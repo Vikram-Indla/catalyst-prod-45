@@ -1,5 +1,5 @@
 /**
- * ExportDropdown — CSV/Excel export for initiative data
+ * ExportDropdown — CSV/Excel export for request data
  * Catalyst V5 Design System
  */
 
@@ -7,18 +7,18 @@ import { useState, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { FileText, FileSpreadsheet } from 'lucide-react';
 import { format } from 'date-fns';
-import type { Initiative } from '@/types/initiative';
-import { STATUS_DISPLAY } from '@/types/initiative';
+import type { Request } from '@/types/request';
+import { STATUS_DISPLAY } from '@/types/request';
 import { catalystToast } from '@/lib/catalystToast';
 
 interface ExportDropdownProps {
-  data: Initiative[];
+  data: Request[];
   anchorRef: React.RefObject<HTMLButtonElement | null>;
   isOpen: boolean;
   onClose: () => void;
 }
 
-function initiativeToRow(i: Initiative): Record<string, string | number> {
+function initiativeToRow(i: Request): Record<string, string | number> {
   return {
     ID: i.initiative_key,
     Title: i.title,
@@ -33,7 +33,7 @@ function initiativeToRow(i: Initiative): Record<string, string | number> {
   };
 }
 
-function exportCSV(data: Initiative[]) {
+function exportCSV(data: Request[]) {
   const rows = data.map(initiativeToRow);
   if (rows.length === 0) return;
   const headers = Object.keys(rows[0]);
@@ -48,20 +48,20 @@ function exportCSV(data: Initiative[]) {
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
-  a.download = `initiatives-export-${format(new Date(), 'yyyy-MM-dd')}.csv`;
+  a.download = `requests-export-${format(new Date(), 'yyyy-MM-dd')}.csv`;
   a.click();
   URL.revokeObjectURL(url);
   catalystToast.success('CSV exported successfully');
 }
 
-async function exportExcel(data: Initiative[]) {
+async function exportExcel(data: Request[]) {
   try {
     const XLSX = await import('xlsx');
     const rows = data.map(initiativeToRow);
     const ws = XLSX.utils.json_to_sheet(rows);
     const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, 'Initiatives');
-    XLSX.writeFile(wb, `initiatives-export-${format(new Date(), 'yyyy-MM-dd')}.xlsx`);
+    XLSX.utils.book_append_sheet(wb, ws, 'Requests');
+    XLSX.writeFile(wb, `requests-export-${format(new Date(), 'yyyy-MM-dd')}.xlsx`);
     catalystToast.success('Excel exported successfully');
   } catch {
     // Fallback to CSV

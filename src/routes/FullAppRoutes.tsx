@@ -86,7 +86,7 @@ const RH21FreezeWindowsPage = lazy(() => import("../pages/releasehub/FreezeWindo
 
 const StrategicThemesPage = lazy(() => import("../pages/strategyhub/StrategicThemesPage"));
 const GoalsKeyResultsPage = lazy(() => import("../pages/strategyhub/GoalsKeyResultsPage"));
-const InitiativeListingPage = lazy(() => import("../pages/producthub/InitiativeListingPage"));
+const InitiativeListingPage = lazy(() => import("../pages/producthub/RequestListingPage"));
 const RoadmapPage = lazy(() => import("../pages/producthub/RoadmapPage"));
 const ProductKanbanPage = lazy(() => import("../pages/producthub/KanbanPage"));
 const RequirementAssistWorkspace = ENABLE_AI ? lazy(() => import("../pages/producthub/requirement-assist/index")) : () => <FeatureComingSoon title="Requirement Assist" />;
@@ -148,7 +148,7 @@ const BudgetGovernancePage = lazy(() => import("../pages/enterprise/BudgetGovern
 const BudgetPlannerPage = lazy(() => import("../pages/enterprise/BudgetPlannerPage"));
 
 const Themes = lazy(() => import("../pages/Themes"));
-const Initiatives = lazy(() => import("../pages/Initiatives"));
+const Requests = lazy(() => import("../pages/Requests"));
 const EpicsPage = lazy(() => import("../pages/items/EpicsPage"));
 const EpicsRecycleBinPage = lazy(() => import("../pages/items/EpicsRecycleBinPage"));
 const EpicsCanceledPage = lazy(() => import("../pages/items/EpicsCanceledPage"));
@@ -642,7 +642,9 @@ export default function FullAppRoutes() {
 
         <Route path="/themes" element={<S><Themes /></S>} />
         <Route path="/themes/grid" element={<S><Themes /></S>} />
-        <Route path="/initiatives" element={<S><Initiatives /></S>} />
+        <Route path="/requests" element={<S><Requests /></S>} />
+        {/* Legacy redirect: /initiatives → /requests (rename 2026-04-29) */}
+        <Route path="/initiatives" element={<Navigate to="/requests" replace />} />
         <Route path="/epics" element={<Navigate to="/program/b2c3d4e5-f6a7-8901-bcde-f12345678901/epic-backlog" replace />} />
         <Route path="/backlog/epics" element={<Navigate to="/program/b2c3d4e5-f6a7-8901-bcde-f12345678901/epic-backlog" replace />} />
         <Route path="/features" element={<S><FeaturesBacklog /></S>} />

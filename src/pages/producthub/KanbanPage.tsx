@@ -1,7 +1,7 @@
 /**
  * ProductHub Kanban — renders through the canonical KanbanBoardShell.
  *
- * Consumes a BoardAdapter<Initiative> produced by
+ * Consumes a BoardAdapter<Request> produced by
  * buildProductHubBoardAdapter. The legacy CatalystKanban primitive this
  * page used to wrap was retired in Phase 7 of the Kanban consolidation;
  * every Catalyst board now flows through KanbanBoardShell + a hub-specific
@@ -12,13 +12,13 @@
  *     density, view settings, advanced filter entry point, ••• menu.
  *   - Pragmatic DnD board with the exact Jira-parity card surface.
  *   - Optimistic colMap + automatic re-sync on data refetch.
- *   - Initiative-typed icon (via the adapter's resolveIcon).
+ *   - Request-typed icon (via the adapter's resolveIcon).
  *
  * Still owned here:
  *   - Data fetch (useMDTBacklog).
  *   - Page-level filter state (search, selAssignees, filterSelected,
  *     groupBy) because it drives query keys.
- *   - Status-change mutation (Supabase update on ph_initiatives).
+ *   - Status-change mutation (Supabase update on ph_requests).
  *   - Detail panel drawer + create drawer.
  */
 import { useCallback, useEffect, useMemo, useState } from 'react';
@@ -26,18 +26,18 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { KanbanBoardShell } from '@/components/kanban/KanbanBoardShell';
 import { buildProductHubBoardAdapter } from '@/components/kanban/adapters/productHubBoardAdapter';
-import { CreateInitiativeDrawer } from '@/components/producthub/shared/CreateInitiativeDrawer';
+import { CreateRequestDrawer } from '@/components/producthub/shared/CreateRequestDrawer';
 import { InitiativeDetailPanel } from '@/components/producthub/timeline/InitiativeDetailPanel';
 import { useMDTBacklog } from '@/hooks/useMDTBacklog';
 import { useProfileAvatarsByName } from '@/hooks/useProfileAvatars';
 import { useCatalystWorkflow } from '@/hooks/useCatalystWorkflow';
 import { supabase } from '@/integrations/supabase/client';
-import type { Initiative, InitiativeStatus } from '@/types/initiative';
-import type { TimelineInitiative } from '@/types/producthub/initiative';
+import type { Request, RequestStatus } from '@/types/request';
+import type { TimelineRequest } from '@/types/producthub/request';
 
-/* ═════ Initiative → TimelineInitiative adapter — unchanged from prior
+/* ═════ Request → TimelineRequest adapter — unchanged from prior
         implementation; used only for the detail panel. ═════ */
-function toTimelineInitiative(i: Initiative): TimelineInitiative {
+function toTimelineInitiative(i: Request): TimelineRequest {
   return {
     id: i.id,
     initiative_key: i.initiative_key,
@@ -77,11 +77,11 @@ function toTimelineInitiative(i: Initiative): TimelineInitiative {
 
 export default function ProductHubKanbanPage() {
   const { data, isLoading } = useMDTBacklog();
-  const initiatives = useMemo<Initiative[]>(() => data?.data ?? [], [data]);
+  const requests = useMemo<Request[]>(() => data?.data ?? [], [data]);
   const avatarsByName = useProfileAvatarsByName();
 
   /* ═════ Workflow-driven columns. The 'Business Request' scheme governs
-     every initiative on this board (per the Phase 1 seed). Editing a
+     every request on this board (per the Phase 1 seed). Editing a
      status name in /admin/workflows updates the column header here on
      next refetch. ═════ */
   const { statuses: workflowStatuses, isLoading: workflowLoading } =
@@ -113,25 +113,25 @@ export default function ProductHubKanbanPage() {
   /* ═════ Status-change mutation (drag between columns). ═════ */
   const qc = useQueryClient();
   const statusMutation = useMutation({
-    mutationFn: async ({ id, status }: { id: string; status: InitiativeStatus }) => {
+    mutationFn: async ({ id, status }: { id: string; status: RequestStatus }) => {
       const { error } = await supabase
-        .from('ph_initiatives')
+        .from('ph_requests')
         .update({ status: status as any, updated_at: new Date().toISOString() })
         .eq('id', id);
       if (error) throw error;
     },
     onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ['ph-initiatives'] });
+      qc.invalidateQueries({ queryKey: ['ph-requests'] });
       qc.invalidateQueries({ queryKey: ['mdt-backlog'] });
     },
     onError: (err) => {
-      toast.error(err instanceof Error ? err.message : 'Failed to update initiative status');
+      toast.error(err instanceof Error ? err.message : 'Failed to update request status');
     },
   });
 
   const onStatusChange = useCallback(
-    (initiativeId: string, status: InitiativeStatus) => {
-      statusMutation.mutate({ id: initiativeId, status });
+    (requestId: string, status: RequestStatus) => {
+      statusMutation.mutate({ id: requestId, status });
     },
     [statusMutation],
   );
@@ -140,31 +140,31 @@ export default function ProductHubKanbanPage() {
   const favoriteMutation = useMutation({
     mutationFn: async ({ id, value }: { id: string; value: boolean }) => {
       const { error } = await supabase
-        .from('ph_initiatives')
+        .from('ph_requests')
         .update({ is_favorited: value, updated_at: new Date().toISOString() })
         .eq('id', id);
       if (error) throw error;
     },
     onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ['ph-initiatives'] });
+      qc.invalidateQueries({ queryKey: ['ph-requests'] });
       qc.invalidateQueries({ queryKey: ['mdt-backlog'] });
     },
   });
 
   const onToggleFavorite = useCallback(
-    (initiativeId: string) => {
-      const current = initiatives.find(i => i.id === initiativeId);
+    (requestId: string) => {
+      const current = requests.find(i => i.id === requestId);
       if (!current) return;
-      favoriteMutation.mutate({ id: initiativeId, value: !current.is_favorited });
+      favoriteMutation.mutate({ id: requestId, value: !current.is_favorited });
     },
-    [favoriteMutation, initiatives],
+    [favoriteMutation, requests],
   );
 
   /* ═════ Detail panel routing. ═════ */
-  const onCardClick = useCallback((initiativeId: string) => setSelectedId(initiativeId), []);
+  const onCardClick = useCallback((requestId: string) => setSelectedId(requestId), []);
 
   /**
-   * Per-column "+ Create initiative" — Jira-parity affordance threaded
+   * Per-column "+ Create request" — Jira-parity affordance threaded
    * through the canonical adapter. Maps the column id (`col-<slug>`)
    * back to a workflow status row, prefers an `slug_aliases` value
    * that's a valid `initiative_status` enum (so the insert doesn't
@@ -182,14 +182,14 @@ export default function ProductHubKanbanPage() {
     setShowCreate(true);
   }, [workflowStatuses]);
   const selectedInitiative = useMemo(
-    () => (selectedId ? initiatives.find(i => i.id === selectedId) ?? null : null),
-    [selectedId, initiatives],
+    () => (selectedId ? requests.find(i => i.id === selectedId) ?? null : null),
+    [selectedId, requests],
   );
-  const detailList = useMemo(() => initiatives.map(toTimelineInitiative), [initiatives]);
+  const detailList = useMemo(() => requests.map(toTimelineInitiative), [requests]);
 
   /* ═════ Build the canonical adapter. ═════ */
   const adapter = useMemo(() => buildProductHubBoardAdapter({
-    initiatives,
+    requests,
     avatarsByName,
     workflowStatuses,
     search,
@@ -206,7 +206,7 @@ export default function ProductHubKanbanPage() {
     onCardClick,
     onCreateInColumn,
   }), [
-    initiatives, avatarsByName, workflowStatuses,
+    requests, avatarsByName, workflowStatuses,
     search, selAssignees, filterSelected, groupBy,
     onFilterChange, onClearFilters,
     onStatusChange, onToggleFavorite, onCardClick, onCreateInColumn,
@@ -230,13 +230,13 @@ export default function ProductHubKanbanPage() {
 
       {selectedInitiative && (
         <InitiativeDetailPanel
-          initiative={toTimelineInitiative(selectedInitiative)}
-          initiatives={detailList}
+          request={toTimelineInitiative(selectedInitiative)}
+          requests={detailList}
           onClose={() => setSelectedId(null)}
         />
       )}
 
-      <CreateInitiativeDrawer
+      <CreateRequestDrawer
         open={showCreate}
         onClose={() => { setShowCreate(false); setCreateInitialStatus(null); }}
         initialStatus={createInitialStatus}

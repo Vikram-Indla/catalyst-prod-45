@@ -30,7 +30,7 @@ export interface WorkflowStatus {
   /** Soft-deactivation flag. Inactive statuses do not render columns on the
    * kanban; preserved so any historical initiative.status keeps mapping. */
   is_active: boolean;
-  /** Additional `ph_initiatives.status` enum values (`initiative_status`)
+  /** Additional `ph_requests.status` enum values (`initiative_status`)
    * that should fold into THIS column. Mirrors Jira's column→multi-status
    * mapping (board 597 has 0..7 statuses per column). The primary `slug`
    * is implicitly always included. */

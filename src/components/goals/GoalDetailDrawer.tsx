@@ -87,7 +87,7 @@ function getAvatarColors(name: string) {
   return palettes[Math.abs(hash) % palettes.length];
 }
 
-const TABS = ['Overview', 'Key Results', 'Initiatives', 'Check-ins', 'Activity'] as const;
+const TABS = ['Overview', 'Key Results', 'Requests', 'Check-ins', 'Activity'] as const;
 type Tab = typeof TABS[number];
 
 export function GoalDetailDrawer({ goalId, isOpen, onClose, onCheckinClick }: GoalDetailDrawerProps) {
@@ -257,7 +257,7 @@ export function GoalDetailDrawer({ goalId, isOpen, onClose, onCheckinClick }: Go
             )
           ) : activeTab === 'Key Results' ? (
             <KeyResultsTab krs={krs} loading={krsLoading} onCheckinClick={onCheckinClick} />
-          ) : activeTab === 'Initiatives' ? (
+          ) : activeTab === 'Requests' ? (
             <InitiativesTab goalId={goalId!} />
           ) : activeTab === 'Check-ins' ? (
             <CheckinsTab checkins={allCheckins} krs={krs} />
@@ -523,7 +523,7 @@ function KeyResultsTab({ krs, loading, onCheckinClick }: { krs: KeyResult[]; loa
   );
 }
 
-// ── Tab: Initiatives ──
+// ── Tab: Requests ──
 function InitiativesTab({ goalId }: { goalId: string }) {
   const { isDark } = useTheme();
   const { data: links = [], isLoading } = useGoalInitiatives(goalId);
@@ -533,7 +533,7 @@ function InitiativesTab({ goalId }: { goalId: string }) {
   const [searchQuery, setSearchQuery] = useState('');
   const { data: searchResults = [] } = useSearchInitiatives(searchQuery);
 
-  const linkedIds = new Set(links.map(l => l.initiative_id));
+  const linkedIds = new Set(links.map(l => l.request_id));
 
   if (isLoading) return <div style={{ textAlign: 'center', color: 'var(--fg-4)', padding: 40 }}>Loading initiatives...</div>;
 
@@ -550,7 +550,7 @@ function InitiativesTab({ goalId }: { goalId: string }) {
             onClick={() => setShowSearch(true)}
             style={{ display: 'inline-flex', alignItems: 'center', gap: 5, padding: '6px 14px', fontSize: 12, fontWeight: 600, color: 'var(--cp-blue)', background: 'rgba(37,99,235,0.06)', border: '1px solid rgba(37,99,235,0.2)', borderRadius: 6, cursor: 'pointer' }}
           >
-            <Plus size={13} /> Link Initiative
+            <Plus size={13} /> Link Request
           </button>
         </div>
       )}
@@ -589,7 +589,7 @@ function InitiativesTab({ goalId }: { goalId: string }) {
             className="link-init-btn"
             style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 5, padding: '12px 0', fontSize: 13, fontWeight: 500, color: 'var(--fg-3)', background: 'none', border: '1px dashed var(--divider)', borderRadius: 8, cursor: 'pointer', marginTop: 4, transition: 'all 150ms' }}
           >
-            <Plus size={13} /> Link Initiative
+            <Plus size={13} /> Link Request
           </button>
         </div>
       )}
@@ -614,7 +614,7 @@ function InitiativesTab({ goalId }: { goalId: string }) {
               {searchResults.filter(i => !linkedIds.has(i.id)).map(init => (
                 <div
                   key={init.id}
-                  onClick={() => { linkMutation.mutate({ goalId, initiativeId: init.id }); setShowSearch(false); setSearchQuery(''); }}
+                  onClick={() => { linkMutation.mutate({ goalId, requestId: init.id }); setShowSearch(false); setSearchQuery(''); }}
                   style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '6px 8px', borderRadius: 6, cursor: 'pointer', transition: 'background 100ms' }}
                   onMouseEnter={e => (e.currentTarget.style.background = isDark ? 'rgba(37,99,235,0.12)' : '#EFF6FF')}
                   onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}

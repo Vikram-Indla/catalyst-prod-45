@@ -113,7 +113,7 @@
    Ensures no white surfaces leak in dark mode.
    ============================================ */
 .dark .budget-module,
-[data-theme="dark"] .budget-module {
+.dark .budget-module , [data-theme="dark"] .budget-module {
   /* Neutrals — hex only (no HSL) */
   --slate-900: var(--fg-1, #EDEDED);
   --slate-800: #EDEDED;

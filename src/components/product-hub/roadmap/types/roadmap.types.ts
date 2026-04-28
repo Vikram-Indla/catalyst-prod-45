@@ -4,7 +4,7 @@
 
 export type InitiativeType = 'business_request';
 
-export type InitiativeStatus = 'Active' | 'Planned' | 'Completed' | 'Cancelled';
+export type RequestStatus = 'Active' | 'Planned' | 'Completed' | 'Cancelled';
 
 export type Priority = 'P0' | 'P1' | 'P2';
 
@@ -31,7 +31,7 @@ export interface RoadmapInitiative {
   titleEn: string;
   type: InitiativeType;
   priority: Priority;
-  status: InitiativeStatus;
+  status: RequestStatus;
   progress: number;
   startDate: string;
   endDate: string;

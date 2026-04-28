@@ -1,8 +1,8 @@
 import React from 'react';
 import { Star, MoreHorizontal, Target } from 'lucide-react';
-import type { Initiative } from '@/types/initiative';
+import type { Request } from '@/types/request';
 import { BusinessRequestBadge } from '@/components/producthub/shared/BusinessRequestBadge';
-import { STATUS_DISPLAY } from '@/types/initiative';
+import { STATUS_DISPLAY } from '@/types/request';
 import { InitiativeMetrics } from '@/components/backlog/MetricBars';
 import { formatDistanceToNow, format, isValid } from 'date-fns';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
@@ -20,7 +20,7 @@ function formatCardDate(value: string | null | undefined): string | null {
 }
 
 interface PCInitiativeCardProps {
-  initiative: Initiative;
+  request: Request;
   isSelected: boolean;
   onClick: () => void;
 }
@@ -67,11 +67,11 @@ function darkPill(pill: { color: string; bg: string; border: string }): { color:
 // priority indicator.
 
 
-export const PCInitiativeCard: React.FC<PCInitiativeCardProps> = ({ initiative, isSelected, onClick }) => {
+export const PCInitiativeCard: React.FC<PCInitiativeCardProps> = ({ request, isSelected, onClick }) => {
   const queryClient = useQueryClient();
   const { isDark } = useTheme();
-  const status = STATUS_DISPLAY[initiative.status];
-  const rawPill = STATUS_PILL_STYLES[initiative.status] || DEFAULT_STATUS_PILL;
+  const status = STATUS_DISPLAY[request.status];
+  const rawPill = STATUS_PILL_STYLES[request.status] || DEFAULT_STATUS_PILL;
   const pillStyle = isDark ? darkPill(rawPill) : rawPill;
   
 
@@ -80,10 +80,10 @@ export const PCInitiativeCard: React.FC<PCInitiativeCardProps> = ({ initiative, 
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
-      if (initiative.is_favorited) {
-        await typedQuery('ph_user_favorites').delete().eq('user_id', user.id).eq('initiative_id', initiative.id);
+      if (request.is_favorited) {
+        await typedQuery('ph_user_favorites').delete().eq('user_id', user.id).eq('request_id', request.id);
       } else {
-        await typedQuery('ph_user_favorites').insert({ user_id: user.id, initiative_id: initiative.id });
+        await typedQuery('ph_user_favorites').insert({ user_id: user.id, request_id: request.id });
       }
       queryClient.invalidateQueries({ queryKey: ['mdt-backlog'] });
     } catch {
@@ -118,22 +118,22 @@ export const PCInitiativeCard: React.FC<PCInitiativeCardProps> = ({ initiative, 
             style={{ color: pillStyle.color, background: pillStyle.bg, borderColor: pillStyle.border }}
           >
             <span className="pc-status-dot" style={{ background: pillStyle.color }} />
-            {status?.label || initiative.status}
+            {status?.label || request.status}
           </span>
-          <span className="pc-card-id">{initiative.initiative_key}</span>
+          <span className="pc-card-id">{request.initiative_key}</span>
         </div>
         <button
-          className={`pc-action-btn ${initiative.is_favorited ? 'pc-action-btn--starred' : ''}`}
+          className={`pc-action-btn ${request.is_favorited ? 'pc-action-btn--starred' : ''}`}
           onClick={handleStar}
           style={{ marginLeft: 'auto', flexShrink: 0 }}
-          aria-label={initiative.is_favorited ? 'Unstar' : 'Star'}
+          aria-label={request.is_favorited ? 'Unstar' : 'Star'}
         >
-          <Star size={14} fill={initiative.is_favorited ? 'currentColor' : 'none'} />
+          <Star size={14} fill={request.is_favorited ? 'currentColor' : 'none'} />
         </button>
       </div>
 
       {/* Title */}
-      <div className="pc-card-title">{initiative.title}</div>
+      <div className="pc-card-title">{request.title}</div>
 
       {/* Business Request label — single canonical type */}
       <div style={{ marginBottom: 10 }}>
@@ -145,7 +145,7 @@ export const PCInitiativeCard: React.FC<PCInitiativeCardProps> = ({ initiative, 
 
       {/* Score + Priority bars */}
       <div style={{ marginBottom: 10 }}>
-        <InitiativeMetrics score={initiative.computed_score} />
+        <InitiativeMetrics score={request.computed_score} />
       </div>
 
       {/*
@@ -155,12 +155,12 @@ export const PCInitiativeCard: React.FC<PCInitiativeCardProps> = ({ initiative, 
       */}
       <div
         style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}
-        title={`${initiative.linked_items_done} / ${initiative.linked_items_total} items`}
+        title={`${request.linked_items_done} / ${request.linked_items_total} items`}
       >
         <div style={{ flex: 1, height: 4, background: 'var(--ds-background-neutral, #F4F4F5)', borderRadius: 4, overflow: 'hidden', border: 'none' }}>
           <div style={{
             height: '100%',
-            width: `${Math.min(initiative.linked_items_progress, 100)}%`,
+            width: `${Math.min(request.linked_items_progress, 100)}%`,
             background: 'var(--cp-blue)',
             borderRadius: 4,
             border: 'none',
@@ -175,28 +175,28 @@ export const PCInitiativeCard: React.FC<PCInitiativeCardProps> = ({ initiative, 
           minWidth: 28,
           textAlign: 'right' as const,
         }}>
-          {initiative.linked_items_progress}%
+          {request.linked_items_progress}%
         </span>
       </div>
 
       {/* Footer */}
       <div className="pc-card-footer">
         <div className="pc-card-footer-left">
-          {initiative.department_name && (
-            <div className="pc-card-dept">{initiative.department_name}</div>
+          {request.department_name && (
+            <div className="pc-card-dept">{request.department_name}</div>
           )}
           {/* Step 9 — emoji removed, dates formatted DD MMM YYYY, null = render nothing */}
-          {(initiative.target_quarter || initiative.target_complete) && (
+          {(request.target_quarter || request.target_complete) && (
             <div className="pc-card-meta">
-              {initiative.target_quarter && (
-                <span className="pc-card-meta-bold">{initiative.target_quarter}</span>
+              {request.target_quarter && (
+                <span className="pc-card-meta-bold">{request.target_quarter}</span>
               )}
               {(() => {
-                const targetStr = formatCardDate(initiative.target_complete);
+                const targetStr = formatCardDate(request.target_complete);
                 if (!targetStr) return null;
                 return (
                   <>
-                    {initiative.target_quarter && ' · '}
+                    {request.target_quarter && ' · '}
                     <span>{targetStr}</span>
                   </>
                 );
@@ -204,23 +204,23 @@ export const PCInitiativeCard: React.FC<PCInitiativeCardProps> = ({ initiative, 
             </div>
           )}
           <div className="pc-card-updated" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <span>Updated {formatDistanceToNow(new Date(initiative.updated_at), { addSuffix: true })}</span>
-            {!!initiative.milestone_count && initiative.milestone_count > 0 && (
+            <span>Updated {formatDistanceToNow(new Date(request.updated_at), { addSuffix: true })}</span>
+            {!!request.milestone_count && request.milestone_count > 0 && (
               <span style={{
                 display: 'inline-flex', alignItems: 'center', gap: 3,
                 fontSize: 10.5, fontWeight: 600, color: '#475569',
               }}>
                 <Target size={10} />
-                {initiative.milestone_count}
+                {request.milestone_count}
               </span>
             )}
           </div>
         </div>
         {/* Step 8 — replace bespoke initials div with Atlaskit Avatar */}
-        {initiative.assignee_name && (
+        {request.assignee_name && (
           <Avatar
-            src={initiative.assignee_avatar || undefined}
-            name={initiative.assignee_name}
+            src={request.assignee_avatar || undefined}
+            name={request.assignee_name}
             size="small"
           />
         )}

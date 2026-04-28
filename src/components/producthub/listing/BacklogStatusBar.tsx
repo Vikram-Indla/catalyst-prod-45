@@ -5,10 +5,10 @@
  */
 
 import React from 'react';
-import type { Initiative } from '@/types/initiative';
+import type { Request } from '@/types/request';
 
 interface BacklogStatusBarProps {
-  items: Initiative[];
+  items: Request[];
   overdueCount: number;
   overdueActive: boolean;
   onOverdueToggle: () => void;

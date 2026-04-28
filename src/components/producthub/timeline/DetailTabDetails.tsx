@@ -14,19 +14,20 @@
  */
 
 import React, { useState, useCallback, useEffect, useMemo } from 'react';
-import type { TimelineInitiative } from '@/types/producthub/initiative';
+import type { TimelineRequest } from '@/types/producthub/request';
 import { format } from 'date-fns';
 import { Trash2 } from 'lucide-react';
 import { useQueryClient, useQuery } from '@tanstack/react-query';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { usePromoteToRoadmap, useRemoveFromRoadmap } from '@/hooks/useRoadmapPromotion';
-import { getInitialsFromName, hashColor } from '@/types/producthub/initiative';
+import { getInitialsFromName, hashColor } from '@/types/producthub/request';
 import { Select, Textfield, Button, Avatar } from '@/components/ads';
 import type { SelectOption } from '@/components/ads';
 import { DatePicker } from '@atlaskit/datetime-picker';
 import TextArea from '@atlaskit/textarea';
 import Toggle from '@atlaskit/toggle';
+import { RequestSubtasksSection } from './RequestSubtasksSection';
 
 /* ═══ Constants ═══ */
 const STATUS_OPTIONS = [
@@ -50,7 +51,7 @@ const BV_OPTS = ['High', 'Medium', 'Low'];
 const PRIO_OPTS = ['Critical', 'High', 'Medium', 'Low'];
 
 interface DetailTabDetailsProps {
-  initiative: TimelineInitiative;
+  request: TimelineRequest;
 }
 
 /* ═══════════════════════════════════════════════════════════════════
@@ -210,17 +211,17 @@ function Cell({ label, children, odd, last }: { label: string; children: React.R
 }
 
 /* ═══ Comments Section ═══ */
-function CommentsSection({ initiativeId }: { initiativeId: string }) {
+function CommentsSection({ requestId }: { requestId: string }) {
   const queryClient = useQueryClient();
   const [newComment, setNewComment] = useState('');
   const [submitting, setSubmitting] = useState(false);
 
   const { data: comments = [], isLoading } = useQuery({
-    queryKey: ['ph-initiative-comments', initiativeId],
+    queryKey: ['ph-request-comments', requestId],
     queryFn: async () => {
-      const { data, error } = await typedQuery('ph_initiative_comments')
+      const { data, error } = await typedQuery('ph_request_comments')
         .select('id, body, author_id, created_at')
-        .eq('initiative_id', initiativeId)
+        .eq('request_id', requestId)
         .order('created_at', { ascending: true });
       if (error) throw error;
       const authorIds: string[] = (data || []).map((c: any) => c.author_id).filter(Boolean);
@@ -239,12 +240,12 @@ function CommentsSection({ initiativeId }: { initiativeId: string }) {
     setSubmitting(true);
     try {
       const { data: { user } } = await supabase.auth.getUser();
-      await typedQuery('ph_initiative_comments').insert({
-        initiative_id: initiativeId,
+      await typedQuery('ph_request_comments').insert({
+        request_id: requestId,
         body: newComment.trim(),
         author_id: user?.id || null,
       });
-      queryClient.invalidateQueries({ queryKey: ['ph-initiative-comments', initiativeId] });
+      queryClient.invalidateQueries({ queryKey: ['ph-request-comments', requestId] });
       setNewComment('');
       // Silent auto-save
     } catch (err: any) {
@@ -255,8 +256,8 @@ function CommentsSection({ initiativeId }: { initiativeId: string }) {
   };
 
   const handleDelete = async (id: string) => {
-    await typedQuery('ph_initiative_comments').delete().eq('id', id);
-    queryClient.invalidateQueries({ queryKey: ['ph-initiative-comments', initiativeId] });
+    await typedQuery('ph_request_comments').delete().eq('id', id);
+    queryClient.invalidateQueries({ queryKey: ['ph-request-comments', requestId] });
     // Silent auto-save
   };
 
@@ -325,19 +326,19 @@ function CommentsSection({ initiativeId }: { initiativeId: string }) {
 }
 
 /* ═══ MAIN COMPONENT ═══ */
-export const DetailTabDetails: React.FC<DetailTabDetailsProps> = ({ initiative }) => {
+export const DetailTabDetails: React.FC<DetailTabDetailsProps> = ({ request }) => {
   const queryClient = useQueryClient();
 
   const [editDesc, setEditDesc] = useState(false);
-  const [desc, setDesc] = useState(initiative.description || '');
+  const [desc, setDesc] = useState(request.description || '');
 
   // Optimistic local state for all editable fields
   const [localFields, setLocalFields] = useState<Record<string, any>>({});
 
-  // Reset local fields when initiative changes (e.g., navigating to different initiative)
-  useEffect(() => { setLocalFields({}); }, [initiative.id]);
+  // Reset local fields when request changes (e.g., navigating to different request)
+  useEffect(() => { setLocalFields({}); }, [request.id]);
 
-  // Helper to get the current value: local override or initiative prop
+  // Helper to get the current value: local override or request prop
   const getField = useCallback((field: string, propValue: any) => {
     return field in localFields ? localFields[field] : propValue;
   }, [localFields]);
@@ -345,7 +346,7 @@ export const DetailTabDetails: React.FC<DetailTabDetailsProps> = ({ initiative }
   const promoteMutation = usePromoteToRoadmap();
   const removeMutation = useRemoveFromRoadmap();
 
-  useEffect(() => { setDesc(initiative.description || ''); }, [initiative.description]);
+  useEffect(() => { setDesc(request.description || ''); }, [request.description]);
 
   const quarters = useMemo(() => {
     const r: string[] = [];
@@ -357,10 +358,10 @@ export const DetailTabDetails: React.FC<DetailTabDetailsProps> = ({ initiative }
 
   const invalidateAll = useCallback(() => {
     queryClient.invalidateQueries({ queryKey: ['mdt-backlog'] });
-    queryClient.invalidateQueries({ queryKey: ['backlog-initiatives'] });
-    queryClient.invalidateQueries({ queryKey: ['roadmap-initiatives'] });
-    queryClient.invalidateQueries({ queryKey: ['ph-initiatives'] });
-    queryClient.invalidateQueries({ queryKey: ['initiatives'] });
+    queryClient.invalidateQueries({ queryKey: ['backlog-requests'] });
+    queryClient.invalidateQueries({ queryKey: ['roadmap-requests'] });
+    queryClient.invalidateQueries({ queryKey: ['ph-requests'] });
+    queryClient.invalidateQueries({ queryKey: ['requests'] });
   }, [queryClient]);
 
   const autoSave = useCallback(async (field: string, value: any, label: string) => {
@@ -371,13 +372,13 @@ export const DetailTabDetails: React.FC<DetailTabDetailsProps> = ({ initiative }
       const sanitized = fkFields.includes(field) && value === '' ? null : value;
 
       let query = supabase
-        .from('ph_initiatives')
+        .from('ph_requests')
         .update({ [field]: sanitized, updated_at: new Date().toISOString() } as any);
 
-      if (isUuid(initiative.id)) {
-        query = query.eq('id', initiative.id);
-      } else if (initiative.initiative_key) {
-        query = query.eq('initiative_key', initiative.initiative_key);
+      if (isUuid(request.id)) {
+        query = query.eq('id', request.id);
+      } else if (request.initiative_key) {
+        query = query.eq('initiative_key', request.initiative_key);
       } else {
         throw new Error('Missing valid persistence identifier');
       }
@@ -392,21 +393,21 @@ export const DetailTabDetails: React.FC<DetailTabDetailsProps> = ({ initiative }
       // Revert optimistic update
       setLocalFields(prev => { const n = { ...prev }; delete n[field]; return n; });
     }
-  }, [initiative.id, initiative.initiative_key, invalidateAll, isUuid]);
+  }, [request.id, request.initiative_key, invalidateAll, isUuid]);
 
   const handleStatusChange = useCallback(async (opt: any) => {
     await autoSave('status', opt.db, 'Status');
   }, [autoSave]);
 
   const handleRoadmapToggle = useCallback(async () => {
-    if (initiative.on_roadmap) {
-      await removeMutation.mutateAsync(initiative.id);
+    if (request.on_roadmap) {
+      await removeMutation.mutateAsync(request.id);
     } else {
       await promoteMutation.mutateAsync({
-        initiative_id: initiative.id,
+        request_id: request.id,
       });
     }
-  }, [initiative.id, initiative.on_roadmap, promoteMutation, removeMutation]);
+  }, [request.id, request.on_roadmap, promoteMutation, removeMutation]);
 
   // DB status for Select matching
   const UI_TO_DB: Record<string, string> = {
@@ -415,7 +416,7 @@ export const DetailTabDetails: React.FC<DetailTabDetailsProps> = ({ initiative }
     ready_for_development: 'approved', under_implementation: 'in_progress', on_hold: 'on_hold',
     implementation_review: 'in_progress', in_support: 'delivered', done: 'closed', cancelled: 'cancelled',
   };
-  const dbStatus = UI_TO_DB[initiative.status] || initiative.status;
+  const dbStatus = UI_TO_DB[request.status] || request.status;
 
   // Normalize date values to YYYY-MM-DD for @atlaskit/datetime-picker
   const dateValue = (v: any): string => {
@@ -429,11 +430,11 @@ export const DetailTabDetails: React.FC<DetailTabDetailsProps> = ({ initiative }
       {/* Roadmap Toggle */}
       <div className="idp-roadmap-toggle">
         <div>
-          <div className="idp-roadmap-label">{initiative.on_roadmap ? 'On Roadmap' : 'Not on Roadmap'}</div>
+          <div className="idp-roadmap-label">{request.on_roadmap ? 'On Roadmap' : 'Not on Roadmap'}</div>
           <div className="idp-roadmap-help">Visible on Product Roadmap timeline</div>
         </div>
         <Toggle
-          isChecked={!!initiative.on_roadmap}
+          isChecked={!!request.on_roadmap}
           onChange={handleRoadmapToggle}
           label="Toggle roadmap visibility"
         />
@@ -449,7 +450,7 @@ export const DetailTabDetails: React.FC<DetailTabDetailsProps> = ({ initiative }
         </Cell>
         <Cell label="EA Review" odd>
           <StringSelect
-            value={getField('ea_review', (initiative as any).ea_review)}
+            value={getField('ea_review', (request as any).ea_review)}
             options={EA_OPTS}
             onChange={(v) => autoSave('ea_review', v, 'EA Review')}
             placeholder="Select EA review"
@@ -457,7 +458,7 @@ export const DetailTabDetails: React.FC<DetailTabDetailsProps> = ({ initiative }
         </Cell>
         <Cell label="Business Value">
           <StringSelect
-            value={getField('business_value', (initiative as any).business_value)}
+            value={getField('business_value', (request as any).business_value)}
             options={BV_OPTS}
             onChange={(v) => autoSave('business_value', v.toLowerCase(), 'Business Value')}
             placeholder="Select business value"
@@ -465,7 +466,7 @@ export const DetailTabDetails: React.FC<DetailTabDetailsProps> = ({ initiative }
         </Cell>
         <Cell label="Priority" odd>
           <StringSelect
-            value={getField('priority', (initiative as any).priority)}
+            value={getField('priority', (request as any).priority)}
             options={PRIO_OPTS}
             onChange={(v) => autoSave('priority', v, 'Priority')}
             placeholder="Select priority"
@@ -473,7 +474,7 @@ export const DetailTabDetails: React.FC<DetailTabDetailsProps> = ({ initiative }
         </Cell>
         <Cell label="Target Quarter" odd>
           <StringSelect
-            value={getField('target_quarter', initiative.target_quarter)}
+            value={getField('target_quarter', request.target_quarter)}
             options={quarters}
             onChange={(v) => autoSave('target_quarter', v, 'Target Quarter')}
             placeholder="Select quarter"
@@ -481,31 +482,31 @@ export const DetailTabDetails: React.FC<DetailTabDetailsProps> = ({ initiative }
         </Cell>
         <Cell label="Reporter">
           <PeoplePicker
-            value={getField('reporter_id', initiative.reporter_id)}
+            value={getField('reporter_id', request.reporter_id)}
             onChange={(id) => autoSave('reporter_id', id, 'Reporter')}
           />
         </Cell>
         <Cell label="Assignee" odd>
           <PeoplePicker
-            value={getField('assignee_id', initiative.assignee_id)}
+            value={getField('assignee_id', request.assignee_id)}
             onChange={(id) => autoSave('assignee_id', id, 'Assignee')}
           />
         </Cell>
         <Cell label="Department">
           <DeptSelect
-            value={getField('department_id', initiative.department_id)}
+            value={getField('department_id', request.department_id)}
             onChange={(id) => autoSave('department_id', id, 'Department')}
           />
         </Cell>
         <Cell label="Business Owner" odd>
           <PeoplePicker
-            value={getField('business_owner_id', initiative.business_owner_id)}
+            value={getField('business_owner_id', request.business_owner_id)}
             onChange={(id) => autoSave('business_owner_id', id, 'Business Owner')}
           />
         </Cell>
         <Cell label="Business Ask Date">
           <DatePicker
-            value={dateValue(getField('business_ask_date', initiative.business_ask_date))}
+            value={dateValue(getField('business_ask_date', request.business_ask_date))}
             onChange={(v) => autoSave('business_ask_date', v || null, 'Business Ask Date')}
             weekStartDay={0}
             locale="en-GB"
@@ -515,7 +516,7 @@ export const DetailTabDetails: React.FC<DetailTabDetailsProps> = ({ initiative }
         </Cell>
         <Cell label="Kickoff Date" odd>
           <DatePicker
-            value={dateValue(getField('kickoff_date', initiative.kickoff_date))}
+            value={dateValue(getField('kickoff_date', request.kickoff_date))}
             onChange={(v) => autoSave('kickoff_date', v || null, 'Kickoff Date')}
             weekStartDay={0}
             locale="en-GB"
@@ -525,7 +526,7 @@ export const DetailTabDetails: React.FC<DetailTabDetailsProps> = ({ initiative }
         </Cell>
         <Cell label="Target Complete">
           <DatePicker
-            value={dateValue(getField('target_complete', initiative.target_complete))}
+            value={dateValue(getField('target_complete', request.target_complete))}
             onChange={(v) => autoSave('target_complete', v || null, 'Target Complete')}
             weekStartDay={0}
             locale="en-GB"
@@ -561,8 +562,11 @@ export const DetailTabDetails: React.FC<DetailTabDetailsProps> = ({ initiative }
         )}
       </div>
 
+      {/* Subtasks — Catalyst-canonical, ph_request_subtasks */}
+      <RequestSubtasksSection requestId={request.id} />
+
       {/* Comments */}
-      <CommentsSection initiativeId={initiative.id} />
+      <CommentsSection requestId={request.id} />
     </div>
   );
 };

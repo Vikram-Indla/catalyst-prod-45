@@ -9,7 +9,7 @@
  *   PragmaticBoard      ──▶ the draggable column grid (via Pragmatic DnD)
  *
  * Everything hub-specific flows through a single `BoardAdapter<T>` prop.
- * The shell knows nothing about Supabase, Initiative rows, Incident types,
+ * The shell knows nothing about Supabase, Request rows, Incident types,
  * or any particular status enum — it just forwards the declarative data
  * and persistence callbacks the adapter supplies.
  *

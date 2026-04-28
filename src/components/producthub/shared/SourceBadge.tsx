@@ -1,8 +1,8 @@
 /**
- * SourceBadge — Canonical lozenge distinguishing Catalyst-native vs Jira-imported initiatives.
+ * SourceBadge — Canonical lozenge distinguishing Catalyst-native vs Jira-imported requests.
  *
- * Source values from `ph_initiatives.source`:
- *   - 'catalyst' (DB default for new inserts via CreateInitiativeDrawer)
+ * Source values from `ph_requests.source`:
+ *   - 'catalyst' (DB default for new inserts via CreateRequestDrawer)
  *   - 'jira'     (set by useSyncMDTToInitiatives for MDT-* imports)
  *
  * Visual rules (per CLAUDE.md §6):

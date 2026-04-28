@@ -82,7 +82,7 @@ export async function updateIdeaMilestones(
   if (error) throw new Error(`updateIdeaMilestones: ${error.message}`);
 }
 
-export async function convertIdeaToInitiative(ideaId: string): Promise<{ initiativeId: string }> {
+export async function convertIdeaToInitiative(ideaId: string): Promise<{ requestId: string }> {
   const { data: idea, error: fetchErr } = await supabase
     .from('ph_ideas')
     .select('*')
@@ -92,7 +92,7 @@ export async function convertIdeaToInitiative(ideaId: string): Promise<{ initiat
   if (fetchErr || !idea) throw new Error(`convertIdeaToInitiative: ${fetchErr?.message}`);
 
   const { data: initiative, error: createErr } = await supabase
-    .from('ph_initiatives')
+    .from('ph_requests')
     .insert({
       title: (idea as any).title,
       description: (idea as any).description,
@@ -110,5 +110,5 @@ export async function convertIdeaToInitiative(ideaId: string): Promise<{ initiat
     .update({ status: 'Converted', updated_at: new Date().toISOString() } as any)
     .eq('id', ideaId);
 
-  return { initiativeId: (initiative as any).id };
+  return { requestId: (initiative as any).id };
 }

@@ -12,7 +12,7 @@ import { logInitiativeAudit } from '@/lib/initiativeAudit';
 import { CheckCircle2, RotateCcw, Pencil, Trash2, Flag, CircleDot, X } from 'lucide-react';
 
 interface DetailTabMilestonesProps {
-  initiativeId: string;
+  requestId: string;
 }
 
 const TYPES = ['Phase Gate', 'Deliverable', 'Decision Point', 'External Dependency', 'Event'];
@@ -98,7 +98,7 @@ function IdSelect({ value, options, placeholder, onChange }: { value: string; op
 }
 
 
-export const DetailTabMilestones: React.FC<DetailTabMilestonesProps> = ({ initiativeId }) => {
+export const DetailTabMilestones: React.FC<DetailTabMilestonesProps> = ({ requestId }) => {
   const queryClient = useQueryClient();
   const [showModal, setShowModal] = useState(false);
   const [editing, setEditing] = useState<any>(null);
@@ -109,11 +109,11 @@ export const DetailTabMilestones: React.FC<DetailTabMilestonesProps> = ({ initia
   });
 
   const { data: milestones = [], refetch } = useQuery({
-    queryKey: ['idp-milestones', initiativeId],
+    queryKey: ['idp-milestones', requestId],
     queryFn: async () => {
-      const { data, error } = await typedQuery('ph_initiative_milestones')
+      const { data, error } = await typedQuery('ph_request_milestones')
         .select('*, owner:profiles!owner_id(id, full_name)')
-        .eq('initiative_id', initiativeId)
+        .eq('request_id', requestId)
         .order('planned_date', { ascending: true });
       if (error) throw error;
       return data || [];
@@ -161,7 +161,7 @@ export const DetailTabMilestones: React.FC<DetailTabMilestonesProps> = ({ initia
   const handleSave = async () => {
     if (!form.title.trim() || !form.planned_date) return;
     const payload: any = {
-      initiative_id: initiativeId,
+      request_id: requestId,
       title: form.title.trim(),
       description: form.description.trim() || null,
       type: form.type.toLowerCase().replace(/ /g, '_'),
@@ -171,17 +171,17 @@ export const DetailTabMilestones: React.FC<DetailTabMilestonesProps> = ({ initia
       is_critical_path: form.is_critical_path,
     };
     if (editing) {
-      const { error } = await typedQuery('ph_initiative_milestones').update(payload).eq('id', editing.id);
+      const { error } = await typedQuery('ph_request_milestones').update(payload).eq('id', editing.id);
       if (error) { toast.error('Failed to update'); return; }
-      logInitiativeAudit({ initiative_id: initiativeId, action: 'updated', entity_type: 'milestone', entity_id: editing.id, field_name: 'milestone', new_value: form.title });
+      logInitiativeAudit({ request_id: requestId, action: 'updated', entity_type: 'milestone', entity_id: editing.id, field_name: 'milestone', new_value: form.title });
       // Silent auto-save
     } else {
       payload.status = 'not_started';
       payload.sort_order = milestones.length + 1;
       payload.created_by = (await supabase.auth.getUser()).data.user?.id;
-      const { error } = await typedQuery('ph_initiative_milestones').insert(payload);
+      const { error } = await typedQuery('ph_request_milestones').insert(payload);
       if (error) { toast.error('Failed to add'); return; }
-      logInitiativeAudit({ initiative_id: initiativeId, action: 'created', entity_type: 'milestone', new_value: form.title });
+      logInitiativeAudit({ request_id: requestId, action: 'created', entity_type: 'milestone', new_value: form.title });
       toast.success('Milestone added', TOAST_OPTS);
     }
     setShowModal(false);
@@ -190,24 +190,24 @@ export const DetailTabMilestones: React.FC<DetailTabMilestonesProps> = ({ initia
   };
 
   const handleComplete = async (m: any) => {
-    await typedQuery('ph_initiative_milestones').update({
+    await typedQuery('ph_request_milestones').update({
       status: 'completed', actual_date: new Date().toISOString().slice(0, 10),
     }).eq('id', m.id);
-    logInitiativeAudit({ initiative_id: initiativeId, action: 'completed', entity_type: 'milestone', entity_id: m.id, new_value: m.title });
+    logInitiativeAudit({ request_id: requestId, action: 'completed', entity_type: 'milestone', entity_id: m.id, new_value: m.title });
     toast.success(`${m.title} completed`, TOAST_OPTS);
     refetch();
   };
   const handleReopen = async (m: any) => {
-    await typedQuery('ph_initiative_milestones').update({
+    await typedQuery('ph_request_milestones').update({
       status: 'in_progress', actual_date: null,
     }).eq('id', m.id);
-    logInitiativeAudit({ initiative_id: initiativeId, action: 'reopened', entity_type: 'milestone', entity_id: m.id, new_value: m.title });
+    logInitiativeAudit({ request_id: requestId, action: 'reopened', entity_type: 'milestone', entity_id: m.id, new_value: m.title });
     toast.success(`${m.title} reopened`, TOAST_OPTS);
     refetch();
   };
   const handleDelete = async (m: any) => {
-    await typedQuery('ph_initiative_milestones').delete().eq('id', m.id);
-    logInitiativeAudit({ initiative_id: initiativeId, action: 'deleted', entity_type: 'milestone', entity_id: m.id, new_value: m.title });
+    await typedQuery('ph_request_milestones').delete().eq('id', m.id);
+    logInitiativeAudit({ request_id: requestId, action: 'deleted', entity_type: 'milestone', entity_id: m.id, new_value: m.title });
     toast.success('Milestone deleted', TOAST_OPTS);
     refetch();
     queryClient.invalidateQueries({ queryKey: ['mdt-backlog'] });
@@ -310,7 +310,7 @@ export const DetailTabMilestones: React.FC<DetailTabMilestonesProps> = ({ initia
 
       {/* M4 — Add/Edit Modal */}
       {showModal && createPortal(
-        <div data-module="initiative-detail-panel">
+        <div data-module="request-detail-panel">
         <div className="idp-modal-backdrop" onClick={() => setShowModal(false)}>
           <div className="idp-modal" style={{ width: 520 }} onClick={e => e.stopPropagation()}>
             <div className="idp-modal-header">

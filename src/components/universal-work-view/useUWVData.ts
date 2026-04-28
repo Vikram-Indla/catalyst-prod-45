@@ -271,7 +271,7 @@ export function useUWVData(params: UWVParams, statusFilter: string[], sort: UWVS
       // ─── ProductHub source (initiatives / MDTs) ───────────────────────────
       if (params.hubSource.includes('producthub')) {
         let q = (supabase as any)
-          .from('ph_initiatives')
+          .from('ph_requests')
           .select(
             'id, initiative_key, title, status, target_quarter, target_complete, assignee_id, updated_at',
             { count: 'exact' },

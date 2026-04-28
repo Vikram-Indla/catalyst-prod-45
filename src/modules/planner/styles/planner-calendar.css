@@ -796,7 +796,7 @@
 
 /* ==================== DARK MODE ==================== */
 .dark .planner-calendar-content,
-[data-theme="dark"] .planner-calendar-content {
+.dark .planner-calendar-content , [data-theme="dark"] .planner-calendar-content {
   /* Surfaces */
   --pln-cal-surface-page: #0f172a;
   --pln-cal-surface-card: #1e293b;
@@ -831,13 +831,13 @@
 
 /* Overdue badge dark mode adjustment */
 .dark .cal-overdue-badge,
-[data-theme="dark"] .cal-overdue-badge {
+.dark .cal-overdue-badge , [data-theme="dark"] .cal-overdue-badge {
   background: rgba(220, 38, 38, 0.2);
   color: #fca5a5;
 }
 
 /* Context menu dark mode danger item */
 .dark .cal-context-menu-item.danger:hover,
-[data-theme="dark"] .cal-context-menu-item.danger:hover {
+.dark .cal-context-menu-item.danger:hover , [data-theme="dark"] .cal-context-menu-item.danger:hover {
   background: rgba(220, 38, 38, 0.15);
 }

@@ -4,7 +4,7 @@
 
 import React from 'react';
 import { dateToX } from './timelineUtils';
-import type { Granularity } from '@/types/producthub/initiative';
+import type { Granularity } from '@/types/producthub/request';
 
 interface TimelineTodayLineProps {
   granularity: Granularity;

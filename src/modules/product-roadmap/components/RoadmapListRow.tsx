@@ -9,7 +9,7 @@ import { cn } from '@/lib/utils';
 import { useTheme } from '@/hooks/useTheme';
 import type { RoadmapDemand } from '../types/roadmap';
 
-// ── Initiative type color map ──
+// ── Request type color map ──
 const TYPE_COLORS: Record<string, string> = {
   project: '#2563EB',
   enhancement: '#0D9488',

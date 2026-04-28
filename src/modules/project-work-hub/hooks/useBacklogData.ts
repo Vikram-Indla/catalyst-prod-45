@@ -6,40 +6,40 @@ import type { BacklogEpic, BacklogFeature, BacklogStory } from '../types/backlog
 const YEAR_2026_START = '2026-01-01T00:00:00Z';
 
 /**
- * Initiative row shape — pulled from `ph_backlog_initiatives_view` which
- * pre-joins initiative type styling (icon + color) onto ph_initiatives.
+ * Request row shape — pulled from `ph_backlog_initiatives_view` which
+ * pre-joins initiative type styling (icon + color) onto ph_requests.
  * This is the "Business Request" layer in Catalyst's hierarchy, sitting
  * one level above Epic. Source of truth per the ProductBacklog ERD
  * (2026-04-18 upload).
  */
-export interface InitiativeRow {
+export interface RequestRow {
   id: string;
   initiative_key: string;
   title: string;
 }
 
 /**
- * useInitiativesByKeys — resolves initiative_key values (found as parent_key
- * on Jira issues) to their full Initiative rows with pre-joined type styling.
+ * useRequestsByKeys — resolves initiative_key values (found as parent_key
+ * on Jira issues) to their full Request rows with pre-joined type styling.
  *
  * Per the ProductBacklog ERD (uploaded 2026-04-18):
- *   ph_initiatives ||--o{ ph_issues : "parent_key = initiative_key"
+ *   ph_requests ||--o{ ph_issues : "parent_key = initiative_key"
  *
  * ph_backlog_initiatives_view is a Supabase view that pre-joins
- * ph_initiatives with initiative_types so icon + color resolve in a single
+ * ph_requests with initiative_types so icon + color resolve in a single
  * query — no client-side mapping required.
  *
  * Usage: pass the union of parent_keys collected from stories + epics.
  * Any that resolve to an initiative become top-level rows in the backlog.
  * Zero-cost when `keys` is empty (hook is disabled).
  */
-export function useInitiativesByKeys(keys: string[]) {
+export function useRequestsByKeys(keys: string[]) {
   const stableKey = keys.slice().sort().join('|');
   return useQuery({
     queryKey: ['backlog-initiatives-by-keys', stableKey],
     enabled: keys.length > 0,
-    queryFn: async (): Promise<Map<string, InitiativeRow>> => {
-      const out = new Map<string, InitiativeRow>();
+    queryFn: async (): Promise<Map<string, RequestRow>> => {
+      const out = new Map<string, RequestRow>();
       if (keys.length === 0) return out;
       const { data, error } = await supabase
         .from('ph_backlog_initiatives_view')
@@ -47,7 +47,7 @@ export function useInitiativesByKeys(keys: string[]) {
         .in('initiative_key', keys);
       if (error) throw error;
       for (const row of (data || []) as any[]) {
-        out.set(row.initiative_key, row as InitiativeRow);
+        out.set(row.initiative_key, row as RequestRow);
       }
       return out;
     },
@@ -55,7 +55,7 @@ export function useInitiativesByKeys(keys: string[]) {
 }
 
 /**
- * useInitiativeLinksByEpicKeys — resolves epic→initiative associations that
+ * useRequestLinksByEpicKeys — resolves epic→initiative associations that
  * live in `ph_issue_links` (the canonical link table written by the Apr 2026
  * InitiativeLinkedItemsTab). This is the SECOND hierarchy path alongside
  * `ph_issues.parent_key`. Returns a Map<epic_issue_key, initiative_key>.
@@ -64,7 +64,7 @@ export function useInitiativesByKeys(keys: string[]) {
  * never surfaces in the Project backlog tree because `parent_key` on the
  * epic stays NULL.
  */
-export function useInitiativeLinksByEpicKeys(epicKeys: string[]) {
+export function useRequestLinksByEpicKeys(epicKeys: string[]) {
   const stableKey = epicKeys.slice().sort().join('|');
   return useQuery({
     queryKey: ['backlog-initiative-links-by-epic-keys', stableKey],

@@ -290,7 +290,7 @@ export function ThemeAlignmentView({ onBack }: { onBack?: () => void }) {
         [`theme-${row.theme_key}`]: row.theme_id,
         [`goal-${row.goal_key}`]: row.goal_id,
         [`kr-${row.kr_key}`]: row.kr_id,
-        [`initiative-${row.initiative_key}`]: row.initiative_id,
+        [`initiative-${row.initiative_key}`]: row.request_id,
         [`epic-${row.epic_key}`]: row.epic_id,
       };
       const nodeIds = Object.keys(ids).filter(k => ids[k] != null);
@@ -309,7 +309,7 @@ export function ThemeAlignmentView({ onBack }: { onBack?: () => void }) {
         [`theme-${row.theme_key}`]: row.theme_id,
         [`goal-${row.goal_key}`]: row.goal_id,
         [`kr-${row.kr_key}`]: row.kr_id,
-        [`initiative-${row.initiative_key}`]: row.initiative_id,
+        [`initiative-${row.initiative_key}`]: row.request_id,
         [`epic-${row.epic_key}`]: row.epic_id,
       };
       return Object.keys(ids).filter(k => ids[k] != null).includes(nodeId);
@@ -330,7 +330,7 @@ export function ThemeAlignmentView({ onBack }: { onBack?: () => void }) {
       }
     });
 
-    const initiative = firstRow.initiative_id ? {
+    const initiative = firstRow.request_id ? {
       key: firstRow.initiative_key || '', title: firstRow.initiative_title || '', status: firstRow.initiative_status || 'draft', progress: Number(firstRow.initiative_progress) || 0,
     } : null;
     const epic = firstRow.epic_id ? {
@@ -448,7 +448,7 @@ export function ThemeAlignmentView({ onBack }: { onBack?: () => void }) {
           [`theme-${row.theme_key}`]: row.theme_id,
           [`goal-${row.goal_key}`]: row.goal_id,
           [`kr-${row.kr_key}`]: row.kr_id,
-          [`initiative-${row.initiative_key}`]: row.initiative_id,
+          [`initiative-${row.initiative_key}`]: row.request_id,
           [`epic-${row.epic_key}`]: row.epic_id,
         };
         return Object.keys(ids).filter(k => ids[k] != null).includes(nodeId);
@@ -712,7 +712,7 @@ export function ThemeAlignmentView({ onBack }: { onBack?: () => void }) {
     { key: 'themes', label: 'Strategic Themes', color: LAYER.theme.color, count: filteredData.themes.length },
     { key: 'goals', label: 'Goals', color: LAYER.goal.color, count: filteredData.goals.length },
     { key: 'keyResults', label: 'Key Results', color: LAYER.kr.color, count: filteredData.krs.length },
-    { key: 'initiatives', label: 'Initiatives', color: LAYER.initiative.color, count: filteredData.initiatives.length },
+    { key: 'initiatives', label: 'Requests', color: LAYER.initiative.color, count: filteredData.initiatives.length },
     { key: 'epics', label: 'Epics', color: LAYER.epic.color, count: filteredData.epics.length },
   ];
 
@@ -733,7 +733,7 @@ export function ThemeAlignmentView({ onBack }: { onBack?: () => void }) {
               <div className="flex items-center gap-5">
                 <ChainStat label="Linked KRs" value={stats.linkedKrs} total={stats.totalKrs} />
                 <Separator orientation="vertical" className="h-5" />
-                <ChainStat label="Linked Initiatives" value={stats.linkedInitiatives} total={stats.totalInitiatives} />
+                <ChainStat label="Linked Requests" value={stats.linkedInitiatives} total={stats.totalInitiatives} />
                 <Separator orientation="vertical" className="h-5" />
                 <ChainStat label="Linked Epics" value={stats.linkedEpics} total={stats.totalEpics} />
                 <Separator orientation="vertical" className="h-5" />
@@ -805,7 +805,7 @@ export function ThemeAlignmentView({ onBack }: { onBack?: () => void }) {
           <span>measured by</span>
           <span className="inline-flex items-center font-semibold text-[11px] py-0 px-1.5 rounded-md border dark:bg-gray-800 dark:border-gray-700" style={{ color: '#1E40AF', background: '#DBEAFE', borderColor: '#93C5FD' }}>● Key Results</span>
           <span>delivered through</span>
-          <span className="inline-flex items-center font-semibold text-[11px] py-0 px-1.5 rounded-md border dark:bg-gray-800 dark:border-gray-700" style={{ color: '#92400E', background: '#FFFBEB', borderColor: '#FDE68A' }}>● Initiatives</span>
+          <span className="inline-flex items-center font-semibold text-[11px] py-0 px-1.5 rounded-md border dark:bg-gray-800 dark:border-gray-700" style={{ color: '#92400E', background: '#FFFBEB', borderColor: '#FDE68A' }}>● Requests</span>
           <span>executed as</span>
           <span className="inline-flex items-center font-semibold text-[11px] py-0 px-1.5 rounded-md border dark:bg-gray-800 dark:border-gray-700" style={{ color: '#3730A3', background: '#EEF2FF', borderColor: '#C7D2FE' }}>● Epics</span>
         </div>
@@ -1077,7 +1077,7 @@ export function ThemeAlignmentView({ onBack }: { onBack?: () => void }) {
           { label: 'Strategic Theme', color: LAYER.theme.color },
           { label: 'Goal', color: LAYER.goal.color },
           { label: 'Key Result', color: LAYER.kr.color },
-          { label: 'Initiative', color: LAYER.initiative.color },
+          { label: 'Request', color: LAYER.initiative.color },
           { label: 'Epic', color: LAYER.epic.color },
         ].map(item => (
           <div key={item.label} className="flex items-center gap-1.5 font-medium text-muted-foreground" style={{ fontSize: 11 }}>

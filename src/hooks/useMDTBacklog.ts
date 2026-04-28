@@ -1,11 +1,11 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
-import type { Initiative, InitiativeStatus } from '@/types/initiative';
+import type { Request, RequestStatus } from '@/types/request';
 
 /**
- * Maps database initiative_status enum to UI InitiativeStatus type.
+ * Maps database initiative_status enum to UI RequestStatus type.
  */
-const STATUS_MAP: Record<string, InitiativeStatus> = {
+const STATUS_MAP: Record<string, RequestStatus> = {
   new_demand: 'new',
   new: 'new',
   under_review: 'portfolio_review',
@@ -27,7 +27,7 @@ const STATUS_MAP: Record<string, InitiativeStatus> = {
   cancelled: 'cancelled',
 };
 
-function mapDbStatus(dbStatus: string): InitiativeStatus {
+function mapDbStatus(dbStatus: string): RequestStatus {
   return STATUS_MAP[dbStatus] || 'new';
 }
 
@@ -41,17 +41,17 @@ export interface BRDTask {
   jira_updated_at: string;
 }
 
-export interface MDTInitiative extends Initiative {
+export interface MDTInitiative extends Request {
   brd_tasks: BRDTask[];
 }
 
 /**
- * Fetches initiatives from ph_backlog_initiatives_view (canonical source).
+ * Fetches requests from ph_backlog_initiatives_view (canonical source).
  *
- * @deprecated Prefer `useInitiativesBacklog` — the `MDT` in the legacy
+ * @deprecated Prefer `useRequestsBacklog` — the `MDT` in the legacy
  * name is a Jira-project-key fossil from the original mirror. The data
  * source today is `ph_backlog_initiatives_view`, a Catalyst-canonical
- * view over `ph_initiatives`. New consumers should adopt the renamed
+ * view over `ph_requests`. New consumers should adopt the renamed
  * alias; the old name stays exported until every call site is migrated.
  */
 export function useMDTBacklog() {
@@ -62,7 +62,7 @@ export function useMDTBacklog() {
       const { data: { user } } = await supabase.auth.getUser();
       const currentUserId = user?.id;
 
-      // Fetch initiatives, profiles, departments, scores, favorites, BRD tasks in parallel
+      // Fetch requests, profiles, departments, scores, favorites, BRD tasks in parallel
       // 2026 GUARDRAIL — only show items created or updated in 2026+
       const YEAR_2026 = '2026-01-01T00:00:00Z';
 
@@ -70,20 +70,20 @@ export function useMDTBacklog() {
       // filtered by project_key='MDT' AND issue_type IN ('BRD Task',
       // 'Sub-task') from the legacy Jira mirror. With Catalyst standing
       // on its own (no Jira inflow), the sub-task list rebuilds on
-      // Catalyst-native data (existing `ph_initiative_milestones` and
+      // Catalyst-native data (existing `ph_request_milestones` and
       // the linked-items roll-up). Keeping `brd_tasks` shape on the
-      // returned initiative as an empty array so consumers compile
+      // returned request as an empty array so consumers compile
       // unchanged; rebuild lands in a follow-up cycle.
       const [initResult, profilesResult, deptsResult, scoresResult, favsResult, milestonesResult] = await Promise.all([
         typedQuery('ph_backlog_initiatives_view').select('*').or(`created_at.gte.${YEAR_2026},updated_at.gte.${YEAR_2026}`).limit(5000),
         supabase.from('profiles').select('id, full_name, avatar_url'),
         typedQuery('ph_departments').select('id, name'),
-        typedQuery('ph_initiative_scores').select('initiative_id, strategic_alignment, business_impact, time_urgency, resource_feasibility, computed_score'),
+        typedQuery('ph_request_scores').select('request_id, strategic_alignment, business_impact, time_urgency, resource_feasibility, computed_score'),
         currentUserId
-          ? typedQuery('ph_user_favorites').select('initiative_id').eq('user_id', currentUserId)
+          ? typedQuery('ph_user_favorites').select('request_id').eq('user_id', currentUserId)
           : Promise.resolve({ data: [] }),
-        // Milestone counts per initiative — minimal projection for tally only
-        typedQuery('ph_initiative_milestones').select('initiative_id').limit(10000),
+        // Milestone counts per request — minimal projection for tally only
+        typedQuery('ph_request_milestones').select('request_id').limit(10000),
       ]);
 
       if (initResult.error) throw initResult.error;
@@ -101,12 +101,12 @@ export function useMDTBacklog() {
 
       const scoreMap = new Map<string, any>();
       (scoresResult.data || []).forEach((s: any) => {
-        scoreMap.set(s.initiative_id, s);
+        scoreMap.set(s.request_id, s);
       });
 
       const favSet = new Set<string>();
       (favsResult.data || []).forEach((f: any) => {
-        favSet.add(f.initiative_id);
+        favSet.add(f.request_id);
       });
 
       // BRD-Task → parent map dropped along with the sidecar fetch.
@@ -114,14 +114,14 @@ export function useMDTBacklog() {
       // existing JSX (`init.brd_tasks?.length` checks) compiles and
       // renders no sub-tasks until the Catalyst-native rebuild lands.
 
-      // Tally milestones per initiative_id
+      // Tally milestones per request_id
       const milestoneCountMap = new Map<string, number>();
       (milestonesResult.data || []).forEach((m: any) => {
-        if (!m.initiative_id) return;
-        milestoneCountMap.set(m.initiative_id, (milestoneCountMap.get(m.initiative_id) || 0) + 1);
+        if (!m.request_id) return;
+        milestoneCountMap.set(m.request_id, (milestoneCountMap.get(m.request_id) || 0) + 1);
       });
 
-      const initiatives: MDTInitiative[] = (initResult.data || []).map((row: any, idx: number) => {
+      const requests: MDTInitiative[] = (initResult.data || []).map((row: any, idx: number) => {
         const assigneeProfile = row.assignee_id ? profileMap.get(row.assignee_id) : null;
         const businessOwnerProfile = row.business_owner_id ? profileMap.get(row.business_owner_id) : null;
         const reporterProfile = row.reporter_id ? profileMap.get(row.reporter_id) : null;
@@ -184,7 +184,7 @@ export function useMDTBacklog() {
         };
       });
 
-      return { data: initiatives, count: initiatives.length };
+      return { data: requests, count: requests.length };
     },
     staleTime: 2 * 60_000,
   });
@@ -197,4 +197,4 @@ export function useMDTBacklog() {
  * underlying query. Use this name in net-new code; the legacy name will
  * be removed once existing call sites have been migrated.
  */
-export const useInitiativesBacklog = useMDTBacklog;
+export const useRequestsBacklog = useMDTBacklog;

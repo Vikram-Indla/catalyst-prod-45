@@ -5,14 +5,14 @@
 
 import React from 'react';
 import { format, differenceInDays } from 'date-fns';
-import type { InitiativeStatus } from '@/types/initiative';
-import { STATUS_DISPLAY, getPriorityLevel, getAvatarColor, getInitials } from '@/types/initiative';
+import type { RequestStatus } from '@/types/request';
+import { STATUS_DISPLAY, getPriorityLevel, getAvatarColor, getInitials } from '@/types/request';
 import { StatusBadge } from '@/components/ui/StatusBadge';
 import { BusinessRequestIcon } from '@/components/producthub/shared/BusinessRequestBadge';
 
 
 /* ── Status Cell ── */
-export const StatusCell = React.memo(function StatusCell({ status }: { status: InitiativeStatus }) {
+export const StatusCell = React.memo(function StatusCell({ status }: { status: RequestStatus }) {
   const s = STATUS_DISPLAY[status];
   return (
     <StatusBadge status={s.label} />
@@ -77,13 +77,13 @@ export const AssigneeCell = React.memo(function AssigneeCell({ name, avatarUrl }
 });
 
 /* ── Date Cell ── */
-export const DateCell = React.memo(function DateCell({ date, status }: { date: string | null; status?: InitiativeStatus }) {
+export const DateCell = React.memo(function DateCell({ date, status }: { date: string | null; status?: RequestStatus }) {
   if (!date) return <span style={{ color: 'var(--cp-text-muted)', fontSize: 13 }}>—</span>;
   const parsed = new Date(date);
   if (isNaN(parsed.getTime())) return <span style={{ color: 'var(--cp-text-muted)', fontSize: 13 }}>—</span>;
   const formatted = format(parsed, 'MMM dd, yyyy');
 
-  const terminalStatuses: InitiativeStatus[] = ['done', 'cancelled'];
+  const terminalStatuses: RequestStatus[] = ['done', 'cancelled'];
   const isOverdue = status && !terminalStatuses.includes(status) && parsed < new Date();
   const isSoon = status && !terminalStatuses.includes(status) && !isOverdue && differenceInDays(parsed, new Date()) <= 14;
 
@@ -106,7 +106,7 @@ export const DateCell = React.memo(function DateCell({ date, status }: { date: s
 });
 
 /* ── Progress Cell ── */
-export const ProgressCell = React.memo(function ProgressCell({ value, status }: { value: number; status?: InitiativeStatus }) {
+export const ProgressCell = React.memo(function ProgressCell({ value, status }: { value: number; status?: RequestStatus }) {
   const clamped = Math.min(Math.max(value, 0), 100);
   const done = status === 'done' || clamped >= 100;
   return (

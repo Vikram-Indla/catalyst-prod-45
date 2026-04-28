@@ -3,7 +3,7 @@
 // All date-to-pixel math for the Gantt grid
 // =====================================================
 
-import type { Granularity } from '@/types/producthub/initiative';
+import type { Granularity } from '@/types/producthub/request';
 import { addDays, startOfQuarter, format, differenceInDays, eachMonthOfInterval, eachWeekOfInterval, eachDayOfInterval, startOfMonth, endOfMonth, startOfWeek, endOfWeek, getQuarter, getYear, isSameMonth } from 'date-fns';
 
 // Fixed timeline range
@@ -144,22 +144,22 @@ export function isCurrentPeriod(date: Date, granularity: Granularity): boolean {
   }
 }
 
-/** Get bar position from initiative data */
+/** Get bar position from request data */
 export function getBarPosition(
-  initiative: { kickoff_date: string | null; business_ask_date: string | null; target_complete: string | null; target_quarter: string | null },
+  request: { kickoff_date: string | null; business_ask_date: string | null; target_complete: string | null; target_quarter: string | null },
   granularity: Granularity
 ): { left: number; width: number } {
   let startDate: Date;
   let endDate: Date;
 
   // Determine start
-  if (initiative.kickoff_date) {
-    startDate = new Date(initiative.kickoff_date);
-  } else if (initiative.business_ask_date) {
-    startDate = new Date(initiative.business_ask_date);
-  } else if (initiative.target_quarter) {
+  if (request.kickoff_date) {
+    startDate = new Date(request.kickoff_date);
+  } else if (request.business_ask_date) {
+    startDate = new Date(request.business_ask_date);
+  } else if (request.target_quarter) {
     // Parse "Q1 2026" → start of that quarter
-    const match = initiative.target_quarter.match(/Q(\d)\s*(\d{4})/);
+    const match = request.target_quarter.match(/Q(\d)\s*(\d{4})/);
     if (match) {
       const q = parseInt(match[1]);
       const y = parseInt(match[2]);
@@ -172,8 +172,8 @@ export function getBarPosition(
   }
 
   // Determine end
-  if (initiative.target_complete) {
-    endDate = new Date(initiative.target_complete);
+  if (request.target_complete) {
+    endDate = new Date(request.target_complete);
   } else {
     endDate = addDays(startDate, 90);
   }
@@ -190,10 +190,10 @@ export function getBarPosition(
   return { left, width };
 }
 
-/** Check if initiative is overdue */
-export function isOverdue(initiative: { target_complete: string | null; progress: number; status: string }): boolean {
-  if (!initiative.target_complete) return false;
-  if (['done', 'cancelled'].includes(initiative.status)) return false;
-  if (initiative.progress >= 100) return false;
-  return new Date(initiative.target_complete) < new Date();
+/** Check if request is overdue */
+export function isOverdue(request: { target_complete: string | null; progress: number; status: string }): boolean {
+  if (!request.target_complete) return false;
+  if (['done', 'cancelled'].includes(request.status)) return false;
+  if (request.progress >= 100) return false;
+  return new Date(request.target_complete) < new Date();
 }

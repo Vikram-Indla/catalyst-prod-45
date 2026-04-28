@@ -33,7 +33,7 @@ import {
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 
 const GADGET_DATE_FIELD: Record<GadgetType, string> = {
-  demand:    'ph_initiatives.target_complete + release cascade',
+  demand:    'ph_requests.target_complete + release cascade',
   release:   'rh_releases.target_date',
   incidents: 'incidents.created_at',
   qa:        'tm_defects.created_at',

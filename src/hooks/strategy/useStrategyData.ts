@@ -102,15 +102,15 @@ export function useEsInitiatives(keyResultId?: string) {
   });
 }
 
-export function useInitiativeEpics(initiativeId: string) {
+export function useRequestEpics(requestId: string) {
   return useQuery({
-    queryKey: ['strategy', 'initiative-epics', initiativeId],
-    enabled: !!initiativeId,
+    queryKey: ['strategy', 'initiative-epics', requestId],
+    enabled: !!requestId,
     queryFn: async () => {
       const { data, error } = await supabase
         .from('es_initiative_epics')
         .select('*')
-        .eq('initiative_id', initiativeId);
+        .eq('request_id', requestId);
       if (error) throw new Error(error.message);
       return (data ?? []) as EsInitiativeEpic[];
     },

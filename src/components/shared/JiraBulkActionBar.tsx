@@ -16,7 +16,7 @@ interface JiraBulkActionBarProps {
   onDelete?: (ids: string[]) => void;
   onEdit?: (ids: string[]) => void;
   /** Table name for generic delete if onDelete not provided */
-  tableName?: 'ph_issues' | 'catalyst_issues' | 'ph_initiatives' | 'tm_defects';
+  tableName?: 'ph_issues' | 'catalyst_issues' | 'ph_requests' | 'tm_defects';
   entityLabel?: string;
 }
 

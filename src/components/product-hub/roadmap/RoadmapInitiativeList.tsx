@@ -126,7 +126,7 @@ export function RoadmapInitiativeList({ groups, selectedId, hoveredId, onSelect,
               </div>
 
               {!isCollapsed && group.items.map(item => (
-                <InitiativeRow
+                <RequestRow
                   key={item.id}
                   item={item}
                   isSelected={selectedId === item.id}
@@ -160,7 +160,7 @@ export function RoadmapInitiativeList({ groups, selectedId, hoveredId, onSelect,
   );
 }
 
-function InitiativeRow({
+function RequestRow({
   item, isSelected, isHovered, onSelect, onHover, onToggleStar, ink, surface, isDark, selectedBg, hoverBg,
 }: {
   item: RoadmapInitiative;

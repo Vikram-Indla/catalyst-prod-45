@@ -1,5 +1,5 @@
 /**
- * Hook for managing roadmap initiatives (ph_initiatives with on_roadmap = true)
+ * Hook for managing roadmap initiatives (ph_requests with on_roadmap = true)
  * Only shows items that have been explicitly added to the roadmap via the toggle.
  */
 
@@ -84,7 +84,7 @@ export function useUpdateDemandDates() {
       start_date: string | null;
       end_date: string | null;
     }) => {
-      const { data, error } = await typedQuery('ph_initiatives')
+      const { data, error } = await typedQuery('ph_requests')
         .update({
           kickoff_date: start_date,
           target_complete: end_date,
@@ -109,7 +109,7 @@ export function useReorderDemands() {
   return useMutation({
     mutationFn: async (reorderedItems: { id: string; rank: number }[]) => {
       const updates = reorderedItems.map((item) =>
-        typedQuery('ph_initiatives')
+        typedQuery('ph_requests')
           .update({ roadmap_priority: item.rank })
           .eq('id', item.id)
       );
@@ -127,7 +127,7 @@ export function useUpdateDemandProgress() {
 
   return useMutation({
     mutationFn: async ({ id, progress }: { id: string; progress: number }) => {
-      const { data, error } = await typedQuery('ph_initiatives')
+      const { data, error } = await typedQuery('ph_requests')
         .update({
           progress,
           updated_at: new Date().toISOString(),
@@ -150,7 +150,7 @@ export function useUpdateDemandProduct() {
 
   return useMutation({
     mutationFn: async ({ id, product_id }: { id: string; product_id: string | null }) => {
-      // ph_initiatives doesn't have product_id, this is a no-op
+      // ph_requests doesn't have product_id, this is a no-op
       return null;
     },
     onSuccess: () => {

@@ -69,7 +69,7 @@ interface WorkItemCardProps {
   /**
    * Optional hub-specific icon resolver. When supplied, overrides the default
    * `JiraIssueTypeIcon` lookup keyed by `issue.issueType`. Use this for hubs
-   * whose type taxonomy does not match Jira (Initiatives, Ideas, etc.). If
+   * whose type taxonomy does not match Jira (Requests, Ideas, etc.). If
    * it returns `null`, the default Jira icon is used as a fallback.
    */
   resolveIcon?: (issue: BoardIssue) => ReactNode | null;

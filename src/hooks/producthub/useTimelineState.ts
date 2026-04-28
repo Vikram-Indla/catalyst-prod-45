@@ -4,7 +4,7 @@
 
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import type { Granularity, Density, GroupByOption, FilterChip } from '@/types/producthub/initiative';
+import type { Granularity, Density, GroupByOption, FilterChip } from '@/types/producthub/request';
 
 interface TimelineStateStore {
   granularity: Granularity;

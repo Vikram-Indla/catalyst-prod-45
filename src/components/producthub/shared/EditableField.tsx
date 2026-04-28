@@ -5,8 +5,8 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Pencil } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import type { InitiativeStatus } from '@/types/initiative';
-import { STATUS_DISPLAY } from '@/types/initiative';
+import type { RequestStatus } from '@/types/request';
+import { STATUS_DISPLAY } from '@/types/request';
 
 interface EditableFieldProps {
   label: string;

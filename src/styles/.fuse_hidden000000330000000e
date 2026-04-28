@@ -1,0 +1,183 @@
+/**
+ * WorkHub Design Tokens — Ring-Fenced CSS Variables
+ * All --wh-* prefixed. NO raw hex values in components.
+ */
+
+:root {
+  /* ── PRIMARY ── */
+  --wh-primary: #2563eb;
+  --wh-primary-hover: #1d4ed8;
+  --wh-primary-light: #eff6ff;
+  --wh-primary-50: #dbeafe;
+  --wh-primary-100: #bfdbfe;
+  --wh-primary-700: #1d4ed8;
+  --wh-primary-900: #1e3a8a;
+
+  /* ── TEAL (secondary accent) ── */
+  --wh-teal: #0d9488;
+  --wh-teal-light: #f0fdfa;
+  --wh-teal-50: #ccfbf1;
+
+  /* ── STATUS SEMANTIC ── */
+  --wh-success: #16a34a;
+  --wh-success-light: #f0fdf4;
+  --wh-success-bg: rgba(22, 163, 74, 0.1);
+  --wh-warning: #d97706;
+  --wh-warning-light: #fffbeb;
+  --wh-warning-bg: rgba(217, 119, 6, 0.1);
+  --wh-danger: #ef4444;
+  --wh-danger-light: #fef2f2;
+  --wh-danger-bg: rgba(239, 68, 68, 0.1);
+  --wh-info: #7c3aed;
+  --wh-info-light: #f5f3ff;
+  --wh-info-bg: rgba(124, 58, 237, 0.1);
+
+  /* ── SURFACES ── */
+  --wh-bg: #f8fafc;
+  --wh-surface: #ffffff;
+  --wh-surface-elevated: #ffffff;
+  --wh-border: #e2e8f0;
+  --wh-border-light: #f1f5f9;
+  --wh-border-focus: var(--wh-primary);
+
+  /* ── TEXT ── */
+  --wh-text-primary: #0f172a;
+  --wh-text-secondary: #475569;
+  --wh-text-tertiary: #94a3b8;
+  --wh-text-inverse: #ffffff;
+
+  /* ── TYPOGRAPHY ── */
+  --wh-font-sans: var(--cp-font-body);
+  --wh-font-mono: var(--cp-font-mono);
+  --wh-font-display: var(--cp-font-heading);
+
+  /* ── SPACING ── */
+  --wh-space-xs: 4px;
+  --wh-space-sm: 8px;
+  --wh-space-md: 12px;
+  --wh-space-lg: 16px;
+  --wh-space-xl: 24px;
+  --wh-space-2xl: 32px;
+
+  /* ── RADIUS ── */
+  --wh-radius-sm: 4px;
+  --wh-radius-md: 6px;
+  --wh-radius-lg: 8px;
+  --wh-radius-xl: 12px;
+  --wh-radius-full: 9999px;
+
+  /* ── SHADOWS ── */
+  --wh-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
+  --wh-shadow-md: 0 2px 8px rgba(0, 0, 0, 0.06);
+  --wh-shadow-lg: 0 4px 16px rgba(0, 0, 0, 0.08);
+  --wh-shadow-xl: 0 8px 32px rgba(0, 0, 0, 0.12);
+  --wh-shadow-focus: 0 0 0 3px rgba(37, 99, 235, 0.15);
+
+  /* ── LAYOUT ── */
+  --wh-topnav-height: 56px;
+  --wh-sidebar-width: 240px;
+  --wh-drawer-width: 480px;
+  --wh-caty-width: 380px;
+
+  /* ── TABLE ── */
+  --wh-row-height: 44px;
+  --wh-row-height-compact: 36px;
+  --wh-header-height: 40px;
+
+  /* ── TRANSITIONS ── */
+  --wh-transition-fast: 150ms ease;
+  --wh-transition-normal: 200ms ease;
+  --wh-transition-slow: 300ms ease;
+
+  /* ── Z-INDEX SCALE ── */
+  --wh-z-base: 1;
+  --wh-z-dropdown: 100;
+  --wh-z-sticky: 200;
+  --wh-z-drawer: 500;
+  --wh-z-modal: 600;
+  --wh-z-caty: 700;
+  --wh-z-toast: 900;
+  --wh-z-topnav: 1000;
+
+  /* ── TYPE BADGE COLORS ── */
+  --wh-type-epic-bg: #dbeafe;
+  --wh-type-epic-text: #1e40af;
+  --wh-type-story-bg: #d1fae5;
+  --wh-type-story-text: #065f46;
+  --wh-type-subtask-bg: #e0e7ff;
+  --wh-type-subtask-text: #3730a3;
+  --wh-type-bug-bg: #fee2e2;
+  --wh-type-bug-text: #991b1b;
+
+  /* ── STATUS BADGE COLORS ── */
+  --wh-status-todo-bg: #f1f5f9;
+  --wh-status-todo-text: #475569;
+  --wh-status-inprogress-bg: #dbeafe;
+  --wh-status-inprogress-text: #1d4ed8;
+  --wh-status-inreview-bg: #f5f3ff;
+  --wh-status-inreview-text: #6d28d9;
+  --wh-status-done-bg: #d1fae5;
+  --wh-status-done-text: #047857;
+  --wh-status-blocked-bg: #fee2e2;
+  --wh-status-blocked-text: #dc2626;
+}
+
+/* ── UTILITY CLASSES ── */
+.workhub-module {
+  font-family: var(--wh-font-sans);
+  color: var(--wh-text-primary);
+  background-color: var(--wh-bg);
+}
+
+/* ── DARK MODE (Vercel Neutral) ── */
+/* Must use :root-level selectors, not .workhub-module (CSS module hashes class names) */
+.dark,
+[data-theme="dark"] {
+  --wh-bg: #0A0A0A;
+  --wh-surface: #1A1A1A;
+  --wh-surface-elevated: #1A1A1A;
+  --wh-border: #2E2E2E;
+  --wh-border-light: #292929;
+  --wh-text-primary: #EDEDED;
+  --wh-text-secondary: #A1A1A1;
+  --wh-text-tertiary: #878787;
+  --wh-shadow-sm: none;
+  --wh-shadow-md: none;
+  --wh-shadow-lg: none;
+  --wh-primary-light: rgba(37,99,235,0.12);
+  --wh-teal-light: rgba(13,148,136,0.12);
+  --wh-success-light: rgba(22,163,74,0.12);
+  --wh-warning-light: rgba(217,119,6,0.12);
+  --wh-danger-light: rgba(239,68,68,0.12);
+  --wh-info-light: rgba(124,58,237,0.12);
+}
+
+.workhub-display {
+  font-family: var(--wh-font-display);
+}
+
+.workhub-safe-area {
+  padding: var(--wh-space-xl);
+}
+
+/* ── PRINT SUPPORT (Task 9) ── */
+@media print {
+  [data-print-hide="true"],
+  .workhub-sidebar,
+  .workhub-topnav {
+    display: none !important;
+  }
+  .workhub-module {
+    margin-left: 0 !important;
+    width: 100% !important;
+  }
+  table, .rounded-xl {
+    width: 100% !important;
+    font-size: 10px !important;
+  }
+  th, [style*="header-height"] {
+    background-color: #f1f5f9 !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+}

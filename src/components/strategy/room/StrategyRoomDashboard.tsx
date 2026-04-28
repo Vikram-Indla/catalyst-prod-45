@@ -79,7 +79,7 @@ const TOKENS = `
 }
 
 /* ── DARK MODE — Nocturne overrides ── */
-[data-theme="dark"] [data-srd] {
+.dark [data-srd] , [data-theme="dark"] [data-srd] {
   --srd-ink: rgba(255,255,255,0.92);
   --srd-ink-2: rgba(255,255,255,0.72);
   --srd-ink-3: rgba(255,255,255,0.72);
@@ -376,7 +376,7 @@ export default function StrategyRoomDashboard({
           </Widget>
 
           {/* ALIGNMENT */}
-          <Widget title="Initiative → Theme Alignment" delay={0.25} foot={<span>% of initiatives linked to at least one strategic theme</span>}>
+          <Widget title="Request → Theme Alignment" delay={0.25} foot={<span>% of initiatives linked to at least one strategic theme</span>}>
             {alignment && alignment.length > 0 ? alignment.map((a, i) => (
               <div key={i} style={{ ...F(10), height: 32 }}>
                 <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--srd-ink)', width: 90, textAlign: 'end', flexShrink: 0 }}>{a.name}</span>

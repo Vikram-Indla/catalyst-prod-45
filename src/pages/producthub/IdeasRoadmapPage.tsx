@@ -31,12 +31,12 @@ export default function IdeasRoadmapPage() {
   const filtered = useMemo(() => {
     let result = ideas;
     if (teamFilter !== 'All Teams') result = result.filter(i => i.assigned_team === teamFilter);
-    if (committedOnly) result = result.filter(i => i.status === 'Approved' || i.status === 'Converted to Initiative');
+    if (committedOnly) result = result.filter(i => i.status === 'Approved' || i.status === 'Converted to Request');
     return result;
   }, [ideas, teamFilter, committedOnly]);
 
   const pipelineCount = filtered.filter(i => i.roadmap_quarter).length;
-  const convertedCount = filtered.filter(i => i.status === 'Converted to Initiative').length;
+  const convertedCount = filtered.filter(i => i.status === 'Converted to Request').length;
 
   return (
     <div className="flex flex-col h-full" style={{ background: dk.pageBg }}>
@@ -108,7 +108,7 @@ export default function IdeasRoadmapPage() {
 }
 
 function RoadmapCard({ idea, onClick, isDark, dk }: { idea: IdeaRow; onClick: () => void; isDark: boolean; dk: typeof DK }) {
-  const isConverted = idea.status === 'Converted to Initiative';
+  const isConverted = idea.status === 'Converted to Request';
   return (
     <div onClick={onClick} style={{
       background: isDark ? '#0A0A0A' : '#FFFFFF',

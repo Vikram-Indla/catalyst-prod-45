@@ -11,7 +11,7 @@ import { logInitiativeAudit } from '@/lib/initiativeAudit';
 import { Upload, Paperclip, Download, Pin, PinOff, Trash2 } from 'lucide-react';
 
 interface DetailTabAttachmentsProps {
-  initiativeId: string;
+  requestId: string;
 }
 
 const MAX_FILE_SIZE = 6 * 1024 * 1024; // 6MB
@@ -56,18 +56,18 @@ function timeAgo(dateStr: string) {
   return `${weeks}w ago`;
 }
 
-export const DetailTabAttachments: React.FC<DetailTabAttachmentsProps> = ({ initiativeId }) => {
+export const DetailTabAttachments: React.FC<DetailTabAttachmentsProps> = ({ requestId }) => {
   const queryClient = useQueryClient();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [dragging, setDragging] = useState(false);
   const [hoveredCard, setHoveredCard] = useState<string | null>(null);
 
   const { data: files = [], refetch } = useQuery({
-    queryKey: ['idp-attachments', initiativeId],
+    queryKey: ['idp-attachments', requestId],
     queryFn: async () => {
-      const { data, error } = await typedQuery('ph_initiative_attachments')
+      const { data, error } = await typedQuery('ph_request_attachments')
         .select('*, uploader:profiles!uploaded_by(full_name)')
-        .eq('initiative_id', initiativeId)
+        .eq('request_id', requestId)
         .order('created_at', { ascending: false });
       if (error) throw error;
       return data || [];
@@ -100,12 +100,12 @@ export const DetailTabAttachments: React.FC<DetailTabAttachmentsProps> = ({ init
         toast.error('Storage limit (30MB) exceeded');
         break;
       }
-      const path = `${initiativeId}/${Date.now()}-${file.name}`;
-      const { error: uploadErr } = await supabase.storage.from('initiative-attachments').upload(path, file);
+      const path = `${requestId}/${Date.now()}-${file.name}`;
+      const { error: uploadErr } = await supabase.storage.from('request-attachments').upload(path, file);
       if (uploadErr) { toast.error(`Upload failed: ${file.name}`); continue; }
 
-      const { error: dbErr } = await typedQuery('ph_initiative_attachments').insert({
-        initiative_id: initiativeId,
+      const { error: dbErr } = await typedQuery('ph_request_attachments').insert({
+        request_id: requestId,
         file_name: file.name,
         file_path: path,
         file_size: file.size,
@@ -116,11 +116,11 @@ export const DetailTabAttachments: React.FC<DetailTabAttachmentsProps> = ({ init
       });
       if (dbErr) { toast.error(`DB insert failed: ${file.name}`); continue; }
 
-      logInitiativeAudit({ initiative_id: initiativeId, action: 'uploaded', entity_type: 'attachment', new_value: file.name });
+      logInitiativeAudit({ request_id: requestId, action: 'uploaded', entity_type: 'attachment', new_value: file.name });
       toast.success(`Uploaded ${file.name}`, TOAST_OPTS);
     }
     refetch();
-  }, [initiativeId, totalUsed, refetch]);
+  }, [requestId, totalUsed, refetch]);
 
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault(); setDragging(false);
@@ -128,7 +128,7 @@ export const DetailTabAttachments: React.FC<DetailTabAttachmentsProps> = ({ init
   };
 
   const handleDownload = async (f: any) => {
-    const { data } = supabase.storage.from('initiative-attachments').getPublicUrl(f.file_path);
+    const { data } = supabase.storage.from('request-attachments').getPublicUrl(f.file_path);
     if (data?.publicUrl) {
       window.open(data.publicUrl, '_blank');
       toast.success(`Downloading ${f.file_name}`, TOAST_OPTS);
@@ -136,16 +136,16 @@ export const DetailTabAttachments: React.FC<DetailTabAttachmentsProps> = ({ init
   };
 
   const handlePin = async (f: any) => {
-    await typedQuery('ph_initiative_attachments').update({ is_pinned: !f.is_pinned }).eq('id', f.id);
-    logInitiativeAudit({ initiative_id: initiativeId, action: f.is_pinned ? 'unpinned' : 'pinned', entity_type: 'attachment', new_value: f.file_name });
+    await typedQuery('ph_request_attachments').update({ is_pinned: !f.is_pinned }).eq('id', f.id);
+    logInitiativeAudit({ request_id: requestId, action: f.is_pinned ? 'unpinned' : 'pinned', entity_type: 'attachment', new_value: f.file_name });
     // Silent auto-save
     refetch();
   };
 
   const handleDelete = async (f: any) => {
-    await supabase.storage.from('initiative-attachments').remove([f.file_path]);
-    await typedQuery('ph_initiative_attachments').delete().eq('id', f.id);
-    logInitiativeAudit({ initiative_id: initiativeId, action: 'deleted', entity_type: 'attachment', new_value: f.file_name });
+    await supabase.storage.from('request-attachments').remove([f.file_path]);
+    await typedQuery('ph_request_attachments').delete().eq('id', f.id);
+    logInitiativeAudit({ request_id: requestId, action: 'deleted', entity_type: 'attachment', new_value: f.file_name });
     toast.success(`Deleted ${f.file_name}`, TOAST_OPTS);
     refetch();
   };

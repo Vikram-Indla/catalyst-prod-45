@@ -24,7 +24,7 @@ import {
 } from '@/hooks/useAIIntelligence';
 import { useWeeklyStory } from '@/hooks/useWeeklyStory';
 import { getWeekNumber } from '@/constants/r360WeekConfig';
-import { getAvatarColor } from '@/types/initiative';
+import { getAvatarColor } from '@/types/request';
 
 interface Props {
   resourceId: string;

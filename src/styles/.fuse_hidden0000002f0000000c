@@ -1,0 +1,207 @@
+/* ══════════════════════════════════════════════
+   CATALYST THEME TOKENS — V12 HYBRID PRECISION
+   Light mode = default. Dark mode = NOCTURNE.
+   All UI references these tokens. Zero hardcoded hex.
+══════════════════════════════════════════════ */
+
+/* ── LIGHT MODE (DEFAULT) ── */
+:root, [data-theme="light"] {
+  /* Surfaces */
+  --cp-bg:              #FFFFFF;
+  /* V3 Canonical White Canvas (Apr 27, 2026 audit, L36).
+     Was #F7F8F9 (Atlassian sunken slate) which painted the h-screen
+     wrapper with a tint visible at the page edges. Catalyst owner
+     decision: every light-mode page surface is white. The Jira-blue
+     wash and Atlassian-slate wash both retire here. */
+  --cp-bg-canvas:       #FFFFFF;
+  --cp-bg-sidebar-hdr:  #F8FAFC;
+  --cp-bg-sunken:       #F1F5F9;
+  --cp-float:           #FFFFFF;
+  /* Bridge gap closure (2026-04-28): src/theme/ads/tokens.ts declared
+     overlay/inset/disabled values in TS but no CSS rule emitted them
+     as custom properties. Wrappers reading var(--cp-bg-overlay) etc.
+     resolved to nothing. Adding here so the bridge has a real CSS
+     counterpart. Light values mirror tokens.ts adsTokens.bg.* and
+     text.disabled. */
+  --cp-bg-overlay:      #F8FAFC;
+  --cp-bg-inset:        #F1F5F9;
+  --cp-text-disabled:   #CBD5E1;
+
+  /* Text */
+  --cp-t1:              #111827;
+  --cp-t2:              #374151;
+  --cp-t3:              #6B7280;
+  --cp-t4:              #9CA3AF;
+
+  /* Borders */
+  --cp-bd:              #E5E7EB;
+  --cp-bd-zone:         #F3F4F6;
+  --cp-bd-hover:        #D1D5DB;
+  --cp-bd-table:        #F3F4F6;
+
+  /* Interactive */
+  --cp-hover:           rgba(0,0,0,0.04);
+  --cp-press:           rgba(0,0,0,0.08);
+  --cp-focus-ring:      rgba(59,130,246,0.45);
+
+  /* Brand */
+  --cp-blue:            #3B82F6;
+  --cp-blue-text:       #2563EB;
+  --cp-blue-link:       #2563EB;
+  --cp-blue-wash:       rgba(59,130,246,0.08);
+
+  /* Status */
+  --cp-ok:              #16A34A;
+  --cp-ok-bg:           rgba(22,163,74,0.08);
+  --cp-warn:            #D97706;
+  --cp-warn-bg:         rgba(217,119,6,0.08);
+  --cp-err:             #DC2626;
+  --cp-err-bg:          rgba(220,38,38,0.08);
+  --cp-err-text:        #DC2626;
+
+  /* AI */
+  --cp-ai-bg:           rgba(59,130,246,0.06);
+  --cp-ai-bd:           rgba(59,130,246,0.12);
+  --cp-ai-t:            #2563EB;
+
+  /* StatusLozenge */
+  --cp-lz-gy-bg:        #DFE1E6;
+  --cp-lz-gy-t:         #42526E;
+  --cp-lz-bl-bg:        #0C66E4;
+  --cp-lz-bl-t:         #FFFFFF;
+  --cp-lz-gn-bg:        #1B7F37;
+  --cp-lz-gn-t:         #FFFFFF;
+  --cp-lz-rd-bg:        #FFEBE6;
+  --cp-lz-rd-t:         #BF2600;
+
+  /* StatusBadge — Jira-grade pill tokens */
+  --status-todo-bg:         #DFE1E6;
+  --status-todo-text:       #42526E;
+  --status-inprogress-bg:   #0C66E4;
+  --status-inprogress-text: #FFFFFF;
+  --status-done-bg:         #1B7F37;
+  --status-done-text:       #FFFFFF;
+
+  /* Progress */
+  --cp-prg-bg:          rgba(0,0,0,0.06);
+
+  /* Scrollbar */
+  --cp-scroll:          rgba(0,0,0,0.12);
+
+  /* Chart Palette */
+  --cp-chart-1: #2563EB;
+  --cp-chart-2: #0D9488;
+  --cp-chart-3: #D97706;
+  --cp-chart-4: #DC2626;
+  --cp-chart-5: #16A34A;
+  --cp-chart-6: #7C3AED;
+  --cp-chart-7: #DB2777;
+  --cp-chart-8: #4B5563;
+}
+
+/* ── DARK MODE — NOCTURNE Geist (canonical Apr 2026) ── */
+/* Phase 11 (2026-04-29): switched the dark selector from [data-theme="dark"]
+   to .dark. Atlaskit's tokens runtime owns data-theme — it writes a
+   space-separated token list ("dark:dark light:light spacing:spacing ...")
+   that its own [data-theme~="dark:dark"] selectors need. Catalyst's
+   ThemeProvider also sets <html class="dark">, which Atlaskit never
+   touches, so we use that as our flip signal. Both layers coexist. */
+.dark, [data-theme="dark"] {
+  /* Surfaces — ONE SURFACE MODEL. No luminance zones. */
+  --cp-bg:              #0A0A0A;
+  --cp-bg-canvas:       #0A0A0A;
+  --cp-bg-sidebar-hdr:  #0A0A0A;
+  --cp-bg-sunken:       #0A0A0A;
+  --cp-float:           #1A1A1A;
+  /* Bridge gap closure (2026-04-28) — see light block. NOCTURNE
+     dark counterparts mirror tokens.ts adsTokens.bg.overlay/inset
+     and text.disabled. */
+  --cp-bg-overlay:      #1F1F1F;
+  --cp-bg-inset:        #111111;
+  --cp-text-disabled:   #7D7D7D;
+
+  /* Text — Geist solid hex scale */
+  --cp-t1:              #EDEDED;
+  --cp-t2:              #A1A1A1;
+  --cp-t3:              #878787;
+  --cp-t4:              #555555;
+
+  /* Borders — Geist solid hex */
+  --cp-bd:              #2E2E2E;
+  --cp-bd-zone:         #2E2E2E;
+  --cp-bd-hover:        #454545;
+  --cp-bd-table:        #2E2E2E;
+
+  /* Interactive — Geist solid hex */
+  --cp-hover:           #1F1F1F;
+  --cp-press:           #292929;
+  --cp-focus-ring:      rgba(59,130,246, 0.45);
+
+  /* Brand */
+  --cp-blue:            #3B82F6;
+  --cp-blue-text:       #60A5FA;
+  --cp-blue-link:       #7DB8FC;
+  --cp-blue-wash:       rgba(59,130,246, 0.10);
+
+  /* Status — bright on dark for readability */
+  --cp-ok:              #4ADE80;
+  --cp-ok-bg:           rgba(74,222,128, 0.12);
+  --cp-warn:            #FDE68A;
+  --cp-warn-bg:         rgba(253,230,138, 0.10);
+  --cp-err:             #FCA5A5;
+  --cp-err-bg:          rgba(239,68,68, 0.10);
+  --cp-err-text:        #FCA5A5;
+
+  /* AI — Catalyst Blue, NEVER purple */
+  --cp-ai-bg:           rgba(59,130,246, 0.08);
+  --cp-ai-bd:           rgba(59,130,246, 0.16);
+  --cp-ai-t:            #60A5FA;
+
+  /* StatusLozenge — Bold pill (matches StatusBadge canonical) */
+  --cp-lz-gy-bg:        #42526E;
+  --cp-lz-gy-t:         #FFFFFF;
+  --cp-lz-bl-bg:        #0C66E4;
+  --cp-lz-bl-t:         #FFFFFF;
+  --cp-lz-gn-bg:        #1B7F37;
+  --cp-lz-gn-t:         #FFFFFF;
+  --cp-lz-rd-bg:        #BF2600;
+  --cp-lz-rd-t:         #FFFFFF;
+
+  /* StatusBadge — Jira-grade pill tokens (dark) */
+  --status-todo-bg:         #3B3D42;
+  --status-todo-text:       #D4D4D4;
+  --status-inprogress-bg:   #0C66E4;
+  --status-inprogress-text: #FFFFFF;
+  --status-done-bg:         #1B7F37;
+  --status-done-text:       #FFFFFF;
+
+  /* Progress */
+  --cp-prg-bg:          #292929;
+
+  /* Scrollbar */
+  --cp-scroll:          #2E2E2E;
+
+  /* Chart Palette */
+  --cp-chart-1: #60A5FA;
+  --cp-chart-2: #5EEAD4;
+  --cp-chart-3: #FBBF24;
+  --cp-chart-4: #F87171;
+  --cp-chart-5: #4ADE80;
+  --cp-chart-6: #A78BFA;
+  --cp-chart-7: #F472B6;
+  --cp-chart-8: #9CA3AF;
+}
+
+/* ── Scrollbar dark mode ── */
+[data-theme="dark"] ::-webkit-scrollbar-thumb {
+  background: var(--cp-scroll);
+}
+[data-theme="dark"] ::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* ── Reduced motion ── */
+[data-reduced-motion="true"] * {
+  transition-duration: 0.01ms !important;
+  animation-duration: 0.01ms !important;
+}

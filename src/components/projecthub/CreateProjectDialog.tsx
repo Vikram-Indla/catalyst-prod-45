@@ -205,7 +205,7 @@ export function CreateProjectDialog({ open, onClose }: Props) {
             <label style={labelStyle}>Project name <span style={{ color: '#DC2626' }}>*</span></label>
             <input
               value={name} onChange={e => setName(e.target.value)}
-              placeholder="e.g. Digital Transformation Initiative"
+              placeholder="e.g. Digital Transformation Request"
               style={inputStyle} onFocus={focusIn} onBlur={focusOut}
             />
             {errors.name && <p style={{ fontSize: 12, color: '#DC2626', marginTop: 4 }}>{errors.name}</p>}

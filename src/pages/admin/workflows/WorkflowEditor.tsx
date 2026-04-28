@@ -172,7 +172,7 @@ export function WorkflowEditor({ scheme, statuses, transitions, onInvalidate }: 
   // Comma-separated raw text → string[] persisted to `slug_aliases`.
   // The kanban routing reads slug + slug_aliases as the column's
   // accepted enum values, so adding "in_progress" to "implementation"'s
-  // aliases routes legacy `ph_initiatives.status='in_progress'` rows
+  // aliases routes legacy `ph_requests.status='in_progress'` rows
   // into the renamed Implementation column without a DB migration.
   async function handleUpdateAliases(statusId: string, raw: string) {
     const aliases = raw

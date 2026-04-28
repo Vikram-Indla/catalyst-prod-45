@@ -9,21 +9,21 @@ import { useTheme } from '@/hooks/useTheme';
 import { DK, LK } from '@/utils/dark-mode-styles';
 
 const MONO = "'JetBrains Mono', monospace";
-const LIFECYCLE_ORDER = ['Draft', 'Submitted', 'Under Review', 'Approved', 'Converted to Initiative'];
+const LIFECYCLE_ORDER = ['Draft', 'Submitted', 'Under Review', 'Approved', 'Converted to Request'];
 
 const STATUS_BAR_COLORS: Record<string, string> = {
-  'Draft': '#DFE1E6', 'Submitted': '#DFE1E6', 'Under Review': '#0C66E4', 'Approved': '#0C66E4', 'Converted to Initiative': '#1B7F37',
+  'Draft': '#DFE1E6', 'Submitted': '#DFE1E6', 'Under Review': '#0C66E4', 'Approved': '#0C66E4', 'Converted to Request': '#1B7F37',
 };
 const STATUS_TEXT_COLORS: Record<string, string> = {
-  'Draft': '#42526E', 'Submitted': '#42526E', 'Under Review': '#FFFFFF', 'Approved': '#FFFFFF', 'Converted to Initiative': '#FFFFFF',
+  'Draft': '#42526E', 'Submitted': '#42526E', 'Under Review': '#FFFFFF', 'Approved': '#FFFFFF', 'Converted to Request': '#FFFFFF',
 };
 const STATUS_BAR_COLORS_DARK: Record<string, string> = {
   'Draft': '#2E2E2E', 'Submitted': '#2E2E2E', 'Under Review': 'rgba(59,130,246,0.15)',
-  'Approved': 'rgba(59,130,246,0.15)', 'Converted to Initiative': 'rgba(22,163,74,0.15)',
+  'Approved': 'rgba(59,130,246,0.15)', 'Converted to Request': 'rgba(22,163,74,0.15)',
 };
 const STATUS_TEXT_COLORS_DARK: Record<string, string> = {
   'Draft': 'rgba(255,255,255,0.72)', 'Submitted': 'rgba(255,255,255,0.72)', 'Under Review': '#93C5FD',
-  'Approved': '#93C5FD', 'Converted to Initiative': '#86EFAC',
+  'Approved': '#93C5FD', 'Converted to Request': '#86EFAC',
 };
 
 export default function IdeasAnalyticsPage() {
@@ -33,7 +33,7 @@ export default function IdeasAnalyticsPage() {
   const { data: allIdeas = [] } = useIdeasHub();
 
   const avgTimeToConvert = useMemo(() => {
-    const converted = allIdeas.filter(i => i.status === 'Converted to Initiative' && (i as any).converted_at && i.created_at);
+    const converted = allIdeas.filter(i => i.status === 'Converted to Request' && (i as any).converted_at && i.created_at);
     if (converted.length === 0) return null;
     const totalDays = converted.reduce((sum, i) => {
       const diff = new Date((i as any).converted_at).getTime() - new Date(i.created_at).getTime();
@@ -53,7 +53,7 @@ export default function IdeasAnalyticsPage() {
     );
   }
 
-  const convertedCount = stats.byStatus.find(s => s.status === 'Converted to Initiative')?.count || 0;
+  const convertedCount = stats.byStatus.find(s => s.status === 'Converted to Request')?.count || 0;
   const conversionRate = stats.total > 0 ? ((convertedCount / stats.total) * 100).toFixed(1) : '0.0';
   const pendingConversion = stats.byStatus.find(s => s.status === 'Approved')?.count || 0;
 
@@ -71,12 +71,12 @@ export default function IdeasAnalyticsPage() {
       if (i.theme) {
         if (!themeConvMap[i.theme]) themeConvMap[i.theme] = { total: 0, converted: 0 };
         themeConvMap[i.theme].total++;
-        if (i.status === 'Converted to Initiative') themeConvMap[i.theme].converted++;
+        if (i.status === 'Converted to Request') themeConvMap[i.theme].converted++;
       }
       if (i.roadmap_quarter) {
         if (!qConvMap[i.roadmap_quarter]) qConvMap[i.roadmap_quarter] = { total: 0, converted: 0 };
         qConvMap[i.roadmap_quarter].total++;
-        if (i.status === 'Converted to Initiative') qConvMap[i.roadmap_quarter].converted++;
+        if (i.status === 'Converted to Request') qConvMap[i.roadmap_quarter].converted++;
       }
     });
     const cbt = Object.entries(themeConvMap).map(([theme, d]) => ({ theme, ...d })).sort((a, b) => b.converted - a.converted).slice(0, 4);
@@ -105,7 +105,7 @@ export default function IdeasAnalyticsPage() {
         {/* Stat Cards */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px', marginBottom: '24px' }}>
           <StatCard label="Total Ideas" value={String(stats.total)} subtitle="in backlog pipeline" color={dk.t1} isDark={isDark} dk={dk} />
-          <StatCard label="Conversion Rate" value={`${conversionRate}%`} subtitle={`${convertedCount} converted to initiatives`} color={dk.greenText} isDark={isDark} dk={dk} />
+          <StatCard label="Conversion Rate" value={`${conversionRate}%`} subtitle={`${convertedCount} converted to requests`} color={dk.greenText} isDark={isDark} dk={dk} />
           <StatCard label="Avg Time to Convert" value={avgTimeToConvert !== null ? `${avgTimeToConvert}d` : '—'} subtitle={avgTimeToConvert !== null ? 'from created to converted' : 'no conversions yet'} color={dk.t1} isDark={isDark} dk={dk} />
           <StatCard label="Pending Conversion" value={String(pendingConversion)} subtitle="approved, awaiting conversion" color="#2563EB" isDark={isDark} dk={dk} />
         </div>
@@ -115,8 +115,8 @@ export default function IdeasAnalyticsPage() {
           <div style={{ background: containerBg, border: containerBorder, borderRadius: '6px', padding: '20px' }}>
             <div style={{ fontSize: '14px', fontWeight: 700, color: dk.t1, marginBottom: '16px', fontFamily: 'var(--cp-font-heading)' }}>Conversion Funnel</div>
             {funnelData.map(s => {
-              const label = s.status === 'Converted to Initiative' ? 'Converted' : s.status;
-              const isConv = s.status === 'Converted to Initiative';
+              const label = s.status === 'Converted to Request' ? 'Converted' : s.status;
+              const isConv = s.status === 'Converted to Request';
               return (
                 <div key={s.status} style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
                   <span style={{ width: '100px', fontSize: '12px', fontWeight: isConv ? 700 : 600, color: dk.t2, flexShrink: 0 }}>{label}</span>

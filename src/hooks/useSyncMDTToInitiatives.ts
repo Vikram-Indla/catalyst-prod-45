@@ -1,8 +1,8 @@
 /**
- * Auto-syncs MDT Jira issues into ph_initiatives.
+ * Auto-syncs MDT Jira issues into ph_requests.
  * HARD GUARDRAIL: Only issues assigned to the 5 approved assignees are synced.
  * Runs once per session on the backlog page.
- * Skips issues that already have a matching ph_initiative (by jira_issue_key).
+ * Skips issues that already have a matching ph_request (by jira_issue_key).
  * Subtasks are explicitly excluded.
  */
 import { useEffect, useRef } from 'react';
@@ -91,7 +91,7 @@ export function useSyncMDTToInitiatives() {
         });
 
         // 3. Get existing initiatives with jira_issue_key set
-        const { data: existing } = await typedQuery('ph_initiatives')
+        const { data: existing } = await typedQuery('ph_requests')
           .select('jira_issue_key')
           .not('jira_issue_key', 'is', null);
 
@@ -104,7 +104,7 @@ export function useSyncMDTToInitiatives() {
           return;
         }
 
-        // 5. Insert as ph_initiatives with resolved assignee
+        // 5. Insert as ph_requests with resolved assignee
         const rows = newIssues.map((issue: any) => ({
           initiative_key: issue.issue_key,
           title: issue.summary,
@@ -118,12 +118,12 @@ export function useSyncMDTToInitiatives() {
         // Batch insert in chunks of 50
         for (let i = 0; i < rows.length; i += 50) {
           const chunk = rows.slice(i, i + 50);
-          await typedQuery('ph_initiatives').insert(chunk);
+          await typedQuery('ph_requests').insert(chunk);
         }
 
         // 5. Invalidate queries
         queryClient.invalidateQueries({ queryKey: ['mdt-backlog'] });
-        queryClient.invalidateQueries({ queryKey: ['backlog-initiatives'] });
+        queryClient.invalidateQueries({ queryKey: ['backlog-requests'] });
 
         console.log(`[MDT Sync] Created ${newIssues.length} initiatives from MDT (guardrail: ${ALLOWED_ASSIGNEE_IDS.length} assignees)`);
       } catch (err) {

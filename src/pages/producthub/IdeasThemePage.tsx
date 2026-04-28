@@ -28,11 +28,11 @@ export default function IdeasThemePage() {
   const navigate = useNavigate();
 
   const ideasWithTheme = allIdeas.filter(i => i.theme).length;
-  const convertedCount = allIdeas.filter(i => (i.status === 'Converted to Initiative' || i.status === 'Converted') && i.theme).length;
+  const convertedCount = allIdeas.filter(i => (i.status === 'Converted to Request' || i.status === 'Converted') && i.theme).length;
 
   const themeConvertedMap: Record<string, number> = {};
   allIdeas.forEach(i => {
-    if (i.theme && (i.status === 'Converted to Initiative' || i.status === 'Converted')) {
+    if (i.theme && (i.status === 'Converted to Request' || i.status === 'Converted')) {
       themeConvertedMap[i.theme] = (themeConvertedMap[i.theme] || 0) + 1;
     }
   });

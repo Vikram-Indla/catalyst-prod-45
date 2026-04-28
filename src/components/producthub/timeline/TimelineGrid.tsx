@@ -3,8 +3,8 @@
 // =====================================================
 
 import React, { useRef, useCallback, useState, useMemo, useEffect } from 'react';
-import type { TimelineInitiative } from '@/types/producthub/initiative';
-import { DENSITY_MAP } from '@/types/producthub/initiative';
+import type { TimelineRequest } from '@/types/producthub/request';
+import { DENSITY_MAP } from '@/types/producthub/request';
 import { useTimelineState } from '@/hooks/producthub/useTimelineState';
 import { TimelineTimeHeader } from './TimelineTimeHeader';
 import { TimelineBar } from './TimelineBar';
@@ -14,19 +14,19 @@ import { getTotalWidth, dateToX, xToDate, getColumns, COLUMN_WIDTHS } from './ti
 
 interface GroupData {
   name: string;
-  items: TimelineInitiative[];
+  items: TimelineRequest[];
   count: number;
 }
 
 interface TimelineGridProps {
-  initiatives: TimelineInitiative[];
+  requests: TimelineRequest[];
   groups: GroupData[];
   isLoading: boolean;
   leftScrollRef: React.RefObject<HTMLDivElement>;
 }
 
 export const TimelineGrid: React.FC<TimelineGridProps> = ({
-  initiatives,
+  requests,
   groups,
   isLoading,
   leftScrollRef,
@@ -48,20 +48,20 @@ export const TimelineGrid: React.FC<TimelineGridProps> = ({
   // Build row list: interleave group headers + items
   const rowList = useMemo(() => {
     if (!isGrouped) {
-      return initiatives.map(item => ({ type: 'item' as const, initiative: item }));
+      return requests.map(item => ({ type: 'item' as const, request: item }));
     }
 
-    const rows: ({ type: 'group'; name: string; count: number } | { type: 'item'; initiative: TimelineInitiative })[] = [];
+    const rows: ({ type: 'group'; name: string; count: number } | { type: 'item'; request: TimelineRequest })[] = [];
     for (const group of groups) {
       rows.push({ type: 'group', name: group.name, count: group.count });
       if (!collapsedGroups.has(group.name)) {
         for (const item of group.items) {
-          rows.push({ type: 'item', initiative: item });
+          rows.push({ type: 'item', request: item });
         }
       }
     }
     return rows;
-  }, [initiatives, groups, isGrouped, collapsedGroups]);
+  }, [requests, groups, isGrouped, collapsedGroups]);
 
   // Total grid height
   const gridHeight = useMemo(() => {
@@ -214,11 +214,11 @@ export const TimelineGrid: React.FC<TimelineGridProps> = ({
               const barIdx = itemIndex++;
               return (
                 <div
-                  key={row.initiative.id}
+                  key={row.request.id}
                   className="absolute left-0"
                   style={{ top: currentY, width: totalWidth, height: rowHeight }}
                 >
-                  <TimelineBar initiative={row.initiative} rowIndex={barIdx} />
+                  <TimelineBar request={row.request} rowIndex={barIdx} />
                 </div>
               );
             });

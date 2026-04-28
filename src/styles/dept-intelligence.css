@@ -41,7 +41,7 @@
 }
 
 /* ── Dark mode overrides ── */
-[data-theme="dark"] {
+.dark , [data-theme="dark"] {
   --di-ink: #EDEDED;
   --di-ink-secondary: #EDEDED;
   --di-ink-tertiary: #878787;
@@ -295,11 +295,11 @@
 .day-tue { background: #0F766E; color: #FFFFFF; }
 .day-wed { background: #6D28D9; color: #FFFFFF; }
 .day-thu { background: #92400E; color: #FFFFFF; }
-[data-theme="dark"] .day-sun { background: rgba(30,58,95,0.5); color: #93C5FD; }
-[data-theme="dark"] .day-mon { background: rgba(30,64,175,0.4); color: #93C5FD; }
-[data-theme="dark"] .day-tue { background: rgba(15,118,110,0.4); color: #2DD4BF; }
-[data-theme="dark"] .day-wed { background: rgba(109,40,217,0.3); color: #A78BFA; }
-[data-theme="dark"] .day-thu { background: rgba(146,64,14,0.4); color: #FDE68A; }
+.dark .day-sun , [data-theme="dark"] .day-sun { background: rgba(30,58,95,0.5); color: #93C5FD; }
+.dark .day-mon , [data-theme="dark"] .day-mon { background: rgba(30,64,175,0.4); color: #93C5FD; }
+.dark .day-tue , [data-theme="dark"] .day-tue { background: rgba(15,118,110,0.4); color: #2DD4BF; }
+.dark .day-wed , [data-theme="dark"] .day-wed { background: rgba(109,40,217,0.3); color: #A78BFA; }
+.dark .day-thu , [data-theme="dark"] .day-thu { background: rgba(146,64,14,0.4); color: #FDE68A; }
 
 .di-day-label { font: 600 13px var(--di-font-heading); color: var(--di-ink); }
 .di-day-date  { font: 400 12px var(--di-font-mono); color: var(--di-ink-muted); }
@@ -341,12 +341,12 @@
 .hub-tst { background: #EDE9FE; color: #5B21B6; }
 .hub-rel { background: #FEF3C7; color: #78350F; }
 .hub-oth { background: #F4F4F5; color: #3F3F46; }
-[data-theme="dark"] .hub-inc { background: #2A1C1E; color: #FCA5A5; }
-[data-theme="dark"] .hub-prd { background: #182820; color: #86EFAC; }
-[data-theme="dark"] .hub-prj { background: #1A2030; color: #93C5FD; }
-[data-theme="dark"] .hub-tst { background: rgba(167,139,250,0.10); color: #A78BFA; }
-[data-theme="dark"] .hub-rel { background: rgba(253,230,138,0.10); color: #FDE68A; }
-[data-theme="dark"] .hub-oth { background: #292929; color: #878787; }
+.dark .hub-inc , [data-theme="dark"] .hub-inc { background: #2A1C1E; color: #FCA5A5; }
+.dark .hub-prd , [data-theme="dark"] .hub-prd { background: #182820; color: #86EFAC; }
+.dark .hub-prj , [data-theme="dark"] .hub-prj { background: #1A2030; color: #93C5FD; }
+.dark .hub-tst , [data-theme="dark"] .hub-tst { background: rgba(167,139,250,0.10); color: #A78BFA; }
+.dark .hub-rel , [data-theme="dark"] .hub-rel { background: rgba(253,230,138,0.10); color: #FDE68A; }
+.dark .hub-oth , [data-theme="dark"] .hub-oth { background: #292929; color: #878787; }
 
 .di-ev-content { flex: 1; }
 
@@ -401,11 +401,11 @@
 .sig-action  { background: #DBEAFE; color: #1E3A8A; }
 .sig-gap     { background: #FEF3C7; color: #78350F; }
 .sig-observe { background: #F4F4F5; color: #3F3F46; }
-[data-theme="dark"] .sig-risk    { background: #2A1C1E; color: #FCA5A5; }
-[data-theme="dark"] .sig-esc     { background: #2A1C1E; color: #FCA5A5; }
-[data-theme="dark"] .sig-action  { background: #1A2030; color: #93C5FD; }
-[data-theme="dark"] .sig-gap     { background: #182820; color: #86EFAC; }
-[data-theme="dark"] .sig-observe { background: #292929; color: #878787; }
+.dark .sig-risk    , [data-theme="dark"] .sig-risk    { background: #2A1C1E; color: #FCA5A5; }
+.dark .sig-esc     , [data-theme="dark"] .sig-esc     { background: #2A1C1E; color: #FCA5A5; }
+.dark .sig-action  , [data-theme="dark"] .sig-action  { background: #1A2030; color: #93C5FD; }
+.dark .sig-gap     , [data-theme="dark"] .sig-gap     { background: #182820; color: #86EFAC; }
+.dark .sig-observe , [data-theme="dark"] .sig-observe { background: #292929; color: #878787; }
 
 /* ══════════════════════════════════════════════════════════
    TAB 1 — EXECUTIVE SUMMARY V5 (Role-Based)
@@ -471,12 +471,12 @@
 .role-ux   .di-role-icon { background: #FCE7F3; color: #DB2777; }
 .role-mgmt .di-role-icon { background: #FFFBEB; color: #D97706; }
 .role-devops .di-role-icon { background: #F0FDF4; color: #16A34A; }
-[data-theme="dark"] .role-dev  .di-role-icon { background: rgba(59,130,246,0.10); color: #60A5FA; }
-[data-theme="dark"] .role-qa   .di-role-icon { background: rgba(74,222,128,0.10); color: #4ADE80; }
-[data-theme="dark"] .role-po   .di-role-icon { background: rgba(13,148,136,0.10); color: #2DD4BF; }
-[data-theme="dark"] .role-ux   .di-role-icon { background: rgba(219,39,119,0.10); color: #F472B6; }
-[data-theme="dark"] .role-mgmt .di-role-icon { background: rgba(253,230,138,0.10); color: #FDE68A; }
-[data-theme="dark"] .role-devops .di-role-icon { background: rgba(74,222,128,0.10); color: #4ADE80; }
+.dark .role-dev  .di-role-icon , [data-theme="dark"] .role-dev  .di-role-icon { background: rgba(59,130,246,0.10); color: #60A5FA; }
+.dark .role-qa   .di-role-icon , [data-theme="dark"] .role-qa   .di-role-icon { background: rgba(74,222,128,0.10); color: #4ADE80; }
+.dark .role-po   .di-role-icon , [data-theme="dark"] .role-po   .di-role-icon { background: rgba(13,148,136,0.10); color: #2DD4BF; }
+.dark .role-ux   .di-role-icon , [data-theme="dark"] .role-ux   .di-role-icon { background: rgba(219,39,119,0.10); color: #F472B6; }
+.dark .role-mgmt .di-role-icon , [data-theme="dark"] .role-mgmt .di-role-icon { background: rgba(253,230,138,0.10); color: #FDE68A; }
+.dark .role-devops .di-role-icon , [data-theme="dark"] .role-devops .di-role-icon { background: rgba(74,222,128,0.10); color: #4ADE80; }
 .di-role-title { font: 600 14px var(--di-font-heading); color: var(--di-ink); }
 .di-role-count { font: 500 11px var(--di-font-mono); color: var(--di-ink-muted); }
 

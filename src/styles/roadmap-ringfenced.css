@@ -132,7 +132,7 @@
    ═══════════════════════════════════════════════════════════════════ */
 
 .dark [data-theme="dark"],
-[data-theme="dark"] {
+.dark , [data-theme="dark"] {
   --roadmap-type-enhancement:       var(--cp-teal-40);
   --roadmap-type-enhancement-bg:    rgba(13, 148, 136, 0.15);
   --roadmap-type-enhancement-bar:   linear-gradient(135deg, #14B8A6, #0D9488);
@@ -167,7 +167,7 @@
   --roadmap-bar-shadow-hover:       0 4px 12px rgba(0,0,0,0.3);
 }
 .dark .roadmap-group-header:hover,
-[data-theme="dark"] .roadmap-group-header:hover {
+.dark .roadmap-group-header:hover , [data-theme="dark"] .roadmap-group-header:hover {
   background: #292929;
 }
 

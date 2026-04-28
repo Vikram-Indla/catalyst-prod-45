@@ -22,7 +22,7 @@
 
 /* ═══ DARK MODE — Nocturne One Surface Model ═══ */
 .dark [data-module="product-kanban"],
-[data-theme="dark"] [data-module="product-kanban"] {
+.dark [data-module="product-kanban"] , [data-theme="dark"] [data-module="product-kanban"] {
   --pk-ink: #EDEDED;
   --pk-ink-secondary: #EDEDED;
   --pk-ink-tertiary: #A1A1A1;
@@ -35,58 +35,58 @@
   --pk-primary-bg: rgba(59,130,246,0.12);
 }
 .dark .pk-card,
-[data-theme="dark"] .pk-card {
+.dark .pk-card , [data-theme="dark"] .pk-card {
   background: transparent;
   border-color: #2E2E2E;
 }
 .dark .pk-card:hover,
-[data-theme="dark"] .pk-card:hover {
+.dark .pk-card:hover , [data-theme="dark"] .pk-card:hover {
   border-color: #454545;
   box-shadow: none;
 }
 .dark .pk-card-title,
-[data-theme="dark"] .pk-card-title {
+.dark .pk-card-title , [data-theme="dark"] .pk-card-title {
   color: #EDEDED;
 }
 .dark .pk-chip,
-[data-theme="dark"] .pk-chip {
+.dark .pk-chip , [data-theme="dark"] .pk-chip {
   color: #A1A1A1 !important;
   background: transparent !important;
   border-color: #2E2E2E !important;
 }
 .dark .pk-chip:hover,
-[data-theme="dark"] .pk-chip:hover {
+.dark .pk-chip:hover , [data-theme="dark"] .pk-chip:hover {
   background: #292929 !important;
   border-color: #454545 !important;
 }
 .dark .pk-chip.pk-chip--active,
-[data-theme="dark"] .pk-chip.pk-chip--active {
+.dark .pk-chip.pk-chip--active , [data-theme="dark"] .pk-chip.pk-chip--active {
   color: #60A5FA !important;
   background: rgba(59,130,246,0.12) !important;
   border-color: rgba(59,130,246,0.30) !important;
 }
 .dark .pk-dropdown,
-[data-theme="dark"] .pk-dropdown {
+.dark .pk-dropdown , [data-theme="dark"] .pk-dropdown {
   background: #1A1A1A;
   border-color: #454545;
   box-shadow: 0 8px 24px rgba(0,0,0,0.4);
 }
 .dark .pk-dropdown-item:hover,
-[data-theme="dark"] .pk-dropdown-item:hover {
+.dark .pk-dropdown-item:hover , [data-theme="dark"] .pk-dropdown-item:hover {
   background: #292929;
 }
 .dark .pk-context-menu,
-[data-theme="dark"] .pk-context-menu {
+.dark .pk-context-menu , [data-theme="dark"] .pk-context-menu {
   background: #1A1A1A;
   border-color: #454545;
   box-shadow: 0 8px 24px rgba(0,0,0,0.5);
 }
 .dark .pk-column-collapsed:hover,
-[data-theme="dark"] .pk-column-collapsed:hover {
+.dark .pk-column-collapsed:hover , [data-theme="dark"] .pk-column-collapsed:hover {
   background: #292929;
 }
 .dark .pk-card--overlay,
-[data-theme="dark"] .pk-card--overlay {
+.dark .pk-card--overlay , [data-theme="dark"] .pk-card--overlay {
   box-shadow: 0 8px 24px rgba(0,0,0,0.4);
 }
 

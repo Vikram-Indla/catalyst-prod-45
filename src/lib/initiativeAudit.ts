@@ -1,11 +1,11 @@
 /**
- * Shared audit logger for ph_initiative_audit_log.
+ * Shared audit logger for ph_request_audit_log.
  * Fire-and-forget — never blocks the calling mutation.
  */
 import { supabase, typedQuery } from '@/integrations/supabase/client';
 
 interface AuditEntry {
-  initiative_id: string;
+  request_id: string;
   action: string;
   entity_type: string;
   entity_id?: string;
@@ -18,7 +18,7 @@ interface AuditEntry {
 export async function logInitiativeAudit(entry: AuditEntry) {
   try {
     const { data: { user } } = await supabase.auth.getUser();
-    await typedQuery('ph_initiative_audit_log').insert({
+    await typedQuery('ph_request_audit_log').insert({
       ...entry,
       user_id: user?.id || null,
     });

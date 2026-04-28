@@ -204,7 +204,7 @@ export const ProjectColors: Record<string, string> = {
   'Digital Investor Portal': '#0d9488',
   'Industrial Marketplace': '#10b981',
   'Industrial Platform Modernization': '#2563eb',
-  'Mobile App Initiative': '#3b82f6',
+  'Mobile App Request': '#3b82f6',
   default: '#6b7280',
 };
 

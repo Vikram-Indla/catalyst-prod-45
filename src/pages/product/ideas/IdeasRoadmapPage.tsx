@@ -150,7 +150,7 @@ export default function IdeasRoadmapPage() {
     addMutating(convertTarget.id);
     try {
       await convertToInit.mutateAsync(convertTarget.id);
-      showToast('Idea converted to Initiative');
+      showToast('Idea converted to Request');
       setSelectedIdea(null);
     } catch {
       showToast('Failed to convert — please try again');
@@ -309,9 +309,9 @@ export default function IdeasRoadmapPage() {
       <AlertDialog open={!!convertTarget} onOpenChange={open => { if (!open) setConvertTarget(null); }}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Convert to Initiative?</AlertDialogTitle>
+            <AlertDialogTitle>Convert to Request?</AlertDialogTitle>
             <AlertDialogDescription>
-              This will create a new Initiative from {convertTarget?.ideaKey} and mark this idea as Converted. This cannot be undone.
+              This will create a new Request from {convertTarget?.ideaKey} and mark this idea as Converted. This cannot be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

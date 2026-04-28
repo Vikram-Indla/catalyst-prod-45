@@ -1,5 +1,5 @@
 /**
- * RoadmapBadge — Shows whether an initiative is on the roadmap
+ * RoadmapBadge — Shows whether an request is on the roadmap
  */
 import { Map } from 'lucide-react';
 import { Tooltip } from '@/components/ads';

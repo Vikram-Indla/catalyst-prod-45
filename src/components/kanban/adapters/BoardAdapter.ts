@@ -20,7 +20,7 @@
  *      fills them with whatever makes sense (`INI-0042` / `IDEA-17`).
  *
  *   2. The canonical column shape is `KanbanColumnDef`. Each hub declares
- *      its own lifecycle (Initiatives, Incidents, Issues, Ideas…) with
+ *      its own lifecycle (Requests, Incidents, Issues, Ideas…) with
  *      stable `id`s so column reordering persists.
  *
  *   3. Filter + group-by + sort schemas are hub-defined. The shell is

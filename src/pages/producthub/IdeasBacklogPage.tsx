@@ -16,7 +16,7 @@ import { toast } from 'sonner';
 import IdeaDrawer from './ideation/IdeaDrawer';
 import IdeationTriagePanel from './ideation/IdeationTriagePanel';
 import IdeationIntelligenceHub from './ideation/IdeationIntelligenceHub';
-import { CreateInitiativeDrawer, type ConversionSource } from '@/components/producthub/shared/CreateInitiativeDrawer';
+import { CreateRequestDrawer, type ConversionSource } from '@/components/producthub/shared/CreateRequestDrawer';
 import { QUARTER_BADGE, STATUS_LOZENGE_COLORS } from './ideation/ideation-data';
 import type { Idea } from './ideation/ideation-data';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -33,7 +33,7 @@ function toIdea(r: IdeaRow): Idea {
     priority: r.priority || 'P2',
     impact: r.impact_total,
     votes: r.vote_count,
-    initiative: r.linked_initiative_key || null,
+    request: r.linked_initiative_key || null,
     dept: r.assigned_team || '',
     assignee: r.assigned_to_name ? { name: r.assigned_to_name, initials: r.assigned_to_name.split(' ').map(p => p[0]).join('').toUpperCase().slice(0, 2), color: '#2563EB' } : null,
     ai: r.ai_enrichment_status === 'completed' ? 'ready' : 'pending',
@@ -51,7 +51,7 @@ const FILTER_PILLS = [
   { key: 'Submitted', label: 'Submitted' },
   { key: 'Under Review', label: 'Under Review' },
   { key: 'Approved', label: 'Approved' },
-  { key: 'Converted to Initiative', label: 'Converted' },
+  { key: 'Converted to Request', label: 'Converted' },
   { key: 'Draft', label: 'Draft' },
 ];
 
@@ -98,7 +98,7 @@ export default function IdeasBacklogPage() {
     return m;
   }, [ideas]);
 
-  const convertedCount = stats?.byStatus.find(s => s.status === 'Converted to Initiative')?.count || 0;
+  const convertedCount = stats?.byStatus.find(s => s.status === 'Converted to Request')?.count || 0;
   const conversionRate = stats && stats.total > 0 ? ((convertedCount / stats.total) * 100).toFixed(1) : '0.0';
 
   const ideasData = useMemo(() => ideas.map(toIdea), [ideas]);
@@ -125,7 +125,7 @@ export default function IdeasBacklogPage() {
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <div>
             <h1 style={{ fontSize: '24px', fontWeight: 700, color: dk.t1, margin: 0, fontFamily: 'var(--cp-font-heading)' }}>Ideas Backlog</h1>
-            <p style={{ fontSize: '13px', color: dk.t3, margin: '4px 0 0' }}>Capture, evaluate, and promote ideas into initiatives — powered by IMPACT scoring & AI Intelligence</p>
+            <p style={{ fontSize: '13px', color: dk.t3, margin: '4px 0 0' }}>Capture, evaluate, and promote ideas into requests — powered by IMPACT scoring & AI Intelligence</p>
           </div>
           <div style={{ display: 'flex', gap: '8px' }}>
             <button onClick={() => setIntelligenceOpen(true)} style={{ background: isDark ? 'transparent' : '#FFFFFF', color: '#2563EB', border: '1px solid #2563EB', borderRadius: '6px', padding: '7px 14px', fontSize: '13px', fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}>
@@ -148,8 +148,8 @@ export default function IdeasBacklogPage() {
           <div style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: dk.t3, marginBottom: '4px' }}>BY STATUS</div>
           <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
             {stats?.byStatus.map(s => (
-              <span key={s.status} style={{ fontSize: '12px', color: s.status === 'Converted to Initiative' ? dk.greenText : dk.t2, fontWeight: 500 }}>
-                {s.count} {s.status === 'Converted to Initiative' ? 'Converted' : s.status}
+              <span key={s.status} style={{ fontSize: '12px', color: s.status === 'Converted to Request' ? dk.greenText : dk.t2, fontWeight: 500 }}>
+                {s.count} {s.status === 'Converted to Request' ? 'Converted' : s.status}
               </span>
             ))}
           </div>
@@ -232,7 +232,7 @@ export default function IdeasBacklogPage() {
               </thead>
               <tbody>
                 {ideas.map(idea => {
-                  const isConverted = idea.status === 'Converted to Initiative' || idea.status === 'Converted';
+                  const isConverted = idea.status === 'Converted to Request' || idea.status === 'Converted';
                   return (
                     <tr key={idea.idea_key} onClick={() => setDrawerKey(idea.idea_key)}
                       style={{ height: '50px', maxHeight: '50px', cursor: 'pointer', borderBottom: `0.75px solid ${dk.divider}`, background: selectedRows.has(idea.idea_key) ? dk.selectedBg : 'transparent', transition: 'background 150ms' }}
@@ -314,7 +314,7 @@ export default function IdeasBacklogPage() {
       </div>
 
       {drawerKey && <IdeaDrawer ideaKey={drawerKey} onClose={() => setDrawerKey(null)} onConvert={handleConvertIdea} />}
-      <CreateInitiativeDrawer
+      <CreateRequestDrawer
         open={convertDrawerOpen}
         onClose={() => { setConvertDrawerOpen(false); setConversionSource(null); }}
         conversionSource={conversionSource}
@@ -323,7 +323,7 @@ export default function IdeasBacklogPage() {
             const ideaToConvert = ideas.find(i => i.idea_key === conversionSource.primaryIdea.key);
             if (ideaToConvert) {
               await supabase.from('ph_ideas').update({
-                status: 'Converted to Initiative',
+                status: 'Converted to Request',
                 converted_at: new Date().toISOString(),
               } as any).eq('id', ideaToConvert.id);
               queryClient.invalidateQueries({ queryKey: ['ideas-hub'] });
@@ -349,12 +349,12 @@ function StatusBadge({ status }: { status: string }) {
     'Approved':                 { bg: 'rgba(59,130,246,0.15)', text: '#93C5FD' },
     'Rejected':                 { bg: '#2E2E2E', text: 'rgba(255,255,255,0.72)' },
     'Converted':                { bg: 'rgba(22,163,74,0.15)', text: '#86EFAC' },
-    'Converted to Initiative':  { bg: 'rgba(22,163,74,0.15)', text: '#86EFAC' },
+    'Converted to Request':  { bg: 'rgba(22,163,74,0.15)', text: '#86EFAC' },
   };
   const s = isDark
     ? (darkColors[status] ?? { bg: '#2E2E2E', text: '#A1A1A1' })
     : (STATUS_LOZENGE_COLORS[status] ?? { bg: '#DFE1E6', text: '#42526E' });
-  const label = status === 'Converted to Initiative' ? 'CONVERTED' : status.toUpperCase();
+  const label = status === 'Converted to Request' ? 'CONVERTED' : status.toUpperCase();
   return (
     <span style={{
       display: 'inline-flex', alignItems: 'center', background: s.bg, color: s.text,

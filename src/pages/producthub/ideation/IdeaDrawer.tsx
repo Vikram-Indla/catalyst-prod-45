@@ -29,7 +29,7 @@ const QUARTERS = ['Q1', 'Q2', 'Q3', 'Q4'];
 
 function StatusLoz({ status }: { status: string }) {
   const s = STATUS_LOZENGE_COLORS[status] ?? { bg: '#DFE1E6', text: '#42526E' };
-  const label = status === 'Converted to Initiative' ? 'CONVERTED' : status.toUpperCase();
+  const label = status === 'Converted to Request' ? 'CONVERTED' : status.toUpperCase();
   return (
     <span style={{
       display: 'inline-flex', alignItems: 'center', padding: '2px 8px', borderRadius: '4px',
@@ -84,7 +84,7 @@ export default function IdeaDrawer({ ideaKey, onClose, onConvert }: Props) {
   const composite = (investorFit * 0.25) + (marketSize * 0.20) + (problemSeverity * 0.20) +
     (userBenefit * 0.15) + (complexityInv * 0.10) + (timeToValue * 0.10);
 
-  const isConverted = rawIdea?.status === 'Converted to Initiative' || rawIdea?.status === 'Converted';
+  const isConverted = rawIdea?.status === 'Converted to Request' || rawIdea?.status === 'Converted';
 
   useEffect(() => {
     if (rawIdea) {
@@ -246,7 +246,7 @@ export default function IdeaDrawer({ ideaKey, onClose, onConvert }: Props) {
         {/* SCROLLABLE CONTENT — single scroll, no tabs */}
         <div style={{ flex: 1, overflowY: 'auto', scrollbarWidth: 'thin' }}>
 
-          {/* Converted: Linked Initiative Card */}
+          {/* Converted: Linked Request Card */}
           {isConverted && rawIdea.linked_initiative_key && (
             <div style={{ padding: '0 20px 16px' }}>
               <div style={{ background: isDark ? 'rgba(22,163,74,0.08)' : '#F0FDF4', border: `0.75px solid ${isDark ? 'rgba(22,163,74,0.20)' : '#BBF7D0'}`, borderRadius: '6px', padding: '14px' }}>
@@ -445,14 +445,14 @@ export default function IdeaDrawer({ ideaKey, onClose, onConvert }: Props) {
                   <span style={{ fontSize: '13px', fontWeight: 650, color: dk.t1 }}>Ready to promote?</span>
                 </div>
                 <p style={{ fontSize: '12px', color: dk.t2, margin: '0 0 10px', lineHeight: 1.4 }}>
-                  Convert this idea into a tracked initiative under ProductHub.
+                  Convert this idea into a tracked request under ProductHub.
                 </p>
                 <button onClick={() => onConvert(rawIdea)} style={{
                   width: '100%', height: '50px', borderRadius: '6px', border: 'none',
                   background: '#16A34A', color: '#FFFFFF', fontSize: '13px', fontWeight: 600,
                   cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px',
                 }}>
-                  <ArrowUpRight size={14} /> Convert to Initiative
+                  <ArrowUpRight size={14} /> Convert to Request
                 </button>
               </div>
             </div>

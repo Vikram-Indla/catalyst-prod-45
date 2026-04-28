@@ -58,7 +58,7 @@
 
 /* ── DARK MODE ── */
 .dark [data-module="initiative-detail-panel"],
-[data-theme="dark"] [data-module="initiative-detail-panel"] {
+.dark [data-module="initiative-detail-panel"] , [data-theme="dark"] [data-module="initiative-detail-panel"] {
   --idp-ink: #EDEDED;
   --idp-ink-secondary: #EDEDED;
   --idp-ink-tertiary: #A1A1A1;
@@ -81,50 +81,50 @@
   --idp-danger-text: #FCA5A5;
 }
 .dark .idp-panel,
-[data-theme="dark"] .idp-panel {
+.dark .idp-panel , [data-theme="dark"] .idp-panel {
   box-shadow: -8px 0 32px rgba(0, 0, 0, 0.4);
 }
 .dark .idp-tab,
-[data-theme="dark"] .idp-tab {
+.dark .idp-tab , [data-theme="dark"] .idp-tab {
   color: #9CA3AF;
 }
 .dark .idp-tab:hover,
-[data-theme="dark"] .idp-tab:hover {
+.dark .idp-tab:hover , [data-theme="dark"] .idp-tab:hover {
   color: #E5E7EB;
 }
 .dark .idp-tab--active,
-[data-theme="dark"] .idp-tab--active {
+.dark .idp-tab--active , [data-theme="dark"] .idp-tab--active {
   color: #60A5FA;
   border-bottom-color: #60A5FA;
 }
 .dark .idp-field-label,
-[data-theme="dark"] .idp-field-label {
+.dark .idp-field-label , [data-theme="dark"] .idp-field-label {
   color: #9CA3AF;
 }
 .dark .idp-field-value,
-[data-theme="dark"] .idp-field-value {
+.dark .idp-field-value , [data-theme="dark"] .idp-field-value {
   color: #EDEDED;
 }
 .dark .idp-dd-trigger,
 [data-theme="dark"] .idp-dd-trigger,
 .dark .idp-ps-trigger,
-[data-theme="dark"] .idp-ps-trigger {
+.dark .idp-ps-trigger , [data-theme="dark"] .idp-ps-trigger {
   color: #EDEDED;
 }
 .dark .idp-dd-trigger--empty,
-[data-theme="dark"] .idp-dd-trigger--empty {
+.dark .idp-dd-trigger--empty , [data-theme="dark"] .idp-dd-trigger--empty {
   color: #7D7D7D;
 }
 .dark .idp-dd-panel,
-[data-theme="dark"] .idp-dd-panel {
+.dark .idp-dd-panel , [data-theme="dark"] .idp-dd-panel {
   background: #1A1A1A;
 }
 .dark .idp-ps-panel,
-[data-theme="dark"] .idp-ps-panel {
+.dark .idp-ps-panel , [data-theme="dark"] .idp-ps-panel {
   background: #1A1A1A;
 }
 .dark .idp-ps-name,
-[data-theme="dark"] .idp-ps-name {
+.dark .idp-ps-name , [data-theme="dark"] .idp-ps-name {
   color: #EDEDED;
 }
 .dark .idp-form-input,
@@ -132,12 +132,12 @@
 .dark .idp-form-textarea,
 [data-theme="dark"] .idp-form-textarea,
 .dark .idp-ps-search,
-[data-theme="dark"] .idp-ps-search {
+.dark .idp-ps-search , [data-theme="dark"] .idp-ps-search {
   background: transparent;
   color: #EDEDED;
 }
 .dark .idp-form-label,
-[data-theme="dark"] .idp-form-label {
+.dark .idp-form-label , [data-theme="dark"] .idp-form-label {
   color: #7D7D7D;
 }
 

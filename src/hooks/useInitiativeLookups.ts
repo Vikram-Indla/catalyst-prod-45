@@ -1,6 +1,6 @@
 /**
  * Shared hooks for initiative form lookups (departments, profiles).
- * Used by CreateInitiativeDrawer and DetailPanel.
+ * Used by CreateRequestDrawer and DetailPanel.
  */
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -9,7 +9,7 @@ export function useDepartmentOptions() {
   return useQuery({
     queryKey: ['ph-departments-lookup'],
     queryFn: async () => {
-      // FK target: ph_initiatives.department_id -> ph_departments.id
+      // FK target: ph_requests.department_id -> ph_departments.id
       const { data, error } = await supabase
         .from('ph_departments')
         .select('id, name')

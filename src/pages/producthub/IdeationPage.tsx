@@ -24,7 +24,7 @@ import IdeationDetailPanel from './ideation/IdeationDetailPanel';
 import IdeationCreateWizard from './ideation/IdeationCreateWizard';
 import IdeationTriagePanel from './ideation/IdeationTriagePanel';
 import IdeationIntelligenceHub from './ideation/IdeationIntelligenceHub';
-import { CreateInitiativeDrawer, type ConversionSource } from '@/components/producthub/shared/CreateInitiativeDrawer';
+import { CreateRequestDrawer, type ConversionSource } from '@/components/producthub/shared/CreateRequestDrawer';
 
 export default function IdeationPage() {
   const { isDark } = useTheme();
@@ -96,7 +96,7 @@ export default function IdeationPage() {
   const ideasWithConversions = useMemo(() => {
     return ideasData.map(idea => {
       if (convertedIdeas[idea.key]) {
-        return { ...idea, status: 'converted' as IdeaStatus, initiative: convertedIdeas[idea.key] };
+        return { ...idea, status: 'converted' as IdeaStatus, request: convertedIdeas[idea.key] };
       }
       return idea;
     });
@@ -190,7 +190,7 @@ export default function IdeationPage() {
             <span style={{ fontSize: '24px', fontWeight: 800, fontFamily: 'var(--cp-font-heading)', color: dk.greenText }}>
               {stats.converted}
             </span>
-            <span style={{ fontSize: '11px', color: dk.t3 }}>→ Initiatives</span>
+            <span style={{ fontSize: '11px', color: dk.t3 }}>→ Requests</span>
           </div>
         </div>
 
@@ -321,7 +321,7 @@ export default function IdeationPage() {
       <IdeationCreateWizard open={wizardOpen} onClose={() => setWizardOpen(false)} />
       <IdeationTriagePanel open={triageOpen} onClose={() => setTriageOpen(false)} onMerge={handleMergeIdeas} onConvert={handleConvertIdea} ideas={ideasData} />
       <IdeationIntelligenceHub open={intelligenceOpen} onClose={() => setIntelligenceOpen(false)} onMerge={(pk, mk) => { setIntelligenceOpen(false); handleMergeIdeas(pk, mk); }} ideas={ideasData} />
-      <CreateInitiativeDrawer
+      <CreateRequestDrawer
         open={convertDrawerOpen}
         onClose={() => { setConvertDrawerOpen(false); setConversionSource(null); }}
         conversionSource={conversionSource}

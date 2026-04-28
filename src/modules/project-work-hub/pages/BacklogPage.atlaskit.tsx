@@ -67,14 +67,14 @@ import type {
   RowAction,
 } from '@/components/shared/JiraTable';
 
-import { useStoryBacklog, useEpicBacklog, useInitiativesByKeys, useInitiativeLinksByEpicKeys } from '../hooks/useBacklogData';
+import { useStoryBacklog, useEpicBacklog, useRequestsByKeys, useRequestLinksByEpicKeys } from '../hooks/useBacklogData';
 import { useProject } from '@/hooks/useProjects';
 // Apr 28, 2026 (carryover #9): Star/Unstar persisted via the canonical
 // starred_items table chokepoint. Replaces the prior local useState toggle
 // that didn't persist.
 import { useStarredItems } from '@/hooks/useStarredItems';
 import { DangerConfirmModal } from '@/components/shared/DangerConfirmModal';
-import type { InitiativeRow } from '../hooks/useBacklogData';
+import type { RequestRow } from '../hooks/useBacklogData';
 import { useProfileAvatarsByName } from '@/hooks/useProfileAvatars';
 import { STORY_STATUS_LOZENGE, getPriorityLabel } from '../utils/backlog.utils';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
@@ -112,7 +112,7 @@ const CatalystDetailRouter = lazy(() => import('@/components/catalyst-detail-vie
 
 /**
  * BacklogType — rows in the unified backlog surface.
- * - 'initiative' (Catalyst-native, from ph_initiatives) sits at depth 0
+ * - 'initiative' (Catalyst-native, from ph_requests) sits at depth 0
  *   and is the "Business Request" layer the ERD describes.
  * - 'epic' / 'feature' / 'story' come from Jira + Catalyst work-item
  *   tables.
@@ -366,8 +366,8 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
   const avatarsByName = useProfileAvatarsByName();
   const backlogError = storiesError || epicsError;
 
-  // Initiative (Business Request) resolution — per the ProductBacklog ERD,
-  // ph_initiatives.initiative_key appears as ph_issues.parent_key on any
+  // Request (Business Request) resolution — per the ProductBacklog ERD,
+  // ph_requests.initiative_key appears as ph_issues.parent_key on any
   // Jira issue that belongs to an initiative. So we collect every distinct
   // parent_key across stories + epics (and the stories' epic parents), then
   // ask ph_backlog_initiatives_view which of those keys are initiatives.
@@ -385,7 +385,7 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
     () => epics.map((e) => e.epic_key).filter(Boolean) as string[],
     [epics],
   );
-  const { data: epicLinkedInitiativeByKey } = useInitiativeLinksByEpicKeys(epicKeysForLinks);
+  const { data: epicLinkedInitiativeByKey } = useRequestLinksByEpicKeys(epicKeysForLinks);
 
   const initiativeCandidateKeys = useMemo(() => {
     const keys = new Set<string>();
@@ -405,7 +405,7 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
     });
     return Array.from(keys);
   }, [epics, stories, epicLinkedInitiativeByKey]);
-  const { data: initiativesByKey } = useInitiativesByKeys(initiativeCandidateKeys);
+  const { data: initiativesByKey } = useRequestsByKeys(initiativeCandidateKeys);
 
   // ── URL deep-link ──────────────────────────────────────────────────────
   // All user-facing view state (type filter, search, sort, column visibility,
@@ -770,8 +770,8 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
     const epicSeen = new Set<string>();
     const initiativeSeen = new Set<string>();
 
-    // Initiative rows first (top of hierarchy). Sourced from
-    // ph_backlog_initiatives_view via useInitiativesByKeys. Only initiatives
+    // Request rows first (top of hierarchy). Sourced from
+    // ph_backlog_initiatives_view via useRequestsByKeys. Only initiatives
     // that are referenced as a parent_key by any current BAU epic/story land
     // here — no noise.
     if (initiativesByKey && initiativesByKey.size > 0) {
@@ -822,7 +822,7 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
         parent_id: parentInit?.id ?? null,
         parent_key: parentInit?.initiative_key ?? null,
         parent_label: parentInit?.title ?? null,
-        parent_issue_type: parentInit ? 'Initiative' : null,
+        parent_issue_type: parentInit ? 'Request' : null,
         source: e.source ?? 'jira',
         updated_at: e.jira_updated_at ?? null,
         created_at: e.jira_created_at ?? null,
@@ -922,9 +922,9 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
     return out;
   }, [epics, stories, initiativesByKey]);
 
-  // ── Three-level tree: Initiative → Epic → Story.
+  // ── Three-level tree: Request → Epic → Story.
   //   - Items with parent_id go into childrenOf[parent_id].
-  //   - Initiatives always stay top-level.
+  //   - Requests always stay top-level.
   //   - Epics without a parent_id also stay top-level.
   //   - Stories with a parent_id nest under their epic.
   //   - Epics with a parent_id (pointing at an initiative) nest under it. ──
@@ -938,7 +938,7 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
       // confirmed BAU-5419 has 1 QA Bug + 9 Stories, but Catalyst showed
       // only the Stories (and not all of those). Jira's hierarchy nests
       // any issue with parent_id under that parent regardless of type;
-      // Catalyst must mirror. Initiatives still stay top-level (no
+      // Catalyst must mirror. Requests still stay top-level (no
       // parent_id by definition for our schema).
       if (it.parent_id) {
         if (!childrenOf.has(it.parent_id)) childrenOf.set(it.parent_id, []);
@@ -1347,7 +1347,7 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
       align: 'start',
       alwaysVisible: true,
       cell: makeTypeIconCell((it: BacklogItem) => {
-        // Initiatives render with their own pre-joined color/icon (from
+        // Requests render with their own pre-joined color/icon (from
         // ph_backlog_initiatives_view). Fall back to the purple Epic lightning
         // if the view row somehow lacks type metadata. Every other backlog
         // type uses our canonical JiraIssueTypeIcon.
@@ -1356,7 +1356,7 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
           const bg = init?.initiative_type_color_hex || '#904EE2';
           return (
             <span
-              title={init?.initiative_type_label || 'Initiative'}
+              title={init?.initiative_type_label || 'Request'}
               style={{
                 display: 'inline-flex',
                 alignItems: 'center',
@@ -2453,7 +2453,7 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
             contextMenuActions={rowActions}
             getRowId={(r) => r.id}
             getRowDepth={(r) => {
-              // Three-level hierarchy: Initiative (0) → Epic (1) → Story (2).
+              // Three-level hierarchy: Request (0) → Epic (1) → Story (2).
               if (r.type === 'initiative') return 0;
               if (r.type === 'epic' && r.parent_id) return 1;       // epic under initiative
               if (r.type === 'story' && r.parent_id) {

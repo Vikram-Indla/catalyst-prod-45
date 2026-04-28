@@ -418,10 +418,10 @@ export const STRATEGY_HUB_EVENTS: NotificationEventDef[] = [
     entityType: 'theme_group',
   },
 
-  // ── Goal-Initiative Links ─────────────────────────────────────
+  // ── Goal-Request Links ─────────────────────────────────────
   {
     triggerKey: 'goal_initiative_linked',
-    displayName: 'Goal-Initiative Linked',
+    displayName: 'Goal-Request Linked',
     description: 'An initiative is linked to a goal',
     hubSource: 'StrategyHub',
     category: 'dependencies_links',
@@ -436,7 +436,7 @@ export const STRATEGY_HUB_EVENTS: NotificationEventDef[] = [
   },
   {
     triggerKey: 'goal_initiative_unlinked',
-    displayName: 'Goal-Initiative Unlinked',
+    displayName: 'Goal-Request Unlinked',
     description: 'An initiative is unlinked from a goal',
     hubSource: 'StrategyHub',
     category: 'dependencies_links',
@@ -688,7 +688,7 @@ export const PRODUCT_HUB_EVENTS: NotificationEventDef[] = [
   },
   {
     triggerKey: 'idea_converted',
-    displayName: 'Idea Converted to Initiative',
+    displayName: 'Idea Converted to Request',
     description: 'An idea is promoted to an initiative',
     hubSource: 'ProductHub',
     category: 'product_ideas',
@@ -717,10 +717,10 @@ export const PRODUCT_HUB_EVENTS: NotificationEventDef[] = [
     entityType: 'idea',
   },
 
-  // ── Initiatives ───────────────────────────────────────────────
+  // ── Requests ───────────────────────────────────────────────
   {
     triggerKey: 'initiative_created',
-    displayName: 'Initiative Created',
+    displayName: 'Request Created',
     description: 'A new initiative is created',
     hubSource: 'ProductHub',
     category: 'product_ideas',
@@ -735,7 +735,7 @@ export const PRODUCT_HUB_EVENTS: NotificationEventDef[] = [
   },
   {
     triggerKey: 'initiative_updated',
-    displayName: 'Initiative Updated',
+    displayName: 'Request Updated',
     description: 'An initiative is modified',
     hubSource: 'ProductHub',
     category: 'product_ideas',
@@ -750,7 +750,7 @@ export const PRODUCT_HUB_EVENTS: NotificationEventDef[] = [
   },
   {
     triggerKey: 'initiative_deleted',
-    displayName: 'Initiative Deleted',
+    displayName: 'Request Deleted',
     description: 'An initiative is deleted',
     hubSource: 'ProductHub',
     category: 'product_ideas',

@@ -1,7 +1,7 @@
 /**
- * ProductHub BoardAdapter<Initiative>.
+ * ProductHub BoardAdapter<Request>.
  *
- * Produces the canonical BoardAdapter<Initiative> contract that
+ * Produces the canonical BoardAdapter<Request> contract that
  * KanbanBoardShell consumes.
  *
  * ───────────────────────────────────────────────────────────────────
@@ -23,7 +23,7 @@
  *   - Filter categories use ProjectHub's shared FilterCategory shape so
  *     the canonical toolbar renders them directly.
  *   - Group-by options use ProjectHub's shared GroupByOption<K> shape.
- *   - An initiative-typed icon resolver ships through so cards render with
+ *   - An request-typed icon resolver ships through so cards render with
  *     the correct hub icon instead of falling back to the Jira "Task" icon.
  *
  * Persistence wiring is forwarded by the hosting page — the adapter builder
@@ -31,7 +31,7 @@
  */
 import type { ReactNode } from 'react';
 import { CircleDashed } from 'lucide-react';
-import type { Initiative, InitiativeStatus } from '@/types/initiative';
+import type { Request, RequestStatus } from '@/types/request';
 import { BusinessRequestIcon } from '@/components/producthub/shared/BusinessRequestBadge';
 import type { WorkflowStatus } from '@/hooks/useCatalystWorkflow';
 import type { KanbanColumnDef } from '../kanban-tokens';
@@ -64,7 +64,7 @@ export function buildColumnsFromWorkflowStatuses(
       // Multi-status mapping — primary slug + any aliases from
       // catalyst_workflow_statuses.slug_aliases. Mirrors Jira's column→N-status
       // model (board 597 has 0..7 statuses per column). The aliases array is
-      // populated for ph_initiatives.status enum values that don't share a
+      // populated for ph_requests.status enum values that don't share a
       // workflow slug (e.g. column 'done' aliases ['closed','delivered',
       // 'cancelled']).
       const aliases = (status as WorkflowStatus & { slug_aliases?: string[] | null })
@@ -83,11 +83,11 @@ export function buildColumnsFromWorkflowStatuses(
 /**
  * Catalyst-native fallback alias map.
  *
- * The post-Phase-3 design routes raw `ph_initiatives.status` enum values
+ * The post-Phase-3 design routes raw `ph_requests.status` enum values
  * into workflow columns via `catalyst_workflow_statuses.slug_aliases`.
  * That assumes the DB has the slug_aliases populated (cycle-4 migration).
  * On any DB where the migration hasn't landed (e.g. dev DB without admin
- * access), we still want the kanban to render every initiative in a
+ * access), we still want the kanban to render every request in a
  * sensible column instead of dropping cards on the floor.
  *
  * This map ships a Catalyst-canonical routing for every base
@@ -133,7 +133,7 @@ function buildStatusToColumnId(
 
 /**
  * Map a column id back to a value safe to write into
- * `ph_initiatives.status`. The column's `statuses` array is
+ * `ph_requests.status`. The column's `statuses` array is
  * `[slug, ...slug_aliases]` per `buildColumnsFromWorkflowStatuses`.
  *
  * Slug-aliases are populated by the cycle-4 migration to route legacy
@@ -150,7 +150,7 @@ function buildStatusToColumnId(
  */
 function buildColumnIdToStatus(
   columns: KanbanColumnDef[],
-): (columnId: string) => InitiativeStatus | null {
+): (columnId: string) => RequestStatus | null {
   return (columnId) => {
     const col = columns.find((c) => c.id === columnId);
     if (!col) return null;
@@ -158,20 +158,20 @@ function buildColumnIdToStatus(
     // write-safety; if no aliases were declared, the slug itself is
     // the only choice.
     const writeValue = col.statuses[1] ?? col.statuses[0] ?? null;
-    return (writeValue as InitiativeStatus) ?? null;
+    return (writeValue as RequestStatus) ?? null;
   };
 }
 
 /* ═══════════════════════════════════════════════════════════════════════
-   Priority — initiative score band → Jira-flavored bucket.
+   Priority — request score band → Jira-flavored bucket.
    ═══════════════════════════════════════════════════════════════════════ */
-function mapPriority(initiative: Initiative): string {
-  const explicit = (initiative as { priority?: string | null }).priority;
+function mapPriority(request: Request): string {
+  const explicit = (request as { priority?: string | null }).priority;
   if (explicit) return explicit;
-  const score = initiative.computed_score;
+  const score = request.computed_score;
   if (score === null || score === undefined) {
     // Jira parity — every card on board 597 shows a priority indicator.
-    // Catalyst initiatives often have neither explicit priority nor a
+    // Catalyst requests often have neither explicit priority nor a
     // computed score; default to 'Medium' so the priority bars always
     // render and the card never looks half-baked.
     return 'Medium';
@@ -188,7 +188,7 @@ function mapPriority(initiative: Initiative): string {
    ═══════════════════════════════════════════════════════════════════════ */
 function buildStatusCategoryResolver(
   statuses: WorkflowStatus[],
-): (status: InitiativeStatus) => 'todo' | 'in_progress' | 'done' {
+): (status: RequestStatus) => 'todo' | 'in_progress' | 'done' {
   const map = new Map<string, 'todo' | 'in_progress' | 'done'>();
   statuses.forEach((s) => map.set(s.slug, s.category));
   return (status) => {
@@ -202,67 +202,67 @@ function buildStatusCategoryResolver(
 }
 
 /* ═══════════════════════════════════════════════════════════════════════
-   Initiative → CanonicalBoardIssue adapter.
+   Request → CanonicalBoardIssue adapter.
    ═══════════════════════════════════════════════════════════════════════ */
 function makeInitiativeToCanonicalIssue(
-  resolveCategory: (status: InitiativeStatus) => 'todo' | 'in_progress' | 'done',
-): (initiative: Initiative) => CanonicalBoardIssue {
-  return (initiative) => {
-    const primary: BoardLozenge | null = initiative.department_name
-      ? { label: initiative.department_name, appearance: 'default' }
+  resolveCategory: (status: RequestStatus) => 'todo' | 'in_progress' | 'done',
+): (request: Request) => CanonicalBoardIssue {
+  return (request) => {
+    const primary: BoardLozenge | null = request.department_name
+      ? { label: request.department_name, appearance: 'default' }
       : null;
-    const secondary: BoardLozenge | null = initiative.target_quarter
-      ? { label: initiative.target_quarter, appearance: 'inprogress' }
+    const secondary: BoardLozenge | null = request.target_quarter
+      ? { label: request.target_quarter, appearance: 'inprogress' }
       : null;
-    // Catalyst-canonical: every initiative is Catalyst's own row. The
+    // Catalyst-canonical: every request is Catalyst's own row. The
     // historical `sourceTag === 'jira'` rendering chip ("Jira-MDT") is
     // dropped now that we treat Catalyst as standalone — provenance no
     // longer drives card chrome. Field intentionally omitted from the
     // canonical card so `WorkItemCard` doesn't render a SourceBadge for
-    // initiatives. Other hubs that still want provenance signaling
+    // requests. Other hubs that still want provenance signaling
     // (e.g. cross-system imports) keep it via their own adapters.
     // Raw DB enum value — the kanban routes columns off this so
     // `catalyst_workflow_statuses.slug_aliases` actually maps the legacy
     // statuses (`new_demand`, `in_progress`, `closed` etc.) into their
     // post-rename column homes. Falls back to UI status for older rows.
     const dbStatus =
-      ((initiative as { db_status?: string }).db_status ?? null) ||
-      (initiative.status as string);
+      ((request as { db_status?: string }).db_status ?? null) ||
+      (request.status as string);
     const issue: CanonicalBoardIssue = {
-      id: initiative.id,
-      issueKey: initiative.initiative_key,
-      summary: initiative.title,
+      id: request.id,
+      issueKey: request.initiative_key,
+      summary: request.title,
       // Jira board 597 filter is `worktype = "Business Request"` — match
       // that string so JiraIssueTypeIcon falls back to the amber-lightbulb
       // glyph defined in jira-issue-type-icons.tsx (line 201) when the
       // adapter's resolveIcon returns null.
       issueType: 'Business Request',
-      priority: mapPriority(initiative),
-      status: initiative.status,
+      priority: mapPriority(request),
+      status: request.status,
       boardStatus: dbStatus,
-      statusCategory: resolveCategory(initiative.status),
-      assigneeName: initiative.assignee_name,
+      statusCategory: resolveCategory(request.status),
+      assigneeName: request.assignee_name,
       labels: [],
       sprintName: null,
       storyPoints: null,
       parentKey: null,
       parentSummary: null,
       fixVersion: null,
-      isFlagged: initiative.is_favorited,
-      updatedAt: initiative.updated_at,
-      createdAt: initiative.created_at,
+      isFlagged: request.is_favorited,
+      updatedAt: request.updated_at,
+      createdAt: request.created_at,
       // sourceTag intentionally omitted — see comment above.
       primaryLozenge: primary,
       secondaryLozenge: secondary,
       metaText: null,
-      raw: initiative,
+      raw: request,
     };
     return issue;
   };
 }
 
 /* ═══════════════════════════════════════════════════════════════════════
-   Initiative type icon — single Business Request icon (Atlaskit lightbulb).
+   Request type icon — single Business Request icon (Atlaskit lightbulb).
    ═══════════════════════════════════════════════════════════════════════ */
 export function resolveInitiativeIcon(_card: BoardIssue): ReactNode | null {
   return <BusinessRequestIcon size={14} />;
@@ -273,9 +273,9 @@ export function resolveInitiativeIcon(_card: BoardIssue): ReactNode | null {
    KanbanToolbar (the canonical toolbar) renders them directly.
    ═══════════════════════════════════════════════════════════════════════ */
 
-function uniqueDepartments(initiatives: Initiative[]): FilterCategory {
+function uniqueDepartments(requests: Request[]): FilterCategory {
   const counts = new Map<string, number>();
-  for (const i of initiatives) {
+  for (const i of requests) {
     if (!i.department_name) continue;
     counts.set(i.department_name, (counts.get(i.department_name) ?? 0) + 1);
   }
@@ -289,9 +289,9 @@ function uniqueDepartments(initiatives: Initiative[]): FilterCategory {
   };
 }
 
-function uniqueQuarters(initiatives: Initiative[]): FilterCategory {
+function uniqueQuarters(requests: Request[]): FilterCategory {
   const counts = new Map<string, number>();
-  for (const i of initiatives) {
+  for (const i of requests) {
     if (!i.target_quarter) continue;
     counts.set(i.target_quarter, (counts.get(i.target_quarter) ?? 0) + 1);
   }
@@ -318,9 +318,9 @@ function uniquePriorities(): FilterCategory {
   };
 }
 
-function uniqueAssignees(initiatives: Initiative[], avatarsByName: Map<string, string>): FilterCategory {
+function uniqueAssignees(requests: Request[], avatarsByName: Map<string, string>): FilterCategory {
   const counts = new Map<string, number>();
-  for (const i of initiatives) {
+  for (const i of requests) {
     if (!i.assignee_name) continue;
     counts.set(i.assignee_name, (counts.get(i.assignee_name) ?? 0) + 1);
   }
@@ -341,14 +341,14 @@ function uniqueAssignees(initiatives: Initiative[], avatarsByName: Map<string, s
 }
 
 export function buildFilterCategories(
-  initiatives: Initiative[],
+  requests: Request[],
   avatarsByName: Map<string, string>,
 ): FilterCategory[] {
   return [
-    uniqueDepartments(initiatives),
-    uniqueQuarters(initiatives),
+    uniqueDepartments(requests),
+    uniqueQuarters(requests),
     uniquePriorities(),
-    uniqueAssignees(initiatives, avatarsByName),
+    uniqueAssignees(requests, avatarsByName),
   ];
 }
 
@@ -367,8 +367,8 @@ export const PRODUCTHUB_GROUP_OPTIONS: GroupByOption<string>[] = [
    ═══════════════════════════════════════════════════════════════════════ */
 
 export interface BuildProductHubAdapterArgs {
-  /** Full, unfiltered initiative set from the hub's data hook. */
-  initiatives: Initiative[];
+  /** Full, unfiltered request set from the hub's data hook. */
+  requests: Request[];
   /** `displayName`.toLowerCase() → avatar URL. */
   avatarsByName: Map<string, string>;
 
@@ -393,11 +393,11 @@ export interface BuildProductHubAdapterArgs {
   onGroupByChange: (key: string) => void;
 
   /* ── Persistence callbacks ── */
-  onStatusChange: (initiativeId: string, newStatus: InitiativeStatus) => void | Promise<void>;
-  onToggleFavorite?: (initiativeId: string) => void | Promise<void>;
+  onStatusChange: (requestId: string, newStatus: RequestStatus) => void | Promise<void>;
+  onToggleFavorite?: (requestId: string) => void | Promise<void>;
 
   /* ── Interactions ── */
-  onCardClick?: (initiativeId: string) => void;
+  onCardClick?: (requestId: string) => void;
   /**
    * Per-column "+ Create" — host opens its create flow with the
    * destination status pre-filled. Forwarded straight to
@@ -408,9 +408,9 @@ export interface BuildProductHubAdapterArgs {
 
 export function buildProductHubBoardAdapter(
   args: BuildProductHubAdapterArgs,
-): BoardAdapter<Initiative> {
+): BoardAdapter<Request> {
   const {
-    initiatives, avatarsByName, workflowStatuses,
+    requests, avatarsByName, workflowStatuses,
     search, onSearchChange,
     selAssignees, onSelAssigneesChange,
     filterSelected, onFilterChange, onClearFilters,
@@ -427,7 +427,7 @@ export function buildProductHubBoardAdapter(
   const initiativeToCanonicalIssue = makeInitiativeToCanonicalIssue(resolveCategory);
 
   /* Filtered cards — mirrors the legacy adapter's filter order. */
-  const filtered = initiatives.filter((i) => {
+  const filtered = requests.filter((i) => {
     if (search) {
       const q = search.toLowerCase();
       if (!i.title.toLowerCase().includes(q) && !i.initiative_key.toLowerCase().includes(q)) {
@@ -451,7 +451,7 @@ export function buildProductHubBoardAdapter(
   const cards: CanonicalBoardIssue[] = filtered.map(initiativeToCanonicalIssue);
 
   const allAssignees = Array.from(
-    initiatives.reduce((map, i) => {
+    requests.reduce((map, i) => {
       if (!i.assignee_name) return map;
       map.set(i.assignee_name, (map.get(i.assignee_name) ?? 0) + 1);
       return map;
@@ -468,13 +468,13 @@ export function buildProductHubBoardAdapter(
       }
     },
     onToggleFlag: onToggleFavorite,
-    onStatusChange: (cardId, status) => onStatusChange(cardId, status as InitiativeStatus),
+    onStatusChange: (cardId, status) => onStatusChange(cardId, status as RequestStatus),
   };
 
   const interactions: BoardInteractions = {
     onCardClick,
     onCreateInColumn,
-    createInColumnLabel: 'Create initiative',
+    createInColumnLabel: 'Create request',
   };
 
   /**
@@ -502,7 +502,7 @@ export function buildProductHubBoardAdapter(
     columnIdToStatus,
     fromHubRow: initiativeToCanonicalIssue,
 
-    filterCategories: buildFilterCategories(initiatives, avatarsByName),
+    filterCategories: buildFilterCategories(requests, avatarsByName),
     filterSelected,
     onFilterChange,
     onClearFilters,

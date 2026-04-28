@@ -5,13 +5,13 @@
    ════════════════════════════════════════════════════════════════════════════ */
 
 /* ── Goals Page Wrapper ── */
-[data-theme="dark"] [data-goals-page] {
+.dark [data-goals-page] , [data-theme="dark"] [data-goals-page] {
   background-color: #0A0A0A !important;
   color: #EDEDED;
 }
 
 /* ── Stats Strip Cards ── */
-[data-theme="dark"] .goals-stats-grid > div {
+.dark .goals-stats-grid > div , [data-theme="dark"] .goals-stats-grid > div {
   background: #0A0A0A !important;
   border-color: #2E2E2E !important;
   box-shadow: none !important;
@@ -20,13 +20,13 @@
 /* ── Tree/List/Heatmap Container ── */
 [data-theme="dark"] .goals-tree-container,
 [data-theme="dark"] [data-goals-page] > div > div[style*="border: 1px solid"][style*="borderRadius"],
-[data-theme="dark"] .heatmap-scroll {
+.dark .heatmap-scroll , [data-theme="dark"] .heatmap-scroll {
   background: #0A0A0A !important;
   border-color: #2E2E2E !important;
 }
 
 /* ── Table Header Rows ── */
-[data-theme="dark"] .goals-tree-container > div:first-child {
+.dark .goals-tree-container > div:first-child , [data-theme="dark"] .goals-tree-container > div:first-child {
   background: #1F1F1F !important;
   border-bottom-color: #2E2E2E !important;
   color: #878787 !important;
@@ -41,26 +41,26 @@
 }
 
 /* ── Goal Row ── */
-[data-theme="dark"] .goal-tree-row {
+.dark .goal-tree-row , [data-theme="dark"] .goal-tree-row {
   background: transparent !important;
   border-bottom-color: #292929 !important;
 }
-[data-theme="dark"] .goal-tree-row:hover {
+.dark .goal-tree-row:hover , [data-theme="dark"] .goal-tree-row:hover {
   background: #1F1F1F !important;
 }
 
 /* ── KR Row ── */
-[data-theme="dark"] .kr-row-hover {
+.dark .kr-row-hover , [data-theme="dark"] .kr-row-hover {
   background: #111111 !important;
   border-bottom-color: #1F1F1F !important;
 }
-[data-theme="dark"] .kr-row-hover:hover {
+.dark .kr-row-hover:hover , [data-theme="dark"] .kr-row-hover:hover {
   background: #292929 !important;
 }
 
 /* ── Tree Footer ── */
 [data-theme="dark"] .goals-tree-container > div:last-of-type[style*="background: rgb(248, 250, 252)"],
-[data-theme="dark"] .goals-tree-container > div:last-of-type[style*="background: #F8FAFC"] {
+.dark .goals-tree-container > div:last-of-type[style*="background: #F8FAFC"] , [data-theme="dark"] .goals-tree-container > div:last-of-type[style*="background: #F8FAFC"] {
   background: #1F1F1F !important;
   border-top-color: #2E2E2E !important;
 }
@@ -73,7 +73,7 @@
 [data-theme="dark"] [data-goals-page] [style*="color: rgb(15, 23, 42)"],
 [data-theme="dark"] [data-goals-page] [style*="color: #0F172A"],
 [data-theme="dark"] [data-goals-page] [style*="color: rgb(30, 41, 59)"],
-[data-theme="dark"] [data-goals-page] [style*="color: #1E293B"] {
+.dark [data-goals-page] [style*="color: #1E293B"] , [data-theme="dark"] [data-goals-page] [style*="color: #1E293B"] {
   color: #EDEDED !important;
 }
 
@@ -81,25 +81,25 @@
 [data-theme="dark"] [data-goals-page] [style*="color: rgb(51, 65, 85)"],
 [data-theme="dark"] [data-goals-page] [style*="color: #334155"],
 [data-theme="dark"] [data-goals-page] [style*="color: rgb(71, 85, 105)"],
-[data-theme="dark"] [data-goals-page] [style*="color: #475569"] {
+.dark [data-goals-page] [style*="color: #475569"] , [data-theme="dark"] [data-goals-page] [style*="color: #475569"] {
   color: #A1A1A1 !important;
 }
 
 /* Tertiary text (#64748B) → t3 */
 [data-theme="dark"] [data-goals-page] [style*="color: rgb(100, 116, 139)"],
-[data-theme="dark"] [data-goals-page] [style*="color: #64748B"] {
+.dark [data-goals-page] [style*="color: #64748B"] , [data-theme="dark"] [data-goals-page] [style*="color: #64748B"] {
   color: #878787 !important;
 }
 
 /* Muted text (#94A3B8) → t3 */
 [data-theme="dark"] [data-goals-page] [style*="color: rgb(148, 163, 184)"],
-[data-theme="dark"] [data-goals-page] [style*="color: #94A3B8"] {
+.dark [data-goals-page] [style*="color: #94A3B8"] , [data-theme="dark"] [data-goals-page] [style*="color: #94A3B8"] {
   color: #878787 !important;
 }
 
 /* Very muted text (#CBD5E1) → t4 */
 [data-theme="dark"] [data-goals-page] [style*="color: rgb(203, 213, 225)"],
-[data-theme="dark"] [data-goals-page] [style*="color: #CBD5E1"] {
+.dark [data-goals-page] [style*="color: #CBD5E1"] , [data-theme="dark"] [data-goals-page] [style*="color: #CBD5E1"] {
   color: #7D7D7D !important;
 }
 
@@ -109,7 +109,7 @@
 
 /* White backgrounds on buttons/inputs/containers → transparent */
 [data-theme="dark"] [data-goals-page] button[style*="background: rgb(255, 255, 255)"],
-[data-theme="dark"] [data-goals-page] button[style*="background: #FFFFFF"] {
+.dark [data-goals-page] button[style*="background: #FFFFFF"] , [data-theme="dark"] [data-goals-page] button[style*="background: #FFFFFF"] {
   background: transparent !important;
   border-color: #2E2E2E !important;
   color: #A1A1A1 !important;
@@ -128,7 +128,7 @@
   background: transparent !important;
   border-color: #2E2E2E !important;
 }
-[data-theme="dark"] [data-goals-page] input {
+.dark [data-goals-page] input , [data-theme="dark"] [data-goals-page] input {
   color: #EDEDED !important;
 }
 
@@ -138,10 +138,10 @@
   border-color: #2E2E2E !important;
   box-shadow: 0 4px 16px rgba(0,0,0,0.4) !important;
 }
-[data-theme="dark"] [data-goals-page] div[style*="position: absolute"] label {
+.dark [data-goals-page] div[style*="position: absolute"] label , [data-theme="dark"] [data-goals-page] div[style*="position: absolute"] label {
   color: #EDEDED !important;
 }
-[data-theme="dark"] [data-goals-page] div[style*="position: absolute"] label:hover {
+.dark [data-goals-page] div[style*="position: absolute"] label:hover , [data-theme="dark"] [data-goals-page] div[style*="position: absolute"] label:hover {
   background: #292929 !important;
 }
 
@@ -166,13 +166,13 @@
 [data-theme="dark"] [data-goals-page] div[style*="background: rgb(226, 232, 240)"][style*="width: 1"],
 [data-theme="dark"] [data-goals-page] div[style*="background: #E2E8F0"][style*="width: 1"],
 [data-theme="dark"] [data-goals-page] div[style*="background: rgb(226, 232, 240)"][style*="height: 1"],
-[data-theme="dark"] [data-goals-page] div[style*="background: #E2E8F0"][style*="height: 1"] {
+.dark [data-goals-page] div[style*="background: #E2E8F0"][style*="height: 1"] , [data-theme="dark"] [data-goals-page] div[style*="background: #E2E8F0"][style*="height: 1"] {
   background: #2E2E2E !important;
 }
 
 /* ── Goal Key / KR Key badges (F1F5F9 bg) ── */
 [data-theme="dark"] [data-goals-page] span[style*="background: rgb(241, 245, 249)"][style*="fontFamily"],
-[data-theme="dark"] [data-goals-page] span[style*="background: #F1F5F9"][style*="fontFamily"] {
+.dark [data-goals-page] span[style*="background: #F1F5F9"][style*="fontFamily"] , [data-theme="dark"] [data-goals-page] span[style*="background: #F1F5F9"][style*="fontFamily"] {
   background: #2E2E2E !important;
   color: #878787 !important;
 }
@@ -208,7 +208,7 @@
 }
 /* Draft/Not Started/Cancelled — grey lozenges */
 [data-theme="dark"] [data-goals-page] span[style*="background: rgb(241, 245, 249)"][style*="borderRadius: 99"],
-[data-theme="dark"] [data-goals-page] span[style*="background: #F1F5F9"][style*="borderRadius: 99"] {
+.dark [data-goals-page] span[style*="background: #F1F5F9"][style*="borderRadius: 99"] , [data-theme="dark"] [data-goals-page] span[style*="background: #F1F5F9"][style*="borderRadius: 99"] {
   background: #1A1A1A !important;
   color: #B8BCC8 !important;
 }
@@ -222,28 +222,28 @@
    HEATMAP VIEW — Dark overrides
    ══════════════════════════════════════════════════════════════════════════ */
 
-[data-theme="dark"] .heatmap-scroll {
+.dark .heatmap-scroll , [data-theme="dark"] .heatmap-scroll {
   background: #0A0A0A !important;
   border-color: #2E2E2E !important;
 }
 
 /* Heatmap header */
-[data-theme="dark"] .heatmap-scroll > div:first-child {
+.dark .heatmap-scroll > div:first-child , [data-theme="dark"] .heatmap-scroll > div:first-child {
   background: #1F1F1F !important;
   border-bottom-color: #2E2E2E !important;
   color: #878787 !important;
 }
 
 /* Heatmap row borders */
-[data-theme="dark"] .heatmap-row {
+.dark .heatmap-row , [data-theme="dark"] .heatmap-row {
   border-bottom-color: #292929 !important;
 }
-[data-theme="dark"] .heatmap-row:hover {
+.dark .heatmap-row:hover , [data-theme="dark"] .heatmap-row:hover {
   background: #111111 !important;
 }
 
 /* Heatmap theme label cell */
-[data-theme="dark"] .heatmap-row > div:first-child {
+.dark .heatmap-row > div:first-child , [data-theme="dark"] .heatmap-row > div:first-child {
   background: transparent !important;
   border-right-color: #292929 !important;
 }
@@ -255,16 +255,16 @@
 }
 
 /* Heatmap cell borders */
-[data-theme="dark"] .heatmap-cell {
+.dark .heatmap-cell , [data-theme="dark"] .heatmap-cell {
   border-right-color: #292929 !important;
 }
 
 /* ── List view row hover ── */
-[data-theme="dark"] [data-goals-page] div[role="button"][style*="borderBottom"]:hover {
+.dark [data-goals-page] div[role="button"][style*="borderBottom"]:hover , [data-theme="dark"] [data-goals-page] div[role="button"][style*="borderBottom"]:hover {
   background: #1F1F1F !important;
 }
 /* List view rows: override #F8FAFC hover target */
-[data-theme="dark"] [data-goals-page] div[role="button"]:hover {
+.dark [data-goals-page] div[role="button"]:hover , [data-theme="dark"] [data-goals-page] div[role="button"]:hover {
   background: #1F1F1F !important;
 }
 
@@ -293,6 +293,6 @@
 
 /* Shadow removal */
 [data-theme="dark"] [data-goals-page] [style*="boxShadow: 0 1px 3px"],
-[data-theme="dark"] [data-goals-page] [style*="boxShadow: 0 2px 8px"] {
+.dark [data-goals-page] [style*="boxShadow: 0 2px 8px"] , [data-theme="dark"] [data-goals-page] [style*="boxShadow: 0 2px 8px"] {
   box-shadow: none !important;
 }

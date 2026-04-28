@@ -1,5 +1,5 @@
 /**
- * Left panel — Initiative list (340px)
+ * Left panel — Request list (340px)
  * Spec: grouped by type, 44px rows, bottom "Add" link
  */
 

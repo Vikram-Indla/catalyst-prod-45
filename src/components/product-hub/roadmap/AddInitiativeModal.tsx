@@ -1,5 +1,5 @@
 /**
- * Product Roadmap — Add Initiative Modal (640px centered, backdrop blur)
+ * Product Roadmap — Add Request Modal (640px centered, backdrop blur)
  * Polish: focus trap, Escape closes, scale animation, success toast
  */
 import React, { useState, useMemo, useEffect, useRef } from 'react';
