@@ -416,7 +416,7 @@ function MoreActionsButton() {
           borderRadius: 4, boxShadow: '0 4px 12px rgba(9,30,66,0.15)', minWidth: 160, padding: '4px 0',
         }}>
           <button role="menuitem" type="button" onClick={() => setOpen(false)}
-            style={{ display: 'block', width: '100%', padding: '8px 14px', background: 'transparent', border: 'none', cursor: 'pointer', fontFamily: 'var(--cp-font-body)', fontSize: 14, color: token('color.text', '#172B4D'), textAlign: 'left' }}
+            style={{ display: 'block', width: '100%', padding: '8px 14px', background: 'transparent', border: 'none', cursor: 'pointer', fontFamily: 'var(--cp-font-body)', fontSize: 14, color: token('color.text', '#292A2E'), textAlign: 'left' }}
             onMouseEnter={e => (e.currentTarget.style.background = token('color.background.neutral.hovered', 'rgba(9,30,66,0.06)'))}
             onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
           >
@@ -536,7 +536,7 @@ function BRDUploadZone({ files, onFilesChange }: { files: File[]; onFilesChange:
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" style={{ margin: '0 auto 8px', display: 'block', color: token('color.text.subtlest', '#626F86') }}>
           <path d="M12 4v12m-4-4l4-4 4 4M4 20h16" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
         </svg>
-        <p style={{ fontSize: 13, fontWeight: 600, color: token('color.text', '#172B4D'), margin: '0 0 4px', fontFamily: 'var(--cp-font-body)' }}>Drop BRD files here or click to browse</p>
+        <p style={{ fontSize: 13, fontWeight: 600, color: token('color.text', '#292A2E'), margin: '0 0 4px', fontFamily: 'var(--cp-font-body)' }}>Drop BRD files here or click to browse</p>
         <p style={{ fontSize: 12, color: token('color.text.subtlest', '#626F86'), margin: 0, fontFamily: 'var(--cp-font-body)' }}>PDF, DOCX, XLSX — max 25 MB per file</p>
       </div>
       {files.length > 0 && (
@@ -547,7 +547,7 @@ function BRDUploadZone({ files, onFilesChange }: { files: File[]; onFilesChange:
                 <path d="M9 1.5H4a1 1 0 0 0-1 1v11a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V5.5L9 1.5z" stroke={token('color.text.brand', '#1868DB')} strokeWidth="1.2" fill="none"/>
                 <path d="M9 1.5V5.5h4" stroke={token('color.text.brand', '#1868DB')} strokeWidth="1.2" fill="none"/>
               </svg>
-              <span style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', color: token('color.text', '#172B4D') }}>{f.name}</span>
+              <span style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', color: token('color.text', '#292A2E') }}>{f.name}</span>
               <span style={{ color: token('color.text.subtlest', '#626F86'), whiteSpace: 'nowrap' }}>{fmt(f.size)}</span>
               <button type="button" onClick={() => remove(i)} aria-label={`Remove ${f.name}`}
                 style={{ background: 'none', border: 'none', cursor: 'pointer', color: token('color.text.subtlest', '#626F86'), padding: 2, display: 'flex', flexShrink: 0 }}>

@@ -46,7 +46,7 @@ export default function DirectNotificationRow({ notification, isRead, onMarkRead
   const pressBg  = isDark ? '#292929' : token('color.background.neutral.pressed',  'rgba(9,30,66,0.10)');
   const rowBg    = pressed ? pressBg : hovered ? hoverBg : 'transparent';
 
-  const text1    = isDark ? '#EDEDED' : token('color.text',           '#172B4D');
+  const text1    = isDark ? '#EDEDED' : token('color.text', '#292A2E');
   const text2    = isDark ? '#A1A1A1' : token('color.text.subtle',    '#626F86');
   const text3    = isDark ? '#878787' : token('color.text.subtlest',  '#8590A2');
   const linkClr  = isDark ? '#6698FF' : token('color.link',           '#0C66E4');

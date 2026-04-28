@@ -93,7 +93,7 @@ export function ModalDialog({ children, onClose, width = 'medium' }: ModalDialog
           tabIndex={0}
           onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') setMinimized(false); }}
         >
-          <span style={{ fontFamily: 'var(--cp-font-body)', fontSize: 14, fontWeight: 500, color: token('color.text', '#172B4D'), flex: 1 }}>
+          <span style={{ fontFamily: 'var(--cp-font-body)', fontSize: 14, fontWeight: 500, color: token('color.text', '#292A2E'), flex: 1 }}>
             Create Story
           </span>
           <button
@@ -168,7 +168,7 @@ export function ModalTitle({ children }: { children: ReactNode }) {
         fontFamily: 'var(--cp-font-heading)',
         fontSize: 20,
         fontWeight: 600,
-        color: token('color.text', '#172B4D'),
+        color: token('color.text', '#292A2E'),
         margin: 0,
         lineHeight: '28px',
       }}

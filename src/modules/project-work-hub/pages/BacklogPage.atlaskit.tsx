@@ -932,7 +932,15 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
     const topLevel: BacklogItem[] = [];
     const childrenOf = new Map<string, BacklogItem[]>();
     items.forEach((it) => {
-      if (it.parent_id && (it.type === 'story' || it.type === 'epic' || it.type === 'feature')) {
+      // Apr 28, 2026 (jira-compare cycle 3 D-NEW-2): nest ANY item with
+      // a parent_id, not just story/epic/feature. Earlier filter dropped
+      // QA Bug, Task, Production Incident, Sub-task children — Rovo
+      // confirmed BAU-5419 has 1 QA Bug + 9 Stories, but Catalyst showed
+      // only the Stories (and not all of those). Jira's hierarchy nests
+      // any issue with parent_id under that parent regardless of type;
+      // Catalyst must mirror. Initiatives still stay top-level (no
+      // parent_id by definition for our schema).
+      if (it.parent_id) {
         if (!childrenOf.has(it.parent_id)) childrenOf.set(it.parent_id, []);
         childrenOf.get(it.parent_id)!.push(it);
       } else {
@@ -1477,10 +1485,14 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
       // - <epic name>"). Catalyst was 12% (~142px), forcing parent
       // labels to truncate after a single word. Bumped 12 → 26
       // (~286px @ 1100 minw) to hit the audit's ≥280px acceptance
-      // target. Still under Jira's full 395px to leave a little
-      // breathing room — bump further if real-world parent labels
-      // continue to truncate.
-      width: 26,
+      // target.
+      // Apr 28, 2026 (jira-compare cycle 3 V6): 26 was too greedy and
+      // squeezed Summary into excessive truncation (visible in user
+      // image — "Issuance New License - The system isn't display Raw
+      // Materials ins…"). Reduced to 18 (~200px) so Summary regains
+      // ~85px of breathing room. Truncation on parent label is
+      // acceptable since it's secondary; truncation on Summary is not.
+      width: 18,
       sortable: true,
       defaultVisible: true,
       cell: makeParentEditCell<BacklogItem>({
@@ -1925,7 +1937,7 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
           // to match Atlaskit canonical heading weight token. 653 was a
           // bespoke value carried over from the old shell.
           fontSize: 14, fontWeight: 600,
-          color: token('color.text', '#172B4D'),
+          color: token('color.text', '#292A2E'),
           letterSpacing: '-0.003em',
         }}>Catalyst work item</span>
         <div style={{ flex: 1 }} />
@@ -2208,15 +2220,33 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
             labels={[]}
           />
         </div>
+        {/* Apr 28, 2026 — Phase A.3 (next-session): @atlaskit/avatar-group
+            renders project members beside Filter, mirroring Jira's BAU list
+            view toolbar. Data sourced from assigneeOptions (already memoized
+            from items + avatarsByName). maxCount=5 with appearance="stack"
+            matches Jira's stacked-circle pattern. The "Add people" CTA is a
+            future addition; for cycle 1 we ship read-only avatar stack. */}
+        {assigneeOptions.length > 0 && (
+          <AvatarGroup
+            appearance="stack"
+            size="small"
+            maxCount={5}
+            data={assigneeOptions.map((a) => ({
+              key: a.id,
+              name: a.name,
+              src: a.avatarUrl ?? undefined,
+            }))}
+          />
+        )}
+
         {/* Apr 27, 2026 — jira-compare audit P0 #2 / P1 #3:
             Two-flex-cluster toolbar. LEFT cluster (above this spacer)
-            holds Search + Filter — and per LOVABLE handoff #1 will
-            grow to host the @atlaskit/avatar-group + "Add people" CTA.
-            RIGHT cluster (below this spacer) anchors all table-affecting
-            controls: Group → Settings → More actions → divider → count
-            → maximize. Jira's BAU list at /list?groupBy=status anchors
-            "Group: Status" to x≈971 (toolbar-end); pushing it past the
-            flex spacer matches that anchor.
+            holds Search + Filter + Avatar group. RIGHT cluster (below this
+            spacer) anchors all table-affecting controls: Group → Settings
+            → More actions → divider → count → maximize. Jira's BAU list at
+            /list?groupBy=status anchors "Group: Status" to x≈971
+            (toolbar-end); pushing it past the flex spacer matches that
+            anchor.
 
             Audit pass 10 type-chips removal note retained: inline type
             chips (All/Epics/Features/Stories/...) live in the Filter
@@ -2578,7 +2608,7 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
                 padding: '10px 14px',
                 fontSize: 14,
                 fontWeight: 653,
-                color: token('color.text', '#172B4D'),
+                color: token('color.text', '#292A2E'),
                 letterSpacing: '-0.003em',
                 flexShrink: 0,
                 // Hex literal — `color.background.neutral.subtle` token
@@ -2806,7 +2836,7 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
                   fontFamily: 'inherit',
                   color: (item as any).danger
                     ? token('color.text.danger', '#AE2A19')
-                    : token('color.text', '#172B4D'),
+                    : token('color.text', '#292A2E'),
                   cursor: 'pointer',
                 }}
                 onMouseEnter={(e) => {
@@ -2885,7 +2915,7 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
                 fontSize: 20,
                 fontWeight: 653,
                 letterSpacing: '-0.003em',
-                color: token('color.text', '#172B4D'),
+                color: token('color.text', '#292A2E'),
               }}
             >
               Add people to {pageTitle}
@@ -2971,7 +3001,7 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
                   border: `1px solid ${token('color.border', '#DFE1E6')}`,
                   borderRadius: 3,
                   background: token('elevation.surface', '#FFFFFF'),
-                  color: token('color.text', '#172B4D'),
+                  color: token('color.text', '#292A2E'),
                   fontSize: 14,
                   fontWeight: 400,
                   fontFamily: 'inherit',
@@ -3130,7 +3160,7 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
                 fontSize: 20,
                 fontWeight: 653,
                 letterSpacing: '-0.003em',
-                color: token('color.text', '#172B4D'),
+                color: token('color.text', '#292A2E'),
               }}
             >
               Link contributing teams
@@ -3153,7 +3183,7 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
 
           {/* Body — Jira copy adapted: "space" → "project". */}
           <div style={{ padding: '0 24px 16px', display: 'flex', flexDirection: 'column', gap: 12 }}>
-            <p style={{ margin: 0, fontSize: 14, color: token('color.text', '#172B4D') }}>
+            <p style={{ margin: 0, fontSize: 14, color: token('color.text', '#292A2E') }}>
               Add the teams that work in this project, so everyone knows who to go to for help.
             </p>
             <Textfield
@@ -3257,7 +3287,7 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
           </div>
 
           <div style={{ padding: '0 24px 16px' }}>
-            <p style={{ margin: 0, fontSize: 14, color: token('color.text', '#172B4D'), lineHeight: '20px' }}>
+            <p style={{ margin: 0, fontSize: 14, color: token('color.text', '#292A2E'), lineHeight: '20px' }}>
               <strong>{pageTitle}</strong> will be archived. Issues stay accessible from search and links, but the project disappears from the active projects list. You can unarchive it later.
             </p>
           </div>
@@ -3343,7 +3373,7 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
           </div>
 
           <div style={{ padding: '0 24px 16px', display: 'flex', flexDirection: 'column', gap: 12 }}>
-            <p style={{ margin: 0, fontSize: 14, color: token('color.text', '#172B4D'), lineHeight: '20px' }}>
+            <p style={{ margin: 0, fontSize: 14, color: token('color.text', '#292A2E'), lineHeight: '20px' }}>
               This will permanently delete <strong>{pageTitle}</strong> and all of its issues, releases, and sprints. This action cannot be undone.
             </p>
             <div>
@@ -3446,7 +3476,7 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
                 margin: 0,
                 fontSize: 16,
                 fontWeight: 653,
-                color: token('color.text', '#172B4D'),
+                color: token('color.text', '#292A2E'),
               }}
             >
               Project background
@@ -3739,7 +3769,7 @@ function GroupByControl({
           borderRadius: 3,
           border: `1px solid ${(isOpen || value !== 'none') ? token('color.border.selected', '#0C66E4') : token('color.border', '#DFE1E6')}`,
           background: (isOpen || value !== 'none') ? token('color.background.selected', '#E9F2FF') : token('elevation.surface', '#FFFFFF'),
-          color: (isOpen || value !== 'none') ? token('color.text.selected', '#0055CC') : token('color.text', '#172B4D'),
+          color: (isOpen || value !== 'none') ? token('color.text.selected', '#0055CC') : token('color.text', '#292A2E'),
           fontSize: 13,
           fontWeight: 500,
           fontFamily: 'inherit',
@@ -3801,7 +3831,7 @@ function GroupByControl({
                     : focused
                       ? token('color.background.neutral.subtle.hovered', '#091E4208')
                       : 'transparent',
-                  color: active ? token('color.text.selected', '#0C66E4') : token('color.text', '#172B4D'),
+                  color: active ? token('color.text.selected', '#0C66E4') : token('color.text', '#292A2E'),
                   fontWeight: active ? 500 : 400,
                   fontSize: 14,
                   fontFamily: 'inherit',
@@ -4026,7 +4056,7 @@ function ToolbarMenuButton({
                         : 'transparent',
                       color: item.isDisabled
                         ? token('color.text.disabled', '#A6A7AA')
-                        : token('color.text', '#172B4D'),
+                        : token('color.text', '#292A2E'),
                       fontSize: 14,
                       fontFamily: 'inherit',
                       textAlign: 'left',
@@ -4219,7 +4249,7 @@ function InlineGroupCreateRow({
                 border: `1px solid ${token('color.border', '#DFE1E6')}`,
                 borderRadius: 3,
                 background: token('elevation.surface', '#FFFFFF'),
-                color: token('color.text', '#172B4D'),
+                color: token('color.text', '#292A2E'),
                 fontSize: 13,
                 fontWeight: 500,
                 fontFamily: 'inherit',
@@ -4274,7 +4304,7 @@ function InlineGroupCreateRow({
                 border: `1px solid ${token('color.border', '#DFE1E6')}`,
                 borderRadius: 3,
                 background: token('elevation.surface', '#FFFFFF'),
-                color: token('color.text', '#172B4D'),
+                color: token('color.text', '#292A2E'),
                 fontSize: 13,
                 fontWeight: 500,
                 fontFamily: 'inherit',
@@ -4476,10 +4506,21 @@ function BottomCreateRow({
         }
       }}
     >
-      {/* Type picker dropdown — @atlaskit/dropdown-menu with icon trigger */}
+      {/* Type picker dropdown — @atlaskit/dropdown-menu with icon trigger.
+       * Apr 28, 2026 (next session cycle 1): the menu was failing to render
+       * its items even when aria-expanded flipped to true. Two fixes:
+       * (1) destructure non-DOM props (isSelected, testId) out of triggerProps
+       *     so they don't leak as DOM attributes (React warnings + breaks
+       *     Atlaskit's internal trigger contract).
+       * (2) add shouldRenderToParent={true} so the menu mounts inline as a
+       *     sibling instead of via React.Portal — sidesteps focus-trap timing
+       *     where BottomCreateRow's textarea autoFocus (50ms timer) steals
+       *     focus from the menu and closes it before items can mount.
+       */}
       <DropdownMenu
         placement="top-start"
-        trigger={({ triggerRef, ...triggerProps }: any) => (
+        shouldRenderToParent
+        trigger={({ triggerRef, isSelected: _isSel, testId: _testId, ...triggerProps }: any) => (
           <button
             {...triggerProps}
             ref={triggerRef}
@@ -4528,7 +4569,7 @@ function BottomCreateRow({
           flex: 1, minHeight: 28, maxHeight: 120,
           border: 'none', outline: 'none',
           fontSize: 14, lineHeight: '20px',
-          color: token('color.text', '#172B4D'),
+          color: token('color.text', '#292A2E'),
           fontFamily: 'inherit', background: 'transparent',
           resize: 'none', padding: '4px 0',
         }}
@@ -4562,13 +4603,18 @@ function BottomCreateRow({
         Cancel
       </Button>
 
-      {/* Create submit — ↵ keycap as iconAfter */}
+      {/* Create submit — ↵ keycap as iconAfter.
+       * Apr 28, 2026 (next session cycle 1): @atlaskit/button (legacy)
+       * iconAfter expects ReactNode, NOT a render function. Passing a
+       * function tripped React's "Functions are not valid as a React
+       * child" warning AND the keycap never rendered. Pass the JSX
+       * element directly. */}
       <Button
         appearance="primary"
         onClick={create}
         isLoading={isSubmitting}
         isDisabled={!summary.trim() || isSubmitting}
-        iconAfter={() => (
+        iconAfter={
           <span
             aria-hidden
             style={{
@@ -4581,7 +4627,7 @@ function BottomCreateRow({
           >
             ↵
           </span>
-        )}
+        }
       >
         Create
       </Button>
@@ -4697,7 +4743,7 @@ function InlineCreateRow({
         placeholder="What needs to be done?"
         style={{
           flex: 1, height: 28, border: 'none', outline: 'none',
-          fontSize: 14, color: token('color.text', '#172B4D'), fontFamily: 'inherit', background: 'transparent',
+          fontSize: 14, color: token('color.text', '#292A2E'), fontFamily: 'inherit', background: 'transparent',
         }}
       />
     </div>
@@ -4996,7 +5042,7 @@ function BulkPopover({
             maxHeight: 360,
             overflowY: 'auto',
             fontFamily: 'inherit',
-            color: token('color.text', '#172B4D'),
+            color: token('color.text', '#292A2E'),
           }}
         >
           {children(() => setIsOpen(false))}
@@ -5061,7 +5107,7 @@ function BulkMenuItem({ onClick, children }: { onClick: () => void; children: Re
         padding: '8px 10px',
         border: 'none',
         background: 'transparent',
-        color: token('color.text', '#172B4D'),
+        color: token('color.text', '#292A2E'),
         fontSize: 14,
         textAlign: 'left',
         cursor: 'pointer',
@@ -5139,7 +5185,7 @@ function EditBacklogItemModal({
                 fontSize: 14,
                 fontFamily: 'inherit',
                 background: isJiraSynced ? token('color.background.neutral.subtle.hovered', '#F4F5F7') : token('elevation.surface', '#FFFFFF'),
-                color: token('color.text', '#172B4D'),
+                color: token('color.text', '#292A2E'),
               }}
             >
               <option value="">— Not set —</option>

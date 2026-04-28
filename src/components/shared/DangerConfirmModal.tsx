@@ -44,11 +44,35 @@
  *     isLoading={deleteMutation.isPending}
  *   />
  *
- * Atlaskit primitives only:
- *   - @atlaskit/modal-dialog   (Modal + Header + Body + Footer)
- *   - @atlaskit/button         (Cancel + Delete buttons)
- *   - @atlaskit/textfield      (confirmation input)
- *   - @atlaskit/tokens         (color tokens for hint copy)
+ * Apr 28, 2026 (jira-compare cycle / D1 RCA — Row-actions Delete no-op).
+ *   Implementation switched from `@atlaskit/modal-dialog` to a bespoke
+ *   `createPortal`-to-`document.body` modal because the Atlaskit Modal
+ *   commits an EMPTY `.atlaskit-portal` div on this surface. Same family
+ *   of bug as CLAUDE.md L1 (DropdownMenu portal mount race) and the
+ *   pre-existing `addPeopleOpen` workaround at BacklogPage.atlaskit.tsx
+ *   line ~2865 ("Add people modal — @atlaskit/modal-dialog rendered an
+ *   empty portal on this surface (L21)"). Probe evidence:
+ *     • React fiber tree commits the full Modal subtree
+ *       (ModalTransition2 → ExitingPersistence → ModalWrapper →
+ *        Layering2 → LevelProvider2 → Portal → InternalPortal →
+ *        ThemeProvider → FadeIn2 → ModalDialog2 → section →
+ *        ModalHeader2 / ModalBody2 / ModalFooter2 → ModalTitle2 → h1)
+ *     • DOM `.atlaskit-portal-container` had 2 `.atlaskit-portal`
+ *       children; both with `descendants: 0`, `outerHTMLLen ≈ 59`
+ *       (literally empty `<div class="atlaskit-portal"></div>`).
+ *     • Visible symptom: Delete menu item closes the menu but no
+ *       confirm dialog appears, no fetch fires, row stays.
+ *   Public API (props, behaviour) is unchanged so every consumer still
+ *   compiles. Visuals mirror Atlaskit's `<Modal width="small">` +
+ *   `<ModalTitle appearance="danger">` via `@atlaskit/tokens` so the
+ *   look is indistinguishable from the broken implementation.
+ *
+ * Atlaskit primitives used:
+ *   - @atlaskit/button         (Cancel + Delete buttons — no portal)
+ *   - @atlaskit/textfield      (confirmation input — no portal)
+ *   - @atlaskit/tokens         (color tokens for surface + text)
+ *   - createPortal             (manual portal-to-body, replaces
+ *                               @atlaskit/modal-dialog)
  *
  * Replaces:
  *   - shadcn AlertDialog usages (banned by jira-compare skill mandate)
@@ -70,13 +94,7 @@
  */
 
 import { useEffect, useId, useRef, useState } from 'react';
-import Modal, {
-  ModalBody,
-  ModalFooter,
-  ModalHeader,
-  ModalTitle,
-  ModalTransition,
-} from '@atlaskit/modal-dialog';
+import { createPortal } from 'react-dom';
 import Button from '@atlaskit/button/new';
 import Textfield from '@atlaskit/textfield';
 import { token } from '@atlaskit/tokens';
@@ -84,7 +102,7 @@ import { token } from '@atlaskit/tokens';
 export interface DangerConfirmModalProps {
   /** Whether the modal is open. */
   isOpen: boolean;
-  /** Called when the user dismisses (Cancel button, X, Esc, backdrop). */
+  /** Called when the user dismisses (Cancel button, X, Esc). */
   onClose: () => void;
   /** Called when the user confirms. Wire your delete mutation here. */
   onConfirm: () => void;
@@ -139,6 +157,7 @@ export function DangerConfirmModal({
 }: DangerConfirmModalProps) {
   const [typedPhrase, setTypedPhrase] = useState('');
   const inputId = useId();
+  const titleId = useId();
   const inputRef = useRef<HTMLInputElement | null>(null);
 
   // Reset the typed phrase whenever the modal closes or reopens. Without
@@ -149,13 +168,29 @@ export function DangerConfirmModal({
   }, [isOpen]);
 
   // Focus the input on open so the user can start typing immediately.
+  // Defer to next tick so the createPortal node is in the DOM first.
   useEffect(() => {
     if (isOpen && !skipPhraseGate) {
-      // Atlaskit's Modal mounts via portal — defer focus until next tick.
       const t = setTimeout(() => inputRef.current?.focus(), 50);
       return () => clearTimeout(t);
     }
   }, [isOpen, skipPhraseGate]);
+
+  // Esc-to-close. Backdrop click does NOT dismiss — matches the
+  // pre-existing Add people modal pattern at BacklogPage.atlaskit.tsx
+  // (intentional: a destructive dialog should require an explicit
+  // Cancel/X dismiss).
+  useEffect(() => {
+    if (!isOpen) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && !isLoading) {
+        e.stopPropagation();
+        onClose();
+      }
+    };
+    window.addEventListener('keydown', onKey, true);
+    return () => window.removeEventListener('keydown', onKey, true);
+  }, [isOpen, isLoading, onClose]);
 
   const phraseMatches =
     skipPhraseGate ||
@@ -166,78 +201,180 @@ export function DangerConfirmModal({
     onConfirm();
   };
 
-  return (
-    <ModalTransition>
-      {isOpen && (
-        <Modal onClose={onClose} shouldScrollInViewport width="small">
-          <ModalHeader>
-            <ModalTitle appearance="danger">{title}</ModalTitle>
-          </ModalHeader>
-          <ModalBody>
-            <p style={{ margin: 0, fontSize: 14, lineHeight: '20px', color: token('color.text', '#172B4D') }}>
-              {description}
+  if (!isOpen) return null;
+  // SSR safety: createPortal needs a real document.
+  if (typeof document === 'undefined') return null;
+
+  // ── Visual conventions mirror @atlaskit/modal-dialog `<Modal width="small">`:
+  //    - 400px content width on desktop (Atlaskit's "small" breakpoint)
+  //    - 8px corner radius, layered shadow, white surface
+  //    - Backdrop tint #091E4226 (rgba(9, 30, 66, 0.54))
+  //    - Title appearance="danger" → red TitleIcon (left-side circle/exclamation)
+  //    - Header / Body / Footer 24px horizontal padding, 20/12/24px vertical
+  return createPortal(
+    <div
+      // Backdrop (intentionally NOT clickable to dismiss — see comment above).
+      style={{
+        position: 'fixed',
+        inset: 0,
+        background: 'rgba(9, 30, 66, 0.54)',
+        zIndex: 9999,
+        display: 'flex',
+        alignItems: 'flex-start',
+        justifyContent: 'center',
+        paddingTop: 80,
+      }}
+    >
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby={titleId}
+        data-testid="danger-confirm-modal"
+        style={{
+          width: 400,
+          maxWidth: 'calc(100vw - 48px)',
+          background: token('elevation.surface.overlay', '#FFFFFF'),
+          borderRadius: 8,
+          boxShadow: '0 8px 32px rgba(9, 30, 66, 0.25)',
+          display: 'flex',
+          flexDirection: 'column',
+          maxHeight: 'calc(100vh - 120px)',
+        }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Header — title with danger icon (mirrors ModalTitle appearance="danger") */}
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'flex-start',
+            gap: 12,
+            padding: '24px 24px 8px',
+          }}
+        >
+          {/* Red exclamation icon (Atlaskit's danger TitleIcon equivalent).
+              Inline SVG keeps us off the lucide dep here so this component
+              stays drop-in for any consumer. 24×24, danger-bold token. */}
+          <span
+            aria-hidden="true"
+            style={{
+              flex: '0 0 auto',
+              display: 'inline-flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              width: 24,
+              height: 24,
+              color: token('color.icon.danger', '#C9372C'),
+            }}
+          >
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="12" cy="12" r="10" fill="currentColor" />
+              <path
+                d="M12 6.75v6"
+                stroke={token('color.text.inverse', '#FFFFFF')}
+                strokeWidth="2"
+                strokeLinecap="round"
+              />
+              <circle cx="12" cy="16.25" r="1.1" fill={token('color.text.inverse', '#FFFFFF')} />
+            </svg>
+          </span>
+          <h1
+            id={titleId}
+            style={{
+              margin: 0,
+              flex: 1,
+              fontSize: 20,
+              lineHeight: '24px',
+              fontWeight: 600,
+              letterSpacing: '-0.003em',
+              color: token('color.text', '#292A2E'),
+            }}
+          >
+            {title}
+          </h1>
+        </div>
+
+        {/* Body */}
+        <div style={{ padding: '0 24px 16px' }}>
+          <p
+            style={{
+              margin: 0,
+              fontSize: 14,
+              lineHeight: '20px',
+              color: token('color.text', '#292A2E'),
+            }}
+          >
+            {description}
+          </p>
+          {hint ? (
+            <p
+              style={{
+                marginTop: 12,
+                marginBottom: 0,
+                fontSize: 13,
+                lineHeight: '18px',
+                color: token('color.text.subtle', '#42526E'),
+              }}
+            >
+              {hint}
             </p>
-            {hint ? (
-              <p
+          ) : null}
+          {!skipPhraseGate && (
+            <div style={{ marginTop: 16 }}>
+              <label
+                htmlFor={inputId}
                 style={{
-                  marginTop: 12,
-                  marginBottom: 0,
-                  fontSize: 13,
-                  lineHeight: '18px',
-                  color: token('color.text.subtle', '#42526E'),
+                  display: 'block',
+                  fontSize: 12,
+                  fontWeight: 600,
+                  color: token('color.text', '#292A2E'),
+                  marginBottom: 6,
                 }}
               >
-                {hint}
-              </p>
-            ) : null}
-            {!skipPhraseGate && (
-              <div style={{ marginTop: 16 }}>
-                <label
-                  htmlFor={inputId}
-                  style={{
-                    display: 'block',
-                    fontSize: 12,
-                    fontWeight: 600,
-                    color: token('color.text', '#172B4D'),
-                    marginBottom: 6,
-                  }}
-                >
-                  Type <strong>{confirmPhrase}</strong> to continue
-                </label>
-                <Textfield
-                  id={inputId}
-                  ref={inputRef}
-                  value={typedPhrase}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                    setTypedPhrase(e.target.value)
+                Type <strong>{confirmPhrase}</strong> to continue
+              </label>
+              <Textfield
+                id={inputId}
+                ref={inputRef}
+                value={typedPhrase}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                  setTypedPhrase(e.target.value)
+                }
+                onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
+                  if (e.key === 'Enter' && phraseMatches && !isLoading) {
+                    e.preventDefault();
+                    handleConfirm();
                   }
-                  onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
-                    if (e.key === 'Enter' && phraseMatches && !isLoading) {
-                      e.preventDefault();
-                      handleConfirm();
-                    }
-                  }}
-                  isCompact
-                  autoComplete="off"
-                />
-              </div>
-            )}
-          </ModalBody>
-          <ModalFooter>
-            <Button appearance="subtle" onClick={onClose} isDisabled={isLoading}>
-              Cancel
-            </Button>
-            <Button
-              appearance="danger"
-              onClick={handleConfirm}
-              isDisabled={!phraseMatches || isLoading}
-              isLoading={isLoading}
-            >
-              {confirmLabel}
-            </Button>
-          </ModalFooter>
-        </Modal>
-      )}
-    </ModalTransition>
+                }}
+                isCompact
+                autoComplete="off"
+              />
+            </div>
+          )}
+        </div>
+
+        {/* Footer */}
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'flex-end',
+            gap: 8,
+            padding: '8px 24px 20px',
+          }}
+        >
+          <Button appearance="subtle" onClick={onClose} isDisabled={isLoading}>
+            Cancel
+          </Button>
+          <Button
+            appearance="danger"
+            onClick={handleConfirm}
+            isDisabled={!phraseMatches || isLoading}
+            isLoading={isLoading}
+          >
+            {confirmLabel}
+          </Button>
+        </div>
+      </div>
+    </div>,
+    document.body,
   );
 }

@@ -176,7 +176,7 @@ function ProjectCardButton({ card, onClick }: { card: Project; onClick: () => vo
             // Jira parity: flat weight 400. Primary color provides the
             // hierarchy against the 400-subtle subtitle beneath.
             font: `400 14px/20px "Inter", system-ui, sans-serif`,
-            color: token('color.text', '#172B4D'),
+            color: token('color.text', '#292A2E'),
             overflow: 'hidden',
             textOverflow: 'ellipsis',
             whiteSpace: 'nowrap',

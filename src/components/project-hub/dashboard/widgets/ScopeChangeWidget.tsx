@@ -252,7 +252,7 @@ function KpiCell({
           fontSize: 24,
           fontWeight: 600,
           lineHeight: 1.1,
-          color: accent ?? token('color.text', '#172B4D'),
+          color: accent ?? token('color.text', '#292A2E'),
           fontVariantNumeric: 'tabular-nums',
         }}
       >
@@ -339,7 +339,7 @@ function ReleaseRow({
           style={{
             fontSize: 13,
             fontWeight: 600,
-            color: token('color.text', '#172B4D'),
+            color: token('color.text', '#292A2E'),
             minWidth: 0,
             // Allow wrapping for very long release names so the right
             // cluster never gets pushed off the row. Two-line cap to keep
@@ -374,11 +374,11 @@ function ReleaseRow({
               whiteSpace: 'nowrap',
             }}
           >
-            <span style={{ fontWeight: 600, color: token('color.text', '#172B4D') }}>
+            <span style={{ fontWeight: 600, color: token('color.text', '#292A2E') }}>
               {s.originalCount}
             </span>{' '}
             original ·{' '}
-            <span style={{ fontWeight: 600, color: token('color.text', '#172B4D') }}>
+            <span style={{ fontWeight: 600, color: token('color.text', '#292A2E') }}>
               {s.addedCount}
             </span>{' '}
             added

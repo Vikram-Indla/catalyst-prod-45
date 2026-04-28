@@ -223,7 +223,7 @@ export default function ForYouPageAtlaskit() {
         minHeight: '100%',
         width: '100%',
         background: token('elevation.surface', '#FFFFFF'),
-        color: token('color.text', '#172B4D'),
+        color: token('color.text', '#292A2E'),
         paddingInline: 'clamp(16px, 3vw, 32px)',
         paddingBlockStart: 24,
         paddingBlockEnd: 48,
@@ -255,7 +255,7 @@ export default function ForYouPageAtlaskit() {
         <h1
           style={{
             font: `500 20px/24px "Inter", system-ui, sans-serif`,
-            color: token('color.text', '#172B4D'),
+            color: token('color.text', '#292A2E'),
             margin: 0,
             letterSpacing: '-0.003em',
           }}
@@ -287,7 +287,7 @@ export default function ForYouPageAtlaskit() {
             style={{
               padding: '8px 18px',
               background: token('color.background.neutral', '#F1F2F4'),
-              color: token('color.text', '#172B4D'),
+              color: token('color.text', '#292A2E'),
               border: 'none',
               borderRadius: 3,
               cursor: 'pointer',

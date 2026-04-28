@@ -244,7 +244,7 @@ function KpiCell({
           fontSize: 24,
           fontWeight: 600,
           lineHeight: 1.1,
-          color: accent ?? token('color.text', '#172B4D'),
+          color: accent ?? token('color.text', '#292A2E'),
           fontVariantNumeric: 'tabular-nums',
         }}
       >
@@ -287,7 +287,7 @@ function ReleaseRow({ release: rel }: { release: any }) {
           style={{
             fontSize: 13,
             fontWeight: 600,
-            color: token('color.text', '#172B4D'),
+            color: token('color.text', '#292A2E'),
             overflow: 'hidden',
             textOverflow: 'ellipsis',
             whiteSpace: 'nowrap',
@@ -334,7 +334,7 @@ function ReleaseRow({ release: rel }: { release: any }) {
             textAlign: 'right',
             color: atRisk
               ? 'var(--ds-text-accent-red-bolder, #AE2A19)'
-              : token('color.text', '#172B4D'),
+              : token('color.text', '#292A2E'),
             fontVariantNumeric: 'tabular-nums',
           }}
         >
@@ -354,7 +354,7 @@ function ReleaseRow({ release: rel }: { release: any }) {
         }}
       >
         <span>
-          <span style={{ fontWeight: 600, color: token('color.text', '#172B4D') }}>
+          <span style={{ fontWeight: 600, color: token('color.text', '#292A2E') }}>
             {rel.done}
           </span>{' '}
           of {rel.total} items

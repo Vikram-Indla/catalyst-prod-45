@@ -193,7 +193,7 @@ function EmptyState({ isDark }: { isDark: boolean }) {
           fontFamily: 'var(--cp-font-body)',
           fontSize: 14,
           fontWeight: 600,
-          color: isDark ? '#EDEDED' : token('color.text', '#172B4D'),
+          color: isDark ? '#EDEDED' : token('color.text', '#292A2E'),
         }}
       >
         You're all caught up

@@ -844,7 +844,7 @@ function SettingsPopupBody({
     <div style={{ width: 300, padding: 12 }}>
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
-        <span style={{ font: token('font.heading.small'), color: token('color.text', '#172B4D') }}>
+        <span style={{ font: token('font.heading.small'), color: token('color.text', '#292A2E') }}>
           Gadget Settings
         </span>
         <IconButton
@@ -918,7 +918,7 @@ function SettingsPopupBody({
       <div style={sectionHeadingStyle}>
         At-risk threshold
       </div>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, color: token('color.text', '#172B4D') }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, color: token('color.text', '#292A2E') }}>
         <span>Mark as At Risk when</span>
         <div style={{ width: 100 }}>
           <Select
@@ -1082,7 +1082,7 @@ function KpiCell({
           fontSize: 28,
           fontWeight: 600,
           lineHeight: 1.1,
-          color: accent ?? token('color.text', '#172B4D'),
+          color: accent ?? token('color.text', '#292A2E'),
           fontVariantNumeric: 'tabular-nums',
         }}
       >
@@ -1197,7 +1197,7 @@ function DemandRowItem({
             lineHeight: '20px',
             fontWeight: 500,
             fontFamily: ATLAS_SANS,
-            color: token('color.text', '#172B4D'),
+            color: token('color.text', '#292A2E'),
             overflow: 'hidden',
             textOverflow: 'ellipsis',
             whiteSpace: 'nowrap',
@@ -1345,7 +1345,7 @@ function DemandRowItem({
                       fontWeight: 400,
                       lineHeight: '20px',
                       fontFamily: ATLAS_SANS,
-                      color: token('color.text', '#172B4D'),
+                      color: token('color.text', '#292A2E'),
                       overflow: 'hidden',
                       textOverflow: 'ellipsis',
                       whiteSpace: 'nowrap',
@@ -1456,7 +1456,7 @@ function DemandRowItem({
                           lineHeight: '20px',
                           fontWeight: 400,
                           fontFamily: ATLAS_SANS,
-                          color: token('color.text', '#172B4D'),
+                          color: token('color.text', '#292A2E'),
                           overflow: 'hidden',
                           textOverflow: 'ellipsis',
                           whiteSpace: 'nowrap',
@@ -1533,7 +1533,7 @@ function DemandRowItem({
                               fontWeight: 400,
                               lineHeight: '20px',
                               fontFamily: ATLAS_SANS,
-                              color: token('color.text', '#172B4D'),
+                              color: token('color.text', '#292A2E'),
                               overflow: 'hidden',
                               textOverflow: 'ellipsis',
                               whiteSpace: 'nowrap',
@@ -2080,7 +2080,7 @@ export default function DemandFulfilmentGadget({ projectId, projectKey, collapse
                   cursor: 'pointer',
                   fontSize: 12,
                   fontWeight: 600,
-                  color: token('color.text', '#172B4D'),
+                  color: token('color.text', '#292A2E'),
                   textAlign: 'left',
                 }}
               >
@@ -2140,7 +2140,7 @@ function DeliveredRow({ row, projectKey }: { row: DemandRow; projectKey: string 
       >
         {row.initiative_key}
       </a>
-      <span title={row.title} style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', color: token('color.text', '#172B4D') }}>
+      <span title={row.title} style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', color: token('color.text', '#292A2E') }}>
         {row.title}
       </span>
       <span style={{ fontSize: 11, lineHeight: '16px', fontWeight: 400, color: token('color.text.subtle', '#6B778C') }}>

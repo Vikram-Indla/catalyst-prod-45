@@ -265,7 +265,7 @@ function KpiCell({
           fontSize: 24,
           fontWeight: 600,
           lineHeight: 1.1,
-          color: accent ?? token('color.text', '#172B4D'),
+          color: accent ?? token('color.text', '#292A2E'),
           fontVariantNumeric: 'tabular-nums',
         }}
       >
@@ -341,7 +341,7 @@ function OnHoldRow({
           overflow: 'hidden',
           textOverflow: 'ellipsis',
           whiteSpace: 'nowrap',
-          color: token('color.text', '#172B4D'),
+          color: token('color.text', '#292A2E'),
           fontSize: 13,
           fontWeight: 500,
         }}

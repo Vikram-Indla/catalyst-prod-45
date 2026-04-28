@@ -315,7 +315,7 @@ export default function TimeInStatusFullscreenModal({
                           borderBottom: `1px solid ${token('color.border', '#E2E8F0')}`,
                           borderRight: `1px solid ${token('color.border', '#E2E8F0')}`,
                           fontWeight: 600,
-                          color: token('color.text', '#172B4D'),
+                          color: token('color.text', '#292A2E'),
                         }}
                       >
                         Ticket
@@ -343,7 +343,7 @@ export default function TimeInStatusFullscreenModal({
                           textAlign: 'right',
                           borderBottom: `1px solid ${token('color.border', '#E2E8F0')}`,
                           fontWeight: 600,
-                          color: token('color.text', '#172B4D'),
+                          color: token('color.text', '#292A2E'),
                           background: token('elevation.surface', '#FFFFFF'),
                           position: 'sticky', right: 0, zIndex: 2,
                         }}
@@ -391,7 +391,7 @@ export default function TimeInStatusFullscreenModal({
                                 overflow: 'hidden',
                                 textOverflow: 'ellipsis',
                                 whiteSpace: 'nowrap',
-                                color: token('color.text', '#172B4D'),
+                                color: token('color.text', '#292A2E'),
                               }}
                             >
                               {r.title}
@@ -415,7 +415,7 @@ export default function TimeInStatusFullscreenModal({
                                 background: categoryBg(s.category, ms),
                                 fontFamily: 'ui-monospace, "SF Mono", Menlo, Consolas, monospace',
                                 fontSize: 12,
-                                color: token('color.text', '#172B4D'),
+                                color: token('color.text', '#292A2E'),
                               }}
                             >
                               {ms > 0 ? (
@@ -463,7 +463,7 @@ export default function TimeInStatusFullscreenModal({
                             fontFamily: 'ui-monospace, "SF Mono", Menlo, Consolas, monospace',
                             fontSize: 13,
                             fontWeight: 600,
-                            color: token('color.text', '#172B4D'),
+                            color: token('color.text', '#292A2E'),
                             background: totalBg(r.totalMs, totalMax),
                             position: 'sticky', right: 0,
                           }}

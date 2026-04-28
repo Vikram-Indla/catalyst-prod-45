@@ -55,7 +55,7 @@ export const BODY: CSSProperties = {
   fontSize: 14,
   lineHeight: '20px',
   fontWeight: 400,
-  color: token('color.text', '#172B4D'),
+  color: token('color.text', '#292A2E'),
 };
 
 /** Emphasised body — counts, names, sortable cell highlights. */
@@ -63,7 +63,7 @@ export const STRONG: CSSProperties = {
   fontSize: 14,
   lineHeight: '20px',
   fontWeight: 600,
-  color: token('color.text', '#172B4D'),
+  color: token('color.text', '#292A2E'),
 };
 
 /** Row titles, table cell titles, emphasised secondary heading. */
@@ -71,7 +71,7 @@ export const TITLE: CSSProperties = {
   fontSize: 16,
   lineHeight: '24px',
   fontWeight: 500,
-  color: token('color.text', '#172B4D'),
+  color: token('color.text', '#292A2E'),
 };
 
 /** KPI strip headline numbers. Atlaskit `font.heading.xlarge`. */
@@ -79,7 +79,7 @@ export const H_NUM: CSSProperties = {
   fontSize: 24,
   lineHeight: '28px',
   fontWeight: 600,
-  color: token('color.text', '#172B4D'),
+  color: token('color.text', '#292A2E'),
   fontVariantNumeric: 'tabular-nums',
 };
 

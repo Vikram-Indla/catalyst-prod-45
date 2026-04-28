@@ -214,7 +214,7 @@ export function ProjectChromeBand({
             // Visual: header band looked vertically over-tall by 6px.
             lineHeight: '24px',
             letterSpacing: '-0.003em',
-            color: token('color.text', '#172B4D'),
+            color: token('color.text', '#292A2E'),
             whiteSpace: 'nowrap',
             overflow: 'hidden',
             textOverflow: 'ellipsis',

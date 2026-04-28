@@ -782,7 +782,7 @@ function ParentChip({ choice }: { choice: { key: string | null; label: string; i
         fontSize: 14,
         lineHeight: '20px',
         fontWeight: 400,
-        color: token('color.text', '#172B4D'),
+        color: token('color.text', '#292A2E'),
         whiteSpace: 'nowrap',
         overflow: 'hidden',
       }}

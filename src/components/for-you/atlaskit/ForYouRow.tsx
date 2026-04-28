@@ -128,7 +128,7 @@ function ForYouRowImpl({ item, alwaysShowStar = false, onSelect, onToggleStar, h
         backgroundColor: isActive
           ? token('elevation.surface.hovered', 'rgba(9,30,66,0.06)')
           : 'transparent',
-        color: token('color.text', '#172B4D'),
+        color: token('color.text', '#292A2E'),
         transition: 'background-color 150ms ease',
         outline: 'none',
         minWidth: 0,
@@ -158,7 +158,7 @@ function ForYouRowImpl({ item, alwaysShowStar = false, onSelect, onToggleStar, h
             // the contrast. Bolding row titles made prior builds read as
             // jittery/faded against Jira's dense scan pattern.
             font: `400 14px/20px "Inter", system-ui, sans-serif`,
-            color: token('color.text', '#172B4D'),
+            color: token('color.text', '#292A2E'),
             overflow: 'hidden',
             textOverflow: 'ellipsis',
             whiteSpace: 'nowrap',

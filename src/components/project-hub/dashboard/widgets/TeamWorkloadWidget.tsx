@@ -274,7 +274,7 @@ function KpiCell({
           fontSize: 24,
           fontWeight: 600,
           lineHeight: 1.1,
-          color: token('color.text', '#172B4D'),
+          color: token('color.text', '#292A2E'),
           fontVariantNumeric: 'tabular-nums',
         }}
       >
@@ -364,7 +364,7 @@ function WorkloadRow({
             style={{
               fontSize: 14,
               fontWeight: 600,
-              color: token('color.text', '#172B4D'),
+              color: token('color.text', '#292A2E'),
               overflow: 'hidden',
               textOverflow: 'ellipsis',
               whiteSpace: 'nowrap',
@@ -378,7 +378,7 @@ function WorkloadRow({
             style={{
               fontSize: 16,
               fontWeight: 600,
-              color: token('color.text', '#172B4D'),
+              color: token('color.text', '#292A2E'),
               fontVariantNumeric: 'tabular-nums',
               flexShrink: 0,
             }}
@@ -486,7 +486,7 @@ function MetaPill({
           flexShrink: 0,
         }}
       />
-      <span style={{ fontWeight: 600, color: token('color.text', '#172B4D') }}>
+      <span style={{ fontWeight: 600, color: token('color.text', '#292A2E') }}>
         {count}
       </span>
       <span>{label}</span>

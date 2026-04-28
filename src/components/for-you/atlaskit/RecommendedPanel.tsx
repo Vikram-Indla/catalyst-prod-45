@@ -174,7 +174,7 @@ export default function RecommendedPanel({
               commentId: m.commentId,
               headline: (
                 <>
-                  <span style={{ color: token('color.text', '#172B4D'), fontWeight: 400 }}>{m.mentionerName}</span>
+                  <span style={{ color: token('color.text', '#292A2E'), fontWeight: 400 }}>{m.mentionerName}</span>
                   <span style={{ color: token('color.text.subtle', '#44546F'), fontWeight: 400 }}>{' '}mentioned you on{' '}</span>
                   <HeadlineIssueTitle issueType={m.issueType} issueSummary={m.issueSummary} />
                 </>
@@ -201,7 +201,7 @@ export default function RecommendedPanel({
               commentId: c.commentId,
               headline: (
                 <>
-                  <span style={{ color: token('color.text', '#172B4D'), fontWeight: 400 }}>{c.authorName}</span>
+                  <span style={{ color: token('color.text', '#292A2E'), fontWeight: 400 }}>{c.authorName}</span>
                   <span style={{ color: token('color.text.subtle', '#44546F'), fontWeight: 400 }}>{' '}commented on{' '}</span>
                   <HeadlineIssueTitle issueType={c.issueType} issueSummary={c.issueSummary} />
                 </>
@@ -302,7 +302,7 @@ function FeedSection({
         <h4
           style={{
             font: `600 16px/20px "Inter", system-ui, sans-serif`,
-            color: token('color.text', '#172B4D'),
+            color: token('color.text', '#292A2E'),
             margin: 0,
             letterSpacing: '-0.003em',
           }}
@@ -500,7 +500,7 @@ function FeedCard({
         <div
           style={{
             font: `400 14px/20px "Inter", system-ui, sans-serif`,
-            color: token('color.text', '#172B4D'),
+            color: token('color.text', '#292A2E'),
             whiteSpace: 'pre-wrap',
             wordBreak: 'break-word',
             marginBlockStart: 4,
@@ -943,7 +943,7 @@ function HeadlineIssueTitle({
       <span style={{ display: 'inline-flex', alignItems: 'center', flexShrink: 0 }}>
         <WorkItemIcon type={normalizeIconType(issueType)} size={16} />
       </span>
-      <span style={{ fontWeight: 400, color: token('color.text', '#172B4D') }}>
+      <span style={{ fontWeight: 400, color: token('color.text', '#292A2E') }}>
         {issueSummary}
       </span>
     </span>

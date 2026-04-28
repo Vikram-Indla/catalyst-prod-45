@@ -232,7 +232,7 @@ function KpiHeadline({
           fontSize: 24,
           fontWeight: 600,
           lineHeight: 1.1,
-          color: accent ?? token('color.text', '#172B4D'),
+          color: accent ?? token('color.text', '#292A2E'),
           fontVariantNumeric: 'tabular-nums',
         }}
       >
@@ -281,7 +281,7 @@ function KpiHeadline({
             color:
               blocked > 0
                 ? 'var(--ds-text-accent-red-bolder, #AE2A19)'
-                : token('color.text', '#172B4D'),
+                : token('color.text', '#292A2E'),
             fontVariantNumeric: 'tabular-nums',
           }}
         >
@@ -360,7 +360,7 @@ function BarRow({ bucket: b, total }: { bucket: Bucket; total: number }) {
           textAlign: 'right',
           fontSize: 14,
           fontWeight: 600,
-          color: token('color.text', '#172B4D'),
+          color: token('color.text', '#292A2E'),
           fontVariantNumeric: 'tabular-nums',
         }}
       >
@@ -432,7 +432,7 @@ function BlockedBreakdown({
           style={{
             fontSize: 12,
             fontWeight: 600,
-            color: token('color.text', '#172B4D'),
+            color: token('color.text', '#292A2E'),
             fontVariantNumeric: 'tabular-nums',
           }}
         >
@@ -455,7 +455,7 @@ function BlockedBreakdown({
               style={{
                 fontSize: 13,
                 fontWeight: 600,
-                color: token('color.text', '#172B4D'),
+                color: token('color.text', '#292A2E'),
                 fontVariantNumeric: 'tabular-nums',
               }}
             >

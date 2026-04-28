@@ -176,7 +176,7 @@ export default function QADefectsWidget({ projectId, projectKey, collapsed, onTo
                     whiteSpace: 'nowrap',
                     fontSize: 14,
                     fontWeight: 500,
-                    color: token('color.text', '#172B4D'),
+                    color: token('color.text', '#292A2E'),
                     lineHeight: '20px',
                   }}
                 >
@@ -201,7 +201,7 @@ export default function QADefectsWidget({ projectId, projectKey, collapsed, onTo
                 style={{
                   fontSize: 14,
                   fontWeight: 500,
-                  color: token('color.text', '#172B4D'),
+                  color: token('color.text', '#292A2E'),
                   overflow: 'hidden',
                   textOverflow: 'ellipsis',
                 }}
@@ -268,7 +268,7 @@ export default function QADefectsWidget({ projectId, projectKey, collapsed, onTo
               style={{
                 fontSize: 14,
                 fontWeight: 600,
-                color: token('color.text', '#172B4D'),
+                color: token('color.text', '#292A2E'),
               }}
             >
               {defects.length} defects

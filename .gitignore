@@ -6,6 +6,7 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
+tsc.log
 
 node_modules
 dist
@@ -34,3 +35,45 @@ playwright-report/
 test-results/
 /blob-report/
 playwright/.cache/
+
+# Editor / agent autosave backups
+*.bak
+*.orig
+*.rej
+
+# Claude Code local settings
+.claude/settings.local.json
+
+# Timestamped autosave duplicates (e.g. "CLAUDE.md 19-32-00-010.md", "bun.lock 02-58-40-102.lock", "SKILL 18.55.33.md")
+* [0-9][0-9]-[0-9][0-9]-[0-9][0-9]-[0-9][0-9][0-9].*
+* [0-9][0-9].[0-9][0-9].[0-9][0-9].*
+
+# Intentionally-skipped supabase migration
+supabase/migrations/20260427014500_jira_write_back_queue_unified_no_fk.sql
+
+# ─────────────────────────────────────────────────────────────────
+# Local working notes — never tracked in main, kept on disk for the
+# author's own use. Listed file-by-file (not by glob) because many
+# tracked sibling files share their prefix patterns.
+# ─────────────────────────────────────────────────────────────────
+
+# Root-level handover & scratch notes
+/HANDOVER.md
+/HANDOVER-jira-compare-2026-04-28.md
+/HANDOVER-jira-compare-2026-04-28-session2.md
+/CATALYST_TOPNAV_VS_ATLASSIAN_CRITIQUE.md
+/jira-compare-skill-v3.md
+/jira-compare-skill-v4.md
+
+# Catalyst working folder (audits, handovers — none of this is tracked)
+.catalyst/
+
+# Specific docs/ subfolder additions that are local-only working notes.
+# (Do NOT add `docs/critiques/`, `docs/handovers/`, etc. as folders —
+#  each of those folders already contains tracked files.)
+/docs/forge/
+/docs/critiques/2026-04-20-bau-5047-field-critique.md
+/docs/handovers/2026-04-20-session-handover.md
+/docs/jira-parity/lovable-nav-parity-prompt.md
+/docs/jira-parity/lovable-phase3-prompt.md
+/docs/plans/business-request-feature-unification.md

@@ -88,7 +88,7 @@ export const type = {
  */
 export const text = {
   /** Primary — headlines, names, values, action text. */
-  primary: token('color.text', '#172B4D'),
+  primary: token('color.text', '#292A2E'),
 
   /** Subtle — verbs, meta, labels, placeholders-within-context. */
   subtle: token('color.text.subtle', '#44546F'),

@@ -279,7 +279,7 @@ export function GlobalSearchPanel({ query, onQueryChange, onClose }: GlobalSearc
               <div style={{ width: 28, display: 'flex', justifyContent: 'center', color: token('color.text.subtle', '#626F86') }}>
                 <SearchIcon label="" />
               </div>
-              <span style={{ fontSize: 14, color: token('color.text', '#172B4D') }}>
+              <span style={{ fontSize: 14, color: token('color.text', '#292A2E') }}>
                 {(r as any).label}
               </span>
             </>,
@@ -313,7 +313,7 @@ export function GlobalSearchPanel({ query, onQueryChange, onClose }: GlobalSearc
                 <WorkItemIcon type={iconType} size={18} />
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 2, minWidth: 0, flex: 1 }}>
-                <div style={{ fontSize: 14, color: token('color.text', '#172B4D'), overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                <div style={{ fontSize: 14, color: token('color.text', '#292A2E'), overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                   <strong style={{ fontWeight: 600 }}>{it.item_key}</strong>
                   {': '}
                   {highlight(it.title, debouncedQuery)}

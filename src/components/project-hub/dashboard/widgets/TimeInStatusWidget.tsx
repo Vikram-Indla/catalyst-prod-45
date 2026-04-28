@@ -384,7 +384,7 @@ export default function TimeInStatusWidget({
                     textAlign: 'right',
                     borderBottom: `1px solid ${token('color.border', '#E2E8F0')}`,
                     fontWeight: 600,
-                    color: token('color.text', '#172B4D'),
+                    color: token('color.text', '#292A2E'),
                     background: token('elevation.surface', '#FFFFFF'),
                     position: 'sticky', right: 0, zIndex: 2,
                   }}
@@ -452,7 +452,7 @@ export default function TimeInStatusWidget({
                           fontSize: 14,
                           fontWeight: 500,
                           lineHeight: '20px',
-                          color: token('color.text', '#172B4D'),
+                          color: token('color.text', '#292A2E'),
                         }}
                       >
                         {r.title}
@@ -478,7 +478,7 @@ export default function TimeInStatusWidget({
                           background: categoryBg(s.category, ms),
                           fontFamily: 'ui-monospace, "SF Mono", Menlo, Consolas, monospace',
                           fontSize: 11,
-                          color: token('color.text', '#172B4D'),
+                          color: token('color.text', '#292A2E'),
                         }}
                       >
                         {ms > 0 ? (
@@ -531,7 +531,7 @@ export default function TimeInStatusWidget({
                       fontFamily: 'ui-monospace, "SF Mono", Menlo, Consolas, monospace',
                       fontSize: 12,
                       fontWeight: 600,
-                      color: token('color.text', '#172B4D'),
+                      color: token('color.text', '#292A2E'),
                       background: totalBg(r.totalMs, totalMax),
                       position: 'sticky', right: 0,
                     }}

@@ -89,8 +89,18 @@ export const STORY_STATUS_LOZENGE: Record<string, LozengeConfig> = {
   'In Production':          { color: 'success',    label: 'IN PRODUCTION' },
   'Backlog':                { color: 'default',    label: 'BACKLOG' },
   'To Do':                  { color: 'default',    label: 'TO DO' },
+  // Apr 28, 2026 (jira-compare cycle 4): added camelCase + UPPERCASE
+  // aliases. Catalyst's detail panel renders "ToDo" without a space and
+  // some surfaces store statuses uppercase (TODO). Without these aliases
+  // those rows fall through to 'default' BUT also miss the canonical
+  // label normalization, which is fine — the appearance is right.
+  'ToDo':                   { color: 'default',    label: 'TO DO' },
+  'TODO':                   { color: 'default',    label: 'TO DO' },
+  'todo':                   { color: 'default',    label: 'TO DO' },
   'In Progress':            { color: 'inprogress', label: 'IN PROGRESS' },
+  'IN PROGRESS':            { color: 'inprogress', label: 'IN PROGRESS' },
   'Done':                   { color: 'success',    label: 'DONE' },
+  'DONE':                   { color: 'success',    label: 'DONE' },
   'Blocked':                { color: 'removed',    label: 'BLOCKED' },
   'On Hold':                { color: 'moved',      label: 'ON HOLD' },
   // Legacy native statuses (fallback)

@@ -477,7 +477,7 @@ function MoreActionsButton() {
                 cursor: 'pointer',
                 fontFamily: 'var(--cp-font-body)',
                 fontSize: 14,
-                color: token('color.text', '#172B4D'),
+                color: token('color.text', '#292A2E'),
                 textAlign: 'left',
               }}
               onMouseEnter={e => (e.currentTarget.style.background = token('color.background.neutral.hovered', 'rgba(9,30,66,0.06)'))}
@@ -604,7 +604,7 @@ function StatusChip({
           fontSize: 14,
           fontWeight: 500,
           fontFamily: 'var(--cp-font-body)',
-          color: token('color.text', '#172B4D'),
+          color: token('color.text', '#292A2E'),
           cursor: 'pointer',
           display: 'inline-flex',
           alignItems: 'center',
@@ -673,7 +673,7 @@ function StatusChip({
                 cursor: 'pointer',
                 fontFamily: 'var(--cp-font-body)',
                 fontSize: 14,
-                color: token('color.text', '#172B4D'),
+                color: token('color.text', '#292A2E'),
                 outline: 'none',
               }}
             >

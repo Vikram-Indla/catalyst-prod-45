@@ -221,7 +221,7 @@ export function JiraFilterAtlaskit(props: JiraFilterAtlaskitProps) {
           borderRadius: 3,
           border: `1px solid ${isOpen ? token('color.border.selected', '#0C66E4') : token('color.border', '#DFE1E6')}`,
           background: isOpen ? token('color.background.selected', '#E9F2FF') : token('elevation.surface', '#FFFFFF'),
-          color: isOpen ? token('color.text.selected', '#0055CC') : token('color.text', '#172B4D'),
+          color: isOpen ? token('color.text.selected', '#0055CC') : token('color.text', '#292A2E'),
           fontSize: 13,
           fontWeight: 500,
           fontFamily: 'inherit',
@@ -270,7 +270,7 @@ export function JiraFilterAtlaskit(props: JiraFilterAtlaskitProps) {
             border: `1px solid ${token('color.border', '#DFE1E6')}`,
             borderRadius: 4,
             boxShadow: token('elevation.shadow.overlay', '0 8px 24px -4px rgba(9,30,66,0.18)'),
-            color: token('color.text', '#172B4D'),
+            color: token('color.text', '#292A2E'),
             fontFamily: '"Atlassian Sans", ui-sans-serif, -apple-system, "system-ui", sans-serif',
             fontSize: 14,
           }}
@@ -483,7 +483,7 @@ function Section({
         style={{
           fontSize: 13,
           fontWeight: 600,
-          color: token('color.text', '#172B4D'),
+          color: token('color.text', '#292A2E'),
           marginBottom: 10,
         }}
       >
@@ -695,7 +695,7 @@ function WorkTypeChipGrid({
               borderRadius: 16,
               border: `1px solid ${isSel ? token('color.border.selected', '#0C66E4') : token('color.border', '#DFE1E6')}`,
               background: isSel ? token('color.background.selected', '#E9F2FF') : token('color.background.neutral.subtle', '#FAFBFC'),
-              color: isSel ? token('color.text.selected', '#0055CC') : token('color.text', '#172B4D'),
+              color: isSel ? token('color.text.selected', '#0055CC') : token('color.text', '#292A2E'),
               fontSize: 13,
               cursor: 'pointer',
               fontFamily: 'inherit',

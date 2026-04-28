@@ -420,23 +420,35 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
         padding-right: 8px !important;
       }
       .jira-table-grid table thead > tr > th {
-        box-shadow: inset 0 -2px 0 0 #C1C7D0 !important;
+        /* Apr 28, 2026 (jira-compare cycle 4): tried tokenizing bg via
+           --ds-background-neutral-subtle but that token resolves to
+           transparent (rgba 0,0,0,0) in the Atlaskit light theme — would
+           erase the header band entirely. Jira's actual computed header
+           bg is the literal hex #F7F8F9 (probed live), so we keep the
+           hex. Border tokenized to --ds-border which DOES resolve to a
+           visible color and matches Jira's bottom rule. */
+        box-shadow: inset 0 -2px 0 0 var(--ds-border, #C1C7D0) !important;
         background: #F7F8F9 !important;
       }
       /* Focused row overrides the td shadow with its own blue bar */
       .jira-table-grid .jira-table-row-focused > td:first-child {
         box-shadow: inset 3px 0 0 #0C66E4, inset 0 -1px 0 0 #DFE1E6 !important;
       }
-      /* Row hover */
+      /* Row hover. Apr 28, 2026 (jira-compare cycle 4): tokenized — was
+         hardcoded #FAFBFC. --ds-background-neutral-subtle-hovered is the
+         exact Atlaskit hover bg (rgba(9,30,66,0.06) in light theme). */
       .jira-table-grid table tbody > tr:hover > td {
-        background-color: #FAFBFC;
+        background-color: var(--ds-background-neutral-subtle-hovered, #FAFBFC);
       }
       /* Whole-cell hover tint: when an editor trigger inside a cell is hovered
          OR opened, tint the entire <td> so the affordance reads as
-         "this whole cell is editable" — matches Jira list-view behaviour. */
+         "this whole cell is editable" — matches Jira list-view behaviour.
+         Apr 28, 2026 (jira-compare cycle 4): tokenized — was hardcoded
+         #F1F2F4. --ds-background-neutral-hovered is the next-step token
+         used for active editor cells. */
       .jira-table-grid table tbody > tr > td:has([data-jira-cell-editor]:hover),
       .jira-table-grid table tbody > tr > td:has([data-jira-cell-editor][aria-expanded="true"]) {
-        background-color: #F1F2F4 !important;
+        background-color: var(--ds-background-neutral-hovered, #F1F2F4) !important;
       }
       /* Key cell -- clearly clickable */
       [data-jira-table-row-open] {
@@ -551,7 +563,8 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
         user-select: none;
       }
       .jira-table-grid thead th.jira-th-sortable { cursor: pointer; }
-      .jira-table-grid thead th.jira-th-sortable:hover { background: #EBECF0; }
+      /* Apr 28, 2026 (jira-compare cycle 4): tokenized — was hardcoded #EBECF0 */
+      .jira-table-grid thead th.jira-th-sortable:hover { background: var(--ds-background-neutral-hovered, #EBECF0); }
       .jira-table-grid tbody td {
         padding: 0 12px;
         vertical-align: middle;
