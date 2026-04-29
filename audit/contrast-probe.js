@@ -47,9 +47,12 @@
   window.__catalystContrastProbe = function () {
     const failures = [];
     const seen = new WeakSet();
-    document.querySelectorAll('*').forEach(el => {
+    const SKIP_TAGS = new Set(['NOSCRIPT', 'SCRIPT', 'STYLE', 'TEMPLATE', 'HEAD', 'META', 'LINK', 'TITLE']);
+    document.querySelectorAll('body *').forEach(el => {
       if (seen.has(el)) return;
       seen.add(el);
+      if (SKIP_TAGS.has(el.tagName)) return;
+      if (el.closest('noscript, script, style, template')) return;
       // Only elements that directly contain text
       const hasOwnText = Array.from(el.childNodes).some(
         n => n.nodeType === 3 && n.textContent.trim().length > 0
