@@ -2034,6 +2034,9 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
       chromeBand={
         <ProjectChromeBand
           projectName={pageTitle}
+          projectIconUrl={(project as any)?.avatar_url ?? undefined}
+          projectIconName={(project as any)?.icon ?? null}
+          projectColor={(project as any)?.color ?? null}
           projectsHref="/"
           nameAdornment={
             <>
