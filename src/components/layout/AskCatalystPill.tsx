@@ -143,9 +143,11 @@ export function AskCatalystPill({ iconOnly = false }: AskCatalystPillProps) {
               borderRadius: 9999,
               background: token('elevation.surface', '#FFFFFF'),
               border: `1px solid ${token('color.border.brand', '#2563EB')}`,
+              // ADS canonical: rest = elevation.shadow.raised; hover ring uses brand-focus
+              // ring (color.border.focused) + raised shadow. Dark mode resolves both via CSS vars.
               boxShadow: hovered && isForYou
-                ? '0 0 0 3px rgba(37,99,235,0.08), 0 4px 10px rgba(37,99,235,0.12)'
-                : '0 1px 2px rgba(15,23,42,0.04)',
+                ? `0 0 0 3px var(--ds-border-focused, rgba(37,99,235,0.20)), var(--ds-shadow-raised, 0 4px 10px rgba(37,99,235,0.12))`
+                : 'var(--ds-shadow-raised, 0 1px 2px rgba(15,23,42,0.04))',
               transition: 'box-shadow 180ms ease, transform 180ms ease',
               cursor: isForYou ? 'pointer' : 'not-allowed',
               opacity: isForYou ? 1 : 0.55,
@@ -176,10 +178,11 @@ export function AskCatalystPill({ iconOnly = false }: AskCatalystPillProps) {
             top: '100%',
             right: 0,
             marginTop: 6,
-            background: 'var(--cp-float, #FFFFFF)',
-            border: '1px solid var(--cp-bd, #DFE1E6)',
+            background: 'var(--ds-surface-overlay, var(--cp-float, #FFFFFF))',
+            border: '1px solid var(--ds-border, var(--cp-bd, #DFE1E6))',
             borderRadius: 12,
-            boxShadow: '0 8px 30px rgba(0,0,0,0.12)',
+            // ADS canonical overlay shadow — works in both modes via the token resolver
+            boxShadow: 'var(--ds-shadow-overlay, 0 8px 30px rgba(0,0,0,0.12))',
             minWidth: 220,
             padding: 6,
             zIndex: 1000,
