@@ -48,15 +48,23 @@
 import { type ReactNode } from 'react';
 import { token } from '@atlaskit/tokens';
 import Breadcrumbs, { BreadcrumbsItem } from '@atlaskit/breadcrumbs';
+import { ProjectIcon } from '@/components/shared/ProjectIcon';
 
 export interface ProjectChromeBandProps {
   /** The project's display name — rendered as the H1 in Row B. */
   projectName: string;
   /**
-   * Optional URL for the project icon. If omitted, a fallback avatar
-   * with the project's first letter is rendered.
+   * Optional URL for the project icon. Highest priority.
+   * (projects.avatar_url — Jira-uploaded image.)
    */
   projectIconUrl?: string;
+  /**
+   * Optional Lucide icon name (ph_projects.icon). Secondary fallback when
+   * `projectIconUrl` is null. Rendered on a tinted square using `projectColor`.
+   */
+  projectIconName?: string | null;
+  /** Optional brand tint hex (ph_projects.color) for the icon tile fallback. */
+  projectColor?: string | null;
   /**
    * Optional href for the project name in the breadcrumb. Defaults to
    * the current page (no navigation).
