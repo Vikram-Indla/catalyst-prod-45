@@ -114,8 +114,7 @@ export default function ProductHubKanbanPage() {
   const qc = useQueryClient();
   const statusMutation = useMutation({
     mutationFn: async ({ id, status }: { id: string; status: RequestStatus }) => {
-      const { error } = await supabase
-        .from('ph_requests')
+      const { error } = await typedQuery('ph_requests')
         .update({ status: status as any, updated_at: new Date().toISOString() })
         .eq('id', id);
       if (error) throw error;
@@ -139,8 +138,7 @@ export default function ProductHubKanbanPage() {
   /* ═════ Favorite toggle mutation. ═════ */
   const favoriteMutation = useMutation({
     mutationFn: async ({ id, value }: { id: string; value: boolean }) => {
-      const { error } = await supabase
-        .from('ph_requests')
+      const { error } = await typedQuery('ph_requests')
         .update({ is_favorited: value, updated_at: new Date().toISOString() })
         .eq('id', id);
       if (error) throw error;

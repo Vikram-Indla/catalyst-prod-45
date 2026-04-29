@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { useProject } from '@/hooks/useProjects';
 import type { BacklogEpic, BacklogFeature, BacklogStory } from '../types/backlog.types';
 
@@ -41,8 +41,7 @@ export function useRequestsByKeys(keys: string[]) {
     queryFn: async (): Promise<Map<string, RequestRow>> => {
       const out = new Map<string, RequestRow>();
       if (keys.length === 0) return out;
-      const { data, error } = await supabase
-        .from('ph_backlog_requests_view')
+      const { data, error } = await typedQuery('ph_backlog_requests_view')
         .select('id, initiative_key, title')
         .in('initiative_key', keys);
       if (error) throw error;

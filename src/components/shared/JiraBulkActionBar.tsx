@@ -6,7 +6,7 @@ import { useCallback, useState } from 'react';
 import { X, Pencil, Clipboard, Trash2 } from 'lucide-react';
 import { createPortal } from 'react-dom';
 import { toast } from 'sonner';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 
 interface JiraBulkActionBarProps {
   selectedIds: string[];
@@ -88,8 +88,7 @@ export function JiraBulkActionBar({
       if (onDelete) {
         onDelete(selectedIds);
       } else if (tableName) {
-        const { error } = await supabase
-          .from(tableName)
+        const { error } = await typedQuery(tableName)
           .delete()
           .in('id', selectedIds);
         if (error) throw error;

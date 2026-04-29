@@ -4,7 +4,7 @@
  */
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { catalystToast } from '@/lib/catalystToast';
 import { logRequestAudit } from '@/lib/requestAudit';
 import { Plus, Wallet, ChevronDown } from 'lucide-react';
@@ -30,8 +30,7 @@ export function RequestBudgetTab({ requestId, budgetAllocated, onBudgetAllocated
   const { data: budgetItems = [], refetch: refetchBudget } = useQuery({
     queryKey: ['request-budget', requestId],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('ph_request_budget_items')
+      const { data, error } = await typedQuery('ph_request_budget_items')
         .select('*, creator:profiles!created_by(id, full_name)')
         .eq('request_id', requestId)
         .order('created_at', { ascending: false });
@@ -48,7 +47,7 @@ export function RequestBudgetTab({ requestId, budgetAllocated, onBudgetAllocated
 
   const handleCreateBudgetItem = async () => {
     if (!budgetForm.description.trim() || !budgetForm.planned_amount) return;
-    const { error } = await supabase.from('ph_request_budget_items').insert({
+    const { error } = await typedQuery('ph_request_budget_items').insert({
       request_id: requestId, category: budgetForm.category,
       description: budgetForm.description.trim(), expense_type: budgetForm.expense_type,
       planned_amount: parseFloat(budgetForm.planned_amount),
