@@ -17,7 +17,7 @@
  * NewIncidentModal stay as page chrome above the table — exactly as
  * before. Only the rendering of the row list itself is canonical.
  *
- * NOCTURNE dark mode is honoured: header chrome uses the same
+ * DARK MODE dark mode is honoured: header chrome uses the same
  * `useTheme()` palette helpers; JiraTable defers its own light/dark
  * styling to the canonical (see JiraTable.tsx focus-css block).
  */
@@ -85,7 +85,7 @@ export default function IncidentListPage() {
     { key: 'resolved', label: 'Resolved' },
   ];
 
-  // ── NOCTURNE color helpers (page chrome only — table palette is
+  // ── DARK MODE color helpers (page chrome only — table palette is
   // owned by JiraTable's own focus-css block) ────────────────────────────
   const pageBg = isDark ? '#0A0A0A' : '#FFFFFF';
   const surfaceBg = isDark ? '#1A1A1A' : '#FFFFFF';

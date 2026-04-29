@@ -26,7 +26,7 @@ function formatDate(d: string) {
   return new Date(d).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
 }
 
-/* ── StatusLozenge (V12 3-color guardrail + NOCTURNE dark) ── */
+/* ── StatusLozenge (V12 3-color guardrail + DARK MODE dark) ── */
 function StatusLozenge({ status }: { status: string }) {
   const isDark = typeof document !== 'undefined' && document.documentElement.classList.contains('dark');
   const s = (status || '').toLowerCase();

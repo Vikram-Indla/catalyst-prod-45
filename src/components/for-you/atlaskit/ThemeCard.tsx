@@ -67,7 +67,7 @@ import ThemeIssueList from './ThemeIssueList';
 // Prior surface used `elevation.surface` (page-level white) — visually flat
 // against the page. Promoted to `elevation.surface.raised` so the card reads
 // as a floating layer. Border + shadow + radius all flow through tokens, so
-// dark mode (NOCTURNE, CLAUDE.md §3) inherits without an override block.
+// dark mode (DARK MODE, CLAUDE.md §3) inherits without an override block.
 //
 // Radius note: original was 8px; Atlaskit token `border.radius.300` = 8px
 // (canonical = 3px which is too tight for theme cards at this density).
@@ -302,7 +302,7 @@ export default function ThemeCard({ theme, defaultExpanded = false }: ThemeCardP
       {/* Phase 12 (2026-04-29): the Phase-8 inline-style override that forced
           backgroundColor + borderColor via cp(adsTokens.*) was reverted.
           Phase 11 unblocked Atlaskit's bundled dark theme — `elevation.surface
-          .raised` now resolves to NOCTURNE-correct values natively (light
+          .raised` now resolves to DARK MODE-correct values natively (light
           surface in light, lifted dark surface in dark). The override was
           flattening the elevation hierarchy and bypassing ADS. Letting
           xcss own the surface restores proper elevation per ADS spec. */}

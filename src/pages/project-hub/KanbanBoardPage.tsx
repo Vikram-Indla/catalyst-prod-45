@@ -7,7 +7,7 @@
  * - Dynamic columns from actual issue statuses
  * - DnD with optimistic updates + rollback + toast
  * - Card density toggle (compact/dense/comfortable)
- * - Dark mode via useTheme() + Nocturne Geist hex tokens
+ * - Dark mode via useTheme() + ADS dark hex tokens
  * - Filters: search, avatar stack, epic, type, priority, quick filters, group by
  * - Context menu on cards (⋯)
  * - Selection state with left accent bar

@@ -1,5 +1,5 @@
 /**
- * NOCTURNE Geist — canonical dark mode tokens for inline-style components
+ * ADS dark — canonical dark mode tokens for inline-style components
  * All surfaces/borders use solid hex (never rgba). Apr 2026.
  */
 export type DarkTokens = {
@@ -13,7 +13,7 @@ export type DarkTokens = {
 };
 
 export const DK: DarkTokens = {
-  // Backgrounds — Geist Neutral Dark
+  // Backgrounds — ADS neutral dark
   pageBg: '#0A0A0A',
   cardBg: 'transparent',
   headerBg: 'transparent',
@@ -25,7 +25,7 @@ export const DK: DarkTokens = {
   progressTrack: '#2E2E2E',
   iconBg: '#292929',
 
-  // Text — Geist Neutral Dark
+  // Text — ADS neutral dark
   t1: '#EDEDED',   // primary text (titles, values, data)
   t2: '#A1A1A1',   // secondary (labels, legends)
   t3: '#878787',   // tertiary (timestamps, muted labels)

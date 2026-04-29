@@ -582,7 +582,7 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
            AND Jira BAU body cells). The legacy hex was the cause of the
            washed-out / blue-shifted body text Vikram flagged: every body
            td was rendering #172B4D while headers + H1 used the modern
-           token. Token-first ensures dark-mode + Nocturne switch flips
+           token. Token-first ensures dark-mode + Dark mode switch flips
            too. Fallback hex updated to #292A2E to match Jira's resolved
            --ds-text in light theme. */
         font-size: 14px;

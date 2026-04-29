@@ -50,7 +50,7 @@ export const SURFACE = {
   borderLight: '#F1F5F9',
 };
 
-// ── Dark Mode Variants (Nocturne One Surface Model) ──
+// ── Dark Mode Variants (Dark mode One Surface Model) ──
 export const INK_DARK = {
   1: 'rgba(255,255,255,0.92)',
   2: 'rgba(255,255,255,0.72)',

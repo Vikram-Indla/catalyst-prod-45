@@ -78,7 +78,7 @@ const TOKENS = `
   -webkit-font-smoothing:antialiased; line-height:1.5;
 }
 
-/* ── DARK MODE — Nocturne overrides ── */
+/* ── DARK MODE — Dark mode overrides ── */
 .dark [data-srd] , [data-theme="dark"] [data-srd] {
   --srd-ink: rgba(255,255,255,0.92);
   --srd-ink-2: rgba(255,255,255,0.72);

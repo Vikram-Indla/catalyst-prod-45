@@ -890,7 +890,7 @@
 }
 
 /* ═══════════════════════════════════════════════════════════════════
-   DARK MODE — Geist Neutral Dark OVERRIDES (variable-level)
+   DARK MODE — ADS neutral dark OVERRIDES (variable-level)
    ═══════════════════════════════════════════════════════════════════ */
 .dark .releaseHub , [data-theme="dark"] .releaseHub {
   --rh-bg-page: var(--bg-0, #0A0A0A);

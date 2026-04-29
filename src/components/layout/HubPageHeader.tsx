@@ -22,7 +22,7 @@
  *   h1 margin:           0
  *
  * Dark mode:
- *   Swaps to Catalyst's NOCTURNE text token so contrast on #1A1A1A surface holds.
+ *   Swaps to Catalyst's DARK MODE text token so contrast on #1A1A1A surface holds.
  *
  * Rollback:
  *   1. Restore the original breadcrumb/h1 JSX per page.

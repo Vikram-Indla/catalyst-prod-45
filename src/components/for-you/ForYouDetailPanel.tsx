@@ -28,7 +28,7 @@ const TL = {
   danger: '#DC2626', dangerText: '#D92525', dangerBg: '#FEF2F2',
 };
 
-// Design tokens — dark mode (NOCTURNE)
+// Design tokens — dark mode (DARK MODE)
 const TD = {
   ink: '#EDEDED', inkSecondary: 'rgba(255,255,255,0.82)', inkTertiary: 'rgba(255,255,255,0.60)',
   inkMuted: 'rgba(255,255,255,0.45)', inkMutedStrong: 'rgba(255,255,255,0.50)',

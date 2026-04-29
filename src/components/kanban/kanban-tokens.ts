@@ -1,5 +1,5 @@
 /**
- * Kanban Board — Design tokens (Nocturne Geist)
+ * Kanban Board — Design tokens (ADS dark)
  * Single source of truth for all kanban theming.
  */
 

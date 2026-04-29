@@ -1,6 +1,6 @@
 /* ============================================================
    JiraBasicFilter.css — Enterprise-grade two-pane filter
-   NOCTURNE dark mode support + visual polish refinements
+   DARK MODE dark mode support + visual polish refinements
    ============================================================ */
 
 /* ── Font ── */
@@ -521,7 +521,7 @@
 }
 
 /* ═══════════════════════════════════════
-   NOCTURNE — DARK MODE OVERRIDES
+   DARK MODE — DARK MODE OVERRIDES
    ═══════════════════════════════════════ */
 
 .dark .jf-trigger-btn {

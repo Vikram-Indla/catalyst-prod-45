@@ -1,7 +1,7 @@
 /**
  * ViewSettingsPanel — Popover from ••• button on Kanban toolbar
  * Sections: Top toggles, Fields, Swimlanes, Density (V2, optional)
- * NOCTURNE Geist compliant
+ * ADS dark compliant
  */
 import { useRef, useEffect, useCallback } from 'react';
 import type { KanbanThemeTokens, KanbanDensity } from './kanban-tokens';

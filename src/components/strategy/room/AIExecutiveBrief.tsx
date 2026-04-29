@@ -34,7 +34,7 @@ const TOKENS = `
   -webkit-font-smoothing:antialiased; line-height:1.5;
 }
 
-/* ── DARK MODE — Nocturne overrides ── */
+/* ── DARK MODE — Dark mode overrides ── */
 .dark [data-sri] , [data-theme="dark"] [data-sri] {
   --sri-ink: rgba(255,255,255,0.96);
   --sri-ink-2: rgba(255,255,255,0.82);

@@ -20,7 +20,7 @@
   --pk-r-full: 9999px;
 }
 
-/* ═══ DARK MODE — Nocturne One Surface Model ═══ */
+/* ═══ DARK MODE — Dark mode One Surface Model ═══ */
 .dark [data-module="product-kanban"],
 .dark [data-module="product-kanban"] , [data-theme="dark"] [data-module="product-kanban"] {
   --pk-ink: #EDEDED;

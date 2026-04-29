@@ -1,6 +1,6 @@
 /**
  * WorkflowEditor — Status list + Transition matrix for a workflow scheme.
- * High-contrast NOCTURNE palette.
+ * High-contrast DARK MODE palette.
  */
 import React, { useState, useCallback } from 'react';
 import { typedQuery } from '@/integrations/supabase/client';

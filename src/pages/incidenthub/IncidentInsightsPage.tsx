@@ -1,6 +1,6 @@
 /**
  * IncidentInsightsPage — AI-branded, purple accent
- * NOCTURNE dark mode support via useTheme
+ * DARK MODE dark mode support via useTheme
  */
 
 import { Sparkles } from 'lucide-react';
@@ -13,7 +13,7 @@ export default function IncidentInsightsPage() {
   const sev1Count = incidents?.filter(i => i.severity === 'SEV1').length || 0;
   const breachedCount = incidents?.filter(i => i.resolution_breached).length || 0;
 
-  // NOCTURNE tokens
+  // DARK MODE tokens
   const pageBg = isDark ? '#0A0A0A' : '#FFFFFF';
   const surfaceBg = isDark ? '#1A1A1A' : '#FFFFFF';
   const textPrimary = isDark ? '#EDEDED' : '#0F172A';

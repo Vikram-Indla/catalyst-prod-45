@@ -5,7 +5,7 @@
  * - Filename click → AttachmentPreviewModal (image/PDF/fallback)
  * - "..." menu → Download all (zip via attachment-download-all edge function)
  * - 25MB max, blocked extensions client-side
- * - V12 tokens, ECLIPSE NOCTURNE-aware via Tailwind dark: classes (no inline overrides)
+ * - V12 tokens, ECLIPSE DARK MODE-aware via Tailwind dark: classes (no inline overrides)
  */
 import React, { useState, useRef, useCallback, useEffect, useMemo } from 'react';
 import { supabase } from '@/integrations/supabase/client';

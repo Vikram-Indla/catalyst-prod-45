@@ -491,7 +491,7 @@
 }
 .att-empty-cta:hover { background: rgba(37, 99, 235, 0.04); border-color: #2563EB; }
 
-/* ─── DARK MODE (ECLIPSE NOCTURNE) ─── */
+/* ─── DARK MODE (ECLIPSE DARK MODE) ─── */
 .dark .att-heading-label { color: #EDEDED; }
 .dark .att-badge { background: #292929; color: #A1A1A1; }
 .dark .att-icon-btn { color: #A1A1A1; }

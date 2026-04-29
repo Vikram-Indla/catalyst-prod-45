@@ -46,9 +46,9 @@
   --wh-shm: 0 4px 12px rgba(0,0,0,0.08);
 }
 
-/* ═══ ECLIPSE NOCTURNE — WORKHUB DARK MODE ═══ */
+/* ═══ ECLIPSE DARK MODE — WORKHUB DARK MODE ═══ */
 .dark, [data-theme="dark"] {
-  /* Surfaces — ONE surface #0A0A0A NOCTURNE */
+  /* Surfaces — ONE surface #0A0A0A DARK MODE */
   --wh-bg: #0A0A0A;
   --wh-sf: #0A0A0A;
   --wh-sf2: #1A1A1A;

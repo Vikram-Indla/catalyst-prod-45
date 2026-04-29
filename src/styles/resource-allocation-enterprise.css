@@ -441,7 +441,7 @@
 
 /* ─────────────────────────────────────────────────────────────
    DARK MODE — [data-theme="dark"] overrides
-   Redefines --ra-* tokens for Geist Neutral Dark dark mode
+   Redefines --ra-* tokens for ADS neutral dark dark mode
    ───────────────────────────────────────────────────────────── */
 .dark .ra-enterprise-clean , [data-theme="dark"] .ra-enterprise-clean {
   /* NEUTRAL FOUNDATION — dark */
