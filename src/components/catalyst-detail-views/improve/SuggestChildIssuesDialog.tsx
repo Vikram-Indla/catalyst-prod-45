@@ -157,7 +157,7 @@ export function SuggestChildIssuesDialog({
           projectId: projectId ?? undefined,
           reporterId: reporterId ?? undefined,
         } as Parameters<typeof createChildIssue>[0]);
-        if (result?.issueKey) created.push(result.issueKey);
+        if (result?.issue_key) created.push(result.issue_key);
       }
       toast.success(`Created ${created.length} child work item${created.length === 1 ? '' : 's'}`);
       if (onChildrenCreated) onChildrenCreated(created);
