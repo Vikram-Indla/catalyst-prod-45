@@ -162,7 +162,12 @@ export interface Project {
   id: string;
   key: string;
   name: string;
+  /** projects.avatar_url — Jira-uploaded image (canonical, primary). */
   avatar_url?: string | null;
+  /** ph_projects.icon — Lucide icon name; canonical secondary fallback. */
+  icon?: string | null;
+  /** ph_projects.color / projects.color — hex tint for the icon tile. */
+  color?: string | null;
 }
 
 export type AIWorkItemType = 'feature' | 'epic' | 'story' | 'defect' | 'incident' | 'task' | 'business-request';
