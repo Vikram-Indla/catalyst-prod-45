@@ -18,8 +18,9 @@ const EMAIL_DOMAIN = '@mim.gov.sa';
 const MAX_REQUESTS_PER_DAY = 2;
 
 // Force light mode for external portal
+// Rule 2 (DARK_MODE_HANDOFF): never write `data-theme` — Atlaskit owns it.
+// Catalyst only toggles the `.dark` class.
 const forceLightMode = () => {
-  document.documentElement.setAttribute('data-theme', 'light');
   document.documentElement.classList.remove('dark');
 };
 
