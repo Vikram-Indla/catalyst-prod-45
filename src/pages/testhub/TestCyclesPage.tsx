@@ -67,7 +67,7 @@ export default function TestCyclesPage() {
   const [deleteCycle, setDeleteCycle] = useState<TestCycle | null>(null);
   const [cloneCycle, setCloneCycle] = useState<TestCycle | null>(null);
 
-  // NOCTURNE tokens
+  // DARK MODE tokens
   const pageBg = isDark ? '#0A0A0A' : '#F8FAFC';
   const surfaceBg = isDark ? '#1A1A1A' : '#FFFFFF';
   const elevatedBg = isDark ? '#1A1A1A' : '#F8FAFC';

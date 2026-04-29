@@ -44,7 +44,7 @@ export default function ReportDetailPage() {
   const [report, setReport] = useState<Report | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  // NOCTURNE tokens
+  // DARK MODE tokens
   const pageBg = isDark ? '#0A0A0A' : '#F8FAFC';
   const surfaceBg = isDark ? '#1A1A1A' : '#FFF';
   const borderColor = isDark ? '#2E2E2E' : '#E2E8F0';

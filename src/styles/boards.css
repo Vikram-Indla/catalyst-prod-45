@@ -125,7 +125,7 @@
   --boards-transition-lift: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Dark mode overrides — NOCTURNE Warm Charcoal */
+/* Dark mode overrides — DARK MODE ADS neutral */
 .dark {
   --boards-card-title-color: #EDEDED;
   --boards-card-title-color-done: #878787;
@@ -149,7 +149,7 @@
   --boards-date-color-upcoming: #878787;
 }
 
-/* NOCTURNE — Direct property overrides to guarantee dark card backgrounds */
+/* DARK MODE — Direct property overrides to guarantee dark card backgrounds */
 .dark .boards-card,
 .dark .boards-card , [data-theme="dark"] .boards-card {
   background-color: #1A1A1A !important;
@@ -693,7 +693,7 @@
   color: #6b21a8;
 }
 
-/* Dark mode label overrides — NOCTURNE */
+/* Dark mode label overrides — DARK MODE */
 .dark .boards-card__label--blue {
   background-color: rgba(59, 130, 246, 0.15);
   color: #93c5fd;

@@ -1,6 +1,6 @@
 /* ══════════════════════════════════════════════
    CATALYST THEME TOKENS — V12 HYBRID PRECISION
-   Light mode = default. Dark mode = NOCTURNE.
+   Light mode = default. Dark mode = DARK MODE.
    All UI references these tokens. Zero hardcoded hex.
 ══════════════════════════════════════════════ */
 
@@ -99,7 +99,7 @@
   --cp-chart-8: #4B5563;
 }
 
-/* ── DARK MODE — NOCTURNE Geist (canonical Apr 2026) ── */
+/* ── DARK MODE — ADS dark (canonical Apr 2026) ── */
 /* Phase 11 (2026-04-29): switched the dark selector from [data-theme="dark"]
    to .dark. Atlaskit's tokens runtime owns data-theme — it writes a
    space-separated token list ("dark:dark light:light spacing:spacing ...")
@@ -113,26 +113,26 @@
   --cp-bg-sidebar-hdr:  #0A0A0A;
   --cp-bg-sunken:       #0A0A0A;
   --cp-float:           #1A1A1A;
-  /* Bridge gap closure (2026-04-28) — see light block. NOCTURNE
+  /* Bridge gap closure (2026-04-28) — see light block. DARK MODE
      dark counterparts mirror tokens.ts adsTokens.bg.overlay/inset
      and text.disabled. */
   --cp-bg-overlay:      #1F1F1F;
   --cp-bg-inset:        #111111;
   --cp-text-disabled:   #7D7D7D;
 
-  /* Text — Geist solid hex scale */
+  /* Text — ADS solid hex scale */
   --cp-t1:              #EDEDED;
   --cp-t2:              #A1A1A1;
   --cp-t3:              #878787;
   --cp-t4:              #555555;
 
-  /* Borders — Geist solid hex */
+  /* Borders — ADS solid hex */
   --cp-bd:              #2E2E2E;
   --cp-bd-zone:         #2E2E2E;
   --cp-bd-hover:        #454545;
   --cp-bd-table:        #2E2E2E;
 
-  /* Interactive — Geist solid hex */
+  /* Interactive — ADS solid hex */
   --cp-hover:           #1F1F1F;
   --cp-press:           #292929;
   --cp-focus-ring:      rgba(59,130,246, 0.45);

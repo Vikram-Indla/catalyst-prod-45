@@ -19,7 +19,7 @@
  *    mount and whenever the resolved mode changes. `setGlobalTheme` is
  *    idempotent — repeated calls with the same mode are free.
  * 3. Feeds `customColors` from `atlaskitCustomColors(mode)` so Atlaskit
- *    renders with NOCTURNE / V12 hex rather than its own defaults. This
+ *    renders with DARK MODE / V12 hex rather than its own defaults. This
  *    is the alignment layer — without it, Atlaskit Lozenge greys would
  *    not match Catalyst Lozenge greys after a token bump.
  *

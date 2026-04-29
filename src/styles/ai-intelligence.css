@@ -960,7 +960,7 @@
 
 /* ═══════════════════════════════════════════════════════════
    DARK MODE — [data-theme="dark"] overrides
-   Redefines --rai-* tokens for Geist Neutral Dark dark mode
+   Redefines --rai-* tokens for ADS neutral dark dark mode
    ═══════════════════════════════════════════════════════════ */
 .dark [data-module="ai-intelligence"] , [data-theme="dark"] [data-module="ai-intelligence"] {
   --rai-ink: var(--fg-1, #EDEDED);

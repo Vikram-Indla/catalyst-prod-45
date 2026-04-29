@@ -1,7 +1,7 @@
 /**
  * Catalyst Design System Tokens for Product Roadmap
  * These tokens ensure visual consistency across the roadmap module
- * V5 - Blue + Teal Professional Palette — NOCTURNE Warm Charcoal dark mode
+ * V5 - Blue + Teal Professional Palette — DARK MODE ADS neutral dark mode
  */
 
 export const catalystTokens = {
@@ -83,7 +83,7 @@ export const catalystTokens = {
     },
   },
 
-  // Dark Mode — NOCTURNE Warm Charcoal
+  // Dark Mode — DARK MODE ADS neutral
   dark: {
     text: {
       primary: '#EDEDED',
@@ -118,7 +118,7 @@ export function getProductColor(productCode: string | null): string {
   return PRODUCT_COLORS[productCode] || catalystTokens.brand.primary;
 }
 
-// Timeline grid colors — NOCTURNE
+// Timeline grid colors — DARK MODE
 export const TIMELINE_COLORS = {
   gridLine: 'rgba(255, 255, 255, 0.05)',
   gridLineDark: 'rgba(255, 255, 255, 0.05)',

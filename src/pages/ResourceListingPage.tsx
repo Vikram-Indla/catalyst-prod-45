@@ -1,7 +1,7 @@
 /**
  * ResourceListingPage — Master resource listing, entry point for Resource Hub
  * Route: /project-hub/resources
- * ECLIPSE NOCTURNE: Full dark mode support with warm charcoal palette
+ * ECLIPSE DARK MODE: Full dark mode support with ads-neutral palette
  */
 import React, { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';

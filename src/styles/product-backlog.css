@@ -108,7 +108,7 @@
   --pb-row-h: var(--cp-size-table-row);
 }
 
-/* ═══ DARK MODE — Nocturne One Surface Model ═══ */
+/* ═══ DARK MODE — Dark mode One Surface Model ═══ */
 .dark [data-module="product-backlog"],
 .dark [data-module="product-backlog"] , [data-theme="dark"] [data-module="product-backlog"] {
   --cp-bg-page: #0A0A0A;

@@ -1232,7 +1232,7 @@
 }
 
 /* ═══════════════════════════════════════════════════════════
-   ECLIPSE — NOCTURNE DARK MODE OVERRIDES (R360 Member Detail)
+   ECLIPSE — DARK MODE DARK MODE OVERRIDES (R360 Member Detail)
    Consolidated: April 2026
    ═══════════════════════════════════════════════════════════ */
 
@@ -1529,7 +1529,7 @@
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   NOCTURNE NUCLEAR OVERRIDES — Intercept ALL inline style leaks
+   DARK MODE NUCLEAR OVERRIDES — Intercept ALL inline style leaks
    These selectors catch hardcoded hex in style="" attributes
    that bypass the design system. Last resort before refactor.
    ═══════════════════════════════════════════════════════════════ */
@@ -1582,7 +1582,7 @@
   background: #1A1A1A !important;
 }
 
-/* Light-mode border colors → Geist borders */
+/* Light-mode border colors → ADS borders */
 .dark #r360-root [style*="border-bottom: 1px solid #F1F5F9"],
 .dark #r360-root [style*="border-top: 1px solid #F1F5F9"],
 .dark #r360-root [style*="border: 1px solid #E2E8F0"],
@@ -1592,7 +1592,7 @@
   border-color: #2E2E2E !important;
 }
 
-/* Light text colors → Geist text hierarchy */
+/* Light text colors → ADS text hierarchy */
 .dark #r360-root [style*="color: #0F172A"],
 .dark #r360-root [style*="color: #020617"],
 .dark #r360-root [style*="color: #1E293B"],
@@ -1608,7 +1608,7 @@
   color: #878787 !important;
 }
 
-/* rgba wash backgrounds → solid Geist hex */
+/* rgba wash backgrounds → solid ADS hex */
 .dark #r360-root [style*="background: rgba(15,23,42,0.05)"],
 .dark #r360-root [style*="background: rgba(15, 23, 42, 0.05)"] {
   background: #1A1A1A !important;

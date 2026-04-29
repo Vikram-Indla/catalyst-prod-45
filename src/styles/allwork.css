@@ -1678,6 +1678,6 @@
 .dark .awAddParentLink:hover { color: #4C9AFF; background: #1F1F1F; }
 /* (old pill-style tab dark rule removed — now using underline tabs) */
 .dark .awLabelChip { background: #292929; color: #EDEDED; }
-/* SubtasksPanel NOCTURNE overrides moved to SubtasksPanel.css — see
+/* SubtasksPanel DARK MODE overrides moved to SubtasksPanel.css — see
    src/modules/project-work-hub/components/SubtasksPanel/SubtasksPanel.css
    (consolidated per CLAUDE.md L35). */

@@ -95,7 +95,7 @@
   --catalyst-grid-gutter: 24px;
 }
 
-/* ── DARK MODE — Nocturne overrides ── */
+/* ── DARK MODE — Dark mode overrides ── */
 .dark .strategy-room , [data-theme="dark"] .strategy-room {
   --catalyst-bg-app: #0A0A0A;
   --catalyst-bg-surface-0: #0A0A0A;

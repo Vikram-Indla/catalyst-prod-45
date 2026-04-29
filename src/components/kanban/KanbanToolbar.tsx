@@ -1,6 +1,6 @@
 /**
  * KanbanToolbar — Search, filters, density, group by
- * Enterprise-grade, fully theme-aware via KanbanThemeTokens (Nocturne Geist)
+ * Enterprise-grade, fully theme-aware via KanbanThemeTokens (ADS dark)
  */
 import { useState, useRef, useEffect } from 'react';
 import { Search, ChevronDown, Check, Filter, X } from 'lucide-react';

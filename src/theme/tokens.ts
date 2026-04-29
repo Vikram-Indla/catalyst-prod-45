@@ -352,10 +352,10 @@ export const chartPalette = {
 } as const;
 
 // ============================================
-// NOCTURNE DARK MODE — HEX PALETTE
+// DARK MODE DARK MODE — HEX PALETTE
 // Use these for direct hex references in components
 // ============================================
-export const nocturne = {
+export const dark-mode = {
   pageBg: '#0A0A0A',
   cardSurface: '#1A1A1A',
   hoverSurface: '#1F1F1F',
@@ -442,7 +442,7 @@ export const tokens = {
   interactive,
   status,
   chartPalette,
-  nocturne,
+  dark-mode,
   catalyst,
   statusLozenge,
   fonts,

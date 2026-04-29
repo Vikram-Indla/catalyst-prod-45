@@ -754,7 +754,7 @@ const drawerCSS = `
   background: #dc2626;
 }
 
-/* ═══ ECLIPSE NOCTURNE — DARK MODE ═══ */
+/* ═══ ECLIPSE DARK MODE — DARK MODE ═══ */
 .dark .um-drawer {
   background: #1A1A1A !important;
   box-shadow: -12px 0 40px rgba(0,0,0,0.5) !important;

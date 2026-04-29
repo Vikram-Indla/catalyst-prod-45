@@ -42,7 +42,7 @@ import { HubSurface } from './HubSurface';
  * Decision A (Apr 2026) — Jira blue-canvas on hub routes.
  * Kept local to this file (no shared hook) so the whole trial can be reverted
  * by unwinding this file + HubSurface.tsx. Mirrors the dark-aware logic used
- * in HubSurface so both stay consistent when NOCTURNE toggles.
+ * in HubSurface so both stay consistent when DARK MODE toggles.
  */
 // V3 Canonical White Canvas (Apr 27, 2026 audit, L36).
 // Was '#E9F2FE' (light Jira blue) — painted on <main> for every hub-surface

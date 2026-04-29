@@ -19,7 +19,7 @@
  *
  * Dark mode:
  *   Falls back to Catalyst's --cp-bg-canvas and --cp-bg tokens so StrategyHub
- *   doesn't flash a light-blue surface on a black NOCTURNE page.
+ *   doesn't flash a light-blue surface on a black DARK MODE page.
  *
  * Scope:
  *   - Use inside hub landing pages (StrategyHub, ProductHub, ProjectHub,
@@ -45,7 +45,7 @@ const JIRA_PANEL  = '#FFFFFF';
 
 /**
  * Observe <html data-theme="..."> so the wrapper flips to Catalyst's dark
- * tokens when the user toggles NOCTURNE. Uses useSyncExternalStore so we
+ * tokens when the user toggles DARK MODE. Uses useSyncExternalStore so we
  * stay in sync with the actual attribute on document.documentElement
  * without reaching for a theme context.
  */
@@ -91,7 +91,7 @@ export function HubSurface({
 }: HubSurfaceProps) {
   const isDark = useIsDark();
 
-  // In dark mode, fall back to Catalyst's NOCTURNE tokens so this wrapper
+  // In dark mode, fall back to Catalyst's DARK MODE tokens so this wrapper
   // doesn't punch a light-blue hole through a black page.
   const canvasBg = isDark ? 'var(--cp-bg-canvas)' : JIRA_CANVAS;
   const panelBg  = isDark ? 'var(--cp-bg)'        : JIRA_PANEL;

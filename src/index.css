@@ -1213,7 +1213,7 @@ html:has(body[data-scroll-locked]) {
        ═══════════════════════════════════════════════════════════════ */
     
     /* === BRAND TOKENS (V5 Compliant) === */
-    --brand-dark: #1A1A1A;  /* NOCTURNE Warm Charcoal elevated surface */
+    --brand-dark: #1A1A1A;  /* DARK MODE ADS neutral elevated surface */
     --brand-gold: #0d9488;
     --brand-gold-hover: #0f766e;
     --brand-teal: #0d9488;
@@ -1272,7 +1272,7 @@ html:has(body[data-scroll-locked]) {
     
     /* ═══════════════════════════════════════════════════════════════
        V9.5 NAVIGATION SHELL — AAA Contrast (Dark Mode)
-       NOCTURNE Warm Charcoal palette
+       DARK MODE ADS neutral palette
        ═══════════════════════════════════════════════════════════════ */
     --nav-text-primary: #EDEDED;
     --nav-text-secondary: #A1A1A1;
@@ -1281,7 +1281,7 @@ html:has(body[data-scroll-locked]) {
     --nav-section-label: #878787;
     --nav-accent-bar: #3b82f6;             /* Left accent bar */
     
-    /* === C) DIVIDER + BORDER GRAMMAR (Warm Charcoal borders) === */
+    /* === C) DIVIDER + BORDER GRAMMAR (ADS neutral borders) === */
     --divider: #292929;
     --border-subtle: #2E2E2E;
     --border-strong: #454545;
@@ -1626,7 +1626,7 @@ html:has(body[data-scroll-locked]) {
 @layer base {
   .dark,
   .dark , [data-theme="dark"] {
-    /* Global border softening — solid hex only (Geist) */
+    /* Global border softening — solid hex only (ADS) */
     .card,
     [class*="rounded-lg"][class*="border"] {
       border-color: #2E2E2E;
@@ -3313,10 +3313,10 @@ input[type="range"]::-moz-range-thumb {
 }
 
 /* ═══════════════════════════════════════════════════
-   ECLIPSE — NOCTURNE DARK MODE OVERRIDES v2.0
+   ECLIPSE — DARK MODE DARK MODE OVERRIDES v2.0
    Consolidated: April 2026
    DO NOT ADD BLOCKS BELOW THIS — CONSOLIDATE ONLY
-   NOCTURNE: #0A0A0A page / #1A1A1A surface / #1A1A1A elevated
+   DARK MODE: #0A0A0A page / #1A1A1A surface / #1A1A1A elevated
    ═══════════════════════════════════════════════════ */
 
 .dark .c-section,
@@ -3369,7 +3369,7 @@ input[type="range"]::-moz-range-thumb {
   --cp-bg: #0A0A0A;
   --cp-bg-elevated: #1A1A1A;
   --cp-bg-page: #0A0A0A;
-  /* <AtlaskitPageShell> hub-page bg — NOCTURNE page bg in dark mode. */
+  /* <AtlaskitPageShell> hub-page bg — DARK MODE page bg in dark mode. */
   --cp-bg-hub-page: #0A0A0A;
   --cp-bg-sunken: #1A1A1A;
   --cp-bg-surface: #1A1A1A;
@@ -3871,7 +3871,7 @@ input[type="range"]::-moz-range-thumb {
   --sidebar-border:          0 0% 18%;
   --sidebar-ring:            217 91% 60%;
 
-  /* Geist surface tokens */
+  /* ADS surface tokens */
   --surface-page:     #0A0A0A;
   --surface-card:     #1A1A1A;
   --surface-hover:    #1F1F1F;
@@ -5286,7 +5286,7 @@ input[type="range"]::-moz-range-thumb {
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   ECLIPSE NOCTURNE — Cool Steel: Jira User Sync Module
+   ECLIPSE DARK MODE — Cool Steel: Jira User Sync Module
    ONE consolidated block — do NOT duplicate
    ═══════════════════════════════════════════════════════════════ */
 
@@ -5443,7 +5443,7 @@ input[type="range"]::-moz-range-thumb {
 }
 
 /* Force card/background CSS var to neutral dark.
-   §L38 hex only. NOCTURNE page background (CLAUDE.md §18). */
+   §L38 hex only. DARK MODE page background (CLAUDE.md §18). */
 .dark [class*="bg-card"],
 .dark [class*="bg-background"],
 [data-theme="dark"] [class*="bg-card"],

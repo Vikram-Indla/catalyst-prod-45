@@ -52,7 +52,7 @@
   --tm-status-critical: #dc2626;
   --tm-status-info: #0284c7;
 
-/* ── DARK MODE — Geist Neutral Dark OVERRIDES ── */
+/* ── DARK MODE — ADS neutral dark OVERRIDES ── */
 [data-theme="dark"] .task-modal,
 .dark .task-modal-enterprise , [data-theme="dark"] .task-modal-enterprise {
   --tm-surface-page: var(--bg-0, #0A0A0A);

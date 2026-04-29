@@ -3,7 +3,7 @@
  * ADS Token Bridge — alignment between three token worlds.
  *
  *   @atlaskit/tokens  ──┐
- *                       ├──▶  Catalyst semantic tokens (--cp-*)  ──▶  NOCTURNE hex
+ *                       ├──▶  Catalyst semantic tokens (--cp-*)  ──▶  DARK MODE hex
  *   shadcn/Tailwind   ──┘
  *
  * This file is the SINGLE SOURCE OF TRUTH for that alignment.
@@ -11,7 +11,7 @@
  * Why a bridge layer exists
  * ─────────────────────────
  * Atlaskit components consume `@atlaskit/tokens`. Catalyst product code uses
- * `--cp-*` variables (see index.css) and Tailwind utilities. NOCTURNE dark
+ * `--cp-*` variables (see index.css) and Tailwind utilities. DARK MODE dark
  * mode uses literal hex (see CLAUDE.md §3, §18). If Atlaskit rendered under
  * its own tokens and our product under `--cp-*`, the two would drift the
  * moment Atlaskit bumps a token value — a full dark-mode regression across
@@ -32,7 +32,7 @@
  * 2. When Atlaskit bumps a token name (e.g. `color.text.subtle` renames),
  *    update the `atlaskit` key in the relevant entry. Product code still
  *    reads `adsTokens.text.secondary` — one-line patch.
- * 3. Dark-mode value MUST match `CLAUDE.md §18 — NOCTURNE GEIST HEX
+ * 3. Dark-mode value MUST match `CLAUDE.md §18 — ADS DARK TOKENS
  *    PALETTE`. Verified by visual-regression CI.
  * 4. Light-mode value MUST match `CLAUDE.md §4 — V12 Hybrid Precision`
  *    semantic tokens.
@@ -46,8 +46,8 @@
  *
  * - `cp`        the --cp-* variable name (without `var(...)`). The product
  *               owns this value; ADS wrappers resolve through it at runtime.
- * - `light`     NOCTURNE / V12 light-mode hex.
- * - `dark`      NOCTURNE dark-mode hex.
+ * - `light`     DARK MODE / V12 light-mode hex.
+ * - `dark`      DARK MODE dark-mode hex.
  * - `atlaskit`  the @atlaskit/tokens identifier this entry aliases. Used by
  *               AdsThemeProvider.customColors so Atlaskit components pick up
  *               our values. Leave empty string for entries with no Atlaskit
@@ -85,7 +85,7 @@ export const adsTokens = {
      *   Pre-V3 (historical): #E9F2FE — Jira BAU list DOM rgb(233,242,254)
      *   measured 2026-04-18.
      *
-     * Dark mode continues to mirror NOCTURNE page bg #0A0A0A (CLAUDE.md §18).
+     * Dark mode continues to mirror DARK MODE page bg #0A0A0A (CLAUDE.md §18).
      */
     hubPage:  { cp: '--cp-bg-hub-page', light: '#FFFFFF', dark: '#0A0A0A', atlaskit: '' } satisfies AdsToken,
     surface:  { cp: '--cp-bg-surface',  light: '#FFFFFF', dark: '#1A1A1A', atlaskit: 'elevation.surface' } satisfies AdsToken,

@@ -1,7 +1,7 @@
 /**
  * SeverityChip — Token-based severity badges
  * SEV-1: danger | SEV-2: warning | SEV-3: primary | SEV-4: neutral
- * NOCTURNE dark mode: washed-out backgrounds with readable text
+ * DARK MODE dark mode: washed-out backgrounds with readable text
  */
 
 import { useTheme } from '@/hooks/useTheme';

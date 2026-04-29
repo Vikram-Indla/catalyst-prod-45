@@ -3763,7 +3763,7 @@ function GroupByControl({
           // flat white when the menu is closed even though the URL is
           // grouped — which fails to signal that a non-default group is
           // applied. The selected token resolves to the right values across
-          // light + NOCTURNE dark mode.
+          // light + DARK MODE dark mode.
           display: 'inline-flex',
           alignItems: 'center',
           gap: 6,
