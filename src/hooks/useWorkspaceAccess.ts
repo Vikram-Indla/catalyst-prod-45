@@ -36,6 +36,10 @@ interface ProjectWithAccess {
   canAccess: boolean;
   sourceField?: string;
   needsMigration?: boolean;
+  /** Canonical project visual fields (mem://constraints/canonical-project-icons). */
+  avatarUrl: string | null;
+  iconName: string | null;
+  color: string | null;
 }
 
 export function useWorkspaceAccess() {
@@ -82,22 +86,37 @@ export function useWorkspaceAccess() {
   });
 
   // Fetch all projects - NO dependency on memberships (calculate access after)
+  // Pulls canonical visual fields (avatar_url, color) from public.projects AND
+  // the Lucide icon name from public.ph_projects (joined by `key`) so every
+  // surface that renders a project has a single source of truth for its icon.
   const { data: rawProjects, isLoading: projectsLoading } = useQuery({
     queryKey: ['workspace-projects'],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('projects')
-        .select(`
-          id, 
-          key, 
-          name, 
-          description,
-          program_id,
-          programs (id, key, name)
-        `)
-        .order('name');
+      const [{ data: projectRows, error }, { data: phRows }] = await Promise.all([
+        supabase
+          .from('projects')
+          .select(`
+            id,
+            key,
+            name,
+            description,
+            program_id,
+            avatar_url,
+            color,
+            programs (id, key, name)
+          `)
+          .order('name'),
+        supabase.from('ph_projects').select('key, icon, color'),
+      ]);
       if (error) throw error;
-      return data || [];
+      const phByKey = new Map<string, { icon: string | null; color: string | null }>();
+      (phRows || []).forEach((r: { key: string; icon: string | null; color: string | null }) => {
+        phByKey.set(r.key, { icon: r.icon, color: r.color });
+      });
+      return (projectRows || []).map((p: any) => {
+        const ph = phByKey.get(p.key);
+        return { ...p, _icon: ph?.icon ?? null, _ph_color: ph?.color ?? null };
+      });
     },
     staleTime: 5 * 60 * 1000, // Cache for 5 minutes
   });
@@ -120,7 +139,7 @@ export function useWorkspaceAccess() {
     });
 
   // Derive projects with access info (computed, not queried)
-  const projects: ProjectWithAccess[] = (rawProjects || []).map(p => {
+  const projects: ProjectWithAccess[] = (rawProjects || []).map((p: any) => {
     logProjectKeyBinding({
       ...p,
       programs: p.programs as { id?: string; name?: string; key?: string | null } | null
@@ -140,6 +159,9 @@ export function useWorkspaceAccess() {
       canAccess: isAdmin || hasDirectAccess || hasInheritedAccess,
       sourceField: keyResult.sourceField,
       needsMigration: !keyResult.isValid,
+      avatarUrl: p.avatar_url ?? null,
+      iconName: p._icon ?? null,
+      color: p._ph_color ?? p.color ?? null,
     };
   });
 

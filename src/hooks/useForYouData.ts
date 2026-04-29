@@ -162,7 +162,12 @@ export interface Project {
   id: string;
   key: string;
   name: string;
+  /** projects.avatar_url — Jira-uploaded image (canonical, primary). */
   avatar_url?: string | null;
+  /** ph_projects.icon — Lucide icon name; canonical secondary fallback. */
+  icon?: string | null;
+  /** ph_projects.color / projects.color — hex tint for the icon tile. */
+  color?: string | null;
 }
 
 export type AIWorkItemType = 'feature' | 'epic' | 'story' | 'defect' | 'incident' | 'task' | 'business-request';
@@ -584,8 +589,9 @@ export function useForYouData() {
           supabase.from('ph_jira_projects').select('project_key, name'),
           // `avatar_url` feeds the Recommended projects strip AND every
           // WorkItem's `projectAvatarUrl`. `name` so the strip has a stable
-          // display string regardless of which tab is active.
-          supabase.from('projects').select('id, key, name, avatar_url'),
+          // display string regardless of which tab is active. `color` is the
+          // canonical brand tint for the icon tile fallback (mem://constraints/canonical-project-icons).
+          supabase.from('projects').select('id, key, name, avatar_url, color'),
           supabase.from('planner_tasks').select('task_key, title, priority, assignee_id, updated_at, created_at, status_id, workstream_id, reporter_id').eq('assignee_id', authUser.id).is('deleted_at', null).order('updated_at', { ascending: false }).limit(200),
           supabase.from('profiles').select('id, full_name').eq('id', authUser.id).single(),
           supabase.from('stories').select('id, story_key, title, name, status, state, priority, assignee_id, story_points, estimate_points, tags, description, updated_at, created_at, feature:features(id, name, display_id, project_id, project:projects(id, name, key))').eq('assignee_id', authUser.id).is('deleted_at', null).order('updated_at', { ascending: false }).limit(200),
@@ -608,16 +614,35 @@ export function useForYouData() {
         const localProjectAvatarMap = new Map<string, string | null>();
         const stableProjects: Project[] = [];
         if (catalystProjects) {
-          (catalystProjects as Array<{ id: string; key: string; name?: string | null; avatar_url?: string | null }>).forEach(p => {
+          // Pull canonical Lucide icon names from ph_projects in parallel —
+          // single source of truth for the project visual when avatar_url is
+          // null (mem://constraints/canonical-project-icons).
+          const projectKeys = (catalystProjects as Array<{ key: string }>)
+            .map(p => p.key)
+            .filter(Boolean);
+          const phIconMap = new Map<string, { icon: string | null; color: string | null }>();
+          if (projectKeys.length > 0) {
+            const { data: phRows } = await supabase
+              .from('ph_projects')
+              .select('key, icon, color')
+              .in('key', projectKeys);
+            (phRows || []).forEach((r: { key: string; icon: string | null; color: string | null }) => {
+              phIconMap.set(r.key, { icon: r.icon, color: r.color });
+            });
+          }
+          (catalystProjects as Array<{ id: string; key: string; name?: string | null; avatar_url?: string | null; color?: string | null }>).forEach(p => {
             if (p.key) {
               projectIdMap.set(p.key, p.id);
               localProjectAvatarMap.set(p.key, p.avatar_url ?? null);
             }
+            const ph = phIconMap.get(p.key);
             stableProjects.push({
               id: p.id,
               key: p.key,
               name: p.name || p.key,
               avatar_url: p.avatar_url ?? null,
+              icon: ph?.icon ?? null,
+              color: ph?.color ?? p.color ?? null,
             });
           });
           setProjectAvatarMap(localProjectAvatarMap);

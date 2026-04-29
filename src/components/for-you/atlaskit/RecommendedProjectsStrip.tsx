@@ -32,7 +32,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { token } from '@atlaskit/tokens';
-import Avatar from '@atlaskit/avatar';
+import { ProjectIcon } from '@/components/shared/ProjectIcon';
 import type { Project } from '@/hooks/useForYouData';
 import { adsTokens, cp } from '@/theme/ads/tokens';
 
@@ -164,16 +164,17 @@ function ProjectCardButton({ card, onClick }: { card: Project; onClick: () => vo
         minWidth: 0,
       }}
     >
-      {/* 32×32 square avatar with radius 4 — matches Jira's project avatar tile.
-          Atlaskit's Avatar at size="medium" is 32×32; appearance="square"
-          applies the 4px radius. When `src` is set we render the branded
-          image; when null, Atlaskit renders the hashed-initials fallback —
-          the same fallback Jira uses for projects without a custom avatar. */}
-      <Avatar
-        appearance="square"
-        size="medium"
+      {/* Canonical project icon (mem://constraints/canonical-project-icons).
+          32×32 ADS-square equivalent (radius 4). Resolution order:
+          (1) projects.avatar_url → Jira-uploaded image
+          (2) ph_projects.icon + color → Lucide tinted tile
+          (3) muted Folder fallback. NEVER hashed-initial letter tiles. */}
+      <ProjectIcon
+        size="large"
+        avatarUrl={card.avatar_url}
+        iconName={card.icon}
+        color={card.color}
         name={card.name}
-        src={card.avatar_url || undefined}
       />
       <div style={{ flex: 1, minWidth: 0 }}>
         <div
