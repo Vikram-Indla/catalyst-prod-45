@@ -416,11 +416,11 @@ export default function TestHubDocsPage() {
   };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', backgroundColor: isDark ? '#0A0A0A' : '#F8FAFC' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', backgroundColor: isDark ? 'var(--cp-bg-page, #1F1F21)' : '#F8FAFC' }}>
       {/* Header */}
       <div style={{
         padding: '24px 32px',
-        backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF',
+        backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF',
         borderBottom: isDark ? '1px solid #2E2E2E' : '1px solid #E2E8F0',
         display: 'flex',
         alignItems: 'center',
@@ -460,7 +460,7 @@ export default function TestHubDocsPage() {
       <div style={{ flex: 1, overflow: 'auto', padding: '24px 32px' }}>
         {/* Dependency Flow Visual */}
         <div style={{
-          backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF',
+          backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF',
           borderRadius: 12,
           border: isDark ? '1px solid #2E2E2E' : '1px solid #E2E8F0',
           padding: 24,
@@ -508,7 +508,7 @@ export default function TestHubDocsPage() {
               <div
                 key={section.id}
                 style={{
-                  backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF',
+                  backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF',
                   borderRadius: 12,
                   border: `1px solid ${isOpen ? section.color + '40' : isDark ? '#2E2E2E' : '#E2E8F0'}`,
                   overflow: 'hidden',
@@ -560,7 +560,7 @@ export default function TestHubDocsPage() {
                     lineHeight: 1.7,
                   }}>
                     <div style={{
-                      backgroundColor: isDark ? '#1A1A1A' : '#F8FAFC',
+                      backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : '#F8FAFC',
                       borderRadius: 8,
                       padding: 16,
                       whiteSpace: 'pre-wrap',
@@ -605,7 +605,7 @@ export default function TestHubDocsPage() {
               alignItems: 'center',
               gap: 8,
               padding: '10px 20px',
-              backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF',
+              backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF',
               color: isDark ? '#EDEDED' : '#0F172A',
               border: 'none',
               borderRadius: 8,

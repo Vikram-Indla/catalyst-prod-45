@@ -75,7 +75,7 @@ export default function IdeationMatrixView({ onOpenDetail }: Props) {
             <span style={{ fontSize: '11px', fontWeight: 600, color: '#94A3B8', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{ctrl.label}:</span>
             <div style={{
               width: '160px', fontSize: '12px', fontWeight: 600, padding: '5px 10px',
-              background: isDark ? '#1A1A1A' : '#F8FAFC', border: isDark ? '1px solid #2E2E2E' : '1px solid #E2E8F0', borderRadius: '6px',
+              background: isDark ? 'var(--cp-bg-surface, #242528)' : '#F8FAFC', border: isDark ? '1px solid #2E2E2E' : '1px solid #E2E8F0', borderRadius: '6px',
               color: isDark ? '#EDEDED' : '#334155', cursor: 'pointer',
             }}>
               {ctrl.value}
@@ -87,7 +87,7 @@ export default function IdeationMatrixView({ onOpenDetail }: Props) {
       {/* Chart — V12: border-only, NO box-shadow */}
       <div style={{ maxWidth: '900px', margin: '0 auto' }}>
         <div style={{
-          width: '100%', height: '520px', background: isDark ? '#1A1A1A' : '#FFFFFF', border: isDark ? '1px solid #2E2E2E' : '1px solid #E2E8F0',
+          width: '100%', height: '520px', background: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF', border: isDark ? '1px solid #2E2E2E' : '1px solid #E2E8F0',
           borderRadius: '6px', position: 'relative', overflow: 'hidden',
         }}>
           {/* Grid area */}

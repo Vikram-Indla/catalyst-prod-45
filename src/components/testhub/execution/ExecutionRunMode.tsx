@@ -342,7 +342,7 @@ export function ExecutionRunMode({
               failed:  { bg: '#DC2626', text: '#FFFFFF' },
               blocked: { bg: '#D97706', text: '#FFFFFF' },
               skipped: { bg: '#475569', text: '#FFFFFF' },
-              not_run: { bg: isDark ? '#1A1A1A' : '#E2E8F0', text: isDark ? '#878787' : '#64748B' },
+              not_run: { bg: isDark ? 'var(--cp-bg-surface, #242528)' : '#E2E8F0', text: isDark ? '#878787' : '#64748B' },
             };
             const colors = statusColors[derivedStatus] || statusColors.not_run;
             const label = derivedStatus !== 'not_run'
@@ -355,7 +355,7 @@ export function ExecutionRunMode({
                 title={!anyStepMarked ? 'Mark all steps before completing' : `Complete with status: ${derivedStatus}`}
                 style={{
                   height: 34, padding: '0 14px', border: isDisabled ? `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}` : 'none',
-                  borderRadius: 6, backgroundColor: isDisabled ? (isDark ? '#1A1A1A' : '#F8FAFC') : colors.bg,
+                  borderRadius: 6, backgroundColor: isDisabled ? (isDark ? 'var(--cp-bg-surface, #242528)' : '#F8FAFC') : colors.bg,
                   color: isDisabled ? (isDark ? '#878787' : '#94A3B8') : colors.text, fontSize: 12, fontWeight: 700,
                   cursor: isDisabled ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', gap: 5,
                   opacity: isDisabled ? 0.7 : 1, transition: 'all 150ms ease',

@@ -6,13 +6,13 @@
 
 /* ── Goals Page Wrapper ── */
 .dark [data-goals-page] , [data-theme="dark"] [data-goals-page] {
-  background-color: #0A0A0A !important;
+  background-color: var(--cp-bg-page, #1F1F21) !important;
   color: #EDEDED;
 }
 
 /* ── Stats Strip Cards ── */
 .dark .goals-stats-grid > div , [data-theme="dark"] .goals-stats-grid > div {
-  background: #0A0A0A !important;
+  background: var(--cp-bg-page, #1F1F21) !important;
   border-color: #2E2E2E !important;
   box-shadow: none !important;
 }
@@ -21,7 +21,7 @@
 [data-theme="dark"] .goals-tree-container,
 [data-theme="dark"] [data-goals-page] > div > div[style*="border: 1px solid"][style*="borderRadius"],
 .dark .heatmap-scroll , [data-theme="dark"] .heatmap-scroll {
-  background: #0A0A0A !important;
+  background: var(--cp-bg-page, #1F1F21) !important;
   border-color: #2E2E2E !important;
 }
 
@@ -134,7 +134,7 @@
 
 /* Filter dropdown panels (float layer) */
 [data-theme="dark"] [data-goals-page] div[style*="background: rgb(255, 255, 255)"][style*="boxShadow"][style*="position: absolute"] {
-  background: #1A1A1A !important;
+  background: var(--cp-bg-surface, #242528) !important;
   border-color: #2E2E2E !important;
   box-shadow: 0 4px 16px rgba(0,0,0,0.4) !important;
 }
@@ -209,7 +209,7 @@
 /* Draft/Not Started/Cancelled — grey lozenges */
 [data-theme="dark"] [data-goals-page] span[style*="background: rgb(241, 245, 249)"][style*="borderRadius: 99"],
 .dark [data-goals-page] span[style*="background: #F1F5F9"][style*="borderRadius: 99"] , [data-theme="dark"] [data-goals-page] span[style*="background: #F1F5F9"][style*="borderRadius: 99"] {
-  background: #1A1A1A !important;
+  background: var(--cp-bg-surface, #242528) !important;
   color: #B8BCC8 !important;
 }
 
@@ -223,7 +223,7 @@
    ══════════════════════════════════════════════════════════════════════════ */
 
 .dark .heatmap-scroll , [data-theme="dark"] .heatmap-scroll {
-  background: #0A0A0A !important;
+  background: var(--cp-bg-page, #1F1F21) !important;
   border-color: #2E2E2E !important;
 }
 
@@ -276,7 +276,7 @@
 [data-theme="dark"] [data-goals-page] div[style*="background: rgb(255, 255, 255)"][style*="width: 520px"],
 [data-theme="dark"] [data-goals-page] div[style*="background: #FFFFFF"][style*="width: 520px"],
 [data-theme="dark"] [data-goals-page] div[style*="background: rgb(255, 255, 255)"][style*="position: fixed"] {
-  background: #1A1A1A !important;
+  background: var(--cp-bg-surface, #242528) !important;
   border-color: #2E2E2E !important;
 }
 

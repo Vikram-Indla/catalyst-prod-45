@@ -27,7 +27,7 @@
   --pk-ink-secondary: #EDEDED;
   --pk-ink-tertiary: #A1A1A1;
   --pk-ink-muted: #7D7D7D;
-  --pk-surface: #0A0A0A;
+  --pk-surface: var(--cp-bg-page, #1F1F21);
   --pk-surface-column: #1F1F1F;
   --pk-surface-tertiary: #292929;
   --pk-border: #2E2E2E;
@@ -67,7 +67,7 @@
 }
 .dark .pk-dropdown,
 .dark .pk-dropdown , [data-theme="dark"] .pk-dropdown {
-  background: #1A1A1A;
+  background: var(--cp-bg-surface, #242528);
   border-color: #454545;
   box-shadow: 0 8px 24px rgba(0,0,0,0.4);
 }
@@ -77,7 +77,7 @@
 }
 .dark .pk-context-menu,
 .dark .pk-context-menu , [data-theme="dark"] .pk-context-menu {
-  background: #1A1A1A;
+  background: var(--cp-bg-surface, #242528);
   border-color: #454545;
   box-shadow: 0 8px 24px rgba(0,0,0,0.5);
 }

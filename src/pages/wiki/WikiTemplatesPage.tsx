@@ -66,7 +66,7 @@ function SimpleDateInput({ label, value, onChange, helperText, isDark }: {
           style={{
             width: '100%', padding: '7px 10px', fontSize: 12, borderRadius: 4,
             border: `0.75px solid ${isDark ? '#2E2E2E' : 'rgba(15,23,42,0.12)'}`,
-            background: isDark ? '#1A1A1A' : '#FFFFFF',
+            background: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF',
             color: isDark ? '#EDEDED' : '#0F172A', fontFamily: 'var(--cp-font-body)',
           }}
         />
@@ -171,7 +171,7 @@ export default function WikiTemplatesPage() {
     <div style={{
       fontFamily: 'var(--cp-font-body)',
       color: isDark ? '#EDEDED' : '#0F172A',
-      background: isDark ? '#0A0A0A' : '#F8FAFC',
+      background: isDark ? 'var(--cp-bg-page, #1F1F21)' : '#F8FAFC',
       minHeight: '100%', padding: '24px 40px 48px',
     }}>
       <nav style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 24 }}>
@@ -204,7 +204,7 @@ export default function WikiTemplatesPage() {
       {/* ── Content Scheduling Section ── */}
       <div style={{
         marginBottom: 20, padding: '14px 16px', borderRadius: 6,
-        background: isDark ? '#1A1A1A' : '#FFFFFF',
+        background: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF',
         border: `0.75px solid ${isDark ? '#2E2E2E' : 'rgba(15,23,42,0.08)'}`,
       }}>
         <button onClick={() => setShowScheduling(!showScheduling)} style={{
@@ -248,7 +248,7 @@ export default function WikiTemplatesPage() {
         {isLoading ? Array.from({ length: 5 }).map((_, i) => (
           <div key={i} style={{
             padding: 20, borderRadius: 8,
-            background: isDark ? '#1A1A1A' : '#FFFFFF',
+            background: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF',
             border: `0.75px solid ${borderColor}`, height: 140,
           }} />
         )) : (templates ?? []).map((t: any) => {
@@ -256,7 +256,7 @@ export default function WikiTemplatesPage() {
           return (
             <div key={t.id} style={{
               padding: 20, borderRadius: 8,
-              background: isDark ? '#1A1A1A' : '#FFFFFF',
+              background: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF',
               border: `0.75px solid ${borderColor}`,
               transition: 'border-color 120ms',
             }}
@@ -265,7 +265,7 @@ export default function WikiTemplatesPage() {
               <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12 }}>
                 <div style={{
                   width: 32, height: 32, borderRadius: 6,
-                  background: isDark ? '#1A1A1A' : '#F1F5F9',
+                  background: isDark ? 'var(--cp-bg-surface, #242528)' : '#F1F5F9',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                 }}>
                   <FileText size={16} style={{ color: isDark ? '#A1A1A1' : '#64748B' }} />
@@ -280,7 +280,7 @@ export default function WikiTemplatesPage() {
                 {sections.slice(0, 4).map((s: any, i: number) => (
                   <span key={i} style={{
                     fontSize: 9, padding: '2px 6px', borderRadius: 4,
-                    background: isDark ? '#1A1A1A' : '#F1F5F9',
+                    background: isDark ? 'var(--cp-bg-surface, #242528)' : '#F1F5F9',
                     color: isDark ? '#A1A1A1' : '#64748B',
                   }}>{s.title}</span>
                 ))}

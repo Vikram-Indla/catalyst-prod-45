@@ -184,11 +184,11 @@ export default function BoardCard({ board, projectId, onOpen, onSettings }: Boar
         <div style={{
           display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 8,
           padding: '8px 12px',
-          background: isDark ? '#1A1A1A' : 'var(--bg-1)', borderTop: isDark ? '0.75px solid #2E2E2E' : '0.75px solid rgba(15,23,42,0.08)',
+          background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--bg-1)', borderTop: isDark ? '0.75px solid #2E2E2E' : '0.75px solid rgba(15,23,42,0.08)',
         }}>
           <button onClick={e => { e.stopPropagation(); onSettings(); }} style={{
             display: 'flex', alignItems: 'center', gap: 5, height: 30, padding: '0 10px',
-            background: isDark ? '#0A0A0A' : 'var(--bg-app)', border: isDark ? '0.75px solid #2E2E2E' : '0.75px solid rgba(15,23,42,0.12)',
+            background: isDark ? 'var(--cp-bg-page, #1F1F21)' : 'var(--bg-app)', border: isDark ? '0.75px solid #2E2E2E' : '0.75px solid rgba(15,23,42,0.12)',
             borderRadius: 6, cursor: 'pointer', fontSize: 11.5, fontWeight: 500,
             color: 'var(--fg-2)', fontFamily: 'var(--cp-font-body)',
           }}>
@@ -229,13 +229,13 @@ export default function BoardCard({ board, projectId, onOpen, onSettings }: Boar
                 width: '100%', height: 50, padding: '8px 12px', boxSizing: 'border-box',
                 border: isDark ? '0.75px solid #2E2E2E' : '0.75px solid rgba(15,23,42,0.15)', borderRadius: 6,
                 fontSize: 13, fontFamily: 'var(--cp-font-body)', color: 'var(--fg-1)',
-                outline: 'none', background: isDark ? '#0A0A0A' : 'var(--bg-app)', marginBottom: 16,
+                outline: 'none', background: isDark ? 'var(--cp-bg-page, #1F1F21)' : 'var(--bg-app)', marginBottom: 16,
               }}
             />
             <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
               <button onClick={() => { setDeleteModal(false); setDeleteConfirm(''); }} style={{
                 padding: '8px 16px', fontSize: 13, fontWeight: 500, borderRadius: 6,
-                border: isDark ? '0.75px solid #2E2E2E' : '0.75px solid rgba(15,23,42,0.15)', background: isDark ? '#0A0A0A' : 'var(--bg-app)',
+                border: isDark ? '0.75px solid #2E2E2E' : '0.75px solid rgba(15,23,42,0.15)', background: isDark ? 'var(--cp-bg-page, #1F1F21)' : 'var(--bg-app)',
                 color: 'var(--fg-2)', cursor: 'pointer', fontFamily: 'var(--cp-font-body)',
               }}>Cancel</button>
               <button onClick={handleDelete}

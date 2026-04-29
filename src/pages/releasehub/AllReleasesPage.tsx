@@ -102,7 +102,7 @@ export default function AllReleasesPage() {
   };
 
   return (
-    <div style={{ background: isDark ? '#0A0A0A' : '#FFFFFF', minHeight: '100%', padding: '24px' }}>
+    <div style={{ background: isDark ? 'var(--cp-bg-page, #1F1F21)' : '#FFFFFF', minHeight: '100%', padding: '24px' }}>
       <div className="flex items-center justify-between mb-5">
         <div>
           <h1 className="text-[22px] font-extrabold" style={{ fontFamily: RH.fontDisplay, color: isDark ? '#EDEDED' : RH.ink1 }}>All Releases</h1>
@@ -111,7 +111,7 @@ export default function AllReleasesPage() {
         <div className="flex items-center gap-2">
           <button onClick={handleImport} disabled={importing}
             className="h-9 px-4 rounded-md text-[13px] font-semibold flex items-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-            style={{ border: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, background: isDark ? '#1A1A1A' : '#FFFFFF', color: isDark ? '#A1A1A1' : '#475569' }}>
+            style={{ border: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, background: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF', color: isDark ? '#A1A1A1' : '#475569' }}>
             <Download size={14} /> Import from Jira
           </button>
           <button onClick={() => setShowCreate(true)}
@@ -159,11 +159,11 @@ export default function AllReleasesPage() {
             className="h-8 px-3 rounded-md text-[12px] font-semibold flex items-center gap-1.5 border transition-colors"
             style={filter === s.key
               ? { borderColor: '#2563EB', background: isDark ? 'rgba(37,99,235,0.12)' : '#EFF6FF', color: '#2563EB' }
-              : { borderColor: isDark ? '#2E2E2E' : 'rgba(15,23,42,0.12)', background: isDark ? '#1A1A1A' : '#FFFFFF', color: isDark ? '#A1A1A1' : '#475569' }
+              : { borderColor: isDark ? '#2E2E2E' : 'rgba(15,23,42,0.12)', background: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF', color: isDark ? '#A1A1A1' : '#475569' }
             }>
             {s.label}
             <span className="inline-flex items-center justify-center min-w-[18px] h-[18px] rounded-full text-[10px] font-bold"
-              style={{ background: isDark ? '#1A1A1A' : '#F1F5F9', color: isDark ? '#A1A1A1' : '#475569' }}>{s.count}</span>
+              style={{ background: isDark ? 'var(--cp-bg-surface, #242528)' : '#F1F5F9', color: isDark ? '#A1A1A1' : '#475569' }}>{s.count}</span>
           </button>
         ))}
       </div>
@@ -174,9 +174,9 @@ export default function AllReleasesPage() {
           <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: isDark ? '#878787' : '#94A3B8' }} />
           <input type="text" placeholder="Search releases..." value={search} onChange={e => setSearch(e.target.value)}
             className="h-9 w-64 pl-9 pr-3 rounded text-[13px] focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB]"
-            style={{ border: `1px solid ${isDark ? '#2E2E2E' : 'rgba(15,23,42,0.12)'}`, background: isDark ? '#1A1A1A' : '#FFFFFF', color: isDark ? '#EDEDED' : '#0F172A' }} />
+            style={{ border: `1px solid ${isDark ? '#2E2E2E' : 'rgba(15,23,42,0.12)'}`, background: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF', color: isDark ? '#EDEDED' : '#0F172A' }} />
         </div>
-        <div className="flex items-center gap-1 rounded-md p-0.5" style={{ border: `1px solid ${isDark ? '#2E2E2E' : 'rgba(15,23,42,0.12)'}`, background: isDark ? '#1A1A1A' : '#FFFFFF' }}>
+        <div className="flex items-center gap-1 rounded-md p-0.5" style={{ border: `1px solid ${isDark ? '#2E2E2E' : 'rgba(15,23,42,0.12)'}`, background: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF' }}>
           <button onClick={() => setView('cards')} className="h-7 w-7 rounded flex items-center justify-center" style={view === 'cards' ? { background: isDark ? 'rgba(37,99,235,0.12)' : '#EFF6FF', color: '#2563EB' } : { color: isDark ? '#878787' : '#94A3B8' }}><LayoutGrid size={14} /></button>
           <button onClick={() => setView('table')} className="h-7 w-7 rounded flex items-center justify-center" style={view === 'table' ? { background: isDark ? 'rgba(37,99,235,0.12)' : '#EFF6FF', color: '#2563EB' } : { color: isDark ? '#878787' : '#94A3B8' }}><List size={14} /></button>
         </div>
@@ -200,7 +200,7 @@ export default function AllReleasesPage() {
             return (
               <button key={r.id} onClick={() => setSelectedRelease(r)}
                 className="rounded-md overflow-hidden text-left hover:-translate-y-0.5 transition-all relative group"
-                style={{ borderRadius: 6, background: isDark ? '#1A1A1A' : '#FFFFFF', border: `1px solid ${isDark ? '#2E2E2E' : 'rgba(15,23,42,0.12)'}` }}>
+                style={{ borderRadius: 6, background: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF', border: `1px solid ${isDark ? '#2E2E2E' : 'rgba(15,23,42,0.12)'}` }}>
                 <div className="absolute left-0 top-0 bottom-0 w-[3px]" style={{ background: accentColor(r.status), borderRadius: '6px 0 0 6px' }} />
                 <div className="p-4 pl-5">
                   <h3 className="text-[15px] font-bold mb-1" style={{ fontFamily: RH.fontDisplay, color: isDark ? '#EDEDED' : RH.ink1, fontWeight: 650 }}>{r.name}</h3>
@@ -232,7 +232,7 @@ export default function AllReleasesPage() {
                     <p className="text-[11px]" style={{ fontFamily: RH.fontBody, color: isDark ? '#878787' : '#94A3B8' }}>No changes yet</p>
                   ) : (
                     <>
-                      <div className="w-full h-1 rounded-full overflow-hidden" style={{ background: isDark ? '#1A1A1A' : '#F1F5F9' }}>
+                      <div className="w-full h-1 rounded-full overflow-hidden" style={{ background: isDark ? 'var(--cp-bg-surface, #242528)' : '#F1F5F9' }}>
                         <div className="h-full rounded-full transition-all" style={{
                           width: progress.pct + '%',
                           background: accentColor(r.status)
@@ -249,10 +249,10 @@ export default function AllReleasesPage() {
           })}
         </div>
       ) : (
-        <div className="rounded overflow-hidden" style={{ background: isDark ? '#1A1A1A' : '#FFFFFF', border: `1px solid ${isDark ? '#2E2E2E' : 'rgba(15,23,42,0.12)'}` }}>
+        <div className="rounded overflow-hidden" style={{ background: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF', border: `1px solid ${isDark ? '#2E2E2E' : 'rgba(15,23,42,0.12)'}` }}>
           <table className="w-full text-[13px]" style={{ fontFamily: RH.fontBody }} role="table">
             <thead>
-              <tr style={{ background: isDark ? '#1A1A1A' : '#F1F5F9' }}>
+              <tr style={{ background: isDark ? 'var(--cp-bg-surface, #242528)' : '#F1F5F9' }}>
                 {['RELEASE', 'SOURCE', 'STATUS', 'TARGET DATE', 'CHANGES', 'PROGRESS'].map(h => (
                   <th key={h} className="px-3 py-0 h-[50px] text-left text-[11px] font-semibold uppercase tracking-[0.06em]" style={{ color: isDark ? '#878787' : '#64748B' }}>{h}</th>
                 ))}
@@ -264,9 +264,9 @@ export default function AllReleasesPage() {
                 return (
                   <tr key={r.id} onClick={() => setSelectedRelease(r)}
                     className="cursor-pointer"
-                    style={{ height: 50, background: isDark ? '#1A1A1A' : '#FFFFFF', transition: 'background 120ms', borderBottom: `0.75px solid ${isDark ? '#292929' : 'rgba(15,23,42,0.06)'}` }}
-                    onMouseEnter={e => (e.currentTarget.style.background = isDark ? '#1A1A1A' : 'rgba(15,23,42,0.04)')}
-                    onMouseLeave={e => (e.currentTarget.style.background = isDark ? '#1A1A1A' : '#FFFFFF')}>
+                    style={{ height: 50, background: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF', transition: 'background 120ms', borderBottom: `0.75px solid ${isDark ? '#292929' : 'rgba(15,23,42,0.06)'}` }}
+                    onMouseEnter={e => (e.currentTarget.style.background = isDark ? 'var(--cp-bg-surface, #242528)' : 'rgba(15,23,42,0.04)')}
+                    onMouseLeave={e => (e.currentTarget.style.background = isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF')}>
                     <td className="px-3 py-0 font-medium" style={{ color: isDark ? '#EDEDED' : RH.ink1 }}>
                       <div className="flex items-center gap-2">
                         {r.name}
@@ -293,7 +293,7 @@ export default function AllReleasesPage() {
                         <span className="text-[11px]" style={{ color: isDark ? '#878787' : '#94A3B8' }}>No changes yet</span>
                       ) : (
                         <div className="flex items-center gap-2">
-                          <div className="w-16 h-1 rounded-full overflow-hidden" style={{ background: isDark ? '#1A1A1A' : '#F1F5F9' }}>
+                          <div className="w-16 h-1 rounded-full overflow-hidden" style={{ background: isDark ? 'var(--cp-bg-surface, #242528)' : '#F1F5F9' }}>
                             <div className="h-full rounded-full" style={{ width: progress.pct + '%', background: accentColor(r.status) }} />
                           </div>
                           <span className="text-[11px]" style={{ fontFamily: RH.fontMono, color: isDark ? '#878787' : '#64748B' }}>{progress.pct}%</span>

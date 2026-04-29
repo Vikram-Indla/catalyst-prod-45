@@ -84,7 +84,7 @@ export function RoadmapCard({ idea, onSelectIdea, onToggleCommitted, onMoveToQua
             {moveOpen && (
               <div style={{
                 position: 'absolute', top: 22, right: 0, zIndex: 20,
-                background: isDark ? '#1A1A1A' : 'var(--bg-app)',
+                background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--bg-app)',
                 border: `1px solid ${dk.border}`, borderRadius: 6,
                 boxShadow: isDark ? 'none' : '0 4px 12px rgba(0,0,0,.12)',
                 minWidth: 140, padding: 4,

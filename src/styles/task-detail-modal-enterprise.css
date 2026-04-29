@@ -55,8 +55,8 @@
 /* ── DARK MODE — ADS neutral dark OVERRIDES ── */
 [data-theme="dark"] .task-modal,
 .dark .task-modal-enterprise , [data-theme="dark"] .task-modal-enterprise {
-  --tm-surface-page: var(--bg-0, #0A0A0A);
-  --tm-surface-card: var(--bg-2, #1A1A1A);
+  --tm-surface-page: var(--bg-0, var(--cp-bg-page, #1F1F21));
+  --tm-surface-card: var(--bg-2, var(--cp-bg-surface, #242528));
   --tm-surface-muted: #1F1F1F;
   --tm-surface-hover: #292929;
   --tm-surface-selected: rgba(59,130,246,0.10);
@@ -1152,7 +1152,7 @@
 }
 
 /* ── DARK MODE — V3 hardcoded overrides ── */
-.dark .task-modal-v3 , [data-theme="dark"] .task-modal-v3 { background: var(--bg-2, #1A1A1A); color: var(--fg-1, #EDEDED); }
+.dark .task-modal-v3 , [data-theme="dark"] .task-modal-v3 { background: var(--bg-2, var(--cp-bg-surface, #242528)); color: var(--fg-1, #EDEDED); }
 .dark .task-modal-v3__main , [data-theme="dark"] .task-modal-v3__main { border-right-color: #2E2E2E; }
 .dark .task-modal-v3__header , [data-theme="dark"] .task-modal-v3__header { border-bottom-color: #2E2E2E; }
 .dark .task-modal-v3__breadcrumb , [data-theme="dark"] .task-modal-v3__breadcrumb { color: var(--fg-3, #878787); }
@@ -1165,21 +1165,21 @@
 .dark .task-modal-v3__icon-btn--close:hover , [data-theme="dark"] .task-modal-v3__icon-btn--close:hover { background: rgba(239,68,68,0.12); color: #FCA5A5; border-color: rgba(239,68,68,0.3); }
 .dark .task-modal-v3__title , [data-theme="dark"] .task-modal-v3__title { color: var(--fg-1, #EDEDED); }
 .dark .task-modal-v3__title:hover , [data-theme="dark"] .task-modal-v3__title:hover { background: #1F1F1F; border-color: #2E2E2E; }
-.dark .task-modal-v3__title:focus , [data-theme="dark"] .task-modal-v3__title:focus { background: var(--bg-2, #1A1A1A); border-color: #2563eb; box-shadow: 0 0 0 3px rgba(59,130,246,0.15); }
+.dark .task-modal-v3__title:focus , [data-theme="dark"] .task-modal-v3__title:focus { background: var(--bg-2, var(--cp-bg-surface, #242528)); border-color: #2563eb; box-shadow: 0 0 0 3px rgba(59,130,246,0.15); }
 .dark .task-modal-v3__tabs , [data-theme="dark"] .task-modal-v3__tabs { border-bottom-color: #2E2E2E; }
 .dark .task-modal-v3__tab , [data-theme="dark"] .task-modal-v3__tab { color: var(--fg-3, #878787); }
 .dark .task-modal-v3__tab:hover , [data-theme="dark"] .task-modal-v3__tab:hover { color: var(--fg-2, #A1A1A1); }
 .dark .task-modal-v3__tab-badge , [data-theme="dark"] .task-modal-v3__tab-badge { background: #2E2E2E; color: var(--fg-3, #878787); }
 .dark .task-modal-v3__tab--active .task-modal-v3__tab-badge , [data-theme="dark"] .task-modal-v3__tab--active .task-modal-v3__tab-badge { background: rgba(59,130,246,0.15); }
-.dark .task-modal-v3__sidebar , [data-theme="dark"] .task-modal-v3__sidebar { background: var(--bg-0, #0A0A0A); }
+.dark .task-modal-v3__sidebar , [data-theme="dark"] .task-modal-v3__sidebar { background: var(--bg-0, var(--cp-bg-page, #1F1F21)); }
 .dark .task-modal-v3__field-label , [data-theme="dark"] .task-modal-v3__field-label { color: var(--fg-3, #878787); }
 .dark .task-modal-v3__field-shortcut , [data-theme="dark"] .task-modal-v3__field-shortcut { background: #2E2E2E; color: var(--fg-3, #878787); }
-.dark .task-modal-v3__field-value , [data-theme="dark"] .task-modal-v3__field-value { background: var(--bg-2, #1A1A1A); border-color: #2E2E2E; color: var(--fg-1, #EDEDED); }
+.dark .task-modal-v3__field-value , [data-theme="dark"] .task-modal-v3__field-value { background: var(--bg-2, var(--cp-bg-surface, #242528)); border-color: #2E2E2E; color: var(--fg-1, #EDEDED); }
 .dark .task-modal-v3__field-value:hover , [data-theme="dark"] .task-modal-v3__field-value:hover { border-color: #2563eb; background: rgba(59,130,246,0.08); }
 .dark .task-modal-v3__sidebar-footer , [data-theme="dark"] .task-modal-v3__sidebar-footer { border-top-color: #2E2E2E; }
 .dark .task-modal-v3__timestamp-label , [data-theme="dark"] .task-modal-v3__timestamp-label { color: var(--fg-3, #878787); }
 .dark .task-modal-v3__timestamp-value , [data-theme="dark"] .task-modal-v3__timestamp-value { color: var(--fg-1, #EDEDED); }
-.dark .task-modal-v3__footer-btn , [data-theme="dark"] .task-modal-v3__footer-btn { background: var(--bg-2, #1A1A1A); border-color: #2E2E2E; color: var(--fg-3, #878787); }
+.dark .task-modal-v3__footer-btn , [data-theme="dark"] .task-modal-v3__footer-btn { background: var(--bg-2, var(--cp-bg-surface, #242528)); border-color: #2E2E2E; color: var(--fg-3, #878787); }
 .dark .task-modal-v3__footer-btn:hover , [data-theme="dark"] .task-modal-v3__footer-btn:hover { background: #292929; color: var(--fg-1, #EDEDED); }
 .dark .task-modal-v3__footer-btn--danger:hover , [data-theme="dark"] .task-modal-v3__footer-btn--danger:hover { background: rgba(239,68,68,0.12); color: #FCA5A5; border-color: rgba(239,68,68,0.2); }
 

@@ -14,8 +14,8 @@ export default function IncidentInsightsPage() {
   const breachedCount = incidents?.filter(i => i.resolution_breached).length || 0;
 
   // DARK MODE tokens
-  const pageBg = isDark ? '#0A0A0A' : '#FFFFFF';
-  const surfaceBg = isDark ? '#1A1A1A' : '#FFFFFF';
+  const pageBg = isDark ? 'var(--cp-bg-page, #1F1F21)' : '#FFFFFF';
+  const surfaceBg = isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF';
   const textPrimary = isDark ? '#EDEDED' : '#0F172A';
   const textSecondary = isDark ? '#A1A1A1' : '#64748B';
   const textBody = isDark ? '#A1A1A1' : '#334155';

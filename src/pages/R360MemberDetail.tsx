@@ -315,9 +315,9 @@ export default function R360MemberDetail() {
   return (
     <>
       <div id="r360-root" data-r360-page-content style={{ position: 'relative', width: '100%', minWidth: 0, overflow: 'hidden' }}>
-        <div className="r3-page" style={{ background: isDark ? '#0A0A0A' : '#FFFFFF', height: '100%', overflow: 'auto', paddingTop: '8px' }}>
+        <div className="r3-page" style={{ background: isDark ? 'var(--cp-bg-page, #1F1F21)' : '#FFFFFF', height: '100%', overflow: 'auto', paddingTop: '8px' }}>
           {/* ── Sticky Header: Profile + Week Nav ── */}
-          <div style={{ position: 'sticky', top: 0, zIndex: 10, background: isDark ? '#0A0A0A' : '#FFFFFF' }}>
+          <div style={{ position: 'sticky', top: 0, zIndex: 10, background: isDark ? 'var(--cp-bg-page, #1F1F21)' : '#FFFFFF' }}>
             {/* ── Profile Header ── */}
             <div className="r3-profile">
               <div className="r3-profile-top">
@@ -335,18 +335,18 @@ export default function R360MemberDetail() {
                 <div style={{ display: 'flex', gap: '10px' }}>
                   <div
                     onClick={() => setTicketListMode(bannerOpenCount > 0 ? 'open' : null)}
-                    style={{ padding: '12px 16px', borderRadius: '8px', minWidth: '76px', textAlign: 'center' as const, background: isDark ? '#1A1A1A' : '#EFF6FF', border: isDark ? '1px solid #2E2E2E' : 'none', cursor: bannerOpenCount > 0 ? 'pointer' : 'default', transition: 'all 80ms ease' }}
+                    style={{ padding: '12px 16px', borderRadius: '8px', minWidth: '76px', textAlign: 'center' as const, background: isDark ? 'var(--cp-bg-surface, #242528)' : '#EFF6FF', border: isDark ? '1px solid #2E2E2E' : 'none', cursor: bannerOpenCount > 0 ? 'pointer' : 'default', transition: 'all 80ms ease' }}
                     onMouseEnter={e => { if (bannerOpenCount > 0) (e.currentTarget.style.background = isDark ? '#1F1F1F' : 'rgba(37,99,235,0.12)'); }}
-                    onMouseLeave={e => { e.currentTarget.style.background = isDark ? '#1A1A1A' : '#EFF6FF'; }}
+                    onMouseLeave={e => { e.currentTarget.style.background = isDark ? 'var(--cp-bg-surface, #242528)' : '#EFF6FF'; }}
                   >
                     <div style={{ fontSize: '20px', fontWeight: 700, color: '#2563EB' }}>{bannerOpenCount}</div>
                     <div style={{ fontSize: '11px', fontWeight: 600, color: '#2563EB', textTransform: 'uppercase' as const, letterSpacing: '.03em' }}>OPEN</div>
                   </div>
                   <div
                     onClick={() => setTicketListMode(bannerStaleCount > 0 ? 'stale' : null)}
-                    style={{ padding: '12px 16px', borderRadius: '8px', minWidth: '76px', textAlign: 'center' as const, background: isDark ? '#1A1A1A' : '#FEF2F2', border: isDark ? '1px solid #2E2E2E' : 'none', cursor: bannerStaleCount > 0 ? 'pointer' : 'default', transition: 'all 80ms ease' }}
+                    style={{ padding: '12px 16px', borderRadius: '8px', minWidth: '76px', textAlign: 'center' as const, background: isDark ? 'var(--cp-bg-surface, #242528)' : '#FEF2F2', border: isDark ? '1px solid #2E2E2E' : 'none', cursor: bannerStaleCount > 0 ? 'pointer' : 'default', transition: 'all 80ms ease' }}
                     onMouseEnter={e => { if (bannerStaleCount > 0) (e.currentTarget.style.background = isDark ? '#1F1F1F' : 'rgba(220,38,38,0.12)'); }}
-                    onMouseLeave={e => { e.currentTarget.style.background = isDark ? '#1A1A1A' : '#FEF2F2'; }}
+                    onMouseLeave={e => { e.currentTarget.style.background = isDark ? 'var(--cp-bg-surface, #242528)' : '#FEF2F2'; }}
                   >
                     <div style={{ fontSize: '20px', fontWeight: 700, color: '#DC2626' }}>{bannerStaleCount}</div>
                     <div style={{ fontSize: '11px', fontWeight: 600, color: '#DC2626', textTransform: 'uppercase' as const, letterSpacing: '.03em' }}>STALE</div>
@@ -379,7 +379,7 @@ export default function R360MemberDetail() {
                   <ChevronLeft size={14} /> Back
                 </button>
                 {/* Quarter label — computed from current date */}
-                <button style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', background: isDark ? '#1A1A1A' : 'rgba(15,23,42,0.05)', border: isDark ? '1px solid #2E2E2E' : 'none', borderRadius: '6px', color: isDark ? '#EDEDED' : '#0F172A', fontSize: '13px', fontWeight: 500, cursor: 'pointer', padding: '5px 12px' }}>
+                <button style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', background: isDark ? 'var(--cp-bg-surface, #242528)' : 'rgba(15,23,42,0.05)', border: isDark ? '1px solid #2E2E2E' : 'none', borderRadius: '6px', color: isDark ? '#EDEDED' : '#0F172A', fontSize: '13px', fontWeight: 500, cursor: 'pointer', padding: '5px 12px' }}>
                   <Calendar size={13} /> {`Q${Math.ceil((new Date().getMonth() + 1) / 3)}-${new Date().getFullYear()}`}
                 </button>
                 {/* Intelligence — brand blue standard */}
@@ -417,7 +417,7 @@ export default function R360MemberDetail() {
             <div>
               <div className="r3-empty">No work items assigned in this period.</div>
               {workItems.length > 0 && lastActivityDate && (
-                <div style={{ margin: '16px auto', maxWidth: 560, padding: '16px 24px', borderRadius: '8px', border: '1px solid rgba(15,23,42,0.12)', background: isDark ? '#1A1A1A' : '#FFFFFF', textAlign: 'center' }}>
+                <div style={{ margin: '16px auto', maxWidth: 560, padding: '16px 24px', borderRadius: '8px', border: '1px solid rgba(15,23,42,0.12)', background: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF', textAlign: 'center' }}>
                   <div style={{ fontSize: '13px', color: isDark ? '#A1A1A1' : '#334155', marginBottom: '10px' }}>
                     <strong style={{ color: isDark ? '#EDEDED' : '#0F172A' }}>{allOpenItems.length} open item{allOpenItems.length !== 1 ? 's' : ''}</strong> across all time
                     {allStaleItems.length > 0 && <span> · {allStaleItems.length} stale</span>}
@@ -487,7 +487,7 @@ export default function R360MemberDetail() {
               right: 0,
               width: 700,
               height: 'calc(100vh - 48px)',
-              backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF',
+              backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF',
               zIndex: 301,
               overflowY: 'auto',
               boxShadow: '-4px 0 24px rgba(0, 0, 0, 0.10)',

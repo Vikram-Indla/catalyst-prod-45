@@ -87,8 +87,8 @@ export default function IncidentListPage() {
 
   // ── DARK MODE color helpers (page chrome only — table palette is
   // owned by JiraTable's own focus-css block) ────────────────────────────
-  const pageBg = isDark ? '#0A0A0A' : '#FFFFFF';
-  const surfaceBg = isDark ? '#1A1A1A' : '#FFFFFF';
+  const pageBg = isDark ? 'var(--cp-bg-page, #1F1F21)' : '#FFFFFF';
+  const surfaceBg = isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF';
   const borderColor = isDark ? '#2E2E2E' : 'rgba(15,23,42,0.12)';
   const textPrimary = isDark ? '#EDEDED' : '#0F172A';
   const textSecondary = isDark ? '#A1A1A1' : '#64748B';

@@ -98,7 +98,7 @@ export function NewIncidentModal({ open, onClose }: NewIncidentModalProps) {
                     style={{
                       borderRadius: 4,
                       border: `1.5px solid ${selected ? (isDark ? s.darkText : s.text) : (isDark ? s.darkBorder : s.border)}`,
-                      backgroundColor: selected ? (isDark ? s.darkBg : s.bg) : (isDark ? '#1A1A1A' : '#FFFFFF'),
+                      backgroundColor: selected ? (isDark ? s.darkBg : s.bg) : (isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF'),
                       fontFamily: 'var(--cp-font-mono)',
                       fontSize: 12,
                       fontWeight: 700,

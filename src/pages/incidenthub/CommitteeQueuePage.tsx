@@ -18,11 +18,11 @@ export default function CommitteeQueuePage() {
   const { data: queue, isLoading } = useCommitteeQueueView();
 
   if (isLoading) {
-    return <div className="flex-1 p-6" style={{ backgroundColor: isDark ? '#0A0A0A' : '#FFFFFF' }}><Skeleton className="h-8 w-48 mb-6" /><Skeleton className="h-64 w-full" /></div>;
+    return <div className="flex-1 p-6" style={{ backgroundColor: isDark ? 'var(--cp-bg-page, #1F1F21)' : '#FFFFFF' }}><Skeleton className="h-8 w-48 mb-6" /><Skeleton className="h-64 w-full" /></div>;
   }
 
   return (
-    <div className="flex-1 overflow-auto" style={{ backgroundColor: isDark ? '#0A0A0A' : '#FFFFFF' }}>
+    <div className="flex-1 overflow-auto" style={{ backgroundColor: isDark ? 'var(--cp-bg-page, #1F1F21)' : '#FFFFFF' }}>
       <div className="px-6 pt-6 pb-4">
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
@@ -42,7 +42,7 @@ export default function CommitteeQueuePage() {
           {/* Header */}
           <div className="grid items-center" style={{
             gridTemplateColumns: '120px 1fr 70px 100px 80px 160px 80px 100px',
-            backgroundColor: isDark ? '#1A1A1A' : '#F1F5F9',
+            backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : '#F1F5F9',
             height: 50,
             borderBottom: isDark ? '0.75px solid #292929' : '0.75px solid rgba(15,23,42,0.06)',
           }}>
@@ -76,10 +76,10 @@ export default function CommitteeQueuePage() {
                   gridTemplateColumns: '120px 1fr 70px 100px 80px 160px 80px 100px',
                   height: 50,
                   borderBottom: isDark ? '0.75px solid #292929' : '0.75px solid rgba(15,23,42,0.06)',
-                  backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF',
+                  backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF',
                 }}
-                onMouseEnter={e => (e.currentTarget.style.backgroundColor = isDark ? '#1A1A1A' : 'rgba(15,23,42,0.04)')}
-                onMouseLeave={e => (e.currentTarget.style.backgroundColor = isDark ? '#1A1A1A' : '#FFFFFF')}
+                onMouseEnter={e => (e.currentTarget.style.backgroundColor = isDark ? 'var(--cp-bg-surface, #242528)' : 'rgba(15,23,42,0.04)')}
+                onMouseLeave={e => (e.currentTarget.style.backgroundColor = isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF')}
                 onClick={() => navigate(`/incident-hub/view/${item.incident_id}`)}
               >
                 <div className="px-3">

@@ -78,14 +78,14 @@ export default function IncidentReportsPage() {
                 <div style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 22, fontWeight: 700, color: 'var(--fg-1, #0F172A)' }}>{avgAge}</div>
               </div>
             </div>
-            <div className="p-8 flex items-center justify-center" style={{ border: `1px solid ${isDark ? '#2E2E2E' : 'rgba(15,23,42,0.12)'}`, borderRadius: 6, backgroundColor: isDark ? '#1A1A1A' : '#F1F5F9' }}>
+            <div className="p-8 flex items-center justify-center" style={{ border: `1px solid ${isDark ? '#2E2E2E' : 'rgba(15,23,42,0.12)'}`, borderRadius: 6, backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : '#F1F5F9' }}>
               <p style={{ fontFamily: 'var(--cp-font-body)', fontSize: 12, color: '#64748B' }}>[Chart] SLA Breach trend over time</p>
             </div>
           </div>
         )}
 
         {activeTab === 1 && (
-          <div className="p-8 flex items-center justify-center" style={{ border: `1px solid ${isDark ? '#2E2E2E' : 'rgba(15,23,42,0.12)'}`, borderRadius: 6, backgroundColor: isDark ? '#1A1A1A' : '#F1F5F9' }}>
+          <div className="p-8 flex items-center justify-center" style={{ border: `1px solid ${isDark ? '#2E2E2E' : 'rgba(15,23,42,0.12)'}`, borderRadius: 6, backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : '#F1F5F9' }}>
             <p style={{ fontFamily: 'var(--cp-font-body)', fontSize: 12, color: '#64748B' }}>[Chart] Incident aging distribution by severity</p>
           </div>
         )}
@@ -110,7 +110,7 @@ export default function IncidentReportsPage() {
         )}
 
         {activeTab === 3 && (
-          <div className="p-8 flex items-center justify-center" style={{ border: `1px solid ${isDark ? '#2E2E2E' : 'rgba(15,23,42,0.12)'}`, borderRadius: 6, backgroundColor: isDark ? '#1A1A1A' : '#F1F5F9' }}>
+          <div className="p-8 flex items-center justify-center" style={{ border: `1px solid ${isDark ? '#2E2E2E' : 'rgba(15,23,42,0.12)'}`, borderRadius: 6, backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : '#F1F5F9' }}>
             <p style={{ fontFamily: 'var(--cp-font-body)', fontSize: 12, color: '#64748B' }}>[Chart] Severity vs Priority heatmap</p>
           </div>
         )}

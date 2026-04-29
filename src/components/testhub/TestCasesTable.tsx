@@ -116,7 +116,7 @@ export function TestCasesTable({
 
   return (
     <div className="th-table-wrapper" style={{
-      backgroundColor: isDark ? '#1A1A1A' : 'var(--cp-float)',
+      backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--cp-float)',
       border: isDark ? '1px solid #2E2E2E' : '1px solid var(--divider)',
       borderRadius: 8,
       overflow: 'hidden',
@@ -215,7 +215,7 @@ export function TestCasesTable({
                 onMouseLeave={() => setHoveredRowId(null)}
                 style={{
                   height: 50,
-                  backgroundColor: isSelected ? 'rgba(37, 99, 235, 0.06)' : isHovered ? (isDark ? '#1F1F1F' : 'var(--cp-bd-zone)') : (isDark ? '#1A1A1A' : 'var(--cp-float)'),
+                  backgroundColor: isSelected ? 'rgba(37, 99, 235, 0.06)' : isHovered ? (isDark ? '#1F1F1F' : 'var(--cp-bd-zone)') : (isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--cp-float)'),
                   cursor: 'pointer',
                   transition: 'background-color 0.1s',
                 }}

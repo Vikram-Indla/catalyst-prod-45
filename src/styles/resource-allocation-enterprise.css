@@ -445,7 +445,7 @@
    ───────────────────────────────────────────────────────────── */
 .dark .ra-enterprise-clean , [data-theme="dark"] .ra-enterprise-clean {
   /* NEUTRAL FOUNDATION — dark */
-  --ra-white: #1A1A1A;
+  --ra-white: var(--cp-bg-surface, #242528);
   --ra-slate-50: #1F1F1F;
   --ra-slate-100: #292929;
   --ra-slate-200: #2E2E2E;
@@ -457,7 +457,7 @@
   --ra-slate-800: #EDEDED;
 
   /* CELL */
-  --ra-cell-bg: #1A1A1A;
+  --ra-cell-bg: var(--cp-bg-surface, #242528);
   --ra-cell-border: #2E2E2E;
 
   /* BAR TRACK */

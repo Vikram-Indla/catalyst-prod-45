@@ -147,7 +147,7 @@ export default function EnvironmentDetailPage() {
 
   if (isLoading) {
     return (
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh', backgroundColor: isDark ? '#0A0A0A' : '#F8FAFC' }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh', backgroundColor: isDark ? 'var(--cp-bg-page, #1F1F21)' : '#F8FAFC' }}>
         <RefreshCw size={32} style={{ animation: 'spin 1s linear infinite', color: '#6366F1' }} />
       </div>
     );
@@ -163,9 +163,9 @@ export default function EnvironmentDetailPage() {
   const HealthIcon = health.icon;
 
   return (
-    <div style={{ padding: 24, backgroundColor: isDark ? '#0A0A0A' : '#F8FAFC', minHeight: '100vh' }}>
+    <div style={{ padding: 24, backgroundColor: isDark ? 'var(--cp-bg-page, #1F1F21)' : '#F8FAFC', minHeight: '100vh' }}>
       <button onClick={() => navigate('/testhub/environments')}
-        style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '8px 12px', border: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, borderRadius: 8, backgroundColor: isDark ? '#1A1A1A' : '#FFF', color: isDark ? '#A1A1A1' : '#64748B', fontSize: 13, cursor: 'pointer', marginBottom: 16 }}>
+        style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '8px 12px', border: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, borderRadius: 8, backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFF', color: isDark ? '#A1A1A1' : '#64748B', fontSize: 13, cursor: 'pointer', marginBottom: 16 }}>
         <ArrowLeft size={16} /> Back to Environments
       </button>
 
@@ -186,7 +186,7 @@ export default function EnvironmentDetailPage() {
         </div>
         <div style={{ display: 'flex', gap: 8 }}>
           <select value={environment.status} onChange={(e) => updateStatus(e.target.value)}
-            style={{ height: 40, padding: '0 14px', border: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, borderRadius: 8, fontSize: 13, backgroundColor: isDark ? '#1A1A1A' : '#FFF', color: isDark ? '#EDEDED' : undefined, cursor: 'pointer' }}>
+            style={{ height: 40, padding: '0 14px', border: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, borderRadius: 8, fontSize: 13, backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFF', color: isDark ? '#EDEDED' : undefined, cursor: 'pointer' }}>
             {Object.entries(STATUS_CONFIG).map(([key, val]) => <option key={key} value={key}>{val.label}</option>)}
           </select>
           <button onClick={deleteEnvironment}
@@ -208,7 +208,7 @@ export default function EnvironmentDetailPage() {
           </div>
         </div>
         <select value={environment.health_status} onChange={(e) => updateHealthStatus(e.target.value)}
-          style={{ height: 50, padding: '8px 12px', border: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, borderRadius: 6, fontSize: 13, backgroundColor: isDark ? '#1A1A1A' : '#FFF', color: isDark ? '#EDEDED' : undefined, cursor: 'pointer' }}>
+          style={{ height: 50, padding: '8px 12px', border: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, borderRadius: 6, fontSize: 13, backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFF', color: isDark ? '#EDEDED' : undefined, cursor: 'pointer' }}>
           <option value="healthy">Healthy</option>
           <option value="degraded">Degraded</option>
           <option value="down">Down</option>
@@ -219,7 +219,7 @@ export default function EnvironmentDetailPage() {
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24 }}>
         {/* Left Column */}
         <div>
-          <div style={{ backgroundColor: isDark ? '#1A1A1A' : '#FFF', borderRadius: 12, padding: 24, border: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, marginBottom: 24 }}>
+          <div style={{ backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFF', borderRadius: 12, padding: 24, border: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, marginBottom: 24 }}>
             <h3 style={{ fontSize: 16, fontWeight: 600, color: isDark ? '#EDEDED' : '#0F172A', margin: '0 0 16px', display: 'flex', alignItems: 'center', gap: 8 }}>
               <Settings size={18} style={{ color: '#6366F1' }} /> Connection Info
             </h3>
@@ -252,7 +252,7 @@ export default function EnvironmentDetailPage() {
           </div>
 
           {environment.description && (
-            <div style={{ backgroundColor: isDark ? '#1A1A1A' : '#FFF', borderRadius: 12, padding: 24, border: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}` }}>
+            <div style={{ backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFF', borderRadius: 12, padding: 24, border: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}` }}>
               <h3 style={{ fontSize: 16, fontWeight: 600, color: isDark ? '#EDEDED' : '#0F172A', margin: '0 0 12px', display: 'flex', alignItems: 'center', gap: 8 }}>
                 <FileText size={18} style={{ color: '#6366F1' }} /> Description
               </h3>
@@ -264,7 +264,7 @@ export default function EnvironmentDetailPage() {
         {/* Right Column */}
         <div>
           {/* Variables */}
-          <div style={{ backgroundColor: isDark ? '#1A1A1A' : '#FFF', borderRadius: 12, padding: 24, border: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, marginBottom: 24 }}>
+          <div style={{ backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFF', borderRadius: 12, padding: 24, border: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, marginBottom: 24 }}>
             <h3 style={{ fontSize: 16, fontWeight: 600, color: isDark ? '#EDEDED' : '#0F172A', margin: '0 0 16px', display: 'flex', alignItems: 'center', gap: 8 }}>
               <Key size={18} style={{ color: '#6366F1' }} /> Variables ({variables.length})
             </h3>
@@ -273,7 +273,7 @@ export default function EnvironmentDetailPage() {
             ) : (
               <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                 {variables.map((v) => (
-                  <div key={v.id} style={{ padding: 12, backgroundColor: isDark ? '#1A1A1A' : '#F8FAFC', borderRadius: 8, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <div key={v.id} style={{ padding: 12, backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : '#F8FAFC', borderRadius: 8, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <div>
                       <p style={{ fontSize: 13, fontWeight: 600, color: isDark ? '#EDEDED' : '#0F172A', margin: 0 }}>{v.key}</p>
                       <p style={{ fontSize: 12, color: isDark ? '#A1A1A1' : '#64748B', margin: '2px 0 0', fontFamily: 'monospace' }}>
@@ -299,7 +299,7 @@ export default function EnvironmentDetailPage() {
           </div>
 
           {/* Linked Cycles */}
-          <div style={{ backgroundColor: isDark ? '#1A1A1A' : '#FFF', borderRadius: 12, padding: 24, border: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}` }}>
+          <div style={{ backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFF', borderRadius: 12, padding: 24, border: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}` }}>
             <h3 style={{ fontSize: 16, fontWeight: 600, color: isDark ? '#EDEDED' : '#0F172A', margin: '0 0 16px', display: 'flex', alignItems: 'center', gap: 8 }}>
               <Activity size={18} style={{ color: '#6366F1' }} /> Test Cycles ({linkedCycles.length})
             </h3>
@@ -309,7 +309,7 @@ export default function EnvironmentDetailPage() {
               <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                 {linkedCycles.map((cycle) => (
                   <div key={cycle.cycle_id} onClick={() => navigate(`/testhub/cycles/${cycle.cycle_id}`)}
-                    style={{ padding: 12, backgroundColor: isDark ? '#1A1A1A' : '#F8FAFC', borderRadius: 8, cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    style={{ padding: 12, backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : '#F8FAFC', borderRadius: 8, cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <div>
                       <span style={{ fontSize: 11, fontWeight: 600, color: '#2563EB', backgroundColor: '#EFF6FF', padding: '2px 6px', borderRadius: 4, marginRight: 8 }}>{cycle.cycle_key}</span>
                       <span style={{ fontSize: 13, color: isDark ? '#EDEDED' : '#0F172A' }}>{cycle.name}</span>

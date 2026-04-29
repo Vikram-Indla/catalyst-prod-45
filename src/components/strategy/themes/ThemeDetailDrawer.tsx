@@ -51,7 +51,7 @@ export function ThemeDetailDrawer({ theme, open, onClose, onEdit, onDelete, isDa
   const pri = theme.priority ? PRIORITY_CONFIG[theme.priority] : null;
 
   // Dark palette shortcuts
-  const bg = isDark ? '#1A1A1A' : 'var(--bg-app)';
+  const bg = isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--bg-app)';
   const t1 = isDark ? DK.t1 : 'var(--fg-1)';
   const t2 = isDark ? DK.t2 : 'var(--fg-3)';
   const t3 = isDark ? DK.t3 : 'var(--fg-4)';
@@ -503,7 +503,7 @@ function ActivityTab({ theme, isDark = false }: { theme: StrategicTheme; isDark?
           <div className="absolute left-[11px] top-2 bottom-2" style={{ width: 2, background: isDark ? '#2E2E2E' : 'var(--divider)' }} />
           {activities.map((a, i) => (
             <div key={i} className="relative flex items-start gap-3 mb-4">
-              <div className="absolute left-[-17px] top-1.5 rounded-full" style={{ width: 10, height: 10, background: a.color, border: `2px solid ${isDark ? '#1A1A1A' : 'var(--bg-app)'}` }} />
+              <div className="absolute left-[-17px] top-1.5 rounded-full" style={{ width: 10, height: 10, background: a.color, border: `2px solid ${isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--bg-app)'}` }} />
               <div>
                 <p style={{ fontSize: 12.5, fontWeight: 500, color: d.t1 }}>{a.title}</p>
                 <p style={{ fontSize: 11, color: d.t2, marginBottom: 2 }}>{a.detail}</p>

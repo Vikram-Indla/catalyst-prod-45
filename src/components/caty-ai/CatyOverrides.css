@@ -1432,7 +1432,7 @@ button.caty-fab {
 .dark .caty-panel,
 .dark [class*="caty-panel"],
 .dark .caty-widget > div {
-  background: var(--ds-surface, #1a1a1a) !important;
+  background: var(--ds-surface, var(--cp-bg-surface, #242528)) !important;
   border: 1px solid var(--ds-border, #2c2c2c) !important;
 }
 
@@ -1442,8 +1442,8 @@ button.caty-fab {
 .dark .caty-panel header.caty-header-fixed,
 .dark header.caty-header-fixed,
 .dark .caty-header-fixed {
-  background: var(--ds-surface, #1a1a1a) !important;
-  background-color: var(--ds-surface, #1a1a1a) !important;
+  background: var(--ds-surface, var(--cp-bg-surface, #242528)) !important;
+  background-color: var(--ds-surface, var(--cp-bg-surface, #242528)) !important;
   border-bottom: 1px solid var(--ds-border, #2c2c2c) !important;
 }
 
@@ -1552,7 +1552,7 @@ button.caty-fab {
 .dark .caty-department-pills .caty-department-pill,
 .dark button.caty-department-pill,
 .dark .caty-department-pill {
-  background: var(--ds-surface, #1a1a1a) !important;
+  background: var(--ds-surface, var(--cp-bg-surface, #242528)) !important;
   border: 2px solid var(--ds-border, #2c2c2c) !important;
   color: var(--ds-text-subtlest, #b3b3b3) !important;
 }
@@ -1566,11 +1566,11 @@ button.caty-fab {
 .dark .caty-department-pill.active {
   background: var(--ds-text-subtlest, #b3b3b3) !important;
   border-color: var(--ds-text-subtlest, #b3b3b3) !important;
-  color: var(--ds-surface, #1a1a1a) !important;
+  color: var(--ds-surface, var(--cp-bg-surface, #242528)) !important;
 }
 
 .dark .caty-messages {
-  background: var(--ds-surface, #1a1a1a) !important;
+  background: var(--ds-surface, var(--cp-bg-surface, #242528)) !important;
 }
 
 .dark .caty-bubble {
@@ -1580,7 +1580,7 @@ button.caty-fab {
 
 .dark .caty-message.user .caty-bubble {
   background: #2563eb !important;
-  color: var(--ds-surface, #1a1a1a) !important;
+  color: var(--ds-surface, var(--cp-bg-surface, #242528)) !important;
 }
 
 .dark .caty-avatar.assistant {
@@ -1631,7 +1631,7 @@ button.caty-fab {
 }
 
 .dark .caty-data-card {
-  background: var(--ds-surface, #1a1a1a) !important;
+  background: var(--ds-surface, var(--cp-bg-surface, #242528)) !important;
   border: 1px solid var(--ds-border, #2c2c2c) !important;
 }
 
@@ -1697,7 +1697,7 @@ button.caty-fab {
 }
 
 .dark .caty-data-avatar-box {
-  background: var(--ds-surface, #1a1a1a) !important;
+  background: var(--ds-surface, var(--cp-bg-surface, #242528)) !important;
   border: 2px solid var(--ds-border, #2c2c2c) !important;
   color: #2563eb !important;
 }
@@ -1740,7 +1740,7 @@ button.caty-fab {
 }
 
 .dark .caty-profile-card {
-  background: var(--ds-surface, #1a1a1a) !important;
+  background: var(--ds-surface, var(--cp-bg-surface, #242528)) !important;
   border: 1px solid var(--ds-border, #2c2c2c) !important;
 }
 
@@ -1750,7 +1750,7 @@ button.caty-fab {
 }
 
 .dark .caty-profile-avatar {
-  background: var(--ds-surface, #1a1a1a) !important;
+  background: var(--ds-surface, var(--cp-bg-surface, #242528)) !important;
 }
 
 .dark .caty-profile-name {
@@ -1803,7 +1803,7 @@ button.caty-fab {
 
 .dark .caty-action-btn.primary {
   background: #2563eb !important;
-  color: var(--ds-surface, #1a1a1a) !important;
+  color: var(--ds-surface, var(--cp-bg-surface, #242528)) !important;
 }
 
 .dark .caty-action-btn.secondary {
@@ -1817,7 +1817,7 @@ button.caty-fab {
 }
 
 .dark .caty-suggestions {
-  background: var(--ds-surface, #1a1a1a) !important;
+  background: var(--ds-surface, var(--cp-bg-surface, #242528)) !important;
   border-top: 1px solid var(--ds-border, #2c2c2c) !important;
 }
 
@@ -1837,7 +1837,7 @@ button.caty-fab {
 }
 
 .dark .caty-input-area {
-  background: var(--ds-surface, #1a1a1a) !important;
+  background: var(--ds-surface, var(--cp-bg-surface, #242528)) !important;
   border-top: 1px solid var(--ds-border, #2c2c2c) !important;
 }
 
@@ -1859,7 +1859,7 @@ button.caty-fab {
 
 .dark .caty-send-btn {
   background: #2563eb !important;
-  color: var(--ds-surface, #1a1a1a) !important;
+  color: var(--ds-surface, var(--cp-bg-surface, #242528)) !important;
 }
 
 .dark .caty-send-btn:disabled {
@@ -1951,7 +1951,7 @@ button.caty-fab {
 }
 
 .dark .caty-viewport__tag--date {
-  background: var(--ds-surface, #1a1a1a) !important;
+  background: var(--ds-surface, var(--cp-bg-surface, #242528)) !important;
   color: #dc2626 !important;
 }
 

@@ -20,7 +20,7 @@ export function WikiQuickRefDrawer({ open, onClose, qr }: Props) {
       {/* Drawer */}
       <div style={{
         position: 'fixed', top: 0, right: 0, bottom: 0, width: 420, maxWidth: '90vw',
-        background: isDark ? '#1A1A1A' : 'var(--cp-float)', zIndex: 61, boxShadow: isDark ? '-4px 0 24px rgba(0,0,0,0.3)' : '-4px 0 24px rgba(0,0,0,0.08)',
+        background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--cp-float)', zIndex: 61, boxShadow: isDark ? '-4px 0 24px rgba(0,0,0,0.3)' : '-4px 0 24px rgba(0,0,0,0.08)',
         display: 'flex', flexDirection: 'column', animation: 'slideInRight 200ms ease-out',
       }}>
         {/* Header */}

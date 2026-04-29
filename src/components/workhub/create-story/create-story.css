@@ -471,7 +471,7 @@
 }
 
 /* ── Dark mode ── */
-.dark .csModal { background: #1A1A1A; }
+.dark .csModal { background: var(--cp-bg-surface, #242528); }
 .dark .csModalTitle { color: #EDEDED; }
 .dark .csRequiredNote { color: #878787; }
 .dark .csHeaderBtn { color: #A1A1A1; }
@@ -481,7 +481,7 @@
 .dark .csInput { color: #EDEDED; border-color: #454545; }
 .dark .csInput:focus { border-color: #0C66E4; }
 .dark .csSelect { background: #292929; border-color: #454545; color: #EDEDED; }
-.dark .csDropdown { background: #1A1A1A; border-color: #2E2E2E; }
+.dark .csDropdown { background: var(--cp-bg-surface, #242528); border-color: #2E2E2E; }
 .dark .csDropdownItem { color: #EDEDED; }
 .dark .csDropdownItem:hover { background: #292929; }
 .dark .csDropdownItem.selected { background: rgba(12,102,228,0.15); }

@@ -21,7 +21,7 @@ function timeAgo(d: string) {
 /* ── Skeleton ── */
 const Sk = ({ w, h, style, isDark }: { w: string | number; h: number; style?: React.CSSProperties; isDark?: boolean }) => (
   <div style={{
-    width: w, height: h, borderRadius: 4, background: isDark ? '#1A1A1A' : '#E2E8F0',
+    width: w, height: h, borderRadius: 4, background: isDark ? 'var(--cp-bg-surface, #242528)' : '#E2E8F0',
     animation: 'pulse 1.5s ease-in-out infinite', ...style,
   }} />
 );
@@ -99,7 +99,7 @@ export default function WikiSearchPage() {
   const borderColor = isDark ? '#2E2E2E' : 'rgba(15,23,42,0.12)';
 
   return (
-    <div style={{ fontFamily: 'var(--cp-font-body)', color: isDark ? '#EDEDED' : '#0F172A', background: isDark ? '#0A0A0A' : '#F8FAFC', minHeight: '100%' }}>
+    <div style={{ fontFamily: 'var(--cp-font-body)', color: isDark ? '#EDEDED' : '#0F172A', background: isDark ? 'var(--cp-bg-page, #1F1F21)' : '#F8FAFC', minHeight: '100%' }}>
       <div style={{ maxWidth: 840, marginInline: 'auto', padding: '24px 28px 48px' }}>
         {/* Breadcrumb */}
         <nav style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 20 }}>
@@ -112,7 +112,7 @@ export default function WikiSearchPage() {
         <div style={{
           display: 'flex', alignItems: 'center', gap: 10, padding: '12px 16px',
           borderRadius: 12, border: `1.5px solid ${borderColor}`,
-          background: isDark ? '#1A1A1A' : '#FFFFFF', marginBottom: 16,
+          background: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF', marginBottom: 16,
           transition: 'border-color 150ms, box-shadow 150ms',
         }}
           onFocus={e => { e.currentTarget.style.borderColor = '#2563EB'; e.currentTarget.style.boxShadow = '0 0 0 3px rgba(37,99,235,0.1)'; }}
@@ -150,7 +150,7 @@ export default function WikiSearchPage() {
             <button onClick={() => { setMode('keyword'); setPage(0); }} style={{
               fontSize: 11, fontWeight: 650, padding: '6px 14px', cursor: 'pointer',
               border: 'none', display: 'flex', alignItems: 'center', gap: 4,
-              background: mode === 'keyword' ? '#2563EB' : (isDark ? '#1A1A1A' : '#FFFFFF'),
+              background: mode === 'keyword' ? '#2563EB' : (isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF'),
               color: mode === 'keyword' ? '#FFFFFF' : (isDark ? '#A1A1A1' : '#64748B'),
               transition: 'all 120ms',
             }}><Zap size={11} /> Keyword</button>
@@ -158,7 +158,7 @@ export default function WikiSearchPage() {
               fontSize: 11, fontWeight: 650, padding: '6px 14px', cursor: 'pointer',
               border: 'none', borderLeft: `1px solid ${borderColor}`,
               display: 'flex', alignItems: 'center', gap: 4,
-              background: mode === 'ai' ? '#7C3AED' : (isDark ? '#1A1A1A' : '#FFFFFF'),
+              background: mode === 'ai' ? '#7C3AED' : (isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF'),
               color: mode === 'ai' ? '#FFFFFF' : (isDark ? '#A1A1A1' : '#64748B'),
               transition: 'all 120ms',
             }}><Sparkles size={11} /> AI Search</button>
@@ -198,7 +198,7 @@ export default function WikiSearchPage() {
         {isLoading && debouncedQuery.length >= 2 && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 16, padding: '8px 0' }}>
             {mode === 'ai' && (
-              <div style={{ borderLeft: '3px solid #7C3AED', padding: '16px 20px', background: isDark ? '#1A1A1A' : '#FAFAFE', borderRadius: '0 6px 6px 0', marginBottom: 8 }}>
+              <div style={{ borderLeft: '3px solid #7C3AED', padding: '16px 20px', background: isDark ? 'var(--cp-bg-surface, #242528)' : '#FAFAFE', borderRadius: '0 6px 6px 0', marginBottom: 8 }}>
                 <Sk w={120} h={14} style={{ marginBottom: 12 }} isDark={isDark} />
                 <Sk w="100%" h={14} style={{ marginBottom: 6 }} isDark={isDark} />
                 <Sk w="90%" h={14} style={{ marginBottom: 6 }} isDark={isDark} />
@@ -222,7 +222,7 @@ export default function WikiSearchPage() {
             {aiAnswer && (
               <div style={{
                 borderLeft: '3px solid #7C3AED', padding: '16px 20px', marginBottom: 24,
-                background: isDark ? '#1A1A1A' : '#FAFAFE', borderRadius: '0 6px 6px 0',
+                background: isDark ? 'var(--cp-bg-surface, #242528)' : '#FAFAFE', borderRadius: '0 6px 6px 0',
               }}>
                 <span style={{
                   fontSize: 10, fontWeight: 700, padding: '2px 8px', borderRadius: 4,
@@ -360,7 +360,7 @@ export default function WikiSearchPage() {
                           {(r.tags as string[]).slice(0, 4).map(t => (
                             <span key={t} style={{
                               fontSize: 9, padding: '1px 6px', borderRadius: 4,
-                              background: isDark ? '#1A1A1A' : '#F1F5F9', color: isDark ? '#A1A1A1' : '#64748B', fontWeight: 500,
+                              background: isDark ? 'var(--cp-bg-surface, #242528)' : '#F1F5F9', color: isDark ? '#A1A1A1' : '#64748B', fontWeight: 500,
                             }}>{t}</span>
                           ))}
                         </div>
@@ -380,7 +380,7 @@ export default function WikiSearchPage() {
                       onClick={() => setPage(p => p - 1)}
                       style={{
                         fontSize: 12, fontWeight: 650, padding: '6px 14px', borderRadius: 4,
-                        border: `1px solid ${borderColor}`, background: isDark ? '#1A1A1A' : '#FFFFFF',
+                        border: `1px solid ${borderColor}`, background: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF',
                         color: page === 0 ? (isDark ? '#292929' : '#CBD5E1') : (isDark ? '#A1A1A1' : '#334155'), cursor: page === 0 ? 'default' : 'pointer',
                       }}
                     >← Previous</button>
@@ -392,7 +392,7 @@ export default function WikiSearchPage() {
                       onClick={() => setPage(p => p + 1)}
                       style={{
                         fontSize: 12, fontWeight: 650, padding: '6px 14px', borderRadius: 4,
-                        border: `1px solid ${borderColor}`, background: isDark ? '#1A1A1A' : '#FFFFFF',
+                        border: `1px solid ${borderColor}`, background: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF',
                         color: page >= totalPages - 1 ? (isDark ? '#292929' : '#CBD5E1') : (isDark ? '#A1A1A1' : '#334155'), cursor: page >= totalPages - 1 ? 'default' : 'pointer',
                       }}
                     >Next →</button>

@@ -76,7 +76,7 @@ export default function ReleaseDetailPage() {
   return (
     <div className="th-page-content" style={{ flex: 1, overflow: 'auto' }}>
       {/* Header */}
-      <div style={{ padding: '20px 32px', borderBottom: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, background: isDark ? '#0A0A0A' : '#fff' }}>
+      <div style={{ padding: '20px 32px', borderBottom: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, background: isDark ? 'var(--cp-bg-page, #1F1F21)' : '#fff' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 12 }}>
           <button
             onClick={() => navigate('/testhub/releases')}
@@ -111,7 +111,7 @@ export default function ReleaseDetailPage() {
       </div>
 
       {/* Tabs */}
-      <div style={{ display: 'flex', gap: 0, borderBottom: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, padding: '0 32px', background: isDark ? '#0A0A0A' : '#fff' }}>
+      <div style={{ display: 'flex', gap: 0, borderBottom: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, padding: '0 32px', background: isDark ? 'var(--cp-bg-page, #1F1F21)' : '#fff' }}>
         {tabs.map(tab => {
           const active = activeTab === tab.id;
           const TabIcon = tab.icon;
@@ -146,7 +146,7 @@ export default function ReleaseDetailPage() {
 
 function StatCard({ label, value, color, isDark }: { label: string; value: string; color: string; isDark: boolean }) {
   return (
-    <div style={{ padding: '14px 16px', background: isDark ? '#1A1A1A' : '#F8FAFC', borderRadius: 12, border: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}` }}>
+    <div style={{ padding: '14px 16px', background: isDark ? 'var(--cp-bg-surface, #242528)' : '#F8FAFC', borderRadius: 12, border: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}` }}>
       <div style={{ fontSize: 22, fontWeight: 700, color, fontVariantNumeric: 'tabular-nums' }}>{value}</div>
       <div style={{ fontSize: 12, color: isDark ? '#A1A1A1' : '#64748B', marginTop: 2 }}>{label}</div>
     </div>
@@ -163,7 +163,7 @@ function OverviewTab({ release, isDark }: { release: any; isDark: boolean }) {
         </p>
 
         <h3 style={{ fontSize: 15, fontWeight: 700, color: isDark ? '#EDEDED' : '#0F172A', margin: '24px 0 12px' }}>Test Progress</h3>
-        <div style={{ height: 10, backgroundColor: isDark ? '#1A1A1A' : '#F1F5F9', borderRadius: 6, overflow: 'hidden', marginBottom: 8 }}>
+        <div style={{ height: 10, backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : '#F1F5F9', borderRadius: 6, overflow: 'hidden', marginBottom: 8 }}>
           {release.test_cases_total > 0 && (
             <div style={{
               display: 'flex', height: '100%',
@@ -183,7 +183,7 @@ function OverviewTab({ release, isDark }: { release: any; isDark: boolean }) {
       </div>
 
       {/* Details panel */}
-      <div style={{ background: isDark ? '#1A1A1A' : '#F8FAFC', borderRadius: 12, padding: 20, border: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}` }}>
+      <div style={{ background: isDark ? 'var(--cp-bg-surface, #242528)' : '#F8FAFC', borderRadius: 12, padding: 20, border: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}` }}>
         <h3 style={{ fontSize: 14, fontWeight: 700, color: isDark ? '#EDEDED' : '#0F172A', marginBottom: 16 }}>Details</h3>
         <dl style={{ margin: 0, display: 'flex', flexDirection: 'column', gap: 14 }}>
           <DetailRow label="Target Date" value={release.target_date ? format(new Date(release.target_date), 'MMMM dd, yyyy') : '—'} />
@@ -223,10 +223,10 @@ function CyclesTab({ cycles, isLoading, navigate, isDark }: { cycles: any[]; isL
   }
 
   return (
-    <div style={{ border: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, borderRadius: 12, overflow: 'hidden', background: isDark ? '#1A1A1A' : '#fff' }}>
+    <div style={{ border: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, borderRadius: 12, overflow: 'hidden', background: isDark ? 'var(--cp-bg-surface, #242528)' : '#fff' }}>
       <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
         <thead>
-          <tr style={{ backgroundColor: isDark ? '#1A1A1A' : '#F8FAFC', borderBottom: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}` }}>
+          <tr style={{ backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : '#F8FAFC', borderBottom: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}` }}>
             <th style={getThStyle(isDark)}>Cycle</th>
             <th style={getThStyle(isDark)}>Status</th>
             <th style={getThStyle(isDark)}>Total</th>
@@ -244,7 +244,7 @@ function CyclesTab({ cycles, isLoading, navigate, isDark }: { cycles: any[]; isL
                 key={c.id}
                 onClick={() => navigate(`/testhub/cycles/${cycle.id}`)}
                 style={{ borderBottom: `1px solid ${isDark ? '#292929' : '#F1F5F9'}`, cursor: 'pointer' }}
-                onMouseEnter={e => (e.currentTarget.style.backgroundColor = isDark ? '#1A1A1A' : '#F8FAFC')}
+                onMouseEnter={e => (e.currentTarget.style.backgroundColor = isDark ? 'var(--cp-bg-surface, #242528)' : '#F8FAFC')}
                 onMouseLeave={e => (e.currentTarget.style.backgroundColor = '')}
               >
                 <td style={tdStyle}><span style={{ fontWeight: 600, color: isDark ? '#EDEDED' : '#0F172A' }}>{cycle.name}</span></td>

@@ -186,7 +186,7 @@ export function AllWorkSplitView({ items, selectedItemKey, onSelectItem, sortFie
   return (
     <div className="flex h-full gap-0 rounded border overflow-hidden" style={{ borderColor: isDark ? '#2E2E2E' : 'var(--bd-default, #2E2E2E)', borderRadius: 4 }}>
       {/* Left card list — 320px */}
-      <div className="flex flex-col" style={{ width: 320, borderRight: isDark ? '1px solid #2E2E2E' : '1px solid var(--bd-subtle, #292929)', backgroundColor: isDark ? '#0A0A0A' : 'var(--bg-app)' }}>
+      <div className="flex flex-col" style={{ width: 320, borderRight: isDark ? '1px solid #2E2E2E' : '1px solid var(--bd-subtle, #292929)', backgroundColor: isDark ? 'var(--cp-bg-page, #1F1F21)' : 'var(--bg-app)' }}>
         <div className="flex items-center justify-between px-3 py-2" style={{ borderBottom: isDark ? '1px solid #2E2E2E' : '1px solid var(--bd-subtle, #292929)' }}>
           {/* Sort dropdown + direction toggle (TC-L1, TC-L2) */}
           <div className="relative flex items-center gap-0.5" ref={sortRef}>
@@ -229,7 +229,7 @@ export function AllWorkSplitView({ items, selectedItemKey, onSelectItem, sortFie
                 className="absolute top-full left-0 mt-1 w-48 rounded-lg border shadow-lg z-50 py-1 animate-scale-in"
                 style={{
                   borderColor: isDark ? '#2E2E2E' : 'var(--bd-default, #2E2E2E)',
-                  backgroundColor: isDark ? '#1A1A1A' : 'var(--bg-app)',
+                  backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--bg-app)',
                 }}
                 role="listbox"
                 aria-label="Sort field"
@@ -276,7 +276,7 @@ export function AllWorkSplitView({ items, selectedItemKey, onSelectItem, sortFie
                 className="px-3 py-2.5 cursor-pointer transition-colors duration-[80ms]"
                 style={{
                   borderBottom: isDark ? '1px solid #292929' : '1px solid var(--bd-subtle, #292929)',
-                  backgroundColor: isActive ? 'rgba(37,99,235,0.08)' : isDark ? '#0A0A0A' : 'var(--bg-app)',
+                  backgroundColor: isActive ? 'rgba(37,99,235,0.08)' : isDark ? 'var(--cp-bg-page, #1F1F21)' : 'var(--bg-app)',
                   borderLeft: isActive ? '3px solid #2563EB' : '3px solid transparent',
                 }}
               >
@@ -314,7 +314,7 @@ export function AllWorkSplitView({ items, selectedItemKey, onSelectItem, sortFie
 
       {/* Detail panel */}
       {currentItem ? (
-        <div className="flex-1 flex flex-col overflow-hidden" style={{ backgroundColor: isDark ? '#0A0A0A' : 'var(--bg-app)' }}>
+        <div className="flex-1 flex flex-col overflow-hidden" style={{ backgroundColor: isDark ? 'var(--cp-bg-page, #1F1F21)' : 'var(--bg-app)' }}>
           {/* Breadcrumb — always rendered, Jira parity */}
           <nav
             aria-label="Breadcrumb"
@@ -324,7 +324,7 @@ export function AllWorkSplitView({ items, selectedItemKey, onSelectItem, sortFie
               lineHeight: '16px',
               fontFamily: 'var(--cp-font-body)',
               borderBottom: isDark ? '1px solid #292929' : '1px solid var(--bd-subtle, #292929)',
-              backgroundColor: isDark ? '#0A0A0A' : 'var(--bg-app)',
+              backgroundColor: isDark ? 'var(--cp-bg-page, #1F1F21)' : 'var(--bg-app)',
               minHeight: 32,
               flexShrink: 0,
             }}
@@ -474,7 +474,7 @@ export function AllWorkSplitView({ items, selectedItemKey, onSelectItem, sortFie
 
           <div className="flex flex-1 overflow-hidden">
             {/* Main detail content */}
-            <div className="flex-1 overflow-y-auto px-5 py-4" style={{ backgroundColor: isDark ? '#0A0A0A' : undefined }}>
+            <div className="flex-1 overflow-y-auto px-5 py-4" style={{ backgroundColor: isDark ? 'var(--cp-bg-page, #1F1F21)' : undefined }}>
               {/* ─── DETAILS TAB ─── */}
               {activeTab === 'details' && (
                 <>
@@ -493,7 +493,7 @@ export function AllWorkSplitView({ items, selectedItemKey, onSelectItem, sortFie
                       style={{
                         borderColor: isDark ? '#2E2E2E' : 'var(--bd-default, #2E2E2E)',
                         color: isDark ? '#A1A1A1' : 'var(--fg-2)',
-                        backgroundColor: isDark ? '#0A0A0A' : 'var(--bg-app)',
+                        backgroundColor: isDark ? 'var(--cp-bg-page, #1F1F21)' : 'var(--bg-app)',
                         fontFamily: 'var(--cp-font-body)',
                         cursor: 'pointer',
                       }}
@@ -508,7 +508,7 @@ export function AllWorkSplitView({ items, selectedItemKey, onSelectItem, sortFie
                         className="absolute top-full left-0 mt-1 w-52 rounded-lg border shadow-lg z-50 py-1 animate-scale-in"
                         style={{
                           borderColor: isDark ? '#2E2E2E' : 'var(--bd-default, #2E2E2E)',
-                          backgroundColor: isDark ? '#1A1A1A' : 'var(--bg-app)',
+                          backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--bg-app)',
                         }}
                         role="menu"
                         aria-label="Add to this work item"
@@ -673,7 +673,7 @@ export function AllWorkSplitView({ items, selectedItemKey, onSelectItem, sortFie
             </div>
 
             {/* Right detail sidebar — 260px */}
-            <div className="overflow-y-auto py-4 px-4" style={{ width: 260, borderLeft: isDark ? '1px solid #2E2E2E' : '1px solid var(--bd-subtle, #292929)', backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF' }}>
+            <div className="overflow-y-auto py-4 px-4" style={{ width: 260, borderLeft: isDark ? '1px solid #2E2E2E' : '1px solid var(--bd-subtle, #292929)', backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF' }}>
               <div className="mb-4">
                 <span className="text-[11px] uppercase font-semibold block mb-1.5" style={{ color: isDark ? '#878787' : '#6b6e76', letterSpacing: '0.05em' }}>Status</span>
                 <StatusLozenge status={currentItem.status} />
@@ -747,7 +747,7 @@ export function AllWorkSplitView({ items, selectedItemKey, onSelectItem, sortFie
           </div>
         </div>
       ) : (
-        <div className="flex-1 flex items-center justify-center" style={{ backgroundColor: isDark ? '#0A0A0A' : 'var(--bg-1)' }}>
+        <div className="flex-1 flex items-center justify-center" style={{ backgroundColor: isDark ? 'var(--cp-bg-page, #1F1F21)' : 'var(--bg-1)' }}>
           <p className="text-[13px]" style={{ color: 'var(--fg-3)' }}>Select an item to view details</p>
         </div>
       )}

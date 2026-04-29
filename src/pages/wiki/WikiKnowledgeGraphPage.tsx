@@ -106,7 +106,7 @@ export default function WikiKnowledgeGraphPage() {
       .join('circle')
       .attr('r', d => radiusScale(d.view_count ?? 1))
       .attr('fill', d => DOMAIN_COLORS[d.domain_code] || '#64748B')
-      .attr('stroke', isDark ? '#0A0A0A' : '#FFFFFF')
+      .attr('stroke', isDark ? 'var(--cp-bg-page, #1F1F21)' : '#FFFFFF')
       .attr('stroke-width', 1.5)
       .attr('cursor', 'pointer')
       .on('click', (_, d) => navigate(`/wiki/${d.slug}`))
@@ -156,7 +156,7 @@ export default function WikiKnowledgeGraphPage() {
   }, [articles, relations, navigate]);
 
   return (
-    <div style={{ fontFamily: 'var(--cp-font-body)', color: isDark ? '#EDEDED' : '#0F172A', background: isDark ? '#0A0A0A' : '#F8FAFC', height: '100%', display: 'flex', flexDirection: 'column' }}>
+    <div style={{ fontFamily: 'var(--cp-font-body)', color: isDark ? '#EDEDED' : '#0F172A', background: isDark ? 'var(--cp-bg-page, #1F1F21)' : '#F8FAFC', height: '100%', display: 'flex', flexDirection: 'column' }}>
       <div style={{ padding: '20px 40px 0' }}>
         <nav style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 16 }}>
           <span onClick={() => navigate('/wiki')} style={{ fontSize: 13, color: '#2563EB', cursor: 'pointer' }}>Wiki</span>
@@ -179,11 +179,11 @@ export default function WikiKnowledgeGraphPage() {
       </div>
 
       <div style={{ flex: 1, position: 'relative', borderTop: isDark ? '0.75px solid #2E2E2E' : '0.75px solid rgba(0,0,0,0.06)' }}>
-        <svg ref={svgRef} style={{ width: '100%', height: '100%', background: isDark ? '#1A1A1A' : '#FFFFFF' }} />
+        <svg ref={svgRef} style={{ width: '100%', height: '100%', background: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF' }} />
         {tooltip && (
           <div style={{
             position: 'absolute', left: tooltip.x + 12, top: tooltip.y - 8,
-            background: isDark ? '#1A1A1A' : '#FFFFFF', border: isDark ? '1px solid #2E2E2E' : '1px solid #E2E8F0', borderRadius: 6,
+            background: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF', border: isDark ? '1px solid #2E2E2E' : '1px solid #E2E8F0', borderRadius: 6,
             padding: '8px 12px', boxShadow: isDark ? '0 4px 12px rgba(0,0,0,0.3)' : '0 4px 12px rgba(0,0,0,0.1)',
             pointerEvents: 'none', zIndex: 10, fontSize: 12, maxWidth: 200,
           }}>

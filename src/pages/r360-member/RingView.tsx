@@ -118,7 +118,7 @@ export function RingView({ items, name, role, avatarUrl, onSelect, selected, ove
               <span style={{ fontSize: '11px', fontWeight: 700, color: '#FFFFFF', background: '#1B7F37', padding: '2px 8px', borderRadius: '12px' }}>{doneCount}</span>
             </div>
             <button onClick={(e) => { e.stopPropagation(); setShowDone(false); }}
-              style={{ width: '24px', height: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center', border: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, borderRadius: '4px', background: isDark ? '#1A1A1A' : '#FFF', cursor: 'pointer', color: isDark ? '#878787' : '#64748B', fontSize: '14px' }}
+              style={{ width: '24px', height: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center', border: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, borderRadius: '4px', background: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFF', cursor: 'pointer', color: isDark ? '#878787' : '#64748B', fontSize: '14px' }}
               aria-label="Close completed panel"
             >{'\u2715'}</button>
           </div>
@@ -141,7 +141,7 @@ export function RingView({ items, name, role, avatarUrl, onSelect, selected, ove
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '3px', flexWrap: 'wrap' }}>
                       <span style={{ fontSize: '11.5px', fontWeight: 600, color: '#2563EB', fontFamily: 'var(--cp-font-mono)' }}>{item.item_key}</span>
-                      <span style={{ fontSize: '10px', fontWeight: 700, padding: '2px 6px', borderRadius: '4px', background: isDark ? '#1A1A1A' : '#F1F5F9', color: isDark ? '#878787' : '#64748B' }}>{item.project_key}</span>
+                      <span style={{ fontSize: '10px', fontWeight: 700, padding: '2px 6px', borderRadius: '4px', background: isDark ? 'var(--cp-bg-surface, #242528)' : '#F1F5F9', color: isDark ? '#878787' : '#64748B' }}>{item.project_key}</span>
                       <StatusLozenge status="Done" />
                     </div>
                     <div style={{ fontSize: '12px', fontWeight: 400, color: isDark ? '#EDEDED' : '#0F172A', lineHeight: '1.35', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.title}</div>
@@ -168,7 +168,7 @@ export function RingView({ items, name, role, avatarUrl, onSelect, selected, ove
       <div ref={canvasRef} className="r3-ring-canvas" style={{ marginTop: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <div style={{
           maxWidth: '520px', width: '100%', padding: '40px 32px',
-          background: isDark ? '#1A1A1A' : '#FFFFFF', border: '1px solid rgba(15,23,42,0.08)',
+          background: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF', border: '1px solid rgba(15,23,42,0.08)',
           borderRadius: '12px', boxShadow: '0 1px 3px rgba(0,0,0,0.06)',
           textAlign: 'center' as const,
         }}>
@@ -203,7 +203,7 @@ export function RingView({ items, name, role, avatarUrl, onSelect, selected, ove
           </div>
 
           {/* Divider */}
-          <div style={{ height: '1px', background: isDark ? '#1A1A1A' : '#F1F5F9', margin: '20px 0', width: '100%' }} />
+          <div style={{ height: '1px', background: isDark ? 'var(--cp-bg-surface, #242528)' : '#F1F5F9', margin: '20px 0', width: '100%' }} />
 
           {/* Open Items Section */}
           {nonDone.length > 0 && (
@@ -218,7 +218,7 @@ export function RingView({ items, name, role, avatarUrl, onSelect, selected, ove
                   <div key={item.id} onClick={() => onSelect(item)} style={{
                     width: '100%', padding: '12px 16px', border: '1px solid rgba(15,23,42,0.08)',
                     borderRadius: '6px', borderInlineStart: `3px solid ${borderColor}`,
-                    marginBottom: '8px', cursor: 'pointer', background: isDark ? '#1A1A1A' : '#FFFFFF',
+                    marginBottom: '8px', cursor: 'pointer', background: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF',
                     transition: 'box-shadow 0.15s ease',
                   }}
                     onMouseEnter={e => { e.currentTarget.style.boxShadow = '0 1px 3px rgba(0,0,0,0.08)'; }}
@@ -235,8 +235,8 @@ export function RingView({ items, name, role, avatarUrl, onSelect, selected, ove
                     {/* Row 2 */}
                     <div style={{ display: 'flex', alignItems: 'center', gap: '5px', marginBottom: '5px' }}>
                       <span style={{ fontSize: '12px', fontWeight: 600, color: '#2563EB', fontFamily: 'var(--cp-font-mono)' }}>{item.item_key}</span>
-                      <span style={{ fontSize: '10px', fontWeight: 700, padding: '2px 6px', borderRadius: '4px', background: isDark ? '#1A1A1A' : '#F1F5F9', color: isDark ? '#878787' : '#64748B' }}>{item.project_key}</span>
-                      <span style={{ marginLeft: 'auto', fontSize: '10px', fontWeight: 600, padding: '1px 6px', borderRadius: '4px', background: isDark ? '#0A0A0A' : '#F8FAFC', color: item.age_days > 30 ? '#D97706' : '#64748B', fontFamily: 'var(--cp-font-mono)' }}>{item.age_days}d</span>
+                      <span style={{ fontSize: '10px', fontWeight: 700, padding: '2px 6px', borderRadius: '4px', background: isDark ? 'var(--cp-bg-surface, #242528)' : '#F1F5F9', color: isDark ? '#878787' : '#64748B' }}>{item.project_key}</span>
+                      <span style={{ marginLeft: 'auto', fontSize: '10px', fontWeight: 600, padding: '1px 6px', borderRadius: '4px', background: isDark ? 'var(--cp-bg-page, #1F1F21)' : '#F8FAFC', color: item.age_days > 30 ? '#D97706' : '#64748B', fontFamily: 'var(--cp-font-mono)' }}>{item.age_days}d</span>
                     </div>
                     {/* Row 3 -- full title */}
                     <div style={{ fontSize: '12px', fontWeight: 500, color: isDark ? '#EDEDED' : '#0F172A', lineHeight: '1.35', marginBottom: '5px' }}>{item.title}</div>
@@ -270,7 +270,7 @@ export function RingView({ items, name, role, avatarUrl, onSelect, selected, ove
                     <div style={{ flex: 1 }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
                         <span style={{ fontSize: '11.5px', fontWeight: 600, color: '#2563EB', fontFamily: 'var(--cp-font-mono)' }}>{item.item_key}</span>
-                        <span style={{ fontSize: '10px', fontWeight: 700, padding: '2px 6px', borderRadius: '4px', background: isDark ? '#1A1A1A' : '#F1F5F9', color: isDark ? '#878787' : '#64748B' }}>{item.project_key}</span>
+                        <span style={{ fontSize: '10px', fontWeight: 700, padding: '2px 6px', borderRadius: '4px', background: isDark ? 'var(--cp-bg-surface, #242528)' : '#F1F5F9', color: isDark ? '#878787' : '#64748B' }}>{item.project_key}</span>
                         <StatusLozenge status="Done" />
                       </div>
                       <div style={{ fontSize: '12px', color: isDark ? '#EDEDED' : '#0F172A', marginTop: '2px' }}>{item.title}</div>
@@ -356,7 +356,7 @@ export function RingView({ items, name, role, avatarUrl, onSelect, selected, ove
               tabIndex={0}
               data-testid={`r360-ring-card-${item.item_key}`}
               onMouseEnter={e => { if (!isSelected) e.currentTarget.style.background = isDark ? '#1F1F1F' : 'rgba(15,23,42,0.04)'; }}
-              onMouseLeave={e => { e.currentTarget.style.background = isDark ? '#1A1A1A' : '#FFFFFF'; }}
+              onMouseLeave={e => { e.currentTarget.style.background = isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF'; }}
             >
               {/* Row 1: type + priority -- fixed 18px */}
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '4px', flexShrink: 0, height: '18px' }}>
@@ -369,10 +369,10 @@ export function RingView({ items, name, role, avatarUrl, onSelect, selected, ove
               {/* Row 2: key + project badge + age -- fixed 18px */}
               <div style={{ display: 'flex', alignItems: 'center', gap: '5px', marginBottom: '5px', flexShrink: 0, height: '18px' }}>
                 <span style={{ fontSize: '12px', fontWeight: 600, color: '#2563EB', fontFamily: 'var(--cp-font-mono)' }}>{item.item_key}</span>
-                <span style={{ fontSize: '10px', fontWeight: 700, padding: '2px 6px', borderRadius: '4px', background: isDark ? '#1A1A1A' : '#F1F5F9', color: isDark ? '#878787' : '#64748B' }}>{item.project_key}</span>
+                <span style={{ fontSize: '10px', fontWeight: 700, padding: '2px 6px', borderRadius: '4px', background: isDark ? 'var(--cp-bg-surface, #242528)' : '#F1F5F9', color: isDark ? '#878787' : '#64748B' }}>{item.project_key}</span>
                 <span style={{
                   marginLeft: 'auto', fontSize: '10px', fontWeight: 600,
-                  padding: '1px 6px', borderRadius: '4px', background: isDark ? '#0A0A0A' : '#F8FAFC',
+                  padding: '1px 6px', borderRadius: '4px', background: isDark ? 'var(--cp-bg-page, #1F1F21)' : '#F8FAFC',
                   color: item.age_days > 30 ? '#D97706' : '#64748B',
                   fontFamily: 'var(--cp-font-mono)',
                 }}>{item.age_days}d</span>
@@ -405,7 +405,7 @@ export function RingView({ items, name, role, avatarUrl, onSelect, selected, ove
         <div style={{
           position: 'absolute', bottom: '8px', left: '50%', transform: 'translateX(-50%)',
           display: 'flex', alignItems: 'center', gap: '8px',
-          fontSize: '11px', fontWeight: 600, color: isDark ? '#878787' : '#64748B', background: isDark ? '#0A0A0A' : '#F8FAFC',
+          fontSize: '11px', fontWeight: 600, color: isDark ? '#878787' : '#64748B', background: isDark ? 'var(--cp-bg-page, #1F1F21)' : '#F8FAFC',
           border: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, borderRadius: '12px', padding: '3px 8px',
           fontFamily: 'var(--cp-font-mono)', zIndex: 8,
         }}>

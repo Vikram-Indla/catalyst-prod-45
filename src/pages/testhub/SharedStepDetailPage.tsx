@@ -86,7 +86,7 @@ export default function SharedStepDetailPage() {
 
   if (isLoading) {
     return (
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', backgroundColor: isDark ? '#0A0A0A' : '#F8FAFC' }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', backgroundColor: isDark ? 'var(--cp-bg-page, #1F1F21)' : '#F8FAFC' }}>
         <div style={{ width: 32, height: 32, border: `3px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, borderTopColor: '#2563EB', borderRadius: '50%', animation: 'spin 1s linear infinite' }} />
       </div>
     );
@@ -101,9 +101,9 @@ export default function SharedStepDetailPage() {
   }
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', backgroundColor: isDark ? '#0A0A0A' : '#F8FAFC' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', backgroundColor: isDark ? 'var(--cp-bg-page, #1F1F21)' : '#F8FAFC' }}>
       {/* Header */}
-      <div style={{ padding: '20px 32px', backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF', borderBottom: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}` }}>
+      <div style={{ padding: '20px 32px', backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF', borderBottom: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}` }}>
         <button
           onClick={() => navigate('/testhub/shared-steps')}
           style={{ display: 'flex', alignItems: 'center', gap: 6, padding: 0, border: 'none', backgroundColor: 'transparent', color: isDark ? '#878787' : '#64748B', fontSize: 13, fontWeight: 500, cursor: 'pointer', marginBottom: 16 }}
@@ -113,7 +113,7 @@ export default function SharedStepDetailPage() {
         <h1 style={{ fontSize: 22, fontWeight: 700, color: isDark ? '#EDEDED' : '#0F172A', margin: '0 0 8px' }}>{step.name}</h1>
         <div style={{ display: 'flex', alignItems: 'center', gap: 16, fontSize: 13, color: isDark ? '#878787' : '#64748B' }}>
           {step.category && (
-            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, padding: '2px 8px', backgroundColor: isDark ? '#1A1A1A' : '#F1F5F9', borderRadius: 4, fontSize: 11, fontWeight: 600 }}>
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, padding: '2px 8px', backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : '#F1F5F9', borderRadius: 4, fontSize: 11, fontWeight: 600 }}>
               <span style={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: step.category.color }} />
               {step.category.name}
             </span>
@@ -128,7 +128,7 @@ export default function SharedStepDetailPage() {
       {/* Content */}
       <div style={{ flex: 1, padding: 32, overflowY: 'auto' }}>
         {/* Step Details */}
-        <div style={{ backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF', border: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, borderRadius: 12, padding: 24, marginBottom: 24 }}>
+        <div style={{ backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF', border: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, borderRadius: 12, padding: 24, marginBottom: 24 }}>
           <h2 style={{ fontSize: 14, fontWeight: 600, color: isDark ? '#A1A1A1' : '#64748B', textTransform: 'uppercase', letterSpacing: '0.05em', margin: '0 0 16px' }}>Step Details</h2>
           {step.description && (
             <div style={{ marginBottom: 16 }}>
@@ -149,7 +149,7 @@ export default function SharedStepDetailPage() {
         </div>
 
         {/* Linked Test Cases */}
-        <div style={{ backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF', border: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, borderRadius: 12, overflow: 'hidden' }}>
+        <div style={{ backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF', border: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, borderRadius: 12, overflow: 'hidden' }}>
           <div style={{ padding: '16px 24px', borderBottom: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}` }}>
             <h2 style={{ fontSize: 14, fontWeight: 600, color: isDark ? '#A1A1A1' : '#64748B', textTransform: 'uppercase', letterSpacing: '0.05em', margin: 0 }}>
               Linked Test Cases ({linkedCases.length})

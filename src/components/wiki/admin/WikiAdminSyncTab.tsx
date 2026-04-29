@@ -261,7 +261,7 @@ export function WikiAdminSyncTab() {
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   flexShrink: 0, fontSize: 11, fontWeight: 700,
                   fontFamily: 'var(--cp-font-mono)',
-                  background: isDone ? '#1B7F37' : isStepFailed ? 'rgba(220,38,38,0.08)' : isActive ? '#0C66E4' : (isDark ? '#1A1A1A' : 'var(--cp-bg-sunken, #F1F5F9)'),
+                  background: isDone ? '#1B7F37' : isStepFailed ? 'rgba(220,38,38,0.08)' : isActive ? '#0C66E4' : (isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--cp-bg-sunken, #F1F5F9)'),
                   color: isDone ? '#FFFFFF' : isStepFailed ? '#DC2626' : isActive ? '#FFFFFF' : (isDark ? '#878787' : 'var(--cp-text-tertiary, #64748B)'),
                   ...(isActive ? { boxShadow: '0 0 0 3px rgba(37,99,235,0.2)' } : {}),
                 }}>

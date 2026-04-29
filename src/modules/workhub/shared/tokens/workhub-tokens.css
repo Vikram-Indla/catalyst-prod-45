@@ -49,10 +49,10 @@
 /* ═══ ECLIPSE DARK MODE — WORKHUB DARK MODE ═══ */
 .dark, [data-theme="dark"] {
   /* Surfaces — ONE surface #0A0A0A DARK MODE */
-  --wh-bg: #0A0A0A;
-  --wh-sf: #0A0A0A;
-  --wh-sf2: #1A1A1A;
-  --wh-sf3: #1A1A1A;
+  --wh-bg: var(--cp-bg-page, #1F1F21);
+  --wh-sf: var(--cp-bg-page, #1F1F21);
+  --wh-sf2: var(--cp-bg-surface, #242528);
+  --wh-sf3: var(--cp-bg-surface, #242528);
   --wh-bdr: #2E2E2E;
 
   /* Text — warm white ladder */

@@ -89,7 +89,7 @@ export default function IdeasAnalyticsPage() {
   const maxConvQ = Math.max(...convByQuarter.map(q => q.total), 1);
 
   const barTrack = isDark ? '#2E2E2E' : '#F4F4F5';
-  const containerBg = isDark ? '#0A0A0A' : '#FFFFFF';
+  const containerBg = isDark ? 'var(--cp-bg-page, #1F1F21)' : '#FFFFFF';
   const containerBorder = `1px solid ${isDark ? '#454545' : dk.border}`;
 
   return (
@@ -186,7 +186,7 @@ export default function IdeasAnalyticsPage() {
 
 function StatCard({ label, value, subtitle, color, isDark, dk }: { label: string; value: string; subtitle: string; color: string; isDark: boolean; dk: typeof DK }) {
   return (
-    <div style={{ background: isDark ? '#0A0A0A' : '#FFFFFF', border: `1px solid ${isDark ? '#454545' : dk.border}`, borderRadius: '6px', padding: '20px' }}>
+    <div style={{ background: isDark ? 'var(--cp-bg-page, #1F1F21)' : '#FFFFFF', border: `1px solid ${isDark ? '#454545' : dk.border}`, borderRadius: '6px', padding: '20px' }}>
       <div style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: dk.t3, marginBottom: '8px' }}>{label}</div>
       <span style={{ fontSize: '32px', fontWeight: 800, fontFamily: 'var(--cp-font-mono)', color, letterSpacing: '-0.5px' }}>{value}</span>
       <div style={{ fontSize: '12px', color: dk.t3, marginTop: '4px' }}>{subtitle}</div>

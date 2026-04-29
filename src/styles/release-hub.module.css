@@ -893,8 +893,8 @@
    DARK MODE — ADS neutral dark OVERRIDES (variable-level)
    ═══════════════════════════════════════════════════════════════════ */
 .dark .releaseHub , [data-theme="dark"] .releaseHub {
-  --rh-bg-page: var(--bg-0, #0A0A0A);
-  --rh-bg-card: var(--bg-2, #1A1A1A);
+  --rh-bg-page: var(--bg-0, var(--cp-bg-page, #1F1F21));
+  --rh-bg-card: var(--bg-2, var(--cp-bg-surface, #242528));
   --rh-bg-muted: #1F1F1F;
   --rh-text-primary: var(--fg-1, #EDEDED);
   --rh-text-secondary: var(--fg-2, #A1A1A1);

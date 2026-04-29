@@ -53,7 +53,7 @@ function StatusLozenge({ status }: { status: string }) {
 /* ── Skeleton ── */
 const Sk = ({ w, h, style, isDark }: { w: string | number; h: number; style?: React.CSSProperties; isDark?: boolean }) => (
   <div style={{
-    width: w, height: h, borderRadius: 4, background: isDark ? '#1A1A1A' : '#E2E8F0',
+    width: w, height: h, borderRadius: 4, background: isDark ? 'var(--cp-bg-surface, #242528)' : '#E2E8F0',
     animation: 'pulse 1.5s ease-in-out infinite', ...style,
   }} />
 );
@@ -78,7 +78,7 @@ function VersionHistoryPanel({ versions, onRestore, onClose }: {
   return (
     <div style={{
       position: 'fixed', top: 0, right: 0, bottom: 0, width: 400, zIndex: 200,
-      background: isDark ? '#1A1A1A' : '#FFFFFF', borderLeft: isDark ? '1px solid #2E2E2E' : '1px solid rgba(15,23,42,0.12)',
+      background: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF', borderLeft: isDark ? '1px solid #2E2E2E' : '1px solid rgba(15,23,42,0.12)',
       boxShadow: isDark ? '-8px 0 24px rgba(0,0,0,0.3)' : '-8px 0 24px rgba(15,23,42,0.08)',
       display: 'flex', flexDirection: 'column', fontFamily: 'var(--cp-font-body)',
     }}>
@@ -123,7 +123,7 @@ function VersionHistoryPanel({ versions, onRestore, onClose }: {
                   fontFamily: 'var(--cp-font-mono)', fontSize: 11, fontWeight: 700,
                   color: i === 0 ? '#2563EB' : isDark ? '#A1A1A1' : '#64748B',
                   padding: '2px 6px', borderRadius: 4,
-                  background: i === 0 ? (isDark ? 'rgba(37,99,235,0.12)' : '#EFF6FF') : (isDark ? '#1A1A1A' : '#F1F5F9'),
+                  background: i === 0 ? (isDark ? 'rgba(37,99,235,0.12)' : '#EFF6FF') : (isDark ? 'var(--cp-bg-surface, #242528)' : '#F1F5F9'),
                 }}>v{v.version_number}</span>
                 {i === 0 && (
                   <span style={{ fontSize: 9, fontWeight: 700, color: '#059669', textTransform: 'uppercase' as const }}>CURRENT</span>
@@ -170,7 +170,7 @@ function ExportDropdown({ onClose }: { onClose: () => void }) {
   return (
     <div style={{
       position: 'absolute', top: '100%', right: 0, marginTop: 4, zIndex: 50,
-      background: isDark ? '#1A1A1A' : '#FFFFFF', borderRadius: 6, border: isDark ? '1px solid #2E2E2E' : '1px solid rgba(15,23,42,0.12)',
+      background: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF', borderRadius: 6, border: isDark ? '1px solid #2E2E2E' : '1px solid rgba(15,23,42,0.12)',
       boxShadow: isDark ? '0 4px 12px rgba(0,0,0,0.3)' : '0 4px 12px rgba(15,23,42,0.08)', minWidth: 160, overflow: 'hidden',
     }}>
       <button onClick={handlePdf} style={{
@@ -204,7 +204,7 @@ function CrossModuleLinks({ links }: { links: any[] }) {
   return (
     <div style={{
       marginTop: 32, padding: 16, borderRadius: 6,
-      border: isDark ? '1px solid #2E2E2E' : '1px solid rgba(15,23,42,0.12)', background: isDark ? '#1A1A1A' : '#FFFFFF',
+      border: isDark ? '1px solid #2E2E2E' : '1px solid rgba(15,23,42,0.12)', background: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF',
     }}>
       <div style={{
         fontSize: 11, fontWeight: 700, textTransform: 'uppercase' as const,
@@ -343,7 +343,7 @@ export default function WikiArticlePage() {
   /* ── Not found ── */
   if (error || !page) {
     return (
-      <div style={{ fontFamily: 'var(--cp-font-body)', padding: 80, textAlign: 'center', background: isDark ? '#0A0A0A' : undefined, minHeight: '100%' }}>
+      <div style={{ fontFamily: 'var(--cp-font-body)', padding: 80, textAlign: 'center', background: isDark ? 'var(--cp-bg-page, #1F1F21)' : undefined, minHeight: '100%' }}>
         <div style={{ fontSize: 48, marginBottom: 12 }}>📄</div>
         <div style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 18, fontWeight: 700, color: isDark ? '#EDEDED' : '#0F172A', marginBottom: 8 }}>Article not found</div>
         <div style={{ fontSize: 13, color: isDark ? '#A1A1A1' : '#64748B', marginBottom: 16 }}>The article you're looking for doesn't exist or has been removed.</div>
@@ -417,7 +417,7 @@ export default function WikiArticlePage() {
   ].filter(r => r.show);
 
   return (
-    <div style={{ fontFamily: 'var(--cp-font-body)', color: isDark ? '#EDEDED' : '#0F172A', background: isDark ? '#0A0A0A' : '#F8FAFC', minHeight: '100%' }}>
+    <div style={{ fontFamily: 'var(--cp-font-body)', color: isDark ? '#EDEDED' : '#0F172A', background: isDark ? 'var(--cp-bg-page, #1F1F21)' : '#F8FAFC', minHeight: '100%' }}>
       {/* Scroll progress bar */}
       <div style={{
         position: 'fixed', top: 0, left: 0, right: 0, height: 3, zIndex: 100,
@@ -499,7 +499,7 @@ export default function WikiArticlePage() {
               {authorName ? (
                 <>
                   <div style={{
-                    width: 24, height: 24, borderRadius: '50%', background: isDark ? '#1A1A1A' : '#E2E8F0',
+                    width: 24, height: 24, borderRadius: '50%', background: isDark ? 'var(--cp-bg-surface, #242528)' : '#E2E8F0',
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                     fontSize: 10, fontWeight: 700, color: isDark ? '#A1A1A1' : '#64748B',
                   }}>{authorName.charAt(0).toUpperCase()}</div>
@@ -520,7 +520,7 @@ export default function WikiArticlePage() {
                 {tags.map(t => (
                   <span key={t} style={{
                     fontSize: 10, padding: '2px 8px', borderRadius: 4,
-                    background: isDark ? '#1A1A1A' : '#F1F5F9', color: isDark ? '#A1A1A1' : '#64748B', fontWeight: 500,
+                    background: isDark ? 'var(--cp-bg-surface, #242528)' : '#F1F5F9', color: isDark ? '#A1A1A1' : '#64748B', fontWeight: 500,
                   }}>{t}</span>
                 ))}
               </div>
@@ -557,7 +557,7 @@ export default function WikiArticlePage() {
             {/* ── Table of Contents ── */}
             {sections.length > 0 && (
               <nav style={{
-                background: isDark ? '#1A1A1A' : '#F8FAFC', border: isDark ? '1px solid #2E2E2E' : '1px solid rgba(15,23,42,0.12)',
+                background: isDark ? 'var(--cp-bg-surface, #242528)' : '#F8FAFC', border: isDark ? '1px solid #2E2E2E' : '1px solid rgba(15,23,42,0.12)',
                 borderRadius: 6, padding: 16, marginBottom: 28,
               }}>
                 <div style={{
@@ -618,7 +618,7 @@ export default function WikiArticlePage() {
             {/* ── Feedback footer ── */}
             <div style={{
               marginTop: 32, padding: 20, borderRadius: 6,
-              border: isDark ? '1px solid #2E2E2E' : '1px solid rgba(15,23,42,0.12)', background: isDark ? '#1A1A1A' : '#FFFFFF',
+              border: isDark ? '1px solid #2E2E2E' : '1px solid rgba(15,23,42,0.12)', background: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF',
               display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 16,
             }}>
               <div>
@@ -660,7 +660,7 @@ export default function WikiArticlePage() {
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: 12 }}>
                   {(related ?? []).map((r: any) => (
                     <div key={r.id} onClick={() => navigate(`/wiki/${r.slug}`)} style={{
-                      padding: 16, borderRadius: 6, background: isDark ? '#1A1A1A' : '#FFFFFF',
+                      padding: 16, borderRadius: 6, background: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF',
                       border: isDark ? '1px solid #2E2E2E' : '1px solid rgba(15,23,42,0.12)', cursor: 'pointer',
                       transition: 'border-color 120ms',
                     }}
@@ -683,7 +683,7 @@ export default function WikiArticlePage() {
           {/* ── Infobox sidebar ── */}
           <aside style={{
             position: 'sticky', top: 80, borderRadius: 6,
-            border: isDark ? '1px solid #2E2E2E' : '1px solid rgba(15,23,42,0.12)', background: isDark ? '#1A1A1A' : '#FFFFFF',
+            border: isDark ? '1px solid #2E2E2E' : '1px solid rgba(15,23,42,0.12)', background: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF',
             overflow: 'hidden', fontSize: 12,
           }}>
             <div style={{
@@ -768,7 +768,7 @@ function ReferencesSection({ refs }: { refs: any[] }) {
 function ArticleSkeleton() {
   const { isDark } = useTheme();
   return (
-    <div style={{ fontFamily: 'var(--cp-font-body)', background: isDark ? '#0A0A0A' : '#F8FAFC', minHeight: '100%', padding: '20px 40px 48px' }}>
+    <div style={{ fontFamily: 'var(--cp-font-body)', background: isDark ? 'var(--cp-bg-page, #1F1F21)' : '#F8FAFC', minHeight: '100%', padding: '20px 40px 48px' }}>
       <Sk w={200} h={14} style={{ marginBottom: 24 }} isDark={isDark} />
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 280px', gap: 32 }}>
         <div>

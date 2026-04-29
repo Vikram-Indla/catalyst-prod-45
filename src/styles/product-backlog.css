@@ -111,7 +111,7 @@
 /* ═══ DARK MODE — Dark mode One Surface Model ═══ */
 .dark [data-module="product-backlog"],
 .dark [data-module="product-backlog"] , [data-theme="dark"] [data-module="product-backlog"] {
-  --cp-bg-page: #0A0A0A;
+  --cp-bg-page: var(--cp-bg-page, #1F1F21);
   --cp-bg-surface: transparent;
   --cp-bg-sunken: #1F1F1F;
   --cp-bg-elevated: transparent;
@@ -150,11 +150,11 @@
   --cp-lozenge-green-bg: #14332A;
   --cp-lozenge-green-text: #86EFAC;
 
-  background-color: #0A0A0A !important;
+  background-color: var(--cp-bg-page, #1F1F21) !important;
 }
 .dark [data-module="product-backlog"] .flex-1,
 .dark [data-module="product-backlog"] .flex-1 , [data-theme="dark"] [data-module="product-backlog"] .flex-1 {
-  background-color: #0A0A0A !important;
+  background-color: var(--cp-bg-page, #1F1F21) !important;
 }
 .dark .pb-table,
 .dark .pb-table , [data-theme="dark"] .pb-table {
@@ -166,7 +166,7 @@
 [data-theme="dark"] .pb-table thead,
 [data-theme="dark"] .pb-table thead tr,
 .dark .pb-table thead th , [data-theme="dark"] .pb-table thead th {
-  background-color: #0A0A0A !important;
+  background-color: var(--cp-bg-page, #1F1F21) !important;
   color: #7D7D7D;
   border-bottom-color: #2E2E2E;
 }

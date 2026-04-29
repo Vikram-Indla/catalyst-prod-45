@@ -18,7 +18,7 @@ import { RoomContentShell } from '@/components/layout/RoomContentShell';
 /* Helper: read current theme for overlay print bg */
 const getOverlayBg = () => {
   const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-  return isDark ? '#1A1A1A' : '#FFFFFF';
+  return isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF';
 };
 
 const OVERLAY_TOKENS = `

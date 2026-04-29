@@ -967,8 +967,8 @@
   --rai-ink-secondary: #EDEDED;
   --rai-ink-tertiary: var(--fg-3, #878787);
   --rai-ink-muted: var(--fg-4, rgba(237,237,237,0.30));
-  --rai-surface: #0A0A0A;
-  --rai-surface-secondary: #1A1A1A;
+  --rai-surface: var(--cp-bg-page, #1F1F21);
+  --rai-surface-secondary: var(--cp-bg-surface, #242528);
   --rai-surface-tertiary: #292929;
   --rai-border: #2E2E2E;
   --rai-border-strong: #454545;

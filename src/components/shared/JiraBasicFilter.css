@@ -540,7 +540,7 @@
 }
 
 .dark .jf-panel {
-  background: #1A1A1A;
+  background: var(--cp-bg-surface, #242528);
   border-color: #2E2E2E;
   color: #EDEDED;
   box-shadow: 0 4px 24px rgba(0, 0, 0, 0.5);

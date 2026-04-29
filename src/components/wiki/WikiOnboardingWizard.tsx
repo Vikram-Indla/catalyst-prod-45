@@ -73,7 +73,7 @@ export function WikiOnboardingWizard({ onComplete }: WikiOnboardingWizardProps) 
       <div style={{ display: 'grid', gap: 6 }}>
         {ROLES.map(r => (
           <button key={r} onClick={() => setRole(r)} style={{
-            padding: '12px 16px', borderRadius: 8, background: isDark ? '#0A0A0A' : 'var(--bg-app)',
+            padding: '12px 16px', borderRadius: 8, background: isDark ? 'var(--cp-bg-page, #1F1F21)' : 'var(--bg-app)',
             border: `0.75px solid ${role === r ? 'var(--cp-blue)' : (isDark ? '#2E2E2E' : 'rgba(0,0,0,0.06)')}`,
             cursor: 'pointer', textAlign: 'left', fontSize: 13, fontWeight: role === r ? 600 : 400,
             color: role === r ? 'var(--cp-blue)' : (isDark ? '#A1A1A1' : 'var(--fg-2)'), transition: 'all 80ms',
@@ -95,12 +95,12 @@ export function WikiOnboardingWizard({ onComplete }: WikiOnboardingWizardProps) 
           const active = selectedDomains.includes(d.code);
           return (
             <button key={d.code} onClick={() => toggleDomain(d.code)} style={{
-              padding: '10px 12px', borderRadius: 8, background: isDark ? '#0A0A0A' : 'var(--bg-app)',
+              padding: '10px 12px', borderRadius: 8, background: isDark ? 'var(--cp-bg-page, #1F1F21)' : 'var(--bg-app)',
               border: `0.75px solid ${active ? 'var(--cp-blue)' : (isDark ? '#2E2E2E' : 'rgba(0,0,0,0.06)')}`,
               cursor: 'pointer', textAlign: 'left', fontSize: 12, transition: 'all 80ms',
               display: 'flex', alignItems: 'center', gap: 8,
             }}>
-              <span style={{ fontSize: 9, fontWeight: 700, padding: '1px 5px', borderRadius: 4, background: active ? 'var(--cp-primary-20)' : (isDark ? '#1A1A1A' : 'var(--cp-bd-zone)'), color: active ? '#1E40AF' : (isDark ? '#878787' : 'var(--fg-3)') }}>{d.code}</span>
+              <span style={{ fontSize: 9, fontWeight: 700, padding: '1px 5px', borderRadius: 4, background: active ? 'var(--cp-primary-20)' : (isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--cp-bd-zone)'), color: active ? '#1E40AF' : (isDark ? '#878787' : 'var(--fg-3)') }}>{d.code}</span>
               <span style={{ fontWeight: active ? 600 : 400, color: active ? (isDark ? '#EDEDED' : 'var(--fg-1)') : (isDark ? '#A1A1A1' : 'var(--fg-2)'), flex: 1, fontSize: 11.5 }}>{d.name}</span>
               {active && <Check size={12} style={{ color: 'var(--cp-blue)' }} />}
             </button>
@@ -118,7 +118,7 @@ export function WikiOnboardingWizard({ onComplete }: WikiOnboardingWizardProps) 
           const diffColor = DIFF_COLORS[p.difficulty] || '#64748B';
           return (
             <div key={p.id} style={{
-              padding: 16, borderRadius: 8, background: isDark ? '#0A0A0A' : 'var(--bg-app)',
+              padding: 16, borderRadius: 8, background: isDark ? 'var(--cp-bg-page, #1F1F21)' : 'var(--bg-app)',
               border: `0.75px solid ${isDark ? '#2E2E2E' : 'rgba(0,0,0,0.06)'}`, cursor: 'pointer',
               transition: 'border-color 120ms',
             }}
@@ -152,7 +152,7 @@ export function WikiOnboardingWizard({ onComplete }: WikiOnboardingWizardProps) 
       <div style={{
         position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
         width: 480, maxHeight: '85vh', overflowY: 'auto',
-        background: isDark ? '#1A1A1A' : 'var(--cp-float)', borderRadius: 12, padding: 32,
+        background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--cp-float)', borderRadius: 12, padding: 32,
         boxShadow: isDark ? '0 16px 48px rgba(0,0,0,0.4)' : '0 16px 48px rgba(0,0,0,0.12)', zIndex: 1001,
       }}>
         {/* Step indicators */}

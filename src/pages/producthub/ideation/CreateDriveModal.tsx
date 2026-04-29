@@ -135,7 +135,7 @@ export default function CreateDriveModal({ open, onClose }: CreateDriveModalProp
       onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
     >
       <div style={{
-        width: '640px', maxHeight: '90vh', background: isDark ? '#1A1A1A' : '#FFFFFF',
+        width: '640px', maxHeight: '90vh', background: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF',
         borderRadius: '16px', display: 'flex', flexDirection: 'column',
         boxShadow: isDark ? 'none' : '0 25px 50px -12px rgba(0,0,0,0.25)',
         padding: '28px',

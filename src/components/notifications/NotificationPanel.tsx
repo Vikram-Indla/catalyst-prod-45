@@ -106,8 +106,8 @@ export default function NotificationPanel({ isOpen, onClose }: NotificationPanel
 
   // Dark mode tokens
   const T = {
-    panelBg: isDark ? '#0A0A0A' : '#FFFFFF',
-    surfaceBg: isDark ? '#1A1A1A' : '#FFFFFF',
+    panelBg: isDark ? 'var(--cp-bg-page, #1F1F21)' : '#FFFFFF',
+    surfaceBg: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF',
     text1: isDark ? '#EDEDED' : '#0F172A',
     text2: isDark ? '#A1A1A1' : '#64748B',
     text3: isDark ? '#878787' : '#94A3B8',
@@ -118,7 +118,7 @@ export default function NotificationPanel({ isOpen, onClose }: NotificationPanel
     shadow: isDark
       ? '0 8px 24px rgba(0,0,0,0.4), 0 0 1px rgba(0,0,0,0.5)'
       : '0 8px 24px rgba(15,23,42,0.12), 0 0 1px rgba(15,23,42,0.08)',
-    menuBg: isDark ? '#1A1A1A' : '#FFFFFF',
+    menuBg: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF',
     divider: isDark ? '#292929' : 'rgba(15,23,42,0.08)',
   };
 

@@ -52,7 +52,7 @@ export function AllWorkDetailPanel({ item, onClose, onNavigateToParent }: AllWor
       className="flex flex-col h-full"
       style={{
         fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-        backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF',
+        backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF',
         color: isDark ? '#EDEDED' : '#172B4D',
       }}
     >
@@ -90,7 +90,7 @@ export function AllWorkDetailPanel({ item, onClose, onNavigateToParent }: AllWor
           className="px-4 py-2"
           style={{
             borderBottom: `1px solid ${isDark ? '#2E2E2E' : '#DFE1E6'}`,
-            backgroundColor: isDark ? '#1A1A1A' : '#F8FAFC',
+            backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : '#F8FAFC',
           }}
         >
           <div className="flex items-center gap-2 text-[12px]">
@@ -132,7 +132,7 @@ export function AllWorkDetailPanel({ item, onClose, onNavigateToParent }: AllWor
             className="px-4 h-10 rounded-none justify-start gap-0"
             style={{
               borderBottom: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`,
-              backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF',
+              backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF',
             }}
           >
             <TabsTrigger
@@ -171,7 +171,7 @@ export function AllWorkDetailPanel({ item, onClose, onNavigateToParent }: AllWor
               <div
                 className="text-[14px] leading-relaxed rounded p-3 min-h-[60px]"
                 style={{
-                  backgroundColor: isDark ? '#1A1A1A' : '#F8FAFC',
+                  backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : '#F8FAFC',
                   color: isDark ? '#EDEDED' : '#172B4D',
                   border: isDark ? '1px solid #2E2E2E' : 'none',
                 }}
@@ -241,7 +241,7 @@ export function AllWorkDetailPanel({ item, onClose, onNavigateToParent }: AllWor
                   <div
                     className="rounded p-3"
                     style={{
-                      backgroundColor: isDark ? '#1A1A1A' : '#F8FAFC',
+                      backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : '#F8FAFC',
                       border: isDark ? '1px solid #2E2E2E' : 'none',
                     }}
                   >

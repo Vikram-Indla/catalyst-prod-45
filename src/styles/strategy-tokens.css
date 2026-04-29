@@ -97,10 +97,10 @@
 
 /* ── DARK MODE — Dark mode overrides ── */
 .dark .strategy-room , [data-theme="dark"] .strategy-room {
-  --catalyst-bg-app: #0A0A0A;
-  --catalyst-bg-surface-0: #0A0A0A;
-  --catalyst-bg-surface-1: #0A0A0A;
-  --catalyst-bg-surface-2: #0A0A0A;
+  --catalyst-bg-app: var(--cp-bg-page, #1F1F21);
+  --catalyst-bg-surface-0: var(--cp-bg-page, #1F1F21);
+  --catalyst-bg-surface-1: var(--cp-bg-page, #1F1F21);
+  --catalyst-bg-surface-2: var(--cp-bg-page, #1F1F21);
   --catalyst-bg-surface-3: #292929;
   --catalyst-bg-hover: #1F1F1F;
   --catalyst-bg-active: #292929;
@@ -109,7 +109,7 @@
   --catalyst-text-primary: #EDEDED;
   --catalyst-text-secondary: #A1A1A1;
   --catalyst-text-tertiary: #878787;
-  --catalyst-text-inverse: #0A0A0A;
+  --catalyst-text-inverse: var(--cp-bg-page, #1F1F21);
   --catalyst-text-link: #7DB8FC;
   --catalyst-text-on-primary: #FFFFFF;
 
