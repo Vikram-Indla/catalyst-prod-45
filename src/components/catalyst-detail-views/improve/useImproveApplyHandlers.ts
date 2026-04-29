@@ -25,7 +25,7 @@ export function useImproveApplyHandlers(issue: IssueLike | null | undefined) {
       if (!issue?.issue_key) return;
       await supabase
         .from('ph_issues')
-        .update({ description_adf: plainTextToAdfDoc(newDesc) })
+        .update({ description_adf: plainTextToAdfDoc(newDesc) as unknown as never })
         .eq('issue_key', issue.issue_key);
       await queryClient.invalidateQueries({ queryKey: ['cv-issue-detail', issue.id] });
     },
