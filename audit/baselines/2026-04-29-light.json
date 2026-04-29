@@ -1,0 +1,12 @@
+{
+  "date": "2026-04-29",
+  "mode": "light",
+  "tool": "audit/contrast-probe.js (ADS-aware)",
+  "wcag": "AA (4.5:1 normal, 3:1 large)",
+  "results": [
+    { "url": "/for-you", "failingCount": 0 }
+  ],
+  "notes": [
+    "Light-mode spot check; full sweep deferred — Wave 1-3 risk surface was dark mode."
+  ]
+}

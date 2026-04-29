@@ -68,24 +68,10 @@
       })();
     </script>
 
-    <!-- TEMP: ADS contrast probe auto-runner (remove after Wave verification) -->
-    <script src="/_audit-contrast-probe.js"></script>
-    <script>
-      (function () {
-        var qs = new URLSearchParams(window.location.search);
-        var force = qs.get('probe');
-        if (force === 'dark') document.documentElement.classList.add('dark');
-        if (force === 'light') document.documentElement.classList.remove('dark');
-        window.addEventListener('load', function () {
-          setTimeout(function () {
-            try {
-              var r = window.__catalystContrastProbe && window.__catalystContrastProbe();
-              if (r) console.log('[CONTRAST_PROBE]', JSON.stringify(r));
-            } catch (e) { console.error('[CONTRAST_PROBE_ERR]', e); }
-          }, 3000);
-        });
-      })();
-    </script>
+    <!-- ADS contrast probe — load on demand only.
+         To run: open the browser console and execute window.__catalystContrastProbe()
+         Source: public/_audit-contrast-probe.js (mirror of audit/contrast-probe.js) -->
+    <script src="/_audit-contrast-probe.js" defer></script>
     
   
   

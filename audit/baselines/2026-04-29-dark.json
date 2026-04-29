@@ -1,0 +1,20 @@
+{
+  "date": "2026-04-29",
+  "mode": "dark",
+  "tool": "audit/contrast-probe.js (ADS-aware)",
+  "wcag": "AA (4.5:1 normal, 3:1 large)",
+  "results": [
+    { "url": "/for-you", "failingCount": 0 },
+    { "url": "/projects/7bf82b68-ac81-44d5-9f55-0a4ad0c945a6/work", "failingCount": 0 },
+    { "url": "/strategyhub", "failingCount": 0 },
+    { "url": "/resources", "failingCount": 0 },
+    { "url": "/incident-hub", "failingCount": 0 },
+    { "url": "/testhub/dashboard", "failingCount": 0 }
+  ],
+  "notes": [
+    "Wave 1-3 token migration verified clean across 6 dense surfaces.",
+    "Probe runs at load+3s, after @atlaskit/tokens hydration.",
+    "Probe measures contrast only — does NOT catch hydration-flash or primitive-parity defects.",
+    "StatusChip primitive defect (image 2 RCA) was caught by visual inspection, not probe."
+  ]
+}
