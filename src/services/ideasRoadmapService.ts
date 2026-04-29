@@ -91,7 +91,7 @@ export async function convertIdeaToInitiative(ideaId: string): Promise<{ request
 
   if (fetchErr || !idea) throw new Error(`convertIdeaToInitiative: ${fetchErr?.message}`);
 
-  const { data: initiative, error: createErr } = await supabase
+  const { data: initiative, error: createErr } = await (supabase as any)
     .from('ph_requests')
     .insert({
       title: (idea as any).title,

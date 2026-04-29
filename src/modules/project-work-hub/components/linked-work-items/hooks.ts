@@ -148,7 +148,7 @@ export function useLinkedWorkItems(issueKey: string) {
       // map to "issue_type=Request" for icon/lozenge rendering.
       const stillMissing = targetKeys.filter((k) => !targetMap.has(k));
       if (stillMissing.length > 0) {
-        const { data: initTargets } = await typedQuery('ph_requests')
+        const { data: initTargets } = await (supabase as any).from('ph_requests')
           .select('id, initiative_key, title, status, assignee_id, priority, updated_at')
           .in('initiative_key', stillMissing)
           .eq('is_deleted', false);

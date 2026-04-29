@@ -303,7 +303,7 @@ export const goalsService = {
   // ── Goal-Request linking (Fix 5) ──
 
   async getGoalInitiatives(goalId: string): Promise<GoalInitiativeLink[]> {
-    const { data, error } = await supabase
+    const { data, error } = await (supabase as any)
       .from('es_goal_initiatives')
       .select('*, ph_requests!request_id (id, initiative_key, title, status, department_id)')
       .eq('goal_id', goalId);
@@ -319,7 +319,7 @@ export const goalsService = {
   },
 
   async linkInitiative(goalId: string, requestId: string): Promise<void> {
-    const { error } = await supabase
+    const { error } = await (supabase as any)
       .from('es_goal_initiatives')
       .insert({ goal_id: goalId, request_id: requestId });
     if (error) throw error;
@@ -334,12 +334,12 @@ export const goalsService = {
   },
 
   async searchInitiatives(query: string): Promise<{ id: string; initiative_key: string; title: string; status: string }[]> {
-    const { data, error } = await supabase
+    const { data, error } = await (supabase as any)
       .from('ph_requests')
       .select('id, initiative_key, title, status')
       .ilike('title', `%${query}%`)
       .limit(20);
     if (error) throw error;
-    return data || [];
+    return (data || []) as { id: string; initiative_key: string; title: string; status: string }[];
   },
 };
