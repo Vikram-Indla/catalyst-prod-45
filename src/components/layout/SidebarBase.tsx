@@ -155,28 +155,22 @@ export function SidebarBase({
   const { favorites, toggleFavorite, isFavorite } = useFavorites();
   const { isDark } = useTheme();
 
-  // Dark mode token helpers — ECLIPSE D8-R3 + Enterprise polish
-  // ADS DARK PARITY (2026-04-29): dark hex values aligned to the Atlaskit
-  // dark palette so the Catalyst rail matches Jira's "For you" sidebar
-  // exactly. Light-mode hex untouched per Vikram's directive
-  // ("do not touch light mode tokens. zero impact").
-  // Token map (ADS dark → fallback hex used here):
-  //   color.background.neutral             → #1D2125  (sidebar bg)
-  //   color.border                         → #38414A  (border + divider)
-  //   color.text                           → #B6C2CF  (item text)
-  //   color.text.subtle                    → #9FADBC  (section label)
-  //   color.background.selected            → #1C2B41  (active row bg)
-  //   color.text.selected                  → #85B8FF  (active row text)
-  //   color.background.neutral.subtle.hov. → #A1BDD914 (hover bg, 8% white-blue)
-  //   color.background.neutral.subtle      → #22272B  (badge bg)
+  // Dark mode token helpers — ADS Side-Nav Canonical Parity (2026-04-29)
+  // Source of truth: @atlaskit/navigation-system side-nav.compiled.css and
+  // @atlaskit/side-navigation button-item.compiled.css. Drift fixed:
+  //   - Surface: was --ds-background-neutral (page bg), now --ds-surface (rail bg)
+  //   - Border: was opaque #38414A, now translucent --ds-border
+  //   - Inactive text: was --ds-text (loud), now --ds-text-subtle (ADS spec)
+  //   - Hover: ADS does NOT promote text color on hover; only bg changes
+  // Light-mode hex untouched ("do not touch light mode tokens. zero impact").
   const tokens: DarkTokens = {
     isDark,
-    itemText: isDark ? 'var(--ds-text, #B6C2CF)' : '#42526E',
+    itemText: isDark ? 'var(--ds-text-subtle, #9FADBC)' : '#42526E',
     activeText: isDark ? 'var(--ds-text-selected, #85B8FF)' : '#0052CC',
     activeBg: isDark ? 'var(--ds-background-selected, #1C2B41)' : '#E9F2FF',
     hoverBg: isDark ? 'var(--ds-background-neutral-subtle-hovered, #A1BDD914)' : '#F4F5F7',
-    hoverText: isDark ? 'var(--ds-text, #B6C2CF)' : '#172B4D',
-    iconOpacityInactive: isDark ? 0.72 : 0.75,
+    hoverText: isDark ? 'var(--ds-text-subtle, #9FADBC)' : '#172B4D',
+    iconOpacityInactive: isDark ? 0.85 : 0.75,
     badgeBg: isDark ? 'var(--ds-background-neutral-subtle, #22272B)' : '#EBECF0',
     badgeText: isDark ? 'var(--ds-text-subtle, #9FADBC)' : '#6B778C',
   };
@@ -188,9 +182,12 @@ export function SidebarBase({
   // affordance pop without reintroducing brand colour.
   const chevronColor = isDark ? 'var(--ds-text-subtle, #9FADBC)' : '#6B778C';
   const chevronHoverColor = isDark ? 'var(--ds-text, #B6C2CF)' : '#172B4D';
-  const sidebarBg = isDark ? 'var(--ds-background-neutral, #1D2125)' : '#FFFFFF';
-  const sidebarBorder = isDark ? 'var(--ds-border, #38414A)' : '#DFE1E6';
-  const dividerColor = isDark ? 'var(--ds-border, #38414A)' : '#DFE1E6';
+  // ADS canonical: side-nav uses --ds-surface (rail surface lifts above
+  // page bg --ds-background-neutral). Was incorrectly using page bg token.
+  const sidebarBg = isDark ? 'var(--ds-surface, #22272B)' : '#FFFFFF';
+  // ADS canonical: --ds-border is translucent (#a6c5e229 dark / #0b120e24 light)
+  const sidebarBorder = isDark ? 'var(--ds-border, #a6c5e229)' : '#DFE1E6';
+  const dividerColor = isDark ? 'var(--ds-border, #a6c5e229)' : '#DFE1E6';
   const sectionLabel = isDark ? 'var(--ds-text-subtle, #9FADBC)' : '#6B778C';
   const hubLabel = isDark ? 'var(--ds-text, #B6C2CF)' : '#172B4D';
 
@@ -434,7 +431,8 @@ function renderMenuItem(
         justifyContent: expanded ? 'flex-start' : 'center',
         background: active ? tk.activeBg : 'transparent',
         lineHeight: 1,
-        borderRadius: '6px',
+        // ADS canonical: --ds-radius-small (3px). Was 6px (Catalyst pill drift).
+        borderRadius: 'var(--ds-radius-small, 3px)',
         letterSpacing: '0',
       }}
       onMouseEnter={(e) => {
@@ -449,10 +447,12 @@ function renderMenuItem(
         e.currentTarget.style.color = active ? tk.activeText : tk.itemText;
       }}
     >
-      {/* Left Accent Bar — 3px, only when expanded and active.
-          Dark mode uses ADS color.border.selected (#579DFF/#669DF1 family)
-          to match Jira's For-you rail; light mode keeps Catalyst Blue. */}
-      {active && expanded && (
+      {/* Left Accent Bar — DARK ONLY. Removed in dark mode (2026-04-29) to
+          match ADS canonical Item: Atlaskit's button-item ships zero left
+          decoration; selection is conveyed by --ds-background-selected +
+          --ds-text-selected only. Light mode keeps the Catalyst accent bar
+          per the "do not touch light mode tokens" directive. */}
+      {active && expanded && !tk.isDark && (
         <span
           style={{
             position: 'absolute',
@@ -460,9 +460,7 @@ function renderMenuItem(
             top: '4px',
             bottom: '4px',
             width: '3px',
-            background: tk.isDark
-              ? 'var(--ds-border-selected, #579DFF)'
-              : 'var(--cp-blue)',
+            background: 'var(--cp-blue)',
             borderRadius: '0 3px 3px 0',
           }}
         />
