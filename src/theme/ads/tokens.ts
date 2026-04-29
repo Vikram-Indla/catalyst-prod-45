@@ -69,7 +69,7 @@ export interface AdsToken {
  */
 export const adsTokens = {
   bg: {
-    page:     { cp: '--cp-bg-page',     light: '#FFFFFF', dark: '#1D2125', atlaskit: 'color.background.neutral' } satisfies AdsToken,
+    page:     { cp: '--cp-bg-page',     light: '#FFFFFF', dark: '#1F1F21', atlaskit: 'color.background.neutral' } satisfies AdsToken,
     /**
      * hubPage — outer page background for <AtlaskitPageShell>.
      *
@@ -87,8 +87,8 @@ export const adsTokens = {
      *
      * Dark mode continues to mirror DARK MODE page bg #0A0A0A (CLAUDE.md §18).
      */
-    hubPage:  { cp: '--cp-bg-hub-page', light: '#FFFFFF', dark: '#1D2125', atlaskit: '' } satisfies AdsToken,
-    surface:  { cp: '--cp-bg-surface',  light: '#FFFFFF', dark: '#22272B', atlaskit: 'elevation.surface' } satisfies AdsToken,
+    hubPage:  { cp: '--cp-bg-hub-page', light: '#FFFFFF', dark: '#1F1F21', atlaskit: '' } satisfies AdsToken,
+    surface:  { cp: '--cp-bg-surface',  light: '#FFFFFF', dark: '#242528', atlaskit: 'elevation.surface' } satisfies AdsToken,
     overlay:  { cp: '--cp-bg-overlay',  light: '#F8FAFC', dark: '#1F1F1F', atlaskit: 'elevation.surface.overlay' } satisfies AdsToken,
     inset:    { cp: '--cp-bg-inset',    light: '#F1F5F9', dark: '#111111', atlaskit: 'color.background.neutral.subtle' } satisfies AdsToken,
     hover:    { cp: '--cp-interact-hover',    light: 'rgba(0,0,0,0.04)', dark: '#1F1F1F', atlaskit: 'color.background.neutral.hovered' } satisfies AdsToken,

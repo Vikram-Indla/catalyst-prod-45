@@ -107,15 +107,15 @@
    ThemeProvider also sets <html class="dark">, which Atlaskit never
    touches, so we use that as our flip signal. Both layers coexist. */
 .dark, [data-theme="dark"] {
-  /* Surfaces — ADS warm-neutral (Atlassian elevation.surface family).
-     2026-04-29: migrated from Geist pure black (#0A0A0A/#1A1A1A) — those
-     read as cool/blue against modal overlays at high DPI. ADS uses
-     #1D2125 (page) and #22272B (raised surface) — Jira-parity neutral. */
-  --cp-bg:              #1D2125;
-  --cp-bg-canvas:       #1D2125;
-  --cp-bg-sidebar-hdr:  #1D2125;
-  --cp-bg-sunken:       #1D2125;
-  --cp-float:           #22272B;
+  /* Surfaces — ADS canonical dark (Atlassian elevation.surface family).
+     2026-04-29: hex values pulled from
+     node_modules/@atlaskit/tokens/figma/atlassian-dark.json — truly
+     neutral (no blue cast). Replaces Geist pure black which read cool. */
+  --cp-bg:              #1F1F21;
+  --cp-bg-canvas:       #1F1F21;
+  --cp-bg-sidebar-hdr:  #1F1F21;
+  --cp-bg-sunken:       #18191A;
+  --cp-float:           #242528;
   /* Bridge gap closure (2026-04-28) — see light block. DARK MODE
      dark counterparts mirror tokens.ts adsTokens.bg.overlay/inset
      and text.disabled. */
