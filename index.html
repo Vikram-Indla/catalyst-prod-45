@@ -53,18 +53,32 @@
     <meta name="twitter:site" content="@Lovable" />
     <meta name="twitter:image" content="https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/a9ebedbd-fb06-43c1-8bc8-559e507aecbe/id-preview-6c58e6e0--2bb025c8-4b1b-4b50-9d0e-de19bd05563b.lovable.app-1773152959457.png">
     
-    <!-- No-flash theme initialization - MUST run before React -->
+    <!-- No-flash theme initialization - MUST run before React.
+         Rule 2 (DARK_MODE_HANDOFF): Catalyst owns ONLY the `.dark` class.
+         `data-theme` is owned by Atlaskit's setGlobalTheme — never set it here. -->
     <script>
       (function() {
         var t = localStorage.getItem('catalyst-theme');
-        if (t === 'dark' || (t === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-          document.documentElement.setAttribute('data-theme', 'dark');
+        var isDark = t === 'dark' || (t === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        if (isDark) {
           document.documentElement.classList.add('dark');
         } else {
-          document.documentElement.setAttribute('data-theme', 'light');
           document.documentElement.classList.remove('dark');
         }
       })();
+    </script>
+
+    <!-- TEMP: ADS contrast probe auto-runner (remove after Wave verification) -->
+    <script src="/_audit-contrast-probe.js"></script>
+    <script>
+      window.addEventListener('load', function () {
+        setTimeout(function () {
+          try {
+            var r = window.__catalystContrastProbe && window.__catalystContrastProbe();
+            if (r) console.log('[CONTRAST_PROBE]', JSON.stringify(r));
+          } catch (e) { console.error('[CONTRAST_PROBE_ERR]', e); }
+        }, 3000);
+      });
     </script>
     
   
