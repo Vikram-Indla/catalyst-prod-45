@@ -1365,16 +1365,16 @@
 [data-theme="dark"] .planhub-module,
 .dark .planhub-module {
   /* Surfaces */
-  --ph-bg: #0A0A0A;
-  --ph-surface: #1A1A1A;
-  --ph-surface-hover: #1A1A1A;
+  --ph-bg: var(--cp-bg-page, #1F1F21);
+  --ph-surface: var(--cp-bg-surface, #242528);
+  --ph-surface-hover: var(--cp-bg-surface, #242528);
   --ph-border: rgba(255, 255, 255, 0.08);
   --ph-border-dark: rgba(255, 255, 255, 0.12);
 
   /* Gray Scale (inverted for dark) */
-  --ph-white: #0A0A0A;
-  --ph-gray-50: #1A1A1A;
-  --ph-gray-100: #1A1A1A;
+  --ph-white: var(--cp-bg-page, #1F1F21);
+  --ph-gray-50: var(--cp-bg-surface, #242528);
+  --ph-gray-100: var(--cp-bg-surface, #242528);
   --ph-gray-200: #292929;
   --ph-gray-300: #878787;
   --ph-gray-400: #878787;
@@ -1414,7 +1414,7 @@
 /* Dark mode: AI chat bubble adjustments */
 [data-theme="dark"] .planhub-module .ph-ai-message.assistant .ph-ai-bubble,
 .dark .planhub-module .ph-ai-message.assistant .ph-ai-bubble {
-  background: #1A1A1A;
+  background: var(--cp-bg-surface, #242528);
   color: #EDEDED;
 }
 
@@ -1432,7 +1432,7 @@
 /* Dark mode: AI input field */
 [data-theme="dark"] .planhub-module .ph-ai-input input,
 .dark .planhub-module .ph-ai-input input {
-  background: #1A1A1A;
+  background: var(--cp-bg-surface, #242528);
   color: #EDEDED;
   border-color: rgba(255, 255, 255, 0.08);
 }
@@ -1440,14 +1440,14 @@
 /* Dark mode: form inputs */
 [data-theme="dark"] .planhub-module .ph-form-input,
 .dark .planhub-module .ph-form-input {
-  background: #1A1A1A;
+  background: var(--cp-bg-surface, #242528);
   color: #EDEDED;
   border-color: rgba(255, 255, 255, 0.12);
 }
 
 [data-theme="dark"] .planhub-module .ph-select,
 .dark .planhub-module .ph-select {
-  background: #1A1A1A;
+  background: var(--cp-bg-surface, #242528);
   color: #EDEDED;
   border-color: rgba(255, 255, 255, 0.08);
 }

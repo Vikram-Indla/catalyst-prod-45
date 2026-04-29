@@ -1216,7 +1216,7 @@
 /* Legend */
 :global(.dark) .legend,
 :global(.dark) .legend , [data-theme="dark"]) .legend {
-  background: var(--surface-1, #1a1a1a);
+  background: var(--surface-1, var(--cp-bg-surface, #242528));
   border-top-color: var(--border-subtle, #333333);
   color: var(--text-secondary, #a3a3a3);
 }
@@ -1258,7 +1258,7 @@
 
 :global(.dark) .timelineBody::-webkit-scrollbar-track,
 :global(.dark) .timelineBody::-webkit-scrollbar-track , [data-theme="dark"]) .timelineBody::-webkit-scrollbar-track {
-  background: var(--surface-1, #1a1a1a);
+  background: var(--surface-1, var(--cp-bg-surface, #242528));
 }
 
 /* Avatar ring visibility */

@@ -5,7 +5,7 @@
 
 /* Panel container */
 .dark .strategy-intel-panel {
-  background: #1A1A1A !important;
+  background: var(--cp-bg-surface, #242528) !important;
   border-color: #2E2E2E !important;
   color: #EDEDED !important;
 }
@@ -27,7 +27,7 @@
 
 /* Backgrounds */
 .dark .strategy-intel-panel .bg-white {
-  background: #1A1A1A !important;
+  background: var(--cp-bg-surface, #242528) !important;
 }
 .dark .strategy-intel-panel .bg-slate-100,
 .dark .strategy-intel-panel .bg-slate-50 {
@@ -59,7 +59,7 @@
 
 /* Footer */
 .dark .strategy-intel-panel .shrink-0.border-t {
-  background: #1A1A1A !important;
+  background: var(--cp-bg-surface, #242528) !important;
 }
 
 /* Metric cards in Executive Brief tab */

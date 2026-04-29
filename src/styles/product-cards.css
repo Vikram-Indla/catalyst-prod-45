@@ -46,7 +46,7 @@
   --pc-ink-secondary: #EDEDED;
   --pc-ink-tertiary: #A1A1A1;
   --pc-ink-muted: #7D7D7D;
-  --pc-surface: #1A1A1A;
+  --pc-surface: var(--cp-bg-surface, #242528);
   --pc-surface-secondary: #1F1F1F;
   --pc-surface-tertiary: #1F1F1F;
   --pc-border: #2E2E2E;

@@ -1238,7 +1238,7 @@
 
 /* Root background */
 .dark #r360-root {
-  background: #0A0A0A !important;
+  background: var(--cp-bg-page, #1F1F21) !important;
   --cp-interact-hover: #1F1F1F;
   --cp-interact-press: #292929;
   --cp-interact-selected: #1F1F1F;
@@ -1252,7 +1252,7 @@
 .dark #r360-root .r3-summary-bar,
 .dark #r360-root .r3-board,
 .dark #r360-root .r3-chrono {
-  background: #0A0A0A !important;
+  background: var(--cp-bg-page, #1F1F21) !important;
 }
 
 /* Period toggle */
@@ -1260,7 +1260,7 @@
   border-color: #2E2E2E !important;
 }
 .dark #r360-root .r3-period-toggle button {
-  background: #1A1A1A !important;
+  background: var(--cp-bg-surface, #242528) !important;
   color: #A1A1A1 !important;
 }
 .dark #r360-root .r3-period-toggle button.active {
@@ -1282,13 +1282,13 @@
 .dark #r360-root .r3-day-cell,
 .dark #r360-root .r3-board-card,
 .dark #r360-root .r3-chrono-card {
-  background: #1A1A1A !important;
+  background: var(--cp-bg-surface, #242528) !important;
   border-color: #2E2E2E !important;
 }
 
 /* Ring canvas + actual ring classes used by this page */
 .dark #r360-root .r3-ring-canvas {
-  background: #0A0A0A !important;
+  background: var(--cp-bg-page, #1F1F21) !important;
   border-color: #2E2E2E !important;
 }
 .dark #r360-root .r3-ring-card,
@@ -1298,7 +1298,7 @@
 }
 .dark #r360-root .r3-ring-card,
 .dark #r360-root .r3-spoke-label {
-  background: #1A1A1A !important;
+  background: var(--cp-bg-surface, #242528) !important;
 }
 .dark #r360-root .r3-spoke-label {
   color: #A1A1A1 !important;
@@ -1363,7 +1363,7 @@
 .dark #r360-root .r3-week-nav,
 .dark #r360-root .r3-filter-pill,
 .dark #r360-root select {
-  background: #1A1A1A !important;
+  background: var(--cp-bg-surface, #242528) !important;
   border-color: #2E2E2E !important;
   color: #A1A1A1 !important;
 }
@@ -1389,16 +1389,16 @@
 
 /* Progress bar track */
 .dark #r360-root .r3-progress-track {
-  background: #1A1A1A !important;
+  background: var(--cp-bg-surface, #242528) !important;
 }
 
 /* ─── RING VIEW — Dark overrides ─── */
 .dark #r360-root .r3-ring-canvas {
-  background: #0A0A0A !important;
+  background: var(--cp-bg-page, #1F1F21) !important;
   border-color: #2E2E2E !important;
 }
 .dark #r360-root .r3-ring-card {
-  background: #1A1A1A !important;
+  background: var(--cp-bg-surface, #242528) !important;
   border-color: #2E2E2E !important;
   box-shadow: none !important;
 }
@@ -1425,7 +1425,7 @@
   color: #A1A1A1 !important;
 }
 .dark #r360-root .r3-spoke-label {
-  background: #1A1A1A !important;
+  background: var(--cp-bg-surface, #242528) !important;
   border-color: #2E2E2E !important;
   color: #A1A1A1 !important;
 }
@@ -1436,7 +1436,7 @@
 
 /* ─── PROFILE HEADER — Dark overrides ─── */
 .dark #r360-root .r3-profile {
-  background: #0A0A0A !important;
+  background: var(--cp-bg-page, #1F1F21) !important;
 }
 .dark #r360-root .r3-profile-name {
   color: #EDEDED !important;
@@ -1465,7 +1465,7 @@
 
 /* Quarter outline button — dark */
 .dark #r360-root .r3-btn-outline {
-  background: #1A1A1A !important;
+  background: var(--cp-bg-surface, #242528) !important;
   color: #EDEDED !important;
   border-color: #2E2E2E !important;
 }
@@ -1476,7 +1476,7 @@
 
 /* Drawer / side panel */
 .dark #r360-root .item-drawer {
-  background: #1A1A1A !important;
+  background: var(--cp-bg-surface, #242528) !important;
   border-color: #2E2E2E !important;
 }
 .dark #r360-root .item-drawer .drawer-header {
@@ -1485,12 +1485,12 @@
 
 /* Board column backgrounds */
 .dark #r360-root .r3-board-column {
-  background: #0A0A0A !important;
+  background: var(--cp-bg-page, #1F1F21) !important;
 }
 
 /* Chronology view */
 .dark #r360-root .r3-chrono-cell {
-  background: #0A0A0A !important;
+  background: var(--cp-bg-page, #1F1F21) !important;
   border-color: #292929 !important;
 }
 .dark #r360-root .r3-chrono-cell.current {
@@ -1499,12 +1499,12 @@
 
 /* Select / dropdown overrides */
 .dark #r360-root select {
-  background: #1A1A1A !important;
+  background: var(--cp-bg-surface, #242528) !important;
 
   color: #EDEDED !important;
 }
 .dark #r360-root .r3-day-cell.today {
-  background: #1A1A1A !important;
+  background: var(--cp-bg-surface, #242528) !important;
   border-color: #EDEDED !important;
 }
 
@@ -1542,7 +1542,7 @@
 .dark #r360-root [style*="background:#fff"],
 .dark #r360-root [style*="background: #F8FAFC"],
 .dark #r360-root [style*="background:#F8FAFC"] {
-  background: #1A1A1A !important;
+  background: var(--cp-bg-surface, #242528) !important;
 }
 .dark #r360-root [style*="border: 1px solid #E2E8F0"],
 .dark #r360-root [style*="border-color: #E2E8F0"],
@@ -1570,7 +1570,7 @@
 .dark #r360-root [style*="background: white"],
 .dark #r360-root [style*="background: rgb(255"],
 .dark #r360-root [style*="backgroundColor: rgb(255"] {
-  background: #0A0A0A !important;
+  background: var(--cp-bg-page, #1F1F21) !important;
 }
 
 /* Surface backgrounds — cards sitting on page → #1A1A1A */
@@ -1579,7 +1579,7 @@
 .dark #r360-root [style*="background: #FFFBEB"],
 .dark #r360-root [style*="background: #F8FAFC"],
 .dark #r360-root [style*="background: #F1F5F9"] {
-  background: #1A1A1A !important;
+  background: var(--cp-bg-surface, #242528) !important;
 }
 
 /* Light-mode border colors → ADS borders */
@@ -1611,7 +1611,7 @@
 /* rgba wash backgrounds → solid ADS hex */
 .dark #r360-root [style*="background: rgba(15,23,42,0.05)"],
 .dark #r360-root [style*="background: rgba(15, 23, 42, 0.05)"] {
-  background: #1A1A1A !important;
+  background: var(--cp-bg-surface, #242528) !important;
 }
 
 /* Divider lines using light-mode colors */

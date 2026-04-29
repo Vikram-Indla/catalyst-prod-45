@@ -481,16 +481,16 @@
 .jlpResetLink:hover { text-decoration: underline; }
 
 /* ── Dark mode ── */
-.dark .jlpHeader { background: #0A0A0A; border-color: #2E2E2E; }
+.dark .jlpHeader { background: var(--cp-bg-page, #1F1F21); border-color: #2E2E2E; }
 .dark .jlpSortBtn { color: #EDEDED; }
 .dark .jlpSortBtn:hover, .dark .jlpSortBtn.active { background: rgba(12,102,228,0.15); color: #4C9AFF; }
 .dark .jlpToolBtn { color: #878787; }
 .dark .jlpToolBtn:hover { background: #1F1F1F; color: #EDEDED; }
-.dark .jlpSortMenu { background: #1A1A1A; border-color: #2E2E2E; }
+.dark .jlpSortMenu { background: var(--cp-bg-surface, #242528); border-color: #2E2E2E; }
 .dark .jlpSortMenuTitle { color: #878787; }
 .dark .jlpSortOption { color: #EDEDED; }
 .dark .jlpSortOption:hover { background: #1F1F1F; }
-.dark .jlpBody { background: #0A0A0A; }
+.dark .jlpBody { background: var(--cp-bg-page, #1F1F21); }
 .dark .jlpCard { border-color: #2E2E2E; }
 .dark .jlpCard:hover { background: #1F1F1F; }
 .dark .jlpCard.jlpCardSelected { background: rgba(12,102,228,0.12); border-left-color: #4C9AFF; }
@@ -1597,32 +1597,32 @@
 @keyframes sp-pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
 
 /* ── Dark mode ── */
-.dark .awShellWrap { background: #0A0A0A; }
-.dark .awToolbar { background: #0A0A0A; border-color: #2E2E2E; }
-.dark .awToolbarBtn { background: #1A1A1A; border-color: #2E2E2E; color: #EDEDED; }
+.dark .awShellWrap { background: var(--cp-bg-page, #1F1F21); }
+.dark .awToolbar { background: var(--cp-bg-page, #1F1F21); border-color: #2E2E2E; }
+.dark .awToolbarBtn { background: var(--cp-bg-surface, #242528); border-color: #2E2E2E; color: #EDEDED; }
 .dark .awToolbarBtn:hover { background: #1F1F1F; }
 .dark .awToolbarBtn.awAskAi { background: none; color: #878787; }
 .dark .awToolbarBtn.awAskAi:hover { color: #4C9AFF; background: rgba(12,102,228,0.12); }
-.dark .awToolbarSearch { background: #1A1A1A; border-color: #2E2E2E; }
+.dark .awToolbarSearch { background: var(--cp-bg-surface, #242528); border-color: #2E2E2E; }
 .dark .awToolbarSearchInput { color: #EDEDED; }
-.dark .awToolbarAvatar { border-color: #0A0A0A; }
-.dark .awToolbarAvatarFallback { border-color: #0A0A0A; }
-.dark .awToolbarAvatarOverflow { background: #292929; color: #A1A1A1; border-color: #0A0A0A; }
-.dark .awViewToggleBtn { background: #1A1A1A; color: #878787; border-color: #2E2E2E; }
+.dark .awToolbarAvatar { border-color: var(--cp-bg-page, #1F1F21); }
+.dark .awToolbarAvatarFallback { border-color: var(--cp-bg-page, #1F1F21); }
+.dark .awToolbarAvatarOverflow { background: #292929; color: #A1A1A1; border-color: var(--cp-bg-page, #1F1F21); }
+.dark .awViewToggleBtn { background: var(--cp-bg-surface, #242528); color: #878787; border-color: #2E2E2E; }
 .dark .awViewToggleBtn:hover { background: #1F1F1F; }
 .dark .awViewToggleBtn.active { background: rgba(12,102,228,0.12); color: #4C9AFF; }
 .dark .awViewToggle { border-color: #2E2E2E; }
 .dark .awShell, .dark .awCol, .dark .awHeader,
-.dark .awIssueContent, .dark .awDetailsSidebar { background: #0A0A0A; }
+.dark .awIssueContent, .dark .awDetailsSidebar { background: var(--cp-bg-page, #1F1F21); }
 .dark .awDivider, .dark .awSidebarDivider::before { background: #2E2E2E; }
 .dark .awRow:hover, .dark .awSectionHead:hover,
 .dark .awDetailsSectionHead:hover { background: #1F1F1F; }
 .dark .awRow.awRowSelected { background: rgba(12,102,228,0.12); }
-.dark .awSearch { background-color: #1A1A1A; border-color: #2E2E2E; color: #EDEDED; }
-.dark .awChip, .dark .awPill { background: #1A1A1A; border-color: #2E2E2E; color: #EDEDED; }
+.dark .awSearch { background-color: var(--cp-bg-surface, #242528); border-color: #2E2E2E; color: #EDEDED; }
+.dark .awChip, .dark .awPill { background: var(--cp-bg-surface, #242528); border-color: #2E2E2E; color: #EDEDED; }
 /* .awNavArrow dark-mode rules removed — canonicalized 2026-04-19
    (component: IssueNavChevrons; light-only inline styles for now). */
-.dark .awCollapseBtn { background: #1A1A1A; border-color: #2E2E2E; }
+.dark .awCollapseBtn { background: var(--cp-bg-surface, #242528); border-color: #2E2E2E; }
 .dark .awIssueTitle { color: #EDEDED; }
 .dark .awRowTitle { color: #EDEDED; }
 .dark .awKey { color: #A1A1A1; }

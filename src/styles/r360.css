@@ -501,20 +501,20 @@
 
 /* Profile card */
 .dark #r360-root .r3-profile {
-  background: #1A1A1A !important;
+  background: var(--cp-bg-surface, #242528) !important;
   border-color: #2E2E2E !important;
 }
 
 /* KPI cards */
 .dark #r360-root .r3-kpi--stale,
 .dark #r360-root .r3-kpi {
-  background: #1A1A1A !important;
+  background: var(--cp-bg-surface, #242528) !important;
   border-color: #2E2E2E !important;
 }
 
 /* Tab bar */
 .dark #r360-root .r3-tab-bar {
-  background: #0A0A0A !important;
+  background: var(--cp-bg-page, #1F1F21) !important;
   border-color: #292929 !important;
 }
 .dark #r360-root .r3-tab {
@@ -530,7 +530,7 @@
 
 /* Period toggle (Weekly/Monthly) */
 .dark #r360-root .r3-toggle button {
-  background: #1A1A1A !important;
+  background: var(--cp-bg-surface, #242528) !important;
   color: #A1A1A1 !important;
   border-color: #2E2E2E !important;
 }
@@ -542,7 +542,7 @@
 
 /* Week header / date strip */
 .dark #r360-root .r3-week-strip {
-  background: #0A0A0A !important;
+  background: var(--cp-bg-page, #1F1F21) !important;
   border-color: #292929 !important;
 }
 .dark #r360-root .r3-week-label {
@@ -551,7 +551,7 @@
 
 /* Calendar day cells */
 .dark #r360-root .r3-date-cell {
-  background: #1A1A1A !important;
+  background: var(--cp-bg-surface, #242528) !important;
   border-color: #292929 !important;
 }
 .dark #r360-root .r3-date-cell.current {
@@ -559,13 +559,13 @@
   border-color: rgba(37,99,235,0.3) !important;
 }
 .dark #r360-root .r3-date-dot--other {
-  background: #1A1A1A !important;
+  background: var(--cp-bg-surface, #242528) !important;
   border-color: #878787 !important;
 }
 
 /* Status filter chips */
 .dark #r360-root .r3-status-chip {
-  background: #1A1A1A !important;
+  background: var(--cp-bg-surface, #242528) !important;
   color: #A1A1A1 !important;
   border-color: #2E2E2E !important;
 }
@@ -582,19 +582,19 @@
 
 /* Progress bar */
 .dark #r360-root .r3-progress-bg {
-  background: #1A1A1A !important;
+  background: var(--cp-bg-surface, #242528) !important;
 }
 
 /* Ring view canvas */
 .dark #r360-root .r3-ring-canvas,
 .dark .r3-ring-canvas {
-  background: #0A0A0A !important;
+  background: var(--cp-bg-page, #1F1F21) !important;
   border-color: #2E2E2E !important;
 }
 
 /* Ring view cards */
 .dark #r360-root .r3-ring-card {
-  background: #1A1A1A !important;
+  background: var(--cp-bg-surface, #242528) !important;
   border-color: #2E2E2E !important;
   box-shadow: none !important;
 }
@@ -605,10 +605,10 @@
 
 /* Board columns */
 .dark #r360-root .r3-board-col {
-  background: #0A0A0A !important;
+  background: var(--cp-bg-page, #1F1F21) !important;
 }
 .dark #r360-root .r3-board-item {
-  background: #1A1A1A !important;
+  background: var(--cp-bg-surface, #242528) !important;
   border-color: #2E2E2E !important;
 }
 .dark #r360-root .r3-board-item:hover {
@@ -623,19 +623,19 @@
   color: #A1A1A1 !important;
 }
 .dark #r360-root .r3-chrono-item {
-  background: #1A1A1A !important;
+  background: var(--cp-bg-surface, #242528) !important;
   border-color: #2E2E2E !important;
 }
 
 /* Detail panel / drawer */
 .dark #r360-root .r3-detail-panel {
-  background: #1A1A1A !important;
+  background: var(--cp-bg-surface, #242528) !important;
   border-color: #2E2E2E !important;
 }
 
 /* Search input */
 .dark #r360-root .r3-search {
-  background: #1A1A1A !important;
+  background: var(--cp-bg-surface, #242528) !important;
   border-color: #2E2E2E !important;
   color: #EDEDED !important;
 }
@@ -643,7 +643,7 @@
 /* Quarter select + nav buttons */
 .dark #r360-root .r3-quarter-picker,
 .dark #r360-root .r3-nav-btn {
-  background: #1A1A1A !important;
+  background: var(--cp-bg-surface, #242528) !important;
   border-color: #2E2E2E !important;
   color: #A1A1A1 !important;
 }
@@ -660,7 +660,7 @@
 .dark #r360-root [style*="background: rgb(255"],
 .dark #r360-root [style*="background: #F8FAFC"],
 .dark #r360-root [style*="background:#F8FAFC"] {
-  background: #0A0A0A !important;
+  background: var(--cp-bg-page, #1F1F21) !important;
 }
 .dark #r360-root [style*="border-color: #E2E8F0"],
 .dark #r360-root [style*="border: 1px solid #E2E8F0"] {

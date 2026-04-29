@@ -55,7 +55,7 @@
 
 /* Dark mode */
 .dark .planner-task-list-content {
-  --tl-surface-page: #0a0a0a;
+  --tl-surface-page: var(--cp-bg-page, #1F1F21);
   --tl-surface-card: #171717;
   --tl-surface-header: #171717;
   --tl-surface-hover: #262626;

@@ -176,10 +176,10 @@
    ECLIPSE — DARK MODE DARK MODE (R360 Tokens)
    ═══════════════════════════════════════════════════════ */
 .dark .r360-root {
-  --r360-bg: #0A0A0A;
-  --r360-bg-alt: #1A1A1A;
-  --r360-bg-warm: #1A1A1A;
-  --r360-surface: #1A1A1A;
+  --r360-bg: var(--cp-bg-page, #1F1F21);
+  --r360-bg-alt: var(--cp-bg-surface, #242528);
+  --r360-bg-warm: var(--cp-bg-surface, #242528);
+  --r360-surface: var(--cp-bg-surface, #242528);
   --r360-surface-hover: #1F1F1F;
   --r360-surface-active: #292929;
 
@@ -206,5 +206,5 @@
 }
 
 .dark .r360-root .r360-row-alt {
-  background: #1A1A1A;
+  background: var(--cp-bg-surface, #242528);
 }

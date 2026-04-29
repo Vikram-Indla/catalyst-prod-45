@@ -284,7 +284,7 @@
   --ra-white: hsl(var(--card));
   --ra-slate-50: hsl(var(--muted));
   /* §L38 hex only. DARK MODE dark-mode palette (CLAUDE.md §18). */
-  --ra-slate-100: #1A1A1A;  /* card surface */
+  --ra-slate-100: var(--cp-bg-surface, #242528);  /* card surface */
   --ra-slate-200: #292929;  /* active / pressed */
   --ra-slate-700: #A1A1A1;  /* text secondary */
   --ra-slate-800: #EDEDED;  /* text primary */

@@ -897,7 +897,7 @@
    ========================================================================== */
 
 .dark .mobile-bottom-nav , [data-theme="dark"] .mobile-bottom-nav {
-  background: #1A1A1A;
+  background: var(--cp-bg-surface, #242528);
   border-top-color: #2E2E2E;
 }
 
@@ -919,11 +919,11 @@
 }
 
 .dark .modal-header , [data-theme="dark"] .modal-header {
-  background: #1A1A1A;
+  background: var(--cp-bg-surface, #242528);
   border-bottom-color: #2E2E2E;
 }
 
 .dark .modal-footer , [data-theme="dark"] .modal-footer {
-  background: #1A1A1A;
+  background: var(--cp-bg-surface, #242528);
   border-top-color: #2E2E2E;
 }
