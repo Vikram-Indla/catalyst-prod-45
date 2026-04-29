@@ -65,7 +65,7 @@ function toIdea(row: any): Idea {
     created_at: row.created_at || null,
     updated_at: row.updated_at || null,
     roadmap_quarter: row.roadmap_quarter || null,
-  };
+  } as Idea;
 }
 
 function shortenDept(dept: string): string {
