@@ -1106,42 +1106,38 @@ export function CreateStoryModal({
 
               <Box xcss={dividerStyles} />
 
-              {/* ── Status — manual label (StatusChip is not a native input;
-                  ADS Field renders the label inline which breaks the layout).
-                  Accessibility: chip trigger has aria-label + aria-haspopup.
-                  Screen readers will announce via aria-label on the button. */}
-              <div>
-                {/* Label styled to match ADS Field label: 12px/600/color.text.subtle */}
-                <label
-                  htmlFor={STATUS_CHIP_TRIGGER_ID}
-                  style={{
-                    fontFamily: 'var(--cp-font-body)',
-                    fontSize: 12,
-                    fontWeight: 600,
-                    color: token('color.text.subtle', '#44546F'),
-                    display: 'block',
-                    marginBottom: 4,
-                    lineHeight: '16px',
-                  }}
-                >
-                  Status
-                </label>
-                <StatusChip
-                  status={form.status}
-                  workType={workType}
-                  options={resolvedStatusOptions}
-                  onChange={(s) => updateField('status', s)}
-                />
-                <p style={{
-                  fontFamily: 'var(--cp-font-body)',
-                  fontSize: 12,
-                  color: token('color.text.subtlest', '#8590A2'),
-                  marginTop: 4,
-                  lineHeight: '16px',
-                }}>
-                  This is the initial status upon creation
-                </p>
-              </div>
+              {/* ── Status — Atlaskit Select with Lozenge option label
+                  (Jira-parity: lozenge sits inside select control, full
+                  ADS dark-mode token resolution, no hand-rolled chip). */}
+              <Field name="status" label="Status">
+                {({ fieldProps }) => {
+                  const selected =
+                    resolvedStatusOptions.find((o) => o.value === form.status) ?? null;
+                  return (
+                    <>
+                      <Select
+                        {...(fieldProps as any)}
+                        inputId="create-story-status"
+                        value={selected}
+                        options={resolvedStatusOptions}
+                        isSearchable={false}
+                        isClearable={false}
+                        onChange={(opt: any) =>
+                          opt && updateField('status', opt.value)
+                        }
+                        formatOptionLabel={(opt: any) => (
+                          <Lozenge appearance={statusAppearance(opt.value)} isBold>
+                            {opt.label}
+                          </Lozenge>
+                        )}
+                      />
+                      <HelperMessage>
+                        This is the initial status upon creation
+                      </HelperMessage>
+                    </>
+                  );
+                }}
+              </Field>
 
               {/* ── Summary — required ─────────────────────────────── */}
               <Field name="summary" label="Summary" isRequired>
