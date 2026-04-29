@@ -4814,3 +4814,236 @@
   color: var(--t10-gray-500) !important;
   margin: 0 0 24px !important;
 }
+
+/* === DARK MODE OVERRIDES (Wave 2 — auto-generated, Rule 3 pairing) === */
+.dark .t10-module .t10-btn-danger:hover {
+  background: #dc2626 !important;
+}
+
+.dark .t10-module .t10-week-checked-badge {
+  background: #ecfdf5 !important;
+}
+
+.dark .t10-module .t10-checked-out-badge {
+  background: #ecfdf5 !important;
+}
+
+.dark .t10-module .t10-ai-icon-wrapper svg {
+  color: #7c3aed !important;
+}
+
+.dark .t10-module .t10-ai-toggle {
+  color: #7c3aed !important;
+}
+
+.dark .t10-module .t10-ai-priority-badge.high {
+  color: #b45309 !important;
+}
+
+.dark .t10-module .t10-carryover-badge {
+  color: #b45309 !important;
+}
+
+.dark .t10-panel {
+  background: var(--ds-surface, #1a1a1a) !important;
+}
+
+.dark .t10-panel-tab.active {
+  color: #2563eb !important;
+  border-bottom-color: #2563eb !important;
+}
+
+.dark .t10-field-value:hover {
+  border-color: #2563eb !important;
+}
+
+.dark .t10-activity-loading svg {
+  color: #2563eb !important;
+}
+
+.dark .t10-activity-error {
+  color: #dc2626 !important;
+}
+
+.dark .t10-activity-error svg {
+  color: #dc2626 !important;
+}
+
+.dark .t10-activity-icon.created {
+  background: var(--ds-background-selected, #1c2b4a) !important;
+  color: #2563eb !important;
+}
+
+.dark .t10-activity-icon.completed {
+  background: #ecfdf5 !important;
+}
+
+.dark .t10-activity-icon.ranked {
+  background: #fffbeb !important;
+}
+
+.dark .t10-delete-btn:hover {
+  background: #fef2f2 !important;
+}
+
+.dark .t10-module .t10-panel-title-input {
+  background: var(--ds-surface, #1a1a1a) !important;
+  border: 2px solid #2563eb !important;
+}
+
+.dark .t10-module .t10-field-clickable:hover {
+  border-color: #2563eb !important;
+}
+
+.dark .t10-module .t10-date-picker-dropdown {
+  background: var(--ds-surface, #1a1a1a) !important;
+}
+
+.dark .t10-module .t10-date-input:focus {
+  border-color: #2563eb !important;
+}
+
+.dark .t10-module .t10-label-picker-dropdown {
+  background: var(--ds-surface, #1a1a1a) !important;
+}
+
+.dark .t10-module .t10-label-option.selected {
+  box-shadow: 0 0 0 2px #2563eb !important;
+}
+
+.dark .t10-checkout-stat {
+  background: var(--ds-surface, #1a1a1a) !important;
+}
+
+.dark .t10-checkout-item {
+  background: var(--ds-surface, #1a1a1a) !important;
+}
+
+.dark .t10-checkout-item-rank {
+  background: linear-gradient(135deg, #2563eb, #2563eb) !important;
+  color: var(--ds-surface, #1a1a1a) !important;
+}
+
+.dark .t10-checkout-option-btn.selected.resolved {
+  background: #ecfdf5 !important;
+}
+
+.dark .t10-checkout-option-btn.selected.carry {
+  background: var(--ds-background-selected, #1c2b4a) !important;
+  border-color: #2563eb !important;
+}
+
+.dark .t10-checkout-option-btn.selected.remove {
+  background: #fef2f2 !important;
+  color: #dc2626 !important;
+}
+
+.dark .t10-checkout-summary {
+  background: var(--ds-background-selected, #1c2b4a) !important;
+}
+
+.dark .t10-checkout-summary-icon {
+  color: #2563eb !important;
+}
+
+.dark .t10-module .t10-week-status-badge.closed {
+  background: #ecfdf5 !important;
+}
+
+.dark .t10-assignee-dropdown {
+  background: var(--ds-surface, #1a1a1a) !important;
+}
+
+.dark .t10-assignee-option.selected {
+  background: var(--ds-background-selected, #1c2b4a) !important;
+}
+
+.dark .t10-assignee-option.unassign {
+  color: #dc2626 !important;
+}
+
+.dark .t10-assignee-option.unassign:hover {
+  background: #fef2f2 !important;
+}
+
+.dark .t10-assignee-check {
+  color: #2563eb !important;
+}
+
+.dark .t10-assignee-action {
+  color: #dc2626 !important;
+}
+
+.dark .t10-skeleton-card {
+  background: var(--ds-surface, #1a1a1a) !important;
+}
+
+.dark .t10-module .t10-filter-trigger {
+  background-color: var(--ds-surface, #1a1a1a) !important;
+}
+
+.dark .t10-module .t10-filter-badge {
+  color: var(--ds-surface, #1a1a1a) !important;
+}
+
+.dark .t10-module .t10-dropdown-panel {
+  background-color: var(--ds-surface, #1a1a1a) !important;
+}
+
+.dark .t10-module .t10-dropdown-search-input:focus {
+  background-color: var(--ds-surface, #1a1a1a) !important;
+}
+
+.dark .t10-module .t10-dropdown-option-checkbox svg {
+  color: var(--ds-surface, #1a1a1a) !important;
+}
+
+.dark .t10-module .t10-dropdown-footer-btn-apply {
+  color: var(--ds-surface, #1a1a1a) !important;
+}
+
+.dark .t10-module .t10-date-input {
+  background-color: var(--ds-surface, #1a1a1a) !important;
+}
+
+.dark .t10-module .t10-lists-empty {
+  background-color: var(--ds-surface, #1a1a1a) !important;
+}
+
+.dark .t10-module .t10-card-menu-dropdown {
+  background-color: var(--ds-surface, #1a1a1a) !important;
+}
+
+.dark .t10-module .t10-week-header-v2 {
+  background-color: var(--ds-surface, #1a1a1a) !important;
+}
+
+.dark .t10-module .t10-week-selector-btn {
+  background-color: var(--ds-surface, #1a1a1a) !important;
+}
+
+.dark .t10-module .t10-btn-checkout {
+  color: var(--ds-surface, #1a1a1a) !important;
+}
+
+.dark .t10-module .t10-ai-banner-v2-icon {
+  color: var(--ds-surface, #1a1a1a) !important;
+}
+
+.dark .t10-module .t10-ai-banner-v2-subtitle {
+  color: #7c3aed !important;
+}
+
+.dark .t10-module .t10-ai-banner-v2-action {
+  color: #7c3aed !important;
+  background-color: var(--ds-surface, #1a1a1a) !important;
+}
+
+.dark .t10-module .t10-ai-suggestion-v2 {
+  background-color: var(--ds-surface, #1a1a1a) !important;
+}
+
+.dark .t10-module .t10-ai-suggestion-v2-action {
+  color: #7c3aed !important;
+}
+/* === END DARK MODE OVERRIDES === */
