@@ -79,16 +79,22 @@ export function HubSwitcher() {
                 justifyContent: 'center',
                 border: 'none',
                 borderRadius: 3,
-                background: open ? 'rgba(9,30,66,0.14)' : 'transparent',
+                // ADS canonical: pressed/hovered = color.background.neutral.{pressed,subtle.hovered}
+                // Dark fallbacks: pressed=#E5E9F640, hovered=#CECED912 (translucent neutrals)
+                background: open
+                  ? 'var(--ds-background-neutral-pressed, rgba(9,30,66,0.14))'
+                  : 'transparent',
                 cursor: 'pointer',
                 color: 'var(--cp-text-secondary, #44546F)',
                 transition: 'background 120ms ease',
               }}
               onMouseEnter={(e) => {
-                if (!open) e.currentTarget.style.background = 'rgba(9,30,66,0.06)';
+                if (!open) e.currentTarget.style.background = 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))';
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.background = open ? 'rgba(9,30,66,0.14)' : 'transparent';
+                e.currentTarget.style.background = open
+                  ? 'var(--ds-background-neutral-pressed, rgba(9,30,66,0.14))'
+                  : 'transparent';
               }}
             >
               <AppSwitcherIcon label="" color="currentColor" />
@@ -103,7 +109,9 @@ export function HubSwitcher() {
         sideOffset={8}
         alignOffset={-8}
         avoidCollisions={false}
-        className="z-[1000] p-0 shadow-[0_8px_24px_rgba(9,30,66,0.16)]"
+        className="z-[1000] p-0"
+        // ADS canonical overlay shadow — see elevation.shadow.overlay token. Inline so dark
+        // mode resolves through the CSS var; Tailwind arbitrary class can't host a var().
         style={{
           width: 320,
           // Phase 12 (2026-04-29): reverted to Atlaskit elevation.surface.overlay
