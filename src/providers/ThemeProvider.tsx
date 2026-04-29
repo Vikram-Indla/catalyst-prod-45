@@ -32,7 +32,8 @@ function resolveTheme(mode: ThemeMode): ResolvedTheme {
 }
 
 function applyTheme(resolved: ResolvedTheme) {
-  document.documentElement.setAttribute('data-theme', resolved);
+  // Rule 2 (DARK_MODE_HANDOFF): Catalyst owns ONLY the `.dark` class.
+  // `data-theme` is owned by Atlaskit's setGlobalTheme — never write it here.
   if (resolved === 'dark') {
     document.documentElement.classList.add('dark');
   } else {
