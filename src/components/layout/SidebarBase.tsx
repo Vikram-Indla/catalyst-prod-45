@@ -156,16 +156,29 @@ export function SidebarBase({
   const { isDark } = useTheme();
 
   // Dark mode token helpers — ECLIPSE D8-R3 + Enterprise polish
+  // ADS DARK PARITY (2026-04-29): dark hex values aligned to the Atlaskit
+  // dark palette so the Catalyst rail matches Jira's "For you" sidebar
+  // exactly. Light-mode hex untouched per Vikram's directive
+  // ("do not touch light mode tokens. zero impact").
+  // Token map (ADS dark → fallback hex used here):
+  //   color.background.neutral             → #1D2125  (sidebar bg)
+  //   color.border                         → #38414A  (border + divider)
+  //   color.text                           → #B6C2CF  (item text)
+  //   color.text.subtle                    → #9FADBC  (section label)
+  //   color.background.selected            → #1C2B41  (active row bg)
+  //   color.text.selected                  → #85B8FF  (active row text)
+  //   color.background.neutral.subtle.hov. → #A1BDD914 (hover bg, 8% white-blue)
+  //   color.background.neutral.subtle      → #22272B  (badge bg)
   const tokens: DarkTokens = {
     isDark,
-    itemText: isDark ? 'var(--cp-t1)' : '#42526E',
-    activeText: isDark ? '#7DB8FC' : '#0052CC',
-    activeBg: isDark ? 'rgba(0,82,204,0.08)' : '#E9F2FF',
-    hoverBg: isDark ? 'rgba(59,130,246,0.06)' : '#F4F5F7',
-    hoverText: isDark ? 'var(--cp-t1)' : '#172B4D',
+    itemText: isDark ? 'var(--ds-text, #B6C2CF)' : '#42526E',
+    activeText: isDark ? 'var(--ds-text-selected, #85B8FF)' : '#0052CC',
+    activeBg: isDark ? 'var(--ds-background-selected, #1C2B41)' : '#E9F2FF',
+    hoverBg: isDark ? 'var(--ds-background-neutral-subtle-hovered, #A1BDD914)' : '#F4F5F7',
+    hoverText: isDark ? 'var(--ds-text, #B6C2CF)' : '#172B4D',
     iconOpacityInactive: isDark ? 0.72 : 0.75,
-    badgeBg: isDark ? '#2E2E2E' : '#EBECF0',
-    badgeText: isDark ? 'var(--cp-t2)' : '#6B778C',
+    badgeBg: isDark ? 'var(--ds-background-neutral-subtle, #22272B)' : '#EBECF0',
+    badgeText: isDark ? 'var(--ds-text-subtle, #9FADBC)' : '#6B778C',
   };
 
   // Chevron critique (2026-04-19): brand-blue (#0052CC / --cp-blue) violated
@@ -173,13 +186,13 @@ export function SidebarBase({
   // only. Pulled the toggle to neutral muted tokens so the primary blue cue
   // stays unique to the primary action. Hover lifts to text-primary for an
   // affordance pop without reintroducing brand colour.
-  const chevronColor = isDark ? 'var(--cp-t2, #A1A1A1)' : '#6B778C';
-  const chevronHoverColor = isDark ? 'var(--cp-t1, #EDEDED)' : '#172B4D';
-  const sidebarBg = isDark ? '#0A0A0A' : '#FFFFFF';
-  const sidebarBorder = isDark ? '#2E2E2E' : '#DFE1E6';
-  const dividerColor = isDark ? '#2E2E2E' : '#DFE1E6';
-  const sectionLabel = isDark ? 'var(--cp-t2)' : '#6B778C';
-  const hubLabel = isDark ? 'var(--cp-t1)' : '#172B4D';
+  const chevronColor = isDark ? 'var(--ds-text-subtle, #9FADBC)' : '#6B778C';
+  const chevronHoverColor = isDark ? 'var(--ds-text, #B6C2CF)' : '#172B4D';
+  const sidebarBg = isDark ? 'var(--ds-background-neutral, #1D2125)' : '#FFFFFF';
+  const sidebarBorder = isDark ? 'var(--ds-border, #38414A)' : '#DFE1E6';
+  const dividerColor = isDark ? 'var(--ds-border, #38414A)' : '#DFE1E6';
+  const sectionLabel = isDark ? 'var(--ds-text-subtle, #9FADBC)' : '#6B778C';
+  const hubLabel = isDark ? 'var(--ds-text, #B6C2CF)' : '#172B4D';
 
   const isActive = (path: string, exact: boolean = false, activeMatchPaths: string[] = []) => {
     if (activeMatchPaths.some((matchPath) => location.pathname === matchPath || location.pathname.startsWith(matchPath + '/'))) {
