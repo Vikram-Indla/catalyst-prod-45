@@ -7180,7 +7180,7 @@ export type Database = {
         Row: {
           goal_id: string
           id: string
-          request_id: string
+          initiative_id: string
           linked_at: string | null
           linked_by: string | null
           notes: string | null
@@ -7188,7 +7188,7 @@ export type Database = {
         Insert: {
           goal_id: string
           id?: string
-          request_id: string
+          initiative_id: string
           linked_at?: string | null
           linked_by?: string | null
           notes?: string | null
@@ -7196,7 +7196,7 @@ export type Database = {
         Update: {
           goal_id?: string
           id?: string
-          request_id?: string
+          initiative_id?: string
           linked_at?: string | null
           linked_by?: string | null
           notes?: string | null
@@ -7246,38 +7246,38 @@ export type Database = {
           },
           {
             foreignKeyName: "es_goal_initiatives_initiative_id_fkey"
-            columns: ["request_id"]
+            columns: ["initiative_id"]
             isOneToOne: false
-            referencedRelation: "ph_backlog_requests_view"
+            referencedRelation: "ph_backlog_initiatives_view"
             referencedColumns: ["id"]
           },
           {
             foreignKeyName: "es_goal_initiatives_initiative_id_fkey"
-            columns: ["request_id"]
+            columns: ["initiative_id"]
             isOneToOne: false
-            referencedRelation: "ph_requests"
+            referencedRelation: "ph_initiatives"
             referencedColumns: ["id"]
           },
           {
             foreignKeyName: "es_goal_initiatives_initiative_id_fkey"
-            columns: ["request_id"]
+            columns: ["initiative_id"]
             isOneToOne: false
-            referencedRelation: "ph_requests_list"
+            referencedRelation: "ph_initiatives_list"
             referencedColumns: ["id"]
           },
           {
             foreignKeyName: "es_goal_initiatives_initiative_id_fkey"
-            columns: ["request_id"]
+            columns: ["initiative_id"]
             isOneToOne: false
-            referencedRelation: "ph_roadmap_requests_view"
+            referencedRelation: "ph_roadmap_initiatives_view"
             referencedColumns: ["id"]
           },
           {
             foreignKeyName: "es_goal_initiatives_initiative_id_fkey"
-            columns: ["request_id"]
+            columns: ["initiative_id"]
             isOneToOne: false
             referencedRelation: "vw_chain_intelligence"
-            referencedColumns: ["request_id"]
+            referencedColumns: ["initiative_id"]
           },
         ]
       }
@@ -7483,7 +7483,7 @@ export type Database = {
           created_by: string | null
           epic_id: string | null
           id: string
-          request_id: string
+          initiative_id: string
           link_type: string | null
           planner_task_id: string | null
         }
@@ -7492,7 +7492,7 @@ export type Database = {
           created_by?: string | null
           epic_id?: string | null
           id?: string
-          request_id: string
+          initiative_id: string
           link_type?: string | null
           planner_task_id?: string | null
         }
@@ -7501,31 +7501,31 @@ export type Database = {
           created_by?: string | null
           epic_id?: string | null
           id?: string
-          request_id?: string
+          initiative_id?: string
           link_type?: string | null
           planner_task_id?: string | null
         }
         Relationships: [
           {
             foreignKeyName: "es_initiative_epics_initiative_id_fkey"
-            columns: ["request_id"]
+            columns: ["initiative_id"]
             isOneToOne: false
             referencedRelation: "es_dashboard_okr_tree"
-            referencedColumns: ["request_id"]
+            referencedColumns: ["initiative_id"]
           },
           {
             foreignKeyName: "es_initiative_epics_initiative_id_fkey"
-            columns: ["request_id"]
+            columns: ["initiative_id"]
             isOneToOne: false
             referencedRelation: "es_initiatives"
             referencedColumns: ["id"]
           },
           {
             foreignKeyName: "es_initiative_epics_initiative_id_fkey"
-            columns: ["request_id"]
+            columns: ["initiative_id"]
             isOneToOne: false
             referencedRelation: "vw_alignment_map"
-            referencedColumns: ["request_id"]
+            referencedColumns: ["initiative_id"]
           },
         ]
       }
@@ -7945,7 +7945,7 @@ export type Database = {
       es_kr_initiatives: {
         Row: {
           id: string
-          request_id: string
+          initiative_id: string
           key_result_id: string
           linked_at: string | null
           linked_by: string | null
@@ -7953,7 +7953,7 @@ export type Database = {
         }
         Insert: {
           id?: string
-          request_id: string
+          initiative_id: string
           key_result_id: string
           linked_at?: string | null
           linked_by?: string | null
@@ -7961,7 +7961,7 @@ export type Database = {
         }
         Update: {
           id?: string
-          request_id?: string
+          initiative_id?: string
           key_result_id?: string
           linked_at?: string | null
           linked_by?: string | null
@@ -7970,38 +7970,38 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "es_kr_initiatives_initiative_id_fkey"
-            columns: ["request_id"]
+            columns: ["initiative_id"]
             isOneToOne: false
-            referencedRelation: "ph_backlog_requests_view"
+            referencedRelation: "ph_backlog_initiatives_view"
             referencedColumns: ["id"]
           },
           {
             foreignKeyName: "es_kr_initiatives_initiative_id_fkey"
-            columns: ["request_id"]
+            columns: ["initiative_id"]
             isOneToOne: false
-            referencedRelation: "ph_requests"
+            referencedRelation: "ph_initiatives"
             referencedColumns: ["id"]
           },
           {
             foreignKeyName: "es_kr_initiatives_initiative_id_fkey"
-            columns: ["request_id"]
+            columns: ["initiative_id"]
             isOneToOne: false
-            referencedRelation: "ph_requests_list"
+            referencedRelation: "ph_initiatives_list"
             referencedColumns: ["id"]
           },
           {
             foreignKeyName: "es_kr_initiatives_initiative_id_fkey"
-            columns: ["request_id"]
+            columns: ["initiative_id"]
             isOneToOne: false
-            referencedRelation: "ph_roadmap_requests_view"
+            referencedRelation: "ph_roadmap_initiatives_view"
             referencedColumns: ["id"]
           },
           {
             foreignKeyName: "es_kr_initiatives_initiative_id_fkey"
-            columns: ["request_id"]
+            columns: ["initiative_id"]
             isOneToOne: false
             referencedRelation: "vw_chain_intelligence"
-            referencedColumns: ["request_id"]
+            referencedColumns: ["initiative_id"]
           },
           {
             foreignKeyName: "es_kr_initiatives_key_result_id_fkey"
@@ -12016,7 +12016,7 @@ export type Database = {
           for_votes: number | null
           id: string
           idea_type: Database["public"]["Enums"]["improvement_idea_type"] | null
-          request_id: string | null
+          initiative_id: string | null
           is_anonymous: boolean | null
           source_type: string | null
           status: Database["public"]["Enums"]["improvement_idea_status"] | null
@@ -12063,7 +12063,7 @@ export type Database = {
           idea_type?:
             | Database["public"]["Enums"]["improvement_idea_type"]
             | null
-          request_id?: string | null
+          initiative_id?: string | null
           is_anonymous?: boolean | null
           source_type?: string | null
           status?: Database["public"]["Enums"]["improvement_idea_status"] | null
@@ -12110,7 +12110,7 @@ export type Database = {
           idea_type?:
             | Database["public"]["Enums"]["improvement_idea_type"]
             | null
-          request_id?: string | null
+          initiative_id?: string | null
           is_anonymous?: boolean | null
           source_type?: string | null
           status?: Database["public"]["Enums"]["improvement_idea_status"] | null
@@ -12132,7 +12132,7 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "improvement_ideas_initiative_id_fkey"
-            columns: ["request_id"]
+            columns: ["initiative_id"]
             isOneToOne: false
             referencedRelation: "improvement_initiatives"
             referencedColumns: ["id"]
@@ -13253,28 +13253,28 @@ export type Database = {
         Row: {
           created_at: string | null
           id: string
-          request_id: string | null
+          initiative_id: string | null
           role: string | null
           user_id: string | null
         }
         Insert: {
           created_at?: string | null
           id?: string
-          request_id?: string | null
+          initiative_id?: string | null
           role?: string | null
           user_id?: string | null
         }
         Update: {
           created_at?: string | null
           id?: string
-          request_id?: string | null
+          initiative_id?: string | null
           role?: string | null
           user_id?: string | null
         }
         Relationships: [
           {
             foreignKeyName: "initiative_moderators_initiative_id_fkey"
-            columns: ["request_id"]
+            columns: ["initiative_id"]
             isOneToOne: false
             referencedRelation: "improvement_initiatives"
             referencedColumns: ["id"]
@@ -20627,25 +20627,25 @@ export type Database = {
         Row: {
           created_at: string | null
           id: string
-          request_id: string
+          initiative_id: string
           objective_id: string
         }
         Insert: {
           created_at?: string | null
           id?: string
-          request_id: string
+          initiative_id: string
           objective_id: string
         }
         Update: {
           created_at?: string | null
           id?: string
-          request_id?: string
+          initiative_id?: string
           objective_id?: string
         }
         Relationships: [
           {
             foreignKeyName: "objective_initiative_links_initiative_id_fkey"
-            columns: ["request_id"]
+            columns: ["initiative_id"]
             isOneToOne: false
             referencedRelation: "initiatives"
             referencedColumns: ["id"]
@@ -23636,28 +23636,28 @@ export type Database = {
             foreignKeyName: "ph_ideas_linked_initiative_id_fkey"
             columns: ["linked_initiative_id"]
             isOneToOne: false
-            referencedRelation: "ph_backlog_requests_view"
+            referencedRelation: "ph_backlog_initiatives_view"
             referencedColumns: ["id"]
           },
           {
             foreignKeyName: "ph_ideas_linked_initiative_id_fkey"
             columns: ["linked_initiative_id"]
             isOneToOne: false
-            referencedRelation: "ph_requests"
+            referencedRelation: "ph_initiatives"
             referencedColumns: ["id"]
           },
           {
             foreignKeyName: "ph_ideas_linked_initiative_id_fkey"
             columns: ["linked_initiative_id"]
             isOneToOne: false
-            referencedRelation: "ph_requests_list"
+            referencedRelation: "ph_initiatives_list"
             referencedColumns: ["id"]
           },
           {
             foreignKeyName: "ph_ideas_linked_initiative_id_fkey"
             columns: ["linked_initiative_id"]
             isOneToOne: false
-            referencedRelation: "ph_roadmap_requests_view"
+            referencedRelation: "ph_roadmap_initiatives_view"
             referencedColumns: ["id"]
           },
           {
@@ -23665,7 +23665,7 @@ export type Database = {
             columns: ["linked_initiative_id"]
             isOneToOne: false
             referencedRelation: "vw_chain_intelligence"
-            referencedColumns: ["request_id"]
+            referencedColumns: ["initiative_id"]
           },
           {
             foreignKeyName: "ph_ideas_parent_idea_id_fkey"
@@ -23914,7 +23914,7 @@ export type Database = {
           },
         ]
       }
-      ph_request_attachments: {
+      ph_initiative_attachments: {
         Row: {
           category: string
           created_at: string | null
@@ -23923,7 +23923,7 @@ export type Database = {
           file_path: string
           file_size: number
           id: string
-          request_id: string
+          initiative_id: string
           is_pinned: boolean | null
           mime_type: string
           uploaded_by: string | null
@@ -23936,7 +23936,7 @@ export type Database = {
           file_path: string
           file_size: number
           id?: string
-          request_id: string
+          initiative_id: string
           is_pinned?: boolean | null
           mime_type: string
           uploaded_by?: string | null
@@ -23949,112 +23949,112 @@ export type Database = {
           file_path?: string
           file_size?: number
           id?: string
-          request_id?: string
+          initiative_id?: string
           is_pinned?: boolean | null
           mime_type?: string
           uploaded_by?: string | null
         }
         Relationships: [
           {
-            foreignKeyName: "ph_request_attachments_initiative_id_fkey"
-            columns: ["request_id"]
+            foreignKeyName: "ph_initiative_attachments_initiative_id_fkey"
+            columns: ["initiative_id"]
             isOneToOne: false
-            referencedRelation: "ph_backlog_requests_view"
+            referencedRelation: "ph_backlog_initiatives_view"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "ph_request_attachments_initiative_id_fkey"
-            columns: ["request_id"]
+            foreignKeyName: "ph_initiative_attachments_initiative_id_fkey"
+            columns: ["initiative_id"]
             isOneToOne: false
-            referencedRelation: "ph_requests"
+            referencedRelation: "ph_initiatives"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "ph_request_attachments_initiative_id_fkey"
-            columns: ["request_id"]
+            foreignKeyName: "ph_initiative_attachments_initiative_id_fkey"
+            columns: ["initiative_id"]
             isOneToOne: false
-            referencedRelation: "ph_requests_list"
+            referencedRelation: "ph_initiatives_list"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "ph_request_attachments_initiative_id_fkey"
-            columns: ["request_id"]
+            foreignKeyName: "ph_initiative_attachments_initiative_id_fkey"
+            columns: ["initiative_id"]
             isOneToOne: false
-            referencedRelation: "ph_roadmap_requests_view"
+            referencedRelation: "ph_roadmap_initiatives_view"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "ph_request_attachments_initiative_id_fkey"
-            columns: ["request_id"]
+            foreignKeyName: "ph_initiative_attachments_initiative_id_fkey"
+            columns: ["initiative_id"]
             isOneToOne: false
             referencedRelation: "vw_chain_intelligence"
-            referencedColumns: ["request_id"]
+            referencedColumns: ["initiative_id"]
           },
           {
-            foreignKeyName: "ph_request_attachments_uploaded_by_fkey"
+            foreignKeyName: "ph_initiative_attachments_uploaded_by_fkey"
             columns: ["uploaded_by"]
             isOneToOne: false
             referencedRelation: "ph_team_workload_view"
             referencedColumns: ["user_id"]
           },
           {
-            foreignKeyName: "ph_request_attachments_uploaded_by_fkey"
+            foreignKeyName: "ph_initiative_attachments_uploaded_by_fkey"
             columns: ["uploaded_by"]
             isOneToOne: false
             referencedRelation: "planner_dashboard_team_workload"
             referencedColumns: ["profile_id"]
           },
           {
-            foreignKeyName: "ph_request_attachments_uploaded_by_fkey"
+            foreignKeyName: "ph_initiative_attachments_uploaded_by_fkey"
             columns: ["uploaded_by"]
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "ph_request_attachments_uploaded_by_fkey"
+            foreignKeyName: "ph_initiative_attachments_uploaded_by_fkey"
             columns: ["uploaded_by"]
             isOneToOne: false
             referencedRelation: "tm_users"
             referencedColumns: ["auth_user_id"]
           },
           {
-            foreignKeyName: "ph_request_attachments_uploaded_by_fkey"
+            foreignKeyName: "ph_initiative_attachments_uploaded_by_fkey"
             columns: ["uploaded_by"]
             isOneToOne: false
             referencedRelation: "tm_users"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "ph_request_attachments_uploaded_by_fkey"
+            foreignKeyName: "ph_initiative_attachments_uploaded_by_fkey"
             columns: ["uploaded_by"]
             isOneToOne: false
             referencedRelation: "vw_chain_intelligence"
             referencedColumns: ["epic_owner_id"]
           },
           {
-            foreignKeyName: "ph_request_attachments_uploaded_by_fkey"
+            foreignKeyName: "ph_initiative_attachments_uploaded_by_fkey"
             columns: ["uploaded_by"]
             isOneToOne: false
             referencedRelation: "vw_chain_intelligence"
             referencedColumns: ["goal_owner_id"]
           },
           {
-            foreignKeyName: "ph_request_attachments_uploaded_by_fkey"
+            foreignKeyName: "ph_initiative_attachments_uploaded_by_fkey"
             columns: ["uploaded_by"]
             isOneToOne: false
             referencedRelation: "vw_chain_intelligence"
             referencedColumns: ["initiative_owner_id"]
           },
           {
-            foreignKeyName: "ph_request_attachments_uploaded_by_fkey"
+            foreignKeyName: "ph_initiative_attachments_uploaded_by_fkey"
             columns: ["uploaded_by"]
             isOneToOne: false
             referencedRelation: "vw_chain_intelligence"
             referencedColumns: ["kr_owner_id"]
           },
           {
-            foreignKeyName: "ph_request_attachments_uploaded_by_fkey"
+            foreignKeyName: "ph_initiative_attachments_uploaded_by_fkey"
             columns: ["uploaded_by"]
             isOneToOne: false
             referencedRelation: "vw_chain_intelligence"
@@ -24062,7 +24062,7 @@ export type Database = {
           },
         ]
       }
-      ph_request_audit_log: {
+      ph_initiative_audit_log: {
         Row: {
           action: string
           created_at: string | null
@@ -24070,7 +24070,7 @@ export type Database = {
           entity_type: string
           field_name: string | null
           id: string
-          request_id: string
+          initiative_id: string
           metadata: Json | null
           new_value: string | null
           old_value: string | null
@@ -24083,7 +24083,7 @@ export type Database = {
           entity_type?: string
           field_name?: string | null
           id?: string
-          request_id: string
+          initiative_id: string
           metadata?: Json | null
           new_value?: string | null
           old_value?: string | null
@@ -24096,7 +24096,7 @@ export type Database = {
           entity_type?: string
           field_name?: string | null
           id?: string
-          request_id?: string
+          initiative_id?: string
           metadata?: Json | null
           new_value?: string | null
           old_value?: string | null
@@ -24104,7 +24104,7 @@ export type Database = {
         }
         Relationships: []
       }
-      ph_request_budget_items: {
+      ph_initiative_budget_items: {
         Row: {
           actual_amount: number | null
           category: string
@@ -24114,7 +24114,7 @@ export type Database = {
           expense_type: string
           fiscal_quarter: string | null
           id: string
-          request_id: string
+          initiative_id: string
           invoice_date: string | null
           notes: string | null
           planned_amount: number
@@ -24132,7 +24132,7 @@ export type Database = {
           expense_type?: string
           fiscal_quarter?: string | null
           id?: string
-          request_id: string
+          initiative_id: string
           invoice_date?: string | null
           notes?: string | null
           planned_amount?: number
@@ -24150,7 +24150,7 @@ export type Database = {
           expense_type?: string
           fiscal_quarter?: string | null
           id?: string
-          request_id?: string
+          initiative_id?: string
           invoice_date?: string | null
           notes?: string | null
           planned_amount?: number
@@ -24161,120 +24161,120 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "ph_request_budget_items_created_by_fkey"
+            foreignKeyName: "ph_initiative_budget_items_created_by_fkey"
             columns: ["created_by"]
             isOneToOne: false
             referencedRelation: "ph_team_workload_view"
             referencedColumns: ["user_id"]
           },
           {
-            foreignKeyName: "ph_request_budget_items_created_by_fkey"
+            foreignKeyName: "ph_initiative_budget_items_created_by_fkey"
             columns: ["created_by"]
             isOneToOne: false
             referencedRelation: "planner_dashboard_team_workload"
             referencedColumns: ["profile_id"]
           },
           {
-            foreignKeyName: "ph_request_budget_items_created_by_fkey"
+            foreignKeyName: "ph_initiative_budget_items_created_by_fkey"
             columns: ["created_by"]
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "ph_request_budget_items_created_by_fkey"
+            foreignKeyName: "ph_initiative_budget_items_created_by_fkey"
             columns: ["created_by"]
             isOneToOne: false
             referencedRelation: "tm_users"
             referencedColumns: ["auth_user_id"]
           },
           {
-            foreignKeyName: "ph_request_budget_items_created_by_fkey"
+            foreignKeyName: "ph_initiative_budget_items_created_by_fkey"
             columns: ["created_by"]
             isOneToOne: false
             referencedRelation: "tm_users"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "ph_request_budget_items_created_by_fkey"
+            foreignKeyName: "ph_initiative_budget_items_created_by_fkey"
             columns: ["created_by"]
             isOneToOne: false
             referencedRelation: "vw_chain_intelligence"
             referencedColumns: ["epic_owner_id"]
           },
           {
-            foreignKeyName: "ph_request_budget_items_created_by_fkey"
+            foreignKeyName: "ph_initiative_budget_items_created_by_fkey"
             columns: ["created_by"]
             isOneToOne: false
             referencedRelation: "vw_chain_intelligence"
             referencedColumns: ["goal_owner_id"]
           },
           {
-            foreignKeyName: "ph_request_budget_items_created_by_fkey"
+            foreignKeyName: "ph_initiative_budget_items_created_by_fkey"
             columns: ["created_by"]
             isOneToOne: false
             referencedRelation: "vw_chain_intelligence"
             referencedColumns: ["initiative_owner_id"]
           },
           {
-            foreignKeyName: "ph_request_budget_items_created_by_fkey"
+            foreignKeyName: "ph_initiative_budget_items_created_by_fkey"
             columns: ["created_by"]
             isOneToOne: false
             referencedRelation: "vw_chain_intelligence"
             referencedColumns: ["kr_owner_id"]
           },
           {
-            foreignKeyName: "ph_request_budget_items_created_by_fkey"
+            foreignKeyName: "ph_initiative_budget_items_created_by_fkey"
             columns: ["created_by"]
             isOneToOne: false
             referencedRelation: "vw_chain_intelligence"
             referencedColumns: ["theme_owner_id"]
           },
           {
-            foreignKeyName: "ph_request_budget_items_initiative_id_fkey"
-            columns: ["request_id"]
+            foreignKeyName: "ph_initiative_budget_items_initiative_id_fkey"
+            columns: ["initiative_id"]
             isOneToOne: false
-            referencedRelation: "ph_backlog_requests_view"
+            referencedRelation: "ph_backlog_initiatives_view"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "ph_request_budget_items_initiative_id_fkey"
-            columns: ["request_id"]
+            foreignKeyName: "ph_initiative_budget_items_initiative_id_fkey"
+            columns: ["initiative_id"]
             isOneToOne: false
-            referencedRelation: "ph_requests"
+            referencedRelation: "ph_initiatives"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "ph_request_budget_items_initiative_id_fkey"
-            columns: ["request_id"]
+            foreignKeyName: "ph_initiative_budget_items_initiative_id_fkey"
+            columns: ["initiative_id"]
             isOneToOne: false
-            referencedRelation: "ph_requests_list"
+            referencedRelation: "ph_initiatives_list"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "ph_request_budget_items_initiative_id_fkey"
-            columns: ["request_id"]
+            foreignKeyName: "ph_initiative_budget_items_initiative_id_fkey"
+            columns: ["initiative_id"]
             isOneToOne: false
-            referencedRelation: "ph_roadmap_requests_view"
+            referencedRelation: "ph_roadmap_initiatives_view"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "ph_request_budget_items_initiative_id_fkey"
-            columns: ["request_id"]
+            foreignKeyName: "ph_initiative_budget_items_initiative_id_fkey"
+            columns: ["initiative_id"]
             isOneToOne: false
             referencedRelation: "vw_chain_intelligence"
-            referencedColumns: ["request_id"]
+            referencedColumns: ["initiative_id"]
           },
         ]
       }
-      ph_request_links: {
+      ph_initiative_links: {
         Row: {
           added_by: string | null
           category: string
           created_at: string | null
           description: string | null
           id: string
-          request_id: string
+          initiative_id: string
           is_pinned: boolean | null
           title: string
           updated_at: string | null
@@ -24286,7 +24286,7 @@ export type Database = {
           created_at?: string | null
           description?: string | null
           id?: string
-          request_id: string
+          initiative_id: string
           is_pinned?: boolean | null
           title: string
           updated_at?: string | null
@@ -24298,7 +24298,7 @@ export type Database = {
           created_at?: string | null
           description?: string | null
           id?: string
-          request_id?: string
+          initiative_id?: string
           is_pinned?: boolean | null
           title?: string
           updated_at?: string | null
@@ -24306,113 +24306,113 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "ph_request_links_added_by_fkey"
+            foreignKeyName: "ph_initiative_links_added_by_fkey"
             columns: ["added_by"]
             isOneToOne: false
             referencedRelation: "ph_team_workload_view"
             referencedColumns: ["user_id"]
           },
           {
-            foreignKeyName: "ph_request_links_added_by_fkey"
+            foreignKeyName: "ph_initiative_links_added_by_fkey"
             columns: ["added_by"]
             isOneToOne: false
             referencedRelation: "planner_dashboard_team_workload"
             referencedColumns: ["profile_id"]
           },
           {
-            foreignKeyName: "ph_request_links_added_by_fkey"
+            foreignKeyName: "ph_initiative_links_added_by_fkey"
             columns: ["added_by"]
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "ph_request_links_added_by_fkey"
+            foreignKeyName: "ph_initiative_links_added_by_fkey"
             columns: ["added_by"]
             isOneToOne: false
             referencedRelation: "tm_users"
             referencedColumns: ["auth_user_id"]
           },
           {
-            foreignKeyName: "ph_request_links_added_by_fkey"
+            foreignKeyName: "ph_initiative_links_added_by_fkey"
             columns: ["added_by"]
             isOneToOne: false
             referencedRelation: "tm_users"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "ph_request_links_added_by_fkey"
+            foreignKeyName: "ph_initiative_links_added_by_fkey"
             columns: ["added_by"]
             isOneToOne: false
             referencedRelation: "vw_chain_intelligence"
             referencedColumns: ["epic_owner_id"]
           },
           {
-            foreignKeyName: "ph_request_links_added_by_fkey"
+            foreignKeyName: "ph_initiative_links_added_by_fkey"
             columns: ["added_by"]
             isOneToOne: false
             referencedRelation: "vw_chain_intelligence"
             referencedColumns: ["goal_owner_id"]
           },
           {
-            foreignKeyName: "ph_request_links_added_by_fkey"
+            foreignKeyName: "ph_initiative_links_added_by_fkey"
             columns: ["added_by"]
             isOneToOne: false
             referencedRelation: "vw_chain_intelligence"
             referencedColumns: ["initiative_owner_id"]
           },
           {
-            foreignKeyName: "ph_request_links_added_by_fkey"
+            foreignKeyName: "ph_initiative_links_added_by_fkey"
             columns: ["added_by"]
             isOneToOne: false
             referencedRelation: "vw_chain_intelligence"
             referencedColumns: ["kr_owner_id"]
           },
           {
-            foreignKeyName: "ph_request_links_added_by_fkey"
+            foreignKeyName: "ph_initiative_links_added_by_fkey"
             columns: ["added_by"]
             isOneToOne: false
             referencedRelation: "vw_chain_intelligence"
             referencedColumns: ["theme_owner_id"]
           },
           {
-            foreignKeyName: "ph_request_links_initiative_id_fkey"
-            columns: ["request_id"]
+            foreignKeyName: "ph_initiative_links_initiative_id_fkey"
+            columns: ["initiative_id"]
             isOneToOne: false
-            referencedRelation: "ph_backlog_requests_view"
+            referencedRelation: "ph_backlog_initiatives_view"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "ph_request_links_initiative_id_fkey"
-            columns: ["request_id"]
+            foreignKeyName: "ph_initiative_links_initiative_id_fkey"
+            columns: ["initiative_id"]
             isOneToOne: false
-            referencedRelation: "ph_requests"
+            referencedRelation: "ph_initiatives"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "ph_request_links_initiative_id_fkey"
-            columns: ["request_id"]
+            foreignKeyName: "ph_initiative_links_initiative_id_fkey"
+            columns: ["initiative_id"]
             isOneToOne: false
-            referencedRelation: "ph_requests_list"
+            referencedRelation: "ph_initiatives_list"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "ph_request_links_initiative_id_fkey"
-            columns: ["request_id"]
+            foreignKeyName: "ph_initiative_links_initiative_id_fkey"
+            columns: ["initiative_id"]
             isOneToOne: false
-            referencedRelation: "ph_roadmap_requests_view"
+            referencedRelation: "ph_roadmap_initiatives_view"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "ph_request_links_initiative_id_fkey"
-            columns: ["request_id"]
+            foreignKeyName: "ph_initiative_links_initiative_id_fkey"
+            columns: ["initiative_id"]
             isOneToOne: false
             referencedRelation: "vw_chain_intelligence"
-            referencedColumns: ["request_id"]
+            referencedColumns: ["initiative_id"]
           },
         ]
       }
-      ph_request_milestones: {
+      ph_initiative_milestones: {
         Row: {
           actual_date: string | null
           budget_release: number | null
@@ -24422,7 +24422,7 @@ export type Database = {
           deliverables: string | null
           description: string | null
           id: string
-          request_id: string
+          initiative_id: string
           is_critical_path: boolean | null
           owner_id: string | null
           planned_date: string
@@ -24442,7 +24442,7 @@ export type Database = {
           deliverables?: string | null
           description?: string | null
           id?: string
-          request_id: string
+          initiative_id: string
           is_critical_path?: boolean | null
           owner_id?: string | null
           planned_date: string
@@ -24462,7 +24462,7 @@ export type Database = {
           deliverables?: string | null
           description?: string | null
           id?: string
-          request_id?: string
+          initiative_id?: string
           is_critical_path?: boolean | null
           owner_id?: string | null
           planned_date?: string
@@ -24475,175 +24475,175 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "ph_request_milestones_created_by_fkey"
+            foreignKeyName: "ph_initiative_milestones_created_by_fkey"
             columns: ["created_by"]
             isOneToOne: false
             referencedRelation: "ph_team_workload_view"
             referencedColumns: ["user_id"]
           },
           {
-            foreignKeyName: "ph_request_milestones_created_by_fkey"
+            foreignKeyName: "ph_initiative_milestones_created_by_fkey"
             columns: ["created_by"]
             isOneToOne: false
             referencedRelation: "planner_dashboard_team_workload"
             referencedColumns: ["profile_id"]
           },
           {
-            foreignKeyName: "ph_request_milestones_created_by_fkey"
+            foreignKeyName: "ph_initiative_milestones_created_by_fkey"
             columns: ["created_by"]
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "ph_request_milestones_created_by_fkey"
+            foreignKeyName: "ph_initiative_milestones_created_by_fkey"
             columns: ["created_by"]
             isOneToOne: false
             referencedRelation: "tm_users"
             referencedColumns: ["auth_user_id"]
           },
           {
-            foreignKeyName: "ph_request_milestones_created_by_fkey"
+            foreignKeyName: "ph_initiative_milestones_created_by_fkey"
             columns: ["created_by"]
             isOneToOne: false
             referencedRelation: "tm_users"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "ph_request_milestones_created_by_fkey"
+            foreignKeyName: "ph_initiative_milestones_created_by_fkey"
             columns: ["created_by"]
             isOneToOne: false
             referencedRelation: "vw_chain_intelligence"
             referencedColumns: ["epic_owner_id"]
           },
           {
-            foreignKeyName: "ph_request_milestones_created_by_fkey"
+            foreignKeyName: "ph_initiative_milestones_created_by_fkey"
             columns: ["created_by"]
             isOneToOne: false
             referencedRelation: "vw_chain_intelligence"
             referencedColumns: ["goal_owner_id"]
           },
           {
-            foreignKeyName: "ph_request_milestones_created_by_fkey"
+            foreignKeyName: "ph_initiative_milestones_created_by_fkey"
             columns: ["created_by"]
             isOneToOne: false
             referencedRelation: "vw_chain_intelligence"
             referencedColumns: ["initiative_owner_id"]
           },
           {
-            foreignKeyName: "ph_request_milestones_created_by_fkey"
+            foreignKeyName: "ph_initiative_milestones_created_by_fkey"
             columns: ["created_by"]
             isOneToOne: false
             referencedRelation: "vw_chain_intelligence"
             referencedColumns: ["kr_owner_id"]
           },
           {
-            foreignKeyName: "ph_request_milestones_created_by_fkey"
+            foreignKeyName: "ph_initiative_milestones_created_by_fkey"
             columns: ["created_by"]
             isOneToOne: false
             referencedRelation: "vw_chain_intelligence"
             referencedColumns: ["theme_owner_id"]
           },
           {
-            foreignKeyName: "ph_request_milestones_initiative_id_fkey"
-            columns: ["request_id"]
+            foreignKeyName: "ph_initiative_milestones_initiative_id_fkey"
+            columns: ["initiative_id"]
             isOneToOne: false
-            referencedRelation: "ph_backlog_requests_view"
+            referencedRelation: "ph_backlog_initiatives_view"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "ph_request_milestones_initiative_id_fkey"
-            columns: ["request_id"]
+            foreignKeyName: "ph_initiative_milestones_initiative_id_fkey"
+            columns: ["initiative_id"]
             isOneToOne: false
-            referencedRelation: "ph_requests"
+            referencedRelation: "ph_initiatives"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "ph_request_milestones_initiative_id_fkey"
-            columns: ["request_id"]
+            foreignKeyName: "ph_initiative_milestones_initiative_id_fkey"
+            columns: ["initiative_id"]
             isOneToOne: false
-            referencedRelation: "ph_requests_list"
+            referencedRelation: "ph_initiatives_list"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "ph_request_milestones_initiative_id_fkey"
-            columns: ["request_id"]
+            foreignKeyName: "ph_initiative_milestones_initiative_id_fkey"
+            columns: ["initiative_id"]
             isOneToOne: false
-            referencedRelation: "ph_roadmap_requests_view"
+            referencedRelation: "ph_roadmap_initiatives_view"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "ph_request_milestones_initiative_id_fkey"
-            columns: ["request_id"]
+            foreignKeyName: "ph_initiative_milestones_initiative_id_fkey"
+            columns: ["initiative_id"]
             isOneToOne: false
             referencedRelation: "vw_chain_intelligence"
-            referencedColumns: ["request_id"]
+            referencedColumns: ["initiative_id"]
           },
           {
-            foreignKeyName: "ph_request_milestones_owner_id_fkey"
+            foreignKeyName: "ph_initiative_milestones_owner_id_fkey"
             columns: ["owner_id"]
             isOneToOne: false
             referencedRelation: "ph_team_workload_view"
             referencedColumns: ["user_id"]
           },
           {
-            foreignKeyName: "ph_request_milestones_owner_id_fkey"
+            foreignKeyName: "ph_initiative_milestones_owner_id_fkey"
             columns: ["owner_id"]
             isOneToOne: false
             referencedRelation: "planner_dashboard_team_workload"
             referencedColumns: ["profile_id"]
           },
           {
-            foreignKeyName: "ph_request_milestones_owner_id_fkey"
+            foreignKeyName: "ph_initiative_milestones_owner_id_fkey"
             columns: ["owner_id"]
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "ph_request_milestones_owner_id_fkey"
+            foreignKeyName: "ph_initiative_milestones_owner_id_fkey"
             columns: ["owner_id"]
             isOneToOne: false
             referencedRelation: "tm_users"
             referencedColumns: ["auth_user_id"]
           },
           {
-            foreignKeyName: "ph_request_milestones_owner_id_fkey"
+            foreignKeyName: "ph_initiative_milestones_owner_id_fkey"
             columns: ["owner_id"]
             isOneToOne: false
             referencedRelation: "tm_users"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "ph_request_milestones_owner_id_fkey"
+            foreignKeyName: "ph_initiative_milestones_owner_id_fkey"
             columns: ["owner_id"]
             isOneToOne: false
             referencedRelation: "vw_chain_intelligence"
             referencedColumns: ["epic_owner_id"]
           },
           {
-            foreignKeyName: "ph_request_milestones_owner_id_fkey"
+            foreignKeyName: "ph_initiative_milestones_owner_id_fkey"
             columns: ["owner_id"]
             isOneToOne: false
             referencedRelation: "vw_chain_intelligence"
             referencedColumns: ["goal_owner_id"]
           },
           {
-            foreignKeyName: "ph_request_milestones_owner_id_fkey"
+            foreignKeyName: "ph_initiative_milestones_owner_id_fkey"
             columns: ["owner_id"]
             isOneToOne: false
             referencedRelation: "vw_chain_intelligence"
             referencedColumns: ["initiative_owner_id"]
           },
           {
-            foreignKeyName: "ph_request_milestones_owner_id_fkey"
+            foreignKeyName: "ph_initiative_milestones_owner_id_fkey"
             columns: ["owner_id"]
             isOneToOne: false
             referencedRelation: "vw_chain_intelligence"
             referencedColumns: ["kr_owner_id"]
           },
           {
-            foreignKeyName: "ph_request_milestones_owner_id_fkey"
+            foreignKeyName: "ph_initiative_milestones_owner_id_fkey"
             columns: ["owner_id"]
             isOneToOne: false
             referencedRelation: "vw_chain_intelligence"
@@ -24651,7 +24651,7 @@ export type Database = {
           },
         ]
       }
-      ph_request_risks: {
+      ph_initiative_risks: {
         Row: {
           category: string
           contingency_plan: string | null
@@ -24661,7 +24661,7 @@ export type Database = {
           due_date: string | null
           id: string
           impact: number
-          request_id: string
+          initiative_id: string
           last_reviewed: string | null
           mitigation_plan: string | null
           notes: string | null
@@ -24683,7 +24683,7 @@ export type Database = {
           due_date?: string | null
           id?: string
           impact: number
-          request_id: string
+          initiative_id: string
           last_reviewed?: string | null
           mitigation_plan?: string | null
           notes?: string | null
@@ -24705,7 +24705,7 @@ export type Database = {
           due_date?: string | null
           id?: string
           impact?: number
-          request_id?: string
+          initiative_id?: string
           last_reviewed?: string | null
           mitigation_plan?: string | null
           notes?: string | null
@@ -24720,175 +24720,175 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "ph_request_risks_created_by_fkey"
+            foreignKeyName: "ph_initiative_risks_created_by_fkey"
             columns: ["created_by"]
             isOneToOne: false
             referencedRelation: "ph_team_workload_view"
             referencedColumns: ["user_id"]
           },
           {
-            foreignKeyName: "ph_request_risks_created_by_fkey"
+            foreignKeyName: "ph_initiative_risks_created_by_fkey"
             columns: ["created_by"]
             isOneToOne: false
             referencedRelation: "planner_dashboard_team_workload"
             referencedColumns: ["profile_id"]
           },
           {
-            foreignKeyName: "ph_request_risks_created_by_fkey"
+            foreignKeyName: "ph_initiative_risks_created_by_fkey"
             columns: ["created_by"]
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "ph_request_risks_created_by_fkey"
+            foreignKeyName: "ph_initiative_risks_created_by_fkey"
             columns: ["created_by"]
             isOneToOne: false
             referencedRelation: "tm_users"
             referencedColumns: ["auth_user_id"]
           },
           {
-            foreignKeyName: "ph_request_risks_created_by_fkey"
+            foreignKeyName: "ph_initiative_risks_created_by_fkey"
             columns: ["created_by"]
             isOneToOne: false
             referencedRelation: "tm_users"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "ph_request_risks_created_by_fkey"
+            foreignKeyName: "ph_initiative_risks_created_by_fkey"
             columns: ["created_by"]
             isOneToOne: false
             referencedRelation: "vw_chain_intelligence"
             referencedColumns: ["epic_owner_id"]
           },
           {
-            foreignKeyName: "ph_request_risks_created_by_fkey"
+            foreignKeyName: "ph_initiative_risks_created_by_fkey"
             columns: ["created_by"]
             isOneToOne: false
             referencedRelation: "vw_chain_intelligence"
             referencedColumns: ["goal_owner_id"]
           },
           {
-            foreignKeyName: "ph_request_risks_created_by_fkey"
+            foreignKeyName: "ph_initiative_risks_created_by_fkey"
             columns: ["created_by"]
             isOneToOne: false
             referencedRelation: "vw_chain_intelligence"
             referencedColumns: ["initiative_owner_id"]
           },
           {
-            foreignKeyName: "ph_request_risks_created_by_fkey"
+            foreignKeyName: "ph_initiative_risks_created_by_fkey"
             columns: ["created_by"]
             isOneToOne: false
             referencedRelation: "vw_chain_intelligence"
             referencedColumns: ["kr_owner_id"]
           },
           {
-            foreignKeyName: "ph_request_risks_created_by_fkey"
+            foreignKeyName: "ph_initiative_risks_created_by_fkey"
             columns: ["created_by"]
             isOneToOne: false
             referencedRelation: "vw_chain_intelligence"
             referencedColumns: ["theme_owner_id"]
           },
           {
-            foreignKeyName: "ph_request_risks_initiative_id_fkey"
-            columns: ["request_id"]
+            foreignKeyName: "ph_initiative_risks_initiative_id_fkey"
+            columns: ["initiative_id"]
             isOneToOne: false
-            referencedRelation: "ph_backlog_requests_view"
+            referencedRelation: "ph_backlog_initiatives_view"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "ph_request_risks_initiative_id_fkey"
-            columns: ["request_id"]
+            foreignKeyName: "ph_initiative_risks_initiative_id_fkey"
+            columns: ["initiative_id"]
             isOneToOne: false
-            referencedRelation: "ph_requests"
+            referencedRelation: "ph_initiatives"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "ph_request_risks_initiative_id_fkey"
-            columns: ["request_id"]
+            foreignKeyName: "ph_initiative_risks_initiative_id_fkey"
+            columns: ["initiative_id"]
             isOneToOne: false
-            referencedRelation: "ph_requests_list"
+            referencedRelation: "ph_initiatives_list"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "ph_request_risks_initiative_id_fkey"
-            columns: ["request_id"]
+            foreignKeyName: "ph_initiative_risks_initiative_id_fkey"
+            columns: ["initiative_id"]
             isOneToOne: false
-            referencedRelation: "ph_roadmap_requests_view"
+            referencedRelation: "ph_roadmap_initiatives_view"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "ph_request_risks_initiative_id_fkey"
-            columns: ["request_id"]
+            foreignKeyName: "ph_initiative_risks_initiative_id_fkey"
+            columns: ["initiative_id"]
             isOneToOne: false
             referencedRelation: "vw_chain_intelligence"
-            referencedColumns: ["request_id"]
+            referencedColumns: ["initiative_id"]
           },
           {
-            foreignKeyName: "ph_request_risks_owner_id_fkey"
+            foreignKeyName: "ph_initiative_risks_owner_id_fkey"
             columns: ["owner_id"]
             isOneToOne: false
             referencedRelation: "ph_team_workload_view"
             referencedColumns: ["user_id"]
           },
           {
-            foreignKeyName: "ph_request_risks_owner_id_fkey"
+            foreignKeyName: "ph_initiative_risks_owner_id_fkey"
             columns: ["owner_id"]
             isOneToOne: false
             referencedRelation: "planner_dashboard_team_workload"
             referencedColumns: ["profile_id"]
           },
           {
-            foreignKeyName: "ph_request_risks_owner_id_fkey"
+            foreignKeyName: "ph_initiative_risks_owner_id_fkey"
             columns: ["owner_id"]
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "ph_request_risks_owner_id_fkey"
+            foreignKeyName: "ph_initiative_risks_owner_id_fkey"
             columns: ["owner_id"]
             isOneToOne: false
             referencedRelation: "tm_users"
             referencedColumns: ["auth_user_id"]
           },
           {
-            foreignKeyName: "ph_request_risks_owner_id_fkey"
+            foreignKeyName: "ph_initiative_risks_owner_id_fkey"
             columns: ["owner_id"]
             isOneToOne: false
             referencedRelation: "tm_users"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "ph_request_risks_owner_id_fkey"
+            foreignKeyName: "ph_initiative_risks_owner_id_fkey"
             columns: ["owner_id"]
             isOneToOne: false
             referencedRelation: "vw_chain_intelligence"
             referencedColumns: ["epic_owner_id"]
           },
           {
-            foreignKeyName: "ph_request_risks_owner_id_fkey"
+            foreignKeyName: "ph_initiative_risks_owner_id_fkey"
             columns: ["owner_id"]
             isOneToOne: false
             referencedRelation: "vw_chain_intelligence"
             referencedColumns: ["goal_owner_id"]
           },
           {
-            foreignKeyName: "ph_request_risks_owner_id_fkey"
+            foreignKeyName: "ph_initiative_risks_owner_id_fkey"
             columns: ["owner_id"]
             isOneToOne: false
             referencedRelation: "vw_chain_intelligence"
             referencedColumns: ["initiative_owner_id"]
           },
           {
-            foreignKeyName: "ph_request_risks_owner_id_fkey"
+            foreignKeyName: "ph_initiative_risks_owner_id_fkey"
             columns: ["owner_id"]
             isOneToOne: false
             referencedRelation: "vw_chain_intelligence"
             referencedColumns: ["kr_owner_id"]
           },
           {
-            foreignKeyName: "ph_request_risks_owner_id_fkey"
+            foreignKeyName: "ph_initiative_risks_owner_id_fkey"
             columns: ["owner_id"]
             isOneToOne: false
             referencedRelation: "vw_chain_intelligence"
@@ -24896,12 +24896,12 @@ export type Database = {
           },
         ]
       }
-      ph_request_scores: {
+      ph_initiative_scores: {
         Row: {
           business_impact: number | null
           computed_score: number | null
           id: string
-          request_id: string
+          initiative_id: string
           resource_feasibility: number | null
           scored_at: string | null
           scored_by: string | null
@@ -24912,7 +24912,7 @@ export type Database = {
           business_impact?: number | null
           computed_score?: number | null
           id?: string
-          request_id: string
+          initiative_id: string
           resource_feasibility?: number | null
           scored_at?: string | null
           scored_by?: string | null
@@ -24923,7 +24923,7 @@ export type Database = {
           business_impact?: number | null
           computed_score?: number | null
           id?: string
-          request_id?: string
+          initiative_id?: string
           resource_feasibility?: number | null
           scored_at?: string | null
           scored_by?: string | null
@@ -24932,43 +24932,43 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "ph_request_scores_initiative_id_fkey"
-            columns: ["request_id"]
+            foreignKeyName: "ph_initiative_scores_initiative_id_fkey"
+            columns: ["initiative_id"]
             isOneToOne: true
-            referencedRelation: "ph_backlog_requests_view"
+            referencedRelation: "ph_backlog_initiatives_view"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "ph_request_scores_initiative_id_fkey"
-            columns: ["request_id"]
+            foreignKeyName: "ph_initiative_scores_initiative_id_fkey"
+            columns: ["initiative_id"]
             isOneToOne: true
-            referencedRelation: "ph_requests"
+            referencedRelation: "ph_initiatives"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "ph_request_scores_initiative_id_fkey"
-            columns: ["request_id"]
+            foreignKeyName: "ph_initiative_scores_initiative_id_fkey"
+            columns: ["initiative_id"]
             isOneToOne: true
-            referencedRelation: "ph_requests_list"
+            referencedRelation: "ph_initiatives_list"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "ph_request_scores_initiative_id_fkey"
-            columns: ["request_id"]
+            foreignKeyName: "ph_initiative_scores_initiative_id_fkey"
+            columns: ["initiative_id"]
             isOneToOne: true
-            referencedRelation: "ph_roadmap_requests_view"
+            referencedRelation: "ph_roadmap_initiatives_view"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "ph_request_scores_initiative_id_fkey"
-            columns: ["request_id"]
+            foreignKeyName: "ph_initiative_scores_initiative_id_fkey"
+            columns: ["initiative_id"]
             isOneToOne: true
             referencedRelation: "vw_chain_intelligence"
-            referencedColumns: ["request_id"]
+            referencedColumns: ["initiative_id"]
           },
         ]
       }
-      ph_requests: {
+      ph_initiatives: {
         Row: {
           assignee_id: string | null
           budget_allocated: number | null
@@ -25085,7 +25085,7 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "ph_requests_department_id_fkey"
+            foreignKeyName: "ph_initiatives_department_id_fkey"
             columns: ["department_id"]
             isOneToOne: false
             referencedRelation: "ph_departments"
@@ -27476,54 +27476,54 @@ export type Database = {
       ph_user_favorites: {
         Row: {
           created_at: string | null
-          request_id: string
+          initiative_id: string
           user_id: string
         }
         Insert: {
           created_at?: string | null
-          request_id: string
+          initiative_id: string
           user_id: string
         }
         Update: {
           created_at?: string | null
-          request_id?: string
+          initiative_id?: string
           user_id?: string
         }
         Relationships: [
           {
             foreignKeyName: "ph_user_favorites_initiative_id_fkey"
-            columns: ["request_id"]
+            columns: ["initiative_id"]
             isOneToOne: false
-            referencedRelation: "ph_backlog_requests_view"
+            referencedRelation: "ph_backlog_initiatives_view"
             referencedColumns: ["id"]
           },
           {
             foreignKeyName: "ph_user_favorites_initiative_id_fkey"
-            columns: ["request_id"]
+            columns: ["initiative_id"]
             isOneToOne: false
-            referencedRelation: "ph_requests"
+            referencedRelation: "ph_initiatives"
             referencedColumns: ["id"]
           },
           {
             foreignKeyName: "ph_user_favorites_initiative_id_fkey"
-            columns: ["request_id"]
+            columns: ["initiative_id"]
             isOneToOne: false
-            referencedRelation: "ph_requests_list"
+            referencedRelation: "ph_initiatives_list"
             referencedColumns: ["id"]
           },
           {
             foreignKeyName: "ph_user_favorites_initiative_id_fkey"
-            columns: ["request_id"]
+            columns: ["initiative_id"]
             isOneToOne: false
-            referencedRelation: "ph_roadmap_requests_view"
+            referencedRelation: "ph_roadmap_initiatives_view"
             referencedColumns: ["id"]
           },
           {
             foreignKeyName: "ph_user_favorites_initiative_id_fkey"
-            columns: ["request_id"]
+            columns: ["initiative_id"]
             isOneToOne: false
             referencedRelation: "vw_chain_intelligence"
-            referencedColumns: ["request_id"]
+            referencedColumns: ["initiative_id"]
           },
         ]
       }
@@ -66650,7 +66650,7 @@ export type Database = {
           goal_progress: number | null
           goal_status: string | null
           goal_title: string | null
-          request_id: string | null
+          initiative_id: string | null
           initiative_progress: number | null
           initiative_status: string | null
           initiative_title: string | null
@@ -67142,7 +67142,7 @@ export type Database = {
         }
         Relationships: []
       }
-      ph_backlog_requests_view: {
+      ph_backlog_initiatives_view: {
         Row: {
           assignee_id: string | null
           budget_allocated: number | null
@@ -67186,7 +67186,7 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "ph_requests_department_id_fkey"
+            foreignKeyName: "ph_initiatives_department_id_fkey"
             columns: ["department_id"]
             isOneToOne: false
             referencedRelation: "ph_departments"
@@ -67306,28 +67306,28 @@ export type Database = {
             foreignKeyName: "ph_ideas_linked_initiative_id_fkey"
             columns: ["linked_initiative_id"]
             isOneToOne: false
-            referencedRelation: "ph_backlog_requests_view"
+            referencedRelation: "ph_backlog_initiatives_view"
             referencedColumns: ["id"]
           },
           {
             foreignKeyName: "ph_ideas_linked_initiative_id_fkey"
             columns: ["linked_initiative_id"]
             isOneToOne: false
-            referencedRelation: "ph_requests"
+            referencedRelation: "ph_initiatives"
             referencedColumns: ["id"]
           },
           {
             foreignKeyName: "ph_ideas_linked_initiative_id_fkey"
             columns: ["linked_initiative_id"]
             isOneToOne: false
-            referencedRelation: "ph_requests_list"
+            referencedRelation: "ph_initiatives_list"
             referencedColumns: ["id"]
           },
           {
             foreignKeyName: "ph_ideas_linked_initiative_id_fkey"
             columns: ["linked_initiative_id"]
             isOneToOne: false
-            referencedRelation: "ph_roadmap_requests_view"
+            referencedRelation: "ph_roadmap_initiatives_view"
             referencedColumns: ["id"]
           },
           {
@@ -67335,7 +67335,7 @@ export type Database = {
             columns: ["linked_initiative_id"]
             isOneToOne: false
             referencedRelation: "vw_chain_intelligence"
-            referencedColumns: ["request_id"]
+            referencedColumns: ["initiative_id"]
           },
           {
             foreignKeyName: "ph_ideas_parent_idea_id_fkey"
@@ -67491,28 +67491,28 @@ export type Database = {
             foreignKeyName: "ph_ideas_linked_initiative_id_fkey"
             columns: ["linked_initiative_id"]
             isOneToOne: false
-            referencedRelation: "ph_backlog_requests_view"
+            referencedRelation: "ph_backlog_initiatives_view"
             referencedColumns: ["id"]
           },
           {
             foreignKeyName: "ph_ideas_linked_initiative_id_fkey"
             columns: ["linked_initiative_id"]
             isOneToOne: false
-            referencedRelation: "ph_requests"
+            referencedRelation: "ph_initiatives"
             referencedColumns: ["id"]
           },
           {
             foreignKeyName: "ph_ideas_linked_initiative_id_fkey"
             columns: ["linked_initiative_id"]
             isOneToOne: false
-            referencedRelation: "ph_requests_list"
+            referencedRelation: "ph_initiatives_list"
             referencedColumns: ["id"]
           },
           {
             foreignKeyName: "ph_ideas_linked_initiative_id_fkey"
             columns: ["linked_initiative_id"]
             isOneToOne: false
-            referencedRelation: "ph_roadmap_requests_view"
+            referencedRelation: "ph_roadmap_initiatives_view"
             referencedColumns: ["id"]
           },
           {
@@ -67520,7 +67520,7 @@ export type Database = {
             columns: ["linked_initiative_id"]
             isOneToOne: false
             referencedRelation: "vw_chain_intelligence"
-            referencedColumns: ["request_id"]
+            referencedColumns: ["initiative_id"]
           },
           {
             foreignKeyName: "ph_ideas_parent_idea_id_fkey"
@@ -67682,7 +67682,7 @@ export type Database = {
         }
         Relationships: []
       }
-      ph_requests_list: {
+      ph_initiatives_list: {
         Row: {
           assignee_id: string | null
           business_ask_date: string | null
@@ -67714,7 +67714,7 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "ph_requests_department_id_fkey"
+            foreignKeyName: "ph_initiatives_department_id_fkey"
             columns: ["department_id"]
             isOneToOne: false
             referencedRelation: "ph_departments"
@@ -67858,7 +67858,7 @@ export type Database = {
         }
         Relationships: []
       }
-      ph_roadmap_requests_view: {
+      ph_roadmap_initiatives_view: {
         Row: {
           assignee_id: string | null
           budget_allocated: number | null
@@ -67963,7 +67963,7 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "ph_requests_department_id_fkey"
+            foreignKeyName: "ph_initiatives_department_id_fkey"
             columns: ["department_id"]
             isOneToOne: false
             referencedRelation: "ph_departments"
@@ -71679,7 +71679,7 @@ export type Database = {
           goal_progress: number | null
           goal_status: string | null
           goal_title: string | null
-          request_id: string | null
+          initiative_id: string | null
           initiative_key: string | null
           initiative_progress: number | null
           initiative_status: string | null
@@ -71723,7 +71723,7 @@ export type Database = {
           goal_title: string | null
           initiative_created_at: string | null
           initiative_epic_linked_at: string | null
-          request_id: string | null
+          initiative_id: string | null
           initiative_key: string | null
           initiative_owner_id: string | null
           initiative_owner_name: string | null
@@ -75953,7 +75953,7 @@ export type Database = {
       r360_resource_role: "assigned" | "reported"
       r360_status_category: "todo" | "progress" | "done"
       r360_work_item_type:
-        | "Request"
+        | "Initiative"
         | "Epic"
         | "Feature"
         | "Story"
@@ -76707,7 +76707,7 @@ export const Constants = {
       r360_resource_role: ["assigned", "reported"],
       r360_status_category: ["todo", "progress", "done"],
       r360_work_item_type: [
-        "Request",
+        "Initiative",
         "Epic",
         "Feature",
         "Story",
