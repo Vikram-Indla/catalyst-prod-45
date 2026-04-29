@@ -107,7 +107,7 @@ export function useRequestEpics(requestId: string) {
     queryKey: ['strategy', 'initiative-epics', requestId],
     enabled: !!requestId,
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('es_initiative_epics')
         .select('*')
         .eq('request_id', requestId);

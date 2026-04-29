@@ -3,7 +3,7 @@
  */
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { catalystToast } from '@/lib/catalystToast';
 import { logRequestAudit } from '@/lib/requestAudit';
 import { Plus, ShieldAlert, X, ChevronDown, Search } from 'lucide-react';
@@ -50,8 +50,7 @@ export function RequestRisksTab({ requestId }: RequestRisksTabProps) {
   const { data: risks = [], refetch: refetchRisks } = useQuery({
     queryKey: ['request-risks', requestId],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('ph_request_risks')
+      const { data, error } = await typedQuery('ph_request_risks')
         .select('*, owner:profiles!owner_id(id, full_name, email)')
         .eq('request_id', requestId)
         .order('risk_score', { ascending: false });
@@ -69,7 +68,7 @@ export function RequestRisksTab({ requestId }: RequestRisksTabProps) {
     }, 0);
     const nextKey = `RSK-${String(maxKey + 1).padStart(3, '0')}`;
 
-    const { error } = await supabase.from('ph_request_risks').insert({
+    const { error } = await typedQuery('ph_request_risks').insert({
       request_id: requestId,
       risk_key: nextKey,
       title: riskForm.title.trim(),

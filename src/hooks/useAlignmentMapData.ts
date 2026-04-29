@@ -189,8 +189,7 @@ export function useAlignmentMapData() {
       }
 
       // Get total initiatives/epics from ph_requests for accurate denominator
-      const { count: totalInitCount } = await supabase
-        .from('ph_requests')
+      const { count: totalInitCount } = await typedQuery('ph_requests')
         .select('id', { count: 'exact', head: true });
 
       return {

@@ -371,8 +371,7 @@ export const DetailTabDetails: React.FC<DetailTabDetailsProps> = ({ request }) =
       const fkFields = ['department_id', 'assignee_id', 'reporter_id', 'business_owner_id', 'product_id'];
       const sanitized = fkFields.includes(field) && value === '' ? null : value;
 
-      let query = supabase
-        .from('ph_requests')
+      let query = typedQuery('ph_requests')
         .update({ [field]: sanitized, updated_at: new Date().toISOString() } as any);
 
       if (isUuid(request.id)) {

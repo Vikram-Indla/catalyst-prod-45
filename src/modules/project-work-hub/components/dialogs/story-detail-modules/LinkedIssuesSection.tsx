@@ -5,7 +5,7 @@
 import React, { useState, useRef, useEffect, useCallback, lazy, Suspense } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { Plus, Check, Loader2, ChevronDown, Sparkles } from 'lucide-react';
 import { catalystToast } from '@/lib/catalystToast';
 import { AiLinkSimilarPanel } from './AiLinkSimilarPanel';
@@ -400,7 +400,7 @@ export function LinkedIssuesSection({ issueId, issueKey: issueKeyProp, projectKe
       // appear on the linked epic / story / defect side of the relationship.
       const stillMissing = targetKeys.filter(k => !targetMap.has(k));
       if (stillMissing.length > 0) {
-        const { data: initTargets } = await supabase.from('ph_requests')
+        const { data: initTargets } = await typedQuery('ph_requests')
           .select('id, initiative_key, title, status, assignee_id, priority, updated_at')
           .in('initiative_key', stillMissing)
           .eq('is_deleted', false);
