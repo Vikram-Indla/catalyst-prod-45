@@ -187,7 +187,7 @@ export function RoadmapSidePanel({
                 color: 'var(--bg-app)', fontSize: 13, fontWeight: 650, textAlign: 'center',
                 border: '1px solid #B7EBD1',
               }}>
-                ✓ Already converted to Initiative
+                ✓ Already converted to Request
               </div>
             ) : (
               <button
@@ -200,7 +200,7 @@ export function RoadmapSidePanel({
                   transition: 'all 150ms',
                 }}
               >
-                Convert to Initiative
+                Convert to Request
                 <ArrowRight size={14} />
               </button>
             )

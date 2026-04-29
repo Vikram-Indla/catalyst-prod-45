@@ -74,7 +74,7 @@ export function StepBasics({
               name={FIELD_NAME_TO_DOM.name}
               value={draft.name}
               maxLength={CREATE_SPACE_LIMITS.nameMax}
-              placeholder="e.g. Digital Transformation Initiative"
+              placeholder="e.g. Digital Transformation Request"
               isInvalid={Boolean(errors.name)}
               onChange={(e) => handleNameChange((e.target as HTMLInputElement).value)}
             />

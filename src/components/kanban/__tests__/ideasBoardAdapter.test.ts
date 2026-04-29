@@ -58,7 +58,7 @@ const sampleIdeas: IdeaRow[] = [
   idea({ id: 'i-submitted',  idea_key: 'IDH-001', status: 'Submitted',    theme: 'DX', roadmap_quarter: '2026-Q2', assigned_to_name: 'Fatima' }),
   idea({ id: 'i-review',     idea_key: 'IDH-002', status: 'Under Review', theme: 'AI', idea_type: 'Enhancement', assigned_to_name: 'Ahmed' }),
   idea({ id: 'i-approved',   idea_key: 'IDH-003', status: 'Approved',     is_committed: true }),
-  idea({ id: 'i-converted',  idea_key: 'IDH-004', status: 'Converted to Initiative' }),
+  idea({ id: 'i-converted',  idea_key: 'IDH-004', status: 'Converted to Request' }),
   idea({ id: 'i-rejected',   idea_key: 'IDH-005', status: 'Rejected' }),
   idea({ id: 'i-draft',      idea_key: 'IDH-006', status: 'Draft' }),          // excluded
   idea({ id: 'i-deleted',    idea_key: 'IDH-007', status: 'Submitted', is_deleted: true }), // excluded
@@ -99,7 +99,7 @@ describe('IDEAS_BOARD_COLUMNS + status mapping', () => {
     expect(ideasStatusToColumnId('Submitted')).toBe('col-submitted');
     expect(ideasStatusToColumnId('Under Review')).toBe('col-review');
     expect(ideasStatusToColumnId('Approved')).toBe('col-approved');
-    expect(ideasStatusToColumnId('Converted to Initiative')).toBe('col-converted');
+    expect(ideasStatusToColumnId('Converted to Request')).toBe('col-converted');
     expect(ideasStatusToColumnId('Rejected')).toBe('col-rejected');
     expect(ideasStatusToColumnId('Draft')).toBeNull();
   });

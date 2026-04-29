@@ -11,7 +11,7 @@ import { useQueryClient } from '@tanstack/react-query';
 interface Props {
   open: boolean;
   onClose: () => void;
-  initiative: { id: string; title: string; initiative_key?: string; description?: string | null; assignee_id?: string | null; department_id?: string | null; business_owner_id?: string | null; target_quarter?: string | null; progress?: number } | null;
+  request: { id: string; title: string; initiative_key?: string; description?: string | null; assignee_id?: string | null; department_id?: string | null; business_owner_id?: string | null; target_quarter?: string | null; progress?: number } | null;
 }
 
 const PRIORITY_OPTIONS = [
@@ -22,16 +22,16 @@ const PRIORITY_OPTIONS = [
   { value: '4', label: '4 — Low' },
 ];
 
-export function PromoteToRoadmapDialog({ open, onClose, initiative }: Props) {
+export function PromoteToRoadmapDialog({ open, onClose, request }: Props) {
   const promoteMutation = usePromoteToRoadmap();
   const queryClient = useQueryClient();
   const [priority, setPriority] = useState('');
 
   useEffect(() => {
-    if (open && initiative) {
+    if (open && request) {
       setPriority('');
     }
-  }, [open, initiative]);
+  }, [open, request]);
 
   useEffect(() => {
     if (!open) return;
@@ -43,51 +43,51 @@ export function PromoteToRoadmapDialog({ open, onClose, initiative }: Props) {
   const isUuid = (v: string) => /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(v);
 
   const handleConfirm = async () => {
-    if (!initiative) return;
+    if (!request) return;
 
-    let initiativeId = initiative.id;
+    let requestId = request.id;
 
-    // For Jira-sourced items (non-UUID id), ensure a ph_initiatives record exists
-    if (!isUuid(initiative.id)) {
-      const issueKey = initiative.initiative_key || initiative.id;
-      const { data: existing } = await typedQuery('ph_initiatives')
+    // For Jira-sourced items (non-UUID id), ensure a ph_requests record exists
+    if (!isUuid(request.id)) {
+      const issueKey = request.initiative_key || request.id;
+      const { data: existing } = await typedQuery('ph_requests')
         .select('id')
         .eq('initiative_key', issueKey)
         .maybeSingle();
 
       if (existing) {
-        initiativeId = existing.id;
+        requestId = existing.id;
       } else {
-        const { data: inserted, error: insertError } = await typedQuery('ph_initiatives')
+        const { data: inserted, error: insertError } = await typedQuery('ph_requests')
           .insert({
             initiative_key: issueKey,
-            title: initiative.title,
-            description: initiative.description || null,
+            title: request.title,
+            description: request.description || null,
             status: 'new_demand',
-            assignee_id: initiative.assignee_id || null,
-            department_id: initiative.department_id || null,
-            business_owner_id: initiative.business_owner_id || null,
-            target_quarter: initiative.target_quarter || null,
-            progress: initiative.progress || 0,
+            assignee_id: request.assignee_id || null,
+            department_id: request.department_id || null,
+            business_owner_id: request.business_owner_id || null,
+            target_quarter: request.target_quarter || null,
+            progress: request.progress || 0,
           })
           .select('id')
           .single();
         if (insertError) throw insertError;
-        initiativeId = inserted.id;
+        requestId = inserted.id;
       }
     }
 
     await promoteMutation.mutateAsync({
-      initiative_id: initiativeId,
+      request_id: requestId,
       roadmap_priority: priority ? parseInt(priority) : undefined,
     });
-    queryClient.invalidateQueries({ queryKey: ['mdt-backlog'] });
+    queryClient.invalidateQueries({ queryKey: ['requests-backlog'] });
     onClose();
   };
 
   return (
     <AnimatePresence>
-      {open && initiative && (
+      {open && request && (
         <div className="fixed inset-0 z-[250] flex items-center justify-center">
           <motion.div
             className="absolute inset-0"
@@ -105,7 +105,7 @@ export function PromoteToRoadmapDialog({ open, onClose, initiative }: Props) {
                 <Map className="w-5 h-5 text-white" />
                 <span className="text-[15px] font-bold text-white">Add to Roadmap</span>
               </div>
-              <p className="text-[11.5px] text-white/85 truncate">{initiative.title}</p>
+              <p className="text-[11.5px] text-white/85 truncate">{request.title}</p>
             </div>
 
             <div className="p-4 px-5">

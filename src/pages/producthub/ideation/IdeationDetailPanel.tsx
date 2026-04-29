@@ -43,7 +43,7 @@ function useUpdateIdea() {
       queryClient.invalidateQueries({ queryKey: ['ideas'] });
       queryClient.invalidateQueries({ queryKey: ['ideas', 'roadmap'] });
       queryClient.invalidateQueries({ queryKey: ['ideas-roadmap'] });
-      queryClient.invalidateQueries({ queryKey: ['initiatives'] });
+      queryClient.invalidateQueries({ queryKey: ['requests'] });
       queryClient.invalidateQueries({ queryKey: ['ideaRaw'] });
       queryClient.invalidateQueries({ queryKey: ['ideaImpactFactors'] });
       queryClient.invalidateQueries({ queryKey: ['ideaStatusCounts'] });
@@ -298,7 +298,7 @@ export default function IdeationDetailPanel({ ideaKey, onClose, onConvert }: Pro
             }}>
               <div style={{ flex: 1 }}>
                 <div style={{ fontSize: '13px', fontWeight: 600, color: dk.t1 }}>Ready for promotion</div>
-                <div style={{ fontSize: '11px', color: dk.t3, marginTop: '2px' }}>Convert to an initiative to begin planning.</div>
+                <div style={{ fontSize: '11px', color: dk.t3, marginTop: '2px' }}>Convert to an request to begin planning.</div>
               </div>
               <button onClick={() => onConvert?.(rawIdea.idea_key)} style={{
                 background: '#2563EB', color: '#FFFFFF', border: 'none', borderRadius: '6px',

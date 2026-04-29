@@ -3,7 +3,7 @@
  * Handles /portfolio/:portfolioId/* routes
  */
 import { lazy, Suspense } from 'react';
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route } from "react-router-dom";
 
 const PlaceholderPage = lazy(() => import("../pages/jira-align/PlaceholderPage"));
 const WorkTreePage = lazy(() => import("../pages/work-tree").then(m => ({ default: m.WorkTreePage })));

@@ -1,16 +1,16 @@
 import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ChevronDown, Search, Plus, Download, LayoutList, LayoutGrid, Columns3, Package } from 'lucide-react';
-import { useMDTBacklog } from '@/hooks/useMDTBacklog';
-import { InitiativeDetailPanel } from '@/components/producthub/timeline/InitiativeDetailPanel';
-import { CreateInitiativeDrawer } from '@/components/producthub/shared/CreateInitiativeDrawer';
-import { PCInitiativeCard } from '@/components/producthub/cards/PCInitiativeCard';
+import { useRequestsBacklog } from '@/hooks/useRequestsBacklog';
+import { RequestDetailPanel } from '@/components/producthub/timeline/RequestDetailPanel';
+import { CreateRequestDrawer } from '@/components/producthub/shared/CreateRequestDrawer';
+import { PCRequestCard } from '@/components/producthub/cards/PCRequestCard';
 import { useDebounce } from '@/hooks/useDebounce';
 import { supabase } from '@/integrations/supabase/client';
-import type { Initiative } from '@/types/initiative';
-import type { FilterChip, TimelineInitiative } from '@/types/producthub/initiative';
-import { FILTER_CHIPS } from '@/types/producthub/initiative';
-import { getPriorityLevel, STATUS_DISPLAY } from '@/types/initiative';
+import type { Request } from '@/types/request';
+import type { FilterChip, TimelineRequest } from '@/types/producthub/request';
+import { FILTER_CHIPS } from '@/types/producthub/request';
+import { getPriorityLevel, STATUS_DISPLAY } from '@/types/request';
 import { formatDistanceToNow } from 'date-fns';
 import '@/styles/product-cards.css';
 import '@/styles/product-kanban.css';
@@ -38,7 +38,7 @@ const SORT_OPTIONS: { value: SortOption; label: string }[] = [
   { value: 'updated', label: 'Updated' },
 ];
 
-function toTimelineInitiative(i: Initiative): TimelineInitiative {
+function toTimelineInitiative(i: Request): TimelineRequest {
   return {
     id: i.id, initiative_key: i.initiative_key, title: i.title, description: i.description,
     status: i.status as any, assignee_id: i.assignee_id, assignee_name: i.assignee_name,
@@ -56,7 +56,7 @@ function toTimelineInitiative(i: Initiative): TimelineInitiative {
   };
 }
 
-function applyFilter<T extends Initiative>(items: T[], filter: FilterChip, currentUserId: string | null): T[] {
+function applyFilter<T extends Request>(items: T[], filter: FilterChip, currentUserId: string | null): T[] {
   switch (filter) {
     case 'my': return currentUserId ? items.filter(i => i.assignee_id === currentUserId) : items;
     case 'quarter': {
@@ -72,7 +72,7 @@ function applyFilter<T extends Initiative>(items: T[], filter: FilterChip, curre
   }
 }
 
-function applySort<T extends Initiative>(items: T[], sort: SortOption): T[] {
+function applySort<T extends Request>(items: T[], sort: SortOption): T[] {
   const s = [...items];
   switch (sort) {
     case 'score': return s.sort((a, b) => (b.computed_score ?? -1) - (a.computed_score ?? -1));
@@ -88,7 +88,7 @@ function applySort<T extends Initiative>(items: T[], sort: SortOption): T[] {
   }
 }
 
-function groupItems<T extends Initiative>(items: T[], groupBy: GroupByOption): { key: string; label: string; items: T[] }[] {
+function groupItems<T extends Request>(items: T[], groupBy: GroupByOption): { key: string; label: string; items: T[] }[] {
   if (groupBy === 'none') return [{ key: 'all', label: '', items }];
   const map = new Map<string, T[]>();
   for (const item of items) {
@@ -110,8 +110,8 @@ const PAGE_SIZES = [12, 24, 48];
 
 const CardsPage: React.FC = () => {
   const navigate = useNavigate();
-  const { data, isLoading } = useMDTBacklog();
-  const initiatives = data?.data ?? [];
+  const { data, isLoading } = useRequestsBacklog();
+  const requests = data?.data ?? [];
 
   const [searchRaw, setSearchRaw] = useState('');
   const searchTerm = useDebounce(searchRaw, 300);
@@ -129,7 +129,7 @@ const CardsPage: React.FC = () => {
 
   // Search + filter + sort
   const processed = useMemo(() => {
-    let result = initiatives;
+    let result = requests;
     if (searchTerm) {
       const q = searchTerm.toLowerCase();
       result = result.filter(i => i.title.toLowerCase().includes(q) || i.initiative_key.toLowerCase().includes(q));
@@ -137,7 +137,7 @@ const CardsPage: React.FC = () => {
     result = applyFilter(result, activeFilter, currentUserId);
     result = applySort(result, sortBy);
     return result;
-  }, [initiatives, searchTerm, activeFilter, sortBy, currentUserId]);
+  }, [requests, searchTerm, activeFilter, sortBy, currentUserId]);
 
   const paged = useMemo(() => processed.slice(0, pageSize), [processed, pageSize]);
   const groups = useMemo(() => groupItems(paged, groupBy), [paged, groupBy]);
@@ -145,19 +145,19 @@ const CardsPage: React.FC = () => {
   // Filter counts
   const filterCounts = useMemo(() => {
     const counts: Record<string, number> = {};
-    counts['all'] = initiatives.length;
-    counts['my'] = currentUserId ? initiatives.filter(i => i.assignee_id === currentUserId).length : 0;
+    counts['all'] = requests.length;
+    counts['my'] = currentUserId ? requests.filter(i => i.assignee_id === currentUserId).length : 0;
     const now = new Date();
     const q = `Q${Math.ceil((now.getMonth() + 1) / 3)} ${now.getFullYear()}`;
-    counts['quarter'] = initiatives.filter(i => i.target_quarter === q).length;
-    counts['high'] = initiatives.filter(i => i.computed_score !== null && i.computed_score >= 4.0).length;
-    counts['unscored'] = initiatives.filter(i => i.computed_score === null).length;
-    counts['overdue'] = initiatives.filter(i => i.target_complete && new Date(i.target_complete) < now && i.status !== 'done' && i.status !== 'cancelled').length;
-    counts['starred'] = initiatives.filter(i => i.is_favorited).length;
+    counts['quarter'] = requests.filter(i => i.target_quarter === q).length;
+    counts['high'] = requests.filter(i => i.computed_score !== null && i.computed_score >= 4.0).length;
+    counts['unscored'] = requests.filter(i => i.computed_score === null).length;
+    counts['overdue'] = requests.filter(i => i.target_complete && new Date(i.target_complete) < now && i.status !== 'done' && i.status !== 'cancelled').length;
+    counts['starred'] = requests.filter(i => i.is_favorited).length;
     return counts;
-  }, [initiatives, currentUserId]);
+  }, [requests, currentUserId]);
 
-  const selectedInitiative = selectedId ? initiatives.find(i => i.id === selectedId) : null;
+  const selectedInitiative = selectedId ? requests.find(i => i.id === selectedId) : null;
 
   const activeGroupLabel = GROUP_OPTIONS.find(o => o.value === groupBy)?.label ?? 'None';
   const activeSortLabel = SORT_OPTIONS.find(o => o.value === sortBy)?.label ?? 'Score';
@@ -288,9 +288,9 @@ const CardsPage: React.FC = () => {
                 )}
                 <div className="pc-grid">
                   {group.items.map(init => (
-                    <PCInitiativeCard
+                    <PCRequestCard
                       key={init.id}
-                      initiative={init}
+                      request={init}
                       isSelected={selectedId === init.id}
                       onClick={() => setSelectedId(init.id)}
                     />
@@ -319,15 +319,15 @@ const CardsPage: React.FC = () => {
 
       {/* Detail Panel — REUSE existing */}
       {selectedInitiative && (
-        <InitiativeDetailPanel
-          initiative={toTimelineInitiative(selectedInitiative)}
-          initiatives={processed.map(toTimelineInitiative)}
+        <RequestDetailPanel
+          request={toTimelineInitiative(selectedInitiative)}
+          requests={processed.map(toTimelineInitiative)}
           onClose={() => setSelectedId(null)}
         />
       )}
 
       {/* Create drawer */}
-      <CreateInitiativeDrawer open={showCreateDrawer} onClose={() => setShowCreateDrawer(false)} />
+      <CreateRequestDrawer open={showCreateDrawer} onClose={() => setShowCreateDrawer(false)} />
     </div>
   );
 };

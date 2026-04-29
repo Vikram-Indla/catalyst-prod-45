@@ -443,7 +443,7 @@
    DARK MODE — [data-theme="dark"] overrides
    Redefines --ra-* tokens for Geist Neutral Dark dark mode
    ───────────────────────────────────────────────────────────── */
-[data-theme="dark"] .ra-enterprise-clean {
+.dark .ra-enterprise-clean , [data-theme="dark"] .ra-enterprise-clean {
   /* NEUTRAL FOUNDATION — dark */
   --ra-white: #1A1A1A;
   --ra-slate-50: #1F1F1F;

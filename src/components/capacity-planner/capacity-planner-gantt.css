@@ -989,7 +989,7 @@
    Applied when html has class="dark" or data-theme="dark"
    ============================================================ */
 html.dark .capacity-gantt-container,
-html[data-theme="dark"] .capacity-gantt-container {
+html.dark .capacity-gantt-container , [data-theme="dark"] .capacity-gantt-container {
   /* Override dark mode design tokens */
   --cpg-slate-50: #1e293b !important;
   --cpg-slate-100: #1e293b !important;
@@ -1009,194 +1009,194 @@ html[data-theme="dark"] .capacity-gantt-container {
 
 /* Container & main surfaces */
 html.dark .cpg-toolbar,
-html[data-theme="dark"] .cpg-toolbar {
+html.dark .cpg-toolbar , [data-theme="dark"] .cpg-toolbar {
   background: linear-gradient(to bottom, #1e293b, #0f172a) !important;
   border-color: #334155 !important;
 }
 
 html.dark .cpg-toolbar-title,
-html[data-theme="dark"] .cpg-toolbar-title {
+html.dark .cpg-toolbar-title , [data-theme="dark"] .cpg-toolbar-title {
   color: #f8fafc !important;
 }
 
 html.dark .cpg-date-navigator,
-html[data-theme="dark"] .cpg-date-navigator {
+html.dark .cpg-date-navigator , [data-theme="dark"] .cpg-date-navigator {
   background: #1e293b !important;
 }
 
 html.dark .cpg-nav-btn,
-html[data-theme="dark"] .cpg-nav-btn {
+html.dark .cpg-nav-btn , [data-theme="dark"] .cpg-nav-btn {
   background: #334155 !important;
   color: #cbd5e1 !important;
 }
 
 html.dark .cpg-nav-btn:hover,
-html[data-theme="dark"] .cpg-nav-btn:hover {
+html.dark .cpg-nav-btn:hover , [data-theme="dark"] .cpg-nav-btn:hover {
   background: #2563eb !important;
   color: #ffffff !important;
 }
 
 html.dark .cpg-date-range,
-html[data-theme="dark"] .cpg-date-range {
+html.dark .cpg-date-range , [data-theme="dark"] .cpg-date-range {
   color: #e2e8f0 !important;
 }
 
 /* View Mode Toggle */
 html.dark .cpg-view-mode,
-html[data-theme="dark"] .cpg-view-mode {
+html.dark .cpg-view-mode , [data-theme="dark"] .cpg-view-mode {
   background: #1e293b !important;
   border-color: #334155 !important;
 }
 
 html.dark .cpg-view-btn,
-html[data-theme="dark"] .cpg-view-btn {
+html.dark .cpg-view-btn , [data-theme="dark"] .cpg-view-btn {
   color: #94a3b8 !important;
 }
 
 html.dark .cpg-view-btn:hover,
-html[data-theme="dark"] .cpg-view-btn:hover {
+html.dark .cpg-view-btn:hover , [data-theme="dark"] .cpg-view-btn:hover {
   color: #f8fafc !important;
 }
 
 html.dark .cpg-view-btn.active,
-html[data-theme="dark"] .cpg-view-btn.active {
+html.dark .cpg-view-btn.active , [data-theme="dark"] .cpg-view-btn.active {
   background: #334155 !important;
   color: #f8fafc !important;
 }
 
 /* Today button */
 html.dark .cpg-today-btn,
-html[data-theme="dark"] .cpg-today-btn {
+html.dark .cpg-today-btn , [data-theme="dark"] .cpg-today-btn {
   background: #1e293b !important;
   border-color: #334155 !important;
   color: #e2e8f0 !important;
 }
 
 html.dark .cpg-today-btn:hover,
-html[data-theme="dark"] .cpg-today-btn:hover {
+html.dark .cpg-today-btn:hover , [data-theme="dark"] .cpg-today-btn:hover {
   border-color: #2563eb !important;
   color: #2563eb !important;
 }
 
 /* Legend */
 html.dark .cpg-legend,
-html[data-theme="dark"] .cpg-legend {
+html.dark .cpg-legend , [data-theme="dark"] .cpg-legend {
   background: #1e293b !important;
   border-color: #334155 !important;
 }
 
 html.dark .cpg-legend-label,
-html[data-theme="dark"] .cpg-legend-label {
+html.dark .cpg-legend-label , [data-theme="dark"] .cpg-legend-label {
   color: #94a3b8 !important;
 }
 
 /* Grid header */
 html.dark .cpg-header-cell,
-html[data-theme="dark"] .cpg-header-cell {
+html.dark .cpg-header-cell , [data-theme="dark"] .cpg-header-cell {
   background: #0f172a !important;
   border-color: #334155 !important;
   color: #94a3b8 !important;
 }
 
 html.dark .cpg-resource-header,
-html[data-theme="dark"] .cpg-resource-header {
+html.dark .cpg-resource-header , [data-theme="dark"] .cpg-resource-header {
   background: #0f172a !important;
   border-color: #334155 !important;
   color: #94a3b8 !important;
 }
 
 html.dark .cpg-month-cell,
-html[data-theme="dark"] .cpg-month-cell {
+html.dark .cpg-month-cell , [data-theme="dark"] .cpg-month-cell {
   background: #0f172a !important;
   border-color: #334155 !important;
 }
 
 html.dark .cpg-month-name,
-html[data-theme="dark"] .cpg-month-name {
+html.dark .cpg-month-name , [data-theme="dark"] .cpg-month-name {
   color: #f8fafc !important;
 }
 
 html.dark .cpg-month-year,
-html[data-theme="dark"] .cpg-month-year {
+html.dark .cpg-month-year , [data-theme="dark"] .cpg-month-year {
   color: #64748b !important;
 }
 
 /* Grid rows */
 html.dark .cpg-row,
-html[data-theme="dark"] .cpg-row {
+html.dark .cpg-row , [data-theme="dark"] .cpg-row {
   background: #0f172a !important;
   border-color: #334155 !important;
 }
 
 html.dark .cpg-row:hover,
-html[data-theme="dark"] .cpg-row:hover {
+html.dark .cpg-row:hover , [data-theme="dark"] .cpg-row:hover {
   background: #1e293b !important;
 }
 
 html.dark .cpg-resource-cell,
-html[data-theme="dark"] .cpg-resource-cell {
+html.dark .cpg-resource-cell , [data-theme="dark"] .cpg-resource-cell {
   background: #0f172a !important;
   border-color: #334155 !important;
 }
 
 html.dark .cpg-resource-name,
-html[data-theme="dark"] .cpg-resource-name {
+html.dark .cpg-resource-name , [data-theme="dark"] .cpg-resource-name {
   color: #f8fafc !important;
 }
 
 html.dark .cpg-resource-role,
-html[data-theme="dark"] .cpg-resource-role {
+html.dark .cpg-resource-role , [data-theme="dark"] .cpg-resource-role {
   color: #94a3b8 !important;
 }
 
 html.dark .cpg-util-date,
-html[data-theme="dark"] .cpg-util-date {
+html.dark .cpg-util-date , [data-theme="dark"] .cpg-util-date {
   color: #64748b !important;
 }
 
 /* Timeline cells */
 html.dark .cpg-timeline-cell,
-html[data-theme="dark"] .cpg-timeline-cell {
+html.dark .cpg-timeline-cell , [data-theme="dark"] .cpg-timeline-cell {
   border-color: #334155 !important;
 }
 
 html.dark .cpg-timeline-grid,
-html[data-theme="dark"] .cpg-timeline-grid {
+html.dark .cpg-timeline-grid , [data-theme="dark"] .cpg-timeline-grid {
   border-color: #334155 !important;
 }
 
 html.dark .cpg-week-divider,
-html[data-theme="dark"] .cpg-week-divider {
+html.dark .cpg-week-divider , [data-theme="dark"] .cpg-week-divider {
   background: #1e293b !important;
 }
 
 /* Summary footer */
 html.dark .cpg-summary,
-html[data-theme="dark"] .cpg-summary {
+html.dark .cpg-summary , [data-theme="dark"] .cpg-summary {
   background: linear-gradient(to bottom, #1e293b, #0f172a) !important;
   border-color: #334155 !important;
 }
 
 html.dark .cpg-stat-label,
-html[data-theme="dark"] .cpg-stat-label {
+html.dark .cpg-stat-label , [data-theme="dark"] .cpg-stat-label {
   color: #94a3b8 !important;
 }
 
 html.dark .cpg-export-btn,
-html[data-theme="dark"] .cpg-export-btn {
+html.dark .cpg-export-btn , [data-theme="dark"] .cpg-export-btn {
   background: #1e293b !important;
   border-color: #334155 !important;
   color: #e2e8f0 !important;
 }
 
 html.dark .cpg-export-btn:hover,
-html[data-theme="dark"] .cpg-export-btn:hover {
+html.dark .cpg-export-btn:hover , [data-theme="dark"] .cpg-export-btn:hover {
   border-color: #2563eb !important;
   color: #2563eb !important;
 }
 
 /* Contract end marker */
 html.dark .cpg-contract-end,
-html[data-theme="dark"] .cpg-contract-end {
+html.dark .cpg-contract-end , [data-theme="dark"] .cpg-contract-end {
   color: #94a3b8 !important;
 }

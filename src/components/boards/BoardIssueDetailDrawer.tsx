@@ -1,5 +1,5 @@
 /**
- * BoardIssueDetailDrawer — InitiativeDetailPanel-style slide-out drawer
+ * BoardIssueDetailDrawer — RequestDetailPanel-style slide-out drawer
  * for Kanban board cards (ph_issues). Reuses idp-* CSS classes.
  */
 
@@ -10,7 +10,7 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import { toast } from 'sonner';
-import '@/styles/initiative-detail-panel.css';
+import '@/styles/request-detail-panel.css';
 
 /* ── Status color map ── */
 const STATUS_PILL: Record<string, { text: string; bg: string; bdr: string }> = {

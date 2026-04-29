@@ -41,7 +41,7 @@
    card" because the dark page bg shows straight through. The new
    value matches --cp-bg-surface dark (#1A1A1A) for consistency. */
 .dark [data-module="product-cards"],
-[data-theme="dark"] [data-module="product-cards"] {
+.dark [data-module="product-cards"] , [data-theme="dark"] [data-module="product-cards"] {
   --pc-ink: #EDEDED;
   --pc-ink-secondary: #EDEDED;
   --pc-ink-tertiary: #A1A1A1;
@@ -59,11 +59,11 @@
   --pc-purple-bg: rgba(124,58,237,0.12);
 }
 .dark .pc-card:hover,
-[data-theme="dark"] .pc-card:hover {
+.dark .pc-card:hover , [data-theme="dark"] .pc-card:hover {
   box-shadow: none;
 }
 .dark .pc-card--selected,
-[data-theme="dark"] .pc-card--selected {
+.dark .pc-card--selected , [data-theme="dark"] .pc-card--selected {
   box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.25);
 }
 

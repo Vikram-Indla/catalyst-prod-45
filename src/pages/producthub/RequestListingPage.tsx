@@ -1,0 +1,756 @@
+/**
+ * Request Listing Page — /producthub/backlog
+ * LINEAR PRECISION Design — pb-* namespace
+ */
+
+import React, { useState, useCallback, useMemo, useEffect, useRef } from 'react';
+import { useRequestsBacklog } from '@/hooks/useRequestsBacklog';
+import type { BRDTask } from '@/hooks/useRequestsBacklog';
+import { useSyncMDTToRequests } from '@/hooks/useSyncMDTToRequests';
+import { useProfileOptions, useDepartmentOptions } from '@/hooks/useRequestLookups';
+import { useProfileAvatarsByName } from '@/hooks/useProfileAvatars';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
+import { useQueryClient } from '@tanstack/react-query';
+import { RequestTable } from '@/components/producthub/listing/RequestTable';
+import { Pagination } from '@/components/producthub/listing/Pagination';
+import { RequestDetailPanel } from '@/components/producthub/timeline/RequestDetailPanel';
+import type { TimelineRequest } from '@/types/producthub/request';
+import { ContextMenu } from '@/components/requests/ContextMenu';
+import { CreateRequestDrawer } from '@/components/producthub/shared/CreateRequestDrawer';
+import { PromoteToRoadmapDialog } from '@/components/producthub/shared/PromoteToRoadmapDialog';
+
+import { ColumnManager, DEFAULT_COLUMNS, type ColumnConfig } from '@/components/producthub/listing/ColumnManager';
+import type { GroupByField } from '@/components/producthub/listing/ListingToolbar';
+import { ExportDropdown } from '@/components/producthub/listing/ExportDropdown';
+import { catalystToast } from '@/lib/catalystToast';
+import { JiraBulkActionBar } from '@/components/shared/JiraBulkActionBar';
+
+import type { Request, RequestStatus, Density } from '@/types/request';
+import { getPriorityLevel, STATUS_DISPLAY, getAvatarColor, getInitials } from '@/types/request';
+import { Search, X, Plus, Download, Calendar, Clock, LayoutGrid } from 'lucide-react';
+import { PriorityBars } from '@/components/shared/PriorityIndicator';
+import { CatalystPageHeader } from '@/components/shared/CatalystPageHeader';
+import { BacklogSubTabs, type BacklogTabType } from '@/components/producthub/listing/BacklogSubTabs';
+import { BacklogStatusBar } from '@/components/producthub/listing/BacklogStatusBar';
+import { FilterTriggerButton, JiraBasicFilter } from '@/components/shared/JiraBasicFilter';
+import type { FilterCategory } from '@/components/shared/JiraBasicFilter';
+import '@/styles/product-backlog.css';
+
+function toTimelineInitiative(i: Request): TimelineRequest {
+  return {
+    id: i.id, initiative_key: i.initiative_key, title: i.title, description: i.description,
+    status: i.status as any, assignee_id: i.assignee_id, assignee_name: i.assignee_name,
+    business_owner_id: i.business_owner_id, reporter_id: i.reporter_id, reporter_name: i.reporter_name,
+    department_id: i.department_id, department_name: i.department_name, department_code: null,
+    target_quarter: i.target_quarter, business_ask_date: i.business_ask_date, kickoff_date: i.kickoff_date,
+    target_complete: i.target_complete, progress: i.progress, sort_order: i.sort_order,
+    risk_count: i.risk_count, is_archived: i.is_archived, score_strategic_alignment: i.score_strategic_alignment,
+    score_business_impact: i.score_business_impact, score_time_urgency: i.score_time_urgency,
+    score_resource_feasibility: i.score_resource_feasibility, computed_score: i.computed_score,
+    created_at: i.created_at, updated_at: i.updated_at,
+    health_status: i.health_status ?? null,
+    business_value: i.business_value ?? null, ea_review: (i as any).ea_review ?? null,
+    priority: (i as any).priority ?? null, on_roadmap: i.on_roadmap ?? false,
+    source: (i as any).source ?? 'catalyst', jira_issue_key: (i as any).jira_issue_key ?? null,
+  };
+}
+
+const TERMINAL_STATUSES: RequestStatus[] = ['done', 'cancelled'];
+const COLUMN_STORAGE_KEY = 'ph-backlog-columns';
+const DENSITY_STORAGE_KEY = 'ph-backlog-density';
+
+
+function loadColumns(): ColumnConfig[] {
+  try {
+    const raw = localStorage.getItem(COLUMN_STORAGE_KEY);
+    if (raw) {
+      const parsed = JSON.parse(raw) as ColumnConfig[];
+      const ids = parsed.map(c => c.id);
+      if (!ids.includes('roadmap')) parsed.splice(0, 0, { id: 'roadmap', label: 'Roadmap', visible: true });
+      if (!ids.includes('type')) {
+        const statusIdx = parsed.findIndex(c => c.id === 'status');
+        parsed.splice(statusIdx >= 0 ? statusIdx + 1 : 3, 0, { id: 'type', label: 'Type', visible: true });
+      }
+      return parsed;
+    }
+  } catch { /* ignore */ }
+  return DEFAULT_COLUMNS.map(c => ({ ...c }));
+}
+
+function loadDensity(): Density {
+  try {
+    const raw = localStorage.getItem(DENSITY_STORAGE_KEY);
+    if (raw && ['compact', 'standard', 'comfortable'].includes(raw)) return raw as Density;
+  } catch { /* ignore */ }
+  return 'standard';
+}
+
+function applyTabFilter(data: Request[], tab: BacklogTabType): Request[] {
+  switch (tab) {
+    case 'my': return data.filter(i => !!i.assignee_name);
+    case 'starred': return data.filter(i => i.is_favorited);
+    default: return data;
+  }
+}
+
+function isOverdue(i: Request): boolean {
+  return !!(i.target_complete && new Date(i.target_complete) < new Date() && !TERMINAL_STATUSES.includes(i.status));
+}
+
+function applyAdvancedFilters(data: Request[], filters: Record<string, string[]>, overdueActive: boolean): Request[] {
+  let result = data;
+
+  if (overdueActive) {
+    result = result.filter(isOverdue);
+  }
+
+  const af = filters;
+  if (af.priority?.length) {
+    result = result.filter(i => {
+      const level = getPriorityLevel(i.computed_score).level;
+      return af.priority.includes(level);
+    });
+  }
+  if (af.quarter?.length) {
+    result = result.filter(i => af.quarter.includes(i.target_quarter ?? ''));
+  }
+  if (af.roadmap?.length) {
+    result = result.filter(i => {
+      const val = i.on_roadmap ? 'on' : 'off';
+      return af.roadmap.includes(val);
+    });
+  }
+  if (af.status?.length) {
+    result = result.filter(i => af.status.includes(i.status));
+  }
+  if (af.department?.length) {
+    result = result.filter(i => af.department.includes(i.department_name ?? ''));
+  }
+  if (af.assignee?.length) {
+    result = result.filter(i => af.assignee.includes(i.assignee_name ?? ''));
+  }
+
+  return result;
+}
+
+function applySearch(data: Request[], query: string): Request[] {
+  if (!query.trim()) return data;
+  const q = query.toLowerCase();
+  return data.filter(i =>
+    i.title.toLowerCase().includes(q) ||
+    i.initiative_key.toLowerCase().includes(q) ||
+    (i.assignee_name?.toLowerCase().includes(q)) ||
+    (i.department_name?.toLowerCase().includes(q))
+  );
+}
+
+function getGroupSortKey(item: Request, groupBy: GroupByField): string {
+  switch (groupBy) {
+    case 'status': return item.status;
+    case 'priority': return getPriorityLevel(item.computed_score).level;
+    case 'department': return item.department_name || 'zzz_unassigned';
+    case 'quarter': return item.target_quarter || 'zzz_none';
+    case 'assignee': return item.assignee_name || 'zzz_unassigned';
+    default: return '';
+  }
+}
+
+export default function RequestListingPage() {
+  useSyncMDTToRequests();
+  const { data: mdtData, isLoading } = useRequestsBacklog();
+  const { data: profiles } = useProfileOptions();
+  const { data: departments } = useDepartmentOptions();
+  const avatarsByName = useProfileAvatarsByName();
+  const queryClient = useQueryClient();
+
+  const invalidateAll = useCallback(() => {
+    queryClient.invalidateQueries({ queryKey: ['requests-backlog'] });
+    queryClient.invalidateQueries({ queryKey: ['backlog-requests'] });
+    queryClient.invalidateQueries({ queryKey: ['roadmap-requests'] });
+  }, [queryClient]);
+
+  const isNative = useCallback((id: string) => /^[0-9a-f]{8}-[0-9a-f]{4}-/i.test(id), []);
+
+  const mappedInitiatives: Request[] = useMemo(() => mdtData?.data ?? [], [mdtData]);
+
+  const brdTasksMap = useMemo<Record<string, BRDTask[]>>(() => {
+    const map: Record<string, BRDTask[]> = {};
+    for (const init of (mdtData?.data ?? [])) {
+      if ((init as any).brd_tasks?.length) {
+        map[init.id] = (init as any).brd_tasks;
+      }
+    }
+    return map;
+  }, [mdtData]);
+
+  const [density, setDensity] = useState<Density>(loadDensity);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [activeTab, setActiveTab] = useState<BacklogTabType>('all');
+  const [advancedFilters, setAdvancedFilters] = useState<Record<string, string[]>>({});
+  const [filterPanelOpen, setFilterPanelOpen] = useState(false);
+  const [overdueActive, setOverdueActive] = useState(false);
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [sorting, setSorting] = useState<{ id: string; desc: boolean }[]>([{ id: 'initiative_key', desc: false }]);
+  const [orderedData, setOrderedData] = useState<Request[] | null>(null);
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(25);
+  const [focusedRow, setFocusedRow] = useState(-1);
+  const [groupBy, setGroupBy] = useState<GroupByField>('none');
+  const [localSearch, setLocalSearch] = useState('');
+  const debounceRef = useRef<ReturnType<typeof setTimeout>>();
+
+  const [detailInitiative, setDetailInitiative] = useState<Request | null>(null);
+  const [detailOpen, setDetailOpen] = useState(false);
+  const [contextMenu, setContextMenu] = useState<{ pos: { x: number; y: number }; request: Request } | null>(null);
+  const [showCreateDrawer, setShowCreateDrawer] = useState(false);
+  const [promoteTarget, setPromoteTarget] = useState<Request | null>(null);
+
+  const [columnConfigs, setColumnConfigs] = useState<ColumnConfig[]>(loadColumns);
+  const [columnManagerOpen, setColumnManagerOpen] = useState(false);
+  const columnsButtonRef = useRef<HTMLButtonElement>(null);
+  const [exportOpen, setExportOpen] = useState(false);
+  const exportButtonRef = useRef<HTMLButtonElement>(null);
+  const searchInputRef = useRef<HTMLInputElement>(null);
+
+  const allInitiatives = orderedData ?? mappedInitiatives;
+
+  useEffect(() => { setOrderedData(null); }, [mappedInitiatives]);
+  useEffect(() => { localStorage.setItem(COLUMN_STORAGE_KEY, JSON.stringify(columnConfigs)); }, [columnConfigs]);
+  useEffect(() => { localStorage.setItem(DENSITY_STORAGE_KEY, density); }, [density]);
+
+  const handleSearch = useCallback((val: string) => {
+    setLocalSearch(val);
+    clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => setSearchQuery(val), 250);
+  }, []);
+
+  useEffect(() => { setLocalSearch(searchQuery); }, [searchQuery]);
+
+  // Tab-filtered data (before advanced filters, used for status counts)
+  const tabFiltered = useMemo(() => {
+    return applyTabFilter(allInitiatives, activeTab);
+  }, [allInitiatives, activeTab]);
+
+  const filtered = useMemo(() => {
+    let result = applyTabFilter(allInitiatives, activeTab);
+    result = applyAdvancedFilters(result, advancedFilters, overdueActive);
+    result = applySearch(result, searchQuery);
+    if (groupBy !== 'none') {
+      result = [...result].sort((a, b) => {
+        const aKey = getGroupSortKey(a, groupBy);
+        const bKey = getGroupSortKey(b, groupBy);
+        return aKey.localeCompare(bKey);
+      });
+    }
+    return result;
+  }, [allInitiatives, activeTab, advancedFilters, overdueActive, searchQuery, groupBy]);
+
+  const tabCounts = useMemo<Record<BacklogTabType, number>>(() => ({
+    all: allInitiatives.length,
+    my: applyTabFilter(allInitiatives, 'my').length,
+    starred: applyTabFilter(allInitiatives, 'starred').length,
+  }), [allInitiatives]);
+
+  const overdueCount = useMemo(() => tabFiltered.filter(isOverdue).length, [tabFiltered]);
+
+  const advancedFilterCount = useMemo(() => Object.values(advancedFilters).flat().length, [advancedFilters]);
+
+  // Build filter categories for JiraBasicFilter panel
+  const filterCategories = useMemo<FilterCategory[]>(() => {
+    const PRIORITY_ICONS: Record<string, React.ReactNode> = {
+      Critical: <PriorityBars priority="critical" />,
+      High: <PriorityBars priority="high" />,
+      Medium: <PriorityBars priority="medium" />,
+      Low: <PriorityBars priority="low" />,
+      Unscored: <PriorityBars priority="low" />,
+    };
+
+    // Priority category
+    const priorityLevels = ['High', 'Medium', 'Low', 'Unscored'] as const;
+    const priorityOptions = priorityLevels.map(level => ({
+      id: level,
+      label: level,
+      iconNode: PRIORITY_ICONS[level],
+    }));
+
+    // Quarter category — fixed 5-quarter window with calendar icons
+    const now = new Date();
+    const currentQNum = Math.ceil((now.getMonth() + 1) / 3);
+    const currentYear = now.getFullYear();
+    const quarterOptions: Array<{ id: string; label: string; iconNode: React.ReactNode }> = [];
+    for (let offset = -2; offset <= 2; offset++) {
+      let q = currentQNum + offset;
+      let y = currentYear;
+      while (q < 1) { q += 4; y--; }
+      while (q > 4) { q -= 4; y++; }
+      const id = `Q${q} ${y}`;
+      quarterOptions.push({
+        id,
+        label: offset === 0 ? `${id} (Current)` : id,
+        iconNode: <Calendar size={15} color={offset === 0 ? '#2563EB' : '#94A3B8'} strokeWidth={2} />,
+      });
+    }
+
+    // Roadmap category — with icons, mutually exclusive
+    const roadmapOptions = [
+      {
+        id: 'on',
+        label: 'On Roadmap',
+        iconNode: (
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <path d="M2 3.5C2 3.22 2.22 3 2.5 3H5.5C5.78 3 6 3.22 6 3.5V6.5C6 6.78 5.78 7 5.5 7H2.5C2.22 7 2 6.78 2 6.5V3.5Z" fill="#2563EB" opacity="0.9"/>
+            <path d="M7 4.5C7 4.22 7.22 4 7.5 4H13.5C13.78 4 14 4.22 14 4.5V5.5C14 5.78 13.78 6 13.5 6H7.5C7.22 6 7 5.78 7 5.5V4.5Z" fill="#2563EB" opacity="0.5"/>
+            <path d="M2 9.5C2 9.22 2.22 9 2.5 9H5.5C5.78 9 6 9.22 6 9.5V12.5C6 12.78 5.78 13 5.5 13H2.5C2.22 13 2 12.78 2 12.5V9.5Z" fill="#2563EB" opacity="0.9"/>
+            <path d="M7 10.5C7 10.22 7.22 10 7.5 10H11.5C11.78 10 12 10.22 12 10.5V11.5C12 11.78 11.78 12 11.5 12H7.5C7.22 12 7 11.78 7 11.5V10.5Z" fill="#2563EB" opacity="0.5"/>
+          </svg>
+        ),
+      },
+      {
+        id: 'off',
+        label: 'Not on Roadmap',
+        iconNode: (
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <path d="M2 3.5C2 3.22 2.22 3 2.5 3H5.5C5.78 3 6 3.22 6 3.5V6.5C6 6.78 5.78 7 5.5 7H2.5C2.22 7 2 6.78 2 6.5V3.5Z" stroke="#94A3B8" strokeWidth="1" fill="none"/>
+            <path d="M7 4.5C7 4.22 7.22 4 7.5 4H13.5C13.78 4 14 4.22 14 4.5V5.5C14 5.78 13.78 6 13.5 6H7.5C7.22 6 7 5.78 7 5.5V4.5Z" stroke="#94A3B8" strokeWidth="1" fill="none" strokeDasharray="2 2"/>
+            <path d="M2 9.5C2 9.22 2.22 9 2.5 9H5.5C5.78 9 6 9.22 6 9.5V12.5C6 12.78 5.78 13 5.5 13H2.5C2.22 13 2 12.78 2 12.5V9.5Z" stroke="#94A3B8" strokeWidth="1" fill="none"/>
+            <path d="M7 10.5C7 10.22 7.22 10 7.5 10H11.5C11.78 10 12 10.22 12 10.5V11.5C12 11.78 11.78 12 11.5 12H7.5C7.22 12 7 11.78 7 11.5V10.5Z" stroke="#94A3B8" strokeWidth="1" fill="none" strokeDasharray="2 2"/>
+          </svg>
+        ),
+      },
+    ];
+
+    // Status category — with 3-colour StatusLozenge pills
+    const LOZENGE_COLORS: Record<string, { bg: string; color: string }> = {
+      grey:  { bg: '#DFE1E6', color: '#253858' },
+      blue:  { bg: '#DEEBFF', color: '#0747A6' },
+      green: { bg: '#E3FCEF', color: '#006644' },
+    };
+    const statuses = [...new Set(tabFiltered.map(i => i.status))].sort();
+    const statusOptions = statuses.map(s => {
+      const sd = STATUS_DISPLAY[s as RequestStatus];
+      const label = sd?.label ?? s;
+      const loz = LOZENGE_COLORS[sd?.lozenge ?? 'grey'] ?? LOZENGE_COLORS.grey;
+      return {
+        id: s,
+        label,
+        hideLabel: true,
+        iconNode: (
+          <span style={{
+            display: 'inline-block', height: 20, lineHeight: '20px', fontSize: 11,
+            fontWeight: 700, textTransform: 'uppercase' as const, letterSpacing: '0.03em',
+            borderRadius: 3, padding: '0 6px', whiteSpace: 'nowrap' as const,
+            background: loz.bg, color: loz.color,
+          }}>{label}</span>
+        ),
+      };
+    });
+
+    // Department category
+    const depts = [...new Set(tabFiltered.map(i => i.department_name).filter(Boolean) as string[])].sort();
+    const departmentOptions = depts.map(d => ({ id: d, label: d }));
+
+    // Assignee category — derived from actual request data for speed
+    const assigneeNames = [...new Set(tabFiltered.map(i => i.assignee_name).filter(Boolean) as string[])].sort();
+    const assigneeOptions = assigneeNames.map(name => {
+      const avatarUrl = avatarsByName.get(name.toLowerCase());
+      return {
+        id: name,
+        label: name,
+        ...(avatarUrl
+          ? { avatarUrl, avatarType: 'photo' as const }
+          : { avatarInitials: getInitials(name), avatarColor: getAvatarColor(name), avatarType: 'initials' as const }),
+      };
+    });
+
+    return [
+      { id: 'priority', label: 'Priority', searchPlaceholder: 'Search priority', options: priorityOptions },
+      { id: 'quarter', label: 'Quarter', searchPlaceholder: 'Search quarter', options: quarterOptions },
+      { id: 'roadmap', label: 'Roadmap', searchPlaceholder: 'Search roadmap', options: roadmapOptions },
+      { id: 'status', label: 'Status', searchPlaceholder: 'Search status', options: statusOptions },
+      { id: 'department', label: 'Department', searchPlaceholder: 'Search department', options: departmentOptions },
+      { id: 'assignee', label: 'Assignee', searchPlaceholder: 'Search assignee', options: assigneeOptions },
+    ];
+  }, [tabFiltered, avatarsByName]);
+
+  const handleAdvancedFilterChange = useCallback((categoryId: string, optionIds: string[]) => {
+    if (categoryId === 'roadmap') {
+      // Mutually exclusive: only keep the most recently selected option
+      setAdvancedFilters(prev => {
+        const prevSelected = prev.roadmap ?? [];
+        const newlyAdded = optionIds.filter(id => !prevSelected.includes(id));
+        return { ...prev, roadmap: newlyAdded.length > 0 ? [newlyAdded[newlyAdded.length - 1]] : [] };
+      });
+    } else {
+      setAdvancedFilters(prev => ({ ...prev, [categoryId]: optionIds }));
+    }
+  }, []);
+
+  const handleClearAllFilters = useCallback(() => {
+    setAdvancedFilters({});
+    setOverdueActive(false);
+  }, []);
+
+  const handleCloseFilterPanel = useCallback(() => {
+    setFilterPanelOpen(false);
+  }, []);
+
+  const handleTabChange = useCallback((tab: BacklogTabType) => {
+    setActiveTab(tab);
+    setPage(1);
+  }, []);
+
+  // Shift+F to toggle filter panel
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if (e.shiftKey && e.key === 'F') {
+        e.preventDefault();
+        setFilterPanelOpen(v => !v);
+      }
+    };
+    document.addEventListener('keydown', handler);
+    return () => document.removeEventListener('keydown', handler);
+  }, []);
+
+  const paginatedData = useMemo(() => {
+    const start = (page - 1) * pageSize;
+    return filtered.slice(start, start + pageSize);
+  }, [filtered, page, pageSize]);
+
+  const handleReorder = useCallback((sourceIndex: number, destIndex: number) => {
+    setOrderedData(prev => {
+      const items = [...(prev ?? allInitiatives)];
+      const [moved] = items.splice(sourceIndex, 1);
+      items.splice(destIndex, 0, moved);
+      return items;
+    });
+  }, [allInitiatives]);
+
+  // Keyboard navigation
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        if (columnManagerOpen) { setColumnManagerOpen(false); return; }
+        if (exportOpen) { setExportOpen(false); return; }
+        if (contextMenu) { setContextMenu(null); return; }
+        if (detailOpen) { setDetailOpen(false); return; }
+        if (selectedIds.length > 0) { setSelectedIds([]); return; }
+      }
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+        e.preventDefault();
+        searchInputRef.current?.focus();
+        return;
+      }
+      if ((e.metaKey || e.ctrlKey) && e.key === 'a') {
+        const active = document.activeElement;
+        if (active instanceof HTMLInputElement || active instanceof HTMLTextAreaElement || active instanceof HTMLSelectElement) return;
+        e.preventDefault();
+        setSelectedIds(paginatedData.map(d => d.id));
+        return;
+      }
+      if (e.key === 'ArrowDown') { e.preventDefault(); setFocusedRow(prev => Math.min(prev + 1, paginatedData.length - 1)); }
+      if (e.key === 'ArrowUp') { e.preventDefault(); setFocusedRow(prev => Math.max(prev - 1, 0)); }
+      if (e.key === 'Enter' && focusedRow >= 0 && focusedRow < paginatedData.length) {
+        const active = document.activeElement;
+        if (active instanceof HTMLInputElement || active instanceof HTMLTextAreaElement || active instanceof HTMLSelectElement) return;
+        setDetailInitiative(paginatedData[focusedRow]);
+        setDetailOpen(true);
+      }
+      if (e.key === ' ' && focusedRow >= 0 && focusedRow < paginatedData.length) {
+        const active = document.activeElement;
+        if (active instanceof HTMLInputElement || active instanceof HTMLTextAreaElement || active instanceof HTMLSelectElement) return;
+        e.preventDefault();
+        const id = paginatedData[focusedRow].id;
+        setSelectedIds(prev => prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]);
+      }
+      if ((e.key === 'Delete' || e.key === 'Backspace') && selectedIds.length > 0) {
+        const active = document.activeElement;
+        if (active instanceof HTMLInputElement || active instanceof HTMLTextAreaElement || active instanceof HTMLSelectElement) return;
+        e.preventDefault();
+        if (confirm(`Delete ${selectedIds.length} business request(s)? This cannot be undone.`)) {
+          handleBulkAction('delete');
+        }
+      }
+    };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, [contextMenu, detailOpen, selectedIds, columnManagerOpen, exportOpen, focusedRow, paginatedData]);
+
+  const handleRowClick = useCallback((request: Request) => {
+    setDetailInitiative(request);
+    setDetailOpen(true);
+  }, []);
+
+  const handleStatusChange = useCallback(async (id: string, newStatus: RequestStatus) => {
+    if (isNative(id)) {
+      await typedQuery('ph_requests').update({ status: newStatus, updated_at: new Date().toISOString() }).eq('id', id);
+      invalidateAll();
+    }
+    catalystToast.success(`Status updated to ${newStatus.replace(/_/g, ' ')}`);
+  }, [isNative, invalidateAll]);
+
+  const handleFavoriteToggle = useCallback(async (id: string, isFavorited: boolean) => {
+    if (isNative(id)) {
+      await typedQuery('ph_requests').update({ is_favorited: !isFavorited, updated_at: new Date().toISOString() }).eq('id', id);
+      invalidateAll();
+    }
+    catalystToast.success(isFavorited ? 'Removed from favorites' : 'Added to favorites');
+  }, [isNative, invalidateAll]);
+
+  const handleSortChange = useCallback((s: { id: string; desc: boolean }[]) => { setSorting(s); }, []);
+
+  const handleContextMenu = useCallback((e: React.MouseEvent, request: Request) => {
+    setContextMenu({ pos: { x: e.clientX, y: e.clientY }, request });
+  }, []);
+
+  const handleContextAction = useCallback(async (action: string, value?: unknown) => {
+    if (!contextMenu) return;
+    const init = contextMenu.request;
+    switch (action) {
+      case 'open':
+      case 'edit':
+        setDetailInitiative(init);
+        setDetailOpen(true);
+        break;
+      case 'change_status':
+        handleStatusChange(init.id, value as RequestStatus);
+        break;
+      case 'assign':
+        if (isNative(init.id)) {
+          await typedQuery('ph_requests').update({ assignee_id: value as string, updated_at: new Date().toISOString() }).eq('id', init.id);
+          invalidateAll();
+          catalystToast.success('Assignee updated');
+        }
+        break;
+      case 'copy_id':
+        navigator.clipboard.writeText(init.initiative_key);
+        catalystToast.success(`Copied ${init.initiative_key}`);
+        break;
+      case 'clone':
+        if (isNative(init.id)) {
+          const { data: existing } = await typedQuery('ph_requests').select('initiative_key').order('created_at', { ascending: false }).limit(100);
+          const maxNum = (existing || []).reduce((max: number, r: any) => { const num = parseInt(r.initiative_key?.replace(/[A-Z]+-/, '') || '0'); return num > max ? num : max; }, 0);
+          const prefix = init.initiative_key?.replace(/-\d+$/, '') || 'MIM';
+          const nextKey = `${prefix}-${String(maxNum + 1).padStart(3, '0')}`;
+          await typedQuery('ph_requests').insert({ title: `${init.title} (Copy)`, initiative_key: nextKey, description: init.description, status: 'new_demand', progress: 0, department_id: init.department_id, assignee_id: init.assignee_id });
+          invalidateAll();
+          catalystToast.success(`Cloned as ${nextKey}`);
+        }
+        break;
+      case 'archive':
+        if (isNative(init.id)) {
+          await typedQuery('ph_requests').update({ is_archived: true }).eq('id', init.id);
+          invalidateAll();
+          catalystToast.success('Archived');
+        }
+        break;
+      case 'delete':
+        if (confirm(`Delete ${init.initiative_key}? This cannot be undone.`)) {
+          if (isNative(init.id)) {
+            await typedQuery('ph_requests').update({ is_deleted: true }).eq('id', init.id);
+            invalidateAll();
+          }
+          catalystToast.success('Deleted');
+        }
+        break;
+    }
+  }, [contextMenu, handleStatusChange, isNative, invalidateAll]);
+
+  const handleInlineEdit = useCallback(async (id: string, field: string, value: string | number | null) => {
+    if (isNative(id)) {
+      await typedQuery('ph_requests').update({ [field]: value, updated_at: new Date().toISOString() }).eq('id', id);
+      invalidateAll();
+    }
+    catalystToast.success('Updated');
+  }, [isNative, invalidateAll]);
+
+  const handleBulkAction = useCallback(async (action: string) => {
+    const nativeIds = selectedIds.filter(id => isNative(id));
+    switch (action) {
+      case 'archive':
+        if (nativeIds.length) {
+          await typedQuery('ph_requests').update({ is_archived: true }).in('id', nativeIds);
+          invalidateAll();
+        }
+        catalystToast.success(`${selectedIds.length} items archived`);
+        setSelectedIds([]);
+        break;
+      case 'delete':
+        if (nativeIds.length) {
+          await typedQuery('ph_requests').update({ is_deleted: true }).in('id', nativeIds);
+          invalidateAll();
+        }
+        catalystToast.success(`${selectedIds.length} items deleted`);
+        setSelectedIds([]);
+        break;
+      default:
+        catalystToast.success(`${selectedIds.length} items — ${action}`);
+        break;
+    }
+  }, [selectedIds, isNative, invalidateAll]);
+
+  const handleScoreSave = useCallback(async () => {
+    invalidateAll();
+  }, [invalidateAll]);
+
+  const memoizedTimelineInitiatives = useMemo(() => filtered.map(toTimelineInitiative), [filtered]);
+
+  const handleRoadmapToggle = useCallback(async (id: string, currentValue: boolean) => {
+    if (isNative(id)) {
+      await typedQuery('ph_requests').update({ on_roadmap: !currentValue, updated_at: new Date().toISOString() }).eq('id', id);
+      invalidateAll();
+    }
+    catalystToast.success(currentValue ? 'Removed from roadmap' : 'Added to roadmap');
+  }, [isNative, invalidateAll]);
+
+  return (
+    <div data-module="product-backlog" className="flex flex-col h-full" style={{ fontFamily: 'var(--cp-font-body)' }}>
+      {/* ── Page Header (Canonical) ── */}
+      <CatalystPageHeader title="Product Backlog" />
+
+      {/* ── Primary Tabs (All / My Items / Starred) + Overdue + Filter ── */}
+      <div style={{
+        display: 'flex', alignItems: 'center', gap: 8,
+        padding: '10px 28px', borderBottom: '0.75px solid var(--cp-border-subtle)',
+      }}>
+        <BacklogSubTabs activeTab={activeTab} counts={tabCounts} onTabChange={handleTabChange} />
+        <BacklogStatusBar
+          items={tabFiltered}
+          overdueCount={overdueCount}
+          overdueActive={overdueActive}
+          onOverdueToggle={() => { setOverdueActive(v => !v); setPage(1); }}
+          filterSlot={
+            <div style={{ position: 'relative' }}>
+              <FilterTriggerButton
+                count={advancedFilterCount}
+                onClick={() => setFilterPanelOpen(v => !v)}
+                isOpen={filterPanelOpen}
+              />
+              {filterPanelOpen && (
+                <JiraBasicFilter
+                  categories={filterCategories}
+                  selected={advancedFilters}
+                  onSelectionChange={handleAdvancedFilterChange}
+                  onClearAll={handleClearAllFilters}
+                  onClose={handleCloseFilterPanel}
+                />
+              )}
+            </div>
+          }
+        />
+      </div>
+
+      {/* ── Jira-style bulk action bar ── */}
+      {selectedIds.length > 0 && (
+        <JiraBulkActionBar
+          selectedIds={selectedIds}
+          items={paginatedData.map(d => ({ id: d.id, issue_key: d.initiative_key, title: d.title, status: d.status, priority: d.priority ?? undefined, assignee_name: d.assignee_name ?? undefined }))}
+          onClear={() => setSelectedIds([])}
+          onEdit={(ids) => {
+            const item = paginatedData.find(d => d.id === ids[0]);
+            if (item) { setDetailInitiative(item); setDetailOpen(true); }
+          }}
+          onDelete={(ids) => handleBulkAction('delete')}
+          entityLabel="business request"
+        />
+      )}
+
+      {/* ── Table or Empty State ── */}
+      {filtered.length === 0 && !isLoading ? (
+        <div className="flex-1 flex flex-col items-center justify-center" style={{ padding: '80px 32px' }}>
+          {overdueActive ? (
+            <>
+              <Clock size={40} color="#94A3B8" strokeWidth={1.5} />
+              <p style={{ fontSize: 15, fontWeight: 600, color: '#0F172A', marginTop: 16 }}>No overdue business requests</p>
+              <p style={{ fontSize: 13, color: '#94A3B8', marginTop: 4 }}>All business requests are on track with their target dates</p>
+              <button
+                onClick={() => { setOverdueActive(false); setPage(1); }}
+                style={{ marginTop: 16, fontSize: 13, fontWeight: 500, color: '#2563EB', cursor: 'pointer', background: 'none', border: 'none', padding: '6px 12px', borderRadius: 6 }}
+              >
+                Clear overdue filter
+              </button>
+            </>
+          ) : (
+            <>
+              <LayoutGrid size={40} color="#94A3B8" strokeWidth={1.5} />
+              <p style={{ fontSize: 15, fontWeight: 600, color: '#0F172A', marginTop: 16 }}>No business requests match your filters</p>
+              <p style={{ fontSize: 13, color: '#94A3B8', marginTop: 4 }}>Try adjusting your search or filter criteria</p>
+            </>
+          )}
+        </div>
+      ) : (
+        <div className="flex-1 flex flex-col min-h-0" style={{ padding: '0 32px' }}>
+          <RequestTable
+            data={paginatedData}
+            loading={isLoading}
+            density={density}
+            columnConfigs={columnConfigs}
+            groupBy={groupBy}
+            brdTasksMap={brdTasksMap}
+            onRowClick={handleRowClick}
+            onStatusChange={handleStatusChange}
+            onFavoriteToggle={handleFavoriteToggle}
+            onSelectionChange={setSelectedIds}
+            onSortChange={handleSortChange}
+            onContextMenu={handleContextMenu}
+            onReorder={handleReorder}
+            onInlineEdit={handleInlineEdit}
+            onPromote={setPromoteTarget}
+            onRoadmapToggle={handleRoadmapToggle}
+            focusedRowIndex={focusedRow}
+            onFocusedRowChange={setFocusedRow}
+          />
+        </div>
+      )}
+
+      {/* ── Pagination ── */}
+      <Pagination
+        total={filtered.length}
+        page={page}
+        pageSize={pageSize}
+        onPageChange={setPage}
+        onPageSizeChange={setPageSize}
+      />
+
+      {detailOpen && detailInitiative && (
+        <RequestDetailPanel
+          request={toTimelineInitiative(detailInitiative)}
+          requests={memoizedTimelineInitiatives}
+          onClose={() => setDetailOpen(false)}
+        />
+      )}
+
+      <ContextMenu
+        position={contextMenu?.pos ?? null}
+        request={contextMenu?.request ?? null}
+        onAction={handleContextAction}
+        onClose={() => setContextMenu(null)}
+      />
+
+      <ColumnManager
+        columns={columnConfigs}
+        onChange={setColumnConfigs}
+        anchorRef={columnsButtonRef}
+        isOpen={columnManagerOpen}
+        onClose={() => setColumnManagerOpen(false)}
+      />
+
+      <ExportDropdown
+        data={filtered}
+        anchorRef={exportButtonRef}
+        isOpen={exportOpen}
+        onClose={() => setExportOpen(false)}
+      />
+
+      <CreateRequestDrawer open={showCreateDrawer} onClose={() => setShowCreateDrawer(false)} />
+
+      <PromoteToRoadmapDialog
+        open={!!promoteTarget}
+        onClose={() => setPromoteTarget(null)}
+        request={promoteTarget ? {
+          id: promoteTarget.id,
+          title: promoteTarget.title,
+        } : null}
+      />
+    </div>
+  );
+}

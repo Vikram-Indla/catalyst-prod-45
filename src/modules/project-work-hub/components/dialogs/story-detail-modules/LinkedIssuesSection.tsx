@@ -395,12 +395,12 @@ export function LinkedIssuesSection({ issueId, issueKey: issueKeyProp, projectKe
         });
       }
 
-      // Final fallback: resolve missing keys from ph_initiatives so links to
-      // MIM-* / MDT-* initiatives (created via InitiativeLinkedItemsTab)
+      // Final fallback: resolve missing keys from ph_requests so links to
+      // MIM-* / MDT-* initiatives (created via RequestLinkedItemsTab)
       // appear on the linked epic / story / defect side of the relationship.
       const stillMissing = targetKeys.filter(k => !targetMap.has(k));
       if (stillMissing.length > 0) {
-        const { data: initTargets } = await supabase.from('ph_initiatives')
+        const { data: initTargets } = await supabase.from('ph_requests')
           .select('id, initiative_key, title, status, assignee_id, priority, updated_at')
           .in('initiative_key', stillMissing)
           .eq('is_deleted', false);
@@ -414,7 +414,7 @@ export function LinkedIssuesSection({ issueId, issueKey: issueKeyProp, projectKe
             summary: it.title,
             status,
             status_category,
-            issue_type: 'Initiative',
+            issue_type: 'Request',
             assignee_account_id: it.assignee_id ?? null,
             assignee_display_name: null,
             priority: it.priority ?? null,

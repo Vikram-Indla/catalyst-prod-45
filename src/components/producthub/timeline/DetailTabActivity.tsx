@@ -1,7 +1,7 @@
 /**
  * Detail Tab — Activity (catalyst-ds replacement)
- * Reads from ph_initiative_comments + ph_initiative_audit_log.
- * Comments routed to the dedicated ph_initiative_comments table after
+ * Reads from ph_request_comments + ph_request_audit_log.
+ * Comments routed to the dedicated ph_request_comments table after
  * the split-table fix in migration
  * 20260428140000_jira_compare_initiative_comments_split.sql.
  * For business_request types, also reads business_request_discussions + audit_logs.
@@ -14,7 +14,7 @@ import { ActivityPanel } from '@/components/catalyst-ds';
 import type { CdsComment, CdsActivityItem, CdsUser, CdsQuickReply } from '@/components/catalyst-ds';
 
 interface DetailTabActivityProps {
-  initiativeId: string;
+  requestId: string;
 }
 
 const QUICK_REPLIES: CdsQuickReply[] = [
@@ -69,7 +69,7 @@ function mapAuditEntry(raw: any): CdsActivityItem {
   };
 }
 
-export const DetailTabActivity: React.FC<DetailTabActivityProps> = ({ initiativeId }) => {
+export const DetailTabActivity: React.FC<DetailTabActivityProps> = ({ requestId }) => {
   const queryClient = useQueryClient();
   const [currentUser, setCurrentUser] = useState<CdsUser | undefined>();
 
@@ -94,7 +94,7 @@ export const DetailTabActivity: React.FC<DetailTabActivityProps> = ({ initiative
   }));
 
   useQuery({
-    queryKey: ['current-user-for-initiative-activity'],
+    queryKey: ['current-user-for-request-activity'],
     enabled: profiles.length > 0,
     queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
@@ -113,11 +113,11 @@ export const DetailTabActivity: React.FC<DetailTabActivityProps> = ({ initiative
   });
 
   const { data: rawComments = [], isLoading: isLoadingComments } = useQuery({
-    queryKey: ['ph-initiative-comments', initiativeId],
+    queryKey: ['ph-request-comments', requestId],
     queryFn: async () => {
-      const { data, error } = await typedQuery('ph_initiative_comments')
+      const { data, error } = await typedQuery('ph_request_comments')
         .select('id, body, author_id, created_at, updated_at')
-        .eq('initiative_id', initiativeId)
+        .eq('request_id', requestId)
         .order('created_at', { ascending: true });
       if (error) throw error;
       return data || [];
@@ -127,11 +127,11 @@ export const DetailTabActivity: React.FC<DetailTabActivityProps> = ({ initiative
   const profileMap = new Map(profiles.map((p: any) => [p.id, p]));
 
   const { data: rawAudit = [], isLoading: isLoadingHistory } = useQuery({
-    queryKey: ['idp-activity', initiativeId],
+    queryKey: ['idp-activity', requestId],
     queryFn: async () => {
-      const { data, error } = await typedQuery('ph_initiative_audit_log')
+      const { data, error } = await typedQuery('ph_request_audit_log')
         .select('*, user:profiles!user_id(full_name)')
-        .eq('initiative_id', initiativeId)
+        .eq('request_id', requestId)
         .order('created_at', { ascending: false })
         .limit(100);
       if (error) throw error;
@@ -144,15 +144,15 @@ export const DetailTabActivity: React.FC<DetailTabActivityProps> = ({ initiative
     mutationFn: async (body: string) => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
-      const { error } = await typedQuery('ph_initiative_comments').insert({
-        initiative_id: initiativeId,
+      const { error } = await typedQuery('ph_request_comments').insert({
+        request_id: requestId,
         body,
         author_id: user.id,
       });
       if (error) throw error;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['ph-initiative-comments', initiativeId] });
+      queryClient.invalidateQueries({ queryKey: ['ph-request-comments', requestId] });
       toast.success('Comment added');
     },
     onError: () => toast.error('Failed to add comment'),
@@ -160,20 +160,20 @@ export const DetailTabActivity: React.FC<DetailTabActivityProps> = ({ initiative
 
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => {
-      await typedQuery('ph_initiative_comments').delete().eq('id', id);
+      await typedQuery('ph_request_comments').delete().eq('id', id);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['ph-initiative-comments', initiativeId] });
+      queryClient.invalidateQueries({ queryKey: ['ph-request-comments', requestId] });
       toast.success('Comment deleted');
     },
   });
 
   const editMutation = useMutation({
     mutationFn: async ({ id, body }: { id: string; body: string }) => {
-      await typedQuery('ph_initiative_comments').update({ body, updated_at: new Date().toISOString() }).eq('id', id);
+      await typedQuery('ph_request_comments').update({ body, updated_at: new Date().toISOString() }).eq('id', id);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['ph-initiative-comments', initiativeId] });
+      queryClient.invalidateQueries({ queryKey: ['ph-request-comments', requestId] });
     },
   });
 

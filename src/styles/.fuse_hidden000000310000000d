@@ -1,0 +1,200 @@
+/* ════════════════════════════════════════════════════════════════════════════
+   CATALYST V11 — Strategy Room Design Tokens
+   Scoped to .strategy-room for isolation from the rest of the design system.
+   ════════════════════════════════════════════════════════════════════════════ */
+
+.strategy-room {
+  /* ── Surfaces ── */
+  --catalyst-bg-app: #F1F5F9;
+  --catalyst-bg-surface-0: #FFFFFF;
+  --catalyst-bg-surface-1: #F8FAFC;
+  --catalyst-bg-surface-2: #F1F5F9;
+  --catalyst-bg-surface-3: #E2E8F0;
+  --catalyst-bg-hover: rgba(0,0,0,0.04);
+  --catalyst-bg-active: rgba(0,0,0,0.06);
+  --catalyst-bg-selected: #EFF6FF;
+
+  /* ── Text ── */
+  --catalyst-text-primary: #0F172A;
+  --catalyst-text-secondary: #334155;  /* slate-700, contrast 8.6:1 — passes AAA */
+  --catalyst-text-tertiary: #64748B;   /* slate-500, contrast 5.6:1 — passes AA */
+  --catalyst-text-inverse: #FFFFFF;
+  --catalyst-text-link: #2563EB;
+  --catalyst-text-on-primary: #FFFFFF;
+
+  /* ── Borders ── */
+  --catalyst-border-default: #E2E8F0;
+  --catalyst-border-strong: #CBD5E1;
+  --catalyst-border-focus: #3B82F6;
+  --catalyst-border-interactive: #3B82F6;
+
+  /* ── Brand Colors ── */
+  --catalyst-primary: #2563EB;
+  --catalyst-primary-hover: #1D4ED8;
+  --catalyst-primary-bg: #EFF6FF;
+  --catalyst-success: #0D9488;
+  --catalyst-success-bg: #F0FDFA;
+  --catalyst-warning: #D97706;
+  --catalyst-warning-bg: #FFFBEB;
+  --catalyst-danger: #EF4444;
+  --catalyst-danger-bg: #FEF2F2;
+  --catalyst-ai-purple: #7C3AED;
+  --catalyst-ai-purple-bg: #F5F3FF;
+
+  /* ── Theme Colors (Strategic Themes) ── */
+  --theme-digital: #2563EB;
+  --theme-workforce: #0D9488;
+  --theme-supply-chain: #D97706;
+  --theme-esg: #16A34A;
+
+  /* ── Workstream Colors ── */
+  --catalyst-ws-senaie: #06B6D4;
+  --catalyst-ws-catalyst: #8B5CF6;
+  --catalyst-ws-tahommona: #6366F1;
+  --catalyst-ws-delivery: #F97316;
+  --catalyst-ws-mim: #EC4899;
+  --catalyst-ws-standalone: #84CC16;
+  --catalyst-ws-dataai: #14B8A6;
+
+  /* ── Radius ── */
+  --catalyst-radius-xs: 2px;
+  --catalyst-radius-sm: 4px;
+  --catalyst-radius-md: 6px;
+  --catalyst-radius-lg: 8px;
+  --catalyst-radius-xl: 12px;
+  --catalyst-radius-2xl: 16px;
+  --catalyst-radius-full: 9999px;
+
+  /* ── Shadows ── */
+  --catalyst-shadow-card: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.04);
+  --catalyst-shadow-dropdown: 0 4px 12px rgba(0,0,0,0.08), 0 2px 4px rgba(0,0,0,0.04);
+  --catalyst-shadow-modal: 0 12px 40px rgba(0,0,0,0.12), 0 4px 12px rgba(0,0,0,0.06);
+
+  /* ── Typography ── */
+  --catalyst-font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+  --catalyst-font-mono: 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
+
+  /* ── Motion ── */
+  --catalyst-duration-fast: 120ms;
+  --catalyst-duration-normal: 200ms;
+  --catalyst-duration-slow: 300ms;
+  --catalyst-easing-default: cubic-bezier(0.4, 0, 0.2, 1);
+  --catalyst-easing-out: cubic-bezier(0, 0, 0.2, 1);
+  --catalyst-easing-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  /* ── Spacing (4px grid) ── */
+  --catalyst-space-1: 4px;
+  --catalyst-space-2: 8px;
+  --catalyst-space-3: 12px;
+  --catalyst-space-4: 16px;
+  --catalyst-space-5: 20px;
+  --catalyst-space-6: 24px;
+  --catalyst-space-8: 32px;
+
+  /* ── Grid ── */
+  --catalyst-grid-gutter: 24px;
+}
+
+/* ── DARK MODE — Nocturne overrides ── */
+[data-theme="dark"] .strategy-room {
+  --catalyst-bg-app: #0A0A0A;
+  --catalyst-bg-surface-0: #0A0A0A;
+  --catalyst-bg-surface-1: #0A0A0A;
+  --catalyst-bg-surface-2: #0A0A0A;
+  --catalyst-bg-surface-3: #292929;
+  --catalyst-bg-hover: #1F1F1F;
+  --catalyst-bg-active: #292929;
+  --catalyst-bg-selected: rgba(59,130,246,0.08);
+
+  --catalyst-text-primary: #EDEDED;
+  --catalyst-text-secondary: #A1A1A1;
+  --catalyst-text-tertiary: #878787;
+  --catalyst-text-inverse: #0A0A0A;
+  --catalyst-text-link: #7DB8FC;
+  --catalyst-text-on-primary: #FFFFFF;
+
+  --catalyst-border-default: #2E2E2E;
+  --catalyst-border-strong: #454545;
+  --catalyst-border-focus: #3B82F6;
+  --catalyst-border-interactive: #3B82F6;
+
+  --catalyst-primary: #3B82F6;
+  --catalyst-primary-hover: #60A5FA;
+  --catalyst-primary-bg: rgba(59,130,246,0.08);
+  --catalyst-success: #4ADE80;
+  --catalyst-success-bg: rgba(74,222,128,0.08);
+  --catalyst-warning: #FBBF24;
+  --catalyst-warning-bg: rgba(251,191,36,0.08);
+  --catalyst-danger: #FCA5A5;
+  --catalyst-danger-bg: rgba(239,68,68,0.10);
+  --catalyst-ai-purple: #A78BFA;
+  --catalyst-ai-purple-bg: rgba(167,139,250,0.08);
+
+  --theme-digital: #60A5FA;
+  --theme-workforce: #5EEAD4;
+  --theme-supply-chain: #FBBF24;
+  --theme-esg: #4ADE80;
+
+  --catalyst-shadow-card: none;
+  --catalyst-shadow-dropdown: 0 4px 12px rgba(0,0,0,0.3);
+  --catalyst-shadow-modal: 0 12px 40px rgba(0,0,0,0.4);
+
+  /* Workstream colors — lightened for dark bg contrast */
+  --catalyst-ws-senaie: #22D3EE;
+  --catalyst-ws-catalyst: #A78BFA;
+  --catalyst-ws-tahommona: #818CF8;
+  --catalyst-ws-delivery: #FB923C;
+  --catalyst-ws-mim: #F472B6;
+  --catalyst-ws-standalone: #A3E635;
+  --catalyst-ws-dataai: #2DD4BF;
+}
+
+/* ── Density: Compact ── */
+.strategy-room[data-density="compact"] {
+  --catalyst-density-padding-card: 12px;
+  --catalyst-density-gap: 8px;
+  --catalyst-density-row-height: 28px;
+  --catalyst-density-font-size: 12px;
+  --catalyst-density-widget-title: 12px;
+  --catalyst-density-grid-gutter: 16px;
+  --catalyst-density-icon-size: 14px;
+  --catalyst-density-chart-dial: 80px;
+  --catalyst-density-chart-ring: 100px;
+}
+
+/* ── Density: Comfortable (default) ── */
+.strategy-room,
+.strategy-room[data-density="comfortable"] {
+  --catalyst-density-padding-card: 20px;
+  --catalyst-density-gap: 12px;
+  --catalyst-density-row-height: 36px;
+  --catalyst-density-font-size: 14px;
+  --catalyst-density-widget-title: 14px;
+  --catalyst-density-grid-gutter: 24px;
+  --catalyst-density-icon-size: 16px;
+  --catalyst-density-chart-dial: 100px;
+  --catalyst-density-chart-ring: 120px;
+}
+
+/* ── Density: Spacious ── */
+.strategy-room[data-density="spacious"] {
+  --catalyst-density-padding-card: 24px;
+  --catalyst-density-gap: 16px;
+  --catalyst-density-row-height: 44px;
+  --catalyst-density-font-size: 15px;
+  --catalyst-density-widget-title: 16px;
+  --catalyst-density-grid-gutter: 32px;
+  --catalyst-density-icon-size: 18px;
+  --catalyst-density-chart-dial: 116px;
+  --catalyst-density-chart-ring: 136px;
+}
+
+/* ── Reduced Motion ── */
+@media (prefers-reduced-motion: reduce) {
+  .strategy-room *,
+  .strategy-room *::before,
+  .strategy-room *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

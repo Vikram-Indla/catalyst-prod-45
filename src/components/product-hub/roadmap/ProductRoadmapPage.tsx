@@ -13,10 +13,10 @@ import { RoadmapKPIStrip } from './RoadmapKPIStrip';
 import { RoadmapToolbar } from './RoadmapToolbar';
 import { RoadmapFilters } from './RoadmapFilters';
 import { RoadmapTimeline } from './RoadmapTimeline';
-import { InitiativeDetailPanel } from '@/components/producthub/timeline/InitiativeDetailPanel';
-import type { TimelineInitiative } from '@/types/producthub/initiative';
+import { RequestDetailPanel } from '@/components/producthub/timeline/RequestDetailPanel';
+import type { TimelineRequest } from '@/types/producthub/request';
 
-import { AddInitiativeModal } from './AddInitiativeModal';
+import { AddRequestModal } from './AddRequestModal';
 
 import { useRoadmapData, useToggleRoadmapStar } from './hooks/useRoadmapData';
 import { useRoadmapFilters } from './hooks/useRoadmapFilters';
@@ -29,7 +29,7 @@ export function ProductRoadmapPage() {
   const { isDark } = useTheme();
   const ink = isDark ? INK_DARK : INK;
   const surface = isDark ? SURFACE_DARK : SURFACE;
-  const { initiatives, stats, isLoading, error } = useRoadmapData();
+  const { requests, stats, isLoading, error } = useRoadmapData();
   const toggleStar = useToggleRoadmapStar();
   const {
     search, setSearch,
@@ -41,7 +41,7 @@ export function ProductRoadmapPage() {
     hoveredId, setHoveredId,
     filtered,
     groups,
-  } = useRoadmapFilters(initiatives);
+  } = useRoadmapFilters(requests);
 
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
@@ -55,10 +55,10 @@ export function ProductRoadmapPage() {
 
   const selectedItem = useMemo(() => filtered.find(i => i.id === selectedId) || null, [filtered, selectedId]);
 
-  // Convert RoadmapInitiative → TimelineInitiative for the backlog detail panel
-  const selectedAsTimeline = useMemo((): TimelineInitiative | null => {
+  // Convert RoadmapRequest → TimelineRequest for the backlog detail panel
+  const selectedAsTimeline = useMemo((): TimelineRequest | null => {
     if (!selectedItem) return null;
-    const statusReverseMap: Record<string, TimelineInitiative['status']> = {
+    const statusReverseMap: Record<string, TimelineRequest['status']> = {
       Active: 'under_implementation',
       Planned: 'new',
       Completed: 'done',
@@ -99,7 +99,7 @@ export function ProductRoadmapPage() {
     };
   }, [selectedItem]);
 
-  const allAsTimeline = useMemo((): TimelineInitiative[] => {
+  const allAsTimeline = useMemo((): TimelineRequest[] => {
     if (!selectedAsTimeline) return [];
     return [selectedAsTimeline];
   }, [selectedAsTimeline]);
@@ -110,7 +110,7 @@ export function ProductRoadmapPage() {
   }, []);
 
   const handleToggleStar = useCallback((id: string, isCurrentlyStarred: boolean) => {
-    toggleStar.mutate({ initiativeId: id, isCurrentlyStarred });
+    toggleStar.mutate({ requestId: id, isCurrentlyStarred });
   }, [toggleStar]);
 
   const handleToday = useCallback(() => {
@@ -201,7 +201,7 @@ export function ProductRoadmapPage() {
     );
   }
 
-  const isEmpty = initiatives.length === 0;
+  const isEmpty = requests.length === 0;
 
   return (
     <div className="flex flex-col h-full" style={{ fontFamily: FONT.body }}>
@@ -311,13 +311,13 @@ export function ProductRoadmapPage() {
       )}
 
       {isDetailOpen && selectedAsTimeline && (
-        <InitiativeDetailPanel
-          initiative={selectedAsTimeline}
-          initiatives={allAsTimeline}
+        <RequestDetailPanel
+          request={selectedAsTimeline}
+          requests={allAsTimeline}
           onClose={() => setIsDetailOpen(false)}
         />
       )}
-      <AddInitiativeModal isOpen={isAddModalOpen} onClose={() => setIsAddModalOpen(false)} />
+      <AddRequestModal isOpen={isAddModalOpen} onClose={() => setIsAddModalOpen(false)} />
     </div>
   );
 }

@@ -9,7 +9,7 @@ import type { StrategicTheme, ThemeMilestone } from '@/types/strategic-themes';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import {
   useMilestones, useCreateMilestone, useUpdateMilestone, useDeleteMilestone,
-  useGoalsForTheme, useInitiativesForTheme,
+  useGoalsForTheme, useRequestsForTheme,
 } from '@/hooks/use-strategic-themes';
 import {
   STATUS_CONFIG, STATUS_CONFIG_DARK, BSC_CONFIG, PRIORITY_CONFIG,
@@ -26,7 +26,7 @@ interface Props {
   isDark?: boolean;
 }
 
-const TABS = ['Overview', 'Goals & KRs', 'Initiatives', 'Financials', 'Milestones', 'Activity'] as const;
+const TABS = ['Overview', 'Goals & KRs', 'Requests', 'Financials', 'Milestones', 'Activity'] as const;
 type Tab = typeof TABS[number];
 
 export function ThemeDetailDrawer({ theme, open, onClose, onEdit, onDelete, isDark = false }: Props) {
@@ -131,7 +131,7 @@ export function ThemeDetailDrawer({ theme, open, onClose, onEdit, onDelete, isDa
         <div className="flex-1 overflow-y-auto" style={{ padding: 20 }}>
           {tab === 'Overview' && <OverviewTab theme={theme} sc={sc} bsc={bsc} pri={pri} isDark={isDark} />}
           {tab === 'Goals & KRs' && <GoalsTab theme={theme} isDark={isDark} />}
-          {tab === 'Initiatives' && <InitiativesTab theme={theme} isDark={isDark} />}
+          {tab === 'Requests' && <InitiativesTab theme={theme} isDark={isDark} />}
           {tab === 'Financials' && <FinancialsTab theme={theme} isDark={isDark} />}
           {tab === 'Milestones' && <MilestonesTab theme={theme} isDark={isDark} />}
           {tab === 'Activity' && <ActivityTab theme={theme} isDark={isDark} />}
@@ -306,18 +306,18 @@ function GoalsTab({ theme, isDark = false }: { theme: StrategicTheme; isDark?: b
 
 // ═══ INITIATIVES ═══
 function InitiativesTab({ theme, isDark = false }: { theme: StrategicTheme; isDark?: boolean }) {
-  const { data: initiatives = [], isLoading } = useInitiativesForTheme(theme.id);
+  const { data: initiatives = [], isLoading } = useRequestsForTheme(theme.id);
   const d = dk(isDark);
   return (
     <div>
       <div className="flex items-center justify-between mb-3">
-        <h3 style={{ fontSize: 13, fontWeight: 600, color: d.t1 }}>Linked Initiatives ({initiatives.length})</h3>
-        <button style={{ fontSize: 12, color: d.linkBlue, background: 'none', border: 'none', cursor: 'pointer', fontWeight: 500 }}>+ Link Initiative</button>
+        <h3 style={{ fontSize: 13, fontWeight: 600, color: d.t1 }}>Linked Requests ({initiatives.length})</h3>
+        <button style={{ fontSize: 12, color: d.linkBlue, background: 'none', border: 'none', cursor: 'pointer', fontWeight: 500 }}>+ Link Request</button>
       </div>
       {isLoading ? (
         <div className="flex justify-center py-8"><Loader2 size={20} className="animate-spin" color={d.t3} /></div>
       ) : initiatives.length === 0 ? (
-        <EmptyState icon={Rocket} title="No initiatives linked" description="Initiatives are actionable projects that contribute to this theme's goals. Link an initiative to connect execution to strategy." cta="Link Initiative" isDark={isDark} />
+        <EmptyState icon={Rocket} title="No initiatives linked" description="Requests are actionable projects that contribute to this theme's goals. Link an initiative to connect execution to strategy." cta="Link Request" isDark={isDark} />
       ) : (
         <div className="space-y-2">
           {initiatives.map((ini: any) => (

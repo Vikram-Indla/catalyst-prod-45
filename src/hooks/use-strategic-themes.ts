@@ -149,7 +149,7 @@ export function useGoalsForTheme(themeId: string | undefined) {
   });
 }
 
-export function useInitiativesForTheme(themeId: string | undefined) {
+export function useRequestsForTheme(themeId: string | undefined) {
   return useQuery({
     queryKey: ['theme-initiatives', themeId],
     queryFn: () => api.fetchInitiativesForTheme(themeId!),

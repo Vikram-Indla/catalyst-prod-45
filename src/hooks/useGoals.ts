@@ -115,7 +115,7 @@ export function useCreateCheckin() {
   });
 }
 
-// ── Goal-Initiative hooks (Fix 5) ──
+// ── Goal-Request hooks (Fix 5) ──
 
 export function useGoalInitiatives(goalId: string) {
   return useQuery({
@@ -128,8 +128,8 @@ export function useGoalInitiatives(goalId: string) {
 export function useLinkInitiative() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: ({ goalId, initiativeId }: { goalId: string; initiativeId: string }) =>
-      goalsService.linkInitiative(goalId, initiativeId),
+    mutationFn: ({ goalId, requestId }: { goalId: string; requestId: string }) =>
+      goalsService.linkInitiative(goalId, requestId),
     onSuccess: () => qc.invalidateQueries({ queryKey: ['goal-initiatives'] }),
   });
 }

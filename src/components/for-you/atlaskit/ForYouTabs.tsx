@@ -32,7 +32,6 @@ import { token } from '@atlaskit/tokens';
 import { Sparkles } from 'lucide-react';
 import type { TabType } from '@/hooks/useForYouData';
 import { useAgeingCount } from '@/components/notifications/AgeingTab';
-import { adsTokens, cp } from '@/theme/ads/tokens';
 
 export const FOR_YOU_TAB_KEY = 'catalyst.forYou.activeTab.v1';
 
@@ -76,7 +75,7 @@ export default function ForYouTabs({ activeTab, tabCounts, onChange }: ForYouTab
           alignItems: 'center',
           gap: 4,
           padding: 4,
-          background: cp(adsTokens.bg.inset),
+          background: token('color.background.neutral', 'rgba(5,21,36,0.06)'),
           borderRadius: 8,
           height: 32,
           boxSizing: 'border-box',
@@ -120,14 +119,13 @@ function TabButton({
   // counters keep the neutral Atlaskit treatment.
   const isAgeingBadge = tab.id === 'ageing' && showCounter;
 
-  // Selected: elevated surface pill. Hover (only when not selected): faint
+  // Selected: elevated-white pill. Hover (only when not selected): faint
   // neutral bg. Rest: transparent.
-  // Phase 7 (2026-04-28): swap token() to bridge tokens so selected pill
-  // flips to dark surface (#1A1A1A) instead of glaring white in dark mode.
+  // Phase 12 (2026-04-29): reverted to token(). Atlaskit theme handles flip.
   const background = isActive
-    ? cp(adsTokens.bg.surface)
+    ? token('elevation.surface', '#FFFFFF')
     : hover
-      ? cp(adsTokens.bg.hover)
+      ? token('color.background.neutral.hovered', 'rgba(11,18,14,0.14)')
       : 'transparent';
 
   return (
@@ -155,7 +153,7 @@ function TabButton({
         // "Atlassian Sans 13.33px 400" on the tab text, routed through
         // Catalyst's Inter.
         font: `400 13.33px/normal "Inter", system-ui, sans-serif`,
-        color: cp(adsTokens.text.primary),
+        color: token('color.text', '#292A2E'),
         whiteSpace: 'nowrap',
         outline: 'none',
         // Only the selected pill gets a shadow — the visual lift that

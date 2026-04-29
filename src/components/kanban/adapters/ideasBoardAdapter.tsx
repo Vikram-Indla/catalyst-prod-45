@@ -21,7 +21,7 @@
  *     - raw        ← full IdeaRow (for adapter callbacks)
  *
  *   Columns — 5-stage lifecycle preserved from the legacy page.
- *     Submitted → Under Review → Approved → Converted to Initiative → Rejected.
+ *     Submitted → Under Review → Approved → Converted to Request → Rejected.
  *     Drafts are filtered out up-front so the board never surfaces them
  *     (parity with the old IdeasBoardPage which filtered on `is_deleted`
  *     only and relied on draft ideas being invisible).
@@ -29,8 +29,8 @@
  *   Persistence — drag between columns now persists via `onStatusChange`.
  *     The legacy page was static (click-only); the canonical shell promotes
  *     the board to drag-and-drop capable. Dropping into "Converted to
- *     Initiative" is treated as a plain status change; the full convert
- *     flow (with IdeaDrawer → CreateInitiativeDrawer) is still owned by
+ *     Request" is treated as a plain status change; the full convert
+ *     flow (with IdeaDrawer → CreateRequestDrawer) is still owned by
  *     the page and triggered via `onCardClick`.
  *
  *   Filter categories — idea_type / priority / theme / roadmap_quarter /
@@ -69,7 +69,7 @@ export const IDEAS_BOARD_COLUMNS: KanbanColumnDef[] = [
   { id: 'col-submitted', name: 'SUBMITTED',     category: 'todo',        statuses: ['Submitted'] },
   { id: 'col-review',    name: 'UNDER REVIEW',  category: 'in_progress', statuses: ['Under Review'] },
   { id: 'col-approved',  name: 'APPROVED',      category: 'in_progress', statuses: ['Approved'] },
-  { id: 'col-converted', name: 'CONVERTED',     category: 'done',        statuses: ['Converted to Initiative'] },
+  { id: 'col-converted', name: 'CONVERTED',     category: 'done',        statuses: ['Converted to Request'] },
   { id: 'col-rejected',  name: 'REJECTED',      category: 'done',        statuses: ['Rejected'] },
 ];
 
@@ -90,7 +90,7 @@ export function ideasColumnIdToStatus(columnId: string): string | null {
    ═══════════════════════════════════════════════════════════════════════ */
 
 function statusCategory(status: string): 'todo' | 'in_progress' | 'done' {
-  if (status === 'Converted to Initiative' || status === 'Rejected') return 'done';
+  if (status === 'Converted to Request' || status === 'Rejected') return 'done';
   if (status === 'Submitted') return 'todo';
   return 'in_progress';
 }

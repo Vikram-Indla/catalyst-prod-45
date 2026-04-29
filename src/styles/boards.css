@@ -151,7 +151,7 @@
 
 /* NOCTURNE — Direct property overrides to guarantee dark card backgrounds */
 .dark .boards-card,
-[data-theme="dark"] .boards-card {
+.dark .boards-card , [data-theme="dark"] .boards-card {
   background-color: #1A1A1A !important;
   border-color: #2E2E2E !important;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2) !important;
@@ -159,40 +159,40 @@
 }
 
 .dark .boards-card:hover,
-[data-theme="dark"] .boards-card:hover {
+.dark .boards-card:hover , [data-theme="dark"] .boards-card:hover {
   background-color: #1A1A1A !important;
   border-color: #454545 !important;
 }
 
 .dark .boards-column__empty,
-[data-theme="dark"] .boards-column__empty {
+.dark .boards-column__empty , [data-theme="dark"] .boards-column__empty {
   background-color: #1A1A1A !important;
   border-color: #2E2E2E !important;
   color: #878787 !important;
 }
 
 .dark .boards-column__header,
-[data-theme="dark"] .boards-column__header {
+.dark .boards-column__header , [data-theme="dark"] .boards-column__header {
   color: #EDEDED !important;
 }
 
 .dark .boards-container,
-[data-theme="dark"] .boards-container {
+.dark .boards-container , [data-theme="dark"] .boards-container {
   background-color: #0A0A0A !important;
 }
 
 .dark .boards-card__id,
-[data-theme="dark"] .boards-card__id {
+.dark .boards-card__id , [data-theme="dark"] .boards-card__id {
   color: #A1A1A1 !important;
 }
 
 .dark .boards-card__title,
-[data-theme="dark"] .boards-card__title {
+.dark .boards-card__title , [data-theme="dark"] .boards-card__title {
   color: #EDEDED !important;
 }
 
 .dark .boards-card__date,
-[data-theme="dark"] .boards-card__date {
+.dark .boards-card__date , [data-theme="dark"] .boards-card__date {
   color: #878787 !important;
 }
 

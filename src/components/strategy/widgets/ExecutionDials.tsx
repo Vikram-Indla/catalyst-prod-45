@@ -48,7 +48,7 @@ export function ExecutionDials() {
     const onTrackGoals = goals?.filter(g => g.status === 'on_track' || g.status === 'completed').length || 0;
 
     return [
-      { label: 'Initiatives', value: initAvg, subtitle: `${initiatives?.length || 0} tracked`, color: getDialColor(initAvg) },
+      { label: 'Requests', value: initAvg, subtitle: `${initiatives?.length || 0} tracked`, color: getDialColor(initAvg) },
       { label: 'Goals', value: goalAvg, subtitle: `${onTrackGoals}/${goals?.length || 0} on track`, color: getDialColor(goalAvg) },
       { label: 'Key Results', value: krAvg, subtitle: `${krs?.length || 0} measured`, color: getDialColor(krAvg) },
       { label: 'Execution', value: overallAvg, subtitle: 'Overall velocity', color: getDialColor(overallAvg) },

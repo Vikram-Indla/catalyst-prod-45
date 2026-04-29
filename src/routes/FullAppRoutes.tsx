@@ -86,7 +86,7 @@ const RH21FreezeWindowsPage = lazy(() => import("../pages/releasehub/FreezeWindo
 
 const StrategicThemesPage = lazy(() => import("../pages/strategyhub/StrategicThemesPage"));
 const GoalsKeyResultsPage = lazy(() => import("../pages/strategyhub/GoalsKeyResultsPage"));
-const InitiativeListingPage = lazy(() => import("../pages/producthub/InitiativeListingPage"));
+const RequestListingPage = lazy(() => import("../pages/producthub/RequestListingPage"));
 const RoadmapPage = lazy(() => import("../pages/producthub/RoadmapPage"));
 const ProductKanbanPage = lazy(() => import("../pages/producthub/KanbanPage"));
 const RequirementAssistWorkspace = ENABLE_AI ? lazy(() => import("../pages/producthub/requirement-assist/index")) : () => <FeatureComingSoon title="Requirement Assist" />;
@@ -148,7 +148,7 @@ const BudgetGovernancePage = lazy(() => import("../pages/enterprise/BudgetGovern
 const BudgetPlannerPage = lazy(() => import("../pages/enterprise/BudgetPlannerPage"));
 
 const Themes = lazy(() => import("../pages/Themes"));
-const Initiatives = lazy(() => import("../pages/Initiatives"));
+const Initiatives = lazy(() => import("@/pages/Initiatives"));
 const EpicsPage = lazy(() => import("../pages/items/EpicsPage"));
 const EpicsRecycleBinPage = lazy(() => import("../pages/items/EpicsRecycleBinPage"));
 const EpicsCanceledPage = lazy(() => import("../pages/items/EpicsCanceledPage"));
@@ -462,7 +462,7 @@ export default function FullAppRoutes() {
 
         {/* ═══ ProductHub ═══ */}
         <Route path="/producthub" element={<Navigate to="/producthub/backlog" replace />} />
-        <Route path="/producthub/backlog" element={<MG k="producthub" t="ProductHub"><S><InitiativeListingPage /></S></MG>} />
+        <Route path="/producthub/backlog" element={<MG k="producthub" t="ProductHub"><S><RequestListingPage /></S></MG>} />
         <Route path="/producthub/table" element={<MG k="producthub" t="ProductHub"><S><CatalystDemandTable /></S></MG>} />
         <Route path="/producthub/kanban" element={<MG k="producthub" t="ProductHub"><S><ProductKanbanPage /></S></MG>} />
         <Route path="/producthub/dashboard" element={<MG k="producthub" t="ProductHub"><S><DemandSummaryPage /></S></MG>} />

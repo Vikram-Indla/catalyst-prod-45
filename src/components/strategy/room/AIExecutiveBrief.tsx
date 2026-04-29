@@ -35,7 +35,7 @@ const TOKENS = `
 }
 
 /* ── DARK MODE — Nocturne overrides ── */
-[data-theme="dark"] [data-sri] {
+.dark [data-sri] , [data-theme="dark"] [data-sri] {
   --sri-ink: rgba(255,255,255,0.96);
   --sri-ink-2: rgba(255,255,255,0.82);
   --sri-ink-3: rgba(255,255,255,0.75);

@@ -38,7 +38,6 @@
  */
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { token } from '@atlaskit/tokens';
-import { adsTokens, cp } from '@/theme/ads/tokens';
 import { useForYouData, type TabType, type WorkItem } from '@/hooks/useForYouData';
 import RecommendedProjectsStrip from '@/components/for-you/atlaskit/RecommendedProjectsStrip';
 import ForYouTabs, { FOR_YOU_TAB_KEY } from '@/components/for-you/atlaskit/ForYouTabs';
@@ -223,14 +222,11 @@ export default function ForYouPageAtlaskit() {
       style={{
         minHeight: '100%',
         width: '100%',
-        // Phase 2 (2026-04-28): swapped Atlaskit `token('elevation.surface')`
-        // / `token('color.text')` to bridge tokens. Atlaskit v13 ignored
-        // our `customColors` map silently — `token()` resolved to the hex
-        // fallback even in dark. Catalyst CSS layer (--cp-*) does flip
-        // since the Phase-0 data-theme restore landed, so reading via
-        // cp() puts the surface on the working code path.
-        background: cp(adsTokens.bg.surface),
-        color: cp(adsTokens.text.primary),
+        // Phase 12 (2026-04-29): reverted to Atlaskit token() calls. Phase 11
+        // unblocked Atlaskit's bundled dark theme — `elevation.surface` /
+        // `color.text` resolve correctly via --ds-* in both modes natively.
+        background: token('elevation.surface', '#FFFFFF'),
+        color: token('color.text', '#292A2E'),
         paddingInline: 'clamp(16px, 3vw, 32px)',
         paddingBlockStart: 24,
         paddingBlockEnd: 48,
@@ -262,7 +258,7 @@ export default function ForYouPageAtlaskit() {
         <h1
           style={{
             font: `500 20px/24px "Inter", system-ui, sans-serif`,
-            color: cp(adsTokens.text.primary),
+            color: token('color.text', '#292A2E'),
             margin: 0,
             letterSpacing: '-0.003em',
           }}
@@ -293,8 +289,8 @@ export default function ForYouPageAtlaskit() {
             onClick={loadMore}
             style={{
               padding: '8px 18px',
-              background: cp(adsTokens.bg.inset),
-              color: cp(adsTokens.text.primary),
+              background: token('color.background.neutral', '#F1F2F4'),
+              color: token('color.text', '#292A2E'),
               border: 'none',
               borderRadius: 3,
               cursor: 'pointer',

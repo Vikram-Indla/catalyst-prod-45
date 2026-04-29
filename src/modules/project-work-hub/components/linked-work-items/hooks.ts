@@ -142,14 +142,14 @@ export function useLinkedWorkItems(issueKey: string) {
         });
       }
 
-      // Final fallback: resolve missing keys from ph_initiatives so links to
-      // MIM-* / MDT-* initiatives (created via the InitiativeLinkedItemsTab)
-      // surface on the epic / story side of the relationship too. Initiatives
-      // map to "issue_type=Initiative" for icon/lozenge rendering.
+      // Final fallback: resolve missing keys from ph_requests so links to
+      // MIM-* / MDT-* initiatives (created via the RequestLinkedItemsTab)
+      // surface on the epic / story side of the relationship too. Requests
+      // map to "issue_type=Request" for icon/lozenge rendering.
       const stillMissing = targetKeys.filter((k) => !targetMap.has(k));
       if (stillMissing.length > 0) {
         const { data: initTargets } = await supabase
-          .from('ph_initiatives')
+          .from('ph_requests')
           .select('id, initiative_key, title, status, assignee_id, priority, updated_at')
           .in('initiative_key', stillMissing)
           .eq('is_deleted', false);
@@ -161,7 +161,7 @@ export function useLinkedWorkItems(issueKey: string) {
             id: it.id,
             issue_key: it.initiative_key,
             summary: it.title,
-            issue_type: 'Initiative',
+            issue_type: 'Request',
             status,
             status_category,
             assignee_account_id: it.assignee_id ?? null,

@@ -29,7 +29,7 @@ const ETA_MAP: Record<string, number> = {
 const TYPE_CONFIG: Record<string, { title: string; desc: string; steps: string[] }> = {
   epics: { title: 'Generating Epic Statements', desc: 'AI is extracting epics and user stories from the BRD document.', steps: ['Reading BRD content', 'Identifying functional domains', 'Drafting epic statements', 'Mapping to Catalyst epic fields', 'Quality validation'] },
   uat: { title: 'Generating UAT Scenarios', desc: 'AI is creating user acceptance test scenarios from the requirements.', steps: ['Analysing requirements', 'Identifying test boundaries', 'Generating scenarios', 'Cross-referencing epics', 'Validation complete'] },
-  initiative: { title: 'Creating Catalyst Initiative', desc: 'Creating a new initiative in Catalyst from the BRD document.', steps: ['Extracting metadata', 'Mapping to initiative fields', 'Creating initiative record', 'Linking artefacts'] },
+  initiative: { title: 'Creating Catalyst Request', desc: 'Creating a new initiative in Catalyst from the BRD document.', steps: ['Extracting metadata', 'Mapping to initiative fields', 'Creating initiative record', 'Linking artefacts'] },
   wikihub: { title: 'Re-syncing WikiHub', desc: 'Updating knowledge base with latest document content.', steps: ['Chunking content', 'Generating embeddings', 'Updating index', 'Cache warm-up'] },
 };
 

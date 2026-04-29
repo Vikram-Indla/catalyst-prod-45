@@ -1,13 +1,13 @@
 /**
  * Product Roadmap — Database-wired data hooks
- * All data from ph_roadmap_initiatives_view, ph_roadmap_summary_view, ph_initiative_milestones
+ * All data from ph_roadmap_requests_view, ph_roadmap_summary_view, ph_request_milestones
  */
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
-import type { RoadmapInitiative, RoadmapStats, RoadmapMilestone } from '../types/roadmap.types';
+import type { RoadmapRequest, RoadmapStats, RoadmapMilestone } from '../types/roadmap.types';
 
 // ── Status mapping: DB enum → UI label ──
-const STATUS_MAP: Record<string, RoadmapInitiative['status']> = {
+const STATUS_MAP: Record<string, RoadmapRequest['status']> = {
   in_progress: 'Active',
   approved: 'Active',
   under_review: 'Planned',
@@ -18,7 +18,7 @@ const STATUS_MAP: Record<string, RoadmapInitiative['status']> = {
 };
 
 // ── Type mapping (single business_request type) ──
-const TYPE_MAP: Record<string, RoadmapInitiative['type']> = {
+const TYPE_MAP: Record<string, RoadmapRequest['type']> = {
   project: 'business_request',
   enhancement: 'business_request',
   improvement: 'business_request',
@@ -73,9 +73,9 @@ async function fetchFavoriteIds(): Promise<Set<string>> {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return new Set();
   const { data } = await typedQuery('ph_user_favorites')
-    .select('initiative_id')
+    .select('request_id')
     .eq('user_id', user.id);
-  return new Set((data || []).map((r: any) => r.initiative_id));
+  return new Set((data || []).map((r: any) => r.request_id));
 }
 
 // ── Fetch profiles for owner resolution ──
@@ -92,21 +92,21 @@ async function fetchProfiles(): Promise<Map<string, { name: string; avatar: stri
 
 // ── Fetch milestones for all roadmap initiatives ──
 async function fetchMilestones(): Promise<Map<string, RoadmapMilestone[]>> {
-  const { data } = await typedQuery('ph_initiative_milestones')
-    .select('id, initiative_id, title, planned_date, status, sort_order')
+  const { data } = await typedQuery('ph_request_milestones')
+    .select('id, request_id, title, planned_date, status, sort_order')
     .order('sort_order', { ascending: true });
 
   const map = new Map<string, RoadmapMilestone[]>();
   if (data) {
     for (const m of data) {
-      const arr = map.get(m.initiative_id) || [];
+      const arr = map.get(m.request_id) || [];
       arr.push({
         id: m.id,
         title: m.title,
         targetDate: m.planned_date,
         completed: m.status === 'completed',
       });
-      map.set(m.initiative_id, arr);
+      map.set(m.request_id, arr);
     }
   }
   return map;
@@ -129,14 +129,14 @@ async function fetchIssueOwners(): Promise<Map<string, string>> {
 }
 
 // ══════════════════════════════════════════
-// useRoadmapInitiatives — main data hook
+// useRoadmapRequests — main data hook
 // ══════════════════════════════════════════
-export function useRoadmapInitiatives() {
+export function useRoadmapRequests() {
   return useQuery({
-    queryKey: ['roadmap-initiatives'],
-    queryFn: async (): Promise<RoadmapInitiative[]> => {
+    queryKey: ['roadmap-requests'],
+    queryFn: async (): Promise<RoadmapRequest[]> => {
       const [{ data, error }, profiles, milestones, issueOwners, favoriteIds] = await Promise.all([
-        typedQuery('ph_roadmap_initiatives_view')
+        typedQuery('ph_roadmap_requests_view')
           .select('*')
           .eq('on_roadmap', true)
           .eq('is_deleted', false)
@@ -150,7 +150,7 @@ export function useRoadmapInitiatives() {
       if (error) throw error;
       if (!data) return [];
 
-      return data.map((row: any, index: number): RoadmapInitiative => {
+      return data.map((row: any, index: number): RoadmapRequest => {
         const { titleAr, titleEn } = splitTitle(row.title || '');
         
         // Resolve owner: try assignee_id → business_owner_id → Jira assignee → fallback
@@ -256,7 +256,7 @@ export function useRoadmapStats() {
 }
 
 // ══════════════════════════════════════════
-// useBacklogItemsNotOnRoadmap — queries ph_backlog_initiatives_view
+// useBacklogItemsNotOnRoadmap — queries ph_backlog_requests_view
 // (canonical source: includes BOTH catalyst-native and Jira-synced initiatives)
 // ══════════════════════════════════════════
 export function useBacklogItemsNotOnRoadmap() {
@@ -264,7 +264,7 @@ export function useBacklogItemsNotOnRoadmap() {
     queryKey: ['backlog-not-on-roadmap'],
     queryFn: async () => {
       const [{ data, error }, profiles] = await Promise.all([
-        typedQuery('ph_backlog_initiatives_view')
+        typedQuery('ph_backlog_requests_view')
           .select('id, initiative_key, title, status, priority, assignee_id, on_roadmap, is_deleted')
           .eq('is_deleted', false)
           .eq('on_roadmap', false)
@@ -279,14 +279,14 @@ export function useBacklogItemsNotOnRoadmap() {
         const { titleAr, titleEn } = splitTitle(row.title || '');
         const ownerName = row.assignee_id ? (profiles.get(row.assignee_id)?.name || '') : '';
         return {
-          id: row.id, // real UUID from ph_initiatives — used by useAddToRoadmap
+          id: row.id, // real UUID from ph_requests — used by useAddToRoadmap
           key: row.initiative_key,
           title: titleEn || row.title,
           titleAr,
           status: row.status || '',
           owner: ownerName,
           source: 'catalyst',
-          type: 'business_request' as RoadmapInitiative['type'],
+          type: 'business_request' as RoadmapRequest['type'],
           alreadyOnRoadmap: false, // filtered out at query level
         };
       });
@@ -295,23 +295,23 @@ export function useBacklogItemsNotOnRoadmap() {
 }
 
 // ══════════════════════════════════════════
-// useAddToRoadmap — accepts ph_initiatives.id (UUID)
+// useAddToRoadmap — accepts ph_requests.id (UUID)
 // Single UPDATE; no insert path (every backlog item already has a row).
 // ══════════════════════════════════════════
 export function useAddToRoadmap() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async (initiativeId: string) => {
-      const { error } = await typedQuery('ph_initiatives')
+    mutationFn: async (requestId: string) => {
+      const { error } = await typedQuery('ph_requests')
         .update({ on_roadmap: true, roadmap_added_at: new Date().toISOString() })
-        .eq('id', initiativeId);
+        .eq('id', requestId);
       if (error) throw error;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['roadmap-initiatives'] });
+      queryClient.invalidateQueries({ queryKey: ['roadmap-requests'] });
       queryClient.invalidateQueries({ queryKey: ['roadmap-stats'] });
       queryClient.invalidateQueries({ queryKey: ['backlog-not-on-roadmap'] });
-      queryClient.invalidateQueries({ queryKey: ['backlog-initiatives'] });
+      queryClient.invalidateQueries({ queryKey: ['backlog-requests'] });
     },
   });
 }
@@ -322,14 +322,14 @@ export function useAddToRoadmap() {
 export function useRemoveFromRoadmap() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async (initiativeId: string) => {
-      const { error } = await typedQuery('ph_initiatives')
+    mutationFn: async (requestId: string) => {
+      const { error } = await typedQuery('ph_requests')
         .update({ on_roadmap: false })
-        .eq('id', initiativeId);
+        .eq('id', requestId);
       if (error) throw error;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['roadmap-initiatives'] });
+      queryClient.invalidateQueries({ queryKey: ['roadmap-requests'] });
       queryClient.invalidateQueries({ queryKey: ['roadmap-stats'] });
       queryClient.invalidateQueries({ queryKey: ['backlog-not-on-roadmap'] });
     },
@@ -343,13 +343,13 @@ export function useUpdateInitiative() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async ({ id, updates }: { id: string; updates: Record<string, any> }) => {
-      const { error } = await typedQuery('ph_initiatives')
+      const { error } = await typedQuery('ph_requests')
         .update(updates)
         .eq('id', id);
       if (error) throw error;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['roadmap-initiatives'] });
+      queryClient.invalidateQueries({ queryKey: ['roadmap-requests'] });
       queryClient.invalidateQueries({ queryKey: ['roadmap-stats'] });
     },
   });
@@ -361,7 +361,7 @@ export function useUpdateInitiative() {
 export function useToggleRoadmapStar() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async ({ initiativeId, isCurrentlyStarred }: { initiativeId: string; isCurrentlyStarred: boolean }) => {
+    mutationFn: async ({ requestId, isCurrentlyStarred }: { requestId: string; isCurrentlyStarred: boolean }) => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 
@@ -369,27 +369,27 @@ export function useToggleRoadmapStar() {
         const { error } = await typedQuery('ph_user_favorites')
           .delete()
           .eq('user_id', user.id)
-          .eq('initiative_id', initiativeId);
+          .eq('request_id', requestId);
         if (error) throw error;
       } else {
         const { error } = await typedQuery('ph_user_favorites')
-          .insert({ user_id: user.id, initiative_id: initiativeId });
+          .insert({ user_id: user.id, request_id: requestId });
         if (error) throw error;
       }
     },
-    onMutate: async ({ initiativeId, isCurrentlyStarred }) => {
-      await queryClient.cancelQueries({ queryKey: ['roadmap-initiatives'] });
-      const prev = queryClient.getQueryData<RoadmapInitiative[]>(['roadmap-initiatives']);
-      queryClient.setQueryData<RoadmapInitiative[]>(['roadmap-initiatives'], old =>
-        (old || []).map(i => i.id === initiativeId ? { ...i, starred: !isCurrentlyStarred } : i)
+    onMutate: async ({ requestId, isCurrentlyStarred }) => {
+      await queryClient.cancelQueries({ queryKey: ['roadmap-requests'] });
+      const prev = queryClient.getQueryData<RoadmapRequest[]>(['roadmap-requests']);
+      queryClient.setQueryData<RoadmapRequest[]>(['roadmap-requests'], old =>
+        (old || []).map(i => i.id === requestId ? { ...i, starred: !isCurrentlyStarred } : i)
       );
       return { prev };
     },
     onError: (_err, _vars, context) => {
-      if (context?.prev) queryClient.setQueryData(['roadmap-initiatives'], context.prev);
+      if (context?.prev) queryClient.setQueryData(['roadmap-requests'], context.prev);
     },
     onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: ['roadmap-initiatives'] });
+      queryClient.invalidateQueries({ queryKey: ['roadmap-requests'] });
     },
   });
 }
@@ -398,7 +398,7 @@ export function useToggleRoadmapStar() {
 // Convenience wrapper
 // ══════════════════════════════════════════
 export function useRoadmapData() {
-  const { data: initiatives = [], isLoading: initLoading, error: initError } = useRoadmapInitiatives();
+  const { data: requests = [], isLoading: reqLoading, error: reqError } = useRoadmapRequests();
   const { data: stats, isLoading: statsLoading, error: statsError } = useRoadmapStats();
 
   const defaultStats: RoadmapStats = {
@@ -407,9 +407,9 @@ export function useRoadmapData() {
   };
 
   return {
-    initiatives,
+    requests,
     stats: stats || defaultStats,
-    isLoading: initLoading || statsLoading,
-    error: initError || statsError,
+    isLoading: reqLoading || statsLoading,
+    error: reqError || statsError,
   };
 }

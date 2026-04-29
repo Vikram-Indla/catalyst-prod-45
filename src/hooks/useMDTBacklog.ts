@@ -1,11 +1,11 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
-import type { Initiative, InitiativeStatus } from '@/types/initiative';
+import type { Request, RequestStatus } from '@/types/request';
 
 /**
- * Maps database initiative_status enum to UI InitiativeStatus type.
+ * Maps database initiative_status enum to UI RequestStatus type.
  */
-const STATUS_MAP: Record<string, InitiativeStatus> = {
+const STATUS_MAP: Record<string, RequestStatus> = {
   new_demand: 'new',
   new: 'new',
   under_review: 'portfolio_review',
@@ -27,7 +27,7 @@ const STATUS_MAP: Record<string, InitiativeStatus> = {
   cancelled: 'cancelled',
 };
 
-function mapDbStatus(dbStatus: string): InitiativeStatus {
+function mapDbStatus(dbStatus: string): RequestStatus {
   return STATUS_MAP[dbStatus] || 'new';
 }
 
@@ -41,49 +41,49 @@ export interface BRDTask {
   jira_updated_at: string;
 }
 
-export interface MDTInitiative extends Initiative {
+export interface MDTRequest extends Request {
   brd_tasks: BRDTask[];
 }
 
 /**
- * Fetches initiatives from ph_backlog_initiatives_view (canonical source).
+ * Fetches business requests from `ph_backlog_requests_view` — the
+ * Catalyst-canonical view over `ph_requests`. The hook owns enrichment
+ * (profiles / departments / scores / favorites / milestone counts).
  *
- * @deprecated Prefer `useInitiativesBacklog` — the `MDT` in the legacy
- * name is a Jira-project-key fossil from the original mirror. The data
- * source today is `ph_backlog_initiatives_view`, a Catalyst-canonical
- * view over `ph_initiatives`. New consumers should adopt the renamed
- * alias; the old name stays exported until every call site is migrated.
+ * Canonical name: `useRequestsBacklog`. Legacy aliases `useMDTBacklog`
+ * and `useInitiativesBacklog` stay exported until every call site is
+ * migrated.
  */
-export function useMDTBacklog() {
+export function useRequestsBacklog() {
   return useQuery({
-    queryKey: ['mdt-backlog'],
-    queryFn: async (): Promise<{ data: MDTInitiative[]; count: number }> => {
+    queryKey: ['requests-backlog'],
+    queryFn: async (): Promise<{ data: MDTRequest[]; count: number }> => {
       // Get current user for favorites
       const { data: { user } } = await supabase.auth.getUser();
       const currentUserId = user?.id;
 
-      // Fetch initiatives, profiles, departments, scores, favorites, BRD tasks in parallel
+      // Fetch requests, profiles, departments, scores, favorites, BRD tasks in parallel
       // 2026 GUARDRAIL — only show items created or updated in 2026+
       const YEAR_2026 = '2026-01-01T00:00:00Z';
 
-      const [initResult, profilesResult, deptsResult, scoresResult, favsResult, brdTasksResult, milestonesResult] = await Promise.all([
-        typedQuery('ph_backlog_initiatives_view').select('*').or(`created_at.gte.${YEAR_2026},updated_at.gte.${YEAR_2026}`).limit(5000),
+      // BRD-Task sidecar fetch dropped — that path read `ph_issues`
+      // filtered by project_key='MDT' AND issue_type IN ('BRD Task',
+      // 'Sub-task') from the legacy Jira mirror. With Catalyst standing
+      // on its own (no Jira inflow), the sub-task list rebuilds on
+      // Catalyst-native data (existing `ph_request_milestones` and
+      // the linked-items roll-up). Keeping `brd_tasks` shape on the
+      // returned request as an empty array so consumers compile
+      // unchanged; rebuild lands in a follow-up cycle.
+      const [initResult, profilesResult, deptsResult, scoresResult, favsResult, milestonesResult] = await Promise.all([
+        typedQuery('ph_backlog_requests_view').select('*').or(`created_at.gte.${YEAR_2026},updated_at.gte.${YEAR_2026}`).limit(5000),
         supabase.from('profiles').select('id, full_name, avatar_url'),
         typedQuery('ph_departments').select('id, name'),
-        typedQuery('ph_initiative_scores').select('initiative_id, strategic_alignment, business_impact, time_urgency, resource_feasibility, computed_score'),
+        typedQuery('ph_request_scores').select('request_id, strategic_alignment, business_impact, time_urgency, resource_feasibility, computed_score'),
         currentUserId
-          ? typedQuery('ph_user_favorites').select('initiative_id').eq('user_id', currentUserId)
+          ? typedQuery('ph_user_favorites').select('request_id').eq('user_id', currentUserId)
           : Promise.resolve({ data: [] }),
-        // Fetch BRD Tasks (sub-tasks of Business Requests) from ph_issues
-        typedQuery('ph_issues')
-          .select('issue_key, summary, status, assignee_display_name, priority, jira_created_at, jira_updated_at, parent_key')
-          .eq('project_key', 'MDT')
-          .in('issue_type', ['BRD Task', 'Sub-task'])
-          .not('parent_key', 'is', null)
-          .is('archived_at', null)
-          .limit(5000),
-        // Milestone counts per initiative — minimal projection for tally only
-        typedQuery('ph_initiative_milestones').select('initiative_id').limit(10000),
+        // Milestone counts per request — minimal projection for tally only
+        typedQuery('ph_request_milestones').select('request_id').limit(10000),
       ]);
 
       if (initResult.error) throw initResult.error;
@@ -101,39 +101,27 @@ export function useMDTBacklog() {
 
       const scoreMap = new Map<string, any>();
       (scoresResult.data || []).forEach((s: any) => {
-        scoreMap.set(s.initiative_id, s);
+        scoreMap.set(s.request_id, s);
       });
 
       const favSet = new Set<string>();
       (favsResult.data || []).forEach((f: any) => {
-        favSet.add(f.initiative_id);
+        favSet.add(f.request_id);
       });
 
-      // Build BRD tasks map: parent Jira key → BRDTask[]
-      const brdTasksByParent = new Map<string, BRDTask[]>();
-      (brdTasksResult.data || []).forEach((t: any) => {
-        if (!t.parent_key) return;
-        const key = t.parent_key;
-        if (!brdTasksByParent.has(key)) brdTasksByParent.set(key, []);
-        brdTasksByParent.get(key)!.push({
-          issue_key: t.issue_key,
-          summary: t.summary,
-          status: t.status,
-          assignee_display_name: t.assignee_display_name,
-          priority: t.priority,
-          jira_created_at: t.jira_created_at,
-          jira_updated_at: t.jira_updated_at,
-        });
-      });
+      // BRD-Task → parent map dropped along with the sidecar fetch.
+      // Consumers that read `brd_tasks` get an empty array per row so
+      // existing JSX (`init.brd_tasks?.length` checks) compiles and
+      // renders no sub-tasks until the Catalyst-native rebuild lands.
 
-      // Tally milestones per initiative_id
+      // Tally milestones per request_id
       const milestoneCountMap = new Map<string, number>();
       (milestonesResult.data || []).forEach((m: any) => {
-        if (!m.initiative_id) return;
-        milestoneCountMap.set(m.initiative_id, (milestoneCountMap.get(m.initiative_id) || 0) + 1);
+        if (!m.request_id) return;
+        milestoneCountMap.set(m.request_id, (milestoneCountMap.get(m.request_id) || 0) + 1);
       });
 
-      const initiatives: MDTInitiative[] = (initResult.data || []).map((row: any, idx: number) => {
+      const requests: MDTRequest[] = (initResult.data || []).map((row: any, idx: number) => {
         const assigneeProfile = row.assignee_id ? profileMap.get(row.assignee_id) : null;
         const businessOwnerProfile = row.business_owner_id ? profileMap.get(row.business_owner_id) : null;
         const reporterProfile = row.reporter_id ? profileMap.get(row.reporter_id) : null;
@@ -167,7 +155,7 @@ export function useMDTBacklog() {
           kickoff_date: row.kickoff_date || null,
           target_complete: row.target_complete || null,
           // `progress` is now driven by the linked-items roll-up computed in
-          // ph_backlog_initiatives_view. Falls back to the legacy column for
+          // ph_backlog_requests_view. Falls back to the legacy column for
           // older rows that have no linked work items yet.
           progress: row.linked_items_progress ?? row.progress ?? 0,
           linked_items_total: row.linked_items_total ?? 0,
@@ -192,21 +180,20 @@ export function useMDTBacklog() {
           jira_issue_key: row.jira_issue_key ?? null,
           created_at: row.created_at,
           updated_at: row.updated_at,
-          brd_tasks: brdTasksByParent.get(row.jira_issue_key || row.initiative_key) || [],
+          brd_tasks: [], // see comment above — empty until rebuild lands
         };
       });
 
-      return { data: initiatives, count: initiatives.length };
+      return { data: requests, count: requests.length };
     },
     staleTime: 2 * 60_000,
   });
 }
 
 /**
- * Catalyst-canonical name for the ProductHub backlog hook.
- *
- * Identical behavior to `useMDTBacklog` — both names point at the same
- * underlying query. Use this name in net-new code; the legacy name will
- * be removed once existing call sites have been migrated.
+ * Legacy aliases — both `useMDTBacklog` and `useInitiativesBacklog`
+ * point at the canonical `useRequestsBacklog`. Existing call sites
+ * compile unchanged; remove once every consumer has been migrated.
  */
-export const useInitiativesBacklog = useMDTBacklog;
+export const useMDTBacklog = useRequestsBacklog;
+export const useInitiativesBacklog = useRequestsBacklog;

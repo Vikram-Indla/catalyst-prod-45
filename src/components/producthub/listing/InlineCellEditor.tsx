@@ -1,13 +1,13 @@
 /**
- * InlineCellEditor — In-place cell editing for the Initiative Table
+ * InlineCellEditor — In-place cell editing for the Request Table
  * Catalyst V5 Design System — Uses real profile data
  */
 
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { createPortal } from 'react-dom';
-import type { InitiativeStatus } from '@/types/initiative';
-import { STATUS_DISPLAY } from '@/types/initiative';
-import { useProfileOptions } from '@/hooks/useInitiativeLookups';
+import type { RequestStatus } from '@/types/request';
+import { STATUS_DISPLAY } from '@/types/request';
+import { useProfileOptions } from '@/hooks/useRequestLookups';
 
 type EditorType = 'text' | 'status' | 'assignee' | 'quarter' | 'date' | 'number';
 
@@ -20,7 +20,7 @@ interface InlineCellEditorProps {
   onTab?: (direction: 'next' | 'prev') => void;
 }
 
-const ALL_STATUSES = Object.keys(STATUS_DISPLAY) as InitiativeStatus[];
+const ALL_STATUSES = Object.keys(STATUS_DISPLAY) as RequestStatus[];
 
 function generateQuarters(): string[] {
   const quarters: string[] = [];
@@ -197,7 +197,7 @@ export const EDITABLE_COLUMNS: Record<string, EditorType> = {
   progress: 'number',
 };
 
-/** Map column IDs to Initiative field keys for Supabase updates */
+/** Map column IDs to Request field keys for Supabase updates */
 export const COLUMN_TO_FIELD: Record<string, string> = {
   title: 'title',
   status: 'status',

@@ -416,7 +416,7 @@ function SingleParentPicker({
            (matches the breadcrumb / TicketBreadcrumbs path). The earlier
            hardcoded "Feature" caused the right-panel parent icon to
            disagree with the breadcrumb (BAU-5534-style: breadcrumb showed
-           the correct Epic/Initiative icon, panel showed a blue Feature
+           the correct Epic/Request icon, panel showed a blue Feature
            checkbox). Falls back to 'Epic' to match TicketBreadcrumbs'
            default. */
         <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>

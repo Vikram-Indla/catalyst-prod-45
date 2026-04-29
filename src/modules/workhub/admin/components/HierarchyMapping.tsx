@@ -13,7 +13,7 @@ const DEFAULT_LEVELS: HierarchyLevel[] = [
 ]
 
 const TYPE_CHIPS: Record<string, string[]> = {
-  Epic: ['Epic', 'Initiative', 'Theme'],
+  Epic: ['Epic', 'Request', 'Theme'],
   Story: ['Story', 'User Story', 'Feature', 'Requirement'],
   Subtask: ['Sub-task', 'Technical Task'],
   Bug: ['Bug', 'Defect', 'QA Issue'],

@@ -13,7 +13,7 @@ export interface TierConfig {
 
 export const WORK_ITEM_HIERARCHY: Record<string, TierConfig> = {
   // TIER 1 — STRATEGIC (individual cards, 14-day window)
-  'Initiative':           { tier: 1, label: 'INITIATIVE',          freshnessDays: 14, renderMode: 'individual', color: '#722ED1' },
+  'Request':           { tier: 1, label: 'INITIATIVE',          freshnessDays: 14, renderMode: 'individual', color: '#722ED1' },
   'Business Request':     { tier: 1, label: 'BUSINESS REQUEST',    freshnessDays: 14, renderMode: 'individual', color: '#722ED1' },
   'BRD':                  { tier: 1, label: 'BUSINESS REQUEST',    freshnessDays: 14, renderMode: 'individual', color: '#722ED1' },
   'BRD Task':             { tier: 1, label: 'BUSINESS REQUEST',    freshnessDays: 14, renderMode: 'individual', color: '#722ED1' },

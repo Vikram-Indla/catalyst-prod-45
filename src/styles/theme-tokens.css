@@ -193,10 +193,10 @@
 }
 
 /* ── Scrollbar dark mode ── */
-[data-theme="dark"] ::-webkit-scrollbar-thumb {
+.dark ::-webkit-scrollbar-thumb , [data-theme="dark"] ::-webkit-scrollbar-thumb {
   background: var(--cp-scroll);
 }
-[data-theme="dark"] ::-webkit-scrollbar-track {
+.dark ::-webkit-scrollbar-track , [data-theme="dark"] ::-webkit-scrollbar-track {
   background: transparent;
 }
 

@@ -4,9 +4,9 @@ import SearchIcon from '@atlaskit/icon/glyph/search';
 import { IconButton } from '@atlaskit/button/new';
 import Tooltip from '@atlaskit/tooltip';
 import Textfield from '@atlaskit/textfield';
+import { token } from '@atlaskit/tokens';
 import { useGlobalSearchStore } from '@/store/globalSearchStore';
 import { GlobalSearchPanel } from '@/components/global-search/GlobalSearchPanel';
-import { adsTokens, cp } from '@/theme/ads/tokens';
 
 // GlobalSearch — correctly anchored search trigger.
 //
@@ -133,7 +133,7 @@ export function GlobalSearch({ collapsed = false }: GlobalSearchProps) {
           ref={inputRef}
           isCompact
           elemBeforeInput={
-            <span style={{ display: 'inline-flex', paddingLeft: 6, color: cp(adsTokens.text.secondary) }}>
+            <span style={{ display: 'inline-flex', paddingLeft: 6, color: token('color.text.subtle', '#626F86') }}>
               <SearchIcon label="" />
             </span>
           }
@@ -148,9 +148,9 @@ export function GlobalSearch({ collapsed = false }: GlobalSearchProps) {
                 padding: '0 6px',
                 marginRight: 6,
                 borderRadius: 3,
-                border: `1px solid ${cp(adsTokens.border.default)}`,
-                background: cp(adsTokens.bg.inset),
-                color: cp(adsTokens.text.secondary),
+                border: `1px solid ${token('color.border', '#DFE1E6')}`,
+                background: token('elevation.surface.sunken', '#F4F5F7'),
+                color: token('color.text.subtle', '#626F86'),
                 fontSize: 11,
                 fontWeight: 600,
                 fontFamily: 'var(--cp-font-body)',

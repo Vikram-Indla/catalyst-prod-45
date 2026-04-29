@@ -96,7 +96,7 @@
 }
 
 /* ── DARK MODE — Nocturne overrides ── */
-[data-theme="dark"] .strategy-room {
+.dark .strategy-room , [data-theme="dark"] .strategy-room {
   --catalyst-bg-app: #0A0A0A;
   --catalyst-bg-surface-0: #0A0A0A;
   --catalyst-bg-surface-1: #0A0A0A;

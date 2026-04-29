@@ -34,7 +34,7 @@ export interface AlignmentRow {
   kr_title: string | null;
   kr_status: string | null;
   kr_progress: number | null;
-  initiative_id: string | null;
+  request_id: string | null;
   initiative_key: string | null;
   initiative_title: string | null;
   initiative_status: string | null;
@@ -138,9 +138,9 @@ export function useAlignmentMapData() {
           });
         }
 
-        if (row.initiative_id && !initiativesMap.has(row.initiative_id)) {
-          initiativesMap.set(row.initiative_id, {
-            id: row.initiative_id,
+        if (row.request_id && !initiativesMap.has(row.request_id)) {
+          initiativesMap.set(row.request_id, {
+            id: row.request_id,
             key: row.initiative_key || '',
             title: row.initiative_title || '',
             status: row.initiative_status || 'draft',
@@ -166,19 +166,19 @@ export function useAlignmentMapData() {
           if (!goalToKrs.has(row.goal_id)) goalToKrs.set(row.goal_id, new Set());
           goalToKrs.get(row.goal_id)!.add(row.kr_id);
         }
-        if (row.kr_id && row.initiative_id) {
+        if (row.kr_id && row.request_id) {
           if (!krToInitiatives.has(row.kr_id)) krToInitiatives.set(row.kr_id, new Set());
-          krToInitiatives.get(row.kr_id)!.add(row.initiative_id);
+          krToInitiatives.get(row.kr_id)!.add(row.request_id);
           krsWithInitiative.add(row.kr_id);
         }
-        if (row.initiative_id && row.epic_id) {
-          if (!initiativeToEpics.has(row.initiative_id)) initiativeToEpics.set(row.initiative_id, new Set());
-          initiativeToEpics.get(row.initiative_id)!.add(row.epic_id);
+        if (row.request_id && row.epic_id) {
+          if (!initiativeToEpics.has(row.request_id)) initiativeToEpics.set(row.request_id, new Set());
+          initiativeToEpics.get(row.request_id)!.add(row.epic_id);
         }
 
         // Full chain
-        if (row.theme_id && row.goal_id && row.kr_id && row.initiative_id && row.epic_id) {
-          fullChainSet.add(`${row.theme_id}-${row.goal_id}-${row.kr_id}-${row.initiative_id}-${row.epic_id}`);
+        if (row.theme_id && row.goal_id && row.kr_id && row.request_id && row.epic_id) {
+          fullChainSet.add(`${row.theme_id}-${row.goal_id}-${row.kr_id}-${row.request_id}-${row.epic_id}`);
         }
       }
 
@@ -188,9 +188,9 @@ export function useAlignmentMapData() {
         theme.krCount = themeKrCount.get(tid)?.size || 0;
       }
 
-      // Get total initiatives/epics from ph_initiatives for accurate denominator
+      // Get total initiatives/epics from ph_requests for accurate denominator
       const { count: totalInitCount } = await supabase
-        .from('ph_initiatives')
+        .from('ph_requests')
         .select('id', { count: 'exact', head: true });
 
       return {

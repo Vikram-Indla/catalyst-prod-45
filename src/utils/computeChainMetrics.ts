@@ -79,7 +79,7 @@ export function computeChainMetrics(
   });
   const krs = Array.from(krMap.values());
 
-  const initiative = chainData.find(r => r.initiative_id);
+  const initiative = chainData.find(r => r.request_id);
   const epic = chainData.find(r => r.epic_id);
 
   // ─── Schedule ───
@@ -110,7 +110,7 @@ export function computeChainMetrics(
     })),
     ...(initiative ? [{
       key: initiative.initiative_key, progress: initiative.initiative_progress || 0,
-      status: initiative.initiative_status || 'Draft', layer: 'Initiative',
+      status: initiative.initiative_status || 'Draft', layer: 'Request',
     }] : []),
     ...(epic ? [{
       key: epic.epic_key,

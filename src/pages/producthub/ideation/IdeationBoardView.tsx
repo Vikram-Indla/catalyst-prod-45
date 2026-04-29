@@ -20,19 +20,19 @@ const COLUMNS: { status: IdeaStatus; extra?: React.ReactNode }[] = [
   { status: 'submitted' },
   { status: 'under_review' },
   { status: 'approved', extra: <span style={{ fontSize: '10px', color: '#FFFFFF', fontWeight: 600 }}>Ready to convert</span> },
-  { status: 'converted', extra: <span style={{ fontSize: '10px', color: '#FFFFFF', fontWeight: 600 }}>→ Initiatives</span> },
+  { status: 'converted', extra: <span style={{ fontSize: '10px', color: '#FFFFFF', fontWeight: 600 }}>→ Requests</span> },
   { status: 'draft' },
   { status: 'rejected' },
 ];
 
 const INITIATIVE_LINKS: Record<string, string> = {
-  'IDH-001': '↗ INIT-2026-001 · Linked Initiative',
+  'IDH-001': '↗ INIT-2026-001 · Linked Request',
   'IDH-013': '↗ INIT-2026-002 · 2 ideas merged',
 };
 
 function getInitiativeLink(idea: Idea): string | null {
   if (INITIATIVE_LINKS[idea.key]) return INITIATIVE_LINKS[idea.key];
-  if (idea.initiative) return `↗ ${idea.initiative} · Linked Initiative`;
+  if (idea.request) return `↗ ${idea.request} · Linked Request`;
   return null;
 }
 
@@ -204,7 +204,7 @@ function IdeaBoardCard({ idea, columnStatus, onClick, onConvert, isDark, dk }: {
         </div>
       )}
 
-      {/* Initiative link (converted) */}
+      {/* Request link (converted) */}
       {isConverted && initLink && (
         <div style={{
           marginTop: '8px', background: isDark ? 'rgba(22,163,74,0.12)' : '#1B7F37',
@@ -225,7 +225,7 @@ function IdeaBoardCard({ idea, columnStatus, onClick, onConvert, isDark, dk }: {
             fontWeight: 700, cursor: 'pointer',
           }}
         >
-          → Convert to Initiative
+          → Convert to Request
         </button>
       )}
     </div>

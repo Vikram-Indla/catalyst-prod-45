@@ -5,7 +5,7 @@
  * Shares state with ProfileMenu's Theme submenu via useThemeMode() — both
  * call setTheme on the same context, so they stay in sync.
  *
- * Colours come from the bridge tokens (cp(adsTokens.text.secondary) etc.) —
+ * Colours come from the bridge tokens (token('color.text.subtle', '#626F86') etc.) —
  * no hex literals (CLAUDE.md ADS wrapper contract rule 5).
  *
  * Apr 28, 2026 — moved here from src/components/ui/ThemeToggle.tsx to
@@ -17,7 +17,7 @@ import React from 'react';
 import { Sun, Moon } from 'lucide-react';
 import { useThemeMode } from '@/providers/ThemeProvider';
 import { Tooltip } from '@/components/ads/Tooltip';
-import { adsTokens, cp } from '@/theme/ads/tokens';
+import { token } from '@atlaskit/tokens';
 
 interface ThemeToggleProps {
   /** Optional testId forwarded to the toggle button for Playwright. */
@@ -47,25 +47,25 @@ export function ThemeToggle({ testId }: ThemeToggleProps = {}) {
         style={{
           width: 36,
           height: 36,
-          color: cp(adsTokens.text.secondary),
+          color: token('color.text.subtle', '#626F86'),
           background: 'transparent',
           border: 'none',
           cursor: 'pointer',
           borderRadius: 6,
         }}
         onMouseEnter={(e) => {
-          e.currentTarget.style.color = cp(adsTokens.text.primary);
-          e.currentTarget.style.background = cp(adsTokens.bg.hover);
+          e.currentTarget.style.color = token('color.text', '#0F172A');
+          e.currentTarget.style.background = token('color.background.neutral.hovered', 'rgba(0,0,0,0.04)');
         }}
         onMouseLeave={(e) => {
-          e.currentTarget.style.color = cp(adsTokens.text.secondary);
+          e.currentTarget.style.color = token('color.text.subtle', '#626F86');
           e.currentTarget.style.background = 'transparent';
         }}
         onFocus={(e) => {
-          e.currentTarget.style.color = cp(adsTokens.text.primary);
+          e.currentTarget.style.color = token('color.text', '#0F172A');
         }}
         onBlur={(e) => {
-          e.currentTarget.style.color = cp(adsTokens.text.secondary);
+          e.currentTarget.style.color = token('color.text.subtle', '#626F86');
         }}
         title={label}
       >

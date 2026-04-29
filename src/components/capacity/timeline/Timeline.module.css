@@ -1066,20 +1066,20 @@
 
 /* Container */
 :global(.dark) .timelineContainer,
-:global([data-theme="dark"]) .timelineContainer {
+:global(.dark) .timelineContainer , [data-theme="dark"]) .timelineContainer {
   background: var(--surface-0, #262626);
   border-color: var(--border-subtle, #333333);
 }
 
 /* Header */
 :global(.dark) .timelineHeader,
-:global([data-theme="dark"]) .timelineHeader {
+:global(.dark) .timelineHeader , [data-theme="dark"]) .timelineHeader {
   background: var(--surface-2, #1f1f1f);
   border-bottom-color: var(--border-default, #404040);
 }
 
 :global(.dark) .resourceColumnHeader,
-:global([data-theme="dark"]) .resourceColumnHeader {
+:global(.dark) .resourceColumnHeader , [data-theme="dark"]) .resourceColumnHeader {
   background: var(--surface-2, #1f1f1f);
   color: var(--text-primary, #f5f5f5);
   border-right-color: var(--border-default, #404040);
@@ -1087,115 +1087,115 @@
 
 /* Month Headers — CRITICAL: must be readable */
 :global(.dark) .monthHeader,
-:global([data-theme="dark"]) .monthHeader {
+:global(.dark) .monthHeader , [data-theme="dark"]) .monthHeader {
   color: var(--text-primary, #f5f5f5);
   border-right-color: var(--border-subtle, #333333);
 }
 
 :global(.dark) .monthHeaderCurrent,
-:global([data-theme="dark"]) .monthHeaderCurrent {
+:global(.dark) .monthHeaderCurrent , [data-theme="dark"]) .monthHeaderCurrent {
   background: rgba(37, 99, 235, 0.15);
   color: #60a5fa;
 }
 
 /* Resource Column */
 :global(.dark) .resourceColumn,
-:global([data-theme="dark"]) .resourceColumn {
+:global(.dark) .resourceColumn , [data-theme="dark"]) .resourceColumn {
   background: var(--surface-0, #262626);
   border-right-color: var(--border-default, #404040);
 }
 
 /* Resource Name — CRITICAL: must be readable, no opacity */
 :global(.dark) .textResourceName,
-:global([data-theme="dark"]) .textResourceName {
+:global(.dark) .textResourceName , [data-theme="dark"]) .textResourceName {
   color: var(--text-primary, #f5f5f5);
   opacity: 1;
 }
 
 /* Resource Role — secondary but readable */
 :global(.dark) .textResourceRole,
-:global([data-theme="dark"]) .textResourceRole {
+:global(.dark) .textResourceRole , [data-theme="dark"]) .textResourceRole {
   color: var(--text-secondary, #a3a3a3);
   opacity: 1;
 }
 
 /* Row */
 :global(.dark) .timelineRow,
-:global([data-theme="dark"]) .timelineRow {
+:global(.dark) .timelineRow , [data-theme="dark"]) .timelineRow {
   border-bottom-color: var(--border-subtle, #333333);
 }
 
 :global(.dark) .timelineRow:hover,
-:global([data-theme="dark"]) .timelineRow:hover {
+:global(.dark) .timelineRow:hover , [data-theme="dark"]) .timelineRow:hover {
   background: var(--surface-3, #2d2d2d);
 }
 
 :global(.dark) .rowCritical,
-:global([data-theme="dark"]) .rowCritical {
+:global(.dark) .rowCritical , [data-theme="dark"]) .rowCritical {
   background: linear-gradient(90deg, rgba(239, 68, 68, 0.12) 0%, transparent 40%);
 }
 
 :global(.dark) .rowAvailable,
-:global([data-theme="dark"]) .rowAvailable {
+:global(.dark) .rowAvailable , [data-theme="dark"]) .rowAvailable {
   background: linear-gradient(90deg, rgba(13, 148, 136, 0.08) 0%, transparent 40%);
 }
 
 /* Timeline Cells */
 :global(.dark) .timelineCell,
-:global([data-theme="dark"]) .timelineCell {
+:global(.dark) .timelineCell , [data-theme="dark"]) .timelineCell {
   border-right-color: var(--border-subtle, #333333);
 }
 
 :global(.dark) .timelineCellCurrent,
-:global([data-theme="dark"]) .timelineCellCurrent {
+:global(.dark) .timelineCellCurrent , [data-theme="dark"]) .timelineCellCurrent {
   background: rgba(37, 99, 235, 0.08);
 }
 
 /* Allocation Bar Text — CRITICAL: no dimming */
 :global(.dark) .allocationBar,
-:global([data-theme="dark"]) .allocationBar {
+:global(.dark) .allocationBar , [data-theme="dark"]) .allocationBar {
   color: white;
   opacity: 1;
 }
 
 :global(.dark) .allocationBar span,
-:global([data-theme="dark"]) .allocationBar span {
+:global(.dark) .allocationBar span , [data-theme="dark"]) .allocationBar span {
   color: white;
   opacity: 1;
 }
 
 /* Bar Tooltip */
 :global(.dark) .barTooltip,
-:global([data-theme="dark"]) .barTooltip {
+:global(.dark) .barTooltip , [data-theme="dark"]) .barTooltip {
   background: var(--surface-elevated, #333333);
   color: var(--text-primary, #f5f5f5);
   border: 1px solid var(--border-subtle, #333333);
 }
 
 :global(.dark) .barTooltip::before,
-:global([data-theme="dark"]) .barTooltip::before {
+:global(.dark) .barTooltip::before , [data-theme="dark"]) .barTooltip::before {
   border-bottom-color: var(--surface-elevated, #333333);
 }
 
 /* Available Cell */
 :global(.dark) .availableCell:hover,
-:global([data-theme="dark"]) .availableCell:hover {
+:global(.dark) .availableCell:hover , [data-theme="dark"]) .availableCell:hover {
   background: rgba(13, 148, 136, 0.15);
 }
 
 :global(.dark) .availableDot,
-:global([data-theme="dark"]) .availableDot {
+:global(.dark) .availableDot , [data-theme="dark"]) .availableDot {
   background: rgba(13, 148, 136, 0.5);
 }
 
 :global(.dark) .availableLabel,
-:global([data-theme="dark"]) .availableLabel {
+:global(.dark) .availableLabel , [data-theme="dark"]) .availableLabel {
   color: #14b8a6;
 }
 
 /* Locked Zone */
 :global(.dark) .lockedZone,
-:global([data-theme="dark"]) .lockedZone {
+:global(.dark) .lockedZone , [data-theme="dark"]) .lockedZone {
   background: repeating-linear-gradient(
     135deg,
     rgba(115, 115, 115, 0.15) 0px,
@@ -1207,7 +1207,7 @@
 }
 
 :global(.dark) .lockedZoneBadge,
-:global([data-theme="dark"]) .lockedZoneBadge {
+:global(.dark) .lockedZoneBadge , [data-theme="dark"]) .lockedZoneBadge {
   background: var(--surface-elevated, #333333);
   color: var(--text-primary, #f5f5f5);
   border: 1px solid var(--border-subtle, #333333);
@@ -1215,7 +1215,7 @@
 
 /* Legend */
 :global(.dark) .legend,
-:global([data-theme="dark"]) .legend {
+:global(.dark) .legend , [data-theme="dark"]) .legend {
   background: var(--surface-1, #1a1a1a);
   border-top-color: var(--border-subtle, #333333);
   color: var(--text-secondary, #a3a3a3);
@@ -1223,24 +1223,24 @@
 
 /* Avg Column */
 :global(.dark) .avgColumn,
-:global([data-theme="dark"]) .avgColumn {
+:global(.dark) .avgColumn , [data-theme="dark"]) .avgColumn {
   background: var(--surface-2, #1f1f1f);
   border-left-color: var(--border-default, #404040);
 }
 
 :global(.dark) .avgValue,
-:global([data-theme="dark"]) .avgValue {
+:global(.dark) .avgValue , [data-theme="dark"]) .avgValue {
   color: var(--text-primary, #f5f5f5);
 }
 
 :global(.dark) .avgStatus,
-:global([data-theme="dark"]) .avgStatus {
+:global(.dark) .avgStatus , [data-theme="dark"]) .avgStatus {
   color: var(--text-secondary, #a3a3a3);
 }
 
 /* Skeleton */
 :global(.dark) .skeletonCell,
-:global([data-theme="dark"]) .skeletonCell {
+:global(.dark) .skeletonCell , [data-theme="dark"]) .skeletonCell {
   background: linear-gradient(
     90deg,
     var(--surface-2, #1f1f1f) 0%,
@@ -1252,22 +1252,22 @@
 
 /* Scrollbar */
 :global(.dark) .timelineBody::-webkit-scrollbar-thumb,
-:global([data-theme="dark"]) .timelineBody::-webkit-scrollbar-thumb {
+:global(.dark) .timelineBody::-webkit-scrollbar-thumb , [data-theme="dark"]) .timelineBody::-webkit-scrollbar-thumb {
   background: var(--border-default, #404040);
 }
 
 :global(.dark) .timelineBody::-webkit-scrollbar-track,
-:global([data-theme="dark"]) .timelineBody::-webkit-scrollbar-track {
+:global(.dark) .timelineBody::-webkit-scrollbar-track , [data-theme="dark"]) .timelineBody::-webkit-scrollbar-track {
   background: var(--surface-1, #1a1a1a);
 }
 
 /* Avatar ring visibility */
 :global(.dark) .avatarRing,
-:global([data-theme="dark"]) .avatarRing {
+:global(.dark) .avatarRing , [data-theme="dark"]) .avatarRing {
   border-color: var(--ring-color, #595959);
 }
 
 :global(.dark) .ringGray,
-:global([data-theme="dark"]) .ringGray {
+:global(.dark) .ringGray , [data-theme="dark"]) .ringGray {
   --ring-color: #595959;
 }

@@ -2,11 +2,11 @@
  * Product Roadmap — Filter & search state management
  */
 import { useState, useMemo, useCallback } from 'react';
-import type { RoadmapInitiative, InitiativeType, QuickFilter, GroupBy, ZoomLevel, ViewMode, RoadmapGroup } from '../types/roadmap.types';
+import type { RoadmapRequest, RequestType, QuickFilter, GroupBy, ZoomLevel, ViewMode, RoadmapGroup } from '../types/roadmap.types';
 
-export function useRoadmapFilters(allItems: RoadmapInitiative[]) {
+export function useRoadmapFilters(allItems: RoadmapRequest[]) {
   const [search, setSearch] = useState('');
-  const [typeFilter, setTypeFilter] = useState<InitiativeType | 'all'>('all');
+  const [typeFilter, setTypeFilter] = useState<RequestType | 'all'>('all');
   const [quickFilter, setQuickFilter] = useState<QuickFilter>('all');
   const [groupBy, setGroupBy] = useState<GroupBy>('none');
   const [zoom, setZoom] = useState<ZoomLevel>('Month');
@@ -38,7 +38,7 @@ export function useRoadmapFilters(allItems: RoadmapInitiative[]) {
   const groups = useMemo<RoadmapGroup[]>(() => {
     if (groupBy === 'none') return [{ key: 'all', label: 'All Business Requests', color: '#64748B', items: filtered, isExpanded: true }];
 
-    const map = new Map<string, RoadmapInitiative[]>();
+    const map = new Map<string, RoadmapRequest[]>();
     for (const item of filtered) {
       let key: string;
       if (groupBy === 'priority') key = item.priority;

@@ -6,12 +6,12 @@
 import React, { useState, useCallback, useMemo, useEffect } from 'react';
 import { useQueryClient, useQuery } from '@tanstack/react-query';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
-import type { TimelineInitiative } from '@/types/producthub/initiative';
+import type { TimelineRequest } from '@/types/producthub/request';
 import { toast } from 'sonner';
-import { logInitiativeAudit } from '@/lib/initiativeAudit';
+import { logRequestAudit } from '@/lib/requestAudit';
 
 interface DetailTabScoreProps {
-  initiative: TimelineInitiative;
+  request: TimelineRequest;
 }
 
 const DIMS = [
@@ -73,17 +73,17 @@ function RadarSVG({ scores }: { scores: Record<ScoreKeys, number> }) {
   );
 }
 
-export const DetailTabScore: React.FC<DetailTabScoreProps> = ({ initiative }) => {
+export const DetailTabScore: React.FC<DetailTabScoreProps> = ({ request }) => {
   const queryClient = useQueryClient();
   const [saving, setSaving] = useState(false);
 
-  // Fetch existing scores from ph_initiative_scores
+  // Fetch existing scores from ph_request_scores
   const { data: dbScores } = useQuery({
-    queryKey: ['idp-scores', initiative.id],
+    queryKey: ['idp-scores', request.id],
     queryFn: async () => {
-      const { data } = await typedQuery('ph_initiative_scores')
+      const { data } = await typedQuery('ph_request_scores')
         .select('strategic_alignment, business_impact, time_urgency, resource_feasibility')
-        .eq('initiative_id', initiative.id)
+        .eq('request_id', request.id)
         .maybeSingle();
       return data;
     },
@@ -121,30 +121,30 @@ export const DetailTabScore: React.FC<DetailTabScoreProps> = ({ initiative }) =>
   const handleSave = useCallback(async () => {
     setSaving(true);
     try {
-      // Upsert into ph_initiative_scores
+      // Upsert into ph_request_scores
       const { data: { user } } = await supabase.auth.getUser();
-      const { error } = await typedQuery('ph_initiative_scores')
+      const { error } = await typedQuery('ph_request_scores')
         .upsert({
-          initiative_id: initiative.id,
+          request_id: request.id,
           strategic_alignment: scores.sa,
           business_impact: scores.bi,
           time_urgency: scores.tu,
           resource_feasibility: scores.rf,
           scored_by: user?.id ?? null,
           scored_at: new Date().toISOString(),
-        }, { onConflict: 'initiative_id' });
+        }, { onConflict: 'request_id' });
       if (error) throw error;
       // Silent auto-save
-      logInitiativeAudit({ initiative_id: initiative.id, action: 'updated', entity_type: 'score', new_value: String(composite) });
-      queryClient.invalidateQueries({ queryKey: ['idp-scores', initiative.id] });
-      queryClient.invalidateQueries({ queryKey: ['idp-activity', initiative.id] });
-      queryClient.invalidateQueries({ queryKey: ['mdt-backlog'] });
+      logRequestAudit({ request_id: request.id, action: 'updated', entity_type: 'score', new_value: String(composite) });
+      queryClient.invalidateQueries({ queryKey: ['idp-scores', request.id] });
+      queryClient.invalidateQueries({ queryKey: ['idp-activity', request.id] });
+      queryClient.invalidateQueries({ queryKey: ['requests-backlog'] });
     } catch {
       toast.error('Failed to save score');
     } finally {
       setSaving(false);
     }
-  }, [scores, composite, initiative.id, queryClient]);
+  }, [scores, composite, request.id, queryClient]);
 
   return (
     <div className="idp-score">

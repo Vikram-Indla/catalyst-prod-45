@@ -110,7 +110,7 @@
 
 /* ═══ DARK MODE — Nocturne One Surface Model ═══ */
 .dark [data-module="product-backlog"],
-[data-theme="dark"] [data-module="product-backlog"] {
+.dark [data-module="product-backlog"] , [data-theme="dark"] [data-module="product-backlog"] {
   --cp-bg-page: #0A0A0A;
   --cp-bg-surface: transparent;
   --cp-bg-sunken: #1F1F1F;
@@ -153,11 +153,11 @@
   background-color: #0A0A0A !important;
 }
 .dark [data-module="product-backlog"] .flex-1,
-[data-theme="dark"] [data-module="product-backlog"] .flex-1 {
+.dark [data-module="product-backlog"] .flex-1 , [data-theme="dark"] [data-module="product-backlog"] .flex-1 {
   background-color: #0A0A0A !important;
 }
 .dark .pb-table,
-[data-theme="dark"] .pb-table {
+.dark .pb-table , [data-theme="dark"] .pb-table {
   background-color: transparent !important;
 }
 .dark .pb-table thead,
@@ -165,24 +165,24 @@
 .dark .pb-table thead th,
 [data-theme="dark"] .pb-table thead,
 [data-theme="dark"] .pb-table thead tr,
-[data-theme="dark"] .pb-table thead th {
+.dark .pb-table thead th , [data-theme="dark"] .pb-table thead th {
   background-color: #0A0A0A !important;
   color: #7D7D7D;
   border-bottom-color: #2E2E2E;
 }
 .dark .pb-table thead th:hover,
-[data-theme="dark"] .pb-table thead th:hover {
+.dark .pb-table thead th:hover , [data-theme="dark"] .pb-table thead th:hover {
   color: #A1A1A1;
 }
 .dark .pb-table tbody,
 .dark .pb-table tbody tr,
 [data-theme="dark"] .pb-table tbody,
-[data-theme="dark"] .pb-table tbody tr {
+.dark .pb-table tbody tr , [data-theme="dark"] .pb-table tbody tr {
   background-color: transparent !important;
   background: transparent !important;
 }
 .dark .pb-table tbody tr:hover,
-[data-theme="dark"] .pb-table tbody tr:hover {
+.dark .pb-table tbody tr:hover , [data-theme="dark"] .pb-table tbody tr:hover {
   background: #1F1F1F !important;
 }
 

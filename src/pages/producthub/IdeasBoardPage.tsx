@@ -18,13 +18,13 @@
  *     Quarter / Assignee).
  *
  *   - Clicking a card still opens the IdeaDrawer (full edit surface),
- *     and the convert-to-initiative flow (IdeaDrawer → onConvert →
- *     CreateInitiativeDrawer) is preserved verbatim.
+ *     and the convert-to-request flow (IdeaDrawer → onConvert →
+ *     CreateRequestDrawer) is preserved verbatim.
  *
  *   - The green left-border treatment on converted cards is not carried
  *     over — the canonical card surface is Atlaskit/Jira-parity so any
  *     decorative column-tinting lives in the column header, not the
- *     card edge. The "Converted to Initiative" column still reads
+ *     card edge. The "Converted to Request" column still reads
  *     clearly as a terminal state via its header styling.
  */
 import { useCallback, useMemo, useState } from 'react';
@@ -37,9 +37,9 @@ import { useIdeasHub, type IdeaRow } from '@/hooks/useIdeasHub';
 import { useProfileAvatarsByName } from '@/hooks/useProfileAvatars';
 import IdeaDrawer from './ideation/IdeaDrawer';
 import {
-  CreateInitiativeDrawer,
+  CreateRequestDrawer,
   type ConversionSource,
-} from '@/components/producthub/shared/CreateInitiativeDrawer';
+} from '@/components/producthub/shared/CreateRequestDrawer';
 
 export default function IdeasBoardPage() {
   const avatarsByName = useProfileAvatarsByName();
@@ -170,7 +170,7 @@ export default function IdeasBoardPage() {
         />
       )}
 
-      <CreateInitiativeDrawer
+      <CreateRequestDrawer
         open={convertDrawerOpen}
         onClose={() => { setConvertDrawerOpen(false); setConversionSource(null); }}
         conversionSource={conversionSource}
@@ -181,7 +181,7 @@ export default function IdeasBoardPage() {
           await supabase
             .from('ph_ideas')
             .update({
-              status: 'Converted to Initiative',
+              status: 'Converted to Request',
               converted_at: new Date().toISOString(),
             } as any)
             .eq('id', idea.id);

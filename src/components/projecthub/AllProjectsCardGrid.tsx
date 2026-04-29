@@ -5,7 +5,7 @@ import type { ProjectListItem } from '@/types/projecthub';
 import { MemberStack } from './MemberStack';
 import { ProjectStatusBadge } from './ProjectStatusBadge';
 import { Avatar, Tooltip } from '@/components/ads';
-import { InitiativeMetrics } from '@/components/backlog/MetricBars';
+import { RequestMetrics } from '@/components/backlog/MetricBars';
 import { cn } from '@/lib/utils';
 
 const PRIORITY_STYLES: Record<string, { bg: string; text: string; border: string; label: string }> = {
@@ -178,7 +178,7 @@ export function AllProjectsCardGrid({ projects, favoriteIds, onToggleFav, onSele
 
             {/* Score + Priority bars */}
             <div className="mt-3">
-              <InitiativeMetrics score={p.computed_score ?? null} />
+              <RequestMetrics score={p.computed_score ?? null} />
             </div>
 
             {/* E/S/T stats — flex-1 fills space */}

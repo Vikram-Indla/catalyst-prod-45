@@ -1,0 +1,483 @@
+/* ============================================================
+   RESOURCE ALLOCATION — ENTERPRISE CLEAN OVERRIDE
+   
+   STRATEGY D: Horizontal Bar Inside Cell (Microsoft Project Style)
+   
+   OVERRIDE STRATEGY:
+   - Wrapper class: .ra-enterprise-clean
+   - High specificity: .wrapper .component
+   - !important for: colors, backgrounds, display
+   - Load order: Import AFTER Catalyst base styles
+   
+   Token Prefix: --ra-* (Resource Allocation)
+   ============================================================ */
+
+/* ─────────────────────────────────────────────────────────────
+   DESIGN TOKENS
+   ───────────────────────────────────────────────────────────── */
+.ra-enterprise-clean {
+  /* NEUTRAL FOUNDATION */
+  --ra-white: #ffffff;
+  --ra-slate-50: #f8fafc;
+  --ra-slate-100: #f1f5f9;
+  --ra-slate-200: #e2e8f0;
+  --ra-slate-300: #cbd5e1;
+  --ra-slate-400: #94a3b8;
+  --ra-slate-500: #64748b;
+  --ra-slate-600: #475569;
+  --ra-slate-700: #334155;
+  --ra-slate-800: #1e293b;
+
+  /* PROJECT COLORS (Bar Fill) */
+  --ra-project-sectorial: #3b82f6;
+  --ra-project-dataplatform: #10b981;
+  --ra-project-senaei: #f59e0b;
+  --ra-project-tahommena: #ec4899;
+  --ra-project-inspection: #8b5cf6;
+  --ra-project-irplatform: #06b6d4;
+  --ra-project-default: #3b82f6;
+  
+  /* CELL CONFIGURATION */
+  --ra-cell-bg: var(--ra-white);
+  --ra-cell-border: var(--ra-slate-200);
+  --ra-cell-radius: 8px;
+  --ra-cell-padding: 4px;
+  --ra-cell-min-height: 48px;
+  
+  /* HORIZONTAL BAR CONFIGURATION */
+  --ra-bar-height: 4px;
+  --ra-bar-radius: 2px;
+  --ra-bar-track-bg: var(--ra-slate-200);
+  --ra-bar-margin-top: 6px;
+  
+  /* TYPOGRAPHY */
+  --ra-text-percent: var(--ra-slate-700);
+  --ra-text-percent-size: 12px;
+  --ra-text-percent-weight: 600;
+  --ra-text-project: var(--ra-slate-500);
+  --ra-text-project-size: 9px;
+  
+  /* AVATAR (Neutralized) */
+  --ra-avatar-bg: var(--ra-slate-400);
+  --ra-avatar-text: var(--ra-white);
+  --ra-avatar-size: 32px;
+  --ra-avatar-radius: 50%;
+  
+  /* END/EMPTY CELL */
+  --ra-end-bg: repeating-linear-gradient(
+    -45deg,
+    var(--ra-slate-100),
+    var(--ra-slate-100) 4px,
+    var(--ra-slate-200) 4px,
+    var(--ra-slate-200) 8px
+  );
+  --ra-end-text: var(--ra-slate-400);
+}
+
+/* ─────────────────────────────────────────────────────────────
+   GRID CONTAINER
+   NOTE: Removed grid/table layout overrides to preserve existing structure
+   ───────────────────────────────────────────────────────────── */
+/* Layout rules removed - preserve native table structure */
+
+/* ─────────────────────────────────────────────────────────────
+   ALLOCATION CELL — BASE (Strategy D: Horizontal Bar)
+   NUCLEAR OVERRIDE - target ALL possible cell classes
+   ───────────────────────────────────────────────────────────── */
+.ra-enterprise-clean .allocation-cell,
+.ra-enterprise-clean [class*="allocation-cell"],
+.ra-enterprise-clean td.allocation-cell,
+.ra-enterprise-clean td[class*="allocation"],
+.ra-enterprise-clean td.p-1 > div:not([class*="allocation-cell"]),
+.ra-enterprise-clean td > div.h-12 {
+  /* OVERRIDE: White background - NOT blue */
+  background: var(--ra-cell-bg) !important;
+  background-color: var(--ra-cell-bg) !important;
+  
+  /* Layout */
+  min-height: var(--ra-cell-min-height) !important;
+  
+  /* Border */
+  border: 1px solid var(--ra-cell-border) !important;
+  border-radius: var(--ra-cell-radius) !important;
+}
+
+/* Force white on any cell container divs */
+.ra-enterprise-clean td > div.rounded-lg,
+.ra-enterprise-clean td > div.flex,
+.ra-enterprise-clean td > div.h-12,
+.ra-enterprise-clean td > div {
+  background: var(--ra-white) !important;
+  background-color: var(--ra-white) !important;
+}
+
+/* NUCLEAR: Override inline style backgrounds on *cell containers* only.
+   IMPORTANT: Do NOT target nested divs (e.g., allocation bars), otherwise bars become invisible. */
+.ra-enterprise-clean td > div[style*="background"] {
+  background-color: var(--ra-white) !important;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   ALLOCATION CELL — TEXT CONTENT (Dark on White)
+   ───────────────────────────────────────────────────────────── */
+.ra-enterprise-clean .allocation-cell .cell-percent,
+.ra-enterprise-clean .allocation-cell [class*="percent"],
+.ra-enterprise-clean .allocation-cell [class*="utilization"],
+.ra-enterprise-clean td span.text-xs.font-semibold,
+.ra-enterprise-clean td span.text-xs.font-bold,
+.ra-enterprise-clean td div span.text-white {
+  /* OVERRIDE: Dark text instead of white-on-blue */
+  color: var(--ra-text-percent) !important;
+  font-size: var(--ra-text-percent-size) !important;
+  font-weight: var(--ra-text-percent-weight) !important;
+  line-height: 1.2 !important;
+}
+
+.ra-enterprise-clean .allocation-cell .cell-project,
+.ra-enterprise-clean .allocation-cell [class*="project-name"],
+.ra-enterprise-clean .allocation-cell [class*="assignment"],
+.ra-enterprise-clean td span.text-\\[9px\\],
+.ra-enterprise-clean td span.text-white\\/90 {
+  color: var(--ra-text-project) !important;
+  font-size: var(--ra-text-project-size) !important;
+  font-weight: 500 !important;
+  margin-top: 2px !important;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   HORIZONTAL BAR — TRACK (Background)
+   ───────────────────────────────────────────────────────────── */
+.ra-enterprise-clean .allocation-cell::after,
+.ra-enterprise-clean .allocation-bar-track {
+  content: '' !important;
+  position: absolute !important;
+  bottom: 4px !important;
+  left: 6px !important;
+  right: 6px !important;
+  height: var(--ra-bar-height) !important;
+  background: var(--ra-bar-track-bg) !important;
+  border-radius: var(--ra-bar-radius) !important;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   HORIZONTAL BAR — FILL (Project Color)
+   Use data-project attribute or specific class
+   ───────────────────────────────────────────────────────────── */
+/* Track (outer container) — GRAY background */
+.ra-enterprise-clean .allocation-bar {
+  position: absolute !important;
+  bottom: 4px !important;
+  left: 6px !important;
+  right: 6px !important;
+  height: var(--ra-bar-height) !important;
+  border-radius: var(--ra-bar-radius) !important;
+  z-index: 1 !important;
+  background: var(--ra-bar-track) !important; /* Gray track */
+}
+
+/* Fill bar (inner div) — Project colored */
+.ra-enterprise-clean .allocation-bar > div {
+  height: 100% !important;
+  border-radius: var(--ra-bar-radius) !important;
+  transition: width 0.3s ease !important;
+}
+
+/* Project-specific bar colors on INNER fill div */
+.ra-enterprise-clean .allocation-bar > div[data-project="sectorial"] {
+  background: var(--ra-project-sectorial) !important;
+}
+
+.ra-enterprise-clean .allocation-bar > div[data-project="dataplatform"],
+.ra-enterprise-clean .allocation-bar > div[data-project="data-platform"] {
+  background: var(--ra-project-dataplatform) !important;
+}
+
+.ra-enterprise-clean .allocation-bar > div[data-project="senaei"] {
+  background: var(--ra-project-senaei) !important;
+}
+
+.ra-enterprise-clean .allocation-bar > div[data-project="tahommena"] {
+  background: var(--ra-project-tahommena) !important;
+}
+
+.ra-enterprise-clean .allocation-bar > div[data-project="inspection"] {
+  background: var(--ra-project-inspection) !important;
+}
+
+.ra-enterprise-clean .allocation-bar > div[data-project="irplatform"],
+.ra-enterprise-clean .allocation-bar > div[data-project="ir-platform"] {
+  background: var(--ra-project-irplatform) !important;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   BAR WIDTH (Allocation Percentage)
+   ───────────────────────────────────────────────────────────── */
+.ra-enterprise-clean .allocation-bar[data-percent="100"] { width: calc(100% - 12px) !important; }
+.ra-enterprise-clean .allocation-bar[data-percent="75"]  { width: calc(75% - 9px) !important; }
+.ra-enterprise-clean .allocation-bar[data-percent="50"]  { width: calc(50% - 6px) !important; }
+.ra-enterprise-clean .allocation-bar[data-percent="25"]  { width: calc(25% - 3px) !important; }
+
+/* ─────────────────────────────────────────────────────────────
+   END/EMPTY CELL
+   ───────────────────────────────────────────────────────────── */
+.ra-enterprise-clean .allocation-cell.end,
+.ra-enterprise-clean .allocation-cell[data-status="end"],
+.ra-enterprise-clean [class*="cell-end"],
+.ra-enterprise-clean [class*="cell-empty"] {
+  background: var(--ra-end-bg) !important;
+  color: var(--ra-end-text) !important;
+  font-size: 10px !important;
+  font-weight: 500 !important;
+}
+
+.ra-enterprise-clean .allocation-cell.end::after,
+.ra-enterprise-clean .allocation-cell[data-status="end"]::after {
+  display: none !important; /* No bar track on END cells */
+}
+
+/* ─────────────────────────────────────────────────────────────
+   AVATARS — NEUTRALIZE (Remove decorative colors)
+   ───────────────────────────────────────────────────────────── */
+.ra-enterprise-clean .avatar,
+.ra-enterprise-clean [class*="avatar"],
+.ra-enterprise-clean [class*="user-avatar"],
+.ra-enterprise-clean .resource-avatar {
+  background: var(--ra-avatar-bg) !important;
+  color: var(--ra-avatar-text) !important;
+  width: var(--ra-avatar-size) !important;
+  height: var(--ra-avatar-size) !important;
+  border-radius: var(--ra-avatar-radius) !important;
+}
+
+/* HIDE any colored avatar variants */
+.ra-enterprise-clean .avatar[class*="pink"],
+.ra-enterprise-clean .avatar[class*="green"],
+.ra-enterprise-clean .avatar[class*="blue"],
+.ra-enterprise-clean .avatar[class*="purple"] {
+  background: var(--ra-avatar-bg) !important;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   LOCATION BADGES — NEUTRALIZE
+   ───────────────────────────────────────────────────────────── */
+.ra-enterprise-clean .location-badge,
+.ra-enterprise-clean [class*="location-badge"],
+.ra-enterprise-clean [class*="onsite-badge"],
+.ra-enterprise-clean [class*="offshore-badge"] {
+  /* Remove colored badge styling */
+  background: transparent !important;
+  border: none !important;
+  padding: 0 !important;
+  
+  /* Plain text */
+  color: var(--ra-slate-500) !important;
+  font-size: 11px !important;
+  font-weight: 500 !important;
+  text-transform: uppercase !important;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   HIDE LEGACY COLORED ELEMENTS
+   ───────────────────────────────────────────────────────────── */
+.ra-enterprise-clean [class*="colored-tag"],
+.ra-enterprise-clean [class*="priority-badge"],
+.ra-enterprise-clean [class*="status-badge"]:not(.column-header *) {
+  display: none !important;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   COLUMN HEADERS
+   ───────────────────────────────────────────────────────────── */
+.ra-enterprise-clean .grid-header,
+.ra-enterprise-clean th,
+.ra-enterprise-clean [class*="header-cell"] {
+  background: var(--ra-slate-100) !important;
+  color: var(--ra-slate-600) !important;
+  font-weight: 600 !important;
+  font-size: 12px !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.3px !important;
+  padding: 10px 8px !important;
+  border-bottom: 1px solid var(--ra-slate-200) !important;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   UTILIZATION COLUMN (Per-Resource Summary)
+   ───────────────────────────────────────────────────────────── */
+.ra-enterprise-clean .utilization-badge,
+.ra-enterprise-clean [class*="utilization-badge"] {
+  background: var(--ra-white) !important;
+  border: 1px solid var(--ra-slate-300) !important;
+  color: var(--ra-slate-700) !important;
+  font-weight: 600 !important;
+  padding: 4px 10px !important;
+  border-radius: 4px !important;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   TIMELINE BARS OVERRIDE — Strategy D Horizontal Style
+   ───────────────────────────────────────────────────────────── */
+
+/* Override AllocationBar buttons to have white background + thin bar at bottom */
+.ra-enterprise-clean [role="grid"] .absolute.rounded-md {
+  /* Reset solid fills to white */
+  background: var(--ra-white) !important;
+  color: var(--ra-text-percent) !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) !important;
+  border: 1px solid var(--ra-cell-border) !important;
+}
+
+/* Add the horizontal bar as pseudo-element */
+.ra-enterprise-clean [role="grid"] .absolute.rounded-md::after {
+  content: '' !important;
+  position: absolute !important;
+  bottom: 2px !important;
+  left: 4px !important;
+  right: 4px !important;
+  height: var(--ra-bar-height) !important;
+  background: var(--ra-project-default) !important;
+  border-radius: var(--ra-bar-radius) !important;
+}
+
+/* Committed status - solid bar */
+.ra-enterprise-clean [role="grid"] .absolute.rounded-md[style*="rgb(37, 99, 235)"]::after,
+.ra-enterprise-clean [role="grid"] .absolute.rounded-md.text-white::after {
+  background: var(--ra-project-sectorial) !important;
+}
+
+/* Forecast status - dashed border, lighter bar */
+.ra-enterprise-clean [role="grid"] .absolute.rounded-md[style*="dotted"]::after {
+  background: linear-gradient(
+    90deg,
+    var(--ra-project-default) 50%,
+    transparent 50%
+  ) !important;
+  background-size: 6px 100% !important;
+}
+
+/* Available capacity row - keep green styling */
+.ra-enterprise-clean [class*="bg-emerald"] .rounded-md {
+  background: #d1fae5 !important;
+  color: #059669 !important;
+  border-color: #a7f3d0 !important;
+}
+
+.ra-enterprise-clean [class*="bg-emerald"] .rounded-md::after {
+  display: none !important;
+}
+
+/* TOTAL row - keep semantic colors */
+.ra-enterprise-clean [role="grid"] .sticky.bottom-0 .h-1\\.5 {
+  /* Keep existing progress bar behavior */
+}
+
+/* ─────────────────────────────────────────────────────────────
+   RESOURCE ROW STYLING
+   ───────────────────────────────────────────────────────────── */
+.ra-enterprise-clean [role="row"] {
+  background: var(--ra-white) !important;
+}
+
+.ra-enterprise-clean [role="row"]:hover {
+  background: var(--ra-slate-50) !important;
+}
+
+/* Resource name column */
+.ra-enterprise-clean [role="rowheader"] {
+  background: var(--ra-white) !important;
+}
+
+/* Assignment color indicator */
+.ra-enterprise-clean [role="rowheader"] .w-1.rounded-full {
+  /* Keep assignment color for project differentiation */
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   NUCLEAR OVERRIDES - Strategy D Enforcement
+   Force ALL colored backgrounds to white, keep only horizontal bar
+   ═══════════════════════════════════════════════════════════════ */
+
+/* Override ANY blue background on cells */
+.ra-enterprise-clean td div[style*="#3b82f6"],
+.ra-enterprise-clean td div[style*="rgb(59, 130, 246)"],
+.ra-enterprise-clean td div[style*="BRAND_COLOR"],
+.ra-enterprise-clean td div.bg-blue-500,
+.ra-enterprise-clean td div.bg-blue-600,
+.ra-enterprise-clean td div.bg-primary {
+  background: var(--ra-white) !important;
+  background-color: var(--ra-white) !important;
+}
+
+/* Force segment divs to be transparent (only the bar should have color) */
+.ra-enterprise-clean td div.h-full.flex.flex-col {
+  background: transparent !important;
+  background-color: transparent !important;
+}
+
+/* But keep the allocation-bar colored */
+.ra-enterprise-clean .allocation-bar > div,
+.ra-enterprise-clean div.h-1,
+.ra-enterprise-clean div.h-1\\.5 {
+  /* Keep these colored - they are the progress bars */
+}
+
+/* Force white text to become dark */
+.ra-enterprise-clean td .text-white,
+.ra-enterprise-clean td .text-white\\/90 {
+  color: var(--ra-text-percent) !important;
+}
+
+/* END cell styling */
+.ra-enterprise-clean td.allocation-cell.end div,
+.ra-enterprise-clean td[data-status="end"] div {
+  background: transparent !important;
+}
+
+/* Ensure the main cell container is white */
+.ra-enterprise-clean td.p-1.min-w-\\[120px\\] > div {
+  background: var(--ra-white) !important;
+  border: 1px solid var(--ra-cell-border) !important;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   DARK MODE — [data-theme="dark"] overrides
+   Redefines --ra-* tokens for Geist Neutral Dark dark mode
+   ───────────────────────────────────────────────────────────── */
+[data-theme="dark"] .ra-enterprise-clean {
+  /* NEUTRAL FOUNDATION — dark */
+  --ra-white: #1A1A1A;
+  --ra-slate-50: #1F1F1F;
+  --ra-slate-100: #292929;
+  --ra-slate-200: #2E2E2E;
+  --ra-slate-300: #454545;
+  --ra-slate-400: var(--fg-4, rgba(237,237,237,0.30));
+  --ra-slate-500: #7D7D7D;
+  --ra-slate-600: var(--fg-3, #878787);
+  --ra-slate-700: var(--fg-2, #A1A1A1);
+  --ra-slate-800: #EDEDED;
+
+  /* CELL */
+  --ra-cell-bg: #1A1A1A;
+  --ra-cell-border: #2E2E2E;
+
+  /* BAR TRACK */
+  --ra-bar-track-bg: #2E2E2E;
+
+  /* TEXT */
+  --ra-text-percent: var(--fg-1, #EDEDED);
+  --ra-text-project: #7D7D7D;
+
+  /* AVATAR */
+  --ra-avatar-bg: #454545;
+  --ra-avatar-text: var(--fg-1, #EDEDED);
+
+  /* END/EMPTY CELL */
+  --ra-end-bg: repeating-linear-gradient(
+    -45deg,
+    #1F1F1F,
+    #1F1F1F 4px,
+    #292929 4px,
+    #292929 8px
+  );
+  --ra-end-text: var(--fg-4, rgba(237,237,237,0.30));
+}

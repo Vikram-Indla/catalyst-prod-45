@@ -8,11 +8,11 @@ import { createPortal } from 'react-dom';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { logInitiativeAudit } from '@/lib/initiativeAudit';
+import { logRequestAudit } from '@/lib/requestAudit';
 import { Pencil, Trash2, FolderOpen, X } from 'lucide-react';
 
 interface DetailTabBudgetProps {
-  initiativeId: string;
+  requestId: string;
 }
 
 const CATEGORIES = ['Development', 'Infrastructure', 'Consulting', 'Licensing', 'Training', 'Operations', 'Contingency', 'Other'];
@@ -75,7 +75,7 @@ function ToggleButtons({ value, onChange }: { value: string; onChange: (v: strin
   );
 }
 
-export const DetailTabBudget: React.FC<DetailTabBudgetProps> = ({ initiativeId }) => {
+export const DetailTabBudget: React.FC<DetailTabBudgetProps> = ({ requestId }) => {
   const queryClient = useQueryClient();
   const [totalBudget, setTotalBudget] = useState(0);
   const [showModal, setShowModal] = useState(false);
@@ -84,24 +84,24 @@ export const DetailTabBudget: React.FC<DetailTabBudgetProps> = ({ initiativeId }
   const [form, setForm] = useState({ category: 'Development', expense_type: 'opex', description: '', planned_amount: '', actual_amount: '' });
 
   const { data: items = [], refetch } = useQuery({
-    queryKey: ['idp-budget-items', initiativeId],
+    queryKey: ['idp-budget-items', requestId],
     queryFn: async () => {
-      const { data, error } = await typedQuery('ph_initiative_budget_items')
+      const { data, error } = await typedQuery('ph_request_budget_items')
         .select('*')
-        .eq('initiative_id', initiativeId)
+        .eq('request_id', requestId)
         .order('created_at', { ascending: true });
       if (error) throw error;
       return data || [];
     },
   });
 
-  // Load total budget from initiative
+  // Load total budget from request
   useQuery({
-    queryKey: ['idp-budget-total', initiativeId],
+    queryKey: ['idp-budget-total', requestId],
     queryFn: async () => {
-      const { data } = await typedQuery('ph_initiatives')
+      const { data } = await typedQuery('ph_requests')
         .select('budget_allocated')
-        .eq('id', initiativeId)
+        .eq('id', requestId)
         .single();
       if (data?.budget_allocated) setTotalBudget(data.budget_allocated);
       return data;
@@ -114,10 +114,10 @@ export const DetailTabBudget: React.FC<DetailTabBudgetProps> = ({ initiativeId }
   const utilPct = totalBudget > 0 ? Math.min(100, Math.round((totalActual / totalBudget) * 100)) : 0;
 
   const saveTotalBudget = useCallback(async () => {
-    await typedQuery('ph_initiatives').update({ budget_allocated: totalBudget, updated_at: new Date().toISOString() }).eq('id', initiativeId);
-    logInitiativeAudit({ initiative_id: initiativeId, action: 'updated', entity_type: 'budget', field_name: 'budget_allocated', new_value: `SAR ${totalBudget.toLocaleString('en-US')}` });
+    await typedQuery('ph_requests').update({ budget_allocated: totalBudget, updated_at: new Date().toISOString() }).eq('id', requestId);
+    logRequestAudit({ request_id: requestId, action: 'updated', entity_type: 'budget', field_name: 'budget_allocated', new_value: `SAR ${totalBudget.toLocaleString('en-US')}` });
     // Silent auto-save
-  }, [totalBudget, initiativeId]);
+  }, [totalBudget, requestId]);
 
   const openAdd = () => {
     setEditingItem(null);
@@ -139,7 +139,7 @@ export const DetailTabBudget: React.FC<DetailTabBudgetProps> = ({ initiativeId }
   const handleSaveItem = async () => {
     if (!form.description.trim() || !form.planned_amount) return;
     const payload: any = {
-      initiative_id: initiativeId,
+      request_id: requestId,
       category: form.category.toLowerCase(),
       expense_type: form.expense_type,
       description: form.description.trim(),
@@ -147,15 +147,15 @@ export const DetailTabBudget: React.FC<DetailTabBudgetProps> = ({ initiativeId }
       actual_amount: form.actual_amount ? parseFloat(form.actual_amount) : 0,
     };
     if (editingItem) {
-      const { error } = await typedQuery('ph_initiative_budget_items').update(payload).eq('id', editingItem.id);
+      const { error } = await typedQuery('ph_request_budget_items').update(payload).eq('id', editingItem.id);
       if (error) { toast.error('Failed to update'); return; }
-      logInitiativeAudit({ initiative_id: initiativeId, action: 'updated', entity_type: 'budget_item', new_value: form.description });
+      logRequestAudit({ request_id: requestId, action: 'updated', entity_type: 'budget_item', new_value: form.description });
       // Silent auto-save
     } else {
       payload.created_by = (await supabase.auth.getUser()).data.user?.id;
-      const { error } = await typedQuery('ph_initiative_budget_items').insert(payload);
+      const { error } = await typedQuery('ph_request_budget_items').insert(payload);
       if (error) { toast.error('Failed to add'); return; }
-      logInitiativeAudit({ initiative_id: initiativeId, action: 'created', entity_type: 'budget_item', new_value: form.description });
+      logRequestAudit({ request_id: requestId, action: 'created', entity_type: 'budget_item', new_value: form.description });
       toast.success('Item added', { duration: 2200, style: { background: '#18181B', color: '#fff' }, position: 'bottom-center' });
     }
     setShowModal(false);
@@ -163,8 +163,8 @@ export const DetailTabBudget: React.FC<DetailTabBudgetProps> = ({ initiativeId }
   };
 
   const handleDelete = async (id: string) => {
-    await typedQuery('ph_initiative_budget_items').delete().eq('id', id);
-    logInitiativeAudit({ initiative_id: initiativeId, action: 'deleted', entity_type: 'budget_item' });
+    await typedQuery('ph_request_budget_items').delete().eq('id', id);
+    logRequestAudit({ request_id: requestId, action: 'deleted', entity_type: 'budget_item' });
     toast.success('Item deleted', { duration: 2200, style: { background: '#18181B', color: '#fff' }, position: 'bottom-center' });
     refetch();
   };
@@ -280,7 +280,7 @@ export const DetailTabBudget: React.FC<DetailTabBudgetProps> = ({ initiativeId }
 
       {/* B5 — Add/Edit Modal */}
       {showModal && createPortal(
-        <div data-module="initiative-detail-panel">
+        <div data-module="request-detail-panel">
         <div className="idp-modal-backdrop" onClick={() => setShowModal(false)}>
           <div className="idp-modal" style={{ width: 480 }} onClick={e => e.stopPropagation()}>
             <div className="idp-modal-header">

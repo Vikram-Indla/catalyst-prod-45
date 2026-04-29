@@ -1,7 +1,7 @@
 /**
  * Shared data, types, and config for the Ideation module.
  * V12 Hybrid Precision — 3-color StatusLozenge guardrail
- * Updated: Approved = BLUE (active state), Converted to Initiative = GREEN (terminal)
+ * Updated: Approved = BLUE (active state), Converted to Request = GREEN (terminal)
  * Submitted = GREY (initial state)
  */
 
@@ -25,7 +25,7 @@ export interface Idea {
   priority: string;
   impact: number;
   votes: number;
-  initiative: string | null;
+  request: string | null;
   dept: string;
   assignee: Assignee | null;
   ai: 'ready' | 'pending';
@@ -118,7 +118,7 @@ export const STATUS_DB_TO_UI: Record<string, IdeaStatus> = {
   'Approved': 'approved',
   'Rejected': 'rejected',
   'Converted': 'converted',
-  'Converted to Initiative': 'converted',
+  'Converted to Request': 'converted',
 };
 
 export const STATUS_LOZENGE_COLORS: Record<string, { bg: string; text: string }> = {
@@ -128,5 +128,5 @@ export const STATUS_LOZENGE_COLORS: Record<string, { bg: string; text: string }>
   'Approved':                 { bg: '#0C66E4', text: '#FFFFFF' },
   'Rejected':                 { bg: '#DFE1E6', text: '#42526E' },
   'Converted':                { bg: '#1B7F37', text: '#FFFFFF' },
-  'Converted to Initiative':  { bg: '#1B7F37', text: '#FFFFFF' },
+  'Converted to Request':  { bg: '#1B7F37', text: '#FFFFFF' },
 };

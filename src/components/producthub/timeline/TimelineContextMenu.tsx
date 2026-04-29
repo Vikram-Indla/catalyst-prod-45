@@ -7,13 +7,13 @@ import { cn } from '@/lib/utils';
 import { Eye, Pencil, RefreshCw, User, ClipboardCopy, Copy, Archive, Trash2 } from 'lucide-react';
 import { useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import type { TimelineInitiative, InitiativeStatus } from '@/types/producthub/initiative';
-import { STATUS_CONFIG } from '@/types/producthub/initiative';
+import type { TimelineRequest, RequestStatus } from '@/types/producthub/request';
+import { STATUS_CONFIG } from '@/types/producthub/request';
 import { useTimelineState } from '@/hooks/producthub/useTimelineState';
 import { catalystToast } from '@/lib/catalystToast';
 
 interface TimelineContextMenuProps {
-  initiative: TimelineInitiative;
+  request: TimelineRequest;
   x: number;
   y: number;
   onClose: () => void;
@@ -42,7 +42,7 @@ const MenuItem: React.FC<{
 );
 
 export const TimelineContextMenu: React.FC<TimelineContextMenuProps> = ({
-  initiative,
+  request,
   x,
   y,
   onClose,
@@ -71,40 +71,40 @@ export const TimelineContextMenu: React.FC<TimelineContextMenuProps> = ({
   const clampedY = Math.min(y, window.innerHeight - 320);
 
   const handleCopyId = useCallback(() => {
-    navigator.clipboard.writeText(initiative.initiative_key);
-    catalystToast.success(`Copied ${initiative.initiative_key}`);
+    navigator.clipboard.writeText(request.initiative_key);
+    catalystToast.success(`Copied ${request.initiative_key}`);
     onClose();
-  }, [initiative.initiative_key, onClose]);
+  }, [request.initiative_key, onClose]);
 
   const handleArchive = useCallback(async () => {
     try {
       const { error } = await supabase
-        .from('ph_initiatives' as never)
+        .from('ph_requests' as never)
         .update({ is_archived: true } as never)
-        .eq('id' as never, initiative.id as never);
+        .eq('id' as never, request.id as never);
       if (error) throw new Error(error.message);
-      await queryClient.invalidateQueries({ queryKey: ['ph-timeline-initiatives'] });
+      await queryClient.invalidateQueries({ queryKey: ['ph-timeline-requests'] });
       catalystToast.success('Business request archived');
     } catch (err: unknown) {
       catalystToast.error(err instanceof Error ? err.message : 'Archive failed');
     }
     onClose();
-  }, [initiative.id, queryClient, onClose]);
+  }, [request.id, queryClient, onClose]);
 
-  const handleStatusChange = useCallback(async (status: InitiativeStatus) => {
+  const handleStatusChange = useCallback(async (status: RequestStatus) => {
     try {
       const { error } = await supabase
-        .from('ph_initiatives' as never)
+        .from('ph_requests' as never)
         .update({ status } as never)
-        .eq('id' as never, initiative.id as never);
+        .eq('id' as never, request.id as never);
       if (error) throw new Error(error.message);
-      await queryClient.invalidateQueries({ queryKey: ['ph-timeline-initiatives'] });
+      await queryClient.invalidateQueries({ queryKey: ['ph-timeline-requests'] });
       // Silent auto-save
     } catch (err: unknown) {
       catalystToast.error(err instanceof Error ? err.message : 'Status update failed');
     }
     onClose();
-  }, [initiative.id, queryClient, onClose]);
+  }, [request.id, queryClient, onClose]);
 
   return (
     <div
@@ -116,8 +116,8 @@ export const TimelineContextMenu: React.FC<TimelineContextMenuProps> = ({
         boxShadow: '0 10px 40px rgba(0,0,0,0.12)',
       }}
     >
-      <MenuItem icon={Eye} label="View Details" onClick={() => { openDetail(initiative.id); onClose(); }} />
-      <MenuItem icon={Pencil} label="Edit" onClick={() => { openDetail(initiative.id); onClose(); }} />
+      <MenuItem icon={Eye} label="View Details" onClick={() => { openDetail(request.id); onClose(); }} />
+      <MenuItem icon={Pencil} label="Edit" onClick={() => { openDetail(request.id); onClose(); }} />
 
       <Separator />
 
@@ -140,13 +140,13 @@ export const TimelineContextMenu: React.FC<TimelineContextMenuProps> = ({
             onMouseEnter={() => setShowStatusSub(true)}
             onMouseLeave={() => setShowStatusSub(false)}
           >
-            {(Object.keys(STATUS_CONFIG) as InitiativeStatus[]).map(st => (
+            {(Object.keys(STATUS_CONFIG) as RequestStatus[]).map(st => (
               <button
                 key={st}
                 onClick={() => handleStatusChange(st)}
                 className={cn(
                   'w-full flex items-center gap-2 px-3 py-1.5 text-[13px] rounded-md transition-colors text-left',
-                  st === initiative.status ? 'bg-muted font-medium' : 'hover:bg-muted'
+                  st === request.status ? 'bg-muted font-medium' : 'hover:bg-muted'
                 )}
               >
                 <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: STATUS_CONFIG[st].color }} />

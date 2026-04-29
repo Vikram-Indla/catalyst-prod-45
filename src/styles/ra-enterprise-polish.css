@@ -313,7 +313,7 @@
    DARK MODE — [data-theme="dark"] overrides for ra-polish
    Outside @layer so it applies after all layer rules
    ───────────────────────────────────────────────────────────── */
-[data-theme="dark"] .ra-polish {
+.dark .ra-polish , [data-theme="dark"] .ra-polish {
   /* Shadows — suppressed in dark */
   --ra-card-shadow: none;
   --ra-card-shadow-hover: 0 4px 12px rgba(0,0,0,0.3);

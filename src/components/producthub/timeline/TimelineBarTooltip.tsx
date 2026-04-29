@@ -4,24 +4,24 @@
 
 import React from 'react';
 import { createPortal } from 'react-dom';
-import type { TimelineInitiative } from '@/types/producthub/initiative';
-import { STATUS_CONFIG, getPriorityFromScore, hashColor, getInitialsFromName } from '@/types/producthub/initiative';
+import type { TimelineRequest } from '@/types/producthub/request';
+import { STATUS_CONFIG, getPriorityFromScore, hashColor, getInitialsFromName } from '@/types/producthub/request';
 import { SourceBadge } from '@/components/producthub/shared/SourceBadge';
 import { format } from 'date-fns';
 
 interface TimelineBarTooltipProps {
-  initiative: TimelineInitiative;
+  request: TimelineRequest;
   position: { x: number; y: number };
   isVisible: boolean;
 }
 
-export const TimelineBarTooltip: React.FC<TimelineBarTooltipProps> = ({ initiative, position, isVisible }) => {
+export const TimelineBarTooltip: React.FC<TimelineBarTooltipProps> = ({ request, position, isVisible }) => {
   if (!isVisible) return null;
 
-  const statusCfg = STATUS_CONFIG[initiative.status];
-  const priority = getPriorityFromScore(initiative.computed_score);
-  const startStr = initiative.kickoff_date || initiative.business_ask_date;
-  const endStr = initiative.target_complete;
+  const statusCfg = STATUS_CONFIG[request.status];
+  const priority = getPriorityFromScore(request.computed_score);
+  const startStr = request.kickoff_date || request.business_ask_date;
+  const endStr = request.target_complete;
 
   return createPortal(
     <div
@@ -56,9 +56,9 @@ export const TimelineBarTooltip: React.FC<TimelineBarTooltipProps> = ({ initiati
               color: 'var(--cp-blue)',
             }}
           >
-            {initiative.initiative_key}
+            {request.initiative_key}
           </span>
-          <SourceBadge source={initiative.source} />
+          <SourceBadge source={request.source} />
           <span
             style={{
               fontSize: '14px',
@@ -72,7 +72,7 @@ export const TimelineBarTooltip: React.FC<TimelineBarTooltipProps> = ({ initiati
               flexBasis: '100%',
             }}
           >
-            {initiative.title}
+            {request.title}
           </span>
         </div>
 
@@ -125,7 +125,7 @@ export const TimelineBarTooltip: React.FC<TimelineBarTooltipProps> = ({ initiati
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             <span style={{ fontSize: '11px', color: '#71717a' }}>Progress</span>
             <span style={{ fontSize: '11px', fontWeight: 500, color: '#18181b', fontVariantNumeric: 'tabular-nums' }}>
-              {initiative.progress}%
+              {request.progress}%
             </span>
           </div>
           <div style={{ height: '4px', backgroundColor: '#f4f4f5', borderRadius: '9999px', overflow: 'hidden' }}>
@@ -133,7 +133,7 @@ export const TimelineBarTooltip: React.FC<TimelineBarTooltipProps> = ({ initiati
               style={{
                 height: '100%',
                 borderRadius: '9999px',
-                width: `${initiative.progress}%`,
+                width: `${request.progress}%`,
                 backgroundColor: statusCfg.color,
               }}
             />
@@ -141,7 +141,7 @@ export const TimelineBarTooltip: React.FC<TimelineBarTooltipProps> = ({ initiati
         </div>
 
         {/* Footer: assignee + department */}
-        {(initiative.assignee_name || initiative.department_name) && (
+        {(request.assignee_name || request.department_name) && (
           <div style={{
             display: 'flex',
             alignItems: 'center',
@@ -149,7 +149,7 @@ export const TimelineBarTooltip: React.FC<TimelineBarTooltipProps> = ({ initiati
             paddingTop: '4px',
             borderTop: '1px solid #f4f4f5',
           }}>
-            {initiative.assignee_name && (
+            {request.assignee_name && (
               <>
                 <span
                   style={{
@@ -163,19 +163,19 @@ export const TimelineBarTooltip: React.FC<TimelineBarTooltipProps> = ({ initiati
                     fontWeight: 600,
                     color: 'var(--bg-app)',
                     flexShrink: 0,
-                    backgroundColor: hashColor(initiative.assignee_name || initiative.initiative_key),
+                    backgroundColor: hashColor(request.assignee_name || request.initiative_key),
                   }}
                 >
-                  {getInitialsFromName(initiative.assignee_name)}
+                  {getInitialsFromName(request.assignee_name)}
                 </span>
-                <span style={{ fontSize: '12px', color: '#18181b' }}>{initiative.assignee_name}</span>
+                <span style={{ fontSize: '12px', color: '#18181b' }}>{request.assignee_name}</span>
               </>
             )}
-            {initiative.assignee_name && initiative.department_name && (
+            {request.assignee_name && request.department_name && (
               <span style={{ color: '#a1a1aa' }}>·</span>
             )}
-            {initiative.department_name && (
-              <span style={{ fontSize: '12px', color: '#71717a' }}>{initiative.department_name}</span>
+            {request.department_name && (
+              <span style={{ fontSize: '12px', color: '#71717a' }}>{request.department_name}</span>
             )}
           </div>
         )}

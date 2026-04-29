@@ -3,8 +3,8 @@
 // =====================================================
 
 import React, { useState, useCallback, useRef } from 'react';
-import type { TimelineInitiative } from '@/types/producthub/initiative';
-import { STATUS_CONFIG, DENSITY_MAP } from '@/types/producthub/initiative';
+import type { TimelineRequest } from '@/types/producthub/request';
+import { STATUS_CONFIG, DENSITY_MAP } from '@/types/producthub/request';
 import { useTimelineState } from '@/hooks/producthub/useTimelineState';
 import { getBarPosition, isOverdue } from './timelineUtils';
 import { TimelineBarTooltip } from './TimelineBarTooltip';
@@ -13,11 +13,11 @@ import { TimelineContextMenu } from './TimelineContextMenu';
 const getTypeColor = () => ({ hex: '#2563EB', bg: '#EFF6FF', text: '#1E40AF', border: '#1D4ED8', gradient: 'linear-gradient(90deg, #2563EB, #3B82F6)' });
 
 interface TimelineBarProps {
-  initiative: TimelineInitiative;
+  request: TimelineRequest;
   rowIndex: number;
 }
 
-export const TimelineBar: React.FC<TimelineBarProps> = ({ initiative, rowIndex }) => {
+export const TimelineBar: React.FC<TimelineBarProps> = ({ request, rowIndex }) => {
   const { granularity, density, openDetail } = useTimelineState();
   const [isHovered, setIsHovered] = useState(false);
   const [showTooltip, setShowTooltip] = useState(false);
@@ -26,9 +26,9 @@ export const TimelineBar: React.FC<TimelineBarProps> = ({ initiative, rowIndex }
   const tooltipTimer = useRef<ReturnType<typeof setTimeout>>();
 
   const { row: rowHeight, bar: barHeight } = DENSITY_MAP[density];
-  const { left, width } = getBarPosition(initiative, granularity);
-  const overdue = isOverdue(initiative);
-  const statusCfg = STATUS_CONFIG[initiative.status];
+  const { left, width } = getBarPosition(request, granularity);
+  const overdue = isOverdue(request);
+  const statusCfg = STATUS_CONFIG[request.status];
   const typeColor = getTypeColor();
 
   const topOffset = (rowHeight - barHeight) / 2;
@@ -59,8 +59,8 @@ export const TimelineBar: React.FC<TimelineBarProps> = ({ initiative, rowIndex }
   }, []);
 
   const handleClick = useCallback(() => {
-    openDetail(initiative.id);
-  }, [initiative.id, openDetail]);
+    openDetail(request.id);
+  }, [request.id, openDetail]);
 
   const handleContextMenu = useCallback((e: React.MouseEvent) => {
     e.preventDefault();
@@ -90,7 +90,7 @@ export const TimelineBar: React.FC<TimelineBarProps> = ({ initiative, rowIndex }
   return (
     <>
       <div
-        data-bar-id={initiative.id}
+        data-bar-id={request.id}
         style={barStyle}
         onClick={handleClick}
         onContextMenu={handleContextMenu}
@@ -99,15 +99,15 @@ export const TimelineBar: React.FC<TimelineBarProps> = ({ initiative, rowIndex }
         role="button"
         tabIndex={0}
         onKeyDown={e => { if (e.key === 'Enter') handleClick(); }}
-        aria-label={`${initiative.initiative_key}: ${initiative.title}`}
+        aria-label={`${request.initiative_key}: ${request.title}`}
       >
         {/* Progress fill */}
-        {initiative.progress > 0 && (
+        {request.progress > 0 && (
           <div
             style={{
               position: 'absolute',
               left: 0, top: 0, bottom: 0,
-              width: `${Math.min(100, initiative.progress)}%`,
+              width: `${Math.min(100, request.progress)}%`,
               background: fillColor,
               borderRadius: '6px 0 0 6px',
               zIndex: 0,
@@ -133,17 +133,17 @@ export const TimelineBar: React.FC<TimelineBarProps> = ({ initiative, rowIndex }
               textShadow: '0 1px 2px rgba(0,0,0,0.3)',
             }}
           >
-            {initiative.title}
+            {request.title}
           </span>
         )}
       </div>
 
       {showTooltip && (
-        <TimelineBarTooltip initiative={initiative} position={tooltipPos} isVisible={showTooltip} />
+        <TimelineBarTooltip request={request} position={tooltipPos} isVisible={showTooltip} />
       )}
 
       {contextMenu && (
-        <TimelineContextMenu initiative={initiative} x={contextMenu.x} y={contextMenu.y} onClose={() => setContextMenu(null)} />
+        <TimelineContextMenu request={request} x={contextMenu.x} y={contextMenu.y} onClose={() => setContextMenu(null)} />
       )}
     </>
   );

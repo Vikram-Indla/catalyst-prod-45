@@ -82,7 +82,7 @@
  * Sweep targets (other delete sites that should adopt this — see
  * /jira-compare lessons L53):
  *   - StoryDetailModal.tsx     (single-issue delete in detail rail)
- *   - InitiativeDetailPanel    (initiative delete)
+ *   - RequestDetailPanel    (initiative delete)
  *   - SubtasksPanel            (subtask delete)
  *   - AllProjectsTable         (project delete)
  *   - PlanLibrary              (plan delete)
@@ -98,7 +98,6 @@ import { createPortal } from 'react-dom';
 import Button from '@atlaskit/button/new';
 import Textfield from '@atlaskit/textfield';
 import { token } from '@atlaskit/tokens';
-import { adsTokens, cp } from '@/theme/ads/tokens';
 
 export interface DangerConfirmModalProps {
   /** Whether the modal is open. */
@@ -234,11 +233,9 @@ export function DangerConfirmModal({
         style={{
           width: 400,
           maxWidth: 'calc(100vw - 48px)',
-          // Phase 5 (2026-04-28): swap token('elevation.surface.overlay')
-          // to bridge token. token() returns the fallback hex on snapshot
-          // path, leaving modal surface white in dark mode. cp() reads
-          // through CSS var which flips at every paint.
-          background: cp(adsTokens.bg.overlay),
+          // Phase 12 (2026-04-29): reverted to Atlaskit token. Phase 11
+          // loaded the dark theme — elevation.surface.overlay flips natively.
+          background: token('elevation.surface.overlay', '#FFFFFF'),
           borderRadius: 8,
           boxShadow: '0 8px 32px rgba(9, 30, 66, 0.25)',
           display: 'flex',
@@ -291,7 +288,7 @@ export function DangerConfirmModal({
               lineHeight: '24px',
               fontWeight: 600,
               letterSpacing: '-0.003em',
-              color: cp(adsTokens.text.primary),
+              color: token('color.text', '#292A2E'),
             }}
           >
             {title}
@@ -305,7 +302,7 @@ export function DangerConfirmModal({
               margin: 0,
               fontSize: 14,
               lineHeight: '20px',
-              color: cp(adsTokens.text.primary),
+              color: token('color.text', '#292A2E'),
             }}
           >
             {description}
@@ -317,7 +314,7 @@ export function DangerConfirmModal({
                 marginBottom: 0,
                 fontSize: 13,
                 lineHeight: '18px',
-                color: cp(adsTokens.text.secondary),
+                color: token('color.text.subtle', '#42526E'),
               }}
             >
               {hint}
@@ -331,7 +328,7 @@ export function DangerConfirmModal({
                   display: 'block',
                   fontSize: 12,
                   fontWeight: 600,
-                  color: cp(adsTokens.text.primary),
+                  color: token('color.text', '#292A2E'),
                   marginBottom: 6,
                 }}
               >

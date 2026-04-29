@@ -41,7 +41,7 @@ export const PRIORITY_ICONS: Record<string, string> = {
 };
 
 export const WIT_STYLES: Record<string, { bg: string; color: string }> = {
-  Initiative: { bg: '#DBEAFE', color: '#1E40AF' },
+  Request: { bg: '#DBEAFE', color: '#1E40AF' },
   Epic: { bg: '#EDE9FE', color: '#6D28D9' },
   Feature: { bg: '#E0E7FF', color: '#3730A3' },
   Story: { bg: '#DBEAFE', color: '#1D4ED8' },

@@ -1,5 +1,5 @@
 /**
- * Roadmap Initiative Detail Panel
+ * Roadmap Request Detail Panel
  * Slide-over panel with Details, Score, and placeholder tabs
  * Renders as portal to document.body to avoid overflow clipping
  */

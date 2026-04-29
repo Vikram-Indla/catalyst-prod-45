@@ -896,34 +896,34 @@
    Fixes hardcoded light-mode colors in responsive selectors
    ========================================================================== */
 
-[data-theme="dark"] .mobile-bottom-nav {
+.dark .mobile-bottom-nav , [data-theme="dark"] .mobile-bottom-nav {
   background: #1A1A1A;
   border-top-color: #2E2E2E;
 }
 
-[data-theme="dark"] .mobile-bottom-nav-item {
+.dark .mobile-bottom-nav-item , [data-theme="dark"] .mobile-bottom-nav-item {
   color: #7D7D7D;
 }
 
-[data-theme="dark"] .mobile-bottom-nav-item.active {
+.dark .mobile-bottom-nav-item.active , [data-theme="dark"] .mobile-bottom-nav-item.active {
   color: #60A5FA;
   background: rgba(59,130,246,0.10);
 }
 
-[data-theme="dark"] .mobile-menu-toggle {
+.dark .mobile-menu-toggle , [data-theme="dark"] .mobile-menu-toggle {
   color: var(--fg-2, #A1A1A1);
 }
 
-[data-theme="dark"] .mobile-menu-toggle:hover {
+.dark .mobile-menu-toggle:hover , [data-theme="dark"] .mobile-menu-toggle:hover {
   background: #292929;
 }
 
-[data-theme="dark"] .modal-header {
+.dark .modal-header , [data-theme="dark"] .modal-header {
   background: #1A1A1A;
   border-bottom-color: #2E2E2E;
 }
 
-[data-theme="dark"] .modal-footer {
+.dark .modal-footer , [data-theme="dark"] .modal-footer {
   background: #1A1A1A;
   border-top-color: #2E2E2E;
 }

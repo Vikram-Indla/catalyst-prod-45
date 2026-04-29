@@ -1,9 +1,9 @@
 /**
- * SourceBadge — Canonical lozenge distinguishing Catalyst-native vs Jira-imported initiatives.
+ * SourceBadge — Canonical lozenge distinguishing Catalyst-native vs Jira-imported requests.
  *
- * Source values from `ph_initiatives.source`:
- *   - 'catalyst' (DB default for new inserts via CreateInitiativeDrawer)
- *   - 'jira'     (set by useSyncMDTToInitiatives for MDT-* imports)
+ * Source values from `ph_requests.source`:
+ *   - 'catalyst' (DB default for new inserts via CreateRequestDrawer)
+ *   - 'jira'     (set by useSyncMDTToRequests for MDT-* imports)
  *
  * Visual rules (per CLAUDE.md §6):
  *   - Catalyst → neutral grey #3F3F46 (structural, NOT semantic)
@@ -15,18 +15,18 @@
  */
 import React from 'react';
 
-export type InitiativeSource = 'catalyst' | 'jira' | string | null | undefined;
+export type RequestSource = 'catalyst' | 'jira' | string | null | undefined;
 
-export function normalizeSource(source: InitiativeSource): 'catalyst' | 'jira' {
+export function normalizeSource(source: RequestSource): 'catalyst' | 'jira' {
   return source === 'jira' ? 'jira' : 'catalyst';
 }
 
-export function getSourceLabel(source: InitiativeSource): string {
+export function getSourceLabel(source: RequestSource): string {
   return normalizeSource(source) === 'jira' ? 'Jira-MDT' : 'Catalyst';
 }
 
 interface SourceBadgeProps {
-  source: InitiativeSource;
+  source: RequestSource;
   size?: 'xs' | 'sm';
   variant?: 'solid' | 'outline';
   className?: string;

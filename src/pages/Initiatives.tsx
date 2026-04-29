@@ -10,7 +10,7 @@ import { Input } from '@/components/ui/input';
 import { Lozenge, type LozengeAppearance } from '@/components/ads';
 import { RightDetailsPanel } from '@/components/shared/RightDetailsPanel';
 import { ListScreenToolbar } from '@/components/shared/ListScreenToolbar';
-import { InitiativeDialog } from '@/components/forms/InitiativeDialog';
+import { RequestDialog } from '@/components/forms/RequestDialog';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Plus, Search, Edit } from 'lucide-react';
@@ -184,7 +184,7 @@ export default function Initiatives() {
         />
       )}
 
-      <InitiativeDialog
+      <RequestDialog
         open={dialogOpen}
         onOpenChange={setDialogOpen}
         initiative={editingInitiative}

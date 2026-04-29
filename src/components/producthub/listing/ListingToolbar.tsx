@@ -6,7 +6,7 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { Search, X, Download, Plus, Check } from 'lucide-react';
 import { createPortal } from 'react-dom';
-import type { Density } from '@/types/initiative';
+import type { Density } from '@/types/request';
 
 export type GroupByField = 'none' | 'status' | 'priority' | 'department' | 'quarter' | 'assignee';
 
@@ -165,7 +165,7 @@ export function ListingToolbar({
           {/* ── Separator ── */}
           <div className="w-px h-5 bg-zinc-300" />
 
-          {/* ── Primary CTA: New Initiative (Solid Blue) ── */}
+          {/* ── Primary CTA: New Request (Solid Blue) ── */}
           <button
             type="button"
             onClick={onNewInitiative}

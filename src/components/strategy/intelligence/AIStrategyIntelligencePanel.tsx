@@ -34,7 +34,7 @@ interface AIStrategyIntelligencePanelProps {
 const TABS = [
   { id: 'brief', label: 'Executive Brief' },
   { id: 'strategy', label: 'Strategy' },
-  { id: 'initiatives', label: 'Initiatives' },
+  { id: 'initiatives', label: 'Requests' },
   { id: 'epics', label: 'Epics & Stories' },
   { id: 'operations', label: 'Operations' },
 ] as const;
@@ -124,7 +124,7 @@ export function AIStrategyIntelligencePanel({
           {!metrics.initiativeKey && (
             <>
               <span className="text-[10px] font-medium" style={{ color: 'var(--fg-4)' }}>›</span>
-              <span className="text-[10px] font-semibold px-2 py-[3px] rounded-md" style={{ color: '#D97706', background: '#FFFBEB', border: '1px solid #FDE68A' }}>⚠ No Initiative</span>
+              <span className="text-[10px] font-semibold px-2 py-[3px] rounded-md" style={{ color: '#D97706', background: '#FFFBEB', border: '1px solid #FDE68A' }}>⚠ No Request</span>
             </>
           )}
           {!metrics.epicKey && (
@@ -277,7 +277,7 @@ function ChainHealthBars({ metrics }: { metrics: ChainMetrics }) {
     { label: 'Strategic Theme', progress: metrics.goalProgress },
     { label: 'Goal', progress: metrics.goalProgress },
     { label: 'Key Results avg', progress: krAvg },
-    ...(metrics.initiativeKey ? [{ label: 'Initiative', progress: 60 }] : []),
+    ...(metrics.initiativeKey ? [{ label: 'Request', progress: 60 }] : []),
     ...(metrics.epicKey ? [{ label: 'Epic', progress: epicProgress }] : []),
   ];
 
@@ -544,7 +544,7 @@ function InitiativesTab({ metrics, aiResult, isAILoading }: { metrics: ChainMetr
 
   return (
     <div className="px-7 py-5">
-      <div className="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">Initiative</div>
+      <div className="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">Request</div>
 
       {hasInitiative ? (
         <>

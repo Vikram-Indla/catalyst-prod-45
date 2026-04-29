@@ -83,11 +83,11 @@ function mapCheckinRow(row: any): KRCheckin {
   };
 }
 
-// ── Initiative types ──
+// ── Request types ──
 export interface GoalInitiativeLink {
   id: string;
   goal_id: string;
-  initiative_id: string;
+  request_id: string;
   linked_at: string;
   notes?: string;
   initiative?: {
@@ -300,28 +300,28 @@ export const goalsService = {
     return data || [];
   },
 
-  // ── Goal-Initiative linking (Fix 5) ──
+  // ── Goal-Request linking (Fix 5) ──
 
   async getGoalInitiatives(goalId: string): Promise<GoalInitiativeLink[]> {
     const { data, error } = await supabase
       .from('es_goal_initiatives')
-      .select('*, ph_initiatives!initiative_id (id, initiative_key, title, status, department_id)')
+      .select('*, ph_requests!request_id (id, initiative_key, title, status, department_id)')
       .eq('goal_id', goalId);
     if (error) throw error;
     return (data || []).map((row: any) => ({
       id: row.id,
       goal_id: row.goal_id,
-      initiative_id: row.initiative_id,
+      request_id: row.request_id,
       linked_at: row.linked_at,
       notes: row.notes,
-      initiative: row.ph_initiatives,
+      initiative: row.ph_requests,
     }));
   },
 
-  async linkInitiative(goalId: string, initiativeId: string): Promise<void> {
+  async linkInitiative(goalId: string, requestId: string): Promise<void> {
     const { error } = await supabase
       .from('es_goal_initiatives')
-      .insert({ goal_id: goalId, initiative_id: initiativeId });
+      .insert({ goal_id: goalId, request_id: requestId });
     if (error) throw error;
   },
 
@@ -335,7 +335,7 @@ export const goalsService = {
 
   async searchInitiatives(query: string): Promise<{ id: string; initiative_key: string; title: string; status: string }[]> {
     const { data, error } = await supabase
-      .from('ph_initiatives')
+      .from('ph_requests')
       .select('id, initiative_key, title, status')
       .ilike('title', `%${query}%`)
       .limit(20);

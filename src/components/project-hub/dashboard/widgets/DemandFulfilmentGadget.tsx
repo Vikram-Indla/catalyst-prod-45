@@ -4,7 +4,7 @@
  *
  * Shows MDT (demand) tickets that have at least one linked epic, and rolls up
  * Story + Defect completion under each MDT via the two-hop chain:
- *   MDT (ph_initiatives) → Epics (es_initiative_epics) → Stories/Bugs (ph_issues.parent_key)
+ *   MDT (ph_requests) → Epics (es_initiative_epics) → Stories/Bugs (ph_issues.parent_key)
  *
  * Spec: Apr 23 2026 — Demand Fulfilment gadget (replaces Key Milestones)
  *
@@ -13,7 +13,7 @@
  *     ("in_progress" = Under Implementation, "closed" = Delivered)
  *   - Per spec clarification: DO NOT filter on mdt.status — show every MDT
  *     that has ≥1 linked epic.
- *   - Epic↔MDT linkage: es_initiative_epics(initiative_id, epic_id)
+ *   - Epic↔MDT linkage: es_initiative_epics(request_id, epic_id)
  *   - Story↔Epic linkage: ph_issues.parent_key → epic ph_issues.issue_key
  *   - Story status uses ph_issues.status_category ('Done' / 'In Progress' /
  *     'To Do'), with 'Blocked' carved out from In Progress by status name.
@@ -324,7 +324,7 @@ function useUnlinkedEpics(projectKey: string, settings: GadgetSettings) {
         .limit(500);
 
       // Also exclude epics linked via ph_issue_links → MIM/MDT initiatives
-      // (Apr 2026 InitiativeLinkedItemsTab path). Without this an epic
+      // (Apr 2026 RequestLinkedItemsTab path). Without this an epic
       // linked from Product Hub appears in BOTH the linked rollup and the
       // "unlinked" tab.
       const { data: phLinks2 } = await (supabase as any)
@@ -433,10 +433,10 @@ function useDemandData(projectKey: string, settings: GadgetSettings) {
       // 1a) Fetch epic↔initiative links from es_initiative_epics (legacy join).
       const { data: linksA } = await (supabase as any)
         .from('es_initiative_epics')
-        .select('initiative_id, epic_id');
+        .select('request_id, epic_id');
 
       // 1b) Union with ph_issue_links rows that pair an initiative_key
-      // (MIM-* / MDT-*) with an Epic issue_key. The InitiativeLinkedItemsTab
+      // (MIM-* / MDT-*) with an Epic issue_key. The RequestLinkedItemsTab
       // (Apr 2026) writes only to ph_issue_links, so without this union
       // anything linked from a Product Hub initiative is invisible here.
       const { data: phLinks } = await (supabase as any)
@@ -444,7 +444,7 @@ function useDemandData(projectKey: string, settings: GadgetSettings) {
         .select('source_id, target_id')
         .or('source_id.like.MIM-%,source_id.like.MDT-%,target_id.like.MIM-%,target_id.like.MDT-%');
 
-      const synthesizedLinks: { initiative_id: string; epic_id: string }[] = [];
+      const synthesizedLinks: { request_id: string; epic_id: string }[] = [];
       if (phLinks && phLinks.length > 0) {
         // Collect candidate initiative_keys + the paired (potential epic) keys.
         const initKeys = new Set<string>();
@@ -466,7 +466,7 @@ function useDemandData(projectKey: string, settings: GadgetSettings) {
         if (pairs.length > 0) {
           const [{ data: initRows }, { data: epicRows }] = await Promise.all([
             (supabase as any)
-              .from('ph_initiatives')
+              .from('ph_requests')
               .select('id, initiative_key')
               .in('initiative_key', Array.from(initKeys)),
             (supabase as any)
@@ -484,18 +484,18 @@ function useDemandData(projectKey: string, settings: GadgetSettings) {
             (epicRows ?? []).map((r: any) => [r.issue_key, r.id]),
           );
           for (const p of pairs) {
-            const initiative_id = initIdByKey.get(p.initKey);
+            const request_id = initIdByKey.get(p.initKey);
             const epic_id = epicIdByKey.get(p.otherKey);
-            if (initiative_id && epic_id) synthesizedLinks.push({ initiative_id, epic_id });
+            if (request_id && epic_id) synthesizedLinks.push({ request_id, epic_id });
           }
         }
       }
 
       // De-dupe across both sources.
       const linkSet = new Set<string>();
-      const links: { initiative_id: string; epic_id: string }[] = [];
+      const links: { request_id: string; epic_id: string }[] = [];
       for (const l of [...((linksA as any[]) ?? []), ...synthesizedLinks]) {
-        const k = `${l.initiative_id}|${l.epic_id}`;
+        const k = `${l.request_id}|${l.epic_id}`;
         if (linkSet.has(k)) continue;
         linkSet.add(k);
         links.push(l);
@@ -503,12 +503,12 @@ function useDemandData(projectKey: string, settings: GadgetSettings) {
 
       if (links.length === 0) return [];
 
-      const initiativeIds = Array.from(new Set(links.map((l: any) => l.initiative_id)));
+      const initiativeIds = Array.from(new Set(links.map((l: any) => l.request_id)));
       const epicIds = Array.from(new Set(links.map((l: any) => l.epic_id)));
 
       // 2) Fetch initiatives (filtered later by scope; do not filter on status).
       const { data: initiatives } = await (supabase as any)
-        .from('ph_initiatives')
+        .from('ph_requests')
         .select('id, initiative_key, title, status, target_complete, target_quarter, assignee_id, updated_at')
         .in('id', initiativeIds)
         .eq('is_deleted', false);
@@ -603,7 +603,7 @@ function useDemandData(projectKey: string, settings: GadgetSettings) {
         const epic = epicByKey.get(epicKey);
         if (!epic) return;
         const b = bucketByEpicKey.get(epicKey)!;
-        const arr = epicsByInitiative.get(l.initiative_id) ?? [];
+        const arr = epicsByInitiative.get(l.request_id) ?? [];
         arr.push({
           id: epic.id,
           issue_key: epic.issue_key,
@@ -612,7 +612,7 @@ function useDemandData(projectKey: string, settings: GadgetSettings) {
           ...b,
           stories: storyListByEpicKey.get(epicKey) ?? [],
         });
-        epicsByInitiative.set(l.initiative_id, arr);
+        epicsByInitiative.set(l.request_id, arr);
       });
 
       // 7) Build demand rows; only include MDTs that actually have ≥1 epic in this project.
@@ -1158,9 +1158,9 @@ function DemandRowItem({
           <ChevronRightIcon label="" color={token('color.icon.subtle', '#626F86')} LEGACY_size="small" />
         </span>
 
-        {/* Type icon — Epic icon for unlinked epics, Initiative/default for MDTs */}
+        {/* Type icon — Epic icon for unlinked epics, Request/default for MDTs */}
         <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
-          <JiraIssueTypeIcon type={isUnlinkedEpic ? 'Epic' : 'Initiative'} size={16} />
+          <JiraIssueTypeIcon type={isUnlinkedEpic ? 'Epic' : 'Request'} size={16} />
         </span>
 
         {/* Key (with leading RAG dot) — Apr 26, 2026: bumped to match

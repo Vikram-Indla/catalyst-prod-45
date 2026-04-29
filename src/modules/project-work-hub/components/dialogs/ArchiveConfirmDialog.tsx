@@ -99,7 +99,7 @@ export function ArchiveConfirmDialog({
       queryClient.invalidateQueries({ queryKey: ['kanban-issues'] });
       queryClient.invalidateQueries({ queryKey: ['board-cards'] });
       queryClient.invalidateQueries({ queryKey: ['backlog-data'] });
-      queryClient.invalidateQueries({ queryKey: ['mdt-backlog'] });
+      queryClient.invalidateQueries({ queryKey: ['requests-backlog'] });
       queryClient.invalidateQueries({ queryKey: ['for-you'] });
       queryClient.invalidateQueries({ queryKey: ['incident-hub'] });
       queryClient.invalidateQueries({ queryKey: ['defect-table'] });

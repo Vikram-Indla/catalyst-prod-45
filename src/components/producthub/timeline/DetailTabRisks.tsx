@@ -8,8 +8,8 @@ import { createPortal } from 'react-dom';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { logInitiativeAudit } from '@/lib/initiativeAudit';
-import { getInitialsFromName, hashColor } from '@/types/producthub/initiative';
+import { logRequestAudit } from '@/lib/requestAudit';
+import { getInitialsFromName, hashColor } from '@/types/producthub/request';
 import { Pencil, Trash2, Shield, X } from 'lucide-react';
 
 /* ── Custom Dropdown (no native <select>) ── */
@@ -80,7 +80,7 @@ function IdSelect({ value, options, placeholder, onChange }: { value: string; op
 }
 
 interface DetailTabRisksProps {
-  initiativeId: string;
+  requestId: string;
 }
 
 const CATEGORIES = ['Technical', 'Financial', 'Resource', 'Schedule', 'Scope', 'External', 'Compliance', 'Organizational'];
@@ -105,7 +105,7 @@ function cellBg(score: number) {
   return '#DCFCE7';
 }
 
-export const DetailTabRisks: React.FC<DetailTabRisksProps> = ({ initiativeId }) => {
+export const DetailTabRisks: React.FC<DetailTabRisksProps> = ({ requestId }) => {
   const queryClient = useQueryClient();
   const [showModal, setShowModal] = useState(false);
   const [editingRisk, setEditingRisk] = useState<any>(null);
@@ -116,11 +116,11 @@ export const DetailTabRisks: React.FC<DetailTabRisksProps> = ({ initiativeId }) 
   });
 
   const { data: risks = [], refetch } = useQuery({
-    queryKey: ['idp-risks', initiativeId],
+    queryKey: ['idp-risks', requestId],
     queryFn: async () => {
-      const { data, error } = await typedQuery('ph_initiative_risks')
+      const { data, error } = await typedQuery('ph_request_risks')
         .select('*, owner:profiles!owner_id(id, full_name)')
-        .eq('initiative_id', initiativeId)
+        .eq('request_id', requestId)
         .order('risk_score', { ascending: false });
       if (error) throw error;
       return data || [];
@@ -165,7 +165,7 @@ export const DetailTabRisks: React.FC<DetailTabRisksProps> = ({ initiativeId }) 
   const handleSave = async () => {
     if (!form.title.trim()) return;
     const payload: any = {
-      initiative_id: initiativeId,
+      request_id: requestId,
       title: form.title.trim(),
       description: form.description.trim() || null,
       category: form.category.toLowerCase(),
@@ -178,9 +178,9 @@ export const DetailTabRisks: React.FC<DetailTabRisksProps> = ({ initiativeId }) 
       owner_id: form.owner_id || null,
     };
     if (editingRisk) {
-      const { error } = await typedQuery('ph_initiative_risks').update(payload).eq('id', editingRisk.id);
+      const { error } = await typedQuery('ph_request_risks').update(payload).eq('id', editingRisk.id);
       if (error) { toast.error('Failed to update'); return; }
-      logInitiativeAudit({ initiative_id: initiativeId, action: 'updated', entity_type: 'risk', entity_id: editingRisk.id, new_value: form.title });
+      logRequestAudit({ request_id: requestId, action: 'updated', entity_type: 'risk', entity_id: editingRisk.id, new_value: form.title });
       // Silent auto-save
     } else {
       // Generate key
@@ -190,9 +190,9 @@ export const DetailTabRisks: React.FC<DetailTabRisksProps> = ({ initiativeId }) 
       }, 0);
       payload.risk_key = `RSK-${String(maxKey + 1).padStart(3, '0')}`;
       payload.created_by = (await supabase.auth.getUser()).data.user?.id;
-      const { error } = await typedQuery('ph_initiative_risks').insert(payload);
+      const { error } = await typedQuery('ph_request_risks').insert(payload);
       if (error) { toast.error('Failed to add'); return; }
-      logInitiativeAudit({ initiative_id: initiativeId, action: 'created', entity_type: 'risk', new_value: form.title });
+      logRequestAudit({ request_id: requestId, action: 'created', entity_type: 'risk', new_value: form.title });
       toast.success(`${payload.risk_key} created`, { duration: 2200, style: { background: '#18181B', color: '#fff' }, position: 'bottom-center' });
     }
     setShowModal(false);
@@ -200,8 +200,8 @@ export const DetailTabRisks: React.FC<DetailTabRisksProps> = ({ initiativeId }) 
   };
 
   const handleDelete = async (id: string) => {
-    await typedQuery('ph_initiative_risks').delete().eq('id', id);
-    logInitiativeAudit({ initiative_id: initiativeId, action: 'deleted', entity_type: 'risk', entity_id: id });
+    await typedQuery('ph_request_risks').delete().eq('id', id);
+    logRequestAudit({ request_id: requestId, action: 'deleted', entity_type: 'risk', entity_id: id });
     toast.success('Risk deleted', { duration: 2200, style: { background: '#18181B', color: '#fff' }, position: 'bottom-center' });
     refetch();
   };
@@ -325,7 +325,7 @@ export const DetailTabRisks: React.FC<DetailTabRisksProps> = ({ initiativeId }) 
 
       {/* R4 — Add/Edit Modal */}
       {showModal && createPortal(
-        <div data-module="initiative-detail-panel">
+        <div data-module="request-detail-panel">
         <div className="idp-modal-backdrop" onClick={() => setShowModal(false)}>
           <div className="idp-modal" style={{ width: 520 }} onClick={e => e.stopPropagation()}>
             <div className="idp-modal-header">

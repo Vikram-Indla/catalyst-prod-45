@@ -95,7 +95,7 @@ export type R360Hub =
   | 'TestHub' | 'IncidentHub' | 'TaskHub';
 
 export type R360WorkItemType =
-  | 'Initiative' | 'Epic' | 'Feature' | 'Story' | 'Subtask' | 'Bug' | 'Task'
+  | 'Request' | 'Epic' | 'Feature' | 'Story' | 'Subtask' | 'Bug' | 'Task'
   | 'Test Case' | 'Test Plan' | 'Incident' | 'Release' | 'Requirement';
 
 export type R360StatusCategory = 'todo' | 'progress' | 'done';
