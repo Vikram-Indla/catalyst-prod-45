@@ -235,7 +235,7 @@ export default function ReqAssistLibrary() {
   const hasDocuments = documents && documents.length > 0;
 
   return (
-    <div style={{ background: isDark ? '#0A0A0A' : '#F8FAFC', minHeight: '100%' }}>
+    <div style={{ background: isDark ? 'var(--cp-bg-page, #1F1F21)' : '#F8FAFC', minHeight: '100%' }}>
       {/* ── ZONE 1: PAGE HEADER ── */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', padding: '24px 28px 0' }}>
         <div>
@@ -253,12 +253,12 @@ export default function ReqAssistLibrary() {
               display: 'inline-flex', alignItems: 'center', gap: 6,
               padding: '0 14px', height: 50, fontSize: 13, fontWeight: 500,
               border: `1px solid ${isDark ? '#2E2E2E' : 'rgba(15,23,42,0.18)'}`, borderRadius: 6,
-              background: isDark ? '#1A1A1A' : '#FFFFFF', color: isDark ? '#A1A1A1' : '#374151', cursor: 'pointer',
+              background: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF', color: isDark ? '#A1A1A1' : '#374151', cursor: 'pointer',
               fontFamily: 'var(--cp-font-body)',
               transition: 'background 80ms ease',
             }}
             onMouseEnter={e => (e.currentTarget.style.background = isDark ? '#1F1F1F' : 'rgba(15,23,42,0.04)')}
-            onMouseLeave={e => (e.currentTarget.style.background = isDark ? '#1A1A1A' : '#FFFFFF')}
+            onMouseLeave={e => (e.currentTarget.style.background = isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF')}
           >
             <Download size={14} color="#374151" /> Import from Jira
           </button>
@@ -299,7 +299,7 @@ export default function ReqAssistLibrary() {
           /* Empty state */
           <div style={{
             display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-            padding: '80px 0', background: isDark ? '#1A1A1A' : '#FFFFFF',
+            padding: '80px 0', background: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF',
             border: `0.75px solid ${isDark ? '#2E2E2E' : 'rgba(15,23,42,0.10)'}`, borderRadius: 8,
           }}>
             <FileText size={32} color="#94A3B8" style={{ marginBottom: 12 }} />
@@ -318,7 +318,7 @@ export default function ReqAssistLibrary() {
         ) : (
           /* Table container */
           <div style={{
-            background: isDark ? '#1A1A1A' : '#FFFFFF',
+            background: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF',
             border: `0.75px solid ${isDark ? '#2E2E2E' : 'rgba(15,23,42,0.10)'}`,
             borderRadius: 8,
             overflow: 'hidden',
@@ -341,7 +341,7 @@ export default function ReqAssistLibrary() {
               <div style={{
                 display: 'flex', alignItems: 'center', gap: 8,
                 padding: '8px 28px', fontSize: 12, color: isDark ? '#878787' : '#64748B',
-                background: isDark ? '#1A1A1A' : '#FFFFFF', borderBottom: `0.75px solid ${isDark ? '#292929' : 'rgba(15,23,42,0.08)'}`,
+                background: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF', borderBottom: `0.75px solid ${isDark ? '#292929' : 'rgba(15,23,42,0.08)'}`,
                 fontFamily: 'var(--cp-font-body)',
               }}>
                 Showing {documents?.length ?? 0} of {totalCount} documents
@@ -379,7 +379,7 @@ export default function ReqAssistLibrary() {
                       fontSize: 11, fontWeight: 600, color: isDark ? '#878787' : '#64748B',
                       textTransform: 'uppercase', letterSpacing: '0.06em',
                       textAlign: 'left', width: col.w || undefined,
-                      background: isDark ? '#0A0A0A' : '#F8FAFC',
+                      background: isDark ? 'var(--cp-bg-page, #1F1F21)' : '#F8FAFC',
                       fontFamily: 'var(--cp-font-body)',
                     }}>
                       {col.label}
@@ -410,7 +410,7 @@ export default function ReqAssistLibrary() {
                         style={{
                           height: parentKeys[doc.id] ? 48 : 36, cursor: 'pointer',
                           borderBottom: isLast ? 'none' : '0.75px solid rgba(15,23,42,0.06)',
-                          background: isProcessingRow ? 'rgba(37,99,235,0.04)' : isDark ? '#0A0A0A' : 'transparent',
+                          background: isProcessingRow ? 'rgba(37,99,235,0.04)' : isDark ? 'var(--cp-bg-page, #1F1F21)' : 'transparent',
                           transition: 'background 120ms ease',
                         }}
                         onMouseEnter={e => { if (!isProcessingRow) (e.currentTarget as HTMLElement).style.background = isDark ? '#1F1F1F' : 'rgba(15,23,42,0.02)'; }}
@@ -490,7 +490,7 @@ export default function ReqAssistLibrary() {
                             ) : (
                               <span style={{
                                 display: 'inline-flex', alignItems: 'center', padding: '1px 6px',
-                                background: isDark ? '#1A1A1A' : '#F1F5F9', borderRadius: 4,
+                                background: isDark ? 'var(--cp-bg-surface, #242528)' : '#F1F5F9', borderRadius: 4,
                                 fontSize: 11, color: isDark ? '#878787' : '#94A3B8', fontFamily: 'var(--cp-font-body)',
                               }}>Uncategorised</span>
                             );
@@ -582,7 +582,7 @@ export default function ReqAssistLibrary() {
               <div style={{
                 display: 'flex', justifyContent: 'space-between', alignItems: 'center',
                 height: 50, padding: '8px 12px',
-                background: isDark ? '#0A0A0A' : '#FAFAFA',
+                background: isDark ? 'var(--cp-bg-page, #1F1F21)' : '#FAFAFA',
                 borderTop: `0.75px solid ${isDark ? '#292929' : 'rgba(15,23,42,0.08)'}`,
               }}>
                 <span style={{ fontSize: 12, fontWeight: 400, color: isDark ? '#878787' : '#64748B', fontFamily: 'var(--cp-font-body)' }}>
@@ -635,7 +635,7 @@ export default function ReqAssistLibrary() {
           <div style={{ position: 'fixed', inset: 0, background: 'rgba(15,23,42,0.30)', zIndex: 80 }} onClick={() => setRegenConfirm(null)} />
           <div style={{
             position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
-            width: 420, background: isDark ? '#1A1A1A' : '#FFFFFF', borderRadius: 8, zIndex: 90,
+            width: 420, background: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF', borderRadius: 8, zIndex: 90,
             padding: 24, border: `0.75px solid ${isDark ? '#2E2E2E' : 'rgba(15,23,42,0.10)'}`,
             fontFamily: 'var(--cp-font-body)',
           }}>
@@ -661,7 +661,7 @@ export default function ReqAssistLibrary() {
                 setDraftDrawer({ brdId, docTitle: doc.title, jiraKey: (doc as any).jira_ticket_key || null });
               }} style={{
                 padding: '8px 16px', fontSize: 13, fontWeight: 500, borderRadius: 6,
-                border: `0.75px solid ${isDark ? '#2E2E2E' : 'rgba(15,23,42,0.15)'}`, background: isDark ? '#1A1A1A' : '#FFFFFF', color: isDark ? '#A1A1A1' : '#334155', cursor: 'pointer',
+                border: `0.75px solid ${isDark ? '#2E2E2E' : 'rgba(15,23,42,0.15)'}`, background: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF', color: isDark ? '#A1A1A1' : '#334155', cursor: 'pointer',
               }}>View Drafts</button>
               <button onClick={() => { const d = regenConfirm.doc; setRegenConfirm(null); setBgModal({ type: 'epics', doc: d }); }} style={{
                 padding: '8px 16px', fontSize: 13, fontWeight: 600, borderRadius: 6,
@@ -884,7 +884,7 @@ function ActionsCell({ doc, epicCount, onSyncKb, onSelect, onViewDrafts }: {
             display: 'inline-flex', alignItems: 'center', gap: 4,
             height: 28, padding: '0 10px', fontSize: 12, fontWeight: 500,
             borderRadius: 6, border: `0.75px solid ${isDark ? '#2E2E2E' : 'rgba(15,23,42,0.15)'}`,
-            background: isDark ? '#1A1A1A' : '#FFFFFF', color: isDark ? '#A1A1A1' : '#374151', cursor: 'pointer',
+            background: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF', color: isDark ? '#A1A1A1' : '#374151', cursor: 'pointer',
             fontFamily: 'var(--cp-font-body)', whiteSpace: 'nowrap',
           }}
         >
@@ -953,7 +953,7 @@ function ActionsCell({ doc, epicCount, onSyncKb, onSelect, onViewDrafts }: {
         display: 'inline-flex', alignItems: 'center', gap: 4,
         height: 28, padding: '0 10px', fontSize: 12, fontWeight: 500,
         borderRadius: 6, border: `0.75px solid ${isDark ? '#2E2E2E' : 'rgba(15,23,42,0.15)'}`,
-        background: isDark ? '#1A1A1A' : '#FFFFFF', color: isDark ? '#A1A1A1' : '#374151', cursor: 'pointer',
+        background: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF', color: isDark ? '#A1A1A1' : '#374151', cursor: 'pointer',
         fontFamily: 'var(--cp-font-body)', whiteSpace: 'nowrap',
         transition: 'all 80ms ease',
       }}
@@ -963,7 +963,7 @@ function ActionsCell({ doc, epicCount, onSyncKb, onSelect, onViewDrafts }: {
         e.currentTarget.style.color = '#1D4ED8';
       }}
       onMouseLeave={e => {
-        e.currentTarget.style.background = isDark ? '#1A1A1A' : '#FFFFFF';
+        e.currentTarget.style.background = isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF';
         e.currentTarget.style.borderColor = 'rgba(15,23,42,0.15)';
         e.currentTarget.style.color = '#374151';
       }}

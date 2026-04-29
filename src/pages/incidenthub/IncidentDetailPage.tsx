@@ -71,7 +71,7 @@ export default function IncidentDetailPage() {
 
   if (isLoading) {
     return (
-      <div className="flex-1 p-6" style={{ backgroundColor: isDark ? '#0A0A0A' : '#FFFFFF' }}>
+      <div className="flex-1 p-6" style={{ backgroundColor: isDark ? 'var(--cp-bg-page, #1F1F21)' : '#FFFFFF' }}>
         <Skeleton className="h-6 w-48 mb-4" />
         <Skeleton className="h-8 w-96 mb-2" />
         <Skeleton className="h-4 w-64" />
@@ -81,7 +81,7 @@ export default function IncidentDetailPage() {
 
   if (!incident) {
     return (
-      <div className="flex-1 flex items-center justify-center" style={{ backgroundColor: isDark ? '#0A0A0A' : '#FFFFFF' }}>
+      <div className="flex-1 flex items-center justify-center" style={{ backgroundColor: isDark ? 'var(--cp-bg-page, #1F1F21)' : '#FFFFFF' }}>
         <p style={{ fontFamily: 'var(--cp-font-body)', color: isDark ? '#878787' : '#94A3B8' }}>Incident not found</p>
       </div>
     );
@@ -92,7 +92,7 @@ export default function IncidentDetailPage() {
     (new Date(incident.sla.resolution_due_at).getTime() - Date.now()) <= 3600000;
 
   return (
-    <div className="flex-1 flex flex-col overflow-hidden" style={{ backgroundColor: isDark ? '#0A0A0A' : '#FFFFFF' }}>
+    <div className="flex-1 flex flex-col overflow-hidden" style={{ backgroundColor: isDark ? 'var(--cp-bg-page, #1F1F21)' : '#FFFFFF' }}>
       {/* Breadcrumb */}
       <div className="flex items-center justify-between px-6 shrink-0" style={{
         height: 50,
@@ -175,7 +175,7 @@ export default function IncidentDetailPage() {
               <h3 style={{ fontFamily: 'var(--cp-font-body)', fontSize: 13, fontWeight: 700, color: isDark ? '#EDEDED' : '#0F172A', marginBottom: 8 }}>Labels</h3>
               <div className="flex flex-wrap gap-1">
                 {(incident.labels as string[]).map((label: string) => (
-                  <span key={label} className="px-2 py-0.5" style={{ fontSize: 11, backgroundColor: isDark ? '#1A1A1A' : '#F1F5F9', border: isDark ? '1px solid #2E2E2E' : '1px solid rgba(15,23,42,0.08)', borderRadius: 4, color: isDark ? '#A1A1A1' : '#475569' }}>{label}</span>
+                  <span key={label} className="px-2 py-0.5" style={{ fontSize: 11, backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : '#F1F5F9', border: isDark ? '1px solid #2E2E2E' : '1px solid rgba(15,23,42,0.08)', borderRadius: 4, color: isDark ? '#A1A1A1' : '#475569' }}>{label}</span>
                 ))}
               </div>
             </div>
@@ -228,7 +228,7 @@ export default function IncidentDetailPage() {
                 {incident.comments?.map((c: any) => (
                   <div key={c.id} className="mb-3 pb-3" style={{ borderBottom: isDark ? '0.75px solid #2E2E2E' : '0.75px solid rgba(15,23,42,0.06)' }}>
                     <div className="flex items-center gap-2 mb-1">
-                      <div className="rounded-full flex items-center justify-center" style={{ width: 24, height: 24, backgroundColor: isDark ? '#1A1A1A' : '#E2E8F0', fontSize: 10, fontWeight: 650, color: isDark ? '#A1A1A1' : '#475569' }}>
+                      <div className="rounded-full flex items-center justify-center" style={{ width: 24, height: 24, backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : '#E2E8F0', fontSize: 10, fontWeight: 650, color: isDark ? '#A1A1A1' : '#475569' }}>
                         {(c.author?.full_name || c.author_name || 'U').charAt(0).toUpperCase()}
                       </div>
                       <span style={{ fontFamily: 'var(--cp-font-body)', fontSize: 12, fontWeight: 650, color: isDark ? '#EDEDED' : '#0F172A' }}>
@@ -277,7 +277,7 @@ export default function IncidentDetailPage() {
           width: 300,
           borderLeft: isDark ? '0.75px solid #2E2E2E' : '0.75px solid rgba(15,23,42,0.06)',
           padding: 16,
-          backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF',
+          backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF',
         }}>
           {/* Metadata Grid */}
           <div className="space-y-3">

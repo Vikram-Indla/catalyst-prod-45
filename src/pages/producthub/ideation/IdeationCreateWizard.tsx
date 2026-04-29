@@ -235,7 +235,7 @@ export default function IdeationCreateWizard({ open, onClose }: Props) {
         <div
           onClick={e => e.stopPropagation()}
           style={{
-            background: isDark ? '#1A1A1A' : '#FFFFFF',
+            background: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF',
             borderRadius: '16px',
             width: '720px',
             maxHeight: '90vh',
@@ -523,7 +523,7 @@ export default function IdeationCreateWizard({ open, onClose }: Props) {
             justifyContent: 'flex-end',
             alignItems: 'center',
             gap: '12px',
-            background: isDark ? '#0A0A0A' : '#FAFAFA',
+            background: isDark ? 'var(--cp-bg-page, #1F1F21)' : '#FAFAFA',
             borderRadius: '0 0 16px 16px',
           }}>
             <button

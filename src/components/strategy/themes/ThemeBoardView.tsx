@@ -27,7 +27,7 @@ export function ThemeBoardView({ themes, onSelect, isDark = false }: Props) {
             onClick={() => onSelect(theme)}
             className="rounded-xl border cursor-pointer overflow-hidden"
             style={{
-              background: isDark ? '#1A1A1A' : 'var(--bg-app)',
+              background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--bg-app)',
               borderColor: isDark ? '#2E2E2E' : 'var(--divider)',
               transition: 'transform 200ms ease, box-shadow 200ms ease',
               animation: `fadeUp 300ms ease ${i * 60}ms both`,

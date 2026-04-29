@@ -10,7 +10,7 @@ export default function WikiLearningPathsPage() {
   const { isDark } = useTheme();
 
   return (
-    <div style={{ fontFamily: 'var(--cp-font-body)', color: isDark ? '#EDEDED' : '#0F172A', background: isDark ? '#0A0A0A' : '#F8FAFC', minHeight: '100%', padding: '24px 40px 48px' }}>
+    <div style={{ fontFamily: 'var(--cp-font-body)', color: isDark ? '#EDEDED' : '#0F172A', background: isDark ? 'var(--cp-bg-page, #1F1F21)' : '#F8FAFC', minHeight: '100%', padding: '24px 40px 48px' }}>
       <nav style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 24 }}>
         <span onClick={() => navigate('/wiki')} style={{ fontSize: 13, color: '#2563EB', cursor: 'pointer' }}>Wiki</span>
         <ChevronRight size={12} style={{ color: '#94A3B8' }} />
@@ -22,14 +22,14 @@ export default function WikiLearningPathsPage() {
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: 12 }}>
         {isLoading ? Array.from({ length: 3 }).map((_, i) => (
-          <div key={i} style={{ padding: 24, borderRadius: 8, background: isDark ? '#1A1A1A' : '#FFFFFF', border: isDark ? '1px solid #2E2E2E' : '0.75px solid rgba(0,0,0,0.06)', height: 160 }} />
+          <div key={i} style={{ padding: 24, borderRadius: 8, background: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF', border: isDark ? '1px solid #2E2E2E' : '0.75px solid rgba(0,0,0,0.06)', height: 160 }} />
         )) : (paths ?? []).length === 0 ? (
           <div style={{ padding: 40, textAlign: 'center', color: '#64748B', fontSize: 12, gridColumn: '1 / -1' }}>No learning paths configured yet.</div>
         ) : (paths ?? []).map((p: any) => {
           const pct = p.article_count > 0 ? Math.round((p.completedCount / p.article_count) * 100) : 0;
           const diffColor = p.difficulty === 'beginner' ? '#16A34A' : p.difficulty === 'intermediate' ? '#2563EB' : '#D97706';
           return (
-            <div key={p.id} style={{ padding: 24, borderRadius: 8, background: isDark ? '#1A1A1A' : '#FFFFFF', border: isDark ? '1px solid #2E2E2E' : '0.75px solid rgba(0,0,0,0.06)', transition: 'border-color 120ms' }}
+            <div key={p.id} style={{ padding: 24, borderRadius: 8, background: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF', border: isDark ? '1px solid #2E2E2E' : '0.75px solid rgba(0,0,0,0.06)', transition: 'border-color 120ms' }}
               onMouseEnter={e => e.currentTarget.style.borderColor = '#2563EB'} onMouseLeave={e => e.currentTarget.style.borderColor = isDark ? '#2E2E2E' : 'rgba(0,0,0,0.06)'}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 12 }}>
                 <div style={{ width: 40, height: 40, borderRadius: '50%', background: '#2563EB', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>

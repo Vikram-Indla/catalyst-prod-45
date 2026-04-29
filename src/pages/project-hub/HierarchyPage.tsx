@@ -112,7 +112,7 @@ function FilterTrigger({ label, values, onClear, onClick, isOpen }: {
         height: 32, padding: '8px 12px', display: 'inline-flex', alignItems: 'center', gap: 6,
         fontSize: 12, fontWeight: 500, fontFamily: 'var(--cp-font-body)',
         color: active ? '#2563EB' : isDark ? '#A1A1A1' : '#334155',
-        background: active ? 'rgba(37,99,235,0.06)' : isDark ? '#1A1A1A' : '#FFFFFF',
+        background: active ? 'rgba(37,99,235,0.06)' : isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF',
         border: `1px solid ${active ? 'rgba(37,99,235,0.3)' : isDark ? '#2E2E2E' : '#E2E8F0'}`,
         borderRadius: 6, cursor: 'pointer', whiteSpace: 'nowrap',
         transition: 'all 80ms ease',
@@ -197,7 +197,7 @@ function FilterDropdown({ options, selected, onChange, onClose, searchable = fal
       <div style={{ position: 'fixed', inset: 0, zIndex: 99 }} onClick={onClose} />
       <div ref={ref} style={{
         position: 'absolute', top: 'calc(100% + 6px)', left: 0, width: variant === 'assignee' ? 280 : 260,
-        background: isDark ? '#1A1A1A' : '#FFFFFF', border: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, borderRadius: 12,
+        background: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF', border: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, borderRadius: 12,
         boxShadow: isDark ? '0 12px 40px rgba(0,0,0,0.40), 0 2px 8px rgba(0,0,0,0.20)' : '0 12px 40px rgba(0,0,0,0.10), 0 2px 8px rgba(0,0,0,0.04)', zIndex: 100, maxHeight: 360,
         display: 'flex', flexDirection: 'column', overflow: 'hidden',
       }}>
@@ -206,7 +206,7 @@ function FilterDropdown({ options, selected, onChange, onClose, searchable = fal
           <div style={{ padding: '10px 12px', borderBottom: `1px solid ${isDark ? '#292929' : '#F1F5F9'}` }}>
             <div style={{
               display: 'flex', alignItems: 'center', gap: 6, padding: '0 8px',
-              height: 32, background: isDark ? '#0A0A0A' : '#F8FAFC', borderRadius: 6, border: '1px solid transparent',
+              height: 32, background: isDark ? 'var(--cp-bg-page, #1F1F21)' : '#F8FAFC', borderRadius: 6, border: '1px solid transparent',
               transition: 'border-color 80ms',
             }}>
               <Search size={13} color="#94A3B8" />
@@ -247,7 +247,7 @@ function FilterDropdown({ options, selected, onChange, onClose, searchable = fal
               >
                 <div style={{
                   width: 16, height: 16, borderRadius: 4, border: `1.5px solid ${isSelected ? '#2563EB' : '#CBD5E1'}`,
-                  background: isSelected ? '#2563EB' : isDark ? '#1A1A1A' : '#FFFFFF', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  background: isSelected ? '#2563EB' : isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF', display: 'flex', alignItems: 'center', justifyContent: 'center',
                   flexShrink: 0, transition: 'all 80ms',
                 }}>
                   {isSelected && (
@@ -371,20 +371,20 @@ export default function HierarchyPage() {
   }, []);
 
   return (
-    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden', background: isDark ? '#0A0A0A' : '#F8FAFC', fontFamily: 'var(--cp-font-body)' }}>
+    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden', background: isDark ? 'var(--cp-bg-page, #1F1F21)' : '#F8FAFC', fontFamily: 'var(--cp-font-body)' }}>
       {/* PAGE HEADER */}
       <CatalystPageHeader title="All Work Items" />
 
       {/* TOOLBAR — Search + Filter + Spacer + View Toggle ONLY */}
       <div style={{
-        height: 48, padding: '0 24px', borderBottom: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, background: isDark ? '#1A1A1A' : '#FFFFFF',
+        height: 48, padding: '0 24px', borderBottom: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, background: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF',
         display: 'flex', alignItems: 'center', gap: 8,
         boxShadow: '0 1px 2px rgba(0,0,0,0.03)',
       }}>
         {/* Search */}
         <div style={{
           width: 240, height: 34, display: 'flex', alignItems: 'center', gap: 6,
-          padding: '0 10px', background: isDark ? '#0A0A0A' : '#F8FAFC', border: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, borderRadius: 6,
+          padding: '0 10px', background: isDark ? 'var(--cp-bg-page, #1F1F21)' : '#F8FAFC', border: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, borderRadius: 6,
           transition: 'border-color 80ms, box-shadow 80ms',
         }}
           onFocus={e => { e.currentTarget.style.borderColor = '#2563EB'; e.currentTarget.style.boxShadow = '0 0 0 3px rgba(37,99,235,0.08)'; }}
@@ -412,7 +412,7 @@ export default function HierarchyPage() {
             height: 34, padding: '0 14px', display: 'flex', alignItems: 'center', gap: 6,
             fontSize: 13, fontWeight: 500, fontFamily: 'var(--cp-font-body)',
             color: activeFilterCount > 0 ? '#2563EB' : isDark ? '#A1A1A1' : '#334155',
-            background: activeFilterCount > 0 ? (isDark ? 'rgba(37,99,235,0.10)' : '#EFF6FF') : isDark ? '#1A1A1A' : '#FFFFFF',
+            background: activeFilterCount > 0 ? (isDark ? 'rgba(37,99,235,0.10)' : '#EFF6FF') : isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF',
             border: `1px solid ${activeFilterCount > 0 ? '#2563EB' : isDark ? '#2E2E2E' : '#E2E8F0'}`,
             borderRadius: 6, cursor: 'pointer', transition: 'all 80ms ease',
           }}
@@ -435,7 +435,7 @@ export default function HierarchyPage() {
           <button onClick={() => setViewMode('table')}
             style={{
               width: 32, height: 32, display: 'flex', alignItems: 'center', justifyContent: 'center',
-              background: viewMode === 'table' ? (isDark ? 'rgba(37,99,235,0.10)' : '#EFF6FF') : (isDark ? '#1A1A1A' : '#FFFFFF'), border: 'none', cursor: 'pointer',
+              background: viewMode === 'table' ? (isDark ? 'rgba(37,99,235,0.10)' : '#EFF6FF') : (isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF'), border: 'none', cursor: 'pointer',
               transition: 'background 80ms',
             }}>
             <TableProperties size={14} color={viewMode === 'table' ? '#2563EB' : '#64748B'} />
@@ -443,7 +443,7 @@ export default function HierarchyPage() {
           <button onClick={() => setViewMode('tree')}
             style={{
               width: 32, height: 32, display: 'flex', alignItems: 'center', justifyContent: 'center',
-              background: viewMode === 'tree' ? (isDark ? 'rgba(37,99,235,0.10)' : '#EFF6FF') : (isDark ? '#1A1A1A' : '#FFFFFF'), border: 'none', cursor: 'pointer',
+              background: viewMode === 'tree' ? (isDark ? 'rgba(37,99,235,0.10)' : '#EFF6FF') : (isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF'), border: 'none', cursor: 'pointer',
               borderLeft: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, transition: 'background 80ms',
             }}>
             <GitBranch size={14} color={viewMode === 'tree' ? '#2563EB' : '#64748B'} />
@@ -460,7 +460,7 @@ export default function HierarchyPage() {
             exit={{ height: 0, opacity: 0 }}
             transition={{ duration: 0.15, ease: 'easeOut' }}
             style={{
-              overflow: 'visible', background: isDark ? '#1A1A1A' : '#FFFFFF', borderBottom: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`,
+              overflow: 'visible', background: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF', borderBottom: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`,
               display: 'flex', alignItems: 'center', gap: 8, padding: '0 24px',
               position: 'relative', zIndex: 50,
             }}
@@ -559,7 +559,7 @@ export default function HierarchyPage() {
           {isLoading ? (
             <TableSkeleton rows={10} />
           ) : isError ? (
-            <div style={{ border: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, borderRadius: 8, background: isDark ? '#1A1A1A' : '#FFFFFF', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: 200, gap: 12, padding: 24, textAlign: 'center' }}>
+            <div style={{ border: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, borderRadius: 8, background: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: 200, gap: 12, padding: 24, textAlign: 'center' }}>
               <p style={{ fontSize: 14, fontWeight: 600, color: '#DC2626', margin: 0 }}>Failed to load work items</p>
               <p style={{ fontSize: 12, color: isDark ? '#878787' : '#64748B', margin: 0 }}>There was an error fetching the work items.</p>
               <button onClick={() => refetch()} style={{ height: 32, padding: '0 14px', fontSize: 13, fontWeight: 600, fontFamily: 'var(--cp-font-body)', color: '#FFFFFF', background: '#2563EB', border: 'none', borderRadius: 6, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}>
@@ -567,7 +567,7 @@ export default function HierarchyPage() {
               </button>
             </div>
           ) : filteredItems.length === 0 ? (
-            <div style={{ border: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, borderRadius: 8, background: isDark ? '#1A1A1A' : '#FFFFFF', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: 300, gap: 12, textAlign: 'center', padding: 48 }}>
+            <div style={{ border: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, borderRadius: 8, background: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: 300, gap: 12, textAlign: 'center', padding: 48 }}>
               <div style={{ width: 48, height: 48, borderRadius: 12, background: isDark ? '#1F1F1F' : '#F1F5F9', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 <Search size={20} color="#94A3B8" />
               </div>
@@ -580,7 +580,7 @@ export default function HierarchyPage() {
               {(search || activeFilterCount > 0) && (
                 <button onClick={handleClearAllFilters} style={{
                   height: 32, padding: '0 14px', fontSize: 12, fontWeight: 500, fontFamily: 'var(--cp-font-body)',
-                  color: isDark ? '#A1A1A1' : '#334155', background: isDark ? '#1A1A1A' : '#FFFFFF', border: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, borderRadius: 6, cursor: 'pointer',
+                  color: isDark ? '#A1A1A1' : '#334155', background: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF', border: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, borderRadius: 6, cursor: 'pointer',
                 }}>
                   Clear filters
                 </button>
@@ -629,7 +629,7 @@ export default function HierarchyPage() {
                   height: '100vh',
                   width: 'min(62vw, 920px)',
                   minWidth: 480,
-                  background: isDark ? '#1A1A1A' : '#FFFFFF',
+                  background: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF',
                   borderLeft: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`,
                   zIndex: 61,
                   padding: 16,

@@ -49,7 +49,7 @@ export function PriorityDropdown({ currentPriority, onSelect, onClose }: Priorit
       ref={ref}
       style={{
         position: 'absolute', top: '100%', left: 0, marginTop: 4, width: 180,
-        background: isDark ? '#1A1A1A' : '#FFFFFF', border: isDark ? '1px solid #2E2E2E' : '1px solid #E2E8F0', borderRadius: 6,
+        background: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF', border: isDark ? '1px solid #2E2E2E' : '1px solid #E2E8F0', borderRadius: 6,
         boxShadow: isDark ? '0 4px 16px rgba(0,0,0,0.30)' : '0 4px 16px rgba(0,0,0,0.10)', zIndex: 9999, overflow: 'hidden',
       }}
     >
@@ -61,11 +61,11 @@ export function PriorityDropdown({ currentPriority, onSelect, onClose }: Priorit
             onClick={() => { onSelect(p.name); onClose(); }}
             style={{
               height: 50, padding: '8px 12px', display: 'flex', alignItems: 'center', gap: 8,
-              cursor: 'pointer', background: isCurrent ? (isDark ? '#1A1A1A' : '#F8FAFC') : undefined,
+              cursor: 'pointer', background: isCurrent ? (isDark ? 'var(--cp-bg-surface, #242528)' : '#F8FAFC') : undefined,
               fontFamily: 'var(--cp-font-body)',
             }}
-            onMouseEnter={(e) => (e.currentTarget.style.background = isDark ? '#1A1A1A' : '#F8FAFC')}
-            onMouseLeave={(e) => (e.currentTarget.style.background = isCurrent ? (isDark ? '#1A1A1A' : '#F8FAFC') : '')}
+            onMouseEnter={(e) => (e.currentTarget.style.background = isDark ? 'var(--cp-bg-surface, #242528)' : '#F8FAFC')}
+            onMouseLeave={(e) => (e.currentTarget.style.background = isCurrent ? (isDark ? 'var(--cp-bg-surface, #242528)' : '#F8FAFC') : '')}
           >
             <PriorityBarsInline level={p.level} />
             <span style={{ fontSize: 12, color: isDark ? '#EDEDED' : '#0F172A', flex: 1 }}>{p.name}</span>

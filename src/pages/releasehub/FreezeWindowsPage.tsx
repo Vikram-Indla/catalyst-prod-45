@@ -102,7 +102,7 @@ export default function FreezeWindowsPage() {
   const monthLabel = calMonth.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
 
   return (
-    <div style={{ background: isDark ? '#0A0A0A' : '#FFFFFF', minHeight: '100%', padding: '24px' }}>
+    <div style={{ background: isDark ? 'var(--cp-bg-page, #1F1F21)' : '#FFFFFF', minHeight: '100%', padding: '24px' }}>
       {/* Header */}
       <div className="flex items-center justify-between mb-5">
         <div>
@@ -118,7 +118,7 @@ export default function FreezeWindowsPage() {
       </div>
 
       {/* Calendar Strip */}
-      <div className="mb-6 rounded-lg p-4" style={{ background: isDark ? '#1A1A1A' : '#FFFFFF', border: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}` }}>
+      <div className="mb-6 rounded-lg p-4" style={{ background: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF', border: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}` }}>
         <div className="flex items-center justify-between mb-3">
           <button onClick={() => setCalMonth(new Date(calMonth.getFullYear(), calMonth.getMonth() - 1))}
             className="h-7 w-7 rounded flex items-center justify-center" style={{ color: isDark ? '#878787' : '#64748B' }}>
@@ -157,22 +157,22 @@ export default function FreezeWindowsPage() {
       {isLoading ? (
         <div className="space-y-1">
           {[1, 2, 3].map(i => (
-            <div key={i} className="h-9 rounded animate-pulse" style={{ background: isDark ? '#1A1A1A' : '#F1F5F9' }} />
+            <div key={i} className="h-9 rounded animate-pulse" style={{ background: isDark ? 'var(--cp-bg-surface, #242528)' : '#F1F5F9' }} />
           ))}
         </div>
       ) : windows.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-20 text-center">
-          <div className="w-16 h-16 rounded-full flex items-center justify-center mb-4" style={{ background: isDark ? '#1A1A1A' : '#F1F5F9' }}>
+          <div className="w-16 h-16 rounded-full flex items-center justify-center mb-4" style={{ background: isDark ? 'var(--cp-bg-surface, #242528)' : '#F1F5F9' }}>
             <CalendarOff className="w-8 h-8" style={{ color: isDark ? '#878787' : '#94A3B8' }} />
           </div>
           <h3 className="font-semibold text-lg mb-1" style={{ color: isDark ? '#EDEDED' : '#0F172A' }}>No freeze windows defined</h3>
           <p className="text-[13px] max-w-md" style={{ color: isDark ? '#878787' : '#64748B' }}>Add one to protect critical periods.</p>
         </div>
       ) : (
-        <div className="rounded-lg overflow-hidden" style={{ background: isDark ? '#1A1A1A' : '#FFFFFF', border: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}` }}>
+        <div className="rounded-lg overflow-hidden" style={{ background: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF', border: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}` }}>
           <table className="w-full text-[13px]" style={{ fontFamily: RH.fontBody }}>
             <thead>
-              <tr style={{ background: isDark ? '#1A1A1A' : '#F1F5F9' }}>
+              <tr style={{ background: isDark ? 'var(--cp-bg-surface, #242528)' : '#F1F5F9' }}>
                 {['NAME', 'START DATE', 'END DATE', 'DURATION', 'REASON', 'ACTIONS'].map(h => (
                   <th key={h} className="px-3 py-0 h-9 text-left text-[11px] font-semibold uppercase tracking-[0.06em]" style={{ color: isDark ? '#878787' : '#64748B' }}>{h}</th>
                 ))}
@@ -182,8 +182,8 @@ export default function FreezeWindowsPage() {
               {windows.map((fw: any) => (
                 <tr key={fw.id} className="group"
                   style={{ height: 50, transition: 'background 120ms', borderBottom: `0.75px solid ${isDark ? '#292929' : 'rgba(15,23,42,0.06)'}` }}
-                  onMouseEnter={e => (e.currentTarget.style.background = isDark ? '#1A1A1A' : 'rgba(15,23,42,0.04)')}
-                  onMouseLeave={e => (e.currentTarget.style.background = isDark ? '#1A1A1A' : '#FFFFFF')}>
+                  onMouseEnter={e => (e.currentTarget.style.background = isDark ? 'var(--cp-bg-surface, #242528)' : 'rgba(15,23,42,0.04)')}
+                  onMouseLeave={e => (e.currentTarget.style.background = isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF')}>
                   <td className="px-3 py-0 font-medium" style={{ color: isDark ? '#EDEDED' : '#0F172A', fontWeight: 650 }}>{fw.name}</td>
                   <td className="px-3 py-0" style={{ fontFamily: RH.fontMono, fontSize: 12, color: isDark ? '#A1A1A1' : '#475569' }}>{formatDate(fw.start_date)}</td>
                   <td className="px-3 py-0" style={{ fontFamily: RH.fontMono, fontSize: 12, color: isDark ? '#A1A1A1' : '#475569' }}>{formatDate(fw.end_date)}</td>

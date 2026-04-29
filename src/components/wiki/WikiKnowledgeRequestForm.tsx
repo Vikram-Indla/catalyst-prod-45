@@ -88,7 +88,7 @@ export function WikiKnowledgeRequestForm({ open, onClose }: Props) {
       <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: isDark ? 'rgba(0,0,0,0.6)' : 'rgba(15,23,42,0.3)', zIndex: 60 }} />
       <div style={{
         position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
-        width: 440, maxWidth: '92vw', background: isDark ? '#1A1A1A' : 'var(--cp-float)', borderRadius: 12,
+        width: 440, maxWidth: '92vw', background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--cp-float)', borderRadius: 12,
         boxShadow: isDark ? '0 16px 48px rgba(0,0,0,0.4)' : '0 16px 48px rgba(0,0,0,0.12)', zIndex: 61,
         animation: 'fadeScaleIn 180ms ease-out',
       }}>
@@ -130,7 +130,7 @@ export function WikiKnowledgeRequestForm({ open, onClose }: Props) {
               <label style={labelStyle}>Domain *</label>
               <select
                 value={domainCode} onChange={e => setDomainCode(e.target.value)}
-                style={{ ...inputStyle, cursor: 'pointer', background: isDark ? '#1A1A1A' : 'var(--cp-float)' }}
+                style={{ ...inputStyle, cursor: 'pointer', background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--cp-float)' }}
               >
                 <option value="">Select domain...</option>
                 {DOMAINS.map(d => (
@@ -143,7 +143,7 @@ export function WikiKnowledgeRequestForm({ open, onClose }: Props) {
               <label style={labelStyle}>Priority</label>
               <select
                 value={priority} onChange={e => setPriority(e.target.value)}
-                style={{ ...inputStyle, cursor: 'pointer', background: isDark ? '#1A1A1A' : 'var(--cp-float)' }}
+                style={{ ...inputStyle, cursor: 'pointer', background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--cp-float)' }}
               >
                 {PRIORITIES.map(p => (
                   <option key={p} value={p}>{p.charAt(0).toUpperCase() + p.slice(1)}</option>
@@ -157,7 +157,7 @@ export function WikiKnowledgeRequestForm({ open, onClose }: Props) {
         <div style={{ padding: '16px 24px 20px', borderTop: isDark ? '0.75px solid #2E2E2E' : '0.75px solid rgba(0,0,0,0.06)', display: 'flex', justifyContent: 'flex-end', gap: 8 }}>
           <button onClick={onClose} style={{
             fontSize: 12, fontWeight: 600, padding: '8px 16px', borderRadius: 6, cursor: 'pointer',
-            border: isDark ? '0.75px solid #2E2E2E' : '0.75px solid rgba(0,0,0,0.10)', background: isDark ? '#1A1A1A' : 'var(--cp-float)', color: isDark ? '#A1A1A1' : 'var(--fg-2)',
+            border: isDark ? '0.75px solid #2E2E2E' : '0.75px solid rgba(0,0,0,0.10)', background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--cp-float)', color: isDark ? '#A1A1A1' : 'var(--fg-2)',
           }}>Cancel</button>
           <button onClick={handleSubmit} disabled={!canSubmit || submitting} style={{
             fontSize: 12, fontWeight: 650, padding: '8px 20px', borderRadius: 6, cursor: canSubmit ? 'pointer' : 'not-allowed',

@@ -99,7 +99,7 @@ export default function WikiAnalyticsPage() {
   const border = isDark ? '#2E2E2E' : 'rgba(0,0,0,0.06)';
 
   return (
-    <div style={{ fontFamily: 'var(--cp-font-body)', color: isDark ? '#EDEDED' : '#0F172A', background: isDark ? '#0A0A0A' : '#F8FAFC', minHeight: '100%', padding: '24px 40px 48px' }}>
+    <div style={{ fontFamily: 'var(--cp-font-body)', color: isDark ? '#EDEDED' : '#0F172A', background: isDark ? 'var(--cp-bg-page, #1F1F21)' : '#F8FAFC', minHeight: '100%', padding: '24px 40px 48px' }}>
       <nav style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 24 }}>
         <span onClick={() => navigate('/wiki')} style={{ fontSize: 13, color: '#2563EB', cursor: 'pointer' }}>Wiki</span>
         <ChevronRight size={12} style={{ color: isDark ? '#878787' : '#94A3B8' }} />
@@ -111,9 +111,9 @@ export default function WikiAnalyticsPage() {
       {/* Stats Grid */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', gap: 12, marginBottom: 32 }}>
         {isLoading ? Array.from({ length: 8 }).map((_, i) => (
-          <div key={i} style={{ padding: 20, borderRadius: 8, background: isDark ? '#1A1A1A' : '#FFFFFF', border: `0.75px solid ${border}`, height: 80 }} />
+          <div key={i} style={{ padding: 20, borderRadius: 8, background: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF', border: `0.75px solid ${border}`, height: 80 }} />
         )) : statCards.map(s => (
-          <div key={s.label} style={{ padding: 20, borderRadius: 8, background: isDark ? '#1A1A1A' : '#FFFFFF', border: `0.75px solid ${border}`, textAlign: 'center' }}>
+          <div key={s.label} style={{ padding: 20, borderRadius: 8, background: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF', border: `0.75px solid ${border}`, textAlign: 'center' }}>
             <div style={{ fontFamily: F.sora, fontSize: 24, fontWeight: 700, color: isDark ? '#EDEDED' : '#0F172A' }}>{s.value}</div>
             <div style={{ fontSize: 10, fontWeight: 600, textTransform: 'uppercase', color: isDark ? '#878787' : '#94A3B8', marginTop: 4, letterSpacing: '0.05em' }}>{s.label}</div>
           </div>
@@ -123,14 +123,14 @@ export default function WikiAnalyticsPage() {
       {/* Charts Row */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20, marginBottom: 32 }}>
         {/* Articles per Domain */}
-        <div style={{ padding: 20, borderRadius: 8, background: isDark ? '#1A1A1A' : '#FFFFFF', border: `0.75px solid ${border}` }}>
+        <div style={{ padding: 20, borderRadius: 8, background: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF', border: `0.75px solid ${border}` }}>
           <h2 style={{ fontFamily: F.sora, fontSize: 14, fontWeight: 600, marginBottom: 16, margin: '0 0 16px' }}>Articles per Domain</h2>
           <ResponsiveContainer width="100%" height={220}>
             <BarChart data={domainDistribution ?? []}>
               <CartesianGrid strokeDasharray="3 3" stroke={border} />
               <XAxis dataKey="domain" tick={{ fontSize: 10, fill: isDark ? '#A1A1A1' : '#64748B' }} />
               <YAxis tick={{ fontSize: 10, fill: isDark ? '#A1A1A1' : '#64748B' }} />
-              <Tooltip contentStyle={{ fontSize: 12, borderRadius: 6, border: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, background: isDark ? '#1A1A1A' : '#FFFFFF', color: isDark ? '#EDEDED' : undefined }} />
+              <Tooltip contentStyle={{ fontSize: 12, borderRadius: 6, border: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, background: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF', color: isDark ? '#EDEDED' : undefined }} />
               <Bar dataKey="count" radius={[4, 4, 0, 0]}>
                 {(domainDistribution ?? []).map((d: any) => (
                   <Cell key={d.domain} fill={DOMAIN_COLORS[d.domain] || '#64748B'} />
@@ -141,7 +141,7 @@ export default function WikiAnalyticsPage() {
         </div>
 
         {/* Verification Status Pie */}
-        <div style={{ padding: 20, borderRadius: 8, background: isDark ? '#1A1A1A' : '#FFFFFF', border: `0.75px solid ${border}` }}>
+        <div style={{ padding: 20, borderRadius: 8, background: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF', border: `0.75px solid ${border}` }}>
           <h2 style={{ fontFamily: F.sora, fontSize: 14, fontWeight: 600, marginBottom: 16, margin: '0 0 16px' }}>Verification Status</h2>
           <ResponsiveContainer width="100%" height={220}>
             <PieChart>
@@ -150,7 +150,7 @@ export default function WikiAnalyticsPage() {
                   <Cell key={i} fill={entry.fill} />
                 ))}
               </Pie>
-              <Tooltip contentStyle={{ fontSize: 12, borderRadius: 6, background: isDark ? '#1A1A1A' : '#FFFFFF', color: isDark ? '#EDEDED' : undefined, border: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}` }} />
+              <Tooltip contentStyle={{ fontSize: 12, borderRadius: 6, background: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF', color: isDark ? '#EDEDED' : undefined, border: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}` }} />
               <Legend wrapperStyle={{ fontSize: 11, color: isDark ? '#A1A1A1' : undefined }} />
             </PieChart>
           </ResponsiveContainer>
@@ -162,10 +162,10 @@ export default function WikiAnalyticsPage() {
         {/* Most Viewed */}
         <div>
           <h2 style={{ fontFamily: F.sora, fontSize: 14, fontWeight: 600, marginBottom: 12 }}>Most Viewed Articles</h2>
-          <div style={{ borderRadius: 8, border: `0.75px solid ${border}`, background: isDark ? '#1A1A1A' : '#FFFFFF', overflow: 'hidden' }}>
+          <div style={{ borderRadius: 8, border: `0.75px solid ${border}`, background: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF', overflow: 'hidden' }}>
             <div style={{
               display: 'grid', gridTemplateColumns: '1fr 60px 60px 60px',
-              background: isDark ? '#1A1A1A' : '#F1F5F9', padding: '0 14px', height: 32, alignItems: 'center',
+              background: isDark ? 'var(--cp-bg-surface, #242528)' : '#F1F5F9', padding: '0 14px', height: 32, alignItems: 'center',
               fontFamily: F.sora, fontSize: 10, fontWeight: 600, textTransform: 'uppercase' as const,
               color: isDark ? '#878787' : '#64748B', letterSpacing: '0.05em', borderBottom: `0.75px solid ${border}`,
             }}>
@@ -194,10 +194,10 @@ export default function WikiAnalyticsPage() {
         {/* Least Helpful */}
         <div>
           <h2 style={{ fontFamily: F.sora, fontSize: 14, fontWeight: 600, marginBottom: 12 }}>Least Helpful Articles</h2>
-          <div style={{ borderRadius: 8, border: `0.75px solid ${border}`, background: isDark ? '#1A1A1A' : '#FFFFFF', overflow: 'hidden' }}>
+          <div style={{ borderRadius: 8, border: `0.75px solid ${border}`, background: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF', overflow: 'hidden' }}>
             <div style={{
               display: 'grid', gridTemplateColumns: '1fr 60px 60px',
-              background: isDark ? '#1A1A1A' : '#F1F5F9', padding: '0 14px', height: 32, alignItems: 'center',
+              background: isDark ? 'var(--cp-bg-surface, #242528)' : '#F1F5F9', padding: '0 14px', height: 32, alignItems: 'center',
               fontFamily: F.sora, fontSize: 10, fontWeight: 600, textTransform: 'uppercase' as const,
               color: isDark ? '#878787' : '#64748B', letterSpacing: '0.05em', borderBottom: `0.75px solid ${border}`,
             }}>

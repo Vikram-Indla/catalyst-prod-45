@@ -119,7 +119,7 @@ export default function IdeationDrivesView() {
         const IconComponent = getDriveIcon(drive.title);
         return (
           <div key={drive.id} style={{
-            background: isDark ? '#1A1A1A' : '#FFFFFF', border: isDark ? '1px solid #2E2E2E' : '1px solid #E2E8F0', borderRadius: '6px',
+            background: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF', border: isDark ? '1px solid #2E2E2E' : '1px solid #E2E8F0', borderRadius: '6px',
             padding: '20px', marginBottom: '16px',
           }}>
             {/* Title + Icon + Status */}
@@ -127,7 +127,7 @@ export default function IdeationDrivesView() {
               {/* V12: Lucide icon container */}
               <div style={{
                 width: 36, height: 50, borderRadius: 8,
-                background: isDark ? '#1A1A1A' : '#F1F5F9', border: isDark ? '1px solid #2E2E2E' : '1px solid #E2E8F0',
+                background: isDark ? 'var(--cp-bg-surface, #242528)' : '#F1F5F9', border: isDark ? '1px solid #2E2E2E' : '1px solid #E2E8F0',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 flexShrink: 0, color: isDark ? '#A1A1A1' : '#475569',
               }}>

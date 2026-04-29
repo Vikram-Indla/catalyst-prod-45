@@ -102,7 +102,7 @@ export function GroupByPopover<K extends string>({
 
   // Tokens
   const tk = {
-    bg: isDark ? '#1A1A1A' : '#FFFFFF',
+    bg: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF',
     border: isDark ? '#2E2E2E' : '#E2E8F0',
     borderSubtle: isDark ? '#292929' : '#F1F5F9',
     text: isDark ? '#EDEDED' : '#0F172A',
@@ -115,7 +115,7 @@ export function GroupByPopover<K extends string>({
       ? '0 4px 24px rgba(0,0,0,0.5)'
       : '0 4px 16px rgba(0,0,0,0.08), 0 1px 3px rgba(0,0,0,0.06)',
     inputBg: isDark ? '#111111' : '#FFFFFF',
-    triggerBg: isDark ? '#1A1A1A' : '#FFFFFF',
+    triggerBg: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF',
     triggerBgActive: isDark ? '#0D1526' : '#F0F6FF',
   };
 

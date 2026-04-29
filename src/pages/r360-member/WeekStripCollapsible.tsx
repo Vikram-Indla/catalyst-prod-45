@@ -63,13 +63,13 @@ export function WeekStripCollapsible({
           {isLive ? 'LIVE' : 'SNAPSHOT'}
         </span>
 
-        <button style={{ width: '28px', height: '28px', border: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, borderRadius: '4px', background: isDark ? '#1A1A1A' : '#FFF', cursor: 'pointer', fontSize: '13px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', transition: 'background var(--cp-duration-fast, 0.15s) ease' }} onClick={() => onNavigatePeriod(-1)}
+        <button style={{ width: '28px', height: '28px', border: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, borderRadius: '4px', background: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFF', cursor: 'pointer', fontSize: '13px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', transition: 'background var(--cp-duration-fast, 0.15s) ease' }} onClick={() => onNavigatePeriod(-1)}
           onMouseEnter={e => { e.currentTarget.style.background = isDark ? '#1F1F1F' : 'rgba(15,23,42,0.04)'; }}
-          onMouseLeave={e => { e.currentTarget.style.background = isDark ? '#1A1A1A' : '#FFF'; }}
+          onMouseLeave={e => { e.currentTarget.style.background = isDark ? 'var(--cp-bg-surface, #242528)' : '#FFF'; }}
         >{'\u2039'}</button>
-        <button style={{ width: '28px', height: '28px', border: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, borderRadius: '4px', background: isDark ? '#1A1A1A' : '#FFF', cursor: 'pointer', fontSize: '13px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', transition: 'background var(--cp-duration-fast, 0.15s) ease' }} onClick={() => onNavigatePeriod(1)}
+        <button style={{ width: '28px', height: '28px', border: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, borderRadius: '4px', background: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFF', cursor: 'pointer', fontSize: '13px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', transition: 'background var(--cp-duration-fast, 0.15s) ease' }} onClick={() => onNavigatePeriod(1)}
           onMouseEnter={e => { e.currentTarget.style.background = isDark ? '#1F1F1F' : 'rgba(15,23,42,0.04)'; }}
-          onMouseLeave={e => { e.currentTarget.style.background = isDark ? '#1A1A1A' : '#FFF'; }}
+          onMouseLeave={e => { e.currentTarget.style.background = isDark ? 'var(--cp-bg-surface, #242528)' : '#FFF'; }}
         >{'\u203A'}</button>
 
         <div style={{ width: '1px', height: '20px', background: isDark ? '#2E2E2E' : '#E2E8F0', margin: '0 4px' }} />

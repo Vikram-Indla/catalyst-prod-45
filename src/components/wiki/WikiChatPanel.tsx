@@ -66,7 +66,7 @@ export function WikiChatPanel({ open, onClose }: { open: boolean; onClose: () =>
   return (
     <div style={{
       position: 'fixed', bottom: 80, right: 24, width: 380, height: 520,
-      background: isDark ? '#1A1A1A' : 'var(--cp-float)', borderRadius: 12, zIndex: 51,
+      background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--cp-float)', borderRadius: 12, zIndex: 51,
       border: `0.75px solid ${border}`,
       boxShadow: isDark ? '0 8px 32px rgba(0,0,0,0.4)' : '0 8px 32px rgba(0,0,0,0.12)',
       display: 'flex', flexDirection: 'column', overflow: 'hidden',
@@ -152,7 +152,7 @@ export function WikiChatPanel({ open, onClose }: { open: boolean; onClose: () =>
           style={{
             flex: 1, height: 50, padding: '8px 12px', borderRadius: 8, fontSize: 12.5,
             border: `0.75px solid ${border}`, outline: 'none', fontFamily: 'var(--cp-font-body)',
-            background: isDark ? '#0A0A0A' : 'var(--bg-1)', color: isDark ? '#EDEDED' : undefined,
+            background: isDark ? 'var(--cp-bg-page, #1F1F21)' : 'var(--bg-1)', color: isDark ? '#EDEDED' : undefined,
           }}
           onFocus={e => { e.currentTarget.style.borderColor = 'var(--cp-blue)'; e.currentTarget.style.boxShadow = '0 0 0 3px rgba(37,99,235,0.08)'; }}
           onBlur={e => { e.currentTarget.style.borderColor = isDark ? '#2E2E2E' : 'rgba(0,0,0,0.06)'; e.currentTarget.style.boxShadow = 'none'; }}

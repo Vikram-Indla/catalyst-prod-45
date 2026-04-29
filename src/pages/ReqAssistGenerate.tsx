@@ -252,7 +252,7 @@ export default function ReqAssistGenerate() {
   }, []);
 
   return (
-    <div style={{ background: isDark ? '#0A0A0A' : '#F8FAFC', minHeight: '100%' }}>
+    <div style={{ background: isDark ? 'var(--cp-bg-page, #1F1F21)' : '#F8FAFC', minHeight: '100%' }}>
       <CatalystTopNav />
 
       <div style={{ padding: '24px 28px' }}>
@@ -268,7 +268,7 @@ export default function ReqAssistGenerate() {
         </div>
 
         {/* INPUT CARD */}
-        <div style={{ background: isDark ? '#1A1A1A' : '#FFFFFF', border: `0.75px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, borderRadius: 6, padding: 24, marginBottom: 20 }}>
+        <div style={{ background: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF', border: `0.75px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, borderRadius: 6, padding: 24, marginBottom: 20 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
             <FileText size={15} color="#7C3AED" />
             <span style={{ fontSize: 13, fontWeight: 650, color: isDark ? '#EDEDED' : '#111827', fontFamily: 'var(--cp-font-body)' }}>Requirements Input</span>
@@ -335,7 +335,7 @@ export default function ReqAssistGenerate() {
 
         {/* Generating spinner */}
         {generating && !genResult && (
-          <div style={{ background: isDark ? '#1A1A1A' : '#FFFFFF', border: `0.75px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, borderRadius: 6, padding: '40px 24px', textAlign: 'center' }}>
+          <div style={{ background: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF', border: `0.75px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, borderRadius: 6, padding: '40px 24px', textAlign: 'center' }}>
             <Loader2 size={24} color="#7C3AED" style={{ animation: 'ra-spin 1s linear infinite', margin: '0 auto 12px', display: 'block' }} />
             <p style={{ fontSize: 14, fontWeight: 500, color: isDark ? '#A1A1A1' : '#374151', margin: '0 0 4px', fontFamily: 'var(--cp-font-body)' }}>Generating BRD sections from your input…</p>
             <p style={{ fontSize: 12, color: isDark ? '#878787' : '#6B7280', margin: 0, fontFamily: 'var(--cp-font-body)' }}>This typically takes 15–30 seconds</p>
@@ -344,7 +344,7 @@ export default function ReqAssistGenerate() {
 
         {/* GENERATED BRD */}
         {genResult && genResult.sections.length > 0 && (
-          <div style={{ border: `0.75px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, borderRadius: 6, overflow: 'hidden', background: isDark ? '#1A1A1A' : '#FFFFFF' }}>
+          <div style={{ border: `0.75px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, borderRadius: 6, overflow: 'hidden', background: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF' }}>
             {/* Header */}
             <div style={{ padding: '12px 16px', borderBottom: `0.75px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, display: 'flex', alignItems: 'center', gap: 8 }}>
               <span style={{ fontSize: 14, fontWeight: 650, color: isDark ? '#EDEDED' : '#0F172A', fontFamily: 'var(--cp-font-heading)' }}>Generated BRD</span>
@@ -396,7 +396,7 @@ export default function ReqAssistGenerate() {
             )}
 
             {/* ACTION BAR */}
-            <div style={{ padding: '12px 16px', background: isDark ? '#1A1A1A' : '#FFFFFF', borderTop: `0.75px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, display: 'flex', gap: 8, alignItems: 'center' }}>
+            <div style={{ padding: '12px 16px', background: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF', borderTop: `0.75px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, display: 'flex', gap: 8, alignItems: 'center' }}>
               {brdState === 'generated' && (
                 <>
                   <BtnPrimary onClick={() => doSave()} disabled={saving}>
@@ -473,7 +473,7 @@ export default function ReqAssistGenerate() {
       {/* DUPLICATE MODAL */}
       {dupModalOpen && duplicateDoc && (
         <ModalOverlay>
-          <div style={{ width: 480, background: isDark ? '#1A1A1A' : '#FFFFFF', borderRadius: 6, padding: 24, fontFamily: 'var(--cp-font-body)' }}>
+          <div style={{ width: 480, background: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF', borderRadius: 6, padding: 24, fontFamily: 'var(--cp-font-body)' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
               <AlertTriangle size={20} color="#64748B" />
               <span style={{ fontSize: 16, fontWeight: 650, color: isDark ? '#EDEDED' : '#111827', fontFamily: 'var(--cp-font-heading)' }}>Document Already Exists</span>
@@ -525,7 +525,7 @@ export default function ReqAssistGenerate() {
       {/* OVERWRITE CONFIRM */}
       {overwriteConfirmOpen && (
         <ModalOverlay>
-          <div style={{ width: 440, background: isDark ? '#1A1A1A' : '#FFFFFF', borderRadius: 6, padding: 24, fontFamily: 'var(--cp-font-body)' }}>
+          <div style={{ width: 440, background: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF', borderRadius: 6, padding: 24, fontFamily: 'var(--cp-font-body)' }}>
             <p style={{ fontSize: 14, color: isDark ? '#A1A1A1' : '#374151', lineHeight: 1.6, margin: '0 0 16px' }}>
               Are you sure? This will replace the existing BRD and clear any generated Epics for that document.
             </p>
@@ -553,7 +553,7 @@ export default function ReqAssistGenerate() {
       {/* REGEN EPICS CONFIRM */}
       {regenConfirmOpen && (
         <ModalOverlay>
-          <div style={{ width: 440, background: isDark ? '#1A1A1A' : '#FFFFFF', borderRadius: 6, padding: 24, fontFamily: 'var(--cp-font-body)' }}>
+          <div style={{ width: 440, background: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF', borderRadius: 6, padding: 24, fontFamily: 'var(--cp-font-body)' }}>
             <p style={{ fontSize: 14, color: isDark ? '#A1A1A1' : '#374151', lineHeight: 1.6, margin: '0 0 16px' }}>
               Regenerating will replace all {epicCount} existing epics for this document. This cannot be undone.
             </p>
@@ -612,7 +612,7 @@ function BtnOutline({ children, ...props }: React.ButtonHTMLAttributes<HTMLButto
     <button {...props} style={{
       display: 'inline-flex', alignItems: 'center', gap: 6, padding: '8px 16px', fontSize: 14, fontWeight: 500,
       border: `0.75px solid ${isDark ? '#2E2E2E' : '#CBD5E1'}`, borderRadius: 6, cursor: props.disabled ? 'not-allowed' : 'pointer',
-      background: isDark ? '#1A1A1A' : '#FFFFFF', color: isDark ? '#A1A1A1' : '#374151', fontFamily: 'var(--cp-font-body)',
+      background: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF', color: isDark ? '#A1A1A1' : '#374151', fontFamily: 'var(--cp-font-body)',
       transition: 'background 120ms',
       ...props.style,
     }}>{children}</button>
@@ -667,7 +667,7 @@ function CatalystTopNav() {
     { label: 'WikiHub', path: '/wikihub' },
   ];
   return (
-    <nav style={{ height: 48, display: 'flex', alignItems: 'center', gap: 0, background: isDark ? '#1A1A1A' : '#FFFFFF', borderBottom: `0.75px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, padding: '0 24px', fontFamily: 'var(--cp-font-body)' }}>
+    <nav style={{ height: 48, display: 'flex', alignItems: 'center', gap: 0, background: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF', borderBottom: `0.75px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, padding: '0 24px', fontFamily: 'var(--cp-font-body)' }}>
       {HUBS.map(h => {
         const isActive = h.label === 'ProductHub';
         return (

@@ -50,7 +50,7 @@ export default function WikiVerificationPage() {
   }, [qc]);
 
   return (
-    <div style={{ fontFamily: 'var(--cp-font-body)', color: isDark ? '#EDEDED' : '#0F172A', background: isDark ? '#0A0A0A' : '#F8FAFC', minHeight: '100%', padding: '24px 40px 48px' }}>
+    <div style={{ fontFamily: 'var(--cp-font-body)', color: isDark ? '#EDEDED' : '#0F172A', background: isDark ? 'var(--cp-bg-page, #1F1F21)' : '#F8FAFC', minHeight: '100%', padding: '24px 40px 48px' }}>
       <nav style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 24 }}>
         <span onClick={() => navigate('/wiki')} style={{ fontSize: 13, color: '#2563EB', cursor: 'pointer' }}>Wiki</span>
         <ChevronRight size={12} style={{ color: isDark ? '#878787' : '#94A3B8' }} />
@@ -66,7 +66,7 @@ export default function WikiVerificationPage() {
         </div>
         <button onClick={handleRefreshFreshness} disabled={refreshing} style={{
           fontSize: 11, fontWeight: 650, padding: '6px 14px', borderRadius: 6,
-          border: `0.75px solid ${isDark ? '#454545' : 'rgba(0,0,0,0.12)'}`, background: isDark ? '#1A1A1A' : '#FFFFFF', color: isDark ? '#A1A1A1' : '#334155',
+          border: `0.75px solid ${isDark ? '#454545' : 'rgba(0,0,0,0.12)'}`, background: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF', color: isDark ? '#A1A1A1' : '#334155',
           cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6,
           opacity: refreshing ? 0.6 : 1,
         }}>
@@ -75,10 +75,10 @@ export default function WikiVerificationPage() {
         </button>
       </div>
 
-      <div style={{ borderRadius: 8, border: `0.75px solid ${border}`, background: isDark ? '#1A1A1A' : '#FFFFFF', overflow: 'hidden' }}>
+      <div style={{ borderRadius: 8, border: `0.75px solid ${border}`, background: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF', overflow: 'hidden' }}>
         <div style={{
           display: 'grid', gridTemplateColumns: '1fr 100px 120px 80px 100px 180px',
-          background: isDark ? '#1A1A1A' : '#F1F5F9', padding: '0 16px', height: 50, alignItems: 'center',
+          background: isDark ? 'var(--cp-bg-surface, #242528)' : '#F1F5F9', padding: '0 16px', height: 50, alignItems: 'center',
           fontFamily: 'var(--cp-font-heading)', fontSize: 10, fontWeight: 600, textTransform: 'uppercase' as const,
           color: isDark ? '#878787' : '#64748B', letterSpacing: '0.05em', borderBottom: `0.75px solid ${border}`,
         }}>
@@ -127,7 +127,7 @@ export default function WikiVerificationPage() {
                   }}><ShieldCheck size={11} /> Verify</button>
                   <button onClick={() => handleRequestChanges(a.id)} style={{
                     fontSize: 10, fontWeight: 650, padding: '4px 10px', borderRadius: 4,
-                    border: `0.75px solid ${isDark ? '#454545' : 'rgba(0,0,0,0.12)'}`, background: isDark ? '#1A1A1A' : '#FFFFFF', color: '#D97706',
+                    border: `0.75px solid ${isDark ? '#454545' : 'rgba(0,0,0,0.12)'}`, background: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF', color: '#D97706',
                     cursor: 'pointer',
                   }}>Request Changes</button>
                 </div>

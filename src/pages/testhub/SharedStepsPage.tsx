@@ -260,11 +260,11 @@ export default function SharedStepsPage() {
   // no longer needed — counts come from fetchCategories
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', backgroundColor: isDark ? '#0A0A0A' : '#F8FAFC' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', backgroundColor: isDark ? 'var(--cp-bg-page, #1F1F21)' : '#F8FAFC' }}>
       <TestHubPageHeader title="Shared Steps Library" subtitle="Reusable test steps for consistency across test cases">
             <button onClick={handleRefresh} title="Refresh" style={{
               width: 40, height: 40, padding: 0, border: `1.5px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, borderRadius: 8,
-              backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF', color: isDark ? '#A1A1A1' : '#64748B', cursor: 'pointer',
+              backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF', color: isDark ? '#A1A1A1' : '#64748B', cursor: 'pointer',
               display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
             }}>
               <RefreshCw size={18} />
@@ -285,7 +285,7 @@ export default function SharedStepsPage() {
       <div style={{ flex: 1, display: 'flex', overflow: 'hidden' }}>
         {/* Category Sidebar */}
         <div style={{
-          width: 260, backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF', borderRight: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`,
+          width: 260, backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF', borderRight: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`,
           display: 'flex', flexDirection: 'column', overflow: 'hidden',
         }}>
           {/* Sidebar Header */}
@@ -299,7 +299,7 @@ export default function SharedStepsPage() {
             }}>Categories</h2>
             <button onClick={() => setIsCreateCategoryModalOpen(true)} title="Add category" style={{
               width: 28, height: 28, padding: 0, border: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, borderRadius: 6,
-              backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF', color: isDark ? '#A1A1A1' : '#64748B', cursor: 'pointer',
+              backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF', color: isDark ? '#A1A1A1' : '#64748B', cursor: 'pointer',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
             }}>
               <Plus size={14} />
@@ -345,7 +345,7 @@ export default function SharedStepsPage() {
         <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
           {/* Toolbar */}
           <div style={{
-            padding: '16px 24px', backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF', borderBottom: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`,
+            padding: '16px 24px', backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF', borderBottom: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`,
             display: 'flex', alignItems: 'center', gap: 12,
           }}>
             <div style={{ position: 'relative', flex: 1, maxWidth: 400 }}>
@@ -356,7 +356,7 @@ export default function SharedStepsPage() {
                 style={{
                   width: '100%', height: 40, paddingLeft: 40, paddingRight: 12,
                   border: `1.5px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, borderRadius: 8, fontSize: 14,
-                  color: isDark ? '#EDEDED' : '#0F172A', backgroundColor: isDark ? '#0A0A0A' : '#FFFFFF', fontFamily: 'var(--cp-font-body)',
+                  color: isDark ? '#EDEDED' : '#0F172A', backgroundColor: isDark ? 'var(--cp-bg-page, #1F1F21)' : '#FFFFFF', fontFamily: 'var(--cp-font-body)',
                 }}
               />
             </div>
@@ -369,7 +369,7 @@ export default function SharedStepsPage() {
                   height: 40, padding: '0 14px',
                   border: `1.5px solid ${activeFilters.length > 0 ? '#2563EB' : (isDark ? '#2E2E2E' : '#E2E8F0')}`,
                   borderRadius: 8,
-                  backgroundColor: activeFilters.length > 0 ? (isDark ? 'rgba(37,99,235,0.15)' : '#EFF6FF') : (isDark ? '#1A1A1A' : '#FFFFFF'),
+                  backgroundColor: activeFilters.length > 0 ? (isDark ? 'rgba(37,99,235,0.15)' : '#EFF6FF') : (isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF'),
                   color: activeFilters.length > 0 ? '#2563EB' : (isDark ? '#A1A1A1' : '#334155'),
                   fontSize: 14, fontWeight: 500, cursor: 'pointer',
                   display: 'inline-flex', alignItems: 'center', gap: 8, fontFamily: 'var(--cp-font-body)',
@@ -394,7 +394,7 @@ export default function SharedStepsPage() {
                   onClick={(e) => e.stopPropagation()}
                   style={{
                     position: 'absolute', top: 'calc(100% + 4px)', left: 0, width: 280,
-                    backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF', border: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, borderRadius: 8,
+                    backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF', border: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, borderRadius: 8,
                     boxShadow: isDark ? '0 10px 40px rgba(0,0,0,0.4)' : '0 10px 40px rgba(0,0,0,0.12)', zIndex: 200, overflow: 'hidden',
                   }}
                 >
@@ -457,7 +457,7 @@ export default function SharedStepsPage() {
                 onClick={(e) => { e.stopPropagation(); setIsSortOpen(!isSortOpen); setIsFilterOpen(false); }}
                 style={{
                   height: 40, padding: '0 14px', border: `1.5px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, borderRadius: 8,
-                  backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF', color: isDark ? '#A1A1A1' : '#334155', fontSize: 14, fontWeight: 500,
+                  backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF', color: isDark ? '#A1A1A1' : '#334155', fontSize: 14, fontWeight: 500,
                   cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 8, fontFamily: 'var(--cp-font-body)',
                 }}
               >
@@ -471,7 +471,7 @@ export default function SharedStepsPage() {
                   onClick={(e) => e.stopPropagation()}
                   style={{
                     position: 'absolute', top: 'calc(100% + 4px)', left: 0, width: 220,
-                    backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF', border: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, borderRadius: 8,
+                    backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF', border: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, borderRadius: 8,
                     boxShadow: isDark ? '0 10px 40px rgba(0,0,0,0.4)' : '0 10px 40px rgba(0,0,0,0.12)', zIndex: 200, padding: 8,
                   }}
                 >
@@ -519,7 +519,7 @@ export default function SharedStepsPage() {
             <div style={{ display: 'flex', border: `1.5px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, borderRadius: 8, overflow: 'hidden' }}>
               <button onClick={() => setViewMode('list')} title="List view" style={{
                 width: 40, height: 38, padding: 0, border: 'none',
-                backgroundColor: viewMode === 'list' ? (isDark ? 'rgba(37,99,235,0.15)' : '#EFF6FF') : (isDark ? '#1A1A1A' : '#FFFFFF'),
+                backgroundColor: viewMode === 'list' ? (isDark ? 'rgba(37,99,235,0.15)' : '#EFF6FF') : (isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF'),
                 color: viewMode === 'list' ? '#2563EB' : (isDark ? '#A1A1A1' : '#64748B'), cursor: 'pointer',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
               }}>
@@ -528,7 +528,7 @@ export default function SharedStepsPage() {
               <button onClick={() => setViewMode('card')} title="Card view" style={{
                 width: 40, height: 38, padding: 0, border: 'none',
                 borderLeft: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`,
-                backgroundColor: viewMode === 'card' ? (isDark ? 'rgba(37,99,235,0.15)' : '#EFF6FF') : (isDark ? '#1A1A1A' : '#FFFFFF'),
+                backgroundColor: viewMode === 'card' ? (isDark ? 'rgba(37,99,235,0.15)' : '#EFF6FF') : (isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF'),
                 color: viewMode === 'card' ? '#2563EB' : (isDark ? '#A1A1A1' : '#64748B'), cursor: 'pointer',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
               }}>
@@ -564,10 +564,10 @@ export default function SharedStepsPage() {
                 </p>
               </div>
             ) : viewMode === 'list' ? (
-              <div style={{ backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF', border: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, borderRadius: 12, overflow: 'hidden' }}>
+              <div style={{ backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF', border: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, borderRadius: 12, overflow: 'hidden' }}>
                 <table style={{ width: '100%', borderCollapse: 'collapse', fontFamily: 'var(--cp-font-body)' }}>
                   <thead>
-                    <tr style={{ borderBottom: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, backgroundColor: isDark ? '#1A1A1A' : '#F8FAFC' }}>
+                    <tr style={{ borderBottom: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : '#F8FAFC' }}>
                       <th style={{ padding: '12px 16px', textAlign: 'left', fontSize: 11, fontWeight: 600, color: isDark ? '#878787' : '#64748B', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Name</th>
                       <th style={{ padding: '12px 16px', textAlign: 'left', fontSize: 11, fontWeight: 600, color: isDark ? '#878787' : '#64748B', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Category</th>
                       <th style={{ padding: '12px 16px', textAlign: 'center', fontSize: 11, fontWeight: 600, color: isDark ? '#878787' : '#64748B', textTransform: 'uppercase', letterSpacing: '0.05em', width: 80 }}>Variables</th>
@@ -586,7 +586,7 @@ export default function SharedStepsPage() {
                             borderBottom: index < sharedSteps.length - 1 ? `1px solid ${isDark ? '#292929' : '#F1F5F9'}` : 'none',
                             cursor: 'pointer', transition: 'background-color 0.15s',
                           }}
-                          onMouseEnter={(e) => e.currentTarget.style.backgroundColor = isDark ? '#1A1A1A' : '#F8FAFC'}
+                          onMouseEnter={(e) => e.currentTarget.style.backgroundColor = isDark ? 'var(--cp-bg-surface, #242528)' : '#F8FAFC'}
                           onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
                         >
                           <td style={{ padding: '12px 16px' }}>
@@ -601,7 +601,7 @@ export default function SharedStepsPage() {
                             {step.category ? (
                               <span style={{
                                 display: 'inline-flex', alignItems: 'center', gap: 4, padding: '2px 8px',
-                                backgroundColor: isDark ? '#1A1A1A' : '#F1F5F9', borderRadius: 4, fontSize: 11,
+                                backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : '#F1F5F9', borderRadius: 4, fontSize: 11,
                                 fontWeight: 600, color: isDark ? '#A1A1A1' : '#374151',
                               }}>
                                 {step.category.name}
@@ -624,7 +624,7 @@ export default function SharedStepsPage() {
                               onClick={(e) => { e.stopPropagation(); navigate(`/testhub/shared-steps/${step.id}`); }}
                               style={{
                                 padding: '2px 8px', borderRadius: 12, fontSize: 12, fontWeight: 600,
-                                backgroundColor: step.usage_count > 0 ? (isDark ? 'rgba(5,150,105,0.12)' : '#F0FDF4') : (isDark ? '#1A1A1A' : '#F1F5F9'),
+                                backgroundColor: step.usage_count > 0 ? (isDark ? 'rgba(5,150,105,0.12)' : '#F0FDF4') : (isDark ? 'var(--cp-bg-surface, #242528)' : '#F1F5F9'),
                                 color: step.usage_count > 0 ? '#059669' : (isDark ? '#878787' : '#64748B'),
                                 border: 'none', cursor: 'pointer',
                               }}
@@ -739,7 +739,7 @@ function CategorySidebarItem({ label, icon, count, isSelected, selectedColor, on
     >
       <div style={{
         width: 32, height: 32, borderRadius: 8, flexShrink: 0,
-        backgroundColor: isSelected ? `${selectedColor}25` : (isDark ? '#1A1A1A' : '#F1F5F9'),
+        backgroundColor: isSelected ? `${selectedColor}25` : (isDark ? 'var(--cp-bg-surface, #242528)' : '#F1F5F9'),
         display: 'flex', alignItems: 'center', justifyContent: 'center',
       }}>
         {icon}
@@ -754,7 +754,7 @@ function CategorySidebarItem({ label, icon, count, isSelected, selectedColor, on
       <span style={{
         fontSize: 12, fontWeight: 500, padding: '2px 8px', borderRadius: 12, flexShrink: 0,
         color: isSelected ? selectedColor : (isDark ? '#878787' : '#94A3B8'),
-        backgroundColor: isSelected ? `${selectedColor}20` : (isDark ? '#1A1A1A' : '#F1F5F9'),
+        backgroundColor: isSelected ? `${selectedColor}20` : (isDark ? 'var(--cp-bg-surface, #242528)' : '#F1F5F9'),
       }}>
         {count}
       </span>
@@ -785,7 +785,7 @@ function SharedStepCard({ step, onView, onEdit, onDuplicate, onDelete, isDark = 
   return (
     <div
       style={{
-        backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF', border: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, borderRadius: 8,
+        backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF', border: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, borderRadius: 8,
         padding: 16, cursor: 'pointer', transition: 'border-color 0.15s, box-shadow 0.15s', display: 'flex', flexDirection: 'column' as const,
       }}
       onMouseEnter={(e) => { e.currentTarget.style.borderColor = isDark ? '#454545' : '#CBD5E1'; e.currentTarget.style.boxShadow = isDark ? '0 4px 12px rgba(0,0,0,0.2)' : '0 4px 12px rgba(0,0,0,0.08)'; }}
@@ -798,7 +798,7 @@ function SharedStepCard({ step, onView, onEdit, onDuplicate, onDelete, isDark = 
         {cat && (
             <span style={{
               display: 'inline-flex', alignItems: 'center', gap: 4, padding: '2px 8px',
-              backgroundColor: isDark ? '#1A1A1A' : '#F1F5F9', borderRadius: 4, fontSize: 11,
+              backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : '#F1F5F9', borderRadius: 4, fontSize: 11,
               fontWeight: 600, color: isDark ? '#A1A1A1' : '#374151', fontFamily: 'var(--cp-font-body)',
             }}>
               {cat.name}
@@ -828,7 +828,7 @@ function SharedStepCard({ step, onView, onEdit, onDuplicate, onDelete, isDark = 
             <div
               onClick={(e) => e.stopPropagation()}
               style={{
-                position: 'absolute', right: 0, top: 36, width: 160, backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF',
+                position: 'absolute', right: 0, top: 36, width: 160, backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF',
                 borderRadius: 8, border: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, boxShadow: isDark ? '0 8px 24px rgba(0,0,0,0.4)' : '0 8px 24px rgba(0,0,0,0.12)',
                 padding: 4, zIndex: 50,
               }}
@@ -877,7 +877,7 @@ function SharedStepCard({ step, onView, onEdit, onDuplicate, onDelete, isDark = 
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, paddingTop: 12, borderTop: `1px solid ${isDark ? '#292929' : '#F1F5F9'}` }}>
           {variables.map((v, i) => (
             <span key={i} style={{
-              padding: '2px 8px', backgroundColor: isDark ? '#1A1A1A' : '#F1F5F9', borderRadius: 4,
+              padding: '2px 8px', backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : '#F1F5F9', borderRadius: 4,
               fontFamily: 'monospace', fontSize: 11, color: isDark ? '#878787' : '#64748B',
             }}>
               {`{{${v.name}}}`}

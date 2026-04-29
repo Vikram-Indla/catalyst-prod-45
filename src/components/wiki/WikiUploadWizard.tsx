@@ -130,7 +130,7 @@ export function WikiUploadWizard({ open, onClose }: Props) {
       display: 'flex', alignItems: 'center', justifyContent: 'center',
     }}>
       <div style={{
-        width: 640, maxHeight: '85vh', background: isDark ? '#1A1A1A' : 'var(--cp-bg-elevated)',
+        width: 640, maxHeight: '85vh', background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--cp-bg-elevated)',
         borderRadius: 12, boxShadow: isDark ? '0 16px 48px rgba(0,0,0,0.4)' : 'var(--cp-shadow-overlay)',
         display: 'flex', flexDirection: 'column', overflow: 'hidden',
         border: isDark ? '1px solid #2E2E2E' : '1px solid var(--cp-border-default)',
@@ -141,7 +141,7 @@ export function WikiUploadWizard({ open, onClose }: Props) {
             <span style={{ fontSize: 16, fontWeight: 650, fontFamily: 'var(--cp-font-body)', color: isDark ? '#EDEDED' : 'var(--cp-text-primary)' }}>Upload Documents</span>
             <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', color: isDark ? '#878787' : 'var(--cp-text-muted)', padding: 4 }}><X size={16} /></button>
           </div>
-          <div style={{ height: 3, background: isDark ? '#0A0A0A' : 'var(--cp-bg-sunken)', borderRadius: 4, overflow: 'hidden' }}>
+          <div style={{ height: 3, background: isDark ? 'var(--cp-bg-page, #1F1F21)' : 'var(--cp-bg-sunken)', borderRadius: 4, overflow: 'hidden' }}>
             <div style={{ height: '100%', width: `${progressPct}%`, background: 'var(--cp-primary-60)', transition: 'width 300ms', borderRadius: 2 }} />
           </div>
           <div style={{ display: 'flex', gap: 4, marginTop: 8, marginBottom: 12 }}>
@@ -163,7 +163,7 @@ export function WikiUploadWizard({ open, onClose }: Props) {
                 style={{
                   border: isDark ? '2px dashed #2E2E2E' : '2px dashed var(--cp-border-default)', borderRadius: 6,
                   padding: 40, textAlign: 'center', cursor: 'pointer',
-                  background: isDark ? '#1A1A1A' : 'var(--cp-bg-surface)', marginBottom: 16,
+                  background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--cp-bg-surface)', marginBottom: 16,
                 }}
                 onClick={() => document.getElementById('wiki-file-input')?.click()}
               >

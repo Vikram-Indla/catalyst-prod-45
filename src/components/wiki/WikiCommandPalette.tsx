@@ -103,7 +103,7 @@ export function WikiCommandPalette({ open, onClose }: Props) {
       opacity: 1, transition: 'opacity 150ms ease',
     }}>
       <div onClick={e => e.stopPropagation()} style={{
-        width: 560, maxHeight: 420, background: isDark ? '#1A1A1A' : 'var(--cp-bg-elevated)',
+        width: 560, maxHeight: 420, background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--cp-bg-elevated)',
         borderRadius: 12, boxShadow: isDark ? '0 16px 48px rgba(0,0,0,0.4)' : 'var(--cp-shadow-overlay)',
         display: 'flex', flexDirection: 'column', overflow: 'hidden',
         border: isDark ? '1px solid #2E2E2E' : '1px solid var(--cp-border-default)',
@@ -163,9 +163,9 @@ export function WikiCommandPalette({ open, onClose }: Props) {
           padding: '8px 16px', borderTop: isDark ? '1px solid #2E2E2E' : '1px solid var(--cp-border-default)',
           display: 'flex', gap: 16, fontSize: 11, color: isDark ? '#878787' : 'var(--cp-text-muted)',
         }}>
-          <span><kbd style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 10, padding: '1px 4px', borderRadius: 4, border: isDark ? '1px solid #2E2E2E' : '1px solid var(--cp-border-default)', background: isDark ? '#0A0A0A' : 'var(--cp-bg-sunken)' }}>↑↓</kbd> Navigate</span>
-          <span><kbd style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 10, padding: '1px 4px', borderRadius: 4, border: isDark ? '1px solid #2E2E2E' : '1px solid var(--cp-border-default)', background: isDark ? '#0A0A0A' : 'var(--cp-bg-sunken)' }}>↵</kbd> Open</span>
-          <span><kbd style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 10, padding: '1px 4px', borderRadius: 4, border: isDark ? '1px solid #2E2E2E' : '1px solid var(--cp-border-default)', background: isDark ? '#0A0A0A' : 'var(--cp-bg-sunken)' }}>ESC</kbd> Close</span>
+          <span><kbd style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 10, padding: '1px 4px', borderRadius: 4, border: isDark ? '1px solid #2E2E2E' : '1px solid var(--cp-border-default)', background: isDark ? 'var(--cp-bg-page, #1F1F21)' : 'var(--cp-bg-sunken)' }}>↑↓</kbd> Navigate</span>
+          <span><kbd style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 10, padding: '1px 4px', borderRadius: 4, border: isDark ? '1px solid #2E2E2E' : '1px solid var(--cp-border-default)', background: isDark ? 'var(--cp-bg-page, #1F1F21)' : 'var(--cp-bg-sunken)' }}>↵</kbd> Open</span>
+          <span><kbd style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 10, padding: '1px 4px', borderRadius: 4, border: isDark ? '1px solid #2E2E2E' : '1px solid var(--cp-border-default)', background: isDark ? 'var(--cp-bg-page, #1F1F21)' : 'var(--cp-bg-sunken)' }}>ESC</kbd> Close</span>
         </div>
       </div>
     </div>
