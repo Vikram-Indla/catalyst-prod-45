@@ -120,6 +120,8 @@ export interface ProjectChromeBandProps {
 export function ProjectChromeBand({
   projectName,
   projectIconUrl,
+  projectIconName,
+  projectColor,
   projectHref,
   projectsHref = '/',
   actions,
@@ -171,42 +173,16 @@ export function ProjectChromeBand({
           paddingBottom: 4,
         }}
       >
-        {/* Project icon. Native IMG when URL provided, else a 20×20
-            initial-letter fallback. Sized to match Jira parity probe at
-            (23, 97, 20×20). */}
-        {projectIconUrl ? (
-          <img
-            src={projectIconUrl}
-            alt=""
-            width={20}
-            height={20}
-            style={{
-              borderRadius: 3,
-              flexShrink: 0,
-              objectFit: 'cover',
-            }}
-          />
-        ) : (
-          <div
-            aria-hidden="true"
-            style={{
-              width: 20,
-              height: 20,
-              borderRadius: 3,
-              flexShrink: 0,
-              background: token('color.background.brand.bold', '#0C66E4'),
-              color: token('color.text.inverse', '#FFFFFF'),
-              display: 'inline-flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              fontSize: 11,
-              fontWeight: 700,
-              fontFamily: 'inherit',
-            }}
-          >
-            {(projectName || '?').slice(0, 1).toUpperCase()}
-          </div>
-        )}
+        {/* Canonical project icon (mem://constraints/canonical-project-icons).
+            20×20 ADS-square equivalent (radius 3). NEVER renders a hashed-name
+            initial tile — fallback is muted Lucide Folder. */}
+        <ProjectIcon
+          size="small"
+          avatarUrl={projectIconUrl}
+          iconName={projectIconName}
+          color={projectColor}
+          name={projectName}
+        />
 
         {/* H1. 20px / weight 653 / -0.003em — exact Jira parity probe at
             "Senaei BAU" 20px/653 color rgb(41,42,46). Inline so it sits on
