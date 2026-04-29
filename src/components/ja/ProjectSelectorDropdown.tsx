@@ -7,9 +7,10 @@
  */
 import React, { useCallback, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Search, Plus, Settings, LayoutGrid, Lock } from 'lucide-react';
+import { Search, Plus, Settings, Lock } from 'lucide-react';
 import { useWorkspaceAccess } from '@/hooks/useWorkspaceAccess';
 import { useCatalystContext } from '@/contexts/CatalystContext';
+import { ProjectIcon } from '@/components/shared/ProjectIcon';
 import { cn } from '@/lib/utils';
 
 interface ProjectSelectorDropdownProps {
@@ -108,7 +109,13 @@ export const ProjectSelectorDropdown = React.memo(function ProjectSelectorDropdo
                     : "opacity-50 cursor-not-allowed"
                 )}
               >
-                <LayoutGrid className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+                <ProjectIcon
+                  size="small"
+                  avatarUrl={project.avatarUrl}
+                  iconName={project.iconName}
+                  color={project.color}
+                  name={project.name}
+                />
                 <div className="flex-1 min-w-0 flex items-center gap-1.5">
                   <span className="text-sm text-foreground truncate">
                     {project.name}
