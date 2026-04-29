@@ -449,7 +449,9 @@ function renderMenuItem(
         e.currentTarget.style.color = active ? tk.activeText : tk.itemText;
       }}
     >
-      {/* Left Accent Bar — 3px, only when expanded and active */}
+      {/* Left Accent Bar — 3px, only when expanded and active.
+          Dark mode uses ADS color.border.selected (#579DFF/#669DF1 family)
+          to match Jira's For-you rail; light mode keeps Catalyst Blue. */}
       {active && expanded && (
         <span
           style={{
@@ -458,7 +460,9 @@ function renderMenuItem(
             top: '4px',
             bottom: '4px',
             width: '3px',
-            background: 'var(--cp-blue)',
+            background: tk.isDark
+              ? 'var(--ds-border-selected, #579DFF)'
+              : 'var(--cp-blue)',
             borderRadius: '0 3px 3px 0',
           }}
         />
