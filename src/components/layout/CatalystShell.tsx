@@ -4,7 +4,48 @@ import { useGlobalSearchStore } from '@/store/globalSearchStore';
 import { useNavBreakpoint } from '@/hooks/useNavBreakpoint';
 import { GlobalMobileDrawer } from './GlobalMobileDrawer';
 
-const CatalystDetailRouter = lazy(() => import('@/components/catalyst-detail-views/CatalystDetailRouter'));
+/**
+ * lazyWithRetry — defends against Vite stale-chunk errors after deploys/HMR.
+ *
+ * When a user has a tab open during a redeploy, the chunk URLs they loaded
+ * earlier may 404 because Vite has produced new hashed chunks. The dynamic
+ * import() rejects with "Failed to fetch dynamically imported module", which
+ * bubbles up to ErrorBoundary and renders a blank page — exactly the /for-you
+ * regression we are chasing today.
+ *
+ * Strategy: catch the failure, attempt a single hard reload (gated by
+ * sessionStorage to avoid reload loops), then re-throw if reload doesn't help.
+ */
+function lazyWithRetry<T extends ComponentType<any>>(
+  factory: () => Promise<{ default: T }>,
+  chunkName: string
+) {
+  return lazy(async () => {
+    try {
+      return await factory();
+    } catch (err: any) {
+      const msg = String(err?.message || err || '');
+      const isStaleChunk =
+        msg.includes('Failed to fetch dynamically imported module') ||
+        msg.includes('Importing a module script failed') ||
+        msg.includes('error loading dynamically imported module');
+      if (isStaleChunk && typeof window !== 'undefined') {
+        const key = `__catalyst_lazy_retry__${chunkName}`;
+        const alreadyRetried = sessionStorage.getItem(key);
+        if (!alreadyRetried) {
+          sessionStorage.setItem(key, String(Date.now()));
+          window.location.reload();
+          // Return a never-resolving promise so React keeps the Suspense
+          // fallback up while the page reloads, instead of crashing.
+          return new Promise<{ default: T }>(() => {});
+        }
+      }
+      throw err;
+    }
+  });
+}
+
+const CatalystDetailRouter = lazyWithRetry(() => import('@/components/catalyst-detail-views/CatalystDetailRouter'), 'CatalystDetailRouter');
 
 import { useLocation, useParams, Outlet, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
