@@ -1,4 +1,18 @@
 /**
+ * 🪦 DEAD CODE — SUNSET 2026-04-30 (jira-compare cycle 7)
+ *
+ * v1 of this view is no longer mounted. The canonical Product Hub Business Request
+ * detail view is the v2 sibling in this same directory:
+ *   src/components/catalyst-detail-views/business-request/CatalystViewBusinessRequest.v2.tsx
+ *
+ * v2 ships the full ADS-only single-scroll layout (15 fields + scoring + linked items
+ * + attachments + watchers + clone/archive/delete) used across cycles 4–6 (14 mount sites).
+ *
+ * Search this file before editing — any change here is a no-op in production.
+ * Schedule deletion after v2 has baked in for one sprint.
+ */
+
+/**
  * CatalystViewBusinessRequest — Business Request / Demand detail overlay.
  *
  * Canonical sections: Title, Description, Acceptance Criteria, Priority,

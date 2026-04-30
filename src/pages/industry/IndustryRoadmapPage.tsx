@@ -13,7 +13,10 @@ import { cn } from '@/lib/utils';
 import GlobalPageHeader from '@/components/layout/GlobalPageHeader';
 import { TimelineFilterPopover, TimelineFilterState, DEFAULT_TIMELINE_FILTER } from '@/components/roadmap/TimelineFilterPopover';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
-import { BusinessRequestDetailModal } from '@/components/business-requests/BusinessRequestDetailModal';
+// jira-compare cycle 5 — BusinessRequestDetailModal replaced by CatalystViewBusinessRequestV2.
+// Legacy import retained as commented sunset breadcrumb.
+// import { BusinessRequestDetailModal } from '@/components/business-requests/BusinessRequestDetailModal';
+import CatalystViewBusinessRequestV2 from '@/components/catalyst-detail-views/business-request/CatalystViewBusinessRequest.v2';
 import { IndustryRoadmapFiltersDialog, IndustryFilters, DEFAULT_INDUSTRY_FILTERS, getCurrentQuarterDates, getNextQuarterDates } from '@/components/industry/IndustryRoadmapFiltersDialog';
 
 // ===== TYPES =====
@@ -1316,7 +1319,7 @@ export default function IndustryRoadmapPage() {
       />
       
       {/* Business Request Detail Modal */}
-      <BusinessRequestDetailModal
+      <CatalystViewBusinessRequestV2
         requestId={selectedRequestId}
         isOpen={!!selectedRequestId}
         onClose={() => setSelectedRequestId(null)}

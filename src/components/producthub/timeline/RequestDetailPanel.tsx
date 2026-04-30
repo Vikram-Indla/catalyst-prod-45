@@ -1,4 +1,24 @@
 /**
+ * 🪦 DEAD CODE — SUNSET 2026-04-30 (jira-compare cycle 7)
+ *
+ * This component is no longer mounted anywhere in the codebase. Every consumer
+ * has been migrated to the canonical:
+ *   src/components/catalyst-detail-views/business-request/CatalystViewBusinessRequest.v2.tsx
+ *
+ * Mount-swap history:
+ *   - Cycle 4 (PH-canonical, 4 sites): RequestListingPage, KanbanPage, CardsPage,
+ *     ProductRoadmapPage (product-hub variant)
+ *   - Cycle 5 (BR-domain, 9 sites): CatalystDemandTable, CatalystDemandList drawer,
+ *     CatalystDemandKanban, ProductRoadmap module, IndustryRoadmapPage,
+ *     DemandIntakeCatalyst, ProductRoadmapPage (top-level), RiskLinksTab,
+ *     ExecutiveRoadmap
+ *   - Cycle 6 (split-panel, 1 site): CatalystDemandList split-panel right pane
+ *
+ * Search this file before editing — any change here is a no-op in production.
+ * Schedule deletion after CatalystViewBusinessRequestV2 has baked in for one sprint.
+ */
+
+/**
  * Request Detail Panel — V3.1 MARAM + Catalyst V11 Carbon Precision
  * 62% width slide-out drawer with 7 tabs.
  *

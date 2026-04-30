@@ -5,7 +5,10 @@
 
 import React, { useState, useMemo, useCallback } from 'react';
 import { useBusinessRequests } from '@/hooks/useBusinessRequests';
-import { BusinessRequestDetailModal } from '@/components/business-requests/BusinessRequestDetailModal';
+// jira-compare cycle 5 — BusinessRequestDetailModal replaced by CatalystViewBusinessRequestV2.
+// Legacy import retained as commented sunset breadcrumb.
+// import { BusinessRequestDetailModal } from '@/components/business-requests/BusinessRequestDetailModal';
+import CatalystViewBusinessRequestV2 from '@/components/catalyst-detail-views/business-request/CatalystViewBusinessRequest.v2';
 import { CreateBusinessRequestModal } from '@/components/business-requests/CreateBusinessRequestModal';
 import { ProductBacklogFiltersDialog, ProductBacklogFilters } from '../components/ProductBacklogFiltersDialog';
 import { BacklogTableView } from '@/components/business-requests/table-view';
@@ -203,11 +206,10 @@ export default function CatalystDemandTable() {
       />
 
       {/* Business Request Detail Modal */}
-      <BusinessRequestDetailModal
+      <CatalystViewBusinessRequestV2
         isOpen={!!drawerRequestId}
         onClose={() => setDrawerRequestId(null)}
         requestId={drawerRequestId}
-        onRequestChange={() => queryClient.invalidateQueries({ queryKey: ['business-requests'] })}
       />
 
       {/* Create Modal */}

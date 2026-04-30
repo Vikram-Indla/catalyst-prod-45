@@ -1,4 +1,15 @@
 /**
+ * 🪦 DEAD CODE — SUNSET 2026-04-30 (jira-compare cycle 7)
+ *
+ * This split-panel right-pane is no longer mounted. CatalystDemandList.tsx (cycle 6)
+ * now embeds CatalystViewBusinessRequestV2 in fullPageMode for the same surface area:
+ *   src/components/catalyst-detail-views/business-request/CatalystViewBusinessRequest.v2.tsx
+ *
+ * The barrel export at ../split-panel/index.ts still names this file but no consumer
+ * imports it. Schedule deletion (file + barrel entry) after v2 has baked in for one sprint.
+ */
+
+/**
  * RequestDetailPanel - Right panel for split panel layout
  * Full detail view of selected request with inline editing
  * Matches the design spec with exact field layout

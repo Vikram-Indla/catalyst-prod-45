@@ -8,10 +8,17 @@ import React, { useState, useMemo, useCallback, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { cn } from '@/lib/utils';
 import { useBusinessRequests } from '@/hooks/useBusinessRequests';
-import { BusinessRequestDetailModal } from '@/components/business-requests/BusinessRequestDetailModal';
+// jira-compare cycle 5 — BusinessRequestDetailModal replaced by CatalystViewBusinessRequestV2.
+// Legacy import retained as commented sunset breadcrumb.
+// import { BusinessRequestDetailModal } from '@/components/business-requests/BusinessRequestDetailModal';
+import CatalystViewBusinessRequestV2 from '@/components/catalyst-detail-views/business-request/CatalystViewBusinessRequest.v2';
 import { CreateBusinessRequestModal } from '@/components/business-requests/CreateBusinessRequestModal';
 import { ProductBacklogFiltersDialog, ProductBacklogFilters } from '../components/ProductBacklogFiltersDialog';
-import { RequestListPanel, RequestDetailPanel, AttachmentUploadModal } from '../components/split-panel';
+// jira-compare cycle 6 — split-panel RequestDetailPanel replaced inline by
+// CatalystViewBusinessRequestV2 in fullPageMode. RequestListPanel + AttachmentUploadModal
+// are still used by this surface and remain imported.
+// import { RequestDetailPanel } from '../components/split-panel'; // sunset breadcrumb
+import { RequestListPanel, AttachmentUploadModal } from '../components/split-panel';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { useQueryClient } from '@tanstack/react-query';
@@ -553,31 +560,26 @@ export default function CatalystDemandList() {
           "flex-1 min-w-0 h-full",
           mobileShowDetail ? "block" : "hidden md:block"
         )}>
-          <RequestDetailPanel
-            request={selectedRequest}
-            onUpdateField={handleFieldUpdate}
-            onEdit={() => selectedRequest && openDrawerWithTab(selectedRequest._dbId)}
-            onClone={handleClone}
-            onDelete={() => setDeleteDialogOpen(true)}
-            onOpenDrawer={() => selectedRequest && openDrawerWithTab(selectedRequest._dbId)}
-            onAttachment={() => {
-              if (selectedRequest) {
-                setAttachmentModalOpen(true);
-              }
-            }}
-            onLink={() => {
-              if (selectedRequest) {
-                openDrawerWithTab(selectedRequest._dbId, 'links');
-              }
-            }}
-            onScore={() => {
-              if (selectedRequest) {
-                openDrawerWithTab(selectedRequest._dbId, 'business-score');
-              }
-            }}
-            onMobileBack={handleMobileBack}
-            showMobileBack={mobileShowDetail}
-          />
+          {selectedRequest ? (
+            // jira-compare cycle 6 — fullPageMode renders v2 inline (no modal chrome,
+            // no escape, no overlay) so it fits the split-panel right pane.
+            // v2 owns Clone/Archive/Delete in its More menu, attachments/linked-items/scoring
+            // sections inline, and inline-edit on every field — so the legacy 8-callback
+            // surface (onUpdateField, onEdit, onClone, onDelete, onOpenDrawer, onAttachment,
+            // onLink, onScore) is no longer needed. onMobileBack / showMobileBack on mobile
+            // is parent-controlled via the wrapper div's `mobileShowDetail` CSS class.
+            <CatalystViewBusinessRequestV2
+              isOpen={true}
+              fullPageMode={true}
+              requestId={selectedRequest._dbId}
+              requestKey={selectedRequest.id}
+              onClose={handleMobileBack}
+            />
+          ) : (
+            <div className="flex h-full items-center justify-center text-sm text-muted-foreground">
+              Select a request to view details
+            </div>
+          )}
         </div>
       </div>
 
@@ -600,14 +602,13 @@ export default function CatalystDemandList() {
       />
 
       {/* Business Request Detail Modal */}
-      <BusinessRequestDetailModal
+      <CatalystViewBusinessRequestV2
         isOpen={!!drawerRequestId}
         onClose={() => {
           setDrawerRequestId(null);
           setDrawerInitialTab(undefined);
         }}
         requestId={drawerRequestId}
-        onRequestChange={() => queryClient.invalidateQueries({ queryKey: ['business-requests'] })}
       />
 
       {/* Create Modal */}

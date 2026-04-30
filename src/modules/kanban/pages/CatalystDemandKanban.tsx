@@ -15,7 +15,10 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { CreateBusinessRequestModal } from '@/components/business-requests/CreateBusinessRequestModal';
 import { IndustryHeaderToolbarV2 } from '@/shared/components/IndustryHeaderToolbarV2';
 import { useDepartments } from '@/hooks/useDepartmentsAndOwners';
-import { BusinessRequestDetailModal } from '@/components/business-requests/BusinessRequestDetailModal';
+// jira-compare cycle 5 — BusinessRequestDetailModal replaced by CatalystViewBusinessRequestV2.
+// Legacy import retained as commented sunset breadcrumb.
+// import { BusinessRequestDetailModal } from '@/components/business-requests/BusinessRequestDetailModal';
+import CatalystViewBusinessRequestV2 from '@/components/catalyst-detail-views/business-request/CatalystViewBusinessRequest.v2';
 import { PageChrome } from '@/components/layout/PageChrome';
 import { useIndustryViewStore } from '@/stores/useIndustryViewStore';
 
@@ -253,7 +256,7 @@ export default function CatalystDemandKanban() {
       </div>
 
       {/* Business Request Detail Modal */}
-      <BusinessRequestDetailModal
+      <CatalystViewBusinessRequestV2
         isOpen={!!selectedCardId}
         onClose={() => setSelectedCardId(null)}
         requestId={selectedCardId || null}

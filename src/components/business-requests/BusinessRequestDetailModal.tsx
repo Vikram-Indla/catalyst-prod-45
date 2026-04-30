@@ -1,4 +1,20 @@
 /**
+ * 🪦 DEAD CODE — SUNSET 2026-04-30 (jira-compare cycle 7)
+ *
+ * This modal is no longer mounted anywhere. All 9 BR-domain consumers were migrated
+ * in cycle 5 to the canonical:
+ *   src/components/catalyst-detail-views/business-request/CatalystViewBusinessRequest.v2.tsx
+ *
+ * Cycle 5 mount swaps: CatalystDemandTable, CatalystDemandList drawer,
+ * CatalystDemandKanban, ProductRoadmap module, IndustryRoadmapPage,
+ * DemandIntakeCatalyst, ProductRoadmapPage (top-level), RiskLinksTab,
+ * ExecutiveRoadmap.
+ *
+ * Search this file before editing — any change here is a no-op in production.
+ * Schedule deletion after v2 has baked in for one sprint.
+ */
+
+/**
  * BusinessRequestDetailModal — Enterprise two-column modal
  * Replaces BusinessRequestDrawer with StoryDetailModal patterns:
  * - Jira-parity breadcrumb + share + dots menu header

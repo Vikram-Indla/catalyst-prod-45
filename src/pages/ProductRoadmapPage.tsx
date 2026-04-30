@@ -9,7 +9,10 @@ import { filterDemandsCanonical, countMatchingDemands, filterByViewportOverlap }
 import { Scale, Demand } from '@/types/product-roadmap';
 import { useProductRoadmapData } from '@/hooks/useProductRoadmapData';
 import { useProductRoadmapFilters } from '@/hooks/useProductRoadmapFilters';
-import { BusinessRequestDetailModal } from '@/components/business-requests/BusinessRequestDetailModal';
+// jira-compare cycle 5 — BusinessRequestDetailModal replaced by CatalystViewBusinessRequestV2.
+// Legacy import retained as commented sunset breadcrumb.
+// import { BusinessRequestDetailModal } from '@/components/business-requests/BusinessRequestDetailModal';
+import CatalystViewBusinessRequestV2 from '@/components/catalyst-detail-views/business-request/CatalystViewBusinessRequest.v2';
 import GlobalPageHeader from '@/components/layout/GlobalPageHeader';
 import { Loader2 } from 'lucide-react';
 import { RoadmapViewport, RoadmapDebugOverlay } from '@/components/roadmaps/RoadmapDateFilterV2';
@@ -337,7 +340,7 @@ export const ProductRoadmapPage: React.FC = () => {
       />
 
       {/* Business Request Detail Modal */}
-      <BusinessRequestDetailModal
+      <CatalystViewBusinessRequestV2
         requestId={selectedDemandId}
         isOpen={!!selectedDemandId}
         onClose={handleCloseDrawer}

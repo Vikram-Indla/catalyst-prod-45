@@ -13,7 +13,11 @@ import { RoadmapLoadingSkeleton } from './RoadmapLoadingSkeleton';
 import { RoadmapEmptyState } from './RoadmapEmptyState';
 import { RoadmapFilterDialog } from './RoadmapFilterDialog';
 import { RoadmapExportDialog } from './RoadmapExportDialog';
-import { BusinessRequestDetailModal } from '@/components/business-requests/BusinessRequestDetailModal';
+// jira-compare cycle 5 — BusinessRequestDetailModal replaced by CatalystViewBusinessRequestV2.
+// jira-compare cycle 7 — sibling-nav (Prev/Next chevrons) restored via navigationItems +
+// onNavigate props. Legacy import retained as sunset breadcrumb.
+// import { BusinessRequestDetailModal } from '@/components/business-requests/BusinessRequestDetailModal';
+import CatalystViewBusinessRequestV2 from '@/components/catalyst-detail-views/business-request/CatalystViewBusinessRequest.v2';
 import { RoadmapDetailPanel } from './RoadmapDetailPanel';
 import { useRoadmapDemands, useReorderDemands, useUpdateDemandDates } from '../hooks/useRoadmapDemands';
 import { useRoadmapFilters } from '../hooks/useRoadmapFilters';
@@ -281,11 +285,17 @@ export function ProductRoadmap({ isFullscreen = false, onToggleFullscreen }: Pro
           />
 
           {/* Business Request Detail Modal */}
-          <BusinessRequestDetailModal
+          <CatalystViewBusinessRequestV2
             isOpen={isDrawerOpen}
             onClose={handleCloseDrawer}
             requestId={drawerRequestId}
-            onRequestChange={handleDrawerRequestChange}
+            navigationItems={items.map(it => ({
+              id: it.id,
+              summary: it.title,
+              issue_key: it.request_key,
+            }))}
+            currentItemId={drawerRequestId ?? undefined}
+            onNavigate={handleDrawerRequestChange}
           />
 
           {/* Detail Panel */}
