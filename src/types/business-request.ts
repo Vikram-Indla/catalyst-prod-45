@@ -317,6 +317,14 @@ export interface BusinessRequest {
   import_source: string | null;  // 'notion' for imported rows; null for native
   import_ref: string | null;     // Notion page URL — conflict key for upsert idempotency
 
+  // Producthub view migration (cycle 3, 2026-04-30) — these columns
+  // already exist on `business_requests` and are written by
+  // `useCreateBusinessRequest` (via `as any`); typing them here so the
+  // View modal's inline-edit handlers don't need to widen.
+  request_type: string | null;   // 'feature' | 'gap' | 'integration' | 'data_request'
+  category: string | null;       // 'Industrial' | 'Ministry Website' | 'Internal Services' | 'Innovation Platform'
+  scope_url: string | null;      // Optional canonical URL to the scope doc
+
   // Metadata
   created_at: string;
   updated_at: string;

@@ -27,7 +27,10 @@ import { toast } from 'sonner';
 import { KanbanBoardShell } from '@/components/kanban/KanbanBoardShell';
 import { buildProductHubBoardAdapter } from '@/components/kanban/adapters/productHubBoardAdapter';
 import { CreateRequestDrawer } from '@/components/producthub/shared/CreateRequestDrawer';
-import { RequestDetailPanel } from '@/components/producthub/timeline/RequestDetailPanel';
+// jira-compare cycle 4 — RequestDetailPanel replaced by CatalystViewBusinessRequestV2.
+// Legacy import retained as commented sunset breadcrumb.
+// import { RequestDetailPanel } from '@/components/producthub/timeline/RequestDetailPanel';
+import CatalystViewBusinessRequestV2 from '@/components/catalyst-detail-views/business-request/CatalystViewBusinessRequest.v2';
 import { useRequestsBacklog } from '@/hooks/useRequestsBacklog';
 import { useProfileAvatarsByName } from '@/hooks/useProfileAvatars';
 import { useCatalystWorkflow } from '@/hooks/useCatalystWorkflow';
@@ -229,10 +232,15 @@ export default function ProductHubKanbanPage() {
       <KanbanBoardShell adapter={adapter} title="Product Kanban" />
 
       {selectedInitiative && (
-        <RequestDetailPanel
-          request={toTimelineInitiative(selectedInitiative)}
-          requests={detailList}
+        <CatalystViewBusinessRequestV2
+          isOpen={!!selectedInitiative}
           onClose={() => setSelectedId(null)}
+          requestKey={
+            (selectedInitiative as { request_key?: string | null; initiative_key?: string | null })
+              .request_key ??
+            (selectedInitiative as { initiative_key?: string | null }).initiative_key ??
+            null
+          }
         />
       )}
 
