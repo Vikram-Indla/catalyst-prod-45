@@ -272,16 +272,16 @@ export default function TestHubDashboardPage() {
 
   if (isLoading) {
     return (
-      <div style={{ height: 'calc(100vh - 44px)', display: 'flex', flexDirection: 'column', overflow: 'hidden', background: isDark ? 'var(--cp-bg-page, #1F1F21)' : '#F8FAFC', padding: '12px 16px' }}>
+      <div style={{ height: 'calc(100vh - 44px)', display: 'flex', flexDirection: 'column', overflow: 'hidden', background: 'var(--cp-bg-page, #F8FAFC)', padding: '12px 16px' }}>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 12, flexShrink: 0, marginBottom: 12 }}>
           {[...Array(6)].map((_, i) => (
-            <div key={i} className="animate-pulse" style={{ height: 130, background: isDark ? 'var(--cp-bg-surface, #242528)' : '#E2E8F0', borderRadius: 8 }} />
+            <div key={i} className="animate-pulse" style={{ height: 130, background: 'var(--cp-border, #E2E8F0)', borderRadius: 8 }} />
           ))}
         </div>
-        <div className="animate-pulse" style={{ height: 48, background: isDark ? 'var(--cp-bg-surface, #242528)' : '#E2E8F0', borderRadius: 8, marginBottom: 12, flexShrink: 0 }} />
+        <div className="animate-pulse" style={{ height: 48, background: 'var(--cp-border, #E2E8F0)', borderRadius: 8, marginBottom: 12, flexShrink: 0 }} />
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 320px', gap: 12, flex: 1, minHeight: 0 }}>
           {[...Array(3)].map((_, i) => (
-            <div key={i} className="animate-pulse" style={{ height: '100%', background: isDark ? 'var(--cp-bg-surface, #242528)' : '#E2E8F0', borderRadius: 8 }} />
+            <div key={i} className="animate-pulse" style={{ height: '100%', background: 'var(--cp-border, #E2E8F0)', borderRadius: 8 }} />
           ))}
         </div>
       </div>
@@ -292,7 +292,7 @@ export default function TestHubDashboardPage() {
     <div style={{
       height: 'calc(100vh - 44px)',
       display: 'flex', flexDirection: 'column', overflow: 'hidden',
-      background: isDark ? 'var(--cp-bg-page, #1F1F21)' : '#F8FAFC', fontFamily: 'var(--cp-font-body)',
+      background: 'var(--cp-bg-page, #F8FAFC)', fontFamily: 'var(--cp-font-body)',
     }}>
 
       {/* ═══ PAGE HEADER — 52px ═══ */}
@@ -304,7 +304,7 @@ export default function TestHubDashboardPage() {
           <button onClick={fetchDashboardData} style={{
             display: 'inline-flex', alignItems: 'center', gap: 4,
             height: 32, padding: '8px 12px', fontSize: 13, fontWeight: 500,
-            color: 'var(--cp-text-primary, #0F172A)', background: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF', border: `1px solid ${'var(--cp-border, #E2E8F0)'}`,
+            color: 'var(--cp-text-primary, #0F172A)', background: 'var(--cp-bg-elevated, #FFFFFF)', border: `1px solid ${'var(--cp-border, #E2E8F0)'}`,
             borderRadius: 6, cursor: 'pointer',
           }}>
             <RefreshCw size={13} /> Refresh
@@ -312,7 +312,7 @@ export default function TestHubDashboardPage() {
           <button style={{
             display: 'inline-flex', alignItems: 'center', gap: 4,
             height: 32, padding: '8px 12px', fontSize: 13, fontWeight: 500,
-            color: 'var(--cp-text-primary, #0F172A)', background: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF', border: `1px solid ${'var(--cp-border, #E2E8F0)'}`,
+            color: 'var(--cp-text-primary, #0F172A)', background: 'var(--cp-bg-elevated, #FFFFFF)', border: `1px solid ${'var(--cp-border, #E2E8F0)'}`,
             borderRadius: 6, cursor: 'pointer',
           }}>
             <Download size={13} /> Export
@@ -351,14 +351,14 @@ export default function TestHubDashboardPage() {
 
         {/* ── EXECUTION STATUS BAR — 48px ── */}
         <div style={{
-          background: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF', border: `1px solid ${'var(--cp-border, #E2E8F0)'}`, borderRadius: 8,
+          background: 'var(--cp-bg-elevated, #FFFFFF)', border: `1px solid ${'var(--cp-border, #E2E8F0)'}`, borderRadius: 8,
           padding: '10px 16px', flexShrink: 0,
         }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
             <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--cp-text-secondary, #334155)' }}>Execution status</span>
             <span style={{ fontSize: 14, fontWeight: 700, color: 'var(--cp-text-primary, #0F172A)' }}>{totalAll} total</span>
           </div>
-          <div style={{ display: 'flex', height: 8, borderRadius: 4, background: isDark ? 'var(--cp-bg-surface, #242528)' : '#F1F5F9', gap: 1, overflow: 'hidden' }}>
+          <div style={{ display: 'flex', height: 8, borderRadius: 4, background: 'var(--cp-bg-sunken, #F1F5F9)', gap: 1, overflow: 'hidden' }}>
             {execSegments.map(seg => (
               seg.pct > 0 && (
                 <div key={seg.label} style={{
@@ -412,7 +412,7 @@ export default function TestHubDashboardPage() {
                          {cycle.name}
                        </span>
                        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                         <div style={{ flex: 1, height: 4, borderRadius: 4, background: isDark ? 'var(--cp-bg-surface, #242528)' : '#F1F5F9', overflow: 'hidden' }}>
+                         <div style={{ flex: 1, height: 4, borderRadius: 4, background: 'var(--cp-bg-sunken, #F1F5F9)', overflow: 'hidden' }}>
                            <div style={{ width: `${pct}%`, height: '100%', background: barColor, borderRadius: 4, transition: 'width 400ms ease-out' }} />
                          </div>
                          <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--cp-text-primary, #0F172A)', minWidth: 32, textAlign: 'right' }}>{pct}%</span>
@@ -444,7 +444,7 @@ export default function TestHubDashboardPage() {
            {/* ═ MIDDLE: Failing Tests + Defects (Merged) ═ */}
            <div style={{
              display: 'flex', flexDirection: 'column', minHeight: 0,
-             background: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF', border: `1px solid ${'var(--cp-border, #E2E8F0)'}`, borderRadius: 8, overflow: 'hidden',
+             background: 'var(--cp-bg-elevated, #FFFFFF)', border: `1px solid ${'var(--cp-border, #E2E8F0)'}`, borderRadius: 8, overflow: 'hidden',
            }}>
              {/* Header: Top Failing Tests */}
              <div style={{
@@ -453,7 +453,7 @@ export default function TestHubDashboardPage() {
              }}>
                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                  <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--cp-text-primary, #0F172A)' }}>Top Failing Tests</span>
-                 <span style={{ fontSize: 12, fontWeight: 600, color: '#DC2626', background: isDark ? 'rgba(248,113,113,0.12)' : '#FEF2F2', padding: '2px 8px', borderRadius: 10 }}>
+                 <span style={{ fontSize: 12, fontWeight: 600, color: '#DC2626', background: 'var(--cp-danger-light, #FEF2F2)', padding: '2px 8px', borderRadius: 10 }}>
                    {failingTests.length}
                  </span>
                </div>
@@ -470,7 +470,7 @@ export default function TestHubDashboardPage() {
                  <>
                    {failingTests.slice(0, 10).map(test => {
                      const sevColor = test.priority?.toLowerCase() === 'high' || test.priority?.toLowerCase() === 'critical'
-                       ? { bg: isDark ? 'rgba(248,113,113,0.12)' : '#FEF2F2', color: '#DC2626' }
+                       ? { bg: 'var(--cp-danger-light, #FEF2F2)', color: '#DC2626' }
                        : { bg: isDark ? 'rgba(251,191,36,0.12)' : '#FFFBEB', color: '#D97706' };
                      return (
                        <div key={test.test_case_id} onClick={() => navigate(`/testhub/repository?view=${test.test_case_id}`)}
@@ -514,7 +514,7 @@ export default function TestHubDashboardPage() {
                }}>
                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                    <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--cp-text-primary, #0F172A)' }}>Defects</span>
-                   <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--cp-text-tertiary, #64748B)', background: isDark ? 'var(--cp-bg-surface, #242528)' : '#F1F5F9', padding: '2px 8px', borderRadius: 10 }}>
+                   <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--cp-text-tertiary, #64748B)', background: 'var(--cp-bg-sunken, #F1F5F9)', padding: '2px 8px', borderRadius: 10 }}>
                      {defectStats?.total_defects ?? 0}
                    </span>
                  </div>
@@ -545,13 +545,13 @@ export default function TestHubDashboardPage() {
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12, minHeight: 0 }}>
             {/* Needs Attention */}
             <div style={{
-              background: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF', border: `1px solid ${'var(--cp-border, #E2E8F0)'}`, borderRadius: 8,
+              background: 'var(--cp-bg-elevated, #FFFFFF)', border: `1px solid ${'var(--cp-border, #E2E8F0)'}`, borderRadius: 8,
               borderLeft: '3px solid #EF4444', overflow: 'hidden', flexShrink: 0,
             }}>
               <div style={{ padding: '12px 16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--cp-text-primary, #0F172A)' }}>Needs attention</span>
                 <span style={{
-                  fontSize: 12, fontWeight: 600, color: '#DC2626', background: isDark ? 'rgba(248,113,113,0.12)' : '#FEF2F2',
+                  fontSize: 12, fontWeight: 600, color: '#DC2626', background: 'var(--cp-danger-light, #FEF2F2)',
                   padding: '2px 8px', borderRadius: 12,
                 }}>
                   {attentionItems.length}
@@ -566,7 +566,7 @@ export default function TestHubDashboardPage() {
                   <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 16px', borderTop: i > 0 ? `1px solid ${'var(--cp-bg-sunken, #F1F5F9)'}` : 'none' }}>
                     <div style={{
                       width: 24, height: 24, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      background: item.danger ? (isDark ? 'rgba(248,113,113,0.12)' : '#FEF2F2') : (isDark ? 'rgba(251,191,36,0.12)' : '#FFFBEB'),
+                      background: item.danger ? ('var(--cp-danger-light, #FEF2F2)') : (isDark ? 'rgba(251,191,36,0.12)' : '#FFFBEB'),
                     }}>
                       <AlertTriangle size={12} color={item.danger ? '#DC2626' : '#D97706'} />
                     </div>
@@ -581,7 +581,7 @@ export default function TestHubDashboardPage() {
 
             {/* Activity Feed + Quick Actions */}
             <div style={{
-              background: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF', border: `1px solid ${'var(--cp-border, #E2E8F0)'}`, borderRadius: 8,
+              background: 'var(--cp-bg-elevated, #FFFFFF)', border: `1px solid ${'var(--cp-border, #E2E8F0)'}`, borderRadius: 8,
               flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column', overflow: 'hidden',
             }}>
               <div style={{ padding: '12px 16px', borderBottom: `1px solid ${'var(--cp-bg-sunken, #F1F5F9)'}`, flexShrink: 0 }}>
@@ -643,10 +643,10 @@ export default function TestHubDashboardPage() {
 
       {/* ── Inline styles for hover ── */}
       <style>{`
-        .c10-row:hover { background: ${isDark ? 'var(--cp-bg-surface, #242528)' : '#F8FAFC'}; }
-        .c10-row-danger:hover { background: ${isDark ? 'rgba(248,113,113,0.12)' : '#FEF2F2'}; }
+        .c10-row:hover { background: ${'var(--cp-bg-page, #F8FAFC)'}; }
+        .c10-row-danger:hover { background: ${'var(--cp-danger-light, #FEF2F2)'}; }
         .c10-kpi:hover { border-color: ${'var(--cp-border-strong, #CBD5E1)'} !important; box-shadow: 0 4px 16px ${isDark ? 'rgba(0,0,0,0.3)' : 'rgba(0,0,0,0.08)'} !important; }
-        .c10-qbtn:hover { border-color: #2563EB !important; color: #2563EB !important; background: ${isDark ? 'rgba(37,99,235,0.12)' : '#EFF6FF'} !important; }
+        .c10-qbtn:hover { border-color: #2563EB !important; color: #2563EB !important; background: ${'var(--cp-primary-light, #EFF6FF)'} !important; }
         /* Rule 3 paired .dark — brand blue is intentional in both modes;
            this selector exists so audits confirm dark pairing for the
            !important hex above. */
@@ -671,7 +671,7 @@ function KPICard({ label, value, accent, trend, subtitle, sparkData, valueColor,
   const { isDark } = useTheme();
   return (
     <div className="c10-kpi" style={{
-      background: isDanger ? (isDark ? 'rgba(248,113,113,0.08)' : 'rgba(254, 242, 242, 0.6)') : (isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF'),
+      background: isDanger ? (isDark ? 'rgba(248,113,113,0.08)' : 'rgba(254, 242, 242, 0.6)') : ('var(--cp-bg-elevated, #FFFFFF)'),
       border: isDanger ? `1px solid ${isDark ? 'rgba(248,113,113,0.2)' : '#FECACA'}` : `1px solid ${'var(--cp-border, #E2E8F0)'}`,
       borderRadius: 8,
       borderLeft: `3px solid ${accent}`,
@@ -703,10 +703,10 @@ function Card({ title, badge, badgeDanger, badgeColor, onViewAll, children, styl
   style?: React.CSSProperties;
 }) {
   const { isDark } = useTheme();
-  const bg = badgeDanger ? (isDark ? 'rgba(248,113,113,0.12)' : '#FEF2F2') : (isDark ? 'var(--cp-bg-surface, #242528)' : '#F1F5F9');
+  const bg = badgeDanger ? ('var(--cp-danger-light, #FEF2F2)') : ('var(--cp-bg-sunken, #F1F5F9)');
   const color = badgeDanger ? '#DC2626' : badgeColor || ('var(--cp-text-tertiary, #64748B)');
   return (
-    <div style={{ background: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF', border: `1px solid ${'var(--cp-border, #E2E8F0)'}`, borderRadius: 8, overflow: 'hidden', display: 'flex', flexDirection: 'column', minHeight: 0, ...style }}>
+    <div style={{ background: 'var(--cp-bg-elevated, #FFFFFF)', border: `1px solid ${'var(--cp-border, #E2E8F0)'}`, borderRadius: 8, overflow: 'hidden', display: 'flex', flexDirection: 'column', minHeight: 0, ...style }}>
       <div style={{ padding: '12px 16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: `1px solid ${'var(--cp-bg-sunken, #F1F5F9)'}`, flexShrink: 0 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--cp-text-primary, #0F172A)' }}>{title}</span>
@@ -744,7 +744,7 @@ function QuickBtn({ label, onClick }: { label: string; onClick: () => void }) {
   return (
     <button className="c10-qbtn" onClick={onClick} style={{
       flex: 1, height: 32, fontSize: 13, fontWeight: 500,
-      color: 'var(--cp-text-secondary, #334155)', background: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF', border: `1px solid ${'var(--cp-border, #E2E8F0)'}`,
+      color: 'var(--cp-text-secondary, #334155)', background: 'var(--cp-bg-elevated, #FFFFFF)', border: `1px solid ${'var(--cp-border, #E2E8F0)'}`,
       borderRadius: 6, cursor: 'pointer', transition: 'all 150ms',
     }}>
       {label}

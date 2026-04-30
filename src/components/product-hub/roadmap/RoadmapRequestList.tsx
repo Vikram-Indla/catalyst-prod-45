@@ -59,9 +59,9 @@ export function RoadmapRequestList({ groups, selectedId, hoveredId, onSelect, on
   const totalCount = groups.reduce((sum, g) => sum + g.items.length, 0);
 
   const headerBg = 'var(--cp-bg-page, #FAFBFC)';
-  const selectedBg = isDark ? 'rgba(59,130,246,0.10)' : '#EFF6FF';
+  const selectedBg = 'var(--cp-primary-light, #EFF6FF)';
   const hoverBg = isDark ? '#1F1F1F' : 'rgba(37,99,235,0.04)';
-  const addHoverBg = isDark ? 'rgba(59,130,246,0.10)' : '#EFF6FF';
+  const addHoverBg = 'var(--cp-primary-light, #EFF6FF)';
 
   return (
     <div className="flex-shrink-0 flex flex-col roadmap-scroll" style={{ width: width || LIST_PANEL_WIDTH, borderRight: `1px solid ${surface.border}`, background: surface.card }}>

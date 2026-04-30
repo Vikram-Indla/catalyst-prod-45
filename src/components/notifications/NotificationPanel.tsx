@@ -106,8 +106,8 @@ export default function NotificationPanel({ isOpen, onClose }: NotificationPanel
 
   // Dark mode tokens
   const T = {
-    panelBg: isDark ? 'var(--cp-bg-page, #1F1F21)' : '#FFFFFF',
-    surfaceBg: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF',
+    panelBg: 'var(--cp-bg-elevated, #FFFFFF)',
+    surfaceBg: 'var(--cp-bg-elevated, #FFFFFF)',
     text1: 'var(--cp-text-primary, #0F172A)',
     text2: 'var(--cp-text-tertiary, #64748B)',
     text3: 'var(--cp-text-muted, #94A3B8)',
@@ -118,7 +118,7 @@ export default function NotificationPanel({ isOpen, onClose }: NotificationPanel
     shadow: isDark
       ? '0 8px 24px rgba(0,0,0,0.4), 0 0 1px rgba(0,0,0,0.5)'
       : '0 8px 24px rgba(15,23,42,0.12), 0 0 1px rgba(15,23,42,0.08)',
-    menuBg: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF',
+    menuBg: 'var(--cp-bg-elevated, #FFFFFF)',
     divider: 'var(--cp-border-subtle, rgba(15,23,42,0.08))',
   };
 
@@ -395,7 +395,7 @@ export default function NotificationPanel({ isOpen, onClose }: NotificationPanel
               aria-label={unreadOnly ? 'Show all notifications' : 'Show only unread'}
               style={{
                 width: 36, height: 20, borderRadius: 12, cursor: 'pointer', border: 'none',
-                background: unreadOnly ? '#16A34A' : (isDark ? '#444444' : '#334155'),
+                background: unreadOnly ? '#16A34A' : ('var(--cp-text-secondary, #334155)'),
                 position: 'relative', transition: 'background 200ms ease',
                 padding: 0,
               }}

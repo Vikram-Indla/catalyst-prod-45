@@ -135,7 +135,7 @@ export default function RequirementsListPage() {
   const hasActiveFilters = typeFilter !== 'all' || statusFilter !== 'all' || searchTerm;
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', backgroundColor: isDark ? 'var(--cp-bg-page, #1F1F21)' : '#F8FAFC' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', backgroundColor: 'var(--cp-bg-page, #F8FAFC)' }}>
       <CatalystPageHeader title="Requirements" actions={
         <button
           onClick={() => setShowCreateModal(true)}
@@ -189,7 +189,7 @@ export default function RequirementsListPage() {
             onChange={(e) => setSearchTerm(e.target.value)}
             style={{
               width: '100%', height: 44, padding: '0 14px 0 44px',
-              border: isDark ? '1.5px solid #2E2E2E' : '1.5px solid #E2E8F0', borderRadius: 12, fontSize: 14, backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF', color: isDark ? '#EDEDED' : undefined,
+              border: isDark ? '1.5px solid #2E2E2E' : '1.5px solid #E2E8F0', borderRadius: 12, fontSize: 14, backgroundColor: 'var(--cp-bg-elevated, #FFFFFF)', color: isDark ? '#EDEDED' : undefined,
             }}
           />
         </div>
@@ -235,13 +235,13 @@ export default function RequirementsListPage() {
           <RefreshCw size={32} style={{ animation: 'spin 1s linear infinite', color: '#2563EB' }} />
         </div>
       ) : filteredRequirements.length === 0 ? (
-        <div style={{ backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF', borderRadius: 12, padding: 60, textAlign: 'center', border: isDark ? '1px solid #2E2E2E' : '1px solid #E2E8F0' }}>
+        <div style={{ backgroundColor: 'var(--cp-bg-elevated, #FFFFFF)', borderRadius: 12, padding: 60, textAlign: 'center', border: isDark ? '1px solid #2E2E2E' : '1px solid #E2E8F0' }}>
           <FileCheck size={48} style={{ color: 'var(--cp-text-muted, #CBD5E1)', marginBottom: 16 }} />
           <p style={{ fontSize: 16, color: 'var(--cp-text-tertiary, #64748B)', margin: 0 }}>No requirements found</p>
           <p style={{ fontSize: 14, color: 'var(--cp-text-muted, #94A3B8)', margin: '8px 0 0' }}>Add requirements to track test coverage</p>
         </div>
       ) : (
-        <div style={{ backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF', borderRadius: 8, border: isDark ? '1px solid #2E2E2E' : '1px solid #E2E8F0', overflow: 'hidden' }}>
+        <div style={{ backgroundColor: 'var(--cp-bg-elevated, #FFFFFF)', borderRadius: 8, border: isDark ? '1px solid #2E2E2E' : '1px solid #E2E8F0', overflow: 'hidden' }}>
           <table style={{ width: '100%', borderCollapse: 'collapse' }}>
             <thead>
               <tr>
@@ -249,7 +249,7 @@ export default function RequirementsListPage() {
                   <th key={h} style={{
                     height: 50, padding: '8px 12px', textAlign: 'left',
                     fontSize: 10.5, fontWeight: 600, color: 'var(--cp-text-tertiary, #64748B)', textTransform: 'uppercase',
-                    borderBottom: isDark ? '0.75px solid #2E2E2E' : '0.75px solid #E2E8F0', backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : '#F8FAFC',
+                    borderBottom: isDark ? '0.75px solid #2E2E2E' : '0.75px solid #E2E8F0', backgroundColor: 'var(--cp-bg-page, #F8FAFC)',
                   }}>{h}</th>
                 ))}
               </tr>

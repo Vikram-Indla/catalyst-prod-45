@@ -132,9 +132,9 @@ export default function ImportExportPage() {
   };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', backgroundColor: isDark ? 'var(--cp-bg-page, #1F1F21)' : '#F8FAFC' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', backgroundColor: 'var(--cp-bg-page, #F8FAFC)' }}>
       <CatalystPageHeader title="Import / Export" actions={
-        <button onClick={fetchData} style={{ display: 'flex', alignItems: 'center', gap: 8, height: 40, padding: '0 16px', border: `1px solid ${'var(--cp-border, #E2E8F0)'}`, borderRadius: 8, backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF', color: 'var(--cp-text-secondary, #334155)', fontSize: 14, fontWeight: 500, cursor: 'pointer' }}>
+        <button onClick={fetchData} style={{ display: 'flex', alignItems: 'center', gap: 8, height: 40, padding: '0 16px', border: `1px solid ${'var(--cp-border, #E2E8F0)'}`, borderRadius: 8, backgroundColor: 'var(--cp-bg-elevated, #FFFFFF)', color: 'var(--cp-text-secondary, #334155)', fontSize: 14, fontWeight: 500, cursor: 'pointer' }}>
           <RefreshCw size={16} /> Refresh
         </button>
       } />
@@ -183,13 +183,13 @@ export default function ImportExportPage() {
       )}
 
       {/* Tabs */}
-      <div style={{ display: 'flex', gap: 4, marginBottom: 24, backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : '#E2E8F0', padding: 4, borderRadius: 12, width: 'fit-content' }}>
+      <div style={{ display: 'flex', gap: 4, marginBottom: 24, backgroundColor: 'var(--cp-border, #E2E8F0)', padding: 4, borderRadius: 12, width: 'fit-content' }}>
         <button
           onClick={() => setActiveTab('import')}
           style={{
             display: 'flex', alignItems: 'center', gap: 8,
             padding: '10px 20px', border: 'none', borderRadius: 8,
-            backgroundColor: activeTab === 'import' ? (isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF') : 'transparent',
+            backgroundColor: activeTab === 'import' ? ('var(--cp-bg-elevated, #FFFFFF)') : 'transparent',
             color: activeTab === 'import' ? ('var(--cp-text-primary, #0F172A)') : ('var(--cp-text-tertiary, #64748B)'),
             fontSize: 14, fontWeight: 500, cursor: 'pointer',
             boxShadow: activeTab === 'import' ? '0 1px 3px rgba(0,0,0,0.1)' : 'none',
@@ -202,7 +202,7 @@ export default function ImportExportPage() {
           style={{
             display: 'flex', alignItems: 'center', gap: 8,
             padding: '10px 20px', border: 'none', borderRadius: 8,
-            backgroundColor: activeTab === 'export' ? (isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF') : 'transparent',
+            backgroundColor: activeTab === 'export' ? ('var(--cp-bg-elevated, #FFFFFF)') : 'transparent',
             color: activeTab === 'export' ? ('var(--cp-text-primary, #0F172A)') : ('var(--cp-text-tertiary, #64748B)'),
             fontSize: 14, fontWeight: 500, cursor: 'pointer',
             boxShadow: activeTab === 'export' ? '0 1px 3px rgba(0,0,0,0.1)' : 'none',

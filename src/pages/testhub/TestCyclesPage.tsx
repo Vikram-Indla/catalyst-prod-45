@@ -68,9 +68,9 @@ export default function TestCyclesPage() {
   const [cloneCycle, setCloneCycle] = useState<TestCycle | null>(null);
 
   // DARK MODE tokens
-  const pageBg = isDark ? 'var(--cp-bg-page, #1F1F21)' : '#F8FAFC';
-  const surfaceBg = isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF';
-  const elevatedBg = isDark ? 'var(--cp-bg-surface, #242528)' : '#F8FAFC';
+  const pageBg = 'var(--cp-bg-page, #F8FAFC)';
+  const surfaceBg = 'var(--cp-bg-elevated, #FFFFFF)';
+  const elevatedBg = 'var(--cp-bg-page, #F8FAFC)';
   const borderColor = 'var(--cp-border, #E2E8F0)';
   const textPrimary = 'var(--cp-text-primary, #0F172A)';
   const textBody = 'var(--cp-text-secondary, #334155)';

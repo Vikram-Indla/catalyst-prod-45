@@ -147,7 +147,7 @@ export default function EnvironmentDetailPage() {
 
   if (isLoading) {
     return (
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh', backgroundColor: isDark ? 'var(--cp-bg-page, #1F1F21)' : '#F8FAFC' }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh', backgroundColor: 'var(--cp-bg-page, #F8FAFC)' }}>
         <RefreshCw size={32} style={{ animation: 'spin 1s linear infinite', color: '#6366F1' }} />
       </div>
     );
@@ -163,7 +163,7 @@ export default function EnvironmentDetailPage() {
   const HealthIcon = health.icon;
 
   return (
-    <div style={{ padding: 24, backgroundColor: isDark ? 'var(--cp-bg-page, #1F1F21)' : '#F8FAFC', minHeight: '100vh' }}>
+    <div style={{ padding: 24, backgroundColor: 'var(--cp-bg-page, #F8FAFC)', minHeight: '100vh' }}>
       <button onClick={() => navigate('/testhub/environments')}
         style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '8px 12px', border: `1px solid ${'var(--cp-border, #E2E8F0)'}`, borderRadius: 8, backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFF', color: 'var(--cp-text-tertiary, #64748B)', fontSize: 13, cursor: 'pointer', marginBottom: 16 }}>
         <ArrowLeft size={16} /> Back to Environments
@@ -273,7 +273,7 @@ export default function EnvironmentDetailPage() {
             ) : (
               <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                 {variables.map((v) => (
-                  <div key={v.id} style={{ padding: 12, backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : '#F8FAFC', borderRadius: 8, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <div key={v.id} style={{ padding: 12, backgroundColor: 'var(--cp-bg-page, #F8FAFC)', borderRadius: 8, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <div>
                       <p style={{ fontSize: 13, fontWeight: 600, color: 'var(--cp-text-primary, #0F172A)', margin: 0 }}>{v.key}</p>
                       <p style={{ fontSize: 12, color: 'var(--cp-text-tertiary, #64748B)', margin: '2px 0 0', fontFamily: 'monospace' }}>
@@ -309,7 +309,7 @@ export default function EnvironmentDetailPage() {
               <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                 {linkedCycles.map((cycle) => (
                   <div key={cycle.cycle_id} onClick={() => navigate(`/testhub/cycles/${cycle.cycle_id}`)}
-                    style={{ padding: 12, backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : '#F8FAFC', borderRadius: 8, cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    style={{ padding: 12, backgroundColor: 'var(--cp-bg-page, #F8FAFC)', borderRadius: 8, cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <div>
                       <span style={{ fontSize: 11, fontWeight: 600, color: '#2563EB', backgroundColor: '#EFF6FF', padding: '2px 6px', borderRadius: 4, marginRight: 8 }}>{cycle.cycle_key}</span>
                       <span style={{ fontSize: 13, color: 'var(--cp-text-primary, #0F172A)' }}>{cycle.name}</span>

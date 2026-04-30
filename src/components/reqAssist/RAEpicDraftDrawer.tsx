@@ -232,7 +232,7 @@ export default function RAEpicDraftDrawer({ brdId, docTitle, jiraKey, onClose }:
                     {/* D01: Epic key badge — neutral grey, not purple */}
                     <span style={{
                       display: 'inline-flex', alignItems: 'center',
-                      background: isDark ? 'var(--cp-bg-surface, #242528)' : '#F1F5F9',
+                      background: 'var(--cp-bg-sunken, #F1F5F9)',
                       border: isDark ? '0.75px solid #2E2E2E' : '0.75px solid #CBD5E1',
                       borderRadius: 4,
                       padding: '2px 8px',
@@ -310,7 +310,7 @@ export default function RAEpicDraftDrawer({ brdId, docTitle, jiraKey, onClose }:
                           <button onClick={() => setArchiveConfirmId(null)} style={{
                             height: 28, padding: '0 10px', fontSize: 12, fontWeight: 500,
                             borderRadius: 6, border: isDark ? '0.75px solid #2E2E2E' : '0.75px solid rgba(15,23,42,0.15)',
-                            background: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF', color: 'var(--fg-2)', cursor: 'pointer',
+                            background: 'var(--cp-bg-elevated, #FFFFFF)', color: 'var(--fg-2)', cursor: 'pointer',
                             fontFamily: 'var(--cp-font-body)',
                           }}>Cancel</button>
                           <button onClick={() => handleArchiveEpic(epic.id)} style={{
@@ -329,7 +329,7 @@ export default function RAEpicDraftDrawer({ brdId, docTitle, jiraKey, onClose }:
                               display: 'inline-flex', alignItems: 'center', gap: 4,
                               fontSize: 12, fontWeight: 500, color: 'var(--fg-2)',
                               border: '0.75px solid rgba(15,23,42,0.15)', borderRadius: 6,
-                              background: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF', cursor: 'pointer',
+                              background: 'var(--cp-bg-elevated, #FFFFFF)', cursor: 'pointer',
                               fontFamily: 'var(--cp-font-body)',
                             }}
                             onMouseEnter={e => (e.currentTarget.style.background = isDark ? 'var(--cp-bg-surface, #242528)' : 'rgba(37,99,235,0.04)')}

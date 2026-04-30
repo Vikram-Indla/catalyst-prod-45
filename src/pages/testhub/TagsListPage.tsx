@@ -97,7 +97,7 @@ export default function TagsListPage() {
   const hasActiveFilters = categoryFilter !== 'all' || searchTerm;
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', backgroundColor: isDark ? 'var(--cp-bg-page, #1F1F21)' : '#F8FAFC' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', backgroundColor: 'var(--cp-bg-page, #F8FAFC)' }}>
       <TestHubPageHeader title="Tags & Labels" subtitle="Organize test cases, defects, and requirements with tags">
         <button onClick={() => setShowCreateModal(true)} style={{ display: 'flex', alignItems: 'center', gap: 8, height: 40, padding: '0 20px', border: 'none', borderRadius: 8, background: 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)', color: '#FFFFFF', fontSize: 14, fontWeight: 600, cursor: 'pointer', boxShadow: '0 2px 8px rgba(37,99,235,0.25)' }}>
           <Plus size={18} /> Create Tag
@@ -132,7 +132,7 @@ export default function TagsListPage() {
         <div style={{ position: 'relative', flex: '1 1 300px', maxWidth: 400 }}>
           <Search size={18} style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', color: '#94A3B8' }} />
           <input type="text" placeholder="Search tags..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)}
-            style={{ width: '100%', height: 44, padding: '0 14px 0 44px', border: isDark ? '1.5px solid #2E2E2E' : '1.5px solid #E2E8F0', borderRadius: 12, fontSize: 14, backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF', color: isDark ? '#EDEDED' : undefined }} />
+            style={{ width: '100%', height: 44, padding: '0 14px 0 44px', border: isDark ? '1.5px solid #2E2E2E' : '1.5px solid #E2E8F0', borderRadius: 12, fontSize: 14, backgroundColor: 'var(--cp-bg-elevated, #FFFFFF)', color: isDark ? '#EDEDED' : undefined }} />
         </div>
         <select value={categoryFilter} onChange={(e) => setCategoryFilter(e.target.value)} style={{ height: 44, padding: '0 36px 0 14px', border: isDark ? '1.5px solid #2E2E2E' : '1.5px solid #E2E8F0', borderRadius: 12, fontSize: 14, backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFF', color: isDark ? '#EDEDED' : undefined, cursor: 'pointer' }}>
           <option value="all">All Categories</option>
@@ -151,7 +151,7 @@ export default function TagsListPage() {
           <RefreshCw size={32} style={{ animation: 'spin 1s linear infinite', color: '#EC4899' }} />
         </div>
       ) : filteredTags.length === 0 ? (
-        <div style={{ backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF', borderRadius: 12, padding: 60, textAlign: 'center', border: isDark ? '1px solid #2E2E2E' : '1px solid #E2E8F0' }}>
+        <div style={{ backgroundColor: 'var(--cp-bg-elevated, #FFFFFF)', borderRadius: 12, padding: 60, textAlign: 'center', border: isDark ? '1px solid #2E2E2E' : '1px solid #E2E8F0' }}>
           <Tags size={48} style={{ color: 'var(--cp-text-muted, #CBD5E1)', marginBottom: 16 }} />
           <p style={{ fontSize: 16, color: 'var(--cp-text-tertiary, #64748B)', margin: 0 }}>No tags found</p>
           <p style={{ fontSize: 14, color: 'var(--cp-text-muted, #94A3B8)', margin: '8px 0 0' }}>Create tags to organize your test assets</p>
@@ -165,12 +165,12 @@ export default function TagsListPage() {
               </h3>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10 }}>
                 {categoryTags.map((tag) => (
-                  <div key={tag.id} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 14px', backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF', borderRadius: 12, border: isDark ? '1px solid #2E2E2E' : '1px solid #E2E8F0', cursor: 'pointer' }}
+                  <div key={tag.id} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 14px', backgroundColor: 'var(--cp-bg-elevated, #FFFFFF)', borderRadius: 12, border: isDark ? '1px solid #2E2E2E' : '1px solid #E2E8F0', cursor: 'pointer' }}
                     onMouseEnter={(e) => { e.currentTarget.style.borderColor = tag.color; e.currentTarget.style.boxShadow = `0 2px 8px ${tag.color}20`; }}
                     onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'var(--cp-border, #E2E8F0)'; e.currentTarget.style.boxShadow = 'none'; }}>
                     <span style={{ width: 12, height: 12, borderRadius: '50%', backgroundColor: tag.color, flexShrink: 0 }} />
                     <span style={{ fontSize: 14, fontWeight: 500, color: 'var(--cp-text-primary, #0F172A)' }}>{tag.name}</span>
-                    <span style={{ fontSize: 11, color: 'var(--cp-text-muted, #94A3B8)', backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : '#F1F5F9', padding: '2px 6px', borderRadius: 4 }}>{tag.usage_count}</span>
+                    <span style={{ fontSize: 11, color: 'var(--cp-text-muted, #94A3B8)', backgroundColor: 'var(--cp-bg-sunken, #F1F5F9)', padding: '2px 6px', borderRadius: 4 }}>{tag.usage_count}</span>
                     <div style={{ display: 'flex', gap: 4, marginLeft: 4 }}>
                       <button onClick={(e) => { e.stopPropagation(); setEditingTag(tag); setShowCreateModal(true); }}
                         style={{ width: 24, height: 24, border: 'none', borderRadius: 4, backgroundColor: 'transparent', color: '#64748B', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>

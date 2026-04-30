@@ -25,7 +25,7 @@ interface WorkItemTreeProps {
 /* ── Skeleton rows ── */
 export function TreeSkeleton({ rows = 5 }: { rows?: number }) {
   const { isDark } = useTheme();
-  const shimmerBg = isDark ? 'var(--cp-bg-surface, #242528)' : '#F1F5F9';
+  const shimmerBg = 'var(--cp-bg-sunken, #F1F5F9)';
   const headerBg = 'var(--cp-bg-page, #FAFAFA)';
   return (
     <div style={{ border: '1px solid var(--divider)', borderRadius: 8, overflow: 'hidden', background: 'var(--bg-app)' }}>
@@ -85,7 +85,7 @@ function getAvatarColor(name: string): string {
 function AssigneeAvatar({ assignee }: { assignee?: WorkItem['assignee'] }) {
   const { isDark } = useTheme();
   if (!assignee) {
-    return <div style={{ width: 24, height: 24, borderRadius: '50%', background: isDark ? 'var(--cp-bg-surface, #242528)' : '#F1F5F9', border: '1px solid var(--divider)', flexShrink: 0 }} />;
+    return <div style={{ width: 24, height: 24, borderRadius: '50%', background: 'var(--cp-bg-sunken, #F1F5F9)', border: '1px solid var(--divider)', flexShrink: 0 }} />;
   }
   const avatarUrl = (assignee as any).avatar;
   if (avatarUrl) {
@@ -110,7 +110,7 @@ function ProgressBar({ stats }: { stats: WorkItem['stats'] }) {
   const textColor = isComplete ? '#15803D' : 'var(--cp-blue)';
   return (
     <div style={{ width: 64, display: 'flex', flexDirection: 'column', gap: 2, justifyContent: 'center' }}>
-      <div style={{ height: 4, background: isDark ? 'var(--cp-bg-surface, #242528)' : '#F1F5F9', borderRadius: 4, overflow: 'hidden' }}>
+      <div style={{ height: 4, background: 'var(--cp-bg-sunken, #F1F5F9)', borderRadius: 4, overflow: 'hidden' }}>
         <div style={{ height: '100%', width: `${pct}%`, background: fillColor, borderRadius: 4, transition: 'width 300ms ease' }} />
       </div>
       <span style={{ fontSize: 11, fontWeight: 500, color: textColor, fontFamily: 'var(--cp-font-body)', fontVariantNumeric: 'tabular-nums', textAlign: 'right' }}>

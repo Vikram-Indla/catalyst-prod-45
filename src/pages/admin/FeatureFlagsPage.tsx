@@ -110,7 +110,7 @@ const FlagRow = memo(function FlagRow({ flag, isSelected, isPending, onToggle, o
         ...(isSelected ? { backgroundColor: 'rgba(37,99,235,0.08)' } : {}),
       }}
       onMouseEnter={(e) => { if (!isSelected) e.currentTarget.style.backgroundColor = 'var(--cp-interact-hover, rgba(15,23,42,0.04))'; }}
-      onMouseLeave={(e) => { if (!isSelected) e.currentTarget.style.backgroundColor = isDark ? 'var(--cp-bg-page, #1F1F21)' : '#FFFFFF'; }}
+      onMouseLeave={(e) => { if (!isSelected) e.currentTarget.style.backgroundColor = 'var(--cp-bg-elevated, #FFFFFF)'; }}
     >
       {/* Checkbox */}
       <div className="flex items-center justify-center">
@@ -261,7 +261,7 @@ const GroupHeaderRow = memo(function GroupHeaderRow({ category, count, isCollaps
       style={{
         height: 50,
         padding: '8px 12px',
-        background: isDark ? 'var(--cp-bg-surface, #242528)' : '#F8FAFC',
+        background: 'var(--cp-bg-page, #F8FAFC)',
         borderTop: isFirst ? 'none' : `0.75px solid ${'var(--cp-border-default, rgba(15,23,42,0.12))'}`,
         borderBottom: `0.75px solid ${'var(--cp-border-subtle, rgba(15,23,42,0.06))'}`,
       }}
@@ -289,7 +289,7 @@ const GroupHeaderRow = memo(function GroupHeaderRow({ category, count, isCollaps
           fontSize: 11,
           fontWeight: 500,
           color: 'var(--cp-text-tertiary, #64748B)',
-          background: isDark ? '#2E2E2E' : '#E5E5E5',
+          background: 'var(--cp-border, #E5E5E5)',
           borderRadius: 9999,
           padding: '1px 6px',
         }}
@@ -435,7 +435,7 @@ export default function FeatureFlagsPage() {
           <div className="h-9 w-16 bg-[#F1F5F9] rounded animate-pulse" />
         </div>
         <div className={`overflow-hidden ${isDark ? "bg-[#0A0A0A]" : "bg-white"}`} style={{ border: `0.75px solid ${'var(--cp-border-default, rgba(15,23,42,0.12))'}`, borderRadius: 6 }}>
-          <div style={{ height: 40, background: isDark ? 'var(--cp-bg-surface, #242528)' : '#F1F5F9', borderBottom: `0.75px solid ${'var(--cp-border-subtle, rgba(15,23,42,0.06))'}` }} />
+          <div style={{ height: 40, background: 'var(--cp-bg-sunken, #F1F5F9)', borderBottom: `0.75px solid ${'var(--cp-border-subtle, rgba(15,23,42,0.06))'}` }} />
           {Array.from({ length: 8 }).map((_, i) => (
             <div key={i} className={`animate-pulse ${isDark ? "bg-[#0A0A0A]" : "bg-white"}`} style={{ height: 52, borderBottom: `0.75px solid ${'var(--cp-border-subtle, rgba(15,23,42,0.06))'}` }} />
           ))}
@@ -507,7 +507,7 @@ export default function FeatureFlagsPage() {
             padding: '10px 16px',
             border: `0.75px solid ${'var(--cp-border-default, rgba(15,23,42,0.12))'}`,
             borderRadius: 6,
-            background: isDark ? 'var(--cp-bg-surface, #242528)' : '#F1F5F9',
+            background: 'var(--cp-bg-sunken, #F1F5F9)',
             gap: 0,
           }}
         >
@@ -586,7 +586,7 @@ export default function FeatureFlagsPage() {
                 cursor: noneEnabled ? 'not-allowed' : 'pointer',
                 transition: 'background 120ms ease',
               }}
-              onMouseEnter={(e) => { if (!noneEnabled) (e.currentTarget.style.background = isDark ? 'rgba(220,38,38,0.10)' : '#FEF2F2'); }}
+              onMouseEnter={(e) => { if (!noneEnabled) (e.currentTarget.style.background = 'var(--cp-danger-light, #FEF2F2)'); }}
               onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
             >
               <X size={16} />
@@ -646,7 +646,7 @@ export default function FeatureFlagsPage() {
             fontSize: 12,
             border: `0.75px solid ${isDark ? '#2E2E2E' : 'rgba(15,23,42,0.14)'}`,
             borderRadius: 4,
-            background: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF',
+            background: 'var(--cp-bg-elevated, #FFFFFF)',
             color: 'var(--cp-text-primary, #0F172A)',
           }}
         >
@@ -697,7 +697,7 @@ export default function FeatureFlagsPage() {
           style={{
             gridTemplateColumns: GRID_COLS,
             height: 40,
-            background: isDark ? 'var(--cp-bg-surface, #242528)' : '#F1F5F9',
+            background: 'var(--cp-bg-sunken, #F1F5F9)',
             borderBottom: `0.75px solid ${'var(--cp-border-subtle, rgba(15,23,42,0.06))'}`,
             fontFamily: 'var(--cp-font-body)',
             fontSize: 11,

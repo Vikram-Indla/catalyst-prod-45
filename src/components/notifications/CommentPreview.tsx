@@ -16,7 +16,7 @@ export default function CommentPreview({ text, attachmentFilename }: CommentPrev
 
   return (
     <div style={{
-      background: isDark ? 'var(--cp-bg-surface, #242528)' : '#F8FAFC',
+      background: 'var(--cp-bg-page, #F8FAFC)',
       border: `0.5px solid ${isDark ? '#2E2E2E' : 'rgba(15,23,42,.08)'}`,
       borderRadius: 4,
       padding: '10px 12px',

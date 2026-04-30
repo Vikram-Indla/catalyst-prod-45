@@ -83,7 +83,7 @@ export default function IdeationCreateWizard({ open, onClose }: Props) {
     border: `1px solid ${'var(--cp-border-strong, #E2E8F0)'}`,
     borderRadius: '8px', padding: '0 14px', fontSize: '14px',
     color: 'var(--cp-text-primary, #0F172A)',
-    background: isDark ? 'transparent' : '#FFFFFF', outline: 'none',
+    background: 'var(--cp-bg-elevated, #FFFFFF)', outline: 'none',
   };
   const labelBase: React.CSSProperties = {
     display: 'block', fontSize: '13px', fontWeight: 600,
@@ -235,7 +235,7 @@ export default function IdeationCreateWizard({ open, onClose }: Props) {
         <div
           onClick={e => e.stopPropagation()}
           style={{
-            background: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF',
+            background: 'var(--cp-bg-elevated, #FFFFFF)',
             borderRadius: '16px',
             width: '720px',
             maxHeight: '90vh',
@@ -482,7 +482,7 @@ export default function IdeationCreateWizard({ open, onClose }: Props) {
               <div style={{
                 display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '6px',
                 minHeight: '44px', border: `1px solid ${'var(--cp-border-strong, #E2E8F0)'}`, borderRadius: '8px',
-                padding: '6px 10px', background: isDark ? 'transparent' : '#FFFFFF',
+                padding: '6px 10px', background: 'var(--cp-bg-elevated, #FFFFFF)',
               }}>
                 {tags.map(tag => (
                   <span key={tag} style={{
@@ -523,7 +523,7 @@ export default function IdeationCreateWizard({ open, onClose }: Props) {
             justifyContent: 'flex-end',
             alignItems: 'center',
             gap: '12px',
-            background: isDark ? 'var(--cp-bg-page, #1F1F21)' : '#FAFAFA',
+            background: 'var(--cp-bg-page, #FAFAFA)',
             borderRadius: '0 0 16px 16px',
           }}>
             <button

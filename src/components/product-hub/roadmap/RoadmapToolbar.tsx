@@ -112,7 +112,7 @@ export function RoadmapToolbar({ zoom, onZoomChange, groupBy, onGroupByChange, v
             fontWeight: 600,
             transition: 'all 0.15s ease',
           }}
-          onMouseEnter={e => { e.currentTarget.style.background = isDark ? 'rgba(220,38,38,0.12)' : '#FEF2F2'; }}
+          onMouseEnter={e => { e.currentTarget.style.background = 'var(--cp-danger-light, #FEF2F2)'; }}
           onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
         >
           <Calendar className="w-3.5 h-3.5" /> Today

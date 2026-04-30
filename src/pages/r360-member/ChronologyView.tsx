@@ -220,7 +220,7 @@ export function ChronologyView({ items, onSelect, weekStart, weekEnd }: { items:
             <span style={{ width: '10px', height: '10px', borderRadius: '50%', border: '2px solid #D97706', background: 'transparent', flexShrink: 0 }} />
             <span className="r3-date-label" style={{ fontWeight: 650, fontSize: '13px' }}>Carried Over</span>
             <span className="r3-date-count">{carryoverItems.length} items</span>
-            <span style={{ fontSize: '10px', padding: '2px 6px', borderRadius: '4px', background: isDark ? 'var(--cp-bg-surface, #242528)' : '#F1F5F9', color: 'var(--cp-text-tertiary, #64748B)' }}>No activity this week</span>
+            <span style={{ fontSize: '10px', padding: '2px 6px', borderRadius: '4px', background: 'var(--cp-bg-sunken, #F1F5F9)', color: 'var(--cp-text-tertiary, #64748B)' }}>No activity this week</span>
             <ChevronDown size={16} className={`r3-date-chevron ${collapsed.has('__carryover__') ? 'r3-date-chevron--collapsed' : ''}`} />
           </div>
           {!collapsed.has('__carryover__') && (

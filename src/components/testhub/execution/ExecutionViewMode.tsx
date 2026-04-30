@@ -141,7 +141,7 @@ export function ExecutionViewMode({
               const colors = stepColors[step.status] || stepColors.not_run;
               return (
                 <div key={i} style={{
-                  padding: '12px 16px', backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF',
+                  padding: '12px 16px', backgroundColor: 'var(--cp-bg-elevated, #FFFFFF)',
                   border: `0.75px solid ${'var(--cp-border, #E2E8F0)'}`, borderRadius: 6,
                   borderLeft: `3px solid ${colors.border}`,
                 }}>
@@ -162,7 +162,7 @@ export function ExecutionViewMode({
                     <p style={{ fontSize: 13, color: 'hsl(var(--foreground))', margin: '4px 0 0', lineHeight: 1.5 }}>{step.title}</p>
                   </div>
                   {step.notes ? (
-                    <div style={{ marginTop: 8, padding: '6px 10px', backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : '#F8FAFC', borderRadius: 4 }}>
+                    <div style={{ marginTop: 8, padding: '6px 10px', backgroundColor: 'var(--cp-bg-page, #F8FAFC)', borderRadius: 4 }}>
                       <span style={{ fontSize: 10, fontWeight: 700, color: 'hsl(var(--muted-foreground))', textTransform: 'uppercase', letterSpacing: '0.06em' }}>NOTES</span>
                       <p style={{ fontSize: 12, color: 'hsl(var(--foreground))', margin: '2px 0 0' }}>{step.notes}</p>
                     </div>

@@ -63,14 +63,14 @@ const monoSmall: React.CSSProperties = { fontFamily: 'var(--cp-font-mono)', font
 const Code: React.FC<{ children: React.ReactNode; isDark?: boolean }> = ({ children, isDark = false }) => (
   <code style={{
     fontFamily: 'var(--cp-font-mono)', fontSize: '10px',
-    background: isDark ? 'var(--cp-bg-surface, #242528)' : '#F1F5F9', padding: '1px 4px', borderRadius: '4px',
+    background: 'var(--cp-bg-sunken, #F1F5F9)', padding: '1px 4px', borderRadius: '4px',
     color: 'var(--cp-text-link, #2563EB)',
   }}>{children}</code>
 );
 
 const InfoCard: React.FC<{ label: string; children: React.ReactNode; isDark?: boolean }> = ({ label, children, isDark = false }) => (
   <div style={{
-    background: isDark ? 'var(--cp-bg-surface, #242528)' : '#F8FAFC',
+    background: 'var(--cp-bg-page, #F8FAFC)',
     border: `1px solid ${'var(--cp-border-default, rgba(15,23,42,0.10))'}`,
     borderRadius: '6px', padding: '10px 12px',
   }}>
@@ -129,7 +129,7 @@ const ProjectsTab: React.FC<{ perms: any[]; isDark?: boolean }> = ({ perms, isDa
     fontSize: '9px', fontWeight: 700, textTransform: 'uppercase',
     padding: '3px 7px', borderRadius: '4px', cursor: 'pointer',
     border: `1px solid ${'var(--cp-border-default, rgba(15,23,42,0.10))'}`,
-    background: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF', color: 'var(--cp-text-tertiary, #64748B)',
+    background: 'var(--cp-bg-elevated, #FFFFFF)', color: 'var(--cp-text-tertiary, #64748B)',
   };
   const xsBtnClass = 'jus-action-btn';
 
@@ -162,7 +162,7 @@ const ProjectsTab: React.FC<{ perms: any[]; isDark?: boolean }> = ({ perms, isDa
         <>
           <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '11px', marginTop: '6px' }}>
             <thead>
-              <tr style={{ background: isDark ? 'var(--cp-bg-page, #1F1F21)' : '#F1F5F9' }} className="jus-table-head">
+              <tr style={{ background: 'var(--cp-bg-sunken, #F1F5F9)' }} className="jus-table-head">
                 <th style={{ padding: '6px 9px', fontSize: '9px', fontWeight: 700, color: 'var(--cp-text-tertiary, #64748B)', textTransform: 'uppercase', textAlign: 'left', width: '28px' }}>
                   <input
                     type="checkbox"
@@ -199,7 +199,7 @@ const ProjectsTab: React.FC<{ perms: any[]; isDark?: boolean }> = ({ perms, isDa
                       <span className="jus-project-key-chip" style={{
                         fontFamily: 'var(--cp-font-mono)', fontSize: '9px',
                         color: 'var(--cp-text-tertiary, #64748B)',
-                        background: isDark ? 'var(--cp-bg-surface, #242528)' : '#F1F5F9', padding: '1px 4px', borderRadius: '4px',
+                        background: 'var(--cp-bg-sunken, #F1F5F9)', padding: '1px 4px', borderRadius: '4px',
                       }}>{p.project_key}</span>
                     </td>
                     <td style={{ padding: '6px 9px', textAlign: 'right' }}>
@@ -376,7 +376,7 @@ const UserDetailPanel: React.FC<Props> = ({ userId, onClose, isDark = false }) =
                   display: 'inline-flex', alignItems: 'center', gap: '3px',
                   padding: '1px 6px', borderRadius: '4px', fontSize: '10px', fontWeight: 700,
                   letterSpacing: '0.03em', textTransform: 'uppercase',
-                  background: isDark ? 'rgba(37,99,235,0.15)' : '#EFF6FF',
+                  background: 'var(--cp-primary-light, #EFF6FF)',
                   color: 'var(--cp-text-link, #2563EB)',
                   border: `1px solid ${isDark ? 'rgba(37,99,235,0.30)' : '#BFDBFE'}`,
                 }}>

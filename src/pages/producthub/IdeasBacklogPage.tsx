@@ -128,7 +128,7 @@ export default function IdeasBacklogPage() {
             <p style={{ fontSize: '13px', color: dk.t3, margin: '4px 0 0' }}>Capture, evaluate, and promote ideas into requests — powered by IMPACT scoring & AI Intelligence</p>
           </div>
           <div style={{ display: 'flex', gap: '8px' }}>
-            <button onClick={() => setIntelligenceOpen(true)} style={{ background: isDark ? 'transparent' : '#FFFFFF', color: '#2563EB', border: '1px solid #2563EB', borderRadius: '6px', padding: '7px 14px', fontSize: '13px', fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}>
+            <button onClick={() => setIntelligenceOpen(true)} style={{ background: 'var(--cp-bg-elevated, #FFFFFF)', color: '#2563EB', border: '1px solid #2563EB', borderRadius: '6px', padding: '7px 14px', fontSize: '13px', fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}>
               <Sparkles size={14} /> Intelligence
             </button>
             <button onClick={() => setCreateOpen(true)} style={{ background: '#2563EB', color: '#FFF', border: 'none', borderRadius: '6px', padding: '8px 16px', fontSize: '13px', fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}>
@@ -179,14 +179,14 @@ export default function IdeasBacklogPage() {
         <div style={{ position: 'relative', width: '220px' }}>
           <Search size={14} style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', color: dk.t3 }} />
           <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search ideas..."
-            style={{ width: '100%', height: '32px', paddingLeft: '32px', paddingRight: '10px', background: isDark ? 'transparent' : '#FFFFFF', border: `1px solid ${dk.border}`, borderRadius: '6px', fontSize: '13px', color: dk.t1, outline: 'none' }}
+            style={{ width: '100%', height: '32px', paddingLeft: '32px', paddingRight: '10px', background: 'var(--cp-bg-elevated, #FFFFFF)', border: `1px solid ${dk.border}`, borderRadius: '6px', fontSize: '13px', color: dk.t1, outline: 'none' }}
           />
         </div>
         {FILTER_PILLS.map(pill => {
           const isActive = statusFilter === pill.key;
           return (
             <button key={pill.key} onClick={() => setStatusFilter(pill.key)} style={{
-              background: isActive ? '#2563EB' : (isDark ? 'transparent' : '#FFFFFF'), color: isActive ? '#FFFFFF' : dk.t2,
+              background: isActive ? '#2563EB' : ('var(--cp-bg-elevated, #FFFFFF)'), color: isActive ? '#FFFFFF' : dk.t2,
               border: `1px solid ${isActive ? '#2563EB' : dk.border}`,
               borderRadius: '20px', padding: '4px 12px', fontSize: '12px', fontWeight: 500, cursor: 'pointer', transition: 'all 150ms',
             }}>{pill.label}</button>
@@ -209,7 +209,7 @@ export default function IdeasBacklogPage() {
             <div style={{ fontSize: '13px', color: dk.t3 }}>Create your first idea to get started.</div>
           </div>
         ) : (
-          <div style={{ background: isDark ? 'transparent' : '#FFFFFF', borderRadius: '6px', border: `1px solid ${dk.border}`, overflow: 'hidden' }}>
+          <div style={{ background: 'var(--cp-bg-elevated, #FFFFFF)', borderRadius: '6px', border: `1px solid ${dk.border}`, overflow: 'hidden' }}>
             <table style={{ width: '100%', borderCollapse: 'collapse' }}>
               <thead>
                 <tr style={{ height: '50px', background: 'var(--cp-bg-page, #F1F5F9)' }}>
@@ -403,7 +403,7 @@ function CreateIdeaDialog({ open, onClose }: { open: boolean; onClose: () => voi
           <div>
             <label style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: dk.t2, display: 'block', marginBottom: '6px' }}>TITLE *</label>
             <input value={title} onChange={e => setTitle(e.target.value)} placeholder="Enter idea title..."
-              style={{ width: '100%', height: '50px', border: `1px solid ${dk.border}`, borderRadius: '6px', padding: '8px 12px', fontSize: '13px', outline: 'none', color: dk.t1, background: isDark ? 'transparent' : '#FFFFFF' }}
+              style={{ width: '100%', height: '50px', border: `1px solid ${dk.border}`, borderRadius: '6px', padding: '8px 12px', fontSize: '13px', outline: 'none', color: dk.t1, background: 'var(--cp-bg-elevated, #FFFFFF)' }}
             />
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
@@ -439,11 +439,11 @@ function CreateIdeaDialog({ open, onClose }: { open: boolean; onClose: () => voi
           <div>
             <label style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: dk.t2, display: 'block', marginBottom: '6px' }}>DESCRIPTION</label>
             <textarea value={description} onChange={e => setDescription(e.target.value)} rows={3} placeholder="Optional description..."
-              style={{ width: '100%', border: `1px solid ${dk.border}`, borderRadius: '6px', padding: '8px 12px', fontSize: '13px', resize: 'vertical', outline: 'none', fontFamily: 'var(--cp-font-body)', color: dk.t1, background: isDark ? 'transparent' : '#FFFFFF' }}
+              style={{ width: '100%', border: `1px solid ${dk.border}`, borderRadius: '6px', padding: '8px 12px', fontSize: '13px', resize: 'vertical', outline: 'none', fontFamily: 'var(--cp-font-body)', color: dk.t1, background: 'var(--cp-bg-elevated, #FFFFFF)' }}
             />
           </div>
           <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px', marginTop: '4px' }}>
-            <button onClick={onClose} style={{ height: '50px', padding: '0 16px', borderRadius: '6px', border: `1px solid ${dk.border}`, background: isDark ? 'transparent' : '#FFFFFF', color: dk.t2, fontSize: '13px', fontWeight: 600, cursor: 'pointer' }}>Cancel</button>
+            <button onClick={onClose} style={{ height: '50px', padding: '0 16px', borderRadius: '6px', border: `1px solid ${dk.border}`, background: 'var(--cp-bg-elevated, #FFFFFF)', color: dk.t2, fontSize: '13px', fontWeight: 600, cursor: 'pointer' }}>Cancel</button>
             <button onClick={handleCreate} disabled={createIdea.isPending} style={{ height: '50px', padding: '0 16px', borderRadius: '6px', border: 'none', background: '#2563EB', color: '#FFFFFF', fontSize: '13px', fontWeight: 600, cursor: 'pointer', opacity: createIdea.isPending ? 0.7 : 1 }}>
               {createIdea.isPending ? 'Creating...' : 'Create Idea'}
             </button>

@@ -64,7 +64,7 @@ export default function IdeasRoadmapPage() {
       <div style={{ background: dk.pageBg, borderBottom: `1px solid ${dk.border}`, padding: '10px 28px', display: 'flex', alignItems: 'center', gap: '10px' }}>
         {TEAMS.map(t => (
           <button key={t} onClick={() => setTeamFilter(t)} style={{
-            background: teamFilter === t ? '#2563EB' : (isDark ? 'transparent' : '#FFFFFF'), color: teamFilter === t ? '#FFFFFF' : dk.t2,
+            background: teamFilter === t ? '#2563EB' : ('var(--cp-bg-elevated, #FFFFFF)'), color: teamFilter === t ? '#FFFFFF' : dk.t2,
             border: `1px solid ${teamFilter === t ? '#2563EB' : dk.border}`,
             borderRadius: '20px', padding: '4px 12px', fontSize: '12px', fontWeight: 500, cursor: 'pointer',
           }}>{t}</button>
@@ -111,7 +111,7 @@ function RoadmapCard({ idea, onClick, isDark, dk }: { idea: IdeaRow; onClick: ()
   const isConverted = idea.status === 'Converted to Request';
   return (
     <div onClick={onClick} style={{
-      background: isDark ? 'var(--cp-bg-page, #1F1F21)' : '#FFFFFF',
+      background: 'var(--cp-bg-elevated, #FFFFFF)',
       border: `1px solid ${isDark ? '#454545' : dk.border}`,
       borderLeft: isConverted ? '3px solid #16A34A' : `1px solid ${dk.border}`,
       borderRadius: '6px',

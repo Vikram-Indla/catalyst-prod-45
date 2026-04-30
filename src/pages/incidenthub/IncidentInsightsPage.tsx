@@ -14,8 +14,8 @@ export default function IncidentInsightsPage() {
   const breachedCount = incidents?.filter(i => i.resolution_breached).length || 0;
 
   // DARK MODE tokens
-  const pageBg = isDark ? 'var(--cp-bg-page, #1F1F21)' : '#FFFFFF';
-  const surfaceBg = isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF';
+  const pageBg = 'var(--cp-bg-elevated, #FFFFFF)';
+  const surfaceBg = 'var(--cp-bg-elevated, #FFFFFF)';
   const textPrimary = 'var(--cp-text-primary, #0F172A)';
   const textSecondary = 'var(--cp-text-tertiary, #64748B)';
   const textBody = 'var(--cp-text-secondary, #334155)';
@@ -72,12 +72,12 @@ export default function IncidentInsightsPage() {
                 { title: 'SLA breach pattern detected', desc: 'SEV-1 incidents averaging resolution above target threshold' },
               ].map((item, i) => (
                 <div key={i} className="p-2.5" style={{
-                  backgroundColor: isDark ? 'rgba(248,113,113,0.08)' : '#FEF2F2',
+                  backgroundColor: 'var(--cp-danger-light, #FEF2F2)',
                   borderRadius: 4,
                   border: `1px solid ${isDark ? 'rgba(248,113,113,0.2)' : '#FECACA'}`,
                 }}>
                   <h4 style={{ fontFamily: 'var(--cp-font-body)', fontSize: 12, fontWeight: 650, color: 'var(--cp-danger-text, #991B1B)', marginBottom: 2 }}>{item.title}</h4>
-                  <p style={{ fontFamily: 'var(--cp-font-body)', fontSize: 11, color: isDark ? '#F87171' : '#B91C1C' }}>{item.desc}</p>
+                  <p style={{ fontFamily: 'var(--cp-font-body)', fontSize: 11, color: 'var(--cp-danger-text, #B91C1C)' }}>{item.desc}</p>
                 </div>
               ))}
             </div>
@@ -99,8 +99,8 @@ export default function IncidentInsightsPage() {
                   borderRadius: 4,
                   border: `1px solid ${isDark ? 'rgba(34,197,94,0.2)' : '#BBF7D0'}`,
                 }}>
-                  <h4 style={{ fontFamily: 'var(--cp-font-body)', fontSize: 12, fontWeight: 650, color: isDark ? '#86EFAC' : '#166534', marginBottom: 2 }}>{item.title}</h4>
-                  <p style={{ fontFamily: 'var(--cp-font-body)', fontSize: 11, color: isDark ? '#4ADE80' : '#15803D' }}>{item.desc}</p>
+                  <h4 style={{ fontFamily: 'var(--cp-font-body)', fontSize: 12, fontWeight: 650, color: 'var(--cp-success-text, #166534)', marginBottom: 2 }}>{item.title}</h4>
+                  <p style={{ fontFamily: 'var(--cp-font-body)', fontSize: 11, color: 'var(--cp-success, #15803D)' }}>{item.desc}</p>
                 </div>
               ))}
             </div>

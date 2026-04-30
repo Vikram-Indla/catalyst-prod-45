@@ -89,7 +89,7 @@ export function IssueDetailPanel({ item, onClose, onFieldChange }: IssueDetailPa
       className="w-full h-full flex flex-col"
       style={{
         fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-        backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF',
+        backgroundColor: 'var(--cp-bg-elevated, #FFFFFF)',
         borderLeft: `1px solid ${'var(--cp-border, #E2E8F0)'}`,
       }}
     >
@@ -163,7 +163,7 @@ export function IssueDetailPanel({ item, onClose, onFieldChange }: IssueDetailPa
                     The system display alignment issue in Competitiveness Program page
                   </p>
                 )}
-                <div className="mt-4 p-4 rounded text-center" style={{ backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : '#F8FAFC', border: `1px solid ${'var(--cp-border, #E2E8F0)'}`, color: 'var(--cp-text-tertiary, #64748B)' }}>
+                <div className="mt-4 p-4 rounded text-center" style={{ backgroundColor: 'var(--cp-bg-page, #F8FAFC)', border: `1px solid ${'var(--cp-border, #E2E8F0)'}`, color: 'var(--cp-text-tertiary, #64748B)' }}>
                   <FileText className="h-8 w-8 mx-auto mb-2" style={{ color: 'var(--cp-text-muted, #94A3B8)' }} />
                   <p className="text-[12px]">Embedded content preview</p>
                 </div>
@@ -199,7 +199,7 @@ export function IssueDetailPanel({ item, onClose, onFieldChange }: IssueDetailPa
 
               {attachmentsExpanded && (
                 <div style={{ borderTop: `1px solid ${'var(--cp-border, #E2E8F0)'}` }}>
-                  <div className="grid grid-cols-[1fr_80px_140px_60px] px-4 py-2 text-[11px] font-medium uppercase" style={{ backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : '#F8FAFC', borderBottom: `1px solid ${'var(--cp-border, #E2E8F0)'}`, color: 'var(--cp-text-tertiary, #64748B)' }}>
+                  <div className="grid grid-cols-[1fr_80px_140px_60px] px-4 py-2 text-[11px] font-medium uppercase" style={{ backgroundColor: 'var(--cp-bg-page, #F8FAFC)', borderBottom: `1px solid ${'var(--cp-border, #E2E8F0)'}`, color: 'var(--cp-text-tertiary, #64748B)' }}>
                     <span>Name</span>
                     <span>Size</span>
                     <span>Date added</span>
@@ -350,7 +350,7 @@ export function IssueDetailPanel({ item, onClose, onFieldChange }: IssueDetailPa
               </div>
 
               {/* Your pinned fields - collapsible */}
-              <div className="rounded" style={{ border: `1px solid ${'var(--cp-border, #E2E8F0)'}`, backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF' }}>
+              <div className="rounded" style={{ border: `1px solid ${'var(--cp-border, #E2E8F0)'}`, backgroundColor: 'var(--cp-bg-elevated, #FFFFFF)' }}>
                 <button
                   className={cn("w-full flex items-center justify-between px-3 py-2", isDark ? "hover:bg-[#232323]" : "hover:bg-slate-50")}
                   onClick={() => setPinnedFieldsExpanded(!pinnedFieldsExpanded)}
@@ -373,7 +373,7 @@ export function IssueDetailPanel({ item, onClose, onFieldChange }: IssueDetailPa
               </div>
 
               {/* Details section - collapsible */}
-              <div className="rounded" style={{ border: `1px solid ${'var(--cp-border, #E2E8F0)'}`, backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF' }}>
+              <div className="rounded" style={{ border: `1px solid ${'var(--cp-border, #E2E8F0)'}`, backgroundColor: 'var(--cp-bg-elevated, #FFFFFF)' }}>
                 <button
                   className={cn("w-full flex items-center justify-between px-3 py-2", isDark ? "hover:bg-[#232323]" : "hover:bg-slate-50")}
                   onClick={() => setDetailsExpanded(!detailsExpanded)}
@@ -433,7 +433,7 @@ export function IssueDetailPanel({ item, onClose, onFieldChange }: IssueDetailPa
               </div>
 
               {/* Automation section */}
-              <div className="rounded" style={{ border: `1px solid ${'var(--cp-border, #E2E8F0)'}`, backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF' }}>
+              <div className="rounded" style={{ border: `1px solid ${'var(--cp-border, #E2E8F0)'}`, backgroundColor: 'var(--cp-bg-elevated, #FFFFFF)' }}>
                 <div className="flex items-center justify-between px-3 py-2">
                   <div className="flex items-center gap-2">
                     <span className="text-[12px] font-semibold" style={{ color: 'var(--cp-text-secondary, #334155)' }}>Automation</span>

@@ -30,7 +30,7 @@ export function ThemeStatsStrip({ themes, isDark = false }: Props) {
       sub: `${themes.length} total`,
       icon: Layers,
       iconColor: '#2563EB',
-      iconBg: isDark ? 'rgba(59,130,246,0.12)' : '#EFF6FF',
+      iconBg: 'var(--cp-primary-light, #EFF6FF)',
       cardBg: undefined,
     },
     {
@@ -51,7 +51,7 @@ export function ThemeStatsStrip({ themes, isDark = false }: Props) {
       sub: themes.length ? `~${Math.round(totalGoals / themes.length)} per theme` : '—',
       icon: Target,
       iconColor: '#059669',
-      iconBg: isDark ? 'rgba(5,150,105,0.12)' : '#ECFDF5',
+      iconBg: 'var(--cp-success-light, #ECFDF5)',
       cardBg: undefined,
     },
     {
@@ -60,7 +60,7 @@ export function ThemeStatsStrip({ themes, isDark = false }: Props) {
       sub: 'FY2026 planned',
       icon: DollarSign,
       iconColor: '#2563EB',
-      iconBg: isDark ? 'rgba(59,130,246,0.12)' : '#EFF6FF',
+      iconBg: 'var(--cp-primary-light, #EFF6FF)',
       cardBg: undefined,
     },
     {

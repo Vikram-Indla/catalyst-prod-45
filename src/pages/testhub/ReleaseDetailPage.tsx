@@ -146,7 +146,7 @@ export default function ReleaseDetailPage() {
 
 function StatCard({ label, value, color, isDark }: { label: string; value: string; color: string; isDark: boolean }) {
   return (
-    <div style={{ padding: '14px 16px', background: isDark ? 'var(--cp-bg-surface, #242528)' : '#F8FAFC', borderRadius: 12, border: `1px solid ${'var(--cp-border, #E2E8F0)'}` }}>
+    <div style={{ padding: '14px 16px', background: 'var(--cp-bg-page, #F8FAFC)', borderRadius: 12, border: `1px solid ${'var(--cp-border, #E2E8F0)'}` }}>
       <div style={{ fontSize: 22, fontWeight: 700, color, fontVariantNumeric: 'tabular-nums' }}>{value}</div>
       <div style={{ fontSize: 12, color: 'var(--cp-text-tertiary, #64748B)', marginTop: 2 }}>{label}</div>
     </div>
@@ -163,7 +163,7 @@ function OverviewTab({ release, isDark }: { release: any; isDark: boolean }) {
         </p>
 
         <h3 style={{ fontSize: 15, fontWeight: 700, color: 'var(--cp-text-primary, #0F172A)', margin: '24px 0 12px' }}>Test Progress</h3>
-        <div style={{ height: 10, backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : '#F1F5F9', borderRadius: 6, overflow: 'hidden', marginBottom: 8 }}>
+        <div style={{ height: 10, backgroundColor: 'var(--cp-bg-sunken, #F1F5F9)', borderRadius: 6, overflow: 'hidden', marginBottom: 8 }}>
           {release.test_cases_total > 0 && (
             <div style={{
               display: 'flex', height: '100%',
@@ -183,7 +183,7 @@ function OverviewTab({ release, isDark }: { release: any; isDark: boolean }) {
       </div>
 
       {/* Details panel */}
-      <div style={{ background: isDark ? 'var(--cp-bg-surface, #242528)' : '#F8FAFC', borderRadius: 12, padding: 20, border: `1px solid ${'var(--cp-border, #E2E8F0)'}` }}>
+      <div style={{ background: 'var(--cp-bg-page, #F8FAFC)', borderRadius: 12, padding: 20, border: `1px solid ${'var(--cp-border, #E2E8F0)'}` }}>
         <h3 style={{ fontSize: 14, fontWeight: 700, color: 'var(--cp-text-primary, #0F172A)', marginBottom: 16 }}>Details</h3>
         <dl style={{ margin: 0, display: 'flex', flexDirection: 'column', gap: 14 }}>
           <DetailRow label="Target Date" value={release.target_date ? format(new Date(release.target_date), 'MMMM dd, yyyy') : '—'} />
@@ -226,7 +226,7 @@ function CyclesTab({ cycles, isLoading, navigate, isDark }: { cycles: any[]; isL
     <div style={{ border: `1px solid ${'var(--cp-border, #E2E8F0)'}`, borderRadius: 12, overflow: 'hidden', background: isDark ? 'var(--cp-bg-surface, #242528)' : '#fff' }}>
       <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
         <thead>
-          <tr style={{ backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : '#F8FAFC', borderBottom: `1px solid ${'var(--cp-border, #E2E8F0)'}` }}>
+          <tr style={{ backgroundColor: 'var(--cp-bg-page, #F8FAFC)', borderBottom: `1px solid ${'var(--cp-border, #E2E8F0)'}` }}>
             <th style={getThStyle(isDark)}>Cycle</th>
             <th style={getThStyle(isDark)}>Status</th>
             <th style={getThStyle(isDark)}>Total</th>
@@ -244,7 +244,7 @@ function CyclesTab({ cycles, isLoading, navigate, isDark }: { cycles: any[]; isL
                 key={c.id}
                 onClick={() => navigate(`/testhub/cycles/${cycle.id}`)}
                 style={{ borderBottom: `1px solid ${'var(--cp-bg-sunken, #F1F5F9)'}`, cursor: 'pointer' }}
-                onMouseEnter={e => (e.currentTarget.style.backgroundColor = isDark ? 'var(--cp-bg-surface, #242528)' : '#F8FAFC')}
+                onMouseEnter={e => (e.currentTarget.style.backgroundColor = 'var(--cp-bg-page, #F8FAFC)')}
                 onMouseLeave={e => (e.currentTarget.style.backgroundColor = '')}
               >
                 <td style={tdStyle}><span style={{ fontWeight: 600, color: 'var(--cp-text-primary, #0F172A)' }}>{cycle.name}</span></td>

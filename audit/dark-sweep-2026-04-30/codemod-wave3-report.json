@@ -1,0 +1,555 @@
+{
+  "total": 541,
+  "changed": [
+    {
+      "file": "src/components/admin/UserDetailPanel.tsx",
+      "n": 6
+    },
+    {
+      "file": "src/components/boards/BoardCard.tsx",
+      "n": 1
+    },
+    {
+      "file": "src/components/goals/GoalDetailDrawer.tsx",
+      "n": 4
+    },
+    {
+      "file": "src/components/goals/GoalsStatsStrip.tsx",
+      "n": 1
+    },
+    {
+      "file": "src/components/hierarchy/PriorityDropdown.tsx",
+      "n": 4
+    },
+    {
+      "file": "src/components/hierarchy/StatusDropdown.tsx",
+      "n": 4
+    },
+    {
+      "file": "src/components/hierarchy/WorkItemTable.tsx",
+      "n": 1
+    },
+    {
+      "file": "src/components/hierarchy/WorkItemTree.tsx",
+      "n": 3
+    },
+    {
+      "file": "src/components/ideas-roadmap/RoadmapCard.tsx",
+      "n": 2
+    },
+    {
+      "file": "src/components/ja/MobileNavigationMenu.tsx",
+      "n": 1
+    },
+    {
+      "file": "src/components/layout/SidebarBase.tsx",
+      "n": 11
+    },
+    {
+      "file": "src/components/notifications/CommentPreview.tsx",
+      "n": 1
+    },
+    {
+      "file": "src/components/notifications/EmptyState.tsx",
+      "n": 3
+    },
+    {
+      "file": "src/components/notifications/NotificationPanel.tsx",
+      "n": 4
+    },
+    {
+      "file": "src/components/notifications/SectionHeader.tsx",
+      "n": 1
+    },
+    {
+      "file": "src/components/notifications/WatchingTab.tsx",
+      "n": 1
+    },
+    {
+      "file": "src/components/product-hub/roadmap/ProductRoadmapPage.tsx",
+      "n": 1
+    },
+    {
+      "file": "src/components/product-hub/roadmap/RoadmapKPIStrip.tsx",
+      "n": 1
+    },
+    {
+      "file": "src/components/product-hub/roadmap/RoadmapRequestList.tsx",
+      "n": 2
+    },
+    {
+      "file": "src/components/product-hub/roadmap/RoadmapTimelineBar.tsx",
+      "n": 1
+    },
+    {
+      "file": "src/components/product-hub/roadmap/RoadmapToolbar.tsx",
+      "n": 1
+    },
+    {
+      "file": "src/components/producthub/cards/CardScoreRing.tsx",
+      "n": 1
+    },
+    {
+      "file": "src/components/producthub/shared/CreateRequestDrawer.tsx",
+      "n": 1
+    },
+    {
+      "file": "src/components/producthub/shared/ProductHubPageHeader.tsx",
+      "n": 2
+    },
+    {
+      "file": "src/components/project-hub/ProjectStatusTabs.tsx",
+      "n": 1
+    },
+    {
+      "file": "src/components/project-hub/ProjectToolbar.tsx",
+      "n": 1
+    },
+    {
+      "file": "src/components/project-hub/shell/NavItem.tsx",
+      "n": 2
+    },
+    {
+      "file": "src/components/reqAssist/RAEpicDraftDrawer.tsx",
+      "n": 3
+    },
+    {
+      "file": "src/components/reqAssist/RAJiraSidePanel.tsx",
+      "n": 5
+    },
+    {
+      "file": "src/components/resource360/Resource360Banner.tsx",
+      "n": 1
+    },
+    {
+      "file": "src/components/resource360/Toolbar.tsx",
+      "n": 1
+    },
+    {
+      "file": "src/components/shared/GroupByPopover.tsx",
+      "n": 3
+    },
+    {
+      "file": "src/components/strategy/themes/ThemeDetailDrawer.tsx",
+      "n": 1
+    },
+    {
+      "file": "src/components/strategy/themes/ThemeListView.tsx",
+      "n": 1
+    },
+    {
+      "file": "src/components/strategy/themes/ThemeStatsStrip.tsx",
+      "n": 3
+    },
+    {
+      "file": "src/components/testhub/CreateTestCycleModal.tsx",
+      "n": 7
+    },
+    {
+      "file": "src/components/testhub/execution/ExecutionHeader.tsx",
+      "n": 2
+    },
+    {
+      "file": "src/components/testhub/execution/ExecutionRunMode.tsx",
+      "n": 6
+    },
+    {
+      "file": "src/components/testhub/execution/ExecutionViewMode.tsx",
+      "n": 2
+    },
+    {
+      "file": "src/components/testhub/requirements/CreateRequirementModal.tsx",
+      "n": 5
+    },
+    {
+      "file": "src/components/testhub/requirements/LinkTestCaseModal.tsx",
+      "n": 6
+    },
+    {
+      "file": "src/components/wiki/admin/WikiAdminSyncTab.tsx",
+      "n": 1
+    },
+    {
+      "file": "src/components/workhub/allwork/AllWorkSplitView.tsx",
+      "n": 1
+    },
+    {
+      "file": "src/modules/product-roadmap/components/RoadmapListRow.tsx",
+      "n": 1
+    },
+    {
+      "file": "src/modules/product-roadmap/components/RoadmapToolbar.tsx",
+      "n": 1
+    },
+    {
+      "file": "src/modules/work-hub/components/AllWorkDetailPanel.tsx",
+      "n": 5
+    },
+    {
+      "file": "src/modules/work-hub/components/IssueDetailPanel.tsx",
+      "n": 6
+    },
+    {
+      "file": "src/pages/R360MemberDetail.tsx",
+      "n": 8
+    },
+    {
+      "file": "src/pages/ReqAssistGenerate.tsx",
+      "n": 10
+    },
+    {
+      "file": "src/pages/ReqAssistLibrary.tsx",
+      "n": 15
+    },
+    {
+      "file": "src/pages/ResourceListingPage.tsx",
+      "n": 1
+    },
+    {
+      "file": "src/pages/admin/FeatureFlagsPage.tsx",
+      "n": 8
+    },
+    {
+      "file": "src/pages/admin/JiraUserSync.tsx",
+      "n": 24
+    },
+    {
+      "file": "src/pages/incidenthub/CommitteeQueuePage.tsx",
+      "n": 6
+    },
+    {
+      "file": "src/pages/incidenthub/IncidentAnalyticsPage.tsx",
+      "n": 3
+    },
+    {
+      "file": "src/pages/incidenthub/IncidentDetailPage.tsx",
+      "n": 6
+    },
+    {
+      "file": "src/pages/incidenthub/IncidentInsightsPage.tsx",
+      "n": 6
+    },
+    {
+      "file": "src/pages/incidenthub/IncidentListPage.tsx",
+      "n": 4
+    },
+    {
+      "file": "src/pages/incidenthub/IncidentReportsPage.tsx",
+      "n": 3
+    },
+    {
+      "file": "src/pages/incidenthub/components/CommitteeModal.tsx",
+      "n": 1
+    },
+    {
+      "file": "src/pages/incidenthub/components/ConvertDialog.tsx",
+      "n": 2
+    },
+    {
+      "file": "src/pages/incidenthub/components/NewIncidentModal.tsx",
+      "n": 1
+    },
+    {
+      "file": "src/pages/product/ideas/IdeasRoadmapPage.tsx",
+      "n": 5
+    },
+    {
+      "file": "src/pages/producthub/IdeasAnalyticsPage.tsx",
+      "n": 3
+    },
+    {
+      "file": "src/pages/producthub/IdeasBacklogPage.tsx",
+      "n": 7
+    },
+    {
+      "file": "src/pages/producthub/IdeasRoadmapPage.tsx",
+      "n": 2
+    },
+    {
+      "file": "src/pages/producthub/IdeasThemePage.tsx",
+      "n": 1
+    },
+    {
+      "file": "src/pages/producthub/IdeationPage.tsx",
+      "n": 5
+    },
+    {
+      "file": "src/pages/producthub/ideation/CreateDriveModal.tsx",
+      "n": 9
+    },
+    {
+      "file": "src/pages/producthub/ideation/IdeaDrawer.tsx",
+      "n": 9
+    },
+    {
+      "file": "src/pages/producthub/ideation/IdeationAnalyticsView.tsx",
+      "n": 4
+    },
+    {
+      "file": "src/pages/producthub/ideation/IdeationBoardView.tsx",
+      "n": 5
+    },
+    {
+      "file": "src/pages/producthub/ideation/IdeationCreateWizard.tsx",
+      "n": 4
+    },
+    {
+      "file": "src/pages/producthub/ideation/IdeationDetailPanel.tsx",
+      "n": 11
+    },
+    {
+      "file": "src/pages/producthub/ideation/IdeationDrivesView.tsx",
+      "n": 3
+    },
+    {
+      "file": "src/pages/producthub/ideation/IdeationMatrixView.tsx",
+      "n": 2
+    },
+    {
+      "file": "src/pages/producthub/ideation/IdeationTriagePanel.tsx",
+      "n": 9
+    },
+    {
+      "file": "src/pages/r360-member/ChronologyView.tsx",
+      "n": 1
+    },
+    {
+      "file": "src/pages/r360-member/DetailPanel.tsx",
+      "n": 2
+    },
+    {
+      "file": "src/pages/r360-member/RingView.tsx",
+      "n": 11
+    },
+    {
+      "file": "src/pages/releasehub/AllChangesPage.tsx",
+      "n": 14
+    },
+    {
+      "file": "src/pages/releasehub/AllReleasesPage.tsx",
+      "n": 16
+    },
+    {
+      "file": "src/pages/releasehub/CommandCenterPage.tsx",
+      "n": 22
+    },
+    {
+      "file": "src/pages/releasehub/FreezeWindowsPage.tsx",
+      "n": 8
+    },
+    {
+      "file": "src/pages/releasehub/ProductionEventsPage.tsx",
+      "n": 6
+    },
+    {
+      "file": "src/pages/releasehub/SignOffQueuePage.tsx",
+      "n": 6
+    },
+    {
+      "file": "src/pages/strategy/StrategyRoom.tsx",
+      "n": 1
+    },
+    {
+      "file": "src/pages/strategyhub/GoalsKeyResultsPage.tsx",
+      "n": 1
+    },
+    {
+      "file": "src/pages/testhub/ActivityFeedPage.tsx",
+      "n": 4
+    },
+    {
+      "file": "src/pages/testhub/EnvironmentDetailPage.tsx",
+      "n": 4
+    },
+    {
+      "file": "src/pages/testhub/EnvironmentsListPage.tsx",
+      "n": 4
+    },
+    {
+      "file": "src/pages/testhub/ImportExportPage.tsx",
+      "n": 5
+    },
+    {
+      "file": "src/pages/testhub/ReleaseDetailPage.tsx",
+      "n": 5
+    },
+    {
+      "file": "src/pages/testhub/ReportDetailPage.tsx",
+      "n": 4
+    },
+    {
+      "file": "src/pages/testhub/ReportsListPage.tsx",
+      "n": 4
+    },
+    {
+      "file": "src/pages/testhub/RequirementDetailPage.tsx",
+      "n": 3
+    },
+    {
+      "file": "src/pages/testhub/RequirementsListPage.tsx",
+      "n": 5
+    },
+    {
+      "file": "src/pages/testhub/SettingsPage.tsx",
+      "n": 2
+    },
+    {
+      "file": "src/pages/testhub/SharedStepDetailPage.tsx",
+      "n": 6
+    },
+    {
+      "file": "src/pages/testhub/SharedStepsPage.tsx",
+      "n": 31
+    },
+    {
+      "file": "src/pages/testhub/TagsListPage.tsx",
+      "n": 5
+    },
+    {
+      "file": "src/pages/testhub/TestCycleDetailPage.tsx",
+      "n": 23
+    },
+    {
+      "file": "src/pages/testhub/TestCyclesPage.tsx",
+      "n": 3
+    },
+    {
+      "file": "src/pages/testhub/TestHubDashboardPage.tsx",
+      "n": 26
+    },
+    {
+      "file": "src/pages/testhub/TestHubDocsPage.tsx",
+      "n": 6
+    },
+    {
+      "file": "src/pages/testhub/TestRepositoryPage.tsx",
+      "n": 13
+    }
+  ],
+  "unmapped": [
+    {
+      "light": "#FFFBEB",
+      "count": 13
+    },
+    {
+      "light": "#F0FDF4",
+      "count": 10
+    },
+    {
+      "light": "#F0FDFA",
+      "count": 7
+    },
+    {
+      "light": "#DBEAFE",
+      "count": 7
+    },
+    {
+      "light": "#BFDBFE",
+      "count": 6
+    },
+    {
+      "light": "#FDE68A",
+      "count": 6
+    },
+    {
+      "light": "#F5F3FF",
+      "count": 5
+    },
+    {
+      "light": "#FECACA",
+      "count": 5
+    },
+    {
+      "light": "#BBF7D0",
+      "count": 5
+    },
+    {
+      "light": "#1B7F37",
+      "count": 4
+    },
+    {
+      "light": "#DCFCE7",
+      "count": 3
+    },
+    {
+      "light": "#EDE9FE",
+      "count": 3
+    },
+    {
+      "light": "#F3E8FF",
+      "count": 3
+    },
+    {
+      "light": "#99F6E4",
+      "count": 2
+    },
+    {
+      "light": "#86EFAC",
+      "count": 2
+    },
+    {
+      "light": "#FCD34D",
+      "count": 2
+    },
+    {
+      "light": "#B7EBD1",
+      "count": 2
+    },
+    {
+      "light": "#93C5FD",
+      "count": 1
+    },
+    {
+      "light": "#C4B5FD",
+      "count": 1
+    },
+    {
+      "light": "#CCFBF1",
+      "count": 1
+    },
+    {
+      "light": "#5EEAD4",
+      "count": 1
+    },
+    {
+      "light": "#D1FAE5",
+      "count": 1
+    },
+    {
+      "light": "#6EE7B7",
+      "count": 1
+    },
+    {
+      "light": "#E9F2FF",
+      "count": 1
+    },
+    {
+      "light": "#EDEDED",
+      "count": 1
+    },
+    {
+      "light": "#E9D5FF",
+      "count": 1
+    },
+    {
+      "light": "#0C66E4",
+      "count": 1
+    },
+    {
+      "light": "#1E40AF",
+      "count": 1
+    },
+    {
+      "light": "#DDD6FE",
+      "count": 1
+    },
+    {
+      "light": "#A7F3D0",
+      "count": 1
+    },
+    {
+      "light": "#FDF4FF",
+      "count": 1
+    }
+  ]
+}

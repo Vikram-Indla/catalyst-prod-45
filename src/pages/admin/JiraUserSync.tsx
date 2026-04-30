@@ -233,13 +233,13 @@ const JiraUserSync: React.FC = () => {
   return (
     <div
       className="flex flex-col h-full"
-      style={{ background: isDark ? 'var(--cp-bg-page, #1F1F21)' : '#F8FAFC', minHeight: '100vh' }}
+      style={{ background: 'var(--cp-bg-page, #F8FAFC)', minHeight: '100vh' }}
     >
 
       {/* Layer 2 — Main content surface */}
       <div className="jira-surface flex flex-col flex-1 overflow-hidden mx-5 my-4 rounded-lg"
         style={{
-          background: isDark ? 'var(--cp-bg-page, #1F1F21)' : '#FFFFFF',
+          background: 'var(--cp-bg-elevated, #FFFFFF)',
           border: `0.75px solid ${'var(--cp-border-subtle, rgba(15,23,42,0.06))'}`,
         }}>
 
@@ -264,7 +264,7 @@ const JiraUserSync: React.FC = () => {
                   display: 'inline-flex', alignItems: 'center', gap: '4px',
                   padding: '5px 11px', borderRadius: '6px', fontSize: '12px', fontWeight: 500,
                   cursor: 'pointer', lineHeight: 1,
-                  background: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF',
+                  background: 'var(--cp-bg-elevated, #FFFFFF)',
                   color: 'var(--cp-text-secondary, #334155)',
                   border: `1px solid ${'var(--cp-border-default, rgba(15,23,42,0.10))'}`,
                 }}>
@@ -294,7 +294,7 @@ const JiraUserSync: React.FC = () => {
               className="jira-card"
               style={{
                 flex: 1, minWidth: '140px', padding: '16px 20px', borderRadius: '8px',
-                background: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF',
+                background: 'var(--cp-bg-elevated, #FFFFFF)',
                 border: `1px solid ${'var(--cp-border-subtle, rgba(15,23,42,0.08))'}`,
               }}
             >
@@ -319,7 +319,7 @@ const JiraUserSync: React.FC = () => {
 
         {/* ══ Toolbar ══ */}
         <div className="jira-toolbar shrink-0 flex items-center gap-[7px] flex-wrap"
-          style={{ padding: '9px 18px', background: isDark ? 'var(--cp-bg-page, #1F1F21)' : '#FFFFFF', borderBottom: `0.75px solid ${'var(--cp-border-subtle, rgba(15,23,42,0.06))'}` }}>
+          style={{ padding: '9px 18px', background: 'var(--cp-bg-elevated, #FFFFFF)', borderBottom: `0.75px solid ${'var(--cp-border-subtle, rgba(15,23,42,0.06))'}` }}>
           <div className="relative w-[220px]">
             <Search size={12} className="absolute left-2 top-1/2 -translate-y-1/2" style={{ color: 'var(--cp-text-tertiary, #64748B)' }} />
             <input
@@ -329,7 +329,7 @@ const JiraUserSync: React.FC = () => {
               placeholder="Name, email, Jira ID, project…"
               style={{
                 padding: '5px 10px 5px 26px', borderRadius: '4px', fontSize: '12px', outline: 'none',
-                background: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF',
+                background: 'var(--cp-bg-elevated, #FFFFFF)',
                 color: 'var(--cp-text-primary, #0F172A)',
                 border: `1px solid ${'var(--cp-border-default, rgba(15,23,42,0.10))'}`,
               }}
@@ -345,8 +345,8 @@ const JiraUserSync: React.FC = () => {
                   padding: '4px 9px', borderRadius: '4px', fontSize: '11px', fontWeight: 500, cursor: 'pointer',
                   transition: 'all 120ms ease',
                   background: filter === f.value
-                    ? (isDark ? 'rgba(37,99,235,0.12)' : '#EFF6FF')
-                    : (isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF'),
+                    ? ('var(--cp-primary-light, #EFF6FF)')
+                    : ('var(--cp-bg-elevated, #FFFFFF)'),
                   color: filter === f.value
                     ? ('var(--cp-text-link, #2563EB)')
                     : ('var(--cp-text-secondary, #334155)'),
@@ -365,7 +365,7 @@ const JiraUserSync: React.FC = () => {
                 style={{
                   display: 'inline-flex', alignItems: 'center', gap: '4px',
                   padding: '4px 9px', borderRadius: '4px', fontSize: '11px', fontWeight: 500, cursor: 'pointer',
-                  background: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF',
+                  background: 'var(--cp-bg-elevated, #FFFFFF)',
                   color: 'var(--cp-text-secondary, #334155)',
                   border: `1px solid ${'var(--cp-border-default, rgba(15,23,42,0.10))'}`,
                 }}>
@@ -377,7 +377,7 @@ const JiraUserSync: React.FC = () => {
               style={{
                 display: 'inline-flex', alignItems: 'center', gap: '4px',
                 padding: '4px 9px', borderRadius: '4px', fontSize: '11px', fontWeight: 500, cursor: 'pointer',
-                background: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF',
+                background: 'var(--cp-bg-elevated, #FFFFFF)',
                 color: 'var(--cp-text-secondary, #334155)',
                 border: `1px solid ${'var(--cp-border-default, rgba(15,23,42,0.10))'}`,
               }}>
@@ -391,14 +391,14 @@ const JiraUserSync: React.FC = () => {
           <div className="jira-selection-bar shrink-0 flex items-center gap-[9px]"
             style={{
               padding: '7px 18px',
-              background: isDark ? 'rgba(37,99,235,0.12)' : '#EFF6FF',
+              background: 'var(--cp-primary-light, #EFF6FF)',
               borderBottom: `1px solid ${isDark ? 'rgba(37,99,235,0.25)' : '#BFDBFE'}`,
             }}>
             <input type="checkbox" checked onChange={clearAll} style={{ cursor: 'pointer', accentColor: '#2563EB' }} />
             <span className="jira-selection-count" style={{ fontSize: '12px', fontWeight: 500, color: 'var(--cp-text-link, #2563EB)' }}>
               {selected.size} users selected
             </span>
-            <span style={{ fontSize: '11px', color: isDark ? '#2E2E2E' : '#94A3B8' }}>|</span>
+            <span style={{ fontSize: '11px', color: 'var(--cp-text-muted, #94A3B8)' }}>|</span>
 
             <Popover open={assignPopoverOpen} onOpenChange={setAssignPopoverOpen}>
               <PopoverTrigger asChild>
@@ -415,7 +415,7 @@ const JiraUserSync: React.FC = () => {
                 className="jira-popover-surface"
                 style={{
                   width: '360px', padding: 0,
-                  background: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF',
+                  background: 'var(--cp-bg-elevated, #FFFFFF)',
                   border: `1px solid ${'var(--cp-border-default, rgba(15,23,42,0.12))'}`,
                 }}
                 align="start"
@@ -434,7 +434,7 @@ const JiraUserSync: React.FC = () => {
                     className="jira-input w-full"
                     style={{
                       padding: '5px 8px', borderRadius: '4px', fontSize: '11px', outline: 'none', marginBottom: '6px',
-                      background: isDark ? 'var(--cp-bg-surface, #242528)' : '#F8FAFC',
+                      background: 'var(--cp-bg-page, #F8FAFC)',
                       color: 'var(--cp-text-primary, #0F172A)',
                       border: `1px solid ${'var(--cp-border-default, rgba(15,23,42,0.10))'}`,
                     }}
@@ -516,7 +516,7 @@ const JiraUserSync: React.FC = () => {
               style={{
                 display: 'inline-flex', alignItems: 'center', gap: '4px',
                 padding: '3px 10px', borderRadius: '4px', fontSize: '11px', fontWeight: 500, cursor: 'pointer',
-                background: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF',
+                background: 'var(--cp-bg-elevated, #FFFFFF)',
                 color: '#DC2626',
                 border: `1px solid ${'var(--cp-border-default, rgba(15,23,42,0.10))'}`,
               }}>
@@ -526,7 +526,7 @@ const JiraUserSync: React.FC = () => {
               style={{
                 display: 'inline-flex', alignItems: 'center', gap: '4px',
                 padding: '3px 10px', borderRadius: '4px', fontSize: '11px', fontWeight: 500, cursor: 'pointer',
-                background: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF',
+                background: 'var(--cp-bg-elevated, #FFFFFF)',
                 color: 'var(--cp-text-secondary, #334155)',
                 border: `1px solid ${'var(--cp-border-default, rgba(15,23,42,0.10))'}`,
               }}>
@@ -548,7 +548,7 @@ const JiraUserSync: React.FC = () => {
         <div className="flex-1 overflow-y-auto overflow-x-auto">
           <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: '1000px' }}>
             <thead>
-              <tr className="jira-table-header" style={{ background: isDark ? 'var(--cp-bg-surface, #242528)' : '#F1F5F9', borderBottom: `0.75px solid ${'var(--cp-border-subtle, rgba(15,23,42,0.06))'}` }}>
+              <tr className="jira-table-header" style={{ background: 'var(--cp-bg-sunken, #F1F5F9)', borderBottom: `0.75px solid ${'var(--cp-border-subtle, rgba(15,23,42,0.06))'}` }}>
                 <th style={{ width: '36px', padding: '10px 12px', textAlign: 'center' }}>
                   <input
                     ref={headerCheckRef}
@@ -684,7 +684,7 @@ const JiraUserSync: React.FC = () => {
                           display: 'inline-flex', alignItems: 'center', gap: '3px',
                           padding: '1px 6px', borderRadius: '4px',
                           fontSize: '10px', fontWeight: 700, letterSpacing: '0.03em', textTransform: 'uppercase',
-                          background: isDark ? 'rgba(37,99,235,0.18)' : '#EFF6FF',
+                          background: 'var(--cp-primary-light, #EFF6FF)',
                           color: 'var(--cp-primary-hover, #1D4ED8)',
                           border: `0.75px solid ${isDark ? 'rgba(37,99,235,0.30)' : 'rgba(37,99,235,0.25)'}`,
                         }}><Share2 size={9} /> JIRA</span>
@@ -744,7 +744,7 @@ const JiraUserSync: React.FC = () => {
                     <td style={{ padding: '8px 12px' }}>
                       {hasConflicts ? (
                         <span className="jira-lozenge-conflict"
-                          style={{ display: 'inline-block', padding: '0 7px', borderRadius: '4px', fontSize: '10px', fontWeight: 700, textTransform: 'uppercase', height: '20px', lineHeight: '20px', letterSpacing: '0.03em', background: isDark ? '#451A03' : '#FEF3C7', color: 'var(--cp-warning-text, #92400E)' }}>CONFLICT</span>
+                          style={{ display: 'inline-block', padding: '0 7px', borderRadius: '4px', fontSize: '10px', fontWeight: 700, textTransform: 'uppercase', height: '20px', lineHeight: '20px', letterSpacing: '0.03em', background: 'var(--cp-warning-light, #FEF3C7)', color: 'var(--cp-warning-text, #92400E)' }}>CONFLICT</span>
                       ) : isInactive ? (
                         <span className="jira-lozenge-inactive"
                           style={{ display: 'inline-block', padding: '0 7px', borderRadius: '4px', fontSize: '10px', fontWeight: 700, textTransform: 'uppercase', height: '20px', lineHeight: '20px', letterSpacing: '0.03em', background: 'var(--cp-danger-light, #FEE2E2)', color: 'var(--cp-danger-text, #991B1B)' }}>INACTIVE</span>
@@ -761,7 +761,7 @@ const JiraUserSync: React.FC = () => {
                         style={{
                           display: 'inline-flex', alignItems: 'center', gap: '3px',
                           padding: '3px 8px', borderRadius: '4px', fontSize: '11px', fontWeight: 500,
-                          background: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF',
+                          background: 'var(--cp-bg-elevated, #FFFFFF)',
                           border: `1px solid ${user.is_active_in_catalyst ? '#DC2626' : '#16A34A'}`,
                           color: user.is_active_in_catalyst ? '#DC2626' : '#16A34A',
                           cursor: togglingId === user.id ? 'not-allowed' : 'pointer',
@@ -780,7 +780,7 @@ const JiraUserSync: React.FC = () => {
 
         {/* ══ Pagination ══ */}
         <div className="jira-pagination-bg shrink-0 flex items-center justify-between"
-          style={{ padding: '9px 16px', borderTop: `0.75px solid ${'var(--cp-border-subtle, rgba(15,23,42,0.06))'}`, background: isDark ? 'var(--cp-bg-page, #1F1F21)' : '#F8FAFC' }}>
+          style={{ padding: '9px 16px', borderTop: `0.75px solid ${'var(--cp-border-subtle, rgba(15,23,42,0.06))'}`, background: 'var(--cp-bg-page, #F8FAFC)' }}>
           <span style={{ fontSize: '11px', color: 'var(--cp-text-tertiary, #64748B)' }}>
             {totalCount > 0 ? `Showing ${showStart}–${showEnd} of ${totalCount} users` : 'No results'}
           </span>
@@ -793,7 +793,7 @@ const JiraUserSync: React.FC = () => {
                 width: '28px', height: '28px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
                 borderRadius: '4px', cursor: page <= 1 ? 'not-allowed' : 'pointer',
                 opacity: page <= 1 ? 0.4 : 1,
-                background: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF',
+                background: 'var(--cp-bg-elevated, #FFFFFF)',
                 border: `1px solid ${'var(--cp-border-default, rgba(15,23,42,0.10))'}`,
                 color: 'var(--cp-text-secondary, #334155)',
               }}
@@ -810,7 +810,7 @@ const JiraUserSync: React.FC = () => {
                   style={{
                     width: '28px', height: '28px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
                     borderRadius: '4px', fontSize: '11px', fontWeight: 500, cursor: 'pointer',
-                    background: page === p ? '#2563EB' : (isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF'),
+                    background: page === p ? '#2563EB' : ('var(--cp-bg-elevated, #FFFFFF)'),
                     color: page === p ? '#FFFFFF' : ('var(--cp-text-tertiary, #64748B)'),
                     border: page === p ? 'none' : `1px solid ${'var(--cp-border-default, rgba(15,23,42,0.10))'}`,
                   }}
@@ -827,7 +827,7 @@ const JiraUserSync: React.FC = () => {
                 width: '28px', height: '28px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
                 borderRadius: '4px', cursor: page >= totalPages ? 'not-allowed' : 'pointer',
                 opacity: page >= totalPages ? 0.4 : 1,
-                background: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF',
+                background: 'var(--cp-bg-elevated, #FFFFFF)',
                 border: `1px solid ${'var(--cp-border-default, rgba(15,23,42,0.10))'}`,
                 color: 'var(--cp-text-secondary, #334155)',
               }}

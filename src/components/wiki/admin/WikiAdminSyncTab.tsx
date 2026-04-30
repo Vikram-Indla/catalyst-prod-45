@@ -336,7 +336,7 @@ export function WikiAdminSyncTab() {
       {latestRun?.status === 'complete' && (
         <div style={{
           padding: '10px 16px', borderRadius: 6,
-          background: isDark ? 'rgba(27,127,55,0.15)' : '#E3FCEF', border: '1px solid rgba(13,115,49,0.15)',
+          background: 'var(--cp-success-light, #E3FCEF)', border: '1px solid rgba(13,115,49,0.15)',
           fontFamily: 'var(--cp-font-body)', fontSize: 13, fontWeight: 500,
           color: 'var(--cp-success-text, #006644)',
         }}>

@@ -101,7 +101,7 @@ export function ThemeDetailDrawer({ theme, open, onClose, onEdit, onDelete, isDa
 
         {/* Delete Confirmation */}
         {confirmDelete && (
-          <div style={{ padding: '12px 20px', background: isDark ? 'rgba(220,38,38,0.12)' : '#FEF2F2', borderBottom: `1px solid ${isDark ? 'rgba(220,38,38,0.25)' : '#FECACA'}` }}>
+          <div style={{ padding: '12px 20px', background: 'var(--cp-danger-light, #FEF2F2)', borderBottom: `1px solid ${isDark ? 'rgba(220,38,38,0.25)' : '#FECACA'}` }}>
             <p style={{ fontSize: 12, color: 'var(--cp-danger-text, #991B1B)', marginBottom: 8 }}>Delete "<strong>{theme.title}</strong>"? This will also remove all milestones and links.</p>
             <div className="flex gap-2">
               <button onClick={() => { onDelete(theme); setConfirmDelete(false); }} style={{ fontSize: 11, fontWeight: 600, padding: '4px 12px', borderRadius: 4, border: 'none', background: 'var(--sem-danger)', color: '#FFF', cursor: 'pointer' }}>Delete</button>

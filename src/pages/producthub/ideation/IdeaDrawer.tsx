@@ -169,7 +169,7 @@ export default function IdeaDrawer({ ideaKey, onClose, onConvert }: Props) {
   if (isLoading) return (
     <>
       <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.25)', zIndex: 200 }} />
-      <div style={{ position: 'fixed', top: 0, right: 0, bottom: 0, width: '560px', background: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF', zIndex: 201, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <div style={{ position: 'fixed', top: 0, right: 0, bottom: 0, width: '560px', background: 'var(--cp-bg-elevated, #FFFFFF)', zIndex: 201, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <span style={{ color: dk.t3, fontSize: '14px' }}>Loading...</span>
       </div>
     </>
@@ -199,7 +199,7 @@ export default function IdeaDrawer({ ideaKey, onClose, onConvert }: Props) {
       <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.40)', zIndex: 200 }} />
       <div style={{
         position: 'fixed', top: 0, right: 0, bottom: 0, width: '560px',
-        background: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF', zIndex: 201, boxShadow: isDark ? 'none' : '-8px 0 32px rgba(0,0,0,0.12)',
+        background: 'var(--cp-bg-elevated, #FFFFFF)', zIndex: 201, boxShadow: isDark ? 'none' : '-8px 0 32px rgba(0,0,0,0.12)',
         display: 'flex', flexDirection: 'column',
         animation: 'slideInRight 0.25s ease forwards',
       }}>
@@ -250,7 +250,7 @@ export default function IdeaDrawer({ ideaKey, onClose, onConvert }: Props) {
           {isConverted && rawIdea.linked_initiative_key && (
             <div style={{ padding: '0 20px 16px' }}>
               <div style={{ background: isDark ? 'rgba(22,163,74,0.08)' : '#F0FDF4', border: `0.75px solid ${isDark ? 'rgba(22,163,74,0.20)' : '#BBF7D0'}`, borderRadius: '6px', padding: '14px' }}>
-                <div style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: isDark ? '#86EFAC' : '#11853D', marginBottom: '8px' }}>CONVERTED TO INITIATIVE</div>
+                <div style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--cp-success-text, #11853D)', marginBottom: '8px' }}>CONVERTED TO INITIATIVE</div>
                 <div style={{ background: 'var(--cp-bg-elevated, #FFFFFF)', border: `0.75px solid ${isDark ? 'rgba(22,163,74,0.20)' : '#BBF7D0'}`, borderRadius: '4px', padding: '10px 12px' }}>
                   <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: '13px', fontWeight: 700, color: '#11853D' }}>
                     {rawIdea.linked_initiative_key}
@@ -374,7 +374,7 @@ export default function IdeaDrawer({ ideaKey, onClose, onConvert }: Props) {
             {canEdit ? (
               <textarea value={localDescription} onChange={(e) => setLocalDescription(e.target.value)} rows={4}
                 placeholder="Add a description..."
-                style={{ width: '100%', borderRadius: '4px', border: `0.75px solid ${isDark ? '#454545' : 'rgba(15,23,42,0.14)'}`, padding: '8px 12px', fontSize: '13px', color: dk.t1, resize: 'vertical', fontFamily: 'var(--cp-font-body)', outline: 'none', background: isDark ? 'transparent' : '#FFFFFF' }}
+                style={{ width: '100%', borderRadius: '4px', border: `0.75px solid ${isDark ? '#454545' : 'rgba(15,23,42,0.14)'}`, padding: '8px 12px', fontSize: '13px', color: dk.t1, resize: 'vertical', fontFamily: 'var(--cp-font-body)', outline: 'none', background: 'var(--cp-bg-elevated, #FFFFFF)' }}
               />
             ) : (
               <p style={{ fontSize: '13px', color: rawIdea.description ? dk.t1 : dk.t3, lineHeight: 1.6, margin: 0 }}>
@@ -441,7 +441,7 @@ export default function IdeaDrawer({ ideaKey, onClose, onConvert }: Props) {
             <div style={{ padding: '16px 20px' }}>
               <div style={{ background: isDark ? 'rgba(22,163,74,0.08)' : '#F0FDF4', border: `0.75px solid ${isDark ? 'rgba(22,163,74,0.20)' : '#BBF7D0'}`, borderRadius: '6px', padding: '14px' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '6px' }}>
-                  <ArrowUpRight size={14} style={{ color: isDark ? '#86EFAC' : '#16A34A' }} />
+                  <ArrowUpRight size={14} style={{ color: 'var(--cp-success, #16A34A)' }} />
                   <span style={{ fontSize: '13px', fontWeight: 650, color: dk.t1 }}>Ready to promote?</span>
                 </div>
                 <p style={{ fontSize: '12px', color: dk.t2, margin: '0 0 10px', lineHeight: 1.4 }}>
@@ -463,11 +463,11 @@ export default function IdeaDrawer({ ideaKey, onClose, onConvert }: Props) {
         {canEdit ? (
           <div style={{
             padding: '12px 20px', borderTop: `0.75px solid ${dk.border}`,
-            backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF', display: 'flex', justifyContent: 'flex-end', gap: '8px', flexShrink: 0,
+            backgroundColor: 'var(--cp-bg-elevated, #FFFFFF)', display: 'flex', justifyContent: 'flex-end', gap: '8px', flexShrink: 0,
           }}>
             <button onClick={() => { resetLocal(); }} style={{
               height: '50px', padding: '0 16px', borderRadius: '6px',
-              border: `0.75px solid ${dk.border}`, background: isDark ? 'transparent' : '#FFFFFF', color: dk.t2,
+              border: `0.75px solid ${dk.border}`, background: 'var(--cp-bg-elevated, #FFFFFF)', color: dk.t2,
               fontSize: '13px', fontWeight: 600, cursor: 'pointer',
             }}>Cancel</button>
             <button onClick={handleSave} disabled={updateIdea.isPending} style={{
@@ -480,11 +480,11 @@ export default function IdeaDrawer({ ideaKey, onClose, onConvert }: Props) {
         ) : (
           <div style={{
             padding: '12px 20px', borderTop: `0.75px solid ${dk.border}`,
-            backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF', display: 'flex', justifyContent: 'flex-end', flexShrink: 0,
+            backgroundColor: 'var(--cp-bg-elevated, #FFFFFF)', display: 'flex', justifyContent: 'flex-end', flexShrink: 0,
           }}>
             <button onClick={onClose} style={{
               height: '50px', padding: '0 16px', borderRadius: '6px',
-              border: `0.75px solid ${dk.border}`, background: isDark ? 'transparent' : '#FFFFFF', color: dk.t2,
+              border: `0.75px solid ${dk.border}`, background: 'var(--cp-bg-elevated, #FFFFFF)', color: dk.t2,
               fontSize: '13px', fontWeight: 600, cursor: 'pointer',
             }}>Close</button>
           </div>

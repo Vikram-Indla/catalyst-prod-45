@@ -46,7 +46,7 @@ export function NavItem({ icon: Icon, label, isActive, onClick, collapsed, badge
         letterSpacing: '-0.01em',
       }}
     >
-      <Icon size={18} strokeWidth={isActive ? 2 : 1.75} style={{ flexShrink: 0, color: isActive ? '#0052CC' : isDark ? '#A1A1A1' : '#6B778C' }} />
+      <Icon size={18} strokeWidth={isActive ? 2 : 1.75} style={{ flexShrink: 0, color: isActive ? '#0052CC' : 'var(--cp-text-tertiary, #6B778C)' }} />
       {!collapsed && (
         <>
           <span className="truncate">{label}</span>
@@ -76,7 +76,7 @@ export function NavItem({ icon: Icon, label, isActive, onClick, collapsed, badge
                 color: 'var(--cp-text-tertiary, #6B778C)',
                 fontFamily: 'var(--cp-font-mono)',
                 borderRadius: 9999,
-                backgroundColor: isDark ? '#292929' : '#EBECF0',
+                backgroundColor: 'var(--cp-border, #EBECF0)',
                 padding: '1px 7px',
               }}
             >

@@ -105,7 +105,7 @@ function IdeaBoardCard({ idea, columnStatus, onClick, onConvert, isDark, dk }: {
       onClick={onClick}
       style={{
         position: 'relative',
-        background: isDark ? 'transparent' : '#FFFFFF',
+        background: 'var(--cp-bg-elevated, #FFFFFF)',
         border: `1px solid ${dk.border}`,
         borderRadius: '8px', padding: '12px', marginBottom: '8px', cursor: 'grab',
         opacity: isDraft ? 0.7 : isRejected ? 0.55 : 1,
@@ -117,7 +117,7 @@ function IdeaBoardCard({ idea, columnStatus, onClick, onConvert, isDark, dk }: {
         if (!isDark) e.currentTarget.style.transform = 'translateY(-1px)';
       }}
       onMouseLeave={e => {
-        e.currentTarget.style.background = isDark ? 'transparent' : '#FFFFFF';
+        e.currentTarget.style.background = 'var(--cp-bg-elevated, #FFFFFF)';
         if (!isDark) e.currentTarget.style.transform = 'none';
       }}
     >
@@ -169,7 +169,7 @@ function IdeaBoardCard({ idea, columnStatus, onClick, onConvert, isDark, dk }: {
         </span>
         {idea.theme && (
           <span style={{
-            background: isDark ? 'rgba(59,130,246,0.12)' : '#EFF6FF',
+            background: 'var(--cp-primary-light, #EFF6FF)',
             color: isDark ? '#93C5FD' : '#1E40AF',
             padding: '2px 6px', borderRadius: '4px',
             fontSize: '10px', fontWeight: 600, maxWidth: '160px',
@@ -197,7 +197,7 @@ function IdeaBoardCard({ idea, columnStatus, onClick, onConvert, isDark, dk }: {
       {/* AI insight strip */}
       {showFullAiStrip && (
         <div style={{
-          marginTop: '8px', background: isDark ? 'rgba(59,130,246,0.12)' : '#EFF6FF', borderRadius: '6px',
+          marginTop: '8px', background: 'var(--cp-primary-light, #EFF6FF)', borderRadius: '6px',
           padding: '5px 8px', fontSize: '10px', color: 'var(--cp-text-link, #2563EB)', fontWeight: 600,
         }}>
           {aiInsight}
@@ -209,7 +209,7 @@ function IdeaBoardCard({ idea, columnStatus, onClick, onConvert, isDark, dk }: {
         <div style={{
           marginTop: '8px', background: isDark ? 'rgba(22,163,74,0.12)' : '#1B7F37',
           border: `1px solid ${isDark ? 'rgba(22,163,74,0.25)' : '#B7EBD1'}`,
-          borderRadius: '6px', padding: '5px 8px', fontSize: '10px', color: isDark ? '#86EFAC' : '#FFFFFF', fontWeight: 600,
+          borderRadius: '6px', padding: '5px 8px', fontSize: '10px', color: 'var(--cp-bg-elevated, #FFFFFF)', fontWeight: 600,
         }}>
           {initLink}
         </div>

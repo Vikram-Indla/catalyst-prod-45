@@ -112,7 +112,7 @@ export default function IdeationAnalyticsView({ ideas }: Props) {
   const maxWeek = Math.max(...weeks.map(w => w.c), 1);
 
   const cardStyle: React.CSSProperties = {
-    background: isDark ? 'transparent' : '#FFFFFF',
+    background: 'var(--cp-bg-elevated, #FFFFFF)',
     border: `1px solid ${dk.border}`,
     borderRadius: '12px',
     padding: '20px',
@@ -124,10 +124,10 @@ export default function IdeationAnalyticsView({ ideas }: Props) {
 
   // ── Metric cards ──
   const METRICS = [
-    { label: 'TOTAL SUBMISSIONS', value: String(stats.total), color: dk.t1, sub: `${stats.total} ideas in backlog`, subColor: dk.t3, icon: ClipboardList, iconBg: isDark ? 'rgba(59,130,246,0.12)' : '#EFF6FF', iconColor: '#2563EB' },
-    { label: 'AVG IMPACT SCORE', value: stats.avgImpact.toFixed(2), color: '#2563EB', sub: 'across all ideas', subColor: dk.t3, icon: BarChart3, iconBg: isDark ? 'rgba(59,130,246,0.12)' : '#EFF6FF', iconColor: '#2563EB' },
+    { label: 'TOTAL SUBMISSIONS', value: String(stats.total), color: dk.t1, sub: `${stats.total} ideas in backlog`, subColor: dk.t3, icon: ClipboardList, iconBg: 'var(--cp-primary-light, #EFF6FF)', iconColor: '#2563EB' },
+    { label: 'AVG IMPACT SCORE', value: stats.avgImpact.toFixed(2), color: '#2563EB', sub: 'across all ideas', subColor: dk.t3, icon: BarChart3, iconBg: 'var(--cp-primary-light, #EFF6FF)', iconColor: '#2563EB' },
     { label: 'CONVERSION RATE', value: `${stats.convRate.toFixed(1)}%`, color: dk.greenText, sub: `${stats.converted} ideas → requests`, subColor: dk.greenText, icon: RefreshCw, iconBg: isDark ? 'rgba(13,148,136,0.12)' : '#F0FDFA', iconColor: '#0D9488' },
-    { label: 'AI COVERAGE', value: `${stats.aiPct}%`, color: '#3B82F6', sub: `${stats.aiReady} of ${stats.total} enriched`, subColor: dk.t3, icon: Sparkles, iconBg: isDark ? 'rgba(59,130,246,0.12)' : '#EFF6FF', iconColor: '#3B82F6' },
+    { label: 'AI COVERAGE', value: `${stats.aiPct}%`, color: '#3B82F6', sub: `${stats.aiReady} of ${stats.total} enriched`, subColor: dk.t3, icon: Sparkles, iconBg: 'var(--cp-primary-light, #EFF6FF)', iconColor: '#3B82F6' },
     { label: 'PIPELINE VALUE', value: String(stats.pipeline), color: dk.greenText, sub: 'Active ideas in pipeline', subColor: dk.greenText, icon: Rocket, iconBg: isDark ? 'rgba(22,163,74,0.12)' : '#F0FDF4', iconColor: '#16A34A' },
   ];
 

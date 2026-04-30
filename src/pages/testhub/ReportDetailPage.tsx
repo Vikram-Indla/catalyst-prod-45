@@ -45,7 +45,7 @@ export default function ReportDetailPage() {
   const [isLoading, setIsLoading] = useState(true);
 
   // DARK MODE tokens
-  const pageBg = isDark ? 'var(--cp-bg-page, #1F1F21)' : '#F8FAFC';
+  const pageBg = 'var(--cp-bg-page, #F8FAFC)';
   const surfaceBg = isDark ? 'var(--cp-bg-surface, #242528)' : '#FFF';
   const borderColor = 'var(--cp-border, #E2E8F0)';
   const borderSubtle = 'var(--cp-bg-sunken, #F1F5F9)';
@@ -226,7 +226,7 @@ export default function ReportDetailPage() {
               </h3>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: 12 }}>
                 {data.assignee_breakdown.map((a: any, i: number) => (
-                  <div key={i} style={{ padding: 14, backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : '#F8FAFC', borderRadius: 8 }}>
+                  <div key={i} style={{ padding: 14, backgroundColor: 'var(--cp-bg-page, #F8FAFC)', borderRadius: 8 }}>
                     <p style={{ fontSize: 14, fontWeight: 600, color: textPrimary, margin: '0 0 8px' }}>{a.assignee_name}</p>
                     <div style={{ display: 'flex', gap: 12, fontSize: 12 }}>
                       <span>Total: {a.total}</span>
@@ -265,7 +265,7 @@ export default function ReportDetailPage() {
                         <td style={{ padding: '12px 8px' }}>
                           <span style={{
                             fontSize: 11, fontWeight: 500, padding: '3px 8px', borderRadius: 4,
-                            backgroundColor: tc.status === 'passed' ? ('var(--cp-success-light, #ECFDF5)') : tc.status === 'failed' ? ('var(--cp-danger-light, #FEF2F2)') : (isDark ? 'var(--cp-bg-surface, #242528)' : '#F1F5F9'),
+                            backgroundColor: tc.status === 'passed' ? ('var(--cp-success-light, #ECFDF5)') : tc.status === 'failed' ? ('var(--cp-danger-light, #FEF2F2)') : ('var(--cp-bg-sunken, #F1F5F9)'),
                             color: tc.status === 'passed' ? '#059669' : tc.status === 'failed' ? '#DC2626' : textSecondary,
                           }}>
                             {tc.status || 'Not Run'}
@@ -292,7 +292,7 @@ export default function ReportDetailPage() {
           {data.severity_breakdown && (
             <div style={{ display: 'flex', gap: 16, marginBottom: 16, flexWrap: 'wrap' }}>
               {Object.entries(data.severity_breakdown).map(([sev, count]) => (
-                <div key={sev} style={{ padding: '8px 16px', backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : '#F8FAFC', borderRadius: 8, fontSize: 13, color: textBody }}>
+                <div key={sev} style={{ padding: '8px 16px', backgroundColor: 'var(--cp-bg-page, #F8FAFC)', borderRadius: 8, fontSize: 13, color: textBody }}>
                   <span style={{ fontWeight: 600, textTransform: 'capitalize' }}>{sev}</span>: {String(count)}
                 </div>
               ))}

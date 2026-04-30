@@ -141,9 +141,9 @@ export default function SettingsPage() {
   };
 
   // DARK MODE tokens
-  const pageBg = isDark ? 'var(--cp-bg-page, #1F1F21)' : '#F8FAFC';
+  const pageBg = 'var(--cp-bg-page, #F8FAFC)';
   const surfaceBg = isDark ? 'var(--cp-bg-surface, #242528)' : '#FFF';
-  const elevatedBg = isDark ? 'var(--cp-bg-surface, #242528)' : '#F1F5F9';
+  const elevatedBg = 'var(--cp-bg-sunken, #F1F5F9)';
   const borderColor = 'var(--cp-border, #E2E8F0)';
   const textPrimary = 'var(--cp-text-primary, #0F172A)';
   const textSecondary = 'var(--cp-text-tertiary, #64748B)';

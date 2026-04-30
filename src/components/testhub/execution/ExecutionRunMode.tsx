@@ -243,9 +243,9 @@ export function ExecutionRunMode({
                  </p>
 
                  {currentStep.expected_result && (
-                   <div style={{ marginTop: 16, padding: 14, backgroundColor: isDark ? 'rgba(34,197,94,0.12)' : '#ECFDF5', borderRadius: 8, borderLeft: '3px solid #10B981' }}>
+                   <div style={{ marginTop: 16, padding: 14, backgroundColor: 'var(--cp-success-light, #ECFDF5)', borderRadius: 8, borderLeft: '3px solid #10B981' }}>
                      <span style={{ fontSize: 10, fontWeight: 700, color: '#059669', textTransform: 'uppercase', letterSpacing: '0.06em' }}>EXPECTED</span>
-                     <p style={{ fontSize: 14, color: isDark ? '#A1A1A1' : '#065F46', margin: '4px 0 0', lineHeight: 1.5 }}>
+                     <p style={{ fontSize: 14, color: 'var(--cp-success-text, #065F46)', margin: '4px 0 0', lineHeight: 1.5 }}>
                        {highlightVariables(currentStep.expected_result)}
                      </p>
                    </div>
@@ -292,8 +292,8 @@ export function ExecutionRunMode({
 
         {/* Status buttons */}
         {[
-          { key: 'passed', label: 'Pass', shortcut: 'P', icon: CheckCircle2, onClick: onPass, color: '#059669', bg: isDark ? 'rgba(34,197,94,0.12)' : '#ECFDF5', activeBg: 'linear-gradient(135deg, #10B981, #059669)' },
-          { key: 'failed', label: 'Fail', shortcut: 'F', icon: XCircle, onClick: onFail, color: '#DC2626', bg: isDark ? 'rgba(248,113,113,0.12)' : '#FEF2F2', activeBg: 'linear-gradient(135deg, #EF4444, #DC2626)' },
+          { key: 'passed', label: 'Pass', shortcut: 'P', icon: CheckCircle2, onClick: onPass, color: '#059669', bg: 'var(--cp-success-light, #ECFDF5)', activeBg: 'linear-gradient(135deg, #10B981, #059669)' },
+          { key: 'failed', label: 'Fail', shortcut: 'F', icon: XCircle, onClick: onFail, color: '#DC2626', bg: 'var(--cp-danger-light, #FEF2F2)', activeBg: 'linear-gradient(135deg, #EF4444, #DC2626)' },
           { key: 'blocked', label: 'Block', shortcut: 'B', icon: AlertTriangle, onClick: onBlocked, color: '#D97706', bg: isDark ? 'rgba(251,191,36,0.12)' : '#FFFBEB', activeBg: 'linear-gradient(135deg, #F59E0B, #D97706)' },
           { key: 'skipped', label: 'Skip', shortcut: 'S', icon: SkipForward, onClick: onSkip, color: 'var(--cp-text-tertiary, #64748B)', bg: 'hsl(var(--muted) / 0.3)', activeBg: 'linear-gradient(135deg, #64748B, #475569)' },
         ].map(btn => {
@@ -342,7 +342,7 @@ export function ExecutionRunMode({
               failed:  { bg: '#DC2626', text: '#FFFFFF' },
               blocked: { bg: '#D97706', text: '#FFFFFF' },
               skipped: { bg: '#475569', text: '#FFFFFF' },
-              not_run: { bg: isDark ? 'var(--cp-bg-surface, #242528)' : '#E2E8F0', text: 'var(--cp-text-tertiary, #64748B)' },
+              not_run: { bg: 'var(--cp-border, #E2E8F0)', text: 'var(--cp-text-tertiary, #64748B)' },
             };
             const colors = statusColors[derivedStatus] || statusColors.not_run;
             const label = derivedStatus !== 'not_run'
@@ -355,7 +355,7 @@ export function ExecutionRunMode({
                 title={!anyStepMarked ? 'Mark all steps before completing' : `Complete with status: ${derivedStatus}`}
                 style={{
                   height: 34, padding: '0 14px', border: isDisabled ? `1px solid ${'var(--cp-border, #E2E8F0)'}` : 'none',
-                  borderRadius: 6, backgroundColor: isDisabled ? (isDark ? 'var(--cp-bg-surface, #242528)' : '#F8FAFC') : colors.bg,
+                  borderRadius: 6, backgroundColor: isDisabled ? ('var(--cp-bg-page, #F8FAFC)') : colors.bg,
                   color: isDisabled ? ('var(--cp-text-muted, #94A3B8)') : colors.text, fontSize: 12, fontWeight: 700,
                   cursor: isDisabled ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', gap: 5,
                   opacity: isDisabled ? 0.7 : 1, transition: 'all 150ms ease',

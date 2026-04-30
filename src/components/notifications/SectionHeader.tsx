@@ -12,7 +12,7 @@ export default function SectionHeader({ label }: SectionHeaderProps) {
       position: 'sticky',
       top: 0,
       zIndex: 10,
-      background: isDark ? 'var(--cp-bg-page, #1F1F21)' : '#FFFFFF',
+      background: 'var(--cp-bg-elevated, #FFFFFF)',
       padding: '12px 16px 4px',
       fontFamily: 'var(--cp-font-body)',
       fontSize: 11,

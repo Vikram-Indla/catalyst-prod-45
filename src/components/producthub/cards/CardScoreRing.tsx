@@ -29,7 +29,7 @@ export const CardScoreRing: React.FC<CardScoreRingProps> = ({ score, size = 64 }
         cy={size / 2}
         r={radius}
         fill="none"
-        stroke={isDark ? '#292929' : '#e4e4e7'}
+        stroke={'var(--cp-border, #e4e4e7)'}
         strokeWidth={strokeWidth}
       />
       {/* Score arc */}
