@@ -21,6 +21,7 @@ import { CreateSpaceModal } from '@/spaces';
 import { JiraSyncPanel, SyncCTALabel } from '@/components/projecthub/JiraSyncPanel';
 import { toast } from 'sonner';
 import { CatalystPageHeader } from '@/components/shared/CatalystPageHeader';
+import { useNavBreakpoint } from '@/hooks/useNavBreakpoint';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
 const WiringAuditLazy = lazy(() => import('@/components/project-hub/WiringAudit').then(m => ({ default: m.WiringAudit })));
