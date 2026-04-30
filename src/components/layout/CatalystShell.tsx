@@ -1,5 +1,8 @@
-import { useState, useEffect, lazy, Suspense, ComponentType, useSyncExternalStore } from 'react';
+import { useState, useEffect, useRef, lazy, Suspense, ComponentType, useSyncExternalStore } from 'react';
+import { Menu } from 'lucide-react';
 import { useGlobalSearchStore } from '@/store/globalSearchStore';
+import { useNavBreakpoint } from '@/hooks/useNavBreakpoint';
+import { GlobalMobileDrawer } from './GlobalMobileDrawer';
 
 const CatalystDetailRouter = lazy(() => import('@/components/catalyst-detail-views/CatalystDetailRouter'));
 
@@ -134,6 +137,25 @@ function CatalystShellContent() {
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
   }, [cycleSidebarState]);
+
+  // ─── Mobile / tablet drawer (Loop 2, 2026-04-30) ──────────────────────
+  // At <1024px the inline sidebar rail is unmounted; the same sidebar
+  // node is rendered inside GlobalMobileDrawer instead. Desktop ≥1024px
+  // is byte-identical to baseline — none of the JSX below changes.
+  const { isNarrow } = useNavBreakpoint();
+  const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
+  const mobileMenuTriggerRef = useRef<HTMLButtonElement | null>(null);
+
+  // Auto-close on route change
+  useEffect(() => {
+    setMobileDrawerOpen(false);
+  }, [location.pathname]);
+
+  // Auto-close if viewport grows back to desktop
+  useEffect(() => {
+    if (!isNarrow && mobileDrawerOpen) setMobileDrawerOpen(false);
+  }, [isNarrow, mobileDrawerOpen]);
+
   const { isModuleEnabled } = useEnabledModules();
   
   // Extract IDs from URL params - these take precedence
@@ -543,10 +565,42 @@ function CatalystShellContent() {
       </a>
 
       {/* Global Header */}
-      <div data-catalyst-header>
+      <div data-catalyst-header style={{ position: 'relative' }}>
         <Suspense fallback={<div className="h-[56px] border-b" style={{ background: 'var(--cp-bg)', borderColor: 'var(--cp-bd)' }} />}>
           <CatalystHeader />
         </Suspense>
+        {/* Mobile / tablet hamburger — only visible at <1024px.
+            Positioned absolutely so we don't edit CatalystHeader internals.
+            Sits at the far-left where the sidebar chevron normally lives. */}
+        {isNarrow && (
+          <button
+            ref={mobileMenuTriggerRef}
+            type="button"
+            aria-label="Open navigation"
+            aria-expanded={mobileDrawerOpen}
+            aria-controls="catalyst-mobile-drawer"
+            onClick={() => setMobileDrawerOpen(true)}
+            style={{
+              position: 'absolute',
+              top: '50%',
+              left: 8,
+              transform: 'translateY(-50%)',
+              width: 36,
+              height: 36,
+              display: 'inline-flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              borderRadius: 4,
+              background: 'var(--ds-background-neutral-subtle, transparent)',
+              border: 'none',
+              cursor: 'pointer',
+              color: 'var(--ds-text, var(--cp-t1, #172B4D))',
+              zIndex: 50,
+            }}
+          >
+            <Menu size={20} />
+          </button>
+        )}
       </div>
 
       {/* Main Content with Context Panel - Conditional Sidebar Based on workspaceType */}
@@ -587,6 +641,11 @@ function CatalystShellContent() {
               zIndex: 40,
               boxShadow: '0 8px 24px rgba(0,0,0,0.15)',
             } : {}),
+            // Loop 2 (2026-04-30): hide the inline rail at <1024px. The same
+            // sidebar node is rendered inside GlobalMobileDrawer below.
+            // display:none keeps it out of the flex flow without affecting
+            // the desktop branch when isNarrow flips back to false.
+            ...(isNarrow ? { display: 'none' } : null),
           }}
           >
             {sidebarVisuallyOpen ? (
@@ -624,6 +683,19 @@ function CatalystShellContent() {
           </div>
         </main>
       </div>
+
+      {/* Loop 2 (2026-04-30) — Mobile / tablet off-canvas drawer.
+          Renders the SAME sidebar node the desktop rail would render,
+          but inside a portal-mounted left drawer. Inactive at ≥1024px. */}
+      {isNarrow && (
+        <GlobalMobileDrawer
+          open={mobileDrawerOpen}
+          onClose={() => setMobileDrawerOpen(false)}
+          returnFocusRef={mobileMenuTriggerRef}
+        >
+          <Suspense fallback={null}>{renderSidebar()}</Suspense>
+        </GlobalMobileDrawer>
+      )}
     </div>
   );
 }
