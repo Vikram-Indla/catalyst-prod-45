@@ -38,8 +38,26 @@
  *   Consumers render the "not enough activity to theme yet" state when
  *   `data?.themes.length === 0 && data?.totalIssuesAnalyzed < 5`.
  */
+import { useEffect, useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+
+/**
+ * Tracks whether the current user has an authenticated Supabase session.
+ * `ai-digest` rejects anon-key calls with 401, so we MUST gate the query
+ * on a real session to avoid noisy 401s on signed-out page loads.
+ */
+function useHasAuthSession(): boolean {
+  const [hasSession, setHasSession] = useState(false);
+  useEffect(() => {
+    const { data: sub } = supabase.auth.onAuthStateChange((_evt, session) => {
+      setHasSession(!!session);
+    });
+    supabase.auth.getSession().then(({ data }) => setHasSession(!!data.session));
+    return () => sub.subscription.unsubscribe();
+  }, []);
+  return hasSession;
+}
 
 // ── Types (mirrors supabase/functions/ai-digest/themes.ts exports) ────────
 export type ThemeIntent = 'bug' | 'feature' | 'infra' | 'ux' | 'data' | 'other';
@@ -146,6 +164,7 @@ export function useAiThemes(args: UseAiThemesArgs) {
   const queryClient = useQueryClient();
   const queryKey = buildQueryKey(args);
   const enabled = args.enabled ?? true;
+  const hasSession = useHasAuthSession();
 
   // Daily-refresh policy (2026-04-30): the AI theme analyzer is regenerated
   // ONCE per day at 21:00 AST by a pg_cron pre-warm. We mirror that on the
@@ -157,7 +176,7 @@ export function useAiThemes(args: UseAiThemesArgs) {
   const query = useQuery<ThemesResponse, Error>({
     queryKey,
     queryFn: () => invokeThemes(args, { forceRefresh: false }),
-    enabled: enabled && (args.scope === 'personal' || Boolean(args.projectKey)),
+    enabled: hasSession && enabled && (args.scope === 'personal' || Boolean(args.projectKey)),
     staleTime: dailyStaleMs,
     gcTime: dailyStaleMs + 60 * 60 * 1000, // keep an hour past the boundary
     refetchOnWindowFocus: false,
