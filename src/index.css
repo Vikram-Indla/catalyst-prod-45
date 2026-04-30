@@ -732,13 +732,17 @@ html:has(body[data-scroll-locked]) {
     --text-muted: 0 0% 42%;              /* #6b7280 */
     --text-inverse: 0 0% 100%;           /* #ffffff */
     
-    /* === SURFACE TOKENS === */
-    --surface-0: 0 0% 100%;              /* #ffffff - cards, dialogs */
-    --surface-1: 210 40% 98%;             /* #f8fafc - page background */
-    --surface-2: 0 0% 97%;               /* #f8f8f7 - subtle sections */
-    --surface-3: 0 0% 95%;               /* #f3f3f3 - muted containers */
-    --surface-elevated: 0 0% 100%;       /* #ffffff - popovers, dropdowns */
-    --surface-overlay: 0 0% 0%;          /* black base for overlays */
+    /* === SURFACE TOKENS ===
+       Stored as COMPLETE hsl() color values (not raw triples) so that bare
+       `var(--surface-N)` usage in component style props produces valid CSS.
+       Tailwind utilities (bg-surface-1 etc.) reference these directly without
+       an extra hsl() wrapper — see tailwind.config.ts. */
+    --surface-0: hsl(0 0% 100%);              /* #ffffff - cards, dialogs */
+    --surface-1: hsl(210 40% 98%);            /* #f8fafc - page background */
+    --surface-2: hsl(0 0% 97%);               /* #f8f8f7 - subtle sections */
+    --surface-3: hsl(0 0% 95%);               /* #f3f3f3 - muted containers */
+    --surface-elevated: hsl(0 0% 100%);       /* #ffffff - popovers, dropdowns */
+    --surface-overlay: hsl(0 0% 0%);          /* black base for overlays */
     
     /* === BORDER TOKENS === */
     --border-subtle: 0 0% 91%;           /* #e8e8e8 */
@@ -1414,13 +1418,16 @@ html:has(body[data-scroll-locked]) {
     --info: 217 91% 60%;                   /* #2563eb blue */
     --info-foreground: 0 0% 100%;
     
-    /* === SURFACE TOKEN ALIASES (Neutral dark) === */
-    --surface-0: 0 0% 4%;
-    --surface-1: 0 0% 4%;
-    --surface-2: 0 0% 10%;
-    --surface-3: 0 0% 10%;
-    --surface-elevated: 0 0% 10%;
-    --surface-overlay: 0 0% 0%;
+    /* === SURFACE TOKEN ALIASES (Neutral dark) ===
+       Jira-parity ADS pairing (2026-04-30): canvas = #1D2125 (background.neutral),
+       elevated chrome = #22272B (elevation.surface). Stored as complete hsl()
+       so bare var(--surface-N) callers render valid CSS. */
+    --surface-0: hsl(210 11% 13%);   /* #1D2125 — page canvas */
+    --surface-1: hsl(210 11% 13%);   /* #1D2125 — page canvas */
+    --surface-2: hsl(210 9% 15%);    /* #22272B — elevated chrome */
+    --surface-3: hsl(210 8% 18%);    /* #282E33 — raised cards */
+    --surface-elevated: hsl(210 8% 18%); /* #282E33 — popovers */
+    --surface-overlay: hsl(0 0% 0%);
     
     /* === INPUT TOKENS === */
     --input-bg: var(--bg-3);
@@ -2230,7 +2237,7 @@ html:has(body[data-scroll-locked]) {
 }
 
 ::-webkit-scrollbar-track {
-  background: hsl(var(--surface-2));
+  background: var(--surface-2);
 }
 
 ::-webkit-scrollbar-thumb {
@@ -2248,7 +2255,7 @@ html:has(body[data-scroll-locked]) {
 /* Firefox scrollbar */
 * {
   scrollbar-width: thin;
-  scrollbar-color: hsl(var(--border-default)) hsl(var(--surface-2));
+  scrollbar-color: hsl(var(--border-default)) var(--surface-2);
 }
 
 
@@ -2334,13 +2341,13 @@ html:has(body[data-scroll-locked]) {
   transition: box-shadow 0.2s ease;
 }
 .avatar-ring:hover {
-  box-shadow: 0 0 0 2px hsl(var(--surface-0)), 0 0 0 4px hsl(var(--brand-primary));
+  box-shadow: 0 0 0 2px var(--surface-0), 0 0 0 4px hsl(var(--brand-primary));
 }
 
 /* Focus ring utility */
 .focus-ring:focus-visible {
   outline: none;
-  box-shadow: 0 0 0 2px hsl(var(--surface-0)), 0 0 0 4px hsl(var(--focus-ring) / 0.4);
+  box-shadow: 0 0 0 2px var(--surface-0), 0 0 0 4px hsl(var(--focus-ring) / 0.4);
 }
 
 /* ═══════════════════════════════════════════════════════════════

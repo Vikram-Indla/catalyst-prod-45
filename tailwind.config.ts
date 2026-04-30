@@ -63,12 +63,12 @@ export default {
         
         /* === SEMANTIC SURFACE COLORS === */
         surface: {
-          0: "hsl(var(--surface-0))",
-          1: "hsl(var(--surface-1))",
-          2: "hsl(var(--surface-2))",
-          3: "hsl(var(--surface-3))",
-          elevated: "hsl(var(--surface-elevated))",
-          overlay: "hsl(var(--surface-overlay))",
+          0: "var(--surface-0)",
+          1: "var(--surface-1)",
+          2: "var(--surface-2)",
+          3: "var(--surface-3)",
+          elevated: "var(--surface-elevated)",
+          overlay: "var(--surface-overlay)",
           card: "var(--surface-card)",
           muted: "var(--surface-muted)",
           subtle: "var(--surface-subtle)",
