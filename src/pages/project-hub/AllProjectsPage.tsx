@@ -1,6 +1,6 @@
 import { useState, useMemo, useEffect, lazy, Suspense } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { Plus, FolderKanban, FolderOpen, Star } from 'lucide-react';
+import { Plus, FolderKanban, FolderOpen, Star, RefreshCw } from 'lucide-react';
 import type { ViewMode, ProjectFilters, SortColumn, SortDirection } from '@/types/projecthub';
 import { DEFAULT_FILTERS } from '@/types/projecthub';
 import {
@@ -21,6 +21,7 @@ import { CreateSpaceModal } from '@/spaces';
 import { JiraSyncPanel, SyncCTALabel } from '@/components/projecthub/JiraSyncPanel';
 import { toast } from 'sonner';
 import { CatalystPageHeader } from '@/components/shared/CatalystPageHeader';
+import { useNavBreakpoint } from '@/hooks/useNavBreakpoint';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
 const WiringAuditLazy = lazy(() => import('@/components/project-hub/WiringAudit').then(m => ({ default: m.WiringAudit })));
@@ -33,6 +34,10 @@ import {
 } from '@/components/ui/select';
 
 export default function AllProjectsPage() {
+  // Loop 5b (2026-04-30): collapse the wide actions cluster (Jira Sync pill +
+  // "Create project" label) into icon-only triggers at <1024px so they fit
+  // alongside the title on iPhone/iPad. Desktop ≥1024px untouched.
+  const { isNarrow } = useNavBreakpoint();
   const [view, setView] = useState<ViewMode>('list');
   const [filters, setFilters] = useState<ProjectFilters>(DEFAULT_FILTERS);
   const [sortCol, setSortCol] = useState<SortColumn>('total_issues');
@@ -168,25 +173,46 @@ export default function AllProjectsPage() {
         title="All Projects"
         actions={
           <div className="flex items-center gap-3">
-            {/* Jira Sync CTA */}
+            {/* Jira Sync CTA — full pill on desktop, icon-only at <1024 (Loop 5b) */}
             <Popover open={syncPanelOpen} onOpenChange={setSyncPanelOpen}>
               <PopoverTrigger asChild>
-                <button className="h-10 px-4 bg-white dark:!bg-[#1A1A1A] border border-slate-200 dark:border-slate-700 rounded-md text-[13px] font-semibold flex items-center gap-2.5 hover:border-blue-600 hover:bg-blue-50 dark:hover:bg-blue-950 hover:text-blue-600 transition-all text-slate-700 dark:text-slate-300 focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2 outline-none">
-                  <SyncCTALabel />
-                </button>
+                {isNarrow ? (
+                  <button
+                    aria-label="Jira Sync"
+                    title="Jira Sync"
+                    className="h-9 w-9 bg-white dark:!bg-[#1A1A1A] border border-slate-200 dark:border-slate-700 rounded-md flex items-center justify-center hover:border-blue-600 hover:bg-blue-50 dark:hover:bg-blue-950 hover:text-blue-600 transition-all text-slate-700 dark:text-slate-300 focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2 outline-none"
+                  >
+                    <RefreshCw size={16} strokeWidth={2} />
+                  </button>
+                ) : (
+                  <button className="h-10 px-4 bg-white dark:!bg-[#1A1A1A] border border-slate-200 dark:border-slate-700 rounded-md text-[13px] font-semibold flex items-center gap-2.5 hover:border-blue-600 hover:bg-blue-50 dark:hover:bg-blue-950 hover:text-blue-600 transition-all text-slate-700 dark:text-slate-300 focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2 outline-none">
+                    <SyncCTALabel />
+                  </button>
+                )}
               </PopoverTrigger>
               <PopoverContent className="w-[360px] p-5 bg-white dark:!bg-[#1A1A1A] dark:border-slate-700" align="end">
                 <JiraSyncPanel />
               </PopoverContent>
             </Popover>
 
-            {/* New Project */}
-            <button
-              onClick={() => setShowCreateModal(true)}
-              className="h-10 px-5 rounded-md text-sm font-semibold flex items-center gap-2 text-white bg-blue-600 hover:bg-blue-700 border-none cursor-pointer shadow-[0_2px_8px_rgba(37,99,235,0.15)] focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2 outline-none"
-            >
-              <Plus size={16} strokeWidth={2.5} /> Create project
-            </button>
+            {/* New Project — full label on desktop, icon-only at <1024 (Loop 5b) */}
+            {isNarrow ? (
+              <button
+                onClick={() => setShowCreateModal(true)}
+                aria-label="Create project"
+                title="Create project"
+                className="h-9 w-9 rounded-md flex items-center justify-center text-white bg-blue-600 hover:bg-blue-700 border-none cursor-pointer shadow-[0_2px_8px_rgba(37,99,235,0.15)] focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2 outline-none"
+              >
+                <Plus size={18} strokeWidth={2.5} />
+              </button>
+            ) : (
+              <button
+                onClick={() => setShowCreateModal(true)}
+                className="h-10 px-5 rounded-md text-sm font-semibold flex items-center gap-2 text-white bg-blue-600 hover:bg-blue-700 border-none cursor-pointer shadow-[0_2px_8px_rgba(37,99,235,0.15)] focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2 outline-none"
+              >
+                <Plus size={16} strokeWidth={2.5} /> Create project
+              </button>
+            )}
           </div>
         }
       />
