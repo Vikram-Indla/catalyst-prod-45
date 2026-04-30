@@ -843,7 +843,7 @@ export default function KanbanBoardPage() {
           <div key={c.id} style={{ width: 267, background: tk.surfaceAlt, borderRadius: 6 }}>
             <div style={{ height: 48, background: tk.surfaceAlt, borderRadius: '6px 6px 0 0' }} />
             <div className="flex flex-col" style={{ gap: 4, padding: '0 10px 10px' }}>
-              {[0, 1, 2].map(i => <div key={i} className="animate-pulse" style={{ height: 72, background: '#FFFFFF', borderRadius: 4, boxShadow: tk.cardShadowRest }} />)}
+              {[0, 1, 2].map(i => <div key={i} className="animate-pulse" style={{ height: 72, background: 'var(--cp-bg-elevated, #FFFFFF)', borderRadius: 4, boxShadow: tk.cardShadowRest }} />)}
             </div>
           </div>
         ))}
