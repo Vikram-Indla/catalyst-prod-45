@@ -1,5 +1,8 @@
-import { useState, useEffect, lazy, Suspense, ComponentType, useSyncExternalStore } from 'react';
+import { useState, useEffect, useRef, lazy, Suspense, ComponentType, useSyncExternalStore } from 'react';
+import { Menu } from 'lucide-react';
 import { useGlobalSearchStore } from '@/store/globalSearchStore';
+import { useNavBreakpoint } from '@/hooks/useNavBreakpoint';
+import { GlobalMobileDrawer } from './GlobalMobileDrawer';
 
 const CatalystDetailRouter = lazy(() => import('@/components/catalyst-detail-views/CatalystDetailRouter'));
 
