@@ -5959,43 +5959,28 @@ html[data-presentation="true"] [data-testid="project-dashboard-shell"] [role="re
 /* ────────────────────────────────────────────────────────────────────────
    Dark-mode lozenge color softening (2026-04-30)
    ────────────────────────────────────────────────────────────────────────
-   Atlaskit Lozenge appearance="success"/"inprogress"/"removed" renders
-   bright saturated pills (green #1F845A, yellow #FFAB00, red #C9372C) that
-   read as "screaming" against ADS dark canvas (#1D2125). Soften to the
-   muted Pale Lozenge palette per status-badge-platform-guardrail-v12-spec.
-   Targets the inner pill <span> rendered by @atlaskit/lozenge.
+   Atlaskit @atlaskit/lozenge applies bold colors via Emotion classNames
+   (not inline styles), so we override using `data-cp-lozenge-jira-parity`
+   as a scope and target the inner `<span>` regardless of generated class.
+   We use Atlaskit's own CSS custom properties to nudge tone:
+     - Override the local --ds-* tokens within the lozenge subtree.
+   This works because Atlaskit reads from --ds-* at render time.
    ────────────────────────────────────────────────────────────────────── */
-.dark [data-cp-lozenge-jira-parity] span[class^="css-"] {
-  /* Default success (green) → muted Pale Green */
-}
-.dark [data-cp-lozenge-jira-parity] span[style*="background-color: rgb(31, 132, 90)"],
-.dark [data-cp-lozenge-jira-parity] span[style*="background: rgb(31, 132, 90)"],
-.dark [data-cp-lozenge-jira-parity] span[style*="background-color: rgb(34, 161, 110)"],
-.dark [data-cp-lozenge-jira-parity] span[style*="background-color: rgb(20, 102, 65)"] {
-  background-color: var(--cp-lozenge-green-bg, #1B7F37) !important;
-  color: var(--cp-lozenge-green-text, #FFFFFF) !important;
-}
-.dark [data-cp-lozenge-jira-parity] span[style*="background-color: rgb(255, 171, 0)"],
-.dark [data-cp-lozenge-jira-parity] span[style*="background-color: rgb(244, 191, 79)"],
-.dark [data-cp-lozenge-jira-parity] span[style*="background-color: rgb(176, 95, 0)"] {
-  background-color: #7F4F01 !important;
-  color: #FFE2A8 !important;
-}
-.dark [data-cp-lozenge-jira-parity] span[style*="background-color: rgb(201, 55, 44)"],
-.dark [data-cp-lozenge-jira-parity] span[style*="background-color: rgb(174, 47, 36)"] {
-  background-color: #8E1A12 !important;
-  color: #FFD4D0 !important;
-}
-.dark [data-cp-lozenge-jira-parity] span[style*="background-color: rgb(9, 50, 108)"],
-.dark [data-cp-lozenge-jira-parity] span[style*="background-color: rgb(12, 102, 228)"],
-.dark [data-cp-lozenge-jira-parity] span[style*="background-color: rgb(76, 154, 255)"] {
-  background-color: var(--cp-lozenge-blue-bg, #0C66E4) !important;
-  color: var(--cp-lozenge-blue-text, #FFFFFF) !important;
-}
-.dark [data-cp-lozenge-jira-parity] span[style*="background-color: rgb(221, 222, 225)"],
-.dark [data-cp-lozenge-jira-parity] span[style*="background-color: rgb(244, 245, 247)"] {
-  background-color: var(--cp-lozenge-grey-bg, #292929) !important;
-  color: var(--cp-lozenge-grey-text, #D4D4D4) !important;
+.dark [data-cp-lozenge-jira-parity] {
+  /* Soften the saturated success/inprogress/removed pills */
+  --ds-background-success-bold: #1B7F37;
+  --ds-background-success: #1B7F37;
+  --ds-text-inverse: #FFFFFF;
+  --ds-background-warning-bold: #7F4F01;
+  --ds-background-warning: #7F4F01;
+  --ds-background-danger-bold: #8E1A12;
+  --ds-background-danger: #8E1A12;
+  --ds-background-information-bold: #0C66E4;
+  --ds-background-information: #0C66E4;
+  --ds-background-discovery-bold: #5E4DB2;
+  --ds-background-discovery: #5E4DB2;
+  --ds-background-neutral-bold: #42526E;
+  --ds-background-neutral: #42526E;
 }
 
 /* ────────────────────────────────────────────────────────────────────────
