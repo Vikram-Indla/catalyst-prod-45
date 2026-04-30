@@ -438,9 +438,22 @@ export async function handleThemesRequest(args: {
   };
 
   // ── 5. Upsert cache ─────────────────────────────────────────────────────
-  // 10-min TTL. The unique index on (user_id, scope_mode, COALESCE(project_key,''))
-  // means one row per user-scope combo; upsert handles both INSERT and UPDATE.
-  const expiresAt = new Date(Date.now() + 10 * 60 * 1000).toISOString();
+  // Daily-refresh policy (2026-04-30): cache stays valid until the next
+  // 21:00 Asia/Riyadh (AST = UTC+3). A pg_cron job at 21:00 AST pre-warms
+  // active caches with forceRefresh=true, so the day's first page load after
+  // 9 PM is served warm. Signature mismatch still re-runs intra-day if the
+  // input issue set drifts (new issue, status update, etc.).
+  function nextNinePmRiyadhUtc(now: Date): Date {
+    // 21:00 AST == 18:00 UTC. Build today's 18:00 UTC; if past, use tomorrow.
+    const target = new Date(Date.UTC(
+      now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), 18, 0, 0, 0,
+    ));
+    if (target.getTime() <= now.getTime()) {
+      target.setUTCDate(target.getUTCDate() + 1);
+    }
+    return target;
+  }
+  const expiresAt = nextNinePmRiyadhUtc(new Date()).toISOString();
 
   // Two-step: DELETE existing row for this scope (RLS-safe), then INSERT.
   // Simpler than matching PostgREST upsert semantics across null project_key.
