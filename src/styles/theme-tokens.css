@@ -107,15 +107,20 @@
    ThemeProvider also sets <html class="dark">, which Atlaskit never
    touches, so we use that as our flip signal. Both layers coexist. */
 .dark, [data-theme="dark"] {
-  /* Surfaces — ADS canonical dark (Atlassian elevation.surface family).
-     2026-04-29: hex values pulled from
-     node_modules/@atlaskit/tokens/figma/atlassian-dark.json — truly
-     neutral (no blue cast). Replaces Geist pure black which read cool. */
-  --cp-bg:              #1F1F21;
-  --cp-bg-canvas:       #1F1F21;
-  --cp-bg-sidebar-hdr:  #1F1F21;
-  --cp-bg-sunken:       #18191A;
-  --cp-float:           #242528;
+  /* Surfaces — ADS canonical dark, Jira parity (2026-04-30).
+     Jira's shell uses TWO elevation tiers in dark mode:
+       background.neutral = #1D2125  (page canvas — main content area)
+       elevation.surface   = #22272B  (raised — sidebar, header, cards)
+     This pairing is what produces Jira's subtle "sidebar slightly lifted
+     above canvas" seam. Previously we collapsed both to #1F1F21, which
+     made canvas + sidebar identical and exposed the split-tone defect
+     when one path used --ds-surface (#22272B) and the other --cp-bg
+     (#1F1F21). Re-aligning to ADS pair eliminates the seam at source. */
+  --cp-bg:              var(--ds-background-neutral, #1D2125);
+  --cp-bg-canvas:       var(--ds-background-neutral, #1D2125);
+  --cp-bg-sidebar-hdr:  var(--ds-surface, #22272B);
+  --cp-bg-sunken:       var(--ds-background-neutral-subtle, #18191A);
+  --cp-float:           var(--ds-surface-raised, #282E33);
   /* Bridge gap closure (2026-04-28) — see light block. DARK MODE
      dark counterparts mirror tokens.ts adsTokens.bg.overlay/inset
      and text.disabled. */

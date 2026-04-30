@@ -349,9 +349,15 @@ function CatalystShellContent() {
 
   const shouldWrapHubSurface = isHubSurfaceRoute && !isSelfFramedRoute && !isWhiteCanvasRoute;
   const isDarkTheme = useIsDarkTheme();
-  const mainBg = isHubSurfaceRoute && !isDarkTheme && !isWhiteCanvasRoute
-    ? JIRA_CANVAS_BG
-    : 'var(--cp-bg)';
+  // 2026-04-30 Jira parity: in dark mode, route the canvas through the
+  // ADS background.neutral token (one step BELOW elevation.surface).
+  // This produces Jira's exact two-tier shell: canvas dim, sidebar+header
+  // raised. Previously fell back to --cp-bg legacy alias.
+  const mainBg = isWhiteCanvasRoute
+    ? '#FFFFFF'
+    : isDarkTheme
+      ? 'var(--ds-background-neutral, #1D2125)'
+      : (isHubSurfaceRoute ? JIRA_CANVAS_BG : 'var(--cp-bg)');
 
   // Prevent full document reloads caused by accidental <a href="/..."> navigation.
   // IMPORTANT: In Preview, the URL contains special query params (e.g. __lovable_token).
