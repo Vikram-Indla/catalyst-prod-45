@@ -26,12 +26,12 @@ export default function IncidentInsightsPage() {
       <div className="px-6 pt-6 pb-4">
         {/* Header */}
         <div className="flex items-center gap-3 mb-6">
-          <div className="flex items-center justify-center rounded-md" style={{ width: 32, height: 32, backgroundColor: isDark ? 'rgba(124,58,237,0.16)' : '#F3E8FF' }}>
+          <div className="flex items-center justify-center rounded-md" style={{ width: 32, height: 32, backgroundColor: 'var(--cp-purple-5, #F3E8FF)' }}>
             <Sparkles size={18} style={{ color: '#7C3AED' }} />
           </div>
           <div className="flex items-center gap-2">
             <h1 style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 18, fontWeight: 700, color: textPrimary }}>Insights</h1>
-            <span className="px-1.5 py-0.5" style={{ fontSize: 10, fontWeight: 700, backgroundColor: isDark ? 'rgba(124,58,237,0.16)' : '#F3E8FF', color: '#7C3AED', borderRadius: 3 }}>AI</span>
+            <span className="px-1.5 py-0.5" style={{ fontSize: 10, fontWeight: 700, backgroundColor: 'var(--cp-purple-5, #F3E8FF)', color: '#7C3AED', borderRadius: 3 }}>AI</span>
           </div>
           <p style={{ fontFamily: 'var(--cp-font-body)', fontSize: 12, color: textSecondary, marginLeft: 'auto' }}>Pattern analysis and recommendations</p>
         </div>
@@ -74,7 +74,7 @@ export default function IncidentInsightsPage() {
                 <div key={i} className="p-2.5" style={{
                   backgroundColor: 'var(--cp-danger-light, #FEF2F2)',
                   borderRadius: 4,
-                  border: `1px solid ${isDark ? 'rgba(248,113,113,0.2)' : '#FECACA'}`,
+                  border: `1px solid ${'var(--cp-danger-light, #FECACA)'}`,
                 }}>
                   <h4 style={{ fontFamily: 'var(--cp-font-body)', fontSize: 12, fontWeight: 650, color: 'var(--cp-danger-text, #991B1B)', marginBottom: 2 }}>{item.title}</h4>
                   <p style={{ fontFamily: 'var(--cp-font-body)', fontSize: 11, color: 'var(--cp-danger-text, #B91C1C)' }}>{item.desc}</p>
@@ -95,9 +95,9 @@ export default function IncidentInsightsPage() {
                 { title: 'Pre-deployment health checks', desc: 'Add mandatory health check gates before production deployments' },
               ].map((item, i) => (
                 <div key={i} className="p-2.5" style={{
-                  backgroundColor: isDark ? 'rgba(34,197,94,0.08)' : '#F0FDF4',
+                  backgroundColor: 'var(--cp-success-light, #F0FDF4)',
                   borderRadius: 4,
-                  border: `1px solid ${isDark ? 'rgba(34,197,94,0.2)' : '#BBF7D0'}`,
+                  border: `1px solid ${'var(--cp-success-light, #BBF7D0)'}`,
                 }}>
                   <h4 style={{ fontFamily: 'var(--cp-font-body)', fontSize: 12, fontWeight: 650, color: 'var(--cp-success-text, #166534)', marginBottom: 2 }}>{item.title}</h4>
                   <p style={{ fontFamily: 'var(--cp-font-body)', fontSize: 11, color: 'var(--cp-success, #15803D)' }}>{item.desc}</p>

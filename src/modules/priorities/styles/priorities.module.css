@@ -1532,3 +1532,7 @@
     display: none;
   }
 }
+
+/* DARK MODE OVERRIDES — added 2026-04-30 sweep */
+:global(.dark) .priorityRow { background: var(--cp-bg-elevated, #22272B); color: var(--cp-text-primary, #EDEDED); }
+:global(.dark) .priorityRow:hover { background: var(--cp-interact-hover, #2E2E2E); }

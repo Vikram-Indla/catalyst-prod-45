@@ -60,7 +60,7 @@ export function RoadmapRequestList({ groups, selectedId, hoveredId, onSelect, on
 
   const headerBg = 'var(--cp-bg-page, #FAFBFC)';
   const selectedBg = 'var(--cp-primary-light, #EFF6FF)';
-  const hoverBg = isDark ? '#1F1F1F' : 'rgba(37,99,235,0.04)';
+  const hoverBg = 'var(--cp-interact-selected, rgba(37,99,235,0.04))';
   const addHoverBg = 'var(--cp-primary-light, #EFF6FF)';
 
   return (

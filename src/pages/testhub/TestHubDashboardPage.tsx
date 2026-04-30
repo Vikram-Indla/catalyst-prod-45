@@ -471,7 +471,7 @@ export default function TestHubDashboardPage() {
                    {failingTests.slice(0, 10).map(test => {
                      const sevColor = test.priority?.toLowerCase() === 'high' || test.priority?.toLowerCase() === 'critical'
                        ? { bg: 'var(--cp-danger-light, #FEF2F2)', color: '#DC2626' }
-                       : { bg: isDark ? 'rgba(251,191,36,0.12)' : '#FFFBEB', color: '#D97706' };
+                       : { bg: 'var(--cp-warning-light, #FFFBEB)', color: '#D97706' };
                      return (
                        <div key={test.test_case_id} onClick={() => navigate(`/testhub/repository?view=${test.test_case_id}`)}
                          className="c10-row-danger"
@@ -566,7 +566,7 @@ export default function TestHubDashboardPage() {
                   <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 16px', borderTop: i > 0 ? `1px solid ${'var(--cp-bg-sunken, #F1F5F9)'}` : 'none' }}>
                     <div style={{
                       width: 24, height: 24, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      background: item.danger ? ('var(--cp-danger-light, #FEF2F2)') : (isDark ? 'rgba(251,191,36,0.12)' : '#FFFBEB'),
+                      background: item.danger ? ('var(--cp-danger-light, #FEF2F2)') : ('var(--cp-warning-light, #FFFBEB)'),
                     }}>
                       <AlertTriangle size={12} color={item.danger ? '#DC2626' : '#D97706'} />
                     </div>
@@ -672,7 +672,7 @@ function KPICard({ label, value, accent, trend, subtitle, sparkData, valueColor,
   return (
     <div className="c10-kpi" style={{
       background: isDanger ? (isDark ? 'rgba(248,113,113,0.08)' : 'rgba(254, 242, 242, 0.6)') : ('var(--cp-bg-elevated, #FFFFFF)'),
-      border: isDanger ? `1px solid ${isDark ? 'rgba(248,113,113,0.2)' : '#FECACA'}` : `1px solid ${'var(--cp-border, #E2E8F0)'}`,
+      border: isDanger ? `1px solid ${'var(--cp-danger-light, #FECACA)'}` : `1px solid ${'var(--cp-border, #E2E8F0)'}`,
       borderRadius: 8,
       borderLeft: `3px solid ${accent}`,
       padding: 16, cursor: 'pointer',

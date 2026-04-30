@@ -299,7 +299,7 @@ export default function DirectNotificationRow({ notification, isRead, onMarkRead
                       borderRadius: 10,
                       border: `1px solid ${threadBorderColor}`,
                       background: count > 0
-                        ? (isDark ? '#292929' : 'rgba(37,99,235,0.06)')
+                        ? ('var(--cp-interact-selected, rgba(37,99,235,0.06))')
                         : 'transparent',
                       cursor: 'pointer',
                       fontFamily: 'var(--cp-font-body)',

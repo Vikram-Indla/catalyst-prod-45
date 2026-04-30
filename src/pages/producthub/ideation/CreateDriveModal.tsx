@@ -240,7 +240,7 @@ export default function CreateDriveModal({ open, onClose }: CreateDriveModalProp
                         ? (isActive ? '1.5px solid #16A34A' : `1.5px solid ${'var(--cp-border-strong, #CBD5E1)'}`)
                         : `1.5px solid ${'var(--cp-border-strong, #E2E8F0)'}`,
                       background: isSelected
-                        ? (isActive ? (isDark ? 'rgba(22,163,74,0.12)' : '#F0FDF4') : ('var(--cp-bg-page, #F8FAFC)'))
+                        ? (isActive ? ('var(--cp-success-light, #F0FDF4)') : ('var(--cp-bg-page, #F8FAFC)'))
                         : ('var(--cp-bg-elevated, #FFFFFF)'),
                       color: isSelected
                         ? (isActive ? ('var(--cp-success, #15803D)') : ('var(--cp-text-tertiary, #64748B)'))

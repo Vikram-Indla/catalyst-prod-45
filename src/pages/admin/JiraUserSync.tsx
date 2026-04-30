@@ -351,7 +351,7 @@ const JiraUserSync: React.FC = () => {
                     ? ('var(--cp-text-link, #2563EB)')
                     : ('var(--cp-text-secondary, #334155)'),
                   border: filter === f.value
-                    ? `1px solid ${isDark ? 'rgba(37,99,235,0.25)' : '#BFDBFE'}`
+                    ? `1px solid ${'var(--cp-primary-light, #BFDBFE)'}`
                     : `1px solid ${'var(--cp-border-default, rgba(15,23,42,0.10))'}`,
                 }}>
                 {f.label}
@@ -392,7 +392,7 @@ const JiraUserSync: React.FC = () => {
             style={{
               padding: '7px 18px',
               background: 'var(--cp-primary-light, #EFF6FF)',
-              borderBottom: `1px solid ${isDark ? 'rgba(37,99,235,0.25)' : '#BFDBFE'}`,
+              borderBottom: `1px solid ${'var(--cp-primary-light, #BFDBFE)'}`,
             }}>
             <input type="checkbox" checked onChange={clearAll} style={{ cursor: 'pointer', accentColor: '#2563EB' }} />
             <span className="jira-selection-count" style={{ fontSize: '12px', fontWeight: 500, color: 'var(--cp-text-link, #2563EB)' }}>
@@ -693,7 +693,7 @@ const JiraUserSync: React.FC = () => {
                           display: 'inline-flex', alignItems: 'center', gap: '3px',
                           padding: '1px 6px', borderRadius: '4px',
                           fontSize: '10px', fontWeight: 700, letterSpacing: '0.03em', textTransform: 'uppercase',
-                          background: isDark ? 'rgba(91,33,182,0.18)' : '#EDE9FE',
+                          background: 'var(--cp-purple-5, #EDE9FE)',
                           color: 'var(--cp-purple-60, #5B21B6)',
                         }}>CATALYST</span>
                       )}

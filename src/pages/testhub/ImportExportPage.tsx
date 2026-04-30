@@ -249,7 +249,7 @@ export default function ImportExportPage() {
                     </div>
                     <div>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
-                        <span style={{ fontSize: 12, fontWeight: 600, color: '#14B8A6', backgroundColor: isDark ? 'rgba(20,184,166,0.1)' : '#F0FDFA', padding: '2px 8px', borderRadius: 4 }}>
+                        <span style={{ fontSize: 12, fontWeight: 600, color: '#14B8A6', backgroundColor: 'var(--cp-success-light, #F0FDFA)', padding: '2px 8px', borderRadius: 4 }}>
                           {job.job_key}
                         </span>
                         <span style={{
@@ -326,7 +326,7 @@ export default function ImportExportPage() {
                     </div>
                     <div>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
-                        <span style={{ fontSize: 12, fontWeight: 600, color: '#14B8A6', backgroundColor: isDark ? 'rgba(20,184,166,0.1)' : '#F0FDFA', padding: '2px 8px', borderRadius: 4 }}>
+                        <span style={{ fontSize: 12, fontWeight: 600, color: '#14B8A6', backgroundColor: 'var(--cp-success-light, #F0FDFA)', padding: '2px 8px', borderRadius: 4 }}>
                           {job.job_key}
                         </span>
                         <span style={{

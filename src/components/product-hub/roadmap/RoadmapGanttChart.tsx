@@ -114,8 +114,8 @@ export function RoadmapGanttChart({ groups, timelineStart, timelineEnd, zoom, zo
 
   const headerBg = 'var(--cp-bg-page, #FAFBFC)';
   const hoverRowBg = 'var(--cp-bg-page, #FAFBFC)';
-  const selectedRowBg = isDark ? 'rgba(59,130,246,0.10)' : 'rgba(37,99,235,0.06)';
-  const currentPeriodBg = isDark ? 'rgba(59,130,246,0.06)' : 'rgba(37,99,235,0.04)';
+  const selectedRowBg = 'var(--cp-interact-selected, rgba(37,99,235,0.06))';
+  const currentPeriodBg = 'var(--cp-interact-selected, rgba(37,99,235,0.04))';
   const currentPeriodGridBg = isDark ? 'rgba(59,130,246,0.04)' : 'rgba(37,99,235,0.03)';
 
   return (

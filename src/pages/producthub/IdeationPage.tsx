@@ -230,7 +230,7 @@ export default function IdeationPage() {
 
       {/* Filtered context indicator */}
       {activeFilter !== 'all' && (
-        <div style={{ padding: '6px 28px', background: 'var(--cp-primary-light, #EFF6FF)', borderBottom: `1px solid ${isDark ? 'rgba(37,99,235,0.15)' : '#DBEAFE'}`, display: 'flex', alignItems: 'center', gap: '6px' }}>
+        <div style={{ padding: '6px 28px', background: 'var(--cp-primary-light, #EFF6FF)', borderBottom: `1px solid ${'var(--cp-primary-light, #DBEAFE)'}`, display: 'flex', alignItems: 'center', gap: '6px' }}>
           <span style={{ fontSize: '11px', fontWeight: 500, color: 'var(--cp-text-link, #2563EB)' }}>
             Showing {activeFilter.replace('_', ' ')} ideas only
           </span>

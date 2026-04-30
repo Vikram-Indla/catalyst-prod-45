@@ -315,7 +315,7 @@ export function CreateRequestDrawer({ open, onClose, conversionSource, onCreated
 
           {/* Conversion banners */}
           {conversionSource?.type === 'single' && (
-            <div className="p-3 rounded-lg mb-3" style={{ background: isDark ? 'rgba(74,222,128,0.08)' : '#F0FDF4', border: `1px solid ${isDark ? 'rgba(74,222,128,0.2)' : '#BBF7D0'}` }}>
+            <div className="p-3 rounded-lg mb-3" style={{ background: 'var(--cp-success-light, #F0FDF4)', border: `1px solid ${'var(--cp-success-light, #BBF7D0)'}` }}>
               <div className="text-[13px] font-bold flex items-center gap-1.5" style={{ color: T.ink }}>
                 <RefreshCw className="w-3.5 h-3.5" /> Converting idea to business request
               </div>
@@ -326,7 +326,7 @@ export function CreateRequestDrawer({ open, onClose, conversionSource, onCreated
             </div>
           )}
           {conversionSource?.type === 'merge' && conversionSource.mergeIdea && (
-            <div className="p-3 rounded-lg mb-3" style={{ background: 'var(--cp-primary-light, #EFF6FF)', border: `1px solid ${isDark ? 'rgba(59,130,246,0.2)' : '#BFDBFE'}` }}>
+            <div className="p-3 rounded-lg mb-3" style={{ background: 'var(--cp-primary-light, #EFF6FF)', border: `1px solid ${'var(--cp-primary-light, #BFDBFE)'}` }}>
               <div className="text-[13px] font-bold flex items-center gap-1.5" style={{ color: T.ink }}>
                 <GitMerge className="w-3.5 h-3.5" /> Merging 2 ideas into 1 business request
               </div>

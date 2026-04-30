@@ -207,7 +207,7 @@ function IdeaBoardCard({ idea, columnStatus, onClick, onConvert, isDark, dk }: {
       {/* Request link (converted) */}
       {isConverted && initLink && (
         <div style={{
-          marginTop: '8px', background: isDark ? 'rgba(22,163,74,0.12)' : '#1B7F37',
+          marginTop: '8px', background: 'var(--cp-success, #1B7F37)',
           border: `1px solid ${isDark ? 'rgba(22,163,74,0.25)' : '#B7EBD1'}`,
           borderRadius: '6px', padding: '5px 8px', fontSize: '10px', color: 'var(--cp-bg-elevated, #FFFFFF)', fontWeight: 600,
         }}>

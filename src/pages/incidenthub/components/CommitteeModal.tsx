@@ -73,7 +73,7 @@ export function CommitteeModal({ open, onClose, committee, incidentId }: Committ
                           {m.user?.full_name || 'Member'}
                         </span>
                         {m.role === 'chair' && (
-                          <span className="px-1.5" style={{ fontSize: 9, fontWeight: 700, backgroundColor: isDark ? 'rgba(124,58,237,0.12)' : '#F3E8FF', color: 'var(--cp-purple-60, #7C3AED)', borderRadius: 3 }}>CHAIR</span>
+                          <span className="px-1.5" style={{ fontSize: 9, fontWeight: 700, backgroundColor: 'var(--cp-purple-5, #F3E8FF)', color: 'var(--cp-purple-60, #7C3AED)', borderRadius: 3 }}>CHAIR</span>
                         )}
                         {m.has_veto && (
                           <span className="px-1.5" style={{ fontSize: 9, fontWeight: 700, backgroundColor: 'var(--cp-danger-light, #FEE2E2)', color: 'var(--cp-danger-text, #991B1B)', borderRadius: 3 }}>VETO</span>

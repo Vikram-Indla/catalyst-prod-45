@@ -458,7 +458,7 @@ export default function TestCycleDetailPage() {
               <span style={{ flex: 1, fontSize: 14, color: 'var(--cp-text-secondary, #334155)' }}>Failed</span>
               <span style={{ fontSize: 16, fontWeight: 700, color: '#DC2626' }}>{failedCount}</span>
             </button>
-            <button onClick={() => setStatusFilter('blocked')} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 12px', border: 'none', borderRadius: 8, backgroundColor: statusFilter === 'blocked' ? (isDark ? 'rgba(217,119,6,0.12)' : '#FFFBEB') : 'transparent', cursor: 'pointer', width: '100%', textAlign: 'left' }}>
+            <button onClick={() => setStatusFilter('blocked')} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 12px', border: 'none', borderRadius: 8, backgroundColor: statusFilter === 'blocked' ? ('var(--cp-warning-light, #FFFBEB)') : 'transparent', cursor: 'pointer', width: '100%', textAlign: 'left' }}>
               <AlertTriangle size={18} style={{ color: '#D97706' }} />
               <span style={{ flex: 1, fontSize: 14, color: 'var(--cp-text-secondary, #334155)' }}>Blocked</span>
               <span style={{ fontSize: 16, fontWeight: 700, color: '#D97706' }}>{blockedCount}</span>
@@ -509,12 +509,12 @@ export default function TestCycleDetailPage() {
       {/* Blocked Items Banner */}
       {blockedTestCases.length > 0 && (
         <div style={{ padding: '0 32px 16px' }}>
-          <div style={{ padding: '14px 20px', backgroundColor: isDark ? 'rgba(217,119,6,0.1)' : '#FFFBEB', border: `1px solid ${isDark ? 'rgba(217,119,6,0.2)' : '#FDE68A'}`, borderRadius: 12, display: 'flex', alignItems: 'center', gap: 12 }}>
+          <div style={{ padding: '14px 20px', backgroundColor: 'var(--cp-warning-light, #FFFBEB)', border: `1px solid ${'var(--cp-warning-light, #FDE68A)'}`, borderRadius: 12, display: 'flex', alignItems: 'center', gap: 12 }}>
             <AlertTriangle size={18} style={{ color: '#D97706', flexShrink: 0 }} />
             <span style={{ fontSize: 14, fontWeight: 500, color: '#92400E' }}>
               {blockedTestCases.length} blocked test case{blockedTestCases.length !== 1 ? 's' : ''} require attention
             </span>
-            <button onClick={() => setStatusFilter('blocked')} style={{ marginLeft: 'auto', padding: '4px 12px', border: `1px solid ${isDark ? 'rgba(217,119,6,0.3)' : '#FDE68A'}`, borderRadius: 6, backgroundColor: 'var(--cp-bg-elevated, #FFFFFF)', color: '#D97706', fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>
+            <button onClick={() => setStatusFilter('blocked')} style={{ marginLeft: 'auto', padding: '4px 12px', border: `1px solid ${'var(--cp-warning-light, #FDE68A)'}`, borderRadius: 6, backgroundColor: 'var(--cp-bg-elevated, #FFFFFF)', color: '#D97706', fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>
               View Blocked
             </button>
           </div>

@@ -264,7 +264,7 @@ export default function RequirementsListPage() {
                 return (
                   <tr key={req.id} onClick={() => navigate(`/testhub/requirements/${req.id}`)}
                     style={{ cursor: 'pointer', height: 50, maxHeight: 50, borderBottom: isDark ? '0.75px solid #2E2E2E' : '0.75px solid #E2E8F0' }}
-                    onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.backgroundColor = isDark ? '#1F1F1F' : 'rgba(0,0,0,0.04)'; }}
+                    onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.backgroundColor = 'var(--cp-interact-hover, rgba(0,0,0,0.04))'; }}
                     onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.backgroundColor = 'transparent'; }}>
                     <td style={{ padding: '8px 12px', fontSize: 13, fontWeight: 600, color: '#2563EB' }}>{req.req_key}</td>
                     <td style={{ padding: '8px 12px', fontSize: 13, color: 'var(--cp-text-primary, #0F172A)', maxWidth: 400, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{req.title}</td>

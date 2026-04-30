@@ -134,8 +134,8 @@ const formatSource = (source: string): string => {
 export default function IdeationDetailPanel({ ideaKey, onClose, onConvert }: Props) {
   const { isDark } = useTheme();
   const dk = isDark ? DK : LK;
-  const darkSelectStyle: React.CSSProperties = { ...selectStyle, color: dk.t1, background: 'var(--cp-bg-elevated, #FFFFFF)', borderColor: isDark ? '#454545' : 'rgba(15,23,42,0.14)' };
-  const darkInputStyle: React.CSSProperties = { ...inputStyle, color: dk.t1, background: 'var(--cp-bg-elevated, #FFFFFF)', borderColor: isDark ? '#454545' : 'rgba(15,23,42,0.14)' };
+  const darkSelectStyle: React.CSSProperties = { ...selectStyle, color: dk.t1, background: 'var(--cp-bg-elevated, #FFFFFF)', borderColor: 'var(--cp-border-default, rgba(15,23,42,0.14))' };
+  const darkInputStyle: React.CSSProperties = { ...inputStyle, color: dk.t1, background: 'var(--cp-bg-elevated, #FFFFFF)', borderColor: 'var(--cp-border-default, rgba(15,23,42,0.14))' };
   const { data: rawIdea, isLoading } = useIdeaRaw(ideaKey);
   const { data: dbFactors } = useImpactFactors(ideaKey);
   const updateIdea = useUpdateIdea();
@@ -292,7 +292,7 @@ export default function IdeationDetailPanel({ ideaKey, onClose, onConvert }: Pro
           {/* Convert banner */}
           {localStatus === 'Approved' && (
             <div style={{
-              margin: '16px 24px 0', background: isDark ? 'rgba(22,163,74,0.08)' : '#F0FDF4', border: `1px solid ${isDark ? 'rgba(22,163,74,0.20)' : '#86EFAC'}`,
+              margin: '16px 24px 0', background: 'var(--cp-success-light, #F0FDF4)', border: `1px solid ${'var(--cp-success, #86EFAC)'}`,
               borderRadius: '6px', padding: '12px 16px',
               display: 'flex', alignItems: 'center', gap: '12px',
             }}>
@@ -476,7 +476,7 @@ export default function IdeationDetailPanel({ ideaKey, onClose, onConvert }: Pro
                 rows={4}
                 placeholder="Add a description..."
                 style={{
-                  width: '100%', borderRadius: '4px', border: `1px solid ${isDark ? '#454545' : 'rgba(15,23,42,0.14)'}`,
+                  width: '100%', borderRadius: '4px', border: `1px solid ${'var(--cp-border-default, rgba(15,23,42,0.14))'}`,
                   padding: '8px 12px', fontSize: '13px', color: dk.t1, resize: 'vertical',
                   fontFamily: 'var(--cp-font-body)', outline: 'none', background: 'var(--cp-bg-elevated, #FFFFFF)',
                 }}

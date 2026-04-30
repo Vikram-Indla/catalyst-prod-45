@@ -605,7 +605,7 @@ export default function FeatureFlagsPage() {
             value={searchInput}
             onChange={(e) => setSearchInput(e.target.value)}
             className="h-9 pl-8 focus-visible:ring-2 focus-visible:ring-[#2563EB] focus-visible:ring-offset-2"
-            style={{ fontFamily: 'var(--cp-font-body)', fontSize: 13, borderRadius: 4, border: `0.75px solid ${isDark ? '#2E2E2E' : 'rgba(15,23,42,0.14)'}` }}
+            style={{ fontFamily: 'var(--cp-font-body)', fontSize: 13, borderRadius: 4, border: `0.75px solid ${'var(--cp-border-default, rgba(15,23,42,0.14))'}` }}
             aria-label="Search feature flags"
           />
         </div>
@@ -644,7 +644,7 @@ export default function FeatureFlagsPage() {
             padding: '8px 12px',
             fontFamily: 'var(--cp-font-body)',
             fontSize: 12,
-            border: `0.75px solid ${isDark ? '#2E2E2E' : 'rgba(15,23,42,0.14)'}`,
+            border: `0.75px solid ${'var(--cp-border-default, rgba(15,23,42,0.14))'}`,
             borderRadius: 4,
             background: 'var(--cp-bg-elevated, #FFFFFF)',
             color: 'var(--cp-text-primary, #0F172A)',
@@ -828,7 +828,7 @@ export default function FeatureFlagsPage() {
             value={confirmText}
             onChange={(e) => setConfirmText(e.target.value)}
             className="mt-2 focus-visible:ring-2 focus-visible:ring-[#2563EB] focus-visible:ring-offset-2"
-            style={{ borderRadius: 4, border: `0.75px solid ${isDark ? '#2E2E2E' : 'rgba(15,23,42,0.14)'}` }}
+            style={{ borderRadius: 4, border: `0.75px solid ${'var(--cp-border-default, rgba(15,23,42,0.14))'}` }}
             autoFocus
             onKeyDown={(e) => { if (e.key === 'Enter') handleBulkDisableConfirm(); if (e.key === 'Escape') { setBulkDisableOpen(false); setConfirmText(''); } }}
           />

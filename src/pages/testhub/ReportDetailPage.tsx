@@ -137,7 +137,7 @@ export default function ReportDetailPage() {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 24 }}>
         <div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
-            <span style={{ fontSize: 14, fontWeight: 600, color: '#F59E0B', backgroundColor: isDark ? '#3D3520' : '#FFFBEB', padding: '6px 14px', borderRadius: 8 }}>{report.report_key}</span>
+            <span style={{ fontSize: 14, fontWeight: 600, color: '#F59E0B', backgroundColor: 'var(--cp-warning-light, #FFFBEB)', padding: '6px 14px', borderRadius: 8 }}>{report.report_key}</span>
             <span style={{ fontSize: 12, fontWeight: 500, color: type.color, backgroundColor: `${type.color}15`, padding: '4px 10px', borderRadius: 6 }}>{type.label}</span>
           </div>
           <h1 style={{ fontSize: 24, fontWeight: 700, color: textPrimary, margin: 0 }}>{report.name}</h1>
@@ -182,7 +182,7 @@ export default function ReportDetailPage() {
               <p style={{ fontSize: 28, fontWeight: 700, color: '#059669', margin: 0 }}>{data.summary.passed}</p>
               <p style={{ fontSize: 12, color: '#059669', margin: '4px 0 0' }}>Passed</p>
             </div>
-            <div style={{ backgroundColor: 'var(--cp-danger-light, #FEF2F2)', borderRadius: 12, padding: 20, border: `1px solid ${isDark ? '#5C2020' : '#FECACA'}`, textAlign: 'center' }}>
+            <div style={{ backgroundColor: 'var(--cp-danger-light, #FEF2F2)', borderRadius: 12, padding: 20, border: `1px solid ${'var(--cp-danger-light, #FECACA)'}`, textAlign: 'center' }}>
               <XCircle size={24} style={{ color: '#DC2626', marginBottom: 8 }} />
               <p style={{ fontSize: 28, fontWeight: 700, color: '#DC2626', margin: 0 }}>{data.summary.failed}</p>
               <p style={{ fontSize: 12, color: '#DC2626', margin: '4px 0 0' }}>Failed</p>

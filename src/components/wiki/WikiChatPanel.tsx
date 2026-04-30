@@ -22,7 +22,7 @@ export function WikiChatPanel({ open, onClose }: { open: boolean; onClose: () =>
   const bottomRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const border = isDark ? '#2E2E2E' : 'rgba(0,0,0,0.06)';
+  const border = 'var(--cp-border-subtle, rgba(0,0,0,0.06))';
 
   useEffect(() => {
     if (open) inputRef.current?.focus();
@@ -155,7 +155,7 @@ export function WikiChatPanel({ open, onClose }: { open: boolean; onClose: () =>
             background: isDark ? 'var(--cp-bg-page, #1F1F21)' : 'var(--bg-1)', color: isDark ? '#EDEDED' : undefined,
           }}
           onFocus={e => { e.currentTarget.style.borderColor = 'var(--cp-blue)'; e.currentTarget.style.boxShadow = '0 0 0 3px rgba(37,99,235,0.08)'; }}
-          onBlur={e => { e.currentTarget.style.borderColor = isDark ? '#2E2E2E' : 'rgba(0,0,0,0.06)'; e.currentTarget.style.boxShadow = 'none'; }}
+          onBlur={e => { e.currentTarget.style.borderColor = 'var(--cp-border-subtle, rgba(0,0,0,0.06))'; e.currentTarget.style.boxShadow = 'none'; }}
         />
         <button onClick={handleSend} disabled={sending || !input.trim()} style={{
           width: 36, height: 50, borderRadius: 8, border: 'none', cursor: 'pointer',

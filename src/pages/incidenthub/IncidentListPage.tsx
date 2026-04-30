@@ -305,7 +305,7 @@ export default function IncidentListPage() {
                   fontWeight: statusFilter === c.key ? 650 : 400,
                   backgroundColor: statusFilter === c.key ? ('var(--cp-primary-light, #EFF6FF)') : 'transparent',
                   color: statusFilter === c.key ? ('var(--cp-text-link, #2563EB)') : textSecondary,
-                  border: statusFilter === c.key ? `1px solid ${isDark ? 'rgba(37,99,235,0.3)' : '#BFDBFE'}` : '1px solid transparent',
+                  border: statusFilter === c.key ? `1px solid ${'var(--cp-primary-light, #BFDBFE)'}` : '1px solid transparent',
                 }}
               >
                 {c.label}

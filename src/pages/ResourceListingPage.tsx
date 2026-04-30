@@ -341,7 +341,7 @@ export default function ResourceListingPage() {
                 {pill.label}
                 {showBadge && (
                   <span style={{
-                    background: isActive ? (isDark ? '#2E2E2E' : 'rgba(0,0,0,0.06)') : t.badgeBg,
+                    background: isActive ? ('var(--cp-border-subtle, rgba(0,0,0,0.06))') : t.badgeBg,
                     color: isActive ? 'inherit' : t.text3,
                     borderRadius: 3, padding: '0 5px',
                     fontSize: 11, fontWeight: 600,
