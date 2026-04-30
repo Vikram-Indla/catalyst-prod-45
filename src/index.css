@@ -1418,13 +1418,16 @@ html:has(body[data-scroll-locked]) {
     --info: 217 91% 60%;                   /* #2563eb blue */
     --info-foreground: 0 0% 100%;
     
-    /* === SURFACE TOKEN ALIASES (Neutral dark) === */
-    --surface-0: 0 0% 4%;
-    --surface-1: 0 0% 4%;
-    --surface-2: 0 0% 10%;
-    --surface-3: 0 0% 10%;
-    --surface-elevated: 0 0% 10%;
-    --surface-overlay: 0 0% 0%;
+    /* === SURFACE TOKEN ALIASES (Neutral dark) ===
+       Jira-parity ADS pairing (2026-04-30): canvas = #1D2125 (background.neutral),
+       elevated chrome = #22272B (elevation.surface). Stored as complete hsl()
+       so bare var(--surface-N) callers render valid CSS. */
+    --surface-0: hsl(210 11% 13%);   /* #1D2125 — page canvas */
+    --surface-1: hsl(210 11% 13%);   /* #1D2125 — page canvas */
+    --surface-2: hsl(210 9% 15%);    /* #22272B — elevated chrome */
+    --surface-3: hsl(210 8% 18%);    /* #282E33 — raised cards */
+    --surface-elevated: hsl(210 8% 18%); /* #282E33 — popovers */
+    --surface-overlay: hsl(0 0% 0%);
     
     /* === INPUT TOKENS === */
     --input-bg: var(--bg-3);
