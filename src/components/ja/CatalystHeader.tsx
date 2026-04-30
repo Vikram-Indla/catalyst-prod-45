@@ -123,7 +123,7 @@ export function CatalystHeader() {
             (x≈12). When pinned-open, the chevron moves to the trailing
             slot below, anchored to the sidebar's right edge (x=240). */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '4px', minWidth: 0 }}>
-          {!isPinnedOpen && (
+          {!isPinnedOpen && !isNarrow && (
             <div
               onMouseEnter={handleChevronEnter}
               onMouseLeave={handleChevronLeave}
