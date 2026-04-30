@@ -155,7 +155,7 @@ export function CatalystHeader() {
             />
           </a>
         </div>
-        {isPinnedOpen && (
+        {isPinnedOpen && !isNarrow && (
           <div
             onMouseEnter={handleChevronEnter}
             onMouseLeave={handleChevronLeave}
