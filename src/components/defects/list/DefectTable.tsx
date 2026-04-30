@@ -83,8 +83,17 @@ export const DefectTable = memo(function DefectTable({
   }
 
   return (
-    <div className="border border-border rounded-lg overflow-hidden">
-      <table className="w-full">
+    // Loop 6 Phase 2 (responsive dense tables, 2026-04-30):
+    // - `overflow-x-auto` on the wrapper lets the table scroll horizontally
+    //   inside the parent column when viewport <1024px (iPad portrait, phones).
+    // - `min-w-[820px]` on <table> forces the fixed column widths
+    //   (40+112+100+110+120+100+80+50 ≈ 712px + Title flex) to keep their
+    //   semantics instead of squishing. Below 820px the user pans horizontally.
+    // - Desktop (≥1024) is byte-identical: `w-full` still applies and the
+    //   container gives the table all available space; `min-w-[820px]` is
+    //   only a floor, never a ceiling.
+    <div className="border border-border rounded-lg overflow-hidden overflow-x-auto">
+      <table className="w-full min-w-[820px]">
         <thead className="bg-muted/50 border-b border-border">
           <tr className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
             <th className="w-10 px-3 py-2">
