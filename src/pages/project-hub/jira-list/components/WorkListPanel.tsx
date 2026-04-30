@@ -50,12 +50,12 @@ export function WorkListPanel({ items, selectedKey, onSelect, projectId }: Props
           (Ask AI removed 2026-04-18 per directive — not used on All Work.) */}
       <div style={{
         display: 'flex', alignItems: 'center', gap: 8,
-        padding: '8px 12px', borderBottom: '1px solid #DFE1E6', background: 'transparent',
+        padding: '8px 12px', borderBottom: '1px solid var(--cp-border-default, #DFE1E6)', background: 'transparent',
         flexWrap: 'nowrap',
       }}>
         <div style={{
           display: 'flex', alignItems: 'center', gap: 6, flex: 1, minWidth: 0,
-          border: '1px solid #DFE1E6', borderRadius: 6, padding: '0 8px', height: 32,
+          border: '1px solid var(--cp-border-default, #DFE1E6)', borderRadius: 6, padding: '0 8px', height: 32,
           background: 'transparent',
         }}>
           <Search size={14} style={{ opacity: 0.5, flexShrink: 0 }} />
@@ -67,16 +67,16 @@ export function WorkListPanel({ items, selectedKey, onSelect, projectId }: Props
             style={{
               border: 'none', outline: 'none', boxShadow: 'none', width: '100%', fontSize: 14,
               fontFamily: "'Atlassian Sans', -apple-system, sans-serif",
-              background: 'transparent', color: '#172B4D',
+              background: 'transparent', color: 'var(--cp-text-primary, #172B4D)',
             }}
           />
         </div>
 
         <button style={{
-          height: 32, padding: '0 10px', border: '1px solid #DFE1E6',
+          height: 32, padding: '0 10px', border: '1px solid var(--cp-border-default, #DFE1E6)',
           background: 'transparent', borderRadius: 6, cursor: 'pointer',
           fontSize: 13, fontFamily: 'var(--cp-font-body)', display: 'inline-flex',
-          alignItems: 'center', gap: 4, color: '#44546F', flexShrink: 0,
+          alignItems: 'center', gap: 4, color: 'var(--cp-text-secondary, #44546F)', flexShrink: 0,
         }}>
           <Filter size={14} />
           Filter
@@ -86,7 +86,7 @@ export function WorkListPanel({ items, selectedKey, onSelect, projectId }: Props
       {/* Sort header */}
       <div style={{
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        padding: '8px 12px', borderBottom: '1px solid #DFE1E6', background: 'transparent',
+        padding: '8px 12px', borderBottom: '1px solid var(--cp-border-default, #DFE1E6)', background: 'transparent',
       }}>
         <button
           onClick={() => setSortDir(d => (d === 'asc' ? 'desc' : 'asc'))}
@@ -94,12 +94,12 @@ export function WorkListPanel({ items, selectedKey, onSelect, projectId }: Props
           style={{
           display: 'inline-flex', alignItems: 'center', gap: 4,
           background: 'transparent', border: 'none', cursor: 'pointer',
-          fontWeight: 600, color: '#172B4D', fontSize: 14,
+          fontWeight: 600, color: 'var(--cp-text-primary, #172B4D)', fontSize: 14,
           fontFamily: "'Atlassian Sans', -apple-system, sans-serif",
         }}>
           Created
           <svg width="10" height="6" viewBox="0 0 10 6" style={{ transform: sortDir === 'asc' ? 'rotate(180deg)' : 'none' }}>
-            <path d="M0 0l5 6 5-6z" fill="#44546F"/>
+            <path d="M0 0l5 6 5-6z" fill="currentColor" opacity="0.55"/>
           </svg>
         </button>
         <div style={{ display: 'inline-flex', gap: 4 }}>
@@ -133,7 +133,7 @@ export function WorkListPanel({ items, selectedKey, onSelect, projectId }: Props
                 //   - 2px margin between cards (was 8px)
                 width: '100%', textAlign: 'left', display: 'block',
                 border: 'none',
-                background: selected ? '#E9F2FE' : '#FFFFFF',
+                background: selected ? 'var(--cp-interact-selected, #E9F2FE)' : 'var(--cp-bg-elevated, #FFFFFF)',
                 borderRadius: 4,
                 padding: 12,
                 margin: '2px 0',
@@ -143,15 +143,15 @@ export function WorkListPanel({ items, selectedKey, onSelect, projectId }: Props
                   : 'rgba(30, 31, 33, 0.25) 0px 1px 1px 0px, rgba(30, 31, 33, 0.31) 0px 0px 1px 0px',
                 transition: 'background 80ms, box-shadow 80ms',
               }}
-              onMouseEnter={e => { if (!selected) { e.currentTarget.style.background = '#F8F9FA'; } }}
-              onMouseLeave={e => { if (!selected) { e.currentTarget.style.background = '#FFFFFF'; } }}
+              onMouseEnter={e => { if (!selected) { e.currentTarget.style.background = 'var(--cp-interact-hover, #F8F9FA)'; } }}
+              onMouseLeave={e => { if (!selected) { e.currentTarget.style.background = 'var(--cp-bg-elevated, #FFFFFF)'; } }}
             >
               <div
                 dir={rtl ? 'rtl' : 'ltr'}
                 style={{
                   // Jira card title: Atlassian Sans 14/400/#292A2E (weight 400, not 600).
                   // Selected state tints the title blue (#1868DB).
-                  fontWeight: 400, color: selected ? '#1868DB' : '#292A2E',
+                  fontWeight: 400, color: selected ? 'var(--cp-text-link, #1868DB)' : 'var(--cp-text-primary, #292A2E)',
                   marginBottom: 8, lineHeight: '20px', fontSize: 14,
                   fontFamily: "'Atlassian Sans', -apple-system, sans-serif",
                   overflow: 'hidden', textOverflow: 'ellipsis',
@@ -164,7 +164,7 @@ export function WorkListPanel({ items, selectedKey, onSelect, projectId }: Props
                 <span style={{
                   // Issue key in card: Atlassian Sans 12/400/#505258 (NOT monospace —
                   // Jira uses the same family as body, just smaller).
-                  fontSize: 12, color: '#505258', display: 'inline-flex',
+                  fontSize: 12, color: 'var(--cp-text-secondary, #505258)', display: 'inline-flex',
                   alignItems: 'center', gap: 6,
                   fontFamily: "'Atlassian Sans', -apple-system, sans-serif", fontWeight: 400,
                 }}>
@@ -194,7 +194,7 @@ export function WorkListPanel({ items, selectedKey, onSelect, projectId }: Props
 
         {/* Footer count */}
         <div style={{
-          padding: '12px 4px', color: '#626F86', fontSize: 12, textAlign: 'center',
+          padding: '12px 4px', color: 'var(--cp-text-tertiary, #626F86)', fontSize: 12, textAlign: 'center',
           fontFamily: "'Atlassian Sans', -apple-system, sans-serif",
         }}>
           {(() => {
@@ -214,9 +214,9 @@ function SortIconBtn({ children }: { children: React.ReactNode }) {
       style={{
         width: 28, height: 28, border: 'none', background: 'transparent',
         cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
-        color: '#626F86', borderRadius: 4,
+        color: 'var(--cp-text-tertiary, #626F86)', borderRadius: 4,
       }}
-      onMouseEnter={e => { e.currentTarget.style.background = '#F1F2F4'; }}
+      onMouseEnter={e => { e.currentTarget.style.background = 'var(--cp-interact-hover, #F1F2F4)'; }}
       onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
     >
       {children}
