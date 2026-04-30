@@ -34,6 +34,10 @@ import {
 } from '@/components/ui/select';
 
 export default function AllProjectsPage() {
+  // Loop 5b (2026-04-30): collapse the wide actions cluster (Jira Sync pill +
+  // "Create project" label) into icon-only triggers at <1024px so they fit
+  // alongside the title on iPhone/iPad. Desktop ≥1024px untouched.
+  const { isNarrow } = useNavBreakpoint();
   const [view, setView] = useState<ViewMode>('list');
   const [filters, setFilters] = useState<ProjectFilters>(DEFAULT_FILTERS);
   const [sortCol, setSortCol] = useState<SortColumn>('total_issues');
