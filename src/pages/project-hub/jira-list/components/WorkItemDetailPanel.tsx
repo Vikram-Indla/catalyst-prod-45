@@ -276,12 +276,12 @@ function RightDetails({ item }: { item: WorkItem }) {
   return (
     <div style={{
       width: 360, flexShrink: 0, display: 'flex', flexDirection: 'column',
-      minHeight: 0, background: '#FFFFFF',
+      minHeight: 0, background: 'var(--cp-bg-elevated, #FFFFFF)',
     }}>
       {/* Header: Strong status pill + ✓ Done + ⚡ + ✦ Improve Epic */}
       <div style={{
         display: 'flex', alignItems: 'center', gap: 8,
-        padding: '12px 16px', borderBottom: '1px solid #DFE1E6',
+        padding: '12px 16px', borderBottom: '1px solid var(--cp-border-default, #DFE1E6)',
         flexWrap: 'wrap',
       }}>
         <JiraStrongStatus
@@ -298,9 +298,9 @@ function RightDetails({ item }: { item: WorkItem }) {
           <ActionBtn title="Automation"><Zap size={16} /></ActionBtn>
           <button style={{
             display: 'inline-flex', alignItems: 'center', gap: 4,
-            height: 32, padding: '0 10px', border: '1px solid #DFE1E6', borderRadius: 4,
-            background: '#FFFFFF', cursor: 'pointer', fontSize: 13, fontWeight: 600,
-            color: '#172B4D', fontFamily: 'var(--cp-font-body)',
+            height: 32, padding: '0 10px', border: '1px solid var(--cp-border-default, #DFE1E6)', borderRadius: 4,
+            background: 'var(--cp-bg-elevated, #FFFFFF)', cursor: 'pointer', fontSize: 13, fontWeight: 600,
+            color: 'var(--cp-text-primary, #172B4D)', fontFamily: 'var(--cp-font-body)',
           }}>
             <svg width="14" height="14" viewBox="0 0 16 16" fill="#7C3AED"><circle cx="4" cy="4" r="1.5"/><circle cx="8" cy="4" r="1.5"/><circle cx="12" cy="4" r="1.5"/><circle cx="4" cy="8" r="1.5"/><circle cx="8" cy="8" r="1.5"/></svg>
             Improve Epic
@@ -435,8 +435,8 @@ function DetailRow({ label, children }: { label: string; children: React.ReactNo
 
 /* ── Style constants ── */
 const navBtnStyle: React.CSSProperties = {
-  width: 28, height: 28, border: '1px solid #DFE1E6', borderRadius: 4,
-  background: '#FFFFFF', cursor: 'pointer', display: 'flex', alignItems: 'center',
+  width: 28, height: 28, border: '1px solid var(--cp-border-default, #DFE1E6)', borderRadius: 4,
+  background: 'var(--cp-bg-elevated, #FFFFFF)', cursor: 'pointer', display: 'flex', alignItems: 'center',
   justifyContent: 'center',
 };
 
@@ -472,12 +472,12 @@ function ActionBtn({ children, title }: { children: React.ReactNode; title?: str
     <button
       title={title}
       style={{
-        width: 32, height: 32, border: '1px solid #DFE1E6', borderRadius: 4,
-        background: '#FFFFFF', cursor: 'pointer', display: 'flex', alignItems: 'center',
-        justifyContent: 'center', color: '#626F86',
+        width: 32, height: 32, border: '1px solid var(--cp-border-default, #DFE1E6)', borderRadius: 4,
+        background: 'var(--cp-bg-elevated, #FFFFFF)', cursor: 'pointer', display: 'flex', alignItems: 'center',
+        justifyContent: 'center', color: 'var(--cp-text-tertiary, #626F86)',
       }}
-      onMouseEnter={e => { e.currentTarget.style.background = '#F1F2F4'; }}
-      onMouseLeave={e => { e.currentTarget.style.background = '#FFFFFF'; }}
+      onMouseEnter={e => { e.currentTarget.style.background = 'var(--cp-interact-hover, #F1F2F4)'; }}
+      onMouseLeave={e => { e.currentTarget.style.background = 'var(--cp-bg-elevated, #FFFFFF)'; }}
     >
       {children}
     </button>
