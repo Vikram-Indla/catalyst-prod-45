@@ -69,6 +69,7 @@ export function GlobalMobileDrawer({
       role="dialog"
       aria-modal="true"
       aria-label={ariaLabel}
+      data-cp-mobile-drawer
       style={{
         position: 'fixed',
         inset: 0,
