@@ -47,8 +47,8 @@ export default function ProjectListView({ projectKey, projectId }: Props) {
       <div style={{
         display: 'flex', alignItems: 'center', gap: 8,
         padding: '4px 16px',
-        borderBottom: '0.75px solid #DDDEE1',
-        background: '#FFFFFF',
+        borderBottom: '0.75px solid var(--cp-border-default)',
+        background: 'var(--cp-bg-elevated)',
         flexShrink: 0,
       }}>
         <div style={{ display: 'flex', gap: 2 }}>
@@ -65,11 +65,11 @@ export default function ProjectListView({ projectKey, projectId }: Props) {
       {viewMode === 'list' ? (
         <AllWorkTable items={items} isLoading={isLoading} onOpenItem={handleOpenItem} pageTitle="List" />
       ) : (
-        <div style={{ flex: 1, display: 'flex', overflow: 'hidden', background: '#F4F5F7' }}>
+        <div style={{ flex: 1, display: 'flex', overflow: 'hidden', background: 'var(--cp-bg-page)' }}>
           {/* Left: WorkListPanel */}
           <div style={{
-            width: 320, flexShrink: 0, background: '#FFFFFF',
-            border: '1px solid #DFE1E6', borderRadius: '10px 0 0 10px',
+            width: 320, flexShrink: 0, background: 'var(--cp-bg-elevated)',
+            border: '1px solid var(--cp-border-default)', borderRadius: '10px 0 0 10px',
             overflow: 'hidden', display: 'flex', flexDirection: 'column',
           }}>
             <WorkListPanel
@@ -88,7 +88,7 @@ export default function ProjectListView({ projectKey, projectId }: Props) {
               onClose={() => { setActiveItemId(null); setViewMode('list'); }}
             />
           ) : (
-            <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#6B6E76', fontSize: 14, fontFamily: 'var(--cp-font-body)' }}>
+            <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--cp-text-tertiary)', fontSize: 14, fontFamily: 'var(--cp-font-body)' }}>
               Select an item to view details
             </div>
           )}
@@ -107,9 +107,9 @@ function ToggleBtn({ active, onClick, title, side, children }: {
       title={title}
       style={{
         width: 30, height: 28, border: '1px solid',
-        borderColor: active ? '#2563EB' : '#DDDEE1',
+        borderColor: active ? '#2563EB' : 'var(--cp-border-default)',
         borderRadius: side === 'left' ? '4px 0 0 4px' : '0 4px 4px 0',
-        background: active ? 'rgba(37,99,235,0.08)' : '#fff',
+        background: active ? 'var(--cp-interact-selected)' : 'var(--cp-bg-elevated)',
         color: active ? '#2563EB' : '#94A3B8',
         cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
         marginLeft: side === 'right' ? -1 : 0,

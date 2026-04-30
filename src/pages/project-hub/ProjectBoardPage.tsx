@@ -409,7 +409,7 @@ function FilterDropdown({ label, value, options, isOpen, onToggle, onChange }: {
         className="flex items-center justify-between gap-2 rounded-md transition-colors"
         style={{
           fontSize: 12, fontWeight: 500, padding: '4px 8px',
-          border: '1px solid #E2E8F0', background: '#fff', color: '#0F172A',
+          border: '1px solid var(--cp-border-default)', background: 'var(--cp-bg-elevated)', color: 'var(--cp-text-primary)',
           cursor: 'pointer', minWidth: 130, textAlign: 'left' as const,
         }}
       >
@@ -419,7 +419,7 @@ function FilterDropdown({ label, value, options, isOpen, onToggle, onChange }: {
       {isOpen && (
         <div
           className="absolute top-full left-0 mt-1 rounded-lg shadow-lg border z-50"
-          style={{ background: '#fff', borderColor: '#E2E8F0', minWidth: 160, padding: 4 }}
+          style={{ background: 'var(--cp-bg-elevated)', borderColor: 'var(--cp-border-default)', minWidth: 160, padding: 4 }}
         >
           {options.map(o => (
             <button
@@ -428,11 +428,11 @@ function FilterDropdown({ label, value, options, isOpen, onToggle, onChange }: {
               className="w-full text-left px-3 py-1.5 rounded transition-colors"
               style={{
                 fontSize: 12, fontWeight: value === o.value ? 600 : 400,
-                color: '#334155',
-                background: value === o.value ? '#F1F5F9' : 'transparent',
+                color: 'var(--cp-text-secondary)',
+                background: value === o.value ? 'var(--cp-interact-selected)' : 'transparent',
                 border: 'none', cursor: 'pointer',
               }}
-              onMouseEnter={e => { if (value !== o.value) e.currentTarget.style.background = '#F8FAFC'; }}
+              onMouseEnter={e => { if (value !== o.value) e.currentTarget.style.background = 'var(--cp-interact-hover)'; }}
               onMouseLeave={e => { if (value !== o.value) e.currentTarget.style.background = 'transparent'; }}
             >
               {o.label}

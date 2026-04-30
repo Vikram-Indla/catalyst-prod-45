@@ -83,7 +83,7 @@ function OverlayPill({ name, tk }: { name: string; tk: any }) {
       <GripVertical size={14} color={tk.textDisabled} />
       <span style={{
         fontSize: 11, fontWeight: 700, textTransform: 'uppercase',
-        letterSpacing: '0.03em', color: '#253858', background: '#DFE1E6',
+        letterSpacing: '0.03em', color: 'var(--cp-text-secondary)', background: 'var(--cp-border-default)',
         borderRadius: 3, padding: '2px 8px', lineHeight: '20px',
       }}>
         {name}
