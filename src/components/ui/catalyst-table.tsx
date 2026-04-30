@@ -17,11 +17,12 @@
  *   />
  */
 
-import { useState, useCallback, useMemo, useRef, useLayoutEffect, type ReactNode } from 'react';
+import { useState, useCallback, useMemo, useRef, useLayoutEffect, useEffect, type ReactNode } from 'react';
 import { ChevronDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { cn } from '@/lib/utils';
+import { useNavBreakpoint } from '@/hooks/useNavBreakpoint';
 
 // ═══════════════════════════════════════════════════════════════════
 // TYPES
@@ -141,9 +142,12 @@ export function CatalystTable<T>({
   loadMoreIncrement = 25,
 }: CatalystTableProps<T>) {
   const containerRef = useRef<HTMLDivElement>(null);
+  const scrollRef = useRef<HTMLDivElement>(null);
   const [hoveredRowId, setHoveredRowId] = useState<string | null>(null);
   const [visibleCount, setVisibleCount] = useState(pageSize);
   const [containerWidth, setContainerWidth] = useState(0);
+  const [showEdgeFade, setShowEdgeFade] = useState(false);
+  const { isNarrow } = useNavBreakpoint();
 
   // Track container width for responsive sizing
   useLayoutEffect(() => {
@@ -167,6 +171,33 @@ export function CatalystTable<T>({
   useLayoutEffect(() => {
     setVisibleCount(pageSize);
   }, [data.length, pageSize]);
+
+  // Track horizontal scroll position to toggle right-edge fade affordance
+  // (only relevant at narrow viewports where columns overflow)
+  useEffect(() => {
+    if (!isNarrow) {
+      setShowEdgeFade(false);
+      return;
+    }
+    const el = scrollRef.current;
+    if (!el) return;
+
+    const update = () => {
+      const overflow = el.scrollWidth - el.clientWidth;
+      const atEnd = el.scrollLeft >= overflow - 2;
+      setShowEdgeFade(overflow > 4 && !atEnd);
+    };
+
+    update();
+    el.addEventListener('scroll', update, { passive: true });
+    const ro = new ResizeObserver(update);
+    ro.observe(el);
+
+    return () => {
+      el.removeEventListener('scroll', update);
+      ro.disconnect();
+    };
+  }, [isNarrow, visibleCount, containerWidth]);
 
   // Calculate grid template
   // Fixed columns use their minWidth, canGrow column uses remaining space
@@ -217,31 +248,35 @@ export function CatalystTable<T>({
   }
 
   return (
-    <div ref={containerRef} className="w-full">
+    <div ref={containerRef} className="w-full" data-cp-table-narrow={isNarrow ? 'true' : undefined}>
       {/* Table container - full width, content-driven height */}
-      <div className="w-full rounded-md border border-border dark:border-[#2E2E2E] overflow-hidden bg-card dark:bg-[#0A0A0A]">
+      <div className="relative w-full rounded-md border border-border dark:border-[#2E2E2E] overflow-hidden bg-card dark:bg-[#0A0A0A]">
         {/* Horizontal scroll only when columns exceed container */}
-        <div className="w-full overflow-x-auto">
+        <div ref={scrollRef} className="w-full overflow-x-auto">
           {/* Header - 32px height */}
           <div
-            className="grid items-center h-9 bg-muted dark:bg-[#111111] border-b-2 border-border dark:border-[#2E2E2E] sticky top-0 z-10"
+            className="grid items-center h-9 bg-muted dark:bg-[#111111] border-b-2 border-border dark:border-[#2E2E2E] sticky top-0 z-20"
             style={{ gridTemplateColumns: gridTemplate, minWidth: 'max-content' }}
           >
-            {columns.map((col, idx) => (
-              <div 
-                key={col.key}
-                className={cn(
-                  "px-3 flex items-center h-full min-w-0",
-                  idx === 0 && "pl-4",
-                  col.align === 'center' && "justify-center",
-                  col.align === 'right' && "justify-end"
-                )}
-              >
-                <span className={cn(HEADER_STYLES, "text-muted-foreground truncate")}>
-                  {col.label}
-                </span>
-              </div>
-            ))}
+            {columns.map((col, idx) => {
+              const stickyFirst = isNarrow && idx === 0;
+              return (
+                <div
+                  key={col.key}
+                  className={cn(
+                    "px-3 flex items-center h-full min-w-0",
+                    idx === 0 && "pl-4",
+                    col.align === 'center' && "justify-center",
+                    col.align === 'right' && "justify-end",
+                    stickyFirst && "sticky left-0 z-30 border-r border-border dark:border-[#2E2E2E] bg-muted dark:bg-[#111111]"
+                  )}
+                >
+                  <span className={cn(HEADER_STYLES, "text-muted-foreground truncate")}>
+                    {col.label}
+                  </span>
+                </div>
+              );
+            })}
           </div>
 
           {/* Body */}
@@ -267,30 +302,46 @@ export function CatalystTable<T>({
                   onMouseEnter={() => setHoveredRowId(rowId)}
                   onMouseLeave={() => setHoveredRowId(null)}
                 >
-                  {columns.map((col, idx) => (
-                    <div 
-                      key={col.key}
-                      className={cn(
-                        "px-3 flex items-center h-full min-w-0",
-                        idx === 0 && "pl-4",
-                        col.align === 'center' && "justify-center",
-                        col.align === 'right' && "justify-end",
-                        CELL_STYLES,
-                        "text-foreground"
-                      )}
-                    >
-                      {col.canGrow ? (
-                        <span className="truncate block max-w-full">{col.render(item)}</span>
-                      ) : (
-                        col.render(item)
-                      )}
-                    </div>
-                  ))}
+                  {columns.map((col, idx) => {
+                    const stickyFirst = isNarrow && idx === 0;
+                    return (
+                      <div
+                        key={col.key}
+                        className={cn(
+                          "px-3 flex items-center h-full min-w-0",
+                          idx === 0 && "pl-4",
+                          col.align === 'center' && "justify-center",
+                          col.align === 'right' && "justify-end",
+                          CELL_STYLES,
+                          "text-foreground",
+                          stickyFirst && "sticky left-0 z-10 border-r border-border dark:border-[#2E2E2E]",
+                          stickyFirst && (isHovered ? "bg-muted/95" : "bg-card dark:bg-[#0A0A0A]")
+                        )}
+                      >
+                        {col.canGrow ? (
+                          <span className="truncate block max-w-full">{col.render(item)}</span>
+                        ) : (
+                          col.render(item)
+                        )}
+                      </div>
+                    );
+                  })}
                 </div>
               );
             })
           )}
         </div>
+
+        {/* Right-edge scroll affordance — only at narrow viewports while more content remains */}
+        {isNarrow && showEdgeFade && (
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute top-0 right-0 h-full w-4"
+            style={{
+              background: 'linear-gradient(to left, hsl(var(--background) / 0.9), transparent)',
+            }}
+          />
+        )}
       </div>
 
       {/* Load More button */}
