@@ -55,7 +55,9 @@ export default function ProjectJiraLayout() {
         height: 'calc(100vh - 52px)',
         maxHeight: 'calc(100vh - 52px)',
         minHeight: 0, overflow: 'hidden',
-        background: 'var(--cp-bg-page)',
+        // Inherit page bg from shell — don't paint here, ProjectAllWorkView's
+        // outer container owns the surface and themes via cp-bg-elevated.
+        background: 'transparent',
       }}
     >
       <ProjectAllWorkView projectKey={key!} projectId={project?.id} />
