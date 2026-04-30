@@ -220,7 +220,7 @@ export function WorkCardAssigneePicker({
               </div>
             ))}
             {filtered.length === 0 && (
-              <div style={{ padding: 16, fontSize: 13, color: '#6B778C', textAlign: 'center' }}>
+              <div style={{ padding: 16, fontSize: 13, color: 'var(--cp-text-tertiary, #6B778C)', textAlign: 'center' }}>
                 No members found
               </div>
             )}
