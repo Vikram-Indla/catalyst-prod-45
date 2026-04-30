@@ -170,7 +170,13 @@ export function UnifiedSidebar({
           // which broke the elevation hierarchy on /for-you and program/project shells
           // (sidebar over-elevated, header collapsed into canvas). 2026-04-30 fix.
           background: 'var(--cp-bg-sidebar-hdr)',
-          borderRight: '1px solid var(--cp-bd)',
+          // 2026-04-30 (Vikram critique — "ugly divider"): in Jira parity the
+          // sidebar/header form ONE continuous chrome surface, with the canvas
+          // (#1D2125 dark / hub-page light) providing natural contrast on the
+          // right. The 1px solid `var(--cp-bd)` line drew an unwanted vertical
+          // seam against the header chrome. We drop it — the bg-vs-canvas
+          // delta is enough separation in both modes.
+          borderRight: 'none',
         }}
       >
         {/* V10 Header with collapse toggle */}
