@@ -309,6 +309,39 @@ export type Database = {
         }
         Relationships: []
       }
+      ai_theme_cache: {
+        Row: {
+          expires_at: string
+          generated_at: string
+          id: string
+          issues_signature: string
+          payload: Json
+          project_key: string | null
+          scope_mode: string
+          user_id: string
+        }
+        Insert: {
+          expires_at?: string
+          generated_at?: string
+          id?: string
+          issues_signature: string
+          payload: Json
+          project_key?: string | null
+          scope_mode: string
+          user_id: string
+        }
+        Update: {
+          expires_at?: string
+          generated_at?: string
+          id?: string
+          issues_signature?: string
+          payload?: Json
+          project_key?: string | null
+          scope_mode?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       assignment_license_allocations: {
         Row: {
           allocation_percent: number

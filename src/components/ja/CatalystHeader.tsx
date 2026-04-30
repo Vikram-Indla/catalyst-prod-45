@@ -177,8 +177,19 @@ export function CatalystHeader() {
         )}
       </div>
 
-      {/* CENTER: flex row so the Popup trigger div gets a definite containing-block width */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', minWidth: 0 }}>
+      {/* CENTER: flex row so the Popup trigger div gets a definite containing-block width.
+          minWidth:0 on the wrapper is REQUIRED — without it, the grid's 1fr track resolves
+          to min-content (Search + Create + gap), pushing past its own track and OVERLAPPING
+          the right cluster (visible as Ask Caty white pill rendering on top of Create
+          button). RCA 2026-04-30. */}
+      <div style={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: '8px',
+        minWidth: 0,
+        overflow: 'hidden',
+      }}>
         <div style={{ flex: '1 1 0', minWidth: 0, maxWidth: '560px' }}>
           <GlobalSearch />
         </div>
@@ -188,12 +199,22 @@ export function CatalystHeader() {
       </div>
 
       {/* RIGHT cluster — justifySelf:end pins it to the right screen edge.
+          flexShrink:0 on the cluster + each child defends the right column from
+          overflow bleed coming out of the center 1fr track. Without this,
+          AskCatalystPill (white, raised) renders ON TOP of the Create button
+          when the viewport narrows. (RCA 2026-04-30, /ui-fix.)
           ThemeToggle sits left of NotificationsPanel so the moon/sun lives
           inside the natural reading order before the alert/settings/avatar
           stack. The toggle and ProfileMenu's Theme submenu share state
-          via useThemeMode() — clicking either flips both. (2026-04-28).
-          HMR-nudge marker: phase-0-1-v2 */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '4px', justifySelf: 'end' }} data-theme-toggle-cluster>
+          via useThemeMode() — clicking either flips both. (2026-04-28). */}
+      <div style={{
+        display: 'flex',
+        alignItems: 'center',
+        gap: '4px',
+        justifySelf: 'end',
+        flexShrink: 0,
+        minWidth: 'max-content',
+      }} data-theme-toggle-cluster>
         {!isNarrow && <AskCatalystPill />}
         {!isNarrow && <ThemeToggle />}
         <NotificationsPanel />

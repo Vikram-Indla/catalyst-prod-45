@@ -26,7 +26,9 @@ const EpicDescriptionEditor = lazy(
 
 const EpicDescriptionRenderer = lazy(() =>
   import('@/components/shared/rich-text/atlaskit/EpicDescriptionRenderer').then((m) => ({
-    default: m.default ?? (m as { EpicDescriptionRenderer: unknown }).EpicDescriptionRenderer,
+    default:
+      (m as Record<string, unknown>).default
+        ?? (m as Record<string, unknown>).EpicDescriptionRenderer,
   })) as Promise<{ default: React.ComponentType<{ adf?: unknown; fallbackText?: string | null }> }>,
 );
 

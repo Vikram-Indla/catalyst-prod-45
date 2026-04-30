@@ -58,9 +58,11 @@ export function useProductHubBusinessRequest(
   // Normalize the arg: support legacy 1-arg `(string | null)` callers + the
   // new `({ requestId, requestKey })` callers.
   const args: UseProductHubBusinessRequestArgs =
-    typeof arg === 'string' || arg === null
+    typeof arg === 'string'
       ? { requestId: arg }
-      : arg;
+      : arg === null
+        ? { requestId: null }
+        : arg;
 
   const { requestId: directId, requestKey } = args;
 
