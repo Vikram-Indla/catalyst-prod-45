@@ -52,7 +52,7 @@ export const DefectTable = memo(function DefectTable({
             <div />
           </div>
         </div>
-        <div className="divide-y divide-border">
+        <div className="divide-y divide-border min-w-[820px]">
           {Array.from({ length: 10 }).map((_, i) => (
             <div key={i} className="grid grid-cols-[40px_112px_1fr_100px_110px_120px_100px_80px_50px] gap-2 px-3 py-3">
               <Skeleton className="h-4 w-4" />
