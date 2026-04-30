@@ -277,6 +277,8 @@ const AdminV2AuditLog = lazy(() => import("../pages/admin/v2/AuditLogPage"));
 const AdminV2CustomFields = lazy(() => import("../pages/admin/v2/work-items/CustomFieldsPage"));
 const AdminV2Statuses = lazy(() => import("../pages/admin/v2/work-items/StatusesPage"));
 const AdminV2WorkTypes = lazy(() => import("../pages/admin/v2/work-items/WorkTypesPage"));
+const AdminV2Workflows = lazy(() => import("../pages/admin/v2/work-items/WorkflowsPage"));
+const AdminV2WorkflowDetail = lazy(() => import("../pages/admin/v2/work-items/WorkflowDetailPage"));
 const WorkHubAdminPage = lazy(() => import("../modules/workhub/admin/pages/WorkHubAdmin"));
 const WorkHubHierarchyPage = lazy(() => import("../modules/workhub/admin/pages/WorkHubHierarchyPage"));
 const WorkHubSchedulingPage = lazy(() => import("../modules/workhub/admin/pages/WorkHubSchedulingPage"));
@@ -800,6 +802,8 @@ export default function FullAppRoutes() {
           <Route path="work-items/custom-fields" element={<S><AdminV2CustomFields /></S>} />
           <Route path="work-items/statuses" element={<S><AdminV2Statuses /></S>} />
           <Route path="work-items/types" element={<S><AdminV2WorkTypes /></S>} />
+          <Route path="work-items/workflows" element={<S><AdminV2Workflows /></S>} />
+          <Route path="work-items/workflows/:schemeId" element={<S><AdminV2WorkflowDetail /></S>} />
         </Route>
 
         <Route path="/value-stream" element={<S><ValueStreamView /></S>} />

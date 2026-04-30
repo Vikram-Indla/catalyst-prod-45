@@ -1,17 +1,24 @@
 /**
- * BrScoringSection — Business Request scoring (priority tier + WSJF
- * components). Ports DetailTabScore (currently in
- * `src/components/producthub/timeline/`) to the canonical CatalystView
- * pattern as a single-scroll section, ADS-only.
+ * BrScoringSection — Business Request scoring rows (WSJF-ish components).
  *
- * Cycle 1 stub. Cycle 2 will:
- *  - Render an Atlaskit table or stacked Stat tiles for the four score
- *    components (`business_value`, `complexity_score`, `executive_urgency`,
- *    `business_score`)
- *  - Add an Atlaskit InlineEdit per editable score field
- *  - Show the computed `rank` + `priority_tier` as Atlaskit Lozenges
- *  - Wire `is_force_ranked` + `rank_override_justification` editing
+ * Real implementation as of cycle 3. Renders four numeric InlineEdit
+ * fields covering the BR scoring vocabulary on `business_requests`:
+ *   - business_value      (0..10, integer suggested)
+ *   - complexity_score    (0..10, integer suggested)
+ *   - executive_urgency   (0..10, integer suggested)
+ *   - business_score      (computed total — read-only typically, but
+ *     editable here for manual override; cycle 4 may convert to
+ *     read-only with a "Recompute" button)
+ *
+ * Saves via the parent's `onUpdate(field, value)` callback. Each cell is
+ * a labelled InlineEdit + Textfield; non-numeric input is coerced to
+ * `null` so the DB sees a clean update.
+ *
+ * 100% ADS — no shadcn, no lucide-react.
  */
+import InlineEdit from '@atlaskit/inline-edit';
+import Textfield from '@atlaskit/textfield';
+import { token } from '@atlaskit/tokens';
 import type { BusinessRequest } from '@/types/business-request';
 
 interface Props {
@@ -19,37 +26,112 @@ interface Props {
   onUpdate: (field: string, value: unknown) => Promise<void>;
 }
 
-export function BrScoringSection({ request, onUpdate: _onUpdate }: Props) {
+interface ScoreField {
+  key: keyof BusinessRequest;
+  label: string;
+}
+
+const SCORE_FIELDS: ScoreField[] = [
+  { key: 'business_value', label: 'Business value' },
+  { key: 'complexity_score', label: 'Complexity' },
+  { key: 'executive_urgency', label: 'Executive urgency' },
+  { key: 'business_score', label: 'Score (total)' },
+];
+
+function parseScore(raw: string): number | null {
+  const trimmed = (raw ?? '').trim();
+  if (trimmed === '') return null;
+  const num = Number(trimmed);
+  return Number.isFinite(num) ? num : null;
+}
+
+export function BrScoringSection({ request, onUpdate }: Props) {
   if (!request) return null;
   return (
     <section
       data-cv-section="br-scoring"
-      style={{ marginBottom: 16 }}
+      style={{ marginBottom: 20 }}
       aria-label="Scoring"
     >
       <div
         style={{
           fontSize: 11,
-          color: '#6B6E76',
+          color: token('color.text.subtle', '#6B6E76'),
           fontWeight: 600,
           textTransform: 'uppercase',
-          marginBottom: 4,
+          marginBottom: 8,
           letterSpacing: '0.04em',
           fontFamily: 'var(--cp-font-body)',
         }}
       >
-        Scoring <span style={{ textTransform: 'none', color: '#8590A2' }}>(cycle 2 stub)</span>
+        Scoring
       </div>
       <div
         style={{
-          fontSize: 13,
-          color: '#42526E',
-          fontFamily: 'var(--cp-font-body)',
+          display: 'grid',
+          gridTemplateColumns: 'repeat(2, minmax(0, 1fr))',
+          gap: 12,
         }}
       >
-        Business value: {request.business_value ?? '—'} · Complexity:{' '}
-        {request.complexity_score ?? '—'} · Urgency:{' '}
-        {request.executive_urgency ?? '—'} · Score: {request.business_score ?? '—'}
+        {SCORE_FIELDS.map((field) => {
+          const value = (request[field.key] as number | null) ?? null;
+          const display = value === null || value === undefined ? '—' : String(value);
+          return (
+            <div
+              key={String(field.key)}
+              data-cv-section={`br-scoring-${String(field.key)}`}
+              style={{
+                padding: 12,
+                background: token('elevation.surface.sunken', '#F7F8F9'),
+                borderRadius: 4,
+                border: `1px solid ${token('color.border', '#DFE1E6')}`,
+              }}
+            >
+              <div
+                style={{
+                  fontSize: 11,
+                  color: token('color.text.subtle', '#6B6E76'),
+                  fontWeight: 600,
+                  marginBottom: 4,
+                  fontFamily: 'var(--cp-font-body)',
+                }}
+              >
+                {field.label}
+              </div>
+              <InlineEdit<string>
+                label={field.label}
+                hideActionButtons
+                defaultValue={display === '—' ? '' : display}
+                editView={({ errorMessage: _err, ...fieldProps }) => (
+                  <Textfield
+                    {...fieldProps}
+                    autoFocus
+                    type="number"
+                    inputMode="numeric"
+                  />
+                )}
+                readView={() => (
+                  <div
+                    style={{
+                      fontSize: 18,
+                      fontWeight: 600,
+                      color: token('color.text', '#292A2E'),
+                      fontFamily: 'var(--cp-font-body)',
+                    }}
+                  >
+                    {display}
+                  </div>
+                )}
+                onConfirm={(next) => {
+                  const parsed = parseScore(String(next ?? ''));
+                  if (parsed === value) return;
+                  void onUpdate(String(field.key), parsed);
+                }}
+                keepEditViewOpenOnBlur={false}
+              />
+            </div>
+          );
+        })}
       </div>
     </section>
   );

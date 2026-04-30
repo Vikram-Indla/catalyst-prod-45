@@ -32,11 +32,14 @@ import { useCallback } from 'react';
 import { toast } from 'sonner';
 import { CatalystViewBase } from '../shared/CatalystViewBase';
 import { useProductHubBusinessRequest } from './useProductHubBusinessRequest';
+import { useDuplicateBusinessRequest } from '@/hooks/useBusinessRequests';
 import {
+  BrTitleSection,
+  BrStatusSection,
   BrArabicTitleSection,
+  BrDescriptionSection,
   BrScoringSection,
   BrAttachmentsSection,
-  BrBrdUploadSection,
   BrLinkedItemsSection,
   BrSidebarDetails,
 } from './sections';
@@ -44,8 +47,18 @@ import {
 export interface CatalystViewBusinessRequestV2Props {
   isOpen: boolean;
   onClose: () => void;
-  /** business_requests.id (UUID). null = render loading skeleton. */
-  requestId: string | null;
+  /**
+   * `business_requests.id` (UUID). Direct path. null = render loading
+   * skeleton.
+   */
+  requestId?: string | null;
+  /**
+   * Display key (MIM-XXX). Used by Product Hub list/kanban/cards/roadmap
+   * mount sites that render rows from `ph_requests` (a separate table
+   * whose UUIDs do NOT match `business_requests.id`). The hook resolves
+   * `requestKey` → `business_requests.id` on mount.
+   */
+  requestKey?: string | null;
   /** Panel mode (slide-in side panel — default for Product Hub drawers). */
   panelMode?: boolean;
   /** Full-page mode (fills viewport below top nav). */
@@ -60,16 +73,18 @@ export default function CatalystViewBusinessRequestV2({
   isOpen,
   onClose,
   requestId,
+  requestKey,
   panelMode,
   fullPageMode,
   onTogglePanelMode,
   navigationItems,
   onNavigate,
 }: CatalystViewBusinessRequestV2Props) {
-  const { request, isLoading, updateField, deleteRequest } =
-    useProductHubBusinessRequest(requestId);
+  const { request, resolvedId, isLoading, updateField, deleteRequest } =
+    useProductHubBusinessRequest({ requestId, requestKey });
+  const duplicateMutation = useDuplicateBusinessRequest();
 
-  // ── Header chrome handlers (wired more fully in cycle 2) ─────────────────
+  // ── Header chrome handlers ────────────────────────────────────────────────
   const handlePermalink = useCallback(async () => {
     if (!request?.request_key) return;
     const url = new URL(window.location.href);
@@ -82,17 +97,21 @@ export default function CatalystViewBusinessRequestV2({
     }
   }, [request?.request_key]);
 
-  const handleClone = useCallback(() => {
-    // Cycle 2: wire to useDuplicateBusinessRequest.
-    toast('Clone — wired in cycle 2');
-  }, []);
+  const handleClone = useCallback(async () => {
+    if (!resolvedId) return;
+    try {
+      const newReq = await duplicateMutation.mutateAsync(resolvedId);
+      toast.success(`Duplicated as ${newReq?.request_key ?? 'BR'}`);
+    } catch {
+      // Hook surfaces its own error toast via useToast — silent here.
+    }
+  }, [resolvedId, duplicateMutation]);
 
   const handleArchive = useCallback(() => {
-    // Cycle 2: archive is currently a soft-flag on the legacy panel. The
-    // BR domain doesn't have an archive column (only deleted_at). Decide
-    // whether to add `is_archived` to business_requests OR drop archive
-    // entirely as a feature on the new view. Flagged for cycle-2 design.
-    toast('Archive — wired in cycle 2');
+    // Cycle 4: `business_requests` has no `is_archived` column. Either
+    // add one via migration OR drop archive entirely. Stub for now —
+    // exposing the action keeps Jira-parity until the design call lands.
+    toast('Archive — pending design call (no archive column on business_requests)');
   }, []);
 
   const handleDelete = useCallback(async () => {
@@ -108,14 +127,12 @@ export default function CatalystViewBusinessRequestV2({
   // ── Left rail content (single-scroll, project-hub canonical pattern) ─────
   const leftContent = (
     <>
-      {/* Cycle 2 — wire each section to the real BR data + Atlaskit field rows.
-          Order mirrors CatalystViewStory: Title (chrome) → Status → Quick
-          actions → Key details → Description → Acceptance criteria → BR-
-          specific sections → Linked items → Activity → Footer meta. */}
+      <BrTitleSection request={request} onUpdate={updateField} />
+      <BrStatusSection request={request} onUpdate={updateField} />
       <BrArabicTitleSection request={request} onUpdate={updateField} />
-      <BrBrdUploadSection request={request} onUpdate={updateField} />
-      <BrAttachmentsSection request={request} />
+      <BrDescriptionSection request={request} onUpdate={updateField} />
       <BrScoringSection request={request} onUpdate={updateField} />
+      <BrAttachmentsSection request={request} />
       <BrLinkedItemsSection request={request} />
     </>
   );
@@ -143,7 +160,7 @@ export default function CatalystViewBusinessRequestV2({
       ]}
       onTogglePanelMode={onTogglePanelMode}
       navigationItems={navigationItems}
-      currentItemId={requestId ?? undefined}
+      currentItemId={resolvedId ?? undefined}
       onNavigate={onNavigate}
       leftContent={leftContent}
       rightContent={rightContent}
