@@ -18,11 +18,11 @@ export default function CommitteeQueuePage() {
   const { data: queue, isLoading } = useCommitteeQueueView();
 
   if (isLoading) {
-    return <div className="flex-1 p-6" style={{ backgroundColor: isDark ? 'var(--cp-bg-page, #1F1F21)' : '#FFFFFF' }}><Skeleton className="h-8 w-48 mb-6" /><Skeleton className="h-64 w-full" /></div>;
+    return <div className="flex-1 p-6" style={{ backgroundColor: 'var(--cp-bg-elevated, #FFFFFF)' }}><Skeleton className="h-8 w-48 mb-6" /><Skeleton className="h-64 w-full" /></div>;
   }
 
   return (
-    <div className="flex-1 overflow-auto" style={{ backgroundColor: isDark ? 'var(--cp-bg-page, #1F1F21)' : '#FFFFFF' }}>
+    <div className="flex-1 overflow-auto" style={{ backgroundColor: 'var(--cp-bg-elevated, #FFFFFF)' }}>
       <div className="px-6 pt-6 pb-4">
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
@@ -30,7 +30,7 @@ export default function CommitteeQueuePage() {
             <div className="flex items-center justify-center rounded-md" style={{ width: 32, height: 32, backgroundColor: '#FEF3C7' }}>
               <Users size={18} style={{ color: '#D97706' }} />
             </div>
-            <h1 style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 18, fontWeight: 700, color: isDark ? '#EDEDED' : '#0F172A' }}>Committee Queue</h1>
+            <h1 style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 18, fontWeight: 700, color: 'var(--cp-text-primary, #0F172A)' }}>Committee Queue</h1>
           </div>
           <Button size="sm" className="gap-1.5" style={{ backgroundColor: '#2563EB', borderRadius: 6 }}>
             <Plus size={14} /> New Committee
@@ -42,14 +42,14 @@ export default function CommitteeQueuePage() {
           {/* Header */}
           <div className="grid items-center" style={{
             gridTemplateColumns: '120px 1fr 70px 100px 80px 160px 80px 100px',
-            backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : '#F1F5F9',
+            backgroundColor: 'var(--cp-bg-sunken, #F1F5F9)',
             height: 50,
             borderBottom: isDark ? '0.75px solid #292929' : '0.75px solid rgba(15,23,42,0.06)',
           }}>
             {['KEY', 'INCIDENT', 'SEV', 'STATUS', 'AGE', 'APPROVAL', 'TYPE', 'ACTIONS'].map(h => (
               <div key={h} className="px-3" style={{
                 fontFamily: 'var(--cp-font-body)', fontSize: 11, fontWeight: 700,
-                textTransform: 'uppercase' as const, letterSpacing: '0.06em', color: isDark ? '#878787' : '#64748B',
+                textTransform: 'uppercase' as const, letterSpacing: '0.06em', color: 'var(--cp-text-tertiary, #64748B)',
               }}>{h}</div>
             ))}
           </div>
@@ -57,7 +57,7 @@ export default function CommitteeQueuePage() {
           {/* Empty */}
           {(!queue || queue.length === 0) && (
             <div className="flex items-center justify-center py-12">
-              <p style={{ fontFamily: 'var(--cp-font-body)', fontSize: 12, color: isDark ? '#878787' : '#94A3B8' }}>No committee members assigned.</p>
+              <p style={{ fontFamily: 'var(--cp-font-body)', fontSize: 12, color: 'var(--cp-text-muted, #94A3B8)' }}>No committee members assigned.</p>
             </div>
           )}
 
@@ -76,27 +76,27 @@ export default function CommitteeQueuePage() {
                   gridTemplateColumns: '120px 1fr 70px 100px 80px 160px 80px 100px',
                   height: 50,
                   borderBottom: isDark ? '0.75px solid #292929' : '0.75px solid rgba(15,23,42,0.06)',
-                  backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF',
+                  backgroundColor: 'var(--cp-bg-elevated, #FFFFFF)',
                 }}
                 onMouseEnter={e => (e.currentTarget.style.backgroundColor = isDark ? 'var(--cp-bg-surface, #242528)' : 'rgba(15,23,42,0.04)')}
-                onMouseLeave={e => (e.currentTarget.style.backgroundColor = isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF')}
+                onMouseLeave={e => (e.currentTarget.style.backgroundColor = 'var(--cp-bg-elevated, #FFFFFF)')}
                 onClick={() => navigate(`/incident-hub/view/${item.incident_id}`)}
               >
                 <div className="px-3">
-                  <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 12, color: '#2563EB', backgroundColor: isDark ? 'rgba(37,99,235,0.12)' : '#EFF6FF', padding: '0 4px', borderRadius: 3 }}>
+                  <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 12, color: '#2563EB', backgroundColor: 'var(--cp-primary-light, #EFF6FF)', padding: '0 4px', borderRadius: 3 }}>
                     {item.incident_key}
                   </span>
                 </div>
-                <div className="px-3 truncate" style={{ fontFamily: 'var(--cp-font-body)', fontSize: 12, fontWeight: 650, color: isDark ? '#EDEDED' : '#0F172A' }}>
+                <div className="px-3 truncate" style={{ fontFamily: 'var(--cp-font-body)', fontSize: 12, fontWeight: 650, color: 'var(--cp-text-primary, #0F172A)' }}>
                   {item.title}
                 </div>
                 <div className="px-3"><SeverityChip severity={item.severity || 'SEV4'} /></div>
                 <div className="px-3"><StatusLozenge status={item.committee_status || 'pending'} /></div>
-                <div className="px-3" style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 11, color: isDark ? '#878787' : '#64748B' }}>
+                <div className="px-3" style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 11, color: 'var(--cp-text-tertiary, #64748B)' }}>
                   {item.age_hours ? `${Math.round(item.age_hours)}h` : '\u2014'}
                 </div>
                 <div className="px-3 flex items-center gap-2">
-                  <div style={{ flex: 1, height: 6, borderRadius: 4, backgroundColor: isDark ? '#292929' : '#E2E8F0', overflow: 'hidden' }}>
+                  <div style={{ flex: 1, height: 6, borderRadius: 4, backgroundColor: 'var(--cp-bg-sunken, #E2E8F0)', overflow: 'hidden' }}>
                     <div style={{
                       height: '100%',
                       width: `${progress * 100}%`,
@@ -105,7 +105,7 @@ export default function CommitteeQueuePage() {
                       transition: 'width 400ms ease',
                     }} />
                   </div>
-                  <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 10, color: isDark ? '#878787' : '#64748B', whiteSpace: 'nowrap' }}>
+                  <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 10, color: 'var(--cp-text-tertiary, #64748B)', whiteSpace: 'nowrap' }}>
                     {approved}/{total}
                   </span>
                 </div>

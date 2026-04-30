@@ -144,7 +144,7 @@ export default function IdeationPage() {
           <>
             <AIIntelligenceButton label="Intelligence" onClick={() => setIntelligenceOpen(true)} />
             <button style={{
-              background: isDark ? 'transparent' : '#FFFFFF', color: dk.t2, border: `1px solid ${dk.border}`,
+              background: 'var(--cp-bg-elevated, #FFFFFF)', color: dk.t2, border: `1px solid ${dk.border}`,
               borderRadius: '6px', padding: '7px 14px', fontSize: '13px', fontWeight: 500,
               cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '6px',
               fontFamily: 'var(--cp-font-body)',
@@ -230,12 +230,12 @@ export default function IdeationPage() {
 
       {/* Filtered context indicator */}
       {activeFilter !== 'all' && (
-        <div style={{ padding: '6px 28px', background: isDark ? 'rgba(37,99,235,0.08)' : '#EFF6FF', borderBottom: `1px solid ${isDark ? 'rgba(37,99,235,0.15)' : '#DBEAFE'}`, display: 'flex', alignItems: 'center', gap: '6px' }}>
-          <span style={{ fontSize: '11px', fontWeight: 500, color: isDark ? '#60A5FA' : '#2563EB' }}>
+        <div style={{ padding: '6px 28px', background: 'var(--cp-primary-light, #EFF6FF)', borderBottom: `1px solid ${isDark ? 'rgba(37,99,235,0.15)' : '#DBEAFE'}`, display: 'flex', alignItems: 'center', gap: '6px' }}>
+          <span style={{ fontSize: '11px', fontWeight: 500, color: 'var(--cp-text-link, #2563EB)' }}>
             Showing {activeFilter.replace('_', ' ')} ideas only
           </span>
           <span style={{ color: dk.t3 }}>·</span>
-          <button onClick={() => setActiveFilter('all')} style={{ fontSize: '11px', color: isDark ? '#60A5FA' : '#2563EB', textDecoration: 'underline', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
+          <button onClick={() => setActiveFilter('all')} style={{ fontSize: '11px', color: 'var(--cp-text-link, #2563EB)', textDecoration: 'underline', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
             Clear filter
           </button>
         </div>
@@ -254,11 +254,11 @@ export default function IdeationPage() {
             placeholder="Search ideas..."
             style={{
               width: '100%', height: '32px', paddingLeft: '32px', paddingRight: '10px',
-              background: isDark ? 'transparent' : '#F8FAFC', border: `1px solid ${dk.border}`, borderRadius: '6px',
+              background: 'var(--cp-bg-page, #F8FAFC)', border: `1px solid ${dk.border}`, borderRadius: '6px',
               fontSize: '13px', color: dk.t1, outline: 'none',
             }}
             onFocus={e => { e.currentTarget.style.boxShadow = '0 0 0 3px rgba(37,99,235,0.08)'; e.currentTarget.style.borderColor = '#2563EB'; }}
-            onBlur={e => { e.currentTarget.style.boxShadow = 'none'; e.currentTarget.style.borderColor = isDark ? '#2E2E2E' : 'rgba(15,23,42,0.12)'; }}
+            onBlur={e => { e.currentTarget.style.boxShadow = 'none'; e.currentTarget.style.borderColor = 'var(--cp-border-default, rgba(15,23,42,0.12))'; }}
           />
         </div>
 
@@ -270,7 +270,7 @@ export default function IdeationPage() {
               key={pill.key}
               onClick={() => setActiveFilter(pill.key)}
               style={{
-                background: isActive ? '#2563EB' : (isDark ? 'transparent' : '#FFFFFF'),
+                background: isActive ? '#2563EB' : ('var(--cp-bg-elevated, #FFFFFF)'),
                 color: isActive ? '#FFFFFF' : dk.t2,
                 border: `1px solid ${isActive ? '#2563EB' : dk.border}`,
                 borderRadius: '20px', padding: '4px 12px', fontSize: '12px', fontWeight: 500,
@@ -352,12 +352,12 @@ function IdeationListView({ ideas, selectedRows, toggleRow, toggleAll, onOpenDet
 }) {
   return (
     <div style={{
-      background: isDark ? 'transparent' : '#FFFFFF', borderRadius: '6px', border: `1px solid ${dk.border}`,
+      background: 'var(--cp-bg-elevated, #FFFFFF)', borderRadius: '6px', border: `1px solid ${dk.border}`,
       overflow: 'hidden',
     }}>
       <table style={{ width: '100%', borderCollapse: 'collapse' }}>
         <thead>
-          <tr style={{ height: '50px', background: isDark ? '#1F1F1F' : '#F8FAFC' }}>
+          <tr style={{ height: '50px', background: 'var(--cp-bg-page, #F8FAFC)' }}>
             <th style={{ width: '40px', padding: '0 8px', textAlign: 'center' }}>
               <input type="checkbox" checked={selectedRows.size === ideas.length && ideas.length > 0} onChange={toggleAll} style={{ cursor: 'pointer', accentColor: '#2563EB' }} />
             </th>

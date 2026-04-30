@@ -161,7 +161,7 @@ export function GoalsToolbar({
 
         {/* Search */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 6, background: isDark ? 'transparent' : 'var(--bg-app)', border: `1px solid ${isDark ? DK.border : 'var(--divider)'}`, borderRadius: 8, padding: '5px 10px', minWidth: 220 }}>
-          <Search size={14} color={isDark ? '#7D7D7D' : '#94A3B8'} />
+          <Search size={14} color={'var(--cp-text-muted, #94A3B8)'} />
           <input
             type="text" placeholder="Search goals or KRs..."
             value={searchQuery} onChange={e => onSearch(e.target.value)}
@@ -169,7 +169,7 @@ export function GoalsToolbar({
           />
           {searchQuery && (
             <button onClick={() => onSearch('')} style={{ border: 'none', background: 'none', cursor: 'pointer', padding: 0, display: 'flex' }}>
-              <X size={12} color={isDark ? '#7D7D7D' : '#94A3B8'} />
+              <X size={12} color={'var(--cp-text-muted, #94A3B8)'} />
             </button>
           )}
         </div>

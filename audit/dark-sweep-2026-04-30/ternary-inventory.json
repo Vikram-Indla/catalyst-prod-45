@@ -1,0 +1,693 @@
+{
+  "total": 1276,
+  "distinct_pairs": 97,
+  "pairs": [
+    {
+      "dark": "#878787",
+      "light": "#64748B",
+      "count": 188
+    },
+    {
+      "dark": "#2E2E2E",
+      "light": "#E2E8F0",
+      "count": 185
+    },
+    {
+      "dark": "#EDEDED",
+      "light": "#0F172A",
+      "count": 167
+    },
+    {
+      "dark": "#878787",
+      "light": "#94A3B8",
+      "count": 136
+    },
+    {
+      "dark": "#A1A1A1",
+      "light": "#64748B",
+      "count": 96
+    },
+    {
+      "dark": "#A1A1A1",
+      "light": "#334155",
+      "count": 76
+    },
+    {
+      "dark": "#292929",
+      "light": "#F1F5F9",
+      "count": 52
+    },
+    {
+      "dark": "#A1A1A1",
+      "light": "#475569",
+      "count": 29
+    },
+    {
+      "dark": "#EDEDED",
+      "light": "#334155",
+      "count": 26
+    },
+    {
+      "dark": "#878787",
+      "light": "#6b6e76",
+      "count": 20
+    },
+    {
+      "dark": "#454545",
+      "light": "#CBD5E1",
+      "count": 19
+    },
+    {
+      "dark": "#878787",
+      "light": "#CBD5E1",
+      "count": 16
+    },
+    {
+      "dark": "#878787",
+      "light": "#6B778C",
+      "count": 16
+    },
+    {
+      "dark": "#A1A1A1",
+      "light": "#374151",
+      "count": 15
+    },
+    {
+      "dark": "#EDEDED",
+      "light": "#172B4D",
+      "count": 9
+    },
+    {
+      "dark": "#878787",
+      "light": "#71717A",
+      "count": 9
+    },
+    {
+      "dark": "#93C5FD",
+      "light": "#2563EB",
+      "count": 7
+    },
+    {
+      "dark": "#FCA5A5",
+      "light": "#991B1B",
+      "count": 7
+    },
+    {
+      "dark": "#7D7D7D",
+      "light": "#94A3B8",
+      "count": 7
+    },
+    {
+      "dark": "#292929",
+      "light": "#E2E8F0",
+      "count": 7
+    },
+    {
+      "dark": "#1F1F1F",
+      "light": "#F8FAFC",
+      "count": 7
+    },
+    {
+      "dark": "#60A5FA",
+      "light": "#2563EB",
+      "count": 7
+    },
+    {
+      "dark": "#2E2E2E",
+      "light": "#DFE1E6",
+      "count": 7
+    },
+    {
+      "dark": "#878787",
+      "light": "#6B7280",
+      "count": 7
+    },
+    {
+      "dark": "#1e293b",
+      "light": "#EFF6FF",
+      "count": 7
+    },
+    {
+      "dark": "#111111",
+      "light": "#F8FAFC",
+      "count": 6
+    },
+    {
+      "dark": "#2E2E2E",
+      "light": "#F1F5F9",
+      "count": 6
+    },
+    {
+      "dark": "#EDEDED",
+      "light": "#111827",
+      "count": 6
+    },
+    {
+      "dark": "#454545",
+      "light": "#E2E8F0",
+      "count": 6
+    },
+    {
+      "dark": "#C4B5FD",
+      "light": "#7C3AED",
+      "count": 5
+    },
+    {
+      "dark": "#292929",
+      "light": "#F8FAFC",
+      "count": 5
+    },
+    {
+      "dark": "#EDEDED",
+      "light": "#1E293B",
+      "count": 4
+    },
+    {
+      "dark": "#FBBF24",
+      "light": "#92400E",
+      "count": 4
+    },
+    {
+      "dark": "#EDEDED",
+      "light": "#020617",
+      "count": 4
+    },
+    {
+      "dark": "#A1A1A1",
+      "light": "#44546f",
+      "count": 4
+    },
+    {
+      "dark": "#3D2020",
+      "light": "#FEF2F2",
+      "count": 4
+    },
+    {
+      "dark": "#450A0A",
+      "light": "#FEE2E2",
+      "count": 3
+    },
+    {
+      "dark": "#064E3B",
+      "light": "#E3FCEF",
+      "count": 3
+    },
+    {
+      "dark": "#6EE7B7",
+      "light": "#006644",
+      "count": 3
+    },
+    {
+      "dark": "#93C5FD",
+      "light": "#1D4ED8",
+      "count": 3
+    },
+    {
+      "dark": "#86EFAC",
+      "light": "#15803D",
+      "count": 3
+    },
+    {
+      "dark": "#FCD34D",
+      "light": "#92400E",
+      "count": 3
+    },
+    {
+      "dark": "#1F1F1F",
+      "light": "#F1F5F9",
+      "count": 3
+    },
+    {
+      "dark": "#1F1F1F",
+      "light": "#FAFBFC",
+      "count": 3
+    },
+    {
+      "dark": "#4C9AFF",
+      "light": "#0052CC",
+      "count": 3
+    },
+    {
+      "dark": "#A1A1A1",
+      "light": "#42526E",
+      "count": 3
+    },
+    {
+      "dark": "#292929",
+      "light": "#CBD5E1",
+      "count": 3
+    },
+    {
+      "dark": "#292929",
+      "light": "#F4F4F5",
+      "count": 3
+    },
+    {
+      "dark": "#7DB8FC",
+      "light": "#0747A6",
+      "count": 3
+    },
+    {
+      "dark": "#7D7D7D",
+      "light": "#64748B",
+      "count": 2
+    },
+    {
+      "dark": "#1F1F1F",
+      "light": "#FAFAFA",
+      "count": 2
+    },
+    {
+      "dark": "#C4B5FD",
+      "light": "#5B21B6",
+      "count": 2
+    },
+    {
+      "dark": "#1F1F1F",
+      "light": "#F4F5F7",
+      "count": 2
+    },
+    {
+      "dark": "#7D7D7D",
+      "light": "#6B778C",
+      "count": 2
+    },
+    {
+      "dark": "#0D1526",
+      "light": "#DEEBFF",
+      "count": 2
+    },
+    {
+      "dark": "#0D1526",
+      "light": "#F0F6FF",
+      "count": 2
+    },
+    {
+      "dark": "#4ADE80",
+      "light": "#006644",
+      "count": 2
+    },
+    {
+      "dark": "#A1A1A1",
+      "light": "#6b6e76",
+      "count": 2
+    },
+    {
+      "dark": "#2E2E2E",
+      "light": "#CBD5E1",
+      "count": 2
+    },
+    {
+      "dark": "#1F1F1F",
+      "light": "#FFFFFF",
+      "count": 2
+    },
+    {
+      "dark": "#A1A1A1",
+      "light": "#253858",
+      "count": 2
+    },
+    {
+      "dark": "#1A2E1A",
+      "light": "#ECFDF5",
+      "count": 2
+    },
+    {
+      "dark": "#A1A1A1",
+      "light": "#94A3B8",
+      "count": 1
+    },
+    {
+      "dark": "#5EEAD4",
+      "light": "#0D9488",
+      "count": 1
+    },
+    {
+      "dark": "#5EEAD4",
+      "light": "#134E4A",
+      "count": 1
+    },
+    {
+      "dark": "#111111",
+      "light": "#FAFBFE",
+      "count": 1
+    },
+    {
+      "dark": "#5EEAD4",
+      "light": "#0F766E",
+      "count": 1
+    },
+    {
+      "dark": "#86EFAC",
+      "light": "#065F46",
+      "count": 1
+    },
+    {
+      "dark": "#FFFFFF",
+      "light": "#2563EB",
+      "count": 1
+    },
+    {
+      "dark": "#0F2A1A",
+      "light": "#E3FCEF",
+      "count": 1
+    },
+    {
+      "dark": "#86EFAC",
+      "light": "#006644",
+      "count": 1
+    },
+    {
+      "dark": "#444444",
+      "light": "#334155",
+      "count": 1
+    },
+    {
+      "dark": "#2E2E2E",
+      "light": "#E9EBEE",
+      "count": 1
+    },
+    {
+      "dark": "#292929",
+      "light": "#e4e4e7",
+      "count": 1
+    },
+    {
+      "dark": "#EDEDED",
+      "light": "#09090B",
+      "count": 1
+    },
+    {
+      "dark": "#A1A1A1",
+      "light": "#71717A",
+      "count": 1
+    },
+    {
+      "dark": "#2E2E2E",
+      "light": "#EBECF0",
+      "count": 1
+    },
+    {
+      "dark": "#A1A1A1",
+      "light": "#6B778C",
+      "count": 1
+    },
+    {
+      "dark": "#292929",
+      "light": "#EBECF0",
+      "count": 1
+    },
+    {
+      "dark": "#111111",
+      "light": "#FFFFFF",
+      "count": 1
+    },
+    {
+      "dark": "#A1A1A1",
+      "light": "#065F46",
+      "count": 1
+    },
+    {
+      "dark": "#A1A1A1",
+      "light": "#1e293b",
+      "count": 1
+    },
+    {
+      "dark": "#EDEDED",
+      "light": "#0f172a",
+      "count": 1
+    },
+    {
+      "dark": "#2E2E2E",
+      "light": "#E5E5E5",
+      "count": 1
+    },
+    {
+      "dark": "#2E2E2E",
+      "light": "#94A3B8",
+      "count": 1
+    },
+    {
+      "dark": "#451A03",
+      "light": "#FEF3C7",
+      "count": 1
+    },
+    {
+      "dark": "#F87171",
+      "light": "#B91C1C",
+      "count": 1
+    },
+    {
+      "dark": "#86EFAC",
+      "light": "#166534",
+      "count": 1
+    },
+    {
+      "dark": "#4ADE80",
+      "light": "#15803D",
+      "count": 1
+    },
+    {
+      "dark": "#2E2E2E",
+      "light": "#F4F4F5",
+      "count": 1
+    },
+    {
+      "dark": "#86EFAC",
+      "light": "#11853D",
+      "count": 1
+    },
+    {
+      "dark": "#86EFAC",
+      "light": "#16A34A",
+      "count": 1
+    },
+    {
+      "dark": "#93C5FD",
+      "light": "#1E40AF",
+      "count": 1
+    },
+    {
+      "dark": "#86EFAC",
+      "light": "#FFFFFF",
+      "count": 1
+    },
+    {
+      "dark": "#3D3520",
+      "light": "#FFFBEB",
+      "count": 1
+    },
+    {
+      "dark": "#2D4A2D",
+      "light": "#A7F3D0",
+      "count": 1
+    },
+    {
+      "dark": "#5C2020",
+      "light": "#FECACA",
+      "count": 1
+    }
+  ],
+  "top_files": [
+    {
+      "file": "src/pages/testhub/TestCycleDetailPage.tsx",
+      "count": 83
+    },
+    {
+      "file": "src/modules/work-hub/components/IssueDetailPanel.tsx",
+      "count": 69
+    },
+    {
+      "file": "src/pages/admin/JiraUserSync.tsx",
+      "count": 66
+    },
+    {
+      "file": "src/pages/testhub/SharedStepsPage.tsx",
+      "count": 66
+    },
+    {
+      "file": "src/pages/testhub/TestHubDashboardPage.tsx",
+      "count": 52
+    },
+    {
+      "file": "src/components/admin/UserDetailPanel.tsx",
+      "count": 35
+    },
+    {
+      "file": "src/pages/r360-member/RingView.tsx",
+      "count": 35
+    },
+    {
+      "file": "src/modules/work-hub/components/AllWorkDetailPanel.tsx",
+      "count": 34
+    },
+    {
+      "file": "src/pages/ReqAssistGenerate.tsx",
+      "count": 34
+    },
+    {
+      "file": "src/pages/incidenthub/IncidentDetailPage.tsx",
+      "count": 30
+    },
+    {
+      "file": "src/pages/producthub/ideation/CreateDriveModal.tsx",
+      "count": 30
+    },
+    {
+      "file": "src/pages/releasehub/CommandCenterPage.tsx",
+      "count": 30
+    },
+    {
+      "file": "src/pages/testhub/ReleaseDetailPage.tsx",
+      "count": 30
+    },
+    {
+      "file": "src/components/workhub/allwork/AllWorkSplitView.tsx",
+      "count": 29
+    },
+    {
+      "file": "src/pages/admin/FeatureFlagsPage.tsx",
+      "count": 29
+    },
+    {
+      "file": "src/pages/testhub/EnvironmentDetailPage.tsx",
+      "count": 29
+    },
+    {
+      "file": "src/pages/testhub/ImportExportPage.tsx",
+      "count": 26
+    },
+    {
+      "file": "src/pages/ReqAssistLibrary.tsx",
+      "count": 25
+    },
+    {
+      "file": "src/pages/producthub/ideation/IdeationTriagePanel.tsx",
+      "count": 25
+    },
+    {
+      "file": "src/pages/testhub/ActivityFeedPage.tsx",
+      "count": 24
+    },
+    {
+      "file": "src/pages/testhub/SharedStepDetailPage.tsx",
+      "count": 24
+    },
+    {
+      "file": "src/pages/releasehub/FreezeWindowsPage.tsx",
+      "count": 19
+    },
+    {
+      "file": "src/pages/testhub/EnvironmentsListPage.tsx",
+      "count": 19
+    },
+    {
+      "file": "src/components/ideas-roadmap/RoadmapCard.tsx",
+      "count": 18
+    },
+    {
+      "file": "src/pages/releasehub/AllReleasesPage.tsx",
+      "count": 18
+    },
+    {
+      "file": "src/pages/testhub/ReportDetailPage.tsx",
+      "count": 18
+    },
+    {
+      "file": "src/pages/producthub/ideation/IdeationCreateWizard.tsx",
+      "count": 16
+    },
+    {
+      "file": "src/components/testhub/requirements/LinkTestCaseModal.tsx",
+      "count": 15
+    },
+    {
+      "file": "src/pages/releasehub/AllChangesPage.tsx",
+      "count": 15
+    },
+    {
+      "file": "src/pages/testhub/TestRepositoryPage.tsx",
+      "count": 15
+    },
+    {
+      "file": "src/pages/testhub/TagsListPage.tsx",
+      "count": 14
+    },
+    {
+      "file": "src/pages/testhub/ReportsListPage.tsx",
+      "count": 12
+    },
+    {
+      "file": "src/components/testhub/requirements/CreateRequirementModal.tsx",
+      "count": 11
+    },
+    {
+      "file": "src/components/shared/GroupByPopover.tsx",
+      "count": 9
+    },
+    {
+      "file": "src/pages/r360-member/WeekStripCollapsible.tsx",
+      "count": 9
+    },
+    {
+      "file": "src/pages/releasehub/SignOffQueuePage.tsx",
+      "count": 9
+    },
+    {
+      "file": "src/pages/testhub/TestCyclesPage.tsx",
+      "count": 9
+    },
+    {
+      "file": "src/components/project-hub/ProjectToolbar.tsx",
+      "count": 8
+    },
+    {
+      "file": "src/components/testhub/CreateTestCycleModal.tsx",
+      "count": 8
+    },
+    {
+      "file": "src/pages/testhub/RequirementDetailPage.tsx",
+      "count": 8
+    },
+    {
+      "file": "src/pages/testhub/RequirementsListPage.tsx",
+      "count": 8
+    },
+    {
+      "file": "src/pages/testhub/TestHubDocsPage.tsx",
+      "count": 8
+    },
+    {
+      "file": "src/components/notifications/NotificationItem.tsx",
+      "count": 7
+    },
+    {
+      "file": "src/pages/R360MemberDetail.tsx",
+      "count": 7
+    },
+    {
+      "file": "src/pages/incidenthub/CommitteeQueuePage.tsx",
+      "count": 7
+    },
+    {
+      "file": "src/pages/incidenthub/IncidentInsightsPage.tsx",
+      "count": 7
+    },
+    {
+      "file": "src/components/project-hub/shell/SidebarProjectNav.tsx",
+      "count": 6
+    },
+    {
+      "file": "src/components/reqAssist/RAJiraSidePanel.tsx",
+      "count": 6
+    },
+    {
+      "file": "src/components/strategy/themes/ThemeDetailDrawer.tsx",
+      "count": 6
+    },
+    {
+      "file": "src/components/testhub/execution/ExecutionRunMode.tsx",
+      "count": 6
+    }
+  ]
+}

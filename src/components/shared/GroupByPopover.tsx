@@ -102,21 +102,21 @@ export function GroupByPopover<K extends string>({
 
   // Tokens
   const tk = {
-    bg: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF',
-    border: isDark ? '#2E2E2E' : '#E2E8F0',
-    borderSubtle: isDark ? '#292929' : '#F1F5F9',
-    text: isDark ? '#EDEDED' : '#0F172A',
-    textMuted: isDark ? '#878787' : '#94A3B8',
-    textSecondary: isDark ? '#A1A1A1' : '#475569',
-    hover: isDark ? '#1F1F1F' : '#F8FAFC',
-    selected: isDark ? '#0D1526' : '#F0F6FF',
+    bg: 'var(--cp-bg-elevated, #FFFFFF)',
+    border: 'var(--cp-border, #E2E8F0)',
+    borderSubtle: 'var(--cp-bg-sunken, #F1F5F9)',
+    text: 'var(--cp-text-primary, #0F172A)',
+    textMuted: 'var(--cp-text-muted, #94A3B8)',
+    textSecondary: 'var(--cp-text-secondary, #475569)',
+    hover: 'var(--cp-bg-page, #F8FAFC)',
+    selected: 'var(--cp-primary-light, #F0F6FF)',
     selectedBorder: '#2563EB',
     shadow: isDark
       ? '0 4px 24px rgba(0,0,0,0.5)'
       : '0 4px 16px rgba(0,0,0,0.08), 0 1px 3px rgba(0,0,0,0.06)',
-    inputBg: isDark ? '#111111' : '#FFFFFF',
-    triggerBg: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF',
-    triggerBgActive: isDark ? '#0D1526' : '#F0F6FF',
+    inputBg: 'var(--cp-bg-elevated, #FFFFFF)',
+    triggerBg: 'var(--cp-bg-elevated, #FFFFFF)',
+    triggerBgActive: 'var(--cp-primary-light, #F0F6FF)',
   };
 
   return (

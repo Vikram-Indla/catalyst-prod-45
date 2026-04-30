@@ -59,7 +59,7 @@ export default function IdeationBoardView({ ideas, onOpenDetail, onConvert }: Pr
               <span style={{ fontSize: '11px', fontWeight: 700, color: dk.t2, textTransform: 'uppercase', letterSpacing: '0.07em' }}>{sc.label}</span>
               <span style={{
                 fontSize: '10px', fontFamily: 'var(--cp-font-mono)', fontWeight: 700,
-                background: isDark ? '#292929' : '#F1F5F9', borderRadius: '100px',
+                background: 'var(--cp-bg-sunken, #F1F5F9)', borderRadius: '100px',
                 padding: '0 6px', height: 18, display: 'inline-flex', alignItems: 'center',
                 color: dk.t3,
               }}>
@@ -105,7 +105,7 @@ function IdeaBoardCard({ idea, columnStatus, onClick, onConvert, isDark, dk }: {
       onClick={onClick}
       style={{
         position: 'relative',
-        background: isDark ? 'transparent' : '#FFFFFF',
+        background: 'var(--cp-bg-elevated, #FFFFFF)',
         border: `1px solid ${dk.border}`,
         borderRadius: '8px', padding: '12px', marginBottom: '8px', cursor: 'grab',
         opacity: isDraft ? 0.7 : isRejected ? 0.55 : 1,
@@ -113,11 +113,11 @@ function IdeaBoardCard({ idea, columnStatus, onClick, onConvert, isDark, dk }: {
         boxShadow: isDark ? 'none' : undefined,
       }}
       onMouseEnter={e => {
-        e.currentTarget.style.background = isDark ? '#1F1F1F' : 'rgba(15,23,42,0.04)';
+        e.currentTarget.style.background = 'var(--cp-interact-hover, rgba(15,23,42,0.04))';
         if (!isDark) e.currentTarget.style.transform = 'translateY(-1px)';
       }}
       onMouseLeave={e => {
-        e.currentTarget.style.background = isDark ? 'transparent' : '#FFFFFF';
+        e.currentTarget.style.background = 'var(--cp-bg-elevated, #FFFFFF)';
         if (!isDark) e.currentTarget.style.transform = 'none';
       }}
     >
@@ -160,7 +160,7 @@ function IdeaBoardCard({ idea, columnStatus, onClick, onConvert, isDark, dk }: {
       {/* Type badge + Ideas Theme */}
       <div style={{ marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '4px', flexWrap: 'wrap' }}>
         <span style={{
-          background: isDark ? '#292929' : '#F4F4F5', color: dk.t2,
+          background: 'var(--cp-bg-sunken, #F4F4F5)', color: dk.t2,
           padding: '2px 6px', borderRadius: '4px',
           fontSize: '10px', fontWeight: 600,
           border: isDark ? `1px solid ${dk.border}` : 'none',
@@ -169,7 +169,7 @@ function IdeaBoardCard({ idea, columnStatus, onClick, onConvert, isDark, dk }: {
         </span>
         {idea.theme && (
           <span style={{
-            background: isDark ? 'rgba(59,130,246,0.12)' : '#EFF6FF',
+            background: 'var(--cp-primary-light, #EFF6FF)',
             color: isDark ? '#93C5FD' : '#1E40AF',
             padding: '2px 6px', borderRadius: '4px',
             fontSize: '10px', fontWeight: 600, maxWidth: '160px',
@@ -197,8 +197,8 @@ function IdeaBoardCard({ idea, columnStatus, onClick, onConvert, isDark, dk }: {
       {/* AI insight strip */}
       {showFullAiStrip && (
         <div style={{
-          marginTop: '8px', background: isDark ? 'rgba(59,130,246,0.12)' : '#EFF6FF', borderRadius: '6px',
-          padding: '5px 8px', fontSize: '10px', color: isDark ? '#93C5FD' : '#2563EB', fontWeight: 600,
+          marginTop: '8px', background: 'var(--cp-primary-light, #EFF6FF)', borderRadius: '6px',
+          padding: '5px 8px', fontSize: '10px', color: 'var(--cp-text-link, #2563EB)', fontWeight: 600,
         }}>
           {aiInsight}
         </div>
@@ -209,7 +209,7 @@ function IdeaBoardCard({ idea, columnStatus, onClick, onConvert, isDark, dk }: {
         <div style={{
           marginTop: '8px', background: isDark ? 'rgba(22,163,74,0.12)' : '#1B7F37',
           border: `1px solid ${isDark ? 'rgba(22,163,74,0.25)' : '#B7EBD1'}`,
-          borderRadius: '6px', padding: '5px 8px', fontSize: '10px', color: isDark ? '#86EFAC' : '#FFFFFF', fontWeight: 600,
+          borderRadius: '6px', padding: '5px 8px', fontSize: '10px', color: 'var(--cp-bg-elevated, #FFFFFF)', fontWeight: 600,
         }}>
           {initLink}
         </div>

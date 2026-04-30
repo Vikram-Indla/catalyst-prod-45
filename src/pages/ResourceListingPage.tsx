@@ -488,7 +488,7 @@ export default function ResourceListingPage() {
                         />
                         <ActionBtn
                           tooltip="Resource 360°"
-                          bg={isDark ? '#A1A1A1' : '#1e293b'} bgHover={isDark ? '#EDEDED' : '#0f172a'}
+                          bg={'var(--cp-text-secondary, #1e293b)'} bgHover={'var(--cp-text-primary, #0f172a)'}
                           icon={<RotateCw size={13} strokeWidth={1.9} />}
                           onClick={(e) => { e.stopPropagation(); navTo(r.id, 'ring'); }}
                         />

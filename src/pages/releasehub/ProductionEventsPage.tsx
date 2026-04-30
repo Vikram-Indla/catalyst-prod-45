@@ -77,7 +77,7 @@ export default function ProductionEventsPage() {
   ];
 
   return (
-    <div style={{ background: isDark ? 'var(--cp-bg-page, #1F1F21)' : '#FFFFFF', minHeight: '100%', padding: 24 }}>
+    <div style={{ background: 'var(--cp-bg-elevated, #FFFFFF)', minHeight: '100%', padding: 24 }}>
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div>
@@ -87,13 +87,13 @@ export default function ProductionEventsPage() {
           }}>
             Production Events
           </h1>
-          <p style={{ fontSize: 13, color: isDark ? '#878787' : '#64748B', marginTop: 2 }}>
+          <p style={{ fontSize: 13, color: 'var(--cp-text-tertiary, #64748B)', marginTop: 2 }}>
             Post-deployment monitoring & event log
           </p>
         </div>
         <button
           className="h-9 px-4 rounded-md text-[13px] font-semibold flex items-center gap-1.5"
-          style={{ border: isDark ? '0.75px solid #2E2E2E' : '0.75px solid rgba(15,23,42,0.12)', background: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF', color: isDark ? '#A1A1A1' : '#475569' }}
+          style={{ border: isDark ? '0.75px solid #2E2E2E' : '0.75px solid rgba(15,23,42,0.12)', background: 'var(--cp-bg-elevated, #FFFFFF)', color: 'var(--cp-text-secondary, #475569)' }}
           onClick={() => {
             const next = resultFilter === 'all' ? 'SUCCESS' : 'all';
             setResultFilter(next);
@@ -111,9 +111,9 @@ export default function ProductionEventsPage() {
             className="h-8 px-3 rounded-[6px] text-[12px] transition-colors"
             style={{
               fontWeight: 600,
-              border: `0.75px solid ${resultFilter === chip.key ? '#2563EB' : isDark ? '#2E2E2E' : 'rgba(15,23,42,0.12)'}`,
-              background: resultFilter === chip.key ? (isDark ? 'rgba(37,99,235,0.15)' : '#EFF6FF') : (isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF'),
-              color: resultFilter === chip.key ? '#2563EB' : (isDark ? '#A1A1A1' : '#64748B'),
+              border: `0.75px solid ${resultFilter === chip.key ? '#2563EB' : 'var(--cp-border-default, rgba(15,23,42,0.12))'}`,
+              background: resultFilter === chip.key ? ('var(--cp-primary-light, #EFF6FF)') : ('var(--cp-bg-elevated, #FFFFFF)'),
+              color: resultFilter === chip.key ? '#2563EB' : ('var(--cp-text-tertiary, #64748B)'),
             }}
           >
             {chip.label}
@@ -154,14 +154,14 @@ export default function ProductionEventsPage() {
                     width: size,
                     height: size,
                     border: `2px solid ${borderColor}`,
-                    background: isDark ? 'var(--cp-bg-page, #1F1F21)' : '#FFFFFF',
+                    background: 'var(--cp-bg-elevated, #FFFFFF)',
                   }}
                 />
 
                 {/* Event card */}
                 <div
                   style={{
-                    background: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF',
+                    background: 'var(--cp-bg-elevated, #FFFFFF)',
                     borderRadius: 4,
                     padding: '14px 16px',
                     border: isDark ? '0.75px solid #2E2E2E' : '0.75px solid rgba(15,23,42,0.12)',
@@ -175,7 +175,7 @@ export default function ProductionEventsPage() {
                   </div>
 
                   {/* Meta row */}
-                  <div className="flex flex-wrap" style={{ gap: 16, fontSize: 12, color: isDark ? '#878787' : '#64748B' }}>
+                  <div className="flex flex-wrap" style={{ gap: 16, fontSize: 12, color: 'var(--cp-text-tertiary, #64748B)' }}>
                     {ev.change_key && <span style={{ fontFamily: RH.fontMono }}>{ev.change_key}</span>}
                     {ev.release_key && <span style={{ fontFamily: RH.fontMono }}>{ev.release_key}</span>}
                     {ev.deployed_at && <span>{formatDateTime(ev.deployed_at)}</span>}

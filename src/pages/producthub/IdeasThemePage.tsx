@@ -91,19 +91,19 @@ export default function IdeasThemePage() {
               return (
                 <div key={theme.theme} onClick={() => navigate(`/product/ideas/backlog?theme=${encodeURIComponent(theme.theme)}`)}
                   style={{
-                    background: isDark ? 'var(--cp-bg-page, #1F1F21)' : '#FFFFFF', border: `1px solid ${isDark ? '#454545' : dk.border}`, borderRadius: '8px',
+                    background: 'var(--cp-bg-elevated, #FFFFFF)', border: `1px solid ${isDark ? '#454545' : dk.border}`, borderRadius: '8px',
                     padding: '16px', cursor: 'pointer', transition: 'all 0.15s', minHeight: '180px',
                     display: 'flex', flexDirection: 'column',
                   }}
                   onMouseEnter={e => { e.currentTarget.style.borderColor = '#2563EB'; e.currentTarget.style.transform = 'translateY(-1px)'; }}
-                  onMouseLeave={e => { e.currentTarget.style.borderColor = isDark ? '#2E2E2E' : 'rgba(15,23,42,0.08)'; e.currentTarget.style.transform = 'none'; }}
+                  onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--cp-border-subtle, rgba(15,23,42,0.08))'; e.currentTarget.style.transform = 'none'; }}
                 >
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
                     <span style={{ fontFamily: MONO, fontSize: '11px', fontWeight: 600, color: dk.t3 }}>
                       {theme.idea_count} {theme.idea_count === 1 ? 'idea' : 'ideas'}
                     </span>
                     <div style={{
-                      width: 36, height: 50, borderRadius: 8, background: isDark ? '#292929' : '#F1F5F9', border: `1px solid ${dk.border}`,
+                      width: 36, height: 50, borderRadius: 8, background: 'var(--cp-bg-sunken, #F1F5F9)', border: `1px solid ${dk.border}`,
                       display: 'flex', alignItems: 'center', justifyContent: 'center', color: dk.t3,
                     }}>
                       <IconComp size={18} strokeWidth={2} />
@@ -128,7 +128,7 @@ export default function IdeasThemePage() {
                         {convRate}%
                       </span>
                     </div>
-                    <div style={{ height: 6, borderRadius: 4, background: isDark ? '#2E2E2E' : '#F1F5F9', overflow: 'hidden', border: `1px solid ${dk.border}` }}>
+                    <div style={{ height: 6, borderRadius: 4, background: 'var(--cp-border-lt, #F1F5F9)', overflow: 'hidden', border: `1px solid ${dk.border}` }}>
                       <div style={{
                         width: `${Math.min(progressPct, 100)}%`, height: '100%',
                         background: barColor, borderRadius: 4, transition: 'width 0.3s',

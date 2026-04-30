@@ -106,20 +106,20 @@ export default function NotificationPanel({ isOpen, onClose }: NotificationPanel
 
   // Dark mode tokens
   const T = {
-    panelBg: isDark ? 'var(--cp-bg-page, #1F1F21)' : '#FFFFFF',
-    surfaceBg: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF',
-    text1: isDark ? '#EDEDED' : '#0F172A',
-    text2: isDark ? '#A1A1A1' : '#64748B',
-    text3: isDark ? '#878787' : '#94A3B8',
-    border: isDark ? '#2E2E2E' : 'rgba(15,23,42,0.08)',
-    borderStrong: isDark ? '#454545' : 'rgba(15,23,42,0.12)',
-    hover: isDark ? '#1F1F1F' : 'rgba(15,23,42,0.04)',
-    press: isDark ? '#2E2E2E' : 'rgba(15,23,42,0.08)',
+    panelBg: 'var(--cp-bg-elevated, #FFFFFF)',
+    surfaceBg: 'var(--cp-bg-elevated, #FFFFFF)',
+    text1: 'var(--cp-text-primary, #0F172A)',
+    text2: 'var(--cp-text-tertiary, #64748B)',
+    text3: 'var(--cp-text-muted, #94A3B8)',
+    border: 'var(--cp-border-subtle, rgba(15,23,42,0.08))',
+    borderStrong: 'var(--cp-border-default, rgba(15,23,42,0.12))',
+    hover: 'var(--cp-interact-hover, rgba(15,23,42,0.04))',
+    press: 'var(--cp-border-subtle, rgba(15,23,42,0.08))',
     shadow: isDark
       ? '0 8px 24px rgba(0,0,0,0.4), 0 0 1px rgba(0,0,0,0.5)'
       : '0 8px 24px rgba(15,23,42,0.12), 0 0 1px rgba(15,23,42,0.08)',
-    menuBg: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF',
-    divider: isDark ? '#292929' : 'rgba(15,23,42,0.08)',
+    menuBg: 'var(--cp-bg-elevated, #FFFFFF)',
+    divider: 'var(--cp-border-subtle, rgba(15,23,42,0.08))',
   };
 
   const [activeTab, setActiveTab] = useState<NotificationTab>('direct');
@@ -395,7 +395,7 @@ export default function NotificationPanel({ isOpen, onClose }: NotificationPanel
               aria-label={unreadOnly ? 'Show all notifications' : 'Show only unread'}
               style={{
                 width: 36, height: 20, borderRadius: 12, cursor: 'pointer', border: 'none',
-                background: unreadOnly ? '#16A34A' : (isDark ? '#444444' : '#334155'),
+                background: unreadOnly ? '#16A34A' : ('var(--cp-text-secondary, #334155)'),
                 position: 'relative', transition: 'background 200ms ease',
                 padding: 0,
               }}

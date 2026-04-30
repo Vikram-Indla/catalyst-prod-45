@@ -60,7 +60,7 @@ export function BoardView({ items, onSelect }: { items: R360WorkItem[]; onSelect
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
                         <span className="r3-priority-dot" style={{ background: priorityDotColor(item.priority) }} />
-                        <span style={{ fontSize: 12, fontWeight: 500, color: isDark ? '#A1A1A1' : '#334155' }}>{item.priority}</span>
+                        <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--cp-text-secondary, #334155)' }}>{item.priority}</span>
                       </div>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                         <StatusLozenge status={item.status} statusCategory={item.status_category} />

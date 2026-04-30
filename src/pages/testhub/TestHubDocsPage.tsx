@@ -416,21 +416,21 @@ export default function TestHubDocsPage() {
   };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', backgroundColor: isDark ? 'var(--cp-bg-page, #1F1F21)' : '#F8FAFC' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', backgroundColor: 'var(--cp-bg-page, #F8FAFC)' }}>
       {/* Header */}
       <div style={{
         padding: '24px 32px',
-        backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF',
+        backgroundColor: 'var(--cp-bg-elevated, #FFFFFF)',
         borderBottom: isDark ? '1px solid #2E2E2E' : '1px solid #E2E8F0',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
       }}>
         <div>
-          <h1 style={{ fontSize: 22, fontWeight: 700, color: isDark ? '#EDEDED' : '#0F172A', margin: 0, fontFamily: 'var(--cp-font-body)' }}>
+          <h1 style={{ fontSize: 22, fontWeight: 700, color: 'var(--cp-text-primary, #0F172A)', margin: 0, fontFamily: 'var(--cp-font-body)' }}>
             📘 TestHub Functional Flow Guide
           </h1>
-          <p style={{ fontSize: 14, color: isDark ? '#878787' : '#64748B', margin: '4px 0 0', fontFamily: 'var(--cp-font-body)' }}>
+          <p style={{ fontSize: 14, color: 'var(--cp-text-tertiary, #64748B)', margin: '4px 0 0', fontFamily: 'var(--cp-font-body)' }}>
             Complete dependency map, step-by-step testing flow, database schema, and business rules
           </p>
         </div>
@@ -460,13 +460,13 @@ export default function TestHubDocsPage() {
       <div style={{ flex: 1, overflow: 'auto', padding: '24px 32px' }}>
         {/* Dependency Flow Visual */}
         <div style={{
-          backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF',
+          backgroundColor: 'var(--cp-bg-elevated, #FFFFFF)',
           borderRadius: 12,
           border: isDark ? '1px solid #2E2E2E' : '1px solid #E2E8F0',
           padding: 24,
           marginBottom: 24,
         }}>
-          <h2 style={{ fontSize: 16, fontWeight: 700, color: isDark ? '#EDEDED' : '#0F172A', margin: '0 0 16px', fontFamily: 'var(--cp-font-body)' }}>
+          <h2 style={{ fontSize: 16, fontWeight: 700, color: 'var(--cp-text-primary, #0F172A)', margin: '0 0 16px', fontFamily: 'var(--cp-font-body)' }}>
             Dependency Flow (Follow This Order)
           </h2>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
@@ -508,9 +508,9 @@ export default function TestHubDocsPage() {
               <div
                 key={section.id}
                 style={{
-                  backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF',
+                  backgroundColor: 'var(--cp-bg-elevated, #FFFFFF)',
                   borderRadius: 12,
-                  border: `1px solid ${isOpen ? section.color + '40' : isDark ? '#2E2E2E' : '#E2E8F0'}`,
+                  border: `1px solid ${isOpen ? section.color + '40' : 'var(--cp-border, #E2E8F0)'}`,
                   overflow: 'hidden',
                   transition: 'border-color 0.2s',
                 }}
@@ -542,10 +542,10 @@ export default function TestHubDocsPage() {
                     <Icon size={18} style={{ color: section.color }} />
                   </div>
                   <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ fontSize: 15, fontWeight: 600, color: isDark ? '#EDEDED' : '#0F172A', fontFamily: 'var(--cp-font-body)' }}>
+                    <div style={{ fontSize: 15, fontWeight: 600, color: 'var(--cp-text-primary, #0F172A)', fontFamily: 'var(--cp-font-body)' }}>
                       {section.title}
                     </div>
-                    <div style={{ fontSize: 13, color: isDark ? '#878787' : '#64748B', fontFamily: 'var(--cp-font-body)', marginTop: 2 }}>
+                    <div style={{ fontSize: 13, color: 'var(--cp-text-tertiary, #64748B)', fontFamily: 'var(--cp-font-body)', marginTop: 2 }}>
                       {section.summary}
                     </div>
                   </div>
@@ -555,12 +555,12 @@ export default function TestHubDocsPage() {
                   <div style={{
                     padding: '0 20px 20px',
                     fontSize: 14,
-                    color: isDark ? '#A1A1A1' : '#334155',
+                    color: 'var(--cp-text-secondary, #334155)',
                     fontFamily: 'var(--cp-font-body)',
                     lineHeight: 1.7,
                   }}>
                     <div style={{
-                      backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : '#F8FAFC',
+                      backgroundColor: 'var(--cp-bg-page, #F8FAFC)',
                       borderRadius: 8,
                       padding: 16,
                       whiteSpace: 'pre-wrap',
@@ -605,8 +605,8 @@ export default function TestHubDocsPage() {
               alignItems: 'center',
               gap: 8,
               padding: '10px 20px',
-              backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF',
-              color: isDark ? '#EDEDED' : '#0F172A',
+              backgroundColor: 'var(--cp-bg-elevated, #FFFFFF)',
+              color: 'var(--cp-text-primary, #0F172A)',
               border: 'none',
               borderRadius: 8,
               fontSize: 14,

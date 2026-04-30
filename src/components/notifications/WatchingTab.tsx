@@ -169,8 +169,8 @@ function EmptyState({ isDark }: { isDark: boolean }) {
 }
 
 function LoadingState({ isDark }: { isDark: boolean }) {
-  const shimmerBg = isDark ? '#1F1F1F' : '#F4F5F7';
-  const shimmerHighlight = isDark ? '#2E2E2E' : '#E9EBEE';
+  const shimmerBg = 'var(--cp-bg-page, #F4F5F7)';
+  const shimmerHighlight = 'var(--cp-border, #E9EBEE)';
   return (
     <Box xcss={panelXcss}>
       {[1, 2, 3].map(i => (

@@ -257,7 +257,7 @@ export function GoalsTreeView({
   const headerText = isDark ? DK.t3 : 'var(--fg-3)';
   const containerBg = isDark ? 'transparent' : 'var(--bg-app)';
   const themeRowBg = isDark ? '#1F1F1F' : 'var(--cp-bd-zone)';
-  const themeRowHover = isDark ? '#292929' : '#E2E8F0';
+  const themeRowHover = 'var(--cp-bg-sunken, #E2E8F0)';
   const goalRowBg = isDark ? 'transparent' : 'var(--bg-app)';
   const goalRowHover = isDark ? '#1F1F1F' : 'var(--bg-1)';
   const krRowBg = isDark ? '#111111' : 'var(--bg-1)';
@@ -315,7 +315,7 @@ export function GoalsTreeView({
               onMouseLeave={e => (e.currentTarget.style.background = themeRowBg)}
             >
               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                <ChevronRight size={14} color={isDark ? '#7D7D7D' : '#64748B'} style={{ transform: themeExpanded ? 'rotate(90deg)' : 'rotate(0deg)', transition: 'transform 200ms', flexShrink: 0 }} />
+                <ChevronRight size={14} color={'var(--cp-text-tertiary, #64748B)'} style={{ transform: themeExpanded ? 'rotate(90deg)' : 'rotate(0deg)', transition: 'transform 200ms', flexShrink: 0 }} />
                 <span style={{ fontSize: 14, fontWeight: 600, color: isDark ? DK.t1 : 'var(--fg-1)' }}>{theme.title}</span>
                 <span style={{ fontSize: 11, color: isDark ? DK.t3 : 'var(--fg-3)' }}>({themeGoals.length} goal{themeGoals.length !== 1 ? 's' : ''})</span>
               </div>
@@ -361,7 +361,7 @@ export function GoalsTreeView({
 
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8, minWidth: 0 }}>
                       <ChevronRight
-                        size={13} color={isDark ? '#7D7D7D' : '#94A3B8'}
+                        size={13} color={'var(--cp-text-muted, #94A3B8)'}
                         onClick={e => { e.stopPropagation(); onToggleGoal(goal.id); }}
                         style={{ transform: goalExpanded ? 'rotate(90deg)' : 'rotate(0deg)', transition: 'transform 200ms', flexShrink: 0, cursor: 'pointer' }}
                       />

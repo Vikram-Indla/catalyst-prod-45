@@ -38,7 +38,7 @@ export function ProjectTable({ projects, starredIds, onToggleStar, onContextMenu
                   padding: '0 12px',
                   fontSize: 10.5,
                   fontWeight: 600,
-                  color: isDark ? '#7D7D7D' : '#6B778C',
+                  color: 'var(--cp-text-tertiary, #6B778C)',
                   letterSpacing: '0.06em',
                   textTransform: 'uppercase',
                   textAlign: col.key === 'items' ? 'right' : 'left',

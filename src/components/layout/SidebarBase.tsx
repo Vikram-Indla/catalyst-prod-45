@@ -165,14 +165,14 @@ export function SidebarBase({
   // Light-mode hex untouched ("do not touch light mode tokens. zero impact").
   const tokens: DarkTokens = {
     isDark,
-    itemText: isDark ? 'var(--ds-text-subtle, #9FADBC)' : '#42526E',
-    activeText: isDark ? 'var(--ds-text-selected, #85B8FF)' : '#0052CC',
+    itemText: 'var(--cp-text-secondary, #42526E)',
+    activeText: 'var(--cp-text-link, #0052CC)',
     activeBg: isDark ? 'var(--ds-background-selected, #1C2B41)' : '#E9F2FF',
     hoverBg: isDark ? 'var(--ds-background-neutral-subtle-hovered, #A1BDD914)' : '#F4F5F7',
-    hoverText: isDark ? 'var(--ds-text-subtle, #9FADBC)' : '#172B4D',
+    hoverText: 'var(--cp-text-primary, #172B4D)',
     iconOpacityInactive: isDark ? 0.85 : 0.75,
     badgeBg: isDark ? 'var(--ds-background-neutral-subtle, #22272B)' : '#EBECF0',
-    badgeText: isDark ? 'var(--ds-text-subtle, #9FADBC)' : '#6B778C',
+    badgeText: 'var(--cp-text-tertiary, #6B778C)',
   };
 
   // Chevron critique (2026-04-19): brand-blue (#0052CC / --cp-blue) violated
@@ -180,16 +180,16 @@ export function SidebarBase({
   // only. Pulled the toggle to neutral muted tokens so the primary blue cue
   // stays unique to the primary action. Hover lifts to text-primary for an
   // affordance pop without reintroducing brand colour.
-  const chevronColor = isDark ? 'var(--ds-text-subtle, #9FADBC)' : '#6B778C';
-  const chevronHoverColor = isDark ? 'var(--ds-text, #B6C2CF)' : '#172B4D';
+  const chevronColor = 'var(--cp-text-tertiary, #6B778C)';
+  const chevronHoverColor = 'var(--cp-text-primary, #172B4D)';
   // ADS canonical: side-nav uses --ds-surface (rail surface lifts above
   // page bg --ds-background-neutral). Was incorrectly using page bg token.
-  const sidebarBg = isDark ? 'var(--ds-surface, #22272B)' : '#FFFFFF';
+  const sidebarBg = 'var(--cp-bg-elevated, #FFFFFF)';
   // ADS canonical: --ds-border is translucent (#a6c5e229 dark / #0b120e24 light)
-  const sidebarBorder = isDark ? 'var(--ds-border, #a6c5e229)' : '#DFE1E6';
-  const dividerColor = isDark ? 'var(--ds-border, #a6c5e229)' : '#DFE1E6';
-  const sectionLabel = isDark ? 'var(--ds-text-subtle, #9FADBC)' : '#6B778C';
-  const hubLabel = isDark ? 'var(--ds-text, #B6C2CF)' : '#172B4D';
+  const sidebarBorder = 'var(--cp-border, #DFE1E6)';
+  const dividerColor = 'var(--cp-border, #DFE1E6)';
+  const sectionLabel = 'var(--cp-text-tertiary, #6B778C)';
+  const hubLabel = 'var(--cp-text-primary, #172B4D)';
 
   const isActive = (path: string, exact: boolean = false, activeMatchPaths: string[] = []) => {
     if (activeMatchPaths.some((matchPath) => location.pathname === matchPath || location.pathname.startsWith(matchPath + '/'))) {

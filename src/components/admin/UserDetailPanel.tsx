@@ -48,39 +48,39 @@ interface Props {
 }
 
 const mkSectionLabel = (isDark: boolean): React.CSSProperties => ({
-  fontSize: '10px', fontWeight: 700, color: isDark ? '#878787' : '#64748B',
+  fontSize: '10px', fontWeight: 700, color: 'var(--cp-text-tertiary, #64748B)',
   textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '6px',
 });
 
 const mkFieldRow = (isDark: boolean): React.CSSProperties => ({
   display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-  padding: '5px 0', borderBottom: `0.5px solid ${isDark ? '#2E2E2E' : 'rgba(15,23,42,0.06)'}`,
+  padding: '5px 0', borderBottom: `0.5px solid ${'var(--cp-border-subtle, rgba(15,23,42,0.06))'}`,
 });
 
-const mkFieldKey = (isDark: boolean): React.CSSProperties => ({ fontSize: '11px', color: isDark ? '#A1A1A1' : '#64748B' });
-const mkFieldVal = (isDark: boolean): React.CSSProperties => ({ fontSize: '12px', fontWeight: 500, color: isDark ? '#EDEDED' : '#0F172A', textAlign: 'right' as const });
+const mkFieldKey = (isDark: boolean): React.CSSProperties => ({ fontSize: '11px', color: 'var(--cp-text-tertiary, #64748B)' });
+const mkFieldVal = (isDark: boolean): React.CSSProperties => ({ fontSize: '12px', fontWeight: 500, color: 'var(--cp-text-primary, #0F172A)', textAlign: 'right' as const });
 const monoSmall: React.CSSProperties = { fontFamily: 'var(--cp-font-mono)', fontSize: '10px' };
 const Code: React.FC<{ children: React.ReactNode; isDark?: boolean }> = ({ children, isDark = false }) => (
   <code style={{
     fontFamily: 'var(--cp-font-mono)', fontSize: '10px',
-    background: isDark ? 'var(--cp-bg-surface, #242528)' : '#F1F5F9', padding: '1px 4px', borderRadius: '4px',
-    color: isDark ? '#93C5FD' : '#2563EB',
+    background: 'var(--cp-bg-sunken, #F1F5F9)', padding: '1px 4px', borderRadius: '4px',
+    color: 'var(--cp-text-link, #2563EB)',
   }}>{children}</code>
 );
 
 const InfoCard: React.FC<{ label: string; children: React.ReactNode; isDark?: boolean }> = ({ label, children, isDark = false }) => (
   <div style={{
-    background: isDark ? 'var(--cp-bg-surface, #242528)' : '#F8FAFC',
-    border: `1px solid ${isDark ? '#2E2E2E' : 'rgba(15,23,42,0.10)'}`,
+    background: 'var(--cp-bg-page, #F8FAFC)',
+    border: `1px solid ${'var(--cp-border-default, rgba(15,23,42,0.10))'}`,
     borderRadius: '6px', padding: '10px 12px',
   }}>
     <div style={{
-      fontSize: '9.5px', fontWeight: 700, color: isDark ? '#878787' : '#64748B',
+      fontSize: '9.5px', fontWeight: 700, color: 'var(--cp-text-tertiary, #64748B)',
       textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '5px',
     }}>
       {label}
     </div>
-    <div style={{ fontSize: '11px', color: isDark ? '#A1A1A1' : '#334155', lineHeight: 1.55 }}>{children}</div>
+    <div style={{ fontSize: '11px', color: 'var(--cp-text-secondary, #334155)', lineHeight: 1.55 }}>{children}</div>
   </div>
 );
 const PERM_LEVELS = ['view', 'edit', 'full', 'none'] as const;
@@ -128,8 +128,8 @@ const ProjectsTab: React.FC<{ perms: any[]; isDark?: boolean }> = ({ perms, isDa
   const xsBtn: React.CSSProperties = {
     fontSize: '9px', fontWeight: 700, textTransform: 'uppercase',
     padding: '3px 7px', borderRadius: '4px', cursor: 'pointer',
-    border: `1px solid ${isDark ? '#2E2E2E' : 'rgba(15,23,42,0.10)'}`,
-    background: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF', color: isDark ? '#A1A1A1' : '#64748B',
+    border: `1px solid ${'var(--cp-border-default, rgba(15,23,42,0.10))'}`,
+    background: 'var(--cp-bg-elevated, #FFFFFF)', color: 'var(--cp-text-tertiary, #64748B)',
   };
   const xsBtnClass = 'jus-action-btn';
 
@@ -152,7 +152,7 @@ const ProjectsTab: React.FC<{ perms: any[]; isDark?: boolean }> = ({ perms, isDa
 
       {perms.length === 0 ? (
         <div style={{ textAlign: 'center', padding: '32px 16px' }}>
-          <div style={{ fontSize: '12px', color: isDark ? '#878787' : '#94A3B8', marginBottom: '10px' }}>No projects assigned yet</div>
+          <div style={{ fontSize: '12px', color: 'var(--cp-text-muted, #94A3B8)', marginBottom: '10px' }}>No projects assigned yet</div>
           <button
             style={{ fontSize: '11px', fontWeight: 600, background: '#2563EB', color: '#FFFFFF', border: 'none', borderRadius: '4px', padding: '5px 12px', cursor: 'pointer' }}
             onClick={() => toast.info('Project picker — Phase 2')}
@@ -162,8 +162,8 @@ const ProjectsTab: React.FC<{ perms: any[]; isDark?: boolean }> = ({ perms, isDa
         <>
           <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '11px', marginTop: '6px' }}>
             <thead>
-              <tr style={{ background: isDark ? 'var(--cp-bg-page, #1F1F21)' : '#F1F5F9' }} className="jus-table-head">
-                <th style={{ padding: '6px 9px', fontSize: '9px', fontWeight: 700, color: isDark ? '#878787' : '#64748B', textTransform: 'uppercase', textAlign: 'left', width: '28px' }}>
+              <tr style={{ background: 'var(--cp-bg-sunken, #F1F5F9)' }} className="jus-table-head">
+                <th style={{ padding: '6px 9px', fontSize: '9px', fontWeight: 700, color: 'var(--cp-text-tertiary, #64748B)', textTransform: 'uppercase', textAlign: 'left', width: '28px' }}>
                   <input
                     type="checkbox"
                     checked={checkedPerms.size === perms.length && perms.length > 0}
@@ -171,16 +171,16 @@ const ProjectsTab: React.FC<{ perms: any[]; isDark?: boolean }> = ({ perms, isDa
                     style={{ width: '12px', height: '12px', accentColor: '#2563EB' }}
                   />
                 </th>
-                <th style={{ padding: '6px 9px', fontSize: '9px', fontWeight: 700, color: isDark ? '#878787' : '#64748B', textTransform: 'uppercase', textAlign: 'left' }}>Project</th>
-                <th style={{ padding: '6px 9px', fontSize: '9px', fontWeight: 700, color: isDark ? '#878787' : '#64748B', textTransform: 'uppercase', textAlign: 'left' }}>Key</th>
-                <th style={{ padding: '6px 9px', fontSize: '9px', fontWeight: 700, color: isDark ? '#878787' : '#64748B', textTransform: 'uppercase', textAlign: 'right' }}>Permission</th>
+                <th style={{ padding: '6px 9px', fontSize: '9px', fontWeight: 700, color: 'var(--cp-text-tertiary, #64748B)', textTransform: 'uppercase', textAlign: 'left' }}>Project</th>
+                <th style={{ padding: '6px 9px', fontSize: '9px', fontWeight: 700, color: 'var(--cp-text-tertiary, #64748B)', textTransform: 'uppercase', textAlign: 'left' }}>Key</th>
+                <th style={{ padding: '6px 9px', fontSize: '9px', fontWeight: 700, color: 'var(--cp-text-tertiary, #64748B)', textTransform: 'uppercase', textAlign: 'right' }}>Permission</th>
               </tr>
             </thead>
             <tbody>
               {perms.map((p: any) => {
                 const isMutating = isPending && variables?.permId === p.id;
                 return (
-                  <tr key={p.id} style={{ borderBottom: `0.75px solid ${isDark ? '#2E2E2E' : 'rgba(15,23,42,0.06)'}` }}
+                  <tr key={p.id} style={{ borderBottom: `0.75px solid ${'var(--cp-border-subtle, rgba(15,23,42,0.06))'}` }}
                     onMouseEnter={e => (e.currentTarget.style.background = isDark ? '#1F1F1F' : 'rgba(15,23,42,0.035)')}
                     onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
                   >
@@ -192,19 +192,19 @@ const ProjectsTab: React.FC<{ perms: any[]; isDark?: boolean }> = ({ perms, isDa
                         style={{ width: '12px', height: '12px', accentColor: '#2563EB' }}
                       />
                     </td>
-                    <td style={{ padding: '6px 9px', fontWeight: 500, color: isDark ? '#EDEDED' : '#0F172A', whiteSpace: 'nowrap' }} className="jus-field-val">
+                    <td style={{ padding: '6px 9px', fontWeight: 500, color: 'var(--cp-text-primary, #0F172A)', whiteSpace: 'nowrap' }} className="jus-field-val">
                       {p.project_name || p.project_key}
                     </td>
                     <td style={{ padding: '6px 9px' }}>
                       <span className="jus-project-key-chip" style={{
                         fontFamily: 'var(--cp-font-mono)', fontSize: '9px',
-                        color: isDark ? '#A1A1A1' : '#64748B',
-                        background: isDark ? 'var(--cp-bg-surface, #242528)' : '#F1F5F9', padding: '1px 4px', borderRadius: '4px',
+                        color: 'var(--cp-text-tertiary, #64748B)',
+                        background: 'var(--cp-bg-sunken, #F1F5F9)', padding: '1px 4px', borderRadius: '4px',
                       }}>{p.project_key}</span>
                     </td>
                     <td style={{ padding: '6px 9px', textAlign: 'right' }}>
                       <div className="jus-perm-seg" style={{
-                        display: 'inline-flex', border: `1px solid ${isDark ? '#2E2E2E' : 'rgba(15,23,42,0.10)'}`,
+                        display: 'inline-flex', border: `1px solid ${'var(--cp-border-default, rgba(15,23,42,0.10))'}`,
                         borderRadius: '4px', overflow: 'hidden',
                       }}>
                         {PERM_LEVELS.map((level, i) => {
@@ -220,9 +220,9 @@ const ProjectsTab: React.FC<{ perms: any[]; isDark?: boolean }> = ({ perms, isDa
                                 padding: '3px 7px', fontSize: '9px', fontWeight: 700,
                                 textTransform: 'uppercase', cursor: active ? 'default' : 'pointer',
                                 background: active ? (isDark ? colors.bgDark : colors.bg) : 'transparent',
-                                color: active ? (isDark ? colors.colorDark : colors.color) : (isDark ? '#878787' : '#94A3B8'),
+                                color: active ? (isDark ? colors.colorDark : colors.color) : ('var(--cp-text-muted, #94A3B8)'),
                                 border: 'none',
-                                borderRight: i < 3 ? `1px solid ${isDark ? '#2E2E2E' : 'rgba(15,23,42,0.10)'}` : 'none',
+                                borderRight: i < 3 ? `1px solid ${'var(--cp-border-default, rgba(15,23,42,0.10))'}` : 'none',
                               }}
                             >
                               {showSpinner ? <Loader2 size={10} className="animate-spin" /> : level}
@@ -261,23 +261,23 @@ const ActivityTab: React.FC<{ events: any[]; isDark?: boolean }> = ({ events, is
       <div style={mkSectionLabel(isDark)}>SYNC ACTIVITY</div>
       {sorted.length === 0 ? (
         <div style={{ textAlign: 'center', padding: '32px 16px' }}>
-          <Activity size={24} color={isDark ? '#878787' : '#94A3B8'} style={{ margin: '0 auto 8px' }} />
-          <div style={{ fontSize: '12px', color: isDark ? '#A1A1A1' : '#94A3B8', fontWeight: 500 }}>No activity recorded yet</div>
-          <div style={{ fontSize: '11px', color: isDark ? '#878787' : '#CBD5E1', marginTop: '4px' }}>Events will appear here after the first sync</div>
+          <Activity size={24} color={'var(--cp-text-muted, #94A3B8)'} style={{ margin: '0 auto 8px' }} />
+          <div style={{ fontSize: '12px', color: 'var(--cp-text-muted, #94A3B8)', fontWeight: 500 }}>No activity recorded yet</div>
+          <div style={{ fontSize: '11px', color: 'var(--cp-text-muted, #CBD5E1)', marginTop: '4px' }}>Events will appear here after the first sync</div>
         </div>
       ) : (
         sorted.slice(0, 30).map((ev: any) => (
           <div key={ev.id} style={{
             display: 'flex', gap: '9px', padding: '5px 0',
-            borderBottom: `0.5px solid ${isDark ? '#2E2E2E' : 'rgba(15,23,42,0.06)'}`,
+            borderBottom: `0.5px solid ${'var(--cp-border-subtle, rgba(15,23,42,0.06))'}`,
           }}>
             <div style={{
               width: '7px', height: '7px', borderRadius: '50%', flexShrink: 0,
               marginTop: '3px', background: getEventDotColor(ev),
             }} />
             <div style={{ flex: 1 }}>
-              <div className="jus-event-text" style={{ fontSize: '11px', color: isDark ? '#EDEDED' : '#334155' }}>{getEventText(ev)}</div>
-              <div className="jus-event-time" style={{ fontSize: '10px', color: isDark ? '#878787' : '#94A3B8', marginTop: '1px' }}>{formatDate(ev.created_at)}</div>
+              <div className="jus-event-text" style={{ fontSize: '11px', color: 'var(--cp-text-secondary, #334155)' }}>{getEventText(ev)}</div>
+              <div className="jus-event-time" style={{ fontSize: '10px', color: 'var(--cp-text-muted, #94A3B8)', marginTop: '1px' }}>{formatDate(ev.created_at)}</div>
             </div>
           </div>
         ))
@@ -314,7 +314,7 @@ const UserDetailPanel: React.FC<Props> = ({ userId, onClose, isDark = false }) =
           {Array.from({ length: 8 }).map((_, i) => (
             <div key={i} className="animate-pulse" style={{
               height: i === 0 ? 48 : 14, width: i === 0 ? 48 : `${70 + (i * 10)}%`,
-              borderRadius: i === 0 ? '50%' : 3, background: isDark ? '#2E2E2E' : '#E2E8F0',
+              borderRadius: i === 0 ? '50%' : 3, background: 'var(--cp-border, #E2E8F0)',
               marginBottom: i === 0 ? 12 : 10,
             }} />
           ))}
@@ -376,8 +376,8 @@ const UserDetailPanel: React.FC<Props> = ({ userId, onClose, isDark = false }) =
                   display: 'inline-flex', alignItems: 'center', gap: '3px',
                   padding: '1px 6px', borderRadius: '4px', fontSize: '10px', fontWeight: 700,
                   letterSpacing: '0.03em', textTransform: 'uppercase',
-                  background: isDark ? 'rgba(37,99,235,0.15)' : '#EFF6FF',
-                  color: isDark ? '#93C5FD' : '#2563EB',
+                  background: 'var(--cp-primary-light, #EFF6FF)',
+                  color: 'var(--cp-text-link, #2563EB)',
                   border: `1px solid ${isDark ? 'rgba(37,99,235,0.30)' : '#BFDBFE'}`,
                 }}>
                   Jira Proxy
@@ -387,7 +387,7 @@ const UserDetailPanel: React.FC<Props> = ({ userId, onClose, isDark = false }) =
                   padding: '1px 6px', borderRadius: '4px', fontSize: '10px', fontWeight: 700,
                   letterSpacing: '0.03em', textTransform: 'uppercase',
                   background: isDark ? 'rgba(124,58,237,0.15)' : '#F5F3FF',
-                  color: isDark ? '#C4B5FD' : '#7C3AED',
+                  color: 'var(--cp-purple-60, #7C3AED)',
                   border: '1px solid rgba(124,58,237,0.25)',
                 }}>
                   Local Auth
@@ -398,8 +398,8 @@ const UserDetailPanel: React.FC<Props> = ({ userId, onClose, isDark = false }) =
                 display: 'inline-block', padding: '0 7px', borderRadius: '4px',
                 fontSize: '10px', fontWeight: 700, textTransform: 'uppercase',
                 height: '20px', lineHeight: '20px',
-                background: isInactive ? (isDark ? '#450A0A' : '#FEE2E2') : (isDark ? '#064E3B' : '#E3FCEF'),
-                color: isInactive ? (isDark ? '#FCA5A5' : '#991B1B') : (isDark ? '#6EE7B7' : '#006644'),
+                background: isInactive ? ('var(--cp-danger-light, #FEE2E2)') : ('var(--cp-success-light, #E3FCEF)'),
+                color: isInactive ? ('var(--cp-danger-text, #991B1B)') : ('var(--cp-success-text, #006644)'),
               }}>
                 {isInactive ? 'INACTIVE' : 'ACTIVE'}
               </span>
@@ -488,8 +488,8 @@ const UserDetailPanel: React.FC<Props> = ({ userId, onClose, isDark = false }) =
                   display: 'inline-block', padding: '0 7px', borderRadius: '4px',
                   fontSize: '10px', fontWeight: 700, textTransform: 'uppercase',
                   height: '20px', lineHeight: '20px',
-                  background: isInactive ? (isDark ? '#450A0A' : '#FEE2E2') : (isDark ? '#064E3B' : '#E3FCEF'),
-                  color: isInactive ? (isDark ? '#FCA5A5' : '#991B1B') : (isDark ? '#6EE7B7' : '#006644'),
+                  background: isInactive ? ('var(--cp-danger-light, #FEE2E2)') : ('var(--cp-success-light, #E3FCEF)'),
+                  color: isInactive ? ('var(--cp-danger-text, #991B1B)') : ('var(--cp-success-text, #006644)'),
                 }}>
                   {isInactive ? 'INACTIVE' : 'ACTIVE'}
                 </span>
@@ -514,7 +514,7 @@ const UserDetailPanel: React.FC<Props> = ({ userId, onClose, isDark = false }) =
                   <span style={{
                     padding: '1px 5px', borderRadius: '4px', fontSize: '9.5px', fontWeight: 700,
                     background: isDark ? 'rgba(13,148,136,0.15)' : '#F0FDFA',
-                    color: isDark ? '#5EEAD4' : '#0D9488',
+                    color: 'var(--cp-teal-60, #0D9488)',
                     border: `1px solid ${isDark ? 'rgba(13,148,136,0.25)' : '#99F6E4'}`,
                     whiteSpace: 'nowrap',
                   }}>
@@ -524,7 +524,7 @@ const UserDetailPanel: React.FC<Props> = ({ userId, onClose, isDark = false }) =
                   <span style={{
                     padding: '1px 5px', borderRadius: '4px', fontSize: '9.5px', fontWeight: 700,
                     background: isDark ? 'rgba(124,58,237,0.15)' : '#F5F3FF',
-                    color: isDark ? '#C4B5FD' : '#7C3AED',
+                    color: 'var(--cp-purple-60, #7C3AED)',
                     border: `1px solid rgba(124,58,237,0.25)`,
                     whiteSpace: 'nowrap',
                   }}>
@@ -559,8 +559,8 @@ const UserDetailPanel: React.FC<Props> = ({ userId, onClose, isDark = false }) =
                 <span style={{
                   fontSize: '11px', lineHeight: 1.55,
                   color: isJiraProxy
-                    ? (isDark ? '#5EEAD4' : '#134E4A')
-                    : (isDark ? '#C4B5FD' : '#7C3AED'),
+                    ? ('var(--cp-teal-60, #134E4A)')
+                    : ('var(--cp-purple-60, #7C3AED)'),
                 }}>
                   {isJiraProxy
                     ? 'Jira password used as-is in Catalyst. No password is stored here. Changing the password in Jira takes effect on the next Catalyst login.'
@@ -687,7 +687,7 @@ const UserDetailPanel: React.FC<Props> = ({ userId, onClose, isDark = false }) =
       {/* ── Footer ── */}
       <div className="jus-footer-sticky" style={{
         position: 'sticky', bottom: 0, background: T.surface,
-        borderTop: `1px solid ${isDark ? '#2E2E2E' : 'rgba(15,23,42,0.06)'}`, padding: '10px 16px',
+        borderTop: `1px solid ${'var(--cp-border-subtle, rgba(15,23,42,0.06))'}`, padding: '10px 16px',
         display: 'flex', gap: '7px',
       }}>
         <button style={{

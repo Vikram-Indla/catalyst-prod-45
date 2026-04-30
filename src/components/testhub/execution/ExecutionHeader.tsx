@@ -90,8 +90,8 @@ export function ExecutionHeader({
         {/* Stats badges */}
         <div style={{ display: 'flex', gap: 6 }}>
           {[
-            { count: cycle.passed_count, color: '#059669', bg: isDark ? 'rgba(34,197,94,0.12)' : '#ECFDF5', Icon: CheckCircle2 },
-            { count: cycle.failed_count, color: '#DC2626', bg: isDark ? 'rgba(248,113,113,0.12)' : '#FEF2F2', Icon: XCircle },
+            { count: cycle.passed_count, color: '#059669', bg: 'var(--cp-success-light, #ECFDF5)', Icon: CheckCircle2 },
+            { count: cycle.failed_count, color: '#DC2626', bg: 'var(--cp-danger-light, #FEF2F2)', Icon: XCircle },
             { count: cycle.blocked_count, color: '#D97706', bg: isDark ? 'rgba(251,191,36,0.12)' : '#FFFBEB', Icon: AlertTriangle },
           ].map((s, i) => (
             <span key={i} style={{ display: 'inline-flex', alignItems: 'center', gap: 3, padding: '4px 8px', backgroundColor: s.bg, borderRadius: 6, fontSize: 11, fontWeight: 600, color: s.color }}>

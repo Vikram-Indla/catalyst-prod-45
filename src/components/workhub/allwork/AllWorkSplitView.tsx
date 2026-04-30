@@ -197,7 +197,7 @@ export function AllWorkSplitView({ items, selectedItemKey, onSelectItem, sortFie
               aria-label={`Sort by ${currentSortLabel}. Click to change field.`}
               className="flex items-center gap-1 text-[12px] px-1.5 py-0.5 rounded transition-colors duration-[80ms] hover:bg-[var(--hover,#1F1F1F)] focus-visible:outline-2 focus-visible:outline-[#2563EB]"
               style={{
-                color: isDark ? '#A1A1A1' : '#6b6e76',
+                color: 'var(--cp-text-secondary, #6b6e76)',
                 fontFamily: 'var(--cp-font-body)',
                 background: 'none',
                 border: 'none',
@@ -213,7 +213,7 @@ export function AllWorkSplitView({ items, selectedItemKey, onSelectItem, sortFie
               title={sortDir === 'asc' ? 'Ascending' : 'Descending'}
               className="p-1 rounded transition-colors duration-[80ms] hover:bg-[var(--hover,#1F1F1F)] focus-visible:outline-2 focus-visible:outline-[#2563EB]"
               style={{
-                color: isDark ? '#A1A1A1' : '#6b6e76',
+                color: 'var(--cp-text-secondary, #6b6e76)',
                 background: 'none',
                 border: 'none',
                 cursor: 'pointer',
@@ -329,10 +329,10 @@ export function AllWorkSplitView({ items, selectedItemKey, onSelectItem, sortFie
               flexShrink: 0,
             }}
           >
-            <span style={{ color: isDark ? '#878787' : '#6b6e76' }}>Projects</span>
-            <span aria-hidden="true" style={{ color: isDark ? '#454545' : '#CBD5E1' }}>/</span>
-            <span style={{ color: isDark ? '#878787' : '#6b6e76' }}>{projectName}</span>
-            <span aria-hidden="true" style={{ color: isDark ? '#454545' : '#CBD5E1' }}>/</span>
+            <span style={{ color: 'var(--cp-text-tertiary, #6b6e76)' }}>Projects</span>
+            <span aria-hidden="true" style={{ color: 'var(--cp-border-strong, #CBD5E1)' }}>/</span>
+            <span style={{ color: 'var(--cp-text-tertiary, #6b6e76)' }}>{projectName}</span>
+            <span aria-hidden="true" style={{ color: 'var(--cp-border-strong, #CBD5E1)' }}>/</span>
             {panelStack.length > 1 ? (
               <>
                 {panelStack.slice(0, -1).map((item) => {
@@ -355,7 +355,7 @@ export function AllWorkSplitView({ items, selectedItemKey, onSelectItem, sortFie
                       >
                         {item.issue_key}
                       </button>
-                      <span aria-hidden="true" style={{ color: isDark ? '#454545' : '#CBD5E1' }}>/</span>
+                      <span aria-hidden="true" style={{ color: 'var(--cp-border-strong, #CBD5E1)' }}>/</span>
                     </Fragment>
                   );
                 })}
@@ -416,11 +416,11 @@ export function AllWorkSplitView({ items, selectedItemKey, onSelectItem, sortFie
               {!canGoBack && (
                 <>
                   <button onClick={goPrev} disabled={selectedIdx <= 0} className="p-1 rounded hover:bg-[var(--hover, #1F1F1F)] disabled:opacity-30 focus-visible:outline-2 focus-visible:outline-[#2563EB]" aria-label="Previous item">
-                    <ChevronLeft className="w-4 h-4" style={{ color: isDark ? '#878787' : '#6b6e76' }} />
+                    <ChevronLeft className="w-4 h-4" style={{ color: 'var(--cp-text-tertiary, #6b6e76)' }} />
                   </button>
                   <span className="text-[11px]" style={{ color: 'var(--fg-3)', fontFamily: 'var(--cp-font-mono)' }}>{selectedIdx + 1}/{items.length}</span>
                   <button onClick={goNext} disabled={selectedIdx >= items.length - 1} className="p-1 rounded hover:bg-[var(--hover, #1F1F1F)] disabled:opacity-30 focus-visible:outline-2 focus-visible:outline-[#2563EB]" aria-label="Next item">
-                    <ChevronRight className="w-4 h-4" style={{ color: isDark ? '#878787' : '#6b6e76' }} />
+                    <ChevronRight className="w-4 h-4" style={{ color: 'var(--cp-text-tertiary, #6b6e76)' }} />
                   </button>
                 </>
               )}
@@ -442,7 +442,7 @@ export function AllWorkSplitView({ items, selectedItemKey, onSelectItem, sortFie
                   className="flex items-center gap-1.5 px-3 py-2.5 transition-colors duration-[80ms] focus-visible:outline-2 focus-visible:outline-[#2563EB]"
                   style={{
                     fontSize: 12, fontWeight: isActive ? 600 : 400,
-                    color: isActive ? '#2563EB' : isDark ? '#878787' : '#6b6e76',
+                    color: isActive ? '#2563EB' : 'var(--cp-text-tertiary, #6b6e76)',
                     borderBottom: isActive ? '2px solid #2563EB' : '2px solid transparent',
                     marginBottom: -1, fontFamily: 'var(--cp-font-body)',
                     background: 'none', border: 'none', borderBottomStyle: 'solid',
@@ -531,7 +531,7 @@ export function AllWorkSplitView({ items, selectedItemKey, onSelectItem, sortFie
                             }}
                             role="menuitem"
                           >
-                            <span style={{ color: isDark ? '#878787' : '#6b6e76' }}>{action.icon}</span>
+                            <span style={{ color: 'var(--cp-text-tertiary, #6b6e76)' }}>{action.icon}</span>
                             <span>{action.label}</span>
                           </button>
                         ))}
@@ -541,7 +541,7 @@ export function AllWorkSplitView({ items, selectedItemKey, onSelectItem, sortFie
 
                   {/* Key details */}
                   <div className="mb-6">
-                    <h3 className="text-[11px] uppercase font-semibold mb-2" style={{ color: isDark ? '#878787' : '#6b6e76', letterSpacing: '0.05em', fontFamily: 'var(--cp-font-body)' }}>
+                    <h3 className="text-[11px] uppercase font-semibold mb-2" style={{ color: 'var(--cp-text-tertiary, #6b6e76)', letterSpacing: '0.05em', fontFamily: 'var(--cp-font-body)' }}>
                       Key Details
                     </h3>
                     <div className="grid grid-cols-2 gap-3">
@@ -561,11 +561,11 @@ export function AllWorkSplitView({ items, selectedItemKey, onSelectItem, sortFie
 
                   {/* Description */}
                   <div className="mb-6">
-                    <h3 className="text-[11px] uppercase font-semibold mb-2" style={{ color: isDark ? '#878787' : '#6b6e76', letterSpacing: '0.05em' }}>
+                    <h3 className="text-[11px] uppercase font-semibold mb-2" style={{ color: 'var(--cp-text-tertiary, #6b6e76)', letterSpacing: '0.05em' }}>
                       Description
                     </h3>
                     {currentItem.description_text ? (
-                      <p className="text-[13px] leading-[20px]" style={{ color: isDark ? '#A1A1A1' : '#44546f', fontFamily: 'var(--cp-font-body)' }}>
+                      <p className="text-[13px] leading-[20px]" style={{ color: 'var(--cp-text-secondary, #44546f)', fontFamily: 'var(--cp-font-body)' }}>
                         {currentItem.description_text}
                       </p>
                     ) : (
@@ -582,7 +582,7 @@ export function AllWorkSplitView({ items, selectedItemKey, onSelectItem, sortFie
                           onClick={() => setActivityTab(tab)}
                           className="text-[12px] pb-1 capitalize transition-colors duration-[80ms] focus-visible:outline-2 focus-visible:outline-[#2563EB]"
                           style={{
-                            color: activityTab === tab ? '#2563EB' : isDark ? '#878787' : '#6b6e76',
+                            color: activityTab === tab ? '#2563EB' : 'var(--cp-text-tertiary, #6b6e76)',
                             fontWeight: activityTab === tab ? 600 : 400,
                             borderBottom: activityTab === tab ? '2px solid #2563EB' : '2px solid transparent',
                             fontFamily: 'var(--cp-font-body)',
@@ -607,7 +607,7 @@ export function AllWorkSplitView({ items, selectedItemKey, onSelectItem, sortFie
                     ) : (
                       <div className="text-center py-8">
                         <MessageSquare className="w-8 h-8 mx-auto mb-2" style={{ color: 'var(--fg-3)' }} />
-                        <p className="text-[13px]" style={{ color: isDark ? '#878787' : '#6b6e76' }}>No activity yet</p>
+                        <p className="text-[13px]" style={{ color: 'var(--cp-text-tertiary, #6b6e76)' }}>No activity yet</p>
                       </div>
                     )}
 
@@ -627,10 +627,10 @@ export function AllWorkSplitView({ items, selectedItemKey, onSelectItem, sortFie
                           aria-label="Add a comment"
                         />
                         <div className="flex items-center gap-2 mt-2">
-                          <span className="text-[10px] px-2 py-0.5 rounded-full cursor-pointer hover:bg-[var(--bd-subtle, #292929)] transition-colors duration-[80ms]" style={{ backgroundColor: isDark ? '#292929' : 'var(--hover, #1F1F1F)', color: isDark ? '#878787' : '#6b6e76' }}>
+                          <span className="text-[10px] px-2 py-0.5 rounded-full cursor-pointer hover:bg-[var(--bd-subtle, #292929)] transition-colors duration-[80ms]" style={{ backgroundColor: isDark ? '#292929' : 'var(--hover, #1F1F1F)', color: 'var(--cp-text-tertiary, #6b6e76)' }}>
                             Status update...
                           </span>
-                          <span className="text-[10px] px-2 py-0.5 rounded-full cursor-pointer hover:bg-[var(--bd-subtle, #292929)] transition-colors duration-[80ms]" style={{ backgroundColor: isDark ? '#292929' : 'var(--hover, #1F1F1F)', color: isDark ? '#878787' : '#6b6e76' }}>
+                          <span className="text-[10px] px-2 py-0.5 rounded-full cursor-pointer hover:bg-[var(--bd-subtle, #292929)] transition-colors duration-[80ms]" style={{ backgroundColor: isDark ? '#292929' : 'var(--hover, #1F1F1F)', color: 'var(--cp-text-tertiary, #6b6e76)' }}>
                             Thanks!
                           </span>
                         </div>
@@ -673,14 +673,14 @@ export function AllWorkSplitView({ items, selectedItemKey, onSelectItem, sortFie
             </div>
 
             {/* Right detail sidebar — 260px */}
-            <div className="overflow-y-auto py-4 px-4" style={{ width: 260, borderLeft: isDark ? '1px solid #2E2E2E' : '1px solid var(--bd-subtle, #292929)', backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF' }}>
+            <div className="overflow-y-auto py-4 px-4" style={{ width: 260, borderLeft: isDark ? '1px solid #2E2E2E' : '1px solid var(--bd-subtle, #292929)', backgroundColor: 'var(--cp-bg-elevated, #FFFFFF)' }}>
               <div className="mb-4">
-                <span className="text-[11px] uppercase font-semibold block mb-1.5" style={{ color: isDark ? '#878787' : '#6b6e76', letterSpacing: '0.05em' }}>Status</span>
+                <span className="text-[11px] uppercase font-semibold block mb-1.5" style={{ color: 'var(--cp-text-tertiary, #6b6e76)', letterSpacing: '0.05em' }}>Status</span>
                 <StatusLozenge status={currentItem.status} />
               </div>
 
               <div className="mb-4">
-                <span className="text-[11px] uppercase font-semibold block mb-1.5" style={{ color: isDark ? '#878787' : '#6b6e76', letterSpacing: '0.05em' }}>Assignee</span>
+                <span className="text-[11px] uppercase font-semibold block mb-1.5" style={{ color: 'var(--cp-text-tertiary, #6b6e76)', letterSpacing: '0.05em' }}>Assignee</span>
                 {currentItem.assignee_display_name ? (
                   <div className="flex items-center gap-2">
                     <div className="w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold text-white" style={{ backgroundColor: '#4C6EF5' }}>
@@ -695,7 +695,7 @@ export function AllWorkSplitView({ items, selectedItemKey, onSelectItem, sortFie
               </div>
 
               <div className="mb-4">
-                <span className="text-[11px] uppercase font-semibold block mb-1.5" style={{ color: isDark ? '#878787' : '#6b6e76', letterSpacing: '0.05em' }}>Priority</span>
+                <span className="text-[11px] uppercase font-semibold block mb-1.5" style={{ color: 'var(--cp-text-tertiary, #6b6e76)', letterSpacing: '0.05em' }}>Priority</span>
                 <div className="flex items-center gap-2">
                   <span className="w-2 h-2 rounded-full" style={{ backgroundColor: PRIORITY_COLORS[currentItem.priority] || 'var(--cp-blue)' }} />
                   <span className="text-[13px]" style={{ color: 'var(--fg-1)' }}>{currentItem.priority}</span>
@@ -703,25 +703,25 @@ export function AllWorkSplitView({ items, selectedItemKey, onSelectItem, sortFie
               </div>
 
               <div className="mb-4">
-                <span className="text-[11px] uppercase font-semibold block mb-1.5" style={{ color: isDark ? '#878787' : '#6b6e76', letterSpacing: '0.05em' }}>Fix Version</span>
+                <span className="text-[11px] uppercase font-semibold block mb-1.5" style={{ color: 'var(--cp-text-tertiary, #6b6e76)', letterSpacing: '0.05em' }}>Fix Version</span>
                 <span className="text-[13px]" style={{ color: currentItem.fix_version_name ? 'var(--fg-1)' : 'var(--fg-3)' }}>
                   {currentItem.fix_version_name || '—'}
                 </span>
               </div>
 
               <div className="mb-4">
-                <span className="text-[11px] uppercase font-semibold block mb-1.5" style={{ color: isDark ? '#878787' : '#6b6e76', letterSpacing: '0.05em' }}>Reporter</span>
+                <span className="text-[11px] uppercase font-semibold block mb-1.5" style={{ color: 'var(--cp-text-tertiary, #6b6e76)', letterSpacing: '0.05em' }}>Reporter</span>
                 <span className="text-[13px]" style={{ color: currentItem.reporter_name ? 'var(--fg-1)' : 'var(--fg-3)' }}>
                   {currentItem.reporter_name || '—'}
                 </span>
               </div>
 
               <div className="mb-4">
-                <span className="text-[11px] uppercase font-semibold block mb-1.5" style={{ color: isDark ? '#878787' : '#6b6e76', letterSpacing: '0.05em' }}>Labels</span>
+                <span className="text-[11px] uppercase font-semibold block mb-1.5" style={{ color: 'var(--cp-text-tertiary, #6b6e76)', letterSpacing: '0.05em' }}>Labels</span>
                 {currentItem.labels?.length ? (
                   <div className="flex flex-wrap gap-1">
                     {currentItem.labels.map(l => (
-                      <span key={l} className="text-[11px] px-2 py-0.5 rounded" style={{ backgroundColor: isDark ? '#292929' : 'var(--hover, #1F1F1F)', color: isDark ? '#A1A1A1' : '#44546f' }}>{l}</span>
+                      <span key={l} className="text-[11px] px-2 py-0.5 rounded" style={{ backgroundColor: isDark ? '#292929' : 'var(--hover, #1F1F1F)', color: 'var(--cp-text-secondary, #44546f)' }}>{l}</span>
                     ))}
                   </div>
                 ) : (
@@ -731,14 +731,14 @@ export function AllWorkSplitView({ items, selectedItemKey, onSelectItem, sortFie
 
               <div className="mt-6 pt-4" style={{ borderTop: isDark ? '1px solid #2E2E2E' : '1px solid var(--bd-subtle, #292929)' }}>
                 <div className="mb-2">
-                  <span className="text-[11px] uppercase font-semibold block mb-0.5" style={{ color: isDark ? '#878787' : '#6b6e76', letterSpacing: '0.05em' }}>Created</span>
-                  <span className="text-[12px]" style={{ color: isDark ? '#A1A1A1' : '#44546f', fontFamily: 'var(--cp-font-mono)' }} title={currentItem.jira_created_at || ''}>
+                  <span className="text-[11px] uppercase font-semibold block mb-0.5" style={{ color: 'var(--cp-text-tertiary, #6b6e76)', letterSpacing: '0.05em' }}>Created</span>
+                  <span className="text-[12px]" style={{ color: 'var(--cp-text-secondary, #44546f)', fontFamily: 'var(--cp-font-mono)' }} title={currentItem.jira_created_at || ''}>
                     {formatRel(currentItem.jira_created_at)}
                   </span>
                 </div>
                 <div>
-                  <span className="text-[11px] uppercase font-semibold block mb-0.5" style={{ color: isDark ? '#878787' : '#6b6e76', letterSpacing: '0.05em' }}>Updated</span>
-                  <span className="text-[12px]" style={{ color: isDark ? '#A1A1A1' : '#44546f', fontFamily: 'var(--cp-font-mono)' }} title={currentItem.jira_updated_at || ''}>
+                  <span className="text-[11px] uppercase font-semibold block mb-0.5" style={{ color: 'var(--cp-text-tertiary, #6b6e76)', letterSpacing: '0.05em' }}>Updated</span>
+                  <span className="text-[12px]" style={{ color: 'var(--cp-text-secondary, #44546f)', fontFamily: 'var(--cp-font-mono)' }} title={currentItem.jira_updated_at || ''}>
                     {formatRel(currentItem.jira_updated_at)}
                   </span>
                 </div>

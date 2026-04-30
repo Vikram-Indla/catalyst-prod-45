@@ -58,10 +58,10 @@ export function RoadmapRequestList({ groups, selectedId, hoveredId, onSelect, on
   const surface = isDark ? SURFACE_DARK : SURFACE;
   const totalCount = groups.reduce((sum, g) => sum + g.items.length, 0);
 
-  const headerBg = isDark ? '#1F1F1F' : '#FAFBFC';
-  const selectedBg = isDark ? 'rgba(59,130,246,0.10)' : '#EFF6FF';
+  const headerBg = 'var(--cp-bg-page, #FAFBFC)';
+  const selectedBg = 'var(--cp-primary-light, #EFF6FF)';
   const hoverBg = isDark ? '#1F1F1F' : 'rgba(37,99,235,0.04)';
-  const addHoverBg = isDark ? 'rgba(59,130,246,0.10)' : '#EFF6FF';
+  const addHoverBg = 'var(--cp-primary-light, #EFF6FF)';
 
   return (
     <div className="flex-shrink-0 flex flex-col roadmap-scroll" style={{ width: width || LIST_PANEL_WIDTH, borderRight: `1px solid ${surface.border}`, background: surface.card }}>
@@ -148,7 +148,7 @@ export function RoadmapRequestList({ groups, selectedId, hoveredId, onSelect, on
         <button
           onClick={onAddClick}
           className="w-full flex items-center gap-2 px-4 py-3 text-sm font-medium focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500"
-          style={{ color: isDark ? '#60A5FA' : '#2563EB', borderTop: `1px solid ${surface.borderLight}`, transition: 'background-color 0.15s ease' }}
+          style={{ color: 'var(--cp-text-link, #2563EB)', borderTop: `1px solid ${surface.borderLight}`, transition: 'background-color 0.15s ease' }}
           onMouseEnter={e => (e.currentTarget.style.backgroundColor = addHoverBg)}
           onMouseLeave={e => (e.currentTarget.style.backgroundColor = 'transparent')}
         >
@@ -195,7 +195,7 @@ function RequestRow({
         paddingRight: 12,
         backgroundColor: isSelected ? selectedBg : isHovered ? hoverBg : 'transparent',
         borderBottom: `1px solid ${surface.borderLight}`,
-        borderLeft: isSelected ? `3px solid ${isDark ? '#60A5FA' : '#2563EB'}` : '3px solid transparent',
+        borderLeft: isSelected ? `3px solid ${'var(--cp-text-link, #2563EB)'}` : '3px solid transparent',
         transition: 'background-color 0.15s ease',
         overflow: 'hidden',
       }}

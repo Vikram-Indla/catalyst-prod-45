@@ -93,7 +93,7 @@ export function ExecutionViewMode({
             backgroundColor: isDark ? 'rgba(251,191,36,0.12)' : '#FFFBEB',
             border: `1px solid ${isDark ? 'rgba(251,191,36,0.2)' : '#FDE68A'}`,
             display: 'flex', alignItems: 'center', gap: 6,
-            fontSize: 12, color: isDark ? '#FBBF24' : '#92400E',
+            fontSize: 12, color: 'var(--cp-warning-text, #92400E)',
           }}>
             <AlertTriangle size={14} style={{ color: '#D97706', flexShrink: 0 }} />
             <span>
@@ -141,8 +141,8 @@ export function ExecutionViewMode({
               const colors = stepColors[step.status] || stepColors.not_run;
               return (
                 <div key={i} style={{
-                  padding: '12px 16px', backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF',
-                  border: `0.75px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, borderRadius: 6,
+                  padding: '12px 16px', backgroundColor: 'var(--cp-bg-elevated, #FFFFFF)',
+                  border: `0.75px solid ${'var(--cp-border, #E2E8F0)'}`, borderRadius: 6,
                   borderLeft: `3px solid ${colors.border}`,
                 }}>
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
@@ -162,7 +162,7 @@ export function ExecutionViewMode({
                     <p style={{ fontSize: 13, color: 'hsl(var(--foreground))', margin: '4px 0 0', lineHeight: 1.5 }}>{step.title}</p>
                   </div>
                   {step.notes ? (
-                    <div style={{ marginTop: 8, padding: '6px 10px', backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : '#F8FAFC', borderRadius: 4 }}>
+                    <div style={{ marginTop: 8, padding: '6px 10px', backgroundColor: 'var(--cp-bg-page, #F8FAFC)', borderRadius: 4 }}>
                       <span style={{ fontSize: 10, fontWeight: 700, color: 'hsl(var(--muted-foreground))', textTransform: 'uppercase', letterSpacing: '0.06em' }}>NOTES</span>
                       <p style={{ fontSize: 12, color: 'hsl(var(--foreground))', margin: '2px 0 0' }}>{step.notes}</p>
                     </div>

@@ -113,7 +113,7 @@ function FieldPair({ label, value }: { label: string; value: React.ReactNode }) 
     <div>
       <div style={{
         fontSize: '11px', fontWeight: 700, textTransform: 'uppercase' as const,
-        letterSpacing: '0.06em', color: isDark ? '#878787' : '#64748B', marginBottom: '6px',
+        letterSpacing: '0.06em', color: 'var(--cp-text-tertiary, #64748B)', marginBottom: '6px',
       }}>
         {label}
       </div>
@@ -134,8 +134,8 @@ const formatSource = (source: string): string => {
 export default function IdeationDetailPanel({ ideaKey, onClose, onConvert }: Props) {
   const { isDark } = useTheme();
   const dk = isDark ? DK : LK;
-  const darkSelectStyle: React.CSSProperties = { ...selectStyle, color: dk.t1, background: isDark ? 'transparent' : '#FFFFFF', borderColor: isDark ? '#454545' : 'rgba(15,23,42,0.14)' };
-  const darkInputStyle: React.CSSProperties = { ...inputStyle, color: dk.t1, background: isDark ? 'transparent' : '#FFFFFF', borderColor: isDark ? '#454545' : 'rgba(15,23,42,0.14)' };
+  const darkSelectStyle: React.CSSProperties = { ...selectStyle, color: dk.t1, background: 'var(--cp-bg-elevated, #FFFFFF)', borderColor: isDark ? '#454545' : 'rgba(15,23,42,0.14)' };
+  const darkInputStyle: React.CSSProperties = { ...inputStyle, color: dk.t1, background: 'var(--cp-bg-elevated, #FFFFFF)', borderColor: isDark ? '#454545' : 'rgba(15,23,42,0.14)' };
   const { data: rawIdea, isLoading } = useIdeaRaw(ideaKey);
   const { data: dbFactors } = useImpactFactors(ideaKey);
   const updateIdea = useUpdateIdea();
@@ -231,7 +231,7 @@ export default function IdeationDetailPanel({ ideaKey, onClose, onConvert }: Pro
   if (isLoading) return (
     <>
       <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.25)', zIndex: 200 }} />
-      <div style={{ position: 'fixed', top: 0, right: 0, bottom: 0, width: '480px', background: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF', zIndex: 201, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <div style={{ position: 'fixed', top: 0, right: 0, bottom: 0, width: '480px', background: 'var(--cp-bg-elevated, #FFFFFF)', zIndex: 201, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <span style={{ color: dk.t3, fontSize: '14px' }}>Loading...</span>
       </div>
     </>
@@ -249,7 +249,7 @@ export default function IdeationDetailPanel({ ideaKey, onClose, onConvert }: Pro
       <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.40)', zIndex: 200 }} />
       <div style={{
         position: 'fixed', top: 0, right: 0, bottom: 0, width: '480px',
-        background: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF', zIndex: 201, boxShadow: isDark ? 'none' : '-8px 0 32px rgba(0,0,0,0.12)',
+        background: 'var(--cp-bg-elevated, #FFFFFF)', zIndex: 201, boxShadow: isDark ? 'none' : '-8px 0 32px rgba(0,0,0,0.12)',
         display: 'flex', flexDirection: 'column',
         animation: 'slideInRight 0.25s ease forwards',
       }}>
@@ -260,7 +260,7 @@ export default function IdeationDetailPanel({ ideaKey, onClose, onConvert }: Pro
         }}>
           <span style={{
             fontFamily: 'var(--cp-font-mono)', fontSize: '13px', fontWeight: 700,
-            color: dk.blueKey, background: isDark ? 'rgba(37,99,235,0.12)' : '#EFF6FF', padding: '3px 10px', borderRadius: '4px',
+            color: dk.blueKey, background: 'var(--cp-primary-light, #EFF6FF)', padding: '3px 10px', borderRadius: '4px',
           }}>
             {rawIdea.idea_key}
           </span>
@@ -269,7 +269,7 @@ export default function IdeationDetailPanel({ ideaKey, onClose, onConvert }: Pro
           <button onClick={() => { if (isEditing) { resetLocalState(); setIsEditing(false); } else { setIsEditing(true); } }} style={{
             width: '32px', height: '32px', borderRadius: '6px',
             border: `1px solid ${dk.border}`,
-            background: isEditing ? (isDark ? 'rgba(37,99,235,0.12)' : '#EFF6FF') : (isDark ? 'transparent' : '#FFFFFF'),
+            background: isEditing ? ('var(--cp-primary-light, #EFF6FF)') : ('var(--cp-bg-elevated, #FFFFFF)'),
             cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
             color: dk.t2,
           }}>
@@ -448,7 +448,7 @@ export default function IdeationDetailPanel({ ideaKey, onClose, onConvert }: Pro
                   onClick={() => setLocalIsCommitted(!localIsCommitted)}
                   style={{
                     width: '44px', height: '24px', borderRadius: '12px', border: 'none',
-                    backgroundColor: localIsCommitted ? '#2563EB' : (isDark ? '#454545' : '#E2E8F0'),
+                    backgroundColor: localIsCommitted ? '#2563EB' : ('var(--cp-border-strong, #E2E8F0)'),
                     cursor: 'pointer', position: 'relative', transition: 'background 200ms ease',
                   }}
                 >
@@ -478,7 +478,7 @@ export default function IdeationDetailPanel({ ideaKey, onClose, onConvert }: Pro
                 style={{
                   width: '100%', borderRadius: '4px', border: `1px solid ${isDark ? '#454545' : 'rgba(15,23,42,0.14)'}`,
                   padding: '8px 12px', fontSize: '13px', color: dk.t1, resize: 'vertical',
-                  fontFamily: 'var(--cp-font-body)', outline: 'none', background: isDark ? 'transparent' : '#FFFFFF',
+                  fontFamily: 'var(--cp-font-body)', outline: 'none', background: 'var(--cp-bg-elevated, #FFFFFF)',
                 }}
               />
             ) : (
@@ -526,7 +526,7 @@ export default function IdeationDetailPanel({ ideaKey, onClose, onConvert }: Pro
               <div key={dim.letter} style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '14px' }}>
                 <div style={{
                   width: '32px', height: '32px', borderRadius: '50%',
-                  backgroundColor: isDark ? '#2E2E2E' : '#E2E8F0', color: dk.t2,
+                  backgroundColor: 'var(--cp-border, #E2E8F0)', color: dk.t2,
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   fontSize: '13px', fontWeight: 700, flexShrink: 0,
                 }}>
@@ -537,7 +537,7 @@ export default function IdeationDetailPanel({ ideaKey, onClose, onConvert }: Pro
                     <span style={{ fontSize: '13px', fontWeight: 500, color: dk.t1 }}>{dim.name}</span>
                     <span style={{ fontSize: '12px', color: dk.t2 }}>{dim.weight}</span>
                   </div>
-                  <div style={{ height: '4px', borderRadius: '4px', backgroundColor: isDark ? '#2E2E2E' : '#E2E8F0', overflow: 'hidden' }}>
+                  <div style={{ height: '4px', borderRadius: '4px', backgroundColor: 'var(--cp-border, #E2E8F0)', overflow: 'hidden' }}>
                     <div style={{
                       height: '100%', width: `${(dim.score / 5) * 100}%`,
                       backgroundColor: dim.score > 0 ? '#2563EB' : 'transparent',
@@ -569,12 +569,12 @@ export default function IdeationDetailPanel({ ideaKey, onClose, onConvert }: Pro
         {isEditing && (
           <div style={{
             padding: '12px 24px', borderTop: `1px solid ${dk.border}`,
-            backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF', display: 'flex', justifyContent: 'flex-end', gap: '8px', flexShrink: 0,
+            backgroundColor: 'var(--cp-bg-elevated, #FFFFFF)', display: 'flex', justifyContent: 'flex-end', gap: '8px', flexShrink: 0,
           }}>
             <button onClick={() => { resetLocalState(); setIsEditing(false); }} style={{
               height: '50px', padding: '0 16px', borderRadius: '6px',
               border: `1px solid ${dk.border}`,
-              background: isDark ? 'transparent' : '#FFFFFF', color: dk.t2,
+              background: 'var(--cp-bg-elevated, #FFFFFF)', color: dk.t2,
               fontSize: '13px', fontWeight: 600, cursor: 'pointer',
             }}>
               Cancel
@@ -641,7 +641,7 @@ function CommentsSection({ ideaId }: { ideaId: string | null }) {
             const timeAgo = c.created_at ? getRelativeTime(c.created_at) : '';
             return (
               <div key={c.id} style={{
-                background: isDark ? '#1F1F1F' : '#FFFFFF', border: `1px solid ${dk.divider}`,
+                background: 'var(--cp-bg-elevated, #FFFFFF)', border: `1px solid ${dk.divider}`,
                 borderRadius: '6px', padding: '12px 16px',
               }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
@@ -674,7 +674,7 @@ function CommentsSection({ ideaId }: { ideaId: string | null }) {
             flex: 1, minHeight: '50px', maxHeight: '120px', resize: 'vertical',
             border: `1px solid ${dk.border}`, borderRadius: '6px', padding: '8px 12px',
             fontSize: '14px', fontFamily: 'var(--cp-font-body)', outline: 'none', color: dk.t1,
-            background: isDark ? 'transparent' : '#FFFFFF',
+            background: 'var(--cp-bg-elevated, #FFFFFF)',
           }}
         />
         {newComment.trim() && (

@@ -28,11 +28,11 @@ export function ProjectToolbar({
     return () => clearTimeout(t);
   }, [localSearch, onSearchChange]);
 
-  const borderColor = isDark ? '#2E2E2E' : '#E2E8F0';
-  const surfaceBg = isDark ? 'transparent' : '#FFFFFF';
-  const textColor = isDark ? '#EDEDED' : '#0F172A';
-  const mutedColor = isDark ? '#7D7D7D' : '#94A3B8';
-  const subtleColor = isDark ? '#878787' : '#6B778C';
+  const borderColor = 'var(--cp-border, #E2E8F0)';
+  const surfaceBg = 'var(--cp-bg-elevated, #FFFFFF)';
+  const textColor = 'var(--cp-text-primary, #0F172A)';
+  const mutedColor = 'var(--cp-text-muted, #94A3B8)';
+  const subtleColor = 'var(--cp-text-tertiary, #6B778C)';
 
   return (
     <div>
@@ -74,8 +74,8 @@ export function ProjectToolbar({
             style={{
               width: 32,
               height: 32,
-              backgroundColor: view === 'table' ? (isDark ? '#0D1526' : '#DEEBFF') : surfaceBg,
-              color: view === 'table' ? (isDark ? '#4C9AFF' : '#0052CC') : subtleColor,
+              backgroundColor: view === 'table' ? ('var(--cp-primary-light, #DEEBFF)') : surfaceBg,
+              color: view === 'table' ? ('var(--cp-text-link, #0052CC)') : subtleColor,
               border: 'none',
               cursor: 'pointer',
             }}
@@ -89,8 +89,8 @@ export function ProjectToolbar({
             style={{
               width: 32,
               height: 32,
-              backgroundColor: view === 'card' ? (isDark ? '#0D1526' : '#DEEBFF') : surfaceBg,
-              color: view === 'card' ? (isDark ? '#4C9AFF' : '#0052CC') : subtleColor,
+              backgroundColor: view === 'card' ? ('var(--cp-primary-light, #DEEBFF)') : surfaceBg,
+              color: view === 'card' ? ('var(--cp-text-link, #0052CC)') : subtleColor,
               border: 'none',
               borderLeft: `1px solid ${borderColor}`,
               cursor: 'pointer',

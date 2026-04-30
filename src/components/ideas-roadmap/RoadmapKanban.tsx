@@ -101,7 +101,7 @@ export function RoadmapKanban({ ideas, onDrop, onSelectIdea, onToggleCommitted, 
               <span style={{
                 fontSize: 11, fontWeight: 600, color: dk.t3,
                 fontFamily: 'var(--cp-font-body)',
-                background: isDark ? '#292929' : '#F1F5F9',
+                background: 'var(--cp-bg-sunken, #F1F5F9)',
                 padding: '1px 7px', borderRadius: 100,
               }}>
                 {colIdeas.length}

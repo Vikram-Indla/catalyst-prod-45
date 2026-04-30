@@ -229,7 +229,7 @@ export function ThemeListView({ themes, onSelect, isDark = false }: Props) {
       {selected.size > 0 && (
         <div style={{
           position: 'fixed', bottom: 24, left: '50%', transform: 'translateX(-50%)',
-          background: isDark ? 'var(--cp-bg-surface, #242528)' : '#0F172A', color: '#FFFFFF', borderRadius: 12,
+          background: 'var(--cp-text-primary, #0F172A)', color: '#FFFFFF', borderRadius: 12,
           padding: '10px 16px', display: 'flex', alignItems: 'center', gap: 12,
           boxShadow: '0 8px 30px rgba(0,0,0,0.25)', zIndex: 50,
         }}>

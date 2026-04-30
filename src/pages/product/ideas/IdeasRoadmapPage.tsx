@@ -49,7 +49,7 @@ import { useLocation } from 'react-router-dom';
 const TEAMS = ['All Teams', 'Senaie BAU', 'Integration Team', 'Mobile App Team'];
 
 function SkeletonCard({ isDark }: { isDark?: boolean }) {
-  return <div style={{ height: 80, background: isDark ? 'var(--cp-bg-surface, #242528)' : '#F1F5F9', borderRadius: 8, animation: 'shimmer 1.5s infinite' }} />;
+  return <div style={{ height: 80, background: 'var(--cp-bg-sunken, #F1F5F9)', borderRadius: 8, animation: 'shimmer 1.5s infinite' }} />;
 }
 
 function LoadingSkeleton({ isDark }: { isDark?: boolean }) {
@@ -60,7 +60,7 @@ function LoadingSkeleton({ isDark }: { isDark?: boolean }) {
           flex: 1, minWidth: 220, display: 'flex', flexDirection: 'column', gap: 8,
           borderRadius: 8, border: isDark ? '1px solid #2E2E2E' : '1px solid #E2E8F0', padding: 12,
         }}>
-          <div style={{ height: 20, width: 100, background: isDark ? 'var(--cp-bg-surface, #242528)' : '#F1F5F9', borderRadius: 4, marginBottom: 8 }} />
+          <div style={{ height: 20, width: 100, background: 'var(--cp-bg-sunken, #F1F5F9)', borderRadius: 4, marginBottom: 8 }} />
           {[1, 2, 3].map(i => <SkeletonCard key={i} isDark={isDark} />)}
         </div>
       ))}
@@ -179,7 +179,7 @@ export default function IdeasRoadmapPage() {
     return (
       <div style={{
         height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center',
-        justifyContent: 'center', gap: 12, background: isDark ? 'var(--cp-bg-page, #1F1F21)' : '#FFFFFF', fontFamily: 'var(--cp-font-body)',
+        justifyContent: 'center', gap: 12, background: 'var(--cp-bg-elevated, #FFFFFF)', fontFamily: 'var(--cp-font-body)',
       }}>
         <div style={{ fontSize: 14, fontWeight: 600, color: '#DC2626' }}>Failed to load roadmap</div>
         <button
@@ -201,18 +201,18 @@ export default function IdeasRoadmapPage() {
     return (
       <div style={{
         height: '100%', display: 'flex', flexDirection: 'column',
-        background: isDark ? 'var(--cp-bg-page, #1F1F21)' : '#FFFFFF', fontFamily: 'var(--cp-font-body)',
+        background: 'var(--cp-bg-elevated, #FFFFFF)', fontFamily: 'var(--cp-font-body)',
       }}>
         <RoadmapToolbar view={view} onViewChange={setView} committedOnly={committedOnly}
           onCommittedOnlyChange={setCommittedOnly} totalCount={0} committedCount={0}
           onPresent={handlePresent} onExport={handleExport} onGantt={handleGantt} />
         <div style={{
           flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center',
-          justifyContent: 'center', gap: 12, color: isDark ? '#878787' : '#64748B',
+          justifyContent: 'center', gap: 12, color: 'var(--cp-text-tertiary, #64748B)',
         }}>
           <div style={{ fontSize: 40, opacity: 0.3 }}>💡</div>
-          <div style={{ fontSize: 14, fontWeight: 600, color: isDark ? '#A1A1A1' : '#334155' }}>No ideas in backlog yet</div>
-          <div style={{ fontSize: 13, color: isDark ? '#878787' : '#94A3B8' }}>Add ideas from the Ideas list to get started.</div>
+          <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--cp-text-secondary, #334155)' }}>No ideas in backlog yet</div>
+          <div style={{ fontSize: 13, color: 'var(--cp-text-muted, #94A3B8)' }}>Add ideas from the Ideas list to get started.</div>
           <a href="/producthub/ideation" style={{
             marginTop: 8, fontSize: 13, fontWeight: 600, color: '#2563EB', textDecoration: 'none',
           }}>Go to Ideas →</a>
@@ -229,7 +229,7 @@ export default function IdeasRoadmapPage() {
   return (
     <div style={{
       height: '100%', display: 'flex', flexDirection: 'column',
-      background: isDark ? 'var(--cp-bg-page, #1F1F21)' : '#FFFFFF', fontFamily: 'var(--cp-font-body)',
+      background: 'var(--cp-bg-elevated, #FFFFFF)', fontFamily: 'var(--cp-font-body)',
     }}>
       <RoadmapToolbar
         view={view} onViewChange={setView}
@@ -251,7 +251,7 @@ export default function IdeasRoadmapPage() {
             flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center',
             justifyContent: 'center', gap: 8, padding: 24, textAlign: 'center',
           }}>
-            <div style={{ fontSize: 14, color: isDark ? '#878787' : '#64748B', maxWidth: 340, lineHeight: 1.5 }}>
+            <div style={{ fontSize: 14, color: 'var(--cp-text-tertiary, #64748B)', maxWidth: 340, lineHeight: 1.5 }}>
               No committed ideas yet. Toggle an idea's committed switch to include it on the roadmap.
             </div>
             <button
@@ -267,7 +267,7 @@ export default function IdeasRoadmapPage() {
             flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center',
             justifyContent: 'center', gap: 8,
           }}>
-            <div style={{ fontSize: 14, color: isDark ? '#878787' : '#64748B' }}>No ideas match the current filters</div>
+            <div style={{ fontSize: 14, color: 'var(--cp-text-tertiary, #64748B)' }}>No ideas match the current filters</div>
             <button
               onClick={() => { setTeamFilter('All Teams'); setCommittedOnly(false); }}
               style={{

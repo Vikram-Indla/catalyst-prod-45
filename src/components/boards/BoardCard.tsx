@@ -122,7 +122,7 @@ export default function BoardCard({ board, projectId, onOpen, onSettings }: Boar
                 <MenuItem onClick={() => setMenuOpen(false)}>
                   <ClipboardCopy size={13} /> Duplicate board
                 </MenuItem>
-                <div style={{ height: 0.75, background: isDark ? '#2E2E2E' : 'rgba(15,23,42,0.08)', margin: '4px 0' }} />
+                <div style={{ height: 0.75, background: 'var(--cp-border-subtle, rgba(15,23,42,0.08))', margin: '4px 0' }} />
                 <MenuItem danger onClick={() => { setMenuOpen(false); setDeleteModal(true); }}>
                   <Trash2 size={13} /> Delete board…
                 </MenuItem>
@@ -146,10 +146,10 @@ export default function BoardCard({ board, projectId, onOpen, onSettings }: Boar
           </button>
 
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5, marginBottom: 10 }}>
-            {board.isPersonal && <Chip bg={isDark ? 'rgba(37,99,235,0.12)' : '#EFF6FF'} color="#2563EB">Personal</Chip>}
+            {board.isPersonal && <Chip bg={'var(--cp-primary-light, #EFF6FF)'} color="#2563EB">Personal</Chip>}
             <Chip bg={vis.bg} color={vis.color}>{vis.label}</Chip>
             {board.swimlaneType !== 'none' && (
-              <Chip bg={isDark ? '#292929' : '#F8FAFC'} color={isDark ? '#A1A1A1' : '#64748B'}>By {board.swimlaneType}</Chip>
+              <Chip bg={'var(--cp-bg-page, #F8FAFC)'} color={'var(--cp-text-tertiary, #64748B)'}>By {board.swimlaneType}</Chip>
             )}
             {/* Jira Sync badge */}
             {hasJiraSync && (

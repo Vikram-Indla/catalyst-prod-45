@@ -1,0 +1,236 @@
+{
+  "total_substitutions": 32,
+  "files_changed": 22,
+  "changed_files": [
+    {
+      "file": "src/components/admin/UserDetailPanel.tsx",
+      "count": 3
+    },
+    {
+      "file": "src/components/ideas-roadmap/RoadmapCard.tsx",
+      "count": 3
+    },
+    {
+      "file": "src/components/hierarchy/WorkItemTree.tsx",
+      "count": 2
+    },
+    {
+      "file": "src/components/project-hub/ProjectToolbar.tsx",
+      "count": 2
+    },
+    {
+      "file": "src/components/shared/GroupByPopover.tsx",
+      "count": 2
+    },
+    {
+      "file": "src/components/workhub/allwork/AllWorkSplitView.tsx",
+      "count": 2
+    },
+    {
+      "file": "src/pages/releasehub/CommandCenterPage.tsx",
+      "count": 2
+    },
+    {
+      "file": "src/pages/testhub/ReportDetailPage.tsx",
+      "count": 2
+    },
+    {
+      "file": "src/components/goals/GoalsHeatmapView.tsx",
+      "count": 1
+    },
+    {
+      "file": "src/components/goals/GoalsTreeView.tsx",
+      "count": 1
+    },
+    {
+      "file": "src/components/notifications/WatchingTab.tsx",
+      "count": 1
+    },
+    {
+      "file": "src/components/project-hub/ProjectStatusTabs.tsx",
+      "count": 1
+    },
+    {
+      "file": "src/components/project-hub/ProjectTable.tsx",
+      "count": 1
+    },
+    {
+      "file": "src/components/project-hub/shell/SidebarProjectNav.tsx",
+      "count": 1
+    },
+    {
+      "file": "src/components/wiki/admin/WikiAdminSyncTab.tsx",
+      "count": 1
+    },
+    {
+      "file": "src/pages/ReqAssistGenerate.tsx",
+      "count": 1
+    },
+    {
+      "file": "src/pages/admin/JiraUserSync.tsx",
+      "count": 1
+    },
+    {
+      "file": "src/pages/producthub/IdeasBacklogPage.tsx",
+      "count": 1
+    },
+    {
+      "file": "src/pages/producthub/ideation/IdeaDrawer.tsx",
+      "count": 1
+    },
+    {
+      "file": "src/pages/producthub/ideation/IdeationDetailPanel.tsx",
+      "count": 1
+    },
+    {
+      "file": "src/pages/producthub/ideation/IdeationDrivesView.tsx",
+      "count": 1
+    },
+    {
+      "file": "src/pages/producthub/ideation/IdeationTriagePanel.tsx",
+      "count": 1
+    }
+  ],
+  "unmapped_pairs": [
+    {
+      "dark": "#FFFFFF",
+      "light": "#2563EB",
+      "count": 1
+    },
+    {
+      "dark": "#0F2A1A",
+      "light": "#E3FCEF",
+      "count": 1
+    },
+    {
+      "dark": "#86EFAC",
+      "light": "#006644",
+      "count": 1
+    },
+    {
+      "dark": "#444444",
+      "light": "#334155",
+      "count": 1
+    },
+    {
+      "dark": "#2E2E2E",
+      "light": "#E9EBEE",
+      "count": 1
+    },
+    {
+      "dark": "#292929",
+      "light": "#e4e4e7",
+      "count": 1
+    },
+    {
+      "dark": "#EDEDED",
+      "light": "#09090B",
+      "count": 1
+    },
+    {
+      "dark": "#A1A1A1",
+      "light": "#71717A",
+      "count": 1
+    },
+    {
+      "dark": "#2E2E2E",
+      "light": "#EBECF0",
+      "count": 1
+    },
+    {
+      "dark": "#A1A1A1",
+      "light": "#6B778C",
+      "count": 1
+    },
+    {
+      "dark": "#292929",
+      "light": "#EBECF0",
+      "count": 1
+    },
+    {
+      "dark": "#111111",
+      "light": "#FFFFFF",
+      "count": 1
+    },
+    {
+      "dark": "#A1A1A1",
+      "light": "#065F46",
+      "count": 1
+    },
+    {
+      "dark": "#A1A1A1",
+      "light": "#1e293b",
+      "count": 1
+    },
+    {
+      "dark": "#2E2E2E",
+      "light": "#E5E5E5",
+      "count": 1
+    },
+    {
+      "dark": "#2E2E2E",
+      "light": "#94A3B8",
+      "count": 1
+    },
+    {
+      "dark": "#451A03",
+      "light": "#FEF3C7",
+      "count": 1
+    },
+    {
+      "dark": "#F87171",
+      "light": "#B91C1C",
+      "count": 1
+    },
+    {
+      "dark": "#86EFAC",
+      "light": "#166534",
+      "count": 1
+    },
+    {
+      "dark": "#4ADE80",
+      "light": "#15803D",
+      "count": 1
+    },
+    {
+      "dark": "#2E2E2E",
+      "light": "#F4F4F5",
+      "count": 1
+    },
+    {
+      "dark": "#86EFAC",
+      "light": "#11853D",
+      "count": 1
+    },
+    {
+      "dark": "#86EFAC",
+      "light": "#16A34A",
+      "count": 1
+    },
+    {
+      "dark": "#93C5FD",
+      "light": "#1E40AF",
+      "count": 1
+    },
+    {
+      "dark": "#86EFAC",
+      "light": "#FFFFFF",
+      "count": 1
+    },
+    {
+      "dark": "#3D3520",
+      "light": "#FFFBEB",
+      "count": 1
+    },
+    {
+      "dark": "#2D4A2D",
+      "light": "#A7F3D0",
+      "count": 1
+    },
+    {
+      "dark": "#5C2020",
+      "light": "#FECACA",
+      "count": 1
+    }
+  ]
+}

@@ -235,14 +235,14 @@ export default function ReqAssistLibrary() {
   const hasDocuments = documents && documents.length > 0;
 
   return (
-    <div style={{ background: isDark ? 'var(--cp-bg-page, #1F1F21)' : '#F8FAFC', minHeight: '100%' }}>
+    <div style={{ background: 'var(--cp-bg-page, #F8FAFC)', minHeight: '100%' }}>
       {/* ── ZONE 1: PAGE HEADER ── */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', padding: '24px 28px 0' }}>
         <div>
-          <h1 style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 22, fontWeight: 700, color: isDark ? '#EDEDED' : '#0F172A', margin: 0 }}>
+          <h1 style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 22, fontWeight: 700, color: 'var(--cp-text-primary, #0F172A)', margin: 0 }}>
             Req Assist™
           </h1>
-          <p style={{ fontSize: 13, fontWeight: 400, color: isDark ? '#878787' : '#64748B', margin: '2px 0 0', fontFamily: 'var(--cp-font-body)' }}>
+          <p style={{ fontSize: 13, fontWeight: 400, color: 'var(--cp-text-tertiary, #64748B)', margin: '2px 0 0', fontFamily: 'var(--cp-font-body)' }}>
             BRD library — sourced from Jira, enriched by AI, indexed for AI-powered search
           </p>
         </div>
@@ -253,12 +253,12 @@ export default function ReqAssistLibrary() {
               display: 'inline-flex', alignItems: 'center', gap: 6,
               padding: '0 14px', height: 50, fontSize: 13, fontWeight: 500,
               border: `1px solid ${isDark ? '#2E2E2E' : 'rgba(15,23,42,0.18)'}`, borderRadius: 6,
-              background: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF', color: isDark ? '#A1A1A1' : '#374151', cursor: 'pointer',
+              background: 'var(--cp-bg-elevated, #FFFFFF)', color: 'var(--cp-text-secondary, #374151)', cursor: 'pointer',
               fontFamily: 'var(--cp-font-body)',
               transition: 'background 80ms ease',
             }}
-            onMouseEnter={e => (e.currentTarget.style.background = isDark ? '#1F1F1F' : 'rgba(15,23,42,0.04)')}
-            onMouseLeave={e => (e.currentTarget.style.background = isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF')}
+            onMouseEnter={e => (e.currentTarget.style.background = 'var(--cp-interact-hover, rgba(15,23,42,0.04))')}
+            onMouseLeave={e => (e.currentTarget.style.background = 'var(--cp-bg-elevated, #FFFFFF)')}
           >
             <Download size={14} color="#374151" /> Import from Jira
           </button>
@@ -299,12 +299,12 @@ export default function ReqAssistLibrary() {
           /* Empty state */
           <div style={{
             display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-            padding: '80px 0', background: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF',
-            border: `0.75px solid ${isDark ? '#2E2E2E' : 'rgba(15,23,42,0.10)'}`, borderRadius: 8,
+            padding: '80px 0', background: 'var(--cp-bg-elevated, #FFFFFF)',
+            border: `0.75px solid ${'var(--cp-border-default, rgba(15,23,42,0.10))'}`, borderRadius: 8,
           }}>
             <FileText size={32} color="#94A3B8" style={{ marginBottom: 12 }} />
-            <p style={{ fontSize: 16, fontWeight: 600, color: isDark ? '#EDEDED' : '#0F172A', margin: '0 0 6px', fontFamily: 'var(--cp-font-heading)' }}>No documents yet</p>
-            <p style={{ fontSize: 14, color: isDark ? '#878787' : '#64748B', margin: '0 0 20px', fontFamily: 'var(--cp-font-body)' }}>Import from Jira or generate a BRD from text to get started.</p>
+            <p style={{ fontSize: 16, fontWeight: 600, color: 'var(--cp-text-primary, #0F172A)', margin: '0 0 6px', fontFamily: 'var(--cp-font-heading)' }}>No documents yet</p>
+            <p style={{ fontSize: 14, color: 'var(--cp-text-tertiary, #64748B)', margin: '0 0 20px', fontFamily: 'var(--cp-font-body)' }}>Import from Jira or generate a BRD from text to get started.</p>
             <div style={{ display: 'flex', gap: 8 }}>
               <button onClick={() => setImportOpen(true)} style={{
                 display: 'inline-flex', alignItems: 'center', gap: 6, padding: '0 14px', height: 50,
@@ -318,8 +318,8 @@ export default function ReqAssistLibrary() {
         ) : (
           /* Table container */
           <div style={{
-            background: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF',
-            border: `0.75px solid ${isDark ? '#2E2E2E' : 'rgba(15,23,42,0.10)'}`,
+            background: 'var(--cp-bg-elevated, #FFFFFF)',
+            border: `0.75px solid ${'var(--cp-border-default, rgba(15,23,42,0.10))'}`,
             borderRadius: 8,
             overflow: 'hidden',
           }}>
@@ -340,13 +340,13 @@ export default function ReqAssistLibrary() {
             {isFiltering && (
               <div style={{
                 display: 'flex', alignItems: 'center', gap: 8,
-                padding: '8px 28px', fontSize: 12, color: isDark ? '#878787' : '#64748B',
-                background: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF', borderBottom: `0.75px solid ${isDark ? '#292929' : 'rgba(15,23,42,0.08)'}`,
+                padding: '8px 28px', fontSize: 12, color: 'var(--cp-text-tertiary, #64748B)',
+                background: 'var(--cp-bg-elevated, #FFFFFF)', borderBottom: `0.75px solid ${'var(--cp-border-subtle, rgba(15,23,42,0.08))'}`,
                 fontFamily: 'var(--cp-font-body)',
               }}>
                 Showing {documents?.length ?? 0} of {totalCount} documents
-                <span style={{ color: isDark ? '#878787' : '#94A3B8' }}>·</span>
-                Filtered by: <strong style={{ color: isDark ? '#A1A1A1' : '#334155', fontWeight: 600 }}>{tab !== 'all' ? tab.charAt(0).toUpperCase() + tab.slice(1) : search}</strong>
+                <span style={{ color: 'var(--cp-text-muted, #94A3B8)' }}>·</span>
+                Filtered by: <strong style={{ color: 'var(--cp-text-secondary, #334155)', fontWeight: 600 }}>{tab !== 'all' ? tab.charAt(0).toUpperCase() + tab.slice(1) : search}</strong>
                 <button
                   onClick={() => { setSearch(''); setTab('all'); }}
                   style={{
@@ -363,7 +363,7 @@ export default function ReqAssistLibrary() {
             {/* Table */}
             <table style={{ width: '100%', borderCollapse: 'collapse', tableLayout: 'fixed' }}>
               <thead>
-                <tr style={{ borderBottom: `0.75px solid ${isDark ? '#2E2E2E' : 'rgba(15,23,42,0.10)'}` }}>
+                <tr style={{ borderBottom: `0.75px solid ${'var(--cp-border-default, rgba(15,23,42,0.10))'}` }}>
                   {[
                     { label: 'JIRA TICKET', w: 120 },
                     { label: 'TITLE', w: undefined },
@@ -376,10 +376,10 @@ export default function ReqAssistLibrary() {
                   ].map((col, i) => (
                     <th key={i} style={{
                       padding: '10px 12px', height: 50,
-                      fontSize: 11, fontWeight: 600, color: isDark ? '#878787' : '#64748B',
+                      fontSize: 11, fontWeight: 600, color: 'var(--cp-text-tertiary, #64748B)',
                       textTransform: 'uppercase', letterSpacing: '0.06em',
                       textAlign: 'left', width: col.w || undefined,
-                      background: isDark ? 'var(--cp-bg-page, #1F1F21)' : '#F8FAFC',
+                      background: 'var(--cp-bg-page, #F8FAFC)',
                       fontFamily: 'var(--cp-font-body)',
                     }}>
                       {col.label}
@@ -393,7 +393,7 @@ export default function ReqAssistLibrary() {
                     <tr key={i} style={{ height: 50 }}>
                       {Array.from({ length: 8 }).map((_, j) => (
                         <td key={j} style={{ padding: '8px 12px' }}>
-                          <div style={{ width: j === 1 ? '80%' : '60%', height: 12, background: isDark ? '#2E2E2E' : '#E2E8F0', borderRadius: 4, animation: 'ra-pulse 1.5s ease-in-out infinite' }} />
+                          <div style={{ width: j === 1 ? '80%' : '60%', height: 12, background: 'var(--cp-border, #E2E8F0)', borderRadius: 4, animation: 'ra-pulse 1.5s ease-in-out infinite' }} />
                         </td>
                       ))}
                     </tr>
@@ -423,7 +423,7 @@ export default function ReqAssistLibrary() {
                               {/* Parent line */}
                               <div style={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                                 <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M3.5 2L6.5 5L3.5 8" stroke="#CBD5E1" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                                <span style={{ fontFamily: 'var(--cp-font-body)', fontSize: 11, fontWeight: 500, color: isDark ? '#878787' : '#94A3B8' }}>
+                                <span style={{ fontFamily: 'var(--cp-font-body)', fontSize: 11, fontWeight: 500, color: 'var(--cp-text-muted, #94A3B8)' }}>
                                   {parentKeys[doc.id]}
                                 </span>
                               </div>
@@ -467,7 +467,7 @@ export default function ReqAssistLibrary() {
                         {/* Title */}
                         <td style={{ padding: '8px 12px', overflow: 'hidden', maxWidth: 0 }}>
                           <span title={doc.title} style={{
-                            display: 'block', fontSize: 13, fontWeight: 400, color: isDark ? '#EDEDED' : '#0F172A',
+                            display: 'block', fontSize: 13, fontWeight: 400, color: 'var(--cp-text-primary, #0F172A)',
                             fontFamily: 'var(--cp-font-body)',
                             overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
                             maxWidth: 320,
@@ -481,7 +481,7 @@ export default function ReqAssistLibrary() {
                             const domain = doc.domain || deriveDomainFromKey(doc.jira_ticket_key);
                             return domain ? (
                               <span style={{
-                                fontSize: 12, color: isDark ? '#A1A1A1' : '#475569', fontFamily: 'var(--cp-font-body)',
+                                fontSize: 12, color: 'var(--cp-text-secondary, #475569)', fontFamily: 'var(--cp-font-body)',
                                 whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
                                 display: 'block', maxWidth: 110,
                               }} title={domain}>
@@ -490,8 +490,8 @@ export default function ReqAssistLibrary() {
                             ) : (
                               <span style={{
                                 display: 'inline-flex', alignItems: 'center', padding: '1px 6px',
-                                background: isDark ? 'var(--cp-bg-surface, #242528)' : '#F1F5F9', borderRadius: 4,
-                                fontSize: 11, color: isDark ? '#878787' : '#94A3B8', fontFamily: 'var(--cp-font-body)',
+                                background: 'var(--cp-bg-sunken, #F1F5F9)', borderRadius: 4,
+                                fontSize: 11, color: 'var(--cp-text-muted, #94A3B8)', fontFamily: 'var(--cp-font-body)',
                               }}>Uncategorised</span>
                             );
                           })()}
@@ -543,7 +543,7 @@ export default function ReqAssistLibrary() {
                         </td>
                         {/* Imported */}
                         <td style={{ padding: '8px 12px', overflow: 'hidden' }}>
-                          <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 12, color: isDark ? '#878787' : '#64748B' }}>
+                          <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 12, color: 'var(--cp-text-tertiary, #64748B)' }}>
                             {doc.pulled_at ? formatImported(doc.pulled_at) : '—'}
                           </span>
                         </td>
@@ -564,7 +564,7 @@ export default function ReqAssistLibrary() {
                   <tr>
                     <td colSpan={8} style={{ padding: '48px 0', textAlign: 'center' }}>
                       <FileSearch size={24} color="#94A3B8" style={{ margin: '0 auto 8px', display: 'block' }} />
-                      <p style={{ fontSize: 14, color: isDark ? '#878787' : '#64748B', margin: '0 0 8px', fontFamily: 'var(--cp-font-body)' }}>
+                      <p style={{ fontSize: 14, color: 'var(--cp-text-tertiary, #64748B)', margin: '0 0 8px', fontFamily: 'var(--cp-font-body)' }}>
                         No documents match "{search || 'your search term'}"
                       </p>
                       <button onClick={() => { setSearch(''); setTab('all'); }}
@@ -582,10 +582,10 @@ export default function ReqAssistLibrary() {
               <div style={{
                 display: 'flex', justifyContent: 'space-between', alignItems: 'center',
                 height: 50, padding: '8px 12px',
-                background: isDark ? 'var(--cp-bg-page, #1F1F21)' : '#FAFAFA',
-                borderTop: `0.75px solid ${isDark ? '#292929' : 'rgba(15,23,42,0.08)'}`,
+                background: 'var(--cp-bg-page, #FAFAFA)',
+                borderTop: `0.75px solid ${'var(--cp-border-subtle, rgba(15,23,42,0.08))'}`,
               }}>
-                <span style={{ fontSize: 12, fontWeight: 400, color: isDark ? '#878787' : '#64748B', fontFamily: 'var(--cp-font-body)' }}>
+                <span style={{ fontSize: 12, fontWeight: 400, color: 'var(--cp-text-tertiary, #64748B)', fontFamily: 'var(--cp-font-body)' }}>
                   Showing {documents.length} of {totalCount} documents
                 </span>
                 <button
@@ -635,14 +635,14 @@ export default function ReqAssistLibrary() {
           <div style={{ position: 'fixed', inset: 0, background: 'rgba(15,23,42,0.30)', zIndex: 80 }} onClick={() => setRegenConfirm(null)} />
           <div style={{
             position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
-            width: 420, background: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF', borderRadius: 8, zIndex: 90,
-            padding: 24, border: `0.75px solid ${isDark ? '#2E2E2E' : 'rgba(15,23,42,0.10)'}`,
+            width: 420, background: 'var(--cp-bg-elevated, #FFFFFF)', borderRadius: 8, zIndex: 90,
+            padding: 24, border: `0.75px solid ${'var(--cp-border-default, rgba(15,23,42,0.10))'}`,
             fontFamily: 'var(--cp-font-body)',
           }}>
-            <h3 style={{ fontSize: 16, fontWeight: 650, color: isDark ? '#EDEDED' : '#0F172A', margin: '0 0 8px', fontFamily: 'var(--cp-font-heading)' }}>
+            <h3 style={{ fontSize: 16, fontWeight: 650, color: 'var(--cp-text-primary, #0F172A)', margin: '0 0 8px', fontFamily: 'var(--cp-font-heading)' }}>
               Epics Already Exist
             </h3>
-            <p style={{ fontSize: 14, color: isDark ? '#878787' : '#64748B', margin: '0 0 20px', lineHeight: 1.5 }}>
+            <p style={{ fontSize: 14, color: 'var(--cp-text-tertiary, #64748B)', margin: '0 0 20px', lineHeight: 1.5 }}>
               This document already has {regenConfirm.count} epic{regenConfirm.count !== 1 ? 's' : ''} generated
               {regenConfirm.generatedAt ? (() => {
                 const days = Math.floor((Date.now() - new Date(regenConfirm.generatedAt!).getTime()) / 86400000);
@@ -652,7 +652,7 @@ export default function ReqAssistLibrary() {
             <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
               <button onClick={() => setRegenConfirm(null)} style={{
                 padding: '8px 16px', fontSize: 13, fontWeight: 500, borderRadius: 6,
-                border: 'none', background: 'transparent', color: isDark ? '#A1A1A1' : '#475569', cursor: 'pointer',
+                border: 'none', background: 'transparent', color: 'var(--cp-text-secondary, #475569)', cursor: 'pointer',
               }}>Cancel</button>
               <button onClick={() => {
                 const brdId = regenConfirm.brdId;
@@ -661,7 +661,7 @@ export default function ReqAssistLibrary() {
                 setDraftDrawer({ brdId, docTitle: doc.title, jiraKey: (doc as any).jira_ticket_key || null });
               }} style={{
                 padding: '8px 16px', fontSize: 13, fontWeight: 500, borderRadius: 6,
-                border: `0.75px solid ${isDark ? '#2E2E2E' : 'rgba(15,23,42,0.15)'}`, background: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF', color: isDark ? '#A1A1A1' : '#334155', cursor: 'pointer',
+                border: `0.75px solid ${isDark ? '#2E2E2E' : 'rgba(15,23,42,0.15)'}`, background: 'var(--cp-bg-elevated, #FFFFFF)', color: 'var(--cp-text-secondary, #334155)', cursor: 'pointer',
               }}>View Drafts</button>
               <button onClick={() => { const d = regenConfirm.doc; setRegenConfirm(null); setBgModal({ type: 'epics', doc: d }); }} style={{
                 padding: '8px 16px', fontSize: 13, fontWeight: 600, borderRadius: 6,
@@ -846,7 +846,7 @@ function ActionsCell({ doc, epicCount, onSyncKb, onSelect, onViewDrafts }: {
             display: 'inline-flex', alignItems: 'center', gap: 4,
             height: 28, padding: '0 10px', fontSize: 12, fontWeight: 500,
             borderRadius: 6, border: '0.75px solid #BFDBFE',
-            background: isDark ? 'rgba(37,99,235,0.12)' : '#EFF6FF', color: '#1D4ED8', cursor: 'pointer',
+            background: 'var(--cp-primary-light, #EFF6FF)', color: '#1D4ED8', cursor: 'pointer',
             fontFamily: 'var(--cp-font-body)', whiteSpace: 'nowrap',
             transition: 'background 80ms ease',
           }}
@@ -884,7 +884,7 @@ function ActionsCell({ doc, epicCount, onSyncKb, onSelect, onViewDrafts }: {
             display: 'inline-flex', alignItems: 'center', gap: 4,
             height: 28, padding: '0 10px', fontSize: 12, fontWeight: 500,
             borderRadius: 6, border: `0.75px solid ${isDark ? '#2E2E2E' : 'rgba(15,23,42,0.15)'}`,
-            background: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF', color: isDark ? '#A1A1A1' : '#374151', cursor: 'pointer',
+            background: 'var(--cp-bg-elevated, #FFFFFF)', color: 'var(--cp-text-secondary, #374151)', cursor: 'pointer',
             fontFamily: 'var(--cp-font-body)', whiteSpace: 'nowrap',
           }}
         >
@@ -937,7 +937,7 @@ function ActionsCell({ doc, epicCount, onSyncKb, onSelect, onViewDrafts }: {
         display: 'inline-flex', alignItems: 'center',
         height: 28, padding: '0 10px', fontSize: 12, fontWeight: 500,
         borderRadius: 6, border: 'none', cursor: 'not-allowed',
-        background: isDark ? '#2E2E2E' : '#E2E8F0', color: isDark ? '#878787' : '#94A3B8',
+        background: 'var(--cp-border, #E2E8F0)', color: 'var(--cp-text-muted, #94A3B8)',
         fontFamily: 'var(--cp-font-body)', whiteSpace: 'nowrap',
       }}>
         Generate
@@ -953,7 +953,7 @@ function ActionsCell({ doc, epicCount, onSyncKb, onSelect, onViewDrafts }: {
         display: 'inline-flex', alignItems: 'center', gap: 4,
         height: 28, padding: '0 10px', fontSize: 12, fontWeight: 500,
         borderRadius: 6, border: `0.75px solid ${isDark ? '#2E2E2E' : 'rgba(15,23,42,0.15)'}`,
-        background: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF', color: isDark ? '#A1A1A1' : '#374151', cursor: 'pointer',
+        background: 'var(--cp-bg-elevated, #FFFFFF)', color: 'var(--cp-text-secondary, #374151)', cursor: 'pointer',
         fontFamily: 'var(--cp-font-body)', whiteSpace: 'nowrap',
         transition: 'all 80ms ease',
       }}
@@ -963,7 +963,7 @@ function ActionsCell({ doc, epicCount, onSyncKb, onSelect, onViewDrafts }: {
         e.currentTarget.style.color = '#1D4ED8';
       }}
       onMouseLeave={e => {
-        e.currentTarget.style.background = isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF';
+        e.currentTarget.style.background = 'var(--cp-bg-elevated, #FFFFFF)';
         e.currentTarget.style.borderColor = 'rgba(15,23,42,0.15)';
         e.currentTarget.style.color = '#374151';
       }}

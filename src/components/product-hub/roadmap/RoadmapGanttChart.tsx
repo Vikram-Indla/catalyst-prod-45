@@ -112,8 +112,8 @@ export function RoadmapGanttChart({ groups, timelineStart, timelineEnd, zoom, zo
   const periodMinWidth = Math.round(baseWidth * zoomScale);
   const totalMinWidth = periods.length * periodMinWidth;
 
-  const headerBg = isDark ? '#1F1F1F' : '#FAFBFC';
-  const hoverRowBg = isDark ? '#1F1F1F' : '#FAFBFC';
+  const headerBg = 'var(--cp-bg-page, #FAFBFC)';
+  const hoverRowBg = 'var(--cp-bg-page, #FAFBFC)';
   const selectedRowBg = isDark ? 'rgba(59,130,246,0.10)' : 'rgba(37,99,235,0.06)';
   const currentPeriodBg = isDark ? 'rgba(59,130,246,0.06)' : 'rgba(37,99,235,0.04)';
   const currentPeriodGridBg = isDark ? 'rgba(59,130,246,0.04)' : 'rgba(37,99,235,0.03)';
@@ -143,7 +143,7 @@ export function RoadmapGanttChart({ groups, timelineStart, timelineEnd, zoom, zo
                   {p.sublabel && (
                     <span style={{
                       fontSize: 9, fontWeight: 700,
-                      color: isCurrentQ ? (isDark ? '#60A5FA' : '#2563EB') : ink[2],
+                      color: isCurrentQ ? ('var(--cp-text-link, #2563EB)') : ink[2],
                       textTransform: 'uppercase', letterSpacing: '0.05em',
                     }}>
                       {p.sublabel}
@@ -151,7 +151,7 @@ export function RoadmapGanttChart({ groups, timelineStart, timelineEnd, zoom, zo
                   )}
                   <span style={{
                     fontSize: 12, fontWeight: p.isCurrent ? 700 : 600,
-                    color: p.isCurrent ? (isDark ? '#60A5FA' : '#2563EB') : ink[1],
+                    color: p.isCurrent ? ('var(--cp-text-link, #2563EB)') : ink[1],
                     letterSpacing: '0.02em',
                   }}>
                     {p.label}

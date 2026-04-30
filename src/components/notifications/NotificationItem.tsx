@@ -135,13 +135,13 @@ function NotificationItemInner({ notification, actorProfile, onMarkRead, onClick
   const isDeleted = notification.entity_deleted;
 
   const T = {
-    text1: isDark ? '#EDEDED' : '#0F172A',
-    text2: isDark ? '#A1A1A1' : '#64748B',
-    text3: isDark ? '#878787' : '#94A3B8',
-    hover: isDark ? '#1F1F1F' : 'rgba(15,23,42,0.04)',
-    press: isDark ? '#2E2E2E' : 'rgba(15,23,42,0.08)',
+    text1: 'var(--cp-text-primary, #0F172A)',
+    text2: 'var(--cp-text-tertiary, #64748B)',
+    text3: 'var(--cp-text-muted, #94A3B8)',
+    hover: 'var(--cp-interact-hover, rgba(15,23,42,0.04))',
+    press: 'var(--cp-border-subtle, rgba(15,23,42,0.08))',
     borderStrong: isDark ? '#454545' : 'rgba(15,23,42,0.2)',
-    checkStroke: isDark ? '#A1A1A1' : '#64748B',
+    checkStroke: 'var(--cp-text-tertiary, #64748B)',
   };
 
   /* ═══ C-03: Actor avatar logic ═══ */
@@ -157,11 +157,11 @@ function NotificationItemInner({ notification, actorProfile, onMarkRead, onClick
       return (
         <div style={{
           width: 36, height: 36, borderRadius: '50%',
-          background: isDark ? '#292929' : '#E2E8F0',
+          background: 'var(--cp-bg-sunken, #E2E8F0)',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           flexShrink: 0,
         }}>
-          <UserCheck size={16} color={isDark ? '#878787' : '#94A3B8'} />
+          <UserCheck size={16} color={'var(--cp-text-muted, #94A3B8)'} />
         </div>
       );
     }
@@ -314,7 +314,7 @@ function NotificationItemInner({ notification, actorProfile, onMarkRead, onClick
               background: 'rgba(217,119,6,.08)', borderRadius: 4, padding: '6px 10px',
             }}>
               <Clock size={14} color="#D97706" />
-              <span style={{ fontFamily: 'var(--cp-font-body)', fontSize: 12, color: isDark ? '#FCD34D' : '#92400E' }}>
+              <span style={{ fontFamily: 'var(--cp-font-body)', fontSize: 12, color: 'var(--cp-warning-text, #92400E)' }}>
                 Due in {daysUntilDue} day{daysUntilDue !== 1 ? 's' : ''} — {notification.metadata.due_date}
               </span>
             </div>

@@ -45,7 +45,7 @@ export function ProjectStatusTabs({ activeTab, onTabChange, counts, isDark = fal
               lineHeight: '32px',
               fontSize: 13,
               fontWeight: isActive ? 600 : 500,
-              color: isActive ? (isDark ? '#4C9AFF' : '#0052CC') : (isDark ? '#878787' : '#6B778C'),
+              color: isActive ? ('var(--cp-text-link, #0052CC)') : ('var(--cp-text-tertiary, #6B778C)'),
               borderWidth: 1,
               borderStyle: 'solid',
               cursor: 'pointer',
@@ -57,7 +57,7 @@ export function ProjectStatusTabs({ activeTab, onTabChange, counts, isDark = fal
                 size={13}
                 strokeWidth={2}
                 fill={isActive ? '#FFAB00' : 'none'}
-                color={isActive ? '#FFAB00' : (isDark ? '#7D7D7D' : '#6B778C')}
+                color={isActive ? '#FFAB00' : ('var(--cp-text-tertiary, #6B778C)')}
               />
             )}
             {tab.label}
@@ -69,8 +69,8 @@ export function ProjectStatusTabs({ activeTab, onTabChange, counts, isDark = fal
                 padding: '0 5px',
                 fontSize: 11,
                 fontWeight: 600,
-                backgroundColor: isActive ? '#0052CC' : (isDark ? '#2E2E2E' : '#EBECF0'),
-                color: isActive ? '#FFFFFF' : (isDark ? '#878787' : '#6B778C'),
+                backgroundColor: isActive ? '#0052CC' : ('var(--cp-border, #EBECF0)'),
+                color: isActive ? '#FFFFFF' : ('var(--cp-text-tertiary, #6B778C)'),
                 fontFamily: 'var(--cp-font-body)',
               }}
             >

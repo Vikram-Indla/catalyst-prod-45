@@ -87,12 +87,12 @@ export default function IncidentListPage() {
 
   // ── DARK MODE color helpers (page chrome only — table palette is
   // owned by JiraTable's own focus-css block) ────────────────────────────
-  const pageBg = isDark ? 'var(--cp-bg-page, #1F1F21)' : '#FFFFFF';
-  const surfaceBg = isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF';
-  const borderColor = isDark ? '#2E2E2E' : 'rgba(15,23,42,0.12)';
-  const textPrimary = isDark ? '#EDEDED' : '#0F172A';
-  const textSecondary = isDark ? '#A1A1A1' : '#64748B';
-  const textMuted = isDark ? '#878787' : '#94A3B8';
+  const pageBg = 'var(--cp-bg-elevated, #FFFFFF)';
+  const surfaceBg = 'var(--cp-bg-elevated, #FFFFFF)';
+  const borderColor = 'var(--cp-border-default, rgba(15,23,42,0.12))';
+  const textPrimary = 'var(--cp-text-primary, #0F172A)';
+  const textSecondary = 'var(--cp-text-tertiary, #64748B)';
+  const textMuted = 'var(--cp-text-muted, #94A3B8)';
 
   // ── Column schema (the canonical's value props per row) ─────────────────
   // The order here is the visual order. Widths are fractions out of 100;
@@ -225,7 +225,7 @@ export default function IncidentListPage() {
         const k = (row as any).parent_key;
         if (!k) return <span style={{ color: '#7A869A' }}>—</span>;
         return (
-          <span style={{ color: isDark ? '#93C5FD' : '#2563EB', fontSize: 13 }}>{k}</span>
+          <span style={{ color: 'var(--cp-text-link, #2563EB)', fontSize: 13 }}>{k}</span>
         );
       },
     },
@@ -245,7 +245,7 @@ export default function IncidentListPage() {
       <div className="px-6 pt-6 pb-4">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-3">
-            <div className="flex items-center justify-center rounded-md" style={{ width: 32, height: 32, backgroundColor: isDark ? 'rgba(248,113,113,0.12)' : '#FEE2E2' }}>
+            <div className="flex items-center justify-center rounded-md" style={{ width: 32, height: 32, backgroundColor: 'var(--cp-danger-light, #FEE2E2)' }}>
               <AlertTriangle size={18} style={{ color: '#DC2626' }} />
             </div>
             <div>
@@ -270,7 +270,7 @@ export default function IncidentListPage() {
           {[
             { label: 'Critical (SEV-1)', value: stats.sev1, accent: '#DC2626' },
             { label: 'High (SEV-2)', value: stats.sev2, accent: '#D97706' },
-            { label: 'Active Incidents', value: stats.active, accent: isDark ? '#60A5FA' : '#2563EB' },
+            { label: 'Active Incidents', value: stats.active, accent: 'var(--cp-text-link, #2563EB)' },
             { label: 'Committee Pending', value: stats.committeePending, accent: textSecondary },
             { label: 'Resolved (7d)', value: stats.resolvedWeek, accent: '#16A34A' },
           ].map(s => (
@@ -303,8 +303,8 @@ export default function IncidentListPage() {
                   borderRadius: 4,
                   fontFamily: 'var(--cp-font-body)',
                   fontWeight: statusFilter === c.key ? 650 : 400,
-                  backgroundColor: statusFilter === c.key ? (isDark ? 'rgba(37,99,235,0.16)' : '#EFF6FF') : 'transparent',
-                  color: statusFilter === c.key ? (isDark ? '#93C5FD' : '#2563EB') : textSecondary,
+                  backgroundColor: statusFilter === c.key ? ('var(--cp-primary-light, #EFF6FF)') : 'transparent',
+                  color: statusFilter === c.key ? ('var(--cp-text-link, #2563EB)') : textSecondary,
                   border: statusFilter === c.key ? `1px solid ${isDark ? 'rgba(37,99,235,0.3)' : '#BFDBFE'}` : '1px solid transparent',
                 }}
               >

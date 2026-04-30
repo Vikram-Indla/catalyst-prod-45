@@ -35,7 +35,7 @@ export function StatusDropdown({ currentStatus, availableStatuses, onSelect, onC
         left: 0,
         marginTop: 4,
         width: 200,
-        background: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF',
+        background: 'var(--cp-bg-elevated, #FFFFFF)',
         border: isDark ? '1px solid #2E2E2E' : '1px solid #E2E8F0',
         borderRadius: 6,
         boxShadow: isDark ? '0 4px 16px rgba(0,0,0,0.30)' : '0 4px 16px rgba(0,0,0,0.10)',
@@ -58,14 +58,14 @@ export function StatusDropdown({ currentStatus, availableStatuses, onSelect, onC
               alignItems: 'center',
               gap: 8,
               cursor: 'pointer',
-              background: isCurrent ? (isDark ? 'var(--cp-bg-surface, #242528)' : '#F8FAFC') : undefined,
+              background: isCurrent ? ('var(--cp-bg-page, #F8FAFC)') : undefined,
               fontFamily: 'var(--cp-font-body)',
             }}
-            onMouseEnter={(e) => (e.currentTarget.style.background = isDark ? 'var(--cp-bg-surface, #242528)' : '#F8FAFC')}
-            onMouseLeave={(e) => (e.currentTarget.style.background = isCurrent ? (isDark ? 'var(--cp-bg-surface, #242528)' : '#F8FAFC') : '')}
+            onMouseEnter={(e) => (e.currentTarget.style.background = 'var(--cp-bg-page, #F8FAFC)')}
+            onMouseLeave={(e) => (e.currentTarget.style.background = isCurrent ? ('var(--cp-bg-page, #F8FAFC)') : '')}
           >
             <span style={{ width: 8, height: 8, borderRadius: '50%', background: style.color, flexShrink: 0 }} />
-            <span style={{ fontSize: 12, color: isDark ? '#EDEDED' : '#0F172A', flex: 1 }}>{status}</span>
+            <span style={{ fontSize: 12, color: 'var(--cp-text-primary, #0F172A)', flex: 1 }}>{status}</span>
             {isCurrent && <Check size={14} color="#2563EB" />}
           </div>
         );

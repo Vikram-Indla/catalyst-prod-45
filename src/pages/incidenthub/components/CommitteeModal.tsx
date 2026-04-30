@@ -63,8 +63,8 @@ export function CommitteeModal({ open, onClose, committee, incidentId }: Committ
                 const vote = m.vote;
                 const voteStatus = vote?.vote || 'pending';
                 return (
-                  <div key={m.id} className="flex items-center gap-3 p-2" style={{ border: `1px solid ${isDark ? '#2E2E2E' : 'rgba(15,23,42,0.08)'}`, borderRadius: 4 }}>
-                    <div className="rounded-full flex items-center justify-center shrink-0" style={{ width: 32, height: 32, backgroundColor: isDark ? '#292929' : '#E2E8F0', fontSize: 12, fontWeight: 650, color: isDark ? '#A1A1A1' : '#475569' }}>
+                  <div key={m.id} className="flex items-center gap-3 p-2" style={{ border: `1px solid ${'var(--cp-border-subtle, rgba(15,23,42,0.08))'}`, borderRadius: 4 }}>
+                    <div className="rounded-full flex items-center justify-center shrink-0" style={{ width: 32, height: 32, backgroundColor: 'var(--cp-bg-sunken, #E2E8F0)', fontSize: 12, fontWeight: 650, color: 'var(--cp-text-secondary, #475569)' }}>
                       {(m.user?.full_name || 'U').charAt(0).toUpperCase()}
                     </div>
                     <div className="flex-1">
@@ -73,10 +73,10 @@ export function CommitteeModal({ open, onClose, committee, incidentId }: Committ
                           {m.user?.full_name || 'Member'}
                         </span>
                         {m.role === 'chair' && (
-                          <span className="px-1.5" style={{ fontSize: 9, fontWeight: 700, backgroundColor: isDark ? 'rgba(124,58,237,0.12)' : '#F3E8FF', color: isDark ? '#C4B5FD' : '#7C3AED', borderRadius: 3 }}>CHAIR</span>
+                          <span className="px-1.5" style={{ fontSize: 9, fontWeight: 700, backgroundColor: isDark ? 'rgba(124,58,237,0.12)' : '#F3E8FF', color: 'var(--cp-purple-60, #7C3AED)', borderRadius: 3 }}>CHAIR</span>
                         )}
                         {m.has_veto && (
-                          <span className="px-1.5" style={{ fontSize: 9, fontWeight: 700, backgroundColor: isDark ? 'rgba(239,68,68,0.12)' : '#FEE2E2', color: isDark ? '#FCA5A5' : '#991B1B', borderRadius: 3 }}>VETO</span>
+                          <span className="px-1.5" style={{ fontSize: 9, fontWeight: 700, backgroundColor: 'var(--cp-danger-light, #FEE2E2)', color: 'var(--cp-danger-text, #991B1B)', borderRadius: 3 }}>VETO</span>
                         )}
                       </div>
                       <span style={{ fontFamily: 'var(--cp-font-body)', fontSize: 11, color: '#64748B' }}>{m.role || 'Member'}</span>

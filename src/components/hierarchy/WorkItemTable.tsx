@@ -743,7 +743,7 @@ export const WorkItemTable = memo(function WorkItemTable({ items, search, onSele
             alignItems: 'center',
             height: 36,
             minWidth: 1100,
-                background: isDark ? '#111111' : '#F8FAFC',
+                background: 'var(--cp-bg-page, #F8FAFC)',
                 borderBottom: isDark ? '2px solid #2E2E2E' : '2px solid #E2E8F0',
           }}
         >
@@ -876,8 +876,8 @@ export const WorkItemTable = memo(function WorkItemTable({ items, search, onSele
 
       <style>{`
         .hi-table-row { border-left: 3px solid transparent; transition: all 80ms ease; }
-        .hi-table-row:hover { background: ${isDark ? '#1F1F1F' : '#F8FAFC'} !important; border-left-color: #2563EB; box-shadow: ${isDark ? 'none' : '0 1px 3px rgba(0,0,0,0.06)'}; }
-        .hi-table-row.checked { background: ${isDark ? 'rgba(37,99,235,0.12)' : '#EFF6FF'} !important; }
+        .hi-table-row:hover { background: ${'var(--cp-bg-page, #F8FAFC)'} !important; border-left-color: #2563EB; box-shadow: ${isDark ? 'none' : '0 1px 3px rgba(0,0,0,0.06)'}; }
+        .hi-table-row.checked { background: ${'var(--cp-primary-light, #EFF6FF)'} !important; }
         .hi-table-row .hi-row-action { opacity: 0; transition: opacity 100ms ease; }
         .hi-table-row:hover .hi-row-action { opacity: 1; }
         .hi-parent-cell:hover .hi-parent-key { text-decoration: underline; text-underline-offset: 2px; }

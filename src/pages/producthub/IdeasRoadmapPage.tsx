@@ -64,7 +64,7 @@ export default function IdeasRoadmapPage() {
       <div style={{ background: dk.pageBg, borderBottom: `1px solid ${dk.border}`, padding: '10px 28px', display: 'flex', alignItems: 'center', gap: '10px' }}>
         {TEAMS.map(t => (
           <button key={t} onClick={() => setTeamFilter(t)} style={{
-            background: teamFilter === t ? '#2563EB' : (isDark ? 'transparent' : '#FFFFFF'), color: teamFilter === t ? '#FFFFFF' : dk.t2,
+            background: teamFilter === t ? '#2563EB' : ('var(--cp-bg-elevated, #FFFFFF)'), color: teamFilter === t ? '#FFFFFF' : dk.t2,
             border: `1px solid ${teamFilter === t ? '#2563EB' : dk.border}`,
             borderRadius: '20px', padding: '4px 12px', fontSize: '12px', fontWeight: 500, cursor: 'pointer',
           }}>{t}</button>
@@ -88,7 +88,7 @@ export default function IdeasRoadmapPage() {
               }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px', height: 50 }}>
                   <span style={{ fontSize: '11px', fontWeight: 700, color: isDark ? dk.t3 : col.textColor, textTransform: 'uppercase', letterSpacing: '0.07em' }}>{col.label}</span>
-                  <span style={{ fontSize: '10px', fontFamily: 'var(--cp-font-mono)', fontWeight: 700, background: isDark ? '#292929' : '#F1F5F9', borderRadius: '100px', padding: '0 6px', height: 18, display: 'inline-flex', alignItems: 'center', color: dk.t3 }}>{colIdeas.length}</span>
+                  <span style={{ fontSize: '10px', fontFamily: 'var(--cp-font-mono)', fontWeight: 700, background: 'var(--cp-bg-sunken, #F1F5F9)', borderRadius: '100px', padding: '0 6px', height: 18, display: 'inline-flex', alignItems: 'center', color: dk.t3 }}>{colIdeas.length}</span>
                 </div>
                 {colIdeas.length === 0 && (
                   <div style={{ padding: '20px', textAlign: 'center', color: dk.t3, fontSize: '12px', border: `1px dashed ${dk.border}`, borderRadius: '8px' }}>No ideas</div>
@@ -111,7 +111,7 @@ function RoadmapCard({ idea, onClick, isDark, dk }: { idea: IdeaRow; onClick: ()
   const isConverted = idea.status === 'Converted to Request';
   return (
     <div onClick={onClick} style={{
-      background: isDark ? 'var(--cp-bg-page, #1F1F21)' : '#FFFFFF',
+      background: 'var(--cp-bg-elevated, #FFFFFF)',
       border: `1px solid ${isDark ? '#454545' : dk.border}`,
       borderLeft: isConverted ? '3px solid #16A34A' : `1px solid ${dk.border}`,
       borderRadius: '6px',
@@ -131,17 +131,17 @@ function RoadmapCard({ idea, onClick, isDark, dk }: { idea: IdeaRow; onClick: ()
           e.currentTarget.style.boxShadow = '0 1px 3px rgba(0,0,0,0.06)';
           e.currentTarget.style.transform = 'none';
         }
-        e.currentTarget.style.borderColor = isDark ? '#2E2E2E' : 'rgba(15,23,42,0.12)';
+        e.currentTarget.style.borderColor = 'var(--cp-border-default, rgba(15,23,42,0.12))';
       }}
     >
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '6px' }}>
         <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: '11px', fontWeight: 600, color: dk.blueKey }}>{idea.idea_key}</span>
-        <span style={{ fontSize: '9px', fontWeight: 800, background: isDark ? '#292929' : '#F1F5F9', color: dk.t2, padding: '1px 5px', borderRadius: '4px', border: `1px solid ${dk.border}`, fontFamily: 'var(--cp-font-mono)' }}>{idea.priority || 'P2'}</span>
+        <span style={{ fontSize: '9px', fontWeight: 800, background: 'var(--cp-bg-sunken, #F1F5F9)', color: dk.t2, padding: '1px 5px', borderRadius: '4px', border: `1px solid ${dk.border}`, fontFamily: 'var(--cp-font-mono)' }}>{idea.priority || 'P2'}</span>
       </div>
       <div style={{ fontSize: '13px', fontWeight: 500, color: dk.t1, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden', marginBottom: '6px', lineHeight: 1.35 }}>{idea.title}</div>
       <div style={{ marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '4px', flexWrap: 'wrap' }}>
-        {idea.assigned_team && <span style={{ background: isDark ? '#292929' : '#F1F5F9', color: dk.t2, padding: '1px 6px', borderRadius: '4px', fontSize: '11px', fontWeight: 500, border: isDark ? `1px solid ${dk.border}` : 'none' }}>{idea.assigned_team}</span>}
-        {idea.theme && <span style={{ background: isDark ? '#292929' : '#F1F5F9', color: dk.t2, padding: '1px 6px', borderRadius: '4px', fontSize: '11px', fontWeight: 500, maxWidth: '160px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', border: isDark ? `1px solid ${dk.border}` : 'none' }}>{idea.theme}</span>}
+        {idea.assigned_team && <span style={{ background: 'var(--cp-bg-sunken, #F1F5F9)', color: dk.t2, padding: '1px 6px', borderRadius: '4px', fontSize: '11px', fontWeight: 500, border: isDark ? `1px solid ${dk.border}` : 'none' }}>{idea.assigned_team}</span>}
+        {idea.theme && <span style={{ background: 'var(--cp-bg-sunken, #F1F5F9)', color: dk.t2, padding: '1px 6px', borderRadius: '4px', fontSize: '11px', fontWeight: 500, maxWidth: '160px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', border: isDark ? `1px solid ${dk.border}` : 'none' }}>{idea.theme}</span>}
       </div>
       <div style={{ borderTop: `1px solid ${dk.divider}`, paddingTop: '8px' }}>
         <span style={{ fontSize: '11px', fontWeight: 700, color: idea.impact_total > 0 ? dk.t2 : dk.t3, fontFamily: 'var(--cp-font-mono)' }}>IMPACT {idea.impact_total.toFixed(2)}</span>

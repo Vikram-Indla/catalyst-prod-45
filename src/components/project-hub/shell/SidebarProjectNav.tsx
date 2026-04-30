@@ -273,7 +273,7 @@ export function SidebarProjectNav({
               <span className="dark:text-[#7D7D7D]" style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase', color: '#6B778C' }}>
                 Recents
               </span>
-              <span style={{ marginLeft: 'auto', fontSize: 10, fontWeight: 600, color: isDark ? '#7D7D7D' : '#94A3B8', fontFamily: 'var(--cp-font-mono)' }}>
+              <span style={{ marginLeft: 'auto', fontSize: 10, fontWeight: 600, color: 'var(--cp-text-muted, #94A3B8)', fontFamily: 'var(--cp-font-mono)' }}>
                 {recentItems.length}
               </span>
             </button>
@@ -295,23 +295,23 @@ export function SidebarProjectNav({
                         transition: 'background 100ms ease',
                       }}
                       onClick={() => handleRecentClick(item)}
-                      onMouseEnter={e => { e.currentTarget.style.backgroundColor = isDark ? '#1F1F1F' : '#F4F5F7'; }}
+                      onMouseEnter={e => { e.currentTarget.style.backgroundColor = 'var(--cp-bg-page, #F4F5F7)'; }}
                       onMouseLeave={e => { e.currentTarget.style.backgroundColor = 'transparent'; }}
                     >
                       <span style={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: typeColor, flexShrink: 0 }} />
-                      <span style={{ fontSize: 11.5, fontWeight: 600, color: isDark ? '#A1A1A1' : '#42526E', fontFamily: 'var(--cp-font-mono)', flexShrink: 0, letterSpacing: '-0.02em' }}>
+                      <span style={{ fontSize: 11.5, fontWeight: 600, color: 'var(--cp-text-secondary, #42526E)', fontFamily: 'var(--cp-font-mono)', flexShrink: 0, letterSpacing: '-0.02em' }}>
                         {item.entity_key}
                       </span>
-                      <span style={{ fontSize: 12, fontWeight: 400, color: isDark ? '#878787' : '#6B778C', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1, minWidth: 0 }}>
+                      <span style={{ fontSize: 12, fontWeight: 400, color: 'var(--cp-text-tertiary, #6B778C)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1, minWidth: 0 }}>
                         {item.display_summary}
                       </span>
-                      <span className="group-hover:hidden" style={{ fontSize: 10, fontWeight: 500, color: isDark ? '#7D7D7D' : '#94A3B8', flexShrink: 0, fontFamily: 'var(--cp-font-mono)' }}>
+                      <span className="group-hover:hidden" style={{ fontSize: 10, fontWeight: 500, color: 'var(--cp-text-muted, #94A3B8)', flexShrink: 0, fontFamily: 'var(--cp-font-mono)' }}>
                         {formatTimeAgo(item.visited_at)}
                       </span>
                       <button
                         className="hidden group-hover:flex items-center justify-center"
                         onClick={(e) => { e.stopPropagation(); removeRecent.mutate(item.id); }}
-                        style={{ width: 18, height: 18, borderRadius: 4, border: 'none', background: 'transparent', cursor: 'pointer', flexShrink: 0, color: isDark ? '#878787' : '#6B778C' }}
+                        style={{ width: 18, height: 18, borderRadius: 4, border: 'none', background: 'transparent', cursor: 'pointer', flexShrink: 0, color: 'var(--cp-text-tertiary, #6B778C)' }}
                         title="Remove from recents"
                       >
                         <X size={12} />
