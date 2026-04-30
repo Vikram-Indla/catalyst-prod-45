@@ -714,11 +714,36 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
       }
       /* Strengthen grid lines to match the legacy renderer + critique-fix tone. */
       .jira-table-grid table tbody > tr > td {
-        box-shadow: inset 0 -1px 0 0 #E4E6EA !important;
+        box-shadow: inset 0 -1px 0 0 var(--ds-border, #E4E6EA) !important;
       }
       /* Row hover tint matches Jira's list view. */
       .jira-table-grid table tbody > tr:hover > td {
-        background-color: #F7F8F9 !important;
+        background-color: var(--ds-background-neutral-subtle-hovered, #F7F8F9) !important;
+      }
+      /* ─────────────────────────────────────────────────────────────────────
+         DARK MODE — Rule 3 paired overrides for !important hex above.
+         Most surfaces already use --ds-* tokens that flip natively under
+         @atlaskit/tokens dark mode. The remaining hardcoded fallbacks
+         (#F4F5F7 group-row bg, #F7F8F9 sticky header, #0C66E4 focus bar,
+         #DFE1E6 grid line) need explicit .dark companions per Rule 3.
+         ───────────────────────────────────────────────────────────────────── */
+      .dark .jira-table-grid .jira-table-row-focused > td {
+        background-color: var(--ds-background-selected, #1C2B41) !important;
+      }
+      .dark .jira-table-grid tbody tr.jira-table-group-row > td,
+      .dark .jira-table-grid tbody tr.jira-table-group-row > td:nth-child(1),
+      .dark .jira-table-grid tbody tr.jira-table-group-row > td:nth-child(2),
+      .dark .jira-table-grid tbody tr.jira-table-group-row > td:nth-child(3) {
+        background: var(--ds-surface-sunken, #1D2125) !important;
+      }
+      .dark .jira-table-grid thead th,
+      .dark .jira-table-grid thead th:nth-child(1),
+      .dark .jira-table-grid thead th:nth-child(2),
+      .dark .jira-table-grid thead th:nth-child(3) {
+        background: var(--ds-surface-sunken, #1D2125) !important;
+      }
+      .dark .jira-table-grid .jira-table-row-focused > td:first-child {
+        box-shadow: inset 3px 0 0 var(--ds-border-selected, #579DFF), inset 0 -1px 0 0 var(--ds-border, #38414A) !important;
       }
     `;
     document.head.appendChild(style);

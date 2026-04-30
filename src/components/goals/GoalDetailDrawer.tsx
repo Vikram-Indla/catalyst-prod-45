@@ -637,6 +637,10 @@ function InitiativesTab({ goalId }: { goalId: string }) {
         .init-card:hover { border-color: #CBD5E1; box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
         .unlink-btn:hover { color: #EF4444 !important; }
         .link-init-btn:hover { border-color: #94A3B8; background: #F8FAFC; }
+        /* Rule 3 paired .dark — brand red stays; neutral surfaces flip to ADS dark. */
+        .dark .unlink-btn:hover { color: #F87171 !important; }
+        .dark .init-card:hover { border-color: var(--ds-border-bold, #5C6F82); box-shadow: 0 1px 3px rgba(0,0,0,0.4); }
+        .dark .link-init-btn:hover { border-color: var(--ds-border-bold, #5C6F82); background: var(--ds-background-neutral-hovered, #2C333A); }
       `}</style>
     </div>
   );

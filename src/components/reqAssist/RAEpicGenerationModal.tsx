@@ -491,6 +491,12 @@ export default function RAEpicGenerationModal({ doc, onClose, onViewDrafts }: Pr
           animation: ra-epic-spin 0.8s linear infinite !important;
           flex-shrink: 0 !important;
         }
+        /* Rule 3 paired .dark — brand blue spinner uses lighter ADS blue in dark mode. */
+        .dark .ra-epic-spinner,
+        .dark .ra-epic-spinner-lg {
+          border-color: #579DFF !important;
+          border-top-color: transparent !important;
+        }
       `}</style>
     </>
   );

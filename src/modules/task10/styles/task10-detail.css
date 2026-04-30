@@ -1905,3 +1905,38 @@
   background: #fee2e2;
   border-color: #fca5a5;
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   DARK MODE — Rule 3 paired overrides for !important hex above
+   Brand blue (#2563eb) and white (#ffffff) on brand surfaces stay intentional.
+   We only flip neutral surfaces and text to ADS dark tokens.
+   ═══════════════════════════════════════════════════════════════════════════════ */
+.dark .t10-detail-priority-item-dragging {
+  background: var(--ds-surface-overlay, #282E33) !important;
+  border-color: #2563eb !important;
+}
+.dark .t10-detail-priority-item-completed {
+  background: var(--ds-surface-sunken, #1D2125);
+}
+.dark .t10-detail-priority-item-completed .t10-detail-priority-text {
+  color: var(--ds-text-disabled, #5C6F82);
+}
+.dark .t10-detail-priority-text {
+  color: var(--ds-text, #B6C2CF);
+}
+.dark .t10-detail-checkbox-visual {
+  background: var(--ds-surface, #161A1D);
+  border-color: var(--ds-border, #38414A);
+}
+.dark .t10-detail-priority-label {
+  background: var(--ds-background-neutral, #2C333A);
+  color: var(--ds-text-subtle, #9FADBC);
+}
+.dark .t10-detail-priority-assignee,
+.dark .t10-detail-priority-due {
+  color: var(--ds-text-subtle, #9FADBC);
+}
+.dark .t10-duedate-clear-btn:hover {
+  background: var(--ds-background-danger, #42221F);
+  border-color: var(--ds-border-danger, #93291E);
+}
