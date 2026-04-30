@@ -85,7 +85,8 @@ export function BrArabicTitleSection({ request, onUpdate }: Props) {
                   textAlign: 'right',
                   fontSize: 14,
                   fontFamily: 'var(--cp-font-body)',
-                  color: token('color.text', '#292A2E'),
+                  // Cycle 7 dark-mode fix — see CLAUDE.md Phase 4.
+                  color: 'var(--cp-text-primary, #292A2E)',
                   padding: '6px 8px',
                   minHeight: 32,
                   cursor: 'text',

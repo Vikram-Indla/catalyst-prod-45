@@ -175,6 +175,36 @@ export function CatalystViewBase({
     return () => document.removeEventListener('keydown', handleEscape);
   }, [isOpen, panelMode, showDotsMenu, onClose]);
 
+  /* ── Navigation (full-page back) ─────────────
+     2026-04-30 cycle 7 fix: useNavigate + handleBack + handleShare
+     MUST be declared BEFORE the `if (!isOpen) return null` early return.
+     When v2 first opens (isOpen flipping false → true), the previous render
+     had 7 hooks but the next render has 10 — React throws
+     "Rendered more hooks than during the previous render". Live probe on
+     /producthub/table caught this in CatalystDemandTable's first v2 mount. */
+  const navigate = useNavigate();
+  const handleBack = useCallback(() => {
+    if (fullPageMode) {
+      if (projectKey) {
+        navigate(`/project-hub/${projectKey}/list`);
+      } else {
+        navigate(-1);
+      }
+    } else {
+      onClose();
+    }
+  }, [fullPageMode, projectKey, navigate, onClose]);
+
+  const handleShare = useCallback(() => {
+    if (onShare) { onShare(); return; }
+    if (fullPageMode && itemKey && projectKey) {
+      navigator.clipboard.writeText(`${window.location.origin}/project-hub/${projectKey}/issue/${itemKey}`);
+    } else {
+      navigator.clipboard.writeText(window.location.href);
+    }
+    toast.success('Link copied to clipboard');
+  }, [onShare, fullPageMode, itemKey, projectKey]);
+
   if (!isOpen) return null;
 
   /* ── Panel navigation helpers ───────────── */
@@ -226,31 +256,6 @@ export function CatalystViewBase({
     background: 'none', border: 'none', fontSize: 13, color: '#344054', cursor: 'pointer',
     fontFamily: 'var(--cp-font-body)', textAlign: 'left',
   };
-
-  /* ── Navigation (full-page back) ─────────── */
-  const navigate = useNavigate();
-  const handleBack = useCallback(() => {
-    if (fullPageMode) {
-      if (projectKey) {
-        navigate(`/project-hub/${projectKey}/list`);
-      } else {
-        navigate(-1);
-      }
-    } else {
-      onClose();
-    }
-  }, [fullPageMode, projectKey, navigate, onClose]);
-
-  /* ── Share handler ──────────────────────── */
-  const handleShare = useCallback(() => {
-    if (onShare) { onShare(); return; }
-    if (fullPageMode && itemKey && projectKey) {
-      navigator.clipboard.writeText(`${window.location.origin}/project-hub/${projectKey}/issue/${itemKey}`);
-    } else {
-      navigator.clipboard.writeText(window.location.href);
-    }
-    toast.success('Link copied to clipboard');
-  }, [onShare, fullPageMode, itemKey, projectKey]);
 
   /* ── Card contents ─────────────────────────────────────────────────────
      Top bar + body JSX, extracted as a fragment so all three modes

@@ -164,7 +164,8 @@ function ReadOnlyValue({ value }: { value: string }) {
       style={{
         padding: '6px 0',
         fontSize: 13,
-        color: token('color.text', '#292A2E'),
+        // Cycle 7 dark-mode fix — see CLAUDE.md Phase 4.
+        color: 'var(--cp-text-primary, #292A2E)',
         fontFamily: 'var(--cp-font-body)',
       }}
     >

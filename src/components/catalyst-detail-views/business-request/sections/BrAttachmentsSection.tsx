@@ -393,7 +393,8 @@ export function BrAttachmentsSection({ request }: Props) {
                     style={{
                       fontSize: 13,
                       fontWeight: 600,
-                      color: token('color.text', '#292A2E'),
+                      // Cycle 7 dark-mode fix — see CLAUDE.md Phase 4.
+                      color: 'var(--cp-text-primary, #292A2E)',
                       overflow: 'hidden',
                       textOverflow: 'ellipsis',
                       whiteSpace: 'nowrap',

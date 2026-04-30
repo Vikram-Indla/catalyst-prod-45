@@ -120,9 +120,10 @@ export function BrDescriptionSection({ request, onUpdate }: Props) {
               ? `1px solid ${token('color.border', '#DFE1E6')}`
               : `1px dashed ${token('color.border', '#DFE1E6')}`,
             borderRadius: 4,
+            // Cycle 7 dark-mode fix — see CLAUDE.md Phase 4.
             color: hasContent
-              ? token('color.text', '#292A2E')
-              : token('color.text.subtlest', '#8590A2'),
+              ? 'var(--cp-text-primary, #292A2E)'
+              : 'var(--cp-text-tertiary, #8590A2)',
             fontSize: 14,
             fontFamily: 'var(--cp-font-body)',
             cursor: 'text',

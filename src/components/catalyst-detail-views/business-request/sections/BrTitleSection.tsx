@@ -43,7 +43,10 @@ export function BrTitleSection({ request, onUpdate }: Props) {
                 fontSize: 24,
                 lineHeight: '28px',
                 fontWeight: 653,
-                color: token('color.text', '#292A2E'),
+                // Cycle 7 dark-mode fix: token('color.text') resolves to its
+                // hardcoded fallback hex regardless of theme (CLAUDE.md Phase 2
+                // lesson). --cp-text-primary IS Catalyst-CSS-flipped in dark.
+                color: 'var(--cp-text-primary, #292A2E)',
                 fontFamily: 'var(--cp-font-body)',
                 letterSpacing: '-0.005em',
                 wordBreak: 'break-word',
