@@ -85,7 +85,7 @@ export default function ProjectAllWorkView({ projectKey, projectId }: Props) {
     // Matches Jira's 3-region scroll model (measured 2026-04-18): left
     // panel 256×717 scrolls cards; center body scrolls article; right
     // details scrolls sidebar. Independent, not page-level.
-    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0, overflow: 'hidden', background: token('elevation.surface', '#FFFFFF') }}>
+    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0, overflow: 'hidden', background: 'var(--cp-bg-elevated, #FFFFFF)' }}>
       {/* ── Header card — mirrors /backlog's h1 block. No rule/line above;
             tight vertical rhythm; page title same size Jira uses (20/600).
       */}
@@ -95,7 +95,7 @@ export default function ProjectAllWorkView({ projectKey, projectId }: Props) {
             so we don't ship two H1s on a single page (WCAG 2.4.6). */}
         <h2 style={{
           margin: 0, fontSize: 20, fontWeight: 600,
-          color: token('color.text', '#292A2E'),
+          color: 'var(--cp-text-primary, #292A2E)',
           letterSpacing: '-0.003em',
           fontFamily: "'Atlassian Sans', -apple-system, BlinkMacSystemFont, sans-serif",
         }}>
@@ -114,7 +114,8 @@ export default function ProjectAllWorkView({ projectKey, projectId }: Props) {
           {/* Navigator (left) — always visible; expands to full width when narrow. */}
           <div style={{
             width: isNarrow ? '100%' : 260,
-            flexShrink: 0, background: '#F8F8F8',
+            flexShrink: 0,
+            background: 'var(--cp-bg-sunken, #F8F8F8)',
             border: 'none', borderRadius: 4,
             overflow: 'hidden', display: 'flex', flexDirection: 'column',
             padding: '0 2px',
@@ -136,11 +137,11 @@ export default function ProjectAllWorkView({ projectKey, projectId }: Props) {
             activeItem ? (
               <div style={{
                 flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0,
-                background: token('elevation.surface', '#FFFFFF'),
+                background: 'var(--cp-bg-elevated, #FFFFFF)',
                 borderRadius: '0 10px 10px 0', overflow: 'hidden',
               }}>
                 <Suspense fallback={
-                  <div style={{ padding: 24, color: token('color.text.subtlest', '#6B778C'), fontSize: 14 }}>
+                  <div style={{ padding: 24, color: 'var(--cp-text-tertiary, #6B778C)', fontSize: 14 }}>
                     Loading…
                   </div>
                 }>
@@ -170,7 +171,7 @@ export default function ProjectAllWorkView({ projectKey, projectId }: Props) {
             ) : (
               <div style={{
                 flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center',
-                color: token('color.text.subtlest', '#6B778C'), fontSize: 14,
+                color: 'var(--cp-text-tertiary, #6B778C)', fontSize: 14,
                 fontFamily: "'Atlassian Sans', -apple-system, BlinkMacSystemFont, sans-serif",
               }}>
                 Select an item to view details
