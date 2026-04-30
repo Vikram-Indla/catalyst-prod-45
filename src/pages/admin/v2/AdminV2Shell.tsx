@@ -27,6 +27,9 @@ interface NavItem {
   label: string;
   to?: string; // omitted when disabled
   disabled?: boolean;
+  /** Match descendant routes too — e.g. /admin/v2/work-items/workflows/:id
+   *  should keep "Workflows" highlighted. Default false (exact-match). */
+  prefixMatch?: boolean;
 }
 
 interface NavSection {
@@ -48,7 +51,7 @@ const SECTIONS: NavSection[] = [
     label: 'Work items',
     items: [
       { label: 'Work types', to: '/admin/v2/work-items/types' },
-      { label: 'Workflows', disabled: true },
+      { label: 'Workflows', to: '/admin/v2/work-items/workflows', prefixMatch: true },
       { label: 'Screens', disabled: true },
       { label: 'Custom fields', to: '/admin/v2/work-items/custom-fields' },
       { label: 'Statuses', to: '/admin/v2/work-items/statuses' },
@@ -201,7 +204,7 @@ function NavRow({ item }: { item: NavItem }) {
   return (
     <NavLink
       to={item.to}
-      end
+      end={!item.prefixMatch}
       style={({ isActive }) => ({
         display: 'block',
         padding: 'var(--ds-space-100, 8px) var(--ds-space-300, 16px)',
