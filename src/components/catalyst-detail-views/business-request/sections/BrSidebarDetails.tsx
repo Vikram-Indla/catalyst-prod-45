@@ -336,7 +336,7 @@ export function BrSidebarDetails({ request, onUpdate }: Props) {
           onChange={(vals) =>
             void onUpdate(
               'stakeholders',
-              ((vals ?? []) as { value: string }[]).map((v) => v.value),
+              (Array.from(vals ?? []) as { value: string }[]).map((v) => v.value),
             )
           }
           placeholder="+ Add stakeholder"
@@ -357,7 +357,7 @@ export function BrSidebarDetails({ request, onUpdate }: Props) {
           onChange={(vals) =>
             void onUpdate(
               'planned_quarter',
-              ((vals ?? []) as { value: string }[]).map((v) => v.value),
+              (Array.from(vals ?? []) as { value: string }[]).map((v) => v.value),
             )
           }
           placeholder="Link to releases"
