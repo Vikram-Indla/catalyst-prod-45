@@ -29,6 +29,13 @@ export function CatalystHeader() {
     cycleSidebarState,
   } = useCatalystContext();
 
+  // Loop 3 (2026-04-30): trim header chrome at <1024px so Search + Create
+  // still fit alongside the external mobile hamburger overlay (rendered by
+  // CatalystShell). At isNarrow we hide AskCaty, ThemeToggle, and Settings
+  // — they remain reachable via the drawer / profile menu. Desktop ≥1024
+  // is byte-identical: the early-narrow branch is the only thing changing.
+  const { isNarrow } = useNavBreakpoint();
+
   // The chevron's POSITION/ICON is driven by stickiness (sidebarPinned),
   // NOT by visibility. Pinned-visible → chevron at right edge (x=240) with
   // Collapse icon. Otherwise → chevron at left (x=12) with Expand icon.
