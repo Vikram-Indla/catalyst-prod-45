@@ -142,9 +142,12 @@ export function CatalystTable<T>({
   loadMoreIncrement = 25,
 }: CatalystTableProps<T>) {
   const containerRef = useRef<HTMLDivElement>(null);
+  const scrollRef = useRef<HTMLDivElement>(null);
   const [hoveredRowId, setHoveredRowId] = useState<string | null>(null);
   const [visibleCount, setVisibleCount] = useState(pageSize);
   const [containerWidth, setContainerWidth] = useState(0);
+  const [showEdgeFade, setShowEdgeFade] = useState(false);
+  const { isNarrow } = useNavBreakpoint();
 
   // Track container width for responsive sizing
   useLayoutEffect(() => {
