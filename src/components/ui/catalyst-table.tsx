@@ -17,11 +17,12 @@
  *   />
  */
 
-import { useState, useCallback, useMemo, useRef, useLayoutEffect, type ReactNode } from 'react';
+import { useState, useCallback, useMemo, useRef, useLayoutEffect, useEffect, type ReactNode } from 'react';
 import { ChevronDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { cn } from '@/lib/utils';
+import { useNavBreakpoint } from '@/hooks/useNavBreakpoint';
 
 // ═══════════════════════════════════════════════════════════════════
 // TYPES
