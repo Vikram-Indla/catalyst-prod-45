@@ -354,12 +354,12 @@ function RightDetails({ item }: { item: WorkItem }) {
 
             {/* Actual start */}
             <DetailRow label="Actual start">
-              <span style={{ fontSize: 14, color: '#172B4D' }}>None</span>
+              <span style={{ fontSize: 14, color: 'var(--cp-text-primary)' }}>None</span>
             </DetailRow>
 
             {/* Actual end */}
             <DetailRow label="Actual end">
-              <span style={{ fontSize: 14, color: '#172B4D' }}>None</span>
+              <span style={{ fontSize: 14, color: 'var(--cp-text-primary)' }}>None</span>
             </DetailRow>
           </div>
         )}
