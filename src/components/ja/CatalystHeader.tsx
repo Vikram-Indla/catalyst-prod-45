@@ -79,7 +79,7 @@ export function CatalystHeader() {
           continuous line from viewport top to bottom. Shown when the sidebar
           is visible (pinned OR hover-peek overlay); hidden in edge-reveal
           state so there's no orphan line when the sidebar isn't on screen. */}
-      {sidebarOnScreen && (
+      {sidebarOnScreen && !isNarrow && (
         <div
           aria-hidden="true"
           data-catalyst-sidebar-ceiling
