@@ -181,7 +181,7 @@ const ProjectsTab: React.FC<{ perms: any[]; isDark?: boolean }> = ({ perms, isDa
                 const isMutating = isPending && variables?.permId === p.id;
                 return (
                   <tr key={p.id} style={{ borderBottom: `0.75px solid ${'var(--cp-border-subtle, rgba(15,23,42,0.06))'}` }}
-                    onMouseEnter={e => (e.currentTarget.style.background = isDark ? '#1F1F1F' : 'rgba(15,23,42,0.035)')}
+                    onMouseEnter={e => (e.currentTarget.style.background = 'var(--cp-interact-hover, rgba(15,23,42,0.035))')}
                     onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
                   >
                     <td style={{ padding: '6px 9px' }}>
@@ -378,7 +378,7 @@ const UserDetailPanel: React.FC<Props> = ({ userId, onClose, isDark = false }) =
                   letterSpacing: '0.03em', textTransform: 'uppercase',
                   background: 'var(--cp-primary-light, #EFF6FF)',
                   color: 'var(--cp-text-link, #2563EB)',
-                  border: `1px solid ${isDark ? 'rgba(37,99,235,0.30)' : '#BFDBFE'}`,
+                  border: `1px solid ${'var(--cp-primary-light, #BFDBFE)'}`,
                 }}>
                   Jira Proxy
                 </span>
@@ -386,7 +386,7 @@ const UserDetailPanel: React.FC<Props> = ({ userId, onClose, isDark = false }) =
                 <span style={{
                   padding: '1px 6px', borderRadius: '4px', fontSize: '10px', fontWeight: 700,
                   letterSpacing: '0.03em', textTransform: 'uppercase',
-                  background: isDark ? 'rgba(124,58,237,0.15)' : '#F5F3FF',
+                  background: 'var(--cp-purple-5, #F5F3FF)',
                   color: 'var(--cp-purple-60, #7C3AED)',
                   border: '1px solid rgba(124,58,237,0.25)',
                 }}>
@@ -513,9 +513,9 @@ const UserDetailPanel: React.FC<Props> = ({ userId, onClose, isDark = false }) =
                 {isJiraProxy ? (
                   <span style={{
                     padding: '1px 5px', borderRadius: '4px', fontSize: '9.5px', fontWeight: 700,
-                    background: isDark ? 'rgba(13,148,136,0.15)' : '#F0FDFA',
+                    background: 'var(--cp-success-light, #F0FDFA)',
                     color: 'var(--cp-teal-60, #0D9488)',
-                    border: `1px solid ${isDark ? 'rgba(13,148,136,0.25)' : '#99F6E4'}`,
+                    border: `1px solid ${'var(--cp-teal-60, #99F6E4)'}`,
                     whiteSpace: 'nowrap',
                   }}>
                     Jira Proxy
@@ -523,7 +523,7 @@ const UserDetailPanel: React.FC<Props> = ({ userId, onClose, isDark = false }) =
                 ) : (
                   <span style={{
                     padding: '1px 5px', borderRadius: '4px', fontSize: '9.5px', fontWeight: 700,
-                    background: isDark ? 'rgba(124,58,237,0.15)' : '#F5F3FF',
+                    background: 'var(--cp-purple-5, #F5F3FF)',
                     color: 'var(--cp-purple-60, #7C3AED)',
                     border: `1px solid rgba(124,58,237,0.25)`,
                     whiteSpace: 'nowrap',
@@ -546,10 +546,10 @@ const UserDetailPanel: React.FC<Props> = ({ userId, onClose, isDark = false }) =
                 marginTop: '7px', padding: '9px 11px', borderRadius: '6px',
                 display: 'flex', gap: '8px', alignItems: 'flex-start',
                 background: isJiraProxy
-                  ? (isDark ? 'rgba(13,148,136,0.10)' : '#F0FDFA')
-                  : (isDark ? 'rgba(124,58,237,0.10)' : '#F5F3FF'),
+                  ? ('var(--cp-success-light, #F0FDFA)')
+                  : ('var(--cp-purple-5, #F5F3FF)'),
                 border: isJiraProxy
-                  ? `1px solid ${isDark ? 'rgba(13,148,136,0.20)' : '#99F6E4'}`
+                  ? `1px solid ${'var(--cp-teal-60, #99F6E4)'}`
                   : `1px solid rgba(124,58,237,0.25)`,
               }}>
                 {isJiraProxy

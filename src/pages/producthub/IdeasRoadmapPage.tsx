@@ -145,7 +145,7 @@ function RoadmapCard({ idea, onClick, isDark, dk }: { idea: IdeaRow; onClick: ()
       </div>
       <div style={{ borderTop: `1px solid ${dk.divider}`, paddingTop: '8px' }}>
         <span style={{ fontSize: '11px', fontWeight: 700, color: idea.impact_total > 0 ? dk.t2 : dk.t3, fontFamily: 'var(--cp-font-mono)' }}>IMPACT {idea.impact_total.toFixed(2)}</span>
-        {idea.is_committed && <span style={{ marginLeft: '8px', fontSize: '10px', fontWeight: 700, color: '#FFFFFF', background: isDark ? 'rgba(22,163,74,0.12)' : '#1B7F37', padding: '1px 6px', borderRadius: '4px' }}>COMMITTED</span>}
+        {idea.is_committed && <span style={{ marginLeft: '8px', fontSize: '10px', fontWeight: 700, color: '#FFFFFF', background: 'var(--cp-success, #1B7F37)', padding: '1px 6px', borderRadius: '4px' }}>COMMITTED</span>}
       </div>
       {isConverted && idea.linked_initiative_key && (
         <div style={{ marginTop: '6px', fontSize: '11px', fontWeight: 600, color: dk.greenText, fontFamily: 'var(--cp-font-mono)' }}>

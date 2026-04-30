@@ -1,0 +1,323 @@
+{
+  "total": 110,
+  "changed": [
+    {
+      "file": "src/components/admin/UserDetailPanel.tsx",
+      "n": 9
+    },
+    {
+      "file": "src/components/goals/GoalsStatsStrip.tsx",
+      "n": 2
+    },
+    {
+      "file": "src/components/ideas-roadmap/RoadmapCard.tsx",
+      "n": 5
+    },
+    {
+      "file": "src/components/ideas-roadmap/RoadmapKanban.tsx",
+      "n": 1
+    },
+    {
+      "file": "src/components/ja/MobileNavigationMenu.tsx",
+      "n": 3
+    },
+    {
+      "file": "src/components/product-hub/roadmap/ProductRoadmapPage.tsx",
+      "n": 1
+    },
+    {
+      "file": "src/components/product-hub/roadmap/RoadmapGanttChart.tsx",
+      "n": 2
+    },
+    {
+      "file": "src/components/product-hub/roadmap/RoadmapRequestList.tsx",
+      "n": 1
+    },
+    {
+      "file": "src/components/producthub/shared/CreateRequestDrawer.tsx",
+      "n": 3
+    },
+    {
+      "file": "src/components/reqAssist/RAJiraSidePanel.tsx",
+      "n": 4
+    },
+    {
+      "file": "src/components/resource360/Resource360Banner.tsx",
+      "n": 1
+    },
+    {
+      "file": "src/components/strategy/themes/ThemeDetailDrawer.tsx",
+      "n": 3
+    },
+    {
+      "file": "src/components/testhub/execution/ExecutionHeader.tsx",
+      "n": 1
+    },
+    {
+      "file": "src/components/testhub/execution/ExecutionRunMode.tsx",
+      "n": 5
+    },
+    {
+      "file": "src/components/testhub/execution/ExecutionViewMode.tsx",
+      "n": 4
+    },
+    {
+      "file": "src/components/wiki/WikiChatPanel.tsx",
+      "n": 2
+    },
+    {
+      "file": "src/components/wiki/WikiKnowledgeRequestForm.tsx",
+      "n": 2
+    },
+    {
+      "file": "src/components/wiki/WikiOnboardingWizard.tsx",
+      "n": 4
+    },
+    {
+      "file": "src/features/notifications/components/DirectNotificationRow.tsx",
+      "n": 1
+    },
+    {
+      "file": "src/pages/R360MemberDetail.tsx",
+      "n": 1
+    },
+    {
+      "file": "src/pages/ReqAssistLibrary.tsx",
+      "n": 3
+    },
+    {
+      "file": "src/pages/ResourceListingPage.tsx",
+      "n": 1
+    },
+    {
+      "file": "src/pages/admin/FeatureFlagsPage.tsx",
+      "n": 3
+    },
+    {
+      "file": "src/pages/admin/JiraUserSync.tsx",
+      "n": 3
+    },
+    {
+      "file": "src/pages/incidenthub/IncidentInsightsPage.tsx",
+      "n": 5
+    },
+    {
+      "file": "src/pages/incidenthub/IncidentListPage.tsx",
+      "n": 1
+    },
+    {
+      "file": "src/pages/incidenthub/components/CommitteeModal.tsx",
+      "n": 1
+    },
+    {
+      "file": "src/pages/producthub/IdeasAnalyticsPage.tsx",
+      "n": 1
+    },
+    {
+      "file": "src/pages/producthub/IdeasRoadmapPage.tsx",
+      "n": 1
+    },
+    {
+      "file": "src/pages/producthub/IdeationPage.tsx",
+      "n": 1
+    },
+    {
+      "file": "src/pages/producthub/ideation/CreateDriveModal.tsx",
+      "n": 1
+    },
+    {
+      "file": "src/pages/producthub/ideation/IdeaDrawer.tsx",
+      "n": 6
+    },
+    {
+      "file": "src/pages/producthub/ideation/IdeationAnalyticsView.tsx",
+      "n": 3
+    },
+    {
+      "file": "src/pages/producthub/ideation/IdeationBoardView.tsx",
+      "n": 1
+    },
+    {
+      "file": "src/pages/producthub/ideation/IdeationCreateWizard.tsx",
+      "n": 2
+    },
+    {
+      "file": "src/pages/producthub/ideation/IdeationDetailPanel.tsx",
+      "n": 5
+    },
+    {
+      "file": "src/pages/r360-member/DetailPanel.tsx",
+      "n": 1
+    },
+    {
+      "file": "src/pages/releasehub/CommandCenterPage.tsx",
+      "n": 3
+    },
+    {
+      "file": "src/pages/testhub/ImportExportPage.tsx",
+      "n": 2
+    },
+    {
+      "file": "src/pages/testhub/ReportDetailPage.tsx",
+      "n": 2
+    },
+    {
+      "file": "src/pages/testhub/RequirementsListPage.tsx",
+      "n": 1
+    },
+    {
+      "file": "src/pages/testhub/SharedStepsPage.tsx",
+      "n": 1
+    },
+    {
+      "file": "src/pages/testhub/TestCycleDetailPage.tsx",
+      "n": 4
+    },
+    {
+      "file": "src/pages/testhub/TestHubDashboardPage.tsx",
+      "n": 3
+    }
+  ],
+  "unmapped": [
+    {
+      "light": "rgba(15,23,42,0.3)",
+      "count": 3
+    },
+    {
+      "light": "#FCD34D",
+      "count": 2
+    },
+    {
+      "light": "#B7EBD1",
+      "count": 2
+    },
+    {
+      "light": "rgba(0,0,0,0.4)",
+      "count": 2
+    },
+    {
+      "light": "rgba(0,82,204,0.06)",
+      "count": 1
+    },
+    {
+      "light": "rgba(15,23,42,0.30)",
+      "count": 1
+    },
+    {
+      "light": "#93C5FD",
+      "count": 1
+    },
+    {
+      "light": "#C4B5FD",
+      "count": 1
+    },
+    {
+      "light": "#CCFBF1",
+      "count": 1
+    },
+    {
+      "light": "#5EEAD4",
+      "count": 1
+    },
+    {
+      "light": "#D1FAE5",
+      "count": 1
+    },
+    {
+      "light": "#6EE7B7",
+      "count": 1
+    },
+    {
+      "light": "rgba(15,23,42,.08)",
+      "count": 1
+    },
+    {
+      "light": "rgba(15,23,42,0.2)",
+      "count": 1
+    },
+    {
+      "light": "rgba(37,99,235,0.03)",
+      "count": 1
+    },
+    {
+      "light": "rgba(0,0,0,0.3)",
+      "count": 1
+    },
+    {
+      "light": "rgba(255,255,255,0.6)",
+      "count": 1
+    },
+    {
+      "light": "rgba(15,23,42,0.4)",
+      "count": 1
+    },
+    {
+      "light": "rgba(11,18,14,0.14)",
+      "count": 1
+    },
+    {
+      "light": "#EDEDED",
+      "count": 1
+    },
+    {
+      "light": "rgba(37,99,235,0.12)",
+      "count": 1
+    },
+    {
+      "light": "rgba(220,38,38,0.12)",
+      "count": 1
+    },
+    {
+      "light": "rgba(15,23,42,0.18)",
+      "count": 1
+    },
+    {
+      "light": "rgba(15,23,42,0.02)",
+      "count": 1
+    },
+    {
+      "light": "rgba(37,99,235,0.07)",
+      "count": 1
+    },
+    {
+      "light": "rgba(251,191,36,0.04)",
+      "count": 1
+    },
+    {
+      "light": "rgba(37,99,235,0.25)",
+      "count": 1
+    },
+    {
+      "light": "#E9D5FF",
+      "count": 1
+    },
+    {
+      "light": "#0C66E4",
+      "count": 1
+    },
+    {
+      "light": "rgba(37,99,235,0.3)",
+      "count": 1
+    },
+    {
+      "light": "#1E40AF",
+      "count": 1
+    },
+    {
+      "light": "#DDD6FE",
+      "count": 1
+    },
+    {
+      "light": "#A7F3D0",
+      "count": 1
+    },
+    {
+      "light": "rgba(0,0,0,0.08)",
+      "count": 1
+    },
+    {
+      "light": "rgba(254,242,242,0.6)",
+      "count": 1
+    }
+  ]
+}

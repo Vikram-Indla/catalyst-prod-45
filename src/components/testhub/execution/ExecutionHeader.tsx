@@ -92,7 +92,7 @@ export function ExecutionHeader({
           {[
             { count: cycle.passed_count, color: '#059669', bg: 'var(--cp-success-light, #ECFDF5)', Icon: CheckCircle2 },
             { count: cycle.failed_count, color: '#DC2626', bg: 'var(--cp-danger-light, #FEF2F2)', Icon: XCircle },
-            { count: cycle.blocked_count, color: '#D97706', bg: isDark ? 'rgba(251,191,36,0.12)' : '#FFFBEB', Icon: AlertTriangle },
+            { count: cycle.blocked_count, color: '#D97706', bg: 'var(--cp-warning-light, #FFFBEB)', Icon: AlertTriangle },
           ].map((s, i) => (
             <span key={i} style={{ display: 'inline-flex', alignItems: 'center', gap: 3, padding: '4px 8px', backgroundColor: s.bg, borderRadius: 6, fontSize: 11, fontWeight: 600, color: s.color }}>
               <s.Icon size={12} /> {s.count}

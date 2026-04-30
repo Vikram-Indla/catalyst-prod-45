@@ -101,7 +101,7 @@ export function ThemeDetailDrawer({ theme, open, onClose, onEdit, onDelete, isDa
 
         {/* Delete Confirmation */}
         {confirmDelete && (
-          <div style={{ padding: '12px 20px', background: 'var(--cp-danger-light, #FEF2F2)', borderBottom: `1px solid ${isDark ? 'rgba(220,38,38,0.25)' : '#FECACA'}` }}>
+          <div style={{ padding: '12px 20px', background: 'var(--cp-danger-light, #FEF2F2)', borderBottom: `1px solid ${'var(--cp-danger-light, #FECACA)'}` }}>
             <p style={{ fontSize: 12, color: 'var(--cp-danger-text, #991B1B)', marginBottom: 8 }}>Delete "<strong>{theme.title}</strong>"? This will also remove all milestones and links.</p>
             <div className="flex gap-2">
               <button onClick={() => { onDelete(theme); setConfirmDelete(false); }} style={{ fontSize: 11, fontWeight: 600, padding: '4px 12px', borderRadius: 4, border: 'none', background: 'var(--sem-danger)', color: '#FFF', cursor: 'pointer' }}>Delete</button>
@@ -212,7 +212,7 @@ function OverviewTab({ theme, sc, bsc, pri, isDark = false }: { theme: Strategic
           background: isDark
             ? 'rgba(59, 130, 246, 0.12)'
             : 'linear-gradient(135deg, #DBEAFE, #EFF6FF)',
-          border: `1px solid ${isDark ? 'rgba(59, 130, 246, 0.25)' : '#BFDBFE'}`,
+          border: `1px solid ${'var(--cp-primary-light, #BFDBFE)'}`,
           padding: 16,
         }}>
           <div className="flex items-center gap-2 mb-2">
@@ -424,7 +424,7 @@ function MilestonesTab({ theme, isDark = false }: { theme: StrategicTheme; isDar
       </div>
 
       {showForm && (
-        <div className="rounded-lg border p-3 mb-3" style={{ borderColor: isDark ? 'rgba(59,130,246,0.25)' : '#DBEAFE', background: isDark ? 'rgba(59,130,246,0.06)' : 'var(--bg-1)' }}>
+        <div className="rounded-lg border p-3 mb-3" style={{ borderColor: 'var(--cp-primary-light, #DBEAFE)', background: isDark ? 'rgba(59,130,246,0.06)' : 'var(--bg-1)' }}>
           <div className="space-y-2">
             <input style={inputStyle} placeholder="Milestone name *" value={formData.name} onChange={e => setFormData(f => ({ ...f, name: e.target.value }))} autoFocus />
             <div className="grid grid-cols-3 gap-2">

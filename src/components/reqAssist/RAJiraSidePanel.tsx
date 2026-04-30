@@ -358,7 +358,7 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
         {brdData.rawTextSource === 'title_only' && (
           <div style={{
             margin: '0 20px', marginTop: 12, padding: '8px 12px', borderRadius: 6,
-            background: isDark ? 'rgba(217,119,6,0.10)' : '#FFFBEB', border: isDark ? '0.75px solid rgba(217,119,6,0.25)' : '0.75px solid #FDE68A',
+            background: 'var(--cp-warning-light, #FFFBEB)', border: isDark ? '0.75px solid rgba(217,119,6,0.25)' : '0.75px solid #FDE68A',
             fontSize: 12, color: 'var(--cp-warning-text, #92400E)', fontFamily: 'var(--cp-font-body)',
             display: 'flex', alignItems: 'center', gap: 6,
           }}>
@@ -704,14 +704,14 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
 
               {/* Wiki Chunks Row — D04: renamed link */}
               <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '10px 0', borderBottom: isDark ? '0.75px solid #292929' : '0.75px solid rgba(15,23,42,0.06)' }}>
-                <div style={{ width: 28, height: 28, borderRadius: 6, background: isDark ? 'rgba(13,148,136,0.12)' : '#F0FDFA', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                <div style={{ width: 28, height: 28, borderRadius: 6, background: 'var(--cp-success-light, #F0FDFA)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                   <BookOpen size={16} color="#0D9488" />
                 </div>
                 <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--fg-1)', fontFamily: 'var(--cp-font-body)', flexShrink: 0, minWidth: 80 }}>Wiki Chunks</span>
                 {wikiCount > 0 ? (
                   <span style={{
                     display: 'inline-flex', alignItems: 'center', padding: '2px 10px', borderRadius: 12,
-                    background: isDark ? 'rgba(13,148,136,0.12)' : '#F0FDFA', border: isDark ? '0.75px solid rgba(13,148,136,0.25)' : '0.75px solid #99F6E4',
+                    background: 'var(--cp-success-light, #F0FDFA)', border: isDark ? '0.75px solid rgba(13,148,136,0.25)' : '0.75px solid #99F6E4',
                     fontSize: 11, fontWeight: 700, color: '#0F766E',
                     fontFamily: 'var(--cp-font-body)',
                   }}>{pluralise(wikiCount, 'chunk', 'chunks')} indexed</span>
@@ -762,7 +762,7 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
                 {uatCount > 0 ? (
                   <span style={{
                     display: 'inline-flex', alignItems: 'center', padding: '2px 10px', borderRadius: 12,
-                    background: isDark ? 'rgba(22,163,74,0.12)' : '#F0FDF4', border: isDark ? '0.75px solid rgba(22,163,74,0.25)' : '0.75px solid #BBF7D0',
+                    background: 'var(--cp-success-light, #F0FDF4)', border: isDark ? '0.75px solid rgba(22,163,74,0.25)' : '0.75px solid #BBF7D0',
                     fontSize: 11, fontWeight: 700, color: 'var(--sem-success)',
                     fontFamily: 'var(--cp-font-body)',
                   }}>{pluralise(uatCount, 'scenario', 'scenarios')}</span>

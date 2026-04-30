@@ -74,7 +74,7 @@ export function WikiOnboardingWizard({ onComplete }: WikiOnboardingWizardProps) 
         {ROLES.map(r => (
           <button key={r} onClick={() => setRole(r)} style={{
             padding: '12px 16px', borderRadius: 8, background: isDark ? 'var(--cp-bg-page, #1F1F21)' : 'var(--bg-app)',
-            border: `0.75px solid ${role === r ? 'var(--cp-blue)' : (isDark ? '#2E2E2E' : 'rgba(0,0,0,0.06)')}`,
+            border: `0.75px solid ${role === r ? 'var(--cp-blue)' : ('var(--cp-border-subtle, rgba(0,0,0,0.06))')}`,
             cursor: 'pointer', textAlign: 'left', fontSize: 13, fontWeight: role === r ? 600 : 400,
             color: role === r ? 'var(--cp-blue)' : (isDark ? '#A1A1A1' : 'var(--fg-2)'), transition: 'all 80ms',
             display: 'flex', alignItems: 'center', justifyContent: 'space-between',
@@ -96,7 +96,7 @@ export function WikiOnboardingWizard({ onComplete }: WikiOnboardingWizardProps) 
           return (
             <button key={d.code} onClick={() => toggleDomain(d.code)} style={{
               padding: '10px 12px', borderRadius: 8, background: isDark ? 'var(--cp-bg-page, #1F1F21)' : 'var(--bg-app)',
-              border: `0.75px solid ${active ? 'var(--cp-blue)' : (isDark ? '#2E2E2E' : 'rgba(0,0,0,0.06)')}`,
+              border: `0.75px solid ${active ? 'var(--cp-blue)' : ('var(--cp-border-subtle, rgba(0,0,0,0.06))')}`,
               cursor: 'pointer', textAlign: 'left', fontSize: 12, transition: 'all 80ms',
               display: 'flex', alignItems: 'center', gap: 8,
             }}>
@@ -119,11 +119,11 @@ export function WikiOnboardingWizard({ onComplete }: WikiOnboardingWizardProps) 
           return (
             <div key={p.id} style={{
               padding: 16, borderRadius: 8, background: isDark ? 'var(--cp-bg-page, #1F1F21)' : 'var(--bg-app)',
-              border: `0.75px solid ${isDark ? '#2E2E2E' : 'rgba(0,0,0,0.06)'}`, cursor: 'pointer',
+              border: `0.75px solid ${'var(--cp-border-subtle, rgba(0,0,0,0.06))'}`, cursor: 'pointer',
               transition: 'border-color 120ms',
             }}
               onMouseEnter={e => e.currentTarget.style.borderColor = 'var(--cp-blue)'}
-              onMouseLeave={e => e.currentTarget.style.borderColor = isDark ? '#2E2E2E' : 'rgba(0,0,0,0.06)'}
+              onMouseLeave={e => e.currentTarget.style.borderColor = 'var(--cp-border-subtle, rgba(0,0,0,0.06))'}
             >
               <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
                 <GraduationCap size={16} style={{ color: 'var(--cp-blue)' }} />

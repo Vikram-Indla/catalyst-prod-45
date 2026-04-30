@@ -277,13 +277,13 @@ export default function CommandCenterPage() {
           )}
 
           {/* AI Post-Deployment Summary */}
-          <div className="mt-4 rounded-[6px] p-3.5" style={{ background: 'var(--cp-primary-light, #EFF6FF)', border: `0.75px solid ${isDark ? 'rgba(37,99,235,0.2)' : '#DBEAFE'}` }}>
+          <div className="mt-4 rounded-[6px] p-3.5" style={{ background: 'var(--cp-primary-light, #EFF6FF)', border: `0.75px solid ${'var(--cp-primary-light, #DBEAFE)'}` }}>
             <div className="flex items-center gap-1.5 mb-1.5">
               <Sparkles size={12} style={{ color: '#2563EB' }} />
               <span className="text-[11px] font-bold text-[#2563EB] uppercase">AI Post-Deploy Summary</span>
             </div>
             {!coreDataReady ? (
-              <div className="h-3 w-3/4 rounded animate-pulse" style={{ background: isDark ? 'rgba(37,99,235,0.2)' : '#DBEAFE' }} />
+              <div className="h-3 w-3/4 rounded animate-pulse" style={{ background: 'var(--cp-primary-light, #DBEAFE)' }} />
             ) : (
               <p className="text-[12px]" style={{ color: 'var(--cp-text-secondary, #334155)' }}>{computed.postDeploySummary}</p>
             )}
@@ -363,7 +363,7 @@ export default function CommandCenterPage() {
               <span className="text-[11px] font-bold text-[#2563EB] uppercase">AI Conflict Alert</span>
             </div>
             {!coreDataReady ? (
-              <div className="h-3 w-3/4 rounded animate-pulse" style={{ background: isDark ? 'rgba(37,99,235,0.2)' : '#DBEAFE' }} />
+              <div className="h-3 w-3/4 rounded animate-pulse" style={{ background: 'var(--cp-primary-light, #DBEAFE)' }} />
             ) : (
               <p className="text-[12px]" style={{ color: 'var(--cp-text-secondary, #334155)' }}>{computed.conflictMessage}</p>
             )}

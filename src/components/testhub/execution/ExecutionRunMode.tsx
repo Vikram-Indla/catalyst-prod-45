@@ -141,8 +141,8 @@ export function ExecutionRunMode({
         {isVersionDrifted && (
           <div style={{
             marginTop: 10, padding: '8px 12px', borderRadius: 6,
-            backgroundColor: isDark ? 'rgba(251,191,36,0.12)' : '#FFFBEB',
-            border: `1px solid ${isDark ? 'rgba(251,191,36,0.2)' : '#FDE68A'}`,
+            backgroundColor: 'var(--cp-warning-light, #FFFBEB)',
+            border: `1px solid ${'var(--cp-warning-light, #FDE68A)'}`,
             display: 'flex', alignItems: 'center', gap: 6,
             fontSize: 12, color: 'var(--cp-warning-text, #92400E)',
           }}>
@@ -177,7 +177,7 @@ export function ExecutionRunMode({
         <div style={{ maxWidth: 720, margin: '0 auto' }}>
           {/* Preconditions */}
           {testCase.preconditions && (
-            <div style={{ marginBottom: 20, padding: 14, backgroundColor: isDark ? 'rgba(251,191,36,0.12)' : '#FFFBEB', border: `1px solid ${isDark ? 'rgba(251,191,36,0.2)' : '#FDE68A'}`, borderRadius: 8 }}>
+            <div style={{ marginBottom: 20, padding: 14, backgroundColor: 'var(--cp-warning-light, #FFFBEB)', border: `1px solid ${'var(--cp-warning-light, #FDE68A)'}`, borderRadius: 8 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6 }}>
                 <AlertTriangle size={14} style={{ color: '#D97706' }} />
                 <span style={{ fontSize: 12, fontWeight: 600, color: '#92400E' }}>Preconditions</span>
@@ -294,7 +294,7 @@ export function ExecutionRunMode({
         {[
           { key: 'passed', label: 'Pass', shortcut: 'P', icon: CheckCircle2, onClick: onPass, color: '#059669', bg: 'var(--cp-success-light, #ECFDF5)', activeBg: 'linear-gradient(135deg, #10B981, #059669)' },
           { key: 'failed', label: 'Fail', shortcut: 'F', icon: XCircle, onClick: onFail, color: '#DC2626', bg: 'var(--cp-danger-light, #FEF2F2)', activeBg: 'linear-gradient(135deg, #EF4444, #DC2626)' },
-          { key: 'blocked', label: 'Block', shortcut: 'B', icon: AlertTriangle, onClick: onBlocked, color: '#D97706', bg: isDark ? 'rgba(251,191,36,0.12)' : '#FFFBEB', activeBg: 'linear-gradient(135deg, #F59E0B, #D97706)' },
+          { key: 'blocked', label: 'Block', shortcut: 'B', icon: AlertTriangle, onClick: onBlocked, color: '#D97706', bg: 'var(--cp-warning-light, #FFFBEB)', activeBg: 'linear-gradient(135deg, #F59E0B, #D97706)' },
           { key: 'skipped', label: 'Skip', shortcut: 'S', icon: SkipForward, onClick: onSkip, color: 'var(--cp-text-tertiary, #64748B)', bg: 'hsl(var(--muted) / 0.3)', activeBg: 'linear-gradient(135deg, #64748B, #475569)' },
         ].map(btn => {
           const Icon = btn.icon;

@@ -270,8 +270,8 @@ export default function IdeationCreateWizard({ open, onClose }: Props) {
           {/* AI Auto-fill Bar */}
           <div style={{
             margin: '16px 32px 0',
-            background: isDark ? 'rgba(124,58,237,0.08)' : '#F5F3FF',
-            border: `1px solid ${isDark ? 'rgba(124,58,237,0.15)' : '#EDE9FE'}`,
+            background: 'var(--cp-purple-5, #F5F3FF)',
+            border: `1px solid ${'var(--cp-purple-5, #EDE9FE)'}`,
             borderRadius: '12px',
             padding: '12px 16px',
             display: 'flex', alignItems: 'center', justifyContent: 'space-between',

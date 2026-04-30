@@ -104,7 +104,7 @@ export function MobileNavigationMenu() {
                     padding: '10px 24px',
                     border: 'none',
                     background: isActive
-                      ? (isDark ? 'rgba(59,130,246,0.10)' : 'rgba(37,99,235,0.06)')
+                      ? ('var(--cp-interact-selected, rgba(37,99,235,0.06))')
                       : 'transparent',
                     cursor: 'pointer',
                     fontSize: '14px',
@@ -118,11 +118,11 @@ export function MobileNavigationMenu() {
                     borderLeft: isActive ? '3px solid #3B82F6' : '3px solid transparent',
                   }}
                   onMouseEnter={(e) => {
-                    if (!isActive) e.currentTarget.style.background = isDark ? '#1F1F1F' : 'rgba(0,0,0,0.04)';
+                    if (!isActive) e.currentTarget.style.background = 'var(--cp-interact-hover, rgba(0,0,0,0.04))';
                   }}
                   onMouseLeave={(e) => {
                     e.currentTarget.style.background = isActive
-                      ? (isDark ? 'rgba(59,130,246,0.10)' : 'rgba(37,99,235,0.06)')
+                      ? ('var(--cp-interact-selected, rgba(37,99,235,0.06))')
                       : 'transparent';
                   }}
                 >

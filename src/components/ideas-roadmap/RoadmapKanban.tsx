@@ -84,7 +84,7 @@ export function RoadmapKanban({ ideas, onDrop, onSelectIdea, onToggleCommitted, 
                 : `1px solid ${isOver ? 'var(--cp-blue)' : dk.border}`,
               borderTop: col.dashed ? undefined : `2px solid ${col.accent}`,
               transition: 'border-color 150ms, background 150ms',
-              ...(isOver && !col.dashed ? { background: isDark ? 'rgba(37,99,235,0.06)' : 'rgba(37,99,235,0.04)' } : {}),
+              ...(isOver && !col.dashed ? { background: 'var(--cp-interact-selected, rgba(37,99,235,0.04))' } : {}),
             }}
           >
             <div style={{

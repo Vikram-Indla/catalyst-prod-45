@@ -109,7 +109,7 @@ export function WikiKnowledgeRequestForm({ open, onClose }: Props) {
               placeholder="What knowledge are you looking for?"
               style={inputStyle}
               onFocus={e => e.currentTarget.style.borderColor = 'var(--cp-blue)'}
-              onBlur={e => e.currentTarget.style.borderColor = isDark ? '#2E2E2E' : 'rgba(0,0,0,0.10)'}
+              onBlur={e => e.currentTarget.style.borderColor = 'var(--cp-border-default, rgba(0,0,0,0.10))'}
             />
           </div>
 
@@ -121,7 +121,7 @@ export function WikiKnowledgeRequestForm({ open, onClose }: Props) {
               rows={3}
               style={{ ...inputStyle, resize: 'vertical' }}
               onFocus={e => e.currentTarget.style.borderColor = 'var(--cp-blue)'}
-              onBlur={e => e.currentTarget.style.borderColor = isDark ? '#2E2E2E' : 'rgba(0,0,0,0.10)'}
+              onBlur={e => e.currentTarget.style.borderColor = 'var(--cp-border-default, rgba(0,0,0,0.10))'}
             />
           </div>
 

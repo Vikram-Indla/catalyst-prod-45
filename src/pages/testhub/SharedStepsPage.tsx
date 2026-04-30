@@ -624,7 +624,7 @@ export default function SharedStepsPage() {
                               onClick={(e) => { e.stopPropagation(); navigate(`/testhub/shared-steps/${step.id}`); }}
                               style={{
                                 padding: '2px 8px', borderRadius: 12, fontSize: 12, fontWeight: 600,
-                                backgroundColor: step.usage_count > 0 ? (isDark ? 'rgba(5,150,105,0.12)' : '#F0FDF4') : ('var(--cp-bg-sunken, #F1F5F9)'),
+                                backgroundColor: step.usage_count > 0 ? ('var(--cp-success-light, #F0FDF4)') : ('var(--cp-bg-sunken, #F1F5F9)'),
                                 color: step.usage_count > 0 ? '#059669' : ('var(--cp-text-tertiary, #64748B)'),
                                 border: 'none', cursor: 'pointer',
                               }}

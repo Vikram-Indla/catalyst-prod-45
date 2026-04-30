@@ -184,7 +184,7 @@ export function ProductRoadmapPage() {
           <h1 style={{ fontSize: 22, fontWeight: 800, color: ink[1], margin: 0 }}>Product Roadmap</h1>
         </div>
         <div className="flex flex-col items-center justify-center flex-1 gap-3">
-          <div className="flex items-center gap-2 px-4 py-3 rounded-lg" style={{ background: 'var(--cp-danger-light, #FEF2F2)', border: `1px solid ${isDark ? 'rgba(220,38,38,0.25)' : '#FECACA'}` }}>
+          <div className="flex items-center gap-2 px-4 py-3 rounded-lg" style={{ background: 'var(--cp-danger-light, #FEF2F2)', border: `1px solid ${'var(--cp-danger-light, #FECACA)'}` }}>
             <AlertCircle size={18} style={{ color: '#EF4444' }} />
             <span style={{ fontSize: 14, color: 'var(--cp-danger-text, #991B1B)', fontWeight: 500 }}>
               Failed to load roadmap data: {(error as Error).message}

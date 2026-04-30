@@ -249,9 +249,9 @@ export default function IdeaDrawer({ ideaKey, onClose, onConvert }: Props) {
           {/* Converted: Linked Request Card */}
           {isConverted && rawIdea.linked_initiative_key && (
             <div style={{ padding: '0 20px 16px' }}>
-              <div style={{ background: isDark ? 'rgba(22,163,74,0.08)' : '#F0FDF4', border: `0.75px solid ${isDark ? 'rgba(22,163,74,0.20)' : '#BBF7D0'}`, borderRadius: '6px', padding: '14px' }}>
+              <div style={{ background: 'var(--cp-success-light, #F0FDF4)', border: `0.75px solid ${'var(--cp-success-light, #BBF7D0)'}`, borderRadius: '6px', padding: '14px' }}>
                 <div style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--cp-success-text, #11853D)', marginBottom: '8px' }}>CONVERTED TO INITIATIVE</div>
-                <div style={{ background: 'var(--cp-bg-elevated, #FFFFFF)', border: `0.75px solid ${isDark ? 'rgba(22,163,74,0.20)' : '#BBF7D0'}`, borderRadius: '4px', padding: '10px 12px' }}>
+                <div style={{ background: 'var(--cp-bg-elevated, #FFFFFF)', border: `0.75px solid ${'var(--cp-success-light, #BBF7D0)'}`, borderRadius: '4px', padding: '10px 12px' }}>
                   <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: '13px', fontWeight: 700, color: '#11853D' }}>
                     {rawIdea.linked_initiative_key}
                   </span>
@@ -374,7 +374,7 @@ export default function IdeaDrawer({ ideaKey, onClose, onConvert }: Props) {
             {canEdit ? (
               <textarea value={localDescription} onChange={(e) => setLocalDescription(e.target.value)} rows={4}
                 placeholder="Add a description..."
-                style={{ width: '100%', borderRadius: '4px', border: `0.75px solid ${isDark ? '#454545' : 'rgba(15,23,42,0.14)'}`, padding: '8px 12px', fontSize: '13px', color: dk.t1, resize: 'vertical', fontFamily: 'var(--cp-font-body)', outline: 'none', background: 'var(--cp-bg-elevated, #FFFFFF)' }}
+                style={{ width: '100%', borderRadius: '4px', border: `0.75px solid ${'var(--cp-border-default, rgba(15,23,42,0.14))'}`, padding: '8px 12px', fontSize: '13px', color: dk.t1, resize: 'vertical', fontFamily: 'var(--cp-font-body)', outline: 'none', background: 'var(--cp-bg-elevated, #FFFFFF)' }}
               />
             ) : (
               <p style={{ fontSize: '13px', color: rawIdea.description ? dk.t1 : dk.t3, lineHeight: 1.6, margin: 0 }}>
@@ -439,7 +439,7 @@ export default function IdeaDrawer({ ideaKey, onClose, onConvert }: Props) {
           {/* CONVERT TO INITIATIVE — green section (only if not Draft and not already converted) */}
           {!isConverted && localStatus !== 'Draft' && onConvert && rawIdea && (
             <div style={{ padding: '16px 20px' }}>
-              <div style={{ background: isDark ? 'rgba(22,163,74,0.08)' : '#F0FDF4', border: `0.75px solid ${isDark ? 'rgba(22,163,74,0.20)' : '#BBF7D0'}`, borderRadius: '6px', padding: '14px' }}>
+              <div style={{ background: 'var(--cp-success-light, #F0FDF4)', border: `0.75px solid ${'var(--cp-success-light, #BBF7D0)'}`, borderRadius: '6px', padding: '14px' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '6px' }}>
                   <ArrowUpRight size={14} style={{ color: 'var(--cp-success, #16A34A)' }} />
                   <span style={{ fontSize: '13px', fontWeight: 650, color: dk.t1 }}>Ready to promote?</span>

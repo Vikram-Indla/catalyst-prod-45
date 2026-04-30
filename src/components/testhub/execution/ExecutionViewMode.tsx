@@ -90,8 +90,8 @@ export function ExecutionViewMode({
         {isVersionDrifted && (
           <div style={{
             marginTop: 10, padding: '8px 12px', borderRadius: 6,
-            backgroundColor: isDark ? 'rgba(251,191,36,0.12)' : '#FFFBEB',
-            border: `1px solid ${isDark ? 'rgba(251,191,36,0.2)' : '#FDE68A'}`,
+            backgroundColor: 'var(--cp-warning-light, #FFFBEB)',
+            border: `1px solid ${'var(--cp-warning-light, #FDE68A)'}`,
             display: 'flex', alignItems: 'center', gap: 6,
             fontSize: 12, color: 'var(--cp-warning-text, #92400E)',
           }}>
@@ -110,7 +110,7 @@ export function ExecutionViewMode({
         <div style={{ maxWidth: 720, margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 8 }}>
           {/* Preconditions */}
           {testCase.preconditions && (
-            <div style={{ marginBottom: 12, padding: 14, backgroundColor: isDark ? 'rgba(251,191,36,0.12)' : '#FFFBEB', border: `1px solid ${isDark ? 'rgba(251,191,36,0.2)' : '#FDE68A'}`, borderRadius: 8 }}>
+            <div style={{ marginBottom: 12, padding: 14, backgroundColor: 'var(--cp-warning-light, #FFFBEB)', border: `1px solid ${'var(--cp-warning-light, #FDE68A)'}`, borderRadius: 8 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6 }}>
                 <AlertTriangle size={14} style={{ color: '#D97706' }} />
                 <span style={{ fontSize: 12, fontWeight: 600, color: '#92400E' }}>Preconditions</span>
