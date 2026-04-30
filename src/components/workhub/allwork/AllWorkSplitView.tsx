@@ -197,7 +197,7 @@ export function AllWorkSplitView({ items, selectedItemKey, onSelectItem, sortFie
               aria-label={`Sort by ${currentSortLabel}. Click to change field.`}
               className="flex items-center gap-1 text-[12px] px-1.5 py-0.5 rounded transition-colors duration-[80ms] hover:bg-[var(--hover,#1F1F1F)] focus-visible:outline-2 focus-visible:outline-[#2563EB]"
               style={{
-                color: isDark ? '#A1A1A1' : '#6b6e76',
+                color: 'var(--cp-text-secondary, #6b6e76)',
                 fontFamily: 'var(--cp-font-body)',
                 background: 'none',
                 border: 'none',
@@ -213,7 +213,7 @@ export function AllWorkSplitView({ items, selectedItemKey, onSelectItem, sortFie
               title={sortDir === 'asc' ? 'Ascending' : 'Descending'}
               className="p-1 rounded transition-colors duration-[80ms] hover:bg-[var(--hover,#1F1F1F)] focus-visible:outline-2 focus-visible:outline-[#2563EB]"
               style={{
-                color: isDark ? '#A1A1A1' : '#6b6e76',
+                color: 'var(--cp-text-secondary, #6b6e76)',
                 background: 'none',
                 border: 'none',
                 cursor: 'pointer',

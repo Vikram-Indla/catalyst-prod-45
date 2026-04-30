@@ -163,7 +163,7 @@ export function GoalsHeatmapView({ goals, themes, onCellClick, isDark = false }:
       })}
 
       <style>{`
-        .heatmap-row:hover { background: ${isDark ? '#111111' : '#FAFBFE'}; }
+        .heatmap-row:hover { background: ${'var(--cp-bg-page, #FAFBFE)'}; }
         .heatmap-cell:hover { outline: 2px solid #2563EB; outline-offset: -2px; border-radius: 4px; }
         @media (max-width: 767px) { .heatmap-scroll { overflow-x: auto; } .heatmap-scroll > div { min-width: 700px; } }
       `}</style>

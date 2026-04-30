@@ -57,7 +57,7 @@ export function ProjectStatusTabs({ activeTab, onTabChange, counts, isDark = fal
                 size={13}
                 strokeWidth={2}
                 fill={isActive ? '#FFAB00' : 'none'}
-                color={isActive ? '#FFAB00' : (isDark ? '#7D7D7D' : '#6B778C')}
+                color={isActive ? '#FFAB00' : ('var(--cp-text-tertiary, #6B778C)')}
               />
             )}
             {tab.label}

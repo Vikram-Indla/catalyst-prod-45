@@ -109,14 +109,14 @@ export function GroupByPopover<K extends string>({
     textMuted: 'var(--cp-text-muted, #94A3B8)',
     textSecondary: 'var(--cp-text-secondary, #475569)',
     hover: 'var(--cp-bg-page, #F8FAFC)',
-    selected: isDark ? '#0D1526' : '#F0F6FF',
+    selected: 'var(--cp-primary-light, #F0F6FF)',
     selectedBorder: '#2563EB',
     shadow: isDark
       ? '0 4px 24px rgba(0,0,0,0.5)'
       : '0 4px 16px rgba(0,0,0,0.08), 0 1px 3px rgba(0,0,0,0.06)',
     inputBg: isDark ? '#111111' : '#FFFFFF',
     triggerBg: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF',
-    triggerBgActive: isDark ? '#0D1526' : '#F0F6FF',
+    triggerBgActive: 'var(--cp-primary-light, #F0F6FF)',
   };
 
   return (

@@ -641,7 +641,7 @@ function CommentsSection({ ideaId }: { ideaId: string | null }) {
             const timeAgo = c.created_at ? getRelativeTime(c.created_at) : '';
             return (
               <div key={c.id} style={{
-                background: isDark ? '#1F1F1F' : '#FFFFFF', border: `1px solid ${dk.divider}`,
+                background: 'var(--cp-bg-elevated, #FFFFFF)', border: `1px solid ${dk.divider}`,
                 borderRadius: '6px', padding: '12px 16px',
               }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>

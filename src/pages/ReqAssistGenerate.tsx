@@ -611,7 +611,7 @@ function BtnOutline({ children, ...props }: React.ButtonHTMLAttributes<HTMLButto
   return (
     <button {...props} style={{
       display: 'inline-flex', alignItems: 'center', gap: 6, padding: '8px 16px', fontSize: 14, fontWeight: 500,
-      border: `0.75px solid ${isDark ? '#2E2E2E' : '#CBD5E1'}`, borderRadius: 6, cursor: props.disabled ? 'not-allowed' : 'pointer',
+      border: `0.75px solid ${'var(--cp-border-strong, #CBD5E1)'}`, borderRadius: 6, cursor: props.disabled ? 'not-allowed' : 'pointer',
       background: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF', color: 'var(--cp-text-secondary, #374151)', fontFamily: 'var(--cp-font-body)',
       transition: 'background 120ms',
       ...props.style,

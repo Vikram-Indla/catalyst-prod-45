@@ -26,7 +26,7 @@ interface WorkItemTreeProps {
 export function TreeSkeleton({ rows = 5 }: { rows?: number }) {
   const { isDark } = useTheme();
   const shimmerBg = isDark ? 'var(--cp-bg-surface, #242528)' : '#F1F5F9';
-  const headerBg = isDark ? '#1F1F1F' : '#FAFAFA';
+  const headerBg = 'var(--cp-bg-page, #FAFAFA)';
   return (
     <div style={{ border: '1px solid var(--divider)', borderRadius: 8, overflow: 'hidden', background: 'var(--bg-app)' }}>
       <div style={{ height: 32, background: headerBg, borderBottom: '1px solid var(--divider)', display: 'flex', alignItems: 'center', padding: '8px 12px' }}>
@@ -516,7 +516,7 @@ export function WorkItemTree({ items, selectedId, onSelect, onDeselect, onDelete
     <div style={{ border: '1px solid var(--divider)', borderRadius: 8, overflow: 'hidden', background: 'var(--bg-app)' }}>
       {/* Column header row */}
       <div style={{
-        height: 50, background: isDark ? '#1F1F1F' : '#FAFAFA', borderBottom: '1px solid var(--divider)',
+        height: 50, background: 'var(--cp-bg-page, #FAFAFA)', borderBottom: '1px solid var(--divider)',
         display: 'flex', alignItems: 'center', padding: '8px 12px',
         fontFamily: 'var(--cp-font-body)', fontSize: 11, fontWeight: 600,
         textTransform: 'uppercase', color: 'var(--fg-3)', letterSpacing: '0.06em',

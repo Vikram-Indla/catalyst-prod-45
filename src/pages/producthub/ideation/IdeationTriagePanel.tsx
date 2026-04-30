@@ -287,7 +287,7 @@ function TriageCard({ badge, ideaKey, title, body, aiSuggestion, primary, second
       <div style={{ fontSize: '14px', fontWeight: 600, color: 'var(--cp-text-primary, #0F172A)', marginTop: '8px', lineHeight: 1.4 }}>{title}</div>
       <div style={{ fontSize: '13px', fontWeight: 400, color: 'var(--cp-text-tertiary, #64748B)', lineHeight: 1.5, marginTop: '4px' }}>{body}</div>
       {aiSuggestion && (
-        <div style={{ background: isDark ? 'var(--cp-bg-surface, #242528)' : '#F8FAFC', borderLeft: `2px solid ${isDark ? '#2E2E2E' : '#CBD5E1'}`, borderRadius: '0 6px 6px 0', padding: '8px 12px', marginTop: '10px', fontSize: '12px', fontWeight: 500, color: 'var(--cp-text-secondary, #475569)', lineHeight: 1.4 }}>
+        <div style={{ background: isDark ? 'var(--cp-bg-surface, #242528)' : '#F8FAFC', borderLeft: `2px solid ${'var(--cp-border-strong, #CBD5E1)'}`, borderRadius: '0 6px 6px 0', padding: '8px 12px', marginTop: '10px', fontSize: '12px', fontWeight: 500, color: 'var(--cp-text-secondary, #475569)', lineHeight: 1.4 }}>
           {aiSuggestion}
         </div>
       )}

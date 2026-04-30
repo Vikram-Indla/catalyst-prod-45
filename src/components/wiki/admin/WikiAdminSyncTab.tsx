@@ -338,7 +338,7 @@ export function WikiAdminSyncTab() {
           padding: '10px 16px', borderRadius: 6,
           background: isDark ? 'rgba(27,127,55,0.15)' : '#E3FCEF', border: '1px solid rgba(13,115,49,0.15)',
           fontFamily: 'var(--cp-font-body)', fontSize: 13, fontWeight: 500,
-          color: isDark ? '#4ADE80' : '#006644',
+          color: 'var(--cp-success-text, #006644)',
         }}>
           ✓ Sync completed · {latestRun.total_duration_ms ? `${(latestRun.total_duration_ms / 1000).toFixed(0)}s` : '—'} · {latestRun.total_items_processed ?? 0} items · {latestRun.new_pages ?? 0} new · {latestRun.updated_pages ?? 0} updated
         </div>

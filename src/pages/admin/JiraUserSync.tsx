@@ -694,7 +694,7 @@ const JiraUserSync: React.FC = () => {
                           padding: '1px 6px', borderRadius: '4px',
                           fontSize: '10px', fontWeight: 700, letterSpacing: '0.03em', textTransform: 'uppercase',
                           background: isDark ? 'rgba(91,33,182,0.18)' : '#EDE9FE',
-                          color: isDark ? '#C4B5FD' : '#5B21B6',
+                          color: 'var(--cp-purple-60, #5B21B6)',
                         }}>CATALYST</span>
                       )}
                     </td>

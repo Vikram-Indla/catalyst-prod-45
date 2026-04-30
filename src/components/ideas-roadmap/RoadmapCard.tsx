@@ -166,11 +166,11 @@ export function RoadmapCard({ idea, onSelectIdea, onToggleCommitted, onMoveToQua
           const isSet = !!idea.milestones[m.key];
           const CHIP_STYLES: Record<string, { bg: string; text: string; border: string }> = {
             req:  { bg: isDark ? 'rgba(59,130,246,0.15)' : '#DBEAFE', text: 'var(--cp-primary-hover, #1D4ED8)', border: isDark ? 'rgba(59,130,246,0.25)' : '#93C5FD' },
-            des:  { bg: isDark ? 'rgba(139,92,246,0.15)' : '#EDE9FE', text: isDark ? '#C4B5FD' : '#5B21B6', border: isDark ? 'rgba(139,92,246,0.25)' : '#C4B5FD' },
+            des:  { bg: isDark ? 'rgba(139,92,246,0.15)' : '#EDE9FE', text: 'var(--cp-purple-60, #5B21B6)', border: isDark ? 'rgba(139,92,246,0.25)' : '#C4B5FD' },
             dev:  { bg: isDark ? 'rgba(22,163,74,0.15)' : '#DCFCE7', text: 'var(--cp-success, #15803D)', border: isDark ? 'rgba(22,163,74,0.25)' : '#86EFAC' },
             uat:  { bg: isDark ? 'rgba(217,119,6,0.15)' : '#FEF3C7', text: 'var(--cp-warning-text, #92400E)', border: isDark ? 'rgba(217,119,6,0.25)' : '#FCD34D' },
-            beta: { bg: isDark ? 'rgba(13,148,136,0.15)' : '#CCFBF1', text: isDark ? '#5EEAD4' : '#0F766E', border: isDark ? 'rgba(13,148,136,0.25)' : '#5EEAD4' },
-            prod: { bg: isDark ? 'rgba(22,163,74,0.15)' : '#D1FAE5', text: isDark ? '#86EFAC' : '#065F46', border: isDark ? 'rgba(22,163,74,0.25)' : '#6EE7B7' },
+            beta: { bg: isDark ? 'rgba(13,148,136,0.15)' : '#CCFBF1', text: 'var(--cp-teal-60, #0F766E)', border: isDark ? 'rgba(13,148,136,0.25)' : '#5EEAD4' },
+            prod: { bg: isDark ? 'rgba(22,163,74,0.15)' : '#D1FAE5', text: 'var(--cp-success-text, #065F46)', border: isDark ? 'rgba(22,163,74,0.25)' : '#6EE7B7' },
           };
           const unsetStyle = { bg: 'var(--cp-bg-page, #F1F5F9)', text: 'var(--cp-border-strong, #CBD5E1)', border: 'var(--cp-border, #E2E8F0)' };
           const style = isSet ? CHIP_STYLES[m.key] : unsetStyle;

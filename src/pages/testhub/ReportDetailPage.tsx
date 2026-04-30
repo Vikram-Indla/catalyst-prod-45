@@ -177,7 +177,7 @@ export default function ReportDetailPage() {
               <p style={{ fontSize: 28, fontWeight: 700, color: textPrimary, margin: 0 }}>{data.summary.total_cases}</p>
               <p style={{ fontSize: 12, color: textSecondary, margin: '4px 0 0' }}>Total Tests</p>
             </div>
-            <div style={{ backgroundColor: isDark ? '#1A2E1A' : '#ECFDF5', borderRadius: 12, padding: 20, border: `1px solid ${isDark ? '#2D4A2D' : '#A7F3D0'}`, textAlign: 'center' }}>
+            <div style={{ backgroundColor: 'var(--cp-success-light, #ECFDF5)', borderRadius: 12, padding: 20, border: `1px solid ${isDark ? '#2D4A2D' : '#A7F3D0'}`, textAlign: 'center' }}>
               <CheckCircle2 size={24} style={{ color: '#059669', marginBottom: 8 }} />
               <p style={{ fontSize: 28, fontWeight: 700, color: '#059669', margin: 0 }}>{data.summary.passed}</p>
               <p style={{ fontSize: 12, color: '#059669', margin: '4px 0 0' }}>Passed</p>
@@ -265,7 +265,7 @@ export default function ReportDetailPage() {
                         <td style={{ padding: '12px 8px' }}>
                           <span style={{
                             fontSize: 11, fontWeight: 500, padding: '3px 8px', borderRadius: 4,
-                            backgroundColor: tc.status === 'passed' ? (isDark ? '#1A2E1A' : '#ECFDF5') : tc.status === 'failed' ? ('var(--cp-danger-light, #FEF2F2)') : (isDark ? 'var(--cp-bg-surface, #242528)' : '#F1F5F9'),
+                            backgroundColor: tc.status === 'passed' ? ('var(--cp-success-light, #ECFDF5)') : tc.status === 'failed' ? ('var(--cp-danger-light, #FEF2F2)') : (isDark ? 'var(--cp-bg-surface, #242528)' : '#F1F5F9'),
                             color: tc.status === 'passed' ? '#059669' : tc.status === 'failed' ? '#DC2626' : textSecondary,
                           }}>
                             {tc.status || 'Not Run'}

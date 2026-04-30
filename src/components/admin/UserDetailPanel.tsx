@@ -262,7 +262,7 @@ const ActivityTab: React.FC<{ events: any[]; isDark?: boolean }> = ({ events, is
       {sorted.length === 0 ? (
         <div style={{ textAlign: 'center', padding: '32px 16px' }}>
           <Activity size={24} color={'var(--cp-text-muted, #94A3B8)'} style={{ margin: '0 auto 8px' }} />
-          <div style={{ fontSize: '12px', color: isDark ? '#A1A1A1' : '#94A3B8', fontWeight: 500 }}>No activity recorded yet</div>
+          <div style={{ fontSize: '12px', color: 'var(--cp-text-muted, #94A3B8)', fontWeight: 500 }}>No activity recorded yet</div>
           <div style={{ fontSize: '11px', color: 'var(--cp-text-muted, #CBD5E1)', marginTop: '4px' }}>Events will appear here after the first sync</div>
         </div>
       ) : (
@@ -514,7 +514,7 @@ const UserDetailPanel: React.FC<Props> = ({ userId, onClose, isDark = false }) =
                   <span style={{
                     padding: '1px 5px', borderRadius: '4px', fontSize: '9.5px', fontWeight: 700,
                     background: isDark ? 'rgba(13,148,136,0.15)' : '#F0FDFA',
-                    color: isDark ? '#5EEAD4' : '#0D9488',
+                    color: 'var(--cp-teal-60, #0D9488)',
                     border: `1px solid ${isDark ? 'rgba(13,148,136,0.25)' : '#99F6E4'}`,
                     whiteSpace: 'nowrap',
                   }}>
@@ -559,7 +559,7 @@ const UserDetailPanel: React.FC<Props> = ({ userId, onClose, isDark = false }) =
                 <span style={{
                   fontSize: '11px', lineHeight: 1.55,
                   color: isJiraProxy
-                    ? (isDark ? '#5EEAD4' : '#134E4A')
+                    ? ('var(--cp-teal-60, #134E4A)')
                     : ('var(--cp-purple-60, #7C3AED)'),
                 }}>
                   {isJiraProxy

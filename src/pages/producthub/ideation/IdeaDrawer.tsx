@@ -251,7 +251,7 @@ export default function IdeaDrawer({ ideaKey, onClose, onConvert }: Props) {
             <div style={{ padding: '0 20px 16px' }}>
               <div style={{ background: isDark ? 'rgba(22,163,74,0.08)' : '#F0FDF4', border: `0.75px solid ${isDark ? 'rgba(22,163,74,0.20)' : '#BBF7D0'}`, borderRadius: '6px', padding: '14px' }}>
                 <div style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: isDark ? '#86EFAC' : '#11853D', marginBottom: '8px' }}>CONVERTED TO INITIATIVE</div>
-                <div style={{ background: isDark ? '#1F1F1F' : '#FFFFFF', border: `0.75px solid ${isDark ? 'rgba(22,163,74,0.20)' : '#BBF7D0'}`, borderRadius: '4px', padding: '10px 12px' }}>
+                <div style={{ background: 'var(--cp-bg-elevated, #FFFFFF)', border: `0.75px solid ${isDark ? 'rgba(22,163,74,0.20)' : '#BBF7D0'}`, borderRadius: '4px', padding: '10px 12px' }}>
                   <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: '13px', fontWeight: 700, color: '#11853D' }}>
                     {rawIdea.linked_initiative_key}
                   </span>

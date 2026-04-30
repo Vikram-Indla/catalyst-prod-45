@@ -295,7 +295,7 @@ export function SidebarProjectNav({
                         transition: 'background 100ms ease',
                       }}
                       onClick={() => handleRecentClick(item)}
-                      onMouseEnter={e => { e.currentTarget.style.backgroundColor = isDark ? '#1F1F1F' : '#F4F5F7'; }}
+                      onMouseEnter={e => { e.currentTarget.style.backgroundColor = 'var(--cp-bg-page, #F4F5F7)'; }}
                       onMouseLeave={e => { e.currentTarget.style.backgroundColor = 'transparent'; }}
                     >
                       <span style={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: typeColor, flexShrink: 0 }} />

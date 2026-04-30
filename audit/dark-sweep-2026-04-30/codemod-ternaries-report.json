@@ -1,45 +1,17 @@
 {
-  "total_substitutions": 71,
-  "files_changed": 35,
+  "total_substitutions": 32,
+  "files_changed": 22,
   "changed_files": [
     {
       "file": "src/components/admin/UserDetailPanel.tsx",
-      "count": 6
-    },
-    {
-      "file": "src/pages/admin/JiraUserSync.tsx",
-      "count": 5
-    },
-    {
-      "file": "src/pages/testhub/ReportDetailPage.tsx",
-      "count": 5
+      "count": 3
     },
     {
       "file": "src/components/ideas-roadmap/RoadmapCard.tsx",
-      "count": 4
-    },
-    {
-      "file": "src/components/reqAssist/RAJiraSidePanel.tsx",
-      "count": 4
-    },
-    {
-      "file": "src/components/workhub/allwork/AllWorkSplitView.tsx",
-      "count": 4
-    },
-    {
-      "file": "src/pages/testhub/TestCyclesPage.tsx",
-      "count": 4
-    },
-    {
-      "file": "src/components/resource360/R360RingView.tsx",
       "count": 3
     },
     {
-      "file": "src/pages/producthub/ideation/IdeationAnalyticsView.tsx",
-      "count": 3
-    },
-    {
-      "file": "src/components/product-hub/roadmap/RoadmapGanttChart.tsx",
+      "file": "src/components/hierarchy/WorkItemTree.tsx",
       "count": 2
     },
     {
@@ -47,11 +19,11 @@
       "count": 2
     },
     {
-      "file": "src/components/testhub/CreateTestCycleModal.tsx",
+      "file": "src/components/shared/GroupByPopover.tsx",
       "count": 2
     },
     {
-      "file": "src/pages/producthub/ideation/CreateDriveModal.tsx",
+      "file": "src/components/workhub/allwork/AllWorkSplitView.tsx",
       "count": 2
     },
     {
@@ -59,27 +31,19 @@
       "count": 2
     },
     {
-      "file": "src/pages/testhub/SettingsPage.tsx",
+      "file": "src/pages/testhub/ReportDetailPage.tsx",
       "count": 2
     },
     {
-      "file": "src/pages/testhub/TestCycleDetailPage.tsx",
-      "count": 2
-    },
-    {
-      "file": "src/components/boards/BoardCard.tsx",
+      "file": "src/components/goals/GoalsHeatmapView.tsx",
       "count": 1
     },
     {
-      "file": "src/components/ja/MobileNavigationMenu.tsx",
+      "file": "src/components/goals/GoalsTreeView.tsx",
       "count": 1
     },
     {
-      "file": "src/components/notifications/NotificationItem.tsx",
-      "count": 1
-    },
-    {
-      "file": "src/components/product-hub/roadmap/RoadmapRequestList.tsx",
+      "file": "src/components/notifications/WatchingTab.tsx",
       "count": 1
     },
     {
@@ -87,11 +51,7 @@
       "count": 1
     },
     {
-      "file": "src/components/project-hub/ProjectTableRow.tsx",
-      "count": 1
-    },
-    {
-      "file": "src/components/project-hub/shell/NavItem.tsx",
+      "file": "src/components/project-hub/ProjectTable.tsx",
       "count": 1
     },
     {
@@ -99,19 +59,15 @@
       "count": 1
     },
     {
-      "file": "src/components/strategy/themes/ThemeDetailDrawer.tsx",
+      "file": "src/components/wiki/admin/WikiAdminSyncTab.tsx",
       "count": 1
     },
     {
-      "file": "src/components/testhub/execution/ExecutionRunMode.tsx",
+      "file": "src/pages/ReqAssistGenerate.tsx",
       "count": 1
     },
     {
-      "file": "src/components/testhub/execution/ExecutionViewMode.tsx",
-      "count": 1
-    },
-    {
-      "file": "src/pages/R360MemberDetail.tsx",
+      "file": "src/pages/admin/JiraUserSync.tsx",
       "count": 1
     },
     {
@@ -119,11 +75,11 @@
       "count": 1
     },
     {
-      "file": "src/pages/producthub/ideation/IdeationBoardView.tsx",
+      "file": "src/pages/producthub/ideation/IdeaDrawer.tsx",
       "count": 1
     },
     {
-      "file": "src/pages/producthub/ideation/IdeationCreateWizard.tsx",
+      "file": "src/pages/producthub/ideation/IdeationDetailPanel.tsx",
       "count": 1
     },
     {
@@ -131,114 +87,11 @@
       "count": 1
     },
     {
-      "file": "src/pages/r360-member/DetailPanel.tsx",
-      "count": 1
-    },
-    {
-      "file": "src/pages/releasehub/AllChangesPage.tsx",
-      "count": 1
-    },
-    {
-      "file": "src/pages/releasehub/FreezeWindowsPage.tsx",
+      "file": "src/pages/producthub/ideation/IdeationTriagePanel.tsx",
       "count": 1
     }
   ],
   "unmapped_pairs": [
-    {
-      "dark": "#7D7D7D",
-      "light": "#64748B",
-      "count": 2
-    },
-    {
-      "dark": "#1F1F1F",
-      "light": "#FAFAFA",
-      "count": 2
-    },
-    {
-      "dark": "#C4B5FD",
-      "light": "#5B21B6",
-      "count": 2
-    },
-    {
-      "dark": "#1F1F1F",
-      "light": "#F4F5F7",
-      "count": 2
-    },
-    {
-      "dark": "#7D7D7D",
-      "light": "#6B778C",
-      "count": 2
-    },
-    {
-      "dark": "#0D1526",
-      "light": "#DEEBFF",
-      "count": 2
-    },
-    {
-      "dark": "#0D1526",
-      "light": "#F0F6FF",
-      "count": 2
-    },
-    {
-      "dark": "#4ADE80",
-      "light": "#006644",
-      "count": 2
-    },
-    {
-      "dark": "#A1A1A1",
-      "light": "#6b6e76",
-      "count": 2
-    },
-    {
-      "dark": "#2E2E2E",
-      "light": "#CBD5E1",
-      "count": 2
-    },
-    {
-      "dark": "#1F1F1F",
-      "light": "#FFFFFF",
-      "count": 2
-    },
-    {
-      "dark": "#A1A1A1",
-      "light": "#253858",
-      "count": 2
-    },
-    {
-      "dark": "#1A2E1A",
-      "light": "#ECFDF5",
-      "count": 2
-    },
-    {
-      "dark": "#A1A1A1",
-      "light": "#94A3B8",
-      "count": 1
-    },
-    {
-      "dark": "#5EEAD4",
-      "light": "#0D9488",
-      "count": 1
-    },
-    {
-      "dark": "#5EEAD4",
-      "light": "#134E4A",
-      "count": 1
-    },
-    {
-      "dark": "#111111",
-      "light": "#FAFBFE",
-      "count": 1
-    },
-    {
-      "dark": "#5EEAD4",
-      "light": "#0F766E",
-      "count": 1
-    },
-    {
-      "dark": "#86EFAC",
-      "light": "#065F46",
-      "count": 1
-    },
     {
       "dark": "#FFFFFF",
       "light": "#2563EB",
