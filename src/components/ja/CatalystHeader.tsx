@@ -34,7 +34,7 @@ export function CatalystHeader() {
   // CatalystShell). At isNarrow we hide AskCaty, ThemeToggle, and Settings
   // — they remain reachable via the drawer / profile menu. Desktop ≥1024
   // is byte-identical: the early-narrow branch is the only thing changing.
-  const { isNarrow } = useNavBreakpoint();
+  const { isNarrow, isMobile } = useNavBreakpoint();
 
   // The chevron's POSITION/ICON is driven by stickiness (sidebarPinned),
   // NOT by visibility. Pinned-visible → chevron at right edge (x=240) with
