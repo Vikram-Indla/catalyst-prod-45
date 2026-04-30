@@ -12,6 +12,7 @@ import { GlobalSearch } from '@/components/layout/GlobalSearch';
 import { CreateDropdown } from './CreateDropdown';
 import { NotificationsPanel } from './NotificationsPanel';
 import { useCatalystContext } from '@/contexts/CatalystContext';
+import { useNavBreakpoint } from '@/hooks/useNavBreakpoint';
 import catalystWordmark from '@/assets/catalyst-wordmark-3.svg';
 
 const isMacPlatform = () =>
