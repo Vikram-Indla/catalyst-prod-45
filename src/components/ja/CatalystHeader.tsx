@@ -192,10 +192,10 @@ export function CatalystHeader() {
           via useThemeMode() — clicking either flips both. (2026-04-28).
           HMR-nudge marker: phase-0-1-v2 */}
       <div style={{ display: 'flex', alignItems: 'center', gap: '4px', justifySelf: 'end' }} data-theme-toggle-cluster>
-        <AskCatalystPill />
-        <ThemeToggle />
+        {!isNarrow && <AskCatalystPill />}
+        {!isNarrow && <ThemeToggle />}
         <NotificationsPanel />
-        <SettingsMenu />
+        {!isNarrow && <SettingsMenu />}
         <ProfileMenu />
       </div>
     </header>
