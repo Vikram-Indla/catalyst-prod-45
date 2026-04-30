@@ -3363,22 +3363,26 @@ input[type="range"]::-moz-range-thumb {
   /* 2026-04-29: ADS canonical dark surfaces. Hex pulled from
      node_modules/@atlaskit/tokens/figma/atlassian-dark.json —
      elevation.surface=#1F1F21, raised=#242528, sunken=#18191A. */
-  --bg-0: #1F1F21;
-  --bg-1: #1F1F21;
-  --bg-2: #242528;
-  --bg-3: #242528;
-  --bg-4: #2B2C2F;
+  /* 2026-04-30 Jira parity: aligned to ADS dark elevation pair.
+     background.neutral=#1D2125 (canvas) + elevation.surface=#22272B
+     (raised). Prior collapse to #1F1F21 produced the split-tone seam
+     between sidebar (--ds-surface) and canvas (--cp-bg). */
+  --bg-0: #1D2125;
+  --bg-1: #1D2125;
+  --bg-2: #22272B;
+  --bg-3: #22272B;
+  --bg-4: #282E33;
   --border: #2E2E2E;
   --cp-bd: #2E2E2E;
   --cp-bd-table: #292929;
   --cp-bd-zone: #2E2E2E;
-  --cp-bg: #1F1F21;
-  --cp-bg-elevated: #242528;
-  --cp-bg-page: #1F1F21;
+  --cp-bg: #1D2125;
+  --cp-bg-elevated: #22272B;
+  --cp-bg-page: #1D2125;
   /* <AtlaskitPageShell> hub-page bg — ADS page bg in dark mode. */
-  --cp-bg-hub-page: #1F1F21;
-  --cp-bg-sunken: #18191A;
-  --cp-bg-surface: #242528;
+  --cp-bg-hub-page: #1D2125;
+  --cp-bg-sunken: #161A1D;
+  --cp-bg-surface: #22272B;
   --cp-blue: #3B82F6;
   --cp-blue-link: #7DB8FC;
   --cp-blue-text: #7DB8FC;

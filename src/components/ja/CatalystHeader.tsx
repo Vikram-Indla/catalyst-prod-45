@@ -67,8 +67,11 @@ export function CatalystHeader() {
         height: '56px',
         paddingInline: '12px',
         gap: '8px',
-        background: 'var(--ds-surface, var(--cp-bg, #fff))',
-        borderBottom: '1px solid var(--ds-border, var(--cp-bd, #e2e8f0))',
+        // 2026-04-30 Jira parity: header rides at elevation.surface
+        // (raised), matching the sidebar so the entire shell chrome
+        // reads as one continuous surface above the canvas.
+        background: 'var(--ds-surface, #22272B)',
+        borderBottom: '1px solid var(--ds-border, #2E2E2E)',
         boxSizing: 'border-box',
         flexShrink: 0,
       }}
