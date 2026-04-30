@@ -1,325 +1,69 @@
 {
-  "total_substitutions": 1145,
-  "files_changed": 92,
+  "total_substitutions": 71,
+  "files_changed": 35,
   "changed_files": [
     {
-      "file": "src/pages/testhub/TestCycleDetailPage.tsx",
-      "count": 81
-    },
-    {
-      "file": "src/modules/work-hub/components/IssueDetailPanel.tsx",
-      "count": 69
-    },
-    {
-      "file": "src/pages/testhub/SharedStepsPage.tsx",
-      "count": 66
+      "file": "src/components/admin/UserDetailPanel.tsx",
+      "count": 6
     },
     {
       "file": "src/pages/admin/JiraUserSync.tsx",
-      "count": 58
-    },
-    {
-      "file": "src/pages/testhub/TestHubDashboardPage.tsx",
-      "count": 52
-    },
-    {
-      "file": "src/pages/r360-member/RingView.tsx",
-      "count": 35
-    },
-    {
-      "file": "src/modules/work-hub/components/AllWorkDetailPanel.tsx",
-      "count": 34
-    },
-    {
-      "file": "src/pages/ReqAssistGenerate.tsx",
-      "count": 33
-    },
-    {
-      "file": "src/pages/incidenthub/IncidentDetailPage.tsx",
-      "count": 30
-    },
-    {
-      "file": "src/pages/testhub/ReleaseDetailPage.tsx",
-      "count": 30
-    },
-    {
-      "file": "src/pages/testhub/EnvironmentDetailPage.tsx",
-      "count": 29
-    },
-    {
-      "file": "src/pages/admin/FeatureFlagsPage.tsx",
-      "count": 28
-    },
-    {
-      "file": "src/pages/producthub/ideation/CreateDriveModal.tsx",
-      "count": 28
-    },
-    {
-      "file": "src/components/admin/UserDetailPanel.tsx",
-      "count": 26
-    },
-    {
-      "file": "src/pages/releasehub/CommandCenterPage.tsx",
-      "count": 26
-    },
-    {
-      "file": "src/pages/testhub/ImportExportPage.tsx",
-      "count": 26
-    },
-    {
-      "file": "src/pages/ReqAssistLibrary.tsx",
-      "count": 25
-    },
-    {
-      "file": "src/pages/producthub/ideation/IdeationTriagePanel.tsx",
-      "count": 24
-    },
-    {
-      "file": "src/pages/testhub/ActivityFeedPage.tsx",
-      "count": 24
-    },
-    {
-      "file": "src/pages/testhub/SharedStepDetailPage.tsx",
-      "count": 24
-    },
-    {
-      "file": "src/components/workhub/allwork/AllWorkSplitView.tsx",
-      "count": 23
-    },
-    {
-      "file": "src/pages/testhub/EnvironmentsListPage.tsx",
-      "count": 19
-    },
-    {
-      "file": "src/pages/releasehub/AllReleasesPage.tsx",
-      "count": 18
-    },
-    {
-      "file": "src/pages/releasehub/FreezeWindowsPage.tsx",
-      "count": 18
-    },
-    {
-      "file": "src/components/testhub/requirements/LinkTestCaseModal.tsx",
-      "count": 15
-    },
-    {
-      "file": "src/pages/producthub/ideation/IdeationCreateWizard.tsx",
-      "count": 15
-    },
-    {
-      "file": "src/pages/testhub/TestRepositoryPage.tsx",
-      "count": 15
-    },
-    {
-      "file": "src/pages/releasehub/AllChangesPage.tsx",
-      "count": 14
-    },
-    {
-      "file": "src/pages/testhub/TagsListPage.tsx",
-      "count": 14
-    },
-    {
-      "file": "src/pages/testhub/ReportsListPage.tsx",
-      "count": 12
-    },
-    {
-      "file": "src/components/ideas-roadmap/RoadmapCard.tsx",
-      "count": 11
-    },
-    {
-      "file": "src/components/testhub/requirements/CreateRequirementModal.tsx",
-      "count": 11
-    },
-    {
-      "file": "src/pages/r360-member/WeekStripCollapsible.tsx",
-      "count": 9
-    },
-    {
-      "file": "src/pages/releasehub/SignOffQueuePage.tsx",
-      "count": 9
+      "count": 5
     },
     {
       "file": "src/pages/testhub/ReportDetailPage.tsx",
-      "count": 8
-    },
-    {
-      "file": "src/pages/testhub/RequirementDetailPage.tsx",
-      "count": 8
-    },
-    {
-      "file": "src/pages/testhub/RequirementsListPage.tsx",
-      "count": 8
-    },
-    {
-      "file": "src/pages/testhub/TestHubDocsPage.tsx",
-      "count": 8
-    },
-    {
-      "file": "src/pages/incidenthub/CommitteeQueuePage.tsx",
-      "count": 7
-    },
-    {
-      "file": "src/components/notifications/NotificationItem.tsx",
-      "count": 6
-    },
-    {
-      "file": "src/components/shared/GroupByPopover.tsx",
-      "count": 6
-    },
-    {
-      "file": "src/components/testhub/CreateTestCycleModal.tsx",
-      "count": 6
-    },
-    {
-      "file": "src/pages/R360MemberDetail.tsx",
-      "count": 6
-    },
-    {
-      "file": "src/pages/incidenthub/IncidentListPage.tsx",
-      "count": 6
-    },
-    {
-      "file": "src/components/strategy/themes/ThemeDetailDrawer.tsx",
       "count": 5
     },
     {
-      "file": "src/pages/product/ideas/IdeasRoadmapPage.tsx",
-      "count": 5
+      "file": "src/components/ideas-roadmap/RoadmapCard.tsx",
+      "count": 4
+    },
+    {
+      "file": "src/components/reqAssist/RAJiraSidePanel.tsx",
+      "count": 4
+    },
+    {
+      "file": "src/components/workhub/allwork/AllWorkSplitView.tsx",
+      "count": 4
     },
     {
       "file": "src/pages/testhub/TestCyclesPage.tsx",
-      "count": 5
-    },
-    {
-      "file": "src/components/notifications/AgeingSkeleton.tsx",
       "count": 4
     },
     {
-      "file": "src/components/project-hub/ProjectToolbar.tsx",
-      "count": 4
-    },
-    {
-      "file": "src/components/project-hub/shell/SidebarProjectNav.tsx",
-      "count": 4
-    },
-    {
-      "file": "src/components/testhub/execution/ExecutionRunMode.tsx",
-      "count": 4
-    },
-    {
-      "file": "src/pages/incidenthub/IncidentInsightsPage.tsx",
-      "count": 4
-    },
-    {
-      "file": "src/pages/incidenthub/components/CommitteeModal.tsx",
-      "count": 4
-    },
-    {
-      "file": "src/pages/producthub/IdeasRoadmapPage.tsx",
-      "count": 4
-    },
-    {
-      "file": "src/pages/producthub/ideation/IdeationDetailPanel.tsx",
-      "count": 4
-    },
-    {
-      "file": "src/pages/producthub/ideation/IdeationDrivesView.tsx",
-      "count": 4
-    },
-    {
-      "file": "src/pages/r360-member/ChronologyView.tsx",
-      "count": 4
-    },
-    {
-      "file": "src/pages/r360-member/TicketListDrawer.tsx",
-      "count": 4
-    },
-    {
-      "file": "src/pages/releasehub/ProductionEventsPage.tsx",
-      "count": 4
-    },
-    {
-      "file": "src/pages/testhub/SettingsPage.tsx",
-      "count": 4
-    },
-    {
-      "file": "src/components/hierarchy/PriorityDropdown.tsx",
+      "file": "src/components/resource360/R360RingView.tsx",
       "count": 3
     },
     {
-      "file": "src/components/notifications/NotificationPanel.tsx",
+      "file": "src/pages/producthub/ideation/IdeationAnalyticsView.tsx",
       "count": 3
-    },
-    {
-      "file": "src/components/project-hub/ProjectTableRow.tsx",
-      "count": 3
-    },
-    {
-      "file": "src/pages/producthub/IdeationPage.tsx",
-      "count": 3
-    },
-    {
-      "file": "src/pages/producthub/ideation/IdeaDrawer.tsx",
-      "count": 3
-    },
-    {
-      "file": "src/pages/r360-member/DetailPanel.tsx",
-      "count": 3
-    },
-    {
-      "file": "src/components/goals/GoalsToolbar.tsx",
-      "count": 2
-    },
-    {
-      "file": "src/components/goals/GoalsTreeView.tsx",
-      "count": 2
-    },
-    {
-      "file": "src/components/hierarchy/WorkItemTable.tsx",
-      "count": 2
-    },
-    {
-      "file": "src/components/notifications/CommentPreview.tsx",
-      "count": 2
-    },
-    {
-      "file": "src/components/notifications/EmptyState.tsx",
-      "count": 2
     },
     {
       "file": "src/components/product-hub/roadmap/RoadmapGanttChart.tsx",
       "count": 2
     },
     {
-      "file": "src/components/product-hub/roadmap/RoadmapRequestList.tsx",
+      "file": "src/components/project-hub/ProjectToolbar.tsx",
       "count": 2
     },
     {
-      "file": "src/components/product-hub/roadmap/RoadmapToolbar.tsx",
+      "file": "src/components/testhub/CreateTestCycleModal.tsx",
       "count": 2
     },
     {
-      "file": "src/components/project-hub/ProjectStatusTabs.tsx",
+      "file": "src/pages/producthub/ideation/CreateDriveModal.tsx",
       "count": 2
     },
     {
-      "file": "src/components/reqAssist/RAJiraSidePanel.tsx",
+      "file": "src/pages/releasehub/CommandCenterPage.tsx",
       "count": 2
     },
     {
-      "file": "src/pages/producthub/IdeasBacklogPage.tsx",
+      "file": "src/pages/testhub/SettingsPage.tsx",
       "count": 2
     },
     {
-      "file": "src/pages/producthub/IdeasThemePage.tsx",
-      "count": 2
-    },
-    {
-      "file": "src/pages/producthub/ideation/IdeationBoardView.tsx",
-      "count": 2
-    },
-    {
-      "file": "src/pages/producthub/ideation/IdeationMatrixView.tsx",
+      "file": "src/pages/testhub/TestCycleDetailPage.tsx",
       "count": 2
     },
     {
@@ -327,27 +71,23 @@
       "count": 1
     },
     {
-      "file": "src/components/hierarchy/StatusDropdown.tsx",
+      "file": "src/components/ja/MobileNavigationMenu.tsx",
       "count": 1
     },
     {
-      "file": "src/components/ideas-roadmap/RoadmapKanban.tsx",
+      "file": "src/components/notifications/NotificationItem.tsx",
       "count": 1
     },
     {
-      "file": "src/components/layout/HubPageHeader.tsx",
+      "file": "src/components/product-hub/roadmap/RoadmapRequestList.tsx",
       "count": 1
     },
     {
-      "file": "src/components/notifications/SectionHeader.tsx",
+      "file": "src/components/project-hub/ProjectStatusTabs.tsx",
       "count": 1
     },
     {
-      "file": "src/components/product-hub/roadmap/ProductRoadmapPage.tsx",
-      "count": 1
-    },
-    {
-      "file": "src/components/product-hub/roadmap/RoadmapKPIStrip.tsx",
+      "file": "src/components/project-hub/ProjectTableRow.tsx",
       "count": 1
     },
     {
@@ -355,123 +95,55 @@
       "count": 1
     },
     {
+      "file": "src/components/project-hub/shell/SidebarProjectNav.tsx",
+      "count": 1
+    },
+    {
+      "file": "src/components/strategy/themes/ThemeDetailDrawer.tsx",
+      "count": 1
+    },
+    {
+      "file": "src/components/testhub/execution/ExecutionRunMode.tsx",
+      "count": 1
+    },
+    {
       "file": "src/components/testhub/execution/ExecutionViewMode.tsx",
       "count": 1
     },
     {
-      "file": "src/modules/product-roadmap/components/RoadmapListRow.tsx",
+      "file": "src/pages/R360MemberDetail.tsx",
       "count": 1
     },
     {
-      "file": "src/pages/ResourceListingPage.tsx",
+      "file": "src/pages/producthub/IdeasBacklogPage.tsx",
       "count": 1
     },
     {
-      "file": "src/pages/r360-member/BoardView.tsx",
+      "file": "src/pages/producthub/ideation/IdeationBoardView.tsx",
+      "count": 1
+    },
+    {
+      "file": "src/pages/producthub/ideation/IdeationCreateWizard.tsx",
+      "count": 1
+    },
+    {
+      "file": "src/pages/producthub/ideation/IdeationDrivesView.tsx",
+      "count": 1
+    },
+    {
+      "file": "src/pages/r360-member/DetailPanel.tsx",
+      "count": 1
+    },
+    {
+      "file": "src/pages/releasehub/AllChangesPage.tsx",
+      "count": 1
+    },
+    {
+      "file": "src/pages/releasehub/FreezeWindowsPage.tsx",
       "count": 1
     }
   ],
   "unmapped_pairs": [
-    {
-      "dark": "#1E293B",
-      "light": "#EFF6FF",
-      "count": 7
-    },
-    {
-      "dark": "#292929",
-      "light": "#F8FAFC",
-      "count": 5
-    },
-    {
-      "dark": "#EDEDED",
-      "light": "#1E293B",
-      "count": 4
-    },
-    {
-      "dark": "#FBBF24",
-      "light": "#92400E",
-      "count": 4
-    },
-    {
-      "dark": "#EDEDED",
-      "light": "#020617",
-      "count": 4
-    },
-    {
-      "dark": "#A1A1A1",
-      "light": "#44546f",
-      "count": 4
-    },
-    {
-      "dark": "#3D2020",
-      "light": "#FEF2F2",
-      "count": 4
-    },
-    {
-      "dark": "#450A0A",
-      "light": "#FEE2E2",
-      "count": 3
-    },
-    {
-      "dark": "#064E3B",
-      "light": "#E3FCEF",
-      "count": 3
-    },
-    {
-      "dark": "#6EE7B7",
-      "light": "#006644",
-      "count": 3
-    },
-    {
-      "dark": "#93C5FD",
-      "light": "#1D4ED8",
-      "count": 3
-    },
-    {
-      "dark": "#86EFAC",
-      "light": "#15803D",
-      "count": 3
-    },
-    {
-      "dark": "#FCD34D",
-      "light": "#92400E",
-      "count": 3
-    },
-    {
-      "dark": "#1F1F1F",
-      "light": "#F1F5F9",
-      "count": 3
-    },
-    {
-      "dark": "#1F1F1F",
-      "light": "#FAFBFC",
-      "count": 3
-    },
-    {
-      "dark": "#4C9AFF",
-      "light": "#0052CC",
-      "count": 3
-    },
-    {
-      "dark": "#A1A1A1",
-      "light": "#42526E",
-      "count": 3
-    },
-    {
-      "dark": "#292929",
-      "light": "#CBD5E1",
-      "count": 3
-    },
-    {
-      "dark": "#292929",
-      "light": "#F4F4F5",
-      "count": 3
-    },
-    {
-      "dark": "#7DB8FC",
-      "light": "#0747A6",
-      "count": 3
-    },
     {
       "dark": "#7D7D7D",
       "light": "#64748B",

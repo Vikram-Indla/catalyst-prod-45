@@ -107,7 +107,7 @@ export function DetailPanel({ item, onClose, onSelectItem }: {
               <div className="r3-hier-item r3-hier-item--current">
                 {getJiraIcon(item.item_type)}
                 <span className="r3-card-key r3-card-key--sm">{item.item_key}</span>
-                <span style={{ fontSize: 12, color: isDark ? '#EDEDED' : '#020617', fontWeight: 500 }}>{item.title}</span>
+                <span style={{ fontSize: 12, color: 'var(--cp-text-primary, #020617)', fontWeight: 500 }}>{item.title}</span>
               </div>
             </div>
           )}

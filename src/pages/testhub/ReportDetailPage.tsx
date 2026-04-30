@@ -153,7 +153,7 @@ export default function ReportDetailPage() {
           <button onClick={() => window.print()} style={{ display: 'flex', alignItems: 'center', gap: 6, height: 40, padding: '0 14px', border: `1px solid ${borderColor}`, borderRadius: 8, backgroundColor: surfaceBg, color: textBody, fontSize: 13, cursor: 'pointer' }}>
             <Printer size={16} />
           </button>
-          <button onClick={deleteReport} style={{ display: 'flex', alignItems: 'center', gap: 6, height: 40, padding: '0 14px', border: '1px solid #FECACA', borderRadius: 8, backgroundColor: isDark ? '#3D2020' : '#FEF2F2', color: '#DC2626', fontSize: 13, cursor: 'pointer' }}>
+          <button onClick={deleteReport} style={{ display: 'flex', alignItems: 'center', gap: 6, height: 40, padding: '0 14px', border: '1px solid #FECACA', borderRadius: 8, backgroundColor: 'var(--cp-danger-light, #FEF2F2)', color: '#DC2626', fontSize: 13, cursor: 'pointer' }}>
             <Trash2 size={16} />
           </button>
         </div>
@@ -182,7 +182,7 @@ export default function ReportDetailPage() {
               <p style={{ fontSize: 28, fontWeight: 700, color: '#059669', margin: 0 }}>{data.summary.passed}</p>
               <p style={{ fontSize: 12, color: '#059669', margin: '4px 0 0' }}>Passed</p>
             </div>
-            <div style={{ backgroundColor: isDark ? '#3D2020' : '#FEF2F2', borderRadius: 12, padding: 20, border: `1px solid ${isDark ? '#5C2020' : '#FECACA'}`, textAlign: 'center' }}>
+            <div style={{ backgroundColor: 'var(--cp-danger-light, #FEF2F2)', borderRadius: 12, padding: 20, border: `1px solid ${isDark ? '#5C2020' : '#FECACA'}`, textAlign: 'center' }}>
               <XCircle size={24} style={{ color: '#DC2626', marginBottom: 8 }} />
               <p style={{ fontSize: 28, fontWeight: 700, color: '#DC2626', margin: 0 }}>{data.summary.failed}</p>
               <p style={{ fontSize: 12, color: '#DC2626', margin: '4px 0 0' }}>Failed</p>
@@ -258,14 +258,14 @@ export default function ReportDetailPage() {
                     {data.test_cases.map((tc: any, i: number) => (
                       <tr key={i} style={{ borderBottom: `1px solid ${borderSubtle}` }}>
                         <td style={{ padding: '12px 8px' }}>
-                          <span style={{ fontSize: 12, fontWeight: 600, color: '#2563EB', backgroundColor: isDark ? '#1e293b' : '#EFF6FF', padding: '2px 6px', borderRadius: 4 }}>{tc.case_key}</span>
+                          <span style={{ fontSize: 12, fontWeight: 600, color: '#2563EB', backgroundColor: 'var(--cp-primary-light, #EFF6FF)', padding: '2px 6px', borderRadius: 4 }}>{tc.case_key}</span>
                         </td>
                         <td style={{ padding: '12px 8px', color: textPrimary }}>{tc.title}</td>
                         <td style={{ padding: '12px 8px', textTransform: 'capitalize', color: textBody }}>{tc.priority}</td>
                         <td style={{ padding: '12px 8px' }}>
                           <span style={{
                             fontSize: 11, fontWeight: 500, padding: '3px 8px', borderRadius: 4,
-                            backgroundColor: tc.status === 'passed' ? (isDark ? '#1A2E1A' : '#ECFDF5') : tc.status === 'failed' ? (isDark ? '#3D2020' : '#FEF2F2') : (isDark ? 'var(--cp-bg-surface, #242528)' : '#F1F5F9'),
+                            backgroundColor: tc.status === 'passed' ? (isDark ? '#1A2E1A' : '#ECFDF5') : tc.status === 'failed' ? ('var(--cp-danger-light, #FEF2F2)') : (isDark ? 'var(--cp-bg-surface, #242528)' : '#F1F5F9'),
                             color: tc.status === 'passed' ? '#059669' : tc.status === 'failed' ? '#DC2626' : textSecondary,
                           }}>
                             {tc.status || 'Not Run'}
@@ -312,7 +312,7 @@ export default function ReportDetailPage() {
               <tbody>
                 {data.defects.map((d: any, i: number) => (
                   <tr key={i} style={{ borderBottom: `1px solid ${borderSubtle}` }}>
-                    <td style={{ padding: '12px 8px' }}><span style={{ fontSize: 12, fontWeight: 600, color: '#DC2626', backgroundColor: isDark ? '#3D2020' : '#FEF2F2', padding: '2px 6px', borderRadius: 4 }}>{d.defect_key}</span></td>
+                    <td style={{ padding: '12px 8px' }}><span style={{ fontSize: 12, fontWeight: 600, color: '#DC2626', backgroundColor: 'var(--cp-danger-light, #FEF2F2)', padding: '2px 6px', borderRadius: 4 }}>{d.defect_key}</span></td>
                     <td style={{ padding: '12px 8px', color: textPrimary }}>{d.title}</td>
                     <td style={{ padding: '12px 8px', textTransform: 'capitalize', color: textBody }}>{d.severity}</td>
                     <td style={{ padding: '12px 8px', textTransform: 'capitalize', color: textBody }}>{d.status}</td>

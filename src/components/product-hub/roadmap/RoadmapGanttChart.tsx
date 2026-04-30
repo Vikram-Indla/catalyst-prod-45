@@ -112,8 +112,8 @@ export function RoadmapGanttChart({ groups, timelineStart, timelineEnd, zoom, zo
   const periodMinWidth = Math.round(baseWidth * zoomScale);
   const totalMinWidth = periods.length * periodMinWidth;
 
-  const headerBg = isDark ? '#1F1F1F' : '#FAFBFC';
-  const hoverRowBg = isDark ? '#1F1F1F' : '#FAFBFC';
+  const headerBg = 'var(--cp-bg-page, #FAFBFC)';
+  const hoverRowBg = 'var(--cp-bg-page, #FAFBFC)';
   const selectedRowBg = isDark ? 'rgba(59,130,246,0.10)' : 'rgba(37,99,235,0.06)';
   const currentPeriodBg = isDark ? 'rgba(59,130,246,0.06)' : 'rgba(37,99,235,0.04)';
   const currentPeriodGridBg = isDark ? 'rgba(59,130,246,0.04)' : 'rgba(37,99,235,0.03)';

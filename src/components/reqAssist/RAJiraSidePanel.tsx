@@ -359,7 +359,7 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
           <div style={{
             margin: '0 20px', marginTop: 12, padding: '8px 12px', borderRadius: 6,
             background: isDark ? 'rgba(217,119,6,0.10)' : '#FFFBEB', border: isDark ? '0.75px solid rgba(217,119,6,0.25)' : '0.75px solid #FDE68A',
-            fontSize: 12, color: isDark ? '#FBBF24' : '#92400E', fontFamily: 'var(--cp-font-body)',
+            fontSize: 12, color: 'var(--cp-warning-text, #92400E)', fontFamily: 'var(--cp-font-body)',
             display: 'flex', alignItems: 'center', gap: 6,
           }}>
             ⚠ No BRD content found — attach PDF for accurate epic generation
@@ -610,7 +610,7 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
                 </div>
               ) : (
                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '16px 0', gap: 4 }}>
-                  <Paperclip size={18} color={isDark ? '#292929' : '#CBD5E1'} />
+                  <Paperclip size={18} color={'var(--cp-bg-sunken, #CBD5E1)'} />
                   <span style={{ fontSize: 13, color: 'var(--fg-4)', fontFamily: 'var(--cp-font-body)' }}>No attachments found</span>
                   <span style={{ fontSize: 11, color: 'var(--cp-text-muted, #CBD5E1)', fontFamily: 'var(--cp-font-body)' }}>Attachments are imported automatically from Jira</span>
                 </div>
@@ -650,7 +650,7 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
                 </>
               ) : (
                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '20px 0', gap: 6 }}>
-                  <FileText size={20} color={isDark ? '#292929' : '#CBD5E1'} />
+                  <FileText size={20} color={'var(--cp-bg-sunken, #CBD5E1)'} />
                   <span style={{ fontSize: 13, color: 'var(--fg-4)', fontFamily: 'var(--cp-font-body)' }}>Content not yet extracted</span>
                   <span style={{ fontSize: 12, color: 'var(--cp-text-muted, #CBD5E1)', fontFamily: 'var(--cp-font-body)' }}>Upload a PDF or extract from Jira attachments</span>
                 </div>
@@ -836,7 +836,7 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
                             fontFamily: 'var(--cp-font-mono)', fontSize: 11, color: 'var(--fg-4)', flexShrink: 0,
                           }}>{s.scenario_key}</span>
                           <span style={{
-                            fontSize: 13, color: isDark ? '#EDEDED' : '#1E293B', fontFamily: 'var(--cp-font-body)',
+                            fontSize: 13, color: 'var(--cp-text-primary, #1E293B)', fontFamily: 'var(--cp-font-body)',
                             flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
                           }}>{s.title}</span>
                           <span style={{

@@ -37,7 +37,7 @@ function CustomDropdown({ label, value, options, onChange, isDark }: { label: st
               <button key={o.value} onClick={() => { onChange(o.value); setOpen(false); }}
                 className="w-full px-3 h-9 text-left text-[13px] font-medium"
                 style={{ color: value === o.value ? '#2563EB' : ('var(--cp-text-secondary, #475569)') }}
-                onMouseEnter={e => (e.currentTarget.style.background = isDark ? '#292929' : '#F8FAFC')}
+                onMouseEnter={e => (e.currentTarget.style.background = 'var(--cp-bg-page, #F8FAFC)')}
                 onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
                 {o.label}
               </button>

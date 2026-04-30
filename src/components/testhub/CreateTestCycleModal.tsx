@@ -349,7 +349,7 @@ export function CreateTestCycleModal({ isOpen, onClose, onSuccess, mode = 'creat
                 onChange={(e) => setStartDate(e.target.value)}
                 onFocus={(e) => { (e.target as HTMLInputElement).type = 'date'; }}
                 onBlur={(e) => { if (!(e.target as HTMLInputElement).value) { (e.target as HTMLInputElement).type = 'text'; } }}
-                style={{ width: '100%', height: 40, padding: '8px 12px', border: `1.5px solid ${'var(--cp-border, #E2E8F0)'}`, borderRadius: 4, fontSize: 14, color: isDark ? '#EDEDED' : '#1E293B', backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF', fontFamily: 'var(--cp-font-body)', outline: 'none', boxSizing: 'border-box' } as React.CSSProperties}
+                style={{ width: '100%', height: 40, padding: '8px 12px', border: `1.5px solid ${'var(--cp-border, #E2E8F0)'}`, borderRadius: 4, fontSize: 14, color: 'var(--cp-text-primary, #1E293B)', backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF', fontFamily: 'var(--cp-font-body)', outline: 'none', boxSizing: 'border-box' } as React.CSSProperties}
               />
             </div>
             <div style={{ flex: 1 }}>
@@ -363,7 +363,7 @@ export function CreateTestCycleModal({ isOpen, onClose, onSuccess, mode = 'creat
                 onChange={(e) => setEndDate(e.target.value)}
                 onFocus={(e) => { (e.target as HTMLInputElement).type = 'date'; (e.target as HTMLInputElement).min = startDate; }}
                 onBlur={(e) => { if (!(e.target as HTMLInputElement).value) { (e.target as HTMLInputElement).type = 'text'; } }}
-                style={{ width: '100%', height: 40, padding: '8px 12px', border: `1.5px solid ${errors.endDate ? '#EF4444' : ('var(--cp-border, #E2E8F0)')}`, borderRadius: 4, fontSize: 14, color: isDark ? '#EDEDED' : '#1E293B', backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF', fontFamily: 'var(--cp-font-body)', outline: 'none', boxSizing: 'border-box' } as React.CSSProperties}
+                style={{ width: '100%', height: 40, padding: '8px 12px', border: `1.5px solid ${errors.endDate ? '#EF4444' : ('var(--cp-border, #E2E8F0)')}`, borderRadius: 4, fontSize: 14, color: 'var(--cp-text-primary, #1E293B)', backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF', fontFamily: 'var(--cp-font-body)', outline: 'none', boxSizing: 'border-box' } as React.CSSProperties}
               />
               {errors.endDate && <p style={{ fontSize: 12, color: 'var(--sem-danger)', margin: '6px 0 0', display: 'flex', alignItems: 'center', gap: 4 }}><AlertCircle size={12} />{errors.endDate}</p>}
             </div>

@@ -565,7 +565,7 @@ export function AllWorkSplitView({ items, selectedItemKey, onSelectItem, sortFie
                       Description
                     </h3>
                     {currentItem.description_text ? (
-                      <p className="text-[13px] leading-[20px]" style={{ color: isDark ? '#A1A1A1' : '#44546f', fontFamily: 'var(--cp-font-body)' }}>
+                      <p className="text-[13px] leading-[20px]" style={{ color: 'var(--cp-text-secondary, #44546f)', fontFamily: 'var(--cp-font-body)' }}>
                         {currentItem.description_text}
                       </p>
                     ) : (
@@ -721,7 +721,7 @@ export function AllWorkSplitView({ items, selectedItemKey, onSelectItem, sortFie
                 {currentItem.labels?.length ? (
                   <div className="flex flex-wrap gap-1">
                     {currentItem.labels.map(l => (
-                      <span key={l} className="text-[11px] px-2 py-0.5 rounded" style={{ backgroundColor: isDark ? '#292929' : 'var(--hover, #1F1F1F)', color: isDark ? '#A1A1A1' : '#44546f' }}>{l}</span>
+                      <span key={l} className="text-[11px] px-2 py-0.5 rounded" style={{ backgroundColor: isDark ? '#292929' : 'var(--hover, #1F1F1F)', color: 'var(--cp-text-secondary, #44546f)' }}>{l}</span>
                     ))}
                   </div>
                 ) : (
@@ -732,13 +732,13 @@ export function AllWorkSplitView({ items, selectedItemKey, onSelectItem, sortFie
               <div className="mt-6 pt-4" style={{ borderTop: isDark ? '1px solid #2E2E2E' : '1px solid var(--bd-subtle, #292929)' }}>
                 <div className="mb-2">
                   <span className="text-[11px] uppercase font-semibold block mb-0.5" style={{ color: 'var(--cp-text-tertiary, #6b6e76)', letterSpacing: '0.05em' }}>Created</span>
-                  <span className="text-[12px]" style={{ color: isDark ? '#A1A1A1' : '#44546f', fontFamily: 'var(--cp-font-mono)' }} title={currentItem.jira_created_at || ''}>
+                  <span className="text-[12px]" style={{ color: 'var(--cp-text-secondary, #44546f)', fontFamily: 'var(--cp-font-mono)' }} title={currentItem.jira_created_at || ''}>
                     {formatRel(currentItem.jira_created_at)}
                   </span>
                 </div>
                 <div>
                   <span className="text-[11px] uppercase font-semibold block mb-0.5" style={{ color: 'var(--cp-text-tertiary, #6b6e76)', letterSpacing: '0.05em' }}>Updated</span>
-                  <span className="text-[12px]" style={{ color: isDark ? '#A1A1A1' : '#44546f', fontFamily: 'var(--cp-font-mono)' }} title={currentItem.jira_updated_at || ''}>
+                  <span className="text-[12px]" style={{ color: 'var(--cp-text-secondary, #44546f)', fontFamily: 'var(--cp-font-mono)' }} title={currentItem.jira_updated_at || ''}>
                     {formatRel(currentItem.jira_updated_at)}
                   </span>
                 </div>

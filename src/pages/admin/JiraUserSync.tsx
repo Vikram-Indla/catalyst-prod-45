@@ -685,7 +685,7 @@ const JiraUserSync: React.FC = () => {
                           padding: '1px 6px', borderRadius: '4px',
                           fontSize: '10px', fontWeight: 700, letterSpacing: '0.03em', textTransform: 'uppercase',
                           background: isDark ? 'rgba(37,99,235,0.18)' : '#EFF6FF',
-                          color: isDark ? '#93C5FD' : '#1D4ED8',
+                          color: 'var(--cp-primary-hover, #1D4ED8)',
                           border: `0.75px solid ${isDark ? 'rgba(37,99,235,0.30)' : 'rgba(37,99,235,0.25)'}`,
                         }}><Share2 size={9} /> JIRA</span>
                       ) : (
@@ -744,13 +744,13 @@ const JiraUserSync: React.FC = () => {
                     <td style={{ padding: '8px 12px' }}>
                       {hasConflicts ? (
                         <span className="jira-lozenge-conflict"
-                          style={{ display: 'inline-block', padding: '0 7px', borderRadius: '4px', fontSize: '10px', fontWeight: 700, textTransform: 'uppercase', height: '20px', lineHeight: '20px', letterSpacing: '0.03em', background: isDark ? '#451A03' : '#FEF3C7', color: isDark ? '#FCD34D' : '#92400E' }}>CONFLICT</span>
+                          style={{ display: 'inline-block', padding: '0 7px', borderRadius: '4px', fontSize: '10px', fontWeight: 700, textTransform: 'uppercase', height: '20px', lineHeight: '20px', letterSpacing: '0.03em', background: isDark ? '#451A03' : '#FEF3C7', color: 'var(--cp-warning-text, #92400E)' }}>CONFLICT</span>
                       ) : isInactive ? (
                         <span className="jira-lozenge-inactive"
-                          style={{ display: 'inline-block', padding: '0 7px', borderRadius: '4px', fontSize: '10px', fontWeight: 700, textTransform: 'uppercase', height: '20px', lineHeight: '20px', letterSpacing: '0.03em', background: isDark ? '#450A0A' : '#FEE2E2', color: 'var(--cp-danger-text, #991B1B)' }}>INACTIVE</span>
+                          style={{ display: 'inline-block', padding: '0 7px', borderRadius: '4px', fontSize: '10px', fontWeight: 700, textTransform: 'uppercase', height: '20px', lineHeight: '20px', letterSpacing: '0.03em', background: 'var(--cp-danger-light, #FEE2E2)', color: 'var(--cp-danger-text, #991B1B)' }}>INACTIVE</span>
                       ) : (
                         <span className="jira-lozenge-active"
-                          style={{ display: 'inline-block', padding: '0 7px', borderRadius: '4px', fontSize: '10px', fontWeight: 700, textTransform: 'uppercase', height: '20px', lineHeight: '20px', letterSpacing: '0.03em', background: isDark ? '#064E3B' : '#E3FCEF', color: isDark ? '#6EE7B7' : '#006644' }}>ACTIVE</span>
+                          style={{ display: 'inline-block', padding: '0 7px', borderRadius: '4px', fontSize: '10px', fontWeight: 700, textTransform: 'uppercase', height: '20px', lineHeight: '20px', letterSpacing: '0.03em', background: 'var(--cp-success-light, #E3FCEF)', color: 'var(--cp-success-text, #006644)' }}>ACTIVE</span>
                       )}
                     </td>
 

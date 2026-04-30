@@ -58,7 +58,7 @@ export function RoadmapRequestList({ groups, selectedId, hoveredId, onSelect, on
   const surface = isDark ? SURFACE_DARK : SURFACE;
   const totalCount = groups.reduce((sum, g) => sum + g.items.length, 0);
 
-  const headerBg = isDark ? '#1F1F1F' : '#FAFBFC';
+  const headerBg = 'var(--cp-bg-page, #FAFBFC)';
   const selectedBg = isDark ? 'rgba(59,130,246,0.10)' : '#EFF6FF';
   const hoverBg = isDark ? '#1F1F1F' : 'rgba(37,99,235,0.04)';
   const addHoverBg = isDark ? 'rgba(59,130,246,0.10)' : '#EFF6FF';

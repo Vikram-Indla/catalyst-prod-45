@@ -299,7 +299,7 @@ export function SidebarProjectNav({
                       onMouseLeave={e => { e.currentTarget.style.backgroundColor = 'transparent'; }}
                     >
                       <span style={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: typeColor, flexShrink: 0 }} />
-                      <span style={{ fontSize: 11.5, fontWeight: 600, color: isDark ? '#A1A1A1' : '#42526E', fontFamily: 'var(--cp-font-mono)', flexShrink: 0, letterSpacing: '-0.02em' }}>
+                      <span style={{ fontSize: 11.5, fontWeight: 600, color: 'var(--cp-text-secondary, #42526E)', fontFamily: 'var(--cp-font-mono)', flexShrink: 0, letterSpacing: '-0.02em' }}>
                         {item.entity_key}
                       </span>
                       <span style={{ fontSize: 12, fontWeight: 400, color: 'var(--cp-text-tertiary, #6B778C)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1, minWidth: 0 }}>

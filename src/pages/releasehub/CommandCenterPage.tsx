@@ -108,8 +108,8 @@ export default function CommandCenterPage() {
   // Pipeline columns
   const pipelineCols = [
     { key: 'new', label: 'NEW', loz: { bg: 'var(--cp-border, #DFE1E6)', text: isDark ? '#A1A1A1' : '#253858' } },
-    { key: 'in_uat', label: 'IN UAT', loz: { bg: isDark ? 'rgba(59,130,246,0.15)' : '#DEEBFF', text: isDark ? '#7DB8FC' : '#0747A6' } },
-    { key: 'in_beta', label: 'IN BETA', loz: { bg: isDark ? 'rgba(59,130,246,0.15)' : '#DEEBFF', text: isDark ? '#7DB8FC' : '#0747A6' } },
+    { key: 'in_uat', label: 'IN UAT', loz: { bg: isDark ? 'rgba(59,130,246,0.15)' : '#DEEBFF', text: 'var(--cp-text-link, #0747A6)' } },
+    { key: 'in_beta', label: 'IN BETA', loz: { bg: isDark ? 'rgba(59,130,246,0.15)' : '#DEEBFF', text: 'var(--cp-text-link, #0747A6)' } },
     { key: 'in_production', label: 'IN PROD', loz: { bg: isDark ? 'rgba(74,222,128,0.15)' : '#E3FCEF', text: isDark ? '#4ADE80' : '#006644' } },
   ];
 

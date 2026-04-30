@@ -398,8 +398,8 @@ const UserDetailPanel: React.FC<Props> = ({ userId, onClose, isDark = false }) =
                 display: 'inline-block', padding: '0 7px', borderRadius: '4px',
                 fontSize: '10px', fontWeight: 700, textTransform: 'uppercase',
                 height: '20px', lineHeight: '20px',
-                background: isInactive ? (isDark ? '#450A0A' : '#FEE2E2') : (isDark ? '#064E3B' : '#E3FCEF'),
-                color: isInactive ? ('var(--cp-danger-text, #991B1B)') : (isDark ? '#6EE7B7' : '#006644'),
+                background: isInactive ? ('var(--cp-danger-light, #FEE2E2)') : ('var(--cp-success-light, #E3FCEF)'),
+                color: isInactive ? ('var(--cp-danger-text, #991B1B)') : ('var(--cp-success-text, #006644)'),
               }}>
                 {isInactive ? 'INACTIVE' : 'ACTIVE'}
               </span>
@@ -488,8 +488,8 @@ const UserDetailPanel: React.FC<Props> = ({ userId, onClose, isDark = false }) =
                   display: 'inline-block', padding: '0 7px', borderRadius: '4px',
                   fontSize: '10px', fontWeight: 700, textTransform: 'uppercase',
                   height: '20px', lineHeight: '20px',
-                  background: isInactive ? (isDark ? '#450A0A' : '#FEE2E2') : (isDark ? '#064E3B' : '#E3FCEF'),
-                  color: isInactive ? ('var(--cp-danger-text, #991B1B)') : (isDark ? '#6EE7B7' : '#006644'),
+                  background: isInactive ? ('var(--cp-danger-light, #FEE2E2)') : ('var(--cp-success-light, #E3FCEF)'),
+                  color: isInactive ? ('var(--cp-danger-text, #991B1B)') : ('var(--cp-success-text, #006644)'),
                 }}>
                   {isInactive ? 'INACTIVE' : 'ACTIVE'}
                 </span>

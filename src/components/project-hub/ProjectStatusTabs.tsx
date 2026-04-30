@@ -45,7 +45,7 @@ export function ProjectStatusTabs({ activeTab, onTabChange, counts, isDark = fal
               lineHeight: '32px',
               fontSize: 13,
               fontWeight: isActive ? 600 : 500,
-              color: isActive ? (isDark ? '#4C9AFF' : '#0052CC') : ('var(--cp-text-tertiary, #6B778C)'),
+              color: isActive ? ('var(--cp-text-link, #0052CC)') : ('var(--cp-text-tertiary, #6B778C)'),
               borderWidth: 1,
               borderStyle: 'solid',
               cursor: 'pointer',

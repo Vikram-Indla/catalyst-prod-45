@@ -131,7 +131,7 @@ const CycleDefectsPanel = ({ cycleId, isDark }: { cycleId?: string; isDark: bool
                 <td style={{ padding: '0 12px', fontSize: 13, color: 'var(--cp-text-secondary, #475569)', textTransform: 'capitalize' as const }}>{d.severity ?? '—'}</td>
                 <td style={{ padding: '0 12px' }}>
                   {d.link_source === 'auto_execution' && (
-                    <span style={{ fontSize: 11, fontWeight: 600, padding: '2px 6px', borderRadius: 3, backgroundColor: isDark ? '#1F1F1F' : '#F1F5F9', color: 'var(--cp-text-tertiary, #64748B)' }}>Auto</span>
+                    <span style={{ fontSize: 11, fontWeight: 600, padding: '2px 6px', borderRadius: 3, backgroundColor: 'var(--cp-bg-page, #F1F5F9)', color: 'var(--cp-text-tertiary, #64748B)' }}>Auto</span>
                   )}
                   {d.link_source === 'auto_jira' && (
                     <span style={{ fontSize: 11, fontWeight: 600, padding: '2px 6px', borderRadius: 3, backgroundColor: '#DEEBFF', color: '#0747A6' }}>Jira</span>
@@ -463,7 +463,7 @@ export default function TestCycleDetailPage() {
               <span style={{ flex: 1, fontSize: 14, color: 'var(--cp-text-secondary, #334155)' }}>Blocked</span>
               <span style={{ fontSize: 16, fontWeight: 700, color: '#D97706' }}>{blockedCount}</span>
             </button>
-            <button onClick={() => setStatusFilter('not_run')} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 12px', border: 'none', borderRadius: 8, backgroundColor: statusFilter === 'not_run' ? (isDark ? '#292929' : '#F8FAFC') : 'transparent', cursor: 'pointer', width: '100%', textAlign: 'left' }}>
+            <button onClick={() => setStatusFilter('not_run')} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 12px', border: 'none', borderRadius: 8, backgroundColor: statusFilter === 'not_run' ? ('var(--cp-bg-page, #F8FAFC)') : 'transparent', cursor: 'pointer', width: '100%', textAlign: 'left' }}>
               <Clock size={18} style={{ color: 'var(--cp-text-tertiary, #64748B)' }} />
               <span style={{ flex: 1, fontSize: 14, color: 'var(--cp-text-secondary, #334155)' }}>Not Run</span>
               <span style={{ fontSize: 16, fontWeight: 700, color: 'var(--cp-text-tertiary, #64748B)' }}>{notRunCount}</span>

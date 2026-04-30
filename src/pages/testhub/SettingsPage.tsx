@@ -205,7 +205,7 @@ export default function SettingsPage() {
                         const isSelected = preferences.theme === opt.value;
                         return (
                           <button key={opt.value} onClick={() => updatePreference('theme', opt.value)}
-                            style={{ flex: 1, padding: 16, borderRadius: 12, border: `2px solid ${isSelected ? '#2563EB' : borderColor}`, backgroundColor: isSelected ? (isDark ? '#1e293b' : '#EFF6FF') : surfaceBg, cursor: 'pointer', textAlign: 'center' }}>
+                            style={{ flex: 1, padding: 16, borderRadius: 12, border: `2px solid ${isSelected ? '#2563EB' : borderColor}`, backgroundColor: isSelected ? ('var(--cp-primary-light, #EFF6FF)') : surfaceBg, cursor: 'pointer', textAlign: 'center' }}>
                             <OptIcon size={24} style={{ color: isSelected ? '#2563EB' : textSecondary, marginBottom: 8 }} />
                             <p style={{ fontSize: 14, fontWeight: 500, color: isSelected ? '#2563EB' : textPrimary, margin: 0 }}>{opt.label}</p>
                           </button>
@@ -222,7 +222,7 @@ export default function SettingsPage() {
                         const isSelected = preferences.density === opt.value;
                         return (
                           <button key={opt.value} onClick={() => updatePreference('density', opt.value)}
-                            style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: 14, borderRadius: 8, border: `1.5px solid ${isSelected ? '#2563EB' : borderColor}`, backgroundColor: isSelected ? (isDark ? '#1e293b' : '#EFF6FF') : surfaceBg, cursor: 'pointer', textAlign: 'left' }}>
+                            style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: 14, borderRadius: 8, border: `1.5px solid ${isSelected ? '#2563EB' : borderColor}`, backgroundColor: isSelected ? ('var(--cp-primary-light, #EFF6FF)') : surfaceBg, cursor: 'pointer', textAlign: 'left' }}>
                             <div>
                               <p style={{ fontSize: 14, fontWeight: 500, color: textPrimary, margin: 0 }}>{opt.label}</p>
                               <p style={{ fontSize: 12, color: textSecondary, margin: '2px 0 0' }}>{opt.description}</p>

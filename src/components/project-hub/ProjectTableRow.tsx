@@ -97,7 +97,7 @@ export function ProjectTableRow({ project, isStarred, onToggleStar, onContextMen
             fontSize: 12,
             fontFamily: 'var(--cp-font-mono)',
             fontWeight: 500,
-            color: isDark ? '#A1A1A1' : '#42526E',
+            color: 'var(--cp-text-secondary, #42526E)',
           }}
         >
           {project.item_count ?? 0}

@@ -212,7 +212,7 @@ export default function IdeasBacklogPage() {
           <div style={{ background: isDark ? 'transparent' : '#FFFFFF', borderRadius: '6px', border: `1px solid ${dk.border}`, overflow: 'hidden' }}>
             <table style={{ width: '100%', borderCollapse: 'collapse' }}>
               <thead>
-                <tr style={{ height: '50px', background: isDark ? '#1F1F1F' : '#F1F5F9' }}>
+                <tr style={{ height: '50px', background: 'var(--cp-bg-page, #F1F5F9)' }}>
                   <th style={{ width: '40px', padding: '0 8px', textAlign: 'center' }}>
                     <input type="checkbox" checked={selectedRows.size === ideas.length && ideas.length > 0} onChange={toggleAll} style={{ cursor: 'pointer', accentColor: '#2563EB' }} />
                   </th>

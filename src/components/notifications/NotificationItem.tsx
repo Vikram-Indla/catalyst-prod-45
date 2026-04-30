@@ -314,7 +314,7 @@ function NotificationItemInner({ notification, actorProfile, onMarkRead, onClick
               background: 'rgba(217,119,6,.08)', borderRadius: 4, padding: '6px 10px',
             }}>
               <Clock size={14} color="#D97706" />
-              <span style={{ fontFamily: 'var(--cp-font-body)', fontSize: 12, color: isDark ? '#FCD34D' : '#92400E' }}>
+              <span style={{ fontFamily: 'var(--cp-font-body)', fontSize: 12, color: 'var(--cp-warning-text, #92400E)' }}>
                 Due in {daysUntilDue} day{daysUntilDue !== 1 ? 's' : ''} — {notification.metadata.due_date}
               </span>
             </div>

@@ -160,7 +160,7 @@ function IdeaBoardCard({ idea, columnStatus, onClick, onConvert, isDark, dk }: {
       {/* Type badge + Ideas Theme */}
       <div style={{ marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '4px', flexWrap: 'wrap' }}>
         <span style={{
-          background: isDark ? '#292929' : '#F4F4F5', color: dk.t2,
+          background: 'var(--cp-bg-sunken, #F4F4F5)', color: dk.t2,
           padding: '2px 6px', borderRadius: '4px',
           fontSize: '10px', fontWeight: 600,
           border: isDark ? `1px solid ${dk.border}` : 'none',

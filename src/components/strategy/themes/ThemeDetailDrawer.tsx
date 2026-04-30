@@ -219,7 +219,7 @@ function OverviewTab({ theme, sc, bsc, pri, isDark = false }: { theme: Strategic
             <span style={{ fontSize: 9, fontWeight: 700, padding: '2px 6px', background: '#3B82F6', color: '#FFFFFF', borderRadius: 4, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
               AI
             </span>
-            <span style={{ fontSize: 12, fontWeight: 600, color: isDark ? '#93C5FD' : '#1D4ED8' }}>Strategy Health Score</span>
+            <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--cp-primary-hover, #1D4ED8)' }}>Strategy Health Score</span>
           </div>
           <div style={{ fontSize: 28, fontWeight: 800, color: isDark ? '#60A5FA' : 'var(--cp-blue)', marginBottom: 8 }}>
             {theme.ai_health_score}<span style={{ fontSize: 14, fontWeight: 500, color: d.t3 }}>/100</span>

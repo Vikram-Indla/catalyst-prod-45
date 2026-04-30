@@ -149,7 +149,7 @@ export default function BoardCard({ board, projectId, onOpen, onSettings }: Boar
             {board.isPersonal && <Chip bg={isDark ? 'rgba(37,99,235,0.12)' : '#EFF6FF'} color="#2563EB">Personal</Chip>}
             <Chip bg={vis.bg} color={vis.color}>{vis.label}</Chip>
             {board.swimlaneType !== 'none' && (
-              <Chip bg={isDark ? '#292929' : '#F8FAFC'} color={'var(--cp-text-tertiary, #64748B)'}>By {board.swimlaneType}</Chip>
+              <Chip bg={'var(--cp-bg-page, #F8FAFC)'} color={'var(--cp-text-tertiary, #64748B)'}>By {board.swimlaneType}</Chip>
             )}
             {/* Jira Sync badge */}
             {hasJiraSync && (

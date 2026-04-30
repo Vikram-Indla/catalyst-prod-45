@@ -111,7 +111,7 @@ export function MobileNavigationMenu() {
                     fontWeight: isActive ? 600 : 500,
                     color: isActive
                       ? (isDark ? '#FFFFFF' : '#2563EB')
-                      : (isDark ? '#EDEDED' : '#1E293B'),
+                      : ('var(--cp-text-primary, #1E293B)'),
                     fontFamily: 'var(--cp-font-body)',
                     textAlign: 'left',
                     transition: 'background 0.1s',

@@ -260,7 +260,7 @@ export default function IdeationCreateWizard({ open, onClose }: Props) {
                 fontSize: '16px', cursor: 'pointer',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
               }}
-              onMouseEnter={e => { e.currentTarget.style.background = isDark ? '#292929' : '#F4F4F5'; }}
+              onMouseEnter={e => { e.currentTarget.style.background = 'var(--cp-bg-sunken, #F4F4F5)'; }}
               onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
             >
               <X size={16} />

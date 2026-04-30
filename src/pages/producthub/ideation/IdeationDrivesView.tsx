@@ -141,7 +141,7 @@ export default function IdeationDrivesView() {
                   ? (isDark ? 'rgba(59,130,246,0.10)' : '#DEEBFF')
                   : ('var(--cp-border, #DFE1E6)'),
                 color: isActive
-                  ? (isDark ? '#7DB8FC' : '#0747A6')
+                  ? ('var(--cp-text-link, #0747A6)')
                   : (isDark ? '#A1A1A1' : '#253858'),
                 height: 20, padding: '0 6px', borderRadius: 3, fontSize: '11px', fontWeight: 700,
                 textTransform: 'uppercase', letterSpacing: '0.03em',

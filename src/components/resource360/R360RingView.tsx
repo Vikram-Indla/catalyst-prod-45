@@ -246,7 +246,7 @@ export const R360RingView: React.FC<Props> = ({ member, items, doneCount, onItem
               <span style={{ marginLeft: 'auto', fontSize: '11px', fontWeight: 600, color: ageCol(item.age_days ?? 0), fontVariantNumeric: 'tabular-nums' }}>{item.age_days ?? 0}d</span>
             </div>
             <div style={{
-              fontSize: '12.5px', fontWeight: 500, color: isDark ? '#EDEDED' : '#020617', lineHeight: '1.35', marginBottom: '5px',
+              fontSize: '12.5px', fontWeight: 500, color: 'var(--cp-text-primary, #020617)', lineHeight: '1.35', marginBottom: '5px',
               display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden',
             } as React.CSSProperties}>
               {trunc(item.title, 48)}
@@ -317,7 +317,7 @@ export const R360RingView: React.FC<Props> = ({ member, items, doneCount, onItem
                     color: '#FFF', fontSize: '12px', fontWeight: 700,
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                   }}>✓</div>
-                  <span style={{ fontSize: '13.5px', fontWeight: 600, color: isDark ? '#EDEDED' : '#020617' }}>
+                  <span style={{ fontSize: '13.5px', fontWeight: 600, color: 'var(--cp-text-primary, #020617)' }}>
                     Completed This Week
                   </span>
                 </div>
@@ -374,7 +374,7 @@ export const R360RingView: React.FC<Props> = ({ member, items, doneCount, onItem
                         </span>
                       </div>
                       <div style={{
-                        fontSize: '12.5px', fontWeight: 500, color: isDark ? '#EDEDED' : '#020617', lineHeight: '1.3',
+                        fontSize: '12.5px', fontWeight: 500, color: 'var(--cp-text-primary, #020617)', lineHeight: '1.3',
                         overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
                       }}>
                         {item.title}

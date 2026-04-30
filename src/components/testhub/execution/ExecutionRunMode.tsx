@@ -144,7 +144,7 @@ export function ExecutionRunMode({
             backgroundColor: isDark ? 'rgba(251,191,36,0.12)' : '#FFFBEB',
             border: `1px solid ${isDark ? 'rgba(251,191,36,0.2)' : '#FDE68A'}`,
             display: 'flex', alignItems: 'center', gap: 6,
-            fontSize: 12, color: isDark ? '#FBBF24' : '#92400E',
+            fontSize: 12, color: 'var(--cp-warning-text, #92400E)',
           }}>
             <AlertTriangle size={14} style={{ color: '#D97706', flexShrink: 0 }} />
             <span>
