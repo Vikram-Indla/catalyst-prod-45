@@ -35,15 +35,15 @@ function hashColor(name: string): string {
 
 /* ── Tokens ── */
 const T = {
-  headerBg: '#F7F8F9',
-  headerText: '#44546F',
-  borderColor: '#DDDEE1',
-  rowHover: 'rgba(0,0,0,0.04)',
-  keyColor: '#2563EB',
-  textPrimary: '#292A2E',
-  textSecondary: '#505258',
-  textMuted: '#6B6E76',
-  white: '#FFFFFF',
+  headerBg: 'var(--cp-bg-sunken, #F7F8F9)',
+  headerText: 'var(--cp-text-secondary, #44546F)',
+  borderColor: 'var(--cp-border-default, #DDDEE1)',
+  rowHover: 'var(--cp-interact-hover, rgba(0,0,0,0.04))',
+  keyColor: 'var(--cp-text-link, #2563EB)',
+  textPrimary: 'var(--cp-text-primary, #292A2E)',
+  textSecondary: 'var(--cp-text-secondary, #505258)',
+  textMuted: 'var(--cp-text-tertiary, #6B6E76)',
+  white: 'var(--cp-bg-elevated, #FFFFFF)',
 };
 
 interface AllWorkTableProps {
@@ -427,11 +427,11 @@ function PaginationBtn({ children, disabled, active, onClick }: {
       onClick={onClick}
       style={{
         height: 28, minWidth: 28, padding: '0 8px',
-        border: `1px solid ${active ? '#2563EB' : '#DDDEE1'}`,
+        border: `1px solid ${active ? '#2563EB' : 'var(--cp-border-default, #DDDEE1)'}`,
         borderRadius: 3,
         fontSize: 12, fontWeight: active ? 600 : 400,
-        color: disabled ? '#C1C7CD' : active ? '#2563EB' : '#44546F',
-        background: active ? 'rgba(37,99,235,0.06)' : '#FFFFFF',
+        color: disabled ? 'var(--cp-text-muted, #C1C7CD)' : active ? '#2563EB' : 'var(--cp-text-secondary, #44546F)',
+        background: active ? 'rgba(37,99,235,0.06)' : 'var(--cp-bg-elevated, #FFFFFF)',
         cursor: disabled ? 'default' : 'pointer',
         fontFamily: 'var(--cp-font-body)',
         opacity: disabled ? 0.5 : 1,
