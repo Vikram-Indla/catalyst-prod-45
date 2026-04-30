@@ -50,9 +50,9 @@ const CatalystDetailRouter = lazyWithRetry(() => import('@/components/catalyst-d
 import { useLocation, useParams, Outlet, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-const CatalystHeader = lazy(() => import('@/components/ja/CatalystHeader').then(m => ({ default: m.CatalystHeader })));
+const CatalystHeader = lazyWithRetry(() => import('@/components/ja/CatalystHeader').then(m => ({ default: m.CatalystHeader })), 'CatalystHeader');
 import { CatalystContextProvider, useCatalystContext } from '@/contexts/CatalystContext';
-const AnnouncementBanner = lazy(() => import('@/components/notifications/AnnouncementBanner').then(m => ({ default: m.AnnouncementBanner })));
+const AnnouncementBanner = lazyWithRetry(() => import('@/components/notifications/AnnouncementBanner').then(m => ({ default: m.AnnouncementBanner })), 'AnnouncementBanner');
 import { useTrackLastRoute } from '@/hooks/useSessionPersistence';
 import { useEnabledModules } from '@/hooks/useModules';
 import { useRecentPlaceTracker } from '@/hooks/useRecentPlaceTracker';
@@ -60,25 +60,25 @@ import { useCatalystTitle } from '@/hooks/useCatalystTitle';
 import { derivePageFromPath } from '@/lib/tabIdentity';
 
 // ─── Lazy-loaded sidebars (only the active one loads into memory) ────
-const UnifiedSidebar = lazy(() => import('./UnifiedSidebar').then(m => ({ default: m.UnifiedSidebar })));
-const EnterpriseSidebar = lazy(() => import('./EnterpriseSidebar').then(m => ({ default: m.EnterpriseSidebar })));
-const ProductRoomSidebar = lazy(() => import('./ProductRoomSidebar').then(m => ({ default: m.ProductRoomSidebar })));
-const ProjectSidebar = lazy(() => import('./ProjectSidebar').then(m => ({ default: m.ProjectSidebar })));
-const ReleaseRoomSidebar = lazy(() => import('./OperationsSidebar').then(m => ({ default: m.ReleaseRoomSidebar })));
-const TestManagementSidebar = lazy(() => import('./TestManagementSidebar').then(m => ({ default: m.TestManagementSidebar })));
-const ReleasesManagementSidebar = lazy(() => import('./ReleasesManagementSidebar').then(m => ({ default: m.ReleasesManagementSidebar })));
-const ReleaseHubSidebar = lazy(() => import('./ReleaseHubSidebar').then(m => ({ default: m.ReleaseHubSidebar })));
-const IncidentHubSidebar = lazy(() => import('./IncidentHubSidebar').then(m => ({ default: m.IncidentHubSidebar })));
-const PlanHubSidebar = lazy(() => import('./PlanHubSidebar').then(m => ({ default: m.PlanHubSidebar })));
-const TaskHubSidebar = lazy(() => import('./TaskHubSidebar').then(m => ({ default: m.TaskHubSidebar })));
-const TestHubSidebar = lazy(() => import('./TestHubSidebar').then(m => ({ default: m.TestHubSidebar })));
+const UnifiedSidebar = lazyWithRetry(() => import('./UnifiedSidebar').then(m => ({ default: m.UnifiedSidebar })), 'UnifiedSidebar');
+const EnterpriseSidebar = lazyWithRetry(() => import('./EnterpriseSidebar').then(m => ({ default: m.EnterpriseSidebar })), 'EnterpriseSidebar');
+const ProductRoomSidebar = lazyWithRetry(() => import('./ProductRoomSidebar').then(m => ({ default: m.ProductRoomSidebar })), 'ProductRoomSidebar');
+const ProjectSidebar = lazyWithRetry(() => import('./ProjectSidebar').then(m => ({ default: m.ProjectSidebar })), 'ProjectSidebar');
+const ReleaseRoomSidebar = lazyWithRetry(() => import('./OperationsSidebar').then(m => ({ default: m.ReleaseRoomSidebar })), 'ReleaseRoomSidebar');
+const TestManagementSidebar = lazyWithRetry(() => import('./TestManagementSidebar').then(m => ({ default: m.TestManagementSidebar })), 'TestManagementSidebar');
+const ReleasesManagementSidebar = lazyWithRetry(() => import('./ReleasesManagementSidebar').then(m => ({ default: m.ReleasesManagementSidebar })), 'ReleasesManagementSidebar');
+const ReleaseHubSidebar = lazyWithRetry(() => import('./ReleaseHubSidebar').then(m => ({ default: m.ReleaseHubSidebar })), 'ReleaseHubSidebar');
+const IncidentHubSidebar = lazyWithRetry(() => import('./IncidentHubSidebar').then(m => ({ default: m.IncidentHubSidebar })), 'IncidentHubSidebar');
+const PlanHubSidebar = lazyWithRetry(() => import('./PlanHubSidebar').then(m => ({ default: m.PlanHubSidebar })), 'PlanHubSidebar');
+const TaskHubSidebar = lazyWithRetry(() => import('./TaskHubSidebar').then(m => ({ default: m.TaskHubSidebar })), 'TaskHubSidebar');
+const TestHubSidebar = lazyWithRetry(() => import('./TestHubSidebar').then(m => ({ default: m.TestHubSidebar })), 'TestHubSidebar');
 
-const ProjectHubSidebar = lazy(() => import('./ProjectHubSidebar').then(m => ({ default: m.ProjectHubSidebar })));
-const WikiSidebar = lazy(() => import('./WikiSidebar').then(m => ({ default: m.WikiSidebar })));
+const ProjectHubSidebar = lazyWithRetry(() => import('./ProjectHubSidebar').then(m => ({ default: m.ProjectHubSidebar })), 'ProjectHubSidebar');
+const WikiSidebar = lazyWithRetry(() => import('./WikiSidebar').then(m => ({ default: m.WikiSidebar })), 'WikiSidebar');
 // C1 · Personal command center on / (Home). Replaces the empty 240px rail
 // users were seeing on Home with @atlaskit/side-navigation sections for
 // Pinned, Recent and Jump to. Atlaskit-only — see HomeSidebar.tsx.
-const HomeSidebar = lazy(() => import('./HomeSidebar'));
+const HomeSidebar = lazyWithRetry(() => import('./HomeSidebar'), 'HomeSidebar');
 
 import { HubSurface } from './HubSurface';
 
