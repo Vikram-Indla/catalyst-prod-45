@@ -33,6 +33,8 @@ import { toast } from 'sonner';
 import { CatalystViewBase } from '../shared/CatalystViewBase';
 import { useProductHubBusinessRequest } from './useProductHubBusinessRequest';
 import {
+  BrTitleSection,
+  BrStatusSection,
   BrArabicTitleSection,
   BrScoringSection,
   BrAttachmentsSection,
@@ -108,11 +110,15 @@ export default function CatalystViewBusinessRequestV2({
   // ── Left rail content (single-scroll, project-hub canonical pattern) ─────
   const leftContent = (
     <>
-      {/* Cycle 2 — wire each section to the real BR data + Atlaskit field rows.
-          Order mirrors CatalystViewStory: Title (chrome) → Status → Quick
-          actions → Key details → Description → Acceptance criteria → BR-
-          specific sections → Linked items → Activity → Footer meta. */}
+      {/* Cycle 2 (real): Title + Status + Arabic title.
+          Cycle 3: Description editor (lazy @atlaskit/editor-core) lands
+          between BrStatusSection and BrArabicTitleSection. */}
+      <BrTitleSection request={request} onUpdate={updateField} />
+      <BrStatusSection request={request} onUpdate={updateField} />
       <BrArabicTitleSection request={request} onUpdate={updateField} />
+
+      {/* Cycle 1 stubs — BrScoring / BrAttachments / BrBrdUpload / BrLinkedItems.
+          Real implementations land in cycle 3. */}
       <BrBrdUploadSection request={request} onUpdate={updateField} />
       <BrAttachmentsSection request={request} />
       <BrScoringSection request={request} onUpdate={updateField} />
