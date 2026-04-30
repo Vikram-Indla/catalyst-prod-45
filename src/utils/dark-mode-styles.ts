@@ -12,67 +12,69 @@ export type DarkTokens = {
   shadow: string; cardShadow: string;
 };
 
+/**
+ * NOTE (2026-04-30): Both DK and LK now resolve to `var(--cp-*)` tokens.
+ * This means consumers reading `T.t1`, `T.border`, etc. will automatically
+ * follow the active theme via CSS variable flip in `index.css` (.dark block).
+ * The `isDark ? DK : LK` selection still happens at component level for back-compat,
+ * but the values are theme-neutral now.
+ */
 export const DK: DarkTokens = {
-  // Backgrounds — ADS neutral dark
-  pageBg: '#0A0A0A',
-  cardBg: 'transparent',
-  headerBg: 'transparent',
-  tableHeaderBg: '#111111',
-  hoverBg: '#1F1F1F',
-  selectedBg: 'rgba(59,130,246,0.08)',
-  floatBg: '#1A1A1A',
-  chipBg: '#292929',
-  progressTrack: '#2E2E2E',
-  iconBg: '#292929',
+  pageBg:        'var(--cp-bg-page, #1D2125)',
+  cardBg:        'var(--cp-bg-elevated, #22272B)',
+  headerBg:      'var(--cp-bg-elevated, #22272B)',
+  tableHeaderBg: 'var(--cp-bg-sunken, #161A1D)',
+  hoverBg:       'var(--cp-interact-hover, #2E2E2E)',
+  selectedBg:    'var(--cp-interact-selected, rgba(59,130,246,0.15))',
+  floatBg:       'var(--cp-float, #1A1A1A)',
+  chipBg:        'var(--cp-bg-sunken, #292929)',
+  progressTrack: 'var(--cp-border-default, #2E2E2E)',
+  iconBg:        'var(--cp-bg-sunken, #292929)',
 
-  // Text — ADS neutral dark
-  t1: '#EDEDED',   // primary text (titles, values, data)
-  t2: '#A1A1A1',   // secondary (labels, legends)
-  t3: '#878787',   // tertiary (timestamps, muted labels)
-  t4: '#7D7D7D',   // decorative (placeholders)
+  t1: 'var(--cp-text-primary, #EDEDED)',
+  t2: 'var(--cp-text-secondary, #C9CCD0)',
+  t3: 'var(--cp-text-tertiary, #A1A1A1)',
+  t4: 'var(--cp-text-tertiary, #878787)',
 
-  // Borders — solid hex only
-  border: '#2E2E2E',
-  borderStrong: '#454545',
-  divider: '#292929',
+  border:       'var(--cp-border-default, #2E2E2E)',
+  borderStrong: 'var(--cp-border-strong, #454545)',
+  divider:      'var(--cp-border-default, #292929)',
 
-  // Semantic
-  blue: '#60A5FA',
-  blueKey: '#60A5FA',
-  green: '#86EFAC',
-  greenText: '#86EFAC',
+  blue:      'var(--cp-blue-text, #60A5FA)',
+  blueKey:   'var(--cp-blue-text, #60A5FA)',
+  green:     'var(--cp-ok, #4ADE80)',
+  greenText: 'var(--cp-ok, #4ADE80)',
 
-  // No shadow
-  shadow: 'none',
-  cardShadow: 'none',
+  shadow:     'var(--cp-shadow-xs, none)',
+  cardShadow: 'var(--cp-shadow-xs, none)',
 } as const;
 
 export const LK: DarkTokens = {
-  pageBg: '#FFFFFF',
-  cardBg: '#FFFFFF',
-  headerBg: '#FFFFFF',
-  tableHeaderBg: '#F1F5F9',
-  hoverBg: 'rgba(15,23,42,0.04)',
-  selectedBg: '#F0F4FF',
-  floatBg: '#FFFFFF',
-  chipBg: '#F1F5F9',
-  progressTrack: '#F1F5F9',
-  iconBg: '#F1F5F9',
-  
-  t1: 'var(--fg-1, #0F172A)',
-  t2: '#64748B',
-  t3: '#94A3B8',
-  t4: '#CBD5E1',
-  
-  border: 'rgba(15,23,42,0.12)',
-  borderStrong: 'rgba(15,23,42,0.20)',
-  divider: 'rgba(15,23,42,0.06)',
-  
-  blue: '#2563EB',
-  blueKey: '#2563EB',
-  green: '#16A34A',
-  greenText: '#11853D',
-  
-  shadow: '0 1px 3px rgba(0,0,0,0.06)',
-  cardShadow: '0 1px 3px rgba(0,0,0,0.06)',
+  pageBg:        'var(--cp-bg-page, #FFFFFF)',
+  cardBg:        'var(--cp-bg-elevated, #FFFFFF)',
+  headerBg:      'var(--cp-bg-elevated, #FFFFFF)',
+  tableHeaderBg: 'var(--cp-bg-sunken, #F1F5F9)',
+  hoverBg:       'var(--cp-interact-hover, rgba(15,23,42,0.04))',
+  selectedBg:    'var(--cp-interact-selected, #F0F4FF)',
+  floatBg:       'var(--cp-float, #FFFFFF)',
+  chipBg:        'var(--cp-bg-sunken, #F1F5F9)',
+  progressTrack: 'var(--cp-bg-sunken, #F1F5F9)',
+  iconBg:        'var(--cp-bg-sunken, #F1F5F9)',
+
+  t1: 'var(--cp-text-primary, #0F172A)',
+  t2: 'var(--cp-text-secondary, #44546F)',
+  t3: 'var(--cp-text-tertiary, #6B6E76)',
+  t4: 'var(--cp-text-tertiary, #94A3B8)',
+
+  border:       'var(--cp-border-default, rgba(15,23,42,0.12))',
+  borderStrong: 'var(--cp-border-strong, rgba(15,23,42,0.20))',
+  divider:      'var(--cp-border-default, rgba(15,23,42,0.06))',
+
+  blue:      'var(--cp-blue-text, #2563EB)',
+  blueKey:   'var(--cp-blue-text, #2563EB)',
+  green:     'var(--cp-ok, #16A34A)',
+  greenText: 'var(--cp-ok, #11853D)',
+
+  shadow:     'var(--cp-shadow-xs, 0 1px 3px rgba(0,0,0,0.06))',
+  cardShadow: 'var(--cp-shadow-xs, 0 1px 3px rgba(0,0,0,0.06))',
 } as const;
