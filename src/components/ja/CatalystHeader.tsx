@@ -142,18 +142,20 @@ export function CatalystHeader() {
             </div>
           )}
           <HubSwitcher />
-          <a
-            href="/for-you"
-            aria-label="Catalyst home"
-            style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center' }}
-          >
-            <img
-              src={catalystWordmark}
-              alt=""
-              height={28}
-              style={{ height: '28px', width: 'auto', display: 'block' }}
-            />
-          </a>
+          {!isMobile && (
+            <a
+              href="/for-you"
+              aria-label="Catalyst home"
+              style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center' }}
+            >
+              <img
+                src={catalystWordmark}
+                alt=""
+                height={28}
+                style={{ height: '28px', width: 'auto', display: 'block' }}
+              />
+            </a>
+          )}
         </div>
         {isPinnedOpen && !isNarrow && (
           <div
