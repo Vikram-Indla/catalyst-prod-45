@@ -1432,3 +1432,21 @@
   white-space: nowrap !important;
   border: 0 !important;
 }
+
+/* ════════════════════════════════════════════════════════════════
+   DARK MODE OVERRIDES — paired tokens (added 2026-04-30 sweep)
+   Re-routes local --sdm-* tokens through .dark for theme flip.
+   ════════════════════════════════════════════════════════════════ */
+.dark [data-sdm-scope] {
+  --sdm-section-border: rgba(255, 255, 255, 0.08);
+  --sdm-section-bg: #1D2125;
+  --sdm-ai-bg: #0D1F36;
+  --sdm-ai-border: #1E40AF;
+  --sdm-ai-header-bg: #1E3A8A;
+  --sdm-ai-header-text: #93C5FD;
+  --sdm-ai-btn: #3B82F6;
+  --sdm-ai-btn-hover: #2563EB;
+  --sdm-ai-shimmer: rgba(59, 130, 246, 0.15);
+}
+.dark [data-sdm-scope] .sdm-child-title { color: var(--cp-text-primary, #EDEDED); }
+.dark [data-sdm-scope] .sdm-count-badge { background: var(--cp-bg-sunken, #292929); color: var(--cp-text-tertiary, #A1A1A1); }

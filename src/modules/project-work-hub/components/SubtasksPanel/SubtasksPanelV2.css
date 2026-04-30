@@ -115,3 +115,8 @@
   cursor: pointer;
   opacity: 1;
 }
+
+/* DARK MODE OVERRIDES — added 2026-04-30 sweep */
+.dark .stp-v2-row { background: var(--cp-bg-elevated, #22272B); color: var(--cp-text-primary, #EDEDED); }
+.dark .stp-v2-row:hover { background: var(--cp-interact-hover, #2E2E2E); }
+.dark .stp-v2-cell { color: var(--cp-text-secondary, #C9CCD0); border-color: var(--cp-border-default, #2E2E2E); }

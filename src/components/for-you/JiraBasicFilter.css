@@ -494,3 +494,9 @@
   border: none;
   line-height: 20px;
 }
+
+/* DARK MODE OVERRIDES — added 2026-04-30 sweep */
+.dark .jira-basic-filter,
+.dark .jbf-input { background: var(--cp-bg-sunken, #161A1D); color: var(--cp-text-primary, #EDEDED); border-color: var(--cp-border-default, #2E2E2E); }
+.dark .jbf-chip { background: var(--cp-bg-elevated, #22272B); color: var(--cp-text-secondary, #C9CCD0); }
+.dark .jbf-chip:hover { background: var(--cp-interact-hover, #2E2E2E); }
