@@ -641,6 +641,11 @@ function CatalystShellContent() {
               zIndex: 40,
               boxShadow: '0 8px 24px rgba(0,0,0,0.15)',
             } : {}),
+            // Loop 2 (2026-04-30): hide the inline rail at <1024px. The same
+            // sidebar node is rendered inside GlobalMobileDrawer below.
+            // display:none keeps it out of the flex flow without affecting
+            // the desktop branch when isNarrow flips back to false.
+            ...(isNarrow ? { display: 'none' } : null),
           }}
           >
             {sidebarVisuallyOpen ? (
