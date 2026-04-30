@@ -107,24 +107,25 @@ export function useLinkedWorkItems(issueKey: string) {
         });
       }
 
-      // Final fallback: resolve missing keys from ph_requests so links to
-      // MIM-* / MDT-* initiatives (created via the RequestLinkedItemsTab)
-      // surface on the epic / story side of the relationship too. Requests
-      // map to "issue_type=Request" for icon/lozenge rendering.
-      const stillMissing = targetKeys.filter((k) => !targetMap.has(k));
-      if (stillMissing.length > 0) {
+      // Fallback 3: resolve missing keys from ph_requests (Catalyst-native
+      // initiatives, MIM-* / MDT-*). Requests map to "issue_type=Request"
+      // for icon/lozenge rendering. 2026-04-30 cycle 7: column renamed from
+      // `initiative_key` → `request_key` (CLAUDE.md 2026-04-29 rename
+      // lesson); the prior reference silently broke this branch in production.
+      const stillMissing3 = targetKeys.filter((k) => !targetMap.has(k));
+      if (stillMissing3.length > 0) {
         const { data: initTargets } = await supabase
           .from('ph_requests')
-          .select('id, initiative_key, title, status, assignee_id, priority, updated_at')
-          .in('initiative_key', stillMissing)
+          .select('id, request_key, title, status, assignee_id, priority, updated_at')
+          .in('request_key', stillMissing3)
           .eq('is_deleted', false);
         (initTargets ?? []).forEach((it: any) => {
           const status = String(it.status ?? '');
           const status_category: StatusCategory =
             status === 'closed' ? 'done' : status === 'in_progress' ? 'in_progress' : 'todo';
-          targetMap.set(it.initiative_key, {
+          targetMap.set(it.request_key, {
             id: it.id,
-            issue_key: it.initiative_key,
+            issue_key: it.request_key,
             summary: it.title,
             issue_type: 'Request',
             status,
@@ -134,6 +135,43 @@ export function useLinkedWorkItems(issueKey: string) {
             assignee_avatar_url: null,
             priority: it.priority ?? null,
             jira_updated_at: it.updated_at ?? null,
+          });
+        });
+      }
+
+      // Fallback 4: resolve missing keys from business_requests (Catalyst-native
+      // BRs, MIM-*). 2026-04-30 cycle 7: when an Epic/Story detail view reads
+      // its links, BR-source links (source_id=MIM-XXX) couldn't resolve their
+      // target row because business_requests was missing from the chain.
+      // Maps to "issue_type=Business Request" for icon rendering.
+      const stillMissing4 = targetKeys.filter((k) => !targetMap.has(k));
+      if (stillMissing4.length > 0) {
+        const { data: brTargets } = await supabase
+          .from('business_requests')
+          .select('id, request_key, title, process_step, assignee, priority_tier, updated_at')
+          .in('request_key', stillMissing4)
+          .is('deleted_at', null);
+        (brTargets ?? []).forEach((br: any) => {
+          const status = String(br.process_step ?? '');
+          const lower = status.toLowerCase();
+          const status_category: StatusCategory =
+            lower === 'closed' || lower === 'delivered' || lower === 'cancelled'
+              ? 'done'
+              : lower === 'in_progress' || lower === 'implementation'
+              ? 'in_progress'
+              : 'todo';
+          targetMap.set(br.request_key, {
+            id: br.id,
+            issue_key: br.request_key,
+            summary: br.title,
+            issue_type: 'Business Request',
+            status,
+            status_category,
+            assignee_account_id: br.assignee ?? null,
+            assignee_display_name: null,
+            assignee_avatar_url: null,
+            priority: br.priority_tier ?? null,
+            jira_updated_at: br.updated_at ?? null,
           });
         });
       }

@@ -78,15 +78,19 @@ if (typeof document !== 'undefined' && !document.getElementById(CV_TITLE_STYLE_I
     }
     /* Cycle 7 (2026-04-30) — dark-mode companion. Per CLAUDE.md PERMANENT
        RULE for CSS-in-JS !important: keep the light-mode literal AND add a
-       .dark/[data-theme="dark"] override so the same selector flips color
-       in dark. Live probe on /producthub/table caught the title rendering
-       #292A2E (1.21:1) on the dark #1A1A1A surface — fails WCAG AA. */
-    .dark .cv-title-edit-hide-label h1,
-    [data-theme~="dark:dark"] .cv-title-edit-hide-label h1 {
+       .dark override so the same selector flips color in dark. Live probe
+       on /producthub/table caught the title rendering #292A2E (1.21:1) on
+       the dark #1A1A1A surface — fails WCAG AA.
+       NOTE: do NOT use [data-theme~="dark:dark"] here. Atlaskit's
+       setGlobalTheme writes a parameterized string ("dark:dark
+       light:light spacing:spacing typography:typography") to data-theme
+       in BOTH modes; the token-list-contains operator matches always.
+       Catalyst owns the `.dark` class via ThemeProvider — that's the
+       canonical "dark mode is active" signal. */
+    .dark .cv-title-edit-hide-label h1 {
       color: #EDEDED !important;
     }
-    .dark .cv-title-edit-hide-label input[type="text"],
-    [data-theme~="dark:dark"] .cv-title-edit-hide-label input[type="text"] {
+    .dark .cv-title-edit-hide-label input[type="text"] {
       color: #EDEDED !important;
     }
   `;

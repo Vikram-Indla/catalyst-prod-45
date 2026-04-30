@@ -398,19 +398,22 @@ export function LinkedIssuesSection({ issueId, issueKey: issueKeyProp, projectKe
       // Final fallback: resolve missing keys from ph_requests so links to
       // MIM-* / MDT-* initiatives (created via RequestLinkedItemsTab)
       // appear on the linked epic / story / defect side of the relationship.
+      // 2026-04-30 cycle 7: column renamed initiative_key → request_key
+      // (CLAUDE.md 2026-04-29 rename lesson). The prior reference silently
+      // broke this branch in production.
       const stillMissing = targetKeys.filter(k => !targetMap.has(k));
       if (stillMissing.length > 0) {
         const { data: initTargets } = await supabase.from('ph_requests')
-          .select('id, initiative_key, title, status, assignee_id, priority, updated_at')
-          .in('initiative_key', stillMissing)
+          .select('id, request_key, title, status, assignee_id, priority, updated_at')
+          .in('request_key', stillMissing)
           .eq('is_deleted', false);
         (initTargets ?? []).forEach((it: any) => {
           const status = String(it.status ?? '');
           const status_category =
             status === 'closed' ? 'Done' : status === 'in_progress' ? 'In Progress' : 'To Do';
-          targetMap.set(it.initiative_key, {
+          targetMap.set(it.request_key, {
             id: it.id,
-            issue_key: it.initiative_key,
+            issue_key: it.request_key,
             summary: it.title,
             status,
             status_category,
