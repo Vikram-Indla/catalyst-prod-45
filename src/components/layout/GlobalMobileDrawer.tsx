@@ -159,6 +159,7 @@ export function GlobalMobileDrawer({
 
         {/* Sidebar slot — scrollable */}
         <div
+          data-cp-drawer-slot
           style={{
             flex: 1,
             minHeight: 0,
