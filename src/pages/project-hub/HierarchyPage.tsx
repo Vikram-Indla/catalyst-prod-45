@@ -198,7 +198,7 @@ function FilterDropdown({ options, selected, onChange, onClose, searchable = fal
       <div ref={ref} style={{
         position: 'absolute', top: 'calc(100% + 6px)', left: 0, width: variant === 'assignee' ? 280 : 260,
         background: 'var(--cp-bg-elevated)', border: `1px solid ${'var(--cp-border-default)'}`, borderRadius: 12,
-        boxShadow: isDark ? '0 12px 40px rgba(0,0,0,0.40), 0 2px 8px rgba(0,0,0,0.20)' : '0 12px 40px rgba(0,0,0,0.10), 0 2px 8px rgba(0,0,0,0.04)', zIndex: 100, maxHeight: 360,
+        boxShadow: 'var(--cp-shadow-popover, 0 12px 40px rgba(0,0,0,0.10), 0 2px 8px rgba(0,0,0,0.04))', zIndex: 100, maxHeight: 360,
         display: 'flex', flexDirection: 'column', overflow: 'hidden',
       }}>
         {/* Search */}
@@ -412,7 +412,7 @@ export default function HierarchyPage() {
             height: 34, padding: '0 14px', display: 'flex', alignItems: 'center', gap: 6,
             fontSize: 13, fontWeight: 500, fontFamily: 'var(--cp-font-body)',
             color: activeFilterCount > 0 ? '#2563EB' : 'var(--cp-text-secondary)',
-            background: activeFilterCount > 0 ? (isDark ? 'rgba(37,99,235,0.10)' : '#EFF6FF') : 'var(--cp-bg-elevated)',
+            background: activeFilterCount > 0 ? 'var(--cp-interact-selected)' : 'var(--cp-bg-elevated)',
             border: `1px solid ${activeFilterCount > 0 ? '#2563EB' : 'var(--cp-border-default)'}`,
             borderRadius: 6, cursor: 'pointer', transition: 'all 80ms ease',
           }}
@@ -435,7 +435,7 @@ export default function HierarchyPage() {
           <button onClick={() => setViewMode('table')}
             style={{
               width: 32, height: 32, display: 'flex', alignItems: 'center', justifyContent: 'center',
-              background: viewMode === 'table' ? (isDark ? 'rgba(37,99,235,0.10)' : '#EFF6FF') : ('var(--cp-bg-elevated)'), border: 'none', cursor: 'pointer',
+              background: viewMode === 'table' ? 'var(--cp-interact-selected)' : 'var(--cp-bg-elevated)', border: 'none', cursor: 'pointer',
               transition: 'background 80ms',
             }}>
             <TableProperties size={14} color={viewMode === 'table' ? '#2563EB' : '#64748B'} />
@@ -443,7 +443,7 @@ export default function HierarchyPage() {
           <button onClick={() => setViewMode('tree')}
             style={{
               width: 32, height: 32, display: 'flex', alignItems: 'center', justifyContent: 'center',
-              background: viewMode === 'tree' ? (isDark ? 'rgba(37,99,235,0.10)' : '#EFF6FF') : ('var(--cp-bg-elevated)'), border: 'none', cursor: 'pointer',
+              background: viewMode === 'tree' ? 'var(--cp-interact-selected)' : 'var(--cp-bg-elevated)', border: 'none', cursor: 'pointer',
               borderLeft: `1px solid ${'var(--cp-border-default)'}`, transition: 'background 80ms',
             }}>
             <GitBranch size={14} color={viewMode === 'tree' ? '#2563EB' : '#64748B'} />
@@ -568,7 +568,7 @@ export default function HierarchyPage() {
             </div>
           ) : filteredItems.length === 0 ? (
             <div style={{ border: `1px solid ${'var(--cp-border-default)'}`, borderRadius: 8, background: 'var(--cp-bg-elevated)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: 300, gap: 12, textAlign: 'center', padding: 48 }}>
-              <div style={{ width: 48, height: 48, borderRadius: 12, background: isDark ? '#1F1F1F' : '#F1F5F9', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <div style={{ width: 48, height: 48, borderRadius: 12, background: 'var(--cp-bg-sunken, #F1F5F9)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 <Search size={20} color="#94A3B8" />
               </div>
               <p style={{ fontSize: 14, fontWeight: 600, color: 'var(--cp-text-primary)', margin: 0 }}>
@@ -615,7 +615,7 @@ export default function HierarchyPage() {
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.18 }}
                 onClick={handleDeselect}
-                style={{ position: 'fixed', inset: 0, background: isDark ? 'rgba(0, 0, 0, 0.40)' : 'rgba(15, 23, 42, 0.16)', zIndex: 60 }}
+                style={{ position: 'fixed', inset: 0, background: 'var(--cp-overlay-scrim, rgba(15, 23, 42, 0.16))', zIndex: 60 }}
               />
               <motion.div
                 initial={{ x: '100%' }}
