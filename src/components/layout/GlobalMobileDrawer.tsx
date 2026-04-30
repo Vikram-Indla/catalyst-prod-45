@@ -184,6 +184,23 @@ export function GlobalMobileDrawer({
           [role="dialog"] aside { animation: none !important; }
           [role="dialog"] > div[aria-hidden] { animation: none !important; }
         }
+        /* Loop 4 (2026-04-30): module sidebars hardcode 240px width via
+           SidebarBase. Inside the 320px drawer that leaves ~64px of dead
+           gutter on the right and forces Recent-item titles to truncate
+           earlier than necessary. Stretch any descendant <aside> to fill
+           the drawer width — desktop is untouched because this rule only
+           applies inside [data-cp-mobile-drawer]. The inner ProjectHub
+           "Recent" rail (data-projecthub-rail) and any nested asides keep
+           their own widths unaffected because the rule is scoped to the
+           direct sidebar slot. */
+        [data-cp-mobile-drawer] [data-cp-drawer-slot] > aside {
+          width: 100% !important;
+        }
+        /* Border-right on the inner sidebar is redundant inside the drawer
+           (the drawer already has its own right edge against the backdrop). */
+        [data-cp-mobile-drawer] [data-cp-drawer-slot] > aside {
+          border-right: none !important;
+        }
       `}</style>
     </div>,
     document.body,
