@@ -208,7 +208,7 @@ export function WorkCardAssigneePicker({
                 ) : (
                   <div style={{
                     width: 28, height: 28, borderRadius: '50%', flexShrink: 0,
-                    background: 'var(--cp-bg-sunken, #6554C0)', color: 'var(--cp-text-primary)',
+                    background: '#6554C0', color: '#FFF',
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                     fontSize: 11, fontWeight: 800,
                   }}>{m.full_name.split(' ').map(s => s[0]).slice(0, 2).join('').toUpperCase()}</div>
