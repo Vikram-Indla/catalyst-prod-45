@@ -137,6 +137,25 @@ function CatalystShellContent() {
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
   }, [cycleSidebarState]);
+
+  // ─── Mobile / tablet drawer (Loop 2, 2026-04-30) ──────────────────────
+  // At <1024px the inline sidebar rail is unmounted; the same sidebar
+  // node is rendered inside GlobalMobileDrawer instead. Desktop ≥1024px
+  // is byte-identical to baseline — none of the JSX below changes.
+  const { isNarrow } = useNavBreakpoint();
+  const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
+  const mobileMenuTriggerRef = useRef<HTMLButtonElement | null>(null);
+
+  // Auto-close on route change
+  useEffect(() => {
+    setMobileDrawerOpen(false);
+  }, [location.pathname]);
+
+  // Auto-close if viewport grows back to desktop
+  useEffect(() => {
+    if (!isNarrow && mobileDrawerOpen) setMobileDrawerOpen(false);
+  }, [isNarrow, mobileDrawerOpen]);
+
   const { isModuleEnabled } = useEnabledModules();
   
   // Extract IDs from URL params - these take precedence
