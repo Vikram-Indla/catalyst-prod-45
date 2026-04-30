@@ -3429,8 +3429,8 @@ input[type="range"]::-moz-range-thumb {
   --cp-text-link: #60A5FA;
   --cp-text-muted: #878787;
   --cp-text-primary: #EDEDED;
-  --cp-text-secondary: #A1A1A1;
-  --cp-text-tertiary: #878787;
+  --cp-text-secondary: #C9CCD0;
+  --cp-text-tertiary: #9FA2A6;
   --cp-warn: #FBBF24;
   --cp-warn-bg: rgba(251,191,36,0.10);
   --divider: #292929;
@@ -5955,6 +5955,36 @@ html[data-presentation="true"] [data-testid="project-dashboard-shell"] [role="re
   letter-spacing: 0 !important;
   font-weight: 600 !important;
 }
+
+/* ────────────────────────────────────────────────────────────────────────
+   Dark-mode lozenge color softening (2026-04-30)
+   ────────────────────────────────────────────────────────────────────────
+   Atlaskit @atlaskit/lozenge applies bold colors via Emotion classNames
+   resolved at build time. We override --ds-* tokens within the wrapper
+   (Atlaskit reads these at runtime where supported), AND apply a
+   className-agnostic background override on the deepest span layer.
+   ────────────────────────────────────────────────────────────────────── */
+.dark [data-cp-lozenge-jira-parity] {
+  --ds-background-success-bold: #1B7F37;
+  --ds-background-success: #1B7F37;
+  --ds-text-inverse: #FFFFFF;
+  --ds-background-warning-bold: #7F4F01;
+  --ds-background-warning: #7F4F01;
+  --ds-background-danger-bold: #8E1A12;
+  --ds-background-danger: #8E1A12;
+  --ds-background-information-bold: #0C66E4;
+  --ds-background-information: #0C66E4;
+  --ds-background-discovery-bold: #5E4DB2;
+  --ds-background-discovery: #5E4DB2;
+  --ds-background-neutral-bold: #42526E;
+  --ds-background-neutral: #42526E;
+}
+/* Backup: target Atlaskit's known computed bg values for the inner pill */
+.dark [data-cp-lozenge-jira-parity] span span,
+.dark [data-cp-lozenge-jira-parity] > span > span > span {
+  filter: saturate(0.78) brightness(0.92);
+}
+
 
 /* ────────────────────────────────────────────────────────────────────────
    jira-compare Patch #11+#12 (2026-04-28) — Atlaskit Renderer typography
