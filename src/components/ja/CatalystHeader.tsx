@@ -109,7 +109,11 @@ export function CatalystHeader() {
           gap: '4px',
           justifySelf: 'start',
           justifyContent: 'space-between',
-          width: isPinnedOpen ? '228px' : 'auto',
+          width: isPinnedOpen && !isNarrow ? '228px' : 'auto',
+          // Reserve room for the external mobile hamburger (rendered by
+          // CatalystShell at left:8 / 36px wide) so HubSwitcher doesn't
+          // sit underneath it on iPhone/iPad.
+          paddingLeft: isNarrow ? '44px' : 0,
           boxSizing: 'border-box',
         }}
       >
