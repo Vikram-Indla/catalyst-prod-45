@@ -2237,7 +2237,7 @@ html:has(body[data-scroll-locked]) {
 }
 
 ::-webkit-scrollbar-track {
-  background: hsl(var(--surface-2));
+  background: var(--surface-2);
 }
 
 ::-webkit-scrollbar-thumb {
@@ -2255,7 +2255,7 @@ html:has(body[data-scroll-locked]) {
 /* Firefox scrollbar */
 * {
   scrollbar-width: thin;
-  scrollbar-color: hsl(var(--border-default)) hsl(var(--surface-2));
+  scrollbar-color: hsl(var(--border-default)) var(--surface-2);
 }
 
 
@@ -2341,13 +2341,13 @@ html:has(body[data-scroll-locked]) {
   transition: box-shadow 0.2s ease;
 }
 .avatar-ring:hover {
-  box-shadow: 0 0 0 2px hsl(var(--surface-0)), 0 0 0 4px hsl(var(--brand-primary));
+  box-shadow: 0 0 0 2px var(--surface-0), 0 0 0 4px hsl(var(--brand-primary));
 }
 
 /* Focus ring utility */
 .focus-ring:focus-visible {
   outline: none;
-  box-shadow: 0 0 0 2px hsl(var(--surface-0)), 0 0 0 4px hsl(var(--focus-ring) / 0.4);
+  box-shadow: 0 0 0 2px var(--surface-0), 0 0 0 4px hsl(var(--focus-ring) / 0.4);
 }
 
 /* ═══════════════════════════════════════════════════════════════
