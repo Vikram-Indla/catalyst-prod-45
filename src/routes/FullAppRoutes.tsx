@@ -10,11 +10,8 @@ const FeatureFlagsPage = lazy(() => import("../pages/admin/FeatureFlagsPage"));
 
 // ─── Lazy page imports ───────────────────────────────────────────
 const KBAdminSetup = ENABLE_AI ? lazy(() => import("../pages/KBAdminSetup")) : () => <FeatureComingSoon title="KB Admin" />;
-const KBAdminPage = ENABLE_AI ? lazy(() => import("../pages/KBAdminPage")) : () => <FeatureComingSoon title="KB Admin" />;
 const KBDataAuditPage = ENABLE_AI ? lazy(() => import("../pages/KBDataAudit")) : () => <FeatureComingSoon title="KB Data Audit" />;
 const RAGAuditPage = ENABLE_AI ? lazy(() => import("../pages/RAGAuditPage")) : () => <FeatureComingSoon title="RAG Audit" />;
-const WikiAdminPage = ENABLE_WIKI ? lazy(() => import("../pages/admin/WikiAdminPage")) : () => <FeatureComingSoon title="Wiki Admin" />;
-const WikiDiagnosticPage = ENABLE_WIKI ? lazy(() => import("../pages/admin/WikiDiagnosticPage")) : () => <FeatureComingSoon title="Wiki Diagnostic" />;
 const JiraActivitySyncPage = lazy(() => import("../pages/admin/JiraActivitySyncPage"));
 const JiraSyncControlPage = lazy(() => import("../pages/admin/JiraSyncControlPage"));
 
@@ -258,35 +255,28 @@ const AdminLayout = lazy(() => import('../pages/admin/AdminLayout').then(m => ({
 const AdminGuard = lazy(() => import("../components/admin/AdminGuard").then(m => ({ default: m.AdminGuard })));
 
 const StoriesPage = lazy(() => import('../pages/stories/StoriesPage').then(m => ({ default: m.StoriesPage })));
-const DetailsPanels = lazy(() => import("../pages/admin/DetailsPanels"));
-const GeneralSettings = lazy(() => import("../pages/admin/GeneralSettings"));
-const Announcements = lazy(() => import("../pages/admin/Announcements"));
 const UsersManagement = lazy(() => import("../pages/admin/UsersManagement"));
 const RolesPermissions = lazy(() => import("../pages/admin/RolesPermissions"));
-const ModuleMatrixPage = lazy(() => import("../components/admin/ModuleMatrixPage"));
 const ThemeGroups = lazy(() => import("../pages/admin/ThemeGroups"));
 const Programs = lazy(() => import("../pages/admin/Programs"));
 const Departments = lazy(() => import("../pages/admin/Departments"));
 const CapacityDepartmentsPage = lazy(() => import("../pages/admin/CapacityDepartments"));
 const ResourceAssignmentsPage = lazy(() => import("../pages/admin/ResourceAssignments"));
-const ResourceLocationsPage = lazy(() => import("../pages/admin/ResourceLocations"));
-const ResourceCountriesPage = lazy(() => import("../pages/admin/ResourceCountries"));
-const ResourceVendorsPage = lazy(() => import("../pages/admin/ResourceVendors"));
 const JiraUserSyncPage = lazy(() => import("../pages/admin/JiraUserSync"));
 const BusinessOwnersAdmin = lazy(() => import("../pages/admin/BusinessOwners"));
-const BusinessProcesses = lazy(() => import("../pages/admin/BusinessProcesses"));
 const Portfolios = lazy(() => import("../pages/admin/Portfolios"));
 const ModulesPackages = lazy(() => import("../pages/admin/ModulesPackages"));
-const ImportData = lazy(() => import("../pages/admin/ImportData"));
 const ProductSettings = lazy(() => import("../pages/admin/ProductSettings"));
 const AdminOverview = lazy(() => import("../pages/admin/AdminOverview"));
-const ResourceUtilizationPage = lazy(() => import("../pages/admin/ResourceUtilization"));
 const UserAccessPage = lazy(() => import("../pages/admin/UserAccessPage"));
 const ProcessSteps = lazy(() => import("../pages/admin/ProcessSteps"));
-const SlackIntegrationPage = lazy(() => import("../pages/admin/SlackIntegrationPage"));
-const CreateMenuConfig = lazy(() => import("../pages/admin/CreateMenuConfig"));
-const DeliveryPlatforms = lazy(() => import("../pages/admin/DeliveryPlatforms"));
-const RiskSeverityLevels = lazy(() => import("../pages/admin/RiskSeverityLevels"));
+// ── Admin v2 (Phase 0+1) ────────────────────────────────────────────
+const AdminV2Shell = lazy(() => import("../pages/admin/v2/AdminV2Shell"));
+const AdminV2Overview = lazy(() => import("../pages/admin/v2/AdminV2OverviewPage"));
+const AdminV2AuditLog = lazy(() => import("../pages/admin/v2/AuditLogPage"));
+const AdminV2CustomFields = lazy(() => import("../pages/admin/v2/work-items/CustomFieldsPage"));
+const AdminV2Statuses = lazy(() => import("../pages/admin/v2/work-items/StatusesPage"));
+const AdminV2WorkTypes = lazy(() => import("../pages/admin/v2/work-items/WorkTypesPage"));
 const WorkHubAdminPage = lazy(() => import("../modules/workhub/admin/pages/WorkHubAdmin"));
 const WorkHubHierarchyPage = lazy(() => import("../modules/workhub/admin/pages/WorkHubHierarchyPage"));
 const WorkHubSchedulingPage = lazy(() => import("../modules/workhub/admin/pages/WorkHubSchedulingPage"));
@@ -294,7 +284,6 @@ const WorkHubStatusMappingPage = lazy(() => import("../modules/workhub/admin/pag
 const WorkHubUserMappingPage = lazy(() => import("../modules/workhub/admin/pages/WorkHubUserMappingPage"));
 const WorkHubDataScopePage = lazy(() => import("../modules/workhub/admin/pages/WorkHubDataScopePage"));
 const WorkHubSyncLogs = lazy(() => import("../modules/workhub/admin/pages/WorkHubSyncLogsPage"));
-const SoftwareLicensesPage = lazy(() => import("../modules/budget/components/SoftwareLicensesPage").then(m => ({ default: m.SoftwareLicensesPage })));
 const EpicStatuses = lazy(() => import("../pages/admin/EpicStatuses"));
 const FeatureStatuses = lazy(() => import("../pages/admin/FeatureStatuses"));
 const ThemeStatuses = lazy(() => import("../pages/admin/ThemeStatuses"));
@@ -762,36 +751,22 @@ export default function FullAppRoutes() {
           <Route index element={<Navigate to="/admin/overview" replace />} />
           <Route path="overview" element={<S><AdminOverview /></S>} />
           <Route path="modules-packages" element={<S><ModulesPackages /></S>} />
-          <Route path="details-panels" element={<S><DetailsPanels /></S>} />
-          <Route path="general-settings" element={<S><GeneralSettings /></S>} />
-          <Route path="announcements" element={<S><Announcements /></S>} />
           <Route path="user-access" element={<S><UserAccessPage /></S>} />
           <Route path="users" element={<S><UsersManagement /></S>} />
           <Route path="roles-permissions" element={<S><RolesPermissions /></S>} />
-          <Route path="module-matrix" element={<S><ModuleMatrixPage /></S>} />
           <Route path="theme-groups" element={<S><ThemeGroups /></S>} />
           <Route path="programs" element={<S><Programs /></S>} />
           <Route path="portfolios" element={<S><Portfolios /></S>} />
           <Route path="departments" element={<S><Departments /></S>} />
           <Route path="capacity-departments" element={<S><CapacityDepartmentsPage /></S>} />
           <Route path="resource-assignments" element={<S><ResourceAssignmentsPage /></S>} />
-          <Route path="resource-locations" element={<S><ResourceLocationsPage /></S>} />
-          <Route path="resource-countries" element={<S><ResourceCountriesPage /></S>} />
-          <Route path="resource-vendors" element={<S><ResourceVendorsPage /></S>} />
           <Route path="jira-user-sync" element={<S><JiraUserSyncPage /></S>} />
           <Route path="business-owners" element={<S><BusinessOwnersAdmin /></S>} />
-          <Route path="business-processes" element={<S><BusinessProcesses /></S>} />
           <Route path="business/ProcessStep" element={<S><ProcessSteps /></S>} />
           <Route path="business/EpicStatus" element={<S><EpicStatuses /></S>} />
           <Route path="business/FeatureStatus" element={<S><FeatureStatuses /></S>} />
           <Route path="business/ThemeStatus" element={<S><ThemeStatuses /></S>} />
-          <Route path="create-menu-config" element={<S><CreateMenuConfig /></S>} />
-          <Route path="business/RiskSeverity" element={<S><RiskSeverityLevels /></S>} />
-          <Route path="business/DeliveryPlatforms" element={<S><DeliveryPlatforms /></S>} />
           <Route path="product-settings" element={<S><ProductSettings /></S>} />
-          <Route path="notion" element={<S><ImportData /></S>} />
-          <Route path="resource-utilization" element={<S><ResourceUtilizationPage /></S>} />
-          <Route path="software-licenses" element={<S><SoftwareLicensesPage /></S>} />
           <Route path="incidents/workgroups" element={<S><IncidentWorkgroups /></S>} />
           <Route path="incidents/fields" element={<S><IncidentFieldsConfig /></S>} />
           <Route path="incidents/sla" element={<S><IncidentSLAPolicies /></S>} />
@@ -799,7 +774,6 @@ export default function FullAppRoutes() {
           <Route path="incidents/conversion" element={<S><IncidentConversionRules /></S>} />
           <Route path="incidents/audit" element={<S><IncidentAuditCompliance /></S>} />
           <Route path="incidents/owning-teams" element={<S><IncidentOwningTeams /></S>} />
-          <Route path="slack" element={<S><SlackIntegrationPage /></S>} />
           <Route path="workflows" element={<S><WorkflowAdminPage /></S>} />
           <Route path="workhub-connection" element={<Navigate to="/admin/workhub/jira-connection" replace />} />
           <Route path="workhub" element={<Navigate to="/admin/workhub/jira-connection" replace />} />
@@ -813,13 +787,19 @@ export default function FullAppRoutes() {
           <Route path="workhub/sync-logs" element={<S><WorkHubSyncLogs /></S>} />
           <Route path="workhub/activity-sync" element={<S><JiraActivitySyncPage /></S>} />
           <Route path="workhub/*" element={<Navigate to="/admin/workhub/jira-connection" replace />} />
-          <Route path="kb" element={<S><KBAdminPage /></S>} />
-          <Route path="kb/*" element={<S><KBAdminPage /></S>} />
-          <Route path="wiki" element={<S><WikiAdminPage /></S>} />
-          <Route path="wiki-diagnostic" element={<S><WikiDiagnosticPage /></S>} />
           <Route path="notification-triggers" element={<S><NotificationTriggers /></S>} />
           <Route path="settings/notifications" element={<S><UserNotificationSettingsPage /></S>} />
           <Route path="feature-flags" element={<S><FeatureFlagsPage /></S>} />
+        </Route>
+
+        {/* Admin v2 — Phase 0 + 1. Sibling of /admin (own shell). Gated
+            internally on the admin_v2_enabled feature flag. */}
+        <Route path="/admin/v2" element={<S><AdminGuard><AdminV2Shell /></AdminGuard></S>}>
+          <Route index element={<S><AdminV2Overview /></S>} />
+          <Route path="audit" element={<S><AdminV2AuditLog /></S>} />
+          <Route path="work-items/custom-fields" element={<S><AdminV2CustomFields /></S>} />
+          <Route path="work-items/statuses" element={<S><AdminV2Statuses /></S>} />
+          <Route path="work-items/types" element={<S><AdminV2WorkTypes /></S>} />
         </Route>
 
         <Route path="/value-stream" element={<S><ValueStreamView /></S>} />

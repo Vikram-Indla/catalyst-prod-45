@@ -135,7 +135,80 @@ const adsMigratedFiles = [
   "src/components/shared/CatalystPageHeader.tsx",
   "src/components/project-hub/dashboard/WidgetWrapper.tsx",
   "src/components/project-hub/dashboard/widgets/**/*.{ts,tsx}",
+  // Admin overhaul Phase 0 + 1 — re-architected admin surface lives in
+  // src/pages/admin/v2/**, gated by the admin_v2_enabled feature flag.
+  // The wiring contract requires 100% Atlaskit primitives via the ADS
+  // barrel and forbids direct @atlaskit/* / shadcn imports in this tree.
+  "src/pages/admin/v2/**/*.{ts,tsx}",
+  "src/components/admin/v2/**/*.{ts,tsx}",
+  "src/hooks/admin/useAdminMutation.{ts,tsx}",
+  "src/hooks/admin/useAdminV2*.{ts,tsx}",
 ];
+
+/**
+ * Admin v2 — extra hard-error guardrails.
+ *
+ * Phase 0 of the admin overhaul. Every page under /admin/v2 must use the
+ * ADS barrel exclusively, route writes through `useAdminMutation`, and
+ * read colours through `var(--ds-*)` or `token('color.*')`. These rules
+ * make the wiring contract enforceable from CI.
+ *
+ *   1. Bare hex / rgba / hsl literals inside style blocks
+ *      → use `var(--ds-*, #fallback)`.
+ *   2. Raw <input>, <select>, <button> JSX
+ *      → use Textfield / Select / Button from @/components/ads.
+ *   3. Direct supabase client `.update / .delete / .insert / .upsert`
+ *      → route writes through `useAdminMutation` so they hit the audit log.
+ *
+ * Exceptions are documented inline with `// eslint-disable-next-line` plus a
+ * reason comment — typically DB-stored hex values that happen to land in
+ * source (status palettes) and are not styling literals.
+ */
+const adminV2Rules = {
+  "no-restricted-syntax": ["error",
+    {
+      selector: "Literal[value=/^#[0-9A-Fa-f]{3,8}$/]",
+      message:
+        "Bare hex literals are banned in admin v2. Use `var(--ds-*, #fallback)` " +
+        "or `token('color.*', '#fallback')`. DB-stored hex values must be wrapped " +
+        "in an `// eslint-disable-next-line` block with a reason comment.",
+    },
+    {
+      selector: "Literal[value=/^rgba?\\(/]",
+      message:
+        "rgb()/rgba() literals are banned in admin v2. Use `var(--ds-*)` or " +
+        "`token('color.*')`. Document any exception with eslint-disable + reason.",
+    },
+    {
+      selector: "JSXOpeningElement[name.name='input']",
+      message:
+        "Raw <input> is banned in admin v2 — use `Textfield` from " +
+        "'@/components/ads' so styling, dark theme, and a11y stay consistent.",
+    },
+    {
+      selector: "JSXOpeningElement[name.name='select']",
+      message:
+        "Raw <select> is banned in admin v2 — use `Select` from " +
+        "'@/components/ads'.",
+    },
+    {
+      selector: "JSXOpeningElement[name.name='button']",
+      message:
+        "Raw <button> is banned in admin v2 — use `Button` / `IconButton` from " +
+        "'@/components/ads'. For tab-strip / swatch grid edge cases, use " +
+        "`<div role=\"button\" tabIndex={0} onKeyDown={…}>` instead.",
+    },
+    {
+      selector:
+        "CallExpression[callee.property.name=/^(update|delete|insert|upsert)$/] " +
+        "[callee.object.callee.property.name='from']",
+      message:
+        "Admin v2 writes must route through `useAdminMutation` so the audit log " +
+        "captures the actor, before-state, and reason. Direct supabase mutations " +
+        "(.update / .delete / .insert / .upsert chained off .from) bypass the trail.",
+    },
+  ],
+};
 
 /**
  * ADS-internal guardrails — applied only inside src/components/ads/**.
@@ -380,6 +453,23 @@ export default tseslint.config(
     ],
     rules: {
       ...dashboardMigratedRules,
+    },
+  },
+  /**
+   * Admin v2 — Phase 0 + 1 wiring contract. Hard-error guardrails on
+   * hex / rgba literals, raw form-element JSX, and direct supabase
+   * mutations. See `adminV2Rules` above for the rationale and the list
+   * of accepted exception patterns.
+   */
+  {
+    files: [
+      "src/pages/admin/v2/**/*.{ts,tsx}",
+      "src/components/admin/v2/**/*.{ts,tsx}",
+      "src/hooks/admin/useAdminMutation.{ts,tsx}",
+      "src/hooks/admin/useAdminV2*.{ts,tsx}",
+    ],
+    rules: {
+      ...adminV2Rules,
     },
   },
 );
