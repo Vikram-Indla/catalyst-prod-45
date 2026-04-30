@@ -159,7 +159,7 @@ function CenterBody({ item, childItems, childrenLoading }: {
             <div
               dir={item.description && isRTL(item.description) ? 'rtl' : 'ltr'}
               style={{
-                fontSize: 14, color: item.description ? '#172B4D' : '#626F86',
+                fontSize: 14, color: item.description ? 'var(--cp-text-primary)' : 'var(--cp-text-tertiary)',
                 fontFamily: "'Atlassian Sans', -apple-system, sans-serif",
                 lineHeight: 1.6, padding: '8px 0 0 24px',
               }}
@@ -197,7 +197,7 @@ function CenterBody({ item, childItems, childrenLoading }: {
                 {childItems.length > 0 && (
                   <div style={{ display: 'flex', alignItems: 'center', gap: 10, margin: '10px 0 10px 24px' }}>
                     <div style={{
-                      flex: '0 0 auto', width: 240, height: 6, background: '#DFE1E6', borderRadius: 999,
+                      flex: '0 0 auto', width: 240, height: 6, background: 'var(--cp-border-default)', borderRadius: 999,
                       overflow: 'hidden', display: 'flex',
                     }}>
                       {pctDone > 0 && <div style={{ width: `${pctDone}%`, background: '#5B7F24', borderRadius: '999px 0 0 999px' }} />}
@@ -240,7 +240,7 @@ function CenterBody({ item, childItems, childrenLoading }: {
                                 {child.jiraKey}
                               </a>
                               <span style={{
-                                fontSize: 14, color: '#172B4D', overflow: 'hidden', textOverflow: 'ellipsis',
+                                fontSize: 14, color: 'var(--cp-text-primary)', overflow: 'hidden', textOverflow: 'ellipsis',
                                 whiteSpace: 'nowrap', fontFamily: "'Atlassian Sans', -apple-system, sans-serif",
                               }}>
                                 {child.summary}
@@ -323,7 +323,7 @@ function RightDetails({ item }: { item: WorkItem }) {
               <div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                   <div style={avatarStyle('#6554C0')}>{assigneeInitials}</div>
-                  <span style={{ fontSize: 14, color: '#172B4D' }}>{item.assignee?.name ?? 'Unassigned'}</span>
+                  <span style={{ fontSize: 14, color: 'var(--cp-text-primary)' }}>{item.assignee?.name ?? 'Unassigned'}</span>
                 </div>
                 <a href="#" onClick={e => e.preventDefault()} style={{ fontSize: 13, color: '#0C66E4', textDecoration: 'none', fontWeight: 500, marginTop: 4, display: 'inline-block' }}>
                   Assign to me
@@ -335,7 +335,7 @@ function RightDetails({ item }: { item: WorkItem }) {
             <DetailRow label="Priority">
               <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                 {PRIORITY_ICON[item.priority] || PRIORITY_ICON.medium}
-                <span style={{ fontSize: 14, color: '#172B4D' }}>{capitalize(item.priority)}</span>
+                <span style={{ fontSize: 14, color: 'var(--cp-text-primary)' }}>{capitalize(item.priority)}</span>
               </div>
             </DetailRow>
 
@@ -343,7 +343,7 @@ function RightDetails({ item }: { item: WorkItem }) {
             <DetailRow label="Reporter">
               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                 <div style={avatarStyle('#0C66E4')}>{reporterInitials}</div>
-                <span style={{ fontSize: 14, color: '#172B4D' }}>{item.reporter?.name ?? '—'}</span>
+                <span style={{ fontSize: 14, color: 'var(--cp-text-primary)' }}>{item.reporter?.name ?? '—'}</span>
               </div>
             </DetailRow>
 
@@ -354,12 +354,12 @@ function RightDetails({ item }: { item: WorkItem }) {
 
             {/* Actual start */}
             <DetailRow label="Actual start">
-              <span style={{ fontSize: 14, color: '#172B4D' }}>None</span>
+              <span style={{ fontSize: 14, color: 'var(--cp-text-primary)' }}>None</span>
             </DetailRow>
 
             {/* Actual end */}
             <DetailRow label="Actual end">
-              <span style={{ fontSize: 14, color: '#172B4D' }}>None</span>
+              <span style={{ fontSize: 14, color: 'var(--cp-text-primary)' }}>None</span>
             </DetailRow>
           </div>
         )}

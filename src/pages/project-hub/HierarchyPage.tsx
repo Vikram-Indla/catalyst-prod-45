@@ -111,9 +111,9 @@ function FilterTrigger({ label, values, onClear, onClick, isOpen }: {
       style={{
         height: 32, padding: '8px 12px', display: 'inline-flex', alignItems: 'center', gap: 6,
         fontSize: 12, fontWeight: 500, fontFamily: 'var(--cp-font-body)',
-        color: active ? '#2563EB' : isDark ? '#A1A1A1' : '#334155',
-        background: active ? 'rgba(37,99,235,0.06)' : isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF',
-        border: `1px solid ${active ? 'rgba(37,99,235,0.3)' : isDark ? '#2E2E2E' : '#E2E8F0'}`,
+        color: active ? '#2563EB' : 'var(--cp-text-secondary)',
+        background: active ? 'rgba(37,99,235,0.06)' : 'var(--cp-bg-elevated)',
+        border: `1px solid ${active ? 'rgba(37,99,235,0.3)' : 'var(--cp-border-default)'}`,
         borderRadius: 6, cursor: 'pointer', whiteSpace: 'nowrap',
         transition: 'all 80ms ease',
         boxShadow: isOpen ? '0 0 0 3px rgba(37,99,235,0.08)' : 'none',
@@ -130,7 +130,7 @@ function FilterTrigger({ label, values, onClear, onClick, isOpen }: {
       {active && (
         <span
           onClick={e => { e.stopPropagation(); onClear(); }}
-          style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 14, height: 14, borderRadius: 9999, cursor: 'pointer', color: isDark ? '#878787' : '#94A3B8' }}
+          style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 14, height: 14, borderRadius: 9999, cursor: 'pointer', color: 'var(--cp-text-tertiary)' }}
           onMouseEnter={e => (e.currentTarget.style.color = '#DC2626')}
           onMouseLeave={e => (e.currentTarget.style.color = '#94A3B8')}
         >
@@ -167,7 +167,7 @@ function PriorityIcon({ name }: { name: string }) {
   return (
     <div style={{ display: 'flex', gap: 1.5, alignItems: 'flex-end', height: 14, width: 14 }}>
       {[1, 2, 3, 4].map(i => (
-        <div key={i} style={{ width: 2.5, height: 3 + i * 2.5, borderRadius: 1, background: i <= level ? color : isDark ? '#2E2E2E' : '#E2E8F0' }} />
+        <div key={i} style={{ width: 2.5, height: 3 + i * 2.5, borderRadius: 1, background: i <= level ? color : 'var(--cp-border-default)' }} />
       ))}
     </div>
   );
@@ -197,16 +197,16 @@ function FilterDropdown({ options, selected, onChange, onClose, searchable = fal
       <div style={{ position: 'fixed', inset: 0, zIndex: 99 }} onClick={onClose} />
       <div ref={ref} style={{
         position: 'absolute', top: 'calc(100% + 6px)', left: 0, width: variant === 'assignee' ? 280 : 260,
-        background: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF', border: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, borderRadius: 12,
-        boxShadow: isDark ? '0 12px 40px rgba(0,0,0,0.40), 0 2px 8px rgba(0,0,0,0.20)' : '0 12px 40px rgba(0,0,0,0.10), 0 2px 8px rgba(0,0,0,0.04)', zIndex: 100, maxHeight: 360,
+        background: 'var(--cp-bg-elevated)', border: `1px solid ${'var(--cp-border-default)'}`, borderRadius: 12,
+        boxShadow: 'var(--cp-shadow-popover, 0 12px 40px rgba(0,0,0,0.10), 0 2px 8px rgba(0,0,0,0.04))', zIndex: 100, maxHeight: 360,
         display: 'flex', flexDirection: 'column', overflow: 'hidden',
       }}>
         {/* Search */}
         {searchable && (
-          <div style={{ padding: '10px 12px', borderBottom: `1px solid ${isDark ? '#292929' : '#F1F5F9'}` }}>
+          <div style={{ padding: '10px 12px', borderBottom: `1px solid ${'var(--cp-border-default)'}` }}>
             <div style={{
               display: 'flex', alignItems: 'center', gap: 6, padding: '0 8px',
-              height: 32, background: isDark ? 'var(--cp-bg-page, #1F1F21)' : '#F8FAFC', borderRadius: 6, border: '1px solid transparent',
+              height: 32, background: 'var(--cp-bg-page)', borderRadius: 6, border: '1px solid transparent',
               transition: 'border-color 80ms',
             }}>
               <Search size={13} color="#94A3B8" />
@@ -216,7 +216,7 @@ function FilterDropdown({ options, selected, onChange, onClose, searchable = fal
                 autoFocus
                 style={{
                   flex: 1, border: 'none', outline: 'none', background: 'transparent',
-                  fontSize: 12, fontFamily: 'var(--cp-font-body)', color: isDark ? '#EDEDED' : '#0F172A',
+                  fontSize: 12, fontFamily: 'var(--cp-font-body)', color: 'var(--cp-text-primary)',
                 }}
               />
             </div>
@@ -224,9 +224,9 @@ function FilterDropdown({ options, selected, onChange, onClose, searchable = fal
         )}
 
         {/* Select all / Clear */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 12px', borderBottom: `1px solid ${isDark ? '#292929' : '#F1F5F9'}` }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 12px', borderBottom: `1px solid ${'var(--cp-border-default)'}` }}>
           <button onClick={selectAll} style={{ fontSize: 11, fontWeight: 500, color: '#2563EB', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>Select all</button>
-          <button onClick={clearAll} style={{ fontSize: 11, fontWeight: 500, color: isDark ? '#878787' : '#94A3B8', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>Clear</button>
+          <button onClick={clearAll} style={{ fontSize: 11, fontWeight: 500, color: 'var(--cp-text-tertiary)', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>Clear</button>
         </div>
 
         {/* Options */}
@@ -238,16 +238,16 @@ function FilterDropdown({ options, selected, onChange, onClose, searchable = fal
                 key={opt}
                 style={{
                   display: 'flex', alignItems: 'center', gap: 10, padding: '6px 12px',
-                  cursor: 'pointer', fontSize: 13, color: isDark ? '#EDEDED' : '#0F172A', fontFamily: 'var(--cp-font-body)',
+                  cursor: 'pointer', fontSize: 13, color: 'var(--cp-text-primary)', fontFamily: 'var(--cp-font-body)',
                   transition: 'background 80ms', borderRadius: 0,
                   background: isSelected ? 'rgba(37,99,235,0.04)' : 'transparent',
                 }}
-                onMouseEnter={e => (e.currentTarget.style.background = isSelected ? 'rgba(37,99,235,0.08)' : isDark ? '#1F1F1F' : 'rgba(15,23,42,0.04)')}
+                onMouseEnter={e => (e.currentTarget.style.background = isSelected ? 'rgba(37,99,235,0.08)' : 'var(--cp-interact-hover)')}
                 onMouseLeave={e => (e.currentTarget.style.background = isSelected ? 'rgba(37,99,235,0.04)' : 'transparent')}
               >
                 <div style={{
                   width: 16, height: 16, borderRadius: 4, border: `1.5px solid ${isSelected ? '#2563EB' : '#CBD5E1'}`,
-                  background: isSelected ? '#2563EB' : isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  background: isSelected ? '#2563EB' : 'var(--cp-bg-elevated)', display: 'flex', alignItems: 'center', justifyContent: 'center',
                   flexShrink: 0, transition: 'all 80ms',
                 }}>
                   {isSelected && (
@@ -305,12 +305,12 @@ function FilterDropdown({ options, selected, onChange, onClose, searchable = fal
             );
           })}
           {filtered.length === 0 && (
-            <div style={{ padding: '16px 12px', fontSize: 12, color: isDark ? '#878787' : '#94A3B8', textAlign: 'center' }}>No results found</div>
+            <div style={{ padding: '16px 12px', fontSize: 12, color: 'var(--cp-text-tertiary)', textAlign: 'center' }}>No results found</div>
           )}
         </div>
 
         {/* Footer: count */}
-        <div style={{ padding: '6px 12px', borderTop: `1px solid ${isDark ? '#292929' : '#F1F5F9'}`, fontSize: 11, color: isDark ? '#878787' : '#94A3B8', textAlign: 'center' }}>
+        <div style={{ padding: '6px 12px', borderTop: `1px solid ${'var(--cp-border-default)'}`, fontSize: 11, color: 'var(--cp-text-tertiary)', textAlign: 'center' }}>
           {selected.length} of {options.length} selected
         </div>
       </div>
@@ -371,24 +371,24 @@ export default function HierarchyPage() {
   }, []);
 
   return (
-    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden', background: isDark ? 'var(--cp-bg-page, #1F1F21)' : '#F8FAFC', fontFamily: 'var(--cp-font-body)' }}>
+    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden', background: 'var(--cp-bg-page)', fontFamily: 'var(--cp-font-body)' }}>
       {/* PAGE HEADER */}
       <CatalystPageHeader title="All Work Items" />
 
       {/* TOOLBAR — Search + Filter + Spacer + View Toggle ONLY */}
       <div style={{
-        height: 48, padding: '0 24px', borderBottom: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, background: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF',
+        height: 48, padding: '0 24px', borderBottom: `1px solid ${'var(--cp-border-default)'}`, background: 'var(--cp-bg-elevated)',
         display: 'flex', alignItems: 'center', gap: 8,
         boxShadow: '0 1px 2px rgba(0,0,0,0.03)',
       }}>
         {/* Search */}
         <div style={{
           width: 240, height: 34, display: 'flex', alignItems: 'center', gap: 6,
-          padding: '0 10px', background: isDark ? 'var(--cp-bg-page, #1F1F21)' : '#F8FAFC', border: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, borderRadius: 6,
+          padding: '0 10px', background: 'var(--cp-bg-page)', border: `1px solid ${'var(--cp-border-default)'}`, borderRadius: 6,
           transition: 'border-color 80ms, box-shadow 80ms',
         }}
           onFocus={e => { e.currentTarget.style.borderColor = '#2563EB'; e.currentTarget.style.boxShadow = '0 0 0 3px rgba(37,99,235,0.08)'; }}
-          onBlur={e => { e.currentTarget.style.borderColor = isDark ? '#2E2E2E' : '#E2E8F0'; e.currentTarget.style.boxShadow = 'none'; }}
+          onBlur={e => { e.currentTarget.style.borderColor = 'var(--cp-border-default)'; e.currentTarget.style.boxShadow = 'none'; }}
         >
           <Search size={14} color="#94A3B8" style={{ flexShrink: 0 }} />
           <input
@@ -398,7 +398,7 @@ export default function HierarchyPage() {
             className="!bg-transparent !border-0 !p-0 !outline-none !shadow-none !ring-0 focus:!outline-none focus:!shadow-none focus:!ring-0"
             style={{
               flex: 1, border: 'none', background: 'transparent', outline: 'none',
-              fontSize: 13, fontFamily: 'var(--cp-font-body)', color: isDark ? '#EDEDED' : '#0F172A',
+              fontSize: 13, fontFamily: 'var(--cp-font-body)', color: 'var(--cp-text-primary)',
               WebkitAppearance: 'none', MozAppearance: 'none', appearance: 'none',
               WebkitBoxShadow: '0 0 0 1000px transparent inset',
             } as React.CSSProperties}
@@ -411,9 +411,9 @@ export default function HierarchyPage() {
           style={{
             height: 34, padding: '0 14px', display: 'flex', alignItems: 'center', gap: 6,
             fontSize: 13, fontWeight: 500, fontFamily: 'var(--cp-font-body)',
-            color: activeFilterCount > 0 ? '#2563EB' : isDark ? '#A1A1A1' : '#334155',
-            background: activeFilterCount > 0 ? (isDark ? 'rgba(37,99,235,0.10)' : '#EFF6FF') : isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF',
-            border: `1px solid ${activeFilterCount > 0 ? '#2563EB' : isDark ? '#2E2E2E' : '#E2E8F0'}`,
+            color: activeFilterCount > 0 ? '#2563EB' : 'var(--cp-text-secondary)',
+            background: activeFilterCount > 0 ? 'var(--cp-interact-selected)' : 'var(--cp-bg-elevated)',
+            border: `1px solid ${activeFilterCount > 0 ? '#2563EB' : 'var(--cp-border-default)'}`,
             borderRadius: 6, cursor: 'pointer', transition: 'all 80ms ease',
           }}
         >
@@ -431,11 +431,11 @@ export default function HierarchyPage() {
         <div style={{ flex: 1 }} />
 
         {/* View toggle */}
-        <div style={{ display: 'flex', border: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, borderRadius: 6, overflow: 'hidden' }}>
+        <div style={{ display: 'flex', border: `1px solid ${'var(--cp-border-default)'}`, borderRadius: 6, overflow: 'hidden' }}>
           <button onClick={() => setViewMode('table')}
             style={{
               width: 32, height: 32, display: 'flex', alignItems: 'center', justifyContent: 'center',
-              background: viewMode === 'table' ? (isDark ? 'rgba(37,99,235,0.10)' : '#EFF6FF') : (isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF'), border: 'none', cursor: 'pointer',
+              background: viewMode === 'table' ? 'var(--cp-interact-selected)' : 'var(--cp-bg-elevated)', border: 'none', cursor: 'pointer',
               transition: 'background 80ms',
             }}>
             <TableProperties size={14} color={viewMode === 'table' ? '#2563EB' : '#64748B'} />
@@ -443,8 +443,8 @@ export default function HierarchyPage() {
           <button onClick={() => setViewMode('tree')}
             style={{
               width: 32, height: 32, display: 'flex', alignItems: 'center', justifyContent: 'center',
-              background: viewMode === 'tree' ? (isDark ? 'rgba(37,99,235,0.10)' : '#EFF6FF') : (isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF'), border: 'none', cursor: 'pointer',
-              borderLeft: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, transition: 'background 80ms',
+              background: viewMode === 'tree' ? 'var(--cp-interact-selected)' : 'var(--cp-bg-elevated)', border: 'none', cursor: 'pointer',
+              borderLeft: `1px solid ${'var(--cp-border-default)'}`, transition: 'background 80ms',
             }}>
             <GitBranch size={14} color={viewMode === 'tree' ? '#2563EB' : '#64748B'} />
           </button>
@@ -460,7 +460,7 @@ export default function HierarchyPage() {
             exit={{ height: 0, opacity: 0 }}
             transition={{ duration: 0.15, ease: 'easeOut' }}
             style={{
-              overflow: 'visible', background: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF', borderBottom: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`,
+              overflow: 'visible', background: 'var(--cp-bg-elevated)', borderBottom: `1px solid ${'var(--cp-border-default)'}`,
               display: 'flex', alignItems: 'center', gap: 8, padding: '0 24px',
               position: 'relative', zIndex: 50,
             }}
@@ -540,11 +540,11 @@ export default function HierarchyPage() {
               onClick={handleClearAllFilters}
               style={{
                 marginLeft: 'auto', width: 28, height: 28, display: 'flex', alignItems: 'center', justifyContent: 'center',
-                background: 'none', border: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, borderRadius: 4, cursor: 'pointer',
-                color: isDark ? '#878787' : '#64748B', transition: 'all 80ms',
+                background: 'none', border: `1px solid ${'var(--cp-border-default)'}`, borderRadius: 4, cursor: 'pointer',
+                color: 'var(--cp-text-tertiary)', transition: 'all 80ms',
               }}
               onMouseEnter={e => { e.currentTarget.style.borderColor = '#DC2626'; e.currentTarget.style.color = '#DC2626'; }}
-              onMouseLeave={e => { e.currentTarget.style.borderColor = isDark ? '#2E2E2E' : '#E2E8F0'; e.currentTarget.style.color = '#64748B'; }}
+              onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--cp-border-default)'; e.currentTarget.style.color = '#64748B'; }}
               title="Clear all filters"
             >
               <X size={14} />
@@ -559,28 +559,28 @@ export default function HierarchyPage() {
           {isLoading ? (
             <TableSkeleton rows={10} />
           ) : isError ? (
-            <div style={{ border: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, borderRadius: 8, background: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: 200, gap: 12, padding: 24, textAlign: 'center' }}>
+            <div style={{ border: `1px solid ${'var(--cp-border-default)'}`, borderRadius: 8, background: 'var(--cp-bg-elevated)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: 200, gap: 12, padding: 24, textAlign: 'center' }}>
               <p style={{ fontSize: 14, fontWeight: 600, color: '#DC2626', margin: 0 }}>Failed to load work items</p>
-              <p style={{ fontSize: 12, color: isDark ? '#878787' : '#64748B', margin: 0 }}>There was an error fetching the work items.</p>
+              <p style={{ fontSize: 12, color: 'var(--cp-text-tertiary)', margin: 0 }}>There was an error fetching the work items.</p>
               <button onClick={() => refetch()} style={{ height: 32, padding: '0 14px', fontSize: 13, fontWeight: 600, fontFamily: 'var(--cp-font-body)', color: '#FFFFFF', background: '#2563EB', border: 'none', borderRadius: 6, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}>
                 <RefreshCw size={14} /> Retry
               </button>
             </div>
           ) : filteredItems.length === 0 ? (
-            <div style={{ border: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, borderRadius: 8, background: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: 300, gap: 12, textAlign: 'center', padding: 48 }}>
-              <div style={{ width: 48, height: 48, borderRadius: 12, background: isDark ? '#1F1F1F' : '#F1F5F9', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <div style={{ border: `1px solid ${'var(--cp-border-default)'}`, borderRadius: 8, background: 'var(--cp-bg-elevated)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: 300, gap: 12, textAlign: 'center', padding: 48 }}>
+              <div style={{ width: 48, height: 48, borderRadius: 12, background: 'var(--cp-bg-sunken, #F1F5F9)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 <Search size={20} color="#94A3B8" />
               </div>
-              <p style={{ fontSize: 14, fontWeight: 600, color: isDark ? '#EDEDED' : '#0F172A', margin: 0 }}>
+              <p style={{ fontSize: 14, fontWeight: 600, color: 'var(--cp-text-primary)', margin: 0 }}>
                 {search || activeFilterCount > 0 ? 'No items match your filters' : 'No work items found'}
               </p>
-              <p style={{ fontSize: 12, color: isDark ? '#878787' : '#94A3B8', margin: 0 }}>
+              <p style={{ fontSize: 12, color: 'var(--cp-text-tertiary)', margin: 0 }}>
                 {search || activeFilterCount > 0 ? 'Try adjusting your search or filters.' : `No Jira issues found for ${projectKey?.toUpperCase()}.`}
               </p>
               {(search || activeFilterCount > 0) && (
                 <button onClick={handleClearAllFilters} style={{
                   height: 32, padding: '0 14px', fontSize: 12, fontWeight: 500, fontFamily: 'var(--cp-font-body)',
-                  color: isDark ? '#A1A1A1' : '#334155', background: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF', border: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, borderRadius: 6, cursor: 'pointer',
+                  color: 'var(--cp-text-secondary)', background: 'var(--cp-bg-elevated)', border: `1px solid ${'var(--cp-border-default)'}`, borderRadius: 6, cursor: 'pointer',
                 }}>
                   Clear filters
                 </button>
@@ -615,7 +615,7 @@ export default function HierarchyPage() {
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.18 }}
                 onClick={handleDeselect}
-                style={{ position: 'fixed', inset: 0, background: isDark ? 'rgba(0, 0, 0, 0.40)' : 'rgba(15, 23, 42, 0.16)', zIndex: 60 }}
+                style={{ position: 'fixed', inset: 0, background: 'var(--cp-overlay-scrim, rgba(15, 23, 42, 0.16))', zIndex: 60 }}
               />
               <motion.div
                 initial={{ x: '100%' }}
@@ -629,8 +629,8 @@ export default function HierarchyPage() {
                   height: '100vh',
                   width: 'min(62vw, 920px)',
                   minWidth: 480,
-                  background: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF',
-                  borderLeft: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`,
+                  background: 'var(--cp-bg-elevated)',
+                  borderLeft: `1px solid ${'var(--cp-border-default)'}`,
                   zIndex: 61,
                   padding: 16,
                   overflowY: 'auto',

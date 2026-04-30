@@ -272,23 +272,23 @@ export default function ProjectListPage() {
               Showing {page * perPage + 1}–{Math.min((page + 1) * perPage, filtered.length)} of {filtered.length} projects
             </span>
             <div className="flex items-center gap-1">
-              <button disabled={page === 0} onClick={() => setPage(p => p - 1)} className="flex items-center justify-center rounded transition-colors disabled:opacity-30" style={{ width: 28, height: 28, border: `1px solid ${T.border}`, background: isDark ? 'transparent' : '#FFF', cursor: 'pointer' }}>
+              <button disabled={page === 0} onClick={() => setPage(p => p - 1)} className="flex items-center justify-center rounded transition-colors disabled:opacity-30" style={{ width: 28, height: 28, border: `1px solid ${T.border}`, background: 'var(--cp-bg-elevated)', cursor: 'pointer' }}>
                 <ChevronLeft size={14} style={{ color: T.t2 }} />
               </button>
               {Array.from({ length: Math.min(totalPages, 5) }).map((_, i) => {
                 const pageNum = totalPages <= 5 ? i : Math.max(0, Math.min(page - 2, totalPages - 5)) + i;
                 return (
                   <button key={pageNum} onClick={() => setPage(pageNum)} className="flex items-center justify-center rounded transition-colors"
-                    style={{ width: 28, height: 28, border: pageNum === page ? 'none' : `1px solid ${T.border}`, background: pageNum === page ? '#2563EB' : (isDark ? 'transparent' : '#FFF'), color: pageNum === page ? '#FFF' : T.t2, fontSize: 12, fontWeight: pageNum === page ? 600 : 400, cursor: 'pointer' }}
+                    style={{ width: 28, height: 28, border: pageNum === page ? 'none' : `1px solid ${T.border}`, background: pageNum === page ? '#2563EB' : 'var(--cp-bg-elevated)', color: pageNum === page ? '#FFF' : T.t2, fontSize: 12, fontWeight: pageNum === page ? 600 : 400, cursor: 'pointer' }}
                   >
                     {pageNum + 1}
                   </button>
                 );
               })}
-              <button disabled={page >= totalPages - 1} onClick={() => setPage(p => p + 1)} className="flex items-center justify-center rounded transition-colors disabled:opacity-30" style={{ width: 28, height: 28, border: `1px solid ${T.border}`, background: isDark ? 'transparent' : '#FFF', cursor: 'pointer' }}>
+              <button disabled={page >= totalPages - 1} onClick={() => setPage(p => p + 1)} className="flex items-center justify-center rounded transition-colors disabled:opacity-30" style={{ width: 28, height: 28, border: `1px solid ${T.border}`, background: 'var(--cp-bg-elevated)', cursor: 'pointer' }}>
                 <ChevronRightIcon size={14} style={{ color: T.t2 }} />
               </button>
-              <select value={perPage} onChange={e => { setPerPage(Number(e.target.value)); setPage(0); }} className="ml-3 rounded" style={{ height: 28, padding: '0 6px', border: `1px solid ${T.border}`, fontSize: 12, color: T.t2, background: isDark ? 'transparent' : '#FFF', cursor: 'pointer' }}>
+              <select value={perPage} onChange={e => { setPerPage(Number(e.target.value)); setPage(0); }} className="ml-3 rounded" style={{ height: 28, padding: '0 6px', border: `1px solid ${T.border}`, fontSize: 12, color: T.t2, background: 'var(--cp-bg-elevated)', cursor: 'pointer' }}>
                 <option value={25}>25 / page</option>
                 <option value={50}>50 / page</option>
                 <option value={100}>100 / page</option>
@@ -308,7 +308,7 @@ export default function ProjectListPage() {
               background: T.floatBg,
               border: `1px solid ${T.border}`,
               borderRadius: 8,
-              boxShadow: isDark ? 'none' : '0 10px 15px -3px rgba(0,0,0,.1), 0 4px 6px -4px rgba(0,0,0,.1)',
+              boxShadow: 'var(--cp-shadow-popover, 0 10px 15px -3px rgba(0,0,0,.1), 0 4px 6px -4px rgba(0,0,0,.1))',
               fontFamily: 'var(--cp-font-body)',
               padding: '4px 0',
             }}
@@ -352,7 +352,7 @@ export default function ProjectListPage() {
             <button onClick={() => { archiveProject(ctxMenu.project.id, ctxMenu.project.name); setCtxMenu(null); }}
               className="w-full flex items-center gap-2.5 px-3 transition-colors"
               style={{ height: 50, fontSize: 13, color: '#DC2626', background: 'transparent', border: 'none', cursor: 'pointer' }}
-              onMouseEnter={e => { e.currentTarget.style.background = isDark ? 'rgba(220,38,38,0.1)' : '#FEF2F2'; }}
+              onMouseEnter={e => { e.currentTarget.style.background = 'var(--cp-err-bg, #FEF2F2)'; }}
               onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
             >
               <Archive size={16} color="#DC2626" /> Archive

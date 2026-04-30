@@ -125,9 +125,9 @@ export default function ProjectBoardPage() {
             key={s.label}
             className="flex items-center gap-3"
             style={{
-              background: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF', borderRadius: 12, padding: '12px 16px',
-              border: isDark ? '1px solid #2E2E2E' : '1px solid #E2E8F0',
-              borderLeft: s.accent ? `3px solid ${s.accent}` : (isDark ? '1px solid #2E2E2E' : '1px solid #E2E8F0'),
+              background: 'var(--cp-bg-elevated)', borderRadius: 12, padding: '12px 16px',
+              border: '1px solid var(--cp-border-default)',
+              borderLeft: s.accent ? `3px solid ${s.accent}` : ('1px solid var(--cp-border-default)'),
             }}
           >
             <div
@@ -139,13 +139,13 @@ export default function ProjectBoardPage() {
             <div>
               <div
                 style={{
-                  fontSize: 22, fontWeight: 700, color: isDark ? '#EDEDED' : '#0F172A',
+                  fontSize: 22, fontWeight: 700, color: 'var(--cp-text-primary)',
                   fontFamily: 'var(--cp-font-mono)', lineHeight: 1.1,
                 }}
               >
                 {s.value}
               </div>
-              <div style={{ fontSize: 11, fontWeight: 500, color: isDark ? '#878787' : '#64748B', marginTop: 1 }}>
+              <div style={{ fontSize: 11, fontWeight: 500, color: 'var(--cp-text-tertiary)', marginTop: 1 }}>
                 {s.label}
               </div>
             </div>
@@ -158,7 +158,7 @@ export default function ProjectBoardPage() {
         {/* View Switcher */}
         <div
           className="flex items-center gap-0.5 p-1 rounded-lg"
-          style={{ background: isDark ? 'var(--cp-bg-surface, #242528)' : '#F1F5F9' }}
+          style={{ background: 'var(--cp-bg-sunken, #F1F5F9)' }}
         >
           {views.map(v => {
             const isActive = activeView === v.key;
@@ -172,8 +172,8 @@ export default function ProjectBoardPage() {
                   fontWeight: isActive ? 600 : 500,
                   fontFamily: 'var(--cp-font-body)',
                   borderRadius: 6, cursor: 'pointer', border: 'none',
-                  background: isActive ? (isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF') : 'transparent',
-                  color: isActive ? '#2563EB' : (isDark ? '#A1A1A1' : '#64748B'),
+                  background: isActive ? ('var(--cp-bg-elevated)') : 'transparent',
+                  color: isActive ? '#2563EB' : ('var(--cp-text-secondary)'),
                   boxShadow: isActive ? '0 1px 3px rgba(0,0,0,.08)' : 'none',
                   transition: 'all 150ms ease',
                 }}
@@ -197,8 +197,8 @@ export default function ProjectBoardPage() {
               paddingLeft: 30, paddingRight: 10,
               height: 32, width: 200,
               fontSize: 12, fontWeight: 500,
-              border: isDark ? '1px solid #2E2E2E' : '1px solid #E2E8F0',
-              background: isDark ? 'var(--cp-bg-surface, #242528)' : '#fff', color: isDark ? '#EDEDED' : '#0F172A',
+              border: '1px solid var(--cp-border-default)',
+              background: 'var(--cp-bg-elevated)', color: 'var(--cp-text-primary)',
               fontFamily: 'var(--cp-font-body)',
             }}
           />
@@ -212,9 +212,9 @@ export default function ProjectBoardPage() {
             padding: '6px 12px', height: 32,
             fontSize: 12, fontWeight: 500,
             borderRadius: 6, cursor: 'pointer',
-            border: hasActiveFilters ? '1px solid #BFDBFE' : (isDark ? '1px solid #2E2E2E' : '1px solid #E2E8F0'),
-            background: hasActiveFilters ? (isDark ? 'rgba(37,99,235,0.15)' : '#EFF6FF') : (isDark ? 'var(--cp-bg-surface, #242528)' : '#fff'),
-            color: hasActiveFilters ? '#2563EB' : (isDark ? '#A1A1A1' : '#64748B'),
+            border: hasActiveFilters ? '1px solid #BFDBFE' : ('1px solid var(--cp-border-default)'),
+            background: hasActiveFilters ? ('var(--cp-interact-selected)') : ('var(--cp-bg-elevated)'),
+            color: hasActiveFilters ? '#2563EB' : ('var(--cp-text-secondary)'),
             fontFamily: 'var(--cp-font-body)',
             transition: 'all 150ms ease',
           }}
@@ -242,8 +242,8 @@ export default function ProjectBoardPage() {
               padding: '6px 12px', height: 32,
               fontSize: 12, fontWeight: 500,
               borderRadius: 6, cursor: 'pointer',
-              border: isDark ? '1px solid #2E2E2E' : '1px solid #E2E8F0',
-              background: isDark ? 'var(--cp-bg-surface, #242528)' : '#fff', color: isDark ? '#A1A1A1' : '#64748B',
+              border: '1px solid var(--cp-border-default)',
+              background: 'var(--cp-bg-elevated)', color: 'var(--cp-text-secondary)',
               fontFamily: 'var(--cp-font-body)',
             }}
           >
@@ -257,7 +257,7 @@ export default function ProjectBoardPage() {
       {showFilters && (
         <div
           className="flex items-center gap-3 mb-3 p-3 rounded-lg"
-          style={{ background: isDark ? 'var(--cp-bg-surface, #242528)' : '#F8FAFC', border: isDark ? '1px solid #2E2E2E' : '1px solid #E2E8F0' }}
+          style={{ background: 'var(--cp-bg-elevated)', border: '1px solid var(--cp-border-default)' }}
         >
           <FilterDropdown
             label="Type"
@@ -350,13 +350,13 @@ export default function ProjectBoardPage() {
       {activeView === 'timeline' && (
         <div
           className="flex flex-col items-center justify-center rounded-xl border"
-          style={{ padding: '80px 40px', background: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF', borderColor: isDark ? '#2E2E2E' : '#E2E8F0' }}
+          style={{ padding: '80px 40px', background: 'var(--cp-bg-elevated)', borderColor: 'var(--cp-border-default)' }}
         >
           <GanttChart size={36} color="#94A3B8" strokeWidth={1.5} />
-          <span style={{ fontSize: 14, fontWeight: 600, color: isDark ? '#EDEDED' : '#0F172A', marginTop: 12, fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+          <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--cp-text-primary)', marginTop: 12, fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
             Timeline View
           </span>
-          <span style={{ fontSize: 13, color: isDark ? '#878787' : '#64748B', marginTop: 4 }}>
+          <span style={{ fontSize: 13, color: 'var(--cp-text-tertiary)', marginTop: 4 }}>
             Coming in Phase 2
           </span>
         </div>
@@ -409,7 +409,7 @@ function FilterDropdown({ label, value, options, isOpen, onToggle, onChange }: {
         className="flex items-center justify-between gap-2 rounded-md transition-colors"
         style={{
           fontSize: 12, fontWeight: 500, padding: '4px 8px',
-          border: '1px solid #E2E8F0', background: '#fff', color: '#0F172A',
+          border: '1px solid var(--cp-border-default)', background: 'var(--cp-bg-elevated)', color: 'var(--cp-text-primary)',
           cursor: 'pointer', minWidth: 130, textAlign: 'left' as const,
         }}
       >
@@ -419,7 +419,7 @@ function FilterDropdown({ label, value, options, isOpen, onToggle, onChange }: {
       {isOpen && (
         <div
           className="absolute top-full left-0 mt-1 rounded-lg shadow-lg border z-50"
-          style={{ background: '#fff', borderColor: '#E2E8F0', minWidth: 160, padding: 4 }}
+          style={{ background: 'var(--cp-bg-elevated)', borderColor: 'var(--cp-border-default)', minWidth: 160, padding: 4 }}
         >
           {options.map(o => (
             <button
@@ -428,11 +428,11 @@ function FilterDropdown({ label, value, options, isOpen, onToggle, onChange }: {
               className="w-full text-left px-3 py-1.5 rounded transition-colors"
               style={{
                 fontSize: 12, fontWeight: value === o.value ? 600 : 400,
-                color: '#334155',
-                background: value === o.value ? '#F1F5F9' : 'transparent',
+                color: 'var(--cp-text-secondary)',
+                background: value === o.value ? 'var(--cp-interact-selected)' : 'transparent',
                 border: 'none', cursor: 'pointer',
               }}
-              onMouseEnter={e => { if (value !== o.value) e.currentTarget.style.background = '#F8FAFC'; }}
+              onMouseEnter={e => { if (value !== o.value) e.currentTarget.style.background = 'var(--cp-interact-hover)'; }}
               onMouseLeave={e => { if (value !== o.value) e.currentTarget.style.background = 'transparent'; }}
             >
               {o.label}
