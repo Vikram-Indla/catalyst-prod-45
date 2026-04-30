@@ -565,10 +565,42 @@ function CatalystShellContent() {
       </a>
 
       {/* Global Header */}
-      <div data-catalyst-header>
+      <div data-catalyst-header style={{ position: 'relative' }}>
         <Suspense fallback={<div className="h-[56px] border-b" style={{ background: 'var(--cp-bg)', borderColor: 'var(--cp-bd)' }} />}>
           <CatalystHeader />
         </Suspense>
+        {/* Mobile / tablet hamburger — only visible at <1024px.
+            Positioned absolutely so we don't edit CatalystHeader internals.
+            Sits at the far-left where the sidebar chevron normally lives. */}
+        {isNarrow && (
+          <button
+            ref={mobileMenuTriggerRef}
+            type="button"
+            aria-label="Open navigation"
+            aria-expanded={mobileDrawerOpen}
+            aria-controls="catalyst-mobile-drawer"
+            onClick={() => setMobileDrawerOpen(true)}
+            style={{
+              position: 'absolute',
+              top: '50%',
+              left: 8,
+              transform: 'translateY(-50%)',
+              width: 36,
+              height: 36,
+              display: 'inline-flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              borderRadius: 4,
+              background: 'var(--ds-background-neutral-subtle, transparent)',
+              border: 'none',
+              cursor: 'pointer',
+              color: 'var(--ds-text, var(--cp-t1, #172B4D))',
+              zIndex: 50,
+            }}
+          >
+            <Menu size={20} />
+          </button>
+        )}
       </div>
 
       {/* Main Content with Context Panel - Conditional Sidebar Based on workspaceType */}
