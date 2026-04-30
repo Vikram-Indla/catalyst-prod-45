@@ -123,6 +123,23 @@ async function invokeThemes(
 }
 
 /**
+ * Compute milliseconds from `now` until the next 21:00 Asia/Riyadh (AST=UTC+3).
+ * Used as React Query `staleTime` so the AI theme analyzer is fetched at most
+ * once per day on the client (matches the server-side daily TTL set by
+ * supabase/functions/ai-digest/themes.ts and the nightly pg_cron pre-warm).
+ */
+function msUntilNext9pmRiyadh(now: Date = new Date()): number {
+  // 21:00 AST == 18:00 UTC.
+  const target = new Date(Date.UTC(
+    now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), 18, 0, 0, 0,
+  ));
+  if (target.getTime() <= now.getTime()) {
+    target.setUTCDate(target.getUTCDate() + 1);
+  }
+  return Math.max(60_000, target.getTime() - now.getTime());
+}
+
+/**
  * Primary hook — suspense-off, TanStack Query cached.
  */
 export function useAiThemes(args: UseAiThemesArgs) {
@@ -130,13 +147,22 @@ export function useAiThemes(args: UseAiThemesArgs) {
   const queryKey = buildQueryKey(args);
   const enabled = args.enabled ?? true;
 
+  // Daily-refresh policy (2026-04-30): the AI theme analyzer is regenerated
+  // ONCE per day at 21:00 AST by a pg_cron pre-warm. We mirror that on the
+  // client so React Query never re-invokes the Edge Function within the
+  // window — page loads always serve the cached result. Manual `refresh()`
+  // is the only intra-day path to a fresh LLM run.
+  const dailyStaleMs = msUntilNext9pmRiyadh();
+
   const query = useQuery<ThemesResponse, Error>({
     queryKey,
     queryFn: () => invokeThemes(args, { forceRefresh: false }),
     enabled: enabled && (args.scope === 'personal' || Boolean(args.projectKey)),
-    staleTime: 5 * 60 * 1000,       // 5 min — server TTL is 10 min
-    gcTime: 15 * 60 * 1000,         // 15 min — let it hang around a bit after tab change
-    refetchOnWindowFocus: false,    // This is a theme analysis, not a live feed
+    staleTime: dailyStaleMs,
+    gcTime: dailyStaleMs + 60 * 60 * 1000, // keep an hour past the boundary
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
+    refetchOnReconnect: false,
     retry: (failureCount, err) => {
       // Never retry on rate limit or credits — they won't resolve quickly.
       const msg = err?.message ?? '';
