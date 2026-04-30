@@ -165,8 +165,12 @@ export function UnifiedSidebar({
           // switching workspaces. 56px matches Jira and fits the 28px badge
           // with 14px padding either side.
           width: expanded ? '240px' : '56px',
-          background: 'var(--surface-1)',
-          borderRight: '1px solid var(--divider)',
+          // Canonical chrome token — resolves to #F8FAFC (light) / #22272B (dark, ADS surface).
+          // Was `var(--surface-1)` raw (invalid CSS — HSL triple without hsl() wrapper),
+          // which broke the elevation hierarchy on /for-you and program/project shells
+          // (sidebar over-elevated, header collapsed into canvas). 2026-04-30 fix.
+          background: 'var(--cp-bg-sidebar-hdr)',
+          borderRight: '1px solid var(--cp-bd)',
         }}
       >
         {/* V10 Header with collapse toggle */}
