@@ -172,6 +172,33 @@ export function CatalystTable<T>({
     setVisibleCount(pageSize);
   }, [data.length, pageSize]);
 
+  // Track horizontal scroll position to toggle right-edge fade affordance
+  // (only relevant at narrow viewports where columns overflow)
+  useEffect(() => {
+    if (!isNarrow) {
+      setShowEdgeFade(false);
+      return;
+    }
+    const el = scrollRef.current;
+    if (!el) return;
+
+    const update = () => {
+      const overflow = el.scrollWidth - el.clientWidth;
+      const atEnd = el.scrollLeft >= overflow - 2;
+      setShowEdgeFade(overflow > 4 && !atEnd);
+    };
+
+    update();
+    el.addEventListener('scroll', update, { passive: true });
+    const ro = new ResizeObserver(update);
+    ro.observe(el);
+
+    return () => {
+      el.removeEventListener('scroll', update);
+      ro.disconnect();
+    };
+  }, [isNarrow, visibleCount, containerWidth]);
+
   // Calculate grid template
   // Fixed columns use their minWidth, canGrow column uses remaining space
   const gridTemplate = useMemo(() => {
