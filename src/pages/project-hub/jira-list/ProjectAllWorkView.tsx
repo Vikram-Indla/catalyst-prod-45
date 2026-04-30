@@ -18,7 +18,7 @@
  *    Behaviour unchanged — the hook encodes the exact prior semantics.
  */
 import React, { lazy, Suspense, useState, useCallback, useRef, useEffect } from 'react';
-import { token } from '@atlaskit/tokens';
+// (token import removed — switched to var(--cp-*) for proper dark-mode flip)
 import { WorkListPanel } from './components/WorkListPanel';
 import { useProjectAllWorkItems } from '@/hooks/useProjectListItems';
 import { useItemSelection } from '@/hooks/useItemSelection';
