@@ -754,42 +754,45 @@ const drawerCSS = `
   background: #dc2626;
 }
 
-/* ═══ ECLIPSE DARK MODE — DARK MODE ═══ */
+/* ═══ DARK MODE — ADS tokens (was inline solid hex palette) ═══
+   Per platform guardrail: use --ds-* tokens with sensible fallbacks.
+   Brand blue (#2563eb) and danger red (#ef4444) stay as-is — they
+   are intentional brand accents in both modes. */
 .dark .um-drawer {
-  background: #1A1A1A !important;
+  background: var(--ds-surface-overlay, #1D2125) !important;
   box-shadow: -12px 0 40px rgba(0,0,0,0.5) !important;
 }
 .dark .um-drawer .um-drawer-header {
-  border-color: #2E2E2E !important;
+  border-color: var(--ds-border, #38414A) !important;
 }
 .dark .um-drawer .um-drawer-header h2 {
-  color: #EDEDED !important;
+  color: var(--ds-text, #B6C2CF) !important;
 }
 .dark .um-form-group label {
-  color: #A1A1A1 !important;
+  color: var(--ds-text-subtle, #9FADBC) !important;
 }
 .dark .um-form-group input,
 .dark .um-form-group select {
-  background: #0A0A0A !important;
-  color: #EDEDED !important;
-  border-color: #2E2E2E !important;
+  background: var(--ds-surface-sunken, #161A1D) !important;
+  color: var(--ds-text, #B6C2CF) !important;
+  border-color: var(--ds-border, #38414A) !important;
 }
 .dark .um-form-group input:focus,
 .dark .um-form-group select:focus {
-  border-color: #2563eb !important;
-  box-shadow: 0 0 0 3px rgba(37,99,235,0.15) !important;
+  border-color: var(--ds-border-focused, #579DFF) !important;
+  box-shadow: 0 0 0 3px rgba(87,157,255,0.20) !important;
 }
 .dark .um-form-group input:disabled {
-  background: #1A1A1A !important;
-  color: #878787 !important;
+  background: var(--ds-background-disabled, #1D2125) !important;
+  color: var(--ds-text-disabled, #5C6F82) !important;
 }
 .dark .um-drawer .um-btn {
-  background: #0A0A0A !important;
-  color: #A1A1A1 !important;
-  border-color: #2E2E2E !important;
+  background: var(--ds-surface-sunken, #161A1D) !important;
+  color: var(--ds-text-subtle, #9FADBC) !important;
+  border-color: var(--ds-border, #38414A) !important;
 }
 .dark .um-drawer .um-btn:hover {
-  border-color: #2563eb !important;
-  color: #60A5FA !important;
+  border-color: var(--ds-border-focused, #579DFF) !important;
+  color: var(--ds-text-information, #85B8FF) !important;
 }
 `;
