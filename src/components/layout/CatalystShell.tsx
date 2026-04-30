@@ -683,6 +683,19 @@ function CatalystShellContent() {
           </div>
         </main>
       </div>
+
+      {/* Loop 2 (2026-04-30) — Mobile / tablet off-canvas drawer.
+          Renders the SAME sidebar node the desktop rail would render,
+          but inside a portal-mounted left drawer. Inactive at ≥1024px. */}
+      {isNarrow && (
+        <GlobalMobileDrawer
+          open={mobileDrawerOpen}
+          onClose={() => setMobileDrawerOpen(false)}
+          returnFocusRef={mobileMenuTriggerRef}
+        >
+          <Suspense fallback={null}>{renderSidebar()}</Suspense>
+        </GlobalMobileDrawer>
+      )}
     </div>
   );
 }
