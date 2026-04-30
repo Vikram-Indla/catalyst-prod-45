@@ -1,6 +1,6 @@
 import { useState, useMemo, useEffect, lazy, Suspense } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { Plus, FolderKanban, FolderOpen, Star } from 'lucide-react';
+import { Plus, FolderKanban, FolderOpen, Star, RefreshCw } from 'lucide-react';
 import type { ViewMode, ProjectFilters, SortColumn, SortDirection } from '@/types/projecthub';
 import { DEFAULT_FILTERS } from '@/types/projecthub';
 import {
