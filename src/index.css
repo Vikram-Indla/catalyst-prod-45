@@ -3429,8 +3429,8 @@ input[type="range"]::-moz-range-thumb {
   --cp-text-link: #60A5FA;
   --cp-text-muted: #878787;
   --cp-text-primary: #EDEDED;
-  --cp-text-secondary: #A1A1A1;
-  --cp-text-tertiary: #878787;
+  --cp-text-secondary: #C9CCD0;
+  --cp-text-tertiary: #9FA2A6;
   --cp-warn: #FBBF24;
   --cp-warn-bg: rgba(251,191,36,0.10);
   --divider: #292929;
@@ -5954,6 +5954,48 @@ html[data-presentation="true"] [data-testid="project-dashboard-shell"] [role="re
   text-transform: none !important;
   letter-spacing: 0 !important;
   font-weight: 600 !important;
+}
+
+/* ────────────────────────────────────────────────────────────────────────
+   Dark-mode lozenge color softening (2026-04-30)
+   ────────────────────────────────────────────────────────────────────────
+   Atlaskit Lozenge appearance="success"/"inprogress"/"removed" renders
+   bright saturated pills (green #1F845A, yellow #FFAB00, red #C9372C) that
+   read as "screaming" against ADS dark canvas (#1D2125). Soften to the
+   muted Pale Lozenge palette per status-badge-platform-guardrail-v12-spec.
+   Targets the inner pill <span> rendered by @atlaskit/lozenge.
+   ────────────────────────────────────────────────────────────────────── */
+.dark [data-cp-lozenge-jira-parity] span[class^="css-"] {
+  /* Default success (green) → muted Pale Green */
+}
+.dark [data-cp-lozenge-jira-parity] span[style*="background-color: rgb(31, 132, 90)"],
+.dark [data-cp-lozenge-jira-parity] span[style*="background: rgb(31, 132, 90)"],
+.dark [data-cp-lozenge-jira-parity] span[style*="background-color: rgb(34, 161, 110)"],
+.dark [data-cp-lozenge-jira-parity] span[style*="background-color: rgb(20, 102, 65)"] {
+  background-color: var(--cp-lozenge-green-bg, #1B7F37) !important;
+  color: var(--cp-lozenge-green-text, #FFFFFF) !important;
+}
+.dark [data-cp-lozenge-jira-parity] span[style*="background-color: rgb(255, 171, 0)"],
+.dark [data-cp-lozenge-jira-parity] span[style*="background-color: rgb(244, 191, 79)"],
+.dark [data-cp-lozenge-jira-parity] span[style*="background-color: rgb(176, 95, 0)"] {
+  background-color: #7F4F01 !important;
+  color: #FFE2A8 !important;
+}
+.dark [data-cp-lozenge-jira-parity] span[style*="background-color: rgb(201, 55, 44)"],
+.dark [data-cp-lozenge-jira-parity] span[style*="background-color: rgb(174, 47, 36)"] {
+  background-color: #8E1A12 !important;
+  color: #FFD4D0 !important;
+}
+.dark [data-cp-lozenge-jira-parity] span[style*="background-color: rgb(9, 50, 108)"],
+.dark [data-cp-lozenge-jira-parity] span[style*="background-color: rgb(12, 102, 228)"],
+.dark [data-cp-lozenge-jira-parity] span[style*="background-color: rgb(76, 154, 255)"] {
+  background-color: var(--cp-lozenge-blue-bg, #0C66E4) !important;
+  color: var(--cp-lozenge-blue-text, #FFFFFF) !important;
+}
+.dark [data-cp-lozenge-jira-parity] span[style*="background-color: rgb(221, 222, 225)"],
+.dark [data-cp-lozenge-jira-parity] span[style*="background-color: rgb(244, 245, 247)"] {
+  background-color: var(--cp-lozenge-grey-bg, #292929) !important;
+  color: var(--cp-lozenge-grey-text, #D4D4D4) !important;
 }
 
 /* ────────────────────────────────────────────────────────────────────────
