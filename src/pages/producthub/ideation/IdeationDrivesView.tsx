@@ -78,7 +78,7 @@ export default function IdeationDrivesView() {
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px' }}>
         <div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '4px' }}>
-            <h2 style={{ fontSize: '22px', fontWeight: 800, color: isDark ? '#EDEDED' : '#0F172A', letterSpacing: '-0.5px', margin: 0, fontFamily: 'var(--cp-font-heading)' }}>Ideas Themes</h2>
+            <h2 style={{ fontSize: '22px', fontWeight: 800, color: 'var(--cp-text-primary, #0F172A)', letterSpacing: '-0.5px', margin: 0, fontFamily: 'var(--cp-font-heading)' }}>Ideas Themes</h2>
             <span style={{
               background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: '12px',
               padding: '1px 7px', fontSize: '11px', fontWeight: 600,
@@ -129,17 +129,17 @@ export default function IdeationDrivesView() {
                 width: 36, height: 50, borderRadius: 8,
                 background: isDark ? 'var(--cp-bg-surface, #242528)' : '#F1F5F9', border: isDark ? '1px solid #2E2E2E' : '1px solid #E2E8F0',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
-                flexShrink: 0, color: isDark ? '#A1A1A1' : '#475569',
+                flexShrink: 0, color: 'var(--cp-text-secondary, #475569)',
               }}>
                 <IconComponent size={18} strokeWidth={2} />
               </div>
-              <span style={{ fontSize: '16px', fontWeight: 700, color: isDark ? '#EDEDED' : '#0F172A', flex: 1 }}>{drive.title}</span>
+              <span style={{ fontSize: '16px', fontWeight: 700, color: 'var(--cp-text-primary, #0F172A)', flex: 1 }}>{drive.title}</span>
               {/* V12 3-color lozenge for status */}
               <span style={{
                 display: 'inline-flex', alignItems: 'center',
                 background: isActive
                   ? (isDark ? 'rgba(59,130,246,0.10)' : '#DEEBFF')
-                  : (isDark ? '#2E2E2E' : '#DFE1E6'),
+                  : ('var(--cp-border, #DFE1E6)'),
                 color: isActive
                   ? (isDark ? '#7DB8FC' : '#0747A6')
                   : (isDark ? '#A1A1A1' : '#253858'),

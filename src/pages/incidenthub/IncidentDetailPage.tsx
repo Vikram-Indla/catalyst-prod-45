@@ -82,7 +82,7 @@ export default function IncidentDetailPage() {
   if (!incident) {
     return (
       <div className="flex-1 flex items-center justify-center" style={{ backgroundColor: isDark ? 'var(--cp-bg-page, #1F1F21)' : '#FFFFFF' }}>
-        <p style={{ fontFamily: 'var(--cp-font-body)', color: isDark ? '#878787' : '#94A3B8' }}>Incident not found</p>
+        <p style={{ fontFamily: 'var(--cp-font-body)', color: 'var(--cp-text-muted, #94A3B8)' }}>Incident not found</p>
       </div>
     );
   }
@@ -98,10 +98,10 @@ export default function IncidentDetailPage() {
         height: 50,
         borderBottom: isDark ? '0.75px solid #2E2E2E' : '0.75px solid rgba(15,23,42,0.06)',
       }}>
-        <div className="flex items-center gap-1" style={{ fontFamily: 'var(--cp-font-body)', fontSize: 12, color: isDark ? '#878787' : '#64748B' }}>
+        <div className="flex items-center gap-1" style={{ fontFamily: 'var(--cp-font-body)', fontSize: 12, color: 'var(--cp-text-tertiary, #64748B)' }}>
           <span className="cursor-pointer hover:underline" onClick={() => navigate('/incident-hub')}>Incident List</span>
           <ChevronRight size={12} />
-          <span style={{ color: isDark ? '#EDEDED' : '#0F172A', fontWeight: 650 }}>{incident.incident_key || incident.jira_key || 'INC'}</span>
+          <span style={{ color: 'var(--cp-text-primary, #0F172A)', fontWeight: 650 }}>{incident.incident_key || incident.jira_key || 'INC'}</span>
         </div>
         <div className="flex items-center gap-2">
           <Button variant="ghost" size="sm" style={{ borderRadius: 6, fontSize: 12 }} onClick={() => setShowConvert(true)}>Convert</Button>
@@ -118,7 +118,7 @@ export default function IncidentDetailPage() {
             <svg width="20" height="20" viewBox="0 0 16 16" className="shrink-0 mt-0.5">
               <path fill="#FF5630" fillRule="evenodd" d="M4.78545267,10 L11.2145473,10 L10.5007848,8 L5.49921516,8 L4.78545267,10 Z M4,11 C3.44771525,11 3,11.4477153 3,12 L3,13 L13,13 L13,12 C13,11.4477153 12.5522847,11 12,11 L4,11 Z M5.8560964,7 L10.1439036,7 L8.94181993,3.63169838 C8.8409899,3.34916733 8.61864892,3.12682636 8.33611787,3.02599632 C7.81596508,2.84036355 7.24381284,3.1115456 7.05818007,3.63169838 L5.8560964,7 Z M2,0 L14,0 C15.1045695,-2.02906125e-16 16,0.8954305 16,2 L16,14 C16,15.1045695 15.1045695,16 14,16 L2,16 C0.8954305,16 1.3527075e-16,15.1045695 0,14 L0,2 C-1.3527075e-16,0.8954305 0.8954305,2.02906125e-16 2,0 Z"/>
             </svg>
-            <h1 style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 20, fontWeight: 700, color: isDark ? '#EDEDED' : '#0F172A', letterSpacing: '-0.02em' }}>
+            <h1 style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 20, fontWeight: 700, color: 'var(--cp-text-primary, #0F172A)', letterSpacing: '-0.02em' }}>
               {incident.title}
             </h1>
           </div>
@@ -128,12 +128,12 @@ export default function IncidentDetailPage() {
             <StatusLozenge status={incident.status} />
             <SeverityChip severity={incident.severity} />
             <PriorityChip priority={incident.priority || 'P4'} />
-            <span style={{ color: isDark ? '#878787' : '#CBD5E1' }}>&middot;</span>
+            <span style={{ color: 'var(--cp-text-muted, #CBD5E1)' }}>&middot;</span>
             <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 12, color: '#2563EB' }}>
               {incident.incident_key || incident.jira_key}
             </span>
-            <span style={{ color: isDark ? '#878787' : '#CBD5E1' }}>&middot;</span>
-            <span style={{ fontFamily: 'var(--cp-font-body)', fontSize: 12, color: isDark ? '#878787' : '#64748B' }}>
+            <span style={{ color: 'var(--cp-text-muted, #CBD5E1)' }}>&middot;</span>
+            <span style={{ fontFamily: 'var(--cp-font-body)', fontSize: 12, color: 'var(--cp-text-tertiary, #64748B)' }}>
               Opened {incident.created_at ? formatDistanceToNow(new Date(incident.created_at), { addSuffix: true }) : ''}
             </span>
           </div>
@@ -163,8 +163,8 @@ export default function IncidentDetailPage() {
 
           {/* Description */}
           <div className="mb-6">
-            <h3 style={{ fontFamily: 'var(--cp-font-body)', fontSize: 13, fontWeight: 700, color: isDark ? '#EDEDED' : '#0F172A', marginBottom: 8 }}>Description</h3>
-            <p style={{ fontFamily: 'var(--cp-font-body)', fontSize: 14, lineHeight: 1.75, color: isDark ? '#A1A1A1' : '#334155' }}>
+            <h3 style={{ fontFamily: 'var(--cp-font-body)', fontSize: 13, fontWeight: 700, color: 'var(--cp-text-primary, #0F172A)', marginBottom: 8 }}>Description</h3>
+            <p style={{ fontFamily: 'var(--cp-font-body)', fontSize: 14, lineHeight: 1.75, color: 'var(--cp-text-secondary, #334155)' }}>
               {incident.description || 'No description provided.'}
             </p>
           </div>
@@ -172,10 +172,10 @@ export default function IncidentDetailPage() {
           {/* Tags/Labels */}
           {incident.labels && Array.isArray(incident.labels) && incident.labels.length > 0 && (
             <div className="mb-6">
-              <h3 style={{ fontFamily: 'var(--cp-font-body)', fontSize: 13, fontWeight: 700, color: isDark ? '#EDEDED' : '#0F172A', marginBottom: 8 }}>Labels</h3>
+              <h3 style={{ fontFamily: 'var(--cp-font-body)', fontSize: 13, fontWeight: 700, color: 'var(--cp-text-primary, #0F172A)', marginBottom: 8 }}>Labels</h3>
               <div className="flex flex-wrap gap-1">
                 {(incident.labels as string[]).map((label: string) => (
-                  <span key={label} className="px-2 py-0.5" style={{ fontSize: 11, backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : '#F1F5F9', border: isDark ? '1px solid #2E2E2E' : '1px solid rgba(15,23,42,0.08)', borderRadius: 4, color: isDark ? '#A1A1A1' : '#475569' }}>{label}</span>
+                  <span key={label} className="px-2 py-0.5" style={{ fontSize: 11, backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : '#F1F5F9', border: isDark ? '1px solid #2E2E2E' : '1px solid rgba(15,23,42,0.08)', borderRadius: 4, color: 'var(--cp-text-secondary, #475569)' }}>{label}</span>
                 ))}
               </div>
             </div>
@@ -183,7 +183,7 @@ export default function IncidentDetailPage() {
 
           {/* Activity Section */}
           <div>
-            <h3 style={{ fontFamily: 'var(--cp-font-body)', fontSize: 13, fontWeight: 700, color: isDark ? '#EDEDED' : '#0F172A', marginBottom: 8 }}>Activity</h3>
+            <h3 style={{ fontFamily: 'var(--cp-font-body)', fontSize: 13, fontWeight: 700, color: 'var(--cp-text-primary, #0F172A)', marginBottom: 8 }}>Activity</h3>
             <div className="flex items-center gap-1 mb-4">
               {(['comments', 'history'] as const).map(tab => (
                 <button
@@ -194,7 +194,7 @@ export default function IncidentDetailPage() {
                   style={{
                     fontFamily: 'var(--cp-font-body)',
                     fontWeight: activeTab === tab ? 650 : 400,
-                    color: activeTab === tab ? '#2563EB' : (isDark ? '#878787' : '#64748B'),
+                    color: activeTab === tab ? '#2563EB' : ('var(--cp-text-tertiary, #64748B)'),
                     borderBottom: activeTab === tab ? '2px solid #2563EB' : '2px solid transparent',
                     borderRadius: 0,
                   }}
@@ -223,22 +223,22 @@ export default function IncidentDetailPage() {
                 </div>
                 {/* Comments List */}
                 {(!incident.comments || incident.comments.length === 0) && (
-                  <p style={{ fontFamily: 'var(--cp-font-body)', fontSize: 12, color: isDark ? '#878787' : '#94A3B8' }}>No comments yet. Be the first to comment.</p>
+                  <p style={{ fontFamily: 'var(--cp-font-body)', fontSize: 12, color: 'var(--cp-text-muted, #94A3B8)' }}>No comments yet. Be the first to comment.</p>
                 )}
                 {incident.comments?.map((c: any) => (
                   <div key={c.id} className="mb-3 pb-3" style={{ borderBottom: isDark ? '0.75px solid #2E2E2E' : '0.75px solid rgba(15,23,42,0.06)' }}>
                     <div className="flex items-center gap-2 mb-1">
-                      <div className="rounded-full flex items-center justify-center" style={{ width: 24, height: 24, backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : '#E2E8F0', fontSize: 10, fontWeight: 650, color: isDark ? '#A1A1A1' : '#475569' }}>
+                      <div className="rounded-full flex items-center justify-center" style={{ width: 24, height: 24, backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : '#E2E8F0', fontSize: 10, fontWeight: 650, color: 'var(--cp-text-secondary, #475569)' }}>
                         {(c.author?.full_name || c.author_name || 'U').charAt(0).toUpperCase()}
                       </div>
-                      <span style={{ fontFamily: 'var(--cp-font-body)', fontSize: 12, fontWeight: 650, color: isDark ? '#EDEDED' : '#0F172A' }}>
+                      <span style={{ fontFamily: 'var(--cp-font-body)', fontSize: 12, fontWeight: 650, color: 'var(--cp-text-primary, #0F172A)' }}>
                         {c.author?.full_name || c.author_name || 'User'}
                       </span>
-                      <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 11, color: isDark ? '#878787' : '#94A3B8' }}>
+                      <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 11, color: 'var(--cp-text-muted, #94A3B8)' }}>
                         {c.created_at ? formatDistanceToNow(new Date(c.created_at), { addSuffix: true }) : ''}
                       </span>
                     </div>
-                    <p style={{ fontFamily: 'var(--cp-font-body)', fontSize: 13, color: isDark ? '#A1A1A1' : '#334155', lineHeight: 1.6 }}>{c.content}</p>
+                    <p style={{ fontFamily: 'var(--cp-font-body)', fontSize: 13, color: 'var(--cp-text-secondary, #334155)', lineHeight: 1.6 }}>{c.content}</p>
                   </div>
                 ))}
               </div>
@@ -247,21 +247,21 @@ export default function IncidentDetailPage() {
             {activeTab === 'history' && (
               <div>
                 {(!incident.history || incident.history.length === 0) && (
-                  <p style={{ fontFamily: 'var(--cp-font-body)', fontSize: 12, color: isDark ? '#878787' : '#94A3B8' }}>No history entries.</p>
+                  <p style={{ fontFamily: 'var(--cp-font-body)', fontSize: 12, color: 'var(--cp-text-muted, #94A3B8)' }}>No history entries.</p>
                 )}
                 {incident.history?.map((h: any) => (
                   <div key={h.id} className="flex items-start gap-3 mb-3 pb-3" style={{ borderBottom: isDark ? '0.75px solid #2E2E2E' : '0.75px solid rgba(15,23,42,0.06)' }}>
                     <div className="shrink-0 mt-1" style={{ width: 10, height: 10, borderRadius: '50%', backgroundColor: '#2563EB', border: isDark ? '2px solid #0A0A0A' : '2px solid #FFFFFF', boxShadow: '0 0 0 1px #2563EB' }} />
                     <div>
-                      <div style={{ fontFamily: 'var(--cp-font-body)', fontSize: 12, fontWeight: 650, color: isDark ? '#EDEDED' : '#0F172A' }}>
+                      <div style={{ fontFamily: 'var(--cp-font-body)', fontSize: 12, fontWeight: 650, color: 'var(--cp-text-primary, #0F172A)' }}>
                         {h.field_name} changed
                       </div>
                       <div className="flex items-center gap-1 mt-0.5">
-                        {h.old_value && (h.field_name === 'status' ? <StatusLozenge status={h.old_value} /> : <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 11, color: isDark ? '#878787' : '#94A3B8' }}>{h.old_value}</span>)}
-                        <span style={{ color: isDark ? '#878787' : '#94A3B8', fontSize: 11 }}>&rarr;</span>
-                        {h.new_value && (h.field_name === 'status' ? <StatusLozenge status={h.new_value} /> : <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 11, color: isDark ? '#EDEDED' : '#0F172A' }}>{h.new_value}</span>)}
+                        {h.old_value && (h.field_name === 'status' ? <StatusLozenge status={h.old_value} /> : <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 11, color: 'var(--cp-text-muted, #94A3B8)' }}>{h.old_value}</span>)}
+                        <span style={{ color: 'var(--cp-text-muted, #94A3B8)', fontSize: 11 }}>&rarr;</span>
+                        {h.new_value && (h.field_name === 'status' ? <StatusLozenge status={h.new_value} /> : <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 11, color: 'var(--cp-text-primary, #0F172A)' }}>{h.new_value}</span>)}
                       </div>
-                      <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 11, color: isDark ? '#878787' : '#94A3B8' }}>
+                      <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 11, color: 'var(--cp-text-muted, #94A3B8)' }}>
                         {h.changed_at ? formatDistanceToNow(new Date(h.changed_at), { addSuffix: true }) : ''}
                       </span>
                     </div>
@@ -292,8 +292,8 @@ export default function IncidentDetailPage() {
               { label: 'Resolution', value: incident.resolution || '\u2014' },
             ].map(row => (
               <div key={row.label} className="flex items-center gap-2">
-                <span style={{ fontFamily: 'var(--cp-font-body)', fontSize: 11, color: isDark ? '#878787' : '#64748B', width: 80, flexShrink: 0 }}>{row.label}</span>
-                <div style={{ fontFamily: 'var(--cp-font-body)', fontSize: 12, color: isDark ? '#EDEDED' : '#0F172A' }}>
+                <span style={{ fontFamily: 'var(--cp-font-body)', fontSize: 11, color: 'var(--cp-text-tertiary, #64748B)', width: 80, flexShrink: 0 }}>{row.label}</span>
+                <div style={{ fontFamily: 'var(--cp-font-body)', fontSize: 12, color: 'var(--cp-text-primary, #0F172A)' }}>
                   {typeof row.value === 'string' ? row.value : row.value}
                 </div>
               </div>
@@ -303,14 +303,14 @@ export default function IncidentDetailPage() {
           {/* Custom Fields */}
           <div className="mt-4 pt-4" style={{ borderTop: isDark ? '0.75px solid #2E2E2E' : '0.75px solid rgba(15,23,42,0.06)' }}>
             <div className="flex items-center gap-2 mb-2">
-              <span style={{ fontFamily: 'var(--cp-font-body)', fontSize: 11, color: isDark ? '#878787' : '#64748B', width: 80 }}>Created</span>
-              <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 12, color: isDark ? '#A1A1A1' : '#64748B' }}>
+              <span style={{ fontFamily: 'var(--cp-font-body)', fontSize: 11, color: 'var(--cp-text-tertiary, #64748B)', width: 80 }}>Created</span>
+              <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 12, color: 'var(--cp-text-tertiary, #64748B)' }}>
                 {incident.created_at ? new Date(incident.created_at).toLocaleString() : '\u2014'}
               </span>
             </div>
             <div className="flex items-center gap-2 mb-2">
-              <span style={{ fontFamily: 'var(--cp-font-body)', fontSize: 11, color: isDark ? '#878787' : '#64748B', width: 80 }}>Updated</span>
-              <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 12, color: isDark ? '#A1A1A1' : '#64748B' }}>
+              <span style={{ fontFamily: 'var(--cp-font-body)', fontSize: 11, color: 'var(--cp-text-tertiary, #64748B)', width: 80 }}>Updated</span>
+              <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 12, color: 'var(--cp-text-tertiary, #64748B)' }}>
                 {incident.updated_at ? new Date(incident.updated_at).toLocaleString() : '\u2014'}
               </span>
             </div>

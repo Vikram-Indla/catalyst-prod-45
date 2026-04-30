@@ -85,7 +85,7 @@ export function RoadmapToolbar({ zoom, onZoomChange, groupBy, onGroupByChange, v
           disabled={zoomScale <= MIN_SCALE}
           className="h-[30px] w-[30px] inline-flex items-center justify-center focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-blue-500 disabled:opacity-30 disabled:cursor-not-allowed"
           style={{ border: `1.5px solid ${surface.border}`, borderRadius: 6, transition: 'all 0.15s ease' }}
-          onMouseEnter={e => { e.currentTarget.style.background = isDark ? '#292929' : surface.page; e.currentTarget.style.borderColor = isDark ? '#454545' : '#CBD5E1'; }}
+          onMouseEnter={e => { e.currentTarget.style.background = isDark ? '#292929' : surface.page; e.currentTarget.style.borderColor = 'var(--cp-border-strong, #CBD5E1)'; }}
           onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.borderColor = surface.border; }}
         >
           <ZoomOut className="w-3.5 h-3.5" style={{ color: ink[2] }} />
@@ -95,7 +95,7 @@ export function RoadmapToolbar({ zoom, onZoomChange, groupBy, onGroupByChange, v
           disabled={zoomScale >= MAX_SCALE}
           className="h-[30px] w-[30px] inline-flex items-center justify-center focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-blue-500 disabled:opacity-30 disabled:cursor-not-allowed"
           style={{ border: `1.5px solid ${surface.border}`, borderRadius: 6, transition: 'all 0.15s ease' }}
-          onMouseEnter={e => { e.currentTarget.style.background = isDark ? '#292929' : surface.page; e.currentTarget.style.borderColor = isDark ? '#454545' : '#CBD5E1'; }}
+          onMouseEnter={e => { e.currentTarget.style.background = isDark ? '#292929' : surface.page; e.currentTarget.style.borderColor = 'var(--cp-border-strong, #CBD5E1)'; }}
           onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.borderColor = surface.border; }}
         >
           <ZoomIn className="w-3.5 h-3.5" style={{ color: ink[2] }} />

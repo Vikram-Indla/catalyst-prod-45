@@ -35,7 +35,7 @@ export function DetailPanel({ item, onClose, onSelectItem }: {
           </div>
           <div className="r3-panel-pills">
             <StatusPill label={item.status_label} color={item.status_color} bg={item.status_bg} dot={item.status_dot} />
-            <span style={{ fontSize: 10.5, fontWeight: 600, padding: '2px 8px', borderRadius: 4, background: isDark ? 'var(--cp-bg-surface, #242528)' : '#F1F5F9', color: isDark ? '#A1A1A1' : '#334155' }}>{item.priority}</span>
+            <span style={{ fontSize: 10.5, fontWeight: 600, padding: '2px 8px', borderRadius: 4, background: isDark ? 'var(--cp-bg-surface, #242528)' : '#F1F5F9', color: 'var(--cp-text-secondary, #334155)' }}>{item.priority}</span>
             <span className="r3-type-badge">{getJiraIcon(item.item_type)} {item.item_type}</span>
             <ProjTag projectKey={item.project_key} />
             {item.role_on_item === 'Contributor' && (
@@ -65,7 +65,7 @@ export function DetailPanel({ item, onClose, onSelectItem }: {
             <div className="r3-meta-cell">
               <div className="r3-meta-label">Assigned</div>
               <div className="r3-meta-value">{formatRelativeDate(item.created_at)}</div>
-              <div style={{ fontSize: 11, color: isDark ? '#A1A1A1' : '#334155' }}>{formatDate(item.created_at)}</div>
+              <div style={{ fontSize: 11, color: 'var(--cp-text-secondary, #334155)' }}>{formatDate(item.created_at)}</div>
             </div>
             <div className="r3-meta-cell">
               <div className="r3-meta-label">Days Sitting</div>
@@ -101,7 +101,7 @@ export function DetailPanel({ item, onClose, onSelectItem }: {
               <div className="r3-hier-item" style={{ padding: '6px 8px' }}>
                 {getJiraIcon('Epic')}
                 <span className="r3-card-key r3-card-key--sm">{item.parent_key}</span>
-                <span style={{ fontSize: 12, color: isDark ? '#A1A1A1' : '#334155', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.parent_title}</span>
+                <span style={{ fontSize: 12, color: 'var(--cp-text-secondary, #334155)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.parent_title}</span>
               </div>
               <div className="r3-hier-connector">{'\u21B3'}</div>
               <div className="r3-hier-item r3-hier-item--current">

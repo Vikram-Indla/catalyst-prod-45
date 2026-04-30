@@ -64,7 +64,7 @@ export function ProjectTableRow({ project, isStarred, onToggleStar, onContextMen
           >
             {project.key}
           </div>
-          <span className="truncate" style={{ fontSize: 13, fontWeight: 500, color: isDark ? '#EDEDED' : '#0F172A' }}>
+          <span className="truncate" style={{ fontSize: 13, fontWeight: 500, color: 'var(--cp-text-primary, #0F172A)' }}>
             {project.name}
           </span>
           <span
@@ -72,7 +72,7 @@ export function ProjectTableRow({ project, isStarred, onToggleStar, onContextMen
               fontSize: 11,
               fontFamily: 'var(--cp-font-mono)',
               fontWeight: 500,
-              color: isDark ? '#878787' : '#6B778C',
+              color: 'var(--cp-text-tertiary, #6B778C)',
             }}
           >
             {project.key}
@@ -111,7 +111,7 @@ export function ProjectTableRow({ project, isStarred, onToggleStar, onContextMen
 
       {/* Updated */}
       <td style={{ padding: '0 12px' }}>
-        <span style={{ fontSize: 12, color: isDark ? '#878787' : '#6B778C' }}>
+        <span style={{ fontSize: 12, color: 'var(--cp-text-tertiary, #6B778C)' }}>
           {formatRelativeTime(project.updated_at)}
         </span>
       </td>

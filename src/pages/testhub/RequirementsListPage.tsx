@@ -159,8 +159,8 @@ export default function RequirementsListPage() {
         return (
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16, marginBottom: 24 }}>
             <div style={{ backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFF', borderRadius: 12, padding: 20, border: isDark ? '1px solid #2E2E2E' : '1px solid #E2E8F0' }}>
-              <p style={{ fontSize: 12, color: isDark ? '#878787' : '#64748B', margin: 0, textTransform: 'uppercase', fontWeight: 600 }}>Total Requirements</p>
-              <p style={{ fontSize: 28, fontWeight: 700, color: isDark ? '#EDEDED' : '#0F172A', margin: '8px 0 0' }}>{requirements.length}</p>
+              <p style={{ fontSize: 12, color: 'var(--cp-text-tertiary, #64748B)', margin: 0, textTransform: 'uppercase', fontWeight: 600 }}>Total Requirements</p>
+              <p style={{ fontSize: 28, fontWeight: 700, color: 'var(--cp-text-primary, #0F172A)', margin: '8px 0 0' }}>{requirements.length}</p>
             </div>
             <div style={{ backgroundColor: '#F0FDF4', borderRadius: 12, padding: 20, border: '1px solid #BBF7D0' }}>
               <p style={{ fontSize: 12, color: '#16A34A', margin: 0, textTransform: 'uppercase', fontWeight: 600 }}>Fully Covered</p>
@@ -219,7 +219,7 @@ export default function RequirementsListPage() {
         </Select>
         {hasActiveFilters && (
           <button onClick={clearFilters}
-            style={{ display: 'flex', alignItems: 'center', gap: 6, height: 44, padding: '0 16px', border: isDark ? '1.5px solid #2E2E2E' : '1.5px solid #E2E8F0', borderRadius: 12, backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFF', color: isDark ? '#A1A1A1' : '#64748B', fontSize: 14, cursor: 'pointer' }}>
+            style={{ display: 'flex', alignItems: 'center', gap: 6, height: 44, padding: '0 16px', border: isDark ? '1.5px solid #2E2E2E' : '1.5px solid #E2E8F0', borderRadius: 12, backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFF', color: 'var(--cp-text-tertiary, #64748B)', fontSize: 14, cursor: 'pointer' }}>
             <X size={16} /> Clear
           </button>
         )}
@@ -236,9 +236,9 @@ export default function RequirementsListPage() {
         </div>
       ) : filteredRequirements.length === 0 ? (
         <div style={{ backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF', borderRadius: 12, padding: 60, textAlign: 'center', border: isDark ? '1px solid #2E2E2E' : '1px solid #E2E8F0' }}>
-          <FileCheck size={48} style={{ color: isDark ? '#878787' : '#CBD5E1', marginBottom: 16 }} />
-          <p style={{ fontSize: 16, color: isDark ? '#A1A1A1' : '#64748B', margin: 0 }}>No requirements found</p>
-          <p style={{ fontSize: 14, color: isDark ? '#878787' : '#94A3B8', margin: '8px 0 0' }}>Add requirements to track test coverage</p>
+          <FileCheck size={48} style={{ color: 'var(--cp-text-muted, #CBD5E1)', marginBottom: 16 }} />
+          <p style={{ fontSize: 16, color: 'var(--cp-text-tertiary, #64748B)', margin: 0 }}>No requirements found</p>
+          <p style={{ fontSize: 14, color: 'var(--cp-text-muted, #94A3B8)', margin: '8px 0 0' }}>Add requirements to track test coverage</p>
         </div>
       ) : (
         <div style={{ backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF', borderRadius: 8, border: isDark ? '1px solid #2E2E2E' : '1px solid #E2E8F0', overflow: 'hidden' }}>
@@ -248,7 +248,7 @@ export default function RequirementsListPage() {
                 {['KEY', 'TITLE', 'TYPE', 'PRIORITY', 'STATUS', 'LINKED TESTS'].map(h => (
                   <th key={h} style={{
                     height: 50, padding: '8px 12px', textAlign: 'left',
-                    fontSize: 10.5, fontWeight: 600, color: isDark ? '#878787' : '#64748B', textTransform: 'uppercase',
+                    fontSize: 10.5, fontWeight: 600, color: 'var(--cp-text-tertiary, #64748B)', textTransform: 'uppercase',
                     borderBottom: isDark ? '0.75px solid #2E2E2E' : '0.75px solid #E2E8F0', backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : '#F8FAFC',
                   }}>{h}</th>
                 ))}
@@ -267,7 +267,7 @@ export default function RequirementsListPage() {
                     onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.backgroundColor = isDark ? '#1F1F1F' : 'rgba(0,0,0,0.04)'; }}
                     onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.backgroundColor = 'transparent'; }}>
                     <td style={{ padding: '8px 12px', fontSize: 13, fontWeight: 600, color: '#2563EB' }}>{req.req_key}</td>
-                    <td style={{ padding: '8px 12px', fontSize: 13, color: isDark ? '#EDEDED' : '#0F172A', maxWidth: 400, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{req.title}</td>
+                    <td style={{ padding: '8px 12px', fontSize: 13, color: 'var(--cp-text-primary, #0F172A)', maxWidth: 400, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{req.title}</td>
                     <td style={{ padding: '8px 12px' }}>
                       <span style={{ fontSize: 11, fontWeight: 500, color: type.color, backgroundColor: type.bg, padding: '2px 8px', borderRadius: 4 }}>{type.label}</span>
                     </td>

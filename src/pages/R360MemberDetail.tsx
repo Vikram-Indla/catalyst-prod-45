@@ -372,14 +372,14 @@ export default function R360MemberDetail() {
                 {/* Back — text button */}
                 <button
                   onClick={() => navigate('/project-hub/resources')}
-                  style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', background: 'transparent', border: 'none', color: isDark ? '#878787' : '#64748B', fontSize: '13px', fontWeight: 500, cursor: 'pointer', padding: '4px 8px' }}
+                  style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', background: 'transparent', border: 'none', color: 'var(--cp-text-tertiary, #64748B)', fontSize: '13px', fontWeight: 500, cursor: 'pointer', padding: '4px 8px' }}
                   onMouseEnter={e => { e.currentTarget.style.textDecoration = 'underline'; }}
                   onMouseLeave={e => { e.currentTarget.style.textDecoration = 'none'; }}
                 >
                   <ChevronLeft size={14} /> Back
                 </button>
                 {/* Quarter label — computed from current date */}
-                <button style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', background: isDark ? 'var(--cp-bg-surface, #242528)' : 'rgba(15,23,42,0.05)', border: isDark ? '1px solid #2E2E2E' : 'none', borderRadius: '6px', color: isDark ? '#EDEDED' : '#0F172A', fontSize: '13px', fontWeight: 500, cursor: 'pointer', padding: '5px 12px' }}>
+                <button style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', background: isDark ? 'var(--cp-bg-surface, #242528)' : 'rgba(15,23,42,0.05)', border: isDark ? '1px solid #2E2E2E' : 'none', borderRadius: '6px', color: 'var(--cp-text-primary, #0F172A)', fontSize: '13px', fontWeight: 500, cursor: 'pointer', padding: '5px 12px' }}>
                   <Calendar size={13} /> {`Q${Math.ceil((new Date().getMonth() + 1) / 3)}-${new Date().getFullYear()}`}
                 </button>
                 {/* Intelligence — brand blue standard */}
@@ -418,12 +418,12 @@ export default function R360MemberDetail() {
               <div className="r3-empty">No work items assigned in this period.</div>
               {workItems.length > 0 && lastActivityDate && (
                 <div style={{ margin: '16px auto', maxWidth: 560, padding: '16px 24px', borderRadius: '8px', border: '1px solid rgba(15,23,42,0.12)', background: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF', textAlign: 'center' }}>
-                  <div style={{ fontSize: '13px', color: isDark ? '#A1A1A1' : '#334155', marginBottom: '10px' }}>
-                    <strong style={{ color: isDark ? '#EDEDED' : '#0F172A' }}>{allOpenItems.length} open item{allOpenItems.length !== 1 ? 's' : ''}</strong> across all time
+                  <div style={{ fontSize: '13px', color: 'var(--cp-text-secondary, #334155)', marginBottom: '10px' }}>
+                    <strong style={{ color: 'var(--cp-text-primary, #0F172A)' }}>{allOpenItems.length} open item{allOpenItems.length !== 1 ? 's' : ''}</strong> across all time
                     {allStaleItems.length > 0 && <span> · {allStaleItems.length} stale</span>}
                   </div>
-                  <div style={{ fontSize: '12.5px', color: isDark ? '#878787' : '#64748B', marginBottom: '12px' }}>
-                    Last activity: <strong style={{ color: isDark ? '#A1A1A1' : '#334155' }}>{lastActivityDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</strong>
+                  <div style={{ fontSize: '12.5px', color: 'var(--cp-text-tertiary, #64748B)', marginBottom: '12px' }}>
+                    Last activity: <strong style={{ color: 'var(--cp-text-secondary, #334155)' }}>{lastActivityDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</strong>
                   </div>
                   <button
                     onClick={jumpToLastActivity}

@@ -257,7 +257,7 @@ export function GoalsTreeView({
   const headerText = isDark ? DK.t3 : 'var(--fg-3)';
   const containerBg = isDark ? 'transparent' : 'var(--bg-app)';
   const themeRowBg = isDark ? '#1F1F1F' : 'var(--cp-bd-zone)';
-  const themeRowHover = isDark ? '#292929' : '#E2E8F0';
+  const themeRowHover = 'var(--cp-bg-sunken, #E2E8F0)';
   const goalRowBg = isDark ? 'transparent' : 'var(--bg-app)';
   const goalRowHover = isDark ? '#1F1F1F' : 'var(--bg-1)';
   const krRowBg = isDark ? '#111111' : 'var(--bg-1)';
@@ -361,7 +361,7 @@ export function GoalsTreeView({
 
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8, minWidth: 0 }}>
                       <ChevronRight
-                        size={13} color={isDark ? '#7D7D7D' : '#94A3B8'}
+                        size={13} color={'var(--cp-text-muted, #94A3B8)'}
                         onClick={e => { e.stopPropagation(); onToggleGoal(goal.id); }}
                         style={{ transform: goalExpanded ? 'rotate(90deg)' : 'rotate(0deg)', transition: 'transform 200ms', flexShrink: 0, cursor: 'pointer' }}
                       />

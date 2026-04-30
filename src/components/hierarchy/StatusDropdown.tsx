@@ -65,7 +65,7 @@ export function StatusDropdown({ currentStatus, availableStatuses, onSelect, onC
             onMouseLeave={(e) => (e.currentTarget.style.background = isCurrent ? (isDark ? 'var(--cp-bg-surface, #242528)' : '#F8FAFC') : '')}
           >
             <span style={{ width: 8, height: 8, borderRadius: '50%', background: style.color, flexShrink: 0 }} />
-            <span style={{ fontSize: 12, color: isDark ? '#EDEDED' : '#0F172A', flex: 1 }}>{status}</span>
+            <span style={{ fontSize: 12, color: 'var(--cp-text-primary, #0F172A)', flex: 1 }}>{status}</span>
             {isCurrent && <Check size={14} color="#2563EB" />}
           </div>
         );

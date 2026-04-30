@@ -37,17 +37,17 @@ function GroupSkeleton({ label, rowCount, isDark }: {
       <tr>
         <td colSpan={5} style={{
           padding: '8px 14px',
-          background: isDark ? '#111111' : '#F8FAFC',
+          background: 'var(--cp-bg-page, #F8FAFC)',
           borderBottom: isDark ? '0.75px solid #2E2E2E' : '0.75px solid #E2E8F0',
           borderTop: isDark ? '0.75px solid #2E2E2E' : '0.75px solid #E2E8F0',
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <div style={{
               width: 14, height: 14, borderRadius: 3,
-              background: isDark ? '#292929' : '#E2E8F0',
+              background: 'var(--cp-bg-sunken, #E2E8F0)',
             }} />
             <span style={{
-              fontSize: 11, fontWeight: 700, color: isDark ? '#878787' : '#64748B',
+              fontSize: 11, fontWeight: 700, color: 'var(--cp-text-tertiary, #64748B)',
               textTransform: 'uppercase', letterSpacing: '0.04em',
               fontFamily: 'var(--cp-font-body)', opacity: 0.6,
             }}>
@@ -106,7 +106,7 @@ export default function AgeingSkeleton() {
       <div style={{
         display: 'flex', gap: 16, padding: '8px 14px',
         borderBottom: isDark ? '0.75px solid #2E2E2E' : '0.75px solid #F1F5F9',
-        background: isDark ? '#111111' : '#F8FAFC',
+        background: 'var(--cp-bg-page, #F8FAFC)',
       }}>
         {[48, 52, 56, 60, 44].map((w, i) => (
           <ShimmerBar key={i} width={w} height={14} isDark={isDark} />

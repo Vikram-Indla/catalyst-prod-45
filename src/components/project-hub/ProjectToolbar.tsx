@@ -28,11 +28,11 @@ export function ProjectToolbar({
     return () => clearTimeout(t);
   }, [localSearch, onSearchChange]);
 
-  const borderColor = isDark ? '#2E2E2E' : '#E2E8F0';
+  const borderColor = 'var(--cp-border, #E2E8F0)';
   const surfaceBg = isDark ? 'transparent' : '#FFFFFF';
-  const textColor = isDark ? '#EDEDED' : '#0F172A';
-  const mutedColor = isDark ? '#7D7D7D' : '#94A3B8';
-  const subtleColor = isDark ? '#878787' : '#6B778C';
+  const textColor = 'var(--cp-text-primary, #0F172A)';
+  const mutedColor = 'var(--cp-text-muted, #94A3B8)';
+  const subtleColor = 'var(--cp-text-tertiary, #6B778C)';
 
   return (
     <div>

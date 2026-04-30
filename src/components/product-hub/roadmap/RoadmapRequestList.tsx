@@ -148,7 +148,7 @@ export function RoadmapRequestList({ groups, selectedId, hoveredId, onSelect, on
         <button
           onClick={onAddClick}
           className="w-full flex items-center gap-2 px-4 py-3 text-sm font-medium focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500"
-          style={{ color: isDark ? '#60A5FA' : '#2563EB', borderTop: `1px solid ${surface.borderLight}`, transition: 'background-color 0.15s ease' }}
+          style={{ color: 'var(--cp-text-link, #2563EB)', borderTop: `1px solid ${surface.borderLight}`, transition: 'background-color 0.15s ease' }}
           onMouseEnter={e => (e.currentTarget.style.backgroundColor = addHoverBg)}
           onMouseLeave={e => (e.currentTarget.style.backgroundColor = 'transparent')}
         >
@@ -195,7 +195,7 @@ function RequestRow({
         paddingRight: 12,
         backgroundColor: isSelected ? selectedBg : isHovered ? hoverBg : 'transparent',
         borderBottom: `1px solid ${surface.borderLight}`,
-        borderLeft: isSelected ? `3px solid ${isDark ? '#60A5FA' : '#2563EB'}` : '3px solid transparent',
+        borderLeft: isSelected ? `3px solid ${'var(--cp-text-link, #2563EB)'}` : '3px solid transparent',
         transition: 'background-color 0.15s ease',
         overflow: 'hidden',
       }}

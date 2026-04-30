@@ -612,7 +612,7 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '16px 0', gap: 4 }}>
                   <Paperclip size={18} color={isDark ? '#292929' : '#CBD5E1'} />
                   <span style={{ fontSize: 13, color: 'var(--fg-4)', fontFamily: 'var(--cp-font-body)' }}>No attachments found</span>
-                  <span style={{ fontSize: 11, color: isDark ? '#878787' : '#CBD5E1', fontFamily: 'var(--cp-font-body)' }}>Attachments are imported automatically from Jira</span>
+                  <span style={{ fontSize: 11, color: 'var(--cp-text-muted, #CBD5E1)', fontFamily: 'var(--cp-font-body)' }}>Attachments are imported automatically from Jira</span>
                 </div>
               )}
             </div>
@@ -652,7 +652,7 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '20px 0', gap: 6 }}>
                   <FileText size={20} color={isDark ? '#292929' : '#CBD5E1'} />
                   <span style={{ fontSize: 13, color: 'var(--fg-4)', fontFamily: 'var(--cp-font-body)' }}>Content not yet extracted</span>
-                  <span style={{ fontSize: 12, color: isDark ? '#878787' : '#CBD5E1', fontFamily: 'var(--cp-font-body)' }}>Upload a PDF or extract from Jira attachments</span>
+                  <span style={{ fontSize: 12, color: 'var(--cp-text-muted, #CBD5E1)', fontFamily: 'var(--cp-font-body)' }}>Upload a PDF or extract from Jira attachments</span>
                 </div>
               )}
             </div>

@@ -18,7 +18,7 @@ function PriorityBarsInline({ level }: { level: number }) {
   return (
     <div style={{ display: 'flex', gap: 2, alignItems: 'center' }}>
       {[1, 2, 3, 4].map((i) => (
-        <div key={i} style={{ width: 10, height: 4, borderRadius: 1, background: i <= level ? (isDark ? '#A1A1A1' : '#64748B') : (isDark ? '#292929' : '#E2E8F0') }} />
+        <div key={i} style={{ width: 10, height: 4, borderRadius: 1, background: i <= level ? ('var(--cp-text-tertiary, #64748B)') : ('var(--cp-bg-sunken, #E2E8F0)') }} />
       ))}
     </div>
   );
@@ -68,7 +68,7 @@ export function PriorityDropdown({ currentPriority, onSelect, onClose }: Priorit
             onMouseLeave={(e) => (e.currentTarget.style.background = isCurrent ? (isDark ? 'var(--cp-bg-surface, #242528)' : '#F8FAFC') : '')}
           >
             <PriorityBarsInline level={p.level} />
-            <span style={{ fontSize: 12, color: isDark ? '#EDEDED' : '#0F172A', flex: 1 }}>{p.name}</span>
+            <span style={{ fontSize: 12, color: 'var(--cp-text-primary, #0F172A)', flex: 1 }}>{p.name}</span>
             {isCurrent && <Check size={14} color="#2563EB" />}
           </div>
         );

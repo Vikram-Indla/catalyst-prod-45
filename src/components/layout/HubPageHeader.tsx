@@ -81,7 +81,7 @@ export function HubPageHeader({
           margin: 0,
           fontSize: 20,
           fontWeight: 600,
-          color: isDark ? '#EDEDED' : '#172B4D',
+          color: 'var(--cp-text-primary, #172B4D)',
           letterSpacing: '-0.003em',
           fontFamily: '"Atlassian Sans", Inter, system-ui, -apple-system, sans-serif',
           lineHeight: 1.2,

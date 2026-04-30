@@ -142,7 +142,7 @@ export function ExecutionViewMode({
               return (
                 <div key={i} style={{
                   padding: '12px 16px', backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF',
-                  border: `0.75px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, borderRadius: 6,
+                  border: `0.75px solid ${'var(--cp-border, #E2E8F0)'}`, borderRadius: 6,
                   borderLeft: `3px solid ${colors.border}`,
                 }}>
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>

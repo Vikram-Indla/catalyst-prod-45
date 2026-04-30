@@ -59,7 +59,7 @@ export default function IdeationBoardView({ ideas, onOpenDetail, onConvert }: Pr
               <span style={{ fontSize: '11px', fontWeight: 700, color: dk.t2, textTransform: 'uppercase', letterSpacing: '0.07em' }}>{sc.label}</span>
               <span style={{
                 fontSize: '10px', fontFamily: 'var(--cp-font-mono)', fontWeight: 700,
-                background: isDark ? '#292929' : '#F1F5F9', borderRadius: '100px',
+                background: 'var(--cp-bg-sunken, #F1F5F9)', borderRadius: '100px',
                 padding: '0 6px', height: 18, display: 'inline-flex', alignItems: 'center',
                 color: dk.t3,
               }}>
@@ -198,7 +198,7 @@ function IdeaBoardCard({ idea, columnStatus, onClick, onConvert, isDark, dk }: {
       {showFullAiStrip && (
         <div style={{
           marginTop: '8px', background: isDark ? 'rgba(59,130,246,0.12)' : '#EFF6FF', borderRadius: '6px',
-          padding: '5px 8px', fontSize: '10px', color: isDark ? '#93C5FD' : '#2563EB', fontWeight: 600,
+          padding: '5px 8px', fontSize: '10px', color: 'var(--cp-text-link, #2563EB)', fontWeight: 600,
         }}>
           {aiInsight}
         </div>

@@ -143,7 +143,7 @@ export function RoadmapGanttChart({ groups, timelineStart, timelineEnd, zoom, zo
                   {p.sublabel && (
                     <span style={{
                       fontSize: 9, fontWeight: 700,
-                      color: isCurrentQ ? (isDark ? '#60A5FA' : '#2563EB') : ink[2],
+                      color: isCurrentQ ? ('var(--cp-text-link, #2563EB)') : ink[2],
                       textTransform: 'uppercase', letterSpacing: '0.05em',
                     }}>
                       {p.sublabel}
@@ -151,7 +151,7 @@ export function RoadmapGanttChart({ groups, timelineStart, timelineEnd, zoom, zo
                   )}
                   <span style={{
                     fontSize: 12, fontWeight: p.isCurrent ? 700 : 600,
-                    color: p.isCurrent ? (isDark ? '#60A5FA' : '#2563EB') : ink[1],
+                    color: p.isCurrent ? ('var(--cp-text-link, #2563EB)') : ink[1],
                     letterSpacing: '0.02em',
                   }}>
                     {p.label}

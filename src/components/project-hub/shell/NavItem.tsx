@@ -73,7 +73,7 @@ export function NavItem({ icon: Icon, label, isActive, onClick, collapsed, badge
               style={{
                 fontSize: 11,
                 fontWeight: 600,
-                color: isDark ? '#878787' : '#6B778C',
+                color: 'var(--cp-text-tertiary, #6B778C)',
                 fontFamily: 'var(--cp-font-mono)',
                 borderRadius: 9999,
                 backgroundColor: isDark ? '#292929' : '#EBECF0',

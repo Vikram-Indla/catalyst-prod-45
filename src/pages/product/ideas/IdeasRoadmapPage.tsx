@@ -208,11 +208,11 @@ export default function IdeasRoadmapPage() {
           onPresent={handlePresent} onExport={handleExport} onGantt={handleGantt} />
         <div style={{
           flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center',
-          justifyContent: 'center', gap: 12, color: isDark ? '#878787' : '#64748B',
+          justifyContent: 'center', gap: 12, color: 'var(--cp-text-tertiary, #64748B)',
         }}>
           <div style={{ fontSize: 40, opacity: 0.3 }}>💡</div>
-          <div style={{ fontSize: 14, fontWeight: 600, color: isDark ? '#A1A1A1' : '#334155' }}>No ideas in backlog yet</div>
-          <div style={{ fontSize: 13, color: isDark ? '#878787' : '#94A3B8' }}>Add ideas from the Ideas list to get started.</div>
+          <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--cp-text-secondary, #334155)' }}>No ideas in backlog yet</div>
+          <div style={{ fontSize: 13, color: 'var(--cp-text-muted, #94A3B8)' }}>Add ideas from the Ideas list to get started.</div>
           <a href="/producthub/ideation" style={{
             marginTop: 8, fontSize: 13, fontWeight: 600, color: '#2563EB', textDecoration: 'none',
           }}>Go to Ideas →</a>
@@ -251,7 +251,7 @@ export default function IdeasRoadmapPage() {
             flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center',
             justifyContent: 'center', gap: 8, padding: 24, textAlign: 'center',
           }}>
-            <div style={{ fontSize: 14, color: isDark ? '#878787' : '#64748B', maxWidth: 340, lineHeight: 1.5 }}>
+            <div style={{ fontSize: 14, color: 'var(--cp-text-tertiary, #64748B)', maxWidth: 340, lineHeight: 1.5 }}>
               No committed ideas yet. Toggle an idea's committed switch to include it on the roadmap.
             </div>
             <button
@@ -267,7 +267,7 @@ export default function IdeasRoadmapPage() {
             flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center',
             justifyContent: 'center', gap: 8,
           }}>
-            <div style={{ fontSize: 14, color: isDark ? '#878787' : '#64748B' }}>No ideas match the current filters</div>
+            <div style={{ fontSize: 14, color: 'var(--cp-text-tertiary, #64748B)' }}>No ideas match the current filters</div>
             <button
               onClick={() => { setTeamFilter('All Teams'); setCommittedOnly(false); }}
               style={{

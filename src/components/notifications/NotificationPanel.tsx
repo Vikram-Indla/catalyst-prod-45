@@ -108,9 +108,9 @@ export default function NotificationPanel({ isOpen, onClose }: NotificationPanel
   const T = {
     panelBg: isDark ? 'var(--cp-bg-page, #1F1F21)' : '#FFFFFF',
     surfaceBg: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF',
-    text1: isDark ? '#EDEDED' : '#0F172A',
-    text2: isDark ? '#A1A1A1' : '#64748B',
-    text3: isDark ? '#878787' : '#94A3B8',
+    text1: 'var(--cp-text-primary, #0F172A)',
+    text2: 'var(--cp-text-tertiary, #64748B)',
+    text3: 'var(--cp-text-muted, #94A3B8)',
     border: isDark ? '#2E2E2E' : 'rgba(15,23,42,0.08)',
     borderStrong: isDark ? '#454545' : 'rgba(15,23,42,0.12)',
     hover: isDark ? '#1F1F1F' : 'rgba(15,23,42,0.04)',

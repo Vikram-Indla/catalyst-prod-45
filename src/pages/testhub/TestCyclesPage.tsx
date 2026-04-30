@@ -71,11 +71,11 @@ export default function TestCyclesPage() {
   const pageBg = isDark ? 'var(--cp-bg-page, #1F1F21)' : '#F8FAFC';
   const surfaceBg = isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF';
   const elevatedBg = isDark ? 'var(--cp-bg-surface, #242528)' : '#F8FAFC';
-  const borderColor = isDark ? '#2E2E2E' : '#E2E8F0';
-  const textPrimary = isDark ? '#EDEDED' : '#0F172A';
-  const textBody = isDark ? '#A1A1A1' : '#334155';
-  const textSecondary = isDark ? '#A1A1A1' : '#64748B';
-  const textMuted = isDark ? '#878787' : '#94A3B8';
+  const borderColor = 'var(--cp-border, #E2E8F0)';
+  const textPrimary = 'var(--cp-text-primary, #0F172A)';
+  const textBody = 'var(--cp-text-secondary, #334155)';
+  const textSecondary = 'var(--cp-text-tertiary, #64748B)';
+  const textMuted = 'var(--cp-text-muted, #94A3B8)';
 
   const fetchCycles = async () => {
     setIsLoading(true);

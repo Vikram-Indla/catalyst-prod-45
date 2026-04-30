@@ -402,7 +402,7 @@ export default function IdeaDrawer({ ideaKey, onClose, onConvert }: Props) {
               <div key={dim.letter} style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '14px' }}>
                 <div style={{
                   width: '28px', height: '28px', borderRadius: '50%',
-                  backgroundColor: isDark ? '#2E2E2E' : '#E2E8F0', color: dk.t2,
+                  backgroundColor: 'var(--cp-border, #E2E8F0)', color: dk.t2,
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   fontSize: '12px', fontWeight: 700, flexShrink: 0,
                 }}>{dim.letter}</div>
@@ -419,7 +419,7 @@ export default function IdeaDrawer({ ideaKey, onClose, onConvert }: Props) {
                       className="w-full"
                     />
                   ) : (
-                    <div style={{ height: '4px', borderRadius: '4px', backgroundColor: isDark ? '#2E2E2E' : '#E2E8F0', overflow: 'hidden' }}>
+                    <div style={{ height: '4px', borderRadius: '4px', backgroundColor: 'var(--cp-border, #E2E8F0)', overflow: 'hidden' }}>
                       <div style={{
                         height: '100%', width: `${(dim.value / 5) * 100}%`,
                         backgroundColor: dim.value > 0 ? '#2563EB' : 'transparent',
@@ -505,7 +505,7 @@ function FieldBlock({ label, children }: { label: string; children: React.ReactN
   const { isDark } = useTheme();
   return (
     <div>
-      <div style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: isDark ? '#878787' : '#64748B', marginBottom: '6px' }}>{label}</div>
+      <div style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--cp-text-tertiary, #64748B)', marginBottom: '6px' }}>{label}</div>
       {children}
     </div>
   );

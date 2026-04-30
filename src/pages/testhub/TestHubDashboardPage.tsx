@@ -298,13 +298,13 @@ export default function TestHubDashboardPage() {
       {/* ═══ PAGE HEADER — 52px ═══ */}
       <CatalystPageHeader title="TestHub Dashboard" actions={
         <>
-          <span style={{ fontSize: 12, fontWeight: 400, color: isDark ? '#878787' : '#64748B' }}>
+          <span style={{ fontSize: 12, fontWeight: 400, color: 'var(--cp-text-tertiary, #64748B)' }}>
             Updated {formatLastUpdated()}
           </span>
           <button onClick={fetchDashboardData} style={{
             display: 'inline-flex', alignItems: 'center', gap: 4,
             height: 32, padding: '8px 12px', fontSize: 13, fontWeight: 500,
-            color: isDark ? '#EDEDED' : '#0F172A', background: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF', border: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`,
+            color: 'var(--cp-text-primary, #0F172A)', background: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF', border: `1px solid ${'var(--cp-border, #E2E8F0)'}`,
             borderRadius: 6, cursor: 'pointer',
           }}>
             <RefreshCw size={13} /> Refresh
@@ -312,7 +312,7 @@ export default function TestHubDashboardPage() {
           <button style={{
             display: 'inline-flex', alignItems: 'center', gap: 4,
             height: 32, padding: '8px 12px', fontSize: 13, fontWeight: 500,
-            color: isDark ? '#EDEDED' : '#0F172A', background: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF', border: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`,
+            color: 'var(--cp-text-primary, #0F172A)', background: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF', border: `1px solid ${'var(--cp-border, #E2E8F0)'}`,
             borderRadius: 6, cursor: 'pointer',
           }}>
             <Download size={13} /> Export
@@ -351,12 +351,12 @@ export default function TestHubDashboardPage() {
 
         {/* ── EXECUTION STATUS BAR — 48px ── */}
         <div style={{
-          background: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF', border: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, borderRadius: 8,
+          background: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF', border: `1px solid ${'var(--cp-border, #E2E8F0)'}`, borderRadius: 8,
           padding: '10px 16px', flexShrink: 0,
         }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
-            <span style={{ fontSize: 13, fontWeight: 600, color: isDark ? '#A1A1A1' : '#334155' }}>Execution status</span>
-            <span style={{ fontSize: 14, fontWeight: 700, color: isDark ? '#EDEDED' : '#0F172A' }}>{totalAll} total</span>
+            <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--cp-text-secondary, #334155)' }}>Execution status</span>
+            <span style={{ fontSize: 14, fontWeight: 700, color: 'var(--cp-text-primary, #0F172A)' }}>{totalAll} total</span>
           </div>
           <div style={{ display: 'flex', height: 8, borderRadius: 4, background: isDark ? 'var(--cp-bg-surface, #242528)' : '#F1F5F9', gap: 1, overflow: 'hidden' }}>
             {execSegments.map(seg => (
@@ -372,8 +372,8 @@ export default function TestHubDashboardPage() {
             {execSegments.map(seg => (
               <span key={seg.label} style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
                 <span style={{ width: 7, height: 7, borderRadius: '50%', background: seg.color, display: 'inline-block' }} />
-                <span style={{ fontSize: 13, fontWeight: 500, color: isDark ? '#A1A1A1' : '#334155' }}>{seg.label}</span>
-                <span style={{ fontSize: 13, fontWeight: 700, color: isDark ? '#EDEDED' : '#0F172A' }}>{seg.count}</span>
+                <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--cp-text-secondary, #334155)' }}>{seg.label}</span>
+                <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--cp-text-primary, #0F172A)' }}>{seg.count}</span>
               </span>
             ))}
           </div>
@@ -403,19 +403,19 @@ export default function TestHubDashboardPage() {
                        style={{
                          display: 'grid', gridTemplateColumns: '90px 1fr 100px 130px',
                          alignItems: 'center', height: 50, padding: '0 16px',
-                         cursor: 'pointer', borderBottom: `1px solid ${isDark ? '#292929' : '#F1F5F9'}`,
+                         cursor: 'pointer', borderBottom: `1px solid ${'var(--cp-bg-sunken, #F1F5F9)'}`,
                        }}>
                        <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 12, fontWeight: 600, color: '#2563EB' }}>
                          {cycle.cycle_key}
                        </span>
-                       <span style={{ fontSize: 14, fontWeight: 500, color: isDark ? '#EDEDED' : '#0F172A', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                       <span style={{ fontSize: 14, fontWeight: 500, color: 'var(--cp-text-primary, #0F172A)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                          {cycle.name}
                        </span>
                        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                          <div style={{ flex: 1, height: 4, borderRadius: 4, background: isDark ? 'var(--cp-bg-surface, #242528)' : '#F1F5F9', overflow: 'hidden' }}>
                            <div style={{ width: `${pct}%`, height: '100%', background: barColor, borderRadius: 4, transition: 'width 400ms ease-out' }} />
                          </div>
-                         <span style={{ fontSize: 13, fontWeight: 700, color: isDark ? '#EDEDED' : '#0F172A', minWidth: 32, textAlign: 'right' }}>{pct}%</span>
+                         <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--cp-text-primary, #0F172A)', minWidth: 32, textAlign: 'right' }}>{pct}%</span>
                        </div>
                        <div style={{ display: 'flex', gap: 6, fontSize: 12, fontWeight: 600, justifyContent: 'flex-end' }}>
                          <span style={{ color: '#059669' }}>{csPassed}P</span>
@@ -429,7 +429,7 @@ export default function TestHubDashboardPage() {
                  })}
                  {activeCycles.length === activeCycles.length && (
                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', flex: 1, gap: 4, padding: '32px 16px' }}>
-                     <span style={{ fontSize: 12, fontWeight: 400, color: isDark ? '#878787' : '#94A3B8' }}>
+                     <span style={{ fontSize: 12, fontWeight: 400, color: 'var(--cp-text-muted, #94A3B8)' }}>
                        All {activeCycles.length} active cycle{activeCycles.length !== 1 ? 's' : ''} shown
                      </span>
                      <a href="/testhub/cycles" style={{ fontSize: 12, fontWeight: 500, color: '#2563EB', textDecoration: 'none', cursor: 'pointer' }}>
@@ -444,15 +444,15 @@ export default function TestHubDashboardPage() {
            {/* ═ MIDDLE: Failing Tests + Defects (Merged) ═ */}
            <div style={{
              display: 'flex', flexDirection: 'column', minHeight: 0,
-             background: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF', border: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, borderRadius: 8, overflow: 'hidden',
+             background: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF', border: `1px solid ${'var(--cp-border, #E2E8F0)'}`, borderRadius: 8, overflow: 'hidden',
            }}>
              {/* Header: Top Failing Tests */}
              <div style={{
                padding: '12px 16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-               borderBottom: `1px solid ${isDark ? '#292929' : '#F1F5F9'}`, flexShrink: 0,
+               borderBottom: `1px solid ${'var(--cp-bg-sunken, #F1F5F9)'}`, flexShrink: 0,
              }}>
                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                 <span style={{ fontSize: 14, fontWeight: 600, color: isDark ? '#EDEDED' : '#0F172A' }}>Top Failing Tests</span>
+                 <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--cp-text-primary, #0F172A)' }}>Top Failing Tests</span>
                  <span style={{ fontSize: 12, fontWeight: 600, color: '#DC2626', background: isDark ? 'rgba(248,113,113,0.12)' : '#FEF2F2', padding: '2px 8px', borderRadius: 10 }}>
                    {failingTests.length}
                  </span>
@@ -478,12 +478,12 @@ export default function TestHubDashboardPage() {
                          style={{
                            display: 'grid', gridTemplateColumns: '72px 1fr 60px 64px',
                            alignItems: 'center', height: 50, padding: '0 16px',
-                           cursor: 'pointer', borderBottom: `1px solid ${isDark ? '#292929' : '#F1F5F9'}`,
+                           cursor: 'pointer', borderBottom: `1px solid ${'var(--cp-bg-sunken, #F1F5F9)'}`,
                          }}>
                          <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 12, fontWeight: 600, color: '#2563EB' }}>
                            {test.case_key}
                          </span>
-                         <span style={{ fontSize: 14, fontWeight: 500, color: isDark ? '#EDEDED' : '#0F172A', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                         <span style={{ fontSize: 14, fontWeight: 500, color: 'var(--cp-text-primary, #0F172A)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                            {test.title}
                          </span>
                          <span style={{ fontSize: 13, fontWeight: 700, color: '#DC2626' }}>
@@ -504,7 +504,7 @@ export default function TestHubDashboardPage() {
              </div>
 
              {/* Divider: dashed border */}
-             <div style={{ borderTop: `1px dashed ${isDark ? '#2E2E2E' : '#E2E8F0'}`, flexShrink: 0 }} />
+             <div style={{ borderTop: `1px dashed ${'var(--cp-border, #E2E8F0)'}`, flexShrink: 0 }} />
 
              {/* Defects Section: Sub-header + Grid */}
              <div style={{ flexShrink: 0 }}>
@@ -513,8 +513,8 @@ export default function TestHubDashboardPage() {
                  flexShrink: 0,
                }}>
                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                   <span style={{ fontSize: 14, fontWeight: 600, color: isDark ? '#EDEDED' : '#0F172A' }}>Defects</span>
-                   <span style={{ fontSize: 12, fontWeight: 600, color: isDark ? '#878787' : '#64748B', background: isDark ? 'var(--cp-bg-surface, #242528)' : '#F1F5F9', padding: '2px 8px', borderRadius: 10 }}>
+                   <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--cp-text-primary, #0F172A)' }}>Defects</span>
+                   <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--cp-text-tertiary, #64748B)', background: isDark ? 'var(--cp-bg-surface, #242528)' : '#F1F5F9', padding: '2px 8px', borderRadius: 10 }}>
                      {defectStats?.total_defects ?? 0}
                    </span>
                  </div>
@@ -531,10 +531,10 @@ export default function TestHubDashboardPage() {
                  ].map((d, i) => (
                    <div key={d.label} style={{
                      textAlign: 'center', padding: '12px 8px',
-                     borderRight: i < 3 ? `1px solid ${isDark ? '#292929' : '#F1F5F9'}` : 'none',
+                     borderRight: i < 3 ? `1px solid ${'var(--cp-bg-sunken, #F1F5F9)'}` : 'none',
                    }}>
-                     <div style={{ fontSize: 20, fontWeight: 700, color: isDark ? '#EDEDED' : '#0F172A', lineHeight: 1 }}>{d.value}</div>
-                     <div style={{ fontSize: 12, fontWeight: 500, color: isDark ? '#878787' : '#64748B', marginTop: 4 }}>{d.label}</div>
+                     <div style={{ fontSize: 20, fontWeight: 700, color: 'var(--cp-text-primary, #0F172A)', lineHeight: 1 }}>{d.value}</div>
+                     <div style={{ fontSize: 12, fontWeight: 500, color: 'var(--cp-text-tertiary, #64748B)', marginTop: 4 }}>{d.label}</div>
                    </div>
                  ))}
                </div>
@@ -545,11 +545,11 @@ export default function TestHubDashboardPage() {
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12, minHeight: 0 }}>
             {/* Needs Attention */}
             <div style={{
-              background: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF', border: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, borderRadius: 8,
+              background: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF', border: `1px solid ${'var(--cp-border, #E2E8F0)'}`, borderRadius: 8,
               borderLeft: '3px solid #EF4444', overflow: 'hidden', flexShrink: 0,
             }}>
               <div style={{ padding: '12px 16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <span style={{ fontSize: 14, fontWeight: 600, color: isDark ? '#EDEDED' : '#0F172A' }}>Needs attention</span>
+                <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--cp-text-primary, #0F172A)' }}>Needs attention</span>
                 <span style={{
                   fontSize: 12, fontWeight: 600, color: '#DC2626', background: isDark ? 'rgba(248,113,113,0.12)' : '#FEF2F2',
                   padding: '2px 8px', borderRadius: 12,
@@ -558,12 +558,12 @@ export default function TestHubDashboardPage() {
                 </span>
               </div>
               {attentionItems.length === 0 ? (
-                <div style={{ padding: '16px', textAlign: 'center', fontSize: 13, color: isDark ? '#878787' : '#64748B' }}>
+                <div style={{ padding: '16px', textAlign: 'center', fontSize: 13, color: 'var(--cp-text-tertiary, #64748B)' }}>
                   All clear — no issues
                 </div>
               ) : (
                 attentionItems.map((item, i) => (
-                  <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 16px', borderTop: i > 0 ? `1px solid ${isDark ? '#292929' : '#F1F5F9'}` : 'none' }}>
+                  <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 16px', borderTop: i > 0 ? `1px solid ${'var(--cp-bg-sunken, #F1F5F9)'}` : 'none' }}>
                     <div style={{
                       width: 24, height: 24, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center',
                       background: item.danger ? (isDark ? 'rgba(248,113,113,0.12)' : '#FEF2F2') : (isDark ? 'rgba(251,191,36,0.12)' : '#FFFBEB'),
@@ -571,8 +571,8 @@ export default function TestHubDashboardPage() {
                       <AlertTriangle size={12} color={item.danger ? '#DC2626' : '#D97706'} />
                     </div>
                     <div style={{ minWidth: 0 }}>
-                      <div style={{ fontSize: 14, fontWeight: 500, color: isDark ? '#EDEDED' : '#0F172A' }}>{item.title}</div>
-                      <div style={{ fontSize: 12, fontWeight: 400, color: isDark ? '#878787' : '#64748B' }}>{item.meta}</div>
+                      <div style={{ fontSize: 14, fontWeight: 500, color: 'var(--cp-text-primary, #0F172A)' }}>{item.title}</div>
+                      <div style={{ fontSize: 12, fontWeight: 400, color: 'var(--cp-text-tertiary, #64748B)' }}>{item.meta}</div>
                     </div>
                   </div>
                 ))
@@ -581,15 +581,15 @@ export default function TestHubDashboardPage() {
 
             {/* Activity Feed + Quick Actions */}
             <div style={{
-              background: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF', border: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, borderRadius: 8,
+              background: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF', border: `1px solid ${'var(--cp-border, #E2E8F0)'}`, borderRadius: 8,
               flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column', overflow: 'hidden',
             }}>
-              <div style={{ padding: '12px 16px', borderBottom: `1px solid ${isDark ? '#292929' : '#F1F5F9'}`, flexShrink: 0 }}>
-                <span style={{ fontSize: 14, fontWeight: 600, color: isDark ? '#EDEDED' : '#0F172A' }}>Activity</span>
+              <div style={{ padding: '12px 16px', borderBottom: `1px solid ${'var(--cp-bg-sunken, #F1F5F9)'}`, flexShrink: 0 }}>
+                <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--cp-text-primary, #0F172A)' }}>Activity</span>
               </div>
                <div style={{ flex: 1, minHeight: 0, overflowY: 'auto' }}>
                  {recentActivity.length === 0 ? (
-                   <div style={{ padding: '24px 16px', textAlign: 'center', fontSize: 13, color: isDark ? '#878787' : '#64748B' }}>
+                   <div style={{ padding: '24px 16px', textAlign: 'center', fontSize: 13, color: 'var(--cp-text-tertiary, #64748B)' }}>
                      No test executions recorded yet.
                    </div>
                  ) : (
@@ -606,15 +606,15 @@ export default function TestHubDashboardPage() {
                        return (
                          <div key={a.id} style={{
                            display: 'flex', alignItems: 'flex-start', gap: 8,
-                           padding: '8px 16px', borderTop: i > 0 ? `1px solid ${isDark ? '#292929' : '#F1F5F9'}` : 'none',
+                           padding: '8px 16px', borderTop: i > 0 ? `1px solid ${'var(--cp-bg-sunken, #F1F5F9)'}` : 'none',
                          }}>
                            <span style={{ width: 7, height: 7, borderRadius: '50%', background: dotColor, marginTop: 6, flexShrink: 0 }} />
                            <div style={{ flex: 1, minWidth: 0 }}>
-                             <div style={{ fontSize: 13, fontWeight: 400, color: isDark ? '#EDEDED' : '#0F172A', lineHeight: 1.43 }}>
+                             <div style={{ fontSize: 13, fontWeight: 400, color: 'var(--cp-text-primary, #0F172A)', lineHeight: 1.43 }}>
                                <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 12, fontWeight: 600, color: '#2563EB' }}>{a.case_key}</span>
                                {' '}<span style={{ fontWeight: 600 }}>{verb}</span> in {a.cycle_key}
                              </div>
-                             <div style={{ fontSize: 11, fontWeight: 400, color: isDark ? '#878787' : '#64748B' }}>
+                             <div style={{ fontSize: 11, fontWeight: 400, color: 'var(--cp-text-tertiary, #64748B)' }}>
                                {a.executed_by_name} · {formatTimeAgo(a.executed_at)}
                              </div>
                            </div>
@@ -622,7 +622,7 @@ export default function TestHubDashboardPage() {
                        );
                      })}
                      {recentActivity.length < 3 && (
-                       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px 16px', fontSize: 12, fontWeight: 400, color: isDark ? '#878787' : '#94A3B8' }}>
+                       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px 16px', fontSize: 12, fontWeight: 400, color: 'var(--cp-text-muted, #94A3B8)' }}>
                          No more recent activity
                        </div>
                      )}
@@ -630,7 +630,7 @@ export default function TestHubDashboardPage() {
                  )}
                </div>
                {/* Quick Actions — pinned bottom */}
-               <div style={{ display: 'flex', gap: 8, padding: '10px 16px', paddingRight: '80px', borderTop: `1px solid ${isDark ? '#292929' : '#F1F5F9'}`, flexShrink: 0 }}>
+               <div style={{ display: 'flex', gap: 8, padding: '10px 16px', paddingRight: '80px', borderTop: `1px solid ${'var(--cp-bg-sunken, #F1F5F9)'}`, flexShrink: 0 }}>
                  <QuickBtn label="New case" onClick={() => navigate('/testhub/repository')} />
                  <QuickBtn label="Start cycle" onClick={() => navigate('/testhub/cycles')} />
                  <QuickBtn label="Report" onClick={() => navigate('/testhub/reports')} />
@@ -645,7 +645,7 @@ export default function TestHubDashboardPage() {
       <style>{`
         .c10-row:hover { background: ${isDark ? 'var(--cp-bg-surface, #242528)' : '#F8FAFC'}; }
         .c10-row-danger:hover { background: ${isDark ? 'rgba(248,113,113,0.12)' : '#FEF2F2'}; }
-        .c10-kpi:hover { border-color: ${isDark ? '#454545' : '#CBD5E1'} !important; box-shadow: 0 4px 16px ${isDark ? 'rgba(0,0,0,0.3)' : 'rgba(0,0,0,0.08)'} !important; }
+        .c10-kpi:hover { border-color: ${'var(--cp-border-strong, #CBD5E1)'} !important; box-shadow: 0 4px 16px ${isDark ? 'rgba(0,0,0,0.3)' : 'rgba(0,0,0,0.08)'} !important; }
         .c10-qbtn:hover { border-color: #2563EB !important; color: #2563EB !important; background: ${isDark ? 'rgba(37,99,235,0.12)' : '#EFF6FF'} !important; }
         /* Rule 3 paired .dark — brand blue is intentional in both modes;
            this selector exists so audits confirm dark pairing for the
@@ -672,15 +672,15 @@ function KPICard({ label, value, accent, trend, subtitle, sparkData, valueColor,
   return (
     <div className="c10-kpi" style={{
       background: isDanger ? (isDark ? 'rgba(248,113,113,0.08)' : 'rgba(254, 242, 242, 0.6)') : (isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF'),
-      border: isDanger ? `1px solid ${isDark ? 'rgba(248,113,113,0.2)' : '#FECACA'}` : `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`,
+      border: isDanger ? `1px solid ${isDark ? 'rgba(248,113,113,0.2)' : '#FECACA'}` : `1px solid ${'var(--cp-border, #E2E8F0)'}`,
       borderRadius: 8,
       borderLeft: `3px solid ${accent}`,
       padding: 16, cursor: 'pointer',
       transition: 'border-color 150ms, box-shadow 150ms',
     }}>
-      <div style={{ fontSize: 13, fontWeight: 500, color: isDark ? '#A1A1A1' : '#334155', marginBottom: 4 }}>{label}</div>
+      <div style={{ fontSize: 13, fontWeight: 500, color: 'var(--cp-text-secondary, #334155)', marginBottom: 4 }}>{label}</div>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
-        <span style={{ fontSize: 36, fontWeight: 700, color: valueColor || (isDark ? '#EDEDED' : '#0F172A'), letterSpacing: '-0.02em', fontVariantNumeric: 'tabular-nums', lineHeight: 1 }}>
+        <span style={{ fontSize: 36, fontWeight: 700, color: valueColor || ('var(--cp-text-primary, #0F172A)'), letterSpacing: '-0.02em', fontVariantNumeric: 'tabular-nums', lineHeight: 1 }}>
           {value}
         </span>
         <span style={{ fontSize: 12, fontWeight: 600, color: trend.color }}>
@@ -688,7 +688,7 @@ function KPICard({ label, value, accent, trend, subtitle, sparkData, valueColor,
         </span>
       </div>
       <Sparkline data={sparkData} color={accent} />
-      <div style={{ fontSize: 12, fontWeight: 400, color: isDark ? '#878787' : '#64748B', marginTop: 4 }}>{subtitle}</div>
+      <div style={{ fontSize: 12, fontWeight: 400, color: 'var(--cp-text-tertiary, #64748B)', marginTop: 4 }}>{subtitle}</div>
     </div>
   );
 }
@@ -704,12 +704,12 @@ function Card({ title, badge, badgeDanger, badgeColor, onViewAll, children, styl
 }) {
   const { isDark } = useTheme();
   const bg = badgeDanger ? (isDark ? 'rgba(248,113,113,0.12)' : '#FEF2F2') : (isDark ? 'var(--cp-bg-surface, #242528)' : '#F1F5F9');
-  const color = badgeDanger ? '#DC2626' : badgeColor || (isDark ? '#878787' : '#64748B');
+  const color = badgeDanger ? '#DC2626' : badgeColor || ('var(--cp-text-tertiary, #64748B)');
   return (
-    <div style={{ background: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF', border: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, borderRadius: 8, overflow: 'hidden', display: 'flex', flexDirection: 'column', minHeight: 0, ...style }}>
-      <div style={{ padding: '12px 16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: `1px solid ${isDark ? '#292929' : '#F1F5F9'}`, flexShrink: 0 }}>
+    <div style={{ background: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF', border: `1px solid ${'var(--cp-border, #E2E8F0)'}`, borderRadius: 8, overflow: 'hidden', display: 'flex', flexDirection: 'column', minHeight: 0, ...style }}>
+      <div style={{ padding: '12px 16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: `1px solid ${'var(--cp-bg-sunken, #F1F5F9)'}`, flexShrink: 0 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <span style={{ fontSize: 14, fontWeight: 600, color: isDark ? '#EDEDED' : '#0F172A' }}>{title}</span>
+          <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--cp-text-primary, #0F172A)' }}>{title}</span>
           {badge && (
             <span style={{ fontSize: 12, fontWeight: 600, color, background: bg, padding: '2px 8px', borderRadius: 10 }}>
               {badge}
@@ -734,7 +734,7 @@ function EmptyMini({ icon, text }: { icon: React.ReactNode; text: string }) {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '24px 0', gap: 6 }}>
       {icon}
-      <span style={{ fontSize: 13, color: isDark ? '#878787' : '#64748B' }}>{text}</span>
+      <span style={{ fontSize: 13, color: 'var(--cp-text-tertiary, #64748B)' }}>{text}</span>
     </div>
   );
 }
@@ -744,7 +744,7 @@ function QuickBtn({ label, onClick }: { label: string; onClick: () => void }) {
   return (
     <button className="c10-qbtn" onClick={onClick} style={{
       flex: 1, height: 32, fontSize: 13, fontWeight: 500,
-      color: isDark ? '#A1A1A1' : '#334155', background: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF', border: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`,
+      color: 'var(--cp-text-secondary, #334155)', background: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF', border: `1px solid ${'var(--cp-border, #E2E8F0)'}`,
       borderRadius: 6, cursor: 'pointer', transition: 'all 150ms',
     }}>
       {label}

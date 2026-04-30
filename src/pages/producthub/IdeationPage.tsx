@@ -231,11 +231,11 @@ export default function IdeationPage() {
       {/* Filtered context indicator */}
       {activeFilter !== 'all' && (
         <div style={{ padding: '6px 28px', background: isDark ? 'rgba(37,99,235,0.08)' : '#EFF6FF', borderBottom: `1px solid ${isDark ? 'rgba(37,99,235,0.15)' : '#DBEAFE'}`, display: 'flex', alignItems: 'center', gap: '6px' }}>
-          <span style={{ fontSize: '11px', fontWeight: 500, color: isDark ? '#60A5FA' : '#2563EB' }}>
+          <span style={{ fontSize: '11px', fontWeight: 500, color: 'var(--cp-text-link, #2563EB)' }}>
             Showing {activeFilter.replace('_', ' ')} ideas only
           </span>
           <span style={{ color: dk.t3 }}>·</span>
-          <button onClick={() => setActiveFilter('all')} style={{ fontSize: '11px', color: isDark ? '#60A5FA' : '#2563EB', textDecoration: 'underline', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
+          <button onClick={() => setActiveFilter('all')} style={{ fontSize: '11px', color: 'var(--cp-text-link, #2563EB)', textDecoration: 'underline', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
             Clear filter
           </button>
         </div>
@@ -357,7 +357,7 @@ function IdeationListView({ ideas, selectedRows, toggleRow, toggleAll, onOpenDet
     }}>
       <table style={{ width: '100%', borderCollapse: 'collapse' }}>
         <thead>
-          <tr style={{ height: '50px', background: isDark ? '#1F1F1F' : '#F8FAFC' }}>
+          <tr style={{ height: '50px', background: 'var(--cp-bg-page, #F8FAFC)' }}>
             <th style={{ width: '40px', padding: '0 8px', textAlign: 'center' }}>
               <input type="checkbox" checked={selectedRows.size === ideas.length && ideas.length > 0} onChange={toggleAll} style={{ cursor: 'pointer', accentColor: '#2563EB' }} />
             </th>

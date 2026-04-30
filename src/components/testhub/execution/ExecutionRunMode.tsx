@@ -295,7 +295,7 @@ export function ExecutionRunMode({
           { key: 'passed', label: 'Pass', shortcut: 'P', icon: CheckCircle2, onClick: onPass, color: '#059669', bg: isDark ? 'rgba(34,197,94,0.12)' : '#ECFDF5', activeBg: 'linear-gradient(135deg, #10B981, #059669)' },
           { key: 'failed', label: 'Fail', shortcut: 'F', icon: XCircle, onClick: onFail, color: '#DC2626', bg: isDark ? 'rgba(248,113,113,0.12)' : '#FEF2F2', activeBg: 'linear-gradient(135deg, #EF4444, #DC2626)' },
           { key: 'blocked', label: 'Block', shortcut: 'B', icon: AlertTriangle, onClick: onBlocked, color: '#D97706', bg: isDark ? 'rgba(251,191,36,0.12)' : '#FFFBEB', activeBg: 'linear-gradient(135deg, #F59E0B, #D97706)' },
-          { key: 'skipped', label: 'Skip', shortcut: 'S', icon: SkipForward, onClick: onSkip, color: isDark ? '#878787' : '#64748B', bg: 'hsl(var(--muted) / 0.3)', activeBg: 'linear-gradient(135deg, #64748B, #475569)' },
+          { key: 'skipped', label: 'Skip', shortcut: 'S', icon: SkipForward, onClick: onSkip, color: 'var(--cp-text-tertiary, #64748B)', bg: 'hsl(var(--muted) / 0.3)', activeBg: 'linear-gradient(135deg, #64748B, #475569)' },
         ].map(btn => {
           const Icon = btn.icon;
           const isActive = currentStatus === btn.key;
@@ -342,7 +342,7 @@ export function ExecutionRunMode({
               failed:  { bg: '#DC2626', text: '#FFFFFF' },
               blocked: { bg: '#D97706', text: '#FFFFFF' },
               skipped: { bg: '#475569', text: '#FFFFFF' },
-              not_run: { bg: isDark ? 'var(--cp-bg-surface, #242528)' : '#E2E8F0', text: isDark ? '#878787' : '#64748B' },
+              not_run: { bg: isDark ? 'var(--cp-bg-surface, #242528)' : '#E2E8F0', text: 'var(--cp-text-tertiary, #64748B)' },
             };
             const colors = statusColors[derivedStatus] || statusColors.not_run;
             const label = derivedStatus !== 'not_run'
@@ -354,9 +354,9 @@ export function ExecutionRunMode({
                 disabled={isDisabled}
                 title={!anyStepMarked ? 'Mark all steps before completing' : `Complete with status: ${derivedStatus}`}
                 style={{
-                  height: 34, padding: '0 14px', border: isDisabled ? `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}` : 'none',
+                  height: 34, padding: '0 14px', border: isDisabled ? `1px solid ${'var(--cp-border, #E2E8F0)'}` : 'none',
                   borderRadius: 6, backgroundColor: isDisabled ? (isDark ? 'var(--cp-bg-surface, #242528)' : '#F8FAFC') : colors.bg,
-                  color: isDisabled ? (isDark ? '#878787' : '#94A3B8') : colors.text, fontSize: 12, fontWeight: 700,
+                  color: isDisabled ? ('var(--cp-text-muted, #94A3B8)') : colors.text, fontSize: 12, fontWeight: 700,
                   cursor: isDisabled ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', gap: 5,
                   opacity: isDisabled ? 0.7 : 1, transition: 'all 150ms ease',
                   boxShadow: isDisabled ? 'none' : `0 2px 8px ${colors.bg}40`,

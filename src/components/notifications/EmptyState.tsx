@@ -7,8 +7,8 @@ interface EmptyStateProps {
 
 export default function EmptyState({ variant }: EmptyStateProps) {
   const { isDark } = useTheme();
-  const text1 = isDark ? '#EDEDED' : '#0F172A';
-  const text3 = isDark ? '#878787' : '#94A3B8';
+  const text1 = 'var(--cp-text-primary, #0F172A)';
+  const text3 = 'var(--cp-text-muted, #94A3B8)';
   const iconBgMuted = isDark ? 'var(--cp-bg-surface, #242528)' : '#F1F5F9';
 
   if (variant === 'allCaughtUp') {

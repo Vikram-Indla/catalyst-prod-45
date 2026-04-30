@@ -16,9 +16,9 @@ export default function IncidentInsightsPage() {
   // DARK MODE tokens
   const pageBg = isDark ? 'var(--cp-bg-page, #1F1F21)' : '#FFFFFF';
   const surfaceBg = isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF';
-  const textPrimary = isDark ? '#EDEDED' : '#0F172A';
-  const textSecondary = isDark ? '#A1A1A1' : '#64748B';
-  const textBody = isDark ? '#A1A1A1' : '#334155';
+  const textPrimary = 'var(--cp-text-primary, #0F172A)';
+  const textSecondary = 'var(--cp-text-tertiary, #64748B)';
+  const textBody = 'var(--cp-text-secondary, #334155)';
   const borderColor = isDark ? '#2E2E2E' : 'rgba(15,23,42,0.12)';
 
   return (
@@ -76,7 +76,7 @@ export default function IncidentInsightsPage() {
                   borderRadius: 4,
                   border: `1px solid ${isDark ? 'rgba(248,113,113,0.2)' : '#FECACA'}`,
                 }}>
-                  <h4 style={{ fontFamily: 'var(--cp-font-body)', fontSize: 12, fontWeight: 650, color: isDark ? '#FCA5A5' : '#991B1B', marginBottom: 2 }}>{item.title}</h4>
+                  <h4 style={{ fontFamily: 'var(--cp-font-body)', fontSize: 12, fontWeight: 650, color: 'var(--cp-danger-text, #991B1B)', marginBottom: 2 }}>{item.title}</h4>
                   <p style={{ fontFamily: 'var(--cp-font-body)', fontSize: 11, color: isDark ? '#F87171' : '#B91C1C' }}>{item.desc}</p>
                 </div>
               ))}

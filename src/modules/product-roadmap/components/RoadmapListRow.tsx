@@ -77,7 +77,7 @@ export function RoadmapListRow({ item, index, isFocused, isSelected, onClick, is
       style={{
         height: 44,
         backgroundColor: isSelected ? (isDark ? 'rgba(37,99,235,0.08)' : '#EFF6FF') : 'transparent',
-        borderBottom: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`,
+        borderBottom: `1px solid ${'var(--cp-border, #E2E8F0)'}`,
         outline: isFocused ? '2px solid #2563EB' : 'none',
         outlineOffset: -2,
       }}

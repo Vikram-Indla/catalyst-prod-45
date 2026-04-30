@@ -113,7 +113,7 @@ function FieldPair({ label, value }: { label: string; value: React.ReactNode }) 
     <div>
       <div style={{
         fontSize: '11px', fontWeight: 700, textTransform: 'uppercase' as const,
-        letterSpacing: '0.06em', color: isDark ? '#878787' : '#64748B', marginBottom: '6px',
+        letterSpacing: '0.06em', color: 'var(--cp-text-tertiary, #64748B)', marginBottom: '6px',
       }}>
         {label}
       </div>
@@ -448,7 +448,7 @@ export default function IdeationDetailPanel({ ideaKey, onClose, onConvert }: Pro
                   onClick={() => setLocalIsCommitted(!localIsCommitted)}
                   style={{
                     width: '44px', height: '24px', borderRadius: '12px', border: 'none',
-                    backgroundColor: localIsCommitted ? '#2563EB' : (isDark ? '#454545' : '#E2E8F0'),
+                    backgroundColor: localIsCommitted ? '#2563EB' : ('var(--cp-border-strong, #E2E8F0)'),
                     cursor: 'pointer', position: 'relative', transition: 'background 200ms ease',
                   }}
                 >
@@ -526,7 +526,7 @@ export default function IdeationDetailPanel({ ideaKey, onClose, onConvert }: Pro
               <div key={dim.letter} style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '14px' }}>
                 <div style={{
                   width: '32px', height: '32px', borderRadius: '50%',
-                  backgroundColor: isDark ? '#2E2E2E' : '#E2E8F0', color: dk.t2,
+                  backgroundColor: 'var(--cp-border, #E2E8F0)', color: dk.t2,
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   fontSize: '13px', fontWeight: 700, flexShrink: 0,
                 }}>
@@ -537,7 +537,7 @@ export default function IdeationDetailPanel({ ideaKey, onClose, onConvert }: Pro
                     <span style={{ fontSize: '13px', fontWeight: 500, color: dk.t1 }}>{dim.name}</span>
                     <span style={{ fontSize: '12px', color: dk.t2 }}>{dim.weight}</span>
                   </div>
-                  <div style={{ height: '4px', borderRadius: '4px', backgroundColor: isDark ? '#2E2E2E' : '#E2E8F0', overflow: 'hidden' }}>
+                  <div style={{ height: '4px', borderRadius: '4px', backgroundColor: 'var(--cp-border, #E2E8F0)', overflow: 'hidden' }}>
                     <div style={{
                       height: '100%', width: `${(dim.score / 5) * 100}%`,
                       backgroundColor: dim.score > 0 ? '#2563EB' : 'transparent',

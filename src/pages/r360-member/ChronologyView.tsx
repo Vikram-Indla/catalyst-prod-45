@@ -90,8 +90,8 @@ export function ChronologyView({ items, onSelect, weekStart, weekEnd }: { items:
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 4, flexShrink: 0 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
             {item.role_on_item === 'Contributor' && (
-              <span style={{ fontSize: 12.5, color: isDark ? '#A1A1A1' : '#334155', display: 'inline-flex', alignItems: 'center', gap: 4 }}>
-                <span style={{ color: isDark ? '#878787' : '#64748B' }}>{'\u2192'}</span> <MiniAvatar name={item.assignee_name} size={18} /> {item.assignee_name}
+              <span style={{ fontSize: 12.5, color: 'var(--cp-text-secondary, #334155)', display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+                <span style={{ color: 'var(--cp-text-tertiary, #64748B)' }}>{'\u2192'}</span> <MiniAvatar name={item.assignee_name} size={18} /> {item.assignee_name}
               </span>
             )}
             <span
@@ -203,7 +203,7 @@ export function ChronologyView({ items, onSelect, weekStart, weekEnd }: { items:
               {todayGroup[1].items.map(renderChronoCard)}
             </div>
           ) : (
-            <div style={{ paddingLeft: '28px', fontSize: '12px', fontStyle: 'italic', color: isDark ? '#878787' : '#94A3B8', padding: '8px 0 8px 28px' }}>
+            <div style={{ paddingLeft: '28px', fontSize: '12px', fontStyle: 'italic', color: 'var(--cp-text-muted, #94A3B8)', padding: '8px 0 8px 28px' }}>
               No activity yet today
             </div>
           )
@@ -220,7 +220,7 @@ export function ChronologyView({ items, onSelect, weekStart, weekEnd }: { items:
             <span style={{ width: '10px', height: '10px', borderRadius: '50%', border: '2px solid #D97706', background: 'transparent', flexShrink: 0 }} />
             <span className="r3-date-label" style={{ fontWeight: 650, fontSize: '13px' }}>Carried Over</span>
             <span className="r3-date-count">{carryoverItems.length} items</span>
-            <span style={{ fontSize: '10px', padding: '2px 6px', borderRadius: '4px', background: isDark ? 'var(--cp-bg-surface, #242528)' : '#F1F5F9', color: isDark ? '#878787' : '#64748B' }}>No activity this week</span>
+            <span style={{ fontSize: '10px', padding: '2px 6px', borderRadius: '4px', background: isDark ? 'var(--cp-bg-surface, #242528)' : '#F1F5F9', color: 'var(--cp-text-tertiary, #64748B)' }}>No activity this week</span>
             <ChevronDown size={16} className={`r3-date-chevron ${collapsed.has('__carryover__') ? 'r3-date-chevron--collapsed' : ''}`} />
           </div>
           {!collapsed.has('__carryover__') && (

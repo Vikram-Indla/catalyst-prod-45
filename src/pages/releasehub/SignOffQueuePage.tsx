@@ -59,13 +59,13 @@ export default function SignOffQueuePage() {
     <div className="p-6" style={{ background: isDark ? 'var(--cp-bg-page, #1F1F21)' : '#FFFFFF' }}>
       <div className="mb-5">
         <h1 className="text-[24px]" style={{ fontFamily: RH.fontDisplay, fontWeight: 650, color: isDark ? '#EDEDED' : RH.ink1 }}>Signoff Queue</h1>
-        <p className="text-[13px] mt-1" style={{ color: isDark ? '#878787' : '#64748B' }}>All pending approvals — notifications sent to approver's For You homepage</p>
+        <p className="text-[13px] mt-1" style={{ color: 'var(--cp-text-tertiary, #64748B)' }}>All pending approvals — notifications sent to approver's For You homepage</p>
       </div>
 
       {/* Toolbar */}
       <div className="flex items-center gap-3 mb-4">
         <div className="relative">
-          <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: isDark ? '#878787' : '#94A3B8' }} />
+          <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: 'var(--cp-text-muted, #94A3B8)' }} />
           <input type="text" placeholder="Search changes or approvers..." value={search} onChange={e => setSearch(e.target.value)}
             className="h-9 w-72 pl-9 pr-3 rounded-[4px] text-[13px] focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20"
             style={{ border: isDark ? '0.75px solid #2E2E2E' : '0.75px solid rgba(15,23,42,0.12)', fontFamily: RH.fontBody, background: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF', color: isDark ? '#EDEDED' : undefined }} />
@@ -83,7 +83,7 @@ export default function SignOffQueuePage() {
             <thead>
               <tr style={{ background: isDark ? 'var(--cp-bg-surface, #242528)' : '#F1F5F9' }}>
                 {['CHANGE', 'TITLE', 'GATE', 'APPROVER', 'RISK', 'STATUS', 'ACTIONS'].map(h => (
-                  <th key={h} className="text-left text-[11px] uppercase tracking-[0.06em]" style={{ fontWeight: 600, height: 50, padding: '8px 12px', color: isDark ? '#878787' : '#64748B' }}>{h}</th>
+                  <th key={h} className="text-left text-[11px] uppercase tracking-[0.06em]" style={{ fontWeight: 600, height: 50, padding: '8px 12px', color: 'var(--cp-text-tertiary, #64748B)' }}>{h}</th>
                 ))}
               </tr>
             </thead>
@@ -102,7 +102,7 @@ export default function SignOffQueuePage() {
                     <td className="px-3" style={{ fontFamily: RH.fontMono, color: '#2563EB', fontWeight: 650 }}>{so.rh_changes?.chg_number || '—'}</td>
                     <td className="px-3 truncate max-w-[240px]" style={{ color: isDark ? '#A1A1A1' : RH.ink2 }}>{so.rh_changes?.title || '—'}</td>
                     <td className="px-3" style={{ color: isDark ? '#A1A1A1' : RH.ink2 }}>{so.signoff_role || so.stage || '—'}</td>
-                    <td className="px-3" style={{ color: isDark ? '#878787' : '#64748B' }}>{so.assigned_to || '—'}</td>
+                    <td className="px-3" style={{ color: 'var(--cp-text-tertiary, #64748B)' }}>{so.assigned_to || '—'}</td>
                     <td className="px-3"><RiskBadge risk={so.rh_changes?.risk_level || 'standard'} /></td>
                     <td className="px-3"><StatusLozenge status={so.status} /></td>
                     <td className="px-3">
@@ -136,12 +136,12 @@ export default function SignOffQueuePage() {
           {actionModal && (
             <div className="space-y-4">
               <div className="rounded-[6px] p-3" style={{ background: isDark ? 'var(--cp-bg-surface, #242528)' : '#F1F5F9' }}>
-                <p className="text-[12px] mb-1" style={{ color: isDark ? '#878787' : '#64748B' }}>Gate: <span className="font-bold" style={{ color: isDark ? '#A1A1A1' : '#334155' }}>{actionModal.signoff.signoff_role || actionModal.signoff.stage}</span></p>
-                <p className="text-[12px]" style={{ color: isDark ? '#878787' : '#64748B' }}>Change: <span style={{ fontFamily: RH.fontMono, fontWeight: 650, color: '#2563EB' }}>{actionModal.signoff.rh_changes?.chg_number}</span> — {actionModal.signoff.rh_changes?.title}</p>
+                <p className="text-[12px] mb-1" style={{ color: 'var(--cp-text-tertiary, #64748B)' }}>Gate: <span className="font-bold" style={{ color: 'var(--cp-text-secondary, #334155)' }}>{actionModal.signoff.signoff_role || actionModal.signoff.stage}</span></p>
+                <p className="text-[12px]" style={{ color: 'var(--cp-text-tertiary, #64748B)' }}>Change: <span style={{ fontFamily: RH.fontMono, fontWeight: 650, color: '#2563EB' }}>{actionModal.signoff.rh_changes?.chg_number}</span> — {actionModal.signoff.rh_changes?.title}</p>
                 {actionModal.signoff.rh_changes?.risk_level && <div className="mt-2"><RiskBadge risk={actionModal.signoff.rh_changes.risk_level} /></div>}
               </div>
               <div>
-                <label className="block text-[12px] font-semibold mb-1" style={{ color: isDark ? '#A1A1A1' : '#475569' }}>Comment {actionModal.action === 'reject' && '*'}</label>
+                <label className="block text-[12px] font-semibold mb-1" style={{ color: 'var(--cp-text-secondary, #475569)' }}>Comment {actionModal.action === 'reject' && '*'}</label>
                 <textarea value={comment} onChange={e => setComment(e.target.value)} placeholder="Add a comment..."
                   className="w-full h-24 px-3 py-2 rounded-[4px] text-[13px] focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 resize-none"
                   style={{ border: isDark ? '0.75px solid #2E2E2E' : '0.75px solid rgba(15,23,42,0.12)', background: isDark ? 'var(--cp-bg-surface, #242528)' : undefined, color: isDark ? '#EDEDED' : undefined }} />
@@ -149,7 +149,7 @@ export default function SignOffQueuePage() {
             </div>
           )}
           <DialogFooter>
-            <button onClick={() => { setActionModal(null); setComment(''); }} className="h-9 px-4 rounded-[6px] text-[13px] font-medium" style={{ color: isDark ? '#A1A1A1' : '#475569', border: isDark ? '0.75px solid #2E2E2E' : '0.75px solid rgba(15,23,42,0.12)', background: isDark ? 'var(--cp-bg-surface, #242528)' : undefined }}>Cancel</button>
+            <button onClick={() => { setActionModal(null); setComment(''); }} className="h-9 px-4 rounded-[6px] text-[13px] font-medium" style={{ color: 'var(--cp-text-secondary, #475569)', border: isDark ? '0.75px solid #2E2E2E' : '0.75px solid rgba(15,23,42,0.12)', background: isDark ? 'var(--cp-bg-surface, #242528)' : undefined }}>Cancel</button>
             <button onClick={handleAction} disabled={approveSignoff.isPending || rejectSignoff.isPending}
               className={`h-9 px-4 rounded-[6px] text-[13px] font-semibold text-white disabled:opacity-50 ${actionModal?.action === 'approve' ? 'bg-[#16A34A] hover:bg-[#15803D]' : 'bg-[#DC2626] hover:bg-[#B91C1C]'}`}>
               {actionModal?.action === 'approve' ? 'Approve' : 'Reject'}

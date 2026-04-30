@@ -144,10 +144,10 @@ export default function SettingsPage() {
   const pageBg = isDark ? 'var(--cp-bg-page, #1F1F21)' : '#F8FAFC';
   const surfaceBg = isDark ? 'var(--cp-bg-surface, #242528)' : '#FFF';
   const elevatedBg = isDark ? 'var(--cp-bg-surface, #242528)' : '#F1F5F9';
-  const borderColor = isDark ? '#2E2E2E' : '#E2E8F0';
-  const textPrimary = isDark ? '#EDEDED' : '#0F172A';
-  const textSecondary = isDark ? '#A1A1A1' : '#64748B';
-  const textMuted = isDark ? '#878787' : '#94A3B8';
+  const borderColor = 'var(--cp-border, #E2E8F0)';
+  const textPrimary = 'var(--cp-text-primary, #0F172A)';
+  const textSecondary = 'var(--cp-text-tertiary, #64748B)';
+  const textMuted = 'var(--cp-text-muted, #94A3B8)';
 
   if (isLoading) {
     return (

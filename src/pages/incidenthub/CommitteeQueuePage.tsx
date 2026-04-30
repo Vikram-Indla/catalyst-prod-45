@@ -30,7 +30,7 @@ export default function CommitteeQueuePage() {
             <div className="flex items-center justify-center rounded-md" style={{ width: 32, height: 32, backgroundColor: '#FEF3C7' }}>
               <Users size={18} style={{ color: '#D97706' }} />
             </div>
-            <h1 style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 18, fontWeight: 700, color: isDark ? '#EDEDED' : '#0F172A' }}>Committee Queue</h1>
+            <h1 style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 18, fontWeight: 700, color: 'var(--cp-text-primary, #0F172A)' }}>Committee Queue</h1>
           </div>
           <Button size="sm" className="gap-1.5" style={{ backgroundColor: '#2563EB', borderRadius: 6 }}>
             <Plus size={14} /> New Committee
@@ -49,7 +49,7 @@ export default function CommitteeQueuePage() {
             {['KEY', 'INCIDENT', 'SEV', 'STATUS', 'AGE', 'APPROVAL', 'TYPE', 'ACTIONS'].map(h => (
               <div key={h} className="px-3" style={{
                 fontFamily: 'var(--cp-font-body)', fontSize: 11, fontWeight: 700,
-                textTransform: 'uppercase' as const, letterSpacing: '0.06em', color: isDark ? '#878787' : '#64748B',
+                textTransform: 'uppercase' as const, letterSpacing: '0.06em', color: 'var(--cp-text-tertiary, #64748B)',
               }}>{h}</div>
             ))}
           </div>
@@ -57,7 +57,7 @@ export default function CommitteeQueuePage() {
           {/* Empty */}
           {(!queue || queue.length === 0) && (
             <div className="flex items-center justify-center py-12">
-              <p style={{ fontFamily: 'var(--cp-font-body)', fontSize: 12, color: isDark ? '#878787' : '#94A3B8' }}>No committee members assigned.</p>
+              <p style={{ fontFamily: 'var(--cp-font-body)', fontSize: 12, color: 'var(--cp-text-muted, #94A3B8)' }}>No committee members assigned.</p>
             </div>
           )}
 
@@ -87,16 +87,16 @@ export default function CommitteeQueuePage() {
                     {item.incident_key}
                   </span>
                 </div>
-                <div className="px-3 truncate" style={{ fontFamily: 'var(--cp-font-body)', fontSize: 12, fontWeight: 650, color: isDark ? '#EDEDED' : '#0F172A' }}>
+                <div className="px-3 truncate" style={{ fontFamily: 'var(--cp-font-body)', fontSize: 12, fontWeight: 650, color: 'var(--cp-text-primary, #0F172A)' }}>
                   {item.title}
                 </div>
                 <div className="px-3"><SeverityChip severity={item.severity || 'SEV4'} /></div>
                 <div className="px-3"><StatusLozenge status={item.committee_status || 'pending'} /></div>
-                <div className="px-3" style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 11, color: isDark ? '#878787' : '#64748B' }}>
+                <div className="px-3" style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 11, color: 'var(--cp-text-tertiary, #64748B)' }}>
                   {item.age_hours ? `${Math.round(item.age_hours)}h` : '\u2014'}
                 </div>
                 <div className="px-3 flex items-center gap-2">
-                  <div style={{ flex: 1, height: 6, borderRadius: 4, backgroundColor: isDark ? '#292929' : '#E2E8F0', overflow: 'hidden' }}>
+                  <div style={{ flex: 1, height: 6, borderRadius: 4, backgroundColor: 'var(--cp-bg-sunken, #E2E8F0)', overflow: 'hidden' }}>
                     <div style={{
                       height: '100%',
                       width: `${progress * 100}%`,
@@ -105,7 +105,7 @@ export default function CommitteeQueuePage() {
                       transition: 'width 400ms ease',
                     }} />
                   </div>
-                  <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 10, color: isDark ? '#878787' : '#64748B', whiteSpace: 'nowrap' }}>
+                  <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 10, color: 'var(--cp-text-tertiary, #64748B)', whiteSpace: 'nowrap' }}>
                     {approved}/{total}
                   </span>
                 </div>
