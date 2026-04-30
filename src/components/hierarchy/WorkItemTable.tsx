@@ -884,6 +884,9 @@ export const WorkItemTable = memo(function WorkItemTable({ items, search, onSele
         .hi-type-icon-wrapper { width: 18px; height: 18px; min-width: 18px; min-height: 18px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
         .hi-expand-chevron { width: 20px; height: 20px; min-width: 20px; min-height: 20px; display: flex; align-items: center; justify-content: center; }
         .hi-work-column { overflow: hidden; min-width: 0; }
+        /* Rule 3 paired .dark — surfaces already branched via isDark above;
+           this selector adds ADS-token border-left for left-bar visibility on dark. */
+        .dark .hi-table-row:hover { border-left-color: #579DFF; }
       `}</style>
     </div>
   );

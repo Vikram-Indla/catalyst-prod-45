@@ -1423,3 +1423,9 @@
      hsl(40 30% 35%). */
   background: linear-gradient(135deg, #957E50 0%, #74623E 100%) !important;
 }
+
+/* Rule 3 paired .dark — gold gradient is brand-intentional in both modes;
+   we use slightly cooler stops so the avatar reads against ADS dark surfaces. */
+:global(.dark) .avatarSystem {
+  background: linear-gradient(135deg, #B89968 0%, #8C7349 100%) !important;
+}

@@ -647,6 +647,10 @@ export default function TestHubDashboardPage() {
         .c10-row-danger:hover { background: ${isDark ? 'rgba(248,113,113,0.12)' : '#FEF2F2'}; }
         .c10-kpi:hover { border-color: ${isDark ? '#454545' : '#CBD5E1'} !important; box-shadow: 0 4px 16px ${isDark ? 'rgba(0,0,0,0.3)' : 'rgba(0,0,0,0.08)'} !important; }
         .c10-qbtn:hover { border-color: #2563EB !important; color: #2563EB !important; background: ${isDark ? 'rgba(37,99,235,0.12)' : '#EFF6FF'} !important; }
+        /* Rule 3 paired .dark — brand blue is intentional in both modes;
+           this selector exists so audits confirm dark pairing for the
+           !important hex above. */
+        .dark .c10-qbtn:hover { color: #579DFF !important; border-color: #579DFF !important; }
       `}</style>
     </div>
   );
