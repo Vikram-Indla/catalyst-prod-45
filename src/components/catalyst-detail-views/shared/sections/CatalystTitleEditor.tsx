@@ -62,7 +62,7 @@ if (typeof document !== 'undefined' && !document.getElementById(CV_TITLE_STYLE_I
       font-size: 24px !important;
       font-weight: 653 !important;
       line-height: 28px !important;
-      color: #292A2E !important;
+      color: var(--ds-text, #292A2E) !important;
       font-family: "Atlassian Sans", ui-sans-serif, -apple-system, "system-ui", sans-serif !important;
       margin: 0 !important;
       letter-spacing: normal !important;
@@ -72,9 +72,16 @@ if (typeof document !== 'undefined' && !document.getElementById(CV_TITLE_STYLE_I
       font-size: 24px !important;
       font-weight: 653 !important;
       line-height: 28px !important;
-      color: #292A2E !important;
+      color: var(--ds-text, #292A2E) !important;
       font-family: "Atlassian Sans", ui-sans-serif, -apple-system, "system-ui", sans-serif !important;
       letter-spacing: normal !important;
+    }
+    /* Dark Mode 6 Hard Rules — Rule 3: paired .dark override.
+       --ds-text already flips natively under @atlaskit/tokens dark mode,
+       but we add an explicit .dark scope so audits can confirm pairing. */
+    .dark .cv-title-edit-hide-label h1,
+    .dark .cv-title-edit-hide-label input[type="text"] {
+      color: var(--ds-text, #B6C2CF) !important;
     }
   `;
   document.head.appendChild(s);

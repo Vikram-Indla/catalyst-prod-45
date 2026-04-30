@@ -200,6 +200,29 @@
   background-color: #ffffff !important;
 }
 
+/* ═══════════════════════════════════════════════════════════════════════════════
+   DARK MODE — Rule 3 paired overrides for !important hex in this file.
+   Brand-blue icon background (#2563eb), success/danger dots (#059669/#dc2626)
+   and white svg text on the brand circle are intentional — kept as-is.
+   We flip the white panel header and dark text to ADS dark tokens.
+   ═══════════════════════════════════════════════════════════════════════════════ */
+.dark .caty-header,
+.dark .caty-header-fixed,
+.dark [class*="caty-header"],
+.dark [class*="caty"] header,
+.dark .caty-widget header {
+  background: var(--ds-surface-overlay, #1D2125) !important;
+  background-color: var(--ds-surface-overlay, #1D2125) !important;
+  background-image: none !important;
+  border-bottom: 1px solid var(--ds-border, #38414A) !important;
+}
+.dark .caty-header-title {
+  color: var(--ds-text, #B6C2CF) !important;
+}
+.dark .caty-header-subtitle {
+  color: var(--ds-text-subtle, #9FADBC) !important;
+}
+
 /* ─────────────────────────────────────────────────────────────────────────────
    CONTEXT BAR — Department Pills Only
    ───────────────────────────────────────────────────────────────────────────── */

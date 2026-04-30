@@ -3426,3 +3426,26 @@
   color: #3b82f6;
   flex-shrink: 0;
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   DARK MODE — Rule 3 paired overrides for !important hex above.
+   White text (#ffffff) on brand-blue surfaces is intentional — kept as-is.
+   We only flip the neutral panel surface and the status badge text/bg
+   to maintain WCAG AA on dark backgrounds.
+   ═══════════════════════════════════════════════════════════════════════════════ */
+.dark .t10-panel {
+  background: var(--ds-surface-overlay, #1D2125) !important;
+  box-shadow: -8px 0 32px rgba(0, 0, 0, 0.5), -2px 0 8px rgba(0, 0, 0, 0.3) !important;
+}
+.dark .t10-status-badge.full {
+  color: var(--ds-text-success, #7EE2B8) !important;
+  background: rgba(34, 197, 94, 0.18) !important;
+}
+.dark .t10-status-badge.partial {
+  color: var(--ds-text-information, #85B8FF) !important;
+  background: rgba(37, 99, 235, 0.22) !important;
+}
+.dark .t10-status-badge.low {
+  color: var(--ds-text-warning, #F5CD47) !important;
+  background: rgba(245, 158, 11, 0.18) !important;
+}
