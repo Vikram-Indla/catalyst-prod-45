@@ -76,27 +76,12 @@ export function CatalystHeader() {
         flexShrink: 0,
       }}
     >
-      {/* Ceiling-extension divider — mirrors Jira's ::after pattern. Draws a
-          1px vertical line at the sidebar's right edge (x=240) spanning the
-          full 56px of the top-nav so the sidebar border reads as one
-          continuous line from viewport top to bottom. Shown when the sidebar
-          is visible (pinned OR hover-peek overlay); hidden in edge-reveal
-          state so there's no orphan line when the sidebar isn't on screen. */}
-      {sidebarOnScreen && !isNarrow && (
-        <div
-          aria-hidden="true"
-          data-catalyst-sidebar-ceiling
-          style={{
-            position: 'absolute',
-            left: '240px',
-            top: 0,
-            bottom: 0,
-            width: '1px',
-            background: 'var(--ds-border, var(--cp-bd, #DFE1E6))',
-            pointerEvents: 'none',
-          }}
-        />
-      )}
+      {/* Ceiling-extension divider REMOVED (2026-04-30, Vikram critique).
+          Jira does NOT extend the sidebar's right border up through the top
+          nav — the header reads as one continuous chrome surface with only
+          a horizontal bottom border separating it from the canvas. Drawing
+          a vertical seam at x=240 made the logo zone look "boxed in" and
+          violated ADS one-surface principle for the global shell. */}
       {/* LEFT cluster — in Jira parity, this column mirrors the sidebar's
           footprint (screen x=0 → x=240) when expanded, so the chevron right-
           anchors on the sidebar edge and lines up with the ceiling-extension
