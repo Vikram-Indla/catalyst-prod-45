@@ -12,6 +12,7 @@ import { GlobalSearch } from '@/components/layout/GlobalSearch';
 import { CreateDropdown } from './CreateDropdown';
 import { NotificationsPanel } from './NotificationsPanel';
 import { useCatalystContext } from '@/contexts/CatalystContext';
+import { useNavBreakpoint } from '@/hooks/useNavBreakpoint';
 import catalystWordmark from '@/assets/catalyst-wordmark-3.svg';
 
 const isMacPlatform = () =>
@@ -27,6 +28,13 @@ export function CatalystHeader() {
     sidebarHidden, sidebarPinned, sidebarHoverOpen,
     cycleSidebarState,
   } = useCatalystContext();
+
+  // Loop 3 (2026-04-30): trim header chrome at <1024px so Search + Create
+  // still fit alongside the external mobile hamburger overlay (rendered by
+  // CatalystShell). At isNarrow we hide AskCaty, ThemeToggle, and Settings
+  // — they remain reachable via the drawer / profile menu. Desktop ≥1024
+  // is byte-identical: the early-narrow branch is the only thing changing.
+  const { isNarrow, isMobile } = useNavBreakpoint();
 
   // The chevron's POSITION/ICON is driven by stickiness (sidebarPinned),
   // NOT by visibility. Pinned-visible → chevron at right edge (x=240) with
@@ -71,7 +79,7 @@ export function CatalystHeader() {
           continuous line from viewport top to bottom. Shown when the sidebar
           is visible (pinned OR hover-peek overlay); hidden in edge-reveal
           state so there's no orphan line when the sidebar isn't on screen. */}
-      {sidebarOnScreen && (
+      {sidebarOnScreen && !isNarrow && (
         <div
           aria-hidden="true"
           data-catalyst-sidebar-ceiling
@@ -101,7 +109,11 @@ export function CatalystHeader() {
           gap: '4px',
           justifySelf: 'start',
           justifyContent: 'space-between',
-          width: isPinnedOpen ? '228px' : 'auto',
+          width: isPinnedOpen && !isNarrow ? '228px' : 'auto',
+          // Reserve room for the external mobile hamburger (rendered by
+          // CatalystShell at left:8 / 36px wide) so HubSwitcher doesn't
+          // sit underneath it on iPhone/iPad.
+          paddingLeft: isNarrow ? '44px' : 0,
           boxSizing: 'border-box',
         }}
       >
@@ -111,7 +123,7 @@ export function CatalystHeader() {
             (x≈12). When pinned-open, the chevron moves to the trailing
             slot below, anchored to the sidebar's right edge (x=240). */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '4px', minWidth: 0 }}>
-          {!isPinnedOpen && (
+          {!isPinnedOpen && !isNarrow && (
             <div
               onMouseEnter={handleChevronEnter}
               onMouseLeave={handleChevronLeave}
@@ -130,20 +142,22 @@ export function CatalystHeader() {
             </div>
           )}
           <HubSwitcher />
-          <a
-            href="/for-you"
-            aria-label="Catalyst home"
-            style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center' }}
-          >
-            <img
-              src={catalystWordmark}
-              alt=""
-              height={28}
-              style={{ height: '28px', width: 'auto', display: 'block' }}
-            />
-          </a>
+          {!isMobile && (
+            <a
+              href="/for-you"
+              aria-label="Catalyst home"
+              style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center' }}
+            >
+              <img
+                src={catalystWordmark}
+                alt=""
+                height={28}
+                style={{ height: '28px', width: 'auto', display: 'block' }}
+              />
+            </a>
+          )}
         </div>
-        {isPinnedOpen && (
+        {isPinnedOpen && !isNarrow && (
           <div
             onMouseEnter={handleChevronEnter}
             onMouseLeave={handleChevronLeave}
@@ -180,10 +194,10 @@ export function CatalystHeader() {
           via useThemeMode() — clicking either flips both. (2026-04-28).
           HMR-nudge marker: phase-0-1-v2 */}
       <div style={{ display: 'flex', alignItems: 'center', gap: '4px', justifySelf: 'end' }} data-theme-toggle-cluster>
-        <AskCatalystPill />
-        <ThemeToggle />
+        {!isNarrow && <AskCatalystPill />}
+        {!isNarrow && <ThemeToggle />}
         <NotificationsPanel />
-        <SettingsMenu />
+        {!isNarrow && <SettingsMenu />}
         <ProfileMenu />
       </div>
     </header>
