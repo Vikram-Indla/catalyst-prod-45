@@ -38,8 +38,8 @@ export const DefectTable = memo(function DefectTable({
 
   if (isLoading) {
     return (
-      <div className="border border-border rounded-lg overflow-hidden">
-        <div className="bg-muted/50">
+      <div className="border border-border rounded-lg overflow-hidden overflow-x-auto">
+        <div className="bg-muted/50 min-w-[820px]">
           <div className="grid grid-cols-[40px_112px_1fr_100px_110px_120px_100px_80px_50px] gap-2 px-3 py-2 text-xs font-medium text-muted-foreground">
             <div />
             <div>ID</div>
