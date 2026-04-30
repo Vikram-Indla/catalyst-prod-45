@@ -131,7 +131,7 @@ function RoadmapCard({ idea, onClick, isDark, dk }: { idea: IdeaRow; onClick: ()
           e.currentTarget.style.boxShadow = '0 1px 3px rgba(0,0,0,0.06)';
           e.currentTarget.style.transform = 'none';
         }
-        e.currentTarget.style.borderColor = isDark ? '#2E2E2E' : 'rgba(15,23,42,0.12)';
+        e.currentTarget.style.borderColor = 'var(--cp-border-default, rgba(15,23,42,0.12))';
       }}
     >
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '6px' }}>

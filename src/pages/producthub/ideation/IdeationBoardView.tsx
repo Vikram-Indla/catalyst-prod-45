@@ -113,7 +113,7 @@ function IdeaBoardCard({ idea, columnStatus, onClick, onConvert, isDark, dk }: {
         boxShadow: isDark ? 'none' : undefined,
       }}
       onMouseEnter={e => {
-        e.currentTarget.style.background = isDark ? '#1F1F1F' : 'rgba(15,23,42,0.04)';
+        e.currentTarget.style.background = 'var(--cp-interact-hover, rgba(15,23,42,0.04))';
         if (!isDark) e.currentTarget.style.transform = 'translateY(-1px)';
       }}
       onMouseLeave={e => {

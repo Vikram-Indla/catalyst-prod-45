@@ -51,7 +51,7 @@ export function ConvertDialog({ open, onClose, incidentId }: ConvertDialogProps)
                 className="p-3 text-left transition-all"
                 style={{
                   borderRadius: 6,
-                  border: `1.5px solid ${selected === t.key ? '#2563EB' : (isDark ? '#2E2E2E' : 'rgba(15,23,42,0.12)')}`,
+                  border: `1.5px solid ${selected === t.key ? '#2563EB' : ('var(--cp-border-default, rgba(15,23,42,0.12))')}`,
                   backgroundColor: selected === t.key ? (isDark ? 'rgba(37,99,235,0.12)' : '#EFF6FF') : (isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF'),
                 }}
               >

@@ -57,7 +57,7 @@ export function TicketListDrawer({ mode, items, onClose, onSelectItem }: {
                   cursor: 'pointer', transition: 'background 80ms ease',
                   borderBottom: '1px solid rgba(15,23,42,0.05)',
                 }}
-                onMouseEnter={e => { e.currentTarget.style.background = isDark ? '#1F1F1F' : 'rgba(15,23,42,0.04)'; }}
+                onMouseEnter={e => { e.currentTarget.style.background = 'var(--cp-interact-hover, rgba(15,23,42,0.04))'; }}
                 onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
               >
                 {/* Type icon */}

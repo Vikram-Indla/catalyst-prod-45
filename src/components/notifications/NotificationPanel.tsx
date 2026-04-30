@@ -111,15 +111,15 @@ export default function NotificationPanel({ isOpen, onClose }: NotificationPanel
     text1: 'var(--cp-text-primary, #0F172A)',
     text2: 'var(--cp-text-tertiary, #64748B)',
     text3: 'var(--cp-text-muted, #94A3B8)',
-    border: isDark ? '#2E2E2E' : 'rgba(15,23,42,0.08)',
-    borderStrong: isDark ? '#454545' : 'rgba(15,23,42,0.12)',
-    hover: isDark ? '#1F1F1F' : 'rgba(15,23,42,0.04)',
-    press: isDark ? '#2E2E2E' : 'rgba(15,23,42,0.08)',
+    border: 'var(--cp-border-subtle, rgba(15,23,42,0.08))',
+    borderStrong: 'var(--cp-border-default, rgba(15,23,42,0.12))',
+    hover: 'var(--cp-interact-hover, rgba(15,23,42,0.04))',
+    press: 'var(--cp-border-subtle, rgba(15,23,42,0.08))',
     shadow: isDark
       ? '0 8px 24px rgba(0,0,0,0.4), 0 0 1px rgba(0,0,0,0.5)'
       : '0 8px 24px rgba(15,23,42,0.12), 0 0 1px rgba(15,23,42,0.08)',
     menuBg: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF',
-    divider: isDark ? '#292929' : 'rgba(15,23,42,0.08)',
+    divider: 'var(--cp-border-subtle, rgba(15,23,42,0.08))',
   };
 
   const [activeTab, setActiveTab] = useState<NotificationTab>('direct');

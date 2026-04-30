@@ -257,7 +257,7 @@ export default function ReqAssistLibrary() {
               fontFamily: 'var(--cp-font-body)',
               transition: 'background 80ms ease',
             }}
-            onMouseEnter={e => (e.currentTarget.style.background = isDark ? '#1F1F1F' : 'rgba(15,23,42,0.04)')}
+            onMouseEnter={e => (e.currentTarget.style.background = 'var(--cp-interact-hover, rgba(15,23,42,0.04))')}
             onMouseLeave={e => (e.currentTarget.style.background = isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF')}
           >
             <Download size={14} color="#374151" /> Import from Jira
@@ -300,7 +300,7 @@ export default function ReqAssistLibrary() {
           <div style={{
             display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
             padding: '80px 0', background: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF',
-            border: `0.75px solid ${isDark ? '#2E2E2E' : 'rgba(15,23,42,0.10)'}`, borderRadius: 8,
+            border: `0.75px solid ${'var(--cp-border-default, rgba(15,23,42,0.10))'}`, borderRadius: 8,
           }}>
             <FileText size={32} color="#94A3B8" style={{ marginBottom: 12 }} />
             <p style={{ fontSize: 16, fontWeight: 600, color: 'var(--cp-text-primary, #0F172A)', margin: '0 0 6px', fontFamily: 'var(--cp-font-heading)' }}>No documents yet</p>
@@ -319,7 +319,7 @@ export default function ReqAssistLibrary() {
           /* Table container */
           <div style={{
             background: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF',
-            border: `0.75px solid ${isDark ? '#2E2E2E' : 'rgba(15,23,42,0.10)'}`,
+            border: `0.75px solid ${'var(--cp-border-default, rgba(15,23,42,0.10))'}`,
             borderRadius: 8,
             overflow: 'hidden',
           }}>
@@ -341,7 +341,7 @@ export default function ReqAssistLibrary() {
               <div style={{
                 display: 'flex', alignItems: 'center', gap: 8,
                 padding: '8px 28px', fontSize: 12, color: 'var(--cp-text-tertiary, #64748B)',
-                background: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF', borderBottom: `0.75px solid ${isDark ? '#292929' : 'rgba(15,23,42,0.08)'}`,
+                background: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF', borderBottom: `0.75px solid ${'var(--cp-border-subtle, rgba(15,23,42,0.08))'}`,
                 fontFamily: 'var(--cp-font-body)',
               }}>
                 Showing {documents?.length ?? 0} of {totalCount} documents
@@ -363,7 +363,7 @@ export default function ReqAssistLibrary() {
             {/* Table */}
             <table style={{ width: '100%', borderCollapse: 'collapse', tableLayout: 'fixed' }}>
               <thead>
-                <tr style={{ borderBottom: `0.75px solid ${isDark ? '#2E2E2E' : 'rgba(15,23,42,0.10)'}` }}>
+                <tr style={{ borderBottom: `0.75px solid ${'var(--cp-border-default, rgba(15,23,42,0.10))'}` }}>
                   {[
                     { label: 'JIRA TICKET', w: 120 },
                     { label: 'TITLE', w: undefined },
@@ -583,7 +583,7 @@ export default function ReqAssistLibrary() {
                 display: 'flex', justifyContent: 'space-between', alignItems: 'center',
                 height: 50, padding: '8px 12px',
                 background: isDark ? 'var(--cp-bg-page, #1F1F21)' : '#FAFAFA',
-                borderTop: `0.75px solid ${isDark ? '#292929' : 'rgba(15,23,42,0.08)'}`,
+                borderTop: `0.75px solid ${'var(--cp-border-subtle, rgba(15,23,42,0.08))'}`,
               }}>
                 <span style={{ fontSize: 12, fontWeight: 400, color: 'var(--cp-text-tertiary, #64748B)', fontFamily: 'var(--cp-font-body)' }}>
                   Showing {documents.length} of {totalCount} documents
@@ -636,7 +636,7 @@ export default function ReqAssistLibrary() {
           <div style={{
             position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
             width: 420, background: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF', borderRadius: 8, zIndex: 90,
-            padding: 24, border: `0.75px solid ${isDark ? '#2E2E2E' : 'rgba(15,23,42,0.10)'}`,
+            padding: 24, border: `0.75px solid ${'var(--cp-border-default, rgba(15,23,42,0.10))'}`,
             fontFamily: 'var(--cp-font-body)',
           }}>
             <h3 style={{ fontSize: 16, fontWeight: 650, color: 'var(--cp-text-primary, #0F172A)', margin: '0 0 8px', fontFamily: 'var(--cp-font-heading)' }}>

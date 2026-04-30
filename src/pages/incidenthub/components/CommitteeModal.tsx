@@ -63,7 +63,7 @@ export function CommitteeModal({ open, onClose, committee, incidentId }: Committ
                 const vote = m.vote;
                 const voteStatus = vote?.vote || 'pending';
                 return (
-                  <div key={m.id} className="flex items-center gap-3 p-2" style={{ border: `1px solid ${isDark ? '#2E2E2E' : 'rgba(15,23,42,0.08)'}`, borderRadius: 4 }}>
+                  <div key={m.id} className="flex items-center gap-3 p-2" style={{ border: `1px solid ${'var(--cp-border-subtle, rgba(15,23,42,0.08))'}`, borderRadius: 4 }}>
                     <div className="rounded-full flex items-center justify-center shrink-0" style={{ width: 32, height: 32, backgroundColor: 'var(--cp-bg-sunken, #E2E8F0)', fontSize: 12, fontWeight: 650, color: 'var(--cp-text-secondary, #475569)' }}>
                       {(m.user?.full_name || 'U').charAt(0).toUpperCase()}
                     </div>

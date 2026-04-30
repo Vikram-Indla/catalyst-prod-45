@@ -96,7 +96,7 @@ export default function IdeasThemePage() {
                     display: 'flex', flexDirection: 'column',
                   }}
                   onMouseEnter={e => { e.currentTarget.style.borderColor = '#2563EB'; e.currentTarget.style.transform = 'translateY(-1px)'; }}
-                  onMouseLeave={e => { e.currentTarget.style.borderColor = isDark ? '#2E2E2E' : 'rgba(15,23,42,0.08)'; e.currentTarget.style.transform = 'none'; }}
+                  onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--cp-border-subtle, rgba(15,23,42,0.08))'; e.currentTarget.style.transform = 'none'; }}
                 >
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
                     <span style={{ fontFamily: MONO, fontSize: '11px', fontWeight: 600, color: dk.t3 }}>

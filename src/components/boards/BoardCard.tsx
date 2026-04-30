@@ -122,7 +122,7 @@ export default function BoardCard({ board, projectId, onOpen, onSettings }: Boar
                 <MenuItem onClick={() => setMenuOpen(false)}>
                   <ClipboardCopy size={13} /> Duplicate board
                 </MenuItem>
-                <div style={{ height: 0.75, background: isDark ? '#2E2E2E' : 'rgba(15,23,42,0.08)', margin: '4px 0' }} />
+                <div style={{ height: 0.75, background: 'var(--cp-border-subtle, rgba(15,23,42,0.08))', margin: '4px 0' }} />
                 <MenuItem danger onClick={() => { setMenuOpen(false); setDeleteModal(true); }}>
                   <Trash2 size={13} /> Delete board…
                 </MenuItem>

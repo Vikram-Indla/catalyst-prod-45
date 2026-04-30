@@ -1,0 +1,227 @@
+{
+  "total": 105,
+  "changed": [
+    {
+      "file": "src/components/admin/UserDetailPanel.tsx",
+      "n": 8
+    },
+    {
+      "file": "src/components/boards/BoardCard.tsx",
+      "n": 1
+    },
+    {
+      "file": "src/components/notifications/NotificationItem.tsx",
+      "n": 2
+    },
+    {
+      "file": "src/components/notifications/NotificationPanel.tsx",
+      "n": 5
+    },
+    {
+      "file": "src/components/producthub/shared/ProductHubPageHeader.tsx",
+      "n": 1
+    },
+    {
+      "file": "src/pages/ReqAssistLibrary.tsx",
+      "n": 7
+    },
+    {
+      "file": "src/pages/admin/FeatureFlagsPage.tsx",
+      "n": 14
+    },
+    {
+      "file": "src/pages/admin/JiraUserSync.tsx",
+      "n": 23
+    },
+    {
+      "file": "src/pages/incidenthub/IncidentInsightsPage.tsx",
+      "n": 1
+    },
+    {
+      "file": "src/pages/incidenthub/IncidentListPage.tsx",
+      "n": 1
+    },
+    {
+      "file": "src/pages/incidenthub/IncidentReportsPage.tsx",
+      "n": 7
+    },
+    {
+      "file": "src/pages/incidenthub/components/CommitteeModal.tsx",
+      "n": 1
+    },
+    {
+      "file": "src/pages/incidenthub/components/ConvertDialog.tsx",
+      "n": 1
+    },
+    {
+      "file": "src/pages/producthub/IdeasRoadmapPage.tsx",
+      "n": 1
+    },
+    {
+      "file": "src/pages/producthub/IdeasThemePage.tsx",
+      "n": 1
+    },
+    {
+      "file": "src/pages/producthub/IdeationPage.tsx",
+      "n": 1
+    },
+    {
+      "file": "src/pages/producthub/ideation/IdeationBoardView.tsx",
+      "n": 1
+    },
+    {
+      "file": "src/pages/r360-member/RingView.tsx",
+      "n": 2
+    },
+    {
+      "file": "src/pages/r360-member/TicketListDrawer.tsx",
+      "n": 1
+    },
+    {
+      "file": "src/pages/r360-member/WeekStripCollapsible.tsx",
+      "n": 3
+    },
+    {
+      "file": "src/pages/releasehub/AllChangesPage.tsx",
+      "n": 7
+    },
+    {
+      "file": "src/pages/releasehub/AllReleasesPage.tsx",
+      "n": 6
+    },
+    {
+      "file": "src/pages/releasehub/CommandCenterPage.tsx",
+      "n": 8
+    },
+    {
+      "file": "src/pages/releasehub/FreezeWindowsPage.tsx",
+      "n": 1
+    },
+    {
+      "file": "src/pages/releasehub/ProductionEventsPage.tsx",
+      "n": 1
+    }
+  ],
+  "unmapped": [
+    {
+      "light": "rgba(0,0,0,0.06)",
+      "count": 7
+    },
+    {
+      "light": "rgba(15,23,42,0.14)",
+      "count": 7
+    },
+    {
+      "light": "rgba(37,99,235,0.06)",
+      "count": 4
+    },
+    {
+      "light": "rgba(37,99,235,0.04)",
+      "count": 3
+    },
+    {
+      "light": "rgba(15,23,42,0.15)",
+      "count": 3
+    },
+    {
+      "light": "rgba(0,0,0,0.04)",
+      "count": 2
+    },
+    {
+      "light": "rgba(0,0,0,0.4)",
+      "count": 2
+    },
+    {
+      "light": "rgba(0,0,0,0.10)",
+      "count": 2
+    },
+    {
+      "light": "rgba(15,23,42,0.3)",
+      "count": 2
+    },
+    {
+      "light": "rgba(15,23,42,0.035)",
+      "count": 1
+    },
+    {
+      "light": "rgba(0,82,204,0.06)",
+      "count": 1
+    },
+    {
+      "light": "rgba(15,23,42,0.30)",
+      "count": 1
+    },
+    {
+      "light": "rgba(15,23,42,.08)",
+      "count": 1
+    },
+    {
+      "light": "rgba(15,23,42,0.2)",
+      "count": 1
+    },
+    {
+      "light": "rgba(37,99,235,0.03)",
+      "count": 1
+    },
+    {
+      "light": "rgba(0,0,0,0.3)",
+      "count": 1
+    },
+    {
+      "light": "rgba(255,255,255,0.6)",
+      "count": 1
+    },
+    {
+      "light": "rgba(15, 23, 42, 0.3)",
+      "count": 1
+    },
+    {
+      "light": "rgba(15,23,42,0.4)",
+      "count": 1
+    },
+    {
+      "light": "rgba(11,18,14,0.14)",
+      "count": 1
+    },
+    {
+      "light": "rgba(37,99,235,0.12)",
+      "count": 1
+    },
+    {
+      "light": "rgba(220,38,38,0.12)",
+      "count": 1
+    },
+    {
+      "light": "rgba(15,23,42,0.18)",
+      "count": 1
+    },
+    {
+      "light": "rgba(15,23,42,0.02)",
+      "count": 1
+    },
+    {
+      "light": "rgba(37,99,235,0.07)",
+      "count": 1
+    },
+    {
+      "light": "rgba(251,191,36,0.04)",
+      "count": 1
+    },
+    {
+      "light": "rgba(37,99,235,0.25)",
+      "count": 1
+    },
+    {
+      "light": "rgba(37,99,235,0.3)",
+      "count": 1
+    },
+    {
+      "light": "rgba(0,0,0,0.08)",
+      "count": 1
+    },
+    {
+      "light": "rgba(254, 242, 242, 0.6)",
+      "count": 1
+    }
+  ]
+}

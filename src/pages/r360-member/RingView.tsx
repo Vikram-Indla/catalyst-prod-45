@@ -134,7 +134,7 @@ export function RingView({ items, name, role, avatarUrl, onSelect, selected, ove
               return (
                 <div key={item.id} onClick={(e) => { e.stopPropagation(); onSelect(item); setShowDone(false); }}
                   style={{ display: 'flex', alignItems: 'flex-start', gap: '10px', padding: '10px 16px', cursor: 'pointer', borderBottom: '1px solid #F8FAFC', transition: 'background 80ms' }}
-                  onMouseEnter={e => (e.currentTarget.style.background = isDark ? '#1F1F1F' : 'rgba(15,23,42,0.04)')}
+                  onMouseEnter={e => (e.currentTarget.style.background = 'var(--cp-interact-hover, rgba(15,23,42,0.04))')}
                   onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
                 >
                   <div style={{ flexShrink: 0, marginTop: '2px' }}>{getJiraIcon(item.item_type)}</div>
@@ -355,7 +355,7 @@ export function RingView({ items, name, role, avatarUrl, onSelect, selected, ove
               onClick={() => onSelect(item)}
               tabIndex={0}
               data-testid={`r360-ring-card-${item.item_key}`}
-              onMouseEnter={e => { if (!isSelected) e.currentTarget.style.background = isDark ? '#1F1F1F' : 'rgba(15,23,42,0.04)'; }}
+              onMouseEnter={e => { if (!isSelected) e.currentTarget.style.background = 'var(--cp-interact-hover, rgba(15,23,42,0.04))'; }}
               onMouseLeave={e => { e.currentTarget.style.background = isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF'; }}
             >
               {/* Row 1: type + priority -- fixed 18px */}

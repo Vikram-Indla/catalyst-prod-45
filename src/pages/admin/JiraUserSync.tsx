@@ -240,11 +240,11 @@ const JiraUserSync: React.FC = () => {
       <div className="jira-surface flex flex-col flex-1 overflow-hidden mx-5 my-4 rounded-lg"
         style={{
           background: isDark ? 'var(--cp-bg-page, #1F1F21)' : '#FFFFFF',
-          border: `0.75px solid ${isDark ? '#2E2E2E' : 'rgba(15,23,42,0.06)'}`,
+          border: `0.75px solid ${'var(--cp-border-subtle, rgba(15,23,42,0.06))'}`,
         }}>
 
         {/* ══ Page Header ══ */}
-        <div className="jira-header-area shrink-0" style={{ padding: '14px 20px 0', borderBottom: `0.75px solid ${isDark ? '#2E2E2E' : 'rgba(15,23,42,0.06)'}` }}>
+        <div className="jira-header-area shrink-0" style={{ padding: '14px 20px 0', borderBottom: `0.75px solid ${'var(--cp-border-subtle, rgba(15,23,42,0.06))'}` }}>
           <div className="flex items-start justify-between pb-3">
             <div>
               <h1 className="jira-text-primary"
@@ -266,7 +266,7 @@ const JiraUserSync: React.FC = () => {
                   cursor: 'pointer', lineHeight: 1,
                   background: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF',
                   color: 'var(--cp-text-secondary, #334155)',
-                  border: `1px solid ${isDark ? '#2E2E2E' : 'rgba(15,23,42,0.10)'}`,
+                  border: `1px solid ${'var(--cp-border-default, rgba(15,23,42,0.10))'}`,
                 }}>
                 <Plus size={11} /> Create User
               </button>
@@ -287,7 +287,7 @@ const JiraUserSync: React.FC = () => {
         </div>
 
         {/* ══ Stat Cards ══ */}
-        <div className="jira-stat-band shrink-0 flex flex-nowrap" style={{ gap: '12px', padding: '20px 24px 18px', borderBottom: `0.75px solid ${isDark ? '#2E2E2E' : 'rgba(15,23,42,0.06)'}` }}>
+        <div className="jira-stat-band shrink-0 flex flex-nowrap" style={{ gap: '12px', padding: '20px 24px 18px', borderBottom: `0.75px solid ${'var(--cp-border-subtle, rgba(15,23,42,0.06))'}` }}>
           {STATS_CONFIG.map((card) => (
             <div
               key={card.key}
@@ -295,7 +295,7 @@ const JiraUserSync: React.FC = () => {
               style={{
                 flex: 1, minWidth: '140px', padding: '16px 20px', borderRadius: '8px',
                 background: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF',
-                border: `1px solid ${isDark ? '#2E2E2E' : 'rgba(15,23,42,0.08)'}`,
+                border: `1px solid ${'var(--cp-border-subtle, rgba(15,23,42,0.08))'}`,
               }}
             >
               <div className="flex items-center gap-[5px] mb-[4px]">
@@ -319,7 +319,7 @@ const JiraUserSync: React.FC = () => {
 
         {/* ══ Toolbar ══ */}
         <div className="jira-toolbar shrink-0 flex items-center gap-[7px] flex-wrap"
-          style={{ padding: '9px 18px', background: isDark ? 'var(--cp-bg-page, #1F1F21)' : '#FFFFFF', borderBottom: `0.75px solid ${isDark ? '#2E2E2E' : 'rgba(15,23,42,0.06)'}` }}>
+          style={{ padding: '9px 18px', background: isDark ? 'var(--cp-bg-page, #1F1F21)' : '#FFFFFF', borderBottom: `0.75px solid ${'var(--cp-border-subtle, rgba(15,23,42,0.06))'}` }}>
           <div className="relative w-[220px]">
             <Search size={12} className="absolute left-2 top-1/2 -translate-y-1/2" style={{ color: 'var(--cp-text-tertiary, #64748B)' }} />
             <input
@@ -331,7 +331,7 @@ const JiraUserSync: React.FC = () => {
                 padding: '5px 10px 5px 26px', borderRadius: '4px', fontSize: '12px', outline: 'none',
                 background: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF',
                 color: 'var(--cp-text-primary, #0F172A)',
-                border: `1px solid ${isDark ? '#454545' : 'rgba(15,23,42,0.10)'}`,
+                border: `1px solid ${'var(--cp-border-default, rgba(15,23,42,0.10))'}`,
               }}
             />
           </div>
@@ -352,7 +352,7 @@ const JiraUserSync: React.FC = () => {
                     : ('var(--cp-text-secondary, #334155)'),
                   border: filter === f.value
                     ? `1px solid ${isDark ? 'rgba(37,99,235,0.25)' : '#BFDBFE'}`
-                    : `1px solid ${isDark ? '#2E2E2E' : 'rgba(15,23,42,0.10)'}`,
+                    : `1px solid ${'var(--cp-border-default, rgba(15,23,42,0.10))'}`,
                 }}>
                 {f.label}
               </button>
@@ -367,7 +367,7 @@ const JiraUserSync: React.FC = () => {
                   padding: '4px 9px', borderRadius: '4px', fontSize: '11px', fontWeight: 500, cursor: 'pointer',
                   background: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF',
                   color: 'var(--cp-text-secondary, #334155)',
-                  border: `1px solid ${isDark ? '#2E2E2E' : 'rgba(15,23,42,0.10)'}`,
+                  border: `1px solid ${'var(--cp-border-default, rgba(15,23,42,0.10))'}`,
                 }}>
                 <Copy size={11} /> Copy Permissions
               </button>
@@ -379,7 +379,7 @@ const JiraUserSync: React.FC = () => {
                 padding: '4px 9px', borderRadius: '4px', fontSize: '11px', fontWeight: 500, cursor: 'pointer',
                 background: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF',
                 color: 'var(--cp-text-secondary, #334155)',
-                border: `1px solid ${isDark ? '#2E2E2E' : 'rgba(15,23,42,0.10)'}`,
+                border: `1px solid ${'var(--cp-border-default, rgba(15,23,42,0.10))'}`,
               }}>
               <Download size={11} /> Export
             </button>
@@ -416,7 +416,7 @@ const JiraUserSync: React.FC = () => {
                 style={{
                   width: '360px', padding: 0,
                   background: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF',
-                  border: `1px solid ${isDark ? '#2E2E2E' : 'rgba(15,23,42,0.12)'}`,
+                  border: `1px solid ${'var(--cp-border-default, rgba(15,23,42,0.12))'}`,
                 }}
                 align="start"
               >
@@ -436,7 +436,7 @@ const JiraUserSync: React.FC = () => {
                       padding: '5px 8px', borderRadius: '4px', fontSize: '11px', outline: 'none', marginBottom: '6px',
                       background: isDark ? 'var(--cp-bg-surface, #242528)' : '#F8FAFC',
                       color: 'var(--cp-text-primary, #0F172A)',
-                      border: `1px solid ${isDark ? '#454545' : 'rgba(15,23,42,0.10)'}`,
+                      border: `1px solid ${'var(--cp-border-default, rgba(15,23,42,0.10))'}`,
                     }}
                   />
                   <div className="flex items-center gap-1 mb-2">
@@ -448,7 +448,7 @@ const JiraUserSync: React.FC = () => {
                         style={{
                           padding: '2px 8px', borderRadius: '4px', fontSize: '10px', fontWeight: 700,
                           textTransform: 'uppercase', cursor: 'pointer',
-                          border: `1px solid ${isDark ? '#2E2E2E' : 'rgba(15,23,42,0.10)'}`,
+                          border: `1px solid ${'var(--cp-border-default, rgba(15,23,42,0.10))'}`,
                           background: assignPermLevel === lvl
                             ? lvl === 'full' ? '#DCFCE7' : lvl === 'edit' ? '#EFF6FF' : '#F1F5F9'
                             : 'transparent',
@@ -462,7 +462,7 @@ const JiraUserSync: React.FC = () => {
                     ))}
                   </div>
                 </div>
-                <div style={{ maxHeight: '200px', overflowY: 'auto', borderTop: `0.75px solid ${isDark ? '#2E2E2E' : 'rgba(15,23,42,0.06)'}` }}>
+                <div style={{ maxHeight: '200px', overflowY: 'auto', borderTop: `0.75px solid ${'var(--cp-border-subtle, rgba(15,23,42,0.06))'}` }}>
                   {(jiraProjects || [])
                     .filter(p => !assignSearch || p.project_key.toLowerCase().includes(assignSearch.toLowerCase()) || (p.project_name || '').toLowerCase().includes(assignSearch.toLowerCase()))
                     .map(proj => (
@@ -518,7 +518,7 @@ const JiraUserSync: React.FC = () => {
                 padding: '3px 10px', borderRadius: '4px', fontSize: '11px', fontWeight: 500, cursor: 'pointer',
                 background: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF',
                 color: '#DC2626',
-                border: `1px solid ${isDark ? '#2E2E2E' : 'rgba(15,23,42,0.10)'}`,
+                border: `1px solid ${'var(--cp-border-default, rgba(15,23,42,0.10))'}`,
               }}>
               <UserX size={11} /> Deactivate
             </button>
@@ -528,7 +528,7 @@ const JiraUserSync: React.FC = () => {
                 padding: '3px 10px', borderRadius: '4px', fontSize: '11px', fontWeight: 500, cursor: 'pointer',
                 background: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF',
                 color: 'var(--cp-text-secondary, #334155)',
-                border: `1px solid ${isDark ? '#2E2E2E' : 'rgba(15,23,42,0.10)'}`,
+                border: `1px solid ${'var(--cp-border-default, rgba(15,23,42,0.10))'}`,
               }}>
               <Copy size={11} /> Copy Permissions
             </button>
@@ -548,7 +548,7 @@ const JiraUserSync: React.FC = () => {
         <div className="flex-1 overflow-y-auto overflow-x-auto">
           <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: '1000px' }}>
             <thead>
-              <tr className="jira-table-header" style={{ background: isDark ? 'var(--cp-bg-surface, #242528)' : '#F1F5F9', borderBottom: `0.75px solid ${isDark ? '#2E2E2E' : 'rgba(15,23,42,0.06)'}` }}>
+              <tr className="jira-table-header" style={{ background: isDark ? 'var(--cp-bg-surface, #242528)' : '#F1F5F9', borderBottom: `0.75px solid ${'var(--cp-border-subtle, rgba(15,23,42,0.06))'}` }}>
                 <th style={{ width: '36px', padding: '10px 12px', textAlign: 'center' }}>
                   <input
                     ref={headerCheckRef}
@@ -575,7 +575,7 @@ const JiraUserSync: React.FC = () => {
               {usersLoading ? (
                 Array.from({ length: 10 }).map((_, i) => (
                   <tr key={`skel-${i}`} className="jira-row"
-                    style={{ height: '50px', maxHeight: '50px', borderBottom: `0.75px solid ${isDark ? '#2E2E2E' : 'rgba(15,23,42,0.06)'}` }}>
+                    style={{ height: '50px', maxHeight: '50px', borderBottom: `0.75px solid ${'var(--cp-border-subtle, rgba(15,23,42,0.06))'}` }}>
                     <td style={{ padding: '8px 12px' }}><div className="jira-skeleton animate-pulse" style={{ width: 14, height: 14, borderRadius: 4, background: 'var(--cp-border, #E2E8F0)' }} /></td>
                     <td style={{ padding: '8px 12px' }}>
                       <div className="flex items-center gap-2">
@@ -648,7 +648,7 @@ const JiraUserSync: React.FC = () => {
                     onClick={() => setActiveUserId(user.id === activeUserId ? null : user.id)}
                     style={{
                       height: '50px', maxHeight: '50px',
-                      borderBottom: `0.75px solid ${isDark ? '#2E2E2E' : 'rgba(15,23,42,0.06)'}`,
+                      borderBottom: `0.75px solid ${'var(--cp-border-subtle, rgba(15,23,42,0.06))'}`,
                       borderLeft: isCatalystOnly ? '2px solid #7C3AED' : 'none',
                       cursor: 'pointer', opacity: isInactive ? 0.5 : 1,
                       transition: 'background 120ms ease',
@@ -780,7 +780,7 @@ const JiraUserSync: React.FC = () => {
 
         {/* ══ Pagination ══ */}
         <div className="jira-pagination-bg shrink-0 flex items-center justify-between"
-          style={{ padding: '9px 16px', borderTop: `0.75px solid ${isDark ? '#2E2E2E' : 'rgba(15,23,42,0.06)'}`, background: isDark ? 'var(--cp-bg-page, #1F1F21)' : '#F8FAFC' }}>
+          style={{ padding: '9px 16px', borderTop: `0.75px solid ${'var(--cp-border-subtle, rgba(15,23,42,0.06))'}`, background: isDark ? 'var(--cp-bg-page, #1F1F21)' : '#F8FAFC' }}>
           <span style={{ fontSize: '11px', color: 'var(--cp-text-tertiary, #64748B)' }}>
             {totalCount > 0 ? `Showing ${showStart}–${showEnd} of ${totalCount} users` : 'No results'}
           </span>
@@ -794,7 +794,7 @@ const JiraUserSync: React.FC = () => {
                 borderRadius: '4px', cursor: page <= 1 ? 'not-allowed' : 'pointer',
                 opacity: page <= 1 ? 0.4 : 1,
                 background: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF',
-                border: `1px solid ${isDark ? '#2E2E2E' : 'rgba(15,23,42,0.10)'}`,
+                border: `1px solid ${'var(--cp-border-default, rgba(15,23,42,0.10))'}`,
                 color: 'var(--cp-text-secondary, #334155)',
               }}
             >
@@ -812,7 +812,7 @@ const JiraUserSync: React.FC = () => {
                     borderRadius: '4px', fontSize: '11px', fontWeight: 500, cursor: 'pointer',
                     background: page === p ? '#2563EB' : (isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF'),
                     color: page === p ? '#FFFFFF' : ('var(--cp-text-tertiary, #64748B)'),
-                    border: page === p ? 'none' : `1px solid ${isDark ? '#2E2E2E' : 'rgba(15,23,42,0.10)'}`,
+                    border: page === p ? 'none' : `1px solid ${'var(--cp-border-default, rgba(15,23,42,0.10))'}`,
                   }}
                 >
                   {p}
@@ -828,7 +828,7 @@ const JiraUserSync: React.FC = () => {
                 borderRadius: '4px', cursor: page >= totalPages ? 'not-allowed' : 'pointer',
                 opacity: page >= totalPages ? 0.4 : 1,
                 background: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF',
-                border: `1px solid ${isDark ? '#2E2E2E' : 'rgba(15,23,42,0.10)'}`,
+                border: `1px solid ${'var(--cp-border-default, rgba(15,23,42,0.10))'}`,
                 color: 'var(--cp-text-secondary, #334155)',
               }}
             >

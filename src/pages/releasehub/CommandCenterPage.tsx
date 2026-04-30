@@ -257,7 +257,7 @@ export default function CommandCenterPage() {
       {/* Row 2: Latest Deployed + Release Status */}
       <div className="grid grid-cols-2 gap-4 mb-6">
         {/* Latest Approved Change */}
-        <div className="rounded-[6px] p-5" style={{ background: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF', border: `0.75px solid ${isDark ? '#2E2E2E' : 'rgba(15,23,42,0.12)'}` }}>
+        <div className="rounded-[6px] p-5" style={{ background: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF', border: `0.75px solid ${'var(--cp-border-default, rgba(15,23,42,0.12))'}` }}>
           <SectionHeader title="Latest Deployed Change" isDark={isDark} />
           {latestDeployed ? (
             <div className="cursor-pointer" onClick={() => setSelectedChange(latestDeployed)}>
@@ -291,7 +291,7 @@ export default function CommandCenterPage() {
         </div>
 
         {/* Release Status Table */}
-        <div className="rounded-[6px] overflow-hidden" style={{ background: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF', border: `0.75px solid ${isDark ? '#2E2E2E' : 'rgba(15,23,42,0.12)'}` }}>
+        <div className="rounded-[6px] overflow-hidden" style={{ background: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF', border: `0.75px solid ${'var(--cp-border-default, rgba(15,23,42,0.12))'}` }}>
           <div className="px-5 py-3.5">
             <SectionHeader title="Release Status" isDark={isDark} action={<button onClick={() => navigate('/release-hub/releases')} className="text-[12px] font-medium text-[#2563EB] hover:underline">View all</button>} />
           </div>
@@ -334,7 +334,7 @@ export default function CommandCenterPage() {
       {/* Row 3: Change Pipeline + AI Release Readiness */}
       <div className="grid grid-cols-2 gap-4 mb-6">
         {/* Change Pipeline Funnel */}
-        <div className="rounded-[6px] p-5" style={{ background: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF', border: `0.75px solid ${isDark ? '#2E2E2E' : 'rgba(15,23,42,0.12)'}` }}>
+        <div className="rounded-[6px] p-5" style={{ background: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF', border: `0.75px solid ${'var(--cp-border-default, rgba(15,23,42,0.12))'}` }}>
           <SectionHeader title="Change Pipeline" isDark={isDark} action={<button onClick={() => navigate('/release-hub/changes')} className="text-[12px] font-medium text-[#2563EB] hover:underline">View all</button>} />
           <div className="flex items-center gap-0 mt-4">
             {pipelineCols.map((col, i) => (
@@ -371,7 +371,7 @@ export default function CommandCenterPage() {
         </div>
 
         {/* AI Release Readiness — computed */}
-        <div className="rounded-[6px] p-5" style={{ background: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF', border: `0.75px solid ${isDark ? '#2E2E2E' : 'rgba(15,23,42,0.12)'}` }}>
+        <div className="rounded-[6px] p-5" style={{ background: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF', border: `0.75px solid ${'var(--cp-border-default, rgba(15,23,42,0.12))'}` }}>
           <div className="flex items-center gap-2 mb-4">
             <Sparkles size={14} style={{ color: '#2563EB' }} />
             <h2 className="text-[14px]" style={{ fontFamily: RH.fontDisplay, fontWeight: 650, color: isDark ? '#EDEDED' : RH.ink1 }}>AI Release Readiness</h2>
@@ -433,7 +433,7 @@ export default function CommandCenterPage() {
                       key={gate.label}
                       className="rounded-[6px] p-3"
                       style={{
-                        border: `0.75px solid ${isDark ? '#2E2E2E' : 'rgba(15,23,42,0.08)'}`,
+                        border: `0.75px solid ${'var(--cp-border-subtle, rgba(15,23,42,0.08))'}`,
                         borderLeft: `4px solid ${borderColor}`,
                       }}
                     >
@@ -457,7 +457,7 @@ export default function CommandCenterPage() {
       {/* Row 4: Signoff Queue + Production Events */}
       <div className="grid grid-cols-2 gap-4">
         {/* Signoff Queue Widget */}
-        <div className="rounded-[6px] overflow-hidden" style={{ background: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF', border: `0.75px solid ${isDark ? '#2E2E2E' : 'rgba(15,23,42,0.12)'}` }}>
+        <div className="rounded-[6px] overflow-hidden" style={{ background: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF', border: `0.75px solid ${'var(--cp-border-default, rgba(15,23,42,0.12))'}` }}>
           <div className="px-5 py-3.5 flex items-center justify-between">
             <div className="flex items-center gap-2">
               <h2 className="text-[14px]" style={{ fontFamily: RH.fontDisplay, fontWeight: 650, color: isDark ? '#EDEDED' : RH.ink1 }}>Signoff Queue</h2>
@@ -481,7 +481,7 @@ export default function CommandCenterPage() {
               </thead>
               <tbody>
                 {pendingSignoffs.slice(0, 4).map((so: any) => (
-                  <tr key={so.id} className="cursor-pointer" style={{ height: 50, borderBottom: `0.75px solid ${isDark ? '#292929' : 'rgba(15,23,42,0.06)'}` }}
+                  <tr key={so.id} className="cursor-pointer" style={{ height: 50, borderBottom: `0.75px solid ${'var(--cp-border-subtle, rgba(15,23,42,0.06))'}` }}
                     onMouseEnter={e => (e.currentTarget.style.background = isDark ? 'var(--cp-bg-surface, #242528)' : 'rgba(15,23,42,0.04)')}
                     onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
                     <td className="px-3" style={{ fontFamily: RH.fontMono, color: '#2563EB', fontWeight: 650 }}>{so.rh_changes?.chg_number || '—'}</td>
@@ -496,7 +496,7 @@ export default function CommandCenterPage() {
         </div>
 
         {/* Recent Production Events */}
-        <div className="rounded-[6px] overflow-hidden" style={{ background: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF', border: `0.75px solid ${isDark ? '#2E2E2E' : 'rgba(15,23,42,0.12)'}` }}>
+        <div className="rounded-[6px] overflow-hidden" style={{ background: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF', border: `0.75px solid ${'var(--cp-border-default, rgba(15,23,42,0.12))'}` }}>
           <div className="px-5 py-3.5">
             <SectionHeader title="Recent Production Events" isDark={isDark} action={<button onClick={() => navigate('/release-hub/production-events')} className="text-[12px] font-medium text-[#2563EB] hover:underline">View all</button>} />
           </div>

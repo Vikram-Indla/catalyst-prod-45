@@ -181,7 +181,7 @@ export default function FreezeWindowsPage() {
             <tbody>
               {windows.map((fw: any) => (
                 <tr key={fw.id} className="group"
-                  style={{ height: 50, transition: 'background 120ms', borderBottom: `0.75px solid ${isDark ? '#292929' : 'rgba(15,23,42,0.06)'}` }}
+                  style={{ height: 50, transition: 'background 120ms', borderBottom: `0.75px solid ${'var(--cp-border-subtle, rgba(15,23,42,0.06))'}` }}
                   onMouseEnter={e => (e.currentTarget.style.background = isDark ? 'var(--cp-bg-surface, #242528)' : 'rgba(15,23,42,0.04)')}
                   onMouseLeave={e => (e.currentTarget.style.background = isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF')}>
                   <td className="px-3 py-0 font-medium" style={{ color: 'var(--cp-text-primary, #0F172A)', fontWeight: 650 }}>{fw.name}</td>

@@ -89,7 +89,7 @@ export default function IncidentListPage() {
   // owned by JiraTable's own focus-css block) ────────────────────────────
   const pageBg = isDark ? 'var(--cp-bg-page, #1F1F21)' : '#FFFFFF';
   const surfaceBg = isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF';
-  const borderColor = isDark ? '#2E2E2E' : 'rgba(15,23,42,0.12)';
+  const borderColor = 'var(--cp-border-default, rgba(15,23,42,0.12))';
   const textPrimary = 'var(--cp-text-primary, #0F172A)';
   const textSecondary = 'var(--cp-text-tertiary, #64748B)';
   const textMuted = 'var(--cp-text-muted, #94A3B8)';

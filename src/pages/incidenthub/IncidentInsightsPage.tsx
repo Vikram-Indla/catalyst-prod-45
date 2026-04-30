@@ -19,7 +19,7 @@ export default function IncidentInsightsPage() {
   const textPrimary = 'var(--cp-text-primary, #0F172A)';
   const textSecondary = 'var(--cp-text-tertiary, #64748B)';
   const textBody = 'var(--cp-text-secondary, #334155)';
-  const borderColor = isDark ? '#2E2E2E' : 'rgba(15,23,42,0.12)';
+  const borderColor = 'var(--cp-border-default, rgba(15,23,42,0.12))';
 
   return (
     <div className="flex-1 overflow-auto" style={{ backgroundColor: pageBg }}>
