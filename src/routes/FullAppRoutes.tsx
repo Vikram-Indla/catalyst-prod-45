@@ -488,10 +488,13 @@ export default function FullAppRoutes() {
             Data filter is UI-only until ph_requests gains a product_id FK in
             a follow-up migration — see lesson note in CLAUDE.md. */}
         <Route path="/product-hub/:code/backlog" element={<MG k="producthub" t="ProductHub"><S><RequestListingPage /></S></MG>} />
+        <Route path="/product-hub/:code/boards" element={<MG k="producthub" t="ProductHub"><S><ProductKanbanPage /></S></MG>} />
         <Route path="/product-hub/:code/kanban" element={<MG k="producthub" t="ProductHub"><S><ProductKanbanPage /></S></MG>} />
+        <Route path="/product-hub/:code/allwork" element={<MG k="producthub" t="ProductHub"><S><RequestListingPage /></S></MG>} />
         <Route path="/product-hub/:code/dashboard" element={<MG k="producthub" t="ProductHub"><S><DemandSummaryPage /></S></MG>} />
         <Route path="/product-hub/:code/roadmap" element={<MG k="producthub" t="ProductHub"><S><RoadmapPage /></S></MG>} />
         <Route path="/product-hub/:code/cards" element={<MG k="producthub" t="ProductHub"><S><ProductCardsPage /></S></MG>} />
+        <Route path="/product-hub/:code/settings" element={<MG k="producthub" t="ProductHub"><S><DemandSummaryPage /></S></MG>} />
         <Route path="/product-hub/roadmaps" element={<Navigate to="/product-hub/roadmap" replace />} />
         <Route path="/product-hub/roadmaps-v1" element={<MG k="producthub" t="ProductHub"><S><IndustryRoadmapPage /></S></MG>} />
         <Route path="/product-hub/reports" element={<MG k="producthub" t="ProductHub"><S><IndustryComingSoon /></S></MG>} />
