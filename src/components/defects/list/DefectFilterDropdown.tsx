@@ -176,7 +176,7 @@ export function getPriorityOptions(): FilterOption[] {
 
 export function getSourceOptions(): FilterOption[] {
   return [
-    { value: 'jira', label: 'Jira', color: '#2563EB' },
-    { value: 'native', label: 'Catalyst', color: '#64748b' },
+    { value: 'jira', label: 'Jira', color: 'var(--ds-text-brand, #2563EB)' },
+    { value: 'native', label: 'Catalyst', color: 'var(--ds-text-subtlest, #64748b)' },
   ];
 }

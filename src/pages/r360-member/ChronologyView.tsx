@@ -55,7 +55,7 @@ export function ChronologyView({ items, onSelect, weekStart, weekEnd }: { items:
   // D-19: No auto-scroll -- Chronology renders Today first at the top.
   // The tab-switch handler already scrolls to top on view change.
 
-  const accentColor = (cat: string) => cat === 'in_progress' ? '#2563EB' : cat === 'in_qa' ? '#0D9488' : cat === 'blocked' ? '#EF4444' : cat === 'done' ? '#16A34A' : '#D97706';
+  const accentColor = (cat: string) => cat === 'in_progress' ? 'var(--ds-text-brand, #2563EB)' : cat === 'in_qa' ? '#0D9488' : cat === 'blocked' ? 'var(--ds-text-danger, #EF4444)' : cat === 'done' ? 'var(--ds-text-success, #16A34A)' : 'var(--ds-text-warning, #D97706)';
 
   // Render a single chronology card
   const renderChronoCard = (item: R360WorkItem) => {
@@ -139,10 +139,10 @@ export function ChronologyView({ items, onSelect, weekStart, weekEnd }: { items:
           <span className="r3-date-label">{group.label}</span>
           <span className="r3-date-count">{total} items</span>
           <div className="r3-minibar">
-            {statusDist.done > 0 && <div style={{ width: `${statusDist.done / total * 100}%`, background: '#16A34A' }} />}
-            {statusDist.in_progress > 0 && <div style={{ width: `${statusDist.in_progress / total * 100}%`, background: '#2563EB' }} />}
-            {statusDist.to_do > 0 && <div style={{ width: `${statusDist.to_do / total * 100}%`, background: '#D97706' }} />}
-            {statusDist.blocked > 0 && <div style={{ width: `${statusDist.blocked / total * 100}%`, background: '#EF4444' }} />}
+            {statusDist.done > 0 && <div style={{ width: `${statusDist.done / total * 100}%`, background: 'var(--ds-text-success, #16A34A)' }} />}
+            {statusDist.in_progress > 0 && <div style={{ width: `${statusDist.in_progress / total * 100}%`, background: 'var(--ds-text-brand, #2563EB)' }} />}
+            {statusDist.to_do > 0 && <div style={{ width: `${statusDist.to_do / total * 100}%`, background: 'var(--ds-text-warning, #D97706)' }} />}
+            {statusDist.blocked > 0 && <div style={{ width: `${statusDist.blocked / total * 100}%`, background: 'var(--ds-text-danger, #EF4444)' }} />}
           </div>
           <ChevronDown size={16} className={`r3-date-chevron ${isCollapsed ? 'r3-date-chevron--collapsed' : ''}`} />
         </div>
@@ -188,10 +188,10 @@ export function ChronologyView({ items, onSelect, weekStart, weekEnd }: { items:
             });
             return (
               <div className="r3-minibar">
-                {sd.done > 0 && <div style={{ width: `${sd.done / total * 100}%`, background: '#16A34A' }} />}
-                {sd.in_progress > 0 && <div style={{ width: `${sd.in_progress / total * 100}%`, background: '#2563EB' }} />}
-                {sd.to_do > 0 && <div style={{ width: `${sd.to_do / total * 100}%`, background: '#D97706' }} />}
-                {sd.blocked > 0 && <div style={{ width: `${sd.blocked / total * 100}%`, background: '#EF4444' }} />}
+                {sd.done > 0 && <div style={{ width: `${sd.done / total * 100}%`, background: 'var(--ds-text-success, #16A34A)' }} />}
+                {sd.in_progress > 0 && <div style={{ width: `${sd.in_progress / total * 100}%`, background: 'var(--ds-text-brand, #2563EB)' }} />}
+                {sd.to_do > 0 && <div style={{ width: `${sd.to_do / total * 100}%`, background: 'var(--ds-text-warning, #D97706)' }} />}
+                {sd.blocked > 0 && <div style={{ width: `${sd.blocked / total * 100}%`, background: 'var(--ds-text-danger, #EF4444)' }} />}
               </div>
             );
           })()}

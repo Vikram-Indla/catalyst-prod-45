@@ -5,11 +5,11 @@
 
 export const loginColors = {
   // Primary Action - Blue (ALL interactive elements)
-  primary: '#2563eb',
-  primaryHover: '#1d4ed8',
+  primary: 'var(--ds-text-brand, #2563eb)',
+  primaryHover: 'var(--ds-background-brand-bold-hovered, #1d4ed8)',
   primaryDeep: '#1e40af',
-  primaryLight: '#3b82f6',
-  primaryLighter: '#60a5fa',
+  primaryLight: 'var(--ds-text-brand, #3b82f6)',
+  primaryLighter: 'var(--ds-text-brand, #60a5fa)',
   focusRing: 'rgba(37, 99, 235, 0.18)',
 
   // Brand Accent - Gold (ONLY for logo, headlines, decorative)
@@ -22,13 +22,13 @@ export const loginColors = {
   successLight: '#2dd4bf',
 
   // Text Colors (WCAG AA Compliant)
-  textPrimary: '#ffffff',
+  textPrimary: 'var(--ds-surface, #ffffff)',
   textSecondary: '#d1d5db',
   textMuted: '#9ca3af',
   
   // Text Colors - Form Panel
-  textDark: '#0f172a',
-  textFaint: '#94a3b8',
+  textDark: 'var(--ds-text, #0f172a)',
+  textFaint: 'var(--ds-text-subtlest, #94a3b8)',
 
   // Surfaces
   surfaceDark: '#0f1115',
@@ -37,8 +37,8 @@ export const loginColors = {
   borderMedium: 'rgba(255, 255, 255, 0.15)',
 
   // Form Surface
-  formSurface: '#f8fafc',
-  formBorder: '#e2e8f0',
+  formSurface: 'var(--ds-surface-sunken, #f8fafc)',
+  formBorder: 'var(--ds-border, #e2e8f0)',
 
   // Hero Panel Background
   heroDark: '#070a0f',
@@ -51,7 +51,7 @@ export const featureWidgets = [
     description: 'Strategic oversight & program alignment',
     icon: 'LayoutGrid',
     bgGradient: 'linear-gradient(135deg, rgba(37, 99, 235, 0.25) 0%, rgba(37, 99, 235, 0.12) 100%)',
-    iconColor: '#60a5fa',
+    iconColor: 'var(--ds-text-brand, #60a5fa)',
   },
   {
     title: 'Dependency Management',

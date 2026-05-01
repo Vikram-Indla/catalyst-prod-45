@@ -13,7 +13,7 @@ import { useAuth } from '@/hooks/useAuth';
  * 2026-04-24 — AgeingTab Atlaskit retune
  * ──────────────────────────────────────
  * This file was originally painted with Tailwind-style literal hexes
- * (#EF4444, #F59E0B, #0052CC, #1E293B, #FEF3C7, #92400E …) and 13px Inter
+ * (var(--ds-text-danger, #EF4444), var(--ds-text-warning, #F59E0B), #0052CC, #1E293B, #FEF3C7, #92400E …) and 13px Inter
  * body. None of those values are in the Atlassian Design System. After the
  * /design-critique pass we routed every surface through @atlaskit/tokens
  * with hex fallbacks:
@@ -301,7 +301,7 @@ function GroupHeader({ label, count, isOpen, onToggle, accentColor }: {
    /design-critique callouts ⑧⑨:
      - Row height 36 → 40 for body-scale rhythm.
      - Days pill goes INLINE with the number on a single baseline.
-     - Non-Atlaskit hexes (#EF4444, #F59E0B, #22C55E, #991B1B…) are replaced
+     - Non-Atlaskit hexes (var(--ds-text-danger, #EF4444), var(--ds-text-warning, #F59E0B), var(--ds-text-success, #22C55E), #991B1B…) are replaced
        with the danger / warning / success ADS tokens.
 */
 function AgeingRow({ item }: { item: AgeingItem }) {

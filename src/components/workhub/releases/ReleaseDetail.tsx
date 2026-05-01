@@ -120,7 +120,7 @@ export function ReleaseDetail() {
           padding: '4px 12px', borderRadius: 9999,
           fontSize: 12, fontWeight: 600,
           background: statusLabel === 'Completed' ? '#d1fae5' : statusLabel === 'Active' ? '#dbeafe' : statusLabel === 'At Risk' ? '#fee2e2' : 'var(--bg-1)',
-          color: statusLabel === 'Completed' ? '#047857' : statusLabel === 'Active' ? '#1d4ed8' : statusLabel === 'At Risk' ? '#991b1b' : 'var(--fg-2)',
+          color: statusLabel === 'Completed' ? '#047857' : statusLabel === 'Active' ? 'var(--ds-background-brand-bold-hovered, #1d4ed8)' : statusLabel === 'At Risk' ? 'var(--ds-text-danger, #991b1b)' : 'var(--fg-2)',
         }}>
           {statusLabel}
         </span>
@@ -141,7 +141,7 @@ export function ReleaseDetail() {
         <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginLeft: 52, marginBottom: 16, flexWrap: 'wrap' }}>
           <FolderGit2 size={14} style={{ color: 'var(--fg-4)' }} />
           {release.projects.map((proj, i) => {
-            const colors = ['#2563eb', '#7c3aed', '#0d9488', '#d97706', '#ef4444', '#0891b2', '#16a34a', '#6366f1'];
+            const colors = ['var(--ds-text-brand, #2563eb)', '#7c3aed', '#0d9488', 'var(--ds-text-warning, #d97706)', 'var(--ds-text-danger, #ef4444)', '#0891b2', 'var(--ds-text-success, #16a34a)', '#6366f1'];
             const c = colors[i % colors.length];
             return (
               <span key={proj} style={{

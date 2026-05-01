@@ -72,10 +72,10 @@ function determineHealthFromProgress(progress: number): string {
 function getHealthColor(health?: string): string {
   switch (health) {
     case 'good': return '#0D9488';
-    case 'fair': return '#D97706';
-    case 'poor': return '#EF4444';
+    case 'fair': return 'var(--ds-text-warning, #D97706)';
+    case 'poor': return 'var(--ds-text-danger, #EF4444)';
     case 'at_risk': return '#F97316';
-    default: return '#878787';
+    default: return 'var(--ds-text-subtlest, #878787)';
   }
 }
 
@@ -156,7 +156,7 @@ function PremiumProgressBar({ progress, health }: { progress: number; health: st
         <div 
           className="absolute inset-0 opacity-30"
           style={{
-            backgroundImage: 'repeating-linear-gradient(90deg, transparent, transparent 10px, #1F1F1F 10px, #1F1F1F 20px)'
+            backgroundImage: 'repeating-linear-gradient(90deg, transparent, transparent 10px, var(--ds-surface-overlay, #1F1F1F) 10px, var(--ds-surface-overlay, #1F1F1F) 20px)'
           }}
         />
         <div 

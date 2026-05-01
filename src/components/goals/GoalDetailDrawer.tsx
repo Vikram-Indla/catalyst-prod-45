@@ -1,6 +1,6 @@
 /**
  * GoalDetailDrawer — Fix 2: Complete redesign 520px, sticky header/tabs, modern cards
- * Fix 3: Field labels #94A3B8 10px uppercase, Fix 4: circular avatars
+ * Fix 3: Field labels var(--ds-text-subtlest, #94A3B8) 10px uppercase, Fix 4: circular avatars
  */
 import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { X, Sparkles, Rocket, Clock, Activity, Trash2, Pencil, BarChart3, Plus, Save, Search, Link2, Unlink } from 'lucide-react';
@@ -31,15 +31,15 @@ const LABEL_STYLE: React.CSSProperties = {
 
 function statusBadge(status: string) {
   const map: Record<string, { dot: string; bg: string; text: string; label: string }> = {
-    active:      { dot: '#16A34A', bg: 'rgba(22,163,74,0.08)',  text: '#15803D', label: 'Active' },
-    on_track:    { dot: '#16A34A', bg: 'rgba(22,163,74,0.08)',  text: '#15803D', label: 'On Track' },
+    active:      { dot: 'var(--ds-text-success, #16A34A)', bg: 'rgba(22,163,74,0.08)',  text: '#15803D', label: 'Active' },
+    on_track:    { dot: 'var(--ds-text-success, #16A34A)', bg: 'rgba(22,163,74,0.08)',  text: '#15803D', label: 'On Track' },
     completed:   { dot: '#4F46E5', bg: 'rgba(79,70,229,0.08)',  text: '#4338CA', label: 'Completed' },
     achieved:    { dot: '#4F46E5', bg: 'rgba(79,70,229,0.08)',  text: '#4338CA', label: 'Achieved' },
-    at_risk:     { dot: '#D97706', bg: 'rgba(217,119,6,0.08)',  text: '#B45309', label: 'At Risk' },
-    off_track:   { dot: 'var(--sem-danger)', bg: 'rgba(239,68,68,0.08)',  text: '#DC2626', label: 'Off Track' },
-    draft:       { dot: '#94A3B8', bg: 'var(--cp-bd-zone)',               text: 'var(--fg-3)', label: 'Draft' },
-    not_started: { dot: '#94A3B8', bg: 'var(--cp-bd-zone)',               text: 'var(--fg-3)', label: 'Not Started' },
-    cancelled:   { dot: '#94A3B8', bg: 'var(--cp-bd-zone)',               text: 'var(--fg-3)', label: 'Cancelled' },
+    at_risk:     { dot: 'var(--ds-text-warning, #D97706)', bg: 'rgba(217,119,6,0.08)',  text: '#B45309', label: 'At Risk' },
+    off_track:   { dot: 'var(--sem-danger)', bg: 'rgba(239,68,68,0.08)',  text: 'var(--ds-text-danger, #DC2626)', label: 'Off Track' },
+    draft:       { dot: 'var(--ds-text-subtlest, #94A3B8)', bg: 'var(--cp-bd-zone)',               text: 'var(--fg-3)', label: 'Draft' },
+    not_started: { dot: 'var(--ds-text-subtlest, #94A3B8)', bg: 'var(--cp-bd-zone)',               text: 'var(--fg-3)', label: 'Not Started' },
+    cancelled:   { dot: 'var(--ds-text-subtlest, #94A3B8)', bg: 'var(--cp-bd-zone)',               text: 'var(--fg-3)', label: 'Cancelled' },
   };
   const s = map[status] || map.draft;
   return (
@@ -51,7 +51,7 @@ function statusBadge(status: string) {
 }
 
 function progressBar(pct: number, height = 8) {
-  const color = pct >= 60 ? '#16A34A' : pct >= 40 ? '#D97706' : 'var(--sem-danger)';
+  const color = pct >= 60 ? 'var(--ds-text-success, #16A34A)' : pct >= 40 ? 'var(--ds-text-warning, #D97706)' : 'var(--sem-danger)';
   return (
     <div style={{ width: '100%', height, background: 'var(--divider)', borderRadius: 4, overflow: 'hidden' }}>
       <div style={{ width: `${Math.min(100, Math.max(0, pct))}%`, height: '100%', background: color, borderRadius: 4, transition: 'width 300ms' }} />
@@ -140,14 +140,14 @@ export function GoalDetailDrawer({ goalId, isOpen, onClose, onCheckinClick }: Go
   if (!isOpen) return null;
 
   const confPct = goal ? (typeof goal.confidence_level === 'number' ? (goal.confidence_level <= 1 ? Math.round(goal.confidence_level * 100) : Math.round(goal.confidence_level)) : 0) : 0;
-  const confColor = confPct >= 60 ? '#16A34A' : confPct >= 40 ? '#D97706' : 'var(--sem-danger)';
+  const confColor = confPct >= 60 ? 'var(--ds-text-success, #16A34A)' : confPct >= 40 ? 'var(--ds-text-warning, #D97706)' : 'var(--sem-danger)';
   const daysToDeadline = goal?.target_date ? Math.ceil((new Date(goal.target_date).getTime() - Date.now()) / 86400000) : null;
 
   // Status dot color
   const statusDotColor = goal ? ({
-    active: '#16A34A', on_track: '#16A34A', completed: '#4F46E5',
-    at_risk: '#D97706', off_track: 'var(--sem-danger)', draft: '#94A3B8',
-  }[goal.status] || '#94A3B8') : '#94A3B8';
+    active: 'var(--ds-text-success, #16A34A)', on_track: 'var(--ds-text-success, #16A34A)', completed: '#4F46E5',
+    at_risk: 'var(--ds-text-warning, #D97706)', off_track: 'var(--sem-danger)', draft: 'var(--ds-text-subtlest, #94A3B8)',
+  }[goal.status] || 'var(--ds-text-subtlest, #94A3B8)') : 'var(--ds-text-subtlest, #94A3B8)';
 
   return (
     <>
@@ -226,7 +226,7 @@ export function GoalDetailDrawer({ goalId, isOpen, onClose, onCheckinClick }: Go
             <button key={tab} onClick={() => setActiveTab(tab)} style={{
               padding: '10px 16px', fontSize: 13,
               fontWeight: activeTab === tab ? 600 : 500,
-              color: activeTab === tab ? '#2563EB' : 'var(--fg-3)',
+              color: activeTab === tab ? 'var(--ds-text-brand, #2563EB)' : 'var(--fg-3)',
               background: 'none', border: 'none',
               borderBottom: activeTab === tab ? '2px solid var(--cp-blue)' : '2px solid transparent',
               cursor: 'pointer', transition: 'all 150ms',
@@ -362,7 +362,7 @@ function EditOverviewTab({ goal, themes, onSave, onCancel, isPending }: {
         <button
           onClick={() => onSave({ title, description: description || undefined, status, priority, theme_id: themeId, start_date: startDate || undefined, target_date: targetDate || undefined, fiscal_quarter: quarter || undefined, bsc_perspective: (bsc as BSCPerspective) || undefined })}
           disabled={isPending}
-          style={{ padding: '7px 16px', fontSize: 13, fontWeight: 600, color: '#FFFFFF', background: isPending ? '#93C5FD' : 'var(--cp-blue)', border: 'none', borderRadius: 6, cursor: isPending ? 'not-allowed' : 'pointer', display: 'inline-flex', alignItems: 'center', gap: 5 }}
+          style={{ padding: '7px 16px', fontSize: 13, fontWeight: 600, color: 'var(--ds-surface, #FFFFFF)', background: isPending ? '#93C5FD' : 'var(--cp-blue)', border: 'none', borderRadius: 6, cursor: isPending ? 'not-allowed' : 'pointer', display: 'inline-flex', alignItems: 'center', gap: 5 }}
         >
           <Save size={13} /> {isPending ? 'Saving...' : 'Save'}
         </button>
@@ -391,7 +391,7 @@ function OverviewTab({ goal, theme, krs, confPct, confColor, daysToDeadline }: {
   })() : '—';
 
   const pct = Math.round(goal.progress_pct || 0);
-  const pctColor = pct >= 60 ? '#16A34A' : pct >= 40 ? '#D97706' : 'var(--sem-danger)';
+  const pctColor = pct >= 60 ? 'var(--ds-text-success, #16A34A)' : pct >= 40 ? 'var(--ds-text-warning, #D97706)' : 'var(--sem-danger)';
 
   const fields = [
     { label: 'Status', value: statusBadge(goal.status) },
@@ -445,7 +445,7 @@ function OverviewTab({ goal, theme, krs, confPct, confColor, daysToDeadline }: {
       {/* AI Health Score — purple branded */}
       <div style={{ background: '#DBEAFE', border: '1px solid rgba(37,99,235,0.15)', borderRadius: 12, padding: 16 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 10 }}>
-          <Sparkles size={14} color="#2563EB" />
+          <Sparkles size={14} color="var(--ds-text-brand, #2563EB)" />
           <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--cp-blue)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>AI Health Score</span>
         </div>
         <div style={{ fontSize: 28, fontWeight: 700, color: 'var(--cp-blue)', marginBottom: 6 }}>{aiScore != null ? aiScore : '—'}/100</div>
@@ -475,7 +475,7 @@ function KeyResultsTab({ krs, loading, onCheckinClick }: { krs: KeyResult[]; loa
   if (krs.length === 0) {
     return (
       <div style={{ textAlign: 'center', padding: '48px 20px' }}>
-        <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 12 }}><BarChart3 size={36} color="#CBD5E1" /></div>
+        <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 12 }}><BarChart3 size={36} color="var(--ds-text-disabled, #CBD5E1)" /></div>
         <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--fg-2)', marginBottom: 4 }}>No Key Results yet</div>
         <div style={{ fontSize: 12, color: 'var(--fg-4)', marginBottom: 16 }}>Add measurable key results to track progress toward this goal.</div>
         <button style={{ display: 'inline-flex', alignItems: 'center', gap: 5, padding: '6px 14px', fontSize: 12, fontWeight: 600, color: 'var(--cp-blue)', background: 'rgba(37,99,235,0.06)', border: '1px solid rgba(37,99,235,0.2)', borderRadius: 6, cursor: 'pointer' }}>
@@ -488,7 +488,7 @@ function KeyResultsTab({ krs, loading, onCheckinClick }: { krs: KeyResult[]; loa
     <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
       {krs.map(kr => {
         const pct = computeKRProgress(kr);
-        const pctColor = pct >= 60 ? '#16A34A' : pct >= 40 ? '#D97706' : 'var(--sem-danger)';
+        const pctColor = pct >= 60 ? 'var(--ds-text-success, #16A34A)' : pct >= 40 ? 'var(--ds-text-warning, #D97706)' : 'var(--sem-danger)';
         return (
           <div key={kr.id} className="kr-detail-card" style={{
             background: 'var(--cp-bg-elevated, #FFFFFF)', border: '1px solid var(--divider)', borderRadius: 8,
@@ -507,7 +507,7 @@ function KeyResultsTab({ krs, loading, onCheckinClick }: { krs: KeyResult[]; loa
               <span style={{ fontSize: 12, color: 'var(--fg-3)' }}>{kr.current_value} / {kr.target}{kr.metric_unit ? ` ${kr.metric_unit}` : ''}</span>
               <span style={{ fontSize: 12, color: 'var(--fg-3)' }}>Due: {formatDate(kr.due_date)}</span>
               {onCheckinClick && (
-                <button onClick={() => onCheckinClick(kr.id)} style={{ marginLeft: 'auto', fontSize: 11, fontWeight: 600, color: '#FFFFFF', background: 'var(--cp-blue)', border: 'none', borderRadius: 6, padding: '4px 12px', cursor: 'pointer' }}>Check-in</button>
+                <button onClick={() => onCheckinClick(kr.id)} style={{ marginLeft: 'auto', fontSize: 11, fontWeight: 600, color: 'var(--ds-surface, #FFFFFF)', background: 'var(--cp-blue)', border: 'none', borderRadius: 6, padding: '4px 12px', cursor: 'pointer' }}>Check-in</button>
               )}
             </div>
           </div>
@@ -517,7 +517,7 @@ function KeyResultsTab({ krs, loading, onCheckinClick }: { krs: KeyResult[]; loa
         <Plus size={13} /> Add Key Result
       </button>
       <style>{`
-        .kr-detail-card:hover { border-color: #CBD5E1; box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
+        .kr-detail-card:hover { border-color: var(--ds-text-disabled, #CBD5E1); box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
       `}</style>
     </div>
   );
@@ -542,7 +542,7 @@ function InitiativesTab({ goalId }: { goalId: string }) {
       {links.length === 0 && !showSearch && (
         <div style={{ textAlign: 'center', padding: '48px 20px' }}>
           <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 12 }}>
-            <Rocket size={36} color="#CBD5E1" />
+            <Rocket size={36} color="var(--ds-text-disabled, #CBD5E1)" />
           </div>
           <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--fg-2)', marginBottom: 4 }}>No initiatives linked</div>
           <div style={{ fontSize: 12, color: 'var(--fg-4)', marginBottom: 16 }}>Link initiatives from Product Hub that contribute to this goal.</div>
@@ -562,7 +562,7 @@ function InitiativesTab({ goalId }: { goalId: string }) {
               border: '1px solid var(--divider)', borderRadius: 8, padding: '14px 16px',
               display: 'flex', alignItems: 'center', gap: 10, transition: 'all 150ms',
             }}>
-              <Link2 size={16} color="#CBD5E1" />
+              <Link2 size={16} color="var(--ds-text-disabled, #CBD5E1)" />
               <div style={{ flex: 1, minWidth: 0 }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 2 }}>
                   <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--fg-2)', background: 'var(--cp-bd-zone)', padding: '2px 6px', borderRadius: 4, fontFamily: 'ui-monospace, monospace' }}>
@@ -597,7 +597,7 @@ function InitiativesTab({ goalId }: { goalId: string }) {
       {showSearch && (
         <div style={{ marginTop: links.length > 0 ? 12 : 0, border: '1px solid var(--divider)', borderRadius: 8, padding: 12, background: 'var(--bg-1)' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 8 }}>
-            <Search size={14} color="#94A3B8" />
+            <Search size={14} color="var(--ds-text-subtlest, #94A3B8)" />
             <input
               autoFocus
               value={searchQuery}
@@ -634,9 +634,9 @@ function InitiativesTab({ goalId }: { goalId: string }) {
       )}
 
       <style>{`
-        .init-card:hover { border-color: #CBD5E1; box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
-        .unlink-btn:hover { color: #EF4444 !important; }
-        .link-init-btn:hover { border-color: #94A3B8; background: #F8FAFC; }
+        .init-card:hover { border-color: var(--ds-text-disabled, #CBD5E1); box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
+        .unlink-btn:hover { color: var(--ds-text-danger, #EF4444) !important; }
+        .link-init-btn:hover { border-color: var(--ds-text-subtlest, #94A3B8); background: var(--ds-surface-sunken, #F8FAFC); }
         /* Rule 3 paired .dark — brand red stays; neutral surfaces flip to ADS dark. */
         .dark .unlink-btn:hover { color: #F87171 !important; }
         .dark .init-card:hover { border-color: var(--ds-border-bold, #5C6F82); box-shadow: 0 1px 3px rgba(0,0,0,0.4); }
@@ -652,7 +652,7 @@ function CheckinsTab({ checkins, krs }: { checkins: KRCheckin[]; krs: KeyResult[
   if (checkins.length === 0) {
     return (
       <div style={{ textAlign: 'center', padding: '48px 20px' }}>
-        <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 12 }}><Clock size={36} color="#CBD5E1" /></div>
+        <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 12 }}><Clock size={36} color="var(--ds-text-disabled, #CBD5E1)" /></div>
         <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--fg-2)', marginBottom: 4 }}>No check-ins recorded</div>
         <div style={{ fontSize: 12, color: 'var(--fg-4)' }}>Check-ins will appear here when team members update key results.</div>
       </div>
@@ -687,9 +687,9 @@ function CheckinsTab({ checkins, krs }: { checkins: KRCheckin[]; krs: KeyResult[
 // ── Tab: Activity ──
 function ActivityTab({ goal, krs, checkins }: { goal: Goal; krs: KeyResult[]; checkins: KRCheckin[] }) {
   const items = [
-    { icon: <Activity size={12} color="#2563EB" />, user: 'System', text: 'Goal created', date: goal.created_at || goal.start_date },
+    { icon: <Activity size={12} color="var(--ds-text-brand, #2563EB)" />, user: 'System', text: 'Goal created', date: goal.created_at || goal.start_date },
     ...(krs.length > 0 ? [{ icon: <BarChart3 size={12} color="#0D9488" />, user: 'System', text: `${krs.length} Key Results added`, date: goal.created_at }] : []),
-    ...(checkins.length > 0 ? [{ icon: <Clock size={12} color="#D97706" />, user: 'Team', text: `${checkins.length} check-ins recorded`, date: checkins[0]?.created_at }] : []),
+    ...(checkins.length > 0 ? [{ icon: <Clock size={12} color="var(--ds-text-warning, #D97706)" />, user: 'Team', text: `${checkins.length} check-ins recorded`, date: checkins[0]?.created_at }] : []),
   ];
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>

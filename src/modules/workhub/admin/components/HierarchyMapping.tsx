@@ -83,7 +83,7 @@ export function HierarchyMapping() {
   }
 
   if (isLoading) {
-    return <div style={{ padding: 40, color: '#64748B', fontFamily: 'var(--cp-font-body)' }}>Loading hierarchy config...</div>
+    return <div style={{ padding: 40, color: 'var(--ds-text-subtlest, #64748B)', fontFamily: 'var(--cp-font-body)' }}>Loading hierarchy config...</div>
   }
 
   return (
@@ -93,7 +93,7 @@ export function HierarchyMapping() {
         <h1 style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 18, fontWeight: 700, color: 'var(--fg-1, #0F172A)', margin: 0 }}>
           Hierarchy Mapping
         </h1>
-        <p style={{ fontSize: 13, color: '#64748B', marginTop: 4 }}>
+        <p style={{ fontSize: 13, color: 'var(--ds-text-subtlest, #64748B)', marginTop: 4 }}>
           Define issue type hierarchy levels and map Jira types to each. Drag rows to reorder priority.
         </p>
       </div>
@@ -104,8 +104,8 @@ export function HierarchyMapping() {
           background: '#FFFBEB', border: '1px solid #FCD34D', borderRadius: 6,
           padding: '8px 14px', marginBottom: 16, display: 'flex', alignItems: 'center', gap: 8,
         }}>
-          <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#F59E0B', flexShrink: 0 }} />
-          <span style={{ fontSize: 12, fontWeight: 600, color: '#F59E0B' }}>
+          <span style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--ds-text-warning, #F59E0B)', flexShrink: 0 }} />
+          <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text-warning, #F59E0B)' }}>
             Unsaved changes — hierarchy order modified
           </span>
         </div>
@@ -121,7 +121,7 @@ export function HierarchyMapping() {
             Hierarchy Levels
           </h2>
           <span style={{
-            fontSize: 9, background: '#EFF6FF', color: '#2563EB', padding: '2px 8px',
+            fontSize: 9, background: 'var(--ds-background-selected, #EFF6FF)', color: 'var(--ds-text-brand, #2563EB)', padding: '2px 8px',
             borderRadius: 4, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '.3px',
           }}>Drag to reorder</span>
         </div>
@@ -143,11 +143,11 @@ export function HierarchyMapping() {
               onMouseOver={(e) => (e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,.06)')}
               onMouseOut={(e) => (e.currentTarget.style.boxShadow = 'none')}
             >
-              <span style={{ color: '#94A3B8', fontSize: 16, cursor: 'grab', userSelect: 'none' }}>⠿</span>
+              <span style={{ color: 'var(--ds-text-subtlest, #94A3B8)', fontSize: 16, cursor: 'grab', userSelect: 'none' }}>⠿</span>
               <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--fg-1, #0F172A)', width: 100 }}>
                 {l.level}. {l.name}
               </span>
-              <span style={{ fontSize: 11, color: '#64748B', flex: 1 }}>
+              <span style={{ fontSize: 11, color: 'var(--ds-text-subtlest, #64748B)', flex: 1 }}>
                 Mapped: {l.jiraTypes.join(', ') || 'None'}
               </span>
             </li>
@@ -168,7 +168,7 @@ export function HierarchyMapping() {
           <div key={l.name} style={{ marginBottom: 16 }}>
             <label style={{
               fontFamily: 'var(--cp-font-heading)', fontSize: 11, textTransform: 'uppercase',
-              color: '#64748B', letterSpacing: '.3px', fontWeight: 600, display: 'block', marginBottom: 6,
+              color: 'var(--ds-text-subtlest, #64748B)', letterSpacing: '.3px', fontWeight: 600, display: 'block', marginBottom: 6,
             }}>
               Level: {l.name}
             </label>
@@ -182,9 +182,9 @@ export function HierarchyMapping() {
                     style={{
                       padding: '5px 12px', borderRadius: 6, fontSize: 11, border: '1px solid',
                       cursor: 'pointer', transition: 'all .15s', fontWeight: isOn ? 600 : 400,
-                      background: isOn ? '#EFF6FF' : '#fff',
+                      background: isOn ? 'var(--ds-background-selected, #EFF6FF)' : 'var(--ds-surface, #fff)',
                       borderColor: isOn ? '#BFDBFE' : 'var(--bd-default, #E2E8F0)',
-                      color: isOn ? '#1D4ED8' : '#334155',
+                      color: isOn ? 'var(--ds-background-brand-bold-hovered, #1D4ED8)' : 'var(--ds-text-subtle, #334155)',
                     }}
                   >
                     {chip}
@@ -201,7 +201,7 @@ export function HierarchyMapping() {
             disabled={batchUpdate.isPending}
             style={{
               padding: '8px 20px', borderRadius: 6, fontSize: 12, fontWeight: 600,
-              background: '#2563EB', color: '#fff', border: 'none', cursor: 'pointer',
+              background: 'var(--ds-text-brand, #2563EB)', color: 'var(--ds-surface, #fff)', border: 'none', cursor: 'pointer',
               opacity: batchUpdate.isPending ? 0.6 : 1,
             }}
           >
@@ -211,7 +211,7 @@ export function HierarchyMapping() {
             onClick={handleReset}
             style={{
               padding: '8px 20px', borderRadius: 6, fontSize: 12, fontWeight: 500,
-              background: 'var(--bg-1, #F8FAFC)', color: '#334155', border: '1px solid var(--bd-default, #E2E8F0)', cursor: 'pointer',
+              background: 'var(--bg-1, #F8FAFC)', color: 'var(--ds-text-subtle, #334155)', border: '1px solid var(--bd-default, #E2E8F0)', cursor: 'pointer',
             }}
           >
             Reset to Default

@@ -64,17 +64,17 @@ export function ChgDrawer({ change: c, onClose }: Props) {
                 <RiskBadge risk={mapRisk(c.risk_level)} />
                 <SourceBadge source={c.source} />
               </div>
-              <button onClick={onClose} aria-label="Close drawer" className="w-7 h-7 rounded flex items-center justify-center text-[#94A3B8] hover:bg-[#F1F5F9]"><X size={14} /></button>
+              <button onClick={onClose} aria-label="Close drawer" className="w-7 h-7 rounded flex items-center justify-center text-[var(--ds-text-subtlest,#94A3B8)] hover:bg-[var(--ds-surface-sunken,#F1F5F9)]"><X size={14} /></button>
             </div>
             <h2 className="text-[18px] font-extrabold mb-3" style={{ fontFamily: RH.fontDisplay, color: RH.ink1 }}>{c.title}</h2>
             <div className="flex items-center gap-2 mb-4">
               <StatusLozenge status={c.status} />
-              {c.category && <span className="text-[12px] text-[#64748B]">{c.category}</span>}
+              {c.category && <span className="text-[12px] text-[var(--ds-text-subtlest,#64748B)]">{c.category}</span>}
               {c.deployment_date && <span className="text-[12px] text-[var(--fg-3)]" style={{ fontFamily: RH.fontMono }}>Planned: {new Date(c.deployment_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>}
               {nextStatus && (
                 <button onClick={() => handleAdvanceStatus(nextStatus)}
                   disabled={updateStatus.isPending}
-                  className="ml-auto h-7 px-3 rounded-md bg-[#2563EB] text-white text-[11px] font-bold flex items-center gap-1 hover:bg-[#1D4ED8] disabled:opacity-50">
+                  className="ml-auto h-7 px-3 rounded-md bg-[var(--ds-text-brand,#2563EB)] text-white text-[11px] font-bold flex items-center gap-1 hover:bg-[var(--ds-background-brand-bold-hovered,#1D4ED8)] disabled:opacity-50">
                   Advance to {CHG_STATUS_LABELS[nextStatus]} <ChevronRight size={12} />
                 </button>
               )}
@@ -87,9 +87,9 @@ export function ChgDrawer({ change: c, onClose }: Props) {
                 const isCurrent = i === currentIdx;
                 return (
                   <React.Fragment key={s}>
-                    {i > 0 && <div className={`flex-1 h-0.5 ${isDone || isCurrent ? 'bg-[#2563EB]' : 'bg-[rgba(15,23,42,0.12)]'}`} />}
+                    {i > 0 && <div className={`flex-1 h-0.5 ${isDone || isCurrent ? 'bg-[var(--ds-text-brand,#2563EB)]' : 'bg-[rgba(15,23,42,0.12)]'}`} />}
                     <div className={`w-7 h-7 rounded-full flex items-center justify-center text-[11px] font-bold shrink-0 ${
-                      isDone ? 'bg-[#1B7F37] text-white' : isCurrent ? 'bg-[#2563EB] text-white' : 'bg-[#F1F5F9] text-[#94A3B8] border border-[rgba(15,23,42,0.12)]'
+                      isDone ? 'bg-[#1B7F37] text-white' : isCurrent ? 'bg-[var(--ds-text-brand,#2563EB)] text-white' : 'bg-[var(--ds-surface-sunken,#F1F5F9)] text-[var(--ds-text-subtlest,#94A3B8)] border border-[rgba(15,23,42,0.12)]'
                     }`}>
                       {isDone ? '✓' : isCurrent ? '●' : i + 1}
                     </div>
@@ -108,9 +108,9 @@ export function ChgDrawer({ change: c, onClose }: Props) {
           <div className="border-b border-[rgba(15,23,42,0.12)] px-6 flex gap-0">
             {TABS.map(tab => (
               <button key={tab} onClick={() => setActiveTab(tab)}
-                className={`px-3 py-2.5 text-[13px] font-medium border-b-2 transition-colors ${activeTab === tab ? 'border-[#2563EB] text-[#2563EB]' : 'border-transparent text-[#64748B] hover:text-[#475569]'}`}>
+                className={`px-3 py-2.5 text-[13px] font-medium border-b-2 transition-colors ${activeTab === tab ? 'border-[var(--ds-text-brand,#2563EB)] text-[var(--ds-text-brand,#2563EB)]' : 'border-transparent text-[var(--ds-text-subtlest,#64748B)] hover:text-[var(--ds-text-subtle,#475569)]'}`}>
                 {tab}
-                {tab === 'Work Items' && workItems.length > 0 && <span className="ml-1 text-[10px] font-bold bg-[#F1F5F9] text-[#475569] px-1 rounded">{workItems.length}</span>}
+                {tab === 'Work Items' && workItems.length > 0 && <span className="ml-1 text-[10px] font-bold bg-[var(--ds-surface-sunken,#F1F5F9)] text-[var(--ds-text-subtle,#475569)] px-1 rounded">{workItems.length}</span>}
               </button>
             ))}
           </div>
@@ -184,7 +184,7 @@ function OverviewTab({ change: c }: { change: any }) {
 
       {/* Pending sign-offs */}
       {c.pending_signoffs > 0 && (
-        <div className="rounded-lg p-3 flex items-center gap-2" style={{ background: '#FEF2F2', border: '1px solid #FCA5A5' }}>
+        <div className="rounded-lg p-3 flex items-center gap-2" style={{ background: 'var(--ds-background-danger, #FEF2F2)', border: '1px solid #FCA5A5' }}>
           <span className="text-[12px] font-bold" style={{ color: 'var(--sem-danger)' }}>
             {c.pending_signoffs} sign-off{c.pending_signoffs > 1 ? 's' : ''} pending
           </span>
@@ -209,7 +209,7 @@ function WorkItemsTab({ workItems, changeId }: { workItems: any[]; changeId: str
 
   return (
     <div className="space-y-3">
-      {workItems.length === 0 && !showLink && <div className="text-center py-6 text-[#94A3B8] text-[13px]">No work items linked</div>}
+      {workItems.length === 0 && !showLink && <div className="text-center py-6 text-[var(--ds-text-subtlest,#94A3B8)] text-[13px]">No work items linked</div>}
       {workItems.map((wi: any) => (
         <WorkItemTag key={wi.id || wi.work_item_key} workItemKey={wi.work_item_key} title={wi.work_item_title} type={wi.work_item_type} status={wi.work_item_status} />
       ))}
@@ -220,15 +220,15 @@ function WorkItemsTab({ workItems, changeId }: { workItems: any[]; changeId: str
           <input type="text" value={title} onChange={e => setTitle(e.target.value)} placeholder="Title"
             className="w-full h-8 px-2 rounded border border-[rgba(15,23,42,0.12)] text-[12px]" />
           <div className="flex gap-2">
-            <button onClick={() => setShowLink(false)} className="h-7 px-3 rounded border border-[rgba(15,23,42,0.12)] text-[11px] text-[#475569]">Cancel</button>
+            <button onClick={() => setShowLink(false)} className="h-7 px-3 rounded border border-[rgba(15,23,42,0.12)] text-[11px] text-[var(--ds-text-subtle,#475569)]">Cancel</button>
             <button onClick={handleLink} disabled={!key || !title || linkWorkItem.isPending}
-              className="h-7 px-3 rounded bg-[#2563EB] text-white text-[11px] font-bold disabled:opacity-50">
+              className="h-7 px-3 rounded bg-[var(--ds-text-brand,#2563EB)] text-white text-[11px] font-bold disabled:opacity-50">
               {linkWorkItem.isPending ? 'Linking...' : 'Link'}
             </button>
           </div>
         </div>
       ) : (
-        <button onClick={() => setShowLink(true)} className="h-8 px-3 rounded-md border border-[#DBEAFE] text-[#2563EB] text-[12px] font-semibold hover:bg-[#EFF6FF]">
+        <button onClick={() => setShowLink(true)} className="h-8 px-3 rounded-md border border-[#DBEAFE] text-[var(--ds-text-brand,#2563EB)] text-[12px] font-semibold hover:bg-[var(--ds-background-selected,#EFF6FF)]">
           + Link Work Item
         </button>
       )}
@@ -241,7 +241,7 @@ function SignoffsTab({ changeId }: { changeId: string }) {
   const approveSignoff = useApproveSignoff();
   const rejectSignoff = useRejectSignoff();
 
-  if (isLoading) return <div className="text-center py-6 text-[#94A3B8] text-[13px]">Loading...</div>;
+  if (isLoading) return <div className="text-center py-6 text-[var(--ds-text-subtlest,#94A3B8)] text-[13px]">Loading...</div>;
 
   const stages = [
     { stage: 'QA', key: 'in_qa' },
@@ -262,8 +262,8 @@ function SignoffsTab({ changeId }: { changeId: string }) {
             <div className={`w-8 h-8 rounded-full flex items-center justify-center text-[12px] font-bold shrink-0 ${
               status === 'approved' ? 'bg-[#1B7F37] text-white' :
               status === 'pending' ? 'bg-[#0C66E4] text-white' :
-              status === 'rejected' ? 'bg-[#FEF2F2] text-[#DC2626]' :
-              'bg-[#F1F5F9] text-[#94A3B8]'
+              status === 'rejected' ? 'bg-[var(--ds-background-danger,#FEF2F2)] text-[var(--ds-text-danger,#DC2626)]' :
+              'bg-[var(--ds-surface-sunken,#F1F5F9)] text-[var(--ds-text-subtlest,#94A3B8)]'
             }`}>
               {status === 'approved' ? '✓' : status === 'rejected' ? '✕' : status === 'pending' ? i + 1 : '🔒'}
             </div>
@@ -283,13 +283,13 @@ function SignoffsTab({ changeId }: { changeId: string }) {
                   className="h-7 px-3 rounded bg-[#1B7F37] text-white text-[11px] font-bold hover:bg-[#004D33] disabled:opacity-50">Approve</button>
                 <button onClick={() => rejectSignoff.mutate({ signoffId: signoff.id, comment: 'Rejected' }, { onSuccess: () => toast.success('Rejected') })}
                   disabled={rejectSignoff.isPending}
-                  className="h-7 px-3 rounded border border-[#FCA5A5] text-[#DC2626] text-[11px] font-bold hover:bg-[#FEF2F2] disabled:opacity-50">Reject</button>
+                  className="h-7 px-3 rounded border border-[var(--ds-border-danger,#FCA5A5)] text-[var(--ds-text-danger,#DC2626)] text-[11px] font-bold hover:bg-[var(--ds-background-danger,#FEF2F2)] disabled:opacity-50">Reject</button>
               </div>
             )}
           </div>
         );
       })}
-      {signoffs.length === 0 && <div className="text-center py-6 text-[#94A3B8] text-[13px]">No sign-offs configured for this change</div>}
+      {signoffs.length === 0 && <div className="text-center py-6 text-[var(--ds-text-subtlest,#94A3B8)] text-[13px]">No sign-offs configured for this change</div>}
     </div>
   );
 }
@@ -297,20 +297,20 @@ function SignoffsTab({ changeId }: { changeId: string }) {
 function ActivityTab({ changeId }: { changeId: string }) {
   const { data: history = [], isLoading } = useChangeHistory(changeId);
 
-  if (isLoading) return <div className="text-center py-6 text-[#94A3B8] text-[13px]">Loading...</div>;
-  if (history.length === 0) return <div className="text-center py-6 text-[#94A3B8] text-[13px]">No activity yet</div>;
+  if (isLoading) return <div className="text-center py-6 text-[var(--ds-text-subtlest,#94A3B8)] text-[13px]">Loading...</div>;
+  if (history.length === 0) return <div className="text-center py-6 text-[var(--ds-text-subtlest,#94A3B8)] text-[13px]">No activity yet</div>;
 
   return (
     <div className="space-y-2">
       {history.map((h: any) => (
         <div key={h.id} className="flex items-start gap-3 py-2 border-b border-[rgba(15,23,42,0.06)] last:border-0">
-          <div className="w-2 h-2 rounded-full bg-[#2563EB] mt-1.5 shrink-0" />
+          <div className="w-2 h-2 rounded-full bg-[var(--ds-text-brand,#2563EB)] mt-1.5 shrink-0" />
           <div>
-            <p className="text-[12px] text-[#475569]">
+            <p className="text-[12px] text-[var(--ds-text-subtle,#475569)]">
               Status changed {h.from_status ? `from ${CHG_STATUS_LABELS[h.from_status] || h.from_status}` : ''} to <span className="font-bold">{CHG_STATUS_LABELS[h.to_status] || h.to_status}</span>
             </p>
-            {h.comment && <p className="text-[11px] text-[#94A3B8] mt-0.5">{h.comment}</p>}
-            <p className="text-[10px] text-[#94A3B8] mt-0.5">{h.changed_at ? format(new Date(h.changed_at), 'MMM d, yyyy HH:mm') : ''}</p>
+            {h.comment && <p className="text-[11px] text-[var(--ds-text-subtlest,#94A3B8)] mt-0.5">{h.comment}</p>}
+            <p className="text-[10px] text-[var(--ds-text-subtlest,#94A3B8)] mt-0.5">{h.changed_at ? format(new Date(h.changed_at), 'MMM d, yyyy HH:mm') : ''}</p>
           </div>
         </div>
       ))}

@@ -13,31 +13,31 @@ interface CheckResult {
 }
 
 const statusColors: Record<string, { bg: string; fg: string; label: string }> = {
-  pass: { bg: "#1B7F37", fg: "#FFFFFF", label: "PASS" },
+  pass: { bg: "#1B7F37", fg: "var(--ds-surface, #FFFFFF)", label: "PASS" },
   fail: { bg: "#FFEBE6", fg: "#BF2600", label: "FAIL" },
   warn: { bg: "#FFFAE6", fg: "#974F0C", label: "WARN" },
-  info: { bg: "#0C66E4", fg: "#FFFFFF", label: "INFO" },
-  pending: { bg: "#F4F5F7", fg: "#6B778C", label: "PENDING" },
-  running: { bg: "#0C66E4", fg: "#FFFFFF", label: "RUNNING" },
+  info: { bg: "#0C66E4", fg: "var(--ds-surface, #FFFFFF)", label: "INFO" },
+  pending: { bg: "var(--ds-surface-sunken, #F4F5F7)", fg: "var(--ds-text-subtlest, #6B778C)", label: "PENDING" },
+  running: { bg: "#0C66E4", fg: "var(--ds-surface, #FFFFFF)", label: "RUNNING" },
 };
 
 const today = new Date().toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
 
 function DataTable({ data }: { data: any[] }) {
-  if (!data || data.length === 0) return <span style={{ color: "#6B778C", fontSize: 12 }}>No rows</span>;
+  if (!data || data.length === 0) return <span style={{ color: "var(--ds-text-subtlest, #6B778C)", fontSize: 12 }}>No rows</span>;
   const keys = Object.keys(data[0]);
   return (
     <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 12, marginTop: 8 }}>
       <thead>
         <tr>
           {keys.map((k) => (
-            <th key={k} style={{ textAlign: "left", padding: "4px 8px", borderBottom: "1px solid var(--bd-default, #E2E8F0)", color: "#64748B", fontWeight: 600 }}>{k}</th>
+            <th key={k} style={{ textAlign: "left", padding: "4px 8px", borderBottom: "1px solid var(--bd-default, #E2E8F0)", color: "var(--ds-text-subtlest, #64748B)", fontWeight: 600 }}>{k}</th>
           ))}
         </tr>
       </thead>
       <tbody>
         {data.map((row: any, i: number) => (
-          <tr key={i} style={{ background: i % 2 === 0 ? "#FAFBFC" : "#FFF" }}>
+          <tr key={i} style={{ background: i % 2 === 0 ? "var(--ds-surface-sunken, #FAFBFC)" : "var(--ds-surface, #FFF)" }}>
             {keys.map((k) => (
               <td key={k} style={{ padding: "4px 8px", borderBottom: "1px solid #F1F5F9" }}>{String(row[k] ?? "—")}</td>
             ))}
@@ -59,18 +59,18 @@ function StatusBadge({ status }: { status: CheckStatus }) {
 
 function CheckCard({ result }: { result: CheckResult }) {
   return (
-    <div style={{ border: "0.75px solid var(--bd-default, #E2E8F0)", borderRadius: 6, background: "#FFFFFF", padding: 16, marginBottom: 12 }}>
+    <div style={{ border: "0.75px solid var(--bd-default, #E2E8F0)", borderRadius: 6, background: "var(--ds-surface, #FFFFFF)", padding: 16, marginBottom: 12 }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
         <span style={{ fontWeight: 600, fontSize: 13 }}>{result.id} · {result.title}</span>
         <StatusBadge status={result.status} />
       </div>
-      {result.message && <p style={{ fontSize: 12, color: "#64748B", marginBottom: 4 }}>{result.message}</p>}
+      {result.message && <p style={{ fontSize: 12, color: "var(--ds-text-subtlest, #64748B)", marginBottom: 4 }}>{result.message}</p>}
       {result.data && Array.isArray(result.data) && result.data.length > 0 && <DataTable data={result.data} />}
       {result.data && !Array.isArray(result.data) && typeof result.data === "object" && (
         <div style={{ fontSize: 12, marginTop: 4 }}>
           {Object.entries(result.data).map(([k, v]) => (
             <div key={k} style={{ display: "flex", gap: 8, padding: "2px 0" }}>
-              <span style={{ color: "#64748B", fontWeight: 500, minWidth: 140 }}>{k}:</span>
+              <span style={{ color: "var(--ds-text-subtlest, #64748B)", fontWeight: 500, minWidth: 140 }}>{k}:</span>
               <span>{String(v ?? "—")}</span>
             </div>
           ))}
@@ -267,13 +267,13 @@ export default function RAGAuditPage() {
   return (
     <div style={{ maxWidth: 900, margin: "0 auto", padding: "32px 24px", fontFamily: 'var(--cp-font-heading)' }}>
       <h1 style={{ fontSize: 20, fontWeight: 700, marginBottom: 4 }}>RAG Pipeline Audit — Layers 1–3</h1>
-      <p style={{ fontSize: 13, color: "#64748B", marginBottom: 24 }}>Req Assist™ · Run by Vikram · {today}</p>
+      <p style={{ fontSize: 13, color: "var(--ds-text-subtlest, #64748B)", marginBottom: 24 }}>Req Assist™ · Run by Vikram · {today}</p>
 
       <button
         onClick={runAllChecks}
         disabled={running}
         style={{
-          height: 50, padding: "0 20px", background: running ? "#93C5FD" : "#2563EB", color: "#FFF",
+          height: 50, padding: "0 20px", background: running ? "#93C5FD" : "var(--ds-text-brand, #2563EB)", color: "var(--ds-surface, #FFF)",
           border: "none", borderRadius: 6, fontWeight: 600, fontSize: 14, cursor: running ? "not-allowed" : "pointer", marginBottom: 24,
         }}
       >

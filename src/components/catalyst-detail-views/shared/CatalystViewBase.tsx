@@ -200,16 +200,16 @@ export function CatalystViewBase({
   };
 
   const MODAL: React.CSSProperties = fullPageMode ? {
-    width: '100%', height: '100%', background: '#FFFFFF',
+    width: '100%', height: '100%', background: 'var(--ds-surface, #FFFFFF)',
     display: 'flex', flexDirection: 'column', overflow: 'hidden',
   } : panelMode ? {
-    width: '100%', height: '100%', background: '#FFFFFF',
+    width: '100%', height: '100%', background: 'var(--ds-surface, #FFFFFF)',
     display: 'flex', flexDirection: 'column', overflow: 'hidden',
     animation: 'cv-panel-in 200ms ease-out',
     borderLeft: '1px solid #DFE1E6',
   } : {
     width: 1100, maxWidth: '95vw', minHeight: 600, maxHeight: 'calc(100vh - 80px)',
-    background: '#FFFFFF', borderRadius: 8,
+    background: 'var(--ds-surface, #FFFFFF)', borderRadius: 8,
     display: 'flex', flexDirection: 'column',
     boxShadow: '0 8px 32px rgba(9, 30, 66, 0.25)', overflow: 'hidden',
     animation: 'cv-card-in 250ms ease-out',
@@ -310,7 +310,7 @@ export function CatalystViewBase({
 
             {/* Inline Prev/Next chevrons — Jira parity. Up = previous,
                 Down = next (Atlassian convention). Canonical component
-                IssueNavChevrons owns the 28×28 / 1px #DFE1E6 / 4px-radius
+                IssueNavChevrons owns the 28×28 / 1px var(--ds-border, #DFE1E6) / 4px-radius
                 styling (verified against Jira Cloud, 2026-04-19). */}
             {navigationItems && navigationItems.length > 1 && (() => {
               const prevKey = canNavPrev ? (navigationItems[currentNavIndex - 1].issue_key ?? '') : '';
@@ -358,7 +358,7 @@ export function CatalystViewBase({
                 />
                 {showDotsMenu && (
                   <div style={{
-                    position: 'absolute', right: 0, top: 32, background: '#FFF',
+                    position: 'absolute', right: 0, top: 32, background: 'var(--ds-surface, #FFF)',
                     border: '1px solid #DFE1E6', borderRadius: 4,
                     boxShadow: '0 4px 16px rgba(9,30,66,0.18)', padding: '8px 0',
                     zIndex: 50, minWidth: 200,
@@ -369,7 +369,7 @@ export function CatalystViewBase({
                         <button
                           onClick={() => { setShowDotsMenu(false); item.onClick(); }}
                           style={{ ...menuItemStyle, color: item.danger ? '#DE350B' : '#344054' }}
-                          onMouseEnter={e => (e.currentTarget.style.background = item.danger ? '#FFEBE6' : '#F4F5F7')}
+                          onMouseEnter={e => (e.currentTarget.style.background = item.danger ? '#FFEBE6' : 'var(--ds-surface-sunken, #F4F5F7)')}
                           onMouseLeave={e => (e.currentTarget.style.background = 'none')}
                         >{item.label}</button>
                       </React.Fragment>
@@ -444,16 +444,16 @@ export function CatalystViewBase({
               display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
               transition: 'background 0.15s',
             }}
-            onMouseEnter={e => (e.currentTarget.style.background = '#F4F5F7')}
+            onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-surface-sunken, #F4F5F7)')}
             onMouseLeave={e => { if (!isDraggingRef.current) e.currentTarget.style.background = 'transparent'; }}
           >
-            <div style={{ width: 1.5, height: 32, borderRadius: 1, background: '#DFE1E6', transition: 'background 0.15s' }} />
+            <div style={{ width: 1.5, height: 32, borderRadius: 1, background: 'var(--ds-border, #DFE1E6)', transition: 'background 0.15s' }} />
           </div>
 
           {/* RIGHT PANEL — Sidebar */}
           <div className="cv-drawer-sidebar" style={{
             width: rightPanelWidth, minWidth: 220, maxWidth: 600,
-            background: '#FFFFFF', overflowY: 'auto', overflowX: 'hidden',
+            background: 'var(--ds-surface, #FFFFFF)', overflowY: 'auto', overflowX: 'hidden',
             display: 'flex', flexDirection: 'column', padding: '16px 16px 32px 16px',
           }}>
             {isLoading ? (

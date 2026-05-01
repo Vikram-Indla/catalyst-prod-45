@@ -116,10 +116,10 @@ export interface TabInfo {
 }
 
 export const PRIORITY_CONFIG: Record<PriorityLevel, { label: string; description: string; color: string }> = {
-  P1: { label: 'P1 - Critical', description: 'Blocks release, immediate action', color: '#ef4444' },
-  P2: { label: 'P2 - High', description: 'Important, address soon', color: '#f59e0b' },
-  P3: { label: 'P3 - Medium', description: 'Normal priority', color: '#3b82f6' },
-  P4: { label: 'P4 - Low', description: 'Nice to have', color: '#94a3b8' },
+  P1: { label: 'P1 - Critical', description: 'Blocks release, immediate action', color: 'var(--ds-text-danger, #ef4444)' },
+  P2: { label: 'P2 - High', description: 'Important, address soon', color: 'var(--ds-text-warning, #f59e0b)' },
+  P3: { label: 'P3 - Medium', description: 'Normal priority', color: 'var(--ds-text-brand, #3b82f6)' },
+  P4: { label: 'P4 - Low', description: 'Nice to have', color: 'var(--ds-text-subtlest, #94a3b8)' },
 };
 
 export const TYPE_OPTIONS: { value: TestCaseType; label: string }[] = [

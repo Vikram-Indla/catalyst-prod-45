@@ -83,7 +83,7 @@ export function Logo({
           <span className={cn(
             variant === "light" 
               ? "text-white" 
-              : "text-[#0a0a0a] dark:text-white"
+              : "text-[var(--ds-surface,#0a0a0a)] dark:text-white"
           )}>
             Cata
           </span>

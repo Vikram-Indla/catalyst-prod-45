@@ -7,22 +7,22 @@ import { ComparedRelease, ComparisonInsight, CompareHealthLevel } from '../types
 
 // Catalyst V5 Colors
 export const CATALYST_COLORS = {
-  primary: '#2563eb',
+  primary: 'var(--ds-text-brand, #2563eb)',
   teal: '#0d9488',
-  warning: '#d97706',
-  danger: '#ef4444',
+  warning: 'var(--ds-text-warning, #d97706)',
+  danger: 'var(--ds-text-danger, #ef4444)',
   aiPurpleStart: '#8b5cf6',
   aiPurpleEnd: '#6366f1',
-  gray50: '#f8fafc',
-  gray100: '#f1f5f9',
-  gray200: '#e2e8f0',
-  gray300: '#cbd5e1',
-  gray400: '#94a3b8',
-  gray500: '#64748b',
-  gray600: '#475569',
-  gray700: '#334155',
+  gray50: 'var(--ds-surface-sunken, #f8fafc)',
+  gray100: 'var(--ds-surface-sunken, #f1f5f9)',
+  gray200: 'var(--ds-border, #e2e8f0)',
+  gray300: 'var(--ds-text-disabled, #cbd5e1)',
+  gray400: 'var(--ds-text-subtlest, #94a3b8)',
+  gray500: 'var(--ds-text-subtlest, #64748b)',
+  gray600: 'var(--ds-text-subtle, #475569)',
+  gray700: 'var(--ds-text-subtle, #334155)',
   gray800: '#1e293b',
-  gray900: '#0f172a',
+  gray900: 'var(--ds-text, #0f172a)',
 };
 
 export function getHealthColor(level: CompareHealthLevel): string {

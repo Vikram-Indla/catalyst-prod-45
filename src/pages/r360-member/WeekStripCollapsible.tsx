@@ -63,13 +63,13 @@ export function WeekStripCollapsible({
           {isLive ? 'LIVE' : 'SNAPSHOT'}
         </span>
 
-        <button style={{ width: '28px', height: '28px', border: `1px solid ${'var(--cp-border, #E2E8F0)'}`, borderRadius: '4px', background: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFF', cursor: 'pointer', fontSize: '13px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', transition: 'background var(--cp-duration-fast, 0.15s) ease' }} onClick={() => onNavigatePeriod(-1)}
+        <button style={{ width: '28px', height: '28px', border: `1px solid ${'var(--cp-border, #E2E8F0)'}`, borderRadius: '4px', background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, #FFF)', cursor: 'pointer', fontSize: '13px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', transition: 'background var(--cp-duration-fast, 0.15s) ease' }} onClick={() => onNavigatePeriod(-1)}
           onMouseEnter={e => { e.currentTarget.style.background = 'var(--cp-interact-hover, rgba(15,23,42,0.04))'; }}
-          onMouseLeave={e => { e.currentTarget.style.background = isDark ? 'var(--cp-bg-surface, #242528)' : '#FFF'; }}
+          onMouseLeave={e => { e.currentTarget.style.background = isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, #FFF)'; }}
         >{'\u2039'}</button>
-        <button style={{ width: '28px', height: '28px', border: `1px solid ${'var(--cp-border, #E2E8F0)'}`, borderRadius: '4px', background: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFF', cursor: 'pointer', fontSize: '13px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', transition: 'background var(--cp-duration-fast, 0.15s) ease' }} onClick={() => onNavigatePeriod(1)}
+        <button style={{ width: '28px', height: '28px', border: `1px solid ${'var(--cp-border, #E2E8F0)'}`, borderRadius: '4px', background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, #FFF)', cursor: 'pointer', fontSize: '13px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', transition: 'background var(--cp-duration-fast, 0.15s) ease' }} onClick={() => onNavigatePeriod(1)}
           onMouseEnter={e => { e.currentTarget.style.background = 'var(--cp-interact-hover, rgba(15,23,42,0.04))'; }}
-          onMouseLeave={e => { e.currentTarget.style.background = isDark ? 'var(--cp-bg-surface, #242528)' : '#FFF'; }}
+          onMouseLeave={e => { e.currentTarget.style.background = isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, #FFF)'; }}
         >{'\u203A'}</button>
 
         <div style={{ width: '1px', height: '20px', background: 'var(--cp-border, #E2E8F0)', margin: '0 4px' }} />
@@ -85,7 +85,7 @@ export function WeekStripCollapsible({
               padding: '5px 14px', fontSize: '12.5px', fontWeight: isActive ? 600 : 500,
               borderRadius: '6px', cursor: 'pointer', transition: 'all var(--cp-duration-fast, 0.15s) ease',
               background: isActive ? 'rgba(37,99,235,0.10)' : 'transparent',
-              color: isActive ? '#2563EB' : ('var(--cp-text-tertiary, #64748B)'),
+              color: isActive ? 'var(--ds-text-brand, #2563EB)' : ('var(--cp-text-tertiary, #64748B)'),
               border: 'none',
             }}
             onMouseEnter={e => { if (!isActive) e.currentTarget.style.background = 'var(--cp-interact-hover, rgba(15,23,42,0.04))'; }}

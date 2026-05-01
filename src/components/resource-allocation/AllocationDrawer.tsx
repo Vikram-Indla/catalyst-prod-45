@@ -102,7 +102,7 @@ export function AllocationDrawer({ resource, onClose }: AllocationDrawerProps) {
               {showContractWarning && (
                 <>
                   <span className="w-[3px] h-[3px] rounded-full bg-muted-foreground flex-shrink-0" />
-                  <span className="px-1.5 py-0.5 rounded bg-[#fef2f2] border border-[#fecaca] text-[#dc2626] text-[10px] font-semibold">
+                  <span className="px-1.5 py-0.5 rounded bg-[var(--ds-background-danger,#fef2f2)] border border-[#fecaca] text-[var(--ds-text-danger,#dc2626)] text-[10px] font-semibold">
                     Ends {format(contractEnd, 'MMM d')}
                   </span>
                 </>
@@ -151,9 +151,9 @@ export function AllocationDrawer({ resource, onClose }: AllocationDrawerProps) {
           
           <button 
             onClick={goToToday}
-            className="ml-auto flex items-center gap-1.5 px-2 py-1 rounded bg-[#fef2f2] border border-[#fecaca] text-[10px] font-semibold text-[#dc2626]"
+            className="ml-auto flex items-center gap-1.5 px-2 py-1 rounded bg-[var(--ds-background-danger,#fef2f2)] border border-[#fecaca] text-[10px] font-semibold text-[var(--ds-text-danger,#dc2626)]"
           >
-            <span className="w-1.5 h-1.5 rounded-full bg-[#dc2626] animate-pulse" />
+            <span className="w-1.5 h-1.5 rounded-full bg-[var(--ds-text-danger,#dc2626)] animate-pulse" />
             Today: {format(today, 'MMM d')} (W{getISOWeek(today)})
           </button>
         </div>
@@ -246,12 +246,12 @@ export function AllocationDrawer({ resource, onClose }: AllocationDrawerProps) {
                     <div key={week.weekStart} className="w-14 flex-shrink-0 p-2 text-center border-l border-border" role="gridcell">
                       <div className={cn(
                         "text-[12px] font-extrabold",
-                        isOver ? "text-[#dc2626]" : isOverForecast ? "text-[#d97706]" : "text-primary"
+                        isOver ? "text-[var(--ds-text-danger,#dc2626)]" : isOverForecast ? "text-[var(--ds-text-warning,#d97706)]" : "text-primary"
                       )}>
                         {totals.total}%
                       </div>
                       {isOverForecast && (
-                        <div className="text-[8px] text-[#d97706] font-semibold">
+                        <div className="text-[8px] text-[var(--ds-text-warning,#d97706)] font-semibold">
                           +{totals.forecast}% fcst
                         </div>
                       )}
@@ -267,10 +267,10 @@ export function AllocationDrawer({ resource, onClose }: AllocationDrawerProps) {
         <div className="h-14 px-5 flex items-center gap-3 border-t border-border bg-muted/30 flex-shrink-0">
           <div className="flex-1 text-[11px] text-muted-foreground">
             {!validation.isValid && (
-              <span className="text-[#dc2626]">⚠️ {validation.errors[0]}</span>
+              <span className="text-[var(--ds-text-danger,#dc2626)]">⚠️ {validation.errors[0]}</span>
             )}
             {validation.isValid && validation.warnings.length > 0 && (
-              <span className="text-[#d97706]">Note: {validation.warnings[0]}</span>
+              <span className="text-[var(--ds-text-warning,#d97706)]">Note: {validation.warnings[0]}</span>
             )}
             {validation.isValid && validation.warnings.length === 0 && !isDirty && (
               <span>No changes to save</span>
@@ -335,7 +335,7 @@ function AllocationRow({
   colorIndex: number;
   onCellClick: (weekStart: string) => void;
 }) {
-  const colors = ['#2563eb', '#0d9488', '#ea580c', '#7c3aed'];
+  const colors = ['var(--ds-text-brand, #2563eb)', '#0d9488', '#ea580c', '#7c3aed'];
   const color = assignment.color || colors[colorIndex % colors.length];
 
   return (

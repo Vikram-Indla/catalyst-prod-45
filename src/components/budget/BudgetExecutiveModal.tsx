@@ -323,7 +323,7 @@ export function BudgetExecutiveModal({ open, onClose, data, onNavigateDept, curr
               </div>
 
               <div className="bg-[var(--budget-danger-light)] rounded-xl p-5">
-                <h4 className="text-[14px] font-semibold text-[#991b1b] mb-3">⚠️ Data Quality Issues ({data.dataQualityIssues.length})</h4>
+                <h4 className="text-[14px] font-semibold text-[var(--ds-text-danger,#991b1b)] mb-3">⚠️ Data Quality Issues ({data.dataQualityIssues.length})</h4>
                 <div className="grid grid-cols-2 gap-2">
                   {data.dataQualityIssues.slice(0, 8).map((issue, idx) => (
                     <div key={idx} className="text-[12px] text-[#78350f] p-2 bg-white rounded-md">

@@ -126,7 +126,7 @@ export function T10CheckoutModalNew({
           transform: 'translate(-50%, -50%)',
           width: '100%',
           maxWidth: '520px',
-          backgroundColor: '#ffffff',
+          backgroundColor: 'var(--ds-surface, #ffffff)',
           borderRadius: '12px',
           boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
           zIndex: 601,
@@ -155,9 +155,9 @@ export function T10CheckoutModalNew({
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                backgroundColor: '#dcfce7',
+                backgroundColor: 'var(--ds-background-success, #dcfce7)',
                 borderRadius: '50%',
-                color: '#22c55e',
+                color: 'var(--ds-text-success, #22c55e)',
                 marginBottom: '16px',
               }}
             >
@@ -180,8 +180,8 @@ export function T10CheckoutModalNew({
                 alignItems: 'center',
                 gap: '12px',
                 padding: '20px 24px',
-                background: 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)',
-                color: '#ffffff',
+                background: 'linear-gradient(135deg, var(--ds-text-brand, #2563eb) 0%, var(--ds-background-brand-bold-hovered, #1d4ed8) 100%)',
+                color: 'var(--ds-surface, #ffffff)',
               }}
             >
               <div
@@ -228,7 +228,7 @@ export function T10CheckoutModalNew({
             {/* Body */}
             <div style={{ padding: '24px' }}>
               <p style={{ fontSize: '15px', color: '#374151', marginBottom: '16px' }}>
-                <strong style={{ color: '#2563eb' }}>{completedItems.length}</strong> items completed this week
+                <strong style={{ color: 'var(--ds-text-brand, #2563eb)' }}>{completedItems.length}</strong> items completed this week
               </p>
 
               {/* Items List */}
@@ -253,7 +253,7 @@ export function T10CheckoutModalNew({
                         alignItems: 'center',
                         gap: '12px',
                         padding: '12px 14px',
-                        backgroundColor: isSelected ? '#eff6ff' : '#f9fafb',
+                        backgroundColor: isSelected ? 'var(--ds-background-selected, #eff6ff)' : '#f9fafb',
                         border: isSelected ? '1px solid #2563eb' : '1px solid #e5e7eb',
                         borderRadius: '8px',
                         cursor: 'pointer',
@@ -265,13 +265,13 @@ export function T10CheckoutModalNew({
                           height: '20px',
                           border: isSelected ? '2px solid #2563eb' : '2px solid #d1d5db',
                           borderRadius: '4px',
-                          backgroundColor: isSelected ? '#2563eb' : 'transparent',
+                          backgroundColor: isSelected ? 'var(--ds-text-brand, #2563eb)' : 'transparent',
                           display: 'flex',
                           alignItems: 'center',
                           justifyContent: 'center',
                         }}
                       >
-                        {isSelected && <Check size={12} color="#ffffff" />}
+                        {isSelected && <Check size={12} color="var(--ds-surface, #ffffff)" />}
                       </div>
                       <div
                         style={{
@@ -283,7 +283,7 @@ export function T10CheckoutModalNew({
                           fontSize: '12px',
                           fontWeight: 600,
                           color: '#6b7280',
-                          backgroundColor: '#e5e7eb',
+                          backgroundColor: 'var(--ds-border, #e5e7eb)',
                           borderRadius: '50%',
                         }}
                       >
@@ -345,13 +345,13 @@ export function T10CheckoutModalNew({
                         height: '18px',
                         border: carryOver ? '2px solid #2563eb' : '2px solid #d1d5db',
                         borderRadius: '4px',
-                        backgroundColor: carryOver ? '#2563eb' : 'transparent',
+                        backgroundColor: carryOver ? 'var(--ds-text-brand, #2563eb)' : 'transparent',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
                       }}
                     >
-                      {carryOver && <Check size={10} color="#ffffff" />}
+                      {carryOver && <Check size={10} color="var(--ds-surface, #ffffff)" />}
                     </div>
                     <span style={{ fontSize: '14px', color: '#374151' }}>
                       Carry over incomplete items to next week{' '}
@@ -375,13 +375,13 @@ export function T10CheckoutModalNew({
                       height: '18px',
                       border: startNextWeek ? '2px solid #2563eb' : '2px solid #d1d5db',
                       borderRadius: '4px',
-                      backgroundColor: startNextWeek ? '#2563eb' : 'transparent',
+                      backgroundColor: startNextWeek ? 'var(--ds-text-brand, #2563eb)' : 'transparent',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
                     }}
                   >
-                    {startNextWeek && <Check size={10} color="#ffffff" />}
+                    {startNextWeek && <Check size={10} color="var(--ds-surface, #ffffff)" />}
                   </div>
                   <span style={{ fontSize: '14px', color: '#374151' }}>
                     Start next week after checkout
@@ -409,7 +409,7 @@ export function T10CheckoutModalNew({
                   fontSize: '14px',
                   fontWeight: 500,
                   color: '#374151',
-                  backgroundColor: '#ffffff',
+                  backgroundColor: 'var(--ds-surface, #ffffff)',
                   border: '1px solid #d1d5db',
                   borderRadius: '6px',
                   cursor: 'pointer',
@@ -428,8 +428,8 @@ export function T10CheckoutModalNew({
                   padding: '10px 20px',
                   fontSize: '14px',
                   fontWeight: 500,
-                  color: '#ffffff',
-                  backgroundColor: '#2563eb',
+                  color: 'var(--ds-surface, #ffffff)',
+                  backgroundColor: 'var(--ds-text-brand, #2563eb)',
                   border: 'none',
                   borderRadius: '6px',
                   cursor: selectedIds.length === 0 ? 'not-allowed' : 'pointer',

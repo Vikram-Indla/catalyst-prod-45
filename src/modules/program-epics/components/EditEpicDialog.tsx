@@ -214,7 +214,7 @@ export function EditEpicDialog({ open, onOpenChange, epicId, onUpdated }: EditEp
         'bg-white dark:bg-[#141414] rounded-lg shadow-xl',
         'border border-gray-200 dark:border-[#333333] [&>button]:hidden'
       )}>
-        <div className="h-1 bg-gradient-to-r from-[#2563eb] via-[#8b5cf6] to-[#60a5fa] flex-shrink-0" />
+        <div className="h-1 bg-gradient-to-r from-[var(--ds-text-brand,#2563eb)] via-[#8b5cf6] to-[var(--ds-text-brand,#60a5fa)] flex-shrink-0" />
 
         <DialogHeader className="px-6 py-4 border-b border-gray-200 dark:border-[#333333] flex-shrink-0">
           <div className="flex items-center justify-between">
@@ -350,9 +350,9 @@ export function EditEpicDialog({ open, onOpenChange, epicId, onUpdated }: EditEp
           </div>
         </div>
 
-        <div className="flex items-center justify-between px-6 py-4 border-t border-gray-200 dark:border-[#333333] bg-gray-50 dark:bg-[#1a1a1a]">
+        <div className="flex items-center justify-between px-6 py-4 border-t border-gray-200 dark:border-[#333333] bg-gray-50 dark:bg-[var(--ds-surface-raised,#1a1a1a)]">
           <Button variant="ghost" onClick={() => onOpenChange(false)} className="text-muted-foreground hover:text-foreground">Cancel</Button>
-          <Button onClick={() => updateEpicMutation.mutate()} disabled={!isValid || updateEpicMutation.isPending} className="bg-[#2563eb] hover:bg-[#1d4ed8] text-white px-6">
+          <Button onClick={() => updateEpicMutation.mutate()} disabled={!isValid || updateEpicMutation.isPending} className="bg-[var(--ds-text-brand,#2563eb)] hover:bg-[var(--ds-background-brand-bold-hovered,#1d4ed8)] text-white px-6">
             {updateEpicMutation.isPending ? 'Saving...' : 'Save Changes'}
           </Button>
         </div>

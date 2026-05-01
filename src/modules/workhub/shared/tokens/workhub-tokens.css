@@ -1,33 +1,33 @@
 /* ═══ WORKHUB RING-FENCED DESIGN TOKENS ═══ */
 :root {
   /* Surfaces */
-  --wh-bg: #FFFFFF;
-  --wh-sf: #F8FAFC;
-  --wh-sf2: #F1F5F9;
-  --wh-sf3: #E2E8F0;
-  --wh-bdr: #E2E8F0;
+  --wh-bg: var(--ds-surface, #FFFFFF);
+  --wh-sf: var(--ds-surface-sunken, #F8FAFC);
+  --wh-sf2: var(--ds-surface-sunken, #F1F5F9);
+  --wh-sf3: var(--ds-border, #E2E8F0);
+  --wh-bdr: var(--ds-border, #E2E8F0);
 
   /* Text */
-  --wh-tx: #0F172A;
-  --wh-tx2: #334155;
-  --wh-tx3: #64748B;
-  --wh-tx4: #94A3B8;
+  --wh-tx: var(--ds-text, #0F172A);
+  --wh-tx2: var(--ds-text-subtle, #334155);
+  --wh-tx3: var(--ds-text-subtlest, #64748B);
+  --wh-tx4: var(--ds-text-subtlest, #94A3B8);
 
   /* Primary */
-  --wh-pri: #2563EB;
-  --wh-pri2: #1D4ED8;
-  --wh-pri-bg: #EFF6FF;
+  --wh-pri: var(--ds-text-brand, #2563EB);
+  --wh-pri2: var(--ds-background-brand-bold-hovered, #1D4ED8);
+  --wh-pri-bg: var(--ds-background-selected, #EFF6FF);
   --wh-pri-bdr: #BFDBFE;
 
   /* Semantic */
   --wh-suc: #10B981;
   --wh-suc-bg: #ECFDF5;
-  --wh-warn: #F59E0B;
+  --wh-warn: var(--ds-text-warning, #F59E0B);
   --wh-warn-bg: #FFFBEB;
-  --wh-dng: #EF4444;
-  --wh-dng-bg: #FEF2F2;
-  --wh-pur: #3B82F6;
-  --wh-pur-bg: #EFF6FF;
+  --wh-dng: var(--ds-text-danger, #EF4444);
+  --wh-dng-bg: var(--ds-background-danger, #FEF2F2);
+  --wh-pur: var(--ds-text-brand, #3B82F6);
+  --wh-pur-bg: var(--ds-background-selected, #EFF6FF);
 
   /* Typography */
   --wh-fh: var(--cp-font-heading);
@@ -48,22 +48,22 @@
 
 /* ═══ ECLIPSE DARK MODE — WORKHUB DARK MODE ═══ */
 .dark, [data-theme="dark"] {
-  /* Surfaces — ONE surface #0A0A0A DARK MODE */
+  /* Surfaces — ONE surface var(--ds-surface, #0A0A0A) DARK MODE */
   --wh-bg: var(--cp-bg-page, #1F1F21);
   --wh-sf: var(--cp-bg-page, #1F1F21);
   --wh-sf2: var(--cp-bg-surface, #242528);
   --wh-sf3: var(--cp-bg-surface, #242528);
-  --wh-bdr: #2E2E2E;
+  --wh-bdr: var(--ds-border, #2E2E2E);
 
   /* Text — warm white ladder */
-  --wh-tx: #EDEDED;
-  --wh-tx2: #A1A1A1;
-  --wh-tx3: #878787;
+  --wh-tx: var(--ds-text, #EDEDED);
+  --wh-tx2: var(--ds-text-subtlest, #A1A1A1);
+  --wh-tx3: var(--ds-text-subtlest, #878787);
   --wh-tx4: #7D7D7D;
 
   /* Primary */
-  --wh-pri: #3B82F6;
-  --wh-pri2: #2563EB;
+  --wh-pri: var(--ds-text-brand, #3B82F6);
+  --wh-pri2: var(--ds-text-brand, #2563EB);
   --wh-pri-bg: rgba(59,130,246,0.10);
   --wh-pri-bdr: rgba(59,130,246,0.20);
 
@@ -72,9 +72,9 @@
   --wh-suc-bg: rgba(74,222,128,0.10);
   --wh-warn: #FDE68A;
   --wh-warn-bg: rgba(253,230,138,0.10);
-  --wh-dng: #FCA5A5;
+  --wh-dng: var(--ds-border-danger, #FCA5A5);
   --wh-dng-bg: rgba(252,165,165,0.10);
-  --wh-pur: #3B82F6;
+  --wh-pur: var(--ds-text-brand, #3B82F6);
   --wh-pur-bg: rgba(59,130,246,0.10);
 
   /* Shadows — subtle in dark mode */
@@ -131,7 +131,7 @@
   height: 40px;
   padding: 0 20px;
   background: var(--wh-pri);
-  color: #fff;
+  color: var(--ds-surface, #fff);
   border: none;
   border-radius: var(--wh-rad);
   font-size: 13px;

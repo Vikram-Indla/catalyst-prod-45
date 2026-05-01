@@ -108,7 +108,7 @@ export default function StrategicThemesPage() {
         <CatalystPageHeader title="Strategic Themes" />
         <div className="p-6 space-y-3">
           {[...Array(3)].map((_, i) => (
-            <div key={i} className="rounded-lg animate-pulse" style={{ height: 48, background: isDark ? '#1F1F1F' : 'hsl(var(--muted))' }} />
+            <div key={i} className="rounded-lg animate-pulse" style={{ height: 48, background: isDark ? 'var(--ds-surface-overlay, #1F1F1F)' : 'hsl(var(--muted))' }} />
           ))}
         </div>
       </PageChrome>

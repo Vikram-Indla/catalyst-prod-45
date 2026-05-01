@@ -14,7 +14,7 @@ interface Props {
 }
 
 const CATEGORY_STYLE: Record<string, { bg: string; border: string; text: string }> = {
-  todo:        { bg: '#DFE1E6', border: '#A5ADBA', text: '#253858' },
+  todo:        { bg: 'var(--ds-border, #DFE1E6)', border: '#A5ADBA', text: 'var(--ds-text, #253858)' },
   in_progress: { bg: '#DEEBFF', border: '#4C9AFF', text: '#0747A6' },
   done:        { bg: '#E3FCEF', border: '#57D9A3', text: '#006644' },
 };
@@ -34,8 +34,8 @@ export function WorkflowDiagram({ statuses, transitions, schemeName }: Props) {
     <div className="p-6 space-y-6">
       {/* Scheme name */}
       <div className="flex items-center gap-2 mb-4">
-        <span className="text-sm font-semibold text-[#EDEDED] font-['Sora']">{schemeName}</span>
-        <span className="text-[11px] text-[#878787]">
+        <span className="text-sm font-semibold text-[var(--ds-text,#EDEDED)] font-['Sora']">{schemeName}</span>
+        <span className="text-[11px] text-[var(--ds-text-subtlest,#878787)]">
           {statuses.length} statuses · {transitions.length} transitions
         </span>
       </div>
@@ -63,7 +63,7 @@ export function WorkflowDiagram({ statuses, transitions, schemeName }: Props) {
                 >
                   {label}
                 </span>
-                <span className="text-[10px] text-[#878787]">({items.length})</span>
+                <span className="text-[10px] text-[var(--ds-text-subtlest,#878787)]">({items.length})</span>
               </div>
               <div className="space-y-2">
                 {items.map(s => (
@@ -77,7 +77,7 @@ export function WorkflowDiagram({ statuses, transitions, schemeName }: Props) {
 
       {/* Transition list */}
       <div className="space-y-2">
-        <h4 className="text-xs font-semibold text-[#A1A1A1] uppercase tracking-wider mb-3">
+        <h4 className="text-xs font-semibold text-[var(--ds-text-subtlest,#A1A1A1)] uppercase tracking-wider mb-3">
           Transitions ({transitions.length})
         </h4>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
@@ -86,12 +86,12 @@ export function WorkflowDiagram({ statuses, transitions, schemeName }: Props) {
             return (
               <div
                 key={t.id}
-                className="flex items-center gap-2 px-3 py-2 rounded border border-[#2E2E2E] bg-[#1A1A1A]"
+                className="flex items-center gap-2 px-3 py-2 rounded border border-[var(--ds-border,#2E2E2E)] bg-[var(--ds-surface-raised,#1A1A1A)]"
               >
                 <Zap size={12} className="text-amber-400 shrink-0" />
                 <span className="text-xs text-amber-400 font-medium">Any</span>
-                <ArrowRight size={12} className="text-[#454545] shrink-0" />
-                <span className="text-xs text-[#EDEDED]">{toStatus?.name || '?'}</span>
+                <ArrowRight size={12} className="text-[var(--ds-border-bold,#454545)] shrink-0" />
+                <span className="text-xs text-[var(--ds-text,#EDEDED)]">{toStatus?.name || '?'}</span>
               </div>
             );
           })}
@@ -101,13 +101,13 @@ export function WorkflowDiagram({ statuses, transitions, schemeName }: Props) {
             return (
               <div
                 key={t.id}
-                className="flex items-center gap-2 px-3 py-2 rounded border border-[#2E2E2E] bg-[#1A1A1A]"
+                className="flex items-center gap-2 px-3 py-2 rounded border border-[var(--ds-border,#2E2E2E)] bg-[var(--ds-surface-raised,#1A1A1A)]"
               >
                 <StatusDot category={fromStatus?.category || 'todo'} />
-                <span className="text-xs text-[#EDEDED] truncate">{fromStatus?.name || '?'}</span>
-                <ArrowRight size={12} className="text-[#454545] shrink-0" />
+                <span className="text-xs text-[var(--ds-text,#EDEDED)] truncate">{fromStatus?.name || '?'}</span>
+                <ArrowRight size={12} className="text-[var(--ds-border-bold,#454545)] shrink-0" />
                 <StatusDot category={toStatus?.category || 'todo'} />
-                <span className="text-xs text-[#EDEDED] truncate">{toStatus?.name || '?'}</span>
+                <span className="text-xs text-[var(--ds-text,#EDEDED)] truncate">{toStatus?.name || '?'}</span>
               </div>
             );
           })}
@@ -127,7 +127,7 @@ function StatusNode({ status, style }: { status: WorkflowStatus; style: typeof C
       }}
     >
       {status.is_initial && (
-        <span className="text-[9px] font-bold text-[#EDEDED] bg-[#292929] px-1 py-0.5 rounded">
+        <span className="text-[9px] font-bold text-[var(--ds-text,#EDEDED)] bg-[var(--ds-border,#292929)] px-1 py-0.5 rounded">
           START
         </span>
       )}
@@ -135,7 +135,7 @@ function StatusNode({ status, style }: { status: WorkflowStatus; style: typeof C
         {status.name}
       </span>
       {status.is_final && (
-        <span className="text-[9px] font-bold text-[#EDEDED] bg-[#292929] px-1 py-0.5 rounded ml-auto">
+        <span className="text-[9px] font-bold text-[var(--ds-text,#EDEDED)] bg-[var(--ds-border,#292929)] px-1 py-0.5 rounded ml-auto">
           END
         </span>
       )}
@@ -144,6 +144,6 @@ function StatusNode({ status, style }: { status: WorkflowStatus; style: typeof C
 }
 
 function StatusDot({ category }: { category: string }) {
-  const bg = CATEGORY_STYLE[category]?.bg || '#DFE1E6';
+  const bg = CATEGORY_STYLE[category]?.bg || 'var(--ds-border, #DFE1E6)';
   return <div className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: bg }} />;
 }

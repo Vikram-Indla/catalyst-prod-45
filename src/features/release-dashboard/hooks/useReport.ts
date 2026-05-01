@@ -383,9 +383,9 @@ export function useExportReport() {
 // Generate HTML report
 function generateHtmlReport(report: ReadinessReport): string {
   const decisionColors = {
-    go: '#22c55e',
-    no_go: '#ef4444',
-    conditional: '#f59e0b',
+    go: 'var(--ds-text-success, #22c55e)',
+    no_go: 'var(--ds-text-danger, #ef4444)',
+    conditional: 'var(--ds-text-warning, #f59e0b)',
     pending: '#6b7280',
   };
 
@@ -399,24 +399,24 @@ function generateHtmlReport(report: ReadinessReport): string {
   <title>Release Readiness Report - ${report.metadata.releaseName}</title>
   <style>
     body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; margin: 40px; color: #1f2937; }
-    h1 { color: #111827; border-bottom: 2px solid #e5e7eb; padding-bottom: 16px; }
+    h1 { color: #111827; border-bottom: 2px solid var(--ds-border, #e5e7eb); padding-bottom: 16px; }
     h2 { color: #374151; margin-top: 32px; }
     .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px; }
     .decision { padding: 12px 24px; border-radius: 8px; font-size: 24px; font-weight: bold; color: white; background: ${decisionColor}; }
     .metric-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin: 24px 0; }
-    .metric-card { background: #f9fafb; padding: 16px; border-radius: 8px; border: 1px solid #e5e7eb; }
+    .metric-card { background: #f9fafb; padding: 16px; border-radius: 8px; border: 1px solid var(--ds-border, #e5e7eb); }
     .metric-value { font-size: 28px; font-weight: bold; color: #111827; }
     .metric-label { font-size: 14px; color: #6b7280; }
     table { width: 100%; border-collapse: collapse; margin: 16px 0; }
-    th, td { padding: 12px; text-align: left; border-bottom: 1px solid #e5e7eb; }
+    th, td { padding: 12px; text-align: left; border-bottom: 1px solid var(--ds-border, #e5e7eb); }
     th { background: #f9fafb; font-weight: 600; }
-    .passed { color: #22c55e; }
-    .failed { color: #ef4444; }
-    .risk-critical { background: #fef2f2; border-left: 4px solid #ef4444; padding: 12px; margin: 8px 0; }
+    .passed { color: var(--ds-text-success, #22c55e); }
+    .failed { color: var(--ds-text-danger, #ef4444); }
+    .risk-critical { background: var(--ds-background-danger, #fef2f2); border-left: 4px solid var(--ds-text-danger, #ef4444); padding: 12px; margin: 8px 0; }
     .risk-high { background: #fff7ed; border-left: 4px solid #f97316; padding: 12px; margin: 8px 0; }
-    .risk-medium { background: #fffbeb; border-left: 4px solid #f59e0b; padding: 12px; margin: 8px 0; }
-    .recommendation { background: #f0fdf4; border-left: 4px solid #22c55e; padding: 12px; margin: 8px 0; }
-    .footer { margin-top: 48px; padding-top: 16px; border-top: 1px solid #e5e7eb; color: #6b7280; font-size: 12px; }
+    .risk-medium { background: #fffbeb; border-left: 4px solid var(--ds-text-warning, #f59e0b); padding: 12px; margin: 8px 0; }
+    .recommendation { background: #f0fdf4; border-left: 4px solid var(--ds-text-success, #22c55e); padding: 12px; margin: 8px 0; }
+    .footer { margin-top: 48px; padding-top: 16px; border-top: 1px solid var(--ds-border, #e5e7eb); color: #6b7280; font-size: 12px; }
   </style>
 </head>
 <body>

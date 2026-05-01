@@ -59,7 +59,7 @@ const pageBtnStyle = (disabled: boolean): React.CSSProperties => ({
   fontSize: 13,
   border: '1px solid #DFE1E6',
   borderRadius: 3,
-  background: disabled ? '#F4F5F7' : '#FFFFFF',
+  background: disabled ? 'var(--ds-surface-sunken, #F4F5F7)' : 'var(--ds-surface, #FFFFFF)',
   color: disabled ? '#A5ADBA' : '#42526E',
   cursor: disabled ? 'default' : 'pointer',
   fontFamily: 'inherit',
@@ -401,7 +401,7 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
         box-shadow: inset 3px 0 0 #0C66E4;
       }
       .jira-table-grid .jira-table-row-focused > td {
-        background-color: #F4F5F7 !important;
+        background-color: var(--ds-surface-sunken, #F4F5F7) !important;
       }
       /* Grid lines via box-shadow (immune to Atlaskit's em-based overrides).
          Phase 12 (2026-04-29): reverted to Atlaskit color.border via
@@ -431,7 +431,7 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
       }
       /* Focused row overrides the td shadow with its own blue bar */
       .jira-table-grid .jira-table-row-focused > td:first-child {
-        box-shadow: inset 3px 0 0 #0C66E4, inset 0 -1px 0 0 #DFE1E6 !important;
+        box-shadow: inset 3px 0 0 #0C66E4, inset 0 -1px 0 0 var(--ds-border, #DFE1E6) !important;
       }
       /* Row hover. Apr 28, 2026 (jira-compare cycle 4): tokenized — was
          hardcoded #FAFBFC. --ds-background-neutral-subtle-hovered is the
@@ -576,12 +576,12 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
            cell-renderers (Lozenge, Avatar, dates, etc.) override locally;
            all unstyled text inherits this default so we don't drift.
            Apr 28, 2026 (jira-compare cycle 2 typography RCA): switched
-           from legacy hardcoded #172B4D (rgb 23,43,77 — old Atlassian
+           from legacy hardcoded var(--ds-text, #172B4D) (rgb 23,43,77 — old Atlassian
            Refresh "neutral 800") to the modern --ds-text token (resolves
            to rgb 41,42,46 on Jira /list per live probe of Catalyst H1
            AND Jira BAU body cells). The legacy hex was the cause of the
            washed-out / blue-shifted body text Vikram flagged: every body
-           td was rendering #172B4D while headers + H1 used the modern
+           td was rendering var(--ds-text, #172B4D) while headers + H1 used the modern
            token. Token-first ensures dark-mode + Dark mode switch flips
            too. Fallback hex updated to #292A2E to match Jira's resolved
            --ds-text in light theme. */
@@ -615,7 +615,7 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
         border-radius: 1px;
       }
       .jira-table-grid tbody tr.jira-table-group-row > td {
-        background: #F4F5F7 !important;
+        background: var(--ds-surface-sunken, #F4F5F7) !important;
       }
 
       /* ── Apr 27, 2026 (L59): Sticky Key-column prefix ──
@@ -664,7 +664,7 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
       .jira-table-grid tbody tr.jira-table-group-row > td:nth-child(1),
       .jira-table-grid tbody tr.jira-table-group-row > td:nth-child(2),
       .jira-table-grid tbody tr.jira-table-group-row > td:nth-child(3) {
-        background: #F4F5F7 !important;
+        background: var(--ds-surface-sunken, #F4F5F7) !important;
       }
       /* ── Critique fixes (2026-04) — ported from the retired legacy table ──
          Center the selection checkbox in its column.
@@ -724,8 +724,8 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
          DARK MODE — Rule 3 paired overrides for !important hex above.
          Most surfaces already use --ds-* tokens that flip natively under
          @atlaskit/tokens dark mode. The remaining hardcoded fallbacks
-         (#F4F5F7 group-row bg, #F7F8F9 sticky header, #0C66E4 focus bar,
-         #DFE1E6 grid line) need explicit .dark companions per Rule 3.
+         (var(--ds-surface-sunken, #F4F5F7) group-row bg, #F7F8F9 sticky header, #0C66E4 focus bar,
+         var(--ds-border, #DFE1E6) grid line) need explicit .dark companions per Rule 3.
          ───────────────────────────────────────────────────────────────────── */
       .dark .jira-table-grid .jira-table-row-focused > td {
         background-color: var(--ds-background-selected, #1C2B41) !important;
@@ -1238,7 +1238,7 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
               <span
                 style={{
                   padding: '1px 8px',
-                  background: '#DFE1E6',
+                  background: 'var(--ds-border, #DFE1E6)',
                   borderRadius: 10,
                   color: '#42526E',
                   fontSize: 11,
@@ -1249,7 +1249,7 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
                 {g.rows.length}
               </span>
               {g.meta && (
-                <span style={{ fontWeight: 500, color: '#6B778C', letterSpacing: 0, textTransform: 'none' }}>
+                <span style={{ fontWeight: 500, color: 'var(--ds-text-subtlest, #6B778C)', letterSpacing: 0, textTransform: 'none' }}>
                   {g.meta}
                 </span>
               )}
@@ -1415,7 +1415,7 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
         fontSize: d.cellFontSize,
         color: '#292A2E',
         outline: 'none',
-        background: '#FFFFFF',
+        background: 'var(--ds-surface, #FFFFFF)',
         border: '1px solid #DFE1E6',
         // Apr 27, 2026 — jira-compare audit P2 #10: Jira's outer table
         // card uses 8px border-radius; Catalyst was 6px. Bumped to
@@ -1524,7 +1524,7 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
                       )}
                       {cell.content}
                       {meta?.sortable && isSorted && (
-                        <span aria-hidden="true" style={{ color: '#6B778C' }}>
+                        <span aria-hidden="true" style={{ color: 'var(--ds-text-subtlest, #6B778C)' }}>
                           {sortOrder === 'ASC' ? '▲' : '▼'}
                         </span>
                       )}
@@ -1624,7 +1624,7 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
             borderTop: '1px solid #DFE1E6',
             fontSize: 13,
             color: '#42526E',
-            background: '#FFFFFF',
+            background: 'var(--ds-surface, #FFFFFF)',
           }}>
             <button
               type="button"
@@ -1656,7 +1656,7 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
             left: ctxMenu.x,
             zIndex: 1100,
             minWidth: 200,
-            background: '#FFFFFF',
+            background: 'var(--ds-surface, #FFFFFF)',
             border: '1px solid #DFE1E6',
             borderRadius: 4,
             boxShadow: '0 1px 1px rgba(9,30,66,0.25), 0 8px 24px -4px rgba(9,30,66,0.18)',
@@ -1689,7 +1689,7 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
                     border: 'none',
                     background: 'transparent',
                     // Apr 28, 2026 (jira-compare cycle 3 typography sweep):
-                    // legacy #172B4D → --ds-text fallback #292A2E to match
+                    // legacy var(--ds-text, #172B4D) → --ds-text fallback #292A2E to match
                     // the rest of the table's body-text token swap.
                     color: a.danger ? 'var(--ds-text-danger, #AE2A19)' : 'var(--ds-text, #292A2E)',
                     fontSize: 14,
@@ -1699,7 +1699,7 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
                     fontFamily: 'inherit',
                     borderRadius: 3,
                   }}
-                  onMouseEnter={(e) => { if (!disabled) (e.currentTarget as HTMLElement).style.background = a.danger ? '#FFEBE6' : '#F4F5F7'; }}
+                  onMouseEnter={(e) => { if (!disabled) (e.currentTarget as HTMLElement).style.background = a.danger ? '#FFEBE6' : 'var(--ds-surface-sunken, #F4F5F7)'; }}
                   onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
                 >
                   {a.icon}
@@ -1811,7 +1811,7 @@ function ColumnManagerTrigger<TRow>({
           justifyContent: 'center',
           border: 'none',
           background: 'transparent',
-          color: '#6B778C',
+          color: 'var(--ds-text-subtlest, #6B778C)',
           cursor: 'pointer',
           borderRadius: 3,
         }}
@@ -1831,7 +1831,7 @@ function ColumnManagerTrigger<TRow>({
             right: anchor.right,
             zIndex: 1000,
             minWidth: 260,
-            background: '#FFFFFF',
+            background: 'var(--ds-surface, #FFFFFF)',
             border: '1px solid #DFE1E6',
             borderRadius: 4,
             boxShadow: '0 1px 1px rgba(9,30,66,0.25), 0 8px 24px -4px rgba(9,30,66,0.18)',
@@ -1844,7 +1844,7 @@ function ColumnManagerTrigger<TRow>({
           }}
         >
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '2px 4px 6px' }}>
-            <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#6B778C' }}>
+            <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--ds-text-subtlest, #6B778C)' }}>
               Columns
             </span>
             <button
@@ -1876,7 +1876,7 @@ function ColumnManagerTrigger<TRow>({
               value={search}
               onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearch(e.target.value)}
               elemBeforeInput={
-                <span style={{ paddingInlineStart: 8, color: '#6B778C', display: 'flex', alignItems: 'center' }}>
+                <span style={{ paddingInlineStart: 8, color: 'var(--ds-text-subtlest, #6B778C)', display: 'flex', alignItems: 'center' }}>
                   <SearchIcon size={12} />
                 </span>
               }
@@ -1904,7 +1904,7 @@ function ColumnManagerTrigger<TRow>({
                     fontSize: 14,
                     color: '#292A2E',
                   }}
-                  onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.background = '#F4F5F7')}
+                  onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.background = 'var(--ds-surface-sunken, #F4F5F7)')}
                   onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.background = 'transparent')}
                 >
                   <AkCheckbox

@@ -62,9 +62,9 @@ const formatDateDisplay = (dateStr: string) => {
 };
 
 const CATEGORY_COLORS = {
-  insourced: '#2563eb',
+  insourced: 'var(--ds-text-brand, #2563eb)',
   cosourced: '#0d9488',
-  outsourced: '#d97706',
+  outsourced: 'var(--ds-text-warning, #d97706)',
   licenses: '#7c3aed',
 } as const;
 

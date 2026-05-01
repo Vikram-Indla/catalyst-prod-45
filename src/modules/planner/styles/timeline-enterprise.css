@@ -92,16 +92,16 @@
 /* === MIM — Gray === */
 .task-bar[data-workstream*="MIM"],
 [data-workstream*="MIM"] .task-bar {
-  background-color: #e2e8f0 !important;  /* slate-200 */
-  border: 1px solid #94a3b8 !important;  /* slate-400 */
+  background-color: var(--ds-border, #e2e8f0) !important;  /* slate-200 */
+  border: 1px solid var(--ds-text-subtlest, #94a3b8) !important;  /* slate-400 */
 }
 
 .task-bar[data-workstream*="MIM"] .task-id {
-  color: #475569 !important;  /* slate-600 - DARK */
+  color: var(--ds-text-subtle, #475569) !important;  /* slate-600 - DARK */
 }
 
 .task-bar[data-workstream*="MIM"] .task-title {
-  color: #334155 !important;  /* slate-700 - DARKER */
+  color: var(--ds-text-subtle, #334155) !important;  /* slate-700 - DARKER */
 }
 
 /* === SENAEI — Teal === */
@@ -126,16 +126,16 @@
 /* === STAND-ALONE — Gray === */
 .task-bar[data-workstream*="Stand-Alone"],
 [data-workstream*="Stand-Alone"] .task-bar {
-  background-color: #e2e8f0 !important;
-  border: 1px solid #94a3b8 !important;
+  background-color: var(--ds-border, #e2e8f0) !important;
+  border: 1px solid var(--ds-text-subtlest, #94a3b8) !important;
 }
 
 .task-bar[data-workstream*="Stand-Alone"] .task-id {
-  color: #475569 !important;
+  color: var(--ds-text-subtle, #475569) !important;
 }
 
 .task-bar[data-workstream*="Stand-Alone"] .task-title {
-  color: #334155 !important;
+  color: var(--ds-text-subtle, #334155) !important;
 }
 
 /* === TAHOMMONA — Orange === */
@@ -158,16 +158,16 @@
    ============================================================================ */
 
 .task-bar:not([data-workstream]) {
-  background-color: #e2e8f0 !important;
-  border: 1px solid #94a3b8 !important;
+  background-color: var(--ds-border, #e2e8f0) !important;
+  border: 1px solid var(--ds-text-subtlest, #94a3b8) !important;
 }
 
 .task-bar:not([data-workstream]) .task-id {
-  color: #475569 !important;
+  color: var(--ds-text-subtle, #475569) !important;
 }
 
 .task-bar:not([data-workstream]) .task-title {
-  color: #334155 !important;
+  color: var(--ds-text-subtle, #334155) !important;
 }
 
 /* ============================================================================
@@ -210,16 +210,16 @@
 
 /* Status colors */
 .status-dot[data-status="backlog"] {
-  background-color: #94a3b8 !important;
+  background-color: var(--ds-text-subtlest, #94a3b8) !important;
 }
 
 .status-dot[data-status="planned"] {
-  background-color: #3b82f6 !important;
+  background-color: var(--ds-text-brand, #3b82f6) !important;
 }
 
 .status-dot[data-status="progress"],
 .status-dot[data-status="in-progress"] {
-  background-color: #f59e0b !important;
+  background-color: var(--ds-text-warning, #f59e0b) !important;
 }
 
 .status-dot[data-status="review"] {
@@ -227,7 +227,7 @@
 }
 
 .status-dot[data-status="done"] {
-  background-color: #16a34a !important;
+  background-color: var(--ds-text-success, #16a34a) !important;
 }
 
 /* ============================================================================
@@ -236,7 +236,7 @@
 
 .task-bar.overdue,
 .task-bar[data-overdue="true"] {
-  border-left: 4px solid #dc2626 !important;
+  border-left: 4px solid var(--ds-text-danger, #dc2626) !important;
 }
 
 /* Overdue indicator dot - top right */
@@ -247,7 +247,7 @@
   right: -4px !important;
   width: 10px !important;
   height: 10px !important;
-  background: #dc2626 !important;
+  background: var(--ds-text-danger, #dc2626) !important;
   border-radius: 50% !important;
   border: 2px solid white !important;
 }
@@ -255,7 +255,7 @@
 /* Overdue text in panel */
 .overdue-text,
 .overdue-count {
-  color: #dc2626 !important;
+  color: var(--ds-text-danger, #dc2626) !important;
   font-weight: 600 !important;
 }
 
@@ -312,7 +312,7 @@
 /* MIM — GRAY (not blue) */
 .workstream-dot[data-workstream*="MIM"],
 [data-workstream*="MIM"] .workstream-dot {
-  background-color: #64748b !important;
+  background-color: var(--ds-text-subtlest, #64748b) !important;
 }
 
 /* Senaei — TEAL */
@@ -326,7 +326,7 @@
 /* Stand-Alone — GRAY */
 .workstream-dot[data-workstream*="Stand-Alone"],
 [data-workstream*="Stand-Alone"] .workstream-dot {
-  background-color: #64748b !important;
+  background-color: var(--ds-text-subtlest, #64748b) !important;
 }
 
 /* Tahommona — ORANGE */
@@ -342,29 +342,29 @@
 .workstream-name {
   font-size: 14px !important;
   font-weight: 600 !important;
-  color: #0f172a !important;
+  color: var(--ds-text, #0f172a) !important;
 }
 
 .dark .workstream-name {
-  color: #f1f5f9 !important;
+  color: var(--ds-surface-sunken, #f1f5f9) !important;
 }
 
 .workstream-lead {
   font-size: 13px !important;
-  color: #475569 !important;
+  color: var(--ds-text-subtle, #475569) !important;
 }
 
 .dark .workstream-lead {
-  color: #94a3b8 !important;
+  color: var(--ds-text-subtlest, #94a3b8) !important;
 }
 
 .workstream-stats {
   font-size: 13px !important;
-  color: #475569 !important;
+  color: var(--ds-text-subtle, #475569) !important;
 }
 
 .dark .workstream-stats {
-  color: #94a3b8 !important;
+  color: var(--ds-text-subtlest, #94a3b8) !important;
 }
 
 /* ============================================================================
@@ -374,11 +374,11 @@
 .status-legend .legend-label {
   font-size: 13px !important;
   font-weight: 500 !important;
-  color: #334155 !important;
+  color: var(--ds-text-subtle, #334155) !important;
 }
 
 .dark .status-legend .legend-label {
-  color: #cbd5e1 !important;
+  color: var(--ds-text-disabled, #cbd5e1) !important;
 }
 
 .status-legend .legend-dot {
@@ -388,11 +388,11 @@
 }
 
 /* Legend dot colors */
-.legend-dot[data-status="backlog"] { background-color: #94a3b8 !important; }
-.legend-dot[data-status="planned"] { background-color: #3b82f6 !important; }
-.legend-dot[data-status="progress"] { background-color: #f59e0b !important; }
+.legend-dot[data-status="backlog"] { background-color: var(--ds-text-subtlest, #94a3b8) !important; }
+.legend-dot[data-status="planned"] { background-color: var(--ds-text-brand, #3b82f6) !important; }
+.legend-dot[data-status="progress"] { background-color: var(--ds-text-warning, #f59e0b) !important; }
 .legend-dot[data-status="review"] { background-color: #8b5cf6 !important; }
-.legend-dot[data-status="done"] { background-color: #16a34a !important; }
+.legend-dot[data-status="done"] { background-color: var(--ds-text-success, #16a34a) !important; }
 
 /* ============================================================================
    SECTION 12: DATE HEADERS — More contrast
@@ -401,12 +401,12 @@
 .day-name {
   font-size: 10px !important;
   font-weight: 600 !important;
-  color: #64748b !important;
+  color: var(--ds-text-subtlest, #64748b) !important;
   text-transform: uppercase !important;
 }
 
 .dark .day-name {
-  color: #94a3b8 !important;
+  color: var(--ds-text-subtlest, #94a3b8) !important;
 }
 
 .day-number {
@@ -416,12 +416,12 @@
 }
 
 .dark .day-number {
-  color: #e2e8f0 !important;
+  color: var(--ds-border, #e2e8f0) !important;
 }
 
 /* Today column highlight */
 .date-column-header.today {
-  background-color: #eff6ff !important;
+  background-color: var(--ds-background-selected, #eff6ff) !important;
 }
 
 .dark .date-column-header.today {
@@ -430,13 +430,13 @@
 
 /* Today badge */
 .today-badge {
-  background-color: #3b82f6 !important;
+  background-color: var(--ds-text-brand, #3b82f6) !important;
   color: white !important;
 }
 
 /* Weekend columns */
 .date-column-header.weekend {
-  background-color: #f8fafc !important;
+  background-color: var(--ds-surface-sunken, #f8fafc) !important;
 }
 
 .dark .date-column-header.weekend {
@@ -448,12 +448,12 @@
    ============================================================================ */
 
 .today-marker > div:last-child {
-  background-color: #3b82f6 !important;
+  background-color: var(--ds-text-brand, #3b82f6) !important;
   width: 2px !important;
 }
 
 .today-label {
-  background-color: #3b82f6 !important;
+  background-color: var(--ds-text-brand, #3b82f6) !important;
   color: white !important;
   font-size: 10px !important;
   font-weight: 600 !important;
@@ -483,7 +483,7 @@
 }
 
 .workstream-row:hover {
-  background-color: #f1f5f9 !important;
+  background-color: var(--ds-surface-sunken, #f1f5f9) !important;
 }
 
 .dark .workstream-row:hover {
@@ -492,7 +492,7 @@
 
 /* Filter button hover */
 .filter-btn:hover {
-  background-color: #f1f5f9 !important;
+  background-color: var(--ds-surface-sunken, #f1f5f9) !important;
 }
 
 .dark .filter-btn:hover {
@@ -506,15 +506,15 @@
 .timeline-enterprise .btn-primary,
 .timeline-enterprise [class*="bg-blue-600"],
 .timeline-enterprise [class*="bg-primary"] {
-  background-color: #2563eb !important;
+  background-color: var(--ds-text-brand, #2563eb) !important;
 }
 
 .timeline-enterprise .btn-primary:hover {
-  background-color: #1d4ed8 !important;
+  background-color: var(--ds-background-brand-bold-hovered, #1d4ed8) !important;
 }
 
 .timeline-enterprise {
-  background-color: #f8fafc !important;
+  background-color: var(--ds-surface-sunken, #f8fafc) !important;
 }
 
 .dark .timeline-enterprise {
@@ -522,11 +522,11 @@
 }
 
 .timeline-enterprise .container-bg {
-  background-color: #ffffff !important;
+  background-color: var(--ds-surface, #ffffff) !important;
 }
 
 .dark .timeline-enterprise .container-bg {
-  background-color: #0f172a !important;
+  background-color: var(--ds-text, #0f172a) !important;
 }
 
 /* ============================================================================
@@ -540,7 +540,7 @@
 [style*="background-color: rgb(251, 207, 232)"], /* light pink */
 [style*="background: rgb(14, 165, 233)"],
 [style*="background: rgb(253, 164, 175)"] {
-  background-color: #e2e8f0 !important;
+  background-color: var(--ds-border, #e2e8f0) !important;
 }
 
 /* ============================================================================

@@ -26,7 +26,7 @@ const STATUS_COLORS: Record<string, string> = {
 };
 const statusColor = (s: string) => STATUS_COLORS[s?.toLowerCase()] || 'var(--idp-ink-muted)';
 const fmtSAR = (n: number) => `SAR ${n.toLocaleString('en-US')}`;
-const TOAST_OPTS = { duration: 2200, style: { background: '#18181B', color: '#fff' } as const, position: 'bottom-center' as const };
+const TOAST_OPTS = { duration: 2200, style: { background: '#18181B', color: 'var(--ds-surface, #fff)' } as const, position: 'bottom-center' as const };
 
 /* ── Custom Dropdown (string options) ── */
 function CustomSelect({ value, options, onChange }: { value: string; options: string[]; onChange: (v: string) => void }) {

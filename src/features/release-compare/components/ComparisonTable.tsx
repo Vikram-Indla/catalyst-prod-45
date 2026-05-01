@@ -42,8 +42,8 @@ export function ComparisonTable({ releases, winners }: ComparisonTableProps) {
             <span 
               className="text-xs mt-1 px-2 py-0.5 rounded-full inline-block w-fit"
               style={{
-                backgroundColor: release.status === 'testing' ? '#ccfbf1' : '#f1f5f9',
-                color: release.status === 'testing' ? '#0d9488' : '#64748b'
+                backgroundColor: release.status === 'testing' ? '#ccfbf1' : 'var(--ds-surface-sunken, #f1f5f9)',
+                color: release.status === 'testing' ? '#0d9488' : 'var(--ds-text-subtlest, #64748b)'
               }}
             >
               {getStatusLabel(release.status)}
@@ -134,13 +134,13 @@ export function ComparisonTable({ releases, winners }: ComparisonTableProps) {
             <span 
               className="text-xl font-bold"
               style={{ 
-                color: isRisk ? '#ef4444' : isWarning ? '#d97706' : '#334155'
+                color: isRisk ? 'var(--ds-text-danger, #ef4444)' : isWarning ? 'var(--ds-text-warning, #d97706)' : 'var(--ds-text-subtle, #334155)'
               }}
             >
               {days}
             </span>
-            {isRisk && <AlertCircle className="w-4 h-4" style={{ color: '#ef4444' }} />}
-            {!isRisk && isWarning && <AlertTriangle className="w-4 h-4" style={{ color: '#d97706' }} />}
+            {isRisk && <AlertCircle className="w-4 h-4" style={{ color: 'var(--ds-text-danger, #ef4444)' }} />}
+            {!isRisk && isWarning && <AlertTriangle className="w-4 h-4" style={{ color: 'var(--ds-text-warning, #d97706)' }} />}
             <span className="text-xs text-slate-400">
               {new Date(release.targetDate).toLocaleDateString()}
             </span>

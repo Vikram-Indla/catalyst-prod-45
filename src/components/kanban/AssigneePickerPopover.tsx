@@ -98,7 +98,7 @@ export const AssigneePickerPopover = memo(function AssigneePickerPopover({
       {open && createPortal(
         <div ref={panelRef} style={panelStyle} onClick={e => e.stopPropagation()}>
           <div style={{
-            background: '#FFFFFF',
+            background: 'var(--ds-surface, #FFFFFF)',
             borderRadius: 8,
             border: '2px solid #2563EB',
             boxShadow: '0 8px 24px rgba(9,30,66,0.25)',
@@ -124,7 +124,7 @@ export const AssigneePickerPopover = memo(function AssigneePickerPopover({
                 placeholder={currentAssignee || 'Search people...'}
                 style={{
                   flex: 1, border: 'none', outline: 'none',
-                  fontSize: 14, fontWeight: 500, color: '#172B4D',
+                  fontSize: 14, fontWeight: 500, color: 'var(--ds-text, #172B4D)',
                   background: 'transparent',
                   fontFamily: 'var(--cp-font-body)',
                 }}
@@ -139,19 +139,19 @@ export const AssigneePickerPopover = memo(function AssigneePickerPopover({
                 style={{
                   width: '100%', display: 'flex', alignItems: 'center', gap: 10,
                   padding: '10px 12px', border: 'none', cursor: 'pointer',
-                  background: currentAssignee === null ? '#F4F5F7' : '#FFFFFF',
+                  background: currentAssignee === null ? 'var(--ds-surface-sunken, #F4F5F7)' : 'var(--ds-surface, #FFFFFF)',
                   textAlign: 'left', fontFamily: 'var(--cp-font-body)',
                 }}
-                onMouseEnter={e => { e.currentTarget.style.background = '#F4F5F7'; }}
-                onMouseLeave={e => { e.currentTarget.style.background = currentAssignee === null ? '#F4F5F7' : '#FFFFFF'; }}
+                onMouseEnter={e => { e.currentTarget.style.background = 'var(--ds-surface-sunken, #F4F5F7)'; }}
+                onMouseLeave={e => { e.currentTarget.style.background = currentAssignee === null ? 'var(--ds-surface-sunken, #F4F5F7)' : 'var(--ds-surface, #FFFFFF)'; }}
               >
                 <span style={{
-                  width: 32, height: 32, borderRadius: '50%', background: '#F4F5F7',
+                  width: 32, height: 32, borderRadius: '50%', background: 'var(--ds-surface-sunken, #F4F5F7)',
                   display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
                 }}>
                   <User size={18} color="#5E6C84" />
                 </span>
-                <span style={{ fontSize: 14, fontWeight: 500, color: '#172B4D' }}>Unassigned</span>
+                <span style={{ fontSize: 14, fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>Unassigned</span>
               </button>
 
               {/* People */}
@@ -164,11 +164,11 @@ export const AssigneePickerPopover = memo(function AssigneePickerPopover({
                     style={{
                       width: '100%', display: 'flex', alignItems: 'center', gap: 10,
                       padding: '10px 12px', border: 'none', cursor: 'pointer',
-                      background: isActive ? '#F4F5F7' : '#FFFFFF',
+                      background: isActive ? 'var(--ds-surface-sunken, #F4F5F7)' : 'var(--ds-surface, #FFFFFF)',
                       textAlign: 'left', fontFamily: 'var(--cp-font-body)',
                     }}
-                    onMouseEnter={e => { e.currentTarget.style.background = '#F4F5F7'; }}
-                    onMouseLeave={e => { e.currentTarget.style.background = isActive ? '#F4F5F7' : '#FFFFFF'; }}
+                    onMouseEnter={e => { e.currentTarget.style.background = 'var(--ds-surface-sunken, #F4F5F7)'; }}
+                    onMouseLeave={e => { e.currentTarget.style.background = isActive ? 'var(--ds-surface-sunken, #F4F5F7)' : 'var(--ds-surface, #FFFFFF)'; }}
                   >
                     <KanbanAvatar
                       name={person.name}
@@ -177,7 +177,7 @@ export const AssigneePickerPopover = memo(function AssigneePickerPopover({
                       tk={tk}
                     />
                     <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ fontSize: 14, fontWeight: 500, color: '#172B4D', lineHeight: '18px' }}>
+                      <div style={{ fontSize: 14, fontWeight: 500, color: 'var(--ds-text, #172B4D)', lineHeight: '18px' }}>
                         {person.name}
                       </div>
                       {person.email && (

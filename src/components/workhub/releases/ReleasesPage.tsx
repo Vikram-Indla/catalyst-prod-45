@@ -273,7 +273,7 @@ export function ReleasesPage() {
               padding: '3px 10px', borderRadius: 9999,
               fontSize: 11, fontWeight: 600,
               background: chip.type === 'project' ? '#f0fdf4' : 'var(--cp-primary-5)',
-              color: chip.type === 'project' ? '#15803d' : '#1d4ed8',
+              color: chip.type === 'project' ? '#15803d' : 'var(--ds-background-brand-bold-hovered, #1d4ed8)',
               border: `1px solid ${chip.type === 'project' ? '#bbf7d0' : 'var(--cp-primary-20)'}`,
             }}>
               {chip.type === 'project' ? <FolderGit2 size={11} /> : <Milestone size={11} />}

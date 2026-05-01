@@ -7,16 +7,16 @@
 // AVATAR COLORS (10 colors, hash-based selection)
 // ============================================================
 export const AVATAR_COLORS = [
-  '#2563eb', // Blue
+  'var(--ds-text-brand, #2563eb)', // Blue
   '#0d9488', // Teal
   '#0369a1', // Sky-dark
-  '#d97706', // Amber
+  'var(--ds-text-warning, #d97706)', // Amber
   '#0891b2', // Cyan
   '#1e40af', // Blue-dark
   '#b45309', // Amber-dark
   '#0f766e', // Teal-dark
-  '#475569', // Slate
-  '#334155'  // Slate-dark
+  'var(--ds-text-subtle, #475569)', // Slate
+  'var(--ds-text-subtle, #334155)'  // Slate-dark
 ];
 
 // ============================================================

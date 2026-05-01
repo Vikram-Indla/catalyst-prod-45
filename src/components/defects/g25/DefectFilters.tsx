@@ -118,7 +118,7 @@ export function DefectFilters({ filters, onChange, users, projects }: Props) {
     { value: 'low', label: 'Low' },
   ];
 
-  const AVATAR_COLOURS = ['#2563EB', '#0D9488', '#0284C7', '#DC2626', '#DB2777'];
+  const AVATAR_COLOURS = ['var(--ds-text-brand, #2563EB)', '#0D9488', '#0284C7', 'var(--ds-text-danger, #DC2626)', '#DB2777'];
   const getInitials = (name: string) => name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
 
   // Assignee label for chip display
@@ -221,8 +221,8 @@ export function DefectFilters({ filters, onChange, users, projects }: Props) {
               >
                 <div className="flex items-center gap-2 w-full">
                   {filters.assignedTo === 'unassigned' ? <Check className="h-3.5 w-3.5 text-blue-600 flex-shrink-0" /> : <span className="w-3.5 flex-shrink-0" />}
-                  <div style={{ width: 24, height: 24, borderRadius: '50%', backgroundColor: '#F1F5F9', border: '1px solid rgba(15,23,42,0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                    <UserRound size={12} style={{ color: '#94A3B8' }} />
+                  <div style={{ width: 24, height: 24, borderRadius: '50%', backgroundColor: 'var(--ds-surface-sunken, #F1F5F9)', border: '1px solid rgba(15,23,42,0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                    <UserRound size={12} style={{ color: 'var(--ds-text-subtlest, #94A3B8)' }} />
                   </div>
                   Unassigned
                 </div>
@@ -244,7 +244,7 @@ export function DefectFilters({ filters, onChange, users, projects }: Props) {
                       {u.avatar_url ? (
                         <img src={u.avatar_url} alt={u.full_name} style={{ width: 24, height: 24, borderRadius: '50%', objectFit: 'cover', flexShrink: 0, border: '1px solid rgba(15,23,42,0.12)' }} />
                       ) : (
-                        <div style={{ width: 24, height: 24, borderRadius: '50%', background: clr, color: '#FFFFFF', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontWeight: 700, flexShrink: 0 }}>{ini}</div>
+                        <div style={{ width: 24, height: 24, borderRadius: '50%', background: clr, color: 'var(--ds-surface, #FFFFFF)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontWeight: 700, flexShrink: 0 }}>{ini}</div>
                       )}
                       {u.full_name}
                     </div>

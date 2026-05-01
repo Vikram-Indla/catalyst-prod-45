@@ -22,7 +22,7 @@ const ACTION_CONFIG: Record<string, { label: string; icon: any; color: string }>
   'create': { label: 'Created', icon: Plus, color: 'var(--sem-success)' },
   'update': { label: 'Updated', icon: Edit2, color: 'var(--cp-blue)' },
   'delete': { label: 'Deleted', icon: Trash2, color: 'var(--sem-danger)' },
-  'execute': { label: 'Executed', icon: Play, color: '#2563EB' },
+  'execute': { label: 'Executed', icon: Play, color: 'var(--ds-text-brand, #2563EB)' },
   'pass': { label: 'Passed', icon: CheckCircle2, color: 'var(--sem-success)' },
   'fail': { label: 'Failed', icon: XCircle, color: 'var(--sem-danger)' },
   'assign': { label: 'Assigned', icon: User, color: 'var(--sem-warning)' },

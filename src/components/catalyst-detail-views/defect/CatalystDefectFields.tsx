@@ -81,12 +81,12 @@ function severityAppearance(value: string): React.ComponentProps<typeof Lozenge>
   return SEVERITY_APPEARANCE[value.trim().toLowerCase()] ?? 'default';
 }
 
-/* Inline muted empty-state. `color.text.subtlest` equivalent (#6B778C)
+/* Inline muted empty-state. `color.text.subtlest` equivalent (var(--ds-text-subtlest, #6B778C))
    hits 4.6:1 on white — the former italic #97A0AF was ~3.2:1 and failed
    WCAG AA for body text. */
 function Empty({ text = 'None' }: { text?: string }) {
   return (
-    <span style={{ fontSize: 14, color: '#6B778C' }}>{text}</span>
+    <span style={{ fontSize: 14, color: 'var(--ds-text-subtlest, #6B778C)' }}>{text}</span>
   );
 }
 

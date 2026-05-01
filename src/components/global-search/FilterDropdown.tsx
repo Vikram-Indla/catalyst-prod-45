@@ -43,8 +43,8 @@ const chipBase: React.CSSProperties = {
   padding: '0 10px 0 8px',
   borderRadius: 4,
   border: '1px solid #DFE1E6',
-  background: '#FFFFFF',
-  color: '#172B4D',
+  background: 'var(--ds-surface, #FFFFFF)',
+  color: 'var(--ds-text, #172B4D)',
   fontSize: 14,
   fontWeight: 500,
   fontFamily: 'var(--cp-font-body)',
@@ -98,7 +98,7 @@ export function FilterDropdown({
             maxHeight: 460,
             display: 'flex',
             flexDirection: 'column',
-            background: '#FFFFFF',
+            background: 'var(--ds-surface, #FFFFFF)',
             borderRadius: 4,
             overflow: 'hidden',
           }}
@@ -159,12 +159,12 @@ export function FilterDropdown({
                   <span
                     style={{
                       fontSize: 14,
-                      color: '#172B4D',
+                      color: 'var(--ds-text, #172B4D)',
                       fontFamily: 'var(--cp-font-body)',
                     }}
                   >
                     {opt.name}
-                    {opt.tag ? <span style={{ color: '#172B4D' }}> ({opt.tag})</span> : null}
+                    {opt.tag ? <span style={{ color: 'var(--ds-text, #172B4D)' }}> ({opt.tag})</span> : null}
                   </span>
                 </label>
               );
@@ -192,7 +192,7 @@ export function FilterDropdown({
               padding: '12px 16px',
               borderTop: '1px solid #F1F2F4',
               fontSize: 14,
-              color: '#172B4D',
+              color: 'var(--ds-text, #172B4D)',
               fontFamily: 'var(--cp-font-body)',
             }}
           >
@@ -218,7 +218,7 @@ export function FilterDropdown({
                 padding: '0 6px',
                 borderRadius: 8,
                 background: '#0C66E4',
-                color: '#FFFFFF',
+                color: 'var(--ds-surface, #FFFFFF)',
                 fontSize: 11,
                 fontWeight: 700,
                 lineHeight: '16px',

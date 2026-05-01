@@ -68,7 +68,7 @@ const HEALTH_STYLES: Record<string, { bg: string; color: string; dot: string }> 
 };
 
 export function HealthBadge({ health }: { health: string | null }) {
-  if (!health) return <span style={{ fontSize: 12, color: '#94A3B8' }}>—</span>;
+  if (!health) return <span style={{ fontSize: 12, color: 'var(--ds-text-subtlest, #94A3B8)' }}>—</span>;
   const s = HEALTH_STYLES[health] || HEALTH_STYLES.on_track;
   const label = health.split('_').map(w => w[0].toUpperCase() + w.slice(1)).join(' ');
   return (
@@ -96,7 +96,7 @@ export function HealthBadge({ health }: { health: string | null }) {
   );
 }
 
-const AVATAR_COLORS = ['#2563EB', '#0D9488', '#DC2626', '#7C3AED', '#D97706', '#059669', '#0369A1', '#BE185D'];
+const AVATAR_COLORS = ['var(--ds-text-brand, #2563EB)', '#0D9488', 'var(--ds-text-danger, #DC2626)', '#7C3AED', 'var(--ds-text-warning, #D97706)', '#059669', '#0369A1', '#BE185D'];
 
 function getInitials(name: string): string {
   const parts = name.trim().split(/\s+/);
@@ -111,7 +111,7 @@ function hashName(name: string): number {
 }
 
 export function AvatarStack({ names }: { names: string[] }) {
-  if (names.length === 0) return <span style={{ fontSize: 12, color: '#94A3B8' }}>—</span>;
+  if (names.length === 0) return <span style={{ fontSize: 12, color: 'var(--ds-text-subtlest, #94A3B8)' }}>—</span>;
 
   const show = Math.min(names.length, 4);
   const overflow = names.length - show;

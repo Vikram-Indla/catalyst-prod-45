@@ -462,7 +462,7 @@ export default function EpicsPage() {
               .badge { 
                 display: inline-block; 
                 padding: 4px 8px; 
-                background: #e5e7eb; 
+                background: var(--ds-border, #e5e7eb); 
                 border-radius: 4px;
                 margin-right: 8px;
                 font-size: 12px;

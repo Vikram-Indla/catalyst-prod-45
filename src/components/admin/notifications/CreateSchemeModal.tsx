@@ -94,7 +94,7 @@ export function CreateSchemeModal({ scheme, open, onClose, onCreated }: CreateSc
           <DialogTitle className="text-lg font-semibold font-['Sora']">
             {isEdit ? 'Edit Notification Scheme' : 'Create Notification Scheme'}
           </DialogTitle>
-          <DialogDescription className="text-sm text-[#475569]">
+          <DialogDescription className="text-sm text-[var(--ds-text-subtle,#475569)]">
             {isEdit
               ? 'Update the scheme name and settings.'
               : 'Create a new notification scheme that can be assigned to projects. Schemes define which triggers are active and their channel/recipient configurations.'}
@@ -104,7 +104,7 @@ export function CreateSchemeModal({ scheme, open, onClose, onCreated }: CreateSc
         <div className="space-y-4 py-2">
           {/* Name */}
           <div className="space-y-1.5">
-            <Label htmlFor="scheme-name" className="text-xs font-medium text-[#0F172A]">
+            <Label htmlFor="scheme-name" className="text-xs font-medium text-[var(--ds-text,#0F172A)]">
               Scheme Name
             </Label>
             <Input
@@ -119,7 +119,7 @@ export function CreateSchemeModal({ scheme, open, onClose, onCreated }: CreateSc
 
           {/* Description */}
           <div className="space-y-1.5">
-            <Label htmlFor="scheme-desc" className="text-xs font-medium text-[#0F172A]">
+            <Label htmlFor="scheme-desc" className="text-xs font-medium text-[var(--ds-text,#0F172A)]">
               Description
             </Label>
             <Textarea
@@ -132,17 +132,17 @@ export function CreateSchemeModal({ scheme, open, onClose, onCreated }: CreateSc
           </div>
 
           {/* Default toggle */}
-          <div className="flex items-center justify-between rounded-md border border-[var(--bd-default, #E2E8F0)] px-3 py-2.5">
+          <div className="flex items-center justify-between rounded-md border border-[var(--bd-default,#E2E8F0)] px-3 py-2.5">
             <div>
-              <p className="text-xs font-medium text-[#0F172A]">Set as Default Scheme</p>
-              <p className="text-[11px] text-[#475569] mt-0.5">
+              <p className="text-xs font-medium text-[var(--ds-text,#0F172A)]">Set as Default Scheme</p>
+              <p className="text-[11px] text-[var(--ds-text-subtle,#475569)] mt-0.5">
                 New projects will automatically use this scheme.
               </p>
             </div>
             <Switch
               checked={isDefault}
               onCheckedChange={setIsDefault}
-              className="data-[state=checked]:bg-[#2563EB]"
+              className="data-[state=checked]:bg-[var(--ds-text-brand,#2563EB)]"
             />
           </div>
         </div>
@@ -154,7 +154,7 @@ export function CreateSchemeModal({ scheme, open, onClose, onCreated }: CreateSc
           <Button
             onClick={handleSubmit}
             disabled={!name.trim() || isPending}
-            className="bg-[#2563EB] hover:bg-[#1D4ED8] text-white text-sm"
+            className="bg-[var(--ds-text-brand,#2563EB)] hover:bg-[var(--ds-background-brand-bold-hovered,#1D4ED8)] text-white text-sm"
           >
             {isPending
               ? isEdit

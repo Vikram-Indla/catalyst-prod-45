@@ -473,7 +473,7 @@
     right: 0;
     height: 64px;
     background: white;
-    border-top: 1px solid #e2e8f0;
+    border-top: 1px solid var(--ds-border, #e2e8f0);
     justify-content: space-around;
     align-items: center;
     z-index: 1000;
@@ -487,7 +487,7 @@
     justify-content: center;
     gap: 4px;
     padding: 8px 12px;
-    color: #64748b;
+    color: var(--ds-text-subtlest, #64748b);
     font-size: 10px;
     font-weight: 500;
     text-decoration: none;
@@ -496,8 +496,8 @@
   }
 
   .mobile-bottom-nav-item.active {
-    color: #2563eb;
-    background: #eff6ff;
+    color: var(--ds-text-brand, #2563eb);
+    background: var(--ds-background-selected, #eff6ff);
   }
 
   .mobile-bottom-nav-item svg {
@@ -530,13 +530,13 @@
     height: 40px;
     border: none;
     background: transparent;
-    color: #334155;
+    color: var(--ds-text-subtle, #334155);
     cursor: pointer;
     border-radius: 8px;
   }
 
   .mobile-menu-toggle:hover {
-    background: #f1f5f9;
+    background: var(--ds-surface-sunken, #f1f5f9);
   }
 }
 
@@ -670,7 +670,7 @@
   /* Task row - compact card on mobile */
   .my-task-row {
     padding: 12px 16px !important;
-    border-bottom: 1px solid #f1f5f9;
+    border-bottom: 1px solid var(--ds-surface-sunken, #f1f5f9);
   }
 
   .my-task-checkbox {
@@ -753,7 +753,7 @@
     display: flex !important;
     flex-direction: column !important;
     padding: 12px !important;
-    border: 1px solid #e2e8f0 !important;
+    border: 1px solid var(--ds-border, #e2e8f0) !important;
     border-radius: 8px !important;
     gap: 8px !important;
   }
@@ -768,7 +768,7 @@
   .task-list-table td::before {
     content: attr(data-label);
     font-weight: 600;
-    color: #64748b;
+    color: var(--ds-text-subtlest, #64748b);
     font-size: 11px;
     text-transform: uppercase;
   }
@@ -844,7 +844,7 @@
     top: 0 !important;
     background: white !important;
     z-index: 10 !important;
-    border-bottom: 1px solid #e2e8f0;
+    border-bottom: 1px solid var(--ds-border, #e2e8f0);
   }
 
   /* Modal content scrollable */
@@ -858,7 +858,7 @@
     position: sticky !important;
     bottom: 0 !important;
     background: white !important;
-    border-top: 1px solid #e2e8f0;
+    border-top: 1px solid var(--ds-border, #e2e8f0);
     padding: 16px !important;
   }
 }
@@ -898,7 +898,7 @@
 
 .dark .mobile-bottom-nav , [data-theme="dark"] .mobile-bottom-nav {
   background: var(--cp-bg-surface, #242528);
-  border-top-color: #2E2E2E;
+  border-top-color: var(--ds-border, #2E2E2E);
 }
 
 .dark .mobile-bottom-nav-item , [data-theme="dark"] .mobile-bottom-nav-item {
@@ -906,7 +906,7 @@
 }
 
 .dark .mobile-bottom-nav-item.active , [data-theme="dark"] .mobile-bottom-nav-item.active {
-  color: #60A5FA;
+  color: var(--ds-text-brand, #60A5FA);
   background: rgba(59,130,246,0.10);
 }
 
@@ -915,15 +915,15 @@
 }
 
 .dark .mobile-menu-toggle:hover , [data-theme="dark"] .mobile-menu-toggle:hover {
-  background: #292929;
+  background: var(--ds-border, #292929);
 }
 
 .dark .modal-header , [data-theme="dark"] .modal-header {
   background: var(--cp-bg-surface, #242528);
-  border-bottom-color: #2E2E2E;
+  border-bottom-color: var(--ds-border, #2E2E2E);
 }
 
 .dark .modal-footer , [data-theme="dark"] .modal-footer {
   background: var(--cp-bg-surface, #242528);
-  border-top-color: #2E2E2E;
+  border-top-color: var(--ds-border, #2E2E2E);
 }

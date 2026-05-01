@@ -113,7 +113,7 @@ export function T10AssigneeFieldNew({
         top: position.top,
         left: position.left,
         width: Math.max(position.width, 320),
-        backgroundColor: '#ffffff',
+        backgroundColor: 'var(--ds-surface, #ffffff)',
         border: '1px solid #e5e7eb',
         borderRadius: '8px',
         boxShadow: '0 10px 25px -5px rgba(0,0,0,0.15), 0 4px 6px -2px rgba(0,0,0,0.08)',
@@ -174,12 +174,12 @@ export function T10AssigneeFieldNew({
               width: '100%',
               padding: '10px 12px',
               marginTop: '4px',
-              backgroundColor: '#fef2f2',
+              backgroundColor: 'var(--ds-background-danger, #fef2f2)',
               border: '1px solid #fecaca',
               borderRadius: '6px',
               cursor: 'pointer',
               fontSize: '14px',
-              color: '#dc2626',
+              color: 'var(--ds-text-danger, #dc2626)',
             }}
           >
             <X size={14} />
@@ -229,7 +229,7 @@ export function T10AssigneeFieldNew({
                   width: '100%',
                   padding: '10px 12px',
                   marginTop: '4px',
-                  backgroundColor: isSelected ? '#eff6ff' : 'transparent',
+                  backgroundColor: isSelected ? 'var(--ds-background-selected, #eff6ff)' : 'transparent',
                   border: isSelected ? '1px solid #bfdbfe' : '1px solid transparent',
                   borderRadius: '6px',
                   cursor: 'pointer',
@@ -242,13 +242,13 @@ export function T10AssigneeFieldNew({
                     width: '32px',
                     height: '32px',
                     borderRadius: '50%',
-                    backgroundColor: user.avatar_url ? '#e5e7eb' : getAvatarColor(user.full_name),
+                    backgroundColor: user.avatar_url ? 'var(--ds-border, #e5e7eb)' : getAvatarColor(user.full_name),
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
                     fontSize: '12px',
                     fontWeight: 600,
-                    color: '#ffffff',
+                    color: 'var(--ds-surface, #ffffff)',
                     flexShrink: 0,
                     overflow: 'hidden',
                     boxShadow: '0 1px 3px rgba(0,0,0,0.12)',
@@ -279,7 +279,7 @@ export function T10AssigneeFieldNew({
                   )}
                 </div>
                 {isSelected && (
-                  <Check size={14} style={{ color: '#2563eb', flexShrink: 0 }} />
+                  <Check size={14} style={{ color: 'var(--ds-text-brand, #2563eb)', flexShrink: 0 }} />
                 )}
               </button>
             );
@@ -299,7 +299,7 @@ export function T10AssigneeFieldNew({
           justifyContent: 'space-between',
           width: '100%',
           padding: '10px 14px',
-          backgroundColor: '#ffffff',
+          backgroundColor: 'var(--ds-surface, #ffffff)',
           border: isOpen ? '1px solid #2563eb' : '1px solid #d1d5db',
           borderRadius: '8px',
           cursor: 'pointer',
@@ -314,13 +314,13 @@ export function T10AssigneeFieldNew({
                   width: '32px',
                   height: '32px',
                   borderRadius: '50%',
-                  backgroundColor: assigneeAvatar ? '#e5e7eb' : getAvatarColor(assigneeName),
+                  backgroundColor: assigneeAvatar ? 'var(--ds-border, #e5e7eb)' : getAvatarColor(assigneeName),
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
                   fontSize: '12px',
                   fontWeight: 600,
-                  color: '#ffffff',
+                  color: 'var(--ds-surface, #ffffff)',
                   overflow: 'hidden',
                   boxShadow: '0 1px 3px rgba(0,0,0,0.12)',
                 }}

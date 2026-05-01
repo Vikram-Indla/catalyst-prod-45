@@ -136,7 +136,7 @@ export function UniversalWorkView({ params, onClose }: Props) {
         position: 'fixed',
         inset: 0,
         zIndex: 510,
-        background: '#FFFFFF',
+        background: 'var(--ds-surface, #FFFFFF)',
         display: 'flex',
         flexDirection: 'column',
         fontFamily:
@@ -175,12 +175,12 @@ export function UniversalWorkView({ params, onClose }: Props) {
             gap: 8,
             padding: '8px 16px',
             borderBottom: '1px solid #E2E8F0',
-            background: '#F8FAFC',
+            background: 'var(--ds-surface-sunken, #F8FAFC)',
             fontSize: 12,
             flexWrap: 'wrap',
           }}
         >
-          <span style={{ color: '#64748B', fontWeight: 600 }}>Filtered:</span>
+          <span style={{ color: 'var(--ds-text-subtlest, #64748B)', fontWeight: 600 }}>Filtered:</span>
           {filterChips.map((c) => (
             <span
               key={c.label}
@@ -189,13 +189,13 @@ export function UniversalWorkView({ params, onClose }: Props) {
                 alignItems: 'center',
                 gap: 4,
                 padding: '2px 8px',
-                background: '#FFFFFF',
+                background: 'var(--ds-surface, #FFFFFF)',
                 border: '1px solid #E2E8F0',
                 borderRadius: 3,
-                color: '#0F172A',
+                color: 'var(--ds-text, #0F172A)',
               }}
             >
-              <span style={{ color: '#64748B' }}>{c.label}:</span>
+              <span style={{ color: 'var(--ds-text-subtlest, #64748B)' }}>{c.label}:</span>
               <span style={{ fontWeight: 500 }}>{c.value}</span>
             </span>
           ))}

@@ -77,7 +77,7 @@ function SmartFilterDropdown({ label, icon, options, selected, onSelectionChange
         className="inline-flex items-center gap-1.5 px-3 py-1.5 text-[13px] font-medium rounded-md border transition-all"
         style={{
           borderColor: isActive ? 'var(--wh-primary, #2563eb)' : 'var(--wh-border, #e2e8f0)',
-          backgroundColor: isActive ? '#eff6ff' : 'var(--wh-surface, #fff)',
+          backgroundColor: isActive ? 'var(--ds-background-selected, #eff6ff)' : 'var(--wh-surface, #fff)',
           color: isActive ? 'var(--wh-primary, #2563eb)' : 'var(--wh-text-secondary, #64748b)',
         }}
       >
@@ -86,7 +86,7 @@ function SmartFilterDropdown({ label, icon, options, selected, onSelectionChange
         {isActive && (
           <span
             className="inline-flex items-center justify-center rounded text-[10px] font-bold min-w-[18px] h-[18px] px-1"
-            style={{ backgroundColor: 'var(--wh-primary, #2563eb)', color: '#fff' }}
+            style={{ backgroundColor: 'var(--wh-primary, #2563eb)', color: 'var(--ds-surface, #fff)' }}
           >
             {selected.length}
           </span>
@@ -108,7 +108,7 @@ function SmartFilterDropdown({ label, icon, options, selected, onSelectionChange
           {/* Search Input */}
           <div className="p-2 border-b" style={{ borderColor: 'var(--wh-border, #e2e8f0)' }}>
             <div className="relative">
-              <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5" style={{ color: '#94a3b8' }} />
+              <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5" style={{ color: 'var(--ds-text-subtlest, #94a3b8)' }} />
               <input
                 ref={searchRef}
                 type="text"
@@ -119,7 +119,7 @@ function SmartFilterDropdown({ label, icon, options, selected, onSelectionChange
                 style={{
                   borderColor: 'var(--wh-border, #e2e8f0)',
                   color: 'var(--wh-text-primary, #0f172a)',
-                  backgroundColor: '#f8fafc',
+                  backgroundColor: 'var(--ds-surface-sunken, #f8fafc)',
                 }}
                 onFocus={e => (e.target.style.borderColor = 'var(--wh-primary, #2563eb)')}
                 onBlur={e => (e.target.style.borderColor = 'var(--wh-border, #e2e8f0)')}
@@ -130,7 +130,7 @@ function SmartFilterDropdown({ label, icon, options, selected, onSelectionChange
           {/* Select All / None */}
           {options.length > 0 && (
             <div className="flex items-center justify-between px-3 py-1.5 border-b" style={{ borderColor: 'var(--wh-border, #e2e8f0)' }}>
-              <span className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: '#94a3b8' }}>
+              <span className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: 'var(--ds-text-subtlest, #94a3b8)' }}>
                 {filtered.length} option{filtered.length !== 1 ? 's' : ''}
               </span>
               <div className="flex items-center gap-2">
@@ -141,11 +141,11 @@ function SmartFilterDropdown({ label, icon, options, selected, onSelectionChange
                 >
                   Select all
                 </button>
-                <span style={{ color: '#cbd5e1' }}>|</span>
+                <span style={{ color: 'var(--ds-text-disabled, #cbd5e1)' }}>|</span>
                 <button
                   onClick={selectNone}
                   className="text-[11px] font-medium hover:underline"
-                  style={{ color: '#64748b' }}
+                  style={{ color: 'var(--ds-text-subtlest, #64748b)' }}
                 >
                   Clear
                 </button>
@@ -156,7 +156,7 @@ function SmartFilterDropdown({ label, icon, options, selected, onSelectionChange
           {/* Options List */}
           <div className="overflow-y-auto flex-1" style={{ maxHeight: '260px' }}>
             {filtered.length === 0 ? (
-              <div className="px-3 py-4 text-xs text-center" style={{ color: '#94a3b8' }}>
+              <div className="px-3 py-4 text-xs text-center" style={{ color: 'var(--ds-text-subtlest, #94a3b8)' }}>
                 {emptyMessage || 'No options found'}
               </div>
             ) : (
@@ -172,7 +172,7 @@ function SmartFilterDropdown({ label, icon, options, selected, onSelectionChange
                       color: 'var(--wh-text-primary, #0f172a)',
                     }}
                     onMouseEnter={e => {
-                      if (!isSelected) (e.currentTarget.style.backgroundColor = '#f8fafc');
+                      if (!isSelected) (e.currentTarget.style.backgroundColor = 'var(--ds-surface-sunken, #f8fafc)');
                     }}
                     onMouseLeave={e => {
                       e.currentTarget.style.backgroundColor = isSelected ? '#f0f7ff' : 'transparent';
@@ -182,15 +182,15 @@ function SmartFilterDropdown({ label, icon, options, selected, onSelectionChange
                     <div
                       className="w-4 h-4 rounded border flex items-center justify-center shrink-0 mr-2.5 transition-colors"
                       style={{
-                        borderColor: isSelected ? 'var(--wh-primary, #2563eb)' : '#cbd5e1',
+                        borderColor: isSelected ? 'var(--wh-primary, #2563eb)' : 'var(--ds-text-disabled, #cbd5e1)',
                         backgroundColor: isSelected ? 'var(--wh-primary, #2563eb)' : 'transparent',
                       }}
                     >
-                      {isSelected && <Check className="w-2.5 h-2.5" style={{ color: '#fff' }} />}
+                      {isSelected && <Check className="w-2.5 h-2.5" style={{ color: 'var(--ds-surface, #fff)' }} />}
                     </div>
                     <span className="truncate flex-1 text-left font-medium">{opt.label}</span>
                     {opt.meta && (
-                      <span className="text-[10px] shrink-0 ml-2" style={{ color: '#94a3b8' }}>
+                      <span className="text-[10px] shrink-0 ml-2" style={{ color: 'var(--ds-text-subtlest, #94a3b8)' }}>
                         {opt.meta}
                       </span>
                     )}
@@ -204,15 +204,15 @@ function SmartFilterDropdown({ label, icon, options, selected, onSelectionChange
           {selected.length > 0 && (
             <div
               className="px-3 py-2 border-t flex items-center justify-between"
-              style={{ borderColor: 'var(--wh-border, #e2e8f0)', backgroundColor: '#f8fafc' }}
+              style={{ borderColor: 'var(--wh-border, #e2e8f0)', backgroundColor: 'var(--ds-surface-sunken, #f8fafc)' }}
             >
-              <span className="text-[11px] font-medium" style={{ color: '#64748b' }}>
+              <span className="text-[11px] font-medium" style={{ color: 'var(--ds-text-subtlest, #64748b)' }}>
                 {selected.length} selected
               </span>
               <button
                 onClick={() => { onSelectionChange([]); setSearch(''); }}
                 className="text-[11px] font-medium hover:underline"
-                style={{ color: '#dc2626' }}
+                style={{ color: 'var(--ds-text-danger, #dc2626)' }}
               >
                 Clear all
               </button>
@@ -344,7 +344,7 @@ export function WorkItemFilters({ filters, onChange }: WorkItemFiltersProps) {
           <button
             onClick={() => { onChange({}); setSearchInput(''); }}
             className="flex items-center gap-1 px-2.5 py-1 text-[11px] font-medium rounded-md border transition-colors"
-            style={{ borderColor: '#fecaca', color: '#dc2626', backgroundColor: '#fef2f2' }}
+            style={{ borderColor: '#fecaca', color: 'var(--ds-text-danger, #dc2626)', backgroundColor: 'var(--ds-background-danger, #fef2f2)' }}
           >
             <X className="w-3 h-3" /> Clear all
           </button>
@@ -355,10 +355,10 @@ export function WorkItemFilters({ filters, onChange }: WorkItemFiltersProps) {
       {totalActive > 0 && (
         <div className="flex items-center gap-1.5 flex-wrap pl-7">
           {selectedProjects.map(pk => (
-            <FilterChip key={`p-${pk}`} label={pk} color="#2563eb" bgColor="#eff6ff" borderColor="#bfdbfe" onRemove={() => removeChip('project_keys', pk)} />
+            <FilterChip key={`p-${pk}`} label={pk} color="var(--ds-text-brand, #2563eb)" bgColor="var(--ds-background-selected, #eff6ff)" borderColor="#bfdbfe" onRemove={() => removeChip('project_keys', pk)} />
           ))}
           {selectedTypes.map(t => (
-            <FilterChip key={`t-${t}`} label={t} color="#2563EB" bgColor="#EFF6FF" borderColor="#BFDBFE" onRemove={() => removeChip('types', t)} />
+            <FilterChip key={`t-${t}`} label={t} color="var(--ds-text-brand, #2563EB)" bgColor="var(--ds-background-selected, #EFF6FF)" borderColor="#BFDBFE" onRemove={() => removeChip('types', t)} />
           ))}
           {selectedStatuses.map(s => (
             <FilterChip key={`s-${s}`} label={s} color="#0891b2" bgColor="#ecfeff" borderColor="#a5f3fc" onRemove={() => removeChip('statuses', s)} />

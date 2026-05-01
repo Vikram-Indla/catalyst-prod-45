@@ -16,15 +16,15 @@ import { RoadmapScoreTab } from './RoadmapScoreTab';
 
 // Status bar colors matching the timeline bars
 const BAR_STATUS_COLORS: Record<string, { border: string; bg: string }> = {
-  new_request: { border: '#3B82F6', bg: 'rgba(59,130,246,0.12)' },
+  new_request: { border: 'var(--ds-text-brand, #3B82F6)', bg: 'rgba(59,130,246,0.12)' },
   draft:       { border: '#737373', bg: 'rgba(115,115,115,0.12)' },
-  submitted:   { border: '#3B82F6', bg: 'rgba(59,130,246,0.12)' },
+  submitted:   { border: 'var(--ds-text-brand, #3B82F6)', bg: 'rgba(59,130,246,0.12)' },
   in_review:   { border: '#8B5CF6', bg: 'rgba(139,92,246,0.12)' },
   approved:    { border: '#06B6D4', bg: 'rgba(6,182,212,0.12)' },
-  in_progress: { border: '#F59E0B', bg: 'rgba(245,158,11,0.12)' },
+  in_progress: { border: 'var(--ds-text-warning, #F59E0B)', bg: 'rgba(245,158,11,0.12)' },
   completed:   { border: '#10B981', bg: 'rgba(16,185,129,0.12)' },
-  rejected:    { border: '#EF4444', bg: 'rgba(239,68,68,0.12)' },
-  cancelled:   { border: '#EF4444', bg: 'rgba(239,68,68,0.12)' },
+  rejected:    { border: 'var(--ds-text-danger, #EF4444)', bg: 'rgba(239,68,68,0.12)' },
+  cancelled:   { border: 'var(--ds-text-danger, #EF4444)', bg: 'rgba(239,68,68,0.12)' },
 };
 
 const TABS = [
@@ -114,7 +114,7 @@ export function RoadmapDetailPanel({ item, isOpen, onClose }: RoadmapDetailPanel
           bottom: 0,
           width: '480px',
           maxWidth: '90vw',
-          backgroundColor: '#ffffff',
+          backgroundColor: 'var(--ds-surface, #ffffff)',
           borderLeft: '1px solid #e4e4e7',
           boxShadow: '-8px 0 30px rgba(0,0,0,0.08)',
           zIndex: 201,
@@ -139,7 +139,7 @@ export function RoadmapDetailPanel({ item, isOpen, onClose }: RoadmapDetailPanel
                       fontWeight: 600,
                       fontFamily: 'var(--cp-font-mono)',
                       backgroundColor: 'rgba(59,130,246,0.1)',
-                      color: '#2563eb',
+                      color: 'var(--ds-text-brand, #2563eb)',
                       flexShrink: 0,
                     }}>
                       {item.request_key}
@@ -220,7 +220,7 @@ export function RoadmapDetailPanel({ item, isOpen, onClose }: RoadmapDetailPanel
                     padding: '10px 12px',
                     fontSize: '13px',
                     fontWeight: activeTab === tab.key ? 600 : 400,
-                    color: activeTab === tab.key ? '#2563eb' : '#71717a',
+                    color: activeTab === tab.key ? 'var(--ds-text-brand, #2563eb)' : '#71717a',
                     backgroundColor: 'transparent',
                     border: 'none',
                     borderBottom: activeTab === tab.key ? '2px solid #2563eb' : '2px solid transparent',

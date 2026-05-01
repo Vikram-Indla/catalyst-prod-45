@@ -288,7 +288,7 @@ function SummaryView() {
 
   const statusData = [
     { name: 'To Do', value: 8, color: '#4C9AFF' },
-    { name: 'In Progress', value: 5, color: '#FFFFFF' },
+    { name: 'In Progress', value: 5, color: 'var(--ds-surface, #FFFFFF)' },
     { name: 'Done', value: 4, color: '#36B37E' },
   ];
 

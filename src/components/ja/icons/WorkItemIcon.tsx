@@ -7,38 +7,38 @@ import { Tooltip } from '@/components/ads';
 const ICON_COLORS: Record<string, string> = {
   // Enterprise
   theme: '#0d9488',      // Teal
-  objective: '#2563eb',  // Blue
+  objective: 'var(--ds-text-brand, #2563eb)',  // Blue
   
   // Product
-  'business-request': '#2563eb', // Blue
+  'business-request': 'var(--ds-text-brand, #2563eb)', // Blue
   
   // Program
   epic: '#904EE2',       // Purple
   
   // Project
-  feature: '#F59E0B',    // Amber
+  feature: 'var(--ds-text-warning, #F59E0B)',    // Amber
   story: '#36B37E',      // Green
   task: '#0065FF',       // Blue
   defect: '#FF5630',     // Red
-  incident: '#EF4444',   // Red-500
+  incident: 'var(--ds-text-danger, #EF4444)',   // Red-500
   
   // Other
-  dependency: '#3B82F6', // Blue
+  dependency: 'var(--ds-text-brand, #3B82F6)', // Blue
   risk: '#F97316',       // Orange
 };
 
 // Alternative colors for outline style (slightly muted for balance)
 const OUTLINE_COLORS: Record<string, string> = {
   theme: '#14b8a6',
-  objective: '#3b82f6',
+  objective: 'var(--ds-text-brand, #3b82f6)',
   'business-request': '#9c8466',
   epic: '#a060f0',
   feature: '#fbbf24',
   story: '#4ade80',
-  task: '#3b82f6',
+  task: 'var(--ds-text-brand, #3b82f6)',
   defect: '#f87171',
   incident: '#f87171',
-  dependency: '#60a5fa',
+  dependency: 'var(--ds-text-brand, #60a5fa)',
   risk: '#fb923c',
 };
 

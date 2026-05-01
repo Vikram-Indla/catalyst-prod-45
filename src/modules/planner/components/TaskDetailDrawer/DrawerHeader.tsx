@@ -36,19 +36,19 @@ interface DrawerHeaderProps {
 }
 
 const STATUS_CONFIG: Record<string, { label: string; color: string }> = {
-  backlog: { label: 'Backlog', color: '#94a3b8' },
-  planned: { label: 'Planned', color: '#3b82f6' },
+  backlog: { label: 'Backlog', color: 'var(--ds-text-subtlest, #94a3b8)' },
+  planned: { label: 'Planned', color: 'var(--ds-text-brand, #3b82f6)' },
   'in-progress': { label: 'In Progress', color: '#0284c7' },
   in_progress: { label: 'In Progress', color: '#0284c7' },
   review: { label: 'Review', color: '#8b5cf6' },
-  done: { label: 'Done', color: '#16a34a' },
+  done: { label: 'Done', color: 'var(--ds-text-success, #16a34a)' },
 };
 
 const PRIORITY_CONFIG: Record<string, { label: string; color: string }> = {
-  critical: { label: 'Critical', color: '#dc2626' },
+  critical: { label: 'Critical', color: 'var(--ds-text-danger, #dc2626)' },
   high: { label: 'High', color: '#ca8a04' },
-  medium: { label: 'Medium', color: '#2563eb' },
-  low: { label: 'Low', color: '#94a3b8' },
+  medium: { label: 'Medium', color: 'var(--ds-text-brand, #2563eb)' },
+  low: { label: 'Low', color: 'var(--ds-text-subtlest, #94a3b8)' },
 };
 
 function useStatuses() {

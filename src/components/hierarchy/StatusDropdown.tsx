@@ -66,7 +66,7 @@ export function StatusDropdown({ currentStatus, availableStatuses, onSelect, onC
           >
             <span style={{ width: 8, height: 8, borderRadius: '50%', background: style.color, flexShrink: 0 }} />
             <span style={{ fontSize: 12, color: 'var(--cp-text-primary, #0F172A)', flex: 1 }}>{status}</span>
-            {isCurrent && <Check size={14} color="#2563EB" />}
+            {isCurrent && <Check size={14} color="var(--ds-text-brand, #2563EB)" />}
           </div>
         );
       })}

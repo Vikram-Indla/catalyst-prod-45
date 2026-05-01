@@ -61,7 +61,7 @@ export function TopNav() {
 
         {/* Separator */}
         <div style={{
-          width: 1, height: 24, background: '#454545',
+          width: 1, height: 24, background: 'var(--ds-border-bold, #454545)',
           marginRight: 16, flexShrink: 0,
         }} />
 
@@ -77,7 +77,7 @@ export function TopNav() {
                   height: '100%', display: 'flex', alignItems: 'center',
                   padding: '0 10px', fontSize: 12,
                   fontWeight: active ? 600 : 400,
-                  color: active ? (tab.label === 'Wiki' ? '#3B82F6' : '#60A5FA') : 'rgba(255,255,255,0.55)',
+                  color: active ? (tab.label === 'Wiki' ? 'var(--ds-text-brand, #3B82F6)' : 'var(--ds-text-brand, #60A5FA)') : 'rgba(255,255,255,0.55)',
                   background: 'none', border: 'none', cursor: 'pointer',
                   fontFamily: 'var(--cp-font-body)',
                   transition: 'color 100ms',
@@ -89,12 +89,12 @@ export function TopNav() {
                 {tab.label === 'Wiki' && (
                   <span style={{
                     width: 6, height: 6, borderRadius: '50%',
-                    background: '#3B82F6',
+                    background: 'var(--ds-text-brand, #3B82F6)',
                     marginInlineEnd: 4, flexShrink: 0,
                     animation: 'wiki-pulse 2s ease-in-out infinite',
                   }} />
                 )}
-                <span style={{ color: tab.label === 'Wiki' && active ? '#3B82F6' : undefined }}>
+                <span style={{ color: tab.label === 'Wiki' && active ? 'var(--ds-text-brand, #3B82F6)' : undefined }}>
                   {tab.label}
                 </span>
               </button>
@@ -114,13 +114,13 @@ export function TopNav() {
             fontSize: 12,
             fontWeight: 600,
             fontFamily: 'var(--cp-font-body)',
-            background: kbOpen ? 'rgba(37,99,235,0.2)' : '#2E2E2E',
-            color: kbOpen ? '#60A5FA' : 'rgba(255,255,255,0.65)',
+            background: kbOpen ? 'rgba(37,99,235,0.2)' : 'var(--ds-border, #2E2E2E)',
+            color: kbOpen ? 'var(--ds-text-brand, #60A5FA)' : 'rgba(255,255,255,0.65)',
             transition: 'all 150ms',
             flexShrink: 0,
           }}
-          onMouseEnter={e => { if (!kbOpen) e.currentTarget.style.background = '#454545'; }}
-          onMouseLeave={e => { if (!kbOpen) e.currentTarget.style.background = '#2E2E2E'; }}
+          onMouseEnter={e => { if (!kbOpen) e.currentTarget.style.background = 'var(--ds-border-bold, #454545)'; }}
+          onMouseLeave={e => { if (!kbOpen) e.currentTarget.style.background = 'var(--ds-border, #2E2E2E)'; }}
         >
           <BookOpen size={14} />
           KB

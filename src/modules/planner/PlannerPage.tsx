@@ -122,7 +122,7 @@ export function PlannerPage() {
   const { data: users = [] } = usePlannerUsers();
   
   // Online users from real users data (add color for avatar)
-  const avatarColors = ['#2563eb', '#10b981', '#8b5cf6', '#f59e0b', '#ef4444', '#0d9488'];
+  const avatarColors = ['var(--ds-text-brand, #2563eb)', '#10b981', '#8b5cf6', 'var(--ds-text-warning, #f59e0b)', 'var(--ds-text-danger, #ef4444)', '#0d9488'];
   const onlineUsers = useMemo(() => 
     users.filter(u => u.online).map((u, i) => ({
       id: u.id,

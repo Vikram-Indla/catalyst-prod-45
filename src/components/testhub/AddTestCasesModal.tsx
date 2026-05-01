@@ -27,7 +27,7 @@ interface AddTestCasesModalProps {
 }
 
 const priorityConfig: Record<string, { color: string; bg: string }> = {
-  critical: { color: 'var(--sem-danger)', bg: '#FEF2F2' },
+  critical: { color: 'var(--sem-danger)', bg: 'var(--ds-background-danger, #FEF2F2)' },
   high: { color: '#EA580C', bg: '#FFF7ED' },
   medium: { color: 'var(--sem-warning)', bg: '#FFFBEB' },
   low: { color: 'var(--sem-success)', bg: '#ECFDF5' },
@@ -219,7 +219,7 @@ export function AddTestCasesModal({ isOpen, cycleId, existingTestCaseIds, onClos
             <button onClick={onClose} disabled={isSubmitting} style={{ height: 40, padding: '0 20px', backgroundColor: 'var(--cp-float)', border: '1.5px solid var(--divider)', borderRadius: 8, fontSize: 14, fontWeight: 500, color: 'var(--fg-2)', cursor: 'pointer' }}>Cancel</button>
             <button onClick={handleSubmit} disabled={isSubmitting || selectedIds.size === 0} style={{
               height: 40, padding: '0 20px',
-              background: selectedIds.size > 0 ? 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)' : 'var(--fg-4)',
+              background: selectedIds.size > 0 ? 'linear-gradient(135deg, var(--ds-text-brand, #2563EB) 0%, var(--ds-background-brand-bold-hovered, #1D4ED8) 100%)' : 'var(--fg-4)',
               border: 'none', borderRadius: 8, fontSize: 14, fontWeight: 600, color: 'var(--ds-text-inverse, #FFFFFF)',
               cursor: selectedIds.size > 0 ? 'pointer' : 'not-allowed', opacity: isSubmitting ? 0.7 : 1,
               display: 'flex', alignItems: 'center', gap: 8,

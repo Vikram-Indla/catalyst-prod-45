@@ -30,10 +30,10 @@ function OwnerAvatar({ initials, name }: { initials?: string; name?: string }) {
     return (
       <div
         className="flex-shrink-0 flex items-center justify-center rounded-full"
-        style={{ width: 22, height: 22, background: '#E2E8F0' }}
+        style={{ width: 22, height: 22, background: 'var(--ds-border, #E2E8F0)' }}
         title="Unassigned"
       >
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" strokeWidth="2" strokeLinecap="round">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--ds-text-subtlest, #94A3B8)" strokeWidth="2" strokeLinecap="round">
           <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/>
           <circle cx="12" cy="7" r="4"/>
         </svg>
@@ -76,7 +76,7 @@ export function RoadmapRequestList({ groups, selectedId, hoveredId, onSelect, on
           </span>
           <span style={{
             fontFamily: FONT.mono, fontSize: 11, fontWeight: 600, color: ink[4],
-            background: isDark ? '#292929' : SURFACE.page, border: `1px solid ${surface.border}`,
+            background: isDark ? 'var(--ds-border, #292929)' : SURFACE.page, border: `1px solid ${surface.border}`,
             borderRadius: 9999, padding: '0 6px', height: 20, display: 'inline-flex', alignItems: 'center',
           }}>
             {totalCount}
@@ -87,7 +87,7 @@ export function RoadmapRequestList({ groups, selectedId, hoveredId, onSelect, on
 
       <div ref={scrollRef as any} onScroll={onScroll} className="flex-1 overflow-y-auto roadmap-scroll">
         {groups.map((group, gi) => {
-          const typeColor = TYPE_COLORS[group.key]?.solid || group.color || '#64748B';
+          const typeColor = TYPE_COLORS[group.key]?.solid || group.color || 'var(--ds-text-subtlest, #64748B)';
           const isCollapsed = collapsedGroups.has(group.key);
           return (
             <div key={group.key}>
@@ -99,7 +99,7 @@ export function RoadmapRequestList({ groups, selectedId, hoveredId, onSelect, on
                 onKeyDown={e => e.key === 'Enter' && onToggleGroup(group.key)}
                 style={{
                   height: GROUP_HEADER_HEIGHT,
-                  background: isDark ? '#1F1F1F' : SURFACE.page,
+                  background: isDark ? 'var(--ds-surface-overlay, #1F1F1F)' : SURFACE.page,
                   borderBottom: `1px solid ${surface.border}`,
                   borderTop: gi > 0 ? `1px solid ${surface.border}` : 'none',
                 }}
@@ -175,7 +175,7 @@ function RequestRow({
   selectedBg: string;
   hoverBg: string;
 }) {
-  const typeColor = TYPE_COLORS[item.type]?.solid || '#94A3B8';
+  const typeColor = TYPE_COLORS[item.type]?.solid || 'var(--ds-text-subtlest, #94A3B8)';
 
   return (
     <div
@@ -205,15 +205,15 @@ function RequestRow({
         style={{
           width: 20, height: 20, display: 'flex', alignItems: 'center', justifyContent: 'center',
           border: 'none', background: 'none', padding: 0, cursor: 'pointer',
-          color: item.starred ? '#F59E0B' : ink[4],
+          color: item.starred ? 'var(--ds-text-warning, #F59E0B)' : ink[4],
           opacity: item.starred ? 1 : undefined,
           transition: 'color 0.15s ease, opacity 0.15s ease',
         }}
         onClick={e => { e.stopPropagation(); onToggleStar(); }}
-        onMouseEnter={e => { e.currentTarget.style.color = '#F59E0B'; }}
+        onMouseEnter={e => { e.currentTarget.style.color = 'var(--ds-text-warning, #F59E0B)'; }}
         onMouseLeave={e => { if (!item.starred) e.currentTarget.style.color = ink[4]; }}
       >
-        <Star className="w-3.5 h-3.5" fill={item.starred ? '#F59E0B' : 'none'} />
+        <Star className="w-3.5 h-3.5" fill={item.starred ? 'var(--ds-text-warning, #F59E0B)' : 'none'} />
       </button>
 
       <div className="flex-shrink-0" style={{ width: 18, height: 18, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>

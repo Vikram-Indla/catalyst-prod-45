@@ -12,7 +12,7 @@ function getLozengeStyle(status: string, statusCategory?: string): { bg: string;
   if (cat === 'inprogress' || cat === 'indeterminate' || cat === 'started')
     return { bg: '#0C66E4', color: 'var(--ds-text-inverse, #FFFFFF)', label: (status || 'IN PROGRESS').toUpperCase() };
   if (cat === 'new' || cat === 'todo')
-    return { bg: '#DFE1E6', color: '#42526E', label: (status || 'TO DO').toUpperCase() };
+    return { bg: 'var(--ds-border, #DFE1E6)', color: '#42526E', label: (status || 'TO DO').toUpperCase() };
 
   // 2. Fallback: string-match raw status name
   const s = (status || '').toLowerCase();
@@ -26,7 +26,7 @@ function getLozengeStyle(status: string, statusCategory?: string): { bg: string;
        'deferred for int', 'awaiting info', 'on hold', 'active'].some(k => s === k))
     return { bg: '#0C66E4', color: 'var(--ds-text-inverse, #FFFFFF)', label: status.toUpperCase() };
   // Grey (default — never "Unknown")
-  return { bg: '#DFE1E6', color: '#42526E', label: (status || 'TO DO').toUpperCase() };
+  return { bg: 'var(--ds-border, #DFE1E6)', color: '#42526E', label: (status || 'TO DO').toUpperCase() };
 }
 
 function StatusLozenge({ status, statusCategory }: { status: string; statusCategory?: string }) {
@@ -55,9 +55,9 @@ function JiraIcon({ type }: { type: string }) {
   return <TaskIcon />;
 }
 
-const PC: Record<string, string> = { BAU: '#2563EB', SEN: '#D97706', FAC: '#16A34A', OPS: '#0D9488', SUP: '#64748B', LND: '#7C3AED' };
-const pColor = (k: string, fallback?: string) => fallback || PC[k] || '#64748B';
-const ageCol = (d: number) => d <= 7 ? '#16A34A' : d <= 14 ? '#D97706' : '#EF4444';
+const PC: Record<string, string> = { BAU: 'var(--ds-text-brand, #2563EB)', SEN: 'var(--ds-text-warning, #D97706)', FAC: 'var(--ds-text-success, #16A34A)', OPS: '#0D9488', SUP: 'var(--ds-text-subtlest, #64748B)', LND: '#7C3AED' };
+const pColor = (k: string, fallback?: string) => fallback || PC[k] || 'var(--ds-text-subtlest, #64748B)';
+const ageCol = (d: number) => d <= 7 ? 'var(--ds-text-success, #16A34A)' : d <= 14 ? 'var(--ds-text-warning, #D97706)' : 'var(--ds-text-danger, #EF4444)';
 
 function getCatFromStatus(status: string, statusCategory?: string): 'done' | 'progress' | 'blocked' | 'todo' {
   // Prioritise status_category
@@ -152,7 +152,7 @@ export const R360ChronologyView: React.FC<Props> = ({ items, onItemClick, member
               <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
                 {groupItems.map((item: any) => {
                   const cat = getCatFromStatus(item.status_name || item.status || '', item.status_category);
-                  const accentDot = cat === 'done' ? '#16A34A' : cat === 'progress' ? '#2563EB' : cat === 'blocked' ? '#EF4444' : '#D97706';
+                  const accentDot = cat === 'done' ? 'var(--ds-text-success, #16A34A)' : cat === 'progress' ? 'var(--ds-text-brand, #2563EB)' : cat === 'blocked' ? 'var(--ds-text-danger, #EF4444)' : 'var(--ds-text-warning, #D97706)';
                   const projColor = pColor(item.project_key, item.project_color);
                   return (
                     <div key={item.id} onClick={() => onItemClick(item)} style={{
@@ -177,7 +177,7 @@ export const R360ChronologyView: React.FC<Props> = ({ items, onItemClick, member
                         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '2px', flexWrap: 'wrap' }}>
                           <span style={{ fontSize: '12.5px', fontWeight: 600, color: 'var(--cp-blue)', fontFamily: 'var(--cp-font-mono)' }}>{item.item_key}</span>
                           {item.project_key && (
-                            <span style={{ fontSize: '10px', fontWeight: 700, padding: '2px 6px', borderRadius: '4px', color: '#FFF', background: projColor }}>{item.project_key}</span>
+                            <span style={{ fontSize: '10px', fontWeight: 700, padding: '2px 6px', borderRadius: '4px', color: 'var(--ds-surface, #FFF)', background: projColor }}>{item.project_key}</span>
                           )}
                         </div>
                         <div style={{

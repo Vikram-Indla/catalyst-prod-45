@@ -15,23 +15,23 @@ import { useTheme } from '@/hooks/useTheme';
 import { format } from 'date-fns';
 
 const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string; icon: any }> = {
-  planning: { label: 'Planning', color: '#64748B', bg: '#F1F5F9', icon: Clock },
-  planned: { label: 'Planned', color: '#64748B', bg: '#F1F5F9', icon: Clock },
+  planning: { label: 'Planning', color: 'var(--ds-text-subtlest, #64748B)', bg: 'var(--ds-surface-sunken, #F1F5F9)', icon: Clock },
+  planned: { label: 'Planned', color: 'var(--ds-text-subtlest, #64748B)', bg: 'var(--ds-surface-sunken, #F1F5F9)', icon: Clock },
   development: { label: 'Development', color: '#8B5CF6', bg: '#F5F3FF', icon: Settings2 },
-  testing: { label: 'Testing', color: '#2563EB', bg: '#EFF6FF', icon: Beaker },
+  testing: { label: 'Testing', color: 'var(--ds-text-brand, #2563EB)', bg: 'var(--ds-background-selected, #EFF6FF)', icon: Beaker },
   uat: { label: 'UAT', color: '#EA580C', bg: '#FFF7ED', icon: Monitor },
-  staging: { label: 'Staging', color: '#D97706', bg: '#FFFBEB', icon: Rocket },
+  staging: { label: 'Staging', color: 'var(--ds-text-warning, #D97706)', bg: '#FFFBEB', icon: Rocket },
   ready: { label: 'Ready', color: '#059669', bg: '#ECFDF5', icon: CheckCircle2 },
   released: { label: 'Released', color: '#059669', bg: '#ECFDF5', icon: CheckCircle2 },
   shipped: { label: 'Shipped', color: '#059669', bg: '#ECFDF5', icon: CheckCircle2 },
-  archived: { label: 'Archived', color: '#94A3B8', bg: '#F8FAFC', icon: Archive },
+  archived: { label: 'Archived', color: 'var(--ds-text-subtlest, #94A3B8)', bg: 'var(--ds-surface-sunken, #F8FAFC)', icon: Archive },
 };
 
 const HEALTH_CONFIG: Record<string, { label: string; color: string; dot: string }> = {
-  healthy: { label: 'Healthy', color: '#059669', dot: '#22C55E' },
-  at_risk: { label: 'At Risk', color: '#D97706', dot: '#F59E0B' },
-  critical: { label: 'Critical', color: '#DC2626', dot: '#EF4444' },
-  none: { label: '—', color: '#94A3B8', dot: '#CBD5E1' },
+  healthy: { label: 'Healthy', color: '#059669', dot: 'var(--ds-text-success, #22C55E)' },
+  at_risk: { label: 'At Risk', color: 'var(--ds-text-warning, #D97706)', dot: 'var(--ds-text-warning, #F59E0B)' },
+  critical: { label: 'Critical', color: 'var(--ds-text-danger, #DC2626)', dot: 'var(--ds-text-danger, #EF4444)' },
+  none: { label: '—', color: 'var(--ds-text-subtlest, #94A3B8)', dot: 'var(--ds-text-disabled, #CBD5E1)' },
 };
 
 export default function ReleaseDetailPage() {
@@ -76,7 +76,7 @@ export default function ReleaseDetailPage() {
   return (
     <div className="th-page-content" style={{ flex: 1, overflow: 'auto' }}>
       {/* Header */}
-      <div style={{ padding: '20px 32px', borderBottom: `1px solid ${'var(--cp-border, #E2E8F0)'}`, background: isDark ? 'var(--cp-bg-page, #1F1F21)' : '#fff' }}>
+      <div style={{ padding: '20px 32px', borderBottom: `1px solid ${'var(--cp-border, #E2E8F0)'}`, background: isDark ? 'var(--cp-bg-page, #1F1F21)' : 'var(--ds-surface, #fff)' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 12 }}>
           <button
             onClick={() => navigate('/testhub/releases')}
@@ -101,17 +101,17 @@ export default function ReleaseDetailPage() {
 
         {/* Stat cards */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 12 }}>
-          <StatCard label="Days Left" value={daysLeft !== null ? String(daysLeft) : '—'} color="#2563EB" isDark={isDark} />
+          <StatCard label="Days Left" value={daysLeft !== null ? String(daysLeft) : '—'} color="var(--ds-text-brand, #2563EB)" isDark={isDark} />
           <StatCard label="Total Tests" value={String(release.test_cases_total || 0)} color={'var(--cp-text-secondary, #334155)'} isDark={isDark} />
-          <StatCard label="Execution" value={`${execRate}%`} color={execRate >= 80 ? '#059669' : '#D97706'} isDark={isDark} />
-          <StatCard label="Pass Rate" value={`${passRate}%`} color={passRate >= 80 ? '#059669' : '#DC2626'} isDark={isDark} />
-          <StatCard label="Open Defects" value={String(release.defects_open || 0)} color={release.defects_open > 0 ? '#DC2626' : '#059669'} isDark={isDark} />
-          <StatCard label="Critical" value={String(release.critical_defects || 0)} color={release.critical_defects > 0 ? '#DC2626' : '#059669'} isDark={isDark} />
+          <StatCard label="Execution" value={`${execRate}%`} color={execRate >= 80 ? '#059669' : 'var(--ds-text-warning, #D97706)'} isDark={isDark} />
+          <StatCard label="Pass Rate" value={`${passRate}%`} color={passRate >= 80 ? '#059669' : 'var(--ds-text-danger, #DC2626)'} isDark={isDark} />
+          <StatCard label="Open Defects" value={String(release.defects_open || 0)} color={release.defects_open > 0 ? 'var(--ds-text-danger, #DC2626)' : '#059669'} isDark={isDark} />
+          <StatCard label="Critical" value={String(release.critical_defects || 0)} color={release.critical_defects > 0 ? 'var(--ds-text-danger, #DC2626)' : '#059669'} isDark={isDark} />
         </div>
       </div>
 
       {/* Tabs */}
-      <div style={{ display: 'flex', gap: 0, borderBottom: `1px solid ${'var(--cp-border, #E2E8F0)'}`, padding: '0 32px', background: isDark ? 'var(--cp-bg-page, #1F1F21)' : '#fff' }}>
+      <div style={{ display: 'flex', gap: 0, borderBottom: `1px solid ${'var(--cp-border, #E2E8F0)'}`, padding: '0 32px', background: isDark ? 'var(--cp-bg-page, #1F1F21)' : 'var(--ds-surface, #fff)' }}>
         {tabs.map(tab => {
           const active = activeTab === tab.id;
           const TabIcon = tab.icon;
@@ -123,7 +123,7 @@ export default function ReleaseDetailPage() {
                 display: 'flex', alignItems: 'center', gap: 7, padding: '12px 20px',
                 fontSize: 14, fontWeight: active ? 600 : 500, border: 'none',
                 borderBottom: active ? '2px solid #2563EB' : '2px solid transparent',
-                color: active ? '#2563EB' : ('var(--cp-text-tertiary, #64748B)'), background: 'none', cursor: 'pointer',
+                color: active ? 'var(--ds-text-brand, #2563EB)' : ('var(--cp-text-tertiary, #64748B)'), background: 'none', cursor: 'pointer',
               }}
             >
               <TabIcon style={{ width: 15, height: 15 }} />
@@ -168,9 +168,9 @@ function OverviewTab({ release, isDark }: { release: any; isDark: boolean }) {
             <div style={{
               display: 'flex', height: '100%',
             }}>
-              <div style={{ width: `${(release.test_cases_passed / release.test_cases_total) * 100}%`, backgroundColor: '#22C55E' }} />
-              <div style={{ width: `${((release.test_cases_failed || 0) / release.test_cases_total) * 100}%`, backgroundColor: '#EF4444' }} />
-              <div style={{ width: `${((release.test_cases_blocked || 0) / release.test_cases_total) * 100}%`, backgroundColor: '#F59E0B' }} />
+              <div style={{ width: `${(release.test_cases_passed / release.test_cases_total) * 100}%`, backgroundColor: 'var(--ds-text-success, #22C55E)' }} />
+              <div style={{ width: `${((release.test_cases_failed || 0) / release.test_cases_total) * 100}%`, backgroundColor: 'var(--ds-text-danger, #EF4444)' }} />
+              <div style={{ width: `${((release.test_cases_blocked || 0) / release.test_cases_total) * 100}%`, backgroundColor: 'var(--ds-text-warning, #F59E0B)' }} />
             </div>
           )}
         </div>
@@ -223,7 +223,7 @@ function CyclesTab({ cycles, isLoading, navigate, isDark }: { cycles: any[]; isL
   }
 
   return (
-    <div style={{ border: `1px solid ${'var(--cp-border, #E2E8F0)'}`, borderRadius: 12, overflow: 'hidden', background: isDark ? 'var(--cp-bg-surface, #242528)' : '#fff' }}>
+    <div style={{ border: `1px solid ${'var(--cp-border, #E2E8F0)'}`, borderRadius: 12, overflow: 'hidden', background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, #fff)' }}>
       <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
         <thead>
           <tr style={{ backgroundColor: 'var(--cp-bg-page, #F8FAFC)', borderBottom: `1px solid ${'var(--cp-border, #E2E8F0)'}` }}>
@@ -251,8 +251,8 @@ function CyclesTab({ cycles, isLoading, navigate, isDark }: { cycles: any[]; isL
                 <td style={tdStyle}><span style={{ fontSize: 12, textTransform: 'capitalize' }}>{cycle.status}</span></td>
                 <td style={tdStyle}>{cycle.total_cases || 0}</td>
                 <td style={tdStyle}><span style={{ color: '#059669', fontWeight: 600 }}>{cycle.passed_count || 0}</span></td>
-                <td style={tdStyle}><span style={{ color: '#DC2626', fontWeight: 600 }}>{cycle.failed_count || 0}</span></td>
-                <td style={tdStyle}><ChevronRight style={{ width: 14, height: 14, color: '#CBD5E1' }} /></td>
+                <td style={tdStyle}><span style={{ color: 'var(--ds-text-danger, #DC2626)', fontWeight: 600 }}>{cycle.failed_count || 0}</span></td>
+                <td style={tdStyle}><ChevronRight style={{ width: 14, height: 14, color: 'var(--ds-text-disabled, #CBD5E1)' }} /></td>
               </tr>
             );
           })}
@@ -269,11 +269,11 @@ function DefectsTab({ release, isDark }: { release: any; isDark: boolean }) {
       <p style={{ fontSize: 14, fontWeight: 500 }}>Defects linked to this release</p>
       <div style={{ display: 'flex', gap: 24, justifyContent: 'center', marginTop: 16 }}>
         <div style={{ textAlign: 'center' }}>
-          <div style={{ fontSize: 28, fontWeight: 700, color: '#DC2626' }}>{release.defects_open || 0}</div>
+          <div style={{ fontSize: 28, fontWeight: 700, color: 'var(--ds-text-danger, #DC2626)' }}>{release.defects_open || 0}</div>
           <div style={{ fontSize: 12, color: 'var(--cp-text-tertiary, #64748B)' }}>Open</div>
         </div>
         <div style={{ textAlign: 'center' }}>
-          <div style={{ fontSize: 28, fontWeight: 700, color: '#DC2626' }}>{release.critical_defects || 0}</div>
+          <div style={{ fontSize: 28, fontWeight: 700, color: 'var(--ds-text-danger, #DC2626)' }}>{release.critical_defects || 0}</div>
           <div style={{ fontSize: 12, color: 'var(--cp-text-tertiary, #64748B)' }}>Critical</div>
         </div>
       </div>

@@ -19,15 +19,15 @@ interface Props {
   onToggleFav: () => void;
 }
 
-const CAT_DOT: Record<string, string> = { todo: '#94A3B8', in_progress: '#2563EB', done: '#16A34A' };
+const CAT_DOT: Record<string, string> = { todo: 'var(--ds-text-subtlest, #94A3B8)', in_progress: 'var(--ds-text-brand, #2563EB)', done: 'var(--ds-text-success, #16A34A)' };
 
 function getAvatarGradient(key: string) {
   const letter = (key[0] || '').toUpperCase();
   const map: Record<string, string> = {
-    A: '#2563EB', B: '#2563EB', C: '#2563EB', D: '#7C3AED', E: '#7C3AED', F: '#7C3AED',
-    G: '#0D9488', H: '#0D9488', I: '#0D9488', J: '#1D4ED8', K: '#1D4ED8', L: '#1D4ED8',
-    M: '#F59E0B', N: '#F59E0B', O: '#F59E0B', P: '#DC2626', Q: '#DC2626', R: '#DC2626',
-    S: '#2563EB', T: '#2563EB', U: '#2563EB', V: '#16A34A', W: '#16A34A', X: '#16A34A', Y: '#16A34A', Z: '#16A34A',
+    A: 'var(--ds-text-brand, #2563EB)', B: 'var(--ds-text-brand, #2563EB)', C: 'var(--ds-text-brand, #2563EB)', D: '#7C3AED', E: '#7C3AED', F: '#7C3AED',
+    G: '#0D9488', H: '#0D9488', I: '#0D9488', J: 'var(--ds-background-brand-bold-hovered, #1D4ED8)', K: 'var(--ds-background-brand-bold-hovered, #1D4ED8)', L: 'var(--ds-background-brand-bold-hovered, #1D4ED8)',
+    M: 'var(--ds-text-warning, #F59E0B)', N: 'var(--ds-text-warning, #F59E0B)', O: 'var(--ds-text-warning, #F59E0B)', P: 'var(--ds-text-danger, #DC2626)', Q: 'var(--ds-text-danger, #DC2626)', R: 'var(--ds-text-danger, #DC2626)',
+    S: 'var(--ds-text-brand, #2563EB)', T: 'var(--ds-text-brand, #2563EB)', U: 'var(--ds-text-brand, #2563EB)', V: 'var(--ds-text-success, #16A34A)', W: 'var(--ds-text-success, #16A34A)', X: 'var(--ds-text-success, #16A34A)', Y: 'var(--ds-text-success, #16A34A)', Z: 'var(--ds-text-success, #16A34A)',
   };
   return map[letter] || '#0284C7';
 }
@@ -49,7 +49,7 @@ export function ProjectDetailPanel({ project, open, onClose, isFav, onToggleFav 
             <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 2 }}>
               <ArrowLeft size={18} color="var(--fg-3)" />
             </button>
-            <div className="flex items-center justify-center rounded-md" style={{ width: 36, height: 50, background: bg, color: '#FFF', fontSize: 13, fontWeight: 700, fontFamily: 'var(--cp-font-mono)', borderRadius: 8 }}>
+            <div className="flex items-center justify-center rounded-md" style={{ width: 36, height: 50, background: bg, color: 'var(--ds-surface, #FFF)', fontSize: 13, fontWeight: 700, fontFamily: 'var(--cp-font-mono)', borderRadius: 8 }}>
               {project.project_key}
             </div>
             <div className="flex-1 min-w-0">
@@ -57,7 +57,7 @@ export function ProjectDetailPanel({ project, open, onClose, isFav, onToggleFav 
               <div style={{ fontSize: 12, color: 'var(--fg-3)' }}>{project.department || 'No department'} · {project.project_key}</div>
             </div>
             <button onClick={onToggleFav} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4 }}>
-              <Star size={18} fill={isFav ? '#EAB308' : 'none'} color={isFav ? '#EAB308' : '#CBD5E1'} />
+              <Star size={18} fill={isFav ? '#EAB308' : 'none'} color={isFav ? '#EAB308' : 'var(--ds-text-disabled, #CBD5E1)'} />
             </button>
           </div>
 
@@ -97,7 +97,7 @@ export function ProjectDetailPanel({ project, open, onClose, isFav, onToggleFav 
                   padding: '8px 16px',
                   fontSize: 13,
                   fontWeight: tab === t ? 600 : 400,
-                  color: tab === t ? '#2563EB' : 'var(--fg-3)',
+                  color: tab === t ? 'var(--ds-text-brand, #2563EB)' : 'var(--fg-3)',
                   borderBottom: tab === t ? '2px solid #2563EB' : '2px solid transparent',
                   background: 'none',
                   border: 'none',
@@ -126,13 +126,13 @@ export function ProjectDetailPanel({ project, open, onClose, isFav, onToggleFav 
 
         {/* Footer */}
         <div className="flex items-center gap-3 p-4" style={{ borderTop: '1px solid var(--divider)' }}>
-          <button onClick={onClose} className="flex-1 rounded-md transition-colors" style={{ height: 50, background: '#FFF', border: '1px solid var(--divider)', fontSize: 13, fontWeight: 500, color: 'var(--fg-2)', cursor: 'pointer' }}>
+          <button onClick={onClose} className="flex-1 rounded-md transition-colors" style={{ height: 50, background: 'var(--ds-surface, #FFF)', border: '1px solid var(--divider)', fontSize: 13, fontWeight: 500, color: 'var(--fg-2)', cursor: 'pointer' }}>
             Close
           </button>
           <button
             onClick={() => window.open(`/project-hub/${project.project_key}/dashboard`, '_blank')}
             className="flex items-center justify-center gap-2 flex-1 rounded-md transition-colors"
-            style={{ height: 50, background: 'var(--cp-blue)', border: 'none', fontSize: 13, fontWeight: 600, color: '#FFF', cursor: 'pointer' }}
+            style={{ height: 50, background: 'var(--cp-blue)', border: 'none', fontSize: 13, fontWeight: 600, color: 'var(--ds-surface, #FFF)', cursor: 'pointer' }}
           >
             <ExternalLink size={14} /> Open Project
           </button>

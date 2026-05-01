@@ -103,7 +103,7 @@ export function T10LabelsFieldNew({
         top: position.top,
         left: position.left,
         width: position.width,
-        backgroundColor: '#ffffff',
+        backgroundColor: 'var(--ds-surface, #ffffff)',
         border: '1px solid #e5e7eb',
         borderRadius: '8px',
         boxShadow: '0 10px 25px -5px rgba(0,0,0,0.15), 0 4px 6px -2px rgba(0,0,0,0.08)',
@@ -147,7 +147,7 @@ export function T10LabelsFieldNew({
                   position: 'absolute',
                   top: 'calc(100% + 4px)',
                   left: 0,
-                  backgroundColor: '#ffffff',
+                  backgroundColor: 'var(--ds-surface, #ffffff)',
                   border: '1px solid #e5e7eb',
                   borderRadius: '8px',
                   boxShadow: '0 10px 25px -5px rgba(0,0,0,0.15)',
@@ -221,8 +221,8 @@ export function T10LabelsFieldNew({
               padding: '8px 12px',
               fontSize: '13px',
               fontWeight: 500,
-              color: '#ffffff',
-              backgroundColor: '#2563eb',
+              color: 'var(--ds-surface, #ffffff)',
+              backgroundColor: 'var(--ds-text-brand, #2563eb)',
               border: 'none',
               borderRadius: '6px',
               cursor: !newLabelName.trim() ? 'not-allowed' : 'pointer',
@@ -277,7 +277,7 @@ export function T10LabelsFieldNew({
                   width: '100%',
                   padding: '10px 12px',
                   marginBottom: '4px',
-                  backgroundColor: isSelected ? '#eff6ff' : 'transparent',
+                  backgroundColor: isSelected ? 'var(--ds-background-selected, #eff6ff)' : 'transparent',
                   border: isSelected ? '1px solid #bfdbfe' : '1px solid transparent',
                   borderRadius: '6px',
                   cursor: 'pointer',
@@ -293,13 +293,13 @@ export function T10LabelsFieldNew({
                       ? '2px solid #2563eb'
                       : '2px solid #d1d5db',
                     borderRadius: '4px',
-                    backgroundColor: isSelected ? '#2563eb' : 'transparent',
+                    backgroundColor: isSelected ? 'var(--ds-text-brand, #2563eb)' : 'transparent',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
                   }}
                 >
-                  {isSelected && <Check size={10} color="#ffffff" />}
+                  {isSelected && <Check size={10} color="var(--ds-surface, #ffffff)" />}
                 </div>
                 <span
                   style={{

@@ -199,18 +199,18 @@ export function EntityAttachmentsPanel({
             <div
               {...getRootProps()}
               className={`p-8 text-center cursor-pointer transition-colors border-t border-border ${
-                isDragActive ? 'bg-[#2563EB]/5' : ''
+                isDragActive ? 'bg-[var(--ds-text-brand,#2563EB)]/5' : ''
               }`}
             >
               <input {...getInputProps()} />
               {isDragActive ? (
                 <div className="flex flex-col items-center gap-2">
-                  <Upload className="h-6 w-6 text-[#2563EB]" />
-                  <p className="text-sm font-medium text-[#2563EB]">Drop to upload</p>
+                  <Upload className="h-6 w-6 text-[var(--ds-text-brand,#2563EB)]" />
+                  <p className="text-sm font-medium text-[var(--ds-text-brand,#2563EB)]">Drop to upload</p>
                 </div>
               ) : uploading ? (
                 <div className="flex flex-col items-center gap-2">
-                  <Loader2 className="h-6 w-6 animate-spin text-[#2563EB]" />
+                  <Loader2 className="h-6 w-6 animate-spin text-[var(--ds-text-brand,#2563EB)]" />
                   <p className="text-sm text-muted-foreground">Uploading {uploadCount} file(s)...</p>
                 </div>
               ) : (
@@ -347,7 +347,7 @@ export function EntityAttachmentsPanel({
                     <tr className="border-t border-border">
                       <td colSpan={4} className="px-3 py-3">
                         <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                          <Loader2 className="h-4 w-4 animate-spin text-[#2563EB]" />
+                          <Loader2 className="h-4 w-4 animate-spin text-[var(--ds-text-brand,#2563EB)]" />
                           Uploading {uploadCount} file(s)...
                         </div>
                       </td>
@@ -360,7 +360,7 @@ export function EntityAttachmentsPanel({
               <div
                 {...getRootProps()}
                 className={`border-t border-border px-3 py-3 text-center cursor-pointer transition-colors ${
-                  isDragActive ? 'bg-[#2563EB]/5' : 'hover:bg-muted/30'
+                  isDragActive ? 'bg-[var(--ds-text-brand,#2563EB)]/5' : 'hover:bg-muted/30'
                 }`}
               >
                 <input {...getInputProps()} />

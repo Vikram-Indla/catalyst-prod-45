@@ -102,7 +102,7 @@ export default function BudgetGovernancePage() {
             <Button 
               onClick={() => setExecModalOpen(true)}
               size="sm"
-              className="h-10 px-6 text-sm gap-2 bg-[#2563eb] hover:bg-[#1d4ed8] text-white shadow-md font-semibold"
+              className="h-10 px-6 text-sm gap-2 bg-[var(--ds-text-brand,#2563eb)] hover:bg-[var(--ds-background-brand-bold-hovered,#1d4ed8)] text-white shadow-md font-semibold"
             >
               <BarChart3 className="w-4 h-4" />
               Executive Summary

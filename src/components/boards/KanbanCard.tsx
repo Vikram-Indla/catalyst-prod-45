@@ -13,8 +13,8 @@ interface Props {
 const PRIORITY_COLORS: Record<string, string> = {
   critical: '#FF5630',
   high: '#FF7452',
-  medium: '#D97706',
-  low: '#94A3B8',
+  medium: 'var(--ds-text-warning, #D97706)',
+  low: 'var(--ds-text-subtlest, #94A3B8)',
 };
 
 function getOverdueDays(dueDate: string | null): number | null {
@@ -101,7 +101,7 @@ export default function KanbanCardComponent({ card, onCardClick }: Props) {
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           opacity: hover ? 1 : 0, transition: 'opacity 100ms',
         }} onClick={e => e.stopPropagation()}>
-          <MoreHorizontal size={14} color="#94A3B8" />
+          <MoreHorizontal size={14} color="var(--ds-text-subtlest, #94A3B8)" />
         </button>
       </div>
 
@@ -120,15 +120,15 @@ export default function KanbanCardComponent({ card, onCardClick }: Props) {
         <div style={{
           display: 'inline-flex', alignItems: 'center', gap: 4,
           height: 18, padding: '0 7px', borderRadius: 4,
-          background: '#EFF6FF', border: '0.75px solid #DBEAFE',
+          background: 'var(--ds-background-selected, #EFF6FF)', border: '0.75px solid #DBEAFE',
           maxWidth: '100%', overflow: 'hidden',
         }}>
           <span style={{
             width: 5, height: 5, borderRadius: '50%',
-            background: '#2563EB', flexShrink: 0,
+            background: 'var(--ds-text-brand, #2563EB)', flexShrink: 0,
           }} />
           <span style={{
-            fontSize: 10.5, fontWeight: 500, color: '#2563EB',
+            fontSize: 10.5, fontWeight: 500, color: 'var(--ds-text-brand, #2563EB)',
             fontFamily: 'var(--cp-font-body)',
             overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
           }}>{card.epic.title}</span>
@@ -145,7 +145,7 @@ export default function KanbanCardComponent({ card, onCardClick }: Props) {
           {card.priority && (
             <span style={{
               width: 8, height: 8, borderRadius: '50%',
-              background: PRIORITY_COLORS[card.priority.name] ?? '#94A3B8',
+              background: PRIORITY_COLORS[card.priority.name] ?? 'var(--ds-text-subtlest, #94A3B8)',
               flexShrink: 0,
             }} title={card.priority.name} />
           )}
@@ -178,7 +178,7 @@ export default function KanbanCardComponent({ card, onCardClick }: Props) {
               width: 22, height: 22, borderRadius: '50%',
               background: hashColor(card.assignee.id),
               display: 'flex', alignItems: 'center', justifyContent: 'center',
-              fontSize: 9, fontWeight: 700, color: '#FFFFFF',
+              fontSize: 9, fontWeight: 700, color: 'var(--ds-surface, #FFFFFF)',
               fontFamily: 'var(--cp-font-heading)',
             }} title={card.assignee.displayName}>
               {card.assignee.initials}
@@ -191,7 +191,7 @@ export default function KanbanCardComponent({ card, onCardClick }: Props) {
 }
 
 function hashColor(id: string): string {
-  const colors = ['#2563EB', '#16A34A', '#7C3AED', '#DC2626', '#D97706', '#0D9488', '#0284C7', '#525252'];
+  const colors = ['var(--ds-text-brand, #2563EB)', 'var(--ds-text-success, #16A34A)', '#7C3AED', 'var(--ds-text-danger, #DC2626)', 'var(--ds-text-warning, #D97706)', '#0D9488', '#0284C7', '#525252'];
   let hash = 0;
   for (let i = 0; i < id.length; i++) hash = id.charCodeAt(i) + ((hash << 5) - hash);
   return colors[Math.abs(hash) % colors.length];

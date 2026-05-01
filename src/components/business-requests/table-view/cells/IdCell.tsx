@@ -6,7 +6,7 @@ interface IdCellProps {
   onClick: (e: React.MouseEvent) => void;
 }
 
-/* V12 — ID column: JetBrains Mono, #2563EB, underline on hover */
+/* V12 — ID column: JetBrains Mono, var(--ds-text-brand, #2563EB), underline on hover */
 export function IdCell({ requestKey, onClick }: IdCellProps) {
   return (
     <button
@@ -17,7 +17,7 @@ export function IdCell({ requestKey, onClick }: IdCellProps) {
         fontSize: 12, /* V12 */
         fontWeight: 500, /* V12 */
         fontVariantNumeric: 'tabular-nums', /* V12 */
-        color: '#2563EB', /* V12 */
+        color: 'var(--ds-text-brand, #2563EB)', /* V12 */
         background: 'none',
         border: 'none',
         padding: '2px 4px',

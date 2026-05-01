@@ -73,7 +73,7 @@ export function AssigneePopover({ currentAccountId, onChange, children, showActi
       content={() => (
         <div className="sp-pop" style={{ width: 280, padding: 0 }} onClick={(e) => e.stopPropagation()}>
           <div className="sp-pop-search">
-            <Search size={14} color="#6B778C" />
+            <Search size={14} color="var(--ds-text-subtlest, #6B778C)" />
             <input
               type="text"
               autoFocus
@@ -93,18 +93,18 @@ export function AssigneePopover({ currentAccountId, onChange, children, showActi
                 setIsOpen(false);
               }}
             >
-              <span className="sp-avatar-fallback" style={{ background: '#DFE1E6', color: '#6B778C', width: 24, height: 24 }}>
+              <span className="sp-avatar-fallback" style={{ background: 'var(--ds-border, #DFE1E6)', color: 'var(--ds-text-subtlest, #6B778C)', width: 24, height: 24 }}>
                 <UserX size={12} />
               </span>
-              <span style={{ fontSize: 13, color: '#172B4D' }}>Unassigned</span>
+              <span style={{ fontSize: 13, color: 'var(--ds-text, #172B4D)' }}>Unassigned</span>
               {showActive && !currentAccountId && <Check size={14} color="#0052CC" style={{ marginLeft: 'auto' }} />}
             </button>
 
             {isLoading && (
-              <div style={{ padding: '12px', fontSize: 12, color: '#6B778C' }}>Loading…</div>
+              <div style={{ padding: '12px', fontSize: 12, color: 'var(--ds-text-subtlest, #6B778C)' }}>Loading…</div>
             )}
             {!isLoading && filtered.length === 0 && (
-              <div style={{ padding: '12px', fontSize: 12, color: '#6B778C' }}>No matches</div>
+              <div style={{ padding: '12px', fontSize: 12, color: 'var(--ds-text-subtlest, #6B778C)' }}>No matches</div>
             )}
 
             {filtered.map((p) => {
@@ -125,7 +125,7 @@ export function AssigneePopover({ currentAccountId, onChange, children, showActi
                     src={p.avatar_url ?? undefined}
                     borderColor="transparent"
                   />
-                  <span style={{ fontSize: 13, color: '#172B4D', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                  <span style={{ fontSize: 13, color: 'var(--ds-text, #172B4D)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                     {p.display_name}
                   </span>
                   {active && <Check size={14} color="#0052CC" style={{ marginLeft: 'auto' }} />}

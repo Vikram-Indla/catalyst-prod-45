@@ -38,11 +38,11 @@ const palette = {
 
 const CHART_COLORS = {
   olive: '#0d9488',
-  bronze: '#f59e0b',
-  primary: '#2563eb',
-  champagne: '#94a3b8',
+  bronze: 'var(--ds-text-warning, #f59e0b)',
+  primary: 'var(--ds-text-brand, #2563eb)',
+  champagne: 'var(--ds-text-subtlest, #94a3b8)',
   grey: '#c8ccd0',
-  critical: '#ef4444',
+  critical: 'var(--ds-text-danger, #ef4444)',
 };
 
 const DEFAULT_FILTERS: RiskGridFilters = {

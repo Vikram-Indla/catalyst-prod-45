@@ -75,11 +75,11 @@ export function WikiKnowledgeRequestForm({ open, onClose }: Props) {
     outline: 'none', fontFamily: 'var(--cp-font-body)',
     transition: 'border-color 150ms',
     background: 'transparent',
-    color: isDark ? '#EDEDED' : undefined,
+    color: isDark ? 'var(--ds-text, #EDEDED)' : undefined,
   };
 
   const labelStyle: React.CSSProperties = {
-    fontSize: 11, fontWeight: 600, color: isDark ? '#A1A1A1' : 'var(--fg-2)', marginBottom: 4, display: 'block',
+    fontSize: 11, fontWeight: 600, color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--fg-2)', marginBottom: 4, display: 'block',
     fontFamily: 'var(--cp-font-heading)',
   };
 
@@ -94,9 +94,9 @@ export function WikiKnowledgeRequestForm({ open, onClose }: Props) {
       }}>
         {/* Header */}
         <div style={{ padding: '20px 24px 16px', borderBottom: isDark ? '0.75px solid #2E2E2E' : '0.75px solid rgba(0,0,0,0.06)', display: 'flex', alignItems: 'center' }}>
-          <h2 style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 14, fontWeight: 700, margin: 0, flex: 1, color: isDark ? '#EDEDED' : undefined }}>New Knowledge Request</h2>
+          <h2 style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 14, fontWeight: 700, margin: 0, flex: 1, color: isDark ? 'var(--ds-text, #EDEDED)' : undefined }}>New Knowledge Request</h2>
           <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4 }}>
-            <X size={16} style={{ color: isDark ? '#878787' : 'var(--fg-3)' }} />
+            <X size={16} style={{ color: isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--fg-3)' }} />
           </button>
         </div>
 
@@ -157,11 +157,11 @@ export function WikiKnowledgeRequestForm({ open, onClose }: Props) {
         <div style={{ padding: '16px 24px 20px', borderTop: isDark ? '0.75px solid #2E2E2E' : '0.75px solid rgba(0,0,0,0.06)', display: 'flex', justifyContent: 'flex-end', gap: 8 }}>
           <button onClick={onClose} style={{
             fontSize: 12, fontWeight: 600, padding: '8px 16px', borderRadius: 6, cursor: 'pointer',
-            border: isDark ? '0.75px solid #2E2E2E' : '0.75px solid rgba(0,0,0,0.10)', background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--cp-float)', color: isDark ? '#A1A1A1' : 'var(--fg-2)',
+            border: isDark ? '0.75px solid #2E2E2E' : '0.75px solid rgba(0,0,0,0.10)', background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--cp-float)', color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--fg-2)',
           }}>Cancel</button>
           <button onClick={handleSubmit} disabled={!canSubmit || submitting} style={{
             fontSize: 12, fontWeight: 650, padding: '8px 20px', borderRadius: 6, cursor: canSubmit ? 'pointer' : 'not-allowed',
-            border: 'none', background: canSubmit ? 'var(--cp-blue)' : (isDark ? '#878787' : 'var(--fg-4)'), color: '#FFFFFF',
+            border: 'none', background: canSubmit ? 'var(--cp-blue)' : (isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--fg-4)'), color: 'var(--ds-surface, #FFFFFF)',
             display: 'flex', alignItems: 'center', gap: 6, opacity: submitting ? 0.7 : 1,
           }}>
             <Send size={12} /> {submitting ? 'Submitting...' : 'Submit Request'}

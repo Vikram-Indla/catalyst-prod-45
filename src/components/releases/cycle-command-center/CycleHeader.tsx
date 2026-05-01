@@ -75,7 +75,7 @@ export function CycleHeader({ cycle, stats, isLoading }: CycleHeaderProps) {
               cy={size / 2}
               r={radius}
               fill="none"
-              stroke="#e2e8f0"
+              stroke="var(--ds-border, #e2e8f0)"
               strokeWidth={strokeWidth}
             />
             {/* Progress circle */}

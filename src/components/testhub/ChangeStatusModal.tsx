@@ -20,7 +20,7 @@ const STATUSES = [
   { value: 'draft', label: 'Draft', icon: Clock, color: 'var(--fg-3)', bg: 'var(--cp-bd-zone)' },
   { value: 'ready', label: 'Ready for Review', icon: FileCheck, color: 'var(--cp-blue)', bg: 'color-mix(in srgb, var(--cp-blue) 8%, transparent)' },
   { value: 'approved', label: 'Approved', icon: CheckCircle, color: 'var(--sem-success)', bg: '#ECFDF5' },
-  { value: 'deprecated', label: 'Deprecated', icon: Archive, color: 'var(--sem-danger)', bg: '#FEF2F2' },
+  { value: 'deprecated', label: 'Deprecated', icon: Archive, color: 'var(--sem-danger)', bg: 'var(--ds-background-danger, #FEF2F2)' },
 ];
 
 export function ChangeStatusModal({
@@ -145,7 +145,7 @@ export function ChangeStatusModal({
             disabled={!selectedStatus || isUpdating}
             style={{
               height: 40, padding: '0 20px',
-              background: !selectedStatus || isUpdating ? 'var(--fg-4)' : 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)',
+              background: !selectedStatus || isUpdating ? 'var(--fg-4)' : 'linear-gradient(135deg, var(--ds-text-brand, #2563EB) 0%, var(--ds-background-brand-bold-hovered, #1D4ED8) 100%)',
               border: 'none', borderRadius: 8, fontSize: 14, fontWeight: 600, color: 'var(--ds-text-inverse, #FFFFFF)',
               cursor: !selectedStatus || isUpdating ? 'not-allowed' : 'pointer',
               display: 'flex', alignItems: 'center', gap: 6,

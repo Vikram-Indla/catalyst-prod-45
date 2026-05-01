@@ -74,14 +74,14 @@ export function SchemeSelector({ selectedSchemeId, onSchemeChange }: SchemeSelec
         <SelectContent>
           <SelectItem value="global">
             <span className="flex items-center gap-2">
-              <span className="h-2 w-2 rounded-full bg-[#16A34A]" />
+              <span className="h-2 w-2 rounded-full bg-[var(--ds-text-success,#16A34A)]" />
               Global Defaults
             </span>
           </SelectItem>
           {schemes?.map((s) => (
             <SelectItem key={s.id} value={s.id}>
               <span className="flex items-center gap-2">
-                {s.is_default && <span className="h-2 w-2 rounded-full bg-[#2563EB]" />}
+                {s.is_default && <span className="h-2 w-2 rounded-full bg-[var(--ds-text-brand,#2563EB)]" />}
                 {s.name}
               </span>
             </SelectItem>
@@ -111,7 +111,7 @@ export function SchemeSelector({ selectedSchemeId, onSchemeChange }: SchemeSelec
                 <DropdownMenuSeparator />
                 <DropdownMenuItem
                   onClick={() => handleDelete(selectedScheme)}
-                  className="text-[#DC2626] focus:text-[#DC2626]"
+                  className="text-[var(--ds-text-danger,#DC2626)] focus:text-[var(--ds-text-danger,#DC2626)]"
                 >
                   <Trash2 className="h-3.5 w-3.5 mr-2" />
                   Delete Scheme

@@ -102,7 +102,7 @@ export function TestCasesTable({
     fontWeight: 600,
     textTransform: 'uppercase',
     letterSpacing: '0.05em',
-    color: isDark ? '#878787' : 'var(--fg-3)',
+    color: isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--fg-3)',
     verticalAlign: 'middle',
   };
 
@@ -215,7 +215,7 @@ export function TestCasesTable({
                 onMouseLeave={() => setHoveredRowId(null)}
                 style={{
                   height: 50,
-                  backgroundColor: isSelected ? 'rgba(37, 99, 235, 0.06)' : isHovered ? (isDark ? '#1F1F1F' : 'var(--cp-bd-zone)') : (isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--cp-float)'),
+                  backgroundColor: isSelected ? 'rgba(37, 99, 235, 0.06)' : isHovered ? (isDark ? 'var(--ds-surface-overlay, #1F1F1F)' : 'var(--cp-bd-zone)') : (isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--cp-float)'),
                   cursor: 'pointer',
                   transition: 'background-color 0.1s',
                 }}
@@ -279,7 +279,7 @@ export function TestCasesTable({
                                     tc.type === 'api' ? 'rgba(139,92,246,0.1)' : 'var(--cp-bd-zone)',
                     color: tc.type === 'security' ? 'var(--sem-danger)' :
                            tc.type === 'performance' ? '#B45309' :
-                           tc.type === 'api' ? '#2563EB' : 'var(--fg-2)',
+                           tc.type === 'api' ? 'var(--ds-text-brand, #2563EB)' : 'var(--fg-2)',
                   }}>
                     {tc.type.toUpperCase()}
                   </span>

@@ -116,7 +116,7 @@ export function ForcePasswordReset({ onSuccess, userId }: ForcePasswordResetProp
         fontFamily: "'Playfair Display', serif",
         fontSize: "clamp(1.5rem, 3vw, 1.875rem)",
         fontWeight: 500,
-        color: "#1a1a1a"
+        color: "var(--ds-surface-raised, #1a1a1a)"
       }}>
         Reset your password
       </h2>
@@ -136,7 +136,7 @@ export function ForcePasswordReset({ onSuccess, userId }: ForcePasswordResetProp
             fontFamily: "'DM Sans', sans-serif",
             fontSize: "0.875rem",
             fontWeight: 500,
-            color: "#1a1a1a"
+            color: "var(--ds-surface-raised, #1a1a1a)"
           }}>
             New Password
           </label>
@@ -165,7 +165,7 @@ export function ForcePasswordReset({ onSuccess, userId }: ForcePasswordResetProp
             fontFamily: "'DM Sans', sans-serif",
             fontSize: "0.875rem",
             fontWeight: 500,
-            color: "#1a1a1a"
+            color: "var(--ds-surface-raised, #1a1a1a)"
           }}>
             Confirm New Password
           </label>
@@ -186,7 +186,7 @@ export function ForcePasswordReset({ onSuccess, userId }: ForcePasswordResetProp
               className="mt-2 text-sm"
               style={{
                 fontFamily: "'DM Sans', sans-serif",
-                color: "#dc2626"
+                color: "var(--ds-text-danger, #dc2626)"
               }}
             >
               {error}
@@ -202,7 +202,7 @@ export function ForcePasswordReset({ onSuccess, userId }: ForcePasswordResetProp
           style={{
             fontFamily: "'DM Sans', sans-serif",
             padding: "16px",
-            backgroundColor: "#1a1a1a",
+            backgroundColor: "var(--ds-surface-raised, #1a1a1a)",
             color: "#feffff",
             fontWeight: 600,
             borderRadius: "10px",

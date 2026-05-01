@@ -24,7 +24,7 @@ function BugTypeIcon() {
   return (
     <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
       <rect x="1" y="1" width="14" height="14" rx="3" fill="#FF5630" />
-      <circle cx="8" cy="8" r="3" fill="#FFFFFF" />
+      <circle cx="8" cy="8" r="3" fill="var(--ds-surface, #FFFFFF)" />
     </svg>
   );
 }
@@ -33,8 +33,8 @@ function BugTypeIcon() {
 const SEVERITY_MAP: Record<string, { label: string; bg: string; text: string; border: string }> = {
   critical: { label: 'CRITICAL', bg: '#FFECEC', text: '#AE2A19', border: '#FFBDAD' },
   high:     { label: 'HIGH',     bg: '#FFF4EC', text: '#974F0C', border: '#FFD2A7' },
-  medium:   { label: 'MEDIUM',   bg: '#F4F5F7', text: '#42526E', border: '#C1C7D0' },
-  low:      { label: 'LOW',      bg: '#F4F5F7', text: '#6B778C', border: '#DFE1E6' },
+  medium:   { label: 'MEDIUM',   bg: 'var(--ds-surface-sunken, #F4F5F7)', text: '#42526E', border: '#C1C7D0' },
+  low:      { label: 'LOW',      bg: 'var(--ds-surface-sunken, #F4F5F7)', text: 'var(--ds-text-subtlest, #6B778C)', border: 'var(--ds-border, #DFE1E6)' },
 };
 
 function SeverityPill({ severity }: { severity: string }) {
@@ -52,12 +52,12 @@ function SeverityPill({ severity }: { severity: string }) {
 }
 
 function PriorityCell({ priority }: { priority: string | null }) {
-  if (!priority) return <span style={{ fontSize: 13, color: '#94A3B8' }}>—</span>;
+  if (!priority) return <span style={{ fontSize: 13, color: 'var(--ds-text-subtlest, #94A3B8)' }}>—</span>;
   return <PriorityIndicator priority={priority} />;
 }
 
 // ── Avatar colours (deterministic) ──
-const AVATAR_COLOURS = ['#2563EB', '#0D9488', '#0284C7', '#DC2626', '#DB2777', '#7C3AED', '#059669', '#D97706'];
+const AVATAR_COLOURS = ['var(--ds-text-brand, #2563EB)', '#0D9488', '#0284C7', 'var(--ds-text-danger, #DC2626)', '#DB2777', '#7C3AED', '#059669', 'var(--ds-text-warning, #D97706)'];
 
 // ── Age formatter ──
 function getRelativeAge(createdAt: string): string {
@@ -80,7 +80,7 @@ function JiraBadge() {
     <span style={{
       display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
       height: 16, padding: '0 4px', borderRadius: 3,
-      backgroundColor: '#DFE1E6', color: '#253858',
+      backgroundColor: 'var(--ds-border, #DFE1E6)', color: 'var(--ds-text, #253858)',
       fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.03em', lineHeight: '16px',
       marginLeft: 4,
     }}>
@@ -94,7 +94,7 @@ function getStatusDotColor(statusCategory: string | null): string {
   const cat = (statusCategory || '').toLowerCase();
   if (cat === 'done' || cat === 'closed' || cat === 'resolved') return '#36B37E';
   if (cat === 'in progress' || cat === 'indeterminate' || cat === 'active') return '#0065FF';
-  return '#DFE1E6';
+  return 'var(--ds-border, #DFE1E6)';
 }
 
 // ── Work item type icon component ──
@@ -173,7 +173,7 @@ function ParentPickerCell({ defectId, currentParentKey, projectKey }: { defectId
           {currentParentKey ? (
             <div className="flex items-center gap-1.5">
               <WorkItemIcon type={currentParent?.type || 'task'} size={14} />
-              <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 12, fontWeight: 600, color: '#2563EB' }}>
+              <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 12, fontWeight: 600, color: 'var(--ds-text-brand, #2563EB)' }}>
                 {currentParentKey}
               </span>
             </div>
@@ -230,7 +230,7 @@ function ParentPickerCell({ defectId, currentParentKey, projectKey }: { defectId
                 onClick={() => handleSelect(opt.key)}
                 className={cn(
                   "w-full text-left px-3 py-2.5 border-none cursor-pointer transition-colors block",
-                  isSelected ? "bg-[#DEEBFF]" : "bg-white hover:bg-[#F4F5F7]"
+                  isSelected ? "bg-[#DEEBFF]" : "bg-white hover:bg-[var(--ds-surface-sunken,#F4F5F7)]"
                 )}
               >
                 <div className="flex items-center gap-2">
@@ -257,10 +257,10 @@ function AssigneeCell({ defect, nameAvatarMap }: { defect: Defect; nameAvatarMap
   if (!assigneeName || assigneeName === 'Unassigned') {
     return (
       <div className="flex items-center gap-2.5">
-        <div style={{ width: 28, height: 28, borderRadius: '50%', backgroundColor: '#F1F5F9', border: '1px solid rgba(15,23,42,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-          <UserRound size={14} style={{ color: '#94A3B8' }} />
+        <div style={{ width: 28, height: 28, borderRadius: '50%', backgroundColor: 'var(--ds-surface-sunken, #F1F5F9)', border: '1px solid rgba(15,23,42,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+          <UserRound size={14} style={{ color: 'var(--ds-text-subtlest, #94A3B8)' }} />
         </div>
-        <span style={{ fontSize: 13, color: '#94A3B8' }}>Unassigned</span>
+        <span style={{ fontSize: 13, color: 'var(--ds-text-subtlest, #94A3B8)' }}>Unassigned</span>
       </div>
     );
   }
@@ -276,7 +276,7 @@ function AssigneeCell({ defect, nameAvatarMap }: { defect: Defect; nameAvatarMap
           style={{ width: 28, height: 28, borderRadius: '50%', objectFit: 'cover', flexShrink: 0, border: '1px solid rgba(15,23,42,0.08)' }}
         />
       ) : (
-        <div style={{ width: 28, height: 28, borderRadius: '50%', background: clr, color: '#FFFFFF', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 700, flexShrink: 0 }}>
+        <div style={{ width: 28, height: 28, borderRadius: '50%', background: clr, color: 'var(--ds-surface, #FFFFFF)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 700, flexShrink: 0 }}>
           {ini}
         </div>
       )}
@@ -422,12 +422,12 @@ export function DefectTable({ defects, selectedIds, onSelectionChange, onDelete,
         return (
           <td key={colKey} style={{ width: columnWidths.key }}>
             <div className="flex items-center gap-1">
-              {attCount > 0 && <span title="Attachments"><Paperclip size={12} style={{ color: '#94A3B8', flexShrink: 0, transform: 'rotate(-45deg)' }} /></span>}
-              <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 13, fontWeight: 600, color: '#2563EB' }}>{keyText}</span>
+              {attCount > 0 && <span title="Attachments"><Paperclip size={12} style={{ color: 'var(--ds-text-subtlest, #94A3B8)', flexShrink: 0, transform: 'rotate(-45deg)' }} /></span>}
+              <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 13, fontWeight: 600, color: 'var(--ds-text-brand, #2563EB)' }}>{keyText}</span>
               {isJira && <JiraBadge />}
               {isJira && d.external_url && (
                 <button className="opacity-0 group-hover:opacity-100 transition-opacity duration-150" style={{ marginLeft: 2, padding: 2, borderRadius: 3, border: 'none', background: 'transparent', cursor: 'pointer' }} title="Open in Jira" onClick={e => { e.stopPropagation(); window.open(d.external_url!, '_blank'); }}>
-                  <ExternalLink size={13} style={{ color: '#94A3B8' }} />
+                  <ExternalLink size={13} style={{ color: 'var(--ds-text-subtlest, #94A3B8)' }} />
                 </button>
               )}
             </div>
@@ -447,14 +447,14 @@ export function DefectTable({ defects, selectedIds, onSelectionChange, onDelete,
       case 'assignee':
         return <td key={colKey} style={{ width: columnWidths.assignee }}><AssigneeCell defect={d} nameAvatarMap={nameAvatarMap} /></td>;
       case 'age':
-        return <td key={colKey} style={{ fontSize: 12, color: '#64748B', width: columnWidths.age }}>{getRelativeAge(d.created_at)}</td>;
+        return <td key={colKey} style={{ fontSize: 12, color: 'var(--ds-text-subtlest, #64748B)', width: columnWidths.age }}>{getRelativeAge(d.created_at)}</td>;
       case 'actions':
         return (
           <td key={colKey} style={{ width: columnWidths.actions }} onClick={e => e.stopPropagation()}>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <button className="pb-row-actions opacity-0 group-hover:opacity-100 transition-opacity duration-150" style={{ height: 28, width: 28, borderRadius: 4, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', border: 'none', background: 'transparent', cursor: 'pointer' }}>
-                  <MoreHorizontal size={16} style={{ color: '#64748B' }} />
+                  <MoreHorizontal size={16} style={{ color: 'var(--ds-text-subtlest, #64748B)' }} />
                 </button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">

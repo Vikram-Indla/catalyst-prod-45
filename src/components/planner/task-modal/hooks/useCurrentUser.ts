@@ -15,7 +15,7 @@ interface CurrentUser {
 
 // Generate a consistent color from user id
 const getColorFromId = (id: string): string => {
-  const colors = ['#2563eb', '#7c3aed', '#db2777', '#ea580c', '#16a34a', '#0891b2'];
+  const colors = ['var(--ds-text-brand, #2563eb)', '#7c3aed', '#db2777', '#ea580c', 'var(--ds-text-success, #16a34a)', '#0891b2'];
   const hash = id.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
   return colors[hash % colors.length];
 };

@@ -303,7 +303,7 @@ export function UWVTable({
         flex: 1,
         minHeight: 0,
         overflow: 'auto',
-        background: '#FFFFFF',
+        background: 'var(--ds-surface, #FFFFFF)',
         padding: '4px 16px 16px',
       }}
     >

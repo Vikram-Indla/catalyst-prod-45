@@ -17,7 +17,7 @@ export default function CommentPreview({ text, attachmentFilename }: CommentPrev
   return (
     <div style={{
       background: 'var(--cp-bg-page, #F8FAFC)',
-      border: `0.5px solid ${isDark ? '#2E2E2E' : 'rgba(15,23,42,.08)'}`,
+      border: `0.5px solid ${isDark ? 'var(--ds-border, #2E2E2E)' : 'rgba(15,23,42,.08)'}`,
       borderRadius: 4,
       padding: '10px 12px',
       marginTop: 8,
@@ -34,7 +34,7 @@ export default function CommentPreview({ text, attachmentFilename }: CommentPrev
           onClick={(e) => { e.stopPropagation(); setExpanded(true); }}
           style={{
             background: 'none', border: 'none', cursor: 'pointer', padding: 0, marginLeft: 4,
-            color: '#2563EB', fontSize: 12, fontFamily: 'var(--cp-font-body)', fontWeight: 500,
+            color: 'var(--ds-text-brand, #2563EB)', fontSize: 12, fontFamily: 'var(--cp-font-body)', fontWeight: 500,
           }}
         >
           Show more

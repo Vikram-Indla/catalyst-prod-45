@@ -2,10 +2,10 @@
  * TIMELINE VIEW STYLES — CATALYST V5
  * 
  * COLOR RULES:
- * - Primary actions: #2563eb (primary-600)
+ * - Primary actions: var(--ds-text-brand, #2563eb) (primary-600)
  * - Success/Available: #0d9488 (teal-600)
- * - Warning: #d97706 (warning)
- * - Danger: #ef4444 (danger)
+ * - Warning: var(--ds-text-warning, #d97706) (warning)
+ * - Danger: var(--ds-text-danger, #ef4444) (danger)
  * - Permanent/Neutral: #9ca3af (gray-400)
  * 
  * ⚠️ DO NOT ADD NON-CATALYST COLORS
@@ -99,7 +99,7 @@
 
 .monthHeaderCurrent {
   background: rgba(37, 99, 235, 0.04); /* primary with alpha */
-  color: #2563eb; /* primary-600 */
+  color: var(--ds-text-brand, #2563eb); /* primary-600 */
   position: relative;
 }
 
@@ -111,7 +111,7 @@
   transform: translateX(-50%);
   width: 32px;
   height: 3px;
-  background: linear-gradient(90deg, #3b82f6, #2563eb); /* primary gradient */
+  background: linear-gradient(90deg, var(--ds-text-brand, #3b82f6), var(--ds-text-brand, #2563eb)); /* primary gradient */
   border-radius: 4px 3px 0 0;
 }
 
@@ -140,7 +140,7 @@
   top: 8px;
   bottom: 8px;
   width: 3px;
-  background: linear-gradient(180deg, #3b82f6 0%, #2563eb 100%);
+  background: linear-gradient(180deg, var(--ds-text-brand, #3b82f6) 0%, var(--ds-text-brand, #2563eb) 100%);
   border-radius: 0 3px 3px 0;
   opacity: 0;
   transform: translateX(-3px);
@@ -184,7 +184,7 @@
 }
 
 .rowCritical::before {
-  background: linear-gradient(180deg, #f87171 0%, #ef4444 100%);
+  background: linear-gradient(180deg, #f87171 0%, var(--ds-text-danger, #ef4444) 100%);
 }
 
 .rowAvailable {
@@ -248,7 +248,7 @@
 }
 
 .avatarPrimary {
-  background: #2563eb; /* primary-600 */
+  background: var(--ds-text-brand, #2563eb); /* primary-600 */
   /* Multi-layer shadow for premium depth */
   box-shadow: 
     0 1px 2px rgba(37, 99, 235, 0.1),
@@ -280,8 +280,8 @@
 }
 
 .ringTeal { --ring-color: #0d9488; }
-.ringWarning { --ring-color: #d97706; }
-.ringDanger { --ring-color: #ef4444; }
+.ringWarning { --ring-color: var(--ds-text-warning, #d97706); }
+.ringDanger { --ring-color: var(--ds-text-danger, #ef4444); }
 .ringGray { --ring-color: #9ca3af; }
 
 /* Smooth pulse animation for critical */
@@ -361,7 +361,7 @@
   outline: none;
   box-shadow: 
     0 0 0 2px white,
-    0 0 0 4px #2563eb;
+    0 0 0 4px var(--ds-text-brand, #2563eb);
 }
 
 /* ═══════════════════════════════════════════════════════════════
@@ -386,7 +386,7 @@
 }
 
 .barCommitted .barBadge {
-  background: #2563eb;
+  background: var(--ds-text-brand, #2563eb);
   color: white;
   padding: 3px 8px;
   border-radius: 4px;
@@ -553,25 +553,25 @@
   font-weight: 600;
 }
 
-.barPrimaryForecast .barText { color: #2563eb; }
+.barPrimaryForecast .barText { color: var(--ds-text-brand, #2563eb); }
 .barTealForecast .barText { color: #0d9488; }
-.barWarningForecast .barText { color: #d97706; }
-.barSlateForecast .barText { color: #475569; }
-.barDangerForecast .barText { color: #ef4444; }
+.barWarningForecast .barText { color: var(--ds-text-warning, #d97706); }
+.barSlateForecast .barText { color: var(--ds-text-subtle, #475569); }
+.barDangerForecast .barText { color: var(--ds-text-danger, #ef4444); }
 
 /* Bar badge for legacy bars */
-.barPrimary .barBadge { background: #2563eb; color: white; padding: 3px 8px; border-radius: 4px; font-size: 11px; font-weight: 700; }
+.barPrimary .barBadge { background: var(--ds-text-brand, #2563eb); color: white; padding: 3px 8px; border-radius: 4px; font-size: 11px; font-weight: 700; }
 .barTeal .barBadge { background: #0d9488; color: white; padding: 3px 8px; border-radius: 4px; font-size: 11px; font-weight: 700; }
-.barWarning .barBadge { background: #d97706; color: white; padding: 3px 8px; border-radius: 4px; font-size: 11px; font-weight: 700; }
-.barSlate .barBadge { background: #475569; color: white; padding: 3px 8px; border-radius: 4px; font-size: 11px; font-weight: 700; }
-.barDanger .barBadge { background: #ef4444; color: white; padding: 3px 8px; border-radius: 4px; font-size: 11px; font-weight: 700; }
+.barWarning .barBadge { background: var(--ds-text-warning, #d97706); color: white; padding: 3px 8px; border-radius: 4px; font-size: 11px; font-weight: 700; }
+.barSlate .barBadge { background: var(--ds-text-subtle, #475569); color: white; padding: 3px 8px; border-radius: 4px; font-size: 11px; font-weight: 700; }
+.barDanger .barBadge { background: var(--ds-text-danger, #ef4444); color: white; padding: 3px 8px; border-radius: 4px; font-size: 11px; font-weight: 700; }
 
 /* Forecast bar badges - outlined style */
-.barPrimaryForecast .barBadge { background: transparent; color: #2563eb; border: 1px solid #2563eb; padding: 3px 8px; border-radius: 4px; font-size: 11px; font-weight: 700; }
+.barPrimaryForecast .barBadge { background: transparent; color: var(--ds-text-brand, #2563eb); border: 1px solid var(--ds-text-brand, #2563eb); padding: 3px 8px; border-radius: 4px; font-size: 11px; font-weight: 700; }
 .barTealForecast .barBadge { background: transparent; color: #0d9488; border: 1px solid #0d9488; padding: 3px 8px; border-radius: 4px; font-size: 11px; font-weight: 700; }
-.barWarningForecast .barBadge { background: transparent; color: #d97706; border: 1px solid #d97706; padding: 3px 8px; border-radius: 4px; font-size: 11px; font-weight: 700; }
-.barSlateForecast .barBadge { background: transparent; color: #475569; border: 1px solid #475569; padding: 3px 8px; border-radius: 4px; font-size: 11px; font-weight: 700; }
-.barDangerForecast .barBadge { background: transparent; color: #ef4444; border: 1px solid #ef4444; padding: 3px 8px; border-radius: 4px; font-size: 11px; font-weight: 700; }
+.barWarningForecast .barBadge { background: transparent; color: var(--ds-text-warning, #d97706); border: 1px solid var(--ds-text-warning, #d97706); padding: 3px 8px; border-radius: 4px; font-size: 11px; font-weight: 700; }
+.barSlateForecast .barBadge { background: transparent; color: var(--ds-text-subtle, #475569); border: 1px solid var(--ds-text-subtle, #475569); padding: 3px 8px; border-radius: 4px; font-size: 11px; font-weight: 700; }
+.barDangerForecast .barBadge { background: transparent; color: var(--ds-text-danger, #ef4444); border: 1px solid var(--ds-text-danger, #ef4444); padding: 3px 8px; border-radius: 4px; font-size: 11px; font-weight: 700; }
 
 /* ═══════════════════════════════════════════════════════════════
    AVAILABLE CELL — Subtle elegance with refined transitions
@@ -725,12 +725,12 @@
   --marker-color-light: #14b8a6;
 }
 .markerWarning { 
-  --marker-color: #d97706; 
-  --marker-color-light: #f59e0b;
+  --marker-color: var(--ds-text-warning, #d97706); 
+  --marker-color-light: var(--ds-text-warning, #f59e0b);
 }
 .markerDanger { 
-  --marker-color: #dc2626; 
-  --marker-color-light: #ef4444;
+  --marker-color: var(--ds-text-danger, #dc2626); 
+  --marker-color-light: var(--ds-text-danger, #ef4444);
 }
 
 /* ═══════════════════════════════════════════════════════════════
@@ -901,11 +901,11 @@
 }
 
 .legendDotCritical {
-  background: #ef4444;
+  background: var(--ds-text-danger, #ef4444);
 }
 
 .legendDotWarning {
-  background: #d97706;
+  background: var(--ds-text-warning, #d97706);
 }
 
 .legendDotHealthy {
@@ -945,7 +945,7 @@
   background: linear-gradient(
     90deg,
     #f3f4f6 0%,
-    #e5e7eb 50%,
+    var(--ds-border, #e5e7eb) 50%,
     #f3f4f6 100%
   );
   background-size: 200% 100%;
@@ -1017,7 +1017,7 @@
 }
 
 .avgValueHigh {
-  color: #1d4ed8;
+  color: var(--ds-background-brand-bold-hovered, #1d4ed8);
 }
 
 .avgValueMedium {
@@ -1025,7 +1025,7 @@
 }
 
 .avgValueLow {
-  color: #d97706;
+  color: var(--ds-text-warning, #d97706);
 }
 
 .avgStatus {
@@ -1058,7 +1058,7 @@
 /* ═══════════════════════════════════════════════════════════════
    DARK MODE OVERRIDES — CATALYST V5 COMPLIANT
    Token Reference:
-   --surface-0: #262626  |  --surface-1: #1a1a1a  |  --surface-2: #1f1f1f
+   --surface-0: #262626  |  --surface-1: var(--ds-surface-raised, #1a1a1a)  |  --surface-2: var(--ds-surface-overlay, #1f1f1f)
    --surface-3: #2d2d2d  |  --surface-elevated: #333333
    --text-primary: #f5f5f5  |  --text-secondary: #a3a3a3  |  --muted-foreground: #b3b3b3
    --border-subtle: #333333  |  --border-default: #404040
@@ -1095,7 +1095,7 @@
 :global(.dark) .monthHeaderCurrent,
 :global(.dark) .monthHeaderCurrent , [data-theme="dark"]) .monthHeaderCurrent {
   background: rgba(37, 99, 235, 0.15);
-  color: #60a5fa;
+  color: var(--ds-text-brand, #60a5fa);
 }
 
 /* Resource Column */

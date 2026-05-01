@@ -12,9 +12,9 @@ interface ActivityFeedProps {
 
 const typeConfig = {
   test: { icon: CheckCircle2, bg: '#ccfbf1', color: '#0d9488' },
-  defect: { icon: Bug, bg: '#fee2e2', color: '#ef4444' },
-  gate: { icon: AlertTriangle, bg: '#fef3c7', color: '#d97706' },
-  release: { icon: Package, bg: '#eff6ff', color: '#2563eb' },
+  defect: { icon: Bug, bg: '#fee2e2', color: 'var(--ds-text-danger, #ef4444)' },
+  gate: { icon: AlertTriangle, bg: '#fef3c7', color: 'var(--ds-text-warning, #d97706)' },
+  release: { icon: Package, bg: 'var(--ds-background-selected, #eff6ff)', color: 'var(--ds-text-brand, #2563eb)' },
 };
 
 export function ActivityFeed({ activities }: ActivityFeedProps) {

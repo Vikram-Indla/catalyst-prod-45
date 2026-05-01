@@ -23,9 +23,9 @@ function getScoreBorderClass(score: number | null): string {
 function getPriorityLabel(score: number | null): { label: string; color: string } {
   if (score === null) return { label: 'Unscored', color: '#6B7280' };
   if (score >= 4.0) return { label: 'High', color: '#059669' };
-  if (score >= 3.0) return { label: 'Medium', color: '#2563EB' };
-  if (score >= 2.0) return { label: 'Low', color: '#D97706' };
-  return { label: 'Rejected', color: '#DC2626' };
+  if (score >= 3.0) return { label: 'Medium', color: 'var(--ds-text-brand, #2563EB)' };
+  if (score >= 2.0) return { label: 'Low', color: 'var(--ds-text-warning, #D97706)' };
+  return { label: 'Rejected', color: 'var(--ds-text-danger, #DC2626)' };
 }
 
 function getDateColor(dateStr: string | null): string {
@@ -52,8 +52,8 @@ export const RequestCard: React.FC<RequestCardProps> = React.memo(({ request, gr
       className={cn(
         'group border rounded-xl border-l-4 cursor-pointer transition-all duration-200',
         'bg-white dark:bg-transparent dark:shadow-none',
-        'border-zinc-200 dark:border-[#2E2E2E]',
-        'hover:shadow-lg hover:border-zinc-300 hover:-translate-y-0.5 dark:hover:shadow-none dark:hover:border-[#2E2E2E]',
+        'border-zinc-200 dark:border-[var(--ds-border,#2E2E2E)]',
+        'hover:shadow-lg hover:border-zinc-300 hover:-translate-y-0.5 dark:hover:shadow-none dark:hover:border-[var(--ds-border,#2E2E2E)]',
         getScoreBorderClass(request.computed_score),
         isCancelled && 'opacity-60'
       )}
@@ -66,9 +66,9 @@ export const RequestCard: React.FC<RequestCardProps> = React.memo(({ request, gr
             className={cn(
               'text-xs font-bold uppercase rounded px-1.5 py-0.5',
               status.label === 'Done' && 'bg-green-100 text-green-800 dark:bg-green-950 dark:text-green-300',
-              status.label === 'New' && 'bg-gray-100 text-gray-700 dark:bg-[#1A1A1A] dark:text-[#EDEDED]',
+              status.label === 'New' && 'bg-gray-100 text-gray-700 dark:bg-[var(--ds-surface-raised,#1A1A1A)] dark:text-[var(--ds-text,#EDEDED)]',
               (status.label === 'Under Implementation' || status.label === 'Portfolio Review' || status.label === 'In Progress') && 'bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300',
-              !['Done','New','Under Implementation','Portfolio Review','In Progress'].includes(status.label) && 'bg-gray-100 text-gray-700 dark:bg-[#1A1A1A] dark:text-[#EDEDED]',
+              !['Done','New','Under Implementation','Portfolio Review','In Progress'].includes(status.label) && 'bg-gray-100 text-gray-700 dark:bg-[var(--ds-surface-raised,#1A1A1A)] dark:text-[var(--ds-text,#EDEDED)]',
             )}
           >
             {status.label}
@@ -112,7 +112,7 @@ export const RequestCard: React.FC<RequestCardProps> = React.memo(({ request, gr
 
       {/* Description (large only) */}
       {gridSize === 'large' && request.description && (
-        <p className="px-4 pb-2 text-xs text-zinc-500 dark:text-[#A1A1A1] leading-relaxed line-clamp-3">
+        <p className="px-4 pb-2 text-xs text-zinc-500 dark:text-[var(--ds-text-subtlest,#A1A1A1)] leading-relaxed line-clamp-3">
           {request.description}
         </p>
       )}
@@ -123,7 +123,7 @@ export const RequestCard: React.FC<RequestCardProps> = React.memo(({ request, gr
           /* Small: inline score bar + progress */
           <div className="flex items-center gap-3">
             <div className="flex items-center gap-1.5">
-              <div className="w-10 h-1.5 bg-zinc-100 dark:bg-[#1A1A1A] rounded-full overflow-hidden">
+              <div className="w-10 h-1.5 bg-zinc-100 dark:bg-[var(--ds-surface-raised,#1A1A1A)] rounded-full overflow-hidden">
                 <div
                   className="h-full rounded-full"
                   style={{
@@ -137,13 +137,13 @@ export const RequestCard: React.FC<RequestCardProps> = React.memo(({ request, gr
               </span>
             </div>
             <div className="flex items-center gap-1.5">
-              <div className="w-10 h-1.5 bg-zinc-100 dark:bg-[#1A1A1A] rounded-full overflow-hidden">
+              <div className="w-10 h-1.5 bg-zinc-100 dark:bg-[var(--ds-surface-raised,#1A1A1A)] rounded-full overflow-hidden">
                 <div
                   className="h-full rounded-full bg-blue-500"
                   style={{ width: `${request.progress}%` }}
                 />
               </div>
-              <span className="text-[10px] text-zinc-500 dark:text-[#878787]">{request.progress}%</span>
+              <span className="text-[10px] text-zinc-500 dark:text-[var(--ds-text-subtlest,#878787)]">{request.progress}%</span>
             </div>
           </div>
         ) : (
@@ -152,7 +152,7 @@ export const RequestCard: React.FC<RequestCardProps> = React.memo(({ request, gr
             <CardScoreRing score={request.computed_score} size={ringSize} />
             <div className="flex-1 min-w-0 space-y-1.5">
               <div className="flex items-baseline gap-2">
-              <span className="text-xs font-semibold text-zinc-700 dark:text-[#A1A1A1]">
+              <span className="text-xs font-semibold text-zinc-700 dark:text-[var(--ds-text-subtlest,#A1A1A1)]">
                   Score: {request.computed_score?.toFixed(1) ?? '—'} / 5.0
                 </span>
                 <span
@@ -176,8 +176,8 @@ export const RequestCard: React.FC<RequestCardProps> = React.memo(({ request, gr
                     { label: 'Risk Score', value: request.score_time_urgency },
                   ].map(s => (
                     <div key={s.label} className="flex items-center gap-2">
-              <span className="text-[10px] text-zinc-500 dark:text-[#A1A1A1] w-16 truncate">{s.label}</span>
-                      <div className="flex-1 h-1.5 bg-zinc-100 dark:bg-[#1A1A1A] rounded-full overflow-hidden">
+              <span className="text-[10px] text-zinc-500 dark:text-[var(--ds-text-subtlest,#A1A1A1)] w-16 truncate">{s.label}</span>
+                      <div className="flex-1 h-1.5 bg-zinc-100 dark:bg-[var(--ds-surface-raised,#1A1A1A)] rounded-full overflow-hidden">
                         <div
                           className="h-full rounded-full bg-blue-500"
                           style={{ width: `${((s.value ?? 0) / 5) * 100}%` }}
@@ -194,10 +194,10 @@ export const RequestCard: React.FC<RequestCardProps> = React.memo(({ request, gr
               {/* Progress */}
               <div>
                 <div className="flex items-center justify-between mb-0.5">
-                  <span className="text-[10px] text-zinc-500 dark:text-[#A1A1A1]">Progress</span>
-                  <span className="text-[10px] font-medium text-zinc-700 dark:text-[#878787]">{request.progress}%</span>
+                  <span className="text-[10px] text-zinc-500 dark:text-[var(--ds-text-subtlest,#A1A1A1)]">Progress</span>
+                  <span className="text-[10px] font-medium text-zinc-700 dark:text-[var(--ds-text-subtlest,#878787)]">{request.progress}%</span>
                 </div>
-                <div className="w-full h-1.5 bg-zinc-100 dark:bg-[#1A1A1A] rounded-full overflow-hidden">
+                <div className="w-full h-1.5 bg-zinc-100 dark:bg-[var(--ds-surface-raised,#1A1A1A)] rounded-full overflow-hidden">
                   <div
                     className="h-full rounded-full bg-blue-500 transition-all"
                     style={{ width: `${request.progress}%` }}
@@ -211,7 +211,7 @@ export const RequestCard: React.FC<RequestCardProps> = React.memo(({ request, gr
 
       {/* Meta row */}
       <div className="px-4 pb-2">
-        <div className="flex items-center gap-1.5 text-xs text-zinc-500 dark:text-[#A1A1A1] flex-wrap">
+        <div className="flex items-center gap-1.5 text-xs text-zinc-500 dark:text-[var(--ds-text-subtlest,#A1A1A1)] flex-wrap">
           {request.department_name && (
             <span className="truncate max-w-[100px]">
               {gridSize === 'small' ? request.department_name.split(' ')[0] : request.department_name}
@@ -238,7 +238,7 @@ export const RequestCard: React.FC<RequestCardProps> = React.memo(({ request, gr
       {/* Assignee + counts (medium/large) */}
       {gridSize !== 'small' && (
         <div className="px-4 pb-2">
-          <div className="flex items-center gap-2 text-xs text-zinc-600 dark:text-[#EDEDED]">
+          <div className="flex items-center gap-2 text-xs text-zinc-600 dark:text-[var(--ds-text,#EDEDED)]">
             {request.assignee_name ? (
               <div className="flex items-center gap-1.5">
                 <div
@@ -281,7 +281,7 @@ export const RequestCard: React.FC<RequestCardProps> = React.memo(({ request, gr
             { label: 'Business Owner', value: request.business_owner_name },
           ].filter(r => r.value).map(r => (
             <div key={r.label} className="flex items-center text-xs">
-              <span className="text-zinc-400 dark:text-[#A1A1A1] w-28">{r.label}</span>
+              <span className="text-zinc-400 dark:text-[var(--ds-text-subtlest,#A1A1A1)] w-28">{r.label}</span>
               <span className="text-zinc-700 dark:text-white">{r.value}</span>
             </div>
           ))}
@@ -289,8 +289,8 @@ export const RequestCard: React.FC<RequestCardProps> = React.memo(({ request, gr
       )}
 
       {/* Footer */}
-      <div className="border-t border-zinc-100 dark:border-[#2E2E2E] px-4 py-2">
-        <span className="text-[10px] text-zinc-400 dark:text-[#878787]">
+      <div className="border-t border-zinc-100 dark:border-[var(--ds-border,#2E2E2E)] px-4 py-2">
+        <span className="text-[10px] text-zinc-400 dark:text-[var(--ds-text-subtlest,#878787)]">
           {gridSize === 'large'
             ? `Created ${format(new Date(request.created_at), 'MMM dd')} · Updated ${relativeTime(request.updated_at)}`
             : `Updated ${relativeTime(request.updated_at)}`

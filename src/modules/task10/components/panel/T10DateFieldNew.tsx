@@ -139,7 +139,7 @@ export function T10DateFieldNew({ value, onChange }: T10DateFieldNewProps) {
         top: position.top,
         left: position.left,
         width: Math.max(position.width, 240),
-        backgroundColor: '#ffffff',
+        backgroundColor: 'var(--ds-surface, #ffffff)',
         border: '1px solid #e5e7eb',
         borderRadius: '8px',
         boxShadow: '0 10px 25px -5px rgba(0,0,0,0.15), 0 4px 6px -2px rgba(0,0,0,0.08)',
@@ -216,7 +216,7 @@ export function T10DateFieldNew({ value, onChange }: T10DateFieldNewProps) {
           justifyContent: 'space-between',
           width: '100%',
           padding: '10px 14px',
-          backgroundColor: '#ffffff',
+          backgroundColor: 'var(--ds-surface, #ffffff)',
           border: isOpen ? '1px solid #2563eb' : '1px solid #d1d5db',
           borderRadius: '8px',
           cursor: 'pointer',
@@ -226,7 +226,7 @@ export function T10DateFieldNew({ value, onChange }: T10DateFieldNewProps) {
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flex: 1 }}>
           {value ? (
             <>
-              <Calendar size={16} style={{ color: '#64748b' }} />
+              <Calendar size={16} style={{ color: 'var(--ds-text-subtlest, #64748b)' }} />
               <span style={{ fontSize: '14px', color: '#111827' }}>
                 {formatT10Date(value)}
               </span>

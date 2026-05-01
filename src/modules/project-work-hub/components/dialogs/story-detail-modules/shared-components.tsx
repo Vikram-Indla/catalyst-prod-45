@@ -62,7 +62,7 @@ export function JiraStatusPill({ status, category: _category }: { status: string
 
 /* ── Skel ──────────────────────────────────── */
 export function Skel({ w, h = 14 }: { w: number | string; h?: number }) {
-  return <div style={{ width: w, height: h, borderRadius: 4, background: '#F1F5F9', animation: 'sdm-pulse 1.5s ease-in-out infinite' }} />;
+  return <div style={{ width: w, height: h, borderRadius: 4, background: 'var(--ds-surface-sunken, #F1F5F9)', animation: 'sdm-pulse 1.5s ease-in-out infinite' }} />;
 }
 
 /* ── DetailRow ─────────────────────────────── */
@@ -181,17 +181,17 @@ export function ColumnPicker({ columns, onChange }: { columns: ColumnConfig; onC
         <Settings2 size={11} /> Columns
       </button>
       {open && (
-        <div style={{ position: 'absolute', top: 'calc(100% + 4px)', right: 0, width: 200, background: '#fff', border: '1px solid rgba(9,30,66,.24)', borderRadius: 6, boxShadow: '0 6px 16px rgba(9,30,66,.15)', zIndex: 60, overflow: 'hidden', paddingBottom: 4 }}>
-          <div style={{ fontSize: 11, fontWeight: 700, color: '#6B778C', textTransform: 'uppercase', letterSpacing: '.05em', padding: '6px 12px 6px', borderBottom: '1px solid rgba(9,30,66,.1)' }}>Visible columns</div>
+        <div style={{ position: 'absolute', top: 'calc(100% + 4px)', right: 0, width: 200, background: 'var(--ds-surface, #fff)', border: '1px solid rgba(9,30,66,.24)', borderRadius: 6, boxShadow: '0 6px 16px rgba(9,30,66,.15)', zIndex: 60, overflow: 'hidden', paddingBottom: 4 }}>
+          <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--ds-text-subtlest, #6B778C)', textTransform: 'uppercase', letterSpacing: '.05em', padding: '6px 12px 6px', borderBottom: '1px solid rgba(9,30,66,.1)' }}>Visible columns</div>
           {COLS.map(col => (
             <div key={col.key} onClick={() => toggle(col.key)} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '6px 12px', cursor: 'pointer', transition: 'background .12s' }}
               onMouseEnter={e => (e.currentTarget.style.background = 'rgba(9,30,66,.04)')}
               onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
             >
-              <div style={{ width: 14, height: 14, borderRadius: 3, border: `1.5px solid ${columns[col.key] ? '#2563EB' : 'rgba(9,30,66,.24)'}`, background: columns[col.key] ? '#2563EB' : '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, transition: 'background .12s, border-color .12s' }}>
-                {columns[col.key] && <Check size={9} color="#fff" strokeWidth={3} />}
+              <div style={{ width: 14, height: 14, borderRadius: 3, border: `1.5px solid ${columns[col.key] ? 'var(--ds-text-brand, #2563EB)' : 'rgba(9,30,66,.24)'}`, background: columns[col.key] ? 'var(--ds-text-brand, #2563EB)' : 'var(--ds-surface, #fff)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, transition: 'background .12s, border-color .12s' }}>
+                {columns[col.key] && <Check size={9} color="var(--ds-surface, #fff)" strokeWidth={3} />}
               </div>
-              <span style={{ fontSize: 12, color: '#172B4D' }}>{col.label}</span>
+              <span style={{ fontSize: 12, color: 'var(--ds-text, #172B4D)' }}>{col.label}</span>
             </div>
           ))}
         </div>

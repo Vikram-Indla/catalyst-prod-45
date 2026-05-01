@@ -89,17 +89,17 @@ export function ColumnsPanel({
     >
       <div 
         className="px-4 py-3 border-b flex items-center justify-between"
-        style={{ borderColor: isDark ? '#2E2E2E' : 'var(--divider)' }}
+        style={{ borderColor: isDark ? 'var(--ds-border, #2E2E2E)' : 'var(--divider)' }}
       >
         <span 
           className="text-sm font-semibold"
-          style={{ color: isDark ? '#EDEDED' : 'var(--text-1)' }}
+          style={{ color: isDark ? 'var(--ds-text, #EDEDED)' : 'var(--text-1)' }}
         >
           Columns
         </span>
         <span 
           className="text-xs"
-          style={{ color: isDark ? '#878787' : 'var(--text-3)' }}
+          style={{ color: isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--text-3)' }}
         >
           {visibleColumns.length} of {columns.length}
         </span>
@@ -129,7 +129,7 @@ export function ColumnsPanel({
               />
               <span 
                 className="text-sm"
-                style={{ color: isDark ? '#EDEDED' : 'var(--text-1)' }}
+                style={{ color: isDark ? 'var(--ds-text, #EDEDED)' : 'var(--text-1)' }}
               >
                 {col.header}
               </span>
@@ -141,7 +141,7 @@ export function ColumnsPanel({
       <div 
         className="px-4 py-3 border-t flex gap-2"
         style={{ 
-          borderColor: isDark ? '#2E2E2E' : 'var(--divider)',
+          borderColor: isDark ? 'var(--ds-border, #2E2E2E)' : 'var(--divider)',
           backgroundColor: isDark ? 'var(--cp-bg-page, #1F1F21)' : 'var(--surface-2)',
         }}
       >

@@ -268,7 +268,7 @@ export function StepDetails({ data, onChange, isValid, onValidChange }: StepDeta
               {selectedLead.avatar_url ? (
                 <img src={selectedLead.avatar_url} alt="" className="rounded-full" style={{ width: 22, height: 22, objectFit: 'cover' }} />
               ) : (
-                <div className="rounded-full flex items-center justify-center shrink-0 bg-[var(--bd-default, #E2E8F0)] dark:bg-[#292929]" style={{ width: 22, height: 22, fontSize: 9, fontWeight: 700, color: '#475569' }}>
+                <div className="rounded-full flex items-center justify-center shrink-0 bg-[var(--bd-default,#E2E8F0)] dark:bg-[var(--ds-border,#292929)]" style={{ width: 22, height: 22, fontSize: 9, fontWeight: 700, color: 'var(--ds-text-subtle, #475569)' }}>
                   {getInitials(selectedLead.display_name)}
                 </div>
               )}
@@ -282,18 +282,18 @@ export function StepDetails({ data, onChange, isValid, onValidChange }: StepDeta
 
         {showLeadPicker && (
           <div
-            className="absolute left-0 right-0 z-50 bg-white dark:bg-[#1A1A1A] border border-[var(--bd-default, #E2E8F0)] dark:border-[#2E2E2E] rounded-lg shadow-lg"
+            className="absolute left-0 right-0 z-50 bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] border border-[var(--bd-default,#E2E8F0)] dark:border-[var(--ds-border,#2E2E2E)] rounded-lg shadow-lg"
             style={{ top: '100%', marginTop: 4, maxHeight: 260, display: 'flex', flexDirection: 'column' }}
           >
-            <div className="p-2 border-b border-[var(--bd-default, #E2E8F0)] dark:border-[#2E2E2E]">
+            <div className="p-2 border-b border-[var(--bd-default,#E2E8F0)] dark:border-[var(--ds-border,#2E2E2E)]">
               <div className="relative">
-                <Search size={14} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-[#94A3B8]" />
+                <Search size={14} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-[var(--ds-text-subtlest,#94A3B8)]" />
                 <input
                   autoFocus
                   value={leadFilter}
                   onChange={e => setLeadFilter(e.target.value)}
                   placeholder="Search people..."
-                  className="w-full text-[13px] pl-8 pr-3 py-1.5 rounded border border-[var(--bd-default, #E2E8F0)] dark:border-[#2E2E2E] bg-transparent outline-none"
+                  className="w-full text-[13px] pl-8 pr-3 py-1.5 rounded border border-[var(--bd-default,#E2E8F0)] dark:border-[var(--ds-border,#2E2E2E)] bg-transparent outline-none"
                   style={{ height: 32, color: 'var(--fg-1)' }}
                 />
               </div>
@@ -307,12 +307,12 @@ export function StepDetails({ data, onChange, isValid, onValidChange }: StepDeta
                     key={p.id}
                     type="button"
                     onClick={() => { onChange({ ...data, lead_id: p.id }); setShowLeadPicker(false); setLeadFilter(''); }}
-                    className="flex items-center gap-2 px-2.5 py-2 rounded-md text-sm hover:bg-[#F1F5F9] dark:hover:bg-[#1F1F1F] w-full text-left"
+                    className="flex items-center gap-2 px-2.5 py-2 rounded-md text-sm hover:bg-[var(--ds-surface-sunken,#F1F5F9)] dark:hover:bg-[var(--ds-surface-overlay,#1F1F1F)] w-full text-left"
                   >
                     {p.avatar_url ? (
                       <img src={p.avatar_url} alt="" className="rounded-full" style={{ width: 24, height: 24, objectFit: 'cover' }} />
                     ) : (
-                      <div className="rounded-full flex items-center justify-center shrink-0 bg-[var(--bd-default, #E2E8F0)] dark:bg-[#292929]" style={{ width: 24, height: 24, fontSize: 9, fontWeight: 700, color: '#475569' }}>
+                      <div className="rounded-full flex items-center justify-center shrink-0 bg-[var(--bd-default,#E2E8F0)] dark:bg-[var(--ds-border,#292929)]" style={{ width: 24, height: 24, fontSize: 9, fontWeight: 700, color: 'var(--ds-text-subtle, #475569)' }}>
                         {getInitials(p.display_name)}
                       </div>
                     )}
@@ -320,7 +320,7 @@ export function StepDetails({ data, onChange, isValid, onValidChange }: StepDeta
                       <div className="truncate" style={{ fontSize: 13, fontWeight: 500, color: 'var(--fg-1)' }}>{p.display_name}</div>
                       <div className="truncate" style={{ fontSize: 11, color: 'var(--fg-3)' }}>{p.role || 'Team Member'}</div>
                     </div>
-                    {p.id === data.lead_id && <Check size={14} className="ml-auto text-[#2563EB]" />}
+                    {p.id === data.lead_id && <Check size={14} className="ml-auto text-[var(--ds-text-brand,#2563EB)]" />}
                   </button>
                 ))
               )}
@@ -350,7 +350,7 @@ export function StepDetails({ data, onChange, isValid, onValidChange }: StepDeta
       </div>
 
       {/* Jira Link Toggle */}
-      <div className="rounded-lg border border-[var(--bd-default, #E2E8F0)] dark:border-[#2E2E2E] p-4">
+      <div className="rounded-lg border border-[var(--bd-default,#E2E8F0)] dark:border-[var(--ds-border,#2E2E2E)] p-4">
         <div className="flex items-center justify-between">
           <div>
             <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--fg-1)' }}>Link to Jira project</div>

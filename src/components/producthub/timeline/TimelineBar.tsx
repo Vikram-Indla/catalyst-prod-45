@@ -10,7 +10,7 @@ import { getBarPosition, isOverdue } from './timelineUtils';
 import { TimelineBarTooltip } from './TimelineBarTooltip';
 import { TimelineContextMenu } from './TimelineContextMenu';
 // Type concept removed — Business Request uses single brand color.
-const getTypeColor = () => ({ hex: '#2563EB', bg: '#EFF6FF', text: '#1E40AF', border: '#1D4ED8', gradient: 'linear-gradient(90deg, #2563EB, #3B82F6)' });
+const getTypeColor = () => ({ hex: 'var(--ds-text-brand, #2563EB)', bg: 'var(--ds-background-selected, #EFF6FF)', text: '#1E40AF', border: 'var(--ds-background-brand-bold-hovered, #1D4ED8)', gradient: 'linear-gradient(90deg, var(--ds-text-brand, #2563EB), var(--ds-text-brand, #3B82F6))' });
 
 interface TimelineBarProps {
   request: TimelineRequest;
@@ -36,7 +36,7 @@ export const TimelineBar: React.FC<TimelineBarProps> = ({ request, rowIndex }) =
   // Use type color for bar, override with red for overdue
   const bgGradient = overdue ? 'linear-gradient(90deg, rgba(239,68,68,0.15), rgba(239,68,68,0.08))' : typeColor.gradient;
   const fillColor = overdue ? 'rgba(239,68,68,0.25)' : `${typeColor.hex}33`;
-  const borderColor = overdue ? '#EF4444' : typeColor.border;
+  const borderColor = overdue ? 'var(--ds-text-danger, #EF4444)' : typeColor.border;
 
   const handleMouseEnter = useCallback((e: React.MouseEvent) => {
     setIsHovered(true);
@@ -122,7 +122,7 @@ export const TimelineBar: React.FC<TimelineBarProps> = ({ request, rowIndex }) =
               zIndex: 1,
               fontSize: '12px',
               fontWeight: 600,
-              color: '#fff',
+              color: 'var(--ds-surface, #fff)',
               paddingLeft: '8px',
               paddingRight: '8px',
               whiteSpace: 'nowrap',

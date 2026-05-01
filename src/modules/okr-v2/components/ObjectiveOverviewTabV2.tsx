@@ -77,7 +77,7 @@ export function ObjectiveOverviewTabV2({ formData, onChange, objective }: Object
           id="name"
           value={formData.name}
           onChange={(e) => handleFieldChange('name', e.target.value)}
-          className={`font-medium bg-white dark:bg-[#0D1117] border-[#E1E4E8] dark:border-[#30363D] text-[#24292F] dark:text-[#E6EDF3] focus:border-[#2563eb] focus:ring-1 focus:ring-[rgba(37,99,235,0.3)] ${!formData.name.trim() ? 'border-destructive' : ''}`}
+          className={`font-medium bg-white dark:bg-[#0D1117] border-[#E1E4E8] dark:border-[#30363D] text-[#24292F] dark:text-[#E6EDF3] focus:border-[var(--ds-text-brand,#2563eb)] focus:ring-1 focus:ring-[rgba(37,99,235,0.3)] ${!formData.name.trim() ? 'border-destructive' : ''}`}
           required
         />
         {!formData.name.trim() && (
@@ -96,7 +96,7 @@ export function ObjectiveOverviewTabV2({ formData, onChange, objective }: Object
           onChange={(e) => handleFieldChange('description', e.target.value)}
           rows={3}
           placeholder="Add a description..."
-          className="bg-white dark:bg-[#0D1117] border-[#E1E4E8] dark:border-[#30363D] text-[#24292F] dark:text-[#E6EDF3] placeholder:text-[#8B949E] dark:placeholder:text-[#6E7681] focus:border-[#2563eb] focus:ring-1 focus:ring-[rgba(37,99,235,0.3)]"
+          className="bg-white dark:bg-[#0D1117] border-[#E1E4E8] dark:border-[#30363D] text-[#24292F] dark:text-[#E6EDF3] placeholder:text-[#8B949E] dark:placeholder:text-[#6E7681] focus:border-[var(--ds-text-brand,#2563eb)] focus:ring-1 focus:ring-[rgba(37,99,235,0.3)]"
         />
       </div>
 
@@ -109,7 +109,7 @@ export function ObjectiveOverviewTabV2({ formData, onChange, objective }: Object
           value={formData.theme_id || ''}
           onValueChange={(v) => handleFieldChange('theme_id', v || '')}
         >
-          <SelectTrigger className={`bg-white dark:bg-[#0D1117] border-[#E1E4E8] dark:border-[#30363D] text-[#24292F] dark:text-[#E6EDF3] focus:border-[#2563eb] focus:ring-1 focus:ring-[rgba(37,99,235,0.3)] ${!formData.theme_id ? 'border-destructive' : ''}`}>
+          <SelectTrigger className={`bg-white dark:bg-[#0D1117] border-[#E1E4E8] dark:border-[#30363D] text-[#24292F] dark:text-[#E6EDF3] focus:border-[var(--ds-text-brand,#2563eb)] focus:ring-1 focus:ring-[rgba(37,99,235,0.3)] ${!formData.theme_id ? 'border-destructive' : ''}`}>
             <SelectValue placeholder="Select theme (required)" />
           </SelectTrigger>
           <SelectContent className="bg-white dark:bg-[#161B22] border-[#E1E4E8] dark:border-[#30363D]">
@@ -133,7 +133,7 @@ export function ObjectiveOverviewTabV2({ formData, onChange, objective }: Object
             value={formData.status}
             onValueChange={(v) => handleFieldChange('status', v)}
           >
-            <SelectTrigger className="bg-white dark:bg-[#0D1117] border-[#E1E4E8] dark:border-[#30363D] text-[#24292F] dark:text-[#E6EDF3] focus:border-[#2563eb] focus:ring-1 focus:ring-[rgba(37,99,235,0.3)]">
+            <SelectTrigger className="bg-white dark:bg-[#0D1117] border-[#E1E4E8] dark:border-[#30363D] text-[#24292F] dark:text-[#E6EDF3] focus:border-[var(--ds-text-brand,#2563eb)] focus:ring-1 focus:ring-[rgba(37,99,235,0.3)]">
               <SelectValue />
             </SelectTrigger>
             <SelectContent className="bg-white dark:bg-[#161B22] border-[#E1E4E8] dark:border-[#30363D]">
@@ -154,7 +154,7 @@ export function ObjectiveOverviewTabV2({ formData, onChange, objective }: Object
             value={formData.health || 'at_risk'}
             onValueChange={(v) => handleFieldChange('health', v)}
           >
-            <SelectTrigger className="bg-white dark:bg-[#0D1117] border-[#E1E4E8] dark:border-[#30363D] text-[#24292F] dark:text-[#E6EDF3] focus:border-[#2563eb] focus:ring-1 focus:ring-[rgba(37,99,235,0.3)]">
+            <SelectTrigger className="bg-white dark:bg-[#0D1117] border-[#E1E4E8] dark:border-[#30363D] text-[#24292F] dark:text-[#E6EDF3] focus:border-[var(--ds-text-brand,#2563eb)] focus:ring-1 focus:ring-[rgba(37,99,235,0.3)]">
               <SelectValue />
             </SelectTrigger>
             <SelectContent className="bg-white dark:bg-[#161B22] border-[#E1E4E8] dark:border-[#30363D]">
@@ -198,7 +198,7 @@ export function ObjectiveOverviewTabV2({ formData, onChange, objective }: Object
           value={formData.owner_id || '__unassigned__'}
           onValueChange={(v) => handleFieldChange('owner_id', v === '__unassigned__' ? '' : v)}
         >
-          <SelectTrigger className="bg-white dark:bg-[#0D1117] border-[#E1E4E8] dark:border-[#30363D] text-[#24292F] dark:text-[#E6EDF3] focus:border-[#2563eb] focus:ring-1 focus:ring-[rgba(37,99,235,0.3)]">
+          <SelectTrigger className="bg-white dark:bg-[#0D1117] border-[#E1E4E8] dark:border-[#30363D] text-[#24292F] dark:text-[#E6EDF3] focus:border-[var(--ds-text-brand,#2563eb)] focus:ring-1 focus:ring-[rgba(37,99,235,0.3)]">
             <SelectValue placeholder="Select owner" />
           </SelectTrigger>
           <SelectContent className="bg-white dark:bg-[#161B22] border-[#E1E4E8] dark:border-[#30363D]">
@@ -221,7 +221,7 @@ export function ObjectiveOverviewTabV2({ formData, onChange, objective }: Object
           onChange={(e) => handleFieldChange('notes', e.target.value)}
           rows={3}
           placeholder="Add notes..."
-          className="bg-white dark:bg-[#0D1117] border-[#E1E4E8] dark:border-[#30363D] text-[#24292F] dark:text-[#E6EDF3] placeholder:text-[#8B949E] dark:placeholder:text-[#6E7681] focus:border-[#2563eb] focus:ring-1 focus:ring-[rgba(37,99,235,0.3)]"
+          className="bg-white dark:bg-[#0D1117] border-[#E1E4E8] dark:border-[#30363D] text-[#24292F] dark:text-[#E6EDF3] placeholder:text-[#8B949E] dark:placeholder:text-[#6E7681] focus:border-[var(--ds-text-brand,#2563eb)] focus:ring-1 focus:ring-[rgba(37,99,235,0.3)]"
         />
       </div>
     </div>

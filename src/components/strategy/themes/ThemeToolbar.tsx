@@ -76,7 +76,7 @@ export function ThemeToolbar(props: Props) {
             width: 'auto', minWidth: 110,
             ...(props.statusFilter
               ? (isDark
-                ? { background: 'rgba(59,130,246,0.12)', borderColor: '#3B82F6', color: '#93C5FD' }
+                ? { background: 'rgba(59,130,246,0.12)', borderColor: 'var(--ds-text-brand, #3B82F6)', color: '#93C5FD' }
                 : { background: 'var(--cp-primary-5)', borderColor: 'var(--cp-blue)', color: 'var(--cp-blue)' })
               : {}),
           }}
@@ -100,7 +100,7 @@ export function ThemeToolbar(props: Props) {
             width: 'auto', minWidth: 120,
             ...(props.ownerFilter
               ? (isDark
-                ? { background: 'rgba(59,130,246,0.12)', borderColor: '#3B82F6', color: '#93C5FD' }
+                ? { background: 'rgba(59,130,246,0.12)', borderColor: 'var(--ds-text-brand, #3B82F6)', color: '#93C5FD' }
                 : { background: 'var(--cp-primary-5)', borderColor: 'var(--cp-blue)', color: 'var(--cp-blue)' })
               : {}),
           }}
@@ -121,7 +121,7 @@ export function ThemeToolbar(props: Props) {
             width: 'auto', minWidth: 110,
             ...(props.bscFilter
               ? (isDark
-                ? { background: 'rgba(59,130,246,0.12)', borderColor: '#3B82F6', color: '#93C5FD' }
+                ? { background: 'rgba(59,130,246,0.12)', borderColor: 'var(--ds-text-brand, #3B82F6)', color: '#93C5FD' }
                 : { background: 'var(--cp-primary-5)', borderColor: 'var(--cp-blue)', color: 'var(--cp-blue)' })
               : {}),
           }}
@@ -145,7 +145,7 @@ export function ThemeToolbar(props: Props) {
             width: 'auto', minWidth: 90,
             ...(props.fyFilter
               ? (isDark
-                ? { background: 'rgba(59,130,246,0.12)', borderColor: '#3B82F6', color: '#93C5FD' }
+                ? { background: 'rgba(59,130,246,0.12)', borderColor: 'var(--ds-text-brand, #3B82F6)', color: '#93C5FD' }
                 : { background: 'var(--cp-primary-5)', borderColor: 'var(--cp-blue)', color: 'var(--cp-blue)' })
               : {}),
           }}

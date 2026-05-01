@@ -412,14 +412,14 @@ export default function DemandIntakeCatalyst() {
               placeholder="Search requests..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-9 h-9 bg-white dark:bg-[#1A1A1A] border-border"
+              className="pl-9 h-9 bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] border-border"
             />
           </div>
 
           {/* Right - View Toggle and Action Buttons */}
           <div className="flex items-center gap-2">
             {/* View Toggle */}
-            <div className="flex items-center border border-border rounded-md overflow-hidden bg-white dark:bg-[#1A1A1A]">
+            <div className="flex items-center border border-border rounded-md overflow-hidden bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)]">
               <button
                 onClick={() => setViewMode('list')}
                 className={cn(
@@ -451,7 +451,7 @@ export default function DemandIntakeCatalyst() {
               size="icon"
               onClick={() => setFiltersDialogOpen(true)}
               className={cn(
-                "h-8 w-8 border-border bg-white dark:bg-[#1A1A1A] dark:border-[#2E2E2E]",
+                "h-8 w-8 border-border bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] dark:border-[var(--ds-border,#2E2E2E)]",
                 activeFilterCount > 0 && "border-brand-primary text-brand-primary"
               )}
               title="Filters"
@@ -468,7 +468,7 @@ export default function DemandIntakeCatalyst() {
               variant="outline"
               size="icon"
               onClick={handleExport}
-              className="h-8 w-8 border-border bg-white dark:bg-[#1A1A1A]"
+              className="h-8 w-8 border-border bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)]"
               title="Export"
             >
               <Download className="h-4 w-4" />
@@ -488,13 +488,13 @@ export default function DemandIntakeCatalyst() {
         {/* Table Content - auto height to fit content */}
         <div className="flex-1 flex flex-col min-h-0">
           {isLoading ? (
-            <div className="bg-white dark:bg-[#1A1A1A] border border-border rounded-lg shadow-sm p-8 space-y-4">
+            <div className="bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] border border-border rounded-lg shadow-sm p-8 space-y-4">
               {Array.from({ length: 5 }).map((_, i) => (
                 <Skeleton key={i} className="h-12 w-full" />
               ))}
             </div>
           ) : viewMode === 'kanban' ? (
-            <div className="bg-white dark:bg-[#1A1A1A] border border-border rounded-lg shadow-sm flex-1 overflow-auto">
+            <div className="bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] border border-border rounded-lg shadow-sm flex-1 overflow-auto">
               <StatusSummaryKanbanView 
                 requests={sortedRequests}
                 onRequestSelect={(id) => setSelectedRequestId(id)}
@@ -517,7 +517,7 @@ export default function DemandIntakeCatalyst() {
               </div>
               
               {/* Pagination */}
-              <div className="flex items-center justify-between px-4 py-4 border-t border-border bg-white dark:bg-[#1A1A1A]">
+              <div className="flex items-center justify-between px-4 py-4 border-t border-border bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)]">
                 <p className="text-sm text-muted-foreground whitespace-nowrap">
                   Showing {startIndex + 1}-{Math.min(endIndex, sortedRequests.length)} of {sortedRequests.length} requests
                 </p>
@@ -566,7 +566,7 @@ export default function DemandIntakeCatalyst() {
               </div>
             </div>
           ) : (
-            <div className="bg-white dark:bg-[#1A1A1A] border border-border rounded-lg shadow-sm flex flex-col items-center justify-center py-16 text-center">
+            <div className="bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] border border-border rounded-lg shadow-sm flex flex-col items-center justify-center py-16 text-center">
               <div className="rounded-full bg-muted p-4 mb-4">
                 <AlertTriangle className="h-8 w-8 text-muted-foreground" />
               </div>

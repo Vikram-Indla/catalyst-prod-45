@@ -5,36 +5,36 @@
 
 [data-module="product-backlog"] {
   /* ─── V12 Design Tokens ─── */
-  --cp-bg-page: #FFFFFF;
-  --cp-bg-surface: #F8FAFC;
-  --cp-bg-sunken: #F1F5F9;
-  --cp-bg-elevated: #FFFFFF;
+  --cp-bg-page: var(--ds-surface, #FFFFFF);
+  --cp-bg-surface: var(--ds-surface-sunken, #F8FAFC);
+  --cp-bg-sunken: var(--ds-surface-sunken, #F1F5F9);
+  --cp-bg-elevated: var(--ds-surface, #FFFFFF);
 
-  --cp-text-primary: #0F172A;
-  --cp-text-secondary: #334155;
-  --cp-text-tertiary: #64748B;
-  --cp-text-muted: #94A3B8;
-  --cp-text-inverse: #FFFFFF;
-  --cp-text-link: #2563EB;
+  --cp-text-primary: var(--ds-text, #0F172A);
+  --cp-text-secondary: var(--ds-text-subtle, #334155);
+  --cp-text-tertiary: var(--ds-text-subtlest, #64748B);
+  --cp-text-muted: var(--ds-text-subtlest, #94A3B8);
+  --cp-text-inverse: var(--ds-surface, #FFFFFF);
+  --cp-text-link: var(--ds-text-brand, #2563EB);
 
-  --cp-primary-60: #2563EB;
-  --cp-primary-70: #1D4ED8;
+  --cp-primary-60: var(--ds-text-brand, #2563EB);
+  --cp-primary-70: var(--ds-background-brand-bold-hovered, #1D4ED8);
   --cp-primary-80: #1E3A8A;
-  --cp-primary-5: #EFF6FF;
+  --cp-primary-5: var(--ds-background-selected, #EFF6FF);
 
   --cp-teal-60: #0D9488;
-  --cp-success-60: #16A34A;
-  --cp-success-10: #DCFCE7;
-  --cp-warning-60: #D97706;
+  --cp-success-60: var(--ds-text-success, #16A34A);
+  --cp-success-10: var(--ds-background-success, #DCFCE7);
+  --cp-warning-60: var(--ds-text-warning, #D97706);
   --cp-warning-10: #FEF3C7;
-  --cp-danger-60: #DC2626;
+  --cp-danger-60: var(--ds-text-danger, #DC2626);
   --cp-danger-10: #FEE2E2;
   --cp-purple-60: #7C3AED;
 
   --cp-border-subtle: rgba(15, 23, 42, 0.06);
   --cp-border-default: rgba(15, 23, 42, 0.12);
   --cp-border-strong: rgba(15, 23, 42, 0.20);
-  --cp-border-interactive: #2563EB;
+  --cp-border-interactive: var(--ds-text-brand, #2563EB);
 
   --cp-interact-hover: rgba(15, 23, 42, 0.04);
   --cp-interact-press: rgba(15, 23, 42, 0.08);
@@ -46,10 +46,10 @@
   --cp-toolbar-bg-press: rgba(15, 23, 42, 0.16);
   --cp-toolbar-bg-active: rgba(37, 99, 235, 0.10);
 
-  --cp-input-bg: #FFFFFF;
+  --cp-input-bg: var(--ds-surface, #FFFFFF);
   --cp-input-border: rgba(15, 23, 42, 0.14);
   --cp-input-border-hover: rgba(15, 23, 42, 0.22);
-  --cp-input-border-focus: #2563EB;
+  --cp-input-border-focus: var(--ds-text-brand, #2563EB);
 
 
   --cp-radius-sm: 3px;
@@ -62,8 +62,8 @@
   --cp-shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.04);
   --cp-shadow-focus: 0 0 0 2px rgba(37, 99, 235, 0.18);
 
-  --cp-lozenge-grey-bg: #DFE1E6;
-  --cp-lozenge-grey-text: #253858;
+  --cp-lozenge-grey-bg: var(--ds-border, #DFE1E6);
+  --cp-lozenge-grey-text: var(--ds-text, #253858);
   --cp-lozenge-blue-bg: #DEEBFF;
   --cp-lozenge-blue-text: #0747A6;
   --cp-lozenge-green-bg: #E3FCEF;
@@ -113,32 +113,32 @@
 .dark [data-module="product-backlog"] , [data-theme="dark"] [data-module="product-backlog"] {
   --cp-bg-page: var(--cp-bg-page, #1F1F21);
   --cp-bg-surface: transparent;
-  --cp-bg-sunken: #1F1F1F;
+  --cp-bg-sunken: var(--ds-surface-overlay, #1F1F1F);
   --cp-bg-elevated: transparent;
 
-  --cp-text-primary: #EDEDED;
-  --cp-text-secondary: #EDEDED;
-  --cp-text-tertiary: #A1A1A1;
+  --cp-text-primary: var(--ds-text, #EDEDED);
+  --cp-text-secondary: var(--ds-text, #EDEDED);
+  --cp-text-tertiary: var(--ds-text-subtlest, #A1A1A1);
   --cp-text-muted: #7D7D7D;
-  --cp-text-link: #60A5FA;
+  --cp-text-link: var(--ds-text-brand, #60A5FA);
 
-  --cp-border-subtle: #292929;
-  --cp-border-default: #2E2E2E;
-  --cp-border-strong: #454545;
+  --cp-border-subtle: var(--ds-border, #292929);
+  --cp-border-default: var(--ds-border, #2E2E2E);
+  --cp-border-strong: var(--ds-border-bold, #454545);
 
-  --cp-interact-hover: #1F1F1F;
-  --cp-interact-press: #2E2E2E;
+  --cp-interact-hover: var(--ds-surface-overlay, #1F1F1F);
+  --cp-interact-press: var(--ds-border, #2E2E2E);
   --cp-interact-selected: rgba(59,130,246,0.10);
   --cp-interact-selected-hover: rgba(59,130,246,0.15);
 
-  --cp-toolbar-bg: #292929;
-  --cp-toolbar-bg-hover: #2E2E2E;
-  --cp-toolbar-bg-press: #454545;
+  --cp-toolbar-bg: var(--ds-border, #292929);
+  --cp-toolbar-bg-hover: var(--ds-border, #2E2E2E);
+  --cp-toolbar-bg-press: var(--ds-border-bold, #454545);
   --cp-toolbar-bg-active: rgba(59,130,246,0.12);
 
   --cp-input-bg: transparent;
-  --cp-input-border: #454545;
-  --cp-input-border-hover: #454545;
+  --cp-input-border: var(--ds-border-bold, #454545);
+  --cp-input-border-hover: var(--ds-border-bold, #454545);
 
   --cp-shadow-xs: none;
   --cp-shadow-focus: 0 0 0 2px rgba(59,130,246,0.25);
@@ -168,11 +168,11 @@
 .dark .pb-table thead th , [data-theme="dark"] .pb-table thead th {
   background-color: var(--cp-bg-page, #1F1F21) !important;
   color: #7D7D7D;
-  border-bottom-color: #2E2E2E;
+  border-bottom-color: var(--ds-border, #2E2E2E);
 }
 .dark .pb-table thead th:hover,
 .dark .pb-table thead th:hover , [data-theme="dark"] .pb-table thead th:hover {
-  color: #A1A1A1;
+  color: var(--ds-text-subtlest, #A1A1A1);
 }
 .dark .pb-table tbody,
 .dark .pb-table tbody tr,
@@ -183,7 +183,7 @@
 }
 .dark .pb-table tbody tr:hover,
 .dark .pb-table tbody tr:hover , [data-theme="dark"] .pb-table tbody tr:hover {
-  background: #1F1F1F !important;
+  background: var(--ds-surface-overlay, #1F1F1F) !important;
 }
 
 /* ═══ Page Header ═══ */

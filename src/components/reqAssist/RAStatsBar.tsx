@@ -129,8 +129,8 @@ export default function RAStatsBar({ totalDocuments, wikihubSynced, loading }: S
             </div>
           )}
           <span style={labelStyle}>BRDS PROCESSED</span>
-          <div style={{ width: '100%', height: 4, background: '#E5E7EB', borderRadius: 4, marginTop: 8 }}>
-            <div style={{ width: `${brdPct}%`, height: 4, borderRadius: 4, background: 'linear-gradient(90deg, #16A34A, #22C55E)', transition: 'width 400ms ease' }} />
+          <div style={{ width: '100%', height: 4, background: 'var(--ds-border, #E5E7EB)', borderRadius: 4, marginTop: 8 }}>
+            <div style={{ width: `${brdPct}%`, height: 4, borderRadius: 4, background: 'linear-gradient(90deg, var(--ds-text-success, #16A34A), var(--ds-text-success, #22C55E))', transition: 'width 400ms ease' }} />
           </div>
           <span style={{ fontSize: 11, color: 'var(--sem-success)', fontFamily: 'var(--cp-font-body)', marginTop: 4 }}>Pipeline stage: Complete</span>
         </div>
@@ -181,7 +181,7 @@ export default function RAStatsBar({ totalDocuments, wikihubSynced, loading }: S
             </div>
             <span style={{
               display: 'inline-flex', alignItems: 'center', gap: 6,
-              background: '#F1F5F9', border: '0.75px solid rgba(15,23,42,0.12)',
+              background: 'var(--ds-surface-sunken, #F1F5F9)', border: '0.75px solid rgba(15,23,42,0.12)',
               borderRadius: 12, padding: '2px 10px',
               fontSize: 11, fontWeight: 500, color: 'var(--fg-3)',
               fontFamily: 'var(--cp-font-body)',
@@ -274,10 +274,10 @@ export default function RAStatsBar({ totalDocuments, wikihubSynced, loading }: S
 
 function activityDotColor(eventType: string): string {
   if (eventType === 'index_start' || eventType === 'index_complete') return '#0D9488';
-  if (eventType === 'import') return '#2563EB';
-  if (eventType === 'epic_generated' || eventType === 'published') return '#16A34A';
+  if (eventType === 'import') return 'var(--ds-text-brand, #2563EB)';
+  if (eventType === 'epic_generated' || eventType === 'published') return 'var(--ds-text-success, #16A34A)';
   if (eventType === 'uat_generated') return '#0D9488';
-  return '#94A3B8';
+  return 'var(--ds-text-subtlest, #94A3B8)';
 }
 
 const cardStyle: React.CSSProperties = {

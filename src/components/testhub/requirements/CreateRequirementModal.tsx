@@ -109,10 +109,10 @@ export function CreateRequirementModal({ isOpen, onClose, onCreated }: CreateReq
 
   const inputStyle = (hasError?: boolean): React.CSSProperties => ({
     width: '100%', height: 44, padding: '0 14px',
-    border: `1.5px solid ${hasError ? '#DC2626' : 'var(--cp-border, #E2E8F0)'}`,
+    border: `1.5px solid ${hasError ? 'var(--ds-text-danger, #DC2626)' : 'var(--cp-border, #E2E8F0)'}`,
     borderRadius: 12, fontSize: 14,
     backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : undefined,
-    color: isDark ? '#EDEDED' : undefined,
+    color: isDark ? 'var(--ds-text, #EDEDED)' : undefined,
   });
 
   return (
@@ -121,12 +121,12 @@ export function CreateRequirementModal({ isOpen, onClose, onCreated }: CreateReq
         {/* Header */}
         <div style={{ padding: '20px 24px', borderBottom: isDark ? '1px solid #2E2E2E' : '1px solid #E2E8F0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-            <div style={{ width: 44, height: 44, borderRadius: 12, backgroundColor: '#2563EB', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <div style={{ width: 44, height: 44, borderRadius: 12, backgroundColor: 'var(--ds-text-brand, #2563EB)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <FileCheck size={22} style={{ color: 'var(--ds-text-inverse, #FFFFFF)' }} />
             </div>
             <h2 style={{ fontSize: 18, fontWeight: 700, color: 'var(--cp-text-primary, #0F172A)', margin: 0 }}>Add Requirement</h2>
           </div>
-          <button onClick={onClose} style={{ width: 36, height: 50, border: 'none', borderRadius: 8, backgroundColor: 'transparent', color: '#64748B', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <button onClick={onClose} style={{ width: 36, height: 50, border: 'none', borderRadius: 8, backgroundColor: 'transparent', color: 'var(--ds-text-subtlest, #64748B)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <X size={20} />
           </button>
         </div>
@@ -135,12 +135,12 @@ export function CreateRequirementModal({ isOpen, onClose, onCreated }: CreateReq
         <div style={{ flex: 1, overflowY: 'auto', padding: 24 }}>
           <div style={{ marginBottom: 20 }}>
             <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: 'var(--cp-text-primary, #0F172A)', marginBottom: 6 }}>
-              Title <span style={{ color: '#DC2626' }}>*</span>
+              Title <span style={{ color: 'var(--ds-text-danger, #DC2626)' }}>*</span>
             </label>
             <input type="text" value={title} onChange={(e) => setTitle(e.target.value)}
               placeholder="e.g., User can login with email and password" style={inputStyle(!!errors.title)} />
             {errors.title && (
-              <p style={{ fontSize: 12, color: '#DC2626', margin: '6px 0 0', display: 'flex', alignItems: 'center', gap: 4 }}>
+              <p style={{ fontSize: 12, color: 'var(--ds-text-danger, #DC2626)', margin: '6px 0 0', display: 'flex', alignItems: 'center', gap: 4 }}>
                 <AlertCircle size={12} /> {errors.title}
               </p>
             )}
@@ -198,7 +198,7 @@ export function CreateRequirementModal({ isOpen, onClose, onCreated }: CreateReq
             </label>
             <textarea value={description} onChange={(e) => setDescription(e.target.value)}
               placeholder="Detailed description of the requirement..." rows={4}
-              style={{ width: '100%', padding: 14, border: isDark ? '1.5px solid #2E2E2E' : '1.5px solid #E2E8F0', borderRadius: 12, fontSize: 14, resize: 'vertical', backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : undefined, color: isDark ? '#EDEDED' : undefined }} />
+              style={{ width: '100%', padding: 14, border: isDark ? '1.5px solid #2E2E2E' : '1.5px solid #E2E8F0', borderRadius: 12, fontSize: 14, resize: 'vertical', backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : undefined, color: isDark ? 'var(--ds-text, #EDEDED)' : undefined }} />
           </div>
         </div>
 
@@ -209,7 +209,7 @@ export function CreateRequirementModal({ isOpen, onClose, onCreated }: CreateReq
             Cancel
           </button>
           <button onClick={handleSubmit} disabled={isSubmitting}
-            style={{ height: 44, padding: '0 24px', backgroundColor: '#2563EB', border: 'none', borderRadius: 12, fontSize: 14, fontWeight: 600, color: 'var(--ds-text-inverse, #FFFFFF)', cursor: isSubmitting ? 'not-allowed' : 'pointer', opacity: isSubmitting ? 0.7 : 1, display: 'flex', alignItems: 'center', gap: 8 }}>
+            style={{ height: 44, padding: '0 24px', backgroundColor: 'var(--ds-text-brand, #2563EB)', border: 'none', borderRadius: 12, fontSize: 14, fontWeight: 600, color: 'var(--ds-text-inverse, #FFFFFF)', cursor: isSubmitting ? 'not-allowed' : 'pointer', opacity: isSubmitting ? 0.7 : 1, display: 'flex', alignItems: 'center', gap: 8 }}>
             <FileCheck size={16} /> {isSubmitting ? 'Creating...' : 'Add Requirement'}
           </button>
         </div>

@@ -51,7 +51,7 @@ export function StatusLozenge({ status, statusCategory }: { status: string; stat
   else if (s === 'backlog') label = 'BACKLOG';
   else if (s === 'blocked') label = 'BLOCKED';
   else if (s === 'rejected') label = 'REJECTED';
-  return <LozengeSpan bg="#DFE1E6" color="#42526E" label={label} />;
+  return <LozengeSpan bg="var(--ds-border, #DFE1E6)" color="#42526E" label={label} />;
 }
 
 // Also export for chronology view usage
@@ -60,7 +60,7 @@ export function getChronologyStatusLozengeColors(status: string, statusCategory?
   const cat = (statusCategory || '').toLowerCase().replace(/[_ ]/g, '');
   if (cat === 'done' || cat === 'completed') return { background: '#1B7F37', color: 'var(--ds-text-inverse, #FFFFFF)' };
   if (cat === 'inprogress' || cat === 'indeterminate' || cat === 'started') return { background: '#0C66E4', color: 'var(--ds-text-inverse, #FFFFFF)' };
-  if (cat === 'new' || cat === 'todo') return { background: '#DFE1E6', color: '#42526E' };
+  if (cat === 'new' || cat === 'todo') return { background: 'var(--ds-border, #DFE1E6)', color: '#42526E' };
 
   // 2. Fallback: string match
   const s = (status || '').toUpperCase().trim();
@@ -83,5 +83,5 @@ export function getChronologyStatusLozengeColors(status: string, statusCategory?
   if (blueStatuses.includes(s)) return { background: '#0C66E4', color: 'var(--ds-text-inverse, #FFFFFF)' };
 
   // GREY (default -- never "Unknown")
-  return { background: '#DFE1E6', color: '#42526E' };
+  return { background: 'var(--ds-border, #DFE1E6)', color: '#42526E' };
 }

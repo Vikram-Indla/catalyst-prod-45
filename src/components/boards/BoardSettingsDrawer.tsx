@@ -20,7 +20,7 @@ const TABS: { key: SettingsTab; label: string }[] = [
 ];
 
 const COLOR_SWATCHES = [
-  '#2563EB', '#16A34A', '#7C3AED', '#DC2626', '#D97706', '#0D9488', '#525252', '#0284C7',
+  'var(--ds-text-brand, #2563EB)', 'var(--ds-text-success, #16A34A)', '#7C3AED', 'var(--ds-text-danger, #DC2626)', 'var(--ds-text-warning, #D97706)', '#0D9488', '#525252', '#0284C7',
 ];
 
 const VISIBILITY_OPTIONS: { value: BoardVisibility; label: string; desc: string; warning?: boolean }[] = [
@@ -123,7 +123,7 @@ export default function BoardSettingsDrawer({ board, onClose }: Props) {
             background: 'transparent', cursor: 'pointer',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
           }}>
-            <X size={16} color="#94A3B8" />
+            <X size={16} color="var(--ds-text-subtlest, #94A3B8)" />
           </button>
         </div>
 
@@ -182,7 +182,7 @@ export default function BoardSettingsDrawer({ board, onClose }: Props) {
                       <div style={{ flex: 1 }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
                           <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--fg-1)', fontFamily: 'var(--cp-font-body)' }}>{opt.label}</span>
-                          {opt.warning && <AlertTriangle size={12} color="#D97706" />}
+                          {opt.warning && <AlertTriangle size={12} color="var(--ds-text-warning, #D97706)" />}
                         </div>
                         <div style={{ fontSize: 10.5, color: 'var(--fg-3)', fontFamily: 'var(--cp-font-body)', marginTop: 1 }}>{opt.desc}</div>
                       </div>
@@ -195,14 +195,14 @@ export default function BoardSettingsDrawer({ board, onClose }: Props) {
                 {!showDelete ? (
                   <button onClick={() => setShowDelete(true)} style={{
                     display: 'flex', alignItems: 'center', gap: 6, height: 30, padding: '8px 12px',
-                    background: '#FEF2F2', border: '0.75px solid var(--sem-danger)',
+                    background: 'var(--ds-background-danger, #FEF2F2)', border: '0.75px solid var(--sem-danger)',
                     borderRadius: 6, cursor: 'pointer', fontSize: 11.5, fontWeight: 500,
                     color: 'var(--sem-danger)', fontFamily: 'var(--cp-font-body)',
                   }}>
                     <Trash2 size={13} /> Delete Board
                   </button>
                 ) : (
-                  <div style={{ padding: 10, background: '#FEF2F2', borderRadius: 6, border: '0.75px solid var(--sem-danger)' }}>
+                  <div style={{ padding: 10, background: 'var(--ds-background-danger, #FEF2F2)', borderRadius: 6, border: '0.75px solid var(--sem-danger)' }}>
                     <p style={{ fontSize: 11.5, color: 'var(--sem-danger)', margin: '0 0 8px', fontFamily: 'var(--cp-font-body)' }}>
                       Type <strong>{board.name}</strong> to confirm:
                     </p>
@@ -212,7 +212,7 @@ export default function BoardSettingsDrawer({ board, onClose }: Props) {
                       disabled={deleteConfirm !== board.name || deleteBoard.isPending} style={{
                       height: 28, padding: '8px 12px', borderRadius: 6, border: 'none',
                       background: deleteConfirm === board.name ? 'var(--sem-danger)' : 'var(--divider)',
-                      color: deleteConfirm === board.name ? '#FFFFFF' : 'var(--fg-4)',
+                      color: deleteConfirm === board.name ? 'var(--ds-surface, #FFFFFF)' : 'var(--fg-4)',
                       fontSize: 11.5, fontWeight: 600, cursor: deleteConfirm === board.name ? 'pointer' : 'not-allowed',
                       fontFamily: 'var(--cp-font-body)',
                     }}>{deleteBoard.isPending ? 'Deleting…' : 'Delete'}</button>
@@ -232,20 +232,20 @@ export default function BoardSettingsDrawer({ board, onClose }: Props) {
                     borderRadius: 6, background: 'var(--bg-app)',
                     borderLeftWidth: col.statusIds.length === 0 ? 3 : 0.75,
                   }}>
-                    <GripVertical size={13} color="#94A3B8" style={{ cursor: 'grab', flexShrink: 0 }} />
+                    <GripVertical size={13} color="var(--ds-text-subtlest, #94A3B8)" style={{ cursor: 'grab', flexShrink: 0 }} />
                     <span style={{
                       fontSize: 12, fontWeight: 500, color: 'var(--fg-1)',
                       fontFamily: 'var(--cp-font-body)', flex: 1, minWidth: 0,
                       overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
                     }}>{col.name}</span>
-                    {col.isBacklog && <Badge bg="rgba(37,99,235,0.06)" color="#2563EB">Backlog</Badge>}
+                    {col.isBacklog && <Badge bg="rgba(37,99,235,0.06)" color="var(--ds-text-brand, #2563EB)">Backlog</Badge>}
                     {col.isDone && <Badge bg="#F0FDF4" color="var(--sem-success)">Done</Badge>}
                     <button onClick={() => deleteCol.mutate({ columnId: col.id, boardId: board.id })} style={{
                       width: 22, height: 22, borderRadius: 4, border: 'none',
                       background: 'transparent', cursor: 'pointer',
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
                     }}>
-                      <Trash2 size={12} color="#94A3B8" />
+                      <Trash2 size={12} color="var(--ds-text-subtlest, #94A3B8)" />
                     </button>
                   </div>
                 ))}
@@ -259,7 +259,7 @@ export default function BoardSettingsDrawer({ board, onClose }: Props) {
                   display: 'flex', alignItems: 'center', gap: 4, height: 50, padding: '0 10px',
                   border: '0.75px dashed rgba(15,23,42,0.12)',
                   borderRadius: 6, background: 'transparent', cursor: newColName.trim() ? 'pointer' : 'not-allowed',
-                  fontSize: 11.5, color: '#94A3B8', fontFamily: 'var(--cp-font-body)',
+                  fontSize: 11.5, color: 'var(--ds-text-subtlest, #94A3B8)', fontFamily: 'var(--cp-font-body)',
                 }}>
                   <Plus size={13} /> Add
                 </button>
@@ -297,7 +297,7 @@ export default function BoardSettingsDrawer({ board, onClose }: Props) {
               <button style={{
                 display: 'flex', alignItems: 'center', gap: 5, height: 30, padding: '8px 12px',
                 background: 'var(--cp-blue)', border: 'none', borderRadius: 6,
-                cursor: 'pointer', fontSize: 11.5, fontWeight: 600, color: '#FFFFFF',
+                cursor: 'pointer', fontSize: 11.5, fontWeight: 600, color: 'var(--ds-surface, #FFFFFF)',
                 fontFamily: 'var(--cp-font-body)',
               }}>
                 <Plus size={13} /> Add Member
@@ -314,14 +314,14 @@ export default function BoardSettingsDrawer({ board, onClose }: Props) {
           <button onClick={onClose} style={{
             height: 30, padding: '8px 12px', borderRadius: 6,
             border: '0.75px solid rgba(15,23,42,0.12)', background: 'var(--bg-app)',
-            fontSize: 11.5, fontWeight: 500, color: '#334155',
+            fontSize: 11.5, fontWeight: 500, color: 'var(--ds-text-subtle, #334155)',
             fontFamily: 'var(--cp-font-body)', cursor: 'pointer',
           }}>Cancel</button>
           <button onClick={handleSave} disabled={!isDirty || updateBoard.isPending} style={{
             height: 30, padding: '0 14px', borderRadius: 6, border: 'none',
             background: isDirty ? 'var(--cp-blue)' : 'var(--divider)',
             fontSize: 11.5, fontWeight: 600,
-            color: isDirty ? '#FFFFFF' : 'var(--fg-4)',
+            color: isDirty ? 'var(--ds-surface, #FFFFFF)' : 'var(--fg-4)',
             fontFamily: 'var(--cp-font-body)',
             cursor: isDirty ? 'pointer' : 'not-allowed',
           }}>{updateBoard.isPending ? 'Saving…' : 'Save'}</button>

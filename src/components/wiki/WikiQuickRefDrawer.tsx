@@ -32,29 +32,29 @@ export function WikiQuickRefDrawer({ open, onClose, qr }: Props) {
             <FileText size={18} style={{ color: 'var(--cp-blue)' }} />
           </div>
           <div style={{ flex: 1, minWidth: 0 }}>
-            <h2 style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 14, fontWeight: 700, margin: 0, color: isDark ? '#EDEDED' : 'var(--fg-1)' }}>{qr.title}</h2>
+            <h2 style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 14, fontWeight: 700, margin: 0, color: isDark ? 'var(--ds-text, #EDEDED)' : 'var(--fg-1)' }}>{qr.title}</h2>
             <div style={{ display: 'flex', gap: 12, marginTop: 4, fontSize: 10 }}>
               <span style={{ fontFamily: 'var(--cp-font-mono)', color: 'var(--cp-blue)', fontWeight: 500 }}>{qr.domain_code}</span>
-              <span style={{ fontFamily: 'var(--cp-font-mono)', color: isDark ? '#878787' : 'var(--fg-3)' }}>{qr.steps} steps</span>
-              <span style={{ fontFamily: 'var(--cp-font-mono)', color: isDark ? '#878787' : 'var(--fg-3)', display: 'flex', alignItems: 'center', gap: 3 }}>
+              <span style={{ fontFamily: 'var(--cp-font-mono)', color: isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--fg-3)' }}>{qr.steps} steps</span>
+              <span style={{ fontFamily: 'var(--cp-font-mono)', color: isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--fg-3)', display: 'flex', alignItems: 'center', gap: 3 }}>
                 <Eye size={10} /> {qr.view_count ?? qr.views ?? 0}
               </span>
             </div>
           </div>
           <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4, borderRadius: 4 }}>
-            <X size={16} style={{ color: isDark ? '#878787' : 'var(--fg-3)' }} />
+            <X size={16} style={{ color: isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--fg-3)' }} />
           </button>
         </div>
 
         {/* Content */}
         <div style={{ flex: 1, overflowY: 'auto', padding: '24px' }}>
           {qr.description ? (
-            <p style={{ fontSize: 12, color: isDark ? '#A1A1A1' : 'var(--fg-2)', lineHeight: 1.6, marginBottom: 24 }}>{qr.description}</p>
+            <p style={{ fontSize: 12, color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--fg-2)', lineHeight: 1.6, marginBottom: 24 }}>{qr.description}</p>
           ) : (
-            <p style={{ fontSize: 12, color: isDark ? '#878787' : 'var(--fg-4)', fontStyle: 'italic', marginBottom: 24 }}>No detailed description available yet.</p>
+            <p style={{ fontSize: 12, color: isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--fg-4)', fontStyle: 'italic', marginBottom: 24 }}>No detailed description available yet.</p>
           )}
 
-          <div style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 12, fontWeight: 600, color: isDark ? '#EDEDED' : 'var(--fg-1)', marginBottom: 16 }}>Steps</div>
+          <div style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 12, fontWeight: 600, color: isDark ? 'var(--ds-text, #EDEDED)' : 'var(--fg-1)', marginBottom: 16 }}>Steps</div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
             {Array.from({ length: qr.steps ?? 0 }).map((_, i) => (
               <div key={i} style={{ display: 'flex', gap: 12, alignItems: 'flex-start' }}>
@@ -63,7 +63,7 @@ export function WikiQuickRefDrawer({ open, onClose, qr }: Props) {
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   fontFamily: 'var(--cp-font-mono)', fontSize: 11, fontWeight: 700, color: 'var(--cp-blue)',
                 }}>{i + 1}</div>
-                <div style={{ fontSize: 12, color: isDark ? '#A1A1A1' : 'var(--fg-2)', lineHeight: 1.5, paddingTop: 3 }}>
+                <div style={{ fontSize: 12, color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--fg-2)', lineHeight: 1.5, paddingTop: 3 }}>
                   Step {i + 1} — Complete this action to proceed.
                 </div>
               </div>

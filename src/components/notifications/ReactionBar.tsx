@@ -36,7 +36,7 @@ export default function ReactionBar({ reactions = {}, onReact, onReply, onViewTh
             style={{
               display: 'inline-flex', alignItems: 'center', gap: 2,
               padding: '4px 8px',
-              border: `0.5px solid ${isHov ? '#2563EB' : 'rgba(15,23,42,.08)'}`,
+              border: `0.5px solid ${isHov ? 'var(--ds-text-brand, #2563EB)' : 'rgba(15,23,42,.08)'}`,
               borderRadius: 20,
               background: isHov ? 'rgba(15,23,42,.04)' : 'transparent',
               cursor: 'pointer',
@@ -48,7 +48,7 @@ export default function ReactionBar({ reactions = {}, onReact, onReply, onViewTh
             }}
           >
             <span>{emoji}</span>
-            {count > 0 && <span style={{ fontSize: 11, color: '#475569', fontWeight: 500 }}>{count}</span>}
+            {count > 0 && <span style={{ fontSize: 11, color: 'var(--ds-text-subtle, #475569)', fontWeight: 500 }}>{count}</span>}
           </button>
         );
       })}
@@ -62,7 +62,7 @@ export default function ReactionBar({ reactions = {}, onReact, onReply, onViewTh
           background: 'transparent',
           cursor: 'pointer',
           fontSize: 13,
-          color: '#64748B',
+          color: 'var(--ds-text-subtlest, #64748B)',
         }}
       >
         +
@@ -73,7 +73,7 @@ export default function ReactionBar({ reactions = {}, onReact, onReply, onViewTh
       {onReply && (
         <button
           onClick={(e) => { e.stopPropagation(); onReply(); }}
-          style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 12, fontWeight: 500, color: '#64748B', fontFamily: 'var(--cp-font-body)' }}
+          style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 12, fontWeight: 500, color: 'var(--ds-text-subtlest, #64748B)', fontFamily: 'var(--cp-font-body)' }}
         >
           Reply
         </button>
@@ -82,7 +82,7 @@ export default function ReactionBar({ reactions = {}, onReact, onReply, onViewTh
       {onViewThread && (
         <button
           onClick={(e) => { e.stopPropagation(); onViewThread(); }}
-          style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 12, fontWeight: 500, color: '#2563EB', fontFamily: 'var(--cp-font-body)', textDecoration: 'none' }}
+          style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 12, fontWeight: 500, color: 'var(--ds-text-brand, #2563EB)', fontFamily: 'var(--cp-font-body)', textDecoration: 'none' }}
           onMouseEnter={(e) => (e.currentTarget.style.textDecoration = 'underline')}
           onMouseLeave={(e) => (e.currentTarget.style.textDecoration = 'none')}
         >

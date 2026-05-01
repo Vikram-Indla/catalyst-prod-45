@@ -110,7 +110,7 @@ export function BoardToolbar({
               className={cn(
                 'px-2 py-1 text-xs rounded transition-colors',
                 filter.active
-                  ? 'bg-[#2563eb] text-white'
+                  ? 'bg-[var(--ds-text-brand,#2563eb)] text-white'
                   : 'bg-white dark:bg-gray-800 border text-foreground hover:bg-gray-100 dark:hover:bg-gray-700'
               )}
             >
@@ -165,7 +165,7 @@ export function BoardToolbar({
             Done: {doneCount}
           </span>
           <span className="flex items-center gap-1">
-            <span className="w-2 h-2 rounded-full bg-[#2563eb]" />
+            <span className="w-2 h-2 rounded-full bg-[var(--ds-text-brand,#2563eb)]" />
             In Progress: {inProgressCount}
           </span>
           <span className="flex items-center gap-1">

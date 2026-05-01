@@ -52,7 +52,7 @@ const HUB_COLORS: Record<string, { border: string; text: string; bg: string }> =
   project: { border: 'var(--cp-blue)', text: 'var(--cp-blue)', bg: 'var(--cp-primary-5)' },
   product: { border: 'var(--fg-2)', text: 'var(--fg-2)', bg: '#F4F4F5' },
   task: { border: '#D4D4D8', text: 'var(--fg-3)', bg: '#F4F4F5' },
-  incident: { border: 'var(--sem-danger)', text: 'var(--sem-danger)', bg: '#FEF2F2' },
+  incident: { border: 'var(--sem-danger)', text: 'var(--sem-danger)', bg: 'var(--ds-background-danger, #FEF2F2)' },
 };
 
 const AVATAR_COLORS = ['#4C6EF5', '#FA8C16', '#52C41A', '#EB2F96', '#722ED1', '#13C2C2', '#F5222D'];
@@ -159,7 +159,7 @@ export function AllWorkTable({
               checked={selectAllState === 'all'}
               ref={el => { if (el) el.indeterminate = selectAllState === 'some'; }}
               onChange={onSelectAll}
-              className="w-4 h-4 rounded cursor-pointer accent-[#2563EB]"
+              className="w-4 h-4 rounded cursor-pointer accent-[var(--ds-text-brand,#2563EB)]"
               aria-label="Select all items"
             />
           </div>
@@ -169,7 +169,7 @@ export function AllWorkTable({
               onClick={() => col.sortable && onSort(col.key)}
               role="columnheader"
               aria-sort={col.sortable && sortField === col.key ? (sortDir === 'asc' ? 'ascending' : 'descending') : undefined}
-              className="flex items-center gap-1 text-left focus-visible:outline-2 focus-visible:outline-[#2563EB] focus-visible:outline-offset-2 rounded"
+              className="flex items-center gap-1 text-left focus-visible:outline-2 focus-visible:outline-[var(--ds-text-brand,#2563EB)] focus-visible:outline-offset-2 rounded"
               style={{
                 fontSize: '10.5px',
                 fontWeight: 650,
@@ -264,7 +264,7 @@ const TableRow = memo(function TableRow({
           type="checkbox"
           checked={isSelected}
           onChange={() => onToggleSelect(item.issue_key)}
-          className="w-4 h-4 rounded cursor-pointer accent-[#2563EB]"
+          className="w-4 h-4 rounded cursor-pointer accent-[var(--ds-text-brand,#2563EB)]"
           aria-label={`Select ${item.issue_key}`}
         />
       </div>
@@ -275,7 +275,7 @@ const TableRow = memo(function TableRow({
         {hasChildren ? (
           <button
             onClick={(e) => { e.stopPropagation(); onToggleExpand(item.issue_key); }}
-            className="w-4 h-4 flex items-center justify-center shrink-0 rounded hover:bg-[rgba(128,128,128,0.12)] transition-all duration-150 focus-visible:outline-2 focus-visible:outline-[#2563EB]"
+            className="w-4 h-4 flex items-center justify-center shrink-0 rounded hover:bg-[rgba(128,128,128,0.12)] transition-all duration-150 focus-visible:outline-2 focus-visible:outline-[var(--ds-text-brand,#2563EB)]"
             aria-label={isExpanded ? 'Collapse' : 'Expand'}
             aria-expanded={isExpanded}
           >
@@ -302,10 +302,10 @@ const TableRow = memo(function TableRow({
           {item.summary}
         </span>
         <div className="opacity-0 group-hover:opacity-100 flex items-center gap-0.5 shrink-0 ml-auto transition-opacity duration-[80ms]">
-          <button className="p-0.5 rounded hover:bg-[rgba(128,128,128,0.12)] focus-visible:outline-2 focus-visible:outline-[#2563EB]" title="Open in new tab" aria-label="Open in new tab" onClick={e => e.stopPropagation()}>
+          <button className="p-0.5 rounded hover:bg-[rgba(128,128,128,0.12)] focus-visible:outline-2 focus-visible:outline-[var(--ds-text-brand,#2563EB)]" title="Open in new tab" aria-label="Open in new tab" onClick={e => e.stopPropagation()}>
             <ExternalLink className="w-3.5 h-3.5" style={{ color: 'var(--fg-3)' }} />
           </button>
-          <button className="p-0.5 rounded hover:bg-[rgba(128,128,128,0.12)] focus-visible:outline-2 focus-visible:outline-[#2563EB]" title="Add child" aria-label="Add child item" onClick={e => e.stopPropagation()}>
+          <button className="p-0.5 rounded hover:bg-[rgba(128,128,128,0.12)] focus-visible:outline-2 focus-visible:outline-[var(--ds-text-brand,#2563EB)]" title="Add child" aria-label="Add child item" onClick={e => e.stopPropagation()}>
             <Plus className="w-3.5 h-3.5" style={{ color: 'var(--fg-3)' }} />
           </button>
         </div>
@@ -366,7 +366,7 @@ const TableRow = memo(function TableRow({
           <span className="text-[12px] italic" style={{ color: 'var(--fg-3)' }}>Unassigned</span>
         )}
         <button
-          className="ml-auto opacity-0 group-hover:opacity-100 p-1 rounded hover:bg-[rgba(128,128,128,0.12)] shrink-0 transition-opacity duration-[80ms] focus-visible:outline-2 focus-visible:outline-[#2563EB]"
+          className="ml-auto opacity-0 group-hover:opacity-100 p-1 rounded hover:bg-[rgba(128,128,128,0.12)] shrink-0 transition-opacity duration-[80ms] focus-visible:outline-2 focus-visible:outline-[var(--ds-text-brand,#2563EB)]"
           aria-label={`More actions for ${item.issue_key}`}
           onClick={(e) => { e.stopPropagation(); onContextMenu({ x: e.clientX, y: e.clientY, item }); }}
         >

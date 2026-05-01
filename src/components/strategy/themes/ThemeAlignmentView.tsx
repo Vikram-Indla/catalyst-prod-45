@@ -28,33 +28,33 @@ import { AIStrategyIntelligencePanel } from '@/components/strategy/intelligence/
 
 // ── Layer colors (NO purple for KRs) ──
 const LAYER = {
-  theme:      { color: '#2563EB', badgeBg: '#EFF6FF', badgeText: '#1E40AF', border: '#2563EB' },
+  theme:      { color: 'var(--ds-text-brand, #2563EB)', badgeBg: 'var(--ds-background-selected, #EFF6FF)', badgeText: '#1E40AF', border: 'var(--ds-text-brand, #2563EB)' },
   goal:       { color: '#0D9488', badgeBg: '#F0FDFA', badgeText: '#115E59', border: '#0D9488' },
-  kr:         { color: '#2563EB', badgeBg: '#DBEAFE', badgeText: '#1E40AF', border: '#2563EB' },
-  initiative: { color: '#D97706', badgeBg: '#FFFBEB', badgeText: '#92400E', border: '#D97706' },
+  kr:         { color: 'var(--ds-text-brand, #2563EB)', badgeBg: '#DBEAFE', badgeText: '#1E40AF', border: 'var(--ds-text-brand, #2563EB)' },
+  initiative: { color: 'var(--ds-text-warning, #D97706)', badgeBg: '#FFFBEB', badgeText: '#92400E', border: 'var(--ds-text-warning, #D97706)' },
   epic:       { color: '#4F46E5', badgeBg: '#EEF2FF', badgeText: '#3730A3', border: '#4F46E5' },
 } as const;
 
 const STATUS_CONFIG: Record<string, { dot: string; bg: string; text: string; label: string }> = {
-  active:       { dot: '#16A34A', bg: '#F0FDF4', text: '#166534', label: 'Active' },
-  on_track:     { dot: '#16A34A', bg: '#F0FDF4', text: '#166534', label: 'On Track' },
-  at_risk:      { dot: '#D97706', bg: '#FFFBEB', text: '#92400E', label: 'At Risk' },
-  off_track:    { dot: '#EF4444', bg: '#FEF2F2', text: '#991B1B', label: 'Off Track' },
-  draft:        { dot: '#94A3B8', bg: 'var(--bg-1, #F8FAFC)', text: '#475569', label: 'Draft' },
-  planned:      { dot: '#94A3B8', bg: 'var(--bg-1, #F8FAFC)', text: '#475569', label: 'Planned' },
-  completed:    { dot: '#2563EB', bg: '#EFF6FF', text: '#1E40AF', label: 'Done' },
-  cancelled:    { dot: '#94A3B8', bg: 'var(--bg-1, #F8FAFC)', text: '#475569', label: 'Cancelled' },
-  in_progress:  { dot: '#2563EB', bg: '#EFF6FF', text: '#1E40AF', label: 'In Progress' },
-  not_started:  { dot: '#94A3B8', bg: 'var(--bg-1, #F8FAFC)', text: '#475569', label: 'Not Started' },
+  active:       { dot: 'var(--ds-text-success, #16A34A)', bg: '#F0FDF4', text: '#166534', label: 'Active' },
+  on_track:     { dot: 'var(--ds-text-success, #16A34A)', bg: '#F0FDF4', text: '#166534', label: 'On Track' },
+  at_risk:      { dot: 'var(--ds-text-warning, #D97706)', bg: '#FFFBEB', text: '#92400E', label: 'At Risk' },
+  off_track:    { dot: 'var(--ds-text-danger, #EF4444)', bg: 'var(--ds-background-danger, #FEF2F2)', text: 'var(--ds-text-danger, #991B1B)', label: 'Off Track' },
+  draft:        { dot: 'var(--ds-text-subtlest, #94A3B8)', bg: 'var(--bg-1, #F8FAFC)', text: 'var(--ds-text-subtle, #475569)', label: 'Draft' },
+  planned:      { dot: 'var(--ds-text-subtlest, #94A3B8)', bg: 'var(--bg-1, #F8FAFC)', text: 'var(--ds-text-subtle, #475569)', label: 'Planned' },
+  completed:    { dot: 'var(--ds-text-brand, #2563EB)', bg: 'var(--ds-background-selected, #EFF6FF)', text: '#1E40AF', label: 'Done' },
+  cancelled:    { dot: 'var(--ds-text-subtlest, #94A3B8)', bg: 'var(--bg-1, #F8FAFC)', text: 'var(--ds-text-subtle, #475569)', label: 'Cancelled' },
+  in_progress:  { dot: 'var(--ds-text-brand, #2563EB)', bg: 'var(--ds-background-selected, #EFF6FF)', text: '#1E40AF', label: 'In Progress' },
+  not_started:  { dot: 'var(--ds-text-subtlest, #94A3B8)', bg: 'var(--bg-1, #F8FAFC)', text: 'var(--ds-text-subtle, #475569)', label: 'Not Started' },
   approved:     { dot: '#0D9488', bg: '#F0FDFA', text: '#115E59', label: 'Approved' },
-  proposed:     { dot: '#94A3B8', bg: 'var(--bg-1, #F8FAFC)', text: '#475569', label: 'Proposed' },
-  analyzing:    { dot: '#94A3B8', bg: 'var(--bg-1, #F8FAFC)', text: '#475569', label: 'Analyzing' },
+  proposed:     { dot: 'var(--ds-text-subtlest, #94A3B8)', bg: 'var(--bg-1, #F8FAFC)', text: 'var(--ds-text-subtle, #475569)', label: 'Proposed' },
+  analyzing:    { dot: 'var(--ds-text-subtlest, #94A3B8)', bg: 'var(--bg-1, #F8FAFC)', text: 'var(--ds-text-subtle, #475569)', label: 'Analyzing' },
 };
 
 function getProgressColor(v: number) {
-  if (v >= 60) return '#16A34A';
-  if (v >= 40) return '#D97706';
-  return '#EF4444';
+  if (v >= 60) return 'var(--ds-text-success, #16A34A)';
+  if (v >= 40) return 'var(--ds-text-warning, #D97706)';
+  return 'var(--ds-text-danger, #EF4444)';
 }
 
 // ── Sub-components ──
@@ -72,7 +72,7 @@ function StatusBadge({ status }: { status: string }) {
 
 function ChainStat({ label, value, total }: { label: string; value: number; total: number }) {
   const pct = total > 0 ? Math.round((value / total) * 100) : 0;
-  const clr = pct >= 70 ? '#16A34A' : pct >= 40 ? '#D97706' : '#EF4444';
+  const clr = pct >= 70 ? 'var(--ds-text-success, #16A34A)' : pct >= 40 ? 'var(--ds-text-warning, #D97706)' : 'var(--ds-text-danger, #EF4444)';
   return (
     <div className="text-center" style={{ minWidth: 100 }}>
       <div className="flex items-baseline justify-center gap-1">
@@ -88,9 +88,9 @@ function ChainStat({ label, value, total }: { label: string; value: number; tota
 function GhostNode({ label }: { label: string }) {
   return (
     <div className="flex items-center justify-center gap-1.5 border border-dashed rounded-lg"
-      style={{ width: 180, padding: 12, borderColor: '#CBD5E1', background: 'rgba(248,250,252,0.5)' }}>
-      <Unlink size={12} style={{ color: '#94A3B8' }} />
-      <span style={{ fontSize: 11, color: '#94A3B8' }}>No linked {label}</span>
+      style={{ width: 180, padding: 12, borderColor: 'var(--ds-text-disabled, #CBD5E1)', background: 'rgba(248,250,252,0.5)' }}>
+      <Unlink size={12} style={{ color: 'var(--ds-text-subtlest, #94A3B8)' }} />
+      <span style={{ fontSize: 11, color: 'var(--ds-text-subtlest, #94A3B8)' }}>No linked {label}</span>
     </div>
   );
 }
@@ -102,7 +102,7 @@ function ChainPill({ color, keyLabel, title }: { color: string; keyLabel: string
         style={{ fontSize: 9, background: `${color}15`, color }}>
         {keyLabel}
       </span>
-      <span className="font-medium truncate" style={{ fontSize: 11, color: '#334155' }}>{title}</span>
+      <span className="font-medium truncate" style={{ fontSize: 11, color: 'var(--ds-text-subtle, #334155)' }}>{title}</span>
     </div>
   );
 }
@@ -128,7 +128,7 @@ function AILoadingState() {
     <div className="px-8 py-8">
       <div className="flex items-center gap-3 mb-8">
         <div className="flex items-center justify-center rounded-xl" style={{ width: 40, height: 40, background: '#F3E8FF' }}>
-          <Sparkles size={16} className="animate-pulse" style={{ color: '#2563EB' }} />
+          <Sparkles size={16} className="animate-pulse" style={{ color: 'var(--ds-text-brand, #2563EB)' }} />
         </div>
         <div>
           <div className="h-3 w-48 bg-muted rounded-full animate-pulse" />
@@ -165,13 +165,13 @@ function getChainHealthLabel(chain: LockedChainData | null): string {
 function getChainHealthColor(chain: LockedChainData | null): string {
   const label = getChainHealthLabel(chain);
   switch (label) {
-    case 'Strong': return '#16A34A';
-    case 'Moderate': return '#D97706';
-    case 'At Risk': return '#D97706';
-    case 'Critical': return '#EF4444';
-    case 'Broken': return '#EF4444';
-    case 'Partial': return '#D97706';
-    default: return '#94A3B8';
+    case 'Strong': return 'var(--ds-text-success, #16A34A)';
+    case 'Moderate': return 'var(--ds-text-warning, #D97706)';
+    case 'At Risk': return 'var(--ds-text-warning, #D97706)';
+    case 'Critical': return 'var(--ds-text-danger, #EF4444)';
+    case 'Broken': return 'var(--ds-text-danger, #EF4444)';
+    case 'Partial': return 'var(--ds-text-warning, #D97706)';
+    default: return 'var(--ds-text-subtlest, #94A3B8)';
   }
 }
 
@@ -799,7 +799,7 @@ export function ThemeAlignmentView({ onBack }: { onBack?: () => void }) {
         <div className="flex items-center gap-2 text-muted-foreground dark:text-gray-300" style={{ fontSize: 12 }}>
           <span className="font-semibold text-foreground">Reading this map:</span>
           <span>Each</span>
-          <span className="inline-flex items-center font-semibold text-[11px] py-0 px-1.5 rounded-md border dark:bg-gray-800 dark:border-gray-700" style={{ color: '#1E40AF', background: '#EFF6FF', borderColor: '#BFDBFE' }}>● Theme</span>
+          <span className="inline-flex items-center font-semibold text-[11px] py-0 px-1.5 rounded-md border dark:bg-gray-800 dark:border-gray-700" style={{ color: '#1E40AF', background: 'var(--ds-background-selected, #EFF6FF)', borderColor: '#BFDBFE' }}>● Theme</span>
           <span>breaks down into</span>
           <span className="inline-flex items-center font-semibold text-[11px] py-0 px-1.5 rounded-md border dark:bg-gray-800 dark:border-gray-700" style={{ color: '#115E59', background: '#F0FDFA', borderColor: '#99F6E4' }}>● Goals</span>
           <span>measured by</span>

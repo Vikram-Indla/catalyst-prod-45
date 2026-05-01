@@ -56,24 +56,24 @@ export function CalendarGrid({
   }, [releases, rowAssignments, viewStart, viewEnd]);
 
   return (
-    <div className="bg-white dark:bg-[#1A1A1A] rounded-xl border border-slate-200 dark:border-[#2E2E2E] overflow-hidden">
+    <div className="bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] rounded-xl border border-slate-200 dark:border-[var(--ds-border,#2E2E2E)] overflow-hidden">
       {/* Column Headers */}
       <div 
-        className="grid border-b border-slate-200 dark:border-[#2E2E2E]"
+        className="grid border-b border-slate-200 dark:border-[var(--ds-border,#2E2E2E)]"
         style={{ gridTemplateColumns: `120px repeat(${columns.length}, 1fr)` }}
       >
-        <div className="p-3 bg-slate-50 dark:bg-[#111111] border-r border-slate-200 dark:border-[#2E2E2E]">
-          <span className="text-xs font-medium text-slate-500 dark:text-[#A1A1A1] uppercase">Release</span>
+        <div className="p-3 bg-slate-50 dark:bg-[#111111] border-r border-slate-200 dark:border-[var(--ds-border,#2E2E2E)]">
+          <span className="text-xs font-medium text-slate-500 dark:text-[var(--ds-text-subtlest,#A1A1A1)] uppercase">Release</span>
         </div>
         {columns.map((col, i) => (
           <div
             key={i}
             className={cn(
-              "p-3 text-center border-r border-slate-200 dark:border-[#2E2E2E] last:border-r-0",
-              col.isWeekend ? "bg-[#f8fafc] dark:bg-[#111111]" : "bg-white dark:bg-[#1A1A1A]"
+              "p-3 text-center border-r border-slate-200 dark:border-[var(--ds-border,#2E2E2E)] last:border-r-0",
+              col.isWeekend ? "bg-[var(--ds-surface-sunken,#f8fafc)] dark:bg-[#111111]" : "bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)]"
             )}
           >
-            <span className="text-xs font-medium text-slate-600 dark:text-[#A1A1A1]">{col.label}</span>
+            <span className="text-xs font-medium text-slate-600 dark:text-[var(--ds-text-subtlest,#A1A1A1)]">{col.label}</span>
           </div>
         ))}
       </div>
@@ -103,13 +103,13 @@ export function CalendarGrid({
           className="grid absolute inset-0 pointer-events-none"
           style={{ gridTemplateColumns: `120px repeat(${columns.length}, 1fr)` }}
         >
-          <div className="border-r border-slate-200 dark:border-[#2E2E2E]" />
+          <div className="border-r border-slate-200 dark:border-[var(--ds-border,#2E2E2E)]" />
           {columns.map((col, i) => (
             <div
               key={i}
               className={cn(
-                "border-r border-slate-200 dark:border-[#2E2E2E] last:border-r-0",
-                col.isWeekend && "bg-[#f8fafc] dark:bg-[#111111]"
+                "border-r border-slate-200 dark:border-[var(--ds-border,#2E2E2E)] last:border-r-0",
+                col.isWeekend && "bg-[var(--ds-surface-sunken,#f8fafc)] dark:bg-[#111111]"
               )}
             />
           ))}
@@ -139,7 +139,7 @@ export function CalendarGrid({
 
         {/* Release Labels (Left Column) */}
         <div 
-          className="absolute left-0 top-0 w-[120px] bg-white dark:bg-[#1A1A1A] border-r border-slate-200 dark:border-[#2E2E2E]"
+          className="absolute left-0 top-0 w-[120px] bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] border-r border-slate-200 dark:border-[var(--ds-border,#2E2E2E)]"
           style={{ height: `${(maxRow + 1) * ROW_HEIGHT + 40}px` }}
         >
           {releasesWithPositions.map(({ release, row }) => (
@@ -151,7 +151,7 @@ export function CalendarGrid({
                 height: `${ROW_HEIGHT - 8}px`,
               }}
             >
-              <span className="text-sm font-semibold text-slate-900 dark:text-[#EDEDED] truncate">
+              <span className="text-sm font-semibold text-slate-900 dark:text-[var(--ds-text,#EDEDED)] truncate">
                 {release.version}
               </span>
               <span className="text-xs text-slate-500 truncate">
@@ -171,7 +171,7 @@ export function CalendarGrid({
       {/* Empty State */}
       {releases.length === 0 && (
         <div className="p-12 text-center">
-          <p className="text-slate-500 dark:text-[#A1A1A1]">No releases in this time period</p>
+          <p className="text-slate-500 dark:text-[var(--ds-text-subtlest,#A1A1A1)]">No releases in this time period</p>
         </div>
       )}
     </div>

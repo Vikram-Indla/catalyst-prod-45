@@ -102,7 +102,7 @@ function cellBg(score: number) {
   if (score >= 20) return '#FEE2E2';
   if (score >= 12) return '#FEF3C7';
   if (score >= 5) return '#DBEAFE';
-  return '#DCFCE7';
+  return 'var(--ds-background-success, #DCFCE7)';
 }
 
 export const DetailTabRisks: React.FC<DetailTabRisksProps> = ({ requestId }) => {
@@ -193,7 +193,7 @@ export const DetailTabRisks: React.FC<DetailTabRisksProps> = ({ requestId }) => 
       const { error } = await typedQuery('ph_request_risks').insert(payload);
       if (error) { toast.error('Failed to add'); return; }
       logRequestAudit({ request_id: requestId, action: 'created', entity_type: 'risk', new_value: form.title });
-      toast.success(`${payload.risk_key} created`, { duration: 2200, style: { background: '#18181B', color: '#fff' }, position: 'bottom-center' });
+      toast.success(`${payload.risk_key} created`, { duration: 2200, style: { background: '#18181B', color: 'var(--ds-surface, #fff)' }, position: 'bottom-center' });
     }
     setShowModal(false);
     refetch();
@@ -202,7 +202,7 @@ export const DetailTabRisks: React.FC<DetailTabRisksProps> = ({ requestId }) => 
   const handleDelete = async (id: string) => {
     await typedQuery('ph_request_risks').delete().eq('id', id);
     logRequestAudit({ request_id: requestId, action: 'deleted', entity_type: 'risk', entity_id: id });
-    toast.success('Risk deleted', { duration: 2200, style: { background: '#18181B', color: '#fff' }, position: 'bottom-center' });
+    toast.success('Risk deleted', { duration: 2200, style: { background: '#18181B', color: 'var(--ds-surface, #fff)' }, position: 'bottom-center' });
     refetch();
   };
 

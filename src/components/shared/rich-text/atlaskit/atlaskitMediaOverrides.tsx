@@ -120,7 +120,7 @@ function ImageLightbox({ src, onClose }: { src: string; onClose: () => void }) {
         onClick={onClose}
         style={{
           position: 'absolute', top: 16, right: 16,
-          color: '#fff', fontSize: 24, cursor: 'pointer',
+          color: 'var(--ds-surface, #fff)', fontSize: 24, cursor: 'pointer',
           background: 'transparent', border: 'none', zIndex: 1001,
         }}
       >
@@ -178,7 +178,7 @@ function MediaImageCard({ src, alt, onClick }: { src: string; alt?: string; onCl
       <div style={{
         margin: '12px 0', padding: '16px', borderRadius: 4,
         background: '#F8F8F8', border: '1px solid #E2E8F0',
-        fontSize: 13, color: '#6B778C', display: 'flex', alignItems: 'center', gap: 8,
+        fontSize: 13, color: 'var(--ds-text-subtlest, #6B778C)', display: 'flex', alignItems: 'center', gap: 8,
       }}>
         <span>Image could not be loaded</span>
       </div>
@@ -201,7 +201,7 @@ function MediaImageCard({ src, alt, onClick }: { src: string; alt?: string; onCl
           height: loaded && dims ? aspectHeight : 200,
           borderRadius: 4, overflow: 'hidden',
           position: 'relative', cursor: 'pointer',
-          background: loaded ? 'transparent' : '#F4F5F7',
+          background: loaded ? 'transparent' : 'var(--ds-surface-sunken, #F4F5F7)',
           border: loaded ? '1px solid #E2E8F0' : 'none',
           transition: 'height 100ms ease-in',
         }}
@@ -240,7 +240,7 @@ function MediaImageCard({ src, alt, onClick }: { src: string; alt?: string; onCl
             background: 'rgba(9, 30, 66, 0.54)',
             border: 'none', cursor: 'pointer',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
-            color: '#FFFFFF', transition: 'background 0.15s',
+            color: 'var(--ds-surface, #FFFFFF)', transition: 'background 0.15s',
             zIndex: 2,
           }}
           onMouseEnter={e => { e.currentTarget.style.background = 'rgba(9, 30, 66, 0.71)'; }}

@@ -35,7 +35,7 @@ export function HomeRoleModeSelector({ value, onChange }: HomeRoleModeSelectorPr
             index !== 0 && "border-l border-border",
             value === mode.value
               // Active state: Blue background per design system v2.0
-              ? "bg-[#2563eb] text-white shadow-sm"
+              ? "bg-[var(--ds-text-brand,#2563eb)] text-white shadow-sm"
               : "text-foreground hover:bg-muted/50"
           )}
         >

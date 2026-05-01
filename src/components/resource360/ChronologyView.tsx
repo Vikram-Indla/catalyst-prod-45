@@ -110,7 +110,7 @@ const ChronologyView: React.FC<ChronologyViewProps> = ({ resourceId, onItemClick
             style={{
               fontSize: 10, fontWeight: 700,
               background: filtersExpanded ? T.text1 : T.surface,
-              color: filtersExpanded ? '#fff' : T.text3,
+              color: filtersExpanded ? 'var(--ds-surface, #fff)' : T.text3,
               border: `1px solid ${T.borderStrong}`,
               padding: '4px 10px', borderRadius: 6, cursor: 'pointer',
             }}>
@@ -192,7 +192,7 @@ const ChronologyView: React.FC<ChronologyViewProps> = ({ resourceId, onItemClick
                 const cat = getStatusCategory(item.status_category || item.status);
                 const isPending = cat !== 'done';
                 const statusColor = cat === 'todo' ? T.todo : cat === 'progress' ? T.progress : T.done;
-                const hubColor = HUB_COLORS[item.hub || item.source_hub] ?? '#64748B';
+                const hubColor = HUB_COLORS[item.hub || item.source_hub] ?? 'var(--ds-text-subtlest, #64748B)';
                 const hub = item.hub || item.source_hub || 'ProjectHub';
                 const baseBg = idx % 2 === 0 ? T.surface : '#FAF8F5';
                 const highlightBg = showPendingOnly && isPending ? T.pendingHighlight : baseBg;
@@ -224,7 +224,7 @@ const ChronologyView: React.FC<ChronologyViewProps> = ({ resourceId, onItemClick
                         {key}
                       </span>
                       <span style={{
-                        fontSize: 8, fontWeight: 800, color: '#fff', padding: '1px 5px',
+                        fontSize: 8, fontWeight: 800, color: 'var(--ds-surface, #fff)', padding: '1px 5px',
                         borderRadius: 4, background: hubColor, width: 'fit-content',
                         textTransform: 'uppercase' as const,
                       }}>
@@ -257,7 +257,7 @@ const ChronologyView: React.FC<ChronologyViewProps> = ({ resourceId, onItemClick
 
                     {/* Status pill — SOLID */}
                     <span style={{
-                      fontSize: 9, fontWeight: 700, color: '#fff', padding: '2px 8px',
+                      fontSize: 9, fontWeight: 700, color: 'var(--ds-surface, #fff)', padding: '2px 8px',
                       borderRadius: 4, background: statusColor, whiteSpace: 'nowrap' as const,
                       flexShrink: 0,
                     }}>
@@ -296,7 +296,7 @@ function FilterPill({ label, active, onClick, dotColor }: {
       fontSize: 10, fontWeight: 700, padding: '3px 9px', borderRadius: 4,
       cursor: 'pointer', transition: 'all .12s',
       background: active ? 'var(--cp-blue)' : T.surface,
-      color: active ? '#fff' : T.text3,
+      color: active ? 'var(--ds-surface, #fff)' : T.text3,
       border: active ? 'none' : `1px solid ${T.borderStrong}`,
     }}>
       {dotColor && <span style={{ width: 6, height: 6, borderRadius: '50%', background: dotColor, flexShrink: 0 }} />}

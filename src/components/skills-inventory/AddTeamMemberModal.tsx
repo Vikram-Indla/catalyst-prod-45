@@ -140,7 +140,7 @@ export function AddTeamMemberModal({ open, onClose, onSave, projects }: AddTeamM
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
-      <DialogContent className="max-w-2xl bg-white dark:bg-[#1A1A1A] max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-2xl bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="text-foreground">Add Team Member</DialogTitle>
         </DialogHeader>
@@ -153,7 +153,7 @@ export function AddTeamMemberModal({ open, onClose, onSave, projects }: AddTeamM
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                 placeholder="Enter full name"
-                className="bg-white dark:bg-[#0A0A0A] border-border dark:border-[#2E2E2E]"
+                className="bg-white dark:bg-[var(--ds-surface,#0A0A0A)] border-border dark:border-[var(--ds-border,#2E2E2E)]"
               />
             </div>
             <div className="space-y-2">
@@ -162,10 +162,10 @@ export function AddTeamMemberModal({ open, onClose, onSave, projects }: AddTeamM
                 value={formData.role}
                 onValueChange={(value) => setFormData({ ...formData, role: value })}
               >
-                <SelectTrigger className="bg-white dark:bg-[#0A0A0A] border-border dark:border-[#2E2E2E]">
+                <SelectTrigger className="bg-white dark:bg-[var(--ds-surface,#0A0A0A)] border-border dark:border-[var(--ds-border,#2E2E2E)]">
                   <SelectValue placeholder="Select role" />
                 </SelectTrigger>
-                <SelectContent className="bg-white dark:bg-[#1A1A1A]">
+                <SelectContent className="bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)]">
                   {STANDARD_ROLES.map((role) => (
                     <SelectItem key={role} value={role}>{role}</SelectItem>
                   ))}
@@ -181,10 +181,10 @@ export function AddTeamMemberModal({ open, onClose, onSave, projects }: AddTeamM
               value={formData.project}
               onValueChange={(value) => setFormData({ ...formData, project: value })}
             >
-              <SelectTrigger className="bg-white dark:bg-[#0A0A0A] border-border dark:border-[#2E2E2E]">
+              <SelectTrigger className="bg-white dark:bg-[var(--ds-surface,#0A0A0A)] border-border dark:border-[var(--ds-border,#2E2E2E)]">
                 <SelectValue placeholder="Select project (optional)" />
               </SelectTrigger>
-              <SelectContent className="bg-white dark:bg-[#1A1A1A]">
+              <SelectContent className="bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)]">
                 {projects.filter(p => p !== 'All Projects').map((project) => (
                   <SelectItem key={project} value={project}>{project}</SelectItem>
                 ))}
@@ -209,7 +209,7 @@ export function AddTeamMemberModal({ open, onClose, onSave, projects }: AddTeamM
             </div>
 
             {/* Quick Add Skills */}
-            <div className="flex flex-wrap gap-1.5 p-3 bg-neutral-50 dark:bg-[#0A0A0A] rounded-lg border border-neutral-200 dark:border-[#2E2E2E]">
+            <div className="flex flex-wrap gap-1.5 p-3 bg-neutral-50 dark:bg-[var(--ds-surface,#0A0A0A)] rounded-lg border border-neutral-200 dark:border-[var(--ds-border,#2E2E2E)]">
               <span className="text-xs text-muted-foreground mr-1">Quick add:</span>
               {STANDARD_SKILLS.map((skill) => (
                 <button
@@ -219,7 +219,7 @@ export function AddTeamMemberModal({ open, onClose, onSave, projects }: AddTeamM
                   className={`px-2 py-0.5 text-xs rounded border transition-colors ${
                     skills.some(s => s.skill === skill)
                       ? 'bg-brand-primary/20 border-brand-primary text-brand-primary'
-                      : 'bg-white dark:bg-[#1A1A1A] border-neutral-300 dark:border-[#2E2E2E] text-neutral-600 dark:text-[#A1A1A1] hover:border-brand-primary hover:text-brand-primary'
+                      : 'bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] border-neutral-300 dark:border-[var(--ds-border,#2E2E2E)] text-neutral-600 dark:text-[var(--ds-text-subtlest,#A1A1A1)] hover:border-brand-primary hover:text-brand-primary'
                   }`}
                 >
                   {skill}
@@ -230,16 +230,16 @@ export function AddTeamMemberModal({ open, onClose, onSave, projects }: AddTeamM
             {/* Skill Entries */}
             <div className="space-y-2">
               {skills.map((skillEntry, index) => (
-                <div key={skillEntry.id} className="flex items-center gap-2 p-2 bg-neutral-50 dark:bg-[#0A0A0A] rounded-lg">
+                <div key={skillEntry.id} className="flex items-center gap-2 p-2 bg-neutral-50 dark:bg-[var(--ds-surface,#0A0A0A)] rounded-lg">
                   <div className="flex-1">
                     <Select
                       value={skillEntry.skill}
                       onValueChange={(value) => handleSkillChange(skillEntry.id, 'skill', value)}
                     >
-                      <SelectTrigger className="bg-white dark:bg-[#0A0A0A] border-border dark:border-[#2E2E2E] h-9">
+                      <SelectTrigger className="bg-white dark:bg-[var(--ds-surface,#0A0A0A)] border-border dark:border-[var(--ds-border,#2E2E2E)] h-9">
                         <SelectValue placeholder="Select skill" />
                       </SelectTrigger>
-                      <SelectContent className="bg-white dark:bg-[#1A1A1A]">
+                      <SelectContent className="bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)]">
                         {STANDARD_SKILLS.map((skill) => (
                           <SelectItem key={skill} value={skill}>{skill}</SelectItem>
                         ))}
@@ -251,10 +251,10 @@ export function AddTeamMemberModal({ open, onClose, onSave, projects }: AddTeamM
                       value={skillEntry.proficiency}
                       onValueChange={(value) => handleSkillChange(skillEntry.id, 'proficiency', value)}
                     >
-                      <SelectTrigger className="bg-white dark:bg-[#0A0A0A] border-border dark:border-[#2E2E2E] h-9">
+                      <SelectTrigger className="bg-white dark:bg-[var(--ds-surface,#0A0A0A)] border-border dark:border-[var(--ds-border,#2E2E2E)] h-9">
                         <SelectValue />
                       </SelectTrigger>
-                      <SelectContent className="bg-white dark:bg-[#1A1A1A]">
+                      <SelectContent className="bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)]">
                         {proficiencyOptions.map(({ level, label }) => (
                           <SelectItem key={level} value={level}>{label}</SelectItem>
                         ))}
@@ -285,7 +285,7 @@ export function AddTeamMemberModal({ open, onClose, onSave, projects }: AddTeamM
               onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
               rows={2}
               placeholder="Additional notes..."
-              className="bg-white dark:bg-[#0A0A0A] border-border dark:border-[#2E2E2E] resize-none"
+              className="bg-white dark:bg-[var(--ds-surface,#0A0A0A)] border-border dark:border-[var(--ds-border,#2E2E2E)] resize-none"
             />
           </div>
 

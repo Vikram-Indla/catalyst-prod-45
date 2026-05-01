@@ -155,7 +155,7 @@ export default function RequirementAssistCompose() {
               onChange={(e) => setTitle(e.target.value)}
               placeholder="Enter document title…"
               className={cn(
-                'w-full h-10 px-3 text-sm rounded-lg border border-[hsl(var(--border))] bg-white dark:bg-[#1A1A1A] dark:border-[#2E2E2E] dark:text-[#EDEDED]',
+                'w-full h-10 px-3 text-sm rounded-lg border border-[hsl(var(--border))] bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] dark:border-[var(--ds-border,#2E2E2E)] dark:text-[var(--ds-text,#EDEDED)]',
                 'focus:outline-none focus:border-blue-500 focus:ring-[3px] focus:ring-blue-500/10',
                 'placeholder:text-muted-foreground'
               )}
@@ -175,7 +175,7 @@ export default function RequirementAssistCompose() {
                       'text-left p-4 rounded-lg border transition-all',
                       methodology === opt.key
                         ? 'border-blue-500 border-2 bg-blue-50/50'
-                        : 'border-[hsl(var(--border))] hover:border-zinc-300 bg-white dark:bg-[#1A1A1A] dark:border-[#2E2E2E]'
+                        : 'border-[hsl(var(--border))] hover:border-zinc-300 bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] dark:border-[var(--ds-border,#2E2E2E)]'
                     )}
                   >
                     <div className="text-[13px] font-bold text-foreground">{opt.title}</div>
@@ -194,7 +194,7 @@ export default function RequirementAssistCompose() {
                 value={sourceBrdId}
                 onChange={(e) => setSourceBrdId(e.target.value)}
                 className={cn(
-                  'w-full h-10 px-3 text-sm rounded-lg border border-[hsl(var(--border))] bg-white dark:bg-[#1A1A1A] dark:border-[#2E2E2E] dark:text-[#EDEDED]',
+                  'w-full h-10 px-3 text-sm rounded-lg border border-[hsl(var(--border))] bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] dark:border-[var(--ds-border,#2E2E2E)] dark:text-[var(--ds-text,#EDEDED)]',
                   'focus:outline-none focus:border-blue-500 focus:ring-[3px] focus:ring-blue-500/10'
                 )}
               >
@@ -220,7 +220,7 @@ export default function RequirementAssistCompose() {
                 onChange={(e) => setInputText(e.target.value)}
                 placeholder={config.textPlaceholder}
                 className={cn(
-                  'w-full min-h-[160px] p-3 text-[13px] leading-relaxed rounded-lg border border-[hsl(var(--border))] bg-white dark:bg-[#1A1A1A] dark:border-[#2E2E2E] dark:text-[#EDEDED] resize-y',
+                  'w-full min-h-[160px] p-3 text-[13px] leading-relaxed rounded-lg border border-[hsl(var(--border))] bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] dark:border-[var(--ds-border,#2E2E2E)] dark:text-[var(--ds-text,#EDEDED)] resize-y',
                   'focus:outline-none focus:border-blue-500 focus:ring-[3px] focus:ring-blue-500/10',
                   'placeholder:text-muted-foreground',
                   capabilityKey === 'translation' && 'text-right'
@@ -235,7 +235,7 @@ export default function RequirementAssistCompose() {
             <div>
               <label className="block text-xs font-semibold text-foreground mb-1.5">Or Upload Document</label>
               {uploadedFile ? (
-                <div className="flex items-center gap-3 p-4 rounded-lg border border-[hsl(var(--border))] bg-white dark:bg-[#1A1A1A] dark:border-[#2E2E2E]">
+                <div className="flex items-center gap-3 p-4 rounded-lg border border-[hsl(var(--border))] bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] dark:border-[var(--ds-border,#2E2E2E)]">
                   <FileText className="w-5 h-5 text-blue-600 shrink-0" />
                   <div className="flex-1 min-w-0">
                     <p className="text-[13px] font-medium text-foreground truncate">{uploadedFile.name}</p>
@@ -275,7 +275,7 @@ export default function RequirementAssistCompose() {
         {/* Right panel — Sticky summary */}
         <div className="relative">
           <div
-            className="sticky top-20 bg-white dark:bg-[#1A1A1A] border border-[hsl(var(--border))] dark:border-[#2E2E2E] rounded-xl p-6 space-y-4"
+            className="sticky top-20 bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] border border-[hsl(var(--border))] dark:border-[var(--ds-border,#2E2E2E)] rounded-xl p-6 space-y-4"
           >
             <h4 className="text-xs font-bold text-foreground uppercase tracking-wide">Generation Summary</h4>
 

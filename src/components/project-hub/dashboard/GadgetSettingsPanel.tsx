@@ -204,7 +204,7 @@ export default function GadgetSettingsPanel({
   };
 
   return (
-    <div ref={wrapperRef} style={{ fontSize: 13, color: '#172B4D' }}>
+    <div ref={wrapperRef} style={{ fontSize: 13, color: 'var(--ds-text, #172B4D)' }}>
       {/* HEADER */}
       <div
         style={{
@@ -216,8 +216,8 @@ export default function GadgetSettingsPanel({
         }}
       >
         <div>
-          <div style={{ fontSize: 13, fontWeight: 700, color: '#172B4D' }}>Gadget settings</div>
-          <div style={{ fontSize: 11, color: '#6B778C', marginTop: 2 }}>
+          <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--ds-text, #172B4D)' }}>Gadget settings</div>
+          <div style={{ fontSize: 11, color: 'var(--ds-text-subtlest, #6B778C)', marginTop: 2 }}>
             Showing {filter.label}
           </div>
         </div>
@@ -229,7 +229,7 @@ export default function GadgetSettingsPanel({
             background: 'transparent',
             border: 0,
             cursor: 'pointer',
-            color: '#6B778C',
+            color: 'var(--ds-text-subtlest, #6B778C)',
             padding: 4,
             borderRadius: 3,
           }}
@@ -242,7 +242,7 @@ export default function GadgetSettingsPanel({
       <div style={{ padding: 14, display: 'flex', flexDirection: 'column', gap: 12, maxHeight: 480, overflowY: 'auto' }}>
         {/* ── DATE RANGE — first field ── */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-          <label style={{ fontSize: 11, fontWeight: 600, color: '#6B778C',
+          <label style={{ fontSize: 11, fontWeight: 600, color: 'var(--ds-text-subtlest, #6B778C)',
                           display: 'flex', alignItems: 'center', gap: 6 }}>
             Date range
             <span style={{ fontSize: 9, fontWeight: 700, background: '#DEEBFF',
@@ -257,7 +257,7 @@ export default function GadgetSettingsPanel({
               display: 'flex', alignItems: 'center', minHeight: 36,
               border: openField === 'date' ? '2px solid #4C9AFF' : '2px solid #DFE1E6',
               boxShadow: openField === 'date' ? '0 0 0 2px rgba(76,154,255,.25)' : 'none',
-              borderRadius: 3, background: openField === 'date' ? '#fff' : '#FAFBFC',
+              borderRadius: 3, background: openField === 'date' ? 'var(--ds-surface, #fff)' : 'var(--ds-surface-sunken, #FAFBFC)',
               padding: '0 8px', cursor: 'pointer', width: '100%', gap: 8,
             }}
           >
@@ -269,7 +269,7 @@ export default function GadgetSettingsPanel({
                 strokeWidth="1.5" strokeLinecap="round"/>
             </svg>
             <span style={{ flex: 1, textAlign: 'left', fontSize: 13,
-                           color: draft.datePreset === 'all' ? '#7A869A' : '#172B4D',
+                           color: draft.datePreset === 'all' ? '#7A869A' : 'var(--ds-text, #172B4D)',
                            fontWeight: draft.datePreset === 'all' ? 400 : 500 }}>
               {draft.dateLabel || 'Select period'}
             </span>
@@ -280,7 +280,7 @@ export default function GadgetSettingsPanel({
           </button>
 
           {openField === 'date' && (
-            <div style={{ background: '#fff', border: '1px solid #DFE1E6',
+            <div style={{ background: 'var(--ds-surface, #fff)', border: '1px solid #DFE1E6',
                           borderRadius: 3, boxShadow: '0 6px 16px rgba(9,30,66,.15)',
                           overflow: 'hidden' }}>
               {/* This period group */}
@@ -299,7 +299,7 @@ export default function GadgetSettingsPanel({
                                background: active ? '#EAF0FB' : 'transparent', cursor: 'pointer',
                                borderLeft: active ? '3px solid #0052CC' : '3px solid transparent' }}>
                       <div style={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-                        <span style={{ fontSize: 13, color: active ? '#0052CC' : '#172B4D',
+                        <span style={{ fontSize: 13, color: active ? '#0052CC' : 'var(--ds-text, #172B4D)',
                                        fontWeight: active ? 500 : 400 }}>
                           {p === 'thisQuarter' ? 'This quarter' : 'This year'}
                         </span>
@@ -335,7 +335,7 @@ export default function GadgetSettingsPanel({
                                padding: '7px 12px', width: '100%', border: 0, textAlign: 'left',
                                background: active ? '#EAF0FB' : 'transparent', cursor: 'pointer',
                                borderLeft: active ? '3px solid #0052CC' : '3px solid transparent' }}>
-                      <span style={{ fontSize: 13, color: active ? '#0052CC' : '#172B4D',
+                      <span style={{ fontSize: 13, color: active ? '#0052CC' : 'var(--ds-text, #172B4D)',
                                      fontWeight: active ? 500 : 400 }}>{q} 2026</span>
                       <span style={{ fontSize: 11, color: active ? '#0052CC' : '#7A869A' }}>
                         {range?.trim()}
@@ -356,7 +356,7 @@ export default function GadgetSettingsPanel({
                            background: draft.datePreset === 'all' ? '#EAF0FB' : 'transparent',
                            cursor: 'pointer',
                            borderLeft: draft.datePreset === 'all' ? '3px solid #0052CC' : '3px solid transparent' }}>
-                  <span style={{ fontSize: 13, color: draft.datePreset === 'all' ? '#0052CC' : '#172B4D' }}>
+                  <span style={{ fontSize: 13, color: draft.datePreset === 'all' ? '#0052CC' : 'var(--ds-text, #172B4D)' }}>
                     All active
                   </span>
                   <span style={{ fontSize: 11, color: '#7A869A' }}>No date filter</span>
@@ -366,17 +366,17 @@ export default function GadgetSettingsPanel({
           )}
 
           <label style={{ display: 'flex', alignItems: 'center', gap: 7, padding: '6px 8px',
-                          background: '#F4F5F7', borderRadius: 3, cursor: 'pointer' }}>
+                          background: 'var(--ds-surface-sunken, #F4F5F7)', borderRadius: 3, cursor: 'pointer' }}>
             <input type="checkbox" checked={applyToAll}
               onChange={(e) => setApplyToAll(e.target.checked)}
               style={{ width: 13, height: 13, accentColor: '#0052CC', cursor: 'pointer' }}/>
             <span style={{ fontSize: 11, color: '#42526E' }}>
-              Apply this date to <strong style={{ color: '#172B4D' }}>all gadgets</strong> on this dashboard
+              Apply this date to <strong style={{ color: 'var(--ds-text, #172B4D)' }}>all gadgets</strong> on this dashboard
             </span>
           </label>
 
           <span style={{ fontSize: 10, color: '#7A869A', fontFamily: 'monospace',
-                         background: '#F4F5F7', padding: '2px 6px', borderRadius: 3 }}>
+                         background: 'var(--ds-surface-sunken, #F4F5F7)', padding: '2px 6px', borderRadius: 3 }}>
             filters on: {GADGET_DATE_FIELD[gadgetType]}
           </span>
         </div>
@@ -390,7 +390,7 @@ export default function GadgetSettingsPanel({
               style={{
                 display: 'flex', alignItems: 'center', minHeight: 36,
                 border: '2px solid #DFE1E6', borderRadius: 3,
-                background: '#F4F5F7', padding: '0 10px',
+                background: 'var(--ds-surface-sunken, #F4F5F7)', padding: '0 10px',
                 cursor: 'not-allowed', opacity: 0.6,
                 fontSize: 13, color: '#7A869A', fontStyle: 'italic',
               }}
@@ -505,7 +505,7 @@ export default function GadgetSettingsPanel({
                       borderRadius: 3,
                       cursor: 'pointer',
                       border: active ? '1px solid #0052CC' : '1px solid #DFE1E6',
-                      background: active ? '#DEEBFF' : '#F4F5F7',
+                      background: active ? '#DEEBFF' : 'var(--ds-surface-sunken, #F4F5F7)',
                       color: active ? '#0052CC' : '#42526E',
                       fontWeight: active ? 500 : 400,
                       textAlign: 'left',
@@ -567,7 +567,7 @@ export default function GadgetSettingsPanel({
           justifyContent: 'space-between',
           padding: '10px 14px',
           borderTop: '1px solid #F1F2F4',
-          background: '#FAFBFC',
+          background: 'var(--ds-surface-sunken, #FAFBFC)',
         }}
       >
         <button
@@ -700,7 +700,7 @@ function MultiSelectGeneric({
           width: '100%',
           padding: '4px 6px',
           border: open ? '2px solid #4C9AFF' : '1px solid #DFE1E6',
-          background: '#FAFBFC',
+          background: 'var(--ds-surface-sunken, #FAFBFC)',
           borderRadius: 3,
           textAlign: 'left',
           cursor: 'pointer',
@@ -735,7 +735,7 @@ function MultiSelectGeneric({
                   e.stopPropagation();
                   onChange(value.filter((x) => x !== v));
                 }}
-                style={{ cursor: 'pointer', color: '#6B778C' }}
+                style={{ cursor: 'pointer', color: 'var(--ds-text-subtlest, #6B778C)' }}
               >
                 ×
               </span>
@@ -781,10 +781,10 @@ function MultiSelectGeneric({
                   cursor: 'pointer',
                   fontSize: 12,
                   textAlign: 'left',
-                  color: '#172B4D',
+                  color: 'var(--ds-text, #172B4D)',
                 }}
                 onMouseEnter={(e) => {
-                  if (!sel) e.currentTarget.style.background = '#F4F5F7';
+                  if (!sel) e.currentTarget.style.background = 'var(--ds-surface-sunken, #F4F5F7)';
                 }}
                 onMouseLeave={(e) => {
                   if (!sel) e.currentTarget.style.background = 'transparent';
@@ -850,7 +850,7 @@ function MultiSelectStatus({
           width: '100%',
           padding: '4px 6px',
           border: open ? '2px solid #4C9AFF' : '1px solid #DFE1E6',
-          background: '#FAFBFC',
+          background: 'var(--ds-surface-sunken, #FAFBFC)',
           borderRadius: 3,
           textAlign: 'left',
           cursor: 'pointer',
@@ -872,7 +872,7 @@ function MultiSelectStatus({
                 ? { bg: '#DEEBFF', fg: '#0747A6' }
                 : grp?.label === 'Paused'
                 ? { bg: '#FFF0B3', fg: '#974F0C' }
-                : { bg: '#DFE1E6', fg: '#42526E' };
+                : { bg: 'var(--ds-border, #DFE1E6)', fg: '#42526E' };
             return (
               <span
                 key={v}
@@ -937,7 +937,7 @@ function MultiSelectStatus({
                   textTransform: 'uppercase',
                   letterSpacing: '0.04em',
                   color: '#7A869A',
-                  background: '#FAFBFC',
+                  background: 'var(--ds-surface-sunken, #FAFBFC)',
                 }}
               >
                 <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
@@ -980,7 +980,7 @@ function MultiSelectStatus({
                       cursor: 'pointer',
                       fontSize: 12,
                       textAlign: 'left',
-                      color: '#172B4D',
+                      color: 'var(--ds-text, #172B4D)',
                     }}
                   >
                     <span
@@ -1024,7 +1024,7 @@ function GadgetSpecific({
   if (gadgetType === 'workload' || gadgetType === 'activity') return null;
 
   const wrapper: React.CSSProperties = {
-    background: '#F4F5F7',
+    background: 'var(--ds-surface-sunken, #F4F5F7)',
     borderRadius: 4,
     padding: 10,
     display: 'flex',
@@ -1169,7 +1169,7 @@ function GadgetSpecific({
             padding: '0 8px',
             fontSize: 12,
             background: 'var(--ds-text-inverse, #FFFFFF)',
-            color: '#172B4D',
+            color: 'var(--ds-text, #172B4D)',
           }}
         >
           {opts.map((o) => (
@@ -1190,7 +1190,7 @@ function GadgetSpecific({
 
     const numInput: React.CSSProperties = {
       height: 28, width: '100%', border: '1px solid #DFE1E6', borderRadius: 3,
-      padding: '0 8px', fontSize: 12, background: 'var(--ds-text-inverse, #FFFFFF)', color: '#172B4D',
+      padding: '0 8px', fontSize: 12, background: 'var(--ds-text-inverse, #FFFFFF)', color: 'var(--ds-text, #172B4D)',
     };
 
     return (
@@ -1231,7 +1231,7 @@ function GadgetSpecific({
             onChange={(e) => onChange('showOnlyActive', e.currentTarget.checked)}
             style={{ width: 13, height: 13, accentColor: '#0052CC', cursor: 'pointer' }}
           />
-          <span style={{ fontSize: 12, color: '#172B4D' }}>Active releases only</span>
+          <span style={{ fontSize: 12, color: 'var(--ds-text, #172B4D)' }}>Active releases only</span>
         </label>
       </div>
     );

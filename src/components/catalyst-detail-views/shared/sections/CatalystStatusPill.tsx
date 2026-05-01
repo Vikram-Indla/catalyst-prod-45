@@ -89,7 +89,7 @@ export function CatalystStatusPill({ status, onStatusChange }: CatalystStatusPil
           position: 'sticky',
           top: 32,
           zIndex: 9,
-          background: '#FFFFFF',
+          background: 'var(--ds-surface, #FFFFFF)',
           marginBottom: 12,
         }}
       >

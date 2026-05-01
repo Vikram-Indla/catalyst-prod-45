@@ -126,7 +126,7 @@ export function RoadmapScoreTab({ item }: RoadmapScoreTabProps) {
     ctx.closePath();
     ctx.fillStyle = 'rgba(37, 99, 235, 0.15)';
     ctx.fill();
-    ctx.strokeStyle = '#2563EB';
+    ctx.strokeStyle = 'var(--ds-text-brand, #2563EB)';
     ctx.lineWidth = 2;
     ctx.stroke();
 
@@ -138,9 +138,9 @@ export function RoadmapScoreTab({ item }: RoadmapScoreTabProps) {
       const y = cy + r * Math.sin(angle);
       ctx.beginPath();
       ctx.arc(x, y, 4, 0, 2 * Math.PI);
-      ctx.fillStyle = '#2563EB';
+      ctx.fillStyle = 'var(--ds-text-brand, #2563EB)';
       ctx.fill();
-      ctx.strokeStyle = '#ffffff';
+      ctx.strokeStyle = 'var(--ds-surface, #ffffff)';
       ctx.lineWidth = 2;
       ctx.stroke();
     });
@@ -176,7 +176,7 @@ export function RoadmapScoreTab({ item }: RoadmapScoreTabProps) {
         <div style={{ fontSize: '11px', fontWeight: 600, color: '#a1a1aa', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '4px' }}>
           Computed Score
         </div>
-        <div style={{ fontSize: '40px', fontWeight: 700, color: '#2563eb', fontVariantNumeric: 'tabular-nums' }}>
+        <div style={{ fontSize: '40px', fontWeight: 700, color: 'var(--ds-text-brand, #2563eb)', fontVariantNumeric: 'tabular-nums' }}>
           {computedScore.toFixed(1)}
         </div>
         <div style={{ fontSize: '12px', color: '#71717a' }}>
@@ -192,7 +192,7 @@ export function RoadmapScoreTab({ item }: RoadmapScoreTabProps) {
             <div key={dim.key}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
                 <span style={{ fontSize: '12px', fontWeight: 600, color: '#52525b' }}>{dim.label}</span>
-                <span style={{ fontSize: '13px', fontWeight: 600, color: '#2563eb', fontVariantNumeric: 'tabular-nums' }}>
+                <span style={{ fontSize: '13px', fontWeight: 600, color: 'var(--ds-text-brand, #2563eb)', fontVariantNumeric: 'tabular-nums' }}>
                   {Number(val).toFixed(1)}
                 </span>
               </div>
@@ -209,7 +209,7 @@ export function RoadmapScoreTab({ item }: RoadmapScoreTabProps) {
                   appearance: 'none',
                   WebkitAppearance: 'none',
                   borderRadius: '9999px',
-                  background: `linear-gradient(to right, #2563eb 0%, #2563eb ${(val / 5) * 100}%, #e4e4e7 ${(val / 5) * 100}%, #e4e4e7 100%)`,
+                  background: `linear-gradient(to right, var(--ds-text-brand, #2563eb) 0%, var(--ds-text-brand, #2563eb) ${(val / 5) * 100}%, #e4e4e7 ${(val / 5) * 100}%, #e4e4e7 100%)`,
                   outline: 'none',
                   cursor: 'pointer',
                 }}
@@ -231,8 +231,8 @@ export function RoadmapScoreTab({ item }: RoadmapScoreTabProps) {
         style={{
           width: '100%',
           height: '50px',
-          backgroundColor: saveMutation.isPending ? '#93c5fd' : '#2563eb',
-          color: '#ffffff',
+          backgroundColor: saveMutation.isPending ? '#93c5fd' : 'var(--ds-text-brand, #2563eb)',
+          color: 'var(--ds-surface, #ffffff)',
           fontSize: '14px',
           fontWeight: 600,
           borderRadius: '8px',
@@ -240,14 +240,14 @@ export function RoadmapScoreTab({ item }: RoadmapScoreTabProps) {
           cursor: saveMutation.isPending ? 'not-allowed' : 'pointer',
           transition: 'background-color 150ms',
         }}
-        onMouseEnter={e => { if (!saveMutation.isPending) e.currentTarget.style.backgroundColor = '#1d4ed8'; }}
-        onMouseLeave={e => { if (!saveMutation.isPending) e.currentTarget.style.backgroundColor = '#2563eb'; }}
+        onMouseEnter={e => { if (!saveMutation.isPending) e.currentTarget.style.backgroundColor = 'var(--ds-background-brand-bold-hovered, #1d4ed8)'; }}
+        onMouseLeave={e => { if (!saveMutation.isPending) e.currentTarget.style.backgroundColor = 'var(--ds-text-brand, #2563eb)'; }}
       >
         {saveMutation.isPending ? 'Saving…' : saveMutation.isSuccess ? '✓ Saved' : 'Save Score'}
       </button>
 
       {saveMutation.isError && (
-        <div style={{ marginTop: '8px', fontSize: '12px', color: '#ef4444', textAlign: 'center' }}>
+        <div style={{ marginTop: '8px', fontSize: '12px', color: 'var(--ds-text-danger, #ef4444)', textAlign: 'center' }}>
           Failed to save. Please try again.
         </div>
       )}

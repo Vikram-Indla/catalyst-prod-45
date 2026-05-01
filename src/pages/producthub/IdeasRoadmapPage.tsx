@@ -12,8 +12,8 @@ import { DK, LK } from '@/utils/dark-mode-styles';
 const TEAMS = ['All Teams', 'Senaie BAU', 'Integration Team', 'Mobile App Team'];
 
 const ROADMAP_COLS = [
-  { key: null, label: 'NO QUARTER', borderColor: 'transparent', textColor: '#94A3B8' },
-  { key: 'Q1', label: 'Q1 2026', borderColor: '#991B1B', textColor: '#991B1B' },
+  { key: null, label: 'NO QUARTER', borderColor: 'transparent', textColor: 'var(--ds-text-subtlest, #94A3B8)' },
+  { key: 'Q1', label: 'Q1 2026', borderColor: 'var(--ds-text-danger, #991B1B)', textColor: 'var(--ds-text-danger, #991B1B)' },
   { key: 'Q2', label: 'Q2 2026', borderColor: '#1E40AF', textColor: '#1E40AF' },
   { key: 'Q3', label: 'Q3 2026', borderColor: '#115E59', textColor: '#115E59' },
   { key: 'Q4', label: 'Q4 2026', borderColor: '#78350F', textColor: '#78350F' },
@@ -53,7 +53,7 @@ export default function IdeasRoadmapPage() {
               <strong style={{ fontFamily: 'var(--cp-font-mono)', color: dk.greenText }}>{convertedCount}</strong> converted
             </span>
             <label style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px', color: dk.t2, cursor: 'pointer' }}>
-              <input type="checkbox" checked={committedOnly} onChange={e => setCommittedOnly(e.target.checked)} style={{ accentColor: '#2563EB' }} />
+              <input type="checkbox" checked={committedOnly} onChange={e => setCommittedOnly(e.target.checked)} style={{ accentColor: 'var(--ds-text-brand, #2563EB)' }} />
               Committed only
             </label>
           </div>
@@ -64,8 +64,8 @@ export default function IdeasRoadmapPage() {
       <div style={{ background: dk.pageBg, borderBottom: `1px solid ${dk.border}`, padding: '10px 28px', display: 'flex', alignItems: 'center', gap: '10px' }}>
         {TEAMS.map(t => (
           <button key={t} onClick={() => setTeamFilter(t)} style={{
-            background: teamFilter === t ? '#2563EB' : ('var(--cp-bg-elevated, #FFFFFF)'), color: teamFilter === t ? 'var(--ds-text-inverse, #FFFFFF)' : dk.t2,
-            border: `1px solid ${teamFilter === t ? '#2563EB' : dk.border}`,
+            background: teamFilter === t ? 'var(--ds-text-brand, #2563EB)' : ('var(--cp-bg-elevated, #FFFFFF)'), color: teamFilter === t ? 'var(--ds-text-inverse, #FFFFFF)' : dk.t2,
+            border: `1px solid ${teamFilter === t ? 'var(--ds-text-brand, #2563EB)' : dk.border}`,
             borderRadius: '20px', padding: '4px 12px', fontSize: '12px', fontWeight: 500, cursor: 'pointer',
           }}>{t}</button>
         ))}
@@ -112,7 +112,7 @@ function RoadmapCard({ idea, onClick, isDark, dk }: { idea: IdeaRow; onClick: ()
   return (
     <div onClick={onClick} style={{
       background: 'var(--cp-bg-elevated, #FFFFFF)',
-      border: `1px solid ${isDark ? '#454545' : dk.border}`,
+      border: `1px solid ${isDark ? 'var(--ds-border-bold, #454545)' : dk.border}`,
       borderLeft: isConverted ? '3px solid #16A34A' : `1px solid ${dk.border}`,
       borderRadius: '6px',
       padding: '12px', marginBottom: '8px', cursor: 'pointer',
@@ -124,7 +124,7 @@ function RoadmapCard({ idea, onClick, isDark, dk }: { idea: IdeaRow; onClick: ()
           e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.10)';
           e.currentTarget.style.transform = 'translateY(-1px)';
         }
-        e.currentTarget.style.borderColor = isDark ? '#454545' : 'rgba(37,99,235,0.3)';
+        e.currentTarget.style.borderColor = isDark ? 'var(--ds-border-bold, #454545)' : 'rgba(37,99,235,0.3)';
       }}
       onMouseLeave={e => {
         if (!isDark) {

@@ -7,8 +7,8 @@ interface ResourcePatternProps {
 
 const WarningIcon = () => (
   <svg width="18" height="18" viewBox="0 0 20 20" fill="none" style={{ flexShrink: 0, marginTop: 1 }}>
-    <path d="M10 2L19 18H1L10 2Z" fill="rgba(217, 119, 6, 0.15)" stroke="#D97706" strokeWidth="1.5" strokeLinejoin="round"/>
-    <text x="10" y="15" textAnchor="middle" fill="#D97706" fontSize="10" fontWeight="700">!</text>
+    <path d="M10 2L19 18H1L10 2Z" fill="rgba(217, 119, 6, 0.15)" stroke="var(--ds-text-warning, #D97706)" strokeWidth="1.5" strokeLinejoin="round"/>
+    <text x="10" y="15" textAnchor="middle" fill="var(--ds-text-warning, #D97706)" fontSize="10" fontWeight="700">!</text>
   </svg>
 );
 

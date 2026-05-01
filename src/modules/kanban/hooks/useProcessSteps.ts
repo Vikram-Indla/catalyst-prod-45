@@ -17,11 +17,11 @@ export interface ProcessStep {
 
 // Color palette for dynamic columns
 const COLUMN_COLORS = [
-  '#3b82f6', // Blue
-  '#2563eb', // Blue-600
-  '#1d4ed8', // Blue-700
+  'var(--ds-text-brand, #3b82f6)', // Blue
+  'var(--ds-text-brand, #2563eb)', // Blue-600
+  'var(--ds-background-brand-bold-hovered, #1d4ed8)', // Blue-700
   '#0d9488', // Teal
-  '#ef4444', // Red
+  'var(--ds-text-danger, #ef4444)', // Red
   '#f97316', // Orange
   '#0f766e', // Teal-dark
   '#6b7280', // Gray

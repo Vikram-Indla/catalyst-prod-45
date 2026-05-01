@@ -144,8 +144,8 @@ export function RoadmapToolbar({
               style={{
                 height: 32, padding: '0 10px', border: 'none', cursor: 'pointer',
                 fontSize: 11, fontWeight: viewMode === k ? 600 : 500,
-                color: viewMode === k ? '#2563EB' : (isDark ? '#A1A1A1' : (hc ? '#3F3F46' : '#71717A')),
-                background: viewMode === k ? ('var(--cp-primary-light, #EFF6FF)') : (isDark ? 'var(--cp-bg-surface, #242528)' : (hc ? '#F0F0F0' : '#fff')),
+                color: viewMode === k ? 'var(--ds-text-brand, #2563EB)' : (isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : (hc ? '#3F3F46' : '#71717A')),
+                background: viewMode === k ? ('var(--cp-primary-light, #EFF6FF)') : (isDark ? 'var(--cp-bg-surface, #242528)' : (hc ? '#F0F0F0' : 'var(--ds-surface, #fff)')),
                 borderRight: k === 'gantt' ? `1px solid ${borderColor}` : 'none',
               }}
             >
@@ -211,8 +211,8 @@ export function RoadmapToolbar({
             className="h-9 gap-1.5"
             style={{
               border: `${hc ? 2 : 1}px solid ${hc ? '#09090B' : borderColor}`,
-              background: hc ? '#09090B' : '#fff',
-              color: hc ? '#fff' : '#3F3F46',
+              background: hc ? '#09090B' : 'var(--ds-surface, #fff)',
+              color: hc ? 'var(--ds-surface, #fff)' : '#3F3F46',
               fontWeight: 600,
               fontSize: 11,
             }}
@@ -250,7 +250,7 @@ export function RoadmapToolbar({
         {/* Create */}
         <button
           onClick={onOpenCreateDialog}
-          className="inline-flex items-center gap-2 h-9 px-4 font-medium text-sm rounded-lg transition-colors shadow-sm bg-[#2563eb] hover:bg-[#1d4ed8] text-white"
+          className="inline-flex items-center gap-2 h-9 px-4 font-medium text-sm rounded-lg transition-colors shadow-sm bg-[var(--ds-text-brand,#2563eb)] hover:bg-[var(--ds-background-brand-bold-hovered,#1d4ed8)] text-white"
           data-create-button
         >
           <Plus className="w-4 h-4" />

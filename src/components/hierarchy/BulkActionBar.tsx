@@ -39,18 +39,18 @@ export function BulkActionBar({
       padding: '0 16px', fontFamily: 'var(--cp-font-body)', position: 'sticky', top: 0, zIndex: 50,
       borderRadius: '8px 8px 0 0',
     }}>
-      <span style={{ fontSize: 13, fontWeight: 600, color: '#FFFFFF' }}>
+      <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--ds-surface, #FFFFFF)' }}>
         {selectedCount} item{selectedCount > 1 ? 's' : ''} selected
       </span>
 
       <button onClick={onClear} style={{
         background: 'none', border: 'none', cursor: 'pointer', padding: '4px 8px',
-        display: 'flex', alignItems: 'center', gap: 4, color: '#94A3B8', fontSize: 12,
+        display: 'flex', alignItems: 'center', gap: 4, color: 'var(--ds-text-subtlest, #94A3B8)', fontSize: 12,
       }}>
         <X size={14} /> Clear
       </button>
 
-      <div style={{ width: 1, height: 20, background: '#334155', margin: '0 4px' }} />
+      <div style={{ width: 1, height: 20, background: 'var(--ds-text-subtle, #334155)', margin: '0 4px' }} />
 
       {/* Status */}
       <div style={{ position: 'relative' }}>
@@ -98,14 +98,14 @@ export function BulkActionBar({
       {/* Delete */}
       {confirmDelete ? (
         <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-          <span style={{ fontSize: 12, color: '#FCA5A5' }}>Delete {selectedCount} items?</span>
+          <span style={{ fontSize: 12, color: 'var(--ds-border-danger, #FCA5A5)' }}>Delete {selectedCount} items?</span>
           <button onClick={() => { onBulkDelete(); setConfirmDelete(false); }} style={{
             fontSize: 11, fontWeight: 600, padding: '4px 10px', borderRadius: 4,
-            background: '#DC2626', color: '#FFFFFF', border: 'none', cursor: 'pointer',
+            background: 'var(--ds-text-danger, #DC2626)', color: 'var(--ds-surface, #FFFFFF)', border: 'none', cursor: 'pointer',
           }}>Yes, delete</button>
           <button onClick={() => setConfirmDelete(false)} style={{
             fontSize: 11, padding: '4px 10px', borderRadius: 4,
-            background: 'transparent', color: '#94A3B8', border: '1px solid #475569', cursor: 'pointer',
+            background: 'transparent', color: 'var(--ds-text-subtlest, #94A3B8)', border: '1px solid #475569', cursor: 'pointer',
           }}>Cancel</button>
         </div>
       ) : (
@@ -123,11 +123,11 @@ function BulkBtn({ icon: Icon, label, onClick, danger }: {
     <button onClick={onClick} style={{
       height: 30, padding: '0 10px', fontSize: 12, fontWeight: 500,
       fontFamily: 'var(--cp-font-body)',
-      color: danger ? '#FCA5A5' : 'var(--bd-default, #E2E8F0)',
+      color: danger ? 'var(--ds-border-danger, #FCA5A5)' : 'var(--bd-default, #E2E8F0)',
       background: 'transparent', border: '1px solid #475569', borderRadius: 4,
       cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4,
     }}
-      onMouseEnter={e => (e.currentTarget.style.background = '#334155')}
+      onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-text-subtle, #334155)')}
       onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
     >
       <Icon size={13} /> {label}

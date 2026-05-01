@@ -21,25 +21,25 @@
    ───────────────────────────────────────────────────────────── */
 .ra-enterprise-clean {
   /* Neutral Foundation */
-  --ra-white: #ffffff;
-  --ra-slate-50: #f8fafc;
-  --ra-slate-100: #f1f5f9;
-  --ra-slate-200: #e2e8f0;
-  --ra-slate-300: #cbd5e1;
-  --ra-slate-400: #94a3b8;
-  --ra-slate-500: #64748b;
-  --ra-slate-600: #475569;
-  --ra-slate-700: #334155;
+  --ra-white: var(--ds-surface, #ffffff);
+  --ra-slate-50: var(--ds-surface-sunken, #f8fafc);
+  --ra-slate-100: var(--ds-surface-sunken, #f1f5f9);
+  --ra-slate-200: var(--ds-border, #e2e8f0);
+  --ra-slate-300: var(--ds-text-disabled, #cbd5e1);
+  --ra-slate-400: var(--ds-text-subtlest, #94a3b8);
+  --ra-slate-500: var(--ds-text-subtlest, #64748b);
+  --ra-slate-600: var(--ds-text-subtle, #475569);
+  --ra-slate-700: var(--ds-text-subtle, #334155);
   --ra-slate-800: #1e293b;
 
   /* Project Bar Colors */
-  --ra-project-sectorial: #3b82f6;
+  --ra-project-sectorial: var(--ds-text-brand, #3b82f6);
   --ra-project-dataplatform: #10b981;
-  --ra-project-senaei: #f59e0b;
+  --ra-project-senaei: var(--ds-text-warning, #f59e0b);
   --ra-project-tahommena: #ec4899;
   --ra-project-inspection: #8b5cf6;
   --ra-project-irplatform: #06b6d4;
-  --ra-project-default: #3b82f6;
+  --ra-project-default: var(--ds-text-brand, #3b82f6);
 
   /* Cell Configuration */
   --ra-cell-bg: var(--ra-white);
@@ -285,9 +285,9 @@
   --ra-slate-50: hsl(var(--muted));
   /* §L38 hex only. DARK MODE dark-mode palette (CLAUDE.md §18). */
   --ra-slate-100: var(--cp-bg-surface, #242528);  /* card surface */
-  --ra-slate-200: #292929;  /* active / pressed */
-  --ra-slate-700: #A1A1A1;  /* text secondary */
-  --ra-slate-800: #EDEDED;  /* text primary */
+  --ra-slate-200: var(--ds-border, #292929);  /* active / pressed */
+  --ra-slate-700: var(--ds-text-subtlest, #A1A1A1);  /* text secondary */
+  --ra-slate-800: var(--ds-text, #EDEDED);  /* text primary */
 }
 
 .dark .ra-enterprise-clean td {

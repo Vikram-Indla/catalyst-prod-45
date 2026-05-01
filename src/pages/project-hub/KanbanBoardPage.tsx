@@ -860,7 +860,7 @@ export default function KanbanBoardPage() {
 
       {/* ── F3: Archived filter chip (admin/owner only) — Atlaskit Button ── */}
       {canArchive && (
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '6px 16px', borderBottom: '1px solid #DFE1E6', background: '#FAFBFC' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '6px 16px', borderBottom: '1px solid #DFE1E6', background: 'var(--ds-surface-sunken, #FAFBFC)' }}>
           <Button
             appearance={showArchived ? 'primary' : 'subtle'}
             spacing="compact"

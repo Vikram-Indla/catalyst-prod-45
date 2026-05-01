@@ -27,17 +27,17 @@ export interface LabelsDropdownProps {
 
 // Predefined label colors for color picker
 const LABEL_COLORS = [
-  { name: 'Red', value: '#dc2626' },
+  { name: 'Red', value: 'var(--ds-text-danger, #dc2626)' },
   { name: 'Orange', value: '#f97316' },
   { name: 'Yellow', value: '#eab308' },
-  { name: 'Green', value: '#16a34a' },
+  { name: 'Green', value: 'var(--ds-text-success, #16a34a)' },
   { name: 'Teal', value: '#14b8a6' },
   { name: 'Cyan', value: '#06b6d4' },
-  { name: 'Blue', value: '#2563eb' },
+  { name: 'Blue', value: 'var(--ds-text-brand, #2563eb)' },
   { name: 'Indigo', value: '#6366f1' },
   { name: 'Purple', value: '#8b5cf6' },
   { name: 'Pink', value: '#ec4899' },
-  { name: 'Gray', value: '#64748b' },
+  { name: 'Gray', value: 'var(--ds-text-subtlest, #64748b)' },
   { name: 'Lime', value: '#84cc16' }
 ];
 

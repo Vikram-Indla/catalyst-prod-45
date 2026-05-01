@@ -42,15 +42,15 @@ export default function DirectNotificationRow({ notification, isRead, onMarkRead
   const relTime   = formatRelativeTime(notification.createdAt);
   const { target, aggregation, thread } = notification;
 
-  const hoverBg  = isDark ? '#1F1F1F' : token('color.background.neutral.hovered', 'rgba(9,30,66,0.06)');
-  const pressBg  = isDark ? '#292929' : token('color.background.neutral.pressed',  'rgba(9,30,66,0.10)');
+  const hoverBg  = isDark ? 'var(--ds-surface-overlay, #1F1F1F)' : token('color.background.neutral.hovered', 'rgba(9,30,66,0.06)');
+  const pressBg  = isDark ? 'var(--ds-border, #292929)' : token('color.background.neutral.pressed',  'rgba(9,30,66,0.10)');
   const rowBg    = pressed ? pressBg : hovered ? hoverBg : 'transparent';
 
-  const text1    = isDark ? '#EDEDED' : token('color.text', '#292A2E');
-  const text2    = isDark ? '#A1A1A1' : token('color.text.subtle',    '#626F86');
-  const text3    = isDark ? '#878787' : token('color.text.subtlest',  '#8590A2');
+  const text1    = isDark ? 'var(--ds-text, #EDEDED)' : token('color.text', '#292A2E');
+  const text2    = isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : token('color.text.subtle',    '#626F86');
+  const text3    = isDark ? 'var(--ds-text-subtlest, #878787)' : token('color.text.subtlest',  '#8590A2');
   const linkClr  = isDark ? '#6698FF' : token('color.link',           '#0C66E4');
-  const dotColor = '#2563EB';
+  const dotColor = 'var(--ds-text-brand, #2563EB)';
 
   const threadBorderColor = isDark ? 'rgba(255,255,255,0.10)' : 'rgba(11,18,14,0.14)';
   const threadBg          = 'transparent';

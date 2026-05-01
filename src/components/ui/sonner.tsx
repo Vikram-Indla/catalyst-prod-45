@@ -1,9 +1,9 @@
 /**
  * Catalyst V5 Toast / Notifications Styling
  * - Success: Light teal background (#f0fdfa) with teal text (#0d9488)
- * - Error: Light red background (#fef2f2) with red text (#dc2626)
- * - Warning: Light amber background (#fffbeb) with amber text (#d97706)
- * - Info: Light blue background (#eff6ff) with blue text (#2563eb)
+ * - Error: Light red background (var(--ds-background-danger, #fef2f2)) with red text (var(--ds-text-danger, #dc2626))
+ * - Warning: Light amber background (#fffbeb) with amber text (var(--ds-text-warning, #d97706))
+ * - Info: Light blue background (var(--ds-background-selected, #eff6ff)) with blue text (var(--ds-text-brand, #2563eb))
  */
 import { useTheme } from "next-themes";
 import { Toaster as Sonner, toast } from "sonner";
@@ -30,9 +30,9 @@ const Toaster = ({ ...props }: ToasterProps) => {
           cancelButton: "group-[.toast]:bg-muted group-[.toast]:text-muted-foreground",
           // Catalyst V5: Light semantic backgrounds with matching text
           success: "group-[.toast]:!bg-[#f0fdfa] group-[.toast]:!text-[#0d9488] group-[.toast]:!border-[#99f6e4]",
-          error: "group-[.toast]:!bg-[#fef2f2] group-[.toast]:!text-[#dc2626] group-[.toast]:!border-[#fecaca]",
-          warning: "group-[.toast]:!bg-[#fffbeb] group-[.toast]:!text-[#d97706] group-[.toast]:!border-[#fde68a]",
-          info: "group-[.toast]:!bg-[#eff6ff] group-[.toast]:!text-[#2563eb] group-[.toast]:!border-[#bfdbfe]",
+          error: "group-[.toast]:!bg-[var(--ds-background-danger,#fef2f2)] group-[.toast]:!text-[var(--ds-text-danger,#dc2626)] group-[.toast]:!border-[#fecaca]",
+          warning: "group-[.toast]:!bg-[#fffbeb] group-[.toast]:!text-[var(--ds-text-warning,#d97706)] group-[.toast]:!border-[#fde68a]",
+          info: "group-[.toast]:!bg-[var(--ds-background-selected,#eff6ff)] group-[.toast]:!text-[var(--ds-text-brand,#2563eb)] group-[.toast]:!border-[#bfdbfe]",
         },
       }}
       {...props}

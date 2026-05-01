@@ -14,7 +14,7 @@ interface TesterPerformanceTableProps {
   cycleId: string;
 }
 
-const AVATAR_COLORS = [CATALYST_V5.primary, CATALYST_V5.teal, '#8b5cf6', '#ec4899', '#f59e0b'];
+const AVATAR_COLORS = [CATALYST_V5.primary, CATALYST_V5.teal, '#8b5cf6', '#ec4899', 'var(--ds-text-warning, #f59e0b)'];
 
 function formatDuration(seconds: number): string {
   if (seconds < 60) return `${Math.round(seconds)}s`;

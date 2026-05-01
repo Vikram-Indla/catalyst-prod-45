@@ -19,13 +19,13 @@ interface AddColumnModalProps {
 }
 
 const PRESET_COLORS = [
-  '#94a3b8', // Slate
-  '#3b82f6', // Blue
+  'var(--ds-text-subtlest, #94a3b8)', // Slate
+  'var(--ds-text-brand, #3b82f6)', // Blue
   '#0d9488', // Teal
   '#10b981', // Green
-  '#d97706', // Amber
+  'var(--ds-text-warning, #d97706)', // Amber
   '#f97316', // Orange
-  '#ef4444', // Red
+  'var(--ds-text-danger, #ef4444)', // Red
   '#7c3aed', // Violet
   '#ec4899', // Pink
 ];

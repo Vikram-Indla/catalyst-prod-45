@@ -17,9 +17,9 @@ interface OkrProgressCellProps {
 // Catalyst Design System — Progress bar color based on percentage threshold
 function getProgressBarColor(actual?: number | null): string {
   if (actual == null) return 'bg-[#e5e5e5]';
-  if (actual >= 80) return 'bg-[#22c55e]';  // Success - On Track
-  if (actual >= 50) return 'bg-[#f59e0b]';  // Warning - At Risk
-  return 'bg-[#ef4444]';                     // Danger - Off Track
+  if (actual >= 80) return 'bg-[var(--ds-text-success,#22c55e)]';  // Success - On Track
+  if (actual >= 50) return 'bg-[var(--ds-text-warning,#f59e0b)]';  // Warning - At Risk
+  return 'bg-[var(--ds-text-danger,#ef4444)]';                     // Danger - Off Track
 }
 
 // Trend icon component
@@ -31,21 +31,21 @@ function TrendArrow({ trend }: { trend: TrendCode }) {
   // Ahead or On track - green up arrow
   if (trend === 'ahead' || trend === 'on-track') {
     return (
-      <TrendingUp className="h-3.5 w-3.5 text-[#22c55e] flex-shrink-0" />
+      <TrendingUp className="h-3.5 w-3.5 text-[var(--ds-text-success,#22c55e)] flex-shrink-0" />
     );
   }
 
   // At risk - warning down arrow
   if (trend === 'at-risk') {
     return (
-      <TrendingDown className="h-3.5 w-3.5 text-[#f59e0b] flex-shrink-0" />
+      <TrendingDown className="h-3.5 w-3.5 text-[var(--ds-text-warning,#f59e0b)] flex-shrink-0" />
     );
   }
 
   // Off track - danger down arrow
   if (trend === 'off-track') {
     return (
-      <TrendingDown className="h-3.5 w-3.5 text-[#ef4444] flex-shrink-0" />
+      <TrendingDown className="h-3.5 w-3.5 text-[var(--ds-text-danger,#ef4444)] flex-shrink-0" />
     );
   }
 
@@ -68,7 +68,7 @@ export function OkrProgressCell({ baseline, status, compact = false }: OkrProgre
       {/* Progress bar - fixed width, left-aligned with visible track */}
       <div className={cn(
         "h-2 rounded-full overflow-hidden flex-shrink-0",
-        isDark ? 'bg-[#292929]' : 'bg-[#e5e5e5]',
+        isDark ? 'bg-[var(--ds-border,#292929)]' : 'bg-[#e5e5e5]',
         compact ? 'w-20' : 'w-28'
       )}>
         <div
@@ -78,7 +78,7 @@ export function OkrProgressCell({ baseline, status, compact = false }: OkrProgre
       </div>
 
       {/* Percentage */}
-      <span className={cn("text-[14px] font-semibold flex-shrink-0 min-w-[36px] text-left tabular-nums", isDark ? 'text-[#EDEDED]' : 'text-[#171717]')}>
+      <span className={cn("text-[14px] font-semibold flex-shrink-0 min-w-[36px] text-left tabular-nums", isDark ? 'text-[var(--ds-text,#EDEDED)]' : 'text-[#171717]')}>
         {Math.round(actual)}%
       </span>
       

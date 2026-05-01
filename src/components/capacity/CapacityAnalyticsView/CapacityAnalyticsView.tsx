@@ -728,7 +728,7 @@ export function CapacityAnalyticsView({
               className={cn(
                 'h-8 px-4 text-sm font-medium',
                 viewScope === scope 
-                  ? 'bg-[#2563eb] text-white shadow-sm' 
+                  ? 'bg-[var(--ds-text-brand,#2563eb)] text-white shadow-sm' 
                   : 'text-foreground hover:bg-background'
               )}
               onClick={() => setViewScope(scope)}

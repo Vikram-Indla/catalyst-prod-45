@@ -156,7 +156,7 @@ export function TableView({ resources, projects, groupBy, groupedByAssignment, g
             </Tooltip>
             <div className="flex flex-col min-w-0">
               <div className="flex items-center gap-1.5">
-                <span className="font-semibold text-[14px] text-[#0f172a] dark:text-foreground truncate">{value}</span>
+                <span className="font-semibold text-[14px] text-[var(--ds-text,#0f172a)] dark:text-foreground truncate">{value}</span>
                 {/* Online indicator */}
                 {isOnline && (
                   <span className="w-2 h-2 rounded-full bg-[#059669] flex-shrink-0" />
@@ -190,10 +190,10 @@ export function TableView({ resources, projects, groupBy, groupedByAssignment, g
       render: (_: any, row: ResourceMetric) => {
         const vendor = row.vendor_name;
         if (!vendor) {
-          return <span className="text-[13px] text-[#475569]">-</span>;
+          return <span className="text-[13px] text-[var(--ds-text-subtle,#475569)]">-</span>;
         }
         return (
-          <span className="text-[13px] font-medium text-[#334155]">{vendor}</span>
+          <span className="text-[13px] font-medium text-[var(--ds-text-subtle,#334155)]">{vendor}</span>
         );
       },
     },
@@ -223,7 +223,7 @@ export function TableView({ resources, projects, groupBy, groupedByAssignment, g
 
         if (resourceAllocations.length === 0) {
           return (
-            <span className="text-[13px] font-medium text-[#475569]">No assignments this month</span>
+            <span className="text-[13px] font-medium text-[var(--ds-text-subtle,#475569)]">No assignments this month</span>
           );
         }
 
@@ -235,13 +235,13 @@ export function TableView({ resources, projects, groupBy, groupedByAssignment, g
               const now = new Date();
               const startDate = new Date(alloc.start_date);
               const isCommitted = startDate <= now;
-              const accentColor = isCommitted ? '#2563eb' : '#f59e0b'; // Blue for committed, Amber for forecast
-              const pctColor = isCommitted ? '#2563eb' : '#92400e';
+              const accentColor = isCommitted ? 'var(--ds-text-brand, #2563eb)' : 'var(--ds-text-warning, #f59e0b)'; // Blue for committed, Amber for forecast
+              const pctColor = isCommitted ? 'var(--ds-text-brand, #2563eb)' : '#92400e';
 
               return (
                 <span
                   key={idx}
-                  className="inline-flex items-center gap-2.5 px-3 py-1.5 rounded bg-white text-[13px] font-medium text-[#334155]"
+                  className="inline-flex items-center gap-2.5 px-3 py-1.5 rounded bg-white text-[13px] font-medium text-[var(--ds-text-subtle,#334155)]"
                   style={{
                     border: '1px solid #e2e8f0',
                     borderLeftWidth: '3px',
@@ -256,7 +256,7 @@ export function TableView({ resources, projects, groupBy, groupedByAssignment, g
               );
             })}
             {resourceAllocations.length > 3 && (
-              <span className="text-[11px] text-[#64748b]">+{resourceAllocations.length - 3} more</span>
+              <span className="text-[11px] text-[var(--ds-text-subtlest,#64748b)]">+{resourceAllocations.length - 3} more</span>
             )}
           </div>
         );
@@ -269,7 +269,7 @@ export function TableView({ resources, projects, groupBy, groupedByAssignment, g
       width: '130px',
       sortable: true,
       render: (value: string) => (
-        <span className="text-[13px] font-medium text-[#334155] dark:text-slate-300">{value || '-'}</span>
+        <span className="text-[13px] font-medium text-[var(--ds-text-subtle,#334155)] dark:text-slate-300">{value || '-'}</span>
       ),
     },
     {
@@ -298,7 +298,7 @@ export function TableView({ resources, projects, groupBy, groupedByAssignment, g
           'SUPPORT': { bg: 'rgba(16,185,129,0.12)', text: '#059669' },
         };
 
-        const style = deptStyles[deptUpper] || { bg: 'rgba(100,116,139,0.12)', text: '#475569' };
+        const style = deptStyles[deptUpper] || { bg: 'rgba(100,116,139,0.12)', text: 'var(--ds-text-subtle, #475569)' };
 
         return (
           <span
@@ -320,7 +320,7 @@ export function TableView({ resources, projects, groupBy, groupedByAssignment, g
         const endDate = row.contract_end_date;
 
         if (!endDate) {
-          return <span className="text-[13px] text-[#334155]">Permanent</span>;
+          return <span className="text-[13px] text-[var(--ds-text-subtle,#334155)]">Permanent</span>;
         }
 
         const endDateObj = new Date(endDate);
@@ -341,13 +341,13 @@ export function TableView({ resources, projects, groupBy, groupedByAssignment, g
             : `Expired ${Math.abs(daysRemaining)} days ago`;
 
         // Calculate status based on days remaining - Catalyst V1 style guide
-        // Critical: < 30 days (#b91c1c), Warning: 30-90 days (#92400e), Safe: > 90 days (#334155)
+        // Critical: < 30 days (#b91c1c), Warning: 30-90 days (#92400e), Safe: > 90 days (var(--ds-text-subtle, #334155))
         const status = daysRemaining <= 0 ? 'expired' : daysRemaining < 30 ? 'critical' : daysRemaining < 90 ? 'warning' : 'safe';
         const textColors: Record<string, string> = {
           critical: '#b91c1c',
           warning: '#92400e',
-          safe: '#334155',
-          expired: '#64748b',
+          safe: 'var(--ds-text-subtle, #334155)',
+          expired: 'var(--ds-text-subtlest, #64748b)',
         };
 
         return (
@@ -374,7 +374,7 @@ export function TableView({ resources, projects, groupBy, groupedByAssignment, g
           {/* Edit */}
           <button
             onClick={(e) => { e.stopPropagation(); onEditResource(row.id); }}
-            className="w-[30px] h-[30px] rounded-md flex items-center justify-center text-[#475569] hover:text-[#0f172a] hover:bg-[#f1f5f9] transition-colors"
+            className="w-[30px] h-[30px] rounded-md flex items-center justify-center text-[var(--ds-text-subtle,#475569)] hover:text-[var(--ds-text,#0f172a)] hover:bg-[var(--ds-surface-sunken,#f1f5f9)] transition-colors"
             title="Edit resource"
           >
             <Pencil className="w-4 h-4" />
@@ -382,7 +382,7 @@ export function TableView({ resources, projects, groupBy, groupedByAssignment, g
           {/* Delete */}
           <button
             onClick={(e) => { e.stopPropagation(); onDeleteResource(row); }}
-            className="w-[30px] h-[30px] rounded-md flex items-center justify-center text-[#475569] hover:text-[#0f172a] hover:bg-[#f1f5f9] transition-colors"
+            className="w-[30px] h-[30px] rounded-md flex items-center justify-center text-[var(--ds-text-subtle,#475569)] hover:text-[var(--ds-text,#0f172a)] hover:bg-[var(--ds-surface-sunken,#f1f5f9)] transition-colors"
             title="Remove from Capacity Planner"
           >
             <Trash2 className="w-4 h-4" />

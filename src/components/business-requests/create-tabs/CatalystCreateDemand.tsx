@@ -163,15 +163,15 @@ export function CatalystCreateDemand({ data, onChange }: DemandDetailsTabProps) 
     "rounded-lg",
     "text-gray-900 dark:text-gray-100",
     "placeholder:text-gray-400 dark:placeholder:text-gray-500",
-    "focus:border-[#2563eb] focus:ring-2 focus:ring-[#2563eb]/10",
+    "focus:border-[var(--ds-text-brand,#2563eb)] focus:ring-2 focus:ring-[var(--ds-text-brand,#2563eb)]/10",
     "transition-colors"
   );
 
   // Compact section header
   const SectionHeader = ({ icon: Icon, title }: { icon: React.ElementType; title: string }) => (
     <div className="flex items-center gap-2 pb-2 mb-3 border-b border-gray-200 dark:border-gray-700">
-      <Icon className="w-4 h-4 text-[#2563eb]" />
-      <h3 className="text-xs font-semibold uppercase tracking-wide text-[#2563eb]">
+      <Icon className="w-4 h-4 text-[var(--ds-text-brand,#2563eb)]" />
+      <h3 className="text-xs font-semibold uppercase tracking-wide text-[var(--ds-text-brand,#2563eb)]">
         {title}
       </h3>
     </div>
@@ -298,7 +298,7 @@ export function CatalystCreateDemand({ data, onChange }: DemandDetailsTabProps) 
                   "w-full justify-start h-9 text-sm",
                   "text-gray-500 dark:text-gray-400",
                   "border-gray-200 dark:border-gray-600",
-                  "border-dashed hover:border-[#2563eb] hover:bg-[#2563eb]/5"
+                  "border-dashed hover:border-[var(--ds-text-brand,#2563eb)] hover:bg-[var(--ds-text-brand,#2563eb)]/5"
                 )}
                 onClick={() => fileInputRef.current?.click()}
                 disabled={attachments.length >= MAX_FILES}
@@ -318,7 +318,7 @@ export function CatalystCreateDemand({ data, onChange }: DemandDetailsTabProps) 
                         "border border-gray-200 dark:border-gray-700"
                       )}
                     >
-                      <FileText className="h-3 w-3 text-[#2563eb] shrink-0" />
+                      <FileText className="h-3 w-3 text-[var(--ds-text-brand,#2563eb)] shrink-0" />
                       <span className="truncate max-w-[120px] text-gray-700 dark:text-gray-300">{file.name}</span>
                       <span className="text-gray-400 dark:text-gray-500">({formatFileSize(file.size)})</span>
                       <button

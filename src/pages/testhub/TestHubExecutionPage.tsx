@@ -108,18 +108,18 @@ interface StepStatus {
 
 // ── Status helpers ─────────────────────────────────────────────────────────
 const statusConfigLight: Record<string, { icon: any; color: string; bg: string; label: string }> = {
-  not_run: { icon: Clock, color: '#64748B', bg: '#F1F5F9', label: 'Not Run' },
+  not_run: { icon: Clock, color: 'var(--ds-text-subtlest, #64748B)', bg: 'var(--ds-surface-sunken, #F1F5F9)', label: 'Not Run' },
   passed: { icon: CheckCircle2, color: '#059669', bg: '#ECFDF5', label: 'Passed' },
-  failed: { icon: XCircle, color: '#DC2626', bg: '#FEF2F2', label: 'Failed' },
-  blocked: { icon: AlertTriangle, color: '#D97706', bg: '#FFFBEB', label: 'Blocked' },
-  skipped: { icon: SkipForward, color: '#94A3B8', bg: '#F8FAFC', label: 'Skipped' },
+  failed: { icon: XCircle, color: 'var(--ds-text-danger, #DC2626)', bg: 'var(--ds-background-danger, #FEF2F2)', label: 'Failed' },
+  blocked: { icon: AlertTriangle, color: 'var(--ds-text-warning, #D97706)', bg: '#FFFBEB', label: 'Blocked' },
+  skipped: { icon: SkipForward, color: 'var(--ds-text-subtlest, #94A3B8)', bg: 'var(--ds-surface-sunken, #F8FAFC)', label: 'Skipped' },
 };
 const statusConfigDark: Record<string, { icon: any; color: string; bg: string; label: string }> = {
-  not_run: { icon: Clock, color: '#878787', bg: '#1A1A1A', label: 'Not Run' },
+  not_run: { icon: Clock, color: 'var(--ds-text-subtlest, #878787)', bg: 'var(--ds-surface-raised, #1A1A1A)', label: 'Not Run' },
   passed: { icon: CheckCircle2, color: '#059669', bg: 'rgba(34,197,94,0.12)', label: 'Passed' },
-  failed: { icon: XCircle, color: '#DC2626', bg: 'rgba(248,113,113,0.12)', label: 'Failed' },
-  blocked: { icon: AlertTriangle, color: '#D97706', bg: 'rgba(251,191,36,0.12)', label: 'Blocked' },
-  skipped: { icon: SkipForward, color: '#878787', bg: '#1A1A1A', label: 'Skipped' },
+  failed: { icon: XCircle, color: 'var(--ds-text-danger, #DC2626)', bg: 'rgba(248,113,113,0.12)', label: 'Failed' },
+  blocked: { icon: AlertTriangle, color: 'var(--ds-text-warning, #D97706)', bg: 'rgba(251,191,36,0.12)', label: 'Blocked' },
+  skipped: { icon: SkipForward, color: 'var(--ds-text-subtlest, #878787)', bg: 'var(--ds-surface-raised, #1A1A1A)', label: 'Skipped' },
 };
 // Default reference for static usage; components should use getStatusConfig(isDark) instead
 const statusConfig = statusConfigLight;
@@ -495,8 +495,8 @@ export default function TestHubExecutionPage() {
     const element = document.getElementById(`step-card-${currentStepIndex}`);
     if (element) {
       const colors: Record<string, string> = isDark
-        ? { passed: 'rgba(34,197,94,0.12)', failed: 'rgba(248,113,113,0.12)', blocked: 'rgba(251,191,36,0.12)', skipped: '#1A1A1A' }
-        : { passed: '#ECFDF5', failed: '#FEF2F2', blocked: '#FFFBEB', skipped: '#F8FAFC' };
+        ? { passed: 'rgba(34,197,94,0.12)', failed: 'rgba(248,113,113,0.12)', blocked: 'rgba(251,191,36,0.12)', skipped: 'var(--ds-surface-raised, #1A1A1A)' }
+        : { passed: '#ECFDF5', failed: 'var(--ds-background-danger, #FEF2F2)', blocked: '#FFFBEB', skipped: 'var(--ds-surface-sunken, #F8FAFC)' };
       element.style.backgroundColor = colors[status] || 'hsl(var(--card))';
       setTimeout(() => { element.style.backgroundColor = 'hsl(var(--card))'; }, 200);
     }

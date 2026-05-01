@@ -119,10 +119,10 @@ export function DefectsSection({
           <button onClick={() => setCreating(true)} title="Log defect" style={{
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             width: 24, height: 24, border: 'none', borderRadius: 3, background: 'transparent',
-            cursor: 'pointer', color: '#6B778C', transition: 'background 0.15s, color 0.15s',
+            cursor: 'pointer', color: 'var(--ds-text-subtlest, #6B778C)', transition: 'background 0.15s, color 0.15s',
           }}
-            onMouseEnter={e => { e.currentTarget.style.background = '#F4F5F7'; e.currentTarget.style.color = '#172B4D'; }}
-            onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#6B778C'; }}
+            onMouseEnter={e => { e.currentTarget.style.background = 'var(--ds-surface-sunken, #F4F5F7)'; e.currentTarget.style.color = 'var(--ds-text, #172B4D)'; }}
+            onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--ds-text-subtlest, #6B778C)'; }}
           >
             <Plus size={16} strokeWidth={2} />
           </button>
@@ -143,18 +143,18 @@ export function DefectsSection({
           <div style={{
             display: 'flex', alignItems: 'center', gap: 0,
             border: '2px solid #4C9AFF', borderRadius: 3, margin: '4px 0 0',
-            background: '#fff', overflow: 'hidden',
+            background: 'var(--ds-surface, #fff)', overflow: 'hidden',
           }}>
             <input ref={createRef} type="text" placeholder="Describe the defect…" value={draftSummary}
               onChange={e => setDraftSummary(e.target.value)}
               onKeyDown={e => { if (e.key === 'Enter' && draftSummary.trim()) { e.preventDefault(); createMutation.mutate(draftSummary); } if (e.key === 'Escape') { setCreating(false); setDraftSummary(''); } }}
               maxLength={255}
-              style={{ flex: 1, height: 36, padding: '0 12px', border: 'none', outline: 'none', fontSize: 14, color: '#172B4D', fontFamily: 'inherit', background: 'transparent' }}
+              style={{ flex: 1, height: 36, padding: '0 12px', border: 'none', outline: 'none', fontSize: 14, color: 'var(--ds-text, #172B4D)', fontFamily: 'inherit', background: 'transparent' }}
             />
             <div style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '0 8px', borderLeft: '1px solid #DFE1E6' }}>
               <button onClick={() => { if (draftSummary.trim()) createMutation.mutate(draftSummary); }}
                 disabled={!draftSummary.trim() || createMutation.isPending} title="Create (Enter)"
-                style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 28, height: 28, border: '1px solid #DFE1E6', borderRadius: 3, background: '#F4F5F7', cursor: draftSummary.trim() ? 'pointer' : 'not-allowed', color: '#6B778C', opacity: draftSummary.trim() ? 1 : 0.5 }}
+                style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 28, height: 28, border: '1px solid #DFE1E6', borderRadius: 3, background: 'var(--ds-surface-sunken, #F4F5F7)', cursor: draftSummary.trim() ? 'pointer' : 'not-allowed', color: 'var(--ds-text-subtlest, #6B778C)', opacity: draftSummary.trim() ? 1 : 0.5 }}
               >
                 {createMutation.isPending ? <Loader2 size={14} className="animate-spin" /> : <CornerDownLeft size={14} />}
               </button>
@@ -164,7 +164,7 @@ export function DefectsSection({
         {creating && (
           <div style={{ textAlign: 'right', padding: '6px 0 2px' }}>
             <button onClick={() => { setCreating(false); setDraftSummary(''); }}
-              style={{ background: 'none', border: 'none', fontSize: 13, color: '#6B778C', cursor: 'pointer', fontFamily: 'inherit' }}>Cancel</button>
+              style={{ background: 'none', border: 'none', fontSize: 13, color: 'var(--ds-text-subtlest, #6B778C)', cursor: 'pointer', fontFamily: 'inherit' }}>Cancel</button>
           </div>
         )}
       </SectionBlock>

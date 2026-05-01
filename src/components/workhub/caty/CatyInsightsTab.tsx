@@ -64,7 +64,7 @@ export function CatyInsightsTab() {
           <div
             className="p-3 rounded-lg border flex flex-col items-center justify-center gap-1"
             style={{
-              backgroundColor: '#f8fafc',
+              backgroundColor: 'var(--ds-surface-sunken, #f8fafc)',
               borderColor: 'var(--wh-border-light)',
             }}
           >
@@ -95,7 +95,7 @@ export function CatyInsightsTab() {
           <div
             className="p-3 rounded-lg border flex flex-col items-center justify-center"
             style={{
-              backgroundColor: '#f8fafc',
+              backgroundColor: 'var(--ds-surface-sunken, #f8fafc)',
               borderColor: 'var(--wh-border-light)',
             }}
           >
@@ -117,7 +117,7 @@ export function CatyInsightsTab() {
           <div
             className="p-3 rounded-lg border flex flex-col items-center justify-center"
             style={{
-              backgroundColor: '#f8fafc',
+              backgroundColor: 'var(--ds-surface-sunken, #f8fafc)',
               borderColor: 'var(--wh-border-light)',
             }}
           >
@@ -139,14 +139,14 @@ export function CatyInsightsTab() {
           <div
             className="p-3 rounded-lg border flex flex-col items-center justify-center"
             style={{
-              backgroundColor: summary.dueThisWeek > 0 ? '#fef3c7' : '#f8fafc',
+              backgroundColor: summary.dueThisWeek > 0 ? '#fef3c7' : 'var(--ds-surface-sunken, #f8fafc)',
               borderColor: summary.dueThisWeek > 0 ? '#fcd34d' : 'var(--wh-border-light)',
             }}
           >
             <span
               className="text-lg font-bold"
               style={{
-                color: summary.dueThisWeek > 0 ? '#d97706' : 'var(--wh-text-primary)',
+                color: summary.dueThisWeek > 0 ? 'var(--ds-text-warning, #d97706)' : 'var(--wh-text-primary)',
                 fontFamily: 'var(--cp-font-heading)',
               }}
             >
@@ -155,7 +155,7 @@ export function CatyInsightsTab() {
             <span
               className="text-xs font-medium"
               style={{
-                color: summary.dueThisWeek > 0 ? '#d97706' : 'var(--wh-text-secondary)',
+                color: summary.dueThisWeek > 0 ? 'var(--ds-text-warning, #d97706)' : 'var(--wh-text-secondary)',
               }}
             >
               Due This Week
@@ -190,17 +190,17 @@ export function CatyInsightsTab() {
                 high: {
                   icon: AlertTriangle,
                   bgColor: '#fee2e2',
-                  color: '#dc2626',
+                  color: 'var(--ds-text-danger, #dc2626)',
                 },
                 medium: {
                   icon: AlertCircle,
                   bgColor: '#fef3c7',
-                  color: '#d97706',
+                  color: 'var(--ds-text-warning, #d97706)',
                 },
                 low: {
                   icon: Info,
                   bgColor: '#dbeafe',
-                  color: '#2563eb',
+                  color: 'var(--ds-text-brand, #2563eb)',
                 },
               };
 

@@ -403,7 +403,7 @@ export function PlannerCalendar({ tasks, onTaskClick, onDateClick }: PlannerCale
             id: u.id, 
             name: u.name, 
             initials: u.initials,
-            avatarColor: '#3b82f6',
+            avatarColor: 'var(--ds-text-brand, #3b82f6)',
           }))}
           tasks={filteredTasks}
         />

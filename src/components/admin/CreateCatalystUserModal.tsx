@@ -72,12 +72,12 @@ const CreateCatalystUserModal: React.FC<Props> = ({ open, onClose, onSuccess }) 
     );
   };
 
-  const labelStyle: React.CSSProperties = { fontSize: '11px', fontWeight: 600, color: '#334155', marginBottom: '4px', display: 'block' };
+  const labelStyle: React.CSSProperties = { fontSize: '11px', fontWeight: 600, color: 'var(--ds-text-subtle, #334155)', marginBottom: '4px', display: 'block' };
 
   return (
     <Dialog open={open} onOpenChange={v => { if (!v) onClose(); }}>
       <DialogContent
-        className="!bg-white dark:!bg-[#1A1A1A] !text-slate-900 dark:!text-[#EDEDED] p-0 gap-0"
+        className="!bg-white dark:!bg-[var(--ds-surface-raised,#1A1A1A)] !text-slate-900 dark:!text-[var(--ds-text,#EDEDED)] p-0 gap-0"
         style={{ maxWidth: '460px', borderRadius: '8px' }}
       >
         {/* Header */}
@@ -85,7 +85,7 @@ const CreateCatalystUserModal: React.FC<Props> = ({ open, onClose, onSuccess }) 
           <DialogTitle style={{ fontFamily: 'var(--cp-font-heading)', fontSize: '15px', fontWeight: 700, color: 'var(--fg-1, #0F172A)', margin: 0 }}>
             Create Catalyst User
           </DialogTitle>
-          <p style={{ fontSize: '11px', color: '#64748B', marginTop: '2px' }}>
+          <p style={{ fontSize: '11px', color: 'var(--ds-text-subtlest, #64748B)', marginTop: '2px' }}>
             Local account — not pushed to Jira
           </p>
           <button
@@ -95,7 +95,7 @@ const CreateCatalystUserModal: React.FC<Props> = ({ open, onClose, onSuccess }) 
               width: '26px', height: '26px', borderRadius: '50%',
               border: '1px solid rgba(15,23,42,0.10)', background: 'var(--bg-app, #FFFFFF)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
-              cursor: 'pointer', color: '#64748B',
+              cursor: 'pointer', color: 'var(--ds-text-subtlest, #64748B)',
             }}
           >
             <X size={12} />
@@ -119,41 +119,41 @@ const CreateCatalystUserModal: React.FC<Props> = ({ open, onClose, onSuccess }) 
 
           {/* Full Name */}
           <div style={{ marginBottom: '12px' }}>
-            <label style={labelStyle}>Full Name <span style={{ color: '#DC2626' }}>*</span></label>
+            <label style={labelStyle}>Full Name <span style={{ color: 'var(--ds-text-danger, #DC2626)' }}>*</span></label>
             <Input
               value={displayName}
               onChange={e => { setDisplayName(e.target.value); setErrors(p => ({ ...p, displayName: '' })); }}
               placeholder="e.g. Dr. Ahmed Al-Rashid"
-              className="!bg-white dark:!bg-[#1A1A1A] !text-slate-900 dark:!text-[#EDEDED] !border-slate-200 dark:!border-[#2E2E2E]"
+              className="!bg-white dark:!bg-[var(--ds-surface-raised,#1A1A1A)] !text-slate-900 dark:!text-[var(--ds-text,#EDEDED)] !border-slate-200 dark:!border-[var(--ds-border,#2E2E2E)]"
               style={{ fontSize: '12px', height: '34px' }}
             />
-            {errors.displayName && <span style={{ fontSize: '10px', color: '#DC2626', marginTop: '2px', display: 'block' }}>{errors.displayName}</span>}
+            {errors.displayName && <span style={{ fontSize: '10px', color: 'var(--ds-text-danger, #DC2626)', marginTop: '2px', display: 'block' }}>{errors.displayName}</span>}
           </div>
 
           {/* Email */}
           <div style={{ marginBottom: '12px' }}>
-            <label style={labelStyle}>Email <span style={{ color: '#DC2626' }}>*</span></label>
+            <label style={labelStyle}>Email <span style={{ color: 'var(--ds-text-danger, #DC2626)' }}>*</span></label>
             <Input
               type="email"
               value={email}
               onChange={e => { setEmail(e.target.value); setErrors(p => ({ ...p, email: '' })); }}
               placeholder="user@moi.gov.sa"
-              className="!bg-white dark:!bg-[#1A1A1A] !text-slate-900 dark:!text-[#EDEDED] !border-slate-200 dark:!border-[#2E2E2E]"
+              className="!bg-white dark:!bg-[var(--ds-surface-raised,#1A1A1A)] !text-slate-900 dark:!text-[var(--ds-text,#EDEDED)] !border-slate-200 dark:!border-[var(--ds-border,#2E2E2E)]"
               style={{ fontSize: '12px', height: '34px' }}
             />
-            {errors.email && <span style={{ fontSize: '10px', color: '#DC2626', marginTop: '2px', display: 'block' }}>{errors.email}</span>}
+            {errors.email && <span style={{ fontSize: '10px', color: 'var(--ds-text-danger, #DC2626)', marginTop: '2px', display: 'block' }}>{errors.email}</span>}
           </div>
 
           {/* Password */}
           <div style={{ marginBottom: '12px' }}>
-            <label style={labelStyle}>Password <span style={{ color: '#DC2626' }}>*</span></label>
+            <label style={labelStyle}>Password <span style={{ color: 'var(--ds-text-danger, #DC2626)' }}>*</span></label>
             <div style={{ position: 'relative' }}>
               <Input
                 type={showPassword ? 'text' : 'password'}
                 value={password}
                 onChange={e => { setPassword(e.target.value); setErrors(p => ({ ...p, password: '' })); }}
                 placeholder="Min 8 characters"
-                className="!bg-white dark:!bg-[#1A1A1A] !text-slate-900 dark:!text-[#EDEDED] !border-slate-200 dark:!border-[#2E2E2E] pr-9"
+                className="!bg-white dark:!bg-[var(--ds-surface-raised,#1A1A1A)] !text-slate-900 dark:!text-[var(--ds-text,#EDEDED)] !border-slate-200 dark:!border-[var(--ds-border,#2E2E2E)] pr-9"
                 style={{ fontSize: '12px', height: '34px' }}
               />
               <button
@@ -161,16 +161,16 @@ const CreateCatalystUserModal: React.FC<Props> = ({ open, onClose, onSuccess }) 
                 onClick={() => setShowPassword(!showPassword)}
                 style={{
                   position: 'absolute', right: '8px', top: '50%', transform: 'translateY(-50%)',
-                  background: 'none', border: 'none', cursor: 'pointer', color: '#64748B', padding: 0,
+                  background: 'none', border: 'none', cursor: 'pointer', color: 'var(--ds-text-subtlest, #64748B)', padding: 0,
                 }}
               >
                 {showPassword ? <EyeOff size={14} /> : <Eye size={14} />}
               </button>
             </div>
-            <span style={{ fontSize: '10px', color: '#94A3B8', marginTop: '2px', display: 'block' }}>
+            <span style={{ fontSize: '10px', color: 'var(--ds-text-subtlest, #94A3B8)', marginTop: '2px', display: 'block' }}>
               Min 8 characters. Stored securely in Catalyst (bcrypt).
             </span>
-            {errors.password && <span style={{ fontSize: '10px', color: '#DC2626', marginTop: '1px', display: 'block' }}>{errors.password}</span>}
+            {errors.password && <span style={{ fontSize: '10px', color: 'var(--ds-text-danger, #DC2626)', marginTop: '1px', display: 'block' }}>{errors.password}</span>}
           </div>
 
           {/* Role + Department */}
@@ -178,10 +178,10 @@ const CreateCatalystUserModal: React.FC<Props> = ({ open, onClose, onSuccess }) 
             <div>
               <label style={labelStyle}>Resource Role</label>
               <Select value={roleId} onValueChange={setRoleId}>
-                <SelectTrigger className="!bg-white dark:!bg-[#1A1A1A] !text-slate-900 dark:!text-[#EDEDED] !border-slate-200 dark:!border-[#2E2E2E]" style={{ height: '34px', fontSize: '12px' }}>
+                <SelectTrigger className="!bg-white dark:!bg-[var(--ds-surface-raised,#1A1A1A)] !text-slate-900 dark:!text-[var(--ds-text,#EDEDED)] !border-slate-200 dark:!border-[var(--ds-border,#2E2E2E)]" style={{ height: '34px', fontSize: '12px' }}>
                   <SelectValue placeholder="Select role" />
                 </SelectTrigger>
-                <SelectContent className="!bg-white dark:!bg-[#1A1A1A] !text-slate-900 dark:!text-[#EDEDED]">
+                <SelectContent className="!bg-white dark:!bg-[var(--ds-surface-raised,#1A1A1A)] !text-slate-900 dark:!text-[var(--ds-text,#EDEDED)]">
                   {ROLES.map(r => (
                     <SelectItem key={r} value={r} style={{ fontSize: '12px' }}>{r}</SelectItem>
                   ))}
@@ -191,10 +191,10 @@ const CreateCatalystUserModal: React.FC<Props> = ({ open, onClose, onSuccess }) 
             <div>
               <label style={labelStyle}>Department</label>
               <Select value={department} onValueChange={setDepartment}>
-                <SelectTrigger className="!bg-white dark:!bg-[#1A1A1A] !text-slate-900 dark:!text-[#EDEDED] !border-slate-200 dark:!border-[#2E2E2E]" style={{ height: '34px', fontSize: '12px' }}>
+                <SelectTrigger className="!bg-white dark:!bg-[var(--ds-surface-raised,#1A1A1A)] !text-slate-900 dark:!text-[var(--ds-text,#EDEDED)] !border-slate-200 dark:!border-[var(--ds-border,#2E2E2E)]" style={{ height: '34px', fontSize: '12px' }}>
                   <SelectValue placeholder="Select department" />
                 </SelectTrigger>
-                <SelectContent className="!bg-white dark:!bg-[#1A1A1A] !text-slate-900 dark:!text-[#EDEDED]">
+                <SelectContent className="!bg-white dark:!bg-[var(--ds-surface-raised,#1A1A1A)] !text-slate-900 dark:!text-[var(--ds-text,#EDEDED)]">
                   {DEPARTMENTS.map(d => (
                     <SelectItem key={d} value={d} style={{ fontSize: '12px' }}>{d}</SelectItem>
                   ))}
@@ -224,7 +224,7 @@ const CreateCatalystUserModal: React.FC<Props> = ({ open, onClose, onSuccess }) 
             disabled={isPending}
             style={{
               flex: 1, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '5px',
-              background: '#2563EB', color: 'var(--ds-text-inverse, #FFFFFF)', border: 'none',
+              background: 'var(--ds-text-brand, #2563EB)', color: 'var(--ds-text-inverse, #FFFFFF)', border: 'none',
               padding: '8px 14px', borderRadius: '6px', fontSize: '13px', fontWeight: 600,
               cursor: isPending ? 'not-allowed' : 'pointer', opacity: isPending ? 0.7 : 1,
             }}
@@ -236,7 +236,7 @@ const CreateCatalystUserModal: React.FC<Props> = ({ open, onClose, onSuccess }) 
             onClick={onClose}
             style={{
               padding: '8px 16px', borderRadius: '6px', fontSize: '13px', fontWeight: 500,
-              border: '1px solid rgba(15,23,42,0.10)', background: 'var(--bg-app, #FFFFFF)', color: '#334155',
+              border: '1px solid rgba(15,23,42,0.10)', background: 'var(--bg-app, #FFFFFF)', color: 'var(--ds-text-subtle, #334155)',
               cursor: 'pointer',
             }}
           >

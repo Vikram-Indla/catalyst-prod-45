@@ -80,7 +80,7 @@ export function SwimlaneCard({ task, onClick, accentColor }: SwimlaneCardProps) 
         <div className="flex items-center justify-end mt-2">
           <div 
             className="w-5 h-5 rounded-full flex items-center justify-center text-[9px] font-bold text-white"
-            style={{ backgroundColor: accentColor || '#64748b' }}
+            style={{ backgroundColor: accentColor || 'var(--ds-text-subtlest, #64748b)' }}
             title={task.assignee.full_name || undefined}
           >
             {(task.assignee.full_name || 'U').slice(0, 2).toUpperCase()}

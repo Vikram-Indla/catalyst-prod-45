@@ -9,16 +9,16 @@ import { Button } from '@/components/ui/button';
 
 // Catalyst Brand Color Palette
 export const BRAND_COLORS = [
-  { name: 'Blue', value: 'blue', hex: '#2563eb', bgClass: 'bg-blue-600' },
-  { name: 'Blue Dark', value: 'blue-dark', hex: '#1d4ed8', bgClass: 'bg-blue-700' },
-  { name: 'Blue Light', value: 'blue-light', hex: '#3b82f6', bgClass: 'bg-blue-500' },
+  { name: 'Blue', value: 'blue', hex: 'var(--ds-text-brand, #2563eb)', bgClass: 'bg-blue-600' },
+  { name: 'Blue Dark', value: 'blue-dark', hex: 'var(--ds-background-brand-bold-hovered, #1d4ed8)', bgClass: 'bg-blue-700' },
+  { name: 'Blue Light', value: 'blue-light', hex: 'var(--ds-text-brand, #3b82f6)', bgClass: 'bg-blue-500' },
   { name: 'Teal', value: 'teal', hex: '#0d9488', bgClass: 'bg-teal-600' },
   { name: 'Teal Dark', value: 'teal-dark', hex: '#0f766e', bgClass: 'bg-teal-700' },
   { name: 'Teal Light', value: 'teal-light', hex: '#14b8a6', bgClass: 'bg-teal-500' },
   { name: 'Gray', value: 'gray', hex: '#6b7280', bgClass: 'bg-gray-500' },
   { name: 'Gray Dark', value: 'gray-dark', hex: '#4b5563', bgClass: 'bg-gray-600' },
-  { name: 'Warning', value: 'warning', hex: '#f59e0b', bgClass: 'bg-amber-500' },
-  { name: 'Danger', value: 'danger', hex: '#ef4444', bgClass: 'bg-red-500' },
+  { name: 'Warning', value: 'warning', hex: 'var(--ds-text-warning, #f59e0b)', bgClass: 'bg-amber-500' },
+  { name: 'Danger', value: 'danger', hex: 'var(--ds-text-danger, #ef4444)', bgClass: 'bg-red-500' },
   { name: 'Neutral', value: 'neutral', hex: '#6b7280', bgClass: 'bg-gray-500' },
 ] as const;
 

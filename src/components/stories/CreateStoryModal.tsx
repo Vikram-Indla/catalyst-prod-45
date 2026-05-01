@@ -145,7 +145,7 @@ export function CreateStoryModal({
               <DialogTitle className="text-lg font-semibold">Create Story</DialogTitle>
               <p className="text-sm text-muted-foreground mt-1">
                 Parent Feature:{' '}
-                <span className="text-[#2563eb] dark:text-[#60a5fa] font-mono font-medium">{parentFeature.key}</span>
+                <span className="text-[var(--ds-text-brand,#2563eb)] dark:text-[var(--ds-text-brand,#60a5fa)] font-mono font-medium">{parentFeature.key}</span>
                 {' '}{parentFeature.title}
               </p>
             </div>
@@ -297,7 +297,7 @@ export function CreateStoryModal({
             <div className="grid grid-cols-2 gap-3 text-sm">
               <div>
                 <span className="text-muted-foreground">Program:</span>{' '}
-                <span className="text-[#2563eb] font-medium">
+                <span className="text-[var(--ds-text-brand,#2563eb)] font-medium">
                   {parentFeature.program_name || 'N/A'}
                 </span>
               </div>

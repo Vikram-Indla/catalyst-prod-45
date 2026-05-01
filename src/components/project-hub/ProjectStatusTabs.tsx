@@ -34,7 +34,7 @@ export function ProjectStatusTabs({ activeTab, onTabChange, counts, isDark = fal
           <button
             key={tab.key}
             onClick={() => onTabChange(tab.key)}
-            className={`flex items-center gap-1.5 rounded-full transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2563EB] ${
+            className={`flex items-center gap-1.5 rounded-full transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ds-text-brand,#2563EB)] ${
               isActive
                 ? isDark ? 'bg-[#0D1526] border-[#1E3A5F]' : 'bg-[#DEEBFF] border-[#B3D4FF]'
                 : 'bg-transparent border-transparent'

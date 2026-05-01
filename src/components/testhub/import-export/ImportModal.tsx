@@ -17,7 +17,7 @@ const IMPORT_TYPES = [
   { value: 'test_cases', label: 'Test Cases', icon: FileText, color: 'var(--cp-blue)' },
   { value: 'defects', label: 'Defects', icon: Bug, color: 'var(--sem-danger)' },
   { value: 'requirements', label: 'Requirements', icon: FileCheck, color: 'var(--sem-success)' },
-  { value: 'shared_steps', label: 'Shared Steps', icon: Layers, color: '#2563EB' },
+  { value: 'shared_steps', label: 'Shared Steps', icon: Layers, color: 'var(--ds-text-brand, #2563EB)' },
   { value: 'tags', label: 'Tags', icon: Tags, color: '#EC4899' },
 ];
 
@@ -470,7 +470,7 @@ export function ImportModal({ isOpen, onClose, onImported }: ImportModalProps) {
             style={{
               height: 44, padding: '0 24px',
               background: (step === 2 && !file) ? 'var(--divider)' : 'linear-gradient(135deg, #14B8A6 0%, #0D9488 100%)',
-              border: 'none', borderRadius: 12, fontSize: 14, fontWeight: 600, color: '#FFF',
+              border: 'none', borderRadius: 12, fontSize: 14, fontWeight: 600, color: 'var(--ds-surface, #FFF)',
               cursor: (step === 2 && !file) || isProcessing ? 'not-allowed' : 'pointer',
             }}
           >

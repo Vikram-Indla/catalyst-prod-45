@@ -8,11 +8,11 @@ export interface HubClosureData {
 }
 
 const HUB_ICON_STYLES: Record<string, { bg: string; color: string; letter: string }> = {
-  IncidentHub: { bg: '#FEF2F2', color: '#DC2626', letter: 'I' },
+  IncidentHub: { bg: 'var(--ds-background-danger, #FEF2F2)', color: 'var(--ds-text-danger, #DC2626)', letter: 'I' },
   ProductHub: { bg: '#F0FDFA', color: '#0D9488', letter: 'P' },
   TestHub: { bg: '#F5F3FF', color: '#7C3AED', letter: 'T' },
-  ProjectHub: { bg: '#EFF6FF', color: '#2563EB', letter: 'J' },
-  ReleaseHub: { bg: '#FFFBEB', color: '#D97706', letter: 'R' },
+  ProjectHub: { bg: 'var(--ds-background-selected, #EFF6FF)', color: 'var(--ds-text-brand, #2563EB)', letter: 'J' },
+  ReleaseHub: { bg: '#FFFBEB', color: 'var(--ds-text-warning, #D97706)', letter: 'R' },
   Other: { bg: '#F4F4F5', color: '#71717A', letter: 'O' },
 };
 

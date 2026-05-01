@@ -4,10 +4,10 @@
  * Version: 8.0 - Production Ready
  * 
  * DESIGN TOKENS FROM SPECIFICATION:
- * - Primary: #2563eb (buttons, active states)
- * - Insourced: #2563eb, Cosourced: #0d9488, Outsourced: #d97706
+ * - Primary: var(--ds-text-brand, #2563eb) (buttons, active states)
+ * - Insourced: var(--ds-text-brand, #2563eb), Cosourced: #0d9488, Outsourced: var(--ds-text-warning, #d97706)
  * - Licenses: #7c3aed
- * - Text: #0f172a primary, #334155 secondary, #64748b muted
+ * - Text: var(--ds-text, #0f172a) primary, var(--ds-text-subtle, #334155) secondary, var(--ds-text-subtlest, #64748b) muted
  * - 5px solid top borders on cards, font-mono for values
  */
 
@@ -15,23 +15,23 @@
   /* ============================================
      V8 PRIMARY COLORS
      ============================================ */
-  --budget-primary: #2563eb;
-  --budget-primary-dark: #1d4ed8;
+  --budget-primary: var(--ds-text-brand, #2563eb);
+  --budget-primary-dark: var(--ds-background-brand-bold-hovered, #1d4ed8);
   --budget-primary-light: rgba(37, 99, 235, 0.08);
-  --budget-primary-bg: #eff6ff;
+  --budget-primary-bg: var(--ds-background-selected, #eff6ff);
 
   /* ============================================
      V8 BUDGET TYPE COLORS — PER SPEC
      ============================================ */
-  --budget-insourced: #2563eb;      /* Blue */
-  --budget-insourced-dark: #1d4ed8;
+  --budget-insourced: var(--ds-text-brand, #2563eb);      /* Blue */
+  --budget-insourced-dark: var(--ds-background-brand-bold-hovered, #1d4ed8);
   --budget-insourced-light: rgba(37, 99, 235, 0.08);
   
   --budget-cosourced: #0d9488;      /* Teal */
   --budget-cosourced-dark: #0f766e;
   --budget-cosourced-light: rgba(13, 148, 136, 0.1);
   
-  --budget-outsourced: #d97706;     /* Amber */
+  --budget-outsourced: var(--ds-text-warning, #d97706);     /* Amber */
   --budget-outsourced-dark: #b45309;
   --budget-outsourced-light: rgba(217, 119, 6, 0.1);
   
@@ -44,40 +44,40 @@
      ============================================ */
   --budget-success: #059669;
   --budget-success-light: rgba(5, 150, 105, 0.1);
-  --budget-warning: #d97706;
+  --budget-warning: var(--ds-text-warning, #d97706);
   --budget-warning-light: rgba(217, 119, 6, 0.1);
-  --budget-danger: #dc2626;
+  --budget-danger: var(--ds-text-danger, #dc2626);
   --budget-danger-light: rgba(220, 38, 38, 0.1);
-  --budget-info: #2563eb;
+  --budget-info: var(--ds-text-brand, #2563eb);
 
   /* ============================================
      V8 NEUTRALS (WCAG AA COMPLIANT)
      ============================================ */
-  --slate-900: #0f172a;
+  --slate-900: var(--ds-text, #0f172a);
   --slate-800: #1e293b;
-  --slate-700: #334155;
-  --slate-600: #475569;
-  --slate-500: #64748b;
-  --slate-400: #94a3b8;
-  --slate-300: #cbd5e1;
-  --slate-200: #e2e8f0;
-  --slate-100: #f1f5f9;
-  --slate-50: #f8fafc;
-  --white: #ffffff;
+  --slate-700: var(--ds-text-subtle, #334155);
+  --slate-600: var(--ds-text-subtle, #475569);
+  --slate-500: var(--ds-text-subtlest, #64748b);
+  --slate-400: var(--ds-text-subtlest, #94a3b8);
+  --slate-300: var(--ds-text-disabled, #cbd5e1);
+  --slate-200: var(--ds-border, #e2e8f0);
+  --slate-100: var(--ds-surface-sunken, #f1f5f9);
+  --slate-50: var(--ds-surface-sunken, #f8fafc);
+  --white: var(--ds-surface, #ffffff);
 
-  --budget-bg-page: #f8fafc;
-  --budget-bg-surface: #ffffff;
-  --budget-text-primary: #0f172a;
-  --budget-text-secondary: #334155;
-  --budget-text-muted: #64748b;
-  --budget-border: #e2e8f0;
-  --budget-border-strong: #cbd5e1;
+  --budget-bg-page: var(--ds-surface-sunken, #f8fafc);
+  --budget-bg-surface: var(--ds-surface, #ffffff);
+  --budget-text-primary: var(--ds-text, #0f172a);
+  --budget-text-secondary: var(--ds-text-subtle, #334155);
+  --budget-text-muted: var(--ds-text-subtlest, #64748b);
+  --budget-border: var(--ds-border, #e2e8f0);
+  --budget-border-strong: var(--ds-text-disabled, #cbd5e1);
 
   /* Legacy aliases for compatibility */
-  --budget-bg: #f8fafc;
-  --budget-surface: #ffffff;
-  --budget-text: #0f172a;
-  --budget-border-light: #e2e8f0;
+  --budget-bg: var(--ds-surface-sunken, #f8fafc);
+  --budget-surface: var(--ds-surface, #ffffff);
+  --budget-text: var(--ds-text, #0f172a);
+  --budget-border-light: var(--ds-border, #e2e8f0);
 
   /* ============================================
      V8 SHADOWS
@@ -116,15 +116,15 @@
 .dark .budget-module , [data-theme="dark"] .budget-module {
   /* Neutrals — hex only (no HSL) */
   --slate-900: var(--fg-1, #EDEDED);
-  --slate-800: #EDEDED;
+  --slate-800: var(--ds-text, #EDEDED);
   --slate-700: var(--fg-2, #A1A1A1);
   --slate-600: var(--fg-3, #878787);
   --slate-500: #7D7D7D;
   --slate-400: var(--fg-4, rgba(237,237,237,0.30));
-  --slate-300: #454545;
-  --slate-200: #2E2E2E;
-  --slate-100: #292929;
-  --slate-50: #1F1F1F;
+  --slate-300: var(--ds-border-bold, #454545);
+  --slate-200: var(--ds-border, #2E2E2E);
+  --slate-100: var(--ds-border, #292929);
+  --slate-50: var(--ds-surface-overlay, #1F1F1F);
   --white: var(--cp-bg-surface, #242528);
 
   /* Surfaces + text */
@@ -133,14 +133,14 @@
   --budget-text-primary: var(--fg-1, #EDEDED);
   --budget-text-secondary: var(--fg-2, #A1A1A1);
   --budget-text-muted: var(--fg-3, #878787);
-  --budget-border: #2E2E2E;
-  --budget-border-strong: #454545;
+  --budget-border: var(--ds-border, #2E2E2E);
+  --budget-border-strong: var(--ds-border-bold, #454545);
 
   /* Legacy aliases */
   --budget-bg: var(--cp-bg-page, #1F1F21);
   --budget-surface: var(--cp-bg-surface, #242528);
   --budget-text: var(--fg-1, #EDEDED);
-  --budget-border-light: #2E2E2E;
+  --budget-border-light: var(--ds-border, #2E2E2E);
 
   /* Primary surfaces used in info/expanded rows */
   --budget-primary-bg: rgba(59,130,246,0.10);
@@ -151,13 +151,13 @@
   --budget-success-light: rgba(74,222,128,0.12);
   --budget-warning: #FDE68A;
   --budget-warning-light: rgba(253,230,138,0.10);
-  --budget-danger: #FCA5A5;
+  --budget-danger: var(--ds-border-danger, #FCA5A5);
   --budget-danger-light: rgba(239,68,68,0.10);
-  --budget-info: #60A5FA;
+  --budget-info: var(--ds-text-brand, #60A5FA);
 
   /* Budget type colors — lightened for dark bg */
-  --budget-insourced: #60A5FA;
-  --budget-insourced-dark: #3B82F6;
+  --budget-insourced: var(--ds-text-brand, #60A5FA);
+  --budget-insourced-dark: var(--ds-text-brand, #3B82F6);
   --budget-insourced-light: rgba(59,130,246,0.10);
   --budget-cosourced: #5EEAD4;
   --budget-cosourced-dark: #2DD4BF;
@@ -410,13 +410,13 @@
 }
 
 .budget-module .summary-card.insourced::before { 
-  background: linear-gradient(90deg, var(--budget-insourced) 0%, #3b82f6 100%); 
+  background: linear-gradient(90deg, var(--budget-insourced) 0%, var(--ds-text-brand, #3b82f6) 100%); 
 }
 .budget-module .summary-card.cosourced::before { 
   background: linear-gradient(90deg, #0f766e 0%, var(--budget-cosourced) 100%); 
 }
 .budget-module .summary-card.outsourced::before { 
-  background: linear-gradient(90deg, var(--budget-outsourced) 0%, #f59e0b 100%); 
+  background: linear-gradient(90deg, var(--budget-outsourced) 0%, var(--ds-text-warning, #f59e0b) 100%); 
 }
 .budget-module .summary-card.licenses::before { 
   background: linear-gradient(90deg, var(--budget-licenses) 0%, #a78bfa 100%); 
@@ -690,7 +690,7 @@
   font-family: var(--budget-font-mono);
   color: white;
   flex-shrink: 0;
-  background: #475569; /* slate-600 - CONSISTENT */
+  background: var(--ds-text-subtle, #475569); /* slate-600 - CONSISTENT */
 }
 
 /* Legacy support for old assignment-icon class */
@@ -707,14 +707,14 @@
   font-family: var(--budget-font-mono);
   color: white;
   flex-shrink: 0;
-  background: #475569; /* slate-600 - CONSISTENT */
+  background: var(--ds-text-subtle, #475569); /* slate-600 - CONSISTENT */
 }
 
 /* Remove old type-based icon colors - now all consistent */
 .budget-module .assignment-icon.insourced,
 .budget-module .assignment-icon.cosourced,
 .budget-module .assignment-icon.outsourced { 
-  background: #475569; /* All same: slate-600 */
+  background: var(--ds-text-subtle, #475569); /* All same: slate-600 */
 }
 
 .budget-module .assignment-info {
@@ -780,7 +780,7 @@
 
 .budget-module .type-badge.insourced { 
   background: #dbeafe; /* blue-100 */
-  color: #1d4ed8; /* blue-700 */
+  color: var(--ds-background-brand-bold-hovered, #1d4ed8); /* blue-700 */
   border-color: #93c5fd; /* blue-300 */
 }
 .budget-module .type-badge.cosourced { 
@@ -813,13 +813,13 @@
 /* In Progress - Blue */
 .budget-module .status-badge.in-progress { 
   background: #dbeafe; /* blue-100 */
-  color: #1d4ed8; /* blue-700 */
+  color: var(--ds-background-brand-bold-hovered, #1d4ed8); /* blue-700 */
 }
 
 /* Completed - Slate (MUST have badge styling, not plain text) */
 .budget-module .status-badge.completed { 
-  background: #f1f5f9 !important; /* slate-100 */
-  color: #475569 !important; /* slate-600 */
+  background: var(--ds-surface-sunken, #f1f5f9) !important; /* slate-100 */
+  color: var(--ds-text-subtle, #475569) !important; /* slate-600 */
 }
 
 /* On Hold - Amber */
@@ -831,8 +831,8 @@
 /* Not Started / Yet to Start - Light slate */
 .budget-module .status-badge.yet-to-start,
 .budget-module .status-badge.not-started { 
-  background: #f1f5f9; /* slate-100 */
-  color: #64748b; /* slate-500 */
+  background: var(--ds-surface-sunken, #f1f5f9); /* slate-100 */
+  color: var(--ds-text-subtlest, #64748b); /* slate-500 */
 }
 
 /* Payment Badge - V8 QA: Clear red for unpaid, green for on-track */
@@ -847,10 +847,10 @@
 
 .budget-module .payment-badge.na { 
   background: transparent;
-  color: #94a3b8; /* slate-400 */
+  color: var(--ds-text-subtlest, #94a3b8); /* slate-400 */
 }
 .budget-module .payment-badge.on-track { 
-  background: #dcfce7; /* green-100 */
+  background: var(--ds-background-success, #dcfce7); /* green-100 */
   color: #166534; /* green-800 */
 }
 .budget-module .payment-badge.unpaid { 
@@ -866,9 +866,9 @@
   font-weight: 600;
 }
 
-.budget-module .cost-cell.insourced { color: #2563eb; }
+.budget-module .cost-cell.insourced { color: var(--ds-text-brand, #2563eb); }
 .budget-module .cost-cell.cosourced { color: #0d9488; }
-.budget-module .cost-cell.outsourced { color: #d97706; }
+.budget-module .cost-cell.outsourced { color: var(--ds-text-warning, #d97706); }
 .budget-module .cost-cell.muted { color: var(--budget-text-muted); }
 
 /* ============================================
@@ -1127,7 +1127,7 @@
 .budget-module .exec-alert-title {
   font-size: 14px;
   font-weight: 700;
-  color: #991b1b;
+  color: var(--ds-text-danger, #991b1b);
   margin-bottom: 8px;
 }
 
@@ -1208,7 +1208,7 @@
 }
 
 .budget-module .exec-summary-btn:hover {
-  background: var(--budget-primary-dark); /* per H1.2: #1d4ed8 */
+  background: var(--budget-primary-dark); /* per H1.2: var(--ds-background-brand-bold-hovered, #1d4ed8) */
   transform: translateY(-1px);
   box-shadow: var(--budget-shadow-md);
 }
@@ -1333,23 +1333,23 @@
 
 /* Parent row expansion indicator - blue left border */
 .budget-module tbody tr.expanded-parent {
-  background: #eff6ff !important; /* blue-50 */
-  border-left: 4px solid #2563eb !important;
+  background: var(--ds-background-selected, #eff6ff) !important; /* blue-50 */
+  border-left: 4px solid var(--ds-text-brand, #2563eb) !important;
 }
 
 .budget-module tbody tr.expanded-parent:hover {
-  background: #eff6ff !important;
+  background: var(--ds-background-selected, #eff6ff) !important;
 }
 
 /* Chevron rotation for expanded state */
 .budget-module .expand-chevron {
   transition: transform 0.2s ease;
-  color: #94a3b8; /* slate-400 */
+  color: var(--ds-text-subtlest, #94a3b8); /* slate-400 */
 }
 
 .budget-module .expand-chevron.expanded {
   transform: rotate(90deg);
-  color: #2563eb; /* blue-600 */
+  color: var(--ds-text-brand, #2563eb); /* blue-600 */
 }
 
 .budget-module .expanded-row td {

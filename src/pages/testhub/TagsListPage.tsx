@@ -99,7 +99,7 @@ export default function TagsListPage() {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%', backgroundColor: 'var(--cp-bg-page, #F8FAFC)' }}>
       <TestHubPageHeader title="Tags & Labels" subtitle="Organize test cases, defects, and requirements with tags">
-        <button onClick={() => setShowCreateModal(true)} style={{ display: 'flex', alignItems: 'center', gap: 8, height: 40, padding: '0 20px', border: 'none', borderRadius: 8, background: 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)', color: 'var(--ds-text-inverse, #FFFFFF)', fontSize: 14, fontWeight: 600, cursor: 'pointer', boxShadow: '0 2px 8px rgba(37,99,235,0.25)' }}>
+        <button onClick={() => setShowCreateModal(true)} style={{ display: 'flex', alignItems: 'center', gap: 8, height: 40, padding: '0 20px', border: 'none', borderRadius: 8, background: 'linear-gradient(135deg, var(--ds-text-brand, #2563EB) 0%, var(--ds-background-brand-bold-hovered, #1D4ED8) 100%)', color: 'var(--ds-text-inverse, #FFFFFF)', fontSize: 14, fontWeight: 600, cursor: 'pointer', boxShadow: '0 2px 8px rgba(37,99,235,0.25)' }}>
           <Plus size={18} /> Create Tag
         </button>
       </TestHubPageHeader>
@@ -108,7 +108,7 @@ export default function TagsListPage() {
       {/* Stats Cards */}
       {stats && (
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16, marginBottom: 24 }}>
-          <div style={{ backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFF', borderRadius: 12, padding: 20, border: isDark ? '1px solid #2E2E2E' : '1px solid #E2E8F0' }}>
+          <div style={{ backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, #FFF)', borderRadius: 12, padding: 20, border: isDark ? '1px solid #2E2E2E' : '1px solid #E2E8F0' }}>
             <p style={{ fontSize: 12, color: 'var(--cp-text-tertiary, #64748B)', margin: 0, textTransform: 'uppercase' }}>Total Tags</p>
             <p style={{ fontSize: 28, fontWeight: 700, color: 'var(--cp-text-primary, #0F172A)', margin: '8px 0 0' }}>{stats.total_tags}</p>
           </div>
@@ -116,11 +116,11 @@ export default function TagsListPage() {
             <p style={{ fontSize: 12, color: '#A855F7', margin: 0, textTransform: 'uppercase' }}>In Use</p>
             <p style={{ fontSize: 28, fontWeight: 700, color: '#A855F7', margin: '8px 0 0' }}>{stats.used_tags}</p>
           </div>
-          <div style={{ backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFF', borderRadius: 12, padding: 20, border: isDark ? '1px solid #2E2E2E' : '1px solid #E2E8F0' }}>
+          <div style={{ backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, #FFF)', borderRadius: 12, padding: 20, border: isDark ? '1px solid #2E2E2E' : '1px solid #E2E8F0' }}>
             <p style={{ fontSize: 12, color: 'var(--cp-text-tertiary, #64748B)', margin: 0, textTransform: 'uppercase' }}>Categories</p>
             <p style={{ fontSize: 28, fontWeight: 700, color: 'var(--cp-text-primary, #0F172A)', margin: '8px 0 0' }}>{stats.categories}</p>
           </div>
-          <div style={{ backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFF', borderRadius: 12, padding: 20, border: isDark ? '1px solid #2E2E2E' : '1px solid #E2E8F0' }}>
+          <div style={{ backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, #FFF)', borderRadius: 12, padding: 20, border: isDark ? '1px solid #2E2E2E' : '1px solid #E2E8F0' }}>
             <p style={{ fontSize: 12, color: 'var(--cp-text-tertiary, #64748B)', margin: 0, textTransform: 'uppercase' }}>Most Used</p>
             <p style={{ fontSize: 18, fontWeight: 600, color: 'var(--cp-text-primary, #0F172A)', margin: '8px 0 0' }}>{stats.most_used_tag || '—'}</p>
           </div>
@@ -130,16 +130,16 @@ export default function TagsListPage() {
       {/* Filters */}
       <div style={{ display: 'flex', gap: 12, marginBottom: 24, flexWrap: 'wrap', alignItems: 'center' }}>
         <div style={{ position: 'relative', flex: '1 1 300px', maxWidth: 400 }}>
-          <Search size={18} style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', color: '#94A3B8' }} />
+          <Search size={18} style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', color: 'var(--ds-text-subtlest, #94A3B8)' }} />
           <input type="text" placeholder="Search tags..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)}
-            style={{ width: '100%', height: 44, padding: '0 14px 0 44px', border: isDark ? '1.5px solid #2E2E2E' : '1.5px solid #E2E8F0', borderRadius: 12, fontSize: 14, backgroundColor: 'var(--cp-bg-elevated, #FFFFFF)', color: isDark ? '#EDEDED' : undefined }} />
+            style={{ width: '100%', height: 44, padding: '0 14px 0 44px', border: isDark ? '1.5px solid #2E2E2E' : '1.5px solid #E2E8F0', borderRadius: 12, fontSize: 14, backgroundColor: 'var(--cp-bg-elevated, #FFFFFF)', color: isDark ? 'var(--ds-text, #EDEDED)' : undefined }} />
         </div>
-        <select value={categoryFilter} onChange={(e) => setCategoryFilter(e.target.value)} style={{ height: 44, padding: '0 36px 0 14px', border: isDark ? '1.5px solid #2E2E2E' : '1.5px solid #E2E8F0', borderRadius: 12, fontSize: 14, backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFF', color: isDark ? '#EDEDED' : undefined, cursor: 'pointer' }}>
+        <select value={categoryFilter} onChange={(e) => setCategoryFilter(e.target.value)} style={{ height: 44, padding: '0 36px 0 14px', border: isDark ? '1.5px solid #2E2E2E' : '1.5px solid #E2E8F0', borderRadius: 12, fontSize: 14, backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, #FFF)', color: isDark ? 'var(--ds-text, #EDEDED)' : undefined, cursor: 'pointer' }}>
           <option value="all">All Categories</option>
           {categories.map((cat) => <option key={cat} value={cat!}>{cat}</option>)}
         </select>
         {hasActiveFilters && (
-          <button onClick={clearFilters} style={{ display: 'flex', alignItems: 'center', gap: 6, height: 44, padding: '0 16px', border: isDark ? '1.5px solid #2E2E2E' : '1.5px solid #E2E8F0', borderRadius: 12, backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFF', color: 'var(--cp-text-tertiary, #64748B)', fontSize: 14, cursor: 'pointer' }}>
+          <button onClick={clearFilters} style={{ display: 'flex', alignItems: 'center', gap: 6, height: 44, padding: '0 16px', border: isDark ? '1.5px solid #2E2E2E' : '1.5px solid #E2E8F0', borderRadius: 12, backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, #FFF)', color: 'var(--cp-text-tertiary, #64748B)', fontSize: 14, cursor: 'pointer' }}>
             <X size={16} /> Clear
           </button>
         )}
@@ -173,11 +173,11 @@ export default function TagsListPage() {
                     <span style={{ fontSize: 11, color: 'var(--cp-text-muted, #94A3B8)', backgroundColor: 'var(--cp-bg-sunken, #F1F5F9)', padding: '2px 6px', borderRadius: 4 }}>{tag.usage_count}</span>
                     <div style={{ display: 'flex', gap: 4, marginLeft: 4 }}>
                       <button onClick={(e) => { e.stopPropagation(); setEditingTag(tag); setShowCreateModal(true); }}
-                        style={{ width: 24, height: 24, border: 'none', borderRadius: 4, backgroundColor: 'transparent', color: '#64748B', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        style={{ width: 24, height: 24, border: 'none', borderRadius: 4, backgroundColor: 'transparent', color: 'var(--ds-text-subtlest, #64748B)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                         <Edit2 size={12} />
                       </button>
                       <button onClick={(e) => { e.stopPropagation(); deleteTag(tag.id, tag.name); }}
-                        style={{ width: 24, height: 24, border: 'none', borderRadius: 4, backgroundColor: 'transparent', color: '#DC2626', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        style={{ width: 24, height: 24, border: 'none', borderRadius: 4, backgroundColor: 'transparent', color: 'var(--ds-text-danger, #DC2626)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                         <Trash2 size={12} />
                       </button>
                     </div>

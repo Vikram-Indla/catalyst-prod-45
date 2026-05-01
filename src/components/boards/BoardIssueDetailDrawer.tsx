@@ -14,15 +14,15 @@ import '@/styles/request-detail-panel.css';
 
 /* ── Status color map ── */
 const STATUS_PILL: Record<string, { text: string; bg: string; bdr: string }> = {
-  todo:        { text: '#64748B', bg: '#F1F5F9', bdr: 'rgba(100,116,139,0.2)' },
-  backlog:     { text: '#64748B', bg: '#F1F5F9', bdr: 'rgba(100,116,139,0.2)' },
-  new:         { text: '#64748B', bg: '#F1F5F9', bdr: 'rgba(100,116,139,0.2)' },
-  'in progress': { text: '#2563EB', bg: '#EFF6FF', bdr: 'rgba(37,99,235,0.2)' },
-  inprogress:  { text: '#2563EB', bg: '#EFF6FF', bdr: 'rgba(37,99,235,0.2)' },
+  todo:        { text: 'var(--ds-text-subtlest, #64748B)', bg: 'var(--ds-surface-sunken, #F1F5F9)', bdr: 'rgba(100,116,139,0.2)' },
+  backlog:     { text: 'var(--ds-text-subtlest, #64748B)', bg: 'var(--ds-surface-sunken, #F1F5F9)', bdr: 'rgba(100,116,139,0.2)' },
+  new:         { text: 'var(--ds-text-subtlest, #64748B)', bg: 'var(--ds-surface-sunken, #F1F5F9)', bdr: 'rgba(100,116,139,0.2)' },
+  'in progress': { text: 'var(--ds-text-brand, #2563EB)', bg: 'var(--ds-background-selected, #EFF6FF)', bdr: 'rgba(37,99,235,0.2)' },
+  inprogress:  { text: 'var(--ds-text-brand, #2563EB)', bg: 'var(--ds-background-selected, #EFF6FF)', bdr: 'rgba(37,99,235,0.2)' },
   'in review':   { text: '#7C3AED', bg: '#F5F3FF', bdr: 'rgba(124,58,237,0.2)' },
   done:        { text: '#0D7331', bg: '#F0FDF4', bdr: 'rgba(22,163,74,0.2)' },
   closed:      { text: '#0D7331', bg: '#F0FDF4', bdr: 'rgba(22,163,74,0.2)' },
-  blocked:     { text: '#DC2626', bg: '#FEF2F2', bdr: 'rgba(220,38,38,0.2)' },
+  blocked:     { text: 'var(--ds-text-danger, #DC2626)', bg: 'var(--ds-background-danger, #FEF2F2)', bdr: 'rgba(220,38,38,0.2)' },
 };
 
 const PRIORITY_LEVELS: Record<string, number> = { critical: 4, highest: 4, high: 3, medium: 2, low: 1, lowest: 1 };
@@ -241,7 +241,7 @@ function OverviewTab({ issue }: { issue: any }) {
                     <div style={{
                       width: 24, height: 24, borderRadius: '50%', background: 'var(--cp-blue)',
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      fontSize: 10, fontWeight: 700, color: '#fff',
+                      fontSize: 10, fontWeight: 700, color: 'var(--ds-surface, #fff)',
                     }}>
                       {f.value.split(' ').map((n: string) => n[0]).join('').slice(0, 2).toUpperCase()}
                     </div>
@@ -252,7 +252,7 @@ function OverviewTab({ issue }: { issue: any }) {
                     <div style={{
                       width: 24, height: 24, borderRadius: '50%', background: 'var(--sem-warning)',
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      fontSize: 10, fontWeight: 700, color: '#fff',
+                      fontSize: 10, fontWeight: 700, color: 'var(--ds-surface, #fff)',
                     }}>
                       {f.value.split(' ').map((n: string) => n[0]).join('').slice(0, 2).toUpperCase()}
                     </div>
@@ -302,7 +302,7 @@ function OverviewTab({ issue }: { issue: any }) {
             />
             <button style={{
               padding: '8px 16px', borderRadius: 6, border: 'none',
-              background: '#CBD5E1', color: '#FFFFFF', fontSize: 13, fontWeight: 600,
+              background: 'var(--ds-text-disabled, #CBD5E1)', color: 'var(--ds-surface, #FFFFFF)', fontSize: 13, fontWeight: 600,
               cursor: 'not-allowed',
             }}>
               Post

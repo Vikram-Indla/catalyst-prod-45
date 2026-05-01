@@ -148,7 +148,7 @@ export function CreateEditRiskDialog({
   const isValid = formData.title && formData.description;
   const isEditing = !!risk;
 
-  const inputClasses = "w-full px-3 py-2.5 rounded-lg text-sm bg-white dark:bg-[#0D1117] border border-[#E1E4E8] dark:border-[#30363D] text-[#24292F] dark:text-[#E6EDF3] placeholder:text-[#8B949E] dark:placeholder:text-[#6E7681] focus:border-[#2563eb] focus:ring-1 focus:ring-[rgba(37,99,235,0.3)] outline-none";
+  const inputClasses = "w-full px-3 py-2.5 rounded-lg text-sm bg-white dark:bg-[#0D1117] border border-[#E1E4E8] dark:border-[#30363D] text-[#24292F] dark:text-[#E6EDF3] placeholder:text-[#8B949E] dark:placeholder:text-[#6E7681] focus:border-[var(--ds-text-brand,#2563eb)] focus:ring-1 focus:ring-[rgba(37,99,235,0.3)] outline-none";
   const labelClasses = "text-sm font-medium text-[#24292F] dark:text-[#E6EDF3]";
 
   return (
@@ -385,7 +385,7 @@ export function CreateEditRiskDialog({
               <button
                 type="submit"
                 disabled={!isValid || isSubmitting}
-                className="px-4 py-2 rounded-lg text-sm font-medium bg-[#2563eb] hover:bg-[#1d4ed8] text-white disabled:opacity-50"
+                className="px-4 py-2 rounded-lg text-sm font-medium bg-[var(--ds-text-brand,#2563eb)] hover:bg-[var(--ds-background-brand-bold-hovered,#1d4ed8)] text-white disabled:opacity-50"
               >
                 {isSubmitting ? "Saving..." : isEditing ? "Save Risk" : "Create Risk"}
               </button>
@@ -412,7 +412,7 @@ export function CreateEditRiskDialog({
             </AlertDialogCancel>
             <AlertDialogAction 
               onClick={handleConfirmDiscard}
-              className="bg-[#2563eb] hover:bg-[#1d4ed8] text-white"
+              className="bg-[var(--ds-text-brand,#2563eb)] hover:bg-[var(--ds-background-brand-bold-hovered,#1d4ed8)] text-white"
             >
               Discard Changes
             </AlertDialogAction>

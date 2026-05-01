@@ -1,0 +1,452 @@
+[
+  {
+    "hex": "#2563eb",
+    "count": 2192,
+    "samples": [
+      "style={{ fontSize: 13, color: '#2563EB', cursor: 'pointer', textDecoration: 'underline' }}",
+      "fontSize: 12, fontWeight: 500, color: '#2563EB',",
+      "borderBottom: activeTab === tab.key ? '2px solid #2563EB' : '2px solid transparent',"
+    ]
+  },
+  {
+    "hex": "#64748b",
+    "count": 839,
+    "samples": [
+      "return { label: 'EXPIRED', bg: '#F1F5F9', color: '#64748B', border: '#E2E8F0' };",
+      "<div style={{ fontSize: 13, color: '#64748B', marginTop: 2 }}>",
+      "<span style={{ fontSize: 13, color: '#64748B' }}>From</span>"
+    ]
+  },
+  {
+    "hex": "#94a3b8",
+    "count": 794,
+    "samples": [
+      "fontSize: 11, fontWeight: 500, color: '#94A3B8',",
+      "color: '#94A3B8', textAlign: 'left', fontFamily: 'var(--cp-font-body)',",
+      "<td colSpan={7} style={{ padding: 40, textAlign: 'center', fontSize: 13, color: '#94A3B8' }}>"
+    ]
+  },
+  {
+    "hex": "#2e2e2e",
+    "count": 755,
+    "samples": [
+      "style={{ padding: '12px 16px', borderRadius: '8px', minWidth: '76px', textAlign: 'center' as const, background: '', bord",
+      "style={{ padding: '12px 16px', borderRadius: '8px', minWidth: '76px', textAlign: 'center' as const, background: '', bord",
+      "<button style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', background: isDark ? '' : 'rgba(15,23,42,0.05"
+    ]
+  },
+  {
+    "hex": "#e2e8f0",
+    "count": 673,
+    "samples": [
+      "return { label: 'EXPIRED', bg: '#F1F5F9', color: '#64748B', border: '#E2E8F0' };",
+      "background: '#ffffff', borderBottom: '1px solid #E2E8F0',",
+      "background: '#ffffff', borderBottom: '1px solid #E2E8F0',"
+    ]
+  },
+  {
+    "hex": "#dc2626",
+    "count": 549,
+    "samples": [
+      "if (d > 90) return '#DC2626';",
+      "background: selected.size > 0 ? '#DC2626' : '#F1F5F9',",
+      "onMouseLeave={e => { if (selected.size > 0) e.currentTarget.style.background = '#DC2626'; }}"
+    ]
+  },
+  {
+    "hex": "#f1f5f9",
+    "count": 526,
+    "samples": [
+      "return { label: 'EXPIRED', bg: '#F1F5F9', color: '#64748B', border: '#E2E8F0' };",
+      "style={{ borderBottom: '0.75px solid #F1F5F9', height: 52 }}",
+      "background: '#F1F5F9', border: '1px solid #E2E8F0',"
+    ]
+  },
+  {
+    "hex": "#0d9488",
+    "count": 493,
+    "samples": [
+      "const clr = ['#2563EB', '#0D9488', '#0284C7', '#DC2626', '#DB2777'][ini.charCodeAt(0) % 5];",
+      "const clr = ['#2563EB', '#0D9488', '#0284C7', '#DC2626', '#DB2777'][ini.charCodeAt(0) % 5];",
+      "Plan: <BookOpen size={14} color=\"#0D9488\" strokeWidth={2} />,"
+    ]
+  },
+  {
+    "hex": "#1a1a1a",
+    "count": 493,
+    "samples": [
+      "elevatedBg:   dk ? '#1A1A1A' : '#FFFFFF',",
+      "inputBg:      dk ? '#1A1A1A' : '#FFFFFF',",
+      "badgeBg:      dk ? '#1A1A1A' : '#F1F5F9',"
+    ]
+  },
+  {
+    "hex": "#d97706",
+    "count": 471,
+    "samples": [
+      "Strategy: <Zap size={14} color=\"#D97706\" strokeWidth={2} />,",
+      "<div style={{ margin: '8px 0 0', padding: '8px 12px', background: '', borderLeft: `3px solid #D97706`, borderRadius: '0 ",
+      "Operations: '#D97706',"
+    ]
+  },
+  {
+    "hex": "#ededed",
+    "count": 437,
+    "samples": [
+      "text1:        dk ? '#EDEDED' : '#0F172A',",
+      "pillActiveBorder: dk ? '#EDEDED' : '#111',",
+      "pillActiveText:   dk ? '#EDEDED' : '#111',"
+    ]
+  },
+  {
+    "hex": "#dfe1e6",
+    "count": 397,
+    "samples": [
+      "let bg = '#DFE1E6', color = '#253858';",
+      "bg = '#DFE1E6'; color = '#42526E'; label = 'FAILED';",
+      "bg = '#DFE1E6'; color = '#42526E'; label = 'PENDING';"
+    ]
+  },
+  {
+    "hex": "#ef4444",
+    "count": 380,
+    "samples": [
+      "color: shouldHighlight ? \"#EF4444\" : \"\",",
+      "{loading ? <p style={{ color: \"#888\", fontSize: 13 }}>Loading…</p> : error ? <p style={{ color: \"#EF4444\", fontSize: 13 ",
+      "<p style={{ marginTop: 8, fontSize: 12, color: \"\" }}>Total embeddings: <strong style={{ color: embeddingsTotal === 0 ? \""
+    ]
+  },
+  {
+    "hex": "#0f172a",
+    "count": 367,
+    "samples": [
+      "<div style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 20, fontWeight: 700, color: '#0F172A' }}>",
+      "color: '#0F172A', fontFamily: 'var(--cp-font-body)',",
+      "color: '#0F172A', fontFamily: 'var(--cp-font-body)',"
+    ]
+  },
+  {
+    "hex": "#878787",
+    "count": 364,
+    "samples": [
+      "text3:        dk ? '#878787' : '#94A3B8',",
+      "textMuted:    dk ? '#878787' : '#9ca3af',",
+      "textDim:      dk ? '#878787' : '#d1d5db',"
+    ]
+  },
+  {
+    "hex": "#16a34a",
+    "count": 336,
+    "samples": [
+      "<div style={{ width: 20, height: 20, borderRadius: '50%', background: '#DCFCE7', display: 'flex', alignItems: 'center', ",
+      "<div style={{ fontSize: 13, fontWeight: 600, color: '#16A34A', fontFamily: 'var(--cp-font-body)' }}>✓ Qualified — Score ",
+      "background: '#16A34A',"
+    ]
+  },
+  {
+    "hex": "#a1a1a1",
+    "count": 335,
+    "samples": [
+      "text2:        dk ? '#A1A1A1' : '#475569',",
+      "badgeText:    dk ? '#A1A1A1' : '#475569',",
+      "pillInactiveText: dk ? '#A1A1A1' : '#6b7280',"
+    ]
+  },
+  {
+    "hex": "#f8fafc",
+    "count": 317,
+    "samples": [
+      "background: '#F8FAFC', fontFamily: 'var(--cp-font-body)',",
+      "<tr style={{ background: '#F8FAFC', borderBottom: '1px solid #E2E8F0' }}>",
+      "onMouseEnter={e => (e.currentTarget.style.background = '#F8FAFC')}"
+    ]
+  },
+  {
+    "hex": "#172b4d",
+    "count": 296,
+    "samples": [
+      "<h1 style={{ fontSize: 24, fontWeight: 600, margin: 0, color: '#172B4D' }}>",
+      "<h2 style={{ fontSize: 18, fontWeight: 600, margin: 0, color: '#172B4D' }}>",
+      "<span style={{ fontSize: 14, color: '#172B4D', fontWeight: 400 }}>{currentName}</span>"
+    ]
+  },
+  {
+    "hex": "#475569",
+    "count": 290,
+    "samples": [
+      "fontSize: 13, color: '#475569', fontFamily: 'var(--cp-font-body)',",
+      "<ChevronLeft size={14} color=\"#475569\" />",
+      "<span style={{ fontSize: 10, fontWeight: 700, color: '#475569' }}>"
+    ]
+  },
+  {
+    "hex": "#6b778c",
+    "count": 283,
+    "samples": [
+      "iconNode: <Folder size={14} color=\"#6B778C\" strokeWidth={1.5} />,",
+      "iconNode: HUB_ICONS[h] || <LayoutGrid size={14} color=\"#6B778C\" strokeWidth={2} />,",
+      "pending: { bg: \"#F4F5F7\", fg: \"#6B778C\", label: \"PENDING\" },"
+    ]
+  },
+  {
+    "hex": "#334155",
+    "count": 279,
+    "samples": [
+      "fontSize: 11, color: '#334155',",
+      "<span style={{ fontSize: 13, color: '#334155' }}>",
+      "<span style={{ fontSize: 13, color: '#334155' }}>"
+    ]
+  },
+  {
+    "hex": "#3b82f6",
+    "count": 276,
+    "samples": [
+      "color: '#3B82F6',",
+      "color: option.color || '#3B82F6',",
+      "color: '#3B82F6',"
+    ]
+  },
+  {
+    "hex": "#1d4ed8",
+    "count": 270,
+    "samples": [
+      "className=\"bg-[#2563EB] hover:bg-[#1D4ED8] text-white\"",
+      "background: 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)', color: '#FFFFFF',",
+      "background: 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)',"
+    ]
+  },
+  {
+    "hex": "#eff6ff",
+    "count": 257,
+    "samples": [
+      "onMouseLeave={e => { e.currentTarget.style.background = '#EFF6FF'; e.currentTarget.style.borderColor = '#BFDBFE'; }}",
+      "story:   { bg: '#EFF6FF', color: '#1D4ED8', label: 'STORY' },",
+      "Strategy:   { bg: '#EFF6FF', text: '#2563EB', border: '#BFDBFE' },"
+    ]
+  },
+  {
+    "hex": "#cbd5e1",
+    "count": 229,
+    "samples": [
+      "<span style={{ color: '#CBD5E1' }}>{'\\u2014'}</span>",
+      "{isOpen ? <ChevronUp size={14} color=\"#CBD5E1\" /> : <ChevronDown size={14} color=\"#CBD5E1\" />}",
+      "{isOpen ? <ChevronUp size={14} color=\"#CBD5E1\" /> : <ChevronDown size={14} color=\"#CBD5E1\" />}"
+    ]
+  },
+  {
+    "hex": "#7c3aed",
+    "count": 226,
+    "samples": [
+      "<FileText size={15} color=\"#7C3AED\" />",
+      "onFocus={(e) => { e.currentTarget.style.borderColor = '#7C3AED'; e.currentTarget.style.boxShadow = '0 0 0 2px rgba(124,5",
+      "<Loader2 size={24} color=\"#7C3AED\" style={{ animation: 'ra-spin 1s linear infinite', margin: '0 auto 12px', display: 'bl"
+    ]
+  },
+  {
+    "hex": "#f4f5f7",
+    "count": 223,
+    "samples": [
+      "pending: { bg: \"#F4F5F7\", fg: \"#6B778C\", label: \"PENDING\" },",
+      "<thead className=\"sticky top-0 z-40\" style={{ position: 'sticky', background: '#F4F5F7' }}>",
+      "onMouseEnter={e => (e.currentTarget.style.background = '#F4F5F7')}"
+    ]
+  },
+  {
+    "hex": "#1f1f1f",
+    "count": 219,
+    "samples": [
+      "onMouseEnter={e => { if (bannerOpenCount > 0) (e.currentTarget.style.background = isDark ? '#1F1F1F' : 'rgba(37,99,235,0",
+      "onMouseEnter={e => { if (bannerStaleCount > 0) (e.currentTarget.style.background = isDark ? '#1F1F1F' : 'rgba(220,38,38,",
+      "onMouseEnter={e => { if (!isProcessingRow) (e.currentTarget as HTMLElement).style.background = isDark ? '#1F1F1F' : 'rgb"
+    ]
+  },
+  {
+    "hex": "#fef2f2",
+    "count": 215,
+    "samples": [
+      "red:   { bg: '#FEF2F2', border: '#FCA5A5', color: '#991B1B' },",
+      "background: ragStatus === 'red' ? '#FEF2F2' : '#FFFBEB',",
+      "background: '#FEF2F2', color: '#991B1B', border: '1px solid #FCA5A5',"
+    ]
+  },
+  {
+    "hex": "#292929",
+    "count": 213,
+    "samples": [
+      "borderSubtle: dk ? '#292929' : '#f3f4f6',",
+      "divider:      dk ? '#292929' : '#E2E8F0',",
+      "<span className=\"text-[9px] font-bold text-[#EDEDED] bg-[#292929] px-1 py-0.5 rounded\">"
+    ]
+  },
+  {
+    "hex": "#42526e",
+    "count": 206,
+    "samples": [
+      "bg = '#DFE1E6'; color = '#42526E'; label = 'FAILED';",
+      "bg = '#DFE1E6'; color = '#42526E'; label = 'PENDING';",
+      "neutral: { bg: '#DFE1E6', text: '#42526E' },"
+    ]
+  },
+  {
+    "hex": "#f59e0b",
+    "count": 194,
+    "samples": [
+      "bronze: '#f59e0b',",
+      "const accentColor = isCommitted ? '#2563eb' : '#f59e0b'; // Blue for committed, Amber for forecast",
+      "{ label: 'Open Incidents', value: 24, className: 'text-[#f59e0b]', trend: '↑ +5 from last week', trendUp: true },"
+    ]
+  },
+  {
+    "hex": "#0c66e4",
+    "count": 167,
+    "samples": [
+      "info: { bg: \"#0C66E4\", fg: \"#FFFFFF\", label: \"INFO\" },",
+      "running: { bg: \"#0C66E4\", fg: \"#FFFFFF\", label: \"RUNNING\" },",
+      "bg = '#0C66E4'; color = '#FFFFFF'; label = 'PROCESSING';"
+    ]
+  },
+  {
+    "hex": "#fffbeb",
+    "count": 148,
+    "samples": [
+      "return { label: `RESTORABLE \\u00B7 ${daysLeft}d left`, bg: '#FFFBEB', color: '#92400E', border: '#FCD34D' };",
+      "amber: { bg: '#FFFBEB', border: '#FCD34D', color: '#92400E' },",
+      "background: ragStatus === 'red' ? '#FEF2F2' : '#FFFBEB',"
+    ]
+  },
+  {
+    "hex": "#059669",
+    "count": 148,
+    "samples": [
+      "success:  { icon: CheckCircle2, color: '#059669', bg: 'rgba(5,150,105,0.1)',  label: 'SUCCESS' },",
+      "{ label: 'Success', value: stats.success, color: '#059669', bg: 'rgba(5,150,105,0.08)' },",
+      "<span className=\"w-2 h-2 rounded-full bg-[#059669] flex-shrink-0\" />"
+    ]
+  },
+  {
+    "hex": "#deebff",
+    "count": 134,
+    "samples": [
+      "bg = '#DEEBFF'; color = '#0747A6';",
+      "processing: { bg: '#DEEBFF', text: '#0747A6' },",
+      "pending: { bg: '#DEEBFF', text: '#0747A6' },"
+    ]
+  },
+  {
+    "hex": "#6b7280",
+    "count": 130,
+    "samples": [
+      "pillInactiveText: dk ? '#A1A1A1' : '#6b7280',",
+      "skipped:  { icon: SkipForward,  color: '#6B7280', bg: 'rgba(107,114,128,0.1)', label: 'SKIPPED' },",
+      "{ label: 'Skipped', value: stats.skipped, color: '#6B7280', bg: 'rgba(107,114,128,0.08)' },"
+    ]
+  },
+  {
+    "hex": "#0052cc",
+    "count": 130,
+    "samples": [
+      "background: linear-gradient(135deg, #2684FF, #0052CC);",
+      "{ id: 2, name: 'Backlog', color: '#0052CC' },",
+      "fontSize: 10.5, fontWeight: 600, color: '#0052CC',"
+    ]
+  },
+  {
+    "hex": "#dbeafe",
+    "count": 128,
+    "samples": [
+      "onMouseEnter={e => { e.currentTarget.style.background = '#DBEAFE'; e.currentTarget.style.borderColor = '#93C5FD'; }}",
+      "<div className=\"bg-[#dbeafe] rounded-lg p-4 mb-6\">",
+      "{ bg: '#DBEAFE', text: '#1D4ED8' }, { bg: '#DCFCE7', text: '#15803D' },"
+    ]
+  },
+  {
+    "hex": "#8b5cf6",
+    "count": 124,
+    "samples": [
+      "staging:  { dot: '#8b5cf6', bg: 'rgba(139,92,246,0.1)', text: '#8b5cf6', label: 'Staging' },",
+      "staging:  { dot: '#8b5cf6', bg: 'rgba(139,92,246,0.1)', text: '#8b5cf6', label: 'Staging' },",
+      "<StatItem number={statCounts.staging} label=\"Staging\" dotColor=\"#8b5cf6\" />"
+    ]
+  },
+  {
+    "hex": "#0747a6",
+    "count": 118,
+    "samples": [
+      "bg = '#DEEBFF'; color = '#0747A6';",
+      "processing: { bg: '#DEEBFF', text: '#0747A6' },",
+      "pending: { bg: '#DEEBFF', text: '#0747A6' },"
+    ]
+  },
+  {
+    "hex": "#0a0a0a",
+    "count": 118,
+    "samples": [
+      "pageBg:       dk ? '#0A0A0A' : '#FFFFFF',",
+      "surfaceBg:    dk ? '#0A0A0A' : '#FFFFFF',",
+      "<div className=\"flex flex-col h-full bg-white dark:bg-[#0A0A0A]\">"
+    ]
+  },
+  {
+    "hex": "#60a5fa",
+    "count": 115,
+    "samples": [
+      "<span className=\"text-[13px] font-mono font-medium text-[#2563eb] dark:text-[#60a5fa]\">{item.key}</span>",
+      "<div className=\"text-sm font-medium leading-5 text-[var(--text-1)] truncate group-hover:text-[#2563eb] dark:group-hover:",
+      "primaryLighter: '#60a5fa',"
+    ]
+  },
+  {
+    "hex": "#454545",
+    "count": 109,
+    "samples": [
+      "borderInput:  dk ? '#454545' : '#DDDEE1',",
+      "pillBorder:   dk ? '#454545' : '#DDDEE1',",
+      "<ArrowRight size={12} className=\"text-[#454545] shrink-0\" />"
+    ]
+  },
+  {
+    "hex": "#10b981",
+    "count": 108,
+    "samples": [
+      "<CheckCircle size={48} color=\"#10B981\" strokeWidth={1.5} />",
+      "Support: { bg: 'bg-[#10b981]', text: 'text-white', badge: 'bg-[#10b981]/15 text-[#10b981]' },",
+      "Support: { bg: 'bg-[#10b981]', text: 'text-white', badge: 'bg-[#10b981]/15 text-[#10b981]' },"
+    ]
+  },
+  {
+    "hex": "#f0fdf4",
+    "count": 105,
+    "samples": [
+      "<div style={{ marginTop: 12, padding: '14px 16px', background: '#F0FDF4', border: '0.75px solid #DCFCE7', borderRadius: ",
+      "<div style={{ margin: '0 16px 12px', padding: '10px 14px', background: '#F0FDF4', border: '0.75px solid #BBF7D0', border",
+      "{ bg: '#FEE2E2', text: '#991B1B' }, { bg: '#F0FDF4', text: '#0F766E' },"
+    ]
+  },
+  {
+    "hex": "#006644",
+    "count": 103,
+    "samples": [
+      "return { label: 'RESTORED', bg: '#E3FCEF', color: '#006644', border: '#6EE7B7' };",
+      "bg = '#E3FCEF'; color = '#006644';",
+      "success: { bg: '#E3FCEF', text: '#006644' },"
+    ]
+  },
+  {
+    "hex": "#253858",
+    "count": 103,
+    "samples": [
+      "let bg = '#DFE1E6', color = '#253858';",
+      "error: { bg: '#DFE1E6', text: '#253858' },",
+      "failed: { bg: '#DFE1E6', text: '#253858' },"
+    ]
+  },
+  {
+    "hex": "#1e40af",
+    "count": 91,
+    "samples": [
+      "onMouseEnter={e => { e.currentTarget.style.background = 'linear-gradient(135deg, #1D4ED8 0%, #1E40AF 100%)'; e.currentTa",
+      "className=\"gap-2 bg-gradient-to-r from-[#2563eb] to-[#1d4ed8] hover:from-[#1d4ed8] hover:to-[#1e40af] text-white px-6\"",
+      "className=\"w-full gap-2 bg-gradient-to-r from-[#2563eb] to-[#1d4ed8] hover:from-[#1d4ed8] hover:to-[#1e40af] text-white\""
+    ]
+  }
+]

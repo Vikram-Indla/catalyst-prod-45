@@ -56,7 +56,7 @@ export function RescheduleModal({
       <DialogContent className="max-w-md">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <Calendar className="h-5 w-5 text-[#2563eb]" />
+            <Calendar className="h-5 w-5 text-[var(--ds-text-brand,#2563eb)]" />
             Reschedule Tests
           </DialogTitle>
         </DialogHeader>
@@ -67,7 +67,7 @@ export function RescheduleModal({
             <div
               className={cn(
                 'p-4 rounded-lg border-2 cursor-pointer',
-                mode === 'shift' ? 'border-[#2563eb] bg-[#eff6ff]' : 'border-[#e2e8f0]'
+                mode === 'shift' ? 'border-[var(--ds-text-brand,#2563eb)] bg-[var(--ds-background-selected,#eff6ff)]' : 'border-[var(--ds-border,#e2e8f0)]'
               )}
               onClick={() => setMode('shift')}
             >
@@ -77,7 +77,7 @@ export function RescheduleModal({
                   <Label htmlFor="shift" className="text-sm font-medium cursor-pointer">
                     Shift all tests by days
                   </Label>
-                  <p className="text-xs text-[#64748b] mt-1">
+                  <p className="text-xs text-[var(--ds-text-subtlest,#64748b)] mt-1">
                     Move all {totalTests} tests forward or backward
                   </p>
 
@@ -88,22 +88,22 @@ export function RescheduleModal({
                         variant="outline"
                         size="icon"
                         onClick={() => handleShift(-1)}
-                        className="h-10 w-10 border-[#e2e8f0]"
+                        className="h-10 w-10 border-[var(--ds-border,#e2e8f0)]"
                       >
                         <Minus className="h-4 w-4" />
                       </Button>
                       <div className="text-center">
-                        <div className="text-2xl font-bold text-[#0f172a]">
+                        <div className="text-2xl font-bold text-[var(--ds-text,#0f172a)]">
                           {shiftDays > 0 && '+'}{shiftDays}
                         </div>
-                        <div className="text-xs text-[#64748b]">days</div>
+                        <div className="text-xs text-[var(--ds-text-subtlest,#64748b)]">days</div>
                       </div>
                       <Button
                         type="button"
                         variant="outline"
                         size="icon"
                         onClick={() => handleShift(1)}
-                        className="h-10 w-10 border-[#e2e8f0]"
+                        className="h-10 w-10 border-[var(--ds-border,#e2e8f0)]"
                       >
                         <Plus className="h-4 w-4" />
                       </Button>
@@ -117,7 +117,7 @@ export function RescheduleModal({
             <div
               className={cn(
                 'p-4 rounded-lg border-2 cursor-pointer',
-                mode === 'range' ? 'border-[#2563eb] bg-[#eff6ff]' : 'border-[#e2e8f0]'
+                mode === 'range' ? 'border-[var(--ds-text-brand,#2563eb)] bg-[var(--ds-background-selected,#eff6ff)]' : 'border-[var(--ds-border,#e2e8f0)]'
               )}
               onClick={() => setMode('range')}
             >
@@ -127,14 +127,14 @@ export function RescheduleModal({
                   <Label htmlFor="range" className="text-sm font-medium cursor-pointer">
                     Move date range
                   </Label>
-                  <p className="text-xs text-[#64748b] mt-1">
+                  <p className="text-xs text-[var(--ds-text-subtlest,#64748b)] mt-1">
                     Move tests from one range to another
                   </p>
 
                   {mode === 'range' && (
                     <div className="mt-4 space-y-3">
                       <div>
-                        <Label className="text-xs text-[#64748b]">From date</Label>
+                        <Label className="text-xs text-[var(--ds-text-subtlest,#64748b)]">From date</Label>
                         <Input
                           type="date"
                           value={fromDate}
@@ -143,10 +143,10 @@ export function RescheduleModal({
                         />
                       </div>
                       <div className="flex justify-center">
-                        <ArrowRight className="h-4 w-4 text-[#94a3b8]" />
+                        <ArrowRight className="h-4 w-4 text-[var(--ds-text-subtlest,#94a3b8)]" />
                       </div>
                       <div>
-                        <Label className="text-xs text-[#64748b]">To date</Label>
+                        <Label className="text-xs text-[var(--ds-text-subtlest,#64748b)]">To date</Label>
                         <Input
                           type="date"
                           value={toDate}
@@ -164,7 +164,7 @@ export function RescheduleModal({
           {/* Warning */}
           {isExtendingPastCycle && (
             <div className="flex items-start gap-2 p-3 bg-[#fef3c7] rounded-lg">
-              <AlertTriangle className="h-4 w-4 text-[#d97706] shrink-0 mt-0.5" />
+              <AlertTriangle className="h-4 w-4 text-[var(--ds-text-warning,#d97706)] shrink-0 mt-0.5" />
               <div className="text-xs text-[#92400e]">
                 <strong>Warning:</strong> This will extend tests past the cycle end date
                 ({format(cycleRange.end, 'MMM d')}). Consider extending the cycle.
@@ -174,9 +174,9 @@ export function RescheduleModal({
 
           {/* Preview */}
           {mode === 'shift' && shiftDays !== 0 && (
-            <div className="p-3 bg-[#f1f5f9] rounded-lg">
-              <div className="text-xs font-medium text-[#64748b] mb-1">Preview</div>
-              <div className="text-sm text-[#334155]">
+            <div className="p-3 bg-[var(--ds-surface-sunken,#f1f5f9)] rounded-lg">
+              <div className="text-xs font-medium text-[var(--ds-text-subtlest,#64748b)] mb-1">Preview</div>
+              <div className="text-sm text-[var(--ds-text-subtle,#334155)]">
                 {totalTests} tests will be moved{' '}
                 <strong>{Math.abs(shiftDays)} days {shiftDays > 0 ? 'forward' : 'backward'}</strong>
               </div>
@@ -191,7 +191,7 @@ export function RescheduleModal({
           <Button
             onClick={handleSubmit}
             disabled={mode === 'shift' && shiftDays === 0}
-            className="bg-[#2563eb] hover:bg-[#1d4ed8] text-white"
+            className="bg-[var(--ds-text-brand,#2563eb)] hover:bg-[var(--ds-background-brand-bold-hovered,#1d4ed8)] text-white"
           >
             Apply Changes
           </Button>

@@ -108,12 +108,12 @@ function StarredItemRow({
         {['story', 'feature', 'task', 'defect', 'epic'].includes(item.type) && (
           <WorkItemIcon type={item.type as WorkItemType} size={14} />
         )}
-        <span className="text-[13px] font-mono font-medium text-[#2563eb] dark:text-[#60a5fa]">{item.key}</span>
+        <span className="text-[13px] font-mono font-medium text-[var(--ds-text-brand,#2563eb)] dark:text-[var(--ds-text-brand,#60a5fa)]">{item.key}</span>
       </div>
 
       {/* Summary - hover changes to olive */}
       <div className="min-w-0 pr-4">
-        <div className="text-sm font-medium leading-5 text-[var(--text-1)] truncate group-hover:text-[#2563eb] dark:group-hover:text-[#60a5fa] transition-colors">
+        <div className="text-sm font-medium leading-5 text-[var(--text-1)] truncate group-hover:text-[var(--ds-text-brand,#2563eb)] dark:group-hover:text-[var(--ds-text-brand,#60a5fa)] transition-colors">
           {item.summary}
         </div>
       </div>

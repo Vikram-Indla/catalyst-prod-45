@@ -58,7 +58,7 @@ export function CatyChatTab() {
             <div
               className="w-10 h-10 rounded-full flex items-center justify-center text-white"
               style={{
-                background: 'linear-gradient(135deg, #2563eb, #1D4ED8)',
+                background: 'linear-gradient(135deg, var(--ds-text-brand, #2563eb), var(--ds-background-brand-bold-hovered, #1D4ED8))',
               }}
             >
               <MessageSquare className="w-5 h-5" />
@@ -84,7 +84,7 @@ export function CatyChatTab() {
                   backgroundColor:
                     msg.role === 'user'
                       ? 'var(--wh-primary)'
-                      : '#f1f5f9',
+                      : 'var(--ds-surface-sunken, #f1f5f9)',
                   color:
                     msg.role === 'user'
                       ? 'white'
@@ -106,7 +106,7 @@ export function CatyChatTab() {
             <div
               className="rounded-xl px-3.5 py-2.5 flex gap-1.5"
               style={{
-                backgroundColor: '#f1f5f9',
+                backgroundColor: 'var(--ds-surface-sunken, #f1f5f9)',
                 borderRadius: '12px 12px 12px 4px',
               }}
             >
@@ -115,7 +115,7 @@ export function CatyChatTab() {
                   key={i}
                   className="w-1.5 h-1.5 rounded-full"
                   style={{
-                    backgroundColor: '#94a3b8',
+                    backgroundColor: 'var(--ds-text-subtlest, #94a3b8)',
                     animation: `bounce 1.4s infinite`,
                     animationDelay: `${i * 0.15}s`,
                   }}
@@ -190,7 +190,7 @@ export function CatyChatTab() {
           disabled={!input.trim() || isTyping}
           className="w-8 h-8 rounded-lg flex items-center justify-center transition-all disabled:opacity-50"
           style={{
-            backgroundColor: input.trim() && !isTyping ? 'var(--wh-primary)' : '#e2e8f0',
+            backgroundColor: input.trim() && !isTyping ? 'var(--wh-primary)' : 'var(--ds-border, #e2e8f0)',
           }}
         >
           <Send

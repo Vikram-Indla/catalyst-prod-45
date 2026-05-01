@@ -107,7 +107,7 @@ export const DescriptionTab: React.FC<DescriptionTabProps> = ({
             display: 'block',
             fontSize: '12px',
             fontWeight: 600,
-            color: '#64748b',
+            color: 'var(--ds-text-subtlest, #64748b)',
             textTransform: 'uppercase',
             letterSpacing: '0.03em',
             marginBottom: '12px'

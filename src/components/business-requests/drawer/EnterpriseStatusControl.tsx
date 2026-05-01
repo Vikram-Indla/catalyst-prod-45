@@ -1,6 +1,6 @@
 /**
  * EnterpriseStatusControl - Brand blue status control with dropdown
- * Catalyst Design System: Primary Blue (#2563eb)
+ * Catalyst Design System: Primary Blue (var(--ds-text-brand, #2563eb))
  */
 
 import { useState } from 'react';
@@ -44,7 +44,7 @@ export function EnterpriseStatusControl({
         <button
           className={cn(
             "inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-semibold uppercase tracking-[0.3px]",
-            "cursor-pointer transition-colors bg-[#2563eb] hover:bg-[#1d4ed8] text-white",
+            "cursor-pointer transition-colors bg-[var(--ds-text-brand,#2563eb)] hover:bg-[var(--ds-background-brand-bold-hovered,#1d4ed8)] text-white",
             disabled && "opacity-50 cursor-not-allowed"
           )}
           style={{
@@ -74,12 +74,12 @@ export function EnterpriseStatusControl({
               }}
               className={cn(
                 "text-[13px] cursor-pointer",
-                isActive && "bg-[#2563eb]/10 text-[#2563eb]"
+                isActive && "bg-[var(--ds-text-brand,#2563eb)]/10 text-[var(--ds-text-brand,#2563eb)]"
               )}
             >
               <span className="flex-1">{step.label}</span>
               {isActive && (
-                <Check className="h-4 w-4 shrink-0 text-[#2563eb]" />
+                <Check className="h-4 w-4 shrink-0 text-[var(--ds-text-brand,#2563eb)]" />
               )}
             </DropdownMenuItem>
           );

@@ -21,7 +21,7 @@ const RadioGroupItem = React.forwardRef<
       ref={ref}
       className={cn(
         // Focus ring uses BLUE per design spec v2
-        "aspect-square h-4 w-4 rounded-full border border-primary text-primary ring-offset-background focus:outline-none focus-visible:ring-2 focus-visible:ring-[#3b82f6] dark:focus-visible:ring-[#60a5fa] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50",
+        "aspect-square h-4 w-4 rounded-full border border-primary text-primary ring-offset-background focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ds-text-brand,#3b82f6)] dark:focus-visible:ring-[var(--ds-text-brand,#60a5fa)] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50",
         className,
       )}
       {...props}

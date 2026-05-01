@@ -268,7 +268,7 @@ function OptionAvatar({ option }: { option: FilterOption }) {
     return (
       <span className="jf-avatar jf-avatar--circle" style={{ backgroundColor: 'rgb(24, 104, 219)' }}>
         <svg width="12" height="12" viewBox="0 0 16 16" fill="none">
-          <path fill="#fff" fillRule="evenodd" d="M8 1.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5M4 4a4 4 0 1 1 8 0 4 4 0 0 1-8 0m-2 9a3.75 3.75 0 0 1 3.75-3.75h4.5A3.75 3.75 0 0 1 14 13v2h-1.5v-2a2.25 2.25 0 0 0-2.25-2.25h-4.5A2.25 2.25 0 0 0 3.5 13v2H2z" clipRule="evenodd" />
+          <path fill="var(--ds-surface, #fff)" fillRule="evenodd" d="M8 1.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5M4 4a4 4 0 1 1 8 0 4 4 0 0 1-8 0m-2 9a3.75 3.75 0 0 1 3.75-3.75h4.5A3.75 3.75 0 0 1 14 13v2h-1.5v-2a2.25 2.25 0 0 0-2.25-2.25h-4.5A2.25 2.25 0 0 0 3.5 13v2H2z" clipRule="evenodd" />
         </svg>
       </span>
     );
@@ -284,7 +284,7 @@ function OptionAvatar({ option }: { option: FilterOption }) {
   }
   if (option.avatarUrl) {
     return (
-      <span className="jf-avatar jf-avatar--circle" style={{ backgroundColor: '#fff' }}>
+      <span className="jf-avatar jf-avatar--circle" style={{ backgroundColor: 'var(--ds-surface, #fff)' }}>
         <img src={option.avatarUrl} alt={option.label} className="jf-avatar-img" />
       </span>
     );

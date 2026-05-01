@@ -115,9 +115,9 @@ export default function DefectDetailPage() {
               <>
                 <div><span className="text-muted-foreground">Source</span><p className="font-medium">Execution</p></div>
                 {defect.source_test_case_id && (
-                  <div><span className="text-muted-foreground">Test Case</span><p className="font-medium"><a href={`/testhub/repository?case=${defect.source_test_case_id}`} style={{ color: '#2563EB' }}>View Test Case</a></p></div>
+                  <div><span className="text-muted-foreground">Test Case</span><p className="font-medium"><a href={`/testhub/repository?case=${defect.source_test_case_id}`} style={{ color: 'var(--ds-text-brand, #2563EB)' }}>View Test Case</a></p></div>
                 )}
-                <div><span className="text-muted-foreground">Test Run</span><p className="font-medium"><a href={`/testhub/execution/${defect.source_test_run_id}`} style={{ color: '#2563EB' }}>View Execution</a></p></div>
+                <div><span className="text-muted-foreground">Test Run</span><p className="font-medium"><a href={`/testhub/execution/${defect.source_test_run_id}`} style={{ color: 'var(--ds-text-brand, #2563EB)' }}>View Execution</a></p></div>
                 <div><span className="text-muted-foreground">Environment</span><p className="font-medium">{defect.environment ?? '—'}</p></div>
               </>
             ) : (
@@ -175,12 +175,12 @@ export default function DefectDetailPage() {
         <CardHeader className="pb-2"><CardTitle className="text-sm font-medium">Description</CardTitle></CardHeader>
         <CardContent>
           {defect.source_test_run_id ? (
-            <div style={{ background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: 6, padding: '12px 14px' }}>
+            <div style={{ background: 'var(--ds-surface-sunken, #F8FAFC)', border: '1px solid #E2E8F0', borderRadius: 6, padding: '12px 14px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 8 }}>
-                <span style={{ fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.04em', color: '#64748B' }}>
+                <span style={{ fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.04em', color: 'var(--ds-text-subtlest, #64748B)' }}>
                   Execution Evidence
                 </span>
-                <span style={{ fontSize: 10, background: '#EFF6FF', color: '#1D4ED8', padding: '1px 5px', borderRadius: 3, fontWeight: 600 }}>
+                <span style={{ fontSize: 10, background: 'var(--ds-background-selected, #EFF6FF)', color: 'var(--ds-background-brand-bold-hovered, #1D4ED8)', padding: '1px 5px', borderRadius: 3, fontWeight: 600 }}>
                   READ ONLY
                 </span>
               </div>
@@ -189,9 +189,9 @@ export default function DefectDetailPage() {
               </p>
             </div>
           ) : defect.jira_source ? (
-            <div style={{ background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: 6, padding: '12px 14px' }}>
+            <div style={{ background: 'var(--ds-surface-sunken, #F8FAFC)', border: '1px solid #E2E8F0', borderRadius: 6, padding: '12px 14px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 8 }}>
-                <span style={{ fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.04em', color: '#64748B' }}>
+                <span style={{ fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.04em', color: 'var(--ds-text-subtlest, #64748B)' }}>
                   Jira Description
                 </span>
                 <span style={{ fontSize: 10, background: '#F0FDF4', color: '#166534', padding: '1px 5px', borderRadius: 3, fontWeight: 600 }}>

@@ -316,7 +316,7 @@ export function DemandDetailsViewTab({ data, onChange, onDirtyChange }: DemandDe
               id="ea-review"
               checked={data.ea_review_required ?? true}
               onCheckedChange={(checked) => handleChange('ea_review_required', checked)}
-              className="data-[state=checked]:bg-[#2563eb] flex-shrink-0 ml-2"
+              className="data-[state=checked]:bg-[var(--ds-text-brand,#2563eb)] flex-shrink-0 ml-2"
             />
           </div>
         </div>

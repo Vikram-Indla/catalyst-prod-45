@@ -245,14 +245,14 @@ export function CreateTaskModal({
                         width: '64px',
                         height: '64px',
                         borderRadius: '50%',
-                        backgroundColor: '#dcfce7',
+                        backgroundColor: 'var(--ds-background-success, #dcfce7)',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
                         marginBottom: '16px',
                       }}
                     >
-                      <Check style={{ width: '32px', height: '32px', color: '#16a34a' }} />
+                      <Check style={{ width: '32px', height: '32px', color: 'var(--ds-text-success, #16a34a)' }} />
                     </motion.div>
                     <h3 style={{
                       fontSize: '18px',
@@ -338,11 +338,11 @@ export function CreateTaskModal({
                   <label style={{
                     fontSize: '12px',
                     fontWeight: 600,
-                    color: '#64748b',
+                    color: 'var(--ds-text-subtlest, #64748b)',
                     textTransform: 'uppercase',
                     letterSpacing: '0.03em',
                   }}>
-                    Title <span style={{ color: '#dc2626' }}>*</span>
+                    Title <span style={{ color: 'var(--ds-text-danger, #dc2626)' }}>*</span>
                   </label>
                   <input
                     ref={titleInputRef}
@@ -357,7 +357,7 @@ export function CreateTaskModal({
                       fontWeight: 500,
                       color: COLORS.textPrimary,
                       backgroundColor: COLORS.surfaceCard,
-                      border: `1px solid ${errors.title ? '#ef4444' : COLORS.borderDefault}`,
+                      border: `1px solid ${errors.title ? 'var(--ds-text-danger, #ef4444)' : COLORS.borderDefault}`,
                       borderRadius: '12px',
                       outline: 'none',
                       transition: 'all 0.15s ease',
@@ -368,12 +368,12 @@ export function CreateTaskModal({
                       e.currentTarget.style.boxShadow = '0 0 0 3px rgba(59, 130, 246, 0.15)';
                     }}
                     onBlur={(e) => {
-                      e.currentTarget.style.borderColor = errors.title ? '#ef4444' : COLORS.borderDefault;
+                      e.currentTarget.style.borderColor = errors.title ? 'var(--ds-text-danger, #ef4444)' : COLORS.borderDefault;
                       e.currentTarget.style.boxShadow = 'none';
                     }}
                   />
                   {errors.title && (
-                    <span style={{ fontSize: '12px', color: '#ef4444' }}>{errors.title}</span>
+                    <span style={{ fontSize: '12px', color: 'var(--ds-text-danger, #ef4444)' }}>{errors.title}</span>
                   )}
                 </div>
 
@@ -382,7 +382,7 @@ export function CreateTaskModal({
                   <label style={{
                     fontSize: '12px',
                     fontWeight: 600,
-                    color: '#64748b',
+                    color: 'var(--ds-text-subtlest, #64748b)',
                     textTransform: 'uppercase',
                     letterSpacing: '0.03em',
                   }}>
@@ -507,7 +507,7 @@ export function CreateTaskModal({
                     padding: '10px 20px',
                     fontSize: '14px',
                     fontWeight: 600,
-                    color: '#ffffff',
+                    color: 'var(--ds-surface, #ffffff)',
                     backgroundColor: COLORS.accent,
                     border: 'none',
                     borderRadius: '12px',
@@ -519,7 +519,7 @@ export function CreateTaskModal({
                   }}
                   onMouseEnter={(e) => {
                     if (!isPending && title.trim()) {
-                      e.currentTarget.style.backgroundColor = '#1d4ed8';
+                      e.currentTarget.style.backgroundColor = 'var(--ds-background-brand-bold-hovered, #1d4ed8)';
                       e.currentTarget.style.boxShadow = '0 6px 16px rgba(37, 99, 235, 0.4)';
                     }
                   }}
@@ -581,14 +581,14 @@ function PriorityDropdown({ value, onChange }: PriorityDropdownProps) {
   }, []);
 
   const displayValue = value.charAt(0).toUpperCase() + value.slice(1);
-  const currentColor = PRIORITY_COLORS[displayValue] || '#94a3b8';
+  const currentColor = PRIORITY_COLORS[displayValue] || 'var(--ds-text-subtlest, #94a3b8)';
 
   return (
     <div ref={dropdownRef} style={{ display: 'flex', flexDirection: 'column', gap: '6px', position: 'relative' }}>
       <label style={{
         fontSize: '12px',
         fontWeight: 600,
-        color: '#64748b',
+        color: 'var(--ds-text-subtlest, #64748b)',
         textTransform: 'uppercase',
         letterSpacing: '0.03em',
       }}>
@@ -679,18 +679,18 @@ function WorkstreamDropdown({ value, onChange, workstreams, error }: WorkstreamD
 
   const selectedWorkstream = workstreams.find(w => w.id === value);
   const displayName = selectedWorkstream?.name || 'Select workstream...';
-  const displayColor = selectedWorkstream?.color || WORKSTREAM_COLORS[displayName] || '#94a3b8';
+  const displayColor = selectedWorkstream?.color || WORKSTREAM_COLORS[displayName] || 'var(--ds-text-subtlest, #94a3b8)';
 
   return (
     <div ref={dropdownRef} style={{ display: 'flex', flexDirection: 'column', gap: '6px', position: 'relative' }}>
       <label style={{
         fontSize: '12px',
         fontWeight: 600,
-        color: '#64748b',
+        color: 'var(--ds-text-subtlest, #64748b)',
         textTransform: 'uppercase',
         letterSpacing: '0.03em',
       }}>
-        Workstream <span style={{ color: '#dc2626' }}>*</span>
+        Workstream <span style={{ color: 'var(--ds-text-danger, #dc2626)' }}>*</span>
       </label>
       
       <div
@@ -703,7 +703,7 @@ function WorkstreamDropdown({ value, onChange, workstreams, error }: WorkstreamD
           gap: '10px',
           padding: '10px 14px',
           backgroundColor: COLORS.surfaceCard,
-          border: `1px solid ${error ? '#ef4444' : isOpen ? COLORS.borderFocus : (isHovered ? COLORS.borderDefault : COLORS.borderLight)}`,
+          border: `1px solid ${error ? 'var(--ds-text-danger, #ef4444)' : isOpen ? COLORS.borderFocus : (isHovered ? COLORS.borderDefault : COLORS.borderLight)}`,
           borderRadius: '12px',
           cursor: 'pointer',
           transition: 'all 0.15s ease',
@@ -717,7 +717,7 @@ function WorkstreamDropdown({ value, onChange, workstreams, error }: WorkstreamD
         <ChevronDown size={16} style={{ color: COLORS.textLight, transition: 'transform 0.2s ease', transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)' }} />
       </div>
 
-      {error && <span style={{ fontSize: '12px', color: '#ef4444' }}>{error}</span>}
+      {error && <span style={{ fontSize: '12px', color: 'var(--ds-text-danger, #ef4444)' }}>{error}</span>}
 
       {isOpen && (
         <div
@@ -737,7 +737,7 @@ function WorkstreamDropdown({ value, onChange, workstreams, error }: WorkstreamD
           }}
         >
           {workstreams.map((ws) => {
-            const color = ws.color || WORKSTREAM_COLORS[ws.name] || '#94a3b8';
+            const color = ws.color || WORKSTREAM_COLORS[ws.name] || 'var(--ds-text-subtlest, #94a3b8)';
             return (
               <DropdownItem
                 key={ws.id}
@@ -786,7 +786,7 @@ function AssigneeDropdown({ value, onChange, users }: AssigneeDropdownProps) {
   const displayInitials = selectedUser?.initials || (selectedUser ? selectedUser.name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase() : '?');
   
   const getColorFromName = (name: string): string => {
-    const colors = ['#3b82f6', '#8b5cf6', '#ec4899', '#14b8a6', '#f59e0b', '#6366f1'];
+    const colors = ['var(--ds-text-brand, #3b82f6)', '#8b5cf6', '#ec4899', '#14b8a6', 'var(--ds-text-warning, #f59e0b)', '#6366f1'];
     let hash = 0;
     for (let i = 0; i < name.length; i++) {
       hash = name.charCodeAt(i) + ((hash << 5) - hash);
@@ -794,7 +794,7 @@ function AssigneeDropdown({ value, onChange, users }: AssigneeDropdownProps) {
     return colors[Math.abs(hash) % colors.length];
   };
   
-  const displayColor = selectedUser ? getColorFromName(selectedUser.name) : '#94a3b8';
+  const displayColor = selectedUser ? getColorFromName(selectedUser.name) : 'var(--ds-text-subtlest, #94a3b8)';
 
   const filteredUsers = users.filter(u => 
     u.name.toLowerCase().includes(search.toLowerCase()) ||
@@ -806,7 +806,7 @@ function AssigneeDropdown({ value, onChange, users }: AssigneeDropdownProps) {
       <label style={{
         fontSize: '12px',
         fontWeight: 600,
-        color: '#64748b',
+        color: 'var(--ds-text-subtlest, #64748b)',
         textTransform: 'uppercase',
         letterSpacing: '0.03em',
       }}>
@@ -889,7 +889,7 @@ function AssigneeDropdown({ value, onChange, users }: AssigneeDropdownProps) {
           <AssigneeItem
             name="Unassigned"
             initials="?"
-            color="#94a3b8"
+            color="var(--ds-text-subtlest, #94a3b8)"
             isSelected={!value}
             onClick={() => { onChange(''); setIsOpen(false); setSearch(''); }}
           />
@@ -1004,7 +1004,7 @@ function DateDropdown({ label, value, placeholder = 'Select date...', onChange, 
             borderRadius: '8px',
             border: isToday && !isSelected ? `1px solid ${COLORS.accent}` : 'none',
             backgroundColor: isSelected ? COLORS.accent : 'transparent',
-            color: isSelected ? '#ffffff' : COLORS.textPrimary,
+            color: isSelected ? 'var(--ds-surface, #ffffff)' : COLORS.textPrimary,
             fontSize: '14px',
             fontWeight: isSelected || isToday ? 600 : 400,
             cursor: 'pointer',
@@ -1027,11 +1027,11 @@ function DateDropdown({ label, value, placeholder = 'Select date...', onChange, 
       <label style={{
         fontSize: '12px',
         fontWeight: 600,
-        color: '#64748b',
+        color: 'var(--ds-text-subtlest, #64748b)',
         textTransform: 'uppercase',
         letterSpacing: '0.03em',
       }}>
-        {label} {required && <span style={{ color: '#dc2626' }}>*</span>}
+        {label} {required && <span style={{ color: 'var(--ds-text-danger, #dc2626)' }}>*</span>}
       </label>
 
       <div
@@ -1044,7 +1044,7 @@ function DateDropdown({ label, value, placeholder = 'Select date...', onChange, 
           gap: '10px',
           padding: '10px 14px',
           backgroundColor: COLORS.surfaceCard,
-          border: `1px solid ${error ? '#ef4444' : isOpen ? COLORS.borderFocus : (isHovered ? COLORS.borderFocus : COLORS.borderDefault)}`,
+          border: `1px solid ${error ? 'var(--ds-text-danger, #ef4444)' : isOpen ? COLORS.borderFocus : (isHovered ? COLORS.borderFocus : COLORS.borderDefault)}`,
           borderRadius: '12px',
           cursor: 'pointer',
           transition: 'all 0.15s ease',
@@ -1061,7 +1061,7 @@ function DateDropdown({ label, value, placeholder = 'Select date...', onChange, 
         <ChevronDown size={16} style={{ color: COLORS.textLight, transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.2s ease' }} />
       </div>
       
-      {error && <span style={{ fontSize: '12px', color: '#ef4444' }}>{error}</span>}
+      {error && <span style={{ fontSize: '12px', color: 'var(--ds-text-danger, #ef4444)' }}>{error}</span>}
 
       {isOpen && (
         <div
@@ -1212,7 +1212,7 @@ function AssigneeItem({ name, email, initials, color, isSelected, onClick }: {
           height: '28px',
           borderRadius: '50%',
           backgroundColor: color,
-          color: '#ffffff',
+          color: 'var(--ds-surface, #ffffff)',
           fontSize: '11px',
           fontWeight: 600
         }}

@@ -141,7 +141,7 @@ function groupStories(items: BacklogStory[], groupBy: GroupByKey): { label: stri
 
 
 
-const AVATAR_COLOURS = ['#2563EB', '#0D9488', '#0284C7', '#DC2626', '#DB2777'];
+const AVATAR_COLOURS = ['var(--ds-text-brand, #2563EB)', '#0D9488', '#0284C7', 'var(--ds-text-danger, #DC2626)', '#DB2777'];
 
 // ── V2 table feature flag ──
 // When localStorage.catalyst.table.v2 === '1', the backlog renders via the
@@ -458,8 +458,8 @@ export default function StoryBacklogPage({ projectId: propProjectId, projectKey 
               >
                 <Star
                   size={14}
-                  fill={isStarred ? '#F59E0B' : 'none'}
-                  stroke={isStarred ? '#F59E0B' : '#94A3B8'}
+                  fill={isStarred ? 'var(--ds-text-warning, #F59E0B)' : 'none'}
+                  stroke={isStarred ? 'var(--ds-text-warning, #F59E0B)' : 'var(--ds-text-subtlest, #94A3B8)'}
                   style={{ transition: 'all 150ms' }}
                 />
               </button>
@@ -478,7 +478,7 @@ export default function StoryBacklogPage({ projectId: propProjectId, projectKey 
       case 'key':
         return (
           <td key={colKey} style={{ width: columnWidths.key }}>
-            <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 13, fontWeight: 600, color: '#2563EB' }}>
+            <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 13, fontWeight: 600, color: 'var(--ds-text-brand, #2563EB)' }}>
               {story.story_key || '—'}
             </span>
           </td>
@@ -501,7 +501,7 @@ export default function StoryBacklogPage({ projectId: propProjectId, projectKey 
             {story.feature?.epic ? (
               <ParentEpicChip epicId={story.feature.epic.id} epicKey={story.feature.epic.epic_key} epicName={story.feature.epic.name} />
             ) : (
-              <span style={{ color: '#94A3B8', fontSize: 12 }}>—</span>
+              <span style={{ color: 'var(--ds-text-subtlest, #94A3B8)', fontSize: 12 }}>—</span>
             )}
           </td>
         );
@@ -521,7 +521,7 @@ export default function StoryBacklogPage({ projectId: propProjectId, projectKey 
                   {getInitials(story.assignee_name || null)}
                 </div>
               )}
-              <span style={{ fontSize: 13, fontWeight: 500, color: '#475569', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+              <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--ds-text-subtle, #475569)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                 {story.assignee_name || 'Unassigned'}
               </span>
             </div>
@@ -534,15 +534,15 @@ export default function StoryBacklogPage({ projectId: propProjectId, projectKey 
               {[1, 2, 3, 4].map(i => {
                 const level = PRIORITY_ORDER.indexOf(story.priority || '') >= 0 ? PRIORITY_ORDER.length - PRIORITY_ORDER.indexOf(story.priority || '') : 0;
                 const filled = i <= level;
-                const fillColor = level >= 4 ? '#E5484D' : level >= 3 ? '#F59E0B' : '#22C55E';
-                return <div key={i} style={{ width: 4, height: 14, borderRadius: 1, background: filled ? fillColor : '#E2E8F0' }} />;
+                const fillColor = level >= 4 ? '#E5484D' : level >= 3 ? 'var(--ds-text-warning, #F59E0B)' : 'var(--ds-text-success, #22C55E)';
+                return <div key={i} style={{ width: 4, height: 14, borderRadius: 1, background: filled ? fillColor : 'var(--ds-border, #E2E8F0)' }} />;
               })}
             </div>
           </td>
         );
       case 'updated':
         return (
-          <td key={colKey} style={{ width: columnWidths.updated, fontSize: 12, fontWeight: 500, color: '#64748B' }}>
+          <td key={colKey} style={{ width: columnWidths.updated, fontSize: 12, fontWeight: 500, color: 'var(--ds-text-subtlest, #64748B)' }}>
             {formatDueDate(story.jira_updated_at ?? null)}
           </td>
         );
@@ -599,7 +599,7 @@ export default function StoryBacklogPage({ projectId: propProjectId, projectKey 
       disableSort: true,
       header: () => (
         <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
-          <Star size={13} stroke="#94A3B8" fill="none" />
+          <Star size={13} stroke="var(--ds-text-subtlest, #94A3B8)" fill="none" />
         </span>
       ),
       cell: ({ row }) => {
@@ -616,8 +616,8 @@ export default function StoryBacklogPage({ projectId: propProjectId, projectKey 
           >
             <Star
               size={14}
-              fill={isStarred ? '#F59E0B' : 'none'}
-              stroke={isStarred ? '#F59E0B' : '#94A3B8'}
+              fill={isStarred ? 'var(--ds-text-warning, #F59E0B)' : 'none'}
+              stroke={isStarred ? 'var(--ds-text-warning, #F59E0B)' : 'var(--ds-text-subtlest, #94A3B8)'}
               style={{ transition: 'all 150ms' }}
             />
           </button>
@@ -642,7 +642,7 @@ export default function StoryBacklogPage({ projectId: propProjectId, projectKey 
       header: 'KEY',
       sortingFn: (a, b) => (a.original.story_key || '').localeCompare(b.original.story_key || ''),
       cell: ({ row }) => (
-        <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 13, fontWeight: 600, color: '#2563EB' }}>
+        <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 13, fontWeight: 600, color: 'var(--ds-text-brand, #2563EB)' }}>
           {row.original.story_key || '—'}
         </span>
       ),
@@ -679,7 +679,7 @@ export default function StoryBacklogPage({ projectId: propProjectId, projectKey 
         const ep = row.original.feature?.epic;
         return ep
           ? <ParentEpicChip epicId={ep.id} epicKey={ep.epic_key} epicName={ep.name} />
-          : <span style={{ color: '#94A3B8', fontSize: 12 }}>—</span>;
+          : <span style={{ color: 'var(--ds-text-subtlest, #94A3B8)', fontSize: 12 }}>—</span>;
       },
     },
     {
@@ -711,7 +711,7 @@ export default function StoryBacklogPage({ projectId: propProjectId, projectKey 
                 {getInitials(s.assignee_name || null)}
               </div>
             )}
-            <span style={{ fontSize: 13, fontWeight: 500, color: '#475569', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+            <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--ds-text-subtle, #475569)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
               {s.assignee_name || 'Unassigned'}
             </span>
           </div>
@@ -736,8 +736,8 @@ export default function StoryBacklogPage({ projectId: propProjectId, projectKey 
           <div style={{ display: 'flex', gap: 2 }} title={getPriorityLabel(s.priority)}>
             {[1, 2, 3, 4].map((i) => {
               const filled = i <= level;
-              const fillColor = level >= 4 ? '#E5484D' : level >= 3 ? '#F59E0B' : '#22C55E';
-              return <div key={i} style={{ width: 4, height: 14, borderRadius: 1, background: filled ? fillColor : '#E2E8F0' }} />;
+              const fillColor = level >= 4 ? '#E5484D' : level >= 3 ? 'var(--ds-text-warning, #F59E0B)' : 'var(--ds-text-success, #22C55E)';
+              return <div key={i} style={{ width: 4, height: 14, borderRadius: 1, background: filled ? fillColor : 'var(--ds-border, #E2E8F0)' }} />;
             })}
           </div>
         );
@@ -750,7 +750,7 @@ export default function StoryBacklogPage({ projectId: propProjectId, projectKey 
       header: 'UPDATED',
       sortingFn: (a, b) => (a.original.jira_updated_at || '').localeCompare(b.original.jira_updated_at || ''),
       cell: ({ row }) => (
-        <span style={{ fontSize: 12, fontWeight: 500, color: '#64748B' }}>
+        <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--ds-text-subtlest, #64748B)' }}>
           {formatDueDate(row.original.jira_updated_at ?? null)}
         </span>
       ),
@@ -782,13 +782,13 @@ export default function StoryBacklogPage({ projectId: propProjectId, projectKey 
     );
   }
 
-  if (error) return <div className="h-full flex items-center justify-center" style={{ background: tk.pageBg, color: '#DC2626' }}>Error loading stories</div>;
+  if (error) return <div className="h-full flex items-center justify-center" style={{ background: tk.pageBg, color: 'var(--ds-text-danger, #DC2626)' }}>Error loading stories</div>;
 
   const v2EmptyState = (
     <div className="flex flex-col items-center justify-center" style={{ padding: '64px 0' }}>
-      <BookOpen className="h-12 w-12 mb-4" style={{ color: '#94A3B8' }} />
-      <p style={{ fontSize: 14, fontWeight: 600, color: '#0F172A', marginBottom: 4 }}>No stories found</p>
-      <p style={{ fontSize: 12, color: '#94A3B8', marginBottom: 16 }}>Try adjusting your filters or search</p>
+      <BookOpen className="h-12 w-12 mb-4" style={{ color: 'var(--ds-text-subtlest, #94A3B8)' }} />
+      <p style={{ fontSize: 14, fontWeight: 600, color: 'var(--ds-text, #0F172A)', marginBottom: 4 }}>No stories found</p>
+      <p style={{ fontSize: 12, color: 'var(--ds-text-subtlest, #94A3B8)', marginBottom: 16 }}>Try adjusting your filters or search</p>
     </div>
   );
 
@@ -797,7 +797,7 @@ export default function StoryBacklogPage({ projectId: propProjectId, projectKey 
       <div style={{
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
         padding: '10px 12px', borderTop: '0.75px solid #E2E8F0',
-        fontSize: 13, color: '#64748B', fontFamily: 'var(--cp-font-body)',
+        fontSize: 13, color: 'var(--ds-text-subtlest, #64748B)', fontFamily: 'var(--cp-font-body)',
       }}>
         <span style={{ fontWeight: 500 }}>
           {((page - 1) * pageSize) + 1}–{Math.min(page * pageSize, totalFiltered)} of {totalFiltered}
@@ -825,7 +825,7 @@ export default function StoryBacklogPage({ projectId: propProjectId, projectKey 
             }, [])
             .map((p, i) =>
               p === 'ellipsis' ? (
-                <span key={`e${i}`} style={{ padding: '0 4px', color: '#94A3B8' }}>…</span>
+                <span key={`e${i}`} style={{ padding: '0 4px', color: 'var(--ds-text-subtlest, #94A3B8)' }}>…</span>
               ) : (
                 <button
                   key={p}
@@ -835,7 +835,7 @@ export default function StoryBacklogPage({ projectId: propProjectId, projectKey 
                     minWidth: 28, height: 28, borderRadius: 4, padding: '0 6px',
                     border: page === p ? '1.5px solid #2563EB' : '1px solid #E2E8F0',
                     background: page === p ? 'rgba(37,99,235,0.06)' : 'var(--ds-text-inverse, #FFFFFF)',
-                    color: page === p ? '#2563EB' : '#475569',
+                    color: page === p ? 'var(--ds-text-brand, #2563EB)' : 'var(--ds-text-subtle, #475569)',
                     fontWeight: page === p ? 600 : 400,
                     fontSize: 13, cursor: 'pointer',
                     fontFamily: 'var(--cp-font-body)',
@@ -898,9 +898,9 @@ export default function StoryBacklogPage({ projectId: propProjectId, projectKey 
     if (total === 0) {
       return (
         <div className="flex flex-col items-center justify-center" style={{ padding: '64px 0' }}>
-          <BookOpen className="h-12 w-12 mb-4" style={{ color: '#94A3B8' }} />
-          <p style={{ fontSize: 14, fontWeight: 600, color: '#0F172A', marginBottom: 4 }}>No stories found</p>
-          <p style={{ fontSize: 12, color: '#94A3B8', marginBottom: 16 }}>Try adjusting your filters or search</p>
+          <BookOpen className="h-12 w-12 mb-4" style={{ color: 'var(--ds-text-subtlest, #94A3B8)' }} />
+          <p style={{ fontSize: 14, fontWeight: 600, color: 'var(--ds-text, #0F172A)', marginBottom: 4 }}>No stories found</p>
+          <p style={{ fontSize: 12, color: 'var(--ds-text-subtlest, #94A3B8)', marginBottom: 16 }}>Try adjusting your filters or search</p>
         </div>
       );
     }
@@ -930,7 +930,7 @@ export default function StoryBacklogPage({ projectId: propProjectId, projectKey 
                     return (
                       <th key={c.key} style={{ width: columnWidths.star, overflow: 'visible', textOverflow: 'clip' }}>
                         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                          <Star size={13} stroke="#94A3B8" fill="none" />
+                          <Star size={13} stroke="var(--ds-text-subtlest, #94A3B8)" fill="none" />
                         </div>
                       </th>
                     );
@@ -968,7 +968,7 @@ export default function StoryBacklogPage({ projectId: propProjectId, projectKey 
                           background: '#F7F8F9',
                           borderBottom: '0.75px solid #E2E8F0',
                           borderTop: '0.75px solid #E2E8F0',
-                          fontSize: 11, fontWeight: 700, color: '#475569',
+                          fontSize: 11, fontWeight: 700, color: 'var(--ds-text-subtle, #475569)',
                           textTransform: 'uppercase', letterSpacing: '0.08em',
                           verticalAlign: 'middle',
                         }}
@@ -976,8 +976,8 @@ export default function StoryBacklogPage({ projectId: propProjectId, projectKey 
                       >
                         <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                           {collapsed[group.label]
-                            ? <ChevronRight size={14} style={{ color: '#475569' }} />
-                            : <ChevronDown size={14} style={{ color: '#475569' }} />
+                            ? <ChevronRight size={14} style={{ color: 'var(--ds-text-subtle, #475569)' }} />
+                            : <ChevronDown size={14} style={{ color: 'var(--ds-text-subtle, #475569)' }} />
                           }
                           {groupBy === 'assignee' && group.label !== 'Unassigned' && (() => {
                             const url = avatarsByName.get(group.label.toLowerCase());
@@ -998,7 +998,7 @@ export default function StoryBacklogPage({ projectId: propProjectId, projectKey 
                           <span style={{
                             display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
                             minWidth: 20, height: 18, padding: '0 6px', borderRadius: 9,
-                            background: '#DFE1E6', color: '#253858',
+                            background: 'var(--ds-border, #DFE1E6)', color: 'var(--ds-text, #253858)',
                             fontSize: 10, fontWeight: 700,
                           }}>
                             {group.items.length}
@@ -1040,7 +1040,7 @@ export default function StoryBacklogPage({ projectId: propProjectId, projectKey 
           <div style={{
             display: 'flex', alignItems: 'center', justifyContent: 'space-between',
             padding: '10px 12px', borderTop: '0.75px solid #E2E8F0',
-            fontSize: 13, color: '#64748B', fontFamily: 'var(--cp-font-body)',
+            fontSize: 13, color: 'var(--ds-text-subtlest, #64748B)', fontFamily: 'var(--cp-font-body)',
           }}>
             <span style={{ fontWeight: 500 }}>
               {((page - 1) * pageSize) + 1}–{Math.min(page * pageSize, totalFiltered)} of {totalFiltered}
@@ -1068,7 +1068,7 @@ export default function StoryBacklogPage({ projectId: propProjectId, projectKey 
                 }, [])
                 .map((p, i) =>
                   p === 'ellipsis' ? (
-                    <span key={`e${i}`} style={{ padding: '0 4px', color: '#94A3B8' }}>…</span>
+                    <span key={`e${i}`} style={{ padding: '0 4px', color: 'var(--ds-text-subtlest, #94A3B8)' }}>…</span>
                   ) : (
                     <button
                       key={p}
@@ -1078,7 +1078,7 @@ export default function StoryBacklogPage({ projectId: propProjectId, projectKey 
                         minWidth: 28, height: 28, borderRadius: 4, padding: '0 6px',
                         border: page === p ? '1.5px solid #2563EB' : '1px solid #E2E8F0',
                         background: page === p ? 'rgba(37,99,235,0.06)' : 'var(--ds-text-inverse, #FFFFFF)',
-                        color: page === p ? '#2563EB' : '#475569',
+                        color: page === p ? 'var(--ds-text-brand, #2563EB)' : 'var(--ds-text-subtle, #475569)',
                         fontWeight: page === p ? 600 : 400,
                         fontSize: 13, cursor: 'pointer',
                         fontFamily: 'var(--cp-font-body)',
@@ -1117,13 +1117,13 @@ export default function StoryBacklogPage({ projectId: propProjectId, projectKey 
       <div className="flex items-center gap-3 px-6 py-2.5" style={{ borderColor: tk.border }}>
         {/* Search */}
         <div className="relative w-80">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4" style={{ color: '#94A3B8' }} />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4" style={{ color: 'var(--ds-text-subtlest, #94A3B8)' }} />
           <Input
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search by title, key, Jira ID..."
             className="h-9 pl-9 pr-3 text-sm"
-            style={{ borderColor: '#E2E8F0', background: tk.pageBg, color: tk.t1 }}
+            style={{ borderColor: 'var(--ds-border, #E2E8F0)', background: tk.pageBg, color: tk.t1 }}
           />
         </div>
 
@@ -1151,7 +1151,7 @@ export default function StoryBacklogPage({ projectId: propProjectId, projectKey 
         <div className="flex-1" />
 
         {/* Total count */}
-        <span style={{ fontSize: 13, color: '#64748B' }}>{total} stories</span>
+        <span style={{ fontSize: 13, color: 'var(--ds-text-subtlest, #64748B)' }}>{total} stories</span>
 
       </div>
 
@@ -1163,10 +1163,10 @@ export default function StoryBacklogPage({ projectId: propProjectId, projectKey 
           <div
             onMouseDown={handlePanelMouseDown}
             style={{ width: 6, minWidth: 6, cursor: 'col-resize', flexShrink: 0, background: 'transparent', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'background 0.15s', position: 'relative', zIndex: 10 }}
-            onMouseEnter={e => (e.currentTarget.style.background = '#F1F5F9')}
+            onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-surface-sunken, #F1F5F9)')}
             onMouseLeave={e => { if (!isDraggingPanel.current) e.currentTarget.style.background = 'transparent'; }}
           >
-            <div style={{ width: 1.5, height: 40, borderRadius: 1, background: '#E2E8F0' }} />
+            <div style={{ width: 1.5, height: 40, borderRadius: 1, background: 'var(--ds-border, #E2E8F0)' }} />
           </div>
           <div style={{ flex: 1, minWidth: 0, overflow: 'hidden', transition: isDraggingPanel.current ? 'none' : 'flex 0.15s ease' }}>
             <Suspense fallback={<div style={{ padding: 24, color: '#97A0AF' }}>Loading…</div>}>

@@ -32,16 +32,16 @@
    ───────────────────────────────────────────────────────────────────────────── */
 .caty-widget {
   /* Primary */
-  --caty-primary: #2563eb;
-  --caty-primary-hover: #1d4ed8;
+  --caty-primary: var(--ds-text-brand, #2563eb);
+  --caty-primary-hover: var(--ds-background-brand-bold-hovered, #1d4ed8);
   --caty-primary-muted: #dbeafe;
-  --caty-primary-subtle: #eff6ff;
+  --caty-primary-subtle: var(--ds-background-selected, #eff6ff);
   
   /* Text */
-  --caty-text-primary: #0f172a;
-  --caty-text-secondary: #475569;
-  --caty-text-muted: #64748b;
-  --caty-text-light: #94a3b8;
+  --caty-text-primary: var(--ds-text, #0f172a);
+  --caty-text-secondary: var(--ds-text-subtle, #475569);
+  --caty-text-muted: var(--ds-text-subtlest, #64748b);
+  --caty-text-light: var(--ds-text-subtlest, #94a3b8);
   
   /* Status Colors */
   --caty-success: #059669;
@@ -52,21 +52,21 @@
   --caty-warning-bg: #fffbeb;
   --caty-warning-border: rgba(180, 83, 9, 0.3);
   
-  --caty-danger: #dc2626;
-  --caty-danger-bg: #fef2f2;
+  --caty-danger: var(--ds-text-danger, #dc2626);
+  --caty-danger-bg: var(--ds-background-danger, #fef2f2);
   --caty-danger-border: rgba(220, 38, 38, 0.3);
   
-  --caty-info: #2563eb;
+  --caty-info: var(--ds-text-brand, #2563eb);
   --caty-info-bg: #dbeafe;
   
   /* Backgrounds */
-  --caty-bg-panel: #ffffff;
-  --caty-bg-muted: #f1f5f9;
-  --caty-bg-subtle: #f8fafc;
+  --caty-bg-panel: var(--ds-surface, #ffffff);
+  --caty-bg-muted: var(--ds-surface-sunken, #f1f5f9);
+  --caty-bg-subtle: var(--ds-surface-sunken, #f8fafc);
   
   /* Borders */
-  --caty-border-light: #e2e8f0;
-  --caty-border-default: #cbd5e1;
+  --caty-border-light: var(--ds-border, #e2e8f0);
+  --caty-border-default: var(--ds-text-disabled, #cbd5e1);
   
   /* Shadows */
   --caty-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
@@ -124,10 +124,10 @@
   display: flex !important;
   align-items: center !important;
   padding: 20px 24px !important;
-  background: #ffffff !important;
+  background: var(--ds-surface, #ffffff) !important;
   background-image: none !important;
-  background-color: #ffffff !important;
-  border-bottom: 1px solid #e2e8f0 !important;
+  background-color: var(--ds-surface, #ffffff) !important;
+  border-bottom: 1px solid var(--ds-border, #e2e8f0) !important;
   flex-shrink: 0;
 }
 
@@ -141,7 +141,7 @@
   width: 52px !important;
   height: 52px !important;
   min-width: 52px !important;
-  background: #2563eb !important;
+  background: var(--ds-text-brand, #2563eb) !important;
   border-radius: 14px !important;
   display: flex !important;
   align-items: center !important;
@@ -163,7 +163,7 @@
   font-family: var(--cp-font-body);
   font-size: 1.25rem !important;
   font-weight: 800 !important;
-  color: #0f172a !important;
+  color: var(--ds-text, #0f172a) !important;
   letter-spacing: -0.02em !important;
   line-height: 1.2 !important;
 }
@@ -175,7 +175,7 @@
   font-family: var(--cp-font-body);
   font-size: 0.8125rem !important;
   font-weight: 400 !important;
-  color: #64748b !important;
+  color: var(--ds-text-subtlest, #64748b) !important;
   margin-top: 2px !important;
 }
 
@@ -188,21 +188,21 @@
 }
 
 .caty-status-dot.offline {
-  background: #dc2626 !important;
+  background: var(--ds-text-danger, #dc2626) !important;
 }
 
 /* NUCLEAR OVERRIDE - Remove any blue gradient from header */
 [class*="caty-header"],
 [class*="caty"] header,
 .caty-widget header {
-  background: #ffffff !important;
+  background: var(--ds-surface, #ffffff) !important;
   background-image: none !important;
-  background-color: #ffffff !important;
+  background-color: var(--ds-surface, #ffffff) !important;
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════════
    DARK MODE — Rule 3 paired overrides for !important hex in this file.
-   Brand-blue icon background (#2563eb), success/danger dots (#059669/#dc2626)
+   Brand-blue icon background (var(--ds-text-brand, #2563eb)), success/danger dots (#059669/#dc2626)
    and white svg text on the brand circle are intentional — kept as-is.
    We flip the white panel header and dark text to ADS dark tokens.
    ═══════════════════════════════════════════════════════════════════════════════ */
@@ -834,7 +834,7 @@
   width: 44px;
   height: 44px;
   min-width: 44px;
-  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  background: linear-gradient(135deg, var(--ds-text-brand, #3b82f6) 0%, var(--ds-text-brand, #2563eb) 100%);
   border-radius: var(--caty-radius-md);
   display: flex;
   align-items: center;
@@ -1112,7 +1112,7 @@
 .caty-profile-avatar {
   width: 56px;
   height: 56px;
-  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  background: linear-gradient(135deg, var(--ds-text-brand, #3b82f6) 0%, var(--ds-text-brand, #2563eb) 100%);
   border-radius: var(--caty-radius-lg);
   display: flex;
   align-items: center;

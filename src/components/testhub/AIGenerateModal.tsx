@@ -411,7 +411,7 @@ export function AIGenerateModal({ isOpen, onClose, onSuccess, currentFolderId }:
             <div style={{
               width: 36, height: 50, borderRadius: 8,
               background: step === 'folder'
-                ? 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)'
+                ? 'linear-gradient(135deg, var(--ds-text-brand, #2563EB) 0%, var(--ds-background-brand-bold-hovered, #1D4ED8) 100%)'
                 : 'linear-gradient(135deg, #10B981 0%, #059669 100%)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
             }}>
@@ -545,7 +545,7 @@ export function AIGenerateModal({ isOpen, onClose, onSuccess, currentFolderId }:
                     display: 'flex', gap: 8, alignItems: 'flex-start',
                   }}>
                     <AlertTriangle size={16} style={{ color: 'var(--sem-danger)', flexShrink: 0, marginTop: 1 }} />
-                    <span style={{ fontSize: 13, color: '#991B1B', lineHeight: 1.5 }}>{validationError}</span>
+                    <span style={{ fontSize: 13, color: 'var(--ds-text-danger, #991B1B)', lineHeight: 1.5 }}>{validationError}</span>
                   </div>
                 )}
               </div>

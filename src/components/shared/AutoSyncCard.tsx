@@ -180,7 +180,7 @@ export function AutoSyncCard({ scheduleKeys, lastSyncTable, lastSyncColumn, titl
             style={{
               display: 'inline-flex', alignItems: 'center', gap: 5,
               padding: '5px 14px', borderRadius: 6, fontSize: 12, fontWeight: 600,
-              background: 'var(--wh-pri)', color: '#FFFFFF', border: 'none', cursor: 'pointer',
+              background: 'var(--wh-pri)', color: 'var(--ds-surface, #FFFFFF)', border: 'none', cursor: 'pointer',
             }}
           >
             <Save size={12} />

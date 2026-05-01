@@ -18,8 +18,8 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 // Fallback colors in case DB color is missing
 const STATUS_COLOR_FALLBACKS: Record<string, string> = {
   'backlog': '#9ca3af',
-  'planned': '#2563eb',
-  'in-progress': '#d97706',
+  'planned': 'var(--ds-text-brand, #2563eb)',
+  'in-progress': 'var(--ds-text-warning, #d97706)',
   'review': '#8b5cf6',
   'done': '#10b981',
 };
@@ -68,7 +68,7 @@ export function KanbanColumn({
   const taskIds = tasks.map((t) => t.id);
   
   // Get status color with fallback
-  const statusColor = status.color || STATUS_COLOR_FALLBACKS[status.slug] || '#2563eb';
+  const statusColor = status.color || STATUS_COLOR_FALLBACKS[status.slug] || 'var(--ds-text-brand, #2563eb)';
 
   return (
     <div

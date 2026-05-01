@@ -209,7 +209,7 @@ export function EditableAssignee({ issueId, issueKey, projectId, currentAssignee
             )}
             <span style={{
               fontSize: 14,
-              color: opt.value === UNASSIGNED_VALUE ? 'var(--ds-text-subtlest, #6B6E76)' : '#172B4D',
+              color: opt.value === UNASSIGNED_VALUE ? 'var(--ds-text-subtlest, #6B6E76)' : 'var(--ds-text, #172B4D)',
               fontWeight: 400,
               overflow: 'hidden',
               textOverflow: 'ellipsis',
@@ -270,7 +270,7 @@ export function EditablePriority({ issueId, issueKey, currentPriority, onUpdate 
             <span style={{ display: 'flex', flexShrink: 0 }}>
               {PRIORITY_SVG[opt.value] ?? PRIORITY_SVG.Medium}
             </span>
-            <span style={{ fontSize: 14, color: '#172B4D', fontWeight: 400 }}>
+            <span style={{ fontSize: 14, color: 'var(--ds-text, #172B4D)', fontWeight: 400 }}>
               {opt.label}
             </span>
           </span>
@@ -370,7 +370,7 @@ export function EditableLabels({ issueId, issueKey, currentLabels, onUpdate }: {
           }),
           multiValueLabel: (base) => ({
             ...base,
-            color: '#172B4D',
+            color: 'var(--ds-text, #172B4D)',
             fontSize: 12,
             fontWeight: 500,
           }),
@@ -410,10 +410,10 @@ export function EditableStoryPoints({ issueId, currentPoints, onUpdate }: {
         display: 'inline-flex', alignItems: 'center', gap: 6, cursor: 'pointer',
         padding: '4px 6px', borderRadius: 4, transition: 'background .12s',
       }}
-        onMouseEnter={e => (e.currentTarget.style.background = '#F4F5F7')}
+        onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-surface-sunken, #F4F5F7)')}
         onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
       >
-        <span style={{ fontSize: 14, color: currentPoints != null ? '#172B4D' : '#97A0AF', fontWeight: 400 }}>
+        <span style={{ fontSize: 14, color: currentPoints != null ? 'var(--ds-text, #172B4D)' : '#97A0AF', fontWeight: 400 }}>
           {currentPoints != null ? currentPoints : 'None'}
         </span>
       </div>
@@ -423,11 +423,11 @@ export function EditableStoryPoints({ issueId, currentPoints, onUpdate }: {
           <div onClick={() => updateMutation.mutate(null)}
             style={{
               height: 36, padding: '0 12px', display: 'flex', alignItems: 'center',
-              cursor: 'pointer', fontSize: 14, fontWeight: 400, color: '#6B778C',
+              cursor: 'pointer', fontSize: 14, fontWeight: 400, color: 'var(--ds-text-subtlest, #6B778C)',
               background: currentPoints == null ? '#DEEBFF' : 'transparent',
               borderBottom: '1px solid #F4F5F7',
             }}
-            onMouseEnter={e => { if (currentPoints != null) (e.currentTarget as HTMLElement).style.background = '#F4F5F7'; }}
+            onMouseEnter={e => { if (currentPoints != null) (e.currentTarget as HTMLElement).style.background = 'var(--ds-surface-sunken, #F4F5F7)'; }}
             onMouseLeave={e => { if (currentPoints != null) (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
           >
             <span style={{ flex: 1 }}>None</span>
@@ -437,10 +437,10 @@ export function EditableStoryPoints({ issueId, currentPoints, onUpdate }: {
             <div key={p} onClick={() => updateMutation.mutate(p)}
               style={{
                 height: 36, padding: '0 12px', display: 'flex', alignItems: 'center',
-                cursor: 'pointer', fontSize: 14, fontWeight: 400, color: '#172B4D',
+                cursor: 'pointer', fontSize: 14, fontWeight: 400, color: 'var(--ds-text, #172B4D)',
                 background: p === currentPoints ? '#DEEBFF' : 'transparent',
               }}
-              onMouseEnter={e => { if (p !== currentPoints) (e.currentTarget as HTMLElement).style.background = '#F4F5F7'; }}
+              onMouseEnter={e => { if (p !== currentPoints) (e.currentTarget as HTMLElement).style.background = 'var(--ds-surface-sunken, #F4F5F7)'; }}
               onMouseLeave={e => { if (p !== currentPoints) (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
             >
               <span style={{ flex: 1 }}>{p}</span>
@@ -546,7 +546,7 @@ export function EditableFixVersions({ issueId, currentFixVersions, projectKey, o
 const EpicIconInline = ({ size = 16 }: { size?: number }) => (
   <svg width={size} height={size} viewBox="0 0 16 16" style={{ flexShrink: 0 }}>
     <rect fill="#6554C0" width="16" height="16" rx="2"/>
-    <path fill="#FFF" d="M8.39 2L4.5 9h3.11v5L11.5 7H8.39V2z"/>
+    <path fill="var(--ds-surface, #FFF)" d="M8.39 2L4.5 9h3.11v5L11.5 7H8.39V2z"/>
   </svg>
 );
 
@@ -624,32 +624,32 @@ export function ParentFieldPicker({ storyKey, parentKey, projectKey, onParentCha
         borderRadius: 3, cursor: 'pointer', background: 'transparent',
         transition: 'background 0.15s',
       }}
-        onMouseEnter={e => { e.currentTarget.style.background = '#F4F5F7'; setHovered(true); }}
+        onMouseEnter={e => { e.currentTarget.style.background = 'var(--ds-surface-sunken, #F4F5F7)'; setHovered(true); }}
         onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; setHovered(false); }}
       >
         {parentKey && currentParent ? (
           <>
             <EpicIconInline />
-            <span style={{ flex: 1, fontSize: 14, color: '#172B4D', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+            <span style={{ flex: 1, fontSize: 14, color: 'var(--ds-text, #172B4D)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
               {currentParent.issue_key} {currentParent.summary}
             </span>
             {/* Clear button — hover only */}
             <button onClick={e => { e.stopPropagation(); handleSelect(null); }} style={{
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               width: 20, height: 20, borderRadius: '50%', border: 'none',
-              background: '#DFE1E6', cursor: 'pointer', color: '#42526E', flexShrink: 0,
+              background: 'var(--ds-border, #DFE1E6)', cursor: 'pointer', color: '#42526E', flexShrink: 0,
               opacity: hovered ? 1 : 0, transition: 'opacity 0.15s',
             }}
               onMouseEnter={e => (e.currentTarget.style.background = '#C1C7D0')}
-              onMouseLeave={e => (e.currentTarget.style.background = '#DFE1E6')}
+              onMouseLeave={e => (e.currentTarget.style.background = 'var(--ds-border, #DFE1E6)')}
             >
               <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
             </button>
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#6B778C" strokeWidth="2" style={{ flexShrink: 0, opacity: hovered ? 1 : 0, transition: 'opacity 0.15s' }}><path d="M6 9l6 6 6-6"/></svg>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--ds-text-subtlest, #6B778C)" strokeWidth="2" style={{ flexShrink: 0, opacity: hovered ? 1 : 0, transition: 'opacity 0.15s' }}><path d="M6 9l6 6 6-6"/></svg>
           </>
         ) : (
           <>
-            <span style={{ flex: 1, fontSize: 14, color: '#6B778C' }}>None</span>
+            <span style={{ flex: 1, fontSize: 14, color: 'var(--ds-text-subtlest, #6B778C)' }}>None</span>
           </>
         )}
       </div>
@@ -670,13 +670,13 @@ export function ParentFieldPicker({ storyKey, parentKey, projectKey, onParentCha
                 style={{
                   width: '100%', height: 40, padding: '0 12px',
                   border: '2px solid #4C9AFF', borderRadius: 3,
-                  fontSize: 14, fontFamily: 'inherit', outline: 'none', color: '#172B4D',
+                  fontSize: 14, fontFamily: 'inherit', outline: 'none', color: 'var(--ds-text, #172B4D)',
                 }} />
             </div>
 
             {/* Show done checkbox */}
             <div style={{ padding: '6px 12px', borderBottom: '1px solid #F4F5F7' }}>
-              <label style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', fontSize: 14, color: '#172B4D' }}>
+              <label style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', fontSize: 14, color: 'var(--ds-text, #172B4D)' }}>
                 <input type="checkbox" checked={showDone} onChange={e => setShowDone(e.target.checked)}
                   style={{ width: 16, height: 16, accentColor: '#0052CC', cursor: 'pointer' }} />
                 Show done work items
@@ -695,26 +695,26 @@ export function ParentFieldPicker({ storyKey, parentKey, projectKey, onParentCha
                       background: isActive ? '#DEEBFF' : 'transparent',
                       transition: 'background 0.1s',
                     }}
-                    onMouseEnter={e => { if (!isActive) (e.currentTarget as HTMLElement).style.background = '#F4F5F7'; }}
+                    onMouseEnter={e => { if (!isActive) (e.currentTarget as HTMLElement).style.background = 'var(--ds-surface-sunken, #F4F5F7)'; }}
                     onMouseLeave={e => { if (!isActive) (e.currentTarget as HTMLElement).style.background = isActive ? '#DEEBFF' : 'transparent'; }}
                   >
                     {/* Line 1: icon + key */}
                     <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 2 }}>
                       <EpicIconInline />
-                      <span style={{ fontFamily: 'var(--cp-font-mono)', fontWeight: 600, color: '#6B778C', fontSize: 12 }}>{result.issue_key}</span>
+                      <span style={{ fontFamily: 'var(--cp-font-mono)', fontWeight: 600, color: 'var(--ds-text-subtlest, #6B778C)', fontSize: 12 }}>{result.issue_key}</span>
                     </div>
                     {/* Line 2: summary */}
-                    <div style={{ fontSize: 14, color: '#172B4D', paddingLeft: 22, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    <div style={{ fontSize: 14, color: 'var(--ds-text, #172B4D)', paddingLeft: 22, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                       {result.summary}
                     </div>
                   </div>
                 );
               })}
               {searchResults.length === 0 && search && (
-                <div style={{ padding: 16, fontSize: 13, color: '#6B778C', textAlign: 'center' }}>No epics found for "{search}"</div>
+                <div style={{ padding: 16, fontSize: 13, color: 'var(--ds-text-subtlest, #6B778C)', textAlign: 'center' }}>No epics found for "{search}"</div>
               )}
               {searchResults.length === 0 && !search && (
-                <div style={{ padding: 16, fontSize: 13, color: '#6B778C', textAlign: 'center' }}>No epics available</div>
+                <div style={{ padding: 16, fontSize: 13, color: 'var(--ds-text-subtlest, #6B778C)', textAlign: 'center' }}>No epics available</div>
               )}
             </div>
           </div>

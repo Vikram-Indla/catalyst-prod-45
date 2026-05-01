@@ -30,10 +30,10 @@ function KPICard({ label, value, delta, deltaLabel, color, icon: Icon, loading, 
           {loading ? (
             <div className="h-9 w-16 rounded animate-pulse mt-2" style={{ background: 'var(--cp-bg-sunken, #F1F5F9)' }} />
           ) : (
-            <p className="text-[32px] mt-1" style={{ fontFamily: RH.fontDisplay, fontWeight: 700, color: isDark ? '#EDEDED' : RH.ink1 }}>{value}</p>
+            <p className="text-[32px] mt-1" style={{ fontFamily: RH.fontDisplay, fontWeight: 700, color: isDark ? 'var(--ds-text, #EDEDED)' : RH.ink1 }}>{value}</p>
           )}
           {delta && !loading && (
-            <p className="text-[12px] mt-1" style={{ fontWeight: 600, color: deltaLabel === 'neutral' ? ('var(--cp-text-tertiary, #64748B)') : delta.startsWith('+') ? '#DC2626' : '#16A34A' }}>
+            <p className="text-[12px] mt-1" style={{ fontWeight: 600, color: deltaLabel === 'neutral' ? ('var(--cp-text-tertiary, #64748B)') : delta.startsWith('+') ? 'var(--ds-text-danger, #DC2626)' : 'var(--ds-text-success, #16A34A)' }}>
               {delta}
             </p>
           )}
@@ -49,7 +49,7 @@ function KPICard({ label, value, delta, deltaLabel, color, icon: Icon, loading, 
 function SectionHeader({ title, action, isDark }: { title: string; action?: React.ReactNode; isDark?: boolean }) {
   return (
     <div className="flex items-center justify-between mb-3">
-      <h2 className="text-[14px]" style={{ fontFamily: RH.fontDisplay, fontWeight: 650, color: isDark ? '#EDEDED' : RH.ink1 }}>{title}</h2>
+      <h2 className="text-[14px]" style={{ fontFamily: RH.fontDisplay, fontWeight: 650, color: isDark ? 'var(--ds-text, #EDEDED)' : RH.ink1 }}>{title}</h2>
       {action}
     </div>
   );
@@ -231,9 +231,9 @@ export default function CommandCenterPage() {
     };
   }, [allSignoffs, pendingSignoffs, testCycles, prodEvents, changes]);
 
-  const alertBorderColor = computed.alertSeverity === 'destructive' ? '#DC2626'
-    : computed.alertSeverity === 'warning' ? '#D97706' : '#16A34A';
-  const alertBgColor = computed.alertSeverity === 'destructive' ? '#FEF2F2'
+  const alertBorderColor = computed.alertSeverity === 'destructive' ? 'var(--ds-text-danger, #DC2626)'
+    : computed.alertSeverity === 'warning' ? 'var(--ds-text-warning, #D97706)' : 'var(--ds-text-success, #16A34A)';
+  const alertBgColor = computed.alertSeverity === 'destructive' ? 'var(--ds-background-danger, #FEF2F2)'
     : computed.alertSeverity === 'warning' ? '#FFFBEB' : '#F0FDF4';
 
   return (
@@ -241,17 +241,17 @@ export default function CommandCenterPage() {
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-[24px]" style={{ fontFamily: RH.fontDisplay, fontWeight: 650, color: isDark ? '#EDEDED' : RH.ink1 }}>Command Center</h1>
+          <h1 className="text-[24px]" style={{ fontFamily: RH.fontDisplay, fontWeight: 650, color: isDark ? 'var(--ds-text, #EDEDED)' : RH.ink1 }}>Command Center</h1>
           <p className="text-[13px] mt-1" style={{ fontFamily: RH.fontBody, color: 'var(--cp-text-tertiary, #64748B)' }}>Release operations overview — real-time</p>
         </div>
       </div>
 
       {/* Row 1: KPI Cards */}
       <div className="grid grid-cols-4 gap-4 mb-6">
-        <KPICard label="Active Releases" value={activeReleases} color="#2563EB" icon={Rocket} loading={isLoading} onClick={() => navigate('/release-hub/releases')} isDark={isDark} />
+        <KPICard label="Active Releases" value={activeReleases} color="var(--ds-text-brand, #2563EB)" icon={Rocket} loading={isLoading} onClick={() => navigate('/release-hub/releases')} isDark={isDark} />
         <KPICard label="Changes In Flight" value={changesInFlight} delta={`${changesInFlight} active`} deltaLabel="neutral" color="#0D9488" icon={ArrowLeftRight} loading={isLoading} onClick={() => navigate('/release-hub/changes')} isDark={isDark} />
-        <KPICard label="Sign-offs Pending" value={signoffsPending} color="#DC2626" icon={CheckSquare} loading={isLoading} onClick={() => navigate('/release-hub/sign-off-queue')} isDark={isDark} />
-        <KPICard label="Test Cycles Running" value={kpis?.test_cycles_running ?? 0} color="#16A34A" icon={FlaskConical} loading={isLoading} isDark={isDark} />
+        <KPICard label="Sign-offs Pending" value={signoffsPending} color="var(--ds-text-danger, #DC2626)" icon={CheckSquare} loading={isLoading} onClick={() => navigate('/release-hub/sign-off-queue')} isDark={isDark} />
+        <KPICard label="Test Cycles Running" value={kpis?.test_cycles_running ?? 0} color="var(--ds-text-success, #16A34A)" icon={FlaskConical} loading={isLoading} isDark={isDark} />
       </div>
 
       {/* Row 2: Latest Deployed + Release Status */}
@@ -262,25 +262,25 @@ export default function CommandCenterPage() {
           {latestDeployed ? (
             <div className="cursor-pointer" onClick={() => setSelectedChange(latestDeployed)}>
               <div className="flex items-center gap-2 mb-2">
-                <span className="text-[13px]" style={{ fontFamily: RH.fontMono, fontWeight: 650, color: '#2563EB' }}>{latestDeployed.chg_number}</span>
+                <span className="text-[13px]" style={{ fontFamily: RH.fontMono, fontWeight: 650, color: 'var(--ds-text-brand, #2563EB)' }}>{latestDeployed.chg_number}</span>
                 <ChgStatusBadge status={latestDeployed.status} />
                 {(latestDeployed as any).deployment_result && <DeployResultBadge result={(latestDeployed as any).deployment_result} />}
               </div>
-              <p className="text-[14px] mb-3" style={{ fontWeight: 650, color: isDark ? '#EDEDED' : RH.ink1 }}>{latestDeployed.title}</p>
+              <p className="text-[14px] mb-3" style={{ fontWeight: 650, color: isDark ? 'var(--ds-text, #EDEDED)' : RH.ink1 }}>{latestDeployed.title}</p>
               <div className="grid grid-cols-2 gap-3">
-                <div><p className="text-[11px] uppercase mb-0.5" style={{ color: 'var(--cp-text-tertiary, #64748B)' }}>Release</p><p className="text-[12px]" style={{ color: isDark ? '#A1A1A1' : RH.ink2 }}>{latestDeployed.release_name || '—'}</p></div>
-                <div><p className="text-[11px] uppercase mb-0.5" style={{ color: 'var(--cp-text-tertiary, #64748B)' }}>Deployed</p><p className="text-[12px]" style={{ color: isDark ? '#A1A1A1' : RH.ink2 }}>{latestDeployed.deployment_date ? format(new Date(latestDeployed.deployment_date), 'MMM d, yyyy') : '—'}</p></div>
+                <div><p className="text-[11px] uppercase mb-0.5" style={{ color: 'var(--cp-text-tertiary, #64748B)' }}>Release</p><p className="text-[12px]" style={{ color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : RH.ink2 }}>{latestDeployed.release_name || '—'}</p></div>
+                <div><p className="text-[11px] uppercase mb-0.5" style={{ color: 'var(--cp-text-tertiary, #64748B)' }}>Deployed</p><p className="text-[12px]" style={{ color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : RH.ink2 }}>{latestDeployed.deployment_date ? format(new Date(latestDeployed.deployment_date), 'MMM d, yyyy') : '—'}</p></div>
               </div>
             </div>
           ) : (
-            <p className="text-[13px] text-[#94A3B8]">No deployed changes yet</p>
+            <p className="text-[13px] text-[var(--ds-text-subtlest,#94A3B8)]">No deployed changes yet</p>
           )}
 
           {/* AI Post-Deployment Summary */}
           <div className="mt-4 rounded-[6px] p-3.5" style={{ background: 'var(--cp-primary-light, #EFF6FF)', border: `0.75px solid ${'var(--cp-primary-light, #DBEAFE)'}` }}>
             <div className="flex items-center gap-1.5 mb-1.5">
-              <Sparkles size={12} style={{ color: '#2563EB' }} />
-              <span className="text-[11px] font-bold text-[#2563EB] uppercase">AI Post-Deploy Summary</span>
+              <Sparkles size={12} style={{ color: 'var(--ds-text-brand, #2563EB)' }} />
+              <span className="text-[11px] font-bold text-[var(--ds-text-brand,#2563EB)] uppercase">AI Post-Deploy Summary</span>
             </div>
             {!coreDataReady ? (
               <div className="h-3 w-3/4 rounded animate-pulse" style={{ background: 'var(--cp-primary-light, #DBEAFE)' }} />
@@ -293,7 +293,7 @@ export default function CommandCenterPage() {
         {/* Release Status Table */}
         <div className="rounded-[6px] overflow-hidden" style={{ background: 'var(--cp-bg-elevated, #FFFFFF)', border: `0.75px solid ${'var(--cp-border-default, rgba(15,23,42,0.12))'}` }}>
           <div className="px-5 py-3.5">
-            <SectionHeader title="Release Status" isDark={isDark} action={<button onClick={() => navigate('/release-hub/releases')} className="text-[12px] font-medium text-[#2563EB] hover:underline">View all</button>} />
+            <SectionHeader title="Release Status" isDark={isDark} action={<button onClick={() => navigate('/release-hub/releases')} className="text-[12px] font-medium text-[var(--ds-text-brand,#2563EB)] hover:underline">View all</button>} />
           </div>
           {relLoading ? <SkeletonRows count={3} /> : activeRels.length === 0 ? (
             <div className="px-5 py-8 text-center text-[13px]" style={{ color: 'var(--cp-text-muted, #94A3B8)' }}>No active releases</div>
@@ -313,13 +313,13 @@ export default function CommandCenterPage() {
                     <tr key={r.id} onClick={() => setSelectedRelease(r)} className="cursor-pointer" style={{ height: 44, borderBottom: `1px solid ${'var(--cp-border, #E2E8F0)'}` }}
                       onMouseEnter={e => (e.currentTarget.style.background = isDark ? 'var(--cp-bg-surface, #242528)' : 'rgba(15,23,42,0.04)')}
                       onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
-                      <td className="px-3" style={{ fontWeight: 650, color: isDark ? '#EDEDED' : RH.ink1 }}>{r.name}</td>
+                      <td className="px-3" style={{ fontWeight: 650, color: isDark ? 'var(--ds-text, #EDEDED)' : RH.ink1 }}>{r.name}</td>
                       <td className="px-3"><ReleaseStatusBadge status={r.status} /></td>
                       <td className="px-3" style={{ fontFamily: RH.fontMono, fontWeight: 650 }}>{r.chg_count || chgCount}</td>
                       <td className="px-3" style={{ color: 'var(--cp-text-tertiary, #64748B)' }}>{r.target_date ? format(new Date(r.target_date), 'MMM d') : '—'}</td>
                       <td className="px-3">
                         <div className="w-20 h-2 rounded-full overflow-hidden" style={{ background: 'var(--cp-bg-sunken, #F1F5F9)' }}>
-                          <div className="h-full bg-[#2563EB] rounded-full" style={{ width: `${Math.min(100, (chgCount > 0 ? 60 : 20))}%` }} />
+                          <div className="h-full bg-[var(--ds-text-brand,#2563EB)] rounded-full" style={{ width: `${Math.min(100, (chgCount > 0 ? 60 : 20))}%` }} />
                         </div>
                       </td>
                     </tr>
@@ -335,13 +335,13 @@ export default function CommandCenterPage() {
       <div className="grid grid-cols-2 gap-4 mb-6">
         {/* Change Pipeline Funnel */}
         <div className="rounded-[6px] p-5" style={{ background: 'var(--cp-bg-elevated, #FFFFFF)', border: `0.75px solid ${'var(--cp-border-default, rgba(15,23,42,0.12))'}` }}>
-          <SectionHeader title="Change Pipeline" isDark={isDark} action={<button onClick={() => navigate('/release-hub/changes')} className="text-[12px] font-medium text-[#2563EB] hover:underline">View all</button>} />
+          <SectionHeader title="Change Pipeline" isDark={isDark} action={<button onClick={() => navigate('/release-hub/changes')} className="text-[12px] font-medium text-[var(--ds-text-brand,#2563EB)] hover:underline">View all</button>} />
           <div className="flex items-center gap-0 mt-4">
             {pipelineCols.map((col, i) => (
               <React.Fragment key={col.key}>
                 {i > 0 && (
                   <svg width="16" height="24" viewBox="0 0 16 24" className="shrink-0 -mx-1">
-                    <path d="M0 0 L12 12 L0 24" fill="none" stroke="#CBD5E1" strokeWidth="1.5" />
+                    <path d="M0 0 L12 12 L0 24" fill="none" stroke="var(--ds-text-disabled, #CBD5E1)" strokeWidth="1.5" />
                   </svg>
                 )}
                 <button
@@ -357,10 +357,10 @@ export default function CommandCenterPage() {
           </div>
 
           {/* AI Conflict Alert — computed */}
-          <div className="mt-4 rounded-[6px] p-3.5" style={{ background: isDark ? 'rgba(37,99,235,0.08)' : alertBgColor, border: `0.75px solid ${isDark ? '#2E2E2E' : alertBorderColor + '33'}` }}>
+          <div className="mt-4 rounded-[6px] p-3.5" style={{ background: isDark ? 'rgba(37,99,235,0.08)' : alertBgColor, border: `0.75px solid ${isDark ? 'var(--ds-border, #2E2E2E)' : alertBorderColor + '33'}` }}>
             <div className="flex items-center gap-1.5 mb-1">
-              <Sparkles size={12} style={{ color: '#2563EB' }} />
-              <span className="text-[11px] font-bold text-[#2563EB] uppercase">AI Conflict Alert</span>
+              <Sparkles size={12} style={{ color: 'var(--ds-text-brand, #2563EB)' }} />
+              <span className="text-[11px] font-bold text-[var(--ds-text-brand,#2563EB)] uppercase">AI Conflict Alert</span>
             </div>
             {!coreDataReady ? (
               <div className="h-3 w-3/4 rounded animate-pulse" style={{ background: 'var(--cp-primary-light, #DBEAFE)' }} />
@@ -373,8 +373,8 @@ export default function CommandCenterPage() {
         {/* AI Release Readiness — computed */}
         <div className="rounded-[6px] p-5" style={{ background: 'var(--cp-bg-elevated, #FFFFFF)', border: `0.75px solid ${'var(--cp-border-default, rgba(15,23,42,0.12))'}` }}>
           <div className="flex items-center gap-2 mb-4">
-            <Sparkles size={14} style={{ color: '#2563EB' }} />
-            <h2 className="text-[14px]" style={{ fontFamily: RH.fontDisplay, fontWeight: 650, color: isDark ? '#EDEDED' : RH.ink1 }}>AI Release Readiness</h2>
+            <Sparkles size={14} style={{ color: 'var(--ds-text-brand, #2563EB)' }} />
+            <h2 className="text-[14px]" style={{ fontFamily: RH.fontDisplay, fontWeight: 650, color: isDark ? 'var(--ds-text, #EDEDED)' : RH.ink1 }}>AI Release Readiness</h2>
             {activeRels[0] && <span className="text-[12px]" style={{ color: 'var(--cp-text-tertiary, #64748B)' }}>— {activeRels[0]?.name}</span>}
           </div>
 
@@ -424,9 +424,9 @@ export default function CommandCenterPage() {
               <div className="grid grid-cols-2 gap-3">
                 {computed.gates.map(gate => {
                   const pass = !gate.noData && Math.round(gate.rate * 100) >= gate.threshold;
-                  const borderColor = gate.noData ? '#DFE1E6' : pass ? '#16A34A' : '#DC2626';
+                  const borderColor = gate.noData ? 'var(--ds-border, #DFE1E6)' : pass ? 'var(--ds-text-success, #16A34A)' : 'var(--ds-text-danger, #DC2626)';
                   const GateIcon = gate.noData ? Minus : pass ? CheckCircle2 : XCircle;
-                  const iconColor = gate.noData ? '#94A3B8' : pass ? '#16A34A' : '#DC2626';
+                  const iconColor = gate.noData ? 'var(--ds-text-subtlest, #94A3B8)' : pass ? 'var(--ds-text-success, #16A34A)' : 'var(--ds-text-danger, #DC2626)';
 
                   return (
                     <div
@@ -439,9 +439,9 @@ export default function CommandCenterPage() {
                     >
                       <div className="flex items-center gap-1.5 mb-1">
                         <GateIcon size={16} style={{ color: iconColor }} />
-                        <span className="text-[13px]" style={{ fontWeight: 600, color: isDark ? '#EDEDED' : RH.ink1 }}>{gate.label}</span>
+                        <span className="text-[13px]" style={{ fontWeight: 600, color: isDark ? 'var(--ds-text, #EDEDED)' : RH.ink1 }}>{gate.label}</span>
                       </div>
-                      <p className="text-[22px]" style={{ fontFamily: RH.fontDisplay, fontWeight: 700, color: isDark ? '#EDEDED' : RH.ink1 }}>
+                      <p className="text-[22px]" style={{ fontFamily: RH.fontDisplay, fontWeight: 700, color: isDark ? 'var(--ds-text, #EDEDED)' : RH.ink1 }}>
                         {gate.noData ? '—' : gate.value}
                       </p>
                       <p className="text-[11px]" style={{ color: 'var(--cp-text-tertiary, #64748B)' }}>{gate.noData ? 'No data yet' : gate.detail}</p>
@@ -460,15 +460,15 @@ export default function CommandCenterPage() {
         <div className="rounded-[6px] overflow-hidden" style={{ background: 'var(--cp-bg-elevated, #FFFFFF)', border: `0.75px solid ${'var(--cp-border-default, rgba(15,23,42,0.12))'}` }}>
           <div className="px-5 py-3.5 flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <h2 className="text-[14px]" style={{ fontFamily: RH.fontDisplay, fontWeight: 650, color: isDark ? '#EDEDED' : RH.ink1 }}>Signoff Queue</h2>
-              <span className="inline-flex items-center h-5 px-1.5 rounded text-[11px] font-bold" style={{ background: 'var(--cp-primary-light, #EFF6FF)', color: '#2563EB' }}>AI Prioritized</span>
+              <h2 className="text-[14px]" style={{ fontFamily: RH.fontDisplay, fontWeight: 650, color: isDark ? 'var(--ds-text, #EDEDED)' : RH.ink1 }}>Signoff Queue</h2>
+              <span className="inline-flex items-center h-5 px-1.5 rounded text-[11px] font-bold" style={{ background: 'var(--cp-primary-light, #EFF6FF)', color: 'var(--ds-text-brand, #2563EB)' }}>AI Prioritized</span>
             </div>
-            <button onClick={() => navigate('/release-hub/sign-off-queue')} className="text-[12px] font-medium text-[#2563EB] hover:underline">View all</button>
+            <button onClick={() => navigate('/release-hub/sign-off-queue')} className="text-[12px] font-medium text-[var(--ds-text-brand,#2563EB)] hover:underline">View all</button>
           </div>
           {pendingSignoffs.length === 0 ? (
             <div className="px-5 py-8 text-center">
-              <CheckSquare size={20} className="mx-auto mb-2 text-[#16A34A]" />
-              <p className="text-[13px] text-[#16A34A]" style={{ fontWeight: 650 }}>No pending sign-offs</p>
+              <CheckSquare size={20} className="mx-auto mb-2 text-[var(--ds-text-success,#16A34A)]" />
+              <p className="text-[13px] text-[var(--ds-text-success,#16A34A)]" style={{ fontWeight: 650 }}>No pending sign-offs</p>
             </div>
           ) : (
             <table className="w-full text-[13px]" style={{ fontFamily: RH.fontBody }}>
@@ -484,7 +484,7 @@ export default function CommandCenterPage() {
                   <tr key={so.id} className="cursor-pointer" style={{ height: 50, borderBottom: `0.75px solid ${'var(--cp-border-subtle, rgba(15,23,42,0.06))'}` }}
                     onMouseEnter={e => (e.currentTarget.style.background = isDark ? 'var(--cp-bg-surface, #242528)' : 'rgba(15,23,42,0.04)')}
                     onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
-                    <td className="px-3" style={{ fontFamily: RH.fontMono, color: '#2563EB', fontWeight: 650 }}>{so.rh_changes?.chg_number || '—'}</td>
+                    <td className="px-3" style={{ fontFamily: RH.fontMono, color: 'var(--ds-text-brand, #2563EB)', fontWeight: 650 }}>{so.rh_changes?.chg_number || '—'}</td>
                     <td className="px-3" style={{ color: 'var(--cp-text-secondary, #334155)' }}>{so.signoff_role || so.stage || '—'}</td>
                     <td className="px-3" style={{ color: 'var(--cp-text-tertiary, #64748B)' }}>{so.assigned_to || '—'}</td>
                     <td className="px-3"><StatusLozenge status={so.status} /></td>
@@ -498,7 +498,7 @@ export default function CommandCenterPage() {
         {/* Recent Production Events */}
         <div className="rounded-[6px] overflow-hidden" style={{ background: 'var(--cp-bg-elevated, #FFFFFF)', border: `0.75px solid ${'var(--cp-border-default, rgba(15,23,42,0.12))'}` }}>
           <div className="px-5 py-3.5">
-            <SectionHeader title="Recent Production Events" isDark={isDark} action={<button onClick={() => navigate('/release-hub/production-events')} className="text-[12px] font-medium text-[#2563EB] hover:underline">View all</button>} />
+            <SectionHeader title="Recent Production Events" isDark={isDark} action={<button onClick={() => navigate('/release-hub/production-events')} className="text-[12px] font-medium text-[var(--ds-text-brand,#2563EB)] hover:underline">View all</button>} />
           </div>
           {prodEvents.length === 0 ? (
             <div className="px-5 py-8 text-center text-[13px]" style={{ color: 'var(--cp-text-muted, #94A3B8)' }}>No production events</div>
@@ -507,11 +507,11 @@ export default function CommandCenterPage() {
               {prodEvents.slice(0, 4).map((ev: any) => (
                 <div key={ev.id} className="flex items-center gap-3">
                   <div className="w-2.5 h-2.5 rounded-full shrink-0" style={{
-                    border: `2px solid ${ev.deployment_result === 'SUCCESS' ? '#16A34A' : ev.deployment_result === 'ROLLED_BACK' ? '#DC2626' : '#94A3B8'}`,
+                    border: `2px solid ${ev.deployment_result === 'SUCCESS' ? 'var(--ds-text-success, #16A34A)' : ev.deployment_result === 'ROLLED_BACK' ? 'var(--ds-text-danger, #DC2626)' : 'var(--ds-text-subtlest, #94A3B8)'}`,
                     background: isDark ? 'var(--cp-bg-surface, #242528)' : 'white',
                   }} />
                   <div className="flex-1 min-w-0">
-                    <p className="text-[12px] truncate" style={{ fontWeight: 650, color: isDark ? '#EDEDED' : RH.ink1 }}>{ev.title}</p>
+                    <p className="text-[12px] truncate" style={{ fontWeight: 650, color: isDark ? 'var(--ds-text, #EDEDED)' : RH.ink1 }}>{ev.title}</p>
                     <p className="text-[11px]" style={{ color: 'var(--cp-text-tertiary, #64748B)' }}>{ev.deployed_at ? format(new Date(ev.deployed_at), 'MMM d, HH:mm') : '—'} · {ev.deployed_by}</p>
                   </div>
                   {ev.deployment_result && <DeployResultBadge result={ev.deployment_result} />}

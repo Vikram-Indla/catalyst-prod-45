@@ -9,7 +9,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { FolderKanban } from 'lucide-react';
 
 const ATLASSIAN_DROPDOWN: React.CSSProperties = {
-  background: '#FFFFFF', borderRadius: 4, border: 'none',
+  background: 'var(--ds-surface, #FFFFFF)', borderRadius: 4, border: 'none',
   boxShadow: '0 8px 12px rgba(30,31,33,0.15), 0 0 1px rgba(30,31,33,0.31)',
   padding: '4px 0', zIndex: 9999,
 };
@@ -99,7 +99,7 @@ export function BRProjectsPicker({ businessRequestId }: Props) {
           display: 'flex', alignItems: 'center', gap: 8, padding: '4px 6px',
           borderRadius: 4, cursor: 'pointer', transition: 'background .12s', flexWrap: 'wrap', minHeight: 32,
         }}
-        onMouseEnter={e => (e.currentTarget.style.background = '#F4F5F7')}
+        onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-surface-sunken, #F4F5F7)')}
         onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
       >
         {linkedProjects.length === 0 ? (
@@ -141,22 +141,22 @@ export function BRProjectsPicker({ businessRequestId }: Props) {
                       minHeight: 36, padding: '6px 12px', display: 'flex', alignItems: 'center', gap: 10,
                       cursor: 'pointer', background: isActive ? '#DEEBFF' : 'transparent',
                     }}
-                    onMouseEnter={e => { if (!isActive) (e.currentTarget as HTMLElement).style.background = '#F4F5F7'; }}
+                    onMouseEnter={e => { if (!isActive) (e.currentTarget as HTMLElement).style.background = 'var(--ds-surface-sunken, #F4F5F7)'; }}
                     onMouseLeave={e => { if (!isActive) (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
                   >
                     <div style={{ width: 24, height: 24, borderRadius: 4, background: '#E9F2FF', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                       <FolderKanban size={14} color="#0747A6" />
                     </div>
                     <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ fontSize: 14, color: '#172B4D', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{p.name}</div>
-                      {p.key && <div style={{ fontSize: 11, color: '#6B778C' }}>{p.key}</div>}
+                      <div style={{ fontSize: 14, color: 'var(--ds-text, #172B4D)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{p.name}</div>
+                      {p.key && <div style={{ fontSize: 11, color: 'var(--ds-text-subtlest, #6B778C)' }}>{p.key}</div>}
                     </div>
                     {isActive && <CheckmarkSVG />}
                   </div>
                 );
               })}
               {filtered.length === 0 && (
-                <div style={{ padding: '12px', fontSize: 13, color: '#6B778C', textAlign: 'center' }}>No projects found</div>
+                <div style={{ padding: '12px', fontSize: 13, color: 'var(--ds-text-subtlest, #6B778C)', textAlign: 'center' }}>No projects found</div>
               )}
             </div>
           </div>

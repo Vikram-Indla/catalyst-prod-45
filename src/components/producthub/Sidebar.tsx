@@ -57,7 +57,7 @@ export function Sidebar() {
                 borderRadius: 6, fontSize: 13,
                 fontWeight: active ? 600 : 500,
                 color: active ? 'var(--cp-blue)' : 'var(--fg-3)',
-                background: active ? '#F1F5F9' : 'transparent',
+                background: active ? 'var(--ds-surface-sunken, #F1F5F9)' : 'transparent',
                 border: 'none', cursor: 'pointer',
                 position: 'relative',
                 textAlign: 'left', width: '100%',
@@ -66,13 +66,13 @@ export function Sidebar() {
               }}
               onMouseEnter={e => {
                 if (!active) {
-                  e.currentTarget.style.background = '#F1F5F9';
+                  e.currentTarget.style.background = 'var(--ds-surface-sunken, #F1F5F9)';
                   e.currentTarget.style.color = 'var(--fg-1, #0F172A)';
                 }
               }}
               onMouseLeave={e => {
-                e.currentTarget.style.background = active ? '#F1F5F9' : 'transparent';
-                e.currentTarget.style.color = active ? '#2563EB' : '#64748B';
+                e.currentTarget.style.background = active ? 'var(--ds-surface-sunken, #F1F5F9)' : 'transparent';
+                e.currentTarget.style.color = active ? 'var(--ds-text-brand, #2563EB)' : 'var(--ds-text-subtlest, #64748B)';
               }}
             >
               {/* Active accent bar on right */}

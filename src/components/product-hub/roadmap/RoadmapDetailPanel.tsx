@@ -48,27 +48,27 @@ const STATUS_OPTIONS = [
 ];
 
 const HEALTH_CONFIG: Record<string, { label: string; color: string; bg: string }> = {
-  on_track: { label: 'On Track', color: '#16A34A', bg: '#F0FDF4' },
-  at_risk: { label: 'At Risk', color: '#D97706', bg: '#FFFBEB' },
-  off_track: { label: 'Off Track', color: '#EF4444', bg: '#FEF2F2' },
+  on_track: { label: 'On Track', color: 'var(--ds-text-success, #16A34A)', bg: '#F0FDF4' },
+  at_risk: { label: 'At Risk', color: 'var(--ds-text-warning, #D97706)', bg: '#FFFBEB' },
+  off_track: { label: 'Off Track', color: 'var(--ds-text-danger, #EF4444)', bg: 'var(--ds-background-danger, #FEF2F2)' },
 };
 
 const STATUS_PILL: Record<string, { color: string; bg: string }> = {
-  Planned: { color: '#1D4ED8', bg: '#DBEAFE' },
+  Planned: { color: 'var(--ds-background-brand-bold-hovered, #1D4ED8)', bg: '#DBEAFE' },
   Active: { color: '#0F766E', bg: '#F0FDFA' },
-  Completed: { color: '#16A34A', bg: '#F0FDF4' },
-  Cancelled: { color: '#DC2626', bg: '#FEF2F2' },
-  'On Hold': { color: '#D97706', bg: '#FFFBEB' },
+  Completed: { color: 'var(--ds-text-success, #16A34A)', bg: '#F0FDF4' },
+  Cancelled: { color: 'var(--ds-text-danger, #DC2626)', bg: 'var(--ds-background-danger, #FEF2F2)' },
+  'On Hold': { color: 'var(--ds-text-warning, #D97706)', bg: '#FFFBEB' },
   'Under Review': { color: '#7C3AED', bg: '#F5F3FF' },
   Approved: { color: '#0D9488', bg: '#F0FDFA' },
-  New: { color: '#2563EB', bg: '#EFF6FF' },
+  New: { color: 'var(--ds-text-brand, #2563EB)', bg: 'var(--ds-background-selected, #EFF6FF)' },
 };
 
 // ── Field component (matches backlog) ──
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div>
-      <div className="text-[11px] font-semibold uppercase tracking-[0.05em] mb-1" style={{ color: '#334155' }}>
+      <div className="text-[11px] font-semibold uppercase tracking-[0.05em] mb-1" style={{ color: 'var(--ds-text-subtle, #334155)' }}>
         {label}
       </div>
       <div className="text-[13px] text-foreground">{children}</div>
@@ -141,7 +141,7 @@ export function RoadmapDetailPanel({ item, isOpen, onClose }: RoadmapDetailPanel
 
   if (!item) return null;
 
-  const statusInfo = STATUS_PILL[item.status] || { color: '#334155', bg: '#F1F5F9' };
+  const statusInfo = STATUS_PILL[item.status] || { color: 'var(--ds-text-subtle, #334155)', bg: 'var(--ds-surface-sunken, #F1F5F9)' };
   const ownerProfile = approvedProfiles?.find(p => p.id === item.rawAssigneeId);
 
   return createPortal(
@@ -245,7 +245,7 @@ export function RoadmapDetailPanel({ item, isOpen, onClose }: RoadmapDetailPanel
             <div className="p-5 space-y-5">
               {/* Description */}
               <div>
-                <div className="text-[11px] font-semibold uppercase tracking-[0.05em] mb-1" style={{ color: '#94A3B8' }}>
+                <div className="text-[11px] font-semibold uppercase tracking-[0.05em] mb-1" style={{ color: 'var(--ds-text-subtlest, #94A3B8)' }}>
                   Description
                 </div>
                 <p className="text-[13px] text-muted-foreground italic leading-relaxed">
@@ -259,7 +259,7 @@ export function RoadmapDetailPanel({ item, isOpen, onClose }: RoadmapDetailPanel
                   <div className="flex items-center gap-3">
                     <div className="w-8 h-8 rounded-md flex items-center justify-center"
                       style={{ background: '#DBEAFE' }}>
-                      <Map className="w-4 h-4" style={{ color: '#2563EB' }} />
+                      <Map className="w-4 h-4" style={{ color: 'var(--ds-text-brand, #2563EB)' }} />
                     </div>
                     <div>
                       <div className="text-[13px] font-semibold text-foreground">On Roadmap</div>
@@ -269,7 +269,7 @@ export function RoadmapDetailPanel({ item, isOpen, onClose }: RoadmapDetailPanel
                   <button
                     onClick={handleRoadmapToggle}
                     className="relative w-10 h-5 rounded-full transition-colors"
-                    style={{ background: '#2563EB' }}
+                    style={{ background: 'var(--ds-text-brand, #2563EB)' }}
                   >
                     <span
                       className="absolute top-0.5 w-4 h-4 rounded-full bg-white shadow-sm"
@@ -310,7 +310,7 @@ export function RoadmapDetailPanel({ item, isOpen, onClose }: RoadmapDetailPanel
                     {item.ownerName !== 'Unassigned' && (
                       <div
                         className="w-5 h-5 rounded-full flex items-center justify-center text-white text-[8px] font-bold shrink-0"
-                        style={{ background: '#D97706' }}
+                        style={{ background: 'var(--ds-text-warning, #D97706)' }}
                       >
                         {getInitials(item.ownerName)}
                       </div>

@@ -395,7 +395,7 @@ export default function NotificationPanel({ isOpen, onClose }: NotificationPanel
               aria-label={unreadOnly ? 'Show all notifications' : 'Show only unread'}
               style={{
                 width: 36, height: 20, borderRadius: 12, cursor: 'pointer', border: 'none',
-                background: unreadOnly ? '#16A34A' : ('var(--cp-text-secondary, #334155)'),
+                background: unreadOnly ? 'var(--ds-text-success, #16A34A)' : ('var(--cp-text-secondary, #334155)'),
                 position: 'relative', transition: 'background 200ms ease',
                 padding: 0,
               }}
@@ -407,9 +407,9 @@ export default function NotificationPanel({ isOpen, onClose }: NotificationPanel
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
               }}>
                 {unreadOnly ? (
-                  <svg width="8" height="8" viewBox="0 0 8 8" fill="none"><path d="M1.5 4L3 5.5L6.5 2" stroke="#16A34A" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                  <svg width="8" height="8" viewBox="0 0 8 8" fill="none"><path d="M1.5 4L3 5.5L6.5 2" stroke="var(--ds-text-success, #16A34A)" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg>
                 ) : (
-                  <svg width="8" height="8" viewBox="0 0 8 8" fill="none"><path d="M2 2L6 6M6 2L2 6" stroke="#334155" strokeWidth="1.2" strokeLinecap="round"/></svg>
+                  <svg width="8" height="8" viewBox="0 0 8 8" fill="none"><path d="M2 2L6 6M6 2L2 6" stroke="var(--ds-text-subtle, #334155)" strokeWidth="1.2" strokeLinecap="round"/></svg>
                 )}
               </span>
             </button>
@@ -505,7 +505,7 @@ export default function NotificationPanel({ isOpen, onClose }: NotificationPanel
                   background: 'none', border: 'none', borderBottom: isActive ? '2px solid #2563EB' : '2px solid transparent',
                   cursor: 'pointer',
                   fontFamily: 'var(--cp-font-body)', fontSize: 14, fontWeight: isActive ? 600 : 500,
-                  color: isActive ? '#2563EB' : T.text2,
+                  color: isActive ? 'var(--ds-text-brand, #2563EB)' : T.text2,
                   transition: 'color 150ms ease',
                 }}
                 onMouseEnter={e => { if (!isActive) e.currentTarget.style.color = T.text1; }}

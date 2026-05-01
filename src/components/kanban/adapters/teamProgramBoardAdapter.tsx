@@ -172,7 +172,7 @@ const CARD_TYPE_ICON: Record<CardType, { Icon: typeof Bookmark; color: string }>
 export function resolveTeamProgramIcon(card: BoardIssue): ReactNode | null {
   const raw = (card as CanonicalBoardIssue).raw as KanbanCard | undefined;
   const type = raw?.work_item_type;
-  const entry = (type && CARD_TYPE_ICON[type]) || { Icon: CircleDashed, color: '#64748B' };
+  const entry = (type && CARD_TYPE_ICON[type]) || { Icon: CircleDashed, color: 'var(--ds-text-subtlest, #64748B)' };
   const { Icon, color } = entry;
   return <Icon size={14} strokeWidth={2} style={{ color }} />;
 }

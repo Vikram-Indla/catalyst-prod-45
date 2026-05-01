@@ -72,10 +72,10 @@ const Chip: React.FC<{ children: React.ReactNode; variant?: 'default' | 'success
   
   const textColors: Record<string, string> = {
     default: 'var(--caty-text-primary)',
-    success: '#22c55e',
+    success: 'var(--ds-text-success, #22c55e)',
     warning: '#eab308',
-    error: '#ef4444',
-    info: '#3b82f6',
+    error: 'var(--ds-text-danger, #ef4444)',
+    info: 'var(--ds-text-brand, #3b82f6)',
   };
 
   return (
@@ -369,7 +369,7 @@ const ResourceAnswerCard: React.FC<{
           background: 'rgba(34, 197, 94, 0.1)',
           borderRadius: '8px',
           fontSize: '13px',
-          color: '#22c55e',
+          color: 'var(--ds-text-success, #22c55e)',
           display: 'flex',
           alignItems: 'center',
           gap: '8px'

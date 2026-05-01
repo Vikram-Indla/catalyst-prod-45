@@ -353,7 +353,7 @@ function SortableRow({
           </button>
           <button
             onClick={() => onDelete(assignment)}
-            className="w-8 h-8 rounded flex items-center justify-center text-muted-foreground hover:bg-[#dc2626]/10 hover:text-[#dc2626] transition-colors"
+            className="w-8 h-8 rounded flex items-center justify-center text-muted-foreground hover:bg-[var(--ds-text-danger,#dc2626)]/10 hover:text-[var(--ds-text-danger,#dc2626)] transition-colors"
           >
             <Trash2 className="h-4 w-4" />
           </button>
@@ -760,7 +760,7 @@ export default function ResourceAssignmentsPage() {
             Download Excel
           </Button>
           <Button 
-            className="gap-2 bg-[#2563eb] hover:bg-[#1d4ed8]"
+            className="gap-2 bg-[var(--ds-text-brand,#2563eb)] hover:bg-[var(--ds-background-brand-bold-hovered,#1d4ed8)]"
             onClick={() => setCreateModalOpen(true)}
           >
             <Plus className="h-4 w-4" />
@@ -913,7 +913,7 @@ export default function ResourceAssignmentsPage() {
             <Button 
               onClick={handleCreate}
               disabled={createAssignment.isPending}
-              className="bg-[#2563eb] hover:bg-[#1d4ed8]"
+              className="bg-[var(--ds-text-brand,#2563eb)] hover:bg-[var(--ds-background-brand-bold-hovered,#1d4ed8)]"
             >
               {createAssignment.isPending ? 'Creating...' : 'Create'}
             </Button>
@@ -1024,7 +1024,7 @@ export default function ResourceAssignmentsPage() {
             <Button 
               onClick={handleUpdate}
               disabled={updateAssignment.isPending}
-              className="bg-[#2563eb] hover:bg-[#1d4ed8]"
+              className="bg-[var(--ds-text-brand,#2563eb)] hover:bg-[var(--ds-background-brand-bold-hovered,#1d4ed8)]"
             >
               {updateAssignment.isPending ? 'Saving...' : 'Save'}
             </Button>

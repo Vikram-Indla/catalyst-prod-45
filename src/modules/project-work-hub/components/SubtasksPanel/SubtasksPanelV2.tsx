@@ -104,7 +104,7 @@ function TypeSelector({ value, onChange, disabled }: { value: string; onChange: 
       >
         <span style={{ display: 'flex', width: 16, height: 16 }}>{current.icon}</span>
         <span>{current.label}</span>
-        <ChevronDown size={12} color="#6B778C" />
+        <ChevronDown size={12} color="var(--ds-text-subtlest, #6B778C)" />
       </button>
       {open && (
         <div className="sp-type-selector-dropdown" role="listbox">
@@ -180,7 +180,7 @@ function ColumnPicker({ columns, onChange }: {
               }}
             >
               <div className={`sp-colpicker-check ${columns[col.key] ? 'sp-colpicker-check--active' : ''}`}>
-                {columns[col.key] && <Check size={10} color="#fff" strokeWidth={3} />}
+                {columns[col.key] && <Check size={10} color="var(--ds-surface, #fff)" strokeWidth={3} />}
               </div>
               <span>{col.label}</span>
             </div>

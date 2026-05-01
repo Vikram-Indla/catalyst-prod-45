@@ -79,7 +79,7 @@ export function BulkMoveModal({ items, selectedKeys, onConfirm, onClose }: BulkM
             </p>
           </div>
           <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4 }}>
-            <X size={18} color="#64748B" />
+            <X size={18} color="var(--ds-text-subtlest, #64748B)" />
           </button>
         </div>
 
@@ -89,7 +89,7 @@ export function BulkMoveModal({ items, selectedKeys, onConfirm, onClose }: BulkM
             display: 'flex', alignItems: 'center', gap: 6, padding: '0 8px',
             height: 32, background: 'var(--bg-1)', border: '1px solid var(--divider)', borderRadius: 6,
           }}>
-            <Search size={14} color="#94A3B8" />
+            <Search size={14} color="var(--ds-text-subtlest, #94A3B8)" />
             <input
               value={search}
               onChange={e => setSearch(e.target.value)}
@@ -127,8 +127,8 @@ export function BulkMoveModal({ items, selectedKeys, onConfirm, onClose }: BulkM
                   <button onClick={e => { e.stopPropagation(); toggle(item.id); }}
                     style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', display: 'flex' }}>
                     {expanded.has(item.id)
-                      ? <ChevronDown size={14} color="#94A3B8" />
-                      : <ChevronRight size={14} color="#94A3B8" />}
+                      ? <ChevronDown size={14} color="var(--ds-text-subtlest, #94A3B8)" />
+                      : <ChevronRight size={14} color="var(--ds-text-subtlest, #94A3B8)" />}
                   </button>
                 ) : <div style={{ width: 14 }} />}
 
@@ -158,7 +158,7 @@ export function BulkMoveModal({ items, selectedKeys, onConfirm, onClose }: BulkM
             disabled={!selected}
             style={{
               height: 32, padding: '0 14px', fontSize: 13, fontWeight: 600,
-              color: '#FFFFFF', background: selected ? 'var(--cp-blue)' : 'var(--fg-4)',
+              color: 'var(--ds-surface, #FFFFFF)', background: selected ? 'var(--cp-blue)' : 'var(--fg-4)',
               border: 'none', borderRadius: 6, cursor: selected ? 'pointer' : 'not-allowed',
             }}>
             Move here

@@ -10,11 +10,11 @@ import { getInitials } from './types';
 
 // Department colors mapping
 const DEPT_COLORS: Record<string, string> = {
-  'Delivery': '#2563eb',
+  'Delivery': 'var(--ds-text-brand, #2563eb)',
   'Product': '#8b5cf6',
   'Operations': '#ea580c',
   'Technical Support': '#f97316',
-  'Governance': '#64748b',
+  'Governance': 'var(--ds-text-subtlest, #64748b)',
 };
 
 const DEFAULT_STATS: CapacityStats = {

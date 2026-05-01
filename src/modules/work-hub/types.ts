@@ -159,12 +159,12 @@ export const MORE_MENU_ITEMS = [
 
 // Type icons and colors
 export const WORK_ITEM_TYPE_CONFIG: Record<WorkItemType, { label: string; color: string }> = {
-  FEATURE: { label: 'Epic', color: '#2563eb' },
-  STORY: { label: 'Story', color: '#16a34a' },
-  SUBTASK: { label: 'Subtask', color: '#2563eb' },
-  DEFECT: { label: 'Bug', color: '#dc2626' },
-  INCIDENT: { label: 'Production Incident', color: '#f59e0b' },
-  TASK: { label: 'Task', color: '#2563eb' },
+  FEATURE: { label: 'Epic', color: 'var(--ds-text-brand, #2563eb)' },
+  STORY: { label: 'Story', color: 'var(--ds-text-success, #16a34a)' },
+  SUBTASK: { label: 'Subtask', color: 'var(--ds-text-brand, #2563eb)' },
+  DEFECT: { label: 'Bug', color: 'var(--ds-text-danger, #dc2626)' },
+  INCIDENT: { label: 'Production Incident', color: 'var(--ds-text-warning, #f59e0b)' },
+  TASK: { label: 'Task', color: 'var(--ds-text-brand, #2563eb)' },
 };
 
 // Priority config
@@ -173,16 +173,16 @@ export const PRIORITY_CONFIG: Record<Priority, { label: string; color: string; i
   HIGH: { label: 'High', color: '#FF7452', icon: 'chevron-up' },
   MEDIUM: { label: 'Medium', color: '#FFAB00', icon: 'minus' },
   LOW: { label: 'Low', color: '#36B37E', icon: 'chevron-down' },
-  LOWEST: { label: 'Lowest', color: '#6B778C', icon: 'chevrons-down' },
+  LOWEST: { label: 'Lowest', color: 'var(--ds-text-subtlest, #6B778C)', icon: 'chevrons-down' },
   NONE: { label: 'None', color: '#97A0AF', icon: 'minus' },
 };
 
 // Status colors
 export const STATUS_COLORS: Record<string, string> = {
-  'TODO': '#e5e7eb',
-  'IN PROGRESS': '#2563eb',
-  'DONE': '#16a34a',
-  'READY FOR QA': '#f59e0b',
-  'READY FOR PRODUCTION': '#16a34a',
-  'CLOSED': '#16a34a',
+  'TODO': 'var(--ds-border, #e5e7eb)',
+  'IN PROGRESS': 'var(--ds-text-brand, #2563eb)',
+  'DONE': 'var(--ds-text-success, #16a34a)',
+  'READY FOR QA': 'var(--ds-text-warning, #f59e0b)',
+  'READY FOR PRODUCTION': 'var(--ds-text-success, #16a34a)',
+  'CLOSED': 'var(--ds-text-success, #16a34a)',
 };

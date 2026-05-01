@@ -28,21 +28,21 @@ export function TestBreakdownGrid({ passed, failed, blocked, notRun, isWinner }:
       count: failed, 
       label: 'Failed',
       bgColor: '#fee2e2',
-      iconColor: '#ef4444'
+      iconColor: 'var(--ds-text-danger, #ef4444)'
     },
     { 
       icon: AlertTriangle, 
       count: blocked, 
       label: 'Blocked',
       bgColor: '#fef3c7',
-      iconColor: '#d97706'
+      iconColor: 'var(--ds-text-warning, #d97706)'
     },
     { 
       icon: Circle, 
       count: notRun, 
       label: 'Not Run',
-      bgColor: '#f1f5f9',
-      iconColor: '#64748b'
+      bgColor: 'var(--ds-surface-sunken, #f1f5f9)',
+      iconColor: 'var(--ds-text-subtlest, #64748b)'
     },
   ];
   

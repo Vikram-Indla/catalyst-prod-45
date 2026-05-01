@@ -59,7 +59,7 @@ export function ThemeListView({ themes, onSelect, isDark = false }: Props) {
   const sortIndicator = (field: SortField) => sortField === field ? (sortDir === 'asc' ? ' ↑' : ' ↓') : '';
 
   const borderColor = isDark ? DK.border : 'var(--divider)';
-  const borderSubtle = isDark ? DK.borderSubtle : '#F1F5F9';
+  const borderSubtle = isDark ? DK.borderSubtle : 'var(--ds-surface-sunken, #F1F5F9)';
 
   const colHeaderStyle: React.CSSProperties = {
     fontSize: 10.5, fontWeight: 600,
@@ -83,7 +83,7 @@ export function ThemeListView({ themes, onSelect, isDark = false }: Props) {
           padding: '8px 12px',
         }}
       >
-        <div><input type="checkbox" checked={selected.size === paged.length && paged.length > 0} onChange={toggleAll} style={{ width: 14, height: 14, accentColor: '#2563EB' }} /></div>
+        <div><input type="checkbox" checked={selected.size === paged.length && paged.length > 0} onChange={toggleAll} style={{ width: 14, height: 14, accentColor: 'var(--ds-text-brand, #2563EB)' }} /></div>
         <div onClick={() => toggleSort('title')} className="cursor-pointer select-none" style={colHeaderStyle}>Theme{sortIndicator('title')}</div>
         <div style={colHeaderStyle}>Status</div>
         <div onClick={() => toggleSort('progress_pct')} className="cursor-pointer select-none" style={colHeaderStyle}>Progress{sortIndicator('progress_pct')}</div>
@@ -117,7 +117,7 @@ export function ThemeListView({ themes, onSelect, isDark = false }: Props) {
           >
             {/* Checkbox */}
             <div onClick={e => e.stopPropagation()}>
-              <input type="checkbox" checked={selected.has(theme.id)} onChange={() => toggleCheck(theme.id)} style={{ width: 14, height: 14, accentColor: '#2563EB' }} />
+              <input type="checkbox" checked={selected.has(theme.id)} onChange={() => toggleCheck(theme.id)} style={{ width: 14, height: 14, accentColor: 'var(--ds-text-brand, #2563EB)' }} />
             </div>
 
             {/* Theme */}
@@ -206,7 +206,7 @@ export function ThemeListView({ themes, onSelect, isDark = false }: Props) {
               fontSize: 12, padding: '2px 8px', borderRadius: 4,
               border: `1px solid ${borderColor}`,
               background: isDark ? 'transparent' : 'var(--bg-app)',
-              color: page === 1 ? (isDark ? DK.t4 : '#CBD5E1') : (isDark ? DK.t2 : 'var(--fg-2)'),
+              color: page === 1 ? (isDark ? DK.t4 : 'var(--ds-text-disabled, #CBD5E1)') : (isDark ? DK.t2 : 'var(--fg-2)'),
               cursor: page === 1 ? 'default' : 'pointer',
             }}
           >←</button>
@@ -218,7 +218,7 @@ export function ThemeListView({ themes, onSelect, isDark = false }: Props) {
               fontSize: 12, padding: '2px 8px', borderRadius: 4,
               border: `1px solid ${borderColor}`,
               background: isDark ? 'transparent' : 'var(--bg-app)',
-              color: page === totalPages ? (isDark ? DK.t4 : '#CBD5E1') : (isDark ? DK.t2 : 'var(--fg-2)'),
+              color: page === totalPages ? (isDark ? DK.t4 : 'var(--ds-text-disabled, #CBD5E1)') : (isDark ? DK.t2 : 'var(--fg-2)'),
               cursor: page === totalPages ? 'default' : 'pointer',
             }}
           >→</button>
@@ -234,9 +234,9 @@ export function ThemeListView({ themes, onSelect, isDark = false }: Props) {
           boxShadow: '0 8px 30px rgba(0,0,0,0.25)', zIndex: 50,
         }}>
           <span style={{ fontSize: 13, fontWeight: 500 }}>{selected.size} selected</span>
-          <button style={{ fontSize: 11, background: '#2E2E2E', padding: '4px 12px', borderRadius: 4, border: 'none', color: '#FFF', cursor: 'pointer' }}>Change Status</button>
-          <button style={{ fontSize: 11, background: '#2E2E2E', padding: '4px 12px', borderRadius: 4, border: 'none', color: '#FFF', cursor: 'pointer' }}>Assign Owner</button>
-          <button style={{ fontSize: 11, background: 'rgba(239,68,68,0.7)', padding: '4px 12px', borderRadius: 4, border: 'none', color: '#FFF', cursor: 'pointer' }}>Delete</button>
+          <button style={{ fontSize: 11, background: 'var(--ds-border, #2E2E2E)', padding: '4px 12px', borderRadius: 4, border: 'none', color: 'var(--ds-surface, #FFF)', cursor: 'pointer' }}>Change Status</button>
+          <button style={{ fontSize: 11, background: 'var(--ds-border, #2E2E2E)', padding: '4px 12px', borderRadius: 4, border: 'none', color: 'var(--ds-surface, #FFF)', cursor: 'pointer' }}>Assign Owner</button>
+          <button style={{ fontSize: 11, background: 'rgba(239,68,68,0.7)', padding: '4px 12px', borderRadius: 4, border: 'none', color: 'var(--ds-surface, #FFF)', cursor: 'pointer' }}>Delete</button>
         </div>
       )}
     </div>

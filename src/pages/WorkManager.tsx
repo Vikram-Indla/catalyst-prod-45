@@ -420,7 +420,7 @@ export function WorkManager({ tab: initialTab }: WorkManagerProps) {
                   <Filter className="w-4 h-4" />
                   Filters
                   {activeFilterCount > 0 && (
-                    <span className="ml-1 px-1.5 py-0.5 bg-[#2563eb] text-white text-[10px] font-semibold rounded-full">
+                    <span className="ml-1 px-1.5 py-0.5 bg-[var(--ds-text-brand,#2563eb)] text-white text-[10px] font-semibold rounded-full">
                       {activeFilterCount}
                     </span>
                   )}

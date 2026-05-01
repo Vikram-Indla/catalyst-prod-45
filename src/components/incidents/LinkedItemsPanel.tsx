@@ -45,7 +45,7 @@ export function LinkedItemsPanel({
                 <Lozenge appearance="default">
                   {item.type}
                 </Lozenge>
-                <span className="text-xs font-medium text-[#2563eb] dark:text-[#60a5fa]">{item.id}</span>
+                <span className="text-xs font-medium text-[var(--ds-text-brand,#2563eb)] dark:text-[var(--ds-text-brand,#60a5fa)]">{item.id}</span>
                 <span className="text-xs text-muted-foreground truncate">{item.summary}</span>
               </div>
               <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -71,7 +71,7 @@ export function LinkedItemsPanel({
       <Button 
         variant="ghost" 
         size="sm" 
-        className="w-full mt-2 h-8 text-[#2563eb] dark:text-[#60a5fa] hover:text-[#1d4ed8] dark:hover:text-[#93c5fd] hover:bg-[#2563eb]/10 dark:hover:bg-[#3b82f6]/10"
+        className="w-full mt-2 h-8 text-[var(--ds-text-brand,#2563eb)] dark:text-[var(--ds-text-brand,#60a5fa)] hover:text-[var(--ds-background-brand-bold-hovered,#1d4ed8)] dark:hover:text-[#93c5fd] hover:bg-[var(--ds-text-brand,#2563eb)]/10 dark:hover:bg-[var(--ds-text-brand,#3b82f6)]/10"
         onClick={onAddItem}
       >
         <Plus className="w-3.5 h-3.5 mr-1" />

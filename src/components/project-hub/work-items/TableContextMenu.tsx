@@ -57,10 +57,10 @@ export function TableContextMenu({
             <button
               key={item.label}
               onClick={() => { item.action(); onClose(); }}
-              className="w-full flex items-center gap-2.5 px-3 py-1.5 text-[13px] hover:bg-[#F8FAFC] text-left transition-colors"
+              className="w-full flex items-center gap-2.5 px-3 py-1.5 text-[13px] hover:bg-[var(--ds-surface-sunken,#F8FAFC)] text-left transition-colors"
               style={{ color: 'var(--fg-2)' }}
             >
-              <Icon size={13} className="text-[#94A3B8]" />
+              <Icon size={13} className="text-[var(--ds-text-subtlest,#94A3B8)]" />
               {item.label}
             </button>
           );
@@ -71,13 +71,13 @@ export function TableContextMenu({
             <span className="text-[11px]" style={{ color: 'var(--sem-danger)' }}>Confirm?</span>
             <button
               onClick={() => { onDelete(); onClose(); }}
-              className="text-[11px] font-semibold px-2 py-0.5 rounded bg-[#DC2626] text-white"
+              className="text-[11px] font-semibold px-2 py-0.5 rounded bg-[var(--ds-text-danger,#DC2626)] text-white"
             >
               Yes
             </button>
             <button
               onClick={() => setDeleteConfirm(false)}
-              className="text-[11px] px-2 py-0.5 text-[#64748B]"
+              className="text-[11px] px-2 py-0.5 text-[var(--ds-text-subtlest,#64748B)]"
             >
               No
             </button>
@@ -85,7 +85,7 @@ export function TableContextMenu({
         ) : (
           <button
             onClick={() => setDeleteConfirm(true)}
-            className="w-full flex items-center gap-2.5 px-3 py-1.5 text-[13px] hover:bg-[#FEF2F2] text-left transition-colors"
+            className="w-full flex items-center gap-2.5 px-3 py-1.5 text-[13px] hover:bg-[var(--ds-background-danger,#FEF2F2)] text-left transition-colors"
             style={{ color: 'var(--sem-danger)' }}
           >
             <Trash2 size={13} />

@@ -279,7 +279,7 @@ function CommentsSection({ requestId }: { requestId: string }) {
                 background: hashColor(c.author_name),
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
               }}>
-                <span style={{ color: '#fff', fontSize: 10, fontWeight: 700, lineHeight: 1 }}>{getInitialsFromName(c.author_name)}</span>
+                <span style={{ color: 'var(--ds-surface, #fff)', fontSize: 10, fontWeight: 700, lineHeight: 1 }}>{getInitialsFromName(c.author_name)}</span>
               </div>
               <div style={{ flex: 1 }}>
                 <div style={{ display: 'flex', alignItems: 'baseline', gap: 8 }}>

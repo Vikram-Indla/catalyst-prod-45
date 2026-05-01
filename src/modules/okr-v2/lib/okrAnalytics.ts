@@ -354,7 +354,7 @@ export function computeOkrAnalytics(input: OkrAnalyticsInput): OkrAnalyticsResul
     return {
       id: theme.id,
       name: theme.name,
-      color: theme.color || '#2563eb',
+      color: theme.color || 'var(--ds-text-brand, #2563eb)',
       progress,
       baseline,
       trend,

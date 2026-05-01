@@ -59,7 +59,7 @@ export function RoadmapFilters({
             transition: 'border-color 0.15s ease, box-shadow 0.15s ease',
           }}
           onFocus={e => {
-            e.currentTarget.style.borderColor = '#2563EB';
+            e.currentTarget.style.borderColor = 'var(--ds-text-brand, #2563EB)';
             e.currentTarget.style.boxShadow = '0 0 0 3px rgba(37,99,235,0.1)';
           }}
           onBlur={e => {
@@ -81,13 +81,13 @@ export function RoadmapFilters({
                 borderRadius: 20,
                 fontSize: 12,
                 fontWeight: isActive ? 600 : 500,
-                background: isActive ? '#2563EB' : 'transparent',
+                background: isActive ? 'var(--ds-text-brand, #2563EB)' : 'transparent',
                 color: isActive ? 'var(--ds-text-inverse, #FFFFFF)' : ink[2],
                 border: isActive ? '1px solid #2563EB' : '1px solid transparent',
                 cursor: 'pointer',
                 transition: 'all 0.15s ease',
               }}
-              onMouseEnter={e => { if (!isActive) e.currentTarget.style.background = isDark ? '#292929' : surface.page; }}
+              onMouseEnter={e => { if (!isActive) e.currentTarget.style.background = isDark ? 'var(--ds-border, #292929)' : surface.page; }}
               onMouseLeave={e => { if (!isActive) e.currentTarget.style.background = 'transparent'; }}
             >
               {f.label}

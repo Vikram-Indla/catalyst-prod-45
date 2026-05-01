@@ -96,7 +96,7 @@ export function DashboardWorkstreamHealthV2({ data }: DashboardWorkstreamHealthV
                 {/* Left color bar */}
                 <div 
                   className="w-1 h-14 rounded-full flex-shrink-0"
-                  style={{ backgroundColor: ws.workstream_color || '#64748b' }}
+                  style={{ backgroundColor: ws.workstream_color || 'var(--ds-text-subtlest, #64748b)' }}
                 />
                 
                 <div className="flex-1 min-w-0">
@@ -129,7 +129,7 @@ export function DashboardWorkstreamHealthV2({ data }: DashboardWorkstreamHealthV
                         className="h-full rounded-full transition-all duration-300"
                         style={{ 
                           width: `${progressPercent}%`,
-                          backgroundColor: ws.workstream_color || '#64748b'
+                          backgroundColor: ws.workstream_color || 'var(--ds-text-subtlest, #64748b)'
                         }}
                       />
                     </div>

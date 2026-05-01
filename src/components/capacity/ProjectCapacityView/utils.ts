@@ -189,18 +189,18 @@ export function getStaffingStatusConfig(status: 'full' | 'partial' | 'under' | '
     partial: {
       label: 'Partial',
       color: '#6b7280',
-      bgClass: 'bg-[#f8fafc] dark:bg-slate-950/30',
+      bgClass: 'bg-[var(--ds-surface-sunken,#f8fafc)] dark:bg-slate-950/30',
       textClass: 'text-[#6b7280] dark:text-slate-400',
       borderClass: 'border-[#6b7280] dark:border-slate-600',
       dotClass: 'bg-[#6b7280]'
     },
     under: {
       label: 'Understaffed',
-      color: '#2563eb',
-      bgClass: 'bg-[#eff6ff] dark:bg-blue-950/30',
-      textClass: 'text-[#2563eb] dark:text-blue-400',
-      borderClass: 'border-[#2563eb] dark:border-blue-600',
-      dotClass: 'bg-[#2563eb]'
+      color: 'var(--ds-text-brand, #2563eb)',
+      bgClass: 'bg-[var(--ds-background-selected,#eff6ff)] dark:bg-blue-950/30',
+      textClass: 'text-[var(--ds-text-brand,#2563eb)] dark:text-blue-400',
+      borderClass: 'border-[var(--ds-text-brand,#2563eb)] dark:border-blue-600',
+      dotClass: 'bg-[var(--ds-text-brand,#2563eb)]'
     },
     over: {
       label: 'Over-Allocated',
@@ -228,14 +228,14 @@ export function formatFTE(value: number): string {
  * Get project color with deterministic fallback
  */
 const PROJECT_COLORS = [
-  '#2563eb', // Blue
+  'var(--ds-text-brand, #2563eb)', // Blue
   '#0d9488', // Teal
   '#10b981', // Green
   '#6366f1', // Indigo
   '#8b5cf6', // Violet
   '#0891b2', // Cyan
   '#059669', // Emerald
-  '#3b82f6', // Light Blue
+  'var(--ds-text-brand, #3b82f6)', // Light Blue
 ];
 
 export function getProjectColor(name: string, existingColor?: string): string {

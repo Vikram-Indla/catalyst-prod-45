@@ -338,9 +338,9 @@ export function LinkWorkItemModal({ issue, tk, onClose, onLinked }: LinkWorkItem
             disabled={selected.length === 0 || saving}
             style={{
               height: 32, padding: '0 16px', border: 'none',
-              borderRadius: 4, background: selected.length > 0 ? '#2563EB' : tk.chipBg,
+              borderRadius: 4, background: selected.length > 0 ? 'var(--ds-text-brand, #2563EB)' : tk.chipBg,
               cursor: selected.length > 0 ? 'pointer' : 'not-allowed',
-              fontSize: 13, color: '#FFFFFF', fontWeight: 600,
+              fontSize: 13, color: 'var(--ds-surface, #FFFFFF)', fontWeight: 600,
               fontFamily: 'var(--cp-font-body)',
               opacity: saving ? 0.7 : 1,
               display: 'flex', alignItems: 'center', gap: 6,

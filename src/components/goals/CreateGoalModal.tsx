@@ -1,5 +1,5 @@
 /**
- * CreateGoalModal — Fix 3: field labels #94A3B8, Fix 13: section dividers, slider labels, weight helper
+ * CreateGoalModal — Fix 3: field labels var(--ds-text-subtlest, #94A3B8), Fix 13: section dividers, slider labels, weight helper
  */
 import { useState, useEffect, useCallback } from 'react';
 import { X, Plus } from 'lucide-react';
@@ -29,7 +29,7 @@ const PRIORITY_OPTIONS: { value: Priority; label: string }[] = [
 const QUARTER_OPTIONS = ['Q1 2026', 'Q2 2026', 'Q3 2026', 'Q4 2026'];
 const BSC_OPTIONS: BSCPerspective[] = ['Financial', 'Customer', 'Internal Process', 'Learning & Growth'];
 
-// Fix 3: All labels #94A3B8, 10px, uppercase, 600
+// Fix 3: All labels var(--ds-text-subtlest, #94A3B8), 10px, uppercase, 600
 const labelStyle: React.CSSProperties = {
   fontSize: 10, fontWeight: 600, textTransform: 'uppercase',
   letterSpacing: '0.05em', color: 'var(--fg-4)', marginBottom: 4, display: 'block',
@@ -276,7 +276,7 @@ export function CreateGoalModal({ isOpen, onClose }: CreateGoalModalProps) {
             onClick={handleSubmit}
             disabled={createGoal.isPending}
             style={{
-              padding: '7px 16px', fontSize: 13, fontWeight: 600, color: '#FFFFFF',
+              padding: '7px 16px', fontSize: 13, fontWeight: 600, color: 'var(--ds-surface, #FFFFFF)',
               background: createGoal.isPending ? '#93C5FD' : 'var(--cp-blue)',
               border: 'none', borderRadius: 6, cursor: createGoal.isPending ? 'not-allowed' : 'pointer',
               display: 'inline-flex', alignItems: 'center', gap: 5,

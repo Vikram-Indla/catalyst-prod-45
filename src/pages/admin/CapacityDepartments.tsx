@@ -113,7 +113,7 @@ export default function CapacityDepartmentsPage() {
           </p>
         </div>
         <Button 
-          className="gap-2 bg-[#2563eb] hover:bg-[#1d4ed8]"
+          className="gap-2 bg-[var(--ds-text-brand,#2563eb)] hover:bg-[var(--ds-background-brand-bold-hovered,#1d4ed8)]"
           onClick={() => setCreateModalOpen(true)}
         >
           <Plus className="h-4 w-4" />
@@ -204,7 +204,7 @@ export default function CapacityDepartmentsPage() {
             <Button 
               onClick={handleCreate}
               disabled={createDepartment.isPending}
-              className="bg-[#2563eb] hover:bg-[#1d4ed8]"
+              className="bg-[var(--ds-text-brand,#2563eb)] hover:bg-[var(--ds-background-brand-bold-hovered,#1d4ed8)]"
             >
               {createDepartment.isPending ? 'Creating...' : 'Create'}
             </Button>
@@ -233,7 +233,7 @@ export default function CapacityDepartmentsPage() {
             <Button 
               onClick={handleUpdate}
               disabled={updateDepartment.isPending}
-              className="bg-[#2563eb] hover:bg-[#1d4ed8]"
+              className="bg-[var(--ds-text-brand,#2563eb)] hover:bg-[var(--ds-background-brand-bold-hovered,#1d4ed8)]"
             >
               {updateDepartment.isPending ? 'Saving...' : 'Save'}
             </Button>

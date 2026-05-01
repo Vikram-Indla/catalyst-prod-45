@@ -143,22 +143,22 @@ export interface RoadmapGroup {
 
 // Status config for display
 export const STATUS_CONFIG: Record<string, { label: string; color: string; bgColor: string }> = {
-  new_request: { label: 'New Request', color: '#3b82f6', bgColor: 'rgba(59, 130, 246, 0.1)' },
+  new_request: { label: 'New Request', color: 'var(--ds-text-brand, #3b82f6)', bgColor: 'rgba(59, 130, 246, 0.1)' },
   draft: { label: 'Draft', color: '#737373', bgColor: 'rgba(115, 115, 115, 0.1)' },
-  submitted: { label: 'Submitted', color: '#3b82f6', bgColor: 'rgba(59, 130, 246, 0.1)' },
-  in_review: { label: 'In Review', color: '#f59e0b', bgColor: 'rgba(245, 158, 11, 0.1)' },
-  approved: { label: 'Approved', color: '#22c55e', bgColor: 'rgba(34, 197, 94, 0.1)' },
-  rejected: { label: 'Rejected', color: '#ef4444', bgColor: 'rgba(239, 68, 68, 0.1)' },
+  submitted: { label: 'Submitted', color: 'var(--ds-text-brand, #3b82f6)', bgColor: 'rgba(59, 130, 246, 0.1)' },
+  in_review: { label: 'In Review', color: 'var(--ds-text-warning, #f59e0b)', bgColor: 'rgba(245, 158, 11, 0.1)' },
+  approved: { label: 'Approved', color: 'var(--ds-text-success, #22c55e)', bgColor: 'rgba(34, 197, 94, 0.1)' },
+  rejected: { label: 'Rejected', color: 'var(--ds-text-danger, #ef4444)', bgColor: 'rgba(239, 68, 68, 0.1)' },
   in_progress: { label: 'In Progress', color: '#8b5cf6', bgColor: 'rgba(139, 92, 246, 0.1)' },
   completed: { label: 'Completed', color: '#15803d', bgColor: 'rgba(21, 128, 61, 0.1)' },
-  cancelled: { label: 'Cancelled', color: '#dc2626', bgColor: 'rgba(220, 38, 38, 0.1)' },
+  cancelled: { label: 'Cancelled', color: 'var(--ds-text-danger, #dc2626)', bgColor: 'rgba(220, 38, 38, 0.1)' },
 };
 
 export const PRIORITY_CONFIG: Record<string, { label: string; color: string; bgColor: string }> = {
-  critical: { label: 'Critical', color: '#ef4444', bgColor: 'rgba(239, 68, 68, 0.1)' },
-  high: { label: 'High', color: '#f59e0b', bgColor: 'rgba(245, 158, 11, 0.1)' },
-  medium: { label: 'Medium', color: '#3b82f6', bgColor: 'rgba(59, 130, 246, 0.1)' },
-  low: { label: 'Low', color: '#22c55e', bgColor: 'rgba(34, 197, 94, 0.1)' },
+  critical: { label: 'Critical', color: 'var(--ds-text-danger, #ef4444)', bgColor: 'rgba(239, 68, 68, 0.1)' },
+  high: { label: 'High', color: 'var(--ds-text-warning, #f59e0b)', bgColor: 'rgba(245, 158, 11, 0.1)' },
+  medium: { label: 'Medium', color: 'var(--ds-text-brand, #3b82f6)', bgColor: 'rgba(59, 130, 246, 0.1)' },
+  low: { label: 'Low', color: 'var(--ds-text-success, #22c55e)', bgColor: 'rgba(34, 197, 94, 0.1)' },
 };
 
 // Default filter state

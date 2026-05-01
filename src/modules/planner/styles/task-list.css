@@ -6,45 +6,45 @@
 
 .planner-task-list-content {
   /* === Surfaces (N4, N5) === */
-  --tl-surface-page: #f8fafc;       /* gray-50 */
-  --tl-surface-card: #ffffff;
-  --tl-surface-header: #f8fafc;
-  --tl-surface-hover: #f1f5f9;      /* I1: row hover */
-  --tl-surface-selected: #eff6ff;   /* I3: selected row */
+  --tl-surface-page: var(--ds-surface-sunken, #f8fafc);       /* gray-50 */
+  --tl-surface-card: var(--ds-surface, #ffffff);
+  --tl-surface-header: var(--ds-surface-sunken, #f8fafc);
+  --tl-surface-hover: var(--ds-surface-sunken, #f1f5f9);      /* I1: row hover */
+  --tl-surface-selected: var(--ds-background-selected, #eff6ff);   /* I3: selected row */
   --tl-surface-editing: #fffbeb;
   
   /* === Text Colors (E, K) === */
-  --tl-text-primary: #0f172a;       /* E1.3: page title */
-  --tl-text-secondary: #334155;     /* gray-700 */
-  --tl-text-tertiary: #64748b;      /* E1.5, E2.4: subtitle, headers */
-  --tl-text-muted: #94a3b8;         /* gray-400 */
+  --tl-text-primary: var(--ds-text, #0f172a);       /* E1.3: page title */
+  --tl-text-secondary: var(--ds-text-subtle, #334155);     /* gray-700 */
+  --tl-text-tertiary: var(--ds-text-subtlest, #64748b);      /* E1.5, E2.4: subtitle, headers */
+  --tl-text-muted: var(--ds-text-subtlest, #94a3b8);         /* gray-400 */
   
   /* === Borders (H, N6) === */
-  --tl-border: #e2e8f0;             /* H2, N6: default */
-  --tl-border-light: #f1f5f9;
-  --tl-border-strong: #cbd5e1;      /* N6 */
-  --tl-border-focus: #2563eb;       /* I6 */
+  --tl-border: var(--ds-border, #e2e8f0);             /* H2, N6: default */
+  --tl-border-light: var(--ds-surface-sunken, #f1f5f9);
+  --tl-border-strong: var(--ds-text-disabled, #cbd5e1);      /* N6 */
+  --tl-border-focus: var(--ds-text-brand, #2563eb);       /* I6 */
   
   /* === Interactive (I, N1) === */
-  --tl-primary: #2563eb;            /* N1: primary button */
-  --tl-primary-hover: #1d4ed8;      /* I2 */
+  --tl-primary: var(--ds-text-brand, #2563eb);            /* N1: primary button */
+  --tl-primary-hover: var(--ds-background-brand-bold-hovered, #1d4ed8);      /* I2 */
   
   /* === Priority Dot Colors (A2) === */
-  --tl-priority-critical: #dc2626;  /* A2.1 */
+  --tl-priority-critical: var(--ds-text-danger, #dc2626);  /* A2.1 */
   --tl-priority-high: #f97316;      /* A2.2 */
   --tl-priority-medium: #eab308;    /* A2.3: yellow, NOT green */
-  --tl-priority-low: #94a3b8;       /* A2.4 */
+  --tl-priority-low: var(--ds-text-subtlest, #94a3b8);       /* A2.4 */
   
   /* === Status Dot Colors === */
-  --tl-status-backlog: #94a3b8;
-  --tl-status-planned: #3b82f6;
-  --tl-status-progress: #f59e0b;    /* amber-500 */
-  --tl-status-done: #16a34a;        /* green-600 */
+  --tl-status-backlog: var(--ds-text-subtlest, #94a3b8);
+  --tl-status-planned: var(--ds-text-brand, #3b82f6);
+  --tl-status-progress: var(--ds-text-warning, #f59e0b);    /* amber-500 */
+  --tl-status-done: var(--ds-text-success, #16a34a);        /* green-600 */
   
   /* === KPI Dot Colors (C) === */
-  --tl-kpi-overdue: #dc2626;        /* C2 */
-  --tl-kpi-progress: #f59e0b;       /* C4 */
-  --tl-kpi-done: #16a34a;           /* C6 */
+  --tl-kpi-overdue: var(--ds-text-danger, #dc2626);        /* C2 */
+  --tl-kpi-progress: var(--ds-text-warning, #f59e0b);       /* C4 */
+  --tl-kpi-done: var(--ds-text-success, #16a34a);           /* C6 */
   
   /* === Shadows === */
   --tl-shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
@@ -90,7 +90,7 @@
 .planner-task-list-content .tl-page-title {
   font-size: 1.25rem;      /* 20px - text-xl to match dashboard */
   font-weight: 700;        /* bold to match dashboard */
-  color: var(--tl-text-primary);  /* #0f172a (E1.3) */
+  color: var(--tl-text-primary);  /* var(--ds-text, #0f172a) (E1.3) */
   margin: 0;
   line-height: 1.4;
 }
@@ -98,7 +98,7 @@
 /* E1.4-E1.5: Subtitle - matches dashboard text-sm */
 .planner-task-list-content .tl-page-subtitle {
   font-size: 0.875rem;     /* 14px (E1.4) - matches dashboard */
-  color: var(--tl-text-tertiary);  /* #64748b (E1.5) */
+  color: var(--tl-text-tertiary);  /* var(--ds-text-subtlest, #64748b) (E1.5) */
   margin-top: 0.125rem;
 }
 
@@ -128,15 +128,15 @@
 }
 
 .planner-task-list-content .tl-kpi-dot-overdue {
-  background-color: var(--tl-kpi-overdue);  /* C2: #dc2626 */
+  background-color: var(--tl-kpi-overdue);  /* C2: var(--ds-text-danger, #dc2626) */
 }
 
 .planner-task-list-content .tl-kpi-dot-progress {
-  background-color: var(--tl-kpi-progress); /* C4: #f59e0b */
+  background-color: var(--tl-kpi-progress); /* C4: var(--ds-text-warning, #f59e0b) */
 }
 
 .planner-task-list-content .tl-kpi-dot-done {
-  background-color: var(--tl-kpi-done);     /* C6: #16a34a */
+  background-color: var(--tl-kpi-done);     /* C6: var(--ds-text-success, #16a34a) */
 }
 
 .planner-task-list-content .tl-kpi-value {
@@ -289,7 +289,7 @@
   font-weight: 500;        /* medium (E2.3) */
   text-transform: uppercase;  /* E2.2 */
   letter-spacing: 0.05em;  /* E2.5 */
-  color: var(--tl-text-tertiary);  /* #64748b (E2.4) */
+  color: var(--tl-text-tertiary);  /* var(--ds-text-subtlest, #64748b) (E2.4) */
   user-select: none;
 }
 
@@ -307,11 +307,11 @@
 }
 
 .planner-task-list-content .tl-row:hover {
-  background: var(--tl-surface-hover);  /* I1: #f1f5f9 */
+  background: var(--tl-surface-hover);  /* I1: var(--ds-surface-sunken, #f1f5f9) */
 }
 
 .planner-task-list-content .tl-row.selected {
-  background: var(--tl-surface-selected);  /* I3: #eff6ff */
+  background: var(--tl-surface-selected);  /* I3: var(--ds-background-selected, #eff6ff) */
 }
 
 .planner-task-list-content .tl-row.focused {
@@ -335,7 +335,7 @@
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace !important;  /* B2 */
   font-size: 0.8125rem !important;    /* 13px (B3) */
   font-weight: 500 !important;
-  color: #64748b !important;          /* B1: gray-500, NOT blue */
+  color: var(--ds-text-subtlest, #64748b) !important;          /* B1: gray-500, NOT blue */
   transition: color 0.1s;
   cursor: pointer;
   white-space: nowrap !important;  /* Prevent wrapping */
@@ -343,7 +343,7 @@
 }
 
 .planner-task-list-content .tl-task-id:hover {
-  color: #334155 !important;          /* B4: gray-700 */
+  color: var(--ds-text-subtle, #334155) !important;          /* B4: gray-700 */
   text-decoration: underline;  /* B5 */
 }
 
@@ -363,8 +363,8 @@
 }
 
 .planner-task-list-content .tl-title-cell:hover {
-  background: #eff6ff;
-  outline: 1px dashed #cbd5e1;
+  background: var(--ds-background-selected, #eff6ff);
+  outline: 1px dashed var(--ds-text-disabled, #cbd5e1);
 }
 
 .dark .planner-task-list-content .tl-title-cell:hover {
@@ -405,7 +405,7 @@
   border-radius: 0.375rem !important;    /* H3: 6px */
   font-size: 0.75rem !important;
   font-weight: 500 !important;
-  border: 1px solid #e2e8f0 !important;  /* A3.2, A3.4, A3.5 */
+  border: 1px solid var(--ds-border, #e2e8f0) !important;  /* A3.2, A3.4, A3.5 */
   background: transparent !important;
   cursor: pointer;
   transition: all 0.1s;
@@ -434,9 +434,9 @@
   flex-shrink: 0;
 }
 
-/* A3.3, A3.7: Status text ALWAYS #475569 (gray-600) - NEVER colored */
+/* A3.3, A3.7: Status text ALWAYS var(--ds-text-subtle, #475569) (gray-600) - NEVER colored */
 .planner-task-list-content .tl-status-text {
-  color: #475569 !important;
+  color: var(--ds-text-subtle, #475569) !important;
 }
 
 .planner-task-list-content .tl-status-badge:hover {
@@ -471,11 +471,11 @@
   flex-shrink: 0;
 }
 
-/* A1.1-A1.4: Priority text ALWAYS #64748b (gray-500) - NEVER colored */
+/* A1.1-A1.4: Priority text ALWAYS var(--ds-text-subtlest, #64748b) (gray-500) - NEVER colored */
 .planner-task-list-content .tl-priority-text {
   font-size: 0.875rem !important;
   font-weight: 500 !important;
-  color: #64748b !important;
+  color: var(--ds-text-subtlest, #64748b) !important;
 }
 
 /* ============================================================================
@@ -499,9 +499,9 @@
   flex-shrink: 0;
 }
 
-/* D1: Workstream text ALWAYS #64748b - NEVER colored */
+/* D1: Workstream text ALWAYS var(--ds-text-subtlest, #64748b) - NEVER colored */
 .planner-task-list-content .tl-workstream-text {
-  color: #64748b !important;
+  color: var(--ds-text-subtlest, #64748b) !important;
 }
 
 /* ============================================================================
@@ -534,25 +534,25 @@
   font-size: 0.625rem;     /* K3: 10px */
   font-weight: 600;
   color: white;            /* K2 */
-  background: #2563eb;     /* K1: hash-based would vary */
+  background: var(--ds-text-brand, #2563eb);     /* K1: hash-based would vary */
   flex-shrink: 0;
 }
 
-/* K4: Assignee name #334155 */
+/* K4: Assignee name var(--ds-text-subtle, #334155) */
 .planner-task-list-content .tl-assignee-name {
   font-size: 0.8125rem;
-  color: #334155;
+  color: var(--ds-text-subtle, #334155);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-/* K5: Unassigned #94a3b8 */
+/* K5: Unassigned var(--ds-text-subtlest, #94a3b8) */
 .planner-task-list-content .tl-unassigned-btn {
   display: inline-flex;
   align-items: center;
   gap: 0.25rem;
-  color: #94a3b8;
+  color: var(--ds-text-subtlest, #94a3b8);
   font-size: 0.8125rem;
 }
 
@@ -575,16 +575,16 @@
   background: var(--tl-surface-hover);
 }
 
-/* J1: Normal due date #334155 */
+/* J1: Normal due date var(--ds-text-subtle, #334155) */
 .planner-task-list-content .tl-date-value {
   font-size: 0.8125rem;
   font-weight: 500;
-  color: #334155;
+  color: var(--ds-text-subtle, #334155);
 }
 
-/* J2, J3: Overdue #dc2626, font-weight 500 */
+/* J2, J3: Overdue var(--ds-text-danger, #dc2626), font-weight 500 */
 .planner-task-list-content .tl-date-value.tl-date-overdue {
-  color: #dc2626;
+  color: var(--ds-text-danger, #dc2626);
   font-weight: 500;
 }
 
@@ -596,11 +596,11 @@
 .planner-task-list-content .tl-days-indicator {
   font-size: 0.6875rem;
   font-weight: 600;
-  color: #22c55e;
+  color: var(--ds-text-success, #22c55e);
 }
 
 .planner-task-list-content .tl-days-indicator.overdue {
-  color: #dc2626;
+  color: var(--ds-text-danger, #dc2626);
 }
 
 /* ============================================================================
@@ -628,23 +628,23 @@
   flex: 1;
   min-width: 60px;
   height: 6px;
-  background: #e2e8f0;     /* L1 */
+  background: var(--ds-border, #e2e8f0);     /* L1 */
   border-radius: 4px;      /* H6 */
   overflow: hidden;
 }
 
-/* L2: Progress fill #2563eb */
+/* L2: Progress fill var(--ds-text-brand, #2563eb) */
 .planner-task-list-content .tl-progress-fill {
   height: 100%;
   border-radius: 4px;
   transition: width 0.15s;
 }
 
-/* L3, L4: Progress % #64748b, 13px */
+/* L3, L4: Progress % var(--ds-text-subtlest, #64748b), 13px */
 .planner-task-list-content .tl-progress-value {
   font-size: 0.8125rem;
   font-weight: 500;
-  color: #64748b;
+  color: var(--ds-text-subtlest, #64748b);
   min-width: 2rem;
   text-align: right;
 }
@@ -824,8 +824,8 @@
 }
 
 .planner-task-list-content .tl-row input[type="checkbox"]:checked {
-  background-color: #2563eb;  /* I6: blue-600 */
-  border-color: #2563eb;
+  background-color: var(--ds-text-brand, #2563eb);  /* I6: blue-600 */
+  border-color: var(--ds-text-brand, #2563eb);
 }
 
 /* ============================================================================
@@ -844,7 +844,7 @@
   width: 0.5rem;
   height: 0.5rem;
   border-radius: 50%;
-  background: #22c55e;
+  background: var(--ds-text-success, #22c55e);
   animation: tl-pulse 2s infinite;
 }
 
@@ -866,25 +866,25 @@
 .planner-task-list-content .tl-priority-cell .tl-priority-text,
 .planner-task-list-content .tl-priority-cell span:last-child,
 .planner-task-list-content td .tl-priority-text {
-  color: #64748b !important;
+  color: var(--ds-text-subtlest, #64748b) !important;
 }
 
 /* Force all status badge text to gray */
 .planner-task-list-content .tl-status-badge .tl-status-text,
 .planner-task-list-content .tl-status-badge span:last-child:not(.tl-status-dot) {
-  color: #475569 !important;
+  color: var(--ds-text-subtle, #475569) !important;
 }
 
 /* Force all workstream text to gray */
 .planner-task-list-content .tl-workstream-cell .tl-workstream-text,
 .planner-task-list-content .tl-workstream-cell span:last-child {
-  color: #64748b !important;
+  color: var(--ds-text-subtlest, #64748b) !important;
 }
 
 /* Force status badge outline style - no filled backgrounds */
 .planner-task-list-content .tl-status-badge {
   background-color: transparent !important;
-  border: 1px solid #e2e8f0 !important;
+  border: 1px solid var(--ds-border, #e2e8f0) !important;
 }
 
 /* Only "in-progress" gets subtle amber tint */
@@ -902,10 +902,10 @@
 
 /* Task ID - ensure no wrapping and gray color */
 .planner-task-list-content td .tl-task-id {
-  color: #64748b !important;
+  color: var(--ds-text-subtlest, #64748b) !important;
   white-space: nowrap !important;
 }
 
 .planner-task-list-content td .tl-task-id:hover {
-  color: #334155 !important;
+  color: var(--ds-text-subtle, #334155) !important;
 }

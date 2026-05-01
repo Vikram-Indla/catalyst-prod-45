@@ -103,7 +103,7 @@ export function CompletionOverview({ kpis }: CompletionOverviewProps) {
           percent={kpis.overall_completion_percent}
           size={60}
           strokeWidth={5}
-          color="#2563eb"
+          color="var(--ds-text-brand, #2563eb)"
         />
         <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
           <button

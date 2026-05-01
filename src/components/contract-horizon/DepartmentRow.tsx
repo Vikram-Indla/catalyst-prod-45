@@ -107,11 +107,11 @@ export function DepartmentRow({ stats, isExpanded, onToggle, onResourceClick }: 
           <div className="space-y-0">
             <div className="flex justify-between items-center py-3 border-b border-border">
               <span className="text-[12px] font-medium text-muted-foreground">Critical (≤60d)</span>
-              <span className="text-[18px] font-extrabold tracking-[-0.02em] text-[#ef4444]">{stats.critical}</span>
+              <span className="text-[18px] font-extrabold tracking-[-0.02em] text-[var(--ds-text-danger,#ef4444)]">{stats.critical}</span>
             </div>
             <div className="flex justify-between items-center py-3 border-b border-border">
               <span className="text-[12px] font-medium text-muted-foreground">Warning (60-90d)</span>
-              <span className="text-[18px] font-extrabold tracking-[-0.02em] text-[#d97706]">{stats.warning}</span>
+              <span className="text-[18px] font-extrabold tracking-[-0.02em] text-[var(--ds-text-warning,#d97706)]">{stats.warning}</span>
             </div>
             <div className="flex justify-between items-center py-3">
               <span className="text-[12px] font-medium text-muted-foreground">Safe (90d+)</span>

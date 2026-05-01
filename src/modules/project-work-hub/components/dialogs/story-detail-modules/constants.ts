@@ -27,7 +27,7 @@ export const STATUS_CATEGORIES: Record<string, string[]> = {
  * `in_uat` it renders the canonical blue, not cyan.
  */
 export const STATUS_STYLES: Record<string, { bg: string; text: string }> = {
-  todo:        { bg: '#DFE1E6', text: '#253858' },
+  todo:        { bg: 'var(--ds-border, #DFE1E6)', text: 'var(--ds-text, #253858)' },
   in_progress: { bg: '#DEEBFF', text: '#0747A6' },
   done:        { bg: '#E3FCEF', text: '#006644' },
   blocked:     { bg: '#FFEBE6', text: '#BF2600' },
@@ -39,13 +39,13 @@ export const STATUS_STYLES: Record<string, { bg: string; text: string }> = {
 };
 
 export const LOZENGE_STYLES: Record<'grey' | 'blue' | 'green', React.CSSProperties> = {
-  grey:  { background: '#DFE1E6', color: '#253858' },
+  grey:  { background: 'var(--ds-border, #DFE1E6)', color: 'var(--ds-text, #253858)' },
   blue:  { background: '#DEEBFF', color: '#0747A6' },
   green: { background: '#E3FCEF', color: '#006644' },
 };
 
 export const LOZENGE: Record<StatusCategory, React.CSSProperties> = {
-  todo:        { background: '#DFE1E6', color: '#253858' },
+  todo:        { background: 'var(--ds-border, #DFE1E6)', color: 'var(--ds-text, #253858)' },
   in_progress: { background: '#DEEBFF', color: '#0747A6' },
   done:        { background: '#E3FCEF', color: '#006644' },
 };
@@ -57,9 +57,9 @@ export const PRIORITY_COLORS: Record<string, string> = {
 export const PRIORITY_STYLES: Record<string, { color: string; symbol: string }> = {
   Highest: { color: '#AE2A19', symbol: '▲▲' },
   High: { color: '#DE350B', symbol: '▲' },
-  Medium: { color: '#D97706', symbol: '—' },
+  Medium: { color: 'var(--ds-text-warning, #D97706)', symbol: '—' },
   Low: { color: '#36B37E', symbol: '▼' },
-  Lowest: { color: '#6B778C', symbol: '▼▼' },
+  Lowest: { color: 'var(--ds-text-subtlest, #6B778C)', symbol: '▼▼' },
 };
 
 export const PRIORITY_ICONS: Record<string, string> = {
@@ -72,8 +72,8 @@ export const TEST_RESULT_STYLES: Record<TestResult, React.CSSProperties> = {
   passed:  { background: '#E3FCEF', color: '#006644' },
   failed:  { background: '#FFEDEB', color: '#BF2600' },
   blocked: { background: '#FFF0B3', color: '#974F0C' },
-  skipped: { background: '#DFE1E6', color: '#253858' },
-  not_run: { background: '#F1F5F9', color: '#6B778C' },
+  skipped: { background: 'var(--ds-border, #DFE1E6)', color: 'var(--ds-text, #253858)' },
+  not_run: { background: 'var(--ds-surface-sunken, #F1F5F9)', color: 'var(--ds-text-subtlest, #6B778C)' },
 };
 
 export const LINK_TYPE_LABELS: Record<string, string> = {
@@ -91,9 +91,9 @@ export const LINK_TYPE_STYLES: Record<string, React.CSSProperties> = {
   'relates to':     { background: '#FFF0B3', color: '#974F0C' },
   relates_to:       { background: '#FFF0B3', color: '#974F0C' },
   duplicates:       { background: '#FFEDEB', color: '#BF2600' },
-  'is duplicated by': { background: '#F1F5F9', color: '#6B778C' },
-  clones:           { background: '#EFF6FF', color: '#1D4ED8' },
-  'is cloned by':   { background: '#EFF6FF', color: '#1D4ED8' },
+  'is duplicated by': { background: 'var(--ds-surface-sunken, #F1F5F9)', color: 'var(--ds-text-subtlest, #6B778C)' },
+  clones:           { background: 'var(--ds-background-selected, #EFF6FF)', color: 'var(--ds-background-brand-bold-hovered, #1D4ED8)' },
+  'is cloned by':   { background: 'var(--ds-background-selected, #EFF6FF)', color: 'var(--ds-background-brand-bold-hovered, #1D4ED8)' },
 };
 
 export const LINK_TYPE_OPTIONS = [

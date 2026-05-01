@@ -28,9 +28,9 @@ interface BoardColumnProps {
 const COLUMN_HEADER_COLORS: Record<WorkflowStatus, string> = {
   backlog: '#c8ccd0',
   design: '#0d9488',
-  ready_for_dev: '#3b82f6',
-  in_development: '#2563eb',
-  qa_testing: '#f59e0b',
+  ready_for_dev: 'var(--ds-text-brand, #3b82f6)',
+  in_development: 'var(--ds-text-brand, #2563eb)',
+  qa_testing: 'var(--ds-text-warning, #f59e0b)',
   uat_testing: '#9ca3af',
   in_beta: '#0d9488',
   ready_for_prod: '#0d9488',

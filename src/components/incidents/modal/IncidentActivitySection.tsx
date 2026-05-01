@@ -30,7 +30,7 @@ const ACTIVITY_TABS: { id: ActivityTab; label: string }[] = [
 ];
 
 function avatarColor(name: string) {
-  const colors = ['bg-[#2563eb]', 'bg-[#5243AA]', 'bg-[#00A3BF]', 'bg-[#FF8800]', 'bg-[#0052CC]'];
+  const colors = ['bg-[var(--ds-text-brand,#2563eb)]', 'bg-[#5243AA]', 'bg-[#00A3BF]', 'bg-[#FF8800]', 'bg-[#0052CC]'];
   return colors[(name?.charCodeAt(0) ?? 0) % colors.length];
 }
 
@@ -161,12 +161,12 @@ export function IncidentActivitySection({ incident }: IncidentActivitySectionPro
     <div className="mt-6">
       {/* Header */}
       <div className="flex items-center justify-between mb-3">
-        <h2 className="text-base font-semibold text-[#172B4D]">Activity</h2>
+        <h2 className="text-base font-semibold text-[var(--ds-text,#172B4D)]">Activity</h2>
         <div className="flex items-center gap-1">
-          <button className="w-8 h-8 flex items-center justify-center rounded hover:bg-[#F4F5F7] text-[#42526E]">
+          <button className="w-8 h-8 flex items-center justify-center rounded hover:bg-[var(--ds-surface-sunken,#F4F5F7)] text-[#42526E]">
             <Filter className="w-4 h-4" />
           </button>
-          <button className="w-8 h-8 flex items-center justify-center rounded hover:bg-[#F4F5F7] text-[#42526E]">
+          <button className="w-8 h-8 flex items-center justify-center rounded hover:bg-[var(--ds-surface-sunken,#F4F5F7)] text-[#42526E]">
             <ArrowUpDown className="w-4 h-4" />
           </button>
         </div>
@@ -181,7 +181,7 @@ export function IncidentActivitySection({ incident }: IncidentActivitySectionPro
               'px-3 py-1.5 rounded text-sm transition-colors border',
               activeTab === tab.id
                 ? 'bg-[#E9F2FF] text-[#0052CC] border-[#0052CC]'
-                : 'text-[#42526E] hover:bg-[#F4F5F7] border-transparent',
+                : 'text-[#42526E] hover:bg-[var(--ds-surface-sunken,#F4F5F7)] border-transparent',
             )}
             onClick={() => setActiveTab(tab.id)}
           >
@@ -192,13 +192,13 @@ export function IncidentActivitySection({ incident }: IncidentActivitySectionPro
 
       {/* Comment Composer */}
       <div className="flex gap-3 mb-5">
-        <div className="w-8 h-8 shrink-0 rounded-full bg-[#2563eb] text-white text-xs font-medium flex items-center justify-center">
+        <div className="w-8 h-8 shrink-0 rounded-full bg-[var(--ds-text-brand,#2563eb)] text-white text-xs font-medium flex items-center justify-center">
           V
         </div>
         <div className="flex-1">
           {!isComposerExpanded ? (
             <div
-              className="border border-[#DFE1E6] rounded p-3 cursor-text hover:border-[#A5ADBA] text-sm text-[#A5ADBA]"
+              className="border border-[var(--ds-border,#DFE1E6)] rounded p-3 cursor-text hover:border-[#A5ADBA] text-sm text-[#A5ADBA]"
               onClick={() => setIsComposerExpanded(true)}
             >
               Add a comment...
@@ -207,7 +207,7 @@ export function IncidentActivitySection({ incident }: IncidentActivitySectionPro
             <div>
               <textarea
                 autoFocus
-                className="w-full border-2 border-[#2563eb] rounded p-3 text-sm text-[#172B4D] outline-none min-h-[80px] resize-none"
+                className="w-full border-2 border-[var(--ds-text-brand,#2563eb)] rounded p-3 text-sm text-[var(--ds-text,#172B4D)] outline-none min-h-[80px] resize-none"
                 placeholder="Add a comment..."
                 value={comment}
                 onChange={e => setComment(e.target.value)}
@@ -221,7 +221,7 @@ export function IncidentActivitySection({ incident }: IncidentActivitySectionPro
                   Save
                 </button>
                 <button
-                  className="px-3 h-8 rounded text-sm text-[#172B4D] hover:bg-[#F4F5F7]"
+                  className="px-3 h-8 rounded text-sm text-[var(--ds-text,#172B4D)] hover:bg-[var(--ds-surface-sunken,#F4F5F7)]"
                   onClick={() => { setIsComposerExpanded(false); setComment(''); }}
                 >
                   Cancel
@@ -236,58 +236,58 @@ export function IncidentActivitySection({ incident }: IncidentActivitySectionPro
       {isLoading ? (
         <div className="space-y-4 animate-pulse">
           {[1, 2, 3].map(i => (
-            <div key={i} className="flex gap-3 py-4 border-t border-[#DFE1E6]">
-              <div className="w-8 h-8 rounded-full bg-[#F4F5F7]" />
+            <div key={i} className="flex gap-3 py-4 border-t border-[var(--ds-border,#DFE1E6)]">
+              <div className="w-8 h-8 rounded-full bg-[var(--ds-surface-sunken,#F4F5F7)]" />
               <div className="flex-1 space-y-2">
-                <div className="h-3 bg-[#F4F5F7] rounded w-1/3" />
-                <div className="h-3 bg-[#F4F5F7] rounded w-2/3" />
+                <div className="h-3 bg-[var(--ds-surface-sunken,#F4F5F7)] rounded w-1/3" />
+                <div className="h-3 bg-[var(--ds-surface-sunken,#F4F5F7)] rounded w-2/3" />
               </div>
             </div>
           ))}
         </div>
       ) : filtered.length === 0 ? (
-        <div className="py-10 text-center text-sm text-[#6B778C]">
+        <div className="py-10 text-center text-sm text-[var(--ds-text-subtlest,#6B778C)]">
           No activity yet.
         </div>
       ) : (
         <div className="space-y-0">
           {filtered.map(entry => (
-            <div key={entry.id} className="flex gap-3 py-4 border-t border-[#DFE1E6] first:border-t-0">
+            <div key={entry.id} className="flex gap-3 py-4 border-t border-[var(--ds-border,#DFE1E6)] first:border-t-0">
               <div className={cn('w-8 h-8 shrink-0 rounded-full text-white text-xs font-medium flex items-center justify-center', avatarColor(entry.author_name ?? ''))}>
                 {initials(entry.author_name)}
               </div>
               <div className="flex-1">
                 <div className="flex flex-wrap items-baseline gap-1.5 mb-0.5">
-                  <span className="text-sm font-semibold text-[#172B4D]">{entry.author_name ?? 'System'}</span>
+                  <span className="text-sm font-semibold text-[var(--ds-text,#172B4D)]">{entry.author_name ?? 'System'}</span>
                   {entry.type === 'history' && entry.field_name && (
-                    <span className="text-sm text-[#172B4D]">
+                    <span className="text-sm text-[var(--ds-text,#172B4D)]">
                       changed <span className="font-medium">{formatFieldName(entry.field_name)}</span>
                     </span>
                   )}
                   {entry.type === 'comment' && (
-                    <span className="text-sm text-[#172B4D]">added a comment</span>
+                    <span className="text-sm text-[var(--ds-text,#172B4D)]">added a comment</span>
                   )}
                 </div>
-                <div className="text-[11px] text-[#6B778C] mb-1.5">
+                <div className="text-[11px] text-[var(--ds-text-subtlest,#6B778C)] mb-1.5">
                   {formatDistanceToNow(new Date(entry.occurred_at), { addSuffix: true })}
                 </div>
                 {entry.type === 'history' && (entry.old_value || entry.new_value) && (
                   <div className="flex items-center gap-2 mt-1">
                     {entry.old_value && (
-                      <span className="text-[11px] font-medium px-2 py-0.5 rounded border border-[#DFE1E6] bg-white text-[#172B4D]">
+                      <span className="text-[11px] font-medium px-2 py-0.5 rounded border border-[var(--ds-border,#DFE1E6)] bg-white text-[var(--ds-text,#172B4D)]">
                         {entry.old_value}
                       </span>
                     )}
                     {entry.old_value && entry.new_value && <span className="text-[#A5ADBA]">→</span>}
                     {entry.new_value && (
-                      <span className="text-[11px] font-medium px-2 py-0.5 rounded border border-[#DFE1E6] bg-white text-[#172B4D]">
+                      <span className="text-[11px] font-medium px-2 py-0.5 rounded border border-[var(--ds-border,#DFE1E6)] bg-white text-[var(--ds-text,#172B4D)]">
                         {entry.new_value}
                       </span>
                     )}
                   </div>
                 )}
                 {entry.type === 'comment' && entry.content && (
-                  <div className="text-sm text-[#172B4D] leading-5 mt-1 whitespace-pre-wrap">
+                  <div className="text-sm text-[var(--ds-text,#172B4D)] leading-5 mt-1 whitespace-pre-wrap">
                     {entry.content}
                   </div>
                 )}

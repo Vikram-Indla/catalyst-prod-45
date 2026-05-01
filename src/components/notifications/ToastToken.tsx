@@ -30,7 +30,7 @@ export default function ToastToken({ toast: t, onDismiss, onPause, onResume }: T
   const [hovered, setHovered] = useState(false);
   const n = t.notification;
   const isDueDate = DUE_DATE_TYPES.some(dt => dt === n.notification_type);
-  const accentColor = isDueDate ? '#D97706' : '#2563EB';
+  const accentColor = isDueDate ? 'var(--ds-text-warning, #D97706)' : 'var(--ds-text-brand, #2563EB)';
   const isSystemAssign = !n.actor_user_id && (n.notification_type === 'assigned' || n.notification_type === 'status_changed');
   const actorName = isSystemAssign ? 'You were assigned to' : (n.actor?.full_name || (n.metadata as any)?.actor_display_name || 'Unknown');
   const actorId = n.actor?.id || n.actor_user_id || 'system';
@@ -95,7 +95,7 @@ export default function ToastToken({ toast: t, onDismiss, onPause, onResume }: T
             }}>
               {n.entity_title}
             </span>
-            <span style={{ fontFamily: 'var(--cp-font-body)', fontSize: 12, color: '#2563EB', fontWeight: 500, flexShrink: 0 }}>
+            <span style={{ fontFamily: 'var(--cp-font-body)', fontSize: 12, color: 'var(--ds-text-brand, #2563EB)', fontWeight: 500, flexShrink: 0 }}>
               {n.entity_key}
             </span>
           </div>
@@ -111,7 +111,7 @@ export default function ToastToken({ toast: t, onDismiss, onPause, onResume }: T
                     padding: '4px 10px', borderRadius: 4,
                     border: '0.5px solid rgba(15,23,42,.12)', background: 'transparent',
                     cursor: 'pointer', fontFamily: 'var(--cp-font-body)', fontSize: 12, fontWeight: 500,
-                    color: '#475569',
+                    color: 'var(--ds-text-subtle, #475569)',
                     minHeight: 44, // responsive: min tap target
                   }}
                 >
@@ -127,7 +127,7 @@ export default function ToastToken({ toast: t, onDismiss, onPause, onResume }: T
           onClick={(e) => { e.stopPropagation(); onDismiss(t.id); }}
           style={{
             background: 'none', border: 'none', cursor: 'pointer', padding: 2,
-            color: '#94A3B8', flexShrink: 0, borderRadius: 4,
+            color: 'var(--ds-text-subtlest, #94A3B8)', flexShrink: 0, borderRadius: 4,
             minWidth: 44, minHeight: 44, // responsive: min tap target
             display: 'flex', alignItems: 'center', justifyContent: 'center',
           }}

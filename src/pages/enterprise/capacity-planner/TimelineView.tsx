@@ -391,7 +391,7 @@ export function TimelineView({ resources, period, groupBy, groupedByAssignment, 
             >
               {isOver && (
                 <div className="absolute top-1 right-1 z-10">
-                  <AlertTriangle className="w-3.5 h-3.5 text-[#2563eb]" />
+                  <AlertTriangle className="w-3.5 h-3.5 text-[var(--ds-text-brand,#2563eb)]" />
                 </div>
               )}
 

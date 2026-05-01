@@ -5,7 +5,7 @@ import { ExecutionMetrics } from '@/types/reports';
 
 interface ResultsPieChartProps { metrics: ExecutionMetrics | undefined; isLoading?: boolean; }
 
-const COLORS = { passed: '#10b981', failed: '#ef4444', blocked: '#f59e0b', skipped: '#6b7280' };
+const COLORS = { passed: '#10b981', failed: 'var(--ds-text-danger, #ef4444)', blocked: 'var(--ds-text-warning, #f59e0b)', skipped: '#6b7280' };
 
 export function ResultsPieChart({ metrics, isLoading }: ResultsPieChartProps) {
   if (isLoading) return (

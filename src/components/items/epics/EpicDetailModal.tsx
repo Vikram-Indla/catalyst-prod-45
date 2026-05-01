@@ -43,10 +43,10 @@ interface EpicDetailModalProps {
 
 /* ═══ State mapping ═══ */
 const EPIC_STATE_DISPLAY: Record<string, { label: string; bg: string; text: string }> = {
-  not_started: { label: 'NOT STARTED', bg: '#DFE1E6', text: '#253858' },
-  funnel: { label: 'FUNNEL', bg: '#DFE1E6', text: '#253858' },
+  not_started: { label: 'NOT STARTED', bg: 'var(--ds-border, #DFE1E6)', text: 'var(--ds-text, #253858)' },
+  funnel: { label: 'FUNNEL', bg: 'var(--ds-border, #DFE1E6)', text: 'var(--ds-text, #253858)' },
   analyzing: { label: 'ANALYZING', bg: '#DEEBFF', text: '#0747A6' },
-  backlog: { label: 'BACKLOG', bg: '#DFE1E6', text: '#253858' },
+  backlog: { label: 'BACKLOG', bg: 'var(--ds-border, #DFE1E6)', text: 'var(--ds-text, #253858)' },
   implementing: { label: 'IMPLEMENTING', bg: '#DEEBFF', text: '#0747A6' },
   in_progress: { label: 'IN PROGRESS', bg: '#DEEBFF', text: '#0747A6' },
   validating: { label: 'VALIDATING', bg: '#DEEBFF', text: '#0747A6' },
@@ -61,13 +61,13 @@ const HEALTH_DISPLAY: Record<string, { label: string; color: string; bg: string 
   off_track: { label: 'Off Track', color: '#AE2A19', bg: '#FFECEC' },
 };
 
-const DL: React.CSSProperties = { width: 110, flexShrink: 0, fontSize: 12, color: '#6B778C', paddingTop: 5 };
-const DV: React.CSSProperties = { flex: 1, fontSize: 13, color: '#172B4D' };
+const DL: React.CSSProperties = { width: 110, flexShrink: 0, fontSize: 12, color: 'var(--ds-text-subtlest, #6B778C)', paddingTop: 5 };
+const DV: React.CSSProperties = { flex: 1, fontSize: 13, color: 'var(--ds-text, #172B4D)' };
 const DR: React.CSSProperties = { display: 'flex', alignItems: 'flex-start', marginBottom: 14, minHeight: 28 };
 
 const menuItemStyle: React.CSSProperties = {
   width: '100%', padding: '8px 16px', border: 'none', background: 'transparent',
-  fontSize: 14, color: '#172B4D', cursor: 'pointer', textAlign: 'left', fontFamily: 'inherit',
+  fontSize: 14, color: 'var(--ds-text, #172B4D)', cursor: 'pointer', textAlign: 'left', fontFamily: 'inherit',
 };
 
 export function EpicDetailModal({ isOpen, onClose, epicId, onEpicChange }: EpicDetailModalProps) {
@@ -214,7 +214,7 @@ export function EpicDetailModal({ isOpen, onClose, epicId, onEpicChange }: EpicD
   if (!isOpen) return null;
 
   const stateKey = (epic?.state ?? epic?.status ?? 'not_started') as string;
-  const stateDisplay = EPIC_STATE_DISPLAY[stateKey] ?? { label: stateKey?.toUpperCase() ?? '—', bg: '#DFE1E6', text: '#253858' };
+  const stateDisplay = EPIC_STATE_DISPLAY[stateKey] ?? { label: stateKey?.toUpperCase() ?? '—', bg: 'var(--ds-border, #DFE1E6)', text: 'var(--ds-text, #253858)' };
   const healthDisplay = HEALTH_DISPLAY[(epic?.health ?? '') as string];
 
   return (
@@ -234,7 +234,7 @@ export function EpicDetailModal({ isOpen, onClose, epicId, onEpicChange }: EpicD
           data-edm-scope
           style={{
             width: 1100, maxWidth: '95vw', minHeight: 600, maxHeight: 'calc(100vh - 80px)',
-            background: '#FFFFFF', borderRadius: 8,
+            background: 'var(--ds-surface, #FFFFFF)', borderRadius: 8,
             display: 'flex', flexDirection: 'column',
             boxShadow: '0 8px 32px rgba(9, 30, 66, 0.25)',
             overflow: 'hidden', animation: 'edm-card-in 250ms ease-out',
@@ -264,22 +264,22 @@ export function EpicDetailModal({ isOpen, onClose, epicId, onEpicChange }: EpicD
                 borderRadius: 4, color: '#42526E', fontSize: 13, fontWeight: 500, display: 'flex', alignItems: 'center', gap: 6,
                 transition: 'background 0.15s', fontFamily: 'var(--cp-font-body)',
               }}
-                onMouseEnter={e => (e.currentTarget.style.background = '#F4F5F7')}
+                onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-surface-sunken, #F4F5F7)')}
                 onMouseLeave={e => (e.currentTarget.style.background = 'none')}
               ><Share2 size={16} /> <span>Share</span></button>
               <div ref={dotsMenuRef} style={{ position: 'relative' }}>
                 <button onClick={() => setShowDotsMenu(!showDotsMenu)} style={{
-                  background: showDotsMenu ? '#F4F5F7' : 'none', border: 'none', cursor: 'pointer', padding: '6px 8px',
+                  background: showDotsMenu ? 'var(--ds-surface-sunken, #F4F5F7)' : 'none', border: 'none', cursor: 'pointer', padding: '6px 8px',
                   borderRadius: 4, color: '#42526E', display: 'flex', alignItems: 'center',
                   transition: 'background 0.15s',
                 }}
-                  onMouseEnter={e => (e.currentTarget.style.background = '#F4F5F7')}
+                  onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-surface-sunken, #F4F5F7)')}
                   onMouseLeave={e => { if (!showDotsMenu) e.currentTarget.style.background = 'none'; }}
                 ><MoreHorizontal size={18} /></button>
                 {showDotsMenu && (
-                  <div style={{ position: 'absolute', right: 0, top: 36, background: '#FFF', border: '1px solid #DFE1E6', borderRadius: 6, boxShadow: '0 4px 16px rgba(9,30,66,0.18)', padding: '6px 0', zIndex: 50, minWidth: 200, animation: 'edm-slide-down 0.15s ease-out' }}>
+                  <div style={{ position: 'absolute', right: 0, top: 36, background: 'var(--ds-surface, #FFF)', border: '1px solid #DFE1E6', borderRadius: 6, boxShadow: '0 4px 16px rgba(9,30,66,0.18)', padding: '6px 0', zIndex: 50, minWidth: 200, animation: 'edm-slide-down 0.15s ease-out' }}>
                     <button onClick={() => { setShowDotsMenu(false); duplicateMutation.mutate(); }} style={menuItemStyle}
-                      onMouseEnter={e => (e.currentTarget.style.background = '#F4F5F7')}
+                      onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-surface-sunken, #F4F5F7)')}
                       onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
                     ><Copy size={14} style={{ marginRight: 8, display: 'inline' }} /> Duplicate epic</button>
                     <div style={{ height: 1, background: '#EBECF0', margin: '6px 0' }} />
@@ -330,20 +330,20 @@ export function EpicDetailModal({ isOpen, onClose, epicId, onEpicChange }: EpicD
                     }}
                     style={{
                       fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-                      fontSize: 22, fontWeight: 700, color: '#172B4D', lineHeight: 1.3,
+                      fontSize: 22, fontWeight: 700, color: 'var(--ds-text, #172B4D)', lineHeight: 1.3,
                       margin: '0 0 12px', outline: 'none', cursor: 'text', borderRadius: 3,
                       padding: '4px 6px', wordBreak: 'break-word', transition: 'background 0.15s, box-shadow 0.15s',
-                      background: titleFocused ? '#FFFFFF' : 'transparent',
+                      background: titleFocused ? 'var(--ds-surface, #FFFFFF)' : 'transparent',
                       boxShadow: titleFocused ? '0 0 0 2px #4C9AFF' : 'none',
                     }}
-                    onMouseEnter={e => { if (!titleFocused) e.currentTarget.style.background = '#F4F5F7'; }}
+                    onMouseEnter={e => { if (!titleFocused) e.currentTarget.style.background = 'var(--ds-surface-sunken, #F4F5F7)'; }}
                     onMouseLeave={e => { if (!titleFocused) e.currentTarget.style.background = 'transparent'; }}
                   >{epic?.name ?? '—'}</h1>
 
                   {/* KEY DETAILS — collapsible */}
                   <div style={{ marginBottom: 24 }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 14 }}>
-                      <span style={{ fontSize: 13, fontWeight: 700, color: '#172B4D' }}>Key details</span>
+                      <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--ds-text, #172B4D)' }}>Key details</span>
                     </div>
                     <div>
                       <div style={DR}>
@@ -382,7 +382,7 @@ export function EpicDetailModal({ isOpen, onClose, epicId, onEpicChange }: EpicD
 
                   {/* DESCRIPTION */}
                   <div style={{ marginBottom: 24 }}>
-                    <div style={{ fontSize: 13, fontWeight: 700, color: '#172B4D', marginBottom: 10 }}>Description</div>
+                    <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--ds-text, #172B4D)', marginBottom: 10 }}>Description</div>
                     <div
                       contentEditable suppressContentEditableWarning
                       onBlur={e => {
@@ -391,12 +391,12 @@ export function EpicDetailModal({ isOpen, onClose, epicId, onEpicChange }: EpicD
                       }}
                       style={{
                         minHeight: 120, padding: '12px 14px', border: '1px solid #DFE1E6',
-                        borderRadius: 4, fontSize: 14, color: '#172B4D', lineHeight: 1.7,
+                        borderRadius: 4, fontSize: 14, color: 'var(--ds-text, #172B4D)', lineHeight: 1.7,
                         outline: 'none', whiteSpace: 'pre-wrap', wordBreak: 'break-word',
                         transition: 'border-color 0.15s, box-shadow 0.15s',
                       }}
                       onFocus={e => { e.currentTarget.style.borderColor = '#4C9AFF'; e.currentTarget.style.boxShadow = '0 0 0 1px #4C9AFF'; }}
-                      onBlurCapture={e => { e.currentTarget.style.borderColor = '#DFE1E6'; e.currentTarget.style.boxShadow = 'none'; }}
+                      onBlurCapture={e => { e.currentTarget.style.borderColor = 'var(--ds-border, #DFE1E6)'; e.currentTarget.style.boxShadow = 'none'; }}
                     >
                       {epic?.description || ''}
                     </div>
@@ -405,13 +405,13 @@ export function EpicDetailModal({ isOpen, onClose, epicId, onEpicChange }: EpicD
                   {/* ACTIVITY SECTION */}
                   <div style={{ borderTop: '1px solid #EBECF0', paddingTop: 20 }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 20 }}>
-                      <span style={{ fontSize: 16, fontWeight: 700, color: '#172B4D' }}>Activity</span>
-                      <div style={{ display: 'flex', background: '#F4F5F7', borderRadius: 4, overflow: 'hidden' }}>
+                      <span style={{ fontSize: 16, fontWeight: 700, color: 'var(--ds-text, #172B4D)' }}>Activity</span>
+                      <div style={{ display: 'flex', background: 'var(--ds-surface-sunken, #F4F5F7)', borderRadius: 4, overflow: 'hidden' }}>
                         {(['details', 'comments', 'history'] as const).map(tab => (
                           <button key={tab} onClick={() => setActiveTab(tab)} style={{
                             padding: '5px 14px', fontSize: 13, fontWeight: activeTab === tab ? 700 : 400,
-                            color: activeTab === tab ? '#172B4D' : '#5E6C84', border: 'none', cursor: 'pointer',
-                            background: activeTab === tab ? '#FFFFFF' : 'transparent',
+                            color: activeTab === tab ? 'var(--ds-text, #172B4D)' : '#5E6C84', border: 'none', cursor: 'pointer',
+                            background: activeTab === tab ? 'var(--ds-surface, #FFFFFF)' : 'transparent',
                             borderRadius: activeTab === tab ? 4 : 0,
                             boxShadow: activeTab === tab ? '0 1px 3px rgba(9,30,66,0.1)' : 'none',
                             fontFamily: 'inherit', transition: 'all 0.15s',
@@ -469,16 +469,16 @@ export function EpicDetailModal({ isOpen, onClose, epicId, onEpicChange }: EpicD
                 display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
                 transition: 'background 0.15s',
               }}
-              onMouseEnter={e => (e.currentTarget.style.background = '#F4F5F7')}
+              onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-surface-sunken, #F4F5F7)')}
               onMouseLeave={e => { if (!isDraggingRef.current) e.currentTarget.style.background = 'transparent'; }}
             >
-              <div style={{ width: 1.5, height: 32, borderRadius: 1, background: '#DFE1E6' }} />
+              <div style={{ width: 1.5, height: 32, borderRadius: 1, background: 'var(--ds-border, #DFE1E6)' }} />
             </div>
 
             {/* RIGHT PANEL — Key Details sidebar */}
             <div style={{
               width: rightPanelWidth, minWidth: 220, maxWidth: 480,
-              background: '#FFFFFF', overflowY: 'auto',
+              background: 'var(--ds-surface, #FFFFFF)', overflowY: 'auto',
               display: 'flex', flexDirection: 'column', padding: '16px 16px 32px 16px',
             }}>
               {/* Status pill */}
@@ -491,7 +491,7 @@ export function EpicDetailModal({ isOpen, onClose, epicId, onEpicChange }: EpicD
               </div>
 
               {/* Detail rows */}
-              <div style={{ fontSize: 11, fontWeight: 700, color: '#6B778C', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 12 }}>
+              <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--ds-text-subtlest, #6B778C)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 12 }}>
                 Details
               </div>
 
@@ -504,11 +504,11 @@ export function EpicDetailModal({ isOpen, onClose, epicId, onEpicChange }: EpicD
                       {ownerProfile.avatar_url ? (
                         <img src={ownerProfile.avatar_url} alt="" style={{ width: 24, height: 24, borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }} />
                       ) : (
-                        <div style={{ width: 24, height: 24, borderRadius: '50%', background: getAvatarColor(ownerProfile.id), color: '#FFF', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontWeight: 700, flexShrink: 0 }}>
+                        <div style={{ width: 24, height: 24, borderRadius: '50%', background: getAvatarColor(ownerProfile.id), color: 'var(--ds-surface, #FFF)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontWeight: 700, flexShrink: 0 }}>
                           {getInitials(ownerProfile.full_name)}
                         </div>
                       )}
-                      <span style={{ fontSize: 13, color: '#172B4D' }}>{ownerProfile.full_name}</span>
+                      <span style={{ fontSize: 13, color: 'var(--ds-text, #172B4D)' }}>{ownerProfile.full_name}</span>
                     </>
                   ) : (
                     <span style={{ color: '#97A0AF' }}>Unassigned</span>
@@ -557,7 +557,7 @@ export function EpicDetailModal({ isOpen, onClose, epicId, onEpicChange }: EpicD
               </div>
 
               {/* Dates */}
-              <div style={{ fontSize: 11, fontWeight: 700, color: '#6B778C', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 12, marginTop: 8 }}>
+              <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--ds-text-subtlest, #6B778C)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 12, marginTop: 8 }}>
                 Dates
               </div>
 
@@ -575,16 +575,16 @@ export function EpicDetailModal({ isOpen, onClose, epicId, onEpicChange }: EpicD
               </div>
 
               {/* Timestamps */}
-              <div style={{ fontSize: 11, fontWeight: 700, color: '#6B778C', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 12, marginTop: 8 }}>
+              <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--ds-text-subtlest, #6B778C)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 12, marginTop: 8 }}>
                 Metadata
               </div>
               <div style={DR}>
                 <span style={DL}>Created</span>
-                <span style={{ ...DV, fontSize: 12, color: '#6B778C' }}>{fmtDate(epic?.created_at)}</span>
+                <span style={{ ...DV, fontSize: 12, color: 'var(--ds-text-subtlest, #6B778C)' }}>{fmtDate(epic?.created_at)}</span>
               </div>
               <div style={DR}>
                 <span style={DL}>Updated</span>
-                <span style={{ ...DV, fontSize: 12, color: '#6B778C' }}>{fmtDate(epic?.updated_at)}</span>
+                <span style={{ ...DV, fontSize: 12, color: 'var(--ds-text-subtlest, #6B778C)' }}>{fmtDate(epic?.updated_at)}</span>
               </div>
             </div>
           </div>
@@ -599,21 +599,21 @@ export function EpicDetailModal({ isOpen, onClose, epicId, onEpicChange }: EpicD
           background: 'rgba(9, 30, 66, 0.4)',
         }} onClick={() => setShowConfirmDelete(false)}>
           <div style={{
-            width: 480, background: '#FFFFFF', borderRadius: 8, padding: 24,
+            width: 480, background: 'var(--ds-surface, #FFFFFF)', borderRadius: 8, padding: 24,
             boxShadow: '0 8px 32px rgba(9,30,66,0.25)',
           }} onClick={e => e.stopPropagation()}>
-            <h3 style={{ fontSize: 16, fontWeight: 700, color: '#172B4D', marginBottom: 8, fontFamily: 'var(--cp-font-heading)' }}>Delete epic?</h3>
+            <h3 style={{ fontSize: 16, fontWeight: 700, color: 'var(--ds-text, #172B4D)', marginBottom: 8, fontFamily: 'var(--cp-font-heading)' }}>Delete epic?</h3>
             <p style={{ fontSize: 14, color: '#42526E', marginBottom: 20, lineHeight: 1.5 }}>
               This will soft-delete <strong>{epic?.epic_key}</strong> — "{epic?.name}". This action can be undone by an administrator.
             </p>
             <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8 }}>
               <button onClick={() => setShowConfirmDelete(false)} style={{
                 padding: '8px 16px', borderRadius: 4, border: '1px solid #DFE1E6',
-                background: '#FFFFFF', fontSize: 14, fontWeight: 500, cursor: 'pointer', color: '#42526E',
+                background: 'var(--ds-surface, #FFFFFF)', fontSize: 14, fontWeight: 500, cursor: 'pointer', color: '#42526E',
               }}>Cancel</button>
               <button onClick={() => { deleteMutation.mutate(); setShowConfirmDelete(false); }} style={{
                 padding: '8px 16px', borderRadius: 4, border: 'none',
-                background: '#DE350B', color: '#FFFFFF', fontSize: 14, fontWeight: 600, cursor: 'pointer',
+                background: '#DE350B', color: 'var(--ds-surface, #FFFFFF)', fontSize: 14, fontWeight: 600, cursor: 'pointer',
               }}>Delete</button>
             </div>
           </div>

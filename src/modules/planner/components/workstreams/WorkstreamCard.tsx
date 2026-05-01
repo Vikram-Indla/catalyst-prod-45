@@ -17,28 +17,28 @@ interface WorkstreamCardProps {
 }
 
 const COLORS = {
-  textPrimary: '#0f172a',
-  textSecondary: '#334155',
-  textMuted: '#64748b',
-  textLight: '#94a3b8',
+  textPrimary: 'var(--ds-text, #0f172a)',
+  textSecondary: 'var(--ds-text-subtle, #334155)',
+  textMuted: 'var(--ds-text-subtlest, #64748b)',
+  textLight: 'var(--ds-text-subtlest, #94a3b8)',
   
-  surfaceCard: '#ffffff',
-  surfaceHover: '#f8fafc',
+  surfaceCard: 'var(--ds-surface, #ffffff)',
+  surfaceHover: 'var(--ds-surface-sunken, #f8fafc)',
   
-  borderLight: '#e2e8f0',
-  borderDefault: '#cbd5e1',
+  borderLight: 'var(--ds-border, #e2e8f0)',
+  borderDefault: 'var(--ds-text-disabled, #cbd5e1)',
   
-  accent: '#2563eb',
-  danger: '#dc2626',
-  warning: '#f59e0b',
-  success: '#16a34a'
+  accent: 'var(--ds-text-brand, #2563eb)',
+  danger: 'var(--ds-text-danger, #dc2626)',
+  warning: 'var(--ds-text-warning, #f59e0b)',
+  success: 'var(--ds-text-success, #16a34a)'
 };
 
 const HEALTH_CONFIG: Record<string, { color: string; bgColor: string; borderColor: string; label: string }> = {
   'healthy': { color: COLORS.success, bgColor: '#f0fdf4', borderColor: '#bbf7d0', label: 'On Track' },
   'at-risk': { color: COLORS.warning, bgColor: '#fffbeb', borderColor: '#fde68a', label: 'At Risk' },
-  'critical': { color: COLORS.danger, bgColor: '#fef2f2', borderColor: '#fecaca', label: 'Critical' },
-  'locked': { color: COLORS.textMuted, bgColor: '#f1f5f9', borderColor: '#e2e8f0', label: 'Locked' }
+  'critical': { color: COLORS.danger, bgColor: 'var(--ds-background-danger, #fef2f2)', borderColor: '#fecaca', label: 'Critical' },
+  'locked': { color: COLORS.textMuted, bgColor: 'var(--ds-surface-sunken, #f1f5f9)', borderColor: 'var(--ds-border, #e2e8f0)', label: 'Locked' }
 };
 
 export const WorkstreamCard: React.FC<WorkstreamCardProps> = ({
@@ -333,12 +333,12 @@ const MenuOption: React.FC<{
         width: '100%',
         padding: '10px 12px',
         backgroundColor: isHovered && !disabled
-          ? (danger ? '#fef2f2' : '#f1f5f9') 
+          ? (danger ? 'var(--ds-background-danger, #fef2f2)' : 'var(--ds-surface-sunken, #f1f5f9)') 
           : 'transparent',
         border: 'none',
         borderRadius: '6px',
         fontSize: '14px',
-        color: disabled ? '#94a3b8' : (danger ? '#dc2626' : '#334155'),
+        color: disabled ? 'var(--ds-text-subtlest, #94a3b8)' : (danger ? 'var(--ds-text-danger, #dc2626)' : 'var(--ds-text-subtle, #334155)'),
         cursor: disabled ? 'not-allowed' : 'pointer',
         fontFamily: 'inherit',
         textAlign: 'left',

@@ -38,7 +38,7 @@ export function CalendarHeader({
   const views: CalendarView[] = ['month', 'week', 'day'];
 
   return (
-    <div className="flex items-center justify-between px-6 py-4 border-b border-[#e2e8f0] bg-white">
+    <div className="flex items-center justify-between px-6 py-4 border-b border-[var(--ds-border,#e2e8f0)] bg-white">
       {/* Left: Navigation */}
       <div className="flex items-center gap-3">
         <div className="flex items-center gap-1">
@@ -46,39 +46,39 @@ export function CalendarHeader({
             variant="outline"
             size="icon"
             onClick={() => onNavigate('prev')}
-            className="h-8 w-8 border-[#e2e8f0]"
+            className="h-8 w-8 border-[var(--ds-border,#e2e8f0)]"
           >
-            <ChevronLeft className="h-4 w-4 text-[#475569]" />
+            <ChevronLeft className="h-4 w-4 text-[var(--ds-text-subtle,#475569)]" />
           </Button>
           <Button
             variant="outline"
             size="icon"
             onClick={() => onNavigate('next')}
-            className="h-8 w-8 border-[#e2e8f0]"
+            className="h-8 w-8 border-[var(--ds-border,#e2e8f0)]"
           >
-            <ChevronRight className="h-4 w-4 text-[#475569]" />
+            <ChevronRight className="h-4 w-4 text-[var(--ds-text-subtle,#475569)]" />
           </Button>
         </div>
         <Button
           variant="ghost"
           onClick={() => onNavigate('today')}
-          className="h-8 px-3 bg-[#dbeafe] text-[#2563eb] hover:bg-[#2563eb] hover:text-white"
+          className="h-8 px-3 bg-[#dbeafe] text-[var(--ds-text-brand,#2563eb)] hover:bg-[var(--ds-text-brand,#2563eb)] hover:text-white"
         >
           Today
         </Button>
-        <h2 className="text-lg font-semibold text-[#0f172a]">{getDateDisplay()}</h2>
+        <h2 className="text-lg font-semibold text-[var(--ds-text,#0f172a)]">{getDateDisplay()}</h2>
       </div>
 
       {/* Center: Cycle info */}
       <div className="text-center">
-        <div className="font-medium text-[#0f172a]">{cycleName}</div>
-        <div className="text-sm text-[#64748b]">
+        <div className="font-medium text-[var(--ds-text,#0f172a)]">{cycleName}</div>
+        <div className="text-sm text-[var(--ds-text-subtlest,#64748b)]">
           {format(cycleRange.start, 'MMM d')} - {format(cycleRange.end, 'MMM d, yyyy')}
         </div>
       </div>
 
       {/* Right: View toggle */}
-      <div className="flex items-center gap-1 p-1 bg-[#f1f5f9] rounded-lg">
+      <div className="flex items-center gap-1 p-1 bg-[var(--ds-surface-sunken,#f1f5f9)] rounded-lg">
         {views.map((v) => (
           <Button
             key={v}
@@ -87,8 +87,8 @@ export function CalendarHeader({
             onClick={() => onViewChange(v)}
             className={`h-8 px-4 capitalize ${
               view === v
-                ? 'bg-[#2563eb] text-white hover:bg-[#1d4ed8]'
-                : 'text-[#475569] hover:bg-white'
+                ? 'bg-[var(--ds-text-brand,#2563eb)] text-white hover:bg-[var(--ds-background-brand-bold-hovered,#1d4ed8)]'
+                : 'text-[var(--ds-text-subtle,#475569)] hover:bg-white'
             }`}
           >
             {v}

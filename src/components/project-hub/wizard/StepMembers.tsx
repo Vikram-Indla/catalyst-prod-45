@@ -58,7 +58,7 @@ export function StepMembers({ members, onChange }: StepMembersProps) {
     onChange(members.map(m => m.userId === userId ? { ...m, role } : m));
   };
 
-  const AVATAR_COLORS = ['#7C3AED', '#2563EB', '#0D9488', '#D97706', '#DC2626'];
+  const AVATAR_COLORS = ['#7C3AED', 'var(--ds-text-brand, #2563EB)', '#0D9488', 'var(--ds-text-warning, #D97706)', 'var(--ds-text-danger, #DC2626)'];
 
   return (
     <div className="space-y-4">
@@ -106,7 +106,7 @@ export function StepMembers({ members, onChange }: StepMembersProps) {
               <button
                 key={user.id}
                 onClick={() => addMember(user)}
-                className="w-full flex items-center gap-3 px-3 py-2 text-left transition-colors hover:bg-[#F8FAFC]"
+                className="w-full flex items-center gap-3 px-3 py-2 text-left transition-colors hover:bg-[var(--ds-surface-sunken,#F8FAFC)]"
                 style={{ border: 'none', background: 'transparent', cursor: 'pointer' }}
               >
                 <div
@@ -179,7 +179,7 @@ export function StepMembers({ members, onChange }: StepMembersProps) {
               </select>
               <button
                 onClick={() => removeMember(member.userId)}
-                className="flex items-center justify-center rounded transition-colors hover:bg-[var(--bd-default, #E2E8F0)]"
+                className="flex items-center justify-center rounded transition-colors hover:bg-[var(--bd-default,#E2E8F0)]"
                 style={{ width: 24, height: 24, border: 'none', background: 'transparent', cursor: 'pointer' }}
               >
                 <X size={14} color="var(--fg-4)" />

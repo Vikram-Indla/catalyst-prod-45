@@ -69,8 +69,8 @@ export default function AllReleasesPage() {
 
   const accentColor = (status: string) => {
     const s = mapStatus(status);
-    if (s === 'in_progress') return '#2563EB';
-    if (s === 'released') return '#16A34A';
+    if (s === 'in_progress') return 'var(--ds-text-brand, #2563EB)';
+    if (s === 'released') return 'var(--ds-text-success, #16A34A)';
     if (s === 'planning') return 'var(--ds-text-inverse, #FFFFFF)';
     return 'rgba(15,23,42,0.12)';
   };
@@ -105,7 +105,7 @@ export default function AllReleasesPage() {
     <div style={{ background: 'var(--cp-bg-elevated, #FFFFFF)', minHeight: '100%', padding: '24px' }}>
       <div className="flex items-center justify-between mb-5">
         <div>
-          <h1 className="text-[22px] font-extrabold" style={{ fontFamily: RH.fontDisplay, color: isDark ? '#EDEDED' : RH.ink1 }}>All Releases</h1>
+          <h1 className="text-[22px] font-extrabold" style={{ fontFamily: RH.fontDisplay, color: isDark ? 'var(--ds-text, #EDEDED)' : RH.ink1 }}>All Releases</h1>
           <p className="text-[13px]" style={{ fontFamily: RH.fontBody, color: 'var(--cp-text-tertiary, #64748B)' }}>Manage and track all releases</p>
         </div>
         <div className="flex items-center gap-2">
@@ -115,7 +115,7 @@ export default function AllReleasesPage() {
             <Download size={14} /> Import from Jira
           </button>
           <button onClick={() => setShowCreate(true)}
-            className="h-9 px-4 rounded-md bg-[#2563EB] hover:bg-[#1D4ED8] text-white text-[13px] font-semibold flex items-center gap-1.5 active:scale-[0.98] transition-colors">
+            className="h-9 px-4 rounded-md bg-[var(--ds-text-brand,#2563EB)] hover:bg-[var(--ds-background-brand-bold-hovered,#1D4ED8)] text-white text-[13px] font-semibold flex items-center gap-1.5 active:scale-[0.98] transition-colors">
             <Plus size={14} /> New Release
           </button>
         </div>
@@ -133,7 +133,7 @@ export default function AllReleasesPage() {
           gap: '10px',
           marginBottom: '12px',
         }}>
-          <AlertTriangle size={16} color="#D97706" />
+          <AlertTriangle size={16} color="var(--ds-text-warning, #D97706)" />
           <span style={{ fontSize: '13px', color: '#92400E' }}>
             {freezeConflicts.length === 1
               ? `"${freezeConflicts[0].name}" targets a date within a freeze window.`
@@ -158,7 +158,7 @@ export default function AllReleasesPage() {
           <button key={s.key} onClick={() => setFilter(s.key)}
             className="h-8 px-3 rounded-md text-[12px] font-semibold flex items-center gap-1.5 border transition-colors"
             style={filter === s.key
-              ? { borderColor: '#2563EB', background: 'var(--cp-primary-light, #EFF6FF)', color: '#2563EB' }
+              ? { borderColor: 'var(--ds-text-brand, #2563EB)', background: 'var(--cp-primary-light, #EFF6FF)', color: 'var(--ds-text-brand, #2563EB)' }
               : { borderColor: 'var(--cp-border-default, rgba(15,23,42,0.12))', background: 'var(--cp-bg-elevated, #FFFFFF)', color: 'var(--cp-text-secondary, #475569)' }
             }>
             {s.label}
@@ -173,12 +173,12 @@ export default function AllReleasesPage() {
         <div className="relative">
           <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: 'var(--cp-text-muted, #94A3B8)' }} />
           <input type="text" placeholder="Search releases..." value={search} onChange={e => setSearch(e.target.value)}
-            className="h-9 w-64 pl-9 pr-3 rounded text-[13px] focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB]"
+            className="h-9 w-64 pl-9 pr-3 rounded text-[13px] focus:outline-none focus:ring-2 focus:ring-[var(--ds-text-brand,#2563EB)]/20 focus:border-[var(--ds-text-brand,#2563EB)]"
             style={{ border: `1px solid ${'var(--cp-border-default, rgba(15,23,42,0.12))'}`, background: 'var(--cp-bg-elevated, #FFFFFF)', color: 'var(--cp-text-primary, #0F172A)' }} />
         </div>
         <div className="flex items-center gap-1 rounded-md p-0.5" style={{ border: `1px solid ${'var(--cp-border-default, rgba(15,23,42,0.12))'}`, background: 'var(--cp-bg-elevated, #FFFFFF)' }}>
-          <button onClick={() => setView('cards')} className="h-7 w-7 rounded flex items-center justify-center" style={view === 'cards' ? { background: 'var(--cp-primary-light, #EFF6FF)', color: '#2563EB' } : { color: 'var(--cp-text-muted, #94A3B8)' }}><LayoutGrid size={14} /></button>
-          <button onClick={() => setView('table')} className="h-7 w-7 rounded flex items-center justify-center" style={view === 'table' ? { background: 'var(--cp-primary-light, #EFF6FF)', color: '#2563EB' } : { color: 'var(--cp-text-muted, #94A3B8)' }}><List size={14} /></button>
+          <button onClick={() => setView('cards')} className="h-7 w-7 rounded flex items-center justify-center" style={view === 'cards' ? { background: 'var(--cp-primary-light, #EFF6FF)', color: 'var(--ds-text-brand, #2563EB)' } : { color: 'var(--cp-text-muted, #94A3B8)' }}><LayoutGrid size={14} /></button>
+          <button onClick={() => setView('table')} className="h-7 w-7 rounded flex items-center justify-center" style={view === 'table' ? { background: 'var(--cp-primary-light, #EFF6FF)', color: 'var(--ds-text-brand, #2563EB)' } : { color: 'var(--cp-text-muted, #94A3B8)' }}><List size={14} /></button>
         </div>
       </div>
 
@@ -203,7 +203,7 @@ export default function AllReleasesPage() {
                 style={{ borderRadius: 6, background: 'var(--cp-bg-elevated, #FFFFFF)', border: `1px solid ${'var(--cp-border-default, rgba(15,23,42,0.12))'}` }}>
                 <div className="absolute left-0 top-0 bottom-0 w-[3px]" style={{ background: accentColor(r.status), borderRadius: '6px 0 0 6px' }} />
                 <div className="p-4 pl-5">
-                  <h3 className="text-[15px] font-bold mb-1" style={{ fontFamily: RH.fontDisplay, color: isDark ? '#EDEDED' : RH.ink1, fontWeight: 650 }}>{r.name}</h3>
+                  <h3 className="text-[15px] font-bold mb-1" style={{ fontFamily: RH.fontDisplay, color: isDark ? 'var(--ds-text, #EDEDED)' : RH.ink1, fontWeight: 650 }}>{r.name}</h3>
                   {r.jira_key && <span className="text-[11px] block mb-2" style={{ fontFamily: RH.fontMono, color: 'var(--cp-text-muted, #94A3B8)' }}>{r.jira_key}</span>}
 
                   <div className="flex items-center gap-2 flex-wrap mb-2">
@@ -214,7 +214,7 @@ export default function AllReleasesPage() {
                         position="top"
                         content={`Last synced: ${new Date(r.synced_at || r.updated_at).toLocaleString()}`}
                       >
-                        <span className="inline-flex items-center gap-1 text-[11px] text-[#94A3B8] cursor-default">
+                        <span className="inline-flex items-center gap-1 text-[11px] text-[var(--ds-text-subtlest,#94A3B8)] cursor-default">
                           <Clock size={12} />
                           Synced {relativeTime(r.synced_at || r.updated_at)}
                         </span>
@@ -267,7 +267,7 @@ export default function AllReleasesPage() {
                     style={{ height: 50, background: 'var(--cp-bg-elevated, #FFFFFF)', transition: 'background 120ms', borderBottom: `0.75px solid ${'var(--cp-border-subtle, rgba(15,23,42,0.06))'}` }}
                     onMouseEnter={e => (e.currentTarget.style.background = isDark ? 'var(--cp-bg-surface, #242528)' : 'rgba(15,23,42,0.04)')}
                     onMouseLeave={e => (e.currentTarget.style.background = 'var(--cp-bg-elevated, #FFFFFF)')}>
-                    <td className="px-3 py-0 font-medium" style={{ color: isDark ? '#EDEDED' : RH.ink1 }}>
+                    <td className="px-3 py-0 font-medium" style={{ color: isDark ? 'var(--ds-text, #EDEDED)' : RH.ink1 }}>
                       <div className="flex items-center gap-2">
                         {r.name}
                         {r.source === 'jira' && relativeTime(r.synced_at || r.updated_at) && (
@@ -275,7 +275,7 @@ export default function AllReleasesPage() {
                             position="top"
                             content={`Synced ${relativeTime(r.synced_at || r.updated_at)}`}
                           >
-                            <span className="inline-flex items-center gap-0.5 text-[11px] text-[#94A3B8] cursor-default">
+                            <span className="inline-flex items-center gap-0.5 text-[11px] text-[var(--ds-text-subtlest,#94A3B8)] cursor-default">
                               <Clock size={12} />
                             </span>
                           </Tooltip>

@@ -28,8 +28,8 @@ const buttonVariants = cva(
         outline: "border border-border bg-transparent text-foreground hover:bg-muted",
         
         // Danger - Red
-        danger: "bg-[#dc2626] text-white hover:bg-[#b91c1c] shadow-sm",
-        destructive: "bg-[#dc2626] text-white hover:bg-[#b91c1c] shadow-sm",
+        danger: "bg-[var(--ds-text-danger,#dc2626)] text-white hover:bg-[#b91c1c] shadow-sm",
+        destructive: "bg-[var(--ds-text-danger,#dc2626)] text-white hover:bg-[#b91c1c] shadow-sm",
         
         // Success - Teal
         success: "bg-[#0d9488] text-white hover:bg-[#0f766e] shadow-sm",

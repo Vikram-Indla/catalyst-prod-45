@@ -395,7 +395,7 @@ export function KanbanBoard({
                 <div className="flex items-center gap-2">
                   <span 
                     className="w-3 h-3 rounded-full" 
-                    style={{ backgroundColor: activeColumn.color || '#2563eb' }}
+                    style={{ backgroundColor: activeColumn.color || 'var(--ds-text-brand, #2563eb)' }}
                   />
                   <span className="font-semibold text-sm">{activeColumn.name}</span>
                 </div>

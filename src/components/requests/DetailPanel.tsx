@@ -44,7 +44,7 @@ function isNativeInitiative(id: string): boolean {
 }
 
 function getV5AvatarColor(name: string): string {
-  const colors = ['#2563eb', '#0d9488', '#0369a1', '#d97706', '#0891b2', '#1e40af', '#b45309', '#0f766e', '#475569', '#334155'];
+  const colors = ['var(--ds-text-brand, #2563eb)', '#0d9488', '#0369a1', 'var(--ds-text-warning, #d97706)', '#0891b2', '#1e40af', '#b45309', '#0f766e', 'var(--ds-text-subtle, #475569)', 'var(--ds-text-subtle, #334155)'];
   let hash = 0;
   for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash);
   return colors[Math.abs(hash) % colors.length];
@@ -408,7 +408,7 @@ export function DetailPanel({ request, isOpen, onClose, onStatusChange, onScoreS
               <div className="pb-panel-identity">
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
                   <span className="pb-panel-key">{request.initiative_key}</span>
-                  {request.is_favorited && <span style={{ color: '#F59E0B', fontSize: 14 }}>★</span>}
+                  {request.is_favorited && <span style={{ color: 'var(--ds-text-warning, #F59E0B)', fontSize: 14 }}>★</span>}
                 </div>
                 <InlineEditableTitle value={request.title} onSave={(v) => handleQuickEdit('title', v, 'Title')} />
                 <div style={{ marginTop: 12 }}>
@@ -655,7 +655,7 @@ function CommentsSection({ requestId }: { requestId: string }) {
           className="pb-comment-input" style={{ flex: 1 }} disabled={submitting}
           onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSubmit(); } }} />
         <button type="button" onClick={handleSubmit} disabled={submitting || !newComment.trim()}
-          style={{ height: 50, padding: '0 16px', fontSize: 13, fontWeight: 500, background: 'var(--pb-primary)', color: '#fff', border: 'none', borderRadius: 'var(--pb-r-md)', cursor: 'pointer', opacity: submitting || !newComment.trim() ? 0.5 : 1 }}>
+          style={{ height: 50, padding: '0 16px', fontSize: 13, fontWeight: 500, background: 'var(--pb-primary)', color: 'var(--ds-surface, #fff)', border: 'none', borderRadius: 'var(--pb-r-md)', cursor: 'pointer', opacity: submitting || !newComment.trim() ? 0.5 : 1 }}>
           {submitting ? 'Sending…' : 'Send'}
         </button>
       </div>
@@ -895,7 +895,7 @@ function ScoreContent({ scores, computedScore, priority, onScoreChange, onSave }
         <ScoreSlider label="Time & Urgency" value={scores.tu} onChange={(v) => onScoreChange({ ...scores, tu: v })} />
         <ScoreSlider label="Resource & Feasibility" value={scores.rf} onChange={(v) => onScoreChange({ ...scores, rf: v })} />
         <button type="button" onClick={onSave}
-          style={{ width: '100%', height: 38, background: 'var(--pb-primary)', color: '#fff', fontSize: 13, fontWeight: 500, border: 'none', borderRadius: 'var(--pb-r-md)', cursor: 'pointer', marginTop: 'auto' }}>
+          style={{ width: '100%', height: 38, background: 'var(--pb-primary)', color: 'var(--ds-surface, #fff)', fontSize: 13, fontWeight: 500, border: 'none', borderRadius: 'var(--pb-r-md)', cursor: 'pointer', marginTop: 'auto' }}>
           Save Score
         </button>
       </div>

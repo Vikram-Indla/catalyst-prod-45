@@ -28,35 +28,35 @@
   --roadmap-type-enhancement-light: rgba(13, 148, 136, 0.12);
 
   /* Project = Deep Slate/Navy (NOT blue—reserved for avatar; NOT purple—AI color) */
-  --roadmap-type-project:           #475569;
-  --roadmap-type-project-bg:        #F8FAFC;
-  --roadmap-type-project-bar:       linear-gradient(135deg, #475569, #334155);
-  --roadmap-type-project-hover:     #334155;
+  --roadmap-type-project:           var(--ds-text-subtle, #475569);
+  --roadmap-type-project-bg:        var(--ds-surface-sunken, #F8FAFC);
+  --roadmap-type-project-bar:       linear-gradient(135deg, var(--ds-text-subtle, #475569), var(--ds-text-subtle, #334155));
+  --roadmap-type-project-hover:     var(--ds-text-subtle, #334155);
   --roadmap-type-project-light:     rgba(71, 85, 105, 0.12);
 
   /* Entity Integration = Amber/Warning (NOT purple—AI color) */
-  --roadmap-type-entity:            var(--cp-warning-60);    /* #D97706 */
+  --roadmap-type-entity:            var(--cp-warning-60);    /* var(--ds-text-warning, #D97706) */
   --roadmap-type-entity-bg:         var(--cp-warning-5);     /* #FFFBEB */
-  --roadmap-type-entity-bar:        linear-gradient(135deg, #D97706, #B45309);
+  --roadmap-type-entity-bar:        linear-gradient(135deg, var(--ds-text-warning, #D97706), #B45309);
   --roadmap-type-entity-hover:      var(--cp-warning-70);    /* #B45309 */
   --roadmap-type-entity-light:      rgba(217, 119, 6, 0.12);
 
   /* Improvement = Success Green */
-  --roadmap-type-improvement:       var(--cp-success-60);    /* #16A34A */
+  --roadmap-type-improvement:       var(--cp-success-60);    /* var(--ds-text-success, #16A34A) */
   --roadmap-type-improvement-bg:    #F0FDF4;
-  --roadmap-type-improvement-bar:   linear-gradient(135deg, #16A34A, #15803D);
+  --roadmap-type-improvement-bar:   linear-gradient(135deg, var(--ds-text-success, #16A34A), #15803D);
   --roadmap-type-improvement-hover: #15803D;
   --roadmap-type-improvement-light: rgba(22, 163, 74, 0.12);
 
   /* ─── AVATAR ──────────────────────────────────────────────────── */
-  --roadmap-avatar-bg:              var(--cp-primary-60);    /* #2563EB — always blue */
+  --roadmap-avatar-bg:              var(--cp-primary-60);    /* var(--ds-text-brand, #2563EB) — always blue */
   --roadmap-avatar-text:            var(--cp-text-inverse);  /* white */
   --roadmap-avatar-size:            22px;
   --roadmap-avatar-font-size:       9px;
 
   /* ─── TIMELINE ────────────────────────────────────────────────── */
   --roadmap-timeline-grid:          var(--cp-border-subtle); /* vertical grid lines */
-  --roadmap-timeline-today:         var(--cp-danger-50);     /* #EF4444 — today marker */
+  --roadmap-timeline-today:         var(--cp-danger-50);     /* var(--ds-text-danger, #EF4444) — today marker */
   --roadmap-timeline-today-label-bg: var(--cp-danger-50);
   --roadmap-timeline-header-bg:     var(--cp-bg-secondary);  /* month header row bg */
   --roadmap-timeline-quarter-text:  var(--cp-text-secondary); /* Q1/Q2/Q3/Q4 — FIXED: was too light */
@@ -75,8 +75,8 @@
   --roadmap-name-weight:            500;
 
   /* ─── GROUP SECTIONS ──────────────────────────────────────────── */
-  --roadmap-group-bg:               var(--cp-bg-tertiary);   /* #F1F5F9 */
-  --roadmap-group-border:           var(--cp-border-default); /* #E2E8F0 */
+  --roadmap-group-bg:               var(--cp-bg-tertiary);   /* var(--ds-surface-sunken, #F1F5F9) */
+  --roadmap-group-border:           var(--cp-border-default); /* var(--ds-border, #E2E8F0) */
   --roadmap-group-text:             var(--cp-text-secondary); /* FIXED: proper contrast */
   --roadmap-group-count-bg:         var(--cp-bg-secondary);
   --roadmap-group-count-border:     var(--cp-border-default);
@@ -118,7 +118,7 @@
 
   /* ─── STAR ────────────────────────────────────────────────────── */
   --roadmap-star-color:             var(--cp-text-muted);
-  --roadmap-star-active-color:      var(--cp-warning-50);    /* #F59E0B */
+  --roadmap-star-active-color:      var(--cp-warning-50);    /* var(--ds-text-warning, #F59E0B) */
   --roadmap-star-size:              14px;
 
   /* ─── INITIATIVE ICON ─────────────────────────────────────────── */
@@ -137,38 +137,38 @@
   --roadmap-type-enhancement-bg:    rgba(13, 148, 136, 0.15);
   --roadmap-type-enhancement-bar:   linear-gradient(135deg, #14B8A6, #0D9488);
   
-  --roadmap-type-project:           #94A3B8;
+  --roadmap-type-project:           var(--ds-text-subtlest, #94A3B8);
   --roadmap-type-project-bg:        rgba(71, 85, 105, 0.15);
-  --roadmap-type-project-bar:       linear-gradient(135deg, #94A3B8, #64748B);
+  --roadmap-type-project-bar:       linear-gradient(135deg, var(--ds-text-subtlest, #94A3B8), var(--ds-text-subtlest, #64748B));
   
   --roadmap-type-entity:            var(--cp-warning-40);
   --roadmap-type-entity-bg:         rgba(217, 119, 6, 0.15);
-  --roadmap-type-entity-bar:        linear-gradient(135deg, #FBBF24, #D97706);
+  --roadmap-type-entity-bar:        linear-gradient(135deg, #FBBF24, var(--ds-text-warning, #D97706));
   
   --roadmap-type-improvement:       #4ADE80;
   --roadmap-type-improvement-bg:    rgba(22, 163, 74, 0.15);
-  --roadmap-type-improvement-bar:   linear-gradient(135deg, #4ADE80, #22C55E);
+  --roadmap-type-improvement-bar:   linear-gradient(135deg, #4ADE80, var(--ds-text-success, #22C55E));
 
-  --roadmap-timeline-header-bg:     #1F1F1F;
-  --roadmap-timeline-quarter-text:  #A1A1A1;
-  --roadmap-timeline-month-text:    #EDEDED;
-  --roadmap-timeline-grid:          #292929;
+  --roadmap-timeline-header-bg:     var(--ds-surface-overlay, #1F1F1F);
+  --roadmap-timeline-quarter-text:  var(--ds-text-subtlest, #A1A1A1);
+  --roadmap-timeline-month-text:    var(--ds-text, #EDEDED);
+  --roadmap-timeline-grid:          var(--ds-border, #292929);
 
-  --roadmap-group-bg:               #1F1F1F;
-  --roadmap-group-text:             #A1A1A1;
-  --roadmap-group-border:           #2E2E2E;
-  --roadmap-group-count-bg:         #292929;
-  --roadmap-group-count-border:     #2E2E2E;
+  --roadmap-group-bg:               var(--ds-surface-overlay, #1F1F1F);
+  --roadmap-group-text:             var(--ds-text-subtlest, #A1A1A1);
+  --roadmap-group-border:           var(--ds-border, #2E2E2E);
+  --roadmap-group-count-bg:         var(--ds-border, #292929);
+  --roadmap-group-count-border:     var(--ds-border, #2E2E2E);
   
   --roadmap-kpi-bg:                 transparent;
-  --roadmap-kpi-border:             #2E2E2E;
+  --roadmap-kpi-border:             var(--ds-border, #2E2E2E);
   
   --roadmap-bar-shadow:             none;
   --roadmap-bar-shadow-hover:       0 4px 12px rgba(0,0,0,0.3);
 }
 .dark .roadmap-group-header:hover,
 .dark .roadmap-group-header:hover , [data-theme="dark"] .roadmap-group-header:hover {
-  background: #292929;
+  background: var(--ds-border, #292929);
 }
 
 
@@ -376,7 +376,7 @@
   font-family: var(--cp-font-mono);
   font-size: var(--roadmap-bar-date-font-size);
   font-weight: 500;
-  color: #878787;
+  color: var(--ds-text-subtlest, #878787);
   margin-left: auto;
   padding-left: 8px;
   flex-shrink: 0;

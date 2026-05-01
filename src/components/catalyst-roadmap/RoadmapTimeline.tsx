@@ -118,7 +118,7 @@ export const RoadmapTimeline = forwardRef<HTMLDivElement, RoadmapTimelineProps>(
             <div className="w-0.5 h-full bg-brand-primary opacity-40" />
             {/* TODAY badge - positioned just below the header */}
             <span 
-              className="absolute bg-[#2563eb] text-white text-[8px] font-bold px-1.5 py-0.5 rounded-full uppercase tracking-wide whitespace-nowrap"
+              className="absolute bg-[var(--ds-text-brand,#2563eb)] text-white text-[8px] font-bold px-1.5 py-0.5 rounded-full uppercase tracking-wide whitespace-nowrap"
               style={{
                 top: '4px',
                 left: '50%',

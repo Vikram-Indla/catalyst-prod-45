@@ -60,7 +60,7 @@ export function RoadmapKPIStrip({ stats }: RoadmapKPIStripProps) {
       <div style={cardStyle}>
         <div style={labelStyle}>By Status</div>
         <div className="flex items-baseline gap-2" style={{ marginTop: 4 }}>
-          <span style={{ fontFamily: FONT.heading, fontSize: 26, fontWeight: 700, color: '#16A34A', letterSpacing: '-0.03em' }}>{stats.activeCount}</span>
+          <span style={{ fontFamily: FONT.heading, fontSize: 26, fontWeight: 700, color: 'var(--ds-text-success, #16A34A)', letterSpacing: '-0.03em' }}>{stats.activeCount}</span>
           <span style={{ fontSize: 11, fontWeight: 500, color: ink[3] }}>Active</span>
           <span style={{ fontFamily: FONT.heading, fontSize: 26, fontWeight: 700, color: ink[4], marginLeft: 8, letterSpacing: '-0.03em' }}>{stats.validationCount}</span>
           <span style={{ fontSize: 11, fontWeight: 500, color: ink[3] }}>Validation</span>

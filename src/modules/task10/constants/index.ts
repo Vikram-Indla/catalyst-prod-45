@@ -26,11 +26,11 @@ export const T10_RANK_TIERS = {
 export const T10_COLORS = {
   brand: '#0d9488',
   brandDark: '#0f766e',
-  blue: '#2563eb',
-  blueDark: '#1d4ed8',
+  blue: 'var(--ds-text-brand, #2563eb)',
+  blueDark: 'var(--ds-background-brand-bold-hovered, #1d4ed8)',
   success: '#10b981',
-  warning: '#f59e0b',
-  danger: '#ef4444',
+  warning: 'var(--ds-text-warning, #f59e0b)',
+  danger: 'var(--ds-text-danger, #ef4444)',
   purple: '#8b5cf6',
 } as const;
 

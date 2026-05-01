@@ -175,12 +175,12 @@ export function OperationsGridRow({
         {/* Key - blue color */}
         <div className="flex items-center gap-2.5">
           <WorkItemIcon type={item.type} size={14} />
-          <span className="text-[13px] font-mono font-medium text-[#2563eb] dark:text-[#60a5fa]">{item.key}</span>
+          <span className="text-[13px] font-mono font-medium text-[var(--ds-text-brand,#2563eb)] dark:text-[var(--ds-text-brand,#60a5fa)]">{item.key}</span>
         </div>
 
         {/* Summary - hover changes to olive */}
         <div className="min-w-0 pr-4">
-          <div className="text-sm font-medium leading-5 text-[var(--text-1)] truncate group-hover:text-[#2563eb] dark:group-hover:text-[#60a5fa] transition-colors">
+          <div className="text-sm font-medium leading-5 text-[var(--text-1)] truncate group-hover:text-[var(--ds-text-brand,#2563eb)] dark:group-hover:text-[var(--ds-text-brand,#60a5fa)] transition-colors">
             {item.summary}
           </div>
         </div>
@@ -268,7 +268,7 @@ export function OperationsGridRow({
       >
         <div className="flex items-center gap-1.5">
           <WorkItemIcon type={item.type} size={12} />
-          <span className="text-xs font-mono font-medium text-[#2563eb] dark:text-[#60a5fa]">{item.key}</span>
+          <span className="text-xs font-mono font-medium text-[var(--ds-text-brand,#2563eb)] dark:text-[var(--ds-text-brand,#60a5fa)]">{item.key}</span>
         </div>
         <div className="min-w-0 px-2">
           <div className="text-sm font-medium leading-5 text-[var(--text-1)] truncate">
@@ -367,12 +367,12 @@ export function DeliveryGridRow({
         {/* Key - blue color */}
         <div className="flex items-center gap-2.5">
           <WorkItemIcon type={item.type} size={14} />
-          <span className="text-[13px] font-mono font-medium text-[#2563eb] dark:text-[#60a5fa]">{item.key}</span>
+          <span className="text-[13px] font-mono font-medium text-[var(--ds-text-brand,#2563eb)] dark:text-[var(--ds-text-brand,#60a5fa)]">{item.key}</span>
         </div>
 
         {/* Summary - hover changes to olive */}
         <div className="min-w-0 pr-4">
-          <div className="text-sm font-medium leading-5 text-[var(--text-1)] truncate group-hover:text-[#2563eb] dark:group-hover:text-[#60a5fa] transition-colors">
+          <div className="text-sm font-medium leading-5 text-[var(--text-1)] truncate group-hover:text-[var(--ds-text-brand,#2563eb)] dark:group-hover:text-[var(--ds-text-brand,#60a5fa)] transition-colors">
             {item.summary}
           </div>
         </div>
@@ -468,7 +468,7 @@ export function DeliveryGridRow({
       >
         <div className="flex items-center gap-1.5">
           <WorkItemIcon type={item.type} size={12} />
-          <span className="text-xs font-mono font-medium text-[#2563eb] dark:text-[#60a5fa]">{item.key}</span>
+          <span className="text-xs font-mono font-medium text-[var(--ds-text-brand,#2563eb)] dark:text-[var(--ds-text-brand,#60a5fa)]">{item.key}</span>
         </div>
         <div className="min-w-0 px-2">
           <div className="text-sm font-medium leading-5 text-[var(--text-1)] truncate">
@@ -567,12 +567,12 @@ export function PlannerGridRow({
         {/* Key - bronze/gold color */}
         <div className="flex items-center gap-2.5">
           <WorkItemIcon type={item.type} size={14} />
-          <span className="text-[13px] font-mono font-medium text-[#2563eb] dark:text-[#60a5fa]">{item.key}</span>
+          <span className="text-[13px] font-mono font-medium text-[var(--ds-text-brand,#2563eb)] dark:text-[var(--ds-text-brand,#60a5fa)]">{item.key}</span>
         </div>
 
         {/* Summary - hover changes to olive */}
         <div className="min-w-0 pr-4">
-          <div className="text-sm font-medium leading-5 text-[var(--text-1)] truncate group-hover:text-[#2563eb] dark:group-hover:text-[#60a5fa] transition-colors">
+          <div className="text-sm font-medium leading-5 text-[var(--text-1)] truncate group-hover:text-[var(--ds-text-brand,#2563eb)] dark:group-hover:text-[var(--ds-text-brand,#60a5fa)] transition-colors">
             {item.summary}
           </div>
         </div>
@@ -655,7 +655,7 @@ export function PlannerGridRow({
       >
         <div className="flex items-center gap-1.5">
           <WorkItemIcon type={item.type} size={12} />
-          <span className="text-xs font-mono font-medium text-[#2563eb] dark:text-[#60a5fa]">{item.key}</span>
+          <span className="text-xs font-mono font-medium text-[var(--ds-text-brand,#2563eb)] dark:text-[var(--ds-text-brand,#60a5fa)]">{item.key}</span>
         </div>
         <div className="min-w-0 px-2">
           <div className="text-sm font-medium leading-5 text-[var(--text-1)] truncate">

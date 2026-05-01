@@ -10,7 +10,7 @@
  *
  * Design tokens calibrated against live Jira on 2026-04-18
  * (digital-transformation.atlassian.net, BAU-5419):
- *   text.primary   #292A2E   (was #172B4D — old ADG3)
+ *   text.primary   #292A2E   (was var(--ds-text, #172B4D) — old ADG3)
  *   text.subtle    #505258   (was #44546F — old ADG3)
  *   Title H1       20px / weight 653 / line-height 24px (was 24/600)
  *   Issue key      Atlassian Sans / 14px / 400 / #505258 (was JetBrains Mono 500)
@@ -462,7 +462,7 @@ const flatAccordionHeaderStyle: React.CSSProperties = {
 function avatarStyle(bg: string): React.CSSProperties {
   return {
     width: 28, height: 28, borderRadius: '50%', display: 'flex', alignItems: 'center',
-    justifyContent: 'center', fontWeight: 800, fontSize: 11, color: '#FFFFFF',
+    justifyContent: 'center', fontWeight: 800, fontSize: 11, color: 'var(--ds-surface, #FFFFFF)',
     background: bg, flexShrink: 0,
   };
 }

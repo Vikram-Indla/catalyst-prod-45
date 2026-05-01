@@ -301,9 +301,9 @@ export function MoveWorkItemModal({ issue, currentProjectKey, tk, onClose, onMov
             disabled={!selectedProject || !selectedStatus || saving}
             style={{
               height: 32, padding: '0 16px', border: 'none',
-              borderRadius: 4, background: selectedProject ? '#2563EB' : tk.chipBg,
+              borderRadius: 4, background: selectedProject ? 'var(--ds-text-brand, #2563EB)' : tk.chipBg,
               cursor: selectedProject ? 'pointer' : 'not-allowed',
-              fontSize: 13, color: '#FFFFFF', fontWeight: 600,
+              fontSize: 13, color: 'var(--ds-surface, #FFFFFF)', fontWeight: 600,
               fontFamily: 'var(--cp-font-body)',
               opacity: saving ? 0.7 : 1,
               display: 'flex', alignItems: 'center', gap: 6,

@@ -22,7 +22,7 @@ export const StatusCell = React.memo(function StatusCell({ status }: { status: R
 /* ── Priority Cell — V12: Colored horizontal bars ── */
 export const PriorityCell = React.memo(function PriorityCell({ score }: { score: number | null }) {
   const filled = score === null ? 0 : score >= 4.0 ? 4 : score >= 3.0 ? 3 : score >= 2.0 ? 2 : score >= 1.0 ? 1 : 0;
-  const colors = ['#4ADE80', '#FBBF24', '#F97316', '#EF4444'];
+  const colors = ['#4ADE80', '#FBBF24', '#F97316', 'var(--ds-text-danger, #EF4444)'];
   const fillColor = filled === 0 ? 'var(--cp-border-default)' : colors[Math.min(filled - 1, 3)];
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: 2 }}>

@@ -32,8 +32,8 @@ function CatySparkle({ size = 18, monochromeColor }: SparkleProps) {
       {!monochromeColor && (
         <defs>
           <linearGradient id={gradId} x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#60A5FA" />
-            <stop offset="55%" stopColor="#2563EB" />
+            <stop offset="0%" stopColor="var(--ds-text-brand, #60A5FA)" />
+            <stop offset="55%" stopColor="var(--ds-text-brand, #2563EB)" />
             <stop offset="100%" stopColor="#7C3AED" />
           </linearGradient>
         </defs>
@@ -58,11 +58,11 @@ function AskCatalystIcon() {
 const DEPT_OPTIONS = ['Delivery', 'Product', 'Governance', 'Operations', 'Technical Support', 'Strategy & Planning'];
 
 const DEPT_COLORS: Record<string, string> = {
-  Delivery: '#2563EB',
+  Delivery: 'var(--ds-text-brand, #2563EB)',
   Product: '#7C3AED',
   Governance: '#0D9488',
-  Operations: '#D97706',
-  'Technical Support': '#DC2626',
+  Operations: 'var(--ds-text-warning, #D97706)',
+  'Technical Support': 'var(--ds-text-danger, #DC2626)',
   'Strategy & Planning': '#0891B2',
 };
 

@@ -46,7 +46,7 @@ const HUB_CFG: Record<string, { bg: string; color: string; border: string }> = {
   Test:     { bg: 'var(--cp-hover)', color: 'var(--cp-t3)', border: 'var(--cp-t3)' },
 };
 
-const AVATAR_COLOURS = ['#2563EB', '#0D9488', '#0284C7', '#DC2626', '#DB2777'];
+const AVATAR_COLOURS = ['var(--ds-text-brand, #2563EB)', '#0D9488', '#0284C7', 'var(--ds-text-danger, #DC2626)', '#DB2777'];
 
 const FORYOU_COLUMNS: TColDef[] = [
   { key: 'checkbox', label: '', defaultWidth: 40, minWidth: 40, locked: true },
@@ -187,8 +187,8 @@ export function CatalystTable({
     return (
       <div className="fy-empty" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '64px 0', border: '0.555556px solid #E2E8F0', borderRadius: 8, background: 'var(--ds-text-inverse, #FFFFFF)' }}>
         <span style={{ fontSize: 24, marginBottom: 12 }}>📋</span>
-        <p style={{ fontSize: 13, fontWeight: 600, color: '#0F172A', marginBottom: 4 }}>No work items found</p>
-        <p style={{ fontSize: 11, color: '#94A3B8' }}>Try adjusting your filters or search</p>
+        <p style={{ fontSize: 13, fontWeight: 600, color: 'var(--ds-text, #0F172A)', marginBottom: 4 }}>No work items found</p>
+        <p style={{ fontSize: 11, color: 'var(--ds-text-subtlest, #94A3B8)' }}>Try adjusting your filters or search</p>
       </div>
     );
   }
@@ -215,19 +215,19 @@ export function CatalystTable({
                   background: '#F7F8F9',
                   borderTop: '0.75px solid #E2E8F0',
                   borderBottom: '0.75px solid #E2E8F0',
-                  fontSize: 11, fontWeight: 700, color: '#475569',
+                  fontSize: 11, fontWeight: 700, color: 'var(--ds-text-subtle, #475569)',
                   textTransform: 'uppercase', letterSpacing: '0.08em',
                   display: 'flex', alignItems: 'center', gap: 6,
                 }}
               >
                 {isCollapsed
-                  ? <ChevronRight size={14} style={{ color: '#475569', flexShrink: 0 }} />
-                  : <ChevronDown size={14} style={{ color: '#475569', flexShrink: 0 }} />}
+                  ? <ChevronRight size={14} style={{ color: 'var(--ds-text-subtle, #475569)', flexShrink: 0 }} />
+                  : <ChevronDown size={14} style={{ color: 'var(--ds-text-subtle, #475569)', flexShrink: 0 }} />}
                 {group.label}
                 <span style={{
                   display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
                   minWidth: 20, height: 18, padding: '0 6px', borderRadius: 9,
-                  background: '#DFE1E6', color: '#253858',
+                  background: 'var(--ds-border, #DFE1E6)', color: 'var(--ds-text, #253858)',
                   fontSize: 10, fontWeight: 700, marginLeft: 4,
                 }}>
                   {group.items.length}
@@ -262,9 +262,9 @@ export function CatalystTable({
                         <Checkbox checked={isSelected} onCheckedChange={(v) => handleSelectItem(item.id, !!v)} />
                       </div>
                       <JiraIssueTypeIcon issueType={item.issueType} size={16} />
-                      <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 13, fontWeight: 600, color: '#2563EB' }}>{item.key}</span>
+                      <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 13, fontWeight: 600, color: 'var(--ds-text-brand, #2563EB)' }}>{item.key}</span>
                       {(item.attachmentCount ?? 0) > 0 && (
-                        <Paperclip size={12} style={{ color: '#94A3B8', transform: 'rotate(-45deg)' }} />
+                        <Paperclip size={12} style={{ color: 'var(--ds-text-subtlest, #94A3B8)', transform: 'rotate(-45deg)' }} />
                       )}
                       <div style={{ flex: 1 }} />
                       <button
@@ -272,14 +272,14 @@ export function CatalystTable({
                         style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 28, height: 28, border: 'none', background: 'transparent', cursor: 'pointer', borderRadius: 4, padding: 0 }}
                         title={item.starred ? 'Unstar' : 'Star'}
                       >
-                        <Star size={16} fill={item.starred ? '#FACC15' : 'none'} stroke={item.starred ? '#FACC15' : '#CBD5E1'} strokeWidth={2} />
+                        <Star size={16} fill={item.starred ? '#FACC15' : 'none'} stroke={item.starred ? '#FACC15' : 'var(--ds-text-disabled, #CBD5E1)'} strokeWidth={2} />
                       </button>
                     </div>
 
                     {/* Row 2: summary (2-line clamp) */}
                     <div
                       style={{
-                        fontSize: 14, fontWeight: 600, color: '#0F172A', lineHeight: 1.3,
+                        fontSize: 14, fontWeight: 600, color: 'var(--ds-text, #0F172A)', lineHeight: 1.3,
                         display: '-webkit-box',
                         WebkitLineClamp: 2,
                         WebkitBoxOrient: 'vertical',
@@ -301,13 +301,13 @@ export function CatalystTable({
                     </div>
 
                     {/* Row 4: avatar + project + updated */}
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 12, color: '#64748B' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 12, color: 'var(--ds-text-subtlest, #64748B)' }}>
                       {avatarUrl ? (
                         <img src={avatarUrl} alt={reporterName} style={{ width: 20, height: 20, borderRadius: '50%', objectFit: 'cover', flexShrink: 0, border: '1px solid #E2E8F0' }} />
                       ) : (
                         <div style={{ width: 20, height: 20, borderRadius: '50%', background: clr, color: 'var(--ds-text-inverse, #FFFFFF)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 9, fontWeight: 700, flexShrink: 0 }}>{ini}</div>
                       )}
-                      <span style={{ fontWeight: 500, color: '#475569', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.project}</span>
+                      <span style={{ fontWeight: 500, color: 'var(--ds-text-subtle, #475569)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.project}</span>
                       <div style={{ flex: 1 }} />
                       <span style={{ flexShrink: 0 }}>{item.updatedAt}</span>
                     </div>
@@ -343,7 +343,7 @@ export function CatalystTable({
                 style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 24, height: 24, border: 'none', background: 'transparent', cursor: 'pointer', borderRadius: 4, padding: 0 }}
                 title={item.starred ? 'Unstar' : 'Star'}
               >
-                <Star size={14} fill={item.starred ? '#FACC15' : 'none'} stroke={item.starred ? '#FACC15' : '#CBD5E1'} strokeWidth={2} />
+                <Star size={14} fill={item.starred ? '#FACC15' : 'none'} stroke={item.starred ? '#FACC15' : 'var(--ds-text-disabled, #CBD5E1)'} strokeWidth={2} />
               </button>
             </div>
           </td>
@@ -361,9 +361,9 @@ export function CatalystTable({
           <td key={colKey} style={{ width: columnWidths.key }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
               {(item.attachmentCount ?? 0) > 0 && (
-                <span title="Attachments"><Paperclip size={12} style={{ color: '#94A3B8', flexShrink: 0, transform: 'rotate(-45deg)' }} /></span>
+                <span title="Attachments"><Paperclip size={12} style={{ color: 'var(--ds-text-subtlest, #94A3B8)', flexShrink: 0, transform: 'rotate(-45deg)' }} /></span>
               )}
-              <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 13, fontWeight: 600, color: '#2563EB' }}>{item.key}</span>
+              <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 13, fontWeight: 600, color: 'var(--ds-text-brand, #2563EB)' }}>{item.key}</span>
             </div>
           </td>
         );
@@ -382,7 +382,7 @@ export function CatalystTable({
       case 'project':
         return (
           <td key={colKey} style={{ width: columnWidths.project, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-            <span title={item.project} style={{ fontSize: 13, fontWeight: 500, color: '#475569' }}>{item.project}</span>
+            <span title={item.project} style={{ fontSize: 13, fontWeight: 500, color: 'var(--ds-text-subtle, #475569)' }}>{item.project}</span>
           </td>
         );
       case 'hub':
@@ -401,7 +401,7 @@ export function CatalystTable({
         );
       case 'updated':
         return (
-          <td key={colKey} style={{ width: columnWidths.updated, fontSize: 12, fontWeight: 500, color: '#64748B' }}>
+          <td key={colKey} style={{ width: columnWidths.updated, fontSize: 12, fontWeight: 500, color: 'var(--ds-text-subtlest, #64748B)' }}>
             {item.updatedAt}
           </td>
         );
@@ -420,7 +420,7 @@ export function CatalystTable({
                   <div style={{ width: 24, height: 24, borderRadius: '50%', background: clr, color: 'var(--ds-text-inverse, #FFFFFF)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontWeight: 700, flexShrink: 0 }}>{ini}</div>
                 );
               })()}
-              <span style={{ fontSize: 13, fontWeight: 500, color: '#475569', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.reporter || item.assignee.name}</span>
+              <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--ds-text-subtle, #475569)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.reporter || item.assignee.name}</span>
             </div>
           </td>
         );
@@ -512,15 +512,15 @@ export function CatalystTable({
                       background: '#F7F8F9',
                       borderBottom: '0.75px solid #E2E8F0',
                       borderTop: '0.75px solid #E2E8F0',
-                      fontSize: 11, fontWeight: 700, color: '#475569',
+                      fontSize: 11, fontWeight: 700, color: 'var(--ds-text-subtle, #475569)',
                       textTransform: 'uppercase', letterSpacing: '0.08em',
                       verticalAlign: 'middle',
                     }}
                   >
                     <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                       {isCollapsed
-                        ? <ChevronRight size={14} style={{ color: '#475569', flexShrink: 0 }} />
-                        : <ChevronDown size={14} style={{ color: '#475569', flexShrink: 0 }} />
+                        ? <ChevronRight size={14} style={{ color: 'var(--ds-text-subtle, #475569)', flexShrink: 0 }} />
+                        : <ChevronDown size={14} style={{ color: 'var(--ds-text-subtle, #475569)', flexShrink: 0 }} />
                       }
                       {isAssigneeGroup && (
                         avatarUrl ? (
@@ -540,7 +540,7 @@ export function CatalystTable({
                       <span style={{
                         display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
                         minWidth: 20, height: 18, padding: '0 6px', borderRadius: 9,
-                        background: '#DFE1E6', color: '#253858',
+                        background: 'var(--ds-border, #DFE1E6)', color: 'var(--ds-text, #253858)',
                         fontSize: 10, fontWeight: 700,
                       }}>
                         {group.items.length}

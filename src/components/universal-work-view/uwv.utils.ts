@@ -33,13 +33,13 @@ export function hubLabel(hub?: string | null): string {
 /** Hub source → accent colour (legacy UWVRow). */
 export function hubColour(hub?: string | null): string {
   switch ((hub ?? '').toLowerCase()) {
-    case 'projecthub': return '#2563EB';
+    case 'projecthub': return 'var(--ds-text-brand, #2563EB)';
     case 'producthub': return '#3F3F46';
     case 'taskhub': return '#D4D4D8';
-    case 'incidenthub': return '#DC2626';
+    case 'incidenthub': return 'var(--ds-text-danger, #DC2626)';
     case 'testhub': return '#0D9488';
     case 'releasehub': return '#7C3AED';
-    default: return '#64748B';
+    default: return 'var(--ds-text-subtlest, #64748B)';
   }
 }
 

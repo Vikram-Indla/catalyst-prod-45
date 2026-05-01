@@ -470,8 +470,8 @@ export default function ExportWorkItems({ deptFilter }: { deptFilter: string }) 
           cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '6px',
           transition: 'border-color 150ms',
         }}
-        onMouseEnter={e => { e.currentTarget.style.borderColor = dk ? '#878787' : '#94A3B8'; }}
-        onMouseLeave={e => { e.currentTarget.style.borderColor = dk ? '#2E2E2E' : 'var(--bd-default, #E2E8F0)'; }}
+        onMouseEnter={e => { e.currentTarget.style.borderColor = dk ? 'var(--ds-text-subtlest, #878787)' : 'var(--ds-text-subtlest, #94A3B8)'; }}
+        onMouseLeave={e => { e.currentTarget.style.borderColor = dk ? 'var(--ds-border, #2E2E2E)' : 'var(--bd-default, #E2E8F0)'; }}
       >
         <Download size={14} strokeWidth={2} />
         Export
@@ -483,25 +483,25 @@ export default function ExportWorkItems({ deptFilter }: { deptFilter: string }) 
         <div style={{
           position: 'absolute', top: '100%', right: 0, marginTop: 6,
           width: 330, borderRadius: 14,
-          background: dk ? '#1A1A1A' : '#fff', border: `1px solid ${dk ? '#2E2E2E' : '#e5e7eb'}`,
+          background: dk ? 'var(--ds-surface-raised, #1A1A1A)' : 'var(--ds-surface, #fff)', border: `1px solid ${dk ? 'var(--ds-border, #2E2E2E)' : 'var(--ds-border, #e5e7eb)'}`,
           boxShadow: dk ? '0 12px 40px rgba(0,0,0,0.50), 0 2px 8px rgba(0,0,0,0.30)' : '0 12px 40px rgba(27,42,74,0.16), 0 2px 8px rgba(27,42,74,0.08)',
           zIndex: 50, overflow: 'hidden',
           animation: 'ewi-fadein 0.2s ease-out',
         }}>
           {/* Header */}
           <div style={{
-            background: 'linear-gradient(135deg, #1d4ed8, var(--cp-blue))', padding: '14px 16px',
+            background: 'linear-gradient(135deg, var(--ds-background-brand-bold-hovered, #1d4ed8), var(--cp-blue))', padding: '14px 16px',
           }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 2 }}>
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="18" height="18" rx="2" stroke="#D6E4F0" strokeWidth="2" /><path d="M7 7h4v4H7zM13 7h4v4h-4zM7 13h4v4H7zM13 13h4v4h-4z" fill="#D6E4F0" /></svg>
-              <span style={{ color: '#fff', fontSize: 14, fontWeight: 700 }}>Export Work Items</span>
+              <span style={{ color: 'var(--ds-surface, #fff)', fontSize: 14, fontWeight: 700 }}>Export Work Items</span>
             </div>
             <div style={{ color: '#D6E4F0', fontSize: 11, marginLeft: 26 }}>Select months · Sheet 1 = Resources</div>
           </div>
 
           {/* Month selection */}
           <div style={{ padding: '14px 16px 8px' }}>
-            <div style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', color: dk ? '#878787' : '#6B6B6B', letterSpacing: '0.06em', marginBottom: 10 }}>
+            <div style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', color: dk ? 'var(--ds-text-subtlest, #878787)' : '#6B6B6B', letterSpacing: '0.06em', marginBottom: 10 }}>
               SELECT PERIOD
             </div>
 
@@ -517,7 +517,7 @@ export default function ExportWorkItems({ deptFilter }: { deptFilter: string }) 
                     background: checked ? (dk ? 'rgba(74, 222, 128, 0.06)' : '#F0FDF4') : 'transparent',
                     border: `1.5px solid ${checked ? 'var(--sem-success)' : 'transparent'}`,
                   }}
-                  onMouseEnter={e => { if (!checked) e.currentTarget.style.background = dk ? '#1F1F1F' : '#f8f9fa'; }}
+                  onMouseEnter={e => { if (!checked) e.currentTarget.style.background = dk ? 'var(--ds-surface-overlay, #1F1F1F)' : '#f8f9fa'; }}
                   onMouseLeave={e => { if (!checked) e.currentTarget.style.background = 'transparent'; }}
                 >
                   <input
@@ -528,17 +528,17 @@ export default function ExportWorkItems({ deptFilter }: { deptFilter: string }) 
                   />
                   <div style={{
                     width: 18, height: 18, borderRadius: 4,
-                    border: `2px solid ${checked ? 'var(--sem-success)' : (dk ? '#A1A1A1' : '#cbd5e1')}`,
-                    background: checked ? (dk ? 'rgba(74, 222, 128, 0.15)' : '#DCFCE7') : (dk ? 'transparent' : '#fff'),
+                    border: `2px solid ${checked ? 'var(--sem-success)' : (dk ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-disabled, #cbd5e1)')}`,
+                    background: checked ? (dk ? 'rgba(74, 222, 128, 0.15)' : 'var(--ds-background-success, #DCFCE7)') : (dk ? 'transparent' : 'var(--ds-surface, #fff)'),
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                     flexShrink: 0, transition: 'all 150ms',
                   }}>
-                    {checked && <Check size={12} strokeWidth={3} color="#16A34A" />}
+                    {checked && <Check size={12} strokeWidth={3} color="var(--ds-text-success, #16A34A)" />}
                   </div>
-                  <span style={{ fontSize: 13, fontWeight: 500, color: dk ? '#EDEDED' : '#1e293b', flex: 1 }}>{opt.label}</span>
+                  <span style={{ fontSize: 13, fontWeight: 500, color: dk ? 'var(--ds-text, #EDEDED)' : '#1e293b', flex: 1 }}>{opt.label}</span>
                   {opt.isCurrent && (
                     <span style={{
-                      fontSize: 10, fontWeight: 700, color: '#fff',
+                      fontSize: 10, fontWeight: 700, color: 'var(--ds-surface, #fff)',
                       background: 'var(--cp-blue)', borderRadius: 4, padding: '2px 7px',
                     }}>CURRENT</span>
                   )}
@@ -562,13 +562,13 @@ export default function ExportWorkItems({ deptFilter }: { deptFilter: string }) 
               style={{
                 width: '100%', padding: '11px 16px', borderRadius: 8,
                 border: 'none', cursor: canGenerate ? 'pointer' : 'not-allowed',
-                fontSize: 13, fontWeight: 700, color: '#fff',
+                fontSize: 13, fontWeight: 700, color: 'var(--ds-surface, #fff)',
                 display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
                 transition: 'all 200ms',
                 background: genState === 'done'
                   ? 'linear-gradient(135deg, #15803D, var(--sem-success))'
                   : totalSelected > 0
-                    ? 'linear-gradient(135deg, #1d4ed8, var(--cp-blue))'
+                    ? 'linear-gradient(135deg, var(--ds-background-brand-bold-hovered, #1d4ed8), var(--cp-blue))'
                     : 'var(--divider)',
                 ...(totalSelected === 0 ? { color: 'var(--fg-4)' } : {}),
               }}
@@ -585,7 +585,7 @@ export default function ExportWorkItems({ deptFilter }: { deptFilter: string }) 
               )}
             </button>
             {totalSelected > 0 && (
-              <div style={{ textAlign: 'center', fontSize: 11, color: dk ? '#878787' : '#6B6B6B', marginTop: 6 }}>
+              <div style={{ textAlign: 'center', fontSize: 11, color: dk ? 'var(--ds-text-subtlest, #878787)' : '#6B6B6B', marginTop: 6 }}>
                 {totalSelected} {totalSelected === 1 ? 'month' : 'months'} selected
               </div>
             )}

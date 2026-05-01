@@ -7,10 +7,10 @@
    Usage:  className={styles['pri-root']}
    
    Catalyst V5 Compliant:
-   ✅ Primary: #2563eb
+   ✅ Primary: var(--ds-text-brand, #2563eb)
    ✅ Teal: #0d9488
-   ✅ Warning: #d97706 / #f59e0b
-   ✅ Danger: #ef4444
+   ✅ Warning: var(--ds-text-warning, #d97706) / var(--ds-text-warning, #f59e0b)
+   ✅ Danger: var(--ds-text-danger, #ef4444)
    ❌ BANNED: Golden Hour (#C69C6D, #5C7C5C, #8B7355, #D4B896)
    ============================================================ */
 
@@ -18,30 +18,30 @@
 
 .pri-root {
   /* Brand — Catalyst V5 */
-  --pri-primary: #2563eb;
-  --pri-primary-hover: #1d4ed8;
-  --pri-primary-light: #eff6ff;
+  --pri-primary: var(--ds-text-brand, #2563eb);
+  --pri-primary-hover: var(--ds-background-brand-bold-hovered, #1d4ed8);
+  --pri-primary-light: var(--ds-background-selected, #eff6ff);
   --pri-primary-100: #dbeafe;
   --pri-primary-200: #bfdbfe;
 
   --pri-success: #10b981;
-  --pri-success-light: #dcfce7;
-  --pri-success-dark: #16a34a;
+  --pri-success-light: var(--ds-background-success, #dcfce7);
+  --pri-success-dark: var(--ds-text-success, #16a34a);
 
-  --pri-warning: #f59e0b;
+  --pri-warning: var(--ds-text-warning, #f59e0b);
   --pri-warning-light: #fef3c7;
-  --pri-warning-dark: #d97706;
+  --pri-warning-dark: var(--ds-text-warning, #d97706);
 
-  --pri-danger: #ef4444;
-  --pri-danger-light: #fef2f2;
-  --pri-danger-dark: #dc2626;
+  --pri-danger: var(--ds-text-danger, #ef4444);
+  --pri-danger-light: var(--ds-background-danger, #fef2f2);
+  --pri-danger-dark: var(--ds-text-danger, #dc2626);
 
   --pri-teal: #0d9488;
 
   /* Gray Scale */
   --pri-gray-50:  #f9fafb;
   --pri-gray-100: #f3f4f6;
-  --pri-gray-200: #e5e7eb;
+  --pri-gray-200: var(--ds-border, #e5e7eb);
   --pri-gray-300: #d1d5db;
   --pri-gray-400: #9ca3af;
   --pri-gray-500: #6b7280;
@@ -60,18 +60,18 @@
   --pri-ws-dataai: #14b8a6;
 
   /* Label Colors (Outline Style) */
-  --pri-label-finance: #3b82f6;
-  --pri-label-urgent: #ef4444;
+  --pri-label-finance: var(--ds-text-brand, #3b82f6);
+  --pri-label-urgent: var(--ds-text-danger, #ef4444);
   --pri-label-tech: #8b5cf6;
   --pri-label-sales: #f97316;
   --pri-label-hr: #ec4899;
-  --pri-label-q1: #22c55e;
+  --pri-label-q1: var(--ds-text-success, #22c55e);
 
   /* Surfaces */
-  --pri-bg: #ffffff;
-  --pri-bg-page: #f8fafc;
-  --pri-bg-elevated: #ffffff;
-  --pri-border: #e5e7eb;
+  --pri-bg: var(--ds-surface, #ffffff);
+  --pri-bg-page: var(--ds-surface-sunken, #f8fafc);
+  --pri-bg-elevated: var(--ds-surface, #ffffff);
+  --pri-border: var(--ds-border, #e5e7eb);
   --pri-border-light: #f3f4f6;
 
   /* Shadows */
@@ -151,7 +151,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #fff;
+  color: var(--ds-surface, #fff);
   font-size: 18px;
   font-weight: 700;
   letter-spacing: -0.5px;
@@ -213,7 +213,7 @@
 
 .pri-btn-primary {
   background: var(--pri-primary);
-  color: #fff;
+  color: var(--ds-surface, #fff);
 }
 
 .pri-btn-primary:hover:not(:disabled) {
@@ -234,7 +234,7 @@
 
 .pri-btn-danger {
   background: var(--pri-danger);
-  color: #fff;
+  color: var(--ds-surface, #fff);
 }
 
 .pri-btn-danger:hover:not(:disabled) {
@@ -243,7 +243,7 @@
 
 .pri-btn-checkout {
   background: var(--pri-warning);
-  color: #fff;
+  color: var(--ds-surface, #fff);
   font-weight: 600;
 }
 
@@ -361,7 +361,7 @@
   font-size: 10px;
   font-weight: 600;
   background: var(--pri-primary);
-  color: #fff;
+  color: var(--ds-surface, #fff);
   padding: 0 5px;
   border-radius: var(--pri-radius-pill);
   line-height: 1.5;
@@ -843,7 +843,7 @@
 .pri-status-completed {
   border-color: var(--pri-success);
   background: var(--pri-success);
-  color: #fff;
+  color: var(--ds-surface, #fff);
 }
 
 .pri-status-completed:hover {
@@ -859,7 +859,7 @@
   left: 50%;
   transform: translateX(-50%) scale(0.95);
   background: var(--pri-gray-800);
-  color: #fff;
+  color: var(--ds-surface, #fff);
   font-size: 11px;
   font-weight: 500;
   padding: 4px 8px;
@@ -1318,7 +1318,7 @@
   gap: 10px;
   padding: 12px 16px;
   background: var(--pri-gray-800);
-  color: #fff;
+  color: var(--ds-surface, #fff);
   border-radius: var(--pri-radius-md);
   box-shadow: var(--pri-shadow-lg);
   font-size: 13px;
@@ -1359,7 +1359,7 @@
 }
 
 .pri-toast-dismiss:hover {
-  color: #fff;
+  color: var(--ds-surface, #fff);
 }
 
 /* ======================== EMPTY STATE ======================== */

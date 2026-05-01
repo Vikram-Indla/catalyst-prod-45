@@ -103,10 +103,10 @@ export interface TestScopeFilters {
 
 // Priority score thresholds for color coding
 export const SCORE_THRESHOLDS = {
-  critical: { min: 90, max: 100, color: '#ef4444', label: 'Critical' },
+  critical: { min: 90, max: 100, color: 'var(--ds-text-danger, #ef4444)', label: 'Critical' },
   high: { min: 70, max: 89, color: '#f97316', label: 'High' },
   medium: { min: 50, max: 69, color: '#eab308', label: 'Medium' },
-  low: { min: 0, max: 49, color: '#94a3b8', label: 'Low' },
+  low: { min: 0, max: 49, color: 'var(--ds-text-subtlest, #94a3b8)', label: 'Low' },
 } as const;
 
 export function getScoreLevel(score: number): 'critical' | 'high' | 'medium' | 'low' {

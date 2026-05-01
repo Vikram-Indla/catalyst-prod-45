@@ -26,7 +26,7 @@ export const WorkItemIcon: React.FC<WorkItemIconProps> = ({ type, size = 16 }) =
   // story
   return (
     <svg width={size} height={size} viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path d="M3 1h10a2 2 0 012 2v10a2 2 0 01-2 2H3a2 2 0 01-2-2V3a2 2 0 012-2z" fill="#16A34A"/>
+      <path d="M3 1h10a2 2 0 012 2v10a2 2 0 01-2 2H3a2 2 0 01-2-2V3a2 2 0 012-2z" fill="var(--ds-text-success, #16A34A)"/>
       <path d="M5 4h6v2H5zM5 7h6v2H5zM5 10h4v2H5z" fill="white" opacity="0.85"/>
     </svg>
   );

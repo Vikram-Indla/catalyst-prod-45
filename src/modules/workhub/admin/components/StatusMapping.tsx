@@ -71,7 +71,7 @@ export function StatusMapping() {
   }
 
   if (isLoading) {
-    return <div style={{ padding: 40, color: '#64748B', fontFamily: 'var(--cp-font-body)' }}>Loading...</div>
+    return <div style={{ padding: 40, color: 'var(--ds-text-subtlest, #64748B)', fontFamily: 'var(--cp-font-body)' }}>Loading...</div>
   }
 
   return (
@@ -80,7 +80,7 @@ export function StatusMapping() {
         <h1 style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 18, fontWeight: 700, color: 'var(--fg-1, #0F172A)', margin: 0 }}>
           Status Mapping
         </h1>
-        <p style={{ fontSize: 13, color: '#64748B', marginTop: 4 }}>
+        <p style={{ fontSize: 13, color: 'var(--ds-text-subtlest, #64748B)', marginTop: 4 }}>
           Map each Jira workflow status to a Catalyst category. Covers Story, Task, Sub-task, Production Incident, and QA Bug workflows.
         </p>
       </div>
@@ -94,7 +94,7 @@ export function StatusMapping() {
             Category Mapping
           </h2>
           <span style={{
-            fontSize: 10, background: '#F1F5F9', color: '#64748B', padding: '2px 8px',
+            fontSize: 10, background: 'var(--ds-surface-sunken, #F1F5F9)', color: 'var(--ds-text-subtlest, #64748B)', padding: '2px 8px',
             borderRadius: 4, fontWeight: 500,
           }}>{totalCount} statuses</span>
         </div>
@@ -124,13 +124,13 @@ export function StatusMapping() {
                 }}>
                   {category}
                 </span>
-                <span style={{ fontSize: 10, color: '#94A3B8' }}>
+                <span style={{ fontSize: 10, color: 'var(--ds-text-subtlest, #94A3B8)' }}>
                   {statuses.length} Jira statuses
                 </span>
                 <button
                   onClick={() => { setAddingTo(addingTo === category ? null : category); setNewStatus('') }}
                   style={{
-                    marginLeft: 'auto', fontSize: 11, color: '#2563EB', background: 'none',
+                    marginLeft: 'auto', fontSize: 11, color: 'var(--ds-text-brand, #2563EB)', background: 'none',
                     border: 'none', cursor: 'pointer', padding: '2px 6px', fontWeight: 500,
                   }}
                 >
@@ -150,7 +150,7 @@ export function StatusMapping() {
                       padding: '4px 10px', borderRadius: 4,
                       background: 'var(--bg-1, #F8FAFC)', border: '1px solid var(--bd-default, #E2E8F0)',
                       fontSize: 12, fontFamily: 'var(--cp-font-mono)',
-                      color: '#334155', fontWeight: 500, cursor: 'grab',
+                      color: 'var(--ds-text-subtle, #334155)', fontWeight: 500, cursor: 'grab',
                     }}
                   >
                     <span style={{
@@ -161,7 +161,7 @@ export function StatusMapping() {
                     <button
                       onClick={() => handleRemoveStatus(category, status)}
                       style={{
-                        fontSize: 10, color: '#94A3B8', background: 'none',
+                        fontSize: 10, color: 'var(--ds-text-subtlest, #94A3B8)', background: 'none',
                         border: 'none', cursor: 'pointer', padding: 0, lineHeight: 1,
                         marginLeft: 2,
                       }}
@@ -188,11 +188,11 @@ export function StatusMapping() {
                   />
                   <button onClick={() => handleAddStatus(category)} style={{
                     padding: '5px 12px', borderRadius: 4, fontSize: 11, fontWeight: 600,
-                    background: '#2563EB', color: '#fff', border: 'none', cursor: 'pointer',
+                    background: 'var(--ds-text-brand, #2563EB)', color: 'var(--ds-surface, #fff)', border: 'none', cursor: 'pointer',
                   }}>Add</button>
                   <button onClick={() => { setAddingTo(null); setNewStatus('') }} style={{
                     padding: '5px 12px', borderRadius: 4, fontSize: 11,
-                    background: 'var(--bg-1, #F8FAFC)', color: '#64748B', border: '1px solid var(--bd-default, #E2E8F0)', cursor: 'pointer',
+                    background: 'var(--bg-1, #F8FAFC)', color: 'var(--ds-text-subtlest, #64748B)', border: '1px solid var(--bd-default, #E2E8F0)', cursor: 'pointer',
                   }}>Cancel</button>
                 </div>
               )}
@@ -206,7 +206,7 @@ export function StatusMapping() {
             disabled={updateConfig.isPending}
             style={{
               padding: '8px 20px', borderRadius: 6, fontSize: 12, fontWeight: 600,
-              background: '#2563EB', color: '#fff', border: 'none', cursor: 'pointer',
+              background: 'var(--ds-text-brand, #2563EB)', color: 'var(--ds-surface, #fff)', border: 'none', cursor: 'pointer',
               opacity: updateConfig.isPending ? 0.6 : 1,
             }}
           >
@@ -216,12 +216,12 @@ export function StatusMapping() {
             onClick={handleReset}
             style={{
               padding: '8px 20px', borderRadius: 6, fontSize: 12, fontWeight: 500,
-              background: 'var(--bg-1, #F8FAFC)', color: '#334155', border: '1px solid var(--bd-default, #E2E8F0)', cursor: 'pointer',
+              background: 'var(--bg-1, #F8FAFC)', color: 'var(--ds-text-subtle, #334155)', border: '1px solid var(--bd-default, #E2E8F0)', cursor: 'pointer',
             }}
           >
             Reset to Default
           </button>
-          <span style={{ marginLeft: 'auto', fontSize: 11, color: '#94A3B8' }}>
+          <span style={{ marginLeft: 'auto', fontSize: 11, color: 'var(--ds-text-subtlest, #94A3B8)' }}>
             Drag statuses between categories to reassign
           </span>
         </div>

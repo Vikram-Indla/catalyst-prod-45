@@ -67,18 +67,18 @@ export type KanbanViewMode = 'board' | 'swimlane';
 
 // Catalyst V5 Color Palette (spec-mandated)
 export const CATALYST_COLORS = {
-  primary: '#2563eb',
-  primaryHover: '#1d4ed8',
-  primaryLight: '#eff6ff',
+  primary: 'var(--ds-text-brand, #2563eb)',
+  primaryHover: 'var(--ds-background-brand-bold-hovered, #1d4ed8)',
+  primaryLight: 'var(--ds-background-selected, #eff6ff)',
   
   teal: '#0d9488',
   tealLight: '#f0fdfa',
   
-  warning: '#d97706',
+  warning: 'var(--ds-text-warning, #d97706)',
   warningLight: '#fffbeb',
   
-  danger: '#ef4444',
-  dangerLight: '#fef2f2',
+  danger: 'var(--ds-text-danger, #ef4444)',
+  dangerLight: 'var(--ds-background-danger, #fef2f2)',
   
   success: '#10b981',
   successLight: '#ecfdf5',
@@ -88,7 +88,7 @@ export const CATALYST_COLORS = {
   
   gray50: '#f9fafb',
   gray100: '#f3f4f6',
-  gray200: '#e5e7eb',
+  gray200: 'var(--ds-border, #e5e7eb)',
   gray300: '#d1d5db',
   gray400: '#9ca3af',
   gray500: '#6b7280',

@@ -28,8 +28,8 @@ function getStatusStyle(category: string): { bg: string; color: string } {
   switch (category) {
     case 'in_progress': return { bg: '#0C66E4', color: 'var(--ds-text-inverse, #FFFFFF)' };
     case 'done': return { bg: '#1B7F37', color: 'var(--ds-text-inverse, #FFFFFF)' };
-    case 'terminal': return { bg: '#DFE1E6', color: '#42526E' };
-    default: return { bg: '#DFE1E6', color: '#42526E' };
+    case 'terminal': return { bg: 'var(--ds-border, #DFE1E6)', color: '#42526E' };
+    default: return { bg: 'var(--ds-border, #DFE1E6)', color: '#42526E' };
   }
 }
 
@@ -47,7 +47,7 @@ function AssigneeAvatar({ name }: { name: string }) {
   const initials = name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
   let hash = 0;
   for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash);
-  const colors = ['#2563EB', '#0D9488', '#7C3AED', '#D97706', '#DC2626', '#16A34A'];
+  const colors = ['var(--ds-text-brand, #2563EB)', '#0D9488', '#7C3AED', 'var(--ds-text-warning, #D97706)', 'var(--ds-text-danger, #DC2626)', 'var(--ds-text-success, #16A34A)'];
   return (
     <div className="w-5 h-5 rounded-full flex items-center justify-center text-[8px] font-bold text-white shrink-0"
       style={{ backgroundColor: colors[Math.abs(hash) % colors.length] }}>
@@ -120,7 +120,7 @@ export function WorkItemTableRow({
         return (
           <td key={col.key} style={{ width: 34, textAlign: 'center', padding: '0 8px' }} onClick={e => e.stopPropagation()}>
             <input type="checkbox" checked={isSelected} onChange={() => {}} onClick={onSelect}
-              className="w-3.5 h-3.5 rounded accent-[#2563EB]" />
+              className="w-3.5 h-3.5 rounded accent-[var(--ds-text-brand,#2563EB)]" />
           </td>
         );
       case 'type':

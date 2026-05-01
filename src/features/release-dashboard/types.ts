@@ -126,9 +126,9 @@ export interface ReleaseDashboardData {
 // Health level configuration - Catalyst V5 compliant
 export const HEALTH_THRESHOLDS = {
   healthy: { min: 85, color: '#0d9488' },
-  attention: { min: 70, color: '#d97706' },
-  at_risk: { min: 50, color: '#d97706' },
-  critical: { min: 0, color: '#ef4444' },
+  attention: { min: 70, color: 'var(--ds-text-warning, #d97706)' },
+  at_risk: { min: 50, color: 'var(--ds-text-warning, #d97706)' },
+  critical: { min: 0, color: 'var(--ds-text-danger, #ef4444)' },
 } as const;
 
 export function getHealthLevel(score: number): 'healthy' | 'attention' | 'at_risk' | 'critical' {
@@ -144,23 +144,23 @@ export function getHealthColor(level: 'healthy' | 'attention' | 'at_risk' | 'cri
 
 // Catalyst V5 Colors
 export const CATALYST_COLORS = {
-  primary: '#2563eb',
+  primary: 'var(--ds-text-brand, #2563eb)',
   teal: '#0d9488',
-  warning: '#d97706',
-  danger: '#ef4444',
+  warning: 'var(--ds-text-warning, #d97706)',
+  danger: 'var(--ds-text-danger, #ef4444)',
   aiPurple: '#8b5cf6',
   aiPurpleEnd: '#6366f1',
   gray: {
-    50: '#f8fafc',
-    100: '#f1f5f9',
-    200: '#e2e8f0',
-    300: '#cbd5e1',
-    400: '#94a3b8',
-    500: '#64748b',
-    600: '#475569',
-    700: '#334155',
+    50: 'var(--ds-surface-sunken, #f8fafc)',
+    100: 'var(--ds-surface-sunken, #f1f5f9)',
+    200: 'var(--ds-border, #e2e8f0)',
+    300: 'var(--ds-text-disabled, #cbd5e1)',
+    400: 'var(--ds-text-subtlest, #94a3b8)',
+    500: 'var(--ds-text-subtlest, #64748b)',
+    600: 'var(--ds-text-subtle, #475569)',
+    700: 'var(--ds-text-subtle, #334155)',
     800: '#1e293b',
-    900: '#0f172a',
+    900: 'var(--ds-text, #0f172a)',
   },
 } as const;
 

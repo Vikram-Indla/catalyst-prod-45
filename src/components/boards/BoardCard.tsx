@@ -56,8 +56,8 @@ export default function BoardCard({ board, projectId, onOpen, onSettings }: Boar
   };
 
   const visibilityChip = () => {
-    if (board.visibility === 'private') return { label: '🔒 Private', bg: 'rgba(217,119,6,0.06)', color: '#D97706' };
-    if (board.visibility === 'global') return { label: '🌐 Organisation', bg: 'rgba(37,99,235,0.06)', color: '#2563EB' };
+    if (board.visibility === 'private') return { label: '🔒 Private', bg: 'rgba(217,119,6,0.06)', color: 'var(--ds-text-warning, #D97706)' };
+    if (board.visibility === 'global') return { label: '🌐 Organisation', bg: 'rgba(37,99,235,0.06)', color: 'var(--ds-text-brand, #2563EB)' };
     return { label: 'Project', bg: 'var(--bg-1)', color: 'var(--fg-3)' };
   };
 
@@ -71,7 +71,7 @@ export default function BoardCard({ board, projectId, onOpen, onSettings }: Boar
         onMouseLeave={() => setHover(false)}
         style={{
           background: 'var(--bg-app)',
-          border: `0.75px solid ${isDark ? (hover ? '#454545' : '#2E2E2E') : (hover ? 'rgba(15,23,42,0.18)' : 'rgba(15,23,42,0.12)')}`,
+          border: `0.75px solid ${isDark ? (hover ? 'var(--ds-border-bold, #454545)' : 'var(--ds-border, #2E2E2E)') : (hover ? 'rgba(15,23,42,0.18)' : 'rgba(15,23,42,0.12)')}`,
           borderRadius: 8, cursor: 'pointer', position: 'relative',
           transition: 'box-shadow 150ms, border-color 150ms',
           boxShadow: hover ? (isDark ? '0 4px 16px rgba(0,0,0,0.30)' : '0 4px 16px rgba(15,23,42,0.10)') : 'none',
@@ -106,7 +106,7 @@ export default function BoardCard({ board, projectId, onOpen, onSettings }: Boar
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               opacity: hover || menuOpen ? 1 : 0, transition: 'opacity 150ms',
             }}>
-              <MoreHorizontal size={15} color="#64748B" />
+              <MoreHorizontal size={15} color="var(--ds-text-subtlest, #64748B)" />
             </button>
             {menuOpen && (
               <div style={{
@@ -140,13 +140,13 @@ export default function BoardCard({ board, projectId, onOpen, onSettings }: Boar
             transition: 'opacity 150ms',
           }}>
             <Star size={15}
-              fill={board.isStarred ? '#D97706' : 'none'}
-              color={board.isStarred ? '#D97706' : '#94A3B8'}
+              fill={board.isStarred ? 'var(--ds-text-warning, #D97706)' : 'none'}
+              color={board.isStarred ? 'var(--ds-text-warning, #D97706)' : 'var(--ds-text-subtlest, #94A3B8)'}
             />
           </button>
 
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5, marginBottom: 10 }}>
-            {board.isPersonal && <Chip bg={'var(--cp-primary-light, #EFF6FF)'} color="#2563EB">Personal</Chip>}
+            {board.isPersonal && <Chip bg={'var(--cp-primary-light, #EFF6FF)'} color="var(--ds-text-brand, #2563EB)">Personal</Chip>}
             <Chip bg={vis.bg} color={vis.color}>{vis.label}</Chip>
             {board.swimlaneType !== 'none' && (
               <Chip bg={'var(--cp-bg-page, #F8FAFC)'} color={'var(--cp-text-tertiary, #64748B)'}>By {board.swimlaneType}</Chip>
@@ -197,7 +197,7 @@ export default function BoardCard({ board, projectId, onOpen, onSettings }: Boar
           <button onClick={e => { e.stopPropagation(); handleOpen(); }} style={{
             display: 'flex', alignItems: 'center', gap: 5, height: 30, padding: '8px 12px',
             background: 'var(--cp-blue)', border: 'none', borderRadius: 6, cursor: 'pointer',
-            fontSize: 11.5, fontWeight: 600, color: '#FFFFFF', fontFamily: 'var(--cp-font-body)',
+            fontSize: 11.5, fontWeight: 600, color: 'var(--ds-surface, #FFFFFF)', fontFamily: 'var(--cp-font-body)',
           }}>
             Open Board <ArrowRight size={12} />
           </button>
@@ -244,7 +244,7 @@ export default function BoardCard({ board, projectId, onOpen, onSettings }: Boar
                   padding: '8px 16px', fontSize: 13, fontWeight: 600, borderRadius: 6,
                   border: 'none',
                   background: deleteConfirm === board.name ? 'var(--sem-danger)' : 'var(--divider)',
-                  color: deleteConfirm === board.name ? '#FFFFFF' : 'var(--fg-4)',
+                  color: deleteConfirm === board.name ? 'var(--ds-surface, #FFFFFF)' : 'var(--fg-4)',
                   cursor: deleteConfirm === board.name ? 'pointer' : 'not-allowed',
                   fontFamily: 'var(--cp-font-body)',
                 }}>
@@ -267,7 +267,7 @@ function MenuItem({ children, onClick, danger }: { children: React.ReactNode; on
       color: danger ? 'var(--sem-danger)' : 'var(--fg-2)',
       fontFamily: 'var(--cp-font-body)', textAlign: 'left',
     }}
-      onMouseEnter={e => (e.currentTarget.style.background = danger ? (document.documentElement.classList.contains('dark') ? 'rgba(220,38,38,0.10)' : '#FEF2F2') : (document.documentElement.classList.contains('dark') ? '#1F1F1F' : 'rgba(15,23,42,0.04)'))}
+      onMouseEnter={e => (e.currentTarget.style.background = danger ? (document.documentElement.classList.contains('dark') ? 'rgba(220,38,38,0.10)' : 'var(--ds-background-danger, #FEF2F2)') : (document.documentElement.classList.contains('dark') ? 'var(--ds-surface-overlay, #1F1F1F)' : 'rgba(15,23,42,0.04)'))}
       onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
     >
       {children}

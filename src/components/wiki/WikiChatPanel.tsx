@@ -77,7 +77,7 @@ export function WikiChatPanel({ open, onClose }: { open: boolean; onClose: () =>
         display: 'flex', alignItems: 'center', gap: 10, flexShrink: 0,
       }}>
         <div style={{ width: 28, height: 28, borderRadius: 6, background: 'var(--cp-blue)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <MessageCircle size={14} style={{ color: '#FFFFFF' }} />
+          <MessageCircle size={14} style={{ color: 'var(--ds-surface, #FFFFFF)' }} />
         </div>
         <div style={{ flex: 1 }}>
           <div style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 13, fontWeight: 700, color: 'var(--fg-1)' }}>Ask Catalyst</div>
@@ -106,7 +106,7 @@ export function WikiChatPanel({ open, onClose }: { open: boolean; onClose: () =>
             <div style={{
               padding: '8px 12px', borderRadius: 8, fontSize: 12.5, lineHeight: 1.5,
               background: m.role === 'user' ? 'var(--cp-blue)' : 'var(--cp-bd-zone)',
-              color: m.role === 'user' ? '#FFFFFF' : 'var(--fg-1)',
+              color: m.role === 'user' ? 'var(--ds-surface, #FFFFFF)' : 'var(--fg-1)',
             }}>
               {m.loading ? (
                 <Loader2 size={14} style={{ animation: 'spin 1s linear infinite', color: 'var(--fg-3)' }} />
@@ -152,14 +152,14 @@ export function WikiChatPanel({ open, onClose }: { open: boolean; onClose: () =>
           style={{
             flex: 1, height: 50, padding: '8px 12px', borderRadius: 8, fontSize: 12.5,
             border: `0.75px solid ${border}`, outline: 'none', fontFamily: 'var(--cp-font-body)',
-            background: isDark ? 'var(--cp-bg-page, #1F1F21)' : 'var(--bg-1)', color: isDark ? '#EDEDED' : undefined,
+            background: isDark ? 'var(--cp-bg-page, #1F1F21)' : 'var(--bg-1)', color: isDark ? 'var(--ds-text, #EDEDED)' : undefined,
           }}
           onFocus={e => { e.currentTarget.style.borderColor = 'var(--cp-blue)'; e.currentTarget.style.boxShadow = '0 0 0 3px rgba(37,99,235,0.08)'; }}
           onBlur={e => { e.currentTarget.style.borderColor = 'var(--cp-border-subtle, rgba(0,0,0,0.06))'; e.currentTarget.style.boxShadow = 'none'; }}
         />
         <button onClick={handleSend} disabled={sending || !input.trim()} style={{
           width: 36, height: 50, borderRadius: 8, border: 'none', cursor: 'pointer',
-          background: 'var(--cp-blue)', color: '#FFFFFF', display: 'flex', alignItems: 'center', justifyContent: 'center',
+          background: 'var(--cp-blue)', color: 'var(--ds-surface, #FFFFFF)', display: 'flex', alignItems: 'center', justifyContent: 'center',
           opacity: sending || !input.trim() ? 0.5 : 1,
         }}>
           <Send size={14} />

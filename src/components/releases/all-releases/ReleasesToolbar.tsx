@@ -50,7 +50,7 @@ export function ReleasesToolbar({
           placeholder="Search releases..."
           value={filter.search}
           onChange={(e) => onSearch(e.target.value)}
-          className="pl-10 bg-white dark:bg-[#1A1A1A] border-slate-200 dark:border-[#2E2E2E]"
+          className="pl-10 bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] border-slate-200 dark:border-[var(--ds-border,#2E2E2E)]"
         />
         {filter.search && (
           <button
@@ -151,7 +151,7 @@ export function ReleasesToolbar({
             "px-3 py-2 flex items-center gap-2 text-sm font-medium transition-colors",
             viewMode === 'table'
               ? "bg-primary text-white"
-              : "bg-white dark:bg-[#1A1A1A] text-slate-600 hover:bg-slate-50 dark:hover:bg-[#0A0A0A]"
+              : "bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] text-slate-600 hover:bg-slate-50 dark:hover:bg-[var(--ds-surface,#0A0A0A)]"
           )}
         >
           <LayoutList className="w-4 h-4" />
@@ -163,7 +163,7 @@ export function ReleasesToolbar({
             "px-3 py-2 flex items-center gap-2 text-sm font-medium transition-colors",
             viewMode === 'timeline'
               ? "bg-primary text-white"
-              : "bg-white dark:bg-[#1A1A1A] text-slate-600 hover:bg-slate-50 dark:hover:bg-[#0A0A0A]"
+              : "bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] text-slate-600 hover:bg-slate-50 dark:hover:bg-[var(--ds-surface,#0A0A0A)]"
           )}
         >
           <GanttChartSquare className="w-4 h-4" />

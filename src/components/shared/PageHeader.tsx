@@ -69,7 +69,7 @@ export function PageHeader({
       {/* Optional subtitle */}
       {subtitle && (
         <p
-          className="text-sm mb-2 text-muted-foreground dark:text-[#A1A1A1]"
+          className="text-sm mb-2 text-muted-foreground dark:text-[var(--ds-text-subtlest,#A1A1A1)]"
         >
           {subtitle}
         </p>

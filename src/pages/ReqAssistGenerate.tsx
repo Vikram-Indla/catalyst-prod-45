@@ -258,7 +258,7 @@ export default function ReqAssistGenerate() {
       <div style={{ padding: '24px 28px' }}>
         {/* HEADER */}
         <div style={{ marginBottom: 24 }}>
-          <button onClick={() => navigate('/product/req-assist')} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, border: 'none', background: 'transparent', cursor: 'pointer', fontSize: 14, color: '#2563EB', fontWeight: 500, marginBottom: 16, padding: 0, fontFamily: 'var(--cp-font-body)' }}>
+          <button onClick={() => navigate('/product/req-assist')} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, border: 'none', background: 'transparent', cursor: 'pointer', fontSize: 14, color: 'var(--ds-text-brand, #2563EB)', fontWeight: 500, marginBottom: 16, padding: 0, fontFamily: 'var(--cp-font-body)' }}>
             <ArrowLeft size={14} /> Back to Library
           </button>
           <h2 style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 24, fontWeight: 700, color: 'var(--cp-text-primary, #111827)', margin: '0 0 6px' }}>Generate BRD from Text</h2>
@@ -287,11 +287,11 @@ export default function ReqAssistGenerate() {
 
           {/* Qualify fail */}
           {qualifyResult && !qualifyResult.qualified && (
-            <div style={{ marginTop: 12, padding: '14px 16px', background: '#FEF2F2', border: '0.75px solid rgba(220,38,38,0.12)', borderRadius: 6, display: 'flex', gap: 10 }}>
-              <div style={{ width: 20, height: 20, borderRadius: '50%', background: '#FEE2E2', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}><X size={12} color="#DC2626" /></div>
+            <div style={{ marginTop: 12, padding: '14px 16px', background: 'var(--ds-background-danger, #FEF2F2)', border: '0.75px solid rgba(220,38,38,0.12)', borderRadius: 6, display: 'flex', gap: 10 }}>
+              <div style={{ width: 20, height: 20, borderRadius: '50%', background: '#FEE2E2', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}><X size={12} color="var(--ds-text-danger, #DC2626)" /></div>
               <div>
-                <div style={{ fontSize: 13, fontWeight: 600, color: '#DC2626', fontFamily: 'var(--cp-font-body)' }}>✗ Not Qualified</div>
-                {qualifyResult.reasons.map((r, i) => <p key={i} style={{ fontSize: 12, color: '#991B1B', margin: '4px 0 0', lineHeight: 1.5, fontFamily: 'var(--cp-font-body)' }}>• {r}</p>)}
+                <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--ds-text-danger, #DC2626)', fontFamily: 'var(--cp-font-body)' }}>✗ Not Qualified</div>
+                {qualifyResult.reasons.map((r, i) => <p key={i} style={{ fontSize: 12, color: 'var(--ds-text-danger, #991B1B)', margin: '4px 0 0', lineHeight: 1.5, fontFamily: 'var(--cp-font-body)' }}>• {r}</p>)}
               </div>
             </div>
           )}
@@ -299,9 +299,9 @@ export default function ReqAssistGenerate() {
           {/* Qualify pass */}
           {qualifyResult && qualifyResult.qualified && (
             <div style={{ marginTop: 12, padding: '14px 16px', background: '#F0FDF4', border: '0.75px solid #DCFCE7', borderRadius: 6, display: 'flex', gap: 10 }}>
-              <div style={{ width: 20, height: 20, borderRadius: '50%', background: '#DCFCE7', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}><Check size={12} color="#16A34A" /></div>
+              <div style={{ width: 20, height: 20, borderRadius: '50%', background: 'var(--ds-background-success, #DCFCE7)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}><Check size={12} color="var(--ds-text-success, #16A34A)" /></div>
               <div>
-                <div style={{ fontSize: 13, fontWeight: 600, color: '#16A34A', fontFamily: 'var(--cp-font-body)' }}>✓ Qualified — Score {qualifyResult.score}/100</div>
+                <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--ds-text-success, #16A34A)', fontFamily: 'var(--cp-font-body)' }}>✓ Qualified — Score {qualifyResult.score}/100</div>
                 {qualifyResult.reasons.map((r, i) => <p key={i} style={{ fontSize: 12, color: '#166534', margin: '4px 0 0', lineHeight: 1.5, fontFamily: 'var(--cp-font-body)' }}>• {r}</p>)}
                 <p style={{ fontSize: 11, color: 'var(--cp-text-tertiary, #64748B)', margin: '6px 0 0', fontFamily: 'var(--cp-font-body)' }}>
                   Domain: {qualifyResult.domain_detected} · ~{qualifyResult.requirement_count_estimate} requirements · {qualifyResult.language.toUpperCase()}
@@ -312,9 +312,9 @@ export default function ReqAssistGenerate() {
 
           {/* Error */}
           {genError && (
-            <div style={{ marginTop: 12, padding: '14px 16px', background: '#FEF2F2', border: '0.75px solid rgba(220,38,38,0.12)', borderRadius: 6 }}>
-              <div style={{ fontSize: 13, fontWeight: 600, color: '#DC2626', fontFamily: 'var(--cp-font-body)' }}>Generation Error</div>
-              <p style={{ fontSize: 12, color: '#991B1B', margin: '4px 0 0', fontFamily: 'var(--cp-font-body)' }}>{sanitiseError(genError)}</p>
+            <div style={{ marginTop: 12, padding: '14px 16px', background: 'var(--ds-background-danger, #FEF2F2)', border: '0.75px solid rgba(220,38,38,0.12)', borderRadius: 6 }}>
+              <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--ds-text-danger, #DC2626)', fontFamily: 'var(--cp-font-body)' }}>Generation Error</div>
+              <p style={{ fontSize: 12, color: 'var(--ds-text-danger, #991B1B)', margin: '4px 0 0', fontFamily: 'var(--cp-font-body)' }}>{sanitiseError(genError)}</p>
             </div>
           )}
 
@@ -348,7 +348,7 @@ export default function ReqAssistGenerate() {
             {/* Header */}
             <div style={{ padding: '12px 16px', borderBottom: `0.75px solid ${'var(--cp-border, #E2E8F0)'}`, display: 'flex', alignItems: 'center', gap: 8 }}>
               <span style={{ fontSize: 14, fontWeight: 650, color: 'var(--cp-text-primary, #0F172A)', fontFamily: 'var(--cp-font-heading)' }}>Generated BRD</span>
-              <span style={{ display: 'inline-flex', alignItems: 'center', padding: '0 6px', height: 20, borderRadius: 4, fontSize: 11, fontWeight: 700, textTransform: 'uppercase' as const, background: '#1B7F37', color: '#FFFFFF' }}>QUALIFIED</span>
+              <span style={{ display: 'inline-flex', alignItems: 'center', padding: '0 6px', height: 20, borderRadius: 4, fontSize: 11, fontWeight: 700, textTransform: 'uppercase' as const, background: '#1B7F37', color: 'var(--ds-surface, #FFFFFF)' }}>QUALIFIED</span>
               <span style={{ fontSize: 11, color: 'var(--cp-text-tertiary, #64748B)', marginLeft: 'auto', fontFamily: 'var(--cp-font-mono)' }}>
                 {genResult.section_count} sections · {genResult.language.toUpperCase()} · {genResult.total_requirements} requirements
               </span>
@@ -381,9 +381,9 @@ export default function ReqAssistGenerate() {
 
             {/* STATE BANNERS */}
             {brdState === 'generated' && (
-              <div style={{ margin: '0 16px 12px', padding: '10px 14px', background: '#FEF2F2', border: '0.75px solid #FECACA', borderRadius: 6, display: 'flex', alignItems: 'center', gap: 8 }}>
-                <AlertTriangle size={15} color="#DC2626" style={{ flexShrink: 0 }} />
-                <span style={{ fontSize: 13, color: '#DC2626', fontFamily: 'var(--cp-font-body)' }}>
+              <div style={{ margin: '0 16px 12px', padding: '10px 14px', background: 'var(--ds-background-danger, #FEF2F2)', border: '0.75px solid #FECACA', borderRadius: 6, display: 'flex', alignItems: 'center', gap: 8 }}>
+                <AlertTriangle size={15} color="var(--ds-text-danger, #DC2626)" style={{ flexShrink: 0 }} />
+                <span style={{ fontSize: 13, color: 'var(--ds-text-danger, #DC2626)', fontFamily: 'var(--cp-font-body)' }}>
                   This BRD has not been saved yet. Save to Library to enable Epics generation and WikiHub sync.
                 </span>
               </div>
@@ -431,7 +431,7 @@ export default function ReqAssistGenerate() {
                     </BtnOutline>
                   )}
                   {wikiState === 'success' && (
-                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5, padding: '8px 16px', borderRadius: 6, background: '#1B7F37', color: '#FFFFFF', fontSize: 14, fontWeight: 600, fontFamily: 'var(--cp-font-body)' }}>
+                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5, padding: '8px 16px', borderRadius: 6, background: '#1B7F37', color: 'var(--ds-surface, #FFFFFF)', fontSize: 14, fontWeight: 600, fontFamily: 'var(--cp-font-body)' }}>
                       <Check size={14} /> In WikiHub
                     </span>
                   )}
@@ -475,7 +475,7 @@ export default function ReqAssistGenerate() {
         <ModalOverlay>
           <div style={{ width: 480, background: 'var(--cp-bg-elevated, #FFFFFF)', borderRadius: 6, padding: 24, fontFamily: 'var(--cp-font-body)' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
-              <AlertTriangle size={20} color="#64748B" />
+              <AlertTriangle size={20} color="var(--ds-text-subtlest, #64748B)" />
               <span style={{ fontSize: 16, fontWeight: 650, color: 'var(--cp-text-primary, #111827)', fontFamily: 'var(--cp-font-heading)' }}>Document Already Exists</span>
             </div>
             <p style={{ fontSize: 14, color: 'var(--cp-text-secondary, #374151)', lineHeight: 1.6, margin: '0 0 20px' }}>
@@ -514,7 +514,7 @@ export default function ReqAssistGenerate() {
               </BtnPrimary>
               <button onClick={() => setOverwriteConfirmOpen(true)} style={{
                 display: 'inline-flex', alignItems: 'center', gap: 6, padding: '8px 16px', fontSize: 14, fontWeight: 500,
-                border: '0.75px solid #DC2626', borderRadius: 6, background: 'transparent', color: '#DC2626', cursor: 'pointer', fontFamily: 'var(--cp-font-body)',
+                border: '0.75px solid #DC2626', borderRadius: 6, background: 'transparent', color: 'var(--ds-text-danger, #DC2626)', cursor: 'pointer', fontFamily: 'var(--cp-font-body)',
               }}>Overwrite</button>
               <BtnGhost onClick={() => { setDupModalOpen(false); setDuplicateDoc(null); }}>Cancel</BtnGhost>
             </div>
@@ -542,7 +542,7 @@ export default function ReqAssistGenerate() {
                 } catch (err: any) { setGenError(err.message); } finally { setGenerating(false); setOverwriteConfirmOpen(false); }
               }} style={{
                 display: 'inline-flex', alignItems: 'center', gap: 6, padding: '8px 16px', fontSize: 14, fontWeight: 600,
-                border: 'none', borderRadius: 6, background: '#DC2626', color: '#FFFFFF', cursor: 'pointer', fontFamily: 'var(--cp-font-body)',
+                border: 'none', borderRadius: 6, background: 'var(--ds-text-danger, #DC2626)', color: 'var(--ds-surface, #FFFFFF)', cursor: 'pointer', fontFamily: 'var(--cp-font-body)',
               }}>Yes, Overwrite</button>
               <BtnGhost onClick={() => setOverwriteConfirmOpen(false)}>Go Back</BtnGhost>
             </div>
@@ -585,7 +585,7 @@ function BtnPrimary({ children, ...props }: React.ButtonHTMLAttributes<HTMLButto
     <button {...props} style={{
       display: 'inline-flex', alignItems: 'center', gap: 6, padding: '8px 16px', fontSize: 14, fontWeight: 600,
       border: 'none', borderRadius: 4, cursor: props.disabled ? 'not-allowed' : 'pointer',
-      background: 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)', color: '#FFFFFF',
+      background: 'linear-gradient(135deg, var(--ds-text-brand, #2563EB) 0%, var(--ds-background-brand-bold-hovered, #1D4ED8) 100%)', color: 'var(--ds-surface, #FFFFFF)',
       fontFamily: 'var(--cp-font-body)',
       opacity: props.disabled ? 0.6 : 1, transition: 'filter 120ms',
       ...props.style,
@@ -598,7 +598,7 @@ function BtnAI({ children, ...props }: React.ButtonHTMLAttributes<HTMLButtonElem
     <button {...props} style={{
       display: 'inline-flex', alignItems: 'center', gap: 6, padding: '8px 16px', fontSize: 14, fontWeight: 600,
       border: 'none', borderRadius: 4, cursor: props.disabled ? 'not-allowed' : 'pointer',
-      background: '#7C3AED', color: '#FFFFFF',
+      background: '#7C3AED', color: 'var(--ds-surface, #FFFFFF)',
       fontFamily: 'var(--cp-font-body)',
       opacity: props.disabled ? 0.6 : 1, transition: 'background 120ms',
       ...props.style,
@@ -636,7 +636,7 @@ function BtnDanger({ children, ...props }: React.ButtonHTMLAttributes<HTMLButton
     <button {...props} style={{
       display: 'inline-flex', alignItems: 'center', gap: 6, padding: '8px 16px', fontSize: 14, fontWeight: 500,
       border: '0.75px solid #DC2626', borderRadius: 6, cursor: 'pointer',
-      background: 'transparent', color: '#DC2626', fontFamily: 'var(--cp-font-body)',
+      background: 'transparent', color: 'var(--ds-text-danger, #DC2626)', fontFamily: 'var(--cp-font-body)',
       ...props.style,
     }}>{children}</button>
   );
@@ -673,7 +673,7 @@ function CatalystTopNav() {
         return (
           <button key={h.label} onClick={() => navigate(h.path)} style={{
             height: 48, padding: '0 14px', fontSize: 13, fontWeight: isActive ? 600 : 400,
-            color: isActive ? '#2563EB' : '#64748B', background: 'transparent', border: 'none', cursor: 'pointer',
+            color: isActive ? 'var(--ds-text-brand, #2563EB)' : 'var(--ds-text-subtlest, #64748B)', background: 'transparent', border: 'none', cursor: 'pointer',
             borderBottom: isActive ? '3px solid #2563EB' : '3px solid transparent', transition: 'color 120ms', fontFamily: 'var(--cp-font-body)',
           }}>{h.label}</button>
         );

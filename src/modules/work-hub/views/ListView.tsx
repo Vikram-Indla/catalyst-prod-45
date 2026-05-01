@@ -159,13 +159,13 @@ function AssigneeCell({ assignee, onAssigneeChange }: {
         </div>
         <div className="flex flex-col max-h-60 overflow-auto p-1">
           <button
-            className="flex items-center gap-2 px-2 py-1.5 text-sm rounded hover:bg-muted transition-colors text-left text-[#2563eb]"
+            className="flex items-center gap-2 px-2 py-1.5 text-sm rounded hover:bg-muted transition-colors text-left text-[var(--ds-text-brand,#2563eb)]"
             onClick={() => onAssigneeChange(null)}
           >
             Unassigned
           </button>
           <button
-            className="flex items-center gap-2 px-2 py-1.5 text-sm rounded hover:bg-[#2563eb]/20 bg-[#2563eb]/10 transition-colors text-left text-[#2563eb] font-medium"
+            className="flex items-center gap-2 px-2 py-1.5 text-sm rounded hover:bg-[var(--ds-text-brand,#2563eb)]/20 bg-[var(--ds-text-brand,#2563eb)]/10 transition-colors text-left text-[var(--ds-text-brand,#2563eb)] font-medium"
             onClick={() => onAssigneeChange({ name: 'Vikram India' })}
           >
             <span className="flex-shrink-0">
@@ -414,7 +414,7 @@ export function ListView() {
                 placeholder="Search list"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-9 h-8 w-44 text-[14px] bg-slate-50 dark:bg-[#111111] border-transparent rounded focus:border-blue-400 focus:bg-white dark:focus:bg-[#1A1A1A] placeholder:text-slate-400 dark:placeholder:text-[#878787]"
+                className="pl-9 h-8 w-44 text-[14px] bg-slate-50 dark:bg-[#111111] border-transparent rounded focus:border-blue-400 focus:bg-white dark:focus:bg-[var(--ds-surface-raised,#1A1A1A)] placeholder:text-slate-400 dark:placeholder:text-[var(--ds-text-subtlest,#878787)]"
               />
             </div>
             {/* Avatar group */}
@@ -423,32 +423,32 @@ export function ListView() {
               maxCount={3}
               data={assigneeOptions.map((a) => ({ key: a.name, name: a.name }))}
             />
-            <Button variant="ghost" size="sm" className="h-8 gap-1 text-[14px] text-slate-600 dark:text-[#A1A1A1] hover:bg-slate-50 dark:hover:bg-[#1F1F1F] font-normal">
+            <Button variant="ghost" size="sm" className="h-8 gap-1 text-[14px] text-slate-600 dark:text-[var(--ds-text-subtlest,#A1A1A1)] hover:bg-slate-50 dark:hover:bg-[var(--ds-surface-overlay,#1F1F1F)] font-normal">
               Filter
               <ChevronDown className="h-4 w-4" />
             </Button>
           </div>
           <div className="flex items-center gap-2">
             <GroupByMenu value={groupBy} onChange={setGroupBy} />
-            <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-slate-50 dark:hover:bg-[#1F1F1F]">
-              <Settings2 className="h-4 w-4 text-slate-500 dark:text-[#878787]" />
+            <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-slate-50 dark:hover:bg-[var(--ds-surface-overlay,#1F1F1F)]">
+              <Settings2 className="h-4 w-4 text-slate-500 dark:text-[var(--ds-text-subtlest,#878787)]" />
             </Button>
-            <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-slate-50 dark:hover:bg-[#1F1F1F]">
-              <MoreHorizontal className="h-4 w-4 text-slate-500 dark:text-[#878787]" />
+            <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-slate-50 dark:hover:bg-[var(--ds-surface-overlay,#1F1F1F)]">
+              <MoreHorizontal className="h-4 w-4 text-slate-500 dark:text-[var(--ds-text-subtlest,#878787)]" />
             </Button>
           </div>
         </div>
 
         {/* Card container wrapping the table */}
         <div className="flex-1 p-4 overflow-hidden">
-          <div className="h-full flex flex-col rounded-lg border border-slate-200 dark:border-[#2E2E2E] bg-white dark:bg-[#1A1A1A] overflow-hidden">
+          <div className="h-full flex flex-col rounded-lg border border-slate-200 dark:border-[var(--ds-border,#2E2E2E)] bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] overflow-hidden">
             {/* Table container with horizontal scroll */}
             <div className="flex-1 overflow-auto">
               <table className="w-full border-collapse" style={{ minWidth: '1100px' }}>
                 <thead className="sticky top-0 z-10">
                   <tr>
                     {/* Checkbox column - center aligned */}
-                    <th scope="col" className="w-10 px-2 py-2 bg-slate-50 dark:bg-[#111111] border-b border-r border-slate-200 dark:border-[#2E2E2E] text-center">
+                    <th scope="col" className="w-10 px-2 py-2 bg-slate-50 dark:bg-[#111111] border-b border-r border-slate-200 dark:border-[var(--ds-border,#2E2E2E)] text-center">
                       <div className="flex justify-center">
                         <Checkbox
                           checked={selectedItems.size === items.length && items.length > 0}
@@ -550,7 +550,7 @@ export function ListView() {
                         className="w-28"
                       />
                     )}
-                    <th scope="col" className="w-10 px-2 py-2 bg-slate-50 dark:bg-[#111111] border-b border-slate-200 dark:border-[#2E2E2E]">
+                    <th scope="col" className="w-10 px-2 py-2 bg-slate-50 dark:bg-[#111111] border-b border-slate-200 dark:border-[var(--ds-border,#2E2E2E)]">
                       <FieldPicker visibleFields={visibleFields} onToggleField={handleToggleField} />
                     </th>
                   </tr>
@@ -563,11 +563,11 @@ export function ListView() {
                           <React.Fragment key={groupKey}>
                             {groupBy !== 'none' && (
                               <tr className="bg-slate-50 dark:bg-[#111111]">
-                                <td colSpan={12} className="px-4 py-2 border-b border-slate-200 dark:border-[#2E2E2E]">
+                                <td colSpan={12} className="px-4 py-2 border-b border-slate-200 dark:border-[var(--ds-border,#2E2E2E)]">
                                   <div className="flex items-center gap-2">
                                     <ChevronDown className="h-4 w-4 text-slate-500" />
-                                    <span className="text-[14px] font-semibold text-slate-900 dark:text-[#EDEDED]">{groupKey}</span>
-                                    <span className="text-[12px] text-slate-500 dark:text-[#878787]">{groupItems.length}</span>
+                                    <span className="text-[14px] font-semibold text-slate-900 dark:text-[var(--ds-text,#EDEDED)]">{groupKey}</span>
+                                    <span className="text-[12px] text-slate-500 dark:text-[var(--ds-text-subtlest,#878787)]">{groupItems.length}</span>
                                   </div>
                                 </td>
                               </tr>
@@ -625,7 +625,7 @@ export function ListView() {
                                             {item.hasChildren ? (
                                               <button 
                                                 onClick={(e) => handleToggleExpand(item.id, e)}
-                                                className="p-0.5 hover:bg-slate-100 dark:hover:bg-[#1F1F1F] rounded transition-colors"
+                                                className="p-0.5 hover:bg-slate-100 dark:hover:bg-[var(--ds-surface-overlay,#1F1F1F)] rounded transition-colors"
                                               >
                                                 <ChevronRight className={cn(
                                                   "h-4 w-4 text-slate-500 transition-transform",
@@ -639,7 +639,7 @@ export function ListView() {
                                             {isHovered && item.hasChildren && (
                                               <button 
                                                 onClick={(e) => e.stopPropagation()}
-                                                className="p-0.5 hover:bg-slate-100 dark:hover:bg-[#1F1F1F] rounded transition-colors ml-0.5"
+                                                className="p-0.5 hover:bg-slate-100 dark:hover:bg-[var(--ds-surface-overlay,#1F1F1F)] rounded transition-colors ml-0.5"
                                               >
                                                 <Plus className="h-3.5 w-3.5 text-slate-500" />
                                               </button>
@@ -681,7 +681,7 @@ export function ListView() {
                                       {/* Comments */}
                                       {isFieldVisible('comments') && (
                                         <TableCell className="w-28" onClick={(e) => e.stopPropagation()}>
-                                          <button className="inline-flex items-center gap-1 text-[14px] text-slate-500 dark:text-[#878787] hover:text-slate-900 dark:hover:text-[#EDEDED] hover:bg-slate-50 dark:hover:bg-[#1F1F1F] rounded px-1 py-0.5 -mx-1 transition-colors">
+                                          <button className="inline-flex items-center gap-1 text-[14px] text-slate-500 dark:text-[var(--ds-text-subtlest,#878787)] hover:text-slate-900 dark:hover:text-[var(--ds-text,#EDEDED)] hover:bg-slate-50 dark:hover:bg-[var(--ds-surface-overlay,#1F1F1F)] rounded px-1 py-0.5 -mx-1 transition-colors">
                                             <MessageSquare className="h-3.5 w-3.5" />
                                             {item.comments > 0 ? (
                                               <span>{item.comments} comment{item.comments > 1 ? 's' : ''}</span>
@@ -728,7 +728,7 @@ export function ListView() {
                                           {item.labels.length > 0 ? (
                                             <div className="flex gap-1 flex-wrap">
                                               {item.labels.map((label) => (
-                                                <span key={label} className="text-[11px] text-slate-600 dark:text-[#A1A1A1] bg-slate-100 dark:bg-[#292929] px-1.5 py-0.5 rounded">
+                                                <span key={label} className="text-[11px] text-slate-600 dark:text-[var(--ds-text-subtlest,#A1A1A1)] bg-slate-100 dark:bg-[var(--ds-border,#292929)] px-1.5 py-0.5 rounded">
                                                   {label}
                                                 </span>
                                               ))}
@@ -744,7 +744,7 @@ export function ListView() {
                                       {/* Created */}
                                       {isFieldVisible('created') && (
                                         <TableCell className="w-28">
-                                          <div className="inline-flex items-center gap-1 text-[14px] text-slate-500 dark:text-[#878787]">
+                                          <div className="inline-flex items-center gap-1 text-[14px] text-slate-500 dark:text-[var(--ds-text-subtlest,#878787)]">
                                             <Calendar className="h-3.5 w-3.5" />
                                             <span>{formatDate(item.created)}</span>
                                           </div>
@@ -769,8 +769,8 @@ export function ListView() {
             </div>
 
             {/* Footer inside card */}
-            <div className="border-t border-slate-200 dark:border-[#2E2E2E] flex items-center justify-between px-4 py-2 bg-white dark:bg-[#1A1A1A] flex-shrink-0">
-              <span className="text-[14px] text-slate-600 dark:text-[#A1A1A1]">
+            <div className="border-t border-slate-200 dark:border-[var(--ds-border,#2E2E2E)] flex items-center justify-between px-4 py-2 bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] flex-shrink-0">
+              <span className="text-[14px] text-slate-600 dark:text-[var(--ds-text-subtlest,#A1A1A1)]">
                 {selectedItems.size > 0 
                   ? `${selectedItems.size} item${selectedItems.size > 1 ? 's' : ''} selected`
                   : `Showing ${sortedItems.length} of ${items.length} items`

@@ -768,7 +768,7 @@ export function HomeContent() {
             >
               {/* Header with blue accent per design system v2.0 */}
               <div className="relative text-[11px] font-bold uppercase tracking-wider mb-3 text-[#525252] dark:text-[#a3a3a3] border-b border-border pb-2">
-                <div className="absolute -left-4 top-0 bottom-0 w-1 bg-[#2563eb] rounded-r" />
+                <div className="absolute -left-4 top-0 bottom-0 w-1 bg-[var(--ds-text-brand,#2563eb)] rounded-r" />
                 My focus
               </div>
               

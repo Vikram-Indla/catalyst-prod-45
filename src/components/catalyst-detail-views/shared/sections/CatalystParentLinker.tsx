@@ -42,7 +42,7 @@ function SidebarAddTrigger({
         cursor: 'pointer', fontSize: 13, color: '#5E6C84', whiteSpace: 'nowrap',
         transition: 'border-color 0.15s, background 0.15s',
       }}
-      onMouseEnter={e => { e.currentTarget.style.borderColor = '#4C9AFF'; e.currentTarget.style.background = '#F4F5F7'; }}
+      onMouseEnter={e => { e.currentTarget.style.borderColor = '#4C9AFF'; e.currentTarget.style.background = 'var(--ds-surface-sunken, #F4F5F7)'; }}
       onMouseLeave={e => { e.currentTarget.style.borderColor = '#C1C7D0'; e.currentTarget.style.background = 'none'; }}
     >
       <Plus size={12} /> {label}
@@ -82,10 +82,10 @@ const PARENT_TOKENS: Record<string, { bg: string; text: string }> = {
   Feature:            { bg: '#E9F2FF', text: '#0055CC' },
   Defect:             { bg: '#FFEBE6', text: '#BF2600' },
   Bug:                { bg: '#FFEBE6', text: '#BF2600' },
-  Task:               { bg: '#DFE1E6', text: '#42526E' },
+  Task:               { bg: 'var(--ds-border, #DFE1E6)', text: '#42526E' },
   'Production Incident': { bg: '#FFF7D6', text: '#7F5F01' },
   'Business Request': { bg: '#FFFAE6', text: '#594300' },
-  default:            { bg: '#F4F5F7', text: '#42526E' },
+  default:            { bg: 'var(--ds-surface-sunken, #F4F5F7)', text: '#42526E' },
 };
 
 function ParentLozenge({
@@ -229,7 +229,7 @@ function BusinessRequestParentPicker({
           <span style={{ fontSize: 14, color: '#292A2E', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', cursor: 'pointer' }}
             onClick={() => onOpenItem?.(currentParent.id)}
           >{currentParent.title}</span>
-          <button onClick={() => updateParent.mutate(null)} title="Remove parent" style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 2, color: '#6B778C', display: 'flex' }}>
+          <button onClick={() => updateParent.mutate(null)} title="Remove parent" style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 2, color: 'var(--ds-text-subtlest, #6B778C)', display: 'flex' }}>
             <X size={12} />
           </button>
         </div>
@@ -241,7 +241,7 @@ function BusinessRequestParentPicker({
       {showPicker && (
         <div style={{
           position: 'absolute', left: 0, right: 0, top: '100%', marginTop: 4,
-          background: '#FFFFFF', border: '1px solid #DFE1E6', borderRadius: 6,
+          background: 'var(--ds-surface, #FFFFFF)', border: '1px solid #DFE1E6', borderRadius: 6,
           boxShadow: '0 8px 16px rgba(9,30,66,0.15)', zIndex: 100, maxHeight: 400, display: 'flex', flexDirection: 'column',
         }}>
           {/* Search */}
@@ -250,13 +250,13 @@ function BusinessRequestParentPicker({
               <Search size={14} color="#5E6C84" />
               <input autoFocus value={search} onChange={e => setSearch(e.target.value)} placeholder="Search business requests…"
                 style={{ border: 'none', outline: 'none', fontSize: 13, color: '#292A2E', width: '100%', fontFamily: 'inherit' }} />
-              {search && <button onClick={() => setSearch('')} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#6B778C', display: 'flex', padding: 0 }}><X size={14} /></button>}
+              {search && <button onClick={() => setSearch('')} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--ds-text-subtlest, #6B778C)', display: 'flex', padding: 0 }}><X size={14} /></button>}
             </div>
           </div>
           <div style={{ overflowY: 'auto', maxHeight: 340 }}>
             {renderBrGroup('ACTIVE', active, issue?.parent_key, (key) => updateParent.mutate(key))}
             {renderBrGroup('DONE', done, issue?.parent_key, (key) => updateParent.mutate(key))}
-            {filtered.length === 0 && <div style={{ padding: '16px', fontSize: 13, color: '#6B778C', textAlign: 'center' }}>No matching business requests</div>}
+            {filtered.length === 0 && <div style={{ padding: '16px', fontSize: 13, color: 'var(--ds-text-subtlest, #6B778C)', textAlign: 'center' }}>No matching business requests</div>}
           </div>
         </div>
       )}
@@ -273,7 +273,7 @@ function renderBrGroup(
   const DONE_STEPS = ['done', 'completed', 'closed', 'cancelled', 'rejected'];
   return (
     <>
-      <div style={{ fontSize: 11, fontWeight: 700, color: '#6B778C', textTransform: 'uppercase', letterSpacing: '0.05em', padding: '8px 12px 4px' }}>{label}</div>
+      <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--ds-text-subtlest, #6B778C)', textTransform: 'uppercase', letterSpacing: '0.05em', padding: '8px 12px 4px' }}>{label}</div>
       {items.map(item => {
         const isSelected = currentParentKey === item.request_key;
         const statusCat = DONE_STEPS.includes(item.process_step?.toLowerCase()) ? 'done' : 
@@ -284,7 +284,7 @@ function renderBrGroup(
               display: 'flex', alignItems: 'center', gap: 8, padding: '8px 12px',
               cursor: 'pointer', background: isSelected ? '#DEEBFF' : 'transparent', transition: 'background 80ms',
             }}
-            onMouseEnter={e => { if (!isSelected) e.currentTarget.style.background = '#F4F5F7'; }}
+            onMouseEnter={e => { if (!isSelected) e.currentTarget.style.background = 'var(--ds-surface-sunken, #F4F5F7)'; }}
             onMouseLeave={e => { e.currentTarget.style.background = isSelected ? '#DEEBFF' : 'transparent'; }}
           >
             <IssueIcon type="Business Request" size={14} />
@@ -405,7 +405,7 @@ function SingleParentPicker({
             parentSummary={currentParent.summary}
             onClick={() => onOpenItem?.(currentParent.id)}
           />
-          <button onClick={() => updateParent.mutate(null)} title="Remove parent" style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 2, color: '#6B778C', display: 'flex' }}>
+          <button onClick={() => updateParent.mutate(null)} title="Remove parent" style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 2, color: 'var(--ds-text-subtlest, #6B778C)', display: 'flex' }}>
             <X size={12} />
           </button>
         </div>
@@ -432,7 +432,7 @@ function SingleParentPicker({
               ph_issues (e.g. BAU-4466 lives in a separate Features/Epic
               table). The clickable key + icon already signal "parent
               exists"; the suffix made functional rows look broken. */}
-          <button onClick={() => updateParent.mutate(null)} title="Remove parent" style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 2, color: '#6B778C', display: 'flex', marginLeft: 'auto' }}>
+          <button onClick={() => updateParent.mutate(null)} title="Remove parent" style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 2, color: 'var(--ds-text-subtlest, #6B778C)', display: 'flex', marginLeft: 'auto' }}>
             <X size={12} />
           </button>
         </div>
@@ -444,7 +444,7 @@ function SingleParentPicker({
       {showPicker && (
         <div style={{
           position: 'absolute', left: 0, right: 0, top: '100%', marginTop: 4,
-          background: '#FFFFFF', border: '1px solid #DFE1E6', borderRadius: 6,
+          background: 'var(--ds-surface, #FFFFFF)', border: '1px solid #DFE1E6', borderRadius: 6,
           boxShadow: '0 8px 16px rgba(9,30,66,0.15)', zIndex: 100, maxHeight: 400, display: 'flex', flexDirection: 'column',
         }}>
           {/* Search */}
@@ -453,13 +453,13 @@ function SingleParentPicker({
               <Search size={14} color="#5E6C84" />
               <input autoFocus value={search} onChange={e => setSearch(e.target.value)} placeholder="Search…"
                 style={{ border: 'none', outline: 'none', fontSize: 13, color: '#292A2E', width: '100%', fontFamily: 'inherit' }} />
-              {search && <button onClick={() => setSearch('')} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#6B778C', display: 'flex', padding: 0 }}><X size={14} /></button>}
+              {search && <button onClick={() => setSearch('')} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--ds-text-subtlest, #6B778C)', display: 'flex', padding: 0 }}><X size={14} /></button>}
             </div>
           </div>
           <div style={{ overflowY: 'auto', maxHeight: 340 }}>
             {renderGroup('ACTIVE', active, issue?.parent_key, (key) => updateParent.mutate(key))}
             {renderGroup('DONE', done, issue?.parent_key, (key) => updateParent.mutate(key))}
-            {filtered.length === 0 && <div style={{ padding: '16px', fontSize: 13, color: '#6B778C', textAlign: 'center' }}>No matching items</div>}
+            {filtered.length === 0 && <div style={{ padding: '16px', fontSize: 13, color: 'var(--ds-text-subtlest, #6B778C)', textAlign: 'center' }}>No matching items</div>}
           </div>
         </div>
       )}
@@ -590,7 +590,7 @@ function MultiLinkPicker({
                   onClick={() => onOpenItem?.(link.id)}
                 >{link.summary}</span>
                 <StatusLozenge status={link.status} category={link.status_category} />
-                <button onClick={() => removeLink.mutate(link.linkId)} title="Remove link" style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 2, color: '#6B778C', display: 'flex' }}>
+                <button onClick={() => removeLink.mutate(link.linkId)} title="Remove link" style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 2, color: 'var(--ds-text-subtlest, #6B778C)', display: 'flex' }}>
                   <X size={12} />
                 </button>
               </div>
@@ -604,7 +604,7 @@ function MultiLinkPicker({
         {showPicker && (
           <div style={{
             position: 'absolute', left: 0, right: 0, top: '100%', marginTop: 4,
-            background: '#FFFFFF', border: '1px solid #DFE1E6', borderRadius: 6,
+            background: 'var(--ds-surface, #FFFFFF)', border: '1px solid #DFE1E6', borderRadius: 6,
             boxShadow: '0 8px 16px rgba(9,30,66,0.15)', zIndex: 100, maxHeight: 400, display: 'flex', flexDirection: 'column',
           }}>
             <div style={{ padding: '8px 12px', borderBottom: '1px solid #F4F5F7' }}>
@@ -612,13 +612,13 @@ function MultiLinkPicker({
                 <Search size={14} color="#5E6C84" />
                 <input autoFocus value={search} onChange={e => setSearch(e.target.value)} placeholder="Search…"
                   style={{ border: 'none', outline: 'none', fontSize: 13, color: '#292A2E', width: '100%', fontFamily: 'inherit' }} />
-                {search && <button onClick={() => setSearch('')} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#6B778C', display: 'flex', padding: 0 }}><X size={14} /></button>}
+                {search && <button onClick={() => setSearch('')} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--ds-text-subtlest, #6B778C)', display: 'flex', padding: 0 }}><X size={14} /></button>}
               </div>
             </div>
             <div style={{ overflowY: 'auto', maxHeight: 340 }}>
               {renderGroupMulti('ACTIVE', active, linkedIds, toggleLink)}
               {renderGroupMulti('DONE', done, linkedIds, toggleLink)}
-              {filtered.length === 0 && <div style={{ padding: '16px', fontSize: 13, color: '#6B778C', textAlign: 'center' }}>No matching items</div>}
+              {filtered.length === 0 && <div style={{ padding: '16px', fontSize: 13, color: 'var(--ds-text-subtlest, #6B778C)', textAlign: 'center' }}>No matching items</div>}
             </div>
           </div>
         )}
@@ -639,7 +639,7 @@ function renderGroup(
   if (items.length === 0) return null;
   return (
     <>
-      <div style={{ fontSize: 11, fontWeight: 700, color: '#6B778C', textTransform: 'uppercase', letterSpacing: '0.05em', padding: '8px 12px 4px' }}>{label}</div>
+      <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--ds-text-subtlest, #6B778C)', textTransform: 'uppercase', letterSpacing: '0.05em', padding: '8px 12px 4px' }}>{label}</div>
       {items.map(item => {
         const isSelected = currentParentKey === item.issue_key;
         return (
@@ -648,7 +648,7 @@ function renderGroup(
               display: 'flex', alignItems: 'center', gap: 8, padding: '8px 12px',
               cursor: 'pointer', background: isSelected ? '#DEEBFF' : 'transparent', transition: 'background 80ms',
             }}
-            onMouseEnter={e => { if (!isSelected) e.currentTarget.style.background = '#F4F5F7'; }}
+            onMouseEnter={e => { if (!isSelected) e.currentTarget.style.background = 'var(--ds-surface-sunken, #F4F5F7)'; }}
             onMouseLeave={e => { e.currentTarget.style.background = isSelected ? '#DEEBFF' : 'transparent'; }}
           >
             <IssueIcon type={item.issue_type} size={14} />
@@ -671,7 +671,7 @@ function renderGroupMulti(
   if (items.length === 0) return null;
   return (
     <>
-      <div style={{ fontSize: 11, fontWeight: 700, color: '#6B778C', textTransform: 'uppercase', letterSpacing: '0.05em', padding: '8px 12px 4px' }}>{label}</div>
+      <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--ds-text-subtlest, #6B778C)', textTransform: 'uppercase', letterSpacing: '0.05em', padding: '8px 12px 4px' }}>{label}</div>
       {items.map(item => {
         const isLinked = linkedIds.has(item.id);
         return (
@@ -680,18 +680,18 @@ function renderGroupMulti(
               display: 'flex', alignItems: 'center', gap: 8, padding: '8px 12px',
               cursor: 'pointer', background: isLinked ? '#DEEBFF' : 'transparent', transition: 'background 80ms',
             }}
-            onMouseEnter={e => { if (!isLinked) e.currentTarget.style.background = '#F4F5F7'; }}
+            onMouseEnter={e => { if (!isLinked) e.currentTarget.style.background = 'var(--ds-surface-sunken, #F4F5F7)'; }}
             onMouseLeave={e => { e.currentTarget.style.background = isLinked ? '#DEEBFF' : 'transparent'; }}
           >
             {/* Checkbox */}
             <div style={{
               width: 16, height: 16, borderRadius: 3, flexShrink: 0,
-              border: `1.5px solid ${isLinked ? '#2563EB' : '#C1C7D0'}`,
-              background: isLinked ? '#2563EB' : '#FFF',
+              border: `1.5px solid ${isLinked ? 'var(--ds-text-brand, #2563EB)' : '#C1C7D0'}`,
+              background: isLinked ? 'var(--ds-text-brand, #2563EB)' : 'var(--ds-surface, #FFF)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               transition: 'background 0.12s, border-color 0.12s',
             }}>
-              {isLinked && <Check size={10} color="#FFF" strokeWidth={3} />}
+              {isLinked && <Check size={10} color="var(--ds-surface, #FFF)" strokeWidth={3} />}
             </div>
             <IssueIcon type={item.issue_type} size={14} />
             <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 12, color: '#5E6C84', flexShrink: 0 }}>{item.issue_key}</span>

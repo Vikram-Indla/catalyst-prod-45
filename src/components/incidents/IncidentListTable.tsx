@@ -458,7 +458,7 @@ export function IncidentListTable({
                               </p>
                             }
                           >
-                            <AlertTriangle className="h-3.5 w-3.5 ml-1 text-[#f59e0b] shrink-0" />
+                            <AlertTriangle className="h-3.5 w-3.5 ml-1 text-[var(--ds-text-warning,#f59e0b)] shrink-0" />
                           </Tooltip>
                         )}
                       </div>

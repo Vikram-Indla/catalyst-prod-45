@@ -140,8 +140,8 @@ export function SummaryMetricCards({ stats, onStatusFilter }: SummaryMetricCards
             onClick={() => onStatusFilter(metric.filterValue)}
             className={cn(
               'bg-background rounded-xl border p-4 text-left transition-all',
-              'hover:shadow-md hover:border-[#2563eb]/30 cursor-pointer',
-              'focus:outline-none focus:ring-2 focus:ring-[#2563eb]/20'
+              'hover:shadow-md hover:border-[var(--ds-text-brand,#2563eb)]/30 cursor-pointer',
+              'focus:outline-none focus:ring-2 focus:ring-[var(--ds-text-brand,#2563eb)]/20'
             )}
           >
             <div className="flex items-start gap-3">

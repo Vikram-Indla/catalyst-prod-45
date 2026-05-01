@@ -167,7 +167,7 @@ export function QueryResultRenderer({ result, onItemClick, onFollowUp }: {
                     marginLeft: 'auto', fontSize: 10, fontWeight: 700, textTransform: 'uppercase',
                     padding: '2px 8px', borderRadius: 4,
                     background: r.health === 'on-track' ? 'var(--sem-success)' : 'var(--sem-warning-bg)',
-                    color: r.health === 'on-track' ? '#FFFFFF' : 'var(--sem-warning)',
+                    color: r.health === 'on-track' ? 'var(--ds-surface, #FFFFFF)' : 'var(--sem-warning)',
                   }}>
                     {r.health === 'on-track' ? 'ON TRACK' : 'AT RISK'}
                   </span>

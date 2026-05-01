@@ -165,14 +165,14 @@ export function UnifiedSidebar({
           // switching workspaces. 56px matches Jira and fits the 28px badge
           // with 14px padding either side.
           width: expanded ? '240px' : '56px',
-          // Canonical chrome token — resolves to #F8FAFC (light) / #22272B (dark, ADS surface).
+          // Canonical chrome token — resolves to var(--ds-surface-sunken, #F8FAFC) (light) / var(--ds-surface-raised, #22272B) (dark, ADS surface).
           // Was `var(--surface-1)` raw (invalid CSS — HSL triple without hsl() wrapper),
           // which broke the elevation hierarchy on /for-you and program/project shells
           // (sidebar over-elevated, header collapsed into canvas). 2026-04-30 fix.
           background: 'var(--cp-bg-sidebar-hdr)',
           // 2026-04-30 (Vikram critique — "ugly divider"): in Jira parity the
           // sidebar/header form ONE continuous chrome surface, with the canvas
-          // (#1D2125 dark / hub-page light) providing natural contrast on the
+          // (var(--ds-surface, #1D2125) dark / hub-page light) providing natural contrast on the
           // right. The 1px solid `var(--cp-bd)` line drew an unwanted vertical
           // seam against the header chrome. We drop it — the bg-vs-canvas
           // delta is enough separation in both modes.
@@ -350,10 +350,10 @@ export function UnifiedSidebar({
                         "w-5 h-5 flex items-center justify-center rounded transition-opacity",
                         starred ? "opacity-100" : "opacity-0 group-hover:opacity-100"
                       )}
-                      style={{ color: starred ? '#f59e0b' : 'var(--text-4)' }}
+                      style={{ color: starred ? 'var(--ds-text-warning, #f59e0b)' : 'var(--text-4)' }}
                       onMouseEnter={(e) => {
                         if (!starred) {
-                          e.currentTarget.style.color = '#f59e0b';
+                          e.currentTarget.style.color = 'var(--ds-text-warning, #f59e0b)';
                           e.currentTarget.style.background = 'rgba(245, 158, 11, 0.1)';
                         }
                       }}

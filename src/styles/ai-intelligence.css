@@ -8,22 +8,22 @@
   --rai-ink-secondary: #18181B;
   --rai-ink-tertiary: #3F3F46;
   --rai-ink-muted: #71717A;
-  --rai-surface: #FFFFFF;
+  --rai-surface: var(--ds-surface, #FFFFFF);
   --rai-surface-secondary: #FAFAFA;
   --rai-surface-tertiary: #F4F4F5;
   --rai-border: #E4E4E7;
   --rai-border-strong: #D4D4D8;
-  --rai-primary: #2563EB;
-  --rai-primary-hover: #1D4ED8;
-  --rai-primary-bg: #EFF6FF;
+  --rai-primary: var(--ds-text-brand, #2563EB);
+  --rai-primary-hover: var(--ds-background-brand-bold-hovered, #1D4ED8);
+  --rai-primary-bg: var(--ds-background-selected, #EFF6FF);
   --rai-teal: #0D9488;
   --rai-teal-bg: #F0FDFA;
-  --rai-success: #16A34A;
+  --rai-success: var(--ds-text-success, #16A34A);
   --rai-success-bg: #F0FDF4;
-  --rai-warning: #D97706;
+  --rai-warning: var(--ds-text-warning, #D97706);
   --rai-warning-bg: #FFFBEB;
-  --rai-danger: #DC2626;
-  --rai-danger-bg: #FEF2F2;
+  --rai-danger: var(--ds-text-danger, #DC2626);
+  --rai-danger-bg: var(--ds-background-danger, #FEF2F2);
   --rai-purple: #7C3AED;
   --rai-purple-bg: #F5F3FF;
 
@@ -794,7 +794,7 @@
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(90deg, transparent 0%, #454545 50%, transparent 100%);
+  background: linear-gradient(90deg, transparent 0%, var(--ds-border-bold, #454545) 50%, transparent 100%);
   animation: raiShimmer 4s infinite;
   pointer-events: none;
 }
@@ -964,16 +964,16 @@
    ═══════════════════════════════════════════════════════════ */
 .dark [data-module="ai-intelligence"] , [data-theme="dark"] [data-module="ai-intelligence"] {
   --rai-ink: var(--fg-1, #EDEDED);
-  --rai-ink-secondary: #EDEDED;
+  --rai-ink-secondary: var(--ds-text, #EDEDED);
   --rai-ink-tertiary: var(--fg-3, #878787);
   --rai-ink-muted: var(--fg-4, rgba(237,237,237,0.30));
   --rai-surface: var(--cp-bg-page, #1F1F21);
   --rai-surface-secondary: var(--cp-bg-surface, #242528);
-  --rai-surface-tertiary: #292929;
-  --rai-border: #2E2E2E;
-  --rai-border-strong: #454545;
-  --rai-primary: #60A5FA;
-  --rai-primary-hover: #3B82F6;
+  --rai-surface-tertiary: var(--ds-border, #292929);
+  --rai-border: var(--ds-border, #2E2E2E);
+  --rai-border-strong: var(--ds-border-bold, #454545);
+  --rai-primary: var(--ds-text-brand, #60A5FA);
+  --rai-primary-hover: var(--ds-text-brand, #3B82F6);
   --rai-primary-bg: rgba(59,130,246,0.10);
   --rai-teal: #5EEAD4;
   --rai-teal-bg: rgba(94,234,212,0.10);
@@ -981,7 +981,7 @@
   --rai-success-bg: rgba(74,222,128,0.12);
   --rai-warning: #FDE68A;
   --rai-warning-bg: rgba(253,230,138,0.10);
-  --rai-danger: #FCA5A5;
+  --rai-danger: var(--ds-border-danger, #FCA5A5);
   --rai-danger-bg: rgba(239,68,68,0.10);
   --rai-purple: #A78BFA;
   --rai-purple-bg: rgba(167,139,250,0.10);

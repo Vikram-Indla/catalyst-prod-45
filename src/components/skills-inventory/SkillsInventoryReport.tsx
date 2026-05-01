@@ -88,7 +88,7 @@ export const SkillsInventoryReport: React.FC = () => {
         scale: 2,
         useCORS: true,
         logging: false,
-        backgroundColor: '#ffffff'
+        backgroundColor: 'var(--ds-surface, #ffffff)'
       });
       
       const imgData = canvas.toDataURL('image/png');

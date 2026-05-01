@@ -69,7 +69,7 @@ export function AllWorkEmptyState({ type, message, query, onAction, onClear, onR
         isError || type === 'no-items' ? (
           <button
             onClick={actionHandler}
-            className="px-4 py-2 text-[13px] font-medium rounded-md text-white transition-colors duration-[80ms] hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#2563EB]"
+            className="px-4 py-2 text-[13px] font-medium rounded-md text-white transition-colors duration-[80ms] hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ds-text-brand,#2563EB)]"
             style={{ backgroundColor: isError ? 'var(--sem-danger)' : 'var(--cp-blue)' }}
           >
             {actionLabel}
@@ -77,7 +77,7 @@ export function AllWorkEmptyState({ type, message, query, onAction, onClear, onR
         ) : (
           <button
             onClick={actionHandler}
-            className="text-[13px] font-medium transition-colors duration-[80ms] focus-visible:outline-2 focus-visible:outline-[#2563EB]"
+            className="text-[13px] font-medium transition-colors duration-[80ms] focus-visible:outline-2 focus-visible:outline-[var(--ds-text-brand,#2563EB)]"
             style={{ color: 'var(--cp-blue)' }}
           >
             {actionLabel}

@@ -67,12 +67,12 @@ const TOKENS = `
   --srd-ink-m:#71717A;
   --srd-bg:var(--ds-text-inverse, #FFFFFF); --srd-bg-2:#FAFAFA; --srd-bg-3:#F4F4F5;
   --srd-bdr:#E4E4E7; --srd-bdr-s:#D4D4D8;
-  --srd-blue:#2563EB; --srd-blue-h:#1D4ED8; --srd-blue-bg:#EFF6FF; --srd-blue-bdr:#BFDBFE;
+  --srd-blue:var(--ds-text-brand, #2563EB); --srd-blue-h:var(--ds-background-brand-bold-hovered, #1D4ED8); --srd-blue-bg:var(--ds-background-selected, #EFF6FF); --srd-blue-bdr:#BFDBFE;
   --srd-teal:#0D9488; --srd-teal-t:#0A8277; --srd-teal-bg:#F0FDFA;
-  --srd-green:#16A34A; --srd-green-t:#11853D; --srd-green-bg:#F0FDF4;
-  --srd-red:#DC2626; --srd-red-t:#D92525; --srd-red-bg:#FEF2F2;
-  --srd-purple:#2563EB;
-  --srd-ai:#2563EB; --srd-ai-d:#1E40AF; --srd-ai-bg:#EFF6FF; --srd-ai-bdr:#93C5FD;
+  --srd-green:var(--ds-text-success, #16A34A); --srd-green-t:#11853D; --srd-green-bg:#F0FDF4;
+  --srd-red:var(--ds-text-danger, #DC2626); --srd-red-t:#D92525; --srd-red-bg:var(--ds-background-danger, #FEF2F2);
+  --srd-purple:var(--ds-text-brand, #2563EB);
+  --srd-ai:var(--ds-text-brand, #2563EB); --srd-ai-d:#1E40AF; --srd-ai-bg:var(--ds-background-selected, #EFF6FF); --srd-ai-bdr:#93C5FD;
   --srd-r:4px; --srd-r2:6px; --srd-r3:8px; --srd-r4:12px; --srd-pill:9999px;
   font-family: var(--cp-font-body); color:var(--srd-ink);
   -webkit-font-smoothing:antialiased; line-height:1.5;
@@ -84,13 +84,13 @@ const TOKENS = `
   --srd-ink-2: rgba(255,255,255,0.72);
   --srd-ink-3: rgba(255,255,255,0.72);
   --srd-ink-m: rgba(255,255,255,0.60);
-  --srd-bg: #0A0A0A;
-  --srd-bg-2: #0A0A0A;
-  --srd-bg-3: #292929;
-  --srd-bdr: #2E2E2E;
-  --srd-bdr-s: #454545;
-  --srd-blue: #3B82F6;
-  --srd-blue-h: #60A5FA;
+  --srd-bg: var(--ds-surface, #0A0A0A);
+  --srd-bg-2: var(--ds-surface, #0A0A0A);
+  --srd-bg-3: var(--ds-border, #292929);
+  --srd-bdr: var(--ds-border, #2E2E2E);
+  --srd-bdr-s: var(--ds-border-bold, #454545);
+  --srd-blue: var(--ds-text-brand, #3B82F6);
+  --srd-blue-h: var(--ds-text-brand, #60A5FA);
   --srd-blue-bg: rgba(59,130,246,0.08);
   --srd-blue-bdr: rgba(59,130,246,0.16);
   --srd-teal: #5EEAD4;
@@ -99,12 +99,12 @@ const TOKENS = `
   --srd-green: #4ADE80;
   --srd-green-t: #4ADE80;
   --srd-green-bg: rgba(74,222,128,0.08);
-  --srd-red: #FCA5A5;
-  --srd-red-t: #FCA5A5;
+  --srd-red: var(--ds-border-danger, #FCA5A5);
+  --srd-red-t: var(--ds-border-danger, #FCA5A5);
   --srd-red-bg: rgba(239,68,68,0.10);
-  --srd-purple: #60A5FA;
-  --srd-ai: #3B82F6;
-  --srd-ai-d: #60A5FA;
+  --srd-purple: var(--ds-text-brand, #60A5FA);
+  --srd-ai: var(--ds-text-brand, #3B82F6);
+  --srd-ai-d: var(--ds-text-brand, #60A5FA);
   --srd-ai-bg: rgba(59,130,246,0.08);
   --srd-ai-bdr: rgba(59,130,246,0.16);
 }
@@ -257,7 +257,7 @@ export default function StrategyRoomDashboard({
               <Ico d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3" />Download Brief
             </button>
           )}
-          <button className="srd-btn-p" onClick={onOpenBrief} style={{ height: 32, padding: '0 14px', fontFamily: 'var(--cp-font-body)', fontSize: 13, fontWeight: 600, borderRadius: 'var(--srd-r2)', cursor: 'pointer', ...F(6), border: '1px solid var(--srd-blue)', background: 'var(--srd-blue)', color: '#fff', transition: 'all .15s' }}>
+          <button className="srd-btn-p" onClick={onOpenBrief} style={{ height: 32, padding: '0 14px', fontFamily: 'var(--cp-font-body)', fontSize: 13, fontWeight: 600, borderRadius: 'var(--srd-r2)', cursor: 'pointer', ...F(6), border: '1px solid var(--srd-blue)', background: 'var(--srd-blue)', color: 'var(--ds-surface, #fff)', transition: 'all .15s' }}>
             <Ico d="M13 2L3 14h9l-1 8 10-12h-9l1-8" />AI Intelligence
           </button>
           <button className="srd-btn" style={{ width: 32, height: 32, padding: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid transparent', borderRadius: 'var(--srd-r2)', cursor: 'pointer', background: 'none', color: 'var(--srd-ink-2)' }}>
@@ -279,7 +279,7 @@ export default function StrategyRoomDashboard({
                 onKeyDown={e => { if (e.key === 'Enter') saveVision(); if (e.key === 'Escape') cancelEditVision(); }}
                 style={{ flex: 1, fontWeight: 500, color: 'var(--srd-ink-2)', fontSize: 13, fontFamily: 'var(--cp-font-body)', background: 'var(--srd-bg)', border: '1px solid var(--srd-blue-bdr)', borderRadius: 'var(--srd-r)', padding: '4px 10px', outline: 'none' }}
               />
-              <button onClick={saveVision} style={{ width: 26, height: 26, borderRadius: 'var(--srd-r)', background: 'var(--srd-blue)', color: '#fff', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}><Check size={14} /></button>
+              <button onClick={saveVision} style={{ width: 26, height: 26, borderRadius: 'var(--srd-r)', background: 'var(--srd-blue)', color: 'var(--ds-surface, #fff)', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}><Check size={14} /></button>
               <button onClick={cancelEditVision} style={{ width: 26, height: 26, borderRadius: 'var(--srd-r)', background: 'var(--srd-bg)', color: 'var(--srd-ink-m)', border: '1px solid var(--srd-bdr)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}><X size={14} /></button>
             </div>
           ) : (

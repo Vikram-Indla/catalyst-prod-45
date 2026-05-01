@@ -53,17 +53,17 @@ function LinkTypeDropdown({ value, onChange }: { value: string; onChange: (v: st
     <div ref={ref} style={{ position: 'relative', flexShrink: 0 }}>
       <button onClick={() => setOpen(o => !o)} style={{
         height: 36, padding: '0 10px', border: open ? '2px solid #4C9AFF' : '1px solid #DFE1E6',
-        borderRadius: 3, fontSize: 14, fontFamily: 'inherit', background: '#fff', cursor: 'pointer',
-        display: 'flex', alignItems: 'center', gap: 6, color: '#172B4D', minWidth: 160,
+        borderRadius: 3, fontSize: 14, fontFamily: 'inherit', background: 'var(--ds-surface, #fff)', cursor: 'pointer',
+        display: 'flex', alignItems: 'center', gap: 6, color: 'var(--ds-text, #172B4D)', minWidth: 160,
         transition: 'border-color 0.15s',
       }}>
         <span style={{ flex: 1, textAlign: 'left' }}>{value}</span>
-        <ChevronDown size={14} color="#6B778C" />
+        <ChevronDown size={14} color="var(--ds-text-subtlest, #6B778C)" />
       </button>
       {open && (
         <div style={{
           position: 'absolute', top: 'calc(100% + 2px)', left: 0, minWidth: 200,
-          background: '#fff', border: '1px solid #DFE1E6', borderRadius: 4,
+          background: 'var(--ds-surface, #fff)', border: '1px solid #DFE1E6', borderRadius: 4,
           boxShadow: '0 4px 8px rgba(9,30,66,.25)', zIndex: 60, overflow: 'hidden',
           maxHeight: 320, overflowY: 'auto',
         }}>
@@ -71,10 +71,10 @@ function LinkTypeDropdown({ value, onChange }: { value: string; onChange: (v: st
             <div key={opt} onClick={() => { onChange(opt); setOpen(false); }}
               style={{
                 display: 'flex', alignItems: 'center', height: 36, padding: '0 12px',
-                cursor: 'pointer', fontSize: 14, color: '#172B4D',
+                cursor: 'pointer', fontSize: 14, color: 'var(--ds-text, #172B4D)',
                 background: opt === value ? '#DEEBFF' : 'transparent',
               }}
-              onMouseEnter={e => { if (opt !== value) (e.currentTarget as HTMLElement).style.background = '#F4F5F7'; }}
+              onMouseEnter={e => { if (opt !== value) (e.currentTarget as HTMLElement).style.background = 'var(--ds-surface-sunken, #F4F5F7)'; }}
               onMouseLeave={e => { if (opt !== value) (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
             >
               <span>{opt}</span>
@@ -222,7 +222,7 @@ function AddLinkRow({ issueKey, onClose, onSuccess, onCreateNew, existingLinkedK
           style={{
             flex: 1, minHeight: 36, display: 'flex', flexWrap: 'wrap', alignItems: 'center',
             gap: 4, padding: '4px 8px',
-            border: '2px solid #4C9AFF', borderRadius: 3, background: '#fff',
+            border: '2px solid #4C9AFF', borderRadius: 3, background: 'var(--ds-surface, #fff)',
             cursor: 'text', position: 'relative',
           }}
           onClick={() => inputRef.current?.focus()}
@@ -232,13 +232,13 @@ function AddLinkRow({ issueKey, onClose, onSuccess, onCreateNew, existingLinkedK
             return (
               <span key={item.item_key} style={{
                 display: 'inline-flex', alignItems: 'center', gap: 4, height: 24,
-                padding: '0 6px', background: '#F4F5F7', borderRadius: 3, border: '1px solid #DFE1E6',
-                fontSize: 12, fontWeight: 500, color: '#172B4D', whiteSpace: 'nowrap',
+                padding: '0 6px', background: 'var(--ds-surface-sunken, #F4F5F7)', borderRadius: 3, border: '1px solid #DFE1E6',
+                fontSize: 12, fontWeight: 500, color: 'var(--ds-text, #172B4D)', whiteSpace: 'nowrap',
               }}>
                 <span dangerouslySetInnerHTML={{ __html: icon }} style={{ display: 'flex', width: 14, height: 14 }} />
                 {item.item_key}
                 <button onClick={e => { e.stopPropagation(); removeSelected(item.item_key); }}
-                  style={{ display: 'flex', alignItems: 'center', border: 'none', background: 'none', cursor: 'pointer', padding: 0, color: '#6B778C', fontSize: 14, lineHeight: 1 }}
+                  style={{ display: 'flex', alignItems: 'center', border: 'none', background: 'none', cursor: 'pointer', padding: 0, color: 'var(--ds-text-subtlest, #6B778C)', fontSize: 14, lineHeight: 1 }}
                 >×</button>
               </span>
             );
@@ -251,15 +251,15 @@ function AddLinkRow({ issueKey, onClose, onSuccess, onCreateNew, existingLinkedK
             placeholder={selectedItems.length ? '' : 'Type, search or paste URL'}
             style={{
               flex: 1, minWidth: 120, height: 26, border: 'none', outline: 'none',
-              fontSize: 14, fontFamily: 'inherit', color: '#172B4D', background: 'transparent',
+              fontSize: 14, fontFamily: 'inherit', color: 'var(--ds-text, #172B4D)', background: 'transparent',
             }}
           />
           {selectedItems.length > 0 && (
             <button onClick={() => setSelectedItems([])}
-              style={{ display: 'flex', alignItems: 'center', border: 'none', background: 'none', cursor: 'pointer', padding: 0, color: '#6B778C', flexShrink: 0 }}
+              style={{ display: 'flex', alignItems: 'center', border: 'none', background: 'none', cursor: 'pointer', padding: 0, color: 'var(--ds-text-subtlest, #6B778C)', flexShrink: 0 }}
               title="Clear all"
             >
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" fill="#DFE1E6"/><path d="M8 8l8 8M16 8l-8 8" stroke="#6B778C" strokeWidth="2" strokeLinecap="round"/></svg>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" fill="var(--ds-border, #DFE1E6)"/><path d="M8 8l8 8M16 8l-8 8" stroke="var(--ds-text-subtlest, #6B778C)" strokeWidth="2" strokeLinecap="round"/></svg>
             </button>
           )}
         </div>
@@ -267,8 +267,8 @@ function AddLinkRow({ issueKey, onClose, onSuccess, onCreateNew, existingLinkedK
 
       {/* Search results dropdown */}
       {showDropdown && filteredResults.length > 0 && (
-        <div ref={dropdownRef} style={{ maxHeight: 320, overflowY: 'auto', border: '1px solid #DFE1E6', borderRadius: 3, background: '#fff', marginBottom: 8, boxShadow: '0 4px 8px rgba(9,30,66,.13)' }}>
-          <div style={{ padding: '8px 12px 4px', fontSize: 11, fontWeight: 700, color: '#6B778C', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+        <div ref={dropdownRef} style={{ maxHeight: 320, overflowY: 'auto', border: '1px solid #DFE1E6', borderRadius: 3, background: 'var(--ds-surface, #fff)', marginBottom: 8, boxShadow: '0 4px 8px rgba(9,30,66,.13)' }}>
+          <div style={{ padding: '8px 12px 4px', fontSize: 11, fontWeight: 700, color: 'var(--ds-text-subtlest, #6B778C)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
             {search.trim() ? 'Search results' : 'Recently viewed'}
           </div>
           {filteredResults.map((r: any) => {
@@ -277,10 +277,10 @@ function AddLinkRow({ issueKey, onClose, onSuccess, onCreateNew, existingLinkedK
               <div key={r.issue_key} onClick={() => handleSelect(r)}
                 style={{
                   display: 'flex', alignItems: 'center', gap: 8, height: 40, padding: '0 12px',
-                  cursor: 'pointer', fontSize: 13, color: '#172B4D', borderLeft: '3px solid transparent',
+                  cursor: 'pointer', fontSize: 13, color: 'var(--ds-text, #172B4D)', borderLeft: '3px solid transparent',
                   transition: 'background 0.1s, border-color 0.1s',
                 }}
-                onMouseEnter={e => { e.currentTarget.style.background = '#F4F5F7'; e.currentTarget.style.borderLeftColor = '#4C9AFF'; }}
+                onMouseEnter={e => { e.currentTarget.style.background = 'var(--ds-surface-sunken, #F4F5F7)'; e.currentTarget.style.borderLeftColor = '#4C9AFF'; }}
                 onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.borderLeftColor = 'transparent'; }}
               >
                 <span dangerouslySetInnerHTML={{ __html: issueIcon }} style={{ display: 'flex', width: 16, height: 16, flexShrink: 0 }} />
@@ -297,7 +297,7 @@ function AddLinkRow({ issueKey, onClose, onSuccess, onCreateNew, existingLinkedK
         <button
           onClick={onCreateNew}
           style={{ display: 'flex', alignItems: 'center', gap: 4, border: 'none', background: 'none', cursor: 'pointer', fontSize: 14, color: '#44546F', fontFamily: 'inherit', fontWeight: 400, padding: 0, textDecoration: 'none' }}
-          onMouseEnter={e => { e.currentTarget.style.textDecoration = 'underline'; e.currentTarget.style.color = '#172B4D'; }}
+          onMouseEnter={e => { e.currentTarget.style.textDecoration = 'underline'; e.currentTarget.style.color = 'var(--ds-text, #172B4D)'; }}
           onMouseLeave={e => { e.currentTarget.style.textDecoration = 'none'; e.currentTarget.style.color = '#44546F'; }}
         >
           <Plus size={14} strokeWidth={1.5} /> Create linked work item
@@ -308,8 +308,8 @@ function AddLinkRow({ issueKey, onClose, onSuccess, onCreateNew, existingLinkedK
             disabled={!selectedItems.length || linkMutation.isPending}
             style={{
               height: 32, padding: '0 16px', border: 'none', borderRadius: 3,
-              background: selectedItems.length ? '#0052CC' : '#F4F5F7',
-              color: selectedItems.length ? '#fff' : '#A5ADBA', fontSize: 14, fontWeight: 500,
+              background: selectedItems.length ? '#0052CC' : 'var(--ds-surface-sunken, #F4F5F7)',
+              color: selectedItems.length ? 'var(--ds-surface, #fff)' : '#A5ADBA', fontSize: 14, fontWeight: 500,
               cursor: selectedItems.length ? 'pointer' : 'not-allowed', fontFamily: 'inherit',
             }}
           >
@@ -317,7 +317,7 @@ function AddLinkRow({ issueKey, onClose, onSuccess, onCreateNew, existingLinkedK
           </button>
           <button onClick={onClose} style={{
             height: 32, padding: '0 16px', border: 'none', borderRadius: 3,
-            background: 'transparent', color: '#6B778C', fontSize: 14,
+            background: 'transparent', color: 'var(--ds-text-subtlest, #6B778C)', fontSize: 14,
             cursor: 'pointer', fontFamily: 'inherit',
           }}>Cancel</button>
         </div>
@@ -478,10 +478,10 @@ export function LinkedIssuesSection({ issueId, issueKey: issueKeyProp, projectKe
       <button onClick={() => setShowAdd(true)} title="Link issue" style={{
         display: 'flex', alignItems: 'center', justifyContent: 'center',
         width: 24, height: 24, border: 'none', borderRadius: 3, background: 'transparent',
-        cursor: 'pointer', color: '#6B778C', transition: 'background 0.15s, color 0.15s',
+        cursor: 'pointer', color: 'var(--ds-text-subtlest, #6B778C)', transition: 'background 0.15s, color 0.15s',
       }}
-        onMouseEnter={e => { e.currentTarget.style.background = '#F4F5F7'; e.currentTarget.style.color = '#172B4D'; }}
-        onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#6B778C'; }}
+        onMouseEnter={e => { e.currentTarget.style.background = 'var(--ds-surface-sunken, #F4F5F7)'; e.currentTarget.style.color = 'var(--ds-text, #172B4D)'; }}
+        onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--ds-text-subtlest, #6B778C)'; }}
       >
         <Plus size={16} strokeWidth={2} />
       </button>
@@ -504,7 +504,7 @@ export function LinkedIssuesSection({ issueId, issueKey: issueKeyProp, projectKe
       {/* Grouped link display — Jira style */}
       {!isLoading && Object.entries(grouped).map(([type, typeLinks]) => (
         <div key={type} style={{ marginBottom: 8 }}>
-          <div style={{ fontSize: 12, fontWeight: 700, color: '#6B778C', padding: '6px 0 4px', textTransform: 'lowercase' }}>{type}</div>
+          <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--ds-text-subtlest, #6B778C)', padding: '6px 0 4px', textTransform: 'lowercase' }}>{type}</div>
           <div style={{ border: '1px solid #DFE1E6', borderRadius: 3, overflow: 'hidden' }}>
             {(typeLinks as any[]).map((link: any) => {
               const target = link.target;
@@ -516,7 +516,7 @@ export function LinkedIssuesSection({ issueId, issueKey: issueKeyProp, projectKe
                   display: 'flex', alignItems: 'center', gap: 8, height: 44, padding: '0 12px',
                   borderBottom: '1px solid #F4F5F7', transition: 'background 0.12s',
                 }}
-                  onMouseEnter={e => (e.currentTarget.style.background = '#FAFBFC')}
+                  onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-surface-sunken, #FAFBFC)')}
                   onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
                 >
                   <span dangerouslySetInnerHTML={{ __html: issueIcon }} style={{ display: 'flex', width: 16, height: 16, flexShrink: 0 }} />
@@ -536,7 +536,7 @@ export function LinkedIssuesSection({ issueId, issueKey: issueKeyProp, projectKe
                     onMouseEnter={e => (e.currentTarget.style.textDecoration = 'underline')}
                     onMouseLeave={e => (e.currentTarget.style.textDecoration = 'none')}
                   >{target.issue_key}</span>
-                  <span style={{ flex: 1, fontSize: 13, color: '#172B4D', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{target.summary}</span>
+                  <span style={{ flex: 1, fontSize: 13, color: 'var(--ds-text, #172B4D)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{target.summary}</span>
                   <span style={{ display: 'inline-flex', alignItems: 'center', gap: 3, flexShrink: 0 }}>
                     <Lozenge appearance={statusToLozenge(target.status)}>{target.status}</Lozenge>
                     <ChevronDown size={10} color="#42526E" />
@@ -545,7 +545,7 @@ export function LinkedIssuesSection({ issueId, issueKey: issueKeyProp, projectKe
                     <div style={{
                       width: 28, height: 28, borderRadius: '50%', background: avatarColor,
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      fontSize: 11, fontWeight: 700, color: '#fff', flexShrink: 0,
+                      fontSize: 11, fontWeight: 700, color: 'var(--ds-surface, #fff)', flexShrink: 0,
                     }} title={target.assignee_display_name}>
                       {target.assignee_display_name.charAt(0).toUpperCase()}
                     </div>
@@ -571,10 +571,10 @@ export function LinkedIssuesSection({ issueId, issueKey: issueKeyProp, projectKe
                     style={{
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
                       width: 24, height: 24, border: 'none', borderRadius: 3, background: 'transparent',
-                      cursor: 'pointer', color: '#6B778C', flexShrink: 0, transition: 'color 0.15s',
+                      cursor: 'pointer', color: 'var(--ds-text-subtlest, #6B778C)', flexShrink: 0, transition: 'color 0.15s',
                     }}
-                    onMouseEnter={e => (e.currentTarget.style.color = '#172B4D')}
-                    onMouseLeave={e => (e.currentTarget.style.color = '#6B778C')}
+                    onMouseEnter={e => (e.currentTarget.style.color = 'var(--ds-text, #172B4D)')}
+                    onMouseLeave={e => (e.currentTarget.style.color = 'var(--ds-text-subtlest, #6B778C)')}
                   >
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
                       <path d="M6 6l12 12M18 6L6 18" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"/>

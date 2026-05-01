@@ -225,7 +225,7 @@ export function DeleteTestCaseModal({
             style={{
               height: 40,
               padding: '0 20px',
-              background: isDeleting ? 'var(--fg-4)' : 'linear-gradient(135deg, #EF4444 0%, #DC2626 100%)',
+              background: isDeleting ? 'var(--fg-4)' : 'linear-gradient(135deg, var(--ds-text-danger, #EF4444) 0%, var(--ds-text-danger, #DC2626) 100%)',
               border: 'none',
               borderRadius: 8,
               fontFamily: 'var(--cp-font-body)',

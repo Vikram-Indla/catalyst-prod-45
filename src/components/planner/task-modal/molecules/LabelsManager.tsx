@@ -15,16 +15,16 @@ interface LabelsManagerProps {
 }
 
 const COLORS = {
-  textPrimary: '#0f172a',
-  textSecondary: '#334155',
-  textMuted: '#64748b',
-  textLight: '#94a3b8',
-  surfaceCard: '#ffffff',
-  surfacePage: '#f8fafc',
-  surfaceHover: '#f1f5f9',
-  borderLight: '#e2e8f0',
-  borderDefault: '#cbd5e1',
-  accent: '#2563eb',
+  textPrimary: 'var(--ds-text, #0f172a)',
+  textSecondary: 'var(--ds-text-subtle, #334155)',
+  textMuted: 'var(--ds-text-subtlest, #64748b)',
+  textLight: 'var(--ds-text-subtlest, #94a3b8)',
+  surfaceCard: 'var(--ds-surface, #ffffff)',
+  surfacePage: 'var(--ds-surface-sunken, #f8fafc)',
+  surfaceHover: 'var(--ds-surface-sunken, #f1f5f9)',
+  borderLight: 'var(--ds-border, #e2e8f0)',
+  borderDefault: 'var(--ds-text-disabled, #cbd5e1)',
+  accent: 'var(--ds-text-brand, #2563eb)',
   accentLight: '#dbeafe'
 };
 
@@ -285,7 +285,7 @@ export const LabelsManager: React.FC<LabelsManagerProps> = ({
                       borderRadius: '8px',
                       fontSize: '13px',
                       fontWeight: 500,
-                      color: newLabelName.trim() ? '#ffffff' : COLORS.textMuted,
+                      color: newLabelName.trim() ? 'var(--ds-surface, #ffffff)' : COLORS.textMuted,
                       cursor: newLabelName.trim() ? 'pointer' : 'not-allowed',
                       fontFamily: 'inherit'
                     }}

@@ -80,7 +80,7 @@ export function ActivityFeed({ workItemId }: Props) {
                 {quickReplies.map(q => (
                   <button
                     key={q}
-                    className="text-[12px] px-2.5 py-0.5 rounded-full hover:bg-[#F1F5F9]"
+                    className="text-[12px] px-2.5 py-0.5 rounded-full hover:bg-[var(--ds-surface-sunken,#F1F5F9)]"
                     style={{ border: '1px solid var(--divider)', color: 'var(--fg-2)' }}
                     onClick={() => setCommentText(q.replace('...', ''))}
                   >
@@ -103,7 +103,7 @@ export function ActivityFeed({ workItemId }: Props) {
       {/* Entries */}
       {isLoading ? (
         <div className="flex justify-center py-8">
-          <Loader2 size={20} className="animate-spin text-[#94A3B8]" />
+          <Loader2 size={20} className="animate-spin text-[var(--ds-text-subtlest,#94A3B8)]" />
         </div>
       ) : filtered.length === 0 ? (
         <div className="text-center py-8 text-[13px]" style={{ color: 'var(--fg-4)' }}>No activity yet</div>
@@ -148,10 +148,10 @@ function CommentEntry({ entry, onDelete, onToggleReaction }: {
         </div>
         <button
           onClick={onDelete}
-          className="opacity-0 group-hover:opacity-100 transition-opacity p-1 rounded hover:bg-[#FEF2F2]"
+          className="opacity-0 group-hover:opacity-100 transition-opacity p-1 rounded hover:bg-[var(--ds-background-danger,#FEF2F2)]"
           title="Delete comment"
         >
-          <Trash2 size={12} className="text-[#DC2626]" />
+          <Trash2 size={12} className="text-[var(--ds-text-danger,#DC2626)]" />
         </button>
       </div>
       <div className="text-[12px] mb-1" style={{ color: 'var(--fg-3)' }}>{entry.relative_time}</div>
@@ -180,7 +180,7 @@ function CommentEntry({ entry, onDelete, onToggleReaction }: {
         <div className="relative">
           <button
             onClick={() => setPickerOpen(!pickerOpen)}
-            className="p-1 rounded hover:bg-[#F1F5F9] transition-colors"
+            className="p-1 rounded hover:bg-[var(--ds-surface-sunken,#F1F5F9)] transition-colors"
             style={{ color: 'var(--fg-4)' }}
           >
             <SmilePlus size={14} />
@@ -194,7 +194,7 @@ function CommentEntry({ entry, onDelete, onToggleReaction }: {
                 <button
                   key={e}
                   onClick={() => { onToggleReaction(e); setPickerOpen(false); }}
-                  className="w-7 h-7 flex items-center justify-center rounded hover:bg-[#F1F5F9] text-[16px]"
+                  className="w-7 h-7 flex items-center justify-center rounded hover:bg-[var(--ds-surface-sunken,#F1F5F9)] text-[16px]"
                 >
                   {e}
                 </button>
@@ -249,7 +249,7 @@ function ActivityAvatar({ name }: { name: string }) {
   const initials = name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
   let hash = 0;
   for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash);
-  const colors = ['#2563EB', '#0D9488', '#7C3AED', '#D97706', '#DC2626', '#16A34A'];
+  const colors = ['var(--ds-text-brand, #2563EB)', '#0D9488', '#7C3AED', 'var(--ds-text-warning, #D97706)', 'var(--ds-text-danger, #DC2626)', 'var(--ds-text-success, #16A34A)'];
   return (
     <div
       className="w-8 h-8 rounded-full flex items-center justify-center text-[10px] font-bold text-white shrink-0"

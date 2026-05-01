@@ -19,12 +19,12 @@ interface Props {
 }
 
 const DOT_COLORS: Record<string, string> = {
-  'Fast-Track': '#16A34A', 'Merge': '#2563EB', 'Investigate': '#D97706', 'Defer': '#94A3B8',
+  'Fast-Track': 'var(--ds-text-success, #16A34A)', 'Merge': 'var(--ds-text-brand, #2563EB)', 'Investigate': 'var(--ds-text-warning, #D97706)', 'Defer': 'var(--ds-text-subtlest, #94A3B8)',
 };
 
 const CATEGORY_TEXT_COLORS: Record<string, string> = {
-  'FAST-TRACK RECOMMENDED': '#16A34A', 'MERGE CANDIDATES': '#2563EB',
-  'NEEDS INVESTIGATION': '#D97706', 'RECOMMENDED TO DEFER': '#64748B',
+  'FAST-TRACK RECOMMENDED': 'var(--ds-text-success, #16A34A)', 'MERGE CANDIDATES': 'var(--ds-text-brand, #2563EB)',
+  'NEEDS INVESTIGATION': 'var(--ds-text-warning, #D97706)', 'RECOMMENDED TO DEFER': 'var(--ds-text-subtlest, #64748B)',
 };
 
 type TriageItem = {
@@ -155,7 +155,7 @@ export default function IdeationTriagePanel({ open, onClose, onMerge, ideas = []
         <div style={{ padding: '16px 20px', borderBottom: `1px solid ${'var(--cp-border, #E2E8F0)'}` }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <Sparkles size={18} color="#2563EB" strokeWidth={2} />
+              <Sparkles size={18} color="var(--ds-text-brand, #2563EB)" strokeWidth={2} />
               <span style={{ fontSize: '16px', fontWeight: 600, color: 'var(--cp-text-primary, #0F172A)' }}>AI Intelligence — Triage Results</span>
             </div>
             <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--cp-text-muted, #94A3B8)', padding: '4px' }}><X size={18} /></button>
@@ -258,7 +258,7 @@ export default function IdeationTriagePanel({ open, onClose, onMerge, ideas = []
 
 function CategoryHeader({ label, sub }: { label: string; sub: string }) {
   const { isDark } = useTheme();
-  const color = CATEGORY_TEXT_COLORS[label] || '#64748B';
+  const color = CATEGORY_TEXT_COLORS[label] || 'var(--ds-text-subtlest, #64748B)';
   return (
     <div style={{ marginBottom: '12px', marginTop: '8px' }}>
       <div style={{ borderTop: `1px solid ${'var(--cp-border, #E2E8F0)'}`, marginBottom: '16px' }} />
@@ -274,7 +274,7 @@ function TriageCard({ badge, ideaKey, title, body, aiSuggestion, primary, second
   secondary: { label: string; icon: React.ReactNode; onClick: () => void };
 }) {
   const { isDark } = useTheme();
-  const dotColor = DOT_COLORS[badge] || '#94A3B8';
+  const dotColor = DOT_COLORS[badge] || 'var(--ds-text-subtlest, #94A3B8)';
   return (
     <div style={{ background: 'var(--cp-bg-elevated, #FFFFFF)', border: `1px solid ${'var(--cp-border, #E2E8F0)'}`, borderRadius: '12px', padding: '16px', marginBottom: '10px', boxShadow: isDark ? 'none' : '0 1px 2px rgba(0,0,0,0.04)' }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
@@ -292,8 +292,8 @@ function TriageCard({ badge, ideaKey, title, body, aiSuggestion, primary, second
         </div>
       )}
       <div style={{ display: 'flex', gap: '8px', marginTop: '12px' }}>
-        <button onClick={primary.onClick} style={{ background: '#2563EB', color: 'var(--ds-text-inverse, #FFFFFF)', border: 'none', borderRadius: '6px', padding: '7px 16px', fontSize: '13px', fontWeight: 600, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '6px' }}
-          onMouseEnter={e => (e.currentTarget.style.background = '#1D4ED8')} onMouseLeave={e => (e.currentTarget.style.background = '#2563EB')}>
+        <button onClick={primary.onClick} style={{ background: 'var(--ds-text-brand, #2563EB)', color: 'var(--ds-text-inverse, #FFFFFF)', border: 'none', borderRadius: '6px', padding: '7px 16px', fontSize: '13px', fontWeight: 600, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '6px' }}
+          onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-background-brand-bold-hovered, #1D4ED8)')} onMouseLeave={e => (e.currentTarget.style.background = 'var(--ds-text-brand, #2563EB)')}>
           {primary.icon} {primary.label}
         </button>
         <button onClick={secondary.onClick} style={{ background: 'var(--cp-bg-elevated, #FFFFFF)', color: 'var(--cp-text-secondary, #475569)', border: `1.5px solid ${'var(--cp-border, #E2E8F0)'}`, borderRadius: '6px', padding: '7px 16px', fontSize: '13px', fontWeight: 500, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '6px' }}

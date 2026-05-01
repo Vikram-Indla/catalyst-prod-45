@@ -37,9 +37,9 @@ export interface KanbanThemeTokens {
 
 export const KANBAN_TOKENS: { light: KanbanThemeTokens; dark: KanbanThemeTokens } = {
   light: {
-    /* Jira parity: page transparent, column surface #F8F8F8, card #FFFFFF */
-    pageBg: '#FFFFFF',
-    surfaceBg: '#FFFFFF',
+    /* Jira parity: page transparent, column surface #F8F8F8, card var(--ds-surface, #FFFFFF) */
+    pageBg: 'var(--ds-surface, #FFFFFF)',
+    surfaceBg: 'var(--ds-surface, #FFFFFF)',
     surfaceHover: '#F1F2F4',
     surfaceAlt: '#F8F8F8',     /* column surface (Jira: rgb(248,248,248)) */
     headerBg: '#F8F8F8',       /* column header — matches column body */
@@ -48,55 +48,55 @@ export const KANBAN_TOKENS: { light: KanbanThemeTokens; dark: KanbanThemeTokens 
     textPrimary: '#292A2E',    /* Jira primary text */
     textSecondary: '#42526E',
     textMuted: '#505258',      /* Jira muted (column name, issue key) */
-    textDisabled: '#94A3B8',
+    textDisabled: 'var(--ds-text-subtlest, #94A3B8)',
     badgeBg: 'transparent',    /* Jira: count badge is plain text, no pill */
-    cardBg: '#FFFFFF',
+    cardBg: 'var(--ds-surface, #FFFFFF)',
     cardBorder: 'transparent', /* Jira cards are shadow-only, no border */
-    cardHoverBg: '#FFFFFF',
+    cardHoverBg: 'var(--ds-surface, #FFFFFF)',
     /* Jira dual-stack shadow (rest): 1px offset drop + 1px blur outline */
     cardShadowRest: 'rgba(30,31,33,.25) 0 1px 1px 0, rgba(30,31,33,.31) 0 0 1px 0',
     cardHoverShadow: 'rgba(30,31,33,.35) 0 2px 4px 0, rgba(30,31,33,.31) 0 0 1px 0',
     cardDragShadow: 'rgba(30,31,33,.45) 0 8px 16px 0, rgba(30,31,33,.31) 0 0 1px 0',
     dropHighlight: '#DFE3E8',  /* Jira drop tint */
-    dropIndicator: '#2563EB',  /* 2px accent line on insertion */
-    selectedAccent: '#2563EB',
-    chipBg: '#DFE1E6',
+    dropIndicator: 'var(--ds-text-brand, #2563EB)',  /* 2px accent line on insertion */
+    selectedAccent: 'var(--ds-text-brand, #2563EB)',
+    chipBg: 'var(--ds-border, #DFE1E6)',
     chipText: '#42526E',
-    inputBg: '#FAFBFC',
+    inputBg: 'var(--ds-surface-sunken, #FAFBFC)',
     inputBorder: '#DDDEE1',
     overlay: 'rgba(9,30,66,.08)',
     epicLozengeBg: '#DDDEE1',  /* Jira epic lozenge surface */
     epicLozengeText: '#292A2E',
   },
   dark: {
-    pageBg: '#0A0A0A',
-    surfaceBg: '#1A1A1A',
-    surfaceHover: '#1F1F1F',
+    pageBg: 'var(--ds-surface, #0A0A0A)',
+    surfaceBg: 'var(--ds-surface-raised, #1A1A1A)',
+    surfaceHover: 'var(--ds-surface-overlay, #1F1F1F)',
     surfaceAlt: '#111111',
     headerBg: '#111111',
-    border: '#2E2E2E',
-    borderSubtle: '#292929',
-    textPrimary: '#EDEDED',
-    textSecondary: '#A1A1A1',
-    textMuted: '#A1A1A1',
+    border: 'var(--ds-border, #2E2E2E)',
+    borderSubtle: 'var(--ds-border, #292929)',
+    textPrimary: 'var(--ds-text, #EDEDED)',
+    textSecondary: 'var(--ds-text-subtlest, #A1A1A1)',
+    textMuted: 'var(--ds-text-subtlest, #A1A1A1)',
     textDisabled: '#7D7D7D',
     badgeBg: 'transparent',
-    cardBg: '#1A1A1A',
+    cardBg: 'var(--ds-surface-raised, #1A1A1A)',
     cardBorder: 'transparent',
-    cardHoverBg: '#1F1F1F',
+    cardHoverBg: 'var(--ds-surface-overlay, #1F1F1F)',
     cardShadowRest: 'rgba(0,0,0,.45) 0 1px 1px 0, rgba(0,0,0,.55) 0 0 1px 0',
     cardHoverShadow: 'rgba(0,0,0,.55) 0 2px 4px 0, rgba(0,0,0,.55) 0 0 1px 0',
     cardDragShadow: 'rgba(0,0,0,.65) 0 8px 16px 0, rgba(0,0,0,.55) 0 0 1px 0',
-    dropHighlight: '#292929',
-    dropIndicator: '#2563EB',
-    selectedAccent: '#2563EB',
-    chipBg: '#292929',
-    chipText: '#A1A1A1',
+    dropHighlight: 'var(--ds-border, #292929)',
+    dropIndicator: 'var(--ds-text-brand, #2563EB)',
+    selectedAccent: 'var(--ds-text-brand, #2563EB)',
+    chipBg: 'var(--ds-border, #292929)',
+    chipText: 'var(--ds-text-subtlest, #A1A1A1)',
     inputBg: '#111111',
-    inputBorder: '#2E2E2E',
+    inputBorder: 'var(--ds-border, #2E2E2E)',
     overlay: 'rgba(255,255,255,.04)',
-    epicLozengeBg: '#2E2E2E',
-    epicLozengeText: '#EDEDED',
+    epicLozengeBg: 'var(--ds-border, #2E2E2E)',
+    epicLozengeText: 'var(--ds-text, #EDEDED)',
   },
 };
 

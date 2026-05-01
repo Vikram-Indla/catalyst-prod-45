@@ -116,8 +116,8 @@ export function T10AISuggestionsPanel({
             padding: '12px 16px',
             marginBottom: 12,
             fontSize: 13,
-            color: '#64748b',
-            background: '#f1f5f9',
+            color: 'var(--ds-text-subtlest, #64748b)',
+            background: 'var(--ds-surface-sunken, #f1f5f9)',
             borderRadius: 8
           }}>
             <Info size={16} />
@@ -132,7 +132,7 @@ export function T10AISuggestionsPanel({
               justifyContent: 'center',
               gap: 12, 
               padding: 32,
-              color: '#64748b'
+              color: 'var(--ds-text-subtlest, #64748b)'
             }}>
               <Loader2 size={24} className="animate-spin" />
               <span>Analyzing backlog tasks...</span>
@@ -140,13 +140,13 @@ export function T10AISuggestionsPanel({
           )}
 
           {error && (
-            <div style={{ padding: '20px 16px', color: '#dc2626', textAlign: 'center' }}>
+            <div style={{ padding: '20px 16px', color: 'var(--ds-text-danger, #dc2626)', textAlign: 'center' }}>
               Failed to load suggestions. Please try again later.
             </div>
           )}
 
           {!isLoading && !error && suggestions.length === 0 && (
-            <div style={{ padding: '20px 16px', color: '#64748b', textAlign: 'center' }}>
+            <div style={{ padding: '20px 16px', color: 'var(--ds-text-subtlest, #64748b)', textAlign: 'center' }}>
               No high-priority tasks found in your backlog that aren't already in this week's list.
             </div>
           )}
@@ -191,8 +191,8 @@ export function T10AISuggestionsPanel({
                   padding: '8px 14px',
                   fontSize: 13,
                   fontWeight: 500,
-                  color: '#2563eb',
-                  background: '#eff6ff',
+                  color: 'var(--ds-text-brand, #2563eb)',
+                  background: 'var(--ds-background-selected, #eff6ff)',
                   border: '1px solid #bfdbfe',
                   borderRadius: 6,
                   cursor: slotsAvailable <= 0 ? 'not-allowed' : 'pointer',

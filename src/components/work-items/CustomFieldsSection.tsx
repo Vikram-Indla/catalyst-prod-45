@@ -24,7 +24,7 @@ export function CustomFieldsSection({ entityType, entityId }: CustomFieldsSectio
 
   if (isLoading) {
     return (
-      <Card className="bg-white dark:bg-[#1A1A1A] border border-neutral-200 dark:border-[#2E2E2E] rounded-xl shadow-none">
+      <Card className="bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] border border-neutral-200 dark:border-[var(--ds-border,#2E2E2E)] rounded-xl shadow-none">
         <CardHeader className="pb-2">
           <CardTitle className="text-sm font-semibold text-foreground flex items-center gap-2">
             <Settings2 className="h-4 w-4 text-brand-primary" />
@@ -40,7 +40,7 @@ export function CustomFieldsSection({ entityType, entityId }: CustomFieldsSectio
 
   if (fieldsWithValues.length === 0) {
     return (
-      <Card className="bg-white dark:bg-[#1A1A1A] border border-neutral-200 dark:border-[#2E2E2E] rounded-xl shadow-none">
+      <Card className="bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] border border-neutral-200 dark:border-[var(--ds-border,#2E2E2E)] rounded-xl shadow-none">
         <CardHeader className="pb-2">
           <CardTitle className="text-sm font-semibold text-foreground flex items-center gap-2">
             <Settings2 className="h-4 w-4 text-brand-primary" />
@@ -57,7 +57,7 @@ export function CustomFieldsSection({ entityType, entityId }: CustomFieldsSectio
   }
 
   return (
-    <Card className="bg-white dark:bg-[#1A1A1A] border border-neutral-200 dark:border-[#2E2E2E] rounded-xl shadow-none">
+    <Card className="bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] border border-neutral-200 dark:border-[var(--ds-border,#2E2E2E)] rounded-xl shadow-none">
       <CardHeader className="pb-2">
         <CardTitle className="text-sm font-semibold text-foreground flex items-center gap-2">
           <Settings2 className="h-4 w-4 text-brand-primary" />

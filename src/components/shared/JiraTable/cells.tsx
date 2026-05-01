@@ -117,7 +117,7 @@ export function makeKeyCell(getKey: (row: any) => string | null) {
 // wire it on the column with `onCellEdit`.
 //
 // Apr 27, 2026 (L60): typography per Jira-parity spec — 14/20/400 with
-// `color.text` (#172B4D). Inherits from JiraTable's tbody td baseline so
+// `color.text` (var(--ds-text, #172B4D)). Inherits from JiraTable's tbody td baseline so
 // no explicit fontSize is needed here; only truncation behavior.
 //
 // Tooltip on truncated text is the user's spec requirement — added via

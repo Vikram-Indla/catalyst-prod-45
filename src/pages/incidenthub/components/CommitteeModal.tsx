@@ -44,7 +44,7 @@ export function CommitteeModal({ open, onClose, committee, incidentId }: Committ
               style={{
                 fontFamily: 'var(--cp-font-body)', fontSize: 12,
                 fontWeight: activeTab === i ? 650 : 400,
-                color: activeTab === i ? '#2563EB' : '#64748B',
+                color: activeTab === i ? 'var(--ds-text-brand, #2563EB)' : 'var(--ds-text-subtlest, #64748B)',
                 borderBottom: activeTab === i ? '2px solid #2563EB' : '2px solid transparent',
               }}
             >
@@ -57,7 +57,7 @@ export function CommitteeModal({ open, onClose, committee, incidentId }: Committ
           {activeTab === 0 && (
             <div className="space-y-3">
               {members.length === 0 && (
-                <p style={{ fontFamily: 'var(--cp-font-body)', fontSize: 12, color: '#94A3B8' }}>No committee members assigned.</p>
+                <p style={{ fontFamily: 'var(--cp-font-body)', fontSize: 12, color: 'var(--ds-text-subtlest, #94A3B8)' }}>No committee members assigned.</p>
               )}
               {members.map((m: any) => {
                 const vote = m.vote;
@@ -79,7 +79,7 @@ export function CommitteeModal({ open, onClose, committee, incidentId }: Committ
                           <span className="px-1.5" style={{ fontSize: 9, fontWeight: 700, backgroundColor: 'var(--cp-danger-light, #FEE2E2)', color: 'var(--cp-danger-text, #991B1B)', borderRadius: 3 }}>VETO</span>
                         )}
                       </div>
-                      <span style={{ fontFamily: 'var(--cp-font-body)', fontSize: 11, color: '#64748B' }}>{m.role || 'Member'}</span>
+                      <span style={{ fontFamily: 'var(--cp-font-body)', fontSize: 11, color: 'var(--ds-text-subtlest, #64748B)' }}>{m.role || 'Member'}</span>
                     </div>
                     <div className="flex items-center gap-1">
                       {['approved', 'rejected', 'pending'].map(v => (
@@ -91,11 +91,11 @@ export function CommitteeModal({ open, onClose, committee, incidentId }: Committ
                             fontWeight: voteStatus === v ? 700 : 400,
                             borderRadius: 4,
                             backgroundColor: voteStatus === v
-                              ? (v === 'approved' ? '#1B7F37' : v === 'rejected' ? '#FEE2E2' : '#DFE1E6')
+                              ? (v === 'approved' ? '#1B7F37' : v === 'rejected' ? '#FEE2E2' : 'var(--ds-border, #DFE1E6)')
                               : 'transparent',
                             color: voteStatus === v
-                              ? (v === 'approved' ? 'var(--ds-text-inverse, #FFFFFF)' : v === 'rejected' ? '#991B1B' : '#42526E')
-                              : '#94A3B8',
+                              ? (v === 'approved' ? 'var(--ds-text-inverse, #FFFFFF)' : v === 'rejected' ? 'var(--ds-text-danger, #991B1B)' : '#42526E')
+                              : 'var(--ds-text-subtlest, #94A3B8)',
                             border: voteStatus === v ? 'none' : '1px solid rgba(15,23,42,0.08)',
                           }}
                         >
@@ -110,11 +110,11 @@ export function CommitteeModal({ open, onClose, committee, incidentId }: Committ
           )}
 
           {activeTab === 1 && (
-            <p style={{ fontFamily: 'var(--cp-font-body)', fontSize: 12, color: '#94A3B8' }}>Approver management coming soon.</p>
+            <p style={{ fontFamily: 'var(--cp-font-body)', fontSize: 12, color: 'var(--ds-text-subtlest, #94A3B8)' }}>Approver management coming soon.</p>
           )}
 
           {activeTab === 2 && (
-            <p style={{ fontFamily: 'var(--cp-font-body)', fontSize: 12, color: '#94A3B8' }}>Activity log coming soon.</p>
+            <p style={{ fontFamily: 'var(--cp-font-body)', fontSize: 12, color: 'var(--ds-text-subtlest, #94A3B8)' }}>Activity log coming soon.</p>
           )}
         </div>
 
@@ -124,7 +124,7 @@ export function CommitteeModal({ open, onClose, committee, incidentId }: Committ
             disabled={!quorumMet}
             title={!quorumMet ? 'Requires \u22653 approvals to submit decision' : ''}
             style={{
-              backgroundColor: quorumMet ? '#2563EB' : undefined,
+              backgroundColor: quorumMet ? 'var(--ds-text-brand, #2563EB)' : undefined,
               borderRadius: 6,
               opacity: quorumMet ? 1 : 0.5,
               cursor: quorumMet ? 'pointer' : 'not-allowed',

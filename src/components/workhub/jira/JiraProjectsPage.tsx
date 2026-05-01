@@ -92,9 +92,9 @@ export function JiraProjectsPage() {
   };
 
   const getSyncStatus = (lastSynced?: string): { color: string; dotBg: string } => {
-    if (!lastSynced) return { color: '#dc2626', dotBg: '#fecaca' };
+    if (!lastSynced) return { color: 'var(--ds-text-danger, #dc2626)', dotBg: '#fecaca' };
     const hours = (Date.now() - new Date(lastSynced).getTime()) / 3600000;
-    if (hours < 24) return { color: '#16a34a', dotBg: '#dcfce7' };
+    if (hours < 24) return { color: 'var(--ds-text-success, #16a34a)', dotBg: 'var(--ds-background-success, #dcfce7)' };
     return { color: '#ca8a04', dotBg: '#fef9c3' };
   };
 

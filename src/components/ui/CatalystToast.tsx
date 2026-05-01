@@ -24,15 +24,15 @@ const toastConfig = {
   },
   error: {
     icon: XCircle,
-    iconColor: '#DC2626',
-    bgColor: '#FEF2F2',
+    iconColor: 'var(--ds-text-danger, #DC2626)',
+    bgColor: 'var(--ds-background-danger, #FEF2F2)',
     borderColor: '#FECACA',
-    titleColor: '#991B1B',
+    titleColor: 'var(--ds-text-danger, #991B1B)',
     descColor: '#B91C1C',
   },
   warning: {
     icon: AlertTriangle,
-    iconColor: '#D97706',
+    iconColor: 'var(--ds-text-warning, #D97706)',
     bgColor: '#FFFBEB',
     borderColor: '#FDE68A',
     titleColor: '#92400E',
@@ -40,11 +40,11 @@ const toastConfig = {
   },
   info: {
     icon: Info,
-    iconColor: '#2563EB',
-    bgColor: '#EFF6FF',
+    iconColor: 'var(--ds-text-brand, #2563EB)',
+    bgColor: 'var(--ds-background-selected, #EFF6FF)',
     borderColor: '#BFDBFE',
     titleColor: '#1E40AF',
-    descColor: '#1D4ED8',
+    descColor: 'var(--ds-background-brand-bold-hovered, #1D4ED8)',
   },
 };
 

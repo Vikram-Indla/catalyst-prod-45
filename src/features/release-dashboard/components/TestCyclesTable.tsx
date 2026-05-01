@@ -52,7 +52,7 @@ export function TestCyclesTable({ cycles, releaseId }: TestCyclesTableProps) {
                       className="h-full rounded-full"
                       style={{
                         width: `${cycle.progress}%`,
-                        backgroundColor: cycle.status === 'blocked' ? '#ef4444' : '#0d9488',
+                        backgroundColor: cycle.status === 'blocked' ? 'var(--ds-text-danger, #ef4444)' : '#0d9488',
                       }}
                     />
                   </div>
@@ -62,7 +62,7 @@ export function TestCyclesTable({ cycles, releaseId }: TestCyclesTableProps) {
               <td className="py-2">
                 <div
                   className="w-6 h-6 rounded-full flex items-center justify-center text-white text-xs font-medium"
-                  style={{ backgroundColor: '#2563eb' }}
+                  style={{ backgroundColor: 'var(--ds-text-brand, #2563eb)' }}
                 >
                   {cycle.assignee.initials}
                 </div>

@@ -96,7 +96,7 @@ export function CommandCenterHeader({
         </div>
         {subtitle && (
           <p
-            className="dark:text-[#A1A1A1]"
+            className="dark:text-[var(--ds-text-subtlest,#A1A1A1)]"
             style={{
               fontFamily: 'var(--cp-font-body)',
               fontSize: 14,

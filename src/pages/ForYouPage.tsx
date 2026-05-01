@@ -146,10 +146,10 @@ export default function ForYouPage() {
     const HUB_ICONS: Record<string, React.ReactNode> = {
       Incident: <AlertTriangleIcon size={14} color="#FF5630" strokeWidth={2} />,
       Product: <LayoutGrid size={14} color="#6554C0" strokeWidth={2} />,
-      Project: <Folder size={14} color="#2563EB" strokeWidth={2} />,
+      Project: <Folder size={14} color="var(--ds-text-brand, #2563EB)" strokeWidth={2} />,
       Task: <CheckSquare size={14} color="#4BADE8" strokeWidth={2} />,
       Plan: <BookOpen size={14} color="#0D9488" strokeWidth={2} />,
-      Strategy: <Zap size={14} color="#D97706" strokeWidth={2} />,
+      Strategy: <Zap size={14} color="var(--ds-text-warning, #D97706)" strokeWidth={2} />,
     };
     const PRIORITY_ICONS: Record<string, React.ReactNode> = {
       Critical: <PriorityBars priority="critical" />,
@@ -164,14 +164,14 @@ export default function ForYouPage() {
         id: 'project', label: 'Project', searchPlaceholder: 'Search project',
         options: projectOptions.map(p => ({
           id: p, label: p,
-          iconNode: <Folder size={14} color="#6B778C" strokeWidth={1.5} />,
+          iconNode: <Folder size={14} color="var(--ds-text-subtlest, #6B778C)" strokeWidth={1.5} />,
         })),
       },
       {
         id: 'hub', label: 'Hub', searchPlaceholder: 'Search hub',
         options: hubOptions.map(h => ({
           id: h, label: h + ' Hub',
-          iconNode: HUB_ICONS[h] || <LayoutGrid size={14} color="#6B778C" strokeWidth={2} />,
+          iconNode: HUB_ICONS[h] || <LayoutGrid size={14} color="var(--ds-text-subtlest, #6B778C)" strokeWidth={2} />,
         })),
       },
       {

@@ -290,7 +290,7 @@ export function UWVToolbar({
                     padding: '0 10px',
                     borderRadius: 13,
                     border: `1px solid ${active ? '#0C66E4' : 'var(--ds-border, #DFE1E6)'}`,
-                    background: active ? '#E9F2FF' : '#FFFFFF',
+                    background: active ? '#E9F2FF' : 'var(--ds-surface, #FFFFFF)',
                     color: active ? '#0C66E4' : 'var(--ds-text-subtle, #505258)',
                     fontSize: 12,
                     fontWeight: 600,

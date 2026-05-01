@@ -195,14 +195,14 @@ export function OverviewTab({
           {/* SVG Ring */}
           <svg width={110} height={110} viewBox="0 0 110 110" style={{ flexShrink: 0 }}>
             <circle cx={55} cy={55} r={44} fill="none" stroke="var(--divider)" strokeWidth={9} />
-            <circle cx={55} cy={55} r={44} fill="none" stroke="#CBD5E1" strokeWidth={2}
+            <circle cx={55} cy={55} r={44} fill="none" stroke="var(--ds-text-disabled, #CBD5E1)" strokeWidth={2}
               strokeDasharray="125 151" strokeDashoffset={-69} opacity={0.7} />
             <circle cx={55} cy={55} r={44} fill="none" stroke={loadColour} strokeWidth={9}
               strokeDasharray={`${Math.min((openCount / 11) * 276.5, 276.5)} ${276.5 - Math.min((openCount / 11) * 276.5, 276.5)}`}
               strokeDashoffset={-69} strokeLinecap="round" />
             <text x={55} y={52} textAnchor="middle" fontFamily='var(--cp-font-heading)' fontSize={22} fontWeight={700} fill={loadColour}>{openCount}</text>
             <text x={55} y={67} textAnchor="middle" fontFamily='var(--cp-font-body)' fontSize={11} fontWeight={700} fill={MUTED}>OPEN</text>
-            <text x={55} y={82} textAnchor="middle" fontFamily='var(--cp-font-body)' fontSize={11} fill="#CBD5E1">avg {roleAvg}</text>
+            <text x={55} y={82} textAnchor="middle" fontFamily='var(--cp-font-body)' fontSize={11} fill="var(--ds-text-disabled, #CBD5E1)">avg {roleAvg}</text>
           </svg>
 
           {/* Stat rows — CLICKABLE */}
@@ -336,7 +336,7 @@ export function OverviewTab({
         <SectionTitle>WORK MIX</SectionTitle>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
           {workMix.map(row => {
-            const tc = TYPE_COLORS[row.type] || { color: '#94A3B8', opacity: 0.6 };
+            const tc = TYPE_COLORS[row.type] || { color: 'var(--ds-text-subtlest, #94A3B8)', opacity: 0.6 };
             return (
               <div
                 key={row.type}
@@ -403,8 +403,8 @@ export function OverviewTab({
             </div>
             <div style={{ display: 'flex', gap: 6, marginTop: 6 }}>
               <span style={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: 'var(--fg-3)' }} />
-              <span style={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: '#CBD5E1' }} />
-              <span style={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: '#CBD5E1' }} />
+              <span style={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: 'var(--ds-text-disabled, #CBD5E1)' }} />
+              <span style={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: 'var(--ds-text-disabled, #CBD5E1)' }} />
             </div>
           </div>
           <ChevronRight size={14} color={INK4} />

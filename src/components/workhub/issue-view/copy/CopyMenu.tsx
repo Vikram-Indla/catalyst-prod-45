@@ -100,11 +100,11 @@ export function CopyMenu({ issueKey, item, isDark }: CopyMenuProps) {
         className={cn(
           'inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-xs font-body font-medium transition-colors border',
           isDark
-            ? 'border-[#2E2E2E] text-[#A1A1A1] hover:bg-[#1F1F1F]'
-            : 'border-[#DFE1E6] text-[var(--ds-text-accent-gray, #505258)] hover:bg-[#F4F5F7]',
+            ? 'border-[var(--ds-border,#2E2E2E)] text-[var(--ds-text-subtlest,#A1A1A1)] hover:bg-[var(--ds-surface-overlay,#1F1F1F)]'
+            : 'border-[var(--ds-border,#DFE1E6)] text-[var(--ds-text-accent-gray,#505258)] hover:bg-[var(--ds-surface-sunken,#F4F5F7)]',
         )}
       >
-        {copied ? <Check className="w-3.5 h-3.5 text-[var(--ds-icon-accent-green, #22A06B)]" /> : <Copy className="w-3.5 h-3.5" />}
+        {copied ? <Check className="w-3.5 h-3.5 text-[var(--ds-icon-accent-green,#22A06B)]" /> : <Copy className="w-3.5 h-3.5" />}
         {copied ? 'Copied' : 'Copy'}
       </button>
 
@@ -115,7 +115,7 @@ export function CopyMenu({ issueKey, item, isDark }: CopyMenuProps) {
           aria-label="Copy options"
           className={cn(
             'absolute right-0 top-full mt-1 min-w-[220px] rounded-lg border shadow-md z-50 py-1',
-            isDark ? 'bg-[#1A1A1A] border-[#2E2E2E]' : 'bg-white border-[#DFE1E6]',
+            isDark ? 'bg-[var(--ds-surface-raised,#1A1A1A)] border-[var(--ds-border,#2E2E2E)]' : 'bg-white border-[var(--ds-border,#DFE1E6)]',
           )}
         >
           {menuItems.map(({ kind, label }) => (
@@ -127,8 +127,8 @@ export function CopyMenu({ issueKey, item, isDark }: CopyMenuProps) {
               className={cn(
                 'w-full text-left px-3 py-2 text-xs font-body transition-colors',
                 isDark
-                  ? 'text-[#EDEDED] hover:bg-[#1F1F1F] disabled:text-[#878787]'
-                  : 'text-[var(--ds-text, #292A2E)] hover:bg-[#F4F5F7] disabled:text-[var(--ds-text-subtlest, #6B6E76)]',
+                  ? 'text-[var(--ds-text,#EDEDED)] hover:bg-[var(--ds-surface-overlay,#1F1F1F)] disabled:text-[var(--ds-text-subtlest,#878787)]'
+                  : 'text-[var(--ds-text,#292A2E)] hover:bg-[var(--ds-surface-sunken,#F4F5F7)] disabled:text-[var(--ds-text-subtlest,#6B6E76)]',
               )}
             >
               {label}
@@ -142,21 +142,21 @@ export function CopyMenu({ issueKey, item, isDark }: CopyMenuProps) {
         <div className="fixed inset-0 z-[1000] flex items-center justify-center bg-black/40">
           <div className={cn(
             'w-[min(640px,calc(100vw-32px))] rounded-xl border shadow-xl',
-            isDark ? 'bg-[#1A1A1A] border-[#2E2E2E]' : 'bg-white border-[#DFE1E6]',
+            isDark ? 'bg-[var(--ds-surface-raised,#1A1A1A)] border-[var(--ds-border,#2E2E2E)]' : 'bg-white border-[var(--ds-border,#DFE1E6)]',
           )}>
             <div className={cn(
               'flex items-center justify-between px-4 py-3 border-b',
-              isDark ? 'border-[#2E2E2E]' : 'border-[#DFE1E6]',
+              isDark ? 'border-[var(--ds-border,#2E2E2E)]' : 'border-[var(--ds-border,#DFE1E6)]',
             )}>
-              <span className={cn('font-body text-sm font-medium', isDark ? 'text-[#EDEDED]' : 'text-[var(--ds-text, #292A2E)]')}>
+              <span className={cn('font-body text-sm font-medium', isDark ? 'text-[var(--ds-text,#EDEDED)]' : 'text-[var(--ds-text,#292A2E)]')}>
                 Copy manually
               </span>
-              <button onClick={() => setFallbackText(null)} className={cn('p-1 rounded', isDark ? 'hover:bg-[#292929]' : 'hover:bg-[#F4F5F7]')}>
+              <button onClick={() => setFallbackText(null)} className={cn('p-1 rounded', isDark ? 'hover:bg-[var(--ds-border,#292929)]' : 'hover:bg-[var(--ds-surface-sunken,#F4F5F7)]')}>
                 <X className="w-4 h-4" />
               </button>
             </div>
             <div className="p-4">
-              <p className={cn('font-body text-xs mb-2', isDark ? 'text-[#878787]' : 'text-[var(--ds-text-subtlest, #6B6E76)]')}>
+              <p className={cn('font-body text-xs mb-2', isDark ? 'text-[var(--ds-text-subtlest,#878787)]' : 'text-[var(--ds-text-subtlest,#6B6E76)]')}>
                 Clipboard write failed. Select and copy manually:
               </p>
               <textarea
@@ -165,7 +165,7 @@ export function CopyMenu({ issueKey, item, isDark }: CopyMenuProps) {
                 value={fallbackText}
                 className={cn(
                   'w-full min-h-[200px] rounded-md border p-3 font-mono text-xs resize-y',
-                  isDark ? 'bg-[#111111] border-[#2E2E2E] text-[#EDEDED]' : 'bg-[#F7F8F9] border-[#DFE1E6] text-[var(--ds-text, #292A2E)]',
+                  isDark ? 'bg-[#111111] border-[var(--ds-border,#2E2E2E)] text-[var(--ds-text,#EDEDED)]' : 'bg-[#F7F8F9] border-[var(--ds-border,#DFE1E6)] text-[var(--ds-text,#292A2E)]',
                 )}
               />
             </div>

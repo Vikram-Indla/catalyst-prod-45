@@ -10,40 +10,40 @@ export type { ViewType, ResourceMetric, CapacityProject, AiRecommendation, Resou
 
 // Department colors - Catalyst V5 compliant
 export const departmentColors: Record<string, { bg: string; text: string; badge: string }> = {
-  Product: { bg: 'bg-[#3b82f6]', text: 'text-white', badge: 'bg-[#3b82f6]/15 text-[#2563eb]' },
-  Delivery: { bg: 'bg-[#0d9488]', text: 'text-white', badge: 'bg-[#2563eb]/10 text-[#2563eb]' },
+  Product: { bg: 'bg-[var(--ds-text-brand,#3b82f6)]', text: 'text-white', badge: 'bg-[var(--ds-text-brand,#3b82f6)]/15 text-[var(--ds-text-brand,#2563eb)]' },
+  Delivery: { bg: 'bg-[#0d9488]', text: 'text-white', badge: 'bg-[var(--ds-text-brand,#2563eb)]/10 text-[var(--ds-text-brand,#2563eb)]' },
   Support: { bg: 'bg-[#10b981]', text: 'text-white', badge: 'bg-[#10b981]/15 text-[#10b981]' },
   default: { bg: 'bg-muted', text: 'text-muted-foreground', badge: 'bg-muted text-muted-foreground' },
 };
 
 export const projectColors = [
-  '#2563eb', // Blue
+  'var(--ds-text-brand, #2563eb)', // Blue
   '#0d9488', // Teal
   '#10b981', // Green
-  '#3b82f6', // Light Blue
+  'var(--ds-text-brand, #3b82f6)', // Light Blue
   '#0f766e', // Teal Dark
   '#14b8a6', // Teal Light
 ];
 
 // FILLED project colors for Timeline bars — Catalyst V5 compliant
 export const TIMELINE_PROJECT_COLORS: Record<string, { bg: string; text: string }> = {
-  'Senaei BAU': { bg: '#2563eb', text: '#ffffff' },
-  'Senaei': { bg: '#2563eb', text: '#ffffff' },
-  'Innovation Platform': { bg: '#1d4ed8', text: '#ffffff' },
-  'Innovation': { bg: '#1d4ed8', text: '#ffffff' },
-  'Inspection Project': { bg: '#0d9488', text: '#ffffff' },
-  'Inspection': { bg: '#0d9488', text: '#ffffff' },
-  'International Relations': { bg: '#0f766e', text: '#ffffff' },
-  'International': { bg: '#0f766e', text: '#ffffff' },
-  'MIM Website': { bg: '#14b8a6', text: '#ffffff' },
-  'MIM': { bg: '#14b8a6', text: '#ffffff' },
-  'Senaei OPS': { bg: '#3b82f6', text: '#ffffff' },
-  'Sectorial Services': { bg: '#64748b', text: '#ffffff' },
-  'Sectorial': { bg: '#64748b', text: '#ffffff' },
-  'Tahommena': { bg: '#0d9488', text: '#ffffff' },
-  'Data Platform': { bg: '#3b82f6', text: '#ffffff' },
-  'Data': { bg: '#3b82f6', text: '#ffffff' },
-  'ICP': { bg: '#2563eb', text: '#ffffff' },
+  'Senaei BAU': { bg: 'var(--ds-text-brand, #2563eb)', text: 'var(--ds-surface, #ffffff)' },
+  'Senaei': { bg: 'var(--ds-text-brand, #2563eb)', text: 'var(--ds-surface, #ffffff)' },
+  'Innovation Platform': { bg: 'var(--ds-background-brand-bold-hovered, #1d4ed8)', text: 'var(--ds-surface, #ffffff)' },
+  'Innovation': { bg: 'var(--ds-background-brand-bold-hovered, #1d4ed8)', text: 'var(--ds-surface, #ffffff)' },
+  'Inspection Project': { bg: '#0d9488', text: 'var(--ds-surface, #ffffff)' },
+  'Inspection': { bg: '#0d9488', text: 'var(--ds-surface, #ffffff)' },
+  'International Relations': { bg: '#0f766e', text: 'var(--ds-surface, #ffffff)' },
+  'International': { bg: '#0f766e', text: 'var(--ds-surface, #ffffff)' },
+  'MIM Website': { bg: '#14b8a6', text: 'var(--ds-surface, #ffffff)' },
+  'MIM': { bg: '#14b8a6', text: 'var(--ds-surface, #ffffff)' },
+  'Senaei OPS': { bg: 'var(--ds-text-brand, #3b82f6)', text: 'var(--ds-surface, #ffffff)' },
+  'Sectorial Services': { bg: 'var(--ds-text-subtlest, #64748b)', text: 'var(--ds-surface, #ffffff)' },
+  'Sectorial': { bg: 'var(--ds-text-subtlest, #64748b)', text: 'var(--ds-surface, #ffffff)' },
+  'Tahommena': { bg: '#0d9488', text: 'var(--ds-surface, #ffffff)' },
+  'Data Platform': { bg: 'var(--ds-text-brand, #3b82f6)', text: 'var(--ds-surface, #ffffff)' },
+  'Data': { bg: 'var(--ds-text-brand, #3b82f6)', text: 'var(--ds-surface, #ffffff)' },
+  'ICP': { bg: 'var(--ds-text-brand, #2563eb)', text: 'var(--ds-surface, #ffffff)' },
 };
 
 // Get project color with fallback
@@ -55,7 +55,7 @@ export const getTimelineProjectColor = (name: string) => {
     k.toLowerCase().includes(name.toLowerCase())
   );
 
-  return key ? TIMELINE_PROJECT_COLORS[key] : { bg: '#64748b', text: '#ffffff' };
+  return key ? TIMELINE_PROJECT_COLORS[key] : { bg: 'var(--ds-text-subtlest, #64748b)', text: 'var(--ds-surface, #ffffff)' };
 };
 
 // Short form names for project display in timeline cells

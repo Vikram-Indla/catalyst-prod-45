@@ -24,9 +24,9 @@ interface Props {
 
 const STATUS_CFG: Record<string, { icon: typeof CheckCircle2; color: string; bg: string }> = {
   passed:  { icon: CheckCircle2,  color: '#10B981', bg: '#ECFDF5' },
-  failed:  { icon: XCircle,       color: 'var(--sem-danger)', bg: '#FEF2F2' },
-  blocked: { icon: AlertTriangle, color: '#F59E0B', bg: '#FFFBEB' },
-  skipped: { icon: SkipForward,   color: 'var(--fg-3)', bg: '#F1F5F9' },
+  failed:  { icon: XCircle,       color: 'var(--sem-danger)', bg: 'var(--ds-background-danger, #FEF2F2)' },
+  blocked: { icon: AlertTriangle, color: 'var(--ds-text-warning, #F59E0B)', bg: '#FFFBEB' },
+  skipped: { icon: SkipForward,   color: 'var(--fg-3)', bg: 'var(--ds-surface-sunken, #F1F5F9)' },
   not_run: { icon: Clock,         color: 'var(--fg-4)', bg: 'var(--bg-1, #F8FAFC)' },
 };
 
@@ -38,7 +38,7 @@ export function RecentActivityFeed({ activities }: Props) {
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16 }}>
         <div style={{ width: 36, height: 50, borderRadius: 12, backgroundColor: '#DBEAFE', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <Activity size={18} color="#2563EB" />
+          <Activity size={18} color="var(--ds-text-brand, #2563EB)" />
         </div>
         <div>
           <p style={{ fontSize: 14, fontWeight: 600, color: 'var(--fg-1)', margin: 0 }}>Recent Activity</p>

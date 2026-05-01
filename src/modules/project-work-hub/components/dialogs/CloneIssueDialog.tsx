@@ -236,7 +236,7 @@ export function CloneIssueDialog({ open, onClose, source }: CloneIssueDialogProp
           {({ formProps, getValues, setFieldValue }) => (
             <form {...formProps}>
               <ModalBody>
-                <p style={{ fontSize: 12, color: '#6B778C', marginBottom: 16 }}>
+                <p style={{ fontSize: 12, color: 'var(--ds-text-subtlest, #6B778C)', marginBottom: 16 }}>
                   Required fields are marked with an asterisk *
                 </p>
 

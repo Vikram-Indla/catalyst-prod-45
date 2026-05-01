@@ -15,8 +15,8 @@ interface CreateCategoryModalProps {
 }
 
 const PRESET_COLORS = [
-  '#3B82F6', '#8B5CF6', '#10B981', '#F97316', '#EC4899',
-  '#06B6D4', '#EAB308', '#64748B', '#EF4444', '#14B8A6',
+  'var(--ds-text-brand, #3B82F6)', '#8B5CF6', '#10B981', '#F97316', '#EC4899',
+  '#06B6D4', '#EAB308', 'var(--ds-text-subtlest, #64748B)', 'var(--ds-text-danger, #EF4444)', '#14B8A6',
 ];
 
 const AVAILABLE_ICONS = [

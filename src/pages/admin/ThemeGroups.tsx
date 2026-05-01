@@ -51,9 +51,9 @@ export default function ThemeGroups() {
       case 'proposed':
         return { label: 'Proposed', color: 'bg-blue-100 text-blue-800 dark:bg-[rgba(59,130,246,0.12)] dark:text-blue-300' };
       case 'done':
-        return { label: 'Done', color: 'bg-gray-100 text-gray-800 dark:bg-[#1A1A1A] dark:text-gray-300' };
+        return { label: 'Done', color: 'bg-gray-100 text-gray-800 dark:bg-[var(--ds-surface-raised,#1A1A1A)] dark:text-gray-300' };
       case 'cancelled':
-        return { label: 'Inactive', color: 'bg-gray-100 text-gray-600 dark:bg-[#1A1A1A] dark:text-gray-400' };
+        return { label: 'Inactive', color: 'bg-gray-100 text-gray-600 dark:bg-[var(--ds-surface-raised,#1A1A1A)] dark:text-gray-400' };
       default:
         return { label: status, color: 'bg-gray-100 text-gray-800' };
     }

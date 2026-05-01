@@ -177,8 +177,8 @@ export type GroupByType = 'none' | 'project' | 'department' | 'assignment';
 // Catalyst V5 Design System Colors
 export const CatalystColors = {
   brand: {
-    blue: '#2563eb',
-    blueHover: '#1d4ed8',
+    blue: 'var(--ds-text-brand, #2563eb)',
+    blueHover: 'var(--ds-background-brand-bold-hovered, #1d4ed8)',
     blueBg: 'rgba(37, 99, 235, 0.08)',
     teal: '#0d9488',
     tealHover: '#0f766e',
@@ -187,15 +187,15 @@ export const CatalystColors = {
   secondary: {
     olive: '#0d9488',
     bronze: '#10b981',
-    champagne: '#3b82f6',
-    green: '#22c55e',
+    champagne: 'var(--ds-text-brand, #3b82f6)',
+    green: 'var(--ds-text-success, #22c55e)',
   },
   status: {
     success: '#0d9488',
     successBg: 'rgba(13, 148, 136, 0.08)',
-    warning: '#d97706',
+    warning: 'var(--ds-text-warning, #d97706)',
     warningBg: 'rgba(217, 119, 6, 0.08)',
-    danger: '#dc2626',
+    danger: 'var(--ds-text-danger, #dc2626)',
     dangerBg: 'rgba(220, 38, 38, 0.08)',
   },
 };
@@ -203,14 +203,14 @@ export const CatalystColors = {
 export const ProjectColors: Record<string, string> = {
   'Digital Investor Portal': '#0d9488',
   'Industrial Marketplace': '#10b981',
-  'Industrial Platform Modernization': '#2563eb',
-  'Mobile App Request': '#3b82f6',
+  'Industrial Platform Modernization': 'var(--ds-text-brand, #2563eb)',
+  'Mobile App Request': 'var(--ds-text-brand, #3b82f6)',
   default: '#6b7280',
 };
 
 export const DepartmentColors: Record<string, { bg: string; text: string; badge: string }> = {
-  Product: { bg: 'bg-[#3b82f6]', text: 'text-white', badge: 'bg-[#3b82f6]/15 text-[#2563eb]' },
-  Delivery: { bg: 'bg-[#0d9488]', text: 'text-white', badge: 'bg-[#2563eb]/10 text-[#2563eb]' },
+  Product: { bg: 'bg-[var(--ds-text-brand,#3b82f6)]', text: 'text-white', badge: 'bg-[var(--ds-text-brand,#3b82f6)]/15 text-[var(--ds-text-brand,#2563eb)]' },
+  Delivery: { bg: 'bg-[#0d9488]', text: 'text-white', badge: 'bg-[var(--ds-text-brand,#2563eb)]/10 text-[var(--ds-text-brand,#2563eb)]' },
   Support: { bg: 'bg-[#10b981]', text: 'text-white', badge: 'bg-[#10b981]/15 text-[#10b981]' },
   default: { bg: 'bg-muted', text: 'text-muted-foreground', badge: 'bg-muted text-muted-foreground' },
 };
