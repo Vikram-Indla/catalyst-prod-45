@@ -27,6 +27,7 @@ import type { ADFEntity } from '@atlaskit/adf-utils/types';
 import { IntlProvider } from 'react-intl-next';
 import { normalizeAdfForAtlaskit, parseStoredDescriptionToAdf } from './adfNormalizer';
 import { uploadDescriptionImage } from './supabaseImageUpload';
+import { EditorSkeleton } from './EditorSkeleton';
 
 // Lazy-load @atlaskit/editor-core to avoid eager ProseMirror bundling
 // (prevents "Duplicate use of selection JSON ID cell" collision with Tiptap).
@@ -241,7 +242,13 @@ export default function EpicDescriptionEditor({
   return (
     <IntlProvider locale="en">
       <div ref={wrapperRef} className="epic-desc-atlaskit-wrapper" style={{ position: 'relative' }}>
-        <Suspense fallback={<div style={{ padding: 12, fontSize: 13, color: '#878787' }}>Loading editor…</div>}>
+        {/* 2026-04-30 — canonical loading state. EditorSkeleton renders a
+            sized, shimmering placeholder that matches the editor's final
+            shape (toolbar + content area + border + radius), eliminating
+            layout shift when the lazy chunk resolves. Replaces the prior
+            unstyled "Loading editor…" string per the design-critique
+            "make it canonical" remediation. */}
+        <Suspense fallback={<EditorSkeleton appearance={appearanceProp} />}>
           <LazyEditor
             appearance={appearanceProp}
             defaultValue={defaultValueString}

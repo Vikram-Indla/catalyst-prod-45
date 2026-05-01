@@ -37,21 +37,28 @@ interface ModalDialogProps {
 }
 
 const WIDTH_MAP: Record<string, number> = {
+  // 2026-04-30 jira-compare RE-APPLY of cycle 1 PATCH 6.
+  // `compact` is Jira's measured Create dialog width (right-docked floating panel).
+  compact: 436,
   small: 400,
   medium: 560,
-  large: 640,   // Jira Create modal is ~640px
+  large: 640,
   'x-large': 800,
 };
 
-export function ModalDialog({ children, onClose, width = 'medium' }: ModalDialogProps) {
+export function ModalDialog({ children, onClose, width = 'compact' }: ModalDialogProps) {
   const [fullscreen, setFullscreen] = useState(false);
   const [minimized, setMinimized] = useState(false);
-  const maxW = typeof width === 'number' ? width : (WIDTH_MAP[width] ?? 640);
+  const maxW = typeof width === 'number' ? width : (WIDTH_MAP[width] ?? 436);
 
+  // 2026-04-30 jira-compare RE-APPLY of cycle 1 PATCH 7 (non-blocking).
+  // No body-overflow lock: the modal is a floating panel that does NOT
+  // block the page beneath. Removing scroll-lock so the user can keep
+  // reading / scrolling the underlying surface (matches Jira's Create UX).
+  // Escape + explicit Close button remain as the only dismiss paths
+  // (no click-outside, since there is no scrim to click on).
   useEffect(() => {
-    const prev = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
-    return () => { document.body.style.overflow = prev; };
+    // intentionally a no-op — kept for future hook ordering symmetry.
   }, []);
 
   useEffect(() => {
@@ -107,7 +114,13 @@ export function ModalDialog({ children, onClose, width = 'medium' }: ModalDialog
         </div>
       )}
 
-      {/* Full modal — hidden when minimized */}
+      {/* Full modal — hidden when minimized.
+          2026-04-30 jira-compare RE-APPLY of cycle 1 PATCH 6 (right-dock)
+          + PATCH 7 (non-blocking floating panel). Outer wrapper has NO
+          backdrop scrim and pointer-events: none so clicks pass through
+          to the page beneath. Inner dialog re-enables pointer-events:
+          auto. The dialog floats at the right-bottom corner with a
+          stronger shadow to compensate for the missing scrim. */}
       {!minimized && (
         <div
           role="presentation"
@@ -115,27 +128,28 @@ export function ModalDialog({ children, onClose, width = 'medium' }: ModalDialog
             position: 'fixed',
             inset: 0,
             zIndex: 300,
-            background: 'rgba(9,30,66,0.54)',
+            background: 'transparent',
+            pointerEvents: 'none',
             display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            padding: fullscreen ? '5vh 5vw' : '32px 16px',
+            alignItems: fullscreen ? 'center' : 'flex-end',
+            justifyContent: fullscreen ? 'center' : 'flex-end',
+            padding: fullscreen ? '5vh 5vw' : '0 16px 16px 0',
           }}
-          onMouseDown={(e) => { if (e.target === e.currentTarget) onClose?.(); }}
         >
           <div
             role="dialog"
-            aria-modal="true"
+            aria-modal="false"
             aria-labelledby="create-story-modal-title"
             style={{
               position: 'relative',
+              pointerEvents: 'auto',
               background: token('elevation.surface.overlay', '#FFFFFF'),
               borderRadius: 8,
-              boxShadow: '0 8px 16px -4px rgba(9,30,66,0.25), 0 0 1px rgba(9,30,66,0.31)',
+              boxShadow: '0 12px 24px -4px rgba(9,30,66,0.30), 0 0 1px rgba(9,30,66,0.31)',
               width: fullscreen ? '90vw' : '100%',
               maxWidth: fullscreen ? '90vw' : maxW,
               height: fullscreen ? '90vh' : 'auto',
-              maxHeight: fullscreen ? '90vh' : 'min(90vh, 800px)',
+              maxHeight: fullscreen ? '90vh' : 'min(85vh, 720px)',
               display: 'flex',
               flexDirection: 'column',
               overflow: 'hidden',
@@ -160,21 +174,24 @@ export function ModalHeader({ children }: { children: ReactNode }) {
 }
 
 // ── ModalTitle ───────────────────────────────────────────────────────────────
+// 2026-04-30 jira-compare RE-APPLY of cycle 1 PATCH 5a — element flipped from
+// h1 → h2. Catalyst pages always carry an <h1> in the chrome (e.g. "Senaei
+// BAU"), and two <h1>s on a single document break the screen-reader outline.
 export function ModalTitle({ children }: { children: ReactNode }) {
   return (
-    <h1
+    <h2
       id="create-story-modal-title"
       style={{
         fontFamily: 'var(--cp-font-heading)',
-        fontSize: 20,
+        fontSize: 16,
         fontWeight: 600,
         color: token('color.text', '#292A2E'),
         margin: 0,
-        lineHeight: '28px',
+        lineHeight: '24px',
       }}
     >
       {children}
-    </h1>
+    </h2>
   );
 }
 

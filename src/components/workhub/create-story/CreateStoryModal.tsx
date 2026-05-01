@@ -773,8 +773,17 @@ export function CreateStoryModal({
     [workflowStatuses],
   );
   const [submitAttempted, setSubmitAttempted] = useState(false);
-  // BEH-003: blur-based summary validation — error shows after leaving empty field
+  // 2026-04-30 jira-compare: summaryBlurred state retained but no longer
+  // gates `summaryError` — keeping the setter hooked so onBlur callsite
+  // stays valid without further surgery; expression in summaryError is
+  // submit-only now (see line ~979).
   const [summaryBlurred, setSummaryBlurred] = useState(false);
+  // 2026-04-30 jira-compare RE-APPLY of cycle 1 PATCH 2+3 — Description
+  // editor collapsed-until-clicked. Always-mounting `@atlaskit/editor-core`
+  // (~500KB chunk) on modal open (a) costs 2-3s cold parse in Vite dev,
+  // (b) the editor's autoFocus beats the Summary input's autoFocus race,
+  // (c) the toolbar's 16 buttons consume ~320px of vertical space.
+  const [descriptionExpanded, setDescriptionExpanded] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
 
   const isCreateLinkedMode = !!linkedSource;
@@ -974,9 +983,13 @@ export function CreateStoryModal({
     onClose();
   }, [onClose]);
 
-  // BEH-003: error on blur OR after submit attempt
+  // 2026-04-30 jira-compare: validation only on submit attempt.
+  // Removing the onBlur trigger because the description editor's mount
+  // steals focus from the autoFocused Summary input, firing onBlur
+  // immediately and surfacing "Summary is required" before the user
+  // has interacted. UX best practice + Jira parity = submit-only validation.
   const summaryError =
-    (submitAttempted || summaryBlurred) && !form.summary.trim()
+    submitAttempted && !form.summary.trim()
       ? 'Summary is required'
       : undefined;
 
@@ -988,7 +1001,7 @@ export function CreateStoryModal({
       {open && (
         <ModalDialog
           onClose={handleClose}
-          width="large"
+          width="compact"
           shouldScrollInViewport
           autoFocus
         >
@@ -1256,10 +1269,36 @@ export function CreateStoryModal({
                 )}
               </Field>
 
-              {/* ── Description ─────────────────────────────────────── */}
+              {/* ── Description ───────────────────────────────────────
+                  2026-04-30 jira-compare RE-APPLY of cycle 1 PATCH 2+3.
+                  Collapsed-until-clicked. Auto-expanded if a linked source
+                  pre-populated `descriptionAdf` (e.g. "Create from Idea"). */}
               <Field name="description" label="Description">
                 {() => (
                   <Box xcss={editorWrapperStyles}>
+                    {!descriptionExpanded && !form.descriptionAdf ? (
+                      <button
+                        type="button"
+                        data-testid="create-modal--description-expand"
+                        onClick={() => setDescriptionExpanded(true)}
+                        style={{
+                          display: 'block',
+                          width: '100%',
+                          textAlign: 'left',
+                          padding: '10px 12px',
+                          background: 'transparent',
+                          border: '1px dashed var(--ds-border, #DFE1E6)',
+                          borderRadius: 4,
+                          color: 'var(--cp-text-tertiary, #8590A2)',
+                          fontSize: 14,
+                          fontFamily: 'var(--cp-font-body)',
+                          cursor: 'text',
+                          minHeight: 60,
+                        }}
+                      >
+                        Add a description…
+                      </button>
+                    ) : (
                     <Suspense
                       fallback={
                         <Box xcss={editorLoadingStyles}>
@@ -1290,6 +1329,7 @@ export function CreateStoryModal({
                         onCancel={() => undefined}
                       />
                     </Suspense>
+                    )}
                   </Box>
                 )}
               </Field>
