@@ -138,6 +138,7 @@ function getProjectIconComponent(loc: RecentLocation) {
           color={loc.color}
           name={loc.projectName}
           size="small"
+          variant="ghost"
         />
       </span>
     );
