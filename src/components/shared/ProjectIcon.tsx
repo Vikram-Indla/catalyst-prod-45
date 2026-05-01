@@ -53,6 +53,15 @@ interface ProjectIconProps {
   /** Project name — accessibility only. NEVER rendered as a letter tile. */
   name?: string | null;
   className?: string;
+  /**
+   * Visual variant.
+   * - 'solid' (default): filled tile in `color`, white icon. Matches Jira's
+   *   project-card and breadcrumb chips.
+   * - 'ghost': transparent / faintly-tinted tile, icon stroke uses the
+   *   project color. Matches Jira's recent-items and side-nav rows in
+   *   dark mode (per ref screenshot 2026-05).
+   */
+  variant?: 'solid' | 'ghost';
 }
 
 /**
