@@ -7,9 +7,12 @@
  * row body inert (cursor:default per Block B) so middle-click and Cmd-click
  * open the workstream in a new tab.
  *
- * Data source — public.producthub_workstreams (created by Block C SQL).
- * If the table doesn't exist yet (Vikram hasn't run block_c_workstreams.sql),
- * the page renders an empty state pointing at the migration file.
+ * Data source — public.products (the existing canonical products table,
+ * created in migration 20251222204958). Already seeded with MINI / SEN /
+ * ENT / UNA. business_requests.product_id is the existing FK. The
+ * Block-C-era producthub_workstreams table was a redundant parallel and
+ * is now orphaned — to be cleaned up in a follow-up migration that
+ * remaps mim_business_requests.product_id at public.products.
  *
  * Drilldown route — /product-hub/{KEY}/dashboard|backlog|kanban|... — these
  * mounts come in the follow-on patch; for now the Key cell anchors at
@@ -28,14 +31,15 @@ import Avatar from '@atlaskit/avatar';
 import { token } from '@atlaskit/tokens';
 import { CatalystPageHeader } from '@/components/shared/CatalystPageHeader';
 
-interface Workstream {
+interface Product {
   id: string;
-  key: string;
+  code: string;
   name: string;
   description: string | null;
-  lead_id: string | null;
-  member_ids: string[] | null;
-  is_archived: boolean;
+  color: string | null;
+  owner_id: string | null;
+  is_active: boolean;
+  sort_order: number;
   created_at: string;
 }
 
@@ -50,33 +54,30 @@ const HEAD = {
 };
 
 export default function AllProductsPage() {
-  const { data: workstreams, isLoading, error } = useQuery({
-    queryKey: ['product-hub', 'workstreams'],
+  const { data: products, isLoading, error } = useQuery({
+    queryKey: ['product-hub', 'products'],
     queryFn: async () => {
-      // Use any-cast because producthub_workstreams isn't in the
-      // generated Supabase types yet — it lands when Vikram runs
-      // block_c_workstreams.sql.
       const { data, error } = await (supabase as any)
-        .from('producthub_workstreams')
-        .select('id, key, name, description, lead_id, member_ids, is_archived, created_at')
-        .eq('is_archived', false)
-        .order('key', { ascending: true });
+        .from('products')
+        .select('id, code, name, description, color, owner_id, is_active, sort_order, created_at')
+        .eq('is_active', true)
+        .order('sort_order', { ascending: true });
       if (error) throw error;
-      return (data as Workstream[]) ?? [];
+      return (data as Product[]) ?? [];
     },
     staleTime: 60_000,
   });
 
   const rows = useMemo(() => {
-    if (!workstreams) return [];
-    return workstreams.map((w) => ({
-      key: w.id,
+    if (!products) return [];
+    return products.map((p) => ({
+      key: p.id,
       cells: [
         {
           key: 'key',
           content: (
             <RouterLink
-              to={`/product-hub/${w.key}/backlog`}
+              to={`/product-hub/${p.code}/backlog`}
               style={{
                 fontFamily: 'var(--cp-font-mono)',
                 fontSize: 12,
@@ -87,7 +88,7 @@ export default function AllProductsPage() {
               onMouseEnter={(e) => { e.currentTarget.style.textDecoration = 'underline'; }}
               onMouseLeave={(e) => { e.currentTarget.style.textDecoration = 'none'; }}
             >
-              {w.key}
+              {p.code}
             </RouterLink>
           ),
         },
@@ -95,7 +96,7 @@ export default function AllProductsPage() {
           key: 'name',
           content: (
             <RouterLink
-              to={`/product-hub/${w.key}/backlog`}
+              to={`/product-hub/${p.code}/backlog`}
               style={{
                 fontSize: 14,
                 fontWeight: 500,
@@ -105,7 +106,7 @@ export default function AllProductsPage() {
               onMouseEnter={(e) => { e.currentTarget.style.textDecoration = 'underline'; }}
               onMouseLeave={(e) => { e.currentTarget.style.textDecoration = 'none'; }}
             >
-              {w.name}
+              {p.name}
             </RouterLink>
           ),
         },
@@ -121,16 +122,16 @@ export default function AllProductsPage() {
               display: 'inline-block',
               maxWidth: '100%',
             }}>
-              {w.description || '—'}
+              {p.description || '—'}
             </span>
           ),
         },
         {
           key: 'lead',
-          content: w.lead_id ? (
+          content: p.owner_id ? (
             <span aria-hidden="true" style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
               <Avatar size="small" />
-              <span style={{ fontSize: 13, color: token('color.text.subtle') }}>Lead</span>
+              <span style={{ fontSize: 13, color: token('color.text.subtle') }}>Owner</span>
             </span>
           ) : (
             <span style={{ fontSize: 13, color: token('color.text.subtlest') }}>— Unassigned</span>
@@ -139,12 +140,12 @@ export default function AllProductsPage() {
         {
           key: 'members',
           content: (
-            <Lozenge appearance="default">{w.member_ids?.length ?? 0}</Lozenge>
+            <Lozenge appearance="default">0</Lozenge>
           ),
         },
       ],
     }));
-  }, [workstreams]);
+  }, [products]);
 
   return (
     <div style={{ padding: '24px 32px', maxWidth: 1400 }}>
@@ -153,12 +154,11 @@ export default function AllProductsPage() {
       <div style={{ marginTop: 16 }}>
         {error ? (
           <EmptyState
-            header="Couldn't load workstreams"
+            header="Couldn't load products"
             description={
               <span>
-                The <code>producthub_workstreams</code> table may not exist yet.
-                Run <code>block_c_workstreams.sql</code> from your outputs
-                folder in Supabase to provision it, then reload this page.
+                Could not query <code>public.products</code>. Check the browser
+                console for the Supabase error code.
               </span>
             }
           />
@@ -170,11 +170,11 @@ export default function AllProductsPage() {
             loadingSpinnerSize="large"
             emptyView={
               <EmptyState
-                header="No workstreams yet"
+                header="No active products"
                 description={
                   <span>
-                    Once <code>block_c_workstreams.sql</code> runs, the seeded
-                    <code> INV — Investor Journey </code>workstream appears here.
+                    No rows in <code>public.products</code> with
+                    <code> is_active=true</code>.
                   </span>
                 }
               />
