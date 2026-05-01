@@ -339,22 +339,22 @@ export function SidebarBase({
                   {sectionIndex > 0 && (
                     <div style={{ borderTop: `1px solid ${dividerColor}`, margin: '8px 12px' }} />
                   )}
-                  {/* Section Header — enterprise high-contrast labels */}
+                  {/* Section header — ADS sentence case, --ds-text-subtlest */}
                   {expanded && section.title && (
                     <div
                       style={{
-                        padding: '16px 12px 4px',
+                        padding: '12px 12px 4px',
                         lineHeight: 1,
                       }}
                     >
                       <span
                         style={{
-                          fontFamily: 'var(--cp-font-heading)',
-                          color: sectionLabel,
+                          fontFamily: 'var(--cp-font-body)',
+                          color: 'var(--ds-text-subtlest, #626F86)',
                           fontSize: '11px',
-                          fontWeight: 700,
-                          letterSpacing: '0.07em',
-                          textTransform: 'uppercase' as const,
+                          fontWeight: 600,
+                          letterSpacing: '0',
+                          textTransform: 'none' as const,
                         }}
                       >
                         {section.title}
