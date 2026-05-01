@@ -1,35 +1,37 @@
 /**
  * HomeSidebar — personal command center on the / route.
  *
- *   ┌─ Home (badge "H")  ──────────────────┐
- *   │  Recent projects                     │
- *   │  ▣ Senaei BAU                        │
- *   │  ▣ ICP Project                       │
- *   │  ▣ Data Analytics Platform           │
- *   │  → All projects                      │
- *   └──────────────────────────────────────┘
+ *   ┌─ Home (badge "H")  ──────────────────────────┐
+ *   │  Recent                                       │
+ *   │  ▣ Senaei BAU › Backlog                       │
+ *   │  ▣ Senaei BAU › Dashboard                     │
+ *   │  ▣ ICP Project › Boards                       │
+ *   └───────────────────────────────────────────────┘
  *
- * Project-grain only (Jira "Recent projects" parity, image 2)
- * ───────────────────────────────────────────────────────────
- *   The rail surfaces the user's most recently visited ProjectHub
- *   projects — name + branded ProjectIcon (icon + color from
- *   ph_projects). No ticket numbers, no pinned tickets, no Jump-to. The
- *   visit log is localStorage-backed (`useRecordProjectVisit` in
- *   CatalystShell, `useRecentProjects` here).
+ * Per-location grain (Jira "Recent pages" parity)
+ * ──────────────────────────────────────────────
+ *   Each row is a project sub-page the user actually visited — not just
+ *   the project. Senaei BAU Backlog and Senaei BAU Dashboard show as
+ *   two separate rows so the user can jump straight back to the surface
+ *   they were on. Project icon + name + section label, in that order.
  *
- *   Removed sections:
- *   - "Jump to" (Apr 2026): duplicated the global 9-dot HubSwitcher.
- *   - "Pinned items" (May 2026): mixed ticket-grain into a project-grain
- *     rail. Star functionality remains available everywhere else
- *     (WorkItemStarButton, StarredPage, per-row stars in backlogs).
+ *   Storage / ordering is delegated to `useRecentProjects` (v2 store,
+ *   path-deduped, newest first, cap 8 here).
+ *
+ *   Excluded surfaces:
+ *   - Tickets (story/issue/epic/feature) — never recorded.
+ *   - Global hub roots (Product Hub, Test Hub) — those belong to the
+ *     9-dot global hub switcher, not this rail.
+ *   - "All projects" footer link — removed (project-hub/all-projects is
+ *     not a project, surfacing it was misleading).
  */
 import React, { useMemo } from 'react';
 import { Clock, FolderOpen } from 'lucide-react';
 import { SidebarBase, type SidebarConfig, type SidebarMenuItem } from './SidebarBase';
-import { useRecentProjects, type RecentProject } from '@/hooks/home/useRecentProjects';
+import { useRecentProjects, type RecentLocation } from '@/hooks/home/useRecentProjects';
 import { ProjectIcon } from '@/components/shared/ProjectIcon';
 
-const RECENT_PROJECTS_LIMIT = 6;
+const RECENT_LIMIT = 8;
 
 interface HomeSidebarProps {
   expanded?: boolean;
@@ -55,16 +57,72 @@ function SkeletonRowTitle() {
 }
 
 /**
- * ProjectIcon adapter — renders the canonical branded ProjectIcon inside
- * SidebarBase's icon slot. Cached by composite key so React reconciles by
- * stable reference across config rebuilds.
+ * Title renderer — "Project Name" in primary text, " › Section" in
+ * subtle text. Uses ADS tokens so it themes correctly in dark mode.
+ */
+function LocationRowTitle({ location }: { location: RecentLocation }) {
+  return (
+    <span
+      style={{
+        display: 'inline-flex',
+        alignItems: 'baseline',
+        gap: 6,
+        minWidth: 0,
+        maxWidth: '100%',
+      }}
+    >
+      <span
+        style={{
+          color: 'var(--ds-text, #172B4D)',
+          fontWeight: 500,
+          overflow: 'hidden',
+          textOverflow: 'ellipsis',
+          whiteSpace: 'nowrap',
+          flex: '0 1 auto',
+          minWidth: 0,
+        }}
+        title={`${location.projectName} › ${location.sectionLabel}`}
+      >
+        {location.projectName}
+      </span>
+      <span
+        style={{
+          color: 'var(--ds-text-subtlest, #94A3B8)',
+          fontWeight: 400,
+          flex: '0 0 auto',
+        }}
+        aria-hidden="true"
+      >
+        ›
+      </span>
+      <span
+        style={{
+          color: 'var(--ds-text-subtle, #626F86)',
+          fontWeight: 400,
+          overflow: 'hidden',
+          textOverflow: 'ellipsis',
+          whiteSpace: 'nowrap',
+          flex: '0 1 auto',
+          minWidth: 0,
+        }}
+      >
+        {location.sectionLabel}
+      </span>
+    </span>
+  );
+}
+
+/**
+ * Branded ProjectIcon adapter — renders the canonical icon inside
+ * SidebarBase's icon slot. Cached per (projectKey, iconName, color) so
+ * React reconciles by stable reference across config rebuilds.
  */
 const PROJECT_ICON_COMPONENTS = new Map<
   string,
   React.FC<{ className?: string; style?: React.CSSProperties }>
 >();
-function getProjectIconComponent(p: RecentProject) {
-  const cacheKey = `${p.projectKey}|${p.iconName ?? ''}|${p.color ?? ''}`;
+function getProjectIconComponent(loc: RecentLocation) {
+  const cacheKey = `${loc.projectKey}|${loc.iconName ?? ''}|${loc.color ?? ''}`;
   let cached = PROJECT_ICON_COMPONENTS.get(cacheKey);
   if (!cached) {
     const Component: React.FC<{ className?: string; style?: React.CSSProperties }> = ({
@@ -76,14 +134,14 @@ function getProjectIconComponent(p: RecentProject) {
         style={{ display: 'inline-flex', alignItems: 'center', ...style }}
       >
         <ProjectIcon
-          iconName={p.iconName}
-          color={p.color}
-          name={p.name}
+          iconName={loc.iconName}
+          color={loc.color}
+          name={loc.projectName}
           size="small"
         />
       </span>
     );
-    Component.displayName = `ProjectIcon(${p.projectKey})`;
+    Component.displayName = `ProjectIcon(${loc.projectKey})`;
     PROJECT_ICON_COMPONENTS.set(cacheKey, Component);
     cached = Component;
   }
@@ -95,22 +153,22 @@ export default function HomeSidebar({
   onToggle = () => {},
   className,
 }: HomeSidebarProps) {
-  const { recentProjects, loading: recentLoading } = useRecentProjects(RECENT_PROJECTS_LIMIT);
+  const { recentLocations, loading } = useRecentProjects(RECENT_LIMIT);
 
   const config: SidebarConfig = useMemo(() => {
-    const recentProjectItems: SidebarMenuItem[] = recentLoading
+    const items: SidebarMenuItem[] = loading
       ? [
           { id: 'recent-skel-1', title: <SkeletonRowTitle />, path: '#recent-skel-1', icon: FolderOpen },
           { id: 'recent-skel-2', title: <SkeletonRowTitle />, path: '#recent-skel-2', icon: FolderOpen },
           { id: 'recent-skel-3', title: <SkeletonRowTitle />, path: '#recent-skel-3', icon: FolderOpen },
         ]
-      : recentProjects.length === 0
+      : recentLocations.length === 0
       ? [
           {
             id: 'recent-empty',
             title: (
               <span style={{ color: 'var(--ds-text-subtlest, #94A3B8)', fontSize: 13 }}>
-                Open a project to see it here.
+                Your recent pages will appear here.
               </span>
             ),
             path: '#recent-empty',
@@ -118,22 +176,21 @@ export default function HomeSidebar({
             onClick: () => {},
           },
         ]
-      : recentProjects.map((p) => ({
-          id: `recent-${p.projectKey}`,
-          title: p.name,
-          path: `/project-hub/${p.projectKey}/allwork`,
-          icon: getProjectIconComponent(p),
+      : recentLocations.map((loc) => ({
+          // Path is the dedupe key in storage, so it's unique here too.
+          id: `recent-${loc.path}`,
+          title: <LocationRowTitle location={loc} />,
+          path: loc.path,
+          icon: getProjectIconComponent(loc),
         }));
 
     return {
       badge: 'H',
       label: 'Home',
       showFavorites: false,
-      sections: [
-        { title: 'Recent projects', items: recentProjectItems },
-      ],
+      sections: [{ title: 'Recent', items }],
     };
-  }, [recentProjects, recentLoading]);
+  }, [recentLocations, loading]);
 
   return (
     <SidebarBase
