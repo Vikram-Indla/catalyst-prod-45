@@ -1,0 +1,15 @@
+{
+  "ForYou":      "/for-you",
+  "StrategyHub": "/strategyhub",
+  "ProductHub":  "/producthub/kanban",
+  "ProjectHub":  "/projecthub",
+  "WorkHub":     "/workhub/all-work",
+  "TaskHub":     "/taskhub",
+  "ReleaseHub":  "/releasehub",
+  "TestHub":     "/testhub",
+  "IncidentHub": "/incidenthub",
+  "ResourceHub": "/resourcehub",
+  "NotifyHub":   "/notifyhub",
+  "Admin":       "/admin",
+  "ReqAssist":   "/product/requirement-assist"
+}
