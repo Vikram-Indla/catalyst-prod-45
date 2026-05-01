@@ -306,15 +306,15 @@ export function SidebarBase({
           {config.showFavorites !== false && favoritedItems.length > 0 && !expanded && null}
           {config.showFavorites !== false && favoritedItems.length > 0 && expanded && (
             <div className="mb-3">
-              <div style={{ padding: '16px 12px 4px' }}>
+              <div style={{ padding: '12px 12px 4px' }}>
                 <span
                   style={{
-                    fontFamily: 'var(--cp-font-heading)',
-                    color: sectionLabel,
+                    fontFamily: 'var(--cp-font-body)',
+                    color: 'var(--ds-text-subtlest, #626F86)',
                     fontSize: '11px',
-                    fontWeight: 700,
-                    letterSpacing: '0.07em',
-                    textTransform: 'uppercase' as const,
+                    fontWeight: 600,
+                    letterSpacing: '0',
+                    textTransform: 'none' as const,
                     lineHeight: 1,
                   }}
                 >
