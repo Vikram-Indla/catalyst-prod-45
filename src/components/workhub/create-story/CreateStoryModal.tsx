@@ -198,6 +198,20 @@ function statusAppearance(
   return 'default';
 }
 
+function plainTextToAdf(text: string) {
+  const paragraphs = text.split(/\n{2,}/).map((block) => block.trim()).filter(Boolean);
+  return {
+    type: 'doc',
+    version: 1,
+    content: paragraphs.length
+      ? paragraphs.map((paragraph) => ({
+          type: 'paragraph',
+          content: [{ type: 'text', text: paragraph }],
+        }))
+      : [{ type: 'paragraph' }],
+  };
+}
+
 // ─────────────────────────────────────────────────────────────────────────────
 // xcss styles (token-only)
 // ─────────────────────────────────────────────────────────────────────────────
