@@ -682,10 +682,89 @@
   border-width: 0;
 }
 
-/* DARK MODE OVERRIDES — added 2026-04-30 sweep */
+/* ═══════════════════════════════════════════════════════════════════
+   DARK MODE OVERRIDES — ADS-aligned (Atlaskit neutral tokens)
+   Targets the V10 institutional login surface so it remains legible
+   when the global .dark class is applied to <html>.
+   ═══════════════════════════════════════════════════════════════════ */
 .dark .login-container,
-.dark .login-page-bg { background: var(--cp-bg-page, #1D2125); color: var(--cp-text-primary, #EDEDED); }
-.dark .login-card { background: var(--cp-bg-elevated, #22272B); border-color: var(--cp-border-default, #2E2E2E); }
-.dark .login-input { background: var(--cp-bg-sunken, #161A1D); color: var(--cp-text-primary, #EDEDED); border-color: var(--cp-border-default, #2E2E2E); }
-.dark .login-input::placeholder { color: var(--cp-text-tertiary, #878787); }
-.dark .login-label { color: var(--cp-text-secondary, #C9CCD0); }
+.dark .form-panel-v10 {
+  background: var(--ds-surface, #1D2125);
+  color: var(--ds-text, #B6C2CF);
+}
+
+.dark .welcome-title-v10,
+.dark .input-label-v10 {
+  color: var(--ds-text, #B6C2CF);
+}
+
+.dark .welcome-subtitle-v10 {
+  color: var(--ds-text-subtle, #9FADBC);
+}
+
+.dark .input-field-v10,
+.dark .textarea-field-v10 {
+  background: var(--ds-surface-sunken, #161A1D);
+  color: var(--ds-text, #B6C2CF);
+  border-color: var(--ds-border, #2C333A);
+  box-shadow: none;
+}
+
+.dark .input-field-v10::placeholder,
+.dark .textarea-field-v10::placeholder {
+  color: var(--ds-text-subtlest, #738496);
+}
+
+.dark .input-field-v10:focus,
+.dark .textarea-field-v10:focus {
+  border-color: var(--ds-border-focused, #579DFF);
+  box-shadow: 0 0 0 2px var(--ds-border-focused, #579DFF);
+}
+
+.dark .input-icon-v10,
+.dark .input-action-v10 {
+  color: var(--ds-text-subtlest, #738496);
+}
+
+.dark .input-wrapper-v10:focus-within .input-icon-v10 {
+  color: var(--ds-text-selected, #579DFF);
+}
+
+.dark .checkbox-box-v10 {
+  background: var(--ds-surface-sunken, #161A1D);
+  border-color: var(--ds-border, #2C333A);
+}
+.dark .checkbox-box-v10.checked {
+  background: var(--ds-background-brand-bold, #579DFF);
+  border-color: var(--ds-background-brand-bold, #579DFF);
+}
+.dark .checkbox-label-v10 {
+  color: var(--ds-text-subtle, #9FADBC);
+}
+
+.dark .forgot-link-v10 {
+  color: var(--ds-text-selected, #579DFF);
+}
+
+.dark .submit-btn-v10 {
+  background: var(--ds-background-brand-bold, #579DFF);
+  color: var(--ds-text-inverse, #1D2125);
+}
+.dark .submit-btn-v10:hover:not(:disabled) {
+  background: var(--ds-background-brand-bold-hovered, #85B8FF);
+}
+
+.dark .error-message-v10 {
+  background: var(--ds-background-danger, #42221F);
+  color: var(--ds-text-danger, #FD9891);
+  border-color: var(--ds-border-danger, #5D1F1A);
+}
+
+.dark .success-card-v10 {
+  background: var(--ds-background-success, #1C3329);
+  color: var(--ds-text-success, #7EE2B8);
+  border-color: var(--ds-border-success, #1F3D2E);
+}
+.dark .success-title { color: var(--ds-text, #B6C2CF); }
+.dark .success-desc { color: var(--ds-text-subtle, #9FADBC); }
+
