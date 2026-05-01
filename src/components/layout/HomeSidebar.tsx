@@ -169,7 +169,7 @@ export default function HomeSidebar({
             id: 'recent-empty',
             title: (
               <span style={{ color: 'var(--ds-text-subtlest, #94A3B8)', fontSize: 13 }}>
-                Your recent pages will appear here.
+                No recent pages yet
               </span>
             ),
             path: '#recent-empty',
