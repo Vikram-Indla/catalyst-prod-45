@@ -270,7 +270,10 @@ export default function EpicDescriptionEditor({
             allowStatus
             allowDate
             allowBreakout
-            shouldFocus
+            /* shouldFocus removed 2026-05-01 — Jira parity. Auto-focusing
+               the editor on mount painted a persistent blue focus halo and
+               stole focus from the Summary field which is the canonical
+               first-focus target in Atlassian's Create dialog. */
             primaryToolbarComponents={[
               <button
                 key="insert-image"
