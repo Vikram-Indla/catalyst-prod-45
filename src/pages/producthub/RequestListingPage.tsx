@@ -4,13 +4,14 @@
  */
 
 import React, { useState, useCallback, useMemo, useEffect, useRef } from 'react';
+import { useParams } from 'react-router-dom';
 import { useRequestsBacklog } from '@/hooks/useRequestsBacklog';
 import type { BRDTask } from '@/hooks/useRequestsBacklog';
 import { useSyncMDTToRequests } from '@/hooks/useSyncMDTToRequests';
 import { useProfileOptions, useDepartmentOptions } from '@/hooks/useRequestLookups';
 import { useProfileAvatarsByName } from '@/hooks/useProfileAvatars';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
-import { useQueryClient } from '@tanstack/react-query';
+import { useQueryClient, useQuery } from '@tanstack/react-query';
 import { RequestTable } from '@/components/producthub/listing/RequestTable';
 import { Pagination } from '@/components/producthub/listing/Pagination';
 // jira-compare cycle 4 — RequestDetailPanel replaced by CatalystViewBusinessRequestV2.
@@ -173,6 +174,32 @@ export default function RequestListingPage() {
   const { data: departments } = useDepartmentOptions();
   const avatarsByName = useProfileAvatarsByName();
   const queryClient = useQueryClient();
+
+  // Block D Phase 2.5 (2026-05-01) — Product-scoped backlog drilldown.
+  // When mounted at /product-hub/:code/backlog, look up the product so the
+  // page header reflects the scope ("Mini Apps · Backlog") instead of the
+  // generic "Product Backlog". Data filter is UI-only for now — ph_requests
+  // doesn't yet have a product_id FK; the filter wires through here once
+  // the schema migration lands.
+  const { code: productCode } = useParams<{ code?: string }>();
+  const { data: scopedProduct } = useQuery({
+    queryKey: ['product-hub', 'product-by-code', productCode],
+    enabled: !!productCode,
+    queryFn: async () => {
+      const { data, error } = await (supabase as any)
+        .from('products')
+        .select('id, code, name')
+        .eq('code', productCode)
+        .eq('is_active', true)
+        .maybeSingle();
+      if (error) throw error;
+      return data as { id: string; code: string; name: string } | null;
+    },
+    staleTime: 5 * 60_000,
+  });
+  const headerTitle = scopedProduct
+    ? `${scopedProduct.name} · Backlog`
+    : 'Product Backlog';
 
   const invalidateAll = useCallback(() => {
     queryClient.invalidateQueries({ queryKey: ['requests-backlog'] });
@@ -616,7 +643,7 @@ export default function RequestListingPage() {
   return (
     <div data-module="product-backlog" className="flex flex-col h-full" style={{ fontFamily: 'var(--cp-font-body)' }}>
       {/* ── Page Header (Canonical) ── */}
-      <CatalystPageHeader title="Product Backlog" />
+      <CatalystPageHeader title={headerTitle} />
 
       {/* ── Primary Tabs (All / My Items / Starred) + Overdue + Filter ── */}
       <div style={{

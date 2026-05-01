@@ -481,6 +481,17 @@ export default function FullAppRoutes() {
         <Route path="/product-hub/table" element={<MG k="producthub" t="ProductHub"><S><CatalystDemandTable /></S></MG>} />
         <Route path="/product-hub/kanban" element={<MG k="producthub" t="ProductHub"><S><ProductKanbanPage /></S></MG>} />
         <Route path="/product-hub/dashboard" element={<MG k="producthub" t="ProductHub"><S><DemandSummaryPage /></S></MG>} />
+        {/* Block D Phase 2.5 (2026-05-01) — product-scoped drilldown routes.
+            Mirror of /project-hub/{KEY}/* on the project side. The :code param
+            resolves against public.products.code (MINI/SEN/ENT/UNA). Pages
+            read useParams().code, look up the product, and scope their data.
+            Data filter is UI-only until ph_requests gains a product_id FK in
+            a follow-up migration — see lesson note in CLAUDE.md. */}
+        <Route path="/product-hub/:code/backlog" element={<MG k="producthub" t="ProductHub"><S><RequestListingPage /></S></MG>} />
+        <Route path="/product-hub/:code/kanban" element={<MG k="producthub" t="ProductHub"><S><ProductKanbanPage /></S></MG>} />
+        <Route path="/product-hub/:code/dashboard" element={<MG k="producthub" t="ProductHub"><S><DemandSummaryPage /></S></MG>} />
+        <Route path="/product-hub/:code/roadmap" element={<MG k="producthub" t="ProductHub"><S><RoadmapPage /></S></MG>} />
+        <Route path="/product-hub/:code/cards" element={<MG k="producthub" t="ProductHub"><S><ProductCardsPage /></S></MG>} />
         <Route path="/product-hub/roadmaps" element={<Navigate to="/product-hub/roadmap" replace />} />
         <Route path="/product-hub/roadmaps-v1" element={<MG k="producthub" t="ProductHub"><S><IndustryRoadmapPage /></S></MG>} />
         <Route path="/product-hub/reports" element={<MG k="producthub" t="ProductHub"><S><IndustryComingSoon /></S></MG>} />
