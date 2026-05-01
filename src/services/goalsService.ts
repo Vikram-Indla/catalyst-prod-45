@@ -334,9 +334,12 @@ export const goalsService = {
   },
 
   async searchInitiatives(query: string): Promise<{ id: string; initiative_key: string; title: string; status: string }[]> {
+    // 2026-04-30 cycle 7: ph_requests.initiative_key was renamed to request_key
+    // (CLAUDE.md 2026-04-29 rename lesson). Use the PostgREST alias syntax
+    // `initiative_key:request_key` so the returned shape stays unchanged.
     const { data, error } = await supabase
       .from('ph_requests')
-      .select('id, initiative_key, title, status')
+      .select('id, initiative_key:request_key, title, status')
       .ilike('title', `%${query}%`)
       .limit(20);
     if (error) throw error;

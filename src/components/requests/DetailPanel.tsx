@@ -530,15 +530,18 @@ function RoadmapToggleInline({ request }: { request: Request }) {
       setIsToggling(true);
       const isJira = !isNativeInitiative(request.id);
       if (isJira) {
+        // 2026-04-30 cycle 7: ph_requests.initiative_key renamed to request_key
+        // (CLAUDE.md 2026-04-29 rename lesson). Local request.initiative_key
+        // property name preserved by upstream adapters.
         if (!newValue) {
-          const { data: existing } = await typedQuery('ph_requests').select('id').eq('initiative_key', request.initiative_key).maybeSingle();
+          const { data: existing } = await typedQuery('ph_requests').select('id').eq('request_key', request.initiative_key).maybeSingle();
           if (existing) await removeMutation.mutateAsync(existing.id);
         } else {
-          const { data: existing } = await typedQuery('ph_requests').select('id').eq('initiative_key', request.initiative_key).maybeSingle();
+          const { data: existing } = await typedQuery('ph_requests').select('id').eq('request_key', request.initiative_key).maybeSingle();
           let requestId: string;
           if (existing) { requestId = existing.id; }
           else {
-            const { data: inserted, error: insertError } = await typedQuery('ph_requests').insert({ initiative_key: request.initiative_key, title: request.title, description: request.description || null, status: 'new_demand', assignee_id: request.assignee_id || null, department_id: request.department_id || null, progress: request.progress || 0 }).select('id').single();
+            const { data: inserted, error: insertError } = await typedQuery('ph_requests').insert({ request_key: request.initiative_key, title: request.title, description: request.description || null, status: 'new_demand', assignee_id: request.assignee_id || null, department_id: request.department_id || null, progress: request.progress || 0 }).select('id').single();
             if (insertError) throw insertError;
             requestId = inserted.id;
           }

@@ -41,10 +41,13 @@ export function useRequestsByKeys(keys: string[]) {
     queryFn: async (): Promise<Map<string, RequestRow>> => {
       const out = new Map<string, RequestRow>();
       if (keys.length === 0) return out;
+      // 2026-04-30 cycle 7: ph_backlog_requests_view was recreated with
+      // request_key (CLAUDE.md 2026-04-29 view-recreation lesson). Alias
+      // back to initiative_key so the local RequestRow shape is unchanged.
       const { data, error } = await supabase
         .from('ph_backlog_requests_view')
-        .select('id, initiative_key, title')
-        .in('initiative_key', keys);
+        .select('id, initiative_key:request_key, title')
+        .in('request_key', keys);
       if (error) throw error;
       for (const row of (data || []) as any[]) {
         out.set(row.initiative_key, row as RequestRow);

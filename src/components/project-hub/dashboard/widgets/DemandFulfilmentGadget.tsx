@@ -465,10 +465,11 @@ function useDemandData(projectKey: string, settings: GadgetSettings) {
         }
         if (pairs.length > 0) {
           const [{ data: initRows }, { data: epicRows }] = await Promise.all([
+            // 2026-04-30 cycle 7: alias initiative_key:request_key per CLAUDE.md rename.
             (supabase as any)
               .from('ph_requests')
-              .select('id, initiative_key')
-              .in('initiative_key', Array.from(initKeys)),
+              .select('id, initiative_key:request_key')
+              .in('request_key', Array.from(initKeys)),
             (supabase as any)
               .from('ph_issues')
               .select('id, issue_key, issue_type, project_key')
@@ -507,9 +508,10 @@ function useDemandData(projectKey: string, settings: GadgetSettings) {
       const epicIds = Array.from(new Set(links.map((l: any) => l.epic_id)));
 
       // 2) Fetch initiatives (filtered later by scope; do not filter on status).
+      // 2026-04-30 cycle 7: alias initiative_key:request_key per CLAUDE.md rename.
       const { data: initiatives } = await (supabase as any)
         .from('ph_requests')
-        .select('id, initiative_key, title, status, target_complete, target_quarter, assignee_id, updated_at')
+        .select('id, initiative_key:request_key, title, status, target_complete, target_quarter, assignee_id, updated_at')
         .in('id', initiativeIds)
         .eq('is_deleted', false);
 

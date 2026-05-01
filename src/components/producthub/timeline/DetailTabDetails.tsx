@@ -378,7 +378,11 @@ export const DetailTabDetails: React.FC<DetailTabDetailsProps> = ({ request }) =
       if (isUuid(request.id)) {
         query = query.eq('id', request.id);
       } else if (request.initiative_key) {
-        query = query.eq('initiative_key', request.initiative_key);
+        // 2026-04-30 cycle 7: ph_requests.initiative_key was renamed to
+        // request_key (CLAUDE.md 2026-04-29 rename lesson). The local
+        // `request.initiative_key` property name is preserved by upstream
+        // adapters; the SQL column ref must use the new name.
+        query = query.eq('request_key', request.initiative_key);
       } else {
         throw new Error('Missing valid persistence identifier');
       }

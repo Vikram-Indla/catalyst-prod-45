@@ -270,10 +270,13 @@ export function useUWVData(params: UWVParams, statusFilter: string[], sort: UWVS
 
       // ─── ProductHub source (initiatives / MDTs) ───────────────────────────
       if (params.hubSource.includes('producthub')) {
+        // 2026-04-30 cycle 7: ph_requests.initiative_key was renamed to request_key
+        // (CLAUDE.md 2026-04-29 rename lesson). Alias keeps the result shape
+        // (`r.initiative_key`) so downstream UWVItem mapping is unchanged.
         let q = (supabase as any)
           .from('ph_requests')
           .select(
-            'id, initiative_key, title, status, target_quarter, target_complete, assignee_id, updated_at',
+            'id, initiative_key:request_key, title, status, target_quarter, target_complete, assignee_id, updated_at',
             { count: 'exact' },
           )
           .eq('is_deleted', false);
@@ -281,7 +284,7 @@ export function useUWVData(params: UWVParams, statusFilter: string[], sort: UWVS
         if (params.scope === 'quarter' && params.quarter) {
           q = q.eq('target_quarter', params.quarter);
         }
-        if (params.keys?.length) q = q.in('initiative_key', params.keys);
+        if (params.keys?.length) q = q.in('request_key', params.keys);
         q = q.range(pageParam * PAGE_SIZE, pageParam * PAGE_SIZE + PAGE_SIZE - 1);
 
         const { data, error, count } = await q;

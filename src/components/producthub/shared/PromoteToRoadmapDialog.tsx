@@ -48,11 +48,14 @@ export function PromoteToRoadmapDialog({ open, onClose, request }: Props) {
     let requestId = request.id;
 
     // For Jira-sourced items (non-UUID id), ensure a ph_requests record exists
+    // 2026-04-30 cycle 7: ph_requests.initiative_key renamed to request_key
+    // (CLAUDE.md 2026-04-29 rename lesson). Local issueKey carries either the
+    // jira issue_key or the legacy request.initiative_key property.
     if (!isUuid(request.id)) {
       const issueKey = request.initiative_key || request.id;
       const { data: existing } = await typedQuery('ph_requests')
         .select('id')
-        .eq('initiative_key', issueKey)
+        .eq('request_key', issueKey)
         .maybeSingle();
 
       if (existing) {
@@ -60,7 +63,7 @@ export function PromoteToRoadmapDialog({ open, onClose, request }: Props) {
       } else {
         const { data: inserted, error: insertError } = await typedQuery('ph_requests')
           .insert({
-            initiative_key: issueKey,
+            request_key: issueKey,
             title: request.title,
             description: request.description || null,
             status: 'new_demand',
