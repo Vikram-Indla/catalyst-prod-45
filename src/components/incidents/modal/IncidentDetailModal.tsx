@@ -109,7 +109,7 @@ export default function IncidentDetailModal({ incident, isOpen, onClose, parentI
         onClick={(e) => e.stopPropagation()}
       >
         {/* Modal Header */}
-        <div className="flex items-center justify-between px-4 py-3 border-b border-[#DFE1E6] shrink-0">
+        <div className="flex items-center justify-between px-4 py-3 border-b border-[var(--ds-border,var(--ds-border, #DFE1E6))] shrink-0">
           {/* Breadcrumb */}
           <div className="flex items-center gap-1.5 text-[11px] text-[#42526E]">
             {parentIncidentId && (
@@ -139,13 +139,13 @@ export default function IncidentDetailModal({ incident, isOpen, onClose, parentI
               />
             )}
             <button 
-              className="w-8 h-8 flex items-center justify-center rounded hover:bg-[#F4F5F7] text-[#42526E] hover:text-[#172B4D]"
+              className="w-8 h-8 flex items-center justify-center rounded hover:bg-[var(--ds-surface-sunken,var(--ds-surface-sunken, #F4F5F7))] text-[#42526E] hover:text-[var(--ds-text,var(--ds-text, #172B4D))]"
               title="Watch"
             >
               <Eye className="w-5 h-5" />
             </button>
             <button 
-              className="w-8 h-8 flex items-center justify-center rounded hover:bg-[#F4F5F7] text-[#42526E] hover:text-[#172B4D]"
+              className="w-8 h-8 flex items-center justify-center rounded hover:bg-[var(--ds-surface-sunken,var(--ds-surface-sunken, #F4F5F7))] text-[#42526E] hover:text-[var(--ds-text,var(--ds-text, #172B4D))]"
               title="Share"
             >
               <Share2 className="w-5 h-5" />
@@ -155,26 +155,26 @@ export default function IncidentDetailModal({ incident, isOpen, onClose, parentI
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <button 
-                  className="w-8 h-8 flex items-center justify-center rounded hover:bg-[#F4F5F7] text-[#42526E] hover:text-[#172B4D]"
+                  className="w-8 h-8 flex items-center justify-center rounded hover:bg-[var(--ds-surface-sunken,var(--ds-surface-sunken, #F4F5F7))] text-[#42526E] hover:text-[var(--ds-text,var(--ds-text, #172B4D))]"
                   title="More actions"
                 >
                   <MoreHorizontal className="w-5 h-5" />
                 </button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-48 bg-white border-[#DFE1E6]">
-                <DropdownMenuItem onClick={() => handleMenuAction('flag')} className="text-[#172B4D] hover:bg-[#F4F5F7]">
+              <DropdownMenuContent align="end" className="w-48 bg-white border-[var(--ds-border,var(--ds-border, #DFE1E6))]">
+                <DropdownMenuItem onClick={() => handleMenuAction('flag')} className="text-[var(--ds-text,var(--ds-text, #172B4D))] hover:bg-[var(--ds-surface-sunken,var(--ds-surface-sunken, #F4F5F7))]">
                   <Flag className="w-4 h-4 mr-2 text-[#42526E]" />
                   Add flag
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => handleMenuAction('clone')} className="text-[#172B4D] hover:bg-[#F4F5F7]">
+                <DropdownMenuItem onClick={() => handleMenuAction('clone')} className="text-[var(--ds-text,var(--ds-text, #172B4D))] hover:bg-[var(--ds-surface-sunken,var(--ds-surface-sunken, #F4F5F7))]">
                   <Copy className="w-4 h-4 mr-2 text-[#42526E]" />
                   Clone
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => handleMenuAction('move')} className="text-[#172B4D] hover:bg-[#F4F5F7]">
+                <DropdownMenuItem onClick={() => handleMenuAction('move')} className="text-[var(--ds-text,var(--ds-text, #172B4D))] hover:bg-[var(--ds-surface-sunken,var(--ds-surface-sunken, #F4F5F7))]">
                   <Move className="w-4 h-4 mr-2 text-[#42526E]" />
                   Move
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => handleMenuAction('archive')} className="text-[#172B4D] hover:bg-[#F4F5F7]">
+                <DropdownMenuItem onClick={() => handleMenuAction('archive')} className="text-[var(--ds-text,var(--ds-text, #172B4D))] hover:bg-[var(--ds-surface-sunken,var(--ds-surface-sunken, #F4F5F7))]">
                   <Archive className="w-4 h-4 mr-2 text-[#42526E]" />
                   Archive
                 </DropdownMenuItem>
@@ -182,16 +182,16 @@ export default function IncidentDetailModal({ incident, isOpen, onClose, parentI
                   <Trash2 className="w-4 h-4 mr-2" />
                   Delete
                 </DropdownMenuItem>
-                <DropdownMenuSeparator className="bg-[#DFE1E6]" />
-                <DropdownMenuItem onClick={() => handleMenuAction('print')} className="text-[#172B4D] hover:bg-[#F4F5F7]">
+                <DropdownMenuSeparator className="bg-[var(--ds-border,var(--ds-border, #DFE1E6))]" />
+                <DropdownMenuItem onClick={() => handleMenuAction('print')} className="text-[var(--ds-text,var(--ds-text, #172B4D))] hover:bg-[var(--ds-surface-sunken,var(--ds-surface-sunken, #F4F5F7))]">
                   <Printer className="w-4 h-4 mr-2 text-[#42526E]" />
                   Print
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => handleMenuAction('excel')} className="text-[#172B4D] hover:bg-[#F4F5F7]">
+                <DropdownMenuItem onClick={() => handleMenuAction('excel')} className="text-[var(--ds-text,var(--ds-text, #172B4D))] hover:bg-[var(--ds-surface-sunken,var(--ds-surface-sunken, #F4F5F7))]">
                   <FileSpreadsheet className="w-4 h-4 mr-2 text-[#42526E]" />
                   Export Excel
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => handleMenuAction('word')} className="text-[#172B4D] hover:bg-[#F4F5F7]">
+                <DropdownMenuItem onClick={() => handleMenuAction('word')} className="text-[var(--ds-text,var(--ds-text, #172B4D))] hover:bg-[var(--ds-surface-sunken,var(--ds-surface-sunken, #F4F5F7))]">
                   <FileText className="w-4 h-4 mr-2 text-[#42526E]" />
                   Export Word
                 </DropdownMenuItem>
@@ -199,7 +199,7 @@ export default function IncidentDetailModal({ incident, isOpen, onClose, parentI
             </DropdownMenu>
 
             <button 
-              className="w-8 h-8 flex items-center justify-center rounded hover:bg-[#F4F5F7] text-[#42526E] hover:text-[#172B4D]"
+              className="w-8 h-8 flex items-center justify-center rounded hover:bg-[var(--ds-surface-sunken,var(--ds-surface-sunken, #F4F5F7))] text-[#42526E] hover:text-[var(--ds-text,var(--ds-text, #172B4D))]"
               title={isExpanded ? "Collapse" : "Expand"}
               onClick={() => setIsExpanded(!isExpanded)}
             >
@@ -207,7 +207,7 @@ export default function IncidentDetailModal({ incident, isOpen, onClose, parentI
             </button>
             <button 
               ref={closeButtonRef}
-              className="w-8 h-8 flex items-center justify-center rounded hover:bg-[#F4F5F7] text-[#42526E] hover:text-[#172B4D] focus:outline-none focus:ring-2 focus:ring-[#2563eb] focus:ring-offset-2"
+              className="w-8 h-8 flex items-center justify-center rounded hover:bg-[var(--ds-surface-sunken,var(--ds-surface-sunken, #F4F5F7))] text-[#42526E] hover:text-[var(--ds-text,var(--ds-text, #172B4D))] focus:outline-none focus:ring-2 focus:ring-[var(--ds-text-brand,var(--ds-text-brand, #2563eb))] focus:ring-offset-2"
               title="Close"
               onClick={onClose}
             >

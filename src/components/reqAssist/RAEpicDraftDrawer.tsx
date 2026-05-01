@@ -28,7 +28,7 @@ interface Props {
 function StatusLozenge({ status }: { status: string | null }) {
   const s = status || 'draft';
   const map: Record<string, { bg: string; color: string; label: string }> = {
-    draft:     { bg: '#DFE1E6', color: '#42526E', label: 'DRAFT' },
+    draft:     { bg: 'var(--ds-border, var(--ds-border, #DFE1E6))', color: '#42526E', label: 'DRAFT' },
     reviewed:  { bg: '#0C66E4', color: 'var(--ds-text-inverse, #FFFFFF)', label: 'REVIEWED' },
     published: { bg: '#1B7F37', color: 'var(--ds-text-inverse, #FFFFFF)', label: 'PUBLISHED' },
   };
@@ -255,7 +255,7 @@ export default function RAEpicDraftDrawer({ brdId, docTitle, jiraKey, onClose }:
                           fontFamily: 'var(--cp-font-body)', outline: 'none',
                         }}
                         onFocus={e => (e.currentTarget.style.borderColor = 'var(--cp-blue)')}
-                        onBlur={e => (e.currentTarget.style.borderColor = '#CBD5E1')}
+                        onBlur={e => (e.currentTarget.style.borderColor = 'var(--ds-text-disabled, var(--ds-text-disabled, #CBD5E1))')}
                       />
                       <textarea
                         value={editDesc}
@@ -268,7 +268,7 @@ export default function RAEpicDraftDrawer({ brdId, docTitle, jiraKey, onClose }:
                           lineHeight: 1.5,
                         }}
                         onFocus={e => (e.currentTarget.style.borderColor = 'var(--cp-blue)')}
-                        onBlur={e => (e.currentTarget.style.borderColor = '#CBD5E1')}
+                        onBlur={e => (e.currentTarget.style.borderColor = 'var(--ds-text-disabled, var(--ds-text-disabled, #CBD5E1))')}
                       />
                       <div style={{ display: 'flex', gap: 6, marginTop: 8, justifyContent: 'flex-end' }}>
                         <button onClick={cancelEdit} style={{
@@ -405,7 +405,7 @@ export default function RAEpicDraftDrawer({ brdId, docTitle, jiraKey, onClose }:
                 background: 'var(--cp-blue)', color: 'var(--ds-text-inverse, #FFFFFF)',
                 cursor: 'pointer', fontFamily: 'var(--cp-font-body)',
               }}
-              onMouseEnter={e => (e.currentTarget.style.background = '#1D4ED8')}
+              onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-background-brand-bold-hovered, var(--ds-background-brand-bold-hovered, #1D4ED8))')}
               onMouseLeave={e => (e.currentTarget.style.background = 'var(--cp-blue)')}
             >
               Publish to Project →

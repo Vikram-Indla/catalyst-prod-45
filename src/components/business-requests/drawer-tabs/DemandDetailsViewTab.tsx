@@ -445,7 +445,7 @@ export function DemandDetailsViewTab({ data, onChange, onDirtyChange, requestId 
                         <span
                           key={v}
                           className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium"
-                          style={{ background: '#F4F5F7', color: '#344563', border: '1px solid #DFE1E6' }}
+                          style={{ background: 'var(--ds-surface-sunken, var(--ds-surface-sunken, #F4F5F7))', color: '#344563', border: '1px solid #DFE1E6' }}
                         >
                           {opt?.label ?? v}
                         </span>

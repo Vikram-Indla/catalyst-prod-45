@@ -47,29 +47,29 @@ export const ideas: Idea[] = [];
 // ─── V12 STATUS LOZENGE — 3-COLOR GUARDRAIL — NO DOTS ──────────
 // UPDATED: Approved = BLUE (active/in-progress), Submitted = GREY
 export const STATUS_CONFIG: Record<IdeaStatus, { bg: string; text: string; label: string }> = {
-  draft:        { bg: '#DFE1E6', text: '#42526E', label: 'Draft' },
-  submitted:    { bg: '#DFE1E6', text: '#42526E', label: 'Submitted' },
+  draft:        { bg: 'var(--ds-border, var(--ds-border, #DFE1E6))', text: '#42526E', label: 'Draft' },
+  submitted:    { bg: 'var(--ds-border, var(--ds-border, #DFE1E6))', text: '#42526E', label: 'Submitted' },
   under_review: { bg: '#0C66E4', text: 'var(--ds-text-inverse, #FFFFFF)', label: 'Under Review' },
   approved:     { bg: '#0C66E4', text: 'var(--ds-text-inverse, #FFFFFF)', label: 'Approved' },
-  rejected:     { bg: '#DFE1E6', text: '#42526E', label: 'Rejected' },
+  rejected:     { bg: 'var(--ds-border, var(--ds-border, #DFE1E6))', text: '#42526E', label: 'Rejected' },
   converted:    { bg: '#1B7F37', text: 'var(--ds-text-inverse, #FFFFFF)', label: 'Converted' },
 };
 
 // ─── TYPE CONFIG — ALL NEUTRAL GREY ─────────────────────────────
 export const TYPE_CONFIG: Record<IdeaType, { bg: string; text: string; label: string }> = {
-  opportunity:  { bg: '#F1F5F9', text: '#334155', label: 'Opportunity' },
-  solution:     { bg: '#F1F5F9', text: '#334155', label: 'Solution' },
-  feature:      { bg: '#F1F5F9', text: '#334155', label: 'Feature' },
-  improvement:  { bg: '#F1F5F9', text: '#334155', label: 'Improvement' },
-  problem:      { bg: '#F1F5F9', text: '#334155', label: 'Problem' },
+  opportunity:  { bg: 'var(--ds-surface-sunken, var(--ds-surface-sunken, #F1F5F9))', text: 'var(--ds-text-subtle, var(--ds-text-subtle, #334155))', label: 'Opportunity' },
+  solution:     { bg: 'var(--ds-surface-sunken, var(--ds-surface-sunken, #F1F5F9))', text: 'var(--ds-text-subtle, var(--ds-text-subtle, #334155))', label: 'Solution' },
+  feature:      { bg: 'var(--ds-surface-sunken, var(--ds-surface-sunken, #F1F5F9))', text: 'var(--ds-text-subtle, var(--ds-text-subtle, #334155))', label: 'Feature' },
+  improvement:  { bg: 'var(--ds-surface-sunken, var(--ds-surface-sunken, #F1F5F9))', text: 'var(--ds-text-subtle, var(--ds-text-subtle, #334155))', label: 'Improvement' },
+  problem:      { bg: 'var(--ds-surface-sunken, var(--ds-surface-sunken, #F1F5F9))', text: 'var(--ds-text-subtle, var(--ds-text-subtle, #334155))', label: 'Problem' },
 };
 
 // ─── V12 PRIORITY BADGES — ALL NEUTRAL GREY ─────────────────────
 export const PRIORITY_CONFIG: Record<string, { bg: string; text: string; border: string }> = {
-  P1: { bg: '#F1F5F9', text: '#334155', border: 'var(--bd-default, #E2E8F0)' },
-  P2: { bg: '#F1F5F9', text: '#334155', border: 'var(--bd-default, #E2E8F0)' },
-  P3: { bg: '#F1F5F9', text: '#334155', border: 'var(--bd-default, #E2E8F0)' },
-  P4: { bg: '#F1F5F9', text: '#334155', border: 'var(--bd-default, #E2E8F0)' },
+  P1: { bg: 'var(--ds-surface-sunken, var(--ds-surface-sunken, #F1F5F9))', text: 'var(--ds-text-subtle, var(--ds-text-subtle, #334155))', border: 'var(--bd-default, #E2E8F0)' },
+  P2: { bg: 'var(--ds-surface-sunken, var(--ds-surface-sunken, #F1F5F9))', text: 'var(--ds-text-subtle, var(--ds-text-subtle, #334155))', border: 'var(--bd-default, #E2E8F0)' },
+  P3: { bg: 'var(--ds-surface-sunken, var(--ds-surface-sunken, #F1F5F9))', text: 'var(--ds-text-subtle, var(--ds-text-subtle, #334155))', border: 'var(--bd-default, #E2E8F0)' },
+  P4: { bg: 'var(--ds-surface-sunken, var(--ds-surface-sunken, #F1F5F9))', text: 'var(--ds-text-subtle, var(--ds-text-subtle, #334155))', border: 'var(--bd-default, #E2E8F0)' },
 };
 
 export const VIEW_TITLES: Record<IdeationView, string> = {
@@ -94,7 +94,7 @@ export const FILTER_PILLS: { key: StatusFilter; label: string }[] = [
 
 // ─── Quarter badge — HIGH CONTRAST (AAA) ────────────────────────
 export const QUARTER_BADGE: Record<string, { bg: string; text: string }> = {
-  Q1: { bg: '#991B1B', text: 'var(--ds-text-inverse, #FFFFFF)' },
+  Q1: { bg: 'var(--ds-text-danger, var(--ds-text-danger, #991B1B))', text: 'var(--ds-text-inverse, #FFFFFF)' },
   Q2: { bg: '#1E40AF', text: 'var(--ds-text-inverse, #FFFFFF)' },
   Q3: { bg: '#115E59', text: 'var(--ds-text-inverse, #FFFFFF)' },
   Q4: { bg: '#78350F', text: 'var(--ds-text-inverse, #FFFFFF)' },
@@ -102,10 +102,10 @@ export const QUARTER_BADGE: Record<string, { bg: string; text: string }> = {
 
 // ─── Helpers ────────────────────────────────────────────────────
 export function getImpactColor(score: number) {
-  if (score >= 4.0) return { gradient: 'linear-gradient(90deg, #16A34A, #22C55E)', text: '#16A34A' };
-  if (score >= 3.0) return { gradient: 'linear-gradient(90deg, #2563EB, #3B82F6)', text: '#2563EB' };
-  if (score >= 2.0) return { gradient: 'linear-gradient(90deg, #64748B, #94A3B8)', text: '#64748B' };
-  return { gradient: 'linear-gradient(90deg, #CBD5E1, var(--bd-default, #E2E8F0))', text: '#94A3B8' };
+  if (score >= 4.0) return { gradient: 'linear-gradient(90deg, var(--ds-text-success, #16A34A), var(--ds-text-success, #22C55E))', text: 'var(--ds-text-success, var(--ds-text-success, #16A34A))' };
+  if (score >= 3.0) return { gradient: 'linear-gradient(90deg, var(--ds-text-brand, #2563EB), var(--ds-text-brand, #3B82F6))', text: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))' };
+  if (score >= 2.0) return { gradient: 'linear-gradient(90deg, var(--ds-text-subtlest, #64748B), var(--ds-text-subtlest, #94A3B8))', text: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #64748B))' };
+  return { gradient: 'linear-gradient(90deg, var(--ds-text-disabled, #CBD5E1), var(--bd-default, #E2E8F0))', text: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #94A3B8))' };
 }
 
 export const AI_INSIGHTS: Record<string, string> = {};
@@ -122,11 +122,11 @@ export const STATUS_DB_TO_UI: Record<string, IdeaStatus> = {
 };
 
 export const STATUS_LOZENGE_COLORS: Record<string, { bg: string; text: string }> = {
-  'Draft':                    { bg: '#DFE1E6', text: '#42526E' },
-  'Submitted':                { bg: '#DFE1E6', text: '#42526E' },
+  'Draft':                    { bg: 'var(--ds-border, var(--ds-border, #DFE1E6))', text: '#42526E' },
+  'Submitted':                { bg: 'var(--ds-border, var(--ds-border, #DFE1E6))', text: '#42526E' },
   'Under Review':             { bg: '#0C66E4', text: 'var(--ds-text-inverse, #FFFFFF)' },
   'Approved':                 { bg: '#0C66E4', text: 'var(--ds-text-inverse, #FFFFFF)' },
-  'Rejected':                 { bg: '#DFE1E6', text: '#42526E' },
+  'Rejected':                 { bg: 'var(--ds-border, var(--ds-border, #DFE1E6))', text: '#42526E' },
   'Converted':                { bg: '#1B7F37', text: 'var(--ds-text-inverse, #FFFFFF)' },
   'Converted to Request':  { bg: '#1B7F37', text: 'var(--ds-text-inverse, #FFFFFF)' },
 };

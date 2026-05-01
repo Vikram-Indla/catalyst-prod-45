@@ -192,7 +192,7 @@ export function RequestRisksTab({ requestId }: RequestRisksTabProps) {
           {risks.map((risk: any) => {
             const sev = getSeverity(risk.risk_score || 0);
             return (
-              <div key={risk.id} className={`bg-white dark:bg-[#1A1A1A] border border-zinc-200 dark:border-[#2E2E2E] border-l-4 ${sev.border} rounded-lg p-4`}>
+              <div key={risk.id} className={`bg-white dark:bg-[var(--ds-surface-raised,var(--ds-surface-raised, #1A1A1A))] border border-zinc-200 dark:border-[var(--ds-border,var(--ds-border, #2E2E2E))] border-l-4 ${sev.border} rounded-lg p-4`}>
                 <div className="flex items-start justify-between mb-2">
                   <div className="flex items-center gap-2">
                     <span className="text-[10px] font-mono bg-zinc-100 text-zinc-500 px-1.5 py-0.5 rounded">{risk.risk_key}</span>
@@ -265,7 +265,7 @@ export function RequestRisksTab({ requestId }: RequestRisksTabProps) {
       {showAddRisk && (
         <>
           <div className="fixed inset-0 z-[300] bg-black/20" onClick={() => setShowAddRisk(false)} />
-          <div className="fixed top-0 right-0 h-full w-[420px] max-w-[90vw] z-[301] bg-white dark:bg-[#1A1A1A] shadow-xl flex flex-col">
+          <div className="fixed top-0 right-0 h-full w-[420px] max-w-[90vw] z-[301] bg-white dark:bg-[var(--ds-surface-raised,var(--ds-surface-raised, #1A1A1A))] shadow-xl flex flex-col">
             <div className="flex items-center justify-between px-5 py-4 border-b border-zinc-200 shrink-0">
               <h3 className="text-sm font-semibold text-zinc-900">Add Risk</h3>
               <div className="flex items-center gap-2">
@@ -293,12 +293,12 @@ export function RequestRisksTab({ requestId }: RequestRisksTabProps) {
               <div className="relative">
                 <label className="text-xs font-medium text-zinc-500 uppercase tracking-wide mb-1.5 block">Category</label>
                 <button type="button" onClick={() => setShowCatDropdown(v => !v)}
-                  className="w-full flex items-center justify-between border border-zinc-200 dark:border-[#2E2E2E] rounded-lg px-3 py-2.5 text-sm text-zinc-700 bg-white dark:bg-[#1A1A1A] hover:bg-zinc-50 dark:hover:bg-[#0A0A0A]">
+                  className="w-full flex items-center justify-between border border-zinc-200 dark:border-[var(--ds-border,var(--ds-border, #2E2E2E))] rounded-lg px-3 py-2.5 text-sm text-zinc-700 bg-white dark:bg-[var(--ds-surface-raised,var(--ds-surface-raised, #1A1A1A))] hover:bg-zinc-50 dark:hover:bg-[var(--ds-surface,var(--ds-surface, #0A0A0A))]">
                   <span className="capitalize">{riskForm.category}</span>
                   <ChevronDown className="w-4 h-4 text-zinc-400" />
                 </button>
                 {showCatDropdown && (
-                  <div className="absolute left-0 right-0 top-full mt-1 bg-white dark:bg-[#1A1A1A] border border-zinc-200 dark:border-[#2E2E2E] rounded-lg shadow-lg z-50 py-1 max-h-48 overflow-y-auto">
+                  <div className="absolute left-0 right-0 top-full mt-1 bg-white dark:bg-[var(--ds-surface-raised,var(--ds-surface-raised, #1A1A1A))] border border-zinc-200 dark:border-[var(--ds-border,var(--ds-border, #2E2E2E))] rounded-lg shadow-lg z-50 py-1 max-h-48 overflow-y-auto">
                     {CATEGORIES.map(cat => (
                       <button key={cat} onClick={() => { setRiskForm(f => ({ ...f, category: cat })); setShowCatDropdown(false); }}
                         className={`w-full text-left px-3 py-1.5 text-xs capitalize transition-colors ${riskForm.category === cat ? 'bg-blue-50 text-blue-700 font-medium' : 'text-zinc-600 hover:bg-zinc-50'}`}>

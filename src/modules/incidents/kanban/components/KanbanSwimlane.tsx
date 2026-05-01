@@ -80,7 +80,7 @@ export const KanbanSwimlane = memo(function KanbanSwimlane({
         onClick={handleToggle}
         className={cn(
           "w-full flex items-center gap-2 px-4 sm:px-6 py-2",
-          "bg-muted/20 dark:bg-[#1a1a1a]",
+          "bg-muted/20 dark:bg-[var(--ds-surface-raised,var(--ds-surface-raised, #1a1a1a))]",
           "hover:bg-muted/30 dark:hover:bg-[#262626]",
           "transition-colors sticky top-0 z-10 text-left"
         )}
@@ -107,12 +107,12 @@ export const KanbanSwimlane = memo(function KanbanSwimlane({
         <div className="flex items-center gap-3 text-[11px] text-[#737373] dark:text-[#a3a3a3]">
           {laneStats.atRisk > 0 && (
             <span>
-              At Risk: <span className="font-medium text-[#d97706] dark:text-[#fbbf24]">{laneStats.atRisk}</span>
+              At Risk: <span className="font-medium text-[var(--ds-text-warning,var(--ds-text-warning, #d97706))] dark:text-[#fbbf24]">{laneStats.atRisk}</span>
             </span>
           )}
           {laneStats.breached > 0 && (
             <span>
-              Breached: <span className="font-medium text-[#ef4444] dark:text-[#f87171]">{laneStats.breached}</span>
+              Breached: <span className="font-medium text-[var(--ds-text-danger,var(--ds-text-danger, #ef4444))] dark:text-[#f87171]">{laneStats.breached}</span>
             </span>
           )}
         </div>
@@ -177,7 +177,7 @@ const SwimlaneColumn = memo(function SwimlaneColumn({
     <div
       className={cn(
         "flex flex-col min-w-[240px] max-w-[260px] flex-shrink-0",
-        "bg-muted/10 dark:bg-[#1a1a1a] rounded",
+        "bg-muted/10 dark:bg-[var(--ds-surface-raised,var(--ds-surface-raised, #1a1a1a))] rounded",
         "border border-border/30 dark:border-[#333]"
       )}
       onDragOver={onDragOver}

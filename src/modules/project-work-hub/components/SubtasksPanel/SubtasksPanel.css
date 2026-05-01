@@ -201,7 +201,7 @@
   border: 1px solid transparent;
   background: transparent;
   border-radius: 3px;
-  color: #6B778C;
+  color: var(--ds-text-subtlest, #6B778C);
   cursor: pointer;
   flex-shrink: 0;
   opacity: 0;
@@ -215,7 +215,7 @@
 }
 .sp-panel .sp-desc-trigger:hover {
   background: #EBECF0;
-  color: #172B4D;
+  color: var(--ds-text, #172B4D);
 }
 .sp-panel .sp-desc-trigger:focus-visible {
   outline: none;

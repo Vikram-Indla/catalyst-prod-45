@@ -44,7 +44,7 @@ export function CatyPanel({ isOpen, onClose }: CatyPanelProps) {
             <div
               className="w-8 h-8 rounded-full flex items-center justify-center text-white flex-shrink-0"
               style={{
-                background: 'linear-gradient(135deg, #2563eb, #1D4ED8)',
+                background: 'linear-gradient(135deg, var(--ds-text-brand, #2563eb), var(--ds-background-brand-bold-hovered, #1D4ED8))',
               }}
             >
               <MessageSquare className="w-4 h-4" />

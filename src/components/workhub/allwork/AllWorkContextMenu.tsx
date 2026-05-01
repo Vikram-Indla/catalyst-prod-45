@@ -70,7 +70,7 @@ export function AllWorkContextMenu({ item, x, y, onClose, onOpenItem }: Props) {
     <div
       ref={ref}
       className="fixed z-[9999] w-52 rounded-lg border bg-[var(--bg-app)] shadow-xl py-1"
-      style={{ left: adjustedX, top: adjustedY, borderColor: '#DFE1E6' }}
+      style={{ left: adjustedX, top: adjustedY, borderColor: 'var(--ds-border, var(--ds-border, #DFE1E6))' }}
     >
       {ACTIONS.map((action) => {
         if (action.id.startsWith('divider')) {

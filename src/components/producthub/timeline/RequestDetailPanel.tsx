@@ -160,7 +160,7 @@ export const RequestDetailPanel: React.FC<RequestDetailPanelProps> = ({
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['ph-requests'] });
       queryClient.invalidateQueries({ queryKey: ['requests-backlog'] });
-      toast.success('Business Request deleted', { duration: 2200, style: { background: '#18181B', color: '#fff' }, position: 'bottom-center' });
+      toast.success('Business Request deleted', { duration: 2200, style: { background: '#18181B', color: 'var(--ds-surface, var(--ds-surface, var(--ds-surface, #fff)))' }, position: 'bottom-center' });
       setShowDeleteConfirm(false);
       handleClose();
     },
@@ -188,7 +188,7 @@ export const RequestDetailPanel: React.FC<RequestDetailPanelProps> = ({
       });
       if (error) throw error;
       queryClient.invalidateQueries({ queryKey: ['requests-backlog'] });
-      toast.success('Business Request cloned', { duration: 2200, style: { background: '#18181B', color: '#fff' }, position: 'bottom-center' });
+      toast.success('Business Request cloned', { duration: 2200, style: { background: '#18181B', color: 'var(--ds-surface, var(--ds-surface, var(--ds-surface, #fff)))' }, position: 'bottom-center' });
     } catch { toast.error('Clone failed'); }
   };
 
@@ -249,7 +249,7 @@ export const RequestDetailPanel: React.FC<RequestDetailPanelProps> = ({
       await navigator.clipboard.writeText(url.toString());
       toast.success('Permalink copied', {
         duration: 1800,
-        style: { background: '#18181B', color: '#fff' },
+        style: { background: '#18181B', color: 'var(--ds-surface, var(--ds-surface, var(--ds-surface, #fff)))' },
         position: 'bottom-center',
       });
     } catch {
@@ -289,7 +289,7 @@ export const RequestDetailPanel: React.FC<RequestDetailPanelProps> = ({
       if (error) throw error;
       queryClient.invalidateQueries({ queryKey: ['requests-backlog'] });
       queryClient.invalidateQueries({ queryKey: ['ph-requests'] });
-      toast.success(request.is_archived ? 'Restored' : 'Archived', { duration: 2200, style: { background: '#18181B', color: '#fff' }, position: 'bottom-center' });
+      toast.success(request.is_archived ? 'Restored' : 'Archived', { duration: 2200, style: { background: '#18181B', color: 'var(--ds-surface, var(--ds-surface, var(--ds-surface, #fff)))' }, position: 'bottom-center' });
     } catch { toast.error('Failed to archive'); }
   };
 

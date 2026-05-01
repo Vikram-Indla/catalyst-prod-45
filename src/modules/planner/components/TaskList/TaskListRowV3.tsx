@@ -44,23 +44,23 @@ const STATUS_CONFIG: Record<string, {
 }> = {
   'backlog': {
     label: 'Backlog',
-    dotColor: '#94a3b8',
+    dotColor: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #94a3b8))',
     bgColor: 'transparent',
-    borderColor: '#e2e8f0',
+    borderColor: 'var(--ds-border, var(--ds-border, #e2e8f0))',
     darkBgColor: 'transparent',
-    darkBorderColor: '#2E2E2E',
+    darkBorderColor: 'var(--ds-border, var(--ds-border, #2E2E2E))',
   },
   'planned': {
     label: 'Planned',
-    dotColor: '#3b82f6',
+    dotColor: 'var(--ds-text-brand, var(--ds-text-brand, #3b82f6))',
     bgColor: 'transparent',
-    borderColor: '#e2e8f0',
+    borderColor: 'var(--ds-border, var(--ds-border, #e2e8f0))',
     darkBgColor: 'transparent',
-    darkBorderColor: '#2E2E2E',
+    darkBorderColor: 'var(--ds-border, var(--ds-border, #2E2E2E))',
   },
   'in-progress': {
     label: 'In Progress',
-    dotColor: '#f59e0b',
+    dotColor: 'var(--ds-text-warning, var(--ds-text-warning, #f59e0b))',
     bgColor: '#fffbeb',
     borderColor: '#fde68a',
     darkBgColor: 'rgba(251,191,36,0.08)',
@@ -68,7 +68,7 @@ const STATUS_CONFIG: Record<string, {
   },
   'in progress': {
     label: 'In Progress',
-    dotColor: '#f59e0b',
+    dotColor: 'var(--ds-text-warning, var(--ds-text-warning, #f59e0b))',
     bgColor: '#fffbeb',
     borderColor: '#fde68a',
     darkBgColor: 'rgba(251,191,36,0.08)',
@@ -78,13 +78,13 @@ const STATUS_CONFIG: Record<string, {
     label: 'Review',
     dotColor: '#8b5cf6',
     bgColor: 'transparent',
-    borderColor: '#e2e8f0',
+    borderColor: 'var(--ds-border, var(--ds-border, #e2e8f0))',
     darkBgColor: 'transparent',
-    darkBorderColor: '#2E2E2E',
+    darkBorderColor: 'var(--ds-border, var(--ds-border, #2E2E2E))',
   },
   'done': {
     label: 'Done',
-    dotColor: '#16a34a',
+    dotColor: 'var(--ds-text-success, var(--ds-text-success, #16a34a))',
     bgColor: '#f0fdf4',
     borderColor: '#bbf7d0',
     darkBgColor: 'rgba(74,222,128,0.08)',
@@ -197,9 +197,9 @@ export const TaskListRowV3 = memo(function TaskListRowV3({
   const getWidth = (colId: string) => columnWidths[colId] || 'auto';
 
   const getProgressColor = (progress: number) => {
-    if (progress >= 100) return '#22c55e';
-    if (progress >= 50) return '#3b82f6';
-    return '#94a3b8';
+    if (progress >= 100) return 'var(--ds-text-success, var(--ds-text-success, #22c55e))';
+    if (progress >= 50) return 'var(--ds-text-brand, var(--ds-text-brand, #3b82f6))';
+    return 'var(--ds-text-subtlest, var(--ds-text-subtlest, #94a3b8))';
   };
 
   // Get status config for styling
@@ -241,7 +241,7 @@ export const TaskListRowV3 = memo(function TaskListRowV3({
               fontFamily: 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace',
               fontSize: '13px',
               fontWeight: 500,
-              color: '#64748b',
+              color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #64748b))',
               whiteSpace: 'nowrap',
               display: 'inline-block',
               background: 'none',
@@ -250,11 +250,11 @@ export const TaskListRowV3 = memo(function TaskListRowV3({
               padding: 0,
             }}
             onMouseOver={(e) => {
-              e.currentTarget.style.color = '#334155';
+              e.currentTarget.style.color = 'var(--ds-text-subtle, var(--ds-text-subtle, #334155))';
               e.currentTarget.style.textDecoration = 'underline';
             }}
             onMouseOut={(e) => {
-              e.currentTarget.style.color = '#64748b';
+              e.currentTarget.style.color = 'var(--ds-text-subtlest, var(--ds-text-subtlest, #64748b))';
               e.currentTarget.style.textDecoration = 'none';
             }}
           >
@@ -354,7 +354,7 @@ export const TaskListRowV3 = memo(function TaskListRowV3({
               <button className="tl-date-cell">
                 {task.due_date ? (
                   <>
-                    {/* Normal: #334155, Overdue: #dc2626 (J1, J2) */}
+                    {/* Normal: var(--ds-text-subtle, #334155), Overdue: var(--ds-text-danger, #dc2626) (J1, J2) */}
                     <span className={cn(
                       'tl-date-value',
                       daysIndicator?.isOverdue && 'tl-date-overdue'
@@ -406,7 +406,7 @@ export const TaskListRowV3 = memo(function TaskListRowV3({
                     }}
                   />
                 </div>
-                {/* Progress % - #64748b (L3) */}
+                {/* Progress % - var(--ds-text-subtlest, #64748b) (L3) */}
                 <span className="tl-progress-value">{task.progress}%</span>
               </button>
             </PopoverTrigger>

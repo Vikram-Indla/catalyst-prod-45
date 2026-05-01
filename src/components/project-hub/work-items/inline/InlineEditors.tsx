@@ -77,7 +77,7 @@ export function InlineSummaryEditor({ value, onSave, onCancel }: {
 
 // ─── Inline Status Picker ──────────────────────────────────
 const STATUS_COLORS: Record<string, string> = {
-  todo: '#64748B', in_progress: '#2563EB', done: '#16A34A', terminal: '#DC2626',
+  todo: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #64748B))', in_progress: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))', done: 'var(--ds-text-success, var(--ds-text-success, #16A34A))', terminal: 'var(--ds-text-danger, var(--ds-text-danger, #DC2626))',
 };
 
 export function InlineStatusPicker({ currentStatusId, statuses, anchorRef, onSelect, onClose }: {
@@ -94,12 +94,12 @@ export function InlineStatusPicker({ currentStatusId, statuses, anchorRef, onSel
           <button
             key={s.id}
             onClick={() => { onSelect(s.id); onClose(); }}
-            className="w-full flex items-center gap-2 px-3 py-1.5 text-[12px] hover:bg-[#F8FAFC] transition-colors text-left"
+            className="w-full flex items-center gap-2 px-3 py-1.5 text-[12px] hover:bg-[var(--ds-surface-sunken,var(--ds-surface-sunken, #F8FAFC))] transition-colors text-left"
             style={{ color: 'var(--fg-1)' }}
           >
             <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: STATUS_COLORS[s.category] || 'var(--fg-4)' }} />
             <span className="flex-1">{s.name}</span>
-            {s.id === currentStatusId && <Check size={12} className="text-[#2563EB]" />}
+            {s.id === currentStatusId && <Check size={12} className="text-[var(--ds-text-brand,var(--ds-text-brand, #2563EB))]" />}
           </button>
         ))}
       </div>
@@ -109,10 +109,10 @@ export function InlineStatusPicker({ currentStatusId, statuses, anchorRef, onSel
 
 // ─── Inline Priority Picker ─────────────────────────────────
 const PRIORITIES = [
-  { value: 'Critical', icon: ChevronsUp, color: '#DC2626' },
-  { value: 'High', icon: ArrowUp, color: '#D97706' },
-  { value: 'Medium', icon: ArrowRight, color: '#2563EB' },
-  { value: 'Low', icon: ArrowDown, color: '#94A3B8' },
+  { value: 'Critical', icon: ChevronsUp, color: 'var(--ds-text-danger, var(--ds-text-danger, #DC2626))' },
+  { value: 'High', icon: ArrowUp, color: 'var(--ds-text-warning, var(--ds-text-warning, #D97706))' },
+  { value: 'Medium', icon: ArrowRight, color: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))' },
+  { value: 'Low', icon: ArrowDown, color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #94A3B8))' },
 ];
 
 export function InlinePriorityPicker({ current, anchorRef, onSelect, onClose }: {
@@ -130,12 +130,12 @@ export function InlinePriorityPicker({ current, anchorRef, onSelect, onClose }: 
             <button
               key={p.value}
               onClick={() => { onSelect(p.value); onClose(); }}
-              className="w-full flex items-center gap-2 px-3 py-1.5 text-[12px] hover:bg-[#F8FAFC] transition-colors text-left"
+              className="w-full flex items-center gap-2 px-3 py-1.5 text-[12px] hover:bg-[var(--ds-surface-sunken,var(--ds-surface-sunken, #F8FAFC))] transition-colors text-left"
               style={{ color: 'var(--fg-1)' }}
             >
               <Icon size={13} style={{ color: p.color }} />
               <span className="flex-1">{p.value}</span>
-              {current === p.value && <Check size={12} className="text-[#2563EB]" />}
+              {current === p.value && <Check size={12} className="text-[var(--ds-text-brand,var(--ds-text-brand, #2563EB))]" />}
             </button>
           );
         })}
@@ -159,7 +159,7 @@ export function InlineAssigneePicker({ currentId, profiles, anchorRef, onSelect,
     <FixedDropdown anchorRef={anchorRef} onClose={onClose} width={220}>
       <div className="p-2 border-b" style={{ borderColor: 'var(--cp-bd-zone)' }}>
         <div className="flex items-center gap-1.5 px-2 py-1 rounded" style={{ border: '1px solid var(--divider)' }}>
-          <Search size={12} className="text-[#94A3B8]" />
+          <Search size={12} className="text-[var(--ds-text-subtlest,var(--ds-text-subtlest, #94A3B8))]" />
           <input
             autoFocus
             value={search}
@@ -172,22 +172,22 @@ export function InlineAssigneePicker({ currentId, profiles, anchorRef, onSelect,
       <div className="py-1 max-h-[200px] overflow-y-auto">
         <button
           onClick={() => { onSelect(null); onClose(); }}
-          className="w-full flex items-center gap-2 px-3 py-1.5 text-[12px] hover:bg-[#F8FAFC] text-left"
+          className="w-full flex items-center gap-2 px-3 py-1.5 text-[12px] hover:bg-[var(--ds-surface-sunken,var(--ds-surface-sunken, #F8FAFC))] text-left"
           style={{ color: 'var(--fg-4)' }}
         >
           Unassigned
-          {!currentId && <Check size={12} className="ml-auto text-[#2563EB]" />}
+          {!currentId && <Check size={12} className="ml-auto text-[var(--ds-text-brand,var(--ds-text-brand, #2563EB))]" />}
         </button>
         {filtered.map(p => (
           <button
             key={p.id}
             onClick={() => { onSelect(p.id); onClose(); }}
-            className="w-full flex items-center gap-2 px-3 py-1.5 text-[12px] hover:bg-[#F8FAFC] text-left"
+            className="w-full flex items-center gap-2 px-3 py-1.5 text-[12px] hover:bg-[var(--ds-surface-sunken,var(--ds-surface-sunken, #F8FAFC))] text-left"
             style={{ color: 'var(--fg-1)' }}
           >
             <AvatarCircle name={p.name} size={18} />
             <span className="flex-1 truncate">{p.name}</span>
-            {currentId === p.id && <Check size={12} className="text-[#2563EB]" />}
+            {currentId === p.id && <Check size={12} className="text-[var(--ds-text-brand,var(--ds-text-brand, #2563EB))]" />}
           </button>
         ))}
       </div>
@@ -220,7 +220,7 @@ export function InlineDatePicker({ current, anchorRef, onSelect, onClose }: {
         {current && (
           <button
             onClick={() => { onSelect(null); onClose(); }}
-            className="w-full text-center text-[11px] py-1 mt-1 rounded hover:bg-[#FEF2F2]"
+            className="w-full text-center text-[11px] py-1 mt-1 rounded hover:bg-[var(--ds-background-danger,var(--ds-background-danger, #FEF2F2))]"
             style={{ color: 'var(--sem-danger)' }}
           >
             Clear date
@@ -235,7 +235,7 @@ function AvatarCircle({ name, size = 20 }: { name: string; size?: number }) {
   const initials = name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
   let hash = 0;
   for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash);
-  const colors = ['#2563EB', '#0D9488', '#7C3AED', '#D97706', '#DC2626', '#16A34A'];
+  const colors = ['var(--ds-text-brand, var(--ds-text-brand, #2563EB))', '#0D9488', '#7C3AED', 'var(--ds-text-warning, var(--ds-text-warning, #D97706))', 'var(--ds-text-danger, var(--ds-text-danger, #DC2626))', 'var(--ds-text-success, var(--ds-text-success, #16A34A))'];
   return (
     <div
       className="rounded-full flex items-center justify-center font-bold text-white shrink-0"

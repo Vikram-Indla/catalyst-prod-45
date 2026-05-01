@@ -98,7 +98,7 @@ export function AssigneeDropdown({ currentAssignee, availableAssignees, onSelect
               onMouseLeave={(e) => (e.currentTarget.style.background = isCurrent ? 'var(--bg-1, #F8FAFC)' : '')}
             >
               <div style={{ width: 24, height: 24, borderRadius: '50%', background: 'var(--cp-blue)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                <span style={{ fontSize: 9, fontWeight: 700, color: '#FFFFFF' }}>{initials}</span>
+                <span style={{ fontSize: 9, fontWeight: 700, color: 'var(--ds-surface, var(--ds-surface, #FFFFFF))' }}>{initials}</span>
               </div>
               <div style={{ flex: 1, minWidth: 0 }}>
                 <div style={{ fontSize: 12, color: 'var(--fg-1)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{a.displayName}</div>

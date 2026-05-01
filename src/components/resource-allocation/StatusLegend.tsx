@@ -11,12 +11,12 @@ export function StatusLegend() {
     <div className="flex items-center gap-4">
       <LegendItem 
         label="Committed" 
-        color="#2563eb" 
+        color="var(--ds-text-brand, var(--ds-text-brand, #2563eb))" 
         variant="solid"
       />
       <LegendItem 
         label="Forecast" 
-        color="#2563eb" 
+        color="var(--ds-text-brand, var(--ds-text-brand, #2563eb))" 
         variant="striped"
       />
       <div className="w-px h-4 bg-border" />

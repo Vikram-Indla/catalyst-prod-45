@@ -55,7 +55,7 @@ function WorkItemIcon({ type }: { type: string }) {
       || t === 'frontend' || t === 'backend' || t === 'integration'
       || t === 'brd task' || t === 'change request' || t === 'figma'
       || t === 'entity figma' || t === 'issue')
-    return <svg width="16" height="16" viewBox="0 0 16 16"><rect width="16" height="16" rx="2" fill="#2563EB"/><path d="M4 8.5l2.5 2.5 5.5-5.5" stroke="white" strokeWidth="1.8" fill="none" strokeLinecap="round"/></svg>;
+    return <svg width="16" height="16" viewBox="0 0 16 16"><rect width="16" height="16" rx="2" fill="var(--ds-text-brand, var(--ds-text-brand, #2563EB))"/><path d="M4 8.5l2.5 2.5 5.5-5.5" stroke="white" strokeWidth="1.8" fill="none" strokeLinecap="round"/></svg>;
   // Epic — purple lightning
   if (t === 'epic')
     return <svg width="16" height="16" viewBox="0 0 16 16"><rect width="16" height="16" rx="2" fill="#7C3AED"/><path d="M9.5 3L5.5 9h4L6.5 13l6-7H9l.5-3z" fill="white"/></svg>;
@@ -70,9 +70,9 @@ function WorkItemIcon({ type }: { type: string }) {
     return <svg width="16" height="16" viewBox="0 0 16 16"><rect width="16" height="16" rx="2" fill="#0D9488"/><path d="M4 4h8v8H4z" fill="none" stroke="white" strokeWidth="1.2"/><path d="M6 7l1.5 1.5 3-3" stroke="white" strokeWidth="1.5" fill="none" strokeLinecap="round"/></svg>;
   // Incident / production incident — red warning
   if (t === 'incident' || t === 'production incident')
-    return <svg width="16" height="16" viewBox="0 0 16 16"><rect width="16" height="16" rx="2" fill="#DC2626"/><path d="M8 4v5M8 10.5v1.5" stroke="white" strokeWidth="2" strokeLinecap="round"/></svg>;
+    return <svg width="16" height="16" viewBox="0 0 16 16"><rect width="16" height="16" rx="2" fill="var(--ds-text-danger, var(--ds-text-danger, #DC2626))"/><path d="M8 4v5M8 10.5v1.5" stroke="white" strokeWidth="2" strokeLinecap="round"/></svg>;
   // Default — blue task (safe fallback for unknown Jira types)
-  return <svg width="16" height="16" viewBox="0 0 16 16"><rect width="16" height="16" rx="2" fill="#2563EB"/><path d="M4 8.5l2.5 2.5 5.5-5.5" stroke="white" strokeWidth="1.8" fill="none" strokeLinecap="round"/></svg>;
+  return <svg width="16" height="16" viewBox="0 0 16 16"><rect width="16" height="16" rx="2" fill="var(--ds-text-brand, var(--ds-text-brand, #2563EB))"/><path d="M4 8.5l2.5 2.5 5.5-5.5" stroke="white" strokeWidth="1.8" fill="none" strokeLinecap="round"/></svg>;
 }
 
 /* ═══ M-03/M-04: getActionText — consistent grammar ═══ */
@@ -140,7 +140,7 @@ function NotificationItemInner({ notification, actorProfile, onMarkRead, onClick
     text3: 'var(--cp-text-muted, #94A3B8)',
     hover: 'var(--cp-interact-hover, rgba(15,23,42,0.04))',
     press: 'var(--cp-border-subtle, rgba(15,23,42,0.08))',
-    borderStrong: isDark ? '#454545' : 'rgba(15,23,42,0.2)',
+    borderStrong: isDark ? 'var(--ds-border-bold, var(--ds-border-bold, #454545))' : 'rgba(15,23,42,0.2)',
     checkStroke: 'var(--cp-text-tertiary, #64748B)',
   };
 
@@ -177,7 +177,7 @@ function NotificationItemInner({ notification, actorProfile, onMarkRead, onClick
     // Initials fallback
     const name = actorName || '?';
     const initials = name.split(' ').map((n: string) => n[0]).join('').slice(0, 2).toUpperCase();
-    const colours = ['#2563EB', '#0D9488', '#7C3AED', '#DC2626', '#D97706'];
+    const colours = ['var(--ds-text-brand, var(--ds-text-brand, #2563EB))', '#0D9488', '#7C3AED', 'var(--ds-text-danger, var(--ds-text-danger, #DC2626))', 'var(--ds-text-warning, var(--ds-text-warning, #D97706))'];
     const bg = colours[(notification.actor_user_id || '').charCodeAt(0) % colours.length];
     return (
       <div style={{
@@ -245,12 +245,12 @@ function NotificationItemInner({ notification, actorProfile, onMarkRead, onClick
             </span>
             {/* M-05: timestamp + unread indicator cluster (right-aligned) */}
             <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexShrink: 0 }}>
-              <span style={{ fontSize: 11, color: '#94A3B8', fontWeight: 400, whiteSpace: 'nowrap', fontFamily: 'var(--cp-font-body)' }}>
+              <span style={{ fontSize: 11, color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #94A3B8))', fontWeight: 400, whiteSpace: 'nowrap', fontFamily: 'var(--cp-font-body)' }}>
                 {formatTimestamp(notification.created_at)}
               </span>
               {/* C-01: unread dot OR mark-read button — inline, no overlap */}
               {isUnread && !isHovered && (
-                <div style={{ width: 6, height: 6, borderRadius: '50%', backgroundColor: '#2563EB', flexShrink: 0 }} />
+                <div style={{ width: 6, height: 6, borderRadius: '50%', backgroundColor: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))', flexShrink: 0 }} />
               )}
               {isUnread && isHovered && (
                 <button
@@ -293,7 +293,7 @@ function NotificationItemInner({ notification, actorProfile, onMarkRead, onClick
             {/* M-06: entity key link — muted blue */}
             <span style={{
               fontFamily: 'var(--cp-font-body)', fontSize: 12, fontWeight: 500,
-              color: isDeleted ? T.text3 : '#3B82F6',
+              color: isDeleted ? T.text3 : 'var(--ds-text-brand, var(--ds-text-brand, #3B82F6))',
               textDecoration: isDeleted ? 'line-through' : 'none',
               cursor: 'pointer',
             }}>
@@ -313,7 +313,7 @@ function NotificationItemInner({ notification, actorProfile, onMarkRead, onClick
               display: 'flex', alignItems: 'center', gap: 6, marginTop: 8,
               background: 'rgba(217,119,6,.08)', borderRadius: 4, padding: '6px 10px',
             }}>
-              <Clock size={14} color="#D97706" />
+              <Clock size={14} color="var(--ds-text-warning, var(--ds-text-warning, #D97706))" />
               <span style={{ fontFamily: 'var(--cp-font-body)', fontSize: 12, color: 'var(--cp-warning-text, #92400E)' }}>
                 Due in {daysUntilDue} day{daysUntilDue !== 1 ? 's' : ''} — {notification.metadata.due_date}
               </span>

@@ -113,7 +113,7 @@ export function PrintableTable<T extends { id: string }>({
               font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
               font-size: 10pt;
               line-height: 1.4;
-              color: #1a1a1a;
+              color: var(--ds-surface-raised, #1a1a1a);
             }
             
             .print-header {

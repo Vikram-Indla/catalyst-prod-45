@@ -68,7 +68,7 @@ const AIIntelligencePanel: React.FC<Props> = ({ resourceId, onClose }) => {
     ? name.split(' ').map((n: string) => n[0]).join('').toUpperCase().slice(0, 2)
     : '??';
   const weekNum = getWeekNumber(selectedDate);
-  const avatarBg = name ? getAvatarColor(name) : '#2563EB';
+  const avatarBg = name ? getAvatarColor(name) : 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))';
   const avatarUrl = resource?.avatar_url || null;
 
   const noAIData = !patternData?.summary && !patternData?.insights?.length;

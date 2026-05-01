@@ -32,11 +32,11 @@ interface Resource {
 
 /* ── Constants ── */
 const DEPT_COLORS: Record<string, string> = {
-  Delivery: '#2563EB',
+  Delivery: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))',
   Product: '#7C3AED',
   Governance: '#0D9488',
-  Operations: '#D97706',
-  'Technical Support': '#DC2626',
+  Operations: 'var(--ds-text-warning, var(--ds-text-warning, #D97706))',
+  'Technical Support': 'var(--ds-text-danger, var(--ds-text-danger, #DC2626))',
   'Strategy & Planning': '#0891B2',
 };
 
@@ -71,37 +71,37 @@ const hashColor = (name: string) => {
 /* ── Dark mode token map ── */
 function useTokens(dk: boolean) {
   return useMemo(() => ({
-    pageBg:       dk ? '#0A0A0A' : '#FFFFFF',
-    surfaceBg:    dk ? '#0A0A0A' : '#FFFFFF',
-    elevatedBg:   dk ? '#1A1A1A' : '#FFFFFF',
-    headerBg:     dk ? '#111111' : '#FFFFFF',
-    hoverBg:      dk ? '#1F1F1F' : '#F8FAFC',
-    border:       dk ? '#2E2E2E' : '#E2E8F0',
-    borderSubtle: dk ? '#292929' : '#f3f4f6',
-    borderInput:  dk ? '#454545' : '#DDDEE1',
-    borderFocus:  '#2563EB',
-    text1:        dk ? '#EDEDED' : '#0F172A',
-    text2:        dk ? '#A1A1A1' : '#475569',
-    text3:        dk ? '#878787' : '#94A3B8',
-    textMuted:    dk ? '#878787' : '#9ca3af',
-    textDim:      dk ? '#878787' : '#d1d5db',
-    inputBg:      dk ? '#1A1A1A' : '#FFFFFF',
-    badgeBg:      dk ? '#1A1A1A' : '#F1F5F9',
-    badgeText:    dk ? '#A1A1A1' : '#475569',
-    pillBg:       dk ? '#1A1A1A' : '#FFFFFF',
-    pillBorder:   dk ? '#454545' : '#DDDEE1',
-    pillActiveBorder: dk ? '#EDEDED' : '#111',
-    pillActiveText:   dk ? '#EDEDED' : '#111',
-    pillInactiveText: dk ? '#A1A1A1' : '#6b7280',
-    pillHoverBg:  dk ? '#1A1A1A' : '#F1F5F9',
-    pillHoverText: dk ? '#EDEDED' : '#1E293B',
-    typePillBg:       dk ? '#1A1A1A' : '#F8FAFC',
-    typePillActiveBg: dk ? '#1A1A1A' : '#FFFFFF',
-    shimmerFrom:  dk ? '#1A1A1A' : '#F1F5F9',
-    shimmerMid:   dk ? '#1A1A1A' : '#E2E8F0',
-    tooltipBg:    dk ? '#1A1A1A' : '#1e293b',
-    tooltipText:  dk ? '#EDEDED' : '#f1f5f9',
-    divider:      dk ? '#292929' : '#E2E8F0',
+    pageBg:       dk ? 'var(--ds-surface, var(--ds-surface, #0A0A0A))' : 'var(--ds-surface, var(--ds-surface, #FFFFFF))',
+    surfaceBg:    dk ? 'var(--ds-surface, var(--ds-surface, #0A0A0A))' : 'var(--ds-surface, var(--ds-surface, #FFFFFF))',
+    elevatedBg:   dk ? 'var(--ds-surface-raised, var(--ds-surface-raised, #1A1A1A))' : 'var(--ds-surface, var(--ds-surface, #FFFFFF))',
+    headerBg:     dk ? '#111111' : 'var(--ds-surface, var(--ds-surface, #FFFFFF))',
+    hoverBg:      dk ? 'var(--ds-surface-overlay, var(--ds-surface-overlay, #1F1F1F))' : 'var(--ds-surface-sunken, var(--ds-surface-sunken, #F8FAFC))',
+    border:       dk ? 'var(--ds-border, var(--ds-border, #2E2E2E))' : 'var(--ds-border, var(--ds-border, #E2E8F0))',
+    borderSubtle: dk ? 'var(--ds-border, var(--ds-border, #292929))' : '#f3f4f6',
+    borderInput:  dk ? 'var(--ds-border-bold, var(--ds-border-bold, #454545))' : '#DDDEE1',
+    borderFocus:  'var(--ds-text-brand, var(--ds-text-brand, #2563EB))',
+    text1:        dk ? 'var(--ds-text, var(--ds-text, #EDEDED))' : 'var(--ds-text, var(--ds-text, #0F172A))',
+    text2:        dk ? 'var(--ds-text-subtlest, var(--ds-text-subtlest, #A1A1A1))' : 'var(--ds-text-subtle, var(--ds-text-subtle, #475569))',
+    text3:        dk ? 'var(--ds-text-subtlest, var(--ds-text-subtlest, #878787))' : 'var(--ds-text-subtlest, var(--ds-text-subtlest, #94A3B8))',
+    textMuted:    dk ? 'var(--ds-text-subtlest, var(--ds-text-subtlest, #878787))' : '#9ca3af',
+    textDim:      dk ? 'var(--ds-text-subtlest, var(--ds-text-subtlest, #878787))' : '#d1d5db',
+    inputBg:      dk ? 'var(--ds-surface-raised, var(--ds-surface-raised, #1A1A1A))' : 'var(--ds-surface, var(--ds-surface, #FFFFFF))',
+    badgeBg:      dk ? 'var(--ds-surface-raised, var(--ds-surface-raised, #1A1A1A))' : 'var(--ds-surface-sunken, var(--ds-surface-sunken, #F1F5F9))',
+    badgeText:    dk ? 'var(--ds-text-subtlest, var(--ds-text-subtlest, #A1A1A1))' : 'var(--ds-text-subtle, var(--ds-text-subtle, #475569))',
+    pillBg:       dk ? 'var(--ds-surface-raised, var(--ds-surface-raised, #1A1A1A))' : 'var(--ds-surface, var(--ds-surface, #FFFFFF))',
+    pillBorder:   dk ? 'var(--ds-border-bold, var(--ds-border-bold, #454545))' : '#DDDEE1',
+    pillActiveBorder: dk ? 'var(--ds-text, var(--ds-text, #EDEDED))' : '#111',
+    pillActiveText:   dk ? 'var(--ds-text, var(--ds-text, #EDEDED))' : '#111',
+    pillInactiveText: dk ? 'var(--ds-text-subtlest, var(--ds-text-subtlest, #A1A1A1))' : '#6b7280',
+    pillHoverBg:  dk ? 'var(--ds-surface-raised, var(--ds-surface-raised, #1A1A1A))' : 'var(--ds-surface-sunken, var(--ds-surface-sunken, #F1F5F9))',
+    pillHoverText: dk ? 'var(--ds-text, var(--ds-text, #EDEDED))' : '#1E293B',
+    typePillBg:       dk ? 'var(--ds-surface-raised, var(--ds-surface-raised, #1A1A1A))' : 'var(--ds-surface-sunken, var(--ds-surface-sunken, #F8FAFC))',
+    typePillActiveBg: dk ? 'var(--ds-surface-raised, var(--ds-surface-raised, #1A1A1A))' : 'var(--ds-surface, var(--ds-surface, #FFFFFF))',
+    shimmerFrom:  dk ? 'var(--ds-surface-raised, var(--ds-surface-raised, #1A1A1A))' : 'var(--ds-surface-sunken, var(--ds-surface-sunken, #F1F5F9))',
+    shimmerMid:   dk ? 'var(--ds-surface-raised, var(--ds-surface-raised, #1A1A1A))' : 'var(--ds-border, var(--ds-border, #E2E8F0))',
+    tooltipBg:    dk ? 'var(--ds-surface-raised, var(--ds-surface-raised, #1A1A1A))' : '#1e293b',
+    tooltipText:  dk ? 'var(--ds-text, var(--ds-text, #EDEDED))' : 'var(--ds-surface-sunken, var(--ds-surface-sunken, #f1f5f9))',
+    divider:      dk ? 'var(--ds-border, var(--ds-border, #292929))' : 'var(--ds-border, var(--ds-border, #E2E8F0))',
     focusShadow:  dk ? '0 0 0 3px rgba(37,99,235,.2)' : '0 0 0 3px rgba(37,99,235,.1)',
   }), [dk]);
 }
@@ -321,9 +321,9 @@ export default function ResourceListingPage() {
                   fontSize: 12, fontWeight: isActive ? 600 : 500, cursor: 'pointer',
                   transition: 'all 150ms ease',
                   display: 'inline-flex', alignItems: 'center', gap: 4,
-                  border: isActive ? `1.5px solid ${isDark ? '#EDEDED' : '#111'}` : `1px solid ${t.pillBorder}`,
+                  border: isActive ? `1.5px solid ${isDark ? 'var(--ds-text, var(--ds-text, #EDEDED))' : '#111'}` : `1px solid ${t.pillBorder}`,
                   background: isActive ? t.typePillActiveBg : 'transparent',
-                  color: isActive ? (isDark ? '#EDEDED' : '#111') : t.text2,
+                  color: isActive ? (isDark ? 'var(--ds-text, var(--ds-text, #EDEDED))' : '#111') : t.text2,
                 }}
                 onMouseEnter={e => {
                   if (!isActive) {
@@ -448,7 +448,7 @@ export default function ResourceListingPage() {
                         }}>
                           <span style={{
                             width: '6px', height: '6px', borderRadius: '50%',
-                            background: DEPT_COLORS[r.dept_name] || '#2563EB', flexShrink: 0,
+                            background: DEPT_COLORS[r.dept_name] || 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))', flexShrink: 0,
                           }} />
                           {r.dept_name}
                         </span>
@@ -494,7 +494,7 @@ export default function ResourceListingPage() {
                         />
                         <ActionBtn
                           tooltip="Chronology View"
-                          bg="#2563eb" bgHover="#1d4ed8"
+                          bg="var(--ds-text-brand, var(--ds-text-brand, #2563eb))" bgHover="var(--ds-background-brand-bold-hovered, var(--ds-background-brand-bold-hovered, #1d4ed8))"
                           shadowColor="rgba(37,99,235,0.2)"
                           icon={<Clock size={13} strokeWidth={1.9} />}
                           onClick={(e) => { e.stopPropagation(); navTo(r.id, 'chronology'); }}
@@ -546,9 +546,9 @@ export default function ResourceListingPage() {
                     onClick={() => setPage(n)}
                     style={{
                       width: 28, height: 28, borderRadius: 4,
-                      border: `1px solid ${safePage === n ? '#2563EB' : t.border}`,
-                      background: safePage === n ? '#2563EB' : 'transparent',
-                      color: safePage === n ? '#FFFFFF' : t.text2,
+                      border: `1px solid ${safePage === n ? 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))' : t.border}`,
+                      background: safePage === n ? 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))' : 'transparent',
+                      color: safePage === n ? 'var(--ds-surface, var(--ds-surface, #FFFFFF))' : t.text2,
                       fontWeight: safePage === n ? 600 : 400,
                       cursor: 'pointer', fontSize: 12,
                     }}
@@ -654,7 +654,7 @@ function ResourceAvatar({ name, avatarUrl }: { name: string; avatarUrl: string |
   return (
     <div style={{
       width: 28, height: 28, borderRadius: '50%',
-      background: hashColor(name), color: '#ffffff',
+      background: hashColor(name), color: 'var(--ds-surface, var(--ds-surface, #ffffff))',
       display: 'flex', alignItems: 'center', justifyContent: 'center',
       fontSize: '11px', fontWeight: 600, flexShrink: 0,
     }}>
@@ -688,7 +688,7 @@ function ActionBtn({
         }}
         onMouseEnter={e => {
           e.currentTarget.style.background = bg;
-          e.currentTarget.style.color = '#ffffff';
+          e.currentTarget.style.color = 'var(--ds-surface, var(--ds-surface, #ffffff))';
           e.currentTarget.style.boxShadow = `0 2px 8px ${shadowColor || 'rgba(0,0,0,0.12)'}`;
           e.currentTarget.style.transform = 'translateY(-1px)';
         }}

@@ -24,7 +24,7 @@ const DOMAINS = [
 ];
 
 const ROLES = ['Analyst', 'Developer', 'Manager', 'Executive', 'Compliance Officer', 'Other'];
-const DIFF_COLORS: Record<string, string> = { beginner: '#16A34A', intermediate: '#2563EB', advanced: '#D97706' };
+const DIFF_COLORS: Record<string, string> = { beginner: 'var(--ds-text-success, var(--ds-text-success, #16A34A))', intermediate: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))', advanced: 'var(--ds-text-warning, var(--ds-text-warning, #D97706))' };
 
 interface WikiOnboardingWizardProps {
   onComplete: () => void;
@@ -65,10 +65,10 @@ export function WikiOnboardingWizard({ onComplete }: WikiOnboardingWizardProps) 
     <div key="step1">
       <div style={{ textAlign: 'center', marginBottom: 24 }}>
         <div style={{ width: 56, height: 56, borderRadius: '50%', background: 'var(--cp-blue)', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', marginBottom: 16 }}>
-          <Sparkles size={28} style={{ color: '#FFFFFF' }} />
+          <Sparkles size={28} style={{ color: 'var(--ds-surface, var(--ds-surface, #FFFFFF))' }} />
         </div>
-        <h2 style={{ fontFamily: F.sora, fontSize: 18, fontWeight: 700, marginBottom: 6, color: isDark ? '#EDEDED' : undefined }}>Welcome to WikiHub</h2>
-        <p style={{ fontSize: 13, color: isDark ? '#878787' : 'var(--fg-3)', lineHeight: 1.5 }}>Let's personalize your experience. What's your role?</p>
+        <h2 style={{ fontFamily: F.sora, fontSize: 18, fontWeight: 700, marginBottom: 6, color: isDark ? 'var(--ds-text, var(--ds-text, #EDEDED))' : undefined }}>Welcome to WikiHub</h2>
+        <p style={{ fontSize: 13, color: isDark ? 'var(--ds-text-subtlest, var(--ds-text-subtlest, #878787))' : 'var(--fg-3)', lineHeight: 1.5 }}>Let's personalize your experience. What's your role?</p>
       </div>
       <div style={{ display: 'grid', gap: 6 }}>
         {ROLES.map(r => (
@@ -76,7 +76,7 @@ export function WikiOnboardingWizard({ onComplete }: WikiOnboardingWizardProps) 
             padding: '12px 16px', borderRadius: 8, background: isDark ? 'var(--cp-bg-page, #1F1F21)' : 'var(--bg-app)',
             border: `0.75px solid ${role === r ? 'var(--cp-blue)' : ('var(--cp-border-subtle, rgba(0,0,0,0.06))')}`,
             cursor: 'pointer', textAlign: 'left', fontSize: 13, fontWeight: role === r ? 600 : 400,
-            color: role === r ? 'var(--cp-blue)' : (isDark ? '#A1A1A1' : 'var(--fg-2)'), transition: 'all 80ms',
+            color: role === r ? 'var(--cp-blue)' : (isDark ? 'var(--ds-text-subtlest, var(--ds-text-subtlest, #A1A1A1))' : 'var(--fg-2)'), transition: 'all 80ms',
             display: 'flex', alignItems: 'center', justifyContent: 'space-between',
           }}>
             {r}
@@ -88,8 +88,8 @@ export function WikiOnboardingWizard({ onComplete }: WikiOnboardingWizardProps) 
 
     // Step 2: Domains
     <div key="step2">
-      <h2 style={{ fontFamily: F.sora, fontSize: 16, fontWeight: 700, marginBottom: 6, textAlign: 'center', color: isDark ? '#EDEDED' : undefined }}>Choose Your Domains</h2>
-      <p style={{ fontSize: 12, color: isDark ? '#878787' : 'var(--fg-3)', marginBottom: 20, textAlign: 'center' }}>Select domains you want to follow.</p>
+      <h2 style={{ fontFamily: F.sora, fontSize: 16, fontWeight: 700, marginBottom: 6, textAlign: 'center', color: isDark ? 'var(--ds-text, var(--ds-text, #EDEDED))' : undefined }}>Choose Your Domains</h2>
+      <p style={{ fontSize: 12, color: isDark ? 'var(--ds-text-subtlest, var(--ds-text-subtlest, #878787))' : 'var(--fg-3)', marginBottom: 20, textAlign: 'center' }}>Select domains you want to follow.</p>
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 6 }}>
         {DOMAINS.map(d => {
           const active = selectedDomains.includes(d.code);
@@ -100,8 +100,8 @@ export function WikiOnboardingWizard({ onComplete }: WikiOnboardingWizardProps) 
               cursor: 'pointer', textAlign: 'left', fontSize: 12, transition: 'all 80ms',
               display: 'flex', alignItems: 'center', gap: 8,
             }}>
-              <span style={{ fontSize: 9, fontWeight: 700, padding: '1px 5px', borderRadius: 4, background: active ? 'var(--cp-primary-20)' : (isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--cp-bd-zone)'), color: active ? '#1E40AF' : (isDark ? '#878787' : 'var(--fg-3)') }}>{d.code}</span>
-              <span style={{ fontWeight: active ? 600 : 400, color: active ? (isDark ? '#EDEDED' : 'var(--fg-1)') : (isDark ? '#A1A1A1' : 'var(--fg-2)'), flex: 1, fontSize: 11.5 }}>{d.name}</span>
+              <span style={{ fontSize: 9, fontWeight: 700, padding: '1px 5px', borderRadius: 4, background: active ? 'var(--cp-primary-20)' : (isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--cp-bd-zone)'), color: active ? '#1E40AF' : (isDark ? 'var(--ds-text-subtlest, var(--ds-text-subtlest, #878787))' : 'var(--fg-3)') }}>{d.code}</span>
+              <span style={{ fontWeight: active ? 600 : 400, color: active ? (isDark ? 'var(--ds-text, var(--ds-text, #EDEDED))' : 'var(--fg-1)') : (isDark ? 'var(--ds-text-subtlest, var(--ds-text-subtlest, #A1A1A1))' : 'var(--fg-2)'), flex: 1, fontSize: 11.5 }}>{d.name}</span>
               {active && <Check size={12} style={{ color: 'var(--cp-blue)' }} />}
             </button>
           );
@@ -111,11 +111,11 @@ export function WikiOnboardingWizard({ onComplete }: WikiOnboardingWizardProps) 
 
     // Step 3: Learning Paths
     <div key="step3">
-      <h2 style={{ fontFamily: F.sora, fontSize: 16, fontWeight: 700, marginBottom: 6, textAlign: 'center', color: isDark ? '#EDEDED' : undefined }}>Start a Learning Path</h2>
-      <p style={{ fontSize: 12, color: isDark ? '#878787' : 'var(--fg-3)', marginBottom: 20, textAlign: 'center' }}>Pick one to begin structured learning.</p>
+      <h2 style={{ fontFamily: F.sora, fontSize: 16, fontWeight: 700, marginBottom: 6, textAlign: 'center', color: isDark ? 'var(--ds-text, var(--ds-text, #EDEDED))' : undefined }}>Start a Learning Path</h2>
+      <p style={{ fontSize: 12, color: isDark ? 'var(--ds-text-subtlest, var(--ds-text-subtlest, #878787))' : 'var(--fg-3)', marginBottom: 20, textAlign: 'center' }}>Pick one to begin structured learning.</p>
       <div style={{ display: 'grid', gap: 8 }}>
         {(paths as any[]).slice(0, 3).map((p: any) => {
-          const diffColor = DIFF_COLORS[p.difficulty] || '#64748B';
+          const diffColor = DIFF_COLORS[p.difficulty] || 'var(--ds-text-subtlest, var(--ds-text-subtlest, #64748B))';
           return (
             <div key={p.id} style={{
               padding: 16, borderRadius: 8, background: isDark ? 'var(--cp-bg-page, #1F1F21)' : 'var(--bg-app)',
@@ -127,16 +127,16 @@ export function WikiOnboardingWizard({ onComplete }: WikiOnboardingWizardProps) 
             >
               <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
                 <GraduationCap size={16} style={{ color: 'var(--cp-blue)' }} />
-                <span style={{ fontFamily: F.sora, fontSize: 12.5, fontWeight: 600, flex: 1, color: isDark ? '#EDEDED' : undefined }}>{p.title}</span>
+                <span style={{ fontFamily: F.sora, fontSize: 12.5, fontWeight: 600, flex: 1, color: isDark ? 'var(--ds-text, var(--ds-text, #EDEDED))' : undefined }}>{p.title}</span>
                 <span style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', color: diffColor }}>{p.difficulty}</span>
               </div>
-              <p style={{ fontSize: 11, color: isDark ? '#878787' : 'var(--fg-3)', lineHeight: 1.4 }}>{p.description}</p>
-              <div style={{ fontSize: 10, color: isDark ? '#878787' : 'var(--fg-4)', marginTop: 6 }}>{p.estimated_hours}h · {p.article_count} articles</div>
+              <p style={{ fontSize: 11, color: isDark ? 'var(--ds-text-subtlest, var(--ds-text-subtlest, #878787))' : 'var(--fg-3)', lineHeight: 1.4 }}>{p.description}</p>
+              <div style={{ fontSize: 10, color: isDark ? 'var(--ds-text-subtlest, var(--ds-text-subtlest, #878787))' : 'var(--fg-4)', marginTop: 6 }}>{p.estimated_hours}h · {p.article_count} articles</div>
             </div>
           );
         })}
         {paths.length === 0 && (
-          <p style={{ fontSize: 12, color: isDark ? '#878787' : 'var(--fg-4)', textAlign: 'center', padding: 20 }}>No learning paths available yet.</p>
+          <p style={{ fontSize: 12, color: isDark ? 'var(--ds-text-subtlest, var(--ds-text-subtlest, #878787))' : 'var(--fg-4)', textAlign: 'center', padding: 20 }}>No learning paths available yet.</p>
         )}
       </div>
     </div>,
@@ -171,12 +171,12 @@ export function WikiOnboardingWizard({ onComplete }: WikiOnboardingWizardProps) 
         {/* Footer */}
         <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 28 }}>
           {step > 0 ? (
-            <button onClick={() => setStep(s => s - 1)} style={{ background: 'none', border: 'none', fontSize: 12, color: isDark ? '#878787' : 'var(--fg-3)', cursor: 'pointer', fontWeight: 500 }}>Back</button>
+            <button onClick={() => setStep(s => s - 1)} style={{ background: 'none', border: 'none', fontSize: 12, color: isDark ? 'var(--ds-text-subtlest, var(--ds-text-subtlest, #878787))' : 'var(--fg-3)', cursor: 'pointer', fontWeight: 500 }}>Back</button>
           ) : <span />}
           {step < 2 ? (
             <button onClick={() => setStep(s => s + 1)} disabled={!canNext} style={{
               padding: '8px 20px', borderRadius: 8, background: canNext ? 'var(--cp-blue)' : 'var(--fg-4)',
-              color: '#FFFFFF', border: 'none', fontSize: 12, fontWeight: 600,
+              color: 'var(--ds-surface, var(--ds-surface, #FFFFFF))', border: 'none', fontSize: 12, fontWeight: 600,
               cursor: canNext ? 'pointer' : 'not-allowed', display: 'flex', alignItems: 'center', gap: 4,
             }}>
               Next <ChevronRight size={13} />
@@ -184,7 +184,7 @@ export function WikiOnboardingWizard({ onComplete }: WikiOnboardingWizardProps) 
           ) : (
             <button onClick={() => completeOnboarding.mutate()} style={{
               padding: '8px 24px', borderRadius: 8, background: 'var(--cp-blue)',
-              color: '#FFFFFF', border: 'none', fontSize: 12, fontWeight: 600, cursor: 'pointer',
+              color: 'var(--ds-surface, var(--ds-surface, #FFFFFF))', border: 'none', fontSize: 12, fontWeight: 600, cursor: 'pointer',
             }}>
               Get Started
             </button>

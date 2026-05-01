@@ -39,7 +39,7 @@ export function ProjectHubShell() {
         .order('name');
       if (error) { console.warn('ph_projects shell query error:', error.message); return []; }
       return (data || []).map(p => ({
-        key: p.key, name: p.name, color: p.color || '#2563EB', icon: p.icon || 'rocket',
+        key: p.key, name: p.name, color: p.color || 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))', icon: p.icon || 'rocket',
       })) as ProjectEntry[];
     },
   });
@@ -54,7 +54,7 @@ export function ProjectHubShell() {
         .eq('key', params.key.toUpperCase())
         .maybeSingle();
       if (error) { console.warn('ph_project query error:', error.message); return null; }
-      return data ? { key: data.key, name: data.name, color: data.color || '#2563EB' } : null;
+      return data ? { key: data.key, name: data.name, color: data.color || 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))' } : null;
     },
     enabled: !!params.key,
   });
@@ -75,11 +75,11 @@ export function ProjectHubShell() {
   });
 
   return (
-    <div className="flex flex-col h-screen bg-[var(--bg-1)] dark:!bg-[#0A0A0A]" style={{ ['--ph-bg' as string]: '#0A0A0A' }}>
+    <div className="flex flex-col h-screen bg-[var(--bg-1)] dark:!bg-[var(--ds-surface,var(--ds-surface, #0A0A0A))]" style={{ ['--ph-bg' as string]: 'var(--ds-surface, var(--ds-surface, #0A0A0A))' }}>
       <TopNav onCreateClick={handleTopCreateClick} />
       <div className="flex flex-1 overflow-hidden">
         <Sidebar collapsed={collapsed} onToggle={() => setCollapsed(c => !c)} projects={projects} currentProject={currentProject} />
-        <main className="flex-1 min-w-0 overflow-y-auto bg-[#F8FAFC] dark:!bg-[#0A0A0A]">
+        <main className="flex-1 min-w-0 overflow-y-auto bg-[var(--ds-surface-sunken,var(--ds-surface-sunken, #F8FAFC))] dark:!bg-[var(--ds-surface,var(--ds-surface, #0A0A0A))]">
           <Outlet context={{ onNewProject: () => setCreateModalOpen(true) }} />
         </main>
       </div>

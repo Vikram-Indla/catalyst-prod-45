@@ -101,7 +101,7 @@ export function RoadmapFiltersDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[480px] p-0 gap-0 bg-white dark:bg-[#1A1A1A] [&>button]:hidden rounded-xl overflow-hidden">
+      <DialogContent className="sm:max-w-[480px] p-0 gap-0 bg-white dark:bg-[var(--ds-surface-raised,var(--ds-surface-raised, #1A1A1A))] [&>button]:hidden rounded-xl overflow-hidden">
         {/* Header - Matching Production */}
         <DialogHeader className="px-6 py-4 border-b border-border flex flex-row items-center justify-between">
           <DialogTitle className="text-lg font-semibold text-foreground">Filters</DialogTitle>
@@ -129,7 +129,7 @@ export function RoadmapFiltersDialog({
                     "px-3 py-1.5 rounded-full text-sm font-medium border transition-all",
                     localFilters.activePlatformFilter === pf.id
                       ? "bg-brand-primary text-white border-brand-primary"
-                      : "bg-white dark:bg-[#1A1A1A] text-foreground border-border dark:border-[#2E2E2E] hover:bg-muted/50 hover:border-muted-foreground/30"
+                      : "bg-white dark:bg-[var(--ds-surface-raised,var(--ds-surface-raised, #1A1A1A))] text-foreground border-border dark:border-[var(--ds-border,var(--ds-border, #2E2E2E))] hover:bg-muted/50 hover:border-muted-foreground/30"
                   )}
                   onClick={() => handlePlatformFilterClick(pf.id)}
                 >
@@ -155,7 +155,7 @@ export function RoadmapFiltersDialog({
                       <SelectTrigger className="h-10 border-border">
                         <SelectValue placeholder="All Statuses" />
                       </SelectTrigger>
-                      <SelectContent className="bg-white dark:bg-[#1A1A1A] z-[500]">
+                      <SelectContent className="bg-white dark:bg-[var(--ds-surface-raised,var(--ds-surface-raised, #1A1A1A))] z-[500]">
                         <SelectItem value="all">All Statuses</SelectItem>
                         {Object.entries(STAGE_NAMES).map(([key, label]) => (
                           <SelectItem key={key} value={key}>{label}</SelectItem>
@@ -171,7 +171,7 @@ export function RoadmapFiltersDialog({
                       <SelectTrigger className="h-10 border-border">
                         <SelectValue placeholder="All Owners" />
                       </SelectTrigger>
-                      <SelectContent className="bg-white dark:bg-[#1A1A1A] z-[500]">
+                      <SelectContent className="bg-white dark:bg-[var(--ds-surface-raised,var(--ds-surface-raised, #1A1A1A))] z-[500]">
                         <SelectItem value="all">All Owners</SelectItem>
                         {uniqueOwners.filter(Boolean).map(o => (
                           <SelectItem key={o} value={o}>{o}</SelectItem>
@@ -188,7 +188,7 @@ export function RoadmapFiltersDialog({
                     <SelectTrigger className="h-10 border-border">
                       <SelectValue placeholder="Rank" />
                     </SelectTrigger>
-                    <SelectContent className="bg-white dark:bg-[#1A1A1A] z-[500]">
+                    <SelectContent className="bg-white dark:bg-[var(--ds-surface-raised,var(--ds-surface-raised, #1A1A1A))] z-[500]">
                       <SelectItem value="rank">Rank</SelectItem>
                       <SelectItem value="platform">Platform</SelectItem>
                       <SelectItem value="owner">Owner</SelectItem>

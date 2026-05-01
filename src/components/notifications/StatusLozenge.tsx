@@ -2,13 +2,13 @@ import type { StatusType } from "@/types/notifications";
 import { useTheme } from "@/hooks/useTheme";
 
 const LIGHT_STYLES: Record<StatusType, { bg: string; text: string }> = {
-  gray:  { bg: '#DFE1E6', text: '#253858' },
+  gray:  { bg: 'var(--ds-border, var(--ds-border, #DFE1E6))', text: 'var(--ds-text, var(--ds-text, #253858))' },
   blue:  { bg: '#DEEBFF', text: '#0747A6' },
   green: { bg: '#E3FCEF', text: '#006644' },
 };
 
 const DARK_STYLES: Record<StatusType, { bg: string; text: string }> = {
-  gray:  { bg: '#1A1A1A', text: '#A1A1A1' },
+  gray:  { bg: 'var(--ds-surface-raised, var(--ds-surface-raised, #1A1A1A))', text: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #A1A1A1))' },
   blue:  { bg: '#1A2540', text: '#93C5FD' },
   green: { bg: '#0F2A1A', text: '#86EFAC' },
 };

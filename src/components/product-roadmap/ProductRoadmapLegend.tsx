@@ -22,11 +22,11 @@ const CATALYST_STATUS_COLORS: Record<string, string> = {
 // Fallback colors for any unmapped statuses - cycles through brand palette
 const BRAND_FALLBACK_COLORS = [
   '#0d9488', // Teal
-  '#2563eb', // Blue
+  'var(--ds-text-brand, var(--ds-text-brand, #2563eb))', // Blue
   '#6b7280', // Gray
   '#0f766e', // Teal Dark
-  '#60a5fa', // Blue Light
-  '#1d4ed8', // Blue Dark
+  'var(--ds-text-brand, var(--ds-text-brand, #60a5fa))', // Blue Light
+  'var(--ds-background-brand-bold-hovered, var(--ds-background-brand-bold-hovered, #1d4ed8))', // Blue Dark
   '#4b5563', // Gray Dark
   '#9ca3af', // Gray Light
 ];
@@ -134,7 +134,7 @@ export function ProductRoadmapLegend({ isVisible, showMilestones }: ProductRoadm
                         <div 
                           className="w-3 h-3 rotate-45 border-2"
                           style={{ 
-                            backgroundColor: item.filled ? item.color : ('fillColor' in item ? item.fillColor : '#ffffff'),
+                            backgroundColor: item.filled ? item.color : ('fillColor' in item ? item.fillColor : 'var(--ds-surface, var(--ds-surface, #ffffff))'),
                             borderColor: item.color
                           }}
                         />

@@ -17,12 +17,12 @@
  *   container padding:   16px 16px 4px
  *   h1 font-size:        20px
  *   h1 font-weight:      600
- *   h1 color:            #172B4D   (Atlaskit 'color.text', light mode)
+ *   h1 color:            var(--ds-text, #172B4D)   (Atlaskit 'color.text', light mode)
  *   h1 letter-spacing:  -0.003em
  *   h1 margin:           0
  *
  * Dark mode:
- *   Swaps to Catalyst's DARK MODE text token so contrast on #1A1A1A surface holds.
+ *   Swaps to Catalyst's DARK MODE text token so contrast on var(--ds-surface-raised, #1A1A1A) surface holds.
  *
  * Rollback:
  *   1. Restore the original breadcrumb/h1 JSX per page.

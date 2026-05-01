@@ -8,12 +8,12 @@ function useIsDark() {
 
 export function TableSkeleton({ rows = 10 }: { rows?: number }) {
   const dk = useIsDark();
-  const borderColor = dk ? '#2E2E2E' : 'var(--bd-default, #E2E8F0)';
-  const subtleBorder = dk ? '#292929' : '#F1F5F9';
-  const shimmerStrong = dk ? '#2E2E2E' : 'var(--bd-default, #E2E8F0)';
-  const shimmerLight = dk ? '#292929' : '#F1F5F9';
-  const headerBg = dk ? '#1F1F1F' : '#FAFAFA';
-  const containerBg = dk ? '#0A0A0A' : '#FFFFFF';
+  const borderColor = dk ? 'var(--ds-border, var(--ds-border, #2E2E2E))' : 'var(--bd-default, #E2E8F0)';
+  const subtleBorder = dk ? 'var(--ds-border, var(--ds-border, #292929))' : 'var(--ds-surface-sunken, var(--ds-surface-sunken, #F1F5F9))';
+  const shimmerStrong = dk ? 'var(--ds-border, var(--ds-border, #2E2E2E))' : 'var(--bd-default, #E2E8F0)';
+  const shimmerLight = dk ? 'var(--ds-border, var(--ds-border, #292929))' : 'var(--ds-surface-sunken, var(--ds-surface-sunken, #F1F5F9))';
+  const headerBg = dk ? 'var(--ds-surface-overlay, var(--ds-surface-overlay, #1F1F1F))' : '#FAFAFA';
+  const containerBg = dk ? 'var(--ds-surface, var(--ds-surface, #0A0A0A))' : 'var(--ds-surface, var(--ds-surface, #FFFFFF))';
 
   return (
     <div style={{ border: `1px solid ${borderColor}`, borderRadius: 8, overflow: 'hidden', background: containerBg }}>

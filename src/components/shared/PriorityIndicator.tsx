@@ -22,10 +22,10 @@ export interface PriorityConfig {
 }
 
 export const PRIORITY_MAP: Record<PriorityLevel, PriorityConfig> = {
-  critical: { label: 'Critical', level: 4, filledColor: '#DC2626', textColor: '#991B1B', textColorDark: '#F87171' },
+  critical: { label: 'Critical', level: 4, filledColor: 'var(--ds-text-danger, var(--ds-text-danger, #DC2626))', textColor: 'var(--ds-text-danger, var(--ds-text-danger, #991B1B))', textColorDark: '#F87171' },
   high:     { label: 'High',     level: 3, filledColor: '#F97316', textColor: '#C2410C', textColorDark: '#FB923C' },
   medium:   { label: 'Medium',   level: 2, filledColor: '#EAB308', textColor: '#A16207', textColorDark: '#FBBF24' },
-  low:      { label: 'Low',      level: 1, filledColor: '#94A3B8', textColor: '#64748B', textColorDark: '#94A3B8' },
+  low:      { label: 'Low',      level: 1, filledColor: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #94A3B8))', textColor: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #64748B))', textColorDark: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #94A3B8))' },
 };
 
 /** Normalise any priority string to our canonical PriorityLevel. */
@@ -38,8 +38,8 @@ export function normalisePriority(raw: string | null | undefined): PriorityLevel
   return 'medium'; // default — medium, p3, or anything else
 }
 
-const EMPTY_BAR_LIGHT = '#E2E8F0';
-const EMPTY_BAR_DARK  = '#292929';
+const EMPTY_BAR_LIGHT = 'var(--ds-border, var(--ds-border, #E2E8F0))';
+const EMPTY_BAR_DARK  = 'var(--ds-border, var(--ds-border, #292929))';
 
 interface PriorityBarsProps {
   priority: PriorityLevel;

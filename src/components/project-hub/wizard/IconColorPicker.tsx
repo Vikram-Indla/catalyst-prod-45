@@ -14,8 +14,8 @@ const ICONS = [
 ];
 
 const COLORS = [
-  '#2563EB', '#0D9488', '#7C3AED', '#DC2626',
-  '#EA580C', '#D97706', '#16A34A', '#0284C7',
+  'var(--ds-text-brand, var(--ds-text-brand, #2563EB))', '#0D9488', '#7C3AED', 'var(--ds-text-danger, var(--ds-text-danger, #DC2626))',
+  '#EA580C', 'var(--ds-text-warning, var(--ds-text-warning, #D97706))', 'var(--ds-text-success, var(--ds-text-success, #16A34A))', '#0284C7',
 ];
 
 interface IconColorPickerProps {

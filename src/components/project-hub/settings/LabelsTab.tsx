@@ -4,7 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { X, Tag } from 'lucide-react';
 
-const COLORS = ['#2563EB', '#0D9488', '#7C3AED', '#DC2626', '#EA580C', '#D97706', '#16A34A', '#0284C7'];
+const COLORS = ['var(--ds-text-brand, var(--ds-text-brand, #2563EB))', '#0D9488', '#7C3AED', 'var(--ds-text-danger, var(--ds-text-danger, #DC2626))', '#EA580C', 'var(--ds-text-warning, var(--ds-text-warning, #D97706))', 'var(--ds-text-success, var(--ds-text-success, #16A34A))', '#0284C7'];
 const MAX_LABELS = 20;
 
 interface LabelsTabProps {
@@ -15,7 +15,7 @@ export function LabelsTab({ projectId }: LabelsTabProps) {
   const queryClient = useQueryClient();
   const queryKey = ['ph-labels', projectId];
   const [newName, setNewName] = useState('');
-  const [newColor, setNewColor] = useState('#2563EB');
+  const [newColor, setNewColor] = useState('var(--ds-text-brand, var(--ds-text-brand, #2563EB))');
 
   const { data: labels = [], isLoading } = useQuery({
     queryKey,
@@ -117,7 +117,7 @@ export function LabelsTab({ projectId }: LabelsTabProps) {
             onKeyDown={e => e.key === 'Enter' && handleAdd()}
             placeholder="Label name..."
             disabled={atMax}
-            className="bg-[var(--cp-float)] dark:bg-[#1A1A1A]"
+            className="bg-[var(--cp-float)] dark:bg-[var(--ds-surface-raised,var(--ds-surface-raised, #1A1A1A))]"
             style={{ ...inputStyle, opacity: atMax ? 0.5 : 1 }}
             onFocus={e => { e.currentTarget.style.borderColor = 'var(--cp-blue)'; e.currentTarget.style.boxShadow = '0 0 0 3px rgba(37,99,235,0.1)'; }}
             onBlur={e => { e.currentTarget.style.borderColor = 'var(--divider)'; e.currentTarget.style.boxShadow = 'none'; }}

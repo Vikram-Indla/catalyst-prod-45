@@ -5,19 +5,19 @@
 }
 
 .ph-skeleton {
-  background: linear-gradient(90deg, #F1F5F9 25%, #E8EDF2 37%, #F1F5F9 63%) !important;
+  background: linear-gradient(90deg, var(--ds-surface-sunken, #F1F5F9) 25%, #E8EDF2 37%, var(--ds-surface-sunken, #F1F5F9) 63%) !important;
   background-size: 200% 100% !important;
   animation: ph-shimmer 1.5s ease-in-out infinite;
 }
 
 .dark .ph-skeleton {
-  background: linear-gradient(90deg, #1F1F1F 25%, #2E2E2E 37%, #1F1F1F 63%) !important;
+  background: linear-gradient(90deg, var(--ds-surface-overlay, #1F1F1F) 25%, var(--ds-border, #2E2E2E) 37%, var(--ds-surface-overlay, #1F1F1F) 63%) !important;
 }
 
 /* Card enterprise styling override */
 .ph-card {
   background: var(--ds-text-inverse, #FFFFFF);
-  border: 1px solid #E2E8F0;
+  border: 1px solid var(--ds-border, #E2E8F0);
   border-radius: 8px;
   padding: 20px;
   box-shadow: 0 1px 3px 0 rgba(0,0,0,0.1), 0 1px 2px -1px rgba(0,0,0,0.1);
@@ -25,7 +25,7 @@
 
 .dark .ph-card {
   background: transparent;
-  border-color: #454545;
+  border-color: var(--ds-border-bold, #454545);
   box-shadow: none;
 }
 
@@ -36,32 +36,32 @@
 }
 .dark .ph-content-wrapper ::-webkit-scrollbar-thumb,
 .dark .ph-inner-content ::-webkit-scrollbar-thumb {
-  background: #2E2E2E;
+  background: var(--ds-border, #2E2E2E);
   border-radius: 4px;
 }
 .dark .ph-content-wrapper ::-webkit-scrollbar-thumb:hover,
 .dark .ph-inner-content ::-webkit-scrollbar-thumb:hover {
-  background: #454545;
+  background: var(--ds-border-bold, #454545);
 }
 
 .ph-card-title {
   font-size: 15px;
   font-weight: 600;
-  color: #0F172A;
+  color: var(--ds-text, #0F172A);
   font-family: var(--cp-font-heading);
   padding-bottom: 12px;
   margin-bottom: 16px;
-  border-bottom: 1px solid #F1F5F9;
+  border-bottom: 1px solid var(--ds-surface-sunken, #F1F5F9);
 }
 
 .dark .ph-card-title {
-  color: #EDEDED;
-  border-bottom-color: #292929;
+  color: var(--ds-text, #EDEDED);
+  border-bottom-color: var(--ds-border, #292929);
 }
 
 /* Focus ring for form inputs */
 .ph-input:focus {
-  border-color: #2563EB !important;
+  border-color: var(--ds-text-brand, #2563EB) !important;
   box-shadow: 0 0 0 3px rgba(37,99,235,0.1) !important;
 }
 

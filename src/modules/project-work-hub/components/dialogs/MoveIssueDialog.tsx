@@ -136,7 +136,7 @@ export function MoveIssueDialog({ open, onClose, source }: MoveIssueDialogProps)
                       </>
                     )}
                   </Field>
-                  <p style={{ fontSize: 12, color: '#6B778C', marginTop: 12, lineHeight: 1.5 }}>
+                  <p style={{ fontSize: 12, color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #6B778C))', marginTop: 12, lineHeight: 1.5 }}>
                     Moving will change the issue key from <strong>{source.issue_key}</strong> to{' '}
                     <strong>{dest ? `${dest}-N` : '{destination}-N'}</strong>. Links, comments,
                     attachments, and children are preserved.

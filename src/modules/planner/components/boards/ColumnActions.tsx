@@ -27,13 +27,13 @@ interface ColumnActionsProps {
 }
 
 const STATUS_COLORS = [
-  { name: 'Slate', value: '#94a3b8' },
-  { name: 'Blue', value: '#3b82f6' },
+  { name: 'Slate', value: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #94a3b8))' },
+  { name: 'Blue', value: 'var(--ds-text-brand, var(--ds-text-brand, #3b82f6))' },
   { name: 'Teal', value: '#14b8a6' },
-  { name: 'Green', value: '#22c55e' },
+  { name: 'Green', value: 'var(--ds-text-success, var(--ds-text-success, #22c55e))' },
   { name: 'Yellow', value: '#eab308' },
   { name: 'Orange', value: '#f97316' },
-  { name: 'Red', value: '#ef4444' },
+  { name: 'Red', value: 'var(--ds-text-danger, var(--ds-text-danger, #ef4444))' },
   { name: 'Purple', value: '#8b5cf6' },
 ];
 

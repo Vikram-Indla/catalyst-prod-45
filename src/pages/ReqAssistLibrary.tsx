@@ -252,7 +252,7 @@ export default function ReqAssistLibrary() {
             style={{
               display: 'inline-flex', alignItems: 'center', gap: 6,
               padding: '0 14px', height: 50, fontSize: 13, fontWeight: 500,
-              border: `1px solid ${isDark ? '#2E2E2E' : 'rgba(15,23,42,0.18)'}`, borderRadius: 6,
+              border: `1px solid ${isDark ? 'var(--ds-border, var(--ds-border, #2E2E2E))' : 'rgba(15,23,42,0.18)'}`, borderRadius: 6,
               background: 'var(--cp-bg-elevated, #FFFFFF)', color: 'var(--cp-text-secondary, #374151)', cursor: 'pointer',
               fontFamily: 'var(--cp-font-body)',
               transition: 'background 80ms ease',
@@ -268,14 +268,14 @@ export default function ReqAssistLibrary() {
               display: 'inline-flex', alignItems: 'center', gap: 6,
               padding: '0 14px', height: 50, fontSize: 13, fontWeight: 600,
               border: 'none', borderRadius: 6,
-              background: 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)',
+              background: 'linear-gradient(135deg, var(--ds-text-brand, #2563EB) 0%, var(--ds-background-brand-bold-hovered, #1D4ED8) 100%)',
               boxShadow: '0 1px 3px rgba(37,99,235,0.35)',
-              color: '#FFFFFF', cursor: 'pointer',
+              color: 'var(--ds-surface, var(--ds-surface, #FFFFFF))', cursor: 'pointer',
               fontFamily: 'var(--cp-font-body)',
               transition: 'box-shadow 150ms ease',
             }}
-            onMouseEnter={e => { e.currentTarget.style.background = 'linear-gradient(135deg, #1D4ED8 0%, #1E40AF 100%)'; e.currentTarget.style.boxShadow = '0 2px 6px rgba(37,99,235,0.45)'; }}
-            onMouseLeave={e => { e.currentTarget.style.background = 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)'; e.currentTarget.style.boxShadow = '0 1px 3px rgba(37,99,235,0.35)'; }}
+            onMouseEnter={e => { e.currentTarget.style.background = 'linear-gradient(135deg, var(--ds-background-brand-bold-hovered, #1D4ED8) 0%, #1E40AF 100%)'; e.currentTarget.style.boxShadow = '0 2px 6px rgba(37,99,235,0.45)'; }}
+            onMouseLeave={e => { e.currentTarget.style.background = 'linear-gradient(135deg, var(--ds-text-brand, #2563EB) 0%, var(--ds-background-brand-bold-hovered, #1D4ED8) 100%)'; e.currentTarget.style.boxShadow = '0 1px 3px rgba(37,99,235,0.35)'; }}
           >
             <Sparkles size={14} /> Generate BRD from Text
           </button>
@@ -302,14 +302,14 @@ export default function ReqAssistLibrary() {
             padding: '80px 0', background: 'var(--cp-bg-elevated, #FFFFFF)',
             border: `0.75px solid ${'var(--cp-border-default, rgba(15,23,42,0.10))'}`, borderRadius: 8,
           }}>
-            <FileText size={32} color="#94A3B8" style={{ marginBottom: 12 }} />
+            <FileText size={32} color="var(--ds-text-subtlest, var(--ds-text-subtlest, #94A3B8))" style={{ marginBottom: 12 }} />
             <p style={{ fontSize: 16, fontWeight: 600, color: 'var(--cp-text-primary, #0F172A)', margin: '0 0 6px', fontFamily: 'var(--cp-font-heading)' }}>No documents yet</p>
             <p style={{ fontSize: 14, color: 'var(--cp-text-tertiary, #64748B)', margin: '0 0 20px', fontFamily: 'var(--cp-font-body)' }}>Import from Jira or generate a BRD from text to get started.</p>
             <div style={{ display: 'flex', gap: 8 }}>
               <button onClick={() => setImportOpen(true)} style={{
                 display: 'inline-flex', alignItems: 'center', gap: 6, padding: '0 14px', height: 50,
                 fontSize: 13, fontWeight: 500, border: 'none', borderRadius: 6,
-                background: '#2563EB', color: '#FFFFFF', cursor: 'pointer', fontFamily: 'var(--cp-font-body)',
+                background: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))', color: 'var(--ds-surface, var(--ds-surface, #FFFFFF))', cursor: 'pointer', fontFamily: 'var(--cp-font-body)',
               }}>
                 <Download size={14} /> Import from Jira
               </button>
@@ -351,7 +351,7 @@ export default function ReqAssistLibrary() {
                   onClick={() => { setSearch(''); setTab('all'); }}
                   style={{
                     border: 'none', background: 'transparent', cursor: 'pointer',
-                    fontSize: 12, color: '#2563EB', fontWeight: 500, padding: 0,
+                    fontSize: 12, color: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))', fontWeight: 500, padding: 0,
                     fontFamily: 'var(--cp-font-body)',
                   }}
                 >
@@ -413,7 +413,7 @@ export default function ReqAssistLibrary() {
                           background: isProcessingRow ? 'rgba(37,99,235,0.04)' : isDark ? 'var(--cp-bg-page, #1F1F21)' : 'transparent',
                           transition: 'background 120ms ease',
                         }}
-                        onMouseEnter={e => { if (!isProcessingRow) (e.currentTarget as HTMLElement).style.background = isDark ? '#1F1F1F' : 'rgba(15,23,42,0.02)'; }}
+                        onMouseEnter={e => { if (!isProcessingRow) (e.currentTarget as HTMLElement).style.background = isDark ? 'var(--ds-surface-overlay, var(--ds-surface-overlay, #1F1F1F))' : 'rgba(15,23,42,0.02)'; }}
                         onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = isProcessingRow ? 'rgba(37,99,235,0.04)' : 'transparent'; }}
                       >
                         {/* Jira Ticket — with parent hierarchy */}
@@ -422,7 +422,7 @@ export default function ReqAssistLibrary() {
                             <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
                               {/* Parent line */}
                               <div style={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                                <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M3.5 2L6.5 5L3.5 8" stroke="#CBD5E1" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                                <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M3.5 2L6.5 5L3.5 8" stroke="var(--ds-text-disabled, var(--ds-text-disabled, #CBD5E1))" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg>
                                 <span style={{ fontFamily: 'var(--cp-font-body)', fontSize: 11, fontWeight: 500, color: 'var(--cp-text-muted, #94A3B8)' }}>
                                   {parentKeys[doc.id]}
                                 </span>
@@ -431,14 +431,14 @@ export default function ReqAssistLibrary() {
                               <div style={{ paddingLeft: 8 }}>
                                 {doc.jira_ticket_url ? (
                                   <a href={doc.jira_ticket_url} target="_blank" rel="noopener noreferrer" onClick={e => e.stopPropagation()}
-                                    style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 12, fontWeight: 600, color: '#2563EB', textDecoration: 'none' }}
+                                    style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 12, fontWeight: 600, color: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))', textDecoration: 'none' }}
                                     onMouseEnter={e => (e.currentTarget.style.textDecoration = 'underline')}
                                     onMouseLeave={e => (e.currentTarget.style.textDecoration = 'none')}
                                   >
                                     {doc.jira_ticket_key}
                                   </a>
                                 ) : (
-                                  <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 12, fontWeight: 600, color: '#2563EB' }}>
+                                  <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 12, fontWeight: 600, color: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))' }}>
                                     {doc.jira_ticket_key}
                                   </span>
                                 )}
@@ -449,14 +449,14 @@ export default function ReqAssistLibrary() {
                             <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                               {doc.jira_ticket_url ? (
                                 <a href={doc.jira_ticket_url} target="_blank" rel="noopener noreferrer" onClick={e => e.stopPropagation()}
-                                  style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 12, fontWeight: 500, color: '#2563EB', textDecoration: 'none' }}
+                                  style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 12, fontWeight: 500, color: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))', textDecoration: 'none' }}
                                   onMouseEnter={e => (e.currentTarget.style.textDecoration = 'underline')}
                                   onMouseLeave={e => (e.currentTarget.style.textDecoration = 'none')}
                                 >
                                   {doc.jira_ticket_key}
                                 </a>
                               ) : (
-                                <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 12, fontWeight: 500, color: '#2563EB' }}>
+                                <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 12, fontWeight: 500, color: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))' }}>
                                   {doc.jira_ticket_key}
                                 </span>
                               )}
@@ -512,13 +512,13 @@ export default function ReqAssistLibrary() {
                                 display: 'inline-flex', alignItems: 'center', gap: 4,
                                 padding: '3px 6px', borderRadius: 4,
                                 background: 'transparent', border: 'none', cursor: 'pointer',
-                                fontSize: 12, color: '#2563EB', fontWeight: 500,
+                                fontSize: 12, color: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))', fontWeight: 500,
                                 fontFamily: 'var(--cp-font-body)',
                               }}
                               onMouseEnter={e => (e.currentTarget.style.textDecoration = 'underline')}
                               onMouseLeave={e => (e.currentTarget.style.textDecoration = 'none')}
                             >
-                              <FileText size={14} color="#2563EB" />
+                              <FileText size={14} color="var(--ds-text-brand, var(--ds-text-brand, #2563EB))" />
                               PDF
                             </button>
                           ) : (
@@ -563,12 +563,12 @@ export default function ReqAssistLibrary() {
                 ) : (
                   <tr>
                     <td colSpan={8} style={{ padding: '48px 0', textAlign: 'center' }}>
-                      <FileSearch size={24} color="#94A3B8" style={{ margin: '0 auto 8px', display: 'block' }} />
+                      <FileSearch size={24} color="var(--ds-text-subtlest, var(--ds-text-subtlest, #94A3B8))" style={{ margin: '0 auto 8px', display: 'block' }} />
                       <p style={{ fontSize: 14, color: 'var(--cp-text-tertiary, #64748B)', margin: '0 0 8px', fontFamily: 'var(--cp-font-body)' }}>
                         No documents match "{search || 'your search term'}"
                       </p>
                       <button onClick={() => { setSearch(''); setTab('all'); }}
-                        style={{ fontSize: 12, color: '#2563EB', fontWeight: 600, background: 'transparent', border: 'none', cursor: 'pointer', fontFamily: 'var(--cp-font-body)' }}>
+                        style={{ fontSize: 12, color: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))', fontWeight: 600, background: 'transparent', border: 'none', cursor: 'pointer', fontFamily: 'var(--cp-font-body)' }}>
                         Clear search
                       </button>
                     </td>
@@ -592,7 +592,7 @@ export default function ReqAssistLibrary() {
                   onClick={() => { setTab('all'); setSearch(''); }}
                   style={{
                     display: 'inline-flex', alignItems: 'center', gap: 4,
-                    fontSize: 12, fontWeight: 500, color: '#2563EB',
+                    fontSize: 12, fontWeight: 500, color: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))',
                     background: 'transparent', border: 'none', cursor: 'pointer',
                     fontFamily: 'var(--cp-font-body)',
                   }}
@@ -665,7 +665,7 @@ export default function ReqAssistLibrary() {
               }}>View Drafts</button>
               <button onClick={() => { const d = regenConfirm.doc; setRegenConfirm(null); setBgModal({ type: 'epics', doc: d }); }} style={{
                 padding: '8px 16px', fontSize: 13, fontWeight: 600, borderRadius: 6,
-                border: 'none', background: '#2563EB', color: '#FFFFFF', cursor: 'pointer',
+                border: 'none', background: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))', color: 'var(--ds-surface, var(--ds-surface, #FFFFFF))', cursor: 'pointer',
               }}>Regenerate</button>
             </div>
           </div>
@@ -762,9 +762,9 @@ function PdfUploadCell({ brdId: initialBrdId, jiraKey }: { brdId: string | null;
         }}
       >
         {uploading ? (
-          <Loader2 size={14} color="#94A3B8" style={{ animation: 'ra-pulse 1s linear infinite' }} />
+          <Loader2 size={14} color="var(--ds-text-subtlest, var(--ds-text-subtlest, #94A3B8))" style={{ animation: 'ra-pulse 1s linear infinite' }} />
         ) : (
-          <FileUp size={14} color="#94A3B8" />
+          <FileUp size={14} color="var(--ds-text-subtlest, var(--ds-text-subtlest, #94A3B8))" />
         )}
       </button>
       <input
@@ -794,18 +794,18 @@ function StatusBadge({ status, epicCount, pipelineStage }: { status: string; epi
   const ps = pipelineStage ?? status;
 
   if (ps === 'failed') {
-    bg = '#DFE1E6'; color = '#42526E'; label = 'FAILED';
+    bg = 'var(--ds-border, var(--ds-border, #DFE1E6))'; color = '#42526E'; label = 'FAILED';
   } else if (epicCount > 0) {
     // Having epics = document is usable regardless of pipeline_stage
-    bg = '#1B7F37'; color = '#FFFFFF'; label = 'READY';
+    bg = '#1B7F37'; color = 'var(--ds-surface, var(--ds-surface, #FFFFFF))'; label = 'READY';
   } else if (ps === 'complete') {
     // pipeline complete but no epics yet → still READY
-    bg = '#1B7F37'; color = '#FFFFFF'; label = 'READY';
+    bg = '#1B7F37'; color = 'var(--ds-surface, var(--ds-surface, #FFFFFF))'; label = 'READY';
   } else if (['extract', 'process', 'validate', 'distribute', 'processing'].includes(ps)) {
-    bg = '#0C66E4'; color = '#FFFFFF'; label = 'PROCESSING';
+    bg = '#0C66E4'; color = 'var(--ds-surface, var(--ds-surface, #FFFFFF))'; label = 'PROCESSING';
   } else {
     // intake, pending, or unknown
-    bg = '#DFE1E6'; color = '#42526E'; label = 'PENDING';
+    bg = 'var(--ds-border, var(--ds-border, #DFE1E6))'; color = '#42526E'; label = 'PENDING';
   }
 
   return (
@@ -846,19 +846,19 @@ function ActionsCell({ doc, epicCount, onSyncKb, onSelect, onViewDrafts }: {
             display: 'inline-flex', alignItems: 'center', gap: 4,
             height: 28, padding: '0 10px', fontSize: 12, fontWeight: 500,
             borderRadius: 6, border: '0.75px solid #BFDBFE',
-            background: 'var(--cp-primary-light, #EFF6FF)', color: '#1D4ED8', cursor: 'pointer',
+            background: 'var(--cp-primary-light, #EFF6FF)', color: 'var(--ds-background-brand-bold-hovered, var(--ds-background-brand-bold-hovered, #1D4ED8))', cursor: 'pointer',
             fontFamily: 'var(--cp-font-body)', whiteSpace: 'nowrap',
             transition: 'background 80ms ease',
           }}
           onMouseEnter={e => { e.currentTarget.style.background = '#DBEAFE'; e.currentTarget.style.borderColor = '#93C5FD'; }}
-          onMouseLeave={e => { e.currentTarget.style.background = '#EFF6FF'; e.currentTarget.style.borderColor = '#BFDBFE'; }}
+          onMouseLeave={e => { e.currentTarget.style.background = 'var(--ds-background-selected, var(--ds-background-selected, #EFF6FF))'; e.currentTarget.style.borderColor = '#BFDBFE'; }}
         >
           View Drafts
         </button>
         <span style={{
           display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
           width: 18, height: 18, borderRadius: 8,
-          background: '#2563EB', color: '#FFFFFF',
+          background: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))', color: 'var(--ds-surface, var(--ds-surface, #FFFFFF))',
           fontSize: 11, fontWeight: 700,
           fontFamily: 'var(--cp-font-body)',
         }}>{epicCount}</span>
@@ -875,7 +875,7 @@ function ActionsCell({ doc, epicCount, onSyncKb, onSelect, onViewDrafts }: {
           padding: '0 6px', height: 20, borderRadius: 4,
           fontSize: 11, fontWeight: 700, textTransform: 'uppercase',
           letterSpacing: '0.03em', whiteSpace: 'nowrap',
-          background: '#1B7F37', color: '#FFFFFF',
+          background: '#1B7F37', color: 'var(--ds-surface, var(--ds-surface, #FFFFFF))',
           fontFamily: 'var(--cp-font-body)',
         }}>AI INDEXED</span>
         <button
@@ -903,7 +903,7 @@ function ActionsCell({ doc, epicCount, onSyncKb, onSelect, onViewDrafts }: {
           display: 'inline-flex', alignItems: 'center', gap: 4,
           height: 28, padding: '0 10px', fontSize: 12, fontWeight: 500,
           borderRadius: 6, border: 'none', cursor: 'pointer',
-          background: '#2563EB', color: '#FFFFFF',
+          background: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))', color: 'var(--ds-surface, var(--ds-surface, #FFFFFF))',
           fontFamily: 'var(--cp-font-body)', whiteSpace: 'nowrap',
         }}
       >
@@ -921,7 +921,7 @@ function ActionsCell({ doc, epicCount, onSyncKb, onSelect, onViewDrafts }: {
           display: 'inline-flex', alignItems: 'center', gap: 4,
           height: 28, padding: '0 10px', fontSize: 12, fontWeight: 500,
           borderRadius: 6, border: '0.75px solid #DC2626',
-          background: 'transparent', color: '#DC2626', cursor: 'pointer',
+          background: 'transparent', color: 'var(--ds-text-danger, var(--ds-text-danger, #DC2626))', cursor: 'pointer',
           fontFamily: 'var(--cp-font-body)', whiteSpace: 'nowrap',
         }}
       >
@@ -960,7 +960,7 @@ function ActionsCell({ doc, epicCount, onSyncKb, onSelect, onViewDrafts }: {
       onMouseEnter={e => {
         e.currentTarget.style.background = 'rgba(37,99,235,0.04)';
         e.currentTarget.style.borderColor = '#BFDBFE';
-        e.currentTarget.style.color = '#1D4ED8';
+        e.currentTarget.style.color = 'var(--ds-background-brand-bold-hovered, var(--ds-background-brand-bold-hovered, #1D4ED8))';
       }}
       onMouseLeave={e => {
         e.currentTarget.style.background = 'var(--cp-bg-elevated, #FFFFFF)';
@@ -976,9 +976,9 @@ function ActionsCell({ doc, epicCount, onSyncKb, onSelect, onViewDrafts }: {
 /* ── Ticket Type Badge ── */
 const TICKET_TYPE_STYLES: Record<string, { bg: string; color: string; label: string }> = {
   subtask: { bg: '#FEF3C7', color: '#92400E', label: 'SUBTASK' },
-  story:   { bg: '#EFF6FF', color: '#1D4ED8', label: 'STORY' },
+  story:   { bg: 'var(--ds-background-selected, var(--ds-background-selected, #EFF6FF))', color: 'var(--ds-background-brand-bold-hovered, var(--ds-background-brand-bold-hovered, #1D4ED8))', label: 'STORY' },
   epic:    { bg: '#F3E8FF', color: '#6B21A8', label: 'EPIC' },
-  task:    { bg: '#F1F5F9', color: '#475569', label: 'TASK' },
+  task:    { bg: 'var(--ds-surface-sunken, var(--ds-surface-sunken, #F1F5F9))', color: 'var(--ds-text-subtle, var(--ds-text-subtle, #475569))', label: 'TASK' },
 };
 
 function TicketTypeBadge({ type }: { type: string | null | undefined }) {

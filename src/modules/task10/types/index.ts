@@ -13,30 +13,30 @@ export type T10WeekStatus = 'active' | 'completed' | 'archived';
 export type T10ItemStatus = 'todo' | 'done';
 
 export const T10_STATUS_COLORS = {
-  active: '#22c55e',    // Green
+  active: 'var(--ds-text-success, var(--ds-text-success, #22c55e))',    // Green
   inactive: '#6b7280',  // Gray
-  archived: '#94a3b8',  // Light gray
-  completed: '#3b82f6', // Blue
+  archived: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #94a3b8))',  // Light gray
+  completed: 'var(--ds-text-brand, var(--ds-text-brand, #3b82f6))', // Blue
 } as const;
 
 export const T10_RANK_COLORS = {
-  top5: '#2563eb',      // Blue with glow for ranks 1-5
-  standard: '#64748b',  // Gray for ranks 6-10
-  buffer: '#94a3b8',    // Light gray dashed for 11+
+  top5: 'var(--ds-text-brand, var(--ds-text-brand, #2563eb))',      // Blue with glow for ranks 1-5
+  standard: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #64748b))',  // Gray for ranks 6-10
+  buffer: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #94a3b8))',    // Light gray dashed for 11+
 } as const;
 
 // Label color palette (15 colors)
 export const T10_LABEL_COLORS = [
-  { name: 'Red', value: '#ef4444' },
+  { name: 'Red', value: 'var(--ds-text-danger, var(--ds-text-danger, #ef4444))' },
   { name: 'Orange', value: '#f97316' },
-  { name: 'Amber', value: '#f59e0b' },
+  { name: 'Amber', value: 'var(--ds-text-warning, var(--ds-text-warning, #f59e0b))' },
   { name: 'Yellow', value: '#eab308' },
   { name: 'Lime', value: '#84cc16' },
-  { name: 'Green', value: '#22c55e' },
+  { name: 'Green', value: 'var(--ds-text-success, var(--ds-text-success, #22c55e))' },
   { name: 'Emerald', value: '#10b981' },
   { name: 'Teal', value: '#14b8a6' },
   { name: 'Cyan', value: '#06b6d4' },
-  { name: 'Blue', value: '#3b82f6' },
+  { name: 'Blue', value: 'var(--ds-text-brand, var(--ds-text-brand, #3b82f6))' },
   { name: 'Indigo', value: '#6366f1' },
   { name: 'Violet', value: '#8b5cf6' },
   { name: 'Purple', value: '#a855f7' },

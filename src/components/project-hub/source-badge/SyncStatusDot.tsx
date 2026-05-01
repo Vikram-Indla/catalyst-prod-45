@@ -30,15 +30,15 @@ function exactDateTime(iso?: string | null): string {
 }
 
 const DOT_COLORS: Record<SyncStatus, string> = {
-  synced: '#16A34A',
-  stale: '#D97706',
-  conflict: '#DC2626',
-  syncing: '#2563EB',
-  pending: '#94A3B8',
+  synced: 'var(--ds-text-success, var(--ds-text-success, #16A34A))',
+  stale: 'var(--ds-text-warning, var(--ds-text-warning, #D97706))',
+  conflict: 'var(--ds-text-danger, var(--ds-text-danger, #DC2626))',
+  syncing: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))',
+  pending: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #94A3B8))',
 };
 
 export function SyncStatusDot({ status, lastSyncedAt }: SyncStatusDotProps) {
-  const dotColor = DOT_COLORS[status] || '#94A3B8';
+  const dotColor = DOT_COLORS[status] || 'var(--ds-text-subtlest, var(--ds-text-subtlest, #94A3B8))';
 
   let label: string;
   let labelColor: string;

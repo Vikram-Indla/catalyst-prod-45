@@ -5,8 +5,8 @@ import WatchButton from '@/components/shared/WatchButton';
 
 const STATUS_COLORS: Record<string, { bg: string; text: string }> = {
   'done':        { bg: 'rgba(16,185,129,0.1)', text: '#059669' },
-  'in progress': { bg: 'rgba(37,99,235,0.1)', text: '#2563EB' },
-  'to do':       { bg: 'rgba(148,163,184,0.12)', text: '#64748B' },
+  'in progress': { bg: 'rgba(37,99,235,0.1)', text: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))' },
+  'to do':       { bg: 'rgba(148,163,184,0.12)', text: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #64748B))' },
 };
 
 function getStatusStyle(category: string) {
@@ -17,7 +17,7 @@ function getStatusStyle(category: string) {
 }
 
 const PRIORITY_COLORS: Record<string, string> = {
-  Highest: '#DC2626', High: '#EA580C', Medium: '#F59E0B', Low: '#3B82F6', Lowest: '#94A3B8',
+  Highest: 'var(--ds-text-danger, var(--ds-text-danger, #DC2626))', High: '#EA580C', Medium: 'var(--ds-text-warning, var(--ds-text-warning, #F59E0B))', Low: 'var(--ds-text-brand, var(--ds-text-brand, #3B82F6))', Lowest: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #94A3B8))',
 };
 
 interface Props {

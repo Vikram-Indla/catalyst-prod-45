@@ -27,11 +27,11 @@ interface MyTasksContentProps {
 const SECTION_ORDER: TimeSection[] = ['overdue', 'today', 'this_week', 'upcoming'];
 
 const SECTION_CONFIG: Record<TimeSection, { label: string; color: string }> = {
-  overdue: { label: 'Overdue', color: '#ef4444' },
-  today: { label: 'Today', color: '#f59e0b' },
-  this_week: { label: 'This Week', color: '#3b82f6' },
+  overdue: { label: 'Overdue', color: 'var(--ds-text-danger, var(--ds-text-danger, #ef4444))' },
+  today: { label: 'Today', color: 'var(--ds-text-warning, var(--ds-text-warning, #f59e0b))' },
+  this_week: { label: 'This Week', color: 'var(--ds-text-brand, var(--ds-text-brand, #3b82f6))' },
   upcoming: { label: 'Later', color: '#8b5cf6' },
-  someday: { label: 'Later', color: '#94a3b8' },
+  someday: { label: 'Later', color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #94a3b8))' },
   completed: { label: 'Completed', color: '#10b981' },
 };
 

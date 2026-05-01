@@ -38,7 +38,7 @@ export function DependencyConnector({ fromFeatureId, toFeatureId, status = 'open
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     // Set line style based on status
-    ctx.strokeStyle = status === 'resolved' ? '#22c55e' : status === 'blocked' ? '#ef4444' : '#3b82f6';
+    ctx.strokeStyle = status === 'resolved' ? 'var(--ds-text-success, var(--ds-text-success, #22c55e))' : status === 'blocked' ? 'var(--ds-text-danger, var(--ds-text-danger, #ef4444))' : 'var(--ds-text-brand, var(--ds-text-brand, #3b82f6))';
     ctx.lineWidth = 2;
     ctx.setLineDash(status === 'blocked' ? [5, 5] : []);
 

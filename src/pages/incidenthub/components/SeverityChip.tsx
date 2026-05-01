@@ -7,10 +7,10 @@
 import { useTheme } from '@/hooks/useTheme';
 
 const SEV_STYLES: Record<string, { bg: string; text: string; border: string; darkBg: string; darkText: string; darkBorder: string }> = {
-  SEV1: { bg: '#FEE2E2', text: '#991B1B', border: '#FECACA', darkBg: 'rgba(248,113,113,0.12)', darkText: '#FCA5A5', darkBorder: 'rgba(248,113,113,0.25)' },
+  SEV1: { bg: '#FEE2E2', text: 'var(--ds-text-danger, var(--ds-text-danger, #991B1B))', border: '#FECACA', darkBg: 'rgba(248,113,113,0.12)', darkText: 'var(--ds-border-danger, var(--ds-border-danger, #FCA5A5))', darkBorder: 'rgba(248,113,113,0.25)' },
   SEV2: { bg: '#FEF3C7', text: '#92400E', border: '#FDE68A', darkBg: 'rgba(251,191,36,0.12)', darkText: '#FCD34D', darkBorder: 'rgba(251,191,36,0.25)' },
   SEV3: { bg: '#DBEAFE', text: '#1E40AF', border: '#BFDBFE', darkBg: 'rgba(59,130,246,0.12)', darkText: '#93C5FD', darkBorder: 'rgba(59,130,246,0.25)' },
-  SEV4: { bg: '#F1F5F9', text: '#475569', border: '#E2E8F0', darkBg: '#292929', darkText: '#A1A1A1', darkBorder: '#2E2E2E' },
+  SEV4: { bg: 'var(--ds-surface-sunken, var(--ds-surface-sunken, #F1F5F9))', text: 'var(--ds-text-subtle, var(--ds-text-subtle, #475569))', border: 'var(--ds-border, var(--ds-border, #E2E8F0))', darkBg: 'var(--ds-border, var(--ds-border, #292929))', darkText: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #A1A1A1))', darkBorder: 'var(--ds-border, var(--ds-border, #2E2E2E))' },
 };
 
 interface SeverityChipProps {

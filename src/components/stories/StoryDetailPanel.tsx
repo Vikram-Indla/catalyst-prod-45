@@ -154,7 +154,7 @@ export function StoryDetailPanel({ story, open, onClose, onUpdate }: StoryDetail
             )}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="text-[#1a1a1a] hover:bg-[rgba(37,99,235,0.08)]">
+                <Button variant="ghost" size="icon" className="text-[var(--ds-surface-raised,var(--ds-surface-raised, #1a1a1a))] hover:bg-[rgba(37,99,235,0.08)]">
                   <MoreVertical className="h-4 w-4" />
                 </Button>
               </DropdownMenuTrigger>

@@ -16,7 +16,7 @@ const Cell = ({ value, highlight }: { value: any; highlight?: boolean }) => {
       style={{
         padding: "8px 14px",
         borderBottom: "1px solid var(--divider, #222)",
-        color: shouldHighlight ? "#EF4444" : "var(--fg-1, #e5e5e5)",
+        color: shouldHighlight ? "var(--ds-text-danger, var(--ds-text-danger, #EF4444))" : "var(--fg-1, #e5e5e5)",
         fontWeight: shouldHighlight ? 700 : 400,
         background: shouldHighlight ? "rgba(239,68,68,0.08)" : "transparent",
         fontFamily: "monospace",
@@ -31,7 +31,7 @@ const Cell = ({ value, highlight }: { value: any; highlight?: boolean }) => {
 const SectionCard = ({ title, children, loading, error }: { title: string; children: React.ReactNode; loading: boolean; error: string | null }) => (
   <div style={{ background: "var(--bg-2, #1a1a1a)", borderRadius: 8, padding: "16px 20px", marginBottom: 16 }}>
     <h3 style={{ margin: "0 0 12px", fontSize: 14, fontWeight: 700, color: "var(--fg-1, #e5e5e5)", textTransform: "uppercase", letterSpacing: 1 }}>{title}</h3>
-    {loading ? <p style={{ color: "#888", fontSize: 13 }}>Loading…</p> : error ? <p style={{ color: "#EF4444", fontSize: 13 }}>{error}</p> : children}
+    {loading ? <p style={{ color: "#888", fontSize: 13 }}>Loading…</p> : error ? <p style={{ color: "var(--ds-text-danger, var(--ds-text-danger, #EF4444))", fontSize: 13 }}>{error}</p> : children}
   </div>
 );
 
@@ -156,7 +156,7 @@ export default function KBDataAudit() {
         {embeddings.data && (
           <>
             <SimpleTable rows={embeddings.data} columns={[{ key: "source_type", label: "Source Type", noHighlight: true }, { key: "chunks", label: "Chunks" }, { key: "unique_sources", label: "Unique Sources" }]} />
-            <p style={{ marginTop: 8, fontSize: 12, color: "var(--fg-2, #888)" }}>Total embeddings: <strong style={{ color: embeddingsTotal === 0 ? "#EF4444" : "var(--fg-1)" }}>{embeddingsTotal}</strong></p>
+            <p style={{ marginTop: 8, fontSize: 12, color: "var(--fg-2, #888)" }}>Total embeddings: <strong style={{ color: embeddingsTotal === 0 ? "var(--ds-text-danger, var(--ds-text-danger, #EF4444))" : "var(--fg-1)" }}>{embeddingsTotal}</strong></p>
           </>
         )}
       </SectionCard>
@@ -178,8 +178,8 @@ export default function KBDataAudit() {
           onClick={runLiveTest}
           disabled={liveTest.loading}
           style={{
-            background: "#2563EB",
-            color: "#fff",
+            background: "var(--ds-text-brand, var(--ds-text-brand, #2563EB))",
+            color: "var(--ds-surface, var(--ds-surface, var(--ds-surface, #fff)))",
             border: "none",
             borderRadius: 6,
             padding: "8px 18px",
@@ -193,7 +193,7 @@ export default function KBDataAudit() {
           {liveTest.loading ? "Testing…" : "Test KB Query"}
         </button>
         <p style={{ fontSize: 11, color: "var(--fg-3, #666)", marginBottom: 8 }}>Query: "What is a Gold License?" · Language: en</p>
-        {liveTest.error && <p style={{ color: "#EF4444", fontSize: 13 }}>{liveTest.error}</p>}
+        {liveTest.error && <p style={{ color: "var(--ds-text-danger, var(--ds-text-danger, #EF4444))", fontSize: 13 }}>{liveTest.error}</p>}
         {liveTest.data && (
           <pre style={{ background: "var(--bg-1, #111)", borderRadius: 6, padding: 14, fontSize: 12, overflow: "auto", maxHeight: 400, color: "var(--fg-1, #ddd)", whiteSpace: "pre-wrap", wordBreak: "break-word" }}>
             {JSON.stringify(liveTest.data, null, 2)}

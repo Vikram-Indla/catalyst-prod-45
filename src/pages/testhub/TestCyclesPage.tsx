@@ -40,12 +40,12 @@ interface TestCycle {
 }
 
 const statusConfig: Record<string, { label: string; color: string; bg: string }> = {
-  draft: { label: 'DRAFT', color: '#253858', bg: '#DFE1E6' },
-  planned: { label: 'PLANNED', color: '#253858', bg: '#DFE1E6' },
+  draft: { label: 'DRAFT', color: 'var(--ds-text, var(--ds-text, #253858))', bg: 'var(--ds-border, var(--ds-border, #DFE1E6))' },
+  planned: { label: 'PLANNED', color: 'var(--ds-text, var(--ds-text, #253858))', bg: 'var(--ds-border, var(--ds-border, #DFE1E6))' },
   active: { label: 'IN PROGRESS', color: '#0747A6', bg: '#DEEBFF' },
   completed: { label: 'COMPLETED', color: '#006644', bg: '#E3FCEF' },
-  archived: { label: 'ARCHIVED', color: '#253858', bg: '#DFE1E6' },
-  paused: { label: 'PAUSED', color: '#253858', bg: '#DFE1E6' },
+  archived: { label: 'ARCHIVED', color: 'var(--ds-text, var(--ds-text, #253858))', bg: 'var(--ds-border, var(--ds-border, #DFE1E6))' },
+  paused: { label: 'PAUSED', color: 'var(--ds-text, var(--ds-text, #253858))', bg: 'var(--ds-border, var(--ds-border, #DFE1E6))' },
 };
 
 export default function TestCyclesPage() {
@@ -152,7 +152,7 @@ export default function TestCyclesPage() {
               <RefreshCw size={18} />
             </button>
             <button onClick={() => setIsCreateModalOpen(true)}
-              style={{ height: 40, padding: '0 20px', background: 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)', border: 'none', borderRadius: 8, fontSize: 14, fontWeight: 600, color: 'var(--ds-text-inverse, #FFFFFF)', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 8, boxShadow: '0 2px 8px rgba(37,99,235,0.25)' }}>
+              style={{ height: 40, padding: '0 20px', background: 'linear-gradient(135deg, var(--ds-text-brand, #2563EB) 0%, var(--ds-background-brand-bold-hovered, #1D4ED8) 100%)', border: 'none', borderRadius: 8, fontSize: 14, fontWeight: 600, color: 'var(--ds-text-inverse, #FFFFFF)', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 8, boxShadow: '0 2px 8px rgba(37,99,235,0.25)' }}>
               <Plus size={18} /> Create Test Cycle
             </button>
       </TestHubPageHeader>
@@ -168,9 +168,9 @@ export default function TestCyclesPage() {
         {/* Status Filter */}
         <div style={{ position: 'relative' }}>
           <button onClick={(e) => { e.stopPropagation(); setIsFilterOpen(!isFilterOpen); setIsSortOpen(false); }}
-            style={{ height: 40, padding: '0 14px', border: `1.5px solid ${statusFilter.length > 0 ? '#2563EB' : borderColor}`, borderRadius: 8, backgroundColor: statusFilter.length > 0 ? ('var(--cp-primary-light, #EFF6FF)') : surfaceBg, color: statusFilter.length > 0 ? '#2563EB' : textBody, fontSize: 14, fontWeight: 500, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+            style={{ height: 40, padding: '0 14px', border: `1.5px solid ${statusFilter.length > 0 ? 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))' : borderColor}`, borderRadius: 8, backgroundColor: statusFilter.length > 0 ? ('var(--cp-primary-light, #EFF6FF)') : surfaceBg, color: statusFilter.length > 0 ? 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))' : textBody, fontSize: 14, fontWeight: 500, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 8 }}>
             <Filter size={16} /> Status
-            {statusFilter.length > 0 && <span style={{ minWidth: 18, height: 18, padding: '0 5px', backgroundColor: '#2563EB', color: 'var(--ds-text-inverse, #FFFFFF)', fontSize: 11, fontWeight: 600, borderRadius: 8, display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>{statusFilter.length}</span>}
+            {statusFilter.length > 0 && <span style={{ minWidth: 18, height: 18, padding: '0 5px', backgroundColor: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))', color: 'var(--ds-text-inverse, #FFFFFF)', fontSize: 11, fontWeight: 600, borderRadius: 8, display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>{statusFilter.length}</span>}
             <ChevronDown size={14} />
           </button>
           {isFilterOpen && (
@@ -179,14 +179,14 @@ export default function TestCyclesPage() {
                 const isChecked = statusFilter.includes(key);
                 return (
                   <label key={key} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 12px', borderRadius: 8, cursor: 'pointer', backgroundColor: isChecked ? ('var(--cp-primary-light, #EFF6FF)') : 'transparent' }}>
-                    <input type="checkbox" checked={isChecked} onChange={() => setStatusFilter(prev => isChecked ? prev.filter(s => s !== key) : [...prev, key])} style={{ width: 16, height: 16, accentColor: '#2563EB' }} />
+                    <input type="checkbox" checked={isChecked} onChange={() => setStatusFilter(prev => isChecked ? prev.filter(s => s !== key) : [...prev, key])} style={{ width: 16, height: 16, accentColor: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))' }} />
                     <span style={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: config.color }} />
                     <span style={{ fontSize: 14, color: textBody }}>{config.label}</span>
                   </label>
                 );
               })}
               {statusFilter.length > 0 && (
-                <button onClick={() => setStatusFilter([])} style={{ width: '100%', marginTop: 8, padding: '8px 12px', border: 'none', backgroundColor: 'transparent', color: '#2563EB', fontSize: 13, fontWeight: 500, cursor: 'pointer', textAlign: 'center' }}>Clear filters</button>
+                <button onClick={() => setStatusFilter([])} style={{ width: '100%', marginTop: 8, padding: '8px 12px', border: 'none', backgroundColor: 'transparent', color: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))', fontSize: 13, fontWeight: 500, cursor: 'pointer', textAlign: 'center' }}>Clear filters</button>
               )}
             </div>
           )}
@@ -195,9 +195,9 @@ export default function TestCyclesPage() {
         {/* Date Filter */}
         <div style={{ position: 'relative' }}>
           <button onClick={(e) => { e.stopPropagation(); setIsDateFilterOpen(!isDateFilterOpen); setIsFilterOpen(false); setIsSortOpen(false); }}
-            style={{ height: 40, padding: '0 14px', border: `1.5px solid ${(dateFrom || dateTo) ? '#2563EB' : borderColor}`, borderRadius: 8, backgroundColor: (dateFrom || dateTo) ? ('var(--cp-primary-light, #EFF6FF)') : surfaceBg, color: (dateFrom || dateTo) ? '#2563EB' : textBody, fontSize: 14, fontWeight: 500, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+            style={{ height: 40, padding: '0 14px', border: `1.5px solid ${(dateFrom || dateTo) ? 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))' : borderColor}`, borderRadius: 8, backgroundColor: (dateFrom || dateTo) ? ('var(--cp-primary-light, #EFF6FF)') : surfaceBg, color: (dateFrom || dateTo) ? 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))' : textBody, fontSize: 14, fontWeight: 500, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 8 }}>
             <Calendar size={16} /> Date
-            {(dateFrom || dateTo) && <span style={{ minWidth: 8, height: 8, backgroundColor: '#2563EB', borderRadius: '50%', display: 'inline-block' }} />}
+            {(dateFrom || dateTo) && <span style={{ minWidth: 8, height: 8, backgroundColor: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))', borderRadius: '50%', display: 'inline-block' }} />}
             <ChevronDown size={14} />
           </button>
           {isDateFilterOpen && (
@@ -214,7 +214,7 @@ export default function TestCyclesPage() {
                   style={{ width: '100%', height: 50, padding: '0 10px', border: `1.5px solid ${borderColor}`, borderRadius: 8, fontSize: 13, color: textPrimary, backgroundColor: surfaceBg }} />
               </div>
               {(dateFrom || dateTo) && (
-                <button onClick={() => { setDateFrom(''); setDateTo(''); }} style={{ width: '100%', padding: '8px 12px', border: 'none', backgroundColor: 'transparent', color: '#2563EB', fontSize: 13, fontWeight: 500, cursor: 'pointer', textAlign: 'center' }}>Clear dates</button>
+                <button onClick={() => { setDateFrom(''); setDateTo(''); }} style={{ width: '100%', padding: '8px 12px', border: 'none', backgroundColor: 'transparent', color: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))', fontSize: 13, fontWeight: 500, cursor: 'pointer', textAlign: 'center' }}>Clear dates</button>
               )}
             </div>
           )}
@@ -239,7 +239,7 @@ export default function TestCyclesPage() {
                     if (isActive) setSortDirection(prev => prev === 'asc' ? 'desc' : 'asc');
                     else { setSortField(option.field); setSortDirection(option.defaultDir); }
                     setIsSortOpen(false);
-                  }} style={{ width: '100%', height: 40, padding: '8px 12px', border: 'none', borderRadius: 8, backgroundColor: isActive ? ('var(--cp-primary-light, #EFF6FF)') : 'transparent', color: isActive ? '#2563EB' : textBody, fontSize: 14, fontWeight: isActive ? 600 : 400, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'space-between', textAlign: 'left' }}>
+                  }} style={{ width: '100%', height: 40, padding: '8px 12px', border: 'none', borderRadius: 8, backgroundColor: isActive ? ('var(--cp-primary-light, #EFF6FF)') : 'transparent', color: isActive ? 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))' : textBody, fontSize: 14, fontWeight: isActive ? 600 : 400, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'space-between', textAlign: 'left' }}>
                     <span>{option.label}</span>
                     {isActive && <span style={{ fontSize: 12 }}>{sortDirection === 'asc' ? '↑' : '↓'}</span>}
                   </button>
@@ -258,7 +258,7 @@ export default function TestCyclesPage() {
         {isLoading ? (
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: 300, color: textSecondary }}>
             <div style={{ textAlign: 'center' }}>
-              <div style={{ width: 32, height: 32, border: `3px solid ${borderColor}`, borderTopColor: '#2563EB', borderRadius: '50%', animation: 'spin 1s linear infinite', margin: '0 auto 12px' }} />
+              <div style={{ width: 32, height: 32, border: `3px solid ${borderColor}`, borderTopColor: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))', borderRadius: '50%', animation: 'spin 1s linear infinite', margin: '0 auto 12px' }} />
               Loading test cycles...
             </div>
           </div>

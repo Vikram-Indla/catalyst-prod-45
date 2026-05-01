@@ -25,11 +25,11 @@ interface WorkItemRowProps {
 }
 
 const PRIORITY_COLORS: Record<string, string> = {
-  Highest: '#dc2626',
+  Highest: 'var(--ds-text-danger, var(--ds-text-danger, #dc2626))',
   High: '#ea580c',
-  Medium: '#d97706',
-  Low: '#2563eb',
-  Lowest: '#64748b',
+  Medium: 'var(--ds-text-warning, var(--ds-text-warning, #d97706))',
+  Low: 'var(--ds-text-brand, var(--ds-text-brand, #2563eb))',
+  Lowest: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #64748b))',
 };
 
 function formatDate(d: string | null) {
@@ -42,13 +42,13 @@ export function WorkItemRow({
   avatarUrl, themeName, themeColor,
   onToggleExpand, onToggleSelect, onOpenDrawer,
 }: WorkItemRowProps) {
-  const priorityColor = PRIORITY_COLORS[item.priority] || '#64748b';
+  const priorityColor = PRIORITY_COLORS[item.priority] || 'var(--ds-text-subtlest, var(--ds-text-subtlest, #64748b))';
   const indentPx = depth * 24;
   const [imgError, setImgError] = useState(false);
 
   return (
     <div
-      className="group grid items-center border-b hover:bg-[#f8fafc] cursor-pointer transition-colors"
+      className="group grid items-center border-b hover:bg-[var(--ds-surface-sunken,var(--ds-surface-sunken, #f8fafc))] cursor-pointer transition-colors"
       style={{
         gridTemplateColumns: '36px 36px minmax(140px, auto) 1fr 120px 140px 120px 130px 90px 90px 90px',
         height: 'var(--wh-row-height, 44px)',

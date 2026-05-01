@@ -90,7 +90,7 @@ export function ApplyTemplateModal({
   
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="sm:max-w-[540px] bg-white dark:bg-[#1A1A1A]">
+      <DialogContent className="sm:max-w-[540px] bg-white dark:bg-[var(--ds-surface-raised,var(--ds-surface-raised, #1A1A1A))]">
         <DialogHeader>
           <DialogTitle className="text-xl">Apply Template</DialogTitle>
           <DialogDescription>
@@ -129,7 +129,7 @@ export function ApplyTemplateModal({
                     {startDate ? format(startDate, 'MMM dd, yyyy') : 'Pick a date'}
                   </Button>
                 </PopoverTrigger>
-                <PopoverContent className="w-auto p-0 bg-white dark:bg-[#1A1A1A]" align="start">
+                <PopoverContent className="w-auto p-0 bg-white dark:bg-[var(--ds-surface-raised,var(--ds-surface-raised, #1A1A1A))]" align="start">
                   <Calendar
                     mode="single"
                     selected={startDate}
@@ -156,7 +156,7 @@ export function ApplyTemplateModal({
                     {endDate ? format(endDate, 'MMM dd, yyyy') : 'Pick a date'}
                   </Button>
                 </PopoverTrigger>
-                <PopoverContent className="w-auto p-0 bg-white dark:bg-[#1A1A1A]" align="start">
+                <PopoverContent className="w-auto p-0 bg-white dark:bg-[var(--ds-surface-raised,var(--ds-surface-raised, #1A1A1A))]" align="start">
                   <Calendar
                     mode="single"
                     selected={endDate}
@@ -183,13 +183,13 @@ export function ApplyTemplateModal({
                 </span>
               </div>
               <div className="flex items-center gap-2">
-                <Clock className="w-4 h-4 text-[#2563eb]" />
+                <Clock className="w-4 h-4 text-[var(--ds-text-brand,var(--ds-text-brand, #2563eb))]" />
                 <span className="text-slate-600">
                   {config.defaultDurationDays} days
                 </span>
               </div>
               <div className="flex items-center gap-2">
-                <Flag className="w-4 h-4 text-[#d97706]" />
+                <Flag className="w-4 h-4 text-[var(--ds-text-warning,var(--ds-text-warning, #d97706))]" />
                 <span className="text-slate-600">
                   {milestones.length} milestones
                 </span>
@@ -217,7 +217,7 @@ export function ApplyTemplateModal({
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <Sparkles className="w-5 h-5 text-[#2563eb]" />
+                <Sparkles className="w-5 h-5 text-[var(--ds-text-brand,var(--ds-text-brand, #2563eb))]" />
                 <div>
                   <div className="text-sm font-medium text-slate-700">
                     Run Smart Assignment
@@ -235,7 +235,7 @@ export function ApplyTemplateModal({
             
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <Bell className="w-5 h-5 text-[#d97706]" />
+                <Bell className="w-5 h-5 text-[var(--ds-text-warning,var(--ds-text-warning, #d97706))]" />
                 <div>
                   <div className="text-sm font-medium text-slate-700">
                     Notify Team Members
@@ -260,7 +260,7 @@ export function ApplyTemplateModal({
           <Button
             onClick={handleApply}
             disabled={!cycleName.trim() || applyTemplate.isPending}
-            className="bg-[#2563eb] hover:bg-[#1d4ed8] text-white"
+            className="bg-[var(--ds-text-brand,var(--ds-text-brand, #2563eb))] hover:bg-[var(--ds-background-brand-bold-hovered,var(--ds-background-brand-bold-hovered, #1d4ed8))] text-white"
           >
             {applyTemplate.isPending ? (
               <>

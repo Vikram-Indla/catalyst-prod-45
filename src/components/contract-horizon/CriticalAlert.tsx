@@ -26,14 +26,14 @@ export function CriticalAlert({ criticalCount, criticalResources, onViewAll }: C
       <div 
         className="relative flex items-center gap-4 p-4 pr-5 rounded-[14px] border border-red-200 dark:border-red-500/30"
         style={{
-          background: 'linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%)'
+          background: 'linear-gradient(135deg, var(--ds-background-danger, #fef2f2) 0%, #fee2e2 100%)'
         }}
       >
         {/* Left accent bar */}
         <div 
           className="absolute left-0 top-0 bottom-0 w-1 rounded-l-[14px]"
           style={{
-            background: 'linear-gradient(180deg, #f87171 0%, #dc2626 100%)'
+            background: 'linear-gradient(180deg, #f87171 0%, var(--ds-text-danger, #dc2626) 100%)'
           }}
         />
         
@@ -41,7 +41,7 @@ export function CriticalAlert({ criticalCount, criticalResources, onViewAll }: C
         <div 
           className="w-10 h-10 rounded-[10px] flex items-center justify-center flex-shrink-0"
           style={{
-            background: 'linear-gradient(145deg, #ef4444 0%, #dc2626 100%)',
+            background: 'linear-gradient(145deg, var(--ds-text-danger, #ef4444) 0%, var(--ds-text-danger, #dc2626) 100%)',
             boxShadow: '0 4px 12px rgba(220, 38, 38, 0.3)'
           }}
         >
@@ -63,7 +63,7 @@ export function CriticalAlert({ criticalCount, criticalResources, onViewAll }: C
           onClick={onViewAll}
           className="flex items-center gap-1.5 px-5 py-2.5 rounded-lg text-white text-[12px] font-semibold transition-all hover:-translate-y-0.5"
           style={{
-            background: 'linear-gradient(145deg, #ef4444 0%, #dc2626 100%)',
+            background: 'linear-gradient(145deg, var(--ds-text-danger, #ef4444) 0%, var(--ds-text-danger, #dc2626) 100%)',
             boxShadow: '0 4px 12px rgba(220, 38, 38, 0.3)'
           }}
         >

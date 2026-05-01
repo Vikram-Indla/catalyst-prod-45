@@ -18,7 +18,7 @@ function DuplicateWarning({ duplicates, onDismiss, isDark }: { duplicates: any[]
       border: `1px solid rgba(217,119,6,${isDark ? '0.25' : '0.3'})`,
       display: 'flex', alignItems: 'flex-start', gap: 10,
     }}>
-      <AlertTriangle size={16} style={{ color: '#D97706', flexShrink: 0, marginTop: 2 }} />
+      <AlertTriangle size={16} style={{ color: 'var(--ds-text-warning, var(--ds-text-warning, #D97706))', flexShrink: 0, marginTop: 2 }} />
       <div style={{ flex: 1 }}>
         <div style={{ fontSize: 12, fontWeight: 650, color: isDark ? '#FBBF24' : '#92400E', marginBottom: 4 }}>
           Similar article{duplicates.length > 1 ? 's' : ''} found
@@ -29,20 +29,20 @@ function DuplicateWarning({ duplicates, onDismiss, isDark }: { duplicates: any[]
               fontFamily: 'var(--cp-font-mono)', fontSize: 10, fontWeight: 700,
               padding: '1px 5px', borderRadius: 4,
               background: isDark ? 'rgba(217,119,6,0.2)' : '#FEF3C7',
-              color: '#D97706',
+              color: 'var(--ds-text-warning, var(--ds-text-warning, #D97706))',
             }}>{Math.round((d.similarity ?? 0.8) * 100)}%</span>
             <span
               onClick={() => navigate(`/wiki/${d.slug}`)}
-              style={{ fontSize: 12, color: '#2563EB', cursor: 'pointer', fontWeight: 600 }}
+              style={{ fontSize: 12, color: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))', cursor: 'pointer', fontWeight: 600 }}
             >{d.title}</span>
           </div>
         ))}
-        <div style={{ fontSize: 11, color: isDark ? '#A1A1A1' : '#92400E', marginTop: 4 }}>
+        <div style={{ fontSize: 11, color: isDark ? 'var(--ds-text-subtlest, var(--ds-text-subtlest, #A1A1A1))' : '#92400E', marginTop: 4 }}>
           You can proceed or navigate to an existing article instead.
         </div>
       </div>
       <button onClick={onDismiss} style={{
-        background: 'transparent', border: 'none', cursor: 'pointer', color: '#D97706', padding: 2,
+        background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--ds-text-warning, var(--ds-text-warning, #D97706))', padding: 2,
       }}><X size={14} /></button>
     </div>
   );
@@ -55,7 +55,7 @@ function SimpleDateInput({ label, value, onChange, helperText, isDark }: {
   return (
     <div style={{ flex: 1, minWidth: 200 }}>
       <label style={{
-        fontSize: 11, fontWeight: 700, color: isDark ? '#878787' : '#64748B', marginBottom: 4,
+        fontSize: 11, fontWeight: 700, color: isDark ? 'var(--ds-text-subtlest, var(--ds-text-subtlest, #878787))' : 'var(--ds-text-subtlest, var(--ds-text-subtlest, #64748B))', marginBottom: 4,
         textTransform: 'uppercase' as const, letterSpacing: '0.04em', display: 'block',
       }}>{label}</label>
       <div style={{ position: 'relative' }}>
@@ -65,13 +65,13 @@ function SimpleDateInput({ label, value, onChange, helperText, isDark }: {
           onChange={e => onChange(e.target.value)}
           style={{
             width: '100%', padding: '7px 10px', fontSize: 12, borderRadius: 4,
-            border: `0.75px solid ${isDark ? '#2E2E2E' : 'rgba(15,23,42,0.12)'}`,
-            background: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF',
-            color: isDark ? '#EDEDED' : '#0F172A', fontFamily: 'var(--cp-font-body)',
+            border: `0.75px solid ${isDark ? 'var(--ds-border, var(--ds-border, #2E2E2E))' : 'rgba(15,23,42,0.12)'}`,
+            background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, var(--ds-surface, #FFFFFF))',
+            color: isDark ? 'var(--ds-text, var(--ds-text, #EDEDED))' : 'var(--ds-text, var(--ds-text, #0F172A))', fontFamily: 'var(--cp-font-body)',
           }}
         />
       </div>
-      <div style={{ fontSize: 10, color: isDark ? '#878787' : '#94A3B8', marginTop: 4 }}>{helperText}</div>
+      <div style={{ fontSize: 10, color: isDark ? 'var(--ds-text-subtlest, var(--ds-text-subtlest, #878787))' : 'var(--ds-text-subtlest, var(--ds-text-subtlest, #94A3B8))', marginTop: 4 }}>{helperText}</div>
     </div>
   );
 }
@@ -164,24 +164,24 @@ export default function WikiTemplatesPage() {
     navigate(`/wiki/${slug}`);
   };
 
-  const borderColor = isDark ? '#2E2E2E' : 'rgba(0,0,0,0.06)';
-  const cardBorderHover = '#2563EB';
+  const borderColor = isDark ? 'var(--ds-border, var(--ds-border, #2E2E2E))' : 'rgba(0,0,0,0.06)';
+  const cardBorderHover = 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))';
 
   return (
     <div style={{
       fontFamily: 'var(--cp-font-body)',
-      color: isDark ? '#EDEDED' : '#0F172A',
-      background: isDark ? 'var(--cp-bg-page, #1F1F21)' : '#F8FAFC',
+      color: isDark ? 'var(--ds-text, var(--ds-text, #EDEDED))' : 'var(--ds-text, var(--ds-text, #0F172A))',
+      background: isDark ? 'var(--cp-bg-page, #1F1F21)' : 'var(--ds-surface-sunken, var(--ds-surface-sunken, #F8FAFC))',
       minHeight: '100%', padding: '24px 40px 48px',
     }}>
       <nav style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 24 }}>
-        <span onClick={() => navigate('/wiki')} style={{ fontSize: 13, color: '#2563EB', cursor: 'pointer' }}>Wiki</span>
-        <ChevronRight size={12} style={{ color: isDark ? '#878787' : '#94A3B8' }} />
-        <span style={{ fontSize: 13, color: isDark ? '#A1A1A1' : '#64748B', fontWeight: 600 }}>Templates</span>
+        <span onClick={() => navigate('/wiki')} style={{ fontSize: 13, color: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))', cursor: 'pointer' }}>Wiki</span>
+        <ChevronRight size={12} style={{ color: isDark ? 'var(--ds-text-subtlest, var(--ds-text-subtlest, #878787))' : 'var(--ds-text-subtlest, var(--ds-text-subtlest, #94A3B8))' }} />
+        <span style={{ fontSize: 13, color: isDark ? 'var(--ds-text-subtlest, var(--ds-text-subtlest, #A1A1A1))' : 'var(--ds-text-subtlest, var(--ds-text-subtlest, #64748B))', fontWeight: 600 }}>Templates</span>
       </nav>
 
-      <h1 style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 18, fontWeight: 700, marginBottom: 8, color: isDark ? '#EDEDED' : '#0F172A' }}>Article Templates</h1>
-      <p style={{ fontSize: 12, color: isDark ? '#A1A1A1' : '#64748B', marginBottom: 16 }}>Pre-built structures for common article types. Click "Use Template" to create a pre-filled article.</p>
+      <h1 style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 18, fontWeight: 700, marginBottom: 8, color: isDark ? 'var(--ds-text, var(--ds-text, #EDEDED))' : 'var(--ds-text, var(--ds-text, #0F172A))' }}>Article Templates</h1>
+      <p style={{ fontSize: 12, color: isDark ? 'var(--ds-text-subtlest, var(--ds-text-subtlest, #A1A1A1))' : 'var(--ds-text-subtlest, var(--ds-text-subtlest, #64748B))', marginBottom: 16 }}>Pre-built structures for common article types. Click "Use Template" to create a pre-filled article.</p>
 
       {/* ── Duplicate Detection Warning ── */}
       <DuplicateWarning
@@ -195,7 +195,7 @@ export default function WikiTemplatesPage() {
             fontSize: 11, fontWeight: 650, padding: '6px 16px', borderRadius: 4,
             border: `1px solid rgba(217,119,6,${isDark ? '0.25' : '0.3'})`,
             background: isDark ? 'rgba(217,119,6,0.12)' : '#FFFBEB',
-            color: '#D97706',
+            color: 'var(--ds-text-warning, var(--ds-text-warning, #D97706))',
             cursor: 'pointer',
           }}>Proceed Anyway</button>
         </div>
@@ -204,16 +204,16 @@ export default function WikiTemplatesPage() {
       {/* ── Content Scheduling Section ── */}
       <div style={{
         marginBottom: 20, padding: '14px 16px', borderRadius: 6,
-        background: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF',
-        border: `0.75px solid ${isDark ? '#2E2E2E' : 'rgba(15,23,42,0.08)'}`,
+        background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, var(--ds-surface, #FFFFFF))',
+        border: `0.75px solid ${isDark ? 'var(--ds-border, var(--ds-border, #2E2E2E))' : 'rgba(15,23,42,0.08)'}`,
       }}>
         <button onClick={() => setShowScheduling(!showScheduling)} style={{
-          fontSize: 12, fontWeight: 650, color: isDark ? '#EDEDED' : '#0F172A', background: 'transparent',
+          fontSize: 12, fontWeight: 650, color: isDark ? 'var(--ds-text, var(--ds-text, #EDEDED))' : 'var(--ds-text, var(--ds-text, #0F172A))', background: 'transparent',
           border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8, width: '100%',
         }}>
-          <CalendarIcon size={14} style={{ color: '#2563EB' }} />
+          <CalendarIcon size={14} style={{ color: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))' }} />
           Content Scheduling
-          <span style={{ fontSize: 10, color: isDark ? '#878787' : '#94A3B8', fontWeight: 500, marginLeft: 'auto' }}>
+          <span style={{ fontSize: 10, color: isDark ? 'var(--ds-text-subtlest, var(--ds-text-subtlest, #878787))' : 'var(--ds-text-subtlest, var(--ds-text-subtlest, #94A3B8))', fontWeight: 500, marginLeft: 'auto' }}>
             {showScheduling ? '▾' : '▸'} {publishAt || archiveAt ? '(configured)' : '(optional)'}
           </span>
         </button>
@@ -236,7 +236,7 @@ export default function WikiTemplatesPage() {
             {(publishAt || archiveAt) && (
               <button onClick={() => { setPublishAt(''); setArchiveAt(''); }} style={{
                 fontSize: 10, fontWeight: 600, padding: '4px 10px', borderRadius: 4,
-                border: '1px solid rgba(220,38,38,0.2)', background: isDark ? 'rgba(220,38,38,0.12)' : '#FEF2F2', color: '#DC2626',
+                border: '1px solid rgba(220,38,38,0.2)', background: isDark ? 'rgba(220,38,38,0.12)' : 'var(--ds-background-danger, var(--ds-background-danger, #FEF2F2))', color: 'var(--ds-text-danger, var(--ds-text-danger, #DC2626))',
                 cursor: 'pointer', alignSelf: 'flex-end', marginBottom: 18,
               }}>Clear Dates</button>
             )}
@@ -248,7 +248,7 @@ export default function WikiTemplatesPage() {
         {isLoading ? Array.from({ length: 5 }).map((_, i) => (
           <div key={i} style={{
             padding: 20, borderRadius: 8,
-            background: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF',
+            background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, var(--ds-surface, #FFFFFF))',
             border: `0.75px solid ${borderColor}`, height: 140,
           }} />
         )) : (templates ?? []).map((t: any) => {
@@ -256,7 +256,7 @@ export default function WikiTemplatesPage() {
           return (
             <div key={t.id} style={{
               padding: 20, borderRadius: 8,
-              background: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF',
+              background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, var(--ds-surface, #FFFFFF))',
               border: `0.75px solid ${borderColor}`,
               transition: 'border-color 120ms',
             }}
@@ -265,33 +265,33 @@ export default function WikiTemplatesPage() {
               <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12 }}>
                 <div style={{
                   width: 32, height: 32, borderRadius: 6,
-                  background: isDark ? 'var(--cp-bg-surface, #242528)' : '#F1F5F9',
+                  background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface-sunken, var(--ds-surface-sunken, #F1F5F9))',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                 }}>
-                  <FileText size={16} style={{ color: isDark ? '#A1A1A1' : '#64748B' }} />
+                  <FileText size={16} style={{ color: isDark ? 'var(--ds-text-subtlest, var(--ds-text-subtlest, #A1A1A1))' : 'var(--ds-text-subtlest, var(--ds-text-subtlest, #64748B))' }} />
                 </div>
                 <div>
-                  <div style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 13, fontWeight: 600, color: isDark ? '#EDEDED' : '#0F172A' }}>{t.name}</div>
-                  <div style={{ fontSize: 11, color: isDark ? '#A1A1A1' : '#64748B' }}>{t.description}</div>
+                  <div style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 13, fontWeight: 600, color: isDark ? 'var(--ds-text, var(--ds-text, #EDEDED))' : 'var(--ds-text, var(--ds-text, #0F172A))' }}>{t.name}</div>
+                  <div style={{ fontSize: 11, color: isDark ? 'var(--ds-text-subtlest, var(--ds-text-subtlest, #A1A1A1))' : 'var(--ds-text-subtlest, var(--ds-text-subtlest, #64748B))' }}>{t.description}</div>
                 </div>
               </div>
-              <div style={{ fontSize: 11, color: isDark ? '#A1A1A1' : '#64748B', marginBottom: 12 }}>{sections.length} sections</div>
+              <div style={{ fontSize: 11, color: isDark ? 'var(--ds-text-subtlest, var(--ds-text-subtlest, #A1A1A1))' : 'var(--ds-text-subtlest, var(--ds-text-subtlest, #64748B))', marginBottom: 12 }}>{sections.length} sections</div>
               <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap', marginBottom: 12 }}>
                 {sections.slice(0, 4).map((s: any, i: number) => (
                   <span key={i} style={{
                     fontSize: 9, padding: '2px 6px', borderRadius: 4,
-                    background: isDark ? 'var(--cp-bg-surface, #242528)' : '#F1F5F9',
-                    color: isDark ? '#A1A1A1' : '#64748B',
+                    background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface-sunken, var(--ds-surface-sunken, #F1F5F9))',
+                    color: isDark ? 'var(--ds-text-subtlest, var(--ds-text-subtlest, #A1A1A1))' : 'var(--ds-text-subtlest, var(--ds-text-subtlest, #64748B))',
                   }}>{s.title}</span>
                 ))}
-                {sections.length > 4 && <span style={{ fontSize: 9, color: isDark ? '#878787' : '#94A3B8' }}>+{sections.length - 4} more</span>}
+                {sections.length > 4 && <span style={{ fontSize: 9, color: isDark ? 'var(--ds-text-subtlest, var(--ds-text-subtlest, #878787))' : 'var(--ds-text-subtlest, var(--ds-text-subtlest, #94A3B8))' }}>+{sections.length - 4} more</span>}
               </div>
               <button
                 onClick={() => handleUseTemplate(t)}
                 disabled={creatingSlug !== null}
                 style={{
                   fontSize: 11, fontWeight: 650, padding: '6px 16px', borderRadius: 4,
-                  border: 'none', background: '#2563EB', color: '#FFFFFF', cursor: 'pointer', width: '100%',
+                  border: 'none', background: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))', color: 'var(--ds-surface, var(--ds-surface, #FFFFFF))', cursor: 'pointer', width: '100%',
                   opacity: creatingSlug ? 0.6 : 1,
                 }}
               >{creatingSlug ? 'Creating…' : 'Use Template'}</button>

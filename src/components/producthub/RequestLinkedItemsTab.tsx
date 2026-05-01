@@ -69,7 +69,7 @@ export const RequestLinkedItemsTab: React.FC<RequestLinkedItemsTabProps> = ({ re
 
   if (!request?.initiative_key) {
     return (
-      <div style={{ padding: 24, color: '#64748B', fontSize: 13 }}>
+      <div style={{ padding: 24, color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #64748B))', fontSize: 13 }}>
         Linked items are unavailable for this request.
       </div>
     );

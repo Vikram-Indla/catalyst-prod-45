@@ -47,7 +47,7 @@ export function ExportDialog({ open, onClose, projects }: Props) {
         <DialogHeader>
           <DialogTitle style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 18 }}>Export Projects</DialogTitle>
         </DialogHeader>
-        <p className="text-[#64748B] dark:text-[#878787]" style={{ fontSize: 13, marginTop: -4, marginBottom: 12 }}>
+        <p className="text-[var(--ds-text-subtlest,var(--ds-text-subtlest, #64748B))] dark:text-[var(--ds-text-subtlest,var(--ds-text-subtlest, #878787))]" style={{ fontSize: 13, marginTop: -4, marginBottom: 12 }}>
           Export {projects.length} project{projects.length !== 1 ? 's' : ''} matching current filters.
         </p>
         <div className="grid grid-cols-3 gap-3">
@@ -55,11 +55,11 @@ export function ExportDialog({ open, onClose, projects }: Props) {
             <button
               key={f.key}
               onClick={() => handleExport(f.action)}
-              className="flex flex-col items-center gap-2 rounded-lg transition-all hover:border-blue-300 hover:bg-blue-50 dark:hover:bg-[#1F1F1F] bg-[#F8FAFC] dark:bg-[#1F1F1F] border border-[var(--bd-default, #E2E8F0)] dark:border-[#2E2E2E]"
+              className="flex flex-col items-center gap-2 rounded-lg transition-all hover:border-blue-300 hover:bg-blue-50 dark:hover:bg-[var(--ds-surface-overlay,var(--ds-surface-overlay, #1F1F1F))] bg-[var(--ds-surface-sunken,var(--ds-surface-sunken, #F8FAFC))] dark:bg-[var(--ds-surface-overlay,var(--ds-surface-overlay, #1F1F1F))] border border-[var(--bd-default, #E2E8F0)] dark:border-[var(--ds-border,var(--ds-border, #2E2E2E))]"
               style={{ padding: '20px 12px', cursor: 'pointer' }}
             >
               <f.icon size={24} color="var(--cp-blue)" />
-              <span className="text-[#334155] dark:text-[#A1A1A1]" style={{ fontSize: 12, fontWeight: 600 }}>{f.label}</span>
+              <span className="text-[var(--ds-text-subtle,var(--ds-text-subtle, #334155))] dark:text-[var(--ds-text-subtlest,var(--ds-text-subtlest, #A1A1A1))]" style={{ fontSize: 12, fontWeight: 600 }}>{f.label}</span>
             </button>
           ))}
         </div>

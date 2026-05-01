@@ -29,9 +29,9 @@ interface TicketRow {
 }
 
 const STATUS_COLORS: Record<string, { bg: string; text: string }> = {
-  Done: { bg: '#dcfce7', text: '#166534' },
+  Done: { bg: 'var(--ds-background-success, var(--ds-background-success, #dcfce7))', text: '#166534' },
   'In Progress': { bg: '#dbeafe', text: '#1e40af' },
-  'To Do': { bg: '#f1f5f9', text: '#475569' },
+  'To Do': { bg: 'var(--ds-surface-sunken, var(--ds-surface-sunken, #f1f5f9))', text: 'var(--ds-text-subtle, var(--ds-text-subtle, #475569))' },
 };
 
 function getStatusStyle(cat: string) {
@@ -182,18 +182,18 @@ export default function ClaimDrillInPanel({ resourceName, claimText, weekStart, 
                 return <img src={url} alt={resourceName} style={{ width: 36, height: 50, borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }} />;
               }
               return (
-                <div style={{ width: 36, height: 50, borderRadius: '50%', background: hashColor(resourceName), display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: 12, fontWeight: 600, flexShrink: 0 }}>
+                <div style={{ width: 36, height: 50, borderRadius: '50%', background: hashColor(resourceName), display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--ds-surface, var(--ds-surface, var(--ds-surface, #fff)))', fontSize: 12, fontWeight: 600, flexShrink: 0 }}>
                   {getInitials(resourceName)}
                 </div>
               );
             })()}
             <div>
-              <div style={{ fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px', color: '#94a3b8', marginBottom: 2 }}>
+              <div style={{ fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px', color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #94a3b8))', marginBottom: 2 }}>
                 DRILL-IN
               </div>
               <div style={{ display: 'flex', alignItems: 'baseline', gap: 8 }}>
-                <span style={{ fontSize: 15, fontWeight: 700, color: '#0f172a' }}>{resourceName}</span>
-                <span style={{ fontSize: 13, fontWeight: 500, color: '#64748b' }}>· {claimText}</span>
+                <span style={{ fontSize: 15, fontWeight: 700, color: 'var(--ds-text, var(--ds-text, #0f172a))' }}>{resourceName}</span>
+                <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #64748b))' }}>· {claimText}</span>
               </div>
             </div>
           </div>
@@ -202,23 +202,23 @@ export default function ClaimDrillInPanel({ resourceName, claimText, weekStart, 
             border: 'none', background: 'transparent', cursor: 'pointer',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
           }}>
-            <X size={16} color="#64748b" />
+            <X size={16} color="var(--ds-text-subtlest, var(--ds-text-subtlest, #64748b))" />
           </button>
         </div>
 
         {/* Body */}
         <div style={{ flex: 1, overflowY: 'auto', padding: '12px 20px' }}>
           {loading ? (
-            <div style={{ padding: '40px 0', textAlign: 'center', color: '#94a3b8', fontSize: 13 }}>
+            <div style={{ padding: '40px 0', textAlign: 'center', color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #94a3b8))', fontSize: 13 }}>
               Loading tickets…
             </div>
           ) : tickets.length === 0 ? (
-            <div style={{ padding: '40px 0', textAlign: 'center', color: '#94a3b8', fontSize: 13 }}>
+            <div style={{ padding: '40px 0', textAlign: 'center', color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #94a3b8))', fontSize: 13 }}>
               No matching tickets found for this period.
             </div>
           ) : (
             <>
-              <div style={{ fontSize: 11, color: '#94a3b8', fontWeight: 500, marginBottom: 12 }}>
+              <div style={{ fontSize: 11, color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #94a3b8))', fontWeight: 500, marginBottom: 12 }}>
                 {tickets.length} ticket{tickets.length !== 1 ? 's' : ''} found
               </div>
               {tickets.map((t) => {
@@ -229,7 +229,7 @@ export default function ClaimDrillInPanel({ resourceName, claimText, weekStart, 
                     borderRadius: 8,
                     border: '1px solid #e2e8f0',
                     marginBottom: 8,
-                    background: '#fafbfc',
+                    background: 'var(--ds-surface-sunken, var(--ds-surface-sunken, #fafbfc))',
                     cursor: 'default',
                   }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
@@ -244,25 +244,25 @@ export default function ClaimDrillInPanel({ resourceName, claimText, weekStart, 
                       }}>
                         {t.status}
                       </span>
-                      <span style={{ fontSize: 10, color: '#94a3b8', marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 3 }}>
+                      <span style={{ fontSize: 10, color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #94a3b8))', marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 3 }}>
                         <Clock size={10} />
                         {t.jira_updated_at ? formatDistanceToNow(new Date(t.jira_updated_at), { addSuffix: true }) : '—'}
                       </span>
                     </div>
-                    <div style={{ fontSize: 13, fontWeight: 500, color: '#0f172a', lineHeight: 1.4 }}>
+                    <div style={{ fontSize: 13, fontWeight: 500, color: 'var(--ds-text, var(--ds-text, #0f172a))', lineHeight: 1.4 }}>
                       {t.summary}
                     </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 6, fontSize: 11, color: '#64748b' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 6, fontSize: 11, color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #64748b))' }}>
                       <span>{t.project_key}</span>
                       {t.priority && (
                         <>
-                          <span style={{ color: '#cbd5e1' }}>·</span>
+                          <span style={{ color: 'var(--ds-text-disabled, var(--ds-text-disabled, #cbd5e1))' }}>·</span>
                           <span>{t.priority}</span>
                         </>
                       )}
                       {t.parent_key && (
                         <>
-                          <span style={{ color: '#cbd5e1' }}>·</span>
+                          <span style={{ color: 'var(--ds-text-disabled, var(--ds-text-disabled, #cbd5e1))' }}>·</span>
                           <span>↑ {t.parent_key}</span>
                         </>
                       )}
@@ -278,7 +278,7 @@ export default function ClaimDrillInPanel({ resourceName, claimText, weekStart, 
         <div style={{
           padding: '10px 20px',
           borderTop: '1px solid #e2e8f0',
-          fontSize: 11, color: '#94a3b8',
+          fontSize: 11, color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #94a3b8))',
           flexShrink: 0,
         }}>
           Data from Jira sync · Week of {weekStart.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}

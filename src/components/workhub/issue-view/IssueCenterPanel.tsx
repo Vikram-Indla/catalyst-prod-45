@@ -86,13 +86,13 @@ export function IssueCenterPanel({ issueKey, item, parentItem, loading = false }
       <>
         <div className="awHeader">
           <div className="awCenterHeader">
-            <div style={{ width: 80, height: 12, borderRadius: 3, background: '#E2E8F0', marginBottom: 8 }} />
-            <div style={{ width: '60%', height: 18, borderRadius: 3, background: '#E2E8F0' }} />
+            <div style={{ width: 80, height: 12, borderRadius: 3, background: 'var(--ds-border, var(--ds-border, #E2E8F0))', marginBottom: 8 }} />
+            <div style={{ width: '60%', height: 18, borderRadius: 3, background: 'var(--ds-border, var(--ds-border, #E2E8F0))' }} />
           </div>
         </div>
         <div className="awBody" style={{ padding: 16 }}>
           {[1,2,3].map(i => (
-            <div key={i} style={{ width: `${80 - i * 15}%`, height: 14, borderRadius: 3, background: '#E2E8F0', marginBottom: 10 }} />
+            <div key={i} style={{ width: `${80 - i * 15}%`, height: 14, borderRadius: 3, background: 'var(--ds-border, var(--ds-border, #E2E8F0))', marginBottom: 10 }} />
           ))}
         </div>
       </>
@@ -177,7 +177,7 @@ export function IssueCenterPanel({ issueKey, item, parentItem, loading = false }
           {/* Comment composer */}
           <div className="awCommentRow" style={{ marginBottom: 16 }}>
             <div style={{
-              width: 28, height: 28, borderRadius: '50%', background: '#DFE1E6',
+              width: 28, height: 28, borderRadius: '50%', background: 'var(--ds-border, var(--ds-border, #DFE1E6))',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               fontSize: 11, fontWeight: 700, color: 'var(--ds-text-accent-gray, #505258)', flexShrink: 0,
             }}>

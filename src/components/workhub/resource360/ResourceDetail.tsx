@@ -123,11 +123,11 @@ function useResourceUtilById(id: string) {
 }
 
 const STATUS_COLORS: Record<string, string> = {
-  'To Do': '#94a3b8',
-  'In Progress': '#2563eb',
+  'To Do': 'var(--ds-text-subtlest, var(--ds-text-subtlest, #94a3b8))',
+  'In Progress': 'var(--ds-text-brand, var(--ds-text-brand, #2563eb))',
   'In Review': '#7c3aed',
-  'Done': '#16a34a',
-  'Blocked': '#ef4444',
+  'Done': 'var(--ds-text-success, var(--ds-text-success, #16a34a))',
+  'Blocked': 'var(--ds-text-danger, var(--ds-text-danger, #ef4444))',
   'Cancelled': '#6b7280',
 };
 
@@ -135,7 +135,7 @@ const TYPE_COLORS: Record<string, string> = {
   'Epic': '#1e40af',
   'Story': '#065f46',
   'Sub-task': '#312e81',
-  'Bug': '#dc2626',
+  'Bug': 'var(--ds-text-danger, var(--ds-text-danger, #dc2626))',
   'Task': '#0d9488',
 };
 
@@ -333,7 +333,7 @@ export function ResourceDetail() {
                         style={{
                           height: 44,
                           borderBottom: '1px solid var(--bg-1)',
-                          background: overdue ? '#fef2f2' : 'var(--cp-float)',
+                          background: overdue ? 'var(--ds-background-danger, var(--ds-background-danger, #fef2f2))' : 'var(--cp-float)',
                           transition: 'background 100ms',
                         }}
                         className="wh-detail-row"

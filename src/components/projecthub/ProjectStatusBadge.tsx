@@ -1,6 +1,6 @@
 /**
  * ProjectStatusBadge — 3-colour pale lozenge guardrail (matches For You page).
- * Grey  → bg:#DFE1E6  text:#253858  → Planning / On Hold / Archived
+ * Grey  → bg:var(--ds-border, #DFE1E6)  text:var(--ds-text, #253858)  → Planning / On Hold / Archived
  * Blue  → bg:#DEEBFF  text:#0747A6  → Active / In Progress
  * Green → bg:#E3FCEF  text:#006644  → Completed / Done
  */
@@ -30,7 +30,7 @@ const STATUS_MAP: Record<string, ColorCategory> = {
 };
 
 const COLORS: Record<ColorCategory, { bg: string; text: string }> = {
-  grey:  { bg: '#DFE1E6', text: '#253858' },
+  grey:  { bg: 'var(--ds-border, var(--ds-border, #DFE1E6))', text: 'var(--ds-text, var(--ds-text, #253858))' },
   blue:  { bg: '#DEEBFF', text: '#0747A6' },
   green: { bg: '#E3FCEF', text: '#006644' },
 };

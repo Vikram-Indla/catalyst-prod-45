@@ -46,17 +46,17 @@
   /* END Cell Polish */
   --ra-end-pattern-polish: repeating-linear-gradient(
     -45deg,
-    #f8fafc,
-    #f8fafc 4px,
-    #f1f5f9 4px,
-    #f1f5f9 8px
+    var(--ds-surface-sunken, #f8fafc),
+    var(--ds-surface-sunken, #f8fafc) 4px,
+    var(--ds-surface-sunken, #f1f5f9) 4px,
+    var(--ds-surface-sunken, #f1f5f9) 8px
   );
   --ra-end-text-bg: rgba(255, 255, 255, 0.9);
   
   /* Project Gradients */
-  --ra-gradient-sectorial: linear-gradient(90deg, #3b82f6 0%, #2563eb 100%);
+  --ra-gradient-sectorial: linear-gradient(90deg, var(--ds-text-brand, #3b82f6) 0%, var(--ds-text-brand, #2563eb) 100%);
   --ra-gradient-dataplatform: linear-gradient(90deg, #10b981 0%, #059669 100%);
-  --ra-gradient-senaei: linear-gradient(90deg, #f59e0b 0%, #d97706 100%);
+  --ra-gradient-senaei: linear-gradient(90deg, var(--ds-text-warning, #f59e0b) 0%, var(--ds-text-warning, #d97706) 100%);
   --ra-gradient-tahommena: linear-gradient(90deg, #ec4899 0%, #db2777 100%);
   --ra-gradient-inspection: linear-gradient(90deg, #8b5cf6 0%, #7c3aed 100%);
   --ra-gradient-irplatform: linear-gradient(90deg, #06b6d4 0%, #0891b2 100%);
@@ -72,7 +72,7 @@
   box-shadow: var(--ra-card-shadow) !important;
   
   /* Smoother border */
-  border: 1px solid #e2e8f0 !important;
+  border: 1px solid var(--ds-border, #e2e8f0) !important;
   
   /* Increased height */
   min-height: 56px !important;
@@ -88,7 +88,7 @@
 .ra-polish [class*="alloc-inner"]:hover,
 .ra-polish [class*="alloc-card"]:hover {
   box-shadow: var(--ra-card-shadow-hover) !important;
-  border-color: #cbd5e1 !important;
+  border-color: var(--ds-text-disabled, #cbd5e1) !important;
   transform: translateY(-1px) !important;
 }
 
@@ -100,7 +100,7 @@
 .ra-polish [class*="alloc-bar-track"] {
   height: var(--ra-bar-height-polish) !important;
   border-radius: var(--ra-bar-radius-polish) !important;
-  background: #e2e8f0 !important;
+  background: var(--ds-border, #e2e8f0) !important;
 }
 
 .ra-polish .allocation-bar > div,
@@ -171,7 +171,7 @@
 .ra-polish .allocation-cell .text-\[9px\] {
   font-size: var(--ra-text-project-size-polish) !important;
   font-weight: 500 !important;
-  color: #64748b !important;
+  color: var(--ds-text-subtlest, #64748b) !important;
   margin-top: 3px !important;
 }
 
@@ -183,7 +183,7 @@
 .ra-polish [class*="cell--end"],
 .ra-polish [data-status="end"] > div {
   background: var(--ra-end-pattern-polish) !important;
-  border: 1px solid #e2e8f0 !important;
+  border: 1px solid var(--ds-border, #e2e8f0) !important;
   box-shadow: none !important;
 }
 
@@ -200,7 +200,7 @@
 .ra-polish [data-status="end"] span {
   font-size: 10px !important;
   font-weight: 600 !important;
-  color: #94a3b8 !important;
+  color: var(--ds-text-subtlest, #94a3b8) !important;
   background: var(--ra-end-text-bg) !important;
   padding: 4px 12px !important;
   border-radius: 4px !important;
@@ -226,7 +226,7 @@
    ───────────────────────────────────────────────────────────── */
 .ra-polish tr:hover td:first-child,
 .ra-polish tr:hover .resource-cell {
-  background: #f8fafc !important;
+  background: var(--ds-surface-sunken, #f8fafc) !important;
 }
 
 /* Resource name - bolder */
@@ -255,9 +255,9 @@
   font-size: 11px !important;
   font-weight: 700 !important;
   letter-spacing: 0.5px !important;
-  color: #475569 !important;
-  background: #f8fafc !important;
-  border-bottom: 2px solid #e2e8f0 !important;
+  color: var(--ds-text-subtle, #475569) !important;
+  background: var(--ds-surface-sunken, #f8fafc) !important;
+  border-bottom: 2px solid var(--ds-border, #e2e8f0) !important;
 }
 
 /* ─────────────────────────────────────────────────────────────
@@ -269,9 +269,9 @@
   font-size: 11px !important;
   font-weight: 800 !important;
   letter-spacing: 0.75px !important;
-  color: #2563eb !important;
+  color: var(--ds-text-brand, #2563eb) !important;
   padding: 16px 16px 10px !important;
-  background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%) !important;
+  background: linear-gradient(180deg, var(--ds-surface, #ffffff) 0%, var(--ds-surface-sunken, #f8fafc) 100%) !important;
 }
 
 /* ─────────────────────────────────────────────────────────────
@@ -282,7 +282,7 @@
   font-size: 10px !important;
   font-weight: 600 !important;
   letter-spacing: 0.5px !important;
-  color: #64748b !important;
+  color: var(--ds-text-subtlest, #64748b) !important;
 }
 
 /* ─────────────────────────────────────────────────────────────
@@ -294,17 +294,17 @@
 }
 
 .ra-polish::-webkit-scrollbar-track {
-  background: #f1f5f9;
+  background: var(--ds-surface-sunken, #f1f5f9);
   border-radius: 4px;
 }
 
 .ra-polish::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
+  background: var(--ds-text-disabled, #cbd5e1);
   border-radius: 4px;
 }
 
 .ra-polish::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
+  background: var(--ds-text-subtlest, #94a3b8);
 }
 
 } /* END @layer ra-polish */
@@ -321,10 +321,10 @@
   /* END Cell — dark pattern */
   --ra-end-pattern-polish: repeating-linear-gradient(
     -45deg,
-    #1F1F1F,
-    #1F1F1F 4px,
-    #292929 4px,
-    #292929 8px
+    var(--ds-surface-overlay, #1F1F1F),
+    var(--ds-surface-overlay, #1F1F1F) 4px,
+    var(--ds-border, #292929) 4px,
+    var(--ds-border, #292929) 8px
   );
-  --ra-end-text-bg: #292929;
+  --ra-end-text-bg: var(--ds-border, #292929);
 }

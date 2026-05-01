@@ -12,13 +12,13 @@ const MONO = "'JetBrains Mono', monospace";
 const LIFECYCLE_ORDER = ['Draft', 'Submitted', 'Under Review', 'Approved', 'Converted to Request'];
 
 const STATUS_BAR_COLORS: Record<string, string> = {
-  'Draft': '#DFE1E6', 'Submitted': '#DFE1E6', 'Under Review': '#0C66E4', 'Approved': '#0C66E4', 'Converted to Request': '#1B7F37',
+  'Draft': 'var(--ds-border, var(--ds-border, #DFE1E6))', 'Submitted': 'var(--ds-border, var(--ds-border, #DFE1E6))', 'Under Review': '#0C66E4', 'Approved': '#0C66E4', 'Converted to Request': '#1B7F37',
 };
 const STATUS_TEXT_COLORS: Record<string, string> = {
   'Draft': '#42526E', 'Submitted': '#42526E', 'Under Review': 'var(--ds-text-inverse, #FFFFFF)', 'Approved': 'var(--ds-text-inverse, #FFFFFF)', 'Converted to Request': 'var(--ds-text-inverse, #FFFFFF)',
 };
 const STATUS_BAR_COLORS_DARK: Record<string, string> = {
-  'Draft': '#2E2E2E', 'Submitted': '#2E2E2E', 'Under Review': 'rgba(59,130,246,0.15)',
+  'Draft': 'var(--ds-border, var(--ds-border, #2E2E2E))', 'Submitted': 'var(--ds-border, var(--ds-border, #2E2E2E))', 'Under Review': 'rgba(59,130,246,0.15)',
   'Approved': 'rgba(59,130,246,0.15)', 'Converted to Request': 'rgba(22,163,74,0.15)',
 };
 const STATUS_TEXT_COLORS_DARK: Record<string, string> = {
@@ -90,7 +90,7 @@ export default function IdeasAnalyticsPage() {
 
   const barTrack = 'var(--cp-bg-sunken, #F4F4F5)';
   const containerBg = 'var(--cp-bg-elevated, #FFFFFF)';
-  const containerBorder = `1px solid ${isDark ? '#454545' : dk.border}`;
+  const containerBorder = `1px solid ${isDark ? 'var(--ds-border-bold, var(--ds-border-bold, #454545))' : dk.border}`;
 
   return (
     <div className="flex flex-col h-full" style={{ background: dk.pageBg }}>
@@ -107,7 +107,7 @@ export default function IdeasAnalyticsPage() {
           <StatCard label="Total Ideas" value={String(stats.total)} subtitle="in backlog pipeline" color={dk.t1} isDark={isDark} dk={dk} />
           <StatCard label="Conversion Rate" value={`${conversionRate}%`} subtitle={`${convertedCount} converted to requests`} color={dk.greenText} isDark={isDark} dk={dk} />
           <StatCard label="Avg Time to Convert" value={avgTimeToConvert !== null ? `${avgTimeToConvert}d` : '—'} subtitle={avgTimeToConvert !== null ? 'from created to converted' : 'no conversions yet'} color={dk.t1} isDark={isDark} dk={dk} />
-          <StatCard label="Pending Conversion" value={String(pendingConversion)} subtitle="approved, awaiting conversion" color="#2563EB" isDark={isDark} dk={dk} />
+          <StatCard label="Pending Conversion" value={String(pendingConversion)} subtitle="approved, awaiting conversion" color="var(--ds-text-brand, var(--ds-text-brand, #2563EB))" isDark={isDark} dk={dk} />
         </div>
 
         {/* Row 1 */}
@@ -123,7 +123,7 @@ export default function IdeasAnalyticsPage() {
                   <div style={{ flex: 1, height: '28px', background: barTrack, borderRadius: '4px', overflow: 'hidden' }}>
                     <div style={{
                       width: `${Math.max((s.count / maxFunnel) * 100, s.count > 0 ? 8 : 0)}%`, height: '100%',
-                      background: isDark ? (STATUS_BAR_COLORS_DARK[s.status] || '#2E2E2E') : (STATUS_BAR_COLORS[s.status] || '#DFE1E6'),
+                      background: isDark ? (STATUS_BAR_COLORS_DARK[s.status] || 'var(--ds-border, var(--ds-border, #2E2E2E))') : (STATUS_BAR_COLORS[s.status] || 'var(--ds-border, var(--ds-border, #DFE1E6))'),
                       borderRadius: '4px', display: 'flex', alignItems: 'center', paddingLeft: '8px',
                       color: isDark ? (STATUS_TEXT_COLORS_DARK[s.status] || dk.t2) : (STATUS_TEXT_COLORS[s.status] || '#42526E'),
                       fontSize: '12px', fontWeight: 700, minWidth: s.count > 0 ? '32px' : undefined,
@@ -140,9 +140,9 @@ export default function IdeasAnalyticsPage() {
               <div style={{ color: dk.t3, fontSize: '13px' }}>No ideas assigned to quarters</div>
             ) : stats.byQuarter.map(q => (
               <div key={q.quarter} style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
-                <span style={{ width: '40px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', height: 20, borderRadius: 4, fontSize: '10px', fontWeight: 700, background: QUARTER_BADGE[q.quarter]?.bg || '#E2E8F0', color: QUARTER_BADGE[q.quarter]?.text || '#94A3B8' }}>{q.quarter}</span>
+                <span style={{ width: '40px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', height: 20, borderRadius: 4, fontSize: '10px', fontWeight: 700, background: QUARTER_BADGE[q.quarter]?.bg || 'var(--ds-border, var(--ds-border, #E2E8F0))', color: QUARTER_BADGE[q.quarter]?.text || 'var(--ds-text-subtlest, var(--ds-text-subtlest, #94A3B8))' }}>{q.quarter}</span>
                 <div style={{ flex: 1, height: '28px', background: barTrack, borderRadius: '4px', overflow: 'hidden' }}>
-                  <div style={{ width: `${(q.count / maxQuarter) * 100}%`, height: '100%', background: QUARTER_BADGE[q.quarter]?.bg || '#2563EB', borderRadius: '4px', display: 'flex', alignItems: 'center', paddingLeft: '8px', color: 'var(--ds-text-inverse, #FFFFFF)', fontSize: '12px', fontWeight: 700 }}>{q.count}</div>
+                  <div style={{ width: `${(q.count / maxQuarter) * 100}%`, height: '100%', background: QUARTER_BADGE[q.quarter]?.bg || 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))', borderRadius: '4px', display: 'flex', alignItems: 'center', paddingLeft: '8px', color: 'var(--ds-text-inverse, #FFFFFF)', fontSize: '12px', fontWeight: 700 }}>{q.count}</div>
                 </div>
               </div>
             ))}
@@ -171,9 +171,9 @@ export default function IdeasAnalyticsPage() {
             <div style={{ fontSize: '14px', fontWeight: 700, color: dk.t1, marginBottom: '16px', fontFamily: 'var(--cp-font-heading)' }}>Conversion by Quarter</div>
             {convByQuarter.map(q => (
               <div key={q.quarter} style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
-                <span style={{ width: '40px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', height: 20, borderRadius: 4, fontSize: '10px', fontWeight: 700, background: QUARTER_BADGE[q.quarter]?.bg || '#E2E8F0', color: QUARTER_BADGE[q.quarter]?.text || '#94A3B8' }}>{q.quarter}</span>
+                <span style={{ width: '40px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', height: 20, borderRadius: 4, fontSize: '10px', fontWeight: 700, background: QUARTER_BADGE[q.quarter]?.bg || 'var(--ds-border, var(--ds-border, #E2E8F0))', color: QUARTER_BADGE[q.quarter]?.text || 'var(--ds-text-subtlest, var(--ds-text-subtlest, #94A3B8))' }}>{q.quarter}</span>
                 <div style={{ flex: 1, height: '28px', background: barTrack, borderRadius: '4px', overflow: 'hidden' }}>
-                  <div style={{ width: `${q.total > 0 ? (q.total / maxConvQ) * 100 : 0}%`, height: '100%', background: QUARTER_BADGE[q.quarter]?.bg || '#2563EB', borderRadius: '4px', display: 'flex', alignItems: 'center', paddingLeft: '8px', color: 'var(--ds-text-inverse, #FFFFFF)', fontSize: '12px', fontWeight: 700 }}>{q.converted} <span style={{ fontWeight: 500, opacity: 0.8, marginLeft: 4 }}>of {q.total}</span></div>
+                  <div style={{ width: `${q.total > 0 ? (q.total / maxConvQ) * 100 : 0}%`, height: '100%', background: QUARTER_BADGE[q.quarter]?.bg || 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))', borderRadius: '4px', display: 'flex', alignItems: 'center', paddingLeft: '8px', color: 'var(--ds-text-inverse, #FFFFFF)', fontSize: '12px', fontWeight: 700 }}>{q.converted} <span style={{ fontWeight: 500, opacity: 0.8, marginLeft: 4 }}>of {q.total}</span></div>
                 </div>
               </div>
             ))}
@@ -186,7 +186,7 @@ export default function IdeasAnalyticsPage() {
 
 function StatCard({ label, value, subtitle, color, isDark, dk }: { label: string; value: string; subtitle: string; color: string; isDark: boolean; dk: typeof DK }) {
   return (
-    <div style={{ background: 'var(--cp-bg-elevated, #FFFFFF)', border: `1px solid ${isDark ? '#454545' : dk.border}`, borderRadius: '6px', padding: '20px' }}>
+    <div style={{ background: 'var(--cp-bg-elevated, #FFFFFF)', border: `1px solid ${isDark ? 'var(--ds-border-bold, var(--ds-border-bold, #454545))' : dk.border}`, borderRadius: '6px', padding: '20px' }}>
       <div style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: dk.t3, marginBottom: '8px' }}>{label}</div>
       <span style={{ fontSize: '32px', fontWeight: 800, fontFamily: 'var(--cp-font-mono)', color, letterSpacing: '-0.5px' }}>{value}</span>
       <div style={{ fontSize: '12px', color: dk.t3, marginTop: '4px' }}>{subtitle}</div>

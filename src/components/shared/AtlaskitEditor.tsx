@@ -137,7 +137,7 @@ const AtlaskitEditor = forwardRef<AtlaskitEditorRef, AtlaskitEditorProps>(
               style={{
                 minHeight: appearance === 'comment' ? 80 : minHeight,
                 padding: 12,
-                color: '#878787',
+                color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #878787))',
                 fontSize: 13,
               }}
             >

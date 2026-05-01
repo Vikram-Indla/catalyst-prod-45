@@ -169,7 +169,7 @@ export default function DefectsPage() {
 
 
   return (
-    <div className={cn("flex flex-col h-full", isDark && "bg-[#0A0A0A]")}>
+    <div className={cn("flex flex-col h-full", isDark && "bg-[var(--ds-surface,var(--ds-surface, #0A0A0A))]")}>
       {/* Row 1 — Page header */}
       <TestHubPageHeader title="Defects" subtitle="Track and manage bugs discovered during testing">
         {/* View toggle */}
@@ -203,7 +203,7 @@ export default function DefectsPage() {
         </Button>
       </TestHubPageHeader>
 
-      <div className={cn("p-6 space-y-4 flex-1 overflow-auto", isDark && "bg-[#0A0A0A]")}>
+      <div className={cn("p-6 space-y-4 flex-1 overflow-auto", isDark && "bg-[var(--ds-surface,var(--ds-surface, #0A0A0A))]")}>
         {/* Filters + results count + column configurator */}
         <div className="flex items-center justify-between gap-4">
           <DefectFilters filters={filters as any} onChange={setFilters as any} users={users || []} projects={projects || []} />
@@ -256,7 +256,7 @@ export default function DefectsPage() {
             {[1,2,3,4,5].map(i => <Skeleton key={i} className="h-10 w-full" />)}
           </div>
         ) : defects.length === 0 ? (
-          <div className={cn("border rounded-lg p-12 text-center", isDark && "border-[#2E2E2E] bg-[#1A1A1A]")}>
+          <div className={cn("border rounded-lg p-12 text-center", isDark && "border-[var(--ds-border,var(--ds-border, #2E2E2E))] bg-[var(--ds-surface-raised,var(--ds-surface-raised, #1A1A1A))]")}>
             <Bug className="h-12 w-12 text-muted-foreground/40 mx-auto mb-4" />
             <p className="font-medium text-foreground mb-1">No defects recorded</p>
             <p className="text-muted-foreground text-sm mb-4">
@@ -269,7 +269,7 @@ export default function DefectsPage() {
             </Button>
           </div>
         ) : (
-          <div className={cn("border rounded-lg overflow-hidden", isDark && "border-[#2E2E2E]")}>
+          <div className={cn("border rounded-lg overflow-hidden", isDark && "border-[var(--ds-border,var(--ds-border, #2E2E2E))]")}>
             <DefectTable
               defects={defects}
               selectedIds={selectedIds}

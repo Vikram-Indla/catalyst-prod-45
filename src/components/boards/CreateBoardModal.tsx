@@ -25,7 +25,7 @@ const SWIMLANE_OPTIONS: { value: SwimlaneType; label: string; desc: string }[] =
 ];
 
 const COLOR_SWATCHES = [
-  '#2563EB', '#16A34A', '#7C3AED', '#DC2626', '#D97706', '#0D9488', '#525252', '#0284C7',
+  'var(--ds-text-brand, var(--ds-text-brand, #2563EB))', 'var(--ds-text-success, var(--ds-text-success, #16A34A))', '#7C3AED', 'var(--ds-text-danger, var(--ds-text-danger, #DC2626))', 'var(--ds-text-warning, var(--ds-text-warning, #D97706))', '#0D9488', '#525252', '#0284C7',
 ];
 
 const VISIBILITY_OPTIONS: { value: BoardVisibility; label: string; desc: string; warning?: boolean }[] = [
@@ -38,7 +38,7 @@ export default function CreateBoardModal({ projectId, basePath, onClose }: Props
   const [name, setName] = useState('');
   const [template, setTemplate] = useState('standard');
   const [swimlane, setSwimlane] = useState<SwimlaneType>('none');
-  const [color, setColor] = useState('#2563EB');
+  const [color, setColor] = useState('var(--ds-text-brand, var(--ds-text-brand, #2563EB))');
   const [visibility, setVisibility] = useState<BoardVisibility>('project');
   const createBoard = useCreateBoard();
   const navigate = useNavigate();
@@ -90,7 +90,7 @@ export default function CreateBoardModal({ projectId, basePath, onClose }: Props
             background: 'transparent', cursor: 'pointer',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
           }}>
-            <X size={16} color="#94A3B8" />
+            <X size={16} color="var(--ds-text-subtlest, var(--ds-text-subtlest, #94A3B8))" />
           </button>
         </div>
 
@@ -190,7 +190,7 @@ export default function CreateBoardModal({ projectId, basePath, onClose }: Props
                     </span>
                     {opt.warning && (
                       <span title="Visible to all users in the organisation. Use with caution.">
-                        <AlertTriangle size={13} color="#D97706" />
+                        <AlertTriangle size={13} color="var(--ds-text-warning, var(--ds-text-warning, #D97706))" />
                       </span>
                     )}
                   </div>
@@ -219,7 +219,7 @@ export default function CreateBoardModal({ projectId, basePath, onClose }: Props
               height: 34, padding: '0 18px', borderRadius: 6, border: 'none',
               background: name.trim() ? 'var(--cp-blue)' : 'var(--divider)',
               fontSize: 12.5, fontWeight: 600,
-              color: name.trim() ? '#FFFFFF' : 'var(--fg-4)',
+              color: name.trim() ? 'var(--ds-surface, var(--ds-surface, #FFFFFF))' : 'var(--fg-4)',
               fontFamily: 'var(--cp-font-body)',
               cursor: name.trim() ? 'pointer' : 'not-allowed',
             }}>

@@ -152,7 +152,7 @@ const ragColors: Record<RagState, { dot: string; bg: string; fg: string; border:
   overdue: { dot: '#FF5630', bg: 'var(--ds-background-danger, #FFECEB)', fg: '#AE2A19', border: '#FFB8AC', bar: '#FF5630' },
   risk:    { dot: '#FFAB00', bg: '#FFF7D6', fg: 'var(--ds-text-accent-yellow, #7F5F01)', border: '#F5CD47', bar: '#FFAB00' },
   ontrack: { dot: '#36B37E', bg: '#DCFFF1', fg: 'var(--ds-text-accent-green, #216E4E)', border: '#4BCE97', bar: '#36B37E' },
-  none:    { dot: '#97A0AF', bg: '#F4F5F7', fg: '#6B778C', border: '#DFE1E6', bar: '#97A0AF' },
+  none:    { dot: '#97A0AF', bg: 'var(--ds-surface-sunken, var(--ds-surface-sunken, #F4F5F7))', fg: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #6B778C))', border: 'var(--ds-border, var(--ds-border, #DFE1E6))', bar: '#97A0AF' },
 };
 
 const computeRag = (targetDate: string | null, threshold: number): { state: RagState; daysLeft: number | null } => {

@@ -7,8 +7,8 @@ import { useTheme } from '@/hooks/useTheme';
 import type * as D3Type from 'd3';
 
 const DOMAIN_COLORS: Record<string, string> = {
-  D1: '#2563EB', D2: '#0D9488', D3: '#D97706', D4: '#16A34A',
-  D5: '#DC2626', D6: '#0891B2', D7: '#64748B', D8: '#4F46E5', D9: '#CA8A04',
+  D1: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))', D2: '#0D9488', D3: 'var(--ds-text-warning, var(--ds-text-warning, #D97706))', D4: 'var(--ds-text-success, var(--ds-text-success, #16A34A))',
+  D5: 'var(--ds-text-danger, var(--ds-text-danger, #DC2626))', D6: '#0891B2', D7: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #64748B))', D8: '#4F46E5', D9: '#CA8A04',
 };
 
 interface GNode extends D3Type.SimulationNodeDatum {
@@ -96,7 +96,7 @@ export default function WikiKnowledgeGraphPage() {
       .selectAll('line')
       .data(links)
       .join('line')
-      .attr('stroke', isDark ? '#454545' : '#CBD5E1')
+      .attr('stroke', isDark ? 'var(--ds-border-bold, var(--ds-border-bold, #454545))' : 'var(--ds-text-disabled, var(--ds-text-disabled, #CBD5E1))')
       .attr('stroke-width', 1)
       .attr('stroke-opacity', 0.5);
 
@@ -105,8 +105,8 @@ export default function WikiKnowledgeGraphPage() {
       .data(nodes)
       .join('circle')
       .attr('r', d => radiusScale(d.view_count ?? 1))
-      .attr('fill', d => DOMAIN_COLORS[d.domain_code] || '#64748B')
-      .attr('stroke', isDark ? 'var(--cp-bg-page, #1F1F21)' : '#FFFFFF')
+      .attr('fill', d => DOMAIN_COLORS[d.domain_code] || 'var(--ds-text-subtlest, var(--ds-text-subtlest, #64748B))')
+      .attr('stroke', isDark ? 'var(--cp-bg-page, #1F1F21)' : 'var(--ds-surface, var(--ds-surface, #FFFFFF))')
       .attr('stroke-width', 1.5)
       .attr('cursor', 'pointer')
       .on('click', (_, d) => navigate(`/wiki/${d.slug}`))
@@ -134,7 +134,7 @@ export default function WikiKnowledgeGraphPage() {
       .text(d => d.title.length > 20 ? d.title.slice(0, 18) + '…' : d.title)
       .attr('font-size', 9)
       .attr('font-family', 'Inter, sans-serif')
-      .attr('fill', isDark ? '#A1A1A1' : '#334155')
+      .attr('fill', isDark ? 'var(--ds-text-subtlest, var(--ds-text-subtlest, #A1A1A1))' : 'var(--ds-text-subtle, var(--ds-text-subtle, #334155))')
       .attr('text-anchor', 'middle')
       .attr('dy', d => radiusScale(d.view_count ?? 1) + 12)
       .attr('pointer-events', 'none');
@@ -156,15 +156,15 @@ export default function WikiKnowledgeGraphPage() {
   }, [articles, relations, navigate]);
 
   return (
-    <div style={{ fontFamily: 'var(--cp-font-body)', color: isDark ? '#EDEDED' : '#0F172A', background: isDark ? 'var(--cp-bg-page, #1F1F21)' : '#F8FAFC', height: '100%', display: 'flex', flexDirection: 'column' }}>
+    <div style={{ fontFamily: 'var(--cp-font-body)', color: isDark ? 'var(--ds-text, var(--ds-text, #EDEDED))' : 'var(--ds-text, var(--ds-text, #0F172A))', background: isDark ? 'var(--cp-bg-page, #1F1F21)' : 'var(--ds-surface-sunken, var(--ds-surface-sunken, #F8FAFC))', height: '100%', display: 'flex', flexDirection: 'column' }}>
       <div style={{ padding: '20px 40px 0' }}>
         <nav style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 16 }}>
-          <span onClick={() => navigate('/wiki')} style={{ fontSize: 13, color: '#2563EB', cursor: 'pointer' }}>Wiki</span>
-          <ChevronRight size={12} style={{ color: isDark ? '#878787' : '#94A3B8' }} />
-          <span style={{ fontSize: 13, color: isDark ? '#A1A1A1' : '#64748B', fontWeight: 600 }}>Knowledge Graph</span>
+          <span onClick={() => navigate('/wiki')} style={{ fontSize: 13, color: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))', cursor: 'pointer' }}>Wiki</span>
+          <ChevronRight size={12} style={{ color: isDark ? 'var(--ds-text-subtlest, var(--ds-text-subtlest, #878787))' : 'var(--ds-text-subtlest, var(--ds-text-subtlest, #94A3B8))' }} />
+          <span style={{ fontSize: 13, color: isDark ? 'var(--ds-text-subtlest, var(--ds-text-subtlest, #A1A1A1))' : 'var(--ds-text-subtlest, var(--ds-text-subtlest, #64748B))', fontWeight: 600 }}>Knowledge Graph</span>
         </nav>
         <h1 style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 18, fontWeight: 700, margin: '0 0 8px' }}>Knowledge Graph</h1>
-        <p style={{ fontSize: 12, color: isDark ? '#A1A1A1' : '#64748B', marginBottom: 12 }}>
+        <p style={{ fontSize: 12, color: isDark ? 'var(--ds-text-subtlest, var(--ds-text-subtlest, #A1A1A1))' : 'var(--ds-text-subtlest, var(--ds-text-subtlest, #64748B))', marginBottom: 12 }}>
           Visualize article relationships. Node size = view count. Click to open article.
         </p>
         {/* Legend */}
@@ -172,23 +172,23 @@ export default function WikiKnowledgeGraphPage() {
           {Object.entries(DOMAIN_COLORS).map(([code, color]) => (
             <div key={code} style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
               <span style={{ width: 8, height: 8, borderRadius: '50%', background: color }} />
-              <span style={{ fontSize: 10, color: isDark ? '#A1A1A1' : '#64748B', fontWeight: 500 }}>{code}</span>
+              <span style={{ fontSize: 10, color: isDark ? 'var(--ds-text-subtlest, var(--ds-text-subtlest, #A1A1A1))' : 'var(--ds-text-subtlest, var(--ds-text-subtlest, #64748B))', fontWeight: 500 }}>{code}</span>
             </div>
           ))}
         </div>
       </div>
 
       <div style={{ flex: 1, position: 'relative', borderTop: isDark ? '0.75px solid #2E2E2E' : '0.75px solid rgba(0,0,0,0.06)' }}>
-        <svg ref={svgRef} style={{ width: '100%', height: '100%', background: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF' }} />
+        <svg ref={svgRef} style={{ width: '100%', height: '100%', background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, var(--ds-surface, #FFFFFF))' }} />
         {tooltip && (
           <div style={{
             position: 'absolute', left: tooltip.x + 12, top: tooltip.y - 8,
-            background: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFFFFF', border: isDark ? '1px solid #2E2E2E' : '1px solid #E2E8F0', borderRadius: 6,
+            background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, var(--ds-surface, #FFFFFF))', border: isDark ? '1px solid #2E2E2E' : '1px solid #E2E8F0', borderRadius: 6,
             padding: '8px 12px', boxShadow: isDark ? '0 4px 12px rgba(0,0,0,0.3)' : '0 4px 12px rgba(0,0,0,0.1)',
             pointerEvents: 'none', zIndex: 10, fontSize: 12, maxWidth: 200,
           }}>
-            <div style={{ fontWeight: 600, marginBottom: 2, color: isDark ? '#EDEDED' : undefined }}>{tooltip.title}</div>
-            <div style={{ fontSize: 10, color: isDark ? '#A1A1A1' : '#64748B' }}>{tooltip.domain} · {tooltip.views} views</div>
+            <div style={{ fontWeight: 600, marginBottom: 2, color: isDark ? 'var(--ds-text, var(--ds-text, #EDEDED))' : undefined }}>{tooltip.title}</div>
+            <div style={{ fontSize: 10, color: isDark ? 'var(--ds-text-subtlest, var(--ds-text-subtlest, #A1A1A1))' : 'var(--ds-text-subtlest, var(--ds-text-subtlest, #64748B))' }}>{tooltip.domain} · {tooltip.views} views</div>
           </div>
         )}
       </div>

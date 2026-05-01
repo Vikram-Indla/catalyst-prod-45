@@ -214,9 +214,9 @@ export function InlineCreateWithAI({
             <>
               {(suggestions.length > 0 || aiLoading) && <div className="sp-pop-divider" />}
               <div className="sp-create-section-label">
-                <Search size={11} color="#6B778C" />
+                <Search size={11} color="var(--ds-text-subtlest, var(--ds-text-subtlest, #6B778C))" />
                 <span>Choose existing</span>
-                {searchLoading && <Loader2 size={11} className="animate-spin" color="#6B778C" />}
+                {searchLoading && <Loader2 size={11} className="animate-spin" color="var(--ds-text-subtlest, var(--ds-text-subtlest, #6B778C))" />}
               </div>
               {existing.map((r, i) => {
                 const active = highlight?.kind === 'existing' && highlight.index === i;

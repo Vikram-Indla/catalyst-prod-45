@@ -9,37 +9,37 @@
 
 export const COLORS = {
   // Text
-  textPrimary: '#0f172a',
-  textSecondary: '#334155',
-  textMuted: '#64748b',
-  textLight: '#94a3b8',
+  textPrimary: 'var(--ds-text, var(--ds-text, #0f172a))',
+  textSecondary: 'var(--ds-text-subtle, var(--ds-text-subtle, #334155))',
+  textMuted: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #64748b))',
+  textLight: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #94a3b8))',
 
   // Surfaces
-  surfaceWhite: '#ffffff',
-  surfacePage: '#f8fafc',
-  surfaceHover: '#f1f5f9',
+  surfaceWhite: 'var(--ds-surface, var(--ds-surface, #ffffff))',
+  surfacePage: 'var(--ds-surface-sunken, var(--ds-surface-sunken, #f8fafc))',
+  surfaceHover: 'var(--ds-surface-sunken, var(--ds-surface-sunken, #f1f5f9))',
   surfaceSelected: '#dbeafe',
 
   // Borders
-  borderLight: '#e2e8f0',
-  borderDefault: '#cbd5e1',
+  borderLight: 'var(--ds-border, var(--ds-border, #e2e8f0))',
+  borderDefault: 'var(--ds-text-disabled, var(--ds-text-disabled, #cbd5e1))',
 
   // Brand
-  accent: '#2563eb',
-  accentHover: '#1d4ed8',
+  accent: 'var(--ds-text-brand, var(--ds-text-brand, #2563eb))',
+  accentHover: 'var(--ds-background-brand-bold-hovered, var(--ds-background-brand-bold-hovered, #1d4ed8))',
   accentLight: '#dbeafe',
-  accentLighter: '#eff6ff',
+  accentLighter: 'var(--ds-background-selected, var(--ds-background-selected, #eff6ff))',
 
   // Status
-  success: '#16a34a',
+  success: 'var(--ds-text-success, var(--ds-text-success, #16a34a))',
   successBg: '#f0fdf4',
 
-  warning: '#f59e0b',
+  warning: 'var(--ds-text-warning, var(--ds-text-warning, #f59e0b))',
   warningText: '#b45309',
   warningBg: '#fffbeb',
 
-  danger: '#dc2626',
-  dangerBg: '#fef2f2',
+  danger: 'var(--ds-text-danger, var(--ds-text-danger, #dc2626))',
+  dangerBg: 'var(--ds-background-danger, var(--ds-background-danger, #fef2f2))',
   dangerBorder: '#fecaca',
 };
 
@@ -48,13 +48,13 @@ export const COLORS = {
 // ============================================================================
 
 export const ICON_COLORS = [
-  'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)',
+  'linear-gradient(135deg, var(--ds-text-brand, #3b82f6) 0%, var(--ds-background-brand-bold-hovered, #1d4ed8) 100%)',
   'linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%)',
   'linear-gradient(135deg, #14b8a6 0%, #0d9488 100%)',
   'linear-gradient(135deg, #f97316 0%, #ea580c 100%)',
   'linear-gradient(135deg, #ec4899 0%, #db2777 100%)',
-  'linear-gradient(135deg, #22c55e 0%, #16a34a 100%)',
-  'linear-gradient(135deg, #64748b 0%, #475569 100%)',
+  'linear-gradient(135deg, var(--ds-text-success, #22c55e) 0%, var(--ds-text-success, #16a34a) 100%)',
+  'linear-gradient(135deg, var(--ds-text-subtlest, #64748b) 0%, var(--ds-text-subtle, #475569) 100%)',
 ];
 
 // ============================================================================

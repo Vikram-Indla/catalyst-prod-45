@@ -38,7 +38,7 @@ export function PriorityDistributionChart({ data }: Props) {
               paddingAngle={2} stroke="none"
             >
               {data.map((entry, i) => (
-                <Cell key={i} fill={PRIORITY_CHART_COLORS[entry.name] || '#94a3b8'} />
+                <Cell key={i} fill={PRIORITY_CHART_COLORS[entry.name] || 'var(--ds-text-subtlest, var(--ds-text-subtlest, #94a3b8))'} />
               ))}
             </Pie>
             <Tooltip content={<ChartTooltip />} />

@@ -270,7 +270,7 @@ export function AdminSidebarV2({ expanded, onToggle, className }: AdminSidebarV2
             <div 
               className="w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0"
               style={{
-                background: 'linear-gradient(135deg, var(--cp-blue) 0%, #1d4ed8 100%)',
+                background: 'linear-gradient(135deg, var(--cp-blue) 0%, var(--ds-background-brand-bold-hovered, #1d4ed8) 100%)',
                 color: 'var(--bg-app)',
                 fontSize: '10px',
                 fontWeight: 600,

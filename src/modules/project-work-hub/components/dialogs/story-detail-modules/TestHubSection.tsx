@@ -60,17 +60,17 @@ export function TestHubSection({ storyId }: { storyId: string }) {
         <button className="sdm-create-btn sdm-visibility-btn"><Plus size={10} /> Link test</button>
       </>
     }>
-      <div style={{ display: 'flex', borderBottom: '1px solid rgba(9,30,66,.14)', background: '#F8FAFC' }}>
+      <div style={{ display: 'flex', borderBottom: '1px solid rgba(9,30,66,.14)', background: 'var(--ds-surface-sunken, var(--ds-surface-sunken, #F8FAFC))' }}>
         {([{ key: 'cases' as const, label: 'Test Cases', count: testCases.length }, { key: 'executions' as const, label: 'Test Executions', count: executions.length }]).map(tab => (
           <button key={tab.key} onClick={() => setActiveTab(tab.key)} style={{
             flex: 1, height: 33, fontSize: 12, fontWeight: 500, border: 'none', background: 'transparent', cursor: 'pointer',
-            color: activeTab === tab.key ? '#2563EB' : '#6B778C',
-            borderBottom: `2px solid ${activeTab === tab.key ? '#2563EB' : 'transparent'}`,
+            color: activeTab === tab.key ? 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))' : 'var(--ds-text-subtlest, var(--ds-text-subtlest, #6B778C))',
+            borderBottom: `2px solid ${activeTab === tab.key ? 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))' : 'transparent'}`,
             display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 5, transition: 'color .12s, border-color .12s',
             fontFamily: 'var(--cp-font-body)',
           }}>
             {tab.label}
-            <span style={{ fontSize: 10, fontWeight: 700, padding: '1px 5px', borderRadius: 8, background: activeTab === tab.key ? '#DEEBFF' : '#DFE1E6', color: activeTab === tab.key ? '#0747A6' : '#42526E' }}>{tab.count}</span>
+            <span style={{ fontSize: 10, fontWeight: 700, padding: '1px 5px', borderRadius: 8, background: activeTab === tab.key ? '#DEEBFF' : 'var(--ds-border, var(--ds-border, #DFE1E6))', color: activeTab === tab.key ? '#0747A6' : '#42526E' }}>{tab.count}</span>
           </button>
         ))}
       </div>

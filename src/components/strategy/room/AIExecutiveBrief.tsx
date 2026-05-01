@@ -24,11 +24,11 @@ const TOKENS = `
   --sri-ink-m:#71717A;
   --sri-bg:var(--ds-text-inverse, #FFFFFF); --sri-bg-2:#FAFAFA; --sri-bg-3:#F4F4F5;
   --sri-bdr:#E4E4E7; --sri-bdr-s:#D4D4D8;
-  --sri-ai:#2563EB; --sri-ai-d:#1E40AF; --sri-ai-bg:#EFF6FF;
-  --sri-ai-bg2:#DBEAFE; --sri-ai-bdr:#93C5FD; --sri-ai-m:#3B82F6;
-  --sri-green:#16A34A; --sri-green-t:#11853D; --sri-green-bg:#F0FDF4;
+  --sri-ai:var(--ds-text-brand, #2563EB); --sri-ai-d:#1E40AF; --sri-ai-bg:var(--ds-background-selected, #EFF6FF);
+  --sri-ai-bg2:#DBEAFE; --sri-ai-bdr:#93C5FD; --sri-ai-m:var(--ds-text-brand, #3B82F6);
+  --sri-green:var(--ds-text-success, #16A34A); --sri-green-t:#11853D; --sri-green-bg:#F0FDF4;
   --sri-teal-t:#0A8277;
-  --sri-red:#DC2626; --sri-red-t:#D92525; --sri-red-bg:#FEF2F2;
+  --sri-red:var(--ds-text-danger, #DC2626); --sri-red-t:#D92525; --sri-red-bg:var(--ds-background-danger, #FEF2F2);
   --sri-r:4px; --sri-r2:6px; --sri-r3:8px; --sri-r4:12px; --sri-pill:9999px;
   font-family: var(--cp-font-body); color:var(--sri-ink);
   -webkit-font-smoothing:antialiased; line-height:1.5;
@@ -40,23 +40,23 @@ const TOKENS = `
   --sri-ink-2: rgba(255,255,255,0.82);
   --sri-ink-3: rgba(255,255,255,0.75);
   --sri-ink-m: rgba(255,255,255,0.70);
-  --sri-bg: #1A1A1A;
-  --sri-bg-2: #1F1F1F;
-  --sri-bg-3: #2E2E2E;
-  --sri-bdr: #2E2E2E;
-  --sri-bdr-s: #454545;
-  --sri-ai: #3B82F6;
-  --sri-ai-d: #60A5FA;
+  --sri-bg: var(--ds-surface-raised, #1A1A1A);
+  --sri-bg-2: var(--ds-surface-overlay, #1F1F1F);
+  --sri-bg-3: var(--ds-border, #2E2E2E);
+  --sri-bdr: var(--ds-border, #2E2E2E);
+  --sri-bdr-s: var(--ds-border-bold, #454545);
+  --sri-ai: var(--ds-text-brand, #3B82F6);
+  --sri-ai-d: var(--ds-text-brand, #60A5FA);
   --sri-ai-bg: rgba(59,130,246,0.08);
   --sri-ai-bg2: rgba(59,130,246,0.12);
   --sri-ai-bdr: rgba(59,130,246,0.16);
-  --sri-ai-m: #60A5FA;
+  --sri-ai-m: var(--ds-text-brand, #60A5FA);
   --sri-green: #4ADE80;
   --sri-green-t: #4ADE80;
   --sri-green-bg: rgba(74,222,128,0.08);
   --sri-teal-t: #5EEAD4;
-  --sri-red: #FCA5A5;
-  --sri-red-t: #FCA5A5;
+  --sri-red: var(--ds-border-danger, #FCA5A5);
+  --sri-red-t: var(--ds-border-danger, #FCA5A5);
   --sri-red-bg: rgba(239,68,68,0.10);
 }
 
@@ -69,7 +69,7 @@ const TOKENS = `
     overflow: visible !important;
     height: auto !important;
     max-height: none !important;
-    background: #fff !important;
+    background: var(--ds-surface, var(--ds-surface, #fff)) !important;
   }
   [data-sri] { background:white !important; }
   [data-sri], [data-sri] * {
@@ -219,7 +219,7 @@ export function AIExecutiveBrief({ open, onClose, onDownload }: Props) {
         <header style={{ background: "var(--sri-bg)", border: "1px solid var(--sri-ai-bdr)", borderRadius: "var(--sri-r4)", padding: "20px 28px", margin: "0 32px", ...F(14), justifyContent: "space-between" }}>
           <div style={F(14) as React.CSSProperties}>
             <div style={{ width: 40, height: 40, borderRadius: "50%", background: "linear-gradient(135deg, var(--sri-ai-d), var(--sri-ai))", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10" /></svg>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--ds-surface, var(--ds-surface, var(--ds-surface, #fff)))" strokeWidth="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10" /></svg>
             </div>
             <div>
               <div style={{ ...S(20), color: "var(--sri-ink)" }}>Executive Brief</div>
@@ -391,7 +391,7 @@ export function AIExecutiveBrief({ open, onClose, onDownload }: Props) {
               {/* FIX #16 — export text: no underline */}
               <div style={{ ...F(8) as React.CSSProperties, justifyContent: "space-between", padding: "12px 20px", borderTop: "1px solid var(--sri-bdr)", background: "var(--sri-ai-bg)" }}>
                 <span style={{ fontSize: 13, fontWeight: 500, color: "var(--sri-ai-d)", textDecoration: "none" }}>Ready to act? → Export Decision Pack</span>
-                <button style={{ height: 30, padding: "0 14px", fontFamily: 'var(--cp-font-body)', fontSize: 12, fontWeight: 600, borderRadius: "var(--sri-r2)", cursor: "pointer", ...F(6), border: "none", background: "var(--sri-ai-d)", color: "#fff" }}>
+                <button style={{ height: 30, padding: "0 14px", fontFamily: 'var(--cp-font-body)', fontSize: 12, fontWeight: 600, borderRadius: "var(--sri-r2)", cursor: "pointer", ...F(6), border: "none", background: "var(--sri-ai-d)", color: "var(--ds-surface, var(--ds-surface, var(--ds-surface, #fff)))" }}>
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" /><polyline points="7 10 12 15 17 10" /><line x1="12" y1="15" x2="12" y2="3" /></svg>
                   Export
                 </button>

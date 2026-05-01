@@ -43,11 +43,11 @@ export function DocumentExport({ title, content }: DocumentExportProps) {
   <title>${title}</title>
   <style>
     body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 800px; margin: 0 auto; padding: 40px 20px; line-height: 1.6; }
-    h1 { border-bottom: 2px solid #2563eb; padding-bottom: 10px; }
-    h2, h3 { color: #1a1a1a; }
-    blockquote { border-left: 4px solid #2563eb; margin: 1em 0; padding-left: 1em; color: #666; }
+    h1 { border-bottom: 2px solid var(--ds-text-brand, #2563eb); padding-bottom: 10px; }
+    h2, h3 { color: var(--ds-surface-raised, #1a1a1a); }
+    blockquote { border-left: 4px solid var(--ds-text-brand, #2563eb); margin: 1em 0; padding-left: 1em; color: #666; }
     code { background: #f4f4f4; padding: 2px 6px; border-radius: 3px; }
-    pre { background: #1a1a1a; color: #f8f8f8; padding: 16px; border-radius: 6px; overflow-x: auto; }
+    pre { background: var(--ds-surface-raised, #1a1a1a); color: #f8f8f8; padding: 16px; border-radius: 6px; overflow-x: auto; }
     table { border-collapse: collapse; width: 100%; margin: 1em 0; }
     th, td { border: 1px solid #ddd; padding: 8px 12px; text-align: left; }
     th { background: #f4f4f4; }

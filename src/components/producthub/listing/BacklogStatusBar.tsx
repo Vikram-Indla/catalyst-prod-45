@@ -37,7 +37,7 @@ export function BacklogStatusBar({
           transition: 'all 200ms cubic-bezier(0.4,0,0.2,1)',
           cursor: 'pointer',
           border: overdueActive ? 'none' : '1px solid var(--cp-border-default)',
-          background: overdueActive ? '#DC2626' : 'transparent',
+          background: overdueActive ? 'var(--ds-text-danger, var(--ds-text-danger, #DC2626))' : 'transparent',
           color: overdueActive ? 'var(--ds-text-inverse, #FFFFFF)' : 'var(--cp-text-secondary)',
           fontWeight: overdueActive ? 600 : 500,
           outline: 'none',
@@ -59,7 +59,7 @@ export function BacklogStatusBar({
               alignItems: 'center',
               justifyContent: 'center',
               background: overdueActive ? 'rgba(255,255,255,0.9)' : 'rgba(220, 38, 38, 0.08)',
-              color: overdueActive ? '#DC2626' : '#DC2626',
+              color: overdueActive ? 'var(--ds-text-danger, var(--ds-text-danger, #DC2626))' : 'var(--ds-text-danger, var(--ds-text-danger, #DC2626))',
             }}
           >
             {overdueCount}

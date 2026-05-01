@@ -5,7 +5,7 @@
 import { CircleUser } from 'lucide-react';
 import type { KanbanThemeTokens } from './kanban-tokens';
 
-const AVATAR_COLORS = ['#2563EB', '#0D9488', '#0284C7', '#DC2626', '#DB2777', '#FF8B00'];
+const AVATAR_COLORS = ['var(--ds-text-brand, var(--ds-text-brand, #2563EB))', '#0D9488', '#0284C7', 'var(--ds-text-danger, var(--ds-text-danger, #DC2626))', '#DB2777', '#FF8B00'];
 
 export function KanbanAvatar({ name, url, size = 24, tk }: {
   name?: string | null;
@@ -34,7 +34,7 @@ export function KanbanAvatar({ name, url, size = 24, tk }: {
       style={{ width: size, height: size, background: bg }}
       title={name || undefined}
     >
-      <CircleUser size={size * 0.7} color="#FFFFFF" strokeWidth={1.5} />
+      <CircleUser size={size * 0.7} color="var(--ds-surface, var(--ds-surface, #FFFFFF))" strokeWidth={1.5} />
     </span>
   );
 }

@@ -113,7 +113,7 @@ export function T10AddItemModal({
           transform: 'translate(-50%, -50%)',
           width: '100%',
           maxWidth: '480px',
-          backgroundColor: '#ffffff',
+          backgroundColor: 'var(--ds-surface, var(--ds-surface, #ffffff))',
           borderRadius: '12px',
           boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
           zIndex: 601,
@@ -173,7 +173,7 @@ export function T10AddItemModal({
                   marginBottom: '8px',
                 }}
               >
-                Title <span style={{ color: '#ef4444' }}>*</span>
+                Title <span style={{ color: 'var(--ds-text-danger, var(--ds-text-danger, #ef4444))' }}>*</span>
               </label>
               <input
                 ref={titleInputRef}
@@ -192,7 +192,7 @@ export function T10AddItemModal({
                 }}
               />
               {error && (
-                <p style={{ fontSize: '13px', color: '#ef4444', marginTop: '4px' }}>{error}</p>
+                <p style={{ fontSize: '13px', color: 'var(--ds-text-danger, var(--ds-text-danger, #ef4444))', marginTop: '4px' }}>{error}</p>
               )}
             </div>
 
@@ -269,14 +269,14 @@ export function T10AddItemModal({
                         fontSize: '14px',
                         fontWeight: 600,
                         color: isSelected
-                          ? '#2563eb'
+                          ? 'var(--ds-text-brand, var(--ds-text-brand, #2563eb))'
                           : isOccupied
                           ? '#9ca3af'
                           : isBuffer
                           ? '#9ca3af'
                           : '#4b5563',
                         backgroundColor: isSelected
-                          ? '#eff6ff'
+                          ? 'var(--ds-background-selected, var(--ds-background-selected, #eff6ff))'
                           : isBuffer
                           ? '#f9fafb'
                           : '#f3f4f6',
@@ -361,7 +361,7 @@ export function T10AddItemModal({
                     border: '1px solid #d1d5db',
                     borderRadius: '8px',
                     outline: 'none',
-                    backgroundColor: '#ffffff',
+                    backgroundColor: 'var(--ds-surface, var(--ds-surface, #ffffff))',
                   }}
                 >
                   <option value="">Unassigned</option>
@@ -407,7 +407,7 @@ export function T10AddItemModal({
                   fontSize: '11px',
                   fontWeight: 500,
                   color: '#6b7280',
-                  backgroundColor: '#e5e7eb',
+                  backgroundColor: 'var(--ds-border, var(--ds-border, #e5e7eb))',
                   border: '1px solid #d1d5db',
                   borderRadius: '4px',
                 }}
@@ -425,7 +425,7 @@ export function T10AddItemModal({
                   fontSize: '14px',
                   fontWeight: 500,
                   color: '#374151',
-                  backgroundColor: '#ffffff',
+                  backgroundColor: 'var(--ds-surface, var(--ds-surface, #ffffff))',
                   border: '1px solid #d1d5db',
                   borderRadius: '6px',
                   cursor: 'pointer',
@@ -440,8 +440,8 @@ export function T10AddItemModal({
                   padding: '10px 20px',
                   fontSize: '14px',
                   fontWeight: 500,
-                  color: '#ffffff',
-                  backgroundColor: '#2563eb',
+                  color: 'var(--ds-surface, var(--ds-surface, #ffffff))',
+                  backgroundColor: 'var(--ds-text-brand, var(--ds-text-brand, #2563eb))',
                   border: 'none',
                   borderRadius: '6px',
                   cursor: !title.trim() ? 'not-allowed' : 'pointer',

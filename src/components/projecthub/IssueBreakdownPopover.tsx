@@ -29,7 +29,7 @@ const TYPE_BAR_COLORS: Record<string, string> = {
 };
 
 function getBarColor(type: string): string {
-  return TYPE_BAR_COLORS[type.toLowerCase()] || '#94A3B8';
+  return TYPE_BAR_COLORS[type.toLowerCase()] || 'var(--ds-text-subtlest, var(--ds-text-subtlest, #94A3B8))';
 }
 
 export function IssueBreakdownPopover({ projectKey, projectName, issueCount }: Props) {
@@ -81,7 +81,7 @@ export function IssueBreakdownPopover({ projectKey, projectName, issueCount }: P
       <PopoverContent
         align="center"
         side="bottom"
-        className="w-[320px] p-0 bg-white dark:!bg-[#1A1A1A] border-slate-200 dark:border-white/[0.08] shadow-lg"
+        className="w-[320px] p-0 bg-white dark:!bg-[var(--ds-surface-raised,var(--ds-surface-raised, #1A1A1A))] border-slate-200 dark:border-white/[0.08] shadow-lg"
         onClick={e => e.stopPropagation()}
       >
         {/* Header */}

@@ -85,7 +85,7 @@ export function HeaderOverflowMenu({
                   : <ArrowDown size={14} color="#0052CC" />)
               : undefined
           }
-          elemAfter={<ChevronRight size={14} color="#6B778C" />}
+          elemAfter={<ChevronRight size={14} color="var(--ds-text-subtlest, var(--ds-text-subtlest, #6B778C))" />}
           onClick={(e) => {
             e.preventDefault();
             // Close the dropdown by returning focus, then open the sort popup.

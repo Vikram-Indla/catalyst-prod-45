@@ -25,7 +25,7 @@ export function ArchiveConfirmModal({ open, projectName, onClose, onConfirm, loa
       onClick={e => { if (e.target === e.currentTarget) onClose(); }}
     >
       <div
-        className="bg-[var(--cp-float)] dark:bg-[#1A1A1A]"
+        className="bg-[var(--cp-float)] dark:bg-[var(--ds-surface-raised,var(--ds-surface-raised, #1A1A1A))]"
         style={{
           width: 440, borderRadius: 12, padding: '24px',
           boxShadow: '0 20px 25px -5px rgba(0,0,0,.1)',
@@ -41,7 +41,7 @@ export function ArchiveConfirmModal({ open, projectName, onClose, onConfirm, loa
           </div>
           <button
             onClick={onClose}
-            className="flex items-center justify-center rounded-md hover:bg-[#F1F5F9] transition-colors"
+            className="flex items-center justify-center rounded-md hover:bg-[var(--ds-surface-sunken,var(--ds-surface-sunken, #F1F5F9))] transition-colors"
             style={{ width: 28, height: 28, border: 'none', background: 'transparent', cursor: 'pointer' }}
           >
             <X size={16} color="var(--fg-3)" />
@@ -55,7 +55,7 @@ export function ArchiveConfirmModal({ open, projectName, onClose, onConfirm, loa
         <div className="flex items-center justify-end gap-2 mt-6">
           <button
             onClick={onClose}
-            className="bg-[var(--cp-float)] dark:bg-[#1A1A1A]"
+            className="bg-[var(--cp-float)] dark:bg-[var(--ds-surface-raised,var(--ds-surface-raised, #1A1A1A))]"
             style={{
               height: 50, padding: '0 16px', fontSize: 13, fontWeight: 500,
               color: 'var(--fg-2)', border: '1px solid var(--divider)', borderRadius: 6,

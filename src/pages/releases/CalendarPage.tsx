@@ -81,7 +81,7 @@ export default function CalendarPage() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center" style={{ height: 'calc(100vh - 52px)' }}>
-        <Loader2 className="w-8 h-8 animate-spin text-[#2563eb]" />
+        <Loader2 className="w-8 h-8 animate-spin text-[var(--ds-text-brand,var(--ds-text-brand, #2563eb))]" />
       </div>
     );
   }

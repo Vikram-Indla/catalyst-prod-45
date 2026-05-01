@@ -139,8 +139,8 @@ export function AddRequestModal({ isOpen, onClose }: AddRequestModalProps) {
 
           {error && (
             <div className="flex flex-col items-center justify-center py-12 px-6">
-              <AlertCircle size={32} style={{ color: '#EF4444', marginBottom: 8 }} />
-              <span style={{ fontSize: 13, color: '#EF4444' }}>Failed to load backlog items</span>
+              <AlertCircle size={32} style={{ color: 'var(--ds-text-danger, var(--ds-text-danger, #EF4444))', marginBottom: 8 }} />
+              <span style={{ fontSize: 13, color: 'var(--ds-text-danger, var(--ds-text-danger, #EF4444))' }}>Failed to load backlog items</span>
             </div>
           )}
 
@@ -157,7 +157,7 @@ export function AddRequestModal({ isOpen, onClose }: AddRequestModalProps) {
                 <div className="w-1 rounded" style={{ height: 32, background: 'var(--ds-icon-accent-yellow, #B38600)' }} />
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
-                    <span style={{ fontFamily: FONT.mono, fontSize: 11, fontWeight: 600, color: '#2563EB' }}>{item.key}</span>
+                    <span style={{ fontFamily: FONT.mono, fontSize: 11, fontWeight: 600, color: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))' }}>{item.key}</span>
                     <SourceBadge source={item.source} size="xs" />
                     <span className="truncate" style={{ fontSize: 13, fontWeight: 500, color: INK[1] }}>{item.title}</span>
                   </div>
@@ -176,7 +176,7 @@ export function AddRequestModal({ isOpen, onClose }: AddRequestModalProps) {
                 {isOnRoadmap ? (
                   <span
                     className="flex items-center gap-1 px-3 py-1.5 text-xs font-medium rounded-md"
-                    style={{ color: '#16A34A', border: '1px solid #BBF7D0', background: '#F0FDF4' }}
+                    style={{ color: 'var(--ds-text-success, var(--ds-text-success, #16A34A))', border: '1px solid #BBF7D0', background: '#F0FDF4' }}
                   >
                     <CheckCircle2 size={12} /> On Roadmap
                   </span>
@@ -185,9 +185,9 @@ export function AddRequestModal({ isOpen, onClose }: AddRequestModalProps) {
                     onClick={() => handleAdd(item.id, item.title)}
                     disabled={addMutation.isPending}
                     className="flex items-center gap-1 px-3 py-1.5 text-xs font-medium rounded-md disabled:opacity-50 focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-blue-500"
-                    style={{ color: '#2563EB', border: '1px solid #BFDBFE', background: '#EFF6FF', transition: 'background-color 0.15s ease' }}
+                    style={{ color: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))', border: '1px solid #BFDBFE', background: 'var(--ds-background-selected, var(--ds-background-selected, #EFF6FF))', transition: 'background-color 0.15s ease' }}
                     onMouseEnter={e => { if (!addMutation.isPending) e.currentTarget.style.backgroundColor = '#DBEAFE'; }}
-                    onMouseLeave={e => (e.currentTarget.style.backgroundColor = '#EFF6FF')}
+                    onMouseLeave={e => (e.currentTarget.style.backgroundColor = 'var(--ds-background-selected, var(--ds-background-selected, #EFF6FF))')}
                   >
                     {addMutation.isPending ? <Loader2 size={12} className="animate-spin" /> : <Plus size={12} />} Add
                   </button>

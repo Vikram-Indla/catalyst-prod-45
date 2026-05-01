@@ -31,7 +31,7 @@ export const CatyHeader: React.FC<CatyHeaderProps> = ({
           <circle cx="22" cy="78" r="10" fill="white"/>
           <circle cx="78" cy="78" r="10" fill="white"/>
           <circle cx="50" cy="50" r="16" fill="white"/>
-          <circle cx="50" cy="50" r="8" fill="#2563eb"/>
+          <circle cx="50" cy="50" r="8" fill="var(--ds-text-brand, var(--ds-text-brand, #2563eb))"/>
         </svg>
       </div>
       <div className="caty-header-text">

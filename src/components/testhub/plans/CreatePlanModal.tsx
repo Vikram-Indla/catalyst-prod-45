@@ -129,7 +129,7 @@ export function CreatePlanModal({ isOpen, onClose, onCreated }: CreatePlanModalP
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
             <div style={{
               width: 44, height: 44, borderRadius: 12,
-              background: 'linear-gradient(135deg, #2563EB 0%, #1E3A8A 100%)',
+              background: 'linear-gradient(135deg, var(--ds-text-brand, #2563EB) 0%, #1E3A8A 100%)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
             }}>
               <ClipboardList size={22} style={{ color: 'var(--ds-text-inverse, #FFFFFF)' }} />
@@ -228,7 +228,7 @@ export function CreatePlanModal({ isOpen, onClose, onCreated }: CreatePlanModalP
           }}>Cancel</button>
           <button onClick={handleSubmit} disabled={isSubmitting} style={{
             height: 44, padding: '0 24px',
-            background: 'linear-gradient(135deg, #2563EB 0%, #1E3A8A 100%)',
+            background: 'linear-gradient(135deg, var(--ds-text-brand, #2563EB) 0%, #1E3A8A 100%)',
             border: 'none', borderRadius: 12, fontSize: 14, fontWeight: 600, color: 'var(--ds-text-inverse, #FFFFFF)',
             cursor: isSubmitting ? 'not-allowed' : 'pointer', opacity: isSubmitting ? 0.7 : 1,
             display: 'flex', alignItems: 'center', gap: 8,

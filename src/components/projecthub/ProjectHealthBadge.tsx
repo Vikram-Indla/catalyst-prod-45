@@ -2,15 +2,15 @@ import type { ProjectHealth } from '@/types/projecthub';
 import { PROJECT_HEALTH_DISPLAY } from '@/types/projecthub';
 
 const HEALTH_STYLES_LIGHT: Record<string, { dot: string; text: string }> = {
-  on_track: { dot: '#22C55E', text: '#15803D' },
-  at_risk: { dot: '#F59E0B', text: '#D97706' },
-  off_track: { dot: '#EF4444', text: '#DC2626' },
+  on_track: { dot: 'var(--ds-text-success, var(--ds-text-success, #22C55E))', text: '#15803D' },
+  at_risk: { dot: 'var(--ds-text-warning, var(--ds-text-warning, #F59E0B))', text: 'var(--ds-text-warning, var(--ds-text-warning, #D97706))' },
+  off_track: { dot: 'var(--ds-text-danger, var(--ds-text-danger, #EF4444))', text: 'var(--ds-text-danger, var(--ds-text-danger, #DC2626))' },
 };
 
 const HEALTH_STYLES_DARK: Record<string, { dot: string; text: string }> = {
   on_track: { dot: '#4ADE80', text: '#86EFAC' },
   at_risk: { dot: '#FBBF24', text: '#FDE68A' },
-  off_track: { dot: '#F87171', text: '#FCA5A5' },
+  off_track: { dot: '#F87171', text: 'var(--ds-border-danger, var(--ds-border-danger, #FCA5A5))' },
 };
 
 export function ProjectHealthBadge({ health }: { health: ProjectHealth }) {

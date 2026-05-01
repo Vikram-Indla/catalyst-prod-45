@@ -147,9 +147,9 @@ export interface ChartConfig {
 
 export const DEFAULT_CHART_COLORS = {
   passed: '#0d9488',  // Teal
-  failed: '#ef4444',  // Danger
-  blocked: '#d97706', // Warning
-  notRun: '#e2e8f0',  // Gray
-  opened: '#ef4444',  // Danger
+  failed: 'var(--ds-text-danger, var(--ds-text-danger, #ef4444))',  // Danger
+  blocked: 'var(--ds-text-warning, var(--ds-text-warning, #d97706))', // Warning
+  notRun: 'var(--ds-border, var(--ds-border, #e2e8f0))',  // Gray
+  opened: 'var(--ds-text-danger, var(--ds-text-danger, #ef4444))',  // Danger
   closed: '#0d9488',  // Teal
 };

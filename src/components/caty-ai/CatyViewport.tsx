@@ -81,7 +81,7 @@ export function CatyViewport({ selectedDepartmentId, onQuestionClick, onTileClic
       {hasIssues && (
         <div style={styles.issuesContainer}>
           <div style={styles.issuesHeader}>
-            <Zap size={14} style={{ color: '#f59e0b' }} />
+            <Zap size={14} style={{ color: 'var(--ds-text-warning, var(--ds-text-warning, #f59e0b))' }} />
             <span style={styles.issuesTitle}>ACTION ITEMS</span>
             <span style={styles.issuesBadge}>{viewportData.sections.reduce((acc, s) => acc + s.totalCount, 0)}</span>
           </div>
@@ -124,10 +124,10 @@ interface MetricTileProps {
 }
 
 const variantColors = {
-  neutral: { bg: '#f8fafc', border: '#e2e8f0', text: '#475569', accent: '#64748b' },
-  danger: { bg: '#fef2f2', border: '#fecaca', text: '#dc2626', accent: '#dc2626' },
-  warning: { bg: '#fffbeb', border: '#fde68a', text: '#d97706', accent: '#f59e0b' },
-  info: { bg: '#eff6ff', border: '#bfdbfe', text: '#2563eb', accent: '#3b82f6' },
+  neutral: { bg: 'var(--ds-surface-sunken, var(--ds-surface-sunken, #f8fafc))', border: 'var(--ds-border, var(--ds-border, #e2e8f0))', text: 'var(--ds-text-subtle, var(--ds-text-subtle, #475569))', accent: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #64748b))' },
+  danger: { bg: 'var(--ds-background-danger, var(--ds-background-danger, #fef2f2))', border: '#fecaca', text: 'var(--ds-text-danger, var(--ds-text-danger, #dc2626))', accent: 'var(--ds-text-danger, var(--ds-text-danger, #dc2626))' },
+  warning: { bg: '#fffbeb', border: '#fde68a', text: 'var(--ds-text-warning, var(--ds-text-warning, #d97706))', accent: 'var(--ds-text-warning, var(--ds-text-warning, #f59e0b))' },
+  info: { bg: 'var(--ds-background-selected, var(--ds-background-selected, #eff6ff))', border: '#bfdbfe', text: 'var(--ds-text-brand, var(--ds-text-brand, #2563eb))', accent: 'var(--ds-text-brand, var(--ds-text-brand, #3b82f6))' },
 };
 
 function MetricTile({ icon: Icon, value, label, variant, showProgress, progressPercent = 0, onClick, isClickable = false }: MetricTileProps) {
@@ -205,13 +205,13 @@ interface IssueSectionProps {
 
 function IssueSection({ section, onQuestionClick }: IssueSectionProps) {
   const sectionColors = {
-    danger: '#dc2626',
-    warning: '#f59e0b',
-    info: '#3b82f6',
-    critical: '#dc2626',
+    danger: 'var(--ds-text-danger, var(--ds-text-danger, #dc2626))',
+    warning: 'var(--ds-text-warning, var(--ds-text-warning, #f59e0b))',
+    info: 'var(--ds-text-brand, var(--ds-text-brand, #3b82f6))',
+    critical: 'var(--ds-text-danger, var(--ds-text-danger, #dc2626))',
   };
   
-  const accentColor = sectionColors[section.severity as keyof typeof sectionColors] || '#64748b';
+  const accentColor = sectionColors[section.severity as keyof typeof sectionColors] || 'var(--ds-text-subtlest, var(--ds-text-subtlest, #64748b))';
 
   return (
     <div style={styles.issueSection}>
@@ -250,12 +250,12 @@ function IssueTile({ question, accentColor, onClick }: IssueTileProps) {
       onClick={onClick}
       style={styles.issueTile}
       onMouseEnter={(e) => {
-        e.currentTarget.style.background = '#f8fafc';
-        e.currentTarget.style.borderColor = '#cbd5e1';
+        e.currentTarget.style.background = 'var(--ds-surface-sunken, var(--ds-surface-sunken, #f8fafc))';
+        e.currentTarget.style.borderColor = 'var(--ds-text-disabled, var(--ds-text-disabled, #cbd5e1))';
       }}
       onMouseLeave={(e) => {
-        e.currentTarget.style.background = '#ffffff';
-        e.currentTarget.style.borderColor = '#e2e8f0';
+        e.currentTarget.style.background = 'var(--ds-surface, var(--ds-surface, #ffffff))';
+        e.currentTarget.style.borderColor = 'var(--ds-border, var(--ds-border, #e2e8f0))';
       }}
     >
       {/* Left Accent Bar */}
@@ -294,12 +294,12 @@ function getTagStyle(type: string): React.CSSProperties {
     case 'vendor':
       return { background: '#f0fdfa', color: '#0d9488', borderColor: '#99f6e4' };
     case 'date':
-      return { background: 'var(--bg-app, #fff)', color: '#dc2626', borderColor: '#fecaca' };
+      return { background: 'var(--bg-app, #fff)', color: 'var(--ds-text-danger, var(--ds-text-danger, #dc2626))', borderColor: '#fecaca' };
     case 'project':
       return { background: '#faf5ff', color: '#7c3aed', borderColor: '#e9d5ff' };
     case 'count':
     default:
-      return { background: '#f1f5f9', color: '#475569', borderColor: '#e2e8f0' };
+      return { background: 'var(--ds-surface-sunken, var(--ds-surface-sunken, #f1f5f9))', color: 'var(--ds-text-subtle, var(--ds-text-subtle, #475569))', borderColor: 'var(--ds-border, var(--ds-border, #e2e8f0))' };
   }
 }
 
@@ -388,7 +388,7 @@ const styles: Record<string, React.CSSProperties> = {
   
   // Issues Container
   issuesContainer: {
-    background: '#ffffff',
+    background: 'var(--ds-surface, var(--ds-surface, #ffffff))',
     borderRadius: 12,
     border: '1px solid #e2e8f0',
     padding: 16,
@@ -404,15 +404,15 @@ const styles: Record<string, React.CSSProperties> = {
   issuesTitle: {
     fontSize: 13,
     fontWeight: 700,
-    color: '#334155',
+    color: 'var(--ds-text-subtle, var(--ds-text-subtle, #334155))',
     letterSpacing: '0.08em',
   },
   issuesBadge: {
     marginLeft: 'auto',
     fontSize: 13,
     fontWeight: 600,
-    color: '#475569',
-    background: '#f1f5f9',
+    color: 'var(--ds-text-subtle, var(--ds-text-subtle, #475569))',
+    background: 'var(--ds-surface-sunken, var(--ds-surface-sunken, #f1f5f9))',
     padding: '4px 10px',
     borderRadius: 12,
   },
@@ -441,7 +441,7 @@ const styles: Record<string, React.CSSProperties> = {
   sectionCount: {
     fontSize: 13,
     fontWeight: 500,
-    color: '#64748b',
+    color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #64748b))',
     marginLeft: 'auto',
   },
   issueList: {
@@ -456,7 +456,7 @@ const styles: Record<string, React.CSSProperties> = {
     alignItems: 'center',
     gap: 12,
     padding: '10px 12px',
-    background: '#ffffff',
+    background: 'var(--ds-surface, var(--ds-surface, #ffffff))',
     border: '1px solid #e2e8f0',
     borderRadius: 8,
     cursor: 'pointer',
@@ -511,8 +511,8 @@ const styles: Record<string, React.CSSProperties> = {
     width: 40,
     height: 40,
     borderRadius: '50%',
-    background: '#22c55e',
-    color: '#ffffff',
+    background: 'var(--ds-text-success, var(--ds-text-success, #22c55e))',
+    color: 'var(--ds-surface, var(--ds-surface, #ffffff))',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
@@ -528,6 +528,6 @@ const styles: Record<string, React.CSSProperties> = {
   },
   allClearSubtext: {
     fontSize: 12,
-    color: '#16a34a',
+    color: 'var(--ds-text-success, var(--ds-text-success, #16a34a))',
   },
 };

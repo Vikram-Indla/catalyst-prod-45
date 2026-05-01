@@ -96,7 +96,7 @@ function Avatar({ name, size = 24 }: { name: string; size?: number }) {
   const clr = [T.primary, T.teal, T.warning, T.danger, '#7C3AED'][ini.charCodeAt(0) % 5];
   return (
     <div style={{
-      width: size, height: size, borderRadius: '50%', background: clr, color: '#fff',
+      width: size, height: size, borderRadius: '50%', background: clr, color: 'var(--ds-surface, var(--ds-surface, var(--ds-surface, #fff)))',
       display: 'flex', alignItems: 'center', justifyContent: 'center',
       fontSize: size * 0.4, fontWeight: 700, flexShrink: 0,
     }}>{ini}</div>

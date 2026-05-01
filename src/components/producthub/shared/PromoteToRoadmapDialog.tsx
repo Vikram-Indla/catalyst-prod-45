@@ -96,7 +96,7 @@ export function PromoteToRoadmapDialog({ open, onClose, request }: Props) {
             onClick={onClose}
           />
           <motion.div
-            className="relative w-[420px] bg-white dark:bg-[#1A1A1A] rounded-2xl shadow-xl overflow-hidden"
+            className="relative w-[420px] bg-white dark:bg-[var(--ds-surface-raised,var(--ds-surface-raised, #1A1A1A))] rounded-2xl shadow-xl overflow-hidden"
             initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }}
             transition={{ duration: 0.2 }}
           >
@@ -116,7 +116,7 @@ export function PromoteToRoadmapDialog({ open, onClose, request }: Props) {
                 <select
                   value={priority}
                   onChange={e => setPriority(e.target.value)}
-                  className="w-full h-9 px-3 text-[13px] bg-white dark:bg-[#1A1A1A] dark:text-[#EDEDED] border dark:border-[#2E2E2E] rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none appearance-none"
+                  className="w-full h-9 px-3 text-[13px] bg-white dark:bg-[var(--ds-surface-raised,var(--ds-surface-raised, #1A1A1A))] dark:text-[var(--ds-text,var(--ds-text, #EDEDED))] border dark:border-[var(--ds-border,var(--ds-border, #2E2E2E))] rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none appearance-none"
                   style={{ borderColor: 'var(--divider)' }}
                 >
                   {PRIORITY_OPTIONS.map(opt => (
@@ -129,7 +129,7 @@ export function PromoteToRoadmapDialog({ open, onClose, request }: Props) {
             <div className="p-3 px-5 border-t flex justify-end gap-2" style={{ borderColor: 'var(--divider)' }}>
               <button
                 onClick={onClose}
-                className="px-4 py-1.5 text-[12.5px] font-medium rounded-md text-[#64748B] hover:bg-[#F1F5F9] transition-colors"
+                className="px-4 py-1.5 text-[12.5px] font-medium rounded-md text-[var(--ds-text-subtlest,var(--ds-text-subtlest, #64748B))] hover:bg-[var(--ds-surface-sunken,var(--ds-surface-sunken, #F1F5F9))] transition-colors"
               >
                 Cancel
               </button>

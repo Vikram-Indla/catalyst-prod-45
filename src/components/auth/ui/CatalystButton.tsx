@@ -21,7 +21,7 @@ export const CatalystButton = forwardRef<HTMLButtonElement, CatalystButtonProps>
         )}
         style={{
           backgroundColor: isPrimary ? 'var(--brand-primary)' : 'var(--btn-secondary-bg)',
-          color: isPrimary ? '#fff' : 'var(--btn-secondary-text)',
+          color: isPrimary ? 'var(--ds-surface, var(--ds-surface, var(--ds-surface, #fff)))' : 'var(--btn-secondary-text)',
           borderColor: isPrimary ? undefined : 'var(--btn-secondary-border)',
           borderWidth: isPrimary ? undefined : '1px',
           borderStyle: isPrimary ? undefined : 'solid',

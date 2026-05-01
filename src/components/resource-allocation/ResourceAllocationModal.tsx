@@ -181,7 +181,7 @@ export function AllocationModal({ resource, onClose }: AllocationModalProps) {
           </div>
 
           {/* Controls Bar */}
-          <div className="h-12 px-6 flex items-center gap-4 border-b border-border bg-[#f8fafc] dark:bg-muted/10 flex-shrink-0">
+          <div className="h-12 px-6 flex items-center gap-4 border-b border-border bg-[var(--ds-surface-sunken,var(--ds-surface-sunken, #f8fafc))] dark:bg-muted/10 flex-shrink-0">
             <StatusLegend />
             
             <div className="ml-auto flex items-center gap-3">
@@ -251,7 +251,7 @@ export function AllocationModal({ resource, onClose }: AllocationModalProps) {
               </span>
               <span className="w-px h-4 bg-border" />
               <span className="text-muted-foreground">
-                Total Forecast: <span className="font-bold text-[#d97706]">{summary.forecast}%</span>
+                Total Forecast: <span className="font-bold text-[var(--ds-text-warning,var(--ds-text-warning, #d97706))]">{summary.forecast}%</span>
               </span>
             </div>
             

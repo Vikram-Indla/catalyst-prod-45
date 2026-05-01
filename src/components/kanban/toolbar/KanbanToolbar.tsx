@@ -66,18 +66,18 @@ function BoardMenuItem({
       className="flex items-center gap-3 w-full"
       style={{
         padding: '10px 16px', background: 'transparent', border: 'none',
-        cursor: 'pointer', fontSize: 14, color: '#172B4D', fontWeight: 450,
+        cursor: 'pointer', fontSize: 14, color: 'var(--ds-text, var(--ds-text, #172B4D))', fontWeight: 450,
         textAlign: 'left', fontFamily: 'var(--cp-font-body)',
         transition: 'background 80ms ease',
       }}
-      onMouseEnter={e => (e.currentTarget.style.background = '#F4F5F7')}
+      onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-surface-sunken, var(--ds-surface-sunken, #F4F5F7))')}
       onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
     >
       {icon}
       <span style={{ flex: 1 }}>{label}</span>
       {badge !== undefined && badge > 0 && (
         <span style={{
-          fontSize: 11, fontWeight: 700, color: '#FFFFFF',
+          fontSize: 11, fontWeight: 700, color: 'var(--ds-surface, var(--ds-surface, #FFFFFF))',
           background: '#0052CC', borderRadius: 10, padding: '1px 8px',
           lineHeight: '18px',
         }}>{badge}</span>

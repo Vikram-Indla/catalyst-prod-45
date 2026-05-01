@@ -6,15 +6,15 @@ import type { RoadmapDemand } from '../types/roadmap';
 import { format, parseISO } from 'date-fns';
 
 const STATUS_PRINT_COLORS: Record<string, { bg: string; c: string }> = {
-  new_request: { bg: 'rgba(59,130,246,0.12)', c: '#2563EB' },
+  new_request: { bg: 'rgba(59,130,246,0.12)', c: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))' },
   draft: { bg: 'rgba(115,115,115,0.12)', c: '#737373' },
-  submitted: { bg: 'rgba(59,130,246,0.12)', c: '#2563EB' },
-  in_review: { bg: 'rgba(245,158,11,0.12)', c: '#D97706' },
+  submitted: { bg: 'rgba(59,130,246,0.12)', c: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))' },
+  in_review: { bg: 'rgba(245,158,11,0.12)', c: 'var(--ds-text-warning, var(--ds-text-warning, #D97706))' },
   approved: { bg: 'rgba(34,197,94,0.12)', c: '#15803D' },
-  rejected: { bg: 'rgba(239,68,68,0.12)', c: '#DC2626' },
+  rejected: { bg: 'rgba(239,68,68,0.12)', c: 'var(--ds-text-danger, var(--ds-text-danger, #DC2626))' },
   in_progress: { bg: 'rgba(139,92,246,0.12)', c: '#7C3AED' },
   completed: { bg: 'rgba(21,128,61,0.12)', c: '#15803D' },
-  cancelled: { bg: 'rgba(220,38,38,0.12)', c: '#DC2626' },
+  cancelled: { bg: 'rgba(220,38,38,0.12)', c: 'var(--ds-text-danger, var(--ds-text-danger, #DC2626))' },
 };
 
 function fdf(dateStr: string | null): string {
@@ -30,7 +30,7 @@ export function doPrintExport(items: RoadmapDemand[]) {
     const status = item.process_step || 'draft';
     const sc = STATUS_PRINT_COLORS[status] || STATUS_PRINT_COLORS.draft;
     return `<tr>
-      <td style="font-family:monospace;color:#2563EB;font-weight:600">${item.request_key || '—'}</td>
+      <td style="font-family:monospace;color:var(--ds-text-brand, #2563EB);font-weight:600">${item.request_key || '—'}</td>
       <td style="font-weight:500;max-width:280px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${item.title}</td>
       <td><span style="display:inline-block;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:600;background:${sc.bg};color:${sc.c}">${status.replace(/_/g, ' ')}</span></td>
       <td>${(item as any).owner_name || '—'}</td>
@@ -39,10 +39,10 @@ export function doPrintExport(items: RoadmapDemand[]) {
       <td style="font-weight:500">${item.priority_tier || '—'}</td>
       <td>
         <div style="display:flex;align-items:center;gap:6px">
-          <div style="flex:1;height:4px;background:#F1F5F9;border-radius:999px;overflow:hidden;min-width:50px">
-            <div style="width:${item.progress}%;height:100%;background:#2563EB;border-radius:999px"></div>
+          <div style="flex:1;height:4px;background:var(--ds-surface-sunken, #F1F5F9);border-radius:999px;overflow:hidden;min-width:50px">
+            <div style="width:${item.progress}%;height:100%;background:var(--ds-text-brand, #2563EB);border-radius:999px"></div>
           </div>
-          <span style="font-size:11px;font-weight:600;color:#334155;min-width:32px">${item.progress}%</span>
+          <span style="font-size:11px;font-weight:600;color:var(--ds-text-subtle, #334155);min-width:32px">${item.progress}%</span>
         </div>
       </td>
     </tr>`;

@@ -38,9 +38,9 @@ export function ProgressGauge({ summary }: ProgressGaugeProps) {
 
       <div className="grid grid-cols-4 gap-2 mt-4 w-full">
         <StatusItem icon={CheckCircle2} count={passedTests} label="Passed" color="#10B981" />
-        <StatusItem icon={XCircle} count={failedTests} label="Failed" color="#EF4444" />
-        <StatusItem icon={Ban} count={blockedTests} label="Blocked" color="#F59E0B" />
-        <StatusItem icon={Circle} count={notRunTests} label="Not Run" color="#94A3B8" />
+        <StatusItem icon={XCircle} count={failedTests} label="Failed" color="var(--ds-text-danger, var(--ds-text-danger, #EF4444))" />
+        <StatusItem icon={Ban} count={blockedTests} label="Blocked" color="var(--ds-text-warning, var(--ds-text-warning, #F59E0B))" />
+        <StatusItem icon={Circle} count={notRunTests} label="Not Run" color="var(--ds-text-subtlest, var(--ds-text-subtlest, #94A3B8))" />
       </div>
     </div>
   );

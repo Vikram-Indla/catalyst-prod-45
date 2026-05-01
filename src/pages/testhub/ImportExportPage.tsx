@@ -51,22 +51,22 @@ interface Stats {
 }
 
 const TYPE_CONFIG: Record<string, { label: string; icon: any; color: string }> = {
-  test_cases: { label: 'Test Cases', icon: FileText, color: '#2563EB' },
-  defects: { label: 'Defects', icon: Bug, color: '#DC2626' },
+  test_cases: { label: 'Test Cases', icon: FileText, color: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))' },
+  defects: { label: 'Defects', icon: Bug, color: 'var(--ds-text-danger, var(--ds-text-danger, #DC2626))' },
   requirements: { label: 'Requirements', icon: FileCheck, color: '#059669' },
   shared_steps: { label: 'Shared Steps', icon: Layers, color: '#7C3AED' },
   tags: { label: 'Tags', icon: Tags, color: '#EC4899' },
   cycles: { label: 'Test Cycles', icon: RefreshCw, color: '#0891B2' },
-  full_backup: { label: 'Full Backup', icon: Database, color: '#64748B' },
+  full_backup: { label: 'Full Backup', icon: Database, color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #64748B))' },
 };
 
 const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string; icon: any }> = {
-  pending: { label: 'Pending', color: '#64748B', bg: '#F1F5F9', icon: Clock },
-  validating: { label: 'Validating', color: '#D97706', bg: '#FFFBEB', icon: AlertTriangle },
-  processing: { label: 'Processing', color: '#2563EB', bg: '#EFF6FF', icon: RefreshCw },
+  pending: { label: 'Pending', color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #64748B))', bg: 'var(--ds-surface-sunken, var(--ds-surface-sunken, #F1F5F9))', icon: Clock },
+  validating: { label: 'Validating', color: 'var(--ds-text-warning, var(--ds-text-warning, #D97706))', bg: '#FFFBEB', icon: AlertTriangle },
+  processing: { label: 'Processing', color: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))', bg: 'var(--ds-background-selected, var(--ds-background-selected, #EFF6FF))', icon: RefreshCw },
   completed: { label: 'Completed', color: '#059669', bg: '#ECFDF5', icon: CheckCircle2 },
-  failed: { label: 'Failed', color: '#DC2626', bg: '#FEF2F2', icon: XCircle },
-  cancelled: { label: 'Cancelled', color: '#94A3B8', bg: '#F8FAFC', icon: XCircle },
+  failed: { label: 'Failed', color: 'var(--ds-text-danger, var(--ds-text-danger, #DC2626))', bg: 'var(--ds-background-danger, var(--ds-background-danger, #FEF2F2))', icon: XCircle },
+  cancelled: { label: 'Cancelled', color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #94A3B8))', bg: 'var(--ds-surface-sunken, var(--ds-surface-sunken, #F8FAFC))', icon: XCircle },
 };
 
 export default function ImportExportPage() {
@@ -143,7 +143,7 @@ export default function ImportExportPage() {
       {/* Stats Cards */}
       {stats && (
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16, marginBottom: 24 }}>
-          <div style={{ backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFF', borderRadius: 12, padding: 20, border: `1px solid ${'var(--cp-border, #E2E8F0)'}` }}>
+          <div style={{ backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, var(--ds-surface, var(--ds-surface, #FFF)))', borderRadius: 12, padding: 20, border: `1px solid ${'var(--cp-border, #E2E8F0)'}` }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
               <FileUp size={18} style={{ color: '#14B8A6' }} />
               <span style={{ fontSize: 12, color: 'var(--cp-text-tertiary, #64748B)', textTransform: 'uppercase' }}>Total Imports</span>
@@ -153,7 +153,7 @@ export default function ImportExportPage() {
               {stats.records_imported.toLocaleString()} records
             </p>
           </div>
-          <div style={{ backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFF', borderRadius: 12, padding: 20, border: `1px solid ${'var(--cp-border, #E2E8F0)'}` }}>
+          <div style={{ backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, var(--ds-surface, var(--ds-surface, #FFF)))', borderRadius: 12, padding: 20, border: `1px solid ${'var(--cp-border, #E2E8F0)'}` }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
               <FileDown size={18} style={{ color: '#14B8A6' }} />
               <span style={{ fontSize: 12, color: 'var(--cp-text-tertiary, #64748B)', textTransform: 'uppercase' }}>Total Exports</span>
@@ -172,12 +172,12 @@ export default function ImportExportPage() {
               {stats.successful_imports + stats.successful_exports}
             </p>
           </div>
-          <div style={{ backgroundColor: '#FEF2F2', borderRadius: 12, padding: 20, border: '1px solid #FECACA' }}>
+          <div style={{ backgroundColor: 'var(--ds-background-danger, var(--ds-background-danger, #FEF2F2))', borderRadius: 12, padding: 20, border: '1px solid #FECACA' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
-              <XCircle size={18} style={{ color: '#DC2626' }} />
-              <span style={{ fontSize: 12, color: '#DC2626', textTransform: 'uppercase' }}>Failed</span>
+              <XCircle size={18} style={{ color: 'var(--ds-text-danger, var(--ds-text-danger, #DC2626))' }} />
+              <span style={{ fontSize: 12, color: 'var(--ds-text-danger, var(--ds-text-danger, #DC2626))', textTransform: 'uppercase' }}>Failed</span>
             </div>
-            <p style={{ fontSize: 28, fontWeight: 700, color: '#DC2626', margin: 0 }}>{stats.failed_imports}</p>
+            <p style={{ fontSize: 28, fontWeight: 700, color: 'var(--ds-text-danger, var(--ds-text-danger, #DC2626))', margin: 0 }}>{stats.failed_imports}</p>
           </div>
         </div>
       )}
@@ -219,7 +219,7 @@ export default function ImportExportPage() {
         </div>
       ) : activeTab === 'import' ? (
         importJobs.length === 0 ? (
-          <div style={{ backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFF', borderRadius: 12, padding: 60, textAlign: 'center', border: `1px solid ${'var(--cp-border, #E2E8F0)'}` }}>
+          <div style={{ backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, var(--ds-surface, var(--ds-surface, #FFF)))', borderRadius: 12, padding: 60, textAlign: 'center', border: `1px solid ${'var(--cp-border, #E2E8F0)'}` }}>
             <Upload size={48} style={{ color: 'var(--cp-text-muted, #CBD5E1)', marginBottom: 16 }} />
             <p style={{ fontSize: 16, color: 'var(--cp-text-tertiary, #64748B)', margin: 0 }}>No import jobs yet</p>
             <p style={{ fontSize: 14, color: 'var(--cp-text-muted, #94A3B8)', margin: '8px 0 0' }}>
@@ -236,7 +236,7 @@ export default function ImportExportPage() {
 
               return (
                 <div key={job.id} style={{
-                  backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFF', borderRadius: 12, padding: 20,
+                  backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, var(--ds-surface, var(--ds-surface, #FFF)))', borderRadius: 12, padding: 20,
                   border: `1px solid ${'var(--cp-border, #E2E8F0)'}`, display: 'flex', justifyContent: 'space-between', alignItems: 'center',
                 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
@@ -272,7 +272,7 @@ export default function ImportExportPage() {
                           {job.success_count} imported
                         </p>
                         {job.error_count > 0 && (
-                          <p style={{ fontSize: 12, color: '#DC2626', margin: '2px 0 0' }}>
+                          <p style={{ fontSize: 12, color: 'var(--ds-text-danger, var(--ds-text-danger, #DC2626))', margin: '2px 0 0' }}>
                             {job.error_count} errors
                           </p>
                         )}
@@ -282,7 +282,7 @@ export default function ImportExportPage() {
                       onClick={() => deleteImportJob(job.id)}
                       style={{
                         width: 36, height: 50, border: '1px solid #FECACA', borderRadius: 8,
-                        backgroundColor: '#FEF2F2', color: '#DC2626', cursor: 'pointer',
+                        backgroundColor: 'var(--ds-background-danger, var(--ds-background-danger, #FEF2F2))', color: 'var(--ds-text-danger, var(--ds-text-danger, #DC2626))', cursor: 'pointer',
                         display: 'flex', alignItems: 'center', justifyContent: 'center',
                       }}
                     >
@@ -296,7 +296,7 @@ export default function ImportExportPage() {
         )
       ) : (
         exportJobs.length === 0 ? (
-          <div style={{ backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFF', borderRadius: 12, padding: 60, textAlign: 'center', border: `1px solid ${'var(--cp-border, #E2E8F0)'}` }}>
+          <div style={{ backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, var(--ds-surface, var(--ds-surface, #FFF)))', borderRadius: 12, padding: 60, textAlign: 'center', border: `1px solid ${'var(--cp-border, #E2E8F0)'}` }}>
             <Download size={48} style={{ color: 'var(--cp-text-muted, #CBD5E1)', marginBottom: 16 }} />
             <p style={{ fontSize: 16, color: 'var(--cp-text-tertiary, #64748B)', margin: 0 }}>No export jobs yet</p>
             <p style={{ fontSize: 14, color: 'var(--cp-text-muted, #94A3B8)', margin: '8px 0 0' }}>
@@ -313,7 +313,7 @@ export default function ImportExportPage() {
 
               return (
                 <div key={job.id} style={{
-                  backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFF', borderRadius: 12, padding: 20,
+                  backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, var(--ds-surface, var(--ds-surface, #FFF)))', borderRadius: 12, padding: 20,
                   border: `1px solid ${'var(--cp-border, #E2E8F0)'}`, display: 'flex', justifyContent: 'space-between', alignItems: 'center',
                 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
@@ -360,7 +360,7 @@ export default function ImportExportPage() {
                       onClick={() => deleteExportJob(job.id)}
                       style={{
                         width: 36, height: 50, border: '1px solid #FECACA', borderRadius: 8,
-                        backgroundColor: '#FEF2F2', color: '#DC2626', cursor: 'pointer',
+                        backgroundColor: 'var(--ds-background-danger, var(--ds-background-danger, #FEF2F2))', color: 'var(--ds-text-danger, var(--ds-text-danger, #DC2626))', cursor: 'pointer',
                         display: 'flex', alignItems: 'center', justifyContent: 'center',
                       }}
                     >

@@ -42,10 +42,10 @@ type StatusFilter = 'all' | 'pending' | 'syncing' | 'success' | 'failed' | 'skip
 
 /* ── Sync status config ─────────────────────────────────── */
 const SYNC_STATUS_CFG: Record<string, { icon: React.ElementType; color: string; bg: string; label: string }> = {
-  pending:  { icon: Clock,        color: '#D97706', bg: 'rgba(217,119,6,0.1)',  label: 'PENDING' },
-  syncing:  { icon: Loader2,      color: '#2563EB', bg: 'rgba(37,99,235,0.1)',  label: 'SYNCING' },
+  pending:  { icon: Clock,        color: 'var(--ds-text-warning, var(--ds-text-warning, #D97706))', bg: 'rgba(217,119,6,0.1)',  label: 'PENDING' },
+  syncing:  { icon: Loader2,      color: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))', bg: 'rgba(37,99,235,0.1)',  label: 'SYNCING' },
   success:  { icon: CheckCircle2, color: '#059669', bg: 'rgba(5,150,105,0.1)',  label: 'SUCCESS' },
-  failed:   { icon: XCircle,      color: '#DC2626', bg: 'rgba(220,38,38,0.1)',  label: 'FAILED' },
+  failed:   { icon: XCircle,      color: 'var(--ds-text-danger, var(--ds-text-danger, #DC2626))', bg: 'rgba(220,38,38,0.1)',  label: 'FAILED' },
   skipped:  { icon: SkipForward,  color: '#6B7280', bg: 'rgba(107,114,128,0.1)', label: 'SKIPPED' },
 };
 
@@ -58,7 +58,7 @@ function DirectionBadge({ dir }: { dir: 'inbound' | 'outbound' }) {
       padding: '2px 8px', borderRadius: 4, fontSize: 11, fontWeight: 700,
       textTransform: 'uppercase', letterSpacing: '0.03em',
       background: isIn ? 'rgba(37,99,235,0.08)' : 'rgba(217,119,6,0.08)',
-      color: isIn ? '#2563EB' : '#D97706',
+      color: isIn ? 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))' : 'var(--ds-text-warning, var(--ds-text-warning, #D97706))',
     }}>
       {isIn ? <ArrowDownLeft size={12} /> : <ArrowUpRight size={12} />}
       {isIn ? 'IN' : 'OUT'}
@@ -152,16 +152,16 @@ function SummaryStats({ items }: { items: SyncActivity[] }) {
 
   const pills: { label: string; value: number; color: string; bg: string }[] = [
     { label: 'Total', value: stats.total, color: 'var(--cp-t1, #0F172A)', bg: 'var(--cp-hover, #F1F5F9)' },
-    { label: 'Inbound', value: stats.inbound, color: '#2563EB', bg: 'rgba(37,99,235,0.08)' },
-    { label: 'Outbound', value: stats.outbound, color: '#D97706', bg: 'rgba(217,119,6,0.08)' },
+    { label: 'Inbound', value: stats.inbound, color: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))', bg: 'rgba(37,99,235,0.08)' },
+    { label: 'Outbound', value: stats.outbound, color: 'var(--ds-text-warning, var(--ds-text-warning, #D97706))', bg: 'rgba(217,119,6,0.08)' },
     { label: 'Success', value: stats.success, color: '#059669', bg: 'rgba(5,150,105,0.08)' },
-    { label: 'Failed', value: stats.failed, color: '#DC2626', bg: 'rgba(220,38,38,0.08)' },
-    { label: 'Pending', value: stats.pending, color: '#D97706', bg: 'rgba(217,119,6,0.08)' },
+    { label: 'Failed', value: stats.failed, color: 'var(--ds-text-danger, var(--ds-text-danger, #DC2626))', bg: 'rgba(220,38,38,0.08)' },
+    { label: 'Pending', value: stats.pending, color: 'var(--ds-text-warning, var(--ds-text-warning, #D97706))', bg: 'rgba(217,119,6,0.08)' },
     { label: 'Skipped', value: stats.skipped, color: '#6B7280', bg: 'rgba(107,114,128,0.08)' },
   ];
 
   if (stats.conflicts > 0) {
-    pills.push({ label: 'Conflicts', value: stats.conflicts, color: '#DC2626', bg: 'rgba(220,38,38,0.08)' });
+    pills.push({ label: 'Conflicts', value: stats.conflicts, color: 'var(--ds-text-danger, var(--ds-text-danger, #DC2626))', bg: 'rgba(220,38,38,0.08)' });
   }
 
   return (
@@ -189,9 +189,9 @@ function FilterPill({ label, active, onClick }: { label: string; active: boolean
       onClick={onClick}
       style={{
         padding: '4px 12px', borderRadius: 6, fontSize: 12, fontWeight: 600,
-        border: `1px solid ${active ? '#2563EB' : 'var(--cp-bd, #E2E8F0)'}`,
+        border: `1px solid ${active ? 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))' : 'var(--cp-bd, #E2E8F0)'}`,
         background: active ? 'rgba(37,99,235,0.08)' : 'transparent',
-        color: active ? '#2563EB' : 'var(--cp-t2, #475569)',
+        color: active ? 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))' : 'var(--cp-t2, #475569)',
         cursor: 'pointer', transition: 'all 150ms',
       }}
     >
@@ -416,7 +416,7 @@ export default function JiraActivitySyncPage() {
                             position="top"
                             content={`Conflict detected${item.conflict_resolution ? `: ${item.conflict_resolution}` : ''}`}
                           >
-                            <AlertTriangle size={14} style={{ color: '#DC2626' }} />
+                            <AlertTriangle size={14} style={{ color: 'var(--ds-text-danger, var(--ds-text-danger, #DC2626))' }} />
                           </Tooltip>
                         )}
                       </div>
@@ -470,7 +470,7 @@ export default function JiraActivitySyncPage() {
                     <td style={{ padding: '6px 12px' }}>
                       {item.error_message ? (
                         <Tooltip position="top" content={item.error_message}>
-                          <span style={{ fontSize: 11, color: '#DC2626', fontWeight: 500, cursor: 'help' }}>
+                          <span style={{ fontSize: 11, color: 'var(--ds-text-danger, var(--ds-text-danger, #DC2626))', fontWeight: 500, cursor: 'help' }}>
                             Error: {item.error_message.substring(0, 30)}…
                           </span>
                         </Tooltip>

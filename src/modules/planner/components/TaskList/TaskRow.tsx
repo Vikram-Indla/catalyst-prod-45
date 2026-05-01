@@ -132,14 +132,14 @@ export function TaskRow({
           <span
             className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md border text-xs font-semibold"
             style={{
-              borderColor: task.status_color ? `${task.status_color}40` : '#e2e8f0',
-              color: task.status_color || '#64748b',
+              borderColor: task.status_color ? `${task.status_color}40` : 'var(--ds-border, var(--ds-border, #e2e8f0))',
+              color: task.status_color || 'var(--ds-text-subtlest, var(--ds-text-subtlest, #64748b))',
               backgroundColor: 'transparent',
             }}
           >
             <span
               className="w-2 h-2 rounded-full"
-              style={{ backgroundColor: task.status_color || '#64748b' }}
+              style={{ backgroundColor: task.status_color || 'var(--ds-text-subtlest, var(--ds-text-subtlest, #64748b))' }}
             />
             {task.status_name || 'Unknown'}
           </span>
@@ -223,8 +223,8 @@ export function TaskRow({
                 className="h-full rounded-full transition-all"
                 style={{
                   width: `${task.progress}%`,
-                  backgroundColor: task.progress >= 100 ? '#22c55e' : 
-                    task.progress >= 50 ? '#22c55e' : '#94a3b8',
+                  backgroundColor: task.progress >= 100 ? 'var(--ds-text-success, var(--ds-text-success, #22c55e))' : 
+                    task.progress >= 50 ? 'var(--ds-text-success, var(--ds-text-success, #22c55e))' : 'var(--ds-text-subtlest, var(--ds-text-subtlest, #94a3b8))',
                 }}
               />
             </div>

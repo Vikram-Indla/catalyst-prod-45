@@ -246,7 +246,7 @@ export const RoadmapDateFilterV2: React.FC<RoadmapDateFilterV2Props> = ({
                 className={cn(
                   "flex-1 px-3 py-2 text-sm font-medium rounded-lg border transition-all",
                   draftViewport.scale === opt.value
-                    ? "bg-[#2563eb] text-white border-[#2563eb]"
+                    ? "bg-[var(--ds-text-brand,var(--ds-text-brand, #2563eb))] text-white border-[var(--ds-text-brand,var(--ds-text-brand, #2563eb))]"
                     : "bg-transparent border-gray-300 text-gray-700 hover:border-gray-400 dark:border-gray-600 dark:text-gray-300 dark:hover:border-gray-500"
                 )}
               >
@@ -270,13 +270,13 @@ export const RoadmapDateFilterV2: React.FC<RoadmapDateFilterV2Props> = ({
                   className={cn(
                     "relative px-4 py-2.5 text-sm font-medium rounded-lg border transition-all min-w-[72px]",
                     isSelected
-                      ? "bg-[#2563eb] text-white border-[#2563eb]"
+                      ? "bg-[var(--ds-text-brand,var(--ds-text-brand, #2563eb))] text-white border-[var(--ds-text-brand,var(--ds-text-brand, #2563eb))]"
                       : "bg-transparent border-gray-300 text-gray-700 hover:border-gray-400 dark:border-gray-600 dark:text-gray-300 dark:hover:border-gray-500"
                   )}
                 >
                   {year}
                   {isCurrent && !isSelected && (
-                    <div className="absolute -bottom-0.5 left-1/2 -translate-x-1/2 w-1.5 h-1.5 rounded-full bg-[#2563eb]" />
+                    <div className="absolute -bottom-0.5 left-1/2 -translate-x-1/2 w-1.5 h-1.5 rounded-full bg-[var(--ds-text-brand,var(--ds-text-brand, #2563eb))]" />
                   )}
                 </button>
               );
@@ -293,7 +293,7 @@ export const RoadmapDateFilterV2: React.FC<RoadmapDateFilterV2Props> = ({
                 onClick={selectAllQuarters}
                 className={cn(
                   "text-sm font-medium transition-colors",
-                  "text-[#2563eb] hover:text-[#1d4ed8] dark:text-[#60a5fa] dark:hover:text-[#93c5fd]"
+                  "text-[var(--ds-text-brand,var(--ds-text-brand, #2563eb))] hover:text-[var(--ds-background-brand-bold-hovered,var(--ds-background-brand-bold-hovered, #1d4ed8))] dark:text-[var(--ds-text-brand,var(--ds-text-brand, #60a5fa))] dark:hover:text-[#93c5fd]"
                 )}
               >
                 All
@@ -310,13 +310,13 @@ export const RoadmapDateFilterV2: React.FC<RoadmapDateFilterV2Props> = ({
                     className={cn(
                       "relative px-3 py-2.5 text-sm font-medium rounded-lg border transition-all",
                       isSelected
-                        ? "bg-[#2563eb] text-white border-[#2563eb]"
+                        ? "bg-[var(--ds-text-brand,var(--ds-text-brand, #2563eb))] text-white border-[var(--ds-text-brand,var(--ds-text-brand, #2563eb))]"
                         : "bg-transparent border-gray-300 text-gray-700 hover:border-gray-400 dark:border-gray-600 dark:text-gray-300 dark:hover:border-gray-500"
                     )}
                   >
                     Q{q}
                     {isCurrent && !isSelected && (
-                      <div className="absolute -bottom-0.5 left-1/2 -translate-x-1/2 w-1.5 h-1.5 rounded-full bg-[#2563eb]" />
+                      <div className="absolute -bottom-0.5 left-1/2 -translate-x-1/2 w-1.5 h-1.5 rounded-full bg-[var(--ds-text-brand,var(--ds-text-brand, #2563eb))]" />
                     )}
                   </button>
                 );
@@ -349,8 +349,8 @@ export const RoadmapDateFilterV2: React.FC<RoadmapDateFilterV2Props> = ({
               className={cn(
                 "flex-1 px-4 py-2 text-sm font-medium rounded-lg transition-colors",
                 hasChanges || draftViewport.selectedYears.length === 0
-                  ? "bg-[#2563eb] hover:bg-[#1d4ed8] text-white border-0"
-                  : "bg-[#2563eb]/50 text-white/70 cursor-not-allowed"
+                  ? "bg-[var(--ds-text-brand,var(--ds-text-brand, #2563eb))] hover:bg-[var(--ds-background-brand-bold-hovered,var(--ds-background-brand-bold-hovered, #1d4ed8))] text-white border-0"
+                  : "bg-[var(--ds-text-brand,var(--ds-text-brand, #2563eb))]/50 text-white/70 cursor-not-allowed"
               )}
             >
               Apply

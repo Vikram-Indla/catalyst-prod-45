@@ -64,7 +64,7 @@ export function AllWorkPagination({ currentPage, totalPages, totalCount, pageSiz
         <button
           onClick={() => onPageChange(currentPage - 1)}
           disabled={currentPage === 0}
-          className="p-1.5 rounded border disabled:opacity-30 hover:bg-[var(--hover, #1F1F1F)] transition-colors duration-[80ms] focus-visible:outline-2 focus-visible:outline-[#2563EB]"
+          className="p-1.5 rounded border disabled:opacity-30 hover:bg-[var(--hover, #1F1F1F)] transition-colors duration-[80ms] focus-visible:outline-2 focus-visible:outline-[var(--ds-text-brand,var(--ds-text-brand, #2563EB))]"
           style={{ borderColor: 'var(--bd-default, #2E2E2E)' }}
           aria-label="Previous page"
         >
@@ -79,7 +79,7 @@ export function AllWorkPagination({ currentPage, totalPages, totalCount, pageSiz
             <button
               key={p}
               onClick={() => onPageChange(p)}
-              className="w-8 h-8 rounded text-[12px] font-medium transition-colors duration-[80ms] focus-visible:outline-2 focus-visible:outline-[#2563EB] focus-visible:outline-offset-2"
+              className="w-8 h-8 rounded text-[12px] font-medium transition-colors duration-[80ms] focus-visible:outline-2 focus-visible:outline-[var(--ds-text-brand,var(--ds-text-brand, #2563EB))] focus-visible:outline-offset-2"
               style={{
                 backgroundColor: p === currentPage ? 'var(--cp-blue)' : 'transparent',
                 color: p === currentPage ? 'var(--bg-app)' : 'var(--fg-3)',
@@ -95,7 +95,7 @@ export function AllWorkPagination({ currentPage, totalPages, totalCount, pageSiz
         <button
           onClick={() => onPageChange(currentPage + 1)}
           disabled={currentPage >= totalPages - 1}
-          className="p-1.5 rounded border disabled:opacity-30 hover:bg-[var(--hover, #1F1F1F)] transition-colors duration-[80ms] focus-visible:outline-2 focus-visible:outline-[#2563EB]"
+          className="p-1.5 rounded border disabled:opacity-30 hover:bg-[var(--hover, #1F1F1F)] transition-colors duration-[80ms] focus-visible:outline-2 focus-visible:outline-[var(--ds-text-brand,var(--ds-text-brand, #2563EB))]"
           style={{ borderColor: 'var(--bd-default, #2E2E2E)' }}
           aria-label="Next page"
         >
@@ -108,7 +108,7 @@ export function AllWorkPagination({ currentPage, totalPages, totalCount, pageSiz
         <span className="text-[12px]" style={{ color: 'var(--fg-3)' }}>Per page:</span>
         <button
           onClick={() => setSizeOpen(!sizeOpen)}
-          className="inline-flex items-center gap-1 px-2.5 h-8 text-[12px] rounded border hover:bg-[var(--hover, #1F1F1F)] transition-colors duration-[80ms] focus-visible:outline-2 focus-visible:outline-[#2563EB]"
+          className="inline-flex items-center gap-1 px-2.5 h-8 text-[12px] rounded border hover:bg-[var(--hover, #1F1F1F)] transition-colors duration-[80ms] focus-visible:outline-2 focus-visible:outline-[var(--ds-text-brand,var(--ds-text-brand, #2563EB))]"
           style={{ borderColor: 'var(--bd-default, #2E2E2E)', color: 'var(--fg-1)', fontFamily: 'var(--cp-font-mono)' }}
           aria-haspopup="listbox"
           aria-expanded={sizeOpen}

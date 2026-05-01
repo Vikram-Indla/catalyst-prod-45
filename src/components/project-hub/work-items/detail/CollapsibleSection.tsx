@@ -19,7 +19,7 @@ export function CollapsibleSection({ title, count, defaultOpen = true, children 
       >
         <ChevronRight
           size={14}
-          className="transition-transform duration-150 text-[#94A3B8]"
+          className="transition-transform duration-150 text-[var(--ds-text-subtlest,var(--ds-text-subtlest, #94A3B8))]"
           style={{ transform: open ? 'rotate(90deg)' : 'rotate(0deg)' }}
         />
         <span className="text-[14px] font-semibold" style={{ color: 'var(--fg-1)' }}>

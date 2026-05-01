@@ -75,7 +75,7 @@ function priorityToLevel(name?: string): number {
 
 /* ── Assignee avatar ── */
 /* ── Avatar color palette (no purple/yellow) ── */
-const AVATAR_COLORS = ['#0D9488','#2563EB','#DC2626','#16A34A','#64748B','#0284C7','#059669','#BE123C','#1D4ED8','#0F766E'];
+const AVATAR_COLORS = ['#0D9488','var(--ds-text-brand, var(--ds-text-brand, #2563EB))','var(--ds-text-danger, var(--ds-text-danger, #DC2626))','var(--ds-text-success, var(--ds-text-success, #16A34A))','var(--ds-text-subtlest, var(--ds-text-subtlest, #64748B))','#0284C7','#059669','#BE123C','var(--ds-background-brand-bold-hovered, var(--ds-background-brand-bold-hovered, #1D4ED8))','#0F766E'];
 function getAvatarColor(name: string): string {
   let hash = 0;
   for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash);
@@ -95,7 +95,7 @@ function AssigneeAvatar({ assignee }: { assignee?: WorkItem['assignee'] }) {
   const bgColor = getAvatarColor(assignee.displayName);
   return (
     <div style={{ width: 24, height: 24, borderRadius: '50%', background: bgColor, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-      <span style={{ fontSize: 10, fontWeight: 700, color: '#FFFFFF', fontFamily: 'var(--cp-font-body)' }}>{initials}</span>
+      <span style={{ fontSize: 10, fontWeight: 700, color: 'var(--ds-surface, var(--ds-surface, #FFFFFF))', fontFamily: 'var(--cp-font-body)' }}>{initials}</span>
     </div>
   );
 }

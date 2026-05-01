@@ -54,7 +54,7 @@ const PRIORITY_COLORS: Record<string, string> = {
   P1: 'bg-[#FFEBE6] text-[#BF2600]',
   P2: 'bg-[#FFF0B3] text-[#FF8B00]',
   P3: 'bg-[#DEEBFF] text-[#0747A6]',
-  P4: 'bg-[#DFE1E6] text-[#253858]',
+  P4: 'bg-[var(--ds-border,var(--ds-border, #DFE1E6))] text-[var(--ds-text,var(--ds-text, #253858))]',
 };
 
 // ── Channel icons ───────────────────────────────────────────────
@@ -137,11 +137,11 @@ export default function NotificationTriggers() {
       {/* ── Page Header ──────────────────────────────────────────── */}
       <div className="flex items-start justify-between">
         <div>
-          <h1 className="text-2xl font-semibold text-[#0F172A] font-['Sora'] tracking-tight flex items-center gap-2">
-            <Bell className="h-6 w-6 text-[#2563EB]" />
+          <h1 className="text-2xl font-semibold text-[var(--ds-text,var(--ds-text, #0F172A))] font-['Sora'] tracking-tight flex items-center gap-2">
+            <Bell className="h-6 w-6 text-[var(--ds-text-brand,var(--ds-text-brand, #2563EB))]" />
             Notification Triggers
           </h1>
-          <p className="text-sm text-[#475569] mt-1">
+          <p className="text-sm text-[var(--ds-text-subtle,var(--ds-text-subtle, #475569))] mt-1">
             Configure which CRUD events trigger notifications, who receives them, and through which channels.
           </p>
         </div>
@@ -180,7 +180,7 @@ export default function NotificationTriggers() {
           <div className="flex items-center gap-3 flex-wrap">
             {/* Search */}
             <div className="relative flex-1 min-w-[240px]">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#94A3B8]" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[var(--ds-text-subtlest,var(--ds-text-subtlest, #94A3B8))]" />
               <Input
                 placeholder="Search triggers by name, key, or description..."
                 value={filters.search}
@@ -278,7 +278,7 @@ export default function NotificationTriggers() {
 
           {/* Expand/Collapse + result count */}
           <div className="flex items-center justify-between mt-3 pt-3 border-t border-[var(--bd-default, #E2E8F0)]">
-            <span className="text-xs text-[#94A3B8]">
+            <span className="text-xs text-[var(--ds-text-subtlest,var(--ds-text-subtlest, #94A3B8))]">
               Showing {filtered.length} of {totalCount} triggers across {groups.length} categories
             </span>
             <div className="flex gap-2">
@@ -318,14 +318,14 @@ export default function NotificationTriggers() {
       {isLoading ? (
         <div className="space-y-3">
           {[1, 2, 3].map((i) => (
-            <div key={i} className="h-14 bg-[#F1F5F9] rounded-md animate-pulse" />
+            <div key={i} className="h-14 bg-[var(--ds-surface-sunken,var(--ds-surface-sunken, #F1F5F9))] rounded-md animate-pulse" />
           ))}
         </div>
       ) : groups.length === 0 ? (
         <Card>
           <CardContent className="py-12 text-center">
-            <Bell className="h-10 w-10 text-[#94A3B8] mx-auto mb-3" />
-            <p className="text-sm text-[#475569]">No triggers match your filters.</p>
+            <Bell className="h-10 w-10 text-[var(--ds-text-subtlest,var(--ds-text-subtlest, #94A3B8))] mx-auto mb-3" />
+            <p className="text-sm text-[var(--ds-text-subtle,var(--ds-text-subtle, #475569))]">No triggers match your filters.</p>
           </CardContent>
         </Card>
       ) : (
@@ -335,15 +335,15 @@ export default function NotificationTriggers() {
               {/* Category Header */}
               <button
                 onClick={() => toggleGroup(group.key)}
-                className="w-full flex items-center justify-between px-4 py-3 hover:bg-[#F8FAFC] transition-colors duration-150"
+                className="w-full flex items-center justify-between px-4 py-3 hover:bg-[var(--ds-surface-sunken,var(--ds-surface-sunken, #F8FAFC))] transition-colors duration-150"
               >
                 <div className="flex items-center gap-3">
                   {expandedGroups.has(group.key) ? (
-                    <ChevronDown className="h-4 w-4 text-[#475569]" />
+                    <ChevronDown className="h-4 w-4 text-[var(--ds-text-subtle,var(--ds-text-subtle, #475569))]" />
                   ) : (
-                    <ChevronRight className="h-4 w-4 text-[#475569]" />
+                    <ChevronRight className="h-4 w-4 text-[var(--ds-text-subtle,var(--ds-text-subtle, #475569))]" />
                   )}
-                  <span className="text-sm font-semibold text-[#0F172A]">{group.label}</span>
+                  <span className="text-sm font-semibold text-[var(--ds-text,var(--ds-text, #0F172A))]">{group.label}</span>
                   <Lozenge appearance="default">
                     {group.enabledCount}/{group.totalCount}
                   </Lozenge>
@@ -354,7 +354,7 @@ export default function NotificationTriggers() {
               {expandedGroups.has(group.key) && (
                 <div className="border-t border-[var(--bd-default, #E2E8F0)]">
                   {/* Table Header */}
-                  <div className="grid grid-cols-[32px_1fr_90px_80px_52px_52px_52px_52px_48px] gap-2 px-4 py-2 bg-[#F8FAFC] text-[10px] uppercase tracking-wider font-semibold text-[#475569] border-b border-[var(--bd-default, #E2E8F0)]">
+                  <div className="grid grid-cols-[32px_1fr_90px_80px_52px_52px_52px_52px_48px] gap-2 px-4 py-2 bg-[var(--ds-surface-sunken,var(--ds-surface-sunken, #F8FAFC))] text-[10px] uppercase tracking-wider font-semibold text-[var(--ds-text-subtle,var(--ds-text-subtle, #475569))] border-b border-[var(--bd-default, #E2E8F0)]">
                     <div />
                     <div>Trigger</div>
                     <div>Hub</div>
@@ -413,19 +413,19 @@ function StatsCard({
   variant?: 'default' | 'blue' | 'gray' | 'red' | 'muted' | 'amber';
 }) {
   const colors: Record<string, string> = {
-    default: 'text-[#0F172A]',
-    blue: 'text-[#2563EB]',
-    gray: 'text-[#475569]',
-    red: 'text-[#DC2626]',
-    muted: 'text-[#94A3B8]',
-    amber: 'text-[#D97706]',
+    default: 'text-[var(--ds-text,var(--ds-text, #0F172A))]',
+    blue: 'text-[var(--ds-text-brand,var(--ds-text-brand, #2563EB))]',
+    gray: 'text-[var(--ds-text-subtle,var(--ds-text-subtle, #475569))]',
+    red: 'text-[var(--ds-text-danger,var(--ds-text-danger, #DC2626))]',
+    muted: 'text-[var(--ds-text-subtlest,var(--ds-text-subtlest, #94A3B8))]',
+    amber: 'text-[var(--ds-text-warning,var(--ds-text-warning, #D97706))]',
   };
 
   return (
     <Card>
       <CardContent className="p-3 text-center">
         <p className={`text-xl font-semibold font-['JetBrains_Mono'] ${colors[variant]}`}>{value}</p>
-        <p className="text-[10px] uppercase tracking-wider text-[#94A3B8] mt-0.5">{label}</p>
+        <p className="text-[10px] uppercase tracking-wider text-[var(--ds-text-subtlest,var(--ds-text-subtlest, #94A3B8))] mt-0.5">{label}</p>
       </CardContent>
     </Card>
   );
@@ -446,7 +446,7 @@ function TriggerRow({
 }) {
   return (
     <div
-      className={`grid grid-cols-[32px_1fr_90px_80px_52px_52px_52px_52px_48px] gap-2 px-4 py-2 items-center border-b border-[#F1F5F9] hover:bg-[rgba(0,0,0,0.02)] transition-colors duration-150 ${
+      className={`grid grid-cols-[32px_1fr_90px_80px_52px_52px_52px_52px_48px] gap-2 px-4 py-2 items-center border-b border-[var(--ds-surface-sunken,var(--ds-surface-sunken, #F1F5F9))] hover:bg-[rgba(0,0,0,0.02)] transition-colors duration-150 ${
         isSelected ? 'bg-[rgba(37,99,235,0.04)]' : ''
       }`}
       style={{ height: 50, maxHeight: 50 }}
@@ -458,7 +458,7 @@ function TriggerRow({
           checked={isSelected}
           onChange={onSelect}
           disabled={trigger.isMandatory}
-          className="h-3.5 w-3.5 rounded border-[#CBD5E1] text-[#2563EB] focus:ring-[#2563EB] disabled:opacity-40"
+          className="h-3.5 w-3.5 rounded border-[var(--ds-text-disabled,var(--ds-text-disabled, #CBD5E1))] text-[var(--ds-text-brand,var(--ds-text-brand, #2563EB))] focus:ring-[var(--ds-text-brand,var(--ds-text-brand, #2563EB))] disabled:opacity-40"
         />
       </div>
 
@@ -476,11 +476,11 @@ function TriggerRow({
           }
         >
           <div className="flex items-center gap-1.5">
-            <span className="text-xs font-medium text-[#0F172A] truncate">
+            <span className="text-xs font-medium text-[var(--ds-text,var(--ds-text, #0F172A))] truncate">
               {trigger.displayName}
             </span>
             {trigger.isMandatory && (
-              <Shield className="h-3 w-3 text-[#DC2626] flex-shrink-0" />
+              <Shield className="h-3 w-3 text-[var(--ds-text-danger,var(--ds-text-danger, #DC2626))] flex-shrink-0" />
             )}
             {trigger.isSilent && (
               <Lozenge appearance="default">
@@ -488,7 +488,7 @@ function TriggerRow({
               </Lozenge>
             )}
             {trigger.isOverridden && (
-              <span className="h-1.5 w-1.5 rounded-full bg-[#2563EB] flex-shrink-0" />
+              <span className="h-1.5 w-1.5 rounded-full bg-[var(--ds-text-brand,var(--ds-text-brand, #2563EB))] flex-shrink-0" />
             )}
           </div>
         </Tooltip>
@@ -515,7 +515,7 @@ function TriggerRow({
             checked={trigger.channels[ch]}
             onCheckedChange={(v) => onChannelToggle(ch, v)}
             disabled={trigger.isSilent}
-            className="h-4 w-7 data-[state=checked]:bg-[#2563EB]"
+            className="h-4 w-7 data-[state=checked]:bg-[var(--ds-text-brand,var(--ds-text-brand, #2563EB))]"
           />
         </div>
       ))}
@@ -526,7 +526,7 @@ function TriggerRow({
           checked={trigger.enabled}
           onCheckedChange={onToggle}
           disabled={trigger.isMandatory || trigger.isSilent}
-          className="h-4 w-7 data-[state=checked]:bg-[#16A34A]"
+          className="h-4 w-7 data-[state=checked]:bg-[var(--ds-text-success,var(--ds-text-success, #16A34A))]"
         />
       </div>
     </div>

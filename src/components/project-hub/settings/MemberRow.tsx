@@ -1,12 +1,12 @@
 import { useState, useRef, useEffect } from 'react';
 import { X } from 'lucide-react';
 
-const AVATAR_COLORS = ['#7C3AED', '#2563EB', '#0D9488', '#D97706', '#DC2626', '#EA580C', '#0284C7'];
+const AVATAR_COLORS = ['#7C3AED', 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))', '#0D9488', 'var(--ds-text-warning, var(--ds-text-warning, #D97706))', 'var(--ds-text-danger, var(--ds-text-danger, #DC2626))', '#EA580C', '#0284C7'];
 
 const ROLE_STYLES: Record<string, { bg: string; text: string }> = {
-  admin: { bg: '#EFF6FF', text: '#2563EB' },
-  member: { bg: '#F1F5F9', text: '#334155' },
-  viewer: { bg: '#FFFBEB', text: '#D97706' },
+  admin: { bg: 'var(--ds-background-selected, var(--ds-background-selected, #EFF6FF))', text: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))' },
+  member: { bg: 'var(--ds-surface-sunken, var(--ds-surface-sunken, #F1F5F9))', text: 'var(--ds-text-subtle, var(--ds-text-subtle, #334155))' },
+  viewer: { bg: '#FFFBEB', text: 'var(--ds-text-warning, var(--ds-text-warning, #D97706))' },
 };
 
 interface MemberRowProps {
@@ -44,7 +44,7 @@ export function MemberRow({ id, name, email, role, isCurrentUser, onRoleChange, 
 
   return (
     <div
-      className="flex items-center gap-3 rounded-md px-3 hover:bg-[#F8FAFC] transition-colors"
+      className="flex items-center gap-3 rounded-md px-3 hover:bg-[var(--ds-surface-sunken,var(--ds-surface-sunken, #F8FAFC))] transition-colors"
       style={{ height: 52 }}
     >
       {/* Avatar */}
@@ -82,7 +82,7 @@ export function MemberRow({ id, name, email, role, isCurrentUser, onRoleChange, 
 
         {dropdownOpen && (
           <div
-            className="absolute right-0 top-full mt-1 z-10 bg-[var(--cp-float)] dark:bg-[#1A1A1A]"
+            className="absolute right-0 top-full mt-1 z-10 bg-[var(--cp-float)] dark:bg-[var(--ds-surface-raised,var(--ds-surface-raised, #1A1A1A))]"
             style={{
               width: 120, border: '1px solid var(--divider)',
               borderRadius: 8, boxShadow: '0 4px 6px -1px rgba(0,0,0,.07)',
@@ -93,7 +93,7 @@ export function MemberRow({ id, name, email, role, isCurrentUser, onRoleChange, 
               <button
                 key={r}
                 onClick={() => { onRoleChange(id, r); setDropdownOpen(false); }}
-                className="w-full text-left px-3 py-2 hover:bg-[#F8FAFC] transition-colors"
+                className="w-full text-left px-3 py-2 hover:bg-[var(--ds-surface-sunken,var(--ds-surface-sunken, #F8FAFC))] transition-colors"
                 style={{
                   fontSize: 12, fontWeight: r === role ? 600 : 400,
                   color: r === role ? 'var(--cp-blue)' : 'var(--fg-2)',

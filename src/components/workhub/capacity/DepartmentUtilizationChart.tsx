@@ -63,8 +63,8 @@ export function DepartmentUtilizationChart({ departments }: Props) {
             tick={{ fontSize: 13, fontFamily: 'var(--cp-font-body)' }}
           />
           <Tooltip content={<DeptTooltip />} />
-          <ReferenceLine x={80} stroke="#ef4444" strokeDasharray="4 4" />
-          <ReferenceLine x={60} stroke="#d97706" strokeDasharray="4 4" />
+          <ReferenceLine x={80} stroke="var(--ds-text-danger, var(--ds-text-danger, #ef4444))" strokeDasharray="4 4" />
+          <ReferenceLine x={60} stroke="var(--ds-text-warning, var(--ds-text-warning, #d97706))" strokeDasharray="4 4" />
           <Bar dataKey="avgUtilization" radius={[0, 4, 4, 0]} barSize={24}>
             {departments.map((d, i) => (
               <Cell key={i} fill={getUtilColor(d.avgUtilization)} />

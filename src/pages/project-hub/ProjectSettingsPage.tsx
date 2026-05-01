@@ -63,12 +63,12 @@ export default function ProjectSettingsPageNew() {
     <div className="ph-content-wrapper" style={{ fontFamily: 'var(--cp-font-body)' }}>
       <div className="ph-inner-content">
         <div className="flex items-center gap-1.5 mb-5">
-          <span className="cursor-pointer hover:underline" style={{ fontSize: 13, color: '#64748B' }} onClick={() => navigate('/project-hub/projects')}>ProjectHub</span>
-          <ChevronRight size={12} color="#94A3B8" />
-          <span className="cursor-pointer hover:underline" style={{ fontSize: 13, color: '#64748B' }} onClick={() => navigate(`/project-hub/${key}/dashboard`)}>
+          <span className="cursor-pointer hover:underline" style={{ fontSize: 13, color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #64748B))' }} onClick={() => navigate('/project-hub/projects')}>ProjectHub</span>
+          <ChevronRight size={12} color="var(--ds-text-subtlest, var(--ds-text-subtlest, #94A3B8))" />
+          <span className="cursor-pointer hover:underline" style={{ fontSize: 13, color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #64748B))' }} onClick={() => navigate(`/project-hub/${key}/dashboard`)}>
             {key?.toUpperCase()}{project ? ` — ${project.name}` : ''}
           </span>
-          <ChevronRight size={12} color="#94A3B8" />
+          <ChevronRight size={12} color="var(--ds-text-subtlest, var(--ds-text-subtlest, #94A3B8))" />
           <span style={{ fontSize: 13, color: 'var(--fg-1, #0F172A)', fontWeight: 500 }}>Settings</span>
         </div>
 
@@ -118,7 +118,7 @@ export default function ProjectSettingsPageNew() {
           {activeTab === 'Notifications' && <NotificationsTab />}
 
           {!project && !isLoading && (
-            <div style={{ fontSize: 13, color: '#94A3B8', textAlign: 'center', padding: '40px 0' }}>Project not found.</div>
+            <div style={{ fontSize: 13, color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #94A3B8))', textAlign: 'center', padding: '40px 0' }}>Project not found.</div>
           )}
         </div>
       </div>

@@ -99,7 +99,7 @@ export function ArchivedWorkstreamsView({
           alignItems: 'center',
           justifyContent: 'space-between',
           padding: '16px 24px',
-          backgroundColor: '#ffffff',
+          backgroundColor: 'var(--ds-surface, var(--ds-surface, #ffffff))',
           borderBottom: '1px solid #e2e8f0',
         }}
       >
@@ -108,7 +108,7 @@ export function ArchivedWorkstreamsView({
             onClick={onBack}
             style={{
               padding: '8px',
-              color: '#64748b',
+              color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #64748b))',
               backgroundColor: 'transparent',
               border: 'none',
               borderRadius: '8px',
@@ -117,7 +117,7 @@ export function ArchivedWorkstreamsView({
               alignItems: 'center',
               justifyContent: 'center',
             }}
-            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f1f5f9'}
+            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--ds-surface-sunken, var(--ds-surface-sunken, #f1f5f9))'}
             onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
             title="Back to workstreams"
           >
@@ -127,14 +127,14 @@ export function ArchivedWorkstreamsView({
             <h1 style={{
               fontSize: '20px',
               fontWeight: 700,
-              color: '#0f172a',
+              color: 'var(--ds-text, var(--ds-text, #0f172a))',
               margin: 0,
             }}>
               Archived Workstreams
             </h1>
             <p style={{
               fontSize: '14px',
-              color: '#64748b',
+              color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #64748b))',
               marginTop: '2px',
               margin: 0,
             }}>

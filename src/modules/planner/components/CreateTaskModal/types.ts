@@ -19,7 +19,7 @@ export interface Priority {
 }
 
 export const PRIORITIES: Priority[] = [
-  { value: 'critical', label: 'Critical', color: '#ef4444' },
+  { value: 'critical', label: 'Critical', color: 'var(--ds-text-danger, var(--ds-text-danger, #ef4444))' },
   { value: 'high', label: 'High', color: '#f97316' },
   { value: 'medium', label: 'Medium', color: '#eab308' },
   { value: 'low', label: 'Low', color: '#6b7280' },

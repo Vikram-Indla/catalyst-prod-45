@@ -100,7 +100,7 @@ export function AssignmentsView({ resources, projects, createAssignment }: Assig
         </div>
         <Button
           size="sm"
-          className="gap-2 bg-[#2563eb] hover:bg-[#1d4ed8]"
+          className="gap-2 bg-[var(--ds-text-brand,var(--ds-text-brand, #2563eb))] hover:bg-[var(--ds-background-brand-bold-hovered,var(--ds-background-brand-bold-hovered, #1d4ed8))]"
           onClick={() => setAddModalOpen(true)}
         >
           <Plus className="h-3.5 w-3.5" />
@@ -120,7 +120,7 @@ export function AssignmentsView({ resources, projects, createAssignment }: Assig
               <div key={week} className="min-w-36 flex-1 border-r border-border last:border-r-0">
                 <div className={cn(
                   'px-2 py-2 text-center text-[11px] font-semibold text-muted-foreground border-b border-border',
-                  i === 0 && 'bg-[#2563eb]/5 text-[#2563eb]'
+                  i === 0 && 'bg-[var(--ds-text-brand,var(--ds-text-brand, #2563eb))]/5 text-[var(--ds-text-brand,var(--ds-text-brand, #2563eb))]'
                 )}>
                   {week}
                 </div>
@@ -160,8 +160,8 @@ export function AssignmentsView({ resources, projects, createAssignment }: Assig
                     <p className="text-[11px] text-muted-foreground">{resource.role}</p>
                     <span className={cn(
                       'text-[10px] font-semibold mt-1 inline-block',
-                      resource.allocation > 100 ? 'text-[#dc2626]' :
-                      resource.allocation > 80 ? 'text-[#d97706]' : 'text-[#0d9488]'
+                      resource.allocation > 100 ? 'text-[var(--ds-text-danger,var(--ds-text-danger, #dc2626))]' :
+                      resource.allocation > 80 ? 'text-[var(--ds-text-warning,var(--ds-text-warning, #d97706))]' : 'text-[#0d9488]'
                     )}>
                       {resource.allocation}%
                     </span>
@@ -190,8 +190,8 @@ export function AssignmentsView({ resources, projects, createAssignment }: Assig
                     <div
                       className={cn(
                         'h-full',
-                        resource.allocation > 100 ? 'bg-[#dc2626]' :
-                        resource.allocation > 80 ? 'bg-[#d97706]' : 'bg-[#0d9488]'
+                        resource.allocation > 100 ? 'bg-[var(--ds-text-danger,var(--ds-text-danger, #dc2626))]' :
+                        resource.allocation > 80 ? 'bg-[var(--ds-text-warning,var(--ds-text-warning, #d97706))]' : 'bg-[#0d9488]'
                       )}
                       style={{ width: `${Math.min(resource.allocation, 100)}%` }}
                     />
@@ -300,7 +300,7 @@ export function AssignmentsView({ resources, projects, createAssignment }: Assig
             <Button
               onClick={handleAddAssignment}
               disabled={createAssignment.isPending}
-              className="bg-[#2563eb] hover:bg-[#1d4ed8]"
+              className="bg-[var(--ds-text-brand,var(--ds-text-brand, #2563eb))] hover:bg-[var(--ds-background-brand-bold-hovered,var(--ds-background-brand-bold-hovered, #1d4ed8))]"
             >
               {createAssignment.isPending ? 'Adding...' : 'Add Assignment'}
             </Button>

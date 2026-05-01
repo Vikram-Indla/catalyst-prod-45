@@ -32,7 +32,7 @@ export function CatyOrb({
       <div 
         className="w-full h-full rounded-full relative flex items-center justify-center"
         style={{
-          background: 'linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)',
+          background: 'linear-gradient(135deg, var(--ds-surface-sunken, #f8fafc) 0%, var(--ds-border, #e2e8f0) 100%)',
           boxShadow: `
             0 4px 20px rgba(37, 99, 235, 0.25),
             inset 0 -4px 12px rgba(0,0,0,0.08),
@@ -69,14 +69,14 @@ export function CatyOrb({
           <div 
             className="absolute top-1/2 left-1/2 w-1 h-1 rounded-full animate-[orbit_6s_linear_infinite]"
             style={{ 
-              background: 'linear-gradient(135deg, #3b82f6, #60a5fa)',
+              background: 'linear-gradient(135deg, var(--ds-text-brand, #3b82f6), var(--ds-text-brand, #60a5fa))',
               boxShadow: '0 0 6px rgba(59, 130, 246, 0.6)' 
             }}
           />
           <div 
             className="absolute top-1/2 left-1/2 w-[3px] h-[3px] rounded-full animate-[orbit_6s_linear_infinite]"
             style={{ 
-              background: 'linear-gradient(135deg, #3b82f6, #60a5fa)',
+              background: 'linear-gradient(135deg, var(--ds-text-brand, #3b82f6), var(--ds-text-brand, #60a5fa))',
               boxShadow: '0 0 6px rgba(59, 130, 246, 0.6)', 
               animationDelay: '-2s' 
             }}
@@ -84,7 +84,7 @@ export function CatyOrb({
           <div 
             className="absolute top-1/2 left-1/2 w-0.5 h-0.5 rounded-full animate-[orbit_6s_linear_infinite]"
             style={{ 
-              background: 'linear-gradient(135deg, #3b82f6, #60a5fa)',
+              background: 'linear-gradient(135deg, var(--ds-text-brand, #3b82f6), var(--ds-text-brand, #60a5fa))',
               boxShadow: '0 0 6px rgba(59, 130, 246, 0.6)', 
               animationDelay: '-4s' 
             }}
@@ -97,7 +97,7 @@ export function CatyOrb({
         <div 
           className="absolute bottom-0 right-0 w-3.5 h-3.5 rounded-full animate-[status-pulse_2s_ease-in-out_infinite]"
           style={{
-            background: 'linear-gradient(135deg, #22c55e, #16a34a)',
+            background: 'linear-gradient(135deg, var(--ds-text-success, #22c55e), var(--ds-text-success, #16a34a))',
             border: '2px solid white',
             boxShadow: '0 0 8px rgba(34, 197, 94, 0.5), 0 1px 3px rgba(0,0,0,0.2)'
           }}

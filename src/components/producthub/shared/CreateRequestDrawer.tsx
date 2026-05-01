@@ -20,9 +20,9 @@ import { DepartmentSelect } from './DepartmentSelect';
 const T = {
   ink: '#09090B', inkSec: '#18181B', inkMuted: '#71717A',
   surface: 'var(--ds-text-inverse, #FFFFFF)', surfSec: 'var(--bg-1, #F8FAFC)',
-  border: 'var(--bd-default, #E2E8F0)', borderStrong: '#CBD5E1',
-  primary: '#2563EB', primaryHover: '#1D4ED8', primaryBg: '#EFF6FF',
-  danger: '#DC2626',
+  border: 'var(--bd-default, #E2E8F0)', borderStrong: 'var(--ds-text-disabled, var(--ds-text-disabled, #CBD5E1))',
+  primary: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))', primaryHover: 'var(--ds-background-brand-bold-hovered, var(--ds-background-brand-bold-hovered, #1D4ED8))', primaryBg: 'var(--ds-background-selected, var(--ds-background-selected, #EFF6FF))',
+  danger: 'var(--ds-text-danger, var(--ds-text-danger, #DC2626))',
 };
 
 export interface ConversionSource {
@@ -454,7 +454,7 @@ export function CreateRequestDrawer({ open, onClose, conversionSource, onCreated
               className="flex items-center gap-2"
               style={{
                 padding: '9px 24px', border: 'none', borderRadius: 8,
-                background: T.primary, color: '#fff', fontSize: 13, fontWeight: 600,
+                background: T.primary, color: 'var(--ds-surface, var(--ds-surface, var(--ds-surface, #fff)))', fontSize: 13, fontWeight: 600,
                 cursor: 'pointer', boxShadow: '0 2px 8px rgba(37,99,235,.25)',
                 opacity: (createMutation.isPending || !form.title.trim()) ? 0.5 : 1,
               }}

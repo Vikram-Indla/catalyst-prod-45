@@ -87,7 +87,7 @@ export const RadarChart: React.FC<RadarChartProps> = ({ values, size = 200 }) =>
     ctx.closePath();
     ctx.fillStyle = 'rgba(37,99,235,0.15)';
     ctx.fill();
-    ctx.strokeStyle = '#2563EB';
+    ctx.strokeStyle = 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))';
     ctx.lineWidth = 2;
     ctx.stroke();
 
@@ -100,7 +100,7 @@ export const RadarChart: React.FC<RadarChartProps> = ({ values, size = 200 }) =>
       const y = center - r * Math.sin(angle);
       ctx.beginPath();
       ctx.arc(x, y, 4, 0, Math.PI * 2);
-      ctx.fillStyle = '#2563EB';
+      ctx.fillStyle = 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))';
       ctx.fill();
       ctx.strokeStyle = 'white';
       ctx.lineWidth = 2;

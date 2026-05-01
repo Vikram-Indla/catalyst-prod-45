@@ -321,7 +321,7 @@ export function useExportToFormat() {
           <style>
             body { font-family: system-ui, sans-serif; padding: 2rem; max-width: 1200px; margin: 0 auto; }
             table { width: 100%; border-collapse: collapse; }
-            th, td { padding: 0.5rem; border: 1px solid #e5e7eb; text-align: left; }
+            th, td { padding: 0.5rem; border: 1px solid var(--ds-border, #e5e7eb); text-align: left; }
             th { background: #f9fafb; font-weight: 600; }
             .metric { font-size: 2rem; font-weight: 700; }
             .label { color: #6b7280; font-size: 0.875rem; }

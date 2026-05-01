@@ -73,9 +73,9 @@ export function MetaStrip({
 
   // Score chip uses champagne background
   const scoreChipStyle = {
-    background: '#2563eb',
+    background: 'var(--ds-text-brand, var(--ds-text-brand, #2563eb))',
     borderColor: 'rgba(37, 99, 235, 0.3)',
-    color: '#ffffff',
+    color: 'var(--ds-surface, var(--ds-surface, #ffffff))',
   };
 
   return (

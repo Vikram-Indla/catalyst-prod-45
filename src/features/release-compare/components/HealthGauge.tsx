@@ -54,7 +54,7 @@ export function HealthGauge({ score, level, trend, isWinner }: HealthGaugeProps)
             cy={size / 2}
             r={radius}
             fill="none"
-            stroke="#e2e8f0"
+            stroke="var(--ds-border, var(--ds-border, #e2e8f0))"
             strokeWidth={strokeWidth}
           />
           {/* Progress circle */}
@@ -86,7 +86,7 @@ export function HealthGauge({ score, level, trend, isWinner }: HealthGaugeProps)
         {trend && (
           <div 
             className="flex items-center gap-1 text-xs"
-            style={{ color: trend.direction === 'up' ? '#0d9488' : trend.direction === 'down' ? '#ef4444' : '#94a3b8' }}
+            style={{ color: trend.direction === 'up' ? '#0d9488' : trend.direction === 'down' ? 'var(--ds-text-danger, var(--ds-text-danger, #ef4444))' : 'var(--ds-text-subtlest, var(--ds-text-subtlest, #94a3b8))' }}
           >
             <TrendIcon className="w-3 h-3" />
             <span>{trend.value}% trend</span>

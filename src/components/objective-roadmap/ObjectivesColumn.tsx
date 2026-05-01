@@ -65,16 +65,16 @@ export const ObjectivesColumn = forwardRef<HTMLDivElement, ObjectivesColumnProps
     
     // Status config per legend:
     // On track: Filled, Teal (brand-teal #0d9488)
-    // At risk: Filled, Amber (#f59e0b)
+    // At risk: Filled, Amber (var(--ds-text-warning, #f59e0b))
     // Off track: Filled, Red (destructive)
-    // In Progress: Outline, Blue (brand-primary #2563eb)
+    // In Progress: Outline, Blue (brand-primary var(--ds-text-brand, #2563eb))
     // Pending: Outline, Grey (muted)
     const getStatusConfig = (status: string) => {
       switch (status) {
         case 'on-track': return { color: '#0d9488', variant: 'filled' as const };
-        case 'at-risk': return { color: '#f59e0b', variant: 'filled' as const };
+        case 'at-risk': return { color: 'var(--ds-text-warning, var(--ds-text-warning, #f59e0b))', variant: 'filled' as const };
         case 'off-track': return { color: '#DE350B', variant: 'filled' as const }; // Atlaskit danger.bolder
-        case 'in-progress': return { color: '#2563eb', variant: 'outline' as const };
+        case 'in-progress': return { color: 'var(--ds-text-brand, var(--ds-text-brand, #2563eb))', variant: 'outline' as const };
         case 'pending': return { color: '#6b7280', variant: 'outline' as const };
         default: return { color: '#6b7280', variant: 'outline' as const };
       }

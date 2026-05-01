@@ -278,7 +278,7 @@ export const CYCLE_STATUS_CONFIG: Record<CycleStatus, { label: string; color: st
     // neutral muted
     label: 'draft',
     color: '#626F86',
-    bgColor: '#F4F5F7'
+    bgColor: 'var(--ds-surface-sunken, var(--ds-surface-sunken, #F4F5F7))'
   },
   planned: {
     // information
@@ -308,7 +308,7 @@ export const CYCLE_STATUS_CONFIG: Record<CycleStatus, { label: string; color: st
     // neutral
     label: 'archived',
     color: '#42526E',
-    bgColor: '#DFE1E6'
+    bgColor: 'var(--ds-border, var(--ds-border, #DFE1E6))'
   },
 };
 

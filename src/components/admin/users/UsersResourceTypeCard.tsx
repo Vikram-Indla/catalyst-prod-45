@@ -61,9 +61,9 @@ export function UsersResourceTypeCard({
 
 // Dot colors per spec
 export const RESOURCE_DOT_COLORS = {
-  total: '#475569',      // slate
-  variable: '#2563eb',   // blue
+  total: 'var(--ds-text-subtle, var(--ds-text-subtle, #475569))',      // slate
+  variable: 'var(--ds-text-brand, var(--ds-text-brand, #2563eb))',   // blue
   permanent: '#0d9488',  // teal
-  fixed: '#d97706',      // amber
+  fixed: 'var(--ds-text-warning, var(--ds-text-warning, #d97706))',      // amber
   freelance: '#8b5cf6',  // purple
 } as const;

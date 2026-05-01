@@ -10,10 +10,10 @@ interface DefectSummaryCardProps {
 }
 
 const severityConfig = {
-  blocker: { label: 'Blocker', bg: '#fee2e2', color: '#ef4444' },
-  critical: { label: 'Critical', bg: '#fef3c7', color: '#d97706' },
-  major: { label: 'Major', bg: '#eff6ff', color: '#2563eb' },
-  minor: { label: 'Minor', bg: '#f1f5f9', color: '#64748b' },
+  blocker: { label: 'Blocker', bg: '#fee2e2', color: 'var(--ds-text-danger, var(--ds-text-danger, #ef4444))' },
+  critical: { label: 'Critical', bg: '#fef3c7', color: 'var(--ds-text-warning, var(--ds-text-warning, #d97706))' },
+  major: { label: 'Major', bg: 'var(--ds-background-selected, var(--ds-background-selected, #eff6ff))', color: 'var(--ds-text-brand, var(--ds-text-brand, #2563eb))' },
+  minor: { label: 'Minor', bg: 'var(--ds-surface-sunken, var(--ds-surface-sunken, #f1f5f9))', color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #64748b))' },
 };
 
 export function DefectSummaryCard({ defects }: DefectSummaryCardProps) {

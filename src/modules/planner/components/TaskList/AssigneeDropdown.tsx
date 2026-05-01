@@ -27,8 +27,8 @@ const getAvatarColor = (name: string) => {
     '#8b5cf6', // purple
     '#06b6d4', // cyan
     '#10b981', // emerald
-    '#f59e0b', // amber
-    '#ef4444', // red
+    'var(--ds-text-warning, var(--ds-text-warning, #f59e0b))', // amber
+    'var(--ds-text-danger, var(--ds-text-danger, #ef4444))', // red
     '#ec4899', // pink
     '#6366f1', // indigo
     '#14b8a6', // teal

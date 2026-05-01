@@ -15,8 +15,8 @@ const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', '
 function getNumberClass(count: number): string {
   if (count === 0) return 'text-muted-foreground/40';
   if (count <= 3) return 'text-foreground';
-  if (count <= 6) return 'text-[#d97706]';
-  return 'text-[#ef4444]';
+  if (count <= 6) return 'text-[var(--ds-text-warning,var(--ds-text-warning, #d97706))]';
+  return 'text-[var(--ds-text-danger,var(--ds-text-danger, #ef4444))]';
 }
 
 export function TimelineHeader({ monthlyTotals, currentMonth }: TimelineHeaderProps) {
@@ -35,15 +35,15 @@ export function TimelineHeader({ monthlyTotals, currentMonth }: TimelineHeaderPr
           key={month}
           className={cn(
             "py-3 px-1.5 text-center border-l border-border relative",
-            index === currentMonth && "bg-[#2563eb]/[0.06]"
+            index === currentMonth && "bg-[var(--ds-text-brand,var(--ds-text-brand, #2563eb))]/[0.06]"
           )}
         >
           {index === currentMonth && (
-            <div className="absolute bottom-0 left-0 right-0 h-[3px] bg-[#2563eb]" />
+            <div className="absolute bottom-0 left-0 right-0 h-[3px] bg-[var(--ds-text-brand,var(--ds-text-brand, #2563eb))]" />
           )}
           <div className={cn(
             "text-[10px] font-semibold uppercase tracking-[0.02em] mb-1",
-            index === currentMonth ? "text-[#2563eb] font-bold" : "text-muted-foreground"
+            index === currentMonth ? "text-[var(--ds-text-brand,var(--ds-text-brand, #2563eb))] font-bold" : "text-muted-foreground"
           )}>
             {month} 26
           </div>
@@ -51,7 +51,7 @@ export function TimelineHeader({ monthlyTotals, currentMonth }: TimelineHeaderPr
             {monthlyTotals[index] || 0}
           </div>
           {index === currentMonth && (
-            <span className="inline-block mt-1.5 px-2 py-0.5 bg-[#2563eb] rounded text-[8px] font-bold text-white uppercase tracking-[0.06em]">
+            <span className="inline-block mt-1.5 px-2 py-0.5 bg-[var(--ds-text-brand,var(--ds-text-brand, #2563eb))] rounded text-[8px] font-bold text-white uppercase tracking-[0.06em]">
               Now
             </span>
           )}

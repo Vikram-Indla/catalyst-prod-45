@@ -142,7 +142,7 @@ export function T10SidePanel({ item, isOpen, onClose, onUpdate, onDelete, isRead
 
   const getRankStyles = () => {
     if (rankTier === 'top') {
-      return { background: 'linear-gradient(135deg, #2563eb 0%, #1e40af 100%)', color: 'white' };
+      return { background: 'linear-gradient(135deg, var(--ds-text-brand, #2563eb) 0%, #1e40af 100%)', color: 'white' };
     } else if (rankTier === 'mid') {
       return { background: '#6b7280', color: 'white' };
     }

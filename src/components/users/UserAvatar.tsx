@@ -32,7 +32,7 @@ export const UserAvatar: React.FC<UserAvatarProps> = ({ name, country, onClick }
             className="w-full h-full object-cover"
           />
         ) : (
-          <CircleUser className="w-[70%] h-[70%]" color="#FFFFFF" strokeWidth={1.5} />
+          <CircleUser className="w-[70%] h-[70%]" color="var(--ds-surface, var(--ds-surface, #FFFFFF))" strokeWidth={1.5} />
         )}
       </div>
       <div className="ct-avatar-flag">

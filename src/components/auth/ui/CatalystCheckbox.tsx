@@ -40,7 +40,7 @@ export const CatalystCheckbox = forwardRef<HTMLInputElement, CatalystCheckboxPro
           </div>
         </div>
         {label && (
-          <span className="text-[13px] leading-snug text-muted-foreground dark:text-[#A1A1A1]">
+          <span className="text-[13px] leading-snug text-muted-foreground dark:text-[var(--ds-text-subtlest,var(--ds-text-subtlest, #A1A1A1))]">
             {label}
           </span>
         )}

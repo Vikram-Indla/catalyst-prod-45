@@ -184,7 +184,7 @@ export function RoadmapGanttChart({ groups, timelineStart, timelineEnd, zoom, zo
               <div className="absolute pointer-events-none" style={{ left: `${todayPct}%`, top: 0, bottom: 0, zIndex: 20 }}>
                 <div style={{
                   position: 'absolute', top: -2, left: '50%', transform: 'translateX(-50%)',
-                  fontSize: 9, fontWeight: 700, color: 'var(--ds-text-inverse, #FFFFFF)', background: '#EF4444',
+                  fontSize: 9, fontWeight: 700, color: 'var(--ds-text-inverse, #FFFFFF)', background: 'var(--ds-text-danger, var(--ds-text-danger, #EF4444))',
                   padding: '2px 8px', borderRadius: 4, whiteSpace: 'nowrap',
                   textTransform: 'uppercase', letterSpacing: '0.08em',
                 }}>
@@ -192,14 +192,14 @@ export function RoadmapGanttChart({ groups, timelineStart, timelineEnd, zoom, zo
                 </div>
                 <div style={{
                   width: 2, height: '100%', margin: '0 auto', marginTop: 18,
-                  background: 'linear-gradient(180deg, #EF4444 0%, rgba(239,68,68,0.15) 100%)',
+                  background: 'linear-gradient(180deg, var(--ds-text-danger, #EF4444) 0%, rgba(239,68,68,0.15) 100%)',
                 }} />
               </div>
             )}
 
             {/* Groups + Rows */}
             {groups.map((group, gi) => {
-              const typeColor = TYPE_COLORS[group.key]?.solid || group.color || '#64748B';
+              const typeColor = TYPE_COLORS[group.key]?.solid || group.color || 'var(--ds-text-subtlest, var(--ds-text-subtlest, #64748B))';
               const isCollapsed = collapsedGroups.has(group.key);
               return (
                 <div key={group.key}>
@@ -208,7 +208,7 @@ export function RoadmapGanttChart({ groups, timelineStart, timelineEnd, zoom, zo
                     className="flex items-center gap-2 px-3 relative cursor-pointer select-none"
                     style={{
                       height: GROUP_HEADER_HEIGHT,
-                      background: isDark ? '#1F1F1F' : SURFACE.page,
+                      background: isDark ? 'var(--ds-surface-overlay, var(--ds-surface-overlay, #1F1F1F))' : SURFACE.page,
                       borderBottom: `1px solid ${surface.border}`,
                       borderTop: gi > 0 ? `1px solid ${surface.border}` : 'none',
                       zIndex: 10,

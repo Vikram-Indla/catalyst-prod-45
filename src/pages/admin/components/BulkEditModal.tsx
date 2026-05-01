@@ -215,13 +215,13 @@ const bulkModalCSS = `
   align-items: center;
   justify-content: space-between;
   padding: 20px 24px;
-  border-bottom: 1px solid #e2e8f0;
+  border-bottom: 1px solid var(--ds-border, #e2e8f0);
 }
 
 .ct-modal-header h2 {
   font-size: 18px;
   font-weight: 700;
-  color: #0f172a;
+  color: var(--ds-text, #0f172a);
   margin: 0;
 }
 
@@ -232,16 +232,16 @@ const bulkModalCSS = `
   align-items: center;
   justify-content: center;
   border: none;
-  background: #f8fafc;
+  background: var(--ds-surface-sunken, #f8fafc);
   border-radius: 8px;
-  color: #64748b;
+  color: var(--ds-text-subtlest, #64748b);
   cursor: pointer;
   transition: all 0.15s ease;
 }
 
 .ct-modal-close:hover {
-  background: #f1f5f9;
-  color: #334155;
+  background: var(--ds-surface-sunken, #f1f5f9);
+  color: var(--ds-text-subtle, #334155);
 }
 
 /* Modal Body */
@@ -253,7 +253,7 @@ const bulkModalCSS = `
 
 .ct-modal-description {
   font-size: 13px;
-  color: #64748b;
+  color: var(--ds-text-subtlest, #64748b);
   margin: 0 0 20px 0;
   line-height: 1.5;
 }
@@ -268,19 +268,19 @@ const bulkModalCSS = `
 /* Field Card - V8: WHITE background, NOT gray */
 .ct-field-card {
   background: var(--ds-text-inverse, #ffffff);
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--ds-border, #e2e8f0);
   border-radius: 12px;
   padding: 16px 20px;
   transition: all 0.15s ease;
 }
 
 .ct-field-card:hover {
-  border-color: #94a3b8;
+  border-color: var(--ds-text-subtlest, #94a3b8);
 }
 
 /* Active state: Blue border + subtle blue bg */
 .ct-field-card.active {
-  border-color: #2563eb;
+  border-color: var(--ds-text-brand, #2563eb);
   background: rgba(37, 99, 235, 0.04);
 }
 
@@ -294,7 +294,7 @@ const bulkModalCSS = `
 .ct-field-card-header input[type="checkbox"] {
   width: 20px;
   height: 20px;
-  accent-color: #2563eb;
+  accent-color: var(--ds-text-brand, #2563eb);
   cursor: pointer;
   flex-shrink: 0;
 }
@@ -302,7 +302,7 @@ const bulkModalCSS = `
 .ct-field-card-label {
   font-size: 14px;
   font-weight: 600;
-  color: #0f172a;
+  color: var(--ds-text, #0f172a);
 }
 
 /* Dropdown Select */
@@ -320,7 +320,7 @@ const bulkModalCSS = `
   font-weight: 500;
   color: #1e293b;
   background: var(--ds-text-inverse, #ffffff);
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--ds-border, #e2e8f0);
   border-radius: 8px;
   cursor: pointer;
   transition: all 0.15s ease;
@@ -331,29 +331,29 @@ const bulkModalCSS = `
 }
 
 .ct-field-select-trigger:hover:not(:disabled) {
-  border-color: #2563eb;
+  border-color: var(--ds-text-brand, #2563eb);
 }
 
 .ct-field-select-trigger:focus {
   outline: none;
-  border-color: #2563eb;
+  border-color: var(--ds-text-brand, #2563eb);
   box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.08);
 }
 
 .ct-field-select-trigger:disabled {
-  background: #f8fafc;
-  color: #94a3b8;
+  background: var(--ds-surface-sunken, #f8fafc);
+  color: var(--ds-text-subtlest, #94a3b8);
   cursor: not-allowed;
 }
 
 .ct-field-select-trigger.placeholder {
-  color: #94a3b8;
+  color: var(--ds-text-subtlest, #94a3b8);
 }
 
 .ct-field-select-trigger svg {
   position: absolute;
   right: 16px;
-  color: #64748b;
+  color: var(--ds-text-subtlest, #64748b);
   transition: transform 0.15s ease;
 }
 
@@ -368,7 +368,7 @@ const bulkModalCSS = `
   left: 0;
   right: 0;
   background: var(--ds-text-inverse, #ffffff);
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--ds-border, #e2e8f0);
   border-radius: 12px;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
   padding: 8px;
@@ -391,20 +391,20 @@ const bulkModalCSS = `
   padding: 12px 14px;
   font-size: 14px;
   font-weight: 500;
-  color: #334155;
+  color: var(--ds-text-subtle, #334155);
   border-radius: 6px;
   cursor: pointer;
   transition: all 0.15s ease;
 }
 
 .ct-field-select-item:hover {
-  background: #f8fafc;
+  background: var(--ds-surface-sunken, #f8fafc);
 }
 
 /* Selected item: Blue tint background */
 .ct-field-select-item.selected {
   background: rgba(37, 99, 235, 0.08);
-  color: #2563eb;
+  color: var(--ds-text-brand, #2563eb);
   font-weight: 600;
 }
 
@@ -414,7 +414,7 @@ const bulkModalCSS = `
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #2563eb;
+  color: var(--ds-text-brand, #2563eb);
 }
 
 /* Modal Footer */
@@ -424,8 +424,8 @@ const bulkModalCSS = `
   justify-content: flex-end;
   gap: 12px;
   padding: 16px 24px;
-  border-top: 1px solid #e2e8f0;
-  background: #f8fafc;
+  border-top: 1px solid var(--ds-border, #e2e8f0);
+  background: var(--ds-surface-sunken, #f8fafc);
   border-radius: 0 0 12px 12px;
 }
 
@@ -440,26 +440,26 @@ const bulkModalCSS = `
   font-size: 14px;
   font-weight: 500;
   border-radius: 8px;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--ds-border, #e2e8f0);
   background: var(--ds-text-inverse, #ffffff);
-  color: #0f172a;
+  color: var(--ds-text, #0f172a);
   cursor: pointer;
   transition: all 0.15s ease;
 }
 
 .ct-btn:hover {
-  border-color: #2563eb;
-  color: #2563eb;
+  border-color: var(--ds-text-brand, #2563eb);
+  color: var(--ds-text-brand, #2563eb);
 }
 
 .ct-btn-primary {
-  background: #2563eb;
-  border-color: #2563eb;
+  background: var(--ds-text-brand, #2563eb);
+  border-color: var(--ds-text-brand, #2563eb);
   color: var(--ds-text-inverse, #ffffff);
 }
 
 .ct-btn-primary:hover {
-  background: #1d4ed8;
-  border-color: #1d4ed8;
+  background: var(--ds-background-brand-bold-hovered, #1d4ed8);
+  border-color: var(--ds-background-brand-bold-hovered, #1d4ed8);
 }
 `;

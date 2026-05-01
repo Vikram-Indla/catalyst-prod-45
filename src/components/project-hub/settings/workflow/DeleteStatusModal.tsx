@@ -46,7 +46,7 @@ export function DeleteStatusModal({ open, statusName, itemCount, otherStatuses, 
       className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/50"
       onClick={e => { if (e.target === e.currentTarget) onClose(); }}
     >
-      <div className="bg-[var(--cp-float)] dark:bg-[#1A1A1A]" style={{ width: 440, borderRadius: 12, padding: 24, boxShadow: '0 20px 25px -5px rgba(0,0,0,.1)', fontFamily: 'var(--cp-font-body)' }}>
+      <div className="bg-[var(--cp-float)] dark:bg-[var(--ds-surface-raised,var(--ds-surface-raised, #1A1A1A))]" style={{ width: 440, borderRadius: 12, padding: 24, boxShadow: '0 20px 25px -5px rgba(0,0,0,.1)', fontFamily: 'var(--cp-font-body)' }}>
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
             <AlertTriangle size={18} color="var(--sem-danger)" strokeWidth={2} />
@@ -70,7 +70,7 @@ export function DeleteStatusModal({ open, statusName, itemCount, otherStatuses, 
 
             <div className="mb-4">
               <label style={{ fontSize: 12, fontWeight: 500, color: 'var(--fg-2)', display: 'block', marginBottom: 4 }}>Move items to:</label>
-              <select value={targetId} onChange={e => setTargetId(e.target.value)} className="bg-[var(--cp-float)] dark:bg-[#1A1A1A]" style={{ ...inputStyle, cursor: 'pointer' }}>
+              <select value={targetId} onChange={e => setTargetId(e.target.value)} className="bg-[var(--cp-float)] dark:bg-[var(--ds-surface-raised,var(--ds-surface-raised, #1A1A1A))]" style={{ ...inputStyle, cursor: 'pointer' }}>
                 {otherStatuses.map(s => (
                   <option key={s.id} value={s.id}>{s.name}</option>
                 ))}
@@ -84,7 +84,7 @@ export function DeleteStatusModal({ open, statusName, itemCount, otherStatuses, 
         )}
 
         <div className="flex justify-end gap-2">
-          <button onClick={onClose} className="bg-[var(--cp-float)] dark:bg-[#1A1A1A]" style={{ height: 50, padding: '0 16px', fontSize: 13, fontWeight: 500, color: 'var(--fg-2)', border: '1px solid var(--divider)', borderRadius: 6, cursor: 'pointer' }}>Cancel</button>
+          <button onClick={onClose} className="bg-[var(--cp-float)] dark:bg-[var(--ds-surface-raised,var(--ds-surface-raised, #1A1A1A))]" style={{ height: 50, padding: '0 16px', fontSize: 13, fontWeight: 500, color: 'var(--fg-2)', border: '1px solid var(--divider)', borderRadius: 6, cursor: 'pointer' }}>Cancel</button>
           <button
             onClick={() => onConfirm(hasMigration ? targetId : undefined)}
             disabled={loading || (hasMigration && !targetId)}

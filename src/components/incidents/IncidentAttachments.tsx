@@ -61,12 +61,12 @@ export function IncidentAttachments({
             {attachments.map(attachment => (
               <div 
                 key={attachment.id}
-                className="flex items-center justify-between p-3 bg-[#FAFBFC] rounded-lg border border-[#E8E8E8] group hover:border-[#2563eb]"
+                className="flex items-center justify-between p-3 bg-[var(--ds-surface-sunken,var(--ds-surface-sunken, #FAFBFC))] rounded-lg border border-[#E8E8E8] group hover:border-[var(--ds-text-brand,var(--ds-text-brand, #2563eb))]"
               >
                 <div className="flex items-center gap-3">
                   {getFileIcon(attachment.name)}
                   <div>
-                    <p className="text-sm font-medium text-[#172B4D]">{attachment.name}</p>
+                    <p className="text-sm font-medium text-[var(--ds-text,var(--ds-text, #172B4D))]">{attachment.name}</p>
                     <p className="text-xs text-[#8C8C8C]">
                       {attachment.size} • Uploaded by {attachment.uploadedBy} at {attachment.uploadedAt}
                     </p>
@@ -102,11 +102,11 @@ export function IncidentAttachments({
           onDrop={handleDrop}
           onDragOver={(e) => e.preventDefault()}
           onClick={() => fileInputRef.current?.click()}
-          className="border-2 border-dashed border-[#DFE1E6] rounded-lg p-6 text-center cursor-pointer hover:border-[#2563eb] hover:bg-[#2563eb]/5 transition-colors"
+          className="border-2 border-dashed border-[var(--ds-border,var(--ds-border, #DFE1E6))] rounded-lg p-6 text-center cursor-pointer hover:border-[var(--ds-text-brand,var(--ds-text-brand, #2563eb))] hover:bg-[var(--ds-text-brand,var(--ds-text-brand, #2563eb))]/5 transition-colors"
         >
           <Upload className="w-8 h-8 text-[#8C8C8C] mx-auto mb-2" />
           <p className="text-sm text-[#5C5C5C]">
-            Drop files here or <span className="text-[#2563eb] font-medium">click to upload</span>
+            Drop files here or <span className="text-[var(--ds-text-brand,var(--ds-text-brand, #2563eb))] font-medium">click to upload</span>
           </p>
           <p className="text-xs text-[#8C8C8C] mt-1">Max 10MB per file</p>
         </div>

@@ -14,8 +14,8 @@ interface ReleaseModalProps {
 
 const STATUS_OPTIONS: ReleaseStatus[] = ['Planned', 'Active', 'At Risk', 'Completed', 'Cancelled'];
 const COLOR_PRESETS = [
-  '#2563eb', '#0d9488', '#7c3aed', '#16a34a',
-  '#d97706', '#ef4444', '#475569', '#0891b2',
+  'var(--ds-text-brand, var(--ds-text-brand, #2563eb))', '#0d9488', '#7c3aed', 'var(--ds-text-success, var(--ds-text-success, #16a34a))',
+  'var(--ds-text-warning, var(--ds-text-warning, #d97706))', 'var(--ds-text-danger, var(--ds-text-danger, #ef4444))', 'var(--ds-text-subtle, var(--ds-text-subtle, #475569))', '#0891b2',
 ];
 
 export function ReleaseModal({ isOpen, onClose, release }: ReleaseModalProps) {
@@ -158,7 +158,7 @@ export function ReleaseModal({ isOpen, onClose, release }: ReleaseModalProps) {
                     transition: 'border-color 150ms',
                   }}>
                   {form.color === c && (
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--ds-surface, var(--ds-surface, var(--ds-surface, #fff)))" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
                       <polyline points="20 6 9 17 4 12" />
                     </svg>
                   )}

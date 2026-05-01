@@ -83,7 +83,7 @@ export function useCreateKanbanStatus() {
         .insert({
           name: status.name,
           slug,
-          color: status.color || '#2563eb',
+          color: status.color || 'var(--ds-text-brand, var(--ds-text-brand, #2563eb))',
           position: nextPosition,
           is_default: false,
           is_completed_status: false,

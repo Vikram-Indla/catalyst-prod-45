@@ -93,12 +93,12 @@ export function ThemeCard({ theme, onClick }: ThemeCardProps) {
               <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--cp-blue)' }} />
               E {theme.epic_count}
             </span>
-            <span style={{ color: '#cbd5e1' }}>·</span>
+            <span style={{ color: 'var(--ds-text-disabled, var(--ds-text-disabled, #cbd5e1))' }}>·</span>
             <span style={{ display: 'inline-flex', alignItems: 'center', gap: 3 }}>
               <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--sem-success)' }} />
               S {theme.story_count}
             </span>
-            <span style={{ color: '#cbd5e1' }}>·</span>
+            <span style={{ color: 'var(--ds-text-disabled, var(--ds-text-disabled, #cbd5e1))' }}>·</span>
             <span style={{ display: 'inline-flex', alignItems: 'center', gap: 3 }}>
               <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#6366f1' }} />
               ST {theme.subtask_count}

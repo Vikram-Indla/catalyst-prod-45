@@ -9,8 +9,8 @@ interface CardScoreRingProps {
 function getScoreColor(score: number | null): string {
   if (score === null) return '#e4e4e7';
   if (score >= 4.0) return '#10b981';
-  if (score >= 3.0) return '#3b82f6';
-  return '#f59e0b';
+  if (score >= 3.0) return 'var(--ds-text-brand, var(--ds-text-brand, #3b82f6))';
+  return 'var(--ds-text-warning, var(--ds-text-warning, #f59e0b))';
 }
 
 export const CardScoreRing: React.FC<CardScoreRingProps> = ({ score, size = 64 }) => {

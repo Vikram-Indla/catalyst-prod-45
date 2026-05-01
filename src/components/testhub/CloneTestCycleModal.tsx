@@ -307,7 +307,7 @@ export function CloneTestCycleModal({
             style={{
               height: 40, padding: '0 20px',
               background: newName.trim()
-                ? 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)'
+                ? 'linear-gradient(135deg, var(--ds-text-brand, #2563EB) 0%, var(--ds-background-brand-bold-hovered, #1D4ED8) 100%)'
                 : 'var(--fg-4)',
               border: 'none', borderRadius: 8, fontSize: 14, fontWeight: 600,
               color: 'var(--ds-text-inverse, #FFFFFF)',

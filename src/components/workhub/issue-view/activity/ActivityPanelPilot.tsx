@@ -140,7 +140,7 @@ function HistoryRow({ entry }: { entry: any }) {
             {isStatus ? (
               <>
                 {oldVal && <span className="ap-status-loz">{oldVal}</span>}
-                <ArrowRight style={{ width: 14, height: 14, color: '#6B778C', flexShrink: 0 }} />
+                <ArrowRight style={{ width: 14, height: 14, color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #6B778C))', flexShrink: 0 }} />
                 {newVal && <span className="ap-status-loz">{newVal}</span>}
               </>
             ) : isAssignee ? (
@@ -151,7 +151,7 @@ function HistoryRow({ entry }: { entry: any }) {
                     {oldVal}
                   </span>
                 )}
-                <ArrowRight style={{ width: 14, height: 14, color: '#6B778C', flexShrink: 0 }} />
+                <ArrowRight style={{ width: 14, height: 14, color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #6B778C))', flexShrink: 0 }} />
                 {newVal && (
                   <span className="ap-assignee-chip">
                     <span className="ap-assignee-mini" style={{ background: avatarBg(newVal) }}>{initials(newVal)}</span>
@@ -162,7 +162,7 @@ function HistoryRow({ entry }: { entry: any }) {
             ) : (
               <>
                 <span className="ap-change-old">{oldVal ?? 'None'}</span>
-                <ArrowRight style={{ width: 14, height: 14, color: '#6B778C', flexShrink: 0 }} />
+                <ArrowRight style={{ width: 14, height: 14, color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #6B778C))', flexShrink: 0 }} />
                 <span className="ap-change-new">{newVal}</span>
               </>
             )}

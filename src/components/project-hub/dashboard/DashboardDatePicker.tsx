@@ -57,10 +57,10 @@ export default function DashboardDatePicker() {
       border: open ? '2px solid #4C9AFF' : '1px solid #DFE1E6',
       boxShadow: open ? '0 0 0 2px rgba(76,154,255,.3)' : 'none',
       borderRadius: 4,
-      background: '#FAFBFC',
+      background: 'var(--ds-surface-sunken, var(--ds-surface-sunken, #FAFBFC))',
       fontSize: 13,
       fontWeight: 500,
-      color: open ? '#0052CC' : '#172B4D',
+      color: open ? '#0052CC' : 'var(--ds-text, var(--ds-text, #172B4D))',
       cursor: 'pointer',
     }) as React.CSSProperties,
     [open],
@@ -243,11 +243,11 @@ function Row({
         border: 0,
         cursor: 'pointer',
         fontSize: 13,
-        color: active ? '#0052CC' : '#172B4D',
+        color: active ? '#0052CC' : 'var(--ds-text, var(--ds-text, #172B4D))',
         fontWeight: active ? 600 : 400,
         textAlign: 'left',
       }}
-      onMouseEnter={(e) => (e.currentTarget.style.background = '#F4F5F7')}
+      onMouseEnter={(e) => (e.currentTarget.style.background = 'var(--ds-surface-sunken, var(--ds-surface-sunken, #F4F5F7))')}
       onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
     >
       <span style={{ width: 14, display: 'inline-flex' }}>
@@ -300,7 +300,7 @@ function CustomRangePanel({
 
   return (
     <div style={{ padding: 12, borderTop: '1px solid #F1F2F4' }}>
-      <div style={{ display: 'flex', gap: 6, alignItems: 'center', fontSize: 12, color: '#172B4D' }}>
+      <div style={{ display: 'flex', gap: 6, alignItems: 'center', fontSize: 12, color: 'var(--ds-text, var(--ds-text, #172B4D))' }}>
         <DateInput label="From" value={from} onChange={setFrom} />
         <span style={{ color: '#7A869A' }}>→</span>
         <DateInput label="To" value={to} onChange={setTo} />
@@ -393,8 +393,8 @@ function DateInput({
           border: '1px solid #DFE1E6',
           borderRadius: 3,
           fontSize: 12,
-          background: '#FAFBFC',
-          color: '#172B4D',
+          background: 'var(--ds-surface-sunken, var(--ds-surface-sunken, #FAFBFC))',
+          color: 'var(--ds-text, var(--ds-text, #172B4D))',
         }}
       />
     </label>
@@ -427,7 +427,7 @@ function MonthHeader({
       >
         ‹
       </button>
-      <span style={{ fontSize: 12, fontWeight: 600, color: '#172B4D' }}>{format(month, 'MMMM yyyy')}</span>
+      <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text, var(--ds-text, #172B4D))' }}>{format(month, 'MMMM yyyy')}</span>
       <button
         type="button"
         onClick={onNext}
@@ -506,7 +506,7 @@ function MonthGrid({
           const isToday = isSameDay(d, today);
 
           let bg = 'transparent';
-          let color = isOtherMonth ? '#C1C7D0' : '#172B4D';
+          let color = isOtherMonth ? '#C1C7D0' : 'var(--ds-text, var(--ds-text, #172B4D))';
           let radius = '3px';
           if (isStart || isEnd) {
             bg = '#0052CC';

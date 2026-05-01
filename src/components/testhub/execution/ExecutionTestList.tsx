@@ -128,7 +128,7 @@ export function ExecutionTestList({
                       {tc.test_case?.title}
                     </p>
                     {tc.current_status !== 'not_run' && tc.executed_at && (
-                      <p style={{ fontSize: 10, color: '#94A3B8', margin: '2px 0 0', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      <p style={{ fontSize: 10, color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #94A3B8))', margin: '2px 0 0', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                         {new Date(tc.executed_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                         {tc.assignee?.full_name ? ` · ${tc.assignee.full_name.split(' ')[0]}` : ''}
                       </p>

@@ -5,8 +5,8 @@
  * styling is never touched.
  *
  * Tokens follow Jira/Atlaskit colours already used throughout sp-*:
- *   #0052CC focus blue · #DFE1E6 border · #172B4D ink · #6B778C muted ·
- *   #F4F5F7 subtle surface.
+ *   #0052CC focus blue · var(--ds-border, #DFE1E6) border · var(--ds-text, #172B4D) ink · var(--ds-text-subtlest, #6B778C) muted ·
+ *   var(--ds-surface-sunken, #F4F5F7) subtle surface.
  */
 
 /* ─── Row focus ring (keyboard navigation) ─── */
@@ -16,7 +16,7 @@
 .sp-panel--v2 .sp-row--v2:focus-visible,
 .sp-panel--v2 .sp-row--focused {
   box-shadow: inset 2px 0 0 #0052CC;
-  background: #F4F5F7;
+  background: var(--ds-surface-sunken, #F4F5F7);
 }
 
 /* ─── Work cell wrapper (row + trailing description trigger) ─── */
@@ -39,7 +39,7 @@
   border: 1px solid transparent;
   background: transparent;
   border-radius: 3px;
-  color: #6B778C;
+  color: var(--ds-text-subtlest, #6B778C);
   cursor: pointer;
   flex-shrink: 0;
   opacity: 0;
@@ -56,7 +56,7 @@
 
 .sp-panel--v2 .sp-desc-trigger:hover {
   background: #EBECF0;
-  color: #172B4D;
+  color: var(--ds-text, #172B4D);
 }
 
 .sp-panel--v2 .sp-desc-trigger:focus-visible {
@@ -93,7 +93,7 @@
 .sp-desc-popover-title {
   font-size: 12px;
   font-weight: 600;
-  color: #6B778C;
+  color: var(--ds-text-subtlest, #6B778C);
   text-transform: uppercase;
   letter-spacing: 0.03em;
   margin: 0 0 8px;
@@ -101,7 +101,7 @@
 
 .sp-desc-loading {
   font-size: 13px;
-  color: #6B778C;
+  color: var(--ds-text-subtlest, #6B778C);
   padding: 24px 0;
   text-align: center;
 }

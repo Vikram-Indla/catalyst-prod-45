@@ -62,10 +62,10 @@ export const PRIORITY_TO_EXECUTE_LABELS: Record<PriorityToExecute, string> = {
 
 // Priority to Execute colors
 export const PRIORITY_TO_EXECUTE_COLORS: Record<PriorityToExecute, string> = {
-  VERY_HIGH: "#dc2626",   // red
+  VERY_HIGH: "var(--ds-text-danger, var(--ds-text-danger, #dc2626))",   // red
   HIGH: "#ea580c",        // orange
   MEDIUM: "#eab308",      // yellow
-  LOW: "#22c55e",         // green
+  LOW: "var(--ds-text-success, var(--ds-text-success, #22c55e))",         // green
 };
 
 export const ABILITY_TO_EXECUTE_STROKE: Record<AbilityToExecute, number> = {

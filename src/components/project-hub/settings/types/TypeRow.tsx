@@ -12,13 +12,13 @@ const ICON_MAP: Record<string, React.ComponentType<any>> = {
 
 const LEVEL_STYLES: Record<string, { bg: string; text: string }> = {
   Top: { bg: '#F5F3FF', text: '#7C3AED' },
-  Mid: { bg: '#EFF6FF', text: '#2563EB' },
-  Work: { bg: '#F1F5F9', text: '#334155' },
-  Child: { bg: '#F1F5F9', text: '#94A3B8' },
+  Mid: { bg: 'var(--ds-background-selected, var(--ds-background-selected, #EFF6FF))', text: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))' },
+  Work: { bg: 'var(--ds-surface-sunken, var(--ds-surface-sunken, #F1F5F9))', text: 'var(--ds-text-subtle, var(--ds-text-subtle, #334155))' },
+  Child: { bg: 'var(--ds-surface-sunken, var(--ds-surface-sunken, #F1F5F9))', text: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #94A3B8))' },
   top: { bg: '#F5F3FF', text: '#7C3AED' },
-  mid: { bg: '#EFF6FF', text: '#2563EB' },
-  work: { bg: '#F1F5F9', text: '#334155' },
-  child: { bg: '#F1F5F9', text: '#94A3B8' },
+  mid: { bg: 'var(--ds-background-selected, var(--ds-background-selected, #EFF6FF))', text: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))' },
+  work: { bg: 'var(--ds-surface-sunken, var(--ds-surface-sunken, #F1F5F9))', text: 'var(--ds-text-subtle, var(--ds-text-subtle, #334155))' },
+  child: { bg: 'var(--ds-surface-sunken, var(--ds-surface-sunken, #F1F5F9))', text: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #94A3B8))' },
 };
 
 interface TypeRowProps {
@@ -41,7 +41,7 @@ export function TypeRow({ name, icon, color, level, isEnabled, isFeatureType, fe
 
   return (
     <div
-      className="flex items-center gap-3 px-3 rounded-lg hover:bg-[#F8FAFC] transition-colors"
+      className="flex items-center gap-3 px-3 rounded-lg hover:bg-[var(--ds-surface-sunken,var(--ds-surface-sunken, #F8FAFC))] transition-colors"
       style={{ height: 48, opacity: isDisabledFeature ? 0.5 : 1 }}
     >
       {/* Icon circle */}

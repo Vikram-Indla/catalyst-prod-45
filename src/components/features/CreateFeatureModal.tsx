@@ -66,8 +66,8 @@ function SectionHeader({
 }) {
   return (
     <div className="flex items-center gap-2 mb-3">
-      <Icon className="w-4 h-4 text-[#2563eb]" />
-      <span className="text-sm font-semibold text-[#2563eb]">{title}</span>
+      <Icon className="w-4 h-4 text-[var(--ds-text-brand,var(--ds-text-brand, #2563eb))]" />
+      <span className="text-sm font-semibold text-[var(--ds-text-brand,var(--ds-text-brand, #2563eb))]">{title}</span>
     </div>
   );
 }
@@ -330,7 +330,7 @@ export function CreateFeatureModal({
         "[&>button]:hidden"
       )}>
         {/* Accent Bar - Catalyst brand gradient */}
-        <div className="h-1 bg-gradient-to-r from-[#2563eb] via-[#0d9488] to-[#60a5fa] flex-shrink-0" />
+        <div className="h-1 bg-gradient-to-r from-[var(--ds-text-brand,var(--ds-text-brand, #2563eb))] via-[#0d9488] to-[var(--ds-text-brand,var(--ds-text-brand, #60a5fa))] flex-shrink-0" />
 
         {/* Header with Progress Ring */}
         <div className="px-5 py-3 border-b border-gray-200 dark:border-gray-700 flex-shrink-0 bg-white dark:bg-[#171717]">
@@ -370,7 +370,7 @@ export function CreateFeatureModal({
               <div className="space-y-1.5">
                 <div className="flex items-center justify-between">
                   <Label className="text-sm font-medium text-foreground">
-                    Feature Name<span className="text-[#ef4444] ml-0.5">*</span>
+                    Feature Name<span className="text-[var(--ds-text-danger,var(--ds-text-danger, #ef4444))] ml-0.5">*</span>
                   </Label>
                   <span className="text-[10px] text-muted-foreground tabular-nums">
                     {formData.featureName.length} / 200
@@ -383,7 +383,7 @@ export function CreateFeatureModal({
                   maxLength={200}
                   className={cn(
                     "h-10 bg-background border-border",
-                    "focus:border-[#2563eb] focus:ring-[3px] focus:ring-[#2563eb]/15",
+                    "focus:border-[var(--ds-text-brand,var(--ds-text-brand, #2563eb))] focus:ring-[3px] focus:ring-[var(--ds-text-brand,var(--ds-text-brand, #2563eb))]/15",
                     "placeholder:text-muted-foreground/60"
                   )}
                 />
@@ -393,7 +393,7 @@ export function CreateFeatureModal({
               <div className="space-y-1.5">
                 <div className="flex items-center justify-between">
                   <Label className="text-sm font-medium text-foreground">
-                    Description<span className="text-[#ef4444] ml-0.5">*</span>
+                    Description<span className="text-[var(--ds-text-danger,var(--ds-text-danger, #ef4444))] ml-0.5">*</span>
                   </Label>
                   <span className="text-[10px] text-muted-foreground tabular-nums">
                     {descriptionWordCount} / 2000 words
@@ -404,7 +404,7 @@ export function CreateFeatureModal({
                   onChange={(value) => handleFieldChange('description', value)}
                   placeholder="Describe the feature, its purpose, and key outcomes..."
                   minHeight="120px"
-                  className="border-border focus-within:border-[#2563eb] focus-within:ring-[3px] focus-within:ring-[#2563eb]/15"
+                  className="border-border focus-within:border-[var(--ds-text-brand,var(--ds-text-brand, #2563eb))] focus-within:ring-[3px] focus-within:ring-[var(--ds-text-brand,var(--ds-text-brand, #2563eb))]/15"
                 />
               </div>
             </div>
@@ -417,7 +417,7 @@ export function CreateFeatureModal({
               {/* Parent Epic */}
               <div className="space-y-1.5">
                 <Label className="text-sm font-medium text-foreground">
-                  Parent Epic<span className="text-[#ef4444] ml-0.5">*</span>
+                  Parent Epic<span className="text-[var(--ds-text-danger,var(--ds-text-danger, #ef4444))] ml-0.5">*</span>
                 </Label>
                 <Select 
                   value={formData.parentEpicId} 
@@ -425,7 +425,7 @@ export function CreateFeatureModal({
                 >
                   <SelectTrigger className={cn(
                     "h-10 bg-background border-border",
-                    "focus:border-[#2563eb] focus:ring-[3px] focus:ring-[#2563eb]/15"
+                    "focus:border-[var(--ds-text-brand,var(--ds-text-brand, #2563eb))] focus:ring-[3px] focus:ring-[var(--ds-text-brand,var(--ds-text-brand, #2563eb))]/15"
                   )}>
                     <SelectValue placeholder={epicsLoading ? "Loading..." : "Select an epic"} />
                   </SelectTrigger>
@@ -436,7 +436,7 @@ export function CreateFeatureModal({
                         value={epic.id}
                         className="cursor-pointer hover:bg-muted focus:bg-muted"
                       >
-                        <span className="text-[#2563eb] dark:text-[#60a5fa] font-mono text-xs mr-2">
+                        <span className="text-[var(--ds-text-brand,var(--ds-text-brand, #2563eb))] dark:text-[var(--ds-text-brand,var(--ds-text-brand, #60a5fa))] font-mono text-xs mr-2">
                           {epic.epic_key}
                         </span>
                         <span className="truncate">{epic.name}</span>
@@ -478,7 +478,7 @@ export function CreateFeatureModal({
             <SectionHeader icon={User} title="Assignment" />
             <div className="space-y-1.5">
               <Label className="text-sm font-medium text-foreground">
-                Assignee<span className="text-[#ef4444] ml-0.5">*</span>
+                Assignee<span className="text-[var(--ds-text-danger,var(--ds-text-danger, #ef4444))] ml-0.5">*</span>
               </Label>
               <Select 
                 value={formData.assigneeId} 
@@ -486,7 +486,7 @@ export function CreateFeatureModal({
               >
                 <SelectTrigger className={cn(
                   "h-10 bg-background border-border",
-                  "focus:border-[#2563eb] focus:ring-[3px] focus:ring-[#2563eb]/15"
+                  "focus:border-[var(--ds-text-brand,var(--ds-text-brand, #2563eb))] focus:ring-[3px] focus:ring-[var(--ds-text-brand,var(--ds-text-brand, #2563eb))]/15"
                 )}>
                   <SelectValue placeholder={usersLoading ? "Loading..." : "Select assignee"}>
                     {selectedAssignee && (
@@ -547,7 +547,7 @@ export function CreateFeatureModal({
               disabled={!isValid || createMutation.isPending}
               className={cn(
                 "px-4 py-2 text-sm font-medium",
-                "text-white bg-[#2563eb] hover:bg-[#1d4ed8]",
+                "text-white bg-[var(--ds-text-brand,var(--ds-text-brand, #2563eb))] hover:bg-[var(--ds-background-brand-bold-hovered,var(--ds-background-brand-bold-hovered, #1d4ed8))]",
                 "rounded-md shadow-sm",
                 "flex items-center gap-1.5",
                 "disabled:opacity-50 disabled:cursor-not-allowed"

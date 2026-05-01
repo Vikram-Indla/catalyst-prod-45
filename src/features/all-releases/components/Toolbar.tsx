@@ -86,7 +86,7 @@ function FilterButton({ label, count, isActive, children }: { label: string; cou
           variant="outline"
           size="sm"
           className={cn(
-            "h-[34px] text-xs font-medium bg-white dark:bg-[#1A1A1A]",
+            "h-[34px] text-xs font-medium bg-white dark:bg-[var(--ds-surface-raised,var(--ds-surface-raised, #1A1A1A))]",
             isActive && "border-blue-600 text-blue-600 bg-blue-50"
           )}
         >
@@ -116,12 +116,12 @@ export function Toolbar({
     <div className="flex items-center gap-2 mb-4 flex-wrap">
       {/* Search */}
       <div className="relative min-w-[180px] max-w-[240px]">
-        <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 dark:text-[#878787]" />
+        <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 dark:text-[var(--ds-text-subtlest,var(--ds-text-subtlest, #878787))]" />
         <Input
           placeholder="Search releases..."
           value={search}
           onChange={(e) => onSearchChange(e.target.value)}
-          className="pl-8 h-[34px] text-xs bg-white dark:bg-[#1A1A1A]"
+          className="pl-8 h-[34px] text-xs bg-white dark:bg-[var(--ds-surface-raised,var(--ds-surface-raised, #1A1A1A))]"
         />
       </div>
 
@@ -182,7 +182,7 @@ export function Toolbar({
 
       {/* Clear */}
       {activeFilterCount > 0 && (
-        <Button variant="ghost" size="sm" onClick={onClearFilters} className="h-[34px] text-xs text-slate-500 dark:text-[#A1A1A1]">
+        <Button variant="ghost" size="sm" onClick={onClearFilters} className="h-[34px] text-xs text-slate-500 dark:text-[var(--ds-text-subtlest,var(--ds-text-subtlest, #A1A1A1))]">
           <X className="w-3.5 h-3.5 mr-1" />
           Clear ({activeFilterCount})
         </Button>
@@ -194,7 +194,7 @@ export function Toolbar({
       {/* Sort */}
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="outline" size="sm" className="h-[34px] text-xs bg-white dark:bg-[#1A1A1A]">
+          <Button variant="outline" size="sm" className="h-[34px] text-xs bg-white dark:bg-[var(--ds-surface-raised,var(--ds-surface-raised, #1A1A1A))]">
             <ArrowUpDown className="w-3.5 h-3.5 mr-1.5" />
             {SORT_LABELS[sortBy]}
           </Button>
@@ -211,16 +211,16 @@ export function Toolbar({
       </DropdownMenu>
 
       {/* View Toggle */}
-      <div className="flex border border-slate-200 dark:border-[#2E2E2E] rounded-md overflow-hidden">
+      <div className="flex border border-slate-200 dark:border-[var(--ds-border,var(--ds-border, #2E2E2E))] rounded-md overflow-hidden">
         {views.map(({ mode, icon, label }) => (
           <button
             key={mode}
             onClick={() => onViewModeChange(mode)}
             className={cn(
-              "h-[34px] flex items-center gap-1.5 px-3 border-r border-slate-200 dark:border-[#2E2E2E] last:border-r-0 transition-colors text-xs font-medium",
+              "h-[34px] flex items-center gap-1.5 px-3 border-r border-slate-200 dark:border-[var(--ds-border,var(--ds-border, #2E2E2E))] last:border-r-0 transition-colors text-xs font-medium",
               viewMode === mode
                 ? "bg-blue-50 text-blue-600"
-                : "text-slate-400 dark:text-[#878787] hover:text-slate-600 dark:hover:text-[#A1A1A1] hover:bg-slate-50 dark:hover:bg-[#1F1F1F]"
+                : "text-slate-400 dark:text-[var(--ds-text-subtlest,var(--ds-text-subtlest, #878787))] hover:text-slate-600 dark:hover:text-[var(--ds-text-subtlest,var(--ds-text-subtlest, #A1A1A1))] hover:bg-slate-50 dark:hover:bg-[var(--ds-surface-overlay,var(--ds-surface-overlay, #1F1F1F))]"
             )}
           >
             {icon}

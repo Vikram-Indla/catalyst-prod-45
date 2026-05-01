@@ -101,7 +101,7 @@ export function DeleteTestCycleModal({
               width: 40,
               height: 40,
               borderRadius: 12,
-              backgroundColor: '#FEF2F2',
+              backgroundColor: 'var(--ds-background-danger, var(--ds-background-danger, #FEF2F2))',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
@@ -138,7 +138,7 @@ export function DeleteTestCycleModal({
           {/* Warning Box */}
           <div style={{
             padding: 16,
-            backgroundColor: '#FEF2F2',
+            backgroundColor: 'var(--ds-background-danger, var(--ds-background-danger, #FEF2F2))',
             border: '1px solid color-mix(in srgb, var(--sem-danger) 20%, transparent)',
             borderRadius: 8,
             marginBottom: 16,
@@ -147,7 +147,7 @@ export function DeleteTestCycleModal({
           }}>
             <AlertTriangle size={20} style={{ color: 'var(--sem-danger)', flexShrink: 0, marginTop: 2 }} />
             <div>
-              <p style={{ fontSize: 14, fontWeight: 600, color: '#991B1B', margin: '0 0 4px' }}>
+              <p style={{ fontSize: 14, fontWeight: 600, color: 'var(--ds-text-danger, var(--ds-text-danger, #991B1B))', margin: '0 0 4px' }}>
                 This action cannot be undone
               </p>
               <p style={{ fontSize: 13, color: '#B91C1C', margin: 0 }}>
@@ -218,7 +218,7 @@ export function DeleteTestCycleModal({
           {hasTestCases && (
             <div style={{
               padding: 12,
-              backgroundColor: '#FEF2F2',
+              backgroundColor: 'var(--ds-background-danger, var(--ds-background-danger, #FEF2F2))',
               border: '1px solid color-mix(in srgb, var(--sem-danger) 20%, transparent)',
               borderRadius: 8,
               marginBottom: 16,
@@ -228,7 +228,7 @@ export function DeleteTestCycleModal({
             }}>
               <AlertTriangle size={16} style={{ color: 'var(--sem-danger)', flexShrink: 0, marginTop: 2 }} />
               <div>
-                <p style={{ fontSize: 13, fontWeight: 600, color: '#991B1B', margin: '0 0 2px' }}>
+                <p style={{ fontSize: 13, fontWeight: 600, color: 'var(--ds-text-danger, var(--ds-text-danger, #991B1B))', margin: '0 0 2px' }}>
                   This cycle contains {cycle.total_cases} test case{cycle.total_cases !== 1 ? 's' : ''}
                 </p>
                 <p style={{ fontSize: 12, color: '#B91C1C', margin: 0 }}>
@@ -307,7 +307,7 @@ export function DeleteTestCycleModal({
               height: 40,
               padding: '0 20px',
               background: (!hasTestCases || confirmText === cycle.cycle_key)
-                ? 'linear-gradient(135deg, #EF4444 0%, #DC2626 100%)'
+                ? 'linear-gradient(135deg, var(--ds-text-danger, #EF4444) 0%, var(--ds-text-danger, #DC2626) 100%)'
                 : 'var(--fg-4)',
               border: 'none',
               borderRadius: 8,

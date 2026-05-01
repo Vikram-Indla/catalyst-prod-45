@@ -168,7 +168,7 @@ export function SidebarBase({
     itemText: 'var(--cp-text-secondary, #42526E)',
     activeText: 'var(--cp-text-link, #0052CC)',
     activeBg: isDark ? 'var(--ds-background-selected, #1C2B41)' : '#E9F2FF',
-    hoverBg: isDark ? 'var(--ds-background-neutral-subtle-hovered, #A1BDD914)' : '#F4F5F7',
+    hoverBg: isDark ? 'var(--ds-background-neutral-subtle-hovered, #A1BDD914)' : 'var(--ds-surface-sunken, var(--ds-surface-sunken, #F4F5F7))',
     hoverText: 'var(--cp-text-primary, #172B4D)',
     iconOpacityInactive: isDark ? 0.85 : 0.75,
     badgeBg: isDark ? 'var(--ds-background-neutral-subtle, #22272B)' : '#EBECF0',
@@ -541,11 +541,11 @@ function renderMenuItem(
             starred ? "opacity-100" : "opacity-0 group-hover:opacity-100"
           )}
           style={{
-            color: starred ? '#f59e0b' : 'var(--text-4)',
+            color: starred ? 'var(--ds-text-warning, var(--ds-text-warning, #f59e0b))' : 'var(--text-4)',
           }}
           onMouseEnter={(e) => {
             if (!starred) {
-              e.currentTarget.style.color = '#f59e0b';
+              e.currentTarget.style.color = 'var(--ds-text-warning, var(--ds-text-warning, #f59e0b))';
               e.currentTarget.style.background = 'rgba(245, 158, 11, 0.1)';
             }
           }}
@@ -575,11 +575,11 @@ function renderMenuItem(
               : item.textBadgeVariant === 'new' 
               ? 'linear-gradient(135deg, #10b981 0%, #059669 100%)'
               : item.textBadgeVariant === 'beta'
-              ? 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)'
+              ? 'linear-gradient(135deg, var(--ds-text-warning, #f59e0b) 0%, var(--ds-text-warning, #d97706) 100%)'
               : 'hsl(var(--brand-primary))',
             color: item.textBadge === 'AI'
               ? '#7C3AED'
-              : '#ffffff',
+              : 'var(--ds-surface, var(--ds-surface, #ffffff))',
             border: item.textBadge === 'AI' ? '1px solid rgba(124, 58, 237, 0.12)' : 'none',
             position: expanded ? 'relative' : 'absolute',
             top: expanded ? 'auto' : '4px',

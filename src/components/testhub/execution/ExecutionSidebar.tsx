@@ -49,18 +49,18 @@ interface ExecutionSidebarProps {
 }
 
 const SEVERITY_COLORS: Record<string, string> = {
-  critical: '#DC2626',
+  critical: 'var(--ds-text-danger, var(--ds-text-danger, #DC2626))',
   major: '#EA580C',
-  minor: '#D97706',
-  trivial: '#16A34A',
+  minor: 'var(--ds-text-warning, var(--ds-text-warning, #D97706))',
+  trivial: 'var(--ds-text-success, var(--ds-text-success, #16A34A))',
 };
 
 const STEP_COLORS: Record<string, { text: string; bg: string; border: string }> = {
-  passed:  { text: '#16A34A', bg: '#F0FDF4', border: '#BBF7D0' },
-  failed:  { text: '#DC2626', bg: '#FEF2F2', border: '#FECACA' },
-  blocked: { text: '#D97706', bg: '#FFFBEB', border: '#FED7AA' },
-  skipped: { text: '#475569', bg: 'var(--bg-1, #F8FAFC)', border: 'var(--bd-default, #E2E8F0)' },
-  not_run: { text: '#64748B', bg: '#F1F5F9', border: 'var(--bd-default, #E2E8F0)' },
+  passed:  { text: 'var(--ds-text-success, var(--ds-text-success, #16A34A))', bg: '#F0FDF4', border: '#BBF7D0' },
+  failed:  { text: 'var(--ds-text-danger, var(--ds-text-danger, #DC2626))', bg: 'var(--ds-background-danger, var(--ds-background-danger, #FEF2F2))', border: '#FECACA' },
+  blocked: { text: 'var(--ds-text-warning, var(--ds-text-warning, #D97706))', bg: '#FFFBEB', border: '#FED7AA' },
+  skipped: { text: 'var(--ds-text-subtle, var(--ds-text-subtle, #475569))', bg: 'var(--bg-1, #F8FAFC)', border: 'var(--bd-default, #E2E8F0)' },
+  not_run: { text: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #64748B))', bg: 'var(--ds-surface-sunken, var(--ds-surface-sunken, #F1F5F9))', border: 'var(--bd-default, #E2E8F0)' },
 };
 
 export function ExecutionSidebar({
@@ -211,11 +211,11 @@ export function ExecutionSidebar({
 
         {activeTab === 'history' && previousRunData && (
           <div>
-            <div style={{ marginBottom: 12, padding: '8px 12px', backgroundColor: '#EFF6FF', borderRadius: 6, border: '1px solid #BFDBFE' }}>
-              <p style={{ fontSize: 11, fontWeight: 600, color: '#1D4ED8', margin: 0 }}>
+            <div style={{ marginBottom: 12, padding: '8px 12px', backgroundColor: 'var(--ds-background-selected, var(--ds-background-selected, #EFF6FF))', borderRadius: 6, border: '1px solid #BFDBFE' }}>
+              <p style={{ fontSize: 11, fontWeight: 600, color: 'var(--ds-background-brand-bold-hovered, var(--ds-background-brand-bold-hovered, #1D4ED8))', margin: 0 }}>
                 Previous Run #{previousRunData.execution_number}
               </p>
-              <p style={{ fontSize: 10, color: '#3B82F6', margin: '2px 0 0' }}>
+              <p style={{ fontSize: 10, color: 'var(--ds-text-brand, var(--ds-text-brand, #3B82F6))', margin: '2px 0 0' }}>
                 {new Date(previousRunData.executed_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
                 {' · Result: '}{previousRunData.result.toUpperCase()}
               </p>
@@ -242,7 +242,7 @@ export function ExecutionSidebar({
                     </div>
                     <p style={{ fontSize: 11, color: 'hsl(var(--muted-foreground))', margin: 0, lineHeight: 1.4 }}>{step.title}</p>
                     {step.notes && (
-                      <p style={{ fontSize: 10, color: '#64748B', margin: '4px 0 0', fontStyle: 'italic' }}>{step.notes}</p>
+                      <p style={{ fontSize: 10, color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #64748B))', margin: '4px 0 0', fontStyle: 'italic' }}>{step.notes}</p>
                     )}
                   </div>
                 );

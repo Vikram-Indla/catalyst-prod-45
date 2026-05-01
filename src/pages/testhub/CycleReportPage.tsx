@@ -71,16 +71,16 @@ interface DailyExecution {
 
 const STATUS_COLORS: Record<string, string> = {
   passed: '#10B981',
-  failed: '#EF4444',
-  blocked: '#F59E0B',
-  skipped: '#64748B',
-  not_run: '#CBD5E1',
+  failed: 'var(--ds-text-danger, var(--ds-text-danger, #EF4444))',
+  blocked: 'var(--ds-text-warning, var(--ds-text-warning, #F59E0B))',
+  skipped: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #64748B))',
+  not_run: 'var(--ds-text-disabled, var(--ds-text-disabled, #CBD5E1))',
 };
 
 const PRIORITY_CONFIG: Record<string, { color: string; bg: string }> = {
-  critical: { color: '#DC2626', bg: '#FEF2F2' },
+  critical: { color: 'var(--ds-text-danger, var(--ds-text-danger, #DC2626))', bg: 'var(--ds-background-danger, var(--ds-background-danger, #FEF2F2))' },
   high: { color: '#EA580C', bg: '#FFF7ED' },
-  medium: { color: '#D97706', bg: '#FFFBEB' },
+  medium: { color: 'var(--ds-text-warning, var(--ds-text-warning, #D97706))', bg: '#FFFBEB' },
   low: { color: '#059669', bg: '#ECFDF5' },
 };
 
@@ -158,7 +158,7 @@ export default function CycleReportPage() {
   if (isLoading) {
     return (
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', backgroundColor: 'hsl(var(--background))' }}>
-        <div style={{ width: 32, height: 32, border: '3px solid hsl(var(--border))', borderTopColor: '#2563EB', borderRadius: '50%', animation: 'spin 1s linear infinite' }} />
+        <div style={{ width: 32, height: 32, border: '3px solid hsl(var(--border))', borderTopColor: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))', borderRadius: '50%', animation: 'spin 1s linear infinite' }} />
         <style>{`@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }`}</style>
       </div>
     );
@@ -173,14 +173,14 @@ export default function CycleReportPage() {
   }
 
   const summaryCards = [
-    { icon: FileText, label: 'Total Tests', value: cycle.total_cases, color: '#2563EB' },
+    { icon: FileText, label: 'Total Tests', value: cycle.total_cases, color: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))' },
     { icon: CheckCircle2, label: 'Pass Rate', value: `${passRate}%`, color: '#10B981' },
-    { icon: BarChart3, label: 'Executed', value: executed, color: '#3B82F6' },
-    { icon: XCircle, label: 'Failed', value: cycle.failed_count, color: '#EF4444' },
-    { icon: AlertTriangle, label: 'Blocked', value: cycle.blocked_count, color: '#F59E0B' },
+    { icon: BarChart3, label: 'Executed', value: executed, color: 'var(--ds-text-brand, var(--ds-text-brand, #3B82F6))' },
+    { icon: XCircle, label: 'Failed', value: cycle.failed_count, color: 'var(--ds-text-danger, var(--ds-text-danger, #EF4444))' },
+    { icon: AlertTriangle, label: 'Blocked', value: cycle.blocked_count, color: 'var(--ds-text-warning, var(--ds-text-warning, #F59E0B))' },
   ];
 
-  const passRateColor = (rate: number) => rate >= 80 ? '#10B981' : rate >= 50 ? '#F59E0B' : '#EF4444';
+  const passRateColor = (rate: number) => rate >= 80 ? '#10B981' : rate >= 50 ? 'var(--ds-text-warning, var(--ds-text-warning, #F59E0B))' : 'var(--ds-text-danger, var(--ds-text-danger, #EF4444))';
 
   const tableHeaderStyle: React.CSSProperties = {
     padding: '10px 14px', fontSize: 11, fontWeight: 600, color: 'hsl(var(--muted-foreground))',
@@ -202,8 +202,8 @@ export default function CycleReportPage() {
         </button>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
-          <span style={{ fontSize: 12, fontWeight: 600, color: '#2563EB', backgroundColor: '#EFF6FF', padding: '4px 10px', borderRadius: 6 }}>{cycle.cycle_key}</span>
-          <span style={{ fontSize: 12, fontWeight: 500, color: '#64748B', backgroundColor: '#F1F5F9', padding: '4px 10px', borderRadius: 6, textTransform: 'capitalize' }}>{cycle.status}</span>
+          <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))', backgroundColor: 'var(--ds-background-selected, var(--ds-background-selected, #EFF6FF))', padding: '4px 10px', borderRadius: 6 }}>{cycle.cycle_key}</span>
+          <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #64748B))', backgroundColor: 'var(--ds-surface-sunken, var(--ds-surface-sunken, #F1F5F9))', padding: '4px 10px', borderRadius: 6, textTransform: 'capitalize' }}>{cycle.status}</span>
         </div>
         <h1 style={{ fontSize: 22, fontWeight: 700, color: 'hsl(var(--foreground))', margin: '0 0 8px' }}>{cycle.name} — Report</h1>
         <div style={{ display: 'flex', alignItems: 'center', gap: 16, fontSize: 13, color: 'hsl(var(--muted-foreground))' }}>
@@ -263,8 +263,8 @@ export default function CycleReportPage() {
                     <YAxis tick={{ fontSize: 11 }} />
                     <Tooltip />
                     <Bar dataKey="passed" stackId="a" fill="#10B981" />
-                    <Bar dataKey="failed" stackId="a" fill="#EF4444" />
-                    <Bar dataKey="blocked" stackId="a" fill="#F59E0B" />
+                    <Bar dataKey="failed" stackId="a" fill="var(--ds-text-danger, var(--ds-text-danger, #EF4444))" />
+                    <Bar dataKey="blocked" stackId="a" fill="var(--ds-text-warning, var(--ds-text-warning, #F59E0B))" />
                   </BarChart>
                 </ResponsiveContainer>
               </div>
@@ -358,13 +358,13 @@ export default function CycleReportPage() {
         {failureReasons.length > 0 && (
           <div style={{ backgroundColor: 'hsl(var(--card))', border: '1px solid hsl(var(--border))', borderRadius: 12, padding: 24, marginBottom: 24 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16 }}>
-              <XCircle size={16} color="#EF4444" />
+              <XCircle size={16} color="var(--ds-text-danger, var(--ds-text-danger, #EF4444))" />
               <p style={{ fontSize: 14, fontWeight: 600, color: 'hsl(var(--foreground))', margin: 0 }}>Failure Reasons</p>
             </div>
             <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
               {failureReasons.map((f, i) => (
-                <div key={i} style={{ backgroundColor: '#FEF2F2', border: '1px solid #FECACA', borderRadius: 12, padding: '12px 20px', textAlign: 'center' }}>
-                  <p style={{ fontSize: 20, fontWeight: 700, color: '#DC2626', margin: '0 0 4px' }}>{f.count}</p>
+                <div key={i} style={{ backgroundColor: 'var(--ds-background-danger, var(--ds-background-danger, #FEF2F2))', border: '1px solid #FECACA', borderRadius: 12, padding: '12px 20px', textAlign: 'center' }}>
+                  <p style={{ fontSize: 20, fontWeight: 700, color: 'var(--ds-text-danger, var(--ds-text-danger, #DC2626))', margin: '0 0 4px' }}>{f.count}</p>
                   <p style={{ fontSize: 12, color: '#92400E', margin: 0 }}>{FAILURE_REASON_LABELS[f.failure_reason] || f.failure_reason}</p>
                 </div>
               ))}

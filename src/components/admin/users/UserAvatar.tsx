@@ -11,12 +11,12 @@ import { resolveAvatarUrl } from '@/lib/avatars';
 
 // Avatar colors — neutral blue-gray palette + approved Catalyst hues (no purple/pink/magenta)
 const AVATAR_COLORS = [
-  '#475569', // Slate
-  '#334155', // Slate dark
-  '#3b82f6', // Blue
+  'var(--ds-text-subtle, var(--ds-text-subtle, #475569))', // Slate
+  'var(--ds-text-subtle, var(--ds-text-subtle, #334155))', // Slate dark
+  'var(--ds-text-brand, var(--ds-text-brand, #3b82f6))', // Blue
   '#0d9488', // Teal
-  '#d97706', // Amber
-  '#2563eb', // Blue 600
+  'var(--ds-text-warning, var(--ds-text-warning, #d97706))', // Amber
+  'var(--ds-text-brand, var(--ds-text-brand, #2563eb))', // Blue 600
   '#0f766e', // Teal dark
   '#1e40af', // Blue 800
   '#065f46', // Emerald dark

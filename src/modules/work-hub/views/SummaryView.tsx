@@ -198,7 +198,7 @@ function PriorityBreakdown() {
     { label: 'High', count: 5, color: '#FF7452' },
     { label: 'Medium', count: 42, color: '#FFAB00' },
     { label: 'Low', count: 8, color: '#36B37E' },
-    { label: 'Lowest', count: 3, color: '#6B778C' },
+    { label: 'Lowest', count: 3, color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #6B778C))' },
     { label: 'None', count: 55, color: '#97A0AF' },
   ];
   const maxCount = Math.max(...priorities.map(p => p.count));
@@ -354,7 +354,7 @@ function EpicProgress() {
             <span>Done</span>
           </div>
           <div className="flex items-center gap-1">
-            <div className="w-3 h-3 rounded bg-[#2563eb]" />
+            <div className="w-3 h-3 rounded bg-[var(--ds-text-brand,var(--ds-text-brand, #2563eb))]" />
             <span>In progress</span>
           </div>
           <div className="flex items-center gap-1">
@@ -378,7 +378,7 @@ function EpicProgress() {
                     </div>
                   )}
                   {epic.inProgress > 0 && (
-                    <div className="h-full bg-[#2563eb]" style={{ width: `${epic.inProgress}%` }} />
+                    <div className="h-full bg-[var(--ds-text-brand,var(--ds-text-brand, #2563eb))]" style={{ width: `${epic.inProgress}%` }} />
                   )}
                   {epic.todo > 0 && (
                     <div className="h-full bg-[#6b7280]" style={{ width: `${epic.todo}%` }} />

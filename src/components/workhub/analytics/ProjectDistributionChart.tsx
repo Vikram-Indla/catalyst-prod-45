@@ -35,7 +35,7 @@ export function ProjectDistributionChart({ data }: Props) {
             tick={{ fontSize: 12, fontFamily: 'monospace' }}
           />
           <Tooltip content={<ChartTooltip />} />
-          <Bar dataKey="value" fill="#2563eb" radius={[0, 4, 4, 0]} barSize={20} />
+          <Bar dataKey="value" fill="var(--ds-text-brand, var(--ds-text-brand, #2563eb))" radius={[0, 4, 4, 0]} barSize={20} />
         </BarChart>
       </ResponsiveContainer>
     </div>

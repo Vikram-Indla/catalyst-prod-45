@@ -16,15 +16,15 @@ interface DetailTabAttachmentsProps {
 
 const MAX_FILE_SIZE = 6 * 1024 * 1024; // 6MB
 const MAX_TOTAL = 30 * 1024 * 1024; // 30MB
-const TOAST_OPTS = { duration: 2200, style: { background: '#18181B', color: '#fff' } as const, position: 'bottom-center' as const };
+const TOAST_OPTS = { duration: 2200, style: { background: '#18181B', color: 'var(--ds-surface, var(--ds-surface, var(--ds-surface, #fff)))' } as const, position: 'bottom-center' as const };
 
 const FILE_TYPE_MAP: Record<string, { label: string; color: string; bg: string }> = {
   pdf: { label: 'PDF', color: '#D92525', bg: '#D9252512' },
   xls: { label: 'XLS', color: '#0D7331', bg: '#0D733112' },
   xlsx: { label: 'XLS', color: '#0D7331', bg: '#0D733112' },
   csv: { label: 'XLS', color: '#0D7331', bg: '#0D733112' },
-  doc: { label: 'DOC', color: '#2563EB', bg: '#2563EB12' },
-  docx: { label: 'DOC', color: '#2563EB', bg: '#2563EB12' },
+  doc: { label: 'DOC', color: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))', bg: '#2563EB12' },
+  docx: { label: 'DOC', color: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))', bg: '#2563EB12' },
   png: { label: 'IMG', color: '#7C3AED', bg: '#7C3AED12' },
   jpg: { label: 'IMG', color: '#7C3AED', bg: '#7C3AED12' },
   jpeg: { label: 'IMG', color: '#7C3AED', bg: '#7C3AED12' },

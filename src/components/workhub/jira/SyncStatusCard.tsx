@@ -50,7 +50,7 @@ export function SyncStatusCards({ projects, totalItems, syncLogs }: SyncStatusCa
       icon: AlertTriangle,
       value: recentErrors === 0 ? 'All Clear' : `${recentErrors} Errors`,
       label: recentErrors === 0 ? 'No Issues' : 'Action Required',
-      iconBg: recentErrors === 0 ? '#dcfce7' : '#fee2e2',
+      iconBg: recentErrors === 0 ? 'var(--ds-background-success, var(--ds-background-success, #dcfce7))' : '#fee2e2',
       iconColor: recentErrors === 0 ? 'var(--sem-success)' : 'var(--sem-danger)',
     },
   ];

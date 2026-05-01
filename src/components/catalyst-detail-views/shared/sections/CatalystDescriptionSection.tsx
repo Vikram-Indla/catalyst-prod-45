@@ -130,17 +130,17 @@ if (typeof document !== 'undefined' && !document.getElementById(STYLE_ID)) {
     .cv-desc-body ol ol, .adf-description-content ol ol { list-style-type: lower-alpha; }
     .cv-desc-body ol ol ol, .adf-description-content ol ol ol { list-style-type: lower-roman; }
     .cv-desc-body table, .adf-description-content table { border-collapse: collapse; width: 100%; margin: 12px 0; }
-    .cv-desc-body th, .adf-description-content th { background: #F4F5F7; font-weight: 600; text-align: left; }
+    .cv-desc-body th, .adf-description-content th { background: var(--ds-surface-sunken, #F4F5F7); font-weight: 600; text-align: left; }
     .cv-desc-body th, .cv-desc-body td,
-    .adf-description-content th, .adf-description-content td { border: 1px solid #DFE1E6; padding: 8px 12px; font-size: 14px; vertical-align: top; }
-    .cv-desc-body blockquote, .adf-description-content blockquote { border-left: 2px solid #DFE1E6; padding: 8px 12px; margin: 8px 0; color: #5E6C84; }
-    .cv-desc-body pre, .adf-description-content pre { background: #F4F5F7; padding: 12px; border-radius: 4px; font-size: 13px; overflow-x: auto; margin: 4px 0 8px; font-family: var(--cp-font-mono); }
-    .cv-desc-body code, .adf-description-content code { background: #F4F5F7; padding: 2px 4px; border-radius: 3px; font-size: 12px; font-family: var(--cp-font-mono); }
+    .adf-description-content th, .adf-description-content td { border: 1px solid var(--ds-border, #DFE1E6); padding: 8px 12px; font-size: 14px; vertical-align: top; }
+    .cv-desc-body blockquote, .adf-description-content blockquote { border-left: 2px solid var(--ds-border, #DFE1E6); padding: 8px 12px; margin: 8px 0; color: #5E6C84; }
+    .cv-desc-body pre, .adf-description-content pre { background: var(--ds-surface-sunken, #F4F5F7); padding: 12px; border-radius: 4px; font-size: 13px; overflow-x: auto; margin: 4px 0 8px; font-family: var(--cp-font-mono); }
+    .cv-desc-body code, .adf-description-content code { background: var(--ds-surface-sunken, #F4F5F7); padding: 2px 4px; border-radius: 3px; font-size: 12px; font-family: var(--cp-font-mono); }
     .cv-desc-body pre code, .adf-description-content pre code { background: none; padding: 0; }
     .cv-desc-body p, .adf-description-content p { margin: 0 0 8px; font-weight: 400; }
     .cv-desc-body a, .adf-description-content a { color: #0052CC; text-decoration: none; }
     .cv-desc-body a:hover, .adf-description-content a:hover { text-decoration: underline; }
-    .cv-desc-body hr, .adf-description-content hr { border: none; border-top: 1px solid #DFE1E6; margin: 16px 0; }
+    .cv-desc-body hr, .adf-description-content hr { border: none; border-top: 1px solid var(--ds-border, #DFE1E6); margin: 16px 0; }
     .cv-desc-body img, .adf-description-content img { max-width: 100%; border-radius: 4px; cursor: pointer; }
 
     /* Bidi — Jira parity. Applying \`unicode-bidi: plaintext\` to every text
@@ -269,7 +269,7 @@ export function CatalystDescriptionSection({ issue, label = 'Description', defau
             title="Edit description"
             style={{
               background: 'none', border: 'none', cursor: 'pointer',
-              padding: '4px 6px', borderRadius: 4, color: '#6B778C',
+              padding: '4px 6px', borderRadius: 4, color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #6B778C))',
               display: 'flex', alignItems: 'center',
               opacity: hovered ? 1 : 0,
               transition: 'opacity 0.15s, color 0.1s, background 0.1s',
@@ -284,11 +284,11 @@ export function CatalystDescriptionSection({ issue, label = 'Description', defau
              */
             onMouseEnter={e => {
               e.currentTarget.style.color = '#292A2E';
-              e.currentTarget.style.background = '#F4F5F7';
+              e.currentTarget.style.background = 'var(--ds-surface-sunken, var(--ds-surface-sunken, #F4F5F7))';
               prefetchEpicEditor();
             }}
             onFocus={() => { prefetchEpicEditor(); }}
-            onMouseLeave={e => { e.currentTarget.style.color = '#6B778C'; e.currentTarget.style.background = 'none'; }}
+            onMouseLeave={e => { e.currentTarget.style.color = 'var(--ds-text-subtlest, var(--ds-text-subtlest, #6B778C))'; e.currentTarget.style.background = 'none'; }}
           >
             <Pencil size={14} />
           </button>
@@ -325,7 +325,7 @@ export function CatalystDescriptionSection({ issue, label = 'Description', defau
               borderRadius: 4, padding: '8px 20px',
               transition: 'background 0.15s',
             }}
-            onMouseEnter={e => { if (issue) e.currentTarget.style.background = '#F4F5F7'; }}
+            onMouseEnter={e => { if (issue) e.currentTarget.style.background = 'var(--ds-surface-sunken, var(--ds-surface-sunken, #F4F5F7))'; }}
             onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
           >
             Add a description...
@@ -353,7 +353,7 @@ export function CatalystDescriptionSection({ issue, label = 'Description', defau
                 setEditing(true);
               }
             }}
-            onMouseEnter={e => { e.currentTarget.style.background = '#F4F5F7'; }}
+            onMouseEnter={e => { e.currentTarget.style.background = 'var(--ds-surface-sunken, var(--ds-surface-sunken, #F4F5F7))'; }}
             onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
             title="Click to edit"
           >

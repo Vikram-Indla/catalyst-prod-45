@@ -31,13 +31,13 @@ export function RowActionsMenu({ onOpen, onRename, onDelete }: RowActionsMenuPro
     >
       <DropdownItemGroup>
         <DropdownItem
-          elemBefore={<ExternalLink size={14} color="#6B778C" />}
+          elemBefore={<ExternalLink size={14} color="var(--ds-text-subtlest, var(--ds-text-subtlest, #6B778C))" />}
           onClick={() => onOpen()}
         >
           Open subtask
         </DropdownItem>
         <DropdownItem
-          elemBefore={<Pencil size={14} color="#6B778C" />}
+          elemBefore={<Pencil size={14} color="var(--ds-text-subtlest, var(--ds-text-subtlest, #6B778C))" />}
           onClick={() => onRename()}
         >
           Rename

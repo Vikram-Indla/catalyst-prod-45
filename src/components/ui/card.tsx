@@ -18,7 +18,7 @@ const Card = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElemen
     className={cn(
       "rounded-lg bg-card text-card-foreground",
       "shadow-sm border border-border/60",
-      "dark:bg-[#1A1A1A] dark:shadow-none dark:border-[#2E2E2E]",
+      "dark:bg-[var(--ds-surface-raised,var(--ds-surface-raised, #1A1A1A))] dark:shadow-none dark:border-[var(--ds-border,var(--ds-border, #2E2E2E))]",
       "focus:outline-none focus-visible:outline-none",
       className
     )} 

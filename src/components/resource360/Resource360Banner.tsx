@@ -64,7 +64,7 @@ export function Resource360Banner({ summary, isLoading, items = [] }: Props) {
       {/* Avatar */}
       <div style={{
         width: 56, height: 56, borderRadius: '50%', flexShrink: 0,
-        background: 'linear-gradient(135deg, #2563EB, #1D4ED8)',
+        background: 'linear-gradient(135deg, var(--ds-text-brand, #2563EB), var(--ds-background-brand-bold-hovered, #1D4ED8))',
         display: 'flex', alignItems: 'center', justifyContent: 'center',
         overflow: 'hidden',
       }}>

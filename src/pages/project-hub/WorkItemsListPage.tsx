@@ -239,7 +239,7 @@ export default function WorkItemsListPage() {
   const assignees = useMemo(() => {
     const seen = new Set<string>();
     const result: { name: string; color: string }[] = [];
-    const colors = ['#2563EB', '#0D9488', '#7C3AED', '#D97706', '#DC2626', '#16A34A'];
+    const colors = ['var(--ds-text-brand, var(--ds-text-brand, #2563EB))', '#0D9488', '#7C3AED', 'var(--ds-text-warning, var(--ds-text-warning, #D97706))', 'var(--ds-text-danger, var(--ds-text-danger, #DC2626))', 'var(--ds-text-success, var(--ds-text-success, #16A34A))'];
     for (const item of items) {
       if (item.assignee_name && !seen.has(item.assignee_name)) {
         seen.add(item.assignee_name);
@@ -267,11 +267,11 @@ export default function WorkItemsListPage() {
       <div className="px-6 py-4 max-w-[1400px] mx-auto">
         {/* Breadcrumb */}
         <div className="flex items-center gap-1 mb-3">
-          <span style={{ fontSize: 10, color: '#94A3B8' }}>ProjectHub</span>
-          <span style={{ fontSize: 10, color: '#CBD5E1' }}>/</span>
-          <span style={{ fontSize: 10, color: '#94A3B8' }}>{project?.key ?? key?.toUpperCase()} — {project?.name ?? 'Loading…'}</span>
-          <span style={{ fontSize: 10, color: '#CBD5E1' }}>/</span>
-          <span style={{ fontSize: 10, fontWeight: 700, color: '#475569' }}>List</span>
+          <span style={{ fontSize: 10, color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #94A3B8))' }}>ProjectHub</span>
+          <span style={{ fontSize: 10, color: 'var(--ds-text-disabled, var(--ds-text-disabled, #CBD5E1))' }}>/</span>
+          <span style={{ fontSize: 10, color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #94A3B8))' }}>{project?.key ?? key?.toUpperCase()} — {project?.name ?? 'Loading…'}</span>
+          <span style={{ fontSize: 10, color: 'var(--ds-text-disabled, var(--ds-text-disabled, #CBD5E1))' }}>/</span>
+          <span style={{ fontSize: 10, fontWeight: 700, color: 'var(--ds-text-subtle, var(--ds-text-subtle, #475569))' }}>List</span>
         </div>
 
         {/* Page header */}
@@ -283,7 +283,7 @@ export default function WorkItemsListPage() {
             style={{
               height: 30, padding: '0 10px', borderRadius: 4,
               border: '0.75px solid var(--bd-default, #E2E8F0)', background: 'none',
-              fontSize: 11, fontWeight: 500, color: '#475569',
+              fontSize: 11, fontWeight: 500, color: 'var(--ds-text-subtle, var(--ds-text-subtle, #475569))',
               fontFamily: 'var(--cp-font-body)', cursor: 'pointer',
             }}
           >
@@ -329,7 +329,7 @@ export default function WorkItemsListPage() {
 
         {isLoading ? (
           <div className="flex items-center justify-center py-20">
-            <Loader2 size={24} className="animate-spin" style={{ color: '#2563EB' }} />
+            <Loader2 size={24} className="animate-spin" style={{ color: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))' }} />
           </div>
         ) : (
           <WorkItemsTable

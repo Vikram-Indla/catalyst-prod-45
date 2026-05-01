@@ -129,7 +129,7 @@ export function TestHubCasesTable({ cases, projectId, onRefresh }: TestHubCasesT
                           width: 18,
                           height: 18,
                           borderRadius: 4,
-                          background: 'linear-gradient(135deg, #2563EB, #3B82F6)',
+                          background: 'linear-gradient(135deg, var(--ds-text-brand, #2563EB), var(--ds-text-brand, #3B82F6))',
                           flexShrink: 0,
                         }}
                       >

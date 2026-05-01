@@ -15,7 +15,7 @@ export function KeyHistorySection({ workItemId, workItemType, currentKey }: KeyH
 
   if (isLoading) {
     return (
-      <Card className="bg-white dark:bg-[#1A1A1A] border border-neutral-200 dark:border-[#2E2E2E] rounded-xl shadow-none">
+      <Card className="bg-white dark:bg-[var(--ds-surface-raised,var(--ds-surface-raised, #1A1A1A))] border border-neutral-200 dark:border-[var(--ds-border,var(--ds-border, #2E2E2E))] rounded-xl shadow-none">
         <CardHeader className="pb-2">
           <CardTitle className="text-sm font-semibold text-foreground flex items-center gap-2">
             <History className="h-4 w-4 text-brand-primary" />
@@ -31,7 +31,7 @@ export function KeyHistorySection({ workItemId, workItemType, currentKey }: KeyH
 
   if (history.length === 0) {
     return (
-      <Card className="bg-white dark:bg-[#1A1A1A] border border-neutral-200 dark:border-[#2E2E2E] rounded-xl shadow-none">
+      <Card className="bg-white dark:bg-[var(--ds-surface-raised,var(--ds-surface-raised, #1A1A1A))] border border-neutral-200 dark:border-[var(--ds-border,var(--ds-border, #2E2E2E))] rounded-xl shadow-none">
         <CardHeader className="pb-2">
           <CardTitle className="text-sm font-semibold text-foreground flex items-center gap-2">
             <History className="h-4 w-4 text-brand-primary" />
@@ -49,7 +49,7 @@ export function KeyHistorySection({ workItemId, workItemType, currentKey }: KeyH
   }
 
   return (
-    <Card className="bg-white dark:bg-[#1A1A1A] border border-neutral-200 dark:border-[#2E2E2E] rounded-xl shadow-none">
+    <Card className="bg-white dark:bg-[var(--ds-surface-raised,var(--ds-surface-raised, #1A1A1A))] border border-neutral-200 dark:border-[var(--ds-border,var(--ds-border, #2E2E2E))] rounded-xl shadow-none">
       <CardHeader className="pb-2">
         <CardTitle className="text-sm font-semibold text-foreground flex items-center gap-2">
           <History className="h-4 w-4 text-brand-primary" />

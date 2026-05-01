@@ -38,12 +38,12 @@ export function CalendarDayCell({
     <div
       onClick={onClick}
       className={cn(
-        'min-h-[120px] p-1.5 border-r border-b border-[#e2e8f0] cursor-pointer',
-        'transition-colors hover:bg-[#f8fafc]',
-        isOutsideMonth && 'bg-[#f1f5f9]',
-        !isOutsideMonth && isWeekendDay && 'bg-[#f8fafc]',
-        !isOutsideMonth && !isWeekendDay && isInCycleRange && 'bg-[#eff6ff]',
-        isCurrentDay && 'ring-2 ring-inset ring-[#2563eb]'
+        'min-h-[120px] p-1.5 border-r border-b border-[var(--ds-border,var(--ds-border, #e2e8f0))] cursor-pointer',
+        'transition-colors hover:bg-[var(--ds-surface-sunken,var(--ds-surface-sunken, #f8fafc))]',
+        isOutsideMonth && 'bg-[var(--ds-surface-sunken,var(--ds-surface-sunken, #f1f5f9))]',
+        !isOutsideMonth && isWeekendDay && 'bg-[var(--ds-surface-sunken,var(--ds-surface-sunken, #f8fafc))]',
+        !isOutsideMonth && !isWeekendDay && isInCycleRange && 'bg-[var(--ds-background-selected,var(--ds-background-selected, #eff6ff))]',
+        isCurrentDay && 'ring-2 ring-inset ring-[var(--ds-text-brand,var(--ds-text-brand, #2563eb))]'
       )}
     >
       {/* Day header */}
@@ -51,9 +51,9 @@ export function CalendarDayCell({
         <span
           className={cn(
             'h-7 w-7 flex items-center justify-center rounded-full text-sm font-medium',
-            isCurrentDay && 'bg-[#2563eb] text-white',
-            !isCurrentDay && isOutsideMonth && 'text-[#94a3b8]',
-            !isCurrentDay && !isOutsideMonth && 'text-[#334155]'
+            isCurrentDay && 'bg-[var(--ds-text-brand,var(--ds-text-brand, #2563eb))] text-white',
+            !isCurrentDay && isOutsideMonth && 'text-[var(--ds-text-subtlest,var(--ds-text-subtlest, #94a3b8))]',
+            !isCurrentDay && !isOutsideMonth && 'text-[var(--ds-text-subtle,var(--ds-text-subtle, #334155))]'
           )}
         >
           {format(date, 'd')}
@@ -76,7 +76,7 @@ export function CalendarDayCell({
         ))}
         {overflowCount > 0 && (
           <button
-            className="w-full text-left px-2 py-1 text-xs font-medium text-[#2563eb] hover:bg-[#dbeafe] rounded"
+            className="w-full text-left px-2 py-1 text-xs font-medium text-[var(--ds-text-brand,var(--ds-text-brand, #2563eb))] hover:bg-[#dbeafe] rounded"
             onClick={(e) => {
               e.stopPropagation();
               onClick();

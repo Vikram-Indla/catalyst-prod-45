@@ -232,7 +232,7 @@ export function LoginFormPanel({
                 <div className={`checkbox-box-v10 ${rememberMe ? 'checked' : ''}`}>
                   {rememberMe && (
                     <svg width="10" height="10" fill="none" viewBox="0 0 10 10" aria-hidden="true">
-                      <path d="M2 5l2 2 4-4" stroke="#fff" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                      <path d="M2 5l2 2 4-4" stroke="var(--ds-surface, var(--ds-surface, var(--ds-surface, #fff)))" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
                     </svg>
                   )}
                 </div>

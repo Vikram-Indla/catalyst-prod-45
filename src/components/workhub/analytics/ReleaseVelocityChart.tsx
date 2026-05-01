@@ -58,10 +58,10 @@ export function ReleaseVelocityChart({ data }: Props) {
           <Legend />
           <Bar yAxisId="left" dataKey="completion" name="Completion %" radius={[4, 4, 0, 0]} barSize={40}>
             {data.map((entry, i) => (
-              <Cell key={i} fill={entry.color || '#2563eb'} />
+              <Cell key={i} fill={entry.color || 'var(--ds-text-brand, var(--ds-text-brand, #2563eb))'} />
             ))}
           </Bar>
-          <Bar yAxisId="right" dataKey="totalItems" name="Total Items" fill="#e2e8f0" radius={[4, 4, 0, 0]} barSize={40} opacity={0.5} />
+          <Bar yAxisId="right" dataKey="totalItems" name="Total Items" fill="var(--ds-border, var(--ds-border, #e2e8f0))" radius={[4, 4, 0, 0]} barSize={40} opacity={0.5} />
         </BarChart>
       </ResponsiveContainer>
     </div>

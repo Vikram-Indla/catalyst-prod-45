@@ -58,7 +58,7 @@ function CustomSelect({
   return (
     <div ref={ref} style={{ position: 'relative' }}>
       <button type="button" onClick={() => setOpen((p) => !p)}
-        style={{ width: '100%', height: 50, padding: '8px 12px', fontSize: 14, fontFamily: 'var(--cp-font-body)', color: selected ? '#0F172A' : '#94A3B8', background: 'var(--cp-float)', border: '1.5px solid var(--divider)', borderRadius: 6, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'space-between', textAlign: 'left' }}>
+        style={{ width: '100%', height: 50, padding: '8px 12px', fontSize: 14, fontFamily: 'var(--cp-font-body)', color: selected ? 'var(--ds-text, var(--ds-text, #0F172A))' : 'var(--ds-text-subtlest, var(--ds-text-subtlest, #94A3B8))', background: 'var(--cp-float)', border: '1.5px solid var(--divider)', borderRadius: 6, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'space-between', textAlign: 'left' }}>
         <span>{selected ? (renderOption ? renderOption(selected) : selected.label) : placeholder}</span>
         <ChevronDown size={14} color="var(--fg-3)" />
       </button>
@@ -68,7 +68,7 @@ function CustomSelect({
             <div key={opt.value} onClick={() => { onChange(opt.value); setOpen(false); }}
               style={{ padding: '8px 12px', fontSize: 13, cursor: 'pointer', background: opt.value === value ? 'var(--cp-primary-5)' : undefined, fontFamily: 'var(--cp-font-body)' }}
               onMouseEnter={(e) => (e.currentTarget.style.background = 'var(--bg-1)')}
-              onMouseLeave={(e) => (e.currentTarget.style.background = opt.value === value ? '#EFF6FF' : '')}>
+              onMouseLeave={(e) => (e.currentTarget.style.background = opt.value === value ? 'var(--ds-background-selected, var(--ds-background-selected, #EFF6FF))' : '')}>
               {renderOption ? renderOption(opt) : opt.label}
             </div>
           ))}
@@ -239,7 +239,7 @@ export function CreateWorkItemModal({ open, onClose, projectId, parentItem }: Cr
                 </button>
               )}
               <button onClick={handleCreate} disabled={!title.trim() || createMutation.isPending}
-                style={{ height: 32, padding: '0 16px', fontSize: 13, fontWeight: 600, color: '#FFFFFF', background: !title.trim() ? 'var(--fg-4)' : 'var(--cp-blue)', border: 'none', borderRadius: 6, cursor: !title.trim() ? 'not-allowed' : 'pointer', fontFamily: 'var(--cp-font-body)', opacity: createMutation.isPending ? 0.7 : 1 }}>
+                style={{ height: 32, padding: '0 16px', fontSize: 13, fontWeight: 600, color: 'var(--ds-surface, var(--ds-surface, #FFFFFF))', background: !title.trim() ? 'var(--fg-4)' : 'var(--cp-blue)', border: 'none', borderRadius: 6, cursor: !title.trim() ? 'not-allowed' : 'pointer', fontFamily: 'var(--cp-font-body)', opacity: createMutation.isPending ? 0.7 : 1 }}>
                 {createMutation.isPending ? 'Creating…' : 'Create'}
               </button>
             </div>

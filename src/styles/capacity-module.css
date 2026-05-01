@@ -13,13 +13,13 @@
 
 :root {
   /* Primary */
-  --ct-primary: #2563eb;
-  --ct-primary-hover: #1d4ed8;
+  --ct-primary: var(--ds-text-brand, #2563eb);
+  --ct-primary-hover: var(--ds-background-brand-bold-hovered, #1d4ed8);
   --ct-primary-light: rgba(37, 99, 235, 0.08);
   --ct-primary-border: rgba(37, 99, 235, 0.2);
 
   /* Budget/Resource Type Colors */
-  --ct-insourced: #2563eb;
+  --ct-insourced: var(--ds-text-brand, #2563eb);
   --ct-insourced-light: rgba(37, 99, 235, 0.08);
   --ct-cosourced: #8b5cf6;
   --ct-cosourced-light: rgba(139, 92, 246, 0.08);
@@ -27,9 +27,9 @@
   --ct-outsourced-light: rgba(13, 148, 136, 0.08);
 
   /* Resource Type Badge Colors */
-  --ct-fixed: #d97706;
+  --ct-fixed: var(--ds-text-warning, #d97706);
   --ct-fixed-light: rgba(217, 119, 6, 0.08);
-  --ct-variable: #2563eb;
+  --ct-variable: var(--ds-text-brand, #2563eb);
   --ct-variable-light: rgba(37, 99, 235, 0.08);
   --ct-freelance: #8b5cf6;
   --ct-freelance-light: rgba(139, 92, 246, 0.08);
@@ -45,20 +45,20 @@
   --ct-violet-light: rgba(139, 92, 246, 0.08);
   --ct-success: #10b981;
   --ct-success-light: rgba(16, 185, 129, 0.08);
-  --ct-warning: #d97706;
+  --ct-warning: var(--ds-text-warning, #d97706);
   --ct-warning-light: rgba(217, 119, 6, 0.08);
-  --ct-danger: #ef4444;
+  --ct-danger: var(--ds-text-danger, #ef4444);
   --ct-danger-light: rgba(239, 68, 68, 0.08);
 
   /* Neutral Colors */
-  --ct-bg: #f8fafc;
-  --ct-surface: #ffffff;
-  --ct-surface-hover: #f1f5f9;
-  --ct-text: #0f172a;
-  --ct-text-secondary: #475569;
-  --ct-text-muted: #64748b; /* WCAG AA compliant (4.7:1 contrast) */
-  --ct-border: #e2e8f0;
-  --ct-border-light: #f1f5f9;
+  --ct-bg: var(--ds-surface-sunken, #f8fafc);
+  --ct-surface: var(--ds-surface, #ffffff);
+  --ct-surface-hover: var(--ds-surface-sunken, #f1f5f9);
+  --ct-text: var(--ds-text, #0f172a);
+  --ct-text-secondary: var(--ds-text-subtle, #475569);
+  --ct-text-muted: var(--ds-text-subtlest, #64748b); /* WCAG AA compliant (4.7:1 contrast) */
+  --ct-border: var(--ds-border, #e2e8f0);
+  --ct-border-light: var(--ds-surface-sunken, #f1f5f9);
 
   /* Typography */
   --ct-font-ui:   var(--cp-font-body);
@@ -79,13 +79,13 @@
 
 /* Dark mode overrides */
 .dark {
-  --ct-bg: #0f172a;
+  --ct-bg: var(--ds-text, #0f172a);
   --ct-surface: #1e293b;
-  --ct-surface-hover: #334155;
-  --ct-text: #f8fafc;
-  --ct-text-secondary: #cbd5e1;
-  --ct-text-muted: #94a3b8;
-  --ct-border: #334155;
+  --ct-surface-hover: var(--ds-text-subtle, #334155);
+  --ct-text: var(--ds-surface-sunken, #f8fafc);
+  --ct-text-secondary: var(--ds-text-disabled, #cbd5e1);
+  --ct-text-muted: var(--ds-text-subtlest, #94a3b8);
+  --ct-border: var(--ds-text-subtle, #334155);
   --ct-border-light: #1e293b;
 }
 
@@ -886,7 +886,7 @@
 .analytics-dept-pill.active {
   background: var(--ct-primary);
   border-color: var(--ct-primary);
-  color: #ffffff;
+  color: var(--ds-surface, #ffffff);
   font-weight: 600;
   box-shadow: 0 2px 8px rgba(37, 99, 235, 0.25);
 }
@@ -894,5 +894,5 @@
 .analytics-dept-pill.active:hover {
   background: var(--ct-primary-hover);
   border-color: var(--ct-primary-hover);
-  color: #ffffff;
+  color: var(--ds-surface, #ffffff);
 }

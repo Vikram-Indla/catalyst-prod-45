@@ -44,7 +44,7 @@ const DropdownItem: React.FC<{
           justifyContent: 'center',
           fontSize: '12px',
           fontWeight: 600,
-          color: '#ffffff',
+          color: 'var(--ds-surface, var(--ds-surface, #ffffff))',
           flexShrink: 0,
         }}
       >

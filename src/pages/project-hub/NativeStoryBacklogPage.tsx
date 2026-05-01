@@ -26,7 +26,7 @@ export default function NativeStoryBacklogPage() {
   }
 
   if (!project) {
-    return <div className="h-full flex items-center justify-center" style={{ background: 'var(--bg-0)' }}><span style={{ color: '#DC2626', fontSize: 13 }}>Project not found</span></div>;
+    return <div className="h-full flex items-center justify-center" style={{ background: 'var(--bg-0)' }}><span style={{ color: 'var(--ds-text-danger, var(--ds-text-danger, #DC2626))', fontSize: 13 }}>Project not found</span></div>;
   }
 
   return <StoryBacklogPage projectId={project.id} projectKey={key || ''} />;

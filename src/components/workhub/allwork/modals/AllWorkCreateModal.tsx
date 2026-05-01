@@ -45,7 +45,7 @@ function CustomSelect({ label, required, value, options, onChange, placeholder, 
         <button
           type="button"
           onClick={() => setOpen(!open)}
-          className="w-full flex items-center justify-between px-3 py-2 rounded-md border text-[13px] text-left transition-colors duration-[80ms] focus-visible:outline-2 focus-visible:outline-[#2563EB]"
+          className="w-full flex items-center justify-between px-3 py-2 rounded-md border text-[13px] text-left transition-colors duration-[80ms] focus-visible:outline-2 focus-visible:outline-[var(--ds-text-brand,var(--ds-text-brand, #2563EB))]"
           style={{
             borderColor: open ? 'var(--cp-blue)' : 'var(--bd-default, #2E2E2E)',
             color: value ? 'var(--fg-1)' : 'var(--fg-3)',
@@ -150,7 +150,7 @@ export function AllWorkCreateModal({ onClose, onCreated }: Props) {
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4" style={{ borderBottom: '1px solid var(--bd-subtle, #292929)' }}>
           <h2 className="text-[16px] font-semibold" style={{ color: 'var(--fg-1)', fontFamily: 'var(--cp-font-body)' }}>Create Work Item</h2>
-          <button onClick={onClose} className="p-1 rounded hover:bg-[var(--hover, #1F1F1F)] transition-colors duration-[80ms] focus-visible:outline-2 focus-visible:outline-[#2563EB]" aria-label="Close modal">
+          <button onClick={onClose} className="p-1 rounded hover:bg-[var(--hover, #1F1F1F)] transition-colors duration-[80ms] focus-visible:outline-2 focus-visible:outline-[var(--ds-text-brand,var(--ds-text-brand, #2563EB))]" aria-label="Close modal">
             <X className="w-5 h-5" style={{ color: 'var(--ds-text-subtlest, #6b6e76)' }} />
           </button>
         </div>
@@ -194,7 +194,7 @@ export function AllWorkCreateModal({ onClose, onCreated }: Props) {
               value={summary}
               onChange={e => setSummary(e.target.value)}
               placeholder="What needs to be done?"
-              className="w-full px-3 py-2 rounded-md border text-[13px] transition-colors duration-[80ms] focus:border-[#2563EB] focus:outline-none"
+              className="w-full px-3 py-2 rounded-md border text-[13px] transition-colors duration-[80ms] focus:border-[var(--ds-text-brand,var(--ds-text-brand, #2563EB))] focus:outline-none"
               style={{ borderColor: 'var(--bd-default, #2E2E2E)', color: 'var(--fg-1)', fontFamily: 'var(--cp-font-body)' }}
               autoFocus
             />
@@ -208,7 +208,7 @@ export function AllWorkCreateModal({ onClose, onCreated }: Props) {
               onChange={e => setDescription(e.target.value)}
               placeholder="Add more details..."
               rows={3}
-              className="w-full px-3 py-2 rounded-md border text-[13px] resize-none transition-colors duration-[80ms] focus:border-[#2563EB] focus:outline-none"
+              className="w-full px-3 py-2 rounded-md border text-[13px] resize-none transition-colors duration-[80ms] focus:border-[var(--ds-text-brand,var(--ds-text-brand, #2563EB))] focus:outline-none"
               style={{ borderColor: 'var(--bd-default, #2E2E2E)', color: 'var(--fg-1)', fontFamily: 'var(--cp-font-body)' }}
             />
           </div>
@@ -221,14 +221,14 @@ export function AllWorkCreateModal({ onClose, onCreated }: Props) {
               type="checkbox"
               checked={createAnother}
               onChange={e => setCreateAnother(e.target.checked)}
-              className="w-4 h-4 rounded accent-[#2563EB]"
+              className="w-4 h-4 rounded accent-[var(--ds-text-brand,var(--ds-text-brand, #2563EB))]"
             />
             Create another
           </label>
           <div className="flex items-center gap-2">
             <button
               onClick={onClose}
-              className="px-4 py-2 text-[13px] rounded-md hover:bg-[var(--hover, #1F1F1F)] transition-colors duration-[80ms] focus-visible:outline-2 focus-visible:outline-[#2563EB]"
+              className="px-4 py-2 text-[13px] rounded-md hover:bg-[var(--hover, #1F1F1F)] transition-colors duration-[80ms] focus-visible:outline-2 focus-visible:outline-[var(--ds-text-brand,var(--ds-text-brand, #2563EB))]"
               style={{ color: 'var(--ds-text-subtlest, #6b6e76)', fontFamily: 'var(--cp-font-body)' }}
             >
               Cancel
@@ -236,7 +236,7 @@ export function AllWorkCreateModal({ onClose, onCreated }: Props) {
             <button
               onClick={handleSubmit}
               disabled={!canSubmit || isSubmitting}
-              className="px-4 py-2 text-[13px] font-medium rounded-md text-white disabled:opacity-50 transition-colors duration-[80ms] hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#2563EB]"
+              className="px-4 py-2 text-[13px] font-medium rounded-md text-white disabled:opacity-50 transition-colors duration-[80ms] hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ds-text-brand,var(--ds-text-brand, #2563EB))]"
               style={{ backgroundColor: 'var(--cp-blue)', fontFamily: 'var(--cp-font-body)' }}
             >
               {isSubmitting ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Create'}

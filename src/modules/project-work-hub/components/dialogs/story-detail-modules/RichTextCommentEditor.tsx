@@ -200,7 +200,7 @@ export function RichTextCommentEditor({
   return (
     <div style={{ position: 'relative' }}>
       <div style={{
-        border: `1px solid ${isFocused ? '#4C9AFF' : '#DFE1E6'}`,
+        border: `1px solid ${isFocused ? '#4C9AFF' : 'var(--ds-border, var(--ds-border, #DFE1E6))'}`,
         borderRadius: 6, overflow: 'hidden',
         boxShadow: isFocused ? '0 0 0 1px #4C9AFF' : 'none',
         transition: 'border-color 0.15s, box-shadow 0.15s',
@@ -208,7 +208,7 @@ export function RichTextCommentEditor({
         {/* Toolbar */}
         <div style={{
           display: 'flex', alignItems: 'center', gap: 2, padding: '4px 8px',
-          borderBottom: '1px solid #F4F5F7', background: '#FAFBFC', flexWrap: 'wrap',
+          borderBottom: '1px solid #F4F5F7', background: 'var(--ds-surface-sunken, var(--ds-surface-sunken, #FAFBFC))', flexWrap: 'wrap',
         }}>
           <button style={toolbarBtnStyle} onClick={() => execCmd('bold')} title="Bold"
             onMouseEnter={e => (e.currentTarget.style.background = '#EBECF0')}
@@ -222,7 +222,7 @@ export function RichTextCommentEditor({
             onMouseEnter={e => (e.currentTarget.style.background = '#EBECF0')}
             onMouseLeave={e => (e.currentTarget.style.background = 'none')}
           ><Underline size={15} /></button>
-          <div style={{ width: 1, height: 16, background: '#DFE1E6', margin: '0 4px' }} />
+          <div style={{ width: 1, height: 16, background: 'var(--ds-border, var(--ds-border, #DFE1E6))', margin: '0 4px' }} />
           <button style={toolbarBtnStyle} onClick={() => execCmd('insertUnorderedList')} title="Bullet list"
             onMouseEnter={e => (e.currentTarget.style.background = '#EBECF0')}
             onMouseLeave={e => (e.currentTarget.style.background = 'none')}
@@ -243,7 +243,7 @@ export function RichTextCommentEditor({
             onMouseEnter={e => (e.currentTarget.style.background = '#EBECF0')}
             onMouseLeave={e => (e.currentTarget.style.background = 'none')}
           ><Link size={15} /></button>
-          <div style={{ width: 1, height: 16, background: '#DFE1E6', margin: '0 4px' }} />
+          <div style={{ width: 1, height: 16, background: 'var(--ds-border, var(--ds-border, #DFE1E6))', margin: '0 4px' }} />
           <button style={toolbarBtnStyle} onClick={() => execCmd('undo')} title="Undo"
             onMouseEnter={e => (e.currentTarget.style.background = '#EBECF0')}
             onMouseLeave={e => (e.currentTarget.style.background = 'none')}
@@ -269,8 +269,8 @@ export function RichTextCommentEditor({
           data-placeholder={placeholder}
           style={{
             minHeight: 80, padding: '12px 14px', outline: 'none',
-            fontSize: 14, color: '#172B4D', lineHeight: 1.6, fontFamily: 'inherit',
-            background: '#FFF', overflowY: 'auto', maxHeight: 300,
+            fontSize: 14, color: 'var(--ds-text, var(--ds-text, #172B4D))', lineHeight: 1.6, fontFamily: 'inherit',
+            background: 'var(--ds-surface, var(--ds-surface, var(--ds-surface, #FFF)))', overflowY: 'auto', maxHeight: 300,
             position: 'relative',
           }}
         />
@@ -279,7 +279,7 @@ export function RichTextCommentEditor({
         {mentionQuery !== null && filteredMembers.length > 0 && mentionPos && (
           <div style={{
             position: 'absolute', top: mentionPos.top + 48, left: mentionPos.left + 8,
-            background: '#FFF', border: '1px solid #DFE1E6', borderRadius: 6,
+            background: 'var(--ds-surface, var(--ds-surface, var(--ds-surface, #FFF)))', border: '1px solid #DFE1E6', borderRadius: 6,
             boxShadow: '0 4px 16px rgba(9,30,66,0.18)', zIndex: 100, minWidth: 240,
             maxHeight: 200, overflowY: 'auto',
           }}>
@@ -288,7 +288,7 @@ export function RichTextCommentEditor({
                 onMouseDown={e => { e.preventDefault(); insertMention(m); }}
                 style={{
                   width: '100%', padding: '8px 12px', border: 'none', textAlign: 'left', cursor: 'pointer',
-                  display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, color: '#172B4D',
+                  display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, color: 'var(--ds-text, var(--ds-text, #172B4D))',
                   background: idx === mentionIndex ? '#DEEBFF' : 'transparent',
                 }}
                 onMouseEnter={() => setMentionIndex(idx)}
@@ -296,7 +296,7 @@ export function RichTextCommentEditor({
                 {m.avatar_url ? (
                   <img src={m.avatar_url} alt="" style={{ width: 24, height: 24, borderRadius: '50%', objectFit: 'cover' }} />
                 ) : (
-                  <div style={{ width: 24, height: 24, borderRadius: '50%', background: '#0747A6', color: '#FFF', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontWeight: 700 }}>
+                  <div style={{ width: 24, height: 24, borderRadius: '50%', background: '#0747A6', color: 'var(--ds-surface, var(--ds-surface, var(--ds-surface, #FFF)))', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontWeight: 700 }}>
                     {m.full_name?.slice(0, 2).toUpperCase()}
                   </div>
                 )}
@@ -308,7 +308,7 @@ export function RichTextCommentEditor({
       </div>
 
       {uploading && (
-        <div style={{ fontSize: 12, color: '#6B778C', marginTop: 4 }}>Uploading image…</div>
+        <div style={{ fontSize: 12, color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #6B778C))', marginTop: 4 }}>Uploading image…</div>
       )}
 
       {/* Save / Cancel */}
@@ -318,7 +318,7 @@ export function RichTextCommentEditor({
           disabled={isEmpty || isSubmitting}
           style={{
             padding: '6px 16px', borderRadius: 4, border: 'none', cursor: isEmpty || isSubmitting ? 'not-allowed' : 'pointer',
-            background: isEmpty || isSubmitting ? '#F4F5F7' : '#0052CC', color: isEmpty || isSubmitting ? '#A5ADBA' : '#FFF',
+            background: isEmpty || isSubmitting ? 'var(--ds-surface-sunken, var(--ds-surface-sunken, #F4F5F7))' : '#0052CC', color: isEmpty || isSubmitting ? '#A5ADBA' : 'var(--ds-surface, var(--ds-surface, var(--ds-surface, #FFF)))',
             fontSize: 14, fontWeight: 600, transition: 'background 0.15s',
           }}
           onMouseEnter={e => { if (!isEmpty && !isSubmitting) e.currentTarget.style.background = '#0747A6'; }}

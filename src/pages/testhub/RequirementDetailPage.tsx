@@ -49,32 +49,32 @@ const COVERAGE_CONFIG: Record<string, { label: string; color: string; bg: string
   'Passed':  { label: 'PASSED',  color: '#006644', bg: '#E3FCEF' },
   'Failed':  { label: 'FAILED',  color: '#BF2600', bg: '#FFEBE6' },
   'Blocked': { label: 'BLOCKED', color: '#FF8B00', bg: '#FFFAE6' },
-  'Skipped': { label: 'SKIPPED', color: '#6B778C', bg: '#DFE1E6' },
-  'Not Run': { label: 'NOT RUN', color: '#253858', bg: '#DFE1E6' },
+  'Skipped': { label: 'SKIPPED', color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #6B778C))', bg: 'var(--ds-border, var(--ds-border, #DFE1E6))' },
+  'Not Run': { label: 'NOT RUN', color: 'var(--ds-text, var(--ds-text, #253858))', bg: 'var(--ds-border, var(--ds-border, #DFE1E6))' },
 };
 
 const TYPE_CONFIG: Record<string, { label: string; color: string; bg: string }> = {
-  functional: { label: 'Functional', color: '#2563EB', bg: '#EFF6FF' },
-  non_functional: { label: 'Non-Functional', color: '#64748B', bg: '#F1F5F9' },
+  functional: { label: 'Functional', color: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))', bg: 'var(--ds-background-selected, var(--ds-background-selected, #EFF6FF))' },
+  non_functional: { label: 'Non-Functional', color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #64748B))', bg: 'var(--ds-surface-sunken, var(--ds-surface-sunken, #F1F5F9))' },
   user_story: { label: 'User Story', color: '#0891B2', bg: '#ECFEFF' },
-  epic: { label: 'Epic', color: '#64748B', bg: '#F1F5F9' },
+  epic: { label: 'Epic', color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #64748B))', bg: 'var(--ds-surface-sunken, var(--ds-surface-sunken, #F1F5F9))' },
   feature: { label: 'Feature', color: '#059669', bg: '#ECFDF5' },
-  bug_fix: { label: 'Bug Fix', color: '#DC2626', bg: '#FEF2F2' },
+  bug_fix: { label: 'Bug Fix', color: 'var(--ds-text-danger, var(--ds-text-danger, #DC2626))', bg: 'var(--ds-background-danger, var(--ds-background-danger, #FEF2F2))' },
 };
 
 const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string }> = {
-  draft:        { label: 'DRAFT',        color: '#253858', bg: '#DFE1E6' },
+  draft:        { label: 'DRAFT',        color: 'var(--ds-text, var(--ds-text, #253858))', bg: 'var(--ds-border, var(--ds-border, #DFE1E6))' },
   approved:     { label: 'APPROVED',     color: '#0747A6', bg: '#DEEBFF' },
   in_progress:  { label: 'IN PROGRESS',  color: '#0747A6', bg: '#DEEBFF' },
   implemented:  { label: 'IMPLEMENTED',  color: '#006644', bg: '#E3FCEF' },
   verified:     { label: 'VERIFIED',     color: '#006644', bg: '#E3FCEF' },
-  deprecated:   { label: 'DEPRECATED',   color: '#253858', bg: '#DFE1E6' },
+  deprecated:   { label: 'DEPRECATED',   color: 'var(--ds-text, var(--ds-text, #253858))', bg: 'var(--ds-border, var(--ds-border, #DFE1E6))' },
 };
 
 const defectStatusColors: Record<string, { bg: string; color: string }> = {
-  open:        { bg: '#DFE1E6', color: '#253858' },
-  new:         { bg: '#DFE1E6', color: '#253858' },
-  deferred:    { bg: '#DFE1E6', color: '#253858' },
+  open:        { bg: 'var(--ds-border, var(--ds-border, #DFE1E6))', color: 'var(--ds-text, var(--ds-text, #253858))' },
+  new:         { bg: 'var(--ds-border, var(--ds-border, #DFE1E6))', color: 'var(--ds-text, var(--ds-text, #253858))' },
+  deferred:    { bg: 'var(--ds-border, var(--ds-border, #DFE1E6))', color: 'var(--ds-text, var(--ds-text, #253858))' },
   in_progress: { bg: '#DEEBFF', color: '#0747A6' },
   reopened:    { bg: '#DEEBFF', color: '#0747A6' },
   fixed:       { bg: '#E3FCEF', color: '#006644' },
@@ -87,12 +87,12 @@ const RequirementDefectsPanel = ({ requirementId }: { requirementId?: string }) 
   const { data: defects = [], isLoading } = useDefectsByRequirementId(requirementId);
 
   if (isLoading) {
-    return <div style={{ padding: 24, color: '#94A3B8', textAlign: 'center' }}>Loading defects...</div>;
+    return <div style={{ padding: 24, color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #94A3B8))', textAlign: 'center' }}>Loading defects...</div>;
   }
 
   if (defects.length === 0) {
     return (
-      <div style={{ textAlign: 'center', padding: 40, color: '#94A3B8' }}>
+      <div style={{ textAlign: 'center', padding: 40, color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #94A3B8))' }}>
         <Bug size={40} style={{ marginBottom: 12, opacity: 0.5 }} />
         <p style={{ margin: 0 }}>No defects linked to this requirement.</p>
       </div>
@@ -105,21 +105,21 @@ const RequirementDefectsPanel = ({ requirementId }: { requirementId?: string }) 
         <thead>
           <tr style={{ height: 36, backgroundColor: '#111111', textAlign: 'left' }}>
             {['Defect Key', 'Title', 'Status', 'Severity', 'Source'].map(h => (
-              <th key={h} style={{ padding: '8px 12px', fontWeight: 600, color: '#A1A1A1', fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.03em', borderBottom: '1px solid #2E2E2E' }}>{h}</th>
+              <th key={h} style={{ padding: '8px 12px', fontWeight: 600, color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #A1A1A1))', fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.03em', borderBottom: '1px solid #2E2E2E' }}>{h}</th>
             ))}
           </tr>
         </thead>
         <tbody>
           {defects.map((d: any) => {
-            const sc = defectStatusColors[d.status] ?? { bg: '#DFE1E6', color: '#253858' };
+            const sc = defectStatusColors[d.status] ?? { bg: 'var(--ds-border, var(--ds-border, #DFE1E6))', color: 'var(--ds-text, var(--ds-text, #253858))' };
             return (
-              <tr key={d.id} style={{ height: 36, backgroundColor: '#1A1A1A', borderBottom: '0.75px solid #2E2E2E' }}>
+              <tr key={d.id} style={{ height: 36, backgroundColor: 'var(--ds-surface-raised, var(--ds-surface-raised, #1A1A1A))', borderBottom: '0.75px solid #2E2E2E' }}>
                 <td style={{ padding: '8px 12px' }}>
-                  <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 12, fontWeight: 600, color: '#2563EB' }}>
+                  <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 12, fontWeight: 600, color: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))' }}>
                     {d.defect_key}
                   </span>
                 </td>
-                <td style={{ padding: '8px 12px', color: '#EDEDED' }}>{d.title}</td>
+                <td style={{ padding: '8px 12px', color: 'var(--ds-text, var(--ds-text, #EDEDED))' }}>{d.title}</td>
                 <td style={{ padding: '8px 12px' }}>
                   <span style={{
                     display: 'inline-flex', alignItems: 'center', height: 20, padding: '2px 6px', borderRadius: 3,
@@ -129,13 +129,13 @@ const RequirementDefectsPanel = ({ requirementId }: { requirementId?: string }) 
                     {d.status?.replace(/_/g, ' ')}
                   </span>
                 </td>
-                <td style={{ padding: '8px 12px', color: '#A1A1A1' }}>{d.severity ?? '—'}</td>
+                <td style={{ padding: '8px 12px', color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #A1A1A1))' }}>{d.severity ?? '—'}</td>
                 <td style={{ padding: '8px 12px' }}>
                   {d.link_source === 'auto_execution' && (
-                    <span style={{ fontSize: 11, fontWeight: 600, color: '#A1A1A1', backgroundColor: '#1F1F1F', padding: '2px 6px', borderRadius: 4 }}>Auto</span>
+                    <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #A1A1A1))', backgroundColor: 'var(--ds-surface-overlay, var(--ds-surface-overlay, #1F1F1F))', padding: '2px 6px', borderRadius: 4 }}>Auto</span>
                   )}
                   {d.link_source === 'auto_jira' && (
-                    <span style={{ fontSize: 11, fontWeight: 600, color: '#A1A1A1', backgroundColor: '#1F1F1F', padding: '2px 6px', borderRadius: 4 }}>Jira</span>
+                    <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #A1A1A1))', backgroundColor: 'var(--ds-surface-overlay, var(--ds-surface-overlay, #1F1F1F))', padding: '2px 6px', borderRadius: 4 }}>Jira</span>
                   )}
                 </td>
               </tr>
@@ -233,14 +233,14 @@ export default function RequirementDetailPage() {
   if (isLoading) {
     return (
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh', backgroundColor: 'var(--cp-bg-page, #F8FAFC)' }}>
-        <RefreshCw size={32} style={{ animation: 'spin 1s linear infinite', color: '#2563EB' }} />
+        <RefreshCw size={32} style={{ animation: 'spin 1s linear infinite', color: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))' }} />
         <style>{`@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }`}</style>
       </div>
     );
   }
 
   if (!requirement) {
-    return <div style={{ padding: 24, textAlign: 'center', color: '#64748B' }}>Requirement not found</div>;
+    return <div style={{ padding: 24, textAlign: 'center', color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #64748B))' }}>Requirement not found</div>;
   }
 
   const type = TYPE_CONFIG[requirement.type] || TYPE_CONFIG.functional;
@@ -250,7 +250,7 @@ export default function RequirementDetailPage() {
   return (
     <div style={{ padding: 24, backgroundColor: 'var(--cp-bg-page, #F8FAFC)', minHeight: '100vh' }}>
       <button onClick={() => navigate('/testhub/requirements')}
-        style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '8px 12px', border: isDark ? '1px solid #2E2E2E' : '1px solid #E2E8F0', borderRadius: 8, backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFF', color: 'var(--cp-text-tertiary, #64748B)', fontSize: 13, cursor: 'pointer', marginBottom: 16 }}>
+        style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '8px 12px', border: isDark ? '1px solid #2E2E2E' : '1px solid #E2E8F0', borderRadius: 8, backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, var(--ds-surface, var(--ds-surface, #FFF)))', color: 'var(--cp-text-tertiary, #64748B)', fontSize: 13, cursor: 'pointer', marginBottom: 16 }}>
         <ArrowLeft size={16} /> Back to Requirements
       </button>
 
@@ -258,7 +258,7 @@ export default function RequirementDetailPage() {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 24 }}>
         <div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
-            <span style={{ fontSize: 14, fontWeight: 600, color: '#2563EB', backgroundColor: '#EFF6FF', padding: '6px 14px', borderRadius: 8 }}>{requirement.req_key}</span>
+            <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))', backgroundColor: 'var(--ds-background-selected, var(--ds-background-selected, #EFF6FF))', padding: '6px 14px', borderRadius: 8 }}>{requirement.req_key}</span>
             <span style={{ fontSize: 12, fontWeight: 500, color: type.color, backgroundColor: type.bg, padding: '4px 10px', borderRadius: 6 }}>{type.label}</span>
             <span style={{
               fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.03em',
@@ -266,13 +266,13 @@ export default function RequirementDetailPage() {
               padding: '2px 6px', borderRadius: 4, height: 20, display: 'inline-flex', alignItems: 'center',
             }}>{status.label}</span>
             {requirement.external_id && (
-              <span style={{ fontSize: 12, fontWeight: 500, color: '#64748B', backgroundColor: '#F1F5F9', padding: '4px 10px', borderRadius: 6, display: 'flex', alignItems: 'center', gap: 4 }}>
+              <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #64748B))', backgroundColor: 'var(--ds-surface-sunken, var(--ds-surface-sunken, #F1F5F9))', padding: '4px 10px', borderRadius: 6, display: 'flex', alignItems: 'center', gap: 4 }}>
                 <ExternalLink size={12} /> {requirement.external_id}
               </span>
             )}
           </div>
           <h1 style={{ fontSize: 24, fontWeight: 700, color: 'var(--cp-text-primary, #0F172A)', margin: 0 }}>{requirement.title}</h1>
-          <div style={{ display: 'flex', gap: 16, marginTop: 8, fontSize: 13, color: '#64748B' }}>
+          <div style={{ display: 'flex', gap: 16, marginTop: 8, fontSize: 13, color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #64748B))' }}>
             {requirement.release_version && <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}><Tag size={14} /> v{requirement.release_version}</span>}
             <span>Created {formatDate(requirement.created_at)}</span>
           </div>
@@ -285,7 +285,7 @@ export default function RequirementDetailPage() {
             </SelectContent>
           </Select>
           <button onClick={deleteRequirement}
-            style={{ display: 'flex', alignItems: 'center', gap: 6, height: 40, padding: '0 14px', border: '1px solid #FECACA', borderRadius: 8, backgroundColor: '#FEF2F2', color: '#DC2626', fontSize: 13, cursor: 'pointer' }}>
+            style={{ display: 'flex', alignItems: 'center', gap: 6, height: 40, padding: '0 14px', border: '1px solid #FECACA', borderRadius: 8, backgroundColor: 'var(--ds-background-danger, var(--ds-background-danger, #FEF2F2))', color: 'var(--ds-text-danger, var(--ds-text-danger, #DC2626))', fontSize: 13, cursor: 'pointer' }}>
             <Trash2 size={16} />
           </button>
         </div>
@@ -293,28 +293,28 @@ export default function RequirementDetailPage() {
 
       {/* Description */}
       {requirement.description && (
-        <div style={{ backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFF', borderRadius: 12, padding: 24, border: isDark ? '1px solid #2E2E2E' : '1px solid #E2E8F0', marginBottom: 24 }}>
+        <div style={{ backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, var(--ds-surface, var(--ds-surface, #FFF)))', borderRadius: 12, padding: 24, border: isDark ? '1px solid #2E2E2E' : '1px solid #E2E8F0', marginBottom: 24 }}>
           <h3 style={{ fontSize: 16, fontWeight: 600, color: 'var(--cp-text-primary, #0F172A)', margin: '0 0 12px', display: 'flex', alignItems: 'center', gap: 8 }}>
-            <FileText size={18} style={{ color: '#2563EB' }} /> Description
+            <FileText size={18} style={{ color: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))' }} /> Description
           </h3>
-          <p style={{ fontSize: 14, color: '#334155', margin: 0, whiteSpace: 'pre-wrap' }}>{requirement.description}</p>
+          <p style={{ fontSize: 14, color: 'var(--ds-text-subtle, var(--ds-text-subtle, #334155))', margin: 0, whiteSpace: 'pre-wrap' }}>{requirement.description}</p>
         </div>
       )}
 
       {/* Linked Tests */}
-      <div style={{ backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFF', borderRadius: 12, padding: 24, border: isDark ? '1px solid #2E2E2E' : '1px solid #E2E8F0' }}>
+      <div style={{ backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, var(--ds-surface, var(--ds-surface, #FFF)))', borderRadius: 12, padding: 24, border: isDark ? '1px solid #2E2E2E' : '1px solid #E2E8F0' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
           <h3 style={{ fontSize: 16, fontWeight: 600, color: 'var(--cp-text-primary, #0F172A)', margin: 0, display: 'flex', alignItems: 'center', gap: 8 }}>
-            <Link2 size={18} style={{ color: '#2563EB' }} /> Linked Test Cases ({linkedTests.length})
+            <Link2 size={18} style={{ color: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))' }} /> Linked Test Cases ({linkedTests.length})
           </h3>
           <button onClick={() => setShowLinkModal(true)}
-            style={{ display: 'flex', alignItems: 'center', gap: 6, height: 50, padding: '0 14px', border: 'none', borderRadius: 8, backgroundColor: '#2563EB', color: '#FFF', fontSize: 13, fontWeight: 500, cursor: 'pointer' }}>
+            style={{ display: 'flex', alignItems: 'center', gap: 6, height: 50, padding: '0 14px', border: 'none', borderRadius: 8, backgroundColor: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))', color: 'var(--ds-surface, var(--ds-surface, var(--ds-surface, #FFF)))', fontSize: 13, fontWeight: 500, cursor: 'pointer' }}>
             <Plus size={16} /> Link Test Case
           </button>
         </div>
 
         {linkedTests.length === 0 ? (
-          <div style={{ textAlign: 'center', padding: 40, color: '#94A3B8' }}>
+          <div style={{ textAlign: 'center', padding: 40, color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #94A3B8))' }}>
             <Link2 size={40} style={{ marginBottom: 12, opacity: 0.5 }} />
             <p style={{ margin: 0 }}>No test cases linked</p>
             <p style={{ margin: '8px 0 0', fontSize: 13 }}>Link test cases to track coverage</p>
@@ -326,8 +326,8 @@ export default function RequirementDetailPage() {
                 style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: 14, backgroundColor: 'var(--cp-bg-page, #F8FAFC)', borderRadius: 12, border: isDark ? '1px solid #2E2E2E' : '1px solid #E2E8F0' }}>
                 <div style={{ flex: 1 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
-                    <span style={{ fontSize: 12, fontWeight: 600, color: '#2563EB', backgroundColor: '#EFF6FF', padding: '2px 8px', borderRadius: 4 }}>{test.case_key}</span>
-                    <span style={{ fontSize: 11, fontWeight: 500, color: '#64748B' }}>{test.priority}</span>
+                    <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))', backgroundColor: 'var(--ds-background-selected, var(--ds-background-selected, #EFF6FF))', padding: '2px 8px', borderRadius: 4 }}>{test.case_key}</span>
+                    <span style={{ fontSize: 11, fontWeight: 500, color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #64748B))' }}>{test.priority}</span>
                     {(() => {
                       const cov = COVERAGE_CONFIG[test.coverage_status] || COVERAGE_CONFIG['Not Run'];
                       return (
@@ -343,11 +343,11 @@ export default function RequirementDetailPage() {
                 </div>
                 <div style={{ display: 'flex', gap: 8 }}>
                   <button onClick={() => navigate(`/testhub/repository?view=${test.test_case_id}`)}
-                    style={{ display: 'flex', alignItems: 'center', gap: 4, height: 32, padding: '8px 12px', border: isDark ? '1px solid #2E2E2E' : '1px solid #E2E8F0', borderRadius: 6, backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFF', color: 'var(--cp-text-secondary, #334155)', fontSize: 12, cursor: 'pointer' }}>
+                    style={{ display: 'flex', alignItems: 'center', gap: 4, height: 32, padding: '8px 12px', border: isDark ? '1px solid #2E2E2E' : '1px solid #E2E8F0', borderRadius: 6, backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, var(--ds-surface, var(--ds-surface, #FFF)))', color: 'var(--cp-text-secondary, #334155)', fontSize: 12, cursor: 'pointer' }}>
                     View <ChevronRight size={14} />
                   </button>
                   <button onClick={() => unlinkTest(test.link_id)}
-                    style={{ width: 32, height: 32, border: isDark ? '1px solid #2E2E2E' : '1px solid #E2E8F0', borderRadius: 6, backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFF', color: 'var(--cp-text-muted, #94A3B8)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    style={{ width: 32, height: 32, border: isDark ? '1px solid #2E2E2E' : '1px solid #E2E8F0', borderRadius: 6, backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, var(--ds-surface, var(--ds-surface, #FFF)))', color: 'var(--cp-text-muted, #94A3B8)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                     <Unlink size={14} />
                   </button>
                 </div>
@@ -358,7 +358,7 @@ export default function RequirementDetailPage() {
       </div>
 
       {/* Linked Defects */}
-      <div style={{ backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFF', borderRadius: 12, padding: 24, border: isDark ? '1px solid #2E2E2E' : '1px solid #E2E8F0', marginTop: 24 }}>
+      <div style={{ backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, var(--ds-surface, var(--ds-surface, #FFF)))', borderRadius: 12, padding: 24, border: isDark ? '1px solid #2E2E2E' : '1px solid #E2E8F0', marginTop: 24 }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
           <h3 style={{ fontSize: 16, fontWeight: 600, color: 'var(--cp-text-primary, #0F172A)', margin: 0, display: 'flex', alignItems: 'center', gap: 8 }}>
             <Bug size={18} style={{ color: '#E5493A' }} /> Linked Defects
@@ -368,12 +368,12 @@ export default function RequirementDetailPage() {
       </div>
 
       {/* Comments */}
-      <div style={{ backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFF', borderRadius: 12, padding: 24, border: isDark ? '1px solid #2E2E2E' : '1px solid #E2E8F0', marginTop: 24 }}>
+      <div style={{ backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, var(--ds-surface, var(--ds-surface, #FFF)))', borderRadius: 12, padding: 24, border: isDark ? '1px solid #2E2E2E' : '1px solid #E2E8F0', marginTop: 24 }}>
         <EntityCommentsPanel entityType="requirement" entityId={requirement?.id} title="Requirement Comments" />
       </div>
 
       {/* Attachments */}
-      <div style={{ backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFF', borderRadius: 12, padding: 24, border: isDark ? '1px solid #2E2E2E' : '1px solid #E2E8F0', marginTop: 24 }}>
+      <div style={{ backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, var(--ds-surface, var(--ds-surface, #FFF)))', borderRadius: 12, padding: 24, border: isDark ? '1px solid #2E2E2E' : '1px solid #E2E8F0', marginTop: 24 }}>
         <EntityAttachmentsPanel entityType="requirement" entityId={requirement?.id} title="Requirement Attachments" />
       </div>
 

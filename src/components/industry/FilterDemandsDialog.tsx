@@ -137,7 +137,7 @@ function MultiSelectDropdown({
         <button
           type="button"
           className={cn(
-            "flex items-center justify-between w-full h-10 px-3 border rounded-md text-sm bg-white dark:bg-[#1A1A1A] transition-colors",
+            "flex items-center justify-between w-full h-10 px-3 border rounded-md text-sm bg-white dark:bg-[var(--ds-surface-raised,var(--ds-surface-raised, #1A1A1A))] transition-colors",
             selected.length > 0 ? "border-border text-foreground" : "border-border text-muted-foreground",
             "hover:border-muted-foreground/50 focus:outline-none focus:ring-1 focus:ring-brand-primary"
           )}
@@ -150,7 +150,7 @@ function MultiSelectDropdown({
           </svg>
         </button>
       </PopoverTrigger>
-      <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-1 bg-white dark:bg-[#1A1A1A] border dark:border-[#2E2E2E] shadow-lg rounded-md max-h-[200px] overflow-y-auto z-[100]" align="start">
+      <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-1 bg-white dark:bg-[var(--ds-surface-raised,var(--ds-surface-raised, #1A1A1A))] border dark:border-[var(--ds-border,var(--ds-border, #2E2E2E))] shadow-lg rounded-md max-h-[200px] overflow-y-auto z-[100]" align="start">
         {options.map(option => (
           <div
             key={option.value}
@@ -237,7 +237,7 @@ function DateInput({
         <button
           type="button"
           className={cn(
-            "flex items-center justify-between w-full h-10 px-3 border rounded-md text-sm bg-white dark:bg-[#1A1A1A] transition-colors",
+            "flex items-center justify-between w-full h-10 px-3 border rounded-md text-sm bg-white dark:bg-[var(--ds-surface-raised,var(--ds-surface-raised, #1A1A1A))] transition-colors",
             value ? "border-border text-foreground" : "border-border text-muted-foreground",
             "hover:border-muted-foreground/50 focus:outline-none focus:ring-1 focus:ring-brand-primary"
           )}
@@ -248,7 +248,7 @@ function DateInput({
           <CalendarIcon className="h-4 w-4 text-muted-foreground shrink-0" />
         </button>
       </PopoverTrigger>
-      <PopoverContent className="w-auto p-0 bg-white dark:bg-[#1A1A1A] border dark:border-[#2E2E2E] shadow-lg rounded-md z-[100]" align="start">
+      <PopoverContent className="w-auto p-0 bg-white dark:bg-[var(--ds-surface-raised,var(--ds-surface-raised, #1A1A1A))] border dark:border-[var(--ds-border,var(--ds-border, #2E2E2E))] shadow-lg rounded-md z-[100]" align="start">
         <Calendar 
           mode="single" 
           selected={value} 
@@ -388,7 +388,7 @@ export function FilterDemandsDialog({
 
   return (
     <Dialog open={open} onOpenChange={handleCancel}>
-      <DialogContent className="max-w-[480px] w-[95vw] p-0 bg-white dark:bg-[#1A1A1A] border dark:border-[#2E2E2E] shadow-xl rounded-lg overflow-hidden gap-0 [&>button.absolute]:hidden">
+      <DialogContent className="max-w-[480px] w-[95vw] p-0 bg-white dark:bg-[var(--ds-surface-raised,var(--ds-surface-raised, #1A1A1A))] border dark:border-[var(--ds-border,var(--ds-border, #2E2E2E))] shadow-xl rounded-lg overflow-hidden gap-0 [&>button.absolute]:hidden">
         {/* Header */}
         <div className="flex items-center justify-between px-4 sm:px-5 py-4 border-b border-border">
           <h2 className="text-base font-semibold text-foreground">Filters</h2>
@@ -413,7 +413,7 @@ export function FilterDemandsDialog({
                     "px-3 py-1.5 border rounded-md text-sm cursor-pointer transition-all whitespace-nowrap font-medium",
                     localFilters.activeSmartFilter === sf.id
                       ? "bg-brand-primary border-brand-primary text-white"
-                      : "bg-white dark:bg-[#1A1A1A] border-border text-foreground hover:border-brand-primary hover:bg-brand-primary/5"
+                      : "bg-white dark:bg-[var(--ds-surface-raised,var(--ds-surface-raised, #1A1A1A))] border-border text-foreground hover:border-brand-primary hover:bg-brand-primary/5"
                   )}
                   onClick={() => handleSmartFilterClick(sf.id)}
                 >
@@ -500,10 +500,10 @@ export function FilterDemandsDialog({
                   value={(localFilters.ageing && localFilters.ageing[0]) || 'all'}
                   onValueChange={(value) => updateFilter('ageing', value === 'all' ? undefined : [value])}
                 >
-                  <SelectTrigger className="h-10 bg-white dark:bg-[#1A1A1A] border-border">
+                  <SelectTrigger className="h-10 bg-white dark:bg-[var(--ds-surface-raised,var(--ds-surface-raised, #1A1A1A))] border-border">
                     <SelectValue placeholder="All" />
                   </SelectTrigger>
-                  <SelectContent className="bg-white dark:bg-[#1A1A1A] z-[100]">
+                  <SelectContent className="bg-white dark:bg-[var(--ds-surface-raised,var(--ds-surface-raised, #1A1A1A))] z-[100]">
                     {AGEING_OPTIONS.map(option => (
                       <SelectItem key={option.value} value={option.value}>
                         {option.label}
@@ -605,7 +605,7 @@ export function FilterDemandsDialog({
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-between px-4 sm:px-5 py-3.5 border-t border-border bg-white dark:bg-[#1A1A1A]">
+        <div className="flex items-center justify-between px-4 sm:px-5 py-3.5 border-t border-border bg-white dark:bg-[var(--ds-surface-raised,var(--ds-surface-raised, #1A1A1A))]">
           <span className="text-sm">
             <span className="text-brand-primary font-medium">{activeFilterCount}</span>
             <span className="text-muted-foreground ml-1">filters applied</span>

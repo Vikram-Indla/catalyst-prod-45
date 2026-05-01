@@ -26,17 +26,17 @@ interface WorkstreamMembersDialogProps {
 }
 
 const COLORS = {
-  accent: '#2563eb',
-  textPrimary: '#0f172a',
-  textSecondary: '#64748b',
-  textMuted: '#94a3b8',
-  borderLight: '#e2e8f0',
-  surfaceHover: '#f8fafc',
+  accent: 'var(--ds-text-brand, var(--ds-text-brand, #2563eb))',
+  textPrimary: 'var(--ds-text, var(--ds-text, #0f172a))',
+  textSecondary: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #64748b))',
+  textMuted: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #94a3b8))',
+  borderLight: 'var(--ds-border, var(--ds-border, #e2e8f0))',
+  surfaceHover: 'var(--ds-surface-sunken, var(--ds-surface-sunken, #f8fafc))',
 };
 
 // Generate avatar background color from user ID
 const getAvatarColor = (userId: string): string => {
-  const colors = ['#2563eb', '#7c3aed', '#db2777', '#ea580c', '#16a34a', '#0891b2', '#4f46e5', '#be185d'];
+  const colors = ['var(--ds-text-brand, var(--ds-text-brand, #2563eb))', '#7c3aed', '#db2777', '#ea580c', 'var(--ds-text-success, var(--ds-text-success, #16a34a))', '#0891b2', '#4f46e5', '#be185d'];
   const hash = userId.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
   return colors[hash % colors.length];
 };
@@ -189,7 +189,7 @@ export function WorkstreamMembersDialog({
                           justifyContent: 'center',
                           fontSize: '12px',
                           fontWeight: 600,
-                          color: '#ffffff',
+                          color: 'var(--ds-surface, var(--ds-surface, #ffffff))',
                           flexShrink: 0,
                         }}
                       >

@@ -206,7 +206,7 @@ export function JiraSyncPanel() {
         <div className="flex items-center gap-2">
           <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-[#2684FF] to-[#0052CC] flex items-center justify-center shadow-sm">
             <svg width={14} height={14} viewBox="0 0 24 24" fill="none">
-              <path d="M22.9 11.4L13 1.5 12 .5 4.1 8.4.5 12l3.6 3.6L12 23.5l7.9-7.9.4-.4 2.6-2.6-2.6-2.6zM12 15.3L8.7 12 12 8.7l3.3 3.3-3.3 3.3z" fill="#fff"/>
+              <path d="M22.9 11.4L13 1.5 12 .5 4.1 8.4.5 12l3.6 3.6L12 23.5l7.9-7.9.4-.4 2.6-2.6-2.6-2.6zM12 15.3L8.7 12 12 8.7l3.3 3.3-3.3 3.3z" fill="var(--ds-surface, var(--ds-surface, var(--ds-surface, #fff)))"/>
             </svg>
           </div>
           <div>

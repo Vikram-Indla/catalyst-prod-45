@@ -144,8 +144,8 @@ function BRTextareaEditor({ initialValue, placeholder, minHeight = 120, onSave, 
           padding: '10px 12px',
           border: '1px solid #DFE1E6',
           borderRadius: 3,
-          background: '#FFFFFF',
-          color: '#172B4D',
+          background: 'var(--ds-surface, var(--ds-surface, #FFFFFF))',
+          color: 'var(--ds-text, var(--ds-text, #172B4D))',
           fontSize: 14,
           lineHeight: 1.5,
           fontFamily: '"Atlassian Sans", ui-sans-serif, -apple-system, "system-ui", "Segoe UI", Ubuntu, "Helvetica Neue", sans-serif',
@@ -153,7 +153,7 @@ function BRTextareaEditor({ initialValue, placeholder, minHeight = 120, onSave, 
           outline: 'none',
         }}
         onFocus={e => (e.currentTarget.style.borderColor = '#4C9AFF')}
-        onBlur={e => (e.currentTarget.style.borderColor = '#DFE1E6')}
+        onBlur={e => (e.currentTarget.style.borderColor = 'var(--ds-border, var(--ds-border, #DFE1E6))')}
       />
       <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
         <button
@@ -161,7 +161,7 @@ function BRTextareaEditor({ initialValue, placeholder, minHeight = 120, onSave, 
           onClick={() => onSave(value)}
           style={{
             padding: '6px 16px', borderRadius: 3, border: 'none', cursor: 'pointer',
-            background: '#0052CC', color: '#FFFFFF', fontSize: 14, fontWeight: 600,
+            background: '#0052CC', color: 'var(--ds-surface, var(--ds-surface, #FFFFFF))', fontSize: 14, fontWeight: 600,
           }}
         >Save</button>
         <button
@@ -423,7 +423,7 @@ export function BusinessRequestDetailModal({ isOpen, onClose, requestId, onReque
   const menuItem: React.CSSProperties = {
     display: 'flex', alignItems: 'center', gap: 10, width: '100%',
     padding: '8px 14px', border: 'none', background: 'transparent',
-    textAlign: 'left', cursor: 'pointer', fontSize: 14, color: '#172B4D',
+    textAlign: 'left', cursor: 'pointer', fontSize: 14, color: 'var(--ds-text, var(--ds-text, #172B4D))',
     transition: 'background 0.1s', fontFamily: 'inherit',
   };
 
@@ -445,7 +445,7 @@ export function BusinessRequestDetailModal({ isOpen, onClose, requestId, onReque
           style={{
             width: 1024, maxWidth: '92vw',
             height: 'min(720px, calc(100vh - 120px))',
-            background: '#FFFFFF', borderRadius: 8,
+            background: 'var(--ds-surface, var(--ds-surface, #FFFFFF))', borderRadius: 8,
             display: 'flex', flexDirection: 'column',
             boxShadow: '0 8px 32px rgba(9, 30, 66, 0.25)',
             overflow: 'hidden',
@@ -478,7 +478,7 @@ export function BusinessRequestDetailModal({ isOpen, onClose, requestId, onReque
             <div style={{ display: 'flex', alignItems: 'center', gap: 2 }}>
               {/* Save indicator */}
               {isSaving && (
-                <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 12, color: '#6B778C', marginRight: 8 }}>
+                <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 12, color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #6B778C))', marginRight: 8 }}>
                   <Loader2 size={12} className="animate-spin" /> Saving…
                 </span>
               )}
@@ -489,7 +489,7 @@ export function BusinessRequestDetailModal({ isOpen, onClose, requestId, onReque
                 display: 'flex', alignItems: 'center', gap: 6, transition: 'background 0.15s',
                 fontFamily: 'var(--cp-font-body)',
               }}
-                onMouseEnter={e => (e.currentTarget.style.background = '#F4F5F7')}
+                onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-surface-sunken, var(--ds-surface-sunken, #F4F5F7))')}
                 onMouseLeave={e => (e.currentTarget.style.background = 'none')}
               >
                 <Share2 size={16} /> <span>Share</span>
@@ -497,26 +497,26 @@ export function BusinessRequestDetailModal({ isOpen, onClose, requestId, onReque
               {/* Dots menu */}
               <div ref={dotsMenuRef} style={{ position: 'relative' }}>
                 <button onClick={() => setShowDotsMenu(!showDotsMenu)} style={{
-                  background: showDotsMenu ? '#F4F5F7' : 'none', border: 'none', cursor: 'pointer',
+                  background: showDotsMenu ? 'var(--ds-surface-sunken, var(--ds-surface-sunken, #F4F5F7))' : 'none', border: 'none', cursor: 'pointer',
                   padding: '6px 8px', borderRadius: 4, color: '#42526E',
                   display: 'flex', alignItems: 'center', transition: 'background 0.15s',
                 }}
-                  onMouseEnter={e => (e.currentTarget.style.background = '#F4F5F7')}
+                  onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-surface-sunken, var(--ds-surface-sunken, #F4F5F7))')}
                   onMouseLeave={e => { if (!showDotsMenu) e.currentTarget.style.background = 'none'; }}
                 ><MoreHorizontal size={18} /></button>
                 {showDotsMenu && (
                   <div style={{
-                    position: 'absolute', right: 0, top: 36, background: '#FFF',
+                    position: 'absolute', right: 0, top: 36, background: 'var(--ds-surface, var(--ds-surface, var(--ds-surface, #FFF)))',
                     border: '1px solid #DFE1E6', borderRadius: 6,
                     boxShadow: '0 4px 16px rgba(9,30,66,0.18)', padding: '6px 0',
                     zIndex: 50, minWidth: 200, animation: 'brm-slide-down 0.15s ease',
                   }}>
                     <button onClick={() => { setShowDotsMenu(false); handleDuplicate(); }} style={menuItem}
-                      onMouseEnter={e => (e.currentTarget.style.background = '#F4F5F7')}
+                      onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-surface-sunken, var(--ds-surface-sunken, #F4F5F7))')}
                       onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
                     ><Copy size={14} /> Clone request</button>
                     <button onClick={() => { setShowDotsMenu(false); toast('Archive — coming soon'); }} style={menuItem}
-                      onMouseEnter={e => (e.currentTarget.style.background = '#F4F5F7')}
+                      onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-surface-sunken, var(--ds-surface-sunken, #F4F5F7))')}
                       onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
                     ><Archive size={14} /> Archive</button>
                     <div style={{ height: 1, background: '#EBECF0', margin: '6px 0' }} />
@@ -561,13 +561,13 @@ export function BusinessRequestDetailModal({ isOpen, onClose, requestId, onReque
                 onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); e.currentTarget.blur(); } if (e.key === 'Escape') { e.currentTarget.textContent = request.title ?? ''; e.currentTarget.blur(); } }}
                 style={{
                   fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-                  fontSize: 22, fontWeight: 700, color: '#172B4D', lineHeight: 1.3,
+                  fontSize: 22, fontWeight: 700, color: 'var(--ds-text, var(--ds-text, #172B4D))', lineHeight: 1.3,
                   margin: '0 0 12px', outline: 'none', cursor: 'text', borderRadius: 3,
                   padding: '4px 6px', wordBreak: 'break-word', transition: 'background 0.15s, box-shadow 0.15s',
-                  background: titleFocused ? '#FFFFFF' : 'transparent',
+                  background: titleFocused ? 'var(--ds-surface, var(--ds-surface, #FFFFFF))' : 'transparent',
                   boxShadow: titleFocused ? '0 0 0 2px #4C9AFF' : 'none',
                 }}
-                onMouseEnter={e => { if (!titleFocused) e.currentTarget.style.background = '#F4F5F7'; }}
+                onMouseEnter={e => { if (!titleFocused) e.currentTarget.style.background = 'var(--ds-surface-sunken, var(--ds-surface-sunken, #F4F5F7))'; }}
                 onMouseLeave={e => { if (!titleFocused) e.currentTarget.style.background = 'transparent'; }}
               >{request.title ?? '—'}</h1>
 
@@ -586,7 +586,7 @@ export function BusinessRequestDetailModal({ isOpen, onClose, requestId, onReque
                     fontSize: 18,
                     fontWeight: 600,
                     textAlign: 'right',
-                    color: '#172B4D',
+                    color: 'var(--ds-text, var(--ds-text, #172B4D))',
                   }}
                 />
               </div>
@@ -697,12 +697,12 @@ export function BusinessRequestDetailModal({ isOpen, onClose, requestId, onReque
 
               {/* 6. MILESTONES ACCORDION */}
               <CollapsibleSection title="Milestones" defaultOpen={false}>
-                <span style={{ fontSize: 13, color: '#6B778C' }}>Milestones are managed in the dedicated view.</span>
+                <span style={{ fontSize: 13, color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #6B778C))' }}>Milestones are managed in the dedicated view.</span>
               </CollapsibleSection>
 
               {/* 7. RISKS ACCORDION */}
               <CollapsibleSection title="Risks" defaultOpen={false}>
-                <span style={{ fontSize: 13, color: '#6B778C' }}>Risks are managed in the dedicated view.</span>
+                <span style={{ fontSize: 13, color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #6B778C))' }}>Risks are managed in the dedicated view.</span>
               </CollapsibleSection>
 
               {/* 8. ACTIVITY — Jira-parity tabs */}
@@ -723,7 +723,7 @@ export function BusinessRequestDetailModal({ isOpen, onClose, requestId, onReque
                         cursor: 'pointer', transition: 'all 0.15s',
                         fontFamily: '"Atlassian Sans", ui-sans-serif, sans-serif',
                       }}
-                        onMouseEnter={e => { if (!isActive) e.currentTarget.style.background = '#F4F5F7'; }}
+                        onMouseEnter={e => { if (!isActive) e.currentTarget.style.background = 'var(--ds-surface-sunken, var(--ds-surface-sunken, #F4F5F7))'; }}
                         onMouseLeave={e => { if (!isActive) e.currentTarget.style.background = 'transparent'; }}
                       >{label}</button>
                     );
@@ -752,20 +752,20 @@ export function BusinessRequestDetailModal({ isOpen, onClose, requestId, onReque
                         <div style={{
                           width: 36, height: 36, borderRadius: '50%',
                           background: getAvatarColor(c.actor_id || c.actor_name),
-                          color: '#FFF', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                          color: 'var(--ds-surface, var(--ds-surface, var(--ds-surface, #FFF)))', display: 'flex', alignItems: 'center', justifyContent: 'center',
                           fontSize: 13, fontWeight: 700, flexShrink: 0,
                         }}>
                           {getInitials(c.actor_name)}
                         </div>
                         <div style={{ flex: 1, minWidth: 0 }}>
                           <div style={{ marginBottom: 4 }}>
-                            <span style={{ fontSize: 14, fontWeight: 600, color: '#172B4D' }}>{c.actor_name || 'Unknown'}</span>
+                            <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--ds-text, var(--ds-text, #172B4D))' }}>{c.actor_name || 'Unknown'}</span>
                             {' '}
-                            <span style={{ fontSize: 13, color: '#6B778C' }}>{fmtDate(c.created_at)}</span>
+                            <span style={{ fontSize: 13, color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #6B778C))' }}>{fmtDate(c.created_at)}</span>
                           </div>
                           <div
                             dangerouslySetInnerHTML={{ __html: c.new_value || '' }}
-                            style={{ fontSize: 14, color: '#172B4D', lineHeight: 1.6 }}
+                            style={{ fontSize: 14, color: 'var(--ds-text, var(--ds-text, #172B4D))', lineHeight: 1.6 }}
                           />
                         </div>
                       </div>
@@ -783,20 +783,20 @@ export function BusinessRequestDetailModal({ isOpen, onClose, requestId, onReque
                       <div key={e.id} style={{ display: 'flex', gap: 12, marginBottom: 24 }}>
                         <div style={{
                           width: 36, height: 36, borderRadius: '50%', background: '#0052CC',
-                          color: '#FFF', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                          color: 'var(--ds-surface, var(--ds-surface, var(--ds-surface, #FFF)))', display: 'flex', alignItems: 'center', justifyContent: 'center',
                           flexShrink: 0,
                         }}>
-                          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#FFF" strokeWidth="2"><rect x="8" y="2" width="8" height="4" rx="1"/><rect x="4" y="4" width="16" height="18" rx="2"/></svg>
+                          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--ds-surface, var(--ds-surface, var(--ds-surface, #FFF)))" strokeWidth="2"><rect x="8" y="2" width="8" height="4" rx="1"/><rect x="4" y="4" width="16" height="18" rx="2"/></svg>
                         </div>
                         <div style={{ flex: 1, minWidth: 0 }}>
-                          <div style={{ fontSize: 14, color: '#172B4D', lineHeight: 1.5, marginBottom: 2 }}>
+                          <div style={{ fontSize: 14, color: 'var(--ds-text, var(--ds-text, #172B4D))', lineHeight: 1.5, marginBottom: 2 }}>
                             <span style={{ fontWeight: 600 }}>{e.actor_name || 'System'}</span>{' '}
                             changed the <span style={{ fontWeight: 600 }}>{e.field_changed}</span>
                           </div>
-                          <div style={{ fontSize: 13, color: '#6B778C' }}>{fmtDate(e.created_at)}</div>
+                          <div style={{ fontSize: 13, color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #6B778C))' }}>{fmtDate(e.created_at)}</div>
                           {(e.old_value || e.new_value) && (
-                            <div style={{ marginTop: 6, fontSize: 14, color: '#172B4D', display: 'flex', alignItems: 'center', gap: 8 }}>
-                              <span style={{ color: '#6B778C' }}>{e.old_value || 'None'}</span>
+                            <div style={{ marginTop: 6, fontSize: 14, color: 'var(--ds-text, var(--ds-text, #172B4D))', display: 'flex', alignItems: 'center', gap: 8 }}>
+                              <span style={{ color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #6B778C))' }}>{e.old_value || 'None'}</span>
                               <span style={{ color: '#97A0AF' }}>→</span>
                               <span style={{ fontWeight: 500 }}>{e.new_value || 'None'}</span>
                             </div>
@@ -817,24 +817,24 @@ export function BusinessRequestDetailModal({ isOpen, onClose, requestId, onReque
                 display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
                 transition: 'background 0.15s',
               }}
-              onMouseEnter={e => (e.currentTarget.style.background = '#F4F5F7')}
+              onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-surface-sunken, var(--ds-surface-sunken, #F4F5F7))')}
               onMouseLeave={e => { if (!isDraggingRef.current) e.currentTarget.style.background = 'transparent'; }}
             >
-              <div style={{ width: 1.5, height: 32, borderRadius: 1, background: '#DFE1E6' }} />
+              <div style={{ width: 1.5, height: 32, borderRadius: 1, background: 'var(--ds-border, var(--ds-border, #DFE1E6))' }} />
             </div>
 
             {/* RIGHT PANEL — Sidebar */}
             <div style={{
               width: rightPanelWidth, minWidth: 220, maxWidth: 480,
-              background: '#FFFFFF', overflowY: 'auto', overflowX: 'hidden',
+              background: 'var(--ds-surface, var(--ds-surface, #FFFFFF))', overflowY: 'auto', overflowX: 'hidden',
               display: 'flex', flexDirection: 'column', padding: '16px 16px 32px 16px',
             }}>
               {/* Status */}
               <div style={{ marginBottom: 14 }} ref={statusDropdownRef}>
                 <div style={{ position: 'relative' }}>
                   <button onClick={() => setShowStatusDropdown(!showStatusDropdown)} style={{
-                    backgroundColor: statusCategory === 'done' ? '#E3FCEF' : statusCategory === 'in_progress' ? '#DEEBFF' : '#DFE1E6',
-                    color: statusCategory === 'done' ? '#006644' : statusCategory === 'in_progress' ? '#0747A6' : '#253858',
+                    backgroundColor: statusCategory === 'done' ? '#E3FCEF' : statusCategory === 'in_progress' ? '#DEEBFF' : 'var(--ds-border, var(--ds-border, #DFE1E6))',
+                    color: statusCategory === 'done' ? '#006644' : statusCategory === 'in_progress' ? '#0747A6' : 'var(--ds-text, var(--ds-text, #253858))',
                     padding: '6px 12px', borderRadius: 4, fontSize: 13, fontWeight: 700,
                     border: 'none', cursor: 'pointer', display: 'inline-flex',
                     alignItems: 'center', gap: 6, fontFamily: 'inherit', lineHeight: 1,
@@ -850,7 +850,7 @@ export function BusinessRequestDetailModal({ isOpen, onClose, requestId, onReque
                   {showStatusDropdown && (
                     <div style={{
                       position: 'absolute', left: 0, top: '100%', marginTop: 4,
-                      background: '#FFFFFF', borderRadius: 4, border: 'none',
+                      background: 'var(--ds-surface, var(--ds-surface, #FFFFFF))', borderRadius: 4, border: 'none',
                       boxShadow: '0 8px 12px rgba(30,31,33,0.15), 0 0 1px rgba(30,31,33,0.31)',
                       padding: '4px 0', zIndex: 9999, minWidth: 220, maxHeight: 340, overflowY: 'auto',
                       animation: 'brm-slide-down 0.15s ease-out',
@@ -858,8 +858,8 @@ export function BusinessRequestDetailModal({ isOpen, onClose, requestId, onReque
                       {processSteps.map((step: any) => {
                         const isActive = formData.process_step === step.value;
                         const cat = resolveProcessStepCategory(step.value);
-                        const bg = cat === 'done' ? '#E3FCEF' : cat === 'in_progress' ? '#DEEBFF' : '#DFE1E6';
-                        const color = cat === 'done' ? '#006644' : cat === 'in_progress' ? '#0747A6' : '#253858';
+                        const bg = cat === 'done' ? '#E3FCEF' : cat === 'in_progress' ? '#DEEBFF' : 'var(--ds-border, var(--ds-border, #DFE1E6))';
+                        const color = cat === 'done' ? '#006644' : cat === 'in_progress' ? '#0747A6' : 'var(--ds-text, var(--ds-text, #253858))';
                         return (
                           <div key={step.value}
                             onClick={() => { handleFieldChange('process_step', step.value); setShowStatusDropdown(false); }}
@@ -867,7 +867,7 @@ export function BusinessRequestDetailModal({ isOpen, onClose, requestId, onReque
                               height: 36, padding: '0 12px', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
                               cursor: 'pointer', background: isActive ? '#DEEBFF' : 'transparent', transition: 'background 80ms',
                             }}
-                            onMouseEnter={e => { if (!isActive) (e.currentTarget as HTMLElement).style.background = '#F4F5F7'; }}
+                            onMouseEnter={e => { if (!isActive) (e.currentTarget as HTMLElement).style.background = 'var(--ds-surface-sunken, var(--ds-surface-sunken, #F4F5F7))'; }}
                             onMouseLeave={e => { if (!isActive) (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
                           >
                             <span style={{ background: bg, color, display: 'inline-flex', alignItems: 'center', height: 20, padding: '0 6px', borderRadius: 3, fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.03em' }}>{step.label}</span>
@@ -884,7 +884,7 @@ export function BusinessRequestDetailModal({ isOpen, onClose, requestId, onReque
               <div style={{ marginBottom: 20 }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 12, userSelect: 'none' }}>
                   <ChevronDown size={14} color="#42526E" />
-                  <span style={{ fontSize: 14, fontWeight: 700, color: '#172B4D' }}>Details</span>
+                  <span style={{ fontSize: 14, fontWeight: 700, color: 'var(--ds-text, var(--ds-text, #172B4D))' }}>Details</span>
                 </div>
 
                 {/* Priority */}
@@ -898,16 +898,16 @@ export function BusinessRequestDetailModal({ isOpen, onClose, requestId, onReque
                         borderRadius: 4, cursor: 'pointer', transition: 'background 0.12s',
                         border: showPriorityDropdown ? '2px solid #4C9AFF' : '2px solid transparent',
                       }}
-                      onMouseEnter={e => { if (!showPriorityDropdown) e.currentTarget.style.background = '#F4F5F7'; }}
+                      onMouseEnter={e => { if (!showPriorityDropdown) e.currentTarget.style.background = 'var(--ds-surface-sunken, var(--ds-surface-sunken, #F4F5F7))'; }}
                       onMouseLeave={e => { if (!showPriorityDropdown) e.currentTarget.style.background = 'transparent'; }}
                     >
                       {PRIORITY_SVG[priorityLabel] || PRIORITY_SVG.Medium}
-                      <span style={{ fontSize: 14, color: '#172B4D' }}>{priorityLabel === 'Unscored' ? 'Medium' : priorityLabel}</span>
+                      <span style={{ fontSize: 14, color: 'var(--ds-text, var(--ds-text, #172B4D))' }}>{priorityLabel === 'Unscored' ? 'Medium' : priorityLabel}</span>
                     </div>
                     {showPriorityDropdown && (
                       <div style={{
                         position: 'absolute', left: 0, top: '100%', marginTop: 4,
-                        background: '#FFFFFF', borderRadius: 4, border: 'none',
+                        background: 'var(--ds-surface, var(--ds-surface, #FFFFFF))', borderRadius: 4, border: 'none',
                         boxShadow: '0 8px 12px rgba(30,31,33,0.15), 0 0 1px rgba(30,31,33,0.31)',
                         padding: '4px 0', zIndex: 9999, minWidth: 180,
                       }}>
@@ -921,11 +921,11 @@ export function BusinessRequestDetailModal({ isOpen, onClose, requestId, onReque
                                 cursor: 'pointer', background: isActive ? '#DEEBFF' : 'transparent',
                                 transition: 'background 80ms',
                               }}
-                              onMouseEnter={e => { if (!isActive) (e.currentTarget as HTMLElement).style.background = '#F4F5F7'; }}
+                              onMouseEnter={e => { if (!isActive) (e.currentTarget as HTMLElement).style.background = 'var(--ds-surface-sunken, var(--ds-surface-sunken, #F4F5F7))'; }}
                               onMouseLeave={e => { if (!isActive) (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
                             >
                               {PRIORITY_SVG[p]}
-                              <span style={{ fontSize: 14, color: '#172B4D' }}>{p}</span>
+                              <span style={{ fontSize: 14, color: 'var(--ds-text, var(--ds-text, #172B4D))' }}>{p}</span>
                               {isActive && <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#0052CC" strokeWidth="2.5" style={{ marginLeft: 'auto' }}><polyline points="20 6 9 17 4 12"/></svg>}
                             </div>
                           );
@@ -991,10 +991,10 @@ export function BusinessRequestDetailModal({ isOpen, onClose, requestId, onReque
                         <div style={{
                           width: 24, height: 24, borderRadius: '50%',
                           background: getAvatarColor(businessOwnerName),
-                          color: '#FFF', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                          color: 'var(--ds-surface, var(--ds-surface, var(--ds-surface, #FFF)))', display: 'flex', alignItems: 'center', justifyContent: 'center',
                           fontSize: 10, fontWeight: 700, flexShrink: 0,
                         }}>{getInitials(businessOwnerName)}</div>
-                        <span style={{ fontSize: 14, color: '#172B4D' }}>{businessOwnerName}</span>
+                        <span style={{ fontSize: 14, color: 'var(--ds-text, var(--ds-text, #172B4D))' }}>{businessOwnerName}</span>
                       </>
                     ) : <span style={{ color: '#42526E', fontSize: 14 }}>Auto-assigned</span>}
                   </div>
@@ -1080,7 +1080,7 @@ export function BusinessRequestDetailModal({ isOpen, onClose, requestId, onReque
                 {formData.rank && (
                   <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12, marginBottom: 10 }}>
                     <div style={{ fontSize: 12, fontWeight: 600, color: '#42526E', width: 110, flexShrink: 0, paddingTop: 6 }}>Rank</div>
-                    <span style={{ fontSize: 14, color: '#172B4D', fontWeight: 500, paddingTop: 6 }}>#{formData.rank}</span>
+                    <span style={{ fontSize: 14, color: 'var(--ds-text, var(--ds-text, #172B4D))', fontWeight: 500, paddingTop: 6 }}>#{formData.rank}</span>
                   </div>
                 )}
 
@@ -1116,7 +1116,7 @@ export function BusinessRequestDetailModal({ isOpen, onClose, requestId, onReque
               <div style={{ marginBottom: 20 }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 12, userSelect: 'none' }}>
                   <ChevronDown size={14} color="#42526E" />
-                  <span style={{ fontSize: 14, fontWeight: 700, color: '#172B4D' }}>Dates</span>
+                  <span style={{ fontSize: 14, fontWeight: 700, color: 'var(--ds-text, var(--ds-text, #172B4D))' }}>Dates</span>
                 </div>
 
                 <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12, marginBottom: 10 }}>
@@ -1156,12 +1156,12 @@ export function BusinessRequestDetailModal({ isOpen, onClose, requestId, onReque
       {/* Delete confirm */}
       {showDeleteConfirm && (
         <div style={{ position: 'fixed', inset: 0, zIndex: 10000, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(9,30,66,0.4)' }}>
-          <div style={{ background: '#FFF', borderRadius: 8, padding: 28, width: 400, maxWidth: '95vw' }}>
-            <h3 style={{ fontSize: 16, fontWeight: 700, color: '#172B4D', marginBottom: 8 }}>Delete {request.request_key}?</h3>
+          <div style={{ background: 'var(--ds-surface, var(--ds-surface, var(--ds-surface, #FFF)))', borderRadius: 8, padding: 28, width: 400, maxWidth: '95vw' }}>
+            <h3 style={{ fontSize: 16, fontWeight: 700, color: 'var(--ds-text, var(--ds-text, #172B4D))', marginBottom: 8 }}>Delete {request.request_key}?</h3>
             <p style={{ fontSize: 13, color: '#5E6C84', lineHeight: 1.6, marginBottom: 20 }}>This request will be moved to deleted items and can be restored within 30 days.</p>
             <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8 }}>
-              <button onClick={() => setShowDeleteConfirm(false)} style={{ padding: '7px 16px', borderRadius: 4, background: '#FFF', border: '1px solid #DFE1E6', fontSize: 13, fontWeight: 500, cursor: 'pointer', color: '#5E6C84' }}>Cancel</button>
-              <button onClick={handleDelete} style={{ padding: '7px 16px', borderRadius: 4, background: '#DE350B', color: '#FFF', border: 'none', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>Delete</button>
+              <button onClick={() => setShowDeleteConfirm(false)} style={{ padding: '7px 16px', borderRadius: 4, background: 'var(--ds-surface, var(--ds-surface, var(--ds-surface, #FFF)))', border: '1px solid #DFE1E6', fontSize: 13, fontWeight: 500, cursor: 'pointer', color: '#5E6C84' }}>Cancel</button>
+              <button onClick={handleDelete} style={{ padding: '7px 16px', borderRadius: 4, background: '#DE350B', color: 'var(--ds-surface, var(--ds-surface, var(--ds-surface, #FFF)))', border: 'none', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>Delete</button>
             </div>
           </div>
         </div>
@@ -1179,7 +1179,7 @@ function CollapsibleSection({ title, defaultOpen = false, children }: { title: s
         <span style={{ width: 16, height: 16, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', color: '#5E6C84', transition: 'transform 0.2s', transform: open ? 'rotate(0deg)' : 'rotate(-90deg)', flexShrink: 0 }}>
           <ChevronDown size={14} />
         </span>
-        <span style={{ fontSize: 14, fontWeight: 700, color: '#172B4D' }}>{title}</span>
+        <span style={{ fontSize: 14, fontWeight: 700, color: 'var(--ds-text, var(--ds-text, #172B4D))' }}>{title}</span>
       </div>
       {open && <div style={{ paddingLeft: 22 }}>{children}</div>}
     </div>
@@ -1190,8 +1190,8 @@ function CollapsibleSection({ title, defaultOpen = false, children }: { title: s
 function SidebarField({ label, value }: { label: string; value: string }) {
   return (
     <div>
-      <div style={{ fontSize: 11, fontWeight: 600, color: '#6B778C', textTransform: 'uppercase', letterSpacing: '0.03em', marginBottom: 2 }}>{label}</div>
-      <div style={{ fontSize: 14, color: '#172B4D', fontWeight: 400 }}>{value}</div>
+      <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #6B778C))', textTransform: 'uppercase', letterSpacing: '0.03em', marginBottom: 2 }}>{label}</div>
+      <div style={{ fontSize: 14, color: 'var(--ds-text, var(--ds-text, #172B4D))', fontWeight: 400 }}>{value}</div>
     </div>
   );
 }

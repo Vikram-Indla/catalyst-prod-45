@@ -114,7 +114,7 @@ export function DashboardUpcomingDeadlinesV2({ data, className, onTaskClick }: D
               <div className="flex items-center gap-2 w-28 flex-shrink-0">
                 <div 
                   className="w-2.5 h-2.5 rounded-full flex-shrink-0"
-                  style={{ backgroundColor: task.workstream_color || '#64748b' }}
+                  style={{ backgroundColor: task.workstream_color || 'var(--ds-text-subtlest, var(--ds-text-subtlest, #64748b))' }}
                 />
                 <span className="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase truncate">
                   {task.workstream_name || 'Unassigned'}

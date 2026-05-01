@@ -145,7 +145,7 @@ function IndividualItemRow({ item, isFirst, onClick }: { item: BriefingItem; isF
         </span>
         {showMovedTag && (
           <span style={{
-            fontSize: 9, fontWeight: 700, color: '#FFFFFF',
+            fontSize: 9, fontWeight: 700, color: 'var(--ds-surface, var(--ds-surface, #FFFFFF))',
             background: 'var(--cp-blue)', padding: '1px 6px', borderRadius: 4,
             textTransform: 'uppercase', letterSpacing: '0.03em', fontFamily: F.inter,
             whiteSpace: 'nowrap',

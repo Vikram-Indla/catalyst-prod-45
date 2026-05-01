@@ -132,7 +132,7 @@ export function CreateReportModal({ isOpen, onClose, onCreated, preselectedCycle
         {/* Header */}
         <div style={{ padding: '20px 24px', borderBottom: '1px solid var(--divider)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-            <div style={{ width: 44, height: 44, borderRadius: 12, background: 'linear-gradient(135deg, #F59E0B 0%, var(--sem-warning) 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <div style={{ width: 44, height: 44, borderRadius: 12, background: 'linear-gradient(135deg, var(--ds-text-warning, #F59E0B) 0%, var(--sem-warning) 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <FileBarChart size={22} style={{ color: 'var(--ds-text-inverse, #FFFFFF)' }} />
             </div>
             <h2 style={{ fontSize: 18, fontWeight: 700, color: 'var(--fg-1)', margin: 0 }}>Generate Report</h2>
@@ -240,7 +240,7 @@ export function CreateReportModal({ isOpen, onClose, onCreated, preselectedCycle
             Cancel
           </button>
           <button onClick={handleSubmit} disabled={isSubmitting}
-            style={{ height: 44, padding: '0 24px', background: 'linear-gradient(135deg, #F59E0B 0%, var(--sem-warning) 100%)', border: 'none', borderRadius: 12, fontSize: 14, fontWeight: 600, color: 'var(--cp-float)', cursor: isSubmitting ? 'not-allowed' : 'pointer', opacity: isSubmitting ? 0.7 : 1, display: 'flex', alignItems: 'center', gap: 8 }}>
+            style={{ height: 44, padding: '0 24px', background: 'linear-gradient(135deg, var(--ds-text-warning, #F59E0B) 0%, var(--sem-warning) 100%)', border: 'none', borderRadius: 12, fontSize: 14, fontWeight: 600, color: 'var(--cp-float)', cursor: isSubmitting ? 'not-allowed' : 'pointer', opacity: isSubmitting ? 0.7 : 1, display: 'flex', alignItems: 'center', gap: 8 }}>
             <FileBarChart size={16} />
             {isSubmitting ? 'Generating...' : 'Generate Report'}
           </button>

@@ -110,7 +110,7 @@ export function GroupByPopover<K extends string>({
     textSecondary: 'var(--cp-text-secondary, #475569)',
     hover: 'var(--cp-bg-page, #F8FAFC)',
     selected: 'var(--cp-primary-light, #F0F6FF)',
-    selectedBorder: '#2563EB',
+    selectedBorder: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))',
     shadow: isDark
       ? '0 4px 24px rgba(0,0,0,0.5)'
       : '0 4px 16px rgba(0,0,0,0.08), 0 1px 3px rgba(0,0,0,0.06)',
@@ -124,11 +124,11 @@ export function GroupByPopover<K extends string>({
       {/* Trigger Button */}
       <button
         onClick={() => { setOpen(p => !p); if (!open) setTimeout(() => inputRef.current?.focus(), 50); }}
-        className="inline-flex items-center gap-1.5 h-8 px-2.5 rounded-md text-[13px] font-medium cursor-pointer transition-all duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2563EB] focus-visible:ring-offset-1"
+        className="inline-flex items-center gap-1.5 h-8 px-2.5 rounded-md text-[13px] font-medium cursor-pointer transition-all duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ds-text-brand,var(--ds-text-brand, #2563EB))] focus-visible:ring-offset-1"
         style={{
           border: `1.5px solid ${isActive ? tk.selectedBorder : tk.border}`,
           background: isActive ? tk.triggerBgActive : tk.triggerBg,
-          color: isActive ? '#2563EB' : tk.text,
+          color: isActive ? 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))' : tk.text,
           fontFamily: 'var(--cp-font-body)',
         }}
       >
@@ -139,7 +139,7 @@ export function GroupByPopover<K extends string>({
             className="inline-flex items-center justify-center rounded-full"
             style={{
               minWidth: 18, height: 18,
-              background: '#2563EB', color: '#FFFFFF',
+              background: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))', color: 'var(--ds-surface, var(--ds-surface, #FFFFFF))',
               fontSize: 10, fontWeight: 700,
               lineHeight: 1,
             }}
@@ -186,7 +186,7 @@ export function GroupByPopover<K extends string>({
                   fontFamily: 'var(--cp-font-body)',
                   transition: 'border-color 150ms',
                 }}
-                onFocus={e => (e.currentTarget.style.borderColor = '#2563EB')}
+                onFocus={e => (e.currentTarget.style.borderColor = 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))')}
                 onBlur={e => (e.currentTarget.style.borderColor = tk.border)}
               />
               {search && (
@@ -236,7 +236,7 @@ export function GroupByPopover<K extends string>({
                       : isFocused
                         ? tk.hover
                         : 'transparent',
-                    color: isSelected ? '#2563EB' : tk.text,
+                    color: isSelected ? 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))' : tk.text,
                     fontSize: 13.5, fontWeight: isSelected ? 500 : 400,
                     cursor: 'pointer', fontFamily: 'var(--cp-font-body)',
                     borderLeft: isSelected ? '3px solid #2563EB' : '3px solid transparent',
@@ -250,9 +250,9 @@ export function GroupByPopover<K extends string>({
                     if (!isSelected) e.currentTarget.style.background = 'transparent';
                   }}
                 >
-                  <IconComp size={15} strokeWidth={1.8} style={{ color: isSelected ? '#2563EB' : tk.textSecondary, flexShrink: 0 }} />
+                  <IconComp size={15} strokeWidth={1.8} style={{ color: isSelected ? 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))' : tk.textSecondary, flexShrink: 0 }} />
                   <span style={{ flex: 1, textAlign: 'left' }}>{opt.label}</span>
-                  {isSelected && <Check size={14} style={{ color: '#2563EB', flexShrink: 0 }} />}
+                  {isSelected && <Check size={14} style={{ color: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))', flexShrink: 0 }} />}
                 </button>
               );
             })}
@@ -282,7 +282,7 @@ export function GroupByPopover<K extends string>({
                   padding: '4px 0',
                   transition: 'color 100ms',
                 }}
-                onMouseEnter={e => (e.currentTarget.style.color = '#2563EB')}
+                onMouseEnter={e => (e.currentTarget.style.color = 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))')}
                 onMouseLeave={e => (e.currentTarget.style.color = tk.textMuted)}
               >
                 Clear grouping

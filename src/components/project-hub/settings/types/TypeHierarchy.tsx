@@ -6,11 +6,11 @@ const ICON_MAP: Record<string, React.ComponentType<any>> = {
 
 const TYPE_CONFIG: Record<string, { color: string; icon: string }> = {
   Epic: { color: '#7C3AED', icon: 'Zap' },
-  Feature: { color: '#2563EB', icon: 'Layers' },
+  Feature: { color: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))', icon: 'Layers' },
   Story: { color: '#0D9488', icon: 'Bookmark' },
-  Bug: { color: '#DC2626', icon: 'Bug' },
-  Task: { color: '#D97706', icon: 'CheckSquare' },
-  Subtask: { color: '#64748B', icon: 'CornerDownRight' },
+  Bug: { color: 'var(--ds-text-danger, var(--ds-text-danger, #DC2626))', icon: 'Bug' },
+  Task: { color: 'var(--ds-text-warning, var(--ds-text-warning, #D97706))', icon: 'CheckSquare' },
+  Subtask: { color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #64748B))', icon: 'CornerDownRight' },
 };
 
 interface TypeHierarchyProps {
@@ -18,7 +18,7 @@ interface TypeHierarchyProps {
 }
 
 function Badge({ name }: { name: string }) {
-  const cfg = TYPE_CONFIG[name] || { color: '#64748B', icon: 'Zap' };
+  const cfg = TYPE_CONFIG[name] || { color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #64748B))', icon: 'Zap' };
   const IconComp = ICON_MAP[cfg.icon] || Zap;
   return (
     <span

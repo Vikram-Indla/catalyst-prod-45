@@ -21,24 +21,24 @@ const TL = {
   inkMuted: '#71717A', inkMutedStrong: '#6F6F78',
   surface: 'var(--ds-text-inverse, #FFFFFF)', surfaceSecondary: '#FAFAFA', surfaceTertiary: '#F4F4F5',
   border: '#E4E4E7', borderStrong: '#D4D4D8',
-  primary: '#2563EB', primaryHover: '#1D4ED8', primaryBg: '#EFF6FF',
+  primary: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))', primaryHover: 'var(--ds-background-brand-bold-hovered, var(--ds-background-brand-bold-hovered, #1D4ED8))', primaryBg: 'var(--ds-background-selected, var(--ds-background-selected, #EFF6FF))',
   teal: '#0D9488', tealText: '#0A8277', tealBg: '#F0FDFA',
-  success: '#16A34A', successText: '#11853D', successBg: '#F0FDF4',
-  warning: '#D97706', warningText: '#AF6003', warningBg: '#FFFBEB',
-  danger: '#DC2626', dangerText: '#D92525', dangerBg: '#FEF2F2',
+  success: 'var(--ds-text-success, var(--ds-text-success, #16A34A))', successText: '#11853D', successBg: '#F0FDF4',
+  warning: 'var(--ds-text-warning, var(--ds-text-warning, #D97706))', warningText: '#AF6003', warningBg: '#FFFBEB',
+  danger: 'var(--ds-text-danger, var(--ds-text-danger, #DC2626))', dangerText: '#D92525', dangerBg: 'var(--ds-background-danger, var(--ds-background-danger, #FEF2F2))',
 };
 
 // Design tokens — dark mode (DARK MODE)
 const TD = {
-  ink: '#EDEDED', inkSecondary: 'rgba(255,255,255,0.82)', inkTertiary: 'rgba(255,255,255,0.60)',
+  ink: 'var(--ds-text, var(--ds-text, #EDEDED))', inkSecondary: 'rgba(255,255,255,0.82)', inkTertiary: 'rgba(255,255,255,0.60)',
   inkMuted: 'rgba(255,255,255,0.45)', inkMutedStrong: 'rgba(255,255,255,0.50)',
-  surface: '#1A1A1A', surfaceSecondary: '#0A0A0A', surfaceTertiary: '#1F1F1F',
-  border: '#2E2E2E', borderStrong: '#454545',
-  primary: '#60A5FA', primaryHover: '#93C5FD', primaryBg: 'rgba(59,130,246,0.12)',
+  surface: 'var(--ds-surface-raised, var(--ds-surface-raised, #1A1A1A))', surfaceSecondary: 'var(--ds-surface, var(--ds-surface, #0A0A0A))', surfaceTertiary: 'var(--ds-surface-overlay, var(--ds-surface-overlay, #1F1F1F))',
+  border: 'var(--ds-border, var(--ds-border, #2E2E2E))', borderStrong: 'var(--ds-border-bold, var(--ds-border-bold, #454545))',
+  primary: 'var(--ds-text-brand, var(--ds-text-brand, #60A5FA))', primaryHover: '#93C5FD', primaryBg: 'rgba(59,130,246,0.12)',
   teal: '#5EEAD4', tealText: '#5EEAD4', tealBg: 'rgba(13,148,136,0.15)',
   success: '#86EFAC', successText: '#86EFAC', successBg: 'rgba(22,163,74,0.15)',
   warning: '#FCD34D', warningText: '#FCD34D', warningBg: 'rgba(217,119,6,0.15)',
-  danger: '#FCA5A5', dangerText: '#FCA5A5', dangerBg: 'rgba(220,38,38,0.15)',
+  danger: 'var(--ds-border-danger, var(--ds-border-danger, #FCA5A5))', dangerText: 'var(--ds-border-danger, var(--ds-border-danger, #FCA5A5))', dangerBg: 'rgba(220,38,38,0.15)',
 };
 
 type Tokens = typeof TL;

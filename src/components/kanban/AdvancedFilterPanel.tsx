@@ -178,7 +178,7 @@ export function AdvancedFilterPanel({ projectKey, filters, onChange, onClose, tk
       ref={panelRef}
       style={{
         position: 'absolute', top: '100%', right: 0, marginTop: 4,
-        width: 400, background: '#FFFFFF',
+        width: 400, background: 'var(--ds-surface, var(--ds-surface, #FFFFFF))',
         border: '1px solid #DDDEE1', borderRadius: 10,
         boxShadow: '0 12px 36px rgba(9,30,66,0.15), 0 2px 8px rgba(9,30,66,0.08)',
         zIndex: 60, fontFamily: 'var(--cp-font-body)',
@@ -189,18 +189,18 @@ export function AdvancedFilterPanel({ projectKey, filters, onChange, onClose, tk
       {/* Header */}
       <div className="flex items-center justify-between" style={{
         padding: '14px 20px', borderBottom: '1px solid #EBECF0',
-        background: '#FAFBFC',
+        background: 'var(--ds-surface-sunken, var(--ds-surface-sunken, #FAFBFC))',
         borderTopLeftRadius: 10, borderTopRightRadius: 10,
       }}>
         <div className="flex items-center gap-2">
           <Filter size={15} color="#42526E" />
-          <span style={{ fontSize: 14, fontWeight: 700, color: '#172B4D', letterSpacing: '-0.01em' }}>
+          <span style={{ fontSize: 14, fontWeight: 700, color: 'var(--ds-text, var(--ds-text, #172B4D))', letterSpacing: '-0.01em' }}>
             Advanced Filters
           </span>
           {activeCount > 0 && (
             <span style={{
-              fontSize: 11, fontWeight: 700, color: '#fff',
-              background: '#2563EB', borderRadius: 10, padding: '2px 8px',
+              fontSize: 11, fontWeight: 700, color: 'var(--ds-surface, var(--ds-surface, var(--ds-surface, #fff)))',
+              background: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))', borderRadius: 10, padding: '2px 8px',
               lineHeight: '16px',
             }}>{activeCount}</span>
           )}
@@ -208,7 +208,7 @@ export function AdvancedFilterPanel({ projectKey, filters, onChange, onClose, tk
         <div className="flex items-center gap-2">
           {activeCount > 0 && (
             <button onClick={clearAll} style={{
-              fontSize: 12, color: '#DC2626', background: 'none', border: 'none',
+              fontSize: 12, color: 'var(--ds-text-danger, var(--ds-text-danger, #DC2626))', background: 'none', border: 'none',
               cursor: 'pointer', fontWeight: 600, display: 'flex', alignItems: 'center', gap: 4,
             }}>
               <Trash2 size={13} /> Clear all
@@ -218,7 +218,7 @@ export function AdvancedFilterPanel({ projectKey, filters, onChange, onClose, tk
             width: 28, height: 28, display: 'flex', alignItems: 'center', justifyContent: 'center',
             background: 'none', border: 'none', cursor: 'pointer', borderRadius: 4,
           }}
-          onMouseEnter={e => (e.currentTarget.style.background = '#F4F5F7')}
+          onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-surface-sunken, var(--ds-surface-sunken, #F4F5F7))')}
           onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
           >
             <X size={15} color="#42526E" />
@@ -309,18 +309,18 @@ function MultiSelectFilterSection({
         className="flex items-center justify-between w-full"
         style={{
           padding: '12px 20px', background: 'transparent', border: 'none',
-          cursor: 'pointer', fontSize: 13, fontWeight: 700, color: '#172B4D',
+          cursor: 'pointer', fontSize: 13, fontWeight: 700, color: 'var(--ds-text, var(--ds-text, #172B4D))',
           textAlign: 'left', textTransform: 'uppercase', letterSpacing: '0.05em',
         }}
-        onMouseEnter={e => (e.currentTarget.style.background = '#F4F5F7')}
+        onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-surface-sunken, var(--ds-surface-sunken, #F4F5F7))')}
         onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
       >
         <span className="flex items-center gap-2">
           {label}
           {selected.length > 0 && (
             <span style={{
-              fontSize: 10, fontWeight: 700, color: '#fff',
-              background: '#2563EB', borderRadius: 10, padding: '1px 7px',
+              fontSize: 10, fontWeight: 700, color: 'var(--ds-surface, var(--ds-surface, var(--ds-surface, #fff)))',
+              background: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))', borderRadius: 10, padding: '1px 7px',
               lineHeight: '16px',
             }}>{selected.length}</span>
           )}
@@ -334,17 +334,17 @@ function MultiSelectFilterSection({
         <div style={{ padding: '0 16px 10px' }}>
           {options.length > 5 && (
             <div className="relative" style={{ marginBottom: 8 }}>
-              <Search size={13} color="#94A3B8" className="absolute left-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+              <Search size={13} color="var(--ds-text-subtlest, var(--ds-text-subtlest, #94A3B8))" className="absolute left-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
               <input
                 type="text" value={search} onChange={e => setSearch(e.target.value)}
                 placeholder={placeholder}
                 style={{
                   width: '100%', height: 32, paddingLeft: 28, paddingRight: 8,
                   border: '1px solid #DDDEE1', borderRadius: 4,
-                  fontSize: 13, color: '#172B4D', background: '#FAFBFC',
+                  fontSize: 13, color: 'var(--ds-text, var(--ds-text, #172B4D))', background: 'var(--ds-surface-sunken, var(--ds-surface-sunken, #FAFBFC))',
                   outline: 'none', fontFamily: 'var(--cp-font-body)',
                 }}
-                onFocus={e => (e.currentTarget.style.borderColor = '#2563EB')}
+                onFocus={e => (e.currentTarget.style.borderColor = 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))')}
                 onBlur={e => (e.currentTarget.style.borderColor = '#DDDEE1')}
               />
             </div>
@@ -360,21 +360,21 @@ function MultiSelectFilterSection({
                   style={{
                     padding: '7px 8px', background: isSelected ? 'rgba(37,99,235,0.06)' : 'transparent',
                     border: 'none', cursor: 'pointer', fontSize: 13.5,
-                    color: '#172B4D', textAlign: 'left', borderRadius: 4,
+                    color: 'var(--ds-text, var(--ds-text, #172B4D))', textAlign: 'left', borderRadius: 4,
                     fontWeight: isSelected ? 600 : 400,
                   }}
-                  onMouseEnter={e => { if (!isSelected) e.currentTarget.style.background = '#F4F5F7'; }}
+                  onMouseEnter={e => { if (!isSelected) e.currentTarget.style.background = 'var(--ds-surface-sunken, var(--ds-surface-sunken, #F4F5F7))'; }}
                   onMouseLeave={e => { if (!isSelected) e.currentTarget.style.background = 'transparent'; }}
                 >
                   <span style={{
                     width: 18, height: 18, borderRadius: 3,
                     border: isSelected ? 'none' : '2px solid #C1C7D0',
-                    background: isSelected ? '#2563EB' : 'transparent',
+                    background: isSelected ? 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))' : 'transparent',
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                     flexShrink: 0,
                     transition: 'all 150ms',
                   }}>
-                    {isSelected && <Check size={12} color="#fff" strokeWidth={3} />}
+                    {isSelected && <Check size={12} color="var(--ds-surface, var(--ds-surface, var(--ds-surface, #fff)))" strokeWidth={3} />}
                   </span>
                   <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{opt}</span>
                 </button>
@@ -412,18 +412,18 @@ function DateRangeFilterSection({
         className="flex items-center justify-between w-full"
         style={{
           padding: '12px 20px', background: 'transparent', border: 'none',
-          cursor: 'pointer', fontSize: 13, fontWeight: 700, color: '#172B4D',
+          cursor: 'pointer', fontSize: 13, fontWeight: 700, color: 'var(--ds-text, var(--ds-text, #172B4D))',
           textAlign: 'left', textTransform: 'uppercase', letterSpacing: '0.05em',
         }}
-        onMouseEnter={e => (e.currentTarget.style.background = '#F4F5F7')}
+        onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-surface-sunken, var(--ds-surface-sunken, #F4F5F7))')}
         onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
       >
         <span className="flex items-center gap-2">
           {label}
           {hasValue && (
             <span style={{
-              fontSize: 10, fontWeight: 700, color: '#fff',
-              background: '#2563EB', borderRadius: 10, padding: '1px 7px',
+              fontSize: 10, fontWeight: 700, color: 'var(--ds-surface, var(--ds-surface, var(--ds-surface, #fff)))',
+              background: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))', borderRadius: 10, padding: '1px 7px',
               lineHeight: '16px',
             }}>1</span>
           )}
@@ -454,7 +454,7 @@ function DateRangeFilterSection({
             <button
               onClick={() => { onChangeAfter(null); onChangeBefore(null); }}
               style={{
-                fontSize: 12, color: '#DC2626', background: 'none', border: 'none',
+                fontSize: 12, color: 'var(--ds-text-danger, var(--ds-text-danger, #DC2626))', background: 'none', border: 'none',
                 cursor: 'pointer', padding: 0, fontWeight: 500,
               }}
             >Clear dates</button>

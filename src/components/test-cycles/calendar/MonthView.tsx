@@ -37,11 +37,11 @@ export function MonthView({
   return (
     <div className="flex-1 flex flex-col bg-white overflow-hidden">
       {/* Day headers */}
-      <div className="grid grid-cols-7 border-b border-[#e2e8f0] bg-[#f8fafc]">
+      <div className="grid grid-cols-7 border-b border-[var(--ds-border,var(--ds-border, #e2e8f0))] bg-[var(--ds-surface-sunken,var(--ds-surface-sunken, #f8fafc))]">
         {DAY_NAMES.map((day) => (
           <div
             key={day}
-            className="px-2 py-3 text-xs font-semibold text-[#64748b] text-center uppercase tracking-wide"
+            className="px-2 py-3 text-xs font-semibold text-[var(--ds-text-subtlest,var(--ds-text-subtlest, #64748b))] text-center uppercase tracking-wide"
           >
             {day}
           </div>

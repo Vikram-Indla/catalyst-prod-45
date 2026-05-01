@@ -13,7 +13,7 @@
   --r360-surface-active: #F0ECE6;
 
   /* ─── TEXT — JET BLACK HIERARCHY ─── */
-  --r360-text-1: #0A0A0A;
+  --r360-text-1: var(--ds-surface, #0A0A0A);
   --r360-text-2: #1A1A2E;
   --r360-text-3: #3D3D56;
   --r360-text-4: #6B6B80;
@@ -29,8 +29,8 @@
   --r360-todo-text: var(--ds-text-inverse, #FFFFFF);
   --r360-todo-soft: #FDE8E8;
 
-  --r360-progress: #2563EB;
-  --r360-progress-bg: #2563EB;
+  --r360-progress: var(--ds-text-brand, #2563EB);
+  --r360-progress-bg: var(--ds-text-brand, #2563EB);
   --r360-progress-text: var(--ds-text-inverse, #FFFFFF);
   --r360-progress-soft: #E0EDFF;
 
@@ -41,16 +41,16 @@
 
   /* ─── HUB COLORS — SATURATED ─── */
   --r360-hub-strategy: #0284C7;
-  --r360-hub-product: #2563EB;
-  --r360-hub-project: #2563EB;
+  --r360-hub-product: var(--ds-text-brand, #2563EB);
+  --r360-hub-project: var(--ds-text-brand, #2563EB);
   --r360-hub-release: #0D9488;
   --r360-hub-test: #C2410C;
-  --r360-hub-incident: #DC2626;
+  --r360-hub-incident: var(--ds-text-danger, #DC2626);
   --r360-hub-task: #4F46E5;
 
   /* ─── PRIORITY — WARM SPECTRUM ─── */
   --r360-pri-critical: #BE123C;
-  --r360-pri-highest: #DC2626;
+  --r360-pri-highest: var(--ds-text-danger, #DC2626);
   --r360-pri-high: #EA580C;
   --r360-pri-medium: #CA8A04;
   --r360-pri-low: #57534E;
@@ -98,7 +98,7 @@
 .r360-root .r360-hub-badge {
   font-size: 9px;
   font-weight: 800;
-  color: #fff;
+  color: var(--ds-surface, var(--ds-surface, #fff));
   padding: 2px 7px;
   border-radius: 4px;
   letter-spacing: 0.04em;
@@ -180,23 +180,23 @@
   --r360-bg-alt: var(--cp-bg-surface, #242528);
   --r360-bg-warm: var(--cp-bg-surface, #242528);
   --r360-surface: var(--cp-bg-surface, #242528);
-  --r360-surface-hover: #1F1F1F;
-  --r360-surface-active: #292929;
+  --r360-surface-hover: var(--ds-surface-overlay, #1F1F1F);
+  --r360-surface-active: var(--ds-border, #292929);
 
-  --r360-text-1: #EDEDED;
-  --r360-text-2: #A1A1A1;
-  --r360-text-3: #A1A1A1;
-  --r360-text-4: #878787;
+  --r360-text-1: var(--ds-text, #EDEDED);
+  --r360-text-2: var(--ds-text-subtlest, #A1A1A1);
+  --r360-text-3: var(--ds-text-subtlest, #A1A1A1);
+  --r360-text-4: var(--ds-text-subtlest, #878787);
 
-  --r360-border: #2E2E2E;
-  --r360-border-light: #292929;
-  --r360-border-strong: #454545;
+  --r360-border: var(--ds-border, #2E2E2E);
+  --r360-border-light: var(--ds-border, #292929);
+  --r360-border-strong: var(--ds-border-bold, #454545);
 
   --r360-todo-soft: rgba(226,54,54,0.12);
   --r360-progress-soft: rgba(37,99,235,0.12);
   --r360-done-soft: rgba(14,138,95,0.12);
 
-  --r360-shadow-card: 0 2px 10px rgba(0,0,0,0.3), 0 0 0 1px #1F1F1F;
+  --r360-shadow-card: 0 2px 10px rgba(0,0,0,0.3), 0 0 0 1px var(--ds-surface-overlay, #1F1F1F);
   --r360-shadow-hover: 0 8px 24px rgba(0,0,0,0.4);
   --r360-shadow-modal: 0 12px 40px rgba(0,0,0,0.5);
   --r360-sidebar-shadow: -4px 0 12px rgba(0,0,0,0.3);

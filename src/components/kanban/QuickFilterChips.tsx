@@ -84,7 +84,7 @@ export function QuickFilterChips({ active, onChange, tk }: QuickFilterChipsProps
               fontWeight: 500,
               fontFamily: 'var(--cp-font-body)',
               border: `1px solid ${isActive ? '#0C66E4' : tk.borderSubtle}`,
-              background: isActive ? '#E9F2FF' : '#FFFFFF',
+              background: isActive ? '#E9F2FF' : 'var(--ds-surface, var(--ds-surface, #FFFFFF))',
               color: isActive ? '#0C66E4' : tk.textPrimary,
               cursor: 'pointer',
               transition: 'background 120ms ease, color 120ms ease, border-color 120ms ease',

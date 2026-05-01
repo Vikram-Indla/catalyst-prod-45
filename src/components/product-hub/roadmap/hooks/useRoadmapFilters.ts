@@ -36,7 +36,7 @@ export function useRoadmapFilters(allItems: RoadmapRequest[]) {
   }, [allItems, typeFilter, search, quickFilter]);
 
   const groups = useMemo<RoadmapGroup[]>(() => {
-    if (groupBy === 'none') return [{ key: 'all', label: 'All Business Requests', color: '#64748B', items: filtered, isExpanded: true }];
+    if (groupBy === 'none') return [{ key: 'all', label: 'All Business Requests', color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #64748B))', items: filtered, isExpanded: true }];
 
     const map = new Map<string, RoadmapRequest[]>();
     for (const item of filtered) {
@@ -50,7 +50,7 @@ export function useRoadmapFilters(allItems: RoadmapRequest[]) {
     return Array.from(map.entries()).map(([key, items]) => ({
       key,
       label: key,
-      color: '#64748B',
+      color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #64748B))',
       items,
       isExpanded: true,
     }));

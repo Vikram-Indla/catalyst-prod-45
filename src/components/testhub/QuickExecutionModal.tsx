@@ -140,7 +140,7 @@ export function QuickExecutionModal({
   if (!tc) return null;
 
   const priorityStyle = {
-    critical: { color: 'var(--sem-danger)', bg: '#FEF2F2' },
+    critical: { color: 'var(--sem-danger)', bg: 'var(--ds-background-danger, var(--ds-background-danger, #FEF2F2))' },
     high:     { color: '#EA580C', bg: '#FFF7ED' },
     medium:   { color: 'var(--sem-warning)', bg: '#FFFBEB' },
     low:      { color: 'var(--sem-success)', bg: '#ECFDF5' },
@@ -256,7 +256,7 @@ export function QuickExecutionModal({
               <XCircle size={18} /> Fail
             </button>
             <button onClick={() => handleExecute('blocked')} disabled={isSubmitting}
-              style={{ height: 44, padding: '0 24px', border: 'none', borderRadius: 8, background: 'linear-gradient(135deg, #F59E0B 0%, var(--sem-warning) 100%)', color: 'var(--cp-float)', fontSize: 14, fontWeight: 600, cursor: isSubmitting ? 'not-allowed' : 'pointer', opacity: isSubmitting ? 0.7 : 1, display: 'flex', alignItems: 'center', gap: 8, boxShadow: '0 2px 8px rgba(217,119,6,0.3)' }}>
+              style={{ height: 44, padding: '0 24px', border: 'none', borderRadius: 8, background: 'linear-gradient(135deg, var(--ds-text-warning, #F59E0B) 0%, var(--sem-warning) 100%)', color: 'var(--cp-float)', fontSize: 14, fontWeight: 600, cursor: isSubmitting ? 'not-allowed' : 'pointer', opacity: isSubmitting ? 0.7 : 1, display: 'flex', alignItems: 'center', gap: 8, boxShadow: '0 2px 8px rgba(217,119,6,0.3)' }}>
               <AlertTriangle size={18} /> Blocked
             </button>
             <button onClick={() => handleExecute('skipped')} disabled={isSubmitting}

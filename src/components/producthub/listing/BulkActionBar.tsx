@@ -25,7 +25,7 @@ export function BulkActionBar({ selectedCount, onAction, onCancel }: Props) {
           transition={{ duration: 0.15 }}
         >
           <div className="flex items-center gap-3">
-            <span className="text-[13px] font-bold" style={{ color: '#1d4ed8' }}>
+            <span className="text-[13px] font-bold" style={{ color: 'var(--ds-background-brand-bold-hovered, var(--ds-background-brand-bold-hovered, #1d4ed8))' }}>
               {selectedCount} selected
             </span>
             <div className="w-px h-4 bg-blue-300" />

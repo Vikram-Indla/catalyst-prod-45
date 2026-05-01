@@ -4,10 +4,10 @@ import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 
 const CATEGORY_PILL: Record<string, { bg: string; text: string; label: string }> = {
-  todo: { bg: '#F1F5F9', text: '#64748B', label: 'To Do' },
-  in_progress: { bg: '#EFF6FF', text: '#2563EB', label: 'In Progress' },
+  todo: { bg: 'var(--ds-surface-sunken, var(--ds-surface-sunken, #F1F5F9))', text: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #64748B))', label: 'To Do' },
+  in_progress: { bg: 'var(--ds-background-selected, var(--ds-background-selected, #EFF6FF))', text: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))', label: 'In Progress' },
   done: { bg: '#F0FDFA', text: '#0D9488', label: 'Done' },
-  terminal: { bg: '#F1F5F9', text: '#64748B', label: 'Terminal' },
+  terminal: { bg: 'var(--ds-surface-sunken, var(--ds-surface-sunken, #F1F5F9))', text: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #64748B))', label: 'Terminal' },
 };
 
 interface StatusRowProps {
@@ -48,14 +48,14 @@ export function StatusRow({ id, name, color, category, isDefault, itemCount, onE
   // Determine pill styling
   const catKey = category.toLowerCase().replace(/\s+/g, '_');
   const pill = isDefault
-    ? { bg: '#EFF6FF', text: '#2563EB', label: 'Default' }
+    ? { bg: 'var(--ds-background-selected, var(--ds-background-selected, #EFF6FF))', text: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))', label: 'Default' }
     : CATEGORY_PILL[catKey] || CATEGORY_PILL.todo;
 
   return (
     <div
       ref={setNodeRef}
       style={style}
-      className="flex items-center gap-3 px-3 rounded-lg hover:bg-[#F8FAFC] transition-colors"
+      className="flex items-center gap-3 px-3 rounded-lg hover:bg-[var(--ds-surface-sunken,var(--ds-surface-sunken, #F8FAFC))] transition-colors"
       {...attributes}
     >
       {/* Drag handle */}
@@ -103,7 +103,7 @@ export function StatusRow({ id, name, color, category, isDefault, itemCount, onE
 
         {menuOpen && (
           <div
-            className="absolute right-0 top-full mt-1 z-10 bg-[var(--cp-float)] dark:bg-[#1A1A1A]"
+            className="absolute right-0 top-full mt-1 z-10 bg-[var(--cp-float)] dark:bg-[var(--ds-surface-raised,var(--ds-surface-raised, #1A1A1A))]"
             style={{
               width: 120, border: '1px solid var(--divider)',
               borderRadius: 8, boxShadow: '0 4px 6px -1px rgba(0,0,0,.07)',
@@ -112,7 +112,7 @@ export function StatusRow({ id, name, color, category, isDefault, itemCount, onE
           >
             <button
               onClick={() => { onEdit(); setMenuOpen(false); }}
-              className="w-full text-left px-3 py-2 hover:bg-[#F8FAFC] transition-colors"
+              className="w-full text-left px-3 py-2 hover:bg-[var(--ds-surface-sunken,var(--ds-surface-sunken, #F8FAFC))] transition-colors"
               style={{ fontSize: 12, color: 'var(--fg-2)', border: 'none', background: 'transparent', cursor: 'pointer', display: 'block' }}
             >
               Edit
@@ -120,7 +120,7 @@ export function StatusRow({ id, name, color, category, isDefault, itemCount, onE
             {!isDefault && (
               <button
                 onClick={() => { onDelete(); setMenuOpen(false); }}
-                className="w-full text-left px-3 py-2 hover:bg-[#FEF2F2] transition-colors"
+                className="w-full text-left px-3 py-2 hover:bg-[var(--ds-background-danger,var(--ds-background-danger, #FEF2F2))] transition-colors"
                 style={{ fontSize: 12, color: 'var(--sem-danger)', border: 'none', background: 'transparent', cursor: 'pointer', display: 'block' }}
               >
                 Delete

@@ -1,0 +1,166 @@
+{
+  "filesEdited": 1136,
+  "totalReplacements": 25893,
+  "perFile": [
+    {
+      "file": "src/pages/releases/AllReleasesPage.tsx",
+      "reps": 412
+    },
+    {
+      "file": "src/pages/wiki/WikiArticlePage.tsx",
+      "reps": 380
+    },
+    {
+      "file": "src/pages/wiki/WikiHomePage.tsx",
+      "reps": 300
+    },
+    {
+      "file": "src/pages/CleanupPage.tsx",
+      "reps": 271
+    },
+    {
+      "file": "src/components/admin/import/NotionImportWizard.tsx",
+      "reps": 240
+    },
+    {
+      "file": "src/modules/task10/styles/task10-detail.css",
+      "reps": 237
+    },
+    {
+      "file": "src/components/caty-ai/CatyOverrides.css",
+      "reps": 214
+    },
+    {
+      "file": "src/styles/r360.css",
+      "reps": 194
+    },
+    {
+      "file": "src/components/releasehub/ReleaseDrawer.tsx",
+      "reps": 184
+    },
+    {
+      "file": "src/modules/task10/components/week/T10WeekViewV3.tsx",
+      "reps": 184
+    },
+    {
+      "file": "src/styles/testhub.css",
+      "reps": 179
+    },
+    {
+      "file": "src/components/resource360/r360-member.css",
+      "reps": 176
+    },
+    {
+      "file": "src/styles/allwork.css",
+      "reps": 170
+    },
+    {
+      "file": "src/pages/wiki/WikiSearchPage.tsx",
+      "reps": 158
+    },
+    {
+      "file": "src/pages/admin/workflows/WorkflowEditor.tsx",
+      "reps": 152
+    },
+    {
+      "file": "src/components/resource360/R360DetailPanel.tsx",
+      "reps": 149
+    },
+    {
+      "file": "src/modules/planner/components/workstreams/WorkstreamDrawer.tsx",
+      "reps": 138
+    },
+    {
+      "file": "src/modules/task10/styles/task10-v2.css",
+      "reps": 135
+    },
+    {
+      "file": "src/modules/work-hub/views/AllWorkView.tsx",
+      "reps": 134
+    },
+    {
+      "file": "src/components/resource360/R360RingView.tsx",
+      "reps": 132
+    },
+    {
+      "file": "src/pages/testhub/RequirementDetailPage.tsx",
+      "reps": 131
+    },
+    {
+      "file": "src/modules/planner/components/PlannerTimeline.tsx",
+      "reps": 130
+    },
+    {
+      "file": "src/pages/wiki/WikiAllArticlesPage.tsx",
+      "reps": 128
+    },
+    {
+      "file": "src/modules/workhub/admin/components/SyncLogs.tsx",
+      "reps": 128
+    },
+    {
+      "file": "src/pages/ResourceListingPage.tsx",
+      "reps": 126
+    },
+    {
+      "file": "src/components/business-requests/BusinessRequestDetailModal.tsx",
+      "reps": 120
+    },
+    {
+      "file": "src/pages/testhub/TestCycleDetailPage.tsx",
+      "reps": 118
+    },
+    {
+      "file": "src/pages/project-hub/HierarchyPage.tsx",
+      "reps": 116
+    },
+    {
+      "file": "src/pages/wiki/WikiLearningPathDetailPage.tsx",
+      "reps": 116
+    },
+    {
+      "file": "src/pages/wiki/WikiAnalyticsPage.tsx",
+      "reps": 114
+    },
+    {
+      "file": "src/pages/testhub/ReleasesListPage.tsx",
+      "reps": 113
+    },
+    {
+      "file": "src/pages/wiki/WikiTemplatesPage.tsx",
+      "reps": 110
+    },
+    {
+      "file": "src/components/goals/GoalsTreeView.tsx",
+      "reps": 108
+    },
+    {
+      "file": "src/components/capacity-planner/capacity-planner-gantt.css",
+      "reps": 107
+    },
+    {
+      "file": "src/components/projecthub/PanelTeamTab.tsx",
+      "reps": 107
+    },
+    {
+      "file": "src/modules/task10/styles/task10.css",
+      "reps": 107
+    },
+    {
+      "file": "src/pages/wiki/WikiSubscriptionsPage.tsx",
+      "reps": 102
+    },
+    {
+      "file": "src/modules/project-work-hub/pages/StoryBacklogPage.tsx",
+      "reps": 98
+    },
+    {
+      "file": "src/modules/task10/components/landing/T10LandingPageV3.tsx",
+      "reps": 98
+    },
+    {
+      "file": "src/pages/AuditTrailPage.tsx",
+      "reps": 97
+    }
+  ]
+}

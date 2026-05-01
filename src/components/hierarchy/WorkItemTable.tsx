@@ -183,14 +183,14 @@ function SourceBadge({ source }: { source?: 'jira' | 'catalyst' }) {
     <span style={{
       fontSize: 9, fontWeight: 700, letterSpacing: '0.06em',
       padding: '1px 4px', borderRadius: 4,
-      background: '#0C66E4', color: '#FFFFFF',
+      background: '#0C66E4', color: 'var(--ds-surface, var(--ds-surface, #FFFFFF))',
       textTransform: 'uppercase', flexShrink: 0,
     }}>JIRA</span>
   );
 }
 
 /* ── Avatar color palette (no purple/yellow) ── */
-const AVATAR_COLORS = ['#0D9488','#2563EB','#DC2626','#16A34A','#64748B','#0284C7','#059669','#BE123C','#1D4ED8','#0F766E'];
+const AVATAR_COLORS = ['#0D9488','var(--ds-text-brand, var(--ds-text-brand, #2563EB))','var(--ds-text-danger, var(--ds-text-danger, #DC2626))','var(--ds-text-success, var(--ds-text-success, #16A34A))','var(--ds-text-subtlest, var(--ds-text-subtlest, #64748B))','#0284C7','#059669','#BE123C','var(--ds-background-brand-bold-hovered, var(--ds-background-brand-bold-hovered, #1D4ED8))','#0F766E'];
 function getAvatarColor(name: string): string {
   let hash = 0;
   for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash);
@@ -216,7 +216,7 @@ function AssigneeCell({ assignee, onClick }: { assignee?: WorkItem['assignee']; 
         <img src={avatarUrl} alt={assignee.displayName} style={{ width: 24, height: 24, borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }} />
       ) : (
         <div style={{ width: 24, height: 24, borderRadius: '50%', background: bgColor, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-          <span style={{ fontSize: 10, fontWeight: 700, color: '#FFFFFF' }}>{initials}</span>
+          <span style={{ fontSize: 10, fontWeight: 700, color: 'var(--ds-surface, var(--ds-surface, #FFFFFF))' }}>{initials}</span>
         </div>
       )}
       <span className="hi-assignee-name" style={{ fontSize: 12, color: 'var(--fg-1)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 120 }}>{assignee.displayName}</span>
@@ -271,7 +271,7 @@ function DueDateCell({ date }: { date?: string }) {
   const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
   const dDate = new Date(d.getFullYear(), d.getMonth(), d.getDate());
   let color = 'var(--fg-1)';
-  if (dDate < today) color = '#DC2626';
+  if (dDate < today) color = 'var(--ds-text-danger, var(--ds-text-danger, #DC2626))';
   else if (dDate.getTime() === today.getTime()) color = '#0284C7';
   return (
     <span style={{ fontSize: 12, color }}>
@@ -282,8 +282,8 @@ function DueDateCell({ date }: { date?: string }) {
 
 /* ── Type colors ── */
 const TYPE_COLORS: Record<string, string> = {
-  'Epic': '#2563EB', 'Feature': '#0D9488', 'Story': '#16A34A', 'Sub-task': '#64748B',
-  'Task': '#64748B', 'Bug': '#DC2626',
+  'Epic': 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))', 'Feature': '#0D9488', 'Story': 'var(--ds-text-success, var(--ds-text-success, #16A34A))', 'Sub-task': 'var(--ds-text-subtlest, var(--ds-text-subtlest, #64748B))',
+  'Task': 'var(--ds-text-subtlest, var(--ds-text-subtlest, #64748B))', 'Bug': 'var(--ds-text-danger, var(--ds-text-danger, #DC2626))',
 };
 
 /* ── Parent cell (chip style matching ParentEpicChip) ── */
@@ -708,7 +708,7 @@ export const WorkItemTable = memo(function WorkItemTable({ items, search, onSele
       case 'type':
         return (
           <div style={{ padding: '0 8px' }}>
-            <span style={{ fontSize: 12, fontWeight: 500, color: TYPE_COLORS[item.issueType || ''] || '#64748B' }}>
+            <span style={{ fontSize: 12, fontWeight: 500, color: TYPE_COLORS[item.issueType || ''] || 'var(--ds-text-subtlest, var(--ds-text-subtlest, #64748B))' }}>
               {item.issueType || '—'}
             </span>
           </div>
@@ -876,7 +876,7 @@ export const WorkItemTable = memo(function WorkItemTable({ items, search, onSele
 
       <style>{`
         .hi-table-row { border-left: 3px solid transparent; transition: all 80ms ease; }
-        .hi-table-row:hover { background: ${'var(--cp-bg-page, #F8FAFC)'} !important; border-left-color: #2563EB; box-shadow: ${isDark ? 'none' : '0 1px 3px rgba(0,0,0,0.06)'}; }
+        .hi-table-row:hover { background: ${'var(--cp-bg-page, #F8FAFC)'} !important; border-left-color: var(--ds-text-brand, #2563EB); box-shadow: ${isDark ? 'none' : '0 1px 3px rgba(0,0,0,0.06)'}; }
         .hi-table-row.checked { background: ${'var(--cp-primary-light, #EFF6FF)'} !important; }
         .hi-table-row .hi-row-action { opacity: 0; transition: opacity 100ms ease; }
         .hi-table-row:hover .hi-row-action { opacity: 1; }

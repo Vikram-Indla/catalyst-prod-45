@@ -505,7 +505,7 @@ function EmptyState({ hasFilters, onClearFilters, onCreateNew }: {
         )}
         <button
           onClick={onCreateNew}
-          className="h-9 px-4 text-sm font-medium rounded-lg transition-colors shadow-sm bg-[#2563eb] hover:bg-[#1d4ed8] text-white flex items-center gap-2"
+          className="h-9 px-4 text-sm font-medium rounded-lg transition-colors shadow-sm bg-[var(--ds-text-brand,var(--ds-text-brand, #2563eb))] hover:bg-[var(--ds-background-brand-bold-hovered,var(--ds-background-brand-bold-hovered, #1d4ed8))] text-white flex items-center gap-2"
         >
           <Plus className="w-4 h-4" />
           <span className="hidden sm:inline">Create request</span>
@@ -733,7 +733,7 @@ export function ExecutiveTable({
       return (
         <span 
           onClick={(e) => { e.stopPropagation(); onOpenFullView(row.id); }}
-          className="font-semibold font-mono text-sm cursor-pointer hover:underline transition-colors focus:outline-none text-[#2563eb] dark:text-[#60a5fa] hover:text-[#1d4ed8] dark:hover:text-[#93c5fd]"
+          className="font-semibold font-mono text-sm cursor-pointer hover:underline transition-colors focus:outline-none text-[var(--ds-text-brand,var(--ds-text-brand, #2563eb))] dark:text-[var(--ds-text-brand,var(--ds-text-brand, #60a5fa))] hover:text-[var(--ds-background-brand-bold-hovered,var(--ds-background-brand-bold-hovered, #1d4ed8))] dark:hover:text-[#93c5fd]"
           tabIndex={0}
           role="button"
           aria-label={`View request ${value}`}

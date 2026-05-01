@@ -344,7 +344,7 @@ export function CloneTestCaseModal({
             style={{
               height: 40,
               padding: '0 20px',
-              background: !newTitle.trim() || isSaving ? 'var(--fg-4)' : 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)',
+              background: !newTitle.trim() || isSaving ? 'var(--fg-4)' : 'linear-gradient(135deg, var(--ds-text-brand, #2563EB) 0%, var(--ds-background-brand-bold-hovered, #1D4ED8) 100%)',
               border: 'none',
               borderRadius: 8,
               fontFamily: 'var(--cp-font-body)',

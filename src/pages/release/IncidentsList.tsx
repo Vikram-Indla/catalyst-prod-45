@@ -290,7 +290,7 @@ export default function IncidentsList() {
             <Card className="flex-1 flex flex-col min-h-0 overflow-hidden border border-border rounded shadow-none">
               <div className="flex-1 overflow-x-auto overflow-y-auto">
                 <table className="min-w-full w-max border-separate border-spacing-0">
-                  <thead className="sticky top-0 z-40" style={{ position: 'sticky', background: '#F4F5F7' }}>
+                  <thead className="sticky top-0 z-40" style={{ position: 'sticky', background: 'var(--ds-surface-sunken, var(--ds-surface-sunken, #F4F5F7))' }}>
                     <tr>
                       <th className="px-4 py-3 text-left border-b border-r border-border last:border-r-0 w-10">
                         <Checkbox 

@@ -4,12 +4,12 @@ import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { useTheme } from '@/hooks/useTheme';
 
 const CYCLE_STATUS_OPTIONS = [
-  { value: 'draft', label: 'DRAFT', bg: '#DFE1E6', text: '#253858' },
+  { value: 'draft', label: 'DRAFT', bg: 'var(--ds-border, var(--ds-border, #DFE1E6))', text: 'var(--ds-text, var(--ds-text, #253858))' },
   { value: 'planned', label: 'PLANNED', bg: '#DEEBFF', text: '#0747A6' },
   { value: 'active', label: 'IN PROGRESS', bg: '#DEEBFF', text: '#0747A6' },
   { value: 'completed', label: 'COMPLETED', bg: '#E3FCEF', text: '#006644' },
-  { value: 'paused', label: 'PAUSED', bg: '#DFE1E6', text: '#253858' },
-  { value: 'archived', label: 'ARCHIVED', bg: '#DFE1E6', text: '#253858' },
+  { value: 'paused', label: 'PAUSED', bg: 'var(--ds-border, var(--ds-border, #DFE1E6))', text: 'var(--ds-text, var(--ds-text, #253858))' },
+  { value: 'archived', label: 'ARCHIVED', bg: 'var(--ds-border, var(--ds-border, #DFE1E6))', text: 'var(--ds-text, var(--ds-text, #253858))' },
 ] as const;
 import { catalystToast } from '@/components/ui/CatalystToast';
 
@@ -289,7 +289,7 @@ export function CreateTestCycleModal({ isOpen, onClose, onSuccess, mode = 'creat
                       );
                     })()}
                   </span>
-                  <ChevronDown size={16} style={{ color: '#94A3B8' }} />
+                  <ChevronDown size={16} style={{ color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #94A3B8))' }} />
                 </button>
                 {statusDropdownOpen && (
                   <div style={{
@@ -363,7 +363,7 @@ export function CreateTestCycleModal({ isOpen, onClose, onSuccess, mode = 'creat
                 onChange={(e) => setEndDate(e.target.value)}
                 onFocus={(e) => { (e.target as HTMLInputElement).type = 'date'; (e.target as HTMLInputElement).min = startDate; }}
                 onBlur={(e) => { if (!(e.target as HTMLInputElement).value) { (e.target as HTMLInputElement).type = 'text'; } }}
-                style={{ width: '100%', height: 40, padding: '8px 12px', border: `1.5px solid ${errors.endDate ? '#EF4444' : ('var(--cp-border, #E2E8F0)')}`, borderRadius: 4, fontSize: 14, color: 'var(--cp-text-primary, #1E293B)', backgroundColor: 'var(--cp-bg-elevated, #FFFFFF)', fontFamily: 'var(--cp-font-body)', outline: 'none', boxSizing: 'border-box' } as React.CSSProperties}
+                style={{ width: '100%', height: 40, padding: '8px 12px', border: `1.5px solid ${errors.endDate ? 'var(--ds-text-danger, var(--ds-text-danger, #EF4444))' : ('var(--cp-border, #E2E8F0)')}`, borderRadius: 4, fontSize: 14, color: 'var(--cp-text-primary, #1E293B)', backgroundColor: 'var(--cp-bg-elevated, #FFFFFF)', fontFamily: 'var(--cp-font-body)', outline: 'none', boxSizing: 'border-box' } as React.CSSProperties}
               />
               {errors.endDate && <p style={{ fontSize: 12, color: 'var(--sem-danger)', margin: '6px 0 0', display: 'flex', alignItems: 'center', gap: 4 }}><AlertCircle size={12} />{errors.endDate}</p>}
             </div>
@@ -413,7 +413,7 @@ export function CreateTestCycleModal({ isOpen, onClose, onSuccess, mode = 'creat
           <button onClick={onClose} disabled={isSubmitting} style={{ height: 40, padding: '0 20px', backgroundColor: 'var(--cp-float)', border: '1.5px solid var(--divider)', borderRadius: 8, fontSize: 14, fontWeight: 500, color: 'var(--fg-2)', cursor: 'pointer' }}>Cancel</button>
           <button type="button" onClick={handleSubmit} disabled={isSubmitting} style={{
             height: 40, padding: '0 24px',
-            backgroundColor: isSubmitting ? '#93C5FD' : '#2563EB',
+            backgroundColor: isSubmitting ? '#93C5FD' : 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))',
             border: 'none', borderRadius: 8, fontSize: 14, fontWeight: 600, color: 'var(--ds-text-inverse, #FFFFFF)',
             cursor: isSubmitting ? 'not-allowed' : 'pointer',
             display: 'inline-flex', alignItems: 'center', gap: 8,

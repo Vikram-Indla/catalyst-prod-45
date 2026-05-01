@@ -73,7 +73,7 @@ export function ExecutionViewMode({
             </button>
             <button onClick={onRerun} style={{
               height: 34, padding: '0 14px', border: 'none', borderRadius: 6,
-              background: 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)',
+              background: 'linear-gradient(135deg, var(--ds-text-brand, #2563EB) 0%, var(--ds-background-brand-bold-hovered, #1D4ED8) 100%)',
               color: 'var(--ds-text-inverse, #FFFFFF)', fontSize: 12, fontWeight: 600, cursor: 'pointer',
               display: 'flex', alignItems: 'center', gap: 5,
             }}>
@@ -83,7 +83,7 @@ export function ExecutionViewMode({
         </div>
         <h2 style={{ fontSize: 18, fontWeight: 700, color: 'hsl(var(--foreground))', margin: 0, lineHeight: 1.3 }}>{testCase.title}</h2>
         {testCase.description && <p style={{ fontSize: 13, color: 'hsl(var(--muted-foreground))', margin: '6px 0 0', lineHeight: 1.4 }}>{testCase.description}</p>}
-        <p style={{ fontSize: 11, color: '#94A3B8', margin: '8px 0 0' }}>
+        <p style={{ fontSize: 11, color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #94A3B8))', margin: '8px 0 0' }}>
           Run #{executionHistory.execution_number} · Executed {new Date(executionHistory.executed_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
           {executionHistory.executor?.full_name ? ` · ${executionHistory.executor.full_name}` : ''}
         </p>
@@ -95,7 +95,7 @@ export function ExecutionViewMode({
             display: 'flex', alignItems: 'center', gap: 6,
             fontSize: 12, color: 'var(--cp-warning-text, #92400E)',
           }}>
-            <AlertTriangle size={14} style={{ color: '#D97706', flexShrink: 0 }} />
+            <AlertTriangle size={14} style={{ color: 'var(--ds-text-warning, var(--ds-text-warning, #D97706))', flexShrink: 0 }} />
             <span>
               This test case has been updated since it was added to this cycle
               (locked v{lockedVersion} → current v{currentVersion}).
@@ -112,7 +112,7 @@ export function ExecutionViewMode({
           {testCase.preconditions && (
             <div style={{ marginBottom: 12, padding: 14, backgroundColor: 'var(--cp-warning-light, #FFFBEB)', border: `1px solid ${'var(--cp-warning-light, #FDE68A)'}`, borderRadius: 8 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6 }}>
-                <AlertTriangle size={14} style={{ color: '#D97706' }} />
+                <AlertTriangle size={14} style={{ color: 'var(--ds-text-warning, var(--ds-text-warning, #D97706))' }} />
                 <span style={{ fontSize: 12, fontWeight: 600, color: '#92400E' }}>Preconditions</span>
               </div>
               <p style={{ fontSize: 13, color: '#92400E', margin: 0, lineHeight: 1.4 }}>{testCase.preconditions}</p>
@@ -126,17 +126,17 @@ export function ExecutionViewMode({
           ) : (
             executionHistory.step_results.map((step, i) => {
               const stepColors: Record<string, { text: string; bg: string; border: string }> = isDark ? {
-                passed:  { text: '#16A34A', bg: 'rgba(34,197,94,0.12)', border: 'rgba(34,197,94,0.3)' },
-                failed:  { text: '#DC2626', bg: 'rgba(248,113,113,0.12)', border: 'rgba(248,113,113,0.3)' },
-                blocked: { text: '#D97706', bg: 'rgba(251,191,36,0.12)', border: 'rgba(251,191,36,0.3)' },
-                skipped: { text: '#878787', bg: '#1A1A1A', border: '#2E2E2E' },
-                not_run: { text: '#878787', bg: '#1A1A1A', border: '#2E2E2E' },
+                passed:  { text: 'var(--ds-text-success, var(--ds-text-success, #16A34A))', bg: 'rgba(34,197,94,0.12)', border: 'rgba(34,197,94,0.3)' },
+                failed:  { text: 'var(--ds-text-danger, var(--ds-text-danger, #DC2626))', bg: 'rgba(248,113,113,0.12)', border: 'rgba(248,113,113,0.3)' },
+                blocked: { text: 'var(--ds-text-warning, var(--ds-text-warning, #D97706))', bg: 'rgba(251,191,36,0.12)', border: 'rgba(251,191,36,0.3)' },
+                skipped: { text: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #878787))', bg: 'var(--ds-surface-raised, var(--ds-surface-raised, #1A1A1A))', border: 'var(--ds-border, var(--ds-border, #2E2E2E))' },
+                not_run: { text: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #878787))', bg: 'var(--ds-surface-raised, var(--ds-surface-raised, #1A1A1A))', border: 'var(--ds-border, var(--ds-border, #2E2E2E))' },
               } : {
-                passed:  { text: '#16A34A', bg: '#F0FDF4', border: '#BBF7D0' },
-                failed:  { text: '#DC2626', bg: '#FEF2F2', border: '#FECACA' },
-                blocked: { text: '#D97706', bg: '#FFFBEB', border: '#FED7AA' },
-                skipped: { text: '#475569', bg: '#F8FAFC', border: '#E2E8F0' },
-                not_run: { text: '#64748B', bg: '#F1F5F9', border: '#E2E8F0' },
+                passed:  { text: 'var(--ds-text-success, var(--ds-text-success, #16A34A))', bg: '#F0FDF4', border: '#BBF7D0' },
+                failed:  { text: 'var(--ds-text-danger, var(--ds-text-danger, #DC2626))', bg: 'var(--ds-background-danger, var(--ds-background-danger, #FEF2F2))', border: '#FECACA' },
+                blocked: { text: 'var(--ds-text-warning, var(--ds-text-warning, #D97706))', bg: '#FFFBEB', border: '#FED7AA' },
+                skipped: { text: 'var(--ds-text-subtle, var(--ds-text-subtle, #475569))', bg: 'var(--ds-surface-sunken, var(--ds-surface-sunken, #F8FAFC))', border: 'var(--ds-border, var(--ds-border, #E2E8F0))' },
+                not_run: { text: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #64748B))', bg: 'var(--ds-surface-sunken, var(--ds-surface-sunken, #F1F5F9))', border: 'var(--ds-border, var(--ds-border, #E2E8F0))' },
               };
               const colors = stepColors[step.status] || stepColors.not_run;
               return (
@@ -167,7 +167,7 @@ export function ExecutionViewMode({
                       <p style={{ fontSize: 12, color: 'hsl(var(--foreground))', margin: '2px 0 0' }}>{step.notes}</p>
                     </div>
                   ) : (
-                    <p style={{ fontSize: 11, color: '#94A3B8', margin: '8px 0 0', fontStyle: 'italic' }}>No notes</p>
+                    <p style={{ fontSize: 11, color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #94A3B8))', margin: '8px 0 0', fontStyle: 'italic' }}>No notes</p>
                   )}
                 </div>
               );
@@ -191,7 +191,7 @@ export function ExecutionViewMode({
         </button>
         <button onClick={onRerun} style={{
           height: 50, padding: '0 16px', border: 'none', borderRadius: 6,
-          background: 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)',
+          background: 'linear-gradient(135deg, var(--ds-text-brand, #2563EB) 0%, var(--ds-background-brand-bold-hovered, #1D4ED8) 100%)',
           color: 'var(--ds-text-inverse, #FFFFFF)', fontSize: 13, fontWeight: 600, cursor: 'pointer',
           display: 'flex', alignItems: 'center', gap: 6,
         }}>

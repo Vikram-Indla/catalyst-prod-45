@@ -10,7 +10,7 @@ export const HubIcon = () => (
     <defs>
       <linearGradient id="catalystBlue" x1="0%" y1="0%" x2="100%" y2="100%">
         <stop offset="0%" style={{stopColor:'var(--cp-blue)'}}/>
-        <stop offset="100%" style={{stopColor:'#1d4ed8'}}/>
+        <stop offset="100%" style={{stopColor:'var(--ds-background-brand-bold-hovered, var(--ds-background-brand-bold-hovered, #1d4ed8))'}}/>
       </linearGradient>
     </defs>
     <line x1="50" y1="50" x2="22" y2="22" stroke="#93c5fd" strokeWidth="4" strokeLinecap="round"/>

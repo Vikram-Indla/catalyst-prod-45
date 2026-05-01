@@ -425,7 +425,7 @@ export function computeObjectiveAnalytics(
   // Alignment path
   const alignment: AlignmentPath = {
     themeName: theme.name,
-    themeColor: theme.color || '#2563eb',
+    themeColor: theme.color || 'var(--ds-text-brand, var(--ds-text-brand, #2563eb))',
     objectiveName: objective.name,
   };
 

@@ -1101,7 +1101,7 @@ export function AllocationBookingModal({
                         key={i} 
                         className="flex-1 text-center text-sm font-semibold"
                         style={{ 
-                          color: total > 100 ? 'var(--sem-warning)' : total === 100 ? '#60a5fa' : '#2dd4bf'
+                          color: total > 100 ? 'var(--sem-warning)' : total === 100 ? 'var(--ds-text-brand, var(--ds-text-brand, #60a5fa))' : '#2dd4bf'
                         }}
                       >
                         {total}%

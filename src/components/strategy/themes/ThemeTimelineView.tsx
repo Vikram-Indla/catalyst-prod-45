@@ -30,15 +30,15 @@ export function ThemeTimelineView({ themes, onSelect }: Props) {
   const noDates = themes.filter(t => !t.start_date || !t.target_completion);
 
   return (
-    <div className="rounded-xl border overflow-hidden bg-white dark:bg-[#0A0A0A] border-slate-200 dark:border-[#2E2E2E]">
+    <div className="rounded-xl border overflow-hidden bg-white dark:bg-[var(--ds-surface,var(--ds-surface, #0A0A0A))] border-slate-200 dark:border-[var(--ds-border,var(--ds-border, #2E2E2E))]">
       {/* Header */}
-      <div className="flex border-b border-slate-200 dark:border-[#2E2E2E]">
-        <div className="shrink-0 flex items-center bg-slate-50 dark:bg-[#1F1F1F]" style={{ width: 220, height: 50, padding: '8px 12px' }}>
-          <span className="text-[10.5px] font-semibold text-slate-400 dark:text-[#878787] uppercase tracking-wide">Theme</span>
+      <div className="flex border-b border-slate-200 dark:border-[var(--ds-border,var(--ds-border, #2E2E2E))]">
+        <div className="shrink-0 flex items-center bg-slate-50 dark:bg-[var(--ds-surface-overlay,var(--ds-surface-overlay, #1F1F1F))]" style={{ width: 220, height: 50, padding: '8px 12px' }}>
+          <span className="text-[10.5px] font-semibold text-slate-400 dark:text-[var(--ds-text-subtlest,var(--ds-text-subtlest, #878787))] uppercase tracking-wide">Theme</span>
         </div>
-        <div className="flex-1 grid bg-slate-50 dark:bg-[#1F1F1F]" style={{ gridTemplateColumns: `repeat(12, 1fr)` }}>
+        <div className="flex-1 grid bg-slate-50 dark:bg-[var(--ds-surface-overlay,var(--ds-surface-overlay, #1F1F1F))]" style={{ gridTemplateColumns: `repeat(12, 1fr)` }}>
           {MONTHS.map((m, i) => (
-            <div key={m} className="flex items-center justify-center text-[10.5px] font-medium text-slate-400 dark:text-[#878787] border-l border-slate-100 dark:border-[#1F1F1F]" style={{
+            <div key={m} className="flex items-center justify-center text-[10.5px] font-medium text-slate-400 dark:text-[var(--ds-text-subtlest,var(--ds-text-subtlest, #878787))] border-l border-slate-100 dark:border-[var(--ds-surface-overlay,var(--ds-surface-overlay, #1F1F1F))]" style={{
               height: 50,
               background: i % 2 === 0 ? 'rgba(248,250,252,0.5)' : 'transparent',
             }}>
@@ -61,13 +61,13 @@ export function ThemeTimelineView({ themes, onSelect }: Props) {
           <div
             key={theme.id}
             onClick={() => onSelect(theme)}
-            className="flex cursor-pointer transition-colors border-b border-slate-100 dark:border-[#1F1F1F] hover:bg-slate-50 dark:hover:bg-[#1F1F1F]"
+            className="flex cursor-pointer transition-colors border-b border-slate-100 dark:border-[var(--ds-surface-overlay,var(--ds-surface-overlay, #1F1F1F))] hover:bg-slate-50 dark:hover:bg-[var(--ds-surface-overlay,var(--ds-surface-overlay, #1F1F1F))]"
             style={{ height: 48 }}
           >
             {/* Label */}
             <div className="shrink-0 flex items-center gap-2 min-w-0" style={{ width: 220, padding: '8px 12px' }}>
               <div className="shrink-0 rounded-full" style={{ width: 8, height: 8, background: theme.color }} />
-              <span className="truncate text-xs font-medium text-slate-900 dark:text-[#EDEDED]" title={theme.title}>{theme.title}</span>
+              <span className="truncate text-xs font-medium text-slate-900 dark:text-[var(--ds-text,var(--ds-text, #EDEDED))]" title={theme.title}>{theme.title}</span>
               <span className="shrink-0 inline-flex items-center gap-1 rounded-full px-1.5 py-0.5" style={{ fontSize: 9, fontWeight: 500, background: sc.bg, color: sc.text }}>
                 <span className="rounded-full" style={{ width: 4, height: 4, background: sc.dot }} />
                 {sc.label}
@@ -75,10 +75,10 @@ export function ThemeTimelineView({ themes, onSelect }: Props) {
             </div>
 
             {/* Timeline area */}
-            <div className="flex-1 relative border-l border-slate-200 dark:border-[#2E2E2E]">
+            <div className="flex-1 relative border-l border-slate-200 dark:border-[var(--ds-border,var(--ds-border, #2E2E2E))]">
               {/* Month gridlines + alternating shading */}
               {MONTHS.map((_, i) => (
-                <div key={i} className="absolute top-0 bottom-0 border-l border-dashed border-slate-100 dark:border-[#1F1F1F]" style={{
+                <div key={i} className="absolute top-0 bottom-0 border-l border-dashed border-slate-100 dark:border-[var(--ds-surface-overlay,var(--ds-surface-overlay, #1F1F1F))]" style={{
                   left: `${(i / 12) * 100}%`,
                   width: `${100 / 12}%`,
                   background: i % 2 === 0 ? 'rgba(248,250,252,0.5)' : 'transparent',
@@ -87,8 +87,8 @@ export function ThemeTimelineView({ themes, onSelect }: Props) {
 
               {/* Today marker */}
               {todayPct !== null && (
-                <div className="absolute top-0 bottom-0" style={{ left: `${todayPct}%`, width: 2, background: '#DC2626', zIndex: 2 }}>
-                  <div style={{ position: 'absolute', top: -16, left: -14, fontSize: 9, color: '#DC2626', fontWeight: 600, whiteSpace: 'nowrap' }}>Today</div>
+                <div className="absolute top-0 bottom-0" style={{ left: `${todayPct}%`, width: 2, background: 'var(--ds-text-danger, var(--ds-text-danger, #DC2626))', zIndex: 2 }}>
+                  <div style={{ position: 'absolute', top: -16, left: -14, fontSize: 9, color: 'var(--ds-text-danger, var(--ds-text-danger, #DC2626))', fontWeight: 600, whiteSpace: 'nowrap' }}>Today</div>
                 </div>
               )}
 
@@ -106,7 +106,7 @@ export function ThemeTimelineView({ themes, onSelect }: Props) {
                     background: progressColor,
                     opacity: 0.75,
                   }} />
-                  <span className="absolute inset-0 flex items-center justify-center text-[10px] font-semibold text-slate-900 dark:text-[#EDEDED]">{theme.progress_pct}%</span>
+                  <span className="absolute inset-0 flex items-center justify-center text-[10px] font-semibold text-slate-900 dark:text-[var(--ds-text,var(--ds-text, #EDEDED))]">{theme.progress_pct}%</span>
                 </div>
               )}
             </div>
@@ -119,21 +119,21 @@ export function ThemeTimelineView({ themes, onSelect }: Props) {
         <div
           key={theme.id}
           onClick={() => onSelect(theme)}
-          className="flex cursor-pointer transition-colors border-b border-slate-100 dark:border-[#1F1F1F] hover:bg-slate-50 dark:hover:bg-[#1F1F1F]"
+          className="flex cursor-pointer transition-colors border-b border-slate-100 dark:border-[var(--ds-surface-overlay,var(--ds-surface-overlay, #1F1F1F))] hover:bg-slate-50 dark:hover:bg-[var(--ds-surface-overlay,var(--ds-surface-overlay, #1F1F1F))]"
           style={{ height: 48 }}
         >
           <div className="shrink-0 flex items-center gap-2 min-w-0" style={{ width: 220, padding: '8px 12px' }}>
             <div className="shrink-0 rounded-full" style={{ width: 8, height: 8, background: theme.color }} />
-            <span className="truncate text-xs font-medium text-slate-900 dark:text-[#EDEDED]">{theme.title}</span>
+            <span className="truncate text-xs font-medium text-slate-900 dark:text-[var(--ds-text,var(--ds-text, #EDEDED))]">{theme.title}</span>
           </div>
-          <div className="flex-1 flex items-center justify-center border-l border-slate-200 dark:border-[#2E2E2E]">
-            <span className="text-[11px] text-slate-400 dark:text-[#878787]">No dates set</span>
+          <div className="flex-1 flex items-center justify-center border-l border-slate-200 dark:border-[var(--ds-border,var(--ds-border, #2E2E2E))]">
+            <span className="text-[11px] text-slate-400 dark:text-[var(--ds-text-subtlest,var(--ds-text-subtlest, #878787))]">No dates set</span>
           </div>
         </div>
       ))}
 
       {themes.length === 0 && (
-        <div className="flex items-center justify-center text-[13px] text-slate-400 dark:text-[#878787]" style={{ height: 120 }}>
+        <div className="flex items-center justify-center text-[13px] text-slate-400 dark:text-[var(--ds-text-subtlest,var(--ds-text-subtlest, #878787))]" style={{ height: 120 }}>
           No themes to display on timeline.
         </div>
       )}

@@ -245,7 +245,7 @@ export default function CoverageMatrixPage() {
   }
 
   return (
-    <div className={`flex-1 flex flex-col overflow-auto ${isDark ? 'bg-[#0A0A0A]' : ''}`}>
+    <div className={`flex-1 flex flex-col overflow-auto ${isDark ? 'bg-[var(--ds-surface,var(--ds-surface, #0A0A0A))]' : ''}`}>
       <CatalystPageHeader title="Traceability Matrix" actions={
         <Button variant="outline" size="sm" onClick={() => exportCSV(filtered)}>
           <Download className="w-4 h-4 mr-2" />

@@ -56,11 +56,11 @@ export function WorkTreeLegend({ open, onClose }: WorkTreeLegendProps) {
                 <span className="text-sm">On Track</span>
               </div>
               <div className="flex items-center gap-2">
-                <div className="w-3 h-3 rounded-full bg-[#f59e0b]" />
+                <div className="w-3 h-3 rounded-full bg-[var(--ds-text-warning,var(--ds-text-warning, #f59e0b))]" />
                 <span className="text-sm">At Risk</span>
               </div>
               <div className="flex items-center gap-2">
-                <div className="w-3 h-3 rounded-full bg-[#ef4444]" />
+                <div className="w-3 h-3 rounded-full bg-[var(--ds-text-danger,var(--ds-text-danger, #ef4444))]" />
                 <span className="text-sm">Off Track</span>
               </div>
               <div className="flex items-center gap-2">
@@ -87,7 +87,7 @@ export function WorkTreeLegend({ open, onClose }: WorkTreeLegendProps) {
                 <span className="text-sm">Has Discussions</span>
               </div>
               <div className="flex items-center gap-2">
-                <AlertCircle className="h-4 w-4 text-[#f59e0b]" />
+                <AlertCircle className="h-4 w-4 text-[var(--ds-text-warning,var(--ds-text-warning, #f59e0b))]" />
                 <span className="text-sm">Has Questions</span>
               </div>
               <div className="flex items-center gap-2">

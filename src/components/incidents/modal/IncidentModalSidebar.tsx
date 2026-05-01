@@ -54,7 +54,7 @@ export function IncidentModalSidebar({ incident, onFieldChange }: IncidentModalS
                 <div
                   key={status.value}
                   className={`px-3 py-2 text-sm cursor-pointer hover:bg-muted ${
-                    incident.status === status.value ? 'bg-[#2563eb]/10 text-[#2563eb]' : 'text-foreground'
+                    incident.status === status.value ? 'bg-[var(--ds-text-brand,var(--ds-text-brand, #2563eb))]/10 text-[var(--ds-text-brand,var(--ds-text-brand, #2563eb))]' : 'text-foreground'
                   }`}
                   onClick={() => {
                     onFieldChange('status', status.value);
@@ -83,7 +83,7 @@ export function IncidentModalSidebar({ incident, onFieldChange }: IncidentModalS
             <div>
               <div className="text-[11px] text-muted-foreground mb-1">Release version</div>
               <div 
-                className="text-sm text-foreground p-1.5 -mx-1.5 rounded border-2 border-transparent hover:bg-muted hover:border-border cursor-text focus-within:border-[#2563eb] focus-within:shadow-[0_0_0_2px_rgba(37,99,235,0.3)] focus-within:bg-card"
+                className="text-sm text-foreground p-1.5 -mx-1.5 rounded border-2 border-transparent hover:bg-muted hover:border-border cursor-text focus-within:border-[var(--ds-text-brand,var(--ds-text-brand, #2563eb))] focus-within:shadow-[0_0_0_2px_rgba(37,99,235,0.3)] focus-within:bg-card"
                 contentEditable
                 suppressContentEditableWarning
               >
@@ -100,7 +100,7 @@ export function IncidentModalSidebar({ incident, onFieldChange }: IncidentModalS
                 </div>
                 <span className="text-sm text-foreground">{incident.assignee?.name || 'Rahaf Alhejaili'}</span>
               </div>
-              <a className="text-sm text-[#2563eb] dark:text-[#60a5fa] hover:underline cursor-pointer mt-1 inline-block">
+              <a className="text-sm text-[var(--ds-text-brand,var(--ds-text-brand, #2563eb))] dark:text-[var(--ds-text-brand,var(--ds-text-brand, #60a5fa))] hover:underline cursor-pointer mt-1 inline-block">
                 Assign to me
               </a>
             </div>
@@ -133,7 +133,7 @@ export function IncidentModalSidebar({ incident, onFieldChange }: IncidentModalS
         </div>
 
         {/* Configure Link */}
-        <a className="flex items-center gap-1 text-[11px] text-muted-foreground hover:text-[#2563eb] mt-4 cursor-pointer">
+        <a className="flex items-center gap-1 text-[11px] text-muted-foreground hover:text-[var(--ds-text-brand,var(--ds-text-brand, #2563eb))] mt-4 cursor-pointer">
           <Settings className="w-3 h-3" />
           Configure
         </a>

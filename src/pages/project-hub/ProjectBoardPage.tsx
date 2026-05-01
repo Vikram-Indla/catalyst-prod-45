@@ -95,10 +95,10 @@ export default function ProjectBoardPage() {
   const projectName = key?.toUpperCase() ?? 'AI GOVERNANCE';
 
   const statCards = [
-    { label: 'Total Issues', value: stats.total, icon: BarChart3, color: '#2563EB', bg: '#EFF6FF', accent: '' },
-    { label: 'Completed', value: stats.completed, icon: CheckCircle2, color: '#16A34A', bg: '#DCFCE7', accent: '' },
-    { label: 'In Progress', value: stats.inProgress, icon: Clock, color: '#2563EB', bg: '#EFF6FF', accent: '' },
-    { label: 'Overdue', value: stats.overdue, icon: AlertTriangle, color: stats.overdue > 0 ? '#EF4444' : '#94A3B8', bg: stats.overdue > 0 ? '#FEF2F2' : '#F1F5F9', accent: '' },
+    { label: 'Total Issues', value: stats.total, icon: BarChart3, color: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))', bg: 'var(--ds-background-selected, var(--ds-background-selected, #EFF6FF))', accent: '' },
+    { label: 'Completed', value: stats.completed, icon: CheckCircle2, color: 'var(--ds-text-success, var(--ds-text-success, #16A34A))', bg: 'var(--ds-background-success, var(--ds-background-success, #DCFCE7))', accent: '' },
+    { label: 'In Progress', value: stats.inProgress, icon: Clock, color: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))', bg: 'var(--ds-background-selected, var(--ds-background-selected, #EFF6FF))', accent: '' },
+    { label: 'Overdue', value: stats.overdue, icon: AlertTriangle, color: stats.overdue > 0 ? 'var(--ds-text-danger, var(--ds-text-danger, #EF4444))' : 'var(--ds-text-subtlest, var(--ds-text-subtlest, #94A3B8))', bg: stats.overdue > 0 ? 'var(--ds-background-danger, var(--ds-background-danger, #FEF2F2))' : 'var(--ds-surface-sunken, var(--ds-surface-sunken, #F1F5F9))', accent: '' },
     { label: 'AI Features', value: '0%', icon: Sparkles, color: '#7C3AED', bg: '#F5F3FF', accent: '#7C3AED' },
   ];
 
@@ -173,7 +173,7 @@ export default function ProjectBoardPage() {
                   fontFamily: 'var(--cp-font-body)',
                   borderRadius: 6, cursor: 'pointer', border: 'none',
                   background: isActive ? ('var(--cp-bg-elevated)') : 'transparent',
-                  color: isActive ? '#2563EB' : ('var(--cp-text-secondary)'),
+                  color: isActive ? 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))' : ('var(--cp-text-secondary)'),
                   boxShadow: isActive ? '0 1px 3px rgba(0,0,0,.08)' : 'none',
                   transition: 'all 150ms ease',
                 }}
@@ -187,7 +187,7 @@ export default function ProjectBoardPage() {
 
         {/* Search */}
         <div className="relative">
-          <Search size={14} color="#94A3B8" className="absolute left-2.5 top-1/2 -translate-y-1/2" />
+          <Search size={14} color="var(--ds-text-subtlest, var(--ds-text-subtlest, #94A3B8))" className="absolute left-2.5 top-1/2 -translate-y-1/2" />
           <input
             value={searchText}
             onChange={e => setSearchText(e.target.value)}
@@ -214,7 +214,7 @@ export default function ProjectBoardPage() {
             borderRadius: 6, cursor: 'pointer',
             border: hasActiveFilters ? '1px solid #BFDBFE' : ('1px solid var(--cp-border-default)'),
             background: hasActiveFilters ? ('var(--cp-interact-selected)') : ('var(--cp-bg-elevated)'),
-            color: hasActiveFilters ? '#2563EB' : ('var(--cp-text-secondary)'),
+            color: hasActiveFilters ? 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))' : ('var(--cp-text-secondary)'),
             fontFamily: 'var(--cp-font-body)',
             transition: 'all 150ms ease',
           }}
@@ -224,7 +224,7 @@ export default function ProjectBoardPage() {
           {hasActiveFilters && (
             <span
               className="rounded-full flex items-center justify-center"
-              style={{ width: 16, height: 16, background: '#2563EB', color: '#fff', fontSize: 9, fontWeight: 700 }}
+              style={{ width: 16, height: 16, background: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))', color: 'var(--ds-surface, var(--ds-surface, var(--ds-surface, #fff)))', fontSize: 9, fontWeight: 700 }}
             >
               {[filterType, filterStatus, filterPriority, filterSource].filter(Boolean).length}
             </span>
@@ -316,7 +316,7 @@ export default function ProjectBoardPage() {
               onClick={clearFilters}
               className="self-end transition-colors"
               style={{
-                fontSize: 11, fontWeight: 500, color: '#EF4444',
+                fontSize: 11, fontWeight: 500, color: 'var(--ds-text-danger, var(--ds-text-danger, #EF4444))',
                 background: 'transparent', border: 'none', cursor: 'pointer',
                 textDecoration: 'underline',
               }}
@@ -352,7 +352,7 @@ export default function ProjectBoardPage() {
           className="flex flex-col items-center justify-center rounded-xl border"
           style={{ padding: '80px 40px', background: 'var(--cp-bg-elevated)', borderColor: 'var(--cp-border-default)' }}
         >
-          <GanttChart size={36} color="#94A3B8" strokeWidth={1.5} />
+          <GanttChart size={36} color="var(--ds-text-subtlest, var(--ds-text-subtlest, #94A3B8))" strokeWidth={1.5} />
           <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--cp-text-primary)', marginTop: 12, fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
             Timeline View
           </span>
@@ -401,7 +401,7 @@ function FilterDropdown({ label, value, options, isOpen, onToggle, onChange }: {
 
   return (
     <div className="flex flex-col gap-1 relative" data-filter-dropdown>
-      <label style={{ fontSize: 10, fontWeight: 600, color: '#94A3B8', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+      <label style={{ fontSize: 10, fontWeight: 600, color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #94A3B8))', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
         {label}
       </label>
       <button
@@ -414,7 +414,7 @@ function FilterDropdown({ label, value, options, isOpen, onToggle, onChange }: {
         }}
       >
         <span className="truncate">{selectedLabel}</span>
-        <ChevronDown size={12} color="#94A3B8" />
+        <ChevronDown size={12} color="var(--ds-text-subtlest, var(--ds-text-subtlest, #94A3B8))" />
       </button>
       {isOpen && (
         <div
@@ -436,7 +436,7 @@ function FilterDropdown({ label, value, options, isOpen, onToggle, onChange }: {
               onMouseLeave={e => { if (value !== o.value) e.currentTarget.style.background = 'transparent'; }}
             >
               {o.label}
-              {value === o.value && <span style={{ float: 'right', color: '#2563EB', fontSize: 11 }}>✓</span>}
+              {value === o.value && <span style={{ float: 'right', color: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))', fontSize: 11 }}>✓</span>}
             </button>
           ))}
         </div>

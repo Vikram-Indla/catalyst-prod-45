@@ -89,12 +89,12 @@ export function AIStrategyIntelligencePanel({
         transition: 'transform 400ms cubic-bezier(0.16, 1, 0.3, 1)',
       }}
     >
-      <div className="h-[2px] w-full shrink-0" style={{ background: 'linear-gradient(90deg, #2563EB 0%, #60A5FA 50%, #2563EB 100%)' }} />
+      <div className="h-[2px] w-full shrink-0" style={{ background: 'linear-gradient(90deg, var(--ds-text-brand, #2563EB) 0%, var(--ds-text-brand, #60A5FA) 50%, var(--ds-text-brand, #2563EB) 100%)' }} />
 
       <div className="px-7 pt-4 pb-0 shrink-0">
         <div className="flex items-start justify-between mb-3">
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0" style={{ background: 'linear-gradient(135deg, #2563EB, #1E3A8A)' }}>
+            <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0" style={{ background: 'linear-gradient(135deg, var(--ds-text-brand, #2563EB), #1E3A8A)' }}>
               <Sparkles size={16} className="text-white" />
             </div>
             <h2 className="text-[15px] font-[700]" style={{ color: 'var(--fg-1)' }}>Strategy Intelligence</h2>
@@ -124,7 +124,7 @@ export function AIStrategyIntelligencePanel({
           {!metrics.initiativeKey && (
             <>
               <span className="text-[10px] font-medium" style={{ color: 'var(--fg-4)' }}>›</span>
-              <span className="text-[10px] font-semibold px-2 py-[3px] rounded-md" style={{ color: '#D97706', background: '#FFFBEB', border: '1px solid #FDE68A' }}>⚠ No Request</span>
+              <span className="text-[10px] font-semibold px-2 py-[3px] rounded-md" style={{ color: 'var(--ds-text-warning, var(--ds-text-warning, #D97706))', background: '#FFFBEB', border: '1px solid #FDE68A' }}>⚠ No Request</span>
             </>
           )}
           {!metrics.epicKey && (
@@ -178,13 +178,13 @@ export function AIStrategyIntelligencePanel({
 
       <div className="shrink-0 border-t px-7 py-2.5 flex items-center justify-between" style={{ borderColor: 'var(--divider)' }}>
         <div className="flex items-center gap-1.5 text-[10px]" style={{ color: 'var(--fg-4)' }}>
-          <span style={{ color: '#60A5FA' }}>✦</span> AI · {new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+          <span style={{ color: 'var(--ds-text-brand, var(--ds-text-brand, #60A5FA))' }}>✦</span> AI · {new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
         </div>
         <div className="flex items-center gap-2">
           <button onClick={onRegenerate} disabled={isAILoading} className="px-3 py-1 rounded transition-colors disabled:opacity-50" style={{ fontSize: 11, fontWeight: 500, color: 'var(--fg-3)' }}>
             Regenerate
           </button>
-          <button onClick={onClose} className="px-3.5 py-1 rounded-md transition-colors text-[11px] font-semibold text-white bg-slate-800 dark:bg-[#1A1A1A] dark:border dark:border-[#2E2E2E]">
+          <button onClick={onClose} className="px-3.5 py-1 rounded-md transition-colors text-[11px] font-semibold text-white bg-slate-800 dark:bg-[var(--ds-surface-raised,var(--ds-surface-raised, #1A1A1A))] dark:border dark:border-[var(--ds-border,var(--ds-border, #2E2E2E))]">
             Close
           </button>
         </div>
@@ -202,9 +202,9 @@ function StatusBanner({ status, health, confidence, label }: {
   health?: number; confidence?: number; label?: string;
 }) {
   const config = {
-    on_track: { text: 'ON TRACK', color: '#16A34A' },
-    at_risk:  { text: 'AT RISK',  color: '#D97706' },
-    critical: { text: 'CRITICAL', color: '#EF4444' },
+    on_track: { text: 'ON TRACK', color: 'var(--ds-text-success, var(--ds-text-success, #16A34A))' },
+    at_risk:  { text: 'AT RISK',  color: 'var(--ds-text-warning, var(--ds-text-warning, #D97706))' },
+    critical: { text: 'CRITICAL', color: 'var(--ds-text-danger, var(--ds-text-danger, #EF4444))' },
   }[status];
 
   return (
@@ -225,7 +225,7 @@ function StatusBanner({ status, health, confidence, label }: {
 }
 
 function StatusDot({ status }: { status: 'on_track' | 'at_risk' | 'critical' }) {
-  const color = status === 'on_track' ? '#16A34A' : status === 'at_risk' ? '#D97706' : '#EF4444';
+  const color = status === 'on_track' ? 'var(--ds-text-success, var(--ds-text-success, #16A34A))' : status === 'at_risk' ? 'var(--ds-text-warning, var(--ds-text-warning, #D97706))' : 'var(--ds-text-danger, var(--ds-text-danger, #EF4444))';
   return <div className="w-2 h-2 rounded-full shrink-0" style={{ background: color }} />;
 }
 
@@ -336,7 +336,7 @@ function ExecutiveBriefTab({ lockedChain, briefContent, isBriefGenerating, brief
         </div>
         <div className="border border-slate-200 rounded-lg p-3.5">
           <p className="uppercase tracking-wider font-semibold text-slate-500 mb-1" style={{ fontSize: 10 }}>AI Health</p>
-          <p className="font-bold leading-none" style={{ fontSize: 20, color: '#2563EB' }}>
+          <p className="font-bold leading-none" style={{ fontSize: 20, color: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))' }}>
             {goalHealth}/100
           </p>
         </div>
@@ -367,7 +367,7 @@ function ExecutiveBriefTab({ lockedChain, briefContent, isBriefGenerating, brief
         <div className="flex flex-col items-center justify-center py-12 text-center">
           <div className="flex items-center justify-center rounded-xl mb-4"
             style={{ width: 48, height: 48, background: '#FFFBEB' }}>
-            <X size={20} style={{ color: '#D97706' }} />
+            <X size={20} style={{ color: 'var(--ds-text-warning, var(--ds-text-warning, #D97706))' }} />
           </div>
           <p className="font-semibold text-slate-900 mb-1" style={{ fontSize: 15 }}>Briefing Unavailable</p>
           <p className="text-slate-500" style={{ fontSize: 13, maxWidth: 300 }}>{briefError}</p>
@@ -406,7 +406,7 @@ function ExecutiveBriefTab({ lockedChain, briefContent, isBriefGenerating, brief
             {briefContent}
           </ReactMarkdown>
           {isBriefGenerating && (
-            <div className="flex items-center gap-2 mt-4" style={{ color: '#2563EB', fontSize: 12 }}>
+            <div className="flex items-center gap-2 mt-4" style={{ color: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))', fontSize: 12 }}>
               <Sparkles size={14} className="animate-pulse" />
               <span className="font-medium">Generating…</span>
             </div>
@@ -629,7 +629,7 @@ function EpicsStoriesTab({ metrics, stories, aiResult, isAILoading }: { metrics:
                 <div className="flex h-3 rounded-full overflow-hidden mb-2">
                   {m.storiesInProd > 0 && <div style={{ width: `${m.storiesInProd / m.storiesTotal * 100}%`, background: 'var(--sem-success)' }} />}
                   {(m.storiesDone - m.storiesInProd) > 0 && <div style={{ width: `${(m.storiesDone - m.storiesInProd) / m.storiesTotal * 100}%`, background: '#86EFAC' }} />}
-                  {m.storiesInProgress > 0 && <div style={{ width: `${m.storiesInProgress / m.storiesTotal * 100}%`, background: '#2563EB' }} />}
+                  {m.storiesInProgress > 0 && <div style={{ width: `${m.storiesInProgress / m.storiesTotal * 100}%`, background: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))' }} />}
                   {m.storiesBlocked > 0 && <div style={{ width: `${m.storiesBlocked / m.storiesTotal * 100}%`, background: 'var(--sem-danger)' }} />}
                   {m.storiesBacklog > 0 && <div style={{ width: `${m.storiesBacklog / m.storiesTotal * 100}%`, background: 'var(--divider)' }} />}
                 </div>

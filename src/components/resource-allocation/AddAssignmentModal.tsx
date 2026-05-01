@@ -375,7 +375,7 @@ export function AddAssignmentModal({
                         : "text-muted-foreground hover:text-foreground"
                     )}
                   >
-                    <div className="w-2.5 h-2.5 rounded-full border-2 border-dashed border-[#d97706]" />
+                    <div className="w-2.5 h-2.5 rounded-full border-2 border-dashed border-[var(--ds-text-warning,var(--ds-text-warning, #d97706))]" />
                     Forecast
                   </button>
                 </div>

@@ -229,7 +229,7 @@ const PragmaticCard = memo(function PragmaticCard({
             top: ctxMenu.y,
             zIndex: 9999,
             minWidth: 180,
-            background: '#FFFFFF',
+            background: 'var(--ds-surface, var(--ds-surface, #FFFFFF))',
             borderRadius: 4,
             boxShadow: 'rgba(9,30,66,0.31) 0 0 1px, rgba(9,30,66,0.25) 0 4px 8px -2px',
             padding: '4px 0',
@@ -256,7 +256,7 @@ const PragmaticCard = memo(function PragmaticCard({
                 fontSize: 14, lineHeight: '20px',
                 color: item.danger ? '#AE2A19' : tk.textPrimary,
               }}
-              onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = '#F4F5F7'; }}
+              onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = 'var(--ds-surface-sunken, var(--ds-surface-sunken, #F4F5F7))'; }}
               onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = 'transparent'; }}
             >
               {item.label}
@@ -445,7 +445,7 @@ const PragmaticColumn = memo(function PragmaticColumn({
               top: meatballAnchor.y,
               zIndex: 9999,
               minWidth: 200,
-              background: '#FFFFFF',
+              background: 'var(--ds-surface, var(--ds-surface, #FFFFFF))',
               borderRadius: 4,
               boxShadow: 'rgba(9,30,66,0.31) 0 0 1px, rgba(9,30,66,0.25) 0 4px 8px -2px',
               padding: '6px 0',

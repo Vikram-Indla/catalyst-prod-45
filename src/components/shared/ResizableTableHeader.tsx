@@ -39,7 +39,7 @@ export function ResizableTableHeader({
   return (
     <th
       ref={thRef}
-      style={{ width, minWidth: width, position: 'relative', color: isSorted ? '#2563EB' : undefined }}
+      style={{ width, minWidth: width, position: 'relative', color: isSorted ? 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))' : undefined }}
       className={cn(
         'select-none',
         isDragging && 'opacity-40',
@@ -93,9 +93,9 @@ export function ResizableTableHeader({
         {canSort && (
           isSorted
             ? (sortDirection === 'asc'
-              ? <ChevronUp size={12} style={{ color: '#2563EB', flexShrink: 0 }} />
-              : <ChevronDown size={12} style={{ color: '#2563EB', flexShrink: 0 }} />)
-            : <ChevronUp size={12} className="opacity-0 group-hover/thead:opacity-30 flex-shrink-0" style={{ color: '#94A3B8', transition: 'opacity 120ms' }} />
+              ? <ChevronUp size={12} style={{ color: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))', flexShrink: 0 }} />
+              : <ChevronDown size={12} style={{ color: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))', flexShrink: 0 }} />)
+            : <ChevronUp size={12} className="opacity-0 group-hover/thead:opacity-30 flex-shrink-0" style={{ color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #94A3B8))', transition: 'opacity 120ms' }} />
         )}
       </div>
 

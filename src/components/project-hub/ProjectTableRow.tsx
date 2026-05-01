@@ -31,7 +31,7 @@ export function ProjectTableRow({ project, isStarred, onToggleStar, onContextMen
 
   return (
     <tr
-      className={`group cursor-pointer transition-colors duration-100 ${isDark ? 'hover:bg-[#1F1F1F]' : 'hover:bg-[#F4F5F7]'}`}
+      className={`group cursor-pointer transition-colors duration-100 ${isDark ? 'hover:bg-[var(--ds-surface-overlay,var(--ds-surface-overlay, #1F1F1F))]' : 'hover:bg-[var(--ds-surface-sunken,var(--ds-surface-sunken, #F4F5F7))]'}`}
       style={{ height: 36, maxHeight: 36 }}
       onClick={() => navigate(`/project-hub/${project.key}/dashboard`)}
       onContextMenu={e => onContextMenu(e, project)}
@@ -53,7 +53,7 @@ export function ProjectTableRow({ project, isStarred, onToggleStar, onContextMen
             style={{
               width: 28,
               height: 24,
-              backgroundColor: project.color || '#2563EB',
+              backgroundColor: project.color || 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))',
               color: 'var(--ds-text-inverse, #FFFFFF)',
               fontSize: project.key.length > 2 ? 9 : 10,
               fontWeight: 700,

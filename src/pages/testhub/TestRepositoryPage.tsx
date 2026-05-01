@@ -689,7 +689,7 @@ export function TestRepositoryPage() {
                 display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.15s',
               }}
             >
-              <RefreshCw style={{ width: 16, height: 16, color: '#64748B' }} />
+              <RefreshCw style={{ width: 16, height: 16, color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #64748B))' }} />
             </button>
 
             {/* Import */}
@@ -741,7 +741,7 @@ export function TestRepositoryPage() {
               onClick={handleOpenCreateModal}
               style={{
                 height: 40, padding: '0 20px',
-                background: 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)',
+                background: 'linear-gradient(135deg, var(--ds-text-brand, #2563EB) 0%, var(--ds-background-brand-bold-hovered, #1D4ED8) 100%)',
                 border: 'none', borderRadius: 8, fontFamily: 'var(--cp-font-body)',
                 fontSize: 14, fontWeight: 600, color: 'var(--ds-text-inverse, #FFFFFF)', cursor: 'pointer',
                 display: 'flex', alignItems: 'center', gap: 8,
@@ -797,7 +797,7 @@ export function TestRepositoryPage() {
                   fontFamily: 'var(--cp-font-body)',
                   fontSize: 14,
                   fontWeight: 600,
-                  color: '#2563EB',
+                  color: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))',
                 }}>
                   {selectedIds.size} selected
                 </span>
@@ -890,7 +890,7 @@ export function TestRepositoryPage() {
                             {u.full_name}
                           </button>
                         ))}
-                        {assignableUsers.length === 0 && <div style={{ padding: 12, fontSize: 13, color: '#94A3B8' }}>No users found</div>}
+                        {assignableUsers.length === 0 && <div style={{ padding: 12, fontSize: 13, color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #94A3B8))' }}>No users found</div>}
                       </div>
                     )}
                   </div>
@@ -929,7 +929,7 @@ export function TestRepositoryPage() {
                             {l.name}
                           </button>
                         ))}
-                        {availableLabels.length === 0 && <div style={{ padding: 12, fontSize: 13, color: '#94A3B8' }}>No labels found</div>}
+                        {availableLabels.length === 0 && <div style={{ padding: 12, fontSize: 13, color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #94A3B8))' }}>No labels found</div>}
                       </div>
                     )}
                   </div>
@@ -940,7 +940,7 @@ export function TestRepositoryPage() {
                       backgroundColor: 'var(--cp-bg-elevated, #FFFFFF)',
                       border: isDark ? '1px solid #2E2E2E' : '1px solid #E2E8F0',
                       borderRadius: 6, fontFamily: 'var(--cp-font-body)', fontSize: 13, fontWeight: 500,
-                      color: '#DC2626', cursor: 'pointer',
+                      color: 'var(--ds-text-danger, var(--ds-text-danger, #DC2626))', cursor: 'pointer',
                       display: 'flex', alignItems: 'center', gap: 6,
                     }}
                     onMouseEnter={(e) => {
@@ -969,7 +969,7 @@ export function TestRepositoryPage() {
                     fontFamily: 'var(--cp-font-body)',
                     fontSize: 13,
                     fontWeight: 500,
-                    color: '#64748B',
+                    color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #64748B))',
                     cursor: 'pointer',
                   }}
                   onMouseEnter={(e) => {

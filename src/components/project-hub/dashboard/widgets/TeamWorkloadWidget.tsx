@@ -12,7 +12,7 @@
  *       Line 2: thick stacked bar (stories blue / bugs red) +
  *               compact meta "31 stories · 2 bugs".
  *   - Bar palette routed through Atlaskit BOLDER tokens (was bespoke
- *     rgba(37,99,235,0.20) + #2563EB hex). Stories blue-bolder, bugs
+ *     rgba(37,99,235,0.20) + var(--ds-text-brand, #2563EB) hex). Stories blue-bolder, bugs
  *     red-bolder. Track neutral-subtle.
  *   - Tabular-num counts so column right edges line up across rows.
  *   - Sort by total desc — highest-load assignee at top.

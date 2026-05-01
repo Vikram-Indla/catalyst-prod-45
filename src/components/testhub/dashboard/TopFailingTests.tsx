@@ -21,7 +21,7 @@ interface Props {
 }
 
 const PRIORITY_CFG: Record<string, { color: string; bg: string }> = {
-  critical: { color: 'var(--sem-danger)', bg: '#FEF2F2' },
+  critical: { color: 'var(--sem-danger)', bg: 'var(--ds-background-danger, var(--ds-background-danger, #FEF2F2))' },
   high:     { color: '#EA580C', bg: '#FFF7ED' },
   medium:   { color: 'var(--sem-warning)', bg: '#FFFBEB' },
   low:      { color: 'var(--sem-success)', bg: '#ECFDF5' },
@@ -36,7 +36,7 @@ export function TopFailingTests({ tests }: Props) {
     <div style={{ backgroundColor: 'var(--bg-app)', border: '1px solid var(--divider)', borderRadius: 12, padding: 24 }}>
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16 }}>
-        <div style={{ width: 36, height: 50, borderRadius: 12, backgroundColor: '#FEF2F2', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div style={{ width: 36, height: 50, borderRadius: 12, backgroundColor: 'var(--ds-background-danger, var(--ds-background-danger, #FEF2F2))', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           <TrendingDown size={18} color="var(--sem-danger)" />
         </div>
         <div>
@@ -59,9 +59,9 @@ export function TopFailingTests({ tests }: Props) {
             <div
               key={test.test_case_id}
               onClick={() => navigate(`/testhub/repository?view=${test.test_case_id}`)}
-              style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 16px', backgroundColor: '#FEF2F2', borderRadius: 12, cursor: 'pointer', border: '1px solid color-mix(in srgb, var(--sem-danger) 20%, transparent)', transition: 'all 0.15s' }}
+              style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 16px', backgroundColor: 'var(--ds-background-danger, var(--ds-background-danger, #FEF2F2))', borderRadius: 12, cursor: 'pointer', border: '1px solid color-mix(in srgb, var(--sem-danger) 20%, transparent)', transition: 'all 0.15s' }}
               onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#FEE2E2'; e.currentTarget.style.borderColor = 'color-mix(in srgb, var(--sem-danger) 30%, transparent)'; }}
-              onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = '#FEF2F2'; e.currentTarget.style.borderColor = 'color-mix(in srgb, var(--sem-danger) 20%, transparent)'; }}
+              onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'var(--ds-background-danger, var(--ds-background-danger, #FEF2F2))'; e.currentTarget.style.borderColor = 'color-mix(in srgb, var(--sem-danger) 20%, transparent)'; }}
             >
               {/* Left */}
               <div style={{ display: 'flex', alignItems: 'center', gap: 14, minWidth: 0, flex: 1 }}>

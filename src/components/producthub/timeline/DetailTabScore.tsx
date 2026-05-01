@@ -57,7 +57,7 @@ function RadarSVG({ scores }: { scores: Record<ScoreKeys, number> }) {
       <polygon points={dataPolygon} fill="rgba(37,99,235,0.15)" stroke="var(--idp-primary)" strokeWidth="2" />
       {/* Data dots */}
       {dataPoints.map(([x, y], i) => (
-        <circle key={i} cx={x} cy={y} r={4} fill="var(--idp-primary)" stroke="#fff" strokeWidth="2" />
+        <circle key={i} cx={x} cy={y} r={4} fill="var(--idp-primary)" stroke="var(--ds-surface, var(--ds-surface, var(--ds-surface, #fff)))" strokeWidth="2" />
       ))}
       {/* Labels */}
       {labels.map((lbl, i) => {

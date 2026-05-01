@@ -21,7 +21,7 @@ function SectionHeader({ icon: Icon, title, color }: { icon: any; title: string;
       <div className={cn("w-10 h-10 rounded-lg flex items-center justify-center", color)}>
         <Icon className="w-5 h-5 text-white" />
       </div>
-      <h2 className="text-lg font-bold text-slate-800 dark:text-[#EDEDED]">{title}</h2>
+      <h2 className="text-lg font-bold text-slate-800 dark:text-[var(--ds-text,var(--ds-text, #EDEDED))]">{title}</h2>
     </div>
   );
 }
@@ -29,7 +29,7 @@ function SectionHeader({ icon: Icon, title, color }: { icon: any; title: string;
 // Empty state component
 function EmptyState({ title }: { title: string }) {
   return (
-    <div className="flex flex-col items-center justify-center py-8 text-slate-400 dark:text-[#878787] bg-slate-50 dark:bg-[#111111] rounded-lg">
+    <div className="flex flex-col items-center justify-center py-8 text-slate-400 dark:text-[var(--ds-text-subtlest,var(--ds-text-subtlest, #878787))] bg-slate-50 dark:bg-[#111111] rounded-lg">
       <Inbox className="w-8 h-8 mb-2" />
       <p className="text-sm">No {title} this month</p>
     </div>
@@ -54,7 +54,7 @@ function ItemCard({
 }) {
   return (
     <div className={cn(
-      "flex items-center gap-3.5 p-4 bg-white dark:bg-[#1A1A1A] border border-slate-200 dark:border-[#2E2E2E] rounded-lg transition-all hover:translate-x-1 hover:shadow-sm",
+      "flex items-center gap-3.5 p-4 bg-white dark:bg-[var(--ds-surface-raised,var(--ds-surface-raised, #1A1A1A))] border border-slate-200 dark:border-[var(--ds-border,var(--ds-border, #2E2E2E))] rounded-lg transition-all hover:translate-x-1 hover:shadow-sm",
       "border-l-4",
       status === 'completed' && "border-l-emerald-500",
       status === 'in_progress' && "border-l-blue-500",
@@ -65,11 +65,11 @@ function ItemCard({
         <Icon className="w-4 h-4" />
       </div>
       <div className="flex-1">
-        <div className="text-[15px] font-semibold text-slate-800 dark:text-[#EDEDED]">
+        <div className="text-[15px] font-semibold text-slate-800 dark:text-[var(--ds-text,var(--ds-text, #EDEDED))]">
           {id && <span className="text-blue-600 cursor-pointer hover:underline mr-2">{id}</span>}
           {title}
         </div>
-        <div className="text-xs text-slate-500 dark:text-[#878787] mt-0.5">{meta}</div>
+        <div className="text-xs text-slate-500 dark:text-[var(--ds-text-subtlest,var(--ds-text-subtlest, #878787))] mt-0.5">{meta}</div>
       </div>
     </div>
   );
@@ -91,7 +91,7 @@ export function MonthlyChronicleView() {
 
   if (error || !data) {
     return (
-      <div className="p-6 flex flex-col items-center justify-center h-full text-slate-500 dark:text-[#878787]">
+      <div className="p-6 flex flex-col items-center justify-center h-full text-slate-500 dark:text-[var(--ds-text-subtlest,var(--ds-text-subtlest, #878787))]">
         <AlertTriangle className="w-12 h-12 mb-4 text-amber-500" />
         <p>Failed to load monthly insights data</p>
       </div>
@@ -104,7 +104,7 @@ export function MonthlyChronicleView() {
     <ScrollArea className="h-full">
       <div className="min-h-full">
         {/* Main Card */}
-        <div className="bg-white dark:bg-[#1A1A1A] rounded-xl shadow-md border border-slate-200 dark:border-[#2E2E2E] overflow-hidden m-6">
+        <div className="bg-white dark:bg-[var(--ds-surface-raised,var(--ds-surface-raised, #1A1A1A))] rounded-xl shadow-md border border-slate-200 dark:border-[var(--ds-border,var(--ds-border, #2E2E2E))] overflow-hidden m-6">
           
           {/* Chronicle Hero - Dark Gradient */}
           <div className="relative px-14 py-12 bg-gradient-to-br from-slate-900 to-[#1a2744] text-white overflow-hidden">
@@ -232,8 +232,8 @@ export function MonthlyChronicleView() {
           </div>
 
           {/* Chronicle Footer */}
-          <div className="flex items-center justify-between px-8 py-5 border-t border-slate-200 dark:border-[#2E2E2E] bg-slate-50 dark:bg-[#111111]">
-            <span className="text-xs text-slate-500 dark:text-[#878787]">
+          <div className="flex items-center justify-between px-8 py-5 border-t border-slate-200 dark:border-[var(--ds-border,var(--ds-border, #2E2E2E))] bg-slate-50 dark:bg-[#111111]">
+            <span className="text-xs text-slate-500 dark:text-[var(--ds-text-subtlest,var(--ds-text-subtlest, #878787))]">
               Data as of {format(new Date(), 'MMMM d, yyyy h:mm a')}
             </span>
             <div className="flex gap-2">

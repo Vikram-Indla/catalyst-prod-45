@@ -20,13 +20,13 @@ export function ResourceDrawer({ resource, onClose }: ResourceDrawerProps) {
   const initials = resource.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
   
   const statusGradient = 
-    resource.status === 'critical' ? 'linear-gradient(90deg, #f87171, #dc2626)' :
-    resource.status === 'warning' ? 'linear-gradient(90deg, #fbbf24, #d97706)' :
+    resource.status === 'critical' ? 'linear-gradient(90deg, #f87171, var(--ds-text-danger, #dc2626))' :
+    resource.status === 'warning' ? 'linear-gradient(90deg, #fbbf24, var(--ds-text-warning, #d97706))' :
     'linear-gradient(90deg, #2dd4bf, #0d9488)';
 
   const statusColor = 
-    resource.status === 'critical' ? '#ef4444' :
-    resource.status === 'warning' ? '#d97706' :
+    resource.status === 'critical' ? 'var(--ds-text-danger, var(--ds-text-danger, #ef4444))' :
+    resource.status === 'warning' ? 'var(--ds-text-warning, var(--ds-text-warning, #d97706))' :
     '#0d9488';
 
   return (
@@ -153,7 +153,7 @@ export function ResourceDrawer({ resource, onClose }: ResourceDrawerProps) {
               />
               <AttributePill 
                 label={resource.country || 'Unknown'} 
-                color="#dc2626"
+                color="var(--ds-text-danger, var(--ds-text-danger, #dc2626))"
               />
             </div>
           </div>

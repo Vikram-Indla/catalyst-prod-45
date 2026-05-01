@@ -91,7 +91,7 @@ export function DeleteConfirmDialog({ issueKey, tk, onConfirm, onCancel }: Props
             style={{
               padding: '6px 16px', fontSize: 13, fontWeight: 600, borderRadius: 6,
               border: 'none', background: canDelete ? '#D32F2F' : '#E0E0E0',
-              color: canDelete ? '#FFFFFF' : '#9E9E9E', cursor: canDelete ? 'pointer' : 'not-allowed',
+              color: canDelete ? 'var(--ds-surface, var(--ds-surface, #FFFFFF))' : '#9E9E9E', cursor: canDelete ? 'pointer' : 'not-allowed',
               opacity: canDelete ? 1 : 0.6,
             }}
           >Delete</button>

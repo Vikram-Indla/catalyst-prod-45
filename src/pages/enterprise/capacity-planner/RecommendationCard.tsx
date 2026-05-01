@@ -9,8 +9,8 @@ export interface RecommendationCardProps {
 
 export function RecommendationCard({ recommendation }: RecommendationCardProps) {
   const priorityColors = {
-    high: 'border-l-[#dc2626]',
-    medium: 'border-l-[#d97706]',
+    high: 'border-l-[var(--ds-text-danger,var(--ds-text-danger, #dc2626))]',
+    medium: 'border-l-[var(--ds-text-warning,var(--ds-text-warning, #d97706))]',
     low: 'border-l-[#0d9488]',
   };
 
@@ -34,7 +34,7 @@ export function RecommendationCard({ recommendation }: RecommendationCardProps) 
           <p className="text-xs text-muted-foreground">{recommendation.description}</p>
           <div className="flex gap-2 mt-3">
             <Button size="sm" variant="outline" className="h-7 text-xs">Dismiss</Button>
-            <Button size="sm" className="h-7 text-xs bg-[#2563eb] hover:bg-[#1d4ed8]">Apply</Button>
+            <Button size="sm" className="h-7 text-xs bg-[var(--ds-text-brand,var(--ds-text-brand, #2563eb))] hover:bg-[var(--ds-background-brand-bold-hovered,var(--ds-background-brand-bold-hovered, #1d4ed8))]">Apply</Button>
           </div>
         </div>
       </div>

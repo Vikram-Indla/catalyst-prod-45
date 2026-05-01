@@ -54,11 +54,11 @@ export function DayView({
       {/* Main content */}
       <div className="flex-1 flex overflow-hidden">
         {/* Time column */}
-        <div className="w-16 shrink-0 border-r border-[#e2e8f0]">
+        <div className="w-16 shrink-0 border-r border-[var(--ds-border,var(--ds-border, #e2e8f0))]">
           {HOURS.map((hour) => (
             <div
               key={hour}
-              className="h-[60px] px-2 py-1 text-right text-xs text-[#64748b] border-b border-[#f1f5f9]"
+              className="h-[60px] px-2 py-1 text-right text-xs text-[var(--ds-text-subtlest,var(--ds-text-subtlest, #64748b))] border-b border-[var(--ds-surface-sunken,var(--ds-surface-sunken, #f1f5f9))]"
             >
               {format(new Date().setHours(hour, 0), 'h a')}
             </div>
@@ -70,17 +70,17 @@ export function DayView({
           {HOURS.map((hour) => (
             <div
               key={hour}
-              className="h-[60px] border-b border-[#f1f5f9] hover:bg-[#f8fafc]"
+              className="h-[60px] border-b border-[var(--ds-surface-sunken,var(--ds-surface-sunken, #f1f5f9))] hover:bg-[var(--ds-surface-sunken,var(--ds-surface-sunken, #f8fafc))]"
             />
           ))}
 
           {/* Current time indicator */}
           {isCurrentDay && currentHour >= 7 && currentHour <= 18 && (
             <div
-              className="absolute left-0 right-0 border-t-2 border-[#ef4444] z-10"
+              className="absolute left-0 right-0 border-t-2 border-[var(--ds-text-danger,var(--ds-text-danger, #ef4444))] z-10"
               style={{ top: `${(currentHour - 7) * 60 + (new Date().getMinutes())}px` }}
             >
-              <div className="absolute -left-1 -top-1.5 w-3 h-3 rounded-full bg-[#ef4444]" />
+              <div className="absolute -left-1 -top-1.5 w-3 h-3 rounded-full bg-[var(--ds-text-danger,var(--ds-text-danger, #ef4444))]" />
             </div>
           )}
 
@@ -99,31 +99,31 @@ export function DayView({
       </div>
 
       {/* Summary panel */}
-      <div className="w-80 shrink-0 border-l border-[#e2e8f0] bg-[#f8fafc] overflow-auto">
-        <div className="p-4 border-b border-[#e2e8f0]">
+      <div className="w-80 shrink-0 border-l border-[var(--ds-border,var(--ds-border, #e2e8f0))] bg-[var(--ds-surface-sunken,var(--ds-surface-sunken, #f8fafc))] overflow-auto">
+        <div className="p-4 border-b border-[var(--ds-border,var(--ds-border, #e2e8f0))]">
           <div className="flex items-center gap-2 mb-2">
-            <h3 className="font-semibold text-[#0f172a]">
+            <h3 className="font-semibold text-[var(--ds-text,var(--ds-text, #0f172a))]">
               {format(currentDate, 'EEEE, MMMM d')}
             </h3>
             {isCycleStart && <MilestoneMarker type="start" />}
             {isCycleEnd && <MilestoneMarker type="end" />}
           </div>
-          <div className="text-3xl font-bold text-[#0f172a]">{events.length}</div>
-          <div className="text-sm text-[#64748b]">tests scheduled</div>
+          <div className="text-3xl font-bold text-[var(--ds-text,var(--ds-text, #0f172a))]">{events.length}</div>
+          <div className="text-sm text-[var(--ds-text-subtlest,var(--ds-text-subtlest, #64748b))]">tests scheduled</div>
         </div>
 
         {/* Status breakdown */}
-        <div className="p-4 border-b border-[#e2e8f0]">
-          <h4 className="text-xs font-semibold text-[#64748b] uppercase tracking-wide mb-3">
+        <div className="p-4 border-b border-[var(--ds-border,var(--ds-border, #e2e8f0))]">
+          <h4 className="text-xs font-semibold text-[var(--ds-text-subtlest,var(--ds-text-subtlest, #64748b))] uppercase tracking-wide mb-3">
             By Status
           </h4>
           <div className="space-y-2">
             {Object.entries(eventsByStatus).map(([status, statusEvents]) => (
               <div key={status} className="flex items-center justify-between">
-                <span className="text-sm text-[#334155]">
+                <span className="text-sm text-[var(--ds-text-subtle,var(--ds-text-subtle, #334155))]">
                   {STATUS_LABELS[status as CalendarEventStatus]}
                 </span>
-                <span className="text-sm font-medium text-[#0f172a]">
+                <span className="text-sm font-medium text-[var(--ds-text,var(--ds-text, #0f172a))]">
                   {statusEvents.length}
                 </span>
               </div>
@@ -133,7 +133,7 @@ export function DayView({
 
         {/* Assignee breakdown */}
         <div className="p-4">
-          <h4 className="text-xs font-semibold text-[#64748b] uppercase tracking-wide mb-3">
+          <h4 className="text-xs font-semibold text-[var(--ds-text-subtlest,var(--ds-text-subtlest, #64748b))] uppercase tracking-wide mb-3">
             By Assignee
           </h4>
           <div className="space-y-2">
@@ -141,9 +141,9 @@ export function DayView({
               <div key={id} className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <Avatar name={name} size="xsmall" />
-                  <span className="text-sm text-[#334155]">{name}</span>
+                  <span className="text-sm text-[var(--ds-text-subtle,var(--ds-text-subtle, #334155))]">{name}</span>
                 </div>
-                <span className="text-sm font-medium text-[#0f172a]">
+                <span className="text-sm font-medium text-[var(--ds-text,var(--ds-text, #0f172a))]">
                   {assigneeEvents.length}
                 </span>
               </div>

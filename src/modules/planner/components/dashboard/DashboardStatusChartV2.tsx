@@ -14,11 +14,11 @@ interface DashboardStatusChartV2Props {
 
 // Status colors matching spec
 const STATUS_COLORS: Record<string, string> = {
-  backlog: '#64748b',    // slate
-  planned: '#3b82f6',    // blue
-  progress: '#f59e0b',   // amber
+  backlog: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #64748b))',    // slate
+  planned: 'var(--ds-text-brand, var(--ds-text-brand, #3b82f6))',    // blue
+  progress: 'var(--ds-text-warning, var(--ds-text-warning, #f59e0b))',   // amber
   review: '#a855f7',     // purple
-  done: '#22c55e',       // green
+  done: 'var(--ds-text-success, var(--ds-text-success, #22c55e))',       // green
 };
 
 const STATUS_ORDER = ['backlog', 'planned', 'progress', 'review', 'done'];

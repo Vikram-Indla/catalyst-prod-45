@@ -17,18 +17,18 @@ const TL = {
   inkMuted: '#71717A', inkMutedStrong: '#6F6F78',
   surface: 'var(--ds-text-inverse, #FFFFFF)', surfaceSecondary: '#FAFAFA', surfaceTertiary: '#F4F4F5',
   border: '#E4E4E7', borderStrong: '#D4D4D8',
-  primary: '#2563EB', primaryHover: '#1D4ED8', primaryBg: '#EFF6FF',
+  primary: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))', primaryHover: 'var(--ds-background-brand-bold-hovered, var(--ds-background-brand-bold-hovered, #1D4ED8))', primaryBg: 'var(--ds-background-selected, var(--ds-background-selected, #EFF6FF))',
   teal: '#0D9488', tealBg: '#F0FDFA',
-  success: '#16A34A', successBg: '#F0FDF4',
-  warning: '#D97706', warningBg: '#FFFBEB',
-  danger: '#DC2626', dangerBg: '#FEF2F2',
+  success: 'var(--ds-text-success, var(--ds-text-success, #16A34A))', successBg: '#F0FDF4',
+  warning: 'var(--ds-text-warning, var(--ds-text-warning, #D97706))', warningBg: '#FFFBEB',
+  danger: 'var(--ds-text-danger, var(--ds-text-danger, #DC2626))', dangerBg: 'var(--ds-background-danger, var(--ds-background-danger, #FEF2F2))',
 };
 const TD = {
-  ink: '#EDEDED', inkSecondary: '#A1A1A1', inkTertiary: '#878787',
+  ink: 'var(--ds-text, var(--ds-text, #EDEDED))', inkSecondary: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #A1A1A1))', inkTertiary: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #878787))',
   inkMuted: 'rgba(255,255,255,0.45)', inkMutedStrong: 'rgba(255,255,255,0.50)',
-  surface: '#0A0A0A', surfaceSecondary: '#1A1A1A', surfaceTertiary: '#1F1F1F',
-  border: '#2E2E2E', borderStrong: '#454545',
-  primary: '#3B82F6', primaryHover: '#60A5FA', primaryBg: 'rgba(59,130,246,0.10)',
+  surface: 'var(--ds-surface, var(--ds-surface, #0A0A0A))', surfaceSecondary: 'var(--ds-surface-raised, var(--ds-surface-raised, #1A1A1A))', surfaceTertiary: 'var(--ds-surface-overlay, var(--ds-surface-overlay, #1F1F1F))',
+  border: 'var(--ds-border, var(--ds-border, #2E2E2E))', borderStrong: 'var(--ds-border-bold, var(--ds-border-bold, #454545))',
+  primary: 'var(--ds-text-brand, var(--ds-text-brand, #3B82F6))', primaryHover: 'var(--ds-text-brand, var(--ds-text-brand, #60A5FA))', primaryBg: 'rgba(59,130,246,0.10)',
   teal: '#2DD4BF', tealBg: 'rgba(13,148,136,0.10)',
   success: '#4ADE80', successBg: 'rgba(74,222,128,0.10)',
   warning: '#FBBF24', warningBg: 'rgba(251,191,36,0.10)',
@@ -130,7 +130,7 @@ function stripJiraMarkup(text: string): string {
     .trim();
 }
 
-const AVATAR_PALETTE = ['#2563EB', '#0D9488', '#D97706', '#7C3AED', '#DC2626', '#16A34A', '#0891B2', '#BE185D'];
+const AVATAR_PALETTE = ['var(--ds-text-brand, var(--ds-text-brand, #2563EB))', '#0D9488', 'var(--ds-text-warning, var(--ds-text-warning, #D97706))', '#7C3AED', 'var(--ds-text-danger, var(--ds-text-danger, #DC2626))', 'var(--ds-text-success, var(--ds-text-success, #16A34A))', '#0891B2', '#BE185D'];
 
 function getAvatarColor(name: string): string {
   let hash = 0;

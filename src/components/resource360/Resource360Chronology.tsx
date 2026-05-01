@@ -4,9 +4,9 @@ import { getStatusCategory, getStaleIndicator, WH_HUB_COLORS, WH_HUB_SHORT } fro
 import { HighlightText, InlineExpansionPanel, ExpandChevron, useExpandedRow, expandAnimationCSS } from './Resource360Shared';
 
 const T = {
-  bg: '#F5F0EB', surface: 'var(--ds-text-inverse, #FFFFFF)', text1: '#0A0A0A', text2: '#1A1A2E',
+  bg: '#F5F0EB', surface: 'var(--ds-text-inverse, #FFFFFF)', text1: 'var(--ds-surface, var(--ds-surface, #0A0A0A))', text2: '#1A1A2E',
   text3: '#3D3D56', text4: '#6B6B80', border: '#D9D2C9', borderStrong: '#C5BDB3',
-  todo: '#E23636', progress: '#2563EB', done: '#0E8A5F', pendHl: '#FFF3E0',
+  todo: '#E23636', progress: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))', done: '#0E8A5F', pendHl: '#FFF3E0',
   mono: "'JetBrains Mono','SF Mono',monospace",
 };
 
@@ -71,12 +71,12 @@ export function Resource360Chronology({ items, onItemClick }: Props) {
               <button key={h} onClick={() => setHubFilter(hubFilter === h ? 'all' : h)} style={{
                 fontSize: 9, fontWeight: 800, padding: '3px 8px', borderRadius: 4, cursor: 'pointer',
                 background: hubFilter === h ? (WH_HUB_COLORS[h] ?? T.text1) : T.surface,
-                color: hubFilter === h ? '#fff' : T.text3,
+                color: hubFilter === h ? 'var(--ds-surface, var(--ds-surface, var(--ds-surface, #fff)))' : T.text3,
                 border: hubFilter === h ? 'none' : `1px solid ${T.border}`,
               }}>{(h ?? '').replace('Hub', '')}</button>
             ))}
           </div>
-          <button onClick={() => setFiltersExpanded(!filtersExpanded)} style={{ fontSize: 10, fontWeight: 700, padding: '4px 10px', borderRadius: 6, cursor: 'pointer', background: filtersExpanded ? T.text1 : T.surface, color: filtersExpanded ? '#fff' : T.text3, border: `1px solid ${T.borderStrong}` }}>
+          <button onClick={() => setFiltersExpanded(!filtersExpanded)} style={{ fontSize: 10, fontWeight: 700, padding: '4px 10px', borderRadius: 6, cursor: 'pointer', background: filtersExpanded ? T.text1 : T.surface, color: filtersExpanded ? 'var(--ds-surface, var(--ds-surface, var(--ds-surface, #fff)))' : T.text3, border: `1px solid ${T.borderStrong}` }}>
             {filtersExpanded ? '▲ Less' : '▼ Filters'}
           </button>
           {hasFilters && <button onClick={clearAll} style={{ fontSize: 9, fontWeight: 700, color: T.todo, background: 'transparent', border: 'none', cursor: 'pointer', textDecoration: 'underline' }}>Clear all</button>}
@@ -128,7 +128,7 @@ export function Resource360Chronology({ items, onItemClick }: Props) {
                 const stale = getStaleIndicator(item.age_days, item.status, item.status_category);
                 const bg = showPendingOnly && isPending ? T.pendHl : idx % 2 === 0 ? T.surface : '#FAF8F5';
                 const isExpanded = expandedId === item.work_item_id;
-                const hc = WH_HUB_COLORS[item.hub] ?? '#64748B';
+                const hc = WH_HUB_COLORS[item.hub] ?? 'var(--ds-text-subtlest, var(--ds-text-subtlest, #64748B))';
                 const hs = WH_HUB_SHORT[item.hub] ?? item.hub?.slice(0, 4).toUpperCase();
 
                 return (
@@ -145,7 +145,7 @@ export function Resource360Chronology({ items, onItemClick }: Props) {
                         <span style={{ fontFamily: T.mono, fontSize: 10, fontWeight: 700, color: T.text1 }}>
                           <HighlightText text={item.item_key} query={searchTerm} />
                         </span>
-                        <span style={{ fontSize: 8, fontWeight: 800, color: '#fff', padding: '1px 5px', borderRadius: 4, background: hc }}>{hs}</span>
+                        <span style={{ fontSize: 8, fontWeight: 800, color: 'var(--ds-surface, var(--ds-surface, var(--ds-surface, #fff)))', padding: '1px 5px', borderRadius: 4, background: hc }}>{hs}</span>
                       </div>
                       {/* Title + parent */}
                       <div style={{ flex: 1, minWidth: 0 }}>
@@ -161,7 +161,7 @@ export function Resource360Chronology({ items, onItemClick }: Props) {
                       {/* Assigner */}
                       <div style={{ fontSize: 10, color: T.progress, fontWeight: 500, minWidth: 80, textAlign: 'right', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.assigner_name ?? '—'}</div>
                       {/* Status pill — SOLID */}
-                      <span style={{ fontSize: 9, fontWeight: 700, color: '#fff', background: sc, padding: '2px 7px', borderRadius: 4, whiteSpace: 'nowrap' }}>
+                      <span style={{ fontSize: 9, fontWeight: 700, color: 'var(--ds-surface, var(--ds-surface, var(--ds-surface, #fff)))', background: sc, padding: '2px 7px', borderRadius: 4, whiteSpace: 'nowrap' }}>
                         {item.status.length > 16 ? item.status.slice(0, 14) + '…' : item.status}
                       </span>
                       {/* Age + stale */}

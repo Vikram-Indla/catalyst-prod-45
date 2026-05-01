@@ -33,8 +33,8 @@ export function ResourceDrawerContent({ resource, projects }: ResourceDrawerCont
         <div className="text-center">
           <p className={cn(
             'text-2xl font-bold',
-            resource.allocation > 100 ? 'text-[#dc2626]' :
-            resource.allocation > 80 ? 'text-[#d97706]' : 'text-[#0d9488]'
+            resource.allocation > 100 ? 'text-[var(--ds-text-danger,var(--ds-text-danger, #dc2626))]' :
+            resource.allocation > 80 ? 'text-[var(--ds-text-warning,var(--ds-text-warning, #d97706))]' : 'text-[#0d9488]'
           )}>
             {resource.allocation}%
           </p>

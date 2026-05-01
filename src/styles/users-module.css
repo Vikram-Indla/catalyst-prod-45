@@ -14,8 +14,8 @@
   /* ═══════════════════════════════════════════════════════════
      PRIMARY PALETTE
      ═══════════════════════════════════════════════════════════ */
-  --ct-primary: #2563eb;
-  --ct-primary-hover: #1d4ed8;
+  --ct-primary: var(--ds-text-brand, #2563eb);
+  --ct-primary-hover: var(--ds-background-brand-bold-hovered, #1d4ed8);
   --ct-primary-light: rgba(37, 99, 235, 0.08);
   --ct-primary-lighter: rgba(37, 99, 235, 0.04);
 
@@ -29,12 +29,12 @@
   --ct-violet-dark: #7c3aed;
   --ct-violet-light: rgba(139, 92, 246, 0.08);
 
-  --ct-warning: #d97706;
+  --ct-warning: var(--ds-text-warning, #d97706);
   --ct-warning-dark: #b45309;
   --ct-warning-light: rgba(217, 119, 6, 0.08);
 
-  --ct-danger: #ef4444;
-  --ct-danger-dark: #dc2626;
+  --ct-danger: var(--ds-text-danger, #ef4444);
+  --ct-danger-dark: var(--ds-text-danger, #dc2626);
   --ct-danger-light: rgba(239, 68, 68, 0.08);
 
   --ct-success: #10b981;
@@ -44,22 +44,22 @@
   /* ═══════════════════════════════════════════════════════════
      NEUTRAL PALETTE (V8 6-LEVEL TEXT HIERARCHY)
      ═══════════════════════════════════════════════════════════ */
-  --ct-text-primary: #0f172a;    /* 15.8:1 — headings, stat values */
+  --ct-text-primary: var(--ds-text, #0f172a);    /* 15.8:1 — headings, stat values */
   --ct-text-body: #1e293b;       /* 12.6:1 — body text */
-  --ct-text-secondary: #334155;  /* 7.4:1  — descriptions */
-  --ct-text-tertiary: #475569;   /* 5.9:1  — metadata, dates */
-  --ct-text-muted: #64748b;      /* 4.7:1  — labels, table headers */
-  --ct-text-disabled: #94a3b8;   /* 3.0:1  — disabled, placeholders ONLY */
+  --ct-text-secondary: var(--ds-text-subtle, #334155);  /* 7.4:1  — descriptions */
+  --ct-text-tertiary: var(--ds-text-subtle, #475569);   /* 5.9:1  — metadata, dates */
+  --ct-text-muted: var(--ds-text-subtlest, #64748b);      /* 4.7:1  — labels, table headers */
+  --ct-text-disabled: var(--ds-text-subtlest, #94a3b8);   /* 3.0:1  — disabled, placeholders ONLY */
 
-  --ct-bg-page: #f8fafc;
-  --ct-bg-surface: #ffffff;
-  --ct-bg-hover: #f8fafc;
-  --ct-bg-active: #f1f5f9;
-  --ct-bg-muted: #f1f5f9;
+  --ct-bg-page: var(--ds-surface-sunken, #f8fafc);
+  --ct-bg-surface: var(--ds-surface, #ffffff);
+  --ct-bg-hover: var(--ds-surface-sunken, #f8fafc);
+  --ct-bg-active: var(--ds-surface-sunken, #f1f5f9);
+  --ct-bg-muted: var(--ds-surface-sunken, #f1f5f9);
 
-  --ct-border: #e2e8f0;
-  --ct-border-light: #f1f5f9;
-  --ct-border-focus: #2563eb;
+  --ct-border: var(--ds-border, #e2e8f0);
+  --ct-border-light: var(--ds-surface-sunken, #f1f5f9);
+  --ct-border-focus: var(--ds-text-brand, #2563eb);
 
   /* ═══════════════════════════════════════════════════════════
      SHADOWS (V8 4-LEVEL SCALE)
@@ -136,20 +136,20 @@
    ═══════════════════════════════════════════════════════════ */
 .dark .users-module,
 .dark .users-module , [data-theme="dark"] .users-module {
-  --ct-text-primary: #EDEDED;
-  --ct-text-body: #A1A1A1;
-  --ct-text-secondary: #878787;
-  --ct-text-tertiary: #878787;
-  --ct-text-muted: #454545;
-  --ct-text-disabled: #454545;
+  --ct-text-primary: var(--ds-text, #EDEDED);
+  --ct-text-body: var(--ds-text-subtlest, #A1A1A1);
+  --ct-text-secondary: var(--ds-text-subtlest, #878787);
+  --ct-text-tertiary: var(--ds-text-subtlest, #878787);
+  --ct-text-muted: var(--ds-border-bold, #454545);
+  --ct-text-disabled: var(--ds-border-bold, #454545);
   --ct-bg-page: var(--cp-bg-page, #1F1F21);
   --ct-bg-surface: var(--cp-bg-page, #1F1F21);
-  --ct-bg-hover: #1F1F1F;
-  --ct-bg-active: #292929;
-  --ct-bg-muted: #292929;
-  --ct-border: #2E2E2E;
-  --ct-border-light: #292929;
-  --ct-border-focus: #3B82F6;
+  --ct-bg-hover: var(--ds-surface-overlay, #1F1F1F);
+  --ct-bg-active: var(--ds-border, #292929);
+  --ct-bg-muted: var(--ds-border, #292929);
+  --ct-border: var(--ds-border, #2E2E2E);
+  --ct-border-light: var(--ds-border, #292929);
+  --ct-border-focus: var(--ds-text-brand, #3B82F6);
   --ct-shadow-sm: none;
   --ct-shadow-md: none;
   --ct-shadow-lg: none;
@@ -162,7 +162,7 @@
   --ct-danger-light: rgba(239,68,68, 0.12);
   --ct-success-light: rgba(16,185,129, 0.12);
   background: var(--cp-bg-page, #1F1F21);
-  color: #A1A1A1;
+  color: var(--ds-text-subtlest, #A1A1A1);
 }
 
 .dark .ct-stat-card,
@@ -178,28 +178,28 @@
 [data-theme="dark"] .ct-dropdown-panel,
 .dark .ct-licenses-widget , [data-theme="dark"] .ct-licenses-widget {
   background: var(--cp-bg-page, #1F1F21) !important;
-  border-color: #2E2E2E !important;
+  border-color: var(--ds-border, #2E2E2E) !important;
   box-shadow: none !important;
 }
 .dark .ct-table thead,
 .dark .ct-table th,
 [data-theme="dark"] .ct-table thead,
 .dark .ct-table th , [data-theme="dark"] .ct-table th {
-  background: #1F1F1F !important;
-  color: #878787 !important;
-  border-color: #2E2E2E !important;
+  background: var(--ds-surface-overlay, #1F1F1F) !important;
+  color: var(--ds-text-subtlest, #878787) !important;
+  border-color: var(--ds-border, #2E2E2E) !important;
 }
 .dark .ct-table tbody tr,
 .dark .ct-table tbody tr , [data-theme="dark"] .ct-table tbody tr {
-  border-color: #292929 !important;
+  border-color: var(--ds-border, #292929) !important;
 }
 .dark .ct-table tbody tr:hover,
 .dark .ct-table tbody tr:hover , [data-theme="dark"] .ct-table tbody tr:hover {
-  background: #1F1F1F !important;
+  background: var(--ds-surface-overlay, #1F1F1F) !important;
 }
 .dark .ct-table td,
 .dark .ct-table td , [data-theme="dark"] .ct-table td {
-  color: #A1A1A1 !important;
+  color: var(--ds-text-subtlest, #A1A1A1) !important;
 }
 .dark .ct-stat-value,
 .dark .ct-runrate-value,
@@ -207,7 +207,7 @@
 [data-theme="dark"] .ct-stat-value,
 [data-theme="dark"] .ct-runrate-value,
 .dark .ct-licenses-value , [data-theme="dark"] .ct-licenses-value {
-  color: #EDEDED !important;
+  color: var(--ds-text, #EDEDED) !important;
 }
 .dark .ct-stat-label,
 .dark .ct-runrate-dept,
@@ -217,24 +217,24 @@
 [data-theme="dark"] .ct-runrate-dept,
 [data-theme="dark"] .ct-runrate-headcount,
 .dark .ct-runrate-title , [data-theme="dark"] .ct-runrate-title {
-  color: #878787 !important;
+  color: var(--ds-text-subtlest, #878787) !important;
 }
 .dark .ct-dropdown-trigger,
 .dark .ct-dropdown-trigger , [data-theme="dark"] .ct-dropdown-trigger {
   background: var(--cp-bg-page, #1F1F21) !important;
-  border-color: #2E2E2E !important;
-  color: #A1A1A1 !important;
+  border-color: var(--ds-border, #2E2E2E) !important;
+  color: var(--ds-text-subtlest, #A1A1A1) !important;
 }
 .dark .ct-search input,
 .dark .ct-search input , [data-theme="dark"] .ct-search input {
   background: var(--cp-bg-page, #1F1F21) !important;
-  border-color: #2E2E2E !important;
-  color: #EDEDED !important;
+  border-color: var(--ds-border, #2E2E2E) !important;
+  color: var(--ds-text, #EDEDED) !important;
 }
 .dark .ct-pagination,
 .dark .ct-pagination , [data-theme="dark"] .ct-pagination {
   background: var(--cp-bg-page, #1F1F21) !important;
-  border-color: #2E2E2E !important;
+  border-color: var(--ds-border, #2E2E2E) !important;
 }
 
 /* ================================================================
@@ -1505,7 +1505,7 @@
 }
 .ct-badge.fixed .ct-badge-dot,
 [class*="badge"][class*="fixed"] .ct-badge-dot {
-  background: #d97706 !important;
+  background: var(--ds-text-warning, #d97706) !important;
 }
 
 /* Freelance Badge — VIOLET (not red) */
@@ -1525,10 +1525,10 @@
 .ct-badge.variable,
 .users-module .ct-badge.variable {
   background: rgba(37, 99, 235, 0.08) !important;
-  color: #2563eb !important;
+  color: var(--ds-text-brand, #2563eb) !important;
 }
 .ct-badge.variable .ct-badge-dot {
-  background: #2563eb !important;
+  background: var(--ds-text-brand, #2563eb) !important;
 }
 
 /* Permanent Badge — TEAL */
@@ -1545,18 +1545,18 @@
 .users-module th,
 .users-module thead th,
 .ct-table th {
-  color: #64748b !important;
+  color: var(--ds-text-subtlest, #64748b) !important;
 }
 
 /* Stat Card Dots — V8 Color Enforcement */
 .ct-stat-dot.fixed {
-  background: #d97706 !important;
+  background: var(--ds-text-warning, #d97706) !important;
 }
 .ct-stat-dot.freelance {
   background: #8b5cf6 !important;
 }
 .ct-stat-dot.variable {
-  background: #2563eb !important;
+  background: var(--ds-text-brand, #2563eb) !important;
 }
 .ct-stat-dot.permanent {
   background: #0d9488 !important;

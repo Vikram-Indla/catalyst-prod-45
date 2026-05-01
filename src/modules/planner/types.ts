@@ -224,7 +224,7 @@ export interface ColumnConfig {
 export const COLUMN_CONFIG: ColumnConfig[] = [
   { id: 'backlog', title: 'Backlog', color: '#9ca3af', order: 0 },       // gray-400 (subtle)
   { id: 'planned', title: 'Planned', color: '#6b7280', order: 1 },       // gray-500 (subtle)
-  { id: 'in-progress', title: 'In Progress', color: '#d97706', order: 2 }, // warning/amber-600 (colorful)
+  { id: 'in-progress', title: 'In Progress', color: 'var(--ds-text-warning, var(--ds-text-warning, #d97706))', order: 2 }, // warning/amber-600 (colorful)
   { id: 'review', title: 'Review', color: '#8b5cf6', order: 3 },         // violet-500 (colorful)
   { id: 'done', title: 'Done', color: '#10b981', order: 4 },             // success/emerald-500 (colorful)
 ];
@@ -241,41 +241,41 @@ export const STATUS_STYLE_CONFIG: Record<string, { colorful: boolean; bgColor: s
 // Priority configuration - Deep, clean semantic priority colors
 // All priorities use colored dots for visual distinction
 export const PRIORITY_CONFIG: Record<TaskPriority, { label: string; color: string; emoji: string; bgColor: string; colorful: boolean }> = {
-  critical: { label: 'Critical', color: '#dc2626', emoji: '●', bgColor: 'transparent', colorful: false },  // red-600 (deep red)
+  critical: { label: 'Critical', color: 'var(--ds-text-danger, var(--ds-text-danger, #dc2626))', emoji: '●', bgColor: 'transparent', colorful: false },  // red-600 (deep red)
   high: { label: 'High', color: '#ea580c', emoji: '●', bgColor: 'transparent', colorful: false },          // orange-600 (deep amber)
-  medium: { label: 'Medium', color: '#16a34a', emoji: '●', bgColor: 'transparent', colorful: false },      // green-600 (deep green)
-  low: { label: 'Low', color: '#64748b', emoji: '●', bgColor: 'transparent', colorful: false },            // slate-500 (neutral)
+  medium: { label: 'Medium', color: 'var(--ds-text-success, var(--ds-text-success, #16a34a))', emoji: '●', bgColor: 'transparent', colorful: false },      // green-600 (deep green)
+  low: { label: 'Low', color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #64748b))', emoji: '●', bgColor: 'transparent', colorful: false },            // slate-500 (neutral)
 };
 
 // Due date groups for grouping
 export const DUE_DATE_GROUPS = [
-  { id: 'overdue', title: 'Overdue', color: '#ef4444' },     // red-500
-  { id: 'today', title: 'Due Today', color: '#d97706' },     // amber-600
-  { id: 'thisWeek', title: 'This Week', color: '#2563eb' },  // blue-600
+  { id: 'overdue', title: 'Overdue', color: 'var(--ds-text-danger, var(--ds-text-danger, #ef4444))' },     // red-500
+  { id: 'today', title: 'Due Today', color: 'var(--ds-text-warning, var(--ds-text-warning, #d97706))' },     // amber-600
+  { id: 'thisWeek', title: 'This Week', color: 'var(--ds-text-brand, var(--ds-text-brand, #2563eb))' },  // blue-600
   { id: 'nextWeek', title: 'Next Week', color: '#0d9488' },  // teal-600
-  { id: 'later', title: 'Later', color: '#64748b' },         // slate-500
-  { id: 'noDueDate', title: 'No Due Date', color: '#94a3b8' }, // slate-400
+  { id: 'later', title: 'Later', color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #64748b))' },         // slate-500
+  { id: 'noDueDate', title: 'No Due Date', color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #94a3b8))' }, // slate-400
 ];
 
 // Status colors for insights - Deep, vibrant semantic status colors
 export const STATUS_COLORS: Record<TaskStatus, string> = {
-  backlog: '#64748b',   // slate-500 (neutral gray)
-  planned: '#2563eb',   // blue-600 (vibrant blue)
+  backlog: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #64748b))',   // slate-500 (neutral gray)
+  planned: 'var(--ds-text-brand, var(--ds-text-brand, #2563eb))',   // blue-600 (vibrant blue)
   'in-progress': '#f97316', // orange-500 (vibrant orange)
   review: '#8b5cf6',    // violet-500 (vibrant violet)
-  done: '#22c55e',      // green-500 (vibrant green)
+  done: 'var(--ds-text-success, var(--ds-text-success, #22c55e))',      // green-500 (vibrant green)
 };
 
 // Progress color helper - returns color based on percentage
 export const getProgressColor = (progress: number): string => {
   if (progress >= 67) return '#0d9488'; // teal-600
-  if (progress >= 34) return '#d97706'; // amber-600
+  if (progress >= 34) return 'var(--ds-text-warning, var(--ds-text-warning, #d97706))'; // amber-600
   return '#9ca3af'; // gray-400
 };
 
 // Avatar colors for resources - Catalyst V5 (Blue, Teal, Gray only)
 export const AVATAR_COLORS = [
-  '#2563eb', // Blue (brand-primary)
+  'var(--ds-text-brand, var(--ds-text-brand, #2563eb))', // Blue (brand-primary)
   '#0d9488', // Teal (brand-teal)
   '#6b7280', // Gray (secondary-grey)
 ];

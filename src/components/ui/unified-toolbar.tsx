@@ -72,7 +72,7 @@ export function UnifiedToolbar({
         <div className={cn(
           "flex items-center gap-2 flex-1 min-w-0 max-w-xs h-7 px-2.5 rounded-md",
           // Light mode: white bg distinct from cream page
-          "bg-white dark:bg-[#1f1f1f]",
+          "bg-white dark:bg-[var(--ds-surface-overlay,var(--ds-surface-overlay, #1f1f1f))]",
           // Subtle border for definition
           "border border-[#e5e5e5] dark:border-[#404040]"
         )}>
@@ -88,7 +88,7 @@ export function UnifiedToolbar({
             className={cn(
               "flex-1 min-w-0 !bg-transparent bg-transparent text-sm pl-1",
               // Text color
-              "text-[#0a0a0a] dark:text-[#fafafa]",
+              "text-[var(--ds-surface,var(--ds-surface, #0a0a0a))] dark:text-[#fafafa]",
               // Placeholder - CRITICAL FIX: brighter in dark mode
               "placeholder:text-[#737373] dark:placeholder:text-[#8a8a8a]",
               "!outline-none !border-none !ring-0 !shadow-none",

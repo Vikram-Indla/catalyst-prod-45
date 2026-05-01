@@ -19,74 +19,74 @@
   --mytasks-title-font-size: 14px;
   --mytasks-title-font-weight: 500;  /* NOT 600 — medium weight per Linear */
   --mytasks-title-color: #1e293b;    /* slate-800 */
-  --mytasks-title-color-overdue: #991b1b;  /* red-800 */
+  --mytasks-title-color-overdue: var(--ds-text-danger, #991b1b);  /* red-800 */
   
   /* Task ID — SECONDARY (visible but subtle) */
   --mytasks-id-font-size: 12px;
   --mytasks-id-font-weight: 400;
   --mytasks-id-font-family: var(--cp-font-mono);
-  --mytasks-id-color: #64748b;       /* slate-500 — visible, not dead */
+  --mytasks-id-color: var(--ds-text-subtlest, #64748b);       /* slate-500 — visible, not dead */
   --mytasks-id-color-overdue: #b91c1c;  /* red-700 */
   
   /* Workstream — TERTIARY (present but quiet) */
   --mytasks-workstream-font-size: 12px;
   --mytasks-workstream-font-weight: 400;
-  --mytasks-workstream-color: #64748b;  /* slate-500 */
+  --mytasks-workstream-color: var(--ds-text-subtlest, #64748b);  /* slate-500 */
   
   /* Date — METADATA */
   --mytasks-date-font-size: 13px;
   --mytasks-date-font-weight: 400;
-  --mytasks-date-color-overdue: #dc2626;   /* red-600 */
+  --mytasks-date-color-overdue: var(--ds-text-danger, #dc2626);   /* red-600 */
   --mytasks-date-color-today: #4f46e5;     /* indigo-600 — NOT red */
-  --mytasks-date-color-upcoming: #64748b;  /* slate-500 */
+  --mytasks-date-color-upcoming: var(--ds-text-subtlest, #64748b);  /* slate-500 */
   
   /* Duration — SUBTLE METADATA */
   --mytasks-duration-font-size: 12px;
   --mytasks-duration-font-weight: 400;
-  --mytasks-duration-color: #94a3b8;  /* slate-400 */
+  --mytasks-duration-color: var(--ds-text-subtlest, #94a3b8);  /* slate-400 */
   
   /* Section Headers */
   --mytasks-section-font-size: 12px;
   --mytasks-section-font-weight: 600;
   --mytasks-section-letter-spacing: 0.04em;
-  --mytasks-section-color-overdue: #dc2626;
+  --mytasks-section-color-overdue: var(--ds-text-danger, #dc2626);
   --mytasks-section-color-today: #1e293b;
-  --mytasks-section-color-upcoming: #64748b;
+  --mytasks-section-color-upcoming: var(--ds-text-subtlest, #64748b);
   
   /* ========================================
      COLORS — SURFACES
      ======================================== */
   
-  --mytasks-bg-page: #f8fafc;
-  --mytasks-bg-card: #ffffff;
-  --mytasks-bg-row: #ffffff;
+  --mytasks-bg-page: var(--ds-surface-sunken, #f8fafc);
+  --mytasks-bg-card: var(--ds-surface, #ffffff);
+  --mytasks-bg-row: var(--ds-surface, #ffffff);
   --mytasks-bg-row-hover: #f9fafb;       /* Very subtle — Linear style */
   --mytasks-bg-row-overdue: #fffbfb;     /* Barely tinted pink */
-  --mytasks-bg-row-overdue-hover: #fef2f2;
-  --mytasks-bg-section-header: #f8fafc;
-  --mytasks-bg-toolbar: #f8fafc;
+  --mytasks-bg-row-overdue-hover: var(--ds-background-danger, #fef2f2);
+  --mytasks-bg-section-header: var(--ds-surface-sunken, #f8fafc);
+  --mytasks-bg-toolbar: var(--ds-surface-sunken, #f8fafc);
   
   /* ========================================
      COLORS — BORDERS
      ======================================== */
   
-  --mytasks-border-light: #f1f5f9;
-  --mytasks-border-default: #e2e8f0;
-  --mytasks-border-row: #f1f5f9;
-  --mytasks-border-overdue: #ef4444;     /* 3px left accent */
+  --mytasks-border-light: var(--ds-surface-sunken, #f1f5f9);
+  --mytasks-border-default: var(--ds-border, #e2e8f0);
+  --mytasks-border-row: var(--ds-surface-sunken, #f1f5f9);
+  --mytasks-border-overdue: var(--ds-text-danger, #ef4444);     /* 3px left accent */
   --mytasks-border-today: #6366f1;       /* Optional: indigo accent */
   
   /* ========================================
      COLORS — WORKSTREAM DOTS (8px circles)
      ======================================== */
   
-  --mytasks-dot-blue: #3b82f6;
+  --mytasks-dot-blue: var(--ds-text-brand, #3b82f6);
   --mytasks-dot-teal: #14b8a6;
   --mytasks-dot-purple: #8b5cf6;
   --mytasks-dot-orange: #f97316;
   --mytasks-dot-pink: #ec4899;
-  --mytasks-dot-green: #22c55e;
-  --mytasks-dot-slate: #64748b;
+  --mytasks-dot-green: var(--ds-text-success, #22c55e);
+  --mytasks-dot-slate: var(--ds-text-subtlest, #64748b);
   
   /* ========================================
      COLORS — INTERACTIVE
@@ -95,8 +95,8 @@
   --mytasks-checkbox-border: #d1d5db;
   --mytasks-checkbox-border-hover: #6366f1;
   --mytasks-checkbox-bg-hover: #eef2ff;
-  --mytasks-checkbox-border-overdue: #fca5a5;
-  --mytasks-checkbox-border-overdue-hover: #ef4444;
+  --mytasks-checkbox-border-overdue: var(--ds-border-danger, #fca5a5);
+  --mytasks-checkbox-border-overdue-hover: var(--ds-text-danger, #ef4444);
   
   --mytasks-action-color: #9ca3af;
   --mytasks-action-color-hover: #4b5563;
@@ -162,13 +162,13 @@
 .mytasks-header-title {
   font-size: 22px;
   font-weight: 700;
-  color: #0f172a;
+  color: var(--ds-text, #0f172a);
   margin: 0;
 }
 
 .mytasks-header-subtitle {
   font-size: 14px;
-  color: #64748b;
+  color: var(--ds-text-subtlest, #64748b);
   margin-top: 4px;
 }
 
@@ -186,12 +186,12 @@
 }
 
 .mytasks-summary-card--overdue {
-  background-color: #fef2f2;
+  background-color: var(--ds-background-danger, #fef2f2);
   border: 1px solid #fecaca;
 }
 
 .mytasks-summary-card--today {
-  background-color: #eff6ff;
+  background-color: var(--ds-background-selected, #eff6ff);
   border: 1px solid #bfdbfe;
 }
 
@@ -206,14 +206,14 @@
   line-height: 1;
 }
 
-.mytasks-summary-card--overdue .mytasks-summary-card__value { color: #dc2626; }
-.mytasks-summary-card--today .mytasks-summary-card__value { color: #2563eb; }
-.mytasks-summary-card--done .mytasks-summary-card__value { color: #16a34a; }
+.mytasks-summary-card--overdue .mytasks-summary-card__value { color: var(--ds-text-danger, #dc2626); }
+.mytasks-summary-card--today .mytasks-summary-card__value { color: var(--ds-text-brand, #2563eb); }
+.mytasks-summary-card--done .mytasks-summary-card__value { color: var(--ds-text-success, #16a34a); }
 
 .mytasks-summary-card__label {
   font-size: 11px;
   font-weight: 500;
-  color: #64748b;
+  color: var(--ds-text-subtlest, #64748b);
   margin-top: 4px;
   text-transform: uppercase;
   letter-spacing: 0.03em;
@@ -243,7 +243,7 @@
   align-items: center;
   gap: 10px;
   padding: 10px 14px;
-  background-color: #ffffff;
+  background-color: var(--ds-surface, #ffffff);
   border: 1px solid var(--mytasks-border-default);
   border-radius: 12px;
   width: 260px;
@@ -254,27 +254,27 @@
   border: none;
   background: transparent;
   font-size: 14px;
-  color: #0f172a;
+  color: var(--ds-text, #0f172a);
   outline: none;
   font-family: inherit;
 }
 
 .mytasks-search__input::placeholder {
-  color: #94a3b8;
+  color: var(--ds-text-subtlest, #94a3b8);
 }
 
 .mytasks-search__icon {
-  color: #94a3b8;
+  color: var(--ds-text-subtlest, #94a3b8);
   flex-shrink: 0;
 }
 
 .mytasks-search__shortcut {
   padding: 3px 6px;
-  background-color: #e2e8f0;
+  background-color: var(--ds-border, #e2e8f0);
   border-radius: 4px;
   font-size: 10px;
   font-weight: 500;
-  color: #64748b;
+  color: var(--ds-text-subtlest, #64748b);
 }
 
 .mytasks-filter-btn {
@@ -282,24 +282,24 @@
   align-items: center;
   gap: 6px;
   padding: 10px 14px;
-  background-color: #ffffff;
+  background-color: var(--ds-surface, #ffffff);
   border: 1px solid var(--mytasks-border-default);
   border-radius: 12px;
   font-size: 14px;
   font-weight: 500;
-  color: #334155;
+  color: var(--ds-text-subtle, #334155);
   cursor: pointer;
   font-family: inherit;
   transition: var(--mytasks-transition-fast);
 }
 
 .mytasks-filter-btn:hover {
-  background-color: #f8fafc;
-  border-color: #cbd5e1;
+  background-color: var(--ds-surface-sunken, #f8fafc);
+  border-color: var(--ds-text-disabled, #cbd5e1);
 }
 
 .mytasks-filter-btn__icon {
-  color: #64748b;
+  color: var(--ds-text-subtlest, #64748b);
 }
 
 .mytasks-add-btn {
@@ -307,19 +307,19 @@
   align-items: center;
   gap: 8px;
   padding: 10px 18px;
-  background-color: #2563eb;
+  background-color: var(--ds-text-brand, #2563eb);
   border: none;
   border-radius: 12px;
   font-size: 14px;
   font-weight: 500;
-  color: #ffffff;
+  color: var(--ds-surface, #ffffff);
   cursor: pointer;
   font-family: inherit;
   transition: background-color var(--mytasks-transition-fast);
 }
 
 .mytasks-add-btn:hover {
-  background-color: #1d4ed8;
+  background-color: var(--ds-background-brand-bold-hovered, #1d4ed8);
 }
 
 
@@ -354,9 +354,9 @@
   flex-shrink: 0;
 }
 
-.mytasks-section-header__icon--overdue { color: #dc2626; }
-.mytasks-section-header__icon--today { color: #64748b; }
-.mytasks-section-header__icon--upcoming { color: #94a3b8; }
+.mytasks-section-header__icon--overdue { color: var(--ds-text-danger, #dc2626); }
+.mytasks-section-header__icon--today { color: var(--ds-text-subtlest, #64748b); }
+.mytasks-section-header__icon--upcoming { color: var(--ds-text-subtlest, #94a3b8); }
 
 .mytasks-section-header__title {
   font-size: var(--mytasks-section-font-size);
@@ -373,8 +373,8 @@
 .mytasks-section-header__count {
   font-size: 11px;
   font-weight: 500;
-  color: #94a3b8;
-  background-color: #f1f5f9;
+  color: var(--ds-text-subtlest, #94a3b8);
+  background-color: var(--ds-surface-sunken, #f1f5f9);
   padding: 2px 8px;
   border-radius: 12px;
 }
@@ -459,16 +459,16 @@
 
 .mytasks-row--overdue .mytasks-checkbox:hover {
   border-color: var(--mytasks-checkbox-border-overdue-hover);
-  background-color: #fef2f2;
+  background-color: var(--ds-background-danger, #fef2f2);
 }
 
 .mytasks-checkbox--checked {
-  background-color: #2563eb;
-  border-color: #2563eb;
+  background-color: var(--ds-text-brand, #2563eb);
+  border-color: var(--ds-text-brand, #2563eb);
 }
 
 .mytasks-checkbox--checked svg {
-  color: #ffffff;
+  color: var(--ds-surface, #ffffff);
   width: 10px;
   height: 10px;
 }
@@ -557,9 +557,9 @@
    DATE — Consistent color rules
    
    CRITICAL COLOR RULES:
-   - Overdue: #dc2626 (red)
+   - Overdue: var(--ds-text-danger, #dc2626) (red)
    - Today: #4f46e5 (indigo) — NOT red!
-   - Upcoming: #64748b (grey)
+   - Upcoming: var(--ds-text-subtlest, #64748b) (grey)
    ============================================================================ */
 
 .mytasks-row__date {
@@ -649,8 +649,8 @@
 }
 
 .mytasks-action-btn--danger:hover {
-  background-color: #fef2f2;
-  color: #dc2626;
+  background-color: var(--ds-background-danger, #fef2f2);
+  color: var(--ds-text-danger, #dc2626);
 }
 
 .mytasks-action-btn svg {
@@ -666,7 +666,7 @@
 .mytasks-empty {
   padding: 60px 20px;
   text-align: center;
-  color: #94a3b8;
+  color: var(--ds-text-subtlest, #94a3b8);
   font-size: 14px;
 }
 
@@ -680,13 +680,13 @@
 .mytasks-empty__title {
   font-size: 16px;
   font-weight: 600;
-  color: #64748b;
+  color: var(--ds-text-subtlest, #64748b);
   margin-bottom: 4px;
 }
 
 .mytasks-empty__description {
   font-size: 14px;
-  color: #94a3b8;
+  color: var(--ds-text-subtlest, #94a3b8);
 }
 
 
@@ -697,15 +697,15 @@
 .mytasks-loading {
   padding: 60px 20px;
   text-align: center;
-  color: #64748b;
+  color: var(--ds-text-subtlest, #64748b);
   font-size: 14px;
 }
 
 .mytasks-loading__spinner {
   width: 32px;
   height: 32px;
-  border: 2px solid #e2e8f0;
-  border-top-color: #2563eb;
+  border: 2px solid var(--ds-border, #e2e8f0);
+  border-top-color: var(--ds-text-brand, #2563eb);
   border-radius: 50%;
   animation: mytasks-spin 0.8s linear infinite;
   margin: 0 auto 16px;
@@ -734,7 +734,7 @@
 
 .mytasks-row__title--completed {
   text-decoration: line-through;
-  color: #94a3b8 !important;
+  color: var(--ds-text-subtlest, #94a3b8) !important;
   transition: all 200ms ease;
 }
 
@@ -793,8 +793,8 @@
 
 /* MUTED gray header — NOT green per spec */
 .mytasks-section-header--completed {
-  background-color: #f1f5f9;  /* slate-100, NOT green */
-  border-bottom: 1px solid #e2e8f0;  /* slate-200 */
+  background-color: var(--ds-surface-sunken, #f1f5f9);  /* slate-100, NOT green */
+  border-bottom: 1px solid var(--ds-border, #e2e8f0);  /* slate-200 */
   cursor: pointer;
   width: 100%;
   text-align: left;
@@ -802,18 +802,18 @@
 
 /* Gray icon — NOT green per spec */
 .mytasks-section-header__icon--completed {
-  color: #94a3b8;  /* slate-400, NOT green */
+  color: var(--ds-text-subtlest, #94a3b8);  /* slate-400, NOT green */
 }
 
 /* Gray title — NOT green per spec */
 .mytasks-section-header__title--completed {
-  color: #94a3b8;  /* slate-400, NOT green */
+  color: var(--ds-text-subtlest, #94a3b8);  /* slate-400, NOT green */
   text-transform: none;  /* Sentence case per spec */
   letter-spacing: normal;
 }
 
 .mytasks-completed-list {
-  background-color: #ffffff;  /* White, NOT green tint */
+  background-color: var(--ds-surface, #ffffff);  /* White, NOT green tint */
 }
 
 /* 60% opacity per spec */
@@ -823,17 +823,17 @@
 }
 
 .mytasks-row--completed-item:hover {
-  background-color: #f8fafc;  /* Subtle slate hover, NOT green */
+  background-color: var(--ds-surface-sunken, #f8fafc);  /* Subtle slate hover, NOT green */
   opacity: 0.8;
 }
 
 .mytasks-row__id--completed {
-  color: #94a3b8;
+  color: var(--ds-text-subtlest, #94a3b8);
 }
 
 .mytasks-completed-time {
   font-size: 11px;
-  color: #94a3b8;
+  color: var(--ds-text-subtlest, #94a3b8);
   margin-left: auto;
   flex-shrink: 0;
 }
@@ -848,7 +848,7 @@
   border: none;
   border-radius: 4px;
   cursor: pointer;
-  color: #94a3b8;
+  color: var(--ds-text-subtlest, #94a3b8);
   opacity: 0;
   transition: all 0.15s ease;
   margin-left: 8px;
@@ -860,7 +860,7 @@
 
 .mytasks-restore-btn:hover {
   background-color: #dbeafe;
-  color: #2563eb;
+  color: var(--ds-text-brand, #2563eb);
 }
 
 

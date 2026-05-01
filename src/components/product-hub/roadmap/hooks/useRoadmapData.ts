@@ -27,7 +27,7 @@ const TYPE_MAP: Record<string, RoadmapRequest['type']> = {
 };
 
 // ── Color fallback for owners — deterministic from name ──
-const OWNER_PALETTE = ['#2563EB', '#7C3AED', '#0D9488', '#EC4899', '#D97706', '#059669', '#E11D48', '#6366F1'];
+const OWNER_PALETTE = ['var(--ds-text-brand, var(--ds-text-brand, #2563EB))', '#7C3AED', '#0D9488', '#EC4899', 'var(--ds-text-warning, var(--ds-text-warning, #D97706))', '#059669', '#E11D48', '#6366F1'];
 
 function getInitials(name: string): string {
   if (!name || name === 'Unassigned') return '?';
@@ -51,7 +51,7 @@ function splitTitle(title: string): { titleAr: string; titleEn: string } {
 }
 
 function ownerColorFromName(name: string): string {
-  if (!name || name === 'Unassigned') return '#94A3B8';
+  if (!name || name === 'Unassigned') return 'var(--ds-text-subtlest, var(--ds-text-subtlest, #94A3B8))';
   let hash = 0;
   for (let i = 0; i < name.length; i++) hash = (hash * 31 + name.charCodeAt(i)) | 0;
   return OWNER_PALETTE[Math.abs(hash) % OWNER_PALETTE.length];

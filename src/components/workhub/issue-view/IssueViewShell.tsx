@@ -182,7 +182,7 @@ export function IssueViewShell({ projectKey, storageKey }: Props) {
         <div className="awToolbarLeft">
           {/* Search work — matches For You page w-80 pattern */}
           <div className="awToolbarSearch" style={{ width: 320 }}>
-            <Search style={{ width: 14, height: 14, color: '#6B778C', flexShrink: 0 }} />
+            <Search style={{ width: 14, height: 14, color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #6B778C))', flexShrink: 0 }} />
             <input
               placeholder="Search work"
               value={toolbarSearch}

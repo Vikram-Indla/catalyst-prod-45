@@ -105,7 +105,7 @@ export default function IncidentDetailPage() {
         </div>
         <div className="flex items-center gap-2">
           <Button variant="ghost" size="sm" style={{ borderRadius: 6, fontSize: 12 }} onClick={() => setShowConvert(true)}>Convert</Button>
-          <Button size="sm" style={{ backgroundColor: '#DC2626', color: 'var(--ds-text-inverse, #FFFFFF)', borderRadius: 6, fontSize: 12 }} onClick={handleResolve}>Resolve</Button>
+          <Button size="sm" style={{ backgroundColor: 'var(--ds-text-danger, var(--ds-text-danger, #DC2626))', color: 'var(--ds-text-inverse, #FFFFFF)', borderRadius: 6, fontSize: 12 }} onClick={handleResolve}>Resolve</Button>
         </div>
       </div>
 
@@ -129,7 +129,7 @@ export default function IncidentDetailPage() {
             <SeverityChip severity={incident.severity} />
             <PriorityChip priority={incident.priority || 'P4'} />
             <span style={{ color: 'var(--cp-text-muted, #CBD5E1)' }}>&middot;</span>
-            <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 12, color: '#2563EB' }}>
+            <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 12, color: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))' }}>
               {incident.incident_key || incident.jira_key}
             </span>
             <span style={{ color: 'var(--cp-text-muted, #CBD5E1)' }}>&middot;</span>
@@ -143,18 +143,18 @@ export default function IncidentDetailPage() {
             <div className="flex items-center gap-3 p-3 mb-4" style={{
               backgroundColor: isDark
                 ? (slaBreached ? 'rgba(248,113,113,0.12)' : 'rgba(251,191,36,0.12)')
-                : (slaBreached ? '#FEF2F2' : '#FFFBEB'),
+                : (slaBreached ? 'var(--ds-background-danger, var(--ds-background-danger, #FEF2F2))' : '#FFFBEB'),
               border: `1px solid ${isDark
                 ? (slaBreached ? 'rgba(248,113,113,0.2)' : 'rgba(251,191,36,0.2)')
                 : (slaBreached ? '#FECACA' : '#FDE68A')}`,
               borderRadius: 6,
             }}>
-              <Clock size={16} style={{ color: slaBreached ? '#DC2626' : '#D97706' }} />
+              <Clock size={16} style={{ color: slaBreached ? 'var(--ds-text-danger, var(--ds-text-danger, #DC2626))' : 'var(--ds-text-warning, var(--ds-text-warning, #D97706))' }} />
               <div>
-                <span style={{ fontFamily: 'var(--cp-font-body)', fontSize: 12, color: slaBreached ? '#DC2626' : '#D97706', fontWeight: 650 }}>
+                <span style={{ fontFamily: 'var(--cp-font-body)', fontSize: 12, color: slaBreached ? 'var(--ds-text-danger, var(--ds-text-danger, #DC2626))' : 'var(--ds-text-warning, var(--ds-text-warning, #D97706))', fontWeight: 650 }}>
                   {slaBreached ? 'SLA BREACHED' : 'SLA breach in '}
                 </span>
-                <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 14, fontWeight: 700, color: slaBreached ? '#DC2626' : '#D97706' }}>
+                <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 14, fontWeight: 700, color: slaBreached ? 'var(--ds-text-danger, var(--ds-text-danger, #DC2626))' : 'var(--ds-text-warning, var(--ds-text-warning, #D97706))' }}>
                   {slaCountdown}
                 </span>
               </div>
@@ -194,7 +194,7 @@ export default function IncidentDetailPage() {
                   style={{
                     fontFamily: 'var(--cp-font-body)',
                     fontWeight: activeTab === tab ? 650 : 400,
-                    color: activeTab === tab ? '#2563EB' : ('var(--cp-text-tertiary, #64748B)'),
+                    color: activeTab === tab ? 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))' : ('var(--cp-text-tertiary, #64748B)'),
                     borderBottom: activeTab === tab ? '2px solid #2563EB' : '2px solid transparent',
                     borderRadius: 0,
                   }}
@@ -215,7 +215,7 @@ export default function IncidentDetailPage() {
                     style={{ fontFamily: 'var(--cp-font-body)', fontSize: 13, minHeight: 60, borderRadius: 4 }}
                   />
                   <div className="flex items-center gap-2 mt-2">
-                    <Button size="sm" style={{ backgroundColor: '#2563EB', borderRadius: 6 }} onClick={handleSaveComment} disabled={!commentText.trim()}>
+                    <Button size="sm" style={{ backgroundColor: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))', borderRadius: 6 }} onClick={handleSaveComment} disabled={!commentText.trim()}>
                       Save
                     </Button>
                     <Button variant="ghost" size="sm" style={{ borderRadius: 6 }} onClick={() => setCommentText('')}>Cancel</Button>
@@ -251,7 +251,7 @@ export default function IncidentDetailPage() {
                 )}
                 {incident.history?.map((h: any) => (
                   <div key={h.id} className="flex items-start gap-3 mb-3 pb-3" style={{ borderBottom: isDark ? '0.75px solid #2E2E2E' : '0.75px solid rgba(15,23,42,0.06)' }}>
-                    <div className="shrink-0 mt-1" style={{ width: 10, height: 10, borderRadius: '50%', backgroundColor: '#2563EB', border: isDark ? '2px solid #0A0A0A' : '2px solid var(--ds-text-inverse, #FFFFFF)', boxShadow: '0 0 0 1px #2563EB' }} />
+                    <div className="shrink-0 mt-1" style={{ width: 10, height: 10, borderRadius: '50%', backgroundColor: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))', border: isDark ? '2px solid #0A0A0A' : '2px solid var(--ds-text-inverse, #FFFFFF)', boxShadow: '0 0 0 1px #2563EB' }} />
                     <div>
                       <div style={{ fontFamily: 'var(--cp-font-body)', fontSize: 12, fontWeight: 650, color: 'var(--cp-text-primary, #0F172A)' }}>
                         {h.field_name} changed

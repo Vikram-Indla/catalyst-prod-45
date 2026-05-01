@@ -175,18 +175,18 @@ export function ReleaseDrawer({ release, onClose }: Props) {
   return (
     <div className="fixed inset-0 z-50 flex justify-end" onClick={onClose}>
       <div className="absolute inset-0 bg-[#080E1D]/38 backdrop-blur-[1px]" />
-      <div className="relative w-[700px] h-full bg-white dark:bg-[#1A1A1A] shadow-2xl flex flex-col animate-in slide-in-from-right duration-300"
+      <div className="relative w-[700px] h-full bg-white dark:bg-[var(--ds-surface-raised,var(--ds-surface-raised, #1A1A1A))] shadow-2xl flex flex-col animate-in slide-in-from-right duration-300"
         onClick={e => e.stopPropagation()}>
         {/* Header */}
-        <div className="sticky top-0 bg-white dark:bg-[#1A1A1A] z-10 border-b border-[rgba(15,23,42,0.12)] dark:border-[#2E2E2E] px-6 py-4">
+        <div className="sticky top-0 bg-white dark:bg-[var(--ds-surface-raised,var(--ds-surface-raised, #1A1A1A))] z-10 border-b border-[rgba(15,23,42,0.12)] dark:border-[var(--ds-border,var(--ds-border, #2E2E2E))] px-6 py-4">
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-center gap-2">
               <SourceBadge source={release.source || 'catalyst'} />
             </div>
             <div className="flex items-center gap-1.5">
-              <button className="w-7 h-7 rounded flex items-center justify-center text-[#94A3B8] hover:bg-[#F1F5F9]"><Download size={14} /></button>
-              <button className="w-7 h-7 rounded flex items-center justify-center text-[#94A3B8] hover:bg-[#F1F5F9]"><RefreshCw size={14} /></button>
-              <button onClick={onClose} aria-label="Close drawer" className="w-7 h-7 rounded flex items-center justify-center text-[#94A3B8] hover:bg-[#F1F5F9]"><XIcon size={14} /></button>
+              <button className="w-7 h-7 rounded flex items-center justify-center text-[var(--ds-text-subtlest,var(--ds-text-subtlest, #94A3B8))] hover:bg-[var(--ds-surface-sunken,var(--ds-surface-sunken, #F1F5F9))]"><Download size={14} /></button>
+              <button className="w-7 h-7 rounded flex items-center justify-center text-[var(--ds-text-subtlest,var(--ds-text-subtlest, #94A3B8))] hover:bg-[var(--ds-surface-sunken,var(--ds-surface-sunken, #F1F5F9))]"><RefreshCw size={14} /></button>
+              <button onClick={onClose} aria-label="Close drawer" className="w-7 h-7 rounded flex items-center justify-center text-[var(--ds-text-subtlest,var(--ds-text-subtlest, #94A3B8))] hover:bg-[var(--ds-surface-sunken,var(--ds-surface-sunken, #F1F5F9))]"><XIcon size={14} /></button>
             </div>
           </div>
           <h2 className="text-[18px] font-extrabold mb-2" style={{ fontFamily: RH.fontDisplay, color: RH.ink1 }}>{release.name}</h2>
@@ -199,7 +199,7 @@ export function ReleaseDrawer({ release, onClose }: Props) {
                   autoFocus
                   value={dateInput}
                   onChange={e => setDateInput(e.target.value)}
-                  className="text-[12px] border border-[#2563EB] rounded px-1.5 py-0.5 outline-none bg-white text-[#0F172A]"
+                  className="text-[12px] border border-[var(--ds-text-brand,var(--ds-text-brand, #2563EB))] rounded px-1.5 py-0.5 outline-none bg-white text-[var(--ds-text,var(--ds-text, #0F172A))]"
                   style={{ fontFamily: 'inherit' }}
                 />
                 <button
@@ -218,14 +218,14 @@ export function ReleaseDrawer({ release, onClose }: Props) {
                       setEditingDate(false);
                     }
                   }}
-                  className="w-6 h-6 flex items-center justify-center rounded bg-[#2563EB] text-white hover:bg-[#1d4ed8] disabled:opacity-50"
+                  className="w-6 h-6 flex items-center justify-center rounded bg-[var(--ds-text-brand,var(--ds-text-brand, #2563EB))] text-white hover:bg-[var(--ds-background-brand-bold-hovered,var(--ds-background-brand-bold-hovered, #1d4ed8))] disabled:opacity-50"
                   title="Save"
                 >
                   {savingDate ? <Loader2 size={11} className="animate-spin" /> : <Check size={11} />}
                 </button>
                 <button
                   onClick={() => setEditingDate(false)}
-                  className="w-6 h-6 flex items-center justify-center rounded border border-[#E2E8F0] text-[#64748B] hover:bg-[#F1F5F9]"
+                  className="w-6 h-6 flex items-center justify-center rounded border border-[var(--ds-border,var(--ds-border, #E2E8F0))] text-[var(--ds-text-subtlest,var(--ds-text-subtlest, #64748B))] hover:bg-[var(--ds-surface-sunken,var(--ds-surface-sunken, #F1F5F9))]"
                   title="Cancel"
                 >
                   <X size={11} />
@@ -237,15 +237,15 @@ export function ReleaseDrawer({ release, onClose }: Props) {
                   setDateInput(release.target_date ? release.target_date.slice(0, 10) : '');
                   setEditingDate(true);
                 }}
-                className="group flex items-center gap-1 text-[12px] text-[#64748B] hover:text-[#2563EB] transition-colors"
+                className="group flex items-center gap-1 text-[12px] text-[var(--ds-text-subtlest,var(--ds-text-subtlest, #64748B))] hover:text-[var(--ds-text-brand,var(--ds-text-brand, #2563EB))] transition-colors"
                 title="Edit release date"
               >
                 <span>{release.target_date ? new Date(release.target_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '—'}</span>
                 <Pencil size={11} className="opacity-0 group-hover:opacity-100 transition-opacity" />
               </button>
             )}
-            <span className="text-[11px] font-bold text-[#0F172A] bg-[#F1F5F9] px-1.5 py-0.5 rounded">{relChanges.length} CHGs</span>
-            <span className="text-[11px] font-bold text-[#2563EB] bg-[#EFF6FF] px-1.5 py-0.5 rounded">{testCycles.length} cycles</span>
+            <span className="text-[11px] font-bold text-[var(--ds-text,var(--ds-text, #0F172A))] bg-[var(--ds-surface-sunken,var(--ds-surface-sunken, #F1F5F9))] px-1.5 py-0.5 rounded">{relChanges.length} CHGs</span>
+            <span className="text-[11px] font-bold text-[var(--ds-text-brand,var(--ds-text-brand, #2563EB))] bg-[var(--ds-background-selected,var(--ds-background-selected, #EFF6FF))] px-1.5 py-0.5 rounded">{testCycles.length} cycles</span>
           </div>
         </div>
 
@@ -253,10 +253,10 @@ export function ReleaseDrawer({ release, onClose }: Props) {
         <div className="border-b border-[rgba(15,23,42,0.12)] px-6 flex gap-0">
           {TABS.map(tab => (
             <button key={tab} onClick={() => setActiveTab(tab)}
-              className={`px-3 py-2.5 text-[13px] font-medium border-b-2 transition-colors ${activeTab === tab ? 'border-[#2563EB] text-[#2563EB]' : 'border-transparent text-[#64748B] hover:text-[#475569]'}`}>
+              className={`px-3 py-2.5 text-[13px] font-medium border-b-2 transition-colors ${activeTab === tab ? 'border-[var(--ds-text-brand,var(--ds-text-brand, #2563EB))] text-[var(--ds-text-brand,var(--ds-text-brand, #2563EB))]' : 'border-transparent text-[var(--ds-text-subtlest,var(--ds-text-subtlest, #64748B))] hover:text-[var(--ds-text-subtle,var(--ds-text-subtle, #475569))]'}`}>
               {tab}
-              {tab === 'Changes' && <span className="ml-1 text-[10px] font-bold bg-[#F1F5F9] text-[#475569] px-1 rounded">{relChanges.length}</span>}
-              {tab === 'Test Cycles' && <span className="ml-1 text-[10px] font-bold bg-[#EFF6FF] text-[#2563EB] px-1 rounded">{testCycles.length}</span>}
+              {tab === 'Changes' && <span className="ml-1 text-[10px] font-bold bg-[var(--ds-surface-sunken,var(--ds-surface-sunken, #F1F5F9))] text-[var(--ds-text-subtle,var(--ds-text-subtle, #475569))] px-1 rounded">{relChanges.length}</span>}
+              {tab === 'Test Cycles' && <span className="ml-1 text-[10px] font-bold bg-[var(--ds-background-selected,var(--ds-background-selected, #EFF6FF))] text-[var(--ds-text-brand,var(--ds-text-brand, #2563EB))] px-1 rounded">{testCycles.length}</span>}
             </button>
           ))}
         </div>
@@ -378,16 +378,16 @@ Do not use jargon. Do not hallucinate features not listed above.`;
   return (
     <div className="space-y-5">
       <div className="grid grid-cols-3 gap-3">
-        <div className="bg-[#F8FAFC] rounded-lg p-3">
-          <p className="text-[10px] font-bold uppercase text-[#64748B] mb-1">Status</p>
+        <div className="bg-[var(--ds-surface-sunken,var(--ds-surface-sunken, #F8FAFC))] rounded-lg p-3">
+          <p className="text-[10px] font-bold uppercase text-[var(--ds-text-subtlest,var(--ds-text-subtlest, #64748B))] mb-1">Status</p>
           <StatusLozenge status={release.status === 'todo' ? 'planning' : release.status === 'done' ? 'released' : release.status} />
         </div>
-        <div className="bg-[#F8FAFC] rounded-lg p-3">
-          <p className="text-[10px] font-bold uppercase text-[#64748B] mb-1">Changes</p>
+        <div className="bg-[var(--ds-surface-sunken,var(--ds-surface-sunken, #F8FAFC))] rounded-lg p-3">
+          <p className="text-[10px] font-bold uppercase text-[var(--ds-text-subtlest,var(--ds-text-subtlest, #64748B))] mb-1">Changes</p>
           <p className="text-[20px] font-extrabold" style={{ fontFamily: RH.fontMono, color: RH.ink1 }}>{changesCount}</p>
         </div>
-        <div className="bg-[#F8FAFC] rounded-lg p-3">
-          <p className="text-[10px] font-bold uppercase text-[#64748B] mb-1">Quality Gates</p>
+        <div className="bg-[var(--ds-surface-sunken,var(--ds-surface-sunken, #F8FAFC))] rounded-lg p-3">
+          <p className="text-[10px] font-bold uppercase text-[var(--ds-text-subtlest,var(--ds-text-subtlest, #64748B))] mb-1">Quality Gates</p>
           <p className="text-[20px] font-extrabold" style={{ fontFamily: RH.fontMono, color: RH.ink1 }}>{gatesPassCount}/{gatesTotalCount}</p>
         </div>
       </div>
@@ -409,7 +409,7 @@ Do not use jargon. Do not hallucinate features not listed above.`;
               bgColor = '#FFEBE6'; borderColor = '#FF5630'; labelColor = '#BF2600'; detailColor = '#7A2300';
               Icon = XCircle;
             } else {
-              bgColor = '#F4F5F7'; borderColor = '#C1C7D0'; labelColor = '#42526E'; detailColor = '#6B778C';
+              bgColor = 'var(--ds-surface-sunken, var(--ds-surface-sunken, #F4F5F7))'; borderColor = '#C1C7D0'; labelColor = '#42526E'; detailColor = 'var(--ds-text-subtlest, var(--ds-text-subtlest, #6B778C))';
               Icon = Minus;
             }
 
@@ -439,7 +439,7 @@ Do not use jargon. Do not hallucinate features not listed above.`;
       </div>
 
       {/* ── AI Release Notes Panel ── */}
-      <div className="border border-[var(--bd-default, #E2E8F0)] dark:border-[#2E2E2E] rounded-md p-4 bg-white dark:bg-[#1A1A1A]">
+      <div className="border border-[var(--bd-default, #E2E8F0)] dark:border-[var(--ds-border,var(--ds-border, #2E2E2E))] rounded-md p-4 bg-white dark:bg-[var(--ds-surface-raised,var(--ds-surface-raised, #1A1A1A))]">
         <div className="flex justify-between items-center mb-3">
           <span className="inline-flex items-center gap-1 text-[11px] font-bold rounded-full px-2 py-0.5 bg-[#F5F3FF] text-[#7C3AED] border border-[#DDD6FE]">
             ✦ Catalyst AI
@@ -447,7 +447,7 @@ Do not use jargon. Do not hallucinate features not listed above.`;
           <button
             onClick={generateReleaseNotes}
             disabled={notesState === 'loading'}
-            className="inline-flex items-center gap-1 bg-[#7C3AED] hover:bg-[#6D28D9] text-white text-xs px-3 py-1.5 rounded font-medium disabled:opacity-50 focus-visible:ring-2 focus-visible:ring-[#2563EB] focus-visible:ring-offset-2 outline-none"
+            className="inline-flex items-center gap-1 bg-[#7C3AED] hover:bg-[#6D28D9] text-white text-xs px-3 py-1.5 rounded font-medium disabled:opacity-50 focus-visible:ring-2 focus-visible:ring-[var(--ds-text-brand,var(--ds-text-brand, #2563EB))] focus-visible:ring-offset-2 outline-none"
           >
             <Sparkles size={12} />
             {notesState === 'success' ? 'Regenerate' : 'Generate'}
@@ -455,7 +455,7 @@ Do not use jargon. Do not hallucinate features not listed above.`;
         </div>
 
         {notesState === 'idle' && (
-          <div className="flex items-center gap-2 py-6 justify-center text-[#94A3B8] text-[13px]">
+          <div className="flex items-center gap-2 py-6 justify-center text-[var(--ds-text-subtlest,var(--ds-text-subtlest, #94A3B8))] text-[13px]">
             <FileText size={16} />
             <span>Click Generate to create AI release notes.</span>
           </div>
@@ -470,20 +470,20 @@ Do not use jargon. Do not hallucinate features not listed above.`;
 
         {notesState === 'success' && generatedNotes && (
           <div>
-            <div className="max-h-[300px] overflow-auto text-[13px] text-[#0F172A] leading-relaxed whitespace-pre-wrap" style={{ fontFamily: RH.fontBody }}>
+            <div className="max-h-[300px] overflow-auto text-[13px] text-[var(--ds-text,var(--ds-text, #0F172A))] leading-relaxed whitespace-pre-wrap" style={{ fontFamily: RH.fontBody }}>
               {generatedNotes}
             </div>
-            <div className="flex items-center gap-3 mt-3 pt-3 border-t border-[#F1F5F9]">
+            <div className="flex items-center gap-3 mt-3 pt-3 border-t border-[var(--ds-surface-sunken,var(--ds-surface-sunken, #F1F5F9))]">
               <button
                 onClick={handleCopy}
-                className="inline-flex items-center gap-1 h-7 px-2.5 rounded border border-[var(--bd-default, #E2E8F0)] text-[12px] font-medium text-[#475569] hover:bg-[#F8FAFC] focus-visible:ring-2 focus-visible:ring-[#2563EB] focus-visible:ring-offset-2 outline-none"
+                className="inline-flex items-center gap-1 h-7 px-2.5 rounded border border-[var(--bd-default, #E2E8F0)] text-[12px] font-medium text-[var(--ds-text-subtle,var(--ds-text-subtle, #475569))] hover:bg-[var(--ds-surface-sunken,var(--ds-surface-sunken, #F8FAFC))] focus-visible:ring-2 focus-visible:ring-[var(--ds-text-brand,var(--ds-text-brand, #2563EB))] focus-visible:ring-offset-2 outline-none"
               >
                 <Copy size={12} />
                 {copied ? 'Copied!' : 'Copy'}
               </button>
               <button
                 onClick={generateReleaseNotes}
-                className="text-[12px] text-[#64748B] hover:text-[#475569] focus-visible:ring-2 focus-visible:ring-[#2563EB] focus-visible:ring-offset-2 outline-none rounded"
+                className="text-[12px] text-[var(--ds-text-subtlest,var(--ds-text-subtlest, #64748B))] hover:text-[var(--ds-text-subtle,var(--ds-text-subtle, #475569))] focus-visible:ring-2 focus-visible:ring-[var(--ds-text-brand,var(--ds-text-brand, #2563EB))] focus-visible:ring-offset-2 outline-none rounded"
               >
                 Regenerate
               </button>
@@ -493,11 +493,11 @@ Do not use jargon. Do not hallucinate features not listed above.`;
 
         {notesState === 'error' && (
           <div className="flex items-center gap-2 py-6 justify-center text-[13px]">
-            <AlertCircle size={16} className="text-[#DC2626]" />
-            <span className="text-[#475569]">Could not generate notes.</span>
+            <AlertCircle size={16} className="text-[var(--ds-text-danger,var(--ds-text-danger, #DC2626))]" />
+            <span className="text-[var(--ds-text-subtle,var(--ds-text-subtle, #475569))]">Could not generate notes.</span>
             <button
               onClick={generateReleaseNotes}
-              className="inline-flex items-center gap-1 h-7 px-2.5 rounded border border-[var(--bd-default, #E2E8F0)] text-[12px] font-medium text-[#475569] hover:bg-[#F8FAFC] focus-visible:ring-2 focus-visible:ring-[#2563EB] focus-visible:ring-offset-2 outline-none"
+              className="inline-flex items-center gap-1 h-7 px-2.5 rounded border border-[var(--bd-default, #E2E8F0)] text-[12px] font-medium text-[var(--ds-text-subtle,var(--ds-text-subtle, #475569))] hover:bg-[var(--ds-surface-sunken,var(--ds-surface-sunken, #F8FAFC))] focus-visible:ring-2 focus-visible:ring-[var(--ds-text-brand,var(--ds-text-brand, #2563EB))] focus-visible:ring-offset-2 outline-none"
             >
               <RefreshCw size={12} /> Try again
             </button>
@@ -510,13 +510,13 @@ Do not use jargon. Do not hallucinate features not listed above.`;
 
 // ── Changes Tab ────────────────────────────────────────
 function ChangesTab({ changes }: { changes: any[] }) {
-  if (changes.length === 0) return <div className="text-center py-10 text-[#94A3B8] text-[13px]">No changes linked to this release</div>;
+  if (changes.length === 0) return <div className="text-center py-10 text-[var(--ds-text-subtlest,var(--ds-text-subtlest, #94A3B8))] text-[13px]">No changes linked to this release</div>;
   return (
     <table className="w-full text-[13px]" style={{ fontFamily: RH.fontBody }}>
       <thead>
         <tr className="border-b border-[rgba(15,23,42,0.12)]">
           {['KEY', 'TITLE', 'STATUS', 'RISK', 'DATE'].map(h => (
-            <th key={h} className="px-3 py-2 text-left text-[11px] font-semibold uppercase tracking-[0.06em] text-[#64748B]">{h}</th>
+            <th key={h} className="px-3 py-2 text-left text-[11px] font-semibold uppercase tracking-[0.06em] text-[var(--ds-text-subtlest,var(--ds-text-subtlest, #64748B))]">{h}</th>
           ))}
         </tr>
       </thead>
@@ -526,7 +526,7 @@ function ChangesTab({ changes }: { changes: any[] }) {
             <td className="px-3 py-2"><span className="font-medium text-[var(--cp-blue)]" style={{ fontFamily: RH.fontMono }}>{c.chg_number}</span></td>
             <td className="px-3 py-2 truncate max-w-[200px]" title={c.title}>{c.title}</td>
             <td className="px-3 py-2"><StatusLozenge status={c.status} /></td>
-            <td className="px-3 py-2"><span className="text-[11px] font-bold uppercase text-[#475569]">{c.risk_level}</span></td>
+            <td className="px-3 py-2"><span className="text-[11px] font-bold uppercase text-[var(--ds-text-subtle,var(--ds-text-subtle, #475569))]">{c.risk_level}</span></td>
             <td className="px-3 py-2 text-[var(--fg-3)]" style={{ fontFamily: RH.fontMono, fontSize: 12 }}>{c.deployment_date ? new Date(c.deployment_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '—'}</td>
           </tr>
         ))}
@@ -569,13 +569,13 @@ function TestCyclesTab({ testCycles, release }: { testCycles: any[]; release: an
     <div>
       {testCycles.length === 0 ? (
         <div className="text-center py-10">
-          <p className="text-[#94A3B8] text-[13px] mb-3">No test cycles linked</p>
-          <button onClick={openLinkModal} className="h-9 px-4 rounded-md border border-[#2563EB] text-[#2563EB] text-[13px] font-semibold hover:bg-[#EFF6FF]">Link Test Cycle</button>
+          <p className="text-[var(--ds-text-subtlest,var(--ds-text-subtlest, #94A3B8))] text-[13px] mb-3">No test cycles linked</p>
+          <button onClick={openLinkModal} className="h-9 px-4 rounded-md border border-[var(--ds-text-brand,var(--ds-text-brand, #2563EB))] text-[var(--ds-text-brand,var(--ds-text-brand, #2563EB))] text-[13px] font-semibold hover:bg-[var(--ds-background-selected,var(--ds-background-selected, #EFF6FF))]">Link Test Cycle</button>
         </div>
       ) : (
         <div className="space-y-3">
           <div className="flex justify-end mb-2">
-            <button onClick={openLinkModal} className="h-8 px-3 rounded-md border border-[#2563EB] text-[#2563EB] text-[12px] font-semibold hover:bg-[#EFF6FF]">Link Test Cycle</button>
+            <button onClick={openLinkModal} className="h-8 px-3 rounded-md border border-[var(--ds-text-brand,var(--ds-text-brand, #2563EB))] text-[var(--ds-text-brand,var(--ds-text-brand, #2563EB))] text-[12px] font-semibold hover:bg-[var(--ds-background-selected,var(--ds-background-selected, #EFF6FF))]">Link Test Cycle</button>
           </div>
           {testCycles.map((tc: any) => {
             const cycle = tc.tm_test_cycles;
@@ -588,22 +588,22 @@ function TestCyclesTab({ testCycles, release }: { testCycles: any[]; release: an
               <div key={tc.id} className="border border-[rgba(15,23,42,0.12)] rounded-lg p-4 group relative">
                 <button
                   onClick={() => handleUnlink(tc.test_cycle_id)}
-                  className="absolute top-3 right-3 w-6 h-6 rounded flex items-center justify-center opacity-0 group-hover:opacity-100 text-[#94A3B8] hover:text-[#DC2626] hover:bg-[#FEF2F2] transition-opacity"
+                  className="absolute top-3 right-3 w-6 h-6 rounded flex items-center justify-center opacity-0 group-hover:opacity-100 text-[var(--ds-text-subtlest,var(--ds-text-subtlest, #94A3B8))] hover:text-[var(--ds-text-danger,var(--ds-text-danger, #DC2626))] hover:bg-[var(--ds-background-danger,var(--ds-background-danger, #FEF2F2))] transition-opacity"
                   title="Unlink test cycle"
                 >
                   <XIcon size={14} />
                 </button>
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-[13px] font-semibold" style={{ color: RH.ink1 }}>{cycle?.name || 'Cycle'}</span>
-                  <a href={`/testhub/cycles/${tc.test_cycle_id}`} className="text-[12px] text-[#2563EB] flex items-center gap-1 hover:underline mr-8">
+                  <a href={`/testhub/cycles/${tc.test_cycle_id}`} className="text-[12px] text-[var(--ds-text-brand,var(--ds-text-brand, #2563EB))] flex items-center gap-1 hover:underline mr-8">
                     Open in TestHub <ExternalLink size={10} />
                   </a>
                 </div>
                 <div className="flex items-center gap-2 mb-2">
                   <StatusLozenge status={cycle?.status || 'not_started'} />
-                  <span className="text-[11px] text-[#64748B]">{passCount}/{totalCases} cases</span>
+                  <span className="text-[11px] text-[var(--ds-text-subtlest,var(--ds-text-subtlest, #64748B))]">{passCount}/{totalCases} cases</span>
                 </div>
-                <div className="w-full h-2 bg-[#F1F5F9] rounded-full overflow-hidden">
+                <div className="w-full h-2 bg-[var(--ds-surface-sunken,var(--ds-surface-sunken, #F1F5F9))] rounded-full overflow-hidden">
                   <div className="h-full bg-[var(--sem-success)] rounded-full" style={{ width: `${passRate}%` }} />
                 </div>
                 {atRisk && <CatalystAIChip label="test cycle at risk — recommend pause release" className="mt-2" />}
@@ -620,7 +620,7 @@ function TestCyclesTab({ testCycles, release }: { testCycles: any[]; release: an
           </DialogHeader>
           <div className="max-h-[320px] overflow-y-auto space-y-0">
             {availableCycles.length === 0 && (
-              <p className="text-center py-6 text-[#94A3B8] text-[13px]">No test cycles found for this project</p>
+              <p className="text-center py-6 text-[var(--ds-text-subtlest,var(--ds-text-subtlest, #94A3B8))] text-[13px]">No test cycles found for this project</p>
             )}
             {availableCycles.map((cycle: any) => {
               const alreadyLinked = linkedCycleIds.has(cycle.id);
@@ -635,16 +635,16 @@ function TestCyclesTab({ testCycles, release }: { testCycles: any[]; release: an
                 >
                   <div className="flex-1 min-w-0">
                     <span className="text-[13px] font-medium block truncate" style={{ color: RH.ink1 }}>{cycle.name}</span>
-                    <span className="text-[11px] text-[#64748B]">{cycle.total_cases ?? 0} cases</span>
+                    <span className="text-[11px] text-[var(--ds-text-subtlest,var(--ds-text-subtlest, #64748B))]">{cycle.total_cases ?? 0} cases</span>
                   </div>
                   <StatusLozenge status={cycle.status || 'not_started'} />
-                  {alreadyLinked && <span className="text-[11px] text-[#94A3B8] font-medium">Linked</span>}
+                  {alreadyLinked && <span className="text-[11px] text-[var(--ds-text-subtlest,var(--ds-text-subtlest, #94A3B8))] font-medium">Linked</span>}
                 </button>
               );
             })}
           </div>
           <DialogFooter>
-            <button onClick={() => setShowLinkModal(false)} className="h-8 px-4 rounded-md text-[13px] font-medium text-[#64748B] hover:bg-[#F1F5F9]">Close</button>
+            <button onClick={() => setShowLinkModal(false)} className="h-8 px-4 rounded-md text-[13px] font-medium text-[var(--ds-text-subtlest,var(--ds-text-subtlest, #64748B))] hover:bg-[var(--ds-surface-sunken,var(--ds-surface-sunken, #F1F5F9))]">Close</button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -668,7 +668,7 @@ function SignoffsTab({ releaseId, changes }: { releaseId: string; changes: any[]
   const approveSignoff = useApproveSignoff();
   const rejectSignoff = useRejectSignoff();
 
-  if (isLoading) return <div className="text-center py-6 text-[#94A3B8] text-[13px]">Loading...</div>;
+  if (isLoading) return <div className="text-center py-6 text-[var(--ds-text-subtlest,var(--ds-text-subtlest, #94A3B8))] text-[13px]">Loading...</div>;
 
   const stages = [
     { stage: 'QA', key: 'in_qa' },
@@ -690,7 +690,7 @@ function SignoffsTab({ releaseId, changes }: { releaseId: string; changes: any[]
             <div className={`w-8 h-8 rounded-full flex items-center justify-center text-[12px] font-bold shrink-0 ${
               status === 'approved' ? 'bg-[#1B7F37] text-white' :
               status === 'pending' ? 'bg-[#0C66E4] text-white' :
-              'bg-[#F1F5F9] text-[#94A3B8]'
+              'bg-[var(--ds-surface-sunken,var(--ds-surface-sunken, #F1F5F9))] text-[var(--ds-text-subtlest,var(--ds-text-subtlest, #94A3B8))]'
             }`}>
               {status === 'approved' ? '✓' : status === 'pending' ? i + 1 : '🔒'}
             </div>
@@ -710,13 +710,13 @@ function SignoffsTab({ releaseId, changes }: { releaseId: string; changes: any[]
                 <button onClick={() => approveSignoff.mutate(so.id, { onSuccess: () => toast.success('Approved') })}
                   className="h-7 px-3 rounded bg-[#1B7F37] text-white text-[11px] font-bold hover:bg-[#004D33]">Approve</button>
                 <button onClick={() => rejectSignoff.mutate({ signoffId: so.id, comment: 'Rejected' }, { onSuccess: () => toast.success('Rejected') })}
-                  className="h-7 px-3 rounded border border-[#FCA5A5] text-[#DC2626] text-[11px] font-bold hover:bg-[#FEF2F2]">Reject</button>
+                  className="h-7 px-3 rounded border border-[var(--ds-border-danger,var(--ds-border-danger, #FCA5A5))] text-[var(--ds-text-danger,var(--ds-text-danger, #DC2626))] text-[11px] font-bold hover:bg-[var(--ds-background-danger,var(--ds-background-danger, #FEF2F2))]">Reject</button>
               </div>
             ))}
           </div>
         );
       })}
-      {signoffs.length === 0 && <div className="text-center py-6 text-[#94A3B8] text-[13px]">No sign-offs configured</div>}
+      {signoffs.length === 0 && <div className="text-center py-6 text-[var(--ds-text-subtlest,var(--ds-text-subtlest, #94A3B8))] text-[13px]">No sign-offs configured</div>}
     </div>
   );
 }
@@ -728,10 +728,10 @@ function ActivityFeed({ entries, loading }: { entries: any[]; loading: boolean }
       <div className="space-y-4">
         {[1, 2, 3].map(i => (
           <div key={i} className="flex gap-3 animate-pulse">
-            <div className="w-7 h-7 rounded-full bg-[#F1F5F9] flex-shrink-0" />
+            <div className="w-7 h-7 rounded-full bg-[var(--ds-surface-sunken,var(--ds-surface-sunken, #F1F5F9))] flex-shrink-0" />
             <div className="flex-1 space-y-2">
-              <div className="h-3 bg-[#F1F5F9] rounded w-3/4" />
-              <div className="h-2.5 bg-[#F1F5F9] rounded w-1/2" />
+              <div className="h-3 bg-[var(--ds-surface-sunken,var(--ds-surface-sunken, #F1F5F9))] rounded w-3/4" />
+              <div className="h-2.5 bg-[var(--ds-surface-sunken,var(--ds-surface-sunken, #F1F5F9))] rounded w-1/2" />
             </div>
           </div>
         ))}
@@ -744,7 +744,7 @@ function ActivityFeed({ entries, loading }: { entries: any[]; loading: boolean }
       <div className="text-center py-12">
         <Activity size={32} style={{ color: '#C1C7D0', margin: '0 auto 12px' }} />
         <p style={{ fontSize: 14, fontWeight: 500, color: '#42526E', marginBottom: 4 }}>No activity yet</p>
-        <p style={{ fontSize: 12, color: '#6B778C' }}>
+        <p style={{ fontSize: 12, color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #6B778C))' }}>
           Activity will appear here as changes progress through their lifecycle.
         </p>
       </div>
@@ -755,8 +755,8 @@ function ActivityFeed({ entries, loading }: { entries: any[]; loading: boolean }
     <div className="space-y-0">
       {entries.map((entry: any, idx: number) => {
         const isAI = !!entry.is_ai;
-        const avatarBg = isAI ? '#F3E8FF' : '#EFF6FF';
-        const avatarColor = isAI ? '#7C3AED' : '#2563EB';
+        const avatarBg = isAI ? '#F3E8FF' : 'var(--ds-background-selected, var(--ds-background-selected, #EFF6FF))';
+        const avatarColor = isAI ? '#7C3AED' : 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))';
         const initials = isAI ? 'AI' : (entry.actor_initials || '??');
 
         return (
@@ -774,7 +774,7 @@ function ActivityFeed({ entries, loading }: { entries: any[]; loading: boolean }
               </div>
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-1.5 flex-wrap">
-                  <span style={{ fontSize: 12, fontWeight: 500, color: '#172B4D' }}>
+                  <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--ds-text, var(--ds-text, #172B4D))' }}>
                     {entry.actor_name || (isAI ? 'Catalyst AI' : 'System')}
                   </span>
                   <span style={{ fontSize: 12, fontWeight: 400, color: '#42526E' }}>
@@ -782,7 +782,7 @@ function ActivityFeed({ entries, loading }: { entries: any[]; loading: boolean }
                   </span>
                 </div>
                 {entry.detail && (
-                  <p style={{ fontSize: 11, fontWeight: 400, color: '#6B778C', fontStyle: 'italic', marginTop: 2 }}>
+                  <p style={{ fontSize: 11, fontWeight: 400, color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #6B778C))', fontStyle: 'italic', marginTop: 2 }}>
                     {entry.detail}
                   </p>
                 )}
@@ -792,7 +792,7 @@ function ActivityFeed({ entries, loading }: { entries: any[]; loading: boolean }
               </div>
             </div>
             {idx < entries.length - 1 && (
-              <div style={{ height: 0.5, background: '#F4F5F7', marginLeft: 40 }} />
+              <div style={{ height: 0.5, background: 'var(--ds-surface-sunken, var(--ds-surface-sunken, #F4F5F7))', marginLeft: 40 }} />
             )}
           </div>
         );

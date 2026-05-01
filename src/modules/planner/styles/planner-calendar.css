@@ -7,38 +7,38 @@
 
 .planner-calendar-content {
   /* ==================== SURFACES ==================== */
-  --pln-cal-surface-page: #ffffff;
-  --pln-cal-surface-card: #ffffff;
-  --pln-cal-surface-hover: #f8fafc;
-  --pln-cal-surface-selected: #eff6ff;
+  --pln-cal-surface-page: var(--ds-surface, #ffffff);
+  --pln-cal-surface-card: var(--ds-surface, #ffffff);
+  --pln-cal-surface-hover: var(--ds-surface-sunken, #f8fafc);
+  --pln-cal-surface-selected: var(--ds-background-selected, #eff6ff);
   --pln-cal-surface-today: #dbeafe;
-  --pln-cal-surface-weekend: #f8fafc;
-  --pln-cal-surface-adjacent: #f1f5f9;
+  --pln-cal-surface-weekend: var(--ds-surface-sunken, #f8fafc);
+  --pln-cal-surface-adjacent: var(--ds-surface-sunken, #f1f5f9);
   
   /* ==================== TEXT ==================== */
-  --pln-cal-text-primary: #0f172a;
-  --pln-cal-text-secondary: #334155;
-  --pln-cal-text-tertiary: #64748b;
-  --pln-cal-text-muted: #94a3b8;
-  --pln-cal-text-adjacent: #cbd5e1;
+  --pln-cal-text-primary: var(--ds-text, #0f172a);
+  --pln-cal-text-secondary: var(--ds-text-subtle, #334155);
+  --pln-cal-text-tertiary: var(--ds-text-subtlest, #64748b);
+  --pln-cal-text-muted: var(--ds-text-subtlest, #94a3b8);
+  --pln-cal-text-adjacent: var(--ds-text-disabled, #cbd5e1);
   
   /* ==================== BORDERS ==================== */
-  --pln-cal-border: #e2e8f0;
-  --pln-cal-border-light: #f1f5f9;
-  --pln-cal-border-focus: #2563eb;
+  --pln-cal-border: var(--ds-border, #e2e8f0);
+  --pln-cal-border-light: var(--ds-surface-sunken, #f1f5f9);
+  --pln-cal-border-focus: var(--ds-text-brand, #2563eb);
   
   /* ==================== STATUS COLORS ==================== */
-  --pln-cal-status-backlog: #94a3b8;
-  --pln-cal-status-planned: #3b82f6;
-  --pln-cal-status-progress: #f59e0b;
+  --pln-cal-status-backlog: var(--ds-text-subtlest, #94a3b8);
+  --pln-cal-status-planned: var(--ds-text-brand, #3b82f6);
+  --pln-cal-status-progress: var(--ds-text-warning, #f59e0b);
   --pln-cal-status-review: #8b5cf6;
   --pln-cal-status-done: #10b981;
   
   /* ==================== PRIORITY COLORS ==================== */
-  --pln-cal-priority-critical: #dc2626;
+  --pln-cal-priority-critical: var(--ds-text-danger, #dc2626);
   --pln-cal-priority-high: #ea580c;
   --pln-cal-priority-medium: #ca8a04;
-  --pln-cal-priority-low: #64748b;
+  --pln-cal-priority-low: var(--ds-text-subtlest, #64748b);
   
   /* ==================== WORKSTREAM COLORS (Planner 7) ==================== */
   --pln-cal-ws-senaie: #06b6d4;
@@ -46,17 +46,17 @@
   --pln-cal-ws-tahommona: #6366f1;
   --pln-cal-ws-delivery: #f97316;
   --pln-cal-ws-mim: #ec4899;
-  --pln-cal-ws-standalone: #64748b;
+  --pln-cal-ws-standalone: var(--ds-text-subtlest, #64748b);
   --pln-cal-ws-data-ai: #14b8a6;
   
   /* ==================== ACCENT ==================== */
-  --pln-cal-accent: #2563eb;
-  --pln-cal-accent-light: #eff6ff;
+  --pln-cal-accent: var(--ds-text-brand, #2563eb);
+  --pln-cal-accent-light: var(--ds-background-selected, #eff6ff);
   
   /* ==================== CAPACITY ==================== */
-  --pln-cal-capacity-normal: #22c55e;
-  --pln-cal-capacity-warning: #f59e0b;
-  --pln-cal-capacity-overload: #ef4444;
+  --pln-cal-capacity-normal: var(--ds-text-success, #22c55e);
+  --pln-cal-capacity-warning: var(--ds-text-warning, #f59e0b);
+  --pln-cal-capacity-overload: var(--ds-text-danger, #ef4444);
   
   /* ==================== SPACING ==================== */
   --pln-cal-space-1: 4px;
@@ -385,7 +385,7 @@
 }
 
 .cal-context-menu-item.danger:hover {
-  background: #fef2f2;
+  background: var(--ds-background-danger, #fef2f2);
 }
 
 .cal-context-menu-divider {
@@ -798,25 +798,25 @@
 .dark .planner-calendar-content,
 .dark .planner-calendar-content , [data-theme="dark"] .planner-calendar-content {
   /* Surfaces */
-  --pln-cal-surface-page: #0f172a;
+  --pln-cal-surface-page: var(--ds-text, #0f172a);
   --pln-cal-surface-card: #1e293b;
-  --pln-cal-surface-hover: #334155;
+  --pln-cal-surface-hover: var(--ds-text-subtle, #334155);
   --pln-cal-surface-selected: #1e3a5f;
   --pln-cal-surface-today: #1e3a5f;
   --pln-cal-surface-weekend: #1a2432;
-  --pln-cal-surface-adjacent: #0f172a;
+  --pln-cal-surface-adjacent: var(--ds-text, #0f172a);
   
   /* Text */
-  --pln-cal-text-primary: #f8fafc;
-  --pln-cal-text-secondary: #cbd5e1;
-  --pln-cal-text-tertiary: #94a3b8;
-  --pln-cal-text-muted: #64748b;
-  --pln-cal-text-adjacent: #475569;
+  --pln-cal-text-primary: var(--ds-surface-sunken, #f8fafc);
+  --pln-cal-text-secondary: var(--ds-text-disabled, #cbd5e1);
+  --pln-cal-text-tertiary: var(--ds-text-subtlest, #94a3b8);
+  --pln-cal-text-muted: var(--ds-text-subtlest, #64748b);
+  --pln-cal-text-adjacent: var(--ds-text-subtle, #475569);
   
   /* Borders */
-  --pln-cal-border: #334155;
+  --pln-cal-border: var(--ds-text-subtle, #334155);
   --pln-cal-border-light: #1e293b;
-  --pln-cal-border-focus: #60a5fa;
+  --pln-cal-border-focus: var(--ds-text-brand, #60a5fa);
   
   /* Shadows */
   --pln-cal-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
@@ -825,7 +825,7 @@
   --pln-cal-shadow-hover: 0 4px 16px rgba(59, 130, 246, 0.3);
   
   /* Accent */
-  --pln-cal-accent: #3b82f6;
+  --pln-cal-accent: var(--ds-text-brand, #3b82f6);
   --pln-cal-accent-light: #1e3a5f;
 }
 
@@ -833,7 +833,7 @@
 .dark .cal-overdue-badge,
 .dark .cal-overdue-badge , [data-theme="dark"] .cal-overdue-badge {
   background: rgba(220, 38, 38, 0.2);
-  color: #fca5a5;
+  color: var(--ds-border-danger, #fca5a5);
 }
 
 /* Context menu dark mode danger item */

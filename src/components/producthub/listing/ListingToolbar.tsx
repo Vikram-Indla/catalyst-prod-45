@@ -101,7 +101,7 @@ export function ListingToolbar({
 
   /* ── Shared button style for toolbar actions ── */
   const toolbarBtnClass = 'h-8 px-3 flex items-center gap-1.5 text-[13px] font-medium rounded-md border transition-colors';
-  const toolbarBtnDefault = `${toolbarBtnClass} text-zinc-700 border-zinc-300 bg-white dark:bg-[#1A1A1A] dark:text-[#EDEDED] dark:border-[#2E2E2E] hover:bg-zinc-50 dark:hover:bg-[#1A1A1A] hover:border-zinc-400`;
+  const toolbarBtnDefault = `${toolbarBtnClass} text-zinc-700 border-zinc-300 bg-white dark:bg-[var(--ds-surface-raised,var(--ds-surface-raised, #1A1A1A))] dark:text-[var(--ds-text,var(--ds-text, #EDEDED))] dark:border-[var(--ds-border,var(--ds-border, #2E2E2E))] hover:bg-zinc-50 dark:hover:bg-[var(--ds-surface-raised,var(--ds-surface-raised, #1A1A1A))] hover:border-zinc-400`;
 
   return (
     <div className="space-y-0 px-6 pt-4 pb-0">
@@ -113,7 +113,7 @@ export function ListingToolbar({
           <button
             type="button"
             onClick={cycleDensity}
-            className={`${toolbarBtnClass} text-zinc-700 border-zinc-300 bg-white dark:bg-[#1A1A1A] dark:text-[#EDEDED] dark:border-[#2E2E2E] hover:bg-zinc-50 dark:hover:bg-[#1A1A1A] hover:border-zinc-400`}
+            className={`${toolbarBtnClass} text-zinc-700 border-zinc-300 bg-white dark:bg-[var(--ds-surface-raised,var(--ds-surface-raised, #1A1A1A))] dark:text-[var(--ds-text,var(--ds-text, #EDEDED))] dark:border-[var(--ds-border,var(--ds-border, #2E2E2E))] hover:bg-zinc-50 dark:hover:bg-[var(--ds-surface-raised,var(--ds-surface-raised, #1A1A1A))] hover:border-zinc-400`}
           >
             <span className="text-zinc-500">{DENSITY_ICONS[density]}</span>
             {DENSITY_LABELS[density]}
@@ -141,7 +141,7 @@ export function ListingToolbar({
             className={`${toolbarBtnClass} ${
               groupBy !== 'none'
                 ? 'text-blue-700 bg-blue-50 border-blue-300 hover:bg-blue-100'
-                : 'text-zinc-700 border-zinc-300 bg-white dark:bg-[#1A1A1A] dark:text-[#EDEDED] dark:border-[#2E2E2E] hover:bg-zinc-50 dark:hover:bg-[#1A1A1A] hover:border-zinc-400'
+                : 'text-zinc-700 border-zinc-300 bg-white dark:bg-[var(--ds-surface-raised,var(--ds-surface-raised, #1A1A1A))] dark:text-[var(--ds-text,var(--ds-text, #EDEDED))] dark:border-[var(--ds-border,var(--ds-border, #2E2E2E))] hover:bg-zinc-50 dark:hover:bg-[var(--ds-surface-raised,var(--ds-surface-raised, #1A1A1A))] hover:border-zinc-400'
             }`}
           >
             <svg width="14" height="14" viewBox="0 0 16 16" fill="none" className={groupBy !== 'none' ? 'text-blue-600' : 'text-zinc-500'}><rect x="2" y="2" width="12" height="4" rx="1" stroke="currentColor" strokeWidth="1.2"/><rect x="2" y="10" width="12" height="4" rx="1" stroke="currentColor" strokeWidth="1.2"/></svg>
@@ -188,7 +188,7 @@ export function ListingToolbar({
             value={localSearch}
             onChange={(e) => handleSearch(e.target.value)}
             placeholder="Search business requests…"
-            className="w-full h-8 pl-8 pr-8 text-[13px] bg-white dark:bg-[#1A1A1A] dark:text-[#EDEDED] border border-zinc-300 dark:border-[#2E2E2E] rounded-md outline-none transition-all placeholder:text-zinc-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
+            className="w-full h-8 pl-8 pr-8 text-[13px] bg-white dark:bg-[var(--ds-surface-raised,var(--ds-surface-raised, #1A1A1A))] dark:text-[var(--ds-text,var(--ds-text, #EDEDED))] border border-zinc-300 dark:border-[var(--ds-border,var(--ds-border, #2E2E2E))] rounded-md outline-none transition-all placeholder:text-zinc-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
           />
           {localSearch && (
             <button type="button" onClick={() => handleSearch('')} className="absolute right-2 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-600">
@@ -209,7 +209,7 @@ export function ListingToolbar({
                 className={`h-7 px-3 text-[12px] font-medium rounded-full whitespace-nowrap border transition-colors ${
                   isActive
                     ? 'bg-blue-50 text-blue-700 border-blue-300 font-semibold'
-                    : 'bg-white dark:bg-[#1A1A1A] text-zinc-600 dark:text-[#A1A1A1] border-zinc-300 dark:border-[#2E2E2E] hover:bg-zinc-50 dark:hover:bg-[#1A1A1A] hover:border-zinc-400 hover:text-zinc-700'
+                    : 'bg-white dark:bg-[var(--ds-surface-raised,var(--ds-surface-raised, #1A1A1A))] text-zinc-600 dark:text-[var(--ds-text-subtlest,var(--ds-text-subtlest, #A1A1A1))] border-zinc-300 dark:border-[var(--ds-border,var(--ds-border, #2E2E2E))] hover:bg-zinc-50 dark:hover:bg-[var(--ds-surface-raised,var(--ds-surface-raised, #1A1A1A))] hover:border-zinc-400 hover:text-zinc-700'
                 }`}
               >
                 {f.label}

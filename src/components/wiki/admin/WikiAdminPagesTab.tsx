@@ -65,7 +65,7 @@ export function WikiAdminPagesTab() {
               padding: '4px 12px', borderRadius: 4,
               border: '1px solid var(--cp-border-default, rgba(15,23,42,0.12))',
               background: statusFilter === s ? 'var(--cp-primary-60, #2563EB)' : 'transparent',
-              color: statusFilter === s ? '#fff' : 'var(--cp-text-secondary, #334155)',
+              color: statusFilter === s ? 'var(--ds-surface, var(--ds-surface, var(--ds-surface, #fff)))' : 'var(--cp-text-secondary, #334155)',
               fontFamily: 'var(--cp-font-body)', fontSize: 11, fontWeight: 600,
               cursor: 'pointer', textTransform: 'capitalize', outline: 'none',
             }}
@@ -202,9 +202,9 @@ function PagBtn({ disabled, onClick, children }: { disabled: boolean; onClick: (
 function PageStatusLoz({ status }: { status: string }) {
   const map: Record<string, { bg: string; color: string }> = {
     published: { bg: '#1B7F37', color: '#0D7331' },
-    draft: { bg: '#DFE1E6', color: '#44546F' },
-    review: { bg: '#0C66E4', color: '#FFFFFF' },
-    archived: { bg: '#DFE1E6', color: '#44546F' },
+    draft: { bg: 'var(--ds-border, var(--ds-border, #DFE1E6))', color: '#44546F' },
+    review: { bg: '#0C66E4', color: 'var(--ds-surface, var(--ds-surface, #FFFFFF))' },
+    archived: { bg: 'var(--ds-border, var(--ds-border, #DFE1E6))', color: '#44546F' },
   };
   const s = map[status] ?? map.draft;
   return (

@@ -122,7 +122,7 @@ export default function CreateDriveModal({ open, onClose }: CreateDriveModalProp
     fontFamily: 'var(--cp-font-body)', background: 'var(--cp-bg-elevated, #FFFFFF)',
   };
   const errorStyle: React.CSSProperties = {
-    fontSize: '12px', color: '#EF4444', marginTop: '4px',
+    fontSize: '12px', color: 'var(--ds-text-danger, var(--ds-text-danger, #EF4444))', marginTop: '4px',
   };
 
   return (
@@ -162,12 +162,12 @@ export default function CreateDriveModal({ open, onClose }: CreateDriveModalProp
           <div>
             <label style={labelStyle}>Title</label>
             <input
-              style={{ ...inputStyle, ...(touched.title && errors.title ? { borderColor: '#EF4444' } : {}) }}
+              style={{ ...inputStyle, ...(touched.title && errors.title ? { borderColor: 'var(--ds-text-danger, var(--ds-text-danger, #EF4444))' } : {}) }}
               placeholder="e.g., AI & Automation Innovation Sprint"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               onBlur={() => handleBlur('title')}
-              onFocus={(e) => { e.target.style.borderColor = '#2563EB'; e.target.style.boxShadow = '0 0 0 3px rgba(37,99,235,0.1)'; }}
+              onFocus={(e) => { e.target.style.borderColor = 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))'; e.target.style.boxShadow = '0 0 0 3px rgba(37,99,235,0.1)'; }}
               maxLength={100}
             />
             {touched.title && errors.title && <div style={errorStyle}>{errors.title}</div>}
@@ -180,13 +180,13 @@ export default function CreateDriveModal({ open, onClose }: CreateDriveModalProp
               rows={3}
               style={{
                 ...inputStyle, resize: 'vertical', minHeight: '80px',
-                ...(touched.description && errors.description ? { borderColor: '#EF4444' } : {}),
+                ...(touched.description && errors.description ? { borderColor: 'var(--ds-text-danger, var(--ds-text-danger, #EF4444))' } : {}),
               }}
               placeholder="Describe the theme and goals of this innovation drive..."
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               onBlur={() => handleBlur('description')}
-              onFocus={(e) => { e.target.style.borderColor = '#2563EB'; e.target.style.boxShadow = '0 0 0 3px rgba(37,99,235,0.1)'; }}
+              onFocus={(e) => { e.target.style.borderColor = 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))'; e.target.style.boxShadow = '0 0 0 3px rgba(37,99,235,0.1)'; }}
               maxLength={500}
             />
             {touched.description && errors.description && <div style={errorStyle}>{errors.description}</div>}
@@ -213,7 +213,7 @@ export default function CreateDriveModal({ open, onClose }: CreateDriveModalProp
                     onMouseEnter={(e) => { if (!isSelected) { e.currentTarget.style.borderColor = 'var(--cp-border-strong, #CBD5E1)'; e.currentTarget.style.background = 'var(--cp-bg-page, #F8FAFC)'; } }}
                     onMouseLeave={(e) => { if (!isSelected) { e.currentTarget.style.borderColor = 'var(--cp-border-strong, #E2E8F0)'; e.currentTarget.style.background = 'var(--cp-bg-elevated, #FFFFFF)'; } }}
                   >
-                    <Icon size={20} strokeWidth={1.75} color={isSelected ? '#2563EB' : ('var(--cp-text-secondary, #334155)')} />
+                    <Icon size={20} strokeWidth={1.75} color={isSelected ? 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))' : ('var(--cp-text-secondary, #334155)')} />
                   </button>
                 );
               })}
@@ -252,8 +252,8 @@ export default function CreateDriveModal({ open, onClose }: CreateDriveModalProp
                     <span style={{
                       width: '6px', height: '6px', borderRadius: '50%',
                       background: isSelected
-                        ? (isActive ? '#16A34A' : '#94A3B8')
-                        : '#CBD5E1',
+                        ? (isActive ? 'var(--ds-text-success, var(--ds-text-success, #16A34A))' : 'var(--ds-text-subtlest, var(--ds-text-subtlest, #94A3B8))')
+                        : 'var(--ds-text-disabled, var(--ds-text-disabled, #CBD5E1))',
                     }} />
                     {isActive ? 'Active' : 'Draft'}
                   </button>
@@ -273,7 +273,7 @@ export default function CreateDriveModal({ open, onClose }: CreateDriveModalProp
                     ...inputStyle,
                     display: 'flex', alignItems: 'center', gap: '8px',
                     cursor: 'pointer', textAlign: 'left',
-                    ...(touched.deadline && errors.deadline ? { borderColor: '#EF4444' } : {}),
+                    ...(touched.deadline && errors.deadline ? { borderColor: 'var(--ds-text-danger, var(--ds-text-danger, #EF4444))' } : {}),
                   }}
                 >
                   <CalendarIcon size={16} style={{ color: 'var(--cp-text-tertiary, #64748B)', flexShrink: 0 }} />
@@ -377,15 +377,15 @@ export default function CreateDriveModal({ open, onClose }: CreateDriveModalProp
             style={{
               padding: '10px 24px', fontSize: '14px', fontWeight: 600,
               color: 'var(--ds-text-inverse, #FFFFFF)',
-              background: (!isValid || createMutation.isPending) ? '#93C5FD' : '#2563EB',
+              background: (!isValid || createMutation.isPending) ? '#93C5FD' : 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))',
               border: 'none', borderRadius: '8px',
               cursor: (!isValid || createMutation.isPending) ? 'not-allowed' : 'pointer',
               display: 'inline-flex', alignItems: 'center', gap: '6px',
               boxShadow: '0 1px 2px rgba(0,0,0,0.05)',
               transition: 'background 150ms ease', fontFamily: 'var(--cp-font-body)',
             }}
-            onMouseEnter={(e) => { if (isValid && !createMutation.isPending) e.currentTarget.style.background = '#1D4ED8'; }}
-            onMouseLeave={(e) => { if (isValid && !createMutation.isPending) e.currentTarget.style.background = '#2563EB'; }}
+            onMouseEnter={(e) => { if (isValid && !createMutation.isPending) e.currentTarget.style.background = 'var(--ds-background-brand-bold-hovered, var(--ds-background-brand-bold-hovered, #1D4ED8))'; }}
+            onMouseLeave={(e) => { if (isValid && !createMutation.isPending) e.currentTarget.style.background = 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))'; }}
           >
             {createMutation.isPending && <Loader2 size={14} style={{ animation: 'spin 1s linear infinite' }} />}
             Create Drive

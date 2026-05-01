@@ -22,7 +22,7 @@ function CatalystLogo({ size = 80 }: { size?: number }) {
       <circle cx="78" cy="78" r="12" fill="white"/>
       {/* Center hub */}
       <circle cx="50" cy="50" r="18" fill="white"/>
-      <circle cx="50" cy="50" r="9" fill="#2563eb"/>
+      <circle cx="50" cy="50" r="9" fill="var(--ds-text-brand, var(--ds-text-brand, #2563eb))"/>
     </svg>
   );
 }

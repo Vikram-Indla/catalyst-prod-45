@@ -21,30 +21,30 @@ const F = {
 
 /* ── V12 Status Lozenge Detection ── */
 const STATUS_PATTERNS: Record<string, { bg: string; color: string }> = {
-  'done': { bg: '#1B7F37', color: '#FFFFFF' },
-  'to do': { bg: '#DFE1E6', color: '#42526E' },
-  'todo': { bg: '#DFE1E6', color: '#42526E' },
-  'available': { bg: '#1B7F37', color: '#FFFFFF' },
-  'open': { bg: '#DFE1E6', color: '#42526E' },
-  'ready': { bg: '#0C66E4', color: '#FFFFFF' },
-  'fixed': { bg: '#1B7F37', color: '#FFFFFF' },
-  'in progress': { bg: '#0C66E4', color: '#FFFFFF' },
-  're-open': { bg: '#0C66E4', color: '#FFFFFF' },
-  'reopen': { bg: '#0C66E4', color: '#FFFFFF' },
-  're-opened': { bg: '#0C66E4', color: '#FFFFFF' },
-  'blocked': { bg: '#DFE1E6', color: '#42526E' },
-  'under review': { bg: '#0C66E4', color: '#FFFFFF' },
-  'in review': { bg: '#0C66E4', color: '#FFFFFF' },
-  'analysis': { bg: '#0C66E4', color: '#FFFFFF' },
-  'deferred': { bg: '#DFE1E6', color: '#42526E' },
-  'closed': { bg: '#DFE1E6', color: '#42526E' },
-  'resolved': { bg: '#1B7F37', color: '#FFFFFF' },
-  'at capacity': { bg: '#DFE1E6', color: '#42526E' },
-  'critical': { bg: '#DFE1E6', color: '#42526E' },
-  'high': { bg: '#DFE1E6', color: '#42526E' },
-  'medium': { bg: '#DFE1E6', color: '#42526E' },
-  'low': { bg: '#DFE1E6', color: '#42526E' },
-  'backlog': { bg: '#DFE1E6', color: '#42526E' },
+  'done': { bg: '#1B7F37', color: 'var(--ds-surface, var(--ds-surface, #FFFFFF))' },
+  'to do': { bg: 'var(--ds-border, var(--ds-border, #DFE1E6))', color: '#42526E' },
+  'todo': { bg: 'var(--ds-border, var(--ds-border, #DFE1E6))', color: '#42526E' },
+  'available': { bg: '#1B7F37', color: 'var(--ds-surface, var(--ds-surface, #FFFFFF))' },
+  'open': { bg: 'var(--ds-border, var(--ds-border, #DFE1E6))', color: '#42526E' },
+  'ready': { bg: '#0C66E4', color: 'var(--ds-surface, var(--ds-surface, #FFFFFF))' },
+  'fixed': { bg: '#1B7F37', color: 'var(--ds-surface, var(--ds-surface, #FFFFFF))' },
+  'in progress': { bg: '#0C66E4', color: 'var(--ds-surface, var(--ds-surface, #FFFFFF))' },
+  're-open': { bg: '#0C66E4', color: 'var(--ds-surface, var(--ds-surface, #FFFFFF))' },
+  'reopen': { bg: '#0C66E4', color: 'var(--ds-surface, var(--ds-surface, #FFFFFF))' },
+  're-opened': { bg: '#0C66E4', color: 'var(--ds-surface, var(--ds-surface, #FFFFFF))' },
+  'blocked': { bg: 'var(--ds-border, var(--ds-border, #DFE1E6))', color: '#42526E' },
+  'under review': { bg: '#0C66E4', color: 'var(--ds-surface, var(--ds-surface, #FFFFFF))' },
+  'in review': { bg: '#0C66E4', color: 'var(--ds-surface, var(--ds-surface, #FFFFFF))' },
+  'analysis': { bg: '#0C66E4', color: 'var(--ds-surface, var(--ds-surface, #FFFFFF))' },
+  'deferred': { bg: 'var(--ds-border, var(--ds-border, #DFE1E6))', color: '#42526E' },
+  'closed': { bg: 'var(--ds-border, var(--ds-border, #DFE1E6))', color: '#42526E' },
+  'resolved': { bg: '#1B7F37', color: 'var(--ds-surface, var(--ds-surface, #FFFFFF))' },
+  'at capacity': { bg: 'var(--ds-border, var(--ds-border, #DFE1E6))', color: '#42526E' },
+  'critical': { bg: 'var(--ds-border, var(--ds-border, #DFE1E6))', color: '#42526E' },
+  'high': { bg: 'var(--ds-border, var(--ds-border, #DFE1E6))', color: '#42526E' },
+  'medium': { bg: 'var(--ds-border, var(--ds-border, #DFE1E6))', color: '#42526E' },
+  'low': { bg: 'var(--ds-border, var(--ds-border, #DFE1E6))', color: '#42526E' },
+  'backlog': { bg: 'var(--ds-border, var(--ds-border, #DFE1E6))', color: '#42526E' },
 };
 
 function isStatusText(text: string): { bg: string; color: string } | null {
@@ -67,11 +67,11 @@ function isAgeing(text: string): { value: string; color: string } | null {
   if (!match) return null;
   const num = parseFloat(match[1]);
   const unit = match[2].toLowerCase();
-  let color = '#16A34A';
+  let color = 'var(--ds-text-success, var(--ds-text-success, #16A34A))';
   if (unit.startsWith('d')) {
-    color = num > 3 ? '#DC2626' : '#D97706';
+    color = num > 3 ? 'var(--ds-text-danger, var(--ds-text-danger, #DC2626))' : 'var(--ds-text-warning, var(--ds-text-warning, #D97706))';
   } else if ((unit === 'h' || unit === 'hr' || unit === 'hrs') && num > 12) {
-    color = '#D97706';
+    color = 'var(--ds-text-warning, var(--ds-text-warning, #D97706))';
   }
   return { value: clean, color };
 }
@@ -106,7 +106,7 @@ function renderInline(text: string): React.ReactNode[] {
         }}>{match[1]}</code>
       );
     } else if (match[2]) {
-      parts.push(<strong key={key++} style={{ color: '#1D4ED8', fontWeight: 700, fontFamily: 'system-ui' }}>{match[2]}</strong>);
+      parts.push(<strong key={key++} style={{ color: 'var(--ds-background-brand-bold-hovered, var(--ds-background-brand-bold-hovered, #1D4ED8))', fontWeight: 700, fontFamily: 'system-ui' }}>{match[2]}</strong>);
     } else if (match[3]) {
       // Hide inline source citations
       // parts.push(<sup>...</sup>);
@@ -177,7 +177,7 @@ function ScopeBar({ totalShown, totalAvailable, scopeLabel, extendLabel, extendH
     }}>
       {/* Scope label */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, color: 'var(--fg-3)' }}>
-        <Clock size={14} strokeWidth={2} color="#64748B" />
+        <Clock size={14} strokeWidth={2} color="var(--ds-text-subtlest, var(--ds-text-subtlest, #64748B))" />
         <span>Showing {totalShown} of {totalAvailable} · {scopeLabel}</span>
       </div>
 
@@ -193,13 +193,13 @@ function ScopeBar({ totalShown, totalAvailable, scopeLabel, extendLabel, extendH
             width: '100%', textAlign: 'left',
           }}
           onMouseEnter={e => {
-            e.currentTarget.style.borderColor = '#2563EB';
-            e.currentTarget.style.background = '#EFF6FF';
+            e.currentTarget.style.borderColor = 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))';
+            e.currentTarget.style.background = 'var(--ds-background-selected, var(--ds-background-selected, #EFF6FF))';
             e.currentTarget.style.boxShadow = '0 1px 4px rgba(37,99,235,0.08)';
           }}
           onMouseLeave={e => {
             e.currentTarget.style.borderColor = 'rgba(15,23,42,0.08)';
-            e.currentTarget.style.background = '#FFFFFF';
+            e.currentTarget.style.background = 'var(--ds-surface, var(--ds-surface, #FFFFFF))';
             e.currentTarget.style.boxShadow = 'none';
           }}
         >
@@ -207,10 +207,10 @@ function ScopeBar({ totalShown, totalAvailable, scopeLabel, extendLabel, extendH
             width: 32, height: 32, minWidth: 32, background: 'var(--cp-blue-wash)',
             borderRadius: 6, display: 'flex', alignItems: 'center', justifyContent: 'center',
           }}>
-            <ArrowUpRight size={16} strokeWidth={2} color="#2563EB" />
+            <ArrowUpRight size={16} strokeWidth={2} color="var(--ds-text-brand, var(--ds-text-brand, #2563EB))" />
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-            <span style={{ fontSize: 13, fontWeight: 500, color: '#1D4ED8' }}>{extendLabel}</span>
+            <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--ds-background-brand-bold-hovered, var(--ds-background-brand-bold-hovered, #1D4ED8))' }}>{extendLabel}</span>
             {extendHint && <span style={{ fontSize: 11, color: 'var(--fg-3)' }}>{extendHint}</span>}
           </div>
         </button>
@@ -271,7 +271,7 @@ export const KBResponseRenderer: React.FC<KBResponseRendererProps> = ({
                     style={{
                       height: 50,
                       borderBottom: ri < tableRows.length - 1 ? '0.75px solid rgba(15,23,42,0.06)' : 'none',
-                      background: ri === 0 ? '#F1F5F9' : 'transparent',
+                      background: ri === 0 ? 'var(--ds-surface-sunken, var(--ds-surface-sunken, #F1F5F9))' : 'transparent',
                       transition: 'background 80ms',
                       cursor: rowIssueKey && onItemClick ? 'pointer' : undefined,
                     }}
@@ -400,9 +400,9 @@ export const KBResponseRenderer: React.FC<KBResponseRendererProps> = ({
   );
   const confConfig = {
     high: { color: '#0D7331', label: 'High confidence' },
-    medium: { color: '#D97706', label: 'Medium confidence' },
-    low: { color: '#DC2626', label: 'Low confidence — verify with sources' },
-    insufficient: { color: '#DC2626', label: 'Insufficient data' },
+    medium: { color: 'var(--ds-text-warning, var(--ds-text-warning, #D97706))', label: 'Medium confidence' },
+    low: { color: 'var(--ds-text-danger, var(--ds-text-danger, #DC2626))', label: 'Low confidence — verify with sources' },
+    insufficient: { color: 'var(--ds-text-danger, var(--ds-text-danger, #DC2626))', label: 'Insufficient data' },
   }[confidence] || { color: '#71717A', label: '' };
 
   // Parse "Showing X of Y" from the response text for scope bar
@@ -482,7 +482,7 @@ export const KBResponseRenderer: React.FC<KBResponseRendererProps> = ({
               cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
               transition: 'all 200ms',
             }}
-            onMouseEnter={(e) => { e.currentTarget.style.background = '#FEF2F2'; }}
+            onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--ds-background-danger, var(--ds-background-danger, #FEF2F2))'; }}
             onMouseLeave={(e) => { e.currentTarget.style.background = 'none'; }}
           >
             <ThumbsDown size={14} color="#A1A1AA" />

@@ -103,7 +103,7 @@ export function RoadmapToolbar({
           placeholder={isRTL ? 'بحث...' : 'Search...'}
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="h-9 w-[200px] text-xs bg-white dark:bg-[#1A1A1A] dark:text-[#EDEDED] pl-9 pr-3"
+          className="h-9 w-[200px] text-xs bg-white dark:bg-[var(--ds-surface-raised,var(--ds-surface-raised, #1A1A1A))] dark:text-[var(--ds-text,var(--ds-text, #EDEDED))] pl-9 pr-3"
           style={{ border: '1px solid hsl(var(--roadmap-sandstone))', borderRadius: '12px' }}
           onKeyDown={(e) => {
             if (e.key === 'Escape') {
@@ -122,7 +122,7 @@ export function RoadmapToolbar({
             onClick={() => setShowMilestones(!showMilestones)}
             className={cn(
               "w-9 h-9 flex items-center justify-center rounded-[10px] cursor-pointer transition-all shadow-sm hover:shadow-md",
-              showMilestones ? "text-white" : "bg-white dark:bg-[#1A1A1A] text-[hsl(var(--roadmap-charcoal))]"
+              showMilestones ? "text-white" : "bg-white dark:bg-[var(--ds-surface-raised,var(--ds-surface-raised, #1A1A1A))] text-[hsl(var(--roadmap-charcoal))]"
             )}
             style={{
               backgroundColor: showMilestones ? 'hsl(var(--roadmap-status-new))' : undefined,
@@ -139,7 +139,7 @@ export function RoadmapToolbar({
         <Tooltip delay={200} position="bottom" content="Filters">
           <button
             onClick={() => setFiltersDialogOpen(true)}
-            className="w-9 h-9 flex items-center justify-center rounded-[10px] cursor-pointer transition-all bg-white dark:bg-[#1A1A1A] shadow-sm hover:shadow-md"
+            className="w-9 h-9 flex items-center justify-center rounded-[10px] cursor-pointer transition-all bg-white dark:bg-[var(--ds-surface-raised,var(--ds-surface-raised, #1A1A1A))] shadow-sm hover:shadow-md"
             style={{ border: '1px solid hsl(var(--roadmap-sandstone))', color: 'hsl(var(--roadmap-charcoal))' }}
           >
             <Filter className="w-[18px] h-[18px]" />
@@ -150,7 +150,7 @@ export function RoadmapToolbar({
         <Popover>
           <PopoverTrigger asChild>
             <button
-              className="w-9 h-9 flex items-center justify-center rounded-[10px] cursor-pointer transition-all bg-white dark:bg-[#1A1A1A] shadow-sm hover:shadow-md"
+              className="w-9 h-9 flex items-center justify-center rounded-[10px] cursor-pointer transition-all bg-white dark:bg-[var(--ds-surface-raised,var(--ds-surface-raised, #1A1A1A))] shadow-sm hover:shadow-md"
               style={{ border: '1px solid hsl(var(--roadmap-sandstone))', color: 'hsl(var(--roadmap-charcoal))' }}
               title="Time Period"
             >
@@ -159,7 +159,7 @@ export function RoadmapToolbar({
           </PopoverTrigger>
           <PopoverContent
             align="end"
-            className="w-[360px] p-0 bg-white dark:bg-[#1A1A1A] shadow-xl rounded-xl z-[400]"
+            className="w-[360px] p-0 bg-white dark:bg-[var(--ds-surface-raised,var(--ds-surface-raised, #1A1A1A))] shadow-xl rounded-xl z-[400]"
             style={{ border: '1px solid hsl(var(--roadmap-sandstone))' }}
           >
             {/* View Scale Section */}
@@ -379,7 +379,7 @@ export function RoadmapToolbar({
         {/* Language Toggle */}
         <button
           onClick={() => setLanguage(language === 'en' ? 'ar' : 'en')}
-          className="h-9 px-2 flex items-center gap-1 rounded-[10px] cursor-pointer transition-all bg-white dark:bg-[#1A1A1A] shadow-sm hover:shadow-md"
+          className="h-9 px-2 flex items-center gap-1 rounded-[10px] cursor-pointer transition-all bg-white dark:bg-[var(--ds-surface-raised,var(--ds-surface-raised, #1A1A1A))] shadow-sm hover:shadow-md"
           style={{ border: '1px solid hsl(var(--roadmap-sandstone))' }}
         >
           <span className={cn("text-xs font-semibold px-1 py-0.5 rounded", language === 'en' ? "text-white" : "")} style={{ backgroundColor: language === 'en' ? 'hsl(var(--roadmap-status-new))' : 'transparent', color: language === 'en' ? 'white' : 'hsl(var(--roadmap-charcoal))' }}>EN</span>
@@ -392,7 +392,7 @@ export function RoadmapToolbar({
         <Tooltip delay={200} position="bottom" content="Export">
           <button
             onClick={handleExport}
-            className="w-9 h-9 flex items-center justify-center rounded-[10px] cursor-pointer transition-all bg-white dark:bg-[#1A1A1A] shadow-sm hover:shadow-md"
+            className="w-9 h-9 flex items-center justify-center rounded-[10px] cursor-pointer transition-all bg-white dark:bg-[var(--ds-surface-raised,var(--ds-surface-raised, #1A1A1A))] shadow-sm hover:shadow-md"
             style={{ border: '1px solid hsl(var(--roadmap-sandstone))', color: 'hsl(var(--roadmap-charcoal))' }}
           >
             <Download className="w-[18px] h-[18px]" />
@@ -405,7 +405,7 @@ export function RoadmapToolbar({
             onClick={() => setShowLegend(!showLegend)}
             className={cn(
               "w-9 h-9 flex items-center justify-center rounded-[10px] cursor-pointer transition-all shadow-sm hover:shadow-md",
-              showLegend ? "text-white" : "bg-white dark:bg-[#1A1A1A] text-[hsl(var(--roadmap-charcoal))]"
+              showLegend ? "text-white" : "bg-white dark:bg-[var(--ds-surface-raised,var(--ds-surface-raised, #1A1A1A))] text-[hsl(var(--roadmap-charcoal))]"
             )}
             style={{
               backgroundColor: showLegend ? 'hsl(var(--roadmap-status-new))' : undefined,
@@ -420,7 +420,7 @@ export function RoadmapToolbar({
         <Tooltip delay={200} position="bottom" content={isFullscreen ? 'Exit Fullscreen' : 'Fullscreen'}>
           <button
             onClick={toggleFullscreen}
-            className="w-9 h-9 flex items-center justify-center rounded-[10px] cursor-pointer transition-all bg-white dark:bg-[#1A1A1A] shadow-sm hover:shadow-md"
+            className="w-9 h-9 flex items-center justify-center rounded-[10px] cursor-pointer transition-all bg-white dark:bg-[var(--ds-surface-raised,var(--ds-surface-raised, #1A1A1A))] shadow-sm hover:shadow-md"
             style={{ border: '1px solid hsl(var(--roadmap-sandstone))', color: 'hsl(var(--roadmap-charcoal))' }}
           >
             {isFullscreen ? <Minimize2 className="w-[18px] h-[18px]" /> : <Maximize2 className="w-[18px] h-[18px]" />}

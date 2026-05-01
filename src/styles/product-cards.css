@@ -8,22 +8,22 @@
   --pc-ink-secondary: #18181B;
   --pc-ink-tertiary: #3F3F46;
   --pc-ink-muted: #71717A;
-  --pc-surface: #FFFFFF;
+  --pc-surface: var(--ds-surface, #FFFFFF);
   --pc-surface-secondary: #FAFAFA;
   --pc-surface-tertiary: #F4F4F5;
   --pc-border: #E4E4E7;
   --pc-border-strong: #D4D4D8;
-  --pc-primary: #2563EB;
-  --pc-primary-hover: #1D4ED8;
-  --pc-primary-bg: #EFF6FF;
+  --pc-primary: var(--ds-text-brand, #2563EB);
+  --pc-primary-hover: var(--ds-background-brand-bold-hovered, #1D4ED8);
+  --pc-primary-bg: var(--ds-background-selected, #EFF6FF);
   --pc-teal: #0D9488;
   --pc-teal-bg: #F0FDFA;
-  --pc-success: #16A34A;
+  --pc-success: var(--ds-text-success, #16A34A);
   --pc-success-bg: #F0FDF4;
-  --pc-warning: #D97706;
+  --pc-warning: var(--ds-text-warning, #D97706);
   --pc-warning-bg: #FFFBEB;
-  --pc-danger: #DC2626;
-  --pc-danger-bg: #FEF2F2;
+  --pc-danger: var(--ds-text-danger, #DC2626);
+  --pc-danger-bg: var(--ds-background-danger, #FEF2F2);
   --pc-purple: #7C3AED;
   --pc-purple-bg: #F5F3FF;
   --pc-r-sm: 4px;
@@ -39,18 +39,18 @@
    DARK MODE elevation hex so the gallery cards have a visible surface
    delta against the page bg. transparent reads as "broken / missing
    card" because the dark page bg shows straight through. The new
-   value matches --cp-bg-surface dark (#1A1A1A) for consistency. */
+   value matches --cp-bg-surface dark (var(--ds-surface-raised, #1A1A1A)) for consistency. */
 .dark [data-module="product-cards"],
 .dark [data-module="product-cards"] , [data-theme="dark"] [data-module="product-cards"] {
-  --pc-ink: #EDEDED;
-  --pc-ink-secondary: #EDEDED;
-  --pc-ink-tertiary: #A1A1A1;
+  --pc-ink: var(--ds-text, #EDEDED);
+  --pc-ink-secondary: var(--ds-text, #EDEDED);
+  --pc-ink-tertiary: var(--ds-text-subtlest, #A1A1A1);
   --pc-ink-muted: #7D7D7D;
   --pc-surface: var(--cp-bg-surface, #242528);
-  --pc-surface-secondary: #1F1F1F;
-  --pc-surface-tertiary: #1F1F1F;
-  --pc-border: #2E2E2E;
-  --pc-border-strong: #454545;
+  --pc-surface-secondary: var(--ds-surface-overlay, #1F1F1F);
+  --pc-surface-tertiary: var(--ds-surface-overlay, #1F1F1F);
+  --pc-border: var(--ds-border, #2E2E2E);
+  --pc-border-strong: var(--ds-border-bold, #454545);
   --pc-primary-bg: rgba(59,130,246,0.12);
   --pc-teal-bg: rgba(13,148,136,0.12);
   --pc-success-bg: rgba(22,163,74,0.12);

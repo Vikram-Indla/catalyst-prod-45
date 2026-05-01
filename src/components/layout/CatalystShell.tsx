@@ -91,10 +91,10 @@ import { HubSurface } from './HubSurface';
 // V3 Canonical White Canvas (Apr 27, 2026 audit, L36).
 // Was '#E9F2FE' (light Jira blue) — painted on <main> for every hub-surface
 // route, producing a global blue tint that didn't match Jira's actual
-// background (which is white #FFFFFF). Catalyst owner decision: all hub
+// background (which is white var(--ds-surface, #FFFFFF)). Catalyst owner decision: all hub
 // pages are white-canvas. Kept as a named constant in case we ever bring
 // back a tinted page wash.
-const JIRA_CANVAS_BG = '#FFFFFF';
+const JIRA_CANVAS_BG = 'var(--ds-surface, var(--ds-surface, #FFFFFF))';
 function useIsDarkTheme(): boolean {
   return useSyncExternalStore(
     (onChange) => {
@@ -354,7 +354,7 @@ function CatalystShellContent() {
   // This produces Jira's exact two-tier shell: canvas dim, sidebar+header
   // raised. Previously fell back to --cp-bg legacy alias.
   const mainBg = isWhiteCanvasRoute
-    ? '#FFFFFF'
+    ? 'var(--ds-surface, var(--ds-surface, #FFFFFF))'
     : isDarkTheme
       ? 'var(--ds-background-neutral, #1D2125)'
       : (isHubSurfaceRoute ? JIRA_CANVAS_BG : 'var(--cp-bg)');

@@ -95,9 +95,9 @@ export default function StrategyRoom() {
     ${styles}
     <style>
       @page { size: auto; margin: 14mm; }
-      html, body { margin: 0; padding: 0; background: #fff; overflow: visible !important; height: auto !important; }
+      html, body { margin: 0; padding: 0; background: var(--ds-surface, var(--ds-surface, #fff)); overflow: visible !important; height: auto !important; }
       .sri-root-container, .sri-root-container * { position: static !important; overflow: visible !important; height: auto !important; max-height: none !important; }
-      .sri-root-container { inset: auto !important; z-index: auto !important; background: #fff !important; }
+      .sri-root-container { inset: auto !important; z-index: auto !important; background: var(--ds-surface, var(--ds-surface, #fff)) !important; }
       [data-sri] .sri-actions { display: none !important; }
     </style>
   </head>
@@ -151,7 +151,7 @@ export default function StrategyRoom() {
       <a
         href="#dashboard-main"
         className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[9999] focus:px-4 focus:py-2 focus:rounded-md focus:text-sm focus:font-medium"
-        style={{ background: '#2563EB', color: 'var(--ds-text-inverse, #FFFFFF)' }}
+        style={{ background: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))', color: 'var(--ds-text-inverse, #FFFFFF)' }}
       >
         Skip to dashboard content
       </a>

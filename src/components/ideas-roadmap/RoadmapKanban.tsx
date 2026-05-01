@@ -12,9 +12,9 @@ interface Column {
 }
 
 const COLUMNS: Column[] = [
-  { id: 'uncommitted', label: 'UNCOMMITTED', accent: '#CBD5E1', dashed: true },
+  { id: 'uncommitted', label: 'UNCOMMITTED', accent: 'var(--ds-text-disabled, var(--ds-text-disabled, #CBD5E1))', dashed: true },
   { id: 'Q1', label: 'Q1 2026', accent: '#6D28D9', dashed: false },
-  { id: 'Q2', label: 'Q2 2026', accent: '#2563EB', dashed: false },
+  { id: 'Q2', label: 'Q2 2026', accent: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))', dashed: false },
   { id: 'Q3', label: 'Q3 2026', accent: '#0D9488', dashed: false },
   { id: 'Q4', label: 'Q4 2026', accent: '#92400E', dashed: false },
 ];

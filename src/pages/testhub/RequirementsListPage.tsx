@@ -34,21 +34,21 @@ interface Requirement {
 }
 
 const TYPE_CONFIG: Record<string, { label: string; color: string; bg: string }> = {
-  functional: { label: 'Functional', color: '#2563EB', bg: '#EFF6FF' },
-  non_functional: { label: 'Non-Functional', color: '#64748B', bg: '#F1F5F9' },
+  functional: { label: 'Functional', color: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))', bg: 'var(--ds-background-selected, var(--ds-background-selected, #EFF6FF))' },
+  non_functional: { label: 'Non-Functional', color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #64748B))', bg: 'var(--ds-surface-sunken, var(--ds-surface-sunken, #F1F5F9))' },
   user_story: { label: 'User Story', color: '#0891B2', bg: '#ECFEFF' },
-  epic: { label: 'Epic', color: '#64748B', bg: '#F1F5F9' },
+  epic: { label: 'Epic', color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #64748B))', bg: 'var(--ds-surface-sunken, var(--ds-surface-sunken, #F1F5F9))' },
   feature: { label: 'Feature', color: '#059669', bg: '#ECFDF5' },
-  bug_fix: { label: 'Bug Fix', color: '#DC2626', bg: '#FEF2F2' },
+  bug_fix: { label: 'Bug Fix', color: 'var(--ds-text-danger, var(--ds-text-danger, #DC2626))', bg: 'var(--ds-background-danger, var(--ds-background-danger, #FEF2F2))' },
 };
 
 const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string }> = {
-  draft:        { label: 'DRAFT',        color: '#253858', bg: '#DFE1E6' },
+  draft:        { label: 'DRAFT',        color: 'var(--ds-text, var(--ds-text, #253858))', bg: 'var(--ds-border, var(--ds-border, #DFE1E6))' },
   approved:     { label: 'APPROVED',     color: '#0747A6', bg: '#DEEBFF' },
   in_progress:  { label: 'IN PROGRESS',  color: '#0747A6', bg: '#DEEBFF' },
   implemented:  { label: 'IMPLEMENTED',  color: '#006644', bg: '#E3FCEF' },
   verified:     { label: 'VERIFIED',     color: '#006644', bg: '#E3FCEF' },
-  deprecated:   { label: 'DEPRECATED',   color: '#253858', bg: '#DFE1E6' },
+  deprecated:   { label: 'DEPRECATED',   color: 'var(--ds-text, var(--ds-text, #253858))', bg: 'var(--ds-border, var(--ds-border, #DFE1E6))' },
 };
 
 const PRIORITY_CONFIG: Record<string, { label: string }> = {
@@ -142,7 +142,7 @@ export default function RequirementsListPage() {
           style={{
             display: 'flex', alignItems: 'center', gap: 8, height: 40, padding: '0 20px',
             border: 'none', borderRadius: 8,
-            backgroundColor: '#2563EB',
+            backgroundColor: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))',
             color: 'var(--ds-text-inverse, #FFFFFF)', fontSize: 14, fontWeight: 600, cursor: 'pointer',
           }}
         >
@@ -158,21 +158,21 @@ export default function RequirementsListPage() {
         const noneCount = requirements.filter(r => r.linked_test_count === 0).length;
         return (
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16, marginBottom: 24 }}>
-            <div style={{ backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFF', borderRadius: 12, padding: 20, border: isDark ? '1px solid #2E2E2E' : '1px solid #E2E8F0' }}>
+            <div style={{ backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, var(--ds-surface, var(--ds-surface, #FFF)))', borderRadius: 12, padding: 20, border: isDark ? '1px solid #2E2E2E' : '1px solid #E2E8F0' }}>
               <p style={{ fontSize: 12, color: 'var(--cp-text-tertiary, #64748B)', margin: 0, textTransform: 'uppercase', fontWeight: 600 }}>Total Requirements</p>
               <p style={{ fontSize: 28, fontWeight: 700, color: 'var(--cp-text-primary, #0F172A)', margin: '8px 0 0' }}>{requirements.length}</p>
             </div>
             <div style={{ backgroundColor: '#F0FDF4', borderRadius: 12, padding: 20, border: '1px solid #BBF7D0' }}>
-              <p style={{ fontSize: 12, color: '#16A34A', margin: 0, textTransform: 'uppercase', fontWeight: 600 }}>Fully Covered</p>
-              <p style={{ fontSize: 28, fontWeight: 700, color: '#16A34A', margin: '8px 0 0' }}>{fullyCount}</p>
+              <p style={{ fontSize: 12, color: 'var(--ds-text-success, var(--ds-text-success, #16A34A))', margin: 0, textTransform: 'uppercase', fontWeight: 600 }}>Fully Covered</p>
+              <p style={{ fontSize: 28, fontWeight: 700, color: 'var(--ds-text-success, var(--ds-text-success, #16A34A))', margin: '8px 0 0' }}>{fullyCount}</p>
             </div>
             <div style={{ backgroundColor: '#FFFBEB', borderRadius: 12, padding: 20, border: '1px solid #FDE68A' }}>
-              <p style={{ fontSize: 12, color: '#D97706', margin: 0, textTransform: 'uppercase', fontWeight: 600 }}>Partially Covered</p>
-              <p style={{ fontSize: 28, fontWeight: 700, color: '#D97706', margin: '8px 0 0' }}>{partialCount}</p>
+              <p style={{ fontSize: 12, color: 'var(--ds-text-warning, var(--ds-text-warning, #D97706))', margin: 0, textTransform: 'uppercase', fontWeight: 600 }}>Partially Covered</p>
+              <p style={{ fontSize: 28, fontWeight: 700, color: 'var(--ds-text-warning, var(--ds-text-warning, #D97706))', margin: '8px 0 0' }}>{partialCount}</p>
             </div>
-            <div style={{ backgroundColor: '#FEF2F2', borderRadius: 12, padding: 20, border: '1px solid #FECACA' }}>
-              <p style={{ fontSize: 12, color: '#DC2626', margin: 0, textTransform: 'uppercase', fontWeight: 600 }}>No Coverage</p>
-              <p style={{ fontSize: 28, fontWeight: 700, color: '#DC2626', margin: '8px 0 0' }}>{noneCount}</p>
+            <div style={{ backgroundColor: 'var(--ds-background-danger, var(--ds-background-danger, #FEF2F2))', borderRadius: 12, padding: 20, border: '1px solid #FECACA' }}>
+              <p style={{ fontSize: 12, color: 'var(--ds-text-danger, var(--ds-text-danger, #DC2626))', margin: 0, textTransform: 'uppercase', fontWeight: 600 }}>No Coverage</p>
+              <p style={{ fontSize: 28, fontWeight: 700, color: 'var(--ds-text-danger, var(--ds-text-danger, #DC2626))', margin: '8px 0 0' }}>{noneCount}</p>
             </div>
           </div>
         );
@@ -181,7 +181,7 @@ export default function RequirementsListPage() {
       {/* Filters */}
       <div style={{ display: 'flex', gap: 12, marginBottom: 24, flexWrap: 'wrap', alignItems: 'center' }}>
         <div style={{ position: 'relative', flex: '1 1 300px', maxWidth: 400 }}>
-          <Search size={18} style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', color: '#94A3B8' }} />
+          <Search size={18} style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #94A3B8))' }} />
           <input
             type="text"
             placeholder="Search requirements..."
@@ -189,7 +189,7 @@ export default function RequirementsListPage() {
             onChange={(e) => setSearchTerm(e.target.value)}
             style={{
               width: '100%', height: 44, padding: '0 14px 0 44px',
-              border: isDark ? '1.5px solid #2E2E2E' : '1.5px solid #E2E8F0', borderRadius: 12, fontSize: 14, backgroundColor: 'var(--cp-bg-elevated, #FFFFFF)', color: isDark ? '#EDEDED' : undefined,
+              border: isDark ? '1.5px solid #2E2E2E' : '1.5px solid #E2E8F0', borderRadius: 12, fontSize: 14, backgroundColor: 'var(--cp-bg-elevated, #FFFFFF)', color: isDark ? 'var(--ds-text, var(--ds-text, #EDEDED))' : undefined,
             }}
           />
         </div>
@@ -219,20 +219,20 @@ export default function RequirementsListPage() {
         </Select>
         {hasActiveFilters && (
           <button onClick={clearFilters}
-            style={{ display: 'flex', alignItems: 'center', gap: 6, height: 44, padding: '0 16px', border: isDark ? '1.5px solid #2E2E2E' : '1.5px solid #E2E8F0', borderRadius: 12, backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFF', color: 'var(--cp-text-tertiary, #64748B)', fontSize: 14, cursor: 'pointer' }}>
+            style={{ display: 'flex', alignItems: 'center', gap: 6, height: 44, padding: '0 16px', border: isDark ? '1.5px solid #2E2E2E' : '1.5px solid #E2E8F0', borderRadius: 12, backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, var(--ds-surface, var(--ds-surface, #FFF)))', color: 'var(--cp-text-tertiary, #64748B)', fontSize: 14, cursor: 'pointer' }}>
             <X size={16} /> Clear
           </button>
         )}
       </div>
 
-      <p style={{ fontSize: 13, color: '#64748B', marginBottom: 16 }}>
+      <p style={{ fontSize: 13, color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #64748B))', marginBottom: 16 }}>
         Showing {filteredRequirements.length} requirement{filteredRequirements.length !== 1 ? 's' : ''}
       </p>
 
       {/* Requirements Table */}
       {isLoading ? (
         <div style={{ display: 'flex', justifyContent: 'center', padding: 60 }}>
-          <RefreshCw size={32} style={{ animation: 'spin 1s linear infinite', color: '#2563EB' }} />
+          <RefreshCw size={32} style={{ animation: 'spin 1s linear infinite', color: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))' }} />
         </div>
       ) : filteredRequirements.length === 0 ? (
         <div style={{ backgroundColor: 'var(--cp-bg-elevated, #FFFFFF)', borderRadius: 12, padding: 60, textAlign: 'center', border: isDark ? '1px solid #2E2E2E' : '1px solid #E2E8F0' }}>
@@ -266,13 +266,13 @@ export default function RequirementsListPage() {
                     style={{ cursor: 'pointer', height: 50, maxHeight: 50, borderBottom: isDark ? '0.75px solid #2E2E2E' : '0.75px solid #E2E8F0' }}
                     onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.backgroundColor = 'var(--cp-interact-hover, rgba(0,0,0,0.04))'; }}
                     onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.backgroundColor = 'transparent'; }}>
-                    <td style={{ padding: '8px 12px', fontSize: 13, fontWeight: 600, color: '#2563EB' }}>{req.req_key}</td>
+                    <td style={{ padding: '8px 12px', fontSize: 13, fontWeight: 600, color: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))' }}>{req.req_key}</td>
                     <td style={{ padding: '8px 12px', fontSize: 13, color: 'var(--cp-text-primary, #0F172A)', maxWidth: 400, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{req.title}</td>
                     <td style={{ padding: '8px 12px' }}>
                       <span style={{ fontSize: 11, fontWeight: 500, color: type.color, backgroundColor: type.bg, padding: '2px 8px', borderRadius: 4 }}>{type.label}</span>
                     </td>
                     <td style={{ padding: '8px 12px' }}>
-                      <span style={{ fontSize: 11, fontWeight: 600, color: '#374151', backgroundColor: '#F1F5F9', padding: '2px 8px', borderRadius: 4 }}>{priority.label}</span>
+                      <span style={{ fontSize: 11, fontWeight: 600, color: '#374151', backgroundColor: 'var(--ds-surface-sunken, var(--ds-surface-sunken, #F1F5F9))', padding: '2px 8px', borderRadius: 4 }}>{priority.label}</span>
                     </td>
                     <td style={{ padding: '8px 12px' }}>
                       <span style={{
@@ -282,7 +282,7 @@ export default function RequirementsListPage() {
                       }}>{status.label}</span>
                     </td>
                     <td style={{ padding: '8px 12px' }}>
-                      <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 13, color: '#64748B' }}>
+                      <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 13, color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #64748B))' }}>
                         <Link2 size={14} /> {req.linked_test_count}
                       </span>
                     </td>

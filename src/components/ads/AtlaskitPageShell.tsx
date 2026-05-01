@@ -16,7 +16,7 @@
  * Chrome (locked)
  * ───────────────
  *   Outer wrapper
- *     - background: --cp-bg-hub-page (#FFFFFF light / #0A0A0A dark).
+ *     - background: --cp-bg-hub-page (var(--ds-surface, #FFFFFF) light / var(--ds-surface, #0A0A0A) dark).
  *                   V3 white — flattened Apr 19, 2026 (see token docstring).
  *                   Pre-V3 was Jira-blue #E9F2FE.
  *     - padding:    8px (preserved from pre-V3 even though it's now
@@ -27,7 +27,7 @@
  *     - flex column, minHeight 100%
  *
  *   Inner content card
- *     - background: elevation.surface (#FFFFFF light / #1A1A1A dark)
+ *     - background: elevation.surface (var(--ds-surface, #FFFFFF) light / var(--ds-surface-raised, #1A1A1A) dark)
  *     - borderRadius: 8px
  *     - overflow: hidden
  *     - flex: 1 — fills the outer wrapper

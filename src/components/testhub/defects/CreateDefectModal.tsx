@@ -22,10 +22,10 @@ interface CreateDefectModalProps {
 }
 
 const SEVERITY_OPTIONS = [
-  { value: 'critical', label: 'Critical', color: '#DC2626', desc: 'System crash, data loss', mapped: 'CRITICAL' as DefectSeverity },
+  { value: 'critical', label: 'Critical', color: 'var(--ds-text-danger, var(--ds-text-danger, #DC2626))', desc: 'System crash, data loss', mapped: 'CRITICAL' as DefectSeverity },
   { value: 'high', label: 'High', color: '#EA580C', desc: 'Major feature broken', mapped: 'MAJOR' as DefectSeverity },
-  { value: 'medium', label: 'Medium', color: '#D97706', desc: 'Feature partially works', mapped: 'MINOR' as DefectSeverity },
-  { value: 'low', label: 'Low', color: '#16A34A', desc: 'Minor/cosmetic issue', mapped: 'TRIVIAL' as DefectSeverity },
+  { value: 'medium', label: 'Medium', color: 'var(--ds-text-warning, var(--ds-text-warning, #D97706))', desc: 'Feature partially works', mapped: 'MINOR' as DefectSeverity },
+  { value: 'low', label: 'Low', color: 'var(--ds-text-success, var(--ds-text-success, #16A34A))', desc: 'Minor/cosmetic issue', mapped: 'TRIVIAL' as DefectSeverity },
 ];
 
 const PRIORITY_OPTIONS = [
@@ -138,10 +138,10 @@ export function CreateDefectModal({ isOpen, onClose, onCreated, prefill }: Creat
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
             <div style={{
               width: 44, height: 44, borderRadius: 12,
-              background: 'linear-gradient(135deg, #DC2626 0%, #B91C1C 100%)',
+              background: 'linear-gradient(135deg, var(--ds-text-danger, #DC2626) 0%, #B91C1C 100%)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
             }}>
-              <Bug size={22} style={{ color: '#FFF' }} />
+              <Bug size={22} style={{ color: 'var(--ds-surface, var(--ds-surface, var(--ds-surface, #FFF)))' }} />
             </div>
             <div>
               <h2 style={{ fontSize: 18, fontWeight: 700, color: 'var(--fg-1)', margin: 0 }}>
@@ -169,7 +169,7 @@ export function CreateDefectModal({ isOpen, onClose, onCreated, prefill }: Creat
           {/* Title */}
           <div style={{ marginBottom: 20 }}>
             <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: 'var(--fg-1)', marginBottom: 6 }}>
-              Title <span style={{ color: '#DC2626' }}>*</span>
+              Title <span style={{ color: 'var(--ds-text-danger, var(--ds-text-danger, #DC2626))' }}>*</span>
             </label>
             <input
               type="text"
@@ -178,12 +178,12 @@ export function CreateDefectModal({ isOpen, onClose, onCreated, prefill }: Creat
               placeholder="Brief description of the issue"
               style={{
                 width: '100%', height: 44, padding: '0 14px',
-                border: `1.5px solid ${errors.title ? '#DC2626' : 'var(--divider)'}`,
+                border: `1.5px solid ${errors.title ? 'var(--ds-text-danger, var(--ds-text-danger, #DC2626))' : 'var(--divider)'}`,
                 borderRadius: 12, fontSize: 14, backgroundColor: 'var(--bg-app)',
                 color: 'var(--fg-1)',
               }}
             />
-            {errors.title && <p style={{ fontSize: 12, color: '#DC2626', margin: '4px 0 0' }}>{errors.title}</p>}
+            {errors.title && <p style={{ fontSize: 12, color: 'var(--ds-text-danger, var(--ds-text-danger, #DC2626))', margin: '4px 0 0' }}>{errors.title}</p>}
           </div>
 
           {/* Severity & Priority */}
@@ -345,7 +345,7 @@ export function CreateDefectModal({ isOpen, onClose, onCreated, prefill }: Creat
             <div>
               <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: 'var(--fg-1)', marginBottom: 6 }}>
                 <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                  <AlertCircle size={14} style={{ color: '#DC2626' }} /> Actual Result
+                  <AlertCircle size={14} style={{ color: 'var(--ds-text-danger, var(--ds-text-danger, #DC2626))' }} /> Actual Result
                 </span>
               </label>
               <textarea
@@ -385,7 +385,7 @@ export function CreateDefectModal({ isOpen, onClose, onCreated, prefill }: Creat
             disabled={createDefect.isPending}
             style={{
               height: 44, padding: '0 24px',
-              background: 'linear-gradient(135deg, #DC2626 0%, #B91C1C 100%)',
+              background: 'linear-gradient(135deg, var(--ds-text-danger, #DC2626) 0%, #B91C1C 100%)',
               border: 'none', borderRadius: 12, fontSize: 14, fontWeight: 600,
               color: 'var(--ds-text-inverse, #FFFFFF)', cursor: createDefect.isPending ? 'not-allowed' : 'pointer',
               opacity: createDefect.isPending ? 0.7 : 1, display: 'flex', alignItems: 'center', gap: 8,

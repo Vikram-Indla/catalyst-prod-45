@@ -200,7 +200,7 @@ export function RiskFormV2({
   return (
     <div className="space-y-5">
       {/* RISK DETAILS Section - Wrapped in bordered card */}
-      <div className="border border-border rounded-lg p-5 bg-white dark:bg-[#1A1A1A]">
+      <div className="border border-border rounded-lg p-5 bg-white dark:bg-[var(--ds-surface-raised,var(--ds-surface-raised, #1A1A1A))]">
         <h4 className="text-xs font-semibold uppercase tracking-wider text-brand-primary mb-4">Risk Details</h4>
         
         {/* Status and Resolution Method - 2 column */}
@@ -386,7 +386,7 @@ export function RiskFormV2({
       </div>
 
       {/* MITIGATION Section - Wrapped in bordered card */}
-      <div className="border border-border rounded-lg p-5 bg-white dark:bg-[#1A1A1A]">
+      <div className="border border-border rounded-lg p-5 bg-white dark:bg-[var(--ds-surface-raised,var(--ds-surface-raised, #1A1A1A))]">
         <h4 className="text-xs font-semibold uppercase tracking-wider text-brand-primary mb-4">Mitigation</h4>
 
         {/* Mitigation Plan */}
@@ -452,7 +452,7 @@ export function RiskFormV2({
 
       {/* Context Metadata Block - only shown in certain contexts */}
       {showContextMetadata && (
-        <div className="border border-border rounded-lg p-5 bg-white dark:bg-[#1A1A1A]">
+        <div className="border border-border rounded-lg p-5 bg-white dark:bg-[var(--ds-surface-raised,var(--ds-surface-raised, #1A1A1A))]">
           <div className="grid grid-cols-2 gap-4 text-sm">
             <div>
               <span className="text-muted-foreground text-xs">Owner</span>

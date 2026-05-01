@@ -34,7 +34,7 @@ const CATALYST_COLORS = {
   oliveDark: '#0f766e',
   oliveLight: '#14b8a6',
   bronze: '#6b7280',
-  gold: '#2563eb',
+  gold: 'var(--ds-text-brand, var(--ds-text-brand, #2563eb))',
   champagne: '#c8ccd0',
   gray: '#737373',
 };
@@ -70,8 +70,8 @@ const getStatusStyles = (colorType: ColorType) => {
     },
     gold: {
       bg: `rgba(37, 99, 235, 0.12)`,
-      text: '#2563eb',
-      dot: '#2563eb',
+      text: 'var(--ds-text-brand, var(--ds-text-brand, #2563eb))',
+      dot: 'var(--ds-text-brand, var(--ds-text-brand, #2563eb))',
       border: `rgba(37, 99, 235, 0.25)`,
     },
     champagne: {

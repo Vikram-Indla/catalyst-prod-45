@@ -22,10 +22,10 @@ interface NewIncidentModalProps {
 
 const SEVERITIES = ['SEV1', 'SEV2', 'SEV3', 'SEV4'] as const;
 const SEV_STYLES: Record<string, { bg: string; border: string; text: string; darkBg: string; darkBorder: string; darkText: string }> = {
-  SEV1: { bg: '#FEE2E2', border: '#FECACA', text: '#991B1B', darkBg: 'rgba(239,68,68,0.12)', darkBorder: 'rgba(239,68,68,0.2)', darkText: '#FCA5A5' },
+  SEV1: { bg: '#FEE2E2', border: '#FECACA', text: 'var(--ds-text-danger, var(--ds-text-danger, #991B1B))', darkBg: 'rgba(239,68,68,0.12)', darkBorder: 'rgba(239,68,68,0.2)', darkText: 'var(--ds-border-danger, var(--ds-border-danger, #FCA5A5))' },
   SEV2: { bg: '#FEF3C7', border: '#FDE68A', text: '#92400E', darkBg: 'rgba(251,191,36,0.12)', darkBorder: 'rgba(251,191,36,0.2)', darkText: '#FDE68A' },
   SEV3: { bg: '#DBEAFE', border: '#BFDBFE', text: '#1E40AF', darkBg: 'rgba(59,130,246,0.12)', darkBorder: 'rgba(59,130,246,0.2)', darkText: '#93C5FD' },
-  SEV4: { bg: '#F1F5F9', border: '#E2E8F0', text: '#475569', darkBg: '#2E2E2E', darkBorder: '#454545', darkText: '#A1A1A1' },
+  SEV4: { bg: 'var(--ds-surface-sunken, var(--ds-surface-sunken, #F1F5F9))', border: 'var(--ds-border, var(--ds-border, #E2E8F0))', text: 'var(--ds-text-subtle, var(--ds-text-subtle, #475569))', darkBg: 'var(--ds-border, var(--ds-border, #2E2E2E))', darkBorder: 'var(--ds-border-bold, var(--ds-border-bold, #454545))', darkText: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #A1A1A1))' },
 };
 
 export function NewIncidentModal({ open, onClose }: NewIncidentModalProps) {
@@ -67,7 +67,7 @@ export function NewIncidentModal({ open, onClose }: NewIncidentModalProps) {
         <DialogHeader className="px-6 pt-5 pb-3" style={{ borderBottom: '0.75px solid rgba(15,23,42,0.06)' }}>
           <DialogTitle className="flex items-center gap-2" style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 16, fontWeight: 700 }}>
             <div className="flex items-center justify-center rounded" style={{ width: 28, height: 28, backgroundColor: '#FEE2E2' }}>
-              <AlertTriangle size={14} style={{ color: '#DC2626' }} />
+              <AlertTriangle size={14} style={{ color: 'var(--ds-text-danger, var(--ds-text-danger, #DC2626))' }} />
             </div>
             New Incident
           </DialogTitle>
@@ -125,7 +125,7 @@ export function NewIncidentModal({ open, onClose }: NewIncidentModalProps) {
 
         <DialogFooter className="px-6 py-3" style={{ borderTop: '0.75px solid rgba(15,23,42,0.06)' }}>
           <Button variant="ghost" onClick={onClose} style={{ borderRadius: 6 }}>Cancel</Button>
-          <Button onClick={handleSubmit} disabled={isSubmitting || !title.trim()} style={{ backgroundColor: '#2563EB', borderRadius: 6 }}>
+          <Button onClick={handleSubmit} disabled={isSubmitting || !title.trim()} style={{ backgroundColor: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))', borderRadius: 6 }}>
             {isSubmitting ? 'Creating...' : 'Create Incident'}
           </Button>
         </DialogFooter>

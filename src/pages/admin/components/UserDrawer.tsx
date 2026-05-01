@@ -608,17 +608,17 @@ const drawerCSS = `
   align-items: center;
   justify-content: space-between;
   padding: 20px 24px;
-  border-bottom: 1px solid #e2e8f0;
+  border-bottom: 1px solid var(--ds-border, #e2e8f0);
 }
 .um-drawer-header h2 {
   font-size: 18px;
   font-weight: 700;
   margin: 0;
-  color: #0f172a;
+  color: var(--ds-text, #0f172a);
 }
 .um-drawer-header p {
   font-size: 12px;
-  color: #94a3b8;
+  color: var(--ds-text-subtlest, #94a3b8);
   margin: 2px 0 0 0;
 }
 .um-drawer-close {
@@ -628,15 +628,15 @@ const drawerCSS = `
   align-items: center;
   justify-content: center;
   border: none;
-  background: #f8fafc;
+  background: var(--ds-surface-sunken, #f8fafc);
   cursor: pointer;
   border-radius: 8px;
-  color: #94a3b8;
+  color: var(--ds-text-subtlest, #94a3b8);
   transition: all 0.15s;
 }
 .um-drawer-close:hover {
-  background: #f1f5f9;
-  color: #0f172a;
+  background: var(--ds-surface-sunken, #f1f5f9);
+  color: var(--ds-text, #0f172a);
 }
 
 /* Drawer Body */
@@ -652,8 +652,8 @@ const drawerCSS = `
   align-items: center;
   gap: 8px;
   padding: 16px 24px;
-  border-top: 1px solid #e2e8f0;
-  background: #f8fafc;
+  border-top: 1px solid var(--ds-border, #e2e8f0);
+  background: var(--ds-surface-sunken, #f8fafc);
 }
 
 /* Form Sections */
@@ -665,10 +665,10 @@ const drawerCSS = `
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  color: #2563eb;
+  color: var(--ds-text-brand, #2563eb);
   margin-bottom: 14px;
   padding-bottom: 10px;
-  border-bottom: 1px solid #f1f5f9;
+  border-bottom: 1px solid var(--ds-surface-sunken, #f1f5f9);
 }
 .um-form-row {
   display: grid;
@@ -687,28 +687,28 @@ const drawerCSS = `
 .um-form-group label {
   font-size: 12px;
   font-weight: 500;
-  color: #475569;
+  color: var(--ds-text-subtle, #475569);
 }
 .um-form-group input,
 .um-form-group select {
   height: 40px;
   padding: 0 12px;
   font-size: 14px;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--ds-border, #e2e8f0);
   border-radius: 8px;
   transition: all 0.15s;
   background: var(--ds-text-inverse, #ffffff);
-  color: #0f172a;
+  color: var(--ds-text, #0f172a);
 }
 .um-form-group input:focus,
 .um-form-group select:focus {
   outline: none;
-  border-color: #2563eb;
+  border-color: var(--ds-text-brand, #2563eb);
   box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.08);
 }
 .um-form-group input:disabled {
   background: rgba(37, 99, 235, 0.08);
-  color: #94a3b8;
+  color: var(--ds-text-subtlest, #94a3b8);
   border-color: transparent;
   cursor: not-allowed;
 }
@@ -723,40 +723,40 @@ const drawerCSS = `
   font-size: 13px;
   font-weight: 500;
   border-radius: 6px;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--ds-border, #e2e8f0);
   background: var(--ds-text-inverse, #ffffff);
-  color: #0f172a;
+  color: var(--ds-text, #0f172a);
   cursor: pointer;
   transition: all 0.15s;
 }
 .um-drawer .um-btn:hover {
-  border-color: #2563eb;
-  color: #2563eb;
+  border-color: var(--ds-text-brand, #2563eb);
+  color: var(--ds-text-brand, #2563eb);
 }
 .um-drawer .um-btn:disabled {
   opacity: 0.6;
   cursor: not-allowed;
 }
 .um-drawer .um-btn-primary {
-  background: #2563eb;
-  border-color: #2563eb;
+  background: var(--ds-text-brand, #2563eb);
+  border-color: var(--ds-text-brand, #2563eb);
   color: white;
 }
 .um-drawer .um-btn-primary:hover {
-  background: #1d4ed8;
+  background: var(--ds-background-brand-bold-hovered, #1d4ed8);
 }
 .um-drawer .um-btn-danger {
-  background: #ef4444;
-  border-color: #ef4444;
+  background: var(--ds-text-danger, #ef4444);
+  border-color: var(--ds-text-danger, #ef4444);
   color: white;
 }
 .um-drawer .um-btn-danger:hover {
-  background: #dc2626;
+  background: var(--ds-text-danger, #dc2626);
 }
 
 /* ═══ DARK MODE — ADS tokens (was inline solid hex palette) ═══
    Per platform guardrail: use --ds-* tokens with sensible fallbacks.
-   Brand blue (#2563eb) and danger red (#ef4444) stay as-is — they
+   Brand blue (var(--ds-text-brand, #2563eb)) and danger red (var(--ds-text-danger, #ef4444)) stay as-is — they
    are intentional brand accents in both modes. */
 .dark .um-drawer {
   background: var(--ds-surface-overlay, #1D2125) !important;

@@ -32,8 +32,8 @@ export function RoadmapSummary({
   const healthColor = healthPercent >= 70 
     ? '#0d9488' 
     : healthPercent >= 40 
-    ? '#d97706' 
-    : '#dc2626';
+    ? 'var(--ds-text-warning, var(--ds-text-warning, #d97706))' 
+    : 'var(--ds-text-danger, var(--ds-text-danger, #dc2626))';
 
   return (
     <div className="h-[68px] px-5 flex items-center gap-8 shrink-0" style={{ backgroundColor: 'var(--bg-app)', borderBottom: '1px solid var(--divider)' }}>

@@ -136,7 +136,7 @@ export function DashboardHeader({
             <div className="flex items-center gap-4">
               <div className="relative w-[100px] h-[100px]">
                 <svg className="w-full h-full -rotate-90">
-                  <circle cx="50" cy="50" r="40" fill="none" stroke="#e2e8f0" strokeWidth="10" />
+                  <circle cx="50" cy="50" r="40" fill="none" stroke="var(--ds-border, var(--ds-border, #e2e8f0))" strokeWidth="10" />
                   <circle
                     cx="50" cy="50" r="40" fill="none"
                     stroke={healthColor}
@@ -151,7 +151,7 @@ export function DashboardHeader({
                 </div>
               </div>
               <div className="text-xs text-slate-500">
-                <span className={healthScore.trend.direction === 'down' ? 'text-[#ef4444]' : 'text-[#0d9488]'}>
+                <span className={healthScore.trend.direction === 'down' ? 'text-[var(--ds-text-danger,var(--ds-text-danger, #ef4444))]' : 'text-[#0d9488]'}>
                   {healthScore.trend.direction === 'down' ? '↓' : '↑'}{healthScore.trend.value}%
                 </span>
                 <span className="ml-1">{healthScore.trend.period}</span>
@@ -167,13 +167,13 @@ export function DashboardHeader({
                     key={gate.id}
                     className="flex items-center gap-2 p-2 rounded-lg border"
                     style={{
-                      backgroundColor: gate.status === 'pass' ? '#ccfbf1' : gate.status === 'fail' ? '#fee2e2' : '#f1f5f9',
-                      borderColor: gate.status === 'pass' ? '#0d9488' : gate.status === 'fail' ? '#ef4444' : '#94a3b8',
+                      backgroundColor: gate.status === 'pass' ? '#ccfbf1' : gate.status === 'fail' ? '#fee2e2' : 'var(--ds-surface-sunken, var(--ds-surface-sunken, #f1f5f9))',
+                      borderColor: gate.status === 'pass' ? '#0d9488' : gate.status === 'fail' ? 'var(--ds-text-danger, var(--ds-text-danger, #ef4444))' : 'var(--ds-text-subtlest, var(--ds-text-subtlest, #94a3b8))',
                     }}
                   >
                     <div
                       className="w-6 h-6 rounded-full flex items-center justify-center text-white text-xs font-bold"
-                      style={{ backgroundColor: gate.status === 'pass' ? '#0d9488' : gate.status === 'fail' ? '#ef4444' : '#94a3b8' }}
+                      style={{ backgroundColor: gate.status === 'pass' ? '#0d9488' : gate.status === 'fail' ? 'var(--ds-text-danger, var(--ds-text-danger, #ef4444))' : 'var(--ds-text-subtlest, var(--ds-text-subtlest, #94a3b8))' }}
                     >
                       {gate.status === 'pass' ? '✓' : gate.status === 'fail' ? '✗' : '?'}
                     </div>

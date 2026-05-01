@@ -120,10 +120,10 @@ export function BehaviouralTab({ workItems, showFilteredList, weekStart, weekEnd
               const isPeak = val === rhythmData.max && val > 0;
               return (
                 <div key={d} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
-                  <span style={{ fontSize: isPeak ? 12 : 12, fontWeight: isPeak ? 600 : 400, fontFamily: 'var(--cp-font-mono)', color: isPeak ? '#1D4ED8' : '#374151' }}>{val}</span>
+                  <span style={{ fontSize: isPeak ? 12 : 12, fontWeight: isPeak ? 600 : 400, fontFamily: 'var(--cp-font-mono)', color: isPeak ? 'var(--ds-background-brand-bold-hovered, var(--ds-background-brand-bold-hovered, #1D4ED8))' : '#374151' }}>{val}</span>
                   <div style={{
                     width: '100%', maxWidth: 40, height: barH, borderRadius: 4,
-                    backgroundColor: isPeak ? '#1D4ED8' : 'var(--cp-blue)',
+                    backgroundColor: isPeak ? 'var(--ds-background-brand-bold-hovered, var(--ds-background-brand-bold-hovered, #1D4ED8))' : 'var(--cp-blue)',
                     transition: 'height 300ms ease, background-color 0ms',
                   }} />
                   <span style={{ fontSize: 11, color: INK4, fontWeight: 500 }}>{DAY_ABBRS[idx]}</span>
@@ -155,7 +155,7 @@ export function BehaviouralTab({ workItems, showFilteredList, weekStart, weekEnd
                 cursor: tile.onClick ? 'pointer' : 'default', transition: 'background 150ms',
               }}
               onMouseEnter={e => { if (tile.onClick) e.currentTarget.style.background = 'rgba(0,0,0,0.03)'; }}
-              onMouseLeave={e => { if (tile.onClick) e.currentTarget.style.background = '#FFFFFF'; }}
+              onMouseLeave={e => { if (tile.onClick) e.currentTarget.style.background = 'var(--ds-surface, var(--ds-surface, #FFFFFF))'; }}
             >
               <div style={{ fontSize: 11, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.05em', color: MUTED, marginBottom: 6 }}>{tile.label}</div>
               <div style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 28, fontWeight: 650, color: (tile as any).valueColor || INK1 }}>{tile.value}</div>
