@@ -34,13 +34,13 @@
       "file": "src/components/for-you/ForYouDetailPanel.tsx",
       "line": 22,
       "hex": "#FAFAFA",
-      "snippet": "surface: '#FFFFFF', surfaceSecondary: '#FAFAFA', surfaceTertiary: '#F4F4F5',"
+      "snippet": "surface: '', surfaceSecondary: '#FAFAFA', surfaceTertiary: '#F4F4F5',"
     },
     {
       "file": "src/components/for-you/ForYouDetailPanel.tsx",
       "line": 22,
       "hex": "#F4F4F5",
-      "snippet": "surface: '#FFFFFF', surfaceSecondary: '#FAFAFA', surfaceTertiary: '#F4F4F5',"
+      "snippet": "surface: '', surfaceSecondary: '#FAFAFA', surfaceTertiary: '#F4F4F5',"
     },
     {
       "file": "src/components/for-you/ForYouDetailPanel.tsx",
@@ -240,7 +240,7 @@
       "file": "src/pages/strategy/StrategyRoom.tsx",
       "line": 154,
       "hex": "#2563EB",
-      "snippet": "style={{ background: '#2563EB', color: '#FFFFFF' }}"
+      "snippet": "style={{ background: '#2563EB', color: '' }}"
     },
     {
       "file": "src/components/strategy/intelligence/AIStrategyIntelligencePanel.tsx",
@@ -398,13 +398,13 @@
       "file": "src/pages/producthub/IdeasAnalyticsPage.tsx",
       "line": 18,
       "hex": "#42526E",
-      "snippet": "'Draft': '#42526E', 'Submitted': '#42526E', 'Under Review': '#FFFFFF', 'Approved': '#FFFFFF', 'Converted to Request': '#FFFFFF',"
+      "snippet": "'Draft': '#42526E', 'Submitted': '#42526E', 'Under Review': '', 'Approved': '', 'Converted to Request': '',"
     },
     {
       "file": "src/pages/producthub/IdeasAnalyticsPage.tsx",
       "line": 18,
       "hex": "#42526E",
-      "snippet": "'Draft': '#42526E', 'Submitted': '#42526E', 'Under Review': '#FFFFFF', 'Approved': '#FFFFFF', 'Converted to Request': '#FFFFFF',"
+      "snippet": "'Draft': '#42526E', 'Submitted': '#42526E', 'Under Review': '', 'Approved': '', 'Converted to Request': '',"
     },
     {
       "file": "src/pages/producthub/IdeasAnalyticsPage.tsx",
@@ -542,7 +542,7 @@
       "file": "src/pages/producthub/IdeasBacklogPage.tsx",
       "line": 189,
       "hex": "#2563EB",
-      "snippet": "background: isActive ? '#2563EB' : (''), color: isActive ? '#FFFFFF' : dk.t2,"
+      "snippet": "background: isActive ? '#2563EB' : (''), color: isActive ? '' : dk.t2,"
     }
   ],
   "ProjectHub": [
@@ -1617,7 +1617,7 @@
       "file": "src/pages/r360-member/RingView.tsx",
       "line": 118,
       "hex": "#1B7F37",
-      "snippet": "<span style={{ fontSize: '11px', fontWeight: 700, color: '#FFFFFF', background: '#1B7F37', padding: '2px 8px', borderRadius: '12px' }}>{done"
+      "snippet": "<span style={{ fontSize: '11px', fontWeight: 700, color: '', background: '#1B7F37', padding: '2px 8px', borderRadius: '12px' }}>{doneCount}<"
     },
     {
       "file": "src/pages/r360-member/RingView.tsx",
@@ -1635,7 +1635,7 @@
       "file": "src/pages/r360-member/RingView.tsx",
       "line": 179,
       "hex": "#2563EB",
-      "snippet": "background: avatarUrl ? '#FFFFFF' : 'linear-gradient(135deg,#2563EB,#0D9488)',"
+      "snippet": "background: avatarUrl ? '' : 'linear-gradient(135deg,#2563EB,#0D9488)',"
     }
   ],
   "NotifyHub": [
@@ -1873,13 +1873,13 @@
       "file": "src/pages/admin/FeatureFlagsPage.tsx",
       "line": 43,
       "hex": "#0C66E4",
-      "snippet": "blue:    { bg: '#0C66E4', text: '#FFFFFF' },"
+      "snippet": "blue:    { bg: '#0C66E4', text: '' },"
     },
     {
       "file": "src/pages/admin/FeatureFlagsPage.tsx",
       "line": 44,
       "hex": "#1B7F37",
-      "snippet": "teal:    { bg: '#1B7F37', text: '#FFFFFF' },"
+      "snippet": "teal:    { bg: '#1B7F37', text: '' },"
     },
     {
       "file": "src/pages/admin/FeatureFlagsPage.tsx",
@@ -1909,7 +1909,7 @@
       "file": "src/pages/admin/FeatureFlagsPage.tsx",
       "line": 51,
       "hex": "#1B7F37",
-      "snippet": "live:  { bg: '#1B7F37', text: '#FFFFFF' },"
+      "snippet": "live:  { bg: '#1B7F37', text: '' },"
     },
     {
       "file": "src/pages/admin/FeatureFlagsPage.tsx",
@@ -1927,7 +1927,7 @@
       "file": "src/pages/admin/FeatureFlagsPage.tsx",
       "line": 53,
       "hex": "#0C66E4",
-      "snippet": "beta:  { bg: '#0C66E4', text: '#FFFFFF' },"
+      "snippet": "beta:  { bg: '#0C66E4', text: '' },"
     },
     {
       "file": "src/pages/admin/FeatureFlagsPage.tsx",
@@ -2061,13 +2061,13 @@
       "file": "src/components/reqAssist/RAEpicDraftDrawer.tsx",
       "line": 32,
       "hex": "#0C66E4",
-      "snippet": "reviewed:  { bg: '#0C66E4', color: '#FFFFFF', label: 'REVIEWED' },"
+      "snippet": "reviewed:  { bg: '#0C66E4', color: '', label: 'REVIEWED' },"
     },
     {
       "file": "src/components/reqAssist/RAEpicDraftDrawer.tsx",
       "line": 33,
       "hex": "#1B7F37",
-      "snippet": "published: { bg: '#1B7F37', color: '#FFFFFF', label: 'PUBLISHED' },"
+      "snippet": "published: { bg: '#1B7F37', color: '', label: 'PUBLISHED' },"
     },
     {
       "file": "src/components/reqAssist/RAEpicDraftDrawer.tsx",
