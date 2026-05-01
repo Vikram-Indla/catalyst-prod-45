@@ -36,11 +36,13 @@ interface ModalDialogProps {
   autoFocus?: boolean;
 }
 
+// ADS @atlaskit/modal-dialog spec widths — do not deviate.
+// Ref: https://atlassian.design/components/modal-dialog
 const WIDTH_MAP: Record<string, number> = {
   small: 400,
-  medium: 560,
-  large: 860,   // Jira Create modal is ~840–880px wide
-  'x-large': 1024,
+  medium: 600,
+  large: 800,    // Jira Cloud Create issue modal = ADS large
+  'x-large': 968,
 };
 
 export function ModalDialog({ children, onClose, width = 'medium' }: ModalDialogProps) {
