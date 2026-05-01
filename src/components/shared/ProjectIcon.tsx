@@ -53,6 +53,15 @@ interface ProjectIconProps {
   /** Project name — accessibility only. NEVER rendered as a letter tile. */
   name?: string | null;
   className?: string;
+  /**
+   * Visual variant.
+   * - 'solid' (default): filled tile in `color`, white icon. Matches Jira's
+   *   project-card and breadcrumb chips.
+   * - 'ghost': transparent / faintly-tinted tile, icon stroke uses the
+   *   project color. Matches Jira's recent-items and side-nav rows in
+   *   dark mode (per ref screenshot 2026-05).
+   */
+  variant?: 'solid' | 'ghost';
 }
 
 /**
@@ -77,6 +86,7 @@ export function ProjectIcon({
   size = 'medium',
   name,
   className,
+  variant = 'solid',
 }: ProjectIconProps) {
   const px = SIZE_PX[size];
   const radius = px <= 24 ? 3 : 4;
@@ -103,9 +113,11 @@ export function ProjectIcon({
     );
   }
 
-  // 2. Secondary: Lucide icon on tinted square (canonical icon+color from ph_projects)
+  // 2. Secondary: Lucide icon. 'solid' = filled tile + white icon.
+  // 'ghost' = transparent tile + colored icon stroke (Jira recent-items).
   const LucideIcon = resolveLucideIcon(iconName);
   if (LucideIcon && color) {
+    const isGhost = variant === 'ghost';
     return (
       <span
         aria-label={name ?? undefined}
@@ -114,15 +126,19 @@ export function ProjectIcon({
           width: px,
           height: px,
           borderRadius: radius,
-          background: color,
+          background: isGhost ? 'transparent' : color,
           display: 'inline-flex',
           alignItems: 'center',
           justifyContent: 'center',
           flexShrink: 0,
-          color: 'var(--ds-surface, #FFFFFF)',
+          color: isGhost ? color : 'var(--ds-surface, #FFFFFF)',
         }}
       >
-        <LucideIcon size={iconPx} color="var(--ds-surface, #FFFFFF)" strokeWidth={2} />
+        <LucideIcon
+          size={iconPx}
+          color={isGhost ? color : 'var(--ds-surface, #FFFFFF)'}
+          strokeWidth={2}
+        />
       </span>
     );
   }
