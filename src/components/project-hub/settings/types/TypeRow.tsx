@@ -49,7 +49,7 @@ export function TypeRow({ name, icon, color, level, isEnabled, isFeatureType, fe
         className="flex items-center justify-center rounded-lg flex-shrink-0"
         style={{ width: 28, height: 28, background: color, borderRadius: 8 }}
       >
-        <IconComp size={14} color="#FFFFFF" strokeWidth={2.5} />
+        <IconComp size={14} color="var(--ds-text-inverse, #FFFFFF)" strokeWidth={2.5} />
       </div>
 
       {/* Name */}

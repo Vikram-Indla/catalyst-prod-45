@@ -82,10 +82,10 @@ export function AllWorkContextMenu({ item, x, y, onClose, onOpenItem }: Props) {
           <button
             key={action.id}
             onClick={() => handleAction(action.id)}
-            className="w-full flex items-center gap-2.5 px-3 py-1.5 text-[13px] hover:bg-[#f8f8f8] transition-colors text-left"
+            className="w-full flex items-center gap-2.5 px-3 py-1.5 text-[13px] hover:bg-[var(--ds-background-input-hovered, #f8f8f8)] transition-colors text-left"
             style={{ color: isDanger ? 'var(--sem-danger)' : '#1A1D23' }}
           >
-            <Icon className="w-4 h-4 shrink-0" style={{ color: isDanger ? 'var(--sem-danger)' : '#6b6e76' }} />
+            <Icon className="w-4 h-4 shrink-0" style={{ color: isDanger ? 'var(--sem-danger)' : 'var(--ds-text-subtlest, #6b6e76)' }} />
             {action.label}
           </button>
         );

@@ -246,7 +246,7 @@ export default function TestHubVerifyPage() {
             borderRadius: 6,
             fontSize: 13,
             fontWeight: 600,
-            color: '#FFFFFF',
+            color: 'var(--ds-text-inverse, #FFFFFF)',
             cursor: 'pointer',
             display: 'inline-flex',
             alignItems: 'center',

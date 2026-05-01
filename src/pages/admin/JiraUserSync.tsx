@@ -275,7 +275,7 @@ const JiraUserSync: React.FC = () => {
                 disabled={isSyncing}
                 style={{
                   display: 'inline-flex', alignItems: 'center', gap: '5px',
-                  background: '#2563EB', color: '#FFFFFF', border: 'none',
+                  background: '#2563EB', color: 'var(--ds-text-inverse, #FFFFFF)', border: 'none',
                   padding: '6px 14px', borderRadius: '6px', fontSize: '12px', fontWeight: 600,
                   cursor: isSyncing ? 'not-allowed' : 'pointer', opacity: isSyncing ? 0.7 : 1, lineHeight: 1,
                 }}>
@@ -406,7 +406,7 @@ const JiraUserSync: React.FC = () => {
                   style={{
                     display: 'inline-flex', alignItems: 'center', gap: '4px',
                     padding: '3px 10px', borderRadius: '4px', fontSize: '11px', fontWeight: 600,
-                    cursor: 'pointer', border: 'none', background: '#2563EB', color: '#FFFFFF',
+                    cursor: 'pointer', border: 'none', background: '#2563EB', color: 'var(--ds-text-inverse, #FFFFFF)',
                   }}>
                   <FolderPlus size={11} /> Assign to Project ▾
                 </button>
@@ -619,7 +619,7 @@ const JiraUserSync: React.FC = () => {
                         <Users2 size={32} style={{ color: 'var(--cp-text-muted, #94A3B8)', margin: '0 auto 10px', display: 'block' }} />
                         <div className="jira-text-primary" style={{ fontSize: '14px', fontWeight: 500, color: 'var(--cp-text-secondary, #334155)' }}>No synced users yet</div>
                         <button onClick={handleSync} disabled={isSyncing}
-                          style={{ marginTop: 10, display: 'inline-flex', alignItems: 'center', gap: '5px', background: '#2563EB', color: '#FFFFFF', border: 'none', padding: '6px 14px', borderRadius: '6px', fontSize: '12px', fontWeight: 600, cursor: isSyncing ? 'not-allowed' : 'pointer' }}>
+                          style={{ marginTop: 10, display: 'inline-flex', alignItems: 'center', gap: '5px', background: '#2563EB', color: 'var(--ds-text-inverse, #FFFFFF)', border: 'none', padding: '6px 14px', borderRadius: '6px', fontSize: '12px', fontWeight: 600, cursor: isSyncing ? 'not-allowed' : 'pointer' }}>
                           <RefreshCw size={11} className={isSyncing ? 'animate-spin' : ''} />
                           Sync Now to pull users from Jira
                         </button>
@@ -811,7 +811,7 @@ const JiraUserSync: React.FC = () => {
                     width: '28px', height: '28px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
                     borderRadius: '4px', fontSize: '11px', fontWeight: 500, cursor: 'pointer',
                     background: page === p ? '#2563EB' : ('var(--cp-bg-elevated, #FFFFFF)'),
-                    color: page === p ? '#FFFFFF' : ('var(--cp-text-tertiary, #64748B)'),
+                    color: page === p ? 'var(--ds-text-inverse, #FFFFFF)' : ('var(--cp-text-tertiary, #64748B)'),
                     border: page === p ? 'none' : `1px solid ${'var(--cp-border-default, rgba(15,23,42,0.10))'}`,
                   }}
                 >

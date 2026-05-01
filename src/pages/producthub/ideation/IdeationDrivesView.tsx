@@ -92,7 +92,7 @@ export default function IdeationDrivesView() {
         <button
           onClick={() => setCreateOpen(true)}
           style={{
-            height: 50, background: '#2563EB', color: '#FFFFFF', border: 'none', borderRadius: '6px',
+            height: 50, background: '#2563EB', color: 'var(--ds-text-inverse, #FFFFFF)', border: 'none', borderRadius: '6px',
             padding: '0 16px', fontSize: '13px', fontWeight: 650, cursor: 'pointer',
             display: 'inline-flex', alignItems: 'center', gap: '6px',
           }}

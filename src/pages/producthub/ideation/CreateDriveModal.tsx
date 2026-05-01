@@ -376,7 +376,7 @@ export default function CreateDriveModal({ open, onClose }: CreateDriveModalProp
             disabled={!isValid || createMutation.isPending}
             style={{
               padding: '10px 24px', fontSize: '14px', fontWeight: 600,
-              color: '#FFFFFF',
+              color: 'var(--ds-text-inverse, #FFFFFF)',
               background: (!isValid || createMutation.isPending) ? '#93C5FD' : '#2563EB',
               border: 'none', borderRadius: '8px',
               cursor: (!isValid || createMutation.isPending) ? 'not-allowed' : 'pointer',

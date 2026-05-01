@@ -60,7 +60,7 @@ export function DefectStatsWidget({ stats }: Props) {
             background: 'linear-gradient(135deg, var(--sem-danger) 0%, #B91C1C 100%)',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
           }}>
-            <Bug size={18} color="#FFFFFF" />
+            <Bug size={18} color="var(--ds-text-inverse, #FFFFFF)" />
           </div>
           <div>
             <h3 style={{ fontSize: 15, fontWeight: 700, color: 'var(--fg-1)', margin: 0 }}>

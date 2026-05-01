@@ -133,7 +133,7 @@ export function CreateReportModal({ isOpen, onClose, onCreated, preselectedCycle
         <div style={{ padding: '20px 24px', borderBottom: '1px solid var(--divider)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
             <div style={{ width: 44, height: 44, borderRadius: 12, background: 'linear-gradient(135deg, #F59E0B 0%, var(--sem-warning) 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <FileBarChart size={22} style={{ color: '#FFFFFF' }} />
+              <FileBarChart size={22} style={{ color: 'var(--ds-text-inverse, #FFFFFF)' }} />
             </div>
             <h2 style={{ fontSize: 18, fontWeight: 700, color: 'var(--fg-1)', margin: 0 }}>Generate Report</h2>
           </div>

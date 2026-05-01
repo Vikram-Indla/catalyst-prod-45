@@ -156,7 +156,7 @@ export function QuickExecutionModal({
         <div style={{ padding: '18px 24px', borderBottom: '1px solid var(--divider)', display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
           <div style={{ display: 'flex', alignItems: 'flex-start', gap: 14, flex: 1, minWidth: 0 }}>
             <div style={{ width: 40, height: 40, borderRadius: 12, background: 'linear-gradient(135deg, #10B981 0%, var(--sem-success) 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-              <Play size={20} style={{ color: '#FFFFFF' }} />
+              <Play size={20} style={{ color: 'var(--ds-text-inverse, #FFFFFF)' }} />
             </div>
             <div style={{ flex: 1, minWidth: 0 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4, flexWrap: 'wrap' }}>

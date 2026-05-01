@@ -589,7 +589,7 @@ export function CreateWorkItemModal({ open, onClose, projectId, projectKey, onCr
               onClick={handleSubmit}
               disabled={!title.trim() || submitting}
               className="flex items-center justify-center rounded-md text-[13px] font-semibold transition-all hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed bg-[var(--cp-blue)]"
-              style={{ height: 40, padding: '0 20px', color: '#FFFFFF', borderRadius: 6 }}
+              style={{ height: 40, padding: '0 20px', color: 'var(--ds-text-inverse, #FFFFFF)', borderRadius: 6 }}
             >
               {submitting ? 'Creating…' : 'Create'}
             </button>

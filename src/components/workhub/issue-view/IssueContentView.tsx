@@ -113,7 +113,7 @@ function StatusPill({ status, statusCategory, issueId, onStatusChange }: { statu
   const ref = useRef<HTMLDivElement>(null);
   const cat = (statusCategory ?? '').toLowerCase();
   let bg = '#44546F';
-  let color = '#FFFFFF';
+  let color = 'var(--ds-text-inverse, #FFFFFF)';
   if (cat.includes('done') || cat === 'complete') { bg = '#1B845D'; }
   else if (cat.includes('progress') || cat === 'indeterminate') { bg = '#0C66E4'; }
   else if (status.toLowerCase().includes('beta')) { bg = '#1B845D'; }
@@ -490,7 +490,7 @@ export function IssueContentView({
               <Plus style={{ width: 14, height: 14 }} />
             </button>
             {showAddMenu && (() => {
-              const atlText = '#292A2E';
+              const atlText = 'var(--ds-text, #292A2E)';
               const addMenuItems = [
                 { id: 'subtask', icon: <CheckSquare size={16} color={atlText} />, label: 'Create subtask', shortcut: '⇧ C', section: 'primary', action: () => { setShowAddMenu(false); toast('Use the Sub-tasks section below'); } },
                 { id: 'link', icon: <Link2 size={16} color={atlText} />, label: 'Link work item', shortcut: '⇧ K', section: 'primary', action: () => { setShowAddMenu(false); toast.info('Use the Linked Issues section below'); } },
@@ -502,7 +502,7 @@ export function IssueContentView({
               const primary = filtered.filter(i => i.section === 'primary');
               const secondary = filtered.filter(i => i.section === 'secondary');
               return (
-                <div style={{ position: 'absolute', left: 0, top: 34, background: '#ffffff', borderRadius: 4, boxShadow: '0px 8px 12px rgba(30,31,33,0.15), 0px 0px 1px rgba(30,31,33,0.31)', width: 266, zIndex: 400, padding: 0 }}>
+                <div style={{ position: 'absolute', left: 0, top: 34, background: 'var(--ds-text-inverse, #ffffff)', borderRadius: 4, boxShadow: '0px 8px 12px rgba(30,31,33,0.15), 0px 0px 1px rgba(30,31,33,0.31)', width: 266, zIndex: 400, padding: 0 }}>
                   <div style={{ margin: '4px 8px' }}>
                     <div style={{ display: 'flex', alignItems: 'center', background: '#fff', border: '2px solid #85B8FF', borderRadius: 3, padding: '1px 0' }}>
                       <Search size={14} color="#626F86" style={{ marginLeft: 8, flexShrink: 0 }} />
@@ -519,7 +519,7 @@ export function IssueContentView({
                     <div style={{ padding: 0 }}>
                       {primary.map(mi => (
                         <button key={mi.id} onClick={mi.action} style={{ width: '100%', display: 'flex', alignItems: 'center', height: 40, padding: '0 8px', border: 'none', background: 'transparent', cursor: 'pointer', fontSize: 14, color: atlText, fontFamily: 'inherit', transition: 'background 0.1s' }}
-                          onMouseEnter={e => (e.currentTarget.style.background = '#F0F1F2')}
+                          onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-surface-hovered, #F0F1F2)')}
                           onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
                         >
                           <span style={{ width: 24, height: 24, display: 'flex', alignItems: 'center', flexShrink: 0, marginRight: 8 }}>{mi.icon}</span>
@@ -530,10 +530,10 @@ export function IssueContentView({
                     </div>
                   )}
                   {secondary.length > 0 && (
-                    <div style={{ borderTop: '1px solid #DDDEE1', padding: 0 }}>
+                    <div style={{ borderTop: '1px solid var(--ds-surface-pressed, #DDDEE1)', padding: 0 }}>
                       {secondary.map(mi => (
                         <button key={mi.id} onClick={mi.action} style={{ width: '100%', display: 'flex', alignItems: 'center', height: 40, padding: '0 8px', border: 'none', background: 'transparent', cursor: 'pointer', fontSize: 14, color: atlText, fontFamily: 'inherit', transition: 'background 0.1s' }}
-                          onMouseEnter={e => (e.currentTarget.style.background = '#F0F1F2')}
+                          onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-surface-hovered, #F0F1F2)')}
                           onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
                         >
                           <span style={{ width: 24, height: 24, display: 'flex', alignItems: 'center', flexShrink: 0, marginRight: 8 }}>{mi.icon}</span>
@@ -652,7 +652,7 @@ export function IssueContentView({
                      surfaced in the console for a fix, rather than
                      silently downgrading to an editor whose ADF
                      emission shape this app no longer accepts. */
-                  <div style={{ position: 'relative', borderRadius: 3, backgroundColor: '#FFFFFF' }}>
+                  <div style={{ position: 'relative', borderRadius: 3, backgroundColor: 'var(--ds-text-inverse, #FFFFFF)' }}>
                     <Suspense
                       fallback={
                         <div style={{ minHeight: 150, padding: '8px 0', color: '#97A0AF', fontSize: 13 }}>
@@ -687,13 +687,13 @@ export function IssueContentView({
                       cursor: 'text', outline: 'none',
                       transition: 'background-color 0.2s ease-in-out',
                     }}
-                    onMouseEnter={e => { e.currentTarget.style.backgroundColor = '#F8F8F8'; }}
+                    onMouseEnter={e => { e.currentTarget.style.backgroundColor = 'var(--ds-background-input-hovered, #F8F8F8)'; }}
                     onMouseLeave={e => { e.currentTarget.style.backgroundColor = 'transparent'; }}
                   >
                     {(() => {
                       const descSource = (item as any)?.description_adf ?? item?.description_text ?? null;
                       if (isAdfEmpty(descSource)) {
-                        return <span style={{ fontSize: 14, color: '#8C8F97', padding: '4px 0' }}>Add a description...</span>;
+                        return <span style={{ fontSize: 14, color: 'var(--ds-border-input, #8C8F97)', padding: '4px 0' }}>Add a description...</span>;
                       }
                       return <EpicDescriptionRenderer content={descSource} issueKey={item?.issue_key} />;
                     })()}
@@ -923,7 +923,7 @@ export function IssueContentView({
                     padding: '4px 8px', borderRadius: 4, cursor: 'pointer',
                     minHeight: 32, transition: 'background 0.12s',
                     border: showFixVersionDropdown ? '2px solid #4C9AFF' : '2px solid transparent',
-                    background: showFixVersionDropdown ? '#FFFFFF' : 'transparent',
+                    background: showFixVersionDropdown ? 'var(--ds-text-inverse, #FFFFFF)' : 'transparent',
                   }}
                   onMouseEnter={e => { if (!showFixVersionDropdown) e.currentTarget.style.background = '#F4F5F7'; }}
                   onMouseLeave={e => { if (!showFixVersionDropdown) e.currentTarget.style.background = 'transparent'; }}
@@ -942,7 +942,7 @@ export function IssueContentView({
                   )}
                 </div>
                 {showFixVersionDropdown && (
-                  <div style={{ position: 'absolute', top: '100%', left: 0, right: 0, background: '#FFFFFF', border: '1px solid #DFE1E6', borderRadius: 4, boxShadow: '0 4px 12px rgba(0,0,0,0.15)', zIndex: 100, maxHeight: 320, overflow: 'hidden' }}>
+                  <div style={{ position: 'absolute', top: '100%', left: 0, right: 0, background: 'var(--ds-text-inverse, #FFFFFF)', border: '1px solid #DFE1E6', borderRadius: 4, boxShadow: '0 4px 12px rgba(0,0,0,0.15)', zIndex: 100, maxHeight: 320, overflow: 'hidden' }}>
                     <div style={{ padding: '8px 12px', borderBottom: '1px solid #F4F5F7' }}>
                       <input autoFocus value={fixVersionSearch} onChange={e => setFixVersionSearch(e.target.value)} placeholder="Search versions..."
                         style={{ width: '100%', border: '1px solid #DFE1E6', borderRadius: 4, padding: '6px 10px', fontSize: 13, color: '#172B4D', outline: 'none', fontFamily: 'inherit' }}

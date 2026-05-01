@@ -152,7 +152,7 @@ export default function TestCyclesPage() {
               <RefreshCw size={18} />
             </button>
             <button onClick={() => setIsCreateModalOpen(true)}
-              style={{ height: 40, padding: '0 20px', background: 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)', border: 'none', borderRadius: 8, fontSize: 14, fontWeight: 600, color: '#FFFFFF', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 8, boxShadow: '0 2px 8px rgba(37,99,235,0.25)' }}>
+              style={{ height: 40, padding: '0 20px', background: 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)', border: 'none', borderRadius: 8, fontSize: 14, fontWeight: 600, color: 'var(--ds-text-inverse, #FFFFFF)', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 8, boxShadow: '0 2px 8px rgba(37,99,235,0.25)' }}>
               <Plus size={18} /> Create Test Cycle
             </button>
       </TestHubPageHeader>
@@ -170,7 +170,7 @@ export default function TestCyclesPage() {
           <button onClick={(e) => { e.stopPropagation(); setIsFilterOpen(!isFilterOpen); setIsSortOpen(false); }}
             style={{ height: 40, padding: '0 14px', border: `1.5px solid ${statusFilter.length > 0 ? '#2563EB' : borderColor}`, borderRadius: 8, backgroundColor: statusFilter.length > 0 ? ('var(--cp-primary-light, #EFF6FF)') : surfaceBg, color: statusFilter.length > 0 ? '#2563EB' : textBody, fontSize: 14, fontWeight: 500, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 8 }}>
             <Filter size={16} /> Status
-            {statusFilter.length > 0 && <span style={{ minWidth: 18, height: 18, padding: '0 5px', backgroundColor: '#2563EB', color: '#FFFFFF', fontSize: 11, fontWeight: 600, borderRadius: 8, display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>{statusFilter.length}</span>}
+            {statusFilter.length > 0 && <span style={{ minWidth: 18, height: 18, padding: '0 5px', backgroundColor: '#2563EB', color: 'var(--ds-text-inverse, #FFFFFF)', fontSize: 11, fontWeight: 600, borderRadius: 8, display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>{statusFilter.length}</span>}
             <ChevronDown size={14} />
           </button>
           {isFilterOpen && (

@@ -82,7 +82,7 @@ export function RoadmapFilters({
                 fontSize: 12,
                 fontWeight: isActive ? 600 : 500,
                 background: isActive ? '#2563EB' : 'transparent',
-                color: isActive ? '#FFFFFF' : ink[2],
+                color: isActive ? 'var(--ds-text-inverse, #FFFFFF)' : ink[2],
                 border: isActive ? '1px solid #2563EB' : '1px solid transparent',
                 cursor: 'pointer',
                 transition: 'all 0.15s ease',

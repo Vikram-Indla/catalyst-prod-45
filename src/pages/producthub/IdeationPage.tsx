@@ -154,7 +154,7 @@ export default function IdeationPage() {
             <button
               onClick={() => setWizardOpen(true)}
               style={{
-                background: '#2563EB', color: '#FFFFFF', border: 'none',
+                background: '#2563EB', color: 'var(--ds-text-inverse, #FFFFFF)', border: 'none',
                 borderRadius: '6px', padding: '8px 16px', fontSize: '13px', fontWeight: 600,
                 cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '4px',
                 fontFamily: 'var(--cp-font-body)',
@@ -271,7 +271,7 @@ export default function IdeationPage() {
               onClick={() => setActiveFilter(pill.key)}
               style={{
                 background: isActive ? '#2563EB' : ('var(--cp-bg-elevated, #FFFFFF)'),
-                color: isActive ? '#FFFFFF' : dk.t2,
+                color: isActive ? 'var(--ds-text-inverse, #FFFFFF)' : dk.t2,
                 border: `1px solid ${isActive ? '#2563EB' : dk.border}`,
                 borderRadius: '20px', padding: '4px 12px', fontSize: '12px', fontWeight: 500,
                 cursor: 'pointer', display: 'inline-flex', alignItems: 'center',

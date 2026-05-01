@@ -934,7 +934,7 @@ export function CreateTestCaseModal({
               fontFamily: 'var(--cp-font-body)',
               fontSize: 14,
               fontWeight: 600,
-              color: '#FFFFFF',
+              color: 'var(--ds-text-inverse, #FFFFFF)',
               cursor: isSaving ? 'not-allowed' : 'pointer',
               boxShadow: isSaving ? 'none' : '0 2px 8px rgba(37,99,235,0.18)',
               transition: 'all 0.15s',

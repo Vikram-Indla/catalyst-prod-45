@@ -91,7 +91,7 @@ export const R360BoardView: React.FC<Props> = ({ items, onItemClick, memberName 
             <div style={{
               width: '22px', height: '22px', borderRadius: '50%', display: 'flex',
               alignItems: 'center', justifyContent: 'center', fontSize: '11px', fontWeight: 700,
-              color: '#FFFFFF', background: col.color, marginLeft: 'auto',
+              color: 'var(--ds-text-inverse, #FFFFFF)', background: col.color, marginLeft: 'auto',
             }}>{col.items.length}</div>
           </div>
 

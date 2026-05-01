@@ -234,7 +234,7 @@ function ReleaseRow({
           alignItems: 'center',
           height: 44,
           padding: '0 16px',
-          background: '#FFFFFF',
+          background: 'var(--ds-text-inverse, #FFFFFF)',
           borderBottom: '1px solid #DFE1E6',
           cursor: 'pointer',
         }}
@@ -367,7 +367,7 @@ export function ReleaseHealthUWV({ projectId, projectKey, onClose }: Props) {
         position: 'fixed',
         inset: 0,
         zIndex: 1000,
-        background: '#FFFFFF',
+        background: 'var(--ds-text-inverse, #FFFFFF)',
         display: 'flex',
         flexDirection: 'column',
         fontFamily: FONT_STACK,
@@ -381,7 +381,7 @@ export function ReleaseHealthUWV({ projectId, projectKey, onClose }: Props) {
           justifyContent: 'space-between',
           padding: '16px 24px',
           borderBottom: '1px solid #DFE1E6',
-          background: '#FFFFFF',
+          background: 'var(--ds-text-inverse, #FFFFFF)',
         }}
       >
         <div>

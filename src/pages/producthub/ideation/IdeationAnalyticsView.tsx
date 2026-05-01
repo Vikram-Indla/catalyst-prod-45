@@ -162,7 +162,7 @@ export default function IdeationAnalyticsView({ ideas }: Props) {
               <div style={{ flex: 1, height: '50px', background: barTrack, borderRadius: '6px', overflow: 'hidden' }}>
                 <div style={{
                   width: `${Math.max(f.pct, f.count > 0 ? 8 : 0)}%`, height: '100%', background: f.color, borderRadius: '6px',
-                  display: 'flex', alignItems: 'center', paddingLeft: '12px', color: '#FFFFFF', fontSize: '12px', fontWeight: 700,
+                  display: 'flex', alignItems: 'center', paddingLeft: '12px', color: 'var(--ds-text-inverse, #FFFFFF)', fontSize: '12px', fontWeight: 700,
                   minWidth: f.count > 0 ? '40px' : undefined,
                 }}>
                   {f.count}
@@ -213,7 +213,7 @@ export default function IdeationAnalyticsView({ ideas }: Props) {
               <div style={{
                 width: '24px', height: '24px', borderRadius: '50%', background: c.color, flexShrink: 0,
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
-                color: '#FFFFFF', fontSize: '9px', fontWeight: 700,
+                color: 'var(--ds-text-inverse, #FFFFFF)', fontSize: '9px', fontWeight: 700,
               }}>{c.initials}</div>
               <span style={{ fontSize: '13px', fontWeight: 600, color: dk.t2, width: '100px', flexShrink: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{c.name}</span>
               <span style={{

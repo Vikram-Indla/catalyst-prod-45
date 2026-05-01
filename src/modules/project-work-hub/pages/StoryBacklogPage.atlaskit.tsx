@@ -1104,7 +1104,7 @@ function InlineCreateRow({
         marginTop: 4,
         border: '1px solid #0C66E4',
         borderRadius: 4,
-        background: '#FFFFFF',
+        background: 'var(--ds-text-inverse, #FFFFFF)',
       }}
     >
       <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 20, height: 20 }}>
@@ -1167,8 +1167,8 @@ function AssigneeStackFilter({
             marginLeft: i === 0 ? 0 : -8,
             width: 26, height: 26,
             borderRadius: '50%',
-            border: '2px solid #FFFFFF',
-            background: '#FFFFFF',
+            border: '2px solid var(--ds-text-inverse, #FFFFFF)',
+            background: 'var(--ds-text-inverse, #FFFFFF)',
             display: 'inline-flex',
             alignItems: 'center',
             justifyContent: 'center',
@@ -1187,7 +1187,7 @@ function AssigneeStackFilter({
             minWidth: 26,
             padding: '0 8px',
             borderRadius: 13,
-            border: '2px solid #FFFFFF',
+            border: '2px solid var(--ds-text-inverse, #FFFFFF)',
             background: '#DFE1E6',
             color: '#42526E',
             fontSize: 11,
@@ -1242,7 +1242,7 @@ const ToolbarButton = React.forwardRef<HTMLButtonElement, ToolbarButtonProps>(
           border: '1px solid',
           borderColor: isSelected ? '#0C66E4' : '#DFE1E6',
           borderRadius: 4,
-          background: isSelected ? '#E9F2FF' : '#FFFFFF',
+          background: isSelected ? '#E9F2FF' : 'var(--ds-text-inverse, #FFFFFF)',
           color: isSelected ? '#0055CC' : '#42526E',
           fontSize: 13,
           fontWeight: 500,
@@ -1252,7 +1252,7 @@ const ToolbarButton = React.forwardRef<HTMLButtonElement, ToolbarButtonProps>(
           outline: 'none',
         }}
         onMouseEnter={e => { if (!isSelected) (e.currentTarget as HTMLElement).style.background = '#F4F5F7'; }}
-        onMouseLeave={e => { if (!isSelected) (e.currentTarget as HTMLElement).style.background = '#FFFFFF'; }}
+        onMouseLeave={e => { if (!isSelected) (e.currentTarget as HTMLElement).style.background = 'var(--ds-text-inverse, #FFFFFF)'; }}
       >
         {iconBefore}
         {children}
@@ -1308,7 +1308,7 @@ function ToolbarMenu({ trigger, children, anchor = 'left', width = 220 }: Toolba
             [anchor === 'right' ? 'right' : 'left']: 0,
             zIndex: 50,
             minWidth: width,
-            background: '#FFFFFF',
+            background: 'var(--ds-text-inverse, #FFFFFF)',
             border: '1px solid #DFE1E6',
             borderRadius: 4,
             boxShadow: '0 1px 1px rgba(9,30,66,0.25), 0 8px 24px -4px rgba(9,30,66,0.18)',

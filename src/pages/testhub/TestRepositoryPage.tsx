@@ -727,12 +727,12 @@ export function TestRepositoryPage() {
                 height: 40, padding: '0 16px',
                 background: 'linear-gradient(135deg, #7C3AED 0%, #6D28D9 100%)',
                 border: 'none', borderRadius: 8, fontFamily: 'var(--cp-font-body)',
-                fontSize: 14, fontWeight: 600, color: '#FFFFFF', cursor: 'pointer',
+                fontSize: 14, fontWeight: 600, color: 'var(--ds-text-inverse, #FFFFFF)', cursor: 'pointer',
                 display: 'flex', alignItems: 'center', gap: 8,
                 boxShadow: '0 2px 8px rgba(124, 58, 237, 0.25)', transition: 'all 0.15s',
               }}
             >
-              <Sparkles style={{ width: 16, height: 16, color: '#FFFFFF' }} />
+              <Sparkles style={{ width: 16, height: 16, color: 'var(--ds-text-inverse, #FFFFFF)' }} />
               Generate with AI
             </button>
 
@@ -743,12 +743,12 @@ export function TestRepositoryPage() {
                 height: 40, padding: '0 20px',
                 background: 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)',
                 border: 'none', borderRadius: 8, fontFamily: 'var(--cp-font-body)',
-                fontSize: 14, fontWeight: 600, color: '#FFFFFF', cursor: 'pointer',
+                fontSize: 14, fontWeight: 600, color: 'var(--ds-text-inverse, #FFFFFF)', cursor: 'pointer',
                 display: 'flex', alignItems: 'center', gap: 8,
                 boxShadow: '0 2px 8px rgba(37,99,235,0.18)', transition: 'all 0.15s',
               }}
             >
-              <Plus style={{ width: 16, height: 16, color: '#FFFFFF' }} />
+              <Plus style={{ width: 16, height: 16, color: 'var(--ds-text-inverse, #FFFFFF)' }} />
               Create Test Case
             </button>
           </div>

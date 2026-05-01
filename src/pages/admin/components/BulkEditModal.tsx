@@ -193,7 +193,7 @@ const bulkModalCSS = `
 
 /* Modal Container */
 .ct-modal {
-  background: #ffffff;
+  background: var(--ds-text-inverse, #ffffff);
   border-radius: 12px;
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
   width: 480px;
@@ -267,7 +267,7 @@ const bulkModalCSS = `
 
 /* Field Card - V8: WHITE background, NOT gray */
 .ct-field-card {
-  background: #ffffff;
+  background: var(--ds-text-inverse, #ffffff);
   border: 1px solid #e2e8f0;
   border-radius: 12px;
   padding: 16px 20px;
@@ -319,7 +319,7 @@ const bulkModalCSS = `
   font-size: 14px;
   font-weight: 500;
   color: #1e293b;
-  background: #ffffff;
+  background: var(--ds-text-inverse, #ffffff);
   border: 1px solid #e2e8f0;
   border-radius: 8px;
   cursor: pointer;
@@ -367,7 +367,7 @@ const bulkModalCSS = `
   top: calc(100% + 6px);
   left: 0;
   right: 0;
-  background: #ffffff;
+  background: var(--ds-text-inverse, #ffffff);
   border: 1px solid #e2e8f0;
   border-radius: 12px;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
@@ -441,7 +441,7 @@ const bulkModalCSS = `
   font-weight: 500;
   border-radius: 8px;
   border: 1px solid #e2e8f0;
-  background: #ffffff;
+  background: var(--ds-text-inverse, #ffffff);
   color: #0f172a;
   cursor: pointer;
   transition: all 0.15s ease;
@@ -455,7 +455,7 @@ const bulkModalCSS = `
 .ct-btn-primary {
   background: #2563eb;
   border-color: #2563eb;
-  color: #ffffff;
+  color: var(--ds-text-inverse, #ffffff);
 }
 
 .ct-btn-primary:hover {

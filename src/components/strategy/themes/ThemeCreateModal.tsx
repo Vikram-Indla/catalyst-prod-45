@@ -310,7 +310,7 @@ export function ThemeCreateModal({ open, onClose, onSubmit, initialData }: Props
             fontSize: 12, fontWeight: 600, height: 34, padding: '0 16px',
             border: 'none', borderRadius: 6,
             background: form.title.trim() ? 'var(--cp-blue)' : 'var(--fg-4)',
-            color: '#FFFFFF', cursor: form.title.trim() ? 'pointer' : 'default',
+            color: 'var(--ds-text-inverse, #FFFFFF)', cursor: form.title.trim() ? 'pointer' : 'default',
           }}>{initialData ? 'Update Theme' : 'Create Theme'}</button>
         </div>
       </div>

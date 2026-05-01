@@ -231,7 +231,7 @@
   height: 6px;
   border-radius: 50%;
   background: #0052CC;
-  box-shadow: 0 0 0 1.5px #FFFFFF;
+  box-shadow: 0 0 0 1.5px var(--ds-text-inverse, #FFFFFF);
 }
 
 .sp-inline-summary-input {
@@ -291,7 +291,7 @@
   justify-content: center;
   font-size: 10px;
   font-weight: 700;
-  color: #FFFFFF;
+  color: var(--ds-text-inverse, #FFFFFF);
   flex-shrink: 0;
 }
 
@@ -424,7 +424,7 @@
   background: var(--ds-link, #0052CC);
   border-radius: 1px;
 }
-.sp-row--selected .sp-checkbox-dash { background: #FFFFFF; }
+.sp-row--selected .sp-checkbox-dash { background: var(--ds-text-inverse, #FFFFFF); }
 
 /* ══════════════════════════════════════════════
    Popover (@atlaskit/popup content)
@@ -860,7 +860,7 @@
   padding: 8px 12px;
   background: #0C2340;
   border-radius: 6px;
-  color: #FFFFFF;
+  color: var(--ds-text-inverse, #FFFFFF);
   box-shadow: 0 4px 12px rgba(9,30,66,0.25);
 }
 .sp-bulkbar-count {
@@ -879,7 +879,7 @@
   border: 1px solid rgba(255,255,255,0.3);
   border-radius: 3px;
   background: transparent;
-  color: #FFFFFF;
+  color: var(--ds-text-inverse, #FFFFFF);
   cursor: pointer;
   font-size: 13px;
   font-family: inherit;
@@ -917,7 +917,7 @@
 }
 .sp-bulkbar-cancel:hover {
   background: rgba(255,255,255,0.12);
-  color: #FFFFFF;
+  color: var(--ds-text-inverse, #FFFFFF);
 }
 
 /* ══════════════════════════════════════════════
@@ -925,30 +925,30 @@
    Subtasks panel table; kept here for historical parity).
    ══════════════════════════════════════════════ */
 .adf-editor-content table {
-  border: 0.556px solid #DDDEE1;
+  border: 0.556px solid var(--ds-surface-pressed, #DDDEE1);
   border-collapse: collapse;
   font-size: 14px;
   width: 100%;
   margin: 8px 0;
 }
 .adf-editor-content table th {
-  background: #F0F1F2;
-  color: #292A2E;
+  background: var(--ds-surface-hovered, #F0F1F2);
+  color: var(--ds-text, #292A2E);
   font-size: 14px;
   font-weight: 400;
   padding: 8px;
   text-align: left;
   vertical-align: top;
-  border-top: 0.556px solid #DDDEE1;
-  border-left: 0.556px solid #DDDEE1;
+  border-top: 0.556px solid var(--ds-surface-pressed, #DDDEE1);
+  border-left: 0.556px solid var(--ds-surface-pressed, #DDDEE1);
 }
 .adf-editor-content table td {
-  background: #FFFFFF;
-  color: #292A2E;
+  background: var(--ds-text-inverse, #FFFFFF);
+  color: var(--ds-text, #292A2E);
   font-size: 14px;
   font-weight: 400;
   padding: 8px;
   vertical-align: top;
-  border-top: 0.556px solid #DDDEE1;
-  border-left: 0.556px solid #DDDEE1;
+  border-top: 0.556px solid var(--ds-surface-pressed, #DDDEE1);
+  border-left: 0.556px solid var(--ds-surface-pressed, #DDDEE1);
 }

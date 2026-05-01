@@ -44,7 +44,7 @@ function OwnerAvatar({ initials, name }: { initials?: string; name?: string }) {
   return (
     <div
       className="flex-shrink-0 flex items-center justify-center rounded-full"
-      style={{ width: 22, height: 22, background: AVATAR_BG, color: '#FFFFFF', fontSize: 9, fontWeight: 700 }}
+      style={{ width: 22, height: 22, background: AVATAR_BG, color: 'var(--ds-text-inverse, #FFFFFF)', fontSize: 9, fontWeight: 700 }}
       title={name}
     >
       {initials}

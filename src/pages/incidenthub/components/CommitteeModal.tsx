@@ -94,7 +94,7 @@ export function CommitteeModal({ open, onClose, committee, incidentId }: Committ
                               ? (v === 'approved' ? '#1B7F37' : v === 'rejected' ? '#FEE2E2' : '#DFE1E6')
                               : 'transparent',
                             color: voteStatus === v
-                              ? (v === 'approved' ? '#FFFFFF' : v === 'rejected' ? '#991B1B' : '#42526E')
+                              ? (v === 'approved' ? 'var(--ds-text-inverse, #FFFFFF)' : v === 'rejected' ? '#991B1B' : '#42526E')
                               : '#94A3B8',
                             border: voteStatus === v ? 'none' : '1px solid rgba(15,23,42,0.08)',
                           }}

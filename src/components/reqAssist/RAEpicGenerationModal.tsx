@@ -292,7 +292,7 @@ export default function RAEpicGenerationModal({ doc, onClose, onViewDrafts }: Pr
                 }}
                 style={{
                   padding: '8px 16px', fontSize: 13, fontWeight: 600, borderRadius: 6,
-                  border: 'none', background: 'var(--cp-blue)', color: '#FFFFFF', cursor: 'pointer',
+                  border: 'none', background: 'var(--cp-blue)', color: 'var(--ds-text-inverse, #FFFFFF)', cursor: 'pointer',
                 }}
               >
                 View Epics →
@@ -351,7 +351,7 @@ export default function RAEpicGenerationModal({ doc, onClose, onViewDrafts }: Pr
                 onClick={handleRetry}
                 style={{
                   padding: '8px 16px', fontSize: 13, fontWeight: 600, borderRadius: 6,
-                  border: 'none', background: 'var(--cp-blue)', color: '#FFFFFF', cursor: 'pointer',
+                  border: 'none', background: 'var(--cp-blue)', color: 'var(--ds-text-inverse, #FFFFFF)', cursor: 'pointer',
                 }}
               >
                 Retry

@@ -71,7 +71,7 @@ export default function AllReleasesPage() {
     const s = mapStatus(status);
     if (s === 'in_progress') return '#2563EB';
     if (s === 'released') return '#16A34A';
-    if (s === 'planning') return '#FFFFFF';
+    if (s === 'planning') return 'var(--ds-text-inverse, #FFFFFF)';
     return 'rgba(15,23,42,0.12)';
   };
 

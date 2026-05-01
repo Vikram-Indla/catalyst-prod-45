@@ -8,9 +8,9 @@ function getLozengeStyle(status: string, statusCategory?: string): { bg: string;
   // 1. Prioritise status_category from Jira (eliminates Unknown)
   const cat = (statusCategory || '').toLowerCase().replace(/[_ ]/g, '');
   if (cat === 'done' || cat === 'completed')
-    return { bg: '#1B7F37', color: '#FFFFFF', label: (status || 'DONE').toUpperCase() };
+    return { bg: '#1B7F37', color: 'var(--ds-text-inverse, #FFFFFF)', label: (status || 'DONE').toUpperCase() };
   if (cat === 'inprogress' || cat === 'indeterminate' || cat === 'started')
-    return { bg: '#0C66E4', color: '#FFFFFF', label: (status || 'IN PROGRESS').toUpperCase() };
+    return { bg: '#0C66E4', color: 'var(--ds-text-inverse, #FFFFFF)', label: (status || 'IN PROGRESS').toUpperCase() };
   if (cat === 'new' || cat === 'todo')
     return { bg: '#DFE1E6', color: '#42526E', label: (status || 'TO DO').toUpperCase() };
 
@@ -18,13 +18,13 @@ function getLozengeStyle(status: string, statusCategory?: string): { bg: string;
   const s = (status || '').toLowerCase();
   // Green
   if (['done', 'closed', 'resolved', 'ready for production', 'beta ready', 'completed', 'production ready', 'monitor', 'released', 'verified'].some(k => s === k))
-    return { bg: '#1B7F37', color: '#FFFFFF', label: status.toUpperCase() };
+    return { bg: '#1B7F37', color: 'var(--ds-text-inverse, #FFFFFF)', label: status.toUpperCase() };
   // Blue
   if (['in progress', 'in development', 'under implementation', 'in review', 'in qa', 'ready for qa', 'retest',
        'code review', 'in uat', 'uat ready', 're-open', 'in beta', 'in production', 'in design', 'in requirements',
        'ready for development', 'in entity integration', 'technical validation', 'end to end testing',
        'deferred for int', 'awaiting info', 'on hold', 'active'].some(k => s === k))
-    return { bg: '#0C66E4', color: '#FFFFFF', label: status.toUpperCase() };
+    return { bg: '#0C66E4', color: 'var(--ds-text-inverse, #FFFFFF)', label: status.toUpperCase() };
   // Grey (default — never "Unknown")
   return { bg: '#DFE1E6', color: '#42526E', label: (status || 'TO DO').toUpperCase() };
 }

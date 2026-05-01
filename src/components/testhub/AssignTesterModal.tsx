@@ -309,7 +309,7 @@ export function AssignTesterModal({
               height: 40, padding: '0 20px',
               background: 'linear-gradient(135deg, #4F46E5 0%, #4338CA 100%)',
               border: 'none', borderRadius: 8, fontSize: 14, fontWeight: 600,
-              color: '#FFFFFF', cursor: 'pointer', opacity: isSubmitting ? 0.7 : 1,
+              color: 'var(--ds-text-inverse, #FFFFFF)', cursor: 'pointer', opacity: isSubmitting ? 0.7 : 1,
               display: 'flex', alignItems: 'center', gap: 8,
             }}
           >

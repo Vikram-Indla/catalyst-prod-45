@@ -14,8 +14,8 @@ interface StatusLozengeProps {
  */
 function getStatusStyle(category: string): { bg: string; color: string } {
   switch (category) {
-    case 'in_progress': return { bg: '#0C66E4', color: '#FFFFFF' };
-    case 'done': return { bg: '#1B7F37', color: '#FFFFFF' };
+    case 'in_progress': return { bg: '#0C66E4', color: 'var(--ds-text-inverse, #FFFFFF)' };
+    case 'done': return { bg: '#1B7F37', color: 'var(--ds-text-inverse, #FFFFFF)' };
     // terminal, todo, backlog, blocked, on_hold — ALL grey
     default: return { bg: '#DFE1E6', color: '#42526E' };
   }

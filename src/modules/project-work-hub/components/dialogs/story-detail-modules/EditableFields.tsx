@@ -14,7 +14,7 @@ import { resolveAvatarUrl } from '@/lib/avatars';
 
 /** Atlassian-spec dropdown container styles */
 const ATLASSIAN_DROPDOWN: React.CSSProperties = {
-  background: '#FFFFFF', borderRadius: 4, border: 'none',
+  background: 'var(--ds-text-inverse, #FFFFFF)', borderRadius: 4, border: 'none',
   boxShadow: '0 8px 12px rgba(30,31,33,0.15), 0 0 1px rgba(30,31,33,0.31)',
   padding: '4px 0', zIndex: 9999,
 };
@@ -71,7 +71,7 @@ export function AvatarCircle({ userId, name, avatarUrl, size = 28 }: { userId: s
   }
   return (
     <div style={{ width: size, height: size, borderRadius: '50%', background: getAvatarColor(userId), display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-      <CircleUser size={size * 0.7} color="#FFFFFF" strokeWidth={1.5} />
+      <CircleUser size={size * 0.7} color="var(--ds-text-inverse, #FFFFFF)" strokeWidth={1.5} />
     </div>
   );
 }
@@ -209,7 +209,7 @@ export function EditableAssignee({ issueId, issueKey, projectId, currentAssignee
             )}
             <span style={{
               fontSize: 14,
-              color: opt.value === UNASSIGNED_VALUE ? '#6B6E76' : '#172B4D',
+              color: opt.value === UNASSIGNED_VALUE ? 'var(--ds-text-subtlest, #6B6E76)' : '#172B4D',
               fontWeight: 400,
               overflow: 'hidden',
               textOverflow: 'ellipsis',
@@ -365,7 +365,7 @@ export function EditableLabels({ issueId, issueKey, currentLabels, onUpdate }: {
           multiValue: (base, state) => ({
             ...base,
             border: `1px solid ${getLabelColor((state.data as LabelOption).value)}`,
-            background: '#FFFFFF',
+            background: 'var(--ds-text-inverse, #FFFFFF)',
             borderRadius: 3,
           }),
           multiValueLabel: (base) => ({

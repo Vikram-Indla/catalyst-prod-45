@@ -74,7 +74,7 @@ export function ExecutionViewMode({
             <button onClick={onRerun} style={{
               height: 34, padding: '0 14px', border: 'none', borderRadius: 6,
               background: 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)',
-              color: '#FFFFFF', fontSize: 12, fontWeight: 600, cursor: 'pointer',
+              color: 'var(--ds-text-inverse, #FFFFFF)', fontSize: 12, fontWeight: 600, cursor: 'pointer',
               display: 'flex', alignItems: 'center', gap: 5,
             }}>
               <Play size={13} /> Re-run
@@ -192,7 +192,7 @@ export function ExecutionViewMode({
         <button onClick={onRerun} style={{
           height: 50, padding: '0 16px', border: 'none', borderRadius: 6,
           background: 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)',
-          color: '#FFFFFF', fontSize: 13, fontWeight: 600, cursor: 'pointer',
+          color: 'var(--ds-text-inverse, #FFFFFF)', fontSize: 13, fontWeight: 600, cursor: 'pointer',
           display: 'flex', alignItems: 'center', gap: 6,
         }}>
           <Play size={14} /> Re-run

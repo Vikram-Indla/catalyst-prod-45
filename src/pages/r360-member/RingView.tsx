@@ -115,7 +115,7 @@ export function RingView({ items, name, role, avatarUrl, onSelect, selected, ove
                 <svg width="12" height="12" viewBox="0 0 12 12"><path d="M2.5 6l2.5 2.5 4.5-4.5" stroke="#16A34A" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round" /></svg>
               </div>
               <span style={{ fontSize: '14px', fontWeight: 650, color: 'var(--cp-text-primary, #0F172A)' }}>Completed This Week</span>
-              <span style={{ fontSize: '11px', fontWeight: 700, color: '#FFFFFF', background: '#1B7F37', padding: '2px 8px', borderRadius: '12px' }}>{doneCount}</span>
+              <span style={{ fontSize: '11px', fontWeight: 700, color: 'var(--ds-text-inverse, #FFFFFF)', background: '#1B7F37', padding: '2px 8px', borderRadius: '12px' }}>{doneCount}</span>
             </div>
             <button onClick={(e) => { e.stopPropagation(); setShowDone(false); }}
               style={{ width: '24px', height: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center', border: `1px solid ${'var(--cp-border, #E2E8F0)'}`, borderRadius: '4px', background: isDark ? 'var(--cp-bg-surface, #242528)' : '#FFF', cursor: 'pointer', color: 'var(--cp-text-tertiary, #64748B)', fontSize: '14px' }}
@@ -176,9 +176,9 @@ export function RingView({ items, name, role, avatarUrl, onSelect, selected, ove
           <div style={{
             width: '72px', height: '72px', borderRadius: '50%', margin: '0 auto 8px',
             overflow: 'hidden',
-            background: avatarUrl ? '#FFFFFF' : 'linear-gradient(135deg,#2563EB,#0D9488)',
+            background: avatarUrl ? 'var(--ds-text-inverse, #FFFFFF)' : 'linear-gradient(135deg,#2563EB,#0D9488)',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
-            boxShadow: '0 1px 3px rgba(0,0,0,0.08)', border: '2px solid #FFFFFF',
+            boxShadow: '0 1px 3px rgba(0,0,0,0.08)', border: '2px solid var(--ds-text-inverse, #FFFFFF)',
             outline: '1px solid rgba(15,23,42,0.08)',
           }}>
             {avatarUrl ? (
@@ -199,7 +199,7 @@ export function RingView({ items, name, role, avatarUrl, onSelect, selected, ove
             <span style={{ color: 'var(--cp-text-muted, #94A3B8)' }}>&middot;</span>
             <span style={{ fontWeight: 650, color: staleItems.length > 0 ? '#DC2626' : '#334155' }}>{staleItems.length} stale</span>
             <span style={{ color: 'var(--cp-text-muted, #94A3B8)' }}>&middot;</span>
-            <span style={{ fontWeight: 650, color: doneCount > 0 ? '#FFFFFF' : '#334155' }}>{doneCount} done</span>
+            <span style={{ fontWeight: 650, color: doneCount > 0 ? 'var(--ds-text-inverse, #FFFFFF)' : '#334155' }}>{doneCount} done</span>
           </div>
 
           {/* Divider */}
@@ -258,7 +258,7 @@ export function RingView({ items, name, role, avatarUrl, onSelect, selected, ove
           {/* Completed Section */}
           {doneItems.length > 0 && (
             <div style={{ textAlign: 'left' as const, borderInlineStart: '3px solid #16A34A', paddingInlineStart: '12px' }}>
-              <div style={{ fontSize: '11px', fontWeight: 700, color: '#FFFFFF', textTransform: 'uppercase' as const, letterSpacing: '0.05em', marginBottom: '10px' }}>Completed</div>
+              <div style={{ fontSize: '11px', fontWeight: 700, color: 'var(--ds-text-inverse, #FFFFFF)', textTransform: 'uppercase' as const, letterSpacing: '0.05em', marginBottom: '10px' }}>Completed</div>
               {doneItems.map(item => {
                 const closedDate = item.resolved_at || item.updated_at;
                 const resolvedLabel = closedDate ? new Date(closedDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '';
@@ -322,10 +322,10 @@ export function RingView({ items, name, role, avatarUrl, onSelect, selected, ove
         <div style={{
           width: '56px', height: '56px', borderRadius: '50%',
           overflow: 'hidden',
-          background: avatarUrl ? '#FFFFFF' : 'linear-gradient(135deg,#2563EB,#0D9488)',
+          background: avatarUrl ? 'var(--ds-text-inverse, #FFFFFF)' : 'linear-gradient(135deg,#2563EB,#0D9488)',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           boxShadow: '0 1px 3px rgba(0,0,0,0.08)',
-          border: '2px solid #FFFFFF',
+          border: '2px solid var(--ds-text-inverse, #FFFFFF)',
           outline: '1px solid rgba(15,23,42,0.08)',
         }}>
           {avatarUrl ? (

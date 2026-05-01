@@ -123,7 +123,7 @@
   border: 1px solid #DFE1E6;
   border-radius: 4px;
   overflow: hidden;
-  background: #FFFFFF;
+  background: var(--ds-text-inverse, #FFFFFF);
 }
 
 /* ── Row ──────────────────────────────────── */
@@ -135,7 +135,7 @@
   height: 40px;
   padding: 0 10px;
   border-bottom: 1px solid #F4F5F7;
-  background: #FFFFFF;
+  background: var(--ds-text-inverse, #FFFFFF);
   transition: background-color 120ms ease;
 }
 
@@ -336,7 +336,7 @@
   padding: 0 10px;
   border: 1px solid #F4F5F7;
   border-radius: 4px;
-  background: #FFFFFF;
+  background: var(--ds-text-inverse, #FFFFFF);
 }
 
 .lwi-skeleton__pulse {
@@ -450,7 +450,7 @@
   font-family: var(--cp-font-mono);
   font-size: 12px;
   font-weight: 600;
-  color: #505258;
+  color: var(--ds-text-accent-gray, #505258);
   flex-shrink: 0;
 }
 

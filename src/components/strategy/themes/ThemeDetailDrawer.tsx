@@ -216,7 +216,7 @@ function OverviewTab({ theme, sc, bsc, pri, isDark = false }: { theme: Strategic
           padding: 16,
         }}>
           <div className="flex items-center gap-2 mb-2">
-            <span style={{ fontSize: 9, fontWeight: 700, padding: '2px 6px', background: '#3B82F6', color: '#FFFFFF', borderRadius: 4, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+            <span style={{ fontSize: 9, fontWeight: 700, padding: '2px 6px', background: '#3B82F6', color: 'var(--ds-text-inverse, #FFFFFF)', borderRadius: 4, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
               AI
             </span>
             <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--cp-primary-hover, #1D4ED8)' }}>Strategy Health Score</span>

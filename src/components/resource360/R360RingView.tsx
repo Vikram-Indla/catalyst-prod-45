@@ -241,7 +241,7 @@ export const R360RingView: React.FC<Props> = ({ member, items, doneCount, onItem
             <div style={{ display: 'flex', alignItems: 'center', gap: '5px', marginBottom: '5px' }}>
               <span style={{ fontSize: '11px', fontWeight: 600, color: 'var(--cp-blue)', fontFamily: 'var(--cp-font-mono)' }}>{item.item_key}</span>
               {item.project_key && (
-                <span style={{ fontSize: '10px', fontWeight: 700, padding: '2px 6px', borderRadius: '4px', color: '#FFFFFF', background: projColor }}>{item.project_key}</span>
+                <span style={{ fontSize: '10px', fontWeight: 700, padding: '2px 6px', borderRadius: '4px', color: 'var(--ds-text-inverse, #FFFFFF)', background: projColor }}>{item.project_key}</span>
               )}
               <span style={{ marginLeft: 'auto', fontSize: '11px', fontWeight: 600, color: ageCol(item.age_days ?? 0), fontVariantNumeric: 'tabular-nums' }}>{item.age_days ?? 0}d</span>
             </div>
@@ -279,7 +279,7 @@ export const R360RingView: React.FC<Props> = ({ member, items, doneCount, onItem
             }}
           >
             <div style={{
-              width: '48px', height: '48px', borderRadius: '50%', background: '#16A34A', color: '#FFFFFF',
+              width: '48px', height: '48px', borderRadius: '50%', background: '#16A34A', color: 'var(--ds-text-inverse, #FFFFFF)',
               fontSize: '18px', fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center',
               boxShadow: showDone
                 ? '0 0 0 3px rgba(22,163,74,.25), 0 2px 8px rgba(22,163,74,.3)'

@@ -75,7 +75,7 @@ const STATUS_COLORS: ReadonlyArray<{
   { hex: '#DCDFE4', label: 'Neutral', appearance: 'default' },
   { hex: '#1F845A', label: 'Green', appearance: 'success' },
   { hex: '#0C66E4', label: 'Blue', appearance: 'inprogress' },
-  { hex: '#C9372C', label: 'Red', appearance: 'removed' },
+  { hex: 'var(--ds-icon-accent-red, #C9372C)', label: 'Red', appearance: 'removed' },
   { hex: '#A54800', label: 'Orange', appearance: 'moved' },
   { hex: '#5E4DB2', label: 'Purple', appearance: 'new' },
 ];

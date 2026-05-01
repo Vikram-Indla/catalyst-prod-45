@@ -61,7 +61,7 @@ export default function RAPDFViewer({ doc, onClose, onGenerateEpics }: Props) {
             <span style={{ fontSize: 11, color: 'var(--fg-3)', fontFamily: 'var(--cp-font-mono)', minWidth: 36, textAlign: 'center' }}>{zoom}%</span>
             <button onClick={() => setZoom(z => Math.min(200, z + 25))} style={{ border: '1px solid rgba(15,23,42,0.12)', background: 'var(--bg-app)', borderRadius: 4, padding: '4px 6px', cursor: 'pointer' }}><ZoomIn size={14} color="var(--fg-2)" /></button>
           </div>
-          <button onClick={onGenerateEpics} style={{ display: 'inline-flex', alignItems: 'center', gap: 5, padding: '6px 12px', fontSize: 12, fontWeight: 500, border: 'none', borderRadius: 'var(--ra-radius-btn)', background: 'var(--cp-blue)', color: '#FFFFFF', cursor: 'pointer', fontFamily: 'var(--cp-font-body)' }}>
+          <button onClick={onGenerateEpics} style={{ display: 'inline-flex', alignItems: 'center', gap: 5, padding: '6px 12px', fontSize: 12, fontWeight: 500, border: 'none', borderRadius: 'var(--ra-radius-btn)', background: 'var(--cp-blue)', color: 'var(--ds-text-inverse, #FFFFFF)', cursor: 'pointer', fontFamily: 'var(--cp-font-body)' }}>
             <Zap size={13} /> Generate Epics from this PDF
           </button>
         </div>
@@ -75,8 +75,8 @@ export default function RAPDFViewer({ doc, onClose, onGenerateEpics }: Props) {
           }}>
             {doc.language === 'ar' && (
               <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 16, padding: '6px 10px', background: '#0C66E4', borderRadius: 4, border: '1px solid #B3D4FF' }}>
-                <Globe size={13} color="#FFFFFF" />
-                <span style={{ fontSize: 12, color: '#FFFFFF', fontFamily: 'var(--cp-font-body)' }}>Original Arabic document — English translation shown</span>
+                <Globe size={13} color="var(--ds-text-inverse, #FFFFFF)" />
+                <span style={{ fontSize: 12, color: 'var(--ds-text-inverse, #FFFFFF)', fontFamily: 'var(--cp-font-body)' }}>Original Arabic document — English translation shown</span>
               </div>
             )}
             <h2 style={{ fontSize: 18, fontWeight: 700, color: 'var(--fg-1)', margin: '0 0 4px', textAlign: 'center', fontFamily: 'var(--cp-font-heading)' }}>{doc.title}</h2>

@@ -38,7 +38,7 @@ export function BacklogStatusBar({
           cursor: 'pointer',
           border: overdueActive ? 'none' : '1px solid var(--cp-border-default)',
           background: overdueActive ? '#DC2626' : 'transparent',
-          color: overdueActive ? '#FFFFFF' : 'var(--cp-text-secondary)',
+          color: overdueActive ? 'var(--ds-text-inverse, #FFFFFF)' : 'var(--cp-text-secondary)',
           fontWeight: overdueActive ? 600 : 500,
           outline: 'none',
           fontFamily: 'var(--cp-font-body)',

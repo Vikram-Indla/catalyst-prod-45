@@ -70,7 +70,7 @@ export function ArchiveConfirmModal({ open, projectName, onClose, onConfirm, loa
             className="hover:opacity-90 transition-opacity disabled:opacity-50 bg-[var(--sem-danger)]"
             style={{
               height: 50, padding: '0 16px', fontSize: 13, fontWeight: 600,
-              color: '#FFFFFF', border: 'none', borderRadius: 6,
+              color: 'var(--ds-text-inverse, #FFFFFF)', border: 'none', borderRadius: 6,
               cursor: loading ? 'default' : 'pointer',
             }}
           >

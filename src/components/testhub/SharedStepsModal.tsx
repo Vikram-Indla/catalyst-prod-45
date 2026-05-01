@@ -240,7 +240,7 @@ export function SharedStepsModal({ isOpen, onClose, onInsert }: SharedStepsModal
                 borderRadius: 8,
                 fontSize: 14,
                 fontWeight: 600,
-                color: '#FFFFFF',
+                color: 'var(--ds-text-inverse, #FFFFFF)',
                 cursor: 'pointer',
                 display: 'flex',
                 alignItems: 'center',

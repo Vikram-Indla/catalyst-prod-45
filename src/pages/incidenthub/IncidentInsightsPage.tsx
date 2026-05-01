@@ -43,7 +43,7 @@ export default function IncidentInsightsPage() {
               width: 36, height: 50,
               background: 'linear-gradient(135deg, #7C3AED, #0D9488)',
             }}>
-              <Sparkles size={18} style={{ color: '#FFFFFF' }} />
+              <Sparkles size={18} style={{ color: 'var(--ds-text-inverse, #FFFFFF)' }} />
             </div>
             <div>
               <h3 style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 14, fontWeight: 650, color: textPrimary, marginBottom: 4 }}>

@@ -45,7 +45,7 @@ export function ForYouSubTabs({ activeTab, counts, onTabChange }: ForYouSubTabsP
               cursor: 'pointer',
               border: isActive ? 'none' : '1px solid var(--cp-bd)',
               background: isActive ? 'var(--cp-blue)' : 'transparent',
-              color: isActive ? '#FFFFFF' : 'var(--cp-t2)',
+              color: isActive ? 'var(--ds-text-inverse, #FFFFFF)' : 'var(--cp-t2)',
               fontWeight: isActive ? 600 : 500,
               outline: 'none',
             }}

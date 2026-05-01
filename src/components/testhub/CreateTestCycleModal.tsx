@@ -414,7 +414,7 @@ export function CreateTestCycleModal({ isOpen, onClose, onSuccess, mode = 'creat
           <button type="button" onClick={handleSubmit} disabled={isSubmitting} style={{
             height: 40, padding: '0 24px',
             backgroundColor: isSubmitting ? '#93C5FD' : '#2563EB',
-            border: 'none', borderRadius: 8, fontSize: 14, fontWeight: 600, color: '#FFFFFF',
+            border: 'none', borderRadius: 8, fontSize: 14, fontWeight: 600, color: 'var(--ds-text-inverse, #FFFFFF)',
             cursor: isSubmitting ? 'not-allowed' : 'pointer',
             display: 'inline-flex', alignItems: 'center', gap: 8,
             opacity: isSubmitting ? 0.7 : 1,

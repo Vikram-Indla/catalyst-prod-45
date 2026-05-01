@@ -183,7 +183,7 @@ function NotificationItemInner({ notification, actorProfile, onMarkRead, onClick
       <div style={{
         width: 36, height: 36, borderRadius: '50%', background: bg,
         display: 'flex', alignItems: 'center', justifyContent: 'center',
-        fontSize: 13, fontWeight: 650, color: '#FFFFFF',
+        fontSize: 13, fontWeight: 650, color: 'var(--ds-text-inverse, #FFFFFF)',
         fontFamily: 'var(--cp-font-body)', flexShrink: 0,
       }}>
         {initials}

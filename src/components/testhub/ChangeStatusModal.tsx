@@ -146,7 +146,7 @@ export function ChangeStatusModal({
             style={{
               height: 40, padding: '0 20px',
               background: !selectedStatus || isUpdating ? 'var(--fg-4)' : 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)',
-              border: 'none', borderRadius: 8, fontSize: 14, fontWeight: 600, color: '#FFFFFF',
+              border: 'none', borderRadius: 8, fontSize: 14, fontWeight: 600, color: 'var(--ds-text-inverse, #FFFFFF)',
               cursor: !selectedStatus || isUpdating ? 'not-allowed' : 'pointer',
               display: 'flex', alignItems: 'center', gap: 6,
             }}

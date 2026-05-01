@@ -19,8 +19,8 @@ interface Props {
 const COLUMNS: { status: IdeaStatus; extra?: React.ReactNode }[] = [
   { status: 'submitted' },
   { status: 'under_review' },
-  { status: 'approved', extra: <span style={{ fontSize: '10px', color: '#FFFFFF', fontWeight: 600 }}>Ready to convert</span> },
-  { status: 'converted', extra: <span style={{ fontSize: '10px', color: '#FFFFFF', fontWeight: 600 }}>→ Requests</span> },
+  { status: 'approved', extra: <span style={{ fontSize: '10px', color: 'var(--ds-text-inverse, #FFFFFF)', fontWeight: 600 }}>Ready to convert</span> },
+  { status: 'converted', extra: <span style={{ fontSize: '10px', color: 'var(--ds-text-inverse, #FFFFFF)', fontWeight: 600 }}>→ Requests</span> },
   { status: 'draft' },
   { status: 'rejected' },
 ];
@@ -221,7 +221,7 @@ function IdeaBoardCard({ idea, columnStatus, onClick, onConvert, isDark, dk }: {
           onClick={e => { e.stopPropagation(); onConvert?.(idea.key); }}
           style={{
             width: '100%', marginTop: '8px', padding: '6px', background: '#2563EB',
-            color: '#FFFFFF', border: 'none', borderRadius: '6px', fontSize: '11px',
+            color: 'var(--ds-text-inverse, #FFFFFF)', border: 'none', borderRadius: '6px', fontSize: '11px',
             fontWeight: 700, cursor: 'pointer',
           }}
         >

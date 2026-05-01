@@ -123,7 +123,7 @@ export function FailureReasonModal({ isOpen, testCaseKey, testCaseTitle, testCas
                     height: 40, padding: '0 14px',
                     backgroundColor: '#2563EB',
                     border: 'none', borderRadius: 8, fontSize: 13, fontWeight: 600,
-                    color: '#FFFFFF', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6,
+                    color: 'var(--ds-text-inverse, #FFFFFF)', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6,
                     whiteSpace: 'nowrap',
                   }}
                 >

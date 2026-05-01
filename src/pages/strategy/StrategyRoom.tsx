@@ -151,7 +151,7 @@ export default function StrategyRoom() {
       <a
         href="#dashboard-main"
         className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[9999] focus:px-4 focus:py-2 focus:rounded-md focus:text-sm focus:font-medium"
-        style={{ background: '#2563EB', color: '#FFFFFF' }}
+        style={{ background: '#2563EB', color: 'var(--ds-text-inverse, #FFFFFF)' }}
       >
         Skip to dashboard content
       </a>

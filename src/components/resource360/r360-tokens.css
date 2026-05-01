@@ -8,7 +8,7 @@
   --r360-bg: #F5F0EB;
   --r360-bg-alt: #EDE7E0;
   --r360-bg-warm: #FAF8F5;
-  --r360-surface: #FFFFFF;
+  --r360-surface: var(--ds-text-inverse, #FFFFFF);
   --r360-surface-hover: #EDE7E0;
   --r360-surface-active: #F0ECE6;
 
@@ -26,17 +26,17 @@
   /* ─── STATUS — BOLD SOLID FILLS ─── */
   --r360-todo: #E23636;
   --r360-todo-bg: #E23636;
-  --r360-todo-text: #FFFFFF;
+  --r360-todo-text: var(--ds-text-inverse, #FFFFFF);
   --r360-todo-soft: #FDE8E8;
 
   --r360-progress: #2563EB;
   --r360-progress-bg: #2563EB;
-  --r360-progress-text: #FFFFFF;
+  --r360-progress-text: var(--ds-text-inverse, #FFFFFF);
   --r360-progress-soft: #E0EDFF;
 
   --r360-done: #0E8A5F;
   --r360-done-bg: #0E8A5F;
-  --r360-done-text: #FFFFFF;
+  --r360-done-text: var(--ds-text-inverse, #FFFFFF);
   --r360-done-soft: #DFF5E9;
 
   /* ─── HUB COLORS — SATURATED ─── */

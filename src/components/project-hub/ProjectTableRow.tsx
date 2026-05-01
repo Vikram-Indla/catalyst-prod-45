@@ -54,7 +54,7 @@ export function ProjectTableRow({ project, isStarred, onToggleStar, onContextMen
               width: 28,
               height: 24,
               backgroundColor: project.color || '#2563EB',
-              color: '#FFFFFF',
+              color: 'var(--ds-text-inverse, #FFFFFF)',
               fontSize: project.key.length > 2 ? 9 : 10,
               fontWeight: 700,
               borderRadius: 4,

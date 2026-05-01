@@ -53,7 +53,7 @@ export function AIInsightsBar({ insights, onActionClick }: AIInsightsBarProps) {
             </span>
           )}
           {warningCount > 0 && (
-            <span className="px-2 py-0.5 text-xs font-medium rounded-full" style={{ background: '#DBEAFE', color: '#FFFFFF' }}>
+            <span className="px-2 py-0.5 text-xs font-medium rounded-full" style={{ background: '#DBEAFE', color: 'var(--ds-text-inverse, #FFFFFF)' }}>
               {warningCount} warnings
             </span>
           )}

@@ -20,7 +20,7 @@
   padding: 6px 12px;
   height: 32px;
   background: transparent;
-  border: 1px solid #DDDEE1;
+  border: 1px solid var(--ds-surface-pressed, #DDDEE1);
   border-radius: 3px;
   cursor: pointer;
   font-size: 14px;

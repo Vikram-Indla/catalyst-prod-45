@@ -19,7 +19,7 @@ import { JiraSyncChip } from '@/components/shared/JiraSyncChip';
 const TL = {
   ink: '#09090B', inkSecondary: '#18181B', inkTertiary: '#3F3F46',
   inkMuted: '#71717A', inkMutedStrong: '#6F6F78',
-  surface: '#FFFFFF', surfaceSecondary: '#FAFAFA', surfaceTertiary: '#F4F4F5',
+  surface: 'var(--ds-text-inverse, #FFFFFF)', surfaceSecondary: '#FAFAFA', surfaceTertiary: '#F4F4F5',
   border: '#E4E4E7', borderStrong: '#D4D4D8',
   primary: '#2563EB', primaryHover: '#1D4ED8', primaryBg: '#EFF6FF',
   teal: '#0D9488', tealText: '#0A8277', tealBg: '#F0FDFA',
@@ -370,8 +370,8 @@ function SubTasksTabContent({ parentKey, onSubTaskClick }: { parentKey: string; 
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
             {[
               { count: todoTasks.length, label: 'To Do', bg: T.border, color: T.inkSecondary },
-              { count: progressTasks.length, label: 'In Progress', bg: T.primary, color: '#FFFFFF' },
-              { count: doneTasks.length, label: 'Done', bg: T.success, color: '#FFFFFF' },
+              { count: progressTasks.length, label: 'In Progress', bg: T.primary, color: 'var(--ds-text-inverse, #FFFFFF)' },
+              { count: doneTasks.length, label: 'Done', bg: T.success, color: 'var(--ds-text-inverse, #FFFFFF)' },
             ].map(s => (
               <span key={s.label} style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
                 <span style={{ display: 'inline-block', padding: '1px 6px', borderRadius: 4, backgroundColor: s.bg, color: s.color, fontSize: 11, fontWeight: 700 }}>{s.count}</span>

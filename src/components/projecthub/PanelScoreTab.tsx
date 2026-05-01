@@ -84,7 +84,7 @@ export function PanelScoreTab({ projectId }: Props) {
                     style={{
                       flex: 1, height: 36, borderRadius: 6, fontSize: 13, fontWeight: 600,
                       background: sel ? '#2563EB' : 'transparent',
-                      color: sel ? '#FFFFFF' : 'var(--fg-2)',
+                      color: sel ? 'var(--ds-text-inverse, #FFFFFF)' : 'var(--fg-2)',
                       border: `1px solid ${sel ? '#2563EB' : 'var(--divider)'}`,
                       cursor: 'pointer',
                     }}
@@ -102,7 +102,7 @@ export function PanelScoreTab({ projectId }: Props) {
         disabled={saving}
         style={{
           marginTop: 20, width: '100%', height: 40, borderRadius: 6,
-          background: '#2563EB', color: '#FFFFFF', border: 'none',
+          background: '#2563EB', color: 'var(--ds-text-inverse, #FFFFFF)', border: 'none',
           fontSize: 13, fontWeight: 600, cursor: saving ? 'default' : 'pointer',
           opacity: saving ? 0.6 : 1,
         }}

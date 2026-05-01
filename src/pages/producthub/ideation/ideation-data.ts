@@ -49,10 +49,10 @@ export const ideas: Idea[] = [];
 export const STATUS_CONFIG: Record<IdeaStatus, { bg: string; text: string; label: string }> = {
   draft:        { bg: '#DFE1E6', text: '#42526E', label: 'Draft' },
   submitted:    { bg: '#DFE1E6', text: '#42526E', label: 'Submitted' },
-  under_review: { bg: '#0C66E4', text: '#FFFFFF', label: 'Under Review' },
-  approved:     { bg: '#0C66E4', text: '#FFFFFF', label: 'Approved' },
+  under_review: { bg: '#0C66E4', text: 'var(--ds-text-inverse, #FFFFFF)', label: 'Under Review' },
+  approved:     { bg: '#0C66E4', text: 'var(--ds-text-inverse, #FFFFFF)', label: 'Approved' },
   rejected:     { bg: '#DFE1E6', text: '#42526E', label: 'Rejected' },
-  converted:    { bg: '#1B7F37', text: '#FFFFFF', label: 'Converted' },
+  converted:    { bg: '#1B7F37', text: 'var(--ds-text-inverse, #FFFFFF)', label: 'Converted' },
 };
 
 // ─── TYPE CONFIG — ALL NEUTRAL GREY ─────────────────────────────
@@ -94,10 +94,10 @@ export const FILTER_PILLS: { key: StatusFilter; label: string }[] = [
 
 // ─── Quarter badge — HIGH CONTRAST (AAA) ────────────────────────
 export const QUARTER_BADGE: Record<string, { bg: string; text: string }> = {
-  Q1: { bg: '#991B1B', text: '#FFFFFF' },
-  Q2: { bg: '#1E40AF', text: '#FFFFFF' },
-  Q3: { bg: '#115E59', text: '#FFFFFF' },
-  Q4: { bg: '#78350F', text: '#FFFFFF' },
+  Q1: { bg: '#991B1B', text: 'var(--ds-text-inverse, #FFFFFF)' },
+  Q2: { bg: '#1E40AF', text: 'var(--ds-text-inverse, #FFFFFF)' },
+  Q3: { bg: '#115E59', text: 'var(--ds-text-inverse, #FFFFFF)' },
+  Q4: { bg: '#78350F', text: 'var(--ds-text-inverse, #FFFFFF)' },
 };
 
 // ─── Helpers ────────────────────────────────────────────────────
@@ -124,9 +124,9 @@ export const STATUS_DB_TO_UI: Record<string, IdeaStatus> = {
 export const STATUS_LOZENGE_COLORS: Record<string, { bg: string; text: string }> = {
   'Draft':                    { bg: '#DFE1E6', text: '#42526E' },
   'Submitted':                { bg: '#DFE1E6', text: '#42526E' },
-  'Under Review':             { bg: '#0C66E4', text: '#FFFFFF' },
-  'Approved':                 { bg: '#0C66E4', text: '#FFFFFF' },
+  'Under Review':             { bg: '#0C66E4', text: 'var(--ds-text-inverse, #FFFFFF)' },
+  'Approved':                 { bg: '#0C66E4', text: 'var(--ds-text-inverse, #FFFFFF)' },
   'Rejected':                 { bg: '#DFE1E6', text: '#42526E' },
-  'Converted':                { bg: '#1B7F37', text: '#FFFFFF' },
-  'Converted to Request':  { bg: '#1B7F37', text: '#FFFFFF' },
+  'Converted':                { bg: '#1B7F37', text: 'var(--ds-text-inverse, #FFFFFF)' },
+  'Converted to Request':  { bg: '#1B7F37', text: 'var(--ds-text-inverse, #FFFFFF)' },
 };

@@ -415,7 +415,7 @@ export function AIGenerateModal({ isOpen, onClose, onSuccess, currentFolderId }:
                 : 'linear-gradient(135deg, #10B981 0%, #059669 100%)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
             }}>
-              {step === 'folder' ? <FolderOpen size={20} style={{ color: '#FFFFFF' }} /> : <Sparkles size={20} style={{ color: '#FFFFFF' }} />}
+              {step === 'folder' ? <FolderOpen size={20} style={{ color: 'var(--ds-text-inverse, #FFFFFF)' }} /> : <Sparkles size={20} style={{ color: 'var(--ds-text-inverse, #FFFFFF)' }} />}
             </div>
             <div>
               <h2 style={{ fontSize: 18, fontWeight: 700, color: 'var(--fg-1)', margin: 0 }}>
@@ -435,7 +435,7 @@ export function AIGenerateModal({ isOpen, onClose, onSuccess, currentFolderId }:
                     width: 22, height: 22, borderRadius: '50%', fontSize: 11, fontWeight: 700,
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                     backgroundColor: step === s ? 'var(--cp-blue)' : (['folder', 'input', 'preview'].indexOf(step) > i ? 'var(--sem-success)' : 'var(--divider)'),
-                    color: step === s || (['folder', 'input', 'preview'].indexOf(step) > i) ? '#FFFFFF' : 'var(--fg-4)',
+                    color: step === s || (['folder', 'input', 'preview'].indexOf(step) > i) ? 'var(--ds-text-inverse, #FFFFFF)' : 'var(--fg-4)',
                   }}>
                     {['folder', 'input', 'preview'].indexOf(step) > i ? '✓' : i + 1}
                   </div>
@@ -703,7 +703,7 @@ export function AIGenerateModal({ isOpen, onClose, onSuccess, currentFolderId }:
               style={{
                 height: 40, padding: '0 20px',
                 background: 'linear-gradient(135deg, var(--cp-blue) 0%, var(--cp-primary-70) 100%)',
-                border: 'none', borderRadius: 8, fontSize: 14, fontWeight: 600, color: '#FFFFFF',
+                border: 'none', borderRadius: 8, fontSize: 14, fontWeight: 600, color: 'var(--ds-text-inverse, #FFFFFF)',
                 cursor: (!selectedFolderId || folders.length === 0) ? 'not-allowed' : 'pointer',
                 opacity: (!selectedFolderId || folders.length === 0) ? 0.5 : 1,
               }}
@@ -719,7 +719,7 @@ export function AIGenerateModal({ isOpen, onClose, onSuccess, currentFolderId }:
               style={{
                 height: 40, padding: '0 20px',
                 background: 'linear-gradient(135deg, #10B981 0%, var(--sem-success) 100%)',
-                border: 'none', borderRadius: 8, fontSize: 14, fontWeight: 600, color: '#FFFFFF',
+                border: 'none', borderRadius: 8, fontSize: 14, fontWeight: 600, color: 'var(--ds-text-inverse, #FFFFFF)',
                 cursor: isGenerating ? 'wait' : 'pointer',
                 opacity: (isGenerating || !description.trim()) ? 0.7 : 1,
                 display: 'flex', alignItems: 'center', gap: 8,
@@ -746,7 +746,7 @@ export function AIGenerateModal({ isOpen, onClose, onSuccess, currentFolderId }:
               style={{
                 height: 40, padding: '0 20px',
                 background: 'linear-gradient(135deg, var(--cp-blue) 0%, var(--cp-primary-70) 100%)',
-                border: 'none', borderRadius: 8, fontSize: 14, fontWeight: 600, color: '#FFFFFF',
+                border: 'none', borderRadius: 8, fontSize: 14, fontWeight: 600, color: 'var(--ds-text-inverse, #FFFFFF)',
                 cursor: isInserting ? 'wait' : 'pointer',
                 opacity: (isInserting || selected.size === 0) ? 0.7 : 1,
               }}

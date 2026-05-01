@@ -29,8 +29,8 @@ function StatusLozenge({ status }: { status: string | null }) {
   const s = status || 'draft';
   const map: Record<string, { bg: string; color: string; label: string }> = {
     draft:     { bg: '#DFE1E6', color: '#42526E', label: 'DRAFT' },
-    reviewed:  { bg: '#0C66E4', color: '#FFFFFF', label: 'REVIEWED' },
-    published: { bg: '#1B7F37', color: '#FFFFFF', label: 'PUBLISHED' },
+    reviewed:  { bg: '#0C66E4', color: 'var(--ds-text-inverse, #FFFFFF)', label: 'REVIEWED' },
+    published: { bg: '#1B7F37', color: 'var(--ds-text-inverse, #FFFFFF)', label: 'PUBLISHED' },
   };
   const m = map[s] ?? map.draft;
   return (
@@ -185,7 +185,7 @@ export default function RAEpicDraftDrawer({ brdId, docTitle, jiraKey, onClose }:
         {isStale && (
           <div style={{
             margin: '12px 20px 0', background: '#0C66E4', border: '1px solid #B3D4FF',
-            color: '#FFFFFF', borderRadius: 6, padding: '8px 12px',
+            color: 'var(--ds-text-inverse, #FFFFFF)', borderRadius: 6, padding: '8px 12px',
             display: 'flex', alignItems: 'center', gap: 8, fontSize: 12,
             fontFamily: 'var(--cp-font-body)',
           }}>
@@ -278,7 +278,7 @@ export default function RAEpicDraftDrawer({ brdId, docTitle, jiraKey, onClose }:
                         }}>Cancel</button>
                         <button onClick={saveEdit} disabled={savingEdit} style={{
                           padding: '4px 12px', fontSize: 12, fontWeight: 600, borderRadius: 6,
-                          border: 'none', background: 'var(--cp-blue)', color: '#FFFFFF',
+                          border: 'none', background: 'var(--cp-blue)', color: 'var(--ds-text-inverse, #FFFFFF)',
                           cursor: 'pointer', fontFamily: 'var(--cp-font-body)',
                         }}>{savingEdit ? 'Saving…' : 'Save'}</button>
                       </div>
@@ -402,7 +402,7 @@ export default function RAEpicDraftDrawer({ brdId, docTitle, jiraKey, onClose }:
               style={{
                 flex: 1, height: 50, fontSize: 13, fontWeight: 600,
                 borderRadius: 6, border: 'none',
-                background: 'var(--cp-blue)', color: '#FFFFFF',
+                background: 'var(--cp-blue)', color: 'var(--ds-text-inverse, #FFFFFF)',
                 cursor: 'pointer', fontFamily: 'var(--cp-font-body)',
               }}
               onMouseEnter={e => (e.currentTarget.style.background = '#1D4ED8')}

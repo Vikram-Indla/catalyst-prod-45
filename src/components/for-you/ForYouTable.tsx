@@ -185,7 +185,7 @@ export function CatalystTable({
 
   if (resolvedGroups.length === 0) {
     return (
-      <div className="fy-empty" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '64px 0', border: '0.555556px solid #E2E8F0', borderRadius: 8, background: '#FFFFFF' }}>
+      <div className="fy-empty" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '64px 0', border: '0.555556px solid #E2E8F0', borderRadius: 8, background: 'var(--ds-text-inverse, #FFFFFF)' }}>
         <span style={{ fontSize: 24, marginBottom: 12 }}>📋</span>
         <p style={{ fontSize: 13, fontWeight: 600, color: '#0F172A', marginBottom: 4 }}>No work items found</p>
         <p style={{ fontSize: 11, color: '#94A3B8' }}>Try adjusting your filters or search</p>
@@ -252,7 +252,7 @@ export function CatalystTable({
                       padding: '12px',
                       borderBottom: '0.75px solid #E2E8F0',
                       cursor: 'pointer',
-                      background: isSelected ? 'rgba(37,99,235,0.08)' : '#FFFFFF',
+                      background: isSelected ? 'rgba(37,99,235,0.08)' : 'var(--ds-text-inverse, #FFFFFF)',
                       display: 'flex', flexDirection: 'column', gap: 8,
                     }}
                   >
@@ -305,7 +305,7 @@ export function CatalystTable({
                       {avatarUrl ? (
                         <img src={avatarUrl} alt={reporterName} style={{ width: 20, height: 20, borderRadius: '50%', objectFit: 'cover', flexShrink: 0, border: '1px solid #E2E8F0' }} />
                       ) : (
-                        <div style={{ width: 20, height: 20, borderRadius: '50%', background: clr, color: '#FFFFFF', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 9, fontWeight: 700, flexShrink: 0 }}>{ini}</div>
+                        <div style={{ width: 20, height: 20, borderRadius: '50%', background: clr, color: 'var(--ds-text-inverse, #FFFFFF)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 9, fontWeight: 700, flexShrink: 0 }}>{ini}</div>
                       )}
                       <span style={{ fontWeight: 500, color: '#475569', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.project}</span>
                       <div style={{ flex: 1 }} />
@@ -417,7 +417,7 @@ export function CatalystTable({
                 return avatarUrl ? (
                   <img src={avatarUrl} alt={reporterName} style={{ width: 24, height: 24, borderRadius: '50%', objectFit: 'cover', flexShrink: 0, border: '1px solid #E2E8F0' }} />
                 ) : (
-                  <div style={{ width: 24, height: 24, borderRadius: '50%', background: clr, color: '#FFFFFF', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontWeight: 700, flexShrink: 0 }}>{ini}</div>
+                  <div style={{ width: 24, height: 24, borderRadius: '50%', background: clr, color: 'var(--ds-text-inverse, #FFFFFF)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontWeight: 700, flexShrink: 0 }}>{ini}</div>
                 );
               })()}
               <span style={{ fontSize: 13, fontWeight: 500, color: '#475569', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.reporter || item.assignee.name}</span>
@@ -448,7 +448,7 @@ export function CatalystTable({
           .fy-table .pb-table thead th:nth-child(5) {
             background: #F7F8F9;
           }
-          .fy-table .pb-table tbody tr { background: #FFFFFF; }
+          .fy-table .pb-table tbody tr { background: var(--ds-text-inverse, #FFFFFF); }
           .fy-table .pb-table tbody tr.pb-row-selected { background: rgba(37,99,235,0.08); }
         }
       `}</style>
@@ -529,7 +529,7 @@ export function CatalystTable({
                           <div style={{
                             width: 20, height: 20, borderRadius: '50%', flexShrink: 0,
                             background: AVATAR_COLOURS[initials.charCodeAt(0) % AVATAR_COLOURS.length],
-                            color: '#FFFFFF', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                            color: 'var(--ds-text-inverse, #FFFFFF)', display: 'flex', alignItems: 'center', justifyContent: 'center',
                             fontSize: 9, fontWeight: 700,
                           }}>
                             {initials}

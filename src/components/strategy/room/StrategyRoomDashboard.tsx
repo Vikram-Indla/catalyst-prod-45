@@ -65,7 +65,7 @@ const TOKENS = `
 [data-srd] {
   --srd-ink:#09090B; --srd-ink-2:#18181B; --srd-ink-3:#3F3F46;
   --srd-ink-m:#71717A;
-  --srd-bg:#FFFFFF; --srd-bg-2:#FAFAFA; --srd-bg-3:#F4F4F5;
+  --srd-bg:var(--ds-text-inverse, #FFFFFF); --srd-bg-2:#FAFAFA; --srd-bg-3:#F4F4F5;
   --srd-bdr:#E4E4E7; --srd-bdr-s:#D4D4D8;
   --srd-blue:#2563EB; --srd-blue-h:#1D4ED8; --srd-blue-bg:#EFF6FF; --srd-blue-bdr:#BFDBFE;
   --srd-teal:#0D9488; --srd-teal-t:#0A8277; --srd-teal-bg:#F0FDFA;

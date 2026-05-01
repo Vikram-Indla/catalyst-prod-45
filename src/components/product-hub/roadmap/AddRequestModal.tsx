@@ -154,7 +154,7 @@ export function AddRequestModal({ isOpen, onClose }: AddRequestModalProps) {
                 onMouseEnter={e => (e.currentTarget.style.backgroundColor = SURFACE.page)}
                 onMouseLeave={e => (e.currentTarget.style.backgroundColor = 'transparent')}
               >
-                <div className="w-1 rounded" style={{ height: 32, background: '#B38600' }} />
+                <div className="w-1 rounded" style={{ height: 32, background: 'var(--ds-icon-accent-yellow, #B38600)' }} />
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
                     <span style={{ fontFamily: FONT.mono, fontSize: 11, fontWeight: 600, color: '#2563EB' }}>{item.key}</span>

@@ -357,7 +357,7 @@ export function CreateSharedStepModal({ isOpen, onClose, onSuccess, categories, 
             height: 40, padding: '0 20px',
             background: 'linear-gradient(135deg, var(--cp-blue) 0%, var(--cp-primary-70) 100%)',
             border: 'none', borderRadius: 8, fontSize: 14, fontWeight: 600,
-            color: '#FFFFFF', cursor: isSubmitting ? 'wait' : 'pointer',
+            color: 'var(--ds-text-inverse, #FFFFFF)', cursor: isSubmitting ? 'wait' : 'pointer',
             opacity: isSubmitting ? 0.7 : 1, fontFamily: 'var(--cp-font-body)',
           }}>
             {isSubmitting ? (mode === 'edit' ? 'Saving...' : 'Creating...') : (mode === 'edit' ? 'Save Changes' : 'Create Shared Step')}

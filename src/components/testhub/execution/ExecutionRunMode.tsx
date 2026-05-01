@@ -303,7 +303,7 @@ export function ExecutionRunMode({
             <button key={btn.key} onClick={btn.onClick} disabled={isSubmitting} title={`${btn.label} (${btn.shortcut})`} style={{
               height: 38, padding: '0 16px', border: isActive ? 'none' : `1px solid ${btn.color}30`,
               borderRadius: 6, background: isActive ? btn.activeBg : btn.bg,
-              color: isActive ? '#FFFFFF' : btn.color, fontSize: 13, fontWeight: 600,
+              color: isActive ? 'var(--ds-text-inverse, #FFFFFF)' : btn.color, fontSize: 13, fontWeight: 600,
               cursor: isSubmitting ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', gap: 6,
               opacity: isSubmitting ? 0.7 : 1, boxShadow: isActive ? `0 2px 8px ${btn.color}40` : 'none',
             }}>
@@ -338,10 +338,10 @@ export function ExecutionRunMode({
           {steps.length > 0 && !fastTrackMode && (() => {
             const isDisabled = !anyStepMarked || isSubmitting;
             const statusColors: Record<string, { bg: string; text: string }> = {
-              passed:  { bg: '#16A34A', text: '#FFFFFF' },
-              failed:  { bg: '#DC2626', text: '#FFFFFF' },
-              blocked: { bg: '#D97706', text: '#FFFFFF' },
-              skipped: { bg: '#475569', text: '#FFFFFF' },
+              passed:  { bg: '#16A34A', text: 'var(--ds-text-inverse, #FFFFFF)' },
+              failed:  { bg: '#DC2626', text: 'var(--ds-text-inverse, #FFFFFF)' },
+              blocked: { bg: '#D97706', text: 'var(--ds-text-inverse, #FFFFFF)' },
+              skipped: { bg: '#475569', text: 'var(--ds-text-inverse, #FFFFFF)' },
               not_run: { bg: 'var(--cp-border, #E2E8F0)', text: 'var(--cp-text-tertiary, #64748B)' },
             };
             const colors = statusColors[derivedStatus] || statusColors.not_run;

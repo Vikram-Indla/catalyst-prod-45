@@ -60,12 +60,12 @@ function useUpdateIdea() {
 const STATUS_LOZENGE: Record<string, { bg: string; text: string }> = {
   'Draft':        { bg: '#DFE1E6', text: '#42526E' },
   'New':          { bg: '#DFE1E6', text: '#42526E' },
-  'Submitted':    { bg: '#0C66E4', text: '#FFFFFF' },
-  'Under Review': { bg: '#0C66E4', text: '#FFFFFF' },
-  'In Progress':  { bg: '#0C66E4', text: '#FFFFFF' },
-  'Approved':     { bg: '#1B7F37', text: '#FFFFFF' },
-  'Converted':    { bg: '#1B7F37', text: '#FFFFFF' },
-  'Done':         { bg: '#1B7F37', text: '#FFFFFF' },
+  'Submitted':    { bg: '#0C66E4', text: 'var(--ds-text-inverse, #FFFFFF)' },
+  'Under Review': { bg: '#0C66E4', text: 'var(--ds-text-inverse, #FFFFFF)' },
+  'In Progress':  { bg: '#0C66E4', text: 'var(--ds-text-inverse, #FFFFFF)' },
+  'Approved':     { bg: '#1B7F37', text: 'var(--ds-text-inverse, #FFFFFF)' },
+  'Converted':    { bg: '#1B7F37', text: 'var(--ds-text-inverse, #FFFFFF)' },
+  'Done':         { bg: '#1B7F37', text: 'var(--ds-text-inverse, #FFFFFF)' },
 };
 
 function StatusLozenge({ status }: { status: string }) {
@@ -301,7 +301,7 @@ export default function IdeationDetailPanel({ ideaKey, onClose, onConvert }: Pro
                 <div style={{ fontSize: '11px', color: dk.t3, marginTop: '2px' }}>Convert to an request to begin planning.</div>
               </div>
               <button onClick={() => onConvert?.(rawIdea.idea_key)} style={{
-                background: '#2563EB', color: '#FFFFFF', border: 'none', borderRadius: '6px',
+                background: '#2563EB', color: 'var(--ds-text-inverse, #FFFFFF)', border: 'none', borderRadius: '6px',
                 padding: '7px 14px', fontSize: '12px', fontWeight: 600, cursor: 'pointer',
               }}>
                 → Convert
@@ -453,7 +453,7 @@ export default function IdeationDetailPanel({ ideaKey, onClose, onConvert }: Pro
                   }}
                 >
                   <div style={{
-                    width: '18px', height: '18px', borderRadius: '50%', background: '#FFFFFF',
+                    width: '18px', height: '18px', borderRadius: '50%', background: 'var(--ds-text-inverse, #FFFFFF)',
                     position: 'absolute', top: '3px',
                     left: localIsCommitted ? '23px' : '3px',
                     transition: 'left 200ms ease',
@@ -505,9 +505,9 @@ export default function IdeationDetailPanel({ ideaKey, onClose, onConvert }: Pro
                 display: 'inline-flex', alignItems: 'center', height: '20px', padding: '0 6px',
                 borderRadius: '4px', fontSize: '11px', fontWeight: 700, textTransform: 'uppercase',
                 ...(impactScore >= 3.5
-                  ? { backgroundColor: '#1B7F37', color: '#FFFFFF' }
+                  ? { backgroundColor: '#1B7F37', color: 'var(--ds-text-inverse, #FFFFFF)' }
                   : impactScore >= 2.0
-                    ? { backgroundColor: '#0C66E4', color: '#FFFFFF' }
+                    ? { backgroundColor: '#0C66E4', color: 'var(--ds-text-inverse, #FFFFFF)' }
                     : { backgroundColor: '#DFE1E6', color: '#42526E' }),
               }}>
                 {impactScore >= 3.5 ? 'HIGH' : impactScore >= 2.0 ? 'MEDIUM' : 'LOW'}
@@ -581,7 +581,7 @@ export default function IdeationDetailPanel({ ideaKey, onClose, onConvert }: Pro
             </button>
             <button onClick={handleSave} disabled={updateIdea.isPending} style={{
               height: '50px', padding: '0 16px', borderRadius: '6px',
-              border: 'none', background: '#2563EB', color: '#FFFFFF',
+              border: 'none', background: '#2563EB', color: 'var(--ds-text-inverse, #FFFFFF)',
               fontSize: '13px', fontWeight: 600, cursor: 'pointer',
               opacity: updateIdea.isPending ? 0.7 : 1,
             }}>

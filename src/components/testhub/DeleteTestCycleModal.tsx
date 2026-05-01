@@ -313,7 +313,7 @@ export function DeleteTestCycleModal({
               borderRadius: 8,
               fontSize: 14,
               fontWeight: 600,
-              color: '#FFFFFF',
+              color: 'var(--ds-text-inverse, #FFFFFF)',
               cursor: (!hasTestCases || confirmText === cycle.cycle_key) ? 'pointer' : 'not-allowed',
               opacity: isDeleting ? 0.7 : 1,
               display: 'flex',

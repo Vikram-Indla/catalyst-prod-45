@@ -172,7 +172,7 @@ export default function IdeationTriagePanel({ open, onClose, onMerge, ideas = []
               {visibleFastTrack.map(item => (
                 <TriageCard key={item.ideaKey} badge="Fast-Track" ideaKey={item.ideaKey} title={item.title}
                   body={item.body} aiSuggestion={item.aiSuggestion}
-                  primary={{ label: 'Fast-Track to Approved', icon: <Zap size={14} color="#FFFFFF" />, onClick: () => handleFastTrack(item.ideaKey) }}
+                  primary={{ label: 'Fast-Track to Approved', icon: <Zap size={14} color="var(--ds-text-inverse, #FFFFFF)" />, onClick: () => handleFastTrack(item.ideaKey) }}
                   secondary={{ label: 'Review First', icon: <Eye size={14} />, onClick: () => dismiss(item.ideaKey) }}
                 />
               ))}
@@ -185,7 +185,7 @@ export default function IdeationTriagePanel({ open, onClose, onMerge, ideas = []
               {visibleMerge.map(item => (
                 <TriageCard key={item.ideaKey} badge="Merge" ideaKey={item.ideaKey} title={item.title}
                   body={item.body} aiSuggestion={item.aiSuggestion}
-                  primary={{ label: 'Merge & Consolidate', icon: <GitMerge size={14} color="#FFFFFF" />, onClick: () => handleMerge(item.ideaKey, (item as any).mergeKey) }}
+                  primary={{ label: 'Merge & Consolidate', icon: <GitMerge size={14} color="var(--ds-text-inverse, #FFFFFF)" />, onClick: () => handleMerge(item.ideaKey, (item as any).mergeKey) }}
                   secondary={{ label: 'Keep Separate', icon: <X size={14} />, onClick: () => dismiss(item.ideaKey) }}
                 />
               ))}
@@ -198,7 +198,7 @@ export default function IdeationTriagePanel({ open, onClose, onMerge, ideas = []
               {visibleInvestigate.map(item => (
                 <TriageCard key={item.ideaKey} badge="Investigate" ideaKey={item.ideaKey} title={item.title}
                   body={item.body} aiSuggestion={item.aiSuggestion}
-                  primary={{ label: 'Request Business Case', icon: <FileSearch size={14} color="#FFFFFF" />, onClick: () => dismiss(item.ideaKey) }}
+                  primary={{ label: 'Request Business Case', icon: <FileSearch size={14} color="var(--ds-text-inverse, #FFFFFF)" />, onClick: () => dismiss(item.ideaKey) }}
                   secondary={{ label: 'Defer 30 Days', icon: <Clock size={14} />, onClick: () => dismiss(item.ideaKey) }}
                 />
               ))}
@@ -211,7 +211,7 @@ export default function IdeationTriagePanel({ open, onClose, onMerge, ideas = []
               {visibleDefer.map(item => (
                 <TriageCard key={item.ideaKey} badge="Defer" ideaKey={item.ideaKey} title={item.title}
                   body={item.body} aiSuggestion={item.aiSuggestion}
-                  primary={{ label: 'Defer to Next Cycle', icon: <Clock size={14} color="#FFFFFF" />, onClick: () => dismiss(item.ideaKey) }}
+                  primary={{ label: 'Defer to Next Cycle', icon: <Clock size={14} color="var(--ds-text-inverse, #FFFFFF)" />, onClick: () => dismiss(item.ideaKey) }}
                   secondary={{ label: 'Reject', icon: <X size={14} />, onClick: () => dismiss(item.ideaKey) }}
                 />
               ))}
@@ -292,7 +292,7 @@ function TriageCard({ badge, ideaKey, title, body, aiSuggestion, primary, second
         </div>
       )}
       <div style={{ display: 'flex', gap: '8px', marginTop: '12px' }}>
-        <button onClick={primary.onClick} style={{ background: '#2563EB', color: '#FFFFFF', border: 'none', borderRadius: '6px', padding: '7px 16px', fontSize: '13px', fontWeight: 600, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '6px' }}
+        <button onClick={primary.onClick} style={{ background: '#2563EB', color: 'var(--ds-text-inverse, #FFFFFF)', border: 'none', borderRadius: '6px', padding: '7px 16px', fontSize: '13px', fontWeight: 600, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '6px' }}
           onMouseEnter={e => (e.currentTarget.style.background = '#1D4ED8')} onMouseLeave={e => (e.currentTarget.style.background = '#2563EB')}>
           {primary.icon} {primary.label}
         </button>

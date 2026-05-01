@@ -402,7 +402,7 @@ export default function NotificationPanel({ isOpen, onClose }: NotificationPanel
             >
               <span style={{
                 position: 'absolute', top: 2, left: unreadOnly ? 18 : 2,
-                width: 16, height: 16, borderRadius: '50%', background: '#FFFFFF',
+                width: 16, height: 16, borderRadius: '50%', background: 'var(--ds-text-inverse, #FFFFFF)',
                 transition: 'left 200ms cubic-bezier(0.16,1,0.3,1)',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
               }}>

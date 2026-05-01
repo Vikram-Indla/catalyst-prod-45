@@ -93,7 +93,7 @@ export function TopNav({ onCreateClick }: TopNavProps) {
           style={{
             height: 32,
             padding: '8px 12px',
-            color: '#FFFFFF',
+            color: 'var(--ds-text-inverse, #FFFFFF)',
             border: 'none',
             borderRadius: 6,
             fontSize: 13,

@@ -42,7 +42,7 @@ export function BacklogSubTabs({ activeTab, counts, onTabChange }: BacklogSubTab
               cursor: 'pointer',
               border: isActive ? 'none' : '1px solid var(--cp-border-default)',
               background: isActive ? 'var(--cp-primary-60)' : 'transparent',
-              color: isActive ? '#FFFFFF' : 'var(--cp-text-secondary)',
+              color: isActive ? 'var(--ds-text-inverse, #FFFFFF)' : 'var(--cp-text-secondary)',
               fontWeight: isActive ? 600 : 500,
               outline: 'none',
               fontFamily: 'var(--cp-font-body)',

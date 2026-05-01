@@ -43,7 +43,7 @@ export function StepProgressIndicator({ steps, currentIndex, onStepClick }: Step
                 : step.status === 'not_run' && isCurrent
                   ? 'var(--bg-app)'
                   : color,
-              color: step.status !== 'not_run' ? '#FFFFFF' : 'var(--fg-3)',
+              color: step.status !== 'not_run' ? 'var(--ds-text-inverse, #FFFFFF)' : 'var(--fg-3)',
               fontSize: 11,
               fontWeight: 700,
               cursor: 'pointer',

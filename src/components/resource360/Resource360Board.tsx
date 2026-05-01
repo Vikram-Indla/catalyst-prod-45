@@ -4,7 +4,7 @@ import { getStatusCategory, getStaleIndicator, WH_HUB_COLORS, WH_HUB_SHORT } fro
 import { HighlightText } from './Resource360Shared';
 
 const T = {
-  bg: '#F5F0EB', surface: '#FFFFFF', text1: '#0A0A0A', text2: '#1A1A2E',
+  bg: '#F5F0EB', surface: 'var(--ds-text-inverse, #FFFFFF)', text1: '#0A0A0A', text2: '#1A1A2E',
   text3: '#3D3D56', text4: '#6B6B80', border: '#D9D2C9',
   todo: '#E23636', progress: '#2563EB', done: '#0E8A5F',
   shadow: '0 2px 8px rgba(0,0,0,.12)',

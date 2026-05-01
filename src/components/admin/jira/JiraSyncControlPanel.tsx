@@ -309,7 +309,7 @@ export function JiraSyncControlPanel() {
                 <Button
                   onClick={handleConfirm}
                   disabled={isPending}
-                  style={{ background: '#253858', color: '#FFFFFF' }}
+                  style={{ background: '#253858', color: 'var(--ds-text-inverse, #FFFFFF)' }}
                 >
                   {isPending ? 'Freezing…' : 'Freeze sync'}
                 </Button>
@@ -344,7 +344,7 @@ export function JiraSyncControlPanel() {
                 <Button
                   onClick={handleConfirm}
                   disabled={isPending}
-                  style={{ background: '#2563EB', color: '#FFFFFF' }}
+                  style={{ background: '#2563EB', color: 'var(--ds-text-inverse, #FFFFFF)' }}
                 >
                   {isPending ? 'Enabling…' : 'Enable sync'}
                 </Button>

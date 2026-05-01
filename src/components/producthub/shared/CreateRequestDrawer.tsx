@@ -19,7 +19,7 @@ import { DepartmentSelect } from './DepartmentSelect';
 /* ── Token constants ── */
 const T = {
   ink: '#09090B', inkSec: '#18181B', inkMuted: '#71717A',
-  surface: '#FFFFFF', surfSec: 'var(--bg-1, #F8FAFC)',
+  surface: 'var(--ds-text-inverse, #FFFFFF)', surfSec: 'var(--bg-1, #F8FAFC)',
   border: 'var(--bd-default, #E2E8F0)', borderStrong: '#CBD5E1',
   primary: '#2563EB', primaryHover: '#1D4ED8', primaryBg: '#EFF6FF',
   danger: '#DC2626',

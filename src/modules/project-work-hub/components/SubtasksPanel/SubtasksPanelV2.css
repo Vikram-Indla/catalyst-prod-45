@@ -80,7 +80,7 @@
   height: 6px;
   border-radius: 50%;
   background: #0052CC;
-  box-shadow: 0 0 0 1.5px #FFFFFF;
+  box-shadow: 0 0 0 1.5px var(--ds-text-inverse, #FFFFFF);
 }
 
 /* ─── Description popover shell ─── */

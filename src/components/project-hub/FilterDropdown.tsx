@@ -180,7 +180,7 @@ function FilterSection({
                 backgroundColor: checked ? '#0052CC' : 'transparent',
               }}
             >
-              {checked && <Check size={11} color="#FFFFFF" strokeWidth={3} />}
+              {checked && <Check size={11} color="var(--ds-text-inverse, #FFFFFF)" strokeWidth={3} />}
             </div>
             {formatLabel ? formatLabel(opt) : opt}
           </button>

@@ -99,7 +99,7 @@ export function CreateTagModal({ isOpen, onClose, onSaved, editingTag }: CreateT
         <div style={{ padding: '20px 24px', borderBottom: '1px solid var(--divider)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
             <div style={{ width: 44, height: 44, borderRadius: 12, background: 'linear-gradient(135deg, #EC4899 0%, #DB2777 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <Tags size={22} style={{ color: '#FFFFFF' }} />
+              <Tags size={22} style={{ color: 'var(--ds-text-inverse, #FFFFFF)' }} />
             </div>
             <h2 style={{ fontSize: 18, fontWeight: 700, color: 'var(--fg-1)', margin: 0 }}>{editingTag ? 'Edit Tag' : 'Create Tag'}</h2>
           </div>
@@ -176,7 +176,7 @@ export function CreateTagModal({ isOpen, onClose, onSaved, editingTag }: CreateT
         <div style={{ padding: '16px 24px', borderTop: '1px solid var(--divider)', display: 'flex', justifyContent: 'flex-end', gap: 12 }}>
           <button onClick={onClose} disabled={isSubmitting} style={{ height: 44, padding: '0 20px', backgroundColor: 'var(--cp-float)', border: '1.5px solid var(--divider)', borderRadius: 12, fontSize: 14, fontWeight: 500, color: 'var(--fg-2)', cursor: 'pointer' }}>Cancel</button>
           <button onClick={handleSubmit} disabled={isSubmitting}
-            style={{ height: 44, padding: '0 24px', background: 'linear-gradient(135deg, #EC4899 0%, #DB2777 100%)', border: 'none', borderRadius: 12, fontSize: 14, fontWeight: 600, color: '#FFFFFF', cursor: isSubmitting ? 'not-allowed' : 'pointer', opacity: isSubmitting ? 0.7 : 1 }}>
+            style={{ height: 44, padding: '0 24px', background: 'linear-gradient(135deg, #EC4899 0%, #DB2777 100%)', border: 'none', borderRadius: 12, fontSize: 14, fontWeight: 600, color: 'var(--ds-text-inverse, #FFFFFF)', cursor: isSubmitting ? 'not-allowed' : 'pointer', opacity: isSubmitting ? 0.7 : 1 }}>
             {isSubmitting ? 'Saving...' : (editingTag ? 'Update Tag' : 'Create Tag')}
           </button>
         </div>

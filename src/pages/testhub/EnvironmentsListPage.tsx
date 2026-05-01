@@ -144,7 +144,7 @@ export default function EnvironmentsListPage() {
               background: 'linear-gradient(135deg, #6366F1 0%, #4F46E5 100%)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
             }}>
-              <Server size={24} style={{ color: '#FFFFFF' }} />
+              <Server size={24} style={{ color: 'var(--ds-text-inverse, #FFFFFF)' }} />
             </div>
             <div>
               <h1 style={{ fontSize: 24, fontWeight: 700, color: 'var(--cp-text-primary, #0F172A)', margin: 0 }}>Test Environments</h1>
@@ -158,7 +158,7 @@ export default function EnvironmentsListPage() {
             display: 'flex', alignItems: 'center', gap: 8, height: 44, padding: '0 20px',
             border: 'none', borderRadius: 12,
             background: '#2563EB',
-            color: '#FFFFFF', fontSize: 14, fontWeight: 600, cursor: 'pointer',
+            color: 'var(--ds-text-inverse, #FFFFFF)', fontSize: 14, fontWeight: 600, cursor: 'pointer',
             boxShadow: 'none',
           }}
         >

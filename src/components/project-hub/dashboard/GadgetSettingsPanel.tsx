@@ -596,7 +596,7 @@ export default function GadgetSettingsPanel({
               padding: '0 10px',
               border: '1px solid #DFE1E6',
               borderRadius: 3,
-              background: '#FFFFFF',
+              background: 'var(--ds-text-inverse, #FFFFFF)',
               fontSize: 12,
               cursor: 'pointer',
               color: '#42526E',
@@ -625,7 +625,7 @@ export default function GadgetSettingsPanel({
               border: 0,
               borderRadius: 3,
               background: '#0052CC',
-              color: '#FFFFFF',
+              color: 'var(--ds-text-inverse, #FFFFFF)',
               fontSize: 12,
               fontWeight: 600,
               cursor: 'pointer',
@@ -752,7 +752,7 @@ function MultiSelectGeneric({
             left: 0,
             right: 0,
             zIndex: 50,
-            background: '#FFFFFF',
+            background: 'var(--ds-text-inverse, #FFFFFF)',
             border: '1px solid #DFE1E6',
             borderRadius: 4,
             boxShadow: '0 8px 24px rgba(9,30,66,.18)',
@@ -796,14 +796,14 @@ function MultiSelectGeneric({
                     height: 14,
                     borderRadius: 3,
                     border: '1px solid #B3BAC5',
-                    background: sel ? '#0052CC' : '#FFFFFF',
+                    background: sel ? '#0052CC' : 'var(--ds-text-inverse, #FFFFFF)',
                     display: 'inline-flex',
                     alignItems: 'center',
                     justifyContent: 'center',
                     flexShrink: 0,
                   }}
                 >
-                  {sel && <Check size={10} color="#FFFFFF" />}
+                  {sel && <Check size={10} color="var(--ds-text-inverse, #FFFFFF)" />}
                 </span>
                 {opt.icon}
                 <span style={{ flex: 1 }}>{opt.label}</span>
@@ -916,7 +916,7 @@ function MultiSelectStatus({
             left: 0,
             right: 0,
             zIndex: 50,
-            background: '#FFFFFF',
+            background: 'var(--ds-text-inverse, #FFFFFF)',
             border: '1px solid #DFE1E6',
             borderRadius: 4,
             boxShadow: '0 8px 24px rgba(9,30,66,.18)',
@@ -989,14 +989,14 @@ function MultiSelectStatus({
                         height: 14,
                         borderRadius: 3,
                         border: '1px solid #B3BAC5',
-                        background: sel ? '#0052CC' : '#FFFFFF',
+                        background: sel ? '#0052CC' : 'var(--ds-text-inverse, #FFFFFF)',
                         display: 'inline-flex',
                         alignItems: 'center',
                         justifyContent: 'center',
                         flexShrink: 0,
                       }}
                     >
-                      {sel && <Check size={10} color="#FFFFFF" />}
+                      {sel && <Check size={10} color="var(--ds-text-inverse, #FFFFFF)" />}
                     </span>
                     <span style={{ flex: 1 }}>{s}</span>
                   </button>
@@ -1101,8 +1101,8 @@ function GadgetSpecific({
                   fontSize: 11,
                   borderRadius: 3,
                   border: '1px solid #DFE1E6',
-                  background: on ? '#0052CC' : '#FFFFFF',
-                  color: on ? '#FFFFFF' : '#42526E',
+                  background: on ? '#0052CC' : 'var(--ds-text-inverse, #FFFFFF)',
+                  color: on ? 'var(--ds-text-inverse, #FFFFFF)' : '#42526E',
                   cursor: 'pointer',
                 }}
               >
@@ -1139,8 +1139,8 @@ function GadgetSpecific({
                   fontSize: 11,
                   borderRadius: 3,
                   border: '1px solid #DFE1E6',
-                  background: on ? '#0052CC' : '#FFFFFF',
-                  color: on ? '#FFFFFF' : '#42526E',
+                  background: on ? '#0052CC' : 'var(--ds-text-inverse, #FFFFFF)',
+                  color: on ? 'var(--ds-text-inverse, #FFFFFF)' : '#42526E',
                   cursor: 'pointer',
                 }}
               >
@@ -1168,7 +1168,7 @@ function GadgetSpecific({
             borderRadius: 3,
             padding: '0 8px',
             fontSize: 12,
-            background: '#FFFFFF',
+            background: 'var(--ds-text-inverse, #FFFFFF)',
             color: '#172B4D',
           }}
         >
@@ -1190,7 +1190,7 @@ function GadgetSpecific({
 
     const numInput: React.CSSProperties = {
       height: 28, width: '100%', border: '1px solid #DFE1E6', borderRadius: 3,
-      padding: '0 8px', fontSize: 12, background: '#FFFFFF', color: '#172B4D',
+      padding: '0 8px', fontSize: 12, background: 'var(--ds-text-inverse, #FFFFFF)', color: '#172B4D',
     };
 
     return (

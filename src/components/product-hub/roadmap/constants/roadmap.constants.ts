@@ -14,8 +14,8 @@ export const TYPE_COLORS: Record<string, {
   hover: string;
 }> = {
   business_request: {
-    solid: '#B38600', light: '#FFFBEB', label: 'Business Request',
-    gradient: 'linear-gradient(135deg, #B38600, #8A6700)',
+    solid: 'var(--ds-icon-accent-yellow, #B38600)', light: '#FFFBEB', label: 'Business Request',
+    gradient: 'linear-gradient(135deg, var(--ds-icon-accent-yellow, #B38600), #8A6700)',
     hover: '#8A6700',
   },
 };
@@ -45,7 +45,7 @@ export const INK = {
 
 export const SURFACE = {
   page: 'var(--bg-1, #F8FAFC)',
-  card: '#FFFFFF',
+  card: 'var(--ds-text-inverse, #FFFFFF)',
   border: 'var(--bd-default, #E2E8F0)',
   borderLight: '#F1F5F9',
 };

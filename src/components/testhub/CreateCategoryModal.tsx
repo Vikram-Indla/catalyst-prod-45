@@ -184,7 +184,7 @@ export function CreateCategoryModal({ isOpen, onClose, onSuccess, existingCatego
           <button onClick={onClose} style={{ height: 40, padding: '0 20px', backgroundColor: 'var(--cp-float)', border: '1.5px solid var(--divider)', borderRadius: 8, fontSize: 14, fontWeight: 500, color: 'var(--fg-2)', cursor: 'pointer', fontFamily: 'var(--cp-font-body)' }}>Cancel</button>
           <button onClick={handleSubmit} disabled={isSubmitting} style={{
             height: 40, padding: '0 24px', background: 'linear-gradient(135deg, var(--cp-blue) 0%, var(--cp-primary-70) 100%)',
-            border: 'none', borderRadius: 8, color: '#FFFFFF', fontSize: 14, fontWeight: 600, cursor: isSubmitting ? 'not-allowed' : 'pointer', fontFamily: 'var(--cp-font-body)', opacity: isSubmitting ? 0.7 : 1,
+            border: 'none', borderRadius: 8, color: 'var(--ds-text-inverse, #FFFFFF)', fontSize: 14, fontWeight: 600, cursor: isSubmitting ? 'not-allowed' : 'pointer', fontFamily: 'var(--cp-font-body)', opacity: isSubmitting ? 0.7 : 1,
           }}>{isSubmitting ? 'Creating...' : 'Create Category'}</button>
         </div>
       </div>

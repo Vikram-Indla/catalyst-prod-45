@@ -51,7 +51,7 @@ export function RoadmapToolbar({ zoom, onZoomChange, groupBy, onGroupByChange, v
               className="h-[30px] px-3 text-xs font-medium focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-blue-500"
               style={{
                 background: zoom === z ? '#2563EB' : surface.card,
-                color: zoom === z ? '#FFFFFF' : ink[2],
+                color: zoom === z ? 'var(--ds-text-inverse, #FFFFFF)' : ink[2],
                 fontWeight: zoom === z ? 600 : 500,
                 borderRight: `1px solid ${surface.border}`,
                 transition: 'background-color 0.15s ease, color 0.15s ease',

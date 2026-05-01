@@ -115,7 +115,7 @@ export function StepMembers({ members, onChange }: StepMembersProps) {
                     width: 28,
                     height: 28,
                     background: AVATAR_COLORS[user.name.charCodeAt(0) % AVATAR_COLORS.length],
-                    color: '#FFFFFF',
+                    color: 'var(--ds-text-inverse, #FFFFFF)',
                     fontSize: 11,
                     fontWeight: 600,
                   }}
@@ -147,7 +147,7 @@ export function StepMembers({ members, onChange }: StepMembersProps) {
                   width: 32,
                   height: 32,
                   background: AVATAR_COLORS[member.name.charCodeAt(0) % AVATAR_COLORS.length],
-                  color: '#FFFFFF',
+                  color: 'var(--ds-text-inverse, #FFFFFF)',
                   fontSize: 12,
                   fontWeight: 600,
                 }}
