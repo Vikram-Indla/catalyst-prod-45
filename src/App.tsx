@@ -153,6 +153,14 @@ function App() {
                 <Route path="/producthub" element={<ProducthubLegacyRedirect />} />
                 <Route path="/producthub/*" element={<ProducthubLegacyRedirect />} />
 
+                {/* Block D (2026-05-01) — canonical /product-hub root lands on
+                    /product-hub/products (the workstream listing). Mounted
+                    OUTSIDE the protected shell for the same reason as the
+                    legacy redirects above: CatalystShell's re-render loop
+                    fires Navigate without committing the URL change when
+                    redirects live inside the shell. */}
+                <Route path="/product-hub" element={<Navigate to="/product-hub/products" replace />} />
+
                 {/* Protected shell with minimal routes */}
 
                 {/* Protected shell with minimal routes */}

@@ -471,10 +471,11 @@ export default function FullAppRoutes() {
             route — a single `/producthub/*` splat is shadowed by the
             individual entries. */}
         {/* Canonical /product-hub/* (these own the rendering) */}
-        {/* Block C/D (2026-05-01): /product-hub now lands on /products
-            (the workstream listing) instead of /backlog. Mirror of
-            /project-hub which lands on /projects. */}
-        <Route path="/product-hub" element={<Navigate to="/product-hub/products" replace />} />
+        {/* Block C/D (2026-05-01): /product-hub root → /product-hub/products
+            redirect lives in App.tsx OUTSIDE this protected shell, because
+            CatalystShell's re-render loop swallows in-shell Navigate calls
+            (same pattern as ProducthubLegacyRedirect). Drilldowns happen at
+            /product-hub/{KEY}/dashboard|backlog|kanban|... */}
         <Route path="/product-hub/products" element={<MG k="producthub" t="ProductHub"><S><AllProductsPage /></S></MG>} />
         <Route path="/product-hub/backlog" element={<MG k="producthub" t="ProductHub"><S><RequestListingPage /></S></MG>} />
         <Route path="/product-hub/table" element={<MG k="producthub" t="ProductHub"><S><CatalystDemandTable /></S></MG>} />
