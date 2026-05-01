@@ -20,9 +20,10 @@
  * RequestListingPage as the canonical Product Backlog).
  */
 
-import { useMemo } from 'react';
+import { useMemo, useState, lazy, Suspense } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Link as RouterLink } from 'react-router-dom';
+import { Plus } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import DynamicTable from '@atlaskit/dynamic-table';
 import EmptyState from '@atlaskit/empty-state';
@@ -30,6 +31,12 @@ import Lozenge from '@atlaskit/lozenge';
 import Avatar from '@atlaskit/avatar';
 import { token } from '@atlaskit/tokens';
 import { CatalystPageHeader } from '@/components/shared/CatalystPageHeader';
+
+// Phase 4 (2026-05-02) — lazy-load the create modal so the listing page
+// doesn't pay the cost when the user never clicks the button.
+const CreateProductModal = lazy(() =>
+  import('@/components/product-hub/CreateProductModal').then((m) => ({ default: m.CreateProductModal })),
+);
 
 interface Product {
   id: string;
@@ -54,6 +61,8 @@ const HEAD = {
 };
 
 export default function AllProductsPage() {
+  const [createOpen, setCreateOpen] = useState(false);
+
   const { data: products, isLoading, error } = useQuery({
     queryKey: ['product-hub', 'products'],
     queryFn: async () => {
@@ -149,7 +158,35 @@ export default function AllProductsPage() {
 
   return (
     <div style={{ padding: '24px 32px', maxWidth: 1400 }}>
-      <CatalystPageHeader title="Products" />
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16 }}>
+        <CatalystPageHeader title="Products" />
+        {/* Phase 4 (2026-05-02) — Create Product button mirrors Project Hub's
+            "+ New project" affordance on /project-hub/projects. Opens
+            CreateProductModal which inserts into public.products via
+            supabase-js (so the row goes through PostgREST and is immediately
+            visible to the same client that created it). */}
+        <button
+          type="button"
+          onClick={() => setCreateOpen(true)}
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: 6,
+            padding: '8px 14px',
+            fontSize: 14,
+            fontWeight: 500,
+            borderRadius: 4,
+            border: 'none',
+            background: token('color.background.brand.bold'),
+            color: token('color.text.inverse'),
+            cursor: 'pointer',
+            fontFamily: 'inherit',
+          }}
+        >
+          <Plus size={16} />
+          Create product
+        </button>
+      </div>
 
       <div style={{ marginTop: 16 }}>
         {error ? (
@@ -186,6 +223,13 @@ export default function AllProductsPage() {
           />
         )}
       </div>
+
+      {/* Phase 4 (2026-05-02) — lazy-rendered create modal. */}
+      <Suspense fallback={null}>
+        {createOpen && (
+          <CreateProductModal open={createOpen} onClose={() => setCreateOpen(false)} />
+        )}
+      </Suspense>
     </div>
   );
 }

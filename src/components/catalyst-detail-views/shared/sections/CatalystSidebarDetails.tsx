@@ -68,9 +68,15 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/lib/auth';
 import type { PhIssue } from '../types';
 import { useCatalystAvatarProfile } from '../hooks/useCatalystAvatarProfile';
-/* EditablePriority moved to CatalystKeyDetails (main content) per Jira
-   parity audit on 2026-04-20. Keeping the other three editable fields. */
-import { EditableAssignee, EditableLabels, EditableFixVersions } from '@/modules/project-work-hub/components/dialogs/story-detail-modules/EditableFields';
+/* jira-compare Phase 1 (2026-05-02): Parent + Priority restored to right
+   rail. The 2026-04-20 audit cited BAU-5538 / BAU-5364 and concluded Jira
+   renders a left "Key details" block. Re-probe of Jira BAU-5609 today
+   shows Parent + Priority live in the right rail Details section between
+   Labels and MDT Ref — order: Fix versions → Assignee → Reporter →
+   Labels → Parent → Priority → MDT Ref. Reverting to canonical Jira layout. */
+import { EditableAssignee, EditableLabels, EditableFixVersions, EditablePriority } from '@/modules/project-work-hub/components/dialogs/story-detail-modules/EditableFields';
+import { CatalystParentLinker } from './CatalystParentLinker';
+import type { CatalystItemType } from '../types';
 import { EpicDueDateField } from '@/components/project/EpicDueDateField';
 import { CatalystMdtRefField } from './CatalystMdtRefField';
 import { CatalystAssessmentFeatureField } from './CatalystAssessmentFeatureField';
@@ -132,12 +138,20 @@ interface CatalystSidebarDetailsProps {
   /** External trigger to open the delete confirmation */
   deleteRequested?: boolean;
   onDeleteDismiss?: () => void;
+  /** jira-compare Phase 1 (2026-05-02): canonical type bucket for the
+   *  CatalystParentLinker. Story → epic, Subtask → story|task, etc.
+   *  Each CatalystView* passes the right value so the Parent picker
+   *  shows the correct parent options. */
+  parentSource?: CatalystItemType;
+  projectKey?: string;
+  onOpenItem?: (key: string) => void;
 }
 
 export function CatalystSidebarDetails({
   issue, itemId, projectId, onStatusChange, onClose, onDelete,
   children, typeLabel = 'item',
   deleteRequested, onDeleteDismiss,
+  parentSource, projectKey, onOpenItem,
 }: CatalystSidebarDetailsProps) {
   const queryClient = useQueryClient();
 
@@ -451,6 +465,36 @@ export function CatalystSidebarDetails({
               <EditableLabels
                 issueId={issue.id}
                 currentLabels={labelsArray}
+                onUpdate={invalidateIssue}
+              />
+            )}
+          </FieldRow>
+
+          {/* ── Parent ──── jira-compare Phase 1 (2026-05-02). Restored to
+              right rail per Lane A re-probe of Jira BAU-5609 — Jira renders
+              Parent in the Details rail between Labels and Priority. */}
+          {parentSource && (
+            <FieldRow label="Parent" alignBlock="center">
+              {issue && (
+                <CatalystParentLinker
+                  issue={issue}
+                  itemId={itemId}
+                  itemType={parentSource}
+                  projectKey={projectKey}
+                  onOpenItem={onOpenItem}
+                />
+              )}
+            </FieldRow>
+          )}
+
+          {/* ── Priority ──── jira-compare Phase 1 (2026-05-02). Restored
+              from CatalystKeyDetails left block — Jira's right rail Details
+              section is the canonical location. */}
+          <FieldRow label="Priority" alignBlock="center">
+            {issue && (
+              <EditablePriority
+                issueId={issue.id}
+                currentPriority={issue.priority}
                 onUpdate={invalidateIssue}
               />
             )}

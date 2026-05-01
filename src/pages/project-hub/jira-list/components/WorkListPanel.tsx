@@ -45,7 +45,16 @@ export function WorkListPanel({ items, selectedKey, onSelect, projectId }: Props
   }, [items, query, sortDir]);
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', minHeight: 0 }}>
+    /* jira-compare Phase 0 (2026-05-02): root fontFamily set so the rail
+       inherits Atlassian Sans for any descendants without an explicit
+       family. Without this the card <div role="button"> root inherits
+       Inter 16px from <body>, even though the title/key spans set their
+       own family explicitly — leaks through any future inner content. */
+    <div style={{
+      display: 'flex', flexDirection: 'column', height: '100%', minHeight: 0,
+      fontFamily: "'Atlassian Sans', -apple-system, BlinkMacSystemFont, sans-serif",
+      fontSize: 14,
+    }}>
       {/* Top bar: Search work | Filter
           (Ask AI removed 2026-04-18 per directive — not used on All Work.) */}
       <div style={{

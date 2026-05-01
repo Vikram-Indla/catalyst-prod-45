@@ -205,7 +205,11 @@
   --cp-border-strong: rgba(15,23,42,0.20);
   --cp-interact-hover: rgba(15,23,42,0.04);
   --cp-interact-press: rgba(15,23,42,0.08);
-  --cp-interact-selected: rgba(37,99,235,0.08);
+  /* jira-compare Phase 0 (2026-05-02): aligned to Atlaskit
+     --ds-background-selected (atlassian.design/tokens) and Jira NIN
+     measured value rgb(233,242,254). Was Tailwind blue-600/8 which
+     rendered the rail card selection ~3 shades too saturated vs Jira. */
+  --cp-interact-selected: #E9F2FE;
   --cp-primary-60: #2563EB;
   --cp-primary-70: #1D4ED8;
   --cp-primary-5: #EFF6FF;
@@ -3404,7 +3408,10 @@ input[type="range"]::-moz-range-thumb {
   --cp-hover: #292929;
   --cp-interact-hover: #2E2E2E;
   --cp-interact-press: #2E2E2E;
-  --cp-interact-selected: rgba(37,99,235,0.15);
+  /* jira-compare Phase 0 (2026-05-02): dark variant of
+     --ds-background-selected per atlassian.design/tokens.
+     Was Tailwind blue-600/15. */
+  --cp-interact-selected: #1C2B41;
   --cp-lozenge-blue-bg: #0C66E4;
   --cp-lozenge-blue-text: #FFFFFF;
   --cp-lozenge-green-bg: #1B7F37;

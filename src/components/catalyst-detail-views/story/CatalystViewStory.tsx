@@ -23,7 +23,7 @@ import { useCatalystIssue, useCatalystIssueMutations } from '../shared/hooks';
 import { useTrackRecentItem } from '@/hooks/useRecentProjectItems';
 import {
   CatalystTitleEditor, CatalystQuickActions, CatalystDescriptionSection, CatalystAcceptanceCriteria,
-  CatalystActivitySection, CatalystSidebarDetails, CatalystKeyDetails,
+  CatalystActivitySection, CatalystSidebarDetails,
 } from '../shared/sections';
 import { SubtasksPanel } from '@/modules/project-work-hub/components/SubtasksPanel';
 import { LinkedWorkItemsSection } from '@/modules/project-work-hub/components/linked-work-items';
@@ -94,7 +94,12 @@ export default function CatalystViewStory({
         }
       />
       <CatalystQuickActions />
-      <CatalystKeyDetails issue={issue ?? null} itemId={itemId} itemType="story" projectKey={projectKey} onOpenItem={onOpenItem} />
+      {/* jira-compare Phase 1 (2026-05-02): Parent + Priority moved back to
+          the right rail (CatalystSidebarDetails) to match Jira BAU-5609
+          live DOM. Story has no Story-unique KeyDetails extraRows, so the
+          entire section is unmounted — Jira's Story body goes straight
+          from title to Description with no "Key details" header. Defect /
+          Incident still mount CatalystKeyDetails for Severity etc. */}
       <CatalystDescriptionSection issue={issue ?? null} />
       <CatalystAcceptanceCriteria issue={issue ?? null} />
 
@@ -165,6 +170,11 @@ export default function CatalystViewStory({
       onClose={onClose}
       onDelete={() => mutations.deleteIssue.mutate()}
       typeLabel="story"
+      /* jira-compare Phase 1 (2026-05-02): Parent picker rendered in the
+         right rail. Story → Epic per CatalystViewBase parentSource. */
+      parentSource="story"
+      projectKey={projectKey}
+      onOpenItem={onOpenItem}
     />
   );
 
