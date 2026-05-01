@@ -18,7 +18,7 @@
  *   - @atlaskit/lozenge             read-only Status pill
  *   - @atlaskit/primitives          Box / Stack / Inline / xcss
  *   - @atlaskit/tokens              token('space.*') / token('color.*')
- *   - EpicDescriptionEditor         Atlaskit @atlaskit/editor-core (lazy)
+ *   - @atlaskit/textarea            Description field in Jira Create-modal form style
  *
  * Callers (unchanged contract):
  *   - src/components/ja/CreateDropdown.tsx                (top nav + Create)
