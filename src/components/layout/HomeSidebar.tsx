@@ -63,19 +63,12 @@
  *   Jump to  ← HUBS constant from @/lib/hubs (canonical CamelCase names)
  */
 import React, { useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   Star,
   Clock,
-  Building2,
-  Briefcase,
   FolderOpen,
-  Ship,
-  CheckCircle2,
-  AlertTriangle,
-  CheckSquare,
-  Calendar,
-  BookOpen,
-  type LucideIcon,
+  ArrowRight,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { SidebarBase, type SidebarConfig, type SidebarMenuItem } from './SidebarBase';
@@ -84,17 +77,13 @@ import {
   useToggleStar,
   type StarredItemType,
 } from '@/hooks/home/useStarredItems';
-import { useRecentIssues, type RecentIssue } from '@/hooks/home/useRecentIssues';
-import { HUBS } from '@/lib/hubs';
+import { useRecentProjects, type RecentProject } from '@/hooks/home/useRecentProjects';
 import { useGlobalSearchStore } from '@/store/globalSearchStore';
 import { supabase } from '@/integrations/supabase/client';
-import WorkItemIcon, {
-  type WorkItemIconType,
-  normalizeIconType,
-} from '@/components/shared/WorkItemIcon';
+import { ProjectIcon } from '@/components/shared/ProjectIcon';
 
 const PINNED_LIMIT = 5;
-const RECENT_LIMIT = 5;
+const RECENT_PROJECTS_LIMIT = 6;
 
 interface HomeSidebarProps {
   expanded?: boolean;
@@ -103,48 +92,7 @@ interface HomeSidebarProps {
 }
 
 /**
- * Hub id → Lucide icon mapping. SidebarBase passes className/style through
- * to the icon component, which the Atlaskit glyph icons in @/lib/hubs
- * don't accept the same way. Lucide is already the canonical icon family
- * for every other hub sidebar, so Home matches.
- */
-const HUB_ICONS: Record<string, LucideIcon> = {
-  enterprise: Building2,
-  product: Briefcase,
-  project: FolderOpen,
-  release: Ship,
-  test: CheckCircle2,
-  incident: AlertTriangle,
-  task: CheckSquare,
-  plan: Calendar,
-  wiki: BookOpen,
-};
-
-/**
- * Compact relative-time formatter — "now", "5m", "2h", "3d", "1w", "2mo".
- * Avoids a date-fns import for one helper; matches the density Linear /
- * Slack use for last-activity timestamps.
- */
-function formatRelativeShort(date: Date): string {
-  const seconds = Math.max(0, (Date.now() - date.getTime()) / 1000);
-  if (seconds < 60) return 'now';
-  const minutes = seconds / 60;
-  if (minutes < 60) return `${Math.floor(minutes)}m`;
-  const hours = minutes / 60;
-  if (hours < 24) return `${Math.floor(hours)}h`;
-  const days = hours / 24;
-  if (days < 7) return `${Math.floor(days)}d`;
-  const weeks = days / 7;
-  if (weeks < 5) return `${Math.floor(weeks)}w`;
-  const months = days / 30;
-  if (months < 12) return `${Math.floor(months)}mo`;
-  return `${Math.floor(days / 365)}y`;
-}
-
-/**
- * Skeleton row used while pins / recents are loading. Rendered as the
- * SidebarMenuItem.title node so the row keeps the canonical 32px height
- * without a separate skeleton component.
+ * Skeleton row — keeps row height stable while data lands.
  */
 function SkeletonRowTitle() {
   return (
@@ -154,7 +102,7 @@ function SkeletonRowTitle() {
         height: 12,
         width: '70%',
         borderRadius: 4,
-        background: 'var(--cp-bg-inset, #F1F5F9)',
+        background: 'var(--ds-background-neutral, #F1F5F9)',
         opacity: 0.8,
       }}
       aria-hidden="true"
@@ -162,55 +110,6 @@ function SkeletonRowTitle() {
   );
 }
 
-/**
- * Recent row title — issue key on the left (Mono, like every other
- * Catalyst issue chip), short relative time on the right. Sits inside
- * SidebarBase's flex-1 wrapper without inflating row height.
- *
- * We surface the key (BAU-5514) rather than the full summary because (a)
- * the rail is 232px wide and summaries truncate badly, (b) the
- * WorkItemIcon already carries the type, so the key is the highest-density
- * identifier we can show, and (c) it matches Linear / Jira's
- * recently-touched UX — terse keys with type icons.
- */
-function RecentRowTitle({ issueKey, when }: { issueKey: string; when: Date }) {
-  return (
-    <span
-      style={{
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        gap: 8,
-        width: '100%',
-      }}
-    >
-      <span
-        style={{
-          overflow: 'hidden',
-          textOverflow: 'ellipsis',
-          whiteSpace: 'nowrap',
-          minWidth: 0,
-          fontFamily: "'JetBrains Mono', monospace",
-          letterSpacing: '0.01em',
-        }}
-      >
-        {issueKey}
-      </span>
-      <span
-        style={{
-          fontSize: 11,
-          fontWeight: 500,
-          color: 'var(--cp-text-muted, #94A3B8)',
-          flexShrink: 0,
-          fontFamily: "'JetBrains Mono', monospace",
-          letterSpacing: '0.02em',
-        }}
-      >
-        {formatRelativeShort(when)}
-      </span>
-    </span>
-  );
-}
 
 /**
  * Click-time pre-check — verify a starred item still resolves to a real
@@ -278,41 +177,40 @@ async function verifyItemExists(
 }
 
 /**
- * Adapter — render <WorkItemIcon> with the SidebarBase icon-prop
- * contract:
- *   icon?: LucideIcon | React.ComponentType<{ className?: string; style?: React.CSSProperties }>
- *
- * SidebarBase forwards `className` and `style` to the icon component; we
- * pass them through to a wrapper <span> so SidebarBase's per-row
- * tinting/sizing (which targets the wrapper) still applies. The
- * WorkItemIcon SVG itself stays at 16px and uses the canonical color
- * locked per CLAUDE.md §11 — we deliberately do NOT thread `currentColor`
- * through it because the work-item icon palette is non-semantic and must
- * not invert in dark mode (CLAUDE.md §11: "color variation for dark mode"
- * is banned).
- *
- * Components are cached by `type` at module level so React can reconcile
- * by stable reference across HomeSidebar renders. Without this cache,
- * every config rebuild would mint a fresh component identity and force
- * the SidebarBase row to remount.
+ * ProjectIcon adapter — renders the canonical 24px ProjectIcon (Jira-parity
+ * branded square) inside SidebarBase's icon slot. SidebarBase forwards
+ * `className` and `style` to the icon component; we wrap ProjectIcon in a
+ * span so per-row tinting/sizing still applies. The icon itself stays at
+ * 20px (slightly tighter than detail screens — rail is dense) and is
+ * cached by projectKey so React reconciles by stable reference across
+ * config rebuilds.
  */
-const WORK_ITEM_ICON_COMPONENTS = new Map<
-  WorkItemIconType,
+const PROJECT_ICON_COMPONENTS = new Map<
+  string,
   React.FC<{ className?: string; style?: React.CSSProperties }>
 >();
-function getWorkItemIconComponent(type: WorkItemIconType) {
-  let cached = WORK_ITEM_ICON_COMPONENTS.get(type);
+function getProjectIconComponent(p: RecentProject) {
+  const cacheKey = `${p.projectKey}|${p.iconName ?? ''}|${p.color ?? ''}`;
+  let cached = PROJECT_ICON_COMPONENTS.get(cacheKey);
   if (!cached) {
     const Component: React.FC<{ className?: string; style?: React.CSSProperties }> = ({
       className,
       style,
     }) => (
-      <span className={className} style={{ display: 'inline-flex', ...style }}>
-        <WorkItemIcon type={type} size={16} />
+      <span
+        className={className}
+        style={{ display: 'inline-flex', alignItems: 'center', ...style }}
+      >
+        <ProjectIcon
+          iconName={p.iconName}
+          color={p.color}
+          name={p.name}
+          size="small"
+        />
       </span>
     );
-    Component.displayName = `WorkItemIcon(${type})`;
-    WORK_ITEM_ICON_COMPONENTS.set(type, Component);
+    Component.displayName = `ProjectIcon(${p.projectKey})`;
+    PROJECT_ICON_COMPONENTS.set(cacheKey, Component);
     cached = Component;
   }
   return cached;
@@ -323,20 +221,13 @@ export default function HomeSidebar({
   onToggle = () => {},
   className,
 }: HomeSidebarProps) {
+  const navigate = useNavigate();
   const openDetail = useGlobalSearchStore((s) => s.openDetail);
   const toggleStar = useToggleStar();
 
   const { data: starredData, isLoading: starredLoading } = useStarredDeliveryItems();
-  const { recentIssues, loading: recentLoading } = useRecentIssues({ limit: RECENT_LIMIT });
+  const { recentProjects, loading: recentLoading } = useRecentProjects(RECENT_PROJECTS_LIMIT);
 
-  /**
-   * Pinned-row click handler — pre-checks existence, then either opens
-   * the detail drawer or auto-unstars + toasts. Runs async; the click
-   * itself is fire-and-forget (no spinner, no awaiting in the JSX), which
-   * keeps the rail responsive. The brief perceptible delay between click
-   * and drawer (one HEAD round-trip, ~50–150ms) is acceptable given the
-   * alternative (an empty drawer for a ghost pin).
-   */
   const handlePinnedClick = React.useCallback(
     async (item: { id: string; type: StarredItemType; projectKey: string }) => {
       const exists = await verifyItemExists(item.id, item.type);
@@ -348,8 +239,6 @@ export default function HomeSidebar({
         });
         return;
       }
-      // Ghost pin — silently unstar and notify. Mutation invalidates
-      // ['starred-delivery-items'] so the row vanishes from the rail.
       toggleStar.mutate({
         itemId: item.id,
         itemType: item.type,
@@ -364,14 +253,57 @@ export default function HomeSidebar({
     () => (starredData?.items ?? []).slice(0, PINNED_LIMIT),
     [starredData],
   );
-  const recent = useMemo(
-    () => recentIssues.slice(0, RECENT_LIMIT),
-    [recentIssues],
-  );
 
   const config: SidebarConfig = useMemo(() => {
-    // Pinned section — fall back to skeleton rows during load so the rail
-    // doesn't reflow when data lands.
+    // Recent projects — Jira "Recent projects" parity. Project-grain only,
+    // no ticket numbers; click navigates to the project's All Work view.
+    const recentProjectItems: SidebarMenuItem[] = recentLoading
+      ? [
+          { id: 'recent-skel-1', title: <SkeletonRowTitle />, path: '#recent-skel-1', icon: FolderOpen },
+          { id: 'recent-skel-2', title: <SkeletonRowTitle />, path: '#recent-skel-2', icon: FolderOpen },
+          { id: 'recent-skel-3', title: <SkeletonRowTitle />, path: '#recent-skel-3', icon: FolderOpen },
+        ]
+      : recentProjects.length === 0
+      ? [
+          {
+            id: 'recent-empty',
+            title: (
+              <span style={{ color: 'var(--ds-text-subtlest, #94A3B8)', fontSize: 13 }}>
+                Open a project to see it here.
+              </span>
+            ),
+            path: '#recent-empty',
+            icon: Clock,
+            onClick: () => {},
+          },
+        ]
+      : recentProjects.map((p) => ({
+          id: `recent-${p.projectKey}`,
+          title: p.name,
+          path: `/project-hub/${p.projectKey}/allwork`,
+          icon: getProjectIconComponent(p),
+        }));
+
+    // "All projects" footer link — Jira "More spaces" parity.
+    const allProjectsItem: SidebarMenuItem = {
+      id: 'recent-all-projects',
+      title: (
+        <span
+          style={{
+            color: 'var(--ds-text-subtle, #626F86)',
+            fontSize: 13,
+            fontWeight: 500,
+          }}
+        >
+          All projects
+        </span>
+      ),
+      path: '/project-hub/all-projects',
+      icon: ArrowRight,
+    };
+
+    // Pinned section — preserved for ticket-level pins. Sits below
+    // Recent projects (project-grain primary, ticket-grain secondary).
     const pinnedItems: SidebarMenuItem[] = starredLoading
       ? [
           { id: 'pinned-skel-1', title: <SkeletonRowTitle />, path: '#pinned-skel-1', icon: Star },
@@ -382,11 +314,10 @@ export default function HomeSidebar({
           {
             id: 'pinned-empty',
             title: (
-              <span style={{ color: 'var(--cp-text-muted, #94A3B8)', fontSize: 13 }}>
+              <span style={{ color: 'var(--ds-text-subtlest, #94A3B8)', fontSize: 13 }}>
                 Nothing pinned yet.
               </span>
             ),
-            // Empty state shouldn't navigate anywhere — onClick is a no-op.
             path: '#pinned-empty',
             icon: Star,
             onClick: () => {},
@@ -395,13 +326,9 @@ export default function HomeSidebar({
       : pinned.map((item) => ({
           id: `pinned-${item.id}`,
           title: item.key,
-          // Path is a placeholder — onClick takes precedence and opens the
-          // universal detail drawer instead of navigating to a route.
           path: `#pinned-${item.id}`,
           icon: Star,
           alwaysStarred: true,
-          // Pre-check existence before opening; auto-unstar + toast if
-          // the item has been deleted since it was pinned.
           onClick: () => {
             void handlePinnedClick({
               id: item.id,
@@ -409,10 +336,6 @@ export default function HomeSidebar({
               projectKey: item.projectKey,
             });
           },
-          // Star override — Pinned rows live in user_starred_items, not
-          // the SidebarBase path-favorites store. Clicking the filled
-          // star unpins via useToggleStar (the same mutation Star
-          // buttons elsewhere call) and shows a confirming toast.
           onStarClick: () => {
             toggleStar.mutate(
               {
@@ -434,87 +357,16 @@ export default function HomeSidebar({
           },
         }));
 
-    const recentItems: SidebarMenuItem[] = recentLoading
-      ? [
-          { id: 'recent-skel-1', title: <SkeletonRowTitle />, path: '#recent-skel-1', icon: Clock },
-          { id: 'recent-skel-2', title: <SkeletonRowTitle />, path: '#recent-skel-2', icon: Clock },
-        ]
-      : recent.length === 0
-      ? [
-          {
-            id: 'recent-empty',
-            title: (
-              <span style={{ color: 'var(--cp-text-muted, #94A3B8)', fontSize: 13 }}>
-                No recent issues.
-              </span>
-            ),
-            path: '#recent-empty',
-            icon: Clock,
-            onClick: () => {},
-          },
-        ]
-      : recent.map((issue: RecentIssue) => {
-          // Use the canonical normalizer from WorkItemIcon (CLAUDE.md §11
-          // single-source-of-truth). It covers more cases than a local
-          // mapper would (service_request, problem, prod_issue,
-          // production_issue, user_story, improvement, technical_task)
-          // and console.warns on any unknown type so we surface gaps.
-          const iconType = normalizeIconType(issue.issueType);
-          // Diagnostic — surface raw issue_type → resolved iconType so we
-          // can see in DevTools whether normalizeIconType is missing a
-          // mapping (e.g., a custom MoIM Jira type). Remove once the
-          // Recent-icon mismatch is verified resolved.
-          // eslint-disable-next-line no-console
-          if (typeof console !== 'undefined') {
-            console.debug(
-              '[HomeSidebar.Recent]',
-              issue.issueKey,
-              'issue_type=',
-              JSON.stringify(issue.issueType),
-              '→ iconType=',
-              iconType,
-            );
-          }
-          return {
-            id: `recent-${issue.id}`,
-            title: (
-              <RecentRowTitle
-                issueKey={issue.issueKey}
-                when={new Date(issue.updatedAt)}
-              />
-            ),
-            // Path is a placeholder — onClick takes precedence and opens
-            // the universal detail drawer instead of navigating.
-            path: `#recent-${issue.id}`,
-            icon: getWorkItemIconComponent(iconType as WorkItemIconType),
-            onClick: () =>
-              openDetail({
-                id: issue.id,
-                projectKey: issue.projectKey,
-              }),
-          };
-        });
-
-    const jumpToItems: SidebarMenuItem[] = HUBS.map((hub) => ({
-      id: `jump-${hub.id}`,
-      title: hub.label,
-      path: hub.path,
-      icon: HUB_ICONS[hub.id] ?? FolderOpen,
-    }));
-
     return {
       badge: 'H',
       label: 'Home',
-      // Disable the per-item star affordance — Pinned items already render
-      // a filled star, and recent / jump rows aren't star-eligible.
       showFavorites: false,
       sections: [
-        { title: 'Pinned', items: pinnedItems },
-        { title: 'Recent', items: recentItems },
-        { title: 'Jump to', items: jumpToItems },
+        { title: 'Recent projects', items: [...recentProjectItems, allProjectsItem] },
+        { title: 'Pinned items', items: pinnedItems },
       ],
     };
-  }, [pinned, recent, starredLoading, recentLoading, openDetail, handlePinnedClick, toggleStar]);
+  }, [pinned, recentProjects, starredLoading, recentLoading, openDetail, handlePinnedClick, toggleStar, navigate]);
 
   return (
     <SidebarBase
@@ -525,3 +377,4 @@ export default function HomeSidebar({
     />
   );
 }
+

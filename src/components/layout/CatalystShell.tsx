@@ -56,6 +56,7 @@ const AnnouncementBanner = lazyWithRetry(() => import('@/components/notification
 import { useTrackLastRoute } from '@/hooks/useSessionPersistence';
 import { useEnabledModules } from '@/hooks/useModules';
 import { useRecentPlaceTracker } from '@/hooks/useRecentPlaceTracker';
+import { useRecordProjectVisit } from '@/hooks/home/useRecentProjects';
 import { useCatalystTitle } from '@/hooks/useCatalystTitle';
 import { derivePageFromPath } from '@/lib/tabIdentity';
 
@@ -132,6 +133,8 @@ function CatalystShellContent() {
   
   // Track room visits for Recent Rooms functionality
   useRecentPlaceTracker();
+  // Track ProjectHub project visits for Home rail "Recent projects"
+  useRecordProjectVisit();
   const location = useLocation();
   const page = derivePageFromPath(location.pathname);
   const navigate = useNavigate();
