@@ -93,48 +93,7 @@ interface HomeSidebarProps {
 }
 
 /**
- * Hub id → Lucide icon mapping. SidebarBase passes className/style through
- * to the icon component, which the Atlaskit glyph icons in @/lib/hubs
- * don't accept the same way. Lucide is already the canonical icon family
- * for every other hub sidebar, so Home matches.
- */
-const HUB_ICONS: Record<string, LucideIcon> = {
-  enterprise: Building2,
-  product: Briefcase,
-  project: FolderOpen,
-  release: Ship,
-  test: CheckCircle2,
-  incident: AlertTriangle,
-  task: CheckSquare,
-  plan: Calendar,
-  wiki: BookOpen,
-};
-
-/**
- * Compact relative-time formatter — "now", "5m", "2h", "3d", "1w", "2mo".
- * Avoids a date-fns import for one helper; matches the density Linear /
- * Slack use for last-activity timestamps.
- */
-function formatRelativeShort(date: Date): string {
-  const seconds = Math.max(0, (Date.now() - date.getTime()) / 1000);
-  if (seconds < 60) return 'now';
-  const minutes = seconds / 60;
-  if (minutes < 60) return `${Math.floor(minutes)}m`;
-  const hours = minutes / 60;
-  if (hours < 24) return `${Math.floor(hours)}h`;
-  const days = hours / 24;
-  if (days < 7) return `${Math.floor(days)}d`;
-  const weeks = days / 7;
-  if (weeks < 5) return `${Math.floor(weeks)}w`;
-  const months = days / 30;
-  if (months < 12) return `${Math.floor(months)}mo`;
-  return `${Math.floor(days / 365)}y`;
-}
-
-/**
- * Skeleton row used while pins / recents are loading. Rendered as the
- * SidebarMenuItem.title node so the row keeps the canonical 32px height
- * without a separate skeleton component.
+ * Skeleton row — keeps row height stable while data lands.
  */
 function SkeletonRowTitle() {
   return (
@@ -144,7 +103,7 @@ function SkeletonRowTitle() {
         height: 12,
         width: '70%',
         borderRadius: 4,
-        background: 'var(--cp-bg-inset, #F1F5F9)',
+        background: 'var(--ds-background-neutral, #F1F5F9)',
         opacity: 0.8,
       }}
       aria-hidden="true"
@@ -152,55 +111,6 @@ function SkeletonRowTitle() {
   );
 }
 
-/**
- * Recent row title — issue key on the left (Mono, like every other
- * Catalyst issue chip), short relative time on the right. Sits inside
- * SidebarBase's flex-1 wrapper without inflating row height.
- *
- * We surface the key (BAU-5514) rather than the full summary because (a)
- * the rail is 232px wide and summaries truncate badly, (b) the
- * WorkItemIcon already carries the type, so the key is the highest-density
- * identifier we can show, and (c) it matches Linear / Jira's
- * recently-touched UX — terse keys with type icons.
- */
-function RecentRowTitle({ issueKey, when }: { issueKey: string; when: Date }) {
-  return (
-    <span
-      style={{
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        gap: 8,
-        width: '100%',
-      }}
-    >
-      <span
-        style={{
-          overflow: 'hidden',
-          textOverflow: 'ellipsis',
-          whiteSpace: 'nowrap',
-          minWidth: 0,
-          fontFamily: "'JetBrains Mono', monospace",
-          letterSpacing: '0.01em',
-        }}
-      >
-        {issueKey}
-      </span>
-      <span
-        style={{
-          fontSize: 11,
-          fontWeight: 500,
-          color: 'var(--cp-text-muted, #94A3B8)',
-          flexShrink: 0,
-          fontFamily: "'JetBrains Mono', monospace",
-          letterSpacing: '0.02em',
-        }}
-      >
-        {formatRelativeShort(when)}
-      </span>
-    </span>
-  );
-}
 
 /**
  * Click-time pre-check — verify a starred item still resolves to a real
