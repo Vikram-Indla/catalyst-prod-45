@@ -24,7 +24,7 @@
  *     (WorkItemStarButton, StarredPage, per-row stars in backlogs).
  */
 import React, { useMemo } from 'react';
-import { Clock, FolderOpen, ArrowRight } from 'lucide-react';
+import { Clock, FolderOpen } from 'lucide-react';
 import { SidebarBase, type SidebarConfig, type SidebarMenuItem } from './SidebarBase';
 import { useRecentProjects, type RecentProject } from '@/hooks/home/useRecentProjects';
 import { ProjectIcon } from '@/components/shared/ProjectIcon';
