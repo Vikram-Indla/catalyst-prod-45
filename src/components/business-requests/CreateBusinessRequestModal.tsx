@@ -89,6 +89,8 @@ import {
 const EpicDescriptionEditor = lazy(
   () => import('@/components/shared/rich-text/atlaskit/EpicDescriptionEditor'),
 );
+// 2026-04-30 — canonical editor prewarm. See CLAUDE.md PERMANENT RULE.
+import { usePrewarmEpicEditorOnOpen } from '@/lib/atlaskitPrefetch';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Option type (identical to CreateStoryModal)
@@ -626,6 +628,9 @@ function FieldLabel({ children, required }: { children: ReactNode; required?: bo
 // ─────────────────────────────────────────────────────────────────────────────
 
 export function CreateBusinessRequestModal({ isOpen, onClose }: CreateBusinessRequestModalProps) {
+  // 2026-04-30 canonical editor prewarm — required by CLAUDE.md PERMANENT RULE.
+  usePrewarmEpicEditorOnOpen(isOpen);
+
   const createMutation = useCreateBusinessRequest();
   const { data: profiles = [] } = useProfiles();
   const { data: releaseOptions = [] } = useReleases();

@@ -315,10 +315,18 @@ export default defineConfig(({ mode, command }) => {
       // pre-bundle IDs so the manifest survives re-optimization.
       '@popperjs/core',
       'react-popper',
-      // NOTE: @atlaskit/editor-core and @atlaskit/renderer are intentionally
-      // EXCLUDED here. They bundle their own ProseMirror tree and clash with
-      // Tiptap if eagerly loaded. AtlaskitEditor.tsx lazy-imports editor-core
-      // via React.lazy so it only enters the page when an editor is mounted.
+      // 2026-04-30 — pre-bundle @atlaskit/editor-core in dev. The original
+      // exclusion was based on a Tiptap-collision concern that is no longer
+      // relevant: TipTap was REMOVED from this codebase (CLAUDE.md
+      // 2026-04-20 lesson). Without these in optimizeDeps, the first editor
+      // mount in Vite dev hangs >40s while transform-on-demand discovers
+      // 1000+ files in editor-core's dependency tree. With them, cold dev
+      // start adds ~10s for one esbuild pre-bundle pass; every subsequent
+      // editor mount is <100ms. The vendor-atlaskit-editor manualChunk in
+      // build.rollupOptions still isolates the editor for production caching.
+      '@atlaskit/editor-core',
+      '@atlaskit/editor-common',
+      'react-intl-next',
       // Pre-bundle prosemirror so editor-core + renderer share ONE instance.
       'prosemirror-state',
       'prosemirror-model',

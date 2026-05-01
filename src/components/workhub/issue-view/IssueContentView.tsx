@@ -48,6 +48,8 @@ import { resolveAvatarUrl } from '@/lib/avatars';
 const EpicDescriptionEditor = lazy(
   () => import('@/components/shared/rich-text/atlaskit/EpicDescriptionEditor'),
 );
+// 2026-04-30 — canonical editor prewarm. See CLAUDE.md PERMANENT RULE.
+import { usePrewarmEpicEditorOnOpen } from '@/lib/atlaskitPrefetch';
 import '@/modules/project-work-hub/components/dialogs/story-detail-extensions.css';
 import { ActivityPanelPilot } from './activity/ActivityPanelPilot';
 /* Catalyst Defect anatomy — unifies the All Work view with the

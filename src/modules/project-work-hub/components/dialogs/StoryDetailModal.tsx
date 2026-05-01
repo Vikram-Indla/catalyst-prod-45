@@ -87,6 +87,8 @@ import { isAdfEmpty } from '@/components/shared/rich-text/atlaskit/adfHelpers';
 const EpicDescriptionEditor = lazy(
   () => import('@/components/shared/rich-text/atlaskit/EpicDescriptionEditor'),
 );
+// 2026-04-30 — canonical editor prewarm. See CLAUDE.md PERMANENT RULE.
+import { usePrewarmEpicEditorOnOpen } from '@/lib/atlaskitPrefetch';
 import { useProfileAvatarsByName } from '@/hooks/useProfileAvatars';
 import { resolveAvatarUrl } from '@/lib/avatars';
 import Lozenge from '@atlaskit/lozenge';
@@ -174,6 +176,9 @@ export default function StoryDetailModal({
   isOpen, onClose, itemId, projectId, projectKey, onOpenItem,
   panelMode, fullPageMode, onTogglePanelMode, navigationItems, onNavigate,
 }: StoryDetailModalProps) {
+  // 2026-04-30 canonical editor prewarm — required by CLAUDE.md PERMANENT RULE.
+  usePrewarmEpicEditorOnOpen(isOpen);
+
   const queryClient = useQueryClient();
   const { user } = useAuth();
   const avatarsByName = useProfileAvatarsByName();
