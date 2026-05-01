@@ -114,7 +114,7 @@ export default function RASearchToolbar({ tab, onTabChange, search, onSearchChan
               ? 'var(--fg-4)'
               : 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)',
             boxShadow: syncingAll ? 'none' : '0 1px 3px rgba(37,99,235,0.35)',
-            color: '#FFFFFF',
+            color: 'var(--ds-text-inverse, #FFFFFF)',
             cursor: syncingAll ? 'not-allowed' : 'pointer',
             fontFamily: 'var(--cp-font-body)',
             whiteSpace: 'nowrap', flexShrink: 0,

@@ -263,7 +263,7 @@ function AddLinkModal({
                     display: 'flex', alignItems: 'center', gap: 6,
                     border: active ? 'none' : '1px solid var(--divider)',
                     background: active ? 'var(--cp-blue)' : 'transparent',
-                    color: active ? '#FFFFFF' : 'var(--fg-2)',
+                    color: active ? 'var(--ds-text-inverse, #FFFFFF)' : 'var(--fg-2)',
                   }}>
                   <opt.icon style={{ width: 14, height: 14 }} />
                   {opt.label}
@@ -1102,7 +1102,7 @@ export function ViewTestCaseModal({
                           height: 28, padding: '0 12px', borderRadius: 4, fontSize: 12, fontWeight: 500,
                           cursor: 'pointer', border: active ? 'none' : '1px solid #E2E8F0',
                           background: active ? '#2563EB' : 'transparent',
-                          color: active ? '#FFFFFF' : '#475569',
+                          color: active ? 'var(--ds-text-inverse, #FFFFFF)' : '#475569',
                           fontFamily: 'var(--cp-font-body)',
                         }}>
                           {labels[fmt]}
@@ -1199,14 +1199,14 @@ export function ViewTestCaseModal({
                           </div>
                           <div style={{ display: 'flex', gap: 6, justifyContent: 'flex-end' }}>
                             <button onClick={() => { setAddingGherkin(false); setNewGherkinFeature(''); setNewGherkinScenario(''); }} style={{ height: 30, padding: '0 12px', fontSize: 12, fontWeight: 500, border: '1px solid #E2E8F0', borderRadius: 6, background: 'transparent', color: '#475569', cursor: 'pointer' }}>Cancel</button>
-                            <button onClick={handleAddGherkinScenario} disabled={!newGherkinScenario.trim()} style={{ height: 30, padding: '0 12px', fontSize: 12, fontWeight: 500, border: 'none', borderRadius: 6, background: newGherkinScenario.trim() ? '#2563EB' : '#94A3B8', color: '#FFFFFF', cursor: newGherkinScenario.trim() ? 'pointer' : 'not-allowed' }}>Add Scenario</button>
+                            <button onClick={handleAddGherkinScenario} disabled={!newGherkinScenario.trim()} style={{ height: 30, padding: '0 12px', fontSize: 12, fontWeight: 500, border: 'none', borderRadius: 6, background: newGherkinScenario.trim() ? '#2563EB' : '#94A3B8', color: 'var(--ds-text-inverse, #FFFFFF)', cursor: newGherkinScenario.trim() ? 'pointer' : 'not-allowed' }}>Add Scenario</button>
                           </div>
                         </div>
                       ) : (
                         <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 4 }}>
                           <button
                             onClick={() => setAddingGherkin(true)}
-                            style={{ display: 'flex', alignItems: 'center', gap: 6, height: 32, padding: '0 12px', borderRadius: 6, fontSize: 13, fontWeight: 500, cursor: 'pointer', border: '1px solid #E2E8F0', background: '#FFFFFF', color: '#172B4D', fontFamily: 'var(--cp-font-body)' }}>
+                            style={{ display: 'flex', alignItems: 'center', gap: 6, height: 32, padding: '0 12px', borderRadius: 6, fontSize: 13, fontWeight: 500, cursor: 'pointer', border: '1px solid #E2E8F0', background: 'var(--ds-text-inverse, #FFFFFF)', color: '#172B4D', fontFamily: 'var(--cp-font-body)' }}>
                             <Plus style={{ width: 14, height: 14 }} />
                             Add Scenario
                           </button>
@@ -1252,14 +1252,14 @@ export function ViewTestCaseModal({
                           />
                           <div style={{ display: 'flex', gap: 6, justifyContent: 'flex-end' }}>
                             <button onClick={() => { setAddingFreeText(false); setNewFreeText(''); }} style={{ height: 30, padding: '0 12px', fontSize: 12, fontWeight: 500, border: '1px solid #E2E8F0', borderRadius: 6, background: 'transparent', color: '#475569', cursor: 'pointer' }}>Cancel</button>
-                            <button onClick={handleAddFreeTextBlock} disabled={!newFreeText.trim()} style={{ height: 30, padding: '0 12px', fontSize: 12, fontWeight: 500, border: 'none', borderRadius: 6, background: newFreeText.trim() ? '#2563EB' : '#94A3B8', color: '#FFFFFF', cursor: newFreeText.trim() ? 'pointer' : 'not-allowed' }}>Add Test Step</button>
+                            <button onClick={handleAddFreeTextBlock} disabled={!newFreeText.trim()} style={{ height: 30, padding: '0 12px', fontSize: 12, fontWeight: 500, border: 'none', borderRadius: 6, background: newFreeText.trim() ? '#2563EB' : '#94A3B8', color: 'var(--ds-text-inverse, #FFFFFF)', cursor: newFreeText.trim() ? 'pointer' : 'not-allowed' }}>Add Test Step</button>
                           </div>
                         </div>
                       ) : (
                         <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 4 }}>
                           <button
                             onClick={() => setAddingFreeText(true)}
-                            style={{ display: 'flex', alignItems: 'center', gap: 6, height: 32, padding: '0 12px', borderRadius: 6, fontSize: 13, fontWeight: 500, cursor: 'pointer', border: '1px solid #E2E8F0', background: '#FFFFFF', color: '#172B4D', fontFamily: 'var(--cp-font-body)' }}>
+                            style={{ display: 'flex', alignItems: 'center', gap: 6, height: 32, padding: '0 12px', borderRadius: 6, fontSize: 13, fontWeight: 500, cursor: 'pointer', border: '1px solid #E2E8F0', background: 'var(--ds-text-inverse, #FFFFFF)', color: '#172B4D', fontFamily: 'var(--cp-font-body)' }}>
                             <Plus style={{ width: 14, height: 14 }} />
                             Add Test Step
                           </button>
@@ -1280,7 +1280,7 @@ export function ViewTestCaseModal({
                         }}>
                           <div style={{
                             width: 24, height: 24, borderRadius: '50%',
-                            background: '#2563EB', color: '#FFFFFF',
+                            background: '#2563EB', color: 'var(--ds-text-inverse, #FFFFFF)',
                             display: 'flex', alignItems: 'center', justifyContent: 'center',
                             fontSize: 11, fontWeight: 700, flexShrink: 0, marginTop: 2,
                           }}>
@@ -1301,7 +1301,7 @@ export function ViewTestCaseModal({
                               </div>
                               <div style={{ display: 'flex', gap: 6, justifyContent: 'flex-end' }}>
                                 <button onClick={() => setEditingStepId(null)} style={{ height: 30, padding: '0 12px', fontSize: 12, fontWeight: 500, border: '1px solid var(--divider)', borderRadius: 6, background: 'transparent', color: 'var(--fg-3)', cursor: 'pointer' }}>Cancel</button>
-                                <button onClick={() => handleUpdateStep(step.id)} style={{ height: 30, padding: '0 12px', fontSize: 12, fontWeight: 500, border: 'none', borderRadius: 6, background: '#2563EB', color: '#FFFFFF', cursor: 'pointer' }}>Save</button>
+                                <button onClick={() => handleUpdateStep(step.id)} style={{ height: 30, padding: '0 12px', fontSize: 12, fontWeight: 500, border: 'none', borderRadius: 6, background: '#2563EB', color: 'var(--ds-text-inverse, #FFFFFF)', cursor: 'pointer' }}>Save</button>
                               </div>
                             </div>
                           ) : (
@@ -1351,7 +1351,7 @@ export function ViewTestCaseModal({
                           </div>
                           <div style={{ display: 'flex', gap: 6, justifyContent: 'flex-end' }}>
                             <button onClick={() => { setAddingStep(false); setNewStepAction(''); setNewStepExpected(''); }} style={{ height: 30, padding: '0 12px', fontSize: 12, fontWeight: 500, border: '1px solid var(--divider)', borderRadius: 6, background: 'transparent', color: 'var(--fg-3)', cursor: 'pointer' }}>Cancel</button>
-                            <button onClick={handleAddStep} disabled={!newStepAction.trim()} style={{ height: 30, padding: '0 12px', fontSize: 12, fontWeight: 500, border: 'none', borderRadius: 6, background: newStepAction.trim() ? '#2563EB' : '#94A3B8', color: '#FFFFFF', cursor: newStepAction.trim() ? 'pointer' : 'not-allowed' }}>Add Step</button>
+                            <button onClick={handleAddStep} disabled={!newStepAction.trim()} style={{ height: 30, padding: '0 12px', fontSize: 12, fontWeight: 500, border: 'none', borderRadius: 6, background: newStepAction.trim() ? '#2563EB' : '#94A3B8', color: 'var(--ds-text-inverse, #FFFFFF)', cursor: newStepAction.trim() ? 'pointer' : 'not-allowed' }}>Add Step</button>
                           </div>
                         </div>
                       ) : (
@@ -1361,12 +1361,12 @@ export function ViewTestCaseModal({
                           <div style={{ position: 'relative' }} data-add-step-menu>
                             <button
                               onClick={() => setIsAddStepMenuOpen(p => !p)}
-                              style={{ display: 'flex', alignItems: 'center', gap: 6, height: 32, padding: '0 12px', borderRadius: 6, fontSize: 13, fontWeight: 500, cursor: 'pointer', border: '1px solid #E2E8F0', background: '#FFFFFF', color: '#172B4D', fontFamily: 'var(--cp-font-body)' }}>
+                              style={{ display: 'flex', alignItems: 'center', gap: 6, height: 32, padding: '0 12px', borderRadius: 6, fontSize: 13, fontWeight: 500, cursor: 'pointer', border: '1px solid #E2E8F0', background: 'var(--ds-text-inverse, #FFFFFF)', color: '#172B4D', fontFamily: 'var(--cp-font-body)' }}>
                               <Plus style={{ width: 14, height: 14 }} />
                               Add Step
                             </button>
                             {isAddStepMenuOpen && (
-                              <div style={{ position: 'absolute', right: 0, top: 36, background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: 6, boxShadow: '0 4px 16px rgba(9,30,66,0.15)', zIndex: 100, minWidth: 180, overflow: 'hidden' }}>
+                              <div style={{ position: 'absolute', right: 0, top: 36, background: 'var(--ds-text-inverse, #FFFFFF)', border: '1px solid #E2E8F0', borderRadius: 6, boxShadow: '0 4px 16px rgba(9,30,66,0.15)', zIndex: 100, minWidth: 180, overflow: 'hidden' }}>
                                 <button
                                   onClick={() => { setIsAddStepMenuOpen(false); setAddingStep(true); }}
                                   style={{ width: '100%', textAlign: 'left', padding: '10px 14px', fontSize: 13, background: 'transparent', border: 'none', cursor: 'pointer', color: '#172B4D', fontFamily: 'var(--cp-font-body)' }}
@@ -1725,7 +1725,7 @@ function MiniAvatar({ name, size = 22 }: { name: string; size?: number }) {
     <div style={{
       width: size, height: size, borderRadius: '50%',
       display: 'flex', alignItems: 'center', justifyContent: 'center',
-      fontWeight: 700, color: '#FFFFFF', flexShrink: 0,
+      fontWeight: 700, color: 'var(--ds-text-inverse, #FFFFFF)', flexShrink: 0,
       fontSize: size * 0.38,
       backgroundColor: colors[Math.abs(hash) % colors.length],
     }}>

@@ -182,8 +182,8 @@ export default function IdeaDrawer({ ideaKey, onClose, onConvert }: Props) {
 
   const impactLevel = composite >= 3.51 ? 'CRITICAL' : composite >= 2.51 ? 'HIGH' : composite >= 0.01 ? 'MEDIUM' : 'LOW';
   const levelColors = composite >= 3.51
-    ? { bg: '#1B7F37', text: '#FFFFFF' }
-    : composite >= 0.01 ? { bg: '#0C66E4', text: '#FFFFFF' } : { bg: '#DFE1E6', text: '#42526E' };
+    ? { bg: '#1B7F37', text: 'var(--ds-text-inverse, #FFFFFF)' }
+    : composite >= 0.01 ? { bg: '#0C66E4', text: 'var(--ds-text-inverse, #FFFFFF)' } : { bg: '#DFE1E6', text: '#42526E' };
 
   const dimensions = [
     { letter: 'I', name: 'Investor Fit', weight: '25%', value: investorFit, set: setInvestorFit },
@@ -449,7 +449,7 @@ export default function IdeaDrawer({ ideaKey, onClose, onConvert }: Props) {
                 </p>
                 <button onClick={() => onConvert(rawIdea)} style={{
                   width: '100%', height: '50px', borderRadius: '6px', border: 'none',
-                  background: '#16A34A', color: '#FFFFFF', fontSize: '13px', fontWeight: 600,
+                  background: '#16A34A', color: 'var(--ds-text-inverse, #FFFFFF)', fontSize: '13px', fontWeight: 600,
                   cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px',
                 }}>
                   <ArrowUpRight size={14} /> Convert to Request
@@ -472,7 +472,7 @@ export default function IdeaDrawer({ ideaKey, onClose, onConvert }: Props) {
             }}>Cancel</button>
             <button onClick={handleSave} disabled={updateIdea.isPending} style={{
               height: '50px', padding: '0 16px', borderRadius: '6px',
-              border: 'none', background: '#2563EB', color: '#FFFFFF',
+              border: 'none', background: '#2563EB', color: 'var(--ds-text-inverse, #FFFFFF)',
               fontSize: '13px', fontWeight: 600, cursor: 'pointer',
               opacity: updateIdea.isPending ? 0.7 : 1,
             }}>{updateIdea.isPending ? 'Saving...' : 'Save Changes'}</button>

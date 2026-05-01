@@ -108,7 +108,7 @@ export function CalendarGrid({ year, month, events, renderCell, onDateClick }: C
                     borderRadius: today ? '50%' : undefined,
                     backgroundColor: today ? 'var(--cp-blue)' : undefined,
                     color: today
-                      ? '#ffffff'
+                      ? 'var(--ds-text-inverse, #ffffff)'
                       : inMonth
                         ? 'var(--fg-1)'
                         : 'var(--fg-4)',

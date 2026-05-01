@@ -132,7 +132,7 @@ export function CopyWorkflowSection({ projectId, onCopied }: CopyWorkflowSection
                 onClick={handleCopy}
                 disabled={loading}
                 className="hover:opacity-90 transition-opacity disabled:opacity-50 bg-[var(--cp-blue)]"
-                style={{ height: 50, padding: '0 16px', fontSize: 13, fontWeight: 600, color: '#FFFFFF', border: 'none', borderRadius: 6, cursor: loading ? 'default' : 'pointer' }}
+                style={{ height: 50, padding: '0 16px', fontSize: 13, fontWeight: 600, color: 'var(--ds-text-inverse, #FFFFFF)', border: 'none', borderRadius: 6, cursor: loading ? 'default' : 'pointer' }}
               >
                 {loading ? 'Copying...' : 'Copy Workflow'}
               </button>

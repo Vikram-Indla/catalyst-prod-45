@@ -15,7 +15,7 @@ const STATUS_BAR_COLORS: Record<string, string> = {
   'Draft': '#DFE1E6', 'Submitted': '#DFE1E6', 'Under Review': '#0C66E4', 'Approved': '#0C66E4', 'Converted to Request': '#1B7F37',
 };
 const STATUS_TEXT_COLORS: Record<string, string> = {
-  'Draft': '#42526E', 'Submitted': '#42526E', 'Under Review': '#FFFFFF', 'Approved': '#FFFFFF', 'Converted to Request': '#FFFFFF',
+  'Draft': '#42526E', 'Submitted': '#42526E', 'Under Review': 'var(--ds-text-inverse, #FFFFFF)', 'Approved': 'var(--ds-text-inverse, #FFFFFF)', 'Converted to Request': 'var(--ds-text-inverse, #FFFFFF)',
 };
 const STATUS_BAR_COLORS_DARK: Record<string, string> = {
   'Draft': '#2E2E2E', 'Submitted': '#2E2E2E', 'Under Review': 'rgba(59,130,246,0.15)',
@@ -142,7 +142,7 @@ export default function IdeasAnalyticsPage() {
               <div key={q.quarter} style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
                 <span style={{ width: '40px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', height: 20, borderRadius: 4, fontSize: '10px', fontWeight: 700, background: QUARTER_BADGE[q.quarter]?.bg || '#E2E8F0', color: QUARTER_BADGE[q.quarter]?.text || '#94A3B8' }}>{q.quarter}</span>
                 <div style={{ flex: 1, height: '28px', background: barTrack, borderRadius: '4px', overflow: 'hidden' }}>
-                  <div style={{ width: `${(q.count / maxQuarter) * 100}%`, height: '100%', background: QUARTER_BADGE[q.quarter]?.bg || '#2563EB', borderRadius: '4px', display: 'flex', alignItems: 'center', paddingLeft: '8px', color: '#FFFFFF', fontSize: '12px', fontWeight: 700 }}>{q.count}</div>
+                  <div style={{ width: `${(q.count / maxQuarter) * 100}%`, height: '100%', background: QUARTER_BADGE[q.quarter]?.bg || '#2563EB', borderRadius: '4px', display: 'flex', alignItems: 'center', paddingLeft: '8px', color: 'var(--ds-text-inverse, #FFFFFF)', fontSize: '12px', fontWeight: 700 }}>{q.count}</div>
                 </div>
               </div>
             ))}
@@ -173,7 +173,7 @@ export default function IdeasAnalyticsPage() {
               <div key={q.quarter} style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
                 <span style={{ width: '40px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', height: 20, borderRadius: 4, fontSize: '10px', fontWeight: 700, background: QUARTER_BADGE[q.quarter]?.bg || '#E2E8F0', color: QUARTER_BADGE[q.quarter]?.text || '#94A3B8' }}>{q.quarter}</span>
                 <div style={{ flex: 1, height: '28px', background: barTrack, borderRadius: '4px', overflow: 'hidden' }}>
-                  <div style={{ width: `${q.total > 0 ? (q.total / maxConvQ) * 100 : 0}%`, height: '100%', background: QUARTER_BADGE[q.quarter]?.bg || '#2563EB', borderRadius: '4px', display: 'flex', alignItems: 'center', paddingLeft: '8px', color: '#FFFFFF', fontSize: '12px', fontWeight: 700 }}>{q.converted} <span style={{ fontWeight: 500, opacity: 0.8, marginLeft: 4 }}>of {q.total}</span></div>
+                  <div style={{ width: `${q.total > 0 ? (q.total / maxConvQ) * 100 : 0}%`, height: '100%', background: QUARTER_BADGE[q.quarter]?.bg || '#2563EB', borderRadius: '4px', display: 'flex', alignItems: 'center', paddingLeft: '8px', color: 'var(--ds-text-inverse, #FFFFFF)', fontSize: '12px', fontWeight: 700 }}>{q.converted} <span style={{ fontWeight: 500, opacity: 0.8, marginLeft: 4 }}>of {q.total}</span></div>
                 </div>
               </div>
             ))}

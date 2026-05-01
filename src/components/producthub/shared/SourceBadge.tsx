@@ -74,7 +74,7 @@ export const SourceBadge: React.FC<SourceBadgeProps> = ({
         lineHeight: 1,
         whiteSpace: 'nowrap',
         background: isOutline ? p.bgSubtle : p.bg,
-        color: isOutline ? p.text : '#FFFFFF',
+        color: isOutline ? p.text : 'var(--ds-text-inverse, #FFFFFF)',
         border: isOutline ? `1px solid ${p.border}` : `1px solid ${p.bg}`,
         ...style,
       }}

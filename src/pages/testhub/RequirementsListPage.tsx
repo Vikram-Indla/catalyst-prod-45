@@ -143,7 +143,7 @@ export default function RequirementsListPage() {
             display: 'flex', alignItems: 'center', gap: 8, height: 40, padding: '0 20px',
             border: 'none', borderRadius: 8,
             backgroundColor: '#2563EB',
-            color: '#FFFFFF', fontSize: 14, fontWeight: 600, cursor: 'pointer',
+            color: 'var(--ds-text-inverse, #FFFFFF)', fontSize: 14, fontWeight: 600, cursor: 'pointer',
           }}
         >
           <Plus size={18} /> Add Requirement

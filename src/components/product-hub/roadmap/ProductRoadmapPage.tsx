@@ -263,7 +263,7 @@ export function ProductRoadmapPage() {
           <button
             onClick={() => setIsAddModalOpen(true)}
             className="inline-flex items-center gap-1.5 h-10 px-5 text-sm font-medium rounded-lg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
-            style={{ background: '#2563EB', color: '#FFFFFF', transition: 'opacity 0.15s ease' }}
+            style={{ background: '#2563EB', color: 'var(--ds-text-inverse, #FFFFFF)', transition: 'opacity 0.15s ease' }}
             onMouseEnter={e => (e.currentTarget.style.opacity = '0.9')}
             onMouseLeave={e => (e.currentTarget.style.opacity = '1')}
           >

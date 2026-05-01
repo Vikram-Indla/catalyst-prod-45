@@ -84,7 +84,7 @@ function SortableStepRow({
         <div style={{
           width: 32, height: 32, borderRadius: '50%',
           backgroundColor: step.sharedStepId ? '#CA8A04' : 'var(--cp-blue)',
-          color: '#FFFFFF', fontSize: 13, fontWeight: 600,
+          color: 'var(--ds-text-inverse, #FFFFFF)', fontSize: 13, fontWeight: 600,
           display: 'flex', alignItems: 'center', justifyContent: 'center',
         }}>{index + 1}</div>
       </div>
@@ -474,7 +474,7 @@ function AttachButton({ onClick, count }: { onClick: () => void; count: number }
           height: 16,
           borderRadius: '50%',
           backgroundColor: 'var(--cp-blue)',
-          color: '#FFFFFF',
+          color: 'var(--ds-text-inverse, #FFFFFF)',
           fontSize: 10,
           fontWeight: 600,
           display: 'flex',

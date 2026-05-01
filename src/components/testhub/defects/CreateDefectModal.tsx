@@ -387,7 +387,7 @@ export function CreateDefectModal({ isOpen, onClose, onCreated, prefill }: Creat
               height: 44, padding: '0 24px',
               background: 'linear-gradient(135deg, #DC2626 0%, #B91C1C 100%)',
               border: 'none', borderRadius: 12, fontSize: 14, fontWeight: 600,
-              color: '#FFFFFF', cursor: createDefect.isPending ? 'not-allowed' : 'pointer',
+              color: 'var(--ds-text-inverse, #FFFFFF)', cursor: createDefect.isPending ? 'not-allowed' : 'pointer',
               opacity: createDefect.isPending ? 0.7 : 1, display: 'flex', alignItems: 'center', gap: 8,
             }}
           >

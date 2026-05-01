@@ -66,7 +66,7 @@ export function ActivityFeed() {
             className="flex items-center justify-center flex-shrink-0"
             style={{
               width: 28, height: 28, borderRadius: '50%', background: item.color,
-              color: '#FFFFFF', fontSize: 10, fontWeight: 600,
+              color: 'var(--ds-text-inverse, #FFFFFF)', fontSize: 10, fontWeight: 600,
             }}
           >
             {item.initials}

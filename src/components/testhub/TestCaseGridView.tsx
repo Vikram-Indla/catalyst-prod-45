@@ -156,7 +156,7 @@ export function TestCaseGridView({ testCases, selectedIds, onSelectOne, onRowCli
                   height: 24,
                   borderRadius: '50%',
                   backgroundColor: getAvatarColor(tc.ownerInitials),
-                  color: '#FFFFFF',
+                  color: 'var(--ds-text-inverse, #FFFFFF)',
                   fontSize: 10,
                   fontWeight: 600,
                   display: 'flex',

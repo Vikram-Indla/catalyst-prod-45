@@ -139,7 +139,7 @@ export default function IncidentListPage() {
             textOverflow: 'ellipsis',
             whiteSpace: 'nowrap',
             fontWeight: 500,
-            color: '#292A2E',
+            color: 'var(--ds-text, #292A2E)',
           }}
         >
           {(row as any).title || '—'}
@@ -182,7 +182,7 @@ export default function IncidentListPage() {
             overflow: 'hidden',
             textOverflow: 'ellipsis',
             whiteSpace: 'nowrap',
-            color: '#505258',
+            color: 'var(--ds-text-accent-gray, #505258)',
           }}
         >
           {(row as any).project_name || '—'}

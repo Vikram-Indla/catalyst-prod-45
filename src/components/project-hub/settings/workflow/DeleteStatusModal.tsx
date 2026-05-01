@@ -89,7 +89,7 @@ export function DeleteStatusModal({ open, statusName, itemCount, otherStatuses, 
             onClick={() => onConfirm(hasMigration ? targetId : undefined)}
             disabled={loading || (hasMigration && !targetId)}
             className="hover:opacity-90 transition-opacity disabled:opacity-50 bg-[var(--sem-danger)]"
-            style={{ height: 50, padding: '0 16px', fontSize: 13, fontWeight: 600, color: '#FFFFFF', border: 'none', borderRadius: 6, cursor: loading ? 'default' : 'pointer' }}
+            style={{ height: 50, padding: '0 16px', fontSize: 13, fontWeight: 600, color: 'var(--ds-text-inverse, #FFFFFF)', border: 'none', borderRadius: 6, cursor: loading ? 'default' : 'pointer' }}
           >
             {loading ? 'Deleting...' : hasMigration ? 'Move & Delete' : 'Delete'}
           </button>

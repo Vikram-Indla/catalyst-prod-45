@@ -87,7 +87,7 @@ export function EditStatusModal({ open, status, onClose, onSubmit, loading }: Ed
             onClick={() => name.trim() && onSubmit({ id: status.id, name: name.trim(), category, color })}
             disabled={!name.trim() || loading}
             className="hover:opacity-90 transition-opacity disabled:opacity-40 bg-[var(--cp-blue)]"
-            style={{ height: 50, padding: '0 16px', fontSize: 13, fontWeight: 600, color: '#FFFFFF', border: 'none', borderRadius: 6, cursor: name.trim() && !loading ? 'pointer' : 'default' }}
+            style={{ height: 50, padding: '0 16px', fontSize: 13, fontWeight: 600, color: 'var(--ds-text-inverse, #FFFFFF)', border: 'none', borderRadius: 6, cursor: name.trim() && !loading ? 'pointer' : 'default' }}
           >
             {loading ? 'Saving...' : 'Save Changes'}
           </button>

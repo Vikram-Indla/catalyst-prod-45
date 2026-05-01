@@ -161,7 +161,7 @@ export default function ClaimDrillInPanel({ resourceName, claimText, weekStart, 
       <div style={{
         position: 'fixed', right: 0, top: 48,
         width: 520, height: 'calc(100vh - 48px)',
-        background: '#ffffff',
+        background: 'var(--ds-text-inverse, #ffffff)',
         boxShadow: '-8px 0 24px rgba(0,0,0,0.08)',
         zIndex: 601,
         display: 'flex', flexDirection: 'column',

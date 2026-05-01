@@ -43,7 +43,7 @@ export function SourceBadge({ source }: SourceBadgeProps) {
             height: 10,
             borderRadius: 4,
             backgroundColor: 'var(--cp-blue)',
-            color: '#FFFFFF',
+            color: 'var(--ds-text-inverse, #FFFFFF)',
             fontSize: 7,
             fontWeight: 700,
             lineHeight: '10px',

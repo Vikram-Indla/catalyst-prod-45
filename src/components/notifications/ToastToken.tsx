@@ -74,9 +74,9 @@ export default function ToastToken({ toast: t, onDismiss, onPause, onResume }: T
           width: 36, height: 50, borderRadius: '50%', flexShrink: 0,
           background: isSystemAssign ? '#6B7280' : getAvatarColor(actorId),
           display: 'flex', alignItems: 'center', justifyContent: 'center',
-          color: '#FFFFFF', fontFamily: 'var(--cp-font-body)', fontSize: 12, fontWeight: 700,
+          color: 'var(--ds-text-inverse, #FFFFFF)', fontFamily: 'var(--cp-font-body)', fontSize: 12, fontWeight: 700,
         }}>
-          {isSystemAssign ? <UserCheck size={18} color="#FFFFFF" /> : getUserInitials(actorName)}
+          {isSystemAssign ? <UserCheck size={18} color="var(--ds-text-inverse, #FFFFFF)" /> : getUserInitials(actorName)}
         </div>
 
         {/* Body */}

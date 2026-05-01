@@ -310,7 +310,7 @@ export function CloneTestCycleModal({
                 ? 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)'
                 : 'var(--fg-4)',
               border: 'none', borderRadius: 8, fontSize: 14, fontWeight: 600,
-              color: '#FFFFFF',
+              color: 'var(--ds-text-inverse, #FFFFFF)',
               cursor: newName.trim() ? 'pointer' : 'not-allowed',
               opacity: isSubmitting ? 0.7 : 1,
               display: 'flex', alignItems: 'center', gap: 8,

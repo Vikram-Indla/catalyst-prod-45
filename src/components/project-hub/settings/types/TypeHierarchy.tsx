@@ -26,7 +26,7 @@ function Badge({ name }: { name: string }) {
       style={{ fontSize: 12, fontWeight: 600, padding: '3px 10px', background: `${cfg.color}15`, color: cfg.color }}
     >
       <span className="flex items-center justify-center rounded-full flex-shrink-0" style={{ width: 18, height: 18, background: cfg.color }}>
-        <IconComp size={10} color="#FFFFFF" strokeWidth={2.5} />
+        <IconComp size={10} color="var(--ds-text-inverse, #FFFFFF)" strokeWidth={2.5} />
       </span>
       {name}
     </span>

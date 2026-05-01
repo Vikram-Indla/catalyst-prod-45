@@ -184,7 +184,7 @@ export function RoadmapGanttChart({ groups, timelineStart, timelineEnd, zoom, zo
               <div className="absolute pointer-events-none" style={{ left: `${todayPct}%`, top: 0, bottom: 0, zIndex: 20 }}>
                 <div style={{
                   position: 'absolute', top: -2, left: '50%', transform: 'translateX(-50%)',
-                  fontSize: 9, fontWeight: 700, color: '#FFFFFF', background: '#EF4444',
+                  fontSize: 9, fontWeight: 700, color: 'var(--ds-text-inverse, #FFFFFF)', background: '#EF4444',
                   padding: '2px 8px', borderRadius: 4, whiteSpace: 'nowrap',
                   textTransform: 'uppercase', letterSpacing: '0.08em',
                 }}>

@@ -158,7 +158,7 @@ export function ThemeListView({ themes, onSelect, isDark = false }: Props) {
                 <>
                   <div className="shrink-0 rounded-full flex items-center justify-center" style={{
                     width: 22, height: 22, background: getAvatarColor(theme.owner_name),
-                    fontSize: 9, fontWeight: 700, color: '#FFFFFF',
+                    fontSize: 9, fontWeight: 700, color: 'var(--ds-text-inverse, #FFFFFF)',
                   }}>
                     {getInitials(theme.owner_name)}
                   </div>
@@ -229,7 +229,7 @@ export function ThemeListView({ themes, onSelect, isDark = false }: Props) {
       {selected.size > 0 && (
         <div style={{
           position: 'fixed', bottom: 24, left: '50%', transform: 'translateX(-50%)',
-          background: 'var(--cp-text-primary, #0F172A)', color: '#FFFFFF', borderRadius: 12,
+          background: 'var(--cp-text-primary, #0F172A)', color: 'var(--ds-text-inverse, #FFFFFF)', borderRadius: 12,
           padding: '10px 16px', display: 'flex', alignItems: 'center', gap: 12,
           boxShadow: '0 8px 30px rgba(0,0,0,0.25)', zIndex: 50,
         }}>

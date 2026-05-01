@@ -124,7 +124,7 @@ function ProjectRow({
     >
       <div
         className="flex items-center justify-center rounded flex-shrink-0"
-        style={{ width: 24, height: 24, backgroundColor: project.color, color: '#FFFFFF', fontSize: 10, fontWeight: 700, borderRadius: 4 }}
+        style={{ width: 24, height: 24, backgroundColor: project.color, color: 'var(--ds-text-inverse, #FFFFFF)', fontSize: 10, fontWeight: 700, borderRadius: 4 }}
       >
         {project.key}
       </div>

@@ -220,10 +220,10 @@ export default function RABackgroundModal({ type, doc, onClose }: Props) {
           {jobStatus === 'failed' ? (
             <>
               <button onClick={onClose} style={{ padding: '8px 16px', fontSize: 13, fontWeight: 500, border: '1px solid rgba(15,23,42,0.12)', borderRadius: 'var(--ra-radius-btn)', background: 'var(--bg-app)', color: 'var(--fg-2)', cursor: 'pointer', fontFamily: 'var(--cp-font-body)' }}>Close</button>
-              <button onClick={handleRetry} style={{ padding: '8px 16px', fontSize: 13, fontWeight: 500, border: 'none', borderRadius: 'var(--ra-radius-btn)', background: 'var(--cp-blue)', color: '#FFFFFF', cursor: 'pointer', fontFamily: 'var(--cp-font-body)' }}>Retry</button>
+              <button onClick={handleRetry} style={{ padding: '8px 16px', fontSize: 13, fontWeight: 500, border: 'none', borderRadius: 'var(--ra-radius-btn)', background: 'var(--cp-blue)', color: 'var(--ds-text-inverse, #FFFFFF)', cursor: 'pointer', fontFamily: 'var(--cp-font-body)' }}>Retry</button>
             </>
           ) : jobStatus === 'done' ? (
-            <button onClick={onClose} style={{ padding: '8px 16px', fontSize: 13, fontWeight: 500, border: 'none', borderRadius: 'var(--ra-radius-btn)', background: 'var(--sem-success)', color: '#FFFFFF', cursor: 'pointer', fontFamily: 'var(--cp-font-body)' }}>Done</button>
+            <button onClick={onClose} style={{ padding: '8px 16px', fontSize: 13, fontWeight: 500, border: 'none', borderRadius: 'var(--ra-radius-btn)', background: 'var(--sem-success)', color: 'var(--ds-text-inverse, #FFFFFF)', cursor: 'pointer', fontFamily: 'var(--cp-font-body)' }}>Done</button>
           ) : (
             <>
               <button onClick={onClose} style={{ padding: '8px 16px', fontSize: 13, fontWeight: 500, border: '1px solid rgba(15,23,42,0.12)', borderRadius: 'var(--ra-radius-btn)', background: 'var(--bg-app)', color: 'var(--fg-2)', cursor: 'pointer', fontFamily: 'var(--cp-font-body)' }}>Stay on this page</button>

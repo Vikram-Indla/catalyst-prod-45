@@ -58,7 +58,7 @@ export function UserAvatar() {
             }}
           />
         ) : (
-          <CircleUser size={size * 0.7} color="#FFFFFF" strokeWidth={1.5} />
+          <CircleUser size={size * 0.7} color="var(--ds-text-inverse, #FFFFFF)" strokeWidth={1.5} />
         )}
       </button>
     </Tooltip>

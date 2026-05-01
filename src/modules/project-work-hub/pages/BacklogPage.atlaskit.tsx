@@ -219,9 +219,9 @@ const PRIORITY_OPTIONS = ['highest', 'critical', 'high', 'medium', 'low', 'lowes
 // `value` is the CSS background string applied directly to the chrome
 // band. Default chrome background `#E9F2FE` is the Jira BAU list-view
 // chrome blue (probed 2026-04-27).
-const BG_DEFAULT = '#E9F2FE';
+const BG_DEFAULT = 'var(--ds-background-selected, #E9F2FE)';
 const BG_SOLIDS: Array<{ name: string; value: string }> = [
-  { name: 'Sky',     value: '#E9F2FE' }, // Jira BAU chrome (default)
+  { name: 'Sky',     value: 'var(--ds-background-selected, #E9F2FE)' }, // Jira BAU chrome (default)
   { name: 'Mint',    value: '#DCFFF1' },
   { name: 'Lemon',   value: '#FFF7D6' },
   { name: 'Peach',   value: '#FFE2D5' },
@@ -232,15 +232,15 @@ const BG_SOLIDS: Array<{ name: string; value: string }> = [
   { name: 'Teal',    value: '#1F845A' },
   { name: 'Violet',  value: '#5E4DB2' },
   { name: 'Orange',  value: '#F18D3D' },
-  { name: 'Crimson', value: '#C9372C' },
+  { name: 'Crimson', value: 'var(--ds-icon-accent-red, #C9372C)' },
 ];
 const BG_GRADIENTS: Array<{ name: string; value: string }> = [
   { name: 'Sunrise',  value: 'linear-gradient(135deg, #FFD2DC, #FFF7D6)' },
   { name: 'Ocean',    value: 'linear-gradient(135deg, #B8DAFF, #DCFFF1)' },
-  { name: 'Sunset',   value: 'linear-gradient(135deg, #C9372C, #E54787)' },
-  { name: 'Forest',   value: 'linear-gradient(135deg, #1F845A, #22A06B)' },
+  { name: 'Sunset',   value: 'linear-gradient(135deg, var(--ds-icon-accent-red, #C9372C), #E54787)' },
+  { name: 'Forest',   value: 'linear-gradient(135deg, #1F845A, var(--ds-icon-accent-green, #22A06B))' },
   { name: 'Lavender', value: 'linear-gradient(135deg, #8270DB, #5E4DB2)' },
-  { name: 'Slate',    value: 'linear-gradient(135deg, #44546F, #6B6E76)' },
+  { name: 'Slate',    value: 'linear-gradient(135deg, #44546F, var(--ds-text-subtlest, #6B6E76))' },
 ];
 
 interface ProjectBackground {
@@ -1152,7 +1152,7 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
         // Compact bars + label, matching the Priority cell renderer
         const p = (sample.priority || '').toLowerCase();
         const PRIORITY_RANK: Record<string, { level: number; color: string }> = {
-          highest:  { level: 4, color: '#C9372C' }, critical: { level: 4, color: '#C9372C' },
+          highest:  { level: 4, color: 'var(--ds-icon-accent-red, #C9372C)' }, critical: { level: 4, color: 'var(--ds-icon-accent-red, #C9372C)' },
           high:     { level: 3, color: '#F59E0B' },
           medium:   { level: 2, color: '#22C55E' },
           low:      { level: 1, color: '#22C55E' },
@@ -1365,7 +1365,7 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
                 height: 16,
                 borderRadius: 3,
                 background: bg,
-                color: '#FFFFFF',
+                color: 'var(--ds-text-inverse, #FFFFFF)',
                 fontSize: 10,
                 fontWeight: 700,
               }}
@@ -1929,7 +1929,7 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
           display: 'inline-flex', alignItems: 'center',
           width: 20, height: 20, borderRadius: 4,
           background: token('color.icon.accent.blue', '#1868DB'),
-          color: '#FFFFFF', justifyContent: 'center',
+          color: 'var(--ds-text-inverse, #FFFFFF)', justifyContent: 'center',
           fontSize: 12, fontWeight: 700,
         }}>✓</span>
         <span style={{
@@ -2629,7 +2629,7 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
                 height: 20,
                 borderRadius: 4,
                 background: token('color.icon.accent.blue', '#1868DB'),
-                color: '#FFFFFF',
+                color: 'var(--ds-text-inverse, #FFFFFF)',
                 justifyContent: 'center',
                 fontSize: 12,
                 fontWeight: 700,
@@ -4817,7 +4817,7 @@ function BulkActionsBar({
           gap: 0,
           height: 44,
           background: '#44546F',
-          color: '#FFFFFF',
+          color: 'var(--ds-text-inverse, #FFFFFF)',
           borderRadius: 8,
           boxShadow: '0 8px 32px rgba(0,0,0,0.28), 0 2px 8px rgba(0,0,0,0.12)',
           fontFamily: 'var(--cp-font-body)',
@@ -4839,7 +4839,7 @@ function BulkActionsBar({
             height: 44,
             background: 'transparent',
             border: 'none',
-            color: '#FFFFFF',
+            color: 'var(--ds-text-inverse, #FFFFFF)',
             cursor: 'pointer',
             transition: 'background 100ms',
           }}
@@ -4856,7 +4856,7 @@ function BulkActionsBar({
             padding: '0 16px',
             fontSize: 14,
             fontWeight: 500,
-            color: '#FFFFFF',
+            color: 'var(--ds-text-inverse, #FFFFFF)',
             letterSpacing: '-0.01em',
             whiteSpace: 'nowrap',
             userSelect: 'none',
@@ -4911,7 +4911,7 @@ function BulkActionsBar({
             padding: '0 16px',
             background: 'transparent',
             border: 'none',
-            color: '#FFFFFF',
+            color: 'var(--ds-text-inverse, #FFFFFF)',
             fontSize: 14,
             fontWeight: 500,
             cursor: isBusy ? 'default' : 'pointer',
@@ -5009,7 +5009,7 @@ function BulkPopover({
           padding: '0 14px',
           background: 'transparent',
           border: 'none',
-          color: '#FFFFFF',
+          color: 'var(--ds-text-inverse, #FFFFFF)',
           fontSize: 14,
           fontWeight: 500,
           cursor: 'pointer',

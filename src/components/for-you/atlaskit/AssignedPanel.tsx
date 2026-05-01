@@ -83,7 +83,7 @@ function SectionHeading({ label, count }: { label: string; count: number }) {
       }}
     >
       {/* Section label — Jira parity (DOM probe 2026-04-24, Assigned tab):
-          14px / weight 500 / Title Case / color #6B6E76 (subtlest). NOT
+          14px / weight 500 / Title Case / color var(--ds-text-subtlest, #6B6E76) (subtlest). NOT
           uppercase — Jira renders "In Progress", not "IN PROGRESS". This
           matches the `<span>` at level-0 inside
           `global-pages.home.common.ui.item-list.list`. */}

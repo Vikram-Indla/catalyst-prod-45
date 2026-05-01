@@ -15,7 +15,7 @@ import { useTheme } from '@/hooks/useTheme';
 const TL = {
   ink: '#09090B', inkSecondary: '#18181B', inkTertiary: '#3F3F46',
   inkMuted: '#71717A', inkMutedStrong: '#6F6F78',
-  surface: '#FFFFFF', surfaceSecondary: '#FAFAFA', surfaceTertiary: '#F4F4F5',
+  surface: 'var(--ds-text-inverse, #FFFFFF)', surfaceSecondary: '#FAFAFA', surfaceTertiary: '#F4F4F5',
   border: '#E4E4E7', borderStrong: '#D4D4D8',
   primary: '#2563EB', primaryHover: '#1D4ED8', primaryBg: '#EFF6FF',
   teal: '#0D9488', tealBg: '#F0FDFA',

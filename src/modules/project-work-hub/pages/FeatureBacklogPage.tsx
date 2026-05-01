@@ -66,7 +66,7 @@ export default function FeatureBacklogPage({ projectId: propProjectId }: { proje
   return (
     <div className="h-full flex flex-col" style={{ background: tk.pageBg }}>
       <CatalystPageHeader title="Feature Backlog" actions={
-        <Button onClick={() => setShowCreate(true)} size="sm" style={{ backgroundColor: '#2563EB', color: '#FFFFFF', borderRadius: 6 }}>
+        <Button onClick={() => setShowCreate(true)} size="sm" style={{ backgroundColor: '#2563EB', color: 'var(--ds-text-inverse, #FFFFFF)', borderRadius: 6 }}>
           <Plus className="h-3.5 w-3.5 mr-1" /> Create Feature
         </Button>
       } />
@@ -77,7 +77,7 @@ export default function FeatureBacklogPage({ projectId: propProjectId }: { proje
             <Layers className="h-12 w-12 mb-4" style={{ color: tk.t3 }} />
             <p className="text-base font-medium" style={{ color: tk.t1 }}>No features yet</p>
             <p className="text-sm mt-1 mb-4" style={{ color: tk.t3 }}>Create the first feature to get started</p>
-            <Button onClick={() => setShowCreate(true)} size="sm" style={{ backgroundColor: '#2563EB', color: '#FFFFFF', borderRadius: 6 }}>
+            <Button onClick={() => setShowCreate(true)} size="sm" style={{ backgroundColor: '#2563EB', color: 'var(--ds-text-inverse, #FFFFFF)', borderRadius: 6 }}>
               <Plus className="h-3.5 w-3.5 mr-1" /> Create Feature
             </Button>
           </div>

@@ -397,7 +397,7 @@ export function CreateProjectDialog({ open, onClose }: Props) {
             disabled={createProject.isPending}
             style={{
               display: 'inline-flex', alignItems: 'center', gap: 6, height: 50, padding: '0 18px',
-              background: '#2563EB', color: '#FFFFFF',
+              background: '#2563EB', color: 'var(--ds-text-inverse, #FFFFFF)',
               border: 'none', borderRadius: 6, fontSize: 13, fontWeight: 600, cursor: 'pointer',
               boxShadow: '0 2px 8px rgba(37,99,235,0.15)',
               opacity: createProject.isPending ? 0.6 : 1,

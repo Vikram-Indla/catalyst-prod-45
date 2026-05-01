@@ -183,7 +183,7 @@ export function ExportModal({ isOpen, onClose, onExported }: ExportModalProps) {
               background: 'linear-gradient(135deg, #14B8A6 0%, var(--sem-success) 100%)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
             }}>
-              <Download size={22} style={{ color: '#FFFFFF' }} />
+              <Download size={22} style={{ color: 'var(--ds-text-inverse, #FFFFFF)' }} />
             </div>
             <h2 style={{ fontSize: 18, fontWeight: 700, color: 'var(--fg-1)', margin: 0 }}>Export Data</h2>
           </div>

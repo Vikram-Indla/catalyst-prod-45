@@ -144,7 +144,7 @@ export function SidebarProjectNav({
           <div
             className="flex items-center justify-center flex-shrink-0"
             style={{
-              width: 30, height: 30, backgroundColor: projectColor, color: '#FFFFFF',
+              width: 30, height: 30, backgroundColor: projectColor, color: 'var(--ds-text-inverse, #FFFFFF)',
               fontSize: 11, fontWeight: 700, borderRadius: 6,
               fontFamily: 'var(--cp-font-heading)', boxShadow: '0 1px 3px rgba(0,0,0,0.12)',
             }}

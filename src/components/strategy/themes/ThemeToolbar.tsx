@@ -192,7 +192,7 @@ export function ThemeToolbar(props: Props) {
           onClick={props.onToggleIntelligence}
           style={{
             background: 'var(--cp-blue)',
-            color: '#FFFFFF', border: 'none',
+            color: 'var(--ds-text-inverse, #FFFFFF)', border: 'none',
             borderRadius: 20, padding: '0 16px', height: 32,
             fontSize: 12, fontWeight: 600, letterSpacing: '0.3px',
             cursor: 'pointer',
@@ -232,7 +232,7 @@ export function ThemeToolbar(props: Props) {
         style={{
           fontSize: 12, fontWeight: 600, height: 32,
           padding: '0 14px', border: 'none',
-          background: 'var(--cp-blue)', color: '#FFFFFF', cursor: 'pointer',
+          background: 'var(--cp-blue)', color: 'var(--ds-text-inverse, #FFFFFF)', cursor: 'pointer',
           borderRadius: 6,
         }}
       >

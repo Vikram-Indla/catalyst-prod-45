@@ -115,7 +115,7 @@ export function LinkTestCaseModal({ isOpen, onClose, requirementId, onLinked, al
         <div style={{ padding: '20px 24px', borderBottom: `1px solid ${'var(--cp-border, #E2E8F0)'}`, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
             <div style={{ width: 44, height: 44, borderRadius: 12, backgroundColor: '#2563EB', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <Link2 size={22} style={{ color: '#FFFFFF' }} />
+              <Link2 size={22} style={{ color: 'var(--ds-text-inverse, #FFFFFF)' }} />
             </div>
             <h2 style={{ fontSize: 18, fontWeight: 700, color: 'var(--cp-text-primary, #0F172A)', margin: 0 }}>Link Test Cases</h2>
           </div>
@@ -175,7 +175,7 @@ export function LinkTestCaseModal({ isOpen, onClose, requirementId, onLinked, al
           <div style={{ display: 'flex', gap: 12 }}>
             <button onClick={onClose} style={{ height: 40, padding: '0 16px', backgroundColor: 'var(--cp-bg-elevated, #FFFFFF)', border: `1.5px solid ${'var(--cp-border, #E2E8F0)'}`, borderRadius: 12, fontSize: 14, color: 'var(--cp-text-tertiary, #64748B)', cursor: 'pointer' }}>Cancel</button>
             <button onClick={handleSubmit} disabled={selectedIds.size === 0 || isSubmitting}
-              style={{ height: 40, padding: '0 20px', backgroundColor: selectedIds.size === 0 ? ('var(--cp-border, #E2E8F0)') : '#2563EB', border: 'none', borderRadius: 12, fontSize: 14, fontWeight: 600, color: '#FFFFFF', cursor: selectedIds.size === 0 ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', gap: 8 }}>
+              style={{ height: 40, padding: '0 20px', backgroundColor: selectedIds.size === 0 ? ('var(--cp-border, #E2E8F0)') : '#2563EB', border: 'none', borderRadius: 12, fontSize: 14, fontWeight: 600, color: 'var(--ds-text-inverse, #FFFFFF)', cursor: selectedIds.size === 0 ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', gap: 8 }}>
               <Link2 size={16} /> {isSubmitting ? 'Linking...' : `Link ${selectedIds.size > 0 ? `(${selectedIds.size})` : ''}`}
             </button>
           </div>

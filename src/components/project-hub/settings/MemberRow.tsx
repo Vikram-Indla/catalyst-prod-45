@@ -50,7 +50,7 @@ export function MemberRow({ id, name, email, role, isCurrentUser, onRoleChange, 
       {/* Avatar */}
       <div
         className="flex items-center justify-center rounded-full flex-shrink-0"
-        style={{ width: 32, height: 32, background: avatarColor, color: '#FFFFFF', fontSize: 12, fontWeight: 600 }}
+        style={{ width: 32, height: 32, background: avatarColor, color: 'var(--ds-text-inverse, #FFFFFF)', fontSize: 12, fontWeight: 600 }}
       >
         {initials || '?'}
       </div>

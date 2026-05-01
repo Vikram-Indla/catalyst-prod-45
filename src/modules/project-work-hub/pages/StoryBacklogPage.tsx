@@ -515,7 +515,7 @@ export default function StoryBacklogPage({ projectId: propProjectId, projectKey 
                 <div style={{
                   width: 24, height: 24, borderRadius: '50%', flexShrink: 0,
                   background: AVATAR_COLOURS[(getInitials(story.assignee_name || null) || 'U').charCodeAt(0) % AVATAR_COLOURS.length],
-                  color: '#FFFFFF', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  color: 'var(--ds-text-inverse, #FFFFFF)', display: 'flex', alignItems: 'center', justifyContent: 'center',
                   fontSize: 10, fontWeight: 700,
                 }}>
                   {getInitials(story.assignee_name || null)}
@@ -705,7 +705,7 @@ export default function StoryBacklogPage({ projectId: propProjectId, projectKey 
               <div style={{
                 width: 24, height: 24, borderRadius: '50%', flexShrink: 0,
                 background: AVATAR_COLOURS[(getInitials(s.assignee_name || null) || 'U').charCodeAt(0) % AVATAR_COLOURS.length],
-                color: '#FFFFFF', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                color: 'var(--ds-text-inverse, #FFFFFF)', display: 'flex', alignItems: 'center', justifyContent: 'center',
                 fontSize: 10, fontWeight: 700,
               }}>
                 {getInitials(s.assignee_name || null)}
@@ -809,7 +809,7 @@ export default function StoryBacklogPage({ projectId: propProjectId, projectKey 
             style={{
               display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
               width: 28, height: 28, borderRadius: 4,
-              border: '1px solid #E2E8F0', background: '#FFFFFF',
+              border: '1px solid #E2E8F0', background: 'var(--ds-text-inverse, #FFFFFF)',
               cursor: page <= 1 ? 'not-allowed' : 'pointer',
               opacity: page <= 1 ? 0.4 : 1,
             }}
@@ -834,7 +834,7 @@ export default function StoryBacklogPage({ projectId: propProjectId, projectKey 
                     display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
                     minWidth: 28, height: 28, borderRadius: 4, padding: '0 6px',
                     border: page === p ? '1.5px solid #2563EB' : '1px solid #E2E8F0',
-                    background: page === p ? 'rgba(37,99,235,0.06)' : '#FFFFFF',
+                    background: page === p ? 'rgba(37,99,235,0.06)' : 'var(--ds-text-inverse, #FFFFFF)',
                     color: page === p ? '#2563EB' : '#475569',
                     fontWeight: page === p ? 600 : 400,
                     fontSize: 13, cursor: 'pointer',
@@ -851,7 +851,7 @@ export default function StoryBacklogPage({ projectId: propProjectId, projectKey 
             style={{
               display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
               width: 28, height: 28, borderRadius: 4,
-              border: '1px solid #E2E8F0', background: '#FFFFFF',
+              border: '1px solid #E2E8F0', background: 'var(--ds-text-inverse, #FFFFFF)',
               cursor: page >= totalPages ? 'not-allowed' : 'pointer',
               opacity: page >= totalPages ? 0.4 : 1,
             }}
@@ -987,7 +987,7 @@ export default function StoryBacklogPage({ projectId: propProjectId, projectKey 
                               <div style={{
                                 width: 20, height: 20, borderRadius: '50%', flexShrink: 0,
                                 background: AVATAR_COLOURS[(getInitials(group.label) || 'U').charCodeAt(0) % AVATAR_COLOURS.length],
-                                color: '#FFFFFF', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                color: 'var(--ds-text-inverse, #FFFFFF)', display: 'flex', alignItems: 'center', justifyContent: 'center',
                                 fontSize: 9, fontWeight: 700,
                               }}>
                                 {getInitials(group.label)}
@@ -1052,7 +1052,7 @@ export default function StoryBacklogPage({ projectId: propProjectId, projectKey 
                 style={{
                   display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
                   width: 28, height: 28, borderRadius: 4,
-                  border: '1px solid #E2E8F0', background: '#FFFFFF',
+                  border: '1px solid #E2E8F0', background: 'var(--ds-text-inverse, #FFFFFF)',
                   cursor: page <= 1 ? 'not-allowed' : 'pointer',
                   opacity: page <= 1 ? 0.4 : 1,
                 }}
@@ -1077,7 +1077,7 @@ export default function StoryBacklogPage({ projectId: propProjectId, projectKey 
                         display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
                         minWidth: 28, height: 28, borderRadius: 4, padding: '0 6px',
                         border: page === p ? '1.5px solid #2563EB' : '1px solid #E2E8F0',
-                        background: page === p ? 'rgba(37,99,235,0.06)' : '#FFFFFF',
+                        background: page === p ? 'rgba(37,99,235,0.06)' : 'var(--ds-text-inverse, #FFFFFF)',
                         color: page === p ? '#2563EB' : '#475569',
                         fontWeight: page === p ? 600 : 400,
                         fontSize: 13, cursor: 'pointer',
@@ -1094,7 +1094,7 @@ export default function StoryBacklogPage({ projectId: propProjectId, projectKey 
                 style={{
                   display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
                   width: 28, height: 28, borderRadius: 4,
-                  border: '1px solid #E2E8F0', background: '#FFFFFF',
+                  border: '1px solid #E2E8F0', background: 'var(--ds-text-inverse, #FFFFFF)',
                   cursor: page >= totalPages ? 'not-allowed' : 'pointer',
                   opacity: page >= totalPages ? 0.4 : 1,
                 }}

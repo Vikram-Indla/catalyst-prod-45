@@ -189,7 +189,7 @@ export function ExportTestCasesModal({ isOpen, onClose, testCaseCount, selectedF
           }}>Cancel</button>
           <button onClick={handleExport} disabled={isExporting} style={{
             height: 40, padding: '0 20px', background: 'linear-gradient(135deg, var(--cp-blue) 0%, var(--cp-primary-70) 100%)',
-            border: 'none', borderRadius: 8, fontSize: 14, fontWeight: 600, color: '#FFFFFF',
+            border: 'none', borderRadius: 8, fontSize: 14, fontWeight: 600, color: 'var(--ds-text-inverse, #FFFFFF)',
             cursor: isExporting ? 'wait' : 'pointer', opacity: isExporting ? 0.7 : 1,
             display: 'flex', alignItems: 'center', gap: 8,
           }}>

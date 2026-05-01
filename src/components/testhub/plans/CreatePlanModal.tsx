@@ -132,7 +132,7 @@ export function CreatePlanModal({ isOpen, onClose, onCreated }: CreatePlanModalP
               background: 'linear-gradient(135deg, #2563EB 0%, #1E3A8A 100%)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
             }}>
-              <ClipboardList size={22} style={{ color: '#FFFFFF' }} />
+              <ClipboardList size={22} style={{ color: 'var(--ds-text-inverse, #FFFFFF)' }} />
             </div>
             <h2 style={{ fontSize: 18, fontWeight: 700, color: 'var(--fg-1)', margin: 0 }}>Create Test Plan</h2>
           </div>
@@ -229,7 +229,7 @@ export function CreatePlanModal({ isOpen, onClose, onCreated }: CreatePlanModalP
           <button onClick={handleSubmit} disabled={isSubmitting} style={{
             height: 44, padding: '0 24px',
             background: 'linear-gradient(135deg, #2563EB 0%, #1E3A8A 100%)',
-            border: 'none', borderRadius: 12, fontSize: 14, fontWeight: 600, color: '#FFFFFF',
+            border: 'none', borderRadius: 12, fontSize: 14, fontWeight: 600, color: 'var(--ds-text-inverse, #FFFFFF)',
             cursor: isSubmitting ? 'not-allowed' : 'pointer', opacity: isSubmitting ? 0.7 : 1,
             display: 'flex', alignItems: 'center', gap: 8,
           }}>

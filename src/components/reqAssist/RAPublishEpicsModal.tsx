@@ -22,8 +22,8 @@ interface Props {
 
 function StatusLozenge({ status }: { status: string }) {
   const map: Record<string, { bg: string; color: string }> = {
-    active:    { bg: '#0C66E4', color: '#FFFFFF' },
-    completed: { bg: '#1B7F37', color: '#FFFFFF' },
+    active:    { bg: '#0C66E4', color: 'var(--ds-text-inverse, #FFFFFF)' },
+    completed: { bg: '#1B7F37', color: 'var(--ds-text-inverse, #FFFFFF)' },
     planning:  { bg: '#DFE1E6', color: '#42526E' },
   };
   const m = map[status] ?? map.planning;
@@ -220,7 +220,7 @@ export default function RAPublishEpicsModal({ brdId, epics, onClose, onPublished
                 disabled={publishing}
                 style={{
                   padding: '8px 16px', fontSize: 13, fontWeight: 600, borderRadius: 6,
-                  border: 'none', background: 'var(--cp-blue)', color: '#FFFFFF', cursor: 'pointer',
+                  border: 'none', background: 'var(--cp-blue)', color: 'var(--ds-text-inverse, #FFFFFF)', cursor: 'pointer',
                   opacity: publishing ? 0.7 : 1,
                 }}
               >

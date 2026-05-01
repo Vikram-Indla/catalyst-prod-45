@@ -124,7 +124,7 @@ export default function GoalsKeyResultsPage() {
           <button onClick={exportCSV} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '7px 14px', fontSize: 13, fontWeight: 500, color: isDark ? DK.t2 : '#64748B', background: 'var(--cp-bg-elevated, #FFFFFF)', border: `1px solid ${isDark ? DK.border : '#E2E8F0'}`, borderRadius: 6, cursor: 'pointer', boxShadow: isDark ? 'none' : '0 1px 2px rgba(0,0,0,0.04)' }}>
             <Download size={14} /> Export
           </button>
-          <button onClick={() => setShowCreateModal(true)} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '7px 16px', fontSize: 13, fontWeight: 600, color: '#FFFFFF', background: 'linear-gradient(135deg, #2563EB, #1D4ED8)', border: 'none', borderRadius: 6, cursor: 'pointer', boxShadow: '0 2px 8px rgba(37,99,235,0.18)' }}>
+          <button onClick={() => setShowCreateModal(true)} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '7px 16px', fontSize: 13, fontWeight: 600, color: 'var(--ds-text-inverse, #FFFFFF)', background: 'linear-gradient(135deg, #2563EB, #1D4ED8)', border: 'none', borderRadius: 6, cursor: 'pointer', boxShadow: '0 2px 8px rgba(37,99,235,0.18)' }}>
             <Plus size={15} strokeWidth={2.5} /> New Goal
           </button>
         </div>

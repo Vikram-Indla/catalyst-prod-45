@@ -355,7 +355,7 @@ export default function TestCycleDetailPage() {
                 const { error } = await typedQuery('tm_test_cycles').update({ status: 'active', updated_at: new Date().toISOString() }).eq('id', cycleId);
                 if (error) { catalystToast.error(error.message); return; }
                 catalystToast.success('Cycle activated successfully'); fetchCycle();
-              }} style={{ height: 40, padding: '0 16px', background: 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)', border: 'none', borderRadius: 8, color: '#FFFFFF', fontSize: 14, fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}>
+              }} style={{ height: 40, padding: '0 16px', background: 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)', border: 'none', borderRadius: 8, color: 'var(--ds-text-inverse, #FFFFFF)', fontSize: 14, fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}>
                 <Play size={16} /> Activate Cycle
               </button>
             )}
@@ -382,7 +382,7 @@ export default function TestCycleDetailPage() {
                 const { error } = await typedQuery('tm_test_cycles').update({ status: 'completed', updated_at: new Date().toISOString() }).eq('id', cycleId);
                 if (error) { catalystToast.error(error.message); return; }
                 catalystToast.success('Cycle completed'); fetchCycle();
-              }} style={{ height: 40, padding: '0 16px', background: 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)', border: 'none', borderRadius: 8, color: '#FFFFFF', fontSize: 14, fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}>
+              }} style={{ height: 40, padding: '0 16px', background: 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)', border: 'none', borderRadius: 8, color: 'var(--ds-text-inverse, #FFFFFF)', fontSize: 14, fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}>
                 Complete
               </button>
             )}
@@ -410,7 +410,7 @@ export default function TestCycleDetailPage() {
                   catalystToast.info('All test cases have been executed', { title: 'Complete' });
                 }
               }}
-                style={{ height: 40, padding: '0 16px', background: 'linear-gradient(135deg, #10B981 0%, #059669 100%)', border: 'none', borderRadius: 8, color: '#FFFFFF', fontSize: 14, fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}>
+                style={{ height: 40, padding: '0 16px', background: 'linear-gradient(135deg, #10B981 0%, #059669 100%)', border: 'none', borderRadius: 8, color: 'var(--ds-text-inverse, #FFFFFF)', fontSize: 14, fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}>
                 <Play size={16} /> Execute Tests
               </button>
             )}
@@ -589,7 +589,7 @@ export default function TestCycleDetailPage() {
             </select>
             {/* Add Test Cases Button */}
             {canEdit && (
-              <button onClick={() => setIsAddModalOpen(true)} style={{ height: 50, padding: '0 14px', background: 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)', border: 'none', borderRadius: 8, color: '#FFFFFF', fontSize: 13, fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}>
+              <button onClick={() => setIsAddModalOpen(true)} style={{ height: 50, padding: '0 14px', background: 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)', border: 'none', borderRadius: 8, color: 'var(--ds-text-inverse, #FFFFFF)', fontSize: 13, fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}>
                 <Plus size={16} /> Add Test Cases
               </button>
             )}
@@ -603,7 +603,7 @@ export default function TestCycleDetailPage() {
               <p style={{ fontSize: 16, fontWeight: 500, margin: '0 0 8px', color: 'var(--cp-text-tertiary, #64748B)' }}>No test cases added yet</p>
               <p style={{ fontSize: 14, margin: '0 0 16px' }}>Add test cases from the Test Repository to start planning</p>
               {canEdit && (
-                <button onClick={() => setIsAddModalOpen(true)} style={{ height: 40, padding: '0 20px', background: 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)', border: 'none', borderRadius: 8, color: '#FFFFFF', fontSize: 14, fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8 }}>
+                <button onClick={() => setIsAddModalOpen(true)} style={{ height: 40, padding: '0 20px', background: 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)', border: 'none', borderRadius: 8, color: 'var(--ds-text-inverse, #FFFFFF)', fontSize: 14, fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8 }}>
                   <Plus size={18} /> Add Test Cases
                 </button>
               )}
@@ -698,7 +698,7 @@ export default function TestCycleDetailPage() {
                         </td>
                         <td style={{ padding: '14px 16px', textAlign: 'center' }}>
                           {cycle.status === 'active' && (
-                            <button onClick={(e) => { e.stopPropagation(); navigate(`/testhub/cycles/${cycleId}/execute?testId=${ctc.id}`); }} style={{ height: 30, padding: '8px 12px', background: 'linear-gradient(135deg, #10B981 0%, #059669 100%)', border: 'none', borderRadius: 6, color: '#FFFFFF', fontSize: 12, fontWeight: 600, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+                            <button onClick={(e) => { e.stopPropagation(); navigate(`/testhub/cycles/${cycleId}/execute?testId=${ctc.id}`); }} style={{ height: 30, padding: '8px 12px', background: 'linear-gradient(135deg, #10B981 0%, #059669 100%)', border: 'none', borderRadius: 6, color: 'var(--ds-text-inverse, #FFFFFF)', fontSize: 12, fontWeight: 600, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 4 }}>
                               <Play size={12} /> Run
                             </button>
                           )}
@@ -814,7 +814,7 @@ export default function TestCycleDetailPage() {
                   height: 40, padding: '0 20px',
                   background: 'linear-gradient(135deg, #EF4444 0%, #DC2626 100%)',
                   border: 'none', borderRadius: 8, fontSize: 14, fontWeight: 600,
-                  color: '#FFFFFF', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8,
+                  color: 'var(--ds-text-inverse, #FFFFFF)', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8,
                 }}
               >
                 <Trash2 size={16} />

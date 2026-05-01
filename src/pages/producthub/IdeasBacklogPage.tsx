@@ -186,7 +186,7 @@ export default function IdeasBacklogPage() {
           const isActive = statusFilter === pill.key;
           return (
             <button key={pill.key} onClick={() => setStatusFilter(pill.key)} style={{
-              background: isActive ? '#2563EB' : ('var(--cp-bg-elevated, #FFFFFF)'), color: isActive ? '#FFFFFF' : dk.t2,
+              background: isActive ? '#2563EB' : ('var(--cp-bg-elevated, #FFFFFF)'), color: isActive ? 'var(--ds-text-inverse, #FFFFFF)' : dk.t2,
               border: `1px solid ${isActive ? '#2563EB' : dk.border}`,
               borderRadius: '20px', padding: '4px 12px', fontSize: '12px', fontWeight: 500, cursor: 'pointer', transition: 'all 150ms',
             }}>{pill.label}</button>
@@ -444,7 +444,7 @@ function CreateIdeaDialog({ open, onClose }: { open: boolean; onClose: () => voi
           </div>
           <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px', marginTop: '4px' }}>
             <button onClick={onClose} style={{ height: '50px', padding: '0 16px', borderRadius: '6px', border: `1px solid ${dk.border}`, background: 'var(--cp-bg-elevated, #FFFFFF)', color: dk.t2, fontSize: '13px', fontWeight: 600, cursor: 'pointer' }}>Cancel</button>
-            <button onClick={handleCreate} disabled={createIdea.isPending} style={{ height: '50px', padding: '0 16px', borderRadius: '6px', border: 'none', background: '#2563EB', color: '#FFFFFF', fontSize: '13px', fontWeight: 600, cursor: 'pointer', opacity: createIdea.isPending ? 0.7 : 1 }}>
+            <button onClick={handleCreate} disabled={createIdea.isPending} style={{ height: '50px', padding: '0 16px', borderRadius: '6px', border: 'none', background: '#2563EB', color: 'var(--ds-text-inverse, #FFFFFF)', fontSize: '13px', fontWeight: 600, cursor: 'pointer', opacity: createIdea.isPending ? 0.7 : 1 }}>
               {createIdea.isPending ? 'Creating...' : 'Create Idea'}
             </button>
           </div>

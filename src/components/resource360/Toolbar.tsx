@@ -106,7 +106,7 @@ const Toolbar: React.FC<ToolbarProps> = ({
 }) => {
   const tabStyle = (active: boolean): React.CSSProperties => ({
     padding: '6px 14px', fontSize: 12, fontWeight: active ? 700 : 600,
-    color: active ? '#FFFFFF' : 'var(--r360-text-3, #3D3D56)',
+    color: active ? 'var(--ds-text-inverse, #FFFFFF)' : 'var(--r360-text-3, #3D3D56)',
     background: active ? '#1A1A2E' : 'transparent',
     border: 'none', borderRadius: 6, cursor: 'pointer',
     boxShadow: active ? '0 1px 3px rgba(0,0,0,.15)' : 'none',
@@ -218,7 +218,7 @@ const Toolbar: React.FC<ToolbarProps> = ({
         aria-label="Open AI Intelligence overlay"
         style={{
           background: 'var(--cp-blue)',
-          color: '#FFFFFF', border: 'none', borderRadius: 20,
+          color: 'var(--ds-text-inverse, #FFFFFF)', border: 'none', borderRadius: 20,
           padding: '0 16px', height: 32, fontSize: 12, fontWeight: 600,
           letterSpacing: '0.3px', cursor: 'pointer',
           display: 'inline-flex', alignItems: 'center', gap: 6,

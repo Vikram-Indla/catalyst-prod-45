@@ -55,7 +55,7 @@ function CustomSelect({ label, required, value, options, onChange, placeholder, 
           aria-expanded={open}
         >
           {value || placeholder}
-          <ChevronDown className="w-3.5 h-3.5 shrink-0" style={{ color: '#6b6e76' }} />
+          <ChevronDown className="w-3.5 h-3.5 shrink-0" style={{ color: 'var(--ds-text-subtlest, #6b6e76)' }} />
         </button>
         {open && (
           <div
@@ -151,7 +151,7 @@ export function AllWorkCreateModal({ onClose, onCreated }: Props) {
         <div className="flex items-center justify-between px-6 py-4" style={{ borderBottom: '1px solid var(--bd-subtle, #292929)' }}>
           <h2 className="text-[16px] font-semibold" style={{ color: 'var(--fg-1)', fontFamily: 'var(--cp-font-body)' }}>Create Work Item</h2>
           <button onClick={onClose} className="p-1 rounded hover:bg-[var(--hover, #1F1F1F)] transition-colors duration-[80ms] focus-visible:outline-2 focus-visible:outline-[#2563EB]" aria-label="Close modal">
-            <X className="w-5 h-5" style={{ color: '#6b6e76' }} />
+            <X className="w-5 h-5" style={{ color: 'var(--ds-text-subtlest, #6b6e76)' }} />
           </button>
         </div>
 
@@ -216,7 +216,7 @@ export function AllWorkCreateModal({ onClose, onCreated }: Props) {
 
         {/* Footer */}
         <div className="flex items-center justify-between px-6 py-4" style={{ borderTop: '1px solid var(--bd-subtle, #292929)' }}>
-          <label className="flex items-center gap-2 text-[12px] cursor-pointer" style={{ color: '#6b6e76', fontFamily: 'var(--cp-font-body)' }}>
+          <label className="flex items-center gap-2 text-[12px] cursor-pointer" style={{ color: 'var(--ds-text-subtlest, #6b6e76)', fontFamily: 'var(--cp-font-body)' }}>
             <input
               type="checkbox"
               checked={createAnother}
@@ -229,7 +229,7 @@ export function AllWorkCreateModal({ onClose, onCreated }: Props) {
             <button
               onClick={onClose}
               className="px-4 py-2 text-[13px] rounded-md hover:bg-[var(--hover, #1F1F1F)] transition-colors duration-[80ms] focus-visible:outline-2 focus-visible:outline-[#2563EB]"
-              style={{ color: '#6b6e76', fontFamily: 'var(--cp-font-body)' }}
+              style={{ color: 'var(--ds-text-subtlest, #6b6e76)', fontFamily: 'var(--cp-font-body)' }}
             >
               Cancel
             </button>

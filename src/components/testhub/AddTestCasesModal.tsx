@@ -190,7 +190,7 @@ export function AddTestCasesModal({ isOpen, cycleId, existingTestCaseIds, onClos
                         <tr key={tc.id} onClick={() => toggleSelection(tc.id)} style={{ borderBottom: '1px solid var(--cp-bd-zone)', cursor: 'pointer', backgroundColor: isSelected ? 'color-mix(in srgb, var(--cp-blue) 8%, transparent)' : 'transparent' }}>
                           <td style={{ padding: '12px 16px', width: 40 }}>
                             <div style={{ width: 20, height: 20, borderRadius: 4, border: isSelected ? 'none' : '2px solid #CBD5E1', backgroundColor: isSelected ? 'var(--cp-blue)' : 'transparent', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                              {isSelected && <Check size={14} style={{ color: '#FFFFFF' }} />}
+                              {isSelected && <Check size={14} style={{ color: 'var(--ds-text-inverse, #FFFFFF)' }} />}
                             </div>
                           </td>
                           <td style={{ padding: '12px 8px', width: 100 }}>
@@ -220,7 +220,7 @@ export function AddTestCasesModal({ isOpen, cycleId, existingTestCaseIds, onClos
             <button onClick={handleSubmit} disabled={isSubmitting || selectedIds.size === 0} style={{
               height: 40, padding: '0 20px',
               background: selectedIds.size > 0 ? 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)' : 'var(--fg-4)',
-              border: 'none', borderRadius: 8, fontSize: 14, fontWeight: 600, color: '#FFFFFF',
+              border: 'none', borderRadius: 8, fontSize: 14, fontWeight: 600, color: 'var(--ds-text-inverse, #FFFFFF)',
               cursor: selectedIds.size > 0 ? 'pointer' : 'not-allowed', opacity: isSubmitting ? 0.7 : 1,
               display: 'flex', alignItems: 'center', gap: 8,
             }}>

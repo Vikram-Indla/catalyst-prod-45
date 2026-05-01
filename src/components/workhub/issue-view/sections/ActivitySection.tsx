@@ -60,12 +60,12 @@ function CommentItem({ comment, isDark }: { comment: any; isDark: boolean }) {
       <AvatarSmall name={name} isDark={isDark} />
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2 mb-1">
-          <span className={cn('font-body text-sm font-medium', isDark ? 'text-[#EDEDED]' : 'text-[#292A2E]')}>{name}</span>
-          <span className={cn('font-body text-xs', isDark ? 'text-[#878787]' : 'text-[#6B6E76]')}>
+          <span className={cn('font-body text-sm font-medium', isDark ? 'text-[#EDEDED]' : 'text-[var(--ds-text, #292A2E)]')}>{name}</span>
+          <span className={cn('font-body text-xs', isDark ? 'text-[#878787]' : 'text-[var(--ds-text-subtlest, #6B6E76)]')}>
             {formatRelative(comment.created_at)}
           </span>
         </div>
-        <div className={cn('font-body text-sm whitespace-pre-wrap', isDark ? 'text-[#EDEDED]' : 'text-[#292A2E]')}>
+        <div className={cn('font-body text-sm whitespace-pre-wrap', isDark ? 'text-[#EDEDED]' : 'text-[var(--ds-text, #292A2E)]')}>
           {comment.body ?? ''}
         </div>
       </div>
@@ -86,13 +86,13 @@ function HistoryItem({ entry, isDark }: { entry: any; isDark: boolean }) {
       <AvatarSmall name={name} isDark={isDark} />
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2 mb-1">
-          <span className={cn('font-body text-sm font-medium', isDark ? 'text-[#EDEDED]' : 'text-[#292A2E]')}>{name}</span>
-          <span className={cn('font-body text-xs', isDark ? 'text-[#878787]' : 'text-[#6B6E76]')}>
+          <span className={cn('font-body text-sm font-medium', isDark ? 'text-[#EDEDED]' : 'text-[var(--ds-text, #292A2E)]')}>{name}</span>
+          <span className={cn('font-body text-xs', isDark ? 'text-[#878787]' : 'text-[var(--ds-text-subtlest, #6B6E76)]')}>
             changed {fieldName} {formatRelative(entry.created_at)}
           </span>
         </div>
         <div className="flex items-center gap-2 text-xs font-body flex-wrap">
-          <span className={cn('font-medium', isDark ? 'text-[#A1A1A1]' : 'text-[#505258]')}>{fieldName}</span>
+          <span className={cn('font-medium', isDark ? 'text-[#A1A1A1]' : 'text-[var(--ds-text-accent-gray, #505258)]')}>{fieldName}</span>
           {oldVal && (
             <span className={cn('px-1.5 py-0.5 rounded line-through', isDark ? 'bg-[#2E1A1A] text-[#FF8F73]' : 'bg-[#FFEBE6] text-[#BF2600]')}>
               {oldVal}
@@ -185,7 +185,7 @@ export function ActivitySection({
               'inline-flex items-center gap-1 px-2 py-1 rounded-md text-xs font-body font-medium transition-colors',
               filter === opt.key
                 ? isDark ? 'bg-[#1F1F1F] text-[#EDEDED]' : 'bg-[#E9F2FF] text-[#0C66E4]'
-                : isDark ? 'text-[#878787] hover:bg-[#1F1F1F]' : 'text-[#505258] hover:bg-[#F4F5F7]',
+                : isDark ? 'text-[#878787] hover:bg-[#1F1F1F]' : 'text-[var(--ds-text-accent-gray, #505258)] hover:bg-[#F4F5F7]',
             )}
           >
             {opt.icon}
@@ -208,7 +208,7 @@ export function ActivitySection({
             disabled={posting}
             className={cn(
               'flex-1 bg-transparent border-none outline-none resize-none font-body text-sm',
-              isDark ? 'text-[#EDEDED] placeholder:text-[#878787]' : 'text-[#292A2E] placeholder:text-[#878787]',
+              isDark ? 'text-[#EDEDED] placeholder:text-[#878787]' : 'text-[var(--ds-text, #292A2E)] placeholder:text-[#878787]',
             )}
             onKeyDown={(e) => {
               if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
@@ -224,7 +224,7 @@ export function ActivitySection({
               'p-2 rounded-md transition-colors shrink-0',
               commentText.trim()
                 ? 'bg-[#0C66E4] text-white hover:bg-[#0052CC]'
-                : isDark ? 'bg-[#292929] text-[#878787]' : 'bg-[#F4F5F7] text-[#6B6E76]',
+                : isDark ? 'bg-[#292929] text-[#878787]' : 'bg-[#F4F5F7] text-[var(--ds-text-subtlest, #6B6E76)]',
             )}
           >
             {posting ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Send className="w-3.5 h-3.5" />}
@@ -235,7 +235,7 @@ export function ActivitySection({
       {/* Activity list */}
       {isLoading ? (
         <div className="flex items-center justify-center py-6">
-          <Loader2 className={cn('w-4 h-4 animate-spin', isDark ? 'text-[#878787]' : 'text-[#505258]')} />
+          <Loader2 className={cn('w-4 h-4 animate-spin', isDark ? 'text-[#878787]' : 'text-[var(--ds-text-accent-gray, #505258)]')} />
         </div>
       ) : mergedActivity.length > 0 ? (
         <div className={cn('divide-y', isDark ? 'divide-[#2E2E2E]' : 'divide-[#DFE1E6]')}>
@@ -247,7 +247,7 @@ export function ActivitySection({
         </div>
       ) : (
         <div className="text-center py-6">
-          <p className={cn('font-body text-sm', isDark ? 'text-[#878787]' : 'text-[#6B6E76]')}>
+          <p className={cn('font-body text-sm', isDark ? 'text-[#878787]' : 'text-[var(--ds-text-subtlest, #6B6E76)]')}>
             No activity yet
           </p>
         </div>

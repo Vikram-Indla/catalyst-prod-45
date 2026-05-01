@@ -231,7 +231,7 @@ export function DeleteTestCaseModal({
               fontFamily: 'var(--cp-font-body)',
               fontSize: 14,
               fontWeight: 600,
-              color: '#FFFFFF',
+              color: 'var(--ds-text-inverse, #FFFFFF)',
               cursor: isDeleting ? 'not-allowed' : 'pointer',
               boxShadow: isDeleting ? 'none' : '0 2px 8px rgba(239,68,68,0.25)',
             }}

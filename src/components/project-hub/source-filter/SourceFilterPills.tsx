@@ -30,7 +30,7 @@ export function SourceFilterPills({ value, onChange, catalystCount, jiraCount }:
   const total = catalystCount + jiraCount;
 
   const pills: PillConfig[] = [
-    { key: 'all', label: 'All', count: total, activeBg: 'var(--fg-1)', activeText: '#FFFFFF', activeBorder: 'var(--fg-1)' },
+    { key: 'all', label: 'All', count: total, activeBg: 'var(--fg-1)', activeText: 'var(--ds-text-inverse, #FFFFFF)', activeBorder: 'var(--fg-1)' },
     { key: 'catalyst', label: 'Catalyst', count: catalystCount, activeBg: 'var(--src-catalyst-bg, #EFF6FF)', activeText: 'var(--src-catalyst-text, #2563EB)', activeBorder: 'var(--src-catalyst-border, #BFDBFE)', icon: 'catalyst' },
     { key: 'jira', label: 'Jira', count: jiraCount, activeBg: 'var(--src-jira-bg, #FFF7ED)', activeText: 'var(--src-jira-text, #9A3412)', activeBorder: 'var(--src-jira-border, #FED7AA)', icon: 'jira' },
   ];
@@ -74,7 +74,7 @@ export function SourceFilterPills({ value, onChange, catalystCount, jiraCount }:
                   height: 8,
                   borderRadius: 1.5,
                   backgroundColor: isActive ? 'var(--cp-blue)' : 'var(--fg-4)',
-                  color: '#FFFFFF',
+                  color: 'var(--ds-text-inverse, #FFFFFF)',
                   fontSize: 6,
                   fontWeight: 700,
                   lineHeight: '8px',

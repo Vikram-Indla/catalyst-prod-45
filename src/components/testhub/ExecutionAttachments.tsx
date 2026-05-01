@@ -141,7 +141,7 @@ export function ExecutionAttachments({ cycleTestCaseId, attachments, onAttachmen
           </button>
           <div style={{ textAlign: 'center' }}>
             <img src={previewUrl} alt={previewName} style={{ maxWidth: '100%', maxHeight: 'calc(100vh - 120px)', borderRadius: 8 }} onClick={(e) => e.stopPropagation()} />
-            <p style={{ color: '#FFFFFF', fontSize: 14, marginTop: 16 }}>{previewName}</p>
+            <p style={{ color: 'var(--ds-text-inverse, #FFFFFF)', fontSize: 14, marginTop: 16 }}>{previewName}</p>
           </div>
         </div>
       )}

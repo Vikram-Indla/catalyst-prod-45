@@ -272,7 +272,7 @@ export default function SharedStepsPage() {
             <button onClick={() => setCreateModalOpen(true)} style={{
               height: 40, padding: '0 20px',
               background: 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)',
-              border: 'none', borderRadius: 8, fontSize: 14, fontWeight: 600, color: '#FFFFFF',
+              border: 'none', borderRadius: 8, fontSize: 14, fontWeight: 600, color: 'var(--ds-text-inverse, #FFFFFF)',
               cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 8,
               boxShadow: '0 2px 8px rgba(37,99,235,0.25)', fontFamily: 'var(--cp-font-body)',
             }}>
@@ -380,7 +380,7 @@ export default function SharedStepsPage() {
                 {activeFilters.length > 0 && (
                   <span style={{
                     width: 20, height: 20, borderRadius: '50%', backgroundColor: '#2563EB',
-                    color: '#FFFFFF', fontSize: 11, fontWeight: 700,
+                    color: 'var(--ds-text-inverse, #FFFFFF)', fontSize: 11, fontWeight: 700,
                     display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
                   }}>
                     {activeFilters.length}
@@ -441,7 +441,7 @@ export default function SharedStepsPage() {
                     <button onClick={() => setIsFilterOpen(false)} style={{
                       width: '100%', height: 50,
                       background: 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)',
-                      border: 'none', borderRadius: 8, color: '#FFFFFF', fontSize: 13,
+                      border: 'none', borderRadius: 8, color: 'var(--ds-text-inverse, #FFFFFF)', fontSize: 13,
                       fontWeight: 600, cursor: 'pointer', fontFamily: 'var(--cp-font-body)',
                     }}>
                       Apply Filter

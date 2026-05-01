@@ -237,7 +237,7 @@ export function RequestSubtasksSection({ requestId }: Props) {
             height: 28, padding: '0 12px',
             border: 'none', borderRadius: 4,
             background: !draftTitle.trim() ? 'var(--cp-bg-inset, #F7F8F9)' : '#0C66E4',
-            color: !draftTitle.trim() ? 'var(--cp-text-secondary, #6B6E76)' : '#FFFFFF',
+            color: !draftTitle.trim() ? 'var(--cp-text-secondary, #6B6E76)' : 'var(--ds-text-inverse, #FFFFFF)',
             fontSize: 12, fontWeight: 600,
             cursor: !draftTitle.trim() ? 'not-allowed' : 'pointer',
             transition: 'background 120ms',

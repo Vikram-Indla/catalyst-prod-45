@@ -324,7 +324,7 @@ export function ImportModal({ isOpen, onClose, onImported }: ImportModalProps) {
               background: 'linear-gradient(135deg, #14B8A6 0%, var(--sem-success) 100%)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
             }}>
-              <Upload size={22} style={{ color: '#FFFFFF' }} />
+              <Upload size={22} style={{ color: 'var(--ds-text-inverse, #FFFFFF)' }} />
             </div>
             <div>
               <h2 style={{ fontSize: 18, fontWeight: 700, color: 'var(--fg-1)', margin: 0 }}>Import Data</h2>

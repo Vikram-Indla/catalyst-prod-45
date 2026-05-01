@@ -105,7 +105,7 @@ export default function IncidentDetailPage() {
         </div>
         <div className="flex items-center gap-2">
           <Button variant="ghost" size="sm" style={{ borderRadius: 6, fontSize: 12 }} onClick={() => setShowConvert(true)}>Convert</Button>
-          <Button size="sm" style={{ backgroundColor: '#DC2626', color: '#FFFFFF', borderRadius: 6, fontSize: 12 }} onClick={handleResolve}>Resolve</Button>
+          <Button size="sm" style={{ backgroundColor: '#DC2626', color: 'var(--ds-text-inverse, #FFFFFF)', borderRadius: 6, fontSize: 12 }} onClick={handleResolve}>Resolve</Button>
         </div>
       </div>
 
@@ -251,7 +251,7 @@ export default function IncidentDetailPage() {
                 )}
                 {incident.history?.map((h: any) => (
                   <div key={h.id} className="flex items-start gap-3 mb-3 pb-3" style={{ borderBottom: isDark ? '0.75px solid #2E2E2E' : '0.75px solid rgba(15,23,42,0.06)' }}>
-                    <div className="shrink-0 mt-1" style={{ width: 10, height: 10, borderRadius: '50%', backgroundColor: '#2563EB', border: isDark ? '2px solid #0A0A0A' : '2px solid #FFFFFF', boxShadow: '0 0 0 1px #2563EB' }} />
+                    <div className="shrink-0 mt-1" style={{ width: 10, height: 10, borderRadius: '50%', backgroundColor: '#2563EB', border: isDark ? '2px solid #0A0A0A' : '2px solid var(--ds-text-inverse, #FFFFFF)', boxShadow: '0 0 0 1px #2563EB' }} />
                     <div>
                       <div style={{ fontFamily: 'var(--cp-font-body)', fontSize: 12, fontWeight: 650, color: 'var(--cp-text-primary, #0F172A)' }}>
                         {h.field_name} changed

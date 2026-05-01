@@ -590,7 +590,7 @@ const drawerCSS = `
   bottom: 0;
   width: 520px;
   max-width: 90vw;
-  background: #ffffff;
+  background: var(--ds-text-inverse, #ffffff);
   z-index: 101;
   transform: translateX(100%);
   transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -697,7 +697,7 @@ const drawerCSS = `
   border: 1px solid #e2e8f0;
   border-radius: 8px;
   transition: all 0.15s;
-  background: #ffffff;
+  background: var(--ds-text-inverse, #ffffff);
   color: #0f172a;
 }
 .um-form-group input:focus,
@@ -724,7 +724,7 @@ const drawerCSS = `
   font-weight: 500;
   border-radius: 6px;
   border: 1px solid #e2e8f0;
-  background: #ffffff;
+  background: var(--ds-text-inverse, #ffffff);
   color: #0f172a;
   cursor: pointer;
   transition: all 0.15s;

@@ -22,7 +22,7 @@ const TOKENS = `
 [data-sri] {
   --sri-ink:#09090B; --sri-ink-2:#18181B; --sri-ink-3:#3F3F46;
   --sri-ink-m:#71717A;
-  --sri-bg:#FFFFFF; --sri-bg-2:#FAFAFA; --sri-bg-3:#F4F4F5;
+  --sri-bg:var(--ds-text-inverse, #FFFFFF); --sri-bg-2:#FAFAFA; --sri-bg-3:#F4F4F5;
   --sri-bdr:#E4E4E7; --sri-bdr-s:#D4D4D8;
   --sri-ai:#2563EB; --sri-ai-d:#1E40AF; --sri-ai-bg:#EFF6FF;
   --sri-ai-bg2:#DBEAFE; --sri-ai-bdr:#93C5FD; --sri-ai-m:#3B82F6;

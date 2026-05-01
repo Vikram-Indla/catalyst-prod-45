@@ -150,7 +150,7 @@ export function CatyChatTab() {
                 onClick={() => handleSuggestionClick(chip)}
                 className="px-3 py-1.5 rounded-full border text-xs font-medium hover:opacity-80 transition-all"
                 style={{
-                  backgroundColor: '#ffffff',
+                  backgroundColor: 'var(--ds-text-inverse, #ffffff)',
                   borderColor: 'var(--wh-border)',
                   color: 'var(--wh-text-primary)',
                 }}

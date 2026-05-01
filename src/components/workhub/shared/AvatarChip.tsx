@@ -44,7 +44,7 @@ export function AvatarChip({ name, color = 'var(--cp-blue)', size = 28, avatarUr
         flexShrink: 0,
       }}
     >
-      <CircleUser size={size * 0.7} color="#FFFFFF" strokeWidth={1.5} />
+      <CircleUser size={size * 0.7} color="var(--ds-text-inverse, #FFFFFF)" strokeWidth={1.5} />
     </div>
   );
 }

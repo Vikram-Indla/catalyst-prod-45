@@ -156,7 +156,7 @@ export function CreateFolderModal({
               alignItems: 'center',
               justifyContent: 'center',
             }}>
-              <Folder style={{ width: 18, height: 18, color: '#FFFFFF' }} />
+              <Folder style={{ width: 18, height: 18, color: 'var(--ds-text-inverse, #FFFFFF)' }} />
             </div>
             <div>
               <h2 className="th-modal-title">Create Folder</h2>

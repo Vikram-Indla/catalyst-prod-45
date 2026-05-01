@@ -95,7 +95,7 @@ export function ThemeBoardView({ themes, onSelect, isDark = false }: Props) {
                 {theme.owner_name && (
                   <div className="shrink-0 rounded-full flex items-center justify-center" style={{
                     width: 24, height: 24, background: getAvatarColor(theme.owner_name),
-                    fontSize: 9, fontWeight: 700, color: '#FFFFFF',
+                    fontSize: 9, fontWeight: 700, color: 'var(--ds-text-inverse, #FFFFFF)',
                   }} title={theme.owner_name}>
                     {getInitials(theme.owner_name)}
                   </div>

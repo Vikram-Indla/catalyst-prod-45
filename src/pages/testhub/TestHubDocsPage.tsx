@@ -442,7 +442,7 @@ export default function TestHubDocsPage() {
             gap: 8,
             padding: '10px 20px',
             backgroundColor: '#0F172A',
-            color: '#FFFFFF',
+            color: 'var(--ds-text-inverse, #FFFFFF)',
             border: 'none',
             borderRadius: 8,
             fontSize: 14,
@@ -591,7 +591,7 @@ export default function TestHubDocsPage() {
           justifyContent: 'space-between',
         }}>
           <div>
-            <div style={{ fontSize: 15, fontWeight: 600, color: '#FFFFFF', fontFamily: 'var(--cp-font-body)' }}>
+            <div style={{ fontSize: 15, fontWeight: 600, color: 'var(--ds-text-inverse, #FFFFFF)', fontFamily: 'var(--cp-font-body)' }}>
               Download the full guide as Markdown
             </div>
             <div style={{ fontSize: 13, color: '#94A3B8', fontFamily: 'var(--cp-font-body)', marginTop: 4 }}>
