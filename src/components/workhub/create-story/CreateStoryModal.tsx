@@ -1072,12 +1072,19 @@ export function CreateStoryModal({
                         </Box>
                       }
                     >
-                      {/* Identical pattern to StoryDetailModal — chromeless in Create modal */}
+                      {/*
+                        Jira parity: Create dialog uses appearance="comment"
+                        (flat, edge-to-edge, no paper canvas). "full-page"
+                        adds a wide centered paper canvas which (a) tints
+                        blue under our color.background.selected token and
+                        (b) vertically misaligns the placeholder. Verified
+                        against Atlassian's live Create Story modal.
+                      */}
                       <EpicDescriptionEditor
                         workItemId="__create__"
                         initialContent={form.descriptionAdf ?? null}
                         placeholder="Add a description..."
-                        appearance="full-page"
+                        appearance="comment"
                         onSave={(adfJson: string) => {
                           try {
                             const parsed = JSON.parse(adfJson);
