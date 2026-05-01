@@ -92,7 +92,12 @@ export const adsTokens = {
     overlay:  { cp: '--cp-bg-overlay',  light: '#F8FAFC', dark: '#1F1F1F', atlaskit: 'elevation.surface.overlay' } satisfies AdsToken,
     inset:    { cp: '--cp-bg-inset',    light: '#F1F5F9', dark: '#111111', atlaskit: 'color.background.neutral.subtle' } satisfies AdsToken,
     hover:    { cp: '--cp-interact-hover',    light: 'rgba(0,0,0,0.04)', dark: '#1F1F1F', atlaskit: 'color.background.neutral.hovered' } satisfies AdsToken,
-    selected: { cp: '--cp-interact-selected', light: 'rgba(37,99,235,0.08)', dark: 'rgba(37,99,235,0.14)', atlaskit: 'color.background.selected' } satisfies AdsToken,
+    // 2026-05-01 — RCA fix for blue tint on Atlaskit Editor canvas in dark mode.
+    // Previously dark = rgba(37,99,235,0.14) which painted Editor's "selected"
+    // canvas state as a visible blue rectangle. ADS canonical dark value for
+    // color.background.selected is #1C2B41 (atlassian.design — Jira parity).
+    // Light kept at the original Catalyst tint per existing UI specs.
+    selected: { cp: '--cp-interact-selected', light: 'rgba(37,99,235,0.08)', dark: '#1C2B41', atlaskit: 'color.background.selected' } satisfies AdsToken,
     pressed:  { cp: '--cp-interact-press',    light: 'rgba(0,0,0,0.08)', dark: '#292929', atlaskit: 'color.background.neutral.pressed' } satisfies AdsToken,
   },
   text: {
