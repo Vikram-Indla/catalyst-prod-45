@@ -149,7 +149,7 @@ export default function WorkTypesPage() {
   return (
     <div
       data-testid="admin-v2/work-types/page"
-      style={{ padding: 'var(--ds-space-400, 24px)', maxWidth: 1200 }}
+      style={{ padding: 'var(--ds-space-400, 24px)', maxWidth: 1280 }}
     >
       <div style={{ marginBottom: 'var(--ds-space-300, 16px)' }}>
         <Heading as="h1" size="large">

@@ -39,7 +39,7 @@ export default function NotificationsPage() {
             color: 'var(--ds-text-subtle, #44546F)',
             fontSize: 14,
             lineHeight: 1.5,
-            maxWidth: 720,
+            maxWidth: 640,
           }}
         >
           Configure which CRUD events trigger notifications, who receives

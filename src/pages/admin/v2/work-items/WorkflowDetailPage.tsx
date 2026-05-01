@@ -207,7 +207,7 @@ function SchemeHeader({ scheme }: { scheme: WorkflowSchemeRow }) {
             color: 'var(--ds-text-subtle, #44546F)',
             fontSize: 14,
             lineHeight: 1.5,
-            maxWidth: 720,
+            maxWidth: 640,
           }}
         >
           {scheme.description}

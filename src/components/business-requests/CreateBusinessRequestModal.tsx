@@ -862,7 +862,11 @@ export function CreateBusinessRequestModal({ isOpen, onClose }: CreateBusinessRe
                         workItemId="__br_create__"
                         initialContent={form.descriptionAdf ?? null}
                         placeholder="Describe what this business request covers, why it is needed, and the current gap or pain point it addresses..."
-                        appearance="full-page"
+                        // 2026-04-30 jira-compare — see CreateStoryModal note.
+                        // appearance="comment" matches Jira's Create-dialog
+                        // variant; "full-page" rendered an inset focus box
+                        // with ~600px wasted vertical space.
+                        appearance="comment"
                         onSave={(adf: string) => { try { const p = JSON.parse(adf); set('descriptionAdf', p); set('description', adf); } catch { /* noop */ } }}
                         onChange={(adf: string) => { try { const p = JSON.parse(adf); set('descriptionAdf', p); set('description', adf); } catch { /* noop */ } }}
                         onCancel={() => undefined}

@@ -1324,7 +1324,18 @@ export function CreateStoryModal({
                         workItemId="__create__"
                         initialContent={form.descriptionAdf ?? null}
                         placeholder="Add a description..."
-                        appearance="full-page"
+                        // 2026-04-30 jira-compare: appearance="comment" matches
+                        // Jira's actual Create-dialog editor variant. The prior
+                        // "full-page" value rendered the editor's internal
+                        // page-framing (a focused inner contenteditable inside
+                        // a much taller page container) which left ~600px of
+                        // wasted vertical space and put the cursor inside an
+                        // inset blue-bordered box instead of the natural top.
+                        // "comment" gives toolbar + content area only, no inner
+                        // page frame. Also drops 6-8 full-page-only plugins
+                        // (analytics, breakout, smart-cards, find-replace),
+                        // which trims the lazy chunk further.
+                        appearance="comment"
                         onSave={(adfJson: string) => {
                           try {
                             const parsed = JSON.parse(adfJson);
