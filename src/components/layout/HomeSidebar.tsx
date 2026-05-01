@@ -69,7 +69,6 @@ import {
   Clock,
   FolderOpen,
   ArrowRight,
-  type LucideIcon,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { SidebarBase, type SidebarConfig, type SidebarMenuItem } from './SidebarBase';
