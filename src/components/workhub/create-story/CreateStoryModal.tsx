@@ -1053,45 +1053,18 @@ export function CreateStoryModal({
               {/* ── Description ─────────────────────────────────────── */}
               <Field name="description" label="Description">
                 {() => (
-                  <Box xcss={editorWrapperStyles}>
-                    <Suspense
-                      fallback={
-                        <Box xcss={editorLoadingStyles}>
-                          <Spinner size="medium" />
-                        </Box>
-                      }
-                    >
-                      {/*
-                        Jira parity: Create dialog uses appearance="comment"
-                        (flat, edge-to-edge, no paper canvas). "full-page"
-                        adds a wide centered paper canvas which (a) tints
-                        blue under our color.background.selected token and
-                        (b) vertically misaligns the placeholder. Verified
-                        against Atlassian's live Create Story modal.
-                      */}
-                      <EpicDescriptionEditor
-                        workItemId="__create__"
-                        initialContent={form.descriptionAdf ?? null}
-                        placeholder="Add a description..."
-                        appearance="comment"
-                        onSave={(adfJson: string) => {
-                          try {
-                            const parsed = JSON.parse(adfJson);
-                            updateField('descriptionAdf', parsed);
-                            updateField('description', JSON.stringify(parsed));
-                          } catch { /* noop */ }
-                        }}
-                        onChange={(adfJson: string) => {
-                          try {
-                            const parsed = JSON.parse(adfJson);
-                            updateField('descriptionAdf', parsed);
-                            updateField('description', JSON.stringify(parsed));
-                          } catch { /* noop */ }
-                        }}
-                        onCancel={() => undefined}
-                      />
-                    </Suspense>
-                  </Box>
+                  <TextArea
+                    name="description"
+                    value={form.description}
+                    minimumRows={4}
+                    resize="vertical"
+                    placeholder="Add a description..."
+                    onChange={(e) => {
+                      const value = (e.target as HTMLTextAreaElement).value;
+                      updateField('description', value);
+                      updateField('descriptionAdf', plainTextToAdf(value));
+                    }}
+                  />
                 )}
               </Field>
 
