@@ -27,7 +27,7 @@ export function ColumnVisibilityMenu<TData>({ table, columns }: ColumnVisibility
     <DropdownMenu>
       <DropdownMenuTrigger
         aria-label="Configure columns"
-        className="inline-flex h-7 w-7 items-center justify-center rounded text-muted-foreground transition-colors hover:bg-accent hover:text-foreground focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ds-text-brand, #3b82f6)] focus-visible:ring-offset-1"
+        className="inline-flex h-7 w-7 items-center justify-center rounded text-muted-foreground transition-colors hover:bg-accent hover:text-foreground focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ds-text-brand,#3b82f6)] focus-visible:ring-offset-1"
       >
         <Plus className="h-3.5 w-3.5" />
       </DropdownMenuTrigger>

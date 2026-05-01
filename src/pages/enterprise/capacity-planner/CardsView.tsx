@@ -167,7 +167,7 @@ export function CardsView({
                     <Building2 className={cn("w-6 h-6", deptColor.text)} />
                   </div>
                   <div>
-                    <span className="text-lg font-bold text-[var(--ds-surface, #0a0a0a)]">{deptName}</span>
+                    <span className="text-lg font-bold text-[var(--ds-surface,#0a0a0a)]">{deptName}</span>
                     <div className="flex items-center gap-4 mt-1">
                       {availableCount > 0 && (
                         <span className="text-sm text-[#525252] flex items-center gap-1.5">

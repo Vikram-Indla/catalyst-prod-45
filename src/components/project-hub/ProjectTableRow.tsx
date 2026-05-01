@@ -31,7 +31,7 @@ export function ProjectTableRow({ project, isStarred, onToggleStar, onContextMen
 
   return (
     <tr
-      className={`group cursor-pointer transition-colors duration-100 ${isDark ? 'hover:bg-[var(--ds-surface-overlay, #1F1F1F)]' : 'hover:bg-[var(--ds-surface-sunken, #F4F5F7)]'}`}
+      className={`group cursor-pointer transition-colors duration-100 ${isDark ? 'hover:bg-[var(--ds-surface-overlay,#1F1F1F)]' : 'hover:bg-[var(--ds-surface-sunken,#F4F5F7)]'}`}
       style={{ height: 36, maxHeight: 36 }}
       onClick={() => navigate(`/project-hub/${project.key}/dashboard`)}
       onContextMenu={e => onContextMenu(e, project)}

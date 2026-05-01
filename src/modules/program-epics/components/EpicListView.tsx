@@ -266,7 +266,7 @@ export function EpicListView({ programId }: EpicListViewProps) {
 
   const getAvatarColor = (name: string) => {
     // Catalyst V5 avatar colors (Blue, Teal, Gray only)
-    const colors = ['bg-[var(--ds-text-brand, #2563eb)]', 'bg-[#0d9488]', 'bg-[#6b7280]'];
+    const colors = ['bg-[var(--ds-text-brand,#2563eb)]', 'bg-[#0d9488]', 'bg-[#6b7280]'];
     return colors[name.charCodeAt(0) % colors.length];
   };
 

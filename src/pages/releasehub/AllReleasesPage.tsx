@@ -115,7 +115,7 @@ export default function AllReleasesPage() {
             <Download size={14} /> Import from Jira
           </button>
           <button onClick={() => setShowCreate(true)}
-            className="h-9 px-4 rounded-md bg-[var(--ds-text-brand, #2563EB)] hover:bg-[var(--ds-background-brand-bold-hovered, #1D4ED8)] text-white text-[13px] font-semibold flex items-center gap-1.5 active:scale-[0.98] transition-colors">
+            className="h-9 px-4 rounded-md bg-[var(--ds-text-brand,#2563EB)] hover:bg-[var(--ds-background-brand-bold-hovered,#1D4ED8)] text-white text-[13px] font-semibold flex items-center gap-1.5 active:scale-[0.98] transition-colors">
             <Plus size={14} /> New Release
           </button>
         </div>
@@ -173,7 +173,7 @@ export default function AllReleasesPage() {
         <div className="relative">
           <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: 'var(--cp-text-muted, #94A3B8)' }} />
           <input type="text" placeholder="Search releases..." value={search} onChange={e => setSearch(e.target.value)}
-            className="h-9 w-64 pl-9 pr-3 rounded text-[13px] focus:outline-none focus:ring-2 focus:ring-[var(--ds-text-brand, #2563EB)]/20 focus:border-[var(--ds-text-brand, #2563EB)]"
+            className="h-9 w-64 pl-9 pr-3 rounded text-[13px] focus:outline-none focus:ring-2 focus:ring-[var(--ds-text-brand,#2563EB)]/20 focus:border-[var(--ds-text-brand,#2563EB)]"
             style={{ border: `1px solid ${'var(--cp-border-default, rgba(15,23,42,0.12))'}`, background: 'var(--cp-bg-elevated, #FFFFFF)', color: 'var(--cp-text-primary, #0F172A)' }} />
         </div>
         <div className="flex items-center gap-1 rounded-md p-0.5" style={{ border: `1px solid ${'var(--cp-border-default, rgba(15,23,42,0.12))'}`, background: 'var(--cp-bg-elevated, #FFFFFF)' }}>
@@ -214,7 +214,7 @@ export default function AllReleasesPage() {
                         position="top"
                         content={`Last synced: ${new Date(r.synced_at || r.updated_at).toLocaleString()}`}
                       >
-                        <span className="inline-flex items-center gap-1 text-[11px] text-[var(--ds-text-subtlest, #94A3B8)] cursor-default">
+                        <span className="inline-flex items-center gap-1 text-[11px] text-[var(--ds-text-subtlest,#94A3B8)] cursor-default">
                           <Clock size={12} />
                           Synced {relativeTime(r.synced_at || r.updated_at)}
                         </span>
@@ -275,7 +275,7 @@ export default function AllReleasesPage() {
                             position="top"
                             content={`Synced ${relativeTime(r.synced_at || r.updated_at)}`}
                           >
-                            <span className="inline-flex items-center gap-0.5 text-[11px] text-[var(--ds-text-subtlest, #94A3B8)] cursor-default">
+                            <span className="inline-flex items-center gap-0.5 text-[11px] text-[var(--ds-text-subtlest,#94A3B8)] cursor-default">
                               <Clock size={12} />
                             </span>
                           </Tooltip>

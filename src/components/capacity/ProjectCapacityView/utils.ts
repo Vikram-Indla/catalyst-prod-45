@@ -189,7 +189,7 @@ export function getStaffingStatusConfig(status: 'full' | 'partial' | 'under' | '
     partial: {
       label: 'Partial',
       color: '#6b7280',
-      bgClass: 'bg-[var(--ds-surface-sunken, #f8fafc)] dark:bg-slate-950/30',
+      bgClass: 'bg-[var(--ds-surface-sunken,#f8fafc)] dark:bg-slate-950/30',
       textClass: 'text-[#6b7280] dark:text-slate-400',
       borderClass: 'border-[#6b7280] dark:border-slate-600',
       dotClass: 'bg-[#6b7280]'
@@ -197,10 +197,10 @@ export function getStaffingStatusConfig(status: 'full' | 'partial' | 'under' | '
     under: {
       label: 'Understaffed',
       color: 'var(--ds-text-brand, #2563eb)',
-      bgClass: 'bg-[var(--ds-background-selected, #eff6ff)] dark:bg-blue-950/30',
-      textClass: 'text-[var(--ds-text-brand, #2563eb)] dark:text-blue-400',
-      borderClass: 'border-[var(--ds-text-brand, #2563eb)] dark:border-blue-600',
-      dotClass: 'bg-[var(--ds-text-brand, #2563eb)]'
+      bgClass: 'bg-[var(--ds-background-selected,#eff6ff)] dark:bg-blue-950/30',
+      textClass: 'text-[var(--ds-text-brand,#2563eb)] dark:text-blue-400',
+      borderClass: 'border-[var(--ds-text-brand,#2563eb)] dark:border-blue-600',
+      dotClass: 'bg-[var(--ds-text-brand,#2563eb)]'
     },
     over: {
       label: 'Over-Allocated',

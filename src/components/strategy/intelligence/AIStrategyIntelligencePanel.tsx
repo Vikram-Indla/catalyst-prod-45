@@ -184,7 +184,7 @@ export function AIStrategyIntelligencePanel({
           <button onClick={onRegenerate} disabled={isAILoading} className="px-3 py-1 rounded transition-colors disabled:opacity-50" style={{ fontSize: 11, fontWeight: 500, color: 'var(--fg-3)' }}>
             Regenerate
           </button>
-          <button onClick={onClose} className="px-3.5 py-1 rounded-md transition-colors text-[11px] font-semibold text-white bg-slate-800 dark:bg-[var(--ds-surface-raised, #1A1A1A)] dark:border dark:border-[var(--ds-border, #2E2E2E)]">
+          <button onClick={onClose} className="px-3.5 py-1 rounded-md transition-colors text-[11px] font-semibold text-white bg-slate-800 dark:bg-[var(--ds-surface-raised,#1A1A1A)] dark:border dark:border-[var(--ds-border,#2E2E2E)]">
             Close
           </button>
         </div>

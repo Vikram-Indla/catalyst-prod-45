@@ -36,17 +36,17 @@ function IssueRow({
     <div
       className={cn(
         'flex items-center gap-3 px-2 py-2 rounded-md transition-colors cursor-pointer',
-        isDark ? 'hover:bg-[var(--ds-surface-overlay, #1F1F1F)]' : 'hover:bg-[var(--ds-surface-sunken, #F4F5F7)]',
+        isDark ? 'hover:bg-[var(--ds-surface-overlay,#1F1F1F)]' : 'hover:bg-[var(--ds-surface-sunken,#F4F5F7)]',
       )}
       onClick={() => onOpen?.(item.key)}
     >
       {item.issueType && <JiraIssueTypeIcon type={item.issueType} size={16} />}
-      <span className={cn('font-mono text-xs font-medium shrink-0', isDark ? 'text-[var(--ds-text-subtlest, #A1A1A1)]' : 'text-[var(--ds-text-accent-gray, #505258)]')}>
+      <span className={cn('font-mono text-xs font-medium shrink-0', isDark ? 'text-[var(--ds-text-subtlest,#A1A1A1)]' : 'text-[var(--ds-text-accent-gray,#505258)]')}>
         {item.key}
       </span>
       <span className={cn(
         'font-body text-sm truncate flex-1 min-w-0',
-        isDark ? 'text-[var(--ds-text, #EDEDED)]' : 'text-[var(--ds-text, #292A2E)]',
+        isDark ? 'text-[var(--ds-text,#EDEDED)]' : 'text-[var(--ds-text,#292A2E)]',
       )}>
         {item.summary}
       </span>
@@ -54,7 +54,7 @@ function IssueRow({
       {badge && (
         <span className={cn(
           'text-[10px] font-body font-medium px-1.5 py-0.5 rounded shrink-0',
-          isDark ? 'bg-[var(--ds-border, #292929)] text-[var(--ds-text-subtlest, #878787)]' : 'bg-[var(--ds-surface-sunken, #F4F5F7)] text-[var(--ds-text-subtlest, #6B6E76)]',
+          isDark ? 'bg-[var(--ds-border,#292929)] text-[var(--ds-text-subtlest,#878787)]' : 'bg-[var(--ds-surface-sunken,#F4F5F7)] text-[var(--ds-text-subtlest,#6B6E76)]',
         )}>
           {badge}
         </span>
@@ -81,7 +81,7 @@ export function HierarchySection({
   if (!hasParent && !hasChildren) {
     return (
       <div className="text-center py-4">
-        <p className={cn('font-body text-sm mb-3', isDark ? 'text-[var(--ds-text-subtlest, #878787)]' : 'text-[var(--ds-text-subtlest, #6B6E76)]')}>
+        <p className={cn('font-body text-sm mb-3', isDark ? 'text-[var(--ds-text-subtlest,#878787)]' : 'text-[var(--ds-text-subtlest,#6B6E76)]')}>
           No hierarchy items linked
         </p>
         <div className="flex items-center justify-center gap-2">
@@ -117,7 +117,7 @@ export function HierarchySection({
         <div>
           <span className={cn(
             'text-[10px] font-body font-semibold uppercase tracking-wider mb-1 block',
-            isDark ? 'text-[var(--ds-text-subtlest, #878787)]' : 'text-[var(--ds-text-subtlest, #6B6E76)]',
+            isDark ? 'text-[var(--ds-text-subtlest,#878787)]' : 'text-[var(--ds-text-subtlest,#6B6E76)]',
           )}>
             Parent
           </span>
@@ -140,7 +140,7 @@ export function HierarchySection({
         <div className={hasParent ? 'mt-2' : ''}>
           <span className={cn(
             'text-[10px] font-body font-semibold uppercase tracking-wider mb-1 block',
-            isDark ? 'text-[var(--ds-text-subtlest, #878787)]' : 'text-[var(--ds-text-subtlest, #6B6E76)]',
+            isDark ? 'text-[var(--ds-text-subtlest,#878787)]' : 'text-[var(--ds-text-subtlest,#6B6E76)]',
           )}>
             Children ({childItems.length || childCount})
           </span>
@@ -160,7 +160,7 @@ export function HierarchySection({
               />
             ))
           ) : (
-            <p className={cn('font-body text-xs py-2', isDark ? 'text-[var(--ds-text-subtlest, #878787)]' : 'text-[var(--ds-text-subtlest, #6B6E76)]')}>
+            <p className={cn('font-body text-xs py-2', isDark ? 'text-[var(--ds-text-subtlest,#878787)]' : 'text-[var(--ds-text-subtlest,#6B6E76)]')}>
               {childCount} subtask{childCount > 1 ? 's' : ''} (load to view)
             </p>
           )}

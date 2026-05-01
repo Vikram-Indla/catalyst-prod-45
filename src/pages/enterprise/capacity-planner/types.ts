@@ -10,8 +10,8 @@ export type { ViewType, ResourceMetric, CapacityProject, AiRecommendation, Resou
 
 // Department colors - Catalyst V5 compliant
 export const departmentColors: Record<string, { bg: string; text: string; badge: string }> = {
-  Product: { bg: 'bg-[var(--ds-text-brand, #3b82f6)]', text: 'text-white', badge: 'bg-[var(--ds-text-brand, #3b82f6)]/15 text-[var(--ds-text-brand, #2563eb)]' },
-  Delivery: { bg: 'bg-[#0d9488]', text: 'text-white', badge: 'bg-[var(--ds-text-brand, #2563eb)]/10 text-[var(--ds-text-brand, #2563eb)]' },
+  Product: { bg: 'bg-[var(--ds-text-brand,#3b82f6)]', text: 'text-white', badge: 'bg-[var(--ds-text-brand,#3b82f6)]/15 text-[var(--ds-text-brand,#2563eb)]' },
+  Delivery: { bg: 'bg-[#0d9488]', text: 'text-white', badge: 'bg-[var(--ds-text-brand,#2563eb)]/10 text-[var(--ds-text-brand,#2563eb)]' },
   Support: { bg: 'bg-[#10b981]', text: 'text-white', badge: 'bg-[#10b981]/15 text-[#10b981]' },
   default: { bg: 'bg-muted', text: 'text-muted-foreground', badge: 'bg-muted text-muted-foreground' },
 };

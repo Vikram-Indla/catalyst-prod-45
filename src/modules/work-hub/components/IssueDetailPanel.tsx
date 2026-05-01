@@ -100,23 +100,23 @@ export function IssueDetailPanel({ item, onClose, onFieldChange }: IssueDetailPa
           <span className="text-[13px] font-medium" style={{ color: 'var(--cp-text-secondary, #334155)' }}>{item.key}</span>
         </div>
         <div className="flex items-center gap-1">
-          <Button variant="ghost" size="sm" className={cn("h-7 px-2 text-[12px] gap-1", isDark ? "text-[var(--ds-text-subtlest, #A1A1A1)] hover:bg-[var(--ds-surface-raised, #1A1A1A)]" : "text-slate-600 hover:bg-slate-100")}>
+          <Button variant="ghost" size="sm" className={cn("h-7 px-2 text-[12px] gap-1", isDark ? "text-[var(--ds-text-subtlest,#A1A1A1)] hover:bg-[var(--ds-surface-raised,#1A1A1A)]" : "text-slate-600 hover:bg-slate-100")}>
             <Eye className="h-3.5 w-3.5" />
             <span>1</span>
           </Button>
-          <Button variant="ghost" size="icon" className={cn("h-7 w-7", isDark ? "hover:bg-[var(--ds-surface-raised, #1A1A1A)]" : "hover:bg-slate-100")}>
+          <Button variant="ghost" size="icon" className={cn("h-7 w-7", isDark ? "hover:bg-[var(--ds-surface-raised,#1A1A1A)]" : "hover:bg-slate-100")}>
             <Share2 className="h-4 w-4" style={{ color: 'var(--cp-text-tertiary, #64748B)' }} />
           </Button>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon" className={cn("h-7 w-7", isDark ? "hover:bg-[var(--ds-surface-raised, #1A1A1A)]" : "hover:bg-slate-100")}>
+              <Button variant="ghost" size="icon" className={cn("h-7 w-7", isDark ? "hover:bg-[var(--ds-surface-raised,#1A1A1A)]" : "hover:bg-slate-100")}>
                 <MoreHorizontal className="h-4 w-4" style={{ color: 'var(--cp-text-tertiary, #64748B)' }} />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className={cn("w-56 shadow-lg", isDark ? "bg-[var(--ds-surface-raised, #1A1A1A)] border-[var(--ds-border, #2E2E2E)]" : "bg-white border-slate-200")}>
+            <DropdownMenuContent align="end" className={cn("w-56 shadow-lg", isDark ? "bg-[var(--ds-surface-raised,#1A1A1A)] border-[var(--ds-border,#2E2E2E)]" : "bg-white border-slate-200")}>
               {ISSUE_ACTIONS.map((action, idx) => (
                 <React.Fragment key={action.id}>
-                  <DropdownMenuItem className={cn("text-[13px] cursor-pointer", isDark ? "text-[var(--ds-text, #EDEDED)] hover:bg-[#232323]" : "text-slate-700 hover:bg-slate-50")}>
+                  <DropdownMenuItem className={cn("text-[13px] cursor-pointer", isDark ? "text-[var(--ds-text,#EDEDED)] hover:bg-[#232323]" : "text-slate-700 hover:bg-slate-50")}>
                     {action.label}
                   </DropdownMenuItem>
                   {action.dividerAfter && <DropdownMenuSeparator />}
@@ -124,7 +124,7 @@ export function IssueDetailPanel({ item, onClose, onFieldChange }: IssueDetailPa
               ))}
             </DropdownMenuContent>
           </DropdownMenu>
-          <Button variant="ghost" size="icon" className={cn("h-7 w-7", isDark ? "hover:bg-[var(--ds-surface-raised, #1A1A1A)]" : "hover:bg-slate-100")} onClick={onClose}>
+          <Button variant="ghost" size="icon" className={cn("h-7 w-7", isDark ? "hover:bg-[var(--ds-surface-raised,#1A1A1A)]" : "hover:bg-slate-100")} onClick={onClose}>
             <X className="h-4 w-4" style={{ color: 'var(--cp-text-tertiary, #64748B)' }} />
           </Button>
         </div>
@@ -143,11 +143,11 @@ export function IssueDetailPanel({ item, onClose, onFieldChange }: IssueDetailPa
 
               {/* Quick add buttons */}
               <div className="flex items-center gap-2 text-[13px]">
-                <button className={cn("px-2 py-1 rounded", isDark ? "text-[var(--ds-text-subtlest, #878787)] hover:text-[var(--ds-text-subtlest, #A1A1A1)] hover:bg-[var(--ds-surface-raised, #1A1A1A)]" : "text-slate-500 hover:text-slate-700 hover:bg-slate-100")}>
+                <button className={cn("px-2 py-1 rounded", isDark ? "text-[var(--ds-text-subtlest,#878787)] hover:text-[var(--ds-text-subtlest,#A1A1A1)] hover:bg-[var(--ds-surface-raised,#1A1A1A)]" : "text-slate-500 hover:text-slate-700 hover:bg-slate-100")}>
                   <Plus className="h-4 w-4 inline mr-1" />
                   Add
                 </button>
-                <button className={cn("px-2 py-1 rounded", isDark ? "text-[var(--ds-text-subtlest, #878787)] hover:text-[var(--ds-text-subtlest, #A1A1A1)] hover:bg-[var(--ds-surface-raised, #1A1A1A)]" : "text-slate-500 hover:text-slate-700 hover:bg-slate-100")}>
+                <button className={cn("px-2 py-1 rounded", isDark ? "text-[var(--ds-text-subtlest,#878787)] hover:text-[var(--ds-text-subtlest,#A1A1A1)] hover:bg-[var(--ds-surface-raised,#1A1A1A)]" : "text-slate-500 hover:text-slate-700 hover:bg-slate-100")}>
                   <LinkIcon className="h-4 w-4 inline mr-1" />
                   Link
                 </button>
@@ -173,7 +173,7 @@ export function IssueDetailPanel({ item, onClose, onFieldChange }: IssueDetailPa
             {/* Attachments section */}
             <div className="rounded" style={{ border: `1px solid ${'var(--cp-border, #E2E8F0)'}` }}>
               <button
-                className={cn("w-full flex items-center justify-between px-4 py-3 transition-colors", isDark ? "hover:bg-[var(--ds-surface-raised, #1A1A1A)]" : "hover:bg-slate-50")}
+                className={cn("w-full flex items-center justify-between px-4 py-3 transition-colors", isDark ? "hover:bg-[var(--ds-surface-raised,#1A1A1A)]" : "hover:bg-slate-50")}
                 onClick={() => setAttachmentsExpanded(!attachmentsExpanded)}
               >
                 <div className="flex items-center gap-2">
@@ -183,10 +183,10 @@ export function IssueDetailPanel({ item, onClose, onFieldChange }: IssueDetailPa
                   </span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Button variant="ghost" size="icon" className={cn("h-7 w-7", isDark ? "hover:bg-[var(--ds-surface-raised, #1A1A1A)]" : "hover:bg-slate-100")}>
+                  <Button variant="ghost" size="icon" className={cn("h-7 w-7", isDark ? "hover:bg-[var(--ds-surface-raised,#1A1A1A)]" : "hover:bg-slate-100")}>
                     <MoreHorizontal className="h-4 w-4" style={{ color: 'var(--cp-text-muted, #94A3B8)' }} />
                   </Button>
-                  <Button variant="ghost" size="icon" className={cn("h-7 w-7", isDark ? "hover:bg-[var(--ds-surface-raised, #1A1A1A)]" : "hover:bg-slate-100")}>
+                  <Button variant="ghost" size="icon" className={cn("h-7 w-7", isDark ? "hover:bg-[var(--ds-surface-raised,#1A1A1A)]" : "hover:bg-slate-100")}>
                     <Plus className="h-4 w-4" style={{ color: 'var(--cp-text-muted, #94A3B8)' }} />
                   </Button>
                   {attachmentsExpanded ? (
@@ -208,7 +208,7 @@ export function IssueDetailPanel({ item, onClose, onFieldChange }: IssueDetailPa
                   {attachments.map((att) => (
                     <div
                       key={att.id}
-                      className={cn("grid grid-cols-[1fr_80px_140px_60px] px-4 py-2 items-center", isDark ? "hover:bg-[var(--ds-surface-raised, #1A1A1A)]" : "hover:bg-slate-50")}
+                      className={cn("grid grid-cols-[1fr_80px_140px_60px] px-4 py-2 items-center", isDark ? "hover:bg-[var(--ds-surface-raised,#1A1A1A)]" : "hover:bg-slate-50")}
                       style={{ borderBottom: `1px solid ${'var(--cp-bg-sunken, #F1F5F9)'}` }}
                     >
                       <div className="flex items-center gap-2 min-w-0">
@@ -220,10 +220,10 @@ export function IssueDetailPanel({ item, onClose, onFieldChange }: IssueDetailPa
                       <span className="text-[13px]" style={{ color: 'var(--cp-text-secondary, #475569)' }}>{formatFileSize(att.size)}</span>
                       <span className="text-[13px]" style={{ color: 'var(--cp-text-secondary, #475569)' }}>{formatIssueDateWithTime(att.dateAdded)}</span>
                       <div className="flex items-center gap-1 justify-end">
-                        <Button variant="ghost" size="icon" className={cn("h-6 w-6", isDark ? "hover:bg-[var(--ds-surface-raised, #1A1A1A)]" : "hover:bg-slate-100")}>
+                        <Button variant="ghost" size="icon" className={cn("h-6 w-6", isDark ? "hover:bg-[var(--ds-surface-raised,#1A1A1A)]" : "hover:bg-slate-100")}>
                           <Eye className="h-3.5 w-3.5" style={{ color: 'var(--cp-text-muted, #94A3B8)' }} />
                         </Button>
-                        <Button variant="ghost" size="icon" className={cn("h-6 w-6", isDark ? "hover:bg-[var(--ds-surface-raised, #1A1A1A)]" : "hover:bg-slate-100")}>
+                        <Button variant="ghost" size="icon" className={cn("h-6 w-6", isDark ? "hover:bg-[var(--ds-surface-raised,#1A1A1A)]" : "hover:bg-slate-100")}>
                           <Download className="h-3.5 w-3.5" style={{ color: 'var(--cp-text-muted, #94A3B8)' }} />
                         </Button>
                       </div>
@@ -236,7 +236,7 @@ export function IssueDetailPanel({ item, onClose, onFieldChange }: IssueDetailPa
             {/* Subtasks section */}
             <div>
               <h3 className="text-[14px] font-semibold mb-2" style={{ color: 'var(--cp-text-primary, #0F172A)' }}>Subtasks</h3>
-              <button className={cn("text-[13px] px-2 py-1 rounded -ml-2", isDark ? "text-[var(--ds-text-subtlest, #878787)] hover:text-blue-500 hover:bg-[var(--ds-surface-raised, #1A1A1A)]" : "text-slate-500 hover:text-blue-600 hover:bg-slate-50")}>
+              <button className={cn("text-[13px] px-2 py-1 rounded -ml-2", isDark ? "text-[var(--ds-text-subtlest,#878787)] hover:text-blue-500 hover:bg-[var(--ds-surface-raised,#1A1A1A)]" : "text-slate-500 hover:text-blue-600 hover:bg-slate-50")}>
                 <Plus className="h-4 w-4 inline mr-1" />
                 Add subtask
               </button>
@@ -245,7 +245,7 @@ export function IssueDetailPanel({ item, onClose, onFieldChange }: IssueDetailPa
             {/* Linked work items section */}
             <div>
               <h3 className="text-[14px] font-semibold mb-2" style={{ color: 'var(--cp-text-primary, #0F172A)' }}>Linked work items</h3>
-              <button className={cn("text-[13px] px-2 py-1 rounded -ml-2", isDark ? "text-[var(--ds-text-subtlest, #878787)] hover:text-blue-500 hover:bg-[var(--ds-surface-raised, #1A1A1A)]" : "text-slate-500 hover:text-blue-600 hover:bg-slate-50")}>
+              <button className={cn("text-[13px] px-2 py-1 rounded -ml-2", isDark ? "text-[var(--ds-text-subtlest,#878787)] hover:text-blue-500 hover:bg-[var(--ds-surface-raised,#1A1A1A)]" : "text-slate-500 hover:text-blue-600 hover:bg-slate-50")}>
                 <LinkIcon className="h-4 w-4 inline mr-1" />
                 Add linked work item
               </button>
@@ -265,7 +265,7 @@ export function IssueDetailPanel({ item, onClose, onFieldChange }: IssueDetailPa
                       "px-3 py-2 text-[13px] font-medium transition-colors relative",
                       activeTab === tab.id
                         ? "text-blue-600"
-                        : isDark ? "text-[var(--ds-text-subtlest, #878787)] hover:text-[var(--ds-text-subtlest, #A1A1A1)]" : "text-slate-500 hover:text-slate-700"
+                        : isDark ? "text-[var(--ds-text-subtlest,#878787)] hover:text-[var(--ds-text-subtlest,#A1A1A1)]" : "text-slate-500 hover:text-slate-700"
                     )}
                   >
                     {tab.label}
@@ -275,7 +275,7 @@ export function IssueDetailPanel({ item, onClose, onFieldChange }: IssueDetailPa
                   </button>
                 ))}
                 <div className="ml-auto">
-                  <Button variant="ghost" size="icon" className={cn("h-7 w-7", isDark ? "hover:bg-[var(--ds-surface-raised, #1A1A1A)]" : "hover:bg-slate-100")}>
+                  <Button variant="ghost" size="icon" className={cn("h-7 w-7", isDark ? "hover:bg-[var(--ds-surface-raised,#1A1A1A)]" : "hover:bg-slate-100")}>
                     <Settings2 className="h-4 w-4" style={{ color: 'var(--cp-text-muted, #94A3B8)' }} />
                   </Button>
                 </div>
@@ -291,13 +291,13 @@ export function IssueDetailPanel({ item, onClose, onFieldChange }: IssueDetailPa
                     placeholder="Add a comment..."
                     value={commentText}
                     onChange={(e) => setCommentText(e.target.value)}
-                    className={cn("min-h-[60px] text-[13px] rounded resize-none focus:border-blue-400 focus:ring-1 focus:ring-blue-400", isDark ? "border-[var(--ds-border, #2E2E2E)] bg-[var(--ds-surface-raised, #1A1A1A)] text-[var(--ds-text, #EDEDED)]" : "border-slate-200")}
+                    className={cn("min-h-[60px] text-[13px] rounded resize-none focus:border-blue-400 focus:ring-1 focus:ring-blue-400", isDark ? "border-[var(--ds-border,#2E2E2E)] bg-[var(--ds-surface-raised,#1A1A1A)] text-[var(--ds-text,#EDEDED)]" : "border-slate-200")}
                   />
                   <div className="flex items-center gap-2 mt-2">
                     {QUICK_COMMENT_ACTIONS.map((action) => (
                       <button
                         key={action.id}
-                        className={cn("px-3 py-1 text-[12px] rounded transition-colors", isDark ? "text-[var(--ds-text-subtlest, #A1A1A1)] bg-[var(--ds-border, #292929)] hover:bg-[var(--ds-border, #2E2E2E)]" : "text-slate-600 bg-slate-100 hover:bg-slate-200")}
+                        className={cn("px-3 py-1 text-[12px] rounded transition-colors", isDark ? "text-[var(--ds-text-subtlest,#A1A1A1)] bg-[var(--ds-border,#292929)] hover:bg-[var(--ds-border,#2E2E2E)]" : "text-slate-600 bg-slate-100 hover:bg-slate-200")}
                       >
                         {action.label}
                       </button>
@@ -331,7 +331,7 @@ export function IssueDetailPanel({ item, onClose, onFieldChange }: IssueDetailPa
                       <ChevronDown className="h-3 w-3" />
                     </button>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent align="start" className={cn("w-48", isDark ? "bg-[var(--ds-surface-raised, #1A1A1A)] border-[var(--ds-border, #2E2E2E)]" : "bg-white")}>
+                  <DropdownMenuContent align="start" className={cn("w-48", isDark ? "bg-[var(--ds-surface-raised,#1A1A1A)] border-[var(--ds-border,#2E2E2E)]" : "bg-white")}>
                     {['Backlog', 'To Do', 'In Progress', 'In Requirement', 'In Production', 'In QA', 'Ready for QA', 'Done', 'Closed', 'Blocked'].map((status) => (
                       <DropdownMenuItem key={status} className="cursor-pointer">
                         <span className="catalyst-status inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium uppercase bg-muted/50 text-foreground border border-border">
@@ -341,7 +341,7 @@ export function IssueDetailPanel({ item, onClose, onFieldChange }: IssueDetailPa
                     ))}
                   </DropdownMenuContent>
                 </DropdownMenu>
-                <Button variant="ghost" size="icon" className={cn("h-7 w-7", isDark ? "hover:bg-[var(--ds-surface-raised, #1A1A1A)]" : "hover:bg-slate-100")}>
+                <Button variant="ghost" size="icon" className={cn("h-7 w-7", isDark ? "hover:bg-[var(--ds-surface-raised,#1A1A1A)]" : "hover:bg-slate-100")}>
                   <Zap className="h-4 w-4" style={{ color: 'var(--cp-text-tertiary, #64748B)' }} />
                 </Button>
                 <span className="text-[11px] px-2 py-1 rounded" style={{ color: 'var(--cp-text-tertiary, #64748B)', backgroundColor: 'var(--cp-bg-sunken, #F1F5F9)' }}>

@@ -120,7 +120,7 @@ export function WorkItemTableRow({
         return (
           <td key={col.key} style={{ width: 34, textAlign: 'center', padding: '0 8px' }} onClick={e => e.stopPropagation()}>
             <input type="checkbox" checked={isSelected} onChange={() => {}} onClick={onSelect}
-              className="w-3.5 h-3.5 rounded accent-[var(--ds-text-brand, #2563EB)]" />
+              className="w-3.5 h-3.5 rounded accent-[var(--ds-text-brand,#2563EB)]" />
           </td>
         );
       case 'type':

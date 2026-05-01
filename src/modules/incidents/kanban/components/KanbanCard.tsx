@@ -89,10 +89,10 @@ function SeverityBadge({ severity }: { severity: string }) {
     switch (severity) {
       case 'SEV1':
         // Dark red background, light red text for dark mode
-        return "bg-[rgba(239,68,68,0.08)] text-[var(--ds-text-danger, #ef4444)] dark:bg-[#7f1d1d] dark:text-[var(--ds-border-danger, #fca5a5)] dark:border dark:border-[var(--ds-text-danger, #991b1b)]";
+        return "bg-[rgba(239,68,68,0.08)] text-[var(--ds-text-danger,#ef4444)] dark:bg-[#7f1d1d] dark:text-[var(--ds-border-danger,#fca5a5)] dark:border dark:border-[var(--ds-text-danger,#991b1b)]";
       case 'SEV2':
         // Amber variant for dark mode
-        return "bg-[rgba(245,158,11,0.08)] text-[var(--ds-text-warning, #d97706)] dark:bg-[#78350f] dark:text-[#fcd34d] dark:border dark:border-[#92400e]";
+        return "bg-[rgba(245,158,11,0.08)] text-[var(--ds-text-warning,#d97706)] dark:bg-[#78350f] dark:text-[#fcd34d] dark:border dark:border-[#92400e]";
       case 'SEV3':
       case 'SEV4':
       default:
@@ -177,15 +177,15 @@ export const KanbanCard = memo(function KanbanCard({
         "dark:shadow-none",
         isDragging && "shadow-[0_4px_12px_rgba(0,0,0,0.15)]",
         // Left border for severity
-        isBreached && "border-l-[3px] border-l-[var(--ds-text-danger, #ef4444)]",
-        isAtRisk && !isBreached && "border-l-[3px] border-l-[var(--ds-text-warning, #f59e0b)]"
+        isBreached && "border-l-[3px] border-l-[var(--ds-text-danger,#ef4444)]",
+        isAtRisk && !isBreached && "border-l-[3px] border-l-[var(--ds-text-warning,#f59e0b)]"
       )}
     >
       {/* Row 1: ID + Badges */}
       <div className="flex items-start justify-between mb-1.5">
         <button
           onClick={handleKeyClick}
-          className="font-mono text-sm font-semibold hover:underline text-[var(--ds-text-brand, #2563eb)] dark:text-[var(--ds-text-brand, #60a5fa)]"
+          className="font-mono text-sm font-semibold hover:underline text-[var(--ds-text-brand,#2563eb)] dark:text-[var(--ds-text-brand,#60a5fa)]"
         >
           {incident.incident_key}
         </button>
@@ -193,7 +193,7 @@ export const KanbanCard = memo(function KanbanCard({
           {incident.is_major_incident && (
             <span className={cn(
               "flex items-center gap-1 px-2 py-1 rounded-md text-[11px] font-semibold",
-              "bg-[rgba(245,158,11,0.08)] text-[var(--ds-text-warning, #d97706)]",
+              "bg-[rgba(245,158,11,0.08)] text-[var(--ds-text-warning,#d97706)]",
               "dark:bg-[#431407] dark:text-[#fdba74] dark:border dark:border-[#7c2d12]"
             )}>
               <AlertTriangle className="h-2.5 w-2.5" />
@@ -219,7 +219,7 @@ export const KanbanCard = memo(function KanbanCard({
       </div>
       
       {/* Row 2: Title */}
-      <h4 className="text-sm font-medium leading-snug mb-2.5 text-[var(--ds-surface, #0a0a0a)] dark:text-[#fafafa]">
+      <h4 className="text-sm font-medium leading-snug mb-2.5 text-[var(--ds-surface,#0a0a0a)] dark:text-[#fafafa]">
         {incident.title}
       </h4>
       
@@ -229,10 +229,10 @@ export const KanbanCard = memo(function KanbanCard({
           <SeverityBadge severity={incident.severity} />
           <span className="text-xs text-[#737373] dark:text-[#a3a3a3]">{age}</span>
           {isBreached && (
-            <span className="text-xs font-semibold text-[var(--ds-text-danger, #ef4444)] dark:text-[#f87171]">Breached</span>
+            <span className="text-xs font-semibold text-[var(--ds-text-danger,#ef4444)] dark:text-[#f87171]">Breached</span>
           )}
           {isAtRisk && (
-            <span className="text-xs font-semibold text-[var(--ds-text-warning, #f59e0b)] dark:text-[#fbbf24]">At Risk</span>
+            <span className="text-xs font-semibold text-[var(--ds-text-warning,#f59e0b)] dark:text-[#fbbf24]">At Risk</span>
           )}
         </div>
         
@@ -254,7 +254,7 @@ export const KanbanCard = memo(function KanbanCard({
       {isInCommittee && (
         <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground mt-2 pt-2 border-t border-border">
           {/* Approvers count */}
-          <span className="flex items-center gap-0.5 text-[var(--ds-text-brand, #2563eb)] dark:text-[var(--ds-text-brand, #60a5fa)]">
+          <span className="flex items-center gap-0.5 text-[var(--ds-text-brand,#2563eb)] dark:text-[var(--ds-text-brand,#60a5fa)]">
             <Users className="h-3 w-3" />
             <span className="font-medium">{approverCount}</span>
           </span>
@@ -280,7 +280,7 @@ export const KanbanCard = memo(function KanbanCard({
               <Tooltip position="top" content="Edit Committee">
                 <button
                   onClick={handleEditCommitteeClick}
-                  className="p-0.5 rounded hover:bg-muted text-muted-foreground hover:text-[var(--ds-text-brand, #2563eb)] dark:hover:text-[var(--ds-text-brand, #60a5fa)] transition-colors"
+                  className="p-0.5 rounded hover:bg-muted text-muted-foreground hover:text-[var(--ds-text-brand,#2563eb)] dark:hover:text-[var(--ds-text-brand,#60a5fa)] transition-colors"
                 >
                   <Settings className="h-3 w-3" />
                 </button>

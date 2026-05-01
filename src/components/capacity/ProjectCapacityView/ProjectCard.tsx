@@ -64,7 +64,7 @@ export function ProjectCard({ utilization, onViewDetails, onResourceClick }: Pro
         </div>
         <div className="flex items-center gap-3 text-xs">
           <div className="flex items-center gap-1.5">
-            <div className="w-2 h-2 rounded-full bg-[var(--ds-text-brand, #2563eb)]" />
+            <div className="w-2 h-2 rounded-full bg-[var(--ds-text-brand,#2563eb)]" />
             <span className="text-muted-foreground">{formatFTE(committedFTE)} committed</span>
           </div>
           {forecastFTE > 0 && (
@@ -86,7 +86,7 @@ export function ProjectCard({ utilization, onViewDetails, onResourceClick }: Pro
           />
           {/* Committed bar */}
           <div
-            className="absolute top-0 bottom-0 left-0 rounded-l-full bg-[var(--ds-text-brand, #2563eb)] transition-all"
+            className="absolute top-0 bottom-0 left-0 rounded-l-full bg-[var(--ds-text-brand,#2563eb)] transition-all"
             style={{ width: `${committedWidth}%` }}
           />
           {/* Forecast bar */}

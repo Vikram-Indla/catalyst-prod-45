@@ -26,7 +26,7 @@ export function AIInsightsBar({ insights, onActionClick }: AIInsightsBarProps) {
   const getIcon = (type: AIReleaseInsight['type']) => {
     switch (type) {
       case 'critical': return <AlertCircle className="w-4 h-4 text-red-500" />;
-      case 'warning': return <AlertTriangle className="w-4 h-4 text-[var(--ds-text-subtlest, #64748B)]" />;
+      case 'warning': return <AlertTriangle className="w-4 h-4 text-[var(--ds-text-subtlest,#64748B)]" />;
       case 'positive': return <CheckCircle2 className="w-4 h-4 text-green-500" />;
     }
   };
@@ -34,7 +34,7 @@ export function AIInsightsBar({ insights, onActionClick }: AIInsightsBarProps) {
   const getBgColor = (type: AIReleaseInsight['type']) => {
     switch (type) {
       case 'critical': return 'bg-red-50 border-red-100';
-      case 'warning': return 'bg-[var(--ds-surface-sunken, #F1F5F9)] border-[rgba(15,23,42,0.12)]';
+      case 'warning': return 'bg-[var(--ds-surface-sunken,#F1F5F9)] border-[rgba(15,23,42,0.12)]';
       case 'positive': return 'bg-green-50 border-green-100';
     }
   };
@@ -73,7 +73,7 @@ export function AIInsightsBar({ insights, onActionClick }: AIInsightsBarProps) {
               {getIcon(insight.type)}
               <span className="text-sm text-slate-700">{insight.message}</span>
             </div>
-            <Button variant="ghost" size="sm" onClick={() => onActionClick?.(insight)} className="text-[var(--ds-text-brand, #2563EB)] hover:text-[var(--ds-background-brand-bold-hovered, #1D4ED8)] text-xs">
+            <Button variant="ghost" size="sm" onClick={() => onActionClick?.(insight)} className="text-[var(--ds-text-brand,#2563EB)] hover:text-[var(--ds-background-brand-bold-hovered,#1D4ED8)] text-xs">
               {insight.action}
               <ArrowRight className="w-3 h-3 ml-1" />
             </Button>

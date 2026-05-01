@@ -151,7 +151,7 @@ export function DashboardHeader({
                 </div>
               </div>
               <div className="text-xs text-slate-500">
-                <span className={healthScore.trend.direction === 'down' ? 'text-[var(--ds-text-danger, #ef4444)]' : 'text-[#0d9488]'}>
+                <span className={healthScore.trend.direction === 'down' ? 'text-[var(--ds-text-danger,#ef4444)]' : 'text-[#0d9488]'}>
                   {healthScore.trend.direction === 'down' ? '↓' : '↑'}{healthScore.trend.value}%
                 </span>
                 <span className="ml-1">{healthScore.trend.period}</span>

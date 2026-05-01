@@ -140,7 +140,7 @@ export function WorkItemDetailModal({ open, itemId, projectId, projectKey, onClo
         </div>
 
         {isLoading || !item ? (
-          <div className="flex items-center justify-center py-20"><Loader2 size={24} className="animate-spin text-[var(--ds-text-brand, #2563EB)]" /></div>
+          <div className="flex items-center justify-center py-20"><Loader2 size={24} className="animate-spin text-[var(--ds-text-brand,#2563EB)]" /></div>
         ) : (
           <div className="flex flex-1 overflow-hidden">
             {/* LEFT PANEL */}
@@ -154,7 +154,7 @@ export function WorkItemDetailModal({ open, itemId, projectId, projectKey, onClo
                     style={{ fontFamily: 'var(--cp-font-heading)', color: 'var(--fg-1)', lineHeight: '30px', border: '2px solid var(--cp-blue)', outline: 'none' }}
                   />
                 ) : (
-                  <h2 className="text-[22px] font-semibold cursor-text rounded px-1 py-0.5 border-2 border-transparent hover:border-[var(--bd-default, #E2E8F0)] transition-colors"
+                  <h2 className="text-[22px] font-semibold cursor-text rounded px-1 py-0.5 border-2 border-transparent hover:border-[var(--bd-default,#E2E8F0)] transition-colors"
                     style={{ fontFamily: 'var(--cp-font-heading)', color: 'var(--fg-1)', lineHeight: '30px' }}
                     onClick={() => { setTitleDraft(item.title); setEditingTitle(true); }}
                   >{item.title}</h2>
@@ -194,7 +194,7 @@ export function WorkItemDetailModal({ open, itemId, projectId, projectKey, onClo
 
               {/* Description */}
               <CollapsibleSection title="Description" defaultOpen={true}>
-                <div className="rounded-md px-3 py-2 min-h-[60px] border border-transparent hover:border-[var(--ds-border, #DFE1E6)] cursor-text transition-colors" style={{ fontSize: 14, lineHeight: '22px', color: item.description ? 'var(--fg-1)' : 'var(--fg-4)' }}>
+                <div className="rounded-md px-3 py-2 min-h-[60px] border border-transparent hover:border-[var(--ds-border,#DFE1E6)] cursor-text transition-colors" style={{ fontSize: 14, lineHeight: '22px', color: item.description ? 'var(--fg-1)' : 'var(--fg-4)' }}>
                   {item.description || 'Add a description...'}
                 </div>
               </CollapsibleSection>

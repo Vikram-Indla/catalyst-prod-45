@@ -21,18 +21,18 @@ interface ProjectTableProps {
 export function ProjectTable({ projects, starredIds, onToggleStar, onContextMenu, isDark = false }: ProjectTableProps) {
   return (
     <div
-      className={`overflow-x-auto rounded-[6px] border ${isDark ? 'bg-transparent border-[var(--ds-border, #2E2E2E)]' : 'bg-white border-[var(--ds-border, #E2E8F0)]'}`}
+      className={`overflow-x-auto rounded-[6px] border ${isDark ? 'bg-transparent border-[var(--ds-border,#2E2E2E)]' : 'bg-white border-[var(--ds-border,#E2E8F0)]'}`}
     >
       <table className="w-full" style={{ borderCollapse: 'collapse', fontFamily: 'var(--cp-font-body)' }}>
         <thead>
           <tr
-            className={isDark ? 'bg-[#111111]' : 'bg-[var(--ds-surface-sunken, #F8FAFC)]'}
+            className={isDark ? 'bg-[#111111]' : 'bg-[var(--ds-surface-sunken,#F8FAFC)]'}
             style={{ height: 36, maxHeight: 36, position: 'sticky', top: 0, zIndex: 1 }}
           >
             {COLUMNS.map(col => (
               <th
                 key={col.key}
-                className={`border-b ${isDark ? 'border-[var(--ds-border, #2E2E2E)]' : 'border-[var(--ds-border, #E2E8F0)]'}`}
+                className={`border-b ${isDark ? 'border-[var(--ds-border,#2E2E2E)]' : 'border-[var(--ds-border,#E2E8F0)]'}`}
                 style={{
                   width: col.width,
                   padding: '0 12px',

@@ -150,22 +150,22 @@ export function RecipientPicker({ trigger, open, onClose, onSave }: RecipientPic
       <DialogContent className="sm:max-w-[520px] max-h-[85vh] overflow-hidden flex flex-col">
         <DialogHeader>
           <DialogTitle className="text-lg font-semibold font-['Sora'] flex items-center gap-2">
-            <Users className="h-5 w-5 text-[var(--ds-text-brand, #2563EB)]" />
+            <Users className="h-5 w-5 text-[var(--ds-text-brand,#2563EB)]" />
             Recipients
           </DialogTitle>
-          <DialogDescription className="text-sm text-[var(--ds-text-subtle, #475569)]">
+          <DialogDescription className="text-sm text-[var(--ds-text-subtle,#475569)]">
             Configure who receives the{' '}
-            <span className="font-medium text-[var(--ds-text, #0F172A)]">{trigger.displayName}</span>{' '}
+            <span className="font-medium text-[var(--ds-text,#0F172A)]">{trigger.displayName}</span>{' '}
             notification.
           </DialogDescription>
         </DialogHeader>
 
         {/* Trigger info bar */}
-        <div className="flex items-center gap-2 px-3 py-2 bg-[var(--ds-surface-sunken, #F8FAFC)] rounded-md border border-[var(--bd-default, #E2E8F0)]">
+        <div className="flex items-center gap-2 px-3 py-2 bg-[var(--ds-surface-sunken,#F8FAFC)] rounded-md border border-[var(--bd-default,#E2E8F0)]">
           <Lozenge appearance="default">
             {trigger.hubSource}
           </Lozenge>
-          <span className="text-xs text-[var(--ds-text-subtle, #475569)]">{trigger.description}</span>
+          <span className="text-xs text-[var(--ds-text-subtle,#475569)]">{trigger.description}</span>
         </div>
 
         {/* Recipient toggles */}
@@ -176,21 +176,21 @@ export function RecipientPicker({ trigger, open, onClose, onSave }: RecipientPic
               onClick={() => handleToggle(def.key)}
               className={`w-full flex items-center justify-between px-3 py-2.5 rounded-md border transition-colors duration-150 text-left ${
                 config[def.key]
-                  ? 'bg-[rgba(37,99,235,0.04)] border-[var(--ds-text-brand, #2563EB)]/20'
-                  : 'bg-white border-[var(--bd-default, #E2E8F0)] hover:bg-[rgba(0,0,0,0.02)]'
+                  ? 'bg-[rgba(37,99,235,0.04)] border-[var(--ds-text-brand,#2563EB)]/20'
+                  : 'bg-white border-[var(--bd-default,#E2E8F0)] hover:bg-[rgba(0,0,0,0.02)]'
               }`}
             >
               <div className="flex items-center gap-3 min-w-0">
                 <span className="text-base flex-shrink-0 w-6 text-center">{def.icon}</span>
                 <div className="min-w-0">
-                  <p className="text-xs font-medium text-[var(--ds-text, #0F172A)]">{def.label}</p>
-                  <p className="text-[11px] text-[var(--ds-text-subtle, #475569)] truncate">{def.description}</p>
+                  <p className="text-xs font-medium text-[var(--ds-text,#0F172A)]">{def.label}</p>
+                  <p className="text-[11px] text-[var(--ds-text-subtle,#475569)] truncate">{def.description}</p>
                 </div>
               </div>
               <Switch
                 checked={config[def.key]}
                 onCheckedChange={() => handleToggle(def.key)}
-                className="h-4 w-7 data-[state=checked]:bg-[var(--ds-text-brand, #2563EB)] flex-shrink-0 ml-3"
+                className="h-4 w-7 data-[state=checked]:bg-[var(--ds-text-brand,#2563EB)] flex-shrink-0 ml-3"
               />
             </button>
           ))}
@@ -199,7 +199,7 @@ export function RecipientPicker({ trigger, open, onClose, onSave }: RecipientPic
         <Separator />
 
         <DialogFooter className="flex items-center justify-between">
-          <span className="text-xs text-[var(--ds-text-subtlest, #94A3B8)]">
+          <span className="text-xs text-[var(--ds-text-subtlest,#94A3B8)]">
             {enabledCount} of {RECIPIENT_DEFS.length} recipient types enabled
           </span>
           <div className="flex gap-2">
@@ -208,7 +208,7 @@ export function RecipientPicker({ trigger, open, onClose, onSave }: RecipientPic
             </Button>
             <Button
               onClick={handleSave}
-              className="bg-[var(--ds-text-brand, #2563EB)] hover:bg-[var(--ds-background-brand-bold-hovered, #1D4ED8)] text-white text-sm"
+              className="bg-[var(--ds-text-brand,#2563EB)] hover:bg-[var(--ds-background-brand-bold-hovered,#1D4ED8)] text-white text-sm"
             >
               Save Recipients
             </Button>

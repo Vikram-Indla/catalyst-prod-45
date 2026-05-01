@@ -73,7 +73,7 @@ export function AllWorkTicketList({
               className={cn(
                 'flex items-start gap-2 px-3 py-2 border-b border-border/50 cursor-pointer transition-colors',
                 isSelected 
-                  ? 'bg-[var(--ds-text-brand, #2563eb)]/10 border-l-2 border-l-[var(--ds-text-brand, #2563eb)]' 
+                  ? 'bg-[var(--ds-text-brand,#2563eb)]/10 border-l-2 border-l-[var(--ds-text-brand,#2563eb)]' 
                   : 'hover:bg-muted border-l-2 border-l-transparent'
               )}
             >
@@ -86,7 +86,7 @@ export function AllWorkTicketList({
               <div className="flex-1 min-w-0">
                 {/* Key */}
                 <div className="flex items-center gap-2 mb-0.5">
-                  <span className="text-[12px] font-medium text-[var(--ds-text-brand, #2563eb)] dark:text-[var(--ds-text-brand, #60a5fa)]">{item.key}</span>
+                  <span className="text-[12px] font-medium text-[var(--ds-text-brand,#2563eb)] dark:text-[var(--ds-text-brand,#60a5fa)]">{item.key}</span>
                   <span className="catalyst-status text-[9px] font-medium uppercase px-1.5 py-0.5 rounded bg-muted/50 text-foreground border border-border">
                     {item.status}
                   </span>
@@ -106,7 +106,7 @@ export function AllWorkTicketList({
                         e.stopPropagation();
                         onNavigateToParent?.(item.parent!, item.parentType || 'Feature');
                       }}
-                      className="text-[10px] text-[var(--ds-text-brand, #2563eb)] dark:text-[var(--ds-text-brand, #60a5fa)] hover:underline flex items-center gap-0.5"
+                      className="text-[10px] text-[var(--ds-text-brand,#2563eb)] dark:text-[var(--ds-text-brand,#60a5fa)] hover:underline flex items-center gap-0.5"
                     >
                       {item.parent}
                       <ChevronRight className="h-3 w-3" />

@@ -175,7 +175,7 @@ export const BulkActionsBar = memo(function BulkActionsBar({
           <DropdownMenuSeparator />
 
           {/* Reset */}
-          <DropdownMenuItem className="text-xs text-[var(--ds-text-danger, #DC2626)]" onClick={handleResetDefaults}>
+          <DropdownMenuItem className="text-xs text-[var(--ds-text-danger,#DC2626)]" onClick={handleResetDefaults}>
             <RotateCcw className="h-3 w-3 mr-2" />
             Reset to Defaults
           </DropdownMenuItem>

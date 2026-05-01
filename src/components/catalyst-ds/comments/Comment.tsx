@@ -40,7 +40,7 @@ function renderContent(content: string): React.ReactNode {
     if (part && part.startsWith('@[')) {
       const name = parts[i + 1];
       nodes.push(
-        <span key={i} className="text-[var(--ds-text-brand, #2563EB)] dark:text-[#4C9AFF] font-medium">
+        <span key={i} className="text-[var(--ds-text-brand,#2563EB)] dark:text-[#4C9AFF] font-medium">
           @{name}
         </span>
       );
@@ -88,23 +88,23 @@ const Comment = React.forwardRef<HTMLDivElement, CommentProps>(
               className={cn(
                 'text-[13px] font-semibold',
                 isSystem
-                  ? 'text-[var(--ds-text-subtlest, #6B778C)] dark:text-[var(--ds-text-subtlest, #878787)]'
-                  : 'text-[var(--ds-text, #172B4D)] dark:text-[var(--ds-text, #EDEDED)]'
+                  ? 'text-[var(--ds-text-subtlest,#6B778C)] dark:text-[var(--ds-text-subtlest,#878787)]'
+                  : 'text-[var(--ds-text,#172B4D)] dark:text-[var(--ds-text,#EDEDED)]'
               )}
             >
               {author.name}
             </span>
-            <span className="text-[12px] text-[var(--ds-text-subtlest, #6B778C)] dark:text-[var(--ds-text-subtlest, #878787)]">
+            <span className="text-[12px] text-[var(--ds-text-subtlest,#6B778C)] dark:text-[var(--ds-text-subtlest,#878787)]">
               {formatRelativeTime(createdAt)}
             </span>
             {isEdited && (
-              <span className="text-[11px] text-[var(--ds-text-subtlest, #6B778C)] dark:text-[#7D7D7D] italic">
+              <span className="text-[11px] text-[var(--ds-text-subtlest,#6B778C)] dark:text-[#7D7D7D] italic">
                 edited
               </span>
             )}
           </div>
 
-          <div className="text-[13px] text-[var(--ds-text, #172B4D)] dark:text-[var(--ds-text, #EDEDED)] whitespace-pre-wrap leading-relaxed">
+          <div className="text-[13px] text-[var(--ds-text,#172B4D)] dark:text-[var(--ds-text,#EDEDED)] whitespace-pre-wrap leading-relaxed">
             {renderContent(content)}
           </div>
 

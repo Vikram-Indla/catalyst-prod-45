@@ -32,8 +32,8 @@ interface AllWorkDetailPanelProps {
 // Type icons now use canonical JiraIssueTypeIcon component
 
 const statusStyles: Record<string, { bg: string; text: string; label: string }> = {
-  'Backlog': { bg: 'bg-[var(--ds-border, #DFE1E6)]', text: 'text-[#42526E]', label: 'BACKLOG' },
-  'To Do': { bg: 'bg-[var(--ds-border, #DFE1E6)]', text: 'text-[#42526E]', label: 'TO DO' },
+  'Backlog': { bg: 'bg-[var(--ds-border,#DFE1E6)]', text: 'text-[#42526E]', label: 'BACKLOG' },
+  'To Do': { bg: 'bg-[var(--ds-border,#DFE1E6)]', text: 'text-[#42526E]', label: 'TO DO' },
   'In Progress': { bg: 'bg-[#0C66E4]', text: 'text-white', label: 'IN PROGRESS' },
   'Ready for QA': { bg: 'bg-[#EAE6FF]', text: 'text-[#403294]', label: 'READY FOR QA' },
   'In Production': { bg: 'bg-[#1B7F37]', text: 'text-white', label: 'IN PRODUCTION' },
@@ -66,19 +66,19 @@ export function AllWorkDetailPanel({ item, onClose, onNavigateToParent }: AllWor
           <span className="text-[14px] font-medium" style={{ color: 'var(--cp-text-primary, #172B4D)' }}>{item.key}</span>
         </div>
         <div className="flex items-center gap-1">
-          <Button variant="ghost" size="icon" className={cn("h-7 w-7", isDark ? "hover:bg-[var(--ds-surface-raised, #1A1A1A)]" : "hover:bg-[var(--ds-surface-sunken, #F4F5F7)]")}>
+          <Button variant="ghost" size="icon" className={cn("h-7 w-7", isDark ? "hover:bg-[var(--ds-surface-raised,#1A1A1A)]" : "hover:bg-[var(--ds-surface-sunken,#F4F5F7)]")}>
             <Eye className="h-4 w-4" style={{ color: 'var(--cp-text-tertiary, #6B778C)' }} />
           </Button>
-          <Button variant="ghost" size="icon" className={cn("h-7 w-7", isDark ? "hover:bg-[var(--ds-surface-raised, #1A1A1A)]" : "hover:bg-[var(--ds-surface-sunken, #F4F5F7)]")}>
+          <Button variant="ghost" size="icon" className={cn("h-7 w-7", isDark ? "hover:bg-[var(--ds-surface-raised,#1A1A1A)]" : "hover:bg-[var(--ds-surface-sunken,#F4F5F7)]")}>
             <Share2 className="h-4 w-4" style={{ color: 'var(--cp-text-tertiary, #6B778C)' }} />
           </Button>
-          <Button variant="ghost" size="icon" className={cn("h-7 w-7", isDark ? "hover:bg-[var(--ds-surface-raised, #1A1A1A)]" : "hover:bg-[var(--ds-surface-sunken, #F4F5F7)]")}>
+          <Button variant="ghost" size="icon" className={cn("h-7 w-7", isDark ? "hover:bg-[var(--ds-surface-raised,#1A1A1A)]" : "hover:bg-[var(--ds-surface-sunken,#F4F5F7)]")}>
             <ExternalLink className="h-4 w-4" style={{ color: 'var(--cp-text-tertiary, #6B778C)' }} />
           </Button>
-          <Button variant="ghost" size="icon" className={cn("h-7 w-7", isDark ? "hover:bg-[var(--ds-surface-raised, #1A1A1A)]" : "hover:bg-[var(--ds-surface-sunken, #F4F5F7)]")}>
+          <Button variant="ghost" size="icon" className={cn("h-7 w-7", isDark ? "hover:bg-[var(--ds-surface-raised,#1A1A1A)]" : "hover:bg-[var(--ds-surface-sunken,#F4F5F7)]")}>
             <MoreHorizontal className="h-4 w-4" style={{ color: 'var(--cp-text-tertiary, #6B778C)' }} />
           </Button>
-          <Button variant="ghost" size="icon" className={cn("h-7 w-7", isDark ? "hover:bg-[var(--ds-surface-raised, #1A1A1A)]" : "hover:bg-[var(--ds-surface-sunken, #F4F5F7)]")} onClick={onClose}>
+          <Button variant="ghost" size="icon" className={cn("h-7 w-7", isDark ? "hover:bg-[var(--ds-surface-raised,#1A1A1A)]" : "hover:bg-[var(--ds-surface-sunken,#F4F5F7)]")} onClick={onClose}>
             <X className="h-4 w-4" style={{ color: 'var(--cp-text-tertiary, #6B778C)' }} />
           </Button>
         </div>

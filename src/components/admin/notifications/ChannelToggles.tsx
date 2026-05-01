@@ -64,12 +64,12 @@ export const InlineChannelToggles = memo(function InlineChannelToggles({
       {CHANNEL_DEFS.map(({ key, label, Icon }) => (
         <Tooltip key={key} delay={200} content={`${label}: ${channels[key] ? 'Enabled' : 'Disabled'}`}>
           <div className="flex items-center gap-1">
-            <Icon className="h-3 w-3 text-[var(--ds-text-subtlest, #94A3B8)]" />
+            <Icon className="h-3 w-3 text-[var(--ds-text-subtlest,#94A3B8)]" />
             <Switch
               checked={channels[key]}
               onCheckedChange={(v) => onChange(key, v)}
               disabled={disabled}
-              className="h-4 w-7 data-[state=checked]:bg-[var(--ds-text-brand, #2563EB)] disabled:opacity-30"
+              className="h-4 w-7 data-[state=checked]:bg-[var(--ds-text-brand,#2563EB)] disabled:opacity-30"
             />
           </div>
         </Tooltip>
@@ -98,8 +98,8 @@ export function ChannelToggleCard({
   return (
     <div className="space-y-2">
       <div className="flex items-center justify-between">
-        <span className="text-xs font-medium text-[var(--ds-text, #0F172A)]">Delivery Channels</span>
-        <span className="text-[10px] text-[var(--ds-text-subtlest, #94A3B8)]">
+        <span className="text-xs font-medium text-[var(--ds-text,#0F172A)]">Delivery Channels</span>
+        <span className="text-[10px] text-[var(--ds-text-subtlest,#94A3B8)]">
           {enabledCount}/{CHANNEL_DEFS.length} active
         </span>
       </div>
@@ -111,24 +111,24 @@ export function ChannelToggleCard({
             disabled={disabled}
             className={`flex items-center gap-3 px-3 py-2.5 rounded-md border text-left transition-colors duration-150 ${
               channels[key]
-                ? 'bg-[rgba(37,99,235,0.04)] border-[var(--ds-text-brand, #2563EB)]/20'
-                : 'bg-white border-[var(--bd-default, #E2E8F0)] hover:bg-[rgba(0,0,0,0.02)]'
+                ? 'bg-[rgba(37,99,235,0.04)] border-[var(--ds-text-brand,#2563EB)]/20'
+                : 'bg-white border-[var(--bd-default,#E2E8F0)] hover:bg-[rgba(0,0,0,0.02)]'
             } ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
           >
             <Icon
               className={`h-4 w-4 flex-shrink-0 ${
-                channels[key] ? 'text-[var(--ds-text-brand, #2563EB)]' : 'text-[var(--ds-text-subtlest, #94A3B8)]'
+                channels[key] ? 'text-[var(--ds-text-brand,#2563EB)]' : 'text-[var(--ds-text-subtlest,#94A3B8)]'
               }`}
             />
             <div className="min-w-0 flex-1">
-              <p className="text-xs font-medium text-[var(--ds-text, #0F172A)]">{label}</p>
-              <p className="text-[10px] text-[var(--ds-text-subtle, #475569)] truncate">{description}</p>
+              <p className="text-xs font-medium text-[var(--ds-text,#0F172A)]">{label}</p>
+              <p className="text-[10px] text-[var(--ds-text-subtle,#475569)] truncate">{description}</p>
             </div>
             <Switch
               checked={channels[key]}
               onCheckedChange={(v) => onChange(key, v)}
               disabled={disabled}
-              className="h-4 w-7 data-[state=checked]:bg-[var(--ds-text-brand, #2563EB)] flex-shrink-0"
+              className="h-4 w-7 data-[state=checked]:bg-[var(--ds-text-brand,#2563EB)] flex-shrink-0"
             />
           </button>
         ))}
@@ -149,7 +149,7 @@ export function ChannelBadges({ channels }: ChannelBadgesProps) {
   const active = CHANNEL_DEFS.filter((d) => channels[d.key]);
 
   if (active.length === 0) {
-    return <span className="text-[10px] text-[var(--ds-text-subtlest, #94A3B8)]">No channels</span>;
+    return <span className="text-[10px] text-[var(--ds-text-subtlest,#94A3B8)]">No channels</span>;
   }
 
   return (
@@ -157,10 +157,10 @@ export function ChannelBadges({ channels }: ChannelBadgesProps) {
       {active.map(({ key, label, Icon }) => (
         <div
           key={key}
-          className="flex items-center gap-1 px-1.5 py-0.5 rounded bg-[var(--ds-surface-sunken, #F1F5F9)] border border-[var(--bd-default, #E2E8F0)]"
+          className="flex items-center gap-1 px-1.5 py-0.5 rounded bg-[var(--ds-surface-sunken,#F1F5F9)] border border-[var(--bd-default,#E2E8F0)]"
         >
-          <Icon className="h-2.5 w-2.5 text-[var(--ds-text-subtle, #475569)]" />
-          <span className="text-[9px] font-medium text-[var(--ds-text-subtle, #475569)]">{label}</span>
+          <Icon className="h-2.5 w-2.5 text-[var(--ds-text-subtle,#475569)]" />
+          <span className="text-[9px] font-medium text-[var(--ds-text-subtle,#475569)]">{label}</span>
         </div>
       ))}
     </div>

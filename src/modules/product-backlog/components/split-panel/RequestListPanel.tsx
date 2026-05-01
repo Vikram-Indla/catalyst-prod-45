@@ -49,19 +49,19 @@ interface RequestListPanelProps {
 
 // Status dot colors - QA spec colors matching Catalyst V5
 const STATUS_DOT_COLORS: Record<string, string> = {
-  new_demand: 'bg-[var(--ds-text-brand, #2563eb)]',      // Blue
-  new_request: 'bg-[var(--ds-text-brand, #2563eb)]',     // Blue
+  new_demand: 'bg-[var(--ds-text-brand,#2563eb)]',      // Blue
+  new_request: 'bg-[var(--ds-text-brand,#2563eb)]',     // Blue
   draft: 'bg-[#737373]',           // Gray
-  in_review: 'bg-[var(--ds-text-brand, #2563eb)]',       // Blue
-  ea_review: 'bg-[var(--ds-text-brand, #2563eb)]',       // Blue
-  analyse: 'bg-[var(--ds-text-brand, #2563eb)]',         // Blue
+  in_review: 'bg-[var(--ds-text-brand,#2563eb)]',       // Blue
+  ea_review: 'bg-[var(--ds-text-brand,#2563eb)]',       // Blue
+  analyse: 'bg-[var(--ds-text-brand,#2563eb)]',         // Blue
   approved: 'bg-[#0d9488]',        // Teal
   ready_to_implement: 'bg-[#0d9488]', // Teal
-  implement: 'bg-[var(--ds-text-brand, #2563eb)]',       // Blue
+  implement: 'bg-[var(--ds-text-brand,#2563eb)]',       // Blue
   closed: 'bg-[#0d9488]',          // Teal
   completed: 'bg-[#0d9488]',       // Teal
-  rejected: 'bg-[var(--ds-text-danger, #ef4444)]',        // Red
-  on_hold: 'bg-[var(--ds-text-warning, #d97706)]',         // Orange
+  rejected: 'bg-[var(--ds-text-danger,#ef4444)]',        // Red
+  on_hold: 'bg-[var(--ds-text-warning,#d97706)]',         // Orange
 };
 
 // Format status for display
@@ -200,12 +200,12 @@ export function RequestListPanel({
                       )}
 
                       {(request.autoPriority === 'High' || request.autoPriority === 'high') && (
-                        <span className="px-1.5 py-0.5 rounded text-[10px] font-bold uppercase bg-[rgba(239,68,68,0.08)] text-[var(--ds-text-danger, #ef4444)] border border-[rgba(239,68,68,0.2)]">
+                        <span className="px-1.5 py-0.5 rounded text-[10px] font-bold uppercase bg-[rgba(239,68,68,0.08)] text-[var(--ds-text-danger,#ef4444)] border border-[rgba(239,68,68,0.2)]">
                           HIGH
                         </span>
                       )}
                       {(request.autoPriority === 'Critical' || request.autoPriority === 'critical') && (
-                        <span className="px-1.5 py-0.5 rounded text-[10px] font-bold uppercase bg-[rgba(239,68,68,0.08)] text-[var(--ds-text-danger, #ef4444)] border border-[rgba(239,68,68,0.2)]">
+                        <span className="px-1.5 py-0.5 rounded text-[10px] font-bold uppercase bg-[rgba(239,68,68,0.08)] text-[var(--ds-text-danger,#ef4444)] border border-[rgba(239,68,68,0.2)]">
                           CRITICAL
                         </span>
                       )}

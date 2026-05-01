@@ -138,7 +138,7 @@ export const KanbanFiltersBar = memo(function KanbanFiltersBar({
       className={cn(
         "px-4 sm:px-6 py-3",
         "border-b border-[#e8e8e8] dark:border-[#333]",
-        "bg-white dark:bg-[var(--ds-surface-raised, #1a1a1a)]"
+        "bg-white dark:bg-[var(--ds-surface-raised,#1a1a1a)]"
       )}
     >
       <div className="flex flex-wrap items-center gap-3">
@@ -182,8 +182,8 @@ export const KanbanFiltersBar = memo(function KanbanFiltersBar({
                 <div className="flex items-center justify-between w-full">
                   <span className={cn(
                     (sev === 'SEV1' || sev === 'SEV2') && 'font-medium',
-                    sev === 'SEV1' && 'text-[var(--ds-text-danger, #ef4444)] dark:text-[#f87171]',
-                    sev === 'SEV2' && 'text-[var(--ds-text-warning, #f59e0b)] dark:text-[#fbbf24]'
+                    sev === 'SEV1' && 'text-[var(--ds-text-danger,#ef4444)] dark:text-[#f87171]',
+                    sev === 'SEV2' && 'text-[var(--ds-text-warning,#f59e0b)] dark:text-[#fbbf24]'
                   )}>
                     {sev}
                   </span>
@@ -212,7 +212,7 @@ export const KanbanFiltersBar = memo(function KanbanFiltersBar({
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={() => onStatusChange('breached')}>
               <div className="flex items-center gap-2 w-full">
-                <div className="h-2 w-2 rounded-full bg-[var(--ds-text-danger, #ef4444)]" />
+                <div className="h-2 w-2 rounded-full bg-[var(--ds-text-danger,#ef4444)]" />
                 <span>Breached</span>
                 <span className="ml-auto">
                   <Lozenge appearance="removed">
@@ -223,7 +223,7 @@ export const KanbanFiltersBar = memo(function KanbanFiltersBar({
             </DropdownMenuItem>
             <DropdownMenuItem onClick={() => onStatusChange('at_risk')}>
               <div className="flex items-center gap-2 w-full">
-                <div className="h-2 w-2 rounded-full bg-[var(--ds-text-warning, #f59e0b)]" />
+                <div className="h-2 w-2 rounded-full bg-[var(--ds-text-warning,#f59e0b)]" />
                 <span>At Risk</span>
                 <span className="ml-auto">
                   <Lozenge appearance="moved">

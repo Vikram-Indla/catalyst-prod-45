@@ -88,7 +88,7 @@ export const KanbanColumn = memo(function KanbanColumn({
           "flex flex-col min-w-[48px] max-w-[48px] flex-shrink-0",
           "rounded-xl cursor-pointer transition-colors hover:opacity-90",
           // Dark mode compliant backgrounds
-          "bg-[#f8f8f7] dark:bg-[var(--ds-surface-raised, #1a1a1a)]",
+          "bg-[#f8f8f7] dark:bg-[var(--ds-surface-raised,#1a1a1a)]",
           "border border-[#e8e8e8] dark:border-[#333]"
         )}
         onClick={handleToggle}
@@ -122,13 +122,13 @@ export const KanbanColumn = memo(function KanbanColumn({
           <span 
             className={cn(
               "text-[11px] font-medium",
-              isOverWip ? "text-[var(--ds-text-warning, #d97706)]" : "text-[#737373] dark:text-[#a3a3a3]"
+              isOverWip ? "text-[var(--ds-text-warning,#d97706)]" : "text-[#737373] dark:text-[#a3a3a3]"
             )}
           >
             {stats.total}
           </span>
           {stats.breached > 0 && (
-            <div className="h-2 w-2 rounded-full animate-pulse bg-[var(--ds-text-danger, #ef4444)]" />
+            <div className="h-2 w-2 rounded-full animate-pulse bg-[var(--ds-text-danger,#ef4444)]" />
           )}
         </div>
       </div>
@@ -141,7 +141,7 @@ export const KanbanColumn = memo(function KanbanColumn({
       className={cn(
         "flex flex-col w-[320px] flex-shrink-0 rounded-xl min-h-[500px]",
         // Dark mode compliant backgrounds
-        "bg-[#f8f8f7] dark:bg-[var(--ds-surface-raised, #1a1a1a)]",
+        "bg-[#f8f8f7] dark:bg-[var(--ds-surface-raised,#1a1a1a)]",
         "border border-[#e8e8e8] dark:border-[#333]"
       )}
       onDragOver={handleDragOver}
@@ -172,12 +172,12 @@ export const KanbanColumn = memo(function KanbanColumn({
           <div className="flex items-center gap-2">
             <span className={cn(
               "text-sm font-semibold tabular-nums",
-              isOverWip ? "text-[var(--ds-text-warning, #d97706)]" : "text-[#737373] dark:text-[#a3a3a3]"
+              isOverWip ? "text-[var(--ds-text-warning,#d97706)]" : "text-[#737373] dark:text-[#a3a3a3]"
             )}>
               {stats.total}{wipLimit !== undefined && `/${wipLimit}`}
             </span>
             {isOverWip && (
-              <AlertCircle className="h-4 w-4 text-[var(--ds-text-warning, #d97706)]" />
+              <AlertCircle className="h-4 w-4 text-[var(--ds-text-warning,#d97706)]" />
             )}
           </div>
         </div>
@@ -188,22 +188,22 @@ export const KanbanColumn = memo(function KanbanColumn({
           {status === 'to_committee' && dueSoonCount > 0 && (
             <span className="flex items-center gap-1 text-[#737373] dark:text-[#a3a3a3]">
               <Clock className="h-3 w-3 text-[#0d9488] dark:text-[#14b8a6]" />
-              Due Soon: <span className="font-medium text-[var(--ds-surface, #0a0a0a)] dark:text-[#fafafa]">{dueSoonCount}</span>
+              Due Soon: <span className="font-medium text-[var(--ds-surface,#0a0a0a)] dark:text-[#fafafa]">{dueSoonCount}</span>
             </span>
           )}
           
           {/* At Risk count */}
           {status !== 'to_committee' && stats.atRisk > 0 && (
             <span className="text-[#737373] dark:text-[#a3a3a3]">
-              At Risk: <span className="font-medium text-[var(--ds-text-warning, #d97706)]">{stats.atRisk}</span>
+              At Risk: <span className="font-medium text-[var(--ds-text-warning,#d97706)]">{stats.atRisk}</span>
             </span>
           )}
           
           {/* Breached count - prominent with pulse */}
           {stats.breached > 0 && (
             <div className="flex items-center gap-1.5">
-              <div className="h-1.5 w-1.5 rounded-full animate-pulse bg-[var(--ds-text-danger, #ef4444)]" />
-              <span className="text-xs font-semibold text-[var(--ds-text-danger, #ef4444)] dark:text-[#f87171]">
+              <div className="h-1.5 w-1.5 rounded-full animate-pulse bg-[var(--ds-text-danger,#ef4444)]" />
+              <span className="text-xs font-semibold text-[var(--ds-text-danger,#ef4444)] dark:text-[#f87171]">
                 {stats.breached} breached
               </span>
             </div>

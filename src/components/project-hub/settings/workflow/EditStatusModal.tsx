@@ -41,7 +41,7 @@ export function EditStatusModal({ open, status, onClose, onSubmit, loading }: Ed
       className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/50"
       onClick={e => { if (e.target === e.currentTarget) onClose(); }}
     >
-      <div className="bg-[var(--cp-float)] dark:bg-[var(--ds-surface-raised, #1A1A1A)]" style={{ width: 440, borderRadius: 12, padding: 24, boxShadow: '0 20px 25px -5px rgba(0,0,0,.1)', fontFamily: 'var(--cp-font-body)' }}>
+      <div className="bg-[var(--cp-float)] dark:bg-[var(--ds-surface-raised,#1A1A1A)]" style={{ width: 440, borderRadius: 12, padding: 24, boxShadow: '0 20px 25px -5px rgba(0,0,0,.1)', fontFamily: 'var(--cp-font-body)' }}>
         <div className="flex items-center justify-between mb-5">
           <h3 style={{ fontSize: 16, fontWeight: 700, color: 'var(--fg-1)', fontFamily: 'var(--cp-font-heading)' }}>Edit Status</h3>
           <button onClick={onClose} className="flex items-center justify-center rounded-md hover:bg-[var(--cp-bd-zone)] transition-colors" style={{ width: 28, height: 28, border: 'none', background: 'transparent', cursor: 'pointer' }}>
@@ -52,12 +52,12 @@ export function EditStatusModal({ open, status, onClose, onSubmit, loading }: Ed
         <div className="space-y-4">
           <div>
             <label style={{ fontSize: 12, fontWeight: 500, color: 'var(--fg-2)', display: 'block', marginBottom: 4 }}>Status Name <span style={{ color: 'var(--sem-danger)' }}>*</span></label>
-            <input value={name} onChange={e => setName(e.target.value)} className="bg-[var(--cp-float)] dark:bg-[var(--ds-surface-raised, #1A1A1A)]" style={inputStyle} />
+            <input value={name} onChange={e => setName(e.target.value)} className="bg-[var(--cp-float)] dark:bg-[var(--ds-surface-raised,#1A1A1A)]" style={inputStyle} />
           </div>
 
           <div>
             <label style={{ fontSize: 12, fontWeight: 500, color: 'var(--fg-2)', display: 'block', marginBottom: 4 }}>Category <span style={{ color: 'var(--sem-danger)' }}>*</span></label>
-            <select value={category} onChange={e => setCategory(e.target.value)} className="bg-[var(--cp-float)] dark:bg-[var(--ds-surface-raised, #1A1A1A)]" style={{ ...inputStyle, cursor: 'pointer' }}>
+            <select value={category} onChange={e => setCategory(e.target.value)} className="bg-[var(--cp-float)] dark:bg-[var(--ds-surface-raised,#1A1A1A)]" style={{ ...inputStyle, cursor: 'pointer' }}>
               {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
             </select>
           </div>
@@ -82,7 +82,7 @@ export function EditStatusModal({ open, status, onClose, onSubmit, loading }: Ed
         </div>
 
         <div className="flex justify-end gap-2 mt-6">
-          <button onClick={onClose} className="bg-[var(--cp-float)] dark:bg-[var(--ds-surface-raised, #1A1A1A)]" style={{ height: 50, padding: '0 16px', fontSize: 13, fontWeight: 500, color: 'var(--fg-2)', border: '1px solid var(--divider)', borderRadius: 6, cursor: 'pointer' }}>Cancel</button>
+          <button onClick={onClose} className="bg-[var(--cp-float)] dark:bg-[var(--ds-surface-raised,#1A1A1A)]" style={{ height: 50, padding: '0 16px', fontSize: 13, fontWeight: 500, color: 'var(--fg-2)', border: '1px solid var(--divider)', borderRadius: 6, cursor: 'pointer' }}>Cancel</button>
           <button
             onClick={() => name.trim() && onSubmit({ id: status.id, name: name.trim(), category, color })}
             disabled={!name.trim() || loading}

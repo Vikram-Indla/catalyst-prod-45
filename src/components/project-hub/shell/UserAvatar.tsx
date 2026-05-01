@@ -34,7 +34,7 @@ export function UserAvatar() {
   return (
     <Tooltip content={name} position="bottom">
       <button
-        className="flex items-center justify-center rounded-full flex-shrink-0 focus-visible:ring-2 focus-visible:ring-[var(--ds-text-brand, #2563EB)] focus-visible:ring-offset-2 outline-none"
+        className="flex items-center justify-center rounded-full flex-shrink-0 focus-visible:ring-2 focus-visible:ring-[var(--ds-text-brand,#2563EB)] focus-visible:ring-offset-2 outline-none"
         style={{
           width: size,
           height: size,

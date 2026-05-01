@@ -200,11 +200,11 @@ export function BookResourceModal({ open, onOpenChange, availableUsers, resource
                         onClick={() => setSelectedUserId(isSelected ? null : user.id)}
                         className={cn(
                           'w-full flex items-center gap-3 px-4 py-3 text-left transition-colors',
-                          isSelected ? 'bg-[var(--ds-text-brand, #2563eb)]/10 border-l-2 border-l-[var(--ds-text-brand, #2563eb)]' : 'hover:bg-muted/50'
+                          isSelected ? 'bg-[var(--ds-text-brand,#2563eb)]/10 border-l-2 border-l-[var(--ds-text-brand,#2563eb)]' : 'hover:bg-muted/50'
                         )}
                       >
                         <div
-                          className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-semibold bg-[var(--ds-text-brand, #2563eb)] text-white"
+                          className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-semibold bg-[var(--ds-text-brand,#2563eb)] text-white"
                         >
                           {initials}
                         </div>
@@ -214,7 +214,7 @@ export function BookResourceModal({ open, onOpenChange, availableUsers, resource
                         </div>
                         <span className="text-xs text-muted-foreground">{user.department || 'Unassigned'}</span>
                         {isSelected && (
-                          <div className="w-5 h-5 rounded-full bg-[var(--ds-text-brand, #2563eb)] flex items-center justify-center">
+                          <div className="w-5 h-5 rounded-full bg-[var(--ds-text-brand,#2563eb)] flex items-center justify-center">
                             <Check className="h-3 w-3 text-white" />
                           </div>
                         )}
@@ -260,7 +260,7 @@ export function BookResourceModal({ open, onOpenChange, availableUsers, resource
                     endDate: (() => { const d = new Date(); d.setMonth(d.getMonth() + 3); return d.toISOString().split('T')[0]; })()
                   }]);
                 }}
-                className="gap-1 h-8 text-xs bg-[var(--ds-text-brand, #2563eb)] hover:bg-[var(--ds-background-brand-bold-hovered, #1d4ed8)] text-white"
+                className="gap-1 h-8 text-xs bg-[var(--ds-text-brand,#2563eb)] hover:bg-[var(--ds-background-brand-bold-hovered,#1d4ed8)] text-white"
               >
                 <Plus className="h-3 w-3" />
                 Add Assignment
@@ -468,7 +468,7 @@ export function BookResourceModal({ open, onOpenChange, availableUsers, resource
           <Button
             disabled={!selectedUserId || isAddingResources || !selectedDepartmentId}
             onClick={handleSubmit}
-            className="bg-[var(--ds-text-brand, #2563eb)] hover:bg-[var(--ds-background-brand-bold-hovered, #1d4ed8)]"
+            className="bg-[var(--ds-text-brand,#2563eb)] hover:bg-[var(--ds-background-brand-bold-hovered,#1d4ed8)]"
           >
             {isAddingResources ? 'Booking...' : 'Book Resource'}
           </Button>

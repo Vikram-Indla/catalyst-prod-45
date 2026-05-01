@@ -84,7 +84,7 @@ const priorityColors: Record<Priority, { dot: string; text: string }> = {
 const teamColors: Record<string, string> = {
   'olive': 'bg-[#0d9488]',
   'bronze': 'bg-[#6b7280]',
-  'gold': 'bg-[var(--ds-text-brand, #2563eb)]',
+  'gold': 'bg-[var(--ds-text-brand,#2563eb)]',
 };
 
 // Task type icons
@@ -251,7 +251,7 @@ export function TaskDrawer({ isOpen, task, activeTab, onClose, onTabChange, onUp
                     className={cn(
                       'flex-1 px-4 py-2 text-[13px] font-medium rounded-full transition-all duration-200',
                       activeTab === tab
-                        ? 'bg-[var(--ds-text-brand, #2563eb)] text-white shadow-sm'
+                        ? 'bg-[var(--ds-text-brand,#2563eb)] text-white shadow-sm'
                         : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
                     )}
                   >
@@ -643,7 +643,7 @@ export function TaskDrawer({ isOpen, task, activeTab, onClose, onTabChange, onUp
               <Button 
                 onClick={handleSave} 
                 disabled={isSaving}
-                className="bg-[var(--ds-text-brand, #2563eb)] hover:bg-[var(--ds-background-brand-bold-hovered, #1d4ed8)] text-white min-w-[120px] transition-all duration-200"
+                className="bg-[var(--ds-text-brand,#2563eb)] hover:bg-[var(--ds-background-brand-bold-hovered,#1d4ed8)] text-white min-w-[120px] transition-all duration-200"
               >
                 {isSaving ? (
                   <RefreshCw className="w-4 h-4 animate-spin" />

@@ -175,7 +175,7 @@ export default function KanbanBoardView() {
           </div>
           <Button
             onClick={() => navigate(`${basePath}/${boardId}/setup`)}
-            className="bg-[var(--ds-text-brand, #2563EB)] hover:bg-[var(--ds-background-brand-bold-hovered, #1D4ED8)] text-white"
+            className="bg-[var(--ds-text-brand,#2563EB)] hover:bg-[var(--ds-background-brand-bold-hovered,#1D4ED8)] text-white"
           >
             <Settings className="w-4 h-4 mr-2" />
             Board Setup

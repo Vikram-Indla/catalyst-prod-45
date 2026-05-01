@@ -61,7 +61,7 @@ export function FieldPicker({ visibleFields, onToggleField }: FieldPickerProps) 
               placeholder="Search"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="pl-8 h-8 text-[13px] bg-muted border-transparent rounded-md focus:border-[var(--ds-text-brand, #2563eb)] focus:bg-card"
+              className="pl-8 h-8 text-[13px] bg-muted border-transparent rounded-md focus:border-[var(--ds-text-brand,#2563eb)] focus:bg-card"
             />
           </div>
         </div>
@@ -74,7 +74,7 @@ export function FieldPicker({ visibleFields, onToggleField }: FieldPickerProps) 
                 key={field.id}
                 className={cn(
                   "w-full flex items-center gap-2 px-2 py-1.5 text-[13px] text-foreground rounded-md hover:bg-muted text-left",
-                  isVisible && "bg-[var(--ds-text-brand, #2563eb)]/10 dark:bg-[var(--ds-text-brand, #3b82f6)]/10"
+                  isVisible && "bg-[var(--ds-text-brand,#2563eb)]/10 dark:bg-[var(--ds-text-brand,#3b82f6)]/10"
                 )}
                 onClick={() => {
                   onToggleField(field.id);
@@ -82,13 +82,13 @@ export function FieldPicker({ visibleFields, onToggleField }: FieldPickerProps) 
               >
                 {field.icon}
                 <span className="flex-1 truncate">{field.label}</span>
-                {isVisible && <Check className="h-4 w-4 text-[var(--ds-text-brand, #2563eb)] dark:text-[var(--ds-text-brand, #60a5fa)]" />}
+                {isVisible && <Check className="h-4 w-4 text-[var(--ds-text-brand,#2563eb)] dark:text-[var(--ds-text-brand,#60a5fa)]" />}
               </button>
             );
           })}
         </div>
         <div className="p-2 border-t border-border">
-          <button className="flex items-center gap-1 text-[13px] text-[var(--ds-text-brand, #2563eb)] dark:text-[var(--ds-text-brand, #60a5fa)] hover:underline">
+          <button className="flex items-center gap-1 text-[13px] text-[var(--ds-text-brand,#2563eb)] dark:text-[var(--ds-text-brand,#60a5fa)] hover:underline">
             <span>⚙</span>
             Configure fields in fields configuration
           </button>

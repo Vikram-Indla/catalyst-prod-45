@@ -43,10 +43,10 @@ export function FilterDropdown({ filters, onChange }: FilterDropdownProps) {
     <div ref={ref} className="relative">
       <button
         onClick={() => setOpen(!open)}
-        className={`flex items-center gap-1.5 rounded-[6px] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ds-text-brand, #2563EB)] ${
+        className={`flex items-center gap-1.5 rounded-[6px] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ds-text-brand,#2563EB)] ${
           hasFilters
             ? dark ? 'bg-[#0D1526] border-[#1E3A5F] text-[#4C9AFF]' : 'bg-[#DEEBFF] border-[#B3D4FF] text-[#0052CC]'
-            : dark ? 'bg-transparent border-[var(--ds-border, #2E2E2E)] text-[var(--ds-text-subtlest, #A1A1A1)]' : 'bg-white border-[var(--ds-border, #E2E8F0)] text-[#42526E]'
+            : dark ? 'bg-transparent border-[var(--ds-border,#2E2E2E)] text-[var(--ds-text-subtlest,#A1A1A1)]' : 'bg-white border-[var(--ds-border,#E2E8F0)] text-[#42526E]'
         }`}
         style={{
           height: 32,
@@ -73,7 +73,7 @@ export function FilterDropdown({ filters, onChange }: FilterDropdownProps) {
 
       {open && (
         <div
-          className={`absolute top-full left-0 mt-1 z-50 ${dark ? 'bg-[var(--ds-surface-raised, #1A1A1A)] border-[var(--ds-border, #2E2E2E)]' : 'bg-white border-[var(--ds-border, #E2E8F0)]'}`}
+          className={`absolute top-full left-0 mt-1 z-50 ${dark ? 'bg-[var(--ds-surface-raised,#1A1A1A)] border-[var(--ds-border,#2E2E2E)]' : 'bg-white border-[var(--ds-border,#E2E8F0)]'}`}
           style={{
             width: 280,
             borderRadius: 8,
@@ -167,7 +167,7 @@ function FilterSection({
           <button
             key={opt}
             onClick={() => onToggle(opt)}
-            className={`flex items-center gap-2 w-full py-1.5 cursor-pointer rounded px-2 transition-colors ${dark ? 'hover:bg-[var(--ds-surface-overlay, #1F1F1F)]' : 'hover:bg-[var(--ds-surface-sunken, #F4F5F7)]'}`}
+            className={`flex items-center gap-2 w-full py-1.5 cursor-pointer rounded px-2 transition-colors ${dark ? 'hover:bg-[var(--ds-surface-overlay,#1F1F1F)]' : 'hover:bg-[var(--ds-surface-sunken,#F4F5F7)]'}`}
             style={{ fontSize: 12, color: dark ? 'var(--ds-text, #EDEDED)' : '#42526E', background: 'transparent', border: 'none', fontFamily: 'var(--cp-font-body)', textAlign: 'left' }}
           >
             <div

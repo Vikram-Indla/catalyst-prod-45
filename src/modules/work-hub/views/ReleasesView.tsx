@@ -111,7 +111,7 @@ function ReleaseRow({
       <div className="min-w-[140px]">
         <button
           onClick={onClick}
-          className="text-[14px] font-medium text-[var(--ds-text-brand, #2563eb)] dark:text-[var(--ds-text-brand, #60a5fa)] hover:underline text-left"
+          className="text-[14px] font-medium text-[var(--ds-text-brand,#2563eb)] dark:text-[var(--ds-text-brand,#60a5fa)] hover:underline text-left"
         >
           {release.name}
         </button>
@@ -239,7 +239,7 @@ export function ReleasesView() {
               placeholder="Search releases"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-9 h-9 text-[14px] border-border focus:border-[var(--ds-text-brand, #2563eb)] focus:ring-[var(--ds-text-brand, #2563eb)]"
+              className="pl-9 h-9 text-[14px] border-border focus:border-[var(--ds-text-brand,#2563eb)] focus:ring-[var(--ds-text-brand,#2563eb)]"
             />
           </div>
           
@@ -259,7 +259,7 @@ export function ReleasesView() {
 
         {/* Create version button */}
         <Button 
-          className="h-9 px-4 text-[14px] font-medium bg-[var(--ds-text-brand, #2563eb)] hover:bg-[var(--ds-background-brand-bold-hovered, #1d4ed8)] text-white gap-2"
+          className="h-9 px-4 text-[14px] font-medium bg-[var(--ds-text-brand,#2563eb)] hover:bg-[var(--ds-background-brand-bold-hovered,#1d4ed8)] text-white gap-2"
         >
           <Plus className="h-4 w-4" />
           Create version

@@ -117,7 +117,7 @@ function RankBadge({ rank }: { rank: number | null }) {
         rounded 
         text-[10px] font-semibold 
         bg-[rgba(37,99,235,0.1)] dark:bg-[rgba(37,99,235,0.15)]
-        text-[var(--ds-text-brand, #2563eb)] dark:text-[var(--ds-text-brand, #60a5fa)]
+        text-[var(--ds-text-brand,#2563eb)] dark:text-[var(--ds-text-brand,#60a5fa)]
         border border-[rgba(37,99,235,0.2)] dark:border-[rgba(96,165,250,0.3)]
       "
     >
@@ -135,7 +135,7 @@ function BusinessOwnerAvatar({ name, size = 28 }: { name: string; size?: number 
       className="
         rounded-full flex items-center justify-center 
         font-bold shrink-0 cursor-pointer shadow-sm
-        bg-[var(--ds-text-brand, #2563eb)] dark:bg-[var(--ds-text-brand, #3b82f6)]
+        bg-[var(--ds-text-brand,#2563eb)] dark:bg-[var(--ds-text-brand,#3b82f6)]
         text-white
       "
       style={{
@@ -272,7 +272,7 @@ if (compactMode) {
           text-[14px] font-medium 
           text-gray-900 dark:text-gray-100
           mb-3 leading-snug line-clamp-2
-          group-hover:text-[var(--ds-text-brand, #2563eb)] dark:group-hover:text-[var(--ds-text-brand, #60a5fa)]
+          group-hover:text-[var(--ds-text-brand,#2563eb)] dark:group-hover:text-[var(--ds-text-brand,#60a5fa)]
           transition-colors
         ">
           {ticket.summary}

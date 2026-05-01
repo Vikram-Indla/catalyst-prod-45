@@ -120,7 +120,7 @@ export function MembersTab({ projectId, currentUserId }: MembersTabProps) {
       {/* Add member search */}
       <div className="relative mb-4">
         <div
-          className="flex items-center gap-2 rounded-md bg-[var(--bg-app)] dark:bg-[var(--ds-surface, #0A0A0A)]"
+          className="flex items-center gap-2 rounded-md bg-[var(--bg-app)] dark:bg-[var(--ds-surface,#0A0A0A)]"
           style={{ height: 40, padding: '8px 12px', border: '1px solid var(--divider)', borderRadius: 6, transition: 'border-color 150ms, box-shadow 150ms' }}
           onFocus={e => { (e.currentTarget as HTMLElement).style.borderColor = 'var(--cp-blue)'; (e.currentTarget as HTMLElement).style.boxShadow = '0 0 0 3px rgba(37,99,235,0.1)'; }}
           onBlur={e => { (e.currentTarget as HTMLElement).style.borderColor = 'var(--divider)'; (e.currentTarget as HTMLElement).style.boxShadow = 'none'; }}
@@ -137,14 +137,14 @@ export function MembersTab({ projectId, currentUserId }: MembersTabProps) {
 
         {searchResults.length > 0 && (
           <div
-            className="absolute top-full left-0 right-0 mt-1 z-10 max-h-[200px] overflow-y-auto bg-[var(--cp-float)] dark:bg-[var(--ds-surface-raised, #1A1A1A)]"
+            className="absolute top-full left-0 right-0 mt-1 z-10 max-h-[200px] overflow-y-auto bg-[var(--cp-float)] dark:bg-[var(--ds-surface-raised,#1A1A1A)]"
             style={{ border: '1px solid var(--divider)', borderRadius: 8, boxShadow: '0 4px 6px -1px rgba(0,0,0,.07)' }}
           >
             {searchResults.map(user => (
               <button
                 key={user.id}
                 onClick={() => addMember(user)}
-                className="w-full flex items-center gap-3 px-3 py-2 text-left transition-colors hover:bg-[var(--ds-surface-sunken, #F8FAFC)]"
+                className="w-full flex items-center gap-3 px-3 py-2 text-left transition-colors hover:bg-[var(--ds-surface-sunken,#F8FAFC)]"
                 style={{ border: 'none', background: 'transparent', cursor: 'pointer' }}
               >
                 <div className="flex items-center justify-center rounded-full flex-shrink-0"

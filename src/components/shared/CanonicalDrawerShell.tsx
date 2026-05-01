@@ -219,11 +219,11 @@ export function CanonicalDrawerShell({
         <SheetContent
           side="right"
           hideClose
-          className={`executive-drawer ${drawerWidthClass} p-0 flex flex-col overflow-hidden bg-white dark:bg-[var(--ds-surface-raised, #1A1A1A)] border-l border-[#E1E4E8] dark:border-[var(--ds-border, #2E2E2E)]`}
+          className={`executive-drawer ${drawerWidthClass} p-0 flex flex-col overflow-hidden bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] border-l border-[#E1E4E8] dark:border-[var(--ds-border,#2E2E2E)]`}
         >
-          <SheetHeader className="executive-drawer-header flex-col space-y-0 shrink-0 p-0 bg-white dark:bg-[var(--ds-surface-raised, #1A1A1A)]">
+          <SheetHeader className="executive-drawer-header flex-col space-y-0 shrink-0 p-0 bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)]">
             {/* Primary Header Row */}
-            <div className="flex items-center justify-between px-4 md:px-5 pt-4 pb-3 border-b border-brand-primary/50 bg-white dark:bg-[var(--ds-surface-raised, #1A1A1A)]">
+            <div className="flex items-center justify-between px-4 md:px-5 pt-4 pb-3 border-b border-brand-primary/50 bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)]">
               {/* Left side: Entity ID + Title */}
               <div className="flex items-center gap-2.5 flex-1 min-w-0">
                 <div className="flex items-center gap-1 shrink-0">
@@ -352,22 +352,22 @@ export function CanonicalDrawerShell({
 
           {/* Status Row */}
           {statusRow && (
-            <div className="px-4 md:px-5 py-2 flex items-center bg-white dark:bg-[var(--ds-surface-raised, #1A1A1A)] shrink-0">
+            <div className="px-4 md:px-5 py-2 flex items-center bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] shrink-0">
               {statusRow}
             </div>
           )}
 
           {/* Tabs */}
           <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col min-h-0">
-            <TabsList className="executive-tabs-list w-full justify-start rounded-none border-b border-[#EAECEF] dark:border-[#21262D] h-10 shrink-0 overflow-x-auto flex-nowrap bg-[var(--ds-surface-sunken, #FAFBFC)] dark:bg-[#0D1117] px-4 md:px-5">
+            <TabsList className="executive-tabs-list w-full justify-start rounded-none border-b border-[#EAECEF] dark:border-[#21262D] h-10 shrink-0 overflow-x-auto flex-nowrap bg-[var(--ds-surface-sunken,#FAFBFC)] dark:bg-[#0D1117] px-4 md:px-5">
               {tabs.map((tab) => (
-                <TabsTrigger key={tab.value} value={tab.value} className="executive-tab whitespace-nowrap px-4 py-3 text-sm font-medium border-b-2 border-transparent data-[state=active]:border-[var(--ds-text-brand, #2563eb)] text-[#57606A] dark:text-[#8B949E] data-[state=active]:text-[#24292F] dark:data-[state=active]:text-[#E6EDF3] hover:text-[#24292F] dark:hover:text-[#E6EDF3]">
+                <TabsTrigger key={tab.value} value={tab.value} className="executive-tab whitespace-nowrap px-4 py-3 text-sm font-medium border-b-2 border-transparent data-[state=active]:border-[var(--ds-text-brand,#2563eb)] text-[#57606A] dark:text-[#8B949E] data-[state=active]:text-[#24292F] dark:data-[state=active]:text-[#E6EDF3] hover:text-[#24292F] dark:hover:text-[#E6EDF3]">
                   {tab.label}
                 </TabsTrigger>
               ))}
             </TabsList>
 
-            <div className="executive-drawer-content flex-1 flex flex-col min-h-0 overflow-y-auto bg-white dark:bg-[var(--ds-surface-raised, #1A1A1A)]">
+            <div className="executive-drawer-content flex-1 flex flex-col min-h-0 overflow-y-auto bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)]">
               {tabs.map((tab) => (
                 <TabsContent
                   key={tab.value}

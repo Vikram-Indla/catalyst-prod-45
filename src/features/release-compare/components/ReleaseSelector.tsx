@@ -103,7 +103,7 @@ export function ReleaseSelector({
             variant="outline"
             size="sm"
             onClick={handleAdd}
-            className="text-[var(--ds-text-brand, #2563eb)] border-[var(--ds-text-brand, #2563eb)] hover:bg-blue-50"
+            className="text-[var(--ds-text-brand,#2563eb)] border-[var(--ds-text-brand,#2563eb)] hover:bg-blue-50"
           >
             <Plus className="w-4 h-4 mr-1" />
             Add

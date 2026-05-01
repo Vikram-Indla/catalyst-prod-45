@@ -56,15 +56,15 @@ export function DayDetailPanel({
   const statusOrder: CalendarEventStatus[] = ['blocked', 'failed', 'in_progress', 'not_started', 'passed'];
 
   return (
-    <div className="fixed inset-y-0 right-0 w-96 bg-white shadow-xl z-50 flex flex-col border-l border-[var(--ds-border, #e2e8f0)]">
+    <div className="fixed inset-y-0 right-0 w-96 bg-white shadow-xl z-50 flex flex-col border-l border-[var(--ds-border,#e2e8f0)]">
       {/* Header */}
-      <div className="p-4 border-b border-[var(--ds-border, #e2e8f0)]">
+      <div className="p-4 border-b border-[var(--ds-border,#e2e8f0)]">
         <div className="flex items-start justify-between">
           <div>
-            <h2 className="text-lg font-semibold text-[var(--ds-text, #0f172a)]">
+            <h2 className="text-lg font-semibold text-[var(--ds-text,#0f172a)]">
               {format(date, 'EEEE')}
             </h2>
-            <p className="text-sm text-[var(--ds-text-subtlest, #64748b)]">
+            <p className="text-sm text-[var(--ds-text-subtlest,#64748b)]">
               {format(date, 'MMMM d, yyyy')}
             </p>
           </div>
@@ -100,10 +100,10 @@ export function DayDetailPanel({
               <div key={status}>
                 <div className="flex items-center gap-2 mb-3">
                   <div className={cn('w-2 h-2 rounded-full', colors.bg, colors.border, 'border-2')} />
-                  <h3 className="text-sm font-semibold text-[var(--ds-text-subtle, #334155)]">
+                  <h3 className="text-sm font-semibold text-[var(--ds-text-subtle,#334155)]">
                     {STATUS_LABELS[status]}
                   </h3>
-                  <span className="text-xs text-[var(--ds-text-subtlest, #64748b)]">({statusEvents.length})</span>
+                  <span className="text-xs text-[var(--ds-text-subtlest,#64748b)]">({statusEvents.length})</span>
                 </div>
 
                 <div className="space-y-2">
@@ -121,7 +121,7 @@ export function DayDetailPanel({
                           <div className={cn('text-xs font-semibold', colors.text)}>
                             {event.code}
                           </div>
-                          <div className="text-sm font-medium text-[var(--ds-text, #0f172a)] line-clamp-2">
+                          <div className="text-sm font-medium text-[var(--ds-text,#0f172a)] line-clamp-2">
                             {event.title}
                           </div>
                         </div>
@@ -134,14 +134,14 @@ export function DayDetailPanel({
                         )}
                       </div>
 
-                      <div className="flex items-center gap-3 mt-2 text-xs text-[var(--ds-text-subtlest, #64748b)]">
+                      <div className="flex items-center gap-3 mt-2 text-xs text-[var(--ds-text-subtlest,#64748b)]">
                         {event.assigneeName && (
                           <div className="flex items-center gap-1">
                             <Avatar name={event.assigneeName} size="xxsmall" />
                             <span>{event.assigneeName}</span>
                           </div>
                         )}
-                        <span className="text-[var(--ds-text-disabled, #cbd5e1)]">•</span>
+                        <span className="text-[var(--ds-text-disabled,#cbd5e1)]">•</span>
                         <span>{event.module}</span>
                       </div>
 
@@ -150,7 +150,7 @@ export function DayDetailPanel({
                           variant="ghost"
                           size="sm"
                           onClick={() => onReschedule(event)}
-                          className="h-7 px-2 text-xs text-[var(--ds-text-subtlest, #64748b)] hover:text-[var(--ds-text-brand, #2563eb)]"
+                          className="h-7 px-2 text-xs text-[var(--ds-text-subtlest,#64748b)] hover:text-[var(--ds-text-brand,#2563eb)]"
                         >
                           <Calendar className="h-3 w-3 mr-1" />
                           Reschedule
@@ -159,7 +159,7 @@ export function DayDetailPanel({
                           variant="ghost"
                           size="sm"
                           onClick={() => onViewDetails(event)}
-                          className="h-7 px-2 text-xs text-[var(--ds-text-subtlest, #64748b)] hover:text-[var(--ds-text-brand, #2563eb)]"
+                          className="h-7 px-2 text-xs text-[var(--ds-text-subtlest,#64748b)] hover:text-[var(--ds-text-brand,#2563eb)]"
                         >
                           <ExternalLink className="h-3 w-3 mr-1" />
                           View
@@ -173,7 +173,7 @@ export function DayDetailPanel({
           })}
 
           {events.length === 0 && (
-            <div className="text-center py-8 text-[var(--ds-text-subtlest, #64748b)]">
+            <div className="text-center py-8 text-[var(--ds-text-subtlest,#64748b)]">
               <Calendar className="h-12 w-12 mx-auto mb-3 opacity-50" />
               <p className="text-sm">No tests scheduled for this day</p>
             </div>
@@ -182,8 +182,8 @@ export function DayDetailPanel({
       </ScrollArea>
 
       {/* Footer */}
-      <div className="p-4 border-t border-[var(--ds-border, #e2e8f0)]">
-        <Button className="w-full bg-[var(--ds-text-brand, #2563eb)] hover:bg-[var(--ds-background-brand-bold-hovered, #1d4ed8)] text-white">
+      <div className="p-4 border-t border-[var(--ds-border,#e2e8f0)]">
+        <Button className="w-full bg-[var(--ds-text-brand,#2563eb)] hover:bg-[var(--ds-background-brand-bold-hovered,#1d4ed8)] text-white">
           Add Test to This Day
         </Button>
       </div>

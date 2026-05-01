@@ -98,12 +98,12 @@ export function CreateVersionDialog({ open, onOpenChange, onSave }: CreateVersio
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent 
-        className="sm:max-w-[500px] p-0 gap-0 bg-white dark:bg-[var(--ds-surface-raised, #1A1A1A)]"
+        className="sm:max-w-[500px] p-0 gap-0 bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)]"
         style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" }}
       >
         {/* Header */}
         <DialogHeader className="px-6 pt-6 pb-4">
-          <DialogTitle className="text-[20px] font-semibold text-[var(--ds-text, #172B4D)]">
+          <DialogTitle className="text-[20px] font-semibold text-[var(--ds-text,#172B4D)]">
             Create version
           </DialogTitle>
         </DialogHeader>
@@ -111,13 +111,13 @@ export function CreateVersionDialog({ open, onOpenChange, onSave }: CreateVersio
         {/* Form Content */}
         <div className="px-6 pb-6 space-y-5">
           {/* Required fields notice */}
-          <p className="text-[13px] text-[var(--ds-text-subtlest, #6B778C)]">
+          <p className="text-[13px] text-[var(--ds-text-subtlest,#6B778C)]">
             Required fields are marked with an asterisk <span className="text-red-500">*</span>
           </p>
 
           {/* Name Field */}
           <div className="space-y-1.5">
-            <Label className="text-[13px] font-medium text-[var(--ds-text, #172B4D)]">
+            <Label className="text-[13px] font-medium text-[var(--ds-text,#172B4D)]">
               Name <span className="text-red-500">*</span>
             </Label>
             <Input
@@ -127,7 +127,7 @@ export function CreateVersionDialog({ open, onOpenChange, onSave }: CreateVersio
                 if (errors.name) setErrors({ ...errors, name: '' });
               }}
               className={cn(
-                "h-10 text-sm border-border focus:border-[var(--ds-text-brand, #2563eb)] focus:ring-[var(--ds-text-brand, #2563eb)]",
+                "h-10 text-sm border-border focus:border-[var(--ds-text-brand,#2563eb)] focus:ring-[var(--ds-text-brand,#2563eb)]",
                 errors.name && "border-red-500 focus:border-red-500 focus:ring-red-500"
               )}
               placeholder=""
@@ -141,7 +141,7 @@ export function CreateVersionDialog({ open, onOpenChange, onSave }: CreateVersio
           <div className="grid grid-cols-2 gap-4">
             {/* Start Date */}
             <div className="space-y-1.5">
-              <Label className="text-[13px] font-medium text-[var(--ds-text, #172B4D)]">
+              <Label className="text-[13px] font-medium text-[var(--ds-text,#172B4D)]">
                 Start Date
               </Label>
               <Popover open={startDateOpen} onOpenChange={setStartDateOpen}>
@@ -154,7 +154,7 @@ export function CreateVersionDialog({ open, onOpenChange, onSave }: CreateVersio
                     )}
                   >
                     {startDate ? format(startDate, "M/d/yyyy") : "Select date"}
-                    <CalendarIcon className="h-4 w-4 text-[var(--ds-text-subtlest, #6B778C)]" />
+                    <CalendarIcon className="h-4 w-4 text-[var(--ds-text-subtlest,#6B778C)]" />
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0" align="start">
@@ -174,7 +174,7 @@ export function CreateVersionDialog({ open, onOpenChange, onSave }: CreateVersio
 
             {/* Release Date */}
             <div className="space-y-1.5">
-              <Label className="text-[13px] font-medium text-[var(--ds-text, #172B4D)]">
+              <Label className="text-[13px] font-medium text-[var(--ds-text,#172B4D)]">
                 Release date
               </Label>
               <Popover open={releaseDateOpen} onOpenChange={setReleaseDateOpen}>
@@ -187,7 +187,7 @@ export function CreateVersionDialog({ open, onOpenChange, onSave }: CreateVersio
                     )}
                   >
                     {releaseDate ? format(releaseDate, "M/d/yyyy") : "Select date"}
-                    <CalendarIcon className="h-4 w-4 text-[var(--ds-text-subtlest, #6B778C)]" />
+                    <CalendarIcon className="h-4 w-4 text-[var(--ds-text-subtlest,#6B778C)]" />
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0" align="start">
@@ -208,11 +208,11 @@ export function CreateVersionDialog({ open, onOpenChange, onSave }: CreateVersio
 
           {/* Driver Field */}
           <div className="space-y-1.5">
-            <Label className="text-[13px] font-medium text-[var(--ds-text, #172B4D)]">
+            <Label className="text-[13px] font-medium text-[var(--ds-text,#172B4D)]">
               Driver
             </Label>
             <Select value={driver} onValueChange={setDriver}>
-              <SelectTrigger className="h-10 text-sm border-border focus:border-[var(--ds-text-brand, #2563eb)] focus:ring-[var(--ds-text-brand, #2563eb)]">
+              <SelectTrigger className="h-10 text-sm border-border focus:border-[var(--ds-text-brand,#2563eb)] focus:ring-[var(--ds-text-brand,#2563eb)]">
                 <SelectValue placeholder="Select driver">
                   {selectedUser && (
                     <div className="flex items-center gap-2">
@@ -237,13 +237,13 @@ export function CreateVersionDialog({ open, onOpenChange, onSave }: CreateVersio
 
           {/* Description Field */}
           <div className="space-y-1.5">
-            <Label className="text-[13px] font-medium text-[var(--ds-text, #172B4D)]">
+            <Label className="text-[13px] font-medium text-[var(--ds-text,#172B4D)]">
               Description
             </Label>
             <Textarea
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              className="min-h-[100px] text-sm border-border focus:border-[var(--ds-text-brand, #2563eb)] focus:ring-[var(--ds-text-brand, #2563eb)] resize-none"
+              className="min-h-[100px] text-sm border-border focus:border-[var(--ds-text-brand,#2563eb)] focus:ring-[var(--ds-text-brand,#2563eb)] resize-none"
               placeholder=""
             />
           </div>
@@ -260,7 +260,7 @@ export function CreateVersionDialog({ open, onOpenChange, onSave }: CreateVersio
           </Button>
           <Button
             onClick={handleSave}
-            className="h-9 px-4 text-sm font-medium bg-[var(--ds-text-brand, #2563eb)] hover:bg-[var(--ds-background-brand-bold-hovered, #1d4ed8)] text-white"
+            className="h-9 px-4 text-sm font-medium bg-[var(--ds-text-brand,#2563eb)] hover:bg-[var(--ds-background-brand-bold-hovered,#1d4ed8)] text-white"
           >
             Save
           </Button>

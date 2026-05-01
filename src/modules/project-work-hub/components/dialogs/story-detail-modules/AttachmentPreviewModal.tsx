@@ -141,14 +141,14 @@ export function AttachmentPreviewModal({ attachments, initialId, onClose }: Prop
             style={{ width: '90vw', height: '90vh' }}
           />
         ) : (
-          <div className="flex flex-col items-center gap-4 p-12 bg-[var(--ds-surface-raised, #1A1A1A)] rounded-lg text-white">
+          <div className="flex flex-col items-center gap-4 p-12 bg-[var(--ds-surface-raised,#1A1A1A)] rounded-lg text-white">
             <FileQuestion size={48} className="text-white/50" />
             <div className="text-base font-medium">Preview not available</div>
             <div className="text-sm text-white/60">{current.mime_type || 'Unknown type'}</div>
             <a
               href={signedUrl}
               download={current.file_name}
-              className="mt-2 flex items-center gap-2 px-4 h-9 rounded bg-[var(--ds-text-brand, #2563EB)] hover:bg-[var(--ds-background-brand-bold-hovered, #1D4ED8)] text-white text-sm font-medium transition-colors"
+              className="mt-2 flex items-center gap-2 px-4 h-9 rounded bg-[var(--ds-text-brand,#2563EB)] hover:bg-[var(--ds-background-brand-bold-hovered,#1D4ED8)] text-white text-sm font-medium transition-colors"
             >
               <Download size={14} /> Download
             </a>

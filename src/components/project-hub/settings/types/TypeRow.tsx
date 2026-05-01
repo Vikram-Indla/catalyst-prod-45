@@ -41,7 +41,7 @@ export function TypeRow({ name, icon, color, level, isEnabled, isFeatureType, fe
 
   return (
     <div
-      className="flex items-center gap-3 px-3 rounded-lg hover:bg-[var(--ds-surface-sunken, #F8FAFC)] transition-colors"
+      className="flex items-center gap-3 px-3 rounded-lg hover:bg-[var(--ds-surface-sunken,#F8FAFC)] transition-colors"
       style={{ height: 48, opacity: isDisabledFeature ? 0.5 : 1 }}
     >
       {/* Icon circle */}
@@ -78,7 +78,7 @@ export function TypeRow({ name, icon, color, level, isEnabled, isFeatureType, fe
       <div className="relative">
         <button
           onClick={onViewFields}
-          className="flex items-center justify-center rounded transition-colors hover:bg-[var(--bd-default, #E2E8F0)]"
+          className="flex items-center justify-center rounded transition-colors hover:bg-[var(--bd-default,#E2E8F0)]"
           style={{ width: 28, height: 28, border: 'none', background: 'transparent', cursor: 'pointer' }}
           title="View Fields"
         >

@@ -75,11 +75,11 @@ export function ProjectHubShell() {
   });
 
   return (
-    <div className="flex flex-col h-screen bg-[var(--bg-1)] dark:!bg-[var(--ds-surface, #0A0A0A)]" style={{ ['--ph-bg' as string]: 'var(--ds-surface, #0A0A0A)' }}>
+    <div className="flex flex-col h-screen bg-[var(--bg-1)] dark:!bg-[var(--ds-surface,#0A0A0A)]" style={{ ['--ph-bg' as string]: 'var(--ds-surface, #0A0A0A)' }}>
       <TopNav onCreateClick={handleTopCreateClick} />
       <div className="flex flex-1 overflow-hidden">
         <Sidebar collapsed={collapsed} onToggle={() => setCollapsed(c => !c)} projects={projects} currentProject={currentProject} />
-        <main className="flex-1 min-w-0 overflow-y-auto bg-[var(--ds-surface-sunken, #F8FAFC)] dark:!bg-[var(--ds-surface, #0A0A0A)]">
+        <main className="flex-1 min-w-0 overflow-y-auto bg-[var(--ds-surface-sunken,#F8FAFC)] dark:!bg-[var(--ds-surface,#0A0A0A)]">
           <Outlet context={{ onNewProject: () => setCreateModalOpen(true) }} />
         </main>
       </div>

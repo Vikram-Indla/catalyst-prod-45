@@ -444,7 +444,7 @@ export default function IncidentViewPage() {
         </main>
 
         {/* Right Sidebar */}
-        <aside className="overflow-y-auto p-5 space-y-4 bg-[var(--ds-surface-sunken, #fafbfc)] border-l border-border">
+        <aside className="overflow-y-auto p-5 space-y-4 bg-[var(--ds-surface-sunken,#fafbfc)] border-l border-border">
           {/* Status Card */}
           <div className="bg-card border border-border rounded-lg p-4">
             <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide block mb-2">Status</label>

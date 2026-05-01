@@ -48,7 +48,7 @@ export function WorkItemRow({
 
   return (
     <div
-      className="group grid items-center border-b hover:bg-[var(--ds-surface-sunken, #f8fafc)] cursor-pointer transition-colors"
+      className="group grid items-center border-b hover:bg-[var(--ds-surface-sunken,#f8fafc)] cursor-pointer transition-colors"
       style={{
         gridTemplateColumns: '36px 36px minmax(140px, auto) 1fr 120px 140px 120px 130px 90px 90px 90px',
         height: 'var(--wh-row-height, 44px)',

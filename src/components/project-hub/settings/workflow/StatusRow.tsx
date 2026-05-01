@@ -55,7 +55,7 @@ export function StatusRow({ id, name, color, category, isDefault, itemCount, onE
     <div
       ref={setNodeRef}
       style={style}
-      className="flex items-center gap-3 px-3 rounded-lg hover:bg-[var(--ds-surface-sunken, #F8FAFC)] transition-colors"
+      className="flex items-center gap-3 px-3 rounded-lg hover:bg-[var(--ds-surface-sunken,#F8FAFC)] transition-colors"
       {...attributes}
     >
       {/* Drag handle */}
@@ -95,7 +95,7 @@ export function StatusRow({ id, name, color, category, isDefault, itemCount, onE
       <div className="relative" ref={menuRef}>
         <button
           onClick={() => setMenuOpen(!menuOpen)}
-          className="flex items-center justify-center rounded transition-colors hover:bg-[var(--bd-default, #E2E8F0)]"
+          className="flex items-center justify-center rounded transition-colors hover:bg-[var(--bd-default,#E2E8F0)]"
           style={{ width: 28, height: 28, border: 'none', background: 'transparent', cursor: 'pointer' }}
         >
           <MoreHorizontal size={16} color="var(--fg-3)" />
@@ -103,7 +103,7 @@ export function StatusRow({ id, name, color, category, isDefault, itemCount, onE
 
         {menuOpen && (
           <div
-            className="absolute right-0 top-full mt-1 z-10 bg-[var(--cp-float)] dark:bg-[var(--ds-surface-raised, #1A1A1A)]"
+            className="absolute right-0 top-full mt-1 z-10 bg-[var(--cp-float)] dark:bg-[var(--ds-surface-raised,#1A1A1A)]"
             style={{
               width: 120, border: '1px solid var(--divider)',
               borderRadius: 8, boxShadow: '0 4px 6px -1px rgba(0,0,0,.07)',
@@ -112,7 +112,7 @@ export function StatusRow({ id, name, color, category, isDefault, itemCount, onE
           >
             <button
               onClick={() => { onEdit(); setMenuOpen(false); }}
-              className="w-full text-left px-3 py-2 hover:bg-[var(--ds-surface-sunken, #F8FAFC)] transition-colors"
+              className="w-full text-left px-3 py-2 hover:bg-[var(--ds-surface-sunken,#F8FAFC)] transition-colors"
               style={{ fontSize: 12, color: 'var(--fg-2)', border: 'none', background: 'transparent', cursor: 'pointer', display: 'block' }}
             >
               Edit
@@ -120,7 +120,7 @@ export function StatusRow({ id, name, color, category, isDefault, itemCount, onE
             {!isDefault && (
               <button
                 onClick={() => { onDelete(); setMenuOpen(false); }}
-                className="w-full text-left px-3 py-2 hover:bg-[var(--ds-background-danger, #FEF2F2)] transition-colors"
+                className="w-full text-left px-3 py-2 hover:bg-[var(--ds-background-danger,#FEF2F2)] transition-colors"
                 style={{ fontSize: 12, color: 'var(--sem-danger)', border: 'none', background: 'transparent', cursor: 'pointer', display: 'block' }}
               >
                 Delete

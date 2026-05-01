@@ -92,7 +92,7 @@ function PragmaticEpicCard({
               <div className="font-mono text-[11px] text-gray-500 dark:text-gray-400 mb-1">
                 {item.displayId || item.key || item.id.slice(0, 8)}
               </div>
-              <div className="text-[14px] font-medium line-clamp-2 text-gray-900 dark:text-gray-100 group-hover:text-[var(--ds-text-brand, #2563eb)] dark:group-hover:text-[var(--ds-text-brand, #60a5fa)] transition-colors">
+              <div className="text-[14px] font-medium line-clamp-2 text-gray-900 dark:text-gray-100 group-hover:text-[var(--ds-text-brand,#2563eb)] dark:group-hover:text-[var(--ds-text-brand,#60a5fa)] transition-colors">
                 {item.name}
               </div>
             </div>

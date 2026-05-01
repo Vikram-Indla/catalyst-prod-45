@@ -65,7 +65,7 @@ export function FeatureLinksTab({ feature }: FeatureLinksTabProps) {
               <div className="flex items-center gap-2">
                 {feature.epic.epic_key && (
                   <>
-                    <span className="font-mono text-sm font-medium text-[var(--ds-text-brand, #2563eb)] hover:text-[var(--ds-background-brand-bold-hovered, #1d4ed8)] transition-colors">
+                    <span className="font-mono text-sm font-medium text-[var(--ds-text-brand,#2563eb)] hover:text-[var(--ds-background-brand-bold-hovered,#1d4ed8)] transition-colors">
                       {feature.epic.epic_key}
                     </span>
                     <span className="text-muted-foreground">-</span>
@@ -107,7 +107,7 @@ export function FeatureLinksTab({ feature }: FeatureLinksTabProps) {
               <div className="w-6 h-6 rounded bg-blue-500/10 flex items-center justify-center">
                 <FileText className="h-3.5 w-3.5 text-blue-500" />
               </div>
-              <span className="font-mono text-xs font-medium text-[var(--ds-text-brand, #2563eb)] hover:text-[var(--ds-background-brand-bold-hovered, #1d4ed8)] transition-colors">
+              <span className="font-mono text-xs font-medium text-[var(--ds-text-brand,#2563eb)] hover:text-[var(--ds-background-brand-bold-hovered,#1d4ed8)] transition-colors">
                 {story.key}
               </span>
               <span className="text-sm text-foreground flex-1 truncate">{story.name}</span>
@@ -153,7 +153,7 @@ export function FeatureLinksTab({ feature }: FeatureLinksTabProps) {
               <span className="text-xs font-medium text-muted-foreground uppercase">
                 {dep.type === 'blocks' ? 'Blocks' : 'Blocked by'}
               </span>
-              <span className="font-mono text-xs font-medium text-[var(--ds-text-brand, #2563eb)] hover:text-[var(--ds-background-brand-bold-hovered, #1d4ed8)] transition-colors">
+              <span className="font-mono text-xs font-medium text-[var(--ds-text-brand,#2563eb)] hover:text-[var(--ds-background-brand-bold-hovered,#1d4ed8)] transition-colors">
                 {dep.itemKey}
               </span>
               <span className="text-sm text-foreground flex-1 truncate">{dep.itemName}</span>
@@ -189,7 +189,7 @@ export function FeatureLinksTab({ feature }: FeatureLinksTabProps) {
               <div className="w-6 h-6 rounded bg-amber-500/10 flex items-center justify-center">
                 <Ban className="h-3.5 w-3.5 text-amber-500" />
               </div>
-              <span className="font-mono text-xs font-medium text-[var(--ds-text-brand, #2563eb)] hover:text-[var(--ds-background-brand-bold-hovered, #1d4ed8)] transition-colors">
+              <span className="font-mono text-xs font-medium text-[var(--ds-text-brand,#2563eb)] hover:text-[var(--ds-background-brand-bold-hovered,#1d4ed8)] transition-colors">
                 {change.key}
               </span>
               <span className="text-sm text-foreground flex-1 truncate">{change.name}</span>

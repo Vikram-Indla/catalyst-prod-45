@@ -586,7 +586,7 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
                       onChange={(e) => setEditedName(e.target.value)}
                       onBlur={handleSaveName}
                       onKeyDown={handleNameKeyDown}
-                      className="text-[22px] font-semibold h-auto py-1.5 px-2 max-w-[480px] border-[var(--ds-text-brand, #2563eb)] focus-visible:ring-[var(--ds-text-brand, #2563eb)]/20 transition-smooth"
+                      className="text-[22px] font-semibold h-auto py-1.5 px-2 max-w-[480px] border-[var(--ds-text-brand,#2563eb)] focus-visible:ring-[var(--ds-text-brand,#2563eb)]/20 transition-smooth"
                       style={{ 
                         background: 'var(--surface-subtle, var(--bg-2))',
                         color: 'var(--text-primary, var(--fg-1))'
@@ -767,7 +767,7 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
                     "after:absolute after:bottom-0 after:left-2 after:right-2",
                     "after:h-[2px] after:rounded-t-sm after:transition-all",
                     "data-[state=inactive]:after:bg-transparent data-[state=inactive]:after:opacity-0",
-                    "data-[state=active]:after:bg-[var(--ds-text-brand, #2563eb)] data-[state=active]:after:opacity-100"
+                    "data-[state=active]:after:bg-[var(--ds-text-brand,#2563eb)] data-[state=active]:after:opacity-100"
                   )}
                 >
                   {tab.label}

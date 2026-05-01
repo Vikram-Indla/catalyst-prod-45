@@ -195,7 +195,7 @@ export function AllWorkSplitView({ items, selectedItemKey, onSelectItem, sortFie
               aria-haspopup="listbox"
               aria-expanded={sortOpen}
               aria-label={`Sort by ${currentSortLabel}. Click to change field.`}
-              className="flex items-center gap-1 text-[12px] px-1.5 py-0.5 rounded transition-colors duration-[80ms] hover:bg-[var(--hover,#1F1F1F)] focus-visible:outline-2 focus-visible:outline-[var(--ds-text-brand, #2563EB)]"
+              className="flex items-center gap-1 text-[12px] px-1.5 py-0.5 rounded transition-colors duration-[80ms] hover:bg-[var(--hover,#1F1F1F)] focus-visible:outline-2 focus-visible:outline-[var(--ds-text-brand,#2563EB)]"
               style={{
                 color: 'var(--cp-text-secondary, #6b6e76)',
                 fontFamily: 'var(--cp-font-body)',
@@ -211,7 +211,7 @@ export function AllWorkSplitView({ items, selectedItemKey, onSelectItem, sortFie
               onClick={() => onSort(sortField)}
               aria-label={sortDir === 'asc' ? 'Ascending. Click to reverse.' : 'Descending. Click to reverse.'}
               title={sortDir === 'asc' ? 'Ascending' : 'Descending'}
-              className="p-1 rounded transition-colors duration-[80ms] hover:bg-[var(--hover,#1F1F1F)] focus-visible:outline-2 focus-visible:outline-[var(--ds-text-brand, #2563EB)]"
+              className="p-1 rounded transition-colors duration-[80ms] hover:bg-[var(--hover,#1F1F1F)] focus-visible:outline-2 focus-visible:outline-[var(--ds-text-brand,#2563EB)]"
               style={{
                 color: 'var(--cp-text-secondary, #6b6e76)',
                 background: 'none',
@@ -240,7 +240,7 @@ export function AllWorkSplitView({ items, selectedItemKey, onSelectItem, sortFie
                     <button
                       key={opt.field}
                       onClick={() => { onSort(opt.field); setSortOpen(false); }}
-                      className="w-full flex items-center justify-between px-3 py-1.5 text-[12px] text-left transition-colors duration-[80ms] hover:bg-[var(--hover,#1F1F1F)] focus-visible:outline-2 focus-visible:outline-[var(--ds-text-brand, #2563EB)]"
+                      className="w-full flex items-center justify-between px-3 py-1.5 text-[12px] text-left transition-colors duration-[80ms] hover:bg-[var(--hover,#1F1F1F)] focus-visible:outline-2 focus-visible:outline-[var(--ds-text-brand,#2563EB)]"
                       style={{
                         color: isDark ? 'var(--ds-text, #EDEDED)' : 'var(--fg-1)',
                         fontFamily: 'var(--cp-font-body)',
@@ -341,7 +341,7 @@ export function AllWorkSplitView({ items, selectedItemKey, onSelectItem, sortFie
                     <Fragment key={item.issue_key}>
                       <button
                         onClick={() => handleBreadcrumbNav(stackIndex)}
-                        className="transition-colors duration-[80ms] hover:underline focus-visible:outline-2 focus-visible:outline-[var(--ds-text-brand, #2563EB)] rounded-sm"
+                        className="transition-colors duration-[80ms] hover:underline focus-visible:outline-2 focus-visible:outline-[var(--ds-text-brand,#2563EB)] rounded-sm"
                         style={{
                           background: 'none',
                           border: 'none',
@@ -393,7 +393,7 @@ export function AllWorkSplitView({ items, selectedItemKey, onSelectItem, sortFie
               {canGoBack && (
                 <button
                   onClick={handleBack}
-                  className="flex items-center gap-1 px-2 py-1 rounded-md transition-colors duration-[80ms] hover:bg-[var(--hover, #1F1F1F)] focus-visible:outline-2 focus-visible:outline-[var(--ds-text-brand, #2563EB)]"
+                  className="flex items-center gap-1 px-2 py-1 rounded-md transition-colors duration-[80ms] hover:bg-[var(--hover,#1F1F1F)] focus-visible:outline-2 focus-visible:outline-[var(--ds-text-brand,#2563EB)]"
                   style={{ color: 'var(--fg-2)', fontSize: 13, fontWeight: 500, fontFamily: 'var(--cp-font-body)', border: 'none', background: 'none', cursor: 'pointer' }}
                   aria-label="Go back"
                 >
@@ -415,11 +415,11 @@ export function AllWorkSplitView({ items, selectedItemKey, onSelectItem, sortFie
             <div className="flex items-center gap-1">
               {!canGoBack && (
                 <>
-                  <button onClick={goPrev} disabled={selectedIdx <= 0} className="p-1 rounded hover:bg-[var(--hover, #1F1F1F)] disabled:opacity-30 focus-visible:outline-2 focus-visible:outline-[var(--ds-text-brand, #2563EB)]" aria-label="Previous item">
+                  <button onClick={goPrev} disabled={selectedIdx <= 0} className="p-1 rounded hover:bg-[var(--hover,#1F1F1F)] disabled:opacity-30 focus-visible:outline-2 focus-visible:outline-[var(--ds-text-brand,#2563EB)]" aria-label="Previous item">
                     <ChevronLeft className="w-4 h-4" style={{ color: 'var(--cp-text-tertiary, #6b6e76)' }} />
                   </button>
                   <span className="text-[11px]" style={{ color: 'var(--fg-3)', fontFamily: 'var(--cp-font-mono)' }}>{selectedIdx + 1}/{items.length}</span>
-                  <button onClick={goNext} disabled={selectedIdx >= items.length - 1} className="p-1 rounded hover:bg-[var(--hover, #1F1F1F)] disabled:opacity-30 focus-visible:outline-2 focus-visible:outline-[var(--ds-text-brand, #2563EB)]" aria-label="Next item">
+                  <button onClick={goNext} disabled={selectedIdx >= items.length - 1} className="p-1 rounded hover:bg-[var(--hover,#1F1F1F)] disabled:opacity-30 focus-visible:outline-2 focus-visible:outline-[var(--ds-text-brand,#2563EB)]" aria-label="Next item">
                     <ChevronRight className="w-4 h-4" style={{ color: 'var(--cp-text-tertiary, #6b6e76)' }} />
                   </button>
                 </>
@@ -439,7 +439,7 @@ export function AllWorkSplitView({ items, selectedItemKey, onSelectItem, sortFie
                 <button
                   key={tab.key}
                   onClick={() => setActiveTab(tab.key)}
-                  className="flex items-center gap-1.5 px-3 py-2.5 transition-colors duration-[80ms] focus-visible:outline-2 focus-visible:outline-[var(--ds-text-brand, #2563EB)]"
+                  className="flex items-center gap-1.5 px-3 py-2.5 transition-colors duration-[80ms] focus-visible:outline-2 focus-visible:outline-[var(--ds-text-brand,#2563EB)]"
                   style={{
                     fontSize: 12, fontWeight: isActive ? 600 : 400,
                     color: isActive ? 'var(--ds-text-brand, #2563EB)' : 'var(--cp-text-tertiary, #6b6e76)',
@@ -489,7 +489,7 @@ export function AllWorkSplitView({ items, selectedItemKey, onSelectItem, sortFie
                       aria-haspopup="menu"
                       aria-expanded={addOpen}
                       aria-label="Add child issue, attachment, or link"
-                      className="inline-flex items-center gap-1 text-[12px] px-2 h-7 rounded border transition-colors duration-[80ms] hover:bg-[var(--hover,#1F1F1F)] focus-visible:outline-2 focus-visible:outline-[var(--ds-text-brand, #2563EB)]"
+                      className="inline-flex items-center gap-1 text-[12px] px-2 h-7 rounded border transition-colors duration-[80ms] hover:bg-[var(--hover,#1F1F1F)] focus-visible:outline-2 focus-visible:outline-[var(--ds-text-brand,#2563EB)]"
                       style={{
                         borderColor: isDark ? 'var(--ds-border, #2E2E2E)' : 'var(--bd-default, #2E2E2E)',
                         color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--fg-2)',
@@ -521,7 +521,7 @@ export function AllWorkSplitView({ items, selectedItemKey, onSelectItem, sortFie
                           <button
                             key={action.key}
                             onClick={() => { setActiveTab(action.tab); setAddOpen(false); }}
-                            className="w-full flex items-center gap-2 px-3 py-1.5 text-[12px] text-left transition-colors duration-[80ms] hover:bg-[var(--hover,#1F1F1F)] focus-visible:outline-2 focus-visible:outline-[var(--ds-text-brand, #2563EB)]"
+                            className="w-full flex items-center gap-2 px-3 py-1.5 text-[12px] text-left transition-colors duration-[80ms] hover:bg-[var(--hover,#1F1F1F)] focus-visible:outline-2 focus-visible:outline-[var(--ds-text-brand,#2563EB)]"
                             style={{
                               color: isDark ? 'var(--ds-text, #EDEDED)' : 'var(--fg-1)',
                               fontFamily: 'var(--cp-font-body)',
@@ -580,7 +580,7 @@ export function AllWorkSplitView({ items, selectedItemKey, onSelectItem, sortFie
                         <button
                           key={tab}
                           onClick={() => setActivityTab(tab)}
-                          className="text-[12px] pb-1 capitalize transition-colors duration-[80ms] focus-visible:outline-2 focus-visible:outline-[var(--ds-text-brand, #2563EB)]"
+                          className="text-[12px] pb-1 capitalize transition-colors duration-[80ms] focus-visible:outline-2 focus-visible:outline-[var(--ds-text-brand,#2563EB)]"
                           style={{
                             color: activityTab === tab ? 'var(--ds-text-brand, #2563EB)' : 'var(--cp-text-tertiary, #6b6e76)',
                             fontWeight: activityTab === tab ? 600 : 400,
@@ -616,7 +616,7 @@ export function AllWorkSplitView({ items, selectedItemKey, onSelectItem, sortFie
                       <div className="w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-bold text-white shrink-0" style={{ backgroundColor: '#4C6EF5' }}>
                         U
                       </div>
-                      <div className="flex-1 rounded-lg border px-3 py-2 focus-within:border-[var(--ds-text-brand, #2563EB)] transition-colors duration-[80ms]" style={{ borderColor: isDark ? 'var(--ds-border, #2E2E2E)' : 'var(--bd-default, #2E2E2E)' }}>
+                      <div className="flex-1 rounded-lg border px-3 py-2 focus-within:border-[var(--ds-text-brand,#2563EB)] transition-colors duration-[80ms]" style={{ borderColor: isDark ? 'var(--ds-border, #2E2E2E)' : 'var(--bd-default, #2E2E2E)' }}>
                         <input
                           ref={commentInputRef}
                           id="aw-comment-input"
@@ -627,10 +627,10 @@ export function AllWorkSplitView({ items, selectedItemKey, onSelectItem, sortFie
                           aria-label="Add a comment"
                         />
                         <div className="flex items-center gap-2 mt-2">
-                          <span className="text-[10px] px-2 py-0.5 rounded-full cursor-pointer hover:bg-[var(--bd-subtle, #292929)] transition-colors duration-[80ms]" style={{ backgroundColor: isDark ? 'var(--ds-border, #292929)' : 'var(--hover, #1F1F1F)', color: 'var(--cp-text-tertiary, #6b6e76)' }}>
+                          <span className="text-[10px] px-2 py-0.5 rounded-full cursor-pointer hover:bg-[var(--bd-subtle,#292929)] transition-colors duration-[80ms]" style={{ backgroundColor: isDark ? 'var(--ds-border, #292929)' : 'var(--hover, #1F1F1F)', color: 'var(--cp-text-tertiary, #6b6e76)' }}>
                             Status update...
                           </span>
-                          <span className="text-[10px] px-2 py-0.5 rounded-full cursor-pointer hover:bg-[var(--bd-subtle, #292929)] transition-colors duration-[80ms]" style={{ backgroundColor: isDark ? 'var(--ds-border, #292929)' : 'var(--hover, #1F1F1F)', color: 'var(--cp-text-tertiary, #6b6e76)' }}>
+                          <span className="text-[10px] px-2 py-0.5 rounded-full cursor-pointer hover:bg-[var(--bd-subtle,#292929)] transition-colors duration-[80ms]" style={{ backgroundColor: isDark ? 'var(--ds-border, #292929)' : 'var(--hover, #1F1F1F)', color: 'var(--cp-text-tertiary, #6b6e76)' }}>
                             Thanks!
                           </span>
                         </div>

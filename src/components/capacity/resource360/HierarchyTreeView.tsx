@@ -50,7 +50,7 @@ export function HierarchyTreeView({ workItems }: HierarchyTreeViewProps) {
       },
       epic: { 
         icon: <Zap className="w-4 h-4 text-white" />, 
-        bg: 'bg-[var(--ds-text-brand, #2563eb)]' 
+        bg: 'bg-[var(--ds-text-brand,#2563eb)]' 
       },
       feature: { 
         icon: <Target className="w-4 h-4 text-white" />, 
@@ -62,11 +62,11 @@ export function HierarchyTreeView({ workItems }: HierarchyTreeViewProps) {
       },
       defect: { 
         icon: <Bug className="w-4 h-4 text-white" />, 
-        bg: 'bg-[var(--ds-text-danger, #dc2626)]' 
+        bg: 'bg-[var(--ds-text-danger,#dc2626)]' 
       },
       business_request: { 
         icon: <Briefcase className="w-4 h-4 text-white" />, 
-        bg: 'bg-[var(--ds-text-success, #22c55e)]' 
+        bg: 'bg-[var(--ds-text-success,#22c55e)]' 
       },
     };
     return iconMap[type] || iconMap.story;
@@ -75,7 +75,7 @@ export function HierarchyTreeView({ workItems }: HierarchyTreeViewProps) {
   const getStatusBadge = (status: string) => {
     const statusMap: Record<string, { bg: string; text: string; label: string }> = {
       current: { bg: 'bg-[#0d9488]/10', text: 'text-[#0d9488]', label: 'CURRENT' },
-      future: { bg: 'bg-[var(--ds-text-brand, #2563eb)]/10', text: 'text-[var(--ds-text-brand, #2563eb)]', label: 'FUTURE' },
+      future: { bg: 'bg-[var(--ds-text-brand,#2563eb)]/10', text: 'text-[var(--ds-text-brand,#2563eb)]', label: 'FUTURE' },
       completed: { bg: 'bg-muted', text: 'text-muted-foreground', label: 'COMPLETED' },
     };
     const config = statusMap[status] || statusMap.current;

@@ -232,7 +232,7 @@ export function BoardKanban({ filters, onTaskClick, onAddTask }: BoardKanbanProp
 
               {/* Add Column Button */}
               <button
-                className="boards-add-column dark:border-[var(--ds-border, #2E2E2E)] dark:text-[var(--ds-text-subtlest, #878787)] dark:hover:bg-[var(--ds-surface-raised, #1A1A1A)] dark:hover:text-[var(--ds-text, #EDEDED)] dark:hover:border-[var(--ds-border-bold, #454545)]"
+                className="boards-add-column dark:border-[var(--ds-border,#2E2E2E)] dark:text-[var(--ds-text-subtlest,#878787)] dark:hover:bg-[var(--ds-surface-raised,#1A1A1A)] dark:hover:text-[var(--ds-text,#EDEDED)] dark:hover:border-[var(--ds-border-bold,#454545)]"
                 onClick={() => setIsAddColumnOpen(true)}
               >
                 <Plus className="w-5 h-5" />
@@ -246,15 +246,15 @@ export function BoardKanban({ filters, onTaskClick, onAddTask }: BoardKanbanProp
               <BoardTaskCard task={activeTask} isDragging />
             )}
             {activeColumn && (
-              <div className="boards-column boards-column--overlay dark:bg-[var(--ds-surface-raised, #1A1A1A)]">
+              <div className="boards-column boards-column--overlay dark:bg-[var(--ds-surface-raised,#1A1A1A)]">
                 <div className="boards-column__header">
                   <div className="boards-column__header-left">
                     <span
                       className="boards-column__dot"
                       style={{ backgroundColor: activeColumn.color }}
                     />
-                    <h3 className="boards-column__title dark:text-[var(--ds-text, #EDEDED)]">{activeColumn.name}</h3>
-                    <span className="boards-column__count dark:bg-[var(--ds-surface-raised, #1A1A1A)] dark:text-[var(--ds-text-subtlest, #A1A1A1)]">{activeColumn.task_count}</span>
+                    <h3 className="boards-column__title dark:text-[var(--ds-text,#EDEDED)]">{activeColumn.name}</h3>
+                    <span className="boards-column__count dark:bg-[var(--ds-surface-raised,#1A1A1A)] dark:text-[var(--ds-text-subtlest,#A1A1A1)]">{activeColumn.task_count}</span>
                   </div>
                 </div>
               </div>

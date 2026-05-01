@@ -352,7 +352,7 @@ export function BacklogTableView({ data, isLoading, onRowClick }: BacklogTableVi
     if (!column.sortable) return null;
     const isActive = sortConfig.column === column.key;
     return (
-      <span className={cn("inline-flex ml-1", isActive ? "text-[var(--ds-text-brand, #2563EB)]" : "text-[var(--ds-text-subtlest, #94A3B8)]")}>
+      <span className={cn("inline-flex ml-1", isActive ? "text-[var(--ds-text-brand,#2563EB)]" : "text-[var(--ds-text-subtlest,#94A3B8)]")}>
         {isActive && sortConfig.direction === 'asc' ? (
           <ChevronUp className="h-3 w-3" />
         ) : (
@@ -369,7 +369,7 @@ export function BacklogTableView({ data, isLoading, onRowClick }: BacklogTableVi
           <Checkbox
             checked={selectedIds.has(row.id)}
             onCheckedChange={() => toggleSelection(row.id)}
-            className="data-[state=checked]:bg-[var(--ds-text-brand, #2563EB)] data-[state=checked]:border-[var(--ds-text-brand, #2563EB)]" /* V12 */
+            className="data-[state=checked]:bg-[var(--ds-text-brand,#2563EB)] data-[state=checked]:border-[var(--ds-text-brand,#2563EB)]" /* V12 */
             style={{ width: 16, height: 16, borderRadius: 3 }} /* V12 */
           />
         );
@@ -573,7 +573,7 @@ export function BacklogTableView({ data, isLoading, onRowClick }: BacklogTableVi
                           <Checkbox
                             checked={isAllSelected || (isIndeterminate ? 'indeterminate' : false)}
                             onCheckedChange={() => toggleAll()}
-                            className="data-[state=checked]:bg-[var(--ds-text-brand, #2563EB)] data-[state=checked]:border-[var(--ds-text-brand, #2563EB)]" /* V12 */
+                            className="data-[state=checked]:bg-[var(--ds-text-brand,#2563EB)] data-[state=checked]:border-[var(--ds-text-brand,#2563EB)]" /* V12 */
                             style={{ width: 16, height: 16, borderRadius: 3 }} /* V12 */
                           />
                         ) : (

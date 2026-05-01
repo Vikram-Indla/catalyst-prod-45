@@ -131,7 +131,7 @@ export function GeneralTab({ project, onSaved }: GeneralTabProps) {
           <div className="space-y-4">
             <div>
               <label style={labelStyle}>Project Name <span style={{ color: 'var(--sem-danger)' }}>*</span></label>
-              <input value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} className="bg-[var(--bg-app)] dark:bg-[var(--ds-surface, #0A0A0A)]" style={inputStyle} onFocus={inputFocusHandler} onBlur={inputBlurHandler} />
+              <input value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} className="bg-[var(--bg-app)] dark:bg-[var(--ds-surface,#0A0A0A)]" style={inputStyle} onFocus={inputFocusHandler} onBlur={inputBlurHandler} />
             </div>
 
             <div>
@@ -139,7 +139,7 @@ export function GeneralTab({ project, onSaved }: GeneralTabProps) {
               <div className="relative">
                 <input
                   value={project.key} readOnly
-                  className="bg-[var(--cp-bd-zone)] dark:bg-[var(--ds-surface-raised, #1A1A1A)]"
+                  className="bg-[var(--cp-bd-zone)] dark:bg-[var(--ds-surface-raised,#1A1A1A)]"
                   style={{ ...inputStyle, color: 'var(--fg-3)', cursor: 'not-allowed', fontFamily: 'var(--cp-font-mono)', letterSpacing: '0.05em', paddingRight: 36 }}
                 />
                 <Lock size={14} color="var(--fg-4)" className="absolute right-3 top-1/2 -translate-y-1/2" />
@@ -148,7 +148,7 @@ export function GeneralTab({ project, onSaved }: GeneralTabProps) {
 
             <div>
               <label style={labelStyle}>Department <span style={{ color: 'var(--sem-danger)' }}>*</span></label>
-              <select value={form.department} onChange={e => setForm(f => ({ ...f, department: e.target.value }))} className="bg-[var(--bg-app)] dark:bg-[var(--ds-surface, #0A0A0A)]" style={{ ...inputStyle, cursor: 'pointer' }} onFocus={inputFocusHandler as any} onBlur={inputBlurHandler as any}>
+              <select value={form.department} onChange={e => setForm(f => ({ ...f, department: e.target.value }))} className="bg-[var(--bg-app)] dark:bg-[var(--ds-surface,#0A0A0A)]" style={{ ...inputStyle, cursor: 'pointer' }} onFocus={inputFocusHandler as any} onBlur={inputBlurHandler as any}>
                 {DEPARTMENTS.map(d => <option key={d} value={d}>{d}</option>)}
               </select>
             </div>
@@ -157,7 +157,7 @@ export function GeneralTab({ project, onSaved }: GeneralTabProps) {
               <label style={labelStyle}>Description</label>
               <textarea
                 value={form.description} onChange={e => setForm(f => ({ ...f, description: e.target.value }))}
-                rows={3} className="bg-[var(--bg-app)] dark:bg-[var(--ds-surface, #0A0A0A)]" style={{ ...inputStyle, height: 'auto', padding: '8px 12px', resize: 'vertical' }}
+                rows={3} className="bg-[var(--bg-app)] dark:bg-[var(--ds-surface,#0A0A0A)]" style={{ ...inputStyle, height: 'auto', padding: '8px 12px', resize: 'vertical' }}
                 onFocus={inputFocusHandler as any} onBlur={inputBlurHandler as any}
               />
             </div>
@@ -167,7 +167,7 @@ export function GeneralTab({ project, onSaved }: GeneralTabProps) {
           <div className="space-y-4">
             <div>
               <label style={labelStyle}>Status</label>
-              <select value={form.status} onChange={e => setForm(f => ({ ...f, status: e.target.value }))} className="bg-[var(--bg-app)] dark:bg-[var(--ds-surface, #0A0A0A)]" style={{ ...inputStyle, cursor: 'pointer' }} onFocus={inputFocusHandler as any} onBlur={inputBlurHandler as any}>
+              <select value={form.status} onChange={e => setForm(f => ({ ...f, status: e.target.value }))} className="bg-[var(--bg-app)] dark:bg-[var(--ds-surface,#0A0A0A)]" style={{ ...inputStyle, cursor: 'pointer' }} onFocus={inputFocusHandler as any} onBlur={inputBlurHandler as any}>
                 {STATUSES.map(s => (
                   <option key={s} value={s}>{s === 'on_hold' ? 'On Hold' : s.charAt(0).toUpperCase() + s.slice(1)}</option>
                 ))}
@@ -177,11 +177,11 @@ export function GeneralTab({ project, onSaved }: GeneralTabProps) {
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label style={labelStyle}>Start Date</label>
-                <input type="date" value={form.start_date} onChange={e => setForm(f => ({ ...f, start_date: e.target.value }))} className="bg-[var(--bg-app)] dark:bg-[var(--ds-surface, #0A0A0A)]" style={{ ...inputStyle, cursor: 'pointer' }} onFocus={inputFocusHandler} onBlur={inputBlurHandler} />
+                <input type="date" value={form.start_date} onChange={e => setForm(f => ({ ...f, start_date: e.target.value }))} className="bg-[var(--bg-app)] dark:bg-[var(--ds-surface,#0A0A0A)]" style={{ ...inputStyle, cursor: 'pointer' }} onFocus={inputFocusHandler} onBlur={inputBlurHandler} />
               </div>
               <div>
                 <label style={labelStyle}>End Date</label>
-                <input type="date" value={form.end_date} onChange={e => setForm(f => ({ ...f, end_date: e.target.value }))} className="bg-[var(--bg-app)] dark:bg-[var(--ds-surface, #0A0A0A)]" style={{ ...inputStyle, cursor: 'pointer' }} onFocus={inputFocusHandler} onBlur={inputBlurHandler} />
+                <input type="date" value={form.end_date} onChange={e => setForm(f => ({ ...f, end_date: e.target.value }))} className="bg-[var(--bg-app)] dark:bg-[var(--ds-surface,#0A0A0A)]" style={{ ...inputStyle, cursor: 'pointer' }} onFocus={inputFocusHandler} onBlur={inputBlurHandler} />
               </div>
             </div>
 
@@ -193,10 +193,10 @@ export function GeneralTab({ project, onSaved }: GeneralTabProps) {
               </div>
               <button
                 onClick={() => setForm(f => ({ ...f, feature_layer: !f.feature_layer }))}
-                className={`flex-shrink-0 rounded-full transition-colors ${form.feature_layer ? 'bg-[var(--cp-blue)]' : 'bg-[var(--divider)] dark:bg-[var(--ds-border, #292929)]'}`}
+                className={`flex-shrink-0 rounded-full transition-colors ${form.feature_layer ? 'bg-[var(--cp-blue)]' : 'bg-[var(--divider)] dark:bg-[var(--ds-border,#292929)]'}`}
                 style={{ width: 40, height: 22, borderRadius: 11, border: 'none', cursor: 'pointer', position: 'relative' }}
               >
-                <span className="rounded-full bg-[var(--bg-app)] dark:bg-[var(--ds-surface, #0A0A0A)]" style={{ width: 16, height: 16, borderRadius: '50%', position: 'absolute', top: 3, left: form.feature_layer ? 21 : 3, transition: 'left 150ms ease', boxShadow: '0 1px 2px rgba(0,0,0,0.15)' }} />
+                <span className="rounded-full bg-[var(--bg-app)] dark:bg-[var(--ds-surface,#0A0A0A)]" style={{ width: 16, height: 16, borderRadius: '50%', position: 'absolute', top: 3, left: form.feature_layer ? 21 : 3, transition: 'left 150ms ease', boxShadow: '0 1px 2px rgba(0,0,0,0.15)' }} />
               </button>
             </div>
 
@@ -208,10 +208,10 @@ export function GeneralTab({ project, onSaved }: GeneralTabProps) {
               </div>
               <button
                 onClick={() => setForm(f => ({ ...f, ai_assist: !f.ai_assist }))}
-                className={`flex-shrink-0 rounded-full transition-colors ${form.ai_assist ? 'bg-[var(--cp-blue)]' : 'bg-[var(--divider)] dark:bg-[var(--ds-border, #292929)]'}`}
+                className={`flex-shrink-0 rounded-full transition-colors ${form.ai_assist ? 'bg-[var(--cp-blue)]' : 'bg-[var(--divider)] dark:bg-[var(--ds-border,#292929)]'}`}
                 style={{ width: 40, height: 22, borderRadius: 11, border: 'none', cursor: 'pointer', position: 'relative' }}
               >
-                <span className="rounded-full bg-[var(--bg-app)] dark:bg-[var(--ds-surface, #0A0A0A)]" style={{ width: 16, height: 16, borderRadius: '50%', position: 'absolute', top: 3, left: form.ai_assist ? 21 : 3, transition: 'left 150ms ease', boxShadow: '0 1px 2px rgba(0,0,0,0.15)' }} />
+                <span className="rounded-full bg-[var(--bg-app)] dark:bg-[var(--ds-surface,#0A0A0A)]" style={{ width: 16, height: 16, borderRadius: '50%', position: 'absolute', top: 3, left: form.ai_assist ? 21 : 3, transition: 'left 150ms ease', boxShadow: '0 1px 2px rgba(0,0,0,0.15)' }} />
               </button>
             </div>
           </div>

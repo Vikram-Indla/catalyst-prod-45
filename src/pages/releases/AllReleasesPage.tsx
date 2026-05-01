@@ -727,7 +727,7 @@ export default function AllReleasesPage() {
               {bulkStatusDropdown && (
                 <div className="absolute top-full mt-1 left-0 z-50" style={{ background: 'var(--bg-app, #fff)', border: '1px solid #e2e8f0', borderRadius: '6px', boxShadow: '0 8px 24px rgba(0,0,0,0.1)', minWidth: '140px' }}>
                   {(['planned', 'active', 'testing', 'uat', 'released'] as const).map(s => (
-                    <button key={s} onClick={() => handleBulkStatus(s)} className="block w-full text-left px-3 py-1.5 transition-colors hover:bg-[var(--ds-surface-sunken, #f8fafc)]" style={{ fontSize: '13px', color: 'var(--ds-text-subtle, #334155)', border: 'none', background: 'transparent', cursor: 'pointer' }}>
+                    <button key={s} onClick={() => handleBulkStatus(s)} className="block w-full text-left px-3 py-1.5 transition-colors hover:bg-[var(--ds-surface-sunken,#f8fafc)]" style={{ fontSize: '13px', color: 'var(--ds-text-subtle, #334155)', border: 'none', background: 'transparent', cursor: 'pointer' }}>
                       {getStatusConfig(s).label}
                     </button>
                   ))}
@@ -1071,7 +1071,7 @@ function SortableHeader({ label, field, current, direction, onClick, style }: {
   return (
     <th
       onClick={() => onClick(field)}
-      className="cursor-pointer select-none transition-colors hover:text-[var(--ds-text-subtle, #334155)]"
+      className="cursor-pointer select-none transition-colors hover:text-[var(--ds-text-subtle,#334155)]"
       style={{ ...colHeaderStyle, ...style, color: isActive ? 'var(--ds-text-brand, #2563eb)' : 'var(--ds-text-subtlest, #64748b)' }}
     >
       {label} {isActive && <span style={{ color: 'var(--ds-text-brand, #2563eb)' }}>{direction === 'asc' ? '↑' : '↓'}</span>}
@@ -1187,7 +1187,7 @@ function ReleaseRow({ release: r, index = 0, selected, onToggle, onClick, onNavi
 
 function CheckboxRow({ checked, label, onChange }: { checked: boolean; label: string; onChange: () => void }) {
   return (
-    <label className="flex items-center gap-2 cursor-pointer transition-colors hover:bg-[var(--ds-surface-sunken, #f8fafc)]" style={{ padding: '6px 12px', fontSize: '13px', color: 'var(--ds-text-subtle, #334155)' }}>
+    <label className="flex items-center gap-2 cursor-pointer transition-colors hover:bg-[var(--ds-surface-sunken,#f8fafc)]" style={{ padding: '6px 12px', fontSize: '13px', color: 'var(--ds-text-subtle, #334155)' }}>
       <input type="checkbox" checked={checked} onChange={onChange} style={{ accentColor: 'var(--ds-text-brand, #2563eb)' }} />
       {label}
     </label>
@@ -1224,7 +1224,7 @@ function DropdownItem({ icon, label, onClick }: { icon: React.ReactNode; label: 
   return (
     <button
       onClick={onClick}
-      className="flex items-center gap-2 w-full text-left transition-colors hover:bg-[var(--ds-surface-sunken, #f8fafc)]"
+      className="flex items-center gap-2 w-full text-left transition-colors hover:bg-[var(--ds-surface-sunken,#f8fafc)]"
       style={{ padding: '8px 12px', fontSize: '13px', color: 'var(--ds-text-subtle, #334155)', border: 'none', background: 'transparent', cursor: 'pointer', borderRadius: '4px' }}
     >
       {icon} {label}
@@ -1485,7 +1485,7 @@ function TimelineView({ releases, onBarClick }: {
             <div
               key={r.id}
               onClick={() => onBarClick(r)}
-              className="flex items-center gap-2 cursor-pointer transition-colors hover:bg-[var(--ds-surface-sunken, #f8fafc)]"
+              className="flex items-center gap-2 cursor-pointer transition-colors hover:bg-[var(--ds-surface-sunken,#f8fafc)]"
               style={{ height: '50px', padding: '8px 12px', borderBottom: '1px solid #f1f5f9' }}
             >
               <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: getHealthColor(r.health), flexShrink: 0 }} />

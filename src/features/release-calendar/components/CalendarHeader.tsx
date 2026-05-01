@@ -44,7 +44,7 @@ export function CalendarHeader({
             <Download className="w-4 h-4 mr-2" />
             Export
           </Button>
-          <Button className="bg-[var(--ds-text-brand, #2563eb)] hover:bg-[var(--ds-text-brand, #2563eb)]/90">
+          <Button className="bg-[var(--ds-text-brand,#2563eb)] hover:bg-[var(--ds-text-brand,#2563eb)]/90">
             <Plus className="w-4 h-4 mr-2" />
             New Release
           </Button>

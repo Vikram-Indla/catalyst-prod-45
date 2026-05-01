@@ -249,23 +249,23 @@ export function WorkflowEditor({ scheme, statuses, transitions, onInvalidate }: 
   }
 
   return (
-    <div className="flex flex-col lg:flex-row gap-0 divide-x divide-[var(--ds-border, #E2E8F0)] bg-white">
+    <div className="flex flex-col lg:flex-row gap-0 divide-x divide-[var(--ds-border,#E2E8F0)] bg-white">
       {/* ─── LEFT: Status List ─── */}
       <div className="w-full lg:w-[380px] shrink-0">
-        <div className="px-4 py-3 border-b border-[var(--ds-border, #E2E8F0)] flex items-center justify-between">
-          <h3 className="text-xs font-semibold text-[var(--ds-text-subtlest, #64748B)] uppercase tracking-wider">
+        <div className="px-4 py-3 border-b border-[var(--ds-border,#E2E8F0)] flex items-center justify-between">
+          <h3 className="text-xs font-semibold text-[var(--ds-text-subtlest,#64748B)] uppercase tracking-wider">
             Statuses ({statuses.length})
           </h3>
         </div>
 
         {/* Status rows */}
-        <div className="divide-y divide-[var(--ds-border, #E2E8F0)]">
+        <div className="divide-y divide-[var(--ds-border,#E2E8F0)]">
           {statuses.map(s => (
             <div
               key={s.id}
-              className="group flex items-center gap-2 px-4 py-2.5 hover:bg-[var(--ds-surface-sunken, #F8FAFC)] transition-colors"
+              className="group flex items-center gap-2 px-4 py-2.5 hover:bg-[var(--ds-surface-sunken,#F8FAFC)] transition-colors"
             >
-              <GripVertical size={14} className="text-[var(--ds-text-disabled, #CBD5E1)] shrink-0" />
+              <GripVertical size={14} className="text-[var(--ds-text-disabled,#CBD5E1)] shrink-0" />
 
               {/* Category dot */}
               <div
@@ -283,12 +283,12 @@ export function WorkflowEditor({ scheme, statuses, transitions, onInvalidate }: 
                   onChange={e => setEditName(e.target.value)}
                   onBlur={() => handleRename(s.id)}
                   onKeyDown={e => e.key === 'Enter' && handleRename(s.id)}
-                  className="h-7 text-xs bg-white border-[var(--ds-text-disabled, #CBD5E1)] text-[var(--ds-text, #0F172A)] flex-1"
+                  className="h-7 text-xs bg-white border-[var(--ds-text-disabled,#CBD5E1)] text-[var(--ds-text,#0F172A)] flex-1"
                   autoFocus
                 />
               ) : (
                 <span
-                  className="text-[13px] text-[var(--ds-text, #0F172A)] flex-1 cursor-pointer hover:underline"
+                  className="text-[13px] text-[var(--ds-text,#0F172A)] flex-1 cursor-pointer hover:underline"
                   onClick={() => { setEditingId(s.id); setEditName(s.name); }}
                 >
                   {s.name}
@@ -298,12 +298,12 @@ export function WorkflowEditor({ scheme, statuses, transitions, onInvalidate }: 
               {/* Flags */}
               <div className="flex items-center gap-1 shrink-0">
                 {s.is_initial && (
-                  <span className="px-1.5 py-0.5 text-[10px] bg-[var(--ds-surface-sunken, #F1F5F9)] text-[var(--ds-text-subtle, #475569)] rounded border border-[var(--ds-border, #E2E8F0)]">
+                  <span className="px-1.5 py-0.5 text-[10px] bg-[var(--ds-surface-sunken,#F1F5F9)] text-[var(--ds-text-subtle,#475569)] rounded border border-[var(--ds-border,#E2E8F0)]">
                     START
                   </span>
                 )}
                 {s.is_final && (
-                  <span className="px-1.5 py-0.5 text-[10px] bg-[var(--ds-surface-sunken, #F1F5F9)] text-[var(--ds-text-subtle, #475569)] rounded border border-[var(--ds-border, #E2E8F0)]">
+                  <span className="px-1.5 py-0.5 text-[10px] bg-[var(--ds-surface-sunken,#F1F5F9)] text-[var(--ds-text-subtle,#475569)] rounded border border-[var(--ds-border,#E2E8F0)]">
                     END
                   </span>
                 )}
@@ -314,7 +314,7 @@ export function WorkflowEditor({ scheme, statuses, transitions, onInvalidate }: 
                 value={s.category}
                 onValueChange={val => handleUpdateCategory(s.id, val)}
               >
-                <SelectTrigger className="h-7 w-[100px] text-[11px] bg-white border-[var(--ds-border, #E2E8F0)] text-[var(--ds-text-subtle, #475569)]">
+                <SelectTrigger className="h-7 w-[100px] text-[11px] bg-white border-[var(--ds-border,#E2E8F0)] text-[var(--ds-text-subtle,#475569)]">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -334,7 +334,7 @@ export function WorkflowEditor({ scheme, statuses, transitions, onInvalidate }: 
                 onKeyDown={e => {
                   if (e.key === 'Enter') (e.currentTarget as HTMLInputElement).blur();
                 }}
-                className="h-7 w-[68px] text-[11px] bg-white border-[var(--ds-border, #E2E8F0)] text-[var(--ds-text-subtle, #475569)] shrink-0"
+                className="h-7 w-[68px] text-[11px] bg-white border-[var(--ds-border,#E2E8F0)] text-[var(--ds-text-subtle,#475569)] shrink-0"
                 title="Work-in-progress limit (blank for no limit)"
               />
 
@@ -347,7 +347,7 @@ export function WorkflowEditor({ scheme, statuses, transitions, onInvalidate }: 
                 onKeyDown={e => {
                   if (e.key === 'Enter') (e.currentTarget as HTMLInputElement).blur();
                 }}
-                className="h-7 w-[140px] text-[11px] bg-white border-[var(--ds-border, #E2E8F0)] text-[var(--ds-text-subtle, #475569)] shrink-0 font-mono"
+                className="h-7 w-[140px] text-[11px] bg-white border-[var(--ds-border,#E2E8F0)] text-[var(--ds-text-subtle,#475569)] shrink-0 font-mono"
                 title="Comma-separated DB enum values that route into this column"
               />
 
@@ -358,7 +358,7 @@ export function WorkflowEditor({ scheme, statuses, transitions, onInvalidate }: 
                   'px-2 h-7 text-[10px] font-medium uppercase tracking-wider rounded border transition-colors shrink-0',
                   ((s as WorkflowStatus & { is_active?: boolean }).is_active ?? true)
                     ? 'bg-[#ECFDF5] text-[#065F46] border-[#A7F3D0]'
-                    : 'bg-[var(--ds-surface-sunken, #F1F5F9)] text-[var(--ds-text-subtlest, #94A3B8)] border-[var(--ds-border, #E2E8F0)]',
+                    : 'bg-[var(--ds-surface-sunken,#F1F5F9)] text-[var(--ds-text-subtlest,#94A3B8)] border-[var(--ds-border,#E2E8F0)]',
                 )}
                 title="Toggle whether this status renders as a kanban column"
               >
@@ -370,8 +370,8 @@ export function WorkflowEditor({ scheme, statuses, transitions, onInvalidate }: 
                 <button
                   onClick={() => handleToggleFlag(s.id, 'is_initial', s.is_initial)}
                   className={cn(
-                    'p-1 rounded hover:bg-[var(--ds-surface-sunken, #F1F5F9)] transition-colors',
-                    s.is_initial ? 'text-[var(--ds-text, #0F172A)]' : 'text-[var(--ds-text-disabled, #CBD5E1)]'
+                    'p-1 rounded hover:bg-[var(--ds-surface-sunken,#F1F5F9)] transition-colors',
+                    s.is_initial ? 'text-[var(--ds-text,#0F172A)]' : 'text-[var(--ds-text-disabled,#CBD5E1)]'
                   )}
                   title="Set as initial status"
                 >
@@ -380,8 +380,8 @@ export function WorkflowEditor({ scheme, statuses, transitions, onInvalidate }: 
                 <button
                   onClick={() => handleToggleFlag(s.id, 'is_final', s.is_final)}
                   className={cn(
-                    'p-1 rounded hover:bg-[var(--ds-surface-sunken, #F1F5F9)] transition-colors',
-                    s.is_final ? 'text-[var(--ds-text, #0F172A)]' : 'text-[var(--ds-text-disabled, #CBD5E1)]'
+                    'p-1 rounded hover:bg-[var(--ds-surface-sunken,#F1F5F9)] transition-colors',
+                    s.is_final ? 'text-[var(--ds-text,#0F172A)]' : 'text-[var(--ds-text-disabled,#CBD5E1)]'
                   )}
                   title="Set as final status"
                 >
@@ -389,7 +389,7 @@ export function WorkflowEditor({ scheme, statuses, transitions, onInvalidate }: 
                 </button>
                 <button
                   onClick={() => setDeleteTarget(s)}
-                  className="p-1 rounded hover:bg-[#FEE2E2] text-[var(--ds-text-disabled, #CBD5E1)] hover:text-red-600 transition-colors"
+                  className="p-1 rounded hover:bg-[#FEE2E2] text-[var(--ds-text-disabled,#CBD5E1)] hover:text-red-600 transition-colors"
                   title="Delete status"
                 >
                   <Trash2 size={12} />
@@ -400,16 +400,16 @@ export function WorkflowEditor({ scheme, statuses, transitions, onInvalidate }: 
         </div>
 
         {/* Add status form */}
-        <div className="px-4 py-3 border-t border-[var(--ds-border, #E2E8F0)] flex items-center gap-2">
+        <div className="px-4 py-3 border-t border-[var(--ds-border,#E2E8F0)] flex items-center gap-2">
           <Input
             value={newStatusName}
             onChange={e => setNewStatusName(e.target.value)}
             placeholder="New status name…"
-            className="h-8 text-xs bg-white border-[var(--ds-border, #E2E8F0)] text-[var(--ds-text, #0F172A)] placeholder:text-[var(--ds-text-subtlest, #94A3B8)] flex-1"
+            className="h-8 text-xs bg-white border-[var(--ds-border,#E2E8F0)] text-[var(--ds-text,#0F172A)] placeholder:text-[var(--ds-text-subtlest,#94A3B8)] flex-1"
             onKeyDown={e => e.key === 'Enter' && handleAddStatus()}
           />
           <Select value={newStatusCategory} onValueChange={setNewStatusCategory}>
-            <SelectTrigger className="h-8 w-[90px] text-[10px] bg-white border-[var(--ds-border, #E2E8F0)] text-[var(--ds-text-subtle, #475569)]">
+            <SelectTrigger className="h-8 w-[90px] text-[10px] bg-white border-[var(--ds-border,#E2E8F0)] text-[var(--ds-text-subtle,#475569)]">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -422,7 +422,7 @@ export function WorkflowEditor({ scheme, statuses, transitions, onInvalidate }: 
             size="sm"
             onClick={handleAddStatus}
             disabled={adding || !newStatusName.trim()}
-            className="h-8 px-3 text-xs bg-[var(--ds-text-brand, #2563EB)] hover:bg-[var(--ds-background-brand-bold-hovered, #1D4ED8)] text-white border border-[var(--ds-text-brand, #2563EB)]"
+            className="h-8 px-3 text-xs bg-[var(--ds-text-brand,#2563EB)] hover:bg-[var(--ds-background-brand-bold-hovered,#1D4ED8)] text-white border border-[var(--ds-text-brand,#2563EB)]"
           >
             <Plus size={14} />
           </Button>
@@ -431,17 +431,17 @@ export function WorkflowEditor({ scheme, statuses, transitions, onInvalidate }: 
 
       {/* ─── RIGHT: Transition Matrix ─── */}
       <div className="flex-1 overflow-auto">
-        <div className="px-4 py-3 border-b border-[var(--ds-border, #E2E8F0)]">
-          <h3 className="text-xs font-semibold text-[var(--ds-text-subtlest, #64748B)] uppercase tracking-wider">
+        <div className="px-4 py-3 border-b border-[var(--ds-border,#E2E8F0)]">
+          <h3 className="text-xs font-semibold text-[var(--ds-text-subtlest,#64748B)] uppercase tracking-wider">
             Transition Matrix
           </h3>
-          <p className="text-[11px] text-[var(--ds-text-subtlest, #94A3B8)] mt-0.5">
+          <p className="text-[11px] text-[var(--ds-text-subtlest,#94A3B8)] mt-0.5">
             Check a cell to allow transition from row → column
           </p>
         </div>
 
         {statuses.length === 0 ? (
-          <div className="flex items-center justify-center py-16 text-[var(--ds-text-subtlest, #94A3B8)] text-sm">
+          <div className="flex items-center justify-center py-16 text-[var(--ds-text-subtlest,#94A3B8)] text-sm">
             Add statuses to configure transitions
           </div>
         ) : (
@@ -449,13 +449,13 @@ export function WorkflowEditor({ scheme, statuses, transitions, onInvalidate }: 
             <table className="w-full border-collapse text-xs">
               <thead>
                 <tr>
-                  <th className="sticky left-0 z-10 bg-[var(--ds-surface-sunken, #F8FAFC)] border-b border-r border-[var(--ds-border, #E2E8F0)] px-3 py-2 text-left text-[10px] text-[var(--ds-text-subtlest, #64748B)] uppercase tracking-wider min-w-[140px]">
+                  <th className="sticky left-0 z-10 bg-[var(--ds-surface-sunken,#F8FAFC)] border-b border-r border-[var(--ds-border,#E2E8F0)] px-3 py-2 text-left text-[10px] text-[var(--ds-text-subtlest,#64748B)] uppercase tracking-wider min-w-[140px]">
                     From ↓ \ To →
                   </th>
                   {statuses.map(s => (
                     <th
                       key={s.id}
-                      className="border-b border-r border-[var(--ds-border, #E2E8F0)] px-2 py-2 text-center text-[10px] text-[var(--ds-text-subtle, #475569)] font-medium min-w-[80px] bg-[var(--ds-surface-sunken, #F8FAFC)]"
+                      className="border-b border-r border-[var(--ds-border,#E2E8F0)] px-2 py-2 text-center text-[10px] text-[var(--ds-text-subtle,#475569)] font-medium min-w-[80px] bg-[var(--ds-surface-sunken,#F8FAFC)]"
                     >
                       <div className="flex flex-col items-center gap-1">
                         <div
@@ -471,7 +471,7 @@ export function WorkflowEditor({ scheme, statuses, transitions, onInvalidate }: 
               <tbody>
                 {/* Global row */}
                 <tr className="bg-[#FFFBEB]">
-                  <td className="sticky left-0 z-10 bg-[#FFFBEB] border-b border-r border-[var(--ds-border, #E2E8F0)] px-3 py-2 text-[var(--ds-text, #0F172A)] font-medium">
+                  <td className="sticky left-0 z-10 bg-[#FFFBEB] border-b border-r border-[var(--ds-border,#E2E8F0)] px-3 py-2 text-[var(--ds-text,#0F172A)] font-medium">
                     <span className="flex items-center gap-1.5">
                       <Zap size={12} className="text-amber-500" />
                       Any (Global)
@@ -480,7 +480,7 @@ export function WorkflowEditor({ scheme, statuses, transitions, onInvalidate }: 
                   {statuses.map(to => (
                     <td
                       key={to.id}
-                      className="border-b border-r border-[var(--ds-border, #E2E8F0)] px-2 py-2 text-center"
+                      className="border-b border-r border-[var(--ds-border,#E2E8F0)] px-2 py-2 text-center"
                     >
                       <TransitionCell
                         active={hasTransition(null, to.id, true)}
@@ -492,8 +492,8 @@ export function WorkflowEditor({ scheme, statuses, transitions, onInvalidate }: 
 
                 {/* Per-status rows */}
                 {statuses.map(from => (
-                  <tr key={from.id} className="hover:bg-[var(--ds-surface-sunken, #F8FAFC)] transition-colors">
-                    <td className="sticky left-0 z-10 bg-white hover:bg-[var(--ds-surface-sunken, #F8FAFC)] border-b border-r border-[var(--ds-border, #E2E8F0)] px-3 py-2 text-[var(--ds-text, #0F172A)] font-medium">
+                  <tr key={from.id} className="hover:bg-[var(--ds-surface-sunken,#F8FAFC)] transition-colors">
+                    <td className="sticky left-0 z-10 bg-white hover:bg-[var(--ds-surface-sunken,#F8FAFC)] border-b border-r border-[var(--ds-border,#E2E8F0)] px-3 py-2 text-[var(--ds-text,#0F172A)] font-medium">
                       <span className="flex items-center gap-1.5">
                         <div
                           className="w-2 h-2 rounded-full"
@@ -506,12 +506,12 @@ export function WorkflowEditor({ scheme, statuses, transitions, onInvalidate }: 
                       <td
                         key={to.id}
                         className={cn(
-                          'border-b border-r border-[var(--ds-border, #E2E8F0)] px-2 py-2 text-center',
-                          from.id === to.id ? 'bg-[var(--ds-surface-sunken, #F1F5F9)]' : ''
+                          'border-b border-r border-[var(--ds-border,#E2E8F0)] px-2 py-2 text-center',
+                          from.id === to.id ? 'bg-[var(--ds-surface-sunken,#F1F5F9)]' : ''
                         )}
                       >
                         {from.id === to.id ? (
-                          <span className="text-[var(--ds-text-disabled, #CBD5E1)]">—</span>
+                          <span className="text-[var(--ds-text-disabled,#CBD5E1)]">—</span>
                         ) : (
                           <TransitionCell
                             active={hasTransition(from.id, to.id, false)}
@@ -530,17 +530,17 @@ export function WorkflowEditor({ scheme, statuses, transitions, onInvalidate }: 
 
       {/* Delete confirmation */}
       <AlertDialog open={!!deleteTarget} onOpenChange={() => setDeleteTarget(null)}>
-        <AlertDialogContent className="bg-white border-[var(--ds-border, #E2E8F0)]">
+        <AlertDialogContent className="bg-white border-[var(--ds-border,#E2E8F0)]">
           <AlertDialogHeader>
-            <AlertDialogTitle className="text-[var(--ds-text, #0F172A)]">Delete Status</AlertDialogTitle>
-            <AlertDialogDescription className="text-[var(--ds-text-subtlest, #64748B)]">
+            <AlertDialogTitle className="text-[var(--ds-text,#0F172A)]">Delete Status</AlertDialogTitle>
+            <AlertDialogDescription className="text-[var(--ds-text-subtlest,#64748B)]">
               Are you sure you want to delete "{deleteTarget?.name}"? This will also remove all
               transitions referencing this status. Any issues currently in this status will need
               to be reassigned.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel className="bg-white border-[var(--ds-border, #E2E8F0)] text-[var(--ds-text, #0F172A)] hover:bg-[var(--ds-surface-sunken, #F8FAFC)]">
+            <AlertDialogCancel className="bg-white border-[var(--ds-border,#E2E8F0)] text-[var(--ds-text,#0F172A)] hover:bg-[var(--ds-surface-sunken,#F8FAFC)]">
               Cancel
             </AlertDialogCancel>
             <AlertDialogAction
@@ -563,8 +563,8 @@ function TransitionCell({ active, onClick }: { active: boolean; onClick: () => v
       className={cn(
         'w-6 h-6 rounded border flex items-center justify-center mx-auto transition-all',
         active
-          ? 'bg-[var(--ds-text-brand, #2563EB)] border-[var(--ds-text-brand, #2563EB)] text-white'
-          : 'bg-white border-[var(--ds-border, #E2E8F0)] text-transparent hover:border-[var(--ds-text-brand, #2563EB)] hover:bg-[var(--ds-background-selected, #EFF6FF)]'
+          ? 'bg-[var(--ds-text-brand,#2563EB)] border-[var(--ds-text-brand,#2563EB)] text-white'
+          : 'bg-white border-[var(--ds-border,#E2E8F0)] text-transparent hover:border-[var(--ds-text-brand,#2563EB)] hover:bg-[var(--ds-background-selected,#EFF6FF)]'
       )}
     >
       <Check size={12} />

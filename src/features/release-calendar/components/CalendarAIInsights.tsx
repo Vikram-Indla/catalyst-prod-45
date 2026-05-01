@@ -41,9 +41,9 @@ export function CalendarAIInsights({ insights, conflicts, onInsightClick }: Cale
 
   const getIcon = (type: 'critical' | 'warning' | 'info') => {
     switch (type) {
-      case 'critical': return <AlertCircle className="w-4 h-4 text-[var(--ds-text-danger, #ef4444)]" />;
-      case 'warning': return <AlertTriangle className="w-4 h-4 text-[var(--ds-text-warning, #d97706)]" />;
-      case 'info': return <Clock className="w-4 h-4 text-[var(--ds-text-brand, #2563eb)]" />;
+      case 'critical': return <AlertCircle className="w-4 h-4 text-[var(--ds-text-danger,#ef4444)]" />;
+      case 'warning': return <AlertTriangle className="w-4 h-4 text-[var(--ds-text-warning,#d97706)]" />;
+      case 'info': return <Clock className="w-4 h-4 text-[var(--ds-text-brand,#2563eb)]" />;
     }
   };
 
@@ -51,7 +51,7 @@ export function CalendarAIInsights({ insights, conflicts, onInsightClick }: Cale
     switch (type) {
       case 'critical': return 'bg-[#fee2e2] border-[#fecaca]';
       case 'warning': return 'bg-[#fef3c7] border-[#fde68a]';
-      case 'info': return 'bg-[var(--ds-background-selected, #eff6ff)] border-[#bfdbfe]';
+      case 'info': return 'bg-[var(--ds-background-selected,#eff6ff)] border-[#bfdbfe]';
     }
   };
 
@@ -119,7 +119,7 @@ export function CalendarAIInsights({ insights, conflicts, onInsightClick }: Cale
               variant="ghost"
               size="sm"
               onClick={() => onInsightClick?.(item.releaseIds)}
-              className="text-[var(--ds-text-brand, #2563eb)] hover:text-[var(--ds-text-brand, #2563eb)]/80 text-xs"
+              className="text-[var(--ds-text-brand,#2563eb)] hover:text-[var(--ds-text-brand,#2563eb)]/80 text-xs"
             >
               {item.action}
               <ArrowRight className="w-3 h-3 ml-1" />

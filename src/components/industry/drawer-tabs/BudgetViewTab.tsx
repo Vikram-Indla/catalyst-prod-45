@@ -125,7 +125,7 @@ function BudgetTypeSelector({
             className={cn(
               "px-4 py-2 text-sm font-medium rounded-md transition-all",
               selected.includes(type)
-                ? "bg-[var(--ds-text-brand, #2563eb)] text-white shadow-sm"
+                ? "bg-[var(--ds-text-brand,#2563eb)] text-white shadow-sm"
                 : "bg-transparent text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
             )}
           >
@@ -169,7 +169,7 @@ function POTagsInput({
         "flex flex-wrap gap-2 p-2 min-h-[42px] border rounded-lg transition-colors",
         "bg-white dark:bg-gray-900",
         "border-gray-200 dark:border-gray-700",
-        "focus-within:border-[var(--ds-text-brand, #2563eb)] focus-within:ring-1 focus-within:ring-[var(--ds-text-brand, #2563eb)]/20"
+        "focus-within:border-[var(--ds-text-brand,#2563eb)] focus-within:ring-1 focus-within:ring-[var(--ds-text-brand,#2563eb)]/20"
       )}>
         {tags.map((tag, index) => (
           <span key={index} className="inline-flex items-center gap-1">
@@ -177,7 +177,7 @@ function POTagsInput({
             <button
               type="button"
               onClick={() => removeTag(tag)}
-              className="hover:bg-[var(--ds-text-brand, #2563eb)]/20 rounded-full p-0.5"
+              className="hover:bg-[var(--ds-text-brand,#2563eb)]/20 rounded-full p-0.5"
             >
               <X className="h-3 w-3" />
             </button>

@@ -101,7 +101,7 @@ const FlagRow = memo(function FlagRow({ flag, isSelected, isPending, onToggle, o
 
   return (
     <div
-      className={`group grid items-center gap-0 ${isDark ? "bg-[var(--ds-surface, #0A0A0A)]" : "bg-white"}`}
+      className={`group grid items-center gap-0 ${isDark ? "bg-[var(--ds-surface,#0A0A0A)]" : "bg-white"}`}
       style={{
         gridTemplateColumns: GRID_COLS,
         height: 52,
@@ -118,7 +118,7 @@ const FlagRow = memo(function FlagRow({ flag, isSelected, isPending, onToggle, o
           type="checkbox"
           checked={isSelected}
           onChange={(e) => onSelect(flag.id, e.target.checked)}
-          className="w-3.5 h-3.5 rounded accent-[var(--ds-text-brand, #2563EB)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ds-text-brand, #2563EB)] focus-visible:ring-offset-2"
+          className="w-3.5 h-3.5 rounded accent-[var(--ds-text-brand,#2563EB)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ds-text-brand,#2563EB)] focus-visible:ring-offset-2"
           aria-label={`Select ${flag.module_name}`}
         />
       </div>
@@ -225,14 +225,14 @@ const FlagRow = memo(function FlagRow({ flag, isSelected, isPending, onToggle, o
       {/* D10: Hover-reveal row actions */}
       <div className="flex items-center justify-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-[120ms]">
         <button
-          className="w-7 h-7 flex items-center justify-center rounded hover:bg-[rgba(15,23,42,0.04)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ds-text-brand, #2563EB)] focus-visible:ring-offset-2"
+          className="w-7 h-7 flex items-center justify-center rounded hover:bg-[rgba(15,23,42,0.04)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ds-text-brand,#2563EB)] focus-visible:ring-offset-2"
           aria-label="Configure module"
           style={{ borderRadius: 4 }}
         >
           <Settings size={16} style={{ color: 'var(--cp-text-tertiary, #64748B)' }} />
         </button>
         <button
-          className="w-7 h-7 flex items-center justify-center rounded hover:bg-[rgba(15,23,42,0.04)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ds-text-brand, #2563EB)] focus-visible:ring-offset-2"
+          className="w-7 h-7 flex items-center justify-center rounded hover:bg-[rgba(15,23,42,0.04)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ds-text-brand,#2563EB)] focus-visible:ring-offset-2"
           aria-label="More options"
           style={{ borderRadius: 4 }}
         >
@@ -426,18 +426,18 @@ export default function FeatureFlagsPage() {
   // ── Loading: first load → full skeleton ────────────────
   if (isLoading) {
     return (
-      <div className={`flex-1 min-w-0 ${isDark ? "bg-[var(--ds-surface, #0A0A0A)]" : "bg-white"}`} style={{ padding: '24px 32px' }}>
-        <div className="h-7 w-48 bg-[var(--ds-surface-sunken, #F1F5F9)] rounded mb-1 animate-pulse" />
-        <div className="h-4 w-80 bg-[var(--ds-surface-sunken, #F1F5F9)] rounded mb-6 animate-pulse" />
-        <div className="h-14 bg-[var(--ds-surface-sunken, #F1F5F9)] rounded-md mb-4 animate-pulse" style={{ border: `0.75px solid ${'var(--cp-border-default, rgba(15,23,42,0.12))'}`, borderRadius: 6 }} />
+      <div className={`flex-1 min-w-0 ${isDark ? "bg-[var(--ds-surface,#0A0A0A)]" : "bg-white"}`} style={{ padding: '24px 32px' }}>
+        <div className="h-7 w-48 bg-[var(--ds-surface-sunken,#F1F5F9)] rounded mb-1 animate-pulse" />
+        <div className="h-4 w-80 bg-[var(--ds-surface-sunken,#F1F5F9)] rounded mb-6 animate-pulse" />
+        <div className="h-14 bg-[var(--ds-surface-sunken,#F1F5F9)] rounded-md mb-4 animate-pulse" style={{ border: `0.75px solid ${'var(--cp-border-default, rgba(15,23,42,0.12))'}`, borderRadius: 6 }} />
         <div className="flex gap-2 mb-3">
-          <div className="h-9 w-64 bg-[var(--ds-surface-sunken, #F1F5F9)] rounded animate-pulse" />
-          <div className="h-9 w-16 bg-[var(--ds-surface-sunken, #F1F5F9)] rounded animate-pulse" />
+          <div className="h-9 w-64 bg-[var(--ds-surface-sunken,#F1F5F9)] rounded animate-pulse" />
+          <div className="h-9 w-16 bg-[var(--ds-surface-sunken,#F1F5F9)] rounded animate-pulse" />
         </div>
-        <div className={`overflow-hidden ${isDark ? "bg-[var(--ds-surface, #0A0A0A)]" : "bg-white"}`} style={{ border: `0.75px solid ${'var(--cp-border-default, rgba(15,23,42,0.12))'}`, borderRadius: 6 }}>
+        <div className={`overflow-hidden ${isDark ? "bg-[var(--ds-surface,#0A0A0A)]" : "bg-white"}`} style={{ border: `0.75px solid ${'var(--cp-border-default, rgba(15,23,42,0.12))'}`, borderRadius: 6 }}>
           <div style={{ height: 40, background: 'var(--cp-bg-sunken, #F1F5F9)', borderBottom: `0.75px solid ${'var(--cp-border-subtle, rgba(15,23,42,0.06))'}` }} />
           {Array.from({ length: 8 }).map((_, i) => (
-            <div key={i} className={`animate-pulse ${isDark ? "bg-[var(--ds-surface, #0A0A0A)]" : "bg-white"}`} style={{ height: 52, borderBottom: `0.75px solid ${'var(--cp-border-subtle, rgba(15,23,42,0.06))'}` }} />
+            <div key={i} className={`animate-pulse ${isDark ? "bg-[var(--ds-surface,#0A0A0A)]" : "bg-white"}`} style={{ height: 52, borderBottom: `0.75px solid ${'var(--cp-border-subtle, rgba(15,23,42,0.06))'}` }} />
           ))}
         </div>
       </div>
@@ -447,7 +447,7 @@ export default function FeatureFlagsPage() {
   // ── Error state ─────────────────────────────────────────
   if (error) {
     return (
-      <div className={`flex-1 flex flex-col items-center justify-center py-20 gap-3 ${isDark ? "bg-[var(--ds-surface, #0A0A0A)]" : "bg-white"}`}>
+      <div className={`flex-1 flex flex-col items-center justify-center py-20 gap-3 ${isDark ? "bg-[var(--ds-surface,#0A0A0A)]" : "bg-white"}`}>
         <AlertCircle className="w-12 h-12" style={{ color: 'var(--ds-text-danger, #DC2626)' }} />
         <p style={{ fontFamily: 'var(--cp-font-body)', fontSize: 14, fontWeight: 650, color: 'var(--cp-text-primary, #0F172A)' }}>
           Failed to load feature flags
@@ -458,7 +458,7 @@ export default function FeatureFlagsPage() {
         <Button
           variant="outline"
           onClick={() => refetch()}
-          className="gap-2 focus-visible:ring-2 focus-visible:ring-[var(--ds-text-brand, #2563EB)] focus-visible:ring-offset-2"
+          className="gap-2 focus-visible:ring-2 focus-visible:ring-[var(--ds-text-brand,#2563EB)] focus-visible:ring-offset-2"
           style={{ borderRadius: 6 }}
         >
           <RefreshCw className="w-4 h-4" />
@@ -472,7 +472,7 @@ export default function FeatureFlagsPage() {
   const someSelected = selectedIds.size > 0 && selectedIds.size < filteredFlags.length;
 
   return (
-    <div className={`flex-1 min-w-0 ${isDark ? "bg-[var(--ds-surface, #0A0A0A)]" : "bg-white"}`} style={{ padding: '24px 32px' }}>
+    <div className={`flex-1 min-w-0 ${isDark ? "bg-[var(--ds-surface,#0A0A0A)]" : "bg-white"}`} style={{ padding: '24px 32px' }}>
       {/* ── Header ─────────────────────────────────────── */}
       <div className="flex items-start justify-between mb-5">
         <div>
@@ -490,7 +490,7 @@ export default function FeatureFlagsPage() {
           variant="outline"
           size="sm"
           onClick={() => refetch()}
-          className="gap-1.5 focus-visible:ring-2 focus-visible:ring-[var(--ds-text-brand, #2563EB)] focus-visible:ring-offset-2"
+          className="gap-1.5 focus-visible:ring-2 focus-visible:ring-[var(--ds-text-brand,#2563EB)] focus-visible:ring-offset-2"
           style={{ borderRadius: 6 }}
         >
           <RefreshCw size={13} className={isFetching ? 'animate-spin' : ''} />
@@ -551,7 +551,7 @@ export default function FeatureFlagsPage() {
             <button
               onClick={() => { if (!allEnabled) bulkMutation.mutate({ enabled: true, environment }); }}
               disabled={allEnabled || bulkMutation.isPending}
-              className="inline-flex items-center gap-1.5 text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ds-text-brand, #2563EB)] focus-visible:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="inline-flex items-center gap-1.5 text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ds-text-brand,#2563EB)] focus-visible:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
               style={{
                 height: 50,
                 padding: '0 14px',
@@ -572,7 +572,7 @@ export default function FeatureFlagsPage() {
             <button
               onClick={() => { if (!noneEnabled) setBulkDisableOpen(true); }}
               disabled={noneEnabled || bulkMutation.isPending}
-              className="inline-flex items-center gap-1.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ds-text-brand, #2563EB)] focus-visible:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="inline-flex items-center gap-1.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ds-text-brand,#2563EB)] focus-visible:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
               style={{
                 height: 50,
                 padding: '0 14px',
@@ -604,7 +604,7 @@ export default function FeatureFlagsPage() {
             placeholder="Search modules..."
             value={searchInput}
             onChange={(e) => setSearchInput(e.target.value)}
-            className="h-9 pl-8 focus-visible:ring-2 focus-visible:ring-[var(--ds-text-brand, #2563EB)] focus-visible:ring-offset-2"
+            className="h-9 pl-8 focus-visible:ring-2 focus-visible:ring-[var(--ds-text-brand,#2563EB)] focus-visible:ring-offset-2"
             style={{ fontFamily: 'var(--cp-font-body)', fontSize: 13, borderRadius: 4, border: `0.75px solid ${'var(--cp-border-default, rgba(15,23,42,0.14))'}` }}
             aria-label="Search feature flags"
           />
@@ -616,7 +616,7 @@ export default function FeatureFlagsPage() {
             <button
               key={mode}
               onClick={() => setFilterMode(mode)}
-              className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ds-text-brand, #2563EB)] focus-visible:ring-offset-2"
+              className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ds-text-brand,#2563EB)] focus-visible:ring-offset-2"
               style={{
                 padding: '8px 12px',
                 height: 50,
@@ -638,7 +638,7 @@ export default function FeatureFlagsPage() {
         <select
           value={categoryFilter}
           onChange={(e) => setCategoryFilter(e.target.value as ModuleCategory | 'all')}
-          className="focus-visible:ring-2 focus-visible:ring-[var(--ds-text-brand, #2563EB)] focus-visible:ring-offset-2"
+          className="focus-visible:ring-2 focus-visible:ring-[var(--ds-text-brand,#2563EB)] focus-visible:ring-offset-2"
           style={{
             height: 50,
             padding: '8px 12px',
@@ -663,7 +663,7 @@ export default function FeatureFlagsPage() {
             <Button
               size="sm"
               variant="outline"
-              className="h-8 gap-1 focus-visible:ring-2 focus-visible:ring-[var(--ds-text-brand, #2563EB)] focus-visible:ring-offset-2"
+              className="h-8 gap-1 focus-visible:ring-2 focus-visible:ring-[var(--ds-text-brand,#2563EB)] focus-visible:ring-offset-2"
               style={{ fontSize: 12, borderRadius: 6 }}
               onClick={() => {
                 selectedIds.forEach((id) => toggleMutation.mutate({ id, enabled: true, environment }));
@@ -681,7 +681,7 @@ export default function FeatureFlagsPage() {
       <div
         aria-label="Feature flags"
         role="table"
-        className={isDark ? "bg-[var(--ds-surface, #0A0A0A)]" : "bg-white"}
+        className={isDark ? "bg-[var(--ds-surface,#0A0A0A)]" : "bg-white"}
         style={{
           border: `0.75px solid ${'var(--cp-border-default, rgba(15,23,42,0.12))'}`,
           borderRadius: 6,
@@ -713,7 +713,7 @@ export default function FeatureFlagsPage() {
               checked={allSelected}
               ref={(el) => { if (el) el.indeterminate = someSelected; }}
               onChange={(e) => handleSelectAll(e.target.checked)}
-              className="w-3.5 h-3.5 rounded accent-[var(--ds-text-brand, #2563EB)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ds-text-brand, #2563EB)] focus-visible:ring-offset-2"
+              className="w-3.5 h-3.5 rounded accent-[var(--ds-text-brand,#2563EB)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ds-text-brand,#2563EB)] focus-visible:ring-offset-2"
               aria-label="Select all modules"
             />
           </div>
@@ -724,7 +724,7 @@ export default function FeatureFlagsPage() {
           <div
             style={{ padding: '8px 12px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4 }}
             onClick={() => handleSort('updated_at')}
-            className="select-none hover:text-[var(--ds-text, #0F172A)] transition-colors duration-[120ms]"
+            className="select-none hover:text-[var(--ds-text,#0F172A)] transition-colors duration-[120ms]"
             role="columnheader"
             tabIndex={0}
             onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleSort('updated_at'); } }}
@@ -741,7 +741,7 @@ export default function FeatureFlagsPage() {
 
         {/* Rows — grouped by category */}
         {filteredFlags.length === 0 ? (
-          <div className={`flex flex-col items-center justify-center py-16 gap-3 ${isDark ? "bg-[var(--ds-surface, #0A0A0A)]" : "bg-white"}`}>
+          <div className={`flex flex-col items-center justify-center py-16 gap-3 ${isDark ? "bg-[var(--ds-surface,#0A0A0A)]" : "bg-white"}`}>
             {flags?.length === 0 ? (
               <>
                 <Settings size={48} style={{ color: 'rgba(15,23,42,0.15)' }} />
@@ -827,7 +827,7 @@ export default function FeatureFlagsPage() {
             placeholder='Type "DISABLE" to confirm'
             value={confirmText}
             onChange={(e) => setConfirmText(e.target.value)}
-            className="mt-2 focus-visible:ring-2 focus-visible:ring-[var(--ds-text-brand, #2563EB)] focus-visible:ring-offset-2"
+            className="mt-2 focus-visible:ring-2 focus-visible:ring-[var(--ds-text-brand,#2563EB)] focus-visible:ring-offset-2"
             style={{ borderRadius: 4, border: `0.75px solid ${'var(--cp-border-default, rgba(15,23,42,0.14))'}` }}
             autoFocus
             onKeyDown={(e) => { if (e.key === 'Enter') handleBulkDisableConfirm(); if (e.key === 'Escape') { setBulkDisableOpen(false); setConfirmText(''); } }}
@@ -837,7 +837,7 @@ export default function FeatureFlagsPage() {
               variant="outline"
               onClick={() => { setBulkDisableOpen(false); setConfirmText(''); }}
               style={{ borderRadius: 6 }}
-              className="focus-visible:ring-2 focus-visible:ring-[var(--ds-text-brand, #2563EB)] focus-visible:ring-offset-2"
+              className="focus-visible:ring-2 focus-visible:ring-[var(--ds-text-brand,#2563EB)] focus-visible:ring-offset-2"
             >
               Cancel
             </Button>
@@ -846,7 +846,7 @@ export default function FeatureFlagsPage() {
               disabled={confirmText !== 'DISABLE' || bulkMutation.isPending}
               onClick={handleBulkDisableConfirm}
               style={{ borderRadius: 6 }}
-              className="focus-visible:ring-2 focus-visible:ring-[var(--ds-text-brand, #2563EB)] focus-visible:ring-offset-2"
+              className="focus-visible:ring-2 focus-visible:ring-[var(--ds-text-brand,#2563EB)] focus-visible:ring-offset-2"
             >
               {bulkMutation.isPending && <RefreshCw size={14} className="animate-spin mr-2" />}
               Disable All Modules

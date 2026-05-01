@@ -47,13 +47,13 @@ export function AllWorkHeader({ activeTab, onTabChange }: Props) {
           </h1>
         </div>
         <div className="flex items-center gap-2">
-          <button className="p-1.5 rounded hover:bg-[var(--hover, #1F1F1F)] transition-colors duration-[80ms] focus-visible:outline-2 focus-visible:outline-[var(--ds-text-brand, #2563EB)]" aria-label="Star project">
+          <button className="p-1.5 rounded hover:bg-[var(--hover,#1F1F1F)] transition-colors duration-[80ms] focus-visible:outline-2 focus-visible:outline-[var(--ds-text-brand,#2563EB)]" aria-label="Star project">
             <Star className="w-4 h-4" style={{ color: 'var(--fg-3)' }} />
           </button>
-          <button className="p-1.5 rounded hover:bg-[var(--hover, #1F1F1F)] transition-colors duration-[80ms] focus-visible:outline-2 focus-visible:outline-[var(--ds-text-brand, #2563EB)]" aria-label="Share project">
+          <button className="p-1.5 rounded hover:bg-[var(--hover,#1F1F1F)] transition-colors duration-[80ms] focus-visible:outline-2 focus-visible:outline-[var(--ds-text-brand,#2563EB)]" aria-label="Share project">
             <Share2 className="w-4 h-4" style={{ color: 'var(--fg-3)' }} />
           </button>
-          <button className="p-1.5 rounded hover:bg-[var(--hover, #1F1F1F)] transition-colors duration-[80ms] focus-visible:outline-2 focus-visible:outline-[var(--ds-text-brand, #2563EB)]" aria-label="More options">
+          <button className="p-1.5 rounded hover:bg-[var(--hover,#1F1F1F)] transition-colors duration-[80ms] focus-visible:outline-2 focus-visible:outline-[var(--ds-text-brand,#2563EB)]" aria-label="More options">
             <MoreHorizontal className="w-4 h-4" style={{ color: 'var(--fg-3)' }} />
           </button>
         </div>
@@ -67,7 +67,7 @@ export function AllWorkHeader({ activeTab, onTabChange }: Props) {
             <button
               key={tab.key}
               onClick={() => onTabChange(tab.key)}
-              className="px-4 py-2 text-[13px] transition-colors duration-[80ms] relative focus-visible:outline-2 focus-visible:outline-[var(--ds-text-brand, #2563EB)]"
+              className="px-4 py-2 text-[13px] transition-colors duration-[80ms] relative focus-visible:outline-2 focus-visible:outline-[var(--ds-text-brand,#2563EB)]"
               style={{
                 color: isActive ? 'var(--ds-text-brand, #2563EB)' : 'var(--ds-text-subtlest, #6b6e76)',
                 fontWeight: isActive ? 600 : 400,

@@ -98,7 +98,7 @@ function PragmaticFeatureCard({
               <div className="font-mono text-[11px] text-gray-500 dark:text-gray-400 mb-1">
                 {item.key}
               </div>
-              <div className="text-[14px] font-medium line-clamp-2 text-gray-900 dark:text-gray-100 group-hover:text-[var(--ds-text-brand, #2563eb)] dark:group-hover:text-[var(--ds-text-brand, #60a5fa)] transition-colors">
+              <div className="text-[14px] font-medium line-clamp-2 text-gray-900 dark:text-gray-100 group-hover:text-[var(--ds-text-brand,#2563eb)] dark:group-hover:text-[var(--ds-text-brand,#60a5fa)] transition-colors">
                 {item.summary}
               </div>
             </div>
@@ -144,7 +144,7 @@ function PragmaticFeatureCard({
                 'text-[10px] px-1.5 py-0.5 rounded font-medium border',
                 item.priority === 'critical' && 'bg-red-500/15 text-red-500 border-red-500/30',
                 item.priority === 'high' && 'bg-amber-500/15 text-amber-500 border-amber-500/30',
-                item.priority === 'medium' && 'bg-[var(--ds-text-brand, #2563eb)]/15 text-[var(--ds-text-brand, #2563eb)] border-[var(--ds-text-brand, #2563eb)]/30',
+                item.priority === 'medium' && 'bg-[var(--ds-text-brand,#2563eb)]/15 text-[var(--ds-text-brand,#2563eb)] border-[var(--ds-text-brand,#2563eb)]/30',
                 item.priority === 'low' && 'bg-[#0d9488]/15 text-[#0d9488] border-[#0d9488]/30',
               )}>
                 {item.priority}

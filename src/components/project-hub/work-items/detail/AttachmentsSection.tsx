@@ -131,7 +131,7 @@ export function AttachmentsSection({ workItemId, projectId }: Props) {
                     className="w-full h-full object-cover"
                   />
                 ) : (
-                  <FileText size={28} className="text-[var(--ds-text-subtlest, #94A3B8)]" />
+                  <FileText size={28} className="text-[var(--ds-text-subtlest,#94A3B8)]" />
                 )}
               </div>
               {/* Delete button */}
@@ -164,7 +164,7 @@ export function AttachmentsSection({ workItemId, projectId }: Props) {
         onClick={() => document.getElementById('att-file-input')?.click()}
       >
         {uploading ? (
-          <Loader2 size={18} className="animate-spin text-[var(--ds-text-brand, #2563EB)] mx-auto" />
+          <Loader2 size={18} className="animate-spin text-[var(--ds-text-brand,#2563EB)] mx-auto" />
         ) : (
           <>
             <Upload size={16} className="mx-auto mb-1" style={{ color: 'var(--fg-4)' }} />

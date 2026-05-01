@@ -45,8 +45,8 @@ export function QuarterCell({ quarter, isCurrentQuarter }: QuarterCellProps) {
         isCurrent 
           ? cn(
               // Current quarter - blue highlight
-              "bg-[rgba(37,99,235,0.1)] text-[var(--ds-text-brand, #2563eb)] border-[rgba(37,99,235,0.3)]",
-              "dark:bg-[rgba(37,99,235,0.15)] dark:text-[var(--ds-text-brand, #60a5fa)] dark:border-[rgba(37,99,235,0.4)]"
+              "bg-[rgba(37,99,235,0.1)] text-[var(--ds-text-brand,#2563eb)] border-[rgba(37,99,235,0.3)]",
+              "dark:bg-[rgba(37,99,235,0.15)] dark:text-[var(--ds-text-brand,#60a5fa)] dark:border-[rgba(37,99,235,0.4)]"
             )
           : cn(
               // Regular quarter - gray tint

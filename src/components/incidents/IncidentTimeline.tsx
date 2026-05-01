@@ -130,7 +130,7 @@ export function IncidentTimeline({ timeline, comments, onAddComment }: IncidentT
             "border border-border rounded-t-md bg-white",
             isEditorFocused ? "border-[#4C9AFF] ring-2 ring-[#4C9AFF]/20" : ""
           )}>
-            <div className="flex items-center gap-0.5 px-2 py-1.5 border-b border-border bg-[var(--ds-surface-sunken, #F4F5F7)]">
+            <div className="flex items-center gap-0.5 px-2 py-1.5 border-b border-border bg-[var(--ds-surface-sunken,#F4F5F7)]">
               {/* Text format dropdown */}
               <button className="flex items-center gap-1 px-2 py-1 text-sm text-foreground hover:bg-muted rounded">
                 Normal text

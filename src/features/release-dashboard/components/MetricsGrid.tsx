@@ -64,7 +64,7 @@ export function MetricsGrid({ metrics }: MetricsGridProps) {
               <card.icon className="w-5 h-5" style={{ color: card.iconColor }} />
             </div>
             {card.trend && (
-              <div className={`flex items-center text-xs ${card.trend.direction === 'up' ? 'text-[var(--ds-text-danger, #ef4444)]' : 'text-[#0d9488]'}`}>
+              <div className={`flex items-center text-xs ${card.trend.direction === 'up' ? 'text-[var(--ds-text-danger,#ef4444)]' : 'text-[#0d9488]'}`}>
                 {card.trend.direction === 'up' ? <TrendingUp className="w-3 h-3 mr-0.5" /> : <TrendingDown className="w-3 h-3 mr-0.5" />}
                 {card.trend.value}
               </div>

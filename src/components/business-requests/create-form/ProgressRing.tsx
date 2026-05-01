@@ -21,7 +21,7 @@ export function ProgressRing({
   const getColor = () => {
     if (percent >= 100) return 'text-[#0d9488]'; // teal - complete
     if (percent >= 75) return 'text-[#0d9488]'; // teal - almost complete
-    if (percent >= 50) return 'text-[var(--ds-text-brand, #2563eb)]'; // blue - progress
+    if (percent >= 50) return 'text-[var(--ds-text-brand,#2563eb)]'; // blue - progress
     return 'text-[#9ca3af]'; // gray - starting
   };
 

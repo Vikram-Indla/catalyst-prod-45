@@ -117,7 +117,7 @@ export function LabelsTab({ projectId }: LabelsTabProps) {
             onKeyDown={e => e.key === 'Enter' && handleAdd()}
             placeholder="Label name..."
             disabled={atMax}
-            className="bg-[var(--cp-float)] dark:bg-[var(--ds-surface-raised, #1A1A1A)]"
+            className="bg-[var(--cp-float)] dark:bg-[var(--ds-surface-raised,#1A1A1A)]"
             style={{ ...inputStyle, opacity: atMax ? 0.5 : 1 }}
             onFocus={e => { e.currentTarget.style.borderColor = 'var(--cp-blue)'; e.currentTarget.style.boxShadow = '0 0 0 3px rgba(37,99,235,0.1)'; }}
             onBlur={e => { e.currentTarget.style.borderColor = 'var(--divider)'; e.currentTarget.style.boxShadow = 'none'; }}

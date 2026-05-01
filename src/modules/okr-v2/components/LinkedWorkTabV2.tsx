@@ -231,7 +231,7 @@ export function LinkedWorkTabV2({ objectiveId, onMutation }: LinkedWorkTabV2Prop
                         <ChevronRight className="h-4 w-4" />
                       )}
                     </Button>
-                    <Target className="h-4 w-4 text-[var(--ds-text-brand, #2563eb)] flex-shrink-0" />
+                    <Target className="h-4 w-4 text-[var(--ds-text-brand,#2563eb)] flex-shrink-0" />
                     <div className="flex-1 min-w-0">
                       <span className="text-sm font-medium truncate block text-[#24292F] dark:text-[#E6EDF3]">KR – {group.krName}</span>
                     </div>
@@ -289,10 +289,10 @@ export function LinkedWorkTabV2({ objectiveId, onMutation }: LinkedWorkTabV2Prop
                                 <tr key={item.id} className="border-b border-[#E1E4E8] dark:border-[#30363D] last:border-0 hover:bg-[#F6F8FA] dark:hover:bg-[#21262D]">
                                   <td className="py-2.5">
                                     <div className="flex items-center gap-2">
-                                      <Target className="h-3.5 w-3.5 text-[var(--ds-text-brand, #2563eb)] flex-shrink-0" />
+                                      <Target className="h-3.5 w-3.5 text-[var(--ds-text-brand,#2563eb)] flex-shrink-0" />
                                       <button
                                         onClick={() => setSelectedWorkItem({ id: item.work_item_id, type: item.type })}
-                                        className="truncate text-left hover:text-[var(--ds-text-brand, #2563eb)] hover:underline transition-colors cursor-pointer text-[#24292F] dark:text-[#E6EDF3]"
+                                        className="truncate text-left hover:text-[var(--ds-text-brand,#2563eb)] hover:underline transition-colors cursor-pointer text-[#24292F] dark:text-[#E6EDF3]"
                                       >
                                         {item.name}
                                       </button>
@@ -330,7 +330,7 @@ export function LinkedWorkTabV2({ objectiveId, onMutation }: LinkedWorkTabV2Prop
                                     ) : (
                                       <button
                                         onClick={() => setEditingItem({ id: item.id, value: item.contributionPercent })}
-                                        className="text-sm font-medium hover:text-[var(--ds-text-brand, #2563eb)] transition-colors px-2 py-0.5 rounded hover:bg-[#F6F8FA] dark:hover:bg-[#21262D] text-[#24292F] dark:text-[#E6EDF3]"
+                                        className="text-sm font-medium hover:text-[var(--ds-text-brand,#2563eb)] transition-colors px-2 py-0.5 rounded hover:bg-[#F6F8FA] dark:hover:bg-[#21262D] text-[#24292F] dark:text-[#E6EDF3]"
                                       >
                                         {item.contributionPercent}%
                                       </button>
@@ -341,7 +341,7 @@ export function LinkedWorkTabV2({ objectiveId, onMutation }: LinkedWorkTabV2Prop
                                       <Button
                                         variant="ghost"
                                         size="icon"
-                                        className="h-7 w-7 text-[#57606A] dark:text-[#8B949E] hover:text-[var(--ds-text-brand, #2563eb)]"
+                                        className="h-7 w-7 text-[#57606A] dark:text-[#8B949E] hover:text-[var(--ds-text-brand,#2563eb)]"
                                         onClick={() => setEditingItem({ id: item.id, value: item.contributionPercent })}
                                         title="Edit contribution"
                                       >

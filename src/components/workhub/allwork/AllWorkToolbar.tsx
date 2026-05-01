@@ -42,7 +42,7 @@ function FilterDropdown({ label, options, selected, onToggle, isLoading }: {
     <div className="relative" ref={ref}>
       <button
         onClick={() => setOpen(!open)}
-        className="inline-flex items-center gap-1.5 px-3 h-8 text-[13px] rounded border transition-colors duration-[80ms] hover:bg-[var(--hover, #1F1F1F)] focus-visible:outline-2 focus-visible:outline-[var(--ds-text-brand, #2563EB)]"
+        className="inline-flex items-center gap-1.5 px-3 h-8 text-[13px] rounded border transition-colors duration-[80ms] hover:bg-[var(--hover,#1F1F1F)] focus-visible:outline-2 focus-visible:outline-[var(--ds-text-brand,#2563EB)]"
         style={{
           borderColor: selected.length > 0 ? 'var(--cp-blue)' : 'var(--bd-default, #2E2E2E)',
           color: selected.length > 0 ? 'var(--cp-blue)' : 'var(--fg-2)',
@@ -80,7 +80,7 @@ function FilterDropdown({ label, options, selected, onToggle, isLoading }: {
               <button
                 key={opt}
                 onClick={() => onToggle(opt)}
-                className="w-full flex items-center gap-2 px-3 py-1.5 text-[13px] hover:bg-[var(--hover, #1F1F1F)] text-left transition-colors duration-[80ms]"
+                className="w-full flex items-center gap-2 px-3 py-1.5 text-[13px] hover:bg-[var(--hover,#1F1F1F)] text-left transition-colors duration-[80ms]"
                 style={{ color: 'var(--fg-1)', fontFamily: 'var(--cp-font-body)' }}
                 role="option"
                 aria-selected={selected.includes(opt)}
@@ -165,7 +165,7 @@ export function AllWorkToolbar({
       {hasFilters && (
         <button
           onClick={() => onFilterChange({})}
-          className="inline-flex items-center gap-1 px-2 h-8 text-[12px] rounded hover:bg-[rgba(220,38,38,0.06)] transition-colors duration-[80ms] focus-visible:outline-2 focus-visible:outline-[var(--ds-text-brand, #2563EB)]"
+          className="inline-flex items-center gap-1 px-2 h-8 text-[12px] rounded hover:bg-[rgba(220,38,38,0.06)] transition-colors duration-[80ms] focus-visible:outline-2 focus-visible:outline-[var(--ds-text-brand,#2563EB)]"
           style={{ color: 'var(--sem-danger)' }}
           aria-label="Clear all filters"
         >
@@ -176,7 +176,7 @@ export function AllWorkToolbar({
 
       {/* Search (TC-G2 — debounced + clear button) */}
       <div
-        className="flex items-center gap-2 h-8 px-2.5 rounded border bg-[var(--bg-app)] focus-within:border-[var(--ds-text-brand, #2563EB)] transition-colors duration-[80ms]"
+        className="flex items-center gap-2 h-8 px-2.5 rounded border bg-[var(--bg-app)] focus-within:border-[var(--ds-text-brand,#2563EB)] transition-colors duration-[80ms]"
         style={{ minWidth: 180, borderColor: 'var(--bd-default, #2E2E2E)' }}
       >
         <Search className="w-3.5 h-3.5 shrink-0" style={{ color: 'var(--fg-3)' }} />
@@ -195,7 +195,7 @@ export function AllWorkToolbar({
             onClick={() => setSearchValue('')}
             aria-label="Clear search"
             title="Clear search"
-            className="shrink-0 rounded p-0.5 transition-colors duration-[80ms] hover:bg-[var(--hover,#1F1F1F)] focus-visible:outline-2 focus-visible:outline-[var(--ds-text-brand, #2563EB)]"
+            className="shrink-0 rounded p-0.5 transition-colors duration-[80ms] hover:bg-[var(--hover,#1F1F1F)] focus-visible:outline-2 focus-visible:outline-[var(--ds-text-brand,#2563EB)]"
             style={{ background: 'none', border: 'none', cursor: 'pointer' }}
           >
             <X className="w-3 h-3" style={{ color: 'var(--fg-3)' }} />
@@ -247,7 +247,7 @@ export function AllWorkToolbar({
           <button
             key={key}
             onClick={() => onViewModeChange(key)}
-            className="flex items-center gap-1.5 px-3 h-8 text-[12px] transition-colors duration-[80ms] focus-visible:outline-2 focus-visible:outline-[var(--ds-text-brand, #2563EB)]"
+            className="flex items-center gap-1.5 px-3 h-8 text-[12px] transition-colors duration-[80ms] focus-visible:outline-2 focus-visible:outline-[var(--ds-text-brand,#2563EB)]"
             style={{
               backgroundColor: viewMode === key ? 'rgba(37,99,235,0.08)' : 'var(--bg-app)',
               color: viewMode === key ? 'var(--cp-blue)' : 'var(--fg-3)',

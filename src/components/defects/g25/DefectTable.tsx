@@ -230,7 +230,7 @@ function ParentPickerCell({ defectId, currentParentKey, projectKey }: { defectId
                 onClick={() => handleSelect(opt.key)}
                 className={cn(
                   "w-full text-left px-3 py-2.5 border-none cursor-pointer transition-colors block",
-                  isSelected ? "bg-[#DEEBFF]" : "bg-white hover:bg-[var(--ds-surface-sunken, #F4F5F7)]"
+                  isSelected ? "bg-[#DEEBFF]" : "bg-white hover:bg-[var(--ds-surface-sunken,#F4F5F7)]"
                 )}
               >
                 <div className="flex items-center gap-2">

@@ -70,7 +70,7 @@ export function ProjectToolbar({
         <div className="flex items-center rounded-[6px]" style={{ border: `1px solid ${borderColor}`, overflow: 'hidden' }}>
           <button
             onClick={() => onViewChange('table')}
-            className="flex items-center justify-center transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ds-text-brand, #2563EB)]"
+            className="flex items-center justify-center transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ds-text-brand,#2563EB)]"
             style={{
               width: 32,
               height: 32,
@@ -85,7 +85,7 @@ export function ProjectToolbar({
           </button>
           <button
             onClick={() => onViewChange('card')}
-            className="flex items-center justify-center transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ds-text-brand, #2563EB)]"
+            className="flex items-center justify-center transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ds-text-brand,#2563EB)]"
             style={{
               width: 32,
               height: 32,

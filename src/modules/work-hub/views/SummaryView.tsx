@@ -354,7 +354,7 @@ function EpicProgress() {
             <span>Done</span>
           </div>
           <div className="flex items-center gap-1">
-            <div className="w-3 h-3 rounded bg-[var(--ds-text-brand, #2563eb)]" />
+            <div className="w-3 h-3 rounded bg-[var(--ds-text-brand,#2563eb)]" />
             <span>In progress</span>
           </div>
           <div className="flex items-center gap-1">
@@ -378,7 +378,7 @@ function EpicProgress() {
                     </div>
                   )}
                   {epic.inProgress > 0 && (
-                    <div className="h-full bg-[var(--ds-text-brand, #2563eb)]" style={{ width: `${epic.inProgress}%` }} />
+                    <div className="h-full bg-[var(--ds-text-brand,#2563eb)]" style={{ width: `${epic.inProgress}%` }} />
                   )}
                   {epic.todo > 0 && (
                     <div className="h-full bg-[#6b7280]" style={{ width: `${epic.todo}%` }} />

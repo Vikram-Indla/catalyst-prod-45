@@ -97,7 +97,7 @@ export function TemplateTestSelector({
                   className={`
                     px-3 py-1.5 rounded-full text-sm font-medium transition-colors
                     ${criteria.modules?.includes(module)
-                      ? 'bg-[var(--ds-text-brand, #2563eb)] text-white'
+                      ? 'bg-[var(--ds-text-brand,#2563eb)] text-white'
                       : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
                     }
                   `}
@@ -201,7 +201,7 @@ export function TemplateTestSelector({
                   <button
                     key={tag}
                     onClick={() => addTag(tag)}
-                    className="text-xs text-[var(--ds-text-brand, #2563eb)] hover:underline mr-2"
+                    className="text-xs text-[var(--ds-text-brand,#2563eb)] hover:underline mr-2"
                   >
                     {tag}
                   </button>

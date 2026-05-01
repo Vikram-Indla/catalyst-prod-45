@@ -58,7 +58,7 @@ export function TimelineBar({ feature, left, width, onClick }: TimelineBarProps)
       {/* Dependency Indicator */}
       {hasBlocker && (
         <div 
-          className="absolute right-1 top-1/2 -translate-y-1/2 w-4 h-4 rounded-full bg-[var(--ds-text-danger, #ef4444)] flex items-center justify-center"
+          className="absolute right-1 top-1/2 -translate-y-1/2 w-4 h-4 rounded-full bg-[var(--ds-text-danger,#ef4444)] flex items-center justify-center"
           title="Has dependencies"
         >
           <Link2 className="w-2.5 h-2.5 text-white" />

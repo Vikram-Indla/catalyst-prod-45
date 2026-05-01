@@ -212,10 +212,10 @@ export function RiskDrawer({ risk, isOpen, onClose, onUpdate }: RiskDrawerProps)
   return (
     <>
       <Sheet open={isOpen} onOpenChange={(open) => !open && handleAttemptClose()}>
-        <SheetContent side="right" hideClose className={`executive-drawer ${drawerWidthClass} p-0 flex flex-col overflow-hidden bg-white dark:bg-[var(--ds-surface, #0A0A0A)]`}>
-          <SheetHeader className="executive-drawer-header flex-col space-y-0 shrink-0 p-0 bg-white dark:bg-[var(--ds-surface-raised, #1A1A1A)]">
+        <SheetContent side="right" hideClose className={`executive-drawer ${drawerWidthClass} p-0 flex flex-col overflow-hidden bg-white dark:bg-[var(--ds-surface,#0A0A0A)]`}>
+          <SheetHeader className="executive-drawer-header flex-col space-y-0 shrink-0 p-0 bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)]">
             {/* Header row - identical structure to BusinessRequestDrawer */}
-            <div className="flex items-center justify-between px-4 md:px-5 pt-4 pb-3 border-b border-brand-primary/50 bg-white dark:bg-[var(--ds-surface-raised, #1A1A1A)]">
+            <div className="flex items-center justify-between px-4 md:px-5 pt-4 pb-3 border-b border-brand-primary/50 bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)]">
               {/* Left side: Favourite + Risk Key + Title */}
               <div className="flex items-center gap-2.5 flex-1 min-w-0">
                 <button className="text-muted-foreground hover:text-brand-primary transition-colors p-0.5 shrink-0">
@@ -317,7 +317,7 @@ export function RiskDrawer({ risk, isOpen, onClose, onUpdate }: RiskDrawerProps)
             </div>
             
             {/* Sub-header: Level label */}
-            <div className="px-4 md:px-5 py-1.5 bg-white dark:bg-[var(--ds-surface-raised, #1A1A1A)] shrink-0">
+            <div className="px-4 md:px-5 py-1.5 bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] shrink-0">
               <span className="text-xs text-muted-foreground">{getRiskLevel()}</span>
             </div>
             
@@ -326,7 +326,7 @@ export function RiskDrawer({ risk, isOpen, onClose, onUpdate }: RiskDrawerProps)
 
           {/* Tabs */}
           <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col min-h-0">
-            <TabsList className="executive-tabs-list w-full justify-start rounded-none border-b border-border h-10 shrink-0 overflow-x-auto flex-nowrap bg-white dark:bg-[var(--ds-surface-raised, #1A1A1A)] px-4 md:px-5">
+            <TabsList className="executive-tabs-list w-full justify-start rounded-none border-b border-border h-10 shrink-0 overflow-x-auto flex-nowrap bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] px-4 md:px-5">
               {TABS.map((tab) => (
                 <TabsTrigger
                   key={tab.value}
@@ -380,7 +380,7 @@ export function RiskDrawer({ risk, isOpen, onClose, onUpdate }: RiskDrawerProps)
           </Tabs>
 
           {/* Footer */}
-          <div className="border-t px-4 md:px-5 py-3 bg-white dark:bg-[var(--ds-surface-raised, #1A1A1A)] flex gap-2 justify-end shrink-0">
+          <div className="border-t px-4 md:px-5 py-3 bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] flex gap-2 justify-end shrink-0">
             <Button variant="outline" onClick={handleAttemptClose}>
               Close
             </Button>

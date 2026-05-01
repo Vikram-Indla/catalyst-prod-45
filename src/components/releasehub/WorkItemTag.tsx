@@ -22,14 +22,14 @@ export function WorkItemTag({ workItemKey, title, type, status, onClick }: Props
   return (
     <button
       onClick={onClick}
-      className="inline-flex items-center gap-1.5 h-6 px-2 rounded border border-[var(--bd-default, #E2E8F0)] bg-white hover:bg-[#F0FDFA] hover:border-[#99F6E4] transition-colors max-w-[280px] group"
+      className="inline-flex items-center gap-1.5 h-6 px-2 rounded border border-[var(--bd-default,#E2E8F0)] bg-white hover:bg-[#F0FDFA] hover:border-[#99F6E4] transition-colors max-w-[280px] group"
       style={{ fontFamily: RH.fontBody }}
     >
       <WorkItemTypeIcon type={type} size={12} />
       <span className="text-[11px] font-bold text-[var(--sem-success)] shrink-0" style={{ fontFamily: RH.fontMono }}>
         {workItemKey}
       </span>
-      <span className="text-[11px] text-[var(--ds-text-subtle, #475569)] truncate">{title}</span>
+      <span className="text-[11px] text-[var(--ds-text-subtle,#475569)] truncate">{title}</span>
       <span className="text-[9px] font-bold uppercase px-1 rounded shrink-0" style={{ background: st.bg, color: st.text }}>
         {status.replace(/_/g, ' ')}
       </span>

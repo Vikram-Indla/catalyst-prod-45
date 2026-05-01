@@ -304,7 +304,7 @@ export default function SearchPage() {
   }
 
   return (
-    <div className="flex flex-col h-full bg-white dark:bg-[var(--ds-surface, #0A0A0A)]">
+    <div className="flex flex-col h-full bg-white dark:bg-[var(--ds-surface,#0A0A0A)]">
       <div className="border-b border-border px-6">
         <CatalystPageHeader title="Issue Navigator" />
       </div>

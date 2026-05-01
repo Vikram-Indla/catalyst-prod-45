@@ -117,7 +117,7 @@ export function TemplateMilestones({
             variant="outline"
             size="sm"
             onClick={addMilestone}
-            className="text-[var(--ds-text-brand, #2563eb)] border-[var(--ds-text-brand, #2563eb)] hover:bg-[var(--ds-background-selected, #eff6ff)]"
+            className="text-[var(--ds-text-brand,#2563eb)] border-[var(--ds-text-brand,#2563eb)] hover:bg-[var(--ds-background-selected,#eff6ff)]"
           >
             <Plus className="w-4 h-4 mr-1.5" />
             Add Milestone

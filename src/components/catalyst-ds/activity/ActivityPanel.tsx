@@ -101,7 +101,7 @@ function ActivityPanel({
     <div className={cn('flex flex-col', className)}>
       <div className="flex items-center justify-between mb-4">
         <h3
-          className="text-[16px] font-semibold text-[var(--ds-text, #172B4D)] dark:text-[var(--ds-text, #EDEDED)]"
+          className="text-[16px] font-semibold text-[var(--ds-text,#172B4D)] dark:text-[var(--ds-text,#EDEDED)]"
           style={{ fontFamily: '"Atlassian Sans", ui-sans-serif, -apple-system, "system-ui", "Segoe UI", Ubuntu, "Helvetica Neue", sans-serif' }}
         >
           Activity
@@ -119,7 +119,7 @@ function ActivityPanel({
                 'px-3 py-1.5 rounded text-[13px] font-medium transition-colors duration-150',
                 activeTab === tab.key
                   ? 'bg-[#DEEBFF] text-[#0747A6] dark:bg-[#1C3A5C] dark:text-[#4C9AFF]'
-                  : 'text-[var(--ds-text-subtlest, #6B778C)] hover:bg-[var(--ds-surface-sunken, #F4F5F7)] dark:text-[var(--ds-text-subtlest, #A1A1A1)] dark:hover:bg-[var(--ds-surface-overlay, #1F1F1F)]'
+                  : 'text-[var(--ds-text-subtlest,#6B778C)] hover:bg-[var(--ds-surface-sunken,#F4F5F7)] dark:text-[var(--ds-text-subtlest,#A1A1A1)] dark:hover:bg-[var(--ds-surface-overlay,#1F1F1F)]'
               )}
             >
               {tab.label}
@@ -131,7 +131,7 @@ function ActivityPanel({
           <button
             type="button"
             onClick={() => setSortOpen(!sortOpen)}
-            className="flex items-center gap-1 text-[13px] text-[var(--ds-text-subtlest, #6B778C)] dark:text-[var(--ds-text-subtlest, #A1A1A1)] hover:text-[var(--ds-text, #172B4D)] dark:hover:text-[var(--ds-text, #EDEDED)] transition-colors"
+            className="flex items-center gap-1 text-[13px] text-[var(--ds-text-subtlest,#6B778C)] dark:text-[var(--ds-text-subtlest,#A1A1A1)] hover:text-[var(--ds-text,#172B4D)] dark:hover:text-[var(--ds-text,#EDEDED)] transition-colors"
           >
             {sortOrder === 'newest' ? 'Newest first' : 'Oldest first'}
             <ChevronDown className="h-3.5 w-3.5" />
@@ -140,7 +140,7 @@ function ActivityPanel({
           {sortOpen && (
             <>
               <div className="fixed inset-0 z-40" onClick={() => setSortOpen(false)} />
-              <div className="absolute right-0 top-full mt-1 z-50 bg-white dark:bg-[var(--ds-surface-raised, #1A1A1A)] border border-[var(--ds-border, #DFE1E6)] dark:border-[var(--ds-border, #2E2E2E)] rounded-md shadow-lg py-1 min-w-[140px]">
+              <div className="absolute right-0 top-full mt-1 z-50 bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] border border-[var(--ds-border,#DFE1E6)] dark:border-[var(--ds-border,#2E2E2E)] rounded-md shadow-lg py-1 min-w-[140px]">
                 {(['newest', 'oldest'] as CdsSortOrder[]).map((order) => (
                   <button
                     key={order}
@@ -153,7 +153,7 @@ function ActivityPanel({
                       'w-full text-left px-3 py-1.5 text-[13px] transition-colors',
                       order === sortOrder
                         ? 'bg-[#DEEBFF] text-[#0747A6] dark:bg-[#1C3A5C] dark:text-[#4C9AFF]'
-                        : 'text-[var(--ds-text, #172B4D)] dark:text-[var(--ds-text, #EDEDED)] hover:bg-[var(--ds-surface-sunken, #F4F5F7)] dark:hover:bg-[var(--ds-surface-overlay, #1F1F1F)]'
+                        : 'text-[var(--ds-text,#172B4D)] dark:text-[var(--ds-text,#EDEDED)] hover:bg-[var(--ds-surface-sunken,#F4F5F7)] dark:hover:bg-[var(--ds-surface-overlay,#1F1F1F)]'
                     )}
                   >
                     {order === 'newest' ? 'Newest first' : 'Oldest first'}
@@ -203,14 +203,14 @@ function ActivityPanel({
             shortcutHint="Pro tip: press **M** to comment"
           />
 
-          <div className="mt-4 divide-y divide-[#EBECF0] dark:divide-[var(--ds-border, #2E2E2E)]">
+          <div className="mt-4 divide-y divide-[#EBECF0] dark:divide-[var(--ds-border,#2E2E2E)]">
             {(isLoadingComments || isLoadingHistory) ? (
               <div className="text-center py-8">
-                <p className="text-[13px] text-[var(--ds-text-subtlest, #6B778C)] dark:text-[var(--ds-text-subtlest, #878787)]">Loading activity...</p>
+                <p className="text-[13px] text-[var(--ds-text-subtlest,#6B778C)] dark:text-[var(--ds-text-subtlest,#878787)]">Loading activity...</p>
               </div>
             ) : mergedAll.length === 0 ? (
               <div className="text-center py-10">
-                <p className="text-[13px] text-[var(--ds-text-subtlest, #6B778C)] dark:text-[var(--ds-text-subtlest, #878787)]">
+                <p className="text-[13px] text-[var(--ds-text-subtlest,#6B778C)] dark:text-[var(--ds-text-subtlest,#878787)]">
                   No activity yet
                 </p>
               </div>
@@ -226,7 +226,7 @@ function ActivityPanel({
                           <textarea
                             value={editValue}
                             onChange={(e) => setEditValue(e.target.value)}
-                            className="w-full resize-none border-0 bg-transparent text-[13px] text-[var(--ds-text, #172B4D)] dark:text-[var(--ds-text, #EDEDED)] focus:outline-none focus:ring-0 min-h-[60px]"
+                            className="w-full resize-none border-0 bg-transparent text-[13px] text-[var(--ds-text,#172B4D)] dark:text-[var(--ds-text,#EDEDED)] focus:outline-none focus:ring-0 min-h-[60px]"
                             autoFocus
                             onKeyDown={(e) => {
                               if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
@@ -247,14 +247,14 @@ function ActivityPanel({
                                   setEditingId(null);
                                 }
                               }}
-                              className="text-[12px] font-medium text-[var(--ds-text-brand, #2563EB)] hover:underline"
+                              className="text-[12px] font-medium text-[var(--ds-text-brand,#2563EB)] hover:underline"
                             >
                               Save
                             </button>
                             <button
                               type="button"
                               onClick={() => setEditingId(null)}
-                              className="text-[12px] font-medium text-[var(--ds-text-subtlest, #6B778C)] hover:text-[var(--ds-text, #172B4D)] dark:text-[var(--ds-text-subtlest, #A1A1A1)] dark:hover:text-[var(--ds-text, #EDEDED)]"
+                              className="text-[12px] font-medium text-[var(--ds-text-subtlest,#6B778C)] hover:text-[var(--ds-text,#172B4D)] dark:text-[var(--ds-text-subtlest,#A1A1A1)] dark:hover:text-[var(--ds-text,#EDEDED)]"
                             >
                               Cancel
                             </button>

@@ -44,8 +44,8 @@ export function ExecutionTrendChart({ data }: ExecutionTrendChartProps) {
 
       <div className="flex items-center gap-4 mt-3 text-xs text-slate-500">
         <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-sm bg-[#0d9488]" />Passed</span>
-        <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-sm bg-[var(--ds-text-danger, #ef4444)]" />Failed</span>
-        <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-sm bg-[var(--ds-text-warning, #d97706)]" />Blocked</span>
+        <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-sm bg-[var(--ds-text-danger,#ef4444)]" />Failed</span>
+        <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-sm bg-[var(--ds-text-warning,#d97706)]" />Blocked</span>
       </div>
     </motion.div>
   );

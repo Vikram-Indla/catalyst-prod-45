@@ -44,7 +44,7 @@ export function MemberRow({ id, name, email, role, isCurrentUser, onRoleChange, 
 
   return (
     <div
-      className="flex items-center gap-3 rounded-md px-3 hover:bg-[var(--ds-surface-sunken, #F8FAFC)] transition-colors"
+      className="flex items-center gap-3 rounded-md px-3 hover:bg-[var(--ds-surface-sunken,#F8FAFC)] transition-colors"
       style={{ height: 52 }}
     >
       {/* Avatar */}
@@ -82,7 +82,7 @@ export function MemberRow({ id, name, email, role, isCurrentUser, onRoleChange, 
 
         {dropdownOpen && (
           <div
-            className="absolute right-0 top-full mt-1 z-10 bg-[var(--cp-float)] dark:bg-[var(--ds-surface-raised, #1A1A1A)]"
+            className="absolute right-0 top-full mt-1 z-10 bg-[var(--cp-float)] dark:bg-[var(--ds-surface-raised,#1A1A1A)]"
             style={{
               width: 120, border: '1px solid var(--divider)',
               borderRadius: 8, boxShadow: '0 4px 6px -1px rgba(0,0,0,.07)',
@@ -93,7 +93,7 @@ export function MemberRow({ id, name, email, role, isCurrentUser, onRoleChange, 
               <button
                 key={r}
                 onClick={() => { onRoleChange(id, r); setDropdownOpen(false); }}
-                className="w-full text-left px-3 py-2 hover:bg-[var(--ds-surface-sunken, #F8FAFC)] transition-colors"
+                className="w-full text-left px-3 py-2 hover:bg-[var(--ds-surface-sunken,#F8FAFC)] transition-colors"
                 style={{
                   fontSize: 12, fontWeight: r === role ? 600 : 400,
                   color: r === role ? 'var(--cp-blue)' : 'var(--fg-2)',

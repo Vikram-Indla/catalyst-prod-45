@@ -136,7 +136,7 @@ export function DetailRightSidebar({ item, statuses, onUpdate, onInvalidate }: S
         {statusOpen && (
           <div className="absolute left-0 right-0 top-full mt-1 rounded-md overflow-hidden bg-[var(--cp-float)]" style={{ border: '1px solid var(--divider)', boxShadow: '0 8px 20px rgba(0,0,0,0.18)', zIndex: 9999 }} onClick={e => e.stopPropagation()}>
             {statuses.map(s => (
-              <button key={s.id} className="w-full flex items-center gap-2 px-3 py-2 text-[12px] font-medium hover:bg-[var(--ds-surface-sunken, #F1F5F9)]" onClick={() => { onUpdate('status_id', s.id); setStatusOpen(false); }}>
+              <button key={s.id} className="w-full flex items-center gap-2 px-3 py-2 text-[12px] font-medium hover:bg-[var(--ds-surface-sunken,#F1F5F9)]" onClick={() => { onUpdate('status_id', s.id); setStatusOpen(false); }}>
                 <StatusLozenge name={s.name} category={s.category} />
               </button>
             ))}
@@ -147,7 +147,7 @@ export function DetailRightSidebar({ item, statuses, onUpdate, onInvalidate }: S
       {/* AI BUTTON */}
       <button
         onClick={() => toast('AI analyzing...', { icon: '✨' })}
-        className="w-full py-2 rounded-md text-[12px] font-semibold flex items-center justify-center gap-1.5 mb-4 transition-colors hover:bg-[var(--ds-background-selected, #EFF6FF)]"
+        className="w-full py-2 rounded-md text-[12px] font-semibold flex items-center justify-center gap-1.5 mb-4 transition-colors hover:bg-[var(--ds-background-selected,#EFF6FF)]"
         style={{ border: '1px solid var(--divider)', color: 'var(--cp-purple)' }}
       >
         <Sparkles size={14} /> Improve Story with AI
@@ -181,12 +181,12 @@ export function DetailRightSidebar({ item, statuses, onUpdate, onInvalidate }: S
             <button onClick={e => { e.stopPropagation(); setPriorityOpen(!priorityOpen); setStatusOpen(false); }} className="flex items-center gap-1.5 text-[13px] font-medium" style={{ color: 'var(--fg-2)' }}>
               <span style={{ color: PRIORITIES.find(p => p.value === item.priority)?.color }}>{PRIORITIES.find(p => p.value === item.priority)?.icon}</span>
               {item.priority}
-              <ChevronDown size={12} className="text-[var(--ds-text-subtlest, #94A3B8)]" />
+              <ChevronDown size={12} className="text-[var(--ds-text-subtlest,#94A3B8)]" />
             </button>
             {priorityOpen && (
               <div className="absolute left-0 top-full mt-1 rounded-md overflow-hidden bg-[var(--cp-float)]" style={{ width: 160, border: '1px solid var(--divider)', boxShadow: '0 8px 20px rgba(0,0,0,0.18)', zIndex: 9999 }} onClick={e => e.stopPropagation()}>
                 {PRIORITIES.map(p => (
-                  <button key={p.value} className="w-full flex items-center gap-2 px-3 py-2 text-[12px] font-medium hover:bg-[var(--ds-surface-sunken, #F1F5F9)]" onClick={() => { onUpdate('priority', p.value); setPriorityOpen(false); }}>
+                  <button key={p.value} className="w-full flex items-center gap-2 px-3 py-2 text-[12px] font-medium hover:bg-[var(--ds-surface-sunken,#F1F5F9)]" onClick={() => { onUpdate('priority', p.value); setPriorityOpen(false); }}>
                     <span style={{ color: p.color }}>{p.icon}</span>{p.value}
                   </button>
                 ))}
@@ -292,7 +292,7 @@ export function DetailRightSidebar({ item, statuses, onUpdate, onInvalidate }: S
             <span className="text-[10px] font-bold uppercase block mb-2" style={{ color: 'var(--fg-3)' }}>Visible Context Fields</span>
             {['Components', 'Labels', 'Release', 'Environment', 'Department', 'Team', 'Security Level', 'Flag', 'Resolution', 'Watchers'].map(f => (
               <label key={f} className="flex items-center gap-2 py-1 text-[12px] cursor-pointer" style={{ color: 'var(--fg-2)' }}>
-                <input type="checkbox" defaultChecked className="rounded border-[var(--ds-text-disabled, #CBD5E1)]" />{f}
+                <input type="checkbox" defaultChecked className="rounded border-[var(--ds-text-disabled,#CBD5E1)]" />{f}
               </label>
             ))}
           </div>

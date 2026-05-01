@@ -124,7 +124,7 @@ export function GroupByPopover<K extends string>({
       {/* Trigger Button */}
       <button
         onClick={() => { setOpen(p => !p); if (!open) setTimeout(() => inputRef.current?.focus(), 50); }}
-        className="inline-flex items-center gap-1.5 h-8 px-2.5 rounded-md text-[13px] font-medium cursor-pointer transition-all duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ds-text-brand, #2563EB)] focus-visible:ring-offset-1"
+        className="inline-flex items-center gap-1.5 h-8 px-2.5 rounded-md text-[13px] font-medium cursor-pointer transition-all duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ds-text-brand,#2563EB)] focus-visible:ring-offset-1"
         style={{
           border: `1.5px solid ${isActive ? tk.selectedBorder : tk.border}`,
           background: isActive ? tk.triggerBgActive : tk.triggerBg,

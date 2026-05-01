@@ -567,7 +567,7 @@ function CatalystEnterpriseTableInner<T extends { id: string }>({
                 onSelectionChange(newSelection);
               }
             }}
-            className="border-[var(--ds-border, #2E2E2E)] data-[state=checked]:bg-[var(--ds-text-brand, #2563eb)] data-[state=checked]:border-[var(--ds-text-brand, #2563eb)]"
+            className="border-[var(--ds-border,#2E2E2E)] data-[state=checked]:bg-[var(--ds-text-brand,#2563eb)] data-[state=checked]:border-[var(--ds-text-brand,#2563eb)]"
           />
         </td>
       )}
@@ -667,7 +667,7 @@ function CatalystEnterpriseTableInner<T extends { id: string }>({
           "border-b border-[var(--table-header-border)]",
           // Dark mode: ultra-subtle border
           "dark:border-b dark:border-[#232323]",
-          "bg-[var(--table-header-bg)] dark:bg-[var(--ds-surface-raised, #1a1a1a)]"
+          "bg-[var(--table-header-bg)] dark:bg-[var(--ds-surface-raised,#1a1a1a)]"
         )}>
           <span className="text-sm text-[var(--table-text-secondary)]">
             <span className="font-semibold text-[var(--table-text-primary)]">{processedData.length}</span> {processedData.length === 1 ? 'request' : 'requests'}
@@ -694,7 +694,7 @@ function CatalystEnterpriseTableInner<T extends { id: string }>({
                 "border-b border-[var(--table-header-border)]",
                 // Dark mode: ultra-subtle or no border (rely on surface contrast)
                 "dark:border-b dark:border-[#232323]",
-                "bg-[var(--table-header-bg)] dark:bg-[var(--ds-surface-raised, #1a1a1a)]"
+                "bg-[var(--table-header-bg)] dark:bg-[var(--ds-surface-raised,#1a1a1a)]"
               )}>
                 {enableDragDrop && (
                   <th className="py-3 px-2 w-8"></th>
@@ -708,7 +708,7 @@ function CatalystEnterpriseTableInner<T extends { id: string }>({
                           onSelectionChange(checked ? processedData.map(row => row.id) : []);
                         }
                       }}
-                      className="border-[var(--ds-border, #2E2E2E)] data-[state=checked]:bg-[var(--ds-text-brand, #2563eb)] data-[state=checked]:border-[var(--ds-text-brand, #2563eb)]"
+                      className="border-[var(--ds-border,#2E2E2E)] data-[state=checked]:bg-[var(--ds-text-brand,#2563eb)] data-[state=checked]:border-[var(--ds-text-brand,#2563eb)]"
                     />
                   </th>
                 )}
@@ -766,11 +766,11 @@ function CatalystEnterpriseTableInner<T extends { id: string }>({
                                 // Alternating row backgrounds for row distinction
                                 rowIndex % 2 === 0 
                                   ? "bg-[var(--table-row-bg)]" 
-                                  : "bg-[var(--table-row-alt-bg)] dark:bg-[var(--ds-surface-overlay, #1f1f1f)]",
+                                  : "bg-[var(--table-row-alt-bg)] dark:bg-[var(--ds-surface-overlay,#1f1f1f)]",
                                 // Hover: surface tint, NOT border highlight
                                 "hover:bg-[var(--table-row-hover)] dark:hover:bg-[#2a2a2a]",
                                 // Selected: surface elevation with subtle brand accent
-                                selectedRows.includes(row.id) && "bg-[var(--table-row-selected)] dark:bg-[var(--ds-surface-overlay, #1f1f1f)] ring-1 ring-inset ring-[var(--brand-primary-hex)]/30",
+                                selectedRows.includes(row.id) && "bg-[var(--table-row-selected)] dark:bg-[var(--ds-surface-overlay,#1f1f1f)] ring-1 ring-inset ring-[var(--brand-primary-hex)]/30",
                                 // Dragging state
                                 snapshot.isDragging && "bg-[var(--selection-row-bg)] shadow-lg"
                               )}
@@ -803,11 +803,11 @@ function CatalystEnterpriseTableInner<T extends { id: string }>({
                         // Alternating backgrounds for row separation
                         rowIndex % 2 === 0 
                           ? "bg-[var(--table-row-bg)]" 
-                          : "bg-[var(--table-row-alt-bg)] dark:bg-[var(--ds-surface-overlay, #1f1f1f)]",
+                          : "bg-[var(--table-row-alt-bg)] dark:bg-[var(--ds-surface-overlay,#1f1f1f)]",
                         // Hover: surface tint
                         "hover:bg-[var(--table-row-hover)] dark:hover:bg-[#2a2a2a]",
                         // Selected: surface elevation
-                        selectedRows.includes(row.id) && "bg-[var(--table-row-selected)] dark:bg-[var(--ds-surface-overlay, #1f1f1f)] ring-1 ring-inset ring-[var(--brand-primary-hex)]/30"
+                        selectedRows.includes(row.id) && "bg-[var(--table-row-selected)] dark:bg-[var(--ds-surface-overlay,#1f1f1f)] ring-1 ring-inset ring-[var(--brand-primary-hex)]/30"
                       )}
                     >
                       {renderRowContent(row, rowIndex)}

@@ -394,7 +394,7 @@ export default function PlanDetailPage() {
                         const statusLabel = c.status === 'active' ? 'IN PROGRESS' : c.status?.toUpperCase().replace('_', ' ');
                         const statusColor = c.status === 'completed' ? 'bg-[#E3FCEF] text-[#006644]'
                           : (c.status === 'active' || c.status === 'in_progress') ? 'bg-[#DEEBFF] text-[#0747A6]'
-                          : 'bg-[var(--ds-border, #DFE1E6)] text-[var(--ds-text, #253858)]';
+                          : 'bg-[var(--ds-border,#DFE1E6)] text-[var(--ds-text,#253858)]';
 
                         return (
                           <tr key={lc.id} className="border-b last:border-b-0 hover:bg-muted/30 transition-colors" style={{ height: 50, maxHeight: 50 }}>

@@ -156,7 +156,7 @@ export function TableView({ resources, projects, groupBy, groupedByAssignment, g
             </Tooltip>
             <div className="flex flex-col min-w-0">
               <div className="flex items-center gap-1.5">
-                <span className="font-semibold text-[14px] text-[var(--ds-text, #0f172a)] dark:text-foreground truncate">{value}</span>
+                <span className="font-semibold text-[14px] text-[var(--ds-text,#0f172a)] dark:text-foreground truncate">{value}</span>
                 {/* Online indicator */}
                 {isOnline && (
                   <span className="w-2 h-2 rounded-full bg-[#059669] flex-shrink-0" />
@@ -190,10 +190,10 @@ export function TableView({ resources, projects, groupBy, groupedByAssignment, g
       render: (_: any, row: ResourceMetric) => {
         const vendor = row.vendor_name;
         if (!vendor) {
-          return <span className="text-[13px] text-[var(--ds-text-subtle, #475569)]">-</span>;
+          return <span className="text-[13px] text-[var(--ds-text-subtle,#475569)]">-</span>;
         }
         return (
-          <span className="text-[13px] font-medium text-[var(--ds-text-subtle, #334155)]">{vendor}</span>
+          <span className="text-[13px] font-medium text-[var(--ds-text-subtle,#334155)]">{vendor}</span>
         );
       },
     },
@@ -223,7 +223,7 @@ export function TableView({ resources, projects, groupBy, groupedByAssignment, g
 
         if (resourceAllocations.length === 0) {
           return (
-            <span className="text-[13px] font-medium text-[var(--ds-text-subtle, #475569)]">No assignments this month</span>
+            <span className="text-[13px] font-medium text-[var(--ds-text-subtle,#475569)]">No assignments this month</span>
           );
         }
 
@@ -241,7 +241,7 @@ export function TableView({ resources, projects, groupBy, groupedByAssignment, g
               return (
                 <span
                   key={idx}
-                  className="inline-flex items-center gap-2.5 px-3 py-1.5 rounded bg-white text-[13px] font-medium text-[var(--ds-text-subtle, #334155)]"
+                  className="inline-flex items-center gap-2.5 px-3 py-1.5 rounded bg-white text-[13px] font-medium text-[var(--ds-text-subtle,#334155)]"
                   style={{
                     border: '1px solid #e2e8f0',
                     borderLeftWidth: '3px',
@@ -256,7 +256,7 @@ export function TableView({ resources, projects, groupBy, groupedByAssignment, g
               );
             })}
             {resourceAllocations.length > 3 && (
-              <span className="text-[11px] text-[var(--ds-text-subtlest, #64748b)]">+{resourceAllocations.length - 3} more</span>
+              <span className="text-[11px] text-[var(--ds-text-subtlest,#64748b)]">+{resourceAllocations.length - 3} more</span>
             )}
           </div>
         );
@@ -269,7 +269,7 @@ export function TableView({ resources, projects, groupBy, groupedByAssignment, g
       width: '130px',
       sortable: true,
       render: (value: string) => (
-        <span className="text-[13px] font-medium text-[var(--ds-text-subtle, #334155)] dark:text-slate-300">{value || '-'}</span>
+        <span className="text-[13px] font-medium text-[var(--ds-text-subtle,#334155)] dark:text-slate-300">{value || '-'}</span>
       ),
     },
     {
@@ -320,7 +320,7 @@ export function TableView({ resources, projects, groupBy, groupedByAssignment, g
         const endDate = row.contract_end_date;
 
         if (!endDate) {
-          return <span className="text-[13px] text-[var(--ds-text-subtle, #334155)]">Permanent</span>;
+          return <span className="text-[13px] text-[var(--ds-text-subtle,#334155)]">Permanent</span>;
         }
 
         const endDateObj = new Date(endDate);
@@ -374,7 +374,7 @@ export function TableView({ resources, projects, groupBy, groupedByAssignment, g
           {/* Edit */}
           <button
             onClick={(e) => { e.stopPropagation(); onEditResource(row.id); }}
-            className="w-[30px] h-[30px] rounded-md flex items-center justify-center text-[var(--ds-text-subtle, #475569)] hover:text-[var(--ds-text, #0f172a)] hover:bg-[var(--ds-surface-sunken, #f1f5f9)] transition-colors"
+            className="w-[30px] h-[30px] rounded-md flex items-center justify-center text-[var(--ds-text-subtle,#475569)] hover:text-[var(--ds-text,#0f172a)] hover:bg-[var(--ds-surface-sunken,#f1f5f9)] transition-colors"
             title="Edit resource"
           >
             <Pencil className="w-4 h-4" />
@@ -382,7 +382,7 @@ export function TableView({ resources, projects, groupBy, groupedByAssignment, g
           {/* Delete */}
           <button
             onClick={(e) => { e.stopPropagation(); onDeleteResource(row); }}
-            className="w-[30px] h-[30px] rounded-md flex items-center justify-center text-[var(--ds-text-subtle, #475569)] hover:text-[var(--ds-text, #0f172a)] hover:bg-[var(--ds-surface-sunken, #f1f5f9)] transition-colors"
+            className="w-[30px] h-[30px] rounded-md flex items-center justify-center text-[var(--ds-text-subtle,#475569)] hover:text-[var(--ds-text,#0f172a)] hover:bg-[var(--ds-surface-sunken,#f1f5f9)] transition-colors"
             title="Remove from Capacity Planner"
           >
             <Trash2 className="w-4 h-4" />

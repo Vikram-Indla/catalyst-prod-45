@@ -96,7 +96,7 @@ export const SkillGapAnalysis: React.FC = () => {
       {/* Top Row: 2 Column Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Section 1: Current vs Required Skills */}
-        <div className="bg-white dark:bg-[var(--ds-surface-raised, #1A1A1A)] rounded-xl border border-brand-primary/20 p-6 shadow-sm">
+        <div className="bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] rounded-xl border border-brand-primary/20 p-6 shadow-sm">
           <div className="flex items-center justify-between mb-6">
             <h3 className="text-lg font-semibold text-brand-dark">
               Current vs Required Skills
@@ -134,7 +134,7 @@ export const SkillGapAnalysis: React.FC = () => {
         </div>
 
         {/* Section 2: Team Skill Coverage */}
-        <div className="bg-white dark:bg-[var(--ds-surface-raised, #1A1A1A)] rounded-xl border border-brand-primary/20 p-6 shadow-sm">
+        <div className="bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] rounded-xl border border-brand-primary/20 p-6 shadow-sm">
           <div className="flex items-center justify-between mb-6">
             <h3 className="text-lg font-semibold text-brand-dark">
               Team Skill Coverage
@@ -172,7 +172,7 @@ export const SkillGapAnalysis: React.FC = () => {
       </div>
 
       {/* Section 3: Critical Skills Table */}
-      <div className="bg-white dark:bg-[var(--ds-surface-raised, #1A1A1A)] rounded-xl border border-brand-primary/20 p-6 shadow-sm">
+      <div className="bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] rounded-xl border border-brand-primary/20 p-6 shadow-sm">
         <div className="flex items-center gap-3 mb-6">
           <AlertTriangle className="w-5 h-5 text-destructive" />
           <h3 className="text-lg font-semibold text-brand-primary">

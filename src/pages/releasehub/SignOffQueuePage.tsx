@@ -67,7 +67,7 @@ export default function SignOffQueuePage() {
         <div className="relative">
           <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: 'var(--cp-text-muted, #94A3B8)' }} />
           <input type="text" placeholder="Search changes or approvers..." value={search} onChange={e => setSearch(e.target.value)}
-            className="h-9 w-72 pl-9 pr-3 rounded-[4px] text-[13px] focus:outline-none focus:ring-2 focus:ring-[var(--ds-text-brand, #2563EB)]/20"
+            className="h-9 w-72 pl-9 pr-3 rounded-[4px] text-[13px] focus:outline-none focus:ring-2 focus:ring-[var(--ds-text-brand,#2563EB)]/20"
             style={{ border: isDark ? '0.75px solid #2E2E2E' : '0.75px solid rgba(15,23,42,0.12)', fontFamily: RH.fontBody, background: 'var(--cp-bg-elevated, #FFFFFF)', color: isDark ? 'var(--ds-text, #EDEDED)' : undefined }} />
         </div>
       </div>
@@ -109,12 +109,12 @@ export default function SignOffQueuePage() {
                       {isWaiting ? (
                         <div className="flex items-center gap-1.5">
                           <button onClick={e => { e.stopPropagation(); setActionModal({ signoff: so, action: 'approve' }); }}
-                            className="h-7 px-2.5 rounded-[4px] bg-[var(--ds-text-success, #16A34A)] text-white text-[11px] font-bold hover:bg-[#15803D]">Approve</button>
+                            className="h-7 px-2.5 rounded-[4px] bg-[var(--ds-text-success,#16A34A)] text-white text-[11px] font-bold hover:bg-[#15803D]">Approve</button>
                           <button onClick={e => { e.stopPropagation(); setActionModal({ signoff: so, action: 'reject' }); }}
-                            className="h-7 px-2.5 rounded-[4px] text-[var(--ds-text-danger, #DC2626)] text-[11px] font-bold hover:bg-[var(--ds-background-danger, #FEF2F2)]" style={{ border: '0.75px solid #FCA5A5' }}>Reject</button>
+                            className="h-7 px-2.5 rounded-[4px] text-[var(--ds-text-danger,#DC2626)] text-[11px] font-bold hover:bg-[var(--ds-background-danger,#FEF2F2)]" style={{ border: '0.75px solid #FCA5A5' }}>Reject</button>
                         </div>
                       ) : isPending ? (
-                        <span className="text-[11px] text-[var(--ds-text-subtlest, #94A3B8)]" title="Requires previous gate approval">Locked</span>
+                        <span className="text-[11px] text-[var(--ds-text-subtlest,#94A3B8)]" title="Requires previous gate approval">Locked</span>
                       ) : null}
                     </td>
                   </tr>
@@ -143,7 +143,7 @@ export default function SignOffQueuePage() {
               <div>
                 <label className="block text-[12px] font-semibold mb-1" style={{ color: 'var(--cp-text-secondary, #475569)' }}>Comment {actionModal.action === 'reject' && '*'}</label>
                 <textarea value={comment} onChange={e => setComment(e.target.value)} placeholder="Add a comment..."
-                  className="w-full h-24 px-3 py-2 rounded-[4px] text-[13px] focus:outline-none focus:ring-2 focus:ring-[var(--ds-text-brand, #2563EB)]/20 resize-none"
+                  className="w-full h-24 px-3 py-2 rounded-[4px] text-[13px] focus:outline-none focus:ring-2 focus:ring-[var(--ds-text-brand,#2563EB)]/20 resize-none"
                   style={{ border: isDark ? '0.75px solid #2E2E2E' : '0.75px solid rgba(15,23,42,0.12)', background: isDark ? 'var(--cp-bg-surface, #242528)' : undefined, color: isDark ? 'var(--ds-text, #EDEDED)' : undefined }} />
               </div>
             </div>
@@ -151,7 +151,7 @@ export default function SignOffQueuePage() {
           <DialogFooter>
             <button onClick={() => { setActionModal(null); setComment(''); }} className="h-9 px-4 rounded-[6px] text-[13px] font-medium" style={{ color: 'var(--cp-text-secondary, #475569)', border: isDark ? '0.75px solid #2E2E2E' : '0.75px solid rgba(15,23,42,0.12)', background: isDark ? 'var(--cp-bg-surface, #242528)' : undefined }}>Cancel</button>
             <button onClick={handleAction} disabled={approveSignoff.isPending || rejectSignoff.isPending}
-              className={`h-9 px-4 rounded-[6px] text-[13px] font-semibold text-white disabled:opacity-50 ${actionModal?.action === 'approve' ? 'bg-[var(--ds-text-success, #16A34A)] hover:bg-[#15803D]' : 'bg-[var(--ds-text-danger, #DC2626)] hover:bg-[#B91C1C]'}`}>
+              className={`h-9 px-4 rounded-[6px] text-[13px] font-semibold text-white disabled:opacity-50 ${actionModal?.action === 'approve' ? 'bg-[var(--ds-text-success,#16A34A)] hover:bg-[#15803D]' : 'bg-[var(--ds-text-danger,#DC2626)] hover:bg-[#B91C1C]'}`}>
               {actionModal?.action === 'approve' ? 'Approve' : 'Reject'}
             </button>
           </DialogFooter>
