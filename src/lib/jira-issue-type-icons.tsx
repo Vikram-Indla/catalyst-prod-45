@@ -1,47 +1,38 @@
 /**
  * ═══════════════════════════════════════════════════════════════════════
- * JIRA ISSUE TYPE ICONS — CANONICAL GUARDRAIL ("RESET ICONS" REFERENCE)
+ * JIRA ISSUE TYPE ICONS — LEGACY DELEGATION LAYER ("RESET ICONS")
  * ═══════════════════════════════════════════════════════════════════════
  *
- * ⚠️  GUARDRAIL: THIS IS THE SINGLE SOURCE OF TRUTH FOR ALL WORK ITEM
- *     TYPE ICONS IN CATALYST. NEVER create competing icon components
- *     with inline SVGs. All other files MUST delegate to this module.
+ * 2026-05-01: This file is now a DELEGATION LAYER. The actual icon
+ * artwork lives in `src/assets/icons/work-type/` and the canonical
+ * rendering component is `WorkItemTypeIcon` from `@/components/icons`.
  *
- * PROTECTED ICON REGISTRY (from Jira project type configuration):
- * ─────────────────────────────────────────────────────────────────
- *   API Requirement   → #2684FF  Blue     → task SVG
- *   Backend           → #2684FF  Blue     → subtask SVG       [SUB-TASK]
- *   Bug / QA Bug      → #FF5630  Red      → bug SVG (filled circle)
- *   Business Gap      → #FF5630  Red      → incident SVG
- *   Change Request    → #FFAB00  Amber    → changes SVG (arrows)
- *   Epic              → #6554C0  Purple   → epic SVG (lightning bolt)
- *   Feature           → #36B37E  Green    → new-feature SVG (plus)
- *   Figma             → #2684FF  Blue     → subtask SVG       [SUB-TASK]
- *   Frontend          → #2684FF  Blue     → subtask SVG       [SUB-TASK]
- *   Improvement       → #36B37E  Green    → improvement SVG (up arrow)
- *   Incident          → #FF5630  Red      → incident SVG (beacon)
- *   Integration       → #2684FF  Blue     → subtask SVG       [SUB-TASK]
- *   Issue             → #2684FF  Blue     → issue SVG (checkmark square)
- *   New Feature       → #36B37E  Green    → new-feature SVG (plus)
- *   Problem           → #FF5630  Red      → problem SVG (circle slash)
- *   Prod. Incident    → #FF5630  Red      → incident SVG
- *   Question          → #6554C0  Purple   → question SVG (circle ?)
- *   Story             → #36B37E  Green    → story SVG (bookmark)
- *   Sub-task          → #2684FF  Blue     → subtask SVG       [SUB-TASK]
- *   Task              → #2684FF  Blue     → task SVG (empty square)
+ * Why delegate instead of remove?
+ *   - 50+ consumers across Catalyst import `JiraIssueTypeIcon` directly.
+ *     Migrating each call site is wider blast radius than swapping the
+ *     internal renderer.
+ *   - The legacy helpers (`resolveJiraTypeConfig`, `getJiraTypeColor`,
+ *     `getJiraTypeLabel`, `getJiraIconUrl`) are still used by surfaces
+ *     that need the color/label without rendering an icon (e.g.
+ *     border accents, status badges). Keep them alive.
  *
- * FILES THAT DELEGATE TO THIS MODULE (guardrail chain):
- *   src/components/shared/JiraIssueTypeIcon.tsx          → re-export w/ tooltip
- *   src/components/project-hub/sdlc/PHIssueTypeIcon.tsx  → re-export
- *   src/modules/.../story-detail/IssueTypeIcon.tsx       → re-export
+ * Migration plan: as files in this codebase are touched for other
+ * reasons, swap their `JiraIssueTypeIcon` import to `WorkItemTypeIcon`
+ * from `@/components/icons`. Once the consumer count drops to 0, this
+ * file can be deleted.
  *
- * SVG FILES: /admin/icons/jira/*.svg (16px and 24px variants)
- * To change an icon globally: replace the SVG file. No code changes.
+ * NEW WORK MUST USE: `import { WorkItemTypeIcon } from '@/components/icons'`
+ *
+ * SOURCE OF TRUTH (icon assets + types):
+ *   src/assets/icons/manifest.json
+ *   src/components/icons/icons.registry.ts
  *
  * CODE WORD: "RESET ICONS"
+ * ═══════════════════════════════════════════════════════════════════════
  */
 
 import React from 'react';
+import { WorkItemTypeIcon } from '@/components/icons/WorkItemTypeIcon';
 
 // ─── SVG FILE MAPPING ────────────────────────────────────────────────
 // Each type maps to a filename prefix in /admin/icons/jira/
@@ -339,36 +330,18 @@ const INLINE_SVGS: Record<string, (size: number) => React.ReactNode> = {
  * pointing at /admin/icons/jira/*.svg for legacy icons.
  */
 export function JiraIssueTypeIcon({ type, size = 16, className, style }: JiraIssueTypeIconProps) {
-  const cfg = resolveJiraTypeConfig(type);
-
-  const inline = INLINE_SVGS[cfg.iconFile];
-  if (inline) {
-    return (
-      <span
-        className={className}
-        title={cfg.label}
-        aria-label={cfg.label}
-        style={{ display: 'inline-flex', flexShrink: 0, ...style }}
-      >
-        {inline(size)}
-      </span>
-    );
-  }
-
-  // Use 16px SVG for sizes ≤ 16, 24px SVG for anything larger
-  const svgSize: 16 | 24 = size <= 16 ? 16 : 24;
-  const src = `${ICON_BASE_PATH}/${cfg.iconFile}-${svgSize}.svg`;
-
+  // Delegate to the canonical Catalyst icon component. WorkItemTypeIcon
+  // accepts a free-text type string and normalizes via
+  // `normalizeWorkItemType()` from icons.registry.ts. Brand color, dark
+  // mode swap, and a11y attributes are handled there. The legacy helpers
+  // below (resolveJiraTypeConfig, etc.) remain available for non-icon
+  // consumers (badges, accents) until those call sites migrate.
   return (
-    <img
-      src={src}
-      width={size}
-      height={size}
-      alt={cfg.label}
-      title={cfg.label}
+    <WorkItemTypeIcon
+      type={type}
+      size={size}
       className={className}
-      style={{ flexShrink: 0, ...style }}
-      draggable={false}
+      style={style}
     />
   );
 }

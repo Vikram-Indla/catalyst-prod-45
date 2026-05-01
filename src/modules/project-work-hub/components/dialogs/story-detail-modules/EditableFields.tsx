@@ -10,6 +10,7 @@ import Select, { CreatableSelect } from '@atlaskit/select';
 import type { ProjectMember, ParentIssue } from './types';
 import { PRIORITY_LIST } from './constants';
 import { getAvatarColor } from './helpers';
+import { PriorityIcon } from '@/components/icons';
 import { resolveAvatarUrl } from '@/lib/avatars';
 
 /** Atlassian-spec dropdown container styles */
@@ -26,37 +27,9 @@ const CheckmarkSVG = () => (
   </svg>
 );
 
-/** Jira-native priority SVG icons — exact parity */
-const PRIORITY_SVG: Record<string, React.ReactNode> = {
-  Highest: (
-    <svg width="16" height="16" viewBox="0 0 16 16">
-      <path d="M3 8l5-5 5 5" fill="none" stroke="#FF5630" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-      <path d="M3 12l5-5 5 5" fill="none" stroke="#FF5630" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-    </svg>
-  ),
-  High: (
-    <svg width="16" height="16" viewBox="0 0 16 16">
-      <path d="M3 10l5-5 5 5" fill="none" stroke="#FF5630" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-    </svg>
-  ),
-  Medium: (
-    <svg width="16" height="16" viewBox="0 0 16 16">
-      <path d="M3 6h10" fill="none" stroke="#FFAB00" strokeWidth="2" strokeLinecap="round"/>
-      <path d="M3 10h10" fill="none" stroke="#FFAB00" strokeWidth="2" strokeLinecap="round"/>
-    </svg>
-  ),
-  Low: (
-    <svg width="16" height="16" viewBox="0 0 16 16">
-      <path d="M3 6l5 5 5-5" fill="none" stroke="#2684FF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-    </svg>
-  ),
-  Lowest: (
-    <svg width="16" height="16" viewBox="0 0 16 16">
-      <path d="M3 4l5 5 5-5" fill="none" stroke="#2684FF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-      <path d="M3 8l5 5 5-5" fill="none" stroke="#2684FF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-    </svg>
-  ),
-};
+// 2026-05-01: replaced inline Jira-stroke priority SVGs with the canonical
+// <PriorityIcon> from @/components/icons (filled-glyph variant matching
+// Catalyst's brand palette + dark-mode aware). See src/assets/icons/priority/.
 
 /* ── Avatar helper — prioritises real image, falls back to face icon (GUARDRAIL) ──
    Exported so peer fields (Reporter etc.) can reuse the canonical fallback and
@@ -265,7 +238,7 @@ export function EditablePriority({ issueId, issueKey, currentPriority, onUpdate 
         formatOptionLabel={(opt) => (
           <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
             <span style={{ display: 'flex', flexShrink: 0 }}>
-              {PRIORITY_SVG[opt.value] ?? PRIORITY_SVG.Medium}
+              <PriorityIcon level={opt.value} size={16} label="" />
             </span>
             <span style={{ fontSize: 14, color: '#172B4D', fontWeight: 400 }}>
               {opt.label}

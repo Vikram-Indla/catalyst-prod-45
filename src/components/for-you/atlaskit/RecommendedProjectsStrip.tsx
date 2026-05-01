@@ -34,6 +34,19 @@ import { useNavigate } from 'react-router-dom';
 import { token } from '@atlaskit/tokens';
 import Avatar from '@atlaskit/avatar';
 import type { Project } from '@/hooks/useForYouData';
+import { PROJECT_AVATAR_REGISTRY, type ProjectKey } from '@/components/icons';
+
+// 2026-05-01: Prefer the locally-bundled Catalyst project avatar (keyed by
+// `project.key`) over the runtime atlassian.net `avatar_url`. The bundled
+// asset is hashed at build time, no CORS, no Atlassian dependency. The
+// `avatar_url` remains as a secondary fallback for projects that don't yet
+// have a Catalyst-side avatar in src/assets/icons/project-avatars/.
+function resolveProjectAvatarSrc(project: Project): string | undefined {
+  if (project.key && project.key in PROJECT_AVATAR_REGISTRY) {
+    return PROJECT_AVATAR_REGISTRY[project.key as ProjectKey].url;
+  }
+  return project.avatar_url || undefined;
+}
 
 interface RecommendedProjectsStripProps {
   projects: Project[];
@@ -170,7 +183,7 @@ function ProjectCardButton({ card, onClick }: { card: Project; onClick: () => vo
         appearance="square"
         size="medium"
         name={card.name}
-        src={card.avatar_url || undefined}
+        src={resolveProjectAvatarSrc(card)}
       />
       <div style={{ flex: 1, minWidth: 0 }}>
         <div

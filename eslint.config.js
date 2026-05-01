@@ -113,6 +113,21 @@ const makeAdsForbidAtlaskit = (severity) => ({
           "Bespoke icon modules drift from Atlassian's glyph set — if a new " +
           "type is needed, add it to CONFIGS in jira-issue-type-icons.tsx.",
       },
+      // ── 2026-05-01 — RESET ICONS canonical asset guardrail ────────────
+      // Direct imports of @/assets/icons/** are banned outside the icon
+      // registry. All product code MUST go through the typed components
+      // in @/components/icons (WorkItemTypeIcon, PriorityIcon,
+      // ProjectAvatar) so the registry remains the single source of
+      // truth. The registry file itself is exempted via the consumer
+      // config block's `ignores` (src/components/icons/**).
+      {
+        group: ["@/assets/icons/*", "@/assets/icons/**"],
+        message:
+          "Direct imports of @/assets/icons/** are banned. Use the typed " +
+          "components from '@/components/icons' (WorkItemTypeIcon, " +
+          "PriorityIcon, ProjectAvatar). To add a new icon: extend " +
+          "src/components/icons/icons.registry.ts.",
+      },
     ],
   }],
 });
@@ -405,6 +420,9 @@ export default tseslint.config(
       // The shim itself imports the canonical lib internally; exempting
       // its own file from the import ban so the deprecation chain works.
       "src/components/shared/WorkItemIcon.tsx",
+      // The icon registry IS the seam where @/assets/icons/** gets
+      // imported. Every other consumer must go through this module.
+      "src/components/icons/**",
     ],
     rules: {
       ...adsForbidAtlaskit,
