@@ -39,8 +39,8 @@ interface ModalDialogProps {
 const WIDTH_MAP: Record<string, number> = {
   small: 400,
   medium: 560,
-  large: 640,   // Jira Create modal is ~640px
-  'x-large': 800,
+  large: 860,   // Jira Create modal is ~840–880px wide
+  'x-large': 1024,
 };
 
 export function ModalDialog({ children, onClose, width = 'medium' }: ModalDialogProps) {
