@@ -63,18 +63,12 @@
  *   Jump to  ← HUBS constant from @/lib/hubs (canonical CamelCase names)
  */
 import React, { useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   Star,
   Clock,
-  Building2,
-  Briefcase,
   FolderOpen,
-  Ship,
-  CheckCircle2,
-  AlertTriangle,
-  CheckSquare,
-  Calendar,
-  BookOpen,
+  ArrowRight,
   type LucideIcon,
 } from 'lucide-react';
 import { toast } from 'sonner';
@@ -84,17 +78,13 @@ import {
   useToggleStar,
   type StarredItemType,
 } from '@/hooks/home/useStarredItems';
-import { useRecentIssues, type RecentIssue } from '@/hooks/home/useRecentIssues';
-import { HUBS } from '@/lib/hubs';
+import { useRecentProjects, type RecentProject } from '@/hooks/home/useRecentProjects';
 import { useGlobalSearchStore } from '@/store/globalSearchStore';
 import { supabase } from '@/integrations/supabase/client';
-import WorkItemIcon, {
-  type WorkItemIconType,
-  normalizeIconType,
-} from '@/components/shared/WorkItemIcon';
+import { ProjectIcon } from '@/components/shared/ProjectIcon';
 
 const PINNED_LIMIT = 5;
-const RECENT_LIMIT = 5;
+const RECENT_PROJECTS_LIMIT = 6;
 
 interface HomeSidebarProps {
   expanded?: boolean;
