@@ -283,11 +283,14 @@ const footerRightStyles = xcss({
   gap: 'space.100',
 });
 
+// Jira parity: subtle 1px input border that elevates to focused-blue ONLY
+// when the user is actively editing. The previous fixed "input" border +
+// auto-focus combo painted a permanent blue rectangle on mount.
 const editorWrapperStyles = xcss({
   borderRadius: 'border.radius',
   borderWidth: 'border.width',
   borderStyle: 'solid',
-  borderColor: 'color.border.input',
+  borderColor: 'color.border',
   minHeight: '160px',
   overflow: 'hidden',
 });
