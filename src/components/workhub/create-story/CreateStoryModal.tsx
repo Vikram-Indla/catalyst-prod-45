@@ -18,7 +18,7 @@
  *   - @atlaskit/lozenge             read-only Status pill
  *   - @atlaskit/primitives          Box / Stack / Inline / xcss
  *   - @atlaskit/tokens              token('space.*') / token('color.*')
- *   - EpicDescriptionEditor         Atlaskit @atlaskit/editor-core (lazy)
+ *   - @atlaskit/textarea            Description field in Jira Create-modal form style
  *
  * Callers (unchanged contract):
  *   - src/components/ja/CreateDropdown.tsx                (top nav + Create)
@@ -31,8 +31,6 @@ import {
   useMemo,
   useCallback,
   useRef,
-  Suspense,
-  lazy,
   type ReactNode,
 } from 'react';
 // @atlaskit/modal-dialog uses @atlaskit/portal which renders empty in this
@@ -49,12 +47,12 @@ import {
 import { Field, ErrorMessage, HelperMessage } from '@atlaskit/form';
 import Select, { AsyncSelect, CreatableSelect } from '@atlaskit/select';
 import Textfield from '@atlaskit/textfield';
+import TextArea from '@atlaskit/textarea';
 import { Checkbox } from '@atlaskit/checkbox';
 import Button, { IconButton } from '@atlaskit/button/new';
 import Lozenge from '@atlaskit/lozenge';
 import { Box, Stack, Inline, xcss } from '@atlaskit/primitives';
 import { token } from '@atlaskit/tokens';
-import Spinner from '@atlaskit/spinner';
 import CrossIcon from '@atlaskit/icon/glyph/cross';
 import EditorCloseIcon from '@atlaskit/icon/glyph/editor/close';
 import VidFullScreenOnIcon from '@atlaskit/icon/glyph/vid-full-screen-on';
@@ -77,13 +75,6 @@ import {
   useCreateStoryMutation,
   useWorkflowStatuses,
 } from './useCreateStory';
-
-// Lazy — keeps @atlaskit/editor-core out of the modal mount path until the
-// "More fields" disclosure is opened. Same pattern as EpicDescriptionEditor's
-// own lazy import elsewhere in the project.
-const EpicDescriptionEditor = lazy(
-  () => import('@/components/shared/rich-text/atlaskit/EpicDescriptionEditor'),
-);
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Public API (callers' contract — DO NOT CHANGE)
@@ -207,6 +198,20 @@ function statusAppearance(
   return 'default';
 }
 
+function plainTextToAdf(text: string) {
+  const paragraphs = text.split(/\n{2,}/).map((block) => block.trim()).filter(Boolean);
+  return {
+    type: 'doc',
+    version: 1,
+    content: paragraphs.length
+      ? paragraphs.map((paragraph) => ({
+          type: 'paragraph',
+          content: [{ type: 'text', text: paragraph }],
+        }))
+      : [{ type: 'paragraph' }],
+  };
+}
+
 // ─────────────────────────────────────────────────────────────────────────────
 // xcss styles (token-only)
 // ─────────────────────────────────────────────────────────────────────────────
@@ -281,25 +286,6 @@ const footerRightStyles = xcss({
   display: 'flex',
   alignItems: 'center',
   gap: 'space.100',
-});
-
-// Jira parity: subtle 1px input border that elevates to focused-blue ONLY
-// when the user is actively editing. The previous fixed "input" border +
-// auto-focus combo painted a permanent blue rectangle on mount.
-const editorWrapperStyles = xcss({
-  borderRadius: 'border.radius',
-  borderWidth: 'border.width',
-  borderStyle: 'solid',
-  borderColor: 'color.border',
-  minHeight: '160px',
-  overflow: 'hidden',
-});
-
-const editorLoadingStyles = xcss({
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  minHeight: '160px',
 });
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -1067,45 +1053,18 @@ export function CreateStoryModal({
               {/* ── Description ─────────────────────────────────────── */}
               <Field name="description" label="Description">
                 {() => (
-                  <Box xcss={editorWrapperStyles}>
-                    <Suspense
-                      fallback={
-                        <Box xcss={editorLoadingStyles}>
-                          <Spinner size="medium" />
-                        </Box>
-                      }
-                    >
-                      {/*
-                        Jira parity: Create dialog uses appearance="comment"
-                        (flat, edge-to-edge, no paper canvas). "full-page"
-                        adds a wide centered paper canvas which (a) tints
-                        blue under our color.background.selected token and
-                        (b) vertically misaligns the placeholder. Verified
-                        against Atlassian's live Create Story modal.
-                      */}
-                      <EpicDescriptionEditor
-                        workItemId="__create__"
-                        initialContent={form.descriptionAdf ?? null}
-                        placeholder="Add a description..."
-                        appearance="comment"
-                        onSave={(adfJson: string) => {
-                          try {
-                            const parsed = JSON.parse(adfJson);
-                            updateField('descriptionAdf', parsed);
-                            updateField('description', JSON.stringify(parsed));
-                          } catch { /* noop */ }
-                        }}
-                        onChange={(adfJson: string) => {
-                          try {
-                            const parsed = JSON.parse(adfJson);
-                            updateField('descriptionAdf', parsed);
-                            updateField('description', JSON.stringify(parsed));
-                          } catch { /* noop */ }
-                        }}
-                        onCancel={() => undefined}
-                      />
-                    </Suspense>
-                  </Box>
+                  <TextArea
+                    name="description"
+                    value={form.description}
+                    minimumRows={4}
+                    resize="vertical"
+                    placeholder="Add a description..."
+                    onChange={(e) => {
+                      const value = (e.target as HTMLTextAreaElement).value;
+                      updateField('description', value);
+                      updateField('descriptionAdf', plainTextToAdf(value));
+                    }}
+                  />
                 )}
               </Field>
 
