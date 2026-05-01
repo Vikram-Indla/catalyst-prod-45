@@ -24,7 +24,7 @@
  *     (WorkItemStarButton, StarredPage, per-row stars in backlogs).
  */
 import React, { useMemo } from 'react';
-import { Clock, FolderOpen, ArrowRight } from 'lucide-react';
+import { Clock, FolderOpen } from 'lucide-react';
 import { SidebarBase, type SidebarConfig, type SidebarMenuItem } from './SidebarBase';
 import { useRecentProjects, type RecentProject } from '@/hooks/home/useRecentProjects';
 import { ProjectIcon } from '@/components/shared/ProjectIcon';
@@ -125,29 +125,12 @@ export default function HomeSidebar({
           icon: getProjectIconComponent(p),
         }));
 
-    const allProjectsItem: SidebarMenuItem = {
-      id: 'recent-all-projects',
-      title: (
-        <span
-          style={{
-            color: 'var(--ds-text-subtle, #626F86)',
-            fontSize: 13,
-            fontWeight: 500,
-          }}
-        >
-          All projects
-        </span>
-      ),
-      path: '/project-hub/all-projects',
-      icon: ArrowRight,
-    };
-
     return {
       badge: 'H',
       label: 'Home',
       showFavorites: false,
       sections: [
-        { title: 'Recent projects', items: [...recentProjectItems, allProjectsItem] },
+        { title: 'Recent projects', items: recentProjectItems },
       ],
     };
   }, [recentProjects, recentLoading]);
