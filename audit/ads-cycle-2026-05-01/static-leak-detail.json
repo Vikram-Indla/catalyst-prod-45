@@ -76,37 +76,37 @@
       "file": "src/components/for-you/ForYouDetailPanel.tsx",
       "line": 26,
       "hex": "#11853D",
-      "snippet": "success: 'var(--ds-text-success, )', successText: '#11853D', successBg: '#F0FDF4',"
+      "snippet": "success: '', successText: '#11853D', successBg: '#F0FDF4',"
     },
     {
       "file": "src/components/for-you/ForYouDetailPanel.tsx",
       "line": 26,
       "hex": "#F0FDF4",
-      "snippet": "success: 'var(--ds-text-success, )', successText: '#11853D', successBg: '#F0FDF4',"
+      "snippet": "success: '', successText: '#11853D', successBg: '#F0FDF4',"
     },
     {
       "file": "src/components/for-you/ForYouDetailPanel.tsx",
       "line": 27,
       "hex": "#AF6003",
-      "snippet": "warning: 'var(--ds-text-warning, )', warningText: '#AF6003', warningBg: '#FFFBEB',"
+      "snippet": "warning: '', warningText: '#AF6003', warningBg: '#FFFBEB',"
     },
     {
       "file": "src/components/for-you/ForYouDetailPanel.tsx",
       "line": 27,
       "hex": "#FFFBEB",
-      "snippet": "warning: 'var(--ds-text-warning, )', warningText: '#AF6003', warningBg: '#FFFBEB',"
+      "snippet": "warning: '', warningText: '#AF6003', warningBg: '#FFFBEB',"
     },
     {
       "file": "src/components/for-you/ForYouDetailPanel.tsx",
       "line": 28,
       "hex": "#D92525",
-      "snippet": "danger: 'var(--ds-text-danger, )', dangerText: '#D92525', dangerBg: 'var(--ds-background-danger, )',"
+      "snippet": "danger: '', dangerText: '#D92525', dangerBg: '',"
     },
     {
       "file": "src/components/for-you/ForYouDetailPanel.tsx",
       "line": 37,
       "hex": "#93C5FD",
-      "snippet": "primary: 'var(--ds-text-brand, )', primaryHover: '#93C5FD', primaryBg: 'rgba(59,130,246,0.12)',"
+      "snippet": "primary: '', primaryHover: '#93C5FD', primaryBg: 'rgba(59,130,246,0.12)',"
     },
     {
       "file": "src/components/for-you/ForYouDetailPanel.tsx",
@@ -282,13 +282,13 @@
       "file": "src/components/strategy/intelligence/AIStrategyIntelligencePanel.tsx",
       "line": 127,
       "hex": "#FFFBEB",
-      "snippet": "<span className=\"text-[10px] font-semibold px-2 py-[3px] rounded-md\" style={{ color: 'var(--ds-text-warning, )', background: '#FFFBEB', bord"
+      "snippet": "<span className=\"text-[10px] font-semibold px-2 py-[3px] rounded-md\" style={{ color: '', background: '#FFFBEB', border: '1px solid #FDE68A' "
     },
     {
       "file": "src/components/strategy/intelligence/AIStrategyIntelligencePanel.tsx",
       "line": 127,
       "hex": "#FDE68A",
-      "snippet": "<span className=\"text-[10px] font-semibold px-2 py-[3px] rounded-md\" style={{ color: 'var(--ds-text-warning, )', background: '#FFFBEB', bord"
+      "snippet": "<span className=\"text-[10px] font-semibold px-2 py-[3px] rounded-md\" style={{ color: '', background: '#FFFBEB', border: '1px solid #FDE68A' "
     },
     {
       "file": "src/components/strategy/intelligence/AIStrategyIntelligencePanel.tsx",
@@ -368,19 +368,19 @@
       "file": "src/pages/producthub/IdeasAnalyticsPage.tsx",
       "line": 15,
       "hex": "#0C66E4",
-      "snippet": "'Draft': 'var(--ds-border, )', 'Submitted': 'var(--ds-border, )', 'Under Review': '#0C66E4', 'Approved': '#0C66E4', 'Converted to Request': "
+      "snippet": "'Draft': '', 'Submitted': '', 'Under Review': '#0C66E4', 'Approved': '#0C66E4', 'Converted to Request': '#1B7F37',"
     },
     {
       "file": "src/pages/producthub/IdeasAnalyticsPage.tsx",
       "line": 15,
       "hex": "#0C66E4",
-      "snippet": "'Draft': 'var(--ds-border, )', 'Submitted': 'var(--ds-border, )', 'Under Review': '#0C66E4', 'Approved': '#0C66E4', 'Converted to Request': "
+      "snippet": "'Draft': '', 'Submitted': '', 'Under Review': '#0C66E4', 'Approved': '#0C66E4', 'Converted to Request': '#1B7F37',"
     },
     {
       "file": "src/pages/producthub/IdeasAnalyticsPage.tsx",
       "line": 15,
       "hex": "#1B7F37",
-      "snippet": "'Draft': 'var(--ds-border, )', 'Submitted': 'var(--ds-border, )', 'Under Review': '#0C66E4', 'Approved': '#0C66E4', 'Converted to Request': "
+      "snippet": "'Draft': '', 'Submitted': '', 'Under Review': '#0C66E4', 'Approved': '#0C66E4', 'Converted to Request': '#1B7F37',"
     },
     {
       "file": "src/pages/producthub/IdeasAnalyticsPage.tsx",
@@ -428,7 +428,7 @@
       "file": "src/pages/producthub/IdeasBacklogPage.tsx",
       "line": 131,
       "hex": "#2563EB",
-      "snippet": "<button onClick={() => setIntelligenceOpen(true)} style={{ background: '', color: 'var(--ds-text-brand, )', border: '1px solid #2563EB', bor"
+      "snippet": "<button onClick={() => setIntelligenceOpen(true)} style={{ background: '', color: '', border: '1px solid #2563EB', borderRadius: '6px', padd"
     },
     {
       "file": "src/pages/producthub/IdeasBacklogPage.tsx",
@@ -464,7 +464,7 @@
       "file": "src/pages/producthub/IdeasBacklogPage.tsx",
       "line": 356,
       "hex": "#42526E",
-      "snippet": ": (STATUS_LOZENGE_COLORS[status] ?? { bg: 'var(--ds-border, )', text: '#42526E' });"
+      "snippet": ": (STATUS_LOZENGE_COLORS[status] ?? { bg: '', text: '#42526E' });"
     },
     {
       "file": "src/pages/producthub/IdeasBoardPage.tsx",
@@ -586,19 +586,19 @@
       "file": "src/components/project-hub/FilterDropdown.tsx",
       "line": 49,
       "hex": "#42526E",
-      "snippet": ": dark ? 'bg-transparent border-[var(--ds-border,)] text-[var(--ds-text-subtlest,)]' : 'bg-white border-[var(--ds-border,)] text-[#42526E]'"
+      "snippet": ": dark ? 'bg-transparent border-[] text-[]' : 'bg-white border-[] text-[#42526E]'"
     },
     {
       "file": "src/components/project-hub/FilterDropdown.tsx",
       "line": 67,
       "hex": "#0052CC",
-      "snippet": "style={{ width: 18, height: 18, backgroundColor: '#0052CC', color: 'var(--ds-surface, var(--ds-surface, ))', fontSize: 10, fontWeight: 600 }"
+      "snippet": "style={{ width: 18, height: 18, backgroundColor: '#0052CC', color: '', fontSize: 10, fontWeight: 600 }}"
     },
     {
       "file": "src/components/project-hub/FilterDropdown.tsx",
       "line": 108,
       "hex": "#7D7D7D",
-      "snippet": "style={{ fontSize: 12, color: dark ? '#7D7D7D' : 'var(--ds-text-subtlest, )', background: 'transparent', border: 'none', cursor: 'pointer' }"
+      "snippet": "style={{ fontSize: 12, color: dark ? '#7D7D7D' : '', background: 'transparent', border: 'none', cursor: 'pointer' }}"
     },
     {
       "file": "src/components/project-hub/FilterDropdown.tsx",
@@ -610,25 +610,25 @@
       "file": "src/components/project-hub/FilterDropdown.tsx",
       "line": 151,
       "hex": "#EBECF0",
-      "snippet": "<div className=\"px-3 py-2\" style={{ borderBottom: `1px solid ${dark ? 'var(--ds-border, )' : '#EBECF0'}` }}>"
+      "snippet": "<div className=\"px-3 py-2\" style={{ borderBottom: `1px solid ${dark ? '' : '#EBECF0'}` }}>"
     },
     {
       "file": "src/components/project-hub/FilterDropdown.tsx",
       "line": 156,
       "hex": "#7D7D7D",
-      "snippet": "color: dark ? '#7D7D7D' : 'var(--ds-text-subtlest, )',"
+      "snippet": "color: dark ? '#7D7D7D' : '',"
     },
     {
       "file": "src/components/project-hub/FilterDropdown.tsx",
       "line": 171,
       "hex": "#42526E",
-      "snippet": "style={{ fontSize: 12, color: dark ? 'var(--ds-text, )' : '#42526E', background: 'transparent', border: 'none', fontFamily: 'var(--cp-font-b"
+      "snippet": "style={{ fontSize: 12, color: dark ? '' : '#42526E', background: 'transparent', border: 'none', fontFamily: 'var(--cp-font-body)', textAlign"
     },
     {
       "file": "src/components/project-hub/FilterDropdown.tsx",
       "line": 179,
       "hex": "#C1C7D0",
-      "snippet": "border: checked ? 'none' : `1.5px solid ${dark ? 'var(--ds-border-bold, )' : '#C1C7D0'}`,"
+      "snippet": "border: checked ? 'none' : `1.5px solid ${dark ? '' : '#C1C7D0'}`,"
     },
     {
       "file": "src/components/project-hub/FilterDropdown.tsx",
@@ -676,7 +676,7 @@
       "file": "src/components/project-hub/FilterDropdown.tsx",
       "line": 249,
       "hex": "#7D7D7D",
-      "snippet": "style={{ fontSize: 11, color: dark ? '#7D7D7D' : 'var(--ds-text-subtlest, )', background: 'transparent', border: 'none', cursor: 'pointer' }"
+      "snippet": "style={{ fontSize: 11, color: dark ? '#7D7D7D' : '', background: 'transparent', border: 'none', cursor: 'pointer' }}"
     },
     {
       "file": "src/components/project-hub/ProjectStatusTabs.tsx",
@@ -724,7 +724,7 @@
       "file": "src/components/project-hub/ProjectTable.tsx",
       "line": 29,
       "hex": "#111111",
-      "snippet": "className={isDark ? 'bg-[#111111]' : 'bg-[var(--ds-surface-sunken,)]'}"
+      "snippet": "className={isDark ? 'bg-[#111111]' : 'bg-[]'}"
     }
   ],
   "WorkHub": [
@@ -732,13 +732,13 @@
       "file": "src/modules/work-hub/components/AllWorkDetailPanel.tsx",
       "line": 35,
       "hex": "#42526E",
-      "snippet": "'Backlog': { bg: 'bg-[var(--ds-border,)]', text: 'text-[#42526E]', label: 'BACKLOG' },"
+      "snippet": "'Backlog': { bg: 'bg-[]', text: 'text-[#42526E]', label: 'BACKLOG' },"
     },
     {
       "file": "src/modules/work-hub/components/AllWorkDetailPanel.tsx",
       "line": 36,
       "hex": "#42526E",
-      "snippet": "'To Do': { bg: 'bg-[var(--ds-border,)]', text: 'text-[#42526E]', label: 'TO DO' },"
+      "snippet": "'To Do': { bg: 'bg-[]', text: 'text-[#42526E]', label: 'TO DO' },"
     },
     {
       "file": "src/modules/work-hub/components/AllWorkDetailPanel.tsx",
@@ -786,7 +786,7 @@
       "file": "src/modules/work-hub/components/IssueDetailPanel.tsx",
       "line": 119,
       "hex": "#232323",
-      "snippet": "<DropdownMenuItem className={cn(\"text-[13px] cursor-pointer\", isDark ? \"text-[var(--ds-text,)] hover:bg-[#232323]\" : \"text-slate-700 hover:b"
+      "snippet": "<DropdownMenuItem className={cn(\"text-[13px] cursor-pointer\", isDark ? \"text-[] hover:bg-[#232323]\" : \"text-slate-700 hover:bg-slate-50\")}>"
     },
     {
       "file": "src/modules/work-hub/components/IssueDetailPanel.tsx",
@@ -840,13 +840,13 @@
       "file": "src/modules/work-hub/views/ListView.tsx",
       "line": 451,
       "hex": "#111111",
-      "snippet": "<th scope=\"col\" className=\"w-10 px-2 py-2 bg-slate-50 dark:bg-[#111111] border-b border-r border-slate-200 dark:border-[var(--ds-border,)] t"
+      "snippet": "<th scope=\"col\" className=\"w-10 px-2 py-2 bg-slate-50 dark:bg-[#111111] border-b border-r border-slate-200 dark:border-[] text-center\">"
     },
     {
       "file": "src/modules/work-hub/views/ListView.tsx",
       "line": 553,
       "hex": "#111111",
-      "snippet": "<th scope=\"col\" className=\"w-10 px-2 py-2 bg-slate-50 dark:bg-[#111111] border-b border-slate-200 dark:border-[var(--ds-border,)]\">"
+      "snippet": "<th scope=\"col\" className=\"w-10 px-2 py-2 bg-slate-50 dark:bg-[#111111] border-b border-slate-200 dark:border-[]\">"
     },
     {
       "file": "src/modules/work-hub/views/ListView.tsx",
@@ -999,7 +999,7 @@
       "file": "src/pages/releasehub/FreezeWindowsPage.tsx",
       "line": 194,
       "hex": "#FEE2E2",
-      "snippet": "className=\"opacity-0 group-hover:opacity-100 transition-opacity h-7 w-7 rounded flex items-center justify-center hover:bg-[#FEE2E2] text-[va"
+      "snippet": "className=\"opacity-0 group-hover:opacity-100 transition-opacity h-7 w-7 rounded flex items-center justify-center hover:bg-[#FEE2E2] text-[] "
     },
     {
       "file": "src/pages/releasehub/ProductionEventsPage.tsx",
@@ -1011,7 +1011,7 @@
       "file": "src/pages/releasehub/ProductionEventsPage.tsx",
       "line": 12,
       "hex": "#42526E",
-      "snippet": "HOTFIX: { bg: 'var(--ds-border, )', color: '#42526E', label: 'HOTFIX' },"
+      "snippet": "HOTFIX: { bg: '', color: '#42526E', label: 'HOTFIX' },"
     },
     {
       "file": "src/pages/releasehub/ProductionEventsPage.tsx",
@@ -1041,7 +1041,7 @@
       "file": "src/pages/releasehub/ReleaseComparePage.tsx",
       "line": 10,
       "hex": "#0D9488",
-      "snippet": "const RADAR_COLORS = ['var(--ds-text-brand, )', '#0D9488', 'var(--ds-text-danger, )', 'var(--ds-text-subtlest, )'];"
+      "snippet": "const RADAR_COLORS = ['', '#0D9488', '', ''];"
     },
     {
       "file": "src/pages/releasehub/ReleaseComparePage.tsx",
@@ -1053,19 +1053,19 @@
       "file": "src/pages/releasehub/ReleaseComparePage.tsx",
       "line": 73,
       "hex": "#0D9488",
-      "snippet": "className={`bg-white dark:bg-[var(--ds-surface-raised,)] rounded-lg border p-3 text-left transition-all ${isSelected ? 'border-[#0D9488] bor"
+      "snippet": "className={`bg-white dark:bg-[] rounded-lg border p-3 text-left transition-all ${isSelected ? 'border-[#0D9488] border-2 ring-2 ring-[#0D948"
     },
     {
       "file": "src/pages/releasehub/ReleaseComparePage.tsx",
       "line": 73,
       "hex": "#0D9488",
-      "snippet": "className={`bg-white dark:bg-[var(--ds-surface-raised,)] rounded-lg border p-3 text-left transition-all ${isSelected ? 'border-[#0D9488] bor"
+      "snippet": "className={`bg-white dark:bg-[] rounded-lg border p-3 text-left transition-all ${isSelected ? 'border-[#0D9488] border-2 ring-2 ring-[#0D948"
     },
     {
       "file": "src/pages/releasehub/ReleaseComparePage.tsx",
       "line": 73,
       "hex": "#C9D3E0",
-      "snippet": "className={`bg-white dark:bg-[var(--ds-surface-raised,)] rounded-lg border p-3 text-left transition-all ${isSelected ? 'border-[#0D9488] bor"
+      "snippet": "className={`bg-white dark:bg-[] rounded-lg border p-3 text-left transition-all ${isSelected ? 'border-[#0D9488] border-2 ring-2 ring-[#0D948"
     },
     {
       "file": "src/pages/releasehub/ReleaseComparePage.tsx",
@@ -1181,13 +1181,13 @@
       "file": "src/pages/testhub/ActivityFeedPage.tsx",
       "line": 163,
       "hex": "#BFDBFE",
-      "snippet": "<div style={{ backgroundColor: 'var(--ds-background-selected, )', borderRadius: 12, padding: 16, border: '1px solid #BFDBFE' }}>"
+      "snippet": "<div style={{ backgroundColor: '', borderRadius: 12, padding: 16, border: '1px solid #BFDBFE' }}>"
     },
     {
       "file": "src/pages/testhub/ActivityFeedPage.tsx",
       "line": 167,
       "hex": "#FECACA",
-      "snippet": "<div style={{ backgroundColor: 'var(--ds-background-danger, )', borderRadius: 12, padding: 16, border: '1px solid #FECACA' }}>"
+      "snippet": "<div style={{ backgroundColor: '', borderRadius: 12, padding: 16, border: '1px solid #FECACA' }}>"
     },
     {
       "file": "src/pages/testhub/ActivityFeedPage.tsx",
@@ -1217,7 +1217,7 @@
       "file": "src/pages/testhub/CycleReportPage.tsx",
       "line": 83,
       "hex": "#FFFBEB",
-      "snippet": "medium: { color: 'var(--ds-text-warning, )', bg: '#FFFBEB' },"
+      "snippet": "medium: { color: '', bg: '#FFFBEB' },"
     },
     {
       "file": "src/pages/testhub/CycleReportPage.tsx",
@@ -1241,7 +1241,7 @@
       "file": "src/pages/testhub/CycleReportPage.tsx",
       "line": 183,
       "hex": "#10B981",
-      "snippet": "const passRateColor = (rate: number) => rate >= 80 ? '#10B981' : rate >= 50 ? 'var(--ds-text-warning, )' : 'var(--ds-text-danger, )';"
+      "snippet": "const passRateColor = (rate: number) => rate >= 80 ? '#10B981' : rate >= 50 ? '' : '';"
     },
     {
       "file": "src/pages/testhub/CycleReportPage.tsx",
@@ -1253,7 +1253,7 @@
       "file": "src/pages/testhub/CycleReportPage.tsx",
       "line": 366,
       "hex": "#FECACA",
-      "snippet": "<div key={i} style={{ backgroundColor: 'var(--ds-background-danger, )', border: '1px solid #FECACA', borderRadius: 12, padding: '12px 20px',"
+      "snippet": "<div key={i} style={{ backgroundColor: '', border: '1px solid #FECACA', borderRadius: 12, padding: '12px 20px', textAlign: 'center' }}>"
     },
     {
       "file": "src/pages/testhub/CycleReportPage.tsx",
@@ -1265,7 +1265,7 @@
       "file": "src/pages/testhub/DefectDetailPage.tsx",
       "line": 178,
       "hex": "#E2E8F0",
-      "snippet": "<div style={{ background: 'var(--ds-surface-sunken, )', border: '1px solid #E2E8F0', borderRadius: 6, padding: '12px 14px' }}>"
+      "snippet": "<div style={{ background: '', border: '1px solid #E2E8F0', borderRadius: 6, padding: '12px 14px' }}>"
     },
     {
       "file": "src/pages/testhub/DefectDetailPage.tsx",
@@ -1303,31 +1303,31 @@
       "file": "src/pages/incidenthub/IncidentAnalyticsPage.tsx",
       "line": 46,
       "hex": "#0C66E4",
-      "snippet": "open: 'var(--ds-border, )', triage: 'var(--ds-border, )', in_progress: '#0C66E4', to_committee: '#0C66E4',"
+      "snippet": "open: '', triage: '', in_progress: '#0C66E4', to_committee: '#0C66E4',"
     },
     {
       "file": "src/pages/incidenthub/IncidentAnalyticsPage.tsx",
       "line": 46,
       "hex": "#0C66E4",
-      "snippet": "open: 'var(--ds-border, )', triage: 'var(--ds-border, )', in_progress: '#0C66E4', to_committee: '#0C66E4',"
+      "snippet": "open: '', triage: '', in_progress: '#0C66E4', to_committee: '#0C66E4',"
     },
     {
       "file": "src/pages/incidenthub/IncidentAnalyticsPage.tsx",
       "line": 47,
       "hex": "#0C66E4",
-      "snippet": "in_review: '#0C66E4', resolved: '#1B7F37', closed: 'var(--ds-border, )', converted: '#1B7F37',"
+      "snippet": "in_review: '#0C66E4', resolved: '#1B7F37', closed: '', converted: '#1B7F37',"
     },
     {
       "file": "src/pages/incidenthub/IncidentAnalyticsPage.tsx",
       "line": 47,
       "hex": "#1B7F37",
-      "snippet": "in_review: '#0C66E4', resolved: '#1B7F37', closed: 'var(--ds-border, )', converted: '#1B7F37',"
+      "snippet": "in_review: '#0C66E4', resolved: '#1B7F37', closed: '', converted: '#1B7F37',"
     },
     {
       "file": "src/pages/incidenthub/IncidentAnalyticsPage.tsx",
       "line": 47,
       "hex": "#1B7F37",
-      "snippet": "in_review: '#0C66E4', resolved: '#1B7F37', closed: 'var(--ds-border, )', converted: '#1B7F37',"
+      "snippet": "in_review: '#0C66E4', resolved: '#1B7F37', closed: '', converted: '#1B7F37',"
     },
     {
       "file": "src/pages/incidenthub/IncidentAnalyticsPage.tsx",
@@ -1351,7 +1351,7 @@
       "file": "src/pages/incidenthub/IncidentDetailPage.tsx",
       "line": 146,
       "hex": "#FFFBEB",
-      "snippet": ": (slaBreached ? 'var(--ds-background-danger, )' : '#FFFBEB'),"
+      "snippet": ": (slaBreached ? '' : '#FFFBEB'),"
     },
     {
       "file": "src/pages/incidenthub/IncidentDetailPage.tsx",
@@ -1393,13 +1393,13 @@
       "file": "src/pages/incidenthub/IncidentDetailPage.tsx",
       "line": 254,
       "hex": "#0A0A0A",
-      "snippet": "<div className=\"shrink-0 mt-1\" style={{ width: 10, height: 10, borderRadius: '50%', backgroundColor: 'var(--ds-text-brand, )', border: isDar"
+      "snippet": "<div className=\"shrink-0 mt-1\" style={{ width: 10, height: 10, borderRadius: '50%', backgroundColor: '', border: isDark ? '2px solid #0A0A0A"
     },
     {
       "file": "src/pages/incidenthub/IncidentDetailPage.tsx",
       "line": 254,
       "hex": "#2563EB",
-      "snippet": "<div className=\"shrink-0 mt-1\" style={{ width: 10, height: 10, borderRadius: '50%', backgroundColor: 'var(--ds-text-brand, )', border: isDar"
+      "snippet": "<div className=\"shrink-0 mt-1\" style={{ width: 10, height: 10, borderRadius: '50%', backgroundColor: '', border: isDark ? '2px solid #0A0A0A"
     },
     {
       "file": "src/pages/incidenthub/IncidentDetailPage.tsx",
@@ -1467,7 +1467,7 @@
       "file": "src/pages/r360-member/ChronologyView.tsx",
       "line": 58,
       "hex": "#0D9488",
-      "snippet": "const accentColor = (cat: string) => cat === 'in_progress' ? 'var(--ds-text-brand, )' : cat === 'in_qa' ? '#0D9488' : cat === 'blocked' ? 'v"
+      "snippet": "const accentColor = (cat: string) => cat === 'in_progress' ? '' : cat === 'in_qa' ? '#0D9488' : cat === 'blocked' ? '' : cat === 'done' ? ''"
     },
     {
       "file": "src/pages/r360-member/ChronologyView.tsx",
@@ -1587,7 +1587,7 @@
       "file": "src/pages/r360-member/StatusLozenge.tsx",
       "line": 54,
       "hex": "#42526E",
-      "snippet": "return <LozengeSpan bg=\"var(--ds-border, )\" color=\"#42526E\" label={label} />;"
+      "snippet": "return <LozengeSpan bg=\"\" color=\"#42526E\" label={label} />;"
     },
     {
       "file": "src/pages/r360-member/StatusLozenge.tsx",
@@ -1605,7 +1605,7 @@
       "file": "src/pages/r360-member/StatusLozenge.tsx",
       "line": 63,
       "hex": "#42526E",
-      "snippet": "if (cat === 'new' || cat === 'todo') return { background: 'var(--ds-border, )', color: '#42526E' };"
+      "snippet": "if (cat === 'new' || cat === 'todo') return { background: '', color: '#42526E' };"
     },
     {
       "file": "src/pages/r360-member/StatusLozenge.tsx",
@@ -1623,7 +1623,7 @@
       "file": "src/pages/r360-member/StatusLozenge.tsx",
       "line": 86,
       "hex": "#42526E",
-      "snippet": "return { background: 'var(--ds-border, )', color: '#42526E' };"
+      "snippet": "return { background: '', color: '#42526E' };"
     },
     {
       "file": "src/pages/r360-member/helpers.ts",
@@ -1635,7 +1635,7 @@
       "file": "src/pages/r360-member/helpers.ts",
       "line": 55,
       "hex": "#0D9488",
-      "snippet": "export const AVATAR_COLORS = ['var(--ds-text-brand, )', '#0D9488', 'var(--ds-text-warning, )'];"
+      "snippet": "export const AVATAR_COLORS = ['', '#0D9488', ''];"
     }
   ],
   "NotifyHub": [
@@ -1849,7 +1849,7 @@
       "file": "src/pages/admin/FeatureFlagsPage.tsx",
       "line": 46,
       "hex": "#42526E",
-      "snippet": "neutral: { bg: 'var(--ds-border, )', text: '#42526E' },"
+      "snippet": "neutral: { bg: '', text: '#42526E' },"
     },
     {
       "file": "src/pages/admin/FeatureFlagsPage.tsx",
@@ -1861,7 +1861,7 @@
       "file": "src/pages/admin/FeatureFlagsPage.tsx",
       "line": 52,
       "hex": "#42526E",
-      "snippet": "draft: { bg: 'var(--ds-border, )', text: '#42526E' },"
+      "snippet": "draft: { bg: '', text: '#42526E' },"
     },
     {
       "file": "src/pages/admin/FeatureFlagsPage.tsx",
@@ -1873,7 +1873,7 @@
       "file": "src/pages/admin/FeatureFlagsPage.tsx",
       "line": 58,
       "hex": "#BFDBFE",
-      "snippet": "Strategy:   { bg: 'var(--ds-background-selected, )', text: 'var(--ds-text-brand, )', border: '#BFDBFE' },"
+      "snippet": "Strategy:   { bg: '', text: '', border: '#BFDBFE' },"
     },
     {
       "file": "src/pages/admin/FeatureFlagsPage.tsx",
@@ -1897,7 +1897,7 @@
       "file": "src/pages/admin/FeatureFlagsPage.tsx",
       "line": 60,
       "hex": "#BFDBFE",
-      "snippet": "Delivery:   { bg: 'var(--ds-background-selected, )', text: 'var(--ds-text-brand, )', border: '#BFDBFE' },"
+      "snippet": "Delivery:   { bg: '', text: '', border: '#BFDBFE' },"
     },
     {
       "file": "src/pages/admin/FeatureFlagsPage.tsx",
@@ -1921,7 +1921,7 @@
       "file": "src/pages/admin/FeatureFlagsPage.tsx",
       "line": 62,
       "hex": "#FECACA",
-      "snippet": "Operations: { bg: 'var(--ds-background-danger, )', text: 'var(--ds-text-danger, )', border: '#FECACA' },"
+      "snippet": "Operations: { bg: '', text: '', border: '#FECACA' },"
     },
     {
       "file": "src/pages/admin/FeatureFlagsPage.tsx",
@@ -1939,7 +1939,7 @@
       "file": "src/pages/admin/FeatureFlagsPage.tsx",
       "line": 627,
       "hex": "#71717A",
-      "snippet": "color: filterMode === mode ? 'var(--ds-text-brand, )' : '#71717A',"
+      "snippet": "color: filterMode === mode ? '' : '#71717A',"
     },
     {
       "file": "src/pages/admin/JiraActivitySyncPage.tsx",
@@ -2007,7 +2007,7 @@
       "file": "src/components/reqAssist/RABackgroundModal.tsx",
       "line": 150,
       "hex": "#F0FDF4",
-      "snippet": "<div style={{ width: 48, height: 48, borderRadius: 12, background: jobStatus === 'failed' ? 'var(--ds-background-danger, )' : jobStatus === "
+      "snippet": "<div style={{ width: 48, height: 48, borderRadius: 12, background: jobStatus === 'failed' ? '' : jobStatus === 'done' ? '#F0FDF4' : 'var(--c"
     },
     {
       "file": "src/components/reqAssist/RABackgroundModal.tsx",
@@ -2037,7 +2037,7 @@
       "file": "src/components/reqAssist/RAEpicDraftDrawer.tsx",
       "line": 31,
       "hex": "#42526E",
-      "snippet": "draft:     { bg: 'var(--ds-border, )', color: '#42526E', label: 'DRAFT' },"
+      "snippet": "draft:     { bg: '', color: '#42526E', label: 'DRAFT' },"
     },
     {
       "file": "src/components/reqAssist/RAEpicDraftDrawer.tsx",
@@ -2115,7 +2115,7 @@
       "file": "src/components/reqAssist/RAEpicGenerationModal.tsx",
       "line": 320,
       "hex": "#DC2626",
-      "snippet": "background: 'var(--ds-background-danger, )', border: '1.5px solid #DC2626', borderRadius: 6,"
+      "snippet": "background: '', border: '1.5px solid #DC2626', borderRadius: 6,"
     },
     {
       "file": "src/components/reqAssist/RAEpicGenerationModal.tsx",
@@ -2139,7 +2139,7 @@
       "file": "src/components/reqAssist/RAEpicGenerationModal.tsx",
       "line": 411,
       "hex": "#F3F4F6",
-      "snippet": "background: state === 'done' ? 'var(--ds-background-success, )' : state === 'active' ? 'var(--cp-primary-5)' : '#F3F4F6',"
+      "snippet": "background: state === 'done' ? '' : state === 'active' ? 'var(--cp-primary-5)' : '#F3F4F6',"
     },
     {
       "file": "src/components/reqAssist/RAEpicGenerationModal.tsx",
@@ -2163,7 +2163,7 @@
       "file": "src/components/reqAssist/RAJiraSidePanel.tsx",
       "line": 270,
       "hex": "#42526E",
-      "snippet": "if (!stage) return { bg: 'var(--ds-border, )', color: '#42526E', label: 'PENDING' };"
+      "snippet": "if (!stage) return { bg: '', color: '#42526E', label: 'PENDING' };"
     },
     {
       "file": "src/components/reqAssist/RAJiraSidePanel.tsx",
@@ -2175,7 +2175,7 @@
       "file": "src/components/reqAssist/RAJiraSidePanel.tsx",
       "line": 272,
       "hex": "#42526E",
-      "snippet": "if (stage === 'failed') return { bg: 'var(--ds-border, )', color: '#42526E', label: 'FAILED' };"
+      "snippet": "if (stage === 'failed') return { bg: '', color: '#42526E', label: 'FAILED' };"
     },
     {
       "file": "src/components/reqAssist/RAJiraSidePanel.tsx",

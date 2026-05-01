@@ -1,0 +1,54 @@
+{
+  "ForYou": {
+    "fileCount": 29,
+    "leakCount": 107
+  },
+  "StrategyHub": {
+    "fileCount": 34,
+    "leakCount": 221
+  },
+  "ProductHub": {
+    "fileCount": 87,
+    "leakCount": 279
+  },
+  "ProjectHub": {
+    "fileCount": 119,
+    "leakCount": 462
+  },
+  "WorkHub": {
+    "fileCount": 234,
+    "leakCount": 884
+  },
+  "TaskHub": {
+    "fileCount": 0,
+    "leakCount": 0
+  },
+  "ReleaseHub": {
+    "fileCount": 94,
+    "leakCount": 186
+  },
+  "TestHub": {
+    "fileCount": 124,
+    "leakCount": 729
+  },
+  "IncidentHub": {
+    "fileCount": 13,
+    "leakCount": 59
+  },
+  "ResourceHub": {
+    "fileCount": 39,
+    "leakCount": 628
+  },
+  "NotifyHub": {
+    "fileCount": 21,
+    "leakCount": 46
+  },
+  "Admin": {
+    "fileCount": 130,
+    "leakCount": 188
+  },
+  "ReqAssist": {
+    "fileCount": 11,
+    "leakCount": 131
+  }
+}
