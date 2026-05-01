@@ -84,6 +84,10 @@ import {
 const EpicDescriptionEditor = lazy(
   () => import('@/components/shared/rich-text/atlaskit/EpicDescriptionEditor'),
 );
+// 2026-04-30 — canonical editor prewarm. See CLAUDE.md PERMANENT RULE
+// "@atlaskit/editor-core load profile". Fires the lazy import on idle so
+// the chunk is in cache before the user clicks "Add a description…".
+import { usePrewarmEpicEditorOnOpen, prefetchEpicEditor } from '@/lib/atlaskitPrefetch';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Public API (callers' contract — DO NOT CHANGE)
@@ -786,6 +790,10 @@ export function CreateStoryModal({
   const [descriptionExpanded, setDescriptionExpanded] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
 
+  // 2026-04-30 canonical editor prewarm — chunks editor-core during idle
+  // while the user fills Summary/Project. Required by CLAUDE.md PERMANENT RULE.
+  usePrewarmEpicEditorOnOpen(open);
+
   const isCreateLinkedMode = !!linkedSource;
   const currentProject = projects.find((p) => p.id === form.projectId);
   const resolvedKey = currentProject?.key ?? projectKey ?? '';
@@ -1281,6 +1289,11 @@ export function CreateStoryModal({
                         type="button"
                         data-testid="create-modal--description-expand"
                         onClick={() => setDescriptionExpanded(true)}
+                        // 2026-04-30 — intent-prefetch. Hover/focus warms the
+                        // editor chunk before the click commits. Belt & braces
+                        // with the modal-open prewarm above.
+                        onMouseEnter={prefetchEpicEditor}
+                        onFocus={prefetchEpicEditor}
                         style={{
                           display: 'block',
                           width: '100%',

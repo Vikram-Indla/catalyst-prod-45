@@ -33,6 +33,8 @@ import { toast } from 'sonner';
 import { CatalystViewBase } from '../shared/CatalystViewBase';
 import { useProductHubBusinessRequest } from './useProductHubBusinessRequest';
 import { useDuplicateBusinessRequest } from '@/hooks/useBusinessRequests';
+// 2026-04-30 — canonical editor prewarm. See CLAUDE.md PERMANENT RULE.
+import { usePrewarmEpicEditorOnOpen } from '@/lib/atlaskitPrefetch';
 import {
   BrTitleSection,
   BrStatusSection,
@@ -83,6 +85,11 @@ export default function CatalystViewBusinessRequestV2({
   const { request, resolvedId, isLoading, updateField, deleteRequest } =
     useProductHubBusinessRequest({ requestId, requestKey });
   const duplicateMutation = useDuplicateBusinessRequest();
+
+  // 2026-04-30 canonical editor prewarm — chunks editor-core during the
+  // panel's idle time so the user's first Description-edit click is instant.
+  // Required by CLAUDE.md PERMANENT RULE.
+  usePrewarmEpicEditorOnOpen(isOpen);
 
   // ── Header chrome handlers ────────────────────────────────────────────────
   const handlePermalink = useCallback(async () => {

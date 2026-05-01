@@ -19,6 +19,9 @@ import { useState, Suspense, lazy } from 'react';
 import Spinner from '@atlaskit/spinner';
 import { token } from '@atlaskit/tokens';
 import type { BusinessRequest } from '@/types/business-request';
+// 2026-04-30 — canonical editor prewarm + intent prefetch.
+// See CLAUDE.md PERMANENT RULE on editor-core load profile.
+import { prefetchEpicEditor } from '@/lib/atlaskitPrefetch';
 
 const EpicDescriptionEditor = lazy(
   () => import('@/components/shared/rich-text/atlaskit/EpicDescriptionEditor'),
@@ -109,6 +112,10 @@ export function BrDescriptionSection({ request, onUpdate }: Props) {
           type="button"
           onClick={() => setEditing(true)}
           data-testid="br-view--description-expand"
+          // 2026-04-30 — intent-prefetch the editor chunk so click→editor is
+          // instant. Required by CLAUDE.md PERMANENT RULE.
+          onMouseEnter={prefetchEpicEditor}
+          onFocus={prefetchEpicEditor}
           style={{
             display: 'block',
             width: '100%',

@@ -34,6 +34,8 @@
  * HTTP cache.
  */
 
+import { useEffect } from 'react';
+
 type PrefetchFn = () => Promise<unknown>;
 
 function fireAndForget(importer: PrefetchFn) {
@@ -121,4 +123,36 @@ export function usePrefetchOnIntent(prefetch: () => void) {
     onFocus: prefetch,
     onPointerDown: prefetch,
   } as const;
+}
+
+/**
+ * 🔒 CANONICAL: pre-warm @atlaskit/editor-core when a surface mounts that
+ * MAY mount the editor on user interaction.
+ *
+ * Use this in EVERY modal / drawer / detail panel that contains an
+ * EpicDescriptionEditor — even when the editor is collapsed-until-clicked.
+ * The hook fires the dynamic import on requestIdleCallback so the chunk
+ * lands in the browser HTTP cache during the user's "thinking time"
+ * (typing the Summary, picking a Project, etc.) and the editor mount on
+ * click is instant instead of a 5-15 second hang in Vite dev / 200-500ms
+ * in production cold cache.
+ *
+ * Pattern (every consumer):
+ *   import { usePrewarmEpicEditorOnOpen } from '@/lib/atlaskitPrefetch';
+ *   ...
+ *   usePrewarmEpicEditorOnOpen(open);   // `open` = the modal's open boolean
+ *
+ * The hook is idempotent — multiple calls to `import()` on the same module
+ * de-dup at the JS engine level, and the prefetch swallows errors so a
+ * 403 on a chunk doesn't surface to the user.
+ *
+ * DO NOT remove this hook from any consumer without explicit owner sign-off.
+ * Removing it WILL re-introduce the "Loading editor…" hang Vikram reported
+ * on 2026-04-30 (design-critique session).
+ */
+export function usePrewarmEpicEditorOnOpen(open: boolean): void {
+  useEffect(() => {
+    if (!open || typeof window === 'undefined') return;
+    onIdle(() => prefetchEpicEditor(), 1500);
+  }, [open]);
 }
