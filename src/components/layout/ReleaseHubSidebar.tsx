@@ -63,7 +63,8 @@ const buildSections = (triageCount: number, pendingSignoffs: number): SidebarSec
 export function ReleaseHubSidebar({ expanded, onToggle, className, triageCount = 0, pendingSignoffs = 0 }: ReleaseHubSidebarProps) {
   const config: SidebarConfig = {
     badge: 'RH',
-    label: 'ReleaseHub',
+    // Block A rule 7 (2026-05-01): canonical spaced casing.
+    label: 'Release Hub',
     sections: buildSections(triageCount, pendingSignoffs),
     footerItem: {
       id: 'settings',

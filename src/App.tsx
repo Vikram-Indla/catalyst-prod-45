@@ -8,7 +8,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { PersistQueryClientProvider } from "@tanstack/react-query-persist-client";
 import { createSyncStoragePersister } from "@tanstack/query-sync-storage-persister";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { ThemeProvider } from "@/providers/ThemeProvider";
 import { AdsThemeProvider } from "@/theme/ads";
 import { AuthProvider } from "./lib/auth";
@@ -79,6 +79,18 @@ const S = ({ children }: { children: React.ReactNode }) => (
   <Suspense fallback={<div className="p-8">Loading...</div>}>{children}</Suspense>
 );
 
+/**
+ * Block A rule 1 (2026-05-01) — canonical URL prefix is `/product-hub`.
+ * Legacy `/producthub/*` redirects here so bookmarks/links keep working.
+ * react-router v6 Navigate doesn't support splat substitution in `to`, so
+ * we resolve the new path imperatively from useLocation().
+ */
+function ProducthubLegacyRedirect() {
+  const location = useLocation();
+  const newPath = location.pathname.replace(/^\/producthub/, '/product-hub');
+  return <Navigate to={newPath + location.search + location.hash} replace />;
+}
+
 
 function App() {
   useCommandK();
@@ -131,6 +143,15 @@ function App() {
                 <Route path="/auth/slack/callback" element={<S><SlackOAuthCallback /></S>} />
                 <Route path="/submit-request" element={<S><SubmitDemandRequest /></S>} />
                 <Route path="/reset-password" element={<S><ResetPassword /></S>} />
+
+                {/* Block A rule 1 (2026-05-01) — canonical URL prefix is
+                    `/product-hub`. Legacy `/producthub/*` redirects via
+                    ProducthubLegacyRedirect (preserves search + hash).
+                    Mounted OUTSIDE the protected shell so we escape the
+                    CatalystShell re-render loop that was causing Navigate to
+                    fire repeatedly without ever committing the URL change. */}
+                <Route path="/producthub" element={<ProducthubLegacyRedirect />} />
+                <Route path="/producthub/*" element={<ProducthubLegacyRedirect />} />
 
                 {/* Protected shell with minimal routes */}
 

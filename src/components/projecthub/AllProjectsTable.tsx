@@ -1,6 +1,6 @@
 import { useState, useMemo, useRef, useCallback, useEffect } from 'react';
 import { Star, MoreHorizontal, Lock, ChevronUp, ChevronDown, ExternalLink, Settings, Archive, Search, Pencil } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link as RouterLink } from 'react-router-dom';
 import '@/styles/product-backlog.css';
 import { useTableColumns, type ColumnDef as TColDef } from '@/hooks/useTableColumns';
 import { ResizableTableHeader, type SortDir } from '@/components/shared/ResizableTableHeader';
@@ -221,7 +221,14 @@ function LeadReassignPopover({ project }: { project: ProjectListItem }) {
       >
         {displayLead.name ? (
           <>
-            <span style={{ flexShrink: 0, pointerEvents: 'none' }}>
+            {/* Block A rule 2 (2026-05-01): the parent <button>'s aria-label
+                already announces "Lead: <name> (click to reassign)" — the
+                Atlaskit Avatar would otherwise add its own accessible name
+                ("<name>") and the adjacent <span> a third copy, producing
+                "Vikram IndlaVikram Indla" in the AT name. Mark the avatar
+                wrapper aria-hidden so the avatar is treated as decorative
+                and the name is read exactly once. */}
+            <span aria-hidden="true" style={{ flexShrink: 0, pointerEvents: 'none' }}>
               <Avatar src={displayLead.avatar_url || undefined} name={displayLead.name || '??'} size="small" />
             </span>
             <span
@@ -1016,8 +1023,17 @@ export function AllProjectsTable({
 
     switch (colKey) {
       case 'star': return <td key={colKey} style={{ overflow: 'visible', textOverflow: 'clip' }}><div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}><button onClick={e => { e.stopPropagation(); onToggleFav(p.id, isFav); }} className="bg-transparent border-none cursor-pointer p-0 outline-none rounded flex-shrink-0" style={{ pointerEvents: 'auto' }}><Star size={14} fill={isFav ? 'var(--ds-text-warning, #F59E0B)' : 'none'} className={isFav ? 'text-amber-500' : 'text-slate-300 dark:text-[var(--ds-text-subtlest,#878787)]'} /></button></div></td>;
-      case 'project_name': return <td key={colKey}><span onClick={() => { recordProjectView(p); navigate(`/project-hub/${p.project_key}/dashboard`); }} title={p.name} style={{ pointerEvents: 'auto', fontSize: 14, fontWeight: 500, color: token('color.link'), fontFamily: 'var(--cp-font-body)', cursor: 'pointer', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', display: 'inline-block', maxWidth: '100%' }} onMouseEnter={(e) => { e.currentTarget.style.textDecoration = 'underline'; }} onMouseLeave={(e) => { e.currentTarget.style.textDecoration = 'none'; }}>{p.name}</span></td>;
-      case 'project_key': return <td key={colKey}><span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 12, fontWeight: 500, color: token('color.text.subtle'), letterSpacing: '0.02em' }}>{p.project_key}</span></td>;
+      // Block B (2026-05-01) — project_name is now a real anchor (RouterLink).
+      // Replaces the previous <span onClick> which lost middle-click new-tab,
+      // keyboard focus, and link semantics. Audit S-? (Project list rows had
+      // cursor:pointer but no role/tabIndex/href).
+      case 'project_name': return <td key={colKey}><RouterLink to={`/project-hub/${p.project_key}/dashboard`} onClick={() => recordProjectView(p)} title={p.name} style={{ pointerEvents: 'auto', fontSize: 14, fontWeight: 500, color: token('color.link'), fontFamily: 'var(--cp-font-body)', textDecoration: 'none', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', display: 'inline-block', maxWidth: '100%' }} onMouseEnter={(e) => { e.currentTarget.style.textDecoration = 'underline'; }} onMouseLeave={(e) => { e.currentTarget.style.textDecoration = 'none'; }}>{p.name}</RouterLink></td>;
+      // Block B (2026-05-01) — project_key now wraps in a RouterLink so
+      // click/middle-click/Cmd-click all navigate; keyboard focus reaches the
+      // key cell via Tab. Visual treatment intentionally subtle (no underline,
+      // matches existing key-cell style) so it reads as part of the table cell
+      // rather than a flashy link.
+      case 'project_key': return <td key={colKey}><RouterLink to={`/project-hub/${p.project_key}/dashboard`} onClick={() => recordProjectView(p)} style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 12, fontWeight: 500, color: token('color.text.subtle'), letterSpacing: '0.02em', textDecoration: 'none' }} onMouseEnter={(e) => { e.currentTarget.style.textDecoration = 'underline'; e.currentTarget.style.color = String(token('color.link')); }} onMouseLeave={(e) => { e.currentTarget.style.textDecoration = 'none'; e.currentTarget.style.color = String(token('color.text.subtle')); }}>{p.project_key}</RouterLink></td>;
       case 'type': return <td key={colKey}><span className="text-[13px] text-slate-600 dark:text-[var(--ds-text-subtlest,#A1A1A1)]">{formatProjectType((p as any).project_type)}</span></td>;
       case 'lead': return <td key={colKey}><LeadReassignPopover project={p} /></td>;
       case 'members': return <td key={colKey}><MemberManagePopover project={p} /></td>;
@@ -1071,7 +1087,17 @@ export function AllProjectsTable({
             const checked = selectedRows.has(p.id);
             const active = isActiveStatus(p.status);
             return (
-              <tr key={p.id} className={cn('group', checked && 'pb-row-selected')} style={{ opacity: active ? 1 : 0.45, pointerEvents: active ? 'auto' : 'none', height: 56 }}>
+              <tr
+                key={p.id}
+                className={cn('group', checked && 'pb-row-selected')}
+                /* Block B (2026-05-01) — row body cursor is the default pointer
+                   (NOT cursor:pointer). The shared `.pb-table tbody tr` rule in
+                   product-backlog.css sets pointer for tables where the whole
+                   row is clickable; here only the project_name and project_key
+                   cells are real anchors, so the row body should read as
+                   non-clickable. Inline override beats the imported sheet. */
+                style={{ opacity: active ? 1 : 0.45, pointerEvents: active ? 'auto' : 'none', height: 56, cursor: 'default' }}
+              >
                 {orderedColumns.map(c => renderProjectCell(c.key, p, idx))}
               </tr>
             );

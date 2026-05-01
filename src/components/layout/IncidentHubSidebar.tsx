@@ -47,7 +47,8 @@ const sections: SidebarSection[] = [
 export function IncidentHubSidebar({ expanded, onToggle, className }: IncidentHubSidebarProps) {
   const config: SidebarConfig = {
     badge: 'IH',
-    label: 'IncidentHub',
+    // Block A rule 7 (2026-05-01): canonical spaced casing.
+    label: 'Incident Hub',
     sections,
   };
 

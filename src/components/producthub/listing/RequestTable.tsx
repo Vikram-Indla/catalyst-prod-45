@@ -60,6 +60,8 @@ import type { GroupByField } from '@/components/producthub/listing/ListingToolba
 import {
   StatusCell, PriorityCell, ScoreCell, AssigneeCell,
   DateCell, ProgressCell, EACell, QuarterCell, IDCell,
+  // Block D rule 3 (2026-05-01): canonical 8-col adds Type, Parent, Comments.
+  TypeCell, ParentCell, CommentsCell,
 } from './CellRenderers';
 import type { ColumnConfig } from './ColumnManager';
 // SourceBadge import dropped — see Source-column removal note below.
@@ -205,7 +207,10 @@ export function RequestTable({
       ),
     },
     {
-      id: 'roadmap', label: '', width: 3, alwaysVisible: true,
+      // Block D rule 2 (2026-05-01): Roadmap is no longer alwaysVisible.
+      // ColumnManager DEFAULT_COLUMNS hides it by default; users can
+      // re-enable via Manage columns. The cell still renders when shown.
+      id: 'roadmap', label: '', width: 3,
       cell: ({ row }) => (
         <button
           type="button"
@@ -219,7 +224,17 @@ export function RequestTable({
       ),
     },
     {
-      id: 'initiative_key', label: 'ID', width: 8, sortable: true, alwaysVisible: true,
+      // Block D rule 2 (2026-05-01): canonical Type column. Reads
+      // request.type (Feature/Gap/Integration/Data Request/Business
+      // Request); falls back to "Business Request" for legacy rows.
+      id: 'type', label: 'Type', width: 9, sortable: true,
+      accessor: (r: any) => r.type || 'Business Request',
+      cell: ({ row }) => <TypeCell type={(row as any).type} />,
+    },
+    {
+      // Block D rule 2 (2026-05-01): label "ID" → "Key" to match Project
+      // Backlog canonical and Jira's spelling.
+      id: 'initiative_key', label: 'Key', width: 8, sortable: true, alwaysVisible: true,
       accessor: (r: any) => r.initiative_key,
       cell: ({ row }) => {
         const key = (row as any).initiative_key;
@@ -241,7 +256,9 @@ export function RequestTable({
       but the table no longer renders it.
     */
     {
-      id: 'title', label: 'Title', width: 24, sortable: true, alwaysVisible: true,
+      // Block D rule 2 (2026-05-01): label "Title" → "Summary" per
+      // canonical (matches Project Backlog header).
+      id: 'title', label: 'Summary', width: 24, sortable: true, alwaysVisible: true,
       accessor: (r: any) => r.title,
       cell: ({ row }) => {
         const cancelled = (row as any).status === 'cancelled';
@@ -256,6 +273,21 @@ export function RequestTable({
       id: 'status', label: 'Status', width: 14, sortable: true,
       accessor: (r: any) => r.status,
       cell: ({ row }) => <StatusCell status={(row as any).status} />,
+    },
+    {
+      // Block D rule 2 (2026-05-01): canonical Comments column. Reads
+      // request.comment_count; renders en-dash when 0.
+      id: 'comments', label: 'Comments', width: 8, sortable: true,
+      accessor: (r: any) => r.comment_count ?? 0,
+      cell: ({ row }) => <CommentsCell count={(row as any).comment_count} />,
+    },
+    {
+      // Block D rule 2 (2026-05-01): canonical Parent column. Reads
+      // request.parent_mim_key (preserved by mim_business_requests.parent_mim_key
+      // column from Block C). Renders the parent MIM key as a subtle link.
+      id: 'parent', label: 'Parent', width: 9, sortable: true,
+      accessor: (r: any) => r.parent_mim_key,
+      cell: ({ row }) => <ParentCell parentKey={(row as any).parent_mim_key} />,
     },
     {
       id: 'priority', label: 'Priority', width: 9, sortable: true,

@@ -60,7 +60,14 @@ function toTimelineInitiative(i: Request): TimelineRequest {
 }
 
 const TERMINAL_STATUSES: RequestStatus[] = ['done', 'cancelled'];
-const COLUMN_STORAGE_KEY = 'ph-backlog-columns';
+// Block D rule 2 (2026-05-01): bumping the column-layout storage key
+// from `ph-backlog-columns` (legacy) to `ph-backlog-columns-v2` so that
+// users who had the 12-column shape locally pick up the 8-column
+// canonical on next load instead of being stuck on the old set.
+// Old key is left in place but read-only (we don't migrate, since the
+// rename ID→Key / Title→Summary plus the new Parent/Comments columns
+// make a clean reset more useful than a partial merge).
+const COLUMN_STORAGE_KEY = 'ph-backlog-columns-v2';
 const DENSITY_STORAGE_KEY = 'ph-backlog-density';
 
 
@@ -70,11 +77,11 @@ function loadColumns(): ColumnConfig[] {
     if (raw) {
       const parsed = JSON.parse(raw) as ColumnConfig[];
       const ids = parsed.map(c => c.id);
-      if (!ids.includes('roadmap')) parsed.splice(0, 0, { id: 'roadmap', label: 'Roadmap', visible: true });
-      if (!ids.includes('type')) {
-        const statusIdx = parsed.findIndex(c => c.id === 'status');
-        parsed.splice(statusIdx >= 0 ? statusIdx + 1 : 3, 0, { id: 'type', label: 'Type', visible: true });
-      }
+      // Backfill any newly-added column ids so users who saved a partial
+      // layout under the v2 key still see the new canonical entries.
+      DEFAULT_COLUMNS.forEach(d => {
+        if (!ids.includes(d.id)) parsed.push({ ...d });
+      });
       return parsed;
     }
   } catch { /* ignore */ }

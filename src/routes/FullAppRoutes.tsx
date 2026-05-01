@@ -1,5 +1,13 @@
 import React, { lazy, Suspense } from "react";
 import { Routes, Route, Navigate, useLocation, useParams, useSearchParams } from "react-router-dom";
+
+// Block A rule 1 (2026-05-01): legacy /producthub/requirement-assist/:id
+// redirect — react-router v6 can't substitute a path param into the
+// destination URL, so we build it imperatively from useParams.
+function NavigateProducthubReqAssistId() {
+  const { id } = useParams();
+  return <Navigate to={`/product-hub/requirement-assist/${id ?? ''}`} replace />;
+}
 import { ENABLE_AI, ENABLE_WIKI, ENABLE_KNOWLEDGE_HUB, ENABLE_HEAVY_EXPORTS } from '../lib/featureFlags';
 import { FeatureComingSoon } from '../components/common/FeatureComingSoon';
 import { ModuleGate } from '../components/common/ModuleGate';
@@ -91,6 +99,8 @@ const RequirementAssistCompose = ENABLE_AI ? lazy(() => import("../pages/product
 const RequirementAssistCategories = ENABLE_AI ? lazy(() => import("../pages/producthub/requirement-assist/categories")) : () => <FeatureComingSoon title="Requirement Assist" />;
 const RequirementAssistOutput = ENABLE_AI ? lazy(() => import("../pages/producthub/requirement-assist/output")) : () => <FeatureComingSoon title="Requirement Assist" />;
 const ProductCardsPage = lazy(() => import("../pages/producthub/CardsPage"));
+// Block C/D (2026-05-01) — All Products listing for /product-hub/products.
+const AllProductsPage = lazy(() => import("../pages/product-hub/AllProductsPage"));
 const IdeationPage = ENABLE_AI ? lazy(() => import("../pages/producthub/IdeationPage")) : () => <FeatureComingSoon title="Ideation" />;
 const IdeasRoadmapPage = ENABLE_AI ? lazy(() => import("../pages/product/ideas/IdeasRoadmapPage")) : () => <FeatureComingSoon title="Ideas Roadmap" />;
 const IdeasBacklogPage = ENABLE_AI ? lazy(() => import("../pages/producthub/IdeasBacklogPage")) : () => <FeatureComingSoon title="Ideas Backlog" />;
@@ -451,34 +461,68 @@ export default function FullAppRoutes() {
 
         <Route path="/browse/:key" element={<S><BrowsePage /></S>} />
 
-        {/* ═══ ProductHub ═══ */}
-        <Route path="/producthub" element={<Navigate to="/producthub/backlog" replace />} />
-        <Route path="/producthub/backlog" element={<MG k="producthub" t="ProductHub"><S><RequestListingPage /></S></MG>} />
-        <Route path="/producthub/table" element={<MG k="producthub" t="ProductHub"><S><CatalystDemandTable /></S></MG>} />
-        <Route path="/producthub/kanban" element={<MG k="producthub" t="ProductHub"><S><ProductKanbanPage /></S></MG>} />
-        <Route path="/producthub/dashboard" element={<MG k="producthub" t="ProductHub"><S><DemandSummaryPage /></S></MG>} />
-        <Route path="/producthub/roadmaps" element={<Navigate to="/producthub/roadmap" replace />} />
-        <Route path="/producthub/roadmaps-v1" element={<MG k="producthub" t="ProductHub"><S><IndustryRoadmapPage /></S></MG>} />
-        <Route path="/producthub/reports" element={<MG k="producthub" t="ProductHub"><S><IndustryComingSoon /></S></MG>} />
-        <Route path="/producthub/roadmap" element={<MG k="producthub" t="ProductHub"><S><RoadmapPage /></S></MG>} />
-        <Route path="/producthub/cards" element={<MG k="producthub" t="ProductHub"><S><ProductCardsPage /></S></MG>} />
-        <Route path="/producthub/ideation" element={<MG k="ai_features" t="Ideation"><S><IdeationPage /></S></MG>} />
+        {/* ═══ Product Hub ═══
+            Block A rule 1 (2026-05-01): canonical URL prefix is `/product-hub`.
+            All ProductHub routes registered under `/product-hub/*`. Each
+            legacy `/producthub/X` is preserved as a redirect to its
+            `/product-hub/X` counterpart so deep links and bookmarks survive.
+            Specificity: react-router v6 picks the most-specific match, so the
+            paired (legacy redirect, canonical destination) stays explicit per
+            route — a single `/producthub/*` splat is shadowed by the
+            individual entries. */}
+        {/* Canonical /product-hub/* (these own the rendering) */}
+        {/* Block C/D (2026-05-01): /product-hub now lands on /products
+            (the workstream listing) instead of /backlog. Mirror of
+            /project-hub which lands on /projects. */}
+        <Route path="/product-hub" element={<Navigate to="/product-hub/products" replace />} />
+        <Route path="/product-hub/products" element={<MG k="producthub" t="ProductHub"><S><AllProductsPage /></S></MG>} />
+        <Route path="/product-hub/backlog" element={<MG k="producthub" t="ProductHub"><S><RequestListingPage /></S></MG>} />
+        <Route path="/product-hub/table" element={<MG k="producthub" t="ProductHub"><S><CatalystDemandTable /></S></MG>} />
+        <Route path="/product-hub/kanban" element={<MG k="producthub" t="ProductHub"><S><ProductKanbanPage /></S></MG>} />
+        <Route path="/product-hub/dashboard" element={<MG k="producthub" t="ProductHub"><S><DemandSummaryPage /></S></MG>} />
+        <Route path="/product-hub/roadmaps" element={<Navigate to="/product-hub/roadmap" replace />} />
+        <Route path="/product-hub/roadmaps-v1" element={<MG k="producthub" t="ProductHub"><S><IndustryRoadmapPage /></S></MG>} />
+        <Route path="/product-hub/reports" element={<MG k="producthub" t="ProductHub"><S><IndustryComingSoon /></S></MG>} />
+        <Route path="/product-hub/roadmap" element={<MG k="producthub" t="ProductHub"><S><RoadmapPage /></S></MG>} />
+        <Route path="/product-hub/cards" element={<MG k="producthub" t="ProductHub"><S><ProductCardsPage /></S></MG>} />
+        <Route path="/product-hub/ideation" element={<MG k="ai_features" t="Ideation"><S><IdeationPage /></S></MG>} />
+        <Route path="/product-hub/requirement-assist" element={<MG k="ai_features" t="Requirement Assist"><S><RequirementAssistWorkspace /></S></MG>} />
+        <Route path="/product-hub/requirement-assist/compose" element={<MG k="ai_features" t="Requirement Assist"><S><RequirementAssistCompose /></S></MG>} />
+        <Route path="/product-hub/requirement-assist/categories" element={<MG k="ai_features" t="Requirement Assist"><S><RequirementAssistCategories /></S></MG>} />
+        <Route path="/product-hub/requirement-assist/:id" element={<MG k="ai_features" t="Requirement Assist"><S><RequirementAssistOutput /></S></MG>} />
+
+        {/* Legacy /producthub/* — redirect each to canonical /product-hub/X.
+            /producthub root now lands on /products (workstream list) per
+            Block C/D Phase-2 architecture. */}
+        <Route path="/producthub" element={<Navigate to="/product-hub/products" replace />} />
+        <Route path="/producthub/backlog" element={<Navigate to="/product-hub/backlog" replace />} />
+        <Route path="/producthub/table" element={<Navigate to="/product-hub/table" replace />} />
+        <Route path="/producthub/kanban" element={<Navigate to="/product-hub/kanban" replace />} />
+        <Route path="/producthub/dashboard" element={<Navigate to="/product-hub/dashboard" replace />} />
+        <Route path="/producthub/roadmaps" element={<Navigate to="/product-hub/roadmap" replace />} />
+        <Route path="/producthub/roadmaps-v1" element={<Navigate to="/product-hub/roadmaps-v1" replace />} />
+        <Route path="/producthub/reports" element={<Navigate to="/product-hub/reports" replace />} />
+        <Route path="/producthub/roadmap" element={<Navigate to="/product-hub/roadmap" replace />} />
+        <Route path="/producthub/cards" element={<Navigate to="/product-hub/cards" replace />} />
+        <Route path="/producthub/ideation" element={<Navigate to="/product-hub/ideation" replace />} />
+        <Route path="/producthub/requirement-assist" element={<Navigate to="/product-hub/requirement-assist" replace />} />
+        <Route path="/producthub/requirement-assist/compose" element={<Navigate to="/product-hub/requirement-assist/compose" replace />} />
+        <Route path="/producthub/requirement-assist/categories" element={<Navigate to="/product-hub/requirement-assist/categories" replace />} />
+        <Route path="/producthub/requirement-assist/:id" element={<NavigateProducthubReqAssistId />} />
+
+        {/* /product/* sub-routes are unrelated namespace (Ideas, req-assist) — leave intact */}
         <Route path="/product/ideas/roadmap" element={<MG k="ai_features" t="Ideas Roadmap"><S><IdeasRoadmapPage /></S></MG>} />
         <Route path="/product/ideas/backlog" element={<MG k="ai_features" t="Ideas Backlog"><S><IdeasBacklogPage /></S></MG>} />
         <Route path="/product/ideas/board" element={<MG k="ai_features" t="Ideas Board"><S><IdeasBoardPage /></S></MG>} />
         <Route path="/product/ideas/roadmap-new" element={<MG k="ai_features" t="Ideas Roadmap"><S><IdeasRoadmapPageNew /></S></MG>} />
         <Route path="/product/ideas/themes" element={<MG k="ai_features" t="Ideas Theme"><S><IdeasThemePage /></S></MG>} />
         <Route path="/product/ideas/analytics" element={<MG k="ai_features" t="Ideas Analytics"><S><IdeasAnalyticsPage /></S></MG>} />
-        <Route path="/producthub/requirement-assist" element={<MG k="ai_features" t="Requirement Assist"><S><RequirementAssistWorkspace /></S></MG>} />
-        <Route path="/producthub/requirement-assist/compose" element={<MG k="ai_features" t="Requirement Assist"><S><RequirementAssistCompose /></S></MG>} />
-        <Route path="/producthub/requirement-assist/categories" element={<MG k="ai_features" t="Requirement Assist"><S><RequirementAssistCategories /></S></MG>} />
-        <Route path="/producthub/requirement-assist/:id" element={<MG k="ai_features" t="Requirement Assist"><S><RequirementAssistOutput /></S></MG>} />
         <Route path="/product/req-assist" element={<MG k="ai_features" t="Requirement Assist"><S><ReqAssistLibrary /></S></MG>} />
         <Route path="/product/req-assist/generate" element={<MG k="ai_features" t="Requirement Assist"><S><ReqAssistGenerate /></S></MG>} />
         <Route path="/req-assist/rag-audit" element={<MG k="ai_features" t="RAG Audit"><S><RAGAuditPage /></S></MG>} />
         <Route path="/product-hub/req-assist" element={<Navigate to="/product/req-assist" replace />} />
         <Route path="/product-hub/req-assist/generate" element={<Navigate to="/product/req-assist/generate" replace />} />
-        <Route path="/industry/*" element={<Navigate to="/producthub" replace />} />
+        <Route path="/industry/*" element={<Navigate to="/product-hub" replace />} />
         
         <Route path="/starred" element={<S><StarredPage /></S>} />
         <Route path="/search" element={<S><SearchPage /></S>} />

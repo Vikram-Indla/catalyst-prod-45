@@ -5,8 +5,11 @@ interface NavItem {
   path: string;
 }
 
+// Block A rule 1 (2026-05-01): canonical URL prefix is `/project-hub`. The
+// legacy `/projecthub` here was a typo — it pointed nowhere live and the
+// new redirect in App.tsx covers any stragglers.
 const NAV_ITEMS: NavItem[] = [
-  { label: 'All Projects', path: '/projecthub' },
+  { label: 'All Projects', path: '/project-hub/projects' },
   { label: 'All Resources', path: '/project-hub/resources' },
   { label: 'Capacity Planning', path: '/project-hub/capacity' },
   { label: 'Timesheets', path: '/project-hub/timesheets' },
@@ -35,12 +38,15 @@ export function Sidebar() {
       }}
     >
       {/* Header */}
+      {/* Block A rule 7 (2026-05-01): canonical hub label is the spaced form.
+          textTransform: 'uppercase' on the header was producing "PROJECTHUB"
+          which didn't match the page <title> "Project Hub · Catalyst". */}
       <div style={{
         padding: '14px 16px 10px',
         fontSize: 10.5, fontWeight: 700, color: 'var(--fg-4)',
         textTransform: 'uppercase', letterSpacing: '0.08em',
       }}>
-        PROJECTHUB
+        Project Hub
       </div>
 
       {/* Nav items */}
@@ -51,6 +57,7 @@ export function Sidebar() {
             <button
               key={item.path}
               onClick={() => navigate(item.path)}
+              aria-current={active ? 'page' : undefined}
               style={{
                 display: 'flex', alignItems: 'center',
                 height: 50, padding: '0 10px',

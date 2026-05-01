@@ -17,7 +17,11 @@ import Tabs, { Tab, TabList } from '@atlaskit/tabs';
 import Select from '@atlaskit/select';
 import Textfield from '@atlaskit/textfield';
 import Button from '@atlaskit/button/new';
-import Badge from '@atlaskit/badge';
+// Block A rule 3 (2026-05-01): swap @atlaskit/badge → @atlaskit/lozenge for
+// tab-count chips. Lozenge is the canonical ADS primitive for state/scalar
+// chips and emits a separate text node so SR reads "All, 9 items" instead of
+// the previous concatenated "All9". See atlassian.design/components/lozenge.
+import Lozenge from '@atlaskit/lozenge';
 import { token } from '@atlaskit/tokens';
 import SearchIcon from '@atlaskit/icon/glyph/search';
 import CrossIcon from '@atlaskit/icon/glyph/cross';
@@ -112,14 +116,31 @@ export function AllProjectsToolbar({
           onChange={handleTabSelect}
         >
           <TabList>
-            {TABS.map((tab) => (
-              <Tab key={tab}>
-                <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
-                  {tab}
-                  <Badge appearance="default">{getCount(tab)}</Badge>
-                </span>
-              </Tab>
-            ))}
+            {TABS.map((tab) => {
+              const count = getCount(tab);
+              return (
+                <Tab key={tab}>
+                  <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+                    {tab}
+                    {/* Visually-hidden comma is the SR pause that makes
+                        "All, 9 items" land correctly. The Lozenge then
+                        carries the visible count chip. */}
+                    <span style={{
+                      position: 'absolute',
+                      width: 1,
+                      height: 1,
+                      padding: 0,
+                      margin: -1,
+                      overflow: 'hidden',
+                      clip: 'rect(0,0,0,0)',
+                      whiteSpace: 'nowrap',
+                      borderWidth: 0,
+                    }}>, </span>
+                    <Lozenge appearance="default">{count}</Lozenge>
+                  </span>
+                </Tab>
+              );
+            })}
           </TabList>
         </Tabs>
       </div>

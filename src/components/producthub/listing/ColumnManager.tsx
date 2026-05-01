@@ -22,22 +22,41 @@ interface ColumnManagerProps {
   onClose: () => void;
 }
 
+// Block D rule 2 (2026-05-01): 8-column canonical aligned with Project
+// Backlog. Visible by default: Type · Key · Summary · Status · Comments ·
+// Parent · Assignee · Priority. Order matters — this is also the column
+// reorder default.
+//
+// The legacy Catalyst-extra columns (Roadmap, Source, Score, Department,
+// Quarter, Kickoff, Target, Progress, EA Review) stay registered so they're
+// available via Manage columns, but visible:false on first load. Users who
+// had a saved layout in localStorage keep theirs (loadColumns() merges
+// new columns conservatively).
+//
+// Field renames vs. previous header labels:
+//   ID    → Key      (initiative_key column id unchanged)
+//   Title → Summary  (title column id unchanged)
 export const DEFAULT_COLUMNS: ColumnConfig[] = [
-  { id: 'roadmap', label: 'Roadmap', visible: true },
-  { id: 'initiative_key', label: 'ID', visible: true, locked: true },
-  { id: 'source', label: 'Source', visible: true },
-  { id: 'title', label: 'Title', visible: true, locked: true },
+  // ── 8-column canonical — visible by default ──
+  { id: 'type', label: 'Type', visible: true },
+  { id: 'initiative_key', label: 'Key', visible: true, locked: true },
+  { id: 'title', label: 'Summary', visible: true, locked: true },
   { id: 'status', label: 'Status', visible: true },
-  
-  { id: 'priority', label: 'Priority', visible: true },
-  { id: 'score', label: 'Score', visible: true },
+  { id: 'comments', label: 'Comments', visible: true },
+  { id: 'parent', label: 'Parent', visible: true },
   { id: 'assignee', label: 'Assignee', visible: true },
-  { id: 'department', label: 'Department', visible: true },
-  { id: 'quarter', label: 'Quarter', visible: true },
-  { id: 'kickoff', label: 'Kickoff', visible: true },
-  { id: 'target', label: 'Target', visible: true },
-  { id: 'progress', label: 'Progress', visible: true },
-  { id: 'ea_review', label: 'EA Review', visible: true },
+  { id: 'priority', label: 'Priority', visible: true },
+
+  // ── Optional Catalyst-extras — hidden by default, available via Manage columns ──
+  { id: 'roadmap', label: 'Roadmap', visible: false },
+  { id: 'source', label: 'Source', visible: false },
+  { id: 'score', label: 'Score', visible: false },
+  { id: 'department', label: 'Department', visible: false },
+  { id: 'quarter', label: 'Quarter', visible: false },
+  { id: 'kickoff', label: 'Kickoff', visible: false },
+  { id: 'target', label: 'Target', visible: false },
+  { id: 'progress', label: 'Progress', visible: false },
+  { id: 'ea_review', label: 'EA Review', visible: false },
 ];
 
 export function ColumnManager({ columns, onChange, anchorRef, isOpen, onClose }: ColumnManagerProps) {

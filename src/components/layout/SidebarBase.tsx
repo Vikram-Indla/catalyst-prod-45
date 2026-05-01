@@ -32,17 +32,20 @@ import { useTheme } from '@/hooks/useTheme';
 // colors come from Atlassian Design System accent palette; we render the
 // icon inside a 16px tinted square so the section reads as "app launcher"
 // rather than nav links.
+//
+// Block A rule 7 (2026-05-01): canonical hub label casing matches HubSwitcher.
+// Block A rule 1 (2026-05-01): canonical URL prefix '/product-hub' (not /producthub).
 const HUB_ITEMS = [
-  { label: 'Home',        href: '/for-you',                 Icon: HomeIcon,            tone: '#42526E' },
-  { label: 'StrategyHub', href: '/strategyhub',             Icon: OfficeBuildingIcon,  tone: '#8270DB' },
-  { label: 'ProductHub',  href: '/producthub',              Icon: PortfolioIcon,       tone: '#0052CC' },
-  { label: 'ProjectHub',  href: '/project-hub',             Icon: FolderIcon,          tone: '#00A3BF' },
-  { label: 'ReleaseHub',  href: '/release-hub/command-center', Icon: ShipIcon,         tone: '#FF8B00' },
-  { label: 'TestHub',     href: '/testhub/dashboard',       Icon: CheckCircleIcon,     tone: '#36B37E' },
-  { label: 'IncidentHub', href: '/incident-hub',            Icon: WarningIcon,         tone: '#DE350B' },
-  { label: 'TaskHub',     href: '/taskhub/boards',          Icon: TaskIcon,            tone: '#FFAB00' },
-  { label: 'PlanHub',     href: '/planhub',                 Icon: CalendarIcon,        tone: '#E774BB' },
-  { label: 'WikiHub',     href: '/wiki',                    Icon: BookIcon,            tone: '#65BA43' },
+  { label: 'Home',         href: '/for-you',                    Icon: HomeIcon,            tone: '#42526E' },
+  { label: 'Strategy Hub', href: '/strategyhub',                Icon: OfficeBuildingIcon,  tone: '#8270DB' },
+  { label: 'Product Hub',  href: '/product-hub',                Icon: PortfolioIcon,       tone: '#0052CC' },
+  { label: 'Project Hub',  href: '/project-hub',                Icon: FolderIcon,          tone: '#00A3BF' },
+  { label: 'Release Hub',  href: '/release-hub/command-center', Icon: ShipIcon,            tone: '#FF8B00' },
+  { label: 'Test Hub',     href: '/testhub/dashboard',          Icon: CheckCircleIcon,     tone: '#36B37E' },
+  { label: 'Incident Hub', href: '/incident-hub',               Icon: WarningIcon,         tone: '#DE350B' },
+  { label: 'Task Hub',     href: '/taskhub/boards',             Icon: TaskIcon,            tone: '#FFAB00' },
+  { label: 'Plan Hub',     href: '/planhub',                    Icon: CalendarIcon,        tone: '#E774BB' },
+  { label: 'Wiki Hub',     href: '/wiki',                       Icon: BookIcon,            tone: '#65BA43' },
 ] as const;
 
 /**
@@ -417,6 +420,7 @@ function renderMenuItem(
   const menuButton = (
     <button
       onClick={() => (item.onClick ? item.onClick() : handleNavigation(item.path))}
+      aria-current={active ? 'page' : undefined}
       className="group w-full flex items-center border-none cursor-pointer transition-all relative"
       style={{
         height: '32px',

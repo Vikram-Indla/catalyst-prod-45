@@ -145,3 +145,54 @@ export const TypeIconCell = React.memo(function TypeIconCell() {
     </span>
   );
 });
+
+/* ── Type Cell — Block D (2026-05-01)
+   Renders the ticket type as icon + lozenge label. Reads from
+   `request.type` (Feature, Gap, Integration, Data Request, Business
+   Request) — matches the discriminator on mim_business_requests.
+   Falls back to "Business Request" so legacy Catalyst rows render. */
+export const TypeCell = React.memo(function TypeCell({ type }: { type?: string | null }) {
+  const t = type || 'Business Request';
+  return (
+    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }} title={t}>
+      <BusinessRequestIcon size={14} />
+      <span style={{ fontSize: 12, color: 'var(--cp-text-secondary)' }}>{t}</span>
+    </span>
+  );
+});
+
+/* ── Parent Cell — Block D (2026-05-01)
+   Shows the parent MIM key (or epic key) as a subtle link. Reads
+   from `request.parent_mim_key`. Empty when ticket has no parent. */
+export const ParentCell = React.memo(function ParentCell({ parentKey }: { parentKey?: string | null }) {
+  if (!parentKey) return <span style={{ color: 'var(--cp-text-muted)', fontSize: 13 }}>—</span>;
+  return (
+    <span
+      className="pb-id"
+      style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 12, color: 'var(--ds-text-link, #0052CC)' }}
+      title={`Parent: ${parentKey}`}
+    >
+      {parentKey}
+    </span>
+  );
+});
+
+/* ── Comments Cell — Block D (2026-05-01)
+   Lightweight count badge. Reads from `request.comment_count`.
+   Renders blank (en-dash) when 0 to avoid noise. */
+export const CommentsCell = React.memo(function CommentsCell({ count }: { count?: number | null }) {
+  const n = count || 0;
+  if (n === 0) return <span style={{ color: 'var(--cp-text-muted)', fontSize: 13 }}>—</span>;
+  return (
+    <span style={{
+      display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+      minWidth: 22, height: 18, padding: '0 6px',
+      fontSize: 11, fontWeight: 600,
+      color: 'var(--ds-text-subtle, #44546F)',
+      background: 'var(--ds-background-neutral, #F1F5F9)',
+      borderRadius: 9,
+    }} title={`${n} comment${n === 1 ? '' : 's'}`}>
+      {n}
+    </span>
+  );
+});

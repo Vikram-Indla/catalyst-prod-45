@@ -29,17 +29,20 @@ interface HubEntry {
   description: string;
 }
 
+// Block A rule 7 (2026-05-01): canonical hub label casing — "ProductHub" → "Product Hub" etc.
+// Block A rule 1 (2026-05-01): canonical URL prefix — '/producthub' → '/product-hub'.
+// Both fixes co-located so the entity model has one source of truth across the app shell.
 const HUBS: HubEntry[] = [
-  { key: 'home',     label: 'Home',         href: '/for-you',                    description: 'Your work across all hubs' },
-  { key: 'strategy', label: 'StrategyHub',  href: '/strategyhub',                description: 'Vision, themes, OKRs' },
-  { key: 'product',  label: 'ProductHub',   href: '/producthub',                 description: 'Products, ideas, roadmaps' },
-  { key: 'project',  label: 'ProjectHub',   href: '/project-hub',                description: 'Delivery projects & backlogs' },
-  { key: 'release',  label: 'ReleaseHub',   href: '/release-hub/command-center', description: 'Release planning & cutover' },
-  { key: 'test',     label: 'TestHub',      href: '/testhub/dashboard',          description: 'Test cases, cycles, defects' },
-  { key: 'incident', label: 'IncidentHub',  href: '/incident-hub',               description: 'Incidents & post-mortems' },
-  { key: 'task',     label: 'TaskHub',      href: '/taskhub/boards',             description: 'Personal & team tasks' },
-  { key: 'plan',     label: 'PlanHub',      href: '/planhub',                    description: 'Capacity & timeline planning' },
-  { key: 'wiki',     label: 'WikiHub',      href: '/wiki',                       description: 'Knowledge base & docs' },
+  { key: 'home',     label: 'Home',          href: '/for-you',                    description: 'Your work across all hubs' },
+  { key: 'strategy', label: 'Strategy Hub',  href: '/strategyhub',                description: 'Vision, themes, OKRs' },
+  { key: 'product',  label: 'Product Hub',   href: '/product-hub',                description: 'Products, ideas, roadmaps' },
+  { key: 'project',  label: 'Project Hub',   href: '/project-hub',                description: 'Delivery projects & backlogs' },
+  { key: 'release',  label: 'Release Hub',   href: '/release-hub/command-center', description: 'Release planning & cutover' },
+  { key: 'test',     label: 'Test Hub',      href: '/testhub/dashboard',          description: 'Test cases, cycles, defects' },
+  { key: 'incident', label: 'Incident Hub',  href: '/incident-hub',               description: 'Incidents & post-mortems' },
+  { key: 'task',     label: 'Task Hub',      href: '/taskhub/boards',             description: 'Personal & team tasks' },
+  { key: 'plan',     label: 'Plan Hub',      href: '/planhub',                    description: 'Capacity & timeline planning' },
+  { key: 'wiki',     label: 'Wiki Hub',      href: '/wiki',                       description: 'Knowledge base & docs' },
 ];
 
 export function HubSwitcher() {
@@ -134,6 +137,7 @@ export function HubSwitcher() {
                 key={hub.href}
                 type="button"
                 onClick={() => go(hub.href)}
+                aria-current={active ? 'page' : undefined}
                 className={`hub-nav-item${active ? ' hub-nav-item--active' : ''}`}
               >
                 {active && <span className="hub-nav-item__bar" aria-hidden />}
