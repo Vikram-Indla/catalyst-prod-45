@@ -1,33 +1,49 @@
 /**
- * useRecentProjects — surfaces the user's most recently accessed
- * ProjectHub projects on the Home rail (Jira "Recent projects" parity).
+ * useRecentProjects — surfaces the user's most recently visited
+ * project sub-pages on the Home rail.
  *
- * Why localStorage (not a server table)
- * ─────────────────────────────────────
- *   Project visits are per-device, transient, and don't need cross-user
- *   visibility. localStorage is fast (no round-trip on Home open),
- *   survives reload, and avoids a new RLS-scoped table. If we later need
- *   cross-device sync we can swap the storage layer without touching the
- *   consumer.
+ * Mental model
+ * ────────────
+ *   Each entry is a (projectKey, sectionPath, sectionLabel) tuple — NOT
+ *   just a project. Visiting Senaei BAU Backlog and Senaei BAU Dashboard
+ *   produces two distinct rows: "Senaei BAU › Backlog" and "Senaei BAU
+ *   › Dashboard". This matches Jira's recent-pages behaviour.
  *
- * Storage shape (key: `catalyst.recentProjects.v1`):
- *   Array<{ projectKey: string; visitedAt: number }>  // newest first, capped at 12
+ *   Scope (intentional):
+ *   - ONLY /project-hub/:key/<section> URLs are tracked.
+ *   - Tickets and modal openers are excluded — we never surface
+ *     ticket-grain navigation here.
+ *   - Global hub roots (Product Hub, Test Hub) are NOT tracked — those
+ *     belong to the global hub switcher, not this rail.
+ *
+ * Storage shape (key: `catalyst.recentLocations.v2`):
+ *   Array<{
+ *     projectKey: string;
+ *     path: string;        // full URL path the entry navigates to
+ *     section: string;     // canonical section slug (e.g. "backlog")
+ *     visitedAt: number;
+ *   }>  // newest first, deduped by path, capped at MAX_ENTRIES
  *
  * Hydration:
- *   On read we fetch `ph_projects` rows for the stored keys (icon, color,
- *   name, avatar) and return them in visit order, filtered to non-archived.
+ *   On read we fetch `ph_projects` rows (icon, color, name) and join
+ *   them onto each entry, dropping rows whose project is archived or
+ *   no longer exists.
  */
 import { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 
-const STORAGE_KEY = 'catalyst.recentProjects.v1';
-const MAX_ENTRIES = 12;
+const STORAGE_KEY = 'catalyst.recentLocations.v2';
+const LEGACY_STORAGE_KEY = 'catalyst.recentProjects.v1';
+const MAX_ENTRIES = 16;
 
-export interface RecentProject {
+export interface RecentLocation {
   projectKey: string;
-  name: string;
+  path: string;
+  section: string;
+  sectionLabel: string;
+  projectName: string;
   iconName: string | null;
   color: string | null;
   visitedAt: number;
@@ -35,7 +51,48 @@ export interface RecentProject {
 
 interface StoredEntry {
   projectKey: string;
+  path: string;
+  section: string;
   visitedAt: number;
+}
+
+/**
+ * Canonical section-slug → human label. Anything not in this map gets a
+ * Title-Cased fallback derived from the slug (e.g. "risk-scanner" → "Risk
+ * Scanner"), so adding new project routes Just Works without a code
+ * change here.
+ */
+const SECTION_LABELS: Record<string, string> = {
+  dashboard: 'Dashboard',
+  backlog: 'Backlog',
+  board: 'Board',
+  boards: 'Boards',
+  allwork: 'All work',
+  list: 'List',
+  timeline: 'Timeline',
+  releases: 'Releases',
+  reports: 'Reports',
+  settings: 'Settings',
+  hierarchy: 'Hierarchy',
+  'sprint-predictor': 'Release Predictor',
+  'risk-scanner': 'Risk Scanner',
+  'epic-backlog': 'Backlog',
+  'feature-backlog': 'Backlog',
+  'story-backlog': 'Backlog',
+};
+
+/** Section slugs we never want to record (ticket detail / modal). */
+const EXCLUDED_SECTIONS = new Set(['story', 'issue', 'epic', 'feature']);
+
+function titleCase(slug: string): string {
+  return slug
+    .split('-')
+    .map((s) => (s.length === 0 ? s : s[0].toUpperCase() + s.slice(1)))
+    .join(' ');
+}
+
+function labelForSection(section: string): string {
+  return SECTION_LABELS[section] ?? titleCase(section);
 }
 
 function readStore(): StoredEntry[] {
@@ -57,55 +114,99 @@ function writeStore(entries: StoredEntry[]) {
   }
 }
 
-/**
- * Append a project visit to the log. Dedupes by projectKey, keeps newest
- * MAX_ENTRIES, and dispatches a window event so live consumers refresh
- * without polling.
- */
-export function recordProjectVisit(projectKey: string) {
-  if (!projectKey) return;
-  const now = Date.now();
-  const existing = readStore().filter((e) => e.projectKey !== projectKey);
-  const next = [{ projectKey, visitedAt: now }, ...existing].slice(0, MAX_ENTRIES);
-  writeStore(next);
-  window.dispatchEvent(new CustomEvent('catalyst:recent-projects-updated'));
+/** One-time migration of the old v1 project-only store into v2. */
+function migrateLegacyIfNeeded() {
+  try {
+    if (localStorage.getItem(STORAGE_KEY)) return;
+    const legacyRaw = localStorage.getItem(LEGACY_STORAGE_KEY);
+    if (!legacyRaw) return;
+    const legacy = JSON.parse(legacyRaw);
+    if (!Array.isArray(legacy)) return;
+    const migrated: StoredEntry[] = legacy
+      .filter((e: any) => e && typeof e.projectKey === 'string')
+      .map((e: any) => ({
+        projectKey: e.projectKey,
+        path: `/project-hub/${e.projectKey}/dashboard`,
+        section: 'dashboard',
+        visitedAt: typeof e.visitedAt === 'number' ? e.visitedAt : Date.now(),
+      }));
+    writeStore(migrated.slice(0, MAX_ENTRIES));
+  } catch {
+    /* ignore */
+  }
 }
 
 /**
- * Mount-once recorder — extracts the project key from
- * `/project-hub/:key/...` and writes a visit on each route change.
- * Mounted in CatalystShell so it runs on every page.
+ * Append a location visit to the log. Dedupes by full path, keeps newest
+ * MAX_ENTRIES, and dispatches a window event so live consumers refresh
+ * without polling.
+ */
+export function recordLocationVisit(input: {
+  projectKey: string;
+  path: string;
+  section: string;
+}) {
+  const { projectKey, path, section } = input;
+  if (!projectKey || !path) return;
+  const now = Date.now();
+  const existing = readStore().filter((e) => e.path !== path);
+  const next: StoredEntry[] = [
+    { projectKey, path, section, visitedAt: now },
+    ...existing,
+  ].slice(0, MAX_ENTRIES);
+  writeStore(next);
+  window.dispatchEvent(new CustomEvent('catalyst:recent-locations-updated'));
+}
+
+/**
+ * Mount-once recorder — extracts (projectKey, section, path) from
+ * `/project-hub/:key/:section/...` and writes a visit on each route
+ * change. Mounted in CatalystShell so it runs on every page.
+ *
+ * Skips:
+ *   - non-project segments (`all-projects`, `resource-360`)
+ *   - ticket-grain sections (`story`, `issue`, `epic`, `feature`)
+ *   - the bare `/project-hub/:key` (route immediately redirects to
+ *     /dashboard, which we'll capture on the next tick)
  */
 export function useRecordProjectVisit() {
   const location = useLocation();
   useEffect(() => {
-    const match = location.pathname.match(/^\/project-hub\/([^/]+)/);
+    const match = location.pathname.match(/^\/project-hub\/([^/]+)(?:\/([^/]+))?/);
     if (!match) return;
-    const key = match[1];
-    // Skip non-project segments (e.g., "/project-hub/all-projects")
-    if (key === 'all-projects' || key === 'resource-360') return;
-    recordProjectVisit(key);
+    const projectKey = match[1];
+    const section = match[2];
+    if (!projectKey || projectKey === 'all-projects' || projectKey === 'resource-360') return;
+    if (!section) return; // wait for the redirect to land on a real section
+    if (EXCLUDED_SECTIONS.has(section)) return;
+    recordLocationVisit({
+      projectKey,
+      path: location.pathname,
+      section,
+    });
   }, [location.pathname]);
 }
 
 /**
- * Read hook — returns hydrated recent projects ordered by visit recency,
- * capped at `limit`. Auto-refreshes when `recordProjectVisit` fires.
+ * Read hook — returns hydrated recent locations ordered by visit
+ * recency, capped at `limit`. Auto-refreshes when `recordLocationVisit`
+ * fires.
  */
-export function useRecentProjects(limit = 6) {
+export function useRecentProjects(limit = 8) {
   const [tick, setTick] = useState(0);
 
   useEffect(() => {
+    migrateLegacyIfNeeded();
     const handler = () => setTick((t) => t + 1);
-    window.addEventListener('catalyst:recent-projects-updated', handler);
-    return () => window.removeEventListener('catalyst:recent-projects-updated', handler);
+    window.addEventListener('catalyst:recent-locations-updated', handler);
+    return () => window.removeEventListener('catalyst:recent-locations-updated', handler);
   }, []);
 
   const entries = readStore().slice(0, limit);
-  const keys = entries.map((e) => e.projectKey);
+  const keys = Array.from(new Set(entries.map((e) => e.projectKey)));
 
-  const { data: projects = [], isLoading } = useQuery({
-    queryKey: ['recent-projects', keys.join(','), tick],
+  const { data: locations = [], isLoading } = useQuery({
+    queryKey: ['recent-locations', entries.map((e) => e.path).join('|'), tick],
     enabled: keys.length > 0,
     staleTime: 60_000,
     queryFn: async () => {
@@ -114,23 +215,25 @@ export function useRecentProjects(limit = 6) {
         .select('key, name, icon, color, is_archived')
         .in('key', keys);
       if (error) throw error;
-      // Preserve visit order from `entries` and drop archived.
       const byKey = new Map((data ?? []).map((r) => [r.key, r]));
       return entries
-        .map<RecentProject | null>((e) => {
+        .map<RecentLocation | null>((e) => {
           const row = byKey.get(e.projectKey);
           if (!row || row.is_archived) return null;
           return {
             projectKey: row.key,
-            name: row.name,
+            path: e.path,
+            section: e.section,
+            sectionLabel: labelForSection(e.section),
+            projectName: row.name,
             iconName: row.icon,
             color: row.color,
             visitedAt: e.visitedAt,
           };
         })
-        .filter((x): x is RecentProject => x !== null);
+        .filter((x): x is RecentLocation => x !== null);
     },
   });
 
-  return { recentProjects: projects, loading: isLoading && keys.length > 0 };
+  return { recentLocations: locations, loading: isLoading && keys.length > 0 };
 }
