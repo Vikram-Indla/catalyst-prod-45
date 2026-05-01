@@ -38,7 +38,7 @@ function LinkedIssueRow({
     <div
       className={cn(
         'group flex items-center gap-2 px-2 py-2 rounded-md transition-colors cursor-pointer',
-        isDark ? 'hover:bg-[var(--ds-surface-overlay,var(--ds-surface-overlay, #1F1F1F))]' : 'hover:bg-[var(--ds-surface-sunken,var(--ds-surface-sunken, #F4F5F7))]',
+        isDark ? 'hover:bg-[var(--ds-surface-overlay, #1F1F1F)]' : 'hover:bg-[var(--ds-surface-sunken, #F4F5F7)]',
       )}
       onClick={onOpen}
     >
@@ -47,20 +47,20 @@ function LinkedIssueRow({
         'text-[10px] font-body font-medium px-1.5 py-0.5 rounded shrink-0',
         direction === 'outward'
           ? isDark ? 'bg-[#1A2332] text-[#4C9AFF]' : 'bg-[#DEEBFF] text-[#0747A6]'
-          : isDark ? 'bg-[var(--ds-border,var(--ds-border, #292929))] text-[var(--ds-text-subtlest,var(--ds-text-subtlest, #A1A1A1))]' : 'bg-[var(--ds-surface-sunken,var(--ds-surface-sunken, #F4F5F7))] text-[var(--ds-text-accent-gray, #505258)]',
+          : isDark ? 'bg-[var(--ds-border, #292929)] text-[var(--ds-text-subtlest, #A1A1A1)]' : 'bg-[var(--ds-surface-sunken, #F4F5F7)] text-[var(--ds-text-accent-gray, #505258)]',
       )}>
         {direction === 'outward' ? '→' : '←'}
       </span>
 
       {issueType && <JiraIssueTypeIcon type={issueType} size={14} />}
 
-      <span className={cn('font-mono text-xs shrink-0', isDark ? 'text-[var(--ds-text-subtlest,var(--ds-text-subtlest, #A1A1A1))]' : 'text-[var(--ds-text-accent-gray, #505258)]')}>
+      <span className={cn('font-mono text-xs shrink-0', isDark ? 'text-[var(--ds-text-subtlest, #A1A1A1)]' : 'text-[var(--ds-text-accent-gray, #505258)]')}>
         {key}
       </span>
 
       <span className={cn(
         'font-body text-sm truncate flex-1 min-w-0',
-        isDark ? 'text-[var(--ds-text,var(--ds-text, #EDEDED))]' : 'text-[var(--ds-text, #292A2E)]',
+        isDark ? 'text-[var(--ds-text, #EDEDED)]' : 'text-[var(--ds-text, #292A2E)]',
       )}>
         {summary}
       </span>
@@ -72,7 +72,7 @@ function LinkedIssueRow({
         {onUnlink && (
           <button
             onClick={(e) => { e.stopPropagation(); onUnlink(); }}
-            className={cn('p-1 rounded transition-colors', isDark ? 'hover:bg-[var(--ds-border,var(--ds-border, #292929))] text-[var(--ds-text-subtlest,var(--ds-text-subtlest, #878787))]' : 'hover:bg-[var(--ds-border,var(--ds-border, #E2E8F0))] text-[var(--ds-text-accent-gray, #505258)]')}
+            className={cn('p-1 rounded transition-colors', isDark ? 'hover:bg-[var(--ds-border, #292929)] text-[var(--ds-text-subtlest, #878787)]' : 'hover:bg-[var(--ds-border, #E2E8F0)] text-[var(--ds-text-accent-gray, #505258)]')}
           >
             <Trash2 className="w-3 h-3" />
           </button>
@@ -102,7 +102,7 @@ export function RelatedIssuesSection({
   if (grouped.length === 0) {
     return (
       <div className="text-center py-4">
-        <p className={cn('font-body text-sm mb-3', isDark ? 'text-[var(--ds-text-subtlest,var(--ds-text-subtlest, #878787))]' : 'text-[var(--ds-text-subtlest, #6B6E76)]')}>
+        <p className={cn('font-body text-sm mb-3', isDark ? 'text-[var(--ds-text-subtlest, #878787)]' : 'text-[var(--ds-text-subtlest, #6B6E76)]')}>
           No related issues
         </p>
         <button
@@ -125,7 +125,7 @@ export function RelatedIssuesSection({
         <div key={group.linkTypeName}>
           <span className={cn(
             'text-[10px] font-body font-semibold uppercase tracking-wider mb-1 block',
-            isDark ? 'text-[var(--ds-text-subtlest,var(--ds-text-subtlest, #878787))]' : 'text-[var(--ds-text-subtlest, #6B6E76)]',
+            isDark ? 'text-[var(--ds-text-subtlest, #878787)]' : 'text-[var(--ds-text-subtlest, #6B6E76)]',
           )}>
             {group.linkTypeName} ({group.items.length})
           </span>

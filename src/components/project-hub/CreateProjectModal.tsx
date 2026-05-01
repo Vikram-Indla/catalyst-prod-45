@@ -22,7 +22,7 @@ export function CreateProjectModal({ open, onClose }: CreateProjectModalProps) {
   const [step1Valid, setStep1Valid] = useState(false);
 
   const [details, setDetails] = useState<StepDetailsData>({
-    name: '', key: '', department: '', description: '', icon: 'rocket', color: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))',
+    name: '', key: '', department: '', description: '', icon: 'rocket', color: 'var(--ds-text-brand, #2563EB)',
     lead_id: '', linkJira: false, jiraKey: '', priority: '',
   });
   const [workflow, setWorkflow] = useState<StepWorkflowData>({
@@ -33,7 +33,7 @@ export function CreateProjectModal({ open, onClose }: CreateProjectModalProps) {
   useEffect(() => {
     if (open) {
       setStep(0);
-      setDetails({ name: '', key: '', department: '', description: '', icon: 'rocket', color: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))', lead_id: '', linkJira: false, jiraKey: '', priority: '' });
+      setDetails({ name: '', key: '', department: '', description: '', icon: 'rocket', color: 'var(--ds-text-brand, #2563EB)', lead_id: '', linkJira: false, jiraKey: '', priority: '' });
       setWorkflow({ useDefault: true, copyFromProject: null, featureLayer: false });
       setMembers([]);
       setStep1Valid(false);
@@ -122,7 +122,7 @@ export function CreateProjectModal({ open, onClose }: CreateProjectModalProps) {
       onClick={e => { if (e.target === e.currentTarget) onClose(); }}
     >
       <div
-        className="relative flex flex-col animate-scale-in bg-white dark:bg-[var(--ds-surface-raised,var(--ds-surface-raised, #1A1A1A))]"
+        className="relative flex flex-col animate-scale-in bg-white dark:bg-[var(--ds-surface-raised, #1A1A1A)]"
         style={{
           width: 640,
           maxHeight: '90vh',
@@ -132,15 +132,15 @@ export function CreateProjectModal({ open, onClose }: CreateProjectModalProps) {
       >
         {/* Header */}
         <div className="flex items-center justify-between px-6 pt-5 pb-0">
-          <h2 className="text-[var(--fg-1)] dark:text-[var(--ds-text,var(--ds-text, #EDEDED))]" style={{ fontSize: 18, fontWeight: 700, fontFamily: 'var(--cp-font-heading)' }}>
+          <h2 className="text-[var(--fg-1)] dark:text-[var(--ds-text, #EDEDED)]" style={{ fontSize: 18, fontWeight: 700, fontFamily: 'var(--cp-font-heading)' }}>
             Create New Project
           </h2>
           <button
             onClick={onClose}
-            className="flex items-center justify-center rounded-md transition-colors hover:bg-[var(--ds-surface-sunken,var(--ds-surface-sunken, #F1F5F9))] dark:hover:bg-[var(--ds-surface-overlay,var(--ds-surface-overlay, #1F1F1F))]"
+            className="flex items-center justify-center rounded-md transition-colors hover:bg-[var(--ds-surface-sunken, #F1F5F9)] dark:hover:bg-[var(--ds-surface-overlay, #1F1F1F)]"
             style={{ width: 32, height: 32, border: 'none', background: 'transparent', cursor: 'pointer' }}
           >
-            <X size={18} className="text-[var(--ds-text-subtlest,var(--ds-text-subtlest, #64748B))] dark:text-[var(--ds-text-subtlest,var(--ds-text-subtlest, #878787))]" />
+            <X size={18} className="text-[var(--ds-text-subtlest, #64748B)] dark:text-[var(--ds-text-subtlest, #878787)]" />
           </button>
         </div>
 
@@ -153,10 +153,10 @@ export function CreateProjectModal({ open, onClose }: CreateProjectModalProps) {
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-between px-6 py-4 border-t border-[var(--bd-default, #E2E8F0)] dark:border-[var(--ds-border,var(--ds-border, #2E2E2E))]">
+        <div className="flex items-center justify-between px-6 py-4 border-t border-[var(--bd-default, #E2E8F0)] dark:border-[var(--ds-border, #2E2E2E)]">
           <button
             onClick={step === 0 ? onClose : () => setStep(s => s - 1)}
-            className="rounded-md transition-colors hover:bg-[var(--ds-surface-sunken,var(--ds-surface-sunken, #F8FAFC))] dark:hover:bg-[var(--ds-surface-overlay,var(--ds-surface-overlay, #1F1F1F))] bg-white dark:bg-transparent border border-[var(--bd-default, #E2E8F0)] dark:border-[var(--ds-border,var(--ds-border, #2E2E2E))] text-[var(--ds-text-subtle,var(--ds-text-subtle, #334155))] dark:text-[var(--ds-text-subtlest,var(--ds-text-subtlest, #A1A1A1))]"
+            className="rounded-md transition-colors hover:bg-[var(--ds-surface-sunken, #F8FAFC)] dark:hover:bg-[var(--ds-surface-overlay, #1F1F1F)] bg-white dark:bg-transparent border border-[var(--bd-default, #E2E8F0)] dark:border-[var(--ds-border, #2E2E2E)] text-[var(--ds-text-subtle, #334155)] dark:text-[var(--ds-text-subtlest, #A1A1A1)]"
             style={{
               height: 50, padding: '0 16px', fontSize: 13, fontWeight: 500,
               borderRadius: 6, cursor: 'pointer',

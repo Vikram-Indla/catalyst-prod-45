@@ -23,7 +23,7 @@ interface EpicDetailDrawerProps {
 
 const DETAIL_LABEL: React.CSSProperties = {
   width: 100, flexShrink: 0, fontSize: 11, fontWeight: 650,
-  textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #64748B))', lineHeight: '36px',
+  textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--ds-text-subtlest, #64748B)', lineHeight: '36px',
 };
 const DETAIL_VALUE: React.CSSProperties = { fontSize: 14, color: 'var(--fg-1, #0F172A)', fontWeight: 400 };
 
@@ -39,17 +39,17 @@ function getEpicStatusColors(status: string): { bg: string; text: string; label:
     const style = getLozengeStyle(cfg.color);
     return { ...style, label: cfg.label };
   }
-  return { bg: 'var(--ds-border, var(--ds-border, #DFE1E6))', text: '#42526E', label: status.replace(/_/g, ' ').toUpperCase() };
+  return { bg: 'var(--ds-border, #DFE1E6)', text: '#42526E', label: status.replace(/_/g, ' ').toUpperCase() };
 }
 
 type TabId = 'details' | 'comments' | 'history';
 
 const TAB_STYLE: React.CSSProperties = {
   fontSize: 12, fontWeight: 600, padding: '8px 12px', border: 'none', cursor: 'pointer',
-  background: 'none', color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #64748B))', borderBottom: '2px solid transparent',
+  background: 'none', color: 'var(--ds-text-subtlest, #64748B)', borderBottom: '2px solid transparent',
   display: 'inline-flex', alignItems: 'center', gap: 5,
 };
-const TAB_ACTIVE: React.CSSProperties = { ...TAB_STYLE, color: 'var(--fg-1, #0F172A)', borderBottomColor: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))' };
+const TAB_ACTIVE: React.CSSProperties = { ...TAB_STYLE, color: 'var(--fg-1, #0F172A)', borderBottomColor: 'var(--ds-text-brand, #2563EB)' };
 
 function formatFixVersions(fv: any): string {
   if (!fv) return '—';
@@ -172,10 +172,10 @@ export const EpicDetailDrawer: React.FC<EpicDetailDrawerProps> = ({ isOpen, onCl
             <>
               <JiraIssueTypeIcon type="epic" size={20} />
               <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 14, fontWeight: 600, color: 'var(--fg-1, #0F172A)' }}>{epic.issue_key}</span>
-              <span style={{ fontSize: 13, color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #64748B))' }}>· Epic</span>
+              <span style={{ fontSize: 13, color: 'var(--ds-text-subtlest, #64748B)' }}>· Epic</span>
             </>
           ) : <div style={{ height: 20, width: 120, borderRadius: 4, background: 'var(--bd-default, #E2E8F0)' }} />}
-          <button onClick={onClose} style={{ marginLeft: 'auto', background: 'none', border: 'none', cursor: 'pointer', padding: 4 }}><X size={20} color="var(--ds-text-subtlest, var(--ds-text-subtlest, #64748B))" /></button>
+          <button onClick={onClose} style={{ marginLeft: 'auto', background: 'none', border: 'none', cursor: 'pointer', padding: 4 }}><X size={20} color="var(--ds-text-subtlest, #64748B)" /></button>
         </div>
 
         {isLoading ? (
@@ -189,7 +189,7 @@ export const EpicDetailDrawer: React.FC<EpicDetailDrawerProps> = ({ isOpen, onCl
           </div>
         ) : error ? (
           <div style={{ padding: '48px 20px', textAlign: 'center' }}>
-            <p style={{ fontSize: 14, color: 'var(--ds-text-danger, var(--ds-text-danger, #DC2626))' }}>Failed to load epic</p>
+            <p style={{ fontSize: 14, color: 'var(--ds-text-danger, #DC2626)' }}>Failed to load epic</p>
           </div>
         ) : epic ? (
           <div style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
@@ -205,7 +205,7 @@ export const EpicDetailDrawer: React.FC<EpicDetailDrawerProps> = ({ isOpen, onCl
                   <PopoverContent align="start" style={{ width: 220, padding: '4px 0', background: 'var(--bg-app, #FFFFFF)', border: '1px solid rgba(15,23,42,0.12)', borderRadius: 6, zIndex: 9999 }}>
                     {STATUS_GROUPS.map(group => (
                       <div key={group.label}>
-                        <div style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #94A3B8))', padding: '6px 12px 2px' }}>{group.label}</div>
+                        <div style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--ds-text-subtlest, #94A3B8)', padding: '6px 12px 2px' }}>{group.label}</div>
                         {group.statuses.map(s => {
                           const sc = getEpicStatusColors(s);
                           return (
@@ -232,7 +232,7 @@ export const EpicDetailDrawer: React.FC<EpicDetailDrawerProps> = ({ isOpen, onCl
                 />
               ) : (
                 <h2 onClick={() => setEditingTitle(true)} style={{ fontSize: 20, fontWeight: 650, color: 'var(--fg-1, #0F172A)', margin: '0 0 8px', cursor: 'text', fontFamily: 'var(--cp-font-heading)', lineHeight: 1.3 }}>
-                  {epic.summary || <span style={{ fontStyle: 'italic', color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #94A3B8))' }}>Click to add a title...</span>}
+                  {epic.summary || <span style={{ fontStyle: 'italic', color: 'var(--ds-text-subtlest, #94A3B8)' }}>Click to add a title...</span>}
                 </h2>
               )}
             </div>
@@ -249,7 +249,7 @@ export const EpicDetailDrawer: React.FC<EpicDetailDrawerProps> = ({ isOpen, onCl
                 <>
                   {/* Description */}
                   <div style={{ marginBottom: 16 }}>
-                    <div style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #64748B))', marginBottom: 6 }}>Description</div>
+                    <div style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--ds-text-subtlest, #64748B)', marginBottom: 6 }}>Description</div>
                     {editingDesc ? (
                       <textarea value={descValue} onChange={e => setDescValue(e.target.value)}
                         onBlur={() => { handleUpdate('description_text', descValue); setEditingDesc(false); }}
@@ -258,7 +258,7 @@ export const EpicDetailDrawer: React.FC<EpicDetailDrawerProps> = ({ isOpen, onCl
                       />
                     ) : (
                       <div onClick={() => setEditingDesc(true)} style={{
-                        fontSize: 14, color: epic.description_text ? 'var(--ds-text-subtle, var(--ds-text-subtle, #334155))' : 'var(--ds-text-subtlest, var(--ds-text-subtlest, #94A3B8))',
+                        fontSize: 14, color: epic.description_text ? 'var(--ds-text-subtle, #334155)' : 'var(--ds-text-subtlest, #94A3B8)',
                         fontStyle: epic.description_text ? 'normal' : 'italic', cursor: 'text', minHeight: 20, lineHeight: 1.6, whiteSpace: 'pre-wrap',
                       }}>
                         {epic.description_text || 'Click to add description...'}
@@ -267,7 +267,7 @@ export const EpicDetailDrawer: React.FC<EpicDetailDrawerProps> = ({ isOpen, onCl
                   </div>
 
                   <div style={{ border: '0.75px solid rgba(15,23,42,0.06)', borderRadius: 6, padding: '8px 16px' }}>
-                    <div style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #64748B))', marginBottom: 4 }}>Key Details</div>
+                    <div style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--ds-text-subtlest, #64748B)', marginBottom: 4 }}>Key Details</div>
 
                     <DetailRow label="Status">
                       {statusColors && <span style={{ display: 'inline-flex', alignItems: 'center', height: 20, padding: '0 6px', borderRadius: 4, fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.03em', background: statusColors.bg, color: statusColors.text }}>{statusColors.label}</span>}
@@ -276,31 +276,31 @@ export const EpicDetailDrawer: React.FC<EpicDetailDrawerProps> = ({ isOpen, onCl
                     <DetailRow label="Assignee">
                       {epic.assignee_display_name ? (
                         <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                          <div style={{ width: 24, height: 24, borderRadius: '50%', background: 'var(--bd-default, #E2E8F0)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 9, fontWeight: 700, color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #64748B))', flexShrink: 0 }}>{getInitials(epic.assignee_display_name)}</div>
+                          <div style={{ width: 24, height: 24, borderRadius: '50%', background: 'var(--bd-default, #E2E8F0)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 9, fontWeight: 700, color: 'var(--ds-text-subtlest, #64748B)', flexShrink: 0 }}>{getInitials(epic.assignee_display_name)}</div>
                           <span style={DETAIL_VALUE}>{epic.assignee_display_name}</span>
                         </div>
-                      ) : <span style={{ fontSize: 14, color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #94A3B8))', fontStyle: 'italic' }}>— Set assignee</span>}
+                      ) : <span style={{ fontSize: 14, color: 'var(--ds-text-subtlest, #94A3B8)', fontStyle: 'italic' }}>— Set assignee</span>}
                     </DetailRow>
                     <DetailRow label="Reporter">
-                      {epic.reporter_display_name ? <span style={DETAIL_VALUE}>{epic.reporter_display_name}</span> : <span style={{ fontSize: 14, color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #94A3B8))', fontStyle: 'italic' }}>— Set reporter</span>}
+                      {epic.reporter_display_name ? <span style={DETAIL_VALUE}>{epic.reporter_display_name}</span> : <span style={{ fontSize: 14, color: 'var(--ds-text-subtlest, #94A3B8)', fontStyle: 'italic' }}>— Set reporter</span>}
                     </DetailRow>
                     <DetailRow label="Due Date">
-                      <span style={{ ...DETAIL_VALUE, fontFamily: 'var(--cp-font-mono)', fontSize: 13, color: epic.due_date ? 'var(--fg-1, #0F172A)' : 'var(--ds-text-subtlest, var(--ds-text-subtlest, #94A3B8))' }}>
+                      <span style={{ ...DETAIL_VALUE, fontFamily: 'var(--cp-font-mono)', fontSize: 13, color: epic.due_date ? 'var(--fg-1, #0F172A)' : 'var(--ds-text-subtlest, #94A3B8)' }}>
                         {epic.due_date ? format(new Date(epic.due_date), 'MMM d, yyyy') : '— Set date'}
                       </span>
                     </DetailRow>
                     <DetailRow label="Release">
-                      <span style={{ ...DETAIL_VALUE, color: formatFixVersions(epic.fix_versions) !== '—' ? 'var(--fg-1, #0F172A)' : 'var(--ds-text-subtlest, var(--ds-text-subtlest, #94A3B8))' }}>
+                      <span style={{ ...DETAIL_VALUE, color: formatFixVersions(epic.fix_versions) !== '—' ? 'var(--fg-1, #0F172A)' : 'var(--ds-text-subtlest, #94A3B8)' }}>
                         {formatFixVersions(epic.fix_versions)}
                       </span>
                     </DetailRow>
                     <DetailRow label="Created">
-                      <span style={{ fontSize: 12, color: 'var(--ds-text-subtle, var(--ds-text-subtle, #334155))', fontFamily: 'var(--cp-font-mono)' }}>
+                      <span style={{ fontSize: 12, color: 'var(--ds-text-subtle, #334155)', fontFamily: 'var(--cp-font-mono)' }}>
                         {epic.jira_created_at ? format(new Date(epic.jira_created_at), 'MMM d, yyyy, hh:mm a') : '—'}
                       </span>
                     </DetailRow>
                     <DetailRow label="Updated">
-                      <span style={{ fontSize: 12, color: 'var(--ds-text-subtle, var(--ds-text-subtle, #334155))', fontFamily: 'var(--cp-font-mono)' }}>
+                      <span style={{ fontSize: 12, color: 'var(--ds-text-subtle, #334155)', fontFamily: 'var(--cp-font-mono)' }}>
                         {epic.jira_updated_at ? format(new Date(epic.jira_updated_at), 'MMM d, yyyy, hh:mm a') : '—'}
                       </span>
                     </DetailRow>
@@ -308,11 +308,11 @@ export const EpicDetailDrawer: React.FC<EpicDetailDrawerProps> = ({ isOpen, onCl
 
                   {jiraSyncData?.jira_key && (
                     <div style={{ borderTop: '0.75px solid var(--bd-default, #E2E8F0)', paddingTop: 16, marginTop: 16 }}>
-                      <div style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #64748B))', marginBottom: 12 }}>Jira Sync</div>
+                      <div style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--ds-text-subtlest, #64748B)', marginBottom: 12 }}>Jira Sync</div>
                       <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                           <span style={{ fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.04em', fontWeight: 600, color: '#6B7280' }}>Jira Issue</span>
-                          <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 12, padding: '2px 8px', borderRadius: 4, background: 'var(--ds-surface-sunken, var(--ds-surface-sunken, #F1F5F9))', color: '#1E293B' }}>{jiraSyncData.jira_key}</span>
+                          <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 12, padding: '2px 8px', borderRadius: 4, background: 'var(--ds-surface-sunken, #F1F5F9)', color: '#1E293B' }}>{jiraSyncData.jira_key}</span>
                         </div>
                         {jiraSyncData.jira_sync_status && (
                           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
@@ -320,14 +320,14 @@ export const EpicDetailDrawer: React.FC<EpicDetailDrawerProps> = ({ isOpen, onCl
                             <span style={{
                               display: 'inline-flex', alignItems: 'center', height: 20, padding: '0 6px', borderRadius: 4,
                               fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.03em',
-                              backgroundColor: jiraSyncData.jira_sync_status === 'synced' || jiraSyncData.jira_sync_status === 'pushed' ? '#E3FCEF' : jiraSyncData.jira_sync_status === 'queued' || jiraSyncData.jira_sync_status === 'approval_pending' ? '#DEEBFF' : 'var(--ds-border, var(--ds-border, #DFE1E6))',
-                              color: jiraSyncData.jira_sync_status === 'synced' || jiraSyncData.jira_sync_status === 'pushed' ? '#006644' : jiraSyncData.jira_sync_status === 'queued' || jiraSyncData.jira_sync_status === 'approval_pending' ? '#0747A6' : 'var(--ds-text, var(--ds-text, #253858))',
+                              backgroundColor: jiraSyncData.jira_sync_status === 'synced' || jiraSyncData.jira_sync_status === 'pushed' ? '#E3FCEF' : jiraSyncData.jira_sync_status === 'queued' || jiraSyncData.jira_sync_status === 'approval_pending' ? '#DEEBFF' : 'var(--ds-border, #DFE1E6)',
+                              color: jiraSyncData.jira_sync_status === 'synced' || jiraSyncData.jira_sync_status === 'pushed' ? '#006644' : jiraSyncData.jira_sync_status === 'queued' || jiraSyncData.jira_sync_status === 'approval_pending' ? '#0747A6' : 'var(--ds-text, #253858)',
                             }}>{jiraSyncData.jira_sync_status}</span>
                           </div>
                         )}
                         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                           <span style={{ fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.04em', fontWeight: 600, color: '#6B7280' }}>Last Synced</span>
-                          <span style={{ fontSize: 12, color: 'var(--ds-text-subtle, var(--ds-text-subtle, #334155))', fontFamily: 'var(--cp-font-mono)' }}>
+                          <span style={{ fontSize: 12, color: 'var(--ds-text-subtle, #334155)', fontFamily: 'var(--cp-font-mono)' }}>
                             {jiraSyncData.jira_pushed_at ? format(new Date(jiraSyncData.jira_pushed_at), 'MMM d, yyyy, hh:mm a') : '—'}
                           </span>
                         </div>
@@ -364,11 +364,11 @@ function CommentsPane({ comments, isLoading }: { comments: any[]; isLoading: boo
       {comments.map((c: any) => (
         <div key={c.id} style={{ borderBottom: '0.75px solid rgba(15,23,42,0.06)', paddingBottom: 12 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
-            <div style={{ width: 24, height: 24, borderRadius: '50%', background: 'var(--bd-default, #E2E8F0)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 9, fontWeight: 700, color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #64748B))', flexShrink: 0 }}>{getInitials(c.author_display_name || 'U')}</div>
+            <div style={{ width: 24, height: 24, borderRadius: '50%', background: 'var(--bd-default, #E2E8F0)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 9, fontWeight: 700, color: 'var(--ds-text-subtlest, #64748B)', flexShrink: 0 }}>{getInitials(c.author_display_name || 'U')}</div>
             <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--fg-1, #0F172A)' }}>{c.author_display_name || 'Unknown'}</span>
-            <span style={{ fontSize: 11, color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #94A3B8))', marginLeft: 'auto' }}>{c.jira_created_at ? formatDistanceToNow(new Date(c.jira_created_at), { addSuffix: true }) : ''}</span>
+            <span style={{ fontSize: 11, color: 'var(--ds-text-subtlest, #94A3B8)', marginLeft: 'auto' }}>{c.jira_created_at ? formatDistanceToNow(new Date(c.jira_created_at), { addSuffix: true }) : ''}</span>
           </div>
-          <div style={{ fontSize: 13, color: 'var(--ds-text-subtle, var(--ds-text-subtle, #334155))', lineHeight: 1.6, whiteSpace: 'pre-wrap', paddingLeft: 32 }}>{c.body || ''}</div>
+          <div style={{ fontSize: 13, color: 'var(--ds-text-subtle, #334155)', lineHeight: 1.6, whiteSpace: 'pre-wrap', paddingLeft: 32 }}>{c.body || ''}</div>
         </div>
       ))}
     </div>
@@ -386,24 +386,24 @@ function HistoryPane({ changelog, isLoading, getStatusColors }: { changelog: any
     <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
       {statusChanges.length > 0 && (
         <div style={{ marginBottom: 20 }}>
-          <div style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #64748B))', marginBottom: 8 }}>Status Transitions ({statusChanges.length})</div>
+          <div style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--ds-text-subtlest, #64748B)', marginBottom: 8 }}>Status Transitions ({statusChanges.length})</div>
           {statusChanges.map((entry: any) => {
             const fromColors = getStatusColors(entry.from_string || '');
             const toColors = getStatusColors(entry.to_string || '');
             return (
               <div key={entry.id} style={{ display: 'flex', gap: 10, padding: '8px 0', borderBottom: '0.75px solid rgba(15,23,42,0.04)' }}>
-                <div style={{ width: 24, height: 24, borderRadius: '50%', background: 'var(--bd-default, #E2E8F0)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 9, fontWeight: 700, color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #64748B))', flexShrink: 0, marginTop: 2 }}>{getInitials(entry.author_display_name || 'S')}</div>
+                <div style={{ width: 24, height: 24, borderRadius: '50%', background: 'var(--bd-default, #E2E8F0)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 9, fontWeight: 700, color: 'var(--ds-text-subtlest, #64748B)', flexShrink: 0, marginTop: 2 }}>{getInitials(entry.author_display_name || 'S')}</div>
                 <div style={{ flex: 1 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap', marginBottom: 4 }}>
                     <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--fg-1, #0F172A)' }}>{entry.author_display_name || 'System'}</span>
-                    <span style={{ fontSize: 11, color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #94A3B8))' }}>{entry.jira_created_at ? formatDistanceToNow(new Date(entry.jira_created_at), { addSuffix: true }) : ''}</span>
+                    <span style={{ fontSize: 11, color: 'var(--ds-text-subtlest, #94A3B8)' }}>{entry.jira_created_at ? formatDistanceToNow(new Date(entry.jira_created_at), { addSuffix: true }) : ''}</span>
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
                     <span style={{ display: 'inline-flex', alignItems: 'center', height: 18, padding: '0 5px', borderRadius: 4, fontSize: 10, fontWeight: 700, textTransform: 'uppercase', background: fromColors.bg, color: fromColors.text }}>{fromColors.label}</span>
-                    <span style={{ fontSize: 12, color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #94A3B8))' }}>→</span>
+                    <span style={{ fontSize: 12, color: 'var(--ds-text-subtlest, #94A3B8)' }}>→</span>
                     <span style={{ display: 'inline-flex', alignItems: 'center', height: 18, padding: '0 5px', borderRadius: 4, fontSize: 10, fontWeight: 700, textTransform: 'uppercase', background: toColors.bg, color: toColors.text }}>{toColors.label}</span>
                   </div>
-                  {entry.jira_created_at && <div style={{ fontSize: 11, color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #94A3B8))', marginTop: 2, fontFamily: 'var(--cp-font-mono)' }}>{format(new Date(entry.jira_created_at), 'MMM d, yyyy, hh:mm a')}</div>}
+                  {entry.jira_created_at && <div style={{ fontSize: 11, color: 'var(--ds-text-subtlest, #94A3B8)', marginTop: 2, fontFamily: 'var(--cp-font-mono)' }}>{format(new Date(entry.jira_created_at), 'MMM d, yyyy, hh:mm a')}</div>}
                 </div>
               </div>
             );
@@ -412,18 +412,18 @@ function HistoryPane({ changelog, isLoading, getStatusColors }: { changelog: any
       )}
       {otherChanges.length > 0 && (
         <div>
-          <div style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #64748B))', marginBottom: 8 }}>Other Changes ({otherChanges.length})</div>
+          <div style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--ds-text-subtlest, #64748B)', marginBottom: 8 }}>Other Changes ({otherChanges.length})</div>
           {otherChanges.map((entry: any) => (
             <div key={entry.id} style={{ display: 'flex', gap: 10, padding: '6px 0', borderBottom: '0.75px solid rgba(15,23,42,0.04)' }}>
-              <div style={{ width: 24, height: 24, borderRadius: '50%', background: 'var(--bd-default, #E2E8F0)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 9, fontWeight: 700, color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #64748B))', flexShrink: 0 }}>{getInitials(entry.author_display_name || 'S')}</div>
+              <div style={{ width: 24, height: 24, borderRadius: '50%', background: 'var(--bd-default, #E2E8F0)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 9, fontWeight: 700, color: 'var(--ds-text-subtlest, #64748B)', flexShrink: 0 }}>{getInitials(entry.author_display_name || 'S')}</div>
               <div style={{ flex: 1 }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 2 }}>
                   <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--fg-1, #0F172A)' }}>{entry.author_display_name || 'System'}</span>
-                  <span style={{ fontSize: 11, color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #94A3B8))' }}>{entry.jira_created_at ? formatDistanceToNow(new Date(entry.jira_created_at), { addSuffix: true }) : ''}</span>
+                  <span style={{ fontSize: 11, color: 'var(--ds-text-subtlest, #94A3B8)' }}>{entry.jira_created_at ? formatDistanceToNow(new Date(entry.jira_created_at), { addSuffix: true }) : ''}</span>
                 </div>
-                <div style={{ fontSize: 13, color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #64748B))' }}>
+                <div style={{ fontSize: 13, color: 'var(--ds-text-subtlest, #64748B)' }}>
                   Changed <strong style={{ color: 'var(--fg-1, #0F172A)', fontWeight: 600 }}>{entry.field_name}</strong>
-                  {entry.from_string && <> from <span style={{ color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #94A3B8))' }}>{entry.from_string}</span></>}
+                  {entry.from_string && <> from <span style={{ color: 'var(--ds-text-subtlest, #94A3B8)' }}>{entry.from_string}</span></>}
                   {entry.to_string && <> to <span style={{ color: 'var(--fg-1, #0F172A)' }}>{entry.to_string}</span></>}
                 </div>
               </div>
@@ -450,5 +450,5 @@ function SkeletonList({ count }: { count: number }) {
 }
 
 function EmptyState({ text }: { text: string }) {
-  return <div style={{ padding: 24, textAlign: 'center', fontSize: 13, color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #94A3B8))' }}>{text}</div>;
+  return <div style={{ padding: 24, textAlign: 'center', fontSize: 13, color: 'var(--ds-text-subtlest, #94A3B8)' }}>{text}</div>;
 }

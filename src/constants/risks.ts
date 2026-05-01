@@ -29,22 +29,22 @@ export const RELATIONSHIP_TYPES: RelationshipType[] = [
 // NOTE: Using gold instead of blue per Catalyst theme requirements
 export const ROAM_BADGE_COLORS: Record<RoamStatus, { bg: string; text: string }> = {
   Resolved: { bg: 'bg-[rgba(163,163,163,0.1)]', text: 'text-[#737373]' },      // Gray (default)
-  Owned: { bg: 'bg-[rgba(37,99,235,0.08)]', text: 'text-[var(--ds-text-brand,var(--ds-text-brand, #2563eb))]' },          // Blue (primary)
+  Owned: { bg: 'bg-[rgba(37,99,235,0.08)]', text: 'text-[var(--ds-text-brand, #2563eb)]' },          // Blue (primary)
   Accepted: { bg: 'bg-[rgba(13,148,136,0.08)]', text: 'text-[#0d9488]' },      // Teal (success)
-  Mitigated: { bg: 'bg-[rgba(217,119,6,0.08)]', text: 'text-[var(--ds-text-warning,var(--ds-text-warning, #d97706))]' }       // Orange (warning)
+  Mitigated: { bg: 'bg-[rgba(217,119,6,0.08)]', text: 'text-[var(--ds-text-warning, #d97706)]' }       // Orange (warning)
 };
 
 // Chart colors using Catalyst Risk Colors
 // Source: Blue + Teal Professional Palette
 export const CHART_COLORS = {
   openVsClosed: {
-    Open: 'var(--ds-text-brand, var(--ds-text-brand, #2563eb))',      // Brand blue
+    Open: 'var(--ds-text-brand, #2563eb)',      // Brand blue
     Closed: '#36B37E'     // Green
   },
   severity: {
-    Critical: 'var(--ds-text-danger, var(--ds-text-danger, #ef4444))',  // Red - Critical
-    High: 'var(--ds-text-danger, var(--ds-text-danger, #ef4444))',      // Red - High
-    Medium: 'var(--ds-text-warning, var(--ds-text-warning, #d97706))',    // Orange - Medium
+    Critical: 'var(--ds-text-danger, #ef4444)',  // Red - Critical
+    High: 'var(--ds-text-danger, #ef4444)',      // Red - High
+    Medium: 'var(--ds-text-warning, #d97706)',    // Orange - Medium
     Low: '#0d9488'        // Teal - Low
   }
 };

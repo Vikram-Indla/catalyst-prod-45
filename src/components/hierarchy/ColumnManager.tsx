@@ -105,7 +105,7 @@ export function ColumnManagerDropdown({ visibleColumns, onChange }: ColumnManage
                 disabled={col.alwaysVisible}
                 style={{
                   width: '100%', display: 'flex', alignItems: 'center', gap: 8,
-                  padding: '6px 12px', fontSize: 13, color: col.alwaysVisible ? 'var(--ds-text-subtlest, var(--ds-text-subtlest, #94A3B8))' : 'var(--ds-text-subtle, var(--ds-text-subtle, #334155))',
+                  padding: '6px 12px', fontSize: 13, color: col.alwaysVisible ? 'var(--ds-text-subtlest, #94A3B8)' : 'var(--ds-text-subtle, #334155)',
                   background: 'none', border: 'none', cursor: col.alwaysVisible ? 'default' : 'pointer',
                   textAlign: 'left', opacity: col.alwaysVisible ? 0.6 : 1,
                 }}
@@ -118,7 +118,7 @@ export function ColumnManagerDropdown({ visibleColumns, onChange }: ColumnManage
                   background: isVisible ? 'var(--cp-blue)' : 'transparent',
                   display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
                 }}>
-                  {isVisible && <Check size={10} color="var(--ds-surface, var(--ds-surface, #FFFFFF))" strokeWidth={3} />}
+                  {isVisible && <Check size={10} color="var(--ds-surface, #FFFFFF)" strokeWidth={3} />}
                 </div>
                 {col.label}
               </button>

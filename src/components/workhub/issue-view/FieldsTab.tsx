@@ -15,7 +15,7 @@ interface Props {
 }
 
 const PRIORITY_COLORS: Record<string, string> = {
-  Highest: 'var(--ds-text-danger, var(--ds-text-danger, #EF4444))', High: '#F97316', Medium: 'var(--ds-text-brand, var(--ds-text-brand, #3B82F6))', Low: 'var(--ds-text-success, var(--ds-text-success, #22C55E))', Lowest: '#8C8F96',
+  Highest: 'var(--ds-text-danger, #EF4444)', High: '#F97316', Medium: 'var(--ds-text-brand, #3B82F6)', Low: 'var(--ds-text-success, #22C55E)', Lowest: '#8C8F96',
 };
 const AVATAR_COLORS = ['#4C6EF5', '#FA8C16', '#52C41A', '#EB2F96', '#722ED1'];
 
@@ -38,7 +38,7 @@ function Avatar({ name }: { name: string | null }) {
       <div style={{
         width: 24, height: 24, borderRadius: '50%', background: bg,
         display: 'flex', alignItems: 'center', justifyContent: 'center',
-        fontSize: 10, fontWeight: 700, color: 'var(--ds-surface, var(--ds-surface, var(--ds-surface, #fff)))', flexShrink: 0,
+        fontSize: 10, fontWeight: 700, color: 'var(--ds-surface, #fff)', flexShrink: 0,
       }}>{initials}</div>
       <span style={{ fontSize: 13, color: 'var(--aw-text)' }}>{name}</span>
     </div>

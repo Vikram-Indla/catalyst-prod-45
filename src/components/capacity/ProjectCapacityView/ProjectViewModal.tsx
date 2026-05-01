@@ -61,8 +61,8 @@ export function ProjectViewModal({ open, onClose, utilization, periodRange, onRe
               <div className="text-2xl font-bold text-foreground">{resources.length}</div>
               <div className="text-xs text-muted-foreground">Resources</div>
             </div>
-            <div className="bg-[var(--ds-text-brand,var(--ds-text-brand, #2563eb))]/10 rounded-lg p-3 text-center">
-              <div className="text-2xl font-bold text-[var(--ds-text-brand,var(--ds-text-brand, #2563eb))]">{formatFTE(committedFTE)}</div>
+            <div className="bg-[var(--ds-text-brand, #2563eb)]/10 rounded-lg p-3 text-center">
+              <div className="text-2xl font-bold text-[var(--ds-text-brand, #2563eb)]">{formatFTE(committedFTE)}</div>
               <div className="text-xs text-muted-foreground">Committed FTE</div>
             </div>
             <div className="bg-amber-500/10 rounded-lg p-3 text-center">
@@ -85,7 +85,7 @@ export function ProjectViewModal({ open, onClose, utilization, periodRange, onRe
             </div>
             <div className="h-3 bg-muted rounded-full overflow-hidden flex">
               <div
-                className="h-full bg-[var(--ds-text-brand,var(--ds-text-brand, #2563eb))] transition-all"
+                className="h-full bg-[var(--ds-text-brand, #2563eb)] transition-all"
                 style={{ width: `${Math.min((committedFTE / requiredFTE) * 100, 100)}%` }}
               />
               <div
@@ -95,7 +95,7 @@ export function ProjectViewModal({ open, onClose, utilization, periodRange, onRe
             </div>
             <div className="flex items-center gap-4 mt-2 text-xs">
               <div className="flex items-center gap-1.5">
-                <div className="w-2 h-2 rounded-full bg-[var(--ds-text-brand,var(--ds-text-brand, #2563eb))]" />
+                <div className="w-2 h-2 rounded-full bg-[var(--ds-text-brand, #2563eb)]" />
                 <span>Committed</span>
               </div>
               <div className="flex items-center gap-1.5">
@@ -157,7 +157,7 @@ export function ProjectViewModal({ open, onClose, utilization, periodRange, onRe
                     </div>
                     <div className="flex items-center gap-2 shrink-0">
                       {resource.committed > 0 && (
-                        <span className="text-xs font-medium px-2 py-0.5 rounded bg-[var(--ds-text-brand,var(--ds-text-brand, #2563eb))]/10 text-[var(--ds-text-brand,var(--ds-text-brand, #2563eb))]">
+                        <span className="text-xs font-medium px-2 py-0.5 rounded bg-[var(--ds-text-brand, #2563eb)]/10 text-[var(--ds-text-brand, #2563eb)]">
                           {resource.committed}% committed
                         </span>
                       )}

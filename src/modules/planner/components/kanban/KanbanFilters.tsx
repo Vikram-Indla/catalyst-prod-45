@@ -180,7 +180,7 @@ export function KanbanFilters({
           placeholder="Search tasks..."
           value={filters.search}
           onChange={(e) => onFilterChange({ search: e.target.value })}
-          className="pl-9 h-9 bg-white dark:bg-[var(--ds-surface-raised,var(--ds-surface-raised, #1A1A1A))] border-border"
+          className="pl-9 h-9 bg-white dark:bg-[var(--ds-surface-raised, #1A1A1A)] border-border"
         />
         {filters.search && (
           <button
@@ -197,7 +197,7 @@ export function KanbanFilters({
         value={filters.priority}
         onValueChange={(value) => onFilterChange({ priority: value as KanbanTaskPriority | 'all' })}
       >
-        <SelectTrigger className="w-[140px] h-9 bg-white dark:bg-[var(--ds-surface-raised,var(--ds-surface-raised, #1A1A1A))] border-border">
+        <SelectTrigger className="w-[140px] h-9 bg-white dark:bg-[var(--ds-surface-raised, #1A1A1A)] border-border">
           <SelectValue placeholder="Priority" />
         </SelectTrigger>
         <SelectContent>
@@ -214,7 +214,7 @@ export function KanbanFilters({
         value={filters.assignee_id}
         onValueChange={(value) => onFilterChange({ assignee_id: value })}
       >
-        <SelectTrigger className="w-[150px] h-9 bg-white dark:bg-[var(--ds-surface-raised,var(--ds-surface-raised, #1A1A1A))] border-border">
+        <SelectTrigger className="w-[150px] h-9 bg-white dark:bg-[var(--ds-surface-raised, #1A1A1A)] border-border">
           <SelectValue placeholder="Assignee" />
         </SelectTrigger>
         <SelectContent>
@@ -232,7 +232,7 @@ export function KanbanFilters({
         value={filters.workstream_id}
         onValueChange={(value) => onFilterChange({ workstream_id: value })}
       >
-        <SelectTrigger className="w-[160px] h-9 bg-white dark:bg-[var(--ds-surface-raised,var(--ds-surface-raised, #1A1A1A))] border-border">
+        <SelectTrigger className="w-[160px] h-9 bg-white dark:bg-[var(--ds-surface-raised, #1A1A1A)] border-border">
           <SelectValue placeholder="Workstream" />
         </SelectTrigger>
         <SelectContent>
@@ -248,7 +248,7 @@ export function KanbanFilters({
       {/* Swimlane Grouping - only show in swimlane mode */}
       {viewMode === 'swimlane' && (
         <Select value={swimlane} onValueChange={(value) => onSwimlaneChange(value as SwimlaneGrouping)}>
-          <SelectTrigger className="w-[150px] h-9 bg-white dark:bg-[var(--ds-surface-raised,var(--ds-surface-raised, #1A1A1A))] border-border">
+          <SelectTrigger className="w-[150px] h-9 bg-white dark:bg-[var(--ds-surface-raised, #1A1A1A)] border-border">
             <SelectValue placeholder="Group by" />
           </SelectTrigger>
           <SelectContent>

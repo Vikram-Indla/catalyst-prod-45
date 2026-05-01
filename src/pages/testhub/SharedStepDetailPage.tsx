@@ -87,7 +87,7 @@ export default function SharedStepDetailPage() {
   if (isLoading) {
     return (
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', backgroundColor: 'var(--cp-bg-page, #F8FAFC)' }}>
-        <div style={{ width: 32, height: 32, border: `3px solid ${'var(--cp-border, #E2E8F0)'}`, borderTopColor: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))', borderRadius: '50%', animation: 'spin 1s linear infinite' }} />
+        <div style={{ width: 32, height: 32, border: `3px solid ${'var(--cp-border, #E2E8F0)'}`, borderTopColor: 'var(--ds-text-brand, #2563EB)', borderRadius: '50%', animation: 'spin 1s linear infinite' }} />
       </div>
     );
   }
@@ -178,7 +178,7 @@ export default function SharedStepDetailPage() {
                     onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
                   >
                     <td style={{ padding: '0 16px' }}>
-                      <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 13, fontWeight: 500, color: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))' }}>{tc.case_key}</span>
+                      <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 13, fontWeight: 500, color: 'var(--ds-text-brand, #2563EB)' }}>{tc.case_key}</span>
                     </td>
                     <td style={{ padding: '0 16px', fontSize: 14, color: 'var(--cp-text-secondary, #334155)' }}>{tc.title}</td>
                   </tr>

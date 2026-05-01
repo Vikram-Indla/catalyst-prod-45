@@ -34,13 +34,13 @@ interface CycleWithStats {
 const CYCLE_STATUS_MAP: Record<string, { bg: string; text: string; label: string }> = {
   in_progress:  { bg: '#DEEBFF', text: '#0747A6', label: 'IN PROGRESS' },
   active:       { bg: '#DEEBFF', text: '#0747A6', label: 'ACTIVE' },
-  planned:      { bg: 'var(--ds-border, var(--ds-border, #DFE1E6))', text: 'var(--ds-text, var(--ds-text, #253858))', label: 'PLANNED' },
-  draft:        { bg: 'var(--ds-border, var(--ds-border, #DFE1E6))', text: 'var(--ds-text, var(--ds-text, #253858))', label: 'DRAFT' },
-  on_hold:      { bg: 'var(--ds-border, var(--ds-border, #DFE1E6))', text: 'var(--ds-text, var(--ds-text, #253858))', label: 'ON HOLD' },
+  planned:      { bg: 'var(--ds-border, #DFE1E6)', text: 'var(--ds-text, #253858)', label: 'PLANNED' },
+  draft:        { bg: 'var(--ds-border, #DFE1E6)', text: 'var(--ds-text, #253858)', label: 'DRAFT' },
+  on_hold:      { bg: 'var(--ds-border, #DFE1E6)', text: 'var(--ds-text, #253858)', label: 'ON HOLD' },
   completed:    { bg: '#E3FCEF', text: '#006644', label: 'COMPLETED' },
   closed:       { bg: '#E3FCEF', text: '#006644', label: 'CLOSED' },
   done:         { bg: '#E3FCEF', text: '#006644', label: 'DONE' },
-  archived:     { bg: 'var(--ds-border, var(--ds-border, #DFE1E6))', text: 'var(--ds-text, var(--ds-text, #253858))', label: 'ARCHIVED' },
+  archived:     { bg: 'var(--ds-border, #DFE1E6)', text: 'var(--ds-text, #253858)', label: 'ARCHIVED' },
 };
 
 export default function ExecutionHubPage() {

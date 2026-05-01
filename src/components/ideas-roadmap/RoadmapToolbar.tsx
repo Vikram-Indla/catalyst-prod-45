@@ -84,7 +84,7 @@ export function RoadmapToolbar({
       >
         <span style={{
           width: 28, height: 16, borderRadius: 8, position: 'relative',
-          background: committedOnly ? 'var(--sem-success)' : 'var(--ds-text-disabled, var(--ds-text-disabled, #CBD5E1))',
+          background: committedOnly ? 'var(--sem-success)' : 'var(--ds-text-disabled, #CBD5E1)',
           display: 'inline-block', transition: 'background 150ms',
         }}>
           <span style={{
@@ -104,14 +104,14 @@ export function RoadmapToolbar({
         background: 'var(--bg-1)', display: 'flex', alignItems: 'center', justifyContent: 'center',
         cursor: 'pointer', transition: 'all 150ms',
       }}>
-        <MonitorPlay size={15} color="var(--ds-text-subtlest, var(--ds-text-subtlest, #64748B))" />
+        <MonitorPlay size={15} color="var(--ds-text-subtlest, #64748B)" />
       </button>
       <button onClick={onGantt} title="Gantt view" style={{
         width: 32, height: 32, borderRadius: 6, border: '1px solid var(--divider)',
         background: 'var(--bg-1)', display: 'flex', alignItems: 'center', justifyContent: 'center',
         cursor: 'pointer', transition: 'all 150ms',
       }}>
-        <BarChart3 size={15} color="var(--ds-text-subtlest, var(--ds-text-subtlest, #64748B))" />
+        <BarChart3 size={15} color="var(--ds-text-subtlest, #64748B)" />
       </button>
       <button onClick={onExport} style={{
         height: 32, padding: '8px 12px', borderRadius: 6, border: 'none',

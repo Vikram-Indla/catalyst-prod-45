@@ -188,7 +188,7 @@ export const drawSelectionHandles = (
   const points = annotation.points.map(p => fromPercentage(p, canvas));
   if (points.length < 1) return;
   
-  ctx.strokeStyle = 'var(--ds-text-brand, var(--ds-text-brand, #2563eb))';
+  ctx.strokeStyle = 'var(--ds-text-brand, #2563eb)';
   ctx.lineWidth = 2;
   ctx.setLineDash([5, 5]);
   

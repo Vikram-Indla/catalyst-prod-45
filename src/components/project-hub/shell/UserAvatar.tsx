@@ -28,13 +28,13 @@ export function UserAvatar() {
   const size = 32;
   const name = profile?.name || 'User';
   const initials = getUserInitials(name);
-  const bg = profile?.id ? getAvatarColor(profile.id) : 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))';
+  const bg = profile?.id ? getAvatarColor(profile.id) : 'var(--ds-text-brand, #2563EB)';
   const showImage = profile?.avatarUrl && !imgError;
 
   return (
     <Tooltip content={name} position="bottom">
       <button
-        className="flex items-center justify-center rounded-full flex-shrink-0 focus-visible:ring-2 focus-visible:ring-[var(--ds-text-brand,var(--ds-text-brand, #2563EB))] focus-visible:ring-offset-2 outline-none"
+        className="flex items-center justify-center rounded-full flex-shrink-0 focus-visible:ring-2 focus-visible:ring-[var(--ds-text-brand, #2563EB)] focus-visible:ring-offset-2 outline-none"
         style={{
           width: size,
           height: size,

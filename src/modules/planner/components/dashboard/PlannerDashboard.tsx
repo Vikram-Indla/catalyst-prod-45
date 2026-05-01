@@ -102,7 +102,7 @@ export function PlannerDashboard() {
     return workstreams.map(ws => ({
       id: ws.id,
       name: ws.name,
-      color: ws.color || 'var(--ds-text-subtlest, var(--ds-text-subtlest, #64748b))',
+      color: ws.color || 'var(--ds-text-subtlest, #64748b)',
     }));
   }, [workstreams]);
 

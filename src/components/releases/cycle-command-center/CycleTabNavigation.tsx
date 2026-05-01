@@ -39,7 +39,7 @@ export function CycleTabNavigation({ tabs, activeTab, onTabChange }: CycleTabNav
                   'flex items-center gap-2 px-4 py-3 text-sm font-medium transition-colors',
                   'border-b-2 -mb-px',
                   isActive
-                    ? 'border-b-2 text-[var(--ds-text-brand,var(--ds-text-brand, #2563eb))]'
+                    ? 'border-b-2 text-[var(--ds-text-brand, #2563eb)]'
                     : 'border-transparent text-muted-foreground hover:text-foreground hover:bg-muted/50'
                 )}
                 style={isActive ? { 

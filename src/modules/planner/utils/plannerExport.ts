@@ -19,22 +19,22 @@ interface ExportOptions {
 
 // Brand colors for enterprise styling
 const BRAND_COLORS = {
-  primary: 'var(--ds-text-brand, var(--ds-text-brand, #2563eb))',
+  primary: 'var(--ds-text-brand, #2563eb)',
   secondary: '#1e40af',
-  accent: 'var(--ds-text-brand, var(--ds-text-brand, #3b82f6))',
+  accent: 'var(--ds-text-brand, #3b82f6)',
   text: '#1f2937',
   textMuted: '#6b7280',
-  border: 'var(--ds-border, var(--ds-border, #e5e7eb))',
+  border: 'var(--ds-border, #e5e7eb)',
   success: '#10b981',
-  warning: 'var(--ds-text-warning, var(--ds-text-warning, #f59e0b))',
-  danger: 'var(--ds-text-danger, var(--ds-text-danger, #ef4444))',
+  warning: 'var(--ds-text-warning, #f59e0b)',
+  danger: 'var(--ds-text-danger, #ef4444)',
 };
 
 const PRIORITY_COLORS: Record<string, string> = {
-  critical: 'var(--ds-text-danger, var(--ds-text-danger, #ef4444))',
+  critical: 'var(--ds-text-danger, #ef4444)',
   high: '#f97316',
   medium: '#eab308',
-  low: 'var(--ds-text-success, var(--ds-text-success, #22c55e))',
+  low: 'var(--ds-text-success, #22c55e)',
 };
 
 const STATUS_LABELS: Record<string, string> = {
@@ -144,7 +144,7 @@ export async function exportPlannerToPDF(options: ExportOptions): Promise<void> 
   const addSummaryStats = () => {
     const stats = calculateStats(tasks);
     
-    pdf.setFillColor('var(--ds-surface-sunken, var(--ds-surface-sunken, #f8fafc))');
+    pdf.setFillColor('var(--ds-surface-sunken, #f8fafc)');
     pdf.roundedRect(margin, currentY, pageWidth - (margin * 2), 25, 3, 3, 'F');
     
     const statBoxWidth = (pageWidth - (margin * 2)) / 5;
@@ -199,7 +199,7 @@ export async function exportPlannerToPDF(options: ExportOptions): Promise<void> 
       theme: 'grid',
       headStyles: {
         fillColor: BRAND_COLORS.primary,
-        textColor: 'var(--ds-surface, var(--ds-surface, #ffffff))',
+        textColor: 'var(--ds-surface, #ffffff)',
         fontSize: 9,
         fontStyle: 'bold',
         halign: 'left',

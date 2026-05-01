@@ -72,9 +72,9 @@ export const ObjectivesColumn = forwardRef<HTMLDivElement, ObjectivesColumnProps
     const getStatusConfig = (status: string) => {
       switch (status) {
         case 'on-track': return { color: '#0d9488', variant: 'filled' as const };
-        case 'at-risk': return { color: 'var(--ds-text-warning, var(--ds-text-warning, #f59e0b))', variant: 'filled' as const };
+        case 'at-risk': return { color: 'var(--ds-text-warning, #f59e0b)', variant: 'filled' as const };
         case 'off-track': return { color: '#DE350B', variant: 'filled' as const }; // Atlaskit danger.bolder
-        case 'in-progress': return { color: 'var(--ds-text-brand, var(--ds-text-brand, #2563eb))', variant: 'outline' as const };
+        case 'in-progress': return { color: 'var(--ds-text-brand, #2563eb)', variant: 'outline' as const };
         case 'pending': return { color: '#6b7280', variant: 'outline' as const };
         default: return { color: '#6b7280', variant: 'outline' as const };
       }

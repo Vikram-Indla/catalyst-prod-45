@@ -8,17 +8,17 @@ import { cn } from '@/lib/utils';
 const timeFilters = ['24h', '7D', '30D', '90D'];
 
 const stats = [
-  { label: 'Critical Incidents', value: 3, className: 'text-[var(--ds-text-danger,var(--ds-text-danger, #ef4444))]', trend: '↑ +2 from last week', trendUp: true },
-  { label: 'Open Incidents', value: 24, className: 'text-[var(--ds-text-warning,var(--ds-text-warning, #f59e0b))]', trend: '↑ +5 from last week', trendUp: true },
+  { label: 'Critical Incidents', value: 3, className: 'text-[var(--ds-text-danger, #ef4444)]', trend: '↑ +2 from last week', trendUp: true },
+  { label: 'Open Incidents', value: 24, className: 'text-[var(--ds-text-warning, #f59e0b)]', trend: '↑ +5 from last week', trendUp: true },
   { label: 'Resolved This Week', value: 18, className: 'text-[#0d9488]', trend: '↑ +12 improvement', trendUp: false },
-  { label: 'Avg Resolution Time', value: '4.2h', className: 'text-[var(--ds-surface-raised,var(--ds-surface-raised, #1A1A1A))]', trend: '↓ -1.2h improvement', trendUp: false },
+  { label: 'Avg Resolution Time', value: '4.2h', className: 'text-[var(--ds-surface-raised, #1A1A1A)]', trend: '↓ -1.2h improvement', trendUp: false },
   { label: 'SLA Compliance', value: '94%', className: 'text-[#0d9488]', trend: '↑ +3% improvement', trendUp: false },
 ];
 
 const statusData = [
-  { label: 'Open', count: 24, color: 'bg-[var(--ds-text-brand,var(--ds-text-brand, #2563eb))]' },
-  { label: 'In Progress', count: 15, color: 'bg-[var(--ds-text-warning,var(--ds-text-warning, #f59e0b))]' },
-  { label: 'Pending', count: 8, color: 'bg-[var(--ds-text-warning,var(--ds-text-warning, #f59e0b))]' },
+  { label: 'Open', count: 24, color: 'bg-[var(--ds-text-brand, #2563eb)]' },
+  { label: 'In Progress', count: 15, color: 'bg-[var(--ds-text-warning, #f59e0b)]' },
+  { label: 'Pending', count: 8, color: 'bg-[var(--ds-text-warning, #f59e0b)]' },
   { label: 'Resolved', count: 45, color: 'bg-[#0d9488]' },
   { label: 'Closed', count: 55, color: 'bg-[#6b7280]' },
 ];
@@ -37,7 +37,7 @@ const matrixData = [
 ];
 
 const matrixColors = [
-  ['bg-[rgba(239,68,68,0.1)] text-[var(--ds-text-danger,var(--ds-text-danger, #ef4444))]', 'bg-[rgba(245,158,11,0.1)] text-[#b45309]', 'bg-[rgba(245,158,11,0.1)] text-[#b45309]'],
+  ['bg-[rgba(239,68,68,0.1)] text-[var(--ds-text-danger, #ef4444)]', 'bg-[rgba(245,158,11,0.1)] text-[#b45309]', 'bg-[rgba(245,158,11,0.1)] text-[#b45309]'],
   ['bg-[rgba(245,158,11,0.1)] text-[#b45309]', 'bg-[rgba(245,158,11,0.1)] text-[#b45309]', 'bg-[rgba(13,148,136,0.1)] text-[#0d9488]'],
   ['bg-[rgba(245,158,11,0.1)] text-[#b45309]', 'bg-[rgba(13,148,136,0.1)] text-[#0d9488]', 'bg-[rgba(13,148,136,0.1)] text-[#0d9488]'],
 ];
@@ -97,7 +97,7 @@ export default function IncidentsDashboard() {
               <p className={cn("text-[28px] font-bold mb-1", stat.className)}>
                 {stat.value}
               </p>
-              <p className={cn("text-[13px]", stat.trendUp ? "text-[var(--ds-text-danger,var(--ds-text-danger, #ef4444))]" : "text-[#0d9488]")}>
+              <p className={cn("text-[13px]", stat.trendUp ? "text-[var(--ds-text-danger, #ef4444)]" : "text-[#0d9488]")}>
                 {stat.trend}
               </p>
             </CardContent>
@@ -134,7 +134,7 @@ export default function IncidentsDashboard() {
                   <path
                     d="M80,80 L155,60 L230,100 L305,70 L380,90 L455,50 L530,40"
                     fill="none"
-                    stroke="var(--ds-text-brand, var(--ds-text-brand, #2563eb))"
+                    stroke="var(--ds-text-brand, #2563eb)"
                     strokeWidth="2.5"
                   />
                   {[
@@ -146,7 +146,7 @@ export default function IncidentsDashboard() {
                     { cx: 455, cy: 50 },
                     { cx: 530, cy: 40 },
                   ].map((point, i) => (
-                    <circle key={i} cx={point.cx} cy={point.cy} r="4" fill="var(--ds-text-brand, var(--ds-text-brand, #2563eb))" />
+                    <circle key={i} cx={point.cx} cy={point.cy} r="4" fill="var(--ds-text-brand, #2563eb)" />
                   ))}
                   {['Nov 30', 'Dec 1', 'Dec 2', 'Dec 3', 'Dec 4', 'Dec 5', 'Today'].map((label, i) => (
                     <text key={label} x={80 + i * 75} y="170" fontSize="11" fill="#8C8C8C">
@@ -263,7 +263,7 @@ export default function IncidentsDashboard() {
                     className="flex items-center gap-3 p-3 rounded-lg"
                     style={{ backgroundColor: 'rgba(37, 99, 235, 0.1)' }}
                   >
-                    <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center font-semibold text-[var(--ds-text-brand,var(--ds-text-brand, #2563eb))]">
+                    <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center font-semibold text-[var(--ds-text-brand, #2563eb)]">
                       {member.initials}
                     </div>
                     <div className="flex-1 min-w-0">

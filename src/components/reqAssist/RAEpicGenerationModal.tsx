@@ -255,7 +255,7 @@ export default function RAEpicGenerationModal({ doc, onClose, onViewDrafts }: Pr
               {STEPS.map((s, i) => (
                 <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '6px 0' }}>
                   <div style={{
-                    width: 28, height: 28, borderRadius: '50%', background: 'var(--ds-background-success, var(--ds-background-success, #DCFCE7))',
+                    width: 28, height: 28, borderRadius: '50%', background: 'var(--ds-background-success, #DCFCE7)',
                     display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
                   }}>
                     <Check size={14} color="var(--sem-success)" strokeWidth={2.5} />
@@ -306,7 +306,7 @@ export default function RAEpicGenerationModal({ doc, onClose, onViewDrafts }: Pr
           <>
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8, marginBottom: 20 }}>
               <div style={{
-                width: 56, height: 56, borderRadius: '50%', background: 'var(--ds-background-danger, var(--ds-background-danger, #FEF2F2))',
+                width: 56, height: 56, borderRadius: '50%', background: 'var(--ds-background-danger, #FEF2F2)',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
               }}>
                 <XCircle size={32} color="var(--sem-danger)" />
@@ -317,11 +317,11 @@ export default function RAEpicGenerationModal({ doc, onClose, onViewDrafts }: Pr
             </div>
 
             <div style={{
-              background: 'var(--ds-background-danger, var(--ds-background-danger, #FEF2F2))', border: '1.5px solid #DC2626', borderRadius: 6,
+              background: 'var(--ds-background-danger, #FEF2F2)', border: '1.5px solid #DC2626', borderRadius: 6,
               padding: '14px 16px', marginBottom: 16, maxHeight: 120, overflowY: 'auto' as const,
             }}>
               <code style={{
-                fontSize: 13, color: 'var(--ds-text-danger, var(--ds-text-danger, #991B1B))', lineHeight: 1.5, whiteSpace: 'pre-wrap', wordBreak: 'break-all' as const,
+                fontSize: 13, color: 'var(--ds-text-danger, #991B1B)', lineHeight: 1.5, whiteSpace: 'pre-wrap', wordBreak: 'break-all' as const,
                 fontFamily: 'monospace', display: 'block',
               }}>
                 {errorMsg || 'Unknown error — check browser console'}
@@ -408,7 +408,7 @@ export default function RAEpicGenerationModal({ doc, onClose, onViewDrafts }: Pr
                       <div style={{
                         width: 28, height: 28, borderRadius: '50%', flexShrink: 0,
                         display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        background: state === 'done' ? 'var(--ds-background-success, var(--ds-background-success, #DCFCE7))' : state === 'active' ? 'var(--cp-primary-5)' : '#F3F4F6',
+                        background: state === 'done' ? 'var(--ds-background-success, #DCFCE7)' : state === 'active' ? 'var(--cp-primary-5)' : '#F3F4F6',
                       }}>
                         {state === 'done' ? (
                           <Check size={14} color="var(--sem-success)" strokeWidth={2.5} />
@@ -429,7 +429,7 @@ export default function RAEpicGenerationModal({ doc, onClose, onViewDrafts }: Pr
                     {i < STEPS.length - 1 && (
                       <div style={{
                         width: 2, height: 10, marginLeft: 13,
-                        background: state === 'done' ? 'var(--ds-background-success, var(--ds-background-success, #DCFCE7))' : 'var(--divider)',
+                        background: state === 'done' ? 'var(--ds-background-success, #DCFCE7)' : 'var(--divider)',
                       }} />
                     )}
                   </div>
@@ -441,7 +441,7 @@ export default function RAEpicGenerationModal({ doc, onClose, onViewDrafts }: Pr
             <div style={{
               background: 'var(--cp-primary-5)', borderRadius: 6, padding: '8px 12px', marginBottom: 20,
             }}>
-              <span style={{ fontSize: 12, color: 'var(--ds-background-brand-bold-hovered, var(--ds-background-brand-bold-hovered, #1D4ED8))' }}>
+              <span style={{ fontSize: 12, color: 'var(--ds-background-brand-bold-hovered, #1D4ED8)' }}>
                 ⏱ Estimated: ~2 minutes · You'll be notified when done
               </span>
             </div>

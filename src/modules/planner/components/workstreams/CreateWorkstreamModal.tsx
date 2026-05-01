@@ -20,8 +20,8 @@ const WORKSTREAM_COLORS = [
   { name: 'Pink', value: '#ec4899' },
   { name: 'Lime', value: '#84cc16' },
   { name: 'Teal', value: '#14b8a6' },
-  { name: 'Blue', value: 'var(--ds-text-brand, var(--ds-text-brand, #2563eb))' },
-  { name: 'Red', value: 'var(--ds-text-danger, var(--ds-text-danger, #ef4444))' },
+  { name: 'Blue', value: 'var(--ds-text-brand, #2563eb)' },
+  { name: 'Red', value: 'var(--ds-text-danger, #ef4444)' },
   { name: 'Emerald', value: '#10b981' },
 ];
 
@@ -74,8 +74,8 @@ export function CreateWorkstreamModal({ isOpen, onClose }: CreateWorkstreamModal
   // Get avatar color based on name hash
   const getAvatarColor = (name: string) => {
     const colors = [
-      'var(--ds-text-brand, var(--ds-text-brand, #3b82f6))', '#8b5cf6', '#ec4899',
-      '#f97316', '#14b8a6', 'var(--ds-text-success, var(--ds-text-success, #22c55e))'
+      'var(--ds-text-brand, #3b82f6)', '#8b5cf6', '#ec4899',
+      '#f97316', '#14b8a6', 'var(--ds-text-success, #22c55e)'
     ];
     const hash = name.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
     return colors[hash % colors.length];
@@ -287,11 +287,11 @@ export function CreateWorkstreamModal({ isOpen, onClose }: CreateWorkstreamModal
           {step === 2 && (
             <div className="space-y-4">
               {/* Help Text */}
-              <div className="flex items-start gap-2 p-3 rounded-lg" style={{ background: 'var(--ds-background-selected, var(--ds-background-selected, #eff6ff))', border: '1px solid #dbeafe' }}>
-                <Info className="w-4 h-4 mt-0.5 flex-shrink-0" style={{ color: 'var(--ds-text-brand, var(--ds-text-brand, #3b82f6))' }} />
+              <div className="flex items-start gap-2 p-3 rounded-lg" style={{ background: 'var(--ds-background-selected, #eff6ff)', border: '1px solid #dbeafe' }}>
+                <Info className="w-4 h-4 mt-0.5 flex-shrink-0" style={{ color: 'var(--ds-text-brand, #3b82f6)' }} />
                 <p className="text-xs leading-relaxed" style={{ color: '#4b5563' }}>
                   Select team members from resource inventory. Click the{' '}
-                  <Crown className="w-3 h-3 inline" style={{ color: 'var(--ds-text-warning, var(--ds-text-warning, #f59e0b))' }} /> icon to designate a{' '}
+                  <Crown className="w-3 h-3 inline" style={{ color: 'var(--ds-text-warning, #f59e0b)' }} /> icon to designate a{' '}
                   <strong style={{ color: '#1f2937' }}>Team Lead</strong>.
                 </p>
               </div>
@@ -300,7 +300,7 @@ export function CreateWorkstreamModal({ isOpen, onClose }: CreateWorkstreamModal
               <div className="flex items-center justify-between">
                 <span className="text-sm font-medium" style={{ color: '#374151' }}>Team Members</span>
                 <span className="text-xs" style={{ color: '#6b7280' }}>
-                  <strong style={{ color: 'var(--ds-text-brand, var(--ds-text-brand, #3b82f6))' }}>{selectedIds.size}</strong> selected
+                  <strong style={{ color: 'var(--ds-text-brand, #3b82f6)' }}>{selectedIds.size}</strong> selected
                 </span>
               </div>
 
@@ -324,7 +324,7 @@ export function CreateWorkstreamModal({ isOpen, onClose }: CreateWorkstreamModal
                   <div className="p-8 text-center" style={{ color: '#9ca3af' }}>
                     <div 
                       className="w-6 h-6 mx-auto mb-2 rounded-full animate-spin"
-                      style={{ border: '2px solid #e5e7eb', borderTopColor: 'var(--ds-text-brand, var(--ds-text-brand, #3b82f6))' }} 
+                      style={{ border: '2px solid #e5e7eb', borderTopColor: 'var(--ds-text-brand, #3b82f6)' }} 
                     />
                     <p className="text-sm">Loading resources...</p>
                   </div>
@@ -358,7 +358,7 @@ export function CreateWorkstreamModal({ isOpen, onClose }: CreateWorkstreamModal
                           )}
                           style={{ 
                             border: isSelected ? 'none' : '2px solid #d1d5db',
-                            background: isSelected ? 'var(--ds-text-brand, var(--ds-text-brand, #3b82f6))' : 'white'
+                            background: isSelected ? 'var(--ds-text-brand, #3b82f6)' : 'white'
                           }}
                         >
                           {isSelected && <Check className="w-3 h-3 text-white" />}
@@ -389,7 +389,7 @@ export function CreateWorkstreamModal({ isOpen, onClose }: CreateWorkstreamModal
                               <span 
                                 className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded uppercase"
                                 style={{ 
-                                  background: 'var(--ds-text-warning, var(--ds-text-warning, #f59e0b))', 
+                                  background: 'var(--ds-text-warning, #f59e0b)', 
                                   color: 'white', 
                                   fontSize: '10px', 
                                   fontWeight: 600 
@@ -422,13 +422,13 @@ export function CreateWorkstreamModal({ isOpen, onClose }: CreateWorkstreamModal
                         <div className="flex flex-col items-end gap-1 flex-shrink-0">
                           <div 
                             className="w-12 h-1 rounded-full overflow-hidden"
-                            style={{ background: 'var(--ds-border, var(--ds-border, #e5e7eb))' }}
+                            style={{ background: 'var(--ds-border, #e5e7eb)' }}
                           >
                             <div
                               className="h-full rounded-full"
                               style={{ 
                                 width: `${resource.capacity}%`,
-                                background: resource.capacity > 80 ? 'var(--ds-text-warning, var(--ds-text-warning, #f59e0b))' : 'var(--ds-text-brand, var(--ds-text-brand, #3b82f6))'
+                                background: resource.capacity > 80 ? 'var(--ds-text-warning, #f59e0b)' : 'var(--ds-text-brand, #3b82f6)'
                               }}
                             />
                           </div>
@@ -445,7 +445,7 @@ export function CreateWorkstreamModal({ isOpen, onClose }: CreateWorkstreamModal
                               "w-7 h-7 flex items-center justify-center rounded-md transition-colors flex-shrink-0"
                             )}
                             style={{
-                              background: isLead ? 'var(--ds-text-warning, var(--ds-text-warning, #f59e0b))' : 'white',
+                              background: isLead ? 'var(--ds-text-warning, #f59e0b)' : 'white',
                               border: isLead ? '1px solid #f59e0b' : '1px solid #e5e7eb',
                               color: isLead ? 'white' : '#9ca3af'
                             }}
@@ -506,12 +506,12 @@ export function CreateWorkstreamModal({ isOpen, onClose }: CreateWorkstreamModal
                               </div>
                             );
                           })()}
-                          {isLead && <Crown className="w-3 h-3" style={{ color: 'var(--ds-text-warning, var(--ds-text-warning, #f59e0b))' }} />}
+                          {isLead && <Crown className="w-3 h-3" style={{ color: 'var(--ds-text-warning, #f59e0b)' }} />}
                           <span style={{ color: '#374151' }}>{resource.name.split(' ')[0]}</span>
                           <button
                             onClick={() => removeResource(resource.id)}
                             className="w-4 h-4 flex items-center justify-center rounded-full transition-colors"
-                            style={{ background: 'var(--ds-border, var(--ds-border, #e5e7eb))', color: '#6b7280' }}
+                            style={{ background: 'var(--ds-border, #e5e7eb)', color: '#6b7280' }}
                           >
                             <X className="w-3 h-3" />
                           </button>

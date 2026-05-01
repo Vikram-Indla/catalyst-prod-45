@@ -14,7 +14,7 @@ export default function JiraSyncControlPage() {
             className="h-9 w-9 rounded-lg flex items-center justify-center flex-shrink-0"
             style={{ background: '#DFE1E618' }}
           >
-            <ShieldOff style={{ width: 18, height: 18, color: 'var(--ds-text, var(--ds-text, #253858))' }} />
+            <ShieldOff style={{ width: 18, height: 18, color: 'var(--ds-text, #253858)' }} />
           </div>
           <div>
             <h1

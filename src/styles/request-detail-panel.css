@@ -445,7 +445,7 @@
   width: 18px;
   height: 18px;
   border-radius: 8px;
-  background: var(--ds-surface, var(--ds-surface, #fff));
+  background: var(--ds-surface, #fff);
   position: absolute;
   top: 2px;
   transition: left 0.2s;
@@ -505,7 +505,7 @@
   top: calc(100% + 4px);
   left: -8px;
   z-index: 200;
-  background: var(--ds-surface, var(--ds-surface, #fff));
+  background: var(--ds-surface, #fff);
   border: 1px solid var(--idp-border);
   border-radius: var(--idp-r-lg);
   box-shadow: 0 12px 40px rgba(0, 0, 0, 0.14);
@@ -570,7 +570,7 @@
   top: calc(100% + 4px);
   left: -8px;
   z-index: 200;
-  background: var(--ds-surface, var(--ds-surface, #fff));
+  background: var(--ds-surface, #fff);
   border: 1px solid var(--idp-border);
   border-radius: var(--idp-r-lg);
   box-shadow: 0 12px 40px rgba(0, 0, 0, 0.14);
@@ -629,7 +629,7 @@
   flex-shrink: 0;
 }
 .idp-avatar-text {
-  color: var(--ds-surface, var(--ds-surface, #fff));
+  color: var(--ds-surface, #fff);
   font-weight: 700;
   line-height: 1;
   font-family: var(--idp-font-body);
@@ -826,7 +826,7 @@
   height: 36px;
   padding: 0 18px;
   background: var(--idp-primary);
-  color: var(--ds-surface, var(--ds-surface, #fff));
+  color: var(--ds-surface, #fff);
   border: none;
   border-radius: var(--idp-r-md);
   font-size: 13px;
@@ -876,7 +876,7 @@
   width: 100%;
   height: 38px;
   background: var(--idp-primary);
-  color: var(--ds-surface, var(--ds-surface, #fff));
+  color: var(--ds-surface, #fff);
   border: none;
   border-radius: var(--idp-r-md);
   font-size: 13px;
@@ -1075,7 +1075,7 @@
   background: rgba(0, 0, 0, 0.5);
 }
 .idp-modal {
-  background: var(--ds-surface, var(--ds-surface, #fff));
+  background: var(--ds-surface, #fff);
   border-radius: 12px;
   max-width: 92vw;
   max-height: 85vh;
@@ -1124,7 +1124,7 @@
   padding: 8px 16px;
   border: 1px solid var(--idp-border);
   border-radius: var(--idp-r-md);
-  background: var(--ds-surface, var(--ds-surface, #fff));
+  background: var(--ds-surface, #fff);
   font-size: 13px;
   font-weight: 500;
   cursor: pointer;
@@ -1136,7 +1136,7 @@
   border: none;
   border-radius: var(--idp-r-md);
   background: var(--idp-primary);
-  color: var(--ds-surface, var(--ds-surface, #fff));
+  color: var(--ds-surface, #fff);
   font-size: 13px;
   font-weight: 600;
   cursor: pointer;
@@ -1148,7 +1148,7 @@
   border: none;
   border-radius: var(--idp-r-md);
   background: var(--idp-danger);
-  color: var(--ds-surface, var(--ds-surface, #fff));
+  color: var(--ds-surface, #fff);
   font-size: 13px;
   font-weight: 600;
   cursor: pointer;
@@ -1166,7 +1166,7 @@
   background: rgba(0, 0, 0, 0.5);
 }
 .idp-confirm-dialog {
-  background: var(--ds-surface, var(--ds-surface, #fff));
+  background: var(--ds-surface, #fff);
   border-radius: 12px;
   padding: 24px;
   width: 420px;
@@ -1207,8 +1207,8 @@
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
   animation: idpToastIn 0.25s ease;
 }
-.idp-toast--success { background: #18181B; color: var(--ds-surface, var(--ds-surface, #fff)); }
-.idp-toast--error { background: var(--idp-danger); color: var(--ds-surface, var(--ds-surface, #fff)); }
+.idp-toast--success { background: #18181B; color: var(--ds-surface, #fff); }
+.idp-toast--error { background: var(--idp-danger); color: var(--ds-surface, #fff); }
 
 /* ── FIELD FORM (used in modals) ── */
 .idp-form-field { margin-bottom: 14px; }
@@ -1267,7 +1267,7 @@
   border-radius: 50%;
   background: var(--idp-primary);
   cursor: pointer;
-  border: 2px solid var(--ds-surface, var(--ds-surface, #fff));
+  border: 2px solid var(--ds-surface, #fff);
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
 }
 

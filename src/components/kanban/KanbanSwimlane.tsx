@@ -23,7 +23,7 @@ function StatusLozenge({ status, category, tk }: { status: string; category: str
   let bg: string, fg: string;
   if (cat === 'done') { bg = '#E3FCEF'; fg = '#006644'; }
   else if (cat === 'indeterminate' || cat === 'in_progress' || cat === 'in progress') { bg = '#DEEBFF'; fg = '#0747A6'; }
-  else { bg = 'var(--ds-border, var(--ds-border, #DFE1E6))'; fg = 'var(--ds-text, var(--ds-text, #253858))'; }
+  else { bg = 'var(--ds-border, #DFE1E6)'; fg = 'var(--ds-text, #253858)'; }
 
   return (
     <span style={{

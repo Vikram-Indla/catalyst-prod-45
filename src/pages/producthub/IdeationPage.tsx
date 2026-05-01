@@ -154,7 +154,7 @@ export default function IdeationPage() {
             <button
               onClick={() => setWizardOpen(true)}
               style={{
-                background: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))', color: 'var(--ds-text-inverse, #FFFFFF)', border: 'none',
+                background: 'var(--ds-text-brand, #2563EB)', color: 'var(--ds-text-inverse, #FFFFFF)', border: 'none',
                 borderRadius: '6px', padding: '8px 16px', fontSize: '13px', fontWeight: 600,
                 cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '4px',
                 fontFamily: 'var(--cp-font-body)',
@@ -257,7 +257,7 @@ export default function IdeationPage() {
               background: 'var(--cp-bg-page, #F8FAFC)', border: `1px solid ${dk.border}`, borderRadius: '6px',
               fontSize: '13px', color: dk.t1, outline: 'none',
             }}
-            onFocus={e => { e.currentTarget.style.boxShadow = '0 0 0 3px rgba(37,99,235,0.08)'; e.currentTarget.style.borderColor = 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))'; }}
+            onFocus={e => { e.currentTarget.style.boxShadow = '0 0 0 3px rgba(37,99,235,0.08)'; e.currentTarget.style.borderColor = 'var(--ds-text-brand, #2563EB)'; }}
             onBlur={e => { e.currentTarget.style.boxShadow = 'none'; e.currentTarget.style.borderColor = 'var(--cp-border-default, rgba(15,23,42,0.12))'; }}
           />
         </div>
@@ -270,9 +270,9 @@ export default function IdeationPage() {
               key={pill.key}
               onClick={() => setActiveFilter(pill.key)}
               style={{
-                background: isActive ? 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))' : ('var(--cp-bg-elevated, #FFFFFF)'),
+                background: isActive ? 'var(--ds-text-brand, #2563EB)' : ('var(--cp-bg-elevated, #FFFFFF)'),
                 color: isActive ? 'var(--ds-text-inverse, #FFFFFF)' : dk.t2,
-                border: `1px solid ${isActive ? 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))' : dk.border}`,
+                border: `1px solid ${isActive ? 'var(--ds-text-brand, #2563EB)' : dk.border}`,
                 borderRadius: '20px', padding: '4px 12px', fontSize: '12px', fontWeight: 500,
                 cursor: 'pointer', display: 'inline-flex', alignItems: 'center',
                 transition: 'all 150ms',
@@ -359,7 +359,7 @@ function IdeationListView({ ideas, selectedRows, toggleRow, toggleAll, onOpenDet
         <thead>
           <tr style={{ height: '50px', background: 'var(--cp-bg-page, #F8FAFC)' }}>
             <th style={{ width: '40px', padding: '0 8px', textAlign: 'center' }}>
-              <input type="checkbox" checked={selectedRows.size === ideas.length && ideas.length > 0} onChange={toggleAll} style={{ cursor: 'pointer', accentColor: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))' }} />
+              <input type="checkbox" checked={selectedRows.size === ideas.length && ideas.length > 0} onChange={toggleAll} style={{ cursor: 'pointer', accentColor: 'var(--ds-text-brand, #2563EB)' }} />
             </th>
             {[
               { label: 'KEY', width: '100px' },
@@ -399,7 +399,7 @@ function IdeationListView({ ideas, selectedRows, toggleRow, toggleAll, onOpenDet
               onMouseLeave={e => { if (!selectedRows.has(idea.key)) e.currentTarget.style.background = 'transparent'; }}
             >
               <td style={{ padding: '0 8px', textAlign: 'center' }} onClick={e => e.stopPropagation()}>
-                <input type="checkbox" checked={selectedRows.has(idea.key)} onChange={() => toggleRow(idea.key)} style={{ cursor: 'pointer', accentColor: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))' }} />
+                <input type="checkbox" checked={selectedRows.has(idea.key)} onChange={() => toggleRow(idea.key)} style={{ cursor: 'pointer', accentColor: 'var(--ds-text-brand, #2563EB)' }} />
               </td>
               <td style={{ padding: '8px 12px' }}>
                 <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: '13px', fontWeight: 600, color: dk.blueKey, cursor: 'pointer' }}
@@ -492,7 +492,7 @@ function PriorityBadge({ priority }: { priority: string }) {
 }
 
 function ImpactCell({ score }: { score: number }) {
-  const textColor = score >= 4 ? 'var(--ds-text-success, var(--ds-text-success, #16A34A))' : score >= 3 ? 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))' : score >= 2 ? 'var(--ds-text-subtlest, var(--ds-text-subtlest, #64748B))' : 'var(--ds-text-subtlest, var(--ds-text-subtlest, #94A3B8))';
+  const textColor = score >= 4 ? 'var(--ds-text-success, #16A34A)' : score >= 3 ? 'var(--ds-text-brand, #2563EB)' : score >= 2 ? 'var(--ds-text-subtlest, #64748B)' : 'var(--ds-text-subtlest, #94A3B8)';
   return (
     <span style={{
       fontFamily: 'var(--cp-font-mono)', fontSize: '13px', fontWeight: 500,
@@ -505,10 +505,10 @@ function ImpactCell({ score }: { score: number }) {
 
 function QuarterBadge({ quarter }: { quarter?: string | null }) {
   if (!quarter) {
-    return <span style={{ fontSize: '11px', color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #94A3B8))' }}>—</span>;
+    return <span style={{ fontSize: '11px', color: 'var(--ds-text-subtlest, #94A3B8)' }}>—</span>;
   }
   const qb = QUARTER_BADGE[quarter];
-  if (!qb) return <span style={{ fontSize: '11px', color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #94A3B8))' }}>{quarter}</span>;
+  if (!qb) return <span style={{ fontSize: '11px', color: 'var(--ds-text-subtlest, #94A3B8)' }}>{quarter}</span>;
   return (
     <span style={{
       display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
@@ -530,9 +530,9 @@ function AssigneeCell({ assignee }: { assignee: Idea['assignee'] }) {
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
       <div style={{
-        width: '24px', height: '24px', borderRadius: '50%', background: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))',
+        width: '24px', height: '24px', borderRadius: '50%', background: 'var(--ds-text-brand, #2563EB)',
         display: 'flex', alignItems: 'center', justifyContent: 'center',
-        color: 'var(--ds-surface, var(--ds-surface, var(--ds-surface, #FFF)))', fontSize: '10px', fontWeight: 700, flexShrink: 0,
+        color: 'var(--ds-surface, #FFF)', fontSize: '10px', fontWeight: 700, flexShrink: 0,
       }}>{assignee.initials}</div>
       <span style={{ fontSize: '13px', color: dk.t2, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
         {assignee.name}

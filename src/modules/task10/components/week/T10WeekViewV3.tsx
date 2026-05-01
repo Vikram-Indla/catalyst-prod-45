@@ -82,7 +82,7 @@ function SortablePriorityItem({ item, onClick, onToggleStatus, onLabelsChange, o
     alignItems: 'center',
     gap: 12,
     padding: '12px 16px',
-    background: isCompleted ? '#fafafa' : 'var(--ds-surface, var(--ds-surface, #ffffff))',
+    background: isCompleted ? '#fafafa' : 'var(--ds-surface, #ffffff)',
     border: isDragging ? '2px solid #2563eb' : '1px solid #e2e8f0',
     borderRadius: 12,
     cursor: 'default',
@@ -104,7 +104,7 @@ function SortablePriorityItem({ item, onClick, onToggleStatus, onLabelsChange, o
     gap: 2,
     padding: 4,
     cursor: 'grab',
-    color: isHovered ? 'var(--ds-text-brand, var(--ds-text-brand, #3b82f6))' : 'var(--ds-text-subtlest, var(--ds-text-subtlest, #94a3b8))',
+    color: isHovered ? 'var(--ds-text-brand, #3b82f6)' : 'var(--ds-text-subtlest, #94a3b8)',
     opacity: isHovered ? 1 : 0.6,
     transition: 'all 0.15s',
   };
@@ -125,8 +125,8 @@ function SortablePriorityItem({ item, onClick, onToggleStatus, onLabelsChange, o
     justifyContent: 'center',
     fontSize: 12,
     fontWeight: 700,
-    color: 'var(--ds-surface, var(--ds-surface, #ffffff))',
-    backgroundColor: 'var(--ds-text-brand, var(--ds-text-brand, #2563eb))',
+    color: 'var(--ds-surface, #ffffff)',
+    backgroundColor: 'var(--ds-text-brand, #2563eb)',
     borderRadius: 8,
     flexShrink: 0,
   };
@@ -137,7 +137,7 @@ function SortablePriorityItem({ item, onClick, onToggleStatus, onLabelsChange, o
     minWidth: 0,
     fontSize: 14,
     fontWeight: 500,
-    color: isCompleted ? 'var(--ds-text-subtlest, var(--ds-text-subtlest, #94a3b8))' : 'var(--ds-text, var(--ds-text, #0f172a))',
+    color: isCompleted ? 'var(--ds-text-subtlest, #94a3b8)' : 'var(--ds-text, #0f172a)',
     textDecoration: isCompleted ? 'line-through' : 'none',
     whiteSpace: 'nowrap',
     overflow: 'hidden',
@@ -158,7 +158,7 @@ function SortablePriorityItem({ item, onClick, onToggleStatus, onLabelsChange, o
     alignItems: 'center',
     gap: 5,
     fontSize: 12,
-    color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #64748b))',
+    color: 'var(--ds-text-subtlest, #64748b)',
     whiteSpace: 'nowrap',
   };
 
@@ -167,15 +167,15 @@ function SortablePriorityItem({ item, onClick, onToggleStatus, onLabelsChange, o
     padding: '3px 8px',
     fontSize: 11,
     fontWeight: 500,
-    backgroundColor: 'var(--ds-surface-sunken, var(--ds-surface-sunken, #f1f5f9))',
-    color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #64748b))',
+    backgroundColor: 'var(--ds-surface-sunken, #f1f5f9)',
+    color: 'var(--ds-text-subtlest, #64748b)',
     borderRadius: 4,
   };
 
   // Due date style with conditional color
   const dueStyle: React.CSSProperties = {
     ...metaItemStyle,
-    color: dueStatus === 'overdue' ? 'var(--ds-text-danger, var(--ds-text-danger, #ef4444))' : dueStatus === 'today' ? '#0d9488' : 'var(--ds-text-subtlest, var(--ds-text-subtlest, #64748b))',
+    color: dueStatus === 'overdue' ? 'var(--ds-text-danger, #ef4444)' : dueStatus === 'today' ? '#0d9488' : 'var(--ds-text-subtlest, #64748b)',
     fontWeight: dueStatus === 'overdue' ? 500 : 400,
   };
 
@@ -197,16 +197,16 @@ function SortablePriorityItem({ item, onClick, onToggleStatus, onLabelsChange, o
   // Edit button style
   const editBtnStyle: React.CSSProperties = {
     ...actionBtnStyle,
-    color: isHovered ? 'var(--ds-text-brand, var(--ds-text-brand, #2563eb))' : 'var(--ds-text-subtlest, var(--ds-text-subtlest, #94a3b8))',
-    background: isHovered ? 'var(--ds-background-selected, var(--ds-background-selected, #eff6ff))' : 'transparent',
+    color: isHovered ? 'var(--ds-text-brand, #2563eb)' : 'var(--ds-text-subtlest, #94a3b8)',
+    background: isHovered ? 'var(--ds-background-selected, #eff6ff)' : 'transparent',
     border: isHovered ? '1px solid #dbeafe' : '1px solid transparent',
   };
 
   // Remove button style
   const removeBtnStyle: React.CSSProperties = {
     ...actionBtnStyle,
-    color: isHovered ? 'var(--ds-text-danger, var(--ds-text-danger, #ef4444))' : 'var(--ds-text-subtlest, var(--ds-text-subtlest, #94a3b8))',
-    background: isHovered ? 'var(--ds-background-danger, var(--ds-background-danger, #fef2f2))' : 'transparent',
+    color: isHovered ? 'var(--ds-text-danger, #ef4444)' : 'var(--ds-text-subtlest, #94a3b8)',
+    background: isHovered ? 'var(--ds-background-danger, #fef2f2)' : 'transparent',
     border: isHovered ? '1px solid #fecaca' : '1px solid transparent',
     opacity: isCompleted ? 0.5 : 1,
   };
@@ -220,7 +220,7 @@ function SortablePriorityItem({ item, onClick, onToggleStatus, onLabelsChange, o
     justifyContent: 'center',
     borderRadius: '50%',
     border: isCompleted ? 'none' : '2px solid #d1d5db',
-    backgroundColor: isCompleted ? 'var(--ds-text-brand, var(--ds-text-brand, #2563eb))' : 'var(--ds-surface, var(--ds-surface, #ffffff))',
+    backgroundColor: isCompleted ? 'var(--ds-text-brand, #2563eb)' : 'var(--ds-surface, #ffffff)',
     cursor: 'pointer',
     transition: 'all 0.15s',
     flexShrink: 0,
@@ -241,7 +241,7 @@ function SortablePriorityItem({ item, onClick, onToggleStatus, onLabelsChange, o
           onToggleStatus();
         }}
       >
-        {isCompleted && <Check size={14} color="var(--ds-surface, var(--ds-surface, #ffffff))" strokeWidth={3} />}
+        {isCompleted && <Check size={14} color="var(--ds-surface, #ffffff)" strokeWidth={3} />}
       </div>
 
       {/* DRAG HANDLE - 6 dots (2x3 grid) */}
@@ -280,7 +280,7 @@ function SortablePriorityItem({ item, onClick, onToggleStatus, onLabelsChange, o
         {/* Assignee */}
         {item.assignee_name && (
           <span style={metaItemStyle}>
-            <User size={12} style={{ color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #94a3b8))' }} />
+            <User size={12} style={{ color: 'var(--ds-text-subtlest, #94a3b8)' }} />
             {item.assignee_name.split(' ')[0]}
           </span>
         )}
@@ -310,7 +310,7 @@ function SortablePriorityItem({ item, onClick, onToggleStatus, onLabelsChange, o
         
         {/* Notes indicator */}
         {hasNotes && (
-          <span style={{ ...metaItemStyle, color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #94a3b8))' }} title="Has notes">
+          <span style={{ ...metaItemStyle, color: 'var(--ds-text-subtlest, #94a3b8)' }} title="Has notes">
             <StickyNote size={14} />
           </span>
         )}
@@ -628,7 +628,7 @@ export const T10WeekViewV3 = memo(function T10WeekViewV3() {
   // ═══════════════════════════════════════════════════════════════════════════════
   const pageStyle: React.CSSProperties = {
     fontFamily: 'var(--cp-font-body)',
-    background: 'var(--ds-surface-sunken, var(--ds-surface-sunken, #f8fafc))',
+    background: 'var(--ds-surface-sunken, #f8fafc)',
     minHeight: '100vh',
   };
 
@@ -637,7 +637,7 @@ export const T10WeekViewV3 = memo(function T10WeekViewV3() {
     alignItems: 'center',
     height: 60,
     padding: '0 24px',
-    background: 'var(--ds-surface, var(--ds-surface, #ffffff))',
+    background: 'var(--ds-surface, #ffffff)',
     borderBottom: '1px solid #e2e8f0',
     gap: 20,
   };
@@ -645,7 +645,7 @@ export const T10WeekViewV3 = memo(function T10WeekViewV3() {
   const logoBadgeStyle: React.CSSProperties = {
     fontSize: 32,
     fontWeight: 800,
-    color: 'var(--ds-text-brand, var(--ds-text-brand, #2563eb))',
+    color: 'var(--ds-text-brand, #2563eb)',
     lineHeight: 1,
     flexShrink: 0,
   };
@@ -659,13 +659,13 @@ export const T10WeekViewV3 = memo(function T10WeekViewV3() {
   const logoTitleStyle: React.CSSProperties = {
     fontSize: 16,
     fontWeight: 600,
-    color: 'var(--ds-text, var(--ds-text, #0f172a))',
+    color: 'var(--ds-text, #0f172a)',
     lineHeight: 1.2,
   };
 
   const logoSubtitleStyle: React.CSSProperties = {
     fontSize: 11,
-    color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #64748b))',
+    color: 'var(--ds-text-subtlest, #64748b)',
   };
 
   const listKeyStyle: React.CSSProperties = {
@@ -674,15 +674,15 @@ export const T10WeekViewV3 = memo(function T10WeekViewV3() {
     fontFamily: "'SF Mono', 'Fira Code', Consolas, monospace",
     fontWeight: 600,
     borderRadius: 6,
-    background: 'var(--ds-surface-sunken, var(--ds-surface-sunken, #f1f5f9))',
-    color: 'var(--ds-text-subtle, var(--ds-text-subtle, #475569))',
+    background: 'var(--ds-surface-sunken, #f1f5f9)',
+    color: 'var(--ds-text-subtle, #475569)',
     border: '1px solid #e2e8f0',
   };
 
   const listNameStyle: React.CSSProperties = {
     fontSize: 15,
     fontWeight: 500,
-    color: 'var(--ds-text-subtle, var(--ds-text-subtle, #334155))',
+    color: 'var(--ds-text-subtle, #334155)',
   };
 
   const weekNavBtnStyle: React.CSSProperties = {
@@ -691,11 +691,11 @@ export const T10WeekViewV3 = memo(function T10WeekViewV3() {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    background: 'var(--ds-surface, var(--ds-surface, #ffffff))',
+    background: 'var(--ds-surface, #ffffff)',
     border: '1px solid #e2e8f0',
     borderRadius: 6,
     cursor: 'pointer',
-    color: 'var(--ds-text-subtle, var(--ds-text-subtle, #475569))',
+    color: 'var(--ds-text-subtle, #475569)',
     transition: 'all 0.15s',
   };
 
@@ -704,12 +704,12 @@ export const T10WeekViewV3 = memo(function T10WeekViewV3() {
     alignItems: 'center',
     gap: 8,
     padding: '6px 14px',
-    background: 'var(--ds-surface-sunken, var(--ds-surface-sunken, #f8fafc))',
+    background: 'var(--ds-surface-sunken, #f8fafc)',
     border: '1px solid #e2e8f0',
     borderRadius: 8,
     fontSize: 13,
     fontWeight: 500,
-    color: 'var(--ds-text, var(--ds-text, #0f172a))',
+    color: 'var(--ds-text, #0f172a)',
     whiteSpace: 'nowrap',
   };
 
@@ -717,8 +717,8 @@ export const T10WeekViewV3 = memo(function T10WeekViewV3() {
     padding: '4px 10px',
     fontSize: 11,
     fontWeight: 700,
-    background: isCurrentWeek ? '#10b981' : 'var(--ds-text-subtlest, var(--ds-text-subtlest, #64748b))',
-    color: 'var(--ds-surface, var(--ds-surface, #ffffff))',
+    background: isCurrentWeek ? '#10b981' : 'var(--ds-text-subtlest, #64748b)',
+    color: 'var(--ds-surface, #ffffff)',
     borderRadius: 4,
     textTransform: 'uppercase',
     letterSpacing: 0.3,
@@ -733,7 +733,7 @@ export const T10WeekViewV3 = memo(function T10WeekViewV3() {
   const progressBarTrackStyle: React.CSSProperties = {
     width: 100,
     height: 6,
-    background: 'var(--ds-border, var(--ds-border, #e2e8f0))',
+    background: 'var(--ds-border, #e2e8f0)',
     borderRadius: 4,
     overflow: 'hidden',
   };
@@ -741,7 +741,7 @@ export const T10WeekViewV3 = memo(function T10WeekViewV3() {
   const progressBarFillStyle: React.CSSProperties = {
     width: `${(completedCount / 10) * 100}%`,
     height: '100%',
-    background: 'var(--ds-text-brand, var(--ds-text-brand, #3b82f6))',
+    background: 'var(--ds-text-brand, #3b82f6)',
     borderRadius: 4,
     transition: 'width 0.3s ease',
   };
@@ -749,7 +749,7 @@ export const T10WeekViewV3 = memo(function T10WeekViewV3() {
   const progressTextStyle: React.CSSProperties = {
     fontSize: 13,
     fontWeight: 500,
-    color: 'var(--ds-text-subtle, var(--ds-text-subtle, #475569))',
+    color: 'var(--ds-text-subtle, #475569)',
     whiteSpace: 'nowrap',
   };
 
@@ -760,8 +760,8 @@ export const T10WeekViewV3 = memo(function T10WeekViewV3() {
     padding: '8px 18px',
     fontSize: 13,
     fontWeight: 600,
-    color: 'var(--ds-surface, var(--ds-surface, #ffffff))',
-    background: 'var(--ds-text-brand, var(--ds-text-brand, #2563eb))',
+    color: 'var(--ds-surface, #ffffff)',
+    background: 'var(--ds-text-brand, #2563eb)',
     border: 'none',
     borderRadius: 8,
     cursor: 'pointer',
@@ -777,7 +777,7 @@ export const T10WeekViewV3 = memo(function T10WeekViewV3() {
 
   const aiSectionStyle: React.CSSProperties = {
     marginBottom: 20,
-    background: 'var(--ds-surface, var(--ds-surface, #ffffff))',
+    background: 'var(--ds-surface, #ffffff)',
     border: '1px dashed #cbd5e1',
     borderRadius: 16,
     overflow: 'hidden',
@@ -809,8 +809,8 @@ export const T10WeekViewV3 = memo(function T10WeekViewV3() {
     padding: '8px 16px',
     fontSize: 13,
     fontWeight: 500,
-    color: 'var(--ds-text-subtle, var(--ds-text-subtle, #475569))',
-    background: 'var(--ds-surface, var(--ds-surface, #ffffff))',
+    color: 'var(--ds-text-subtle, #475569)',
+    background: 'var(--ds-surface, #ffffff)',
     border: '1px solid #e2e8f0',
     borderRadius: 8,
     cursor: 'pointer',
@@ -822,7 +822,7 @@ export const T10WeekViewV3 = memo(function T10WeekViewV3() {
     gap: 14,
     padding: '16px 20px',
     marginBottom: 24,
-    background: 'var(--ds-surface, var(--ds-surface, #ffffff))',
+    background: 'var(--ds-surface, #ffffff)',
     border: '1px dashed #cbd5e1',
     borderRadius: 16,
     opacity: isAddDisabled ? 0.6 : 1,
@@ -833,7 +833,7 @@ export const T10WeekViewV3 = memo(function T10WeekViewV3() {
     padding: 0,
     fontSize: 15,
     fontWeight: 400,
-    color: 'var(--ds-text, var(--ds-text, #0f172a))',
+    color: 'var(--ds-text, #0f172a)',
     background: 'transparent',
     border: 'none',
     outline: 'none',
@@ -844,8 +844,8 @@ export const T10WeekViewV3 = memo(function T10WeekViewV3() {
     fontFamily: 'inherit',
     fontSize: 12,
     fontWeight: 500,
-    color: 'var(--ds-text-subtle, var(--ds-text-subtle, #475569))',
-    background: 'var(--ds-surface, var(--ds-surface, #ffffff))',
+    color: 'var(--ds-text-subtle, #475569)',
+    background: 'var(--ds-surface, #ffffff)',
     border: '1px solid #e2e8f0',
     borderRadius: 6,
   };
@@ -860,14 +860,14 @@ export const T10WeekViewV3 = memo(function T10WeekViewV3() {
   const sectionTitleStyle: React.CSSProperties = {
     fontSize: 11,
     fontWeight: 700,
-    color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #94a3b8))',
+    color: 'var(--ds-text-subtlest, #94a3b8)',
     textTransform: 'uppercase',
     letterSpacing: 0.5,
   };
 
   const sectionCountStyle: React.CSSProperties = {
     fontSize: 12,
-    color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #94a3b8))',
+    color: 'var(--ds-text-subtlest, #94a3b8)',
   };
 
   const priorityListStyle: React.CSSProperties = {
@@ -892,7 +892,7 @@ export const T10WeekViewV3 = memo(function T10WeekViewV3() {
     alignItems: 'center',
     gap: 12,
     padding: '10px 12px',
-    background: 'var(--ds-surface-sunken, var(--ds-surface-sunken, #f8fafc))',
+    background: 'var(--ds-surface-sunken, #f8fafc)',
     border: '1px solid #e2e8f0',
     borderRadius: 8,
     marginBottom: 6,
@@ -907,7 +907,7 @@ export const T10WeekViewV3 = memo(function T10WeekViewV3() {
     justifyContent: 'center',
     fontSize: 12,
     fontWeight: 600,
-    color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #94a3b8))',
+    color: 'var(--ds-text-subtlest, #94a3b8)',
     background: 'transparent',
     border: '2px dashed #d1d5db',
     borderRadius: 8,
@@ -918,7 +918,7 @@ export const T10WeekViewV3 = memo(function T10WeekViewV3() {
     padding: '6px 12px',
     fontSize: 12,
     fontWeight: 500,
-    color: 'var(--ds-text-brand, var(--ds-text-brand, #2563eb))',
+    color: 'var(--ds-text-brand, #2563eb)',
     background: '#dbeafe',
     border: 'none',
     borderRadius: 6,
@@ -930,8 +930,8 @@ export const T10WeekViewV3 = memo(function T10WeekViewV3() {
     padding: '6px 14px',
     fontSize: 12,
     fontWeight: 600,
-    color: 'var(--ds-surface, var(--ds-surface, #ffffff))',
-    background: 'var(--ds-text-brand, var(--ds-text-brand, #3b82f6))',
+    color: 'var(--ds-surface, #ffffff)',
+    background: 'var(--ds-text-brand, #3b82f6)',
     border: 'none',
     borderRadius: 6,
     cursor: 'pointer',
@@ -967,7 +967,7 @@ export const T10WeekViewV3 = memo(function T10WeekViewV3() {
 
         {/* Week Display */}
         <div style={weekDisplayStyle}>
-          <Calendar size={14} strokeWidth={2} style={{ color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #64748b))' }} />
+          <Calendar size={14} strokeWidth={2} style={{ color: 'var(--ds-text-subtlest, #64748b)' }} />
           <span>{weekLabel}</span>
         </div>
 
@@ -1016,8 +1016,8 @@ export const T10WeekViewV3 = memo(function T10WeekViewV3() {
               <div style={aiIconStyle}>
                 <Zap size={16} strokeWidth={2} />
               </div>
-              <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--ds-text, var(--ds-text, #0f172a))', whiteSpace: 'nowrap' }}>AI Suggestions</span>
-              <span style={{ fontSize: 13, color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #64748b))', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+              <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--ds-text, #0f172a)', whiteSpace: 'nowrap' }}>AI Suggestions</span>
+              <span style={{ fontSize: 13, color: 'var(--ds-text-subtlest, #64748b)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                 {uniqueParticipants.length > 0 
                   ? `Based on TaskHub items for ${uniqueParticipants.join(', ')}`
                   : 'Based on TaskHub backlog items'
@@ -1036,7 +1036,7 @@ export const T10WeekViewV3 = memo(function T10WeekViewV3() {
           {aiPanelOpen && (
             <div style={{ padding: '0 20px 20px' }}>
               {aiLoading ? (
-                <div style={{ padding: '24px', textAlign: 'center', color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #64748b))' }}>
+                <div style={{ padding: '24px', textAlign: 'center', color: 'var(--ds-text-subtlest, #64748b)' }}>
                   Loading suggestions...
                 </div>
               ) : suggestionsToRender.length > 0 ? (
@@ -1047,7 +1047,7 @@ export const T10WeekViewV3 = memo(function T10WeekViewV3() {
                       display: 'flex',
                       alignItems: 'center',
                       padding: '16px 20px',
-                      background: 'var(--ds-surface-sunken, var(--ds-surface-sunken, #f8fafc))',
+                      background: 'var(--ds-surface-sunken, #f8fafc)',
                       borderRadius: 12,
                       marginBottom: i < suggestionsToRender.length - 1 ? 8 : 0,
                     }}
@@ -1062,25 +1062,25 @@ export const T10WeekViewV3 = memo(function T10WeekViewV3() {
                         fontSize: 13,
                         fontWeight: 700,
                         borderRadius: 12,
-                        background: i === 0 ? 'var(--ds-text-brand, var(--ds-text-brand, #2563eb))' : i === 1 ? 'var(--ds-text-brand, var(--ds-text-brand, #3b82f6))' : 'var(--ds-text-brand, var(--ds-text-brand, #60a5fa))',
-                        color: 'var(--ds-surface, var(--ds-surface, #ffffff))',
+                        background: i === 0 ? 'var(--ds-text-brand, #2563eb)' : i === 1 ? 'var(--ds-text-brand, #3b82f6)' : 'var(--ds-text-brand, #60a5fa)',
+                        color: 'var(--ds-surface, #ffffff)',
                         flexShrink: 0,
                       }}>
                         P{i + 1}
                       </span>
                       <div>
-                        <span style={{ display: 'block', fontSize: 15, fontWeight: 600, color: 'var(--ds-text, var(--ds-text, #0f172a))', marginBottom: 4 }}>{suggestion.title}</span>
-                        <div style={{ fontSize: 13, color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #64748b))' }}>
+                        <span style={{ display: 'block', fontSize: 15, fontWeight: 600, color: 'var(--ds-text, #0f172a)', marginBottom: 4 }}>{suggestion.title}</span>
+                        <div style={{ fontSize: 13, color: 'var(--ds-text-subtlest, #64748b)' }}>
                           {suggestion.due_date && `Due ${formatShortDate(suggestion.due_date)}`}
                           {suggestion.assignee_name && ` · ${suggestion.assignee_name}`}
                         </div>
                       </div>
                     </div>
-                    <span style={{ fontSize: 13, fontFamily: "'SF Mono', 'Fira Code', Consolas, monospace", fontWeight: 600, color: 'var(--ds-text-brand, var(--ds-text-brand, #2563eb))', flexShrink: 0 }}>{suggestion.key}</span>
+                    <span style={{ fontSize: 13, fontFamily: "'SF Mono', 'Fira Code', Consolas, monospace", fontWeight: 600, color: 'var(--ds-text-brand, #2563eb)', flexShrink: 0 }}>{suggestion.key}</span>
                   </div>
                 ))
               ) : (
-                <div style={{ padding: '24px', textAlign: 'center', color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #64748b))' }}>
+                <div style={{ padding: '24px', textAlign: 'center', color: 'var(--ds-text-subtlest, #64748b)' }}>
                   No suggestions available
                 </div>
               )}
@@ -1090,7 +1090,7 @@ export const T10WeekViewV3 = memo(function T10WeekViewV3() {
 
         {/* ADD INPUT - Nuclear box-inside-box fix applied */}
         <div style={addWrapperStyle}>
-          <Plus size={20} strokeWidth={2.5} style={{ color: isAddDisabled ? 'var(--ds-text-subtlest, var(--ds-text-subtlest, #94a3b8))' : 'var(--ds-text-brand, var(--ds-text-brand, #2563eb))', flexShrink: 0 }} />
+          <Plus size={20} strokeWidth={2.5} style={{ color: isAddDisabled ? 'var(--ds-text-subtlest, #94a3b8)' : 'var(--ds-text-brand, #2563eb)', flexShrink: 0 }} />
           <input 
             type="text"
             className="flex-1 min-w-0 text-[15px] font-normal text-slate-900 placeholder:text-slate-400 !bg-transparent !border-0 !p-0 !outline-none !shadow-none !ring-0 focus:!outline-none focus:!shadow-none focus:!ring-0"
@@ -1117,7 +1117,7 @@ export const T10WeekViewV3 = memo(function T10WeekViewV3() {
                 alignItems: 'center', 
                 gap: 8, 
                 fontSize: 13, 
-                color: newItemText.trim() ? 'var(--ds-text-brand, var(--ds-text-brand, #2563eb))' : 'var(--ds-text-subtlest, var(--ds-text-subtlest, #94a3b8))', 
+                color: newItemText.trim() ? 'var(--ds-text-brand, #2563eb)' : 'var(--ds-text-subtlest, #94a3b8)', 
                 flexShrink: 0,
                 background: 'transparent',
                 border: 'none',
@@ -1127,9 +1127,9 @@ export const T10WeekViewV3 = memo(function T10WeekViewV3() {
             >
               <kbd style={{
                 ...kbdStyle,
-                background: newItemText.trim() ? 'var(--ds-text-brand, var(--ds-text-brand, #2563eb))' : 'var(--ds-surface, var(--ds-surface, #ffffff))',
-                color: newItemText.trim() ? 'var(--ds-surface, var(--ds-surface, #ffffff))' : 'var(--ds-text-subtle, var(--ds-text-subtle, #475569))',
-                borderColor: newItemText.trim() ? 'var(--ds-text-brand, var(--ds-text-brand, #2563eb))' : 'var(--ds-border, var(--ds-border, #e2e8f0))',
+                background: newItemText.trim() ? 'var(--ds-text-brand, #2563eb)' : 'var(--ds-surface, #ffffff)',
+                color: newItemText.trim() ? 'var(--ds-surface, #ffffff)' : 'var(--ds-text-subtle, #475569)',
+                borderColor: newItemText.trim() ? 'var(--ds-text-brand, #2563eb)' : 'var(--ds-border, #e2e8f0)',
               }}>Enter</kbd>
               <span>to add</span>
             </button>
@@ -1141,7 +1141,7 @@ export const T10WeekViewV3 = memo(function T10WeekViewV3() {
           <div style={sectionHeaderStyle}>
             <span style={sectionTitleStyle}>Top 10 Priorities</span>
             <span style={sectionCountStyle}>
-              <strong style={{ color: 'var(--ds-text-brand, var(--ds-text-brand, #2563eb))' }}>{totalCount}</strong>/10 slots
+              <strong style={{ color: 'var(--ds-text-brand, #2563eb)' }}>{totalCount}</strong>/10 slots
             </span>
           </div>
 
@@ -1170,8 +1170,8 @@ export const T10WeekViewV3 = memo(function T10WeekViewV3() {
                   <div style={{ 
                     padding: '40px', 
                     textAlign: 'center', 
-                    color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #94a3b8))',
-                    background: 'var(--ds-surface-sunken, var(--ds-surface-sunken, #f8fafc))',
+                    color: 'var(--ds-text-subtlest, #94a3b8)',
+                    background: 'var(--ds-surface-sunken, #f8fafc)',
                     borderRadius: 12,
                     border: '1px dashed #e2e8f0'
                   }}>
@@ -1186,9 +1186,9 @@ export const T10WeekViewV3 = memo(function T10WeekViewV3() {
         {/* BUFFER ZONE */}
         <div style={bufferSectionStyle}>
           <div style={bufferHeaderStyle}>
-            <Layers size={16} strokeWidth={2} style={{ color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #64748b))' }} />
-            <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #64748b))', textTransform: 'uppercase', letterSpacing: 0.5 }}>Buffer Zone</span>
-            <span style={{ padding: '2px 10px', fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #64748b))', background: 'var(--ds-surface-sunken, var(--ds-surface-sunken, #f1f5f9))', borderRadius: 6 }}>{bufferItems?.length || 0}</span>
+            <Layers size={16} strokeWidth={2} style={{ color: 'var(--ds-text-subtlest, #64748b)' }} />
+            <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--ds-text-subtlest, #64748b)', textTransform: 'uppercase', letterSpacing: 0.5 }}>Buffer Zone</span>
+            <span style={{ padding: '2px 10px', fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtlest, #64748b)', background: 'var(--ds-surface-sunken, #f1f5f9)', borderRadius: 6 }}>{bufferItems?.length || 0}</span>
           </div>
           {bufferItems && bufferItems.length > 0 ? (
             bufferItems.map((item, i) => {
@@ -1208,7 +1208,7 @@ export const T10WeekViewV3 = memo(function T10WeekViewV3() {
                       className="t10-buffer-item-title"
                     />
                     {item.description && item.description.trim() && (
-                      <StickyNote size={12} style={{ color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #94a3b8))', flexShrink: 0 }} />
+                      <StickyNote size={12} style={{ color: 'var(--ds-text-subtlest, #94a3b8)', flexShrink: 0 }} />
                     )}
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -1242,7 +1242,7 @@ export const T10WeekViewV3 = memo(function T10WeekViewV3() {
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #94a3b8))',
+                        color: 'var(--ds-text-subtlest, #94a3b8)',
                         background: 'transparent',
                         border: '1px solid #e2e8f0',
                         borderRadius: 6,
@@ -1256,12 +1256,12 @@ export const T10WeekViewV3 = memo(function T10WeekViewV3() {
                       onMouseEnter={(e) => {
                         e.currentTarget.style.background = '#fee2e2';
                         e.currentTarget.style.borderColor = '#fecaca';
-                        e.currentTarget.style.color = 'var(--ds-text-danger, var(--ds-text-danger, #dc2626))';
+                        e.currentTarget.style.color = 'var(--ds-text-danger, #dc2626)';
                       }}
                       onMouseLeave={(e) => {
                         e.currentTarget.style.background = 'transparent';
-                        e.currentTarget.style.borderColor = 'var(--ds-border, var(--ds-border, #e2e8f0))';
-                        e.currentTarget.style.color = 'var(--ds-text-subtlest, var(--ds-text-subtlest, #94a3b8))';
+                        e.currentTarget.style.borderColor = 'var(--ds-border, #e2e8f0)';
+                        e.currentTarget.style.color = 'var(--ds-text-subtlest, #94a3b8)';
                       }}
                       title="Remove from buffer"
                     >
@@ -1272,7 +1272,7 @@ export const T10WeekViewV3 = memo(function T10WeekViewV3() {
               );
             })
           ) : (
-            <div style={{ ...bufferItemStyle, justifyContent: 'center', color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #94a3b8))' }}>
+            <div style={{ ...bufferItemStyle, justifyContent: 'center', color: 'var(--ds-text-subtlest, #94a3b8)' }}>
               No items in buffer yet
             </div>
           )}

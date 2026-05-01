@@ -17,7 +17,7 @@ interface DetailTabBudgetProps {
 
 const CATEGORIES = ['Development', 'Infrastructure', 'Consulting', 'Licensing', 'Training', 'Operations', 'Contingency', 'Other'];
 const CAT_COLORS: Record<string, string> = {
-  Development: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))', Infrastructure: '#08736B', Consulting: '#7C3AED', Licensing: '#9A5402',
+  Development: 'var(--ds-text-brand, #2563EB)', Infrastructure: '#08736B', Consulting: '#7C3AED', Licensing: '#9A5402',
   Training: '#0D7331', Operations: '#71717A', Contingency: '#D92525', Other: '#3F3F46',
 };
 const STATUSES = ['draft', 'approved', 'committed', 'paid', 'cancelled'];
@@ -156,7 +156,7 @@ export const DetailTabBudget: React.FC<DetailTabBudgetProps> = ({ requestId }) =
       const { error } = await typedQuery('ph_request_budget_items').insert(payload);
       if (error) { toast.error('Failed to add'); return; }
       logRequestAudit({ request_id: requestId, action: 'created', entity_type: 'budget_item', new_value: form.description });
-      toast.success('Item added', { duration: 2200, style: { background: '#18181B', color: 'var(--ds-surface, var(--ds-surface, var(--ds-surface, #fff)))' }, position: 'bottom-center' });
+      toast.success('Item added', { duration: 2200, style: { background: '#18181B', color: 'var(--ds-surface, #fff)' }, position: 'bottom-center' });
     }
     setShowModal(false);
     refetch();
@@ -165,7 +165,7 @@ export const DetailTabBudget: React.FC<DetailTabBudgetProps> = ({ requestId }) =
   const handleDelete = async (id: string) => {
     await typedQuery('ph_request_budget_items').delete().eq('id', id);
     logRequestAudit({ request_id: requestId, action: 'deleted', entity_type: 'budget_item' });
-    toast.success('Item deleted', { duration: 2200, style: { background: '#18181B', color: 'var(--ds-surface, var(--ds-surface, var(--ds-surface, #fff)))' }, position: 'bottom-center' });
+    toast.success('Item deleted', { duration: 2200, style: { background: '#18181B', color: 'var(--ds-surface, #fff)' }, position: 'bottom-center' });
     refetch();
   };
 

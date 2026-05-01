@@ -127,7 +127,7 @@ export const TimelineArea = forwardRef<HTMLDivElement, TimelineAreaProps>(
                 style={{ 
                   left: `${todayPosition}%`, 
                   height: `${totalContentHeight}px`,
-                  backgroundColor: 'var(--ds-text-brand, var(--ds-text-brand, #2563eb))' 
+                  backgroundColor: 'var(--ds-text-brand, #2563eb)' 
                 }}
               />
             )}
@@ -203,7 +203,7 @@ const TimelineRow: React.FC<TimelineRowProps> = ({
         style={{ 
           left: `${barLeft}%`, 
           width: `${barWidth}%`,
-          background: 'var(--ds-border, var(--ds-border, #E5E7EB))',
+          background: 'var(--ds-border, #E5E7EB)',
           minWidth: '24px'
         }}
       >
@@ -268,7 +268,7 @@ const TimelineRow: React.FC<TimelineRowProps> = ({
                     <div 
                       className="w-2 h-2 rotate-45 flex-shrink-0"
                       style={{ 
-                        background: statusStyle.filled ? statusStyle.color : 'var(--ds-surface, var(--ds-surface, #ffffff))',
+                        background: statusStyle.filled ? statusStyle.color : 'var(--ds-surface, #ffffff)',
                         border: `1.5px solid ${statusStyle.color}`
                       }}
                     />
@@ -337,7 +337,7 @@ const KRMarker: React.FC<KRMarkerProps> = ({
       style={{ 
         left: `${absolutePosition}%`,
         transform: 'translateY(-50%) rotate(45deg)',
-        background: statusStyle.filled ? statusStyle.color : 'var(--ds-surface, var(--ds-surface, #ffffff))',
+        background: statusStyle.filled ? statusStyle.color : 'var(--ds-surface, #ffffff)',
         borderColor: statusStyle.color,
         borderWidth: '1.5px'
       }}

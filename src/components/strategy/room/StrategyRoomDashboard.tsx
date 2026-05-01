@@ -257,7 +257,7 @@ export default function StrategyRoomDashboard({
               <Ico d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3" />Download Brief
             </button>
           )}
-          <button className="srd-btn-p" onClick={onOpenBrief} style={{ height: 32, padding: '0 14px', fontFamily: 'var(--cp-font-body)', fontSize: 13, fontWeight: 600, borderRadius: 'var(--srd-r2)', cursor: 'pointer', ...F(6), border: '1px solid var(--srd-blue)', background: 'var(--srd-blue)', color: 'var(--ds-surface, var(--ds-surface, var(--ds-surface, #fff)))', transition: 'all .15s' }}>
+          <button className="srd-btn-p" onClick={onOpenBrief} style={{ height: 32, padding: '0 14px', fontFamily: 'var(--cp-font-body)', fontSize: 13, fontWeight: 600, borderRadius: 'var(--srd-r2)', cursor: 'pointer', ...F(6), border: '1px solid var(--srd-blue)', background: 'var(--srd-blue)', color: 'var(--ds-surface, #fff)', transition: 'all .15s' }}>
             <Ico d="M13 2L3 14h9l-1 8 10-12h-9l1-8" />AI Intelligence
           </button>
           <button className="srd-btn" style={{ width: 32, height: 32, padding: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid transparent', borderRadius: 'var(--srd-r2)', cursor: 'pointer', background: 'none', color: 'var(--srd-ink-2)' }}>
@@ -279,7 +279,7 @@ export default function StrategyRoomDashboard({
                 onKeyDown={e => { if (e.key === 'Enter') saveVision(); if (e.key === 'Escape') cancelEditVision(); }}
                 style={{ flex: 1, fontWeight: 500, color: 'var(--srd-ink-2)', fontSize: 13, fontFamily: 'var(--cp-font-body)', background: 'var(--srd-bg)', border: '1px solid var(--srd-blue-bdr)', borderRadius: 'var(--srd-r)', padding: '4px 10px', outline: 'none' }}
               />
-              <button onClick={saveVision} style={{ width: 26, height: 26, borderRadius: 'var(--srd-r)', background: 'var(--srd-blue)', color: 'var(--ds-surface, var(--ds-surface, var(--ds-surface, #fff)))', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}><Check size={14} /></button>
+              <button onClick={saveVision} style={{ width: 26, height: 26, borderRadius: 'var(--srd-r)', background: 'var(--srd-blue)', color: 'var(--ds-surface, #fff)', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}><Check size={14} /></button>
               <button onClick={cancelEditVision} style={{ width: 26, height: 26, borderRadius: 'var(--srd-r)', background: 'var(--srd-bg)', color: 'var(--srd-ink-m)', border: '1px solid var(--srd-bdr)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}><X size={14} /></button>
             </div>
           ) : (

@@ -13,7 +13,7 @@ interface ThemeModalProps {
   theme?: Theme;
 }
 
-const COLOR_PRESETS = ['var(--ds-text-brand, var(--ds-text-brand, #2563eb))', '#0d9488', '#7c3aed', 'var(--ds-text-success, var(--ds-text-success, #16a34a))', 'var(--ds-text-warning, var(--ds-text-warning, #d97706))', 'var(--ds-text-danger, var(--ds-text-danger, #ef4444))', 'var(--ds-text-subtle, var(--ds-text-subtle, #475569))', '#0891b2'];
+const COLOR_PRESETS = ['var(--ds-text-brand, #2563eb)', '#0d9488', '#7c3aed', 'var(--ds-text-success, #16a34a)', 'var(--ds-text-warning, #d97706)', 'var(--ds-text-danger, #ef4444)', 'var(--ds-text-subtle, #475569)', '#0891b2'];
 const STATUS_OPTIONS = ['Active', 'Completed', 'On Hold'] as const;
 
 export function ThemeModal({ isOpen, onClose, theme }: ThemeModalProps) {

@@ -124,15 +124,15 @@ export default function TimelineView() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[var(--ds-text-brand,var(--ds-text-brand, #2563eb))]" />
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[var(--ds-text-brand, #2563eb)]" />
       </div>
     );
   }
 
   return (
-    <div className="h-full flex flex-col bg-white dark:bg-[var(--ds-surface,var(--ds-surface, #0A0A0A))]">
+    <div className="h-full flex flex-col bg-white dark:bg-[var(--ds-surface, #0A0A0A)]">
       {/* Header */}
-      <div className="sticky top-0 z-30 bg-white dark:bg-[var(--ds-surface-raised,var(--ds-surface-raised, #1A1A1A))] border-b dark:border-[var(--ds-border,var(--ds-border, #2E2E2E))] shadow-sm">
+      <div className="sticky top-0 z-30 bg-white dark:bg-[var(--ds-surface-raised, #1A1A1A)] border-b dark:border-[var(--ds-border, #2E2E2E)] shadow-sm">
         <div className="px-6 py-4">
           <div className="flex items-center justify-between">
             <div>
@@ -153,8 +153,8 @@ export default function TimelineView() {
                     className={cn(
                       'px-3 py-1.5 text-xs border-r last:border-r-0 transition-colors',
                       zoom === level
-                        ? 'bg-[var(--ds-text-brand,var(--ds-text-brand, #2563eb))] text-white'
-                        : 'bg-white dark:bg-[var(--ds-surface-raised,var(--ds-surface-raised, #1A1A1A))] text-gray-600 dark:text-[var(--ds-text-subtlest,var(--ds-text-subtlest, #A1A1A1))] hover:bg-gray-50 dark:hover:bg-[var(--ds-surface-raised,var(--ds-surface-raised, #1A1A1A))]'
+                        ? 'bg-[var(--ds-text-brand, #2563eb)] text-white'
+                        : 'bg-white dark:bg-[var(--ds-surface-raised, #1A1A1A)] text-gray-600 dark:text-[var(--ds-text-subtlest, #A1A1A1)] hover:bg-gray-50 dark:hover:bg-[var(--ds-surface-raised, #1A1A1A)]'
                     )}
                   >
                     {level.charAt(0).toUpperCase() + level.slice(1)}
@@ -165,7 +165,7 @@ export default function TimelineView() {
               <Button
                 variant="outline"
                 onClick={() => setShowDependencies(!showDependencies)}
-                className={cn(showDependencies && 'border-[var(--ds-text-brand,var(--ds-text-brand, #2563eb))] text-[var(--ds-text-brand,var(--ds-text-brand, #2563eb))]')}
+                className={cn(showDependencies && 'border-[var(--ds-text-brand, #2563eb)] text-[var(--ds-text-brand, #2563eb)]')}
               >
                 <Link2 className="w-4 h-4 mr-2" />
                 Dependencies
@@ -210,10 +210,10 @@ export default function TimelineView() {
             <div className="relative" style={{ width: `${gridWidth}px`, minHeight: `${totalContentHeight}px` }}>
               {/* Today Marker */}
               <div
-                className="absolute top-0 bottom-0 w-0.5 bg-[var(--ds-text-danger,var(--ds-text-danger, #ef4444))] z-20"
+                className="absolute top-0 bottom-0 w-0.5 bg-[var(--ds-text-danger, #ef4444)] z-20"
                 style={{ left: `${todayPosition}px`, height: `${totalContentHeight}px` }}
               >
-                <span className="absolute -top-5 left-1/2 -translate-x-1/2 text-[9px] font-semibold text-[var(--ds-text-danger,var(--ds-text-danger, #ef4444))] whitespace-nowrap">
+                <span className="absolute -top-5 left-1/2 -translate-x-1/2 text-[9px] font-semibold text-[var(--ds-text-danger, #ef4444)] whitespace-nowrap">
                   Today
                 </span>
               </div>

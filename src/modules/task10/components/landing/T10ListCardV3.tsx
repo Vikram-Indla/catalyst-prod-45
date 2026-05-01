@@ -82,7 +82,7 @@ export function T10ListCardV3({
     <div
       onClick={hasCurrentWeek ? onCardClick : undefined}
       style={{
-        backgroundColor: 'var(--ds-surface, var(--ds-surface, #ffffff))',
+        backgroundColor: 'var(--ds-surface, #ffffff)',
         border: '1px solid #e2e8f0',
         borderRadius: '12px',
         padding: '20px 24px',
@@ -91,11 +91,11 @@ export function T10ListCardV3({
         marginBottom: 0,
       }}
       onMouseEnter={(e) => {
-        e.currentTarget.style.borderColor = 'var(--ds-text-disabled, var(--ds-text-disabled, #cbd5e1))';
+        e.currentTarget.style.borderColor = 'var(--ds-text-disabled, #cbd5e1)';
         e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.04)';
       }}
       onMouseLeave={(e) => {
-        e.currentTarget.style.borderColor = 'var(--ds-border, var(--ds-border, #e2e8f0))';
+        e.currentTarget.style.borderColor = 'var(--ds-border, #e2e8f0)';
         e.currentTarget.style.boxShadow = 'none';
       }}
     >
@@ -109,7 +109,7 @@ export function T10ListCardV3({
               fontSize: '12px',
               fontWeight: 600,
               fontFamily: 'monospace',
-              color: 'var(--ds-text-brand, var(--ds-text-brand, #3b82f6))',
+              color: 'var(--ds-text-brand, #3b82f6)',
               backgroundColor: 'rgba(59, 130, 246, 0.08)',
               border: '1px solid rgba(59, 130, 246, 0.2)',
               borderRadius: '6px',
@@ -119,7 +119,7 @@ export function T10ListCardV3({
           </span>
           
           {/* Name */}
-          <h3 style={{ fontSize: '16px', fontWeight: 600, color: 'var(--ds-text, var(--ds-text, #0f172a))', margin: 0 }}>
+          <h3 style={{ fontSize: '16px', fontWeight: 600, color: 'var(--ds-text, #0f172a)', margin: 0 }}>
             {list.name}
           </h3>
         </div>
@@ -139,8 +139,8 @@ export function T10ListCardV3({
               fontWeight: 600,
               textTransform: 'uppercase',
               letterSpacing: '0.05em',
-              color: list.status === 'active' ? 'var(--ds-text-success, var(--ds-text-success, #16a34a))' : 'var(--ds-text-subtlest, var(--ds-text-subtlest, #64748b))',
-              backgroundColor: list.status === 'active' ? 'rgba(22, 163, 74, 0.08)' : 'var(--ds-surface-sunken, var(--ds-surface-sunken, #f1f5f9))',
+              color: list.status === 'active' ? 'var(--ds-text-success, #16a34a)' : 'var(--ds-text-subtlest, #64748b)',
+              backgroundColor: list.status === 'active' ? 'rgba(22, 163, 74, 0.08)' : 'var(--ds-surface-sunken, #f1f5f9)',
               borderRadius: '99px',
             }}
           >
@@ -149,7 +149,7 @@ export function T10ListCardV3({
                 width: '6px',
                 height: '6px',
                 borderRadius: '50%',
-                backgroundColor: list.status === 'active' ? 'var(--ds-text-success, var(--ds-text-success, #22c55e))' : 'var(--ds-text-subtlest, var(--ds-text-subtlest, #94a3b8))',
+                backgroundColor: list.status === 'active' ? 'var(--ds-text-success, #22c55e)' : 'var(--ds-text-subtlest, #94a3b8)',
               }}
             />
             {list.status === 'active' ? 'Active' : 'Inactive'}
@@ -170,16 +170,16 @@ export function T10ListCardV3({
                 border: 'none',
                 borderRadius: '6px',
                 cursor: 'pointer',
-                color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #94a3b8))',
+                color: 'var(--ds-text-subtlest, #94a3b8)',
                 transition: 'all 0.15s ease',
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = 'var(--ds-surface-sunken, var(--ds-surface-sunken, #f1f5f9))';
-                e.currentTarget.style.color = 'var(--ds-text-subtlest, var(--ds-text-subtlest, #64748b))';
+                e.currentTarget.style.backgroundColor = 'var(--ds-surface-sunken, #f1f5f9)';
+                e.currentTarget.style.color = 'var(--ds-text-subtlest, #64748b)';
               }}
               onMouseLeave={(e) => {
                 e.currentTarget.style.backgroundColor = 'transparent';
-                e.currentTarget.style.color = 'var(--ds-text-subtlest, var(--ds-text-subtlest, #94a3b8))';
+                e.currentTarget.style.color = 'var(--ds-text-subtlest, #94a3b8)';
               }}
             >
               <MoreVertical size={16} />
@@ -194,7 +194,7 @@ export function T10ListCardV3({
                   right: 0,
                   marginTop: '4px',
                   width: '140px',
-                  backgroundColor: 'var(--ds-surface, var(--ds-surface, #ffffff))',
+                  backgroundColor: 'var(--ds-surface, #ffffff)',
                   border: '1px solid #e2e8f0',
                   borderRadius: '8px',
                   boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
@@ -212,14 +212,14 @@ export function T10ListCardV3({
                     gap: '8px',
                     padding: '8px 10px',
                     fontSize: '13px',
-                    color: 'var(--ds-text-subtle, var(--ds-text-subtle, #475569))',
+                    color: 'var(--ds-text-subtle, #475569)',
                     backgroundColor: 'transparent',
                     border: 'none',
                     borderRadius: '6px',
                     cursor: 'pointer',
                     textAlign: 'left',
                   }}
-                  onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = 'var(--ds-surface-sunken, var(--ds-surface-sunken, #f1f5f9))')}
+                  onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = 'var(--ds-surface-sunken, #f1f5f9)')}
                   onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'transparent')}
                 >
                   <Pencil size={14} />
@@ -235,14 +235,14 @@ export function T10ListCardV3({
                     gap: '8px',
                     padding: '8px 10px',
                     fontSize: '13px',
-                    color: 'var(--ds-text-danger, var(--ds-text-danger, #ef4444))',
+                    color: 'var(--ds-text-danger, #ef4444)',
                     backgroundColor: 'transparent',
                     border: 'none',
                     borderRadius: '6px',
                     cursor: 'pointer',
                     textAlign: 'left',
                   }}
-                  onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = 'var(--ds-background-danger, var(--ds-background-danger, #fef2f2))')}
+                  onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = 'var(--ds-background-danger, #fef2f2)')}
                   onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'transparent')}
                 >
                   <Trash2 size={14} />
@@ -257,12 +257,12 @@ export function T10ListCardV3({
       {/* Current Week Section */}
       {hasCurrentWeek ? (
         <div style={{ marginBottom: pastWeeks.length > 0 ? '8px' : '0' }}>
-          <p style={{ fontSize: '14px', color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #64748b))', margin: '0 0 8px 0' }}>
-            Week of <strong style={{ color: 'var(--ds-text, var(--ds-text, #0f172a))', fontWeight: 600 }}>{weekLabel}</strong>
+          <p style={{ fontSize: '14px', color: 'var(--ds-text-subtlest, #64748b)', margin: '0 0 8px 0' }}>
+            Week of <strong style={{ color: 'var(--ds-text, #0f172a)', fontWeight: 600 }}>{weekLabel}</strong>
           </p>
           
           {/* Progress Bar */}
-          <div style={{ height: '6px', backgroundColor: 'var(--ds-border, var(--ds-border, #e2e8f0))', borderRadius: '4px', marginBottom: '8px', overflow: 'hidden' }}>
+          <div style={{ height: '6px', backgroundColor: 'var(--ds-border, #e2e8f0)', borderRadius: '4px', marginBottom: '8px', overflow: 'hidden' }}>
             <div
               style={{
                 height: '100%',
@@ -278,11 +278,11 @@ export function T10ListCardV3({
           
           {/* Stats */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px' }}>
-            <span style={{ color: 'var(--ds-text-brand, var(--ds-text-brand, #3b82f6))', fontWeight: 600 }}>{completedCount}</span>
-            <span style={{ color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #64748b))' }}>of {totalCount} completed</span>
+            <span style={{ color: 'var(--ds-text-brand, #3b82f6)', fontWeight: 600 }}>{completedCount}</span>
+            <span style={{ color: 'var(--ds-text-subtlest, #64748b)' }}>of {totalCount} completed</span>
             {slotsAvailable > 0 && totalCount > 0 && (
               <>
-                <span style={{ color: 'var(--ds-text-disabled, var(--ds-text-disabled, #cbd5e1))' }}>·</span>
+                <span style={{ color: 'var(--ds-text-disabled, #cbd5e1)' }}>·</span>
                 <span style={{ color: '#0d9488', fontWeight: 500 }}>{slotsAvailable} slots available</span>
               </>
             )}
@@ -323,7 +323,7 @@ export function T10ListCardV3({
               gap: '6px',
               padding: '8px 12px',
               backgroundColor: 'var(--t10-accent)',
-              color: 'var(--ds-surface, var(--ds-surface, #ffffff))',
+              color: 'var(--ds-surface, #ffffff)',
               fontSize: '12px',
               fontWeight: 600,
               border: 'none',
@@ -357,7 +357,7 @@ export function T10ListCardV3({
               cursor: 'pointer',
               fontSize: '13px',
               fontWeight: 500,
-              color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #64748b))',
+              color: 'var(--ds-text-subtlest, #64748b)',
               width: '100%',
               justifyContent: 'flex-start',
             }}
@@ -376,7 +376,7 @@ export function T10ListCardV3({
                 padding: '2px 8px',
                 fontSize: '11px',
                 fontWeight: 600,
-                color: 'var(--ds-text-brand, var(--ds-text-brand, #3b82f6))',
+                color: 'var(--ds-text-brand, #3b82f6)',
                 backgroundColor: 'rgba(59, 130, 246, 0.08)',
                 borderRadius: '4px',
               }}
@@ -416,7 +416,7 @@ export function T10ListCardV3({
                       cursor: 'pointer',
                       transition: 'background-color 0.15s ease',
                     }}
-                    onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = 'var(--ds-surface-sunken, var(--ds-surface-sunken, #f1f5f9))')}
+                    onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = 'var(--ds-surface-sunken, #f1f5f9)')}
                     onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'transparent')}
                   >
                     <span
@@ -424,14 +424,14 @@ export function T10ListCardV3({
                         width: '8px',
                         height: '8px',
                         borderRadius: '50%',
-                        backgroundColor: isComplete ? 'var(--ds-text-success, var(--ds-text-success, #22c55e))' : 'var(--ds-text-disabled, var(--ds-text-disabled, #cbd5e1))',
+                        backgroundColor: isComplete ? 'var(--ds-text-success, #22c55e)' : 'var(--ds-text-disabled, #cbd5e1)',
                         flexShrink: 0,
                       }}
                     />
-                    <span style={{ fontSize: '13px', fontWeight: 500, color: 'var(--ds-text-subtle, var(--ds-text-subtle, #475569))' }}>
+                    <span style={{ fontSize: '13px', fontWeight: 500, color: 'var(--ds-text-subtle, #475569)' }}>
                       {formatT10Date(week.week_start)} - {formatT10Date(week.week_end)}
                     </span>
-                    <span style={{ fontSize: '12px', color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #94a3b8))', marginLeft: 'auto' }}>
+                    <span style={{ fontSize: '12px', color: 'var(--ds-text-subtlest, #94a3b8)', marginLeft: 'auto' }}>
                       {week.completed_count}/{week.total_count} completed
                     </span>
                   </div>

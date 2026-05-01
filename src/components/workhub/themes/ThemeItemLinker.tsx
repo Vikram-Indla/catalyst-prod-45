@@ -129,7 +129,7 @@ export function ThemeItemLinker({ themeId, themeName, isOpen, onClose, anchorRef
           display: 'flex', alignItems: 'center', gap: 6,
           background: 'var(--bg-1)', borderRadius: 6, padding: '6px 10px',
         }}>
-          <Search size={14} color="var(--ds-text-subtlest, var(--ds-text-subtlest, #94a3b8))" />
+          <Search size={14} color="var(--ds-text-subtlest, #94a3b8)" />
           <input
             value={search}
             onChange={e => setSearch(e.target.value)}

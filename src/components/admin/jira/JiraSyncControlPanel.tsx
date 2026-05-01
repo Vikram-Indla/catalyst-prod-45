@@ -67,12 +67,12 @@ function SyncStatusBadge({ enabled }: { enabled: boolean }) {
       style={
         enabled
           ? { background: '#E3FCEF', color: '#006644' }   // StatusLozenge green
-          : { background: 'var(--ds-border, var(--ds-border, #DFE1E6))', color: 'var(--ds-text, var(--ds-text, #253858))' }   // StatusLozenge grey
+          : { background: 'var(--ds-border, #DFE1E6)', color: 'var(--ds-text, #253858)' }   // StatusLozenge grey
       }
     >
       <span
         className="h-1.5 w-1.5 rounded-full"
-        style={{ background: enabled ? '#006644' : 'var(--ds-text, var(--ds-text, #253858))' }}
+        style={{ background: enabled ? '#006644' : 'var(--ds-text, #253858)' }}
       />
       {enabled ? 'LIVE' : 'FROZEN'}
     </span>
@@ -118,18 +118,18 @@ export function JiraSyncControlPanel() {
       <div
         className="rounded-lg border p-5 mb-6"
         style={{
-          borderColor: isFrozen ? 'var(--ds-border, var(--ds-border, #DFE1E6))' : '#DEEBFF',
-          background: isFrozen ? 'var(--ds-surface-sunken, var(--ds-surface-sunken, #F8FAFC))' : '#DEEBFF22',
+          borderColor: isFrozen ? 'var(--ds-border, #DFE1E6)' : '#DEEBFF',
+          background: isFrozen ? 'var(--ds-surface-sunken, #F8FAFC)' : '#DEEBFF22',
         }}
       >
         <div className="flex items-start justify-between gap-4 flex-wrap">
           <div className="flex items-start gap-3">
             <div
               className="mt-0.5 h-10 w-10 rounded-full flex items-center justify-center flex-shrink-0"
-              style={{ background: isFrozen ? 'var(--ds-border, var(--ds-border, #DFE1E6))' : '#DEEBFF' }}
+              style={{ background: isFrozen ? 'var(--ds-border, #DFE1E6)' : '#DEEBFF' }}
             >
               {isFrozen ? (
-                <Lock style={{ width: 18, height: 18, color: 'var(--ds-text, var(--ds-text, #253858))' }} />
+                <Lock style={{ width: 18, height: 18, color: 'var(--ds-text, #253858)' }} />
               ) : (
                 <Zap style={{ width: 18, height: 18, color: '#0747A6' }} />
               )}
@@ -191,9 +191,9 @@ export function JiraSyncControlPanel() {
             </span>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-6">
-            <StatCard icon={Database}    label="Work Items"  value={config?.preserved_work_items} colour="var(--ds-text-brand, var(--ds-text-brand, #2563EB))" />
-            <StatCard icon={FolderSync}  label="Projects"    value={config?.preserved_projects}    colour="var(--ds-text-brand, var(--ds-text-brand, #2563EB))" />
-            <StatCard icon={Users}       label="Users Mapped" value={config?.preserved_users}      colour="var(--ds-text-brand, var(--ds-text-brand, #2563EB))" />
+            <StatCard icon={Database}    label="Work Items"  value={config?.preserved_work_items} colour="var(--ds-text-brand, #2563EB)" />
+            <StatCard icon={FolderSync}  label="Projects"    value={config?.preserved_projects}    colour="var(--ds-text-brand, #2563EB)" />
+            <StatCard icon={Users}       label="Users Mapped" value={config?.preserved_users}      colour="var(--ds-text-brand, #2563EB)" />
           </div>
         </>
       )}
@@ -229,7 +229,7 @@ export function JiraSyncControlPanel() {
                 {row.dormant ? (
                   <span
                     className="rounded-full px-2 py-0.5 font-bold uppercase tracking-widest"
-                    style={{ fontSize: 10, background: 'var(--ds-border, var(--ds-border, #DFE1E6))', color: 'var(--ds-text, var(--ds-text, #253858))' }}
+                    style={{ fontSize: 10, background: 'var(--ds-border, #DFE1E6)', color: 'var(--ds-text, #253858)' }}
                   >
                     DORMANT
                   </span>
@@ -245,7 +245,7 @@ export function JiraSyncControlPanel() {
       {/* ── Dropped tables notice ─────────────────────────────────────────── */}
       <div
         className="mt-4 flex items-start gap-3 rounded-lg px-4 py-3"
-        style={{ background: 'var(--ds-surface-sunken, var(--ds-surface-sunken, #F8FAFC))', border: '1px solid var(--cp-border-default)' }}
+        style={{ background: 'var(--ds-surface-sunken, #F8FAFC)', border: '1px solid var(--cp-border-default)' }}
       >
         <CheckCircle2 style={{ width: 15, height: 15, color: '#006644', flexShrink: 0, marginTop: 1 }} />
         <p className="text-xs leading-relaxed" style={{ color: 'var(--cp-text-secondary)' }}>
@@ -263,7 +263,7 @@ export function JiraSyncControlPanel() {
             <>
               <DialogHeader>
                 <DialogTitle className="flex items-center gap-2">
-                  <Lock style={{ width: 16, height: 16, color: 'var(--ds-text, var(--ds-text, #253858))' }} />
+                  <Lock style={{ width: 16, height: 16, color: 'var(--ds-text, #253858)' }} />
                   Freeze Jira Sync
                 </DialogTitle>
                 <DialogDescription>
@@ -275,7 +275,7 @@ export function JiraSyncControlPanel() {
               </DialogHeader>
               <div className="space-y-4 py-1">
                 <div className="rounded-md border px-4 py-3 space-y-1"
-                  style={{ borderColor: 'var(--ds-border, var(--ds-border, #DFE1E6))', background: 'var(--ds-surface-sunken, var(--ds-surface-sunken, #F8FAFC))' }}>
+                  style={{ borderColor: 'var(--ds-border, #DFE1E6)', background: 'var(--ds-surface-sunken, #F8FAFC)' }}>
                   <div className="flex items-center gap-2">
                     <AlertTriangle style={{ width: 13, height: 13, color: '#FF8B00' }} />
                     <span className="text-xs font-semibold" style={{ color: 'var(--cp-text-primary)' }}>
@@ -309,7 +309,7 @@ export function JiraSyncControlPanel() {
                 <Button
                   onClick={handleConfirm}
                   disabled={isPending}
-                  style={{ background: 'var(--ds-text, var(--ds-text, #253858))', color: 'var(--ds-text-inverse, #FFFFFF)' }}
+                  style={{ background: 'var(--ds-text, #253858)', color: 'var(--ds-text-inverse, #FFFFFF)' }}
                 >
                   {isPending ? 'Freezing…' : 'Freeze sync'}
                 </Button>
@@ -344,7 +344,7 @@ export function JiraSyncControlPanel() {
                 <Button
                   onClick={handleConfirm}
                   disabled={isPending}
-                  style={{ background: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))', color: 'var(--ds-text-inverse, #FFFFFF)' }}
+                  style={{ background: 'var(--ds-text-brand, #2563EB)', color: 'var(--ds-text-inverse, #FFFFFF)' }}
                 >
                   {isPending ? 'Enabling…' : 'Enable sync'}
                 </Button>

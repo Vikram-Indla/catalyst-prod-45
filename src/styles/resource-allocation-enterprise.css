@@ -398,7 +398,7 @@
    ═══════════════════════════════════════════════════════════════ */
 
 /* Override ANY blue background on cells */
-.ra-enterprise-clean td div[style*="var(--ds-text-brand, var(--ds-text-brand, #3b82f6))"],
+.ra-enterprise-clean td div[style*="var(--ds-text-brand, #3b82f6)"],
 .ra-enterprise-clean td div[style*="rgb(59, 130, 246)"],
 .ra-enterprise-clean td div[style*="BRAND_COLOR"],
 .ra-enterprise-clean td div.bg-blue-500,

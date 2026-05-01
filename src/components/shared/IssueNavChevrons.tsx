@@ -45,7 +45,7 @@ export interface IssueNavChevronsProps {
 const BTN_BASE: React.CSSProperties = {
   display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
   width: 28, height: 28, padding: 0,
-  background: 'var(--ds-surface, var(--ds-surface, #FFFFFF))', border: '1px solid #DFE1E6', borderRadius: 4,
+  background: 'var(--ds-surface, #FFFFFF)', border: '1px solid #DFE1E6', borderRadius: 4,
   transition: 'background 0.15s, border-color 0.15s',
 };
 
@@ -74,13 +74,13 @@ function ChevronButton({
       }}
       onMouseEnter={e => {
         if (!disabled) {
-          e.currentTarget.style.background = 'var(--ds-surface-sunken, var(--ds-surface-sunken, #F4F5F7))';
+          e.currentTarget.style.background = 'var(--ds-surface-sunken, #F4F5F7)';
           e.currentTarget.style.borderColor = '#C1C7D0';
         }
       }}
       onMouseLeave={e => {
-        e.currentTarget.style.background = 'var(--ds-surface, var(--ds-surface, #FFFFFF))';
-        e.currentTarget.style.borderColor = 'var(--ds-border, var(--ds-border, #DFE1E6))';
+        e.currentTarget.style.background = 'var(--ds-surface, #FFFFFF)';
+        e.currentTarget.style.borderColor = 'var(--ds-border, #DFE1E6)';
       }}
     >
       <Icon size={16} />

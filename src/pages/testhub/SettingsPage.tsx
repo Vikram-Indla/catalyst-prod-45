@@ -142,7 +142,7 @@ export default function SettingsPage() {
 
   // DARK MODE tokens
   const pageBg = 'var(--cp-bg-page, #F8FAFC)';
-  const surfaceBg = isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, var(--ds-surface, var(--ds-surface, #FFF)))';
+  const surfaceBg = isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, #FFF)';
   const elevatedBg = 'var(--cp-bg-sunken, #F1F5F9)';
   const borderColor = 'var(--cp-border, #E2E8F0)';
   const textPrimary = 'var(--cp-text-primary, #0F172A)';
@@ -152,7 +152,7 @@ export default function SettingsPage() {
   if (isLoading) {
     return (
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh', backgroundColor: pageBg }}>
-        <RefreshCw size={32} style={{ animation: 'spin 1s linear infinite', color: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))' }} />
+        <RefreshCw size={32} style={{ animation: 'spin 1s linear infinite', color: 'var(--ds-text-brand, #2563EB)' }} />
       </div>
     );
   }
@@ -179,7 +179,7 @@ export default function SettingsPage() {
               return (
                 <button key={tab.id} onClick={() => setActiveTab(tab.id)}
                   style={{ display: 'flex', alignItems: 'center', gap: 10, width: '100%', padding: '14px 16px', backgroundColor: isActive ? elevatedBg : 'transparent', border: 'none', borderLeft: isActive ? '3px solid #2563EB' : '3px solid transparent', cursor: 'pointer', textAlign: 'left' }}>
-                  <TabIcon size={18} style={{ color: isActive ? 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))' : textSecondary }} />
+                  <TabIcon size={18} style={{ color: isActive ? 'var(--ds-text-brand, #2563EB)' : textSecondary }} />
                   <span style={{ fontSize: 14, fontWeight: isActive ? 600 : 500, color: isActive ? textPrimary : textSecondary }}>{tab.label}</span>
                 </button>
               );
@@ -205,9 +205,9 @@ export default function SettingsPage() {
                         const isSelected = preferences.theme === opt.value;
                         return (
                           <button key={opt.value} onClick={() => updatePreference('theme', opt.value)}
-                            style={{ flex: 1, padding: 16, borderRadius: 12, border: `2px solid ${isSelected ? 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))' : borderColor}`, backgroundColor: isSelected ? ('var(--cp-primary-light, #EFF6FF)') : surfaceBg, cursor: 'pointer', textAlign: 'center' }}>
-                            <OptIcon size={24} style={{ color: isSelected ? 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))' : textSecondary, marginBottom: 8 }} />
-                            <p style={{ fontSize: 14, fontWeight: 500, color: isSelected ? 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))' : textPrimary, margin: 0 }}>{opt.label}</p>
+                            style={{ flex: 1, padding: 16, borderRadius: 12, border: `2px solid ${isSelected ? 'var(--ds-text-brand, #2563EB)' : borderColor}`, backgroundColor: isSelected ? ('var(--cp-primary-light, #EFF6FF)') : surfaceBg, cursor: 'pointer', textAlign: 'center' }}>
+                            <OptIcon size={24} style={{ color: isSelected ? 'var(--ds-text-brand, #2563EB)' : textSecondary, marginBottom: 8 }} />
+                            <p style={{ fontSize: 14, fontWeight: 500, color: isSelected ? 'var(--ds-text-brand, #2563EB)' : textPrimary, margin: 0 }}>{opt.label}</p>
                           </button>
                         );
                       })}
@@ -222,12 +222,12 @@ export default function SettingsPage() {
                         const isSelected = preferences.density === opt.value;
                         return (
                           <button key={opt.value} onClick={() => updatePreference('density', opt.value)}
-                            style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: 14, borderRadius: 8, border: `1.5px solid ${isSelected ? 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))' : borderColor}`, backgroundColor: isSelected ? ('var(--cp-primary-light, #EFF6FF)') : surfaceBg, cursor: 'pointer', textAlign: 'left' }}>
+                            style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: 14, borderRadius: 8, border: `1.5px solid ${isSelected ? 'var(--ds-text-brand, #2563EB)' : borderColor}`, backgroundColor: isSelected ? ('var(--cp-primary-light, #EFF6FF)') : surfaceBg, cursor: 'pointer', textAlign: 'left' }}>
                             <div>
                               <p style={{ fontSize: 14, fontWeight: 500, color: textPrimary, margin: 0 }}>{opt.label}</p>
                               <p style={{ fontSize: 12, color: textSecondary, margin: '2px 0 0' }}>{opt.description}</p>
                             </div>
-                            {isSelected && <Check size={18} style={{ color: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))' }} />}
+                            {isSelected && <Check size={18} style={{ color: 'var(--ds-text-brand, #2563EB)' }} />}
                           </button>
                         );
                       })}
@@ -242,7 +242,7 @@ export default function SettingsPage() {
                         const isSelected = preferences.default_page_size === size;
                         return (
                           <button key={size} onClick={() => updatePreference('default_page_size', size)}
-                            style={{ padding: '10px 20px', borderRadius: 8, border: `1.5px solid ${isSelected ? 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))' : borderColor}`, backgroundColor: isSelected ? 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))' : surfaceBg, color: isSelected ? 'var(--ds-surface, var(--ds-surface, var(--ds-surface, #FFF)))' : textPrimary, fontSize: 14, fontWeight: 500, cursor: 'pointer' }}>
+                            style={{ padding: '10px 20px', borderRadius: 8, border: `1.5px solid ${isSelected ? 'var(--ds-text-brand, #2563EB)' : borderColor}`, backgroundColor: isSelected ? 'var(--ds-text-brand, #2563EB)' : surfaceBg, color: isSelected ? 'var(--ds-surface, #FFF)' : textPrimary, fontSize: 14, fontWeight: 500, cursor: 'pointer' }}>
                             {size}
                           </button>
                         );
@@ -262,7 +262,7 @@ export default function SettingsPage() {
                   {/* Show Archived */}
                   <div>
                     <label style={{ display: 'flex', alignItems: 'center', gap: 12, cursor: 'pointer' }}>
-                      <input type="checkbox" checked={preferences.show_archived} onChange={(e) => updatePreference('show_archived', e.target.checked)} style={{ width: 20, height: 20, accentColor: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))' }} />
+                      <input type="checkbox" checked={preferences.show_archived} onChange={(e) => updatePreference('show_archived', e.target.checked)} style={{ width: 20, height: 20, accentColor: 'var(--ds-text-brand, #2563EB)' }} />
                       <div>
                         <p style={{ fontSize: 14, fontWeight: 500, color: textPrimary, margin: 0 }}>Show Archived Items</p>
                         <p style={{ fontSize: 12, color: textSecondary, margin: '2px 0 0' }}>Include archived items in lists by default</p>
@@ -285,7 +285,7 @@ export default function SettingsPage() {
                   </div>
                   <div style={{ marginBottom: 20 }}>
                     <label style={{ display: 'flex', alignItems: 'center', gap: 12, cursor: 'pointer' }}>
-                      <input type="checkbox" checked={preferences.auto_advance_on_status} onChange={(e) => updatePreference('auto_advance_on_status', e.target.checked)} style={{ width: 20, height: 20, accentColor: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))' }} />
+                      <input type="checkbox" checked={preferences.auto_advance_on_status} onChange={(e) => updatePreference('auto_advance_on_status', e.target.checked)} style={{ width: 20, height: 20, accentColor: 'var(--ds-text-brand, #2563EB)' }} />
                       <div>
                         <p style={{ fontSize: 14, fontWeight: 500, color: textPrimary, margin: 0 }}>Auto-advance to Next Test</p>
                         <p style={{ fontSize: 12, color: textSecondary, margin: '2px 0 0' }}>Automatically move to the next test case after setting status</p>
@@ -294,7 +294,7 @@ export default function SettingsPage() {
                   </div>
                   <div>
                     <label style={{ display: 'flex', alignItems: 'center', gap: 12, cursor: 'pointer' }}>
-                      <input type="checkbox" checked={preferences.confirm_status_change} onChange={(e) => updatePreference('confirm_status_change', e.target.checked)} style={{ width: 20, height: 20, accentColor: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))' }} />
+                      <input type="checkbox" checked={preferences.confirm_status_change} onChange={(e) => updatePreference('confirm_status_change', e.target.checked)} style={{ width: 20, height: 20, accentColor: 'var(--ds-text-brand, #2563EB)' }} />
                       <div>
                         <p style={{ fontSize: 14, fontWeight: 500, color: textPrimary, margin: 0 }}>Confirm Status Changes</p>
                         <p style={{ fontSize: 12, color: textSecondary, margin: '2px 0 0' }}>Show confirmation dialog before changing test status</p>
@@ -310,7 +310,7 @@ export default function SettingsPage() {
                   <h2 style={{ fontSize: 18, fontWeight: 600, color: textPrimary, margin: '0 0 24px' }}>Notification Preferences</h2>
                   <div style={{ marginBottom: 20 }}>
                     <label style={{ display: 'flex', alignItems: 'center', gap: 12, cursor: 'pointer' }}>
-                      <input type="checkbox" checked={preferences.email_on_assignment} onChange={(e) => updatePreference('email_on_assignment', e.target.checked)} style={{ width: 20, height: 20, accentColor: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))' }} />
+                      <input type="checkbox" checked={preferences.email_on_assignment} onChange={(e) => updatePreference('email_on_assignment', e.target.checked)} style={{ width: 20, height: 20, accentColor: 'var(--ds-text-brand, #2563EB)' }} />
                       <div>
                         <p style={{ fontSize: 14, fontWeight: 500, color: textPrimary, margin: 0 }}>Test Assignments</p>
                         <p style={{ fontSize: 12, color: textSecondary, margin: '2px 0 0' }}>Email me when tests are assigned to me</p>
@@ -319,7 +319,7 @@ export default function SettingsPage() {
                   </div>
                   <div style={{ marginBottom: 20 }}>
                     <label style={{ display: 'flex', alignItems: 'center', gap: 12, cursor: 'pointer' }}>
-                      <input type="checkbox" checked={preferences.email_on_cycle_complete} onChange={(e) => updatePreference('email_on_cycle_complete', e.target.checked)} style={{ width: 20, height: 20, accentColor: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))' }} />
+                      <input type="checkbox" checked={preferences.email_on_cycle_complete} onChange={(e) => updatePreference('email_on_cycle_complete', e.target.checked)} style={{ width: 20, height: 20, accentColor: 'var(--ds-text-brand, #2563EB)' }} />
                       <div>
                         <p style={{ fontSize: 14, fontWeight: 500, color: textPrimary, margin: 0 }}>Cycle Completion</p>
                         <p style={{ fontSize: 12, color: textSecondary, margin: '2px 0 0' }}>Email me when a test cycle is completed</p>
@@ -328,7 +328,7 @@ export default function SettingsPage() {
                   </div>
                   <div style={{ marginBottom: 28 }}>
                     <label style={{ display: 'flex', alignItems: 'center', gap: 12, cursor: 'pointer' }}>
-                      <input type="checkbox" checked={preferences.email_on_defect_update} onChange={(e) => updatePreference('email_on_defect_update', e.target.checked)} style={{ width: 20, height: 20, accentColor: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))' }} />
+                      <input type="checkbox" checked={preferences.email_on_defect_update} onChange={(e) => updatePreference('email_on_defect_update', e.target.checked)} style={{ width: 20, height: 20, accentColor: 'var(--ds-text-brand, #2563EB)' }} />
                       <div>
                         <p style={{ fontSize: 14, fontWeight: 500, color: textPrimary, margin: 0 }}>Defect Updates</p>
                         <p style={{ fontSize: 12, color: textSecondary, margin: '2px 0 0' }}>Email me when defects I reported are updated</p>
@@ -363,7 +363,7 @@ export default function SettingsPage() {
                         const isSelected = preferences.time_format === fmt;
                         return (
                           <button key={fmt} onClick={() => updatePreference('time_format', fmt)}
-                            style={{ padding: '12px 24px', borderRadius: 8, border: `1.5px solid ${isSelected ? 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))' : borderColor}`, backgroundColor: isSelected ? 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))' : surfaceBg, color: isSelected ? 'var(--ds-surface, var(--ds-surface, var(--ds-surface, #FFF)))' : textPrimary, fontSize: 14, fontWeight: 500, cursor: 'pointer' }}>
+                            style={{ padding: '12px 24px', borderRadius: 8, border: `1.5px solid ${isSelected ? 'var(--ds-text-brand, #2563EB)' : borderColor}`, backgroundColor: isSelected ? 'var(--ds-text-brand, #2563EB)' : surfaceBg, color: isSelected ? 'var(--ds-surface, #FFF)' : textPrimary, fontSize: 14, fontWeight: 500, cursor: 'pointer' }}>
                             {fmt === '12h' ? '12-hour (AM/PM)' : '24-hour'}
                           </button>
                         );

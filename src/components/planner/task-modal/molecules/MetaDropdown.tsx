@@ -42,7 +42,7 @@ export const MetaDropdown: React.FC<MetaDropdownProps> = ({
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const currentColor = colorMap[value] || 'var(--ds-text-subtlest, var(--ds-text-subtlest, #94a3b8))';
+  const currentColor = colorMap[value] || 'var(--ds-text-subtlest, #94a3b8)';
 
   return (
     <div 

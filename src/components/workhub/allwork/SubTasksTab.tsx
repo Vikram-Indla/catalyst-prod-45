@@ -182,7 +182,7 @@ export function SubTasksTab({ parentKey, onSubTaskClick }: SubTasksTabProps) {
           </span>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
             {[
-              { count: todoTasks.length, label: 'To Do', bg: 'var(--ds-border, var(--ds-border, #DFE1E6))', color: '#44546F' },
+              { count: todoTasks.length, label: 'To Do', bg: 'var(--ds-border, #DFE1E6)', color: '#44546F' },
               { count: progressTasks.length, label: 'In Progress', bg: '#0C66E4', color: 'var(--bg-app)' },
               { count: doneTasks.length, label: 'Done', bg: '#1B7F37', color: 'var(--bg-app)' },
             ].map(s => (
@@ -198,7 +198,7 @@ export function SubTasksTab({ parentKey, onSubTaskClick }: SubTasksTabProps) {
         </div>
 
         {/* Progress bar */}
-        <div style={{ display: 'flex', width: 100, height: 5, borderRadius: 4, overflow: 'hidden', backgroundColor: 'var(--ds-border, var(--ds-border, #DFE1E6))' }}>
+        <div style={{ display: 'flex', width: 100, height: 5, borderRadius: 4, overflow: 'hidden', backgroundColor: 'var(--ds-border, #DFE1E6)' }}>
           {doneTasks.length > 0 && (
             <div style={{ width: `${(doneTasks.length / total) * 100}%`, backgroundColor: '#00875A', transition: 'width 0.3s ease' }} />
           )}

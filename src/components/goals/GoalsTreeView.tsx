@@ -27,23 +27,23 @@ const DK = {
   t2: 'var(--cp-t2)',
   t3: 'var(--cp-t3)',
   t4: 'var(--cp-t4)',
-  border: 'var(--ds-border, var(--ds-border, #2E2E2E))',
-  borderSubtle: 'var(--ds-border, var(--ds-border, #2E2E2E))',
-  hover: 'var(--ds-surface-overlay, var(--ds-surface-overlay, #1F1F1F))',
+  border: 'var(--ds-border, #2E2E2E)',
+  borderSubtle: 'var(--ds-border, #2E2E2E)',
+  hover: 'var(--ds-surface-overlay, #1F1F1F)',
 };
 
 // ── Status badge ──
 function statusBadge(status: string, isDark = false) {
   const map: Record<string, { dot: string; bg: string; text: string; bgDark: string; textDark: string; label: string }> = {
-    active:      { dot: 'var(--ds-text-success, var(--ds-text-success, #16A34A))', bg: 'rgba(22,163,74,0.08)',  text: '#15803D', bgDark: '#182820', textDark: '#86EFAC', label: 'Active' },
-    on_track:    { dot: 'var(--ds-text-success, var(--ds-text-success, #16A34A))', bg: 'rgba(22,163,74,0.08)',  text: '#15803D', bgDark: '#182820', textDark: '#86EFAC', label: 'On Track' },
+    active:      { dot: 'var(--ds-text-success, #16A34A)', bg: 'rgba(22,163,74,0.08)',  text: '#15803D', bgDark: '#182820', textDark: '#86EFAC', label: 'Active' },
+    on_track:    { dot: 'var(--ds-text-success, #16A34A)', bg: 'rgba(22,163,74,0.08)',  text: '#15803D', bgDark: '#182820', textDark: '#86EFAC', label: 'On Track' },
     completed:   { dot: '#4F46E5', bg: 'rgba(79,70,229,0.08)',  text: '#4338CA', bgDark: '#1A2030', textDark: '#93C5FD', label: 'Completed' },
     achieved:    { dot: '#4F46E5', bg: 'rgba(79,70,229,0.08)',  text: '#4338CA', bgDark: '#1A2030', textDark: '#93C5FD', label: 'Achieved' },
-    at_risk:     { dot: 'var(--ds-text-warning, var(--ds-text-warning, #D97706))', bg: 'rgba(217,119,6,0.08)',  text: '#B45309', bgDark: '#2A2418', textDark: '#FBBF24', label: 'At Risk' },
-    off_track:   { dot: 'var(--ds-text-danger, var(--ds-text-danger, #EF4444))', bg: 'rgba(239,68,68,0.08)',  text: 'var(--ds-text-danger, var(--ds-text-danger, #DC2626))', bgDark: '#2A1C1E', textDark: 'var(--ds-border-danger, var(--ds-border-danger, #FCA5A5))', label: 'Off Track' },
-    draft:       { dot: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #94A3B8))', bg: 'var(--ds-surface-sunken, var(--ds-surface-sunken, #F1F5F9))',               text: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #64748B))', bgDark: 'var(--ds-surface-raised, var(--ds-surface-raised, #1A1A1A))', textDark: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #A1A1A1))', label: 'Draft' },
-    not_started: { dot: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #94A3B8))', bg: 'var(--ds-surface-sunken, var(--ds-surface-sunken, #F1F5F9))',               text: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #64748B))', bgDark: 'var(--ds-surface-raised, var(--ds-surface-raised, #1A1A1A))', textDark: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #A1A1A1))', label: 'Not Started' },
-    cancelled:   { dot: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #94A3B8))', bg: 'var(--ds-surface-sunken, var(--ds-surface-sunken, #F1F5F9))',               text: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #64748B))', bgDark: 'var(--ds-surface-raised, var(--ds-surface-raised, #1A1A1A))', textDark: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #A1A1A1))', label: 'Cancelled' },
+    at_risk:     { dot: 'var(--ds-text-warning, #D97706)', bg: 'rgba(217,119,6,0.08)',  text: '#B45309', bgDark: '#2A2418', textDark: '#FBBF24', label: 'At Risk' },
+    off_track:   { dot: 'var(--ds-text-danger, #EF4444)', bg: 'rgba(239,68,68,0.08)',  text: 'var(--ds-text-danger, #DC2626)', bgDark: '#2A1C1E', textDark: 'var(--ds-border-danger, #FCA5A5)', label: 'Off Track' },
+    draft:       { dot: 'var(--ds-text-subtlest, #94A3B8)', bg: 'var(--ds-surface-sunken, #F1F5F9)',               text: 'var(--ds-text-subtlest, #64748B)', bgDark: 'var(--ds-surface-raised, #1A1A1A)', textDark: 'var(--ds-text-subtlest, #A1A1A1)', label: 'Draft' },
+    not_started: { dot: 'var(--ds-text-subtlest, #94A3B8)', bg: 'var(--ds-surface-sunken, #F1F5F9)',               text: 'var(--ds-text-subtlest, #64748B)', bgDark: 'var(--ds-surface-raised, #1A1A1A)', textDark: 'var(--ds-text-subtlest, #A1A1A1)', label: 'Not Started' },
+    cancelled:   { dot: 'var(--ds-text-subtlest, #94A3B8)', bg: 'var(--ds-surface-sunken, #F1F5F9)',               text: 'var(--ds-text-subtlest, #64748B)', bgDark: 'var(--ds-surface-raised, #1A1A1A)', textDark: 'var(--ds-text-subtlest, #A1A1A1)', label: 'Cancelled' },
   };
   const s = map[status] || map.draft;
   return (
@@ -55,9 +55,9 @@ function statusBadge(status: string, isDark = false) {
 }
 
 function progressBar(pct: number, height = 6, isDark = false) {
-  const color = pct >= 60 ? 'var(--ds-text-success, var(--ds-text-success, #16A34A))' : pct >= 40 ? 'var(--ds-text-warning, var(--ds-text-warning, #D97706))' : 'var(--ds-text-danger, var(--ds-text-danger, #EF4444))';
+  const color = pct >= 60 ? 'var(--ds-text-success, #16A34A)' : pct >= 40 ? 'var(--ds-text-warning, #D97706)' : 'var(--ds-text-danger, #EF4444)';
   return (
-    <div style={{ width: 80, height, background: isDark ? 'var(--ds-border, var(--ds-border, #2E2E2E))' : 'var(--divider)', borderRadius: 4, overflow: 'hidden' }}>
+    <div style={{ width: 80, height, background: isDark ? 'var(--ds-border, #2E2E2E)' : 'var(--divider)', borderRadius: 4, overflow: 'hidden' }}>
       <div style={{ width: `${Math.min(100, Math.max(0, pct))}%`, height: '100%', background: color, borderRadius: 4, transition: 'width 300ms ease' }} />
     </div>
   );
@@ -72,8 +72,8 @@ function ConfidenceDots({ level, isDark = false }: { level: number; isDark?: boo
           style={{
             width: 5, height: 5, borderRadius: '50%',
             background: i <= level
-              ? (level >= 4 ? 'var(--ds-text-success, var(--ds-text-success, #16A34A))' : level >= 3 ? 'var(--ds-text-warning, var(--ds-text-warning, #D97706))' : 'var(--ds-text-danger, var(--ds-text-danger, #EF4444))')
-              : (isDark ? 'var(--ds-border, var(--ds-border, #2E2E2E))' : 'var(--divider)'),
+              ? (level >= 4 ? 'var(--ds-text-success, #16A34A)' : level >= 3 ? 'var(--ds-text-warning, #D97706)' : 'var(--ds-text-danger, #EF4444)')
+              : (isDark ? 'var(--ds-border, #2E2E2E)' : 'var(--divider)'),
           }}
         />
       ))}
@@ -137,7 +137,7 @@ function getAvatarColors(name: string, isDark = false) {
 }
 
 function OwnerAvatar({ name, size = 28, isDark = false }: { name?: string; size?: number; isDark?: boolean }) {
-  if (!name) return <span style={{ fontSize: 11, color: isDark ? DK.t4 : 'var(--ds-text-disabled, var(--ds-text-disabled, #CBD5E1))' }}>—</span>;
+  if (!name) return <span style={{ fontSize: 11, color: isDark ? DK.t4 : 'var(--ds-text-disabled, #CBD5E1)' }}>—</span>;
   const initials = name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
   const colors = getAvatarColors(name, isDark);
   return (
@@ -173,12 +173,12 @@ export function GoalsTreeSkeleton({ isDark = false }: { isDark?: boolean }) {
 export function GoalsEmptyState({ onCreateGoal, isDark = false }: { onCreateGoal: () => void; isDark?: boolean }) {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '60px 20px', border: `1px solid ${isDark ? DK.border : 'var(--divider)'}`, borderRadius: 12, background: isDark ? 'transparent' : 'var(--bg-app)' }}>
-      <div style={{ width: 52, height: 52, borderRadius: 14, background: isDark ? 'var(--ds-surface-overlay, var(--ds-surface-overlay, #1F1F1F))' : 'var(--cp-bd-zone)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 16 }}>
+      <div style={{ width: 52, height: 52, borderRadius: 14, background: isDark ? 'var(--ds-surface-overlay, #1F1F1F)' : 'var(--cp-bd-zone)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 16 }}>
         <Target size={24} color="var(--fg-4)" />
       </div>
       <div style={{ fontSize: 15, fontWeight: 600, color: isDark ? DK.t1 : 'var(--fg-2)', marginBottom: 4 }}>No goals yet</div>
       <div style={{ fontSize: 12.5, color: isDark ? DK.t3 : 'var(--fg-4)', marginBottom: 20, textAlign: 'center', maxWidth: 320 }}>Create your first goal to start tracking progress.</div>
-      <button onClick={onCreateGoal} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '8px 18px', fontSize: 13, fontWeight: 600, color: 'var(--ds-surface, var(--ds-surface, #FFFFFF))', background: 'var(--cp-blue)', border: 'none', borderRadius: 6, cursor: 'pointer' }}>
+      <button onClick={onCreateGoal} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '8px 18px', fontSize: 13, fontWeight: 600, color: 'var(--ds-surface, #FFFFFF)', background: 'var(--cp-blue)', border: 'none', borderRadius: 6, cursor: 'pointer' }}>
         + Create Goal
       </button>
     </div>
@@ -190,7 +190,7 @@ function GoalsNoSearchResults({ query, onClear, isDark = false }: { query: strin
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '48px 20px', border: `1px solid ${isDark ? DK.border : 'var(--divider)'}`, borderRadius: 12, background: isDark ? 'transparent' : 'var(--bg-app)' }}>
       <div style={{ fontSize: 14, fontWeight: 600, color: isDark ? DK.t1 : 'var(--fg-2)', marginBottom: 4 }}>No goals matching "{query}"</div>
       <div style={{ fontSize: 12, color: isDark ? DK.t3 : 'var(--fg-4)', marginBottom: 14 }}>Try a different search term.</div>
-      <button onClick={onClear} style={{ display: 'inline-flex', alignItems: 'center', gap: 5, padding: '6px 14px', fontSize: 12, fontWeight: 500, color: isDark ? DK.t2 : 'var(--fg-3)', background: isDark ? 'var(--ds-surface-overlay, var(--ds-surface-overlay, #1F1F1F))' : 'var(--cp-bd-zone)', border: `1px solid ${isDark ? DK.border : 'var(--divider)'}`, borderRadius: 6, cursor: 'pointer' }}>
+      <button onClick={onClear} style={{ display: 'inline-flex', alignItems: 'center', gap: 5, padding: '6px 14px', fontSize: 12, fontWeight: 500, color: isDark ? DK.t2 : 'var(--fg-3)', background: isDark ? 'var(--ds-surface-overlay, #1F1F1F)' : 'var(--cp-bd-zone)', border: `1px solid ${isDark ? DK.border : 'var(--divider)'}`, borderRadius: 6, cursor: 'pointer' }}>
         <X size={12} /> Clear search
       </button>
     </div>
@@ -256,13 +256,13 @@ export function GoalsTreeView({
   const headerBg = isDark ? 'transparent' : 'var(--bg-app)';
   const headerText = isDark ? DK.t3 : 'var(--fg-3)';
   const containerBg = isDark ? 'transparent' : 'var(--bg-app)';
-  const themeRowBg = isDark ? 'var(--ds-surface-overlay, var(--ds-surface-overlay, #1F1F1F))' : 'var(--cp-bd-zone)';
+  const themeRowBg = isDark ? 'var(--ds-surface-overlay, #1F1F1F)' : 'var(--cp-bd-zone)';
   const themeRowHover = 'var(--cp-bg-sunken, #E2E8F0)';
   const goalRowBg = isDark ? 'transparent' : 'var(--bg-app)';
-  const goalRowHover = isDark ? 'var(--ds-surface-overlay, var(--ds-surface-overlay, #1F1F1F))' : 'var(--bg-1)';
+  const goalRowHover = isDark ? 'var(--ds-surface-overlay, #1F1F1F)' : 'var(--bg-1)';
   const krRowBg = isDark ? '#111111' : 'var(--bg-1)';
-  const krRowHover = isDark ? 'var(--ds-surface-overlay, var(--ds-surface-overlay, #1F1F1F))' : 'var(--cp-bd-zone)';
-  const connectorColor = isDark ? 'var(--ds-border, var(--ds-border, #2E2E2E))' : 'var(--divider)';
+  const krRowHover = isDark ? 'var(--ds-surface-overlay, #1F1F1F)' : 'var(--cp-bd-zone)';
+  const connectorColor = isDark ? 'var(--ds-border, #2E2E2E)' : 'var(--divider)';
   const footerBg = isDark ? '#111111' : 'var(--bg-1)';
 
   return (
@@ -295,7 +295,7 @@ export function GoalsTreeView({
         const themeKRCount = themeGoals.reduce((s, g) => s + (krsByGoal.get(g.id)?.length || 0), 0);
         const avgConf = themeGoals.length > 0
           ? Math.round(themeGoals.reduce((s, g) => s + getConfidenceLevel(g.confidence_level), 0) / themeGoals.length) : 0;
-        const progressColor = avgProgress >= 60 ? 'var(--ds-text-success, var(--ds-text-success, #16A34A))' : avgProgress >= 40 ? 'var(--ds-text-warning, var(--ds-text-warning, #D97706))' : 'var(--ds-text-danger, var(--ds-text-danger, #EF4444))';
+        const progressColor = avgProgress >= 60 ? 'var(--ds-text-success, #16A34A)' : avgProgress >= 40 ? 'var(--ds-text-warning, #D97706)' : 'var(--ds-text-danger, #EF4444)';
 
         return (
           <div key={theme.id}>
@@ -336,7 +336,7 @@ export function GoalsTreeView({
               const goalKRs = krsByGoal.get(goal.id) || [];
               const confLevel = getConfidenceLevel(goal.confidence_level);
               const goalPct = Math.round(goal.progress_pct || 0);
-              const goalProgressColor = goalPct >= 60 ? 'var(--ds-text-success, var(--ds-text-success, #16A34A))' : goalPct >= 40 ? 'var(--ds-text-warning, var(--ds-text-warning, #D97706))' : 'var(--ds-text-danger, var(--ds-text-danger, #EF4444))';
+              const goalProgressColor = goalPct >= 60 ? 'var(--ds-text-success, #16A34A)' : goalPct >= 40 ? 'var(--ds-text-warning, #D97706)' : 'var(--ds-text-danger, #EF4444)';
               const isLastGoal = gi === themeGoals.length - 1;
 
               return (
@@ -365,7 +365,7 @@ export function GoalsTreeView({
                         onClick={e => { e.stopPropagation(); onToggleGoal(goal.id); }}
                         style={{ transform: goalExpanded ? 'rotate(90deg)' : 'rotate(0deg)', transition: 'transform 200ms', flexShrink: 0, cursor: 'pointer' }}
                       />
-                      <span style={{ fontSize: 12, fontWeight: 600, color: isDark ? DK.t2 : 'var(--fg-2)', background: isDark ? 'var(--ds-surface-overlay, var(--ds-surface-overlay, #1F1F1F))' : 'var(--cp-bd-zone)', padding: '2px 8px', borderRadius: 4, flexShrink: 0, fontFamily: 'ui-monospace, monospace' }}>
+                      <span style={{ fontSize: 12, fontWeight: 600, color: isDark ? DK.t2 : 'var(--fg-2)', background: isDark ? 'var(--ds-surface-overlay, #1F1F1F)' : 'var(--cp-bd-zone)', padding: '2px 8px', borderRadius: 4, flexShrink: 0, fontFamily: 'ui-monospace, monospace' }}>
                         {goal.goal_key}
                       </span>
                       <span onClick={e => { e.stopPropagation(); onGoalClick(goal.id); }} style={{ fontSize: 14, fontWeight: 500, color: isDark ? DK.t1 : 'var(--fg-1)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
@@ -387,7 +387,7 @@ export function GoalsTreeView({
                           {goal.ai_health_score}
                         </span>
                       ) : (
-                        <span style={{ fontSize: 11, color: isDark ? DK.t4 : 'var(--ds-text-disabled, var(--ds-text-disabled, #CBD5E1))' }}>—</span>
+                        <span style={{ fontSize: 11, color: isDark ? DK.t4 : 'var(--ds-text-disabled, #CBD5E1)' }}>—</span>
                       )}
                     </div>
                   </div>
@@ -398,7 +398,7 @@ export function GoalsTreeView({
                       : kr.target < kr.baseline
                         ? Math.min(100, Math.max(0, Math.round(((kr.baseline - kr.current_value) / (kr.baseline - kr.target)) * 100)))
                         : Math.min(100, Math.max(0, Math.round(((kr.current_value - kr.baseline) / (kr.target - kr.baseline)) * 100)));
-                    const krProgressColor = krProgress >= 60 ? 'var(--ds-text-success, var(--ds-text-success, #16A34A))' : krProgress >= 40 ? 'var(--ds-text-warning, var(--ds-text-warning, #D97706))' : 'var(--ds-text-danger, var(--ds-text-danger, #EF4444))';
+                    const krProgressColor = krProgress >= 60 ? 'var(--ds-text-success, #16A34A)' : krProgress >= 40 ? 'var(--ds-text-warning, #D97706)' : 'var(--ds-text-danger, #EF4444)';
                     const isLastKR = ki === goalKRs.length - 1;
 
                     return (
@@ -413,7 +413,7 @@ export function GoalsTreeView({
                           background: krRowBg,
                           borderBottom: `1px solid ${isDark ? DK.borderSubtle : 'var(--bg-1)'}`, fontSize: 13, position: 'relative',
                           transition: 'background 150ms',
-                          color: isDark ? DK.t2 : 'var(--ds-text-subtle, var(--ds-text-subtle, #334155))',
+                          color: isDark ? DK.t2 : 'var(--ds-text-subtle, #334155)',
                         }}
                         onMouseEnter={e => (e.currentTarget.style.background = krRowHover)}
                         onMouseLeave={e => (e.currentTarget.style.background = krRowBg)}
@@ -423,7 +423,7 @@ export function GoalsTreeView({
                         <div style={{ position: 'absolute', left: 52, top: '50%', width: 12, height: 1, background: connectorColor }} />
 
                         <div style={{ display: 'flex', alignItems: 'center', gap: 8, minWidth: 0 }}>
-                          <span style={{ fontSize: 10, fontWeight: 600, color: isDark ? DK.t3 : 'var(--fg-4)', background: isDark ? 'var(--ds-surface-overlay, var(--ds-surface-overlay, #1F1F1F))' : 'var(--cp-bd-zone)', padding: '1px 5px', borderRadius: 4, flexShrink: 0, fontFamily: 'ui-monospace, monospace' }}>
+                          <span style={{ fontSize: 10, fontWeight: 600, color: isDark ? DK.t3 : 'var(--fg-4)', background: isDark ? 'var(--ds-surface-overlay, #1F1F1F)' : 'var(--cp-bd-zone)', padding: '1px 5px', borderRadius: 4, flexShrink: 0, fontFamily: 'ui-monospace, monospace' }}>
                             {kr.kr_key}
                           </span>
                           <span style={{ fontWeight: 400, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
@@ -436,7 +436,7 @@ export function GoalsTreeView({
                             style={{
                               display: 'inline-flex', alignItems: 'center', gap: 3,
                               padding: '2px 8px', fontSize: 10.5, fontWeight: 500,
-                              color: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))', background: 'transparent',
+                              color: 'var(--ds-text-brand, #2563EB)', background: 'transparent',
                               border: '1px solid #2563EB', borderRadius: 99, cursor: 'pointer',
                               opacity: 0, transition: 'opacity 150ms', flexShrink: 0,
                             }}

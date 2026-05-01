@@ -17,10 +17,10 @@ function Lozenge({ status }: { status: string }) {
   const map: Record<string, { bg: string; text: string }> = {
     success: { bg: '#E3FCEF', text: '#006644' },
     completed: { bg: '#E3FCEF', text: '#006644' },
-    error: { bg: 'var(--ds-border, var(--ds-border, #DFE1E6))', text: 'var(--ds-text, var(--ds-text, #253858))' },
-    failed: { bg: 'var(--ds-border, var(--ds-border, #DFE1E6))', text: 'var(--ds-text, var(--ds-text, #253858))' },
-    skipped: { bg: 'var(--ds-border, var(--ds-border, #DFE1E6))', text: 'var(--ds-text, var(--ds-text, #253858))' },
-    abandoned: { bg: 'var(--ds-border, var(--ds-border, #DFE1E6))', text: 'var(--ds-text, var(--ds-text, #253858))' },
+    error: { bg: 'var(--ds-border, #DFE1E6)', text: 'var(--ds-text, #253858)' },
+    failed: { bg: 'var(--ds-border, #DFE1E6)', text: 'var(--ds-text, #253858)' },
+    skipped: { bg: 'var(--ds-border, #DFE1E6)', text: 'var(--ds-text, #253858)' },
+    abandoned: { bg: 'var(--ds-border, #DFE1E6)', text: 'var(--ds-text, #253858)' },
     processing: { bg: '#DEEBFF', text: '#0747A6' },
     pending: { bg: '#DEEBFF', text: '#0747A6' },
     approved: { bg: '#DEEBFF', text: '#0747A6' },
@@ -41,9 +41,9 @@ function Lozenge({ status }: { status: string }) {
 }
 
 /* ── Shared table helpers ───────────────────────────────── */
-const thClass = 'text-left text-[10px] font-semibold uppercase text-[var(--ds-text-subtlest,var(--ds-text-subtlest, #64748B))] dark:text-gray-400';
+const thClass = 'text-left text-[10px] font-semibold uppercase text-[var(--ds-text-subtlest, #64748B)] dark:text-gray-400';
 const thStyle = { padding: '10px 12px', height: 50, maxHeight: 50 } as const;
-const tdClass = 'text-[var(--ds-text-subtle,var(--ds-text-subtle, #334155))] dark:text-white';
+const tdClass = 'text-[var(--ds-text-subtle, #334155)] dark:text-white';
 const tdStyle = { padding: '8px 12px', fontSize: 12, height: 50, maxHeight: 50 } as const;
 const PAGE_SIZE = 20;
 
@@ -80,7 +80,7 @@ function PaginationBar({ page, setPage, count }: { page: number; setPage: (p: nu
   const start = page * PAGE_SIZE + 1;
   const end = page * PAGE_SIZE + count;
   return (
-    <div className="flex items-center justify-between px-4 py-2 text-[var(--ds-text-subtlest,var(--ds-text-subtlest, #64748B))] dark:text-gray-400" style={{ fontSize: 12 }}>
+    <div className="flex items-center justify-between px-4 py-2 text-[var(--ds-text-subtlest, #64748B)] dark:text-gray-400" style={{ fontSize: 12 }}>
       <span>Showing {start}–{end}</span>
       <div className="flex gap-2">
         {page > 0 && (
@@ -136,8 +136,8 @@ export function SyncEventsTab() {
   }), [syncLogs, statusFilter, keyFilter]);
 
   return (
-      <div className="bg-white dark:bg-[var(--ds-surface-raised,var(--ds-surface-raised, #1A1A1A))] border border-[var(--bd-default, #E2E8F0)] dark:border-[var(--ds-surface-raised,var(--ds-surface-raised, #1A1A1A))] rounded-md overflow-hidden">
-        <div className="flex items-center gap-3 p-3 border-b border-[var(--bd-default, #E2E8F0)] dark:border-[var(--ds-surface-raised,var(--ds-surface-raised, #1A1A1A))]">
+      <div className="bg-white dark:bg-[var(--ds-surface-raised, #1A1A1A)] border border-[var(--bd-default, #E2E8F0)] dark:border-[var(--ds-surface-raised, #1A1A1A)] rounded-md overflow-hidden">
+        <div className="flex items-center gap-3 p-3 border-b border-[var(--bd-default, #E2E8F0)] dark:border-[var(--ds-surface-raised, #1A1A1A)]">
           <Select value={statusFilter} onValueChange={setStatusFilter}>
             <SelectTrigger className="w-[140px] h-9 text-xs">
               <SelectValue placeholder="All statuses" />
@@ -159,7 +159,7 @@ export function SyncEventsTab() {
 
         <table className="w-full border-collapse">
           <thead>
-            <tr className="border-b border-[var(--bd-default, #E2E8F0)] dark:border-[var(--ds-surface-raised,var(--ds-surface-raised, #1A1A1A))]">
+            <tr className="border-b border-[var(--bd-default, #E2E8F0)] dark:border-[var(--ds-surface-raised, #1A1A1A)]">
               {['Time', 'Event Type', 'Jira Key', 'Status', 'Items', 'Duration', 'Error'].map((h) => (
                 <th key={h} className={thClass} style={thStyle}>{h}</th>
               ))}
@@ -170,7 +170,7 @@ export function SyncEventsTab() {
               {filteredLogs.map((log: any) => {
                 const items = (log.items_created ?? 0) + (log.items_updated ?? 0) + (log.items_deleted ?? 0);
                 return (
-                  <tr key={log.id} className="border-b border-[var(--bd-default, #E2E8F0)] dark:border-[var(--ds-surface-raised,var(--ds-surface-raised, #1A1A1A))]" style={{ height: 50, maxHeight: 50 }}>
+                  <tr key={log.id} className="border-b border-[var(--bd-default, #E2E8F0)] dark:border-[var(--ds-surface-raised, #1A1A1A)]" style={{ height: 50, maxHeight: 50 }}>
                     <td className={tdClass} style={tdStyle}>{formatDistanceToNow(new Date(log.created_at), { addSuffix: true })}</td>
                     <td className={tdClass} style={tdStyle}>{log.event_type}</td>
                     <td className={tdClass} style={tdStyle}>{log.jira_key || '—'}</td>
@@ -217,10 +217,10 @@ export function WriteBackQueueTab() {
   });
 
   return (
-      <div className="bg-white dark:bg-[var(--ds-surface-raised,var(--ds-surface-raised, #1A1A1A))] border border-[var(--bd-default, #E2E8F0)] dark:border-[var(--ds-surface-raised,var(--ds-surface-raised, #1A1A1A))] rounded-md overflow-hidden">
+      <div className="bg-white dark:bg-[var(--ds-surface-raised, #1A1A1A)] border border-[var(--bd-default, #E2E8F0)] dark:border-[var(--ds-surface-raised, #1A1A1A)] rounded-md overflow-hidden">
         <table className="w-full border-collapse">
           <thead>
-            <tr className="border-b border-[var(--bd-default, #E2E8F0)] dark:border-[var(--ds-surface-raised,var(--ds-surface-raised, #1A1A1A))]">
+            <tr className="border-b border-[var(--bd-default, #E2E8F0)] dark:border-[var(--ds-surface-raised, #1A1A1A)]">
               {['Work Item', 'Operation', 'Status', 'Retries', 'Last Error', 'Queued', 'Action'].map((h) => (
                 <th key={h} className={thClass} style={thStyle}>{h}</th>
               ))}
@@ -229,10 +229,10 @@ export function WriteBackQueueTab() {
           {isLoading ? <SkeletonRows cols={7} /> : isError ? <ErrorRow cols={7} /> : (
             <tbody>
               {(queueItems ?? []).map((q: any) => (
-                <tr key={q.id} className="border-b border-[var(--bd-default, #E2E8F0)] dark:border-[var(--ds-surface-raised,var(--ds-surface-raised, #1A1A1A))]" style={{ height: 50, maxHeight: 50 }}>
+                <tr key={q.id} className="border-b border-[var(--bd-default, #E2E8F0)] dark:border-[var(--ds-surface-raised, #1A1A1A)]" style={{ height: 50, maxHeight: 50 }}>
                   <td className={tdClass} style={tdStyle}>{q.ph_work_items?.title || q.ph_work_item_id}</td>
                   <td style={tdStyle}>
-                    <span className="inline-block bg-[var(--ds-surface-sunken,var(--ds-surface-sunken, #F1F5F9))] text-[var(--ds-text-subtle,var(--ds-text-subtle, #334155))] dark:bg-[var(--ds-surface-raised,var(--ds-surface-raised, #1A1A1A))] dark:text-gray-300" style={{ fontSize: 11, fontWeight: 600, borderRadius: 4, padding: '2px 6px', textTransform: 'uppercase' }}>
+                    <span className="inline-block bg-[var(--ds-surface-sunken, #F1F5F9)] text-[var(--ds-text-subtle, #334155)] dark:bg-[var(--ds-surface-raised, #1A1A1A)] dark:text-gray-300" style={{ fontSize: 11, fontWeight: 600, borderRadius: 4, padding: '2px 6px', textTransform: 'uppercase' }}>
                       {q.operation}
                     </span>
                   </td>
@@ -278,17 +278,17 @@ export function DeletedItemsTab() {
   });
 
   return (
-      <div className="bg-white dark:bg-[var(--ds-surface-raised,var(--ds-surface-raised, #1A1A1A))] border border-[var(--bd-default, #E2E8F0)] dark:border-[var(--ds-surface-raised,var(--ds-surface-raised, #1A1A1A))] rounded-md overflow-hidden">
+      <div className="bg-white dark:bg-[var(--ds-surface-raised, #1A1A1A)] border border-[var(--bd-default, #E2E8F0)] dark:border-[var(--ds-surface-raised, #1A1A1A)] rounded-md overflow-hidden">
         {!isLoading && !isError && (!deletedItems || deletedItems.length === 0) ? (
           <div className="flex flex-col items-center justify-center py-10 gap-2">
             <Trash2 size={32} className="text-gray-300 dark:text-gray-600" />
-            <span style={{ fontSize: 13 }} className="text-[var(--ds-text-subtlest,var(--ds-text-subtlest, #94A3B8))] dark:text-gray-400">No deleted items archived</span>
+            <span style={{ fontSize: 13 }} className="text-[var(--ds-text-subtlest, #94A3B8)] dark:text-gray-400">No deleted items archived</span>
           </div>
         ) : (
           <>
             <table className="w-full border-collapse">
               <thead>
-                <tr className="border-b border-[var(--bd-default, #E2E8F0)] dark:border-[var(--ds-surface-raised,var(--ds-surface-raised, #1A1A1A))]">
+                <tr className="border-b border-[var(--bd-default, #E2E8F0)] dark:border-[var(--ds-surface-raised, #1A1A1A)]">
                   {['Jira Key', 'Catalyst Key', 'Deleted', 'Snapshot Preview'].map((h) => (
                     <th key={h} className={thClass} style={thStyle}>{h}</th>
                   ))}
@@ -300,7 +300,7 @@ export function DeletedItemsTab() {
                     const snap = d.item_snapshot ? JSON.stringify(d.item_snapshot) : '';
                     const preview = snap.length > 80 ? snap.substring(0, 80) + '…' : snap;
                     return (
-                      <tr key={d.id} className="border-b border-[var(--bd-default, #E2E8F0)] dark:border-[var(--ds-surface-raised,var(--ds-surface-raised, #1A1A1A))]" style={{ height: 50, maxHeight: 50 }}>
+                      <tr key={d.id} className="border-b border-[var(--bd-default, #E2E8F0)] dark:border-[var(--ds-surface-raised, #1A1A1A)]" style={{ height: 50, maxHeight: 50 }}>
                         <td className={tdClass} style={tdStyle}>{d.jira_key || '—'}</td>
                         <td className={tdClass} style={tdStyle}>{d.catalyst_item_key || '—'}</td>
                         <td className={tdClass} style={tdStyle}>{formatDistanceToNow(new Date(d.deleted_at), { addSuffix: true })}</td>
@@ -327,13 +327,13 @@ export function DeletedItemsTab() {
 /* ── Main Component (standalone page — kept as default export) ── */
 export default function JiraSyncAuditLog() {
   return (
-    <div className="p-6 space-y-6 dark:bg-[var(--ds-surface,var(--ds-surface, #0A0A0A))] min-h-screen">
+    <div className="p-6 space-y-6 dark:bg-[var(--ds-surface, #0A0A0A)] min-h-screen">
       <div className="flex items-start justify-between">
         <div>
-          <h1 style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 20, fontWeight: 700 }} className="text-[var(--ds-text,var(--ds-text, #0F172A))] dark:text-white">
+          <h1 style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 20, fontWeight: 700 }} className="text-[var(--ds-text, #0F172A)] dark:text-white">
             Jira Sync Audit Log
           </h1>
-          <p style={{ fontSize: 13 }} className="text-[var(--ds-text-subtlest,var(--ds-text-subtlest, #64748B))] dark:text-gray-400 mt-1">
+          <p style={{ fontSize: 13 }} className="text-[var(--ds-text-subtlest, #64748B)] dark:text-gray-400 mt-1">
             Monitor bi-directional sync activity
           </p>
         </div>

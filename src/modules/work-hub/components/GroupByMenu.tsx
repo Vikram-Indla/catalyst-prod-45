@@ -34,7 +34,7 @@ export function GroupByMenu({ value, onChange }: GroupByMenuProps) {
           size="sm" 
           className={cn(
             "h-8 gap-1 text-[13px] hover:bg-muted font-normal",
-            value !== 'none' ? "text-[var(--ds-text-brand,var(--ds-text-brand, #2563eb))] bg-[var(--ds-text-brand,var(--ds-text-brand, #2563eb))]/10 dark:text-[var(--ds-text-brand,var(--ds-text-brand, #60a5fa))] dark:bg-[var(--ds-text-brand,var(--ds-text-brand, #3b82f6))]/10" : "text-muted-foreground"
+            value !== 'none' ? "text-[var(--ds-text-brand, #2563eb)] bg-[var(--ds-text-brand, #2563eb)]/10 dark:text-[var(--ds-text-brand, #60a5fa)] dark:bg-[var(--ds-text-brand, #3b82f6)]/10" : "text-muted-foreground"
           )}
         >
           Group
@@ -48,13 +48,13 @@ export function GroupByMenu({ value, onChange }: GroupByMenuProps) {
             key={option.id}
             className={cn(
               "flex items-center gap-2 px-2 py-1.5 text-[13px] text-foreground cursor-pointer hover:bg-muted rounded-md",
-              value === option.id && "bg-[var(--ds-text-brand,var(--ds-text-brand, #2563eb))]/10 dark:bg-[var(--ds-text-brand,var(--ds-text-brand, #3b82f6))]/10"
+              value === option.id && "bg-[var(--ds-text-brand, #2563eb)]/10 dark:bg-[var(--ds-text-brand, #3b82f6)]/10"
             )}
             onClick={() => onChange(value === option.id ? 'none' : option.id)}
           >
             {option.icon}
             <span className="flex-1">{option.label}</span>
-            {value === option.id && <Check className="h-4 w-4 text-[var(--ds-text-brand,var(--ds-text-brand, #2563eb))] dark:text-[var(--ds-text-brand,var(--ds-text-brand, #60a5fa))]" />}
+            {value === option.id && <Check className="h-4 w-4 text-[var(--ds-text-brand, #2563eb)] dark:text-[var(--ds-text-brand, #60a5fa)]" />}
           </DropdownMenuItem>
         ))}
       </DropdownMenuContent>

@@ -33,8 +33,8 @@ export function ExecutionTrendChart({ data }: ExecutionTrendChartProps) {
             <div key={i} className="flex-1 flex flex-col items-center">
               <div className="w-full flex flex-col-reverse" style={{ height: '100px' }}>
                 <div className="w-full rounded-t" style={{ height: `${passedH}%`, backgroundColor: '#0d9488' }} />
-                <div className="w-full" style={{ height: `${failedH}%`, backgroundColor: 'var(--ds-text-danger, var(--ds-text-danger, #ef4444))' }} />
-                <div className="w-full" style={{ height: `${blockedH}%`, backgroundColor: 'var(--ds-text-warning, var(--ds-text-warning, #d97706))' }} />
+                <div className="w-full" style={{ height: `${failedH}%`, backgroundColor: 'var(--ds-text-danger, #ef4444)' }} />
+                <div className="w-full" style={{ height: `${blockedH}%`, backgroundColor: 'var(--ds-text-warning, #d97706)' }} />
               </div>
               <span className="text-[10px] text-slate-400 mt-1">{dateLabel}</span>
             </div>
@@ -44,8 +44,8 @@ export function ExecutionTrendChart({ data }: ExecutionTrendChartProps) {
 
       <div className="flex items-center gap-4 mt-3 text-xs text-slate-500">
         <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-sm bg-[#0d9488]" />Passed</span>
-        <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-sm bg-[var(--ds-text-danger,var(--ds-text-danger, #ef4444))]" />Failed</span>
-        <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-sm bg-[var(--ds-text-warning,var(--ds-text-warning, #d97706))]" />Blocked</span>
+        <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-sm bg-[var(--ds-text-danger, #ef4444)]" />Failed</span>
+        <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-sm bg-[var(--ds-text-warning, #d97706)]" />Blocked</span>
       </div>
     </motion.div>
   );

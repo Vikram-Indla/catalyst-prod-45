@@ -255,7 +255,7 @@ export function CatalystSidebarDetails({
             gap: 6,
             transition: 'background 0.15s',
           }}
-          onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-surface-sunken, var(--ds-surface-sunken, #F4F5F7))')}
+          onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-surface-sunken, #F4F5F7)')}
           onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
         >
           {/* jira-compare A1 (2026-04-28): wrap with jira-parity attribute so
@@ -271,7 +271,7 @@ export function CatalystSidebarDetails({
         {showStatusDropdown && (
           <div style={{
             position: 'absolute', left: 0, top: '100%', marginTop: 4,
-            background: 'var(--ds-surface, var(--ds-surface, #FFFFFF))', borderRadius: 8,
+            background: 'var(--ds-surface, #FFFFFF)', borderRadius: 8,
             boxShadow: '0 4px 24px rgba(30,31,33,0.16), 0 0 1px rgba(30,31,33,0.31)',
             padding: '6px 0', zIndex: 9999, minWidth: 240, maxHeight: 420, overflowY: 'auto',
             animation: 'cv-slide-down 0.15s ease-out',
@@ -279,7 +279,7 @@ export function CatalystSidebarDetails({
             {STATUS_OPTION_GROUPS.map(group => (
               <div key={group.category}>
                 <div style={{
-                  fontSize: 11, fontWeight: 600, color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #6B778C))', textTransform: 'uppercase',
+                  fontSize: 11, fontWeight: 600, color: 'var(--ds-text-subtlest, #6B778C)', textTransform: 'uppercase',
                   letterSpacing: '0.06em', padding: '10px 16px 6px',
                 }}>{group.groupLabel}</div>
                 {group.statuses.map(st => {
@@ -295,7 +295,7 @@ export function CatalystSidebarDetails({
                         justifyContent: 'space-between', cursor: 'pointer',
                         background: isActive ? '#DEEBFF' : 'transparent', transition: 'background 80ms',
                       }}
-                      onMouseEnter={e => { if (!isActive) e.currentTarget.style.background = 'var(--ds-surface-sunken, var(--ds-surface-sunken, #F4F5F7))'; }}
+                      onMouseEnter={e => { if (!isActive) e.currentTarget.style.background = 'var(--ds-surface-sunken, #F4F5F7)'; }}
                       onMouseLeave={e => { if (!isActive) e.currentTarget.style.background = 'transparent'; }}
                     >
                       <span data-cp-lozenge-jira-parity style={{ display: 'inline-block' }}>
@@ -325,7 +325,7 @@ export function CatalystSidebarDetails({
         {/* Section header — 49px, Jira spec */}
         <div style={{
           display: 'flex', alignItems: 'center', gap: 6, height: 49,
-          padding: '0 8px', borderRadius: '6px 6px 0 0', background: 'var(--ds-surface, var(--ds-surface, #FFFFFF))',
+          padding: '0 8px', borderRadius: '6px 6px 0 0', background: 'var(--ds-surface, #FFFFFF)',
         }}>
           <ChevronDown size={14} color="#505258" />
           {/* Phase D.1 (2026-04-18): Atlaskit Heading owns typography via tokens. */}
@@ -435,7 +435,7 @@ export function CatalystSidebarDetails({
                     <span style={{
                       width: 24, height: 24, borderRadius: '50%',
                       background: getAvatarColor(issue.reporter_account_id ?? issue.reporter_display_name),
-                      color: 'var(--ds-surface, var(--ds-surface, var(--ds-surface, #FFF)))', display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                      color: 'var(--ds-surface, #FFF)', display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
                       fontSize: 10, fontWeight: 700, flexShrink: 0,
                     }}>{getInitials(issue.reporter_display_name)}</span>
                   )}

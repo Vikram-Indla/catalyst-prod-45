@@ -267,9 +267,9 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
   ];
 
   const getStageLozenge = () => {
-    if (!stage) return { bg: 'var(--ds-border, var(--ds-border, #DFE1E6))', color: '#42526E', label: 'PENDING' };
+    if (!stage) return { bg: 'var(--ds-border, #DFE1E6)', color: '#42526E', label: 'PENDING' };
     if (stage === 'complete') return { bg: '#1B7F37', color: 'var(--ds-text-inverse, #FFFFFF)', label: 'COMPLETE' };
-    if (stage === 'failed') return { bg: 'var(--ds-border, var(--ds-border, #DFE1E6))', color: '#42526E', label: 'FAILED' };
+    if (stage === 'failed') return { bg: 'var(--ds-border, #DFE1E6)', color: '#42526E', label: 'FAILED' };
     return { bg: '#0C66E4', color: 'var(--ds-text-inverse, #FFFFFF)', label: stage.toUpperCase() };
   };
   const lozenge = getStageLozenge();
@@ -337,7 +337,7 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
                   window.open(`https://jira.example.com/browse/${brdData.parentJiraKey}`, '_blank');
                 }}
               >{brdData.parentJiraKey}</span>
-              <ChevronRight size={10} color="var(--ds-text-disabled, var(--ds-text-disabled, #CBD5E1))" />
+              <ChevronRight size={10} color="var(--ds-text-disabled, #CBD5E1)" />
               <span style={{ color: 'var(--fg-2)', fontWeight: 600 }}>{doc.jira_ticket_key}</span>
             </div>
           )}
@@ -347,7 +347,7 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
               lineHeight: '20px', fontSize: 11, fontWeight: 700, textTransform: 'uppercase',
               background: lozenge.bg, color: lozenge.color, fontFamily: 'var(--cp-font-body)',
             }}>{lozenge.label}</span>
-            <span style={{ width: 3, height: 3, borderRadius: '50%', background: 'var(--ds-text-disabled, var(--ds-text-disabled, #CBD5E1))', flexShrink: 0 }} />
+            <span style={{ width: 3, height: 3, borderRadius: '50%', background: 'var(--ds-text-disabled, #CBD5E1)', flexShrink: 0 }} />
             <span style={{ fontSize: 12, color: 'var(--fg-4)', fontFamily: 'var(--cp-font-body)' }}>
               Imported {formatTimestamp(doc.created_at)}
             </span>
@@ -624,7 +624,7 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
               <SectionHeader>Document Content</SectionHeader>
               {brdData.raw_text && (
                 <button onClick={handleCopy} style={{ border: 'none', background: 'transparent', cursor: 'pointer', padding: 2, display: 'flex', alignItems: 'center' }}>
-                  {copied ? <Check size={14} color="var(--ds-text-success, var(--ds-text-success, #16A34A))" /> : <Copy size={14} color="var(--fg-4)" />}
+                  {copied ? <Check size={14} color="var(--ds-text-success, #16A34A)" /> : <Copy size={14} color="var(--fg-4)" />}
                 </button>
               )}
             </div>
@@ -673,7 +673,7 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
                   <span style={{
                     display: 'inline-flex', alignItems: 'center', padding: '2px 10px', borderRadius: 12,
                     background: 'var(--cp-primary-5)', border: '0.75px solid #BFDBFE',
-                    fontSize: 11, fontWeight: 700, color: 'var(--ds-background-brand-bold-hovered, var(--ds-background-brand-bold-hovered, #1D4ED8))',
+                    fontSize: 11, fontWeight: 700, color: 'var(--ds-background-brand-bold-hovered, #1D4ED8)',
                     fontFamily: 'var(--cp-font-body)',
                   }}>{pluralise(epicCount, 'epic', 'epics')} generated</span>
                 ) : (
@@ -825,7 +825,7 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
                         ? { bg: '#1B7F37', color: 'var(--ds-text-inverse, #FFFFFF)' }
                         : s.status === 'fail'
                           ? { bg: '#FFEBE6', color: '#BF2600' }
-                          : { bg: 'var(--ds-border, var(--ds-border, #DFE1E6))', color: '#42526E' };
+                          : { bg: 'var(--ds-border, #DFE1E6)', color: '#42526E' };
                       return (
                         <div key={s.id || i} style={{
                           display: 'flex', alignItems: 'center', gap: 8, height: 50,
@@ -920,9 +920,9 @@ function TicketTypeBadgeDrawer({ type }: { type: string | null }) {
   const dark = document.documentElement.classList.contains('dark');
   const map: Record<string, { bg: string; color: string; label: string }> = {
     subtask: { bg: dark ? 'rgba(217,119,6,0.15)' : '#FEF3C7', color: dark ? '#FBBF24' : '#92400E', label: 'SUBTASK' },
-    story: { bg: dark ? 'rgba(37,99,235,0.12)' : 'var(--ds-background-selected, var(--ds-background-selected, #EFF6FF))', color: dark ? 'var(--ds-text-brand, var(--ds-text-brand, #60A5FA))' : 'var(--ds-background-brand-bold-hovered, var(--ds-background-brand-bold-hovered, #1D4ED8))', label: 'STORY' },
+    story: { bg: dark ? 'rgba(37,99,235,0.12)' : 'var(--ds-background-selected, #EFF6FF)', color: dark ? 'var(--ds-text-brand, #60A5FA)' : 'var(--ds-background-brand-bold-hovered, #1D4ED8)', label: 'STORY' },
     epic: { bg: dark ? 'rgba(124,58,237,0.15)' : '#F3E8FF', color: dark ? '#A78BFA' : '#6B21A8', label: 'EPIC' },
-    task: { bg: dark ? 'var(--ds-surface-raised, var(--ds-surface-raised, #1A1A1A))' : 'var(--ds-surface-sunken, var(--ds-surface-sunken, #F1F5F9))', color: 'var(--fg-2)', label: 'TASK' },
+    task: { bg: dark ? 'var(--ds-surface-raised, #1A1A1A)' : 'var(--ds-surface-sunken, #F1F5F9)', color: 'var(--fg-2)', label: 'TASK' },
   };
   const s = map[type] || map['task']!;
   return (

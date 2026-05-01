@@ -125,7 +125,7 @@ function IdeaBoardCard({ idea, columnStatus, onClick, onConvert, isDark, dk }: {
       {isAiReady && !showFullAiStrip && (
         <div style={{
           position: 'absolute', top: '10px', right: '10px',
-          width: '6px', height: '6px', borderRadius: '50%', background: 'var(--ds-text-brand, var(--ds-text-brand, #3B82F6))',
+          width: '6px', height: '6px', borderRadius: '50%', background: 'var(--ds-text-brand, #3B82F6)',
         }} />
       )}
 
@@ -139,7 +139,7 @@ function IdeaBoardCard({ idea, columnStatus, onClick, onConvert, isDark, dk }: {
         </span>
         <span style={{
           fontFamily: 'var(--cp-font-mono)', fontSize: '9px', fontWeight: 800,
-          background: isDark ? 'var(--ds-border, var(--ds-border, #292929))' : pc.bg, color: isDark ? dk.t2 : pc.text,
+          background: isDark ? 'var(--ds-border, #292929)' : pc.bg, color: isDark ? dk.t2 : pc.text,
           padding: '1px 5px', borderRadius: '4px',
           border: `1px solid ${isDark ? dk.border : pc.border}`,
         }}>
@@ -187,7 +187,7 @@ function IdeaBoardCard({ idea, columnStatus, onClick, onConvert, isDark, dk }: {
         </span>
         <span style={{
           fontSize: '11px', fontWeight: 600,
-          color: idea.votes > 0 ? 'var(--ds-text-success, var(--ds-text-success, #16A34A))' : idea.votes < 0 ? 'var(--ds-text-danger, var(--ds-text-danger, #EF4444))' : dk.t3,
+          color: idea.votes > 0 ? 'var(--ds-text-success, #16A34A)' : idea.votes < 0 ? 'var(--ds-text-danger, #EF4444)' : dk.t3,
           fontFamily: 'var(--cp-font-mono)',
         }}>
           ▲ {idea.votes}
@@ -220,7 +220,7 @@ function IdeaBoardCard({ idea, columnStatus, onClick, onConvert, isDark, dk }: {
         <button
           onClick={e => { e.stopPropagation(); onConvert?.(idea.key); }}
           style={{
-            width: '100%', marginTop: '8px', padding: '6px', background: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))',
+            width: '100%', marginTop: '8px', padding: '6px', background: 'var(--ds-text-brand, #2563EB)',
             color: 'var(--ds-text-inverse, #FFFFFF)', border: 'none', borderRadius: '6px', fontSize: '11px',
             fontWeight: 700, cursor: 'pointer',
           }}

@@ -133,7 +133,7 @@ export const mockTeamContribution: TeamMember[] = [
     name: 'Vikram Sharma',
     initials: 'VS',
     role: 'Release Manager',
-    avatarColor: 'var(--ds-text-brand, var(--ds-text-brand, #2563eb))',
+    avatarColor: 'var(--ds-text-brand, #2563eb)',
     stats: { executed: 48, passRate: 96 },
   },
   {
@@ -149,7 +149,7 @@ export const mockTeamContribution: TeamMember[] = [
     name: 'Mohammed Khan',
     initials: 'MK',
     role: 'QA Engineer',
-    avatarColor: 'var(--ds-text-warning, var(--ds-text-warning, #d97706))',
+    avatarColor: 'var(--ds-text-warning, #d97706)',
     stats: { executed: 38, passRate: 92 },
   },
 ];

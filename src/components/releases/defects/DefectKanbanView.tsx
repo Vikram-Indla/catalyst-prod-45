@@ -83,7 +83,7 @@ export function DefectKanbanView({ defects, onUpdateStatus }: DefectKanbanViewPr
               <ChevronDown className="w-3 h-3" />
             </Button>
           </PopoverTrigger>
-          <PopoverContent className="w-72 p-3 bg-white dark:bg-[var(--ds-surface-raised,var(--ds-surface-raised, #1A1A1A))]" align="end">
+          <PopoverContent className="w-72 p-3 bg-white dark:bg-[var(--ds-surface-raised, #1A1A1A)]" align="end">
             <div className="space-y-3">
               <p className="text-sm font-medium text-gray-900">Show/Hide Columns</p>
               {columns.map(col => (
@@ -161,7 +161,7 @@ function KanbanColumn({ column, defects, headerColorClass }: KanbanColumnProps) 
       headerColorClass
     )}>
       {/* Column Header */}
-      <div className="p-3 border-b border-gray-200 dark:border-[var(--ds-border,var(--ds-border, #2E2E2E))] bg-white/50 dark:bg-[var(--ds-surface-raised,var(--ds-surface-raised, #1A1A1A))]/50">
+      <div className="p-3 border-b border-gray-200 dark:border-[var(--ds-border, #2E2E2E)] bg-white/50 dark:bg-[var(--ds-surface-raised, #1A1A1A)]/50">
         <div className="flex items-center justify-between mb-1">
           <h3 className="font-semibold text-gray-900">{column.name}</h3>
           <Lozenge appearance="inprogress">{defects.length}</Lozenge>
@@ -176,7 +176,7 @@ function KanbanColumn({ column, defects, headerColorClass }: KanbanColumnProps) 
               return (
                 <span
                   key={status.id}
-                  className="text-[10px] text-muted-foreground bg-white dark:bg-[var(--ds-surface-raised,var(--ds-surface-raised, #1A1A1A))] px-1.5 py-0.5 rounded"
+                  className="text-[10px] text-muted-foreground bg-white dark:bg-[var(--ds-surface-raised, #1A1A1A)] px-1.5 py-0.5 rounded"
                 >
                   {status.name}: {count}
                 </span>
@@ -219,7 +219,7 @@ function DefectKanbanCard({ defect }: DefectKanbanCardProps) {
   
   return (
     <div 
-      className="bg-white dark:bg-[var(--ds-surface-raised,var(--ds-surface-raised, #1A1A1A))] border border-gray-200 dark:border-[var(--ds-border,var(--ds-border, #2E2E2E))] rounded-lg p-3 hover:shadow-md cursor-pointer transition-all"
+      className="bg-white dark:bg-[var(--ds-surface-raised, #1A1A1A)] border border-gray-200 dark:border-[var(--ds-border, #2E2E2E)] rounded-lg p-3 hover:shadow-md cursor-pointer transition-all"
       onClick={() => navigate(`/releases/defects/${defect.id}`)}
     >
       {/* Header: ID + Severity */}

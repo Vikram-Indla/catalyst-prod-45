@@ -143,7 +143,7 @@ function StatusPill({ status, statusCategory, issueId, onStatusChange }: { statu
       {open && (
         <div style={{
           position: 'absolute', top: '100%', left: 0, marginTop: 4,
-          background: 'var(--ds-surface, var(--ds-surface, var(--ds-surface, #fff)))', borderRadius: 6, width: 220,
+          background: 'var(--ds-surface, #fff)', borderRadius: 6, width: 220,
           boxShadow: '0 8px 24px rgba(9,30,66,.25)', zIndex: 80, padding: '4px 0',
           border: '1px solid #DFE1E6', maxHeight: 320, overflowY: 'auto',
         }}>
@@ -158,11 +158,11 @@ function StatusPill({ status, statusCategory, issueId, onStatusChange }: { statu
                   onClick={() => handleSelect(s)}
                   style={{
                     display: 'block', width: '100%', textAlign: 'left',
-                    padding: '6px 12px', fontSize: 13, color: 'var(--ds-text, var(--ds-text, #172B4D))',
+                    padding: '6px 12px', fontSize: 13, color: 'var(--ds-text, #172B4D)',
                     background: s === status ? '#E9F2FF' : 'transparent',
                     border: 'none', cursor: 'pointer', fontWeight: s === status ? 600 : 400,
                   }}
-                  onMouseOver={e => (e.currentTarget.style.background = s === status ? '#E9F2FF' : 'var(--ds-surface-sunken, var(--ds-surface-sunken, #F4F5F7))')}
+                  onMouseOver={e => (e.currentTarget.style.background = s === status ? '#E9F2FF' : 'var(--ds-surface-sunken, #F4F5F7)')}
                   onMouseOut={e => (e.currentTarget.style.background = s === status ? '#E9F2FF' : 'transparent')}
                 >
                   {s}
@@ -407,7 +407,7 @@ export function IssueContentView({
 
   if (loading) {
     return <div className="awBody" style={{ padding: 20 }}>
-      {[1,2,3].map(i => <div key={i} style={{ width: `${80-i*15}%`, height: 14, borderRadius: 3, background: 'var(--ds-border, var(--ds-border, #E2E8F0))', marginBottom: 10 }} />)}
+      {[1,2,3].map(i => <div key={i} style={{ width: `${80-i*15}%`, height: 14, borderRadius: 3, background: 'var(--ds-border, #E2E8F0)', marginBottom: 10 }} />)}
     </div>;
   }
 
@@ -424,9 +424,9 @@ export function IssueContentView({
                 <a
                   href={`/project-hub/${projectKey}/allwork`}
                   onClick={e => { e.preventDefault(); e.stopPropagation(); window.location.href = `/project-hub/${projectKey}/allwork`; }}
-                  style={{ fontSize: 13, fontWeight: 500, color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #6B778C))', textDecoration: 'none', cursor: 'pointer' }}
+                  style={{ fontSize: 13, fontWeight: 500, color: 'var(--ds-text-subtlest, #6B778C)', textDecoration: 'none', cursor: 'pointer' }}
                   onMouseEnter={e => { e.currentTarget.style.color = '#0052CC'; e.currentTarget.style.textDecoration = 'underline'; }}
-                  onMouseLeave={e => { e.currentTarget.style.color = 'var(--ds-text-subtlest, var(--ds-text-subtlest, #6B778C))'; e.currentTarget.style.textDecoration = 'none'; }}
+                  onMouseLeave={e => { e.currentTarget.style.color = 'var(--ds-text-subtlest, #6B778C)'; e.currentTarget.style.textDecoration = 'none'; }}
                 >
                   {projectKey}
                 </a>
@@ -504,7 +504,7 @@ export function IssueContentView({
               return (
                 <div style={{ position: 'absolute', left: 0, top: 34, background: 'var(--ds-text-inverse, #ffffff)', borderRadius: 4, boxShadow: '0px 8px 12px rgba(30,31,33,0.15), 0px 0px 1px rgba(30,31,33,0.31)', width: 266, zIndex: 400, padding: 0 }}>
                   <div style={{ margin: '4px 8px' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', background: 'var(--ds-surface, var(--ds-surface, var(--ds-surface, #fff)))', border: '2px solid #85B8FF', borderRadius: 3, padding: '1px 0' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', background: 'var(--ds-surface, #fff)', border: '2px solid #85B8FF', borderRadius: 3, padding: '1px 0' }}>
                       <Search size={14} color="#626F86" style={{ marginLeft: 8, flexShrink: 0 }} />
                       <input type="text" placeholder="Find menu item" value={addMenuSearch} onChange={e => setAddMenuSearch(e.target.value)} autoFocus
                         style={{ background: 'transparent', border: 'none', outline: 'none', boxShadow: 'none', padding: '4px 4px 4px 8px', fontSize: 14, color: atlText, width: '100%', height: 28, fontFamily: 'inherit' }} />
@@ -572,7 +572,7 @@ export function IssueContentView({
                         onUpdate={() => { queryClient.invalidateQueries({ queryKey: ['ph_issues'] }); queryClient.invalidateQueries({ queryKey: ['allwork-items'] }); }}
                       />
                     ) : (
-                      <span style={{ fontSize: 14, color: 'var(--ds-text, var(--ds-text, #172B4D))' }}>Medium</span>
+                      <span style={{ fontSize: 14, color: 'var(--ds-text, #172B4D)' }}>Medium</span>
                     )}
                   </div>
                 </div>
@@ -808,7 +808,7 @@ export function IssueContentView({
               style={{
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 width: 32, height: 32, border: '1px solid #DFE1E6', borderRadius: 4,
-                background: checkFlagged(item) ? '#FFEBE6' : 'var(--ds-surface, var(--ds-surface, var(--ds-surface, #fff)))', cursor: 'pointer',
+                background: checkFlagged(item) ? '#FFEBE6' : 'var(--ds-surface, #fff)', cursor: 'pointer',
                 padding: 0,
               }}
               title={checkFlagged(item) ? 'Remove flag' : 'Add flag'}
@@ -830,11 +830,11 @@ export function IssueContentView({
             style={{
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               width: 32, height: 32, border: '1px solid #DFE1E6', borderRadius: 4,
-              background: 'var(--ds-surface, var(--ds-surface, var(--ds-surface, #fff)))', cursor: 'pointer', padding: 0,
+              background: 'var(--ds-surface, #fff)', cursor: 'pointer', padding: 0,
             }}
             title="Automation"
           >
-            <Zap size={18} color="var(--ds-text, var(--ds-text, #172B4D))" />
+            <Zap size={18} color="var(--ds-text, #172B4D)" />
           </button>
           <span style={{ marginLeft: 'auto', display: 'flex', gap: 4 }}>
             {/* Watcher count */}
@@ -852,41 +852,41 @@ export function IssueContentView({
               {moreMenuOpen && (
                 <div style={{
                   position: 'absolute', top: '100%', right: 0, marginTop: 4,
-                  background: 'var(--ds-surface, var(--ds-surface, var(--ds-surface, #fff)))', borderRadius: 6, width: 220,
+                  background: 'var(--ds-surface, #fff)', borderRadius: 6, width: 220,
                   boxShadow: '0 8px 24px rgba(9,30,66,.25)', zIndex: 80,
                   border: '1px solid #DFE1E6', padding: '4px 0',
                 }}>
                   {/* Add/Remove flag in menu */}
                   <button onClick={() => { setShowFlagPopover(true); setMoreMenuOpen(false); }}
-                    style={{ display: 'block', width: '100%', textAlign: 'left', padding: '8px 16px', fontSize: 14, color: 'var(--ds-text, var(--ds-text, #172B4D))', background: 'transparent', border: 'none', cursor: 'pointer' }}
-                    onMouseOver={e => (e.currentTarget.style.background = 'var(--ds-surface-sunken, var(--ds-surface-sunken, #F4F5F7))')}
+                    style={{ display: 'block', width: '100%', textAlign: 'left', padding: '8px 16px', fontSize: 14, color: 'var(--ds-text, #172B4D)', background: 'transparent', border: 'none', cursor: 'pointer' }}
+                    onMouseOver={e => (e.currentTarget.style.background = 'var(--ds-surface-sunken, #F4F5F7)')}
                     onMouseOut={e => (e.currentTarget.style.background = 'transparent')}
                   >{checkFlagged(item) ? 'Remove flag' : 'Add flag'}</button>
                   <div style={{ height: 1, background: '#EBECF0', margin: '4px 0' }} />
                   {/* Convert to Subtask */}
                   {item?.issue_type && item.issue_type !== 'Sub-task' && (
                     <button onClick={() => { setShowConvertWizard(true); setMoreMenuOpen(false); }}
-                      style={{ display: 'block', width: '100%', textAlign: 'left', padding: '8px 16px', fontSize: 14, color: 'var(--ds-text, var(--ds-text, #172B4D))', background: 'transparent', border: 'none', cursor: 'pointer' }}
-                      onMouseOver={e => (e.currentTarget.style.background = 'var(--ds-surface-sunken, var(--ds-surface-sunken, #F4F5F7))')}
+                      style={{ display: 'block', width: '100%', textAlign: 'left', padding: '8px 16px', fontSize: 14, color: 'var(--ds-text, #172B4D)', background: 'transparent', border: 'none', cursor: 'pointer' }}
+                      onMouseOver={e => (e.currentTarget.style.background = 'var(--ds-surface-sunken, #F4F5F7)')}
                       onMouseOut={e => (e.currentTarget.style.background = 'transparent')}
                     >Convert to Subtask</button>
                   )}
                   {/* Clone */}
                   <button onClick={() => { setShowCloneWizard(true); setMoreMenuOpen(false); }}
-                    style={{ display: 'block', width: '100%', textAlign: 'left', padding: '8px 16px', fontSize: 14, color: 'var(--ds-text, var(--ds-text, #172B4D))', background: 'transparent', border: 'none', cursor: 'pointer' }}
-                    onMouseOver={e => (e.currentTarget.style.background = 'var(--ds-surface-sunken, var(--ds-surface-sunken, #F4F5F7))')}
+                    style={{ display: 'block', width: '100%', textAlign: 'left', padding: '8px 16px', fontSize: 14, color: 'var(--ds-text, #172B4D)', background: 'transparent', border: 'none', cursor: 'pointer' }}
+                    onMouseOver={e => (e.currentTarget.style.background = 'var(--ds-surface-sunken, #F4F5F7)')}
                     onMouseOut={e => (e.currentTarget.style.background = 'transparent')}
                   >Clone</button>
                   {/* Move */}
                   <button onClick={() => { setShowMoveWizard(true); setMoreMenuOpen(false); }}
-                    style={{ display: 'block', width: '100%', textAlign: 'left', padding: '8px 16px', fontSize: 14, color: 'var(--ds-text, var(--ds-text, #172B4D))', background: 'transparent', border: 'none', cursor: 'pointer' }}
-                    onMouseOver={e => (e.currentTarget.style.background = 'var(--ds-surface-sunken, var(--ds-surface-sunken, #F4F5F7))')}
+                    style={{ display: 'block', width: '100%', textAlign: 'left', padding: '8px 16px', fontSize: 14, color: 'var(--ds-text, #172B4D)', background: 'transparent', border: 'none', cursor: 'pointer' }}
+                    onMouseOver={e => (e.currentTarget.style.background = 'var(--ds-surface-sunken, #F4F5F7)')}
                     onMouseOut={e => (e.currentTarget.style.background = 'transparent')}
                   >Move</button>
                   {/* Archive */}
                   <button onClick={() => { setShowArchiveDialog(true); setMoreMenuOpen(false); }}
-                    style={{ display: 'block', width: '100%', textAlign: 'left', padding: '8px 16px', fontSize: 14, color: 'var(--ds-text, var(--ds-text, #172B4D))', background: 'transparent', border: 'none', cursor: 'pointer' }}
-                    onMouseOver={e => (e.currentTarget.style.background = 'var(--ds-surface-sunken, var(--ds-surface-sunken, #F4F5F7))')}
+                    style={{ display: 'block', width: '100%', textAlign: 'left', padding: '8px 16px', fontSize: 14, color: 'var(--ds-text, #172B4D)', background: 'transparent', border: 'none', cursor: 'pointer' }}
+                    onMouseOver={e => (e.currentTarget.style.background = 'var(--ds-surface-sunken, #F4F5F7)')}
                     onMouseOut={e => (e.currentTarget.style.background = 'transparent')}
                   >Archive</button>
                   <div style={{ height: 1, background: '#EBECF0', margin: '4px 0' }} />
@@ -909,13 +909,13 @@ export function IssueContentView({
               ? <ChevronRight size={14} color="#42526E" />
               : <ChevronDown size={14} color="#42526E" />
             }
-            <span style={{ fontSize: 14, fontWeight: 700, color: 'var(--ds-text, var(--ds-text, #172B4D))' }}>Details</span>
+            <span style={{ fontSize: 14, fontWeight: 700, color: 'var(--ds-text, #172B4D)' }}>Details</span>
           </div>
           {!collapsed.details && (
             <div>
               {/* Fix versions — Jira-parity editable dropdown */}
               <div style={{ marginBottom: 14, position: 'relative' }} ref={fixVersionDropdownRef}>
-                <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text, var(--ds-text, #172B4D))', marginBottom: 4 }}>Fix versions</div>
+                <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text, #172B4D)', marginBottom: 4 }}>Fix versions</div>
                 <div
                   onClick={() => setShowFixVersionDropdown(!showFixVersionDropdown)}
                   style={{
@@ -925,7 +925,7 @@ export function IssueContentView({
                     border: showFixVersionDropdown ? '2px solid #4C9AFF' : '2px solid transparent',
                     background: showFixVersionDropdown ? 'var(--ds-text-inverse, #FFFFFF)' : 'transparent',
                   }}
-                  onMouseEnter={e => { if (!showFixVersionDropdown) e.currentTarget.style.background = 'var(--ds-surface-sunken, var(--ds-surface-sunken, #F4F5F7))'; }}
+                  onMouseEnter={e => { if (!showFixVersionDropdown) e.currentTarget.style.background = 'var(--ds-surface-sunken, #F4F5F7)'; }}
                   onMouseLeave={e => { if (!showFixVersionDropdown) e.currentTarget.style.background = 'transparent'; }}
                 >
                   {fixVersionNames.length > 0 ? (
@@ -938,31 +938,31 @@ export function IssueContentView({
                       </span>
                     ))
                   ) : (
-                    <span style={{ color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #6B778C))', fontSize: 14 }}>None</span>
+                    <span style={{ color: 'var(--ds-text-subtlest, #6B778C)', fontSize: 14 }}>None</span>
                   )}
                 </div>
                 {showFixVersionDropdown && (
                   <div style={{ position: 'absolute', top: '100%', left: 0, right: 0, background: 'var(--ds-text-inverse, #FFFFFF)', border: '1px solid #DFE1E6', borderRadius: 4, boxShadow: '0 4px 12px rgba(0,0,0,0.15)', zIndex: 100, maxHeight: 320, overflow: 'hidden' }}>
                     <div style={{ padding: '8px 12px', borderBottom: '1px solid #F4F5F7' }}>
                       <input autoFocus value={fixVersionSearch} onChange={e => setFixVersionSearch(e.target.value)} placeholder="Search versions..."
-                        style={{ width: '100%', border: '1px solid #DFE1E6', borderRadius: 4, padding: '6px 10px', fontSize: 13, color: 'var(--ds-text, var(--ds-text, #172B4D))', outline: 'none', fontFamily: 'inherit' }}
+                        style={{ width: '100%', border: '1px solid #DFE1E6', borderRadius: 4, padding: '6px 10px', fontSize: 13, color: 'var(--ds-text, #172B4D)', outline: 'none', fontFamily: 'inherit' }}
                         onFocus={e => { e.currentTarget.style.borderColor = '#4C9AFF'; }}
-                        onBlur={e => { e.currentTarget.style.borderColor = 'var(--ds-border, var(--ds-border, #DFE1E6))'; }}
+                        onBlur={e => { e.currentTarget.style.borderColor = 'var(--ds-border, #DFE1E6)'; }}
                       />
                     </div>
                     <div style={{ maxHeight: 260, overflowY: 'auto' }}>
-                      {versionsLoading && <div style={{ padding: '12px 16px', fontSize: 13, color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #6B778C))' }}>Loading...</div>}
+                      {versionsLoading && <div style={{ padding: '12px 16px', fontSize: 13, color: 'var(--ds-text-subtlest, #6B778C)' }}>Loading...</div>}
                       {(() => {
                         const filtered = unreleasedVersions.filter(v => v.name.toLowerCase().includes(fixVersionSearch.toLowerCase()));
                         if (filtered.length === 0) return null;
                         return (
                           <>
-                            <div style={{ padding: '8px 16px 4px', fontSize: 11, fontWeight: 700, color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #6B778C))', textTransform: 'uppercase', letterSpacing: '0.03em' }}>Unreleased</div>
+                            <div style={{ padding: '8px 16px 4px', fontSize: 11, fontWeight: 700, color: 'var(--ds-text-subtlest, #6B778C)', textTransform: 'uppercase', letterSpacing: '0.03em' }}>Unreleased</div>
                             {filtered.map(v => {
                               const isSel = fixVersionNames.includes(v.name);
                               return (
-                                <div key={v.name} onClick={() => handleToggleFixVersion(v.name)} style={{ padding: '8px 16px', fontSize: 14, color: 'var(--ds-text, var(--ds-text, #172B4D))', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: isSel ? '#DEEBFF' : 'transparent', transition: 'background 0.1s' }}
-                                  onMouseEnter={e => { if (!isSel) e.currentTarget.style.background = 'var(--ds-surface-sunken, var(--ds-surface-sunken, #F4F5F7))'; }}
+                                <div key={v.name} onClick={() => handleToggleFixVersion(v.name)} style={{ padding: '8px 16px', fontSize: 14, color: 'var(--ds-text, #172B4D)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: isSel ? '#DEEBFF' : 'transparent', transition: 'background 0.1s' }}
+                                  onMouseEnter={e => { if (!isSel) e.currentTarget.style.background = 'var(--ds-surface-sunken, #F4F5F7)'; }}
                                   onMouseLeave={e => { e.currentTarget.style.background = isSel ? '#DEEBFF' : 'transparent'; }}
                                 >
                                   <span>{v.name}</span>
@@ -978,12 +978,12 @@ export function IssueContentView({
                         if (filtered.length === 0) return null;
                         return (
                           <>
-                            <div style={{ padding: '8px 16px 4px', fontSize: 11, fontWeight: 700, color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #6B778C))', textTransform: 'uppercase', letterSpacing: '0.03em', borderTop: '1px solid #F4F5F7' }}>Released</div>
+                            <div style={{ padding: '8px 16px 4px', fontSize: 11, fontWeight: 700, color: 'var(--ds-text-subtlest, #6B778C)', textTransform: 'uppercase', letterSpacing: '0.03em', borderTop: '1px solid #F4F5F7' }}>Released</div>
                             {filtered.map(v => {
                               const isSel = fixVersionNames.includes(v.name);
                               return (
-                                <div key={v.name} onClick={() => handleToggleFixVersion(v.name)} style={{ padding: '8px 16px', fontSize: 14, color: 'var(--ds-text, var(--ds-text, #172B4D))', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: isSel ? '#DEEBFF' : 'transparent', transition: 'background 0.1s' }}
-                                  onMouseEnter={e => { if (!isSel) e.currentTarget.style.background = 'var(--ds-surface-sunken, var(--ds-surface-sunken, #F4F5F7))'; }}
+                                <div key={v.name} onClick={() => handleToggleFixVersion(v.name)} style={{ padding: '8px 16px', fontSize: 14, color: 'var(--ds-text, #172B4D)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: isSel ? '#DEEBFF' : 'transparent', transition: 'background 0.1s' }}
+                                  onMouseEnter={e => { if (!isSel) e.currentTarget.style.background = 'var(--ds-surface-sunken, #F4F5F7)'; }}
                                   onMouseLeave={e => { e.currentTarget.style.background = isSel ? '#DEEBFF' : 'transparent'; }}
                                 >
                                   <span>{v.name}</span>
@@ -1001,7 +1001,7 @@ export function IssueContentView({
 
               {/* Assignee — Jira parity: avatar + name, click-to-edit dropdown */}
               <div style={{ marginBottom: 14 }}>
-                <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text, var(--ds-text, #172B4D))', marginBottom: 4 }}>Assignee</div>
+                <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text, #172B4D)', marginBottom: 4 }}>Assignee</div>
                 {item?.id ? (
                   <EditableAssignee
                     issueId={item.id}
@@ -1021,12 +1021,12 @@ export function IssueContentView({
 
               {/* Reporter — Jira parity: 28px avatar + 14px name */}
               <div style={{ marginBottom: 14 }}>
-                <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text, var(--ds-text, #172B4D))', marginBottom: 4 }}>Reporter</div>
+                <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text, #172B4D)', marginBottom: 4 }}>Reporter</div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '4px 6px', borderRadius: 4 }}>
                   {item?.reporter_name ? (
                     <>
                       <Avatar name={item.reporter_name} url={resolveAvatarUrl(item.reporter_name)} size={28} />
-                      <span style={{ fontSize: 14, color: 'var(--ds-text, var(--ds-text, #172B4D))', fontWeight: 400 }}>{item.reporter_name}</span>
+                      <span style={{ fontSize: 14, color: 'var(--ds-text, #172B4D)', fontWeight: 400 }}>{item.reporter_name}</span>
                     </>
                   ) : <span style={{ color: '#42526E', fontSize: 14 }}>—</span>}
                 </div>

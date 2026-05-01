@@ -352,7 +352,7 @@ export function BacklogTableView({ data, isLoading, onRowClick }: BacklogTableVi
     if (!column.sortable) return null;
     const isActive = sortConfig.column === column.key;
     return (
-      <span className={cn("inline-flex ml-1", isActive ? "text-[var(--ds-text-brand,var(--ds-text-brand, #2563EB))]" : "text-[var(--ds-text-subtlest,var(--ds-text-subtlest, #94A3B8))]")}>
+      <span className={cn("inline-flex ml-1", isActive ? "text-[var(--ds-text-brand, #2563EB)]" : "text-[var(--ds-text-subtlest, #94A3B8)]")}>
         {isActive && sortConfig.direction === 'asc' ? (
           <ChevronUp className="h-3 w-3" />
         ) : (
@@ -369,7 +369,7 @@ export function BacklogTableView({ data, isLoading, onRowClick }: BacklogTableVi
           <Checkbox
             checked={selectedIds.has(row.id)}
             onCheckedChange={() => toggleSelection(row.id)}
-            className="data-[state=checked]:bg-[var(--ds-text-brand,var(--ds-text-brand, #2563EB))] data-[state=checked]:border-[var(--ds-text-brand,var(--ds-text-brand, #2563EB))]" /* V12 */
+            className="data-[state=checked]:bg-[var(--ds-text-brand, #2563EB)] data-[state=checked]:border-[var(--ds-text-brand, #2563EB)]" /* V12 */
             style={{ width: 16, height: 16, borderRadius: 3 }} /* V12 */
           />
         );
@@ -488,7 +488,7 @@ export function BacklogTableView({ data, isLoading, onRowClick }: BacklogTableVi
         <div
           className="flex items-center justify-between px-3"
           style={{
-            background: 'var(--ds-surface-sunken, var(--ds-surface-sunken, #F1F5F9))', /* V12 */
+            background: 'var(--ds-surface-sunken, #F1F5F9)', /* V12 */
             borderBottom: '1.5px solid rgba(15, 23, 42, 0.12)', /* V12 */
             padding: '8px 12px', /* V12 */
           }}
@@ -532,7 +532,7 @@ export function BacklogTableView({ data, isLoading, onRowClick }: BacklogTableVi
                   position: 'sticky',
                   top: 0,
                   zIndex: 10,
-                  background: 'var(--ds-surface-sunken, var(--ds-surface-sunken, #F1F5F9))', /* V12 */
+                  background: 'var(--ds-surface-sunken, #F1F5F9)', /* V12 */
                 }}
               >
                 <tr style={{ borderBottom: '1.5px solid rgba(15, 23, 42, 0.12)' /* V12 */ }}>
@@ -557,7 +557,7 @@ export function BacklogTableView({ data, isLoading, onRowClick }: BacklogTableVi
                           fontWeight: 650, /* V12 */
                           textTransform: 'uppercase' as const, /* V12 */
                           letterSpacing: '0.06em', /* V12 */
-                          color: isActive ? 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))' : 'var(--ds-text-subtlest, var(--ds-text-subtlest, #64748B))', /* V12 */
+                          color: isActive ? 'var(--ds-text-brand, #2563EB)' : 'var(--ds-text-subtlest, #64748B)', /* V12 */
                           whiteSpace: 'nowrap' as const, /* V12 */
                           userSelect: 'none' as const, /* V12 */
                           lineHeight: 1.2, /* V12 */
@@ -573,7 +573,7 @@ export function BacklogTableView({ data, isLoading, onRowClick }: BacklogTableVi
                           <Checkbox
                             checked={isAllSelected || (isIndeterminate ? 'indeterminate' : false)}
                             onCheckedChange={() => toggleAll()}
-                            className="data-[state=checked]:bg-[var(--ds-text-brand,var(--ds-text-brand, #2563EB))] data-[state=checked]:border-[var(--ds-text-brand,var(--ds-text-brand, #2563EB))]" /* V12 */
+                            className="data-[state=checked]:bg-[var(--ds-text-brand, #2563EB)] data-[state=checked]:border-[var(--ds-text-brand, #2563EB)]" /* V12 */
                             style={{ width: 16, height: 16, borderRadius: 3 }} /* V12 */
                           />
                         ) : (

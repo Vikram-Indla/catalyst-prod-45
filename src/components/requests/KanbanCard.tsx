@@ -35,7 +35,7 @@ export function KanbanCard({ request, density, isDragOverlay, isGhost, onClick, 
   const isDelivered = request.status === 'done';
   const isCancelled = request.status === 'cancelled';
 
-  const progressColor = isDelivered ? '#10b981' : request.progress >= 40 && request.progress < 70 ? 'var(--ds-text-warning, var(--ds-text-warning, #f59e0b))' : 'var(--ds-text-brand, var(--ds-text-brand, #2563eb))';
+  const progressColor = isDelivered ? '#10b981' : request.progress >= 40 && request.progress < 70 ? 'var(--ds-text-warning, #f59e0b)' : 'var(--ds-text-brand, #2563eb)';
 
   if (isGhost) {
     return (

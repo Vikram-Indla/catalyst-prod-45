@@ -53,7 +53,7 @@ export function ThemeCreateModal({ open, onClose, onSubmit, initialData }: Props
         title: initialData.title || '',
         vision_statement: initialData.vision_statement || '',
         description: initialData.description || '',
-        color: initialData.color || 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))',
+        color: initialData.color || 'var(--ds-text-brand, #2563EB)',
         status: initialData.status || 'active',
         priority: initialData.priority || 'medium',
         start_date: initialData.start_date || '',
@@ -267,8 +267,8 @@ export function ThemeCreateModal({ open, onClose, onSubmit, initialData }: Props
               ) : (
                 <div className="flex gap-2">
                   <input style={{ ...inputStyle, flex: 1 }} placeholder="Group name" value={newGroupName} onChange={e => setNewGroupName(e.target.value)} autoFocus />
-                  <button onClick={handleCreateGroup} disabled={!newGroupName.trim()} style={{ fontSize: 11, fontWeight: 600, padding: '0 10px', borderRadius: 4, border: 'none', background: newGroupName.trim() ? 'var(--cp-blue)' : 'var(--fg-4)', color: 'var(--ds-surface, var(--ds-surface, var(--ds-surface, #FFF)))', cursor: newGroupName.trim() ? 'pointer' : 'default' }}>Create</button>
-                  <button onClick={() => { setShowNewGroup(false); setNewGroupName(''); }} style={{ fontSize: 11, padding: '0 10px', borderRadius: 4, border: '1px solid var(--divider)', background: 'var(--ds-surface, var(--ds-surface, var(--ds-surface, #FFF)))', color: 'var(--fg-2)', cursor: 'pointer' }}>Cancel</button>
+                  <button onClick={handleCreateGroup} disabled={!newGroupName.trim()} style={{ fontSize: 11, fontWeight: 600, padding: '0 10px', borderRadius: 4, border: 'none', background: newGroupName.trim() ? 'var(--cp-blue)' : 'var(--fg-4)', color: 'var(--ds-surface, #FFF)', cursor: newGroupName.trim() ? 'pointer' : 'default' }}>Create</button>
+                  <button onClick={() => { setShowNewGroup(false); setNewGroupName(''); }} style={{ fontSize: 11, padding: '0 10px', borderRadius: 4, border: '1px solid var(--divider)', background: 'var(--ds-surface, #FFF)', color: 'var(--fg-2)', cursor: 'pointer' }}>Cancel</button>
                 </div>
               )}
             </div>

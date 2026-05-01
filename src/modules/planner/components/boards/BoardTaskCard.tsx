@@ -100,7 +100,7 @@ export function BoardTaskCard({ task, onClick, isDragging }: BoardTaskCardProps)
       {...listeners}
       onClick={onClick}
       className={cn(
-        'boards-card dark:bg-[var(--ds-surface-raised,var(--ds-surface-raised, #1A1A1A))] dark:border-[var(--ds-border,var(--ds-border, #2E2E2E))] dark:hover:bg-[var(--ds-surface-raised,var(--ds-surface-raised, #1A1A1A))] dark:hover:border-[var(--ds-border-bold,var(--ds-border-bold, #454545))]',
+        'boards-card dark:bg-[var(--ds-surface-raised, #1A1A1A)] dark:border-[var(--ds-border, #2E2E2E)] dark:hover:bg-[var(--ds-surface-raised, #1A1A1A)] dark:hover:border-[var(--ds-border-bold, #454545)]',
         // Priority left border (NOT floating icon)
         task.priority === 'critical' && 'boards-card--priority-critical',
         task.priority === 'high' && 'boards-card--priority-high',
@@ -126,7 +126,7 @@ export function BoardTaskCard({ task, onClick, isDragging }: BoardTaskCardProps)
           NO mysterious blue dot
           ======================================== */}
       <div className="boards-card__header">
-        <span className="boards-card__id dark:text-[var(--ds-text-subtlest,var(--ds-text-subtlest, #A1A1A1))]">{task.key}</span>
+        <span className="boards-card__id dark:text-[var(--ds-text-subtlest, #A1A1A1)]">{task.key}</span>
         {/* NO blue dot — it was unclear what it meant */}
       </div>
 
@@ -134,7 +134,7 @@ export function BoardTaskCard({ task, onClick, isDragging }: BoardTaskCardProps)
           CARD TITLE — The Hero
           Weight 500, darkest element
           ======================================== */}
-      <h4 className="boards-card__title dark:text-[var(--ds-text,var(--ds-text, #EDEDED))]">{task.title}</h4>
+      <h4 className="boards-card__title dark:text-[var(--ds-text, #EDEDED)]">{task.title}</h4>
 
       {/* Blocked indicator */}
       {task.blocked && (

@@ -323,7 +323,7 @@ export function SyncConfigPanel() {
               onChange={handleProjectChange}
               placeholder="Select projects..."
               emptyMessage="No accessible projects found. Test your connection first."
-              accentColor="var(--ds-text-brand, var(--ds-text-brand, #2563EB))"
+              accentColor="var(--ds-text-brand, #2563EB)"
             />
             <p style={{ fontSize: 11, color: 'var(--wh-tx4)', marginTop: 6, fontFamily: 'var(--wh-fn)' }}>
               {selectedProjects.length === 0

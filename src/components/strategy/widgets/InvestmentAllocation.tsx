@@ -9,7 +9,7 @@ import { useInvestmentAllocations, useStrategicThemes } from '@/hooks/strategy/u
 import { formatThemeName } from '@/utils/strategy/formatThemeName';
 
 /* Blue monochrome shades — sorted by allocation size */
-const BLUE_SHADES = ['#1E40AF', 'var(--ds-text-brand, var(--ds-text-brand, #3B82F6))', '#93C5FD', '#DBEAFE', '#DBEAFE'];
+const BLUE_SHADES = ['#1E40AF', 'var(--ds-text-brand, #3B82F6)', '#93C5FD', '#DBEAFE', '#DBEAFE'];
 
 function formatSAR(amount: number): string {
   if (amount >= 1_000_000_000) return `${(amount / 1_000_000_000).toFixed(1)}B`;

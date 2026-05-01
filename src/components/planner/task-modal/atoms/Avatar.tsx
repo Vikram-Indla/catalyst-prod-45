@@ -40,7 +40,7 @@ export const Avatar: React.FC<AvatarProps> = ({
         flexShrink: 0,
       }}
     >
-      <CircleUser size={dimensions.icon} color="var(--ds-surface, var(--ds-surface, #FFFFFF))" strokeWidth={1.5} />
+      <CircleUser size={dimensions.icon} color="var(--ds-surface, #FFFFFF)" strokeWidth={1.5} />
     </span>
   );
 };

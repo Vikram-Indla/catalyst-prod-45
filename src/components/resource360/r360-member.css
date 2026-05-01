@@ -727,7 +727,7 @@
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
-  background: var(--ds-surface, var(--ds-surface, #FFF)) !important;
+  background: var(--ds-surface, #FFF) !important;
   cursor: pointer !important;
   color: var(--ds-text-subtlest, #64748B) !important;
   transition: all 0.15s !important;
@@ -1105,7 +1105,7 @@
 }
 
 #r360-root .pill-project {
-  font-size: 11px !important; font-weight: 700 !important; color: var(--ds-surface, var(--ds-surface, #fff)) !important;
+  font-size: 11px !important; font-weight: 700 !important; color: var(--ds-surface, #fff) !important;
   background: var(--cp-primary, #2563EB) !important;
   padding: 2px 8px !important; border-radius: 4px !important;
   letter-spacing: 0.02em !important;
@@ -1212,7 +1212,7 @@
   flex-shrink: 0 !important; margin-top: 1px !important;
 }
 #r360-root .hier-icon.epic {
-  background: #6554C0 !important; color: var(--ds-surface, var(--ds-surface, #fff)) !important;
+  background: #6554C0 !important; color: var(--ds-surface, #fff) !important;
 }
 
 #r360-root .hier-key {

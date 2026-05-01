@@ -141,7 +141,7 @@ function SectionLabel({ label, isDark }: { label: string; isDark: boolean }) {
           fontSize: 12,
           fontWeight: 600,
           color: isDark
-            ? 'var(--ds-text-subtlest, var(--ds-text-subtlest, #878787))'
+            ? 'var(--ds-text-subtlest, #878787)'
             : token('color.text.subtlest', '#8590A2'),
         }}
       >
@@ -152,7 +152,7 @@ function SectionLabel({ label, isDark }: { label: string; isDark: boolean }) {
 }
 
 function LoadingState({ isDark }: { isDark: boolean }) {
-  const skeletonBg = isDark ? 'var(--ds-surface-overlay, var(--ds-surface-overlay, #1F1F1F))' : token('color.background.neutral', '#F4F5F7');
+  const skeletonBg = isDark ? 'var(--ds-surface-overlay, #1F1F1F)' : token('color.background.neutral', '#F4F5F7');
   return (
     <Box xcss={panelXcss}>
       {[0, 1, 2, 3].map((i) => (
@@ -163,7 +163,7 @@ function LoadingState({ isDark }: { isDark: boolean }) {
             alignItems: 'center',
             gap: 12,
             padding: '12px 16px',
-            borderBottom: `1px solid ${isDark ? 'var(--ds-border, var(--ds-border, #2E2E2E))' : token('color.border', '#DFE1E6')}`,
+            borderBottom: `1px solid ${isDark ? 'var(--ds-border, #2E2E2E)' : token('color.border', '#DFE1E6')}`,
           }}
           aria-hidden="true"
         >
@@ -185,15 +185,15 @@ function EmptyState({ isDark }: { isDark: boolean }) {
   return (
     <Box xcss={emptyXcss}>
       <svg width="48" height="48" viewBox="0 0 48 48" fill="none" aria-hidden="true">
-        <circle cx="24" cy="24" r="20" fill={isDark ? 'var(--ds-border, var(--ds-border, #292929))' : token('color.background.neutral', '#F4F5F7')} />
-        <path d="M16 24l5 5 11-11" stroke={isDark ? 'var(--ds-text-subtlest, var(--ds-text-subtlest, #878787))' : token('color.text.subtlest', '#8590A2')} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+        <circle cx="24" cy="24" r="20" fill={isDark ? 'var(--ds-border, #292929)' : token('color.background.neutral', '#F4F5F7')} />
+        <path d="M16 24l5 5 11-11" stroke={isDark ? 'var(--ds-text-subtlest, #878787)' : token('color.text.subtlest', '#8590A2')} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
       </svg>
       <span
         style={{
           fontFamily: 'var(--cp-font-body)',
           fontSize: 14,
           fontWeight: 600,
-          color: isDark ? 'var(--ds-text, var(--ds-text, #EDEDED))' : token('color.text', '#292A2E'),
+          color: isDark ? 'var(--ds-text, #EDEDED)' : token('color.text', '#292A2E'),
         }}
       >
         You're all caught up
@@ -202,7 +202,7 @@ function EmptyState({ isDark }: { isDark: boolean }) {
         style={{
           fontFamily: 'var(--cp-font-body)',
           fontSize: 13,
-          color: isDark ? 'var(--ds-text-subtlest, var(--ds-text-subtlest, #A1A1A1))' : token('color.text.subtle', '#626F86'),
+          color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : token('color.text.subtle', '#626F86'),
           textAlign: 'center',
         }}
       >
@@ -275,7 +275,7 @@ export default function DirectPanel({ unreadOnly, isDark, readIds: externalReadI
   }
 
   const groups = groupByDate(visible);
-  const dividerColor = isDark ? 'var(--ds-border, var(--ds-border, #2E2E2E))' : token('color.border', '#DFE1E6');
+  const dividerColor = isDark ? 'var(--ds-border, #2E2E2E)' : token('color.border', '#DFE1E6');
 
   return (
     <Box xcss={panelXcss}>

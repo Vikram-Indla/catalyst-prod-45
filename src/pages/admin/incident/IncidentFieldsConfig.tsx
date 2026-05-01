@@ -55,7 +55,7 @@ export default function IncidentFieldsConfig() {
   const [formData, setFormData] = useState({
     option_value: '',
     option_label: '',
-    color: 'var(--ds-text-brand, var(--ds-text-brand, #3B82F6))',
+    color: 'var(--ds-text-brand, #3B82F6)',
     sort_order: 0,
     is_active: true,
   });
@@ -87,7 +87,7 @@ export default function IncidentFieldsConfig() {
       setFormData({
         option_value: option.option_value,
         option_label: option.option_label,
-        color: option.color || 'var(--ds-text-brand, var(--ds-text-brand, #3B82F6))',
+        color: option.color || 'var(--ds-text-brand, #3B82F6)',
         sort_order: option.sort_order,
         is_active: option.is_active,
       });
@@ -97,7 +97,7 @@ export default function IncidentFieldsConfig() {
       setFormData({
         option_value: '',
         option_label: '',
-        color: 'var(--ds-text-brand, var(--ds-text-brand, #3B82F6))',
+        color: 'var(--ds-text-brand, #3B82F6)',
         sort_order: maxOrder + 1,
         is_active: true,
       });
@@ -111,7 +111,7 @@ export default function IncidentFieldsConfig() {
     setFormData({
       option_value: '',
       option_label: '',
-      color: 'var(--ds-text-brand, var(--ds-text-brand, #3B82F6))',
+      color: 'var(--ds-text-brand, #3B82F6)',
       sort_order: 0,
       is_active: true,
     });
@@ -350,7 +350,7 @@ export default function IncidentFieldsConfig() {
                   <Input
                     value={formData.color}
                     onChange={(e) => setFormData((prev) => ({ ...prev, color: e.target.value }))}
-                    placeholder="var(--ds-text-brand, var(--ds-text-brand, #3B82F6))"
+                    placeholder="var(--ds-text-brand, #3B82F6)"
                     className="flex-1"
                   />
                 </div>

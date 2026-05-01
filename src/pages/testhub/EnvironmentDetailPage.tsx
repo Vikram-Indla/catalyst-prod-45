@@ -46,26 +46,26 @@ interface LinkedCycle {
 }
 
 const TYPE_CONFIG: Record<string, { label: string; color: string; bg: string }> = {
-  development: { label: 'Development', color: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))', bg: 'var(--ds-background-selected, var(--ds-background-selected, #EFF6FF))' },
+  development: { label: 'Development', color: 'var(--ds-text-brand, #2563EB)', bg: 'var(--ds-background-selected, #EFF6FF)' },
   testing: { label: 'Testing', color: '#7C3AED', bg: '#F5F3FF' },
-  staging: { label: 'Staging', color: 'var(--ds-text-warning, var(--ds-text-warning, #D97706))', bg: '#FFFBEB' },
+  staging: { label: 'Staging', color: 'var(--ds-text-warning, #D97706)', bg: '#FFFBEB' },
   uat: { label: 'UAT', color: '#0891B2', bg: '#ECFEFF' },
-  production: { label: 'Production', color: 'var(--ds-text-danger, var(--ds-text-danger, #DC2626))', bg: 'var(--ds-background-danger, var(--ds-background-danger, #FEF2F2))' },
-  other: { label: 'Other', color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #64748B))', bg: 'var(--ds-surface-sunken, var(--ds-surface-sunken, #F1F5F9))' },
+  production: { label: 'Production', color: 'var(--ds-text-danger, #DC2626)', bg: 'var(--ds-background-danger, #FEF2F2)' },
+  other: { label: 'Other', color: 'var(--ds-text-subtlest, #64748B)', bg: 'var(--ds-surface-sunken, #F1F5F9)' },
 };
 
 const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string }> = {
   active: { label: 'Active', color: '#059669', bg: '#ECFDF5' },
-  maintenance: { label: 'Maintenance', color: 'var(--ds-text-warning, var(--ds-text-warning, #D97706))', bg: '#FFFBEB' },
-  inactive: { label: 'Inactive', color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #64748B))', bg: 'var(--ds-surface-sunken, var(--ds-surface-sunken, #F1F5F9))' },
-  deprecated: { label: 'Deprecated', color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #94A3B8))', bg: 'var(--ds-surface-sunken, var(--ds-surface-sunken, #F8FAFC))' },
+  maintenance: { label: 'Maintenance', color: 'var(--ds-text-warning, #D97706)', bg: '#FFFBEB' },
+  inactive: { label: 'Inactive', color: 'var(--ds-text-subtlest, #64748B)', bg: 'var(--ds-surface-sunken, #F1F5F9)' },
+  deprecated: { label: 'Deprecated', color: 'var(--ds-text-subtlest, #94A3B8)', bg: 'var(--ds-surface-sunken, #F8FAFC)' },
 };
 
 const HEALTH_CONFIG: Record<string, { label: string; color: string; bg: string; icon: any }> = {
   healthy: { label: 'Healthy', color: '#059669', bg: '#ECFDF5', icon: CheckCircle2 },
-  degraded: { label: 'Degraded', color: 'var(--ds-text-warning, var(--ds-text-warning, #D97706))', bg: '#FFFBEB', icon: AlertTriangle },
-  down: { label: 'Down', color: 'var(--ds-text-danger, var(--ds-text-danger, #DC2626))', bg: 'var(--ds-background-danger, var(--ds-background-danger, #FEF2F2))', icon: XCircle },
-  unknown: { label: 'Unknown', color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #64748B))', bg: 'var(--ds-surface-sunken, var(--ds-surface-sunken, #F1F5F9))', icon: HelpCircle },
+  degraded: { label: 'Degraded', color: 'var(--ds-text-warning, #D97706)', bg: '#FFFBEB', icon: AlertTriangle },
+  down: { label: 'Down', color: 'var(--ds-text-danger, #DC2626)', bg: 'var(--ds-background-danger, #FEF2F2)', icon: XCircle },
+  unknown: { label: 'Unknown', color: 'var(--ds-text-subtlest, #64748B)', bg: 'var(--ds-surface-sunken, #F1F5F9)', icon: HelpCircle },
 };
 
 export default function EnvironmentDetailPage() {
@@ -165,7 +165,7 @@ export default function EnvironmentDetailPage() {
   return (
     <div style={{ padding: 24, backgroundColor: 'var(--cp-bg-page, #F8FAFC)', minHeight: '100vh' }}>
       <button onClick={() => navigate('/testhub/environments')}
-        style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '8px 12px', border: `1px solid ${'var(--cp-border, #E2E8F0)'}`, borderRadius: 8, backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, var(--ds-surface, var(--ds-surface, #FFF)))', color: 'var(--cp-text-tertiary, #64748B)', fontSize: 13, cursor: 'pointer', marginBottom: 16 }}>
+        style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '8px 12px', border: `1px solid ${'var(--cp-border, #E2E8F0)'}`, borderRadius: 8, backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, #FFF)', color: 'var(--cp-text-tertiary, #64748B)', fontSize: 13, cursor: 'pointer', marginBottom: 16 }}>
         <ArrowLeft size={16} /> Back to Environments
       </button>
 
@@ -186,11 +186,11 @@ export default function EnvironmentDetailPage() {
         </div>
         <div style={{ display: 'flex', gap: 8 }}>
           <select value={environment.status} onChange={(e) => updateStatus(e.target.value)}
-            style={{ height: 40, padding: '0 14px', border: `1px solid ${'var(--cp-border, #E2E8F0)'}`, borderRadius: 8, fontSize: 13, backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, var(--ds-surface, var(--ds-surface, #FFF)))', color: isDark ? 'var(--ds-text, var(--ds-text, #EDEDED))' : undefined, cursor: 'pointer' }}>
+            style={{ height: 40, padding: '0 14px', border: `1px solid ${'var(--cp-border, #E2E8F0)'}`, borderRadius: 8, fontSize: 13, backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, #FFF)', color: isDark ? 'var(--ds-text, #EDEDED)' : undefined, cursor: 'pointer' }}>
             {Object.entries(STATUS_CONFIG).map(([key, val]) => <option key={key} value={key}>{val.label}</option>)}
           </select>
           <button onClick={deleteEnvironment}
-            style={{ display: 'flex', alignItems: 'center', gap: 6, height: 40, padding: '0 14px', border: '1px solid #FECACA', borderRadius: 8, backgroundColor: 'var(--ds-background-danger, var(--ds-background-danger, #FEF2F2))', color: 'var(--ds-text-danger, var(--ds-text-danger, #DC2626))', fontSize: 13, cursor: 'pointer' }}>
+            style={{ display: 'flex', alignItems: 'center', gap: 6, height: 40, padding: '0 14px', border: '1px solid #FECACA', borderRadius: 8, backgroundColor: 'var(--ds-background-danger, #FEF2F2)', color: 'var(--ds-text-danger, #DC2626)', fontSize: 13, cursor: 'pointer' }}>
             <Trash2 size={16} />
           </button>
         </div>
@@ -208,7 +208,7 @@ export default function EnvironmentDetailPage() {
           </div>
         </div>
         <select value={environment.health_status} onChange={(e) => updateHealthStatus(e.target.value)}
-          style={{ height: 50, padding: '8px 12px', border: `1px solid ${'var(--cp-border, #E2E8F0)'}`, borderRadius: 6, fontSize: 13, backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, var(--ds-surface, var(--ds-surface, #FFF)))', color: isDark ? 'var(--ds-text, var(--ds-text, #EDEDED))' : undefined, cursor: 'pointer' }}>
+          style={{ height: 50, padding: '8px 12px', border: `1px solid ${'var(--cp-border, #E2E8F0)'}`, borderRadius: 6, fontSize: 13, backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, #FFF)', color: isDark ? 'var(--ds-text, #EDEDED)' : undefined, cursor: 'pointer' }}>
           <option value="healthy">Healthy</option>
           <option value="degraded">Degraded</option>
           <option value="down">Down</option>
@@ -219,7 +219,7 @@ export default function EnvironmentDetailPage() {
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24 }}>
         {/* Left Column */}
         <div>
-          <div style={{ backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, var(--ds-surface, var(--ds-surface, #FFF)))', borderRadius: 12, padding: 24, border: `1px solid ${'var(--cp-border, #E2E8F0)'}`, marginBottom: 24 }}>
+          <div style={{ backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, #FFF)', borderRadius: 12, padding: 24, border: `1px solid ${'var(--cp-border, #E2E8F0)'}`, marginBottom: 24 }}>
             <h3 style={{ fontSize: 16, fontWeight: 600, color: 'var(--cp-text-primary, #0F172A)', margin: '0 0 16px', display: 'flex', alignItems: 'center', gap: 8 }}>
               <Settings size={18} style={{ color: '#6366F1' }} /> Connection Info
             </h3>
@@ -228,8 +228,8 @@ export default function EnvironmentDetailPage() {
                 <div>
                   <p style={{ fontSize: 12, color: 'var(--cp-text-tertiary, #64748B)', margin: '0 0 4px', display: 'flex', alignItems: 'center', gap: 4 }}><Globe size={12} /> Application URL</p>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                    <a href={environment.url} target="_blank" rel="noopener noreferrer" style={{ fontSize: 14, color: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))', textDecoration: 'none' }}>{environment.url}</a>
-                    <ExternalLink size={14} style={{ color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #94A3B8))' }} />
+                    <a href={environment.url} target="_blank" rel="noopener noreferrer" style={{ fontSize: 14, color: 'var(--ds-text-brand, #2563EB)', textDecoration: 'none' }}>{environment.url}</a>
+                    <ExternalLink size={14} style={{ color: 'var(--ds-text-subtlest, #94A3B8)' }} />
                   </div>
                 </div>
               )}
@@ -252,7 +252,7 @@ export default function EnvironmentDetailPage() {
           </div>
 
           {environment.description && (
-            <div style={{ backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, var(--ds-surface, var(--ds-surface, #FFF)))', borderRadius: 12, padding: 24, border: `1px solid ${'var(--cp-border, #E2E8F0)'}` }}>
+            <div style={{ backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, #FFF)', borderRadius: 12, padding: 24, border: `1px solid ${'var(--cp-border, #E2E8F0)'}` }}>
               <h3 style={{ fontSize: 16, fontWeight: 600, color: 'var(--cp-text-primary, #0F172A)', margin: '0 0 12px', display: 'flex', alignItems: 'center', gap: 8 }}>
                 <FileText size={18} style={{ color: '#6366F1' }} /> Description
               </h3>
@@ -264,7 +264,7 @@ export default function EnvironmentDetailPage() {
         {/* Right Column */}
         <div>
           {/* Variables */}
-          <div style={{ backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, var(--ds-surface, var(--ds-surface, #FFF)))', borderRadius: 12, padding: 24, border: `1px solid ${'var(--cp-border, #E2E8F0)'}`, marginBottom: 24 }}>
+          <div style={{ backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, #FFF)', borderRadius: 12, padding: 24, border: `1px solid ${'var(--cp-border, #E2E8F0)'}`, marginBottom: 24 }}>
             <h3 style={{ fontSize: 16, fontWeight: 600, color: 'var(--cp-text-primary, #0F172A)', margin: '0 0 16px', display: 'flex', alignItems: 'center', gap: 8 }}>
               <Key size={18} style={{ color: '#6366F1' }} /> Variables ({variables.length})
             </h3>
@@ -283,12 +283,12 @@ export default function EnvironmentDetailPage() {
                     <div style={{ display: 'flex', gap: 4 }}>
                       {v.is_secret && (
                         <button onClick={() => toggleSecretVisibility(v.id)}
-                          style={{ width: 28, height: 28, border: 'none', borderRadius: 4, backgroundColor: 'transparent', color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #64748B))', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                          style={{ width: 28, height: 28, border: 'none', borderRadius: 4, backgroundColor: 'transparent', color: 'var(--ds-text-subtlest, #64748B)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                           {showSecrets[v.id] ? <EyeOff size={14} /> : <Eye size={14} />}
                         </button>
                       )}
                       <button onClick={() => copyToClipboard(v.value || '')}
-                        style={{ width: 28, height: 28, border: 'none', borderRadius: 4, backgroundColor: 'transparent', color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #64748B))', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        style={{ width: 28, height: 28, border: 'none', borderRadius: 4, backgroundColor: 'transparent', color: 'var(--ds-text-subtlest, #64748B)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                         <Copy size={14} />
                       </button>
                     </div>
@@ -299,7 +299,7 @@ export default function EnvironmentDetailPage() {
           </div>
 
           {/* Linked Cycles */}
-          <div style={{ backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, var(--ds-surface, var(--ds-surface, #FFF)))', borderRadius: 12, padding: 24, border: `1px solid ${'var(--cp-border, #E2E8F0)'}` }}>
+          <div style={{ backgroundColor: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, #FFF)', borderRadius: 12, padding: 24, border: `1px solid ${'var(--cp-border, #E2E8F0)'}` }}>
             <h3 style={{ fontSize: 16, fontWeight: 600, color: 'var(--cp-text-primary, #0F172A)', margin: '0 0 16px', display: 'flex', alignItems: 'center', gap: 8 }}>
               <Activity size={18} style={{ color: '#6366F1' }} /> Test Cycles ({linkedCycles.length})
             </h3>
@@ -311,12 +311,12 @@ export default function EnvironmentDetailPage() {
                   <div key={cycle.cycle_id} onClick={() => navigate(`/testhub/cycles/${cycle.cycle_id}`)}
                     style={{ padding: 12, backgroundColor: 'var(--cp-bg-page, #F8FAFC)', borderRadius: 8, cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <div>
-                      <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))', backgroundColor: 'var(--ds-background-selected, var(--ds-background-selected, #EFF6FF))', padding: '2px 6px', borderRadius: 4, marginRight: 8 }}>{cycle.cycle_key}</span>
+                      <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--ds-text-brand, #2563EB)', backgroundColor: 'var(--ds-background-selected, #EFF6FF)', padding: '2px 6px', borderRadius: 4, marginRight: 8 }}>{cycle.cycle_key}</span>
                       <span style={{ fontSize: 13, color: 'var(--cp-text-primary, #0F172A)' }}>{cycle.name}</span>
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                       <span style={{ fontSize: 12, color: 'var(--cp-text-tertiary, #64748B)' }}>{cycle.progress_percent}%</span>
-                      <ChevronRight size={16} style={{ color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #94A3B8))' }} />
+                      <ChevronRight size={16} style={{ color: 'var(--ds-text-subtlest, #94A3B8)' }} />
                     </div>
                   </div>
                 ))}

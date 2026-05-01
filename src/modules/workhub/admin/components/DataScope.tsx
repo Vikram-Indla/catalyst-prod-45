@@ -90,7 +90,7 @@ export function DataScope() {
   }
 
   if (configLoading) {
-    return <div style={{ padding: 40, color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #64748B))', fontFamily: 'var(--cp-font-body)' }}>Loading...</div>
+    return <div style={{ padding: 40, color: 'var(--ds-text-subtlest, #64748B)', fontFamily: 'var(--cp-font-body)' }}>Loading...</div>
   }
 
   const Toggle = ({ checked, onChange }: { checked: boolean; onChange: (v: boolean) => void }) => (
@@ -98,7 +98,7 @@ export function DataScope() {
       onClick={() => onChange(!checked)}
       style={{
         width: 38, height: 22, borderRadius: 11, border: 'none', cursor: 'pointer',
-        background: checked ? 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))' : 'var(--ds-text-disabled, var(--ds-text-disabled, #CBD5E1))', position: 'relative', flexShrink: 0,
+        background: checked ? 'var(--ds-text-brand, #2563EB)' : 'var(--ds-text-disabled, #CBD5E1)', position: 'relative', flexShrink: 0,
         transition: 'background .2s',
       }}
     >
@@ -124,7 +124,7 @@ export function DataScope() {
         <h1 style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 18, fontWeight: 700, color: 'var(--fg-1, #0F172A)', margin: 0 }}>
           Data Scope
         </h1>
-        <p style={{ fontSize: 13, color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #64748B))', marginTop: 4 }}>
+        <p style={{ fontSize: 13, color: 'var(--ds-text-subtlest, #64748B)', marginTop: 4 }}>
           Select projects to sync and configure time window and data quality rules.
         </p>
       </div>
@@ -136,7 +136,7 @@ export function DataScope() {
             Included Projects
           </h2>
           <span style={{
-            fontSize: 10, background: 'var(--ds-background-selected, var(--ds-background-selected, #EFF6FF))', color: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))', padding: '2px 8px',
+            fontSize: 10, background: 'var(--ds-background-selected, #EFF6FF)', color: 'var(--ds-text-brand, #2563EB)', padding: '2px 8px',
             borderRadius: 4, fontWeight: 600,
           }}>
             {activeCount} of {totalCount} active
@@ -146,7 +146,7 @@ export function DataScope() {
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
           {accessibleProjects.map(p => {
             const isOn = includedProjects.includes(p.key)
-            const color = WORKSTREAM_COLORS[p.key] || 'var(--ds-text-subtlest, var(--ds-text-subtlest, #64748B))'
+            const color = WORKSTREAM_COLORS[p.key] || 'var(--ds-text-subtlest, #64748B)'
             return (
               <button
                 key={p.key}
@@ -154,7 +154,7 @@ export function DataScope() {
                 style={{
                   display: 'inline-flex', alignItems: 'center', gap: 8,
                   padding: '10px 16px', borderRadius: 8, border: '1px solid', cursor: 'pointer',
-                  background: isOn ? 'var(--ds-background-selected, var(--ds-background-selected, #EFF6FF))' : 'var(--ds-surface, var(--ds-surface, var(--ds-surface, #fff)))',
+                  background: isOn ? 'var(--ds-background-selected, #EFF6FF)' : 'var(--ds-surface, #fff)',
                   borderColor: isOn ? '#BFDBFE' : 'var(--bd-default, #E2E8F0)',
                   opacity: isOn ? 1 : 0.5,
                   transition: 'all .15s',
@@ -163,11 +163,11 @@ export function DataScope() {
                 <span style={{
                   width: 12, height: 12, borderRadius: '50%', background: color, flexShrink: 0,
                 }} />
-                <span style={{ fontSize: 12, fontWeight: 600, color: isOn ? 'var(--fg-1, #0F172A)' : 'var(--ds-text-subtlest, var(--ds-text-subtlest, #94A3B8))' }}>
+                <span style={{ fontSize: 12, fontWeight: 600, color: isOn ? 'var(--fg-1, #0F172A)' : 'var(--ds-text-subtlest, #94A3B8)' }}>
                   {p.name}
                 </span>
                 <span style={{
-                  fontFamily: 'var(--cp-font-mono)', fontSize: 10, color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #64748B))',
+                  fontFamily: 'var(--cp-font-mono)', fontSize: 10, color: 'var(--ds-text-subtlest, #64748B)',
                 }}>
                   {p.key}
                 </span>
@@ -175,13 +175,13 @@ export function DataScope() {
             )
           })}
           {accessibleProjects.length === 0 && (
-            <span style={{ fontSize: 12, color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #94A3B8))' }}>No projects discovered. Test your Jira connection first.</span>
+            <span style={{ fontSize: 12, color: 'var(--ds-text-subtlest, #94A3B8)' }}>No projects discovered. Test your Jira connection first.</span>
           )}
         </div>
 
         <button onClick={handleSaveProjects} disabled={batchUpdate.isPending} style={{
           marginTop: 14, padding: '8px 20px', borderRadius: 6, fontSize: 12, fontWeight: 600,
-          background: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))', color: 'var(--ds-surface, var(--ds-surface, var(--ds-surface, #fff)))', border: 'none', cursor: 'pointer',
+          background: 'var(--ds-text-brand, #2563EB)', color: 'var(--ds-surface, #fff)', border: 'none', cursor: 'pointer',
           opacity: batchUpdate.isPending ? 0.6 : 1,
         }}>
           Save Projects
@@ -195,7 +195,7 @@ export function DataScope() {
         </h2>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 10 }}>
-          <label style={{ fontSize: 13, color: 'var(--ds-text-subtle, var(--ds-text-subtle, #334155))', width: 260 }}>Default lookback period:</label>
+          <label style={{ fontSize: 13, color: 'var(--ds-text-subtle, #334155)', width: 260 }}>Default lookback period:</label>
           <select value={lookbackMonths} onChange={(e) => setLookbackMonths(Number(e.target.value))}
             style={{ padding: '7px 10px', borderRadius: 6, border: '1px solid var(--bd-default, #E2E8F0)', fontSize: 12, width: 150 }}>
             <option value={1}>1 month</option>
@@ -205,7 +205,7 @@ export function DataScope() {
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 14 }}>
-          <label style={{ fontSize: 13, color: 'var(--ds-text-subtle, var(--ds-text-subtle, #334155))', width: 260 }}>Maximum lookback (hard limit):</label>
+          <label style={{ fontSize: 13, color: 'var(--ds-text-subtle, #334155)', width: 260 }}>Maximum lookback (hard limit):</label>
           <select value={maxMonths} onChange={(e) => setMaxMonths(Number(e.target.value))}
             style={{ padding: '7px 10px', borderRadius: 6, border: '1px solid var(--bd-default, #E2E8F0)', fontSize: 12, width: 150 }}>
             <option value={3}>3 months</option>
@@ -214,18 +214,18 @@ export function DataScope() {
         </div>
 
         <div style={{
-          background: 'var(--ds-background-selected, var(--ds-background-selected, #EFF6FF))', border: '1px solid #BFDBFE', borderRadius: 8,
+          background: 'var(--ds-background-selected, #EFF6FF)', border: '1px solid #BFDBFE', borderRadius: 8,
           padding: '10px 14px', marginBottom: 14, display: 'flex', gap: 8,
         }}>
           <span style={{ fontSize: 14 }}>ℹ️</span>
-          <p style={{ fontSize: 12, color: 'var(--ds-background-brand-bold-hovered, var(--ds-background-brand-bold-hovered, #1D4ED8))', margin: 0, lineHeight: 1.5 }}>
+          <p style={{ fontSize: 12, color: 'var(--ds-background-brand-bold-hovered, #1D4ED8)', margin: 0, lineHeight: 1.5 }}>
             Time-bounded sync: Catalyst only caches recent data from Jira within the configured lookback window. Older issues are not synced.
           </p>
         </div>
 
         <button onClick={handleSaveWindow} disabled={batchUpdate.isPending} style={{
           padding: '8px 20px', borderRadius: 6, fontSize: 12, fontWeight: 600,
-          background: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))', color: 'var(--ds-surface, var(--ds-surface, var(--ds-surface, #fff)))', border: 'none', cursor: 'pointer',
+          background: 'var(--ds-text-brand, #2563EB)', color: 'var(--ds-surface, #fff)', border: 'none', cursor: 'pointer',
         }}>
           Save Window
         </button>
@@ -238,7 +238,7 @@ export function DataScope() {
         </h2>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 10 }}>
-          <label style={{ fontSize: 13, color: 'var(--ds-text-subtle, var(--ds-text-subtle, #334155))', width: 260 }}>Mark items stale after:</label>
+          <label style={{ fontSize: 13, color: 'var(--ds-text-subtle, #334155)', width: 260 }}>Mark items stale after:</label>
           <select value={staleThreshold} onChange={(e) => setStaleThreshold(Number(e.target.value))}
             style={{ padding: '7px 10px', borderRadius: 6, border: '1px solid var(--bd-default, #E2E8F0)', fontSize: 12, width: 150 }}>
             <option value={7}>7 days</option>
@@ -248,7 +248,7 @@ export function DataScope() {
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 14 }}>
-          <label style={{ fontSize: 13, color: 'var(--ds-text-subtle, var(--ds-text-subtle, #334155))', width: 260 }}>Mark items critical after:</label>
+          <label style={{ fontSize: 13, color: 'var(--ds-text-subtle, #334155)', width: 260 }}>Mark items critical after:</label>
           <select value={criticalThreshold} onChange={(e) => setCriticalThreshold(Number(e.target.value))}
             style={{ padding: '7px 10px', borderRadius: 6, border: '1px solid var(--bd-default, #E2E8F0)', fontSize: 12, width: 150 }}>
             <option value={14}>14 days</option>
@@ -266,14 +266,14 @@ export function DataScope() {
           ].map((t, i) => (
             <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
               <Toggle checked={t.checked} onChange={t.onChange} />
-              <span style={{ fontSize: 13, color: 'var(--ds-text-subtle, var(--ds-text-subtle, #334155))' }}>{t.label}</span>
+              <span style={{ fontSize: 13, color: 'var(--ds-text-subtle, #334155)' }}>{t.label}</span>
             </div>
           ))}
         </div>
 
         <button onClick={handleSaveQuality} disabled={batchUpdate.isPending} style={{
           padding: '8px 20px', borderRadius: 6, fontSize: 12, fontWeight: 600,
-          background: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))', color: 'var(--ds-surface, var(--ds-surface, var(--ds-surface, #fff)))', border: 'none', cursor: 'pointer',
+          background: 'var(--ds-text-brand, #2563EB)', color: 'var(--ds-surface, #fff)', border: 'none', cursor: 'pointer',
         }}>
           Save Quality Rules
         </button>

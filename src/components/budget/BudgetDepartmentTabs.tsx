@@ -43,7 +43,7 @@ export function BudgetDepartmentTabs({ departments, currentDept, budgets, onSele
                 "relative flex flex-col items-center p-4 rounded-xl border-2 transition-all duration-150 text-center",
                 // Active state with gradient + left accent
                 isActive && [
-                  "border-[var(--ds-text-brand,var(--ds-text-brand, #2563eb))]",
+                  "border-[var(--ds-text-brand, #2563eb)]",
                   "bg-gradient-to-br from-[rgba(37,99,235,0.05)] via-[rgba(37,99,235,0.08)] to-[rgba(37,99,235,0.05)]",
                   "shadow-sm"
                 ],
@@ -63,13 +63,13 @@ export function BudgetDepartmentTabs({ departments, currentDept, budgets, onSele
             >
               {/* Left accent bar - ONLY for active */}
               {isActive && (
-                <div className="absolute left-0 top-3 bottom-3 w-1 bg-[var(--ds-text-brand,var(--ds-text-brand, #2563eb))] rounded-full" />
+                <div className="absolute left-0 top-3 bottom-3 w-1 bg-[var(--ds-text-brand, #2563eb)] rounded-full" />
               )}
               
               {/* Department Name */}
               <span className={cn(
                 "text-xs font-bold uppercase tracking-wider mb-2",
-                isActive ? "text-[var(--ds-text-brand,var(--ds-text-brand, #2563eb))]" : "text-slate-500"
+                isActive ? "text-[var(--ds-text-brand, #2563eb)]" : "text-slate-500"
               )}>
                 {d.name}
               </span>
@@ -77,7 +77,7 @@ export function BudgetDepartmentTabs({ departments, currentDept, budgets, onSele
               {/* Budget Value - MUST use font-mono */}
               <span className={cn(
                 "font-mono text-2xl font-bold mb-2",
-                isActive ? "text-[var(--ds-text-brand,var(--ds-text-brand, #2563eb))]" : hasBudget ? "text-slate-800" : "text-slate-400"
+                isActive ? "text-[var(--ds-text-brand, #2563eb)]" : hasBudget ? "text-slate-800" : "text-slate-400"
               )}>
                 {hasBudget ? formatCurrency(budget.total) : '0'}
               </span>

@@ -87,15 +87,15 @@ export default function IdeasThemePage() {
               const converted = themeConvertedMap[theme.theme] || 0;
               const convRate = theme.idea_count > 0 ? Math.round((converted / theme.idea_count) * 100) : 0;
               const progressPct = theme.idea_count > 0 ? (converted / theme.idea_count) * 100 : 0;
-              const barColor = convRate >= 100 ? 'var(--ds-text-success, var(--ds-text-success, #16A34A))' : 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))';
+              const barColor = convRate >= 100 ? 'var(--ds-text-success, #16A34A)' : 'var(--ds-text-brand, #2563EB)';
               return (
                 <div key={theme.theme} onClick={() => navigate(`/product/ideas/backlog?theme=${encodeURIComponent(theme.theme)}`)}
                   style={{
-                    background: 'var(--cp-bg-elevated, #FFFFFF)', border: `1px solid ${isDark ? 'var(--ds-border-bold, var(--ds-border-bold, #454545))' : dk.border}`, borderRadius: '8px',
+                    background: 'var(--cp-bg-elevated, #FFFFFF)', border: `1px solid ${isDark ? 'var(--ds-border-bold, #454545)' : dk.border}`, borderRadius: '8px',
                     padding: '16px', cursor: 'pointer', transition: 'all 0.15s', minHeight: '180px',
                     display: 'flex', flexDirection: 'column',
                   }}
-                  onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))'; e.currentTarget.style.transform = 'translateY(-1px)'; }}
+                  onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--ds-text-brand, #2563EB)'; e.currentTarget.style.transform = 'translateY(-1px)'; }}
                   onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--cp-border-subtle, rgba(15,23,42,0.08))'; e.currentTarget.style.transform = 'none'; }}
                 >
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>

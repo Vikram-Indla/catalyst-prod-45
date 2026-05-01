@@ -760,8 +760,8 @@ export function CreateTestCaseModal({
                   style={{
                     height: 32, padding: '0 14px', border: 'none', borderRadius: 6,
                     fontSize: 13, fontWeight: 500, cursor: 'pointer',
-                    backgroundColor: testFormat === opt.key ? 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))' : 'var(--ds-surface-sunken, var(--ds-surface-sunken, #F1F5F9))',
-                    color: testFormat === opt.key ? 'var(--ds-surface, var(--ds-surface, var(--ds-surface, #FFF)))' : 'var(--ds-text-subtle, var(--ds-text-subtle, #475569))',
+                    backgroundColor: testFormat === opt.key ? 'var(--ds-text-brand, #2563EB)' : 'var(--ds-surface-sunken, #F1F5F9)',
+                    color: testFormat === opt.key ? 'var(--ds-surface, #FFF)' : 'var(--ds-text-subtle, #475569)',
                     transition: 'all 0.15s',
                   }}
                 >

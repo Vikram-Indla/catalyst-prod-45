@@ -205,10 +205,10 @@ export function AllWorkTable({ items, isLoading, onOpenItem, pageTitle = 'All Wo
             onClick={() => toggleSort('updated')}
             style={{
               height: 28, padding: '0 8px',
-              border: `1px solid ${sortBy === 'updated' ? 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))' : T.borderColor}`,
+              border: `1px solid ${sortBy === 'updated' ? 'var(--ds-text-brand, #2563EB)' : T.borderColor}`,
               borderRadius: 3,
               fontSize: 11, fontWeight: 600,
-              color: sortBy === 'updated' ? 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))' : T.textSecondary,
+              color: sortBy === 'updated' ? 'var(--ds-text-brand, #2563EB)' : T.textSecondary,
               background: sortBy === 'updated' ? 'rgba(37,99,235,0.06)' : T.white,
               cursor: 'pointer', fontFamily: 'var(--cp-font-body)',
             }}
@@ -219,10 +219,10 @@ export function AllWorkTable({ items, isLoading, onOpenItem, pageTitle = 'All Wo
             onClick={() => toggleSort('created')}
             style={{
               height: 28, padding: '0 8px',
-              border: `1px solid ${sortBy === 'created' ? 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))' : T.borderColor}`,
+              border: `1px solid ${sortBy === 'created' ? 'var(--ds-text-brand, #2563EB)' : T.borderColor}`,
               borderRadius: 3,
               fontSize: 11, fontWeight: 600,
-              color: sortBy === 'created' ? 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))' : T.textSecondary,
+              color: sortBy === 'created' ? 'var(--ds-text-brand, #2563EB)' : T.textSecondary,
               background: sortBy === 'created' ? 'rgba(37,99,235,0.06)' : T.white,
               cursor: 'pointer', fontFamily: 'var(--cp-font-body)',
             }}
@@ -320,7 +320,7 @@ export function AllWorkTable({ items, isLoading, onOpenItem, pageTitle = 'All Wo
                         width: 24, height: 24, borderRadius: '50%',
                         background: item.assignee.color || hashColor(item.assignee.name),
                         display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        fontSize: 10, fontWeight: 700, color: 'var(--ds-surface, var(--ds-surface, var(--ds-surface, #fff)))',
+                        fontSize: 10, fontWeight: 700, color: 'var(--ds-surface, #fff)',
                         flexShrink: 0,
                       }}>
                         {item.assignee.initials || getInitials(item.assignee.name)}
@@ -427,10 +427,10 @@ function PaginationBtn({ children, disabled, active, onClick }: {
       onClick={onClick}
       style={{
         height: 28, minWidth: 28, padding: '0 8px',
-        border: `1px solid ${active ? 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))' : 'var(--cp-border-default, #DDDEE1)'}`,
+        border: `1px solid ${active ? 'var(--ds-text-brand, #2563EB)' : 'var(--cp-border-default, #DDDEE1)'}`,
         borderRadius: 3,
         fontSize: 12, fontWeight: active ? 600 : 400,
-        color: disabled ? 'var(--cp-text-muted, #C1C7CD)' : active ? 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))' : 'var(--cp-text-secondary, #44546F)',
+        color: disabled ? 'var(--cp-text-muted, #C1C7CD)' : active ? 'var(--ds-text-brand, #2563EB)' : 'var(--cp-text-secondary, #44546F)',
         background: active ? 'rgba(37,99,235,0.06)' : 'var(--cp-bg-elevated, #FFFFFF)',
         cursor: disabled ? 'default' : 'pointer',
         fontFamily: 'var(--cp-font-body)',

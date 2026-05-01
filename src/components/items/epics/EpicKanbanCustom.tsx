@@ -68,9 +68,9 @@ export function EpicKanbanCustom({ epics, onEpicClick, onContextMenu }: EpicKanb
   const columns = customColumns.length > 0
     ? customColumns
     : [
-        { id: 'new', column_id: 'new', label: 'New', color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #94A3B8))', wip_limit: null },
-        { id: 'in_progress', column_id: 'in_progress', label: 'In Progress', color: 'var(--ds-text-brand, var(--ds-text-brand, #3B82F6))', wip_limit: null },
-        { id: 'review', column_id: 'review', label: 'Review', color: 'var(--ds-text-warning, var(--ds-text-warning, #F59E0B))', wip_limit: null },
+        { id: 'new', column_id: 'new', label: 'New', color: 'var(--ds-text-subtlest, #94A3B8)', wip_limit: null },
+        { id: 'in_progress', column_id: 'in_progress', label: 'In Progress', color: 'var(--ds-text-brand, #3B82F6)', wip_limit: null },
+        { id: 'review', column_id: 'review', label: 'Review', color: 'var(--ds-text-warning, #F59E0B)', wip_limit: null },
         { id: 'completed', column_id: 'completed', label: 'Completed', color: '#10B981', wip_limit: null },
       ];
 

@@ -37,11 +37,11 @@ import React, { ReactNode, CSSProperties, useSyncExternalStore } from 'react';
 /* ─── Light-mode hex (V3 Canonical White Canvas) ──────────────────────────
    Apr 27, 2026 audit (L36): canvas was '#E9F2FE' (light Jira blue),
    producing a global page wash that didn't match Jira (which is white).
-   Both canvas and panel are now 'var(--ds-surface, var(--ds-surface, #FFFFFF))'. Paired with CatalystShell's
+   Both canvas and panel are now 'var(--ds-surface, #FFFFFF)'. Paired with CatalystShell's
    JIRA_CANVAS_BG which was patched in the same pass.
    ──────────────────────────────────────────────────────────────────────── */
-const JIRA_CANVAS = 'var(--ds-surface, var(--ds-surface, #FFFFFF))';
-const JIRA_PANEL  = 'var(--ds-surface, var(--ds-surface, #FFFFFF))';
+const JIRA_CANVAS = 'var(--ds-surface, #FFFFFF)';
+const JIRA_PANEL  = 'var(--ds-surface, #FFFFFF)';
 
 /**
  * Observe <html data-theme="..."> so the wrapper flips to Catalyst's dark

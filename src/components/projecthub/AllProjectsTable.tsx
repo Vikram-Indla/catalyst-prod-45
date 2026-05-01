@@ -29,7 +29,7 @@ import { MenuGroup, ButtonItem, Section } from '@atlaskit/menu';
 import { useTrackRecentItem } from '@/hooks/useRecentProjectItems';
 
 // ── Utilities ──────────────────────────────────────────
-const BADGE_COLORS = ['var(--ds-text-brand, var(--ds-text-brand, #3B82F6))', '#6366F1', '#0891B2', 'var(--ds-text-subtle, var(--ds-text-subtle, #475569))', '#0D9488', '#78716C'];
+const BADGE_COLORS = ['var(--ds-text-brand, #3B82F6)', '#6366F1', '#0891B2', 'var(--ds-text-subtle, #475569)', '#0D9488', '#78716C'];
 
 function getBadgeColor(id: string): string {
   let hash = 0;
@@ -736,7 +736,7 @@ function RowActionMenu({ project }: { project: ProjectListItem }) {
             ref={triggerRef as React.Ref<HTMLButtonElement>}
             onClick={(e) => { e.stopPropagation(); triggerProps.onClick?.(e as any); }}
             aria-label={`Actions for ${project.name}`}
-            className="flex h-7 w-7 items-center justify-center rounded text-slate-500 dark:text-[var(--ds-text-subtlest,var(--ds-text-subtlest, #A1A1A1))] hover:bg-slate-100 dark:hover:bg-white/5 hover:text-slate-800 dark:hover:text-[var(--ds-text,var(--ds-text, #EDEDED))] bg-transparent border-none cursor-pointer focus-visible:ring-2 focus-visible:ring-blue-600 outline-none transition-colors"
+            className="flex h-7 w-7 items-center justify-center rounded text-slate-500 dark:text-[var(--ds-text-subtlest, #A1A1A1)] hover:bg-slate-100 dark:hover:bg-white/5 hover:text-slate-800 dark:hover:text-[var(--ds-text, #EDEDED)] bg-transparent border-none cursor-pointer focus-visible:ring-2 focus-visible:ring-blue-600 outline-none transition-colors"
           >
             <MoreHorizontal size={16} />
           </button>
@@ -1015,21 +1015,21 @@ export function AllProjectsTable({
     const syncTooltipText = getSyncTooltip(syncTs, null);
 
     switch (colKey) {
-      case 'star': return <td key={colKey} style={{ overflow: 'visible', textOverflow: 'clip' }}><div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}><button onClick={e => { e.stopPropagation(); onToggleFav(p.id, isFav); }} className="bg-transparent border-none cursor-pointer p-0 outline-none rounded flex-shrink-0" style={{ pointerEvents: 'auto' }}><Star size={14} fill={isFav ? 'var(--ds-text-warning, var(--ds-text-warning, #F59E0B))' : 'none'} className={isFav ? 'text-amber-500' : 'text-slate-300 dark:text-[var(--ds-text-subtlest,var(--ds-text-subtlest, #878787))]'} /></button></div></td>;
+      case 'star': return <td key={colKey} style={{ overflow: 'visible', textOverflow: 'clip' }}><div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}><button onClick={e => { e.stopPropagation(); onToggleFav(p.id, isFav); }} className="bg-transparent border-none cursor-pointer p-0 outline-none rounded flex-shrink-0" style={{ pointerEvents: 'auto' }}><Star size={14} fill={isFav ? 'var(--ds-text-warning, #F59E0B)' : 'none'} className={isFav ? 'text-amber-500' : 'text-slate-300 dark:text-[var(--ds-text-subtlest, #878787)]'} /></button></div></td>;
       case 'project_name': return <td key={colKey}><span onClick={() => { recordProjectView(p); navigate(`/project-hub/${p.project_key}/dashboard`); }} title={p.name} style={{ pointerEvents: 'auto', fontSize: 14, fontWeight: 500, color: token('color.link'), fontFamily: 'var(--cp-font-body)', cursor: 'pointer', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', display: 'inline-block', maxWidth: '100%' }} onMouseEnter={(e) => { e.currentTarget.style.textDecoration = 'underline'; }} onMouseLeave={(e) => { e.currentTarget.style.textDecoration = 'none'; }}>{p.name}</span></td>;
       case 'project_key': return <td key={colKey}><span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 12, fontWeight: 500, color: token('color.text.subtle'), letterSpacing: '0.02em' }}>{p.project_key}</span></td>;
-      case 'type': return <td key={colKey}><span className="text-[13px] text-slate-600 dark:text-[var(--ds-text-subtlest,var(--ds-text-subtlest, #A1A1A1))]">{formatProjectType((p as any).project_type)}</span></td>;
+      case 'type': return <td key={colKey}><span className="text-[13px] text-slate-600 dark:text-[var(--ds-text-subtlest, #A1A1A1)]">{formatProjectType((p as any).project_type)}</span></td>;
       case 'lead': return <td key={colKey}><LeadReassignPopover project={p} /></td>;
       case 'members': return <td key={colKey}><MemberManagePopover project={p} /></td>;
       case 'sync': return (
         <td key={colKey}>
-          <div className="flex items-center gap-1.5 text-[13px] text-slate-500 dark:text-[var(--ds-text-subtlest,var(--ds-text-subtlest, #A1A1A1))]">
+          <div className="flex items-center gap-1.5 text-[13px] text-slate-500 dark:text-[var(--ds-text-subtlest, #A1A1A1)]">
             <Tooltip content={syncTooltipText} position="top"><span className={cn("w-2 h-2 rounded-full flex-shrink-0 cursor-help", syncDotColor)} /></Tooltip>
             <span className="font-medium">{syncAge ? `${issueCount} issues, ${syncAge} ago` : 'Not synced'}</span>
           </div>
         </td>
       );
-      case 'actions': return <td key={colKey} className="text-center" style={{ pointerEvents: 'auto' }}>{active ? <RowActionMenu project={p} /> : <Lock size={14} className="text-slate-300 dark:text-[var(--ds-text-subtlest,var(--ds-text-subtlest, #878787))]" />}</td>;
+      case 'actions': return <td key={colKey} className="text-center" style={{ pointerEvents: 'auto' }}>{active ? <RowActionMenu project={p} /> : <Lock size={14} className="text-slate-300 dark:text-[var(--ds-text-subtlest, #878787)]" />}</td>;
       default: return <td key={colKey} />;
     }
   };

@@ -39,12 +39,12 @@ const variantConfig: Record<CatalystToastType, {
     icon: <X className="w-5 h-5 text-white" />,
   },
   warning: {
-    bg: 'bg-[var(--ds-text-warning,var(--ds-text-warning, #f59e0b))]', // Amber
+    bg: 'bg-[var(--ds-text-warning, #f59e0b)]', // Amber
     iconBg: 'bg-white/20',
     icon: <AlertTriangle className="w-5 h-5 text-white" />,
   },
   info: {
-    bg: 'bg-[var(--ds-text-brand,var(--ds-text-brand, #2563eb))]', // Blue
+    bg: 'bg-[var(--ds-text-brand, #2563eb)]', // Blue
     iconBg: 'bg-white/20',
     icon: <Info className="w-5 h-5 text-white" />,
   },

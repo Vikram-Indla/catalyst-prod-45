@@ -112,13 +112,13 @@ export function RingView({ items, name, role, avatarUrl, onSelect, selected, ove
                 width: '22px', height: '22px', borderRadius: '50%', background: '#1B7F37',
                 border: '1.5px solid #16A34A', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
               }}>
-                <svg width="12" height="12" viewBox="0 0 12 12"><path d="M2.5 6l2.5 2.5 4.5-4.5" stroke="var(--ds-text-success, var(--ds-text-success, #16A34A))" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                <svg width="12" height="12" viewBox="0 0 12 12"><path d="M2.5 6l2.5 2.5 4.5-4.5" stroke="var(--ds-text-success, #16A34A)" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round" /></svg>
               </div>
               <span style={{ fontSize: '14px', fontWeight: 650, color: 'var(--cp-text-primary, #0F172A)' }}>Completed This Week</span>
               <span style={{ fontSize: '11px', fontWeight: 700, color: 'var(--ds-text-inverse, #FFFFFF)', background: '#1B7F37', padding: '2px 8px', borderRadius: '12px' }}>{doneCount}</span>
             </div>
             <button onClick={(e) => { e.stopPropagation(); setShowDone(false); }}
-              style={{ width: '24px', height: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center', border: `1px solid ${'var(--cp-border, #E2E8F0)'}`, borderRadius: '4px', background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, var(--ds-surface, var(--ds-surface, #FFF)))', cursor: 'pointer', color: 'var(--cp-text-tertiary, #64748B)', fontSize: '14px' }}
+              style={{ width: '24px', height: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center', border: `1px solid ${'var(--cp-border, #E2E8F0)'}`, borderRadius: '4px', background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, #FFF)', cursor: 'pointer', color: 'var(--cp-text-tertiary, #64748B)', fontSize: '14px' }}
               aria-label="Close completed panel"
             >{'\u2715'}</button>
           </div>
@@ -140,7 +140,7 @@ export function RingView({ items, name, role, avatarUrl, onSelect, selected, ove
                   <div style={{ flexShrink: 0, marginTop: '2px' }}>{getJiraIcon(item.item_type)}</div>
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '3px', flexWrap: 'wrap' }}>
-                      <span style={{ fontSize: '11.5px', fontWeight: 600, color: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))', fontFamily: 'var(--cp-font-mono)' }}>{item.item_key}</span>
+                      <span style={{ fontSize: '11.5px', fontWeight: 600, color: 'var(--ds-text-brand, #2563EB)', fontFamily: 'var(--cp-font-mono)' }}>{item.item_key}</span>
                       <span style={{ fontSize: '10px', fontWeight: 700, padding: '2px 6px', borderRadius: '4px', background: 'var(--cp-bg-sunken, #F1F5F9)', color: 'var(--cp-text-tertiary, #64748B)' }}>{item.project_key}</span>
                       <StatusLozenge status="Done" />
                     </div>
@@ -197,9 +197,9 @@ export function RingView({ items, name, role, avatarUrl, onSelect, selected, ove
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '16px', fontSize: '13px' }}>
             <span style={{ fontWeight: 650, color: 'var(--cp-text-secondary, #334155)' }}>{nonDone.length} open</span>
             <span style={{ color: 'var(--cp-text-muted, #94A3B8)' }}>&middot;</span>
-            <span style={{ fontWeight: 650, color: staleItems.length > 0 ? 'var(--ds-text-danger, var(--ds-text-danger, #DC2626))' : 'var(--ds-text-subtle, var(--ds-text-subtle, #334155))' }}>{staleItems.length} stale</span>
+            <span style={{ fontWeight: 650, color: staleItems.length > 0 ? 'var(--ds-text-danger, #DC2626)' : 'var(--ds-text-subtle, #334155)' }}>{staleItems.length} stale</span>
             <span style={{ color: 'var(--cp-text-muted, #94A3B8)' }}>&middot;</span>
-            <span style={{ fontWeight: 650, color: doneCount > 0 ? 'var(--ds-text-inverse, #FFFFFF)' : 'var(--ds-text-subtle, var(--ds-text-subtle, #334155))' }}>{doneCount} done</span>
+            <span style={{ fontWeight: 650, color: doneCount > 0 ? 'var(--ds-text-inverse, #FFFFFF)' : 'var(--ds-text-subtle, #334155)' }}>{doneCount} done</span>
           </div>
 
           {/* Divider */}
@@ -212,7 +212,7 @@ export function RingView({ items, name, role, avatarUrl, onSelect, selected, ove
               {nonDone.map(item => {
                 const hasHighP = isHighPriority(item.priority);
                 const hasMedP = isMediumPriority(item.priority);
-                const borderColor = hasHighP ? 'var(--ds-text-danger, var(--ds-text-danger, #DC2626))' : hasMedP ? 'var(--ds-text-warning, var(--ds-text-warning, #D97706))' : 'var(--ds-text-subtlest, var(--ds-text-subtlest, #94A3B8))';
+                const borderColor = hasHighP ? 'var(--ds-text-danger, #DC2626)' : hasMedP ? 'var(--ds-text-warning, #D97706)' : 'var(--ds-text-subtlest, #94A3B8)';
                 const fromClass = getFromTagClass(item.age_days);
                 return (
                   <div key={item.id} onClick={() => onSelect(item)} style={{
@@ -234,9 +234,9 @@ export function RingView({ items, name, role, avatarUrl, onSelect, selected, ove
                     </div>
                     {/* Row 2 */}
                     <div style={{ display: 'flex', alignItems: 'center', gap: '5px', marginBottom: '5px' }}>
-                      <span style={{ fontSize: '12px', fontWeight: 600, color: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))', fontFamily: 'var(--cp-font-mono)' }}>{item.item_key}</span>
+                      <span style={{ fontSize: '12px', fontWeight: 600, color: 'var(--ds-text-brand, #2563EB)', fontFamily: 'var(--cp-font-mono)' }}>{item.item_key}</span>
                       <span style={{ fontSize: '10px', fontWeight: 700, padding: '2px 6px', borderRadius: '4px', background: 'var(--cp-bg-sunken, #F1F5F9)', color: 'var(--cp-text-tertiary, #64748B)' }}>{item.project_key}</span>
-                      <span style={{ marginLeft: 'auto', fontSize: '10px', fontWeight: 600, padding: '1px 6px', borderRadius: '4px', background: 'var(--cp-bg-page, #F8FAFC)', color: item.age_days > 30 ? 'var(--ds-text-warning, var(--ds-text-warning, #D97706))' : 'var(--ds-text-subtlest, var(--ds-text-subtlest, #64748B))', fontFamily: 'var(--cp-font-mono)' }}>{item.age_days}d</span>
+                      <span style={{ marginLeft: 'auto', fontSize: '10px', fontWeight: 600, padding: '1px 6px', borderRadius: '4px', background: 'var(--cp-bg-page, #F8FAFC)', color: item.age_days > 30 ? 'var(--ds-text-warning, #D97706)' : 'var(--ds-text-subtlest, #64748B)', fontFamily: 'var(--cp-font-mono)' }}>{item.age_days}d</span>
                     </div>
                     {/* Row 3 -- full title */}
                     <div style={{ fontSize: '12px', fontWeight: 500, color: 'var(--cp-text-primary, #0F172A)', lineHeight: '1.35', marginBottom: '5px' }}>{item.title}</div>
@@ -265,11 +265,11 @@ export function RingView({ items, name, role, avatarUrl, onSelect, selected, ove
                 return (
                   <div key={item.id} onClick={() => onSelect(item)} style={{ display: 'flex', alignItems: 'flex-start', gap: '8px', marginBottom: '8px', cursor: 'pointer' }}>
                     <div style={{ width: '16px', height: '16px', borderRadius: '50%', background: '#1B7F37', border: '1px solid #16A34A', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: '2px' }}>
-                      <svg width="8" height="8" viewBox="0 0 12 12"><path d="M2.5 6l2.5 2.5 4.5-4.5" stroke="var(--ds-text-success, var(--ds-text-success, #16A34A))" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                      <svg width="8" height="8" viewBox="0 0 12 12"><path d="M2.5 6l2.5 2.5 4.5-4.5" stroke="var(--ds-text-success, #16A34A)" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round" /></svg>
                     </div>
                     <div style={{ flex: 1 }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
-                        <span style={{ fontSize: '11.5px', fontWeight: 600, color: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))', fontFamily: 'var(--cp-font-mono)' }}>{item.item_key}</span>
+                        <span style={{ fontSize: '11.5px', fontWeight: 600, color: 'var(--ds-text-brand, #2563EB)', fontFamily: 'var(--cp-font-mono)' }}>{item.item_key}</span>
                         <span style={{ fontSize: '10px', fontWeight: 700, padding: '2px 6px', borderRadius: '4px', background: 'var(--cp-bg-sunken, #F1F5F9)', color: 'var(--cp-text-tertiary, #64748B)' }}>{item.project_key}</span>
                         <StatusLozenge status="Done" />
                       </div>
@@ -308,7 +308,7 @@ export function RingView({ items, name, role, avatarUrl, onSelect, selected, ove
       <svg width={W} height={RING_CANVAS_H} style={{ position: 'absolute', top: 0, left: 0, zIndex: 0, pointerEvents: 'none', overflow: 'visible' }}>
         {spokes.map((s, i) => (
           <line key={i} x1={s.x1} y1={s.y1} x2={s.x2} y2={s.y2}
-            stroke="var(--ds-text-disabled, var(--ds-text-disabled, #CBD5E1))" strokeWidth={2} opacity={1} />
+            stroke="var(--ds-text-disabled, #CBD5E1)" strokeWidth={2} opacity={1} />
         ))}
       </svg>
 
@@ -368,12 +368,12 @@ export function RingView({ items, name, role, avatarUrl, onSelect, selected, ove
               </div>
               {/* Row 2: key + project badge + age -- fixed 18px */}
               <div style={{ display: 'flex', alignItems: 'center', gap: '5px', marginBottom: '5px', flexShrink: 0, height: '18px' }}>
-                <span style={{ fontSize: '12px', fontWeight: 600, color: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))', fontFamily: 'var(--cp-font-mono)' }}>{item.item_key}</span>
+                <span style={{ fontSize: '12px', fontWeight: 600, color: 'var(--ds-text-brand, #2563EB)', fontFamily: 'var(--cp-font-mono)' }}>{item.item_key}</span>
                 <span style={{ fontSize: '10px', fontWeight: 700, padding: '2px 6px', borderRadius: '4px', background: 'var(--cp-bg-sunken, #F1F5F9)', color: 'var(--cp-text-tertiary, #64748B)' }}>{item.project_key}</span>
                 <span style={{
                   marginLeft: 'auto', fontSize: '10px', fontWeight: 600,
                   padding: '1px 6px', borderRadius: '4px', background: 'var(--cp-bg-page, #F8FAFC)',
-                  color: item.age_days > 30 ? 'var(--ds-text-warning, var(--ds-text-warning, #D97706))' : 'var(--ds-text-subtlest, var(--ds-text-subtlest, #64748B))',
+                  color: item.age_days > 30 ? 'var(--ds-text-warning, #D97706)' : 'var(--ds-text-subtlest, #64748B)',
                   fontFamily: 'var(--cp-font-mono)',
                 }}>{item.age_days}d</span>
               </div>
@@ -414,7 +414,7 @@ export function RingView({ items, name, role, avatarUrl, onSelect, selected, ove
             disabled={safePage === 0}
             style={{
               background: 'none', border: 'none', cursor: safePage === 0 ? 'default' : 'pointer',
-              color: safePage === 0 ? 'var(--ds-text-disabled, var(--ds-text-disabled, #CBD5E1))' : 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))', fontSize: '13px', fontWeight: 700,
+              color: safePage === 0 ? 'var(--ds-text-disabled, #CBD5E1)' : 'var(--ds-text-brand, #2563EB)', fontSize: '13px', fontWeight: 700,
               padding: '0 4px', lineHeight: 1,
             }}
             aria-label="Previous page"
@@ -427,7 +427,7 @@ export function RingView({ items, name, role, avatarUrl, onSelect, selected, ove
             disabled={safePage >= totalPages - 1}
             style={{
               background: 'none', border: 'none', cursor: safePage >= totalPages - 1 ? 'default' : 'pointer',
-              color: safePage >= totalPages - 1 ? 'var(--ds-text-disabled, var(--ds-text-disabled, #CBD5E1))' : 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))', fontSize: '13px', fontWeight: 700,
+              color: safePage >= totalPages - 1 ? 'var(--ds-text-disabled, #CBD5E1)' : 'var(--ds-text-brand, #2563EB)', fontSize: '13px', fontWeight: 700,
               padding: '0 4px', lineHeight: 1,
             }}
             aria-label="Next page"

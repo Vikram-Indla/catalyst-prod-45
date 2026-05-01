@@ -183,9 +183,9 @@ function IncidentHealthSection({
                   }} 
                 />
                 <Legend wrapperStyle={{ fontSize: '11px' }} />
-                <Line type="monotone" dataKey="logged" stroke="var(--ds-text-brand, var(--ds-text-brand, #3b82f6))" strokeWidth={2} name="Logged" dot={{ r: 3 }} />
+                <Line type="monotone" dataKey="logged" stroke="var(--ds-text-brand, #3b82f6)" strokeWidth={2} name="Logged" dot={{ r: 3 }} />
                 <Line type="monotone" dataKey="closed" stroke="#0d9488" strokeWidth={2} name="Closed" dot={{ r: 3 }} />
-                <Line type="monotone" dataKey="converted" stroke="var(--ds-text-brand, var(--ds-text-brand, #2563eb))" strokeWidth={2} name="Converted" dot={{ r: 3 }} />
+                <Line type="monotone" dataKey="converted" stroke="var(--ds-text-brand, #2563eb)" strokeWidth={2} name="Converted" dot={{ r: 3 }} />
               </LineChart>
             </ResponsiveContainer>
           </div>
@@ -269,8 +269,8 @@ function CAPEffectivenessSection({
 }) {
   const data = [
     { name: 'Approved', value: effectiveness.approved, color: '#0d9488' },
-    { name: 'Rejected', value: effectiveness.rejected, color: 'var(--ds-text-danger, var(--ds-text-danger, #ef4444))' },
-    { name: 'Vetoed', value: effectiveness.vetoed, color: 'var(--ds-text-brand, var(--ds-text-brand, #2563eb))' },
+    { name: 'Rejected', value: effectiveness.rejected, color: 'var(--ds-text-danger, #ef4444)' },
+    { name: 'Vetoed', value: effectiveness.vetoed, color: 'var(--ds-text-brand, #2563eb)' },
   ];
 
   const formatTime = (minutes: number) => {

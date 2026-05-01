@@ -44,13 +44,13 @@ const CATEGORY_STYLES: Record<StatusCategory, { bg: string; text: string; border
     bg: 'rgba(245, 158, 11, 0.1)',     // Amber 10%
     text: '#b45309',                    // Amber dark
     border: 'transparent',
-    dot: 'var(--ds-text-warning, var(--ds-text-warning, #f59e0b))',
+    dot: 'var(--ds-text-warning, #f59e0b)',
   },
   critical: {
     bg: 'rgba(239, 68, 68, 0.1)',      // Red 10%
-    text: 'var(--ds-text-danger, var(--ds-text-danger, #ef4444))',                    // Red
+    text: 'var(--ds-text-danger, #ef4444)',                    // Red
     border: 'transparent',
-    dot: 'var(--ds-text-danger, var(--ds-text-danger, #ef4444))',
+    dot: 'var(--ds-text-danger, #ef4444)',
   },
   neutral: {
     bg: 'rgba(107, 114, 128, 0.1)',    // Gray 10%
@@ -66,9 +66,9 @@ const CATEGORY_STYLES: Record<StatusCategory, { bg: string; text: string; border
   },
   progress: {
     bg: 'rgba(37, 99, 235, 0.1)',      // Blue 10%
-    text: 'var(--ds-text-brand, var(--ds-text-brand, #2563eb))',
-    border: 'var(--ds-text-brand, var(--ds-text-brand, #2563eb))',
-    dot: 'var(--ds-text-brand, var(--ds-text-brand, #2563eb))',
+    text: 'var(--ds-text-brand, #2563eb)',
+    border: 'var(--ds-text-brand, #2563eb)',
+    dot: 'var(--ds-text-brand, #2563eb)',
   },
 };
 

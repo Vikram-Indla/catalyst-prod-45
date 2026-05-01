@@ -35,7 +35,7 @@ interface SourceBadgeProps {
 
 const PALETTE: Record<'catalyst' | 'jira', { bg: string; bgSubtle: string; text: string; border: string }> = {
   catalyst: { bg: '#3F3F46', bgSubtle: '#F4F4F5', text: '#3F3F46', border: '#D4D4D8' },
-  jira:     { bg: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))', bgSubtle: 'var(--ds-background-selected, var(--ds-background-selected, #EFF6FF))', text: 'var(--ds-background-brand-bold-hovered, var(--ds-background-brand-bold-hovered, #1D4ED8))', border: '#BFDBFE' },
+  jira:     { bg: 'var(--ds-text-brand, #2563EB)', bgSubtle: 'var(--ds-background-selected, #EFF6FF)', text: 'var(--ds-background-brand-bold-hovered, #1D4ED8)', border: '#BFDBFE' },
 };
 
 export const SourceBadge: React.FC<SourceBadgeProps> = ({

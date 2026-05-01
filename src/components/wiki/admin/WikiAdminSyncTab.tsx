@@ -117,7 +117,7 @@ export function WikiAdminSyncTab() {
             display: 'flex', alignItems: 'center', gap: 6,
             padding: '6px 14px', borderRadius: 4,
             background: 'var(--cp-primary-60, #2563EB)',
-            color: 'var(--ds-surface, var(--ds-surface, var(--ds-surface, #fff)))', border: 'none', cursor: (triggerSync.isPending || isRunning) ? 'not-allowed' : 'pointer',
+            color: 'var(--ds-surface, #fff)', border: 'none', cursor: (triggerSync.isPending || isRunning) ? 'not-allowed' : 'pointer',
             fontFamily: 'var(--cp-font-body)', fontSize: 12, fontWeight: 600,
             opacity: (triggerSync.isPending || isRunning) ? 0.5 : 1,
             outline: 'none',
@@ -204,7 +204,7 @@ export function WikiAdminSyncTab() {
             style={{
               display: 'flex', alignItems: 'center', gap: 4,
               padding: '4px 10px', borderRadius: 4,
-              background: 'var(--sem-danger)', color: 'var(--ds-surface, var(--ds-surface, var(--ds-surface, #fff)))', border: 'none', cursor: 'pointer',
+              background: 'var(--sem-danger)', color: 'var(--ds-surface, #fff)', border: 'none', cursor: 'pointer',
               fontFamily: 'var(--cp-font-body)', fontSize: 11, fontWeight: 600,
             }}
           >
@@ -262,7 +262,7 @@ export function WikiAdminSyncTab() {
                   flexShrink: 0, fontSize: 11, fontWeight: 700,
                   fontFamily: 'var(--cp-font-mono)',
                   background: isDone ? '#1B7F37' : isStepFailed ? 'rgba(220,38,38,0.08)' : isActive ? '#0C66E4' : (isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--cp-bg-sunken, #F1F5F9)'),
-                  color: isDone ? 'var(--ds-surface, var(--ds-surface, #FFFFFF))' : isStepFailed ? 'var(--ds-text-danger, var(--ds-text-danger, #DC2626))' : isActive ? 'var(--ds-surface, var(--ds-surface, #FFFFFF))' : (isDark ? 'var(--ds-text-subtlest, var(--ds-text-subtlest, #878787))' : 'var(--cp-text-tertiary, #64748B)'),
+                  color: isDone ? 'var(--ds-surface, #FFFFFF)' : isStepFailed ? 'var(--ds-text-danger, #DC2626)' : isActive ? 'var(--ds-surface, #FFFFFF)' : (isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--cp-text-tertiary, #64748B)'),
                   ...(isActive ? { boxShadow: '0 0 0 3px rgba(37,99,235,0.2)' } : {}),
                 }}>
                   {isDone
@@ -293,7 +293,7 @@ export function WikiAdminSyncTab() {
                     <span style={{
                       display: 'inline-flex', alignItems: 'center', gap: 4,
                       padding: '2px 8px', borderRadius: 4,
-                      background: '#0C66E4', color: 'var(--ds-surface, var(--ds-surface, #FFFFFF))',
+                      background: '#0C66E4', color: 'var(--ds-surface, #FFFFFF)',
                       fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.03em',
                     }}>
                       <Loader2 style={{ width: 10, height: 10, animation: 'spin 1s linear infinite' }} />
@@ -303,14 +303,14 @@ export function WikiAdminSyncTab() {
                   {isDone && (
                     <span style={{
                       padding: '2px 8px', borderRadius: 4,
-                      background: '#1B7F37', color: 'var(--ds-surface, var(--ds-surface, #FFFFFF))',
+                      background: '#1B7F37', color: 'var(--ds-surface, #FFFFFF)',
                       fontWeight: 700, fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.03em',
                     }}>Complete</span>
                   )}
                   {isStepFailed && (
                     <span style={{
                       padding: '2px 8px', borderRadius: 4,
-                      background: 'rgba(220,38,38,0.08)', color: 'var(--ds-text-danger, var(--ds-text-danger, #DC2626))',
+                      background: 'rgba(220,38,38,0.08)', color: 'var(--ds-text-danger, #DC2626)',
                       fontWeight: 700, fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.03em',
                     }}>Failed</span>
                   )}
@@ -400,9 +400,9 @@ export function EmptyState({ icon, message, sub }: { icon: React.ReactNode; mess
 export function StatusLoz({ status }: { status: string }) {
   const map: Record<string, { bg: string; color: string }> = {
     complete: { bg: '#E3FCEF', color: '#006644' },
-    running: { bg: '#0C66E4', color: 'var(--ds-surface, var(--ds-surface, #FFFFFF))' },
-    failed: { bg: 'rgba(220,38,38,0.08)', color: 'var(--ds-text-danger, var(--ds-text-danger, #DC2626))' },
-    partial: { bg: 'var(--ds-border, var(--ds-border, #DFE1E6))', color: '#44546F' },
+    running: { bg: '#0C66E4', color: 'var(--ds-surface, #FFFFFF)' },
+    failed: { bg: 'rgba(220,38,38,0.08)', color: 'var(--ds-text-danger, #DC2626)' },
+    partial: { bg: 'var(--ds-border, #DFE1E6)', color: '#44546F' },
   };
   const s = map[status] ?? map.failed;
   return (

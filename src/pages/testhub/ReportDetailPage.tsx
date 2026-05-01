@@ -29,12 +29,12 @@ interface Report {
 }
 
 const TYPE_CONFIG: Record<string, { label: string; color: string }> = {
-  cycle_summary: { label: 'Cycle Summary', color: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))' },
+  cycle_summary: { label: 'Cycle Summary', color: 'var(--ds-text-brand, #2563EB)' },
   plan_summary: { label: 'Plan Summary', color: '#7C3AED' },
   coverage: { label: 'Coverage', color: '#0891B2' },
-  defect: { label: 'Defect Report', color: 'var(--ds-text-danger, var(--ds-text-danger, #DC2626))' },
+  defect: { label: 'Defect Report', color: 'var(--ds-text-danger, #DC2626)' },
   trend: { label: 'Trend Analysis', color: '#059669' },
-  custom: { label: 'Custom', color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #64748B))' },
+  custom: { label: 'Custom', color: 'var(--ds-text-subtlest, #64748B)' },
 };
 
 export default function ReportDetailPage() {
@@ -46,7 +46,7 @@ export default function ReportDetailPage() {
 
   // DARK MODE tokens
   const pageBg = 'var(--cp-bg-page, #F8FAFC)';
-  const surfaceBg = isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, var(--ds-surface, var(--ds-surface, #FFF)))';
+  const surfaceBg = isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, #FFF)';
   const borderColor = 'var(--cp-border, #E2E8F0)';
   const borderSubtle = 'var(--cp-bg-sunken, #F1F5F9)';
   const textPrimary = 'var(--cp-text-primary, #0F172A)';
@@ -114,7 +114,7 @@ export default function ReportDetailPage() {
   if (isLoading) {
     return (
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh', backgroundColor: pageBg }}>
-        <RefreshCw size={32} style={{ animation: 'spin 1s linear infinite', color: 'var(--ds-text-warning, var(--ds-text-warning, #F59E0B))' }} />
+        <RefreshCw size={32} style={{ animation: 'spin 1s linear infinite', color: 'var(--ds-text-warning, #F59E0B)' }} />
       </div>
     );
   }
@@ -137,7 +137,7 @@ export default function ReportDetailPage() {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 24 }}>
         <div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
-            <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--ds-text-warning, var(--ds-text-warning, #F59E0B))', backgroundColor: 'var(--cp-warning-light, #FFFBEB)', padding: '6px 14px', borderRadius: 8 }}>{report.report_key}</span>
+            <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--ds-text-warning, #F59E0B)', backgroundColor: 'var(--cp-warning-light, #FFFBEB)', padding: '6px 14px', borderRadius: 8 }}>{report.report_key}</span>
             <span style={{ fontSize: 12, fontWeight: 500, color: type.color, backgroundColor: `${type.color}15`, padding: '4px 10px', borderRadius: 6 }}>{type.label}</span>
           </div>
           <h1 style={{ fontSize: 24, fontWeight: 700, color: textPrimary, margin: 0 }}>{report.name}</h1>
@@ -153,7 +153,7 @@ export default function ReportDetailPage() {
           <button onClick={() => window.print()} style={{ display: 'flex', alignItems: 'center', gap: 6, height: 40, padding: '0 14px', border: `1px solid ${borderColor}`, borderRadius: 8, backgroundColor: surfaceBg, color: textBody, fontSize: 13, cursor: 'pointer' }}>
             <Printer size={16} />
           </button>
-          <button onClick={deleteReport} style={{ display: 'flex', alignItems: 'center', gap: 6, height: 40, padding: '0 14px', border: '1px solid #FECACA', borderRadius: 8, backgroundColor: 'var(--cp-danger-light, #FEF2F2)', color: 'var(--ds-text-danger, var(--ds-text-danger, #DC2626))', fontSize: 13, cursor: 'pointer' }}>
+          <button onClick={deleteReport} style={{ display: 'flex', alignItems: 'center', gap: 6, height: 40, padding: '0 14px', border: '1px solid #FECACA', borderRadius: 8, backgroundColor: 'var(--cp-danger-light, #FEF2F2)', color: 'var(--ds-text-danger, #DC2626)', fontSize: 13, cursor: 'pointer' }}>
             <Trash2 size={16} />
           </button>
         </div>
@@ -173,7 +173,7 @@ export default function ReportDetailPage() {
           {/* Stats */}
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16, marginBottom: 24 }}>
             <div style={{ backgroundColor: surfaceBg, borderRadius: 12, padding: 20, border: `1px solid ${borderColor}`, textAlign: 'center' }}>
-              <BarChart3 size={24} style={{ color: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))', marginBottom: 8 }} />
+              <BarChart3 size={24} style={{ color: 'var(--ds-text-brand, #2563EB)', marginBottom: 8 }} />
               <p style={{ fontSize: 28, fontWeight: 700, color: textPrimary, margin: 0 }}>{data.summary.total_cases}</p>
               <p style={{ fontSize: 12, color: textSecondary, margin: '4px 0 0' }}>Total Tests</p>
             </div>
@@ -183,13 +183,13 @@ export default function ReportDetailPage() {
               <p style={{ fontSize: 12, color: '#059669', margin: '4px 0 0' }}>Passed</p>
             </div>
             <div style={{ backgroundColor: 'var(--cp-danger-light, #FEF2F2)', borderRadius: 12, padding: 20, border: `1px solid ${'var(--cp-danger-light, #FECACA)'}`, textAlign: 'center' }}>
-              <XCircle size={24} style={{ color: 'var(--ds-text-danger, var(--ds-text-danger, #DC2626))', marginBottom: 8 }} />
-              <p style={{ fontSize: 28, fontWeight: 700, color: 'var(--ds-text-danger, var(--ds-text-danger, #DC2626))', margin: 0 }}>{data.summary.failed}</p>
-              <p style={{ fontSize: 12, color: 'var(--ds-text-danger, var(--ds-text-danger, #DC2626))', margin: '4px 0 0' }}>Failed</p>
+              <XCircle size={24} style={{ color: 'var(--ds-text-danger, #DC2626)', marginBottom: 8 }} />
+              <p style={{ fontSize: 28, fontWeight: 700, color: 'var(--ds-text-danger, #DC2626)', margin: 0 }}>{data.summary.failed}</p>
+              <p style={{ fontSize: 12, color: 'var(--ds-text-danger, #DC2626)', margin: '4px 0 0' }}>Failed</p>
             </div>
             <div style={{ backgroundColor: surfaceBg, borderRadius: 12, padding: 20, border: `1px solid ${borderColor}`, textAlign: 'center' }}>
-              <PieChart size={24} style={{ color: data.summary.pass_rate >= 80 ? '#059669' : data.summary.pass_rate >= 50 ? 'var(--ds-text-warning, var(--ds-text-warning, #D97706))' : 'var(--ds-text-danger, var(--ds-text-danger, #DC2626))', marginBottom: 8 }} />
-              <p style={{ fontSize: 28, fontWeight: 700, color: data.summary.pass_rate >= 80 ? '#059669' : data.summary.pass_rate >= 50 ? 'var(--ds-text-warning, var(--ds-text-warning, #D97706))' : 'var(--ds-text-danger, var(--ds-text-danger, #DC2626))', margin: 0 }}>{data.summary.pass_rate}%</p>
+              <PieChart size={24} style={{ color: data.summary.pass_rate >= 80 ? '#059669' : data.summary.pass_rate >= 50 ? 'var(--ds-text-warning, #D97706)' : 'var(--ds-text-danger, #DC2626)', marginBottom: 8 }} />
+              <p style={{ fontSize: 28, fontWeight: 700, color: data.summary.pass_rate >= 80 ? '#059669' : data.summary.pass_rate >= 50 ? 'var(--ds-text-warning, #D97706)' : 'var(--ds-text-danger, #DC2626)', margin: 0 }}>{data.summary.pass_rate}%</p>
               <p style={{ fontSize: 12, color: textSecondary, margin: '4px 0 0' }}>Pass Rate</p>
             </div>
           </div>
@@ -198,23 +198,23 @@ export default function ReportDetailPage() {
           <div style={{ backgroundColor: surfaceBg, borderRadius: 12, padding: 20, border: `1px solid ${borderColor}`, marginBottom: 24 }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 12 }}>
               <span style={{ fontSize: 14, fontWeight: 600, color: textPrimary }}>Execution Progress</span>
-              <span style={{ fontSize: 14, fontWeight: 700, color: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))' }}>{data.summary.progress_percent}%</span>
+              <span style={{ fontSize: 14, fontWeight: 700, color: 'var(--ds-text-brand, #2563EB)' }}>{data.summary.progress_percent}%</span>
             </div>
             <div style={{ height: 16, backgroundColor: 'var(--cp-bg-sunken, #E2E8F0)', borderRadius: 8, overflow: 'hidden', display: 'flex' }}>
               {data.summary.total_cases > 0 && (
                 <>
                   <div style={{ width: `${(data.summary.passed / data.summary.total_cases) * 100}%`, backgroundColor: '#10B981' }} />
-                  <div style={{ width: `${(data.summary.failed / data.summary.total_cases) * 100}%`, backgroundColor: 'var(--ds-text-danger, var(--ds-text-danger, #EF4444))' }} />
-                  <div style={{ width: `${(data.summary.blocked / data.summary.total_cases) * 100}%`, backgroundColor: 'var(--ds-text-warning, var(--ds-text-warning, #F59E0B))' }} />
-                  <div style={{ width: `${(data.summary.skipped / data.summary.total_cases) * 100}%`, backgroundColor: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #94A3B8))' }} />
+                  <div style={{ width: `${(data.summary.failed / data.summary.total_cases) * 100}%`, backgroundColor: 'var(--ds-text-danger, #EF4444)' }} />
+                  <div style={{ width: `${(data.summary.blocked / data.summary.total_cases) * 100}%`, backgroundColor: 'var(--ds-text-warning, #F59E0B)' }} />
+                  <div style={{ width: `${(data.summary.skipped / data.summary.total_cases) * 100}%`, backgroundColor: 'var(--ds-text-subtlest, #94A3B8)' }} />
                 </>
               )}
             </div>
             <div style={{ display: 'flex', gap: 16, marginTop: 12, fontSize: 12, color: textSecondary }}>
               <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}><span style={{ width: 10, height: 10, backgroundColor: '#10B981', borderRadius: 4, display: 'inline-block' }} /> Passed ({data.summary.passed})</span>
-              <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}><span style={{ width: 10, height: 10, backgroundColor: 'var(--ds-text-danger, var(--ds-text-danger, #EF4444))', borderRadius: 4, display: 'inline-block' }} /> Failed ({data.summary.failed})</span>
-              <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}><span style={{ width: 10, height: 10, backgroundColor: 'var(--ds-text-warning, var(--ds-text-warning, #F59E0B))', borderRadius: 4, display: 'inline-block' }} /> Blocked ({data.summary.blocked})</span>
-              <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}><span style={{ width: 10, height: 10, backgroundColor: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #94A3B8))', borderRadius: 4, display: 'inline-block' }} /> Not Run ({data.summary.not_run})</span>
+              <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}><span style={{ width: 10, height: 10, backgroundColor: 'var(--ds-text-danger, #EF4444)', borderRadius: 4, display: 'inline-block' }} /> Failed ({data.summary.failed})</span>
+              <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}><span style={{ width: 10, height: 10, backgroundColor: 'var(--ds-text-warning, #F59E0B)', borderRadius: 4, display: 'inline-block' }} /> Blocked ({data.summary.blocked})</span>
+              <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}><span style={{ width: 10, height: 10, backgroundColor: 'var(--ds-text-subtlest, #94A3B8)', borderRadius: 4, display: 'inline-block' }} /> Not Run ({data.summary.not_run})</span>
             </div>
           </div>
 
@@ -222,7 +222,7 @@ export default function ReportDetailPage() {
           {data.assignee_breakdown && data.assignee_breakdown.length > 0 && (
             <div style={{ backgroundColor: surfaceBg, borderRadius: 12, padding: 20, border: `1px solid ${borderColor}`, marginBottom: 24 }}>
               <h3 style={{ fontSize: 16, fontWeight: 600, color: textPrimary, margin: '0 0 16px', display: 'flex', alignItems: 'center', gap: 8 }}>
-                <Users size={18} style={{ color: 'var(--ds-text-warning, var(--ds-text-warning, #F59E0B))' }} /> By Assignee
+                <Users size={18} style={{ color: 'var(--ds-text-warning, #F59E0B)' }} /> By Assignee
               </h3>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: 12 }}>
                 {data.assignee_breakdown.map((a: any, i: number) => (
@@ -231,7 +231,7 @@ export default function ReportDetailPage() {
                     <div style={{ display: 'flex', gap: 12, fontSize: 12 }}>
                       <span>Total: {a.total}</span>
                       <span style={{ color: '#059669' }}>Passed: {a.passed}</span>
-                      <span style={{ color: 'var(--ds-text-danger, var(--ds-text-danger, #DC2626))' }}>Failed: {a.failed}</span>
+                      <span style={{ color: 'var(--ds-text-danger, #DC2626)' }}>Failed: {a.failed}</span>
                     </div>
                   </div>
                 ))}
@@ -258,7 +258,7 @@ export default function ReportDetailPage() {
                     {data.test_cases.map((tc: any, i: number) => (
                       <tr key={i} style={{ borderBottom: `1px solid ${borderSubtle}` }}>
                         <td style={{ padding: '12px 8px' }}>
-                          <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))', backgroundColor: 'var(--cp-primary-light, #EFF6FF)', padding: '2px 6px', borderRadius: 4 }}>{tc.case_key}</span>
+                          <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text-brand, #2563EB)', backgroundColor: 'var(--cp-primary-light, #EFF6FF)', padding: '2px 6px', borderRadius: 4 }}>{tc.case_key}</span>
                         </td>
                         <td style={{ padding: '12px 8px', color: textPrimary }}>{tc.title}</td>
                         <td style={{ padding: '12px 8px', textTransform: 'capitalize', color: textBody }}>{tc.priority}</td>
@@ -266,7 +266,7 @@ export default function ReportDetailPage() {
                           <span style={{
                             fontSize: 11, fontWeight: 500, padding: '3px 8px', borderRadius: 4,
                             backgroundColor: tc.status === 'passed' ? ('var(--cp-success-light, #ECFDF5)') : tc.status === 'failed' ? ('var(--cp-danger-light, #FEF2F2)') : ('var(--cp-bg-sunken, #F1F5F9)'),
-                            color: tc.status === 'passed' ? '#059669' : tc.status === 'failed' ? 'var(--ds-text-danger, var(--ds-text-danger, #DC2626))' : textSecondary,
+                            color: tc.status === 'passed' ? '#059669' : tc.status === 'failed' ? 'var(--ds-text-danger, #DC2626)' : textSecondary,
                           }}>
                             {tc.status || 'Not Run'}
                           </span>
@@ -312,7 +312,7 @@ export default function ReportDetailPage() {
               <tbody>
                 {data.defects.map((d: any, i: number) => (
                   <tr key={i} style={{ borderBottom: `1px solid ${borderSubtle}` }}>
-                    <td style={{ padding: '12px 8px' }}><span style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text-danger, var(--ds-text-danger, #DC2626))', backgroundColor: 'var(--cp-danger-light, #FEF2F2)', padding: '2px 6px', borderRadius: 4 }}>{d.defect_key}</span></td>
+                    <td style={{ padding: '12px 8px' }}><span style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text-danger, #DC2626)', backgroundColor: 'var(--cp-danger-light, #FEF2F2)', padding: '2px 6px', borderRadius: 4 }}>{d.defect_key}</span></td>
                     <td style={{ padding: '12px 8px', color: textPrimary }}>{d.title}</td>
                     <td style={{ padding: '12px 8px', textTransform: 'capitalize', color: textBody }}>{d.severity}</td>
                     <td style={{ padding: '12px 8px', textTransform: 'capitalize', color: textBody }}>{d.status}</td>

@@ -147,7 +147,7 @@ export function R360ItemDetailDrawer({ itemId, isOpen, onClose }: R360ItemDetail
                         width: 18, height: 18, borderRadius: '50%',
                         background: 'linear-gradient(135deg, var(--ds-text-brand, #2563EB), #0D9488)',
                         display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        fontSize: 7, fontWeight: 700, color: 'var(--ds-surface, var(--ds-surface, var(--ds-surface, #fff)))', flexShrink: 0,
+                        fontSize: 7, fontWeight: 700, color: 'var(--ds-surface, #fff)', flexShrink: 0,
                       }}>{initials(item.assigneeName)}</div>
                       {item.assigneeName}
                     </>

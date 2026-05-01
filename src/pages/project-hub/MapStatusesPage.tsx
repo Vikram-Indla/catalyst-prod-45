@@ -37,10 +37,10 @@ function StatusPill({
   const catColor = mapping.bucketType === 'column'
     ? (mapping.statusName.toLowerCase().includes('done') || mapping.statusName.toLowerCase().includes('closed') || mapping.statusName.toLowerCase().includes('production') || mapping.statusName.toLowerCase().includes('resolved')
       ? '#006644' : mapping.statusName.toLowerCase().includes('progress') || mapping.statusName.toLowerCase().includes('dev') || mapping.statusName.toLowerCase().includes('qa') || mapping.statusName.toLowerCase().includes('uat') || mapping.statusName.toLowerCase().includes('design') || mapping.statusName.toLowerCase().includes('beta') || mapping.statusName.toLowerCase().includes('testing') || mapping.statusName.toLowerCase().includes('review')
-        ? '#0747A6' : 'var(--ds-text, var(--ds-text, #253858))')
-    : 'var(--ds-text, var(--ds-text, #253858))';
+        ? '#0747A6' : 'var(--ds-text, #253858)')
+    : 'var(--ds-text, #253858)';
 
-  const catBg = catColor === '#006644' ? '#E3FCEF' : catColor === '#0747A6' ? '#DEEBFF' : 'var(--ds-border, var(--ds-border, #DFE1E6))';
+  const catBg = catColor === '#006644' ? '#E3FCEF' : catColor === '#0747A6' ? '#DEEBFF' : 'var(--ds-border, #DFE1E6)';
 
   return (
     <div
@@ -387,7 +387,7 @@ function DeleteConfirm({
             onClick={onConfirm}
             style={{
               height: 32, padding: '0 12px', borderRadius: 6,
-              border: 'none', background: '#E5493A', color: 'var(--ds-surface, var(--ds-surface, var(--ds-surface, #fff)))',
+              border: 'none', background: '#E5493A', color: 'var(--ds-surface, #fff)',
               fontSize: 13, fontWeight: 600, cursor: 'pointer',
               fontFamily: 'var(--cp-font-body)',
             }}
@@ -612,8 +612,8 @@ export default function MapStatusesPage() {
             disabled={!hasChanges || saving}
             style={{
               height: 32, padding: '0 14px', borderRadius: 6,
-              border: 'none', background: hasChanges ? 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))' : tk.chipBg,
-              color: hasChanges ? 'var(--ds-surface, var(--ds-surface, #FFFFFF))' : tk.textDisabled,
+              border: 'none', background: hasChanges ? 'var(--ds-text-brand, #2563EB)' : tk.chipBg,
+              color: hasChanges ? 'var(--ds-surface, #FFFFFF)' : tk.textDisabled,
               fontSize: 13, fontWeight: 600, cursor: hasChanges ? 'pointer' : 'default',
               fontFamily: 'var(--cp-font-body)',
             }}

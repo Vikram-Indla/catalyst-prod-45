@@ -38,7 +38,7 @@ export function UserAvatar({ name, size = 24, showName = false, showTooltip = tr
       className="rounded-full flex items-center justify-center text-white font-semibold flex-shrink-0"
       style={{ width: px, height: px, backgroundColor: getAvatarColor(name) }}
     >
-      <CircleUser size={size * 0.7} color="var(--ds-surface, var(--ds-surface, #FFFFFF))" strokeWidth={1.5} />
+      <CircleUser size={size * 0.7} color="var(--ds-surface, #FFFFFF)" strokeWidth={1.5} />
     </div>
   );
 

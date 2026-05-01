@@ -104,7 +104,7 @@ function highlightVariables(text: string, isDark = false) {
             display: 'inline',
             padding: '1px 6px',
             backgroundColor: 'var(--cp-primary-light, #EFF6FF)',
-            color: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))',
+            color: 'var(--ds-text-brand, #2563EB)',
             borderRadius: 4,
             fontFamily: 'monospace',
             fontSize: 12,
@@ -311,10 +311,10 @@ export default function SharedStepsPage() {
             {/* All Steps */}
             <CategorySidebarItem
               label="All Steps"
-              icon={<Folder size={16} style={{ color: !selectedCategoryId ? 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))' : ('var(--cp-text-tertiary, #64748B)') }} />}
+              icon={<Folder size={16} style={{ color: !selectedCategoryId ? 'var(--ds-text-brand, #2563EB)' : ('var(--cp-text-tertiary, #64748B)') }} />}
               count={totalCount}
               isSelected={!selectedCategoryId}
-              selectedColor="var(--ds-text-brand, var(--ds-text-brand, #2563EB))"
+              selectedColor="var(--ds-text-brand, #2563EB)"
               onClick={() => setSelectedCategoryId(null)}
               isDark={isDark}
             />
@@ -367,10 +367,10 @@ export default function SharedStepsPage() {
                 onClick={(e) => { e.stopPropagation(); setIsFilterOpen(!isFilterOpen); setIsSortOpen(false); }}
                 style={{
                   height: 40, padding: '0 14px',
-                  border: `1.5px solid ${activeFilters.length > 0 ? 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))' : ('var(--cp-border, #E2E8F0)')}`,
+                  border: `1.5px solid ${activeFilters.length > 0 ? 'var(--ds-text-brand, #2563EB)' : ('var(--cp-border, #E2E8F0)')}`,
                   borderRadius: 8,
                   backgroundColor: activeFilters.length > 0 ? ('var(--cp-primary-light, #EFF6FF)') : ('var(--cp-bg-elevated, #FFFFFF)'),
-                  color: activeFilters.length > 0 ? 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))' : ('var(--cp-text-secondary, #334155)'),
+                  color: activeFilters.length > 0 ? 'var(--ds-text-brand, #2563EB)' : ('var(--cp-text-secondary, #334155)'),
                   fontSize: 14, fontWeight: 500, cursor: 'pointer',
                   display: 'inline-flex', alignItems: 'center', gap: 8, fontFamily: 'var(--cp-font-body)',
                 }}
@@ -379,7 +379,7 @@ export default function SharedStepsPage() {
                 Filter
                 {activeFilters.length > 0 && (
                   <span style={{
-                    width: 20, height: 20, borderRadius: '50%', backgroundColor: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))',
+                    width: 20, height: 20, borderRadius: '50%', backgroundColor: 'var(--ds-text-brand, #2563EB)',
                     color: 'var(--ds-text-inverse, #FFFFFF)', fontSize: 11, fontWeight: 700,
                     display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
                   }}>
@@ -405,7 +405,7 @@ export default function SharedStepsPage() {
                     <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--cp-text-tertiary, #64748B)', fontFamily: 'var(--cp-font-body)' }}>Filter by Category</span>
                     {activeFilters.length > 0 && (
                       <button onClick={() => setActiveFilters([])} style={{
-                        background: 'none', border: 'none', color: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))', fontSize: 12,
+                        background: 'none', border: 'none', color: 'var(--ds-text-brand, #2563EB)', fontSize: 12,
                         fontWeight: 500, cursor: 'pointer', padding: 0, fontFamily: 'var(--cp-font-body)',
                       }}>
                         Clear all
@@ -428,7 +428,7 @@ export default function SharedStepsPage() {
                                 isChecked ? prev.filter(id => id !== cat.id) : [...prev, cat.id]
                               );
                             }}
-                            style={{ width: 16, height: 16, accentColor: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))' }}
+                            style={{ width: 16, height: 16, accentColor: 'var(--ds-text-brand, #2563EB)' }}
                           />
                           <span style={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: cat.color, flexShrink: 0 }} />
                           <span style={{ flex: 1 }}>{cat.name}</span>
@@ -496,7 +496,7 @@ export default function SharedStepsPage() {
                         style={{
                           width: '100%', height: 40, padding: '8px 12px', border: 'none', borderRadius: 8,
                           backgroundColor: isActive ? ('var(--cp-primary-light, #EFF6FF)') : 'transparent',
-                          color: isActive ? 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))' : ('var(--cp-text-secondary, #334155)'), fontSize: 14,
+                          color: isActive ? 'var(--ds-text-brand, #2563EB)' : ('var(--cp-text-secondary, #334155)'), fontSize: 14,
                           fontWeight: isActive ? 600 : 400, cursor: 'pointer',
                           display: 'flex', alignItems: 'center', justifyContent: 'space-between',
                           textAlign: 'left', fontFamily: 'var(--cp-font-body)',
@@ -520,7 +520,7 @@ export default function SharedStepsPage() {
               <button onClick={() => setViewMode('list')} title="List view" style={{
                 width: 40, height: 38, padding: 0, border: 'none',
                 backgroundColor: viewMode === 'list' ? ('var(--cp-primary-light, #EFF6FF)') : ('var(--cp-bg-elevated, #FFFFFF)'),
-                color: viewMode === 'list' ? 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))' : ('var(--cp-text-tertiary, #64748B)'), cursor: 'pointer',
+                color: viewMode === 'list' ? 'var(--ds-text-brand, #2563EB)' : ('var(--cp-text-tertiary, #64748B)'), cursor: 'pointer',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
               }}>
                 <List size={18} />
@@ -529,7 +529,7 @@ export default function SharedStepsPage() {
                 width: 40, height: 38, padding: 0, border: 'none',
                 borderLeft: `1px solid ${'var(--cp-border, #E2E8F0)'}`,
                 backgroundColor: viewMode === 'card' ? ('var(--cp-primary-light, #EFF6FF)') : ('var(--cp-bg-elevated, #FFFFFF)'),
-                color: viewMode === 'card' ? 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))' : ('var(--cp-text-tertiary, #64748B)'), cursor: 'pointer',
+                color: viewMode === 'card' ? 'var(--ds-text-brand, #2563EB)' : ('var(--cp-text-tertiary, #64748B)'), cursor: 'pointer',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
               }}>
                 <LayoutGrid size={18} />
@@ -546,7 +546,7 @@ export default function SharedStepsPage() {
             {loading ? (
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: 300 }}>
                 <div style={{
-                  width: 40, height: 40, border: `3px solid ${'var(--cp-border, #E2E8F0)'}`, borderTopColor: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))',
+                  width: 40, height: 40, border: `3px solid ${'var(--cp-border, #E2E8F0)'}`, borderTopColor: 'var(--ds-text-brand, #2563EB)',
                   borderRadius: '50%', animation: 'spin 1s linear infinite',
                 }} />
               </div>
@@ -612,7 +612,7 @@ export default function SharedStepsPage() {
                           </td>
                           <td style={{ padding: '12px 16px', textAlign: 'center' }}>
                             {variables.length > 0 ? (
-                              <span style={{ padding: '2px 8px', backgroundColor: 'var(--cp-primary-light, #EFF6FF)', borderRadius: 12, fontSize: 12, fontWeight: 600, color: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))' }}>
+                              <span style={{ padding: '2px 8px', backgroundColor: 'var(--cp-primary-light, #EFF6FF)', borderRadius: 12, fontSize: 12, fontWeight: 600, color: 'var(--ds-text-brand, #2563EB)' }}>
                                 {variables.length}
                               </span>
                             ) : (
@@ -806,7 +806,7 @@ function SharedStepCard({ step, onView, onEdit, onDuplicate, onDelete, isDark = 
           )}
           <span style={{
             padding: '2px 8px', backgroundColor: 'var(--cp-primary-light, #EFF6FF)', borderRadius: 4,
-            fontSize: 11, fontWeight: 600, color: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))', fontFamily: 'var(--cp-font-body)',
+            fontSize: 11, fontWeight: 600, color: 'var(--ds-text-brand, #2563EB)', fontFamily: 'var(--cp-font-body)',
           }}>
             Used {step.usage_count}x
           </span>
@@ -896,7 +896,7 @@ function MenuButton({ icon, label, onClick, danger }: {
   return (
     <button onClick={onClick} style={{
       width: '100%', height: 50, padding: '8px 12px', border: 'none', borderRadius: 6,
-      backgroundColor: 'transparent', color: danger ? 'var(--ds-text-danger, var(--ds-text-danger, #DC2626))' : 'inherit',
+      backgroundColor: 'transparent', color: danger ? 'var(--ds-text-danger, #DC2626)' : 'inherit',
       fontSize: 13, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 10,
       textAlign: 'left', fontFamily: 'var(--cp-font-body)',
     }}>

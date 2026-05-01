@@ -25,23 +25,23 @@ interface AddColumnModalProps {
 }
 
 const STATUS_COLORS = [
-  { name: 'Slate', value: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #94a3b8))' },
-  { name: 'Blue', value: 'var(--ds-text-brand, var(--ds-text-brand, #3b82f6))' },
+  { name: 'Slate', value: 'var(--ds-text-subtlest, #94a3b8)' },
+  { name: 'Blue', value: 'var(--ds-text-brand, #3b82f6)' },
   { name: 'Teal', value: '#14b8a6' },
-  { name: 'Green', value: 'var(--ds-text-success, var(--ds-text-success, #22c55e))' },
+  { name: 'Green', value: 'var(--ds-text-success, #22c55e)' },
   { name: 'Yellow', value: '#eab308' },
   { name: 'Orange', value: '#f97316' },
-  { name: 'Red', value: 'var(--ds-text-danger, var(--ds-text-danger, #ef4444))' },
+  { name: 'Red', value: 'var(--ds-text-danger, #ef4444)' },
   { name: 'Purple', value: '#8b5cf6' },
   { name: 'Pink', value: '#ec4899' },
   { name: 'Cyan', value: '#06b6d4' },
-  { name: 'Amber', value: 'var(--ds-text-warning, var(--ds-text-warning, #f59e0b))' },
+  { name: 'Amber', value: 'var(--ds-text-warning, #f59e0b)' },
   { name: 'Emerald', value: '#10b981' },
 ];
 
 export function AddColumnModal({ open, onOpenChange }: AddColumnModalProps) {
   const [name, setName] = useState('');
-  const [color, setColor] = useState('var(--ds-text-subtlest, var(--ds-text-subtlest, #94a3b8))');
+  const [color, setColor] = useState('var(--ds-text-subtlest, #94a3b8)');
   
   const createColumn = useCreateColumn();
 
@@ -53,7 +53,7 @@ export function AddColumnModal({ open, onOpenChange }: AddColumnModalProps) {
     try {
       await createColumn.mutateAsync({ name: name.trim(), color });
       setName('');
-      setColor('var(--ds-text-subtlest, var(--ds-text-subtlest, #94a3b8))');
+      setColor('var(--ds-text-subtlest, #94a3b8)');
       onOpenChange(false);
     } catch {
       // Error handled in hook
@@ -62,7 +62,7 @@ export function AddColumnModal({ open, onOpenChange }: AddColumnModalProps) {
 
   const handleClose = () => {
     setName('');
-    setColor('var(--ds-text-subtlest, var(--ds-text-subtlest, #94a3b8))');
+    setColor('var(--ds-text-subtlest, #94a3b8)');
     onOpenChange(false);
   };
 
@@ -119,15 +119,15 @@ export function AddColumnModal({ open, onOpenChange }: AddColumnModalProps) {
             {/* Preview */}
             <div className="grid gap-2">
               <Label>Preview</Label>
-              <div className="flex items-center gap-2 p-3 bg-slate-50 dark:bg-[var(--ds-surface-raised,var(--ds-surface-raised, #1A1A1A))] rounded-lg">
+              <div className="flex items-center gap-2 p-3 bg-slate-50 dark:bg-[var(--ds-surface-raised, #1A1A1A)] rounded-lg">
                 <span
                   className="w-2 h-2 rounded-full"
                   style={{ backgroundColor: color }}
                 />
-                <span className="text-sm font-medium text-slate-700 dark:text-[var(--ds-text,var(--ds-text, #EDEDED))]">
+                <span className="text-sm font-medium text-slate-700 dark:text-[var(--ds-text, #EDEDED)]">
                   {name || 'Column Name'}
                 </span>
-                <span className="text-xs text-slate-500 bg-slate-200 dark:bg-[var(--ds-surface-raised,var(--ds-surface-raised, #1A1A1A))] dark:text-[var(--ds-text-subtlest,var(--ds-text-subtlest, #A1A1A1))] px-2 py-0.5 rounded-full ml-auto">
+                <span className="text-xs text-slate-500 bg-slate-200 dark:bg-[var(--ds-surface-raised, #1A1A1A)] dark:text-[var(--ds-text-subtlest, #A1A1A1)] px-2 py-0.5 rounded-full ml-auto">
                   0
                 </span>
               </div>

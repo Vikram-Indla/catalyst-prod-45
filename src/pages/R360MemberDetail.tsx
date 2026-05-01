@@ -310,7 +310,7 @@ export default function R360MemberDetail() {
     );
   }
 
-  const deptColor = R360_DEPT_COLORS[overview.department] || 'var(--ds-text-subtlest, var(--ds-text-subtlest, #64748B))';
+  const deptColor = R360_DEPT_COLORS[overview.department] || 'var(--ds-text-subtlest, #64748B)';
 
   return (
     <>
@@ -336,20 +336,20 @@ export default function R360MemberDetail() {
                   <div
                     onClick={() => setTicketListMode(bannerOpenCount > 0 ? 'open' : null)}
                     style={{ padding: '12px 16px', borderRadius: '8px', minWidth: '76px', textAlign: 'center' as const, background: 'var(--cp-primary-light, #EFF6FF)', border: isDark ? '1px solid #2E2E2E' : 'none', cursor: bannerOpenCount > 0 ? 'pointer' : 'default', transition: 'all 80ms ease' }}
-                    onMouseEnter={e => { if (bannerOpenCount > 0) (e.currentTarget.style.background = isDark ? 'var(--ds-surface-overlay, var(--ds-surface-overlay, #1F1F1F))' : 'rgba(37,99,235,0.12)'); }}
+                    onMouseEnter={e => { if (bannerOpenCount > 0) (e.currentTarget.style.background = isDark ? 'var(--ds-surface-overlay, #1F1F1F)' : 'rgba(37,99,235,0.12)'); }}
                     onMouseLeave={e => { e.currentTarget.style.background = 'var(--cp-primary-light, #EFF6FF)'; }}
                   >
-                    <div style={{ fontSize: '20px', fontWeight: 700, color: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))' }}>{bannerOpenCount}</div>
-                    <div style={{ fontSize: '11px', fontWeight: 600, color: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))', textTransform: 'uppercase' as const, letterSpacing: '.03em' }}>OPEN</div>
+                    <div style={{ fontSize: '20px', fontWeight: 700, color: 'var(--ds-text-brand, #2563EB)' }}>{bannerOpenCount}</div>
+                    <div style={{ fontSize: '11px', fontWeight: 600, color: 'var(--ds-text-brand, #2563EB)', textTransform: 'uppercase' as const, letterSpacing: '.03em' }}>OPEN</div>
                   </div>
                   <div
                     onClick={() => setTicketListMode(bannerStaleCount > 0 ? 'stale' : null)}
                     style={{ padding: '12px 16px', borderRadius: '8px', minWidth: '76px', textAlign: 'center' as const, background: 'var(--cp-danger-light, #FEF2F2)', border: isDark ? '1px solid #2E2E2E' : 'none', cursor: bannerStaleCount > 0 ? 'pointer' : 'default', transition: 'all 80ms ease' }}
-                    onMouseEnter={e => { if (bannerStaleCount > 0) (e.currentTarget.style.background = isDark ? 'var(--ds-surface-overlay, var(--ds-surface-overlay, #1F1F1F))' : 'rgba(220,38,38,0.12)'); }}
+                    onMouseEnter={e => { if (bannerStaleCount > 0) (e.currentTarget.style.background = isDark ? 'var(--ds-surface-overlay, #1F1F1F)' : 'rgba(220,38,38,0.12)'); }}
                     onMouseLeave={e => { e.currentTarget.style.background = 'var(--cp-danger-light, #FEF2F2)'; }}
                   >
-                    <div style={{ fontSize: '20px', fontWeight: 700, color: 'var(--ds-text-danger, var(--ds-text-danger, #DC2626))' }}>{bannerStaleCount}</div>
-                    <div style={{ fontSize: '11px', fontWeight: 600, color: 'var(--ds-text-danger, var(--ds-text-danger, #DC2626))', textTransform: 'uppercase' as const, letterSpacing: '.03em' }}>STALE</div>
+                    <div style={{ fontSize: '20px', fontWeight: 700, color: 'var(--ds-text-danger, #DC2626)' }}>{bannerStaleCount}</div>
+                    <div style={{ fontSize: '11px', fontWeight: 600, color: 'var(--ds-text-danger, #DC2626)', textTransform: 'uppercase' as const, letterSpacing: '.03em' }}>STALE</div>
                   </div>
                 </div>
               </div>
@@ -430,7 +430,7 @@ export default function R360MemberDetail() {
                     style={{
                       display: 'inline-flex', alignItems: 'center', gap: '6px',
                       padding: '7px 18px', borderRadius: '6px', fontSize: '12.5px', fontWeight: 600,
-                      border: 'none', background: 'rgba(37,99,235,0.10)', color: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))',
+                      border: 'none', background: 'rgba(37,99,235,0.10)', color: 'var(--ds-text-brand, #2563EB)',
                       cursor: 'pointer', transition: 'all 80ms ease',
                     }}
                     onMouseOver={e => { (e.target as HTMLButtonElement).style.background = 'rgba(37,99,235,0.16)'; }}

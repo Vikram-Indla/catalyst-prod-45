@@ -4,10 +4,10 @@ import { toast } from 'sonner';
 import { useJiraUserDetail, useToggleUserStatus, useUpdatePerm } from '@/hooks/useJiraUserSync';
 
 const AVATAR_COLORS = [
-  { bg: '#DBEAFE', text: 'var(--ds-background-brand-bold-hovered, var(--ds-background-brand-bold-hovered, #1D4ED8))' }, { bg: 'var(--ds-background-success, var(--ds-background-success, #DCFCE7))', text: '#15803D' },
+  { bg: '#DBEAFE', text: 'var(--ds-background-brand-bold-hovered, #1D4ED8)' }, { bg: 'var(--ds-background-success, #DCFCE7)', text: '#15803D' },
   { bg: '#FEF3C7', text: '#92400E' }, { bg: '#EDE9FE', text: '#5B21B6' },
-  { bg: '#FEE2E2', text: 'var(--ds-text-danger, var(--ds-text-danger, #991B1B))' }, { bg: '#F0FDF4', text: '#0F766E' },
-  { bg: 'var(--ds-background-selected, var(--ds-background-selected, #EFF6FF))', text: 'var(--ds-background-brand-bold-hovered, var(--ds-background-brand-bold-hovered, #1D4ED8))' }, { bg: '#E0F2FE', text: '#0369A1' },
+  { bg: '#FEE2E2', text: 'var(--ds-text-danger, #991B1B)' }, { bg: '#F0FDF4', text: '#0F766E' },
+  { bg: 'var(--ds-background-selected, #EFF6FF)', text: 'var(--ds-background-brand-bold-hovered, #1D4ED8)' }, { bg: '#E0F2FE', text: '#0369A1' },
   { bg: '#F5F3FF', text: '#7C3AED' }, { bg: '#CCFBF1', text: '#0F766E' },
 ];
 
@@ -85,18 +85,18 @@ const InfoCard: React.FC<{ label: string; children: React.ReactNode; isDark?: bo
 );
 const PERM_LEVELS = ['view', 'edit', 'full', 'none'] as const;
 const PERM_COLORS: Record<string, { bg: string; color: string; bgDark: string; colorDark: string }> = {
-  view: { bg: 'var(--ds-background-selected, var(--ds-background-selected, #EFF6FF))', color: '#0747A6', bgDark: 'rgba(37,99,235,0.12)', colorDark: '#93C5FD' },
+  view: { bg: 'var(--ds-background-selected, #EFF6FF)', color: '#0747A6', bgDark: 'rgba(37,99,235,0.12)', colorDark: '#93C5FD' },
   edit: { bg: '#FEF3C7', color: '#92400E', bgDark: 'rgba(251,191,36,0.12)', colorDark: '#FCD34D' },
-  full: { bg: 'var(--ds-background-success, var(--ds-background-success, #DCFCE7))', color: '#006644', bgDark: 'rgba(34,197,94,0.12)', colorDark: '#86EFAC' },
-  none: { bg: 'var(--ds-surface-sunken, var(--ds-surface-sunken, #F1F5F9))', color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #64748B))', bgDark: 'var(--ds-surface-raised, var(--ds-surface-raised, #1A1A1A))', colorDark: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #878787))' },
+  full: { bg: 'var(--ds-background-success, #DCFCE7)', color: '#006644', bgDark: 'rgba(34,197,94,0.12)', colorDark: '#86EFAC' },
+  none: { bg: 'var(--ds-surface-sunken, #F1F5F9)', color: 'var(--ds-text-subtlest, #64748B)', bgDark: 'var(--ds-surface-raised, #1A1A1A)', colorDark: 'var(--ds-text-subtlest, #878787)' },
 };
 
 function getEventDotColor(ev: any): string {
   if (ev.event_type === 'created') return '#7C3AED';
-  if (ev.event_type === 'deactivated' || ev.event_type === 'reactivated') return 'var(--ds-text-warning, var(--ds-text-warning, #D97706))';
-  if (ev.direction === 'jira_to_catalyst') return 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))';
+  if (ev.event_type === 'deactivated' || ev.event_type === 'reactivated') return 'var(--ds-text-warning, #D97706)';
+  if (ev.direction === 'jira_to_catalyst') return 'var(--ds-text-brand, #2563EB)';
   if (ev.direction === 'catalyst_to_jira') return '#0D9488';
-  return 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))';
+  return 'var(--ds-text-brand, #2563EB)';
 }
 
 function getEventText(ev: any): string {
@@ -144,7 +144,7 @@ const ProjectsTab: React.FC<{ perms: any[]; isDark?: boolean }> = ({ perms, isDa
           <button className={xsBtnClass} style={xsBtn} onClick={selectAll}>Select All</button>
           <button className={xsBtnClass} style={xsBtn} onClick={deselectAll}>Deselect All</button>
           <button
-            style={{ ...xsBtn, background: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))', color: 'var(--ds-text-inverse, #FFFFFF)', border: 'none' }}
+            style={{ ...xsBtn, background: 'var(--ds-text-brand, #2563EB)', color: 'var(--ds-text-inverse, #FFFFFF)', border: 'none' }}
             onClick={() => toast.info('Project picker — Phase 2')}
           >+ Add Project</button>
         </div>
@@ -154,7 +154,7 @@ const ProjectsTab: React.FC<{ perms: any[]; isDark?: boolean }> = ({ perms, isDa
         <div style={{ textAlign: 'center', padding: '32px 16px' }}>
           <div style={{ fontSize: '12px', color: 'var(--cp-text-muted, #94A3B8)', marginBottom: '10px' }}>No projects assigned yet</div>
           <button
-            style={{ fontSize: '11px', fontWeight: 600, background: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))', color: 'var(--ds-text-inverse, #FFFFFF)', border: 'none', borderRadius: '4px', padding: '5px 12px', cursor: 'pointer' }}
+            style={{ fontSize: '11px', fontWeight: 600, background: 'var(--ds-text-brand, #2563EB)', color: 'var(--ds-text-inverse, #FFFFFF)', border: 'none', borderRadius: '4px', padding: '5px 12px', cursor: 'pointer' }}
             onClick={() => toast.info('Project picker — Phase 2')}
           >+ Add Project</button>
         </div>
@@ -168,7 +168,7 @@ const ProjectsTab: React.FC<{ perms: any[]; isDark?: boolean }> = ({ perms, isDa
                     type="checkbox"
                     checked={checkedPerms.size === perms.length && perms.length > 0}
                     onChange={() => checkedPerms.size === perms.length ? deselectAll() : selectAll()}
-                    style={{ width: '12px', height: '12px', accentColor: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))' }}
+                    style={{ width: '12px', height: '12px', accentColor: 'var(--ds-text-brand, #2563EB)' }}
                   />
                 </th>
                 <th style={{ padding: '6px 9px', fontSize: '9px', fontWeight: 700, color: 'var(--cp-text-tertiary, #64748B)', textTransform: 'uppercase', textAlign: 'left' }}>Project</th>
@@ -189,7 +189,7 @@ const ProjectsTab: React.FC<{ perms: any[]; isDark?: boolean }> = ({ perms, isDa
                         type="checkbox"
                         checked={checkedPerms.has(p.id)}
                         onChange={() => toggleCheck(p.id)}
-                        style={{ width: '12px', height: '12px', accentColor: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))' }}
+                        style={{ width: '12px', height: '12px', accentColor: 'var(--ds-text-brand, #2563EB)' }}
                       />
                     </td>
                     <td style={{ padding: '6px 9px', fontWeight: 500, color: 'var(--cp-text-primary, #0F172A)', whiteSpace: 'nowrap' }} className="jus-field-val">
@@ -240,7 +240,7 @@ const ProjectsTab: React.FC<{ perms: any[]; isDark?: boolean }> = ({ perms, isDa
           <button
             style={{
               width: '100%', marginTop: '10px', padding: '7px 0',
-              background: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))', color: 'var(--ds-text-inverse, #FFFFFF)', border: 'none',
+              background: 'var(--ds-text-brand, #2563EB)', color: 'var(--ds-text-inverse, #FFFFFF)', border: 'none',
               borderRadius: '4px', fontSize: '11px', fontWeight: 600, cursor: 'pointer',
             }}
             onClick={() => toast.success('Assignments saved. Changes push to Jira on next sync.')}
@@ -295,13 +295,13 @@ const UserDetailPanel: React.FC<Props> = ({ userId, onClose, isDark = false }) =
   const user = data?.data;
 
   const T = isDark ? {
-    surface: 'var(--ds-surface, var(--ds-surface, #0A0A0A))', border: 'var(--ds-border, var(--ds-border, #2E2E2E))', text1: 'var(--ds-text, var(--ds-text, #EDEDED))',
-    text2: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #A1A1A1))', text3: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #878787))', sunken: 'var(--ds-surface, var(--ds-surface, #0A0A0A))',
-    elevated: 'var(--ds-surface-raised, var(--ds-surface-raised, #1A1A1A))', inputBg: 'var(--ds-surface-raised, var(--ds-surface-raised, #1A1A1A))',
+    surface: 'var(--ds-surface, #0A0A0A)', border: 'var(--ds-border, #2E2E2E)', text1: 'var(--ds-text, #EDEDED)',
+    text2: 'var(--ds-text-subtlest, #A1A1A1)', text3: 'var(--ds-text-subtlest, #878787)', sunken: 'var(--ds-surface, #0A0A0A)',
+    elevated: 'var(--ds-surface-raised, #1A1A1A)', inputBg: 'var(--ds-surface-raised, #1A1A1A)',
   } : {
-    surface: 'var(--ds-text-inverse, #FFFFFF)', border: 'rgba(15,23,42,0.10)', text1: 'var(--ds-text, var(--ds-text, #0F172A))',
-    text2: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #64748B))', text3: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #94A3B8))', sunken: 'var(--ds-surface-sunken, var(--ds-surface-sunken, #F1F5F9))',
-    elevated: 'var(--ds-surface-sunken, var(--ds-surface-sunken, #F8FAFC))', inputBg: 'var(--ds-text-inverse, #FFFFFF)',
+    surface: 'var(--ds-text-inverse, #FFFFFF)', border: 'rgba(15,23,42,0.10)', text1: 'var(--ds-text, #0F172A)',
+    text2: 'var(--ds-text-subtlest, #64748B)', text3: 'var(--ds-text-subtlest, #94A3B8)', sunken: 'var(--ds-surface-sunken, #F1F5F9)',
+    elevated: 'var(--ds-surface-sunken, #F8FAFC)', inputBg: 'var(--ds-text-inverse, #FFFFFF)',
   };
 
   if (isLoading || !user) {
@@ -428,10 +428,10 @@ const UserDetailPanel: React.FC<Props> = ({ userId, onClose, isDark = false }) =
               onClick={() => setActiveTab(t.key)}
               style={{
                 padding: '8px 12px', fontSize: '12px', fontWeight: 500, cursor: 'pointer',
-                color: activeTab === t.key ? 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))' : T.text2,
+                color: activeTab === t.key ? 'var(--ds-text-brand, #2563EB)' : T.text2,
                 background: 'none', border: 'none',
                 borderBottomWidth: '2px', borderBottomStyle: 'solid',
-                borderBottomColor: activeTab === t.key ? 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))' : 'transparent',
+                borderBottomColor: activeTab === t.key ? 'var(--ds-text-brand, #2563EB)' : 'transparent',
                 transition: 'color 120ms, border-color 120ms',
               }}
             >
@@ -470,7 +470,7 @@ const UserDetailPanel: React.FC<Props> = ({ userId, onClose, isDark = false }) =
                 <span className="jus-field-val" style={mkFieldVal(isDark)}>
                   {user.last_synced_at ? (
                     <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
-                      <span style={{ width: 5, height: 5, borderRadius: '50%', background: 'var(--ds-text-success, var(--ds-text-success, #16A34A))', display: 'inline-block' }} />
+                      <span style={{ width: 5, height: 5, borderRadius: '50%', background: 'var(--ds-text-success, #16A34A)', display: 'inline-block' }} />
                       {formatDate(user.last_synced_at)}
                     </span>
                   ) : (
@@ -535,7 +535,7 @@ const UserDetailPanel: React.FC<Props> = ({ userId, onClose, isDark = false }) =
                   onClick={() => setShowPwd(p => !p)}
                   style={{
                     background: 'none', border: 'none', cursor: 'pointer',
-                    fontSize: '11px', fontWeight: 600, color: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))', whiteSpace: 'nowrap',
+                    fontSize: '11px', fontWeight: 600, color: 'var(--ds-text-brand, #2563EB)', whiteSpace: 'nowrap',
                   }}
                 >
                   {showPwd ? 'Hide' : 'Show'}
@@ -580,8 +580,8 @@ const UserDetailPanel: React.FC<Props> = ({ userId, onClose, isDark = false }) =
                   style={{
                     display: 'inline-flex', alignItems: 'center', gap: '4px',
                     padding: '4px 8px', borderRadius: '4px', fontSize: '11px', fontWeight: 500,
-                    border: `1px solid ${isInactive ? 'var(--ds-text-success, var(--ds-text-success, #16A34A))' : 'var(--ds-text-danger, var(--ds-text-danger, #DC2626))'}`,
-                    color: isInactive ? 'var(--ds-text-success, var(--ds-text-success, #16A34A))' : 'var(--ds-text-danger, var(--ds-text-danger, #DC2626))',
+                    border: `1px solid ${isInactive ? 'var(--ds-text-success, #16A34A)' : 'var(--ds-text-danger, #DC2626)'}`,
+                    color: isInactive ? 'var(--ds-text-success, #16A34A)' : 'var(--ds-text-danger, #DC2626)',
                     background: T.surface, cursor: toggling ? 'not-allowed' : 'pointer',
                   }}
                 >
@@ -692,7 +692,7 @@ const UserDetailPanel: React.FC<Props> = ({ userId, onClose, isDark = false }) =
       }}>
         <button style={{
           flex: 1, display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-          background: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))', color: 'var(--ds-text-inverse, #FFFFFF)', border: 'none',
+          background: 'var(--ds-text-brand, #2563EB)', color: 'var(--ds-text-inverse, #FFFFFF)', border: 'none',
           padding: '7px 12px', borderRadius: '6px', fontSize: '12px', fontWeight: 600,
           cursor: 'pointer',
         }}>
@@ -705,7 +705,7 @@ const UserDetailPanel: React.FC<Props> = ({ userId, onClose, isDark = false }) =
           style={{
             display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
             padding: '7px 12px', borderRadius: '6px', fontSize: '12px', fontWeight: 500,
-            border: '1px solid #DC2626', color: 'var(--ds-text-danger, var(--ds-text-danger, #DC2626))', background: T.surface,
+            border: '1px solid #DC2626', color: 'var(--ds-text-danger, #DC2626)', background: T.surface,
             cursor: toggling ? 'not-allowed' : 'pointer',
           }}
         >

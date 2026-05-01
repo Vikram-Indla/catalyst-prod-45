@@ -30,7 +30,7 @@ export function RoadmapTimelineBar({ item, left, width, isSelected, isHovered, o
 
   const typeConfig = TYPE_COLORS[item.type];
   const barGradient = typeConfig?.gradient || 'linear-gradient(135deg, var(--ds-text-subtle, #475569), var(--ds-text-subtle, #334155))';
-  const barColor = typeConfig?.solid || 'var(--ds-text-subtle, var(--ds-text-subtle, #475569))';
+  const barColor = typeConfig?.solid || 'var(--ds-text-subtle, #475569)';
   const isOverdue = item.status !== 'Completed' && item.progress < 100 && item.hasRealEndDate && new Date(item.endDate) < new Date();
   const isFallbackEnd = !item.hasRealEndDate;
 
@@ -62,7 +62,7 @@ export function RoadmapTimelineBar({ item, left, width, isSelected, isHovered, o
 
   const tooltipBg = 'var(--cp-bg-elevated, #FFFFFF)';
   const tooltipShadow = isDark ? '0 20px 60px rgba(0,0,0,0.4)' : '0 20px 60px rgba(0,0,0,0.12)';
-  const progressTrackBg = isDark ? 'var(--ds-border, var(--ds-border, #2E2E2E))' : surface.borderLight;
+  const progressTrackBg = isDark ? 'var(--ds-border, #2E2E2E)' : surface.borderLight;
 
   return (
     <>
@@ -83,7 +83,7 @@ export function RoadmapTimelineBar({ item, left, width, isSelected, isHovered, o
           alignItems: 'center',
           overflow: 'hidden',
           borderRadius: 6,
-          background: isOverdue ? 'var(--ds-text-danger, var(--ds-text-danger, #EF4444))' : barGradient,
+          background: isOverdue ? 'var(--ds-text-danger, #EF4444)' : barGradient,
           border: 'none',
           opacity: 1,
           transform: isHovered ? 'translateY(calc(-50% - 1px))' : 'translateY(-50%)',

@@ -462,7 +462,7 @@ const flatAccordionHeaderStyle: React.CSSProperties = {
 function avatarStyle(bg: string): React.CSSProperties {
   return {
     width: 28, height: 28, borderRadius: '50%', display: 'flex', alignItems: 'center',
-    justifyContent: 'center', fontWeight: 800, fontSize: 11, color: 'var(--ds-surface, var(--ds-surface, #FFFFFF))',
+    justifyContent: 'center', fontWeight: 800, fontSize: 11, color: 'var(--ds-surface, #FFFFFF)',
     background: bg, flexShrink: 0,
   };
 }

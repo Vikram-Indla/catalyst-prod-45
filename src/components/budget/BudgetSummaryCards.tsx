@@ -25,9 +25,9 @@ type PanelType = 'insourced' | 'cosourced' | 'outsourced' | 'licenses' | null;
 // V8 Color definitions
 const cardColors = {
   insourced: {
-    bar: 'bg-gradient-to-r from-[var(--ds-text-brand,var(--ds-text-brand, #2563eb))] to-[var(--ds-text-brand,var(--ds-text-brand, #3b82f6))]',
-    value: 'text-[var(--ds-text-brand,var(--ds-text-brand, #2563eb))]',
-    badge: 'bg-[rgba(37,99,235,0.08)] text-[var(--ds-text-brand,var(--ds-text-brand, #2563eb))]',
+    bar: 'bg-gradient-to-r from-[var(--ds-text-brand, #2563eb)] to-[var(--ds-text-brand, #3b82f6)]',
+    value: 'text-[var(--ds-text-brand, #2563eb)]',
+    badge: 'bg-[rgba(37,99,235,0.08)] text-[var(--ds-text-brand, #2563eb)]',
     ring: 'shadow-[0_0_0_2px_rgba(37,99,235,0.3)]'
   },
   cosourced: {
@@ -37,9 +37,9 @@ const cardColors = {
     ring: 'shadow-[0_0_0_2px_rgba(13,148,136,0.3)]'
   },
   outsourced: {
-    bar: 'bg-gradient-to-r from-[var(--ds-text-warning,var(--ds-text-warning, #d97706))] to-[var(--ds-text-warning,var(--ds-text-warning, #f59e0b))]',
-    value: 'text-[var(--ds-text-warning,var(--ds-text-warning, #d97706))]',
-    badge: 'bg-[rgba(217,119,6,0.1)] text-[var(--ds-text-warning,var(--ds-text-warning, #d97706))]',
+    bar: 'bg-gradient-to-r from-[var(--ds-text-warning, #d97706)] to-[var(--ds-text-warning, #f59e0b)]',
+    value: 'text-[var(--ds-text-warning, #d97706)]',
+    badge: 'bg-[rgba(217,119,6,0.1)] text-[var(--ds-text-warning, #d97706)]',
     ring: 'shadow-[0_0_0_2px_rgba(217,119,6,0.3)]'
   },
   licenses: {

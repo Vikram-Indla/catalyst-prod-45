@@ -266,7 +266,7 @@ export function WorkItemsTable({
                           type="checkbox"
                           checked={isAllSelected}
                           onChange={selectAll}
-                          className="w-3.5 h-3.5 rounded accent-[var(--ds-text-brand,var(--ds-text-brand, #2563EB))]"
+                          className="w-3.5 h-3.5 rounded accent-[var(--ds-text-brand, #2563EB)]"
                         />
                       </div>
                     ) : (
@@ -291,12 +291,12 @@ export function WorkItemsTable({
                     <td colSpan={visibleCols.length}>
                       <button
                         onClick={() => toggleGroup(group.key)}
-                        className="w-full flex items-center gap-2 px-3 text-left transition-colors hover:bg-[var(--ds-background-selected,var(--ds-background-selected, #EFF6FF))] bg-[var(--bg-1)]"
+                        className="w-full flex items-center gap-2 px-3 text-left transition-colors hover:bg-[var(--ds-background-selected, #EFF6FF)] bg-[var(--bg-1)]"
                         style={{ height: 32, borderBottom: '1px solid var(--divider)' }}
                       >
                         {collapsedGroups.has(group.key)
-                          ? <ChevronRight size={14} className="text-[var(--ds-text-subtlest,var(--ds-text-subtlest, #94A3B8))]" />
-                          : <ChevronDown size={14} className="text-[var(--ds-text-subtlest,var(--ds-text-subtlest, #94A3B8))]" />
+                          ? <ChevronRight size={14} className="text-[var(--ds-text-subtlest, #94A3B8)]" />
+                          : <ChevronDown size={14} className="text-[var(--ds-text-subtlest, #94A3B8)]" />
                         }
                         <span className="text-[12px] font-semibold" style={{ color: 'var(--fg-1)' }}>{group.label}</span>
                         <span className="text-[10px] font-medium px-1.5 py-0.5 rounded-full bg-[var(--divider)]" style={{ color: 'var(--fg-3)' }}>
@@ -373,7 +373,7 @@ export function WorkItemsTable({
                 <td colSpan={visibleCols.length}>
                   <button
                     onClick={onCreateClick}
-                    className="w-full flex items-center gap-2 px-4 py-2 text-[11px] font-medium hover:bg-[var(--ds-surface-sunken,var(--ds-surface-sunken, #F8FAFC))] transition-colors cursor-pointer"
+                    className="w-full flex items-center gap-2 px-4 py-2 text-[11px] font-medium hover:bg-[var(--ds-surface-sunken, #F8FAFC)] transition-colors cursor-pointer"
                     style={{ color: 'var(--fg-4)', height: 50, border: 'none', background: 'transparent' }}
                   >
                     <Plus size={14} />

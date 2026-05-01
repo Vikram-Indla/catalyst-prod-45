@@ -17,7 +17,7 @@ function getStatusStyle(category: string): { bg: string; color: string } {
     case 'in_progress': return { bg: '#0C66E4', color: 'var(--ds-text-inverse, #FFFFFF)' };
     case 'done': return { bg: '#1B7F37', color: 'var(--ds-text-inverse, #FFFFFF)' };
     // terminal, todo, backlog, blocked, on_hold — ALL grey
-    default: return { bg: 'var(--ds-border, var(--ds-border, #DFE1E6))', color: '#42526E' };
+    default: return { bg: 'var(--ds-border, #DFE1E6)', color: '#42526E' };
   }
 }
 

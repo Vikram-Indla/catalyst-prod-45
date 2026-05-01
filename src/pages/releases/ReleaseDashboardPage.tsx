@@ -133,7 +133,7 @@ export default function ReleaseDashboardPage() {
             <Button variant="ghost" size="icon" className="h-8 w-8">
               <Settings className="w-4 h-4" />
             </Button>
-            <Button size="sm" className="h-8 bg-[var(--ds-text-brand,var(--ds-text-brand, #2563eb))] hover:bg-[var(--ds-background-brand-bold-hovered,var(--ds-background-brand-bold-hovered, #1d4ed8))]">
+            <Button size="sm" className="h-8 bg-[var(--ds-text-brand, #2563eb)] hover:bg-[var(--ds-background-brand-bold-hovered, #1d4ed8)]">
               <Play className="w-4 h-4 mr-2" />
               Execute Tests
             </Button>

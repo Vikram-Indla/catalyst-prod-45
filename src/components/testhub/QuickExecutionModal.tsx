@@ -140,7 +140,7 @@ export function QuickExecutionModal({
   if (!tc) return null;
 
   const priorityStyle = {
-    critical: { color: 'var(--sem-danger)', bg: 'var(--ds-background-danger, var(--ds-background-danger, #FEF2F2))' },
+    critical: { color: 'var(--sem-danger)', bg: 'var(--ds-background-danger, #FEF2F2)' },
     high:     { color: '#EA580C', bg: '#FFF7ED' },
     medium:   { color: 'var(--sem-warning)', bg: '#FFFBEB' },
     low:      { color: 'var(--sem-success)', bg: '#ECFDF5' },

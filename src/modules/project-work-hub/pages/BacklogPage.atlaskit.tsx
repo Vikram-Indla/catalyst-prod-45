@@ -227,7 +227,7 @@ const BG_SOLIDS: Array<{ name: string; value: string }> = [
   { name: 'Peach',   value: '#FFE2D5' },
   { name: 'Rose',    value: '#FFD2DC' },
   { name: 'Lilac',   value: '#E5DBFF' },
-  { name: 'Stone',   value: 'var(--ds-border, var(--ds-border, #DFE1E6))' },
+  { name: 'Stone',   value: 'var(--ds-border, #DFE1E6)' },
   { name: 'Blue',    value: '#0C66E4' }, // bold accents
   { name: 'Teal',    value: '#1F845A' },
   { name: 'Violet',  value: '#5E4DB2' },
@@ -1153,17 +1153,17 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
         const p = (sample.priority || '').toLowerCase();
         const PRIORITY_RANK: Record<string, { level: number; color: string }> = {
           highest:  { level: 4, color: 'var(--ds-icon-accent-red, #C9372C)' }, critical: { level: 4, color: 'var(--ds-icon-accent-red, #C9372C)' },
-          high:     { level: 3, color: 'var(--ds-text-warning, var(--ds-text-warning, #F59E0B))' },
-          medium:   { level: 2, color: 'var(--ds-text-success, var(--ds-text-success, #22C55E))' },
-          low:      { level: 1, color: 'var(--ds-text-success, var(--ds-text-success, #22C55E))' },
-          lowest:   { level: 0, color: 'var(--ds-border, var(--ds-border, #DFE1E6))' },
+          high:     { level: 3, color: 'var(--ds-text-warning, #F59E0B)' },
+          medium:   { level: 2, color: 'var(--ds-text-success, #22C55E)' },
+          low:      { level: 1, color: 'var(--ds-text-success, #22C55E)' },
+          lowest:   { level: 0, color: 'var(--ds-border, #DFE1E6)' },
         };
-        const rank = PRIORITY_RANK[p] || { level: 0, color: 'var(--ds-border, var(--ds-border, #DFE1E6))' };
+        const rank = PRIORITY_RANK[p] || { level: 0, color: 'var(--ds-border, #DFE1E6)' };
         labelNode = (
           <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }} title={k}>
             <span style={{ display: 'inline-flex', gap: 2 }}>
               {[1, 2, 3, 4].map((i) => (
-                <span key={i} style={{ width: 4, height: 12, borderRadius: 1, background: i <= rank.level ? rank.color : 'var(--ds-border, var(--ds-border, #DFE1E6))' }} />
+                <span key={i} style={{ width: 4, height: 12, borderRadius: 1, background: i <= rank.level ? rank.color : 'var(--ds-border, #DFE1E6)' }} />
               ))}
             </span>
             <span>{k}</span>
@@ -1919,7 +1919,7 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
           display: 'flex', alignItems: 'center', gap: 8,
           padding: '10px 12px 10px 14px',
           flexShrink: 0,
-          background: 'var(--ds-surface-sunken, var(--ds-surface-sunken, #F4F5F7))',
+          background: 'var(--ds-surface-sunken, #F4F5F7)',
           borderBottom: `1px solid ${token('color.border', '#DFE1E6')}`,
           minHeight: 44,
         }}
@@ -2617,7 +2617,7 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
                 // Hex literal — `color.background.neutral.subtle` token
                 // resolved to transparent in this theme (probed iter 16),
                 // and CLAUDE.md mandates hex over HSL anyway.
-                background: 'var(--ds-surface-sunken, var(--ds-surface-sunken, #F4F5F7))',
+                background: 'var(--ds-surface-sunken, #F4F5F7)',
                 borderBottom: `1px solid ${token('color.border', '#DFE1E6')}`,
                 minHeight: 44,
               }}

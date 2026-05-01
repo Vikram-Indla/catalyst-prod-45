@@ -80,19 +80,19 @@ export default function IdeationDrivesView() {
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '4px' }}>
             <h2 style={{ fontSize: '22px', fontWeight: 800, color: 'var(--cp-text-primary, #0F172A)', letterSpacing: '-0.5px', margin: 0, fontFamily: 'var(--cp-font-heading)' }}>Ideas Themes</h2>
             <span style={{
-              background: 'var(--ds-surface-sunken, var(--ds-surface-sunken, #F8FAFC))', border: '1px solid #E2E8F0', borderRadius: '12px',
+              background: 'var(--ds-surface-sunken, #F8FAFC)', border: '1px solid #E2E8F0', borderRadius: '12px',
               padding: '1px 7px', fontSize: '11px', fontWeight: 600,
-              fontFamily: MONO, color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #94A3B8))',
+              fontFamily: MONO, color: 'var(--ds-text-subtlest, #94A3B8)',
             }}>{drives.length}</span>
           </div>
-          <p style={{ fontSize: '13px', color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #64748B))', margin: 0 }}>
+          <p style={{ fontSize: '13px', color: 'var(--ds-text-subtlest, #64748B)', margin: 0 }}>
             Themed innovation campaigns to focus idea generation around strategic priorities
           </p>
         </div>
         <button
           onClick={() => setCreateOpen(true)}
           style={{
-            height: 50, background: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))', color: 'var(--ds-text-inverse, #FFFFFF)', border: 'none', borderRadius: '6px',
+            height: 50, background: 'var(--ds-text-brand, #2563EB)', color: 'var(--ds-text-inverse, #FFFFFF)', border: 'none', borderRadius: '6px',
             padding: '0 16px', fontSize: '13px', fontWeight: 650, cursor: 'pointer',
             display: 'inline-flex', alignItems: 'center', gap: '6px',
           }}
@@ -104,11 +104,11 @@ export default function IdeationDrivesView() {
       <CreateDriveModal open={createOpen} onClose={() => setCreateOpen(false)} />
 
       {isLoading && (
-        <div style={{ color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #94A3B8))', fontSize: 13, padding: 20 }}>Loading drives...</div>
+        <div style={{ color: 'var(--ds-text-subtlest, #94A3B8)', fontSize: 13, padding: 20 }}>Loading drives...</div>
       )}
 
       {error && (
-        <div style={{ color: 'var(--ds-text-danger, var(--ds-text-danger, #EF4444))', fontSize: 13, padding: 20 }}>Failed to load drives.</div>
+        <div style={{ color: 'var(--ds-text-danger, #EF4444)', fontSize: 13, padding: 20 }}>Failed to load drives.</div>
       )}
 
       {/* Drive Cards */}
@@ -151,10 +151,10 @@ export default function IdeationDrivesView() {
             </div>
 
             {/* Description */}
-            <p style={{ fontSize: '13px', color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #64748B))', margin: '0 0 12px', lineHeight: 1.5 }}>{drive.description}</p>
+            <p style={{ fontSize: '13px', color: 'var(--ds-text-subtlest, #64748B)', margin: '0 0 12px', lineHeight: 1.5 }}>{drive.description}</p>
 
             {/* Stats row */}
-            <div style={{ display: 'flex', gap: '24px', fontSize: '12px', color: 'var(--ds-text-subtle, var(--ds-text-subtle, #334155))', fontWeight: 500, marginBottom: '10px' }}>
+            <div style={{ display: 'flex', gap: '24px', fontSize: '12px', color: 'var(--ds-text-subtle, #334155)', fontWeight: 500, marginBottom: '10px' }}>
               <span><strong>{submitted}</strong> {submitted === 1 ? 'idea' : 'ideas'} submitted</span>
               <span>Deadline: <strong>{drive.deadline ? new Date(drive.deadline).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'No deadline'}</strong></span>
               <span>Target: <strong>{drive.target_count}</strong> ideas</span>
@@ -164,32 +164,32 @@ export default function IdeationDrivesView() {
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '12px' }}>
               <div style={{
                 flex: 1, height: 6, borderRadius: 4,
-                background: 'var(--ds-surface-sunken, var(--ds-surface-sunken, #F1F5F9))', overflow: 'hidden',
+                background: 'var(--ds-surface-sunken, #F1F5F9)', overflow: 'hidden',
                 border: '1px solid #E2E8F0',
               }}>
                 <div style={{
                   width: `${Math.min(pct, 100)}%`, height: '100%',
-                  background: pct >= 100 ? 'var(--ds-text-success, var(--ds-text-success, #16A34A))' : 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))',
+                  background: pct >= 100 ? 'var(--ds-text-success, #16A34A)' : 'var(--ds-text-brand, #2563EB)',
                   borderRadius: 4,
                   transition: 'width 0.3s',
                   minWidth: pct > 0 ? 4 : 0,
                 }} />
               </div>
-              <span style={{ fontFamily: MONO, fontSize: '11px', fontWeight: 600, color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #64748B))', minWidth: 32, textAlign: 'right' }}>
+              <span style={{ fontFamily: MONO, fontSize: '11px', fontWeight: 600, color: 'var(--ds-text-subtlest, #64748B)', minWidth: 32, textAlign: 'right' }}>
                 {submitted}/{drive.target_count}
               </span>
             </div>
 
             {/* Linked ideas */}
             <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
-              <span style={{ fontSize: '11px', color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #94A3B8))', fontWeight: 600, marginRight: '4px' }}>Ideas:</span>
+              <span style={{ fontSize: '11px', color: 'var(--ds-text-subtlest, #94A3B8)', fontWeight: 600, marginRight: '4px' }}>Ideas:</span>
               {drive.ideas.length === 0 && (
-                <span style={{ fontSize: '11px', color: 'var(--ds-text-disabled, var(--ds-text-disabled, #CBD5E1))', fontStyle: 'italic' }}>No ideas linked yet</span>
+                <span style={{ fontSize: '11px', color: 'var(--ds-text-disabled, #CBD5E1)', fontStyle: 'italic' }}>No ideas linked yet</span>
               )}
               {drive.ideas.map(idea => (
                 <span key={idea.idea_key} style={{
-                  fontFamily: MONO, fontSize: '11px', fontWeight: 600, color: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))',
-                  background: 'var(--ds-background-selected, var(--ds-background-selected, #EFF6FF))', border: '1px solid #DBEAFE', borderRadius: '4px', padding: '1px 6px',
+                  fontFamily: MONO, fontSize: '11px', fontWeight: 600, color: 'var(--ds-text-brand, #2563EB)',
+                  background: 'var(--ds-background-selected, #EFF6FF)', border: '1px solid #DBEAFE', borderRadius: '4px', padding: '1px 6px',
                 }}>{idea.idea_key}</span>
               ))}
             </div>

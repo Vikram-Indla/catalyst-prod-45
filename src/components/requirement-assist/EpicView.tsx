@@ -136,7 +136,7 @@ export function EpicView({ document }: EpicViewProps) {
   return (
     <div className="flex flex-col h-[calc(100vh-56px)]">
       {/* Toolbar */}
-      <div className="sticky top-0 z-10 bg-white dark:bg-[var(--ds-surface-raised,var(--ds-surface-raised, #1A1A1A))] border-b border-[hsl(var(--border))] px-6 py-3 flex items-center gap-3">
+      <div className="sticky top-0 z-10 bg-white dark:bg-[var(--ds-surface-raised, #1A1A1A)] border-b border-[hsl(var(--border))] px-6 py-3 flex items-center gap-3">
         <button
           onClick={() => navigate('/producthub/requirement-assist')}
           className="text-[13px] text-muted-foreground hover:text-foreground flex items-center gap-1 transition-colors"
@@ -152,7 +152,7 @@ export function EpicView({ document }: EpicViewProps) {
       {/* 2-column */}
       <div className="flex-1 grid overflow-hidden" style={{ gridTemplateColumns: '280px 1fr' }}>
         {/* Left — Epic list */}
-        <div className="bg-white dark:bg-[var(--ds-surface-raised,var(--ds-surface-raised, #1A1A1A))] border-r border-[hsl(var(--border))] overflow-y-auto p-4">
+        <div className="bg-white dark:bg-[var(--ds-surface-raised, #1A1A1A)] border-r border-[hsl(var(--border))] overflow-y-auto p-4">
           <div className="text-[10px] font-bold uppercase tracking-wide text-muted-foreground mb-3">
             {DEMO_EPICS.length} Epics · {totalStories} Stories · {totalPoints} pts
           </div>
@@ -199,7 +199,7 @@ export function EpicView({ document }: EpicViewProps) {
 
           {/* Stories */}
           {selectedEpic.stories.map((story) => (
-            <div key={story.id} className="bg-white dark:bg-[var(--ds-surface-raised,var(--ds-surface-raised, #1A1A1A))] border border-[hsl(var(--border))] rounded-[10px] p-[18px] mb-3">
+            <div key={story.id} className="bg-white dark:bg-[var(--ds-surface-raised, #1A1A1A)] border border-[hsl(var(--border))] rounded-[10px] p-[18px] mb-3">
               {/* Header */}
               <div className="flex items-center gap-2 mb-2.5">
                 <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-blue-100 text-blue-700">{story.id}</span>

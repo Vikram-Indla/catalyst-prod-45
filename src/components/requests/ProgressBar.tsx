@@ -8,8 +8,8 @@ interface ProgressBarProps {
 
 function getFillColor(value: number, status?: RequestStatus): string {
   if (status === 'done' || value >= 100) return '#10b981';
-  if (value >= 40 && value < 70) return 'var(--ds-text-warning, var(--ds-text-warning, #f59e0b))';
-  return 'var(--ds-text-brand, var(--ds-text-brand, #2563eb))';
+  if (value >= 40 && value < 70) return 'var(--ds-text-warning, #f59e0b)';
+  return 'var(--ds-text-brand, #2563eb)';
 }
 
 export function ProgressBar({ value, status, showLabel = true }: ProgressBarProps) {

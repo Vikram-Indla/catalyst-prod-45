@@ -7,8 +7,8 @@
 export const catalystTokens = {
   // Brand - Catalyst V5 Blue
   brand: {
-    primary: 'var(--ds-text-brand, var(--ds-text-brand, #2563eb))',
-    primaryHover: 'var(--ds-text-brand, var(--ds-text-brand, #3b82f6))',
+    primary: 'var(--ds-text-brand, #2563eb)',
+    primaryHover: 'var(--ds-text-brand, #3b82f6)',
   },
 
   // Semantic Status
@@ -19,26 +19,26 @@ export const catalystTokens = {
       text: '#115e59',
     },
     warning: {
-      base: 'var(--ds-text-warning, var(--ds-text-warning, #f59e0b))',
+      base: 'var(--ds-text-warning, #f59e0b)',
       bg: 'rgba(245, 158, 11, 0.1)',
       text: '#b45309',
     },
     danger: {
-      base: 'var(--ds-text-danger, var(--ds-text-danger, #ef4444))',
+      base: 'var(--ds-text-danger, #ef4444)',
       bg: 'rgba(239, 68, 68, 0.1)',
       text: '#b91c1c',
     },
     info: {
-      base: 'var(--ds-text-brand, var(--ds-text-brand, #2563eb))',
+      base: 'var(--ds-text-brand, #2563eb)',
       bg: 'rgba(37, 99, 235, 0.1)',
-      text: 'var(--ds-background-brand-bold-hovered, var(--ds-background-brand-bold-hovered, #1d4ed8))',
+      text: 'var(--ds-background-brand-bold-hovered, #1d4ed8)',
     },
   },
 
   // Secondary Palette (Product Colors)
   secondary: {
     blue: {
-      base: 'var(--ds-text-brand, var(--ds-text-brand, #2563eb))',
+      base: 'var(--ds-text-brand, #2563eb)',
       bg: 'rgba(37, 99, 235, 0.15)',
     },
     teal: {
@@ -66,13 +66,13 @@ export const catalystTokens = {
   // Light Mode
   light: {
     text: {
-      primary: 'var(--ds-surface, var(--ds-surface, #0a0a0a))',
+      primary: 'var(--ds-surface, #0a0a0a)',
       secondary: '#525252',
       muted: '#737373',
     },
     surface: {
       bg: '#fafafa',
-      card: 'var(--ds-surface, var(--ds-surface, #ffffff))',
+      card: 'var(--ds-surface, #ffffff)',
       hover: '#f0f0f0',
       active: 'rgba(37, 99, 235, 0.12)',
     },
@@ -86,14 +86,14 @@ export const catalystTokens = {
   // Dark Mode — DARK MODE ADS neutral
   dark: {
     text: {
-      primary: 'var(--ds-text, var(--ds-text, #EDEDED))',
-      secondary: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #A1A1A1))',
-      muted: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #878787))',
+      primary: 'var(--ds-text, #EDEDED)',
+      secondary: 'var(--ds-text-subtlest, #A1A1A1)',
+      muted: 'var(--ds-text-subtlest, #878787)',
     },
     surface: {
-      bg: 'var(--ds-surface, var(--ds-surface, #0A0A0A))',
-      card: 'var(--ds-surface-raised, var(--ds-surface-raised, #1A1A1A))',
-      hover: 'var(--ds-surface-raised, var(--ds-surface-raised, #1A1A1A))',
+      bg: 'var(--ds-surface, #0A0A0A)',
+      card: 'var(--ds-surface-raised, #1A1A1A)',
+      hover: 'var(--ds-surface-raised, #1A1A1A)',
       active: 'rgba(59, 130, 246, 0.2)',
     },
     border: {
@@ -106,7 +106,7 @@ export const catalystTokens = {
 
 // Timeline bar colors by product - Catalyst V5 palette
 export const PRODUCT_COLORS: Record<string, string> = {
-  MINI: 'var(--ds-text-brand, var(--ds-text-brand, #2563eb))',  // Primary blue
+  MINI: 'var(--ds-text-brand, #2563eb)',  // Primary blue
   SEN: '#0d9488',   // Teal/Success
   ENT: '#71717a',   // Neutral gray
   UNA: '#52525b',   // Muted gray
@@ -122,8 +122,8 @@ export function getProductColor(productCode: string | null): string {
 export const TIMELINE_COLORS = {
   gridLine: 'rgba(255, 255, 255, 0.05)',
   gridLineDark: 'rgba(255, 255, 255, 0.05)',
-  todayLine: 'var(--ds-text-danger, var(--ds-text-danger, #ef4444))',      // Danger red
-  milestoneMarker: 'var(--ds-text-brand, var(--ds-text-brand, #2563eb))', // Primary blue
-  barDefault: 'var(--ds-text-brand, var(--ds-text-brand, #2563eb))',      // Primary blue
-  barHover: 'var(--ds-text-brand, var(--ds-text-brand, #3b82f6))',        // Primary hover
+  todayLine: 'var(--ds-text-danger, #ef4444)',      // Danger red
+  milestoneMarker: 'var(--ds-text-brand, #2563eb)', // Primary blue
+  barDefault: 'var(--ds-text-brand, #2563eb)',      // Primary blue
+  barHover: 'var(--ds-text-brand, #3b82f6)',        // Primary hover
 };

@@ -383,9 +383,9 @@ export function useExportReport() {
 // Generate HTML report
 function generateHtmlReport(report: ReadinessReport): string {
   const decisionColors = {
-    go: 'var(--ds-text-success, var(--ds-text-success, #22c55e))',
-    no_go: 'var(--ds-text-danger, var(--ds-text-danger, #ef4444))',
-    conditional: 'var(--ds-text-warning, var(--ds-text-warning, #f59e0b))',
+    go: 'var(--ds-text-success, #22c55e)',
+    no_go: 'var(--ds-text-danger, #ef4444)',
+    conditional: 'var(--ds-text-warning, #f59e0b)',
     pending: '#6b7280',
   };
 

@@ -23,17 +23,17 @@ interface Position {
 
 // Priority config
 const PRIORITY_LABELS: Record<string, { label: string; color: string; shape: string }> = {
-  critical: { label: 'Critical', color: 'var(--ds-text-danger, var(--ds-text-danger, #dc2626))', shape: '◆' },
+  critical: { label: 'Critical', color: 'var(--ds-text-danger, #dc2626)', shape: '◆' },
   high: { label: 'High', color: '#ea580c', shape: '▲' },
   medium: { label: 'Medium', color: '#ca8a04', shape: '●' },
-  low: { label: 'Low', color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #64748b))', shape: '○' },
+  low: { label: 'Low', color: 'var(--ds-text-subtlest, #64748b)', shape: '○' },
 };
 
 // Status config
 const STATUS_LABELS: Record<string, { label: string; color: string }> = {
-  'backlog': { label: 'Backlog', color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #94a3b8))' },
-  'planned': { label: 'Planned', color: 'var(--ds-text-brand, var(--ds-text-brand, #3b82f6))' },
-  'in-progress': { label: 'In Progress', color: 'var(--ds-text-warning, var(--ds-text-warning, #f59e0b))' },
+  'backlog': { label: 'Backlog', color: 'var(--ds-text-subtlest, #94a3b8)' },
+  'planned': { label: 'Planned', color: 'var(--ds-text-brand, #3b82f6)' },
+  'in-progress': { label: 'In Progress', color: 'var(--ds-text-warning, #f59e0b)' },
   'review': { label: 'Review', color: '#8b5cf6' },
   'done': { label: 'Done', color: '#10b981' },
 };

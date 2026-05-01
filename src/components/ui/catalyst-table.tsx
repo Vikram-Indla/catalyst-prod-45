@@ -250,12 +250,12 @@ export function CatalystTable<T>({
   return (
     <div ref={containerRef} className="w-full" data-cp-table-narrow={isNarrow ? 'true' : undefined}>
       {/* Table container - full width, content-driven height */}
-      <div className="relative w-full rounded-md border border-border dark:border-[var(--ds-border,var(--ds-border, #2E2E2E))] overflow-hidden bg-card dark:bg-[var(--ds-surface,var(--ds-surface, #0A0A0A))]">
+      <div className="relative w-full rounded-md border border-border dark:border-[var(--ds-border, #2E2E2E)] overflow-hidden bg-card dark:bg-[var(--ds-surface, #0A0A0A)]">
         {/* Horizontal scroll only when columns exceed container */}
         <div ref={scrollRef} className="w-full overflow-x-auto">
           {/* Header - 32px height */}
           <div
-            className="grid items-center h-9 bg-muted dark:bg-[#111111] border-b-2 border-border dark:border-[var(--ds-border,var(--ds-border, #2E2E2E))] sticky top-0 z-20"
+            className="grid items-center h-9 bg-muted dark:bg-[#111111] border-b-2 border-border dark:border-[var(--ds-border, #2E2E2E)] sticky top-0 z-20"
             style={{ gridTemplateColumns: gridTemplate, minWidth: 'max-content' }}
           >
             {columns.map((col, idx) => {
@@ -268,7 +268,7 @@ export function CatalystTable<T>({
                     idx === 0 && "pl-4",
                     col.align === 'center' && "justify-center",
                     col.align === 'right' && "justify-end",
-                    stickyFirst && "sticky left-0 z-30 border-r border-border dark:border-[var(--ds-border,var(--ds-border, #2E2E2E))] bg-muted dark:bg-[#111111]"
+                    stickyFirst && "sticky left-0 z-30 border-r border-border dark:border-[var(--ds-border, #2E2E2E)] bg-muted dark:bg-[#111111]"
                   )}
                 >
                   <span className={cn(HEADER_STYLES, "text-muted-foreground truncate")}>
@@ -293,7 +293,7 @@ export function CatalystTable<T>({
                 <div
                   key={rowId}
                   className={cn(
-                    "grid items-center h-9 border-b border-border dark:border-[var(--ds-border,var(--ds-border, #2E2E2E))] last:border-b-0 transition-colors",
+                    "grid items-center h-9 border-b border-border dark:border-[var(--ds-border, #2E2E2E)] last:border-b-0 transition-colors",
                     onRowClick && "cursor-pointer",
                     isHovered && "bg-muted/50"
                   )}
@@ -314,8 +314,8 @@ export function CatalystTable<T>({
                           col.align === 'right' && "justify-end",
                           CELL_STYLES,
                           "text-foreground",
-                          stickyFirst && "sticky left-0 z-10 border-r border-border dark:border-[var(--ds-border,var(--ds-border, #2E2E2E))]",
-                          stickyFirst && (isHovered ? "bg-muted/95" : "bg-card dark:bg-[var(--ds-surface,var(--ds-surface, #0A0A0A))]")
+                          stickyFirst && "sticky left-0 z-10 border-r border-border dark:border-[var(--ds-border, #2E2E2E)]",
+                          stickyFirst && (isHovered ? "bg-muted/95" : "bg-card dark:bg-[var(--ds-surface, #0A0A0A)]")
                         )}
                       >
                         {col.canGrow ? (

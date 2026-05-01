@@ -36,7 +36,7 @@ function Toggle({ checked, onChange, tk }: { checked: boolean; onChange: (v: boo
     >
       <span style={{
         width: 16, height: 16, borderRadius: '50%',
-        background: 'var(--ds-surface, var(--ds-surface, #FFFFFF))',
+        background: 'var(--ds-surface, #FFFFFF)',
         position: 'absolute',
         left: checked ? 18 : 2,
         transition: 'left 150ms',
@@ -179,7 +179,7 @@ export function ViewSettingsPanel({ settings, onUpdate, onExpandAll, onCollapseA
                     padding: '0 8px',
                     fontSize: 12,
                     fontWeight: selected ? 600 : 500,
-                    color: selected ? 'var(--ds-surface, var(--ds-surface, #FFFFFF))' : tk.textSecondary,
+                    color: selected ? 'var(--ds-surface, #FFFFFF)' : tk.textSecondary,
                     background: selected ? tk.selectedAccent : tk.chipBg,
                     border: `1px solid ${selected ? tk.selectedAccent : tk.border}`,
                     borderRadius: 4,

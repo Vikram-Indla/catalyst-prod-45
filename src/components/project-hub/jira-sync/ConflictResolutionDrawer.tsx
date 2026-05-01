@@ -128,7 +128,7 @@ export function ConflictResolutionDrawer({ open, onClose, itemKey, conflicts, on
                     {/* Catalyst side */}
                     <div className="bg-[var(--cp-blue-wash)]" style={{ flex: 1, borderRight: '0.75px solid var(--cp-primary-20)', padding: 16 }}>
                       <div className="flex items-center gap-[5px]" style={{ marginBottom: 8 }}>
-                        <span className="bg-[var(--cp-blue)]" style={{ width: 10, height: 10, borderRadius: 4, color: 'var(--ds-surface, var(--ds-surface, var(--ds-surface, #FFF)))', fontSize: 7, fontWeight: 700, display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>C</span>
+                        <span className="bg-[var(--cp-blue)]" style={{ width: 10, height: 10, borderRadius: 4, color: 'var(--ds-surface, #FFF)', fontSize: 7, fontWeight: 700, display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>C</span>
                         <span style={{ fontSize: 11, fontWeight: 700, color: 'var(--cp-blue)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Catalyst Version</span>
                         <span style={{ fontSize: 10, color: 'var(--fg-3)', marginLeft: 4 }}>Your edit</span>
                       </div>

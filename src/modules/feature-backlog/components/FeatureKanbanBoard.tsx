@@ -27,12 +27,12 @@ interface FeatureKanbanBoardProps {
 const COLOR_MAP: Record<string, string> = {
   // Status colors
   info: '#c8ccd0',      // Grey
-  warning: 'var(--ds-text-warning, var(--ds-text-warning, #f59e0b))',   // Amber
+  warning: 'var(--ds-text-warning, #f59e0b)',   // Amber
   success: '#0d9488',   // Teal
-  danger: 'var(--ds-text-danger, var(--ds-text-danger, #ef4444))',    // Red
+  danger: 'var(--ds-text-danger, #ef4444)',    // Red
   forest: '#0d9488',    // Teal (done)
   // Catalyst brand colors
-  blue: 'var(--ds-text-brand, var(--ds-text-brand, #2563eb))',
+  blue: 'var(--ds-text-brand, #2563eb)',
   teal: '#0d9488',
   olive: '#0d9488',     // Changed to teal
   bronze: '#6b7280',    // Changed to gray
@@ -44,9 +44,9 @@ const COLOR_MAP: Record<string, string> = {
 // Fallback statuses if DB fetch fails
 const FALLBACK_STATUSES = [
   { id: 'funnel', label: 'Funnel', color: '#c8ccd0' },
-  { id: 'analyzing', label: 'Analyzing', color: 'var(--ds-text-brand, var(--ds-text-brand, #2563eb))' },
+  { id: 'analyzing', label: 'Analyzing', color: 'var(--ds-text-brand, #2563eb)' },
   { id: 'backlog', label: 'Backlog', color: '#0d9488' },
-  { id: 'implementing', label: 'Implementing', color: 'var(--ds-text-warning, var(--ds-text-warning, #f59e0b))' },
+  { id: 'implementing', label: 'Implementing', color: 'var(--ds-text-warning, #f59e0b)' },
   { id: 'done', label: 'Done', color: '#0d9488' },
 ];
 

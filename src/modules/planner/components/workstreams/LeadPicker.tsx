@@ -35,7 +35,7 @@ const getInitials = (name: string | null): string => {
 };
 
 const getColorFromName = (name: string): string => {
-  const colors = ['var(--ds-text-brand, var(--ds-text-brand, #3b82f6))', '#8b5cf6', '#ec4899', '#14b8a6', 'var(--ds-text-warning, var(--ds-text-warning, #f59e0b))', '#6366f1', 'var(--ds-text-brand, var(--ds-text-brand, #2563eb))'];
+  const colors = ['var(--ds-text-brand, #3b82f6)', '#8b5cf6', '#ec4899', '#14b8a6', 'var(--ds-text-warning, #f59e0b)', '#6366f1', 'var(--ds-text-brand, #2563eb)'];
   let hash = 0;
   for (let i = 0; i < name.length; i++) {
     hash = name.charCodeAt(i) + ((hash << 5) - hash);
@@ -83,7 +83,7 @@ export function LeadPicker({
 
   // Get workstream colors for avatar
   const wsColors = workstreamName ? getWorkstreamColor(workstreamName) : null;
-  const avatarColor = workstreamColor || wsColors?.hex || (displayLead ? getColorFromName(displayLead.name) : 'var(--ds-text-subtlest, var(--ds-text-subtlest, #64748b))');
+  const avatarColor = workstreamColor || wsColors?.hex || (displayLead ? getColorFromName(displayLead.name) : 'var(--ds-text-subtlest, #64748b)');
 
   // Filter resources by search
   const filteredResources = useMemo(() => {

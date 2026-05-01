@@ -84,7 +84,7 @@ export function CatyChatTab() {
                   backgroundColor:
                     msg.role === 'user'
                       ? 'var(--wh-primary)'
-                      : 'var(--ds-surface-sunken, var(--ds-surface-sunken, #f1f5f9))',
+                      : 'var(--ds-surface-sunken, #f1f5f9)',
                   color:
                     msg.role === 'user'
                       ? 'white'
@@ -106,7 +106,7 @@ export function CatyChatTab() {
             <div
               className="rounded-xl px-3.5 py-2.5 flex gap-1.5"
               style={{
-                backgroundColor: 'var(--ds-surface-sunken, var(--ds-surface-sunken, #f1f5f9))',
+                backgroundColor: 'var(--ds-surface-sunken, #f1f5f9)',
                 borderRadius: '12px 12px 12px 4px',
               }}
             >
@@ -115,7 +115,7 @@ export function CatyChatTab() {
                   key={i}
                   className="w-1.5 h-1.5 rounded-full"
                   style={{
-                    backgroundColor: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #94a3b8))',
+                    backgroundColor: 'var(--ds-text-subtlest, #94a3b8)',
                     animation: `bounce 1.4s infinite`,
                     animationDelay: `${i * 0.15}s`,
                   }}
@@ -190,7 +190,7 @@ export function CatyChatTab() {
           disabled={!input.trim() || isTyping}
           className="w-8 h-8 rounded-lg flex items-center justify-center transition-all disabled:opacity-50"
           style={{
-            backgroundColor: input.trim() && !isTyping ? 'var(--wh-primary)' : 'var(--ds-border, var(--ds-border, #e2e8f0))',
+            backgroundColor: input.trim() && !isTyping ? 'var(--wh-primary)' : 'var(--ds-border, #e2e8f0)',
           }}
         >
           <Send

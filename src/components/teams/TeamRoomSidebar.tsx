@@ -200,7 +200,7 @@ export function TeamRoomSidebar({ teamId, expanded, onToggle, className }: TeamR
               className="w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0"
               style={{
                 background: 'linear-gradient(135deg, var(--ds-text-brand, #3b82f6) 0%, var(--ds-background-brand-bold-hovered, #1d4ed8) 100%)',
-                color: 'var(--ds-surface, var(--ds-surface, #ffffff))',
+                color: 'var(--ds-surface, #ffffff)',
                 fontSize: '10px',
                 fontWeight: 600,
                 letterSpacing: '0.02em',
@@ -309,7 +309,7 @@ export function TeamRoomSidebar({ teamId, expanded, onToggle, className }: TeamR
                     style={{ 
                       width: '17px', 
                       height: '17px',
-                      color: active ? 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))' : 'var(--nav-text-secondary, #3F3F46)',
+                      color: active ? 'var(--ds-text-brand, #2563EB)' : 'var(--nav-text-secondary, #3F3F46)',
                       strokeWidth: 1.4,
                     }}
                   />

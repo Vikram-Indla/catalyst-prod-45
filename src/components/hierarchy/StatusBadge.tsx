@@ -63,13 +63,13 @@ const STATUS_CATEGORY_MAP: Record<string, StatusCategory> = {
 };
 
 const STATUS_STYLES_LIGHT: Record<StatusCategory, { background: string; color: string }> = {
-  grey:  { background: 'var(--ds-border, var(--ds-border, #DFE1E6))', color: 'var(--ds-text, var(--ds-text, #253858))' },
+  grey:  { background: 'var(--ds-border, #DFE1E6)', color: 'var(--ds-text, #253858)' },
   blue:  { background: '#DEEBFF', color: '#0747A6' },
   green: { background: '#E3FCEF', color: '#006644' },
 };
 
 const STATUS_STYLES_DARK: Record<StatusCategory, { background: string; color: string }> = {
-  grey:  { background: 'var(--ds-border, var(--ds-border, #2E2E2E))', color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #A1A1A1))' },
+  grey:  { background: 'var(--ds-border, #2E2E2E)', color: 'var(--ds-text-subtlest, #A1A1A1)' },
   blue:  { background: 'rgba(59,130,246,0.10)', color: '#7DB8FC' },
   green: { background: 'rgba(74,222,128,0.10)', color: '#4ADE80' },
 };

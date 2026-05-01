@@ -16,8 +16,8 @@ const mockWorkflow: Workflow = {
   isActive: true,
   isDefault: true,
   statuses: [
-    { id: 'backlog', name: 'Backlog', category: 'todo', color: 'var(--ds-border, var(--ds-border, #DFE1E6))' },
-    { id: 'todo', name: 'To Do', category: 'todo', color: 'var(--ds-border, var(--ds-border, #DFE1E6))' },
+    { id: 'backlog', name: 'Backlog', category: 'todo', color: 'var(--ds-border, #DFE1E6)' },
+    { id: 'todo', name: 'To Do', category: 'todo', color: 'var(--ds-border, #DFE1E6)' },
     { id: 'in-progress', name: 'In Progress', category: 'in_progress', color: '#0052CC' },
     { id: 'in-review', name: 'In Review', category: 'in_progress', color: '#FF991F' },
     { id: 'done', name: 'Done', category: 'done', color: '#36B37E' },
@@ -224,7 +224,7 @@ export function useWorkflowEngine(options: UseWorkflowEngineOptions = {}): UseWo
       return {
         name: status.name,
         category: status.category,
-        color: status.color || 'var(--ds-border, var(--ds-border, #DFE1E6))',
+        color: status.color || 'var(--ds-border, #DFE1E6)',
       };
     },
     [workflow]

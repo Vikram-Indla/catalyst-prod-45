@@ -53,7 +53,7 @@ export function FeatureLayerToggle({ projectId, enabled, onToggled }: FeatureLay
       <button
         onClick={handleToggle}
         disabled={loading}
-        className="hover:bg-[var(--ds-surface-sunken,var(--ds-surface-sunken, #F8FAFC))] transition-colors disabled:opacity-50"
+        className="hover:bg-[var(--ds-surface-sunken, #F8FAFC)] transition-colors disabled:opacity-50"
         style={{
           height: 32, padding: '8px 12px', fontSize: 12, fontWeight: 500,
           color: 'var(--fg-2)', border: '1px solid var(--divider)', borderRadius: 6,

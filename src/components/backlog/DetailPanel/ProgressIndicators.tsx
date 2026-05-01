@@ -3,7 +3,7 @@ import { FormSelect } from './FormSelect';
 
 // Static configuration - not seed data
 const EPIC_STATES: EpicState[] = [
-  { id: 1, name: 'Funnel', color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #6B778C))' },
+  { id: 1, name: 'Funnel', color: 'var(--ds-text-subtlest, #6B778C)' },
   { id: 2, name: 'Backlog', color: '#0052CC' },
   { id: 3, name: 'In Progress', color: '#0065FF' },
   { id: 4, name: 'Done', color: '#36B37E' },

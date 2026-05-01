@@ -26,21 +26,21 @@ interface PCRequestCardProps {
 }
 
 const STATUS_PILL_STYLES: Record<string, { color: string; bg: string; border: string }> = {
-  new: { color: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))', bg: 'var(--ds-background-selected, var(--ds-background-selected, #EFF6FF))', border: 'rgba(37,99,235,0.2)' },
-  new_demand: { color: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))', bg: 'var(--ds-background-selected, var(--ds-background-selected, #EFF6FF))', border: 'rgba(37,99,235,0.2)' },
-  portfolio_review: { color: 'var(--ds-text-success, var(--ds-text-success, #16A34A))', bg: '#F0FDF4', border: 'rgba(22,163,74,0.2)' },
+  new: { color: 'var(--ds-text-brand, #2563EB)', bg: 'var(--ds-background-selected, #EFF6FF)', border: 'rgba(37,99,235,0.2)' },
+  new_demand: { color: 'var(--ds-text-brand, #2563EB)', bg: 'var(--ds-background-selected, #EFF6FF)', border: 'rgba(37,99,235,0.2)' },
+  portfolio_review: { color: 'var(--ds-text-success, #16A34A)', bg: '#F0FDF4', border: 'rgba(22,163,74,0.2)' },
   under_review: { color: '#8B5CF6', bg: '#F5F3FF', border: 'rgba(139,92,246,0.2)' },
   technical_validation: { color: '#A855F7', bg: '#FAF5FF', border: 'rgba(168,85,247,0.2)' },
   estimate: { color: '#6366F1', bg: '#EEF2FF', border: 'rgba(99,102,241,0.2)' },
   demand_approved: { color: '#06B6D4', bg: '#ECFEFF', border: 'rgba(6,182,212,0.2)' },
   analysis: { color: '#0EA5E9', bg: '#F0F9FF', border: 'rgba(14,165,233,0.2)' },
   ready_for_development: { color: '#14B8A6', bg: '#F0FDFA', border: 'rgba(20,184,166,0.2)' },
-  under_implementation: { color: 'var(--ds-text-warning, var(--ds-text-warning, #D97706))', bg: '#FFFBEB', border: 'rgba(217,119,6,0.2)' },
+  under_implementation: { color: 'var(--ds-text-warning, #D97706)', bg: '#FFFBEB', border: 'rgba(217,119,6,0.2)' },
   on_hold: { color: '#6B7280', bg: '#F9FAFB', border: 'rgba(107,114,128,0.2)' },
   implementation_review: { color: '#F97316', bg: '#FFF7ED', border: 'rgba(249,115,22,0.2)' },
   in_support: { color: '#10B981', bg: '#ECFDF5', border: 'rgba(16,185,129,0.2)' },
-  done: { color: 'var(--ds-text-success, var(--ds-text-success, #16A34A))', bg: '#F0FDF4', border: 'rgba(22,163,74,0.2)' },
-  cancelled: { color: 'var(--ds-text-danger, var(--ds-text-danger, #DC2626))', bg: 'var(--ds-background-danger, var(--ds-background-danger, #FEF2F2))', border: 'rgba(220,38,38,0.2)' },
+  done: { color: 'var(--ds-text-success, #16A34A)', bg: '#F0FDF4', border: 'rgba(22,163,74,0.2)' },
+  cancelled: { color: 'var(--ds-text-danger, #DC2626)', bg: 'var(--ds-background-danger, #FEF2F2)', border: 'rgba(220,38,38,0.2)' },
 };
 
 const DEFAULT_STATUS_PILL = { color: '#71717A', bg: '#F4F4F5', border: 'rgba(113,113,122,0.2)' };
@@ -208,7 +208,7 @@ export const PCRequestCard: React.FC<PCRequestCardProps> = ({ request, isSelecte
             {!!request.milestone_count && request.milestone_count > 0 && (
               <span style={{
                 display: 'inline-flex', alignItems: 'center', gap: 3,
-                fontSize: 10.5, fontWeight: 600, color: 'var(--ds-text-subtle, var(--ds-text-subtle, #475569))',
+                fontSize: 10.5, fontWeight: 600, color: 'var(--ds-text-subtle, #475569)',
               }}>
                 <Target size={10} />
                 {request.milestone_count}

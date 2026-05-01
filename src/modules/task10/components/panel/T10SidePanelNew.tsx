@@ -221,7 +221,7 @@ export function T10SidePanelNew({
     width: 480,
     maxWidth: '100vw',
     height: 'calc(100dvh - var(--app-top-offset, 0px))',
-    background: 'var(--ds-surface, var(--ds-surface, #ffffff))',
+    background: 'var(--ds-surface, #ffffff)',
     boxShadow: '-8px 0 32px rgba(0, 0, 0, 0.15), -2px 0 8px rgba(0, 0, 0, 0.1)',
     zIndex: 100001,
     display: 'flex',
@@ -273,7 +273,7 @@ export function T10SidePanelNew({
         {/* Header - clean blue bar */}
         <div
           style={{
-            background: 'var(--ds-text-brand, var(--ds-text-brand, #2563eb))',
+            background: 'var(--ds-text-brand, #2563eb)',
             padding: '14px 20px',
             flexShrink: 0,
             display: 'flex',
@@ -297,7 +297,7 @@ export function T10SidePanelNew({
                 background: 'rgba(255, 255, 255, 0.15)',
                 border: 'none',
                 borderRadius: 8,
-                color: 'var(--ds-surface, var(--ds-surface, #ffffff))',
+                color: 'var(--ds-surface, #ffffff)',
                 cursor: 'pointer',
                 fontSize: 18,
                 fontFamily: 'system-ui, sans-serif',
@@ -312,7 +312,7 @@ export function T10SidePanelNew({
                   fontWeight: 600,
                   textTransform: 'uppercase',
                   letterSpacing: '0.5px',
-                  color: 'var(--ds-surface, var(--ds-surface, #ffffff))',
+                  color: 'var(--ds-surface, #ffffff)',
                   fontFamily: 'system-ui, -apple-system, sans-serif',
                 }}
               >
@@ -329,7 +329,7 @@ export function T10SidePanelNew({
                   borderRadius: 6,
                   fontSize: 12,
                   fontWeight: 700,
-                  color: 'var(--ds-surface, var(--ds-surface, #ffffff))',
+                  color: 'var(--ds-surface, #ffffff)',
                 }}
               >
                 10
@@ -347,7 +347,7 @@ export function T10SidePanelNew({
                   borderRadius: 6,
                   fontSize: 11,
                   fontWeight: 700,
-                  color: 'var(--ds-surface, var(--ds-surface, #ffffff))',
+                  color: 'var(--ds-surface, #ffffff)',
                 }}
               >
                 {item.rank}
@@ -369,7 +369,7 @@ export function T10SidePanelNew({
               background: 'rgba(255, 255, 255, 0.15)',
               border: 'none',
               borderRadius: 8,
-              color: 'var(--ds-surface, var(--ds-surface, #ffffff))',
+              color: 'var(--ds-surface, #ffffff)',
               cursor: 'pointer',
             }}
           >
@@ -485,7 +485,7 @@ export function T10SidePanelNew({
                   className={`t10-status-toggle ${isCompleted ? 't10-status-toggle-done' : ''}`}
                 >
                   <div className={`t10-status-checkbox ${isCompleted ? 't10-status-checkbox-done' : ''}`}>
-                    {isCompleted && <Check size={14} color="var(--ds-surface, var(--ds-surface, #ffffff))" />}
+                    {isCompleted && <Check size={14} color="var(--ds-surface, #ffffff)" />}
                   </div>
                   <span className={`t10-status-text ${isCompleted ? 't10-status-text-done' : ''}`}>
                     {isCompleted ? 'Completed' : 'Mark as completed'}

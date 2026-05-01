@@ -115,7 +115,7 @@ export function T10AIBanner({
           <span style={{ fontWeight: 600, fontSize: '14px', color: '#1e293b', whiteSpace: 'nowrap' }}>
             AI Suggestions
           </span>
-          <span style={{ fontSize: '13px', color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #64748b))', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+          <span style={{ fontSize: '13px', color: 'var(--ds-text-subtlest, #64748b)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
             {suggestions.length} suggestion{suggestions.length !== 1 ? 's' : ''} based on your patterns
           </span>
         </div>

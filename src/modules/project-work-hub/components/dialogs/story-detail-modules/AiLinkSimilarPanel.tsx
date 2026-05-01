@@ -47,17 +47,17 @@ function LinkAsDropdown({ value, onChange }: { value: string; onChange: (v: stri
           display: 'inline-flex', alignItems: 'center', gap: 6,
           height: 32, padding: '0 10px 0 12px',
           border: '1px solid #DFE1E6', borderRadius: 3,
-          background: 'var(--ds-surface, var(--ds-surface, var(--ds-surface, #fff)))', cursor: 'pointer', fontSize: 13,
-          fontFamily: 'inherit', color: 'var(--ds-text, var(--ds-text, #172B4D))', whiteSpace: 'nowrap',
+          background: 'var(--ds-surface, #fff)', cursor: 'pointer', fontSize: 13,
+          fontFamily: 'inherit', color: 'var(--ds-text, #172B4D)', whiteSpace: 'nowrap',
         }}
       >
         Link as {value}
-        <ChevronDown size={14} color={open ? '#0052CC' : 'var(--ds-text-subtlest, var(--ds-text-subtlest, #6B778C))'} />
+        <ChevronDown size={14} color={open ? '#0052CC' : 'var(--ds-text-subtlest, #6B778C)'} />
       </button>
       {open && (
         <div style={{
           position: 'absolute', bottom: 'calc(100% + 4px)', right: 0,
-          minWidth: 200, background: 'var(--ds-surface, var(--ds-surface, var(--ds-surface, #fff)))', border: '1px solid #DFE1E6',
+          minWidth: 200, background: 'var(--ds-surface, #fff)', border: '1px solid #DFE1E6',
           borderRadius: 4, boxShadow: '0 4px 8px rgba(9,30,66,.25)',
           zIndex: 70, maxHeight: 320, overflowY: 'auto',
         }}>
@@ -67,10 +67,10 @@ function LinkAsDropdown({ value, onChange }: { value: string; onChange: (v: stri
               onClick={() => { onChange(opt); setOpen(false); }}
               style={{
                 display: 'flex', alignItems: 'center', height: 36, padding: '0 12px',
-                cursor: 'pointer', fontSize: 14, color: 'var(--ds-text, var(--ds-text, #172B4D))',
+                cursor: 'pointer', fontSize: 14, color: 'var(--ds-text, #172B4D)',
                 background: opt === value ? '#DEEBFF' : 'transparent',
               }}
-              onMouseEnter={e => { if (opt !== value) (e.currentTarget).style.background = 'var(--ds-surface-sunken, var(--ds-surface-sunken, #F4F5F7))'; }}
+              onMouseEnter={e => { if (opt !== value) (e.currentTarget).style.background = 'var(--ds-surface-sunken, #F4F5F7)'; }}
               onMouseLeave={e => { if (opt !== value) (e.currentTarget).style.background = 'transparent'; }}
             >
               {opt}
@@ -89,7 +89,7 @@ function Checkbox({ checked, onChange }: { checked: boolean; onChange: (v: boole
       onClick={(e) => { e.stopPropagation(); onChange(!checked); }}
       style={{
         width: 18, height: 18, borderRadius: 3, border: checked ? 'none' : '2px solid #C1C7D0',
-        background: checked ? '#0052CC' : 'var(--ds-surface, var(--ds-surface, var(--ds-surface, #fff)))', display: 'flex', alignItems: 'center',
+        background: checked ? '#0052CC' : 'var(--ds-surface, #fff)', display: 'flex', alignItems: 'center',
         justifyContent: 'center', cursor: 'pointer', flexShrink: 0, padding: 0,
       }}
       aria-checked={checked}
@@ -97,7 +97,7 @@ function Checkbox({ checked, onChange }: { checked: boolean; onChange: (v: boole
     >
       {checked && (
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
-          <path d="M5 12l5 5L19 7" stroke="var(--ds-surface, var(--ds-surface, var(--ds-surface, #fff)))" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/>
+          <path d="M5 12l5 5L19 7" stroke="var(--ds-surface, #fff)" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/>
         </svg>
       )}
     </button>
@@ -190,29 +190,29 @@ export function AiLinkSimilarPanel({ issueKey, existingLinkedKeys, onLinked }: A
       <div style={{
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
         padding: '10px 12px', border: '1px solid #DFE1E6', borderRadius: 8,
-        background: 'var(--ds-surface-sunken, var(--ds-surface-sunken, #FAFBFC))', marginBottom: 8,
+        background: 'var(--ds-surface-sunken, #FAFBFC)', marginBottom: 8,
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-            <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" stroke="var(--ds-text-subtlest, var(--ds-text-subtlest, #6B778C))" strokeWidth="1.5" fill="none"/>
+            <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" stroke="var(--ds-text-subtlest, #6B778C)" strokeWidth="1.5" fill="none"/>
           </svg>
-          <span style={{ fontSize: 14, fontWeight: 500, color: 'var(--ds-text, var(--ds-text, #172B4D))' }}>Link similar work items</span>
+          <span style={{ fontSize: 14, fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>Link similar work items</span>
         </div>
         {isLoading ? (
-          <Loader2 size={14} className="animate-spin" color="var(--ds-text-subtlest, var(--ds-text-subtlest, #6B778C))" />
+          <Loader2 size={14} className="animate-spin" color="var(--ds-text-subtlest, #6B778C)" />
         ) : count > 0 ? (
           <button
             onClick={() => setExpanded(true)}
             style={{
               height: 28, padding: '0 12px', border: '1px solid #DFE1E6', borderRadius: 3,
-              background: 'var(--ds-surface, var(--ds-surface, var(--ds-surface, #fff)))', cursor: 'pointer', fontSize: 13, color: 'var(--ds-text, var(--ds-text, #172B4D))',
+              background: 'var(--ds-surface, #fff)', cursor: 'pointer', fontSize: 13, color: 'var(--ds-text, #172B4D)',
               fontFamily: 'inherit', fontWeight: 500, whiteSpace: 'nowrap',
             }}
           >
             Show {count} result{count !== 1 ? 's' : ''}
           </button>
         ) : (
-          <span style={{ fontSize: 12, color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #6B778C))', fontStyle: 'italic' }}>No results found.</span>
+          <span style={{ fontSize: 12, color: 'var(--ds-text-subtlest, #6B778C)', fontStyle: 'italic' }}>No results found.</span>
         )}
       </div>
     );
@@ -226,17 +226,17 @@ export function AiLinkSimilarPanel({ issueKey, existingLinkedKeys, onLinked }: A
         onClick={() => setExpanded(false)}
         style={{
           display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-          padding: '10px 12px', cursor: 'pointer', background: 'var(--ds-surface-sunken, var(--ds-surface-sunken, #FAFBFC))',
+          padding: '10px 12px', cursor: 'pointer', background: 'var(--ds-surface-sunken, #FAFBFC)',
           borderBottom: '1px solid #F4F5F7',
         }}
       >
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-            <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" stroke="var(--ds-text-subtlest, var(--ds-text-subtlest, #6B778C))" strokeWidth="1.5" fill="none"/>
+            <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" stroke="var(--ds-text-subtlest, #6B778C)" strokeWidth="1.5" fill="none"/>
           </svg>
-          <span style={{ fontSize: 14, fontWeight: 500, color: 'var(--ds-text, var(--ds-text, #172B4D))' }}>Link similar work items</span>
+          <span style={{ fontSize: 14, fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>Link similar work items</span>
         </div>
-        <ChevronDown size={16} color="var(--ds-text-subtlest, var(--ds-text-subtlest, #6B778C))" style={{ transform: 'rotate(180deg)' }} />
+        <ChevronDown size={16} color="var(--ds-text-subtlest, #6B778C)" style={{ transform: 'rotate(180deg)' }} />
       </div>
 
       {/* Content */}
@@ -247,8 +247,8 @@ export function AiLinkSimilarPanel({ issueKey, existingLinkedKeys, onLinked }: A
             <span style={{ fontSize: 13, color: '#FF5630' }}>Failed to load suggestions</span>
             <button onClick={() => refetch()} style={{
               display: 'inline-flex', alignItems: 'center', gap: 4,
-              border: '1px solid #DFE1E6', borderRadius: 3, background: 'var(--ds-surface, var(--ds-surface, var(--ds-surface, #fff)))',
-              padding: '4px 10px', fontSize: 12, cursor: 'pointer', color: 'var(--ds-text, var(--ds-text, #172B4D))',
+              border: '1px solid #DFE1E6', borderRadius: 3, background: 'var(--ds-surface, #fff)',
+              padding: '4px 10px', fontSize: 12, cursor: 'pointer', color: 'var(--ds-text, #172B4D)',
             }}>
               <RefreshCw size={12} /> Retry
             </button>
@@ -257,7 +257,7 @@ export function AiLinkSimilarPanel({ issueKey, existingLinkedKeys, onLinked }: A
 
         {/* Empty after filter */}
         {!isError && count === 0 && (
-          <div style={{ padding: '12px 0', fontSize: 13, color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #6B778C))', fontStyle: 'italic' }}>
+          <div style={{ padding: '12px 0', fontSize: 13, color: 'var(--ds-text-subtlest, #6B778C)', fontStyle: 'italic' }}>
             No similar work items found.
           </div>
         )}
@@ -271,7 +271,7 @@ export function AiLinkSimilarPanel({ issueKey, existingLinkedKeys, onLinked }: A
               padding: '10px 0 6px', borderBottom: '1px solid #F4F5F7',
             }}>
               <Checkbox checked={allSelected} onChange={toggleAll} />
-              <span style={{ fontSize: 14, fontWeight: 500, color: 'var(--ds-text, var(--ds-text, #172B4D))' }}>
+              <span style={{ fontSize: 14, fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>
                 {allSelected ? 'Deselect all' : 'Select all'}
               </span>
             </div>
@@ -286,12 +286,12 @@ export function AiLinkSimilarPanel({ issueKey, existingLinkedKeys, onLinked }: A
                   padding: '8px 0', borderBottom: '1px solid #F4F5F7',
                   cursor: 'pointer',
                 }}
-                onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-surface-sunken, var(--ds-surface-sunken, #FAFBFC))')}
+                onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-surface-sunken, #FAFBFC)')}
                 onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
               >
                 <Checkbox checked={selectedKeys.has(s.issue_key)} onChange={() => toggleOne(s.issue_key)} />
                 <IssueIcon type={s.issue_type || 'task'} size={16} />
-                <span style={{ fontSize: 13, color: 'var(--ds-text, var(--ds-text, #172B4D))', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                <span style={{ fontSize: 13, color: 'var(--ds-text, #172B4D)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                   <span style={{ fontWeight: 600 }}>{s.issue_key}:</span> {s.summary}
                 </span>
               </div>
@@ -304,19 +304,19 @@ export function AiLinkSimilarPanel({ issueKey, existingLinkedKeys, onLinked }: A
             }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                  <Info size={14} color="var(--ds-text-subtlest, var(--ds-text-subtlest, #6B778C))" />
-                  <span style={{ fontSize: 12, color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #6B778C))' }}>Uses AI. Verify results.</span>
+                  <Info size={14} color="var(--ds-text-subtlest, #6B778C)" />
+                  <span style={{ fontSize: 12, color: 'var(--ds-text-subtlest, #6B778C)' }}>Uses AI. Verify results.</span>
                 </div>
                 <button
                   onClick={e => { e.stopPropagation(); setFeedback('up'); }}
-                  style={{ border: 'none', background: 'none', cursor: 'pointer', padding: 2, color: feedback === 'up' ? '#0052CC' : 'var(--ds-text-subtlest, var(--ds-text-subtlest, #6B778C))' }}
+                  style={{ border: 'none', background: 'none', cursor: 'pointer', padding: 2, color: feedback === 'up' ? '#0052CC' : 'var(--ds-text-subtlest, #6B778C)' }}
                   title="Helpful"
                 >
                   <ThumbsUp size={14} />
                 </button>
                 <button
                   onClick={e => { e.stopPropagation(); setFeedback('down'); }}
-                  style={{ border: 'none', background: 'none', cursor: 'pointer', padding: 2, color: feedback === 'down' ? '#FF5630' : 'var(--ds-text-subtlest, var(--ds-text-subtlest, #6B778C))' }}
+                  style={{ border: 'none', background: 'none', cursor: 'pointer', padding: 2, color: feedback === 'down' ? '#FF5630' : 'var(--ds-text-subtlest, #6B778C)' }}
                   title="Not helpful"
                 >
                   <ThumbsDown size={14} />
@@ -333,7 +333,7 @@ export function AiLinkSimilarPanel({ issueKey, existingLinkedKeys, onLinked }: A
                   disabled={linkMutation.isPending}
                   style={{
                     height: 32, padding: '0 16px', border: 'none', borderRadius: 3,
-                    background: '#0052CC', color: 'var(--ds-surface, var(--ds-surface, var(--ds-surface, #fff)))', fontSize: 14, fontWeight: 500,
+                    background: '#0052CC', color: 'var(--ds-surface, #fff)', fontSize: 14, fontWeight: 500,
                     cursor: linkMutation.isPending ? 'not-allowed' : 'pointer',
                     fontFamily: 'inherit', opacity: linkMutation.isPending ? 0.7 : 1,
                   }}

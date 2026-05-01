@@ -17,7 +17,7 @@ export function IdCell({ requestKey, onClick }: IdCellProps) {
         fontSize: 12, /* V12 */
         fontWeight: 500, /* V12 */
         fontVariantNumeric: 'tabular-nums', /* V12 */
-        color: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))', /* V12 */
+        color: 'var(--ds-text-brand, #2563EB)', /* V12 */
         background: 'none',
         border: 'none',
         padding: '2px 4px',

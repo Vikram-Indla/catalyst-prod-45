@@ -269,7 +269,7 @@ export function CatalystDescriptionSection({ issue, label = 'Description', defau
             title="Edit description"
             style={{
               background: 'none', border: 'none', cursor: 'pointer',
-              padding: '4px 6px', borderRadius: 4, color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #6B778C))',
+              padding: '4px 6px', borderRadius: 4, color: 'var(--ds-text-subtlest, #6B778C)',
               display: 'flex', alignItems: 'center',
               opacity: hovered ? 1 : 0,
               transition: 'opacity 0.15s, color 0.1s, background 0.1s',
@@ -284,11 +284,11 @@ export function CatalystDescriptionSection({ issue, label = 'Description', defau
              */
             onMouseEnter={e => {
               e.currentTarget.style.color = '#292A2E';
-              e.currentTarget.style.background = 'var(--ds-surface-sunken, var(--ds-surface-sunken, #F4F5F7))';
+              e.currentTarget.style.background = 'var(--ds-surface-sunken, #F4F5F7)';
               prefetchEpicEditor();
             }}
             onFocus={() => { prefetchEpicEditor(); }}
-            onMouseLeave={e => { e.currentTarget.style.color = 'var(--ds-text-subtlest, var(--ds-text-subtlest, #6B778C))'; e.currentTarget.style.background = 'none'; }}
+            onMouseLeave={e => { e.currentTarget.style.color = 'var(--ds-text-subtlest, #6B778C)'; e.currentTarget.style.background = 'none'; }}
           >
             <Pencil size={14} />
           </button>
@@ -325,7 +325,7 @@ export function CatalystDescriptionSection({ issue, label = 'Description', defau
               borderRadius: 4, padding: '8px 20px',
               transition: 'background 0.15s',
             }}
-            onMouseEnter={e => { if (issue) e.currentTarget.style.background = 'var(--ds-surface-sunken, var(--ds-surface-sunken, #F4F5F7))'; }}
+            onMouseEnter={e => { if (issue) e.currentTarget.style.background = 'var(--ds-surface-sunken, #F4F5F7)'; }}
             onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
           >
             Add a description...
@@ -353,7 +353,7 @@ export function CatalystDescriptionSection({ issue, label = 'Description', defau
                 setEditing(true);
               }
             }}
-            onMouseEnter={e => { e.currentTarget.style.background = 'var(--ds-surface-sunken, var(--ds-surface-sunken, #F4F5F7))'; }}
+            onMouseEnter={e => { e.currentTarget.style.background = 'var(--ds-surface-sunken, #F4F5F7)'; }}
             onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
             title="Click to edit"
           >

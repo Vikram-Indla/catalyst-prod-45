@@ -19,11 +19,11 @@ interface MyTasksHeaderProps {
 }
 
 const STATUS_OPTIONS = [
-  { value: 'backlog', label: 'Backlog', color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #94a3b8))' },
-  { value: 'planned', label: 'Planned', color: 'var(--ds-text-brand, var(--ds-text-brand, #3b82f6))' },
-  { value: 'progress', label: 'In Progress', color: 'var(--ds-text-warning, var(--ds-text-warning, #f59e0b))' },
+  { value: 'backlog', label: 'Backlog', color: 'var(--ds-text-subtlest, #94a3b8)' },
+  { value: 'planned', label: 'Planned', color: 'var(--ds-text-brand, #3b82f6)' },
+  { value: 'progress', label: 'In Progress', color: 'var(--ds-text-warning, #f59e0b)' },
   { value: 'review', label: 'Review', color: '#8b5cf6' },
-  { value: 'done', label: 'Done', color: 'var(--ds-text-success, var(--ds-text-success, #16a34a))' },
+  { value: 'done', label: 'Done', color: 'var(--ds-text-success, #16a34a)' },
 ];
 
 export function MyTasksHeader({
@@ -189,7 +189,7 @@ function WorkstreamDropdown({
 
   const selectedWorkstream = workstreams.find(w => w.id === selectedId);
   const displayName = selectedWorkstream?.name || 'Workstream';
-  const displayColor = selectedWorkstream?.color || 'var(--ds-text-subtlest, var(--ds-text-subtlest, #64748b))';
+  const displayColor = selectedWorkstream?.color || 'var(--ds-text-subtlest, #64748b)';
 
   return (
     <div ref={dropdownRef} style={{ position: 'relative' }}>
@@ -211,12 +211,12 @@ function WorkstreamDropdown({
           minWidth: '140px',
         }}
       >
-        <Layers size={14} style={{ color: selectedId ? displayColor : 'var(--ds-text-subtlest, var(--ds-text-subtlest, #64748b))' }} />
+        <Layers size={14} style={{ color: selectedId ? displayColor : 'var(--ds-text-subtlest, #64748b)' }} />
         <span style={{ 
           flex: 1, 
           fontSize: '13px', 
           fontWeight: 500, 
-          color: selectedId ? COLORS.textPrimary : 'var(--ds-text-subtlest, var(--ds-text-subtlest, #64748b))',
+          color: selectedId ? COLORS.textPrimary : 'var(--ds-text-subtlest, #64748b)',
         }}>
           {displayName}
         </span>
@@ -249,7 +249,7 @@ function WorkstreamDropdown({
           {/* All Workstreams option */}
           <DropdownItem
             value="All Workstreams"
-            color="var(--ds-text-subtlest, var(--ds-text-subtlest, #64748b))"
+            color="var(--ds-text-subtlest, #64748b)"
             isSelected={!selectedId}
             onClick={() => { onSelect(null); setIsOpen(false); }}
           />
@@ -258,7 +258,7 @@ function WorkstreamDropdown({
             <DropdownItem
               key={ws.id}
               value={ws.name}
-              color={ws.color || 'var(--ds-text-brand, var(--ds-text-brand, #3b82f6))'}
+              color={ws.color || 'var(--ds-text-brand, #3b82f6)'}
               isSelected={ws.id === selectedId}
               onClick={() => { onSelect(ws.id); setIsOpen(false); }}
             />
@@ -295,7 +295,7 @@ function StatusDropdown({
 
   const selected = STATUS_OPTIONS.find(s => s.value === selectedStatus);
   const displayName = selected?.label || 'Status';
-  const displayColor = selected?.color || 'var(--ds-text-subtlest, var(--ds-text-subtlest, #64748b))';
+  const displayColor = selected?.color || 'var(--ds-text-subtlest, #64748b)';
 
   return (
     <div ref={dropdownRef} style={{ position: 'relative' }}>
@@ -332,7 +332,7 @@ function StatusDropdown({
           flex: 1, 
           fontSize: '13px', 
           fontWeight: 500, 
-          color: selectedStatus ? COLORS.textPrimary : 'var(--ds-text-subtlest, var(--ds-text-subtlest, #64748b))',
+          color: selectedStatus ? COLORS.textPrimary : 'var(--ds-text-subtlest, #64748b)',
         }}>
           {displayName}
         </span>
@@ -365,7 +365,7 @@ function StatusDropdown({
           {/* All Statuses option */}
           <DropdownItem
             value="All Statuses"
-            color="var(--ds-text-subtlest, var(--ds-text-subtlest, #64748b))"
+            color="var(--ds-text-subtlest, #64748b)"
             isSelected={!selectedStatus}
             onClick={() => { onSelect(null); setIsOpen(false); }}
           />

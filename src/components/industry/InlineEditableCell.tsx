@@ -143,7 +143,7 @@ export function InlineEditableCell({
         }
       }}
     >
-      {displayValue || <span className="text-[14px] text-[var(--ds-text,var(--ds-text, #172B4D))] truncate">{value || '-'}</span>}
+      {displayValue || <span className="text-[14px] text-[var(--ds-text, #172B4D)] truncate">{value || '-'}</span>}
     </div>
   );
 
@@ -159,7 +159,7 @@ export function InlineEditableCell({
               <div
                 key={opt.value}
                 className={cn(
-                  "px-3 py-2 cursor-pointer hover:bg-[var(--ds-surface-sunken,var(--ds-surface-sunken, #F4F5F7))] flex items-center gap-2 text-[14px]",
+                  "px-3 py-2 cursor-pointer hover:bg-[var(--ds-surface-sunken, #F4F5F7)] flex items-center gap-2 text-[14px]",
                   editValue === opt.value && "bg-[#E9F2FF]"
                 )}
                 onClick={(e) => {

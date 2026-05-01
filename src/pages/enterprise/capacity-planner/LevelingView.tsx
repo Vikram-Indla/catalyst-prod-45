@@ -145,7 +145,7 @@ export function LevelingView({ resources, recommendations }: LevelingViewProps) 
                 >
                   {/* Selection indicator */}
                   {isCurrentSelected && (
-                    <div className="absolute left-0 top-0 bottom-0 w-1 bg-[var(--ds-text-brand,var(--ds-text-brand, #2563eb))] rounded-r" />
+                    <div className="absolute left-0 top-0 bottom-0 w-1 bg-[var(--ds-text-brand, #2563eb)] rounded-r" />
                   )}
                   <div className={cn('w-10 h-10 rounded-full flex items-center justify-center text-xs font-semibold shrink-0', deptColor.bg, deptColor.text)}>
                     {initials}
@@ -157,7 +157,7 @@ export function LevelingView({ resources, recommendations }: LevelingViewProps) 
                   <span className={cn(
                     'text-xs font-semibold',
                     freeCapacity >= 40 ? 'text-[#0d9488]' :
-                    freeCapacity >= 20 ? 'text-[var(--ds-text-warning,var(--ds-text-warning, #d97706))]' : 'text-[var(--ds-text-danger,var(--ds-text-danger, #dc2626))]'
+                    freeCapacity >= 20 ? 'text-[var(--ds-text-warning, #d97706)]' : 'text-[var(--ds-text-danger, #dc2626)]'
                   )}>
                     {freeCapacity}% free
                   </span>
@@ -191,7 +191,7 @@ export function LevelingView({ resources, recommendations }: LevelingViewProps) 
                 </div>
                 <div className="flex gap-6 text-center">
                   <div>
-                    <p className="text-2xl font-bold text-[var(--ds-text-warning,var(--ds-text-warning, #d97706))]">{selectedResource.allocation}%</p>
+                    <p className="text-2xl font-bold text-[var(--ds-text-warning, #d97706)]">{selectedResource.allocation}%</p>
                     <p className="text-xs text-muted-foreground">Current</p>
                   </div>
                   <div>
@@ -248,7 +248,7 @@ export function LevelingView({ resources, recommendations }: LevelingViewProps) 
                           type="checkbox"
                           checked={selected}
                           onChange={() => handleWorkItemToggle(item.id, item.allocation)}
-                          className="w-5 h-5 rounded border-border text-[var(--ds-text-brand,var(--ds-text-brand, #2563eb))] focus:ring-[var(--ds-text-brand,var(--ds-text-brand, #2563eb))]"
+                          className="w-5 h-5 rounded border-border text-[var(--ds-text-brand, #2563eb)] focus:ring-[var(--ds-text-brand, #2563eb)]"
                         />
 
                         {/* Icon */}
@@ -258,7 +258,7 @@ export function LevelingView({ resources, recommendations }: LevelingViewProps) 
 
                         {/* Content */}
                         <div className="flex-1 min-w-0">
-                          <p className="text-xs font-medium text-[var(--ds-text-brand,var(--ds-text-brand, #2563eb))]">{item.itemId}</p>
+                          <p className="text-xs font-medium text-[var(--ds-text-brand, #2563eb)]">{item.itemId}</p>
                           <p className="text-sm font-medium text-foreground truncate">{item.title}</p>
                           <p className="text-xs text-muted-foreground truncate">{item.project} · {item.epic}</p>
                         </div>
@@ -294,7 +294,7 @@ export function LevelingView({ resources, recommendations }: LevelingViewProps) 
                 <Button
                   onClick={handleAssign}
                   disabled={selectedWorkItems.length === 0}
-                  className="bg-[var(--ds-text-brand,var(--ds-text-brand, #2563eb))] hover:bg-[var(--ds-background-brand-bold-hovered,var(--ds-background-brand-bold-hovered, #1d4ed8))] gap-2"
+                  className="bg-[var(--ds-text-brand, #2563eb)] hover:bg-[var(--ds-background-brand-bold-hovered, #1d4ed8)] gap-2"
                 >
                   {selectedWorkItems.length > 0 ? (
                     <>

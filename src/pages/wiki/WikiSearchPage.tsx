@@ -21,7 +21,7 @@ function timeAgo(d: string) {
 /* ── Skeleton ── */
 const Sk = ({ w, h, style, isDark }: { w: string | number; h: number; style?: React.CSSProperties; isDark?: boolean }) => (
   <div style={{
-    width: w, height: h, borderRadius: 4, background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-border, var(--ds-border, #E2E8F0))',
+    width: w, height: h, borderRadius: 4, background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-border, #E2E8F0)',
     animation: 'pulse 1.5s ease-in-out infinite', ...style,
   }} />
 );
@@ -33,7 +33,7 @@ function highlightText(text: string, query: string, isDark: boolean) {
   const parts = text.split(regex);
   return parts.map((part, i) =>
     regex.test(part) ? (
-      <mark key={i} style={{ background: isDark ? 'rgba(251,191,36,0.2)' : '#FEF9C3', padding: '0 1px', borderRadius: 4, color: isDark ? 'var(--ds-text, var(--ds-text, #EDEDED))' : undefined }}>{part}</mark>
+      <mark key={i} style={{ background: isDark ? 'rgba(251,191,36,0.2)' : '#FEF9C3', padding: '0 1px', borderRadius: 4, color: isDark ? 'var(--ds-text, #EDEDED)' : undefined }}>{part}</mark>
     ) : part
   );
 }
@@ -93,32 +93,32 @@ export default function WikiSearchPage() {
   const aiAnswer = aiResults?.answer;
   const aiSources = aiResults?.sources ?? [];
 
-  const confColor = (c: number) => c >= 90 ? 'var(--ds-surface, var(--ds-surface, #FFFFFF))' : c >= 70 ? 'var(--ds-surface, var(--ds-surface, #FFFFFF))' : isDark ? '#FCD34D' : '#9A5402';
+  const confColor = (c: number) => c >= 90 ? 'var(--ds-surface, #FFFFFF)' : c >= 70 ? 'var(--ds-surface, #FFFFFF)' : isDark ? '#FCD34D' : '#9A5402';
   const confBg = (c: number) => c >= 90 ? '#1B7F37' : c >= 70 ? '#0C66E4' : isDark ? 'rgba(251,191,36,0.12)' : '#FEF3C7';
 
-  const borderColor = isDark ? 'var(--ds-border, var(--ds-border, #2E2E2E))' : 'rgba(15,23,42,0.12)';
+  const borderColor = isDark ? 'var(--ds-border, #2E2E2E)' : 'rgba(15,23,42,0.12)';
 
   return (
-    <div style={{ fontFamily: 'var(--cp-font-body)', color: isDark ? 'var(--ds-text, var(--ds-text, #EDEDED))' : 'var(--ds-text, var(--ds-text, #0F172A))', background: isDark ? 'var(--cp-bg-page, #1F1F21)' : 'var(--ds-surface-sunken, var(--ds-surface-sunken, #F8FAFC))', minHeight: '100%' }}>
+    <div style={{ fontFamily: 'var(--cp-font-body)', color: isDark ? 'var(--ds-text, #EDEDED)' : 'var(--ds-text, #0F172A)', background: isDark ? 'var(--cp-bg-page, #1F1F21)' : 'var(--ds-surface-sunken, #F8FAFC)', minHeight: '100%' }}>
       <div style={{ maxWidth: 840, marginInline: 'auto', padding: '24px 28px 48px' }}>
         {/* Breadcrumb */}
         <nav style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 20 }}>
-          <span onClick={() => navigate('/wiki')} style={{ fontSize: 13, color: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))', cursor: 'pointer' }}>Wiki</span>
-          <ChevronRight size={12} style={{ color: isDark ? 'var(--ds-text-subtlest, var(--ds-text-subtlest, #878787))' : 'var(--ds-text-subtlest, var(--ds-text-subtlest, #94A3B8))' }} />
-          <span style={{ fontSize: 13, color: isDark ? 'var(--ds-text-subtlest, var(--ds-text-subtlest, #A1A1A1))' : 'var(--ds-text-subtlest, var(--ds-text-subtlest, #64748B))', fontWeight: 600 }}>Search</span>
+          <span onClick={() => navigate('/wiki')} style={{ fontSize: 13, color: 'var(--ds-text-brand, #2563EB)', cursor: 'pointer' }}>Wiki</span>
+          <ChevronRight size={12} style={{ color: isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--ds-text-subtlest, #94A3B8)' }} />
+          <span style={{ fontSize: 13, color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtlest, #64748B)', fontWeight: 600 }}>Search</span>
         </nav>
 
         {/* ── Search Input ── */}
         <div style={{
           display: 'flex', alignItems: 'center', gap: 10, padding: '12px 16px',
           borderRadius: 12, border: `1.5px solid ${borderColor}`,
-          background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, var(--ds-surface, #FFFFFF))', marginBottom: 16,
+          background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, #FFFFFF)', marginBottom: 16,
           transition: 'border-color 150ms, box-shadow 150ms',
         }}
-          onFocus={e => { e.currentTarget.style.borderColor = 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))'; e.currentTarget.style.boxShadow = '0 0 0 3px rgba(37,99,235,0.1)'; }}
+          onFocus={e => { e.currentTarget.style.borderColor = 'var(--ds-text-brand, #2563EB)'; e.currentTarget.style.boxShadow = '0 0 0 3px rgba(37,99,235,0.1)'; }}
           onBlur={e => { e.currentTarget.style.borderColor = borderColor; e.currentTarget.style.boxShadow = 'none'; }}
         >
-          <Search size={18} style={{ color: isDark ? 'var(--ds-text-subtlest, var(--ds-text-subtlest, #878787))' : 'var(--ds-text-subtlest, var(--ds-text-subtlest, #94A3B8))', flexShrink: 0 }} />
+          <Search size={18} style={{ color: isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--ds-text-subtlest, #94A3B8)', flexShrink: 0 }} />
           <input
             value={query}
             onChange={e => handleQueryChange(e.target.value)}
@@ -128,7 +128,7 @@ export default function WikiSearchPage() {
             style={{
               flex: 1, fontSize: 15, fontFamily: 'var(--cp-font-body)',
               background: 'transparent', border: 'none', outline: 'none',
-              color: isDark ? 'var(--ds-text, var(--ds-text, #EDEDED))' : 'var(--ds-text, var(--ds-text, #0F172A))',
+              color: isDark ? 'var(--ds-text, #EDEDED)' : 'var(--ds-text, #0F172A)',
             }}
           />
           {mode === 'ai' && (
@@ -150,16 +150,16 @@ export default function WikiSearchPage() {
             <button onClick={() => { setMode('keyword'); setPage(0); }} style={{
               fontSize: 11, fontWeight: 650, padding: '6px 14px', cursor: 'pointer',
               border: 'none', display: 'flex', alignItems: 'center', gap: 4,
-              background: mode === 'keyword' ? 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))' : (isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, var(--ds-surface, #FFFFFF))'),
-              color: mode === 'keyword' ? 'var(--ds-surface, var(--ds-surface, #FFFFFF))' : (isDark ? 'var(--ds-text-subtlest, var(--ds-text-subtlest, #A1A1A1))' : 'var(--ds-text-subtlest, var(--ds-text-subtlest, #64748B))'),
+              background: mode === 'keyword' ? 'var(--ds-text-brand, #2563EB)' : (isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, #FFFFFF)'),
+              color: mode === 'keyword' ? 'var(--ds-surface, #FFFFFF)' : (isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtlest, #64748B)'),
               transition: 'all 120ms',
             }}><Zap size={11} /> Keyword</button>
             <button onClick={() => { setMode('ai'); setPage(0); }} style={{
               fontSize: 11, fontWeight: 650, padding: '6px 14px', cursor: 'pointer',
               border: 'none', borderLeft: `1px solid ${borderColor}`,
               display: 'flex', alignItems: 'center', gap: 4,
-              background: mode === 'ai' ? '#7C3AED' : (isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, var(--ds-surface, #FFFFFF))'),
-              color: mode === 'ai' ? 'var(--ds-surface, var(--ds-surface, #FFFFFF))' : (isDark ? 'var(--ds-text-subtlest, var(--ds-text-subtlest, #A1A1A1))' : 'var(--ds-text-subtlest, var(--ds-text-subtlest, #64748B))'),
+              background: mode === 'ai' ? '#7C3AED' : (isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, #FFFFFF)'),
+              color: mode === 'ai' ? 'var(--ds-surface, #FFFFFF)' : (isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtlest, #64748B)'),
               transition: 'all 120ms',
             }}><Sparkles size={11} /> AI Search</button>
           </div>
@@ -174,8 +174,8 @@ export default function WikiSearchPage() {
                 fontSize: 11, fontWeight: active ? 650 : 500, padding: '5px 12px',
                 borderRadius: 4, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4,
                 border: active ? '1.5px solid #2563EB' : `1px solid ${borderColor}`,
-                background: active ? (isDark ? 'rgba(59,130,246,0.12)' : 'var(--ds-background-selected, var(--ds-background-selected, #EFF6FF))') : 'transparent',
-                color: active ? 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))' : (isDark ? 'var(--ds-text-subtlest, var(--ds-text-subtlest, #A1A1A1))' : 'var(--ds-text-subtlest, var(--ds-text-subtlest, #64748B))'),
+                background: active ? (isDark ? 'rgba(59,130,246,0.12)' : 'var(--ds-background-selected, #EFF6FF)') : 'transparent',
+                color: active ? 'var(--ds-text-brand, #2563EB)' : (isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtlest, #64748B)'),
                 transition: 'all 100ms',
               }}>{f.icon} {f.label}</button>
             );
@@ -184,7 +184,7 @@ export default function WikiSearchPage() {
 
         {/* ── Results count ── */}
         {debouncedQuery.length >= 2 && !isLoading && (
-          <div style={{ fontSize: 13, color: isDark ? 'var(--ds-text-subtlest, var(--ds-text-subtlest, #A1A1A1))' : 'var(--ds-text-subtlest, var(--ds-text-subtlest, #64748B))', marginBottom: 16 }}>
+          <div style={{ fontSize: 13, color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtlest, #64748B)', marginBottom: 16 }}>
             {mode === 'keyword'
               ? `${keywordResults?.length ?? 0} results for '${debouncedQuery}'`
               : aiSources.length > 0
@@ -229,19 +229,19 @@ export default function WikiSearchPage() {
                   background: isDark ? 'rgba(124,58,237,0.15)' : '#F5F3FF', color: '#7C3AED', display: 'inline-flex', alignItems: 'center', gap: 3,
                   marginBottom: 10,
                 }}><Sparkles size={10} /> AI Answer</span>
-                <div style={{ fontSize: 14, color: isDark ? 'var(--ds-text-subtlest, var(--ds-text-subtlest, #A1A1A1))' : 'var(--ds-text-subtle, var(--ds-text-subtle, #334155))', lineHeight: 1.75, marginTop: 10 }}>
+                <div style={{ fontSize: 14, color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtle, #334155)', lineHeight: 1.75, marginTop: 10 }}>
                   {aiAnswer}
                 </div>
                 {aiSources.length > 0 && (
                   <div style={{ marginTop: 14, paddingTop: 12, borderTop: `0.75px solid ${borderColor}` }}>
-                    <div style={{ fontSize: 11, color: isDark ? 'var(--ds-text-subtlest, var(--ds-text-subtlest, #878787))' : 'var(--ds-text-subtlest, var(--ds-text-subtlest, #64748B))', marginBottom: 8 }}>
+                    <div style={{ fontSize: 11, color: isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--ds-text-subtlest, #64748B)', marginBottom: 8 }}>
                       Sources used: {aiSources.length} article{aiSources.length !== 1 ? 's' : ''}
                     </div>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
                       {aiSources.map((s: any, i: number) => (
                         <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                           <span style={{
-                            fontFamily: 'var(--cp-font-mono)', fontSize: 10, color: isDark ? 'var(--ds-text-subtlest, var(--ds-text-subtlest, #878787))' : 'var(--ds-text-subtlest, var(--ds-text-subtlest, #94A3B8))',
+                            fontFamily: 'var(--cp-font-mono)', fontSize: 10, color: isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--ds-text-subtlest, #94A3B8)',
                             minWidth: 20, textAlign: 'right' as const,
                           }}>[{i + 1}]</span>
                           <span
@@ -250,7 +250,7 @@ export default function WikiSearchPage() {
                               if (slug) navigate(`/wiki/${slug}`);
                             }}
                             style={{
-                              fontSize: 12, fontWeight: 600, color: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))', cursor: 'pointer',
+                              fontSize: 12, fontWeight: 600, color: 'var(--ds-text-brand, #2563EB)', cursor: 'pointer',
                             }}
                           >{s.title || s.source_key || 'Source'}</span>
                           {s.similarity != null && (
@@ -261,7 +261,7 @@ export default function WikiSearchPage() {
                               color: confColor(Math.round(s.similarity * 100)),
                             }}>{Math.round(s.similarity * 100)}%</span>
                           )}
-                          <span style={{ fontSize: 11, color: isDark ? 'var(--ds-text-subtlest, var(--ds-text-subtlest, #878787))' : 'var(--ds-text-subtlest, var(--ds-text-subtlest, #94A3B8))' }}>{s.entity_type || 'wiki'}</span>
+                          <span style={{ fontSize: 11, color: isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--ds-text-subtlest, #94A3B8)' }}>{s.entity_type || 'wiki'}</span>
                         </div>
                       ))}
                     </div>
@@ -272,7 +272,7 @@ export default function WikiSearchPage() {
 
             {/* No AI results */}
             {!aiAnswer && aiSources.length === 0 && (
-              <div style={{ padding: 40, textAlign: 'center', color: isDark ? 'var(--ds-text-subtlest, var(--ds-text-subtlest, #878787))' : 'var(--ds-text-subtlest, var(--ds-text-subtlest, #94A3B8))', fontSize: 13 }}>
+              <div style={{ padding: 40, textAlign: 'center', color: isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--ds-text-subtlest, #94A3B8)', fontSize: 13 }}>
                 No AI results for '{debouncedQuery}'. Try rephrasing your question or switch to keyword search.
               </div>
             )}
@@ -287,14 +287,14 @@ export default function WikiSearchPage() {
                 {paginatedResults.map((r: any) => {
                   const conf = Math.round((r.ai_confidence ?? 0) * 100);
                   const fmtIcon = r.format === 'pdf'
-                    ? <FileDown size={14} style={{ color: 'var(--ds-text-danger, var(--ds-text-danger, #DC2626))', flexShrink: 0 }} />
+                    ? <FileDown size={14} style={{ color: 'var(--ds-text-danger, #DC2626)', flexShrink: 0 }} />
                     : r.format === 'video'
                     ? <Video size={14} style={{ color: '#7C3AED', flexShrink: 0 }} />
-                    : <FileText size={14} style={{ color: isDark ? 'var(--ds-text-subtlest, var(--ds-text-subtlest, #878787))' : 'var(--ds-text-subtlest, var(--ds-text-subtlest, #94A3B8))', flexShrink: 0 }} />;
+                    : <FileText size={14} style={{ color: isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--ds-text-subtlest, #94A3B8)', flexShrink: 0 }} />;
                   const verBadge = r.verification_status === 'verified'
-                    ? { bg: '#1B7F37', color: 'var(--ds-surface, var(--ds-surface, #FFFFFF))', label: 'Verified' }
+                    ? { bg: '#1B7F37', color: 'var(--ds-surface, #FFFFFF)', label: 'Verified' }
                     : r.verification_status === 'needs_review'
-                    ? { bg: '#0C66E4', color: 'var(--ds-surface, var(--ds-surface, #FFFFFF))', label: 'Review' }
+                    ? { bg: '#0C66E4', color: 'var(--ds-surface, #FFFFFF)', label: 'Review' }
                     : null;
 
                   return (
@@ -305,13 +305,13 @@ export default function WikiSearchPage() {
                         padding: '14px 0', borderBottom: `0.75px solid ${borderColor}`,
                         cursor: 'pointer', transition: 'background 80ms',
                       }}
-                      onMouseEnter={e => e.currentTarget.style.background = isDark ? 'var(--ds-surface-overlay, var(--ds-surface-overlay, #1F1F1F))' : 'rgba(37,99,235,0.03)'}
+                      onMouseEnter={e => e.currentTarget.style.background = isDark ? 'var(--ds-surface-overlay, #1F1F1F)' : 'rgba(37,99,235,0.03)'}
                       onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
                     >
                       {/* Title row */}
                       <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
                         {fmtIcon}
-                        <span style={{ fontSize: 14, fontWeight: 600, color: isDark ? 'var(--ds-text, var(--ds-text, #EDEDED))' : 'var(--ds-text, var(--ds-text, #0F172A))' }}>
+                        <span style={{ fontSize: 14, fontWeight: 600, color: isDark ? 'var(--ds-text, #EDEDED)' : 'var(--ds-text, #0F172A)' }}>
                           {highlightText(r.title || '—', debouncedQuery, isDark)}
                         </span>
                       </div>
@@ -320,10 +320,10 @@ export default function WikiSearchPage() {
                       <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6, flexWrap: 'wrap' }}>
                         <span style={{
                           fontSize: 10, fontWeight: 650, padding: '1px 6px', borderRadius: 4,
-                          background: '#0C66E4', color: 'var(--ds-surface, var(--ds-surface, #FFFFFF))',
+                          background: '#0C66E4', color: 'var(--ds-surface, #FFFFFF)',
                         }}>{r.domain_code || '—'}</span>
                         {r.read_time_minutes && (
-                          <span style={{ fontSize: 11, color: isDark ? 'var(--ds-text-subtlest, var(--ds-text-subtlest, #A1A1A1))' : 'var(--ds-text-subtlest, var(--ds-text-subtlest, #64748B))', display: 'inline-flex', alignItems: 'center', gap: 3 }}>
+                          <span style={{ fontSize: 11, color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtlest, #64748B)', display: 'inline-flex', alignItems: 'center', gap: 3 }}>
                             <Clock size={10} /> {r.read_time_minutes} min
                           </span>
                         )}
@@ -341,13 +341,13 @@ export default function WikiSearchPage() {
                             display: 'inline-flex', alignItems: 'center', gap: 3,
                           }}>{r.verification_status === 'verified' && <ShieldCheck size={9} />} {verBadge.label}</span>
                         )}
-                        <span style={{ fontSize: 11, color: isDark ? 'var(--ds-text-subtlest, var(--ds-text-subtlest, #878787))' : 'var(--ds-text-subtlest, var(--ds-text-subtlest, #94A3B8))' }}>{r.updated_at ? timeAgo(r.updated_at) : '—'}</span>
+                        <span style={{ fontSize: 11, color: isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--ds-text-subtlest, #94A3B8)' }}>{r.updated_at ? timeAgo(r.updated_at) : '—'}</span>
                       </div>
 
                       {/* Snippet */}
                       {r.lead_content && (
                         <div style={{
-                          fontSize: 12, color: isDark ? 'var(--ds-text-subtlest, var(--ds-text-subtlest, #A1A1A1))' : 'var(--ds-text-subtlest, var(--ds-text-subtlest, #64748B))', lineHeight: 1.6,
+                          fontSize: 12, color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtlest, #64748B)', lineHeight: 1.6,
                           display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' as any, overflow: 'hidden',
                         }}>
                           {highlightText(r.lead_content.substring(0, 200), debouncedQuery, isDark)}
@@ -360,7 +360,7 @@ export default function WikiSearchPage() {
                           {(r.tags as string[]).slice(0, 4).map(t => (
                             <span key={t} style={{
                               fontSize: 9, padding: '1px 6px', borderRadius: 4,
-                              background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface-sunken, var(--ds-surface-sunken, #F1F5F9))', color: isDark ? 'var(--ds-text-subtlest, var(--ds-text-subtlest, #A1A1A1))' : 'var(--ds-text-subtlest, var(--ds-text-subtlest, #64748B))', fontWeight: 500,
+                              background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface-sunken, #F1F5F9)', color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtlest, #64748B)', fontWeight: 500,
                             }}>{t}</span>
                           ))}
                         </div>
@@ -380,11 +380,11 @@ export default function WikiSearchPage() {
                       onClick={() => setPage(p => p - 1)}
                       style={{
                         fontSize: 12, fontWeight: 650, padding: '6px 14px', borderRadius: 4,
-                        border: `1px solid ${borderColor}`, background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, var(--ds-surface, #FFFFFF))',
-                        color: page === 0 ? (isDark ? 'var(--ds-border, var(--ds-border, #292929))' : 'var(--ds-text-disabled, var(--ds-text-disabled, #CBD5E1))') : (isDark ? 'var(--ds-text-subtlest, var(--ds-text-subtlest, #A1A1A1))' : 'var(--ds-text-subtle, var(--ds-text-subtle, #334155))'), cursor: page === 0 ? 'default' : 'pointer',
+                        border: `1px solid ${borderColor}`, background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, #FFFFFF)',
+                        color: page === 0 ? (isDark ? 'var(--ds-border, #292929)' : 'var(--ds-text-disabled, #CBD5E1)') : (isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtle, #334155)'), cursor: page === 0 ? 'default' : 'pointer',
                       }}
                     >← Previous</button>
-                    <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 11, color: isDark ? 'var(--ds-text-subtlest, var(--ds-text-subtlest, #A1A1A1))' : 'var(--ds-text-subtlest, var(--ds-text-subtlest, #64748B))' }}>
+                    <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 11, color: isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtlest, #64748B)' }}>
                       {page + 1} / {totalPages}
                     </span>
                     <button
@@ -392,15 +392,15 @@ export default function WikiSearchPage() {
                       onClick={() => setPage(p => p + 1)}
                       style={{
                         fontSize: 12, fontWeight: 650, padding: '6px 14px', borderRadius: 4,
-                        border: `1px solid ${borderColor}`, background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, var(--ds-surface, #FFFFFF))',
-                        color: page >= totalPages - 1 ? (isDark ? 'var(--ds-border, var(--ds-border, #292929))' : 'var(--ds-text-disabled, var(--ds-text-disabled, #CBD5E1))') : (isDark ? 'var(--ds-text-subtlest, var(--ds-text-subtlest, #A1A1A1))' : 'var(--ds-text-subtle, var(--ds-text-subtle, #334155))'), cursor: page >= totalPages - 1 ? 'default' : 'pointer',
+                        border: `1px solid ${borderColor}`, background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, #FFFFFF)',
+                        color: page >= totalPages - 1 ? (isDark ? 'var(--ds-border, #292929)' : 'var(--ds-text-disabled, #CBD5E1)') : (isDark ? 'var(--ds-text-subtlest, #A1A1A1)' : 'var(--ds-text-subtle, #334155)'), cursor: page >= totalPages - 1 ? 'default' : 'pointer',
                       }}
                     >Next →</button>
                   </div>
                 )}
               </>
             ) : (
-              <div style={{ padding: 40, textAlign: 'center', color: isDark ? 'var(--ds-text-subtlest, var(--ds-text-subtlest, #878787))' : 'var(--ds-text-subtlest, var(--ds-text-subtlest, #94A3B8))', fontSize: 13 }}>
+              <div style={{ padding: 40, textAlign: 'center', color: isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--ds-text-subtlest, #94A3B8)', fontSize: 13 }}>
                 No results for '{debouncedQuery}'. Try a different search term or browse by domain.
               </div>
             )}
@@ -409,7 +409,7 @@ export default function WikiSearchPage() {
 
         {/* ── Minimum character prompt ── */}
         {debouncedQuery.length < 2 && (
-          <div style={{ padding: 48, textAlign: 'center', color: isDark ? 'var(--ds-text-subtlest, var(--ds-text-subtlest, #878787))' : 'var(--ds-text-subtlest, var(--ds-text-subtlest, #94A3B8))', fontSize: 13 }}>
+          <div style={{ padding: 48, textAlign: 'center', color: isDark ? 'var(--ds-text-subtlest, #878787)' : 'var(--ds-text-subtlest, #94A3B8)', fontSize: 13 }}>
             Enter at least 2 characters to search
           </div>
         )}

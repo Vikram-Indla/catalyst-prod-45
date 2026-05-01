@@ -202,7 +202,7 @@ export function DynamicTable<TData>(props: DynamicTableProps<TData>) {
               type="button"
               aria-label={open ? 'Collapse row' : 'Expand row'}
               aria-expanded={open}
-              className="flex h-5 w-5 items-center justify-center rounded text-muted-foreground hover:bg-accent focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ds-text-brand,var(--ds-text-brand, #3b82f6))]"
+              className="flex h-5 w-5 items-center justify-center rounded text-muted-foreground hover:bg-accent focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ds-text-brand, #3b82f6)]"
               onClick={(e) => {
                 e.stopPropagation();
                 onToggleExpand?.(rowData);
@@ -378,7 +378,7 @@ export function DynamicTable<TData>(props: DynamicTableProps<TData>) {
                   <button
                     type="button"
                     onClick={h.column.getToggleSortingHandler()}
-                    className="flex items-center gap-1 truncate rounded px-1 py-0.5 -mx-1 -my-0.5 hover:bg-accent focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ds-text-brand,var(--ds-text-brand, #3b82f6))]"
+                    className="flex items-center gap-1 truncate rounded px-1 py-0.5 -mx-1 -my-0.5 hover:bg-accent focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ds-text-brand, #3b82f6)]"
                   >
                     <span className="truncate">
                       {h.isPlaceholder ? null : flexRender(h.column.columnDef.header, h.getContext())}
@@ -403,8 +403,8 @@ export function DynamicTable<TData>(props: DynamicTableProps<TData>) {
                     onTouchStart={h.getResizeHandler()}
                     onClick={(e) => e.stopPropagation()}
                     className={cn(
-                      'absolute right-0 top-0 h-full w-1 cursor-col-resize select-none bg-transparent transition-colors hover:bg-[var(--ds-text-brand,var(--ds-text-brand, #3b82f6))]/40',
-                      h.column.getIsResizing() && 'bg-[var(--ds-text-brand,var(--ds-text-brand, #3b82f6))]'
+                      'absolute right-0 top-0 h-full w-1 cursor-col-resize select-none bg-transparent transition-colors hover:bg-[var(--ds-text-brand, #3b82f6)]/40',
+                      h.column.getIsResizing() && 'bg-[var(--ds-text-brand, #3b82f6)]'
                     )}
                   />
                 )}

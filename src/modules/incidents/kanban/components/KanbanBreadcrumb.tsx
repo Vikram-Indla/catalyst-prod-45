@@ -20,14 +20,14 @@ export const KanbanBreadcrumb = memo(function KanbanBreadcrumb() {
       <nav className="flex items-center gap-2 text-sm">
         <Link 
           to="/release" 
-          className="font-medium hover:underline transition-colors text-[var(--ds-text-brand,var(--ds-text-brand, #2563eb))] dark:text-[var(--ds-text-brand,var(--ds-text-brand, #60a5fa))]"
+          className="font-medium hover:underline transition-colors text-[var(--ds-text-brand, #2563eb)] dark:text-[var(--ds-text-brand, #60a5fa)]"
         >
           Release
         </Link>
         <ChevronRight className="h-3.5 w-3.5 text-[#737373] dark:text-[#a3a3a3]" />
         <Link 
           to="/release/incidents" 
-          className="font-medium hover:underline transition-colors text-[var(--ds-text-brand,var(--ds-text-brand, #2563eb))] dark:text-[var(--ds-text-brand,var(--ds-text-brand, #60a5fa))]"
+          className="font-medium hover:underline transition-colors text-[var(--ds-text-brand, #2563eb)] dark:text-[var(--ds-text-brand, #60a5fa)]"
         >
           Incidents
         </Link>

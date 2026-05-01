@@ -172,7 +172,7 @@ export function KnowledgeAssistPanel({ isOpen, onClose }: { isOpen: boolean; onC
                 <circle cx="22" cy="78" r="10" fill="white" opacity="0.9"/>
                 <circle cx="78" cy="78" r="10" fill="white" opacity="0.9"/>
                 <circle cx="50" cy="50" r="16" fill="white"/>
-                <circle cx="50" cy="50" r="8" fill="var(--ds-text-brand, var(--ds-text-brand, #2563EB))"/>
+                <circle cx="50" cy="50" r="8" fill="var(--ds-text-brand, #2563EB)"/>
               </svg>
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
@@ -230,7 +230,7 @@ export function KnowledgeAssistPanel({ isOpen, onClose }: { isOpen: boolean; onC
                       <div style={{
                         maxWidth: '85%', padding: '10px 16px',
                         borderRadius: '8px 8px 3px 8px', background: 'var(--cp-blue)',
-                        color: 'var(--ds-surface, var(--ds-surface, #FFFFFF))', fontSize: 13, fontWeight: 500, lineHeight: 1.5,
+                        color: 'var(--ds-surface, #FFFFFF)', fontSize: 13, fontWeight: 500, lineHeight: 1.5,
                         fontFamily: F.inter,
                       }}>{msg.text}</div>
                     </div>
@@ -316,7 +316,7 @@ export function KnowledgeAssistPanel({ isOpen, onClose }: { isOpen: boolean; onC
                 transition: 'background 80ms',
               }}
             >
-              <Send size={18} strokeWidth={2} color={input.trim() ? 'var(--ds-surface, var(--ds-surface, #FFFFFF))' : '#8B8FA3'} />
+              <Send size={18} strokeWidth={2} color={input.trim() ? 'var(--ds-surface, #FFFFFF)' : '#8B8FA3'} />
             </button>
           </div>
         </div>

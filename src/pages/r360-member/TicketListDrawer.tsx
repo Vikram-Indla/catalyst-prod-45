@@ -18,8 +18,8 @@ export function TicketListDrawer({ mode, items, onClose, onSelectItem }: {
   const isStale = mode === 'stale';
   const title = isStale ? 'Stale Items' : 'Open Items';
   const { isDark } = useTheme();
-  const accentColor = isStale ? 'var(--ds-text-danger, var(--ds-text-danger, #DC2626))' : 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))';
-  const accentBg = isStale ? 'var(--ds-background-danger, var(--ds-background-danger, #FEF2F2))' : 'var(--ds-background-selected, var(--ds-background-selected, #EFF6FF))';
+  const accentColor = isStale ? 'var(--ds-text-danger, #DC2626)' : 'var(--ds-text-brand, #2563EB)';
+  const accentBg = isStale ? 'var(--ds-background-danger, #FEF2F2)' : 'var(--ds-background-selected, #EFF6FF)';
 
   return (
     <>

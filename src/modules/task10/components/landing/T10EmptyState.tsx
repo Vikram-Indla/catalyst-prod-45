@@ -21,7 +21,7 @@ export function T10EmptyState({ onCreateList }: T10EmptyStateProps) {
           <line x1="20" y1="24" x2="32" y2="24" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
           <line x1="20" y1="28" x2="30" y2="28" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
           <line x1="20" y1="32" x2="26" y2="32" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-          <circle cx="38" cy="34" r="8" fill="var(--ds-text-brand, var(--ds-text-brand, #2563eb))" />
+          <circle cx="38" cy="34" r="8" fill="var(--ds-text-brand, #2563eb)" />
           <text x="38" y="38" textAnchor="middle" fill="white" fontSize="10" fontWeight="600">10</text>
         </svg>
       </div>

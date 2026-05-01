@@ -421,7 +421,7 @@
 .jf-avatar-initials-text {
   font-size: 9px;
   font-weight: 700;
-  color: var(--ds-surface, var(--ds-surface, #fff));
+  color: var(--ds-surface, #fff);
   line-height: 1;
   letter-spacing: -0.3px;
   text-transform: uppercase;

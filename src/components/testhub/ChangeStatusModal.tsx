@@ -20,7 +20,7 @@ const STATUSES = [
   { value: 'draft', label: 'Draft', icon: Clock, color: 'var(--fg-3)', bg: 'var(--cp-bd-zone)' },
   { value: 'ready', label: 'Ready for Review', icon: FileCheck, color: 'var(--cp-blue)', bg: 'color-mix(in srgb, var(--cp-blue) 8%, transparent)' },
   { value: 'approved', label: 'Approved', icon: CheckCircle, color: 'var(--sem-success)', bg: '#ECFDF5' },
-  { value: 'deprecated', label: 'Deprecated', icon: Archive, color: 'var(--sem-danger)', bg: 'var(--ds-background-danger, var(--ds-background-danger, #FEF2F2))' },
+  { value: 'deprecated', label: 'Deprecated', icon: Archive, color: 'var(--sem-danger)', bg: 'var(--ds-background-danger, #FEF2F2)' },
 ];
 
 export function ChangeStatusModal({

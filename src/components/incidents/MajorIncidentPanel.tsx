@@ -50,7 +50,7 @@ export function MajorIncidentPanel({
           <AlertTriangle className={cn("w-4 h-4", isMajorIncident ? "text-red-600" : "text-[#8C8C8C]")} />
           <h4 className={cn(
             "text-sm font-semibold",
-            isMajorIncident ? "text-red-700" : "text-[var(--ds-text,var(--ds-text, #172B4D))]"
+            isMajorIncident ? "text-red-700" : "text-[var(--ds-text, #172B4D)]"
           )}>
             Major Incident
           </h4>

@@ -23,10 +23,10 @@ function getCellStyle(status: OkrStatus, isOverall = false): { bg: string; text:
 }
 
 function getThemeDotColor(overallPct: number | null): string {
-  if (overallPct === null) return 'var(--ds-text-subtlest, var(--ds-text-subtlest, #94A3B8))';
+  if (overallPct === null) return 'var(--ds-text-subtlest, #94A3B8)';
   if (overallPct >= 70) return '#1E40AF';
-  if (overallPct >= 40) return 'var(--ds-text-warning, var(--ds-text-warning, #D97706))';
-  return 'var(--ds-text-danger, var(--ds-text-danger, #DC2626))';
+  if (overallPct >= 40) return 'var(--ds-text-warning, #D97706)';
+  return 'var(--ds-text-danger, #DC2626)';
 }
 
 function pctToStatus(pct: number | null): OkrStatus {
@@ -178,8 +178,8 @@ export function OkrHeatmap() {
       {/* Legend */}
       <div className="flex items-center gap-4 mt-3" style={{ fontSize: 11, color: 'var(--exec-text-secondary)' }}>
         <span className="flex items-center gap-1"><span style={{ width: 8, height: 8, borderRadius: '50%', background: '#1E40AF' }} /> On Track (≥70%)</span>
-        <span className="flex items-center gap-1"><span style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--ds-text-warning, var(--ds-text-warning, #D97706))' }} /> At Risk (40–69%)</span>
-        <span className="flex items-center gap-1"><span style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--ds-text-danger, var(--ds-text-danger, #DC2626))' }} /> Off Track (&lt;40%)</span>
+        <span className="flex items-center gap-1"><span style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--ds-text-warning, #D97706)' }} /> At Risk (40–69%)</span>
+        <span className="flex items-center gap-1"><span style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--ds-text-danger, #DC2626)' }} /> Off Track (&lt;40%)</span>
       </div>
 
       <Drawer isOpen={drawerOpen} onClose={() => setDrawerOpen(false)} title={drawerInfo ? `${drawerInfo.theme} — ${drawerInfo.quarter}` : ''}>

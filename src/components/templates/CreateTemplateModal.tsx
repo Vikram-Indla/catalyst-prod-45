@@ -103,7 +103,7 @@ export function CreateTemplateModal({ projectId, isOpen, onClose, onSuccess }: C
         {/* Progress */}
         <div className="flex items-center gap-1 py-2">
           {STEPS.map((step, i) => (
-            <div key={step.key} className={`flex-1 h-1 rounded-full ${i <= currentIndex ? 'bg-[var(--ds-text-brand,var(--ds-text-brand, #2563eb))]' : 'bg-slate-200'}`} />
+            <div key={step.key} className={`flex-1 h-1 rounded-full ${i <= currentIndex ? 'bg-[var(--ds-text-brand, #2563eb)]' : 'bg-slate-200'}`} />
           ))}
         </div>
         
@@ -216,12 +216,12 @@ export function CreateTemplateModal({ projectId, isOpen, onClose, onSuccess }: C
           <div className="flex gap-2">
             <Button variant="outline" onClick={handleClose}>Cancel</Button>
             {isLast ? (
-              <Button onClick={handleCreate} disabled={!state.basicInfo.name || createTemplate.isPending} className="bg-[var(--ds-text-brand,var(--ds-text-brand, #2563eb))] hover:bg-[var(--ds-background-brand-bold-hovered,var(--ds-background-brand-bold-hovered, #1d4ed8))] text-white">
+              <Button onClick={handleCreate} disabled={!state.basicInfo.name || createTemplate.isPending} className="bg-[var(--ds-text-brand, #2563eb)] hover:bg-[var(--ds-background-brand-bold-hovered, #1d4ed8)] text-white">
                 {createTemplate.isPending ? <Loader2 className="w-4 h-4 animate-spin mr-1" /> : <Check className="w-4 h-4 mr-1" />}
                 Create Template
               </Button>
             ) : (
-              <Button onClick={goNext} className="bg-[var(--ds-text-brand,var(--ds-text-brand, #2563eb))] hover:bg-[var(--ds-background-brand-bold-hovered,var(--ds-background-brand-bold-hovered, #1d4ed8))] text-white">
+              <Button onClick={goNext} className="bg-[var(--ds-text-brand, #2563eb)] hover:bg-[var(--ds-background-brand-bold-hovered, #1d4ed8)] text-white">
                 Next <ChevronRight className="w-4 h-4 ml-1" />
               </Button>
             )}

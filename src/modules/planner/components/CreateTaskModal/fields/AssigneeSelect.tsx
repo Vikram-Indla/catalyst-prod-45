@@ -23,7 +23,7 @@ interface AssigneeSelectProps {
 }
 
 // Avatar color utility
-const AVATAR_COLORS = ['var(--ds-text-brand, var(--ds-text-brand, #2563eb))', '#0d9488', '#6b7280', '#8b5cf6', '#f97316'];
+const AVATAR_COLORS = ['var(--ds-text-brand, #2563eb)', '#0d9488', '#6b7280', '#8b5cf6', '#f97316'];
 function getAvatarColor(name: string): string {
   const index = name.charCodeAt(0) % AVATAR_COLORS.length;
   return AVATAR_COLORS[index];

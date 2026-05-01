@@ -59,7 +59,7 @@ export function WorkHubDashboard() {
         {/* Error state */}
         {kpisQuery.isError && (
           <div style={{
-            background: 'var(--ds-background-danger, var(--ds-background-danger, #fef2f2))',
+            background: 'var(--ds-background-danger, #fef2f2)',
             border: '1px solid #fecaca',
             borderRadius: 'var(--wh-radius-lg, 12px)',
             padding: 24,
@@ -70,7 +70,7 @@ export function WorkHubDashboard() {
           }}>
             <AlertTriangle style={{ width: 20, height: 20, color: 'var(--sem-danger)', flexShrink: 0 }} />
             <div style={{ flex: 1 }}>
-              <div style={{ fontWeight: 600, color: 'var(--ds-text-danger, var(--ds-text-danger, #991b1b))' }}>Failed to load dashboard data</div>
+              <div style={{ fontWeight: 600, color: 'var(--ds-text-danger, #991b1b)' }}>Failed to load dashboard data</div>
               <div style={{ fontSize: 13, color: '#b91c1c', marginTop: 4 }}>{(kpisQuery.error as Error)?.message}</div>
             </div>
             <button

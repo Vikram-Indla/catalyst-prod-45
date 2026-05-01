@@ -16,12 +16,12 @@ interface ConvertDialogProps {
 }
 
 const TYPES = [
-  { key: 'bug', label: 'Bug', desc: 'Software defect or malfunction', color: 'var(--ds-text-danger, var(--ds-text-danger, #DC2626))' },
-  { key: 'task', label: 'Task', desc: 'General work item', color: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))' },
-  { key: 'story', label: 'Story', desc: 'User story for backlog', color: 'var(--ds-text-success, var(--ds-text-success, #16A34A))' },
+  { key: 'bug', label: 'Bug', desc: 'Software defect or malfunction', color: 'var(--ds-text-danger, #DC2626)' },
+  { key: 'task', label: 'Task', desc: 'General work item', color: 'var(--ds-text-brand, #2563EB)' },
+  { key: 'story', label: 'Story', desc: 'User story for backlog', color: 'var(--ds-text-success, #16A34A)' },
   { key: 'epic', label: 'Epic', desc: 'Large body of work', color: '#7C3AED' },
   { key: 'feature', label: 'New Feature', desc: 'New functionality', color: '#0D9488' },
-  { key: 'improvement', label: 'Improvement', desc: 'Enhance existing feature', color: 'var(--ds-text-warning, var(--ds-text-warning, #D97706))' },
+  { key: 'improvement', label: 'Improvement', desc: 'Enhance existing feature', color: 'var(--ds-text-warning, #D97706)' },
 ];
 
 export function ConvertDialog({ open, onClose, incidentId }: ConvertDialogProps) {
@@ -51,7 +51,7 @@ export function ConvertDialog({ open, onClose, incidentId }: ConvertDialogProps)
                 className="p-3 text-left transition-all"
                 style={{
                   borderRadius: 6,
-                  border: `1.5px solid ${selected === t.key ? 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))' : ('var(--cp-border-default, rgba(15,23,42,0.12))')}`,
+                  border: `1.5px solid ${selected === t.key ? 'var(--ds-text-brand, #2563EB)' : ('var(--cp-border-default, rgba(15,23,42,0.12))')}`,
                   backgroundColor: selected === t.key ? ('var(--cp-primary-light, #EFF6FF)') : ('var(--cp-bg-elevated, #FFFFFF)'),
                 }}
               >
@@ -62,7 +62,7 @@ export function ConvertDialog({ open, onClose, incidentId }: ConvertDialogProps)
                   </svg>
                 </div>
                 <div style={{ fontFamily: 'var(--cp-font-body)', fontSize: 13, fontWeight: 650, color: 'var(--fg-1, #0F172A)', marginBottom: 2 }}>{t.label}</div>
-                <div style={{ fontFamily: 'var(--cp-font-body)', fontSize: 11, color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #64748B))' }}>{t.desc}</div>
+                <div style={{ fontFamily: 'var(--cp-font-body)', fontSize: 11, color: 'var(--ds-text-subtlest, #64748B)' }}>{t.desc}</div>
               </button>
             ))}
           </div>
@@ -70,7 +70,7 @@ export function ConvertDialog({ open, onClose, incidentId }: ConvertDialogProps)
 
         <DialogFooter className="px-6 py-3" style={{ borderTop: '0.75px solid rgba(15,23,42,0.06)' }}>
           <Button variant="ghost" onClick={onClose} style={{ borderRadius: 6 }}>Cancel</Button>
-          <Button disabled={!selected} onClick={handleConvert} style={{ backgroundColor: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))', borderRadius: 6, opacity: selected ? 1 : 0.5 }}>
+          <Button disabled={!selected} onClick={handleConvert} style={{ backgroundColor: 'var(--ds-text-brand, #2563EB)', borderRadius: 6, opacity: selected ? 1 : 0.5 }}>
             Convert
           </Button>
         </DialogFooter>

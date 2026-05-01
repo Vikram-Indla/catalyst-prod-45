@@ -46,7 +46,7 @@ interface ProjectIconProps {
   avatarUrl?: string | null;
   /** ph_projects.icon — Lucide icon name (e.g. "rocket", "folder"). */
   iconName?: string | null;
-  /** ph_projects.color — hex (e.g. "var(--ds-text-brand, var(--ds-text-brand, #2563EB))"). */
+  /** ph_projects.color — hex (e.g. "var(--ds-text-brand, #2563EB)"). */
   color?: string | null;
   /** ADS sizing. Defaults to 'medium' (24px). */
   size?: ProjectIconSize;
@@ -119,10 +119,10 @@ export function ProjectIcon({
           alignItems: 'center',
           justifyContent: 'center',
           flexShrink: 0,
-          color: 'var(--ds-surface, var(--ds-surface, #FFFFFF))',
+          color: 'var(--ds-surface, #FFFFFF)',
         }}
       >
-        <LucideIcon size={iconPx} color="var(--ds-surface, var(--ds-surface, #FFFFFF))" strokeWidth={2} />
+        <LucideIcon size={iconPx} color="var(--ds-surface, #FFFFFF)" strokeWidth={2} />
       </span>
     );
   }

@@ -36,7 +36,7 @@ interface ReassignModalProps {
 // Avatar color mapping - Catalyst V5 (Blue, Teal, Gray only)
 const getAvatarColor = (name: string): string => {
   const colors = [
-    'bg-[var(--ds-text-brand,var(--ds-text-brand, #2563eb))] text-white',
+    'bg-[var(--ds-text-brand, #2563eb)] text-white',
     'bg-[#0d9488] text-white',
     'bg-[#6b7280] text-white',
   ];

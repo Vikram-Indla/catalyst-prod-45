@@ -132,7 +132,7 @@ export function TimelineFilterPopover({
         <button
           className={cn(
             "h-9 px-3 flex items-center gap-2 text-sm rounded-lg transition-colors",
-            "bg-[var(--ds-text-brand,var(--ds-text-brand, #2563eb))] text-white hover:bg-[var(--ds-background-brand-bold-hovered,var(--ds-background-brand-bold-hovered, #1d4ed8))]",
+            "bg-[var(--ds-text-brand, #2563eb)] text-white hover:bg-[var(--ds-background-brand-bold-hovered, #1d4ed8)]",
             className
           )}
         >
@@ -159,7 +159,7 @@ export function TimelineFilterPopover({
                   className={cn(
                     "flex-1 px-3 py-2 text-sm rounded-lg border transition-colors",
                     draft.viewScale === option.value
-                      ? "bg-[var(--ds-text-brand,var(--ds-text-brand, #2563eb))] text-white border-[var(--ds-text-brand,var(--ds-text-brand, #2563eb))]"
+                      ? "bg-[var(--ds-text-brand, #2563eb)] text-white border-[var(--ds-text-brand, #2563eb)]"
                       : "bg-background border-border hover:bg-muted text-foreground"
                   )}
                   onClick={() => setDraft(prev => ({ ...prev, viewScale: option.value }))}

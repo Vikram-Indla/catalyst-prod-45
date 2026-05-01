@@ -35,7 +35,7 @@
   grid-template-columns: 1fr 1fr;
   min-height: 100vh;
   font-family: var(--cp-font-heading);
-  background: var(--ds-surface, var(--ds-surface, #fff));
+  background: var(--ds-surface, #fff);
 }
 
 /* Skip Link */
@@ -44,7 +44,7 @@
   top: -40px;
   left: 0;
   background: var(--login-primary-deep);
-  color: var(--ds-surface, var(--ds-surface, #fff));
+  color: var(--ds-surface, #fff);
   padding: 8px 14px;
   z-index: 100;
   border-radius: 0 0 8px 0;
@@ -129,7 +129,7 @@
   font-family: var(--cp-font-heading);
   font-size: 3rem;
   font-weight: 800;
-  color: var(--ds-surface, var(--ds-surface, #fff));
+  color: var(--ds-surface, #fff);
   letter-spacing: -0.03em;
   line-height: 1;
   margin-bottom: 0.75rem;
@@ -188,7 +188,7 @@
   align-items: center;
   justify-content: center;
   padding: 2rem 2.5rem;
-  background: var(--ds-surface, var(--ds-surface, #fff));
+  background: var(--ds-surface, #fff);
   overflow-y: auto;
 }
 
@@ -233,7 +233,7 @@
 
 .toggle-btn-v10.active {
   font-weight: 600;
-  color: var(--ds-surface, var(--ds-surface, #fff));
+  color: var(--ds-surface, #fff);
   background: var(--login-primary);
   box-shadow: 0 2px 7px rgba(37, 99, 235, 0.25);
 }
@@ -329,7 +329,7 @@
   font-size: 0.9rem;
   font-family: inherit;
   color: var(--login-text-dark);
-  background: var(--ds-surface, var(--ds-surface, #fff));
+  background: var(--ds-surface, #fff);
   border: 1.5px solid var(--login-form-border);
   border-radius: 12px;
   outline: none;
@@ -376,7 +376,7 @@
   font-size: 0.9rem;
   font-family: inherit;
   color: var(--login-text-dark);
-  background: var(--ds-surface, var(--ds-surface, #fff));
+  background: var(--ds-surface, #fff);
   border: 1.5px solid var(--login-form-border);
   border-radius: 12px;
   outline: none;
@@ -421,7 +421,7 @@
   height: 17px;
   border-radius: 4px;
   border: 1.5px solid var(--login-form-border);
-  background: var(--ds-surface, var(--ds-surface, #fff));
+  background: var(--ds-surface, #fff);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -467,7 +467,7 @@
   font-size: 0.9rem;
   font-weight: 650;
   font-family: inherit;
-  color: var(--ds-surface, var(--ds-surface, #fff));
+  color: var(--ds-surface, #fff);
   background: linear-gradient(135deg, var(--login-primary), var(--login-primary-hover));
   border: none;
   border-radius: 12px;
@@ -498,7 +498,7 @@
   width: 15px;
   height: 15px;
   border: 2px solid rgba(255, 255, 255, 0.3);
-  border-top-color: var(--ds-surface, var(--ds-surface, #fff));
+  border-top-color: var(--ds-surface, #fff);
   border-radius: 50%;
   animation: spin 0.7s linear infinite;
   display: inline-block;
@@ -575,7 +575,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--ds-surface, var(--ds-surface, #fff));
+  color: var(--ds-surface, #fff);
   font-size: 0.65rem;
   font-weight: 800;
 }

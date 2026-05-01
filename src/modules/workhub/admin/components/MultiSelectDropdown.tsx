@@ -25,7 +25,7 @@ export function MultiSelectDropdown({
   onChange,
   placeholder = 'Select…',
   emptyMessage = 'No options available',
-  accentColor = 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))',
+  accentColor = 'var(--ds-text-brand, #2563EB)',
 }: MultiSelectDropdownProps) {
   const [open, setOpen] = useState(false)
   const [search, setSearch] = useState('')
@@ -60,12 +60,12 @@ export function MultiSelectDropdown({
     )
   }
 
-  const accentBg = accentColor === '#7C3AED' ? '#F5F3FF' : 'var(--ds-background-selected, var(--ds-background-selected, #EFF6FF))'
+  const accentBg = accentColor === '#7C3AED' ? '#F5F3FF' : 'var(--ds-background-selected, #EFF6FF)'
 
   return (
     <div>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
-        <label style={{ fontSize: '11px', fontWeight: 600, color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #64748B))', textTransform: 'uppercase', letterSpacing: '.4px', fontFamily: 'var(--cp-font-body)' }}>
+        <label style={{ fontSize: '11px', fontWeight: 600, color: 'var(--ds-text-subtlest, #64748B)', textTransform: 'uppercase', letterSpacing: '.4px', fontFamily: 'var(--cp-font-body)' }}>
           {label}
         </label>
         {selected.length > 0 && (
@@ -90,7 +90,7 @@ export function MultiSelectDropdown({
         >
           <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap', flex: 1, alignItems: 'center' }}>
             {selected.length === 0 ? (
-              <span style={{ fontSize: '12px', color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #94A3B8))', fontFamily: 'var(--cp-font-body)' }}>{placeholder}</span>
+              <span style={{ fontSize: '12px', color: 'var(--ds-text-subtlest, #94A3B8)', fontFamily: 'var(--cp-font-body)' }}>{placeholder}</span>
             ) : selected.length <= 3 ? (
               selected.map(v => {
                 const opt = options.find(o => o.value === v)
@@ -118,7 +118,7 @@ export function MultiSelectDropdown({
               </span>
             )}
           </div>
-          <ChevronDown size={14} style={{ color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #94A3B8))', flexShrink: 0, transform: open ? 'rotate(180deg)' : 'none', transition: 'transform .15s' }} />
+          <ChevronDown size={14} style={{ color: 'var(--ds-text-subtlest, #94A3B8)', flexShrink: 0, transform: open ? 'rotate(180deg)' : 'none', transition: 'transform .15s' }} />
         </button>
 
         {/* Dropdown */}
@@ -130,7 +130,7 @@ export function MultiSelectDropdown({
           }}>
             {/* Search */}
             <div style={{ padding: '8px 10px', borderBottom: '1px solid #F1F5F9', display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <Search size={13} style={{ color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #94A3B8))', flexShrink: 0 }} />
+              <Search size={13} style={{ color: 'var(--ds-text-subtlest, #94A3B8)', flexShrink: 0 }} />
               <input
                 ref={searchRef}
                 value={search}
@@ -138,7 +138,7 @@ export function MultiSelectDropdown({
                 placeholder="Search…"
                 style={{
                   border: 'none', outline: 'none', width: '100%',
-                  fontSize: '12px', fontFamily: 'var(--cp-font-body)', color: 'var(--ds-text-subtle, var(--ds-text-subtle, #334155))',
+                  fontSize: '12px', fontFamily: 'var(--cp-font-body)', color: 'var(--ds-text-subtle, #334155)',
                   background: 'transparent',
                 }}
               />
@@ -154,7 +154,7 @@ export function MultiSelectDropdown({
               </button>
               <button
                 onClick={() => onChange([])}
-                style={{ fontSize: '10px', color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #64748B))', background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'var(--cp-font-body)', fontWeight: 600 }}
+                style={{ fontSize: '10px', color: 'var(--ds-text-subtlest, #64748B)', background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'var(--cp-font-body)', fontWeight: 600 }}
               >
                 Deselect all
               </button>
@@ -163,11 +163,11 @@ export function MultiSelectDropdown({
             {/* Options */}
             <div style={{ maxHeight: '220px', overflowY: 'auto' }}>
               {options.length === 0 ? (
-                <div style={{ padding: '16px', textAlign: 'center', fontSize: '11px', color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #94A3B8))', fontStyle: 'italic' }}>
+                <div style={{ padding: '16px', textAlign: 'center', fontSize: '11px', color: 'var(--ds-text-subtlest, #94A3B8)', fontStyle: 'italic' }}>
                   {emptyMessage}
                 </div>
               ) : filtered.length === 0 ? (
-                <div style={{ padding: '16px', textAlign: 'center', fontSize: '11px', color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #94A3B8))' }}>
+                <div style={{ padding: '16px', textAlign: 'center', fontSize: '11px', color: 'var(--ds-text-subtlest, #94A3B8)' }}>
                   No matches for "{search}"
                 </div>
               ) : (
@@ -189,21 +189,21 @@ export function MultiSelectDropdown({
                       <div style={{
                         width: 16, height: 16, borderRadius: '4px', flexShrink: 0,
                         border: isSelected ? `2px solid ${accentColor}` : '2px solid #CBD5E1',
-                        background: isSelected ? accentColor : 'var(--ds-surface, var(--ds-surface, var(--ds-surface, #fff)))',
+                        background: isSelected ? accentColor : 'var(--ds-surface, #fff)',
                         display: 'flex', alignItems: 'center', justifyContent: 'center',
                       }}>
                         {isSelected && (
                           <svg width="10" height="8" viewBox="0 0 10 8" fill="none">
-                            <path d="M1 4L3.5 6.5L9 1" stroke="var(--ds-surface, var(--ds-surface, var(--ds-surface, #fff)))" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                            <path d="M1 4L3.5 6.5L9 1" stroke="var(--ds-surface, #fff)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                           </svg>
                         )}
                       </div>
                       <div style={{ flex: 1, minWidth: 0 }}>
-                        <span style={{ fontSize: '12px', color: 'var(--ds-text-subtle, var(--ds-text-subtle, #334155))', fontFamily: 'var(--cp-font-body)', fontWeight: isSelected ? 600 : 400 }}>
+                        <span style={{ fontSize: '12px', color: 'var(--ds-text-subtle, #334155)', fontFamily: 'var(--cp-font-body)', fontWeight: isSelected ? 600 : 400 }}>
                           {opt.label}
                         </span>
                         {opt.sublabel && (
-                          <span style={{ fontSize: '10px', color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #94A3B8))', marginLeft: '6px', fontFamily: 'var(--cp-font-body)' }}>
+                          <span style={{ fontSize: '10px', color: 'var(--ds-text-subtlest, #94A3B8)', marginLeft: '6px', fontFamily: 'var(--cp-font-body)' }}>
                             {opt.sublabel}
                           </span>
                         )}

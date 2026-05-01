@@ -107,10 +107,10 @@ function ToggleBtn({ active, onClick, title, side, children }: {
       title={title}
       style={{
         width: 30, height: 28, border: '1px solid',
-        borderColor: active ? 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))' : 'var(--cp-border-default)',
+        borderColor: active ? 'var(--ds-text-brand, #2563EB)' : 'var(--cp-border-default)',
         borderRadius: side === 'left' ? '4px 0 0 4px' : '0 4px 4px 0',
         background: active ? 'var(--cp-interact-selected)' : 'var(--cp-bg-elevated)',
-        color: active ? 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))' : 'var(--ds-text-subtlest, var(--ds-text-subtlest, #94A3B8))',
+        color: active ? 'var(--ds-text-brand, #2563EB)' : 'var(--ds-text-subtlest, #94A3B8)',
         cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
         marginLeft: side === 'right' ? -1 : 0,
       }}

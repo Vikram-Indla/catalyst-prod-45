@@ -76,14 +76,14 @@ export function CatalystQuickActions({
      The AI sparkle chip mirrors the same dimensions for visual balance.
      A11y is preserved via aria-label + aria-haspopup + aria-expanded. */
   const btnStyle: React.CSSProperties = {
-    width: 28, height: 28, border: '1px solid #DFE1E6', background: 'var(--ds-surface-sunken, var(--ds-surface-sunken, #FAFBFC))',
+    width: 28, height: 28, border: '1px solid #DFE1E6', background: 'var(--ds-surface-sunken, #FAFBFC)',
     borderRadius: 4, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
     color: '#44546F', transition: 'background 0.15s, border-color 0.15s, color 0.15s',
   };
   const aiBtnStyle: React.CSSProperties = {
-    width: 28, height: 28, border: '1px solid #DEEBFF', background: 'var(--ds-background-selected, var(--ds-background-selected, #EFF6FF))',
+    width: 28, height: 28, border: '1px solid #DEEBFF', background: 'var(--ds-background-selected, #EFF6FF)',
     borderRadius: 4, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
-    color: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))', transition: 'background 0.15s',
+    color: 'var(--ds-text-brand, #2563EB)', transition: 'background 0.15s',
   };
 
   const itemStyle: React.CSSProperties = {
@@ -100,8 +100,8 @@ export function CatalystQuickActions({
         <button
           onClick={() => setShowMenu(!showMenu)}
           style={btnStyle}
-          onMouseEnter={e => { e.currentTarget.style.background = '#EBECF0'; e.currentTarget.style.borderColor = '#C1C7D0'; e.currentTarget.style.color = 'var(--ds-text, var(--ds-text, #172B4D))'; }}
-          onMouseLeave={e => { e.currentTarget.style.background = 'var(--ds-surface-sunken, var(--ds-surface-sunken, #FAFBFC))'; e.currentTarget.style.borderColor = 'var(--ds-border, var(--ds-border, #DFE1E6))'; e.currentTarget.style.color = '#44546F'; }}
+          onMouseEnter={e => { e.currentTarget.style.background = '#EBECF0'; e.currentTarget.style.borderColor = '#C1C7D0'; e.currentTarget.style.color = 'var(--ds-text, #172B4D)'; }}
+          onMouseLeave={e => { e.currentTarget.style.background = 'var(--ds-surface-sunken, #FAFBFC)'; e.currentTarget.style.borderColor = 'var(--ds-border, #DFE1E6)'; e.currentTarget.style.color = '#44546F'; }}
           aria-haspopup="menu"
           aria-expanded={showMenu}
           aria-label="Add"
@@ -112,7 +112,7 @@ export function CatalystQuickActions({
 
         {showMenu && (
           <div style={{
-            position: 'absolute', left: 0, top: 34, background: 'var(--ds-surface, var(--ds-surface, #FFFFFF))', borderRadius: 4,
+            position: 'absolute', left: 0, top: 34, background: 'var(--ds-surface, #FFFFFF)', borderRadius: 4,
             boxShadow: 'rgba(30,31,33,0.15) 0px 8px 12px, rgba(30,31,33,0.31) 0px 0px 1px',
             width: 266, zIndex: 400, padding: 0,
             animation: 'cv-slide-down 0.15s ease-out',
@@ -162,7 +162,7 @@ export function CatalystQuickActions({
             ))}
 
             {filtered.length === 0 && (
-              <div style={{ padding: '12px 16px', fontSize: 13, color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #6B778C))', textAlign: 'center' }}>No items match</div>
+              <div style={{ padding: '12px 16px', fontSize: 13, color: 'var(--ds-text-subtlest, #6B778C)', textAlign: 'center' }}>No items match</div>
             )}
           </div>
         )}
@@ -174,7 +174,7 @@ export function CatalystQuickActions({
           onClick={() => setShowAiMenu(o => !o)}
           style={aiBtnStyle}
           onMouseEnter={e => { e.currentTarget.style.background = '#DEEBFF'; }}
-          onMouseLeave={e => { e.currentTarget.style.background = 'var(--ds-background-selected, var(--ds-background-selected, #EFF6FF))'; }}
+          onMouseLeave={e => { e.currentTarget.style.background = 'var(--ds-background-selected, #EFF6FF)'; }}
           aria-haspopup="menu"
           aria-expanded={showAiMenu}
           aria-label="Catalyst Intelligence"
@@ -184,12 +184,12 @@ export function CatalystQuickActions({
         </button>
         {showAiMenu && (
           <div style={{
-            position: 'absolute', left: 0, top: 34, background: 'var(--ds-surface, var(--ds-surface, var(--ds-surface, #FFF)))',
+            position: 'absolute', left: 0, top: 34, background: 'var(--ds-surface, #FFF)',
             border: '1px solid #DFE1E6', borderRadius: 8,
             boxShadow: '0 8px 28px rgba(9,30,66,0.22)', padding: '12px 0 8px',
             zIndex: 50, minWidth: 280, animation: 'cv-slide-down 0.15s ease-out',
           }}>
-            <div style={{ padding: '0 16px 10px', fontSize: 11, fontWeight: 700, color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #6B778C))', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+            <div style={{ padding: '0 16px 10px', fontSize: 11, fontWeight: 700, color: 'var(--ds-text-subtlest, #6B778C)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
               Catalyst Intelligence
             </div>
             {[
@@ -199,7 +199,7 @@ export function CatalystQuickActions({
             ].map((item, i) => (
               <button key={i} onClick={item.action}
                 style={{ display: 'flex', alignItems: 'center', gap: 10, width: '100%', padding: '8px 16px', background: 'none', border: 'none', fontSize: 14, color: '#292A2E', cursor: 'pointer', fontFamily: 'inherit', textAlign: 'left' }}
-                onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-surface-sunken, var(--ds-surface-sunken, #F4F5F7))')}
+                onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-surface-sunken, #F4F5F7)')}
                 onMouseLeave={e => (e.currentTarget.style.background = 'none')}
               >{item.icon}<span>{item.label}</span></button>
             ))}

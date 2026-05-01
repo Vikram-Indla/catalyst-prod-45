@@ -12,9 +12,9 @@ interface QualityGaugeProps {
 // Get health color based on value - EXACT THRESHOLDS
 function getHealthColor(value: number): string {
   if (value >= 90) return '#059669'; // Success green - Excellent
-  if (value >= 75) return 'var(--ds-text-brand, var(--ds-text-brand, #2563eb))'; // Primary blue - Good
-  if (value >= 50) return 'var(--ds-text-warning, var(--ds-text-warning, #d97706))'; // Warning orange - Caution
-  return 'var(--ds-text-danger, var(--ds-text-danger, #ef4444))'; // Danger red - At Risk
+  if (value >= 75) return 'var(--ds-text-brand, #2563eb)'; // Primary blue - Good
+  if (value >= 50) return 'var(--ds-text-warning, #d97706)'; // Warning orange - Caution
+  return 'var(--ds-text-danger, #ef4444)'; // Danger red - At Risk
 }
 
 export function QualityGauge({

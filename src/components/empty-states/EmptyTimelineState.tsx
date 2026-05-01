@@ -17,7 +17,7 @@ export function EmptyTimelineState({ projectId, onCreateFeature }: EmptyTimeline
     <div className="flex-1 flex items-center justify-center p-8">
       <div className="text-center max-w-md">
         <div className="w-16 h-16 mx-auto mb-6 rounded-full bg-[rgba(37,99,235,0.15)] flex items-center justify-center">
-          <Calendar className="w-8 h-8 text-[var(--ds-text-brand,var(--ds-text-brand, #2563eb))]" />
+          <Calendar className="w-8 h-8 text-[var(--ds-text-brand, #2563eb)]" />
         </div>
 
         <h2 className="text-xl font-semibold mb-2">No Timeline Data</h2>
@@ -30,7 +30,7 @@ export function EmptyTimelineState({ projectId, onCreateFeature }: EmptyTimeline
         <div className="flex items-center justify-center gap-3">
           <Button 
             onClick={onCreateFeature}
-            className="bg-[var(--ds-text-brand,var(--ds-text-brand, #2563eb))] hover:bg-[var(--ds-background-brand-bold-hovered,var(--ds-background-brand-bold-hovered, #1d4ed8))] text-white"
+            className="bg-[var(--ds-text-brand, #2563eb)] hover:bg-[var(--ds-background-brand-bold-hovered, #1d4ed8)] text-white"
           >
             <Plus className="w-4 h-4 mr-2" />
             Create Feature

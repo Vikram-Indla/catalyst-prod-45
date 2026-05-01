@@ -80,7 +80,7 @@ export function TemplateCard({
       className={`
         group cursor-pointer transition-all duration-200
         hover:shadow-md hover:border-slate-300
-        ${isSystemTemplate ? 'bg-[var(--ds-background-selected,var(--ds-background-selected, #eff6ff))] border-[#dbeafe]' : 'bg-white border-slate-200'}
+        ${isSystemTemplate ? 'bg-[var(--ds-background-selected, #eff6ff)] border-[#dbeafe]' : 'bg-white border-slate-200'}
       `}
       onClick={onView}
     >
@@ -184,7 +184,7 @@ export function TemplateCard({
           <Button
             size="sm"
             onClick={(e) => { e.stopPropagation(); onApply(); }}
-            className="bg-[var(--ds-text-brand,var(--ds-text-brand, #2563eb))] hover:bg-[var(--ds-background-brand-bold-hovered,var(--ds-background-brand-bold-hovered, #1d4ed8))] text-white"
+            className="bg-[var(--ds-text-brand, #2563eb)] hover:bg-[var(--ds-background-brand-bold-hovered, #1d4ed8)] text-white"
           >
             <Play className="w-3.5 h-3.5 mr-1.5" />
             Apply

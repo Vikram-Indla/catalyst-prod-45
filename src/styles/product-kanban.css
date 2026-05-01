@@ -217,7 +217,7 @@
   font-size: 13px;
   font-weight: 600;
   font-family: var(--pk-font-body);
-  color: var(--ds-surface, var(--ds-surface, #fff));
+  color: var(--ds-surface, #fff);
   background: var(--pk-primary);
   border: none;
   border-radius: var(--pk-r-md);

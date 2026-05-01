@@ -32,14 +32,14 @@ export default function ProjectBoardCanvasPage() {
   if (isLoading) {
     return (
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2" style={{ borderColor: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))' }} />
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2" style={{ borderColor: 'var(--ds-text-brand, #2563EB)' }} />
       </div>
     );
   }
 
   if (!project) {
     return (
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #64748B))', fontSize: 13 }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', color: 'var(--ds-text-subtlest, #64748B)', fontSize: 13 }}>
         Project not found
       </div>
     );

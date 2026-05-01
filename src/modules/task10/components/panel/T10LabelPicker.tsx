@@ -9,14 +9,14 @@ const DEFAULT_LABELS: string[] = [];
 export function getLabelColor(label: string): { bg: string; color: string; border: string } {
   const normalized = label.toUpperCase();
   switch (normalized) {
-    case 'CRITICAL': return { bg: 'var(--ds-background-danger, var(--ds-background-danger, #fef2f2))', color: 'var(--ds-text-danger, var(--ds-text-danger, #dc2626))', border: '#fecaca' };
+    case 'CRITICAL': return { bg: 'var(--ds-background-danger, #fef2f2)', color: 'var(--ds-text-danger, #dc2626)', border: '#fecaca' };
     case 'HIGH': return { bg: '#fff7ed', color: '#ea580c', border: '#fed7aa' };
-    case 'MEDIUM': return { bg: '#fffbeb', color: 'var(--ds-text-warning, var(--ds-text-warning, #d97706))', border: '#fde68a' };
-    case 'LOW': return { bg: '#f0fdf4', color: 'var(--ds-text-success, var(--ds-text-success, #16a34a))', border: '#bbf7d0' };
-    case 'BLOCKED': return { bg: 'var(--ds-background-danger, var(--ds-background-danger, #fef2f2))', color: '#b91c1c', border: '#fecaca' };
+    case 'MEDIUM': return { bg: '#fffbeb', color: 'var(--ds-text-warning, #d97706)', border: '#fde68a' };
+    case 'LOW': return { bg: '#f0fdf4', color: 'var(--ds-text-success, #16a34a)', border: '#bbf7d0' };
+    case 'BLOCKED': return { bg: 'var(--ds-background-danger, #fef2f2)', color: '#b91c1c', border: '#fecaca' };
     case 'NEEDS-REVIEW': return { bg: '#f5f3ff', color: '#7c3aed', border: '#ddd6fe' };
-    case 'HR': return { bg: 'var(--ds-background-selected, var(--ds-background-selected, #eff6ff))', color: 'var(--ds-text-brand, var(--ds-text-brand, #2563eb))', border: '#bfdbfe' };
-    case 'BUG FIX': return { bg: 'var(--ds-background-danger, var(--ds-background-danger, #fef2f2))', color: 'var(--ds-text-danger, var(--ds-text-danger, #dc2626))', border: '#fecaca' };
+    case 'HR': return { bg: 'var(--ds-background-selected, #eff6ff)', color: 'var(--ds-text-brand, #2563eb)', border: '#bfdbfe' };
+    case 'BUG FIX': return { bg: 'var(--ds-background-danger, #fef2f2)', color: 'var(--ds-text-danger, #dc2626)', border: '#fecaca' };
     case 'FEATURE': return { bg: '#ecfdf5', color: '#059669', border: '#a7f3d0' };
     case 'DOCUMENTATION': return { bg: '#f0f9ff', color: '#0284c7', border: '#bae6fd' };
     default: {
@@ -163,7 +163,7 @@ export function T10LabelPicker({ currentLabel, onSelect, isReadOnly = false }: T
         left: position.left,
         width: position.width,
         zIndex: 100001,
-        background: 'var(--ds-surface, var(--ds-surface, #ffffff))',
+        background: 'var(--ds-surface, #ffffff)',
         borderRadius: '8px',
         boxShadow: '0 10px 25px -5px rgba(0,0,0,0.15), 0 4px 6px -2px rgba(0,0,0,0.08)',
         border: '1px solid #e5e7eb',
@@ -234,7 +234,7 @@ export function T10LabelPicker({ currentLabel, onSelect, isReadOnly = false }: T
               borderRadius: '6px',
               cursor: 'pointer',
               fontSize: '14px',
-              color: 'var(--ds-text-success, var(--ds-text-success, #16a34a))',
+              color: 'var(--ds-text-success, #16a34a)',
               fontWeight: 500,
             }}
           >

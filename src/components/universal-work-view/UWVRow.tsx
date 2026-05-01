@@ -138,9 +138,9 @@ function renderCell(
               }}
             >
               {isExpanded ? (
-                <ChevronDown size={14} color="var(--ds-text-subtlest, var(--ds-text-subtlest, #6B778C))" />
+                <ChevronDown size={14} color="var(--ds-text-subtlest, #6B778C)" />
               ) : (
-                <ChevronRight size={14} color="var(--ds-text-subtlest, var(--ds-text-subtlest, #6B778C))" />
+                <ChevronRight size={14} color="var(--ds-text-subtlest, #6B778C)" />
               )}
             </button>
           ) : (
@@ -354,7 +354,7 @@ export const UWVRow = React.memo(function UWVRow({
         gridTemplateColumns: gridTemplate,
         height: JIRA_ROW_HEIGHT,
         boxShadow: isSelected ? selectedShadow : restShadow,
-        backgroundColor: isSelected ? 'var(--ds-surface-sunken, var(--ds-surface-sunken, #F4F5F7))' : 'var(--ds-surface, var(--ds-surface, #FFFFFF))',
+        backgroundColor: isSelected ? 'var(--ds-surface-sunken, #F4F5F7)' : 'var(--ds-surface, #FFFFFF)',
         cursor: 'pointer',
         transition: 'background-color 80ms ease',
       }}
@@ -365,7 +365,7 @@ export const UWVRow = React.memo(function UWVRow({
       }}
       onMouseLeave={(e) => {
         if (!isSelected) {
-          (e.currentTarget as HTMLDivElement).style.backgroundColor = 'var(--ds-surface, var(--ds-surface, #FFFFFF))';
+          (e.currentTarget as HTMLDivElement).style.backgroundColor = 'var(--ds-surface, #FFFFFF)';
         }
       }}
     >

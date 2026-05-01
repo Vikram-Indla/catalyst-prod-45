@@ -86,7 +86,7 @@ function severityAppearance(value: string): React.ComponentProps<typeof Lozenge>
    WCAG AA for body text. */
 function Empty({ text = 'None' }: { text?: string }) {
   return (
-    <span style={{ fontSize: 14, color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #6B778C))' }}>{text}</span>
+    <span style={{ fontSize: 14, color: 'var(--ds-text-subtlest, #6B778C)' }}>{text}</span>
   );
 }
 

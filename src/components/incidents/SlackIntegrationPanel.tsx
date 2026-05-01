@@ -13,14 +13,14 @@ export function SlackIntegrationPanel({ incident }: SlackIntegrationPanelProps) 
     <div className="bg-white border border-[#E8E8E8] rounded-lg p-4">
       <div className="flex items-center gap-2 mb-3">
         <MessageSquare className="w-4 h-4 text-[#8C8C8C]" />
-        <h4 className="text-sm font-semibold text-[var(--ds-text,var(--ds-text, #172B4D))]">Collaboration</h4>
+        <h4 className="text-sm font-semibold text-[var(--ds-text, #172B4D)]">Collaboration</h4>
       </div>
 
       {hasChannel ? (
         <div className="space-y-2">
           <div className="flex items-center justify-between">
             <span className="text-sm font-medium text-[#5C5C5C]">{incident.slackChannel}</span>
-            <Button variant="ghost" size="sm" className="h-7 text-[var(--ds-text-brand,var(--ds-text-brand, #2563eb))] hover:text-[var(--ds-background-brand-bold-hovered,var(--ds-background-brand-bold-hovered, #1d4ed8))]">
+            <Button variant="ghost" size="sm" className="h-7 text-[var(--ds-text-brand, #2563eb)] hover:text-[var(--ds-background-brand-bold-hovered, #1d4ed8)]">
               <ExternalLink className="w-3.5 h-3.5 mr-1" />
               Open Slack
             </Button>

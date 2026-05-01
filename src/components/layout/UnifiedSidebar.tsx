@@ -350,10 +350,10 @@ export function UnifiedSidebar({
                         "w-5 h-5 flex items-center justify-center rounded transition-opacity",
                         starred ? "opacity-100" : "opacity-0 group-hover:opacity-100"
                       )}
-                      style={{ color: starred ? 'var(--ds-text-warning, var(--ds-text-warning, #f59e0b))' : 'var(--text-4)' }}
+                      style={{ color: starred ? 'var(--ds-text-warning, #f59e0b)' : 'var(--text-4)' }}
                       onMouseEnter={(e) => {
                         if (!starred) {
-                          e.currentTarget.style.color = 'var(--ds-text-warning, var(--ds-text-warning, #f59e0b))';
+                          e.currentTarget.style.color = 'var(--ds-text-warning, #f59e0b)';
                           e.currentTarget.style.background = 'rgba(245, 158, 11, 0.1)';
                         }
                       }}

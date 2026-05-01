@@ -70,7 +70,7 @@ export const WorkstreamDropdown = memo(function WorkstreamDropdown({ task, works
 
   const selectedWorkstream = workstreams.find(w => w.id === task.workstream_id);
   const displayName = selectedWorkstream?.name || task.workstream_name || 'None';
-  const displayColor = selectedWorkstream?.color || WORKSTREAM_COLORS[displayName] || workstreamColors.hex || 'var(--ds-text-subtlest, var(--ds-text-subtlest, #94a3b8))';
+  const displayColor = selectedWorkstream?.color || WORKSTREAM_COLORS[displayName] || workstreamColors.hex || 'var(--ds-text-subtlest, #94a3b8)';
 
   return (
     <td style={{ width }} onClick={(e) => e.stopPropagation()}>
@@ -129,7 +129,7 @@ export const WorkstreamDropdown = memo(function WorkstreamDropdown({ task, works
             {/* None option */}
             <WorkstreamDropdownItem
               value="None"
-              color="var(--ds-text-subtlest, var(--ds-text-subtlest, #94a3b8))"
+              color="var(--ds-text-subtlest, #94a3b8)"
               isSelected={!task.workstream_id}
               onClick={() => { onUpdate(task.id, 'workstream_id', null); setIsOpen(false); }}
             />

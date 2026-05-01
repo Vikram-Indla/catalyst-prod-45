@@ -188,7 +188,7 @@ export function useTeamMembers() {
   return useMemo(() => {
     if (!profiles) return [];
     
-    const colors = ['var(--ds-text-brand, var(--ds-text-brand, #2563eb))', '#0d9488', 'var(--ds-text-brand, var(--ds-text-brand, #3b82f6))', '#8b5cf6', 'var(--ds-text-success, var(--ds-text-success, #22c55e))', 'var(--ds-text-warning, var(--ds-text-warning, #f59e0b))'];
+    const colors = ['var(--ds-text-brand, #2563eb)', '#0d9488', 'var(--ds-text-brand, #3b82f6)', '#8b5cf6', 'var(--ds-text-success, #22c55e)', 'var(--ds-text-warning, #f59e0b)'];
     
     return profiles.map((p, idx) => {
       const name = p.full_name || 'Unknown';

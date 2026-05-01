@@ -102,7 +102,7 @@ function ReleaseItemsRows({
           alignItems: 'center',
           justifyContent: 'center',
           padding: '12px 0',
-          background: 'var(--ds-surface-sunken, var(--ds-surface-sunken, #FAFBFC))',
+          background: 'var(--ds-surface-sunken, #FAFBFC)',
         }}
       >
         <Spinner size="small" />
@@ -118,7 +118,7 @@ function ReleaseItemsRows({
           fontSize: 12,
           color: '#8590A2',
           fontStyle: 'italic',
-          background: 'var(--ds-surface-sunken, var(--ds-surface-sunken, #FAFBFC))',
+          background: 'var(--ds-surface-sunken, #FAFBFC)',
         }}
       >
         No items in this release.
@@ -138,10 +138,10 @@ function ReleaseItemsRows({
             height: 36,
             maxHeight: 36,
             padding: '0 16px',
-            background: 'var(--ds-surface-sunken, var(--ds-surface-sunken, #FAFBFC))',
+            background: 'var(--ds-surface-sunken, #FAFBFC)',
             borderBottom: '1px solid #F1F2F4',
             fontSize: 13,
-            color: 'var(--ds-text, var(--ds-text, #172B4D))',
+            color: 'var(--ds-text, #172B4D)',
           }}
         >
           <div /> {/* indent column */}
@@ -196,7 +196,7 @@ function ReleaseItemsRows({
                   width: 24,
                   height: 24,
                   borderRadius: '50%',
-                  background: 'var(--ds-border, var(--ds-border, #DFE1E6))',
+                  background: 'var(--ds-border, #DFE1E6)',
                 }}
               />
             )}
@@ -264,7 +264,7 @@ function ReleaseRow({
           style={{
             fontSize: 13,
             fontWeight: 650,
-            color: 'var(--ds-text, var(--ds-text, #172B4D))',
+            color: 'var(--ds-text, #172B4D)',
             overflow: 'hidden',
             textOverflow: 'ellipsis',
             whiteSpace: 'nowrap',
@@ -284,7 +284,7 @@ function ReleaseRow({
               flex: 1,
               height: 6,
               borderRadius: 3,
-              background: 'var(--ds-border, var(--ds-border, #DFE1E6))',
+              background: 'var(--ds-border, #DFE1E6)',
               overflow: 'hidden',
             }}
           >
@@ -390,7 +390,7 @@ export function ReleaseHealthUWV({ projectId, projectKey, onClose }: Props) {
               fontFamily: 'var(--cp-font-heading)' + FONT_STACK,
               fontSize: 16,
               fontWeight: 650,
-              color: 'var(--ds-text, var(--ds-text, #172B4D))',
+              color: 'var(--ds-text, #172B4D)',
               lineHeight: 1.25,
             }}
           >
@@ -421,7 +421,7 @@ export function ReleaseHealthUWV({ projectId, projectKey, onClose }: Props) {
               alignItems: 'center',
               color: '#42526E',
             }}
-            onMouseEnter={(e) => (e.currentTarget.style.background = 'var(--ds-surface-sunken, var(--ds-surface-sunken, #F4F5F7))')}
+            onMouseEnter={(e) => (e.currentTarget.style.background = 'var(--ds-surface-sunken, #F4F5F7)')}
             onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
           >
             <Settings size={16} />
@@ -440,7 +440,7 @@ export function ReleaseHealthUWV({ projectId, projectKey, onClose }: Props) {
               alignItems: 'center',
               color: '#42526E',
             }}
-            onMouseEnter={(e) => (e.currentTarget.style.background = 'var(--ds-surface-sunken, var(--ds-surface-sunken, #F4F5F7))')}
+            onMouseEnter={(e) => (e.currentTarget.style.background = 'var(--ds-surface-sunken, #F4F5F7)')}
             onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
           >
             <X size={18} />
@@ -456,7 +456,7 @@ export function ReleaseHealthUWV({ projectId, projectKey, onClose }: Props) {
           alignItems: 'center',
           height: 36,
           padding: '0 16px',
-          background: 'var(--ds-surface-sunken, var(--ds-surface-sunken, #F4F5F7))',
+          background: 'var(--ds-surface-sunken, #F4F5F7)',
           borderBottom: '1px solid #DFE1E6',
           fontSize: 11,
           fontWeight: 700,

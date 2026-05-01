@@ -30,7 +30,7 @@ const STATUS_MAP: Record<string, ColorCategory> = {
 };
 
 const COLORS: Record<ColorCategory, { bg: string; text: string }> = {
-  grey:  { bg: 'var(--ds-border, var(--ds-border, #DFE1E6))', text: 'var(--ds-text, var(--ds-text, #253858))' },
+  grey:  { bg: 'var(--ds-border, #DFE1E6)', text: 'var(--ds-text, #253858)' },
   blue:  { bg: '#DEEBFF', text: '#0747A6' },
   green: { bg: '#E3FCEF', text: '#006644' },
 };

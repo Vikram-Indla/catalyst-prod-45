@@ -34,7 +34,7 @@ export function WorkCell({ issueType, issueKey, summary, onClick }: WorkCellProp
         <JiraIssueTypeIcon type={issueType || 'task'} size={16} />
       </span>
       {issueKey && (
-        <span style={{ color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #6B778C))', fontSize: 12, flexShrink: 0 }}>{issueKey}</span>
+        <span style={{ color: 'var(--ds-text-subtlest, #6B778C)', fontSize: 12, flexShrink: 0 }}>{issueKey}</span>
       )}
       <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
         {summary}

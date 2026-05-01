@@ -139,7 +139,7 @@ export function CycleCard({ cycle, onEdit, onDuplicate, onDelete }: CycleCardPro
             className="h-full rounded-full transition-all"
             style={{ 
               width: `${cycle.progress}%`,
-              backgroundColor: cycle.progress === 100 ? '#059669' : 'var(--ds-text-brand, var(--ds-text-brand, #2563eb))'
+              backgroundColor: cycle.progress === 100 ? '#059669' : 'var(--ds-text-brand, #2563eb)'
             }}
           />
         </div>

@@ -6,15 +6,15 @@ import type { RoadmapDemand } from '../types/roadmap';
 import { format, parseISO } from 'date-fns';
 
 const STATUS_PRINT_COLORS: Record<string, { bg: string; c: string }> = {
-  new_request: { bg: 'rgba(59,130,246,0.12)', c: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))' },
+  new_request: { bg: 'rgba(59,130,246,0.12)', c: 'var(--ds-text-brand, #2563EB)' },
   draft: { bg: 'rgba(115,115,115,0.12)', c: '#737373' },
-  submitted: { bg: 'rgba(59,130,246,0.12)', c: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))' },
-  in_review: { bg: 'rgba(245,158,11,0.12)', c: 'var(--ds-text-warning, var(--ds-text-warning, #D97706))' },
+  submitted: { bg: 'rgba(59,130,246,0.12)', c: 'var(--ds-text-brand, #2563EB)' },
+  in_review: { bg: 'rgba(245,158,11,0.12)', c: 'var(--ds-text-warning, #D97706)' },
   approved: { bg: 'rgba(34,197,94,0.12)', c: '#15803D' },
-  rejected: { bg: 'rgba(239,68,68,0.12)', c: 'var(--ds-text-danger, var(--ds-text-danger, #DC2626))' },
+  rejected: { bg: 'rgba(239,68,68,0.12)', c: 'var(--ds-text-danger, #DC2626)' },
   in_progress: { bg: 'rgba(139,92,246,0.12)', c: '#7C3AED' },
   completed: { bg: 'rgba(21,128,61,0.12)', c: '#15803D' },
-  cancelled: { bg: 'rgba(220,38,38,0.12)', c: 'var(--ds-text-danger, var(--ds-text-danger, #DC2626))' },
+  cancelled: { bg: 'rgba(220,38,38,0.12)', c: 'var(--ds-text-danger, #DC2626)' },
 };
 
 function fdf(dateStr: string | null): string {

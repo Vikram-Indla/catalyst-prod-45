@@ -59,7 +59,7 @@ const pageBtnStyle = (disabled: boolean): React.CSSProperties => ({
   fontSize: 13,
   border: '1px solid #DFE1E6',
   borderRadius: 3,
-  background: disabled ? 'var(--ds-surface-sunken, var(--ds-surface-sunken, #F4F5F7))' : 'var(--ds-surface, var(--ds-surface, #FFFFFF))',
+  background: disabled ? 'var(--ds-surface-sunken, #F4F5F7)' : 'var(--ds-surface, #FFFFFF)',
   color: disabled ? '#A5ADBA' : '#42526E',
   cursor: disabled ? 'default' : 'pointer',
   fontFamily: 'inherit',
@@ -1238,7 +1238,7 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
               <span
                 style={{
                   padding: '1px 8px',
-                  background: 'var(--ds-border, var(--ds-border, #DFE1E6))',
+                  background: 'var(--ds-border, #DFE1E6)',
                   borderRadius: 10,
                   color: '#42526E',
                   fontSize: 11,
@@ -1249,7 +1249,7 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
                 {g.rows.length}
               </span>
               {g.meta && (
-                <span style={{ fontWeight: 500, color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #6B778C))', letterSpacing: 0, textTransform: 'none' }}>
+                <span style={{ fontWeight: 500, color: 'var(--ds-text-subtlest, #6B778C)', letterSpacing: 0, textTransform: 'none' }}>
                   {g.meta}
                 </span>
               )}
@@ -1415,7 +1415,7 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
         fontSize: d.cellFontSize,
         color: '#292A2E',
         outline: 'none',
-        background: 'var(--ds-surface, var(--ds-surface, #FFFFFF))',
+        background: 'var(--ds-surface, #FFFFFF)',
         border: '1px solid #DFE1E6',
         // Apr 27, 2026 — jira-compare audit P2 #10: Jira's outer table
         // card uses 8px border-radius; Catalyst was 6px. Bumped to
@@ -1524,7 +1524,7 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
                       )}
                       {cell.content}
                       {meta?.sortable && isSorted && (
-                        <span aria-hidden="true" style={{ color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #6B778C))' }}>
+                        <span aria-hidden="true" style={{ color: 'var(--ds-text-subtlest, #6B778C)' }}>
                           {sortOrder === 'ASC' ? '▲' : '▼'}
                         </span>
                       )}
@@ -1624,7 +1624,7 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
             borderTop: '1px solid #DFE1E6',
             fontSize: 13,
             color: '#42526E',
-            background: 'var(--ds-surface, var(--ds-surface, #FFFFFF))',
+            background: 'var(--ds-surface, #FFFFFF)',
           }}>
             <button
               type="button"
@@ -1656,7 +1656,7 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
             left: ctxMenu.x,
             zIndex: 1100,
             minWidth: 200,
-            background: 'var(--ds-surface, var(--ds-surface, #FFFFFF))',
+            background: 'var(--ds-surface, #FFFFFF)',
             border: '1px solid #DFE1E6',
             borderRadius: 4,
             boxShadow: '0 1px 1px rgba(9,30,66,0.25), 0 8px 24px -4px rgba(9,30,66,0.18)',
@@ -1699,7 +1699,7 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
                     fontFamily: 'inherit',
                     borderRadius: 3,
                   }}
-                  onMouseEnter={(e) => { if (!disabled) (e.currentTarget as HTMLElement).style.background = a.danger ? '#FFEBE6' : 'var(--ds-surface-sunken, var(--ds-surface-sunken, #F4F5F7))'; }}
+                  onMouseEnter={(e) => { if (!disabled) (e.currentTarget as HTMLElement).style.background = a.danger ? '#FFEBE6' : 'var(--ds-surface-sunken, #F4F5F7)'; }}
                   onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
                 >
                   {a.icon}
@@ -1811,7 +1811,7 @@ function ColumnManagerTrigger<TRow>({
           justifyContent: 'center',
           border: 'none',
           background: 'transparent',
-          color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #6B778C))',
+          color: 'var(--ds-text-subtlest, #6B778C)',
           cursor: 'pointer',
           borderRadius: 3,
         }}
@@ -1831,7 +1831,7 @@ function ColumnManagerTrigger<TRow>({
             right: anchor.right,
             zIndex: 1000,
             minWidth: 260,
-            background: 'var(--ds-surface, var(--ds-surface, #FFFFFF))',
+            background: 'var(--ds-surface, #FFFFFF)',
             border: '1px solid #DFE1E6',
             borderRadius: 4,
             boxShadow: '0 1px 1px rgba(9,30,66,0.25), 0 8px 24px -4px rgba(9,30,66,0.18)',
@@ -1844,7 +1844,7 @@ function ColumnManagerTrigger<TRow>({
           }}
         >
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '2px 4px 6px' }}>
-            <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #6B778C))' }}>
+            <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--ds-text-subtlest, #6B778C)' }}>
               Columns
             </span>
             <button
@@ -1876,7 +1876,7 @@ function ColumnManagerTrigger<TRow>({
               value={search}
               onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearch(e.target.value)}
               elemBeforeInput={
-                <span style={{ paddingInlineStart: 8, color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #6B778C))', display: 'flex', alignItems: 'center' }}>
+                <span style={{ paddingInlineStart: 8, color: 'var(--ds-text-subtlest, #6B778C)', display: 'flex', alignItems: 'center' }}>
                   <SearchIcon size={12} />
                 </span>
               }
@@ -1904,7 +1904,7 @@ function ColumnManagerTrigger<TRow>({
                     fontSize: 14,
                     color: '#292A2E',
                   }}
-                  onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.background = 'var(--ds-surface-sunken, var(--ds-surface-sunken, #F4F5F7))')}
+                  onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.background = 'var(--ds-surface-sunken, #F4F5F7)')}
                   onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.background = 'transparent')}
                 >
                   <AkCheckbox

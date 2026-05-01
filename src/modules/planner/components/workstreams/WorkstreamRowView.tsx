@@ -138,7 +138,7 @@ export const WorkstreamRow: React.FC<{
               justifyContent: 'center',
               fontSize: '16px',
               fontWeight: 700,
-              color: 'var(--ds-surface, var(--ds-surface, #ffffff))',
+              color: 'var(--ds-surface, #ffffff)',
               flexShrink: 0,
             }}
           >
@@ -212,7 +212,7 @@ export const WorkstreamRow: React.FC<{
                     justifyContent: 'center',
                     fontSize: '11px',
                     fontWeight: 600,
-                    color: 'var(--ds-surface, var(--ds-surface, #ffffff))',
+                    color: 'var(--ds-surface, #ffffff)',
                     flexShrink: 0,
                   }}
                 >

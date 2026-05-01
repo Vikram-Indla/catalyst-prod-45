@@ -122,7 +122,7 @@ export function CatalystTitleEditor({ issue, onTitleChange }: CatalystTitleEdito
         position: 'sticky',
         top: 0,
         zIndex: 10,
-        background: 'var(--ds-surface, var(--ds-surface, #FFFFFF))',
+        background: 'var(--ds-surface, #FFFFFF)',
         paddingTop: 4,
       }}
     >

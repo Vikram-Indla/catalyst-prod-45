@@ -39,12 +39,12 @@ interface PlannerCreateTeamModalProps {
 const EMOJI_OPTIONS = ['📈', '⚙️', '🛡️', '🎯', '💡', '🚀', '📊', '🔧', '📝', '✨', '🔥', '💼'];
 
 const COLOR_OPTIONS = [
-  { value: 'var(--ds-text-brand, var(--ds-text-brand, #2563eb))', label: 'Blue' },
+  { value: 'var(--ds-text-brand, #2563eb)', label: 'Blue' },
   { value: '#0d9488', label: 'Teal' },
   { value: '#7c3aed', label: 'Purple' },
   { value: '#059669', label: 'Green' },
-  { value: 'var(--ds-text-warning, var(--ds-text-warning, #d97706))', label: 'Orange' },
-  { value: 'var(--ds-text-danger, var(--ds-text-danger, #dc2626))', label: 'Red' },
+  { value: 'var(--ds-text-warning, #d97706)', label: 'Orange' },
+  { value: 'var(--ds-text-danger, #dc2626)', label: 'Red' },
   { value: '#4f46e5', label: 'Indigo' },
 ];
 
@@ -56,7 +56,7 @@ export function PlannerCreateTeamModal({
 }: PlannerCreateTeamModalProps) {
   const [name, setName] = useState('');
   const [emoji, setEmoji] = useState('📈');
-  const [color, setColor] = useState('var(--ds-text-brand, var(--ds-text-brand, #2563eb))');
+  const [color, setColor] = useState('var(--ds-text-brand, #2563eb)');
   const [memberIds, setMemberIds] = useState<string[]>([]);
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -73,7 +73,7 @@ export function PlannerCreateTeamModal({
     // Reset form
     setName('');
     setEmoji('📈');
-    setColor('var(--ds-text-brand, var(--ds-text-brand, #2563eb))');
+    setColor('var(--ds-text-brand, #2563eb)');
     setMemberIds([]);
     onClose();
   };

@@ -25,8 +25,8 @@ export function ResourceDrawer({ resource, onClose }: ResourceDrawerProps) {
     'linear-gradient(90deg, #2dd4bf, #0d9488)';
 
   const statusColor = 
-    resource.status === 'critical' ? 'var(--ds-text-danger, var(--ds-text-danger, #ef4444))' :
-    resource.status === 'warning' ? 'var(--ds-text-warning, var(--ds-text-warning, #d97706))' :
+    resource.status === 'critical' ? 'var(--ds-text-danger, #ef4444)' :
+    resource.status === 'warning' ? 'var(--ds-text-warning, #d97706)' :
     '#0d9488';
 
   return (
@@ -153,7 +153,7 @@ export function ResourceDrawer({ resource, onClose }: ResourceDrawerProps) {
               />
               <AttributePill 
                 label={resource.country || 'Unknown'} 
-                color="var(--ds-text-danger, var(--ds-text-danger, #dc2626))"
+                color="var(--ds-text-danger, #dc2626)"
               />
             </div>
           </div>

@@ -55,11 +55,11 @@ export const HEALTH_FROM_PROGRESS = {
 export const STATUS_COLORS: Record<string, string> = {
   'on-track': '#0d9488', // teal
   'completed': '#0d9488', // teal
-  'in-progress': 'var(--ds-text-brand, var(--ds-text-brand, #2563eb))', // brand-primary blue
+  'in-progress': 'var(--ds-text-brand, #2563eb)', // brand-primary blue
   'pending': '#c8ccd0', // secondary-grey
-  'at-risk': 'var(--ds-text-warning, var(--ds-text-warning, #f59e0b))', // amber warning
-  'off-track': 'var(--ds-text-danger, var(--ds-text-danger, #ef4444))', // red danger
-  'blocked': 'var(--ds-text-danger, var(--ds-text-danger, #dc2626))', // dark danger
+  'at-risk': 'var(--ds-text-warning, #f59e0b)', // amber warning
+  'off-track': 'var(--ds-text-danger, #ef4444)', // red danger
+  'blocked': 'var(--ds-text-danger, #dc2626)', // dark danger
 } as const;
 
 // Status labels for display
@@ -75,11 +75,11 @@ export const STATUS_LABELS: Record<string, string> = {
 
 // Theme default colors (used when no color specified)
 export const DEFAULT_THEME_COLORS = [
-  'var(--ds-text-brand, var(--ds-text-brand, #2563eb))', // brand-primary blue
+  'var(--ds-text-brand, #2563eb)', // brand-primary blue
   '#0d9488', // teal
-  'var(--ds-text-brand, var(--ds-text-brand, #60a5fa))', // blue light
+  'var(--ds-text-brand, #60a5fa)', // blue light
   '#6b7280', // gray
-  'var(--ds-background-brand-bold-hovered, var(--ds-background-brand-bold-hovered, #1d4ed8))', // dark blue
+  'var(--ds-background-brand-bold-hovered, #1d4ed8)', // dark blue
 ] as const;
 
 // Maximum progress for over-achievement display

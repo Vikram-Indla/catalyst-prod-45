@@ -11,7 +11,7 @@ interface Props {
 }
 
 const VARIANT_CLASSES = {
-  primary: 'bg-[var(--ds-text-brand,var(--ds-text-brand, #2563EB))] text-white hover:bg-[var(--ds-background-brand-bold-hovered,var(--ds-background-brand-bold-hovered, #1D4ED8))]',
+  primary: 'bg-[var(--ds-text-brand, #2563EB)] text-white hover:bg-[var(--ds-background-brand-bold-hovered, #1D4ED8)]',
   ghost: 'border border-[#C9D3E0] text-[#1E293B] hover:bg-[#F4F7FA]',
   teal: 'border border-[#0D9488] text-[#0D9488] hover:bg-[#F0FDFA]',
 };
@@ -19,8 +19,8 @@ const VARIANT_CLASSES = {
 export function EmptyState({ icon: Icon = Package, title, subtitle, actions, className = '' }: Props) {
   return (
     <div className={`flex flex-col items-center justify-center py-12 ${className}`} aria-live="polite">
-      <div className="w-12 h-12 rounded-xl bg-[var(--ds-surface-sunken,var(--ds-surface-sunken, #F1F5F9))] flex items-center justify-center mb-4">
-        <Icon size={24} className="text-[var(--ds-text-subtlest,var(--ds-text-subtlest, #94A3B8))]" />
+      <div className="w-12 h-12 rounded-xl bg-[var(--ds-surface-sunken, #F1F5F9)] flex items-center justify-center mb-4">
+        <Icon size={24} className="text-[var(--ds-text-subtlest, #94A3B8)]" />
       </div>
       <h3 className="text-[14px] font-bold mb-1" style={{ fontFamily: RH.fontDisplay, color: RH.ink2 }}>{title}</h3>
       {subtitle && <p className="text-[13px] text-[var(--fg-3)] max-w-sm text-center mb-4" style={{ fontFamily: RH.fontBody }}>{subtitle}</p>}
@@ -41,13 +41,13 @@ export function EmptyState({ icon: Icon = Package, title, subtitle, actions, cla
 export function ErrorState({ message, onRetry }: { message: string; onRetry?: () => void }) {
   return (
     <div className="flex flex-col items-center justify-center py-12" aria-live="assertive">
-      <div className="w-12 h-12 rounded-xl bg-[var(--ds-background-danger,var(--ds-background-danger, #FEF2F2))] flex items-center justify-center mb-4">
-        <AlertCircle size={24} className="text-[var(--ds-text-danger,var(--ds-text-danger, #DC2626))]" />
+      <div className="w-12 h-12 rounded-xl bg-[var(--ds-background-danger, #FEF2F2)] flex items-center justify-center mb-4">
+        <AlertCircle size={24} className="text-[var(--ds-text-danger, #DC2626)]" />
       </div>
       <h3 className="text-[14px] font-bold mb-1" style={{ fontFamily: RH.fontDisplay, color: 'var(--sem-danger)' }}>Something went wrong</h3>
-      <p className="text-[13px] text-[var(--ds-text-subtlest,var(--ds-text-subtlest, #64748B))] mb-4">{message}</p>
+      <p className="text-[13px] text-[var(--ds-text-subtlest, #64748B)] mb-4">{message}</p>
       {onRetry && (
-        <button onClick={onRetry} className="h-8 px-3.5 rounded-md text-[13px] font-semibold bg-[var(--ds-text-brand,var(--ds-text-brand, #2563EB))] text-white hover:bg-[var(--ds-background-brand-bold-hovered,var(--ds-background-brand-bold-hovered, #1D4ED8))]">
+        <button onClick={onRetry} className="h-8 px-3.5 rounded-md text-[13px] font-semibold bg-[var(--ds-text-brand, #2563EB)] text-white hover:bg-[var(--ds-background-brand-bold-hovered, #1D4ED8)]">
           Retry
         </button>
       )}

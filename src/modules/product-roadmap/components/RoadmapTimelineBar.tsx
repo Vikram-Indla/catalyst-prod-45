@@ -12,9 +12,9 @@ import type { RoadmapDemand } from '../types/roadmap';
 import { format, parseISO } from 'date-fns';
 
 const TYPE_COLORS: Record<string, string> = {
-  project: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))',
+  project: 'var(--ds-text-brand, #2563EB)',
   enhancement: '#0D9488',
-  improvement: 'var(--ds-text-warning, var(--ds-text-warning, #D97706))',
+  improvement: 'var(--ds-text-warning, #D97706)',
 };
 
 const TYPE_HOVER_GRADIENTS: Record<string, string> = {
@@ -39,7 +39,7 @@ export function RoadmapTimelineBar({ item, left, width, isSelected, onClick, end
   const tooltipTimer = useRef<ReturnType<typeof setTimeout>>();
 
   const typeKey = (item as any).initiative_type_key || 'project';
-  const barColor = TYPE_COLORS[typeKey] || 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))';
+  const barColor = TYPE_COLORS[typeKey] || 'var(--ds-text-brand, #2563EB)';
 
   // Check overdue
   const isOverdue = (() => {
@@ -49,7 +49,7 @@ export function RoadmapTimelineBar({ item, left, width, isSelected, onClick, end
     return new Date(item.end_date) < new Date();
   })();
 
-  const finalColor = isOverdue ? 'var(--ds-text-danger, var(--ds-text-danger, #EF4444))' : barColor;
+  const finalColor = isOverdue ? 'var(--ds-text-danger, #EF4444)' : barColor;
   const hoverGradient = isOverdue ? 'linear-gradient(135deg, var(--ds-text-danger, #EF4444) 0%, #F87171 100%)' : (TYPE_HOVER_GRADIENTS[typeKey] || TYPE_HOVER_GRADIENTS.project);
 
   const formatDate = (d: string | null) => {
@@ -133,7 +133,7 @@ export function RoadmapTimelineBar({ item, left, width, isSelected, onClick, end
               zIndex: 1,
               fontSize: 12,
               fontWeight: 600,
-              color: 'var(--ds-surface, var(--ds-surface, #FFFFFF))',
+              color: 'var(--ds-surface, #FFFFFF)',
               paddingLeft: 10,
               paddingRight: 10,
               lineHeight: '32px',
@@ -153,7 +153,7 @@ export function RoadmapTimelineBar({ item, left, width, isSelected, onClick, end
             style={{
               fontSize: 10,
               fontWeight: 700,
-              color: 'var(--ds-surface, var(--ds-surface, #FFFFFF))',
+              color: 'var(--ds-surface, #FFFFFF)',
               background: 'rgba(255,255,255,0.2)',
               borderRadius: 4,
               padding: '1px 6px',
@@ -189,19 +189,19 @@ export function RoadmapTimelineBar({ item, left, width, isSelected, onClick, end
           <div style={{ fontWeight: 600, fontSize: 13, color: 'var(--fg-1, #0F172A)', marginBottom: 6 }}>
             {item.request_key}: {item.title}
           </div>
-          <div className="flex items-center gap-1.5" style={{ fontSize: 12, color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #64748B))', marginBottom: 4 }}>
+          <div className="flex items-center gap-1.5" style={{ fontSize: 12, color: 'var(--ds-text-subtlest, #64748B)', marginBottom: 4 }}>
             <Calendar className="w-3 h-3" />
             {formatDate(item.start_date)} → {formatDate(item.end_date)}
-            {endDateIsEstimated && <span style={{ fontSize: 10, color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #94A3B8))', fontStyle: 'italic' }}>(est.)</span>}
+            {endDateIsEstimated && <span style={{ fontSize: 10, color: 'var(--ds-text-subtlest, #94A3B8)', fontStyle: 'italic' }}>(est.)</span>}
           </div>
           <div className="flex items-center gap-2">
             <span style={{ width: 6, height: 6, borderRadius: '50%', background: finalColor }} />
-            <span style={{ fontSize: 11, fontWeight: 500, color: 'var(--ds-text-subtle, var(--ds-text-subtle, #334155))' }}>
+            <span style={{ fontSize: 11, fontWeight: 500, color: 'var(--ds-text-subtle, #334155)' }}>
               {(item as any).initiative_type_label || typeKey}
             </span>
             {item.progress > 0 && (
               <div className="flex items-center gap-1 ml-auto">
-                <div style={{ width: 60, height: 4, background: 'var(--ds-surface-sunken, var(--ds-surface-sunken, #F1F5F9))', borderRadius: 999, overflow: 'hidden' }}>
+                <div style={{ width: 60, height: 4, background: 'var(--ds-surface-sunken, #F1F5F9)', borderRadius: 999, overflow: 'hidden' }}>
                   <div style={{ width: `${item.progress}%`, height: '100%', background: finalColor, borderRadius: 999 }} />
                 </div>
                 <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--fg-1, #0F172A)' }}>{item.progress}%</span>

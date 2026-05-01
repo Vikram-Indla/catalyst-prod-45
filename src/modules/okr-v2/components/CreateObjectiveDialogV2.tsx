@@ -107,11 +107,11 @@ export function CreateObjectiveDialogV2({ open, onOpenChange }: CreateObjectiveD
   const isValid = name.trim() && themeId;
 
   const inputClasses = cn(
-    "h-11 bg-white dark:bg-[var(--ds-surface-raised,var(--ds-surface-raised, #1a1a1a))]",
+    "h-11 bg-white dark:bg-[var(--ds-surface-raised, #1a1a1a)]",
     "border-gray-300 dark:border-[#333333]",
     "text-gray-900 dark:text-[#f5f5f5]",
     "placeholder:text-gray-400 dark:placeholder:text-[#525252]",
-    "focus:border-[var(--ds-text-brand,var(--ds-text-brand, #2563eb))] focus:ring-[var(--ds-text-brand,var(--ds-text-brand, #2563eb))]/30"
+    "focus:border-[var(--ds-text-brand, #2563eb)] focus:ring-[var(--ds-text-brand, #2563eb)]/30"
   );
 
   return (
@@ -125,13 +125,13 @@ export function CreateObjectiveDialogV2({ open, onOpenChange }: CreateObjectiveD
         "[&>button]:hidden"
       )}>
         {/* Accent Bar */}
-        <div className="h-1 bg-gradient-to-r from-[var(--ds-text-brand,var(--ds-text-brand, #2563eb))] via-[#0d9488] to-[var(--ds-text-brand,var(--ds-text-brand, #60a5fa))] flex-shrink-0" />
+        <div className="h-1 bg-gradient-to-r from-[var(--ds-text-brand, #2563eb)] via-[#0d9488] to-[var(--ds-text-brand, #60a5fa)] flex-shrink-0" />
 
         {/* Header */}
         <div className="px-6 py-4 border-b border-gray-200 dark:border-[#333333] flex-shrink-0 bg-white dark:bg-[#141414]">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <Target className="h-5 w-5 text-[var(--ds-text-brand,var(--ds-text-brand, #2563eb))]" />
+              <Target className="h-5 w-5 text-[var(--ds-text-brand, #2563eb)]" />
               <h2 className="text-lg font-semibold text-gray-900 dark:text-[#f5f5f5]">
                 Create Objective
               </h2>
@@ -141,7 +141,7 @@ export function CreateObjectiveDialogV2({ open, onOpenChange }: CreateObjectiveD
               className={cn(
                 "p-1.5 rounded-md",
                 "text-gray-400 hover:text-gray-600 dark:text-[#737373] dark:hover:text-[#a3a3a3]",
-                "hover:bg-gray-100 dark:hover:bg-[var(--ds-surface-raised,var(--ds-surface-raised, #1a1a1a))]",
+                "hover:bg-gray-100 dark:hover:bg-[var(--ds-surface-raised, #1a1a1a)]",
                 "transition-colors"
               )}
             >
@@ -179,11 +179,11 @@ export function CreateObjectiveDialogV2({ open, onOpenChange }: CreateObjectiveD
                 placeholder="Describe this objective"
                 rows={3}
                 className={cn(
-                  "bg-white dark:bg-[var(--ds-surface-raised,var(--ds-surface-raised, #1a1a1a))]",
+                  "bg-white dark:bg-[var(--ds-surface-raised, #1a1a1a)]",
                   "border-gray-300 dark:border-[#333333]",
                   "text-gray-900 dark:text-[#f5f5f5]",
                   "placeholder:text-gray-400 dark:placeholder:text-[#525252]",
-                  "focus:border-[var(--ds-text-brand,var(--ds-text-brand, #2563eb))] focus:ring-[var(--ds-text-brand,var(--ds-text-brand, #2563eb))]/30",
+                  "focus:border-[var(--ds-text-brand, #2563eb)] focus:ring-[var(--ds-text-brand, #2563eb)]/30",
                   "resize-y"
                 )}
               />
@@ -198,7 +198,7 @@ export function CreateObjectiveDialogV2({ open, onOpenChange }: CreateObjectiveD
                 <SelectTrigger className={inputClasses}>
                   <SelectValue placeholder={themes?.length ? "Select theme" : "No themes available"} />
                 </SelectTrigger>
-                <SelectContent className="z-[400] bg-white dark:bg-[var(--ds-surface-raised,var(--ds-surface-raised, #1a1a1a))] border-gray-200 dark:border-[#333333]">
+                <SelectContent className="z-[400] bg-white dark:bg-[var(--ds-surface-raised, #1a1a1a)] border-gray-200 dark:border-[#333333]">
                   {themes?.filter(theme => theme.id).map((theme) => (
                     <SelectItem key={theme.id} value={theme.id}>
                       {theme.name}
@@ -224,7 +224,7 @@ export function CreateObjectiveDialogV2({ open, onOpenChange }: CreateObjectiveD
                   <SelectTrigger className={inputClasses}>
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent className="z-[400] bg-white dark:bg-[var(--ds-surface-raised,var(--ds-surface-raised, #1a1a1a))] border-gray-200 dark:border-[#333333]">
+                  <SelectContent className="z-[400] bg-white dark:bg-[var(--ds-surface-raised, #1a1a1a)] border-gray-200 dark:border-[#333333]">
                     <SelectItem value="pending">Pending</SelectItem>
                     <SelectItem value="in_progress">In Progress</SelectItem>
                     <SelectItem value="on_track">On Track</SelectItem>
@@ -243,7 +243,7 @@ export function CreateObjectiveDialogV2({ open, onOpenChange }: CreateObjectiveD
                   <SelectTrigger className={inputClasses}>
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent className="z-[400] bg-white dark:bg-[var(--ds-surface-raised,var(--ds-surface-raised, #1a1a1a))] border-gray-200 dark:border-[#333333]">
+                  <SelectContent className="z-[400] bg-white dark:bg-[var(--ds-surface-raised, #1a1a1a)] border-gray-200 dark:border-[#333333]">
                     <SelectItem value="good">Good</SelectItem>
                     <SelectItem value="fair">Fair</SelectItem>
                     <SelectItem value="poor">Poor</SelectItem>
@@ -288,7 +288,7 @@ export function CreateObjectiveDialogV2({ open, onOpenChange }: CreateObjectiveD
                 <SelectTrigger className={inputClasses}>
                   <SelectValue placeholder="Select owner" />
                 </SelectTrigger>
-                <SelectContent className="z-[400] bg-white dark:bg-[var(--ds-surface-raised,var(--ds-surface-raised, #1a1a1a))] border-gray-200 dark:border-[#333333]">
+                <SelectContent className="z-[400] bg-white dark:bg-[var(--ds-surface-raised, #1a1a1a)] border-gray-200 dark:border-[#333333]">
                   <SelectItem value="__unassigned__">Unassigned</SelectItem>
                   {users?.filter(user => user.id).map((user) => (
                     <SelectItem key={user.id} value={user.id}>
@@ -310,11 +310,11 @@ export function CreateObjectiveDialogV2({ open, onOpenChange }: CreateObjectiveD
                 placeholder="Add notes..."
                 rows={2}
                 className={cn(
-                  "bg-white dark:bg-[var(--ds-surface-raised,var(--ds-surface-raised, #1a1a1a))]",
+                  "bg-white dark:bg-[var(--ds-surface-raised, #1a1a1a)]",
                   "border-gray-300 dark:border-[#333333]",
                   "text-gray-900 dark:text-[#f5f5f5]",
                   "placeholder:text-gray-400 dark:placeholder:text-[#525252]",
-                  "focus:border-[var(--ds-text-brand,var(--ds-text-brand, #2563eb))] focus:ring-[var(--ds-text-brand,var(--ds-text-brand, #2563eb))]/30",
+                  "focus:border-[var(--ds-text-brand, #2563eb)] focus:ring-[var(--ds-text-brand, #2563eb)]/30",
                   "resize-y"
                 )}
               />
@@ -322,7 +322,7 @@ export function CreateObjectiveDialogV2({ open, onOpenChange }: CreateObjectiveD
           </div>
 
           {/* Footer */}
-          <div className="flex items-center justify-between px-6 py-4 border-t border-gray-200 dark:border-[#333333] bg-gray-50 dark:bg-[var(--ds-surface-raised,var(--ds-surface-raised, #1a1a1a))]">
+          <div className="flex items-center justify-between px-6 py-4 border-t border-gray-200 dark:border-[#333333] bg-gray-50 dark:bg-[var(--ds-surface-raised, #1a1a1a)]">
             <Button
               type="button"
               variant="ghost"
@@ -334,7 +334,7 @@ export function CreateObjectiveDialogV2({ open, onOpenChange }: CreateObjectiveD
             <Button
               type="submit"
               disabled={!isValid || createObjective.isPending}
-              className="bg-[var(--ds-text-brand,var(--ds-text-brand, #2563eb))] hover:bg-[var(--ds-background-brand-bold-hovered,var(--ds-background-brand-bold-hovered, #1d4ed8))] text-white px-6"
+              className="bg-[var(--ds-text-brand, #2563eb)] hover:bg-[var(--ds-background-brand-bold-hovered, #1d4ed8)] text-white px-6"
             >
               {createObjective.isPending ? 'Creating...' : 'Create Objective'}
             </Button>

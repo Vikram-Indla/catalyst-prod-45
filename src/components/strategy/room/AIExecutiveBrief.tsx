@@ -69,7 +69,7 @@ const TOKENS = `
     overflow: visible !important;
     height: auto !important;
     max-height: none !important;
-    background: var(--ds-surface, var(--ds-surface, #fff)) !important;
+    background: var(--ds-surface, #fff) !important;
   }
   [data-sri] { background:white !important; }
   [data-sri], [data-sri] * {
@@ -219,7 +219,7 @@ export function AIExecutiveBrief({ open, onClose, onDownload }: Props) {
         <header style={{ background: "var(--sri-bg)", border: "1px solid var(--sri-ai-bdr)", borderRadius: "var(--sri-r4)", padding: "20px 28px", margin: "0 32px", ...F(14), justifyContent: "space-between" }}>
           <div style={F(14) as React.CSSProperties}>
             <div style={{ width: 40, height: 40, borderRadius: "50%", background: "linear-gradient(135deg, var(--sri-ai-d), var(--sri-ai))", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--ds-surface, var(--ds-surface, var(--ds-surface, #fff)))" strokeWidth="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10" /></svg>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--ds-surface, #fff)" strokeWidth="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10" /></svg>
             </div>
             <div>
               <div style={{ ...S(20), color: "var(--sri-ink)" }}>Executive Brief</div>
@@ -391,7 +391,7 @@ export function AIExecutiveBrief({ open, onClose, onDownload }: Props) {
               {/* FIX #16 — export text: no underline */}
               <div style={{ ...F(8) as React.CSSProperties, justifyContent: "space-between", padding: "12px 20px", borderTop: "1px solid var(--sri-bdr)", background: "var(--sri-ai-bg)" }}>
                 <span style={{ fontSize: 13, fontWeight: 500, color: "var(--sri-ai-d)", textDecoration: "none" }}>Ready to act? → Export Decision Pack</span>
-                <button style={{ height: 30, padding: "0 14px", fontFamily: 'var(--cp-font-body)', fontSize: 12, fontWeight: 600, borderRadius: "var(--sri-r2)", cursor: "pointer", ...F(6), border: "none", background: "var(--sri-ai-d)", color: "var(--ds-surface, var(--ds-surface, var(--ds-surface, #fff)))" }}>
+                <button style={{ height: 30, padding: "0 14px", fontFamily: 'var(--cp-font-body)', fontSize: 12, fontWeight: 600, borderRadius: "var(--sri-r2)", cursor: "pointer", ...F(6), border: "none", background: "var(--sri-ai-d)", color: "var(--ds-surface, #fff)" }}>
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" /><polyline points="7 10 12 15 17 10" /><line x1="12" y1="15" x2="12" y2="3" /></svg>
                   Export
                 </button>

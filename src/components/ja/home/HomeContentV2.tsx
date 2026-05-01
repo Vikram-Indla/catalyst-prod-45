@@ -94,7 +94,7 @@ function FocusWidget({
     >
       <div className="flex items-start justify-between gap-3">
         <div className="flex items-start gap-2.5 min-w-0 flex-1">
-          <Icon className="w-4 h-4 shrink-0 text-[var(--ds-text-brand,var(--ds-text-brand, #2563eb))] dark:text-[var(--ds-text-brand,var(--ds-text-brand, #60a5fa))] mt-0.5" />
+          <Icon className="w-4 h-4 shrink-0 text-[var(--ds-text-brand, #2563eb)] dark:text-[var(--ds-text-brand, #60a5fa)] mt-0.5" />
           <div className="min-w-0 flex-1">
             <div className="text-sm font-medium text-foreground">{title}</div>
             {subtitle && (
@@ -226,14 +226,14 @@ function WorkItemsDataGrid({
           <div key={groupIndex}>
             {/* Group Header with gold accent bar */}
             <div 
-              className="relative text-[11px] font-bold uppercase tracking-[0.1em] py-2.5 px-4 bg-gradient-to-r from-[var(--ds-text-brand,var(--ds-text-brand, #2563eb))]/[0.08] to-transparent dark:from-[var(--ds-text-brand,var(--ds-text-brand, #2563eb))]/[0.15] dark:to-transparent"
+              className="relative text-[11px] font-bold uppercase tracking-[0.1em] py-2.5 px-4 bg-gradient-to-r from-[var(--ds-text-brand, #2563eb)]/[0.08] to-transparent dark:from-[var(--ds-text-brand, #2563eb)]/[0.15] dark:to-transparent"
               style={{ 
                 borderTop: groupIndex > 0 ? '1px solid var(--divider)' : 'none',
                 borderBottom: '1px solid var(--divider)',
               }}
             >
-              <div className="absolute left-0 top-0 bottom-0 w-1 bg-[var(--ds-text-brand,var(--ds-text-brand, #2563eb))]" />
-              <span className="text-[var(--ds-text-brand,var(--ds-text-brand, #2563eb))] dark:text-[var(--ds-text-brand,var(--ds-text-brand, #60a5fa))]">
+              <div className="absolute left-0 top-0 bottom-0 w-1 bg-[var(--ds-text-brand, #2563eb)]" />
+              <span className="text-[var(--ds-text-brand, #2563eb)] dark:text-[var(--ds-text-brand, #60a5fa)]">
                 {group.label}
               </span>
             </div>
@@ -788,7 +788,7 @@ export const HomeContentV2 = memo(function HomeContentV2() {
             >
               {/* Header with blue accent per design system v2.0 */}
               <div className="relative text-[11px] font-bold uppercase tracking-wider mb-3 text-[#525252] dark:text-[#a3a3a3] border-b border-border pb-2">
-                <div className="absolute -left-4 top-0 bottom-0 w-1 bg-[var(--ds-text-brand,var(--ds-text-brand, #2563eb))] rounded-r" />
+                <div className="absolute -left-4 top-0 bottom-0 w-1 bg-[var(--ds-text-brand, #2563eb)] rounded-r" />
                 My Focus
               </div>
               

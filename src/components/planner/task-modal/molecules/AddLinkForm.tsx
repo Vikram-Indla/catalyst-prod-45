@@ -78,7 +78,7 @@ export const AddLinkForm: React.FC<AddLinkFormProps> = ({ onAdd }) => {
         style={{
           padding: '12px 20px',
           backgroundColor: COLORS.accent,
-          color: 'var(--ds-surface, var(--ds-surface, #ffffff))',
+          color: 'var(--ds-surface, #ffffff)',
           border: 'none',
           borderRadius: '12px',
           fontSize: '14px',

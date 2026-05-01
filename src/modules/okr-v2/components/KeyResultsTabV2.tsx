@@ -132,7 +132,7 @@ export function KeyResultsTabV2({ objectiveId, onMutation }: KeyResultsTabV2Prop
               </div>
 
               {expandedKrs.has(kr.id) && (
-                <div className="px-4 py-4 border-t border-[#EAECEF] dark:border-[#21262D] space-y-4 bg-[var(--ds-surface-sunken,var(--ds-surface-sunken, #FAFBFC))] dark:bg-[#0D1117]">
+                <div className="px-4 py-4 border-t border-[#EAECEF] dark:border-[#21262D] space-y-4 bg-[var(--ds-surface-sunken, #FAFBFC)] dark:bg-[#0D1117]">
                   <div className="grid grid-cols-3 gap-4">
                     <div>
                       <p className="text-[11px] font-semibold uppercase tracking-wider text-[#8B949E] dark:text-[#6E7681] mb-1">Baseline</p>

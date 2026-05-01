@@ -90,7 +90,7 @@ export function SavedFilterBar({ currentFilters, activeFilterId, onApplyFilter, 
                 className="inline-flex items-center gap-1 px-3 py-1 text-xs font-medium rounded-full border transition-all whitespace-nowrap"
                 style={{
                   backgroundColor: isActive ? 'var(--cp-blue)' : sf.is_shared ? 'var(--cp-primary-5)' : 'var(--bg-1)',
-                  color: isActive ? 'var(--bg-app)' : sf.is_shared ? 'var(--ds-background-brand-bold-hovered, var(--ds-background-brand-bold-hovered, #1d4ed8))' : 'var(--fg-1)',
+                  color: isActive ? 'var(--bg-app)' : sf.is_shared ? 'var(--ds-background-brand-bold-hovered, #1d4ed8)' : 'var(--fg-1)',
                   borderColor: isActive ? 'var(--cp-blue)' : 'var(--divider)',
                 }}
               >

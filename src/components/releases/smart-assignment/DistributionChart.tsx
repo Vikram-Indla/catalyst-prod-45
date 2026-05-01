@@ -21,7 +21,7 @@ const CHART_COLORS = [
   CATALYST_V5.primary,
   CATALYST_V5.teal,
   CATALYST_V5.warning,
-  'var(--ds-text-danger, var(--ds-text-danger, #ef4444))',
+  'var(--ds-text-danger, #ef4444)',
   '#8b5cf6',
   '#ec4899',
 ];

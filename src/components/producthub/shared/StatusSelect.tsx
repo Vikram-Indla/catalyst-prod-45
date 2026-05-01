@@ -5,18 +5,18 @@ const STATUS_GROUPS = [
   {
     group: 'Intake',
     items: [
-      { value: 'new', label: 'New', color: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))' },
-      { value: 'portfolio_review', label: 'Portfolio Review', color: 'var(--ds-text-warning, var(--ds-text-warning, #D97706))' },
-      { value: 'technical_validation', label: 'Technical Validation', color: 'var(--ds-text-warning, var(--ds-text-warning, #D97706))' },
-      { value: 'estimate', label: 'Estimate', color: 'var(--ds-text-warning, var(--ds-text-warning, #D97706))' },
+      { value: 'new', label: 'New', color: 'var(--ds-text-brand, #2563EB)' },
+      { value: 'portfolio_review', label: 'Portfolio Review', color: 'var(--ds-text-warning, #D97706)' },
+      { value: 'technical_validation', label: 'Technical Validation', color: 'var(--ds-text-warning, #D97706)' },
+      { value: 'estimate', label: 'Estimate', color: 'var(--ds-text-warning, #D97706)' },
     ],
   },
   {
     group: 'Planning',
     items: [
-      { value: 'demand_approved', label: 'Demand Approved', color: 'var(--ds-text-success, var(--ds-text-success, #16A34A))' },
-      { value: 'analysis', label: 'Analysis', color: 'var(--ds-text-success, var(--ds-text-success, #16A34A))' },
-      { value: 'ready_for_development', label: 'Ready for Dev', color: 'var(--ds-text-success, var(--ds-text-success, #16A34A))' },
+      { value: 'demand_approved', label: 'Demand Approved', color: 'var(--ds-text-success, #16A34A)' },
+      { value: 'analysis', label: 'Analysis', color: 'var(--ds-text-success, #16A34A)' },
+      { value: 'ready_for_development', label: 'Ready for Dev', color: 'var(--ds-text-success, #16A34A)' },
     ],
   },
   {
@@ -31,8 +31,8 @@ const STATUS_GROUPS = [
     group: 'Closure',
     items: [
       { value: 'in_support', label: 'In Support', color: '#7C3AED' },
-      { value: 'done', label: 'Done', color: 'var(--ds-text-success, var(--ds-text-success, #16A34A))' },
-      { value: 'cancelled', label: 'Cancelled', color: 'var(--ds-text-danger, var(--ds-text-danger, #DC2626))' },
+      { value: 'done', label: 'Done', color: 'var(--ds-text-success, #16A34A)' },
+      { value: 'cancelled', label: 'Cancelled', color: 'var(--ds-text-danger, #DC2626)' },
     ],
   },
 ];
@@ -65,7 +65,7 @@ export function StatusSelect({ value, onChange, disabled }: StatusSelectProps) {
         type="button"
         onClick={() => !disabled && setOpen(!open)}
         disabled={disabled}
-        className="w-full flex items-center justify-between px-3 py-2.5 bg-white dark:bg-[var(--ds-surface-raised,var(--ds-surface-raised, #1A1A1A))] border rounded-lg text-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+        className="w-full flex items-center justify-between px-3 py-2.5 bg-white dark:bg-[var(--ds-surface-raised, #1A1A1A)] border rounded-lg text-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         style={{
           borderColor: open ? 'var(--cp-blue)' : 'var(--divider)',
           boxShadow: open ? '0 0 0 3px rgba(37,99,235,0.1)' : 'none',
@@ -86,7 +86,7 @@ export function StatusSelect({ value, onChange, disabled }: StatusSelectProps) {
 
       {open && (
         <div
-          className="absolute z-50 mt-1 w-full bg-white dark:bg-[var(--ds-surface-raised,var(--ds-surface-raised, #1A1A1A))] border dark:border-[var(--ds-border,var(--ds-border, #2E2E2E))] rounded-lg overflow-hidden max-h-72 overflow-y-auto"
+          className="absolute z-50 mt-1 w-full bg-white dark:bg-[var(--ds-surface-raised, #1A1A1A)] border dark:border-[var(--ds-border, #2E2E2E)] rounded-lg overflow-hidden max-h-72 overflow-y-auto"
           style={{
             borderColor: 'var(--divider)',
             boxShadow: '0 12px 40px rgba(0,0,0,0.14)',

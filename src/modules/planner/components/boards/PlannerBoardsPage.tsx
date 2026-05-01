@@ -131,7 +131,7 @@ export function PlannerBoardsPage({
   }, []);
 
   return (
-    <div className="planner-v9 flex flex-col h-full bg-slate-50 dark:bg-[var(--ds-surface,var(--ds-surface, #0A0A0A))]">
+    <div className="planner-v9 flex flex-col h-full bg-slate-50 dark:bg-[var(--ds-surface, #0A0A0A)]">
       {/* V9 Header */}
       <PlannerViewHeader
         title="Boards"

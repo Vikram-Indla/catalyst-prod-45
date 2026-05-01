@@ -54,7 +54,7 @@ export function T10SearchBarNew({ onSearch }: T10SearchBarNewProps) {
           gap: '12px',
           height: '48px',
           padding: '0 16px',
-          backgroundColor: 'var(--ds-surface, var(--ds-surface, #ffffff))',
+          backgroundColor: 'var(--ds-surface, #ffffff)',
           border: isFocused ? '2px solid #2563eb' : '1px solid #e2e8f0',
           borderRadius: '12px',
           boxShadow: isFocused ? '0 4px 12px rgba(37, 99, 235, 0.1)' : 'none',
@@ -65,7 +65,7 @@ export function T10SearchBarNew({ onSearch }: T10SearchBarNewProps) {
           size={18} 
           style={{ 
             flexShrink: 0, 
-            color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #94a3b8))',
+            color: 'var(--ds-text-subtlest, #94a3b8)',
           }} 
         />
         <input
@@ -103,8 +103,8 @@ export function T10SearchBarNew({ onSearch }: T10SearchBarNewProps) {
               padding: '0 8px',
               fontSize: '12px',
               fontFamily: 'monospace',
-              color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #94a3b8))',
-              backgroundColor: 'var(--ds-surface-sunken, var(--ds-surface-sunken, #f1f5f9))',
+              color: 'var(--ds-text-subtlest, #94a3b8)',
+              backgroundColor: 'var(--ds-surface-sunken, #f1f5f9)',
               border: '1px solid #e2e8f0',
               borderRadius: '6px',
             }}

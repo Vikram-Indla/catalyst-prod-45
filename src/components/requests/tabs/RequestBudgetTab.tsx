@@ -85,7 +85,7 @@ export function RequestBudgetTab({ requestId, budgetAllocated, onBudgetAllocated
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
         <div>
-          <h3 className="text-sm font-semibold text-zinc-900 dark:text-[var(--ds-text,var(--ds-text, #EDEDED))]">Budget</h3>
+          <h3 className="text-sm font-semibold text-zinc-900 dark:text-[var(--ds-text, #EDEDED)]">Budget</h3>
           <p className="text-xs text-zinc-400 mt-0.5">{budgetItems.length} line item{budgetItems.length !== 1 ? 's' : ''}</p>
         </div>
         <button onClick={() => setShowAddBudget(true)}
@@ -140,17 +140,17 @@ export function RequestBudgetTab({ requestId, budgetAllocated, onBudgetAllocated
         const opexActual = opexItems.reduce((s: number, i: any) => s + (Number(i.actual_amount) || 0), 0);
         return (
           <div className="grid grid-cols-2 gap-3 mb-6">
-            <div className="border border-zinc-200 dark:border-[var(--ds-border,var(--ds-border, #2E2E2E))] rounded-lg p-3">
+            <div className="border border-zinc-200 dark:border-[var(--ds-border, #2E2E2E)] rounded-lg p-3">
               <div className="flex items-center gap-2 mb-2">
-                <span className="w-2 h-2 rounded-full bg-blue-500" /><span className="text-xs font-semibold text-zinc-700 dark:text-[var(--ds-text,var(--ds-text, #EDEDED))]">CapEx</span>
+                <span className="w-2 h-2 rounded-full bg-blue-500" /><span className="text-xs font-semibold text-zinc-700 dark:text-[var(--ds-text, #EDEDED)]">CapEx</span>
                 <span className="text-[10px] text-zinc-400 ml-auto">{capexItems.length} items</span>
               </div>
               <div className="flex items-center justify-between text-[11px]"><span className="text-zinc-500">Planned</span><span className="text-zinc-700 font-medium">SAR {capexPlanned.toLocaleString()}</span></div>
               <div className="flex items-center justify-between text-[11px] mt-1"><span className="text-zinc-500">Actual</span><span className="text-zinc-700 font-medium">SAR {capexActual.toLocaleString()}</span></div>
             </div>
-            <div className="border border-zinc-200 dark:border-[var(--ds-border,var(--ds-border, #2E2E2E))] rounded-lg p-3">
+            <div className="border border-zinc-200 dark:border-[var(--ds-border, #2E2E2E)] rounded-lg p-3">
               <div className="flex items-center gap-2 mb-2">
-                <span className="w-2 h-2 rounded-full bg-teal-500" /><span className="text-xs font-semibold text-zinc-700 dark:text-[var(--ds-text,var(--ds-text, #EDEDED))]">OpEx</span>
+                <span className="w-2 h-2 rounded-full bg-teal-500" /><span className="text-xs font-semibold text-zinc-700 dark:text-[var(--ds-text, #EDEDED)]">OpEx</span>
                 <span className="text-[10px] text-zinc-400 ml-auto">{opexItems.length} items</span>
               </div>
               <div className="flex items-center justify-between text-[11px]"><span className="text-zinc-500">Planned</span><span className="text-zinc-700 font-medium">SAR {opexPlanned.toLocaleString()}</span></div>
@@ -162,17 +162,17 @@ export function RequestBudgetTab({ requestId, budgetAllocated, onBudgetAllocated
 
       {/* Inline Add Form */}
       {showAddBudget && (
-        <div className="border border-zinc-200 dark:border-[var(--ds-border,var(--ds-border, #2E2E2E))] rounded-lg p-5 bg-zinc-50 dark:bg-[var(--ds-surface,var(--ds-surface, #0A0A0A))] space-y-4 mb-6">
+        <div className="border border-zinc-200 dark:border-[var(--ds-border, #2E2E2E)] rounded-lg p-5 bg-zinc-50 dark:bg-[var(--ds-surface, #0A0A0A)] space-y-4 mb-6">
           <h4 className="text-xs font-semibold text-zinc-700">New Budget Item</h4>
           <div className="grid grid-cols-2 gap-4">
             <div className="relative">
               <label className="text-[10px] font-medium text-zinc-500 uppercase tracking-wide mb-1 block">Category *</label>
               <button type="button" onClick={() => setShowCatDropdown(v => !v)}
-                className="w-full flex items-center justify-between border border-zinc-200 dark:border-[var(--ds-border,var(--ds-border, #2E2E2E))] rounded-lg px-3 py-2 text-sm text-zinc-700 dark:text-[var(--ds-text,var(--ds-text, #EDEDED))] bg-white dark:bg-[var(--ds-surface-raised,var(--ds-surface-raised, #1A1A1A))] hover:bg-zinc-50 dark:hover:bg-[var(--ds-surface-raised,var(--ds-surface-raised, #1A1A1A))]">
+                className="w-full flex items-center justify-between border border-zinc-200 dark:border-[var(--ds-border, #2E2E2E)] rounded-lg px-3 py-2 text-sm text-zinc-700 dark:text-[var(--ds-text, #EDEDED)] bg-white dark:bg-[var(--ds-surface-raised, #1A1A1A)] hover:bg-zinc-50 dark:hover:bg-[var(--ds-surface-raised, #1A1A1A)]">
                 <span className="capitalize">{budgetForm.category}</span><ChevronDown className="w-4 h-4 text-zinc-400" />
               </button>
               {showCatDropdown && (
-                <div className="absolute left-0 right-0 top-full mt-1 bg-white dark:bg-[var(--ds-surface-raised,var(--ds-surface-raised, #1A1A1A))] border border-zinc-200 dark:border-[var(--ds-border,var(--ds-border, #2E2E2E))] rounded-lg shadow-lg z-50 py-1 max-h-48 overflow-y-auto">
+                <div className="absolute left-0 right-0 top-full mt-1 bg-white dark:bg-[var(--ds-surface-raised, #1A1A1A)] border border-zinc-200 dark:border-[var(--ds-border, #2E2E2E)] rounded-lg shadow-lg z-50 py-1 max-h-48 overflow-y-auto">
                   {BUDGET_CATEGORIES.map(cat => (
                     <button key={cat} onClick={() => { setBudgetForm(f => ({ ...f, category: cat })); setShowCatDropdown(false); }}
                       className={`w-full text-left px-3 py-1.5 text-xs capitalize transition-colors ${budgetForm.category === cat ? 'bg-blue-50 text-blue-700 font-medium' : 'text-zinc-600 hover:bg-zinc-50'}`}>
@@ -186,31 +186,31 @@ export function RequestBudgetTab({ requestId, budgetAllocated, onBudgetAllocated
               <label className="text-[10px] font-medium text-zinc-500 uppercase tracking-wide mb-1 block">Expense Type *</label>
               <div className="flex rounded-lg border border-zinc-200 overflow-hidden">
                 <button type="button" onClick={() => setBudgetForm(f => ({ ...f, expense_type: 'capex' }))}
-                  className={`px-4 py-2 text-xs font-medium transition-colors ${budgetForm.expense_type === 'capex' ? 'bg-blue-600 text-white' : 'bg-white dark:bg-[var(--ds-surface-raised,var(--ds-surface-raised, #1A1A1A))] text-zinc-600 dark:text-[var(--ds-text-subtlest,var(--ds-text-subtlest, #A1A1A1))] hover:bg-zinc-50 dark:hover:bg-[var(--ds-surface-raised,var(--ds-surface-raised, #1A1A1A))]'}`}>CapEx</button>
+                  className={`px-4 py-2 text-xs font-medium transition-colors ${budgetForm.expense_type === 'capex' ? 'bg-blue-600 text-white' : 'bg-white dark:bg-[var(--ds-surface-raised, #1A1A1A)] text-zinc-600 dark:text-[var(--ds-text-subtlest, #A1A1A1)] hover:bg-zinc-50 dark:hover:bg-[var(--ds-surface-raised, #1A1A1A)]'}`}>CapEx</button>
                 <button type="button" onClick={() => setBudgetForm(f => ({ ...f, expense_type: 'opex' }))}
-                  className={`px-4 py-2 text-xs font-medium transition-colors ${budgetForm.expense_type === 'opex' ? 'bg-blue-600 text-white' : 'bg-white dark:bg-[var(--ds-surface-raised,var(--ds-surface-raised, #1A1A1A))] text-zinc-600 dark:text-[var(--ds-text-subtlest,var(--ds-text-subtlest, #A1A1A1))] hover:bg-zinc-50 dark:hover:bg-[var(--ds-surface-raised,var(--ds-surface-raised, #1A1A1A))]'}`}>OpEx</button>
+                  className={`px-4 py-2 text-xs font-medium transition-colors ${budgetForm.expense_type === 'opex' ? 'bg-blue-600 text-white' : 'bg-white dark:bg-[var(--ds-surface-raised, #1A1A1A)] text-zinc-600 dark:text-[var(--ds-text-subtlest, #A1A1A1)] hover:bg-zinc-50 dark:hover:bg-[var(--ds-surface-raised, #1A1A1A)]'}`}>OpEx</button>
               </div>
             </div>
           </div>
           <div>
             <label className="text-[10px] font-medium text-zinc-500 uppercase tracking-wide mb-1 block">Description *</label>
             <textarea value={budgetForm.description} onChange={e => setBudgetForm(f => ({ ...f, description: e.target.value }))}
-              rows={2} placeholder="What does this cover..." className="w-full border border-zinc-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-[var(--ds-surface-raised,var(--ds-surface-raised, #1A1A1A))] dark:border-[var(--ds-border,var(--ds-border, #2E2E2E))] dark:text-[var(--ds-text,var(--ds-text, #EDEDED))] resize-y" />
+              rows={2} placeholder="What does this cover..." className="w-full border border-zinc-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-[var(--ds-surface-raised, #1A1A1A)] dark:border-[var(--ds-border, #2E2E2E)] dark:text-[var(--ds-text, #EDEDED)] resize-y" />
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="text-[10px] font-medium text-zinc-500 uppercase tracking-wide mb-1 block">Planned Amount (SAR) *</label>
               <input type="number" value={budgetForm.planned_amount} onChange={e => setBudgetForm(f => ({ ...f, planned_amount: e.target.value }))}
-                placeholder="Enter amount" className="w-full border border-zinc-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-[var(--ds-surface-raised,var(--ds-surface-raised, #1A1A1A))] dark:border-[var(--ds-border,var(--ds-border, #2E2E2E))] dark:text-[var(--ds-text,var(--ds-text, #EDEDED))]" />
+                placeholder="Enter amount" className="w-full border border-zinc-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-[var(--ds-surface-raised, #1A1A1A)] dark:border-[var(--ds-border, #2E2E2E)] dark:text-[var(--ds-text, #EDEDED)]" />
             </div>
             <div className="relative">
               <label className="text-[10px] font-medium text-zinc-500 uppercase tracking-wide mb-1 block">Fiscal Quarter</label>
               <button type="button" onClick={() => setShowQtrDropdown(v => !v)}
-                className="w-full flex items-center justify-between border border-zinc-200 dark:border-[var(--ds-border,var(--ds-border, #2E2E2E))] rounded-lg px-3 py-2 text-sm text-zinc-700 dark:text-[var(--ds-text,var(--ds-text, #EDEDED))] bg-white dark:bg-[var(--ds-surface-raised,var(--ds-surface-raised, #1A1A1A))] hover:bg-zinc-50 dark:hover:bg-[var(--ds-surface-raised,var(--ds-surface-raised, #1A1A1A))]">
+                className="w-full flex items-center justify-between border border-zinc-200 dark:border-[var(--ds-border, #2E2E2E)] rounded-lg px-3 py-2 text-sm text-zinc-700 dark:text-[var(--ds-text, #EDEDED)] bg-white dark:bg-[var(--ds-surface-raised, #1A1A1A)] hover:bg-zinc-50 dark:hover:bg-[var(--ds-surface-raised, #1A1A1A)]">
                 <span>{budgetForm.fiscal_quarter || 'Select quarter'}</span><ChevronDown className="w-4 h-4 text-zinc-400" />
               </button>
               {showQtrDropdown && (
-                <div className="absolute left-0 right-0 top-full mt-1 bg-white dark:bg-[var(--ds-surface-raised,var(--ds-surface-raised, #1A1A1A))] border border-zinc-200 dark:border-[var(--ds-border,var(--ds-border, #2E2E2E))] rounded-lg shadow-lg z-50 py-1 max-h-48 overflow-y-auto">
+                <div className="absolute left-0 right-0 top-full mt-1 bg-white dark:bg-[var(--ds-surface-raised, #1A1A1A)] border border-zinc-200 dark:border-[var(--ds-border, #2E2E2E)] rounded-lg shadow-lg z-50 py-1 max-h-48 overflow-y-auto">
                   {FISCAL_QUARTERS.map(q => (
                     <button key={q} onClick={() => { setBudgetForm(f => ({ ...f, fiscal_quarter: q })); setShowQtrDropdown(false); }}
                       className={`w-full text-left px-3 py-1.5 text-xs transition-colors ${budgetForm.fiscal_quarter === q ? 'bg-blue-50 text-blue-700 font-medium' : 'text-zinc-600 hover:bg-zinc-50'}`}>
@@ -225,12 +225,12 @@ export function RequestBudgetTab({ requestId, budgetAllocated, onBudgetAllocated
             <div>
               <label className="text-[10px] font-medium text-zinc-500 uppercase tracking-wide mb-1 block">Vendor</label>
               <input value={budgetForm.vendor} onChange={e => setBudgetForm(f => ({ ...f, vendor: e.target.value }))}
-                placeholder="Vendor name" className="w-full border border-zinc-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-[var(--ds-surface-raised,var(--ds-surface-raised, #1A1A1A))] dark:border-[var(--ds-border,var(--ds-border, #2E2E2E))] dark:text-[var(--ds-text,var(--ds-text, #EDEDED))]" />
+                placeholder="Vendor name" className="w-full border border-zinc-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-[var(--ds-surface-raised, #1A1A1A)] dark:border-[var(--ds-border, #2E2E2E)] dark:text-[var(--ds-text, #EDEDED)]" />
             </div>
             <div>
               <label className="text-[10px] font-medium text-zinc-500 uppercase tracking-wide mb-1 block">PO Number</label>
               <input value={budgetForm.po_number} onChange={e => setBudgetForm(f => ({ ...f, po_number: e.target.value }))}
-                placeholder="PO-12345" className="w-full border border-zinc-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-[var(--ds-surface-raised,var(--ds-surface-raised, #1A1A1A))] dark:border-[var(--ds-border,var(--ds-border, #2E2E2E))] dark:text-[var(--ds-text,var(--ds-text, #EDEDED))]" />
+                placeholder="PO-12345" className="w-full border border-zinc-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-[var(--ds-surface-raised, #1A1A1A)] dark:border-[var(--ds-border, #2E2E2E)] dark:text-[var(--ds-text, #EDEDED)]" />
             </div>
           </div>
           <div className="flex items-center gap-2 pt-2">
@@ -244,7 +244,7 @@ export function RequestBudgetTab({ requestId, budgetAllocated, onBudgetAllocated
 
       {/* Line Items */}
       {budgetItems.length === 0 && !showAddBudget ? (
-        <div className="border border-zinc-200 dark:border-[var(--ds-border,var(--ds-border, #2E2E2E))] rounded-lg px-4 py-12 text-center">
+        <div className="border border-zinc-200 dark:border-[var(--ds-border, #2E2E2E)] rounded-lg px-4 py-12 text-center">
           <div className="mx-auto w-12 h-12 bg-zinc-100 rounded-full flex items-center justify-center mb-3">
             <Wallet className="w-6 h-6 text-zinc-400" />
           </div>
@@ -264,7 +264,7 @@ export function RequestBudgetTab({ requestId, budgetAllocated, onBudgetAllocated
               item.status === 'rejected' ? 'bg-red-50 text-red-700' : 'bg-zinc-100 text-zinc-600';
             const variance = (Number(item.planned_amount) || 0) - (Number(item.actual_amount) || 0);
             return (
-              <div key={item.id} className="bg-white dark:bg-[var(--ds-surface-raised,var(--ds-surface-raised, #1A1A1A))] border border-zinc-200 dark:border-[var(--ds-border,var(--ds-border, #2E2E2E))] rounded-lg p-4 hover:border-zinc-300 transition-colors">
+              <div key={item.id} className="bg-white dark:bg-[var(--ds-surface-raised, #1A1A1A)] border border-zinc-200 dark:border-[var(--ds-border, #2E2E2E)] rounded-lg p-4 hover:border-zinc-300 transition-colors">
                 <div className="flex items-start justify-between mb-2">
                   <div className="flex items-center gap-2">
                     <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${item.expense_type === 'capex' ? 'bg-blue-100 text-blue-700' : 'bg-teal-100 text-teal-700'}`}>
@@ -276,7 +276,7 @@ export function RequestBudgetTab({ requestId, budgetAllocated, onBudgetAllocated
                     {(item.status || '').replace(/_/g, ' ').replace(/\b\w/g, (c: string) => c.toUpperCase())}
                   </span>
                 </div>
-                <p className="text-sm font-medium text-zinc-900 dark:text-[var(--ds-text,var(--ds-text, #EDEDED))] mb-2">{item.description}</p>
+                <p className="text-sm font-medium text-zinc-900 dark:text-[var(--ds-text, #EDEDED)] mb-2">{item.description}</p>
                 <div className="grid grid-cols-3 gap-3">
                   <div><p className="text-[10px] text-zinc-400 uppercase">Planned</p><p className="text-sm font-semibold text-zinc-700">SAR {Number(item.planned_amount).toLocaleString()}</p></div>
                   <div><p className="text-[10px] text-zinc-400 uppercase">Actual</p><p className="text-sm font-semibold text-zinc-700">SAR {Number(item.actual_amount || 0).toLocaleString()}</p></div>

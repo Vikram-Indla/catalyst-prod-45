@@ -241,7 +241,7 @@ export default function EpicDescriptionEditor({
   return (
     <IntlProvider locale="en">
       <div ref={wrapperRef} className="epic-desc-atlaskit-wrapper" style={{ position: 'relative' }}>
-        <Suspense fallback={<div style={{ padding: 12, fontSize: 13, color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #878787))' }}>Loading editor…</div>}>
+        <Suspense fallback={<div style={{ padding: 12, fontSize: 13, color: 'var(--ds-text-subtlest, #878787)' }}>Loading editor…</div>}>
           <LazyEditor
             appearance={appearanceProp}
             defaultValue={defaultValueString}

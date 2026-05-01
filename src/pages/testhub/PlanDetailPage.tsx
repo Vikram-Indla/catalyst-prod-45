@@ -41,9 +41,9 @@ import { useDefectsByPlanId } from '@/hooks/useDefectsG25';
 import { formatDistanceToNow } from 'date-fns';
 
 const defectStatusColors: Record<string, { bg: string; color: string }> = {
-  open:        { bg: 'var(--ds-border, var(--ds-border, #DFE1E6))', color: 'var(--ds-text, var(--ds-text, #253858))' },
-  new:         { bg: 'var(--ds-border, var(--ds-border, #DFE1E6))', color: 'var(--ds-text, var(--ds-text, #253858))' },
-  deferred:    { bg: 'var(--ds-border, var(--ds-border, #DFE1E6))', color: 'var(--ds-text, var(--ds-text, #253858))' },
+  open:        { bg: 'var(--ds-border, #DFE1E6)', color: 'var(--ds-text, #253858)' },
+  new:         { bg: 'var(--ds-border, #DFE1E6)', color: 'var(--ds-text, #253858)' },
+  deferred:    { bg: 'var(--ds-border, #DFE1E6)', color: 'var(--ds-text, #253858)' },
   in_progress: { bg: '#DEEBFF', color: '#0747A6' },
   reopened:    { bg: '#DEEBFF', color: '#0747A6' },
   fixed:       { bg: '#E3FCEF', color: '#006644' },
@@ -82,13 +82,13 @@ const PlanDefectsPanel = ({ planId }: { planId?: string }) => {
           </thead>
           <tbody>
             {defects.map((d: any) => {
-              const sc = defectStatusColors[d.status] ?? { bg: 'var(--ds-border, var(--ds-border, #DFE1E6))', color: 'var(--ds-text, var(--ds-text, #253858))' };
+              const sc = defectStatusColors[d.status] ?? { bg: 'var(--ds-border, #DFE1E6)', color: 'var(--ds-text, #253858)' };
               return (
                 <tr key={d.id} className="border-b last:border-b-0" style={{ height: 36, maxHeight: 36 }}>
                   <td className="px-4 py-0">
                     <span
                       onClick={() => navigate(`/testhub/defects/${d.id}`)}
-                      style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 13, fontWeight: 500, color: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))', cursor: 'pointer' }}
+                      style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 13, fontWeight: 500, color: 'var(--ds-text-brand, #2563EB)', cursor: 'pointer' }}
                     >
                       {d.defect_key}
                     </span>
@@ -394,7 +394,7 @@ export default function PlanDetailPage() {
                         const statusLabel = c.status === 'active' ? 'IN PROGRESS' : c.status?.toUpperCase().replace('_', ' ');
                         const statusColor = c.status === 'completed' ? 'bg-[#E3FCEF] text-[#006644]'
                           : (c.status === 'active' || c.status === 'in_progress') ? 'bg-[#DEEBFF] text-[#0747A6]'
-                          : 'bg-[var(--ds-border,var(--ds-border, #DFE1E6))] text-[var(--ds-text,var(--ds-text, #253858))]';
+                          : 'bg-[var(--ds-border, #DFE1E6)] text-[var(--ds-text, #253858)]';
 
                         return (
                           <tr key={lc.id} className="border-b last:border-b-0 hover:bg-muted/30 transition-colors" style={{ height: 50, maxHeight: 50 }}>

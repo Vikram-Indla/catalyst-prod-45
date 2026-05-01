@@ -63,7 +63,7 @@ export function ArchiveConfirmDialog({ issueKey, tk, onConfirm, onCancel }: Prop
           }}>Cancel</button>
           <button onClick={onConfirm} style={{
             padding: '6px 16px', fontSize: 13, fontWeight: 600, borderRadius: 6,
-            border: 'none', background: '#E65100', color: 'var(--ds-surface, var(--ds-surface, #FFFFFF))', cursor: 'pointer',
+            border: 'none', background: '#E65100', color: 'var(--ds-surface, #FFFFFF)', cursor: 'pointer',
           }}>Archive</button>
         </div>
       </div>

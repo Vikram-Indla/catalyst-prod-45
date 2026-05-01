@@ -924,7 +924,7 @@ export function BusinessScoreViewTab({ data, onChange, requestId, onDirtyChange 
                   <span>Medium: 3.0 – &lt;4.0</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="w-2 h-2 rounded-full bg-[var(--ds-text-warning,var(--ds-text-warning, #f59e0b))]"></span>
+                  <span className="w-2 h-2 rounded-full bg-[var(--ds-text-warning, #f59e0b)]"></span>
                   <span>Low: 2.0 – &lt;3.0</span>
                 </div>
                 <div className="flex items-center gap-2">

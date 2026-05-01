@@ -50,7 +50,7 @@ export function AssigneeAvatar({ profile, size = 'md', showName = true, classNam
           )}
           style={{ backgroundColor: colors.hex }}
         >
-          <CircleUser size={size === 'sm' ? 14 : 18} color="var(--ds-surface, var(--ds-surface, #FFFFFF))" strokeWidth={1.5} />
+          <CircleUser size={size === 'sm' ? 14 : 18} color="var(--ds-surface, #FFFFFF)" strokeWidth={1.5} />
         </div>
       )}
       {showName && (

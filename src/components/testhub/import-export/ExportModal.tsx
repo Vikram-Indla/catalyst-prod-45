@@ -16,7 +16,7 @@ const EXPORT_TYPES = [
   { value: 'test_cases', label: 'Test Cases', icon: FileText, color: 'var(--cp-blue)', table: 'tm_test_cases' },
   { value: 'defects', label: 'Defects', icon: Bug, color: 'var(--sem-danger)', table: 'tm_defects' },
   { value: 'requirements', label: 'Requirements', icon: FileCheck, color: 'var(--sem-success)', table: 'tm_requirements' },
-  { value: 'shared_steps', label: 'Shared Steps', icon: Layers, color: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))', table: 'tm_shared_steps' },
+  { value: 'shared_steps', label: 'Shared Steps', icon: Layers, color: 'var(--ds-text-brand, #2563EB)', table: 'tm_shared_steps' },
   { value: 'cycles', label: 'Test Cycles', icon: RefreshCcw, color: '#0891B2', table: 'tm_test_cycles' },
   { value: 'tags', label: 'Tags', icon: Tags, color: '#EC4899', table: 'tm_labels' },
 ];
@@ -336,7 +336,7 @@ export function ExportModal({ isOpen, onClose, onExported }: ExportModalProps) {
             style={{
               height: 44, padding: '0 24px', display: 'flex', alignItems: 'center', gap: 8,
               background: itemCount === 0 ? 'var(--divider)' : 'linear-gradient(135deg, #14B8A6 0%, #0D9488 100%)',
-              border: 'none', borderRadius: 12, fontSize: 14, fontWeight: 600, color: 'var(--ds-surface, var(--ds-surface, var(--ds-surface, #FFF)))',
+              border: 'none', borderRadius: 12, fontSize: 14, fontWeight: 600, color: 'var(--ds-surface, #FFF)',
               cursor: isExporting || itemCount === 0 ? 'not-allowed' : 'pointer',
             }}
           >

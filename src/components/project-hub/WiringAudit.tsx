@@ -146,21 +146,21 @@ export function WiringAudit() {
         margin: "24px 0",
         border: "1.5px solid var(--bd-default, #E2E8F0)",
         borderRadius: 8,
-        backgroundColor: "var(--ds-surface-sunken, var(--ds-surface-sunken, #FAFBFC))",
+        backgroundColor: "var(--ds-surface-sunken, #FAFBFC)",
         padding: 20,
         fontFamily: 'var(--cp-font-body)',
       }}
     >
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
-        <h3 style={{ fontSize: 14, fontWeight: 650, color: "var(--ds-text, var(--ds-text, #0F172A))", margin: 0 }}>
+        <h3 style={{ fontSize: 14, fontWeight: 650, color: "var(--ds-text, #0F172A)", margin: 0 }}>
           P8 Wiring Audit — {checks.length} checks
         </h3>
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
           {results.length > 0 && (
-            <span style={{ fontSize: 12, color: "var(--ds-text-subtle, var(--ds-text-subtle, #475569))" }}>
+            <span style={{ fontSize: 12, color: "var(--ds-text-subtle, #475569)" }}>
               <span style={{ color: "#006644", fontWeight: 600 }}>{passCount} pass</span>
               {failCount > 0 && (
-                <span style={{ color: "var(--ds-text-danger, var(--ds-text-danger, #DC2626))", fontWeight: 600, marginLeft: 8 }}>{failCount} fail</span>
+                <span style={{ color: "var(--ds-text-danger, #DC2626)", fontWeight: 600, marginLeft: 8 }}>{failCount} fail</span>
               )}
             </span>
           )}
@@ -173,7 +173,7 @@ export function WiringAudit() {
               fontSize: 12,
               fontWeight: 600,
               fontFamily: 'var(--cp-font-body)',
-              backgroundColor: "var(--ds-text-brand, var(--ds-text-brand, #2563EB))",
+              backgroundColor: "var(--ds-text-brand, #2563EB)",
               color: "var(--ds-text-inverse, #FFFFFF)",
               border: "none",
               borderRadius: 6,
@@ -211,14 +211,14 @@ export function WiringAudit() {
               fontSize: 11,
               fontWeight: 700,
               color: "var(--ds-text-inverse, #FFFFFF)",
-              backgroundColor: r.status === "pass" ? "#006644" : "var(--ds-text-danger, var(--ds-text-danger, #DC2626))",
+              backgroundColor: r.status === "pass" ? "#006644" : "var(--ds-text-danger, #DC2626)",
               flexShrink: 0,
             }}
           >
             {r.status === "pass" ? "✓" : "✗"}
           </span>
-          <span style={{ fontWeight: 600, color: "var(--ds-text, var(--ds-text, #0F172A))", minWidth: 180 }}>{r.name}</span>
-          <span style={{ color: "var(--ds-text-subtlest, var(--ds-text-subtlest, #64748B))" }}>{r.detail}</span>
+          <span style={{ fontWeight: 600, color: "var(--ds-text, #0F172A)", minWidth: 180 }}>{r.name}</span>
+          <span style={{ color: "var(--ds-text-subtlest, #64748B)" }}>{r.detail}</span>
         </div>
       ))}
     </div>

@@ -47,27 +47,27 @@ function TypeSelector({ value, onChange }: { value: string; onChange: (v: string
     <div ref={ref} style={{ position: 'relative', flexShrink: 0 }}>
       <button onClick={() => setOpen(o => !o)} style={{
         display: 'flex', alignItems: 'center', gap: 4, height: 32, padding: '0 8px',
-        border: '1px solid #DFE1E6', borderRadius: 3, background: 'var(--ds-surface, var(--ds-surface, var(--ds-surface, #fff)))', cursor: 'pointer',
-        fontSize: 13, color: 'var(--ds-text, var(--ds-text, #172B4D))', fontFamily: 'inherit',
+        border: '1px solid #DFE1E6', borderRadius: 3, background: 'var(--ds-surface, #fff)', cursor: 'pointer',
+        fontSize: 13, color: 'var(--ds-text, #172B4D)', fontFamily: 'inherit',
       }}>
         <span style={{ display: 'flex', width: 16, height: 16 }}>{current.icon}</span>
         <span>{current.label}</span>
-        <ChevronDown size={12} color="var(--ds-text-subtlest, var(--ds-text-subtlest, #6B778C))" />
+        <ChevronDown size={12} color="var(--ds-text-subtlest, #6B778C)" />
       </button>
       {open && (
         <div style={{
           position: 'absolute', top: 'calc(100% + 2px)', left: 0, minWidth: 160,
-          background: 'var(--ds-surface, var(--ds-surface, var(--ds-surface, #fff)))', border: '1px solid #DFE1E6', borderRadius: 4,
+          background: 'var(--ds-surface, #fff)', border: '1px solid #DFE1E6', borderRadius: 4,
           boxShadow: '0 4px 8px rgba(9,30,66,.25)', zIndex: 60, overflow: 'hidden',
         }}>
           {TYPE_OPTIONS.map(opt => (
             <div key={opt.key} onClick={() => { onChange(opt.key); setOpen(false); }}
               style={{
                 display: 'flex', alignItems: 'center', gap: 8, height: 36, padding: '0 12px',
-                cursor: 'pointer', fontSize: 13, color: 'var(--ds-text, var(--ds-text, #172B4D))',
+                cursor: 'pointer', fontSize: 13, color: 'var(--ds-text, #172B4D)',
                 background: opt.key === value ? '#DEEBFF' : 'transparent',
               }}
-              onMouseEnter={e => { if (opt.key !== value) (e.currentTarget as HTMLElement).style.background = 'var(--ds-surface-sunken, var(--ds-surface-sunken, #F4F5F7))'; }}
+              onMouseEnter={e => { if (opt.key !== value) (e.currentTarget as HTMLElement).style.background = 'var(--ds-surface-sunken, #F4F5F7)'; }}
               onMouseLeave={e => { if (opt.key !== value) (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
             >
               <span style={{ display: 'flex', width: 16, height: 16 }}>{opt.icon}</span>
@@ -113,13 +113,13 @@ function InlineStatusDropdown({ item, onUpdate }: { item: PhIssueRow; onUpdate: 
       {open && (
         <div style={{
           position: 'absolute', top: 'calc(100% + 4px)', right: 0, minWidth: 200, maxHeight: 320, overflowY: 'auto',
-          background: 'var(--ds-surface, var(--ds-surface, var(--ds-surface, #fff)))', border: '1px solid #DFE1E6', borderRadius: 6,
+          background: 'var(--ds-surface, #fff)', border: '1px solid #DFE1E6', borderRadius: 6,
           boxShadow: '0 8px 24px rgba(9,30,66,.25)', zIndex: 80, padding: '4px 0',
         }}>
           {STATUS_OPTION_GROUPS.map(group => (
             <div key={group.groupLabel}>
               <div style={{
-                fontSize: 10, fontWeight: 700, color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #6B778C))', textTransform: 'uppercase',
+                fontSize: 10, fontWeight: 700, color: 'var(--ds-text-subtlest, #6B778C)', textTransform: 'uppercase',
                 letterSpacing: '0.06em', padding: '8px 12px 4px',
               }}>{group.groupLabel}</div>
               {group.statuses.map(s => {
@@ -134,10 +134,10 @@ function InlineStatusDropdown({ item, onUpdate }: { item: PhIssueRow; onUpdate: 
                     }}
                     style={{
                       display: 'flex', alignItems: 'center', gap: 8, padding: '6px 12px',
-                      cursor: 'pointer', fontSize: 13, color: 'var(--ds-text, var(--ds-text, #172B4D))',
+                      cursor: 'pointer', fontSize: 13, color: 'var(--ds-text, #172B4D)',
                       background: isActive ? '#DEEBFF' : 'transparent',
                     }}
-                    onMouseEnter={e => { if (!isActive) (e.currentTarget as HTMLElement).style.background = 'var(--ds-surface-sunken, var(--ds-surface-sunken, #F4F5F7))'; }}
+                    onMouseEnter={e => { if (!isActive) (e.currentTarget as HTMLElement).style.background = 'var(--ds-surface-sunken, #F4F5F7)'; }}
                     onMouseLeave={e => { if (!isActive) (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
                   >
                     <span style={{ flex: 1 }}>{s}</span>
@@ -163,7 +163,7 @@ function SortableHeader({ label, sortKey, currentSort, currentDir, onSort, align
       onClick={() => onSort(sortKey)}
       style={{
         display: 'flex', alignItems: 'center', gap: 3, background: 'none', border: 'none',
-        cursor: 'pointer', fontSize: 11, fontWeight: 700, color: isActive ? 'var(--ds-text, var(--ds-text, #172B4D))' : 'var(--ds-text-subtlest, var(--ds-text-subtlest, #6B778C))',
+        cursor: 'pointer', fontSize: 11, fontWeight: 700, color: isActive ? 'var(--ds-text, #172B4D)' : 'var(--ds-text-subtlest, #6B778C)',
         textTransform: 'uppercase', letterSpacing: '0.04em', fontFamily: 'inherit', padding: 0,
         justifyContent: align === 'right' ? 'flex-end' : align === 'center' ? 'center' : 'flex-start',
         width: '100%',
@@ -197,7 +197,7 @@ function DynamicRow({ item, columns, onDelete, onCopyLink, onStatusUpdate, onCli
           onClick={e => { e.stopPropagation(); onClickKey(item.id); }}
           style={{
             background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'var(--cp-font-mono)',
-            fontSize: 12, fontWeight: 500, color: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))', padding: 0, flexShrink: 0,
+            fontSize: 12, fontWeight: 500, color: 'var(--ds-text-brand, #2563EB)', padding: 0, flexShrink: 0,
             textDecoration: 'none',
           }}
           onMouseEnter={e => (e.currentTarget.style.textDecoration = 'underline')}
@@ -207,7 +207,7 @@ function DynamicRow({ item, columns, onDelete, onCopyLink, onStatusUpdate, onCli
           {item.issue_key}
         </button>
         <span style={{
-          fontSize: 13, color: isDone ? 'rgba(9,30,66,0.4)' : 'var(--ds-text, var(--ds-text, #172B4D))',
+          fontSize: 13, color: isDone ? 'rgba(9,30,66,0.4)' : 'var(--ds-text, #172B4D)',
           textDecoration: isDone ? 'line-through' : 'none',
           overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
         }}>{item.summary}</span>
@@ -226,7 +226,7 @@ function DynamicRow({ item, columns, onDelete, onCopyLink, onStatusUpdate, onCli
           <div style={{
             width: 24, height: 24, borderRadius: '50%', background: avatarColor,
             display: 'flex', alignItems: 'center', justifyContent: 'center',
-            fontSize: 11, fontWeight: 700, color: 'var(--ds-surface, var(--ds-surface, var(--ds-surface, #fff)))',
+            fontSize: 11, fontWeight: 700, color: 'var(--ds-surface, #fff)',
           }} title={item.assignee_display_name ?? 'Unassigned'}>
             {avatarInitial}
           </div>
@@ -394,10 +394,10 @@ export function ChildIssuesSection({ storyKey, storyId, projectKey, onOpenItem }
           <button onClick={() => setCreating(true)} title="Create sub-task" style={{
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             width: 24, height: 24, border: 'none', borderRadius: 3, background: 'transparent',
-            cursor: 'pointer', color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #6B778C))', transition: 'background 0.15s, color 0.15s',
+            cursor: 'pointer', color: 'var(--ds-text-subtlest, #6B778C)', transition: 'background 0.15s, color 0.15s',
           }}
-            onMouseEnter={e => { e.currentTarget.style.background = 'var(--ds-surface-sunken, var(--ds-surface-sunken, #F4F5F7))'; e.currentTarget.style.color = 'var(--ds-text, var(--ds-text, #172B4D))'; }}
-            onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--ds-text-subtlest, var(--ds-text-subtlest, #6B778C))'; }}
+            onMouseEnter={e => { e.currentTarget.style.background = 'var(--ds-surface-sunken, #F4F5F7)'; e.currentTarget.style.color = 'var(--ds-text, #172B4D)'; }}
+            onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--ds-text-subtlest, #6B778C)'; }}
           >
             <Plus size={16} strokeWidth={2} />
           </button>
@@ -408,13 +408,13 @@ export function ChildIssuesSection({ storyKey, storyId, projectKey, onOpenItem }
           <div style={{
             display: 'flex', alignItems: 'center', gap: 8, padding: '8px 12px',
             border: '1px solid #DFE1E6', borderRadius: 8, margin: '0 0 4px 0',
-            background: 'var(--ds-surface-sunken, var(--ds-surface-sunken, #FAFBFC))',
+            background: 'var(--ds-surface-sunken, #FAFBFC)',
           }}>
-            <Sparkles size={16} color="var(--ds-text-subtlest, var(--ds-text-subtlest, #6B778C))" />
-            <span style={{ fontSize: 13, color: 'var(--ds-text, var(--ds-text, #172B4D))', flex: 1 }}>Create suggested work items</span>
+            <Sparkles size={16} color="var(--ds-text-subtlest, #6B778C)" />
+            <span style={{ fontSize: 13, color: 'var(--ds-text, #172B4D)', flex: 1 }}>Create suggested work items</span>
             <button style={{
               height: 28, padding: '0 12px', border: '1px solid #DFE1E6', borderRadius: 3,
-              background: 'var(--ds-surface, var(--ds-surface, var(--ds-surface, #fff)))', cursor: 'pointer', fontSize: 13, color: 'var(--ds-text, var(--ds-text, #172B4D))', fontFamily: 'inherit',
+              background: 'var(--ds-surface, #fff)', cursor: 'pointer', fontSize: 13, color: 'var(--ds-text, #172B4D)', fontFamily: 'inherit',
             }}>Suggest</button>
           </div>
         )}
@@ -422,10 +422,10 @@ export function ChildIssuesSection({ storyKey, storyId, projectKey, onOpenItem }
         {/* Progress bar */}
         {children.length > 0 && (
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '4px 0 6px', marginBottom: 2 }}>
-            <div style={{ flex: 1, height: 6, borderRadius: 3, background: 'var(--ds-border, var(--ds-border, #DFE1E6))', overflow: 'hidden' }}>
+            <div style={{ flex: 1, height: 6, borderRadius: 3, background: 'var(--ds-border, #DFE1E6)', overflow: 'hidden' }}>
               <div style={{ width: `${donePercent}%`, height: '100%', borderRadius: 3, background: '#36B37E', transition: 'width 0.3s ease' }} />
             </div>
-            <span style={{ fontSize: 12, color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #6B778C))', flexShrink: 0, fontWeight: 500 }}>{donePercent}% Done</span>
+            <span style={{ fontSize: 12, color: 'var(--ds-text-subtlest, #6B778C)', flexShrink: 0, fontWeight: 500 }}>{donePercent}% Done</span>
           </div>
         )}
 
@@ -483,7 +483,7 @@ export function ChildIssuesSection({ storyKey, storyId, projectKey, onOpenItem }
           <div style={{
             display: 'flex', alignItems: 'center', gap: 0,
             border: '2px solid #4C9AFF', borderRadius: 3, margin: '4px 0 0',
-            background: 'var(--ds-surface, var(--ds-surface, var(--ds-surface, #fff)))', overflow: 'hidden',
+            background: 'var(--ds-surface, #fff)', overflow: 'hidden',
           }}>
             <input
               ref={createRef}
@@ -498,7 +498,7 @@ export function ChildIssuesSection({ storyKey, storyId, projectKey, onOpenItem }
               maxLength={255}
               style={{
                 flex: 1, height: 36, padding: '0 12px', border: 'none', outline: 'none',
-                fontSize: 14, color: 'var(--ds-text, var(--ds-text, #172B4D))', fontFamily: 'inherit',
+                fontSize: 14, color: 'var(--ds-text, #172B4D)', fontFamily: 'inherit',
                 background: 'transparent',
               }}
             />
@@ -511,8 +511,8 @@ export function ChildIssuesSection({ storyKey, storyId, projectKey, onOpenItem }
                 style={{
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   width: 28, height: 28, border: '1px solid #DFE1E6', borderRadius: 3,
-                  background: 'var(--ds-surface-sunken, var(--ds-surface-sunken, #F4F5F7))', cursor: draftSummary.trim() ? 'pointer' : 'not-allowed',
-                  color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #6B778C))', opacity: draftSummary.trim() ? 1 : 0.5,
+                  background: 'var(--ds-surface-sunken, #F4F5F7)', cursor: draftSummary.trim() ? 'pointer' : 'not-allowed',
+                  color: 'var(--ds-text-subtlest, #6B778C)', opacity: draftSummary.trim() ? 1 : 0.5,
                 }}
               >
                 {createMutation.isPending ? <Loader2 size={14} className="animate-spin" /> : <CornerDownLeft size={14} />}
@@ -523,7 +523,7 @@ export function ChildIssuesSection({ storyKey, storyId, projectKey, onOpenItem }
         {creating && (
           <div style={{ textAlign: 'right', padding: '6px 0 2px' }}>
             <button onClick={() => { setCreating(false); setDraftSummary(''); }}
-              style={{ background: 'none', border: 'none', fontSize: 13, color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #6B778C))', cursor: 'pointer', fontFamily: 'inherit' }}>
+              style={{ background: 'none', border: 'none', fontSize: 13, color: 'var(--ds-text-subtlest, #6B778C)', cursor: 'pointer', fontFamily: 'inherit' }}>
               Cancel
             </button>
           </div>

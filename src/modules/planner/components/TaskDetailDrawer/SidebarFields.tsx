@@ -22,30 +22,30 @@ interface SidebarFieldsProps {
 
 // Label colors
 const LABEL_COLORS: Record<string, { bg: string; text: string; hex: string }> = {
-  red: { bg: 'bg-red-500', text: 'text-white', hex: 'var(--ds-text-danger, var(--ds-text-danger, #ef4444))' },
+  red: { bg: 'bg-red-500', text: 'text-white', hex: 'var(--ds-text-danger, #ef4444)' },
   orange: { bg: 'bg-orange-500', text: 'text-white', hex: '#f97316' },
   yellow: { bg: 'bg-yellow-500', text: 'text-black', hex: '#eab308' },
-  green: { bg: 'bg-green-500', text: 'text-white', hex: 'var(--ds-text-success, var(--ds-text-success, #22c55e))' },
-  blue: { bg: 'bg-blue-500', text: 'text-white', hex: 'var(--ds-text-brand, var(--ds-text-brand, #3b82f6))' },
+  green: { bg: 'bg-green-500', text: 'text-white', hex: 'var(--ds-text-success, #22c55e)' },
+  blue: { bg: 'bg-blue-500', text: 'text-white', hex: 'var(--ds-text-brand, #3b82f6)' },
   purple: { bg: 'bg-purple-500', text: 'text-white', hex: '#a855f7' },
   pink: { bg: 'bg-pink-500', text: 'text-white', hex: '#ec4899' },
   gray: { bg: 'bg-gray-500', text: 'text-white', hex: '#6b7280' },
 };
 
 const STATUS_CONFIG: Record<string, { label: string; color: string }> = {
-  backlog: { label: 'Backlog', color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #94a3b8))' },
-  planned: { label: 'Planned', color: 'var(--ds-text-brand, var(--ds-text-brand, #3b82f6))' },
+  backlog: { label: 'Backlog', color: 'var(--ds-text-subtlest, #94a3b8)' },
+  planned: { label: 'Planned', color: 'var(--ds-text-brand, #3b82f6)' },
   'in-progress': { label: 'In Progress', color: '#0284c7' },
   in_progress: { label: 'In Progress', color: '#0284c7' },
   review: { label: 'Review', color: '#8b5cf6' },
-  done: { label: 'Done', color: 'var(--ds-text-success, var(--ds-text-success, #16a34a))' },
+  done: { label: 'Done', color: 'var(--ds-text-success, #16a34a)' },
 };
 
 const PRIORITY_CONFIG: Record<string, { label: string; color: string; icon?: boolean }> = {
-  critical: { label: 'Critical', color: 'var(--ds-text-danger, var(--ds-text-danger, #dc2626))', icon: true },
+  critical: { label: 'Critical', color: 'var(--ds-text-danger, #dc2626)', icon: true },
   high: { label: 'High', color: '#ca8a04' },
-  medium: { label: 'Medium', color: 'var(--ds-text-brand, var(--ds-text-brand, #2563eb))' },
-  low: { label: 'Low', color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #94a3b8))' },
+  medium: { label: 'Medium', color: 'var(--ds-text-brand, #2563eb)' },
+  low: { label: 'Low', color: 'var(--ds-text-subtlest, #94a3b8)' },
 };
 
 function useStatuses() {

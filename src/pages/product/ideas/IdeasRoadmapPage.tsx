@@ -181,12 +181,12 @@ export default function IdeasRoadmapPage() {
         height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center',
         justifyContent: 'center', gap: 12, background: 'var(--cp-bg-elevated, #FFFFFF)', fontFamily: 'var(--cp-font-body)',
       }}>
-        <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--ds-text-danger, var(--ds-text-danger, #DC2626))' }}>Failed to load roadmap</div>
+        <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--ds-text-danger, #DC2626)' }}>Failed to load roadmap</div>
         <button
           onClick={() => refetch()}
           style={{
             height: 50, padding: '0 16px', borderRadius: 6, border: 'none',
-            background: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))', color: 'var(--ds-surface, var(--ds-surface, #FFFFFF))', fontSize: 13, fontWeight: 600,
+            background: 'var(--ds-text-brand, #2563EB)', color: 'var(--ds-surface, #FFFFFF)', fontSize: 13, fontWeight: 600,
             cursor: 'pointer', fontFamily: 'var(--cp-font-body)',
           }}
         >
@@ -214,7 +214,7 @@ export default function IdeasRoadmapPage() {
           <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--cp-text-secondary, #334155)' }}>No ideas in backlog yet</div>
           <div style={{ fontSize: 13, color: 'var(--cp-text-muted, #94A3B8)' }}>Add ideas from the Ideas list to get started.</div>
           <a href="/producthub/ideation" style={{
-            marginTop: 8, fontSize: 13, fontWeight: 600, color: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))', textDecoration: 'none',
+            marginTop: 8, fontSize: 13, fontWeight: 600, color: 'var(--ds-text-brand, #2563EB)', textDecoration: 'none',
           }}>Go to Ideas →</a>
         </div>
       </div>
@@ -257,7 +257,7 @@ export default function IdeasRoadmapPage() {
             <button
               onClick={() => setCommittedOnly(false)}
               style={{
-                fontSize: 13, fontWeight: 600, color: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))', background: 'none',
+                fontSize: 13, fontWeight: 600, color: 'var(--ds-text-brand, #2563EB)', background: 'none',
                 border: 'none', cursor: 'pointer',
               }}
             >Show all ideas</button>
@@ -271,7 +271,7 @@ export default function IdeasRoadmapPage() {
             <button
               onClick={() => { setTeamFilter('All Teams'); setCommittedOnly(false); }}
               style={{
-                fontSize: 13, fontWeight: 600, color: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))', background: 'none',
+                fontSize: 13, fontWeight: 600, color: 'var(--ds-text-brand, #2563EB)', background: 'none',
                 border: 'none', cursor: 'pointer',
               }}
             >Clear filters</button>
@@ -316,7 +316,7 @@ export default function IdeasRoadmapPage() {
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={handleConfirmConvert} style={{ background: '#0D9488', color: 'var(--ds-surface, var(--ds-surface, #FFFFFF))' }}>
+            <AlertDialogAction onClick={handleConfirmConvert} style={{ background: '#0D9488', color: 'var(--ds-surface, #FFFFFF)' }}>
               Convert
             </AlertDialogAction>
           </AlertDialogFooter>
@@ -326,7 +326,7 @@ export default function IdeasRoadmapPage() {
       {toast && (
         <div style={{
           position: 'fixed', bottom: 24, left: '50%', transform: 'translateX(-50%)',
-          background: '#1E293B', color: 'var(--ds-surface, var(--ds-surface, #FFFFFF))', padding: '8px 20px',
+          background: '#1E293B', color: 'var(--ds-surface, #FFFFFF)', padding: '8px 20px',
           borderRadius: 8, fontSize: 13, fontWeight: 600, zIndex: 100,
           boxShadow: '0 4px 12px rgba(0,0,0,.15)',
           animation: 'fadeInUp 250ms ease',

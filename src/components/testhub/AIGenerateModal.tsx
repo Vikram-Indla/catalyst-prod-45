@@ -545,7 +545,7 @@ export function AIGenerateModal({ isOpen, onClose, onSuccess, currentFolderId }:
                     display: 'flex', gap: 8, alignItems: 'flex-start',
                   }}>
                     <AlertTriangle size={16} style={{ color: 'var(--sem-danger)', flexShrink: 0, marginTop: 1 }} />
-                    <span style={{ fontSize: 13, color: 'var(--ds-text-danger, var(--ds-text-danger, #991B1B))', lineHeight: 1.5 }}>{validationError}</span>
+                    <span style={{ fontSize: 13, color: 'var(--ds-text-danger, #991B1B)', lineHeight: 1.5 }}>{validationError}</span>
                   </div>
                 )}
               </div>

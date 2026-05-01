@@ -38,7 +38,7 @@ export function SchedulingRules() {
   }
 
   if (isLoading) {
-    return <div style={{ padding: 40, color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #64748B))', fontFamily: 'var(--cp-font-body)' }}>Loading...</div>
+    return <div style={{ padding: 40, color: 'var(--ds-text-subtlest, #64748B)', fontFamily: 'var(--cp-font-body)' }}>Loading...</div>
   }
 
   const Toggle = ({ checked, onChange }: { checked: boolean; onChange: (v: boolean) => void }) => (
@@ -46,7 +46,7 @@ export function SchedulingRules() {
       onClick={() => onChange(!checked)}
       style={{
         width: 38, height: 22, borderRadius: 11, border: 'none', cursor: 'pointer',
-        background: checked ? 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))' : 'var(--ds-text-disabled, var(--ds-text-disabled, #CBD5E1))', position: 'relative', flexShrink: 0,
+        background: checked ? 'var(--ds-text-brand, #2563EB)' : 'var(--ds-text-disabled, #CBD5E1)', position: 'relative', flexShrink: 0,
         transition: 'background .2s',
       }}
     >
@@ -75,7 +75,7 @@ export function SchedulingRules() {
         <h1 style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 18, fontWeight: 700, color: 'var(--fg-1, #0F172A)', margin: 0 }}>
           Scheduling Rules
         </h1>
-        <p style={{ fontSize: 13, color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #64748B))', marginTop: 4 }}>
+        <p style={{ fontSize: 13, color: 'var(--ds-text-subtlest, #64748B)', marginTop: 4 }}>
           Configure how effective due dates are calculated for the hierarchy.
         </p>
       </div>
@@ -104,17 +104,17 @@ export function SchedulingRules() {
             }} />
             <div>
               <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--fg-1, #0F172A)' }}>{p.label}</span>
-              <span style={{ fontSize: 12, color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #64748B))' }}> — {p.desc}</span>
+              <span style={{ fontSize: 12, color: 'var(--ds-text-subtlest, #64748B)' }}> — {p.desc}</span>
             </div>
           </div>
         ))}
 
         <div style={{
-          background: 'var(--ds-background-selected, var(--ds-background-selected, #EFF6FF))', border: '1px solid #BFDBFE', borderRadius: 8,
+          background: 'var(--ds-background-selected, #EFF6FF)', border: '1px solid #BFDBFE', borderRadius: 8,
           padding: '10px 14px', marginTop: 14, display: 'flex', gap: 8, alignItems: 'flex-start',
         }}>
           <span style={{ fontSize: 14 }}>ℹ️</span>
-          <p style={{ fontSize: 12, color: 'var(--ds-background-brand-bold-hovered, var(--ds-background-brand-bold-hovered, #1D4ED8))', margin: 0, lineHeight: 1.5 }}>
+          <p style={{ fontSize: 12, color: 'var(--ds-background-brand-bold-hovered, #1D4ED8)', margin: 0, lineHeight: 1.5 }}>
             Items that don't match any enabled rule are flagged as <strong>Unscheduled</strong> in dashboards and reports.
           </p>
         </div>
@@ -126,7 +126,7 @@ export function SchedulingRules() {
           Multi-FixVersion Strategy
         </h2>
         <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-          <label style={{ fontSize: 13, color: 'var(--ds-text-subtle, var(--ds-text-subtle, #334155))', width: 260 }}>
+          <label style={{ fontSize: 13, color: 'var(--ds-text-subtle, #334155)', width: 260 }}>
             When an issue has multiple FixVersions, use:
           </label>
           <select
@@ -134,7 +134,7 @@ export function SchedulingRules() {
             onChange={(e) => setMultiVersionStrategy(e.target.value)}
             style={{
               width: 200, padding: '7px 10px', borderRadius: 6, border: '1px solid var(--bd-default, #E2E8F0)',
-              fontSize: 12, color: 'var(--ds-text-subtle, var(--ds-text-subtle, #334155))', background: 'var(--bg-app, #fff)',
+              fontSize: 12, color: 'var(--ds-text-subtle, #334155)', background: 'var(--bg-app, #fff)',
             }}
           >
             <option value="earliest">Earliest release date</option>
@@ -151,7 +151,7 @@ export function SchedulingRules() {
             Version Name Parser
           </h2>
           <span style={{
-            fontSize: 9, background: '#FFFBEB', color: 'var(--ds-text-warning, var(--ds-text-warning, #F59E0B))', padding: '2px 8px',
+            fontSize: 9, background: '#FFFBEB', color: 'var(--ds-text-warning, #F59E0B)', padding: '2px 8px',
             borderRadius: 4, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '.3px',
           }}>Fallback</span>
         </div>
@@ -170,13 +170,13 @@ export function SchedulingRules() {
                 When a FixVersion has no releaseDate, Catalyst attempts to extract a date from the version name:
               </p>
               <div style={{ marginTop: 8, fontSize: 11, color: '#92400E', lineHeight: 2 }}>
-                <code style={{ fontFamily: 'var(--cp-font-mono)', background: 'var(--ds-surface-sunken, var(--ds-surface-sunken, #F1F5F9))', padding: '1px 5px', borderRadius: 2 }}>2026 02</code>
+                <code style={{ fontFamily: 'var(--cp-font-mono)', background: 'var(--ds-surface-sunken, #F1F5F9)', padding: '1px 5px', borderRadius: 2 }}>2026 02</code>
                 {' → 2026-02-28  '}
-                <code style={{ fontFamily: 'var(--cp-font-mono)', background: 'var(--ds-surface-sunken, var(--ds-surface-sunken, #F1F5F9))', padding: '1px 5px', borderRadius: 2 }}>2026 Q1</code>
+                <code style={{ fontFamily: 'var(--cp-font-mono)', background: 'var(--ds-surface-sunken, #F1F5F9)', padding: '1px 5px', borderRadius: 2 }}>2026 Q1</code>
                 {' → 2026-03-31  '}
-                <code style={{ fontFamily: 'var(--cp-font-mono)', background: 'var(--ds-surface-sunken, var(--ds-surface-sunken, #F1F5F9))', padding: '1px 5px', borderRadius: 2 }}>Release 3.0</code>
+                <code style={{ fontFamily: 'var(--cp-font-mono)', background: 'var(--ds-surface-sunken, #F1F5F9)', padding: '1px 5px', borderRadius: 2 }}>Release 3.0</code>
                 {' → '}
-                <span style={{ color: 'var(--ds-text-danger, var(--ds-text-danger, #EF4444))', fontWeight: 600 }}>Cannot parse</span>
+                <span style={{ color: 'var(--ds-text-danger, #EF4444)', fontWeight: 600 }}>Cannot parse</span>
               </div>
             </div>
           </div>
@@ -184,7 +184,7 @@ export function SchedulingRules() {
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 20 }}>
           <Toggle checked={versionNameParsing} onChange={setVersionNameParsing} />
-          <span style={{ fontSize: 13, color: 'var(--ds-text-subtle, var(--ds-text-subtle, #334155))' }}>
+          <span style={{ fontSize: 13, color: 'var(--ds-text-subtle, #334155)' }}>
             Enable version name date parsing as fallback when no releaseDate exists
           </span>
         </div>
@@ -195,7 +195,7 @@ export function SchedulingRules() {
             disabled={batchUpdate.isPending}
             style={{
               padding: '8px 20px', borderRadius: 6, fontSize: 12, fontWeight: 600,
-              background: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))', color: 'var(--ds-surface, var(--ds-surface, var(--ds-surface, #fff)))', border: 'none', cursor: 'pointer',
+              background: 'var(--ds-text-brand, #2563EB)', color: 'var(--ds-surface, #fff)', border: 'none', cursor: 'pointer',
               opacity: batchUpdate.isPending ? 0.6 : 1,
             }}
           >
@@ -205,7 +205,7 @@ export function SchedulingRules() {
             onClick={handleReset}
             style={{
               padding: '8px 20px', borderRadius: 6, fontSize: 12, fontWeight: 500,
-              background: 'var(--bg-1, #F8FAFC)', color: 'var(--ds-text-subtle, var(--ds-text-subtle, #334155))', border: '1px solid var(--bd-default, #E2E8F0)', cursor: 'pointer',
+              background: 'var(--bg-1, #F8FAFC)', color: 'var(--ds-text-subtle, #334155)', border: '1px solid var(--bd-default, #E2E8F0)', cursor: 'pointer',
             }}
           >
             Reset to Default

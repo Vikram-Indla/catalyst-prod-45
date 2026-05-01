@@ -429,7 +429,7 @@ export const WorkItemDetailsDrawer: React.FC<WorkItemDetailsDrawerProps> = ({
 
           {/* Jira Sync Status — show when jira_key exists OR sync_source is jira */}
           {jiraData?.jira_key && (
-            <div className="border-t border-[var(--bd-default, #E2E8F0)] dark:border-[var(--ds-surface-raised,var(--ds-surface-raised, #1A1A1A))] pt-4 mt-4">
+            <div className="border-t border-[var(--bd-default, #E2E8F0)] dark:border-[var(--ds-surface-raised, #1A1A1A)] pt-4 mt-4">
               <label className="block text-[11px] font-semibold text-[#6B7280] dark:text-[#9C8E7E] uppercase mb-3" style={{ fontWeight: 650 }}>
                 Jira Sync
               </label>
@@ -438,7 +438,7 @@ export const WorkItemDetailsDrawer: React.FC<WorkItemDetailsDrawerProps> = ({
                 <div className="flex items-center justify-between">
                   <span className="text-[11px] text-[#6B7280] dark:text-[#9C8E7E]">Jira Issue</span>
                   <span
-                    className="font-mono text-[12px] px-2 py-0.5 rounded bg-[var(--ds-surface-sunken,var(--ds-surface-sunken, #F1F5F9))] text-[#1E293B] dark:bg-[var(--ds-surface-raised,var(--ds-surface-raised, #1A1A1A))] dark:text-[#E2D5C3]"
+                    className="font-mono text-[12px] px-2 py-0.5 rounded bg-[var(--ds-surface-sunken, #F1F5F9)] text-[#1E293B] dark:bg-[var(--ds-surface-raised, #1A1A1A)] dark:text-[#E2D5C3]"
                     style={{ borderRadius: 4 }}
                   >
                     {jiraData.jira_key || jiraData.item_key || '—'}
@@ -457,11 +457,11 @@ export const WorkItemDetailsDrawer: React.FC<WorkItemDetailsDrawerProps> = ({
                         backgroundColor:
                           jiraData.jira_sync_status === 'synced' || jiraData.jira_sync_status === 'pushed' ? '#E3FCEF' :
                           jiraData.jira_sync_status === 'queued' || jiraData.jira_sync_status === 'approval_pending' ? '#DEEBFF' :
-                          'var(--ds-border, var(--ds-border, #DFE1E6))',
+                          'var(--ds-border, #DFE1E6)',
                         color:
                           jiraData.jira_sync_status === 'synced' || jiraData.jira_sync_status === 'pushed' ? '#006644' :
                           jiraData.jira_sync_status === 'queued' || jiraData.jira_sync_status === 'approval_pending' ? '#0747A6' :
-                          'var(--ds-text, var(--ds-text, #253858))',
+                          'var(--ds-text, #253858)',
                       }}
                     >
                       {jiraData.jira_sync_status}
@@ -471,7 +471,7 @@ export const WorkItemDetailsDrawer: React.FC<WorkItemDetailsDrawerProps> = ({
                 {/* Row 3: Last Synced */}
                 <div className="flex items-center justify-between">
                   <span className="text-[11px] text-[#6B7280] dark:text-[#9C8E7E]">Last Synced</span>
-                  <span className="text-[12px] text-[var(--ds-text-subtle,var(--ds-text-subtle, #334155))] dark:text-[#E2D5C3]">
+                  <span className="text-[12px] text-[var(--ds-text-subtle, #334155)] dark:text-[#E2D5C3]">
                     {(jiraData.jira_pushed_at || jiraData.last_synced_at)
                       ? format(new Date(jiraData.jira_pushed_at || jiraData.last_synced_at!), 'MMM d, yyyy, hh:mm a')
                       : '—'}

@@ -16,9 +16,9 @@ interface DefectTrendChartProps {
 }
 
 const SEVERITY_COLORS = {
-  blocker: 'var(--ds-text-danger, var(--ds-text-danger, #dc2626))',  // Red-600
+  blocker: 'var(--ds-text-danger, #dc2626)',  // Red-600
   critical: '#ea580c', // Orange-600
-  major: 'var(--ds-text-warning, var(--ds-text-warning, #d97706))',    // Amber-600
+  major: 'var(--ds-text-warning, #d97706)',    // Amber-600
   minor: '#65a30d',    // Lime-600
 };
 
@@ -61,7 +61,7 @@ export function DefectTrendChart({ cycleId, days = 14 }: DefectTrendChartProps) 
           <div className="h-64">
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={chartData} margin={{ top: 5, right: 20, left: 0, bottom: 5 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="var(--ds-border, var(--ds-border, #e5e7eb))" />
+                <CartesianGrid strokeDasharray="3 3" stroke="var(--ds-border, #e5e7eb)" />
                 <XAxis 
                   dataKey="dateLabel" 
                   tick={{ fontSize: 11 }} 

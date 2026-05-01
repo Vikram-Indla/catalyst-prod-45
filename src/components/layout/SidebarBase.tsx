@@ -168,7 +168,7 @@ export function SidebarBase({
     itemText: 'var(--cp-text-secondary, #42526E)',
     activeText: 'var(--cp-text-link, #0052CC)',
     activeBg: isDark ? 'var(--ds-background-selected, #1C2B41)' : '#E9F2FF',
-    hoverBg: isDark ? 'var(--ds-background-neutral-subtle-hovered, #A1BDD914)' : 'var(--ds-surface-sunken, var(--ds-surface-sunken, #F4F5F7))',
+    hoverBg: isDark ? 'var(--ds-background-neutral-subtle-hovered, #A1BDD914)' : 'var(--ds-surface-sunken, #F4F5F7)',
     hoverText: 'var(--cp-text-primary, #172B4D)',
     iconOpacityInactive: isDark ? 0.85 : 0.75,
     badgeBg: isDark ? 'var(--ds-background-neutral-subtle, #22272B)' : '#EBECF0',
@@ -541,11 +541,11 @@ function renderMenuItem(
             starred ? "opacity-100" : "opacity-0 group-hover:opacity-100"
           )}
           style={{
-            color: starred ? 'var(--ds-text-warning, var(--ds-text-warning, #f59e0b))' : 'var(--text-4)',
+            color: starred ? 'var(--ds-text-warning, #f59e0b)' : 'var(--text-4)',
           }}
           onMouseEnter={(e) => {
             if (!starred) {
-              e.currentTarget.style.color = 'var(--ds-text-warning, var(--ds-text-warning, #f59e0b))';
+              e.currentTarget.style.color = 'var(--ds-text-warning, #f59e0b)';
               e.currentTarget.style.background = 'rgba(245, 158, 11, 0.1)';
             }
           }}
@@ -579,7 +579,7 @@ function renderMenuItem(
               : 'hsl(var(--brand-primary))',
             color: item.textBadge === 'AI'
               ? '#7C3AED'
-              : 'var(--ds-surface, var(--ds-surface, #ffffff))',
+              : 'var(--ds-surface, #ffffff)',
             border: item.textBadge === 'AI' ? '1px solid rgba(124, 58, 237, 0.12)' : 'none',
             position: expanded ? 'relative' : 'absolute',
             top: expanded ? 'auto' : '4px',

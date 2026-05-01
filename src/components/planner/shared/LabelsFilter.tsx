@@ -13,13 +13,13 @@ interface LabelsFilterProps {
 }
 
 const COLORS = {
-  textPrimary: 'var(--ds-text, var(--ds-text, #0f172a))',
-  textMuted: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #64748b))',
-  surfaceCard: 'var(--ds-surface, var(--ds-surface, #ffffff))',
-  surfaceHover: 'var(--ds-surface-sunken, var(--ds-surface-sunken, #f1f5f9))',
-  borderLight: 'var(--ds-border, var(--ds-border, #e2e8f0))',
-  borderDefault: 'var(--ds-text-disabled, var(--ds-text-disabled, #cbd5e1))',
-  accent: 'var(--ds-text-brand, var(--ds-text-brand, #2563eb))',
+  textPrimary: 'var(--ds-text, #0f172a)',
+  textMuted: 'var(--ds-text-subtlest, #64748b)',
+  surfaceCard: 'var(--ds-surface, #ffffff)',
+  surfaceHover: 'var(--ds-surface-sunken, #f1f5f9)',
+  borderLight: 'var(--ds-border, #e2e8f0)',
+  borderDefault: 'var(--ds-text-disabled, #cbd5e1)',
+  accent: 'var(--ds-text-brand, #2563eb)',
   accentLight: '#dbeafe'
 };
 
@@ -89,7 +89,7 @@ export const LabelsFilter: React.FC<LabelsFilterProps> = ({
               alignItems: 'center',
               justifyContent: 'center',
               backgroundColor: COLORS.accent,
-              color: 'var(--ds-surface, var(--ds-surface, #ffffff))',
+              color: 'var(--ds-surface, #ffffff)',
               borderRadius: '9px',
               fontSize: '11px',
               fontWeight: 600

@@ -276,7 +276,7 @@ export function CreateGoalModal({ isOpen, onClose }: CreateGoalModalProps) {
             onClick={handleSubmit}
             disabled={createGoal.isPending}
             style={{
-              padding: '7px 16px', fontSize: 13, fontWeight: 600, color: 'var(--ds-surface, var(--ds-surface, #FFFFFF))',
+              padding: '7px 16px', fontSize: 13, fontWeight: 600, color: 'var(--ds-surface, #FFFFFF)',
               background: createGoal.isPending ? '#93C5FD' : 'var(--cp-blue)',
               border: 'none', borderRadius: 6, cursor: createGoal.isPending ? 'not-allowed' : 'pointer',
               display: 'inline-flex', alignItems: 'center', gap: 5,

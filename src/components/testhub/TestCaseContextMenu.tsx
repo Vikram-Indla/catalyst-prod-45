@@ -49,7 +49,7 @@ function ContextMenuItem({ icon: Icon, children, onClick, danger }: MenuItemProp
         transition: 'background-color 0.15s',
       }}
       onMouseEnter={(e) => {
-        e.currentTarget.style.backgroundColor = danger ? 'var(--ds-background-danger, var(--ds-background-danger, #FEF2F2))' : 'var(--bg-1)';
+        e.currentTarget.style.backgroundColor = danger ? 'var(--ds-background-danger, #FEF2F2)' : 'var(--bg-1)';
       }}
       onMouseLeave={(e) => {
         e.currentTarget.style.backgroundColor = 'transparent';

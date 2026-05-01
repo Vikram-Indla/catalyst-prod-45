@@ -28,7 +28,7 @@ const RELEASES = ['Mar 2026', 'Jun 2026', 'Sep 2026', 'Dec 2026'];
 const QUARTERS = ['Q1', 'Q2', 'Q3', 'Q4'];
 
 function StatusLoz({ status }: { status: string }) {
-  const s = STATUS_LOZENGE_COLORS[status] ?? { bg: 'var(--ds-border, var(--ds-border, #DFE1E6))', text: '#42526E' };
+  const s = STATUS_LOZENGE_COLORS[status] ?? { bg: 'var(--ds-border, #DFE1E6)', text: '#42526E' };
   const label = status === 'Converted to Request' ? 'CONVERTED' : status.toUpperCase();
   return (
     <span style={{
@@ -183,7 +183,7 @@ export default function IdeaDrawer({ ideaKey, onClose, onConvert }: Props) {
   const impactLevel = composite >= 3.51 ? 'CRITICAL' : composite >= 2.51 ? 'HIGH' : composite >= 0.01 ? 'MEDIUM' : 'LOW';
   const levelColors = composite >= 3.51
     ? { bg: '#1B7F37', text: 'var(--ds-text-inverse, #FFFFFF)' }
-    : composite >= 0.01 ? { bg: '#0C66E4', text: 'var(--ds-text-inverse, #FFFFFF)' } : { bg: 'var(--ds-border, var(--ds-border, #DFE1E6))', text: '#42526E' };
+    : composite >= 0.01 ? { bg: '#0C66E4', text: 'var(--ds-text-inverse, #FFFFFF)' } : { bg: 'var(--ds-border, #DFE1E6)', text: '#42526E' };
 
   const dimensions = [
     { letter: 'I', name: 'Investor Fit', weight: '25%', value: investorFit, set: setInvestorFit },
@@ -270,7 +270,7 @@ export default function IdeaDrawer({ ideaKey, onClose, onConvert }: Props) {
                 {canEdit ? (
                   <Select value={localStatus} onValueChange={setLocalStatus}>
                     <SelectTrigger className="h-8 bg-white dark:bg-transparent dark:border-gray-700 dark:text-white"><SelectValue /></SelectTrigger>
-                    <SelectContent className="bg-white dark:bg-[var(--ds-surface-raised,var(--ds-surface-raised, #1A1A1A))] dark:border-gray-700 dark:text-white">{STATUSES.map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}</SelectContent>
+                    <SelectContent className="bg-white dark:bg-[var(--ds-surface-raised, #1A1A1A)] dark:border-gray-700 dark:text-white">{STATUSES.map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}</SelectContent>
                   </Select>
                 ) : <StatusLoz status={localStatus} />}
               </FieldBlock>
@@ -278,7 +278,7 @@ export default function IdeaDrawer({ ideaKey, onClose, onConvert }: Props) {
                 {canEdit ? (
                   <Select value={localPriority} onValueChange={setLocalPriority}>
                     <SelectTrigger className="h-8 bg-white dark:bg-transparent dark:border-gray-700 dark:text-white"><SelectValue /></SelectTrigger>
-                    <SelectContent className="bg-white dark:bg-[var(--ds-surface-raised,var(--ds-surface-raised, #1A1A1A))] dark:border-gray-700 dark:text-white">{PRIORITIES.map(p => <SelectItem key={p} value={p}>{p}</SelectItem>)}</SelectContent>
+                    <SelectContent className="bg-white dark:bg-[var(--ds-surface-raised, #1A1A1A)] dark:border-gray-700 dark:text-white">{PRIORITIES.map(p => <SelectItem key={p} value={p}>{p}</SelectItem>)}</SelectContent>
                   </Select>
                 ) : <span style={{ fontSize: '13px', fontWeight: 650, color: dk.t2 }}>{localPriority}</span>}
               </FieldBlock>
@@ -286,7 +286,7 @@ export default function IdeaDrawer({ ideaKey, onClose, onConvert }: Props) {
                 {canEdit ? (
                   <Select value={localType} onValueChange={setLocalType}>
                     <SelectTrigger className="h-8 bg-white dark:bg-transparent dark:border-gray-700 dark:text-white"><SelectValue /></SelectTrigger>
-                    <SelectContent className="bg-white dark:bg-[var(--ds-surface-raised,var(--ds-surface-raised, #1A1A1A))] dark:border-gray-700 dark:text-white">{TYPES.map(t => <SelectItem key={t} value={t}>{t}</SelectItem>)}</SelectContent>
+                    <SelectContent className="bg-white dark:bg-[var(--ds-surface-raised, #1A1A1A)] dark:border-gray-700 dark:text-white">{TYPES.map(t => <SelectItem key={t} value={t}>{t}</SelectItem>)}</SelectContent>
                   </Select>
                 ) : <span style={{ fontSize: '13px', color: dk.t1 }}>{localType || '—'}</span>}
               </FieldBlock>
@@ -294,7 +294,7 @@ export default function IdeaDrawer({ ideaKey, onClose, onConvert }: Props) {
                 {canEdit ? (
                   <Select value={localSource} onValueChange={setLocalSource}>
                     <SelectTrigger className="h-8 bg-white dark:bg-transparent dark:border-gray-700 dark:text-white"><SelectValue /></SelectTrigger>
-                    <SelectContent className="bg-white dark:bg-[var(--ds-surface-raised,var(--ds-surface-raised, #1A1A1A))] dark:border-gray-700 dark:text-white">{SOURCES.map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}</SelectContent>
+                    <SelectContent className="bg-white dark:bg-[var(--ds-surface-raised, #1A1A1A)] dark:border-gray-700 dark:text-white">{SOURCES.map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}</SelectContent>
                   </Select>
                 ) : <span style={{ fontSize: '13px', color: dk.t1 }}>{localSource || '—'}</span>}
               </FieldBlock>
@@ -302,7 +302,7 @@ export default function IdeaDrawer({ ideaKey, onClose, onConvert }: Props) {
                 {canEdit ? (
                   <Select value={localTheme || '__none__'} onValueChange={(v: string) => setLocalTheme(v === '__none__' ? '' : v)}>
                     <SelectTrigger className="h-8 bg-white dark:bg-transparent dark:border-gray-700 dark:text-white"><SelectValue placeholder="Select theme" /></SelectTrigger>
-                    <SelectContent className="bg-white dark:bg-[var(--ds-surface-raised,var(--ds-surface-raised, #1A1A1A))] dark:border-gray-700 dark:text-white">
+                    <SelectContent className="bg-white dark:bg-[var(--ds-surface-raised, #1A1A1A)] dark:border-gray-700 dark:text-white">
                       <SelectItem value="__none__">— None —</SelectItem>
                       {THEMES.map(t => <SelectItem key={t} value={t}>{t}</SelectItem>)}
                     </SelectContent>
@@ -313,7 +313,7 @@ export default function IdeaDrawer({ ideaKey, onClose, onConvert }: Props) {
                 {canEdit ? (
                   <Select value={localTeam || '__none__'} onValueChange={(v: string) => setLocalTeam(v === '__none__' ? '' : v)}>
                     <SelectTrigger className="h-8 bg-white dark:bg-transparent dark:border-gray-700 dark:text-white"><SelectValue placeholder="Select team" /></SelectTrigger>
-                    <SelectContent className="bg-white dark:bg-[var(--ds-surface-raised,var(--ds-surface-raised, #1A1A1A))] dark:border-gray-700 dark:text-white">
+                    <SelectContent className="bg-white dark:bg-[var(--ds-surface-raised, #1A1A1A)] dark:border-gray-700 dark:text-white">
                       <SelectItem value="__none__">— None —</SelectItem>
                       {TEAMS.map(t => <SelectItem key={t} value={t}>{t}</SelectItem>)}
                     </SelectContent>
@@ -324,7 +324,7 @@ export default function IdeaDrawer({ ideaKey, onClose, onConvert }: Props) {
                 {canEdit ? (
                   <Select value={localRelease || '__none__'} onValueChange={(v: string) => setLocalRelease(v === '__none__' ? '' : v)}>
                     <SelectTrigger className="h-8 bg-white dark:bg-transparent dark:border-gray-700 dark:text-white"><SelectValue placeholder="Select release" /></SelectTrigger>
-                    <SelectContent className="bg-white dark:bg-[var(--ds-surface-raised,var(--ds-surface-raised, #1A1A1A))] dark:border-gray-700 dark:text-white">
+                    <SelectContent className="bg-white dark:bg-[var(--ds-surface-raised, #1A1A1A)] dark:border-gray-700 dark:text-white">
                       <SelectItem value="__none__">— None —</SelectItem>
                       {RELEASES.map(r => <SelectItem key={r} value={r}>{r}</SelectItem>)}
                     </SelectContent>
@@ -335,7 +335,7 @@ export default function IdeaDrawer({ ideaKey, onClose, onConvert }: Props) {
                 {canEdit ? (
                   <Select value={localQuarter || '__none__'} onValueChange={(v: string) => setLocalQuarter(v === '__none__' ? '' : v)}>
                     <SelectTrigger className="h-8 bg-white dark:bg-transparent dark:border-gray-700 dark:text-white"><SelectValue placeholder="Unassigned" /></SelectTrigger>
-                    <SelectContent className="bg-white dark:bg-[var(--ds-surface-raised,var(--ds-surface-raised, #1A1A1A))] dark:border-gray-700 dark:text-white">
+                    <SelectContent className="bg-white dark:bg-[var(--ds-surface-raised, #1A1A1A)] dark:border-gray-700 dark:text-white">
                       <SelectItem value="__none__">— Unassigned —</SelectItem>
                       {QUARTERS.map(q => <SelectItem key={q} value={q}>{q} 2026</SelectItem>)}
                     </SelectContent>
@@ -344,8 +344,8 @@ export default function IdeaDrawer({ ideaKey, onClose, onConvert }: Props) {
                   <span style={{
                     display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
                     height: 20, padding: '0 6px', borderRadius: 4, fontSize: '11px', fontWeight: 700,
-                    background: QUARTER_BADGE[localQuarter]?.bg || 'var(--ds-border, var(--ds-border, #E2E8F0))',
-                    color: QUARTER_BADGE[localQuarter]?.text || 'var(--ds-text-subtlest, var(--ds-text-subtlest, #94A3B8))',
+                    background: QUARTER_BADGE[localQuarter]?.bg || 'var(--ds-border, #E2E8F0)',
+                    color: QUARTER_BADGE[localQuarter]?.text || 'var(--ds-text-subtlest, #94A3B8)',
                   }}>{localQuarter} 2026</span>
                 ) : <span style={{ fontSize: '13px', color: dk.t3 }}>—</span>}
               </FieldBlock>
@@ -353,7 +353,7 @@ export default function IdeaDrawer({ ideaKey, onClose, onConvert }: Props) {
                 {canEdit ? (
                   <Select value={localAssigneeId || '__none__'} onValueChange={(v: string) => setLocalAssigneeId(v === '__none__' ? '' : v)}>
                     <SelectTrigger className="h-8 bg-white dark:bg-transparent dark:border-gray-700 dark:text-white"><SelectValue placeholder="Select assignee" /></SelectTrigger>
-                    <SelectContent className="bg-white dark:bg-[var(--ds-surface-raised,var(--ds-surface-raised, #1A1A1A))] dark:border-gray-700 dark:text-white max-h-[200px]">
+                    <SelectContent className="bg-white dark:bg-[var(--ds-surface-raised, #1A1A1A)] dark:border-gray-700 dark:text-white max-h-[200px]">
                       <SelectItem value="__none__">— Unassigned —</SelectItem>
                       {profiles.map((p) => <SelectItem key={p.id} value={p.id}>{p.full_name}</SelectItem>)}
                     </SelectContent>
@@ -422,7 +422,7 @@ export default function IdeaDrawer({ ideaKey, onClose, onConvert }: Props) {
                     <div style={{ height: '4px', borderRadius: '4px', backgroundColor: 'var(--cp-border, #E2E8F0)', overflow: 'hidden' }}>
                       <div style={{
                         height: '100%', width: `${(dim.value / 5) * 100}%`,
-                        backgroundColor: dim.value > 0 ? 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))' : 'transparent',
+                        backgroundColor: dim.value > 0 ? 'var(--ds-text-brand, #2563EB)' : 'transparent',
                         borderRadius: '4px', transition: 'width 300ms',
                       }} />
                     </div>
@@ -449,7 +449,7 @@ export default function IdeaDrawer({ ideaKey, onClose, onConvert }: Props) {
                 </p>
                 <button onClick={() => onConvert(rawIdea)} style={{
                   width: '100%', height: '50px', borderRadius: '6px', border: 'none',
-                  background: 'var(--ds-text-success, var(--ds-text-success, #16A34A))', color: 'var(--ds-text-inverse, #FFFFFF)', fontSize: '13px', fontWeight: 600,
+                  background: 'var(--ds-text-success, #16A34A)', color: 'var(--ds-text-inverse, #FFFFFF)', fontSize: '13px', fontWeight: 600,
                   cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px',
                 }}>
                   <ArrowUpRight size={14} /> Convert to Request
@@ -472,7 +472,7 @@ export default function IdeaDrawer({ ideaKey, onClose, onConvert }: Props) {
             }}>Cancel</button>
             <button onClick={handleSave} disabled={updateIdea.isPending} style={{
               height: '50px', padding: '0 16px', borderRadius: '6px',
-              border: 'none', background: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))', color: 'var(--ds-text-inverse, #FFFFFF)',
+              border: 'none', background: 'var(--ds-text-brand, #2563EB)', color: 'var(--ds-text-inverse, #FFFFFF)',
               fontSize: '13px', fontWeight: 600, cursor: 'pointer',
               opacity: updateIdea.isPending ? 0.7 : 1,
             }}>{updateIdea.isPending ? 'Saving...' : 'Save Changes'}</button>

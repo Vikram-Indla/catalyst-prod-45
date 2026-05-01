@@ -56,7 +56,7 @@ export function VelocityChart({ cycleId, days = 14 }: VelocityChartProps) {
         <div className="h-64">
           <ResponsiveContainer width="100%" height="100%">
             <ComposedChart data={chartData} margin={{ top: 5, right: 20, left: 0, bottom: 5 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="var(--ds-border, var(--ds-border, #e5e7eb))" />
+              <CartesianGrid strokeDasharray="3 3" stroke="var(--ds-border, #e5e7eb)" />
               <XAxis 
                 dataKey="dateLabel" 
                 tick={{ fontSize: 11 }} 

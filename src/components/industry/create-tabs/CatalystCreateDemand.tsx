@@ -49,7 +49,7 @@ function SectionCard({
     )}>
       <h3 className="
         text-[12px] font-semibold uppercase tracking-wider
-        text-[var(--ds-text-brand,var(--ds-text-brand, #2563eb))] dark:text-blue-400
+        text-[var(--ds-text-brand, #2563eb)] dark:text-blue-400
         mb-5
         flex items-center gap-2
       ">
@@ -137,8 +137,8 @@ export function CatalystCreateDemand({ data, onChange }: DemandDetailsTabProps) 
     "text-gray-900 dark:text-gray-100",
     "placeholder:text-gray-400 dark:placeholder:text-gray-500",
     "focus:outline-none",
-    "focus:ring-2 focus:ring-[var(--ds-text-brand,var(--ds-text-brand, #2563eb))]/20",
-    "focus:border-[var(--ds-text-brand,var(--ds-text-brand, #2563eb))]",
+    "focus:ring-2 focus:ring-[var(--ds-text-brand, #2563eb)]/20",
+    "focus:border-[var(--ds-text-brand, #2563eb)]",
     "transition-all"
   );
 

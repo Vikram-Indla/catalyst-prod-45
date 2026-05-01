@@ -9,32 +9,32 @@ import { resolveStatusCategoryStatic } from '@/hooks/useStatusMappingLookup';
 // ═══════════════════════════════════════════════════
 const SC: Record<string, { dot: string; bg: string; tx: string; label: string }> = {
   // ── Grey: To Do / Waiting ──
-  'To Do':                { dot: 'var(--ds-text-warning, var(--ds-text-warning, #D97706))', bg: '#FFFBEB', tx: '#78350F', label: 'To Do' },
-  'Open':                 { dot: 'var(--ds-text-warning, var(--ds-text-warning, #D97706))', bg: '#FFFBEB', tx: '#78350F', label: 'To Do' },
-  'Backlog':              { dot: 'var(--ds-text-warning, var(--ds-text-warning, #D97706))', bg: '#FFFBEB', tx: '#78350F', label: 'Backlog' },
-  'Re-Open':              { dot: 'var(--ds-text-warning, var(--ds-text-warning, #D97706))', bg: '#FFFBEB', tx: '#78350F', label: 'Re-Open' },
-  'Reopened':             { dot: 'var(--ds-text-warning, var(--ds-text-warning, #D97706))', bg: '#FFFBEB', tx: '#78350F', label: 'Re-Open' },
-  'In Requirements':      { dot: 'var(--ds-text-warning, var(--ds-text-warning, #D97706))', bg: '#FFFBEB', tx: '#78350F', label: 'Requirements' },
-  'Awaiting Info':        { dot: 'var(--ds-text-warning, var(--ds-text-warning, #D97706))', bg: '#FFFBEB', tx: '#78350F', label: 'Awaiting' },
-  'On Hold':              { dot: 'var(--ds-text-warning, var(--ds-text-warning, #D97706))', bg: '#FFFBEB', tx: '#78350F', label: 'On Hold' },
-  'Todo':                 { dot: 'var(--ds-text-warning, var(--ds-text-warning, #D97706))', bg: '#FFFBEB', tx: '#78350F', label: 'To Do' },
-  'Reported':             { dot: 'var(--ds-text-warning, var(--ds-text-warning, #D97706))', bg: '#FFFBEB', tx: '#78350F', label: 'Reported' },
-  'Ready for Dev':        { dot: 'var(--ds-text-warning, var(--ds-text-warning, #D97706))', bg: '#FFFBEB', tx: '#78350F', label: 'Ready Dev' },
-  'Ready for Test':       { dot: 'var(--ds-text-warning, var(--ds-text-warning, #D97706))', bg: '#FFFBEB', tx: '#78350F', label: 'Ready Test' },
+  'To Do':                { dot: 'var(--ds-text-warning, #D97706)', bg: '#FFFBEB', tx: '#78350F', label: 'To Do' },
+  'Open':                 { dot: 'var(--ds-text-warning, #D97706)', bg: '#FFFBEB', tx: '#78350F', label: 'To Do' },
+  'Backlog':              { dot: 'var(--ds-text-warning, #D97706)', bg: '#FFFBEB', tx: '#78350F', label: 'Backlog' },
+  'Re-Open':              { dot: 'var(--ds-text-warning, #D97706)', bg: '#FFFBEB', tx: '#78350F', label: 'Re-Open' },
+  'Reopened':             { dot: 'var(--ds-text-warning, #D97706)', bg: '#FFFBEB', tx: '#78350F', label: 'Re-Open' },
+  'In Requirements':      { dot: 'var(--ds-text-warning, #D97706)', bg: '#FFFBEB', tx: '#78350F', label: 'Requirements' },
+  'Awaiting Info':        { dot: 'var(--ds-text-warning, #D97706)', bg: '#FFFBEB', tx: '#78350F', label: 'Awaiting' },
+  'On Hold':              { dot: 'var(--ds-text-warning, #D97706)', bg: '#FFFBEB', tx: '#78350F', label: 'On Hold' },
+  'Todo':                 { dot: 'var(--ds-text-warning, #D97706)', bg: '#FFFBEB', tx: '#78350F', label: 'To Do' },
+  'Reported':             { dot: 'var(--ds-text-warning, #D97706)', bg: '#FFFBEB', tx: '#78350F', label: 'Reported' },
+  'Ready for Dev':        { dot: 'var(--ds-text-warning, #D97706)', bg: '#FFFBEB', tx: '#78350F', label: 'Ready Dev' },
+  'Ready for Test':       { dot: 'var(--ds-text-warning, #D97706)', bg: '#FFFBEB', tx: '#78350F', label: 'Ready Test' },
   // ── Blue: In Progress ──
-  'In Progress':          { dot: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))', bg: 'var(--ds-background-selected, var(--ds-background-selected, #EFF6FF))', tx: '#1E3A5F', label: 'In Progress' },
-  'In Development':       { dot: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))', bg: 'var(--ds-background-selected, var(--ds-background-selected, #EFF6FF))', tx: '#1E3A5F', label: 'In Progress' },
-  'Under Implementation': { dot: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))', bg: 'var(--ds-background-selected, var(--ds-background-selected, #EFF6FF))', tx: '#1E3A5F', label: 'In Progress' },
-  'In Design':            { dot: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))', bg: 'var(--ds-background-selected, var(--ds-background-selected, #EFF6FF))', tx: '#1E3A5F', label: 'In Design' },
-  'Ready for Development':{ dot: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))', bg: 'var(--ds-background-selected, var(--ds-background-selected, #EFF6FF))', tx: '#1E3A5F', label: 'Ready Dev' },
-  'In Entity Integration':{ dot: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))', bg: 'var(--ds-background-selected, var(--ds-background-selected, #EFF6FF))', tx: '#1E3A5F', label: 'Integration' },
-  'Deferred for Int':     { dot: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))', bg: 'var(--ds-background-selected, var(--ds-background-selected, #EFF6FF))', tx: '#1E3A5F', label: 'Deferred' },
-  'In Beta':              { dot: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))', bg: 'var(--ds-background-selected, var(--ds-background-selected, #EFF6FF))', tx: '#1E3A5F', label: 'In Beta' },
-  'In Production':        { dot: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))', bg: 'var(--ds-background-selected, var(--ds-background-selected, #EFF6FF))', tx: '#1E3A5F', label: 'In Prod' },
-  'In Investigation':     { dot: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))', bg: 'var(--ds-background-selected, var(--ds-background-selected, #EFF6FF))', tx: '#1E3A5F', label: 'Investigating' },
-  'In Fix':               { dot: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))', bg: 'var(--ds-background-selected, var(--ds-background-selected, #EFF6FF))', tx: '#1E3A5F', label: 'In Fix' },
-  'In Execution':         { dot: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))', bg: 'var(--ds-background-selected, var(--ds-background-selected, #EFF6FF))', tx: '#1E3A5F', label: 'In Execution' },
-  'Fix in Progress':      { dot: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))', bg: 'var(--ds-background-selected, var(--ds-background-selected, #EFF6FF))', tx: '#1E3A5F', label: 'Fixing' },
+  'In Progress':          { dot: 'var(--ds-text-brand, #2563EB)', bg: 'var(--ds-background-selected, #EFF6FF)', tx: '#1E3A5F', label: 'In Progress' },
+  'In Development':       { dot: 'var(--ds-text-brand, #2563EB)', bg: 'var(--ds-background-selected, #EFF6FF)', tx: '#1E3A5F', label: 'In Progress' },
+  'Under Implementation': { dot: 'var(--ds-text-brand, #2563EB)', bg: 'var(--ds-background-selected, #EFF6FF)', tx: '#1E3A5F', label: 'In Progress' },
+  'In Design':            { dot: 'var(--ds-text-brand, #2563EB)', bg: 'var(--ds-background-selected, #EFF6FF)', tx: '#1E3A5F', label: 'In Design' },
+  'Ready for Development':{ dot: 'var(--ds-text-brand, #2563EB)', bg: 'var(--ds-background-selected, #EFF6FF)', tx: '#1E3A5F', label: 'Ready Dev' },
+  'In Entity Integration':{ dot: 'var(--ds-text-brand, #2563EB)', bg: 'var(--ds-background-selected, #EFF6FF)', tx: '#1E3A5F', label: 'Integration' },
+  'Deferred for Int':     { dot: 'var(--ds-text-brand, #2563EB)', bg: 'var(--ds-background-selected, #EFF6FF)', tx: '#1E3A5F', label: 'Deferred' },
+  'In Beta':              { dot: 'var(--ds-text-brand, #2563EB)', bg: 'var(--ds-background-selected, #EFF6FF)', tx: '#1E3A5F', label: 'In Beta' },
+  'In Production':        { dot: 'var(--ds-text-brand, #2563EB)', bg: 'var(--ds-background-selected, #EFF6FF)', tx: '#1E3A5F', label: 'In Prod' },
+  'In Investigation':     { dot: 'var(--ds-text-brand, #2563EB)', bg: 'var(--ds-background-selected, #EFF6FF)', tx: '#1E3A5F', label: 'Investigating' },
+  'In Fix':               { dot: 'var(--ds-text-brand, #2563EB)', bg: 'var(--ds-background-selected, #EFF6FF)', tx: '#1E3A5F', label: 'In Fix' },
+  'In Execution':         { dot: 'var(--ds-text-brand, #2563EB)', bg: 'var(--ds-background-selected, #EFF6FF)', tx: '#1E3A5F', label: 'In Execution' },
+  'Fix in Progress':      { dot: 'var(--ds-text-brand, #2563EB)', bg: 'var(--ds-background-selected, #EFF6FF)', tx: '#1E3A5F', label: 'Fixing' },
   // ── Teal: Review / QA ──
   'In Review':            { dot: '#0D9488', bg: '#F0FDFA', tx: '#134E4A', label: 'In Review' },
   'In QA':                { dot: '#0D9488', bg: '#F0FDFA', tx: '#134E4A', label: 'In QA' },
@@ -50,28 +50,28 @@ const SC: Record<string, { dot: string; bg: string; tx: string; label: string }>
   'In UAT':               { dot: '#7C3AED', bg: '#F5F3FF', tx: '#4C1D95', label: 'In UAT' },
   'UAT Ready':            { dot: '#7C3AED', bg: '#F5F3FF', tx: '#4C1D95', label: 'UAT Ready' },
   // ── Green: Done ──
-  'Done':                 { dot: 'var(--ds-text-success, var(--ds-text-success, #16A34A))', bg: '#F0FDF4', tx: '#14532D', label: 'Done' },
-  'Closed':               { dot: 'var(--ds-text-success, var(--ds-text-success, #16A34A))', bg: '#F0FDF4', tx: '#14532D', label: 'Done' },
-  'Resolved':             { dot: 'var(--ds-text-success, var(--ds-text-success, #16A34A))', bg: '#F0FDF4', tx: '#14532D', label: 'Done' },
-  'Ready for Production': { dot: 'var(--ds-text-success, var(--ds-text-success, #16A34A))', bg: '#F0FDF4', tx: '#14532D', label: 'Ready Prod' },
-  'Beta Ready':           { dot: 'var(--ds-text-success, var(--ds-text-success, #16A34A))', bg: '#F0FDF4', tx: '#14532D', label: 'Beta Ready' },
-  'Production Ready':     { dot: 'var(--ds-text-success, var(--ds-text-success, #16A34A))', bg: '#F0FDF4', tx: '#14532D', label: 'Prod Ready' },
-  'Monitor':              { dot: 'var(--ds-text-success, var(--ds-text-success, #16A34A))', bg: '#F0FDF4', tx: '#14532D', label: 'Monitor' },
-  'Released':             { dot: 'var(--ds-text-success, var(--ds-text-success, #16A34A))', bg: '#F0FDF4', tx: '#14532D', label: 'Released' },
-  'Verified':             { dot: 'var(--ds-text-success, var(--ds-text-success, #16A34A))', bg: '#F0FDF4', tx: '#14532D', label: 'Verified' },
-  'Approved':             { dot: 'var(--ds-text-success, var(--ds-text-success, #16A34A))', bg: '#F0FDF4', tx: '#14532D', label: 'Approved' },
-  'Complete':             { dot: 'var(--ds-text-success, var(--ds-text-success, #16A34A))', bg: '#F0FDF4', tx: '#14532D', label: 'Complete' },
-  'Completed':            { dot: 'var(--ds-text-success, var(--ds-text-success, #16A34A))', bg: '#F0FDF4', tx: '#14532D', label: 'Complete' },
+  'Done':                 { dot: 'var(--ds-text-success, #16A34A)', bg: '#F0FDF4', tx: '#14532D', label: 'Done' },
+  'Closed':               { dot: 'var(--ds-text-success, #16A34A)', bg: '#F0FDF4', tx: '#14532D', label: 'Done' },
+  'Resolved':             { dot: 'var(--ds-text-success, #16A34A)', bg: '#F0FDF4', tx: '#14532D', label: 'Done' },
+  'Ready for Production': { dot: 'var(--ds-text-success, #16A34A)', bg: '#F0FDF4', tx: '#14532D', label: 'Ready Prod' },
+  'Beta Ready':           { dot: 'var(--ds-text-success, #16A34A)', bg: '#F0FDF4', tx: '#14532D', label: 'Beta Ready' },
+  'Production Ready':     { dot: 'var(--ds-text-success, #16A34A)', bg: '#F0FDF4', tx: '#14532D', label: 'Prod Ready' },
+  'Monitor':              { dot: 'var(--ds-text-success, #16A34A)', bg: '#F0FDF4', tx: '#14532D', label: 'Monitor' },
+  'Released':             { dot: 'var(--ds-text-success, #16A34A)', bg: '#F0FDF4', tx: '#14532D', label: 'Released' },
+  'Verified':             { dot: 'var(--ds-text-success, #16A34A)', bg: '#F0FDF4', tx: '#14532D', label: 'Verified' },
+  'Approved':             { dot: 'var(--ds-text-success, #16A34A)', bg: '#F0FDF4', tx: '#14532D', label: 'Approved' },
+  'Complete':             { dot: 'var(--ds-text-success, #16A34A)', bg: '#F0FDF4', tx: '#14532D', label: 'Complete' },
+  'Completed':            { dot: 'var(--ds-text-success, #16A34A)', bg: '#F0FDF4', tx: '#14532D', label: 'Complete' },
   // ── Red: Blocked / Rejected ──
-  'Blocked':              { dot: 'var(--ds-text-danger, var(--ds-text-danger, #EF4444))', bg: 'var(--ds-background-danger, var(--ds-background-danger, #FEF2F2))', tx: '#7F1D1D', label: 'Blocked' },
-  'Rejected':             { dot: 'var(--ds-text-danger, var(--ds-text-danger, #EF4444))', bg: 'var(--ds-background-danger, var(--ds-background-danger, #FEF2F2))', tx: '#7F1D1D', label: 'Rejected' },
-  'Impediment':           { dot: 'var(--ds-text-danger, var(--ds-text-danger, #EF4444))', bg: 'var(--ds-background-danger, var(--ds-background-danger, #FEF2F2))', tx: '#7F1D1D', label: 'Impediment' },
+  'Blocked':              { dot: 'var(--ds-text-danger, #EF4444)', bg: 'var(--ds-background-danger, #FEF2F2)', tx: '#7F1D1D', label: 'Blocked' },
+  'Rejected':             { dot: 'var(--ds-text-danger, #EF4444)', bg: 'var(--ds-background-danger, #FEF2F2)', tx: '#7F1D1D', label: 'Rejected' },
+  'Impediment':           { dot: 'var(--ds-text-danger, #EF4444)', bg: 'var(--ds-background-danger, #FEF2F2)', tx: '#7F1D1D', label: 'Impediment' },
 };
 
 // Category-level fallbacks (Jira always provides these)
-const CAT_DONE       = { dot: 'var(--ds-text-success, var(--ds-text-success, #16A34A))', bg: '#F0FDF4', tx: '#14532D', label: 'Done' };
-const CAT_INPROGRESS = { dot: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))', bg: 'var(--ds-background-selected, var(--ds-background-selected, #EFF6FF))', tx: '#1E3A5F', label: 'In Progress' };
-const CAT_TODO       = { dot: 'var(--ds-text-warning, var(--ds-text-warning, #D97706))', bg: '#FFFBEB', tx: '#78350F', label: 'To Do' };
+const CAT_DONE       = { dot: 'var(--ds-text-success, #16A34A)', bg: '#F0FDF4', tx: '#14532D', label: 'Done' };
+const CAT_INPROGRESS = { dot: 'var(--ds-text-brand, #2563EB)', bg: 'var(--ds-background-selected, #EFF6FF)', tx: '#1E3A5F', label: 'In Progress' };
+const CAT_TODO       = { dot: 'var(--ds-text-warning, #D97706)', bg: '#FFFBEB', tx: '#78350F', label: 'To Do' };
 
 function resolveStatus(item: any) {
   // 1. Try exact status_name match first (most descriptive label)
@@ -87,15 +87,15 @@ function resolveStatus(item: any) {
   const cat5 = resolveStatusCategoryStatic(name, item.status_category);
   if (cat5 === 'Done') return CAT_DONE;
   if (cat5 === 'In Progress' || cat5 === 'In Review') return CAT_INPROGRESS;
-  if (cat5 === 'Blocked') return { dot: 'var(--ds-text-danger, var(--ds-text-danger, #EF4444))', bg: 'var(--ds-background-danger, var(--ds-background-danger, #FEF2F2))', tx: '#7F1D1D', label: name || 'Blocked' };
+  if (cat5 === 'Blocked') return { dot: 'var(--ds-text-danger, #EF4444)', bg: 'var(--ds-background-danger, #FEF2F2)', tx: '#7F1D1D', label: name || 'Blocked' };
 
   // 4. Final fallback: To Do (never "Unknown")
   return CAT_TODO;
 }
 
-const PC: Record<string, string> = { BAU: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))', SEN: 'var(--ds-text-warning, var(--ds-text-warning, #D97706))', FAC: 'var(--ds-text-success, var(--ds-text-success, #16A34A))', OPS: '#0D9488', SUP: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #64748B))', LND: '#7C3AED' };
-const pColor = (k: string, fallback?: string) => fallback || PC[k] || 'var(--ds-text-subtlest, var(--ds-text-subtlest, #64748B))';
-const ageCol = (d: number) => d <= 7 ? 'var(--ds-text-success, var(--ds-text-success, #16A34A))' : d <= 14 ? 'var(--ds-text-warning, var(--ds-text-warning, #D97706))' : 'var(--ds-text-danger, var(--ds-text-danger, #EF4444))';
+const PC: Record<string, string> = { BAU: 'var(--ds-text-brand, #2563EB)', SEN: 'var(--ds-text-warning, #D97706)', FAC: 'var(--ds-text-success, #16A34A)', OPS: '#0D9488', SUP: 'var(--ds-text-subtlest, #64748B)', LND: '#7C3AED' };
+const pColor = (k: string, fallback?: string) => fallback || PC[k] || 'var(--ds-text-subtlest, #64748B)';
+const ageCol = (d: number) => d <= 7 ? 'var(--ds-text-success, #16A34A)' : d <= 14 ? 'var(--ds-text-warning, #D97706)' : 'var(--ds-text-danger, #EF4444)';
 const ageLabel = (d: number) => d === 0 ? 'Today' : d === 1 ? '1d ago' : `${d}d ago`;
 
 interface Props {
@@ -168,11 +168,11 @@ export const R360DetailPanel: React.FC<Props> = ({ item, siblings, onClose, onSi
             <span style={{ fontSize: '10.5px', fontWeight: 600, padding: '2px 8px', borderRadius: '4px', background: 'var(--bg-3)', color: 'var(--fg-2)', textTransform: 'capitalize' }}>
               {item.priority || '—'}
             </span>
-            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '3px', fontSize: '10.5px', fontWeight: 600, padding: '2px 8px', borderRadius: '4px', background: 'var(--ds-background-danger, var(--ds-background-danger, #FEF2F2))', color: '#7F1D1D' }}>
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '3px', fontSize: '10.5px', fontWeight: 600, padding: '2px 8px', borderRadius: '4px', background: 'var(--ds-background-danger, #FEF2F2)', color: '#7F1D1D' }}>
               {getJiraIcon(item.item_type)} <span style={{ textTransform: 'uppercase' }}>{item.item_type}</span>
             </span>
             {item.project_key && (
-              <span style={{ fontSize: '10px', fontWeight: 700, padding: '2px 6px', borderRadius: '4px', color: 'var(--ds-surface, var(--ds-surface, var(--ds-surface, #FFF)))', background: projColor }}>{item.project_key}</span>
+              <span style={{ fontSize: '10px', fontWeight: 700, padding: '2px 6px', borderRadius: '4px', color: 'var(--ds-surface, #FFF)', background: projColor }}>{item.project_key}</span>
             )}
           </div>
           <div style={{ fontSize: '16px', fontWeight: 600, color: '#020617', lineHeight: '1.4' }}>{item.title}</div>
@@ -243,7 +243,7 @@ export const R360DetailPanel: React.FC<Props> = ({ item, siblings, onClose, onSi
                 {/* Current */}
                 <div style={{
                   display: 'flex', alignItems: 'flex-start', gap: '6px', padding: '6px 8px',
-                  borderRadius: '6px', border: '1.5px solid var(--cp-blue)', background: 'var(--ds-background-selected, var(--ds-background-selected, #EFF6FF))',
+                  borderRadius: '6px', border: '1.5px solid var(--cp-blue)', background: 'var(--ds-background-selected, #EFF6FF)',
                 }}>
                   {getJiraIcon(item.item_type)}
                   <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: '11px', color: 'var(--cp-blue)', whiteSpace: 'nowrap', flexShrink: 0, minWidth: '72px', fontWeight: 600 }}>{item.item_key}</span>
@@ -276,7 +276,7 @@ export const R360DetailPanel: React.FC<Props> = ({ item, siblings, onClose, onSi
                       display: 'flex', alignItems: 'center', gap: '8px', padding: '7px 10px', borderRadius: '6px',
                       cursor: isCurrent ? 'default' : 'pointer', marginBottom: '2px',
                       border: isCurrent ? '1px solid var(--cp-blue)' : '1px solid transparent',
-                      background: isCurrent ? 'var(--ds-background-selected, var(--ds-background-selected, #EFF6FF))' : 'transparent',
+                      background: isCurrent ? 'var(--ds-background-selected, #EFF6FF)' : 'transparent',
                     }}
                       onMouseEnter={e => { if (!isCurrent) e.currentTarget.style.background = 'var(--bg-3)'; }}
                       onMouseLeave={e => { if (!isCurrent) e.currentTarget.style.background = 'transparent'; }}

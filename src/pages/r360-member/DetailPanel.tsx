@@ -80,7 +80,7 @@ export function DetailPanel({ item, onClose, onSelectItem }: {
               <div className="r3-meta-label">Release</div>
               <div className="r3-meta-value">
                 {item.fix_version ? item.fix_version
-                  : item.item_type === 'Sub-task' && item.parent_key ? <span style={{ color: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))', fontSize: 12 }}>Inherited from {item.parent_key}</span>
+                  : item.item_type === 'Sub-task' && item.parent_key ? <span style={{ color: 'var(--ds-text-brand, #2563EB)', fontSize: 12 }}>Inherited from {item.parent_key}</span>
                   : '\u2014'}
               </div>
             </div>
@@ -88,7 +88,7 @@ export function DetailPanel({ item, onClose, onSelectItem }: {
               <div className="r3-meta-label">Due</div>
               <div className="r3-meta-value">
                 {item.due_date ? formatDate(item.due_date)
-                  : item.item_type === 'Sub-task' && item.parent_key ? <span style={{ color: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))', fontSize: 12 }}>Inherited from {item.parent_key}</span>
+                  : item.item_type === 'Sub-task' && item.parent_key ? <span style={{ color: 'var(--ds-text-brand, #2563EB)', fontSize: 12 }}>Inherited from {item.parent_key}</span>
                   : '\u2014'}
               </div>
             </div>

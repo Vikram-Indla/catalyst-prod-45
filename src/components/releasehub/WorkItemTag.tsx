@@ -11,9 +11,9 @@ interface Props {
 }
 
 const STATUS_MINI: Record<string, { bg: string; text: string }> = {
-  done: { bg: 'var(--ds-background-success, var(--ds-background-success, #DCFCE7))', text: '#15803D' },
+  done: { bg: 'var(--ds-background-success, #DCFCE7)', text: '#15803D' },
   in_progress: { bg: '#DBEAFE', text: '#1E40AF' },
-  todo: { bg: 'var(--ds-surface-sunken, var(--ds-surface-sunken, #F1F5F9))', text: 'var(--ds-text-subtle, var(--ds-text-subtle, #475569))' },
+  todo: { bg: 'var(--ds-surface-sunken, #F1F5F9)', text: 'var(--ds-text-subtle, #475569)' },
 };
 
 export function WorkItemTag({ workItemKey, title, type, status, onClick }: Props) {
@@ -29,7 +29,7 @@ export function WorkItemTag({ workItemKey, title, type, status, onClick }: Props
       <span className="text-[11px] font-bold text-[var(--sem-success)] shrink-0" style={{ fontFamily: RH.fontMono }}>
         {workItemKey}
       </span>
-      <span className="text-[11px] text-[var(--ds-text-subtle,var(--ds-text-subtle, #475569))] truncate">{title}</span>
+      <span className="text-[11px] text-[var(--ds-text-subtle, #475569)] truncate">{title}</span>
       <span className="text-[9px] font-bold uppercase px-1 rounded shrink-0" style={{ background: st.bg, color: st.text }}>
         {status.replace(/_/g, ' ')}
       </span>

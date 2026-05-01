@@ -73,7 +73,7 @@ export function InlineExpansionPanel({ item, onOpenDetail }: { item: Resource360
       <div style={{ marginTop: 8 }}>
         <button onClick={onOpenDetail} style={{
           fontSize: 10, fontWeight: 700, padding: '4px 12px', borderRadius: 6,
-          background: '#1A1A2E', color: 'var(--ds-surface, var(--ds-surface, var(--ds-surface, #fff)))', border: 'none', cursor: 'pointer',
+          background: '#1A1A2E', color: 'var(--ds-surface, #fff)', border: 'none', cursor: 'pointer',
         }}>Open Full Detail</button>
       </div>
     </div>

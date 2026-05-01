@@ -4,9 +4,9 @@ import { getStatusCategory, getStaleIndicator, WH_HUB_COLORS, WH_HUB_SHORT } fro
 import { HighlightText } from './Resource360Shared';
 
 const T = {
-  bg: '#F5F0EB', surface: 'var(--ds-text-inverse, #FFFFFF)', text1: 'var(--ds-surface, var(--ds-surface, #0A0A0A))', text2: '#1A1A2E',
+  bg: '#F5F0EB', surface: 'var(--ds-text-inverse, #FFFFFF)', text1: 'var(--ds-surface, #0A0A0A)', text2: '#1A1A2E',
   text3: '#3D3D56', text4: '#6B6B80', border: '#D9D2C9',
-  todo: '#E23636', progress: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))', done: '#0E8A5F',
+  todo: '#E23636', progress: 'var(--ds-text-brand, #2563EB)', done: '#0E8A5F',
   shadow: '0 2px 8px rgba(0,0,0,.12)',
   mono: "'JetBrains Mono', 'SF Mono', monospace",
 };
@@ -61,7 +61,7 @@ export function Resource360Board({ items, onItemClick }: Props) {
               <span style={{ width: 8, height: 8, borderRadius: '50%', background: col.color, flexShrink: 0 }} />
               <span style={{ fontSize: 11, fontWeight: 800, color: T.text1, letterSpacing: '0.06em' }}>{col.label}</span>
               <span style={{
-                fontSize: 10, fontWeight: 800, color: 'var(--ds-surface, var(--ds-surface, var(--ds-surface, #fff)))', marginLeft: 'auto',
+                fontSize: 10, fontWeight: 800, color: 'var(--ds-surface, #fff)', marginLeft: 'auto',
                 background: col.color, borderRadius: 12, padding: '1px 7px',
               }}>{col.items.length}</span>
             </div>
@@ -69,7 +69,7 @@ export function Resource360Board({ items, onItemClick }: Props) {
             {/* Cards */}
             <div style={{ flex: 1, overflowY: 'auto', paddingRight: 4 }}>
               {col.items.map(item => {
-                const hubColor = WH_HUB_COLORS[item.hub] ?? 'var(--ds-text-subtlest, var(--ds-text-subtlest, #64748B))';
+                const hubColor = WH_HUB_COLORS[item.hub] ?? 'var(--ds-text-subtlest, #64748B)';
                 const hubShort = WH_HUB_SHORT[item.hub] ?? item.hub?.slice(0, 4).toUpperCase();
                 const stale = getStaleIndicator(item.age_days, item.status, item.status_category);
 
@@ -90,7 +90,7 @@ export function Resource360Board({ items, onItemClick }: Props) {
                       <span style={{ fontFamily: T.mono, fontSize: 10, fontWeight: 700, color: T.text1 }}>
                         <HighlightText text={item.item_key} query={searchTerm} />
                       </span>
-                      <span style={{ fontSize: 8, fontWeight: 800, color: 'var(--ds-surface, var(--ds-surface, var(--ds-surface, #fff)))', padding: '1px 5px', borderRadius: 4, background: hubColor }}>{hubShort}</span>
+                      <span style={{ fontSize: 8, fontWeight: 800, color: 'var(--ds-surface, #fff)', padding: '1px 5px', borderRadius: 4, background: hubColor }}>{hubShort}</span>
                       {stale && <span title={stale.label} style={{ fontSize: 10 }}>{stale.icon}</span>}
                       <span style={{ fontFamily: T.mono, fontSize: 9, fontWeight: 700, color: item.age_days > 14 ? T.todo : T.text4, marginLeft: 'auto' }}>{item.age_days}d</span>
                     </div>

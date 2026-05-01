@@ -30,15 +30,15 @@ type StatusCat = 'todo' | 'progress' | 'done';
 
 // ─── CG-05 STATUS COLORS (DEF-02 fix) ───
 const STATUS_CG05: Record<StatusCat, { dot: string; bg: string; text: string }> = {
-  todo:     { dot: 'var(--ds-text-warning, var(--ds-text-warning, #D97706))', bg: '#FFFBEB', text: '#78350F' },
-  progress: { dot: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))', bg: 'var(--ds-background-selected, var(--ds-background-selected, #EFF6FF))', text: '#1E3A5F' },
-  done:     { dot: 'var(--ds-text-success, var(--ds-text-success, #16A34A))', bg: '#F0FDF4', text: '#14532D' },
+  todo:     { dot: 'var(--ds-text-warning, #D97706)', bg: '#FFFBEB', text: '#78350F' },
+  progress: { dot: 'var(--ds-text-brand, #2563EB)', bg: 'var(--ds-background-selected, #EFF6FF)', text: '#1E3A5F' },
+  done:     { dot: 'var(--ds-text-success, #16A34A)', bg: '#F0FDF4', text: '#14532D' },
 };
 
 const STATUS_SOLID: Record<StatusCat, { bg: string; text: string }> = {
-  todo:     { bg: 'var(--ds-text-warning, var(--ds-text-warning, #D97706))', text: 'var(--ds-text-inverse, #FFFFFF)' },
-  progress: { bg: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))', text: 'var(--ds-text-inverse, #FFFFFF)' },
-  done:     { bg: 'var(--ds-text-success, var(--ds-text-success, #16A34A))', text: 'var(--ds-text-inverse, #FFFFFF)' },
+  todo:     { bg: 'var(--ds-text-warning, #D97706)', text: 'var(--ds-text-inverse, #FFFFFF)' },
+  progress: { bg: 'var(--ds-text-brand, #2563EB)', text: 'var(--ds-text-inverse, #FFFFFF)' },
+  done:     { bg: 'var(--ds-text-success, #16A34A)', text: 'var(--ds-text-inverse, #FFFFFF)' },
 };
 
 // ─── JIRA ICON HELPER — delegates to canonical guardrail ───
@@ -49,11 +49,11 @@ function getJiraIconForType(typeStr: string) {
 // ─── JIRA TYPE BADGE STYLES (DEF-05) ───
 function getTypeBadgeStyle(typeStr: string): { bg: string; color: string } {
   const lower = (typeStr || '').toLowerCase();
-  if (lower.includes('bug')) return { bg: 'var(--ds-background-danger, var(--ds-background-danger, #FEF2F2))', color: '#7F1D1D' };
+  if (lower.includes('bug')) return { bg: 'var(--ds-background-danger, #FEF2F2)', color: '#7F1D1D' };
   if (lower.includes('epic')) return { bg: '#F5F3FF', color: '#4C1D95' };
   if (lower.includes('story')) return { bg: '#F0FDF4', color: '#14532D' };
   if (lower.includes('sub')) return { bg: '#F0FDFA', color: '#134E4A' };
-  return { bg: 'var(--ds-background-selected, var(--ds-background-selected, #EFF6FF))', color: '#1E3A5F' };
+  return { bg: 'var(--ds-background-selected, #EFF6FF)', color: '#1E3A5F' };
 }
 
 // ─── INTERNAL WORK ITEM ───
@@ -122,18 +122,18 @@ function mapItem(r: Resource360Item): WorkItem {
 
 // ─── PROJECT COLOR MAP (DEF-06 fallback) ───
 const PROJECT_COLOR_FALLBACK: Record<string, string> = {
-  BAU: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))',
-  SEN: 'var(--ds-text-warning, var(--ds-text-warning, #D97706))',
-  FAC: 'var(--ds-text-success, var(--ds-text-success, #16A34A))',
+  BAU: 'var(--ds-text-brand, #2563EB)',
+  SEN: 'var(--ds-text-warning, #D97706)',
+  FAC: 'var(--ds-text-success, #16A34A)',
   OPS: '#0D9488',
-  SUP: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #64748B))',
+  SUP: 'var(--ds-text-subtlest, #64748B)',
   LND: '#7C3AED',
 };
 
 function getProjectColor(item: WorkItem): string {
   if (item.projectColor) return item.projectColor;
   if (item.projectKey && PROJECT_COLOR_FALLBACK[item.projectKey]) return PROJECT_COLOR_FALLBACK[item.projectKey];
-  return 'var(--ds-text-subtlest, var(--ds-text-subtlest, #64748B))';
+  return 'var(--ds-text-subtlest, #64748B)';
 }
 
 // ─── HELPERS ───
@@ -176,7 +176,7 @@ function smartDue(item: WorkItem): { date: string; source: 'ticket' | 'release' 
 
 function slaBadge(dueStr: string): { label: string; bg: string; color: string } {
   const diff = daysBetween(NOW, new Date(dueStr));
-  if (diff < 0) return { label: `${Math.abs(diff)}d overdue`, bg: 'var(--ds-background-danger, var(--ds-background-danger, #FEF2F2))', color: T.danger };
+  if (diff < 0) return { label: `${Math.abs(diff)}d overdue`, bg: 'var(--ds-background-danger, #FEF2F2)', color: T.danger };
   if (diff === 0) return { label: 'Due today', bg: '#FFFBEB', color: T.warning };
   if (diff <= 3) return { label: `${diff}d left`, bg: '#FFFBEB', color: T.warning };
   return { label: `${diff}d left`, bg: '#F0FDF4', color: T.success };
@@ -519,7 +519,7 @@ const RingViewV16: React.FC<RingViewV16Props> = ({ resource, items: rawItems, on
           <ChevronLeft size={14} color={T.ink2} />
         </button>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <Calendar size={16} color="var(--ds-text-brand, var(--ds-text-brand, #2563EB))" />
+          <Calendar size={16} color="var(--ds-text-brand, #2563EB)" />
           <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--fg-1)', fontFamily: T.sora }}>
             {currentWeek ? weekLabel(currentWeek.weekStart, weekIdx) : 'No items'}
           </span>
@@ -548,10 +548,10 @@ const RingViewV16: React.FC<RingViewV16Props> = ({ resource, items: rawItems, on
             position: 'relative', height: 720, overflow: 'hidden',
             background: isDark
               ? 'radial-gradient(circle at center, var(--ds-surface, #0A0A0A) 0%, var(--ds-surface, #0A0A0A) 55%, var(--ds-surface-raised, #1A1A1A) 100%)'
-              : 'radial-gradient(circle at center, var(--ds-surface, var(--ds-surface, #fff)) 0%, var(--ds-surface-sunken, #F8FAFC) 55%, var(--ds-surface-sunken, #F1F5F9) 100%)',
+              : 'radial-gradient(circle at center, var(--ds-surface, #fff) 0%, var(--ds-surface-sunken, #F8FAFC) 55%, var(--ds-surface-sunken, #F1F5F9) 100%)',
             backgroundImage: isDark
               ? 'radial-gradient(circle at center, var(--ds-surface, #0A0A0A) 0%, var(--ds-surface, #0A0A0A) 55%, var(--ds-surface-raised, #1A1A1A) 100%), radial-gradient(circle, var(--ds-border, #292929) 1px, transparent 1px)'
-              : 'radial-gradient(circle at center, var(--ds-surface, var(--ds-surface, #fff)) 0%, var(--ds-surface-sunken, #F8FAFC) 55%, var(--ds-surface-sunken, #F1F5F9) 100%), radial-gradient(circle, var(--ds-text-disabled, #CBD5E1) 1px, transparent 1px)',
+              : 'radial-gradient(circle at center, var(--ds-surface, #fff) 0%, var(--ds-surface-sunken, #F8FAFC) 55%, var(--ds-surface-sunken, #F1F5F9) 100%), radial-gradient(circle, var(--ds-text-disabled, #CBD5E1) 1px, transparent 1px)',
             backgroundSize: 'cover, 24px 24px',
             boxSizing: 'border-box',
             padding: 20,
@@ -591,7 +591,7 @@ const RingViewV16: React.FC<RingViewV16Props> = ({ resource, items: rawItems, on
                   transform: 'translate(-50%, -50%)',
                   zIndex: 2, pointerEvents: 'none',
                   background: isSelected ? T.accent : 'var(--bg-app)',
-                  border: `1px solid ${isSelected ? 'var(--ds-background-brand-bold-hovered, var(--ds-background-brand-bold-hovered, #1D4ED8))' : 'var(--divider)'}`,
+                  border: `1px solid ${isSelected ? 'var(--ds-background-brand-bold-hovered, #1D4ED8)' : 'var(--divider)'}`,
                   borderRadius: 12, padding: '2px 8px',
                   fontSize: 9.5, fontWeight: 600, fontFamily: T.mono,
                   color: isSelected ? 'var(--ds-text-inverse, #FFFFFF)' : 'var(--fg-2)',
@@ -613,7 +613,7 @@ const RingViewV16: React.FC<RingViewV16Props> = ({ resource, items: rawItems, on
                 width: 76, height: 76, borderRadius: '50%', margin: '0 auto',
                 background: 'linear-gradient(135deg, var(--cp-blue), var(--ds-background-brand-bold-hovered, #1D4ED8))',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
-                boxShadow: '0 0 0 4px var(--ds-surface, var(--ds-surface, #fff)), 0 0 0 6px var(--cp-blue), 0 0 20px rgba(37,99,235,.2)',
+                boxShadow: '0 0 0 4px var(--ds-surface, #fff), 0 0 0 6px var(--cp-blue), 0 0 20px rgba(37,99,235,.2)',
               }}>
                 <span style={{ fontFamily: T.sora, fontSize: 24, fontWeight: 800, color: 'var(--ds-text-inverse, #FFFFFF)' }}>{initials}</span>
               </div>
@@ -842,7 +842,7 @@ const RingViewV16: React.FC<RingViewV16Props> = ({ resource, items: rawItems, on
                   return (
                     <div style={{
                       marginTop: 10, padding: '8px 12px', borderRadius: 8,
-                      background: 'var(--ds-background-danger, var(--ds-background-danger, #FEF2F2))', border: '1px solid #FECACA',
+                      background: 'var(--ds-background-danger, #FEF2F2)', border: '1px solid #FECACA',
                       fontSize: 12, fontWeight: 600, color: 'var(--sem-danger)',
                     }}>
                       {s === 'critical' ? 'Critical' : 'Stale'} — {age} days without resolution

@@ -10,7 +10,7 @@ const MAX_HISTORY_SIZE = 50;
 export const useAnnotationEditor = (existingAnnotations: Annotation[]) => {
   const [annotations, setAnnotations] = useState<Annotation[]>(existingAnnotations);
   const [activeTool, setActiveTool] = useState<Tool>('arrow');
-  const [activeColor, setActiveColor] = useState('var(--ds-text-danger, var(--ds-text-danger, #ef4444))');
+  const [activeColor, setActiveColor] = useState('var(--ds-text-danger, #ef4444)');
   const [strokeWidth, setStrokeWidth] = useState(3);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [currentAnnotation, setCurrentAnnotation] = useState<Annotation | null>(null);

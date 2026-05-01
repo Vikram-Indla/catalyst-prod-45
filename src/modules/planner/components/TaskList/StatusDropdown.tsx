@@ -68,7 +68,7 @@ export const StatusDropdown = memo(function StatusDropdown({ task, statuses, sta
 
   const currentStatus = statuses.find(s => s.id === task.status_id);
   const displayName = currentStatus?.name || task.status_name || 'Select status...';
-  const displayColor = currentStatus?.color || statusConfig.dotColor || 'var(--ds-text-subtlest, var(--ds-text-subtlest, #94a3b8))';
+  const displayColor = currentStatus?.color || statusConfig.dotColor || 'var(--ds-text-subtlest, #94a3b8)';
 
   return (
     <td style={{ width }} onClick={(e) => e.stopPropagation()}>
@@ -124,7 +124,7 @@ export const StatusDropdown = memo(function StatusDropdown({ task, statuses, sta
           >
             {statuses.map((status) => {
               const isSelected = status.id === task.status_id;
-              const color = status.color || STATUS_COLORS[status.name] || 'var(--ds-text-subtlest, var(--ds-text-subtlest, #94a3b8))';
+              const color = status.color || STATUS_COLORS[status.name] || 'var(--ds-text-subtlest, #94a3b8)';
               return (
                 <StatusDropdownItem
                   key={status.id}

@@ -30,9 +30,9 @@ const Toaster = ({ ...props }: ToasterProps) => {
           cancelButton: "group-[.toast]:bg-muted group-[.toast]:text-muted-foreground",
           // Catalyst V5: Light semantic backgrounds with matching text
           success: "group-[.toast]:!bg-[#f0fdfa] group-[.toast]:!text-[#0d9488] group-[.toast]:!border-[#99f6e4]",
-          error: "group-[.toast]:!bg-[var(--ds-background-danger,var(--ds-background-danger, #fef2f2))] group-[.toast]:!text-[var(--ds-text-danger,var(--ds-text-danger, #dc2626))] group-[.toast]:!border-[#fecaca]",
-          warning: "group-[.toast]:!bg-[#fffbeb] group-[.toast]:!text-[var(--ds-text-warning,var(--ds-text-warning, #d97706))] group-[.toast]:!border-[#fde68a]",
-          info: "group-[.toast]:!bg-[var(--ds-background-selected,var(--ds-background-selected, #eff6ff))] group-[.toast]:!text-[var(--ds-text-brand,var(--ds-text-brand, #2563eb))] group-[.toast]:!border-[#bfdbfe]",
+          error: "group-[.toast]:!bg-[var(--ds-background-danger, #fef2f2)] group-[.toast]:!text-[var(--ds-text-danger, #dc2626)] group-[.toast]:!border-[#fecaca]",
+          warning: "group-[.toast]:!bg-[#fffbeb] group-[.toast]:!text-[var(--ds-text-warning, #d97706)] group-[.toast]:!border-[#fde68a]",
+          info: "group-[.toast]:!bg-[var(--ds-background-selected, #eff6ff)] group-[.toast]:!text-[var(--ds-text-brand, #2563eb)] group-[.toast]:!border-[#bfdbfe]",
         },
       }}
       {...props}

@@ -63,7 +63,7 @@ export default function IncidentInsightsPage() {
           {/* Risk Signals */}
           <div className="p-4" style={{ border: `1px solid ${borderColor}`, borderRadius: 6 }}>
             <h3 className="flex items-center gap-2 mb-3" style={{ fontFamily: 'var(--cp-font-body)', fontSize: 13, fontWeight: 700, color: textPrimary }}>
-              <span style={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: 'var(--ds-text-danger, var(--ds-text-danger, #DC2626))', display: 'inline-block' }} />
+              <span style={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: 'var(--ds-text-danger, #DC2626)', display: 'inline-block' }} />
               Risk Signals
             </h3>
             <div className="space-y-3">
@@ -86,7 +86,7 @@ export default function IncidentInsightsPage() {
           {/* Improvements */}
           <div className="p-4" style={{ border: `1px solid ${borderColor}`, borderRadius: 6 }}>
             <h3 className="flex items-center gap-2 mb-3" style={{ fontFamily: 'var(--cp-font-body)', fontSize: 13, fontWeight: 700, color: textPrimary }}>
-              <span style={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: 'var(--ds-text-success, var(--ds-text-success, #16A34A))', display: 'inline-block' }} />
+              <span style={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: 'var(--ds-text-success, #16A34A)', display: 'inline-block' }} />
               Improvements
             </h3>
             <div className="space-y-3">

@@ -48,7 +48,7 @@ export function T10SearchBarV3({ value, onChange }: T10SearchBarV3Props) {
           left: '16px',
           top: '50%',
           transform: 'translateY(-50%)',
-          color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #94a3b8))',
+          color: 'var(--ds-text-subtlest, #94a3b8)',
           pointerEvents: 'none',
         }}
       />
@@ -63,19 +63,19 @@ export function T10SearchBarV3({ value, onChange }: T10SearchBarV3Props) {
           height: '48px',
           padding: '0 16px 0 48px',
           fontSize: '14px',
-          color: 'var(--ds-text, var(--ds-text, #0f172a))',
-          backgroundColor: 'var(--ds-surface, var(--ds-surface, #ffffff))',
+          color: 'var(--ds-text, #0f172a)',
+          backgroundColor: 'var(--ds-surface, #ffffff)',
           border: '1px solid #e2e8f0',
           borderRadius: '12px',
           outline: 'none',
           transition: 'border-color 0.15s ease, box-shadow 0.15s ease',
         }}
         onFocus={(e) => {
-          e.target.style.borderColor = 'var(--ds-text-brand, var(--ds-text-brand, #3b82f6))';
+          e.target.style.borderColor = 'var(--ds-text-brand, #3b82f6)';
           e.target.style.boxShadow = '0 0 0 3px rgba(59, 130, 246, 0.1)';
         }}
         onBlur={(e) => {
-          e.target.style.borderColor = 'var(--ds-border, var(--ds-border, #e2e8f0))';
+          e.target.style.borderColor = 'var(--ds-border, #e2e8f0)';
           e.target.style.boxShadow = 'none';
         }}
       />

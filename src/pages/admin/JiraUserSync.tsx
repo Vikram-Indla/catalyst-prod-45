@@ -24,11 +24,11 @@ import {
 
 /* ── Stats Config ── */
 const STATS_CONFIG = [
-  { key: 'jiraSynced',   dot: 'var(--ds-text-success, var(--ds-text-success, #16A34A))', label: 'Jira Synced',    sub: 'from last sync' },
+  { key: 'jiraSynced',   dot: 'var(--ds-text-success, #16A34A)', label: 'Jira Synced',    sub: 'from last sync' },
   { key: 'catalystOnly', dot: '#7C3AED', label: 'Catalyst Only',  sub: 'Not in Jira' },
-  { key: 'proxyAuth',    dot: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))', label: 'Proxy Auth',     sub: 'Jira password active' },
-  { key: 'conflicts',    dot: 'var(--ds-text-warning, var(--ds-text-warning, #D97706))', label: 'Conflicts',      sub: 'Needs resolution' },
-  { key: 'inactive',     dot: 'var(--ds-text-danger, var(--ds-text-danger, #DC2626))', label: 'Inactive',       sub: 'Access revoked' },
+  { key: 'proxyAuth',    dot: 'var(--ds-text-brand, #2563EB)', label: 'Proxy Auth',     sub: 'Jira password active' },
+  { key: 'conflicts',    dot: 'var(--ds-text-warning, #D97706)', label: 'Conflicts',      sub: 'Needs resolution' },
+  { key: 'inactive',     dot: 'var(--ds-text-danger, #DC2626)', label: 'Inactive',       sub: 'Access revoked' },
   { key: 'webhooks24h',  dot: '#0D9488', label: 'Webhooks / 24h', sub: 'Real-time events' },
 ] as const;
 
@@ -45,18 +45,18 @@ const FILTERS: { value: SyncFilter; label: string }[] = [
 const PER_PAGE = 10;
 
 const AVATAR_COLORS = [
-  { bg: '#DBEAFE', text: 'var(--ds-background-brand-bold-hovered, var(--ds-background-brand-bold-hovered, #1D4ED8))' }, { bg: 'var(--ds-background-success, var(--ds-background-success, #DCFCE7))', text: '#15803D' },
+  { bg: '#DBEAFE', text: 'var(--ds-background-brand-bold-hovered, #1D4ED8)' }, { bg: 'var(--ds-background-success, #DCFCE7)', text: '#15803D' },
   { bg: '#FEF3C7', text: '#92400E' }, { bg: '#EDE9FE', text: '#5B21B6' },
-  { bg: '#FEE2E2', text: 'var(--ds-text-danger, var(--ds-text-danger, #991B1B))' }, { bg: '#F0FDF4', text: '#0F766E' },
-  { bg: 'var(--ds-background-selected, var(--ds-background-selected, #EFF6FF))', text: 'var(--ds-background-brand-bold-hovered, var(--ds-background-brand-bold-hovered, #1D4ED8))' }, { bg: '#E0F2FE', text: '#0369A1' },
+  { bg: '#FEE2E2', text: 'var(--ds-text-danger, #991B1B)' }, { bg: '#F0FDF4', text: '#0F766E' },
+  { bg: 'var(--ds-background-selected, #EFF6FF)', text: 'var(--ds-background-brand-bold-hovered, #1D4ED8)' }, { bg: '#E0F2FE', text: '#0369A1' },
   { bg: '#F5F3FF', text: '#7C3AED' }, { bg: '#CCFBF1', text: '#0F766E' },
 ];
 
 const HEADERS = ['User / Jira Identity', 'Auth Mode', 'Projects & Permissions', 'Synced At', 'Last Jira Login', 'Last in Catalyst', 'Status', ''];
 
 const PERM_DOT: Record<string, string> = {
-  full: 'var(--ds-text-success, var(--ds-text-success, #16A34A))',
-  edit: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))',
+  full: 'var(--ds-text-success, #16A34A)',
+  edit: 'var(--ds-text-brand, #2563EB)',
   view: '#9CA3AF',
 };
 
@@ -275,7 +275,7 @@ const JiraUserSync: React.FC = () => {
                 disabled={isSyncing}
                 style={{
                   display: 'inline-flex', alignItems: 'center', gap: '5px',
-                  background: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))', color: 'var(--ds-text-inverse, #FFFFFF)', border: 'none',
+                  background: 'var(--ds-text-brand, #2563EB)', color: 'var(--ds-text-inverse, #FFFFFF)', border: 'none',
                   padding: '6px 14px', borderRadius: '6px', fontSize: '12px', fontWeight: 600,
                   cursor: isSyncing ? 'not-allowed' : 'pointer', opacity: isSyncing ? 0.7 : 1, lineHeight: 1,
                 }}>
@@ -394,7 +394,7 @@ const JiraUserSync: React.FC = () => {
               background: 'var(--cp-primary-light, #EFF6FF)',
               borderBottom: `1px solid ${'var(--cp-primary-light, #BFDBFE)'}`,
             }}>
-            <input type="checkbox" checked onChange={clearAll} style={{ cursor: 'pointer', accentColor: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))' }} />
+            <input type="checkbox" checked onChange={clearAll} style={{ cursor: 'pointer', accentColor: 'var(--ds-text-brand, #2563EB)' }} />
             <span className="jira-selection-count" style={{ fontSize: '12px', fontWeight: 500, color: 'var(--cp-text-link, #2563EB)' }}>
               {selected.size} users selected
             </span>
@@ -406,7 +406,7 @@ const JiraUserSync: React.FC = () => {
                   style={{
                     display: 'inline-flex', alignItems: 'center', gap: '4px',
                     padding: '3px 10px', borderRadius: '4px', fontSize: '11px', fontWeight: 600,
-                    cursor: 'pointer', border: 'none', background: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))', color: 'var(--ds-text-inverse, #FFFFFF)',
+                    cursor: 'pointer', border: 'none', background: 'var(--ds-text-brand, #2563EB)', color: 'var(--ds-text-inverse, #FFFFFF)',
                   }}>
                   <FolderPlus size={11} /> Assign to Project ▾
                 </button>
@@ -450,10 +450,10 @@ const JiraUserSync: React.FC = () => {
                           textTransform: 'uppercase', cursor: 'pointer',
                           border: `1px solid ${'var(--cp-border-default, rgba(15,23,42,0.10))'}`,
                           background: assignPermLevel === lvl
-                            ? lvl === 'full' ? 'var(--ds-background-success, var(--ds-background-success, #DCFCE7))' : lvl === 'edit' ? 'var(--ds-background-selected, var(--ds-background-selected, #EFF6FF))' : 'var(--ds-surface-sunken, var(--ds-surface-sunken, #F1F5F9))'
+                            ? lvl === 'full' ? 'var(--ds-background-success, #DCFCE7)' : lvl === 'edit' ? 'var(--ds-background-selected, #EFF6FF)' : 'var(--ds-surface-sunken, #F1F5F9)'
                             : 'transparent',
                           color: assignPermLevel === lvl
-                            ? lvl === 'full' ? '#006644' : lvl === 'edit' ? 'var(--ds-background-brand-bold-hovered, var(--ds-background-brand-bold-hovered, #1D4ED8))' : 'var(--ds-text-subtlest, var(--ds-text-subtlest, #64748B))'
+                            ? lvl === 'full' ? '#006644' : lvl === 'edit' ? 'var(--ds-background-brand-bold-hovered, #1D4ED8)' : 'var(--ds-text-subtlest, #64748B)'
                             : ('var(--cp-text-muted, #94A3B8)'),
                         }}
                       >
@@ -500,7 +500,7 @@ const JiraUserSync: React.FC = () => {
                         <span style={{ fontSize: '11px', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', color: 'var(--cp-text-secondary, #334155)' }}>
                           {proj.project_name || proj.project_key}
                         </span>
-                        <Check size={10} style={{ color: 'var(--ds-text-subtlest, var(--ds-text-subtlest, #94A3B8))', opacity: 0 }} />
+                        <Check size={10} style={{ color: 'var(--ds-text-subtlest, #94A3B8)', opacity: 0 }} />
                       </button>
                     ))}
                   {(jiraProjects || []).filter(p => !assignSearch || p.project_key.toLowerCase().includes(assignSearch.toLowerCase())).length === 0 && (
@@ -517,7 +517,7 @@ const JiraUserSync: React.FC = () => {
                 display: 'inline-flex', alignItems: 'center', gap: '4px',
                 padding: '3px 10px', borderRadius: '4px', fontSize: '11px', fontWeight: 500, cursor: 'pointer',
                 background: 'var(--cp-bg-elevated, #FFFFFF)',
-                color: 'var(--ds-text-danger, var(--ds-text-danger, #DC2626))',
+                color: 'var(--ds-text-danger, #DC2626)',
                 border: `1px solid ${'var(--cp-border-default, rgba(15,23,42,0.10))'}`,
               }}>
               <UserX size={11} /> Deactivate
@@ -555,7 +555,7 @@ const JiraUserSync: React.FC = () => {
                     type="checkbox"
                     checked={allSelected}
                     onChange={() => allSelected ? clearAll() : selectAll()}
-                    style={{ cursor: 'pointer', accentColor: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))' }}
+                    style={{ cursor: 'pointer', accentColor: 'var(--ds-text-brand, #2563EB)' }}
                   />
                 </th>
                 {HEADERS.map(h => (
@@ -603,7 +603,7 @@ const JiraUserSync: React.FC = () => {
                         <Search size={24} style={{ color: 'var(--cp-text-muted, #94A3B8)', margin: '0 auto 10px', display: 'block' }} />
                         <div className="jira-text-primary" style={{ fontSize: '14px', fontWeight: 500, color: 'var(--cp-text-secondary, #334155)' }}>No users match '{debouncedSearch}'</div>
                         <button onClick={() => setSearch('')}
-                          style={{ marginTop: 8, fontSize: '12px', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))' }}>Clear search</button>
+                          style={{ marginTop: 8, fontSize: '12px', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--ds-text-brand, #2563EB)' }}>Clear search</button>
                       </>
                     ) : filter !== 'all' ? (
                       <>
@@ -612,14 +612,14 @@ const JiraUserSync: React.FC = () => {
                           {filter === 'conflict' ? 'No conflicts found' : filter === 'inactive' ? 'No inactive users' : `No ${filter} users found`}
                         </div>
                         <button onClick={() => setFilter('all')}
-                          style={{ marginTop: 8, fontSize: '12px', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))' }}>View all users</button>
+                          style={{ marginTop: 8, fontSize: '12px', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--ds-text-brand, #2563EB)' }}>View all users</button>
                       </>
                     ) : (
                       <>
                         <Users2 size={32} style={{ color: 'var(--cp-text-muted, #94A3B8)', margin: '0 auto 10px', display: 'block' }} />
                         <div className="jira-text-primary" style={{ fontSize: '14px', fontWeight: 500, color: 'var(--cp-text-secondary, #334155)' }}>No synced users yet</div>
                         <button onClick={handleSync} disabled={isSyncing}
-                          style={{ marginTop: 10, display: 'inline-flex', alignItems: 'center', gap: '5px', background: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))', color: 'var(--ds-text-inverse, #FFFFFF)', border: 'none', padding: '6px 14px', borderRadius: '6px', fontSize: '12px', fontWeight: 600, cursor: isSyncing ? 'not-allowed' : 'pointer' }}>
+                          style={{ marginTop: 10, display: 'inline-flex', alignItems: 'center', gap: '5px', background: 'var(--ds-text-brand, #2563EB)', color: 'var(--ds-text-inverse, #FFFFFF)', border: 'none', padding: '6px 14px', borderRadius: '6px', fontSize: '12px', fontWeight: 600, cursor: isSyncing ? 'not-allowed' : 'pointer' }}>
                           <RefreshCw size={11} className={isSyncing ? 'animate-spin' : ''} />
                           Sync Now to pull users from Jira
                         </button>
@@ -656,7 +656,7 @@ const JiraUserSync: React.FC = () => {
                     }}>
 
                     <td style={{ padding: '8px 12px', textAlign: 'center' }} onClick={e => e.stopPropagation()}>
-                      <input type="checkbox" checked={isSelected} onChange={() => toggleSelectRow(user.id)} style={{ cursor: 'pointer', accentColor: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))' }} />
+                      <input type="checkbox" checked={isSelected} onChange={() => toggleSelectRow(user.id)} style={{ cursor: 'pointer', accentColor: 'var(--ds-text-brand, #2563EB)' }} />
                     </td>
 
                     {/* User / Jira Identity */}
@@ -728,7 +728,7 @@ const JiraUserSync: React.FC = () => {
                         <span style={{ fontSize: '11px', fontStyle: 'italic', color: 'var(--cp-text-muted, #94A3B8)' }}>Not synced</span>
                       ) : (
                         <div className="flex items-center gap-1">
-                          <span style={{ width: '5px', height: '5px', borderRadius: '50%', background: 'var(--ds-text-success, var(--ds-text-success, #16A34A))', flexShrink: 0 }} />
+                          <span style={{ width: '5px', height: '5px', borderRadius: '50%', background: 'var(--ds-text-success, #16A34A)', flexShrink: 0 }} />
                           <span style={{ fontSize: '11px', fontFamily: 'var(--cp-font-mono)', whiteSpace: 'nowrap', color: 'var(--cp-text-tertiary, #64748B)' }}>{formatSyncDate(user.last_synced_at)}</span>
                         </div>
                       )}
@@ -762,8 +762,8 @@ const JiraUserSync: React.FC = () => {
                           display: 'inline-flex', alignItems: 'center', gap: '3px',
                           padding: '3px 8px', borderRadius: '4px', fontSize: '11px', fontWeight: 500,
                           background: 'var(--cp-bg-elevated, #FFFFFF)',
-                          border: `1px solid ${user.is_active_in_catalyst ? 'var(--ds-text-danger, var(--ds-text-danger, #DC2626))' : 'var(--ds-text-success, var(--ds-text-success, #16A34A))'}`,
-                          color: user.is_active_in_catalyst ? 'var(--ds-text-danger, var(--ds-text-danger, #DC2626))' : 'var(--ds-text-success, var(--ds-text-success, #16A34A))',
+                          border: `1px solid ${user.is_active_in_catalyst ? 'var(--ds-text-danger, #DC2626)' : 'var(--ds-text-success, #16A34A)'}`,
+                          color: user.is_active_in_catalyst ? 'var(--ds-text-danger, #DC2626)' : 'var(--ds-text-success, #16A34A)',
                           cursor: togglingId === user.id ? 'not-allowed' : 'pointer',
                           opacity: togglingId === user.id ? 0.6 : undefined, whiteSpace: 'nowrap',
                         }}>
@@ -810,7 +810,7 @@ const JiraUserSync: React.FC = () => {
                   style={{
                     width: '28px', height: '28px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
                     borderRadius: '4px', fontSize: '11px', fontWeight: 500, cursor: 'pointer',
-                    background: page === p ? 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))' : ('var(--cp-bg-elevated, #FFFFFF)'),
+                    background: page === p ? 'var(--ds-text-brand, #2563EB)' : ('var(--cp-bg-elevated, #FFFFFF)'),
                     color: page === p ? 'var(--ds-text-inverse, #FFFFFF)' : ('var(--cp-text-tertiary, #64748B)'),
                     border: page === p ? 'none' : `1px solid ${'var(--cp-border-default, rgba(15,23,42,0.10))'}`,
                   }}

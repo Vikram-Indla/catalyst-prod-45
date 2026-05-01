@@ -19,18 +19,18 @@ const TEMP_MOCK_FEED: FeedItem[] = [
     time: '2 hours ago',
   },
   {
-    initials: 'AI', color: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))',
-    text: <><strong>AI Insight</strong> flagged Supply Chain Q3 logistics hub as <strong style={{ color: 'var(--ds-text-danger, var(--ds-text-danger, #DC2626))' }}>Off Track</strong> — contractor delays</>,
+    initials: 'AI', color: 'var(--ds-text-brand, #2563EB)',
+    text: <><strong>AI Insight</strong> flagged Supply Chain Q3 logistics hub as <strong style={{ color: 'var(--ds-text-danger, #DC2626)' }}>Off Track</strong> — contractor delays</>,
     time: '3 hours ago',
   },
   {
     initials: 'SR', color: '#1E40AF',
-    text: <><strong>Sara Al-Rashid</strong> completed STEM scholarship pipeline quarterly review — <strong style={{ color: 'var(--ds-text-success, var(--ds-text-success, #16A34A))' }}>on track</strong></>,
+    text: <><strong>Sara Al-Rashid</strong> completed STEM scholarship pipeline quarterly review — <strong style={{ color: 'var(--ds-text-success, #16A34A)' }}>on track</strong></>,
     time: '5 hours ago',
   },
   {
     initials: 'MK', color: '#1E40AF',
-    text: <><strong>Mohammed Khan</strong> requested budget reallocation for Supply Chain — <strong style={{ color: 'var(--ds-text-warning, var(--ds-text-warning, #D97706))' }}>pending</strong></>,
+    text: <><strong>Mohammed Khan</strong> requested budget reallocation for Supply Chain — <strong style={{ color: 'var(--ds-text-warning, #D97706)' }}>pending</strong></>,
     time: 'Yesterday',
   },
   {

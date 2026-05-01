@@ -55,7 +55,7 @@ export function WikiAdminTrainingTab() {
         </div>
         <button onClick={() => setShowAdd(!showAdd)} style={{
           display: 'flex', alignItems: 'center', gap: 4, padding: '6px 12px', borderRadius: 4,
-          background: 'var(--cp-primary-60, #2563EB)', color: 'var(--ds-surface, var(--ds-surface, var(--ds-surface, #fff)))', border: 'none', cursor: 'pointer',
+          background: 'var(--cp-primary-60, #2563EB)', color: 'var(--ds-surface, #fff)', border: 'none', cursor: 'pointer',
           fontFamily: 'var(--cp-font-body)', fontSize: 12, fontWeight: 600, outline: 'none',
         }}
           onFocus={(e) => { e.currentTarget.style.boxShadow = '0 0 0 2px var(--cp-primary-60, #2563EB)'; }}
@@ -165,7 +165,7 @@ function AddQuestionForm({ onClose }: { onClose: () => void }) {
       />
       <div style={{ display: 'flex', gap: 8 }}>
         <button onClick={() => addQ.mutate()} disabled={!question.trim()} style={{
-          padding: '6px 14px', borderRadius: 4, background: 'var(--cp-primary-60, #2563EB)', color: 'var(--ds-surface, var(--ds-surface, var(--ds-surface, #fff)))',
+          padding: '6px 14px', borderRadius: 4, background: 'var(--cp-primary-60, #2563EB)', color: 'var(--ds-surface, #fff)',
           border: 'none', cursor: 'pointer', fontFamily: 'var(--cp-font-body)', fontSize: 12, fontWeight: 600,
           opacity: !question.trim() ? 0.5 : 1, outline: 'none',
         }}>Save</button>

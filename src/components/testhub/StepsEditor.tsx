@@ -524,7 +524,7 @@ function ActionButton({
       onMouseEnter={(e) => {
         if (!disabled) {
           if (danger) {
-            e.currentTarget.style.backgroundColor = 'var(--ds-background-danger, var(--ds-background-danger, #FEF2F2))';
+            e.currentTarget.style.backgroundColor = 'var(--ds-background-danger, #FEF2F2)';
             e.currentTarget.style.borderColor = 'color-mix(in srgb, var(--sem-danger) 20%, transparent)';
             e.currentTarget.style.color = 'var(--sem-danger)';
           } else {

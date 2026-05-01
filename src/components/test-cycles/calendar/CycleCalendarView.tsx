@@ -68,7 +68,7 @@ export function CycleCalendarView({ cycleId }: CycleCalendarViewProps) {
   if (isLoading || !data) {
     return (
       <div className="flex-1 flex items-center justify-center bg-white">
-        <Loader2 className="h-8 w-8 animate-spin text-[var(--ds-text-brand,var(--ds-text-brand, #2563eb))]" />
+        <Loader2 className="h-8 w-8 animate-spin text-[var(--ds-text-brand, #2563eb)]" />
       </div>
     );
   }

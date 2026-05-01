@@ -131,7 +131,7 @@
   height: 40px;
   padding: 0 20px;
   background: var(--wh-pri);
-  color: var(--ds-surface, var(--ds-surface, #fff));
+  color: var(--ds-surface, #fff);
   border: none;
   border-radius: var(--wh-rad);
   font-size: 13px;

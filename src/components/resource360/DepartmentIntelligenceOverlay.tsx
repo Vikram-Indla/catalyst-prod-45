@@ -32,7 +32,7 @@ function ResAvatar({ name, avatarMap, size = 28 }: { name: string; avatarMap: Ma
     return <img src={url} alt={name} style={{ width: px, height: px, borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }} />;
   }
   return (
-    <div style={{ width: px, height: px, borderRadius: '50%', background: hashColor(name), display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--ds-surface, var(--ds-surface, var(--ds-surface, #fff)))', fontSize: size <= 24 ? '9px' : '10px', fontWeight: 600, flexShrink: 0, fontFamily: 'var(--di-font-body)' }}>
+    <div style={{ width: px, height: px, borderRadius: '50%', background: hashColor(name), display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--ds-surface, #fff)', fontSize: size <= 24 ? '9px' : '10px', fontWeight: 600, flexShrink: 0, fontFamily: 'var(--di-font-body)' }}>
       {getInitials(name)}
     </div>
   );
@@ -366,7 +366,7 @@ function ProjectCard({ prj }: { prj: ProjectActivity }) {
             <span className="di-prj-contribs-lbl">Contributors</span>
             {prj.contributors.map((c, ci) => (
               <span className="di-prj-contrib" key={ci}>
-                <span className="di-prj-avatar" style={{ background: c.color || 'var(--ds-text-subtlest, var(--ds-text-subtlest, #64748B))' }}>
+                <span className="di-prj-avatar" style={{ background: c.color || 'var(--ds-text-subtlest, #64748B)' }}>
                   {c.initials}
                 </span>
                 <span className="di-prj-contrib-name">{c.name}</span>

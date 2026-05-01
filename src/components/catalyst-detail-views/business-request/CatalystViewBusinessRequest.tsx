@@ -34,7 +34,7 @@ export default function CatalystViewBusinessRequest({
       {/* BR-UNIQUE: Type badge */}
       <div style={{
         display: 'inline-flex', alignItems: 'center', gap: 6, padding: '4px 10px',
-        background: 'var(--ds-background-selected, var(--ds-background-selected, #EFF6FF))', borderRadius: 4, marginBottom: 12, fontSize: 12, fontWeight: 600, color: 'var(--ds-background-brand-bold-hovered, var(--ds-background-brand-bold-hovered, #1D4ED8))',
+        background: 'var(--ds-background-selected, #EFF6FF)', borderRadius: 4, marginBottom: 12, fontSize: 12, fontWeight: 600, color: 'var(--ds-background-brand-bold-hovered, #1D4ED8)',
       }}>
         <FileText size={14} />
         Business Request

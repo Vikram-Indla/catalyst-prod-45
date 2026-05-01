@@ -513,7 +513,7 @@ export function WorkManagerInsights({ tasks }: WorkManagerInsightsProps) {
               <tbody>
                 {teamInsights.memberStats.map((member, idx) => {
                   // Catalyst V5 avatar colors (Blue, Teal, Gray only)
-                  const avatarColors = ['var(--ds-text-brand, var(--ds-text-brand, #2563eb))', '#0d9488', '#6b7280'];
+                  const avatarColors = ['var(--ds-text-brand, #2563eb)', '#0d9488', '#6b7280'];
                   const avatarColor = avatarColors[idx % avatarColors.length];
                   return (
                     <tr key={member.userId} className="border-b border-border-subtle hover:bg-muted/50 transition-colors cursor-pointer">

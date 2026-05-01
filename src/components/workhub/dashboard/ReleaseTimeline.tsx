@@ -224,7 +224,7 @@ export function ReleaseTimeline({ releases }: ReleaseTimelineProps) {
                       height: 20,
                       borderRadius: 4,
                       background: isCancelled
-                        ? 'var(--ds-text-subtlest, var(--ds-text-subtlest, #94a3b8))'
+                        ? 'var(--ds-text-subtlest, #94a3b8)'
                         : isAtRisk
                           ? `repeating-linear-gradient(135deg, ${release.color}, ${release.color} 4px, transparent 4px, transparent 8px)`
                           : release.color,

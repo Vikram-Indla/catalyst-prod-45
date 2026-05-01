@@ -44,7 +44,7 @@ function getGradient(color: string): { from: string; to: string } {
 }
 
 // Get avatar color based on assignee index - Catalyst V5 (Blue, Teal, Gray only)
-const AVATAR_COLORS = ['var(--ds-text-brand, var(--ds-text-brand, #2563eb))', '#0d9488', '#6b7280'];
+const AVATAR_COLORS = ['var(--ds-text-brand, #2563eb)', '#0d9488', '#6b7280'];
 
 export function useDailyScorecardData() {
   return useQuery({

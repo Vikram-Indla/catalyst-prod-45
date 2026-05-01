@@ -106,7 +106,7 @@ export const SkillsMatrixHeatmap: React.FC = () => {
   ];
 
   return (
-    <div className="bg-white dark:bg-[var(--ds-surface-raised,var(--ds-surface-raised, #1A1A1A))] rounded-xl border border-brand-primary/20 p-6 shadow-sm">
+    <div className="bg-white dark:bg-[var(--ds-surface-raised, #1A1A1A)] rounded-xl border border-brand-primary/20 p-6 shadow-sm">
       {/* Header */}
       <div className="flex items-start justify-between mb-6">
         <div>
@@ -154,7 +154,7 @@ export const SkillsMatrixHeatmap: React.FC = () => {
           <tbody>
             {teamMembers.map((member, rowIndex) => (
               <tr key={member.id} className="border-b border-neutral-100 last:border-b-0">
-                <td className="w-[200px] bg-white dark:bg-[var(--ds-surface-raised,var(--ds-surface-raised, #1A1A1A))] py-4 px-4">
+                <td className="w-[200px] bg-white dark:bg-[var(--ds-surface-raised, #1A1A1A)] py-4 px-4">
                   <div className="flex flex-col">
                     <span className="text-sm font-medium text-brand-dark">
                       {member.name}
@@ -197,7 +197,7 @@ export const SkillsMatrixHeatmap: React.FC = () => {
             transform: 'translate(-50%, -100%)',
           }}
         >
-          <div className="bg-white dark:bg-[var(--ds-surface-raised,var(--ds-surface-raised, #1A1A1A))] border border-neutral-200 dark:border-[var(--ds-border,var(--ds-border, #2E2E2E))] rounded-xl px-4 py-3 shadow-xl min-w-[180px]">
+          <div className="bg-white dark:bg-[var(--ds-surface-raised, #1A1A1A)] border border-neutral-200 dark:border-[var(--ds-border, #2E2E2E)] rounded-xl px-4 py-3 shadow-xl min-w-[180px]">
             <p className="font-semibold text-brand-dark text-sm">
               {tooltip.memberName}
             </p>

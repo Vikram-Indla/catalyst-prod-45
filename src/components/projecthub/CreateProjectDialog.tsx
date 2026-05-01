@@ -19,7 +19,7 @@ function deriveKeyFromName(name: string): string {
   return letters.slice(0, 3);
 }
 
-const BADGE_COLORS = ['#0D9488', 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))', '#6366F1', '#0891B2', 'var(--ds-text-subtle, var(--ds-text-subtle, #475569))', '#059669', '#4F46E5', '#0284C7'];
+const BADGE_COLORS = ['#0D9488', 'var(--ds-text-brand, #2563EB)', '#6366F1', '#0891B2', 'var(--ds-text-subtle, #475569)', '#059669', '#4F46E5', '#0284C7'];
 function getRandomBadgeColor() {
   return BADGE_COLORS[Math.floor(Math.random() * BADGE_COLORS.length)];
 }
@@ -121,17 +121,17 @@ export function CreateProjectDialog({ open, onClose }: Props) {
 
   if (!open) return null;
 
-  const surface = dk ? 'var(--ds-surface-raised, var(--ds-surface-raised, #1A1A1A))' : 'var(--bg-app)';
+  const surface = dk ? 'var(--ds-surface-raised, #1A1A1A)' : 'var(--bg-app)';
   const textPrimary = dk ? 'rgba(255,255,255,0.92)' : 'var(--fg-1)';
   const textSecondary = dk ? 'rgba(255,255,255,0.72)' : 'var(--fg-2)';
   const textMuted = dk ? 'rgba(255,255,255,0.55)' : 'var(--fg-4)';
-  const border = dk ? 'var(--ds-border, var(--ds-border, #2E2E2E))' : 'var(--divider)';
-  const divider = dk ? 'var(--ds-border, var(--ds-border, #2E2E2E))' : 'var(--divider)';
+  const border = dk ? 'var(--ds-border, #2E2E2E)' : 'var(--divider)';
+  const divider = dk ? 'var(--ds-border, #2E2E2E)' : 'var(--divider)';
   const inputBg = dk ? 'transparent' : 'var(--bg-app)';
-  const closeHoverBg = dk ? 'var(--ds-border, var(--ds-border, #292929))' : 'var(--cp-bd-zone)';
+  const closeHoverBg = dk ? 'var(--ds-border, #292929)' : 'var(--cp-bd-zone)';
   const cancelBg = dk ? 'transparent' : 'var(--bg-app)';
-  const cancelHoverBg = dk ? 'var(--ds-border, var(--ds-border, #292929))' : 'var(--bg-1)';
-  const dropdownBg = dk ? 'var(--ds-surface-raised, var(--ds-surface-raised, #1A1A1A))' : 'var(--cp-float)';
+  const cancelHoverBg = dk ? 'var(--ds-border, #292929)' : 'var(--bg-1)';
+  const dropdownBg = dk ? 'var(--ds-surface-raised, #1A1A1A)' : 'var(--cp-float)';
 
   const inputStyle: React.CSSProperties = {
     width: '100%', height: 50, padding: '8px 12px',
@@ -202,18 +202,18 @@ export function CreateProjectDialog({ open, onClose }: Props) {
         <div style={{ padding: 24, overflowY: 'auto', flex: 1 }}>
           {/* Project Name */}
           <div style={{ marginBottom: 16 }}>
-            <label style={labelStyle}>Project name <span style={{ color: 'var(--ds-text-danger, var(--ds-text-danger, #DC2626))' }}>*</span></label>
+            <label style={labelStyle}>Project name <span style={{ color: 'var(--ds-text-danger, #DC2626)' }}>*</span></label>
             <input
               value={name} onChange={e => setName(e.target.value)}
               placeholder="e.g. Digital Transformation Request"
               style={inputStyle} onFocus={focusIn} onBlur={focusOut}
             />
-            {errors.name && <p style={{ fontSize: 12, color: 'var(--ds-text-danger, var(--ds-text-danger, #DC2626))', marginTop: 4 }}>{errors.name}</p>}
+            {errors.name && <p style={{ fontSize: 12, color: 'var(--ds-text-danger, #DC2626)', marginTop: 4 }}>{errors.name}</p>}
           </div>
 
           {/* Project Key */}
           <div style={{ marginBottom: 16 }}>
-            <label style={labelStyle}>Project key <span style={{ color: 'var(--ds-text-danger, var(--ds-text-danger, #DC2626))' }}>*</span></label>
+            <label style={labelStyle}>Project key <span style={{ color: 'var(--ds-text-danger, #DC2626)' }}>*</span></label>
             <input
               value={key}
               onChange={e => {
@@ -224,12 +224,12 @@ export function CreateProjectDialog({ open, onClose }: Props) {
               style={{
                 ...inputStyle, textTransform: 'uppercase',
                 fontFamily: 'var(--cp-font-mono)', letterSpacing: '0.05em',
-                borderColor: (errors.key || isDuplicate) ? 'var(--ds-text-danger, var(--ds-text-danger, #DC2626))' : border,
+                borderColor: (errors.key || isDuplicate) ? 'var(--ds-text-danger, #DC2626)' : border,
               }}
               onFocus={e => { if (!errors.key && !isDuplicate) focusIn(e); }}
               onBlur={e => { if (!errors.key && !isDuplicate) focusOut(e); }}
             />
-            {errors.key && <p style={{ fontSize: 12, color: 'var(--ds-text-danger, var(--ds-text-danger, #DC2626))', marginTop: 4 }}>{errors.key}</p>}
+            {errors.key && <p style={{ fontSize: 12, color: 'var(--ds-text-danger, #DC2626)', marginTop: 4 }}>{errors.key}</p>}
             {!errors.key && <p style={{ fontSize: 11, color: textMuted, marginTop: 4 }}>2–6 uppercase letters. Used as issue prefix.</p>}
           </div>
 
@@ -290,7 +290,7 @@ export function CreateProjectDialog({ open, onClose }: Props) {
               </PopoverTrigger>
               <PopoverContent
                 className="w-[calc(100%-48px)] p-2"
-                style={{ background: dk ? 'var(--ds-surface-raised, var(--ds-surface-raised, #1A1A1A))' : 'var(--ds-surface, var(--ds-surface, var(--ds-surface, #FFF)))', border: `1px solid ${border}`, borderRadius: 6, zIndex: 9999, minWidth: 260 }}
+                style={{ background: dk ? 'var(--ds-surface-raised, #1A1A1A)' : 'var(--ds-surface, #FFF)', border: `1px solid ${border}`, borderRadius: 6, zIndex: 9999, minWidth: 260 }}
                 align="start"
               >
                 <div className="relative mb-2">
@@ -345,7 +345,7 @@ export function CreateProjectDialog({ open, onClose }: Props) {
           <div style={{
             padding: '12px 16px', borderRadius: 8,
             border: `1px solid ${border}`,
-            background: dk ? 'var(--ds-surface-overlay, var(--ds-surface-overlay, #1F1F1F))' : 'var(--bg-1, #F8FAFC)',
+            background: dk ? 'var(--ds-surface-overlay, #1F1F1F)' : 'var(--bg-1, #F8FAFC)',
           }}>
             <div className="flex items-center justify-between">
               <Switch checked={linkJira} onCheckedChange={setLinkJira} />
@@ -365,11 +365,11 @@ export function CreateProjectDialog({ open, onClose }: Props) {
                   style={{
                     ...inputStyle, textTransform: 'uppercase',
                     fontFamily: 'var(--cp-font-mono)',
-                    borderColor: errors.jiraKey ? 'var(--ds-text-danger, var(--ds-text-danger, #DC2626))' : border,
+                    borderColor: errors.jiraKey ? 'var(--ds-text-danger, #DC2626)' : border,
                   }}
                   onFocus={focusIn} onBlur={focusOut}
                 />
-                {errors.jiraKey && <p style={{ fontSize: 12, color: 'var(--ds-text-danger, var(--ds-text-danger, #DC2626))', marginTop: 4 }}>{errors.jiraKey}</p>}
+                {errors.jiraKey && <p style={{ fontSize: 12, color: 'var(--ds-text-danger, #DC2626)', marginTop: 4 }}>{errors.jiraKey}</p>}
               </div>
             )}
           </div>
@@ -397,7 +397,7 @@ export function CreateProjectDialog({ open, onClose }: Props) {
             disabled={createProject.isPending}
             style={{
               display: 'inline-flex', alignItems: 'center', gap: 6, height: 50, padding: '0 18px',
-              background: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))', color: 'var(--ds-text-inverse, #FFFFFF)',
+              background: 'var(--ds-text-brand, #2563EB)', color: 'var(--ds-text-inverse, #FFFFFF)',
               border: 'none', borderRadius: 6, fontSize: 13, fontWeight: 600, cursor: 'pointer',
               boxShadow: '0 2px 8px rgba(37,99,235,0.15)',
               opacity: createProject.isPending ? 0.6 : 1,

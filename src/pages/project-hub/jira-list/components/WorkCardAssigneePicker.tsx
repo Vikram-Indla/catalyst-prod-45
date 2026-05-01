@@ -123,7 +123,7 @@ export function WorkCardAssigneePicker({
       ) : currentAssigneeName ? (
         <div style={{
           width: 28, height: 28, borderRadius: '50%', background: fallbackColor,
-          color: 'var(--ds-surface, var(--ds-surface, var(--ds-surface, #FFF)))', display: 'flex', alignItems: 'center', justifyContent: 'center',
+          color: 'var(--ds-surface, #FFF)', display: 'flex', alignItems: 'center', justifyContent: 'center',
           fontWeight: 800, fontSize: 11,
         }}>{fallbackInitials}</div>
       ) : (
@@ -208,7 +208,7 @@ export function WorkCardAssigneePicker({
                 ) : (
                   <div style={{
                     width: 28, height: 28, borderRadius: '50%', flexShrink: 0,
-                    background: '#6554C0', color: 'var(--ds-surface, var(--ds-surface, var(--ds-surface, #FFF)))',
+                    background: '#6554C0', color: 'var(--ds-surface, #FFF)',
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                     fontSize: 11, fontWeight: 800,
                   }}>{m.full_name.split(' ').map(s => s[0]).slice(0, 2).join('').toUpperCase()}</div>

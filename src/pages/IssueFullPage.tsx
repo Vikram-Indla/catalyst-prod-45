@@ -129,7 +129,7 @@ export default function IssueFullPage() {
         height: '100%', minHeight: 400, fontFamily: 'var(--cp-font-body)', color: '#5E6C84',
       }}>
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12 }}>
-          <Loader2 size={32} className="animate-spin" style={{ color: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))' }} />
+          <Loader2 size={32} className="animate-spin" style={{ color: 'var(--ds-text-brand, #2563EB)' }} />
           <span style={{ fontSize: 14 }}>Loading {issueKey}…</span>
         </div>
       </div>
@@ -151,7 +151,7 @@ export default function IssueFullPage() {
         <button
           onClick={handleClose}
           style={{
-            marginTop: 8, padding: '8px 16px', background: 'var(--ds-text-brand, var(--ds-text-brand, #2563EB))', color: 'var(--ds-surface, var(--ds-surface, #FFFFFF))',
+            marginTop: 8, padding: '8px 16px', background: 'var(--ds-text-brand, #2563EB)', color: 'var(--ds-surface, #FFFFFF)',
             border: 'none', borderRadius: 6, fontSize: 13, fontWeight: 500, cursor: 'pointer',
             fontFamily: 'var(--cp-font-body)',
           }}

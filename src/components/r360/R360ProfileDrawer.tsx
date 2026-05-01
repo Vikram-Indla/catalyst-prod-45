@@ -420,7 +420,7 @@ const R360ProfileDrawer = memo(function R360ProfileDrawer({ resourceId, onClose 
             padding: '5px 12px', borderRadius: 6, border: 'none', cursor: 'pointer',
             transition: 'background 100ms',
           }}
-          onMouseEnter={e => { e.currentTarget.style.background = 'var(--ds-background-brand-bold-hovered, var(--ds-background-brand-bold-hovered, #1D4ED8))'; }}
+          onMouseEnter={e => { e.currentTarget.style.background = 'var(--ds-background-brand-bold-hovered, #1D4ED8)'; }}
           onMouseLeave={e => { e.currentTarget.style.background = BRAND; }}
         >
           <ChevronLeft size={16} /> Resources

@@ -38,15 +38,15 @@ export function T10RenameModal({ isOpen, onClose, currentName, onRename }: T10Re
 
       {/* Modal */}
       <div 
-        className="relative z-10 w-full max-w-md mx-4 bg-white dark:bg-[var(--ds-surface-raised,var(--ds-surface-raised, #1A1A1A))] rounded-2xl shadow-2xl overflow-hidden animate-in zoom-in-95 fade-in duration-200"
+        className="relative z-10 w-full max-w-md mx-4 bg-white dark:bg-[var(--ds-surface-raised, #1A1A1A)] rounded-2xl shadow-2xl overflow-hidden animate-in zoom-in-95 fade-in duration-200"
         onClick={e => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 dark:border-[var(--ds-border,var(--ds-border, #2E2E2E))]">
-          <h2 className="text-lg font-semibold text-slate-900 dark:text-[var(--ds-text,var(--ds-text, #EDEDED))]">Rename List</h2>
+        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 dark:border-[var(--ds-border, #2E2E2E)]">
+          <h2 className="text-lg font-semibold text-slate-900 dark:text-[var(--ds-text, #EDEDED)]">Rename List</h2>
           <button
             type="button"
-            className="p-1.5 rounded-lg text-slate-400 dark:text-[var(--ds-text-subtlest,var(--ds-text-subtlest, #878787))] hover:text-slate-600 hover:bg-slate-100 transition-colors"
+            className="p-1.5 rounded-lg text-slate-400 dark:text-[var(--ds-text-subtlest, #878787)] hover:text-slate-600 hover:bg-slate-100 transition-colors"
             onClick={onClose}
           >
             <X size={18} />
@@ -56,7 +56,7 @@ export function T10RenameModal({ isOpen, onClose, currentName, onRename }: T10Re
         {/* Form */}
         <div className="px-6 py-5">
           <div className="space-y-2">
-            <label className="block text-sm font-medium text-slate-700 dark:text-[var(--ds-text-subtlest,var(--ds-text-subtlest, #A1A1A1))]">
+            <label className="block text-sm font-medium text-slate-700 dark:text-[var(--ds-text-subtlest, #A1A1A1)]">
               List Name
             </label>
             <input
@@ -66,17 +66,17 @@ export function T10RenameModal({ isOpen, onClose, currentName, onRename }: T10Re
               onKeyDown={(e) => e.key === 'Enter' && handleSubmit()}
               placeholder="List name..."
               autoFocus
-              className="w-full px-4 py-2.5 text-[15px] text-slate-900 dark:text-[var(--ds-text,var(--ds-text, #EDEDED))] placeholder:text-slate-400 dark:placeholder:text-[var(--ds-text-subtlest,var(--ds-text-subtlest, #878787))] bg-white dark:bg-[var(--ds-surface-raised,var(--ds-surface-raised, #1A1A1A))] border border-slate-300 dark:border-[var(--ds-border-bold,var(--ds-border-bold, #454545))] rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+              className="w-full px-4 py-2.5 text-[15px] text-slate-900 dark:text-[var(--ds-text, #EDEDED)] placeholder:text-slate-400 dark:placeholder:text-[var(--ds-text-subtlest, #878787)] bg-white dark:bg-[var(--ds-surface-raised, #1A1A1A)] border border-slate-300 dark:border-[var(--ds-border-bold, #454545)] rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
             />
           </div>
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-slate-200 dark:border-[var(--ds-border,var(--ds-border, #2E2E2E))] bg-slate-50 dark:bg-[#111111]">
+        <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-slate-200 dark:border-[var(--ds-border, #2E2E2E)] bg-slate-50 dark:bg-[#111111]">
           <button
             type="button"
             onClick={onClose}
-            className="px-4 py-2 text-sm font-medium text-slate-700 dark:text-[var(--ds-text-subtlest,var(--ds-text-subtlest, #A1A1A1))] bg-white dark:bg-[var(--ds-surface-raised,var(--ds-surface-raised, #1A1A1A))] border border-slate-300 dark:border-[var(--ds-border-bold,var(--ds-border-bold, #454545))] rounded-lg hover:bg-slate-50 dark:hover:bg-[var(--ds-surface-overlay,var(--ds-surface-overlay, #1F1F1F))] transition-colors"
+            className="px-4 py-2 text-sm font-medium text-slate-700 dark:text-[var(--ds-text-subtlest, #A1A1A1)] bg-white dark:bg-[var(--ds-surface-raised, #1A1A1A)] border border-slate-300 dark:border-[var(--ds-border-bold, #454545)] rounded-lg hover:bg-slate-50 dark:hover:bg-[var(--ds-surface-overlay, #1F1F1F)] transition-colors"
           >
             Cancel
           </button>

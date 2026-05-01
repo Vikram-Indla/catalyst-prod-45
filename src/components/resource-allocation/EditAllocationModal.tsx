@@ -26,7 +26,7 @@ interface EditAllocationModalProps {
 export function EditAllocationModal({
   assignmentId,
   assignmentName,
-  assignmentColor = 'var(--ds-text-brand, var(--ds-text-brand, #2563eb))',
+  assignmentColor = 'var(--ds-text-brand, #2563eb)',
   weekStart,
   weekLabel,
   weekDateRange,
