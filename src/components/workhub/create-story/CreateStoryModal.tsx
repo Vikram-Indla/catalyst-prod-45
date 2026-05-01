@@ -31,8 +31,6 @@ import {
   useMemo,
   useCallback,
   useRef,
-  Suspense,
-  lazy,
   type ReactNode,
 } from 'react';
 // @atlaskit/modal-dialog uses @atlaskit/portal which renders empty in this
@@ -49,12 +47,12 @@ import {
 import { Field, ErrorMessage, HelperMessage } from '@atlaskit/form';
 import Select, { AsyncSelect, CreatableSelect } from '@atlaskit/select';
 import Textfield from '@atlaskit/textfield';
+import TextArea from '@atlaskit/textarea';
 import { Checkbox } from '@atlaskit/checkbox';
 import Button, { IconButton } from '@atlaskit/button/new';
 import Lozenge from '@atlaskit/lozenge';
 import { Box, Stack, Inline, xcss } from '@atlaskit/primitives';
 import { token } from '@atlaskit/tokens';
-import Spinner from '@atlaskit/spinner';
 import CrossIcon from '@atlaskit/icon/glyph/cross';
 import EditorCloseIcon from '@atlaskit/icon/glyph/editor/close';
 import VidFullScreenOnIcon from '@atlaskit/icon/glyph/vid-full-screen-on';
@@ -77,13 +75,6 @@ import {
   useCreateStoryMutation,
   useWorkflowStatuses,
 } from './useCreateStory';
-
-// Lazy — keeps @atlaskit/editor-core out of the modal mount path until the
-// "More fields" disclosure is opened. Same pattern as EpicDescriptionEditor's
-// own lazy import elsewhere in the project.
-const EpicDescriptionEditor = lazy(
-  () => import('@/components/shared/rich-text/atlaskit/EpicDescriptionEditor'),
-);
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Public API (callers' contract — DO NOT CHANGE)
@@ -281,25 +272,6 @@ const footerRightStyles = xcss({
   display: 'flex',
   alignItems: 'center',
   gap: 'space.100',
-});
-
-// Jira parity: subtle 1px input border that elevates to focused-blue ONLY
-// when the user is actively editing. The previous fixed "input" border +
-// auto-focus combo painted a permanent blue rectangle on mount.
-const editorWrapperStyles = xcss({
-  borderRadius: 'border.radius',
-  borderWidth: 'border.width',
-  borderStyle: 'solid',
-  borderColor: 'color.border',
-  minHeight: '160px',
-  overflow: 'hidden',
-});
-
-const editorLoadingStyles = xcss({
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  minHeight: '160px',
 });
 
 // ─────────────────────────────────────────────────────────────────────────────
