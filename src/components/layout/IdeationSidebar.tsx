@@ -36,8 +36,8 @@ interface IdeationSidebarProps {
 }
 
 const IDEATION_CONFIG: SidebarConfig = {
-  badge: 'ID',
-  label: 'Ideation',
+  badge: 'IH',
+  label: 'Ideation Hub',
   sections: [
     {
       title: '',
