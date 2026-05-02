@@ -356,56 +356,20 @@ export function CatalystSidebarDetails({
               (CatalystKeyDetails.tsx). */}
         <div style={{ padding: '8px 12px 8px 19px' }}>
 
-          {/* ── Fix Versions ──── */}
-          <FieldRow label="Fix versions" labelTopPad>
-            {issue && (
-              <EditableFixVersions
-                issueId={issue.id}
-                currentFixVersions={issue.fix_versions}
-                projectKey={issue.project_key}
-                onUpdate={invalidateIssue}
-              />
-            )}
-          </FieldRow>
-
-          {/* ── Due date (Epic only) ──── */}
-          {issue?.issue_type === 'Epic' && (
-            <>
-              <FieldRow label="Due date">
-                <EpicDueDateField
+          {/* ── Fix Versions ──── jira-compare Phase 2 (2026-05-02): hidden
+              on Epic — Jira NIN omits this field from the Epic context
+              items (BAU-5419 Lane A re-probe). */}
+          {issue?.issue_type !== 'Epic' && (
+            <FieldRow label="Fix versions" labelTopPad>
+              {issue && (
+                <EditableFixVersions
                   issueId={issue.id}
-                  dueDate={(issue as any).due_date ?? null}
-                  isEpic
-                  onSave={async (date) => {
-                    const { error } = await (supabase as any)
-                      .from('ph_issues')
-                      .update({ due_date: date })
-                      .eq('issue_key', issue.issue_key);
-                    if (error) {
-                      toast.error('Failed to save due date');
-                      throw error;
-                    }
-                    invalidateIssue();
-                  }}
+                  currentFixVersions={issue.fix_versions}
+                  projectKey={issue.project_key}
+                  onUpdate={invalidateIssue}
                 />
-              </FieldRow>
-
-              {/* ── Actual start (Epic) ──── jira-compare night session
-                  (2026-04-28). Read-only surface of customfield_10109
-                  ("Actual start - تاريخ البداية الفعلية"). Edit waits on
-                  Lovable migration adding ph_issues.actual_start. */}
-              <FieldRow label="Actual start">
-                <CatalystActualStartDisplay issue={issue} />
-              </FieldRow>
-
-              {/* ── Actual end (Epic) ──── customfield_10108
-                  ("Actual end - تاريخ النهاية الفعلية"). */}
-              <FieldRow label="Actual end">
-                <CatalystActualEndDisplay issue={issue} />
-              </FieldRow>
-
-              <div style={{ borderTop: '1px solid #DCDFE4', margin: '4px 0' }} />
-            </>
+              )}
+            </FieldRow>
           )}
 
           {/* ── Assignee ──── */}
@@ -438,6 +402,22 @@ export function CatalystSidebarDetails({
             </div>
           </FieldRow>
 
+          {/* ── Priority (Epic only, before Reporter) ──── jira-compare
+              Phase 2 (2026-05-02). On Epic, Jira renders Priority between
+              Assignee and Reporter (BAU-5419). For all other types Priority
+              renders in the canonical position below (after Parent). */}
+          {issue?.issue_type === 'Epic' && (
+            <FieldRow label="Priority" alignBlock="center">
+              {issue && (
+                <EditablePriority
+                  issueId={issue.id}
+                  currentPriority={issue.priority}
+                  onUpdate={invalidateIssue}
+                />
+              )}
+            </FieldRow>
+          )}
+
           {/* ── Reporter ──── */}
           <FieldRow label="Reporter" alignBlock="center">
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -459,16 +439,28 @@ export function CatalystSidebarDetails({
             </div>
           </FieldRow>
 
-          {/* ── Labels ──── */}
-          <FieldRow label="Labels" labelTopPad>
-            {issue && (
-              <EditableLabels
-                issueId={issue.id}
-                currentLabels={labelsArray}
-                onUpdate={invalidateIssue}
-              />
-            )}
-          </FieldRow>
+          {/* ── Labels ──── jira-compare Phase 2 (2026-05-02): hidden on
+              Epic — Jira NIN omits Labels from Epic context items.
+              Phase 3 (2026-05-02): also hidden on Sub-task — Jira's Sub-task
+              context-items show only Fix versions, Assignee, Reporter,
+              Development; Labels lives in the "More fields" tray (BAU-5569
+              Lane A re-probe). Phase 5 (2026-05-02): also hidden on
+              Production Incident — same hide pattern as Sub-task per
+              BAU-5707 Lane A re-probe. */}
+          {(() => {
+            const bk = normalizeIssueTypeBucket(issue?.issue_type);
+            return issue?.issue_type !== 'Epic' && bk !== 'subtask' && bk !== 'incident';
+          })() && (
+            <FieldRow label="Labels" labelTopPad>
+              {issue && (
+                <EditableLabels
+                  issueId={issue.id}
+                  currentLabels={labelsArray}
+                  onUpdate={invalidateIssue}
+                />
+              )}
+            </FieldRow>
+          )}
 
           {/* ── Parent ──── jira-compare Phase 1 (2026-05-02). Restored to
               right rail per Lane A re-probe of Jira BAU-5609 — Jira renders
@@ -489,16 +481,31 @@ export function CatalystSidebarDetails({
 
           {/* ── Priority ──── jira-compare Phase 1 (2026-05-02). Restored
               from CatalystKeyDetails left block — Jira's right rail Details
-              section is the canonical location. */}
-          <FieldRow label="Priority" alignBlock="center">
-            {issue && (
-              <EditablePriority
-                issueId={issue.id}
-                currentPriority={issue.priority}
-                onUpdate={invalidateIssue}
-              />
-            )}
-          </FieldRow>
+              section is the canonical location. Phase 2 update (2026-05-02):
+              suppressed for Epic (rendered above between Assignee and
+              Reporter to match Jira Epic ordering). Phase 3 (2026-05-02):
+              suppressed for Sub-task too — Jira hides Priority on Sub-task
+              context-items. Phase 4 (2026-05-02): suppressed for Defect —
+              CatalystViewDefect renders Priority in its own KeyDetails
+              priorityRow slot to match Jira's Severity → Priority order
+              (Apr-28 cycle 2 Phase B5 decision is preserved). Phase 5
+              (2026-05-02): also suppressed for Production Incident —
+              Jira hides Priority on Incident context-items; Catalyst's
+              KeyDetails left block keeps Parent + Priority canonical. */}
+          {(() => {
+            const bk = normalizeIssueTypeBucket(issue?.issue_type);
+            return issue?.issue_type !== 'Epic' && bk !== 'subtask' && bk !== 'defect' && bk !== 'incident';
+          })() && (
+            <FieldRow label="Priority" alignBlock="center">
+              {issue && (
+                <EditablePriority
+                  issueId={issue.id}
+                  currentPriority={issue.priority}
+                  onUpdate={invalidateIssue}
+                />
+              )}
+            </FieldRow>
+          )}
 
           {/* ── MDT Ref ──── jira-compare Round 4 (2026-04-28)
               Universal Catalyst↔Jira parity field shown on every issue
@@ -509,15 +516,54 @@ export function CatalystSidebarDetails({
             <CatalystMdtRefField issue={issue} onUpdate={invalidateIssue} />
           </FieldRow>
 
+          {/* ── Epic-specific date fields ──── jira-compare Phase 2
+              (2026-05-02). Relocated from above-Assignee to after-MDT-Ref
+              to match Jira Epic ordering on BAU-5419: Assignee → Priority
+              → Reporter → MDT Ref → Actual start → Actual end. Due date
+              also surfaces here on Epic; Jira renders it in a separate
+              "Dates" panel but Catalyst keeps the field inline. */}
+          {issue?.issue_type === 'Epic' && (
+            <>
+              <FieldRow label="Due date">
+                <EpicDueDateField
+                  issueId={issue.id}
+                  dueDate={(issue as any).due_date ?? null}
+                  isEpic
+                  onSave={async (date) => {
+                    const { error } = await (supabase as any)
+                      .from('ph_issues')
+                      .update({ due_date: date })
+                      .eq('issue_key', issue.issue_key);
+                    if (error) {
+                      toast.error('Failed to save due date');
+                      throw error;
+                    }
+                    invalidateIssue();
+                  }}
+                />
+              </FieldRow>
+              <FieldRow label="Actual start">
+                <CatalystActualStartDisplay issue={issue} />
+              </FieldRow>
+              <FieldRow label="Actual end">
+                <CatalystActualEndDisplay issue={issue} />
+              </FieldRow>
+            </>
+          )}
+
           {/* ── Assessment Feature ──── jira-compare Round 4 follow-up
-              (2026-04-28). Universal Catalyst↔Jira parity field — Lane B
-              confirmed customfield_10288 ("Assessment Feature") on QA Bug
-              with cross-project usage on Incident / Task. Schema:
-              ph_issues.assessment_feature TEXT (nullable). 30+ allowed
-              values from the Jira project schema. */}
-          <FieldRow label="Assessment Feature" labelTopPad>
-            <CatalystAssessmentFeatureField issue={issue} onUpdate={invalidateIssue} />
-          </FieldRow>
+              (2026-04-28). Hidden on Epic per Phase 2 audit — Jira's Epic
+              context items omit this field. Phase 3 (2026-05-02): also
+              hidden on Sub-task. Phase 5 (2026-05-02): also hidden on
+              Production Incident — same Jira hide pattern. */}
+          {(() => {
+            const bk = normalizeIssueTypeBucket(issue?.issue_type);
+            return issue?.issue_type !== 'Epic' && bk !== 'subtask' && bk !== 'incident';
+          })() && (
+            <FieldRow label="Assessment Feature" labelTopPad>
+              <CatalystAssessmentFeatureField issue={issue} onUpdate={invalidateIssue} />
+            </FieldRow>
+          )}
 
           {/* ── Service Now# (Defect / Incident / Task) ──── jira-compare
               night session (2026-04-28). Read-only surface of

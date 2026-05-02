@@ -9,7 +9,7 @@ import { CatalystViewBase } from '../shared/CatalystViewBase';
 import { useCatalystIssue, useCatalystIssueMutations } from '../shared/hooks';
 import {
   CatalystTitleEditor, CatalystQuickActions, CatalystDescriptionSection, CatalystAcceptanceCriteria,
-  CatalystActivitySection, CatalystSidebarDetails, CatalystKeyDetails, CatalystStatusPill, CatalystFooterMeta,
+  CatalystActivitySection, CatalystSidebarDetails, CatalystStatusPill, CatalystFooterMeta,
 } from '../shared/sections';
 import { LinkedWorkItemsSection } from '@/modules/project-work-hub/components/linked-work-items';
 import { SubtasksPanel } from '@/modules/project-work-hub/components/SubtasksPanel';
@@ -60,7 +60,10 @@ export default function CatalystViewSubtask({
       <CatalystStatusPill status={issue?.status} onStatusChange={(st) => mutations.updateStatus.mutate(st)} />
       <CatalystQuickActions />
       <ImproveIssueDropdown issue={issue ?? null} {...improveHandlers} />
-      <CatalystKeyDetails issue={issue ?? null} itemId={itemId} itemType="subtask" projectKey={projectKey} onOpenItem={onOpenItem} />
+      {/* jira-compare Phase 3 (2026-05-02): KeyDetails section removed.
+          Sub-task has no extraRows; Parent is shown in the parent-banner
+          above + CatalystViewBase header. Priority is hidden on Sub-task
+          per Jira parity (BAU-5569 Lane A re-probe). */}
       <CatalystDescriptionSection issue={issue ?? null} />
       <CatalystAcceptanceCriteria issue={issue ?? null} />
 
