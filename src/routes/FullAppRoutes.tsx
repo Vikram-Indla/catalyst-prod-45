@@ -15,6 +15,7 @@ import { ProtectedRoute } from "../components/ProtectedRoute";
 import { ErrorBoundary } from "../components/ErrorBoundary";
 
 const FeatureFlagsPage = lazy(() => import("../pages/admin/FeatureFlagsPage"));
+const AdminIconsPage = lazy(() => import("../pages/admin/icons/AdminIconsPage"));
 
 // ─── Lazy page imports ───────────────────────────────────────────
 const KBAdminSetup = ENABLE_AI ? lazy(() => import("../pages/KBAdminSetup")) : () => <FeatureComingSoon title="KB Admin" />;
@@ -871,6 +872,8 @@ export default function FullAppRoutes() {
           <Route path="notification-triggers" element={<S><NotificationTriggers /></S>} />
           <Route path="settings/notifications" element={<S><UserNotificationSettingsPage /></S>} />
           <Route path="feature-flags" element={<S><FeatureFlagsPage /></S>} />
+          {/* RESET ICONS — runtime icon override management. Admin-only. */}
+          <Route path="icons" element={<S><AdminIconsPage /></S>} />
         </Route>
 
         {/* Admin v2 — Phase 0 + 1. Sibling of /admin (own shell). Gated

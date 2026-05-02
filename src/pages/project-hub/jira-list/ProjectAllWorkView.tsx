@@ -22,6 +22,9 @@ import React, { lazy, Suspense, useState, useCallback, useRef, useEffect } from 
 import { WorkListPanel } from './components/WorkListPanel';
 import { useProjectAllWorkItems } from '@/hooks/useProjectListItems';
 import { useItemSelection } from '@/hooks/useItemSelection';
+import { ProjectHeaderChip } from '@/components/layout/ProjectHeaderChip';
+import { ProjectTabBar } from '@/components/layout/ProjectTabBar';
+import { AllWorkToolbar, type AllWorkView } from './components/AllWorkToolbar';
 
 const CatalystDetailRouter = lazy(
   () => import('@/components/catalyst-detail-views/CatalystDetailRouter'),
@@ -45,6 +48,12 @@ const SPLIT_BREAKPOINT_PX = 1120;
 
 export default function ProjectAllWorkView({ projectKey, projectId }: Props) {
   const { data: items = [] } = useProjectAllWorkItems(projectKey);
+
+  /* jira-compare catalog items 3-9 (2026-05-02): toolbar state. */
+  const [toolbarQuery, setToolbarQuery] = useState('');
+  const [toolbarView, setToolbarView] = useState<AllWorkView>('split');
+  const [toolbarFilters, setToolbarFilters] = useState<string[]>([]);
+  const [toolbarAssignees, setToolbarAssignees] = useState<string[]>([]);
 
   /** In narrow mode the middle panel is hidden — clicking a card opens
    *  StoryDetailModal as a full overlay instead (Jira parity). */
@@ -86,26 +95,26 @@ export default function ProjectAllWorkView({ projectKey, projectId }: Props) {
     // panel 256×717 scrolls cards; center body scrolls article; right
     // details scrolls sidebar. Independent, not page-level.
     <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0, overflow: 'hidden', background: 'var(--cp-bg-elevated, #FFFFFF)' }}>
-      {/* ── Header card — mirrors /backlog's h1 block. No rule/line above;
-            tight vertical rhythm; page title same size Jira uses (20/600).
-      */}
-      <div style={{ padding: '16px 16px 4px', flexShrink: 0 }}>
-        {/* jira-compare Patch #13 (2026-04-28): the issue detail panel
-            owns the page <h1> (the issue title). Page chrome uses <h2>
-            so we don't ship two H1s on a single page (WCAG 2.4.6). */}
-        {/* jira-compare follow-up (2026-05-02): heading aligned to the
-            sidebar nav label "Project Work" (ProjectHubSidebar.tsx).
-            Sentence case per ADS guidance. The route slug stays /allwork
-            for URL backwards-compat. */}
-        <h2 style={{
-          margin: 0, fontSize: 20, fontWeight: 500,
-          color: 'var(--cp-text-primary, #292A2E)',
-          letterSpacing: '-0.003em',
-          fontFamily: "'Atlassian Sans', -apple-system, BlinkMacSystemFont, sans-serif",
-        }}>
-          Project work
-        </h2>
-      </div>
+      {/* jira-compare catalog item 1 (2026-05-02): the standalone "Project
+          work" h2 is replaced by the canonical ProjectHeaderChip — Jira
+          renders a 32px horizontal-nav-header strip with project avatar +
+          name + Add people / meatball / share / automation / feedback /
+          fullscreen actions. The previous solo h2 was a Catalyst-only
+          divergence with no parity reference on the Jira side. */}
+      <ProjectHeaderChip projectKey={projectKey} />
+      {/* ProjectTabBar removed 2026-05-02 per Vikram — Catalyst navigation
+          lives in the side menu, the tab strip duplicated those labels. */}
+      <AllWorkToolbar
+        projectKey={projectKey}
+        query={toolbarQuery}
+        onQueryChange={setToolbarQuery}
+        view={toolbarView}
+        onViewChange={setToolbarView}
+        activeFilters={toolbarFilters}
+        onFilterChange={setToolbarFilters}
+        selectedAssignees={toolbarAssignees}
+        onAssigneesChange={setToolbarAssignees}
+      />
 
       {/* Split region — 3-panel responsive model (corrected 2026-04-20):
           • Wide   (≥1120px): [Navigator 260px] [Middle flex] [Right sidebar inside detail]
@@ -119,14 +128,18 @@ export default function ProjectAllWorkView({ projectKey, projectId }: Props) {
           aligns the rail flush against the page-header underline with
           no extra gap. Side / bottom padding kept. */}
       <div ref={splitRef} style={{ flex: 1, minHeight: 0, display: 'flex', overflow: 'hidden', gap: 8, padding: '0 8px 8px' }}>
-          {/* Navigator (left) — always visible; expands to full width when narrow. */}
+          {/* Navigator (left) — always visible; expands to full width when narrow.
+              jira-compare 2026-05-02: bg switched from --cp-bg-sunken
+              (slate-100 grey) to white. Vikram probe captured rail bg as
+              rgb(241,245,249) which diverges from Jira's white rail. */}
           <div style={{
             width: isNarrow ? '100%' : 260,
             flexShrink: 0,
-            background: 'var(--cp-bg-sunken, #F8F8F8)',
-            border: 'none', borderRadius: 4,
+            background: 'var(--ds-surface, #FFFFFF)',
+            borderRight: '1px solid var(--ds-border, #DFE1E6)',
+            borderRadius: 0,
             overflow: 'hidden', display: 'flex', flexDirection: 'column',
-            padding: '0 2px',
+            padding: '0',
           }}>
             <WorkListPanel
               items={items}
@@ -137,6 +150,10 @@ export default function ProjectAllWorkView({ projectKey, projectId }: Props) {
                 if (isNarrow) setOverlayItemId(id);
               }}
               projectId={projectId}
+              /* jira-compare 2026-05-02: AllWorkToolbar owns search — pass
+                 toolbarQuery so the inner search hides and the rail filters
+                 by the toolbar input. */
+              externalQuery={toolbarQuery}
             />
           </div>
 

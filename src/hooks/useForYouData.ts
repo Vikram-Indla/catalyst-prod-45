@@ -6,6 +6,7 @@
 import { useState, useMemo, useEffect, useCallback } from 'react';
 import { useAuth } from '@/lib/auth';
 import { supabase } from '@/integrations/supabase/client';
+import { PROJECT_AVATAR_REGISTRY } from '@/components/icons';
 
 export type WorkMode = 'OPS' | 'DEL' | 'TSK';
 export type WorkGroup = 'YESTERDAY' | 'THIS_WEEK' | 'EARLIER';
@@ -464,7 +465,13 @@ function mapIssueToWorkItem(
     } catch { /* empty */ }
   }
 
-  const resolvedAvatar = projectAvatarMap?.get(projectKey) ?? null;
+  // 2026-05-03 RESET ICONS: prefer locally-bundled Catalyst avatar
+  // (PROJECT_AVATAR_REGISTRY) over the runtime atlassian.net URL. Bundled
+  // assets are hashed at build time, no CORS, no Atlassian dependency.
+  const bundledAvatar = projectKey && projectKey in PROJECT_AVATAR_REGISTRY
+    ? PROJECT_AVATAR_REGISTRY[projectKey as keyof typeof PROJECT_AVATAR_REGISTRY].url
+    : null;
+  const resolvedAvatar = bundledAvatar ?? projectAvatarMap?.get(projectKey) ?? null;
 
   return {
     id: row.issue_key,

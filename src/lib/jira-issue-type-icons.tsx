@@ -1,11 +1,15 @@
 /**
  * ═══════════════════════════════════════════════════════════════════════
- * JIRA ISSUE TYPE ICONS — CANONICAL GUARDRAIL ("RESET ICONS" REFERENCE)
+ * JIRA ISSUE TYPE ICONS — LEGACY DELEGATION LAYER ("RESET ICONS")
  * ═══════════════════════════════════════════════════════════════════════
  *
- * ⚠️  GUARDRAIL: THIS IS THE SINGLE SOURCE OF TRUTH FOR ALL WORK ITEM
- *     TYPE ICONS IN CATALYST. NEVER create competing icon components
- *     with inline SVGs. All other files MUST delegate to this module.
+ * 2026-05-03: Rendering is now DELEGATED to `WorkItemTypeIcon` from
+ * `@/components/icons` — the canonical Catalyst icon library backed by
+ * `src/assets/icons/work-type/*.svg`. The legacy helpers below
+ * (resolveJiraTypeConfig, getJiraTypeColor, getJiraTypeLabel) remain for
+ * non-icon consumers (color borders, status badges, label text).
+ *
+ * NEW WORK MUST USE: `import { WorkItemTypeIcon } from '@/components/icons'`
  *
  * PROTECTED ICON REGISTRY (from Jira project type configuration):
  * ─────────────────────────────────────────────────────────────────
@@ -42,6 +46,7 @@
  */
 
 import React from 'react';
+import { WorkItemTypeIcon } from '@/components/icons/WorkItemTypeIcon';
 
 // ─── SVG FILE MAPPING ────────────────────────────────────────────────
 // Each type maps to a filename prefix in /admin/icons/jira/
@@ -357,26 +362,28 @@ const INLINE_SVGS: Record<string, (size: number) => React.ReactNode> = {
  * pointing at /admin/icons/jira/*.svg for legacy icons.
  */
 export function JiraIssueTypeIcon({ type, size = 16, className, style }: JiraIssueTypeIconProps) {
+  // Delegate to canonical Catalyst icon component. WorkItemTypeIcon
+  // accepts free-text and normalizes via normalizeWorkItemType().
+  // Brand color, dark-mode swap, runtime overrides, a11y are handled there.
+  return (
+    <WorkItemTypeIcon
+      type={type}
+      size={size}
+      className={className}
+      style={style}
+    />
+  );
+}
+
+// Below is preserved only so legacy non-component call sites that imported
+// JiraIssueTypeIcon (rare) continue to compile. The function body above has
+// already returned. The `<img>` block below is unreachable code — kept as a
+// reference of the old static-asset path until all callers have migrated.
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+function _legacyImgFallback({ type, size = 16, className, style }: JiraIssueTypeIconProps) {
   const cfg = resolveJiraTypeConfig(type);
-
-  const inline = INLINE_SVGS[cfg.iconFile];
-  if (inline) {
-    return (
-      <span
-        className={className}
-        title={cfg.label}
-        aria-label={cfg.label}
-        style={{ display: 'inline-flex', flexShrink: 0, ...style }}
-      >
-        {inline(size)}
-      </span>
-    );
-  }
-
-  // Use 16px SVG for sizes ≤ 16, 24px SVG for anything larger
   const svgSize: 16 | 24 = size <= 16 ? 16 : 24;
   const src = `${ICON_BASE_PATH}/${cfg.iconFile}-${svgSize}.svg`;
-
   return (
     <img
       src={src}

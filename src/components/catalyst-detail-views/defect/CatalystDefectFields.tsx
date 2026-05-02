@@ -177,15 +177,9 @@ export function CatalystDefectKeyRows({
         </KeyDetailsFieldRow>
       )}
 
-      {hasFixIn && (
-        <KeyDetailsFieldRow label="Fix in" alignBlock="center">
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
-            {fixVersions.map((v, i) => (
-              <Lozenge key={i} appearance="default">{v.name}</Lozenge>
-            ))}
-          </div>
-        </KeyDetailsFieldRow>
-      )}
+      {/* "Fix in" removed 2026-05-02 per Vikram — duplicates the right-rail
+          Fix versions field. Jira does not surface a separate "Fix in"
+          row; fixVersions is the canonical source. */}
 
       {hasRootCause && (
         <KeyDetailsFieldRow label="Root cause" alignBlock="center">

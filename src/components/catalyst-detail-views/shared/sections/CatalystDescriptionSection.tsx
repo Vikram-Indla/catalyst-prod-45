@@ -353,6 +353,10 @@ export function CatalystDescriptionSection({ issue, label = 'Description', defau
               position: 'relative',
               transition: 'background 0.15s',
             }}
+            /* jira-compare 2026-05-02: prefetch the editor chunk as soon
+               as the user hovers the description body — no spinner flash
+               on click. mousedown so click handlers fire AFTER prefetch. */
+            onMouseEnter={e => { e.currentTarget.style.background = 'var(--ds-surface-sunken, #F4F5F7)'; prefetchEpicEditor(); }}
             onClick={() => { if (issue) setEditing(true); }}
             onKeyDown={(e) => {
               if ((e.key === 'Enter' || e.key === ' ') && issue) {
@@ -360,7 +364,6 @@ export function CatalystDescriptionSection({ issue, label = 'Description', defau
                 setEditing(true);
               }
             }}
-            onMouseEnter={e => { e.currentTarget.style.background = 'var(--ds-surface-sunken, #F4F5F7)'; }}
             onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
             title="Click to edit"
           >

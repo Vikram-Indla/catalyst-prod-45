@@ -11,6 +11,7 @@ import type { ProjectMember, ParentIssue } from './types';
 import { PRIORITY_LIST } from './constants';
 import { getAvatarColor } from './helpers';
 import { resolveAvatarUrl } from '@/lib/avatars';
+import { PriorityIcon as CanonicalPriorityIcon } from '@/components/icons';
 
 /** Atlassian-spec dropdown container styles */
 const ATLASSIAN_DROPDOWN: React.CSSProperties = {
@@ -268,7 +269,7 @@ export function EditablePriority({ issueId, issueKey, currentPriority, onUpdate 
         formatOptionLabel={(opt) => (
           <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
             <span style={{ display: 'flex', flexShrink: 0 }}>
-              {PRIORITY_SVG[opt.value] ?? PRIORITY_SVG.Medium}
+              <CanonicalPriorityIcon level={opt.value} size={16} label="" />
             </span>
             <span style={{ fontSize: 14, color: 'var(--ds-text, #172B4D)', fontWeight: 400 }}>
               {opt.label}

@@ -61,9 +61,21 @@
 }
 
 .lwi-header__count {
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--ds-text-subtlest, #6B778C);
+  /* jira-compare 2026-05-02: Vikram probe — "Linked work items 0" rendered
+     as plain text. Promoted to Atlaskit count-badge pill (matches the
+     SectionBlock count badge in Subtasks). */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 18px;
+  padding: 0 6px;
+  border-radius: 9px;
+  background: var(--ds-background-neutral, #DFE1E6);
+  font-size: 11px;
+  font-weight: 650;
+  color: var(--ds-text-subtle, #42526E);
+  margin-left: 4px;
   background: var(--ds-surface-sunken, #F4F5F7);
   border-radius: 10px;
   padding: 0 8px;

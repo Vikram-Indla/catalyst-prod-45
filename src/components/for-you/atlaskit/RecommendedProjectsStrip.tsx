@@ -168,6 +168,7 @@ function ProjectCardButton({ card, onClick }: { card: Project; onClick: () => vo
           (3) muted Folder fallback. NEVER hashed-initial letter tiles. */}
       <ProjectIcon
         size="large"
+        projectKey={card.key}
         avatarUrl={card.avatar_url}
         iconName={card.icon}
         color={card.color}

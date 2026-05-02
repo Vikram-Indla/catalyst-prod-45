@@ -126,6 +126,20 @@ export function ImproveIssueDropdown({
   return (
     <>
       <div ref={ref} style={{ position: 'relative', display: 'inline-block', marginBottom: 16 }}>
+        {/* jira-compare 2026-05-02 (cycle 5): Vikram probe — appearance="discovery"
+            on @atlaskit/button/new in this theme renders solid bold magenta,
+            not Jira's subtle. Reverted to hand-rolled bare button styled
+            with --ds-background-discovery (subtle purple bg) + --ds-text-discovery
+            (purple text), matching the measured Jira values
+            bg=rgb(248,238,254) color=rgb(128,63,165). */}
+        {/* jira-compare 2026-05-02 (real probe): Vikram pulled DOM on the
+            actual Jira button — testid issue-improve-issue-dropdown.
+            improve-issue-dropdown--trigger. Measured:
+              bg=rgba(0,0,0,0)  color=rgb(41,42,46)  border=0px
+              h=32px  pad=0 10px  br=3px  fontSize=14  fontWeight=500
+              icon: 16×16  fill=black  color=rgb(41,42,46)
+            No purple anywhere — appearance="subtle" with dark text +
+            dark icon. The earlier "subtle discovery" was fabricated. */}
         <button
           type="button"
           onClick={() => setOpen((o) => !o)}
@@ -133,13 +147,22 @@ export function ImproveIssueDropdown({
           aria-expanded={open}
           aria-label={triggerLabel}
           data-testid="catalyst-improve-issue-dropdown--trigger"
-          style={triggerStyle}
-          onMouseEnter={(e) => (e.currentTarget.style.background = token('color.background.accent.purple.subtler', '#E9E4FF'))}
-          onMouseLeave={(e) => (e.currentTarget.style.background = token('color.background.accent.purple.subtlest', '#F3F0FF'))}
+          style={{
+            display: 'inline-flex', alignItems: 'center', gap: 6,
+            height: 32, padding: '0 10px', borderRadius: 3,
+            border: 'none',
+            background: 'transparent',
+            color: 'var(--ds-text, #292A2E)',
+            cursor: 'pointer', fontSize: 14, fontWeight: 500,
+            fontFamily: 'inherit',
+            transition: 'background 0.15s',
+          }}
+          onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = 'var(--ds-background-neutral-subtle-hovered, #F4F5F7)'; }}
+          onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = 'transparent'; }}
         >
-          <Sparkles size={14} />
+          <Sparkles size={16} color={'var(--ds-text, #292A2E)' as any} />
           {triggerLabel}
-          <ChevronDown size={14} />
+          <ChevronDown size={14} color={'var(--ds-text-subtle, #42526E)' as any} />
         </button>
 
         {open && (

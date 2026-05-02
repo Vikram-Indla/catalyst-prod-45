@@ -128,7 +128,15 @@ export function CatalystStatusPill({ status, statusCategory, onStatusChange }: C
           e.currentTarget.style.borderColor = token('color.border', '#DFE1E6');
         }}
       >
-        <span data-cp-lozenge-jira-parity style={{ display: 'inline-block' }}><Lozenge appearance={statusToLozenge(display, statusCategory)} isBold>{display}</Lozenge></span>
+        {(() => {
+          const ap = statusToLozenge(display, statusCategory);
+          // jira-compare 2026-05-02: never bold a 'default' lozenge — produces black bg.
+          return (
+            <span data-cp-lozenge-jira-parity style={{ display: 'inline-block' }}>
+              <Lozenge appearance={ap} isBold={ap !== 'default'}>{display}</Lozenge>
+            </span>
+          );
+        })()}
         <ChevronDown size={12} color={token('color.icon.subtle', '#42526E') as string} />
       </button>
       </div>
@@ -203,7 +211,7 @@ export function CatalystStatusPill({ status, statusCategory, onStatusChange }: C
                     >
                       {/* jira-compare follow-up (2026-05-02): isBold so each option
                           inherits the same bold appearance as the rendered status pill. */}
-                      <span data-cp-lozenge-jira-parity style={{ display: 'inline-block' }}><Lozenge appearance={statusToLozenge(st)} isBold>{st}</Lozenge></span>
+                      <span data-cp-lozenge-jira-parity style={{ display: 'inline-block' }}><Lozenge appearance={statusToLozenge(st)} isBold={statusToLozenge(st) !== 'default'}>{st}</Lozenge></span>
                       {isActive && (
                         <span style={{ fontSize: 12, color: token('color.text.brand', '#0C66E4'), fontWeight: 600 }}>
                           ✓

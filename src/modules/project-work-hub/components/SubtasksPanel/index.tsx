@@ -702,7 +702,10 @@ export function SubtasksPanel({
           >
             {expanded ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
           </button>
-          <h2 className="sp-title" style={{margin:0,fontSize:"inherit",fontWeight:"inherit",fontFamily:"inherit",color:"inherit",letterSpacing:"inherit"}}>{effectiveTitle}</h2>
+          {/* jira-compare 2026-05-02: dropped inline `inherit` overrides
+              that were killing the .sp-title 14/600 styling — Vikram
+              probe showed fontWeight rendering at 400. */}
+          <h2 className="sp-title" style={{margin:0}}>{effectiveTitle}</h2>
           {totalCount > 0 && (
             <span className="sp-title-count">{doneCount}/{totalCount}</span>
           )}
