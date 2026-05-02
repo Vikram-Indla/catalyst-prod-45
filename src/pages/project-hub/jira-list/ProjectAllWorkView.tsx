@@ -17,14 +17,20 @@
  *    reach for the hook rather than re-implementing the pattern.
  *    Behaviour unchanged — the hook encodes the exact prior semantics.
  */
-import React, { lazy, Suspense, useState, useCallback, useRef, useEffect } from 'react';
+import React, { lazy, Suspense, useState, useCallback, useRef, useEffect, useMemo } from 'react';
 // (token import removed — switched to var(--cp-*) for proper dark-mode flip)
 import { WorkListPanel } from './components/WorkListPanel';
 import { useProjectAllWorkItems } from '@/hooks/useProjectListItems';
 import { useItemSelection } from '@/hooks/useItemSelection';
 import { ProjectHeaderChip } from '@/components/layout/ProjectHeaderChip';
 import { ProjectTabBar } from '@/components/layout/ProjectTabBar';
-import { AllWorkToolbar, type AllWorkView } from './components/AllWorkToolbar';
+import {
+  AllWorkToolbar,
+  EMPTY_FILTERS,
+  itemPassesFilters,
+  type AllWorkView,
+  type FilterState,
+} from './components/AllWorkToolbar';
 
 const CatalystDetailRouter = lazy(
   () => import('@/components/catalyst-detail-views/CatalystDetailRouter'),
@@ -49,11 +55,41 @@ const SPLIT_BREAKPOINT_PX = 1120;
 export default function ProjectAllWorkView({ projectKey, projectId }: Props) {
   const { data: items = [] } = useProjectAllWorkItems(projectKey);
 
-  /* jira-compare catalog items 3-9 (2026-05-02): toolbar state. */
+  /* jira-compare catalog items 3-9 (2026-05-02): toolbar state.
+     2026-05-03 (P2.1): toolbarFilters reshaped from string[] (facet
+     names) to per-facet selections so values plumb into the items
+     hook below — selecting "Status" and choosing "In QA" now actually
+     filters the rail. */
   const [toolbarQuery, setToolbarQuery] = useState('');
   const [toolbarView, setToolbarView] = useState<AllWorkView>('split');
-  const [toolbarFilters, setToolbarFilters] = useState<string[]>([]);
+  const [toolbarFilters, setToolbarFilters] = useState<FilterState>(EMPTY_FILTERS);
   const [toolbarAssignees, setToolbarAssignees] = useState<string[]>([]);
+  const [filterOpen, setFilterOpen] = useState(false);
+
+  /* Shift+F toggles the filter popup, mirroring Jira's "Press Shift + F
+     to open and close" hint at the bottom of the popup. Skipped while
+     focus is in an input/textarea/contenteditable so it never steals
+     keystrokes from inline-edit fields. */
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (!e.shiftKey || e.key !== 'F') return;
+      const t = e.target as HTMLElement | null;
+      if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.isContentEditable)) return;
+      e.preventDefault();
+      setFilterOpen(o => !o);
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, []);
+
+  /* Client-side filter pass — paginated useProjectAllWorkItems already
+     fetches the whole project (1000s of rows), so a per-render .filter()
+     on the items array is the right scope. Pushing the predicate into
+     the SQL would force a refetch on every chip click. */
+  const filteredItems = useMemo(
+    () => items.filter(i => itemPassesFilters(i, toolbarFilters)),
+    [items, toolbarFilters],
+  );
 
   /** In narrow mode the middle panel is hidden — clicking a card opens
    *  StoryDetailModal as a full overlay instead (Jira parity). */
@@ -76,8 +112,11 @@ export default function ProjectAllWorkView({ projectKey, projectId }: Props) {
   /* A4 chokepoint: dual-shape lookup (id/dbId), URL param hydration
      (`?issue=BAU-5047`), URL param sync, and split-view auto-select-
      first are all inside the hook. See useItemSelection.ts for the
-     pattern rationale and CLAUDE.md §L39 for the silent-400 guard. */
-  const { activeItem, selectItem } = useItemSelection(items, {
+     pattern rationale and CLAUDE.md §L39 for the silent-400 guard.
+     2026-05-03: pass filteredItems so the auto-select picks something
+     visible in the current filter (matches Jira's behaviour — applying
+     a filter that hides the active issue auto-selects the new top). */
+  const { activeItem, selectItem } = useItemSelection(filteredItems, {
     urlParam: 'issue',
     autoSelectFirst: true,
   });
@@ -110,8 +149,11 @@ export default function ProjectAllWorkView({ projectKey, projectId }: Props) {
         onQueryChange={setToolbarQuery}
         view={toolbarView}
         onViewChange={setToolbarView}
-        activeFilters={toolbarFilters}
-        onFilterChange={setToolbarFilters}
+        items={items}
+        selectedFilters={toolbarFilters}
+        onSelectedFiltersChange={setToolbarFilters}
+        filterOpen={filterOpen}
+        onFilterOpenChange={setFilterOpen}
         selectedAssignees={toolbarAssignees}
         onAssigneesChange={setToolbarAssignees}
       />
@@ -142,7 +184,7 @@ export default function ProjectAllWorkView({ projectKey, projectId }: Props) {
             padding: '0',
           }}>
             <WorkListPanel
-              items={items}
+              items={filteredItems}
               selectedKey={activeItem?.id ?? null}
               onSelect={id => {
                 selectItem(id);
@@ -188,7 +230,7 @@ export default function ProjectAllWorkView({ projectKey, projectId }: Props) {
                     // UUID (P1-5 + P1-8 fix from 2026-04-20 critique).
                     onOpenItem={(id) => selectItem(id)}
                     panelMode={true}
-                    navigationItems={items.map(i => ({ id: i.id, summary: i.summary, issue_key: i.jiraKey }))}
+                    navigationItems={filteredItems.map(i => ({ id: i.id, summary: i.summary, issue_key: i.jiraKey }))}
                     onNavigate={handleNavigate}
                   />
                 </Suspense>
@@ -224,7 +266,7 @@ export default function ProjectAllWorkView({ projectKey, projectId }: Props) {
               projectId={projectId ?? ''}
               projectKey={projectKey}
               onOpenItem={(id) => setOverlayItemId(id)}
-              navigationItems={items.map(i => ({ id: i.id, summary: i.summary, issue_key: i.jiraKey }))}
+              navigationItems={filteredItems.map(i => ({ id: i.id, summary: i.summary, issue_key: i.jiraKey }))}
               onNavigate={(id) => setOverlayItemId(id)}
             />
           </Suspense>
