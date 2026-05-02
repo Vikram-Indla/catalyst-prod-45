@@ -171,19 +171,22 @@ function distinctOptions(items: WorkItem[], facet: FilterFacet): { value: string
     .sort((a, b) => a.label.localeCompare(b.label));
 }
 
-/** Apply the active filters to a single item — true means it passes. */
+/** Apply the active filters to a single item — true means it passes.
+    Each comparison runs both sides through toLabel so non-string label
+    values (object[] from raw_json) compare cleanly against the string[]
+    selection state. */
 export function itemPassesFilters(item: WorkItem, f: FilterState): boolean {
-  if (f.fixVersions.length > 0 && !f.fixVersions.includes(item.fixVersion ?? '')) return false;
-  if (f.parent.length > 0 && !f.parent.includes(item.parentKey ?? '')) return false;
-  if (f.assignee.length > 0 && !f.assignee.includes(item.assigneeId ?? '')) return false;
-  if (f.workType.length > 0 && !f.workType.includes(item.rawType ?? '')) return false;
+  if (f.fixVersions.length > 0 && !f.fixVersions.includes(toLabel(item.fixVersion))) return false;
+  if (f.parent.length > 0 && !f.parent.includes(toLabel(item.parentKey))) return false;
+  if (f.assignee.length > 0 && !f.assignee.includes(toLabel(item.assigneeId))) return false;
+  if (f.workType.length > 0 && !f.workType.includes(toLabel(item.rawType))) return false;
   if (f.labels.length > 0) {
-    const ils = item.labels || [];
+    const ils = (item.labels || []).map(toLabel);
     if (!f.labels.some(l => ils.includes(l))) return false;
   }
-  if (f.status.length > 0 && !f.status.includes(item.statusName ?? '')) return false;
-  if (f.priority.length > 0 && !f.priority.includes(item.priority ?? '')) return false;
-  if (f.reporter.length > 0 && !f.reporter.includes(item.reporterId ?? '')) return false;
+  if (f.status.length > 0 && !f.status.includes(toLabel(item.statusName))) return false;
+  if (f.priority.length > 0 && !f.priority.includes(toLabel(item.priority))) return false;
+  if (f.reporter.length > 0 && !f.reporter.includes(toLabel(item.reporterId))) return false;
   return true;
 }
 
