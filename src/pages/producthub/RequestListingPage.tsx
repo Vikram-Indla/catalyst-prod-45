@@ -35,6 +35,7 @@ import { getPriorityLevel, STATUS_DISPLAY, getAvatarColor, getInitials } from '@
 import { Search, X, Plus, Download, Calendar, Clock, LayoutGrid } from 'lucide-react';
 import { PriorityBars } from '@/components/shared/PriorityIndicator';
 import { CatalystPageHeader } from '@/components/shared/CatalystPageHeader';
+import { ProductChromeBand } from '@/components/product-hub/ProductChromeBand';
 import { BacklogSubTabs, type BacklogTabType } from '@/components/producthub/listing/BacklogSubTabs';
 import { BacklogStatusBar } from '@/components/producthub/listing/BacklogStatusBar';
 import { FilterTriggerButton, JiraBasicFilter } from '@/components/shared/JiraBasicFilter';
@@ -201,6 +202,12 @@ export default function RequestListingPage() {
     ? `${scopedProduct.name} · Backlog`
     : 'Product Backlog';
 
+  // Phase 5 (2026-05-02) — stats for the per-product header chrome.
+  // Computed from the mapped request rows so the cards reflect what's
+  // currently visible. Numbers stay 0 if the backlog is empty.
+  // mappedInitiatives is computed below (declared via useMemo); this stats
+  // memo runs after it via dependency.
+
   const invalidateAll = useCallback(() => {
     queryClient.invalidateQueries({ queryKey: ['requests-backlog'] });
     queryClient.invalidateQueries({ queryKey: ['backlog-requests'] });
@@ -210,6 +217,26 @@ export default function RequestListingPage() {
   const isNative = useCallback((id: string) => /^[0-9a-f]{8}-[0-9a-f]{4}-/i.test(id), []);
 
   const mappedInitiatives: Request[] = useMemo(() => mdtData?.data ?? [], [mdtData]);
+
+  // Phase 5 (2026-05-02) — stats computed from the visible request set.
+  // Mirrors Project Hub's per-project stat cards (Total / Completed /
+  // In Progress / Overdue). Only shown when scoped to a product.
+  const scopedStats = useMemo(() => {
+    const items = mappedInitiatives;
+    const total = items.length;
+    const completed = items.filter((i) => i.status === 'done' || i.status === 'in_support').length;
+    const inProgress = items.filter((i) =>
+      ['under_implementation', 'in_progress', 'analysis', 'ready_for_development', 'implementation_review'].includes(i.status as string),
+    ).length;
+    const today = new Date();
+    const overdue = items.filter((i) => {
+      const tc = (i as any).target_complete;
+      if (!tc) return false;
+      if (i.status === 'done' || i.status === 'cancelled') return false;
+      return new Date(tc) < today;
+    }).length;
+    return { total, completed, inProgress, overdue };
+  }, [mappedInitiatives]);
 
   const brdTasksMap = useMemo<Record<string, BRDTask[]>>(() => {
     const map: Record<string, BRDTask[]> = {};
@@ -642,8 +669,23 @@ export default function RequestListingPage() {
 
   return (
     <div data-module="product-backlog" className="flex flex-col h-full" style={{ fontFamily: 'var(--cp-font-body)' }}>
-      {/* ── Page Header (Canonical) ── */}
-      <CatalystPageHeader title={headerTitle} />
+      {/* ── Page Header ── */}
+      {/* Phase 5b (2026-05-02) — when scoped to a product, render the SAME
+          chrome ProjectChromeBand that /project-hub/{KEY}/backlog uses
+          (Projects breadcrumb → Senaei BAU). For Product Hub, breadcrumb
+          becomes "All Products → {Product Name}". Reuse the existing
+          component so visual parity is automatic. No stat cards / view
+          tabs here — those are Board-page chrome, not Backlog. */}
+      {scopedProduct ? (
+        <div style={{ padding: '8px 24px 0' }}>
+          <ProductChromeBand
+            productName={scopedProduct.name}
+            productColor={null}
+          />
+        </div>
+      ) : (
+        <CatalystPageHeader title={headerTitle} />
+      )}
 
       {/* ── Primary Tabs (All / My Items / Starred) + Overdue + Filter ── */}
       <div style={{
