@@ -127,16 +127,15 @@ export function ProjectHeaderChip({ projectKey }: Props) {
         flexShrink: 0,
       }}
     >
-      {/* jira-compare 2026-05-02 — measured Jira: <img> 20×20 br 3px from
-          /rest/api/2/universal_avatar/view/type/project/avatar/<id>.
-          Use canonical ProjectIcon — when avatar_url is seeded it renders
-          a real <img>; otherwise falls back to coloured tile + initial
-          (still better than the muted Folder, but the real fix is the
-          SQL UPDATE on ph_jira_projects.avatar_url). */}
+      {/* jira-compare 2026-05-03 (re-probe) — measured Jira via
+          [data-testid="horizontal-nav-header.ui.project-header.project-icon"]:
+            IMG · 20×20 · borderRadius 3px · objectFit fill · src is
+            /rest/api/2/universal_avatar/view/type/project/avatar/<id>.
+          ProjectIcon (post-RESET-ICONS) consults PROJECT_AVATAR_REGISTRY
+          first when projectKey matches → renders bundled BAU.png. The
+          handover's "SQL UPDATE on ph_jira_projects.avatar_url" concern
+          is OBSOLETE for the chip — the bundled path bypasses avatar_url. */}
       <span style={{ display: 'inline-flex' }}>
-        {/* RESET ICONS: pass projectKey so ProjectIcon resolves the bundled
-            Catalyst avatar from PROJECT_AVATAR_REGISTRY first. avatarUrl /
-            iconName / color remain as fallbacks for keys not in the registry. */}
         <ProjectIcon
           size="small"
           projectKey={projectKey}
@@ -147,18 +146,29 @@ export function ProjectHeaderChip({ projectKey }: Props) {
         />
       </span>
 
-      {/* jira-compare 2026-05-02 — measured Jira: project name is in a
-          plain DIV at 14px / weight 400 / color rgb(41,42,46), NOT a
-          heading. Earlier 16/600 H1 was a fabrication. */}
-      <span
+      {/* jira-compare 2026-05-03 (re-probe corrects two prior fabrications) —
+          measured Jira project name (the H1 inside testid
+          horizontal-nav-header.ui.project-header.header):
+            tag H1 · fontSize 20px · fontWeight 653 (variable axis) ·
+            lineHeight 24px · color rgb(41,42,46) · padding 0 ·
+            fontFamily "Atlassian Sans".
+          Both the ORIGINAL "16/600 H1" and the LATER "14/400 div" were
+          unverified. Real value re-measured 2026-05-03 with the chip
+          mounted on /jira/software/c/projects/BAU/issues. We approximate
+          weight 653 EXACTLY (modern browsers honour non-standard ints on
+          variable Atlassian Sans; Jira itself uses 653 via an Atlaskit
+          atomic class with fontVariationSettings:normal). */}
+      <h1
         data-testid="catalyst-project-header.name"
         style={{
-          fontSize: 14, fontWeight: 400, color: 'var(--ds-text, #292A2E)',
-          padding: '0 8px',
+          margin: 0, padding: 0,
+          fontSize: 20, fontWeight: 653, lineHeight: '24px',
+          color: 'var(--ds-text, #292A2E)',
+          fontFamily: 'inherit',
         }}
       >
         {projectName}
-      </span>
+      </h1>
 
       {/* jira-compare 2026-05-02 — measured Jira action buttons:
             32×32, transparent bg, color rgb(80,82,88) = --ds-text-subtle.

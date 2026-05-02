@@ -122,7 +122,7 @@ export function ProjectIcon({
           width: px,
           height: px,
           borderRadius: radius,
-          objectFit: 'cover',
+          objectFit: 'fill',
           flexShrink: 0,
           display: 'inline-block',
         }}
@@ -143,7 +143,7 @@ export function ProjectIcon({
           width: px,
           height: px,
           borderRadius: radius,
-          objectFit: 'cover',
+          objectFit: 'fill',
           flexShrink: 0,
           display: 'inline-block',
         }}
