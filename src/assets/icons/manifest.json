@@ -1,0 +1,80 @@
+{
+  "version": "1.0.0",
+  "generatedAt": "2026-05-03",
+  "owner": "Catalyst Design — TurnQy",
+  "license": "Proprietary — internal use only",
+  "guardrail": "RESET ICONS — see src/components/icons/icons.registry.ts",
+  "categories": {
+    "workType": {
+      "viewBox": "0 0 20 20",
+      "format": "svg",
+      "fillStrategy": "hardcoded brand color per type (Jira parity)",
+      "renderSizes": [16, 20, 24],
+      "items": [
+        { "id": "story",               "label": "Story",               "color": "#6A9A23", "metaphor": "bookmark with notch",     "mapsToJira": "Story",          "darkVariant": null },
+        { "id": "task",                "label": "Task",                "color": "#1868DB", "metaphor": "square with checkmark",   "mapsToJira": "Task",           "darkVariant": null },
+        { "id": "epic",                "label": "Epic",                "color": "#AF59E1", "metaphor": "lightning bolt",          "mapsToJira": "Epic",           "darkVariant": null },
+        { "id": "sub-task",            "label": "Sub-task",            "color": "#1868DB", "metaphor": "two nested squares",      "mapsToJira": "Sub-task",       "darkVariant": null },
+        { "id": "qa-bug",              "label": "QA Bug",              "color": "#AE2E24", "metaphor": "beetle",                  "mapsToJira": "Bug",            "darkVariant": null },
+        { "id": "feature",             "label": "Feature",             "color": "#1868DB", "metaphor": "stacked layers",          "mapsToJira": "Feature",        "darkVariant": null },
+        { "id": "change-request",      "label": "Change Request",      "color": "#1868DB", "metaphor": "swap arrows",             "mapsToJira": "Change Request", "darkVariant": null },
+        { "id": "production-incident", "label": "Production Incident", "color": "#E06C00", "metaphor": "circle with question",    "mapsToJira": "Incident",       "darkVariant": null },
+        { "id": "business-gap",        "label": "Business Gap",        "color": "#C9372C", "metaphor": "frame with currency",     "mapsToJira": null,             "darkVariant": null },
+        { "id": "api-requirement",     "label": "API Requirement",     "color": "#6A9A23", "metaphor": "monitor with plus",       "mapsToJira": null,             "darkVariant": null },
+        { "id": "frontend",            "label": "Frontend",            "color": "#1868DB", "metaphor": "window with brackets",    "mapsToJira": null,             "darkVariant": null },
+        { "id": "backend",             "label": "Backend",             "color": "#1868DB", "metaphor": "code chevrons",           "mapsToJira": null,             "darkVariant": null },
+        { "id": "integration",         "label": "Integration",         "color": "#1868DB", "metaphor": "three connected nodes",   "mapsToJira": null,             "darkVariant": null },
+        { "id": "figma",               "label": "Figma",               "color": "#292A2E", "metaphor": "Figma F-mark",            "mapsToJira": null,             "darkVariant": "_dark/figma.svg" }
+      ]
+    },
+    "priority": {
+      "viewBox": "0 0 20 20",
+      "format": "svg",
+      "fillStrategy": "hardcoded semantic color (red urgent / orange medium / blue calm / muted none)",
+      "renderSizes": [12, 16, 20],
+      "items": [
+        { "id": "highest", "label": "Highest", "color": "#C9372C", "metaphor": "double up-chevron",   "darkVariant": null },
+        { "id": "high",    "label": "High",    "color": "#C9372C", "metaphor": "single up-chevron",   "darkVariant": null },
+        { "id": "medium",  "label": "Medium",  "color": "#E06C00", "metaphor": "two horizontal bars", "darkVariant": null },
+        { "id": "low",     "label": "Low",     "color": "#1868DB", "metaphor": "single down-chevron", "darkVariant": null },
+        { "id": "lowest",  "label": "Lowest",  "color": "#1868DB", "metaphor": "double down-chevron", "darkVariant": null },
+        { "id": "none",    "label": "None",    "color": "#080F21", "metaphor": "opposed up-down arrows muted", "darkVariant": "_dark/none.svg" }
+      ]
+    },
+    "projectAvatars": {
+      "format": "png",
+      "resolution": "256x256",
+      "renderSizes": [24, 32, 40, 80],
+      "items": [
+        { "key": "BAU",  "name": "Senaei BAU",                     "metaphor": "sync arrows",      "file": "BAU.png",  "source": "avatar_19" },
+        { "key": "DATA", "name": "DATA Project",                   "metaphor": "audio mixer",      "file": "DATA.png", "source": "avatar_22" },
+        { "key": "DET",  "name": "Digital Experience Team",        "metaphor": "smartphone smiley","file": "DET.png",  "source": "avatar_11" },
+        { "key": "ESS",  "name": "Enterprise Shared Services",     "metaphor": "life buoy",        "file": "ESS.png",  "source": "avatar_25" },
+        { "key": "FSM",  "name": "Field Service Management",       "metaphor": "wrench",           "file": "FSM.png",  "source": "avatar_23" },
+        { "key": "ICP",  "name": "ICP Project",                    "metaphor": "notepad pencil",   "file": "ICP.png",  "source": "avatar_13" },
+        { "key": "IN",   "name": "Inspection Project",             "metaphor": "easel painting",   "file": "IN.png",   "source": "avatar_07" },
+        { "key": "INV",  "name": "Investor360",                    "metaphor": "wallet",           "file": "INV.png",  "source": "avatar_12" },
+        { "key": "IP",   "name": "IP Implementation",              "metaphor": "drill",            "file": "IP.png",   "source": "avatar_08" },
+        { "key": "IRP",  "name": "IR Platform",                    "metaphor": "browser cursor",   "file": "IRP.png",  "source": "avatar_14" },
+        { "key": "ISA",  "name": "Industry.sa",                    "metaphor": "mountains",        "file": "ISA.png",  "source": "avatar_15" },
+        { "key": "MDT",  "name": "MIM Digital Transformation",     "metaphor": "rocket",           "file": "MDT.png",  "source": "avatar_20" },
+        { "key": "MIMI", "name": "MIM Internal Implementation",    "metaphor": "browser dashboard","file": "MIMI.png", "source": "avatar_05" },
+        { "key": "MWR",  "name": "MIM Website Revamp",             "metaphor": "smiling cloud",    "file": "MWR.png",  "source": "avatar_03" },
+        { "key": "SAPI", "name": "SAP Implementation",             "metaphor": "battery plus",     "file": "SAPI.png", "source": "avatar_17" },
+        { "key": "SIMP", "name": "SS Implementation",              "metaphor": "vinyl ribbon",     "file": "SIMP.png", "source": "avatar_04" },
+        { "key": "SS",   "name": "Sectorial Services",             "metaphor": "red flag",         "file": "SS.png",   "source": "avatar_18" },
+        { "key": "TAH",  "name": "Tahommena",                      "metaphor": "airplane",         "file": "TAH.png",  "source": "avatar_16" }
+      ],
+      "stockPool": [
+        { "id": "ufo",          "metaphor": "UFO",            "file": "_stock/ufo.png",          "source": "avatar_01" },
+        { "id": "parrot",       "metaphor": "parrot",         "file": "_stock/parrot.png",       "source": "avatar_02" },
+        { "id": "coffee",       "metaphor": "coffee cup",     "file": "_stock/coffee.png",       "source": "avatar_06" },
+        { "id": "hot-dog",      "metaphor": "hot dog",        "file": "_stock/hot-dog.png",      "source": "avatar_09" },
+        { "id": "koala",        "metaphor": "koala",          "file": "_stock/koala.png",        "source": "avatar_10" },
+        { "id": "flask",        "metaphor": "lab flask",      "file": "_stock/flask.png",        "source": "avatar_21" },
+        { "id": "storm-cloud",  "metaphor": "storm cloud",    "file": "_stock/storm-cloud.png",  "source": "avatar_24" },
+        { "id": "yeti",         "metaphor": "yeti",           "file": "_stock/yeti.png",         "source": "avatar_26" }
+      ]
+    }
+  }
+}
