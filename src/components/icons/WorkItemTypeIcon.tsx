@@ -1,31 +1,98 @@
 /**
- * WorkItemTypeIcon — Canonical SVG icons for Jira-parity views
- * Stage C: Exact SVGs per type — NEVER use Lucide for work item types
+ * WorkItemTypeIcon — canonical Catalyst work-item type icon.
+ *
+ * Code word: "RESET ICONS"
+ *
+ * Renders one of 14 work-item type icons. Light/dark mode handled
+ * automatically. Runtime overrides from /admin/icons take precedence
+ * over the bundled compile-time asset URL.
  */
-import React from 'react';
 
-const ICONS: Record<string, string> = {
-  epic: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"><path fill="#6554C0" fill-rule="evenodd" d="M3,0 L21,0 C22.6568542,-3.04359188e-16 24,1.34314575 24,3 L24,21 C24,22.6568542 22.6568542,24 21,24 L3,24 C1.34314575,24 2.02906125e-16,22.6568542 0,21 L0,3 C-2.02906125e-16,1.34314575 1.34314575,3.04359188e-16 3,0 Z M18.1875,9.4 L15.125,9.4 L15.125,4.8 C15.125,3.80261507 14.3098441,3 13.3125,3 C12.786559,3 12.3057802,3.22820418 11.9641282,3.60847767 L11.7684218,3.8182425 L10.706343,5.12646288 C9.94345588,6.0712692 9.18052942,7.02081922 8.4681962,7.91397549 L8.37483685,8.03107544 C5.18814094,12.029567 5,12.2744886 5,12.8 C5,13.8104178 5.81859781,14.3985043 6.7700213,14.5602545 L6.937625,14.5744 L9.875,14.5744 L9.875,19.2 C9.875,20.1973849 10.6901559,21 11.6875,21 C12.1186864,21 12.6506353,20.7635783 13.2071068,20.2071068 L13.2814304,20.1239924 C14.0301813,19.1696667 14.7998077,18.2081847 15.534394,16.0302629 L15.5828384,15.9689934 C17.4875521,12.8246553 19,11.2 19,11.2 C19,10.2026151 19.1848441,9.4 18.1875,9.4 Z"/></svg>`,
-  story: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"><path fill="#36B37E" fill-rule="evenodd" d="M3,0 L21,0 C22.6568542,-3.04359188e-16 24,1.34314575 24,3 L24,21 C24,22.6568542 22.6568542,24 21,24 L3,24 C1.34314575,24 2.02906125e-16,22.6568542 0,21 L0,3 C-2.02906125e-16,1.34314575 1.34314575,3.04359188e-16 3,0 Z M15.6470004,19.5152539 L16.9369996,17.9868881 L12.0001502,13.8199984 L7.06117589,17.98674 C7.03905703,18.0054091 7,17.9917347 7,18.1534919 L7,6.68807648 C7,6.34797522 7.41227423,6 8,6 L16,6 C16.5865377,6 17,6.34873697 17,6.68807648 L17,18.1534919 C17,17.9913444 16.9591854,18.0056137 16.9369996,17.9868881 L15.6470004,19.5152539 Z"/></svg>`,
-  bug: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"><path fill="#FF5630" fill-rule="evenodd" d="M3,0 L21,0 C22.6568542,-3.04359188e-16 24,1.34314575 24,3 L24,21 C24,22.6568542 22.6568542,24 21,24 L3,24 C1.34314575,24 2.02906125e-16,22.6568542 0,21 L0,3 C-2.02906125e-16,1.34314575 1.34314575,3.04359188e-16 3,0 Z M12,17 C14.7614237,17 17,14.7614237 17,12 C17,9.23857625 14.7614237,7 12,7 C9.23857625,7 7,9.23857625 7,12 C7,14.7614237 9.23857625,17 12,17 Z"/></svg>`,
-  task: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"><path fill="#2684FF" fill-rule="evenodd" d="M3,0 L21,0 C22.6568542,-3.04359188e-16 24,1.34314575 24,3 L24,21 C24,22.6568542 22.6568542,24 21,24 L3,24 C1.34314575,24 2.02906125e-16,22.6568542 0,21 L0,3 C-2.02906125e-16,1.34314575 1.34314575,3.04359188e-16 3,0 Z M6,4 C4.8954305,4 4,4.8954305 4,6 L4,18 C4,19.1045695 4.8954305,20 6,20 L18,20 C19.1045695,20 20,19.1045695 20,18 L20,6 C20,4.8954305 19.1045695,4 18,4 L6,4 Z M6,6 L6,18 L18,18 L18,6 L6,6 Z"/></svg>`,
-  subtask: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"><path fill="#2684FF" fill-rule="evenodd" d="M13,11 L13,6 C13,5.44771525 12.5522847,5 12,5 L6,5 C5.44771525,5 5,5.44771525 5,6 L5,12 C5,12.5522847 5.44771525,13 6,13 L11,13 L11,18 C11,18.5522847 11.4477153,19 12,19 L18,19 C18.5522847,19 19,18.5522847 19,18 L19,12 C19,11.4477153 18.5522847,11 18,11 L13,11 Z M3,0 L21,0 C22.6568542,-3.04359188e-16 24,1.34314575 24,3 L24,21 C24,22.6568542 22.6568542,24 21,24 L3,24 C1.34314575,24 2.02906125e-16,22.6568542 0,21 L0,3 C-2.02906125e-16,1.34314575 1.34314575,3.04359188e-16 3,0 Z M7,7 L11,7 L11,11 L7,11 L7,7 Z M13,13 L17,13 L17,17 L13,17 L13,13 Z"/></svg>`,
-  feature: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"><path fill="#36B37E" fill-rule="evenodd" d="M3,0 L21,0 C22.6568542,-3.04359188e-16 24,1.34314575 24,3 L24,21 C24,22.6568542 22.6568542,24 21,24 L3,24 C1.34314575,24 2.02906125e-16,22.6568542 0,21 L0,3 C-2.02906125e-16,1.34314575 1.34314575,3.04359188e-16 3,0 Z M15.6470004,19.5152539 L16.9369996,17.9868881 L12.0001502,13.8199984 L7.06117589,17.98674 C7.03905703,18.0054091 7,17.9917347 7,18.1534919 L7,6.68807648 C7,6.34797522 7.41227423,6 8,6 L16,6 C16.5865377,6 17,6.34873697 17,6.68807648 L17,18.1534919 C17,17.9913444 16.9591854,18.0056137 16.9369996,17.9868881 L15.6470004,19.5152539 Z"/></svg>`,
-  improvement: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"><path fill="#2684FF" fill-rule="evenodd" d="M3,0 L21,0 C22.6568542,-3.04359188e-16 24,1.34314575 24,3 L24,21 C24,22.6568542 22.6568542,24 21,24 L3,24 C1.34314575,24 2.02906125e-16,22.6568542 0,21 L0,3 C-2.02906125e-16,1.34314575 1.34314575,3.04359188e-16 3,0 Z M6,4 C4.8954305,4 4,4.8954305 4,6 L4,18 C4,19.1045695 4.8954305,20 6,20 L18,20 C19.1045695,20 20,19.1045695 20,18 L20,6 C20,4.8954305 19.1045695,4 18,4 L6,4 Z M6,6 L6,18 L18,18 L18,6 L6,6 Z"/></svg>`,
-};
+import * as React from 'react';
+import { useTheme } from '@/hooks/useTheme';
+import {
+  WORK_TYPE_REGISTRY,
+  normalizeWorkItemType,
+  type WorkItemType,
+  type WorkTypeMeta,
+} from './icons.registry';
+import { useIconOverrides } from './useIconOverrides';
 
-interface WorkItemTypeIconProps {
-  type: string;
+export interface WorkItemTypeIconProps {
+  /** Canonical Catalyst type id OR free-text Jira string. */
+  type: WorkItemType | string;
+  /** Render size in CSS px. Defaults to 16. */
   size?: number;
+  /** aria-label override. Empty string = decorative (aria-hidden). */
+  label?: string;
+  className?: string;
+  style?: React.CSSProperties;
+  testId?: string;
 }
 
-export function WorkItemTypeIcon({ type, size = 16 }: WorkItemTypeIconProps) {
-  const key = (type || 'task').toLowerCase();
-  const svg = ICONS[key] ?? ICONS.task;
+const TASK_FALLBACK: WorkTypeMeta = WORK_TYPE_REGISTRY.task;
+const warned = new Set<string>();
+
+function warnUnknown(rawType: string) {
+  if (!import.meta.env.DEV) return;
+  const k = rawType.toLowerCase();
+  if (warned.has(k)) return;
+  warned.add(k);
+  console.warn(
+    `[WorkItemTypeIcon] Unknown type "${rawType}" — falling back to Task icon. ` +
+      `Add a normalization rule in src/components/icons/icons.registry.ts.`,
+  );
+}
+
+export function WorkItemTypeIcon({
+  type, size = 16, label, className, style, testId,
+}: WorkItemTypeIconProps) {
+  const { isDark } = useTheme();
+  const { data: overrides } = useIconOverrides();
+
+  let meta: WorkTypeMeta = TASK_FALLBACK;
+  let resolvedType: WorkItemType = 'task';
+
+  if (type && typeof type === 'string') {
+    if (type in WORK_TYPE_REGISTRY) {
+      resolvedType = type as WorkItemType;
+      meta = WORK_TYPE_REGISTRY[resolvedType];
+    } else {
+      const normalized = normalizeWorkItemType(type);
+      if (normalized) {
+        resolvedType = normalized;
+        meta = WORK_TYPE_REGISTRY[normalized];
+      } else {
+        warnUnknown(type);
+      }
+    }
+  }
+
+  const variantKey = isDark ? 'dark' : 'light';
+  const override = overrides?.workType?.[resolvedType]?.[variantKey];
+  const src = override ?? (isDark ? meta.dark : meta.light);
+
+  const resolvedLabel = label ?? meta.label;
+  const isDecorative = resolvedLabel === '';
+
   return (
-    <span
-      style={{ display: 'inline-flex', alignItems: 'center', flexShrink: 0, width: size, height: size }}
-      dangerouslySetInnerHTML={{ __html: svg.replace(/width="16" height="16"/, `width="${size}" height="${size}"`) }}
+    <img
+      src={src}
+      width={size}
+      height={size}
+      alt={isDecorative ? '' : resolvedLabel}
+      role={isDecorative ? 'presentation' : 'img'}
+      aria-hidden={isDecorative ? true : undefined}
+      aria-label={isDecorative ? undefined : resolvedLabel}
+      title={isDecorative ? undefined : resolvedLabel}
+      className={className}
+      style={{ flexShrink: 0, display: 'inline-block', ...style }}
+      data-testid={testId ?? `work-type-icon--${resolvedType}`}
+      data-icon-type={resolvedType}
+      data-icon-source={override ? 'override' : 'bundled'}
+      draggable={false}
     />
   );
 }
+
+export default WorkItemTypeIcon;

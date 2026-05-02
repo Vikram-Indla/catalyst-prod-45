@@ -119,11 +119,18 @@ export function StatusLozengeByType({
   const category: StatusCategory = matchedState?.category ?? fallbackCategory;
   const label = matchedState?.name ?? displayName;
 
+  /* jira-compare 2026-05-02: Vikram probe — default + isBold renders
+     near-black (--ds-background-neutral-bold). Suppress isBold for
+     default appearance so unmapped statuses render as subtle grey
+     instead of horror-black. */
+  const appearance = APPEARANCE_MAP[category];
+  const isBoldEffective = variant === 'bold' && appearance !== 'default';
+
   return (
     <span data-cp-lozenge-jira-parity style={{ display: 'inline-block' }}>
       <Lozenge
-        appearance={APPEARANCE_MAP[category]}
-        isBold={variant === 'bold'}
+        appearance={appearance}
+        isBold={isBoldEffective}
         maxWidth={maxWidth}
       >
         {label}

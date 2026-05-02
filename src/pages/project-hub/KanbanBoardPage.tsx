@@ -15,6 +15,8 @@
  */
 import React, { useState, useRef, useCallback, useMemo, useEffect, lazy, Suspense } from 'react';
 import { CatalystPageHeader } from '@/components/shared/CatalystPageHeader';
+import { ProjectHeaderChip } from '@/components/layout/ProjectHeaderChip';
+import { ProjectTabBar } from '@/components/layout/ProjectTabBar';
 import Button from '@atlaskit/button/new';
 import { KanbanToolbar } from '@/components/kanban/toolbar/KanbanToolbar';
 import { useParams } from 'react-router-dom';
@@ -855,6 +857,10 @@ export default function KanbanBoardPage() {
 
   return (
     <div className="flex flex-col flex-1 min-h-0" style={{ background: tk.pageBg }}>
+      {/* jira-compare catalog item 1 cascade (2026-05-02): canonical
+          project chip mounts above the page header. */}
+      {key && <ProjectHeaderChip projectKey={key} />}
+      {/* ProjectTabBar removed 2026-05-02 per Vikram — sidebar owns nav. */}
       {/* ── Page header ── */}
       <CatalystPageHeader title="Board" />
 

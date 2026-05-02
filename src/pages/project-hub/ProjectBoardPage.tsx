@@ -4,6 +4,8 @@
  */
 import { useState, useMemo, useCallback, useRef, useEffect } from 'react';
 import { CatalystPageHeader } from '@/components/shared/CatalystPageHeader';
+import { ProjectHeaderChip } from '@/components/layout/ProjectHeaderChip';
+import { ProjectTabBar } from '@/components/layout/ProjectTabBar';
 import { useParams } from 'react-router-dom';
 import {
   Columns3, Kanban, GanttChart,
@@ -111,7 +113,13 @@ export default function ProjectBoardPage() {
   const hasActiveFilters = !!(filterType || filterStatus || filterPriority || filterSource);
 
   return (
-    <div style={{ fontFamily: 'var(--cp-font-body)', padding: '20px 24px 16px' }}>
+    <div style={{ fontFamily: 'var(--cp-font-body)', padding: '0' }}>
+      {/* jira-compare catalog item 1 cascade (2026-05-02): canonical
+          project chip mounts above the page header on every project-
+          scoped surface (Project Work, Backlog, Board, Kanban). */}
+      {key && <ProjectHeaderChip projectKey={key} />}
+      {/* ProjectTabBar removed 2026-05-02 per Vikram — sidebar owns nav. */}
+      <div style={{ padding: '20px 24px 16px' }}>
       {/* ─── PAGE HEADER ─── */}
       <CatalystPageHeader title={projectName} />
 
@@ -384,6 +392,7 @@ export default function ProjectBoardPage() {
           }
         }}
       />
+      </div>
     </div>
   );
 }

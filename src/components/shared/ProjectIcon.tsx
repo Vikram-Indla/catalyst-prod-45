@@ -22,6 +22,8 @@
 import React from 'react';
 import * as LucideIcons from 'lucide-react';
 import { Folder } from 'lucide-react';
+import { PROJECT_AVATAR_REGISTRY, type ProjectKey } from '@/components/icons/icons.registry';
+import { useIconOverrides } from '@/components/icons/useIconOverrides';
 
 export type ProjectIconSize = 'xsmall' | 'small' | 'medium' | 'large' | 'xlarge';
 
@@ -42,7 +44,13 @@ const ICON_PX: Record<ProjectIconSize, number> = {
 };
 
 interface ProjectIconProps {
-  /** projects.avatar_url — Jira-uploaded project image. Highest priority. */
+  /**
+   * 2026-05-03 (RESET ICONS): Catalyst project key. When set and the key
+   * exists in PROJECT_AVATAR_REGISTRY, the bundled brand avatar wins over
+   * every other source. This is the new canonical path.
+   */
+  projectKey?: string | null;
+  /** projects.avatar_url — Jira-uploaded project image. Used when projectKey is unmapped. */
   avatarUrl?: string | null;
   /** ph_projects.icon — Lucide icon name (e.g. "rocket", "folder"). */
   iconName?: string | null;
@@ -80,6 +88,7 @@ function resolveLucideIcon(name?: string | null): React.ComponentType<{ size?: n
 }
 
 export function ProjectIcon({
+  projectKey,
   avatarUrl,
   iconName,
   color,
@@ -91,6 +100,35 @@ export function ProjectIcon({
   const px = SIZE_PX[size];
   const radius = px <= 24 ? 3 : 4;
   const iconPx = ICON_PX[size];
+  const { data: overrides } = useIconOverrides();
+
+  // 0. NEW canonical (RESET ICONS, 2026-05-03): if projectKey maps to a
+  // bundled Catalyst avatar, that wins. Runtime overrides from
+  // /admin/icons take precedence over the bundled URL.
+  if (projectKey && projectKey in PROJECT_AVATAR_REGISTRY) {
+    const bundled = PROJECT_AVATAR_REGISTRY[projectKey as ProjectKey].url;
+    const override = overrides?.projectAvatar?.[projectKey];
+    const url = override ?? bundled;
+    return (
+      <img
+        src={url}
+        alt={name ?? PROJECT_AVATAR_REGISTRY[projectKey as ProjectKey].name}
+        width={px}
+        height={px}
+        className={className}
+        data-project-key={projectKey}
+        data-icon-source={override ? 'override' : 'bundled'}
+        style={{
+          width: px,
+          height: px,
+          borderRadius: radius,
+          objectFit: 'cover',
+          flexShrink: 0,
+          display: 'inline-block',
+        }}
+      />
+    );
+  }
 
   // 1. Canonical: Jira-uploaded image
   if (avatarUrl) {

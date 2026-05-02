@@ -281,7 +281,7 @@ export function CatalystSidebarDetails({
               rail-card rendering (variant='bold') so Status reads with the same
               saturation across rail card / pill / sidebar. */}
           <span data-cp-lozenge-jira-parity style={{ display: 'inline-block' }}>
-            <Lozenge appearance={lozengeAppearance} isBold>{statusValue}</Lozenge>
+            <Lozenge appearance={lozengeAppearance} isBold={lozengeAppearance !== 'default'}>{statusValue}</Lozenge>
           </span>
           <svg width="10" height="10" viewBox="0 0 10 10" fill="none" aria-hidden="true">
             <path d="M2 4L5 7L8 4" stroke="#42526E" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />

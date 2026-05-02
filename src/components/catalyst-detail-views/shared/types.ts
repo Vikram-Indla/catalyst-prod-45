@@ -11,8 +11,11 @@ export type {
   FixVersion,
 } from '@/modules/project-work-hub/components/dialogs/story-detail-modules/types';
 
-/** Catalyst work item types supported by detail views */
-export type CatalystItemType = 'story' | 'epic' | 'feature' | 'defect' | 'incident' | 'task' | 'business_request' | 'subtask';
+/** Catalyst work item types supported by detail views.
+ *  Phase 6 (2026-05-02): added 'idea' so Ideation Hub routes its detail
+ *  surface through CatalystDetailRouter instead of forking a parallel
+ *  modal. Per the canonical-primitive framework — see CLAUDE.md. */
+export type CatalystItemType = 'story' | 'epic' | 'feature' | 'defect' | 'incident' | 'task' | 'business_request' | 'subtask' | 'idea';
 
 /** Shared props for all CatalystView* components */
 export interface CatalystViewBaseProps {
@@ -28,6 +31,10 @@ export interface CatalystViewBaseProps {
   onTogglePanelMode?: () => void;
   navigationItems?: { id: string; summary: string; issue_key?: string }[];
   onNavigate?: (itemId: string) => void;
+  /** Optional entity-specific promotion handler.
+   *  Currently used by 'idea' to spawn a Request via CreateRequestDrawer.
+   *  Other entity types ignore this prop. */
+  onConvert?: (item: unknown) => void;
 }
 
 /** Props for the CatalystDetailRouter */

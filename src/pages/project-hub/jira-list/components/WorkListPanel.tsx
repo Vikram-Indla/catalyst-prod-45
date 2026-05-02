@@ -21,13 +21,25 @@ interface Props {
   onSelect: (id: string) => void;
   /** Project UUID — required for the assignee picker (project_members lookup). */
   projectId?: string;
+  /** jira-compare 2026-05-02: AllWorkToolbar now owns the Search input.
+   *  When externalQuery is provided, the rail filters by it and the
+   *  inner search input is hidden. */
+  externalQuery?: string;
 }
 
-export function WorkListPanel({ items, selectedKey, onSelect, projectId }: Props) {
-  const [query, setQuery] = useState('');
+export function WorkListPanel({ items, selectedKey, onSelect, projectId, externalQuery }: Props) {
+  const [innerQuery, setInnerQuery] = useState('');
+  const query = externalQuery !== undefined ? externalQuery : innerQuery;
+  const setQuery = setInnerQuery;
+  const showInnerSearch = externalQuery === undefined;
   /* jira-compare Patch #3: Sort "Created" toggles asc/desc.
      Default desc to match Jira's "Newest first" on All work. */
   const [sortDir, setSortDir] = useState<'asc' | 'desc'>('desc');
+  /* jira-compare catalog item 10 (2026-05-02): Jira NIN paginates the
+     navigator at 50 per page with a "50 of 1000+" footer. Catalyst was
+     rendering all 900+ cards at once. Local pagination — server-side
+     paging is a follow-up if/when ph_issues row counts grow further. */
+  const [pageSize, setPageSize] = useState(50);
 
   const filtered = useMemo(() => {
     /* jira-compare follow-up (2026-05-02): Vikram directive — the rail
@@ -68,8 +80,9 @@ export function WorkListPanel({ items, selectedKey, onSelect, projectId }: Props
       fontFamily: "'Atlassian Sans', -apple-system, BlinkMacSystemFont, sans-serif",
       fontSize: 14,
     }}>
-      {/* Top bar: Search work | Filter
-          (Ask AI removed 2026-04-18 per directive — not used on All Work.) */}
+      {/* Top bar: Search work | Filter — hidden when AllWorkToolbar
+          owns search (externalQuery prop provided). */}
+      {showInnerSearch && (
       <div style={{
         display: 'flex', alignItems: 'center', gap: 8,
         padding: '8px 12px', borderBottom: '1px solid var(--cp-border-default, #DFE1E6)', background: 'transparent',
@@ -104,6 +117,7 @@ export function WorkListPanel({ items, selectedKey, onSelect, projectId }: Props
           Filter
         </button>
       </div>
+      )}
 
       {/* Sort header */}
       <div style={{
@@ -132,7 +146,7 @@ export function WorkListPanel({ items, selectedKey, onSelect, projectId }: Props
 
       {/* Scrollable card list */}
       <div style={{ flex: 1, overflowY: 'auto', padding: '8px 8px', minHeight: 0, background: 'transparent' }}>
-        {filtered.map(item => {
+        {filtered.slice(0, pageSize).map(item => {
           const selected = item.id === selectedKey;
           const rtl = /[\u0600-\u06FF]/.test(item.summary);
           return (
@@ -214,16 +228,45 @@ export function WorkListPanel({ items, selectedKey, onSelect, projectId }: Props
           );
         })}
 
-        {/* Footer count */}
+        {/* Footer pagination — jira-compare catalog item 10 (2026-05-02).
+            Mirrors Jira NIN's "50 of 1000+" footer with a "Load more"
+            CTA. Page size grows by 50 each click; resets when filter or
+            sort changes (page-size state would persist otherwise). */}
         <div style={{
-          padding: '12px 4px', color: 'var(--cp-text-tertiary, #626F86)', fontSize: 12, textAlign: 'center',
+          padding: '10px 8px 16px',
+          fontSize: 12, textAlign: 'center',
           fontFamily: "'Atlassian Sans', -apple-system, sans-serif",
+          display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6,
         }}>
           {(() => {
-            const total = items.length >= 1000 ? '1000+' : `${items.length}`;
-            if (filtered.length === items.length) return `${total} items`;
-            return `${filtered.length} of ${total} (filtered)`;
+            /* jira-compare 2026-05-02: Vikram screenshot — footer was
+               showing "(filtered)" because the always-on subtask
+               exclusion makes filtered.length < items.length. Footer
+               should mirror Jira: "{visible} of {total}" only — no
+               "(filtered)" suffix unless the user actually applied a
+               filter (search query non-empty). */
+            const visible = Math.min(pageSize, filtered.length);
+            const total = filtered.length >= 1000 ? '1000+' : `${filtered.length}`;
+            const userFiltered = query.trim().length > 0;
+            return (
+              <span style={{ color: 'var(--cp-text-tertiary, #626F86)' }}>
+                {visible} of {total}{userFiltered ? ' (filtered)' : ''}
+              </span>
+            );
           })()}
+          {pageSize < filtered.length && (
+            <button
+              onClick={() => setPageSize(s => s + 50)}
+              style={{
+                background: 'transparent', border: '1px solid var(--cp-border-default, #DFE1E6)',
+                borderRadius: 6, padding: '4px 12px', cursor: 'pointer',
+                fontSize: 12, color: 'var(--cp-text-info, #1868DB)', fontWeight: 500,
+                fontFamily: "'Atlassian Sans', -apple-system, sans-serif",
+              }}
+            >
+              Load more
+            </button>
+          )}
         </div>
       </div>
     </div>

@@ -49,8 +49,18 @@ const STATUS_APPEARANCE: Record<string, LozengeAppearance> = {
   'cancelled': 'removed',
   'canceled': 'removed',
   'on hold': 'moved',
-  'awaiting info': 'moved',
+  /* jira-compare 2026-05-02: Vikram probe — BAU treats "Awaiting Info"
+     as an active workflow state, not a paused one. Switched from moved
+     (yellow) to inprogress (blue) so the rail pill matches BAU's
+     workflow semantics. */
+  'awaiting info': 'inprogress',
   'paused': 'moved',
+  /* BAU-specific in-flight statuses missing from the original table.
+     "Implementation" was falling through to 'default' which renders as
+     a near-black bold pill — clearly wrong. */
+  'implementation': 'inprogress',
+  'ready for development': 'inprogress',
+  'in implementation': 'inprogress',
 
   // ── Done bucket ──
   'done': 'success',

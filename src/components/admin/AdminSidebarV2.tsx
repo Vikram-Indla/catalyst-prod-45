@@ -77,6 +77,8 @@ const adminPockets = [
       { label: 'Announcements', path: '/admin/announcements' },
       { label: 'Notification Settings', path: '/admin/settings/notifications' },
       { label: 'Notification Triggers', path: '/admin/notification-triggers' },
+      // RESET ICONS — runtime icon override management. Admin-only.
+      { label: 'Icons', path: '/admin/icons' },
     ],
   },
   {

@@ -99,6 +99,8 @@ import { AtlaskitPageShell } from '@/components/ads';
 // header band (Spaces breadcrumb + project icon + H1) lifted out of the
 // white card to match Jira parity. Single import, scoped to project-work-hub.
 import { ProjectChromeBand } from '../components/ProjectChromeBand';
+import { ProjectHeaderChip } from '@/components/layout/ProjectHeaderChip';
+import { ProjectTabBar } from '@/components/layout/ProjectTabBar';
 // Apr 27 2026 (LOVABLE-01 landed in-session): AvatarGroup for the chrome-band
 // member strip + resolveAvatarUrl for local-asset photo lookups (avatars
 // chokepoint per CLAUDE.md §19).
@@ -2032,7 +2034,19 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
       // Enter full screen remains (the invite-people icon next to the H1
       // still opens the Add people modal).
       chromeBand={
-        <ProjectChromeBand
+        <>
+        {/* jira-compare catalog item 1 cascade (2026-05-02): single
+            canonical ProjectHeaderChip — replaces the legacy
+            ProjectChromeBand. Vikram directive (2026-05-02): "always idea
+            is to bring it as close to Jira as possible". The chip carries
+            avatar + name + Add people / meatball / share / automation /
+            feedback / fullscreen, matching Jira's
+            horizontal-nav-header.ui.project-header.header. The legacy
+            ProjectChromeBand is retained for back-compat by surfaces that
+            still mount it directly, but Backlog now uses the chip alone. */}
+        <ProjectHeaderChip projectKey={projectKey} />
+        {/* ProjectTabBar removed 2026-05-02 per Vikram — sidebar owns nav. */}
+        {false && <ProjectChromeBand
           projectName={pageTitle}
           projectIconUrl={(project as any)?.avatar_url ?? undefined}
           projectIconName={(project as any)?.icon ?? null}
@@ -2145,7 +2159,8 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
           }
           // Apr 27 2026 (Vikram instruction): tabs row removed entirely.
           // All work / Releases / "+" not required on this surface.
-        />
+        />}
+        </>
       }
     >
       {/* Toolbar: search + filter + type chips inline + count + maximize.
