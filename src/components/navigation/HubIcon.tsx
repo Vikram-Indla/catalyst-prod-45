@@ -10,7 +10,8 @@ export type HubName =
   | 'incident'
   | 'task'
   | 'plan'
-  | 'wiki';
+  | 'wiki'
+  | 'ideation';
 
 interface HubIconProps {
   name: HubName;
@@ -128,6 +129,15 @@ export const HubIcon: React.FC<HubIconProps> = ({ name, size = 24, className }) 
           <path d="M20.5 5.25a.75.75 0 0 0-.75-.75h-5.5A2.25 2.25 0 0 0 12 6.75v13.5a1.75 1.75 0 0 1 1.75-1.75h6a.75.75 0 0 0 .75-.75V5.25Z" />
           <path d="M6 8.75h3.25M6 11.25h3.25" />
           <path d="M14.75 8.75H18M14.75 11.25H18" />
+        </svg>
+      );
+    case 'ideation':
+      return (
+        <svg {...common}>
+          {/* Lightbulb glyph — Atlassian-fidelity, square linecap, 1.5 stroke. */}
+          <path d="M12 3a6 6 0 0 0-3.6 10.8c.5.4.85.95.85 1.6V16h5.5v-.6c0-.65.35-1.2.85-1.6A6 6 0 0 0 12 3Z" />
+          <path d="M9.25 18h5.5" />
+          <path d="M10.25 20.75h3.5" />
         </svg>
       );
   }

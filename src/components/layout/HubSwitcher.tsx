@@ -35,7 +35,11 @@ interface HubEntry {
 const HUBS: HubEntry[] = [
   { key: 'home',     label: 'Home',          href: '/for-you',                    description: 'Your work across all hubs' },
   { key: 'strategy', label: 'Strategy Hub',  href: '/strategyhub',                description: 'Vision, themes, OKRs' },
-  { key: 'product',  label: 'Product Hub',   href: '/product-hub',                description: 'Products, ideas, roadmaps' },
+  // Phase 6 (2026-05-02): Ideation is its own peer hub — org-wide intake,
+  // product binding only at conversion. Sits between Strategy and Product
+  // because that's the actual flow: theme → idea → product/work.
+  { key: 'ideation', label: 'Ideation',      href: '/ideation/backlog',           description: 'Org-wide ideas — convert to product work' },
+  { key: 'product',  label: 'Product Hub',   href: '/product-hub',                description: 'Products, roadmaps, cards' },
   { key: 'project',  label: 'Project Hub',   href: '/project-hub',                description: 'Delivery projects & backlogs' },
   { key: 'release',  label: 'Release Hub',   href: '/release-hub/command-center', description: 'Release planning & cutover' },
   { key: 'test',     label: 'Test Hub',      href: '/testhub/dashboard',          description: 'Test cases, cycles, defects' },

@@ -621,9 +621,16 @@
   align-items: center;
   gap: 4px;
   padding: 2px 4px;
-  border: 2px solid var(--ds-border-focused, #4C9AFF);
+  /* jira-compare follow-up (2026-05-02): outer 2px focused border
+     removed — @atlaskit/textfield (Textfield appearance="subtle")
+     already paints its own focus ring, the outer border was creating
+     a visible double-border. */
+  border: 1px solid transparent;
   border-radius: 3px;
   background: var(--ds-surface, #FFFFFF);
+}
+.sp-create-wrap:focus-within .sp-create-row {
+  border-color: var(--ds-border-focused, #4C9AFF);
 }
 .sp-create-input-wrap { flex: 1; min-width: 0; }
 

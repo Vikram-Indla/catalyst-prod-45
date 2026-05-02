@@ -64,6 +64,7 @@ import { derivePageFromPath } from '@/lib/tabIdentity';
 const UnifiedSidebar = lazyWithRetry(() => import('./UnifiedSidebar').then(m => ({ default: m.UnifiedSidebar })), 'UnifiedSidebar');
 const EnterpriseSidebar = lazyWithRetry(() => import('./EnterpriseSidebar').then(m => ({ default: m.EnterpriseSidebar })), 'EnterpriseSidebar');
 const ProductRoomSidebar = lazyWithRetry(() => import('./ProductRoomSidebar').then(m => ({ default: m.ProductRoomSidebar })), 'ProductRoomSidebar');
+const IdeationSidebar = lazyWithRetry(() => import('./IdeationSidebar').then(m => ({ default: m.IdeationSidebar })), 'IdeationSidebar');
 const ProjectSidebar = lazyWithRetry(() => import('./ProjectSidebar').then(m => ({ default: m.ProjectSidebar })), 'ProjectSidebar');
 const ReleaseRoomSidebar = lazyWithRetry(() => import('./OperationsSidebar').then(m => ({ default: m.ReleaseRoomSidebar })), 'ReleaseRoomSidebar');
 const TestManagementSidebar = lazyWithRetry(() => import('./TestManagementSidebar').then(m => ({ default: m.TestManagementSidebar })), 'TestManagementSidebar');
@@ -231,7 +232,12 @@ function CatalystShellContent() {
   });
 
   // Check if on product/producthub route
-  const isProductRoute = location.pathname.startsWith('/producthub') || location.pathname.startsWith('/product');
+  // Ideation is a peer hub at /ideation/*. Must be checked BEFORE isProductRoute
+  // because the latter previously caught /product/ideas/* — those URLs now
+  // redirect to /ideation/*, but the redirect is a transient state and we
+  // want IdeationSidebar to render the moment the new URL lands.
+  const isIdeationRoute = location.pathname.startsWith('/ideation');
+  const isProductRoute = !isIdeationRoute && (location.pathname.startsWith('/producthub') || location.pathname.startsWith('/product'));
   
   // Check if on release route (Operations/Incidents)
   const isReleaseRoute = location.pathname.startsWith('/release');
@@ -326,12 +332,14 @@ function CatalystShellContent() {
     location.pathname.startsWith('/strategyhub') ||
     location.pathname.startsWith('/producthub') ||
     location.pathname.startsWith('/product/') ||      // /product/ideas/*, /product/room, etc.
+    location.pathname.startsWith('/product-hub') ||
     location.pathname.startsWith('/project-hub') ||
     location.pathname.startsWith('/release-hub') ||
     location.pathname.startsWith('/releasehub') ||
     location.pathname.startsWith('/testhub') ||
     location.pathname.startsWith('/incident-hub') ||
     location.pathname.startsWith('/taskhub') ||
+    location.pathname.startsWith('/ideation') ||      // peer hub Ideation
     location.pathname.startsWith('/priorities');
 
   // Pages that already paint their own Jira canvas + white card. Wrapping these
@@ -500,6 +508,17 @@ function CatalystShellContent() {
     if (isReleaseRoute) {
       return (
         <ReleaseRoomSidebar
+          expanded={true}
+          onToggle={cycleSidebarState}
+        />
+      );
+    }
+
+    // Ideation hub sidebar (/ideation/*) — peer hub, checked before Product
+    // so the lifted Ideation surfaces don't fall through to ProductRoomSidebar.
+    if (isIdeationRoute) {
+      return (
+        <IdeationSidebar
           expanded={true}
           onToggle={cycleSidebarState}
         />

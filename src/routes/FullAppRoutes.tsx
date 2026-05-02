@@ -500,7 +500,11 @@ export default function FullAppRoutes() {
         <Route path="/product-hub/reports" element={<MG k="producthub" t="ProductHub"><S><IndustryComingSoon /></S></MG>} />
         <Route path="/product-hub/roadmap" element={<MG k="producthub" t="ProductHub"><S><RoadmapPage /></S></MG>} />
         <Route path="/product-hub/cards" element={<MG k="producthub" t="ProductHub"><S><ProductCardsPage /></S></MG>} />
-        <Route path="/product-hub/ideation" element={<MG k="ai_features" t="Ideation"><S><IdeationPage /></S></MG>} />
+        {/* Phase 6 (2026-05-02) — Ideation lifted out of Product Hub.
+            /product-hub/ideation now redirects to the canonical peer hub
+            at /ideation/intelligence. Submitters and reviewers no longer
+            land "inside" Product Hub for ideation work. */}
+        <Route path="/product-hub/ideation" element={<Navigate to="/ideation/intelligence" replace />} />
         <Route path="/product-hub/requirement-assist" element={<MG k="ai_features" t="Requirement Assist"><S><RequirementAssistWorkspace /></S></MG>} />
         <Route path="/product-hub/requirement-assist/compose" element={<MG k="ai_features" t="Requirement Assist"><S><RequirementAssistCompose /></S></MG>} />
         <Route path="/product-hub/requirement-assist/categories" element={<MG k="ai_features" t="Requirement Assist"><S><RequirementAssistCategories /></S></MG>} />
@@ -519,19 +523,35 @@ export default function FullAppRoutes() {
         <Route path="/producthub/reports" element={<Navigate to="/product-hub/reports" replace />} />
         <Route path="/producthub/roadmap" element={<Navigate to="/product-hub/roadmap" replace />} />
         <Route path="/producthub/cards" element={<Navigate to="/product-hub/cards" replace />} />
-        <Route path="/producthub/ideation" element={<Navigate to="/product-hub/ideation" replace />} />
+        <Route path="/producthub/ideation" element={<Navigate to="/ideation/intelligence" replace />} />
         <Route path="/producthub/requirement-assist" element={<Navigate to="/product-hub/requirement-assist" replace />} />
         <Route path="/producthub/requirement-assist/compose" element={<Navigate to="/product-hub/requirement-assist/compose" replace />} />
         <Route path="/producthub/requirement-assist/categories" element={<Navigate to="/product-hub/requirement-assist/categories" replace />} />
         <Route path="/producthub/requirement-assist/:id" element={<NavigateProducthubReqAssistId />} />
 
-        {/* /product/* sub-routes are unrelated namespace (Ideas, req-assist) — leave intact */}
-        <Route path="/product/ideas/roadmap" element={<MG k="ai_features" t="Ideas Roadmap"><S><IdeasRoadmapPage /></S></MG>} />
-        <Route path="/product/ideas/backlog" element={<MG k="ai_features" t="Ideas Backlog"><S><IdeasBacklogPage /></S></MG>} />
-        <Route path="/product/ideas/board" element={<MG k="ai_features" t="Ideas Board"><S><IdeasBoardPage /></S></MG>} />
-        <Route path="/product/ideas/roadmap-new" element={<MG k="ai_features" t="Ideas Roadmap"><S><IdeasRoadmapPageNew /></S></MG>} />
-        <Route path="/product/ideas/themes" element={<MG k="ai_features" t="Ideas Theme"><S><IdeasThemePage /></S></MG>} />
-        <Route path="/product/ideas/analytics" element={<MG k="ai_features" t="Ideas Analytics"><S><IdeasAnalyticsPage /></S></MG>} />
+        {/* Phase 6 (2026-05-02) — Ideation peer hub at /ideation/*.
+            Pages stay where they are (pages/producthub/Ideas*.tsx); only
+            the canonical URL prefix moves. /product/ideas/* legacy paths
+            redirect below so existing bookmarks survive. */}
+        <Route path="/ideation" element={<Navigate to="/ideation/backlog" replace />} />
+        <Route path="/ideation/backlog" element={<MG k="ai_features" t="Ideas Backlog"><S><IdeasBacklogPage /></S></MG>} />
+        <Route path="/ideation/board" element={<MG k="ai_features" t="Ideas Board"><S><IdeasBoardPage /></S></MG>} />
+        <Route path="/ideation/roadmap" element={<MG k="ai_features" t="Ideas Roadmap"><S><IdeasRoadmapPageNew /></S></MG>} />
+        <Route path="/ideation/themes" element={<MG k="ai_features" t="Ideas Themes"><S><IdeasThemePage /></S></MG>} />
+        <Route path="/ideation/analytics" element={<MG k="ai_features" t="Ideas Analytics"><S><IdeasAnalyticsPage /></S></MG>} />
+        <Route path="/ideation/matrix" element={<MG k="ai_features" t="Impact Matrix"><S><IdeationPage /></S></MG>} />
+        <Route path="/ideation/triage" element={<MG k="ai_features" t="Triage"><S><IdeationPage /></S></MG>} />
+        <Route path="/ideation/intelligence" element={<MG k="ai_features" t="Intelligence"><S><IdeationPage /></S></MG>} />
+
+        {/* Legacy /product/ideas/* — redirect to canonical /ideation/*.
+            /product/ideas/roadmap-new collapses with /product/ideas/roadmap
+            since /ideation/roadmap is now the single roadmap surface. */}
+        <Route path="/product/ideas/roadmap" element={<Navigate to="/ideation/roadmap" replace />} />
+        <Route path="/product/ideas/roadmap-new" element={<Navigate to="/ideation/roadmap" replace />} />
+        <Route path="/product/ideas/backlog" element={<Navigate to="/ideation/backlog" replace />} />
+        <Route path="/product/ideas/board" element={<Navigate to="/ideation/board" replace />} />
+        <Route path="/product/ideas/themes" element={<Navigate to="/ideation/themes" replace />} />
+        <Route path="/product/ideas/analytics" element={<Navigate to="/ideation/analytics" replace />} />
         <Route path="/product/req-assist" element={<MG k="ai_features" t="Requirement Assist"><S><ReqAssistLibrary /></S></MG>} />
         <Route path="/product/req-assist/generate" element={<MG k="ai_features" t="Requirement Assist"><S><ReqAssistGenerate /></S></MG>} />
         <Route path="/req-assist/rag-audit" element={<MG k="ai_features" t="RAG Audit"><S><RAGAuditPage /></S></MG>} />

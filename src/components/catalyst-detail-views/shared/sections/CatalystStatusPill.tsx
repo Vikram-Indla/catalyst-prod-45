@@ -30,11 +30,15 @@ import { statusToLozenge } from '@/modules/project-work-hub/utils/statusToLozeng
 interface CatalystStatusPillProps {
   /** Current status name (e.g. "To Do", "In Progress", "Ready for QA"). */
   status?: string | null;
+  /** Jira workflow statusCategory key — drives the Atlaskit Lozenge
+   *  appearance per Jira NIN parity. When omitted, statusToLozenge
+   *  falls back to name-based mapping (less accurate). */
+  statusCategory?: string | null;
   /** Called when the user picks a different status from the dropdown. */
   onStatusChange?: (newStatus: string) => void;
 }
 
-export function CatalystStatusPill({ status, onStatusChange }: CatalystStatusPillProps) {
+export function CatalystStatusPill({ status, statusCategory, onStatusChange }: CatalystStatusPillProps) {
   const [open, setOpen] = useState(false);
   const [anchor, setAnchor] = useState<{ top: number; left: number } | null>(null);
   const triggerRef = useRef<HTMLButtonElement | null>(null);
@@ -124,7 +128,7 @@ export function CatalystStatusPill({ status, onStatusChange }: CatalystStatusPil
           e.currentTarget.style.borderColor = token('color.border', '#DFE1E6');
         }}
       >
-        <span data-cp-lozenge-jira-parity style={{ display: 'inline-block' }}><Lozenge appearance={statusToLozenge(display)}>{display}</Lozenge></span>
+        <span data-cp-lozenge-jira-parity style={{ display: 'inline-block' }}><Lozenge appearance={statusToLozenge(display, statusCategory)} isBold>{display}</Lozenge></span>
         <ChevronDown size={12} color={token('color.icon.subtle', '#42526E') as string} />
       </button>
       </div>
@@ -197,7 +201,9 @@ export function CatalystStatusPill({ status, onStatusChange }: CatalystStatusPil
                         if (!isActive) e.currentTarget.style.background = 'transparent';
                       }}
                     >
-                      <span data-cp-lozenge-jira-parity style={{ display: 'inline-block' }}><Lozenge appearance={statusToLozenge(st)}>{st}</Lozenge></span>
+                      {/* jira-compare follow-up (2026-05-02): isBold so each option
+                          inherits the same bold appearance as the rendered status pill. */}
+                      <span data-cp-lozenge-jira-parity style={{ display: 'inline-block' }}><Lozenge appearance={statusToLozenge(st)} isBold>{st}</Lozenge></span>
                       {isActive && (
                         <span style={{ fontSize: 12, color: token('color.text.brand', '#0C66E4'), fontWeight: 600 }}>
                           ✓

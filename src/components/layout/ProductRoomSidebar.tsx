@@ -22,13 +22,7 @@ import {
   Columns3,
   GanttChart,
   LayoutGrid,
-  Lightbulb,
-  Columns,
-  ScatterChart,
-  BarChart3,
-  Rocket,
   FileText,
-  LayoutPanelLeft,
   LayoutDashboard,
   Network,
   ArrowLeft,
@@ -80,6 +74,9 @@ const GLOBAL_CONFIG: SidebarConfig = {
   badge: 'PH',
   label: 'Product Hub',
   // Design critique (2026-04-19) — see prior version for rationale.
+  // Phase 6 (2026-05-02): Ideation section removed. Ideas are org-wide
+  // intake and now live at the peer /ideation/* hub, accessed via the Hub
+  // Switcher. Product Hub stays focused on product-line management.
   sections: [
     {
       title: '',
@@ -90,16 +87,6 @@ const GLOBAL_CONFIG: SidebarConfig = {
         { id: 'roadmap', title: 'Product Roadmap', path: '/product-hub/roadmap', icon: GanttChart, exact: false },
         { id: 'cards', title: 'Product Cards', path: '/product-hub/cards', icon: LayoutGrid, exact: true },
         { id: 'req-assist-pipeline', title: 'Req Assist™', path: '/product-hub/requirement-assist', icon: FileText, exact: false, textBadge: 'AI' },
-      ],
-    },
-    {
-      title: 'Ideation',
-      items: [
-        { id: 'idea-backlog', title: 'Ideas Backlog', path: '/product/ideas/backlog', icon: Lightbulb, exact: true },
-        { id: 'idea-board', title: 'Ideas Board', path: '/product/ideas/board', icon: Columns, exact: true },
-        { id: 'ideas-roadmap', title: 'Ideas Roadmap', path: '/product/ideas/roadmap-new', icon: LayoutPanelLeft, exact: true },
-        { id: 'ideas-themes', title: 'Ideas Themes', path: '/product/ideas/themes', icon: Rocket, exact: true },
-        { id: 'ideation-analytics', title: 'Ideas Analytics', path: '/product/ideas/analytics', icon: BarChart3, exact: true },
       ],
     },
   ],

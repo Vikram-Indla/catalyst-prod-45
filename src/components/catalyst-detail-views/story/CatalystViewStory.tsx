@@ -23,7 +23,7 @@ import { useCatalystIssue, useCatalystIssueMutations } from '../shared/hooks';
 import { useTrackRecentItem } from '@/hooks/useRecentProjectItems';
 import {
   CatalystTitleEditor, CatalystQuickActions, CatalystDescriptionSection, CatalystAcceptanceCriteria,
-  CatalystActivitySection, CatalystSidebarDetails,
+  CatalystActivitySection, CatalystSidebarDetails, CatalystStatusPill,
 } from '../shared/sections';
 import { SubtasksPanel } from '@/modules/project-work-hub/components/SubtasksPanel';
 import { LinkedWorkItemsSection } from '@/modules/project-work-hub/components/linked-work-items';
@@ -93,6 +93,12 @@ export default function CatalystViewStory({
           mutations.updateField.mutate({ field: 'summary', value: t, oldValue: issue?.summary ?? '' })
         }
       />
+      {/* jira-compare follow-up (2026-05-02): Story was missing the
+          Jira-parity status button under H1. Other CatalystView* types
+          mount it; Story didn't. Lane A re-probe of BAU-5609 confirmed
+          Jira renders a 32px status button immediately under the title
+          (testid issue-field-status.ui.status-view.status-button). */}
+      <CatalystStatusPill status={issue?.status} statusCategory={issue?.status_category} onStatusChange={(st) => mutations.updateStatus.mutate(st)} />
       <CatalystQuickActions />
       {/* jira-compare Phase 1 (2026-05-02): Parent + Priority moved back to
           the right rail (CatalystSidebarDetails) to match Jira BAU-5609

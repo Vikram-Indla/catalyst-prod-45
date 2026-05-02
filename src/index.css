@@ -5960,7 +5960,11 @@ html[data-presentation="true"] [data-testid="project-dashboard-shell"] [role="re
 [data-cp-lozenge-jira-parity] span[class^="css-"] {
   text-transform: none !important;
   letter-spacing: 0 !important;
-  font-weight: 600 !important;
+  /* jira-compare follow-up (2026-05-02): Lane A re-probe of Jira
+     BAU-5609 status button measured font-weight 500, not 600. The
+     earlier 600 override was inferred from Atlaskit's old default and
+     never re-validated. Aligning to live Jira measurement. */
+  font-weight: 500 !important;
 }
 
 /* ────────────────────────────────────────────────────────────────────────

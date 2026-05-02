@@ -77,6 +77,7 @@ export default function CatalystViewDefect({
         itemType="defect"
         projectKey={projectKey}
         onOpenItem={onOpenItem}
+        showParent={false}
         showPriority={false}
         extraRows={
           <CatalystDefectKeyRows
@@ -138,8 +139,20 @@ export default function CatalystViewDefect({
     </>
   );
 
+  /* jira-compare follow-up (2026-05-02): Parent rendering unified with
+     Story — picker lives in the right rail FieldRow, not in left
+     KeyDetails. Defect's KeyDetails keeps Severity / Found in / Fix in /
+     Root Cause / Resolution / Priority. Source string aligns with the
+     CatalystItemType union (defect → story|epic|feature parents). */
   const rightContent = (
-    <CatalystSidebarDetails issue={issue ?? null} itemId={itemId} projectId={projectId} onStatusChange={(st) => mutations.updateStatus.mutate(st)} onClose={onClose} onDelete={() => mutations.deleteIssue.mutate()} typeLabel="defect" />
+    <CatalystSidebarDetails
+      issue={issue ?? null} itemId={itemId} projectId={projectId}
+      onStatusChange={(st) => mutations.updateStatus.mutate(st)}
+      onClose={onClose} onDelete={() => mutations.deleteIssue.mutate()} typeLabel="defect"
+      parentSource="defect"
+      projectKey={projectKey}
+      onOpenItem={onOpenItem}
+    />
   );
 
   return (

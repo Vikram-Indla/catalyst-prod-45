@@ -422,8 +422,13 @@ export function CatalystViewBase({
         {/* ── B. BODY — two-column (restacks to single column under 680px via @container) ── */}
         <div className="cv-drawer-body" style={{ flex: 1, display: 'flex', overflow: 'hidden' }}>
 
-          {/* LEFT PANEL */}
-          <div className="cv-drawer-left" style={{
+          {/* LEFT PANEL —
+              jira-compare follow-up (2026-05-02): data-sdm-scope added so
+              the SectionBlock count-badge / row typography rules in
+              story-detail-extensions.css apply here. Without it the
+              bare spans render as "Defects0" with no spacing or badge
+              chrome. */}
+          <div className="cv-drawer-left" data-sdm-scope style={{
             flex: 1, overflowY: 'auto', padding: '20px 24px 32px 24px',
             borderRight: '1px solid #EBECF0', minWidth: 0,
           }}>

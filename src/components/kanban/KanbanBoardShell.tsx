@@ -48,6 +48,13 @@ export interface KanbanBoardShellProps<THubRow = unknown> {
   adapter: BoardAdapter<THubRow>;
   /** Page title rendered in CatalystPageHeader. Default: "Board". */
   title?: string;
+  /**
+   * Phase 5b (2026-05-02) — Suppress the shell's internal CatalystPageHeader.
+   * Used by per-product Kanban pages that render a higher-priority chrome band
+   * (breadcrumb + product name H1) above the shell, so we don't get a
+   * duplicate H1. Default: false (existing behaviour preserved).
+   */
+  hideTitleHeader?: boolean;
   /** Toggle for ENABLE_KANBAN_V2 features (density / URL state). */
   enableV2?: boolean;
 }
@@ -59,6 +66,7 @@ export interface KanbanBoardShellProps<THubRow = unknown> {
 export function KanbanBoardShell<THubRow = unknown>({
   adapter,
   title = 'Board',
+  hideTitleHeader = false,
   enableV2 = ENABLE_KANBAN_V2,
 }: KanbanBoardShellProps<THubRow>) {
   const { isDark } = useTheme();
@@ -179,7 +187,7 @@ export function KanbanBoardShell<THubRow = unknown>({
   /* ─── Render ─── */
   return (
     <div className="flex flex-col flex-1 min-h-0" style={{ background: tk.pageBg }}>
-      <CatalystPageHeader title={title} />
+      {!hideTitleHeader && <CatalystPageHeader title={title} />}
 
       <KanbanToolbar<string>
         tk={tk}

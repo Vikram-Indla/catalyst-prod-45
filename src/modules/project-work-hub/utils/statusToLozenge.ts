@@ -98,7 +98,27 @@ const STATUS_APPEARANCE: Record<string, LozengeAppearance> = {
  *      substring match against a small set of in-flight / done keywords.
  *   4. Final fallback → `default` (grey).
  */
-export function statusToLozenge(status: string | null | undefined): LozengeAppearance {
+export function statusToLozenge(
+  status: string | null | undefined,
+  /** jira-compare follow-up (2026-05-02): optional Jira workflow
+   *  statusCategory key. When supplied, takes precedence over the
+   *  name-based mapping below. Jira NIN drives lozenge colour off
+   *  the workflow statusCategory — e.g. BAU's "In QA" lives in the
+   *  `done` category, so Jira renders it green even though the name
+   *  reads as in-flight. Without this override, name lookup buckets
+   *  "In QA" as `inprogress` (blue) and ships the wrong colour. */
+  statusCategory?: string | null,
+): LozengeAppearance {
+  // 0. Workflow-category override (Jira NIN parity).
+  if (statusCategory) {
+    const c = statusCategory.toLowerCase();
+    if (c === 'done') return 'success';
+    if (c === 'in_progress' || c === 'indeterminate') return 'inprogress';
+    if (c === 'removed') return 'removed';
+    // c === 'new' / 'todo' / 'undefined' → fall through so the name
+    // table can still surface semantic specials (Blocked / On Hold).
+  }
+
   if (!status) return 'default';
   const s = status.trim().toLowerCase();
   if (!s) return 'default';

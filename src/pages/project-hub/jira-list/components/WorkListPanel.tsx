@@ -30,8 +30,21 @@ export function WorkListPanel({ items, selectedKey, onSelect, projectId }: Props
   const [sortDir, setSortDir] = useState<'asc' | 'desc'>('desc');
 
   const filtered = useMemo(() => {
+    /* jira-compare follow-up (2026-05-02): Vikram directive — the rail
+       must show top-level work only. Subtasks (Sub-task / Backend /
+       Frontend / Figma / Integration / etc.) are visible via the parent's
+       SubtasksPanel and do not belong in the global navigator. Match
+       Jira NIN's project-level issue list which surfaces only Story /
+       Epic / QA Bug / Production Incident / Feature / Task. */
+    const SUBTASK_TYPE_RE = /^(sub-?task|backend|frontend|figma|entity figma|integration)$/i;
+    const topLevel = items.filter(i => {
+      const t = (i.type || '') as string;
+      const rawType = ((i as any).rawType || '') as string;
+      return !SUBTASK_TYPE_RE.test(t) && !SUBTASK_TYPE_RE.test(rawType);
+    });
+
     const q = query.trim().toLowerCase();
-    const base = !q ? items : items.filter(i =>
+    const base = !q ? topLevel : topLevel.filter(i =>
       (i.jiraKey + ' ' + i.summary).toLowerCase().includes(q)
     );
     /* Sort by created (jira_created_at if present; falls back to id ordering). */

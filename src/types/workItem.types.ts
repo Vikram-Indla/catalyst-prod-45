@@ -31,6 +31,14 @@ export interface WorkItem {
   parentKey: string | null;
   jiraKey: string;
   type: WorkItemType;
+  /** Raw issue_type from ph_issues (e.g. "Sub-task", "Backend", "Figma",
+   *  "Production Incident"). The normalised `type` collapses Backend /
+   *  Frontend / Figma / Integration to 'task' and loses the subtask
+   *  signal — call sites that need to filter subtasks out (e.g. the
+   *  project-level navigator) must check rawType against the Jira
+   *  subtask-type list.
+   *  jira-compare follow-up (2026-05-02). */
+  rawType?: string | null;
   summary: string;
   status: WorkItemStatus;
   statusName: string;

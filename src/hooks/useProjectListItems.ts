@@ -112,6 +112,7 @@ function mapPhIssue(row: any): WorkItem {
     parentKey: row.parent_key ?? null,
     jiraKey: row.issue_key ?? '',
     type: normaliseType(row.issue_type),
+    rawType: row.issue_type ?? null,
     summary: row.summary || '(No title)',
     status: normaliseStatus(row.status),
     statusName: row.status ?? 'Backlog',

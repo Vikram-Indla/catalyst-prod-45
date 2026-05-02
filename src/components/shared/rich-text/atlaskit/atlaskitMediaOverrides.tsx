@@ -174,13 +174,38 @@ function MediaImageCard({ src, alt, onClick }: { src: string; alt?: string; onCl
   const aspectHeight = dims ? Math.min(containerWidth * (dims.h / dims.w), 600) : 200;
 
   if (errored) {
+    /* jira-compare follow-up (2026-05-02): ADS-compliant attachment chip
+        for Jira-hosted images that fail to load (most common cause:
+        Jira media-api requires auth Catalyst hasn't been granted).
+        Filename surfaced from src, click downloads. Real fix is a
+        Supabase edge-function media proxy + re-host on first sync —
+        tracked separately. */
+    const filename = (src.split('?')[0].split('/').pop() || 'image').slice(0, 60);
     return (
       <div style={{
-        margin: '12px 0', padding: '16px', borderRadius: 4,
-        background: '#F8F8F8', border: '1px solid #E2E8F0',
-        fontSize: 13, color: 'var(--ds-text-subtlest, #6B778C)', display: 'flex', alignItems: 'center', gap: 8,
+        margin: '12px 0', padding: '12px 16px', borderRadius: 'var(--ds-border-radius, 4px)',
+        background: 'var(--ds-background-neutral-subtle, #F7F8F9)',
+        border: '1px solid var(--ds-border, #DFE1E6)',
+        fontSize: 14, color: 'var(--ds-text, #292A2E)',
+        display: 'inline-flex', alignItems: 'center', gap: 12, maxWidth: '100%',
+        fontFamily: '"Atlassian Sans", -apple-system, sans-serif',
       }}>
-        <span>Image could not be loaded</span>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">
+          <rect x="3" y="3" width="18" height="18" rx="2" />
+          <circle cx="8.5" cy="8.5" r="1.5" />
+          <path d="M21 15l-5-5L5 21" />
+        </svg>
+        <span style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+          <span style={{ fontWeight: 500 }}>{filename}</span>
+          <span style={{ color: 'var(--ds-text-subtlest, #6B778C)', marginLeft: 8, fontSize: 12 }}>
+            attachment unavailable
+          </span>
+        </span>
+        <a href={src} target="_blank" rel="noopener noreferrer"
+           style={{ color: 'var(--ds-text-brand, #0C66E4)', fontSize: 13, textDecoration: 'none' }}
+           onClick={(e) => e.stopPropagation()}>
+          Open ↗
+        </a>
       </div>
     );
   }

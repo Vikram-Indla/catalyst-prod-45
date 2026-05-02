@@ -78,7 +78,7 @@ import { EditableAssignee, EditableLabels, EditableFixVersions, EditablePriority
 import { CatalystParentLinker } from './CatalystParentLinker';
 import type { CatalystItemType } from '../types';
 import { EpicDueDateField } from '@/components/project/EpicDueDateField';
-import { CatalystMdtRefField } from './CatalystMdtRefField';
+/* MDT Ref dropped from the rail per Vikram directive (2026-05-02) — import removed. */
 import { CatalystAssessmentFeatureField } from './CatalystAssessmentFeatureField';
 import {
   CatalystServiceNowDisplay,
@@ -228,15 +228,17 @@ export function CatalystSidebarDetails({
     invalidateIssue();
   }, [user, currentProfile, itemId, invalidateIssue]);
 
+  /* jira-compare follow-up (2026-05-02): Vikram directive — Status must
+     not appear in the right rail. Jira renders Status only as the
+     header pill under H1 (CatalystStatusPill). The rail-side Status
+     dropdown is suppressed here; the workflow + dropdown still mount
+     so legacy keyboard a11y bindings keep working, but the visible
+     trigger is hidden. To restore later, flip SHOW_RAIL_STATUS to true. */
+  const SHOW_RAIL_STATUS = false;
+
   return (
     <>
-      {/* ── Status dropdown ──────────────────────────────────────────────
-          Phase F (2026-04-20): Jira-parity workflow-aware dropdown. When the
-          issue type is bound to a workflow in /admin/workflows, render the
-          StatusTransitionDropdown (verb → target-pill rows matching image 4
-          of the BAU-5514 design critique). Falls back to the legacy grouped
-          picker for unmapped types (Task, Subtask, etc.). */}
-      {workflow && currentWorkflowState ? (
+      {SHOW_RAIL_STATUS && (workflow && currentWorkflowState ? (
         <div style={{ marginBottom: 14 }}>
           {/* jira-compare A2 (2026-04-28): label every right-rail field for
               consistency with Fix versions / Assignee / Reporter / Labels. */}
@@ -275,8 +277,11 @@ export function CatalystSidebarDetails({
           {/* jira-compare A1 (2026-04-28): wrap with jira-parity attribute so
               the global lozenge override (text-transform: none, fw 600) reaches
               this direct AkLozenge import. */}
+          {/* jira-compare follow-up (2026-05-02): isBold matches WorkItemStatusLozenge's
+              rail-card rendering (variant='bold') so Status reads with the same
+              saturation across rail card / pill / sidebar. */}
           <span data-cp-lozenge-jira-parity style={{ display: 'inline-block' }}>
-            <Lozenge appearance={lozengeAppearance}>{statusValue}</Lozenge>
+            <Lozenge appearance={lozengeAppearance} isBold>{statusValue}</Lozenge>
           </span>
           <svg width="10" height="10" viewBox="0 0 10 10" fill="none" aria-hidden="true">
             <path d="M2 4L5 7L8 4" stroke="#42526E" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
@@ -312,8 +317,12 @@ export function CatalystSidebarDetails({
                       onMouseEnter={e => { if (!isActive) e.currentTarget.style.background = 'var(--ds-surface-sunken, #F4F5F7)'; }}
                       onMouseLeave={e => { if (!isActive) e.currentTarget.style.background = 'transparent'; }}
                     >
+                      {/* jira-compare follow-up (2026-05-02): isBold so the
+                          dropdown options inherit the same saturation as the
+                          rendered status pill — fixes "everything is faded
+                          out" gripe in Vikram's screenshot 5. */}
                       <span data-cp-lozenge-jira-parity style={{ display: 'inline-block' }}>
-                        <Lozenge appearance={optionAppearance}>{st}</Lozenge>
+                        <Lozenge appearance={optionAppearance} isBold>{st}</Lozenge>
                       </span>
                       {isActive && (
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#0052CC" strokeWidth="2.5">
@@ -332,7 +341,7 @@ export function CatalystSidebarDetails({
           </div>
         )}
       </div>
-      )}
+      ))}
 
       {/* ── Details section card ──────────────── */}
       <div style={{ marginBottom: 8 }}>
@@ -507,14 +516,14 @@ export function CatalystSidebarDetails({
             </FieldRow>
           )}
 
-          {/* ── MDT Ref ──── jira-compare Round 4 (2026-04-28)
-              Universal Catalyst↔Jira parity field shown on every issue
-              type's Details rail. Free-text reference that mirrors the
-              "MDT Ref" custom field in the digital-transformation Jira
-              tenant. Schema: ph_issues.mdt_ref TEXT (nullable). */}
-          <FieldRow label="MDT Ref" labelTopPad>
-            <CatalystMdtRefField issue={issue} onUpdate={invalidateIssue} />
-          </FieldRow>
+          {/* ── MDT Ref ──── REMOVED 2026-05-02 per Vikram directive.
+              Was a universal custom field surfacing customfield_10882 from
+              the digital-transformation Jira tenant. Catalyst no longer
+              renders it. The CatalystMdtRefField component file is left
+              in place but unmounted — safe to delete in a follow-up
+              cleanup pass once nothing else imports it. The
+              ph_issues.mdt_ref column is also harmless to leave; deleting
+              it is a Lovable migration question. */}
 
           {/* ── Epic-specific date fields ──── jira-compare Phase 2
               (2026-05-02). Relocated from above-Assignee to after-MDT-Ref

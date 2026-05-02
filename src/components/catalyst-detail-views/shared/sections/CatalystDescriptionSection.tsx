@@ -17,6 +17,7 @@
 import React, { Suspense, lazy, useState, useCallback } from 'react';
 import { ChevronRight, Pencil } from 'lucide-react';
 import { Heading } from '@/components/ads';
+import Spinner from '@atlaskit/spinner';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { adfToPlainText, isAdfEmpty } from '@/components/shared/rich-text/atlaskit/adfHelpers';
@@ -57,9 +58,15 @@ const EpicDescriptionRenderer = lazy(
 );
 
 function AtlaskitFallback({ minHeight = 80 }: { minHeight?: number }) {
+  /* jira-compare follow-up (2026-05-02): replaced literal "Loading editor…"
+     text with @atlaskit/spinner — matches Jira NIN's editor-chunk
+     hydration pattern (subtle spinner, no visible English string). */
   return (
-    <div style={{ minHeight, paddingLeft: 20, color: '#97A0AF', fontSize: 13 }}>
-      Loading editor…
+    <div style={{
+      minHeight, paddingLeft: 20, display: 'flex', alignItems: 'center',
+      gap: 8, color: 'var(--ds-text-subtlest, #6B778C)',
+    }}>
+      <Spinner size="small" label="Loading editor" />
     </div>
   );
 }

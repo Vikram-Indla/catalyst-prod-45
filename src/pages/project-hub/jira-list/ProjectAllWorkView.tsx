@@ -93,13 +93,17 @@ export default function ProjectAllWorkView({ projectKey, projectId }: Props) {
         {/* jira-compare Patch #13 (2026-04-28): the issue detail panel
             owns the page <h1> (the issue title). Page chrome uses <h2>
             so we don't ship two H1s on a single page (WCAG 2.4.6). */}
+        {/* jira-compare follow-up (2026-05-02): heading aligned to the
+            sidebar nav label "Project Work" (ProjectHubSidebar.tsx).
+            Sentence case per ADS guidance. The route slug stays /allwork
+            for URL backwards-compat. */}
         <h2 style={{
-          margin: 0, fontSize: 20, fontWeight: 600,
+          margin: 0, fontSize: 20, fontWeight: 500,
           color: 'var(--cp-text-primary, #292A2E)',
           letterSpacing: '-0.003em',
           fontFamily: "'Atlassian Sans', -apple-system, BlinkMacSystemFont, sans-serif",
         }}>
-          All work
+          Project work
         </h2>
       </div>
 
@@ -110,7 +114,11 @@ export default function ProjectAllWorkView({ projectKey, projectId }: Props) {
           • The navigator (left list) is the LAST panel to collapse, matching
             Jira Cloud's tablet behavior — users still need to browse work items
             even when there's no room for the detail surface. */}
-      <div ref={splitRef} style={{ flex: 1, minHeight: 0, display: 'flex', overflow: 'hidden', gap: 8, padding: '6px 8px 8px' }}>
+      {/* jira-compare follow-up (2026-05-02): top padding dropped to 0
+          so the navigator and right rail "touch the roof" — Jira NIN
+          aligns the rail flush against the page-header underline with
+          no extra gap. Side / bottom padding kept. */}
+      <div ref={splitRef} style={{ flex: 1, minHeight: 0, display: 'flex', overflow: 'hidden', gap: 8, padding: '0 8px 8px' }}>
           {/* Navigator (left) — always visible; expands to full width when narrow. */}
           <div style={{
             width: isNarrow ? '100%' : 260,

@@ -1,17 +1,47 @@
 /**
- * IdeaDrawer — Single scrollable drawer, ALWAYS in edit mode.
- * NO tabs. NO Edit button. Fields always editable via shadcn Select.
- * Sections: Header → Fields → Description → Impact → Convert → Footer
+ * IdeaDrawer — Phase 6 (2026-05-02): rebuilt on @atlaskit/modal-dialog.
+ *
+ * Previously a custom right-edge slide-in drawer composed of shadcn
+ * Select, shadcn Slider, lucide icons, and hand-rolled overlay markup.
+ * Now a centered Atlaskit modal-dialog composed entirely of @atlaskit/*
+ * primitives:
+ *
+ *   @atlaskit/modal-dialog   — Modal/Header/Body/Footer/Transition
+ *   @atlaskit/select         — every status / priority / theme picker
+ *   @atlaskit/lozenge        — status badge + impact-level pill
+ *   @atlaskit/textarea       — description field
+ *   @atlaskit/heading        — title typography
+ *   @atlaskit/button         — Cancel / Save / Convert / icon buttons
+ *   @atlaskit/icon/glyph/*   — cross / copy / arrow icons
+ *
+ * Native <input type="range"> is used for the 6 impact-score sliders
+ * because @atlaskit/range isn't installed. Track + thumb are styled
+ * with @atlaskit token CSS vars to match ADS colour ramp.
+ *
+ * File name + default export kept as `IdeaDrawer` so the 3 callers
+ * (IdeasBoardPage, IdeasBacklogPage, IdeasRoadmapPage) need no edits.
+ * The widget is now a modal — visual UX changed from drawer-from-right
+ * to centered overlay per Vikram's "no drawer styles" directive.
  */
 import React, { useState, useEffect, useRef } from 'react';
-import { X, ArrowLeft, Copy, ArrowUpRight } from 'lucide-react';
+import Modal, {
+  ModalBody,
+  ModalFooter,
+  ModalHeader,
+  ModalTitle,
+  ModalTransition,
+} from '@atlaskit/modal-dialog';
+import Button, { IconButton } from '@atlaskit/button/new';
+import Lozenge from '@atlaskit/lozenge';
+import TextArea from '@atlaskit/textarea';
+import Heading from '@atlaskit/heading';
+import Select from '@atlaskit/select';
+import CrossIcon from '@atlaskit/icon/glyph/cross';
+import CopyIcon from '@atlaskit/icon/glyph/copy';
+import ArrowRightIcon from '@atlaskit/icon/glyph/arrow-right';
 import { toast } from 'sonner';
-import { useTheme } from '@/hooks/useTheme';
-import { DK, LK } from '@/utils/dark-mode-styles';
 import { useIdeaByKey, useUpdateIdea, useProfiles, type IdeaRow } from '@/hooks/useIdeasHub';
-import { QUARTER_BADGE, STATUS_LOZENGE_COLORS } from './ideation-data';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Slider } from '@/components/ui/slider';
+import { QUARTER_BADGE } from './ideation-data';
 
 const THEMES = [
   'Provide Services for SBC', 'Digital Maturity 2026', 'Marketplace', 'UX',
@@ -19,25 +49,27 @@ const THEMES = [
   'تحسين خدمة الشركاء', 'تضمين خدمة قطاعية', 'تقارير ومؤشرات', 'رقمنة إجراء جديد',
   'كفاءة الموقع', 'مهام داخلية',
 ];
-const STATUSES = ['Draft', 'Submitted', 'Under Review', 'Approved', 'Rejected'];
+const STATUSES   = ['Draft', 'Submitted', 'Under Review', 'Approved', 'Rejected'];
 const PRIORITIES = ['P1', 'P2', 'P3', 'P4'];
-const TYPES = ['Feature Request', 'Enhancement', 'Bug Fix', 'Opportunity', 'Solution', 'Improvement', 'Problem'];
-const SOURCES = ['Internal', 'External', 'Customer'];
-const TEAMS = ['Senaie BAU', 'Integration Team', 'Mobile App Team'];
-const RELEASES = ['Mar 2026', 'Jun 2026', 'Sep 2026', 'Dec 2026'];
-const QUARTERS = ['Q1', 'Q2', 'Q3', 'Q4'];
+const TYPES      = ['Feature Request', 'Enhancement', 'Bug Fix', 'Opportunity', 'Solution', 'Improvement', 'Problem'];
+const SOURCES    = ['Internal', 'External', 'Customer'];
+const TEAMS      = ['Senaie BAU', 'Integration Team', 'Mobile App Team'];
+const RELEASES   = ['Mar 2026', 'Jun 2026', 'Sep 2026', 'Dec 2026'];
+const QUARTERS   = ['Q1', 'Q2', 'Q3', 'Q4'];
 
-function StatusLoz({ status }: { status: string }) {
-  const s = STATUS_LOZENGE_COLORS[status] ?? { bg: 'var(--ds-border, #DFE1E6)', text: '#42526E' };
-  const label = status === 'Converted to Request' ? 'CONVERTED' : status.toUpperCase();
-  return (
-    <span style={{
-      display: 'inline-flex', alignItems: 'center', padding: '2px 8px', borderRadius: '4px',
-      backgroundColor: s.bg, color: s.text,
-      fontSize: '11px', fontWeight: 700, textTransform: 'uppercase',
-      lineHeight: '16px', whiteSpace: 'nowrap', height: 20,
-    }}>{label}</span>
-  );
+type Opt = { label: string; value: string };
+const toOpts = (arr: string[]): Opt[] => arr.map(v => ({ label: v, value: v }));
+const NONE: Opt = { label: '— None —', value: '__none__' };
+
+/** Map an Idea status to the Atlaskit Lozenge appearance that's
+ *  visually closest to the bespoke colour we used to ship. */
+type LozAppearance = 'default' | 'inprogress' | 'success' | 'removed' | 'new' | 'moved';
+function statusToAppearance(s: string): LozAppearance {
+  if (s === 'Converted' || s === 'Converted to Request') return 'success';
+  if (s === 'Approved' || s === 'Under Review') return 'inprogress';
+  if (s === 'Rejected') return 'removed';
+  if (s === 'Submitted') return 'new';
+  return 'default';
 }
 
 interface Props {
@@ -56,36 +88,78 @@ function getRelativeTime(dateStr: string): string {
   return `${days}d ago`;
 }
 
+/* ─────────────────────────────────────────────────────────────────────
+   FieldBlock — section label + child editor. Pure layout primitive,
+   no Atlaskit dependency since it's literally just text + spacing.
+   ───────────────────────────────────────────────────────────────────── */
+function FieldBlock({ label, children }: { label: string; children: React.ReactNode }) {
+  return (
+    <div>
+      <div style={{
+        fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em',
+        color: 'var(--ds-text-subtlest, #5E6C84)', marginBottom: 6,
+      }}>{label}</div>
+      {children}
+    </div>
+  );
+}
+
+/* ─────────────────────────────────────────────────────────────────────
+   ImpactSlider — native <input type="range"> styled with ADS tokens.
+   Used 6× for the IMPACT/MARKET/PROBLEM/USER/COMPLEXITY/TIME factors.
+   ───────────────────────────────────────────────────────────────────── */
+function ImpactSlider({
+  value, onChange, disabled,
+}: { value: number; onChange: (v: number) => void; disabled?: boolean }) {
+  return (
+    <input
+      type="range"
+      min={0}
+      max={5}
+      step={0.1}
+      value={value}
+      disabled={disabled}
+      onChange={(e) => onChange(parseFloat(e.target.value))}
+      style={{
+        width: '100%',
+        accentColor: 'var(--ds-text-brand, #0C66E4)',  // ADS brand blue track + thumb
+        cursor: disabled ? 'not-allowed' : 'pointer',
+      }}
+    />
+  );
+}
+
 export default function IdeaDrawer({ ideaKey, onClose, onConvert }: Props) {
-  const { isDark } = useTheme();
-  const dk = isDark ? DK : LK;
   const { data: rawIdea, isLoading } = useIdeaByKey(ideaKey);
   const { data: profiles = [] } = useProfiles();
   const updateIdea = useUpdateIdea();
   const isSaving = useRef(false);
 
-  const [localStatus, setLocalStatus] = useState('');
-  const [localPriority, setLocalPriority] = useState('');
-  const [localType, setLocalType] = useState('');
-  const [localSource, setLocalSource] = useState('');
-  const [localTheme, setLocalTheme] = useState('');
-  const [localTeam, setLocalTeam] = useState('');
-  const [localRelease, setLocalRelease] = useState('');
-  const [localQuarter, setLocalQuarter] = useState('');
-  const [localAssigneeId, setLocalAssigneeId] = useState('');
+  const [localStatus, setLocalStatus]           = useState('');
+  const [localPriority, setLocalPriority]       = useState('');
+  const [localType, setLocalType]               = useState('');
+  const [localSource, setLocalSource]           = useState('');
+  const [localTheme, setLocalTheme]             = useState('');
+  const [localTeam, setLocalTeam]               = useState('');
+  const [localRelease, setLocalRelease]         = useState('');
+  const [localQuarter, setLocalQuarter]         = useState('');
+  const [localAssigneeId, setLocalAssigneeId]   = useState('');
   const [localDescription, setLocalDescription] = useState('');
-  const [investorFit, setInvestorFit] = useState(0);
-  const [marketSize, setMarketSize] = useState(0);
-  const [problemSeverity, setProblemSeverity] = useState(0);
-  const [userBenefit, setUserBenefit] = useState(0);
-  const [complexityInv, setComplexityInv] = useState(0);
-  const [timeToValue, setTimeToValue] = useState(0);
+  const [investorFit, setInvestorFit]           = useState(0);
+  const [marketSize, setMarketSize]             = useState(0);
+  const [problemSeverity, setProblemSeverity]   = useState(0);
+  const [userBenefit, setUserBenefit]           = useState(0);
+  const [complexityInv, setComplexityInv]       = useState(0);
+  const [timeToValue, setTimeToValue]           = useState(0);
 
-  const composite = (investorFit * 0.25) + (marketSize * 0.20) + (problemSeverity * 0.20) +
+  const composite =
+    (investorFit * 0.25) + (marketSize * 0.20) + (problemSeverity * 0.20) +
     (userBenefit * 0.15) + (complexityInv * 0.10) + (timeToValue * 0.10);
 
   const isConverted = rawIdea?.status === 'Converted to Request' || rawIdea?.status === 'Converted';
+  const canEdit = !isConverted;
 
+  /* ─── Hydrate local state when a fresh idea loads. ─── */
   useEffect(() => {
     if (rawIdea) {
       setLocalStatus(rawIdea.status || 'Draft');
@@ -105,7 +179,7 @@ export default function IdeaDrawer({ ideaKey, onClose, onConvert }: Props) {
       setComplexityInv(rawIdea.impact_complexity_inv || 0);
       setTimeToValue(rawIdea.impact_time_to_value || 0);
     }
-  }, [rawIdea?.id]);
+  }, [rawIdea?.id]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const resetLocal = () => {
     if (!rawIdea) return;
@@ -152,361 +226,384 @@ export default function IdeaDrawer({ ideaKey, onClose, onConvert }: Props) {
           impact_time_to_value: timeToValue,
         },
       });
-    } catch {} finally {
+      toast.success('Idea saved');
+    } catch {
+      // useUpdateIdea raises a toast on error already
+    } finally {
       isSaving.current = false;
     }
   };
 
-  useEffect(() => {
-    const handleEsc = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose(); };
-    if (ideaKey) {
-      document.addEventListener('keydown', handleEsc);
-      return () => document.removeEventListener('keydown', handleEsc);
-    }
-  }, [ideaKey, onClose]);
+  /* ─── Render ─── */
+  const open = !!ideaKey;
+  const profileOpts: Opt[] = profiles.map(p => ({ label: p.full_name, value: p.id }));
+  const assigneeName = rawIdea?.assigned_to_name
+    || profiles.find(p => p.id === localAssigneeId)?.full_name
+    || null;
+  const updatedAgo = rawIdea?.updated_at ? getRelativeTime(rawIdea.updated_at) : '';
 
-  if (!ideaKey) return null;
-  if (isLoading) return (
-    <>
-      <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.25)', zIndex: 200 }} />
-      <div style={{ position: 'fixed', top: 0, right: 0, bottom: 0, width: '560px', background: 'var(--cp-bg-elevated, #FFFFFF)', zIndex: 201, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <span style={{ color: dk.t3, fontSize: '14px' }}>Loading...</span>
-      </div>
-    </>
-  );
-  if (!rawIdea) return null;
+  /* Impact-level lozenge appearance — mirrors the prior 3-tier mapping. */
+  const impactLevel: LozAppearance =
+    composite >= 3.51 ? 'success' :
+    composite >= 0.01 ? 'inprogress' :
+    'default';
+  const impactLabel =
+    composite >= 3.51 ? 'CRITICAL' :
+    composite >= 2.51 ? 'HIGH' :
+    composite >= 0.01 ? 'MEDIUM' :
+    'LOW';
 
-  const assigneeName = rawIdea.assigned_to_name || profiles.find(p => p.id === localAssigneeId)?.full_name || null;
-  const updatedAgo = rawIdea.updated_at ? getRelativeTime(rawIdea.updated_at) : '';
-  const canEdit = !isConverted;
-
-  const impactLevel = composite >= 3.51 ? 'CRITICAL' : composite >= 2.51 ? 'HIGH' : composite >= 0.01 ? 'MEDIUM' : 'LOW';
-  const levelColors = composite >= 3.51
-    ? { bg: '#1B7F37', text: 'var(--ds-text-inverse, #FFFFFF)' }
-    : composite >= 0.01 ? { bg: '#0C66E4', text: 'var(--ds-text-inverse, #FFFFFF)' } : { bg: 'var(--ds-border, #DFE1E6)', text: '#42526E' };
-
-  const dimensions = [
-    { letter: 'I', name: 'Investor Fit', weight: '25%', value: investorFit, set: setInvestorFit },
-    { letter: 'M', name: 'Market Size', weight: '20%', value: marketSize, set: setMarketSize },
+  const dimensions: ReadonlyArray<{
+    letter: string; name: string; weight: string; value: number; set: (v: number) => void;
+  }> = [
+    { letter: 'I', name: 'Investor Fit',     weight: '25%', value: investorFit,    set: setInvestorFit },
+    { letter: 'M', name: 'Market Size',      weight: '20%', value: marketSize,     set: setMarketSize },
     { letter: 'P', name: 'Problem Severity', weight: '20%', value: problemSeverity, set: setProblemSeverity },
-    { letter: 'A', name: 'User Benefit', weight: '15%', value: userBenefit, set: setUserBenefit },
-    { letter: 'C', name: 'Complexity (inv.)', weight: '10%', value: complexityInv, set: setComplexityInv },
-    { letter: 'T', name: 'Time to Value', weight: '10%', value: timeToValue, set: setTimeToValue },
+    { letter: 'A', name: 'User Benefit',     weight: '15%', value: userBenefit,    set: setUserBenefit },
+    { letter: 'C', name: 'Complexity (inv.)',weight: '10%', value: complexityInv,  set: setComplexityInv },
+    { letter: 'T', name: 'Time to Value',    weight: '10%', value: timeToValue,    set: setTimeToValue },
   ];
 
   return (
-    <>
-      <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.40)', zIndex: 200 }} />
-      <div style={{
-        position: 'fixed', top: 0, right: 0, bottom: 0, width: '560px',
-        background: 'var(--cp-bg-elevated, #FFFFFF)', zIndex: 201, boxShadow: isDark ? 'none' : '-8px 0 32px rgba(0,0,0,0.12)',
-        display: 'flex', flexDirection: 'column',
-        animation: 'slideInRight 0.25s ease forwards',
-      }}>
-        {/* HEADER */}
-        <div style={{
-          padding: '12px 20px', borderBottom: `0.75px solid ${dk.border}`,
-          display: 'flex', alignItems: 'center', gap: '10px', flexShrink: 0,
-        }}>
-          <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '4px', color: dk.t2, display: 'flex' }}>
-            <ArrowLeft size={18} />
-          </button>
-          <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: '13px', fontWeight: 700, color: dk.blueKey }}>
-            {rawIdea.idea_key}
-          </span>
-          <button
-            onClick={() => { navigator.clipboard.writeText(rawIdea.idea_key || ''); toast.success('Key copied'); }}
-            style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '2px', color: dk.t3, display: 'flex' }}
-          >
-            <Copy size={14} />
-          </button>
-          <div style={{ flex: 1 }} />
-          <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '4px', color: dk.t3, display: 'flex' }}>
-            <X size={18} />
-          </button>
-        </div>
-
-        {/* TITLE + STATUS */}
-        <div style={{ padding: '16px 20px 12px', flexShrink: 0 }}>
-          <h2 style={{ fontSize: '18px', fontWeight: 650, color: dk.t1, margin: 0, lineHeight: 1.3, fontFamily: 'var(--cp-font-heading)' }}>
-            {rawIdea.title}
-          </h2>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '8px', flexWrap: 'wrap' }}>
-            <StatusLoz status={localStatus} />
-            {rawIdea.theme && <span style={{ fontSize: '13px', color: dk.t2, fontWeight: 500 }}>{rawIdea.theme}</span>}
-            {updatedAgo && (
-              <>
-                <span style={{ color: dk.t4 }}>·</span>
-                <span style={{ fontSize: '12px', color: dk.t3 }}>Updated {updatedAgo}</span>
-              </>
-            )}
-          </div>
-        </div>
-
-        {/* SCROLLABLE CONTENT — single scroll, no tabs */}
-        <div style={{ flex: 1, overflowY: 'auto', scrollbarWidth: 'thin' }}>
-
-          {/* Converted: Linked Request Card */}
-          {isConverted && rawIdea.linked_initiative_key && (
-            <div style={{ padding: '0 20px 16px' }}>
-              <div style={{ background: 'var(--cp-success-light, #F0FDF4)', border: `0.75px solid ${'var(--cp-success-light, #BBF7D0)'}`, borderRadius: '6px', padding: '14px' }}>
-                <div style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--cp-success-text, #11853D)', marginBottom: '8px' }}>CONVERTED TO INITIATIVE</div>
-                <div style={{ background: 'var(--cp-bg-elevated, #FFFFFF)', border: `0.75px solid ${'var(--cp-success-light, #BBF7D0)'}`, borderRadius: '4px', padding: '10px 12px' }}>
-                  <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: '13px', fontWeight: 700, color: '#11853D' }}>
-                    {rawIdea.linked_initiative_key}
-                  </span>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '4px' }}>
-                    <StatusLoz status="Under Review" />
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* FIELDS — 2-column grid, always inline edit */}
-          <div style={{ padding: '0 20px 16px', borderBottom: `0.75px solid ${dk.divider}` }}>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
-              <FieldBlock label="STATUS">
-                {canEdit ? (
-                  <Select value={localStatus} onValueChange={setLocalStatus}>
-                    <SelectTrigger className="h-8 bg-white dark:bg-transparent dark:border-gray-700 dark:text-white"><SelectValue /></SelectTrigger>
-                    <SelectContent className="bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] dark:border-gray-700 dark:text-white">{STATUSES.map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}</SelectContent>
-                  </Select>
-                ) : <StatusLoz status={localStatus} />}
-              </FieldBlock>
-              <FieldBlock label="PRIORITY">
-                {canEdit ? (
-                  <Select value={localPriority} onValueChange={setLocalPriority}>
-                    <SelectTrigger className="h-8 bg-white dark:bg-transparent dark:border-gray-700 dark:text-white"><SelectValue /></SelectTrigger>
-                    <SelectContent className="bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] dark:border-gray-700 dark:text-white">{PRIORITIES.map(p => <SelectItem key={p} value={p}>{p}</SelectItem>)}</SelectContent>
-                  </Select>
-                ) : <span style={{ fontSize: '13px', fontWeight: 650, color: dk.t2 }}>{localPriority}</span>}
-              </FieldBlock>
-              <FieldBlock label="TYPE">
-                {canEdit ? (
-                  <Select value={localType} onValueChange={setLocalType}>
-                    <SelectTrigger className="h-8 bg-white dark:bg-transparent dark:border-gray-700 dark:text-white"><SelectValue /></SelectTrigger>
-                    <SelectContent className="bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] dark:border-gray-700 dark:text-white">{TYPES.map(t => <SelectItem key={t} value={t}>{t}</SelectItem>)}</SelectContent>
-                  </Select>
-                ) : <span style={{ fontSize: '13px', color: dk.t1 }}>{localType || '—'}</span>}
-              </FieldBlock>
-              <FieldBlock label="SOURCE">
-                {canEdit ? (
-                  <Select value={localSource} onValueChange={setLocalSource}>
-                    <SelectTrigger className="h-8 bg-white dark:bg-transparent dark:border-gray-700 dark:text-white"><SelectValue /></SelectTrigger>
-                    <SelectContent className="bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] dark:border-gray-700 dark:text-white">{SOURCES.map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}</SelectContent>
-                  </Select>
-                ) : <span style={{ fontSize: '13px', color: dk.t1 }}>{localSource || '—'}</span>}
-              </FieldBlock>
-              <FieldBlock label="IDEAS THEME">
-                {canEdit ? (
-                  <Select value={localTheme || '__none__'} onValueChange={(v: string) => setLocalTheme(v === '__none__' ? '' : v)}>
-                    <SelectTrigger className="h-8 bg-white dark:bg-transparent dark:border-gray-700 dark:text-white"><SelectValue placeholder="Select theme" /></SelectTrigger>
-                    <SelectContent className="bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] dark:border-gray-700 dark:text-white">
-                      <SelectItem value="__none__">— None —</SelectItem>
-                      {THEMES.map(t => <SelectItem key={t} value={t}>{t}</SelectItem>)}
-                    </SelectContent>
-                  </Select>
-                ) : <span style={{ fontSize: '13px', color: localTheme ? dk.t1 : dk.t3 }}>{localTheme || '—'}</span>}
-              </FieldBlock>
-              <FieldBlock label="ASSIGNED TEAM">
-                {canEdit ? (
-                  <Select value={localTeam || '__none__'} onValueChange={(v: string) => setLocalTeam(v === '__none__' ? '' : v)}>
-                    <SelectTrigger className="h-8 bg-white dark:bg-transparent dark:border-gray-700 dark:text-white"><SelectValue placeholder="Select team" /></SelectTrigger>
-                    <SelectContent className="bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] dark:border-gray-700 dark:text-white">
-                      <SelectItem value="__none__">— None —</SelectItem>
-                      {TEAMS.map(t => <SelectItem key={t} value={t}>{t}</SelectItem>)}
-                    </SelectContent>
-                  </Select>
-                ) : <span style={{ fontSize: '13px', color: localTeam ? dk.t1 : dk.t3 }}>{localTeam || '—'}</span>}
-              </FieldBlock>
-              <FieldBlock label="TARGET RELEASE">
-                {canEdit ? (
-                  <Select value={localRelease || '__none__'} onValueChange={(v: string) => setLocalRelease(v === '__none__' ? '' : v)}>
-                    <SelectTrigger className="h-8 bg-white dark:bg-transparent dark:border-gray-700 dark:text-white"><SelectValue placeholder="Select release" /></SelectTrigger>
-                    <SelectContent className="bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] dark:border-gray-700 dark:text-white">
-                      <SelectItem value="__none__">— None —</SelectItem>
-                      {RELEASES.map(r => <SelectItem key={r} value={r}>{r}</SelectItem>)}
-                    </SelectContent>
-                  </Select>
-                ) : <span style={{ fontSize: '13px', color: localRelease ? dk.t1 : dk.t3 }}>{localRelease || '—'}</span>}
-              </FieldBlock>
-              <FieldBlock label="QUARTER">
-                {canEdit ? (
-                  <Select value={localQuarter || '__none__'} onValueChange={(v: string) => setLocalQuarter(v === '__none__' ? '' : v)}>
-                    <SelectTrigger className="h-8 bg-white dark:bg-transparent dark:border-gray-700 dark:text-white"><SelectValue placeholder="Unassigned" /></SelectTrigger>
-                    <SelectContent className="bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] dark:border-gray-700 dark:text-white">
-                      <SelectItem value="__none__">— Unassigned —</SelectItem>
-                      {QUARTERS.map(q => <SelectItem key={q} value={q}>{q} 2026</SelectItem>)}
-                    </SelectContent>
-                  </Select>
-                ) : localQuarter ? (
-                  <span style={{
-                    display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-                    height: 20, padding: '0 6px', borderRadius: 4, fontSize: '11px', fontWeight: 700,
-                    background: QUARTER_BADGE[localQuarter]?.bg || 'var(--ds-border, #E2E8F0)',
-                    color: QUARTER_BADGE[localQuarter]?.text || 'var(--ds-text-subtlest, #94A3B8)',
-                  }}>{localQuarter} 2026</span>
-                ) : <span style={{ fontSize: '13px', color: dk.t3 }}>—</span>}
-              </FieldBlock>
-              <FieldBlock label="ASSIGNEE">
-                {canEdit ? (
-                  <Select value={localAssigneeId || '__none__'} onValueChange={(v: string) => setLocalAssigneeId(v === '__none__' ? '' : v)}>
-                    <SelectTrigger className="h-8 bg-white dark:bg-transparent dark:border-gray-700 dark:text-white"><SelectValue placeholder="Select assignee" /></SelectTrigger>
-                    <SelectContent className="bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] dark:border-gray-700 dark:text-white max-h-[200px]">
-                      <SelectItem value="__none__">— Unassigned —</SelectItem>
-                      {profiles.map((p) => <SelectItem key={p.id} value={p.id}>{p.full_name}</SelectItem>)}
-                    </SelectContent>
-                  </Select>
-                ) : <span style={{ fontSize: '13px', color: assigneeName ? dk.t1 : dk.t3 }}>{assigneeName || 'Unassigned'}</span>}
-              </FieldBlock>
-              <FieldBlock label="CREATED">
-                <span style={{ fontSize: '13px', fontWeight: 500, color: dk.t1 }}>
-                  {rawIdea.created_at ? new Date(rawIdea.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '—'}
+    <ModalTransition>
+      {open && (
+        <Modal onClose={onClose} width="x-large" shouldScrollInViewport>
+          <ModalHeader>
+            <ModalTitle>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+                <span style={{
+                  fontFamily: 'var(--cp-font-mono, ui-monospace, SFMono-Regular)',
+                  fontSize: 13, fontWeight: 700, color: 'var(--ds-text-brand, #0C66E4)',
+                }}>
+                  {rawIdea?.idea_key ?? '—'}
                 </span>
-              </FieldBlock>
-            </div>
-          </div>
+                {rawIdea?.idea_key && (
+                  <IconButton
+                    icon={CopyIcon}
+                    label="Copy key"
+                    appearance="subtle"
+                    spacing="compact"
+                    onClick={() => {
+                      navigator.clipboard.writeText(rawIdea.idea_key || '');
+                      toast.success('Key copied');
+                    }}
+                  />
+                )}
+                <Lozenge appearance={statusToAppearance(localStatus)}>
+                  {localStatus === 'Converted to Request' ? 'CONVERTED' : (localStatus || 'DRAFT').toUpperCase()}
+                </Lozenge>
+                {updatedAgo && (
+                  <span style={{ fontSize: 12, color: 'var(--ds-text-subtle, #5E6C84)' }}>
+                    Updated {updatedAgo}
+                  </span>
+                )}
+              </div>
+            </ModalTitle>
+            <IconButton
+              icon={CrossIcon}
+              label="Close"
+              appearance="subtle"
+              onClick={onClose}
+            />
+          </ModalHeader>
 
-          {/* DESCRIPTION */}
-          <div style={{ padding: '16px 20px', borderBottom: `0.75px solid ${dk.divider}` }}>
-            <div style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: dk.t2, marginBottom: '8px' }}>DESCRIPTION</div>
-            {canEdit ? (
-              <textarea value={localDescription} onChange={(e) => setLocalDescription(e.target.value)} rows={4}
-                placeholder="Add a description..."
-                style={{ width: '100%', borderRadius: '4px', border: `0.75px solid ${'var(--cp-border-default, rgba(15,23,42,0.14))'}`, padding: '8px 12px', fontSize: '13px', color: dk.t1, resize: 'vertical', fontFamily: 'var(--cp-font-body)', outline: 'none', background: 'var(--cp-bg-elevated, #FFFFFF)' }}
-              />
+          <ModalBody>
+            {isLoading || !rawIdea ? (
+              <div style={{ padding: '40px 0', textAlign: 'center', color: 'var(--ds-text-subtlest, #5E6C84)' }}>
+                Loading…
+              </div>
             ) : (
-              <p style={{ fontSize: '13px', color: rawIdea.description ? dk.t1 : dk.t3, lineHeight: 1.6, margin: 0 }}>
-                {rawIdea.description || 'No description provided'}
-              </p>
-            )}
-          </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+                {/* TITLE */}
+                <Heading size="medium">{rawIdea.title}</Heading>
 
-          {/* IMPACT SCORE — 6 dimension bars */}
-          <div style={{ padding: '16px 20px', borderBottom: `0.75px solid ${dk.divider}` }}>
-            <div style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: dk.t2, marginBottom: '12px' }}>IMPACT SCORE</div>
-            <div style={{ display: 'flex', alignItems: 'baseline', gap: '10px', marginBottom: '16px' }}>
-              <span style={{ fontSize: '28px', fontWeight: 700, fontFamily: 'var(--cp-font-mono)', color: composite > 0 ? dk.t1 : dk.t3 }}>
-                {composite.toFixed(2)}
-              </span>
-              <span style={{ fontSize: '13px', color: dk.t2 }}>out of 5.00</span>
-              <span style={{
-                display: 'inline-flex', alignItems: 'center', height: '20px', padding: '0 6px',
-                borderRadius: '4px', fontSize: '11px', fontWeight: 700, textTransform: 'uppercase',
-                backgroundColor: levelColors.bg, color: levelColors.text,
-              }}>{impactLevel}</span>
-            </div>
-
-            {dimensions.map((dim) => (
-              <div key={dim.letter} style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '14px' }}>
-                <div style={{
-                  width: '28px', height: '28px', borderRadius: '50%',
-                  backgroundColor: 'var(--cp-border, #E2E8F0)', color: dk.t2,
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  fontSize: '12px', fontWeight: 700, flexShrink: 0,
-                }}>{dim.letter}</div>
-                <div style={{ flex: 1 }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
-                    <span style={{ fontSize: '12px', fontWeight: 500, color: dk.t1 }}>{dim.name}</span>
-                    <span style={{ fontSize: '11px', color: dk.t2 }}>{dim.weight}</span>
+                {/* CONVERTED LINK CARD */}
+                {isConverted && rawIdea.linked_initiative_key && (
+                  <div style={{
+                    background: 'var(--ds-background-success, #DCFFF1)',
+                    border: '1px solid var(--ds-border-success, #6BE1B0)',
+                    borderRadius: 4, padding: 12,
+                  }}>
+                    <div style={{
+                      fontSize: 11, fontWeight: 700, textTransform: 'uppercase',
+                      letterSpacing: '0.06em', color: 'var(--ds-text-success, #1F845A)',
+                      marginBottom: 6,
+                    }}>
+                      CONVERTED TO INITIATIVE
+                    </div>
+                    <span style={{
+                      fontFamily: 'var(--cp-font-mono, ui-monospace)', fontSize: 13,
+                      fontWeight: 700, color: 'var(--ds-text-success, #1F845A)',
+                    }}>
+                      {rawIdea.linked_initiative_key}
+                    </span>
                   </div>
+                )}
+
+                {/* FIELDS — 2 col grid */}
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+                  <FieldBlock label="STATUS">
+                    {canEdit ? (
+                      <Select<Opt>
+                        inputId="idea-status"
+                        options={toOpts(STATUSES)}
+                        value={{ label: localStatus, value: localStatus }}
+                        onChange={(v) => setLocalStatus(v?.value || '')}
+                        spacing="compact"
+                      />
+                    ) : <Lozenge appearance={statusToAppearance(localStatus)}>{localStatus}</Lozenge>}
+                  </FieldBlock>
+
+                  <FieldBlock label="PRIORITY">
+                    {canEdit ? (
+                      <Select<Opt>
+                        inputId="idea-priority"
+                        options={toOpts(PRIORITIES)}
+                        value={{ label: localPriority, value: localPriority }}
+                        onChange={(v) => setLocalPriority(v?.value || '')}
+                        spacing="compact"
+                      />
+                    ) : <span style={{ fontSize: 13, fontWeight: 600 }}>{localPriority}</span>}
+                  </FieldBlock>
+
+                  <FieldBlock label="TYPE">
+                    {canEdit ? (
+                      <Select<Opt>
+                        inputId="idea-type"
+                        options={toOpts(TYPES)}
+                        value={{ label: localType, value: localType }}
+                        onChange={(v) => setLocalType(v?.value || '')}
+                        spacing="compact"
+                      />
+                    ) : <span style={{ fontSize: 13 }}>{localType || '—'}</span>}
+                  </FieldBlock>
+
+                  <FieldBlock label="SOURCE">
+                    {canEdit ? (
+                      <Select<Opt>
+                        inputId="idea-source"
+                        options={toOpts(SOURCES)}
+                        value={{ label: localSource, value: localSource }}
+                        onChange={(v) => setLocalSource(v?.value || '')}
+                        spacing="compact"
+                      />
+                    ) : <span style={{ fontSize: 13 }}>{localSource || '—'}</span>}
+                  </FieldBlock>
+
+                  <FieldBlock label="IDEAS THEME">
+                    {canEdit ? (
+                      <Select<Opt>
+                        inputId="idea-theme"
+                        options={[NONE, ...toOpts(THEMES)]}
+                        value={localTheme ? { label: localTheme, value: localTheme } : NONE}
+                        onChange={(v) => setLocalTheme(v?.value === '__none__' ? '' : (v?.value || ''))}
+                        placeholder="Select theme"
+                        spacing="compact"
+                      />
+                    ) : <span style={{ fontSize: 13 }}>{localTheme || '—'}</span>}
+                  </FieldBlock>
+
+                  <FieldBlock label="ASSIGNED TEAM">
+                    {canEdit ? (
+                      <Select<Opt>
+                        inputId="idea-team"
+                        options={[NONE, ...toOpts(TEAMS)]}
+                        value={localTeam ? { label: localTeam, value: localTeam } : NONE}
+                        onChange={(v) => setLocalTeam(v?.value === '__none__' ? '' : (v?.value || ''))}
+                        placeholder="Select team"
+                        spacing="compact"
+                      />
+                    ) : <span style={{ fontSize: 13 }}>{localTeam || '—'}</span>}
+                  </FieldBlock>
+
+                  <FieldBlock label="TARGET RELEASE">
+                    {canEdit ? (
+                      <Select<Opt>
+                        inputId="idea-release"
+                        options={[NONE, ...toOpts(RELEASES)]}
+                        value={localRelease ? { label: localRelease, value: localRelease } : NONE}
+                        onChange={(v) => setLocalRelease(v?.value === '__none__' ? '' : (v?.value || ''))}
+                        placeholder="Select release"
+                        spacing="compact"
+                      />
+                    ) : <span style={{ fontSize: 13 }}>{localRelease || '—'}</span>}
+                  </FieldBlock>
+
+                  <FieldBlock label="QUARTER">
+                    {canEdit ? (
+                      <Select<Opt>
+                        inputId="idea-quarter"
+                        options={[
+                          { label: '— Unassigned —', value: '__none__' },
+                          ...QUARTERS.map(q => ({ label: `${q} 2026`, value: q })),
+                        ]}
+                        value={
+                          localQuarter
+                            ? { label: `${localQuarter} 2026`, value: localQuarter }
+                            : { label: '— Unassigned —', value: '__none__' }
+                        }
+                        onChange={(v) => setLocalQuarter(v?.value === '__none__' ? '' : (v?.value || ''))}
+                        spacing="compact"
+                      />
+                    ) : localQuarter ? (
+                      <span style={{
+                        display: 'inline-flex', alignItems: 'center', height: 20,
+                        padding: '0 6px', borderRadius: 4, fontSize: 11, fontWeight: 700,
+                        background: QUARTER_BADGE[localQuarter]?.bg || 'var(--ds-border, #DFE1E6)',
+                        color: QUARTER_BADGE[localQuarter]?.text || 'var(--ds-text-subtlest, #5E6C84)',
+                      }}>
+                        {localQuarter} 2026
+                      </span>
+                    ) : <span style={{ fontSize: 13 }}>—</span>}
+                  </FieldBlock>
+
+                  <FieldBlock label="ASSIGNEE">
+                    {canEdit ? (
+                      <Select<Opt>
+                        inputId="idea-assignee"
+                        options={[NONE, ...profileOpts]}
+                        value={
+                          localAssigneeId
+                            ? profileOpts.find(o => o.value === localAssigneeId) ?? NONE
+                            : NONE
+                        }
+                        onChange={(v) => setLocalAssigneeId(v?.value === '__none__' ? '' : (v?.value || ''))}
+                        placeholder="Select assignee"
+                        spacing="compact"
+                      />
+                    ) : <span style={{ fontSize: 13 }}>{assigneeName || 'Unassigned'}</span>}
+                  </FieldBlock>
+
+                  <FieldBlock label="CREATED">
+                    <span style={{ fontSize: 13 }}>
+                      {rawIdea.created_at
+                        ? new Date(rawIdea.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+                        : '—'}
+                    </span>
+                  </FieldBlock>
+                </div>
+
+                {/* DESCRIPTION */}
+                <FieldBlock label="DESCRIPTION">
                   {canEdit ? (
-                    <Slider
-                      value={[dim.value]}
-                      min={0} max={5} step={0.1}
-                      onValueChange={([v]: number[]) => dim.set(v)}
-                      className="w-full"
+                    <TextArea
+                      value={localDescription}
+                      onChange={(e) => setLocalDescription((e.target as HTMLTextAreaElement).value)}
+                      placeholder="Add a description…"
+                      minimumRows={4}
+                      resize="vertical"
                     />
                   ) : (
-                    <div style={{ height: '4px', borderRadius: '4px', backgroundColor: 'var(--cp-border, #E2E8F0)', overflow: 'hidden' }}>
-                      <div style={{
-                        height: '100%', width: `${(dim.value / 5) * 100}%`,
-                        backgroundColor: dim.value > 0 ? 'var(--ds-text-brand, #2563EB)' : 'transparent',
-                        borderRadius: '4px', transition: 'width 300ms',
-                      }} />
-                    </div>
+                    <p style={{ fontSize: 13, lineHeight: 1.6, margin: 0 }}>
+                      {rawIdea.description || 'No description provided'}
+                    </p>
                   )}
+                </FieldBlock>
+
+                {/* IMPACT SCORE */}
+                <div>
+                  <div style={{
+                    fontSize: 11, fontWeight: 700, textTransform: 'uppercase',
+                    letterSpacing: '0.06em', color: 'var(--ds-text-subtlest, #5E6C84)',
+                    marginBottom: 12,
+                  }}>IMPACT SCORE</div>
+
+                  <div style={{ display: 'flex', alignItems: 'baseline', gap: 10, marginBottom: 16 }}>
+                    <span style={{
+                      fontSize: 28, fontWeight: 700,
+                      fontFamily: 'var(--cp-font-mono, ui-monospace, SFMono-Regular)',
+                    }}>
+                      {composite.toFixed(2)}
+                    </span>
+                    <span style={{ fontSize: 13, color: 'var(--ds-text-subtle, #5E6C84)' }}>
+                      out of 5.00
+                    </span>
+                    <Lozenge appearance={impactLevel}>{impactLabel}</Lozenge>
+                  </div>
+
+                  {dimensions.map((dim) => (
+                    <div key={dim.letter} style={{
+                      display: 'flex', alignItems: 'center', gap: 12, marginBottom: 14,
+                    }}>
+                      <div style={{
+                        width: 28, height: 28, borderRadius: '50%',
+                        background: 'var(--ds-background-neutral, #F1F2F4)',
+                        color: 'var(--ds-text-subtle, #5E6C84)',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        fontSize: 12, fontWeight: 700, flexShrink: 0,
+                      }}>{dim.letter}</div>
+                      <div style={{ flex: 1 }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
+                          <span style={{ fontSize: 12, fontWeight: 500 }}>{dim.name}</span>
+                          <span style={{ fontSize: 11, color: 'var(--ds-text-subtle, #5E6C84)' }}>{dim.weight}</span>
+                        </div>
+                        <ImpactSlider
+                          value={dim.value}
+                          onChange={dim.set}
+                          disabled={!canEdit}
+                        />
+                      </div>
+                      <span style={{
+                        fontFamily: 'var(--cp-font-mono, ui-monospace)',
+                        fontSize: 13, fontWeight: 600,
+                        color: dim.value > 0 ? 'inherit' : 'var(--ds-text-subtlest, #94A3B8)',
+                        minWidth: 28, textAlign: 'right',
+                      }}>{dim.value.toFixed(1)}</span>
+                    </div>
+                  ))}
                 </div>
-                <span style={{
-                  fontFamily: 'var(--cp-font-mono)', fontSize: '13px', fontWeight: 650,
-                  color: dim.value > 0 ? dk.t1 : dk.t3, minWidth: '28px', textAlign: 'right',
-                }}>{dim.value.toFixed(1)}</span>
+
+                {/* CONVERT TO REQUEST */}
+                {!isConverted && localStatus !== 'Draft' && onConvert && rawIdea && (
+                  <div style={{
+                    background: 'var(--ds-background-success-subtle, #DCFFF1)',
+                    border: '1px solid var(--ds-border-success, #6BE1B0)',
+                    borderRadius: 4, padding: 14,
+                  }}>
+                    <div style={{
+                      fontSize: 13, fontWeight: 600,
+                      color: 'var(--ds-text-success, #216E4E)',
+                      marginBottom: 4,
+                    }}>
+                      Ready to promote?
+                    </div>
+                    <p style={{
+                      fontSize: 12, margin: '0 0 12px',
+                      color: 'var(--ds-text-subtle, #44546F)',
+                    }}>
+                      Convert this idea into a tracked Request under Product Hub.
+                    </p>
+                    <Button
+                      appearance="primary"
+                      iconBefore={ArrowRightIcon}
+                      onClick={() => onConvert(rawIdea)}
+                    >
+                      Convert to Request
+                    </Button>
+                  </div>
+                )}
               </div>
-            ))}
-          </div>
+            )}
+          </ModalBody>
 
-          {/* CONVERT TO INITIATIVE — green section (only if not Draft and not already converted) */}
-          {!isConverted && localStatus !== 'Draft' && onConvert && rawIdea && (
-            <div style={{ padding: '16px 20px' }}>
-              <div style={{ background: 'var(--cp-success-light, #F0FDF4)', border: `0.75px solid ${'var(--cp-success-light, #BBF7D0)'}`, borderRadius: '6px', padding: '14px' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '6px' }}>
-                  <ArrowUpRight size={14} style={{ color: 'var(--cp-success, #16A34A)' }} />
-                  <span style={{ fontSize: '13px', fontWeight: 650, color: dk.t1 }}>Ready to promote?</span>
-                </div>
-                <p style={{ fontSize: '12px', color: dk.t2, margin: '0 0 10px', lineHeight: 1.4 }}>
-                  Convert this idea into a tracked request under ProductHub.
-                </p>
-                <button onClick={() => onConvert(rawIdea)} style={{
-                  width: '100%', height: '50px', borderRadius: '6px', border: 'none',
-                  background: 'var(--ds-text-success, #16A34A)', color: 'var(--ds-text-inverse, #FFFFFF)', fontSize: '13px', fontWeight: 600,
-                  cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px',
-                }}>
-                  <ArrowUpRight size={14} /> Convert to Request
-                </button>
-              </div>
-            </div>
-          )}
-        </div>
-
-        {/* FOOTER — sticky */}
-        {canEdit ? (
-          <div style={{
-            padding: '12px 20px', borderTop: `0.75px solid ${dk.border}`,
-            backgroundColor: 'var(--cp-bg-elevated, #FFFFFF)', display: 'flex', justifyContent: 'flex-end', gap: '8px', flexShrink: 0,
-          }}>
-            <button onClick={() => { resetLocal(); }} style={{
-              height: '50px', padding: '0 16px', borderRadius: '6px',
-              border: `0.75px solid ${dk.border}`, background: 'var(--cp-bg-elevated, #FFFFFF)', color: dk.t2,
-              fontSize: '13px', fontWeight: 600, cursor: 'pointer',
-            }}>Cancel</button>
-            <button onClick={handleSave} disabled={updateIdea.isPending} style={{
-              height: '50px', padding: '0 16px', borderRadius: '6px',
-              border: 'none', background: 'var(--ds-text-brand, #2563EB)', color: 'var(--ds-text-inverse, #FFFFFF)',
-              fontSize: '13px', fontWeight: 600, cursor: 'pointer',
-              opacity: updateIdea.isPending ? 0.7 : 1,
-            }}>{updateIdea.isPending ? 'Saving...' : 'Save Changes'}</button>
-          </div>
-        ) : (
-          <div style={{
-            padding: '12px 20px', borderTop: `0.75px solid ${dk.border}`,
-            backgroundColor: 'var(--cp-bg-elevated, #FFFFFF)', display: 'flex', justifyContent: 'flex-end', flexShrink: 0,
-          }}>
-            <button onClick={onClose} style={{
-              height: '50px', padding: '0 16px', borderRadius: '6px',
-              border: `0.75px solid ${dk.border}`, background: 'var(--cp-bg-elevated, #FFFFFF)', color: dk.t2,
-              fontSize: '13px', fontWeight: 600, cursor: 'pointer',
-            }}>Close</button>
-          </div>
-        )}
-      </div>
-
-      <style>{`
-        @keyframes slideInRight {
-          from { transform: translateX(100%); }
-          to { transform: translateX(0); }
-        }
-      `}</style>
-    </>
-  );
-}
-
-function FieldBlock({ label, children }: { label: string; children: React.ReactNode }) {
-  const { isDark } = useTheme();
-  return (
-    <div>
-      <div style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--cp-text-tertiary, #64748B)', marginBottom: '6px' }}>{label}</div>
-      {children}
-    </div>
+          <ModalFooter>
+            {canEdit ? (
+              <>
+                <Button appearance="subtle" onClick={resetLocal}>Cancel</Button>
+                <Button
+                  appearance="primary"
+                  onClick={handleSave}
+                  isLoading={updateIdea.isPending}
+                >
+                  Save Changes
+                </Button>
+              </>
+            ) : (
+              <Button appearance="subtle" onClick={onClose}>Close</Button>
+            )}
+          </ModalFooter>
+        </Modal>
+      )}
+    </ModalTransition>
   );
 }

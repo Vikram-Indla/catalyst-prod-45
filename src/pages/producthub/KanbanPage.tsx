@@ -22,10 +22,12 @@
  *   - Detail panel drawer + create drawer.
  */
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useParams } from 'react-router-dom';
 import { toast } from 'sonner';
 import { KanbanBoardShell } from '@/components/kanban/KanbanBoardShell';
 import { buildProductHubBoardAdapter } from '@/components/kanban/adapters/productHubBoardAdapter';
+import { ProductChromeBand } from '@/components/product-hub/ProductChromeBand';
 import { CreateRequestDrawer } from '@/components/producthub/shared/CreateRequestDrawer';
 // jira-compare cycle 4 — RequestDetailPanel replaced by CatalystViewBusinessRequestV2.
 // Legacy import retained as commented sunset breadcrumb.
@@ -82,6 +84,32 @@ export default function ProductHubKanbanPage() {
   const { data, isLoading } = useRequestsBacklog();
   const requests = useMemo<Request[]>(() => data?.data ?? [], [data]);
   const avatarsByName = useProfileAvatarsByName();
+
+  /* ═════ Phase 5b (2026-05-02) — Per-product chrome.
+     When mounted at /product-hub/:code/{boards,kanban}, look up the
+     product so the page renders the same ProductChromeBand
+     (Products → {Name} breadcrumb + product icon + H1) that
+     /product-hub/:code/backlog already uses. Mirrors the lookup pattern
+     in RequestListingPage so the two surfaces share visual chrome.
+     When unscoped (/product-hub/kanban global view), behaviour is
+     unchanged — the shell's CatalystPageHeader keeps showing
+     "Product Kanban". ═════ */
+  const { code: productCode } = useParams<{ code?: string }>();
+  const { data: scopedProduct } = useQuery({
+    queryKey: ['product-hub', 'product-by-code', productCode],
+    enabled: !!productCode,
+    queryFn: async () => {
+      const { data, error } = await (supabase as any)
+        .from('products')
+        .select('id, code, name')
+        .eq('code', productCode)
+        .eq('is_active', true)
+        .maybeSingle();
+      if (error) throw error;
+      return data as { id: string; code: string; name: string } | null;
+    },
+    staleTime: 5 * 60_000,
+  });
 
   /* ═════ Workflow-driven columns. The 'Business Request' scheme governs
      every request on this board (per the Phase 1 seed). Editing a
@@ -227,7 +255,22 @@ export default function ProductHubKanbanPage() {
 
   return (
     <>
-      <KanbanBoardShell adapter={adapter} title="Product Kanban" />
+      {/* Phase 5b (2026-05-02) — chrome band only on per-product routes
+          (/product-hub/:code/boards|kanban). Global /product-hub/kanban
+          stays on the shell's built-in CatalystPageHeader. */}
+      {scopedProduct && (
+        <div style={{ padding: '8px 24px 0' }}>
+          <ProductChromeBand
+            productName={scopedProduct.name}
+            productColor={null}
+          />
+        </div>
+      )}
+      <KanbanBoardShell
+        adapter={adapter}
+        title="Product Kanban"
+        hideTitleHeader={!!scopedProduct}
+      />
 
       {selectedInitiative && (
         <CatalystViewBusinessRequestV2

@@ -46,7 +46,10 @@ export default function CatalystViewIncident({
       <CatalystStatusPill status={issue?.status} onStatusChange={(st) => mutations.updateStatus.mutate(st)} />
       <CatalystQuickActions />
       <ImproveIssueDropdown issue={issue ?? null} {...improveHandlers} />
-      <CatalystKeyDetails issue={issue ?? null} itemId={itemId} itemType="incident" projectKey={projectKey} onOpenItem={onOpenItem} />
+      {/* jira-compare follow-up (2026-05-02): Parent moved to right rail
+          for consistency with Story / Defect. KeyDetails left block kept
+          for Priority (Incident has no extraRows yet). */}
+      <CatalystKeyDetails issue={issue ?? null} itemId={itemId} itemType="incident" projectKey={projectKey} onOpenItem={onOpenItem} showParent={false} />
       <CatalystDescriptionSection issue={issue ?? null} />
       <CatalystAcceptanceCriteria issue={issue ?? null} label="Impact / Root Cause" />
 
@@ -72,7 +75,14 @@ export default function CatalystViewIncident({
   );
 
   const rightContent = (
-    <CatalystSidebarDetails issue={issue ?? null} itemId={itemId} projectId={projectId} onStatusChange={(st) => mutations.updateStatus.mutate(st)} onClose={onClose} onDelete={() => mutations.deleteIssue.mutate()} typeLabel="incident" />
+    <CatalystSidebarDetails
+      issue={issue ?? null} itemId={itemId} projectId={projectId}
+      onStatusChange={(st) => mutations.updateStatus.mutate(st)}
+      onClose={onClose} onDelete={() => mutations.deleteIssue.mutate()} typeLabel="incident"
+      parentSource="incident"
+      projectKey={projectKey}
+      onOpenItem={onOpenItem}
+    />
   );
 
   return (
