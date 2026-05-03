@@ -1,25 +1,59 @@
-// ============================================================
-// TASK DESCRIPTION COMPONENT - WITH @MENTIONS SUPPORT
-// Simple section with MentionTextarea for user tagging
-// ============================================================
-
-import { MentionTextarea } from '@/components/shared/MentionTextarea';
+import { useState, useEffect } from 'react';
+import { CanonicalDescriptionField } from '@/components/shared/CanonicalDescriptionField';
+import { useCanonicalDescription } from '@/hooks/useCanonicalDescription';
 
 interface TaskDescriptionProps {
-  value: string;
-  onChange: (value: string) => void;
+  taskId: string;
+  value?: string;
+  onChange?: (value: string) => void;
+  onSave?: (value: string) => Promise<void>;
 }
 
-export function TaskDescription({ value, onChange }: TaskDescriptionProps) {
+export function TaskDescription({
+  taskId,
+  value: externalValue = '',
+  onChange,
+  onSave: externalOnSave,
+}: TaskDescriptionProps) {
+  const { description: fetchedDescription, save, isSaving, error } = useCanonicalDescription(
+    taskId,
+    'task'
+  );
+  const [isEditing, setIsEditing] = useState(false);
+  const [value, setValue] = useState(externalValue || fetchedDescription);
+
+  useEffect(() => {
+    setValue(externalValue || fetchedDescription);
+  }, [externalValue, fetchedDescription]);
+
+  const handleChange = (newValue: string) => {
+    setValue(newValue);
+    onChange?.(newValue);
+  };
+
+  const handleSave = async () => {
+    if (externalOnSave) {
+      await externalOnSave(value);
+    } else {
+      await save(value);
+    }
+  };
+
   return (
     <div className="space-y-3">
-      {/* Description content - editable with @mentions */}
-      <MentionTextarea
+      <CanonicalDescriptionField
+        workItemId={taskId}
+        workItemType="task"
         value={value}
-        onChange={onChange}
+        onChange={handleChange}
+        onSave={handleSave}
+        isEditing={isEditing}
+        onEditToggle={setIsEditing}
+        isLoading={isSaving}
+        error={error?.message}
+        maxLength={10000}
         placeholder="Add a description... (Type @ to mention someone)"
-        minHeight="100px"
-        className="border-0 bg-transparent focus:ring-0 focus:ring-offset-0 p-0 text-sm leading-relaxed resize-none"
+        isRequired={false}
       />
     </div>
   );
