@@ -139,7 +139,7 @@ function CatalystShellContent() {
   const location = useLocation();
   const page = derivePageFromPath(location.pathname);
   const navigate = useNavigate();
-  const params = useParams<{ programId?: string; portfolioId?: string; teamId?: string; projectId?: string }>();
+  const params = useParams<{ programId?: string; portfolioId?: string; teamId?: string; projectId?: string; projectKey?: string }>();
   const { workspaceType, programId: contextProgramId, projectId: contextProjectId, selectedQuarter, setSelectedQuarter, sidebarExpanded, setSidebarExpanded, sidebarHidden, setSidebarHidden, sidebarPinned, setSidebarPinned, sidebarHoverOpen, cycleSidebarState } = useCatalystContext();
 
   // ─── Sidebar is CLICK-ONLY (April 2026, final) ────────────────────────
@@ -206,7 +206,9 @@ function CatalystShellContent() {
   // Extract IDs from URL params - these take precedence
   const urlProgramId = params.programId || null;
   const urlProjectId = params.projectId || null;
-  
+  // InJira routes use :projectKey (a string key like "BAU"), not :projectId (UUID)
+  const urlProjectKey = params.projectKey || null;
+
   // Determine which ID to use based on route pattern
   const isProgramRoute = location.pathname.startsWith('/program/');
   const isProjectRoute = location.pathname.startsWith('/projects/') || location.pathname.startsWith('/project/');
@@ -214,21 +216,42 @@ function CatalystShellContent() {
   // Current active IDs
   const activeProgramId = isProgramRoute ? urlProgramId : contextProgramId;
   const activeProjectId = isProjectRoute ? urlProjectId : contextProjectId;
-  
+
+  // When on an InJira route (/project/:projectKey/...) the route param is
+  // :projectKey (e.g. "BAU"), not a UUID. Look up the project UUID by key so
+  // ProjectSidebar renders instead of the "No Project" fallback.
+  const { data: projectByKey } = useQuery({
+    queryKey: ['project-by-key', urlProjectKey],
+    queryFn: async () => {
+      if (!urlProjectKey) return null;
+      const { data } = await supabase
+        .from('projects')
+        .select('id, name, key')
+        .eq('key', urlProjectKey)
+        .maybeSingle();
+      return data ?? null;
+    },
+    enabled: !!urlProjectKey && !urlProjectId && isProjectRoute,
+  });
+
+  // Resolve the project to display in the sidebar: prefer UUID-based lookup,
+  // fall back to key-based lookup for InJira routes.
+  const resolvedProjectId = activeProjectId || projectByKey?.id || null;
+
   // Fetch project details for sidebar
   const { data: projectData } = useQuery({
-    queryKey: ['project-sidebar', activeProjectId],
+    queryKey: ['project-sidebar', resolvedProjectId],
     queryFn: async () => {
-      if (!activeProjectId) return null;
+      if (!resolvedProjectId) return null;
       const { data, error } = await supabase
         .from('projects')
         .select('id, name, key')
-        .eq('id', activeProjectId)
+        .eq('id', resolvedProjectId)
         .maybeSingle();
       if (error) throw error;
       return data;
     },
-    enabled: !!activeProjectId && isProjectRoute,
+    enabled: !!resolvedProjectId && isProjectRoute,
   });
 
   // Check if on product/producthub route
@@ -590,17 +613,17 @@ function CatalystShellContent() {
         );
 
       case 'project':
-        if (activeProjectId) {
+        if (resolvedProjectId) {
           return (
             <ProjectSidebar
-              projectId={activeProjectId}
-              projectName={projectData?.name}
+              projectId={resolvedProjectId}
+              projectName={projectData?.name || projectByKey?.name}
               expanded={true}
               onToggle={cycleSidebarState}
             />
           );
         }
-        // Show empty state if no project selected
+        // Show narrow fallback — only 56px so it doesn't create a gap
         return (
           <div className="w-14 h-full flex items-center justify-center p-2 text-center border-r border-border-default bg-surface-2">
             <div className="text-xs text-text-tertiary">
