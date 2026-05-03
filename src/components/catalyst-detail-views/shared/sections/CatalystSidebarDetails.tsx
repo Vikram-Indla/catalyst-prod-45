@@ -17,9 +17,11 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import ChevronDownIcon from '@atlaskit/icon/glyph/chevron-down';
 import CheckIcon from '@atlaskit/icon/glyph/check';
+import AutomationIcon from '@atlaskit/icon/core/automation';
+import SettingsIcon from '@atlaskit/icon/core/settings';
 import { Heading } from '@/components/ads';
 import Modal, { ModalBody, ModalFooter, ModalHeader, ModalTitle, ModalTransition } from '@atlaskit/modal-dialog';
-import Button from '@atlaskit/button/new';
+import Button, { IconButton } from '@atlaskit/button/new';
 import Lozenge from '@atlaskit/lozenge';
 import { Inline } from '@atlaskit/primitives';
 import { useWorkflow } from '@/lib/workflows';
@@ -127,6 +129,32 @@ import {
 import {
   fmtDate, getStatusCategory, getStatusStyle, getInitials, getAvatarColor,
 } from '@/modules/project-work-hub/components/dialogs/story-detail-modules/helpers';
+
+/**
+ * jira-compare 2026-05-03 — Patch A6 · Hybrid time format helper.
+ * Returns a relative description like "4 days ago" / "yesterday" / "just now".
+ * Pair with absolute fmtDate(...) for the "29 Apr 2026 · 4 days ago" hybrid
+ * mirroring Jira's BAU-5737 footer timestamps.
+ */
+function fmtRelative(iso: string | null | undefined): string {
+  if (!iso) return '';
+  const ts = new Date(iso).getTime();
+  if (Number.isNaN(ts)) return '';
+  const diffMs = Date.now() - ts;
+  const sec = Math.round(diffMs / 1000);
+  if (sec < 60) return 'just now';
+  const min = Math.round(sec / 60);
+  if (min < 60) return `${min} min ago`;
+  const hr = Math.round(min / 60);
+  if (hr < 24) return `${hr} hour${hr === 1 ? '' : 's'} ago`;
+  const day = Math.round(hr / 24);
+  if (day === 1) return 'yesterday';
+  if (day < 30) return `${day} days ago`;
+  const mon = Math.round(day / 30);
+  if (mon < 12) return `${mon} month${mon === 1 ? '' : 's'} ago`;
+  const yr = Math.round(mon / 12);
+  return `${yr} year${yr === 1 ? '' : 's'} ago`;
+}
 
 interface CatalystSidebarDetailsProps {
   issue: PhIssue | null;
@@ -258,12 +286,20 @@ export function CatalystSidebarDetails({
 
   return (
     <>
-      {/* jira-compare 2026-05-03 — Patch D + E · Status pill + Improve dropdown
-          rendered together at the top of the rail. Mirrors Jira BAU-5609 where
-          [In QA ▾] and [Improve Story ▾] sit on the same row above Details. */}
+      {/* jira-compare 2026-05-03 — Patch D + E + A1 · Status pill + Automate trigger + Improve dropdown
+          rendered together at the top of the rail. Mirrors Jira BAU-5737 where
+          [Status ▾] [⚡] sit on row 1 and [💬 Improve <Type>] sits on row 2 above Details.
+          Catalyst keeps them flex-wrap so wide rails get one row, narrow rails wrap. */}
       {(statusPill || improveDropdown) && (
         <div style={{ marginBottom: 14, display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
           {statusPill}
+          <IconButton
+            icon={(iconProps) => <AutomationIcon {...iconProps} label="" />}
+            label="Automate"
+            appearance="subtle"
+            spacing="compact"
+            onClick={() => toast('Automation rules — coming soon (A4 trays)')}
+          />
           {improveDropdown}
         </div>
       )}
@@ -600,14 +636,30 @@ export function CatalystSidebarDetails({
         </div>
       </div>
 
-      {/* ── Timestamps (canonical) ────────────── */}
-      <div style={{ marginTop: 'auto', padding: '12px 0 0' }}>
-        <div style={{ fontSize: 12, color: '#5E6C84', marginBottom: 4, lineHeight: 1.6 }}>
-          <span style={{ color: '#42526E', fontWeight: 500 }}>Created</span> {fmtDate(issue?.jira_created_at)}
+      {/* ── Timestamps + Configure CTA (canonical) ──────────────
+          jira-compare 2026-05-03 — Patch A5 · ⚙ Configure CTA added
+          alongside Created / Updated, mirroring Jira BAU-5737 footer. */}
+      <div style={{ marginTop: 'auto', padding: '12px 0 0', display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', gap: 12 }}>
+        <div style={{ flex: 1, minWidth: 0 }}>
+          {/* jira-compare 2026-05-03 — Patch A6 · Hybrid time format
+              (absolute · relative). Title attr exposes the ISO on hover. */}
+          <div style={{ fontSize: 12, color: '#5E6C84', marginBottom: 4, lineHeight: 1.6 }} title={issue?.jira_created_at ?? undefined}>
+            <span style={{ color: '#42526E', fontWeight: 500 }}>Created</span> {fmtDate(issue?.jira_created_at)}
+            {issue?.jira_created_at && <span style={{ color: '#7A869A' }}> · {fmtRelative(issue.jira_created_at)}</span>}
+          </div>
+          <div style={{ fontSize: 12, color: '#5E6C84', lineHeight: 1.6 }} title={issue?.jira_updated_at ?? undefined}>
+            <span style={{ color: '#42526E', fontWeight: 500 }}>Updated</span> {fmtDate(issue?.jira_updated_at)}
+            {issue?.jira_updated_at && <span style={{ color: '#7A869A' }}> · {fmtRelative(issue.jira_updated_at)}</span>}
+          </div>
         </div>
-        <div style={{ fontSize: 12, color: '#5E6C84', lineHeight: 1.6 }}>
-          <span style={{ color: '#42526E', fontWeight: 500 }}>Updated</span> {fmtDate(issue?.jira_updated_at)}
-        </div>
+        <Button
+          appearance="subtle"
+          spacing="compact"
+          iconBefore={(iconProps) => <SettingsIcon {...iconProps} label="" />}
+          onClick={() => toast('Configure issue layout — coming soon')}
+        >
+          Configure
+        </Button>
       </div>
 
       {/* ── Delete confirmation (canonical) ─────────────────────────────

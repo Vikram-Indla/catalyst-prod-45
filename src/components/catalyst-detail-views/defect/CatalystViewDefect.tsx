@@ -15,6 +15,7 @@ import {
   CatalystActivitySection, CatalystSidebarDetails, CatalystKeyDetails,
   KeyDetailsFieldRow, CatalystStatusPill, CatalystFooterMeta,
 } from '../shared/sections';
+import { ImproveIssueDropdown, useImproveApplyHandlers } from '@/components/catalyst-detail-views/improve';
 import {
   CatalystDefectKeyRows,
   CatalystDefectLongFields,
@@ -34,13 +35,14 @@ export default function CatalystViewDefect({
 
   const { data: issue, isLoading } = useCatalystIssue(itemId, isOpen);
   const mutations = useCatalystIssueMutations(itemId, onClose);
+  const improveHandlers = useImproveApplyHandlers(issue ?? null);
   const priorityStyle = PRIORITY_STYLES[issue?.priority ?? 'Medium'] ?? PRIORITY_STYLES.Medium;
   const queryClient = useQueryClient();
 
   const leftContent = (
     <>
       <CatalystTitleEditor issue={issue ?? null} onTitleChange={(t) => mutations.updateField.mutate({ field: 'summary', value: t, oldValue: issue?.summary ?? '' })} />
-      <CatalystStatusPill status={issue?.status} onStatusChange={(st) => mutations.updateStatus.mutate(st)} />
+      {/* jira-compare 2026-05-03 — Patch B (Defect) · CatalystStatusPill relocated to right-rail header in CatalystSidebarDetails (slot-prop pattern). */}
       <CatalystQuickActions />
 
 
@@ -144,6 +146,10 @@ export default function CatalystViewDefect({
       parentSource="defect"
       projectKey={projectKey}
       onOpenItem={onOpenItem}
+      /* jira-compare 2026-05-03 — Patch B (Defect) · Status pill + Improve dropdown
+         anchored together at the rail header. Mirrors CatalystViewStory's Patch D + E. */
+      statusPill={<CatalystStatusPill status={issue?.status} statusCategory={issue?.status_category} onStatusChange={(st) => mutations.updateStatus.mutate(st)} />}
+      improveDropdown={<ImproveIssueDropdown issue={issue ?? null} {...improveHandlers} />}
     />
   );
 

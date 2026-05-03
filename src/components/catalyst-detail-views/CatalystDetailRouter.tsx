@@ -36,7 +36,12 @@ function resolveItemType(raw: string | undefined | null): 'story' | 'epic' | 'fe
   if (t === 'business request' || t === 'business_request' || t === 'demand') return 'business_request';
   if (t === 'sub-task' || t === 'subtask' || t === 'backend' || t === 'frontend' || t === 'figma' || t === 'entity figma' || t === 'integration') return 'subtask';
   if (t === 'idea' || t === 'opportunity') return 'idea';
-  if (t === 'story' || t === 'improvement') return 'story';
+  // jira-compare 2026-05-03 — C4 audit · Change Request mapped explicitly to
+  // 'story' (no dedicated view; shares Story's section set: description / AC /
+  // attachments / defects / incidents / testhub / activity). Was falling
+  // through to default before. 6 tickets in BAU project today (BAU-5610,
+  // BAU-5313, BAU-5167, …).
+  if (t === 'story' || t === 'improvement' || t === 'change request' || t === 'change_request') return 'story';
   // Default to story for any unknown type
   return 'story';
 }

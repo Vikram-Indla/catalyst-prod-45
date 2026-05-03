@@ -11,7 +11,14 @@ import React, { useState, useRef, useCallback, useEffect, useMemo } from 'react'
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { useQueryClient, useQuery } from '@tanstack/react-query';
-import { Trash2, Download, Loader2 } from 'lucide-react';
+/* jira-compare 2026-05-03 — Patch D3 (lucide sweep) ·
+   Trash2  → @atlaskit/icon/core/delete
+   Download → @atlaskit/icon/core/download
+   Loader2 → @atlaskit/spinner (component, replaces .att-spin keyframes for the
+              download-all CTA) */
+import DeleteIcon from '@atlaskit/icon/core/delete';
+import DownloadIcon from '@atlaskit/icon/core/download';
+import Spinner from '@atlaskit/spinner';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -362,7 +369,7 @@ export function AttachmentsSection({ attachments, itemId, userId, projectKey, so
                       disabled={attachments.length === 0 || zipping}
                       role="menuitem"
                     >
-                      {zipping ? <Loader2 size={14} className="att-spin" /> : <Download size={14} />}
+                      {zipping ? <Spinner size="small" /> : <DownloadIcon label="Download" />}
                       <span style={{ marginLeft: 6 }}>Download all</span>
                       <span className="att-menu-badge">{attachments.length}</span>
                     </button>
@@ -575,7 +582,7 @@ function AttachmentRow({ attachment, canDelete, bucket, onPreview, onDelete }: {
               title="Download"
               onClick={(e) => e.stopPropagation()}
             >
-              <Download size={16} />
+              <DownloadIcon label="Download" />
             </a>
           )}
           {canDelete && (
@@ -585,7 +592,7 @@ function AttachmentRow({ attachment, canDelete, bucket, onPreview, onDelete }: {
               onClick={(e) => { e.stopPropagation(); onDelete(); }}
               aria-label="Delete attachment"
             >
-              <Trash2 size={16} />
+              <DeleteIcon label="Delete" />
             </button>
           )}
         </div>
