@@ -1,22 +1,4 @@
 project_id = "mqgshobotcvcjouzxdbi"
 
-[functions.jira-webhook-receiver]
+[functions.jira-bau-reload]
 verify_jwt = false
-
-[functions.process-outbound-sync]
-verify_jwt = true
-
-[functions.wh-jira-issue-activity]
-verify_jwt = false
-
-[functions.ai-improve-story]
-verify_jwt = true
-
-[functions.jira-avatar-sync]
-verify_jwt = true
-
-[functions.jira-title-case-pass]
-verify_jwt = true
-
-[functions.jira-issue-type-resolver]
-verify_jwt = true
