@@ -115,7 +115,7 @@ export function CanonicalDescriptionField({
 
       {/* Validation Error Display */}
       {localError && !isEditing && (
-        <div className="text-sm text-red-600 dark:text-red-400">{localError}</div>
+        <div className="text-sm text-red-600">{localError}</div>
       )}
     </div>
   );
