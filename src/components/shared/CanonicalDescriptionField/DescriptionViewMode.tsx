@@ -1,5 +1,6 @@
 import React from 'react';
-import { Pencil, Plus } from 'lucide-react';
+import Button from '@atlaskit/button';
+import { EditIcon, AddIcon } from '@atlaskit/icon';
 import type { DescriptionMention } from './description.types';
 
 interface DescriptionViewModeProps {
@@ -15,20 +16,18 @@ export function DescriptionViewMode({
 }: DescriptionViewModeProps) {
   if (!value) {
     return (
-      <div className="p-4 bg-neutral-50 rounded-md border border-neutral-200">
-        <div className="flex items-center justify-between">
-          <p className="text-sm text-neutral-500">
-            No description provided.
-          </p>
+      <div style={{ padding: '12px 16px', backgroundColor: '#F7F8F9', borderRadius: '4px', border: '1px solid #DFE1E6' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <span style={{ fontSize: '13px', color: '#626F86' }}>No description provided.</span>
           {onEdit && (
-            <button
+            <Button
               onClick={onEdit}
-              className="inline-flex items-center gap-1.5 px-2 py-1 text-sm font-medium text-neutral-700 hover:bg-neutral-100 rounded transition-colors"
-              aria-label="Add description"
+              iconBefore={<AddIcon label="Add description" />}
+              appearance="subtle"
+              size="small"
             >
-              <Plus className="w-4 h-4" />
               Add
-            </button>
+            </Button>
           )}
         </div>
       </div>
@@ -36,20 +35,20 @@ export function DescriptionViewMode({
   }
 
   return (
-    <div className="p-4 bg-white rounded-md border border-neutral-200">
-      <div className="flex items-start justify-between gap-3">
-        <div className="flex-1 prose prose-sm max-w-none">
+    <div style={{ padding: '12px 16px', backgroundColor: '#FFFFFF', borderRadius: '4px', border: '1px solid #DFE1E6' }}>
+      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '12px' }}>
+        <div style={{ flex: 1, fontSize: '13px', lineHeight: 1.5, color: '#161A1D' }}>
           {renderMarkdown(value, mentions)}
         </div>
         {onEdit && (
-          <button
+          <Button
             onClick={onEdit}
-            className="inline-flex items-center gap-1.5 px-2 py-1 text-sm font-medium text-neutral-700 hover:bg-neutral-100 rounded transition-colors flex-shrink-0"
-            aria-label="Edit description"
+            iconBefore={<EditIcon label="Edit description" />}
+            appearance="subtle"
+            size="small"
           >
-            <Pencil className="w-4 h-4" />
             Edit
-          </button>
+          </Button>
         )}
       </div>
     </div>
@@ -64,19 +63,19 @@ function renderMarkdown(
   let rendered = text
     .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
     .replace(/_([^_]+)_/g, '<em>$1</em>')
-    .replace(/`([^`]+)`/g, '<code class="bg-neutral-100 px-1 rounded text-sm">$1</code>');
+    .replace(/`([^`]+)`/g, '<code style="background-color: #F1F2F4; padding: 2px 4px; border-radius: 3px; font-size: 12px;">$1</code>');
 
   // Render mentions as links/highlights
   mentions.forEach((mention) => {
     if (mention.type === 'url') {
       rendered = rendered.replace(
         mention.reference,
-        `<a href="${mention.reference}" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:underline">${mention.display}</a>`
+        `<a href="${mention.reference}" target="_blank" rel="noopener noreferrer" style="color: #0052CC; text-decoration: none;">${mention.display}</a>`
       );
     } else if (mention.type === 'user') {
       rendered = rendered.replace(
         mention.display,
-        `<span class="text-blue-600 font-medium">${mention.display}</span>`
+        `<span style="color: #0052CC; font-weight: 500;">${mention.display}</span>`
       );
     }
   });
