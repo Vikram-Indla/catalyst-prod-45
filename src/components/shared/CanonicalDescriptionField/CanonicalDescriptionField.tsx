@@ -1,4 +1,12 @@
+// ============================================================================
+// COMPONENT: CanonicalDescriptionField — ADS-compliant description field
+// Built with @atlaskit components only
+// ============================================================================
+
 import React, { useState, useCallback, useMemo } from 'react';
+import Textfield from '@atlaskit/textfield';
+import Button from '@atlaskit/button';
+import { Checkbox } from '@atlaskit/checkbox';
 import type {
   CanonicalDescriptionFieldProps,
   DescriptionMention,
@@ -63,14 +71,9 @@ export function CanonicalDescriptionField({
   // Handle save
   const handleSave = useCallback(async () => {
     if (onSave) {
-      try {
-        await onSave(localValue);
-        onEditToggle?.(false);
-      } catch (err) {
-        setLocalError(err instanceof Error ? err.message : 'Save failed');
-      }
+      await onSave();
     }
-  }, [localValue, onSave, onEditToggle]);
+  }, [onSave]);
 
   // Handle cancel
   const handleCancel = useCallback(() => {
@@ -90,7 +93,7 @@ export function CanonicalDescriptionField({
   }
 
   return (
-    <div className="space-y-3">
+    <div>
       {isEditing ? (
         <DescriptionEditMode
           value={localValue}
@@ -111,11 +114,6 @@ export function CanonicalDescriptionField({
           mentions={mentions}
           onEdit={handleEditToggle}
         />
-      )}
-
-      {/* Validation Error Display */}
-      {localError && !isEditing && (
-        <div className="text-sm text-red-600">{localError}</div>
       )}
     </div>
   );
