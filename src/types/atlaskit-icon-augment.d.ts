@@ -1,28 +1,23 @@
 // Augments @atlaskit/icon to keep legacy call sites compiling after the
-// upstream type tightening (label became required on GlyphProps, and the new
-// core icon props dropped `size`/`primaryColor`). All existing usages pass
-// these props, so we relax the contract here in one place.
-import type { Size } from '@atlaskit/icon';
+// upstream type tightening:
+//   - `label` became required on Glyph/OtherGlyphProps
+//   - new core/utility icon props dropped `size` and `primaryColor`
+// The actual interfaces live in '@atlaskit/icon/dist/types/types'.
+// Declaration merging on that exact module path relaxes them globally.
 
-declare module '@atlaskit/icon/types' {
-  interface LegacyOtherGlyphProps {
-    label?: string;
-  }
+declare module '@atlaskit/icon/dist/types/types' {
   interface OtherGlyphProps {
     label?: string;
-  }
-}
-
-declare module '@atlaskit/icon' {
-  interface GlyphProps {
-    label?: string;
-  }
-  interface NewCoreIconProps {
-    size?: Size | string;
+    size?: string;
     primaryColor?: string;
   }
-  interface NewUtilityIconProps {
-    size?: Size | string;
+  interface LegacyOtherGlyphProps {
+    label?: string;
+    size?: string | number;
+    primaryColor?: string;
+  }
+  interface BaseNewIconProps {
+    size?: string;
     primaryColor?: string;
   }
 }
