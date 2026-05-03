@@ -30,12 +30,26 @@ const isImage = (mime: string | undefined, name: string) => {
   return /\.(png|jpe?g|gif|webp|svg|bmp)$/i.test(name);
 };
 
-async function jiraFetch(path: string) {
+async function jiraFetch(path: string, init?: RequestInit) {
   const res = await fetch(`${jiraBase}${path}`, {
-    headers: { Authorization: authHeader, Accept: "application/json" },
+    ...init,
+    headers: {
+      Authorization: authHeader,
+      Accept: "application/json",
+      "Content-Type": "application/json",
+      ...(init?.headers ?? {}),
+    },
   });
   if (!res.ok) throw new Error(`Jira ${path} -> ${res.status} ${await res.text().catch(() => "")}`);
   return res.json();
+}
+
+async function jiraGetIssue(key: string) {
+  const params = new URLSearchParams({
+    fields: "*all",
+    expand: "renderedFields,changelog,attachment",
+  });
+  return jiraFetch(`/rest/api/3/issue/${encodeURIComponent(key)}?${params}`);
 }
 
 async function downloadAttachmentBytes(url: string): Promise<Uint8Array> {
