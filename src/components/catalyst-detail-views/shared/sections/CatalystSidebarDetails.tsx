@@ -78,7 +78,10 @@ import { EditableAssignee, EditableReporter, EditableLabels, EditableFixVersions
 import { CatalystParentLinker } from './CatalystParentLinker';
 import type { CatalystItemType } from '../types';
 import { EpicDueDateField } from '@/components/project/EpicDueDateField';
-/* MDT Ref dropped from the rail per Vikram directive (2026-05-02) — import removed.
+import { CatalystMdtRefField } from './CatalystMdtRefField';
+/* MDT Ref restored to the rail 2026-05-03 per Vikram directive — DOM-probed
+   Jira BAU-5609 Story rail showed Labels + MDT Ref present in Details container,
+   contradicting prior 2026-05-02 / 05-03 removal directives. Reinstated. Old note:
    CatalystAssessmentFeatureField removed from Details sidebar 2026-05-03 — belongs
    in Key details, not right rail. CatalystServiceNowDisplay removed 2026-05-03 —
    not in Jira's Details panel. */
@@ -134,6 +137,22 @@ interface CatalystSidebarDetailsProps {
   onDelete: () => void;
   /** Type-specific fields rendered between the "Details" header and Priority */
   children?: React.ReactNode;
+  /**
+   * jira-compare 2026-05-03 — slot for the ImproveIssueDropdown trigger.
+   * Rendered next to the Status row at the top of the rail, mirroring
+   * Jira's Status-pill / Improve-Story button layout. Each CatalystView*
+   * passes its own <ImproveIssueDropdown> here and removes the inline
+   * leftContent render so the affordance lives in one place.
+   */
+  improveDropdown?: React.ReactNode;
+  /**
+   * jira-compare 2026-05-03 (Patch E) — slot for the CatalystStatusPill.
+   * Rendered alongside improveDropdown at the rail header to mirror Jira's
+   * top-right layout where Status + Improve sit on the same line above
+   * Details. Each CatalystView* passes its own <CatalystStatusPill> here
+   * and removes the inline leftContent render.
+   */
+  statusPill?: React.ReactNode;
   /** Label for the work item type in the delete confirmation */
   typeLabel?: string;
   /** External trigger to open the delete confirmation */
@@ -150,7 +169,7 @@ interface CatalystSidebarDetailsProps {
 
 export function CatalystSidebarDetails({
   issue, itemId, projectId, onStatusChange, onClose, onDelete,
-  children, typeLabel = 'item',
+  children, improveDropdown, statusPill, typeLabel = 'item',
   deleteRequested, onDeleteDismiss,
   parentSource, projectKey, onOpenItem,
 }: CatalystSidebarDetailsProps) {
@@ -239,6 +258,15 @@ export function CatalystSidebarDetails({
 
   return (
     <>
+      {/* jira-compare 2026-05-03 — Patch D + E · Status pill + Improve dropdown
+          rendered together at the top of the rail. Mirrors Jira BAU-5609 where
+          [In QA ▾] and [Improve Story ▾] sit on the same row above Details. */}
+      {(statusPill || improveDropdown) && (
+        <div style={{ marginBottom: 14, display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+          {statusPill}
+          {improveDropdown}
+        </div>
+      )}
       {SHOW_RAIL_STATUS && (workflow && currentWorkflowState ? (
         <div style={{ marginBottom: 14 }}>
           {/* jira-compare A2 (2026-04-28): label every right-rail field for
@@ -437,10 +465,19 @@ export function CatalystSidebarDetails({
             )}
           </FieldRow>
 
-          {/* ── Labels ──── REMOVED 2026-05-03 per Vikram directive.
-              Jira's Details sidebar does NOT show Labels. Catalyst was
-              incorrectly displaying Labels in the right sidebar. Labels
-              belong in the "More fields" tray for types that support them. */}
+          {/* ── Labels ──── jira-compare 2026-05-03 RESTORED per Vikram directive.
+              DOM-probe of Jira BAU-5609 Story rail showed Labels in Details
+              container (not More fields tray as previously assumed). Reinstated. */}
+          <FieldRow label="Labels" labelTopPad>
+            {issue && (
+              <EditableLabels
+                issueId={issue.id}
+                issueKey={issue.issue_key}
+                currentLabels={(issue as any).labels ?? []}
+                onUpdate={invalidateIssue}
+              />
+            )}
+          </FieldRow>
 
           {/* ── Parent ──── REMOVED 2026-05-03 per Vikram directive.
               Parent belongs in Jira's left "Key details" section, not the
@@ -476,14 +513,12 @@ export function CatalystSidebarDetails({
             </FieldRow>
           )}
 
-          {/* ── MDT Ref ──── REMOVED 2026-05-02 per Vikram directive.
-              Was a universal custom field surfacing customfield_10882 from
-              the digital-transformation Jira tenant. Catalyst no longer
-              renders it. The CatalystMdtRefField component file is left
-              in place but unmounted — safe to delete in a follow-up
-              cleanup pass once nothing else imports it. The
-              ph_issues.mdt_ref column is also harmless to leave; deleting
-              it is a Lovable migration question. */}
+          {/* ── MDT Ref ──── jira-compare 2026-05-03 RESTORED per Vikram directive.
+              DOM-probe of Jira BAU-5609 Story rail showed MDT Ref custom field
+              with "Add text" placeholder in Details container. Reinstated. */}
+          <FieldRow label="MDT Ref" alignBlock="center">
+            <CatalystMdtRefField issue={issue ?? null} onUpdate={invalidateIssue} />
+          </FieldRow>
 
           {/* ── Epic-specific date fields ──── jira-compare Phase 2
               (2026-05-02). Relocated from above-Assignee to after-MDT-Ref

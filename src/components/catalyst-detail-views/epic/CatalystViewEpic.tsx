@@ -50,9 +50,9 @@ export default function CatalystViewEpic({
   const leftContent = (
     <>
       <CatalystTitleEditor issue={issue ?? null} onTitleChange={(t) => mutations.updateField.mutate({ field: 'summary', value: t, oldValue: issue?.summary ?? '' })} />
-      <CatalystStatusPill status={issue?.status} onStatusChange={(st) => mutations.updateStatus.mutate(st)} />
+      {/* jira-compare 2026-05-03 — Patch E · CatalystStatusPill relocated to right-rail header in CatalystSidebarDetails. */}
       <CatalystQuickActions />
-      <ImproveIssueDropdown issue={issue ?? null} {...improveHandlers} />
+      {/* jira-compare 2026-05-03 — Improve relocated to right-rail slot in CatalystSidebarDetails (Patch D). */}
       <ParentAndLabels issue={issue ?? null} itemId={itemId} itemType="epic" projectKey={projectKey} onOpenItem={onOpenItem} />
       <CatalystDescriptionSection issue={issue ?? null} />
       <CatalystAcceptanceCriteria issue={issue ?? null} />
@@ -80,7 +80,7 @@ export default function CatalystViewEpic({
   );
 
   const rightContent = (
-    <CatalystSidebarDetails issue={issue ?? null} itemId={itemId} projectId={projectId} onStatusChange={(st) => mutations.updateStatus.mutate(st)} onClose={onClose} onDelete={() => mutations.deleteIssue.mutate()} typeLabel="epic" />
+    <CatalystSidebarDetails issue={issue ?? null} itemId={itemId} projectId={projectId} onStatusChange={(st) => mutations.updateStatus.mutate(st)} onClose={onClose} onDelete={() => mutations.deleteIssue.mutate()} typeLabel="epic" statusPill={<CatalystStatusPill status={issue?.status} onStatusChange={(st) => mutations.updateStatus.mutate(st)} />} improveDropdown={<ImproveIssueDropdown issue={issue ?? null} {...improveHandlers} />} />
   );
 
   return (
