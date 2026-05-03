@@ -6,7 +6,7 @@ export interface DescriptionConfig {
   workItemId: string;
   workItemType: WorkItemType;
   maxLength: number;
-  minLength: number;
+  minLength?: number;
   isRequired: boolean;
   placeholder: string;
   readOnly?: boolean;

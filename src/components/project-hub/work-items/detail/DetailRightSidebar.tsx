@@ -3,15 +3,15 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { StatusLozenge } from './StatusLozenge';
 import ChevronDownIcon from '@atlaskit/icon/glyph/chevron-down';
-import LockIcon from '@atlaskit/icon/core/lock';
-import FlagIcon from '@atlaskit/icon/glyph/flag';
+import LockIcon from '@atlaskit/icon/core/lock-locked';
+import FlagIcon from '@atlaskit/icon/glyph/flag-filled';
 import SettingsIcon from '@atlaskit/icon/core/settings';
 import AiChatIcon from '@atlaskit/icon/core/ai-chat';
-import EyeIcon from '@atlaskit/icon/core/eye';
-import CrossIcon from '@atlaskit/icon/core/cross';
+import EyeIcon from '@atlaskit/icon/core/eye-open';
+import CrossIcon from '@atlaskit/icon/core/cross-circle';
 import { toast } from 'sonner';
 import { formatDistanceToNow } from 'date-fns';
-import { Button } from '@atlaskit/button/new';
+import Button from '@atlaskit/button/new';
 
 interface SidebarProps {
   item: {

@@ -3,13 +3,13 @@ import { CanonicalDescriptionField } from '@/components/shared/CanonicalDescript
 import { useCanonicalDescription } from '@/hooks/useCanonicalDescription';
 
 interface DescriptionEditorProps {
-  backlogItemId: string;
+  backlogItemId?: string;
   initialValue?: string;
   onChange?: (value: string) => void;
 }
 
 export function DescriptionEditor({
-  backlogItemId,
+  backlogItemId = '',
   initialValue = '',
   onChange
 }: DescriptionEditorProps) {
