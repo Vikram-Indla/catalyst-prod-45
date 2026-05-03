@@ -270,6 +270,72 @@ const dashboardMigratedRules = {
 };
 
 /**
+ * P2.1i — lucide-react ban inside hub scope (2026-05-03, Vikram's directive).
+ *
+ * Lucide icons render as invisible/dead inside Atlaskit Buttons because
+ * they don't consume `--ds-icon` tokens — the icon inherits whatever
+ * currentColor resolves to in the slot, which on Atlaskit subtle text is
+ * muted-text against muted background ("dead grey button" — LLM Council
+ * verdict, 2026-05-03). Hub scope must use Atlaskit icons exclusively.
+ *
+ * Severity = "warn" everywhere per Vikram's call (2026-05-03):
+ *   - ~223 pre-existing lucide-react files in hub scope can't break the
+ *     build during the migration window
+ *   - Future sweeps tighten specific files to "error" by adding them to
+ *     `lucideMigratedFiles` below (mirrors the adsMigratedFiles pattern)
+ *
+ * Allowed alternatives (in priority order):
+ *   1. `@/components/icons` — for work-item types, priority, project avatars
+ *      (canonical asset registry — RESET ICONS 2026-05-03)
+ *   2. `@atlaskit/icon/core/<name>` — modern Atlaskit icon set (filter,
+ *      search, edit, list-bulleted, ai-chat, layout-two-columns-sidebar-
+ *      right, etc.)
+ *   3. `@atlaskit/icon/glyph/<name>` — older glyph fallback (chevron-right
+ *      and similar legacy icons that haven't been migrated to /core/)
+ *
+ * Scope expansion: handover token-set is {project-hub, workhub,
+ * catalyst-detail-views, layout} under {pages, components, modules}.
+ * Most cross-products of those tokens don't exist on disk — ESLint
+ * silently ignores unmatched globs, so listing the full token set is
+ * harmless. modules/project-work-hub is included explicitly because it's
+ * the de-facto modules/workhub equivalent on disk.
+ *
+ * TODO(CI wiring): No .github/workflows/ exists in this repo today. Per
+ * Vikram (2026-05-03) defer wiring this rule into CI until the CI provider
+ * is identified (GitHub Actions vs other). For now `npm run lint` is the
+ * gate; lint job needs to fail on `--max-warnings 0` once the swept files
+ * are tightened to "error" — this also requires adding back-stop migration
+ * of remaining ~223 lucide sites first.
+ */
+const lucideRestrictedPattern = {
+  group: ["lucide-react", "lucide-react/*"],
+  message:
+    "lucide-react is BANNED in hub scope (2026-05-03). Atlaskit Buttons " +
+    "drop the icon's color binding, so lucide glyphs render as dead grey " +
+    "buttons. Use one of: (1) `@/components/icons` for work-item / " +
+    "priority / project-avatar glyphs, (2) `@atlaskit/icon/core/<name>` " +
+    "for modern Atlaskit icons, (3) `@atlaskit/icon/glyph/<name>` for " +
+    "older glyph fallbacks. See CLAUDE.md hard constraint: 'ADS-only " +
+    "inside hub scope. No lucide-react icons.'",
+};
+
+// Hub-scope override: extends adsForbidAtlaskit (warn) with the lucide-react
+// pattern. ESLint flat-config replaces (does not merge) rule entries when
+// multiple matching configs define the same rule, so this block must
+// re-state every `no-restricted-imports` pattern from adsForbidAtlaskit
+// — otherwise the broader ban would be silently weakened on hub-scope
+// files. Severity remains "warn" per Vikram's directive (2026-05-03).
+const hubScopeLucideBan = {
+  "no-restricted-imports": ["warn", {
+    paths: adsForbidAtlaskit["no-restricted-imports"][1].paths,
+    patterns: [
+      ...adsForbidAtlaskit["no-restricted-imports"][1].patterns,
+      lucideRestrictedPattern,
+    ],
+  }],
+};
+
+/**
  * Catalyst design-system colour, typography & asset guardrails.
  *
  * ═══════════════════════════════════════════════════════════════════════
@@ -425,6 +491,40 @@ export default tseslint.config(
     ],
     rules: {
       ...adsForbidAtlaskit,
+    },
+  },
+  /**
+   * P2.1i — hub-scope lucide-react ban. See `hubScopeLucideBan` above
+   * for severity rationale and migration tightening pattern.
+   *
+   * Token-set expansion: {pages, components, modules} × {project-hub,
+   * workhub, catalyst-detail-views, layout}. Unmatched globs are
+   * silently ignored by ESLint. modules/project-work-hub is the
+   * de-facto modules/workhub on disk.
+   *
+   * Cascade order: this block runs BEFORE `adsMigratedFiles` so that
+   * files in both lists keep the error tier from `adsForbidAtlaskitError`
+   * (lucide warn is silently dropped on those ~5 dashboard widgets,
+   * accepted trade-off — they're stable post-migration code).
+   */
+  {
+    files: [
+      "src/pages/project-hub/**/*.{ts,tsx}",
+      "src/pages/workhub/**/*.{ts,tsx}",
+      "src/pages/catalyst-detail-views/**/*.{ts,tsx}",
+      "src/pages/layout/**/*.{ts,tsx}",
+      "src/components/project-hub/**/*.{ts,tsx}",
+      "src/components/workhub/**/*.{ts,tsx}",
+      "src/components/catalyst-detail-views/**/*.{ts,tsx}",
+      "src/components/layout/**/*.{ts,tsx}",
+      "src/modules/project-hub/**/*.{ts,tsx}",
+      "src/modules/workhub/**/*.{ts,tsx}",
+      "src/modules/project-work-hub/**/*.{ts,tsx}",
+      "src/modules/catalyst-detail-views/**/*.{ts,tsx}",
+      "src/modules/layout/**/*.{ts,tsx}",
+    ],
+    rules: {
+      ...hubScopeLucideBan,
     },
   },
   /**

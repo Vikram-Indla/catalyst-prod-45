@@ -15,8 +15,14 @@
  * we do not accept.
  */
 import React, { Suspense, lazy, useState, useCallback } from 'react';
-import { ChevronRight, Pencil } from 'lucide-react';
-import { Heading } from '@/components/ads';
+/* jira-compare 2026-05-03 (Council P3.2): lucide ChevronRight + Pencil
+   removed — CLAUDE.md "ADS-only inside hub scope" violation. Swapped to
+   Atlaskit equivalents. Heading wrapper also dropped in favour of an
+   inline H2 styled to Jira's measured "Description" label values
+   (testid issue.views.issue-base.common.description.label probed
+   2026-05-03: H2 / 14px / weight 500 / rgb(80,82,88) / lh ~19). */
+import ChevronRightIcon from '@atlaskit/icon/glyph/chevron-right';
+import EditIcon from '@atlaskit/icon/core/edit';
 import Spinner from '@atlaskit/spinner';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -145,6 +151,39 @@ if (typeof document !== 'undefined' && !document.getElementById(STYLE_ID)) {
     .cv-desc-body code, .adf-description-content code { background: var(--ds-surface-sunken, #F4F5F7); padding: 2px 4px; border-radius: 3px; font-size: 12px; font-family: var(--cp-font-mono); }
     .cv-desc-body pre code, .adf-description-content pre code { background: none; padding: 0; }
     .cv-desc-body p, .adf-description-content p { margin: 0 0 8px; font-weight: 400; }
+
+    /* jira-compare 2026-05-03 (Council P3.3 — body pixel fix):
+       Atlaskit Renderer's bundled CSS paints body text at 16px / lh 24
+       in slate-900 (rgb(15,23,42)) — that's Catalyst's Tailwind base
+       leaking through, NOT a Jira value. Jira's measured body
+       (testid issue.views.field.rich-text.description) is 14px / 400 /
+       rgb(41,42,46) / lh 20. Override by selector specificity with
+       !important since Atlaskit's CSS-in-JS class wins ordinary cascade. */
+    .atlaskit-renderer-wrapper,
+    .atlaskit-renderer-wrapper p,
+    .atlaskit-renderer-wrapper li,
+    .atlaskit-renderer-wrapper div {
+      font-size: 14px !important;
+      line-height: 20px !important;
+      color: var(--ds-text, rgb(41,42,46)) !important;
+      font-family: "Atlassian Sans", ui-sans-serif, -apple-system, "system-ui", sans-serif !important;
+    }
+    /* Headings inside the renderer keep their relative scale but use ADS
+       text token, not slate-900. */
+    .atlaskit-renderer-wrapper h1,
+    .atlaskit-renderer-wrapper h2,
+    .atlaskit-renderer-wrapper h3,
+    .atlaskit-renderer-wrapper h4,
+    .atlaskit-renderer-wrapper h5,
+    .atlaskit-renderer-wrapper h6 {
+      color: var(--ds-text, rgb(41,42,46)) !important;
+      font-family: "Atlassian Sans", ui-sans-serif, -apple-system, "system-ui", sans-serif !important;
+    }
+    /* Inline images inside the renderer: Jira renders br=0 (probed
+       2026-05-03 on BAU-5737); Catalyst's earlier 4px was speculative. */
+    .atlaskit-renderer-wrapper img {
+      border-radius: 0 !important;
+    }
     .cv-desc-body a, .adf-description-content a { color: #0052CC; text-decoration: none; }
     .cv-desc-body a:hover, .adf-description-content a:hover { text-decoration: underline; }
     .cv-desc-body hr, .adf-description-content hr { border: none; border-top: 1px solid var(--ds-border, #DFE1E6); margin: 16px 0; }
@@ -195,16 +234,10 @@ export function CatalystDescriptionSection({ issue, label = 'Description', defau
   const [hovered, setHovered] = useState(false);
   const queryClient = useQueryClient();
 
-  /* Per-issue diagnostic at info level (visible at default console filter).
-     Prints the build ID so we can confirm which deployed bundle is live
-     without inspecting chunk hashes. */
-  React.useEffect(() => {
-    if (!issue) return;
-    // eslint-disable-next-line no-console
-    console.info(
-      `[CatalystDescriptionSection] build=${DESC_BUILD_ID} issue_key=${issue.issue_key ?? 'n/a'} issue_type=${JSON.stringify(issue.issue_type)} → ATLASKIT`,
-    );
-  }, [issue]);
+  /* jira-compare 2026-05-03 (Council P3.2): per-issue console.info removed.
+     Build ID still tracked in DESC_BUILD_ID constant; visible by grepping
+     the bundle if needed. console.info per render polluted the DevTools
+     view during every probe and added zero diagnostic value at runtime. */
 
   // Empty-check goes through the canonical ADF-aware helper. Previously
   // `!adfToHtml(adf).trim()` — the (ab)use of a rendering function for an
@@ -259,15 +292,40 @@ export function CatalystDescriptionSection({ issue, label = 'Description', defau
           onClick={() => setCollapsed(!collapsed)}
           style={{ display: 'flex', alignItems: 'center', gap: 4, cursor: 'pointer', flex: 1 }}
         >
-          <ChevronRight
-            size={16}
+          {/* jira-compare 2026-05-03 (Council P3.2): the chevron is a pure
+              affordance — wrap the Atlaskit glyph with rotation transform
+              so the same icon serves both collapsed (▶) and expanded (▼)
+              states. CSS rotate is faster than swapping icons. */}
+          <span
             style={{
+              display: 'inline-flex',
               transition: 'transform 0.15s ease',
               transform: collapsed ? 'rotate(0deg)' : 'rotate(90deg)',
-              color: '#5E6C84',
+              color: 'var(--ds-text-subtle, #5E6C84)',
             }}
-          />
-          <Heading size="small">{label}</Heading>
+          >
+            <ChevronRightIcon label="" size="small" primaryColor="currentColor" />
+          </span>
+          {/* jira-compare 2026-05-03 (Council P3.2): inline H2 sized to
+              Jira's measured "Description" label. Atlaskit's <Heading
+              size="small"> renders 16/653 (variable axis), but Jira's
+              section label is the smaller subtle 14/500 — see
+              testid issue.views.issue-base.common.description.label.
+              Wrapping in span isn't needed; render the H2 directly. */}
+          <h2
+            data-testid="catalyst-description-section.label"
+            style={{
+              margin: 0, padding: 0,
+              fontSize: 14, fontWeight: 500, lineHeight: '19px',
+              color: 'var(--ds-text-subtle, #505258)',
+              /* Explicit family — parent context inherits Inter from
+                 Catalyst's Tailwind body, but Jira's section labels use
+                 Atlassian Sans. Don't rely on inheritance. */
+              fontFamily: '"Atlassian Sans", ui-sans-serif, -apple-system, "system-ui", "Segoe UI", Ubuntu, "Helvetica Neue", sans-serif',
+            }}
+          >
+            {label}
+          </h2>
         </div>
         {/* Edit pencil — visible on hover, hidden when editing or collapsed */}
         {!collapsed && !editing && issue && (
@@ -297,7 +355,7 @@ export function CatalystDescriptionSection({ issue, label = 'Description', defau
             onFocus={() => { prefetchEpicEditor(); }}
             onMouseLeave={e => { e.currentTarget.style.color = 'var(--ds-text-subtlest, #6B778C)'; e.currentTarget.style.background = 'none'; }}
           >
-            <Pencil size={14} />
+            <EditIcon label="Edit description" />
           </button>
         )}
       </div>

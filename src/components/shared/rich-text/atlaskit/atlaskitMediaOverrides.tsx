@@ -84,6 +84,15 @@ export function useMediaUrl(attrs: {
   return '';
 }
 
+/* ─── Issue-key context ─────────────────────────────────────
+   2026-05-03 (P3.4 chip-honesty patch): the failed-image chip needs to
+   route "Open" to the user's authenticated Jira session (where their
+   browser cookie can read the attachment), NOT to the Supabase proxy
+   URL that just 403'd. Issue key flows from MediaProvidersShell into
+   this context so MediaImageCard can compute the Jira page URL. */
+const IssueKeyContext = createContext<string | null>(null);
+const JIRA_BROWSE_BASE = 'https://digital-transformation.atlassian.net/browse';
+
 /* ─── Lightbox context ──────────────────────────────────── */
 
 interface LightboxState {
@@ -174,13 +183,23 @@ function MediaImageCard({ src, alt, onClick }: { src: string; alt?: string; onCl
   const aspectHeight = dims ? Math.min(containerWidth * (dims.h / dims.w), 600) : 200;
 
   if (errored) {
-    /* jira-compare follow-up (2026-05-02): ADS-compliant attachment chip
-        for Jira-hosted images that fail to load (most common cause:
-        Jira media-api requires auth Catalyst hasn't been granted).
-        Filename surfaced from src, click downloads. Real fix is a
-        Supabase edge-function media proxy + re-host on first sync —
-        tracked separately. */
-    const filename = (src.split('?')[0].split('/').pop() || 'image').slice(0, 60);
+    /* jira-compare 2026-05-03 (P3.4 — chip honesty pass): the proxy
+       returns HTTP 403 with body {"error":"Jira returned 403"} (probed).
+       Root cause is auth-scope on the Supabase edge function's PAT, not
+       a missing endpoint — the proxy IS deployed at
+       /functions/v1/jira-attachment-proxy on the runtime project
+       mqgshobotcvcjouzxdbi. Real fix lives in Supabase edge function
+       config; this chip improves what the user sees in the meantime:
+         - filename comes from ADF `alt` (real name) instead of URL tail
+         - "Open" goes to the Jira ISSUE page (where the user's browser
+           cookie can render the attachment), not the failing proxy URL
+         - copy is honest: "Image hosted on Jira" + auth hint */
+    const issueKey = useContext(IssueKeyContext);
+    const fallbackName = (src.split('?')[0].split('/').pop() || 'image').slice(0, 60);
+    const filename = (alt && alt.trim()) ? alt.trim().slice(0, 60) : fallbackName;
+    const openHref = issueKey
+      ? `${JIRA_BROWSE_BASE}/${issueKey}`
+      : src;
     return (
       <div style={{
         margin: '12px 0', padding: '12px 16px', borderRadius: 'var(--ds-border-radius, 4px)',
@@ -198,13 +217,13 @@ function MediaImageCard({ src, alt, onClick }: { src: string; alt?: string; onCl
         <span style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
           <span style={{ fontWeight: 500 }}>{filename}</span>
           <span style={{ color: 'var(--ds-text-subtlest, #6B778C)', marginLeft: 8, fontSize: 12 }}>
-            attachment unavailable
+            hosted on Jira · auth required
           </span>
         </span>
-        <a href={src} target="_blank" rel="noopener noreferrer"
+        <a href={openHref} target="_blank" rel="noopener noreferrer"
            style={{ color: 'var(--ds-text-brand, #0C66E4)', fontSize: 13, textDecoration: 'none' }}
            onClick={(e) => e.stopPropagation()}>
-          Open ↗
+          {issueKey ? `Open in Jira ↗` : `Open ↗`}
         </a>
       </div>
     );
@@ -402,11 +421,13 @@ export function MediaProvidersShell({
   }), []);
 
   return (
-    <MediaUrlContext.Provider value={urlMap}>
-      <LightboxContext.Provider value={lightboxValue}>
-        {children}
-        {lightboxSrc && <ImageLightbox src={lightboxSrc} onClose={() => setLightboxSrc(null)} />}
-      </LightboxContext.Provider>
-    </MediaUrlContext.Provider>
+    <IssueKeyContext.Provider value={issueKey ?? null}>
+      <MediaUrlContext.Provider value={urlMap}>
+        <LightboxContext.Provider value={lightboxValue}>
+          {children}
+          {lightboxSrc && <ImageLightbox src={lightboxSrc} onClose={() => setLightboxSrc(null)} />}
+        </LightboxContext.Provider>
+      </MediaUrlContext.Provider>
+    </IssueKeyContext.Provider>
   );
 }

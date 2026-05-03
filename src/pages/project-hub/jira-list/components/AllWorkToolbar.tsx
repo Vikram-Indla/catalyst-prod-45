@@ -33,7 +33,18 @@ import DropdownMenu, { DropdownItem, DropdownItemGroup } from '@atlaskit/dropdow
 import Popup from '@atlaskit/popup';
 import { toast } from 'sonner';
 import { EditorMoreIcon } from '@/components/layout/ProjectHeaderChipIcons';
-import { Search as SearchGlyph, SlidersHorizontal, LayoutList, Columns3, Sparkles } from 'lucide-react';
+/* jira-compare 2026-05-03 (LLM Council sweep, anti-pattern #3): lucide
+   imports were a CLAUDE.md "ADS-only inside hub scope" violation. The
+   Filter glyph in particular rendered invisibly because lucide doesn't
+   consume `--ds-icon` tokens — the icon "looked dead" because it had no
+   relationship to the design system around it. Swapped all six glyphs
+   to @atlaskit/icon/core (the new core set, matches Jira's funnel + text
+   color tokens). */
+import FilterIconCore from '@atlaskit/icon/core/filter';
+import SearchIconCore from '@atlaskit/icon/core/search';
+import ListIconCore from '@atlaskit/icon/core/list-bulleted';
+import SplitIconCore from '@atlaskit/icon/core/layout-two-columns-sidebar-right';
+import SparkIconCore from '@atlaskit/icon/core/ai-chat';
 import type { WorkItem } from '@/types/workItem.types';
 
 export type AllWorkView = 'split' | 'list';
@@ -201,11 +212,22 @@ interface Member {
   src?: string | null;
 }
 
-const SearchIcon = () => <SearchGlyph size={14} />;
-const FilterIcon = () => <SlidersHorizontal size={14} />;
-const ListIcon = () => <LayoutList size={16} />;
-const SplitIcon = () => <Columns3 size={16} />;
-const SparkIcon = () => <Sparkles size={14} />;
+/* Atlaskit core icons consume `--ds-icon` tokens automatically and
+   match Jira's exact glyph set. No size override — let Atlaskit Button
+   render at its natural icon slot (16px).
+
+   2026-05-03 (re-probe Round 4): Atlaskit Button "subtle" appearance
+   sets color: var(--ds-text) via an atomic class that beats inline
+   `style`, so the icon picks up rgb(41,42,46) instead of Jira's
+   rgb(80,82,88). Pass color directly on each core icon to bypass
+   the inheritance entirely. The text label is wrapped in a span at
+   the call site for matching reasons. */
+const SUBTLE = 'var(--ds-text-subtle, #505258)';
+const SearchIcon = () => <SearchIconCore label="" color={SUBTLE} />;
+const FilterIcon = () => <FilterIconCore label="" color={SUBTLE} />;
+const ListIcon = () => <ListIconCore label="" color={SUBTLE} />;
+const SplitIcon = () => <SplitIconCore label="" color={SUBTLE} />;
+const SparkIcon = () => <SparkIconCore label="" color={SUBTLE} />;
 
 export function AllWorkToolbar({
   projectKey,
@@ -352,6 +374,15 @@ export function AllWorkToolbar({
         isOpen={filterOpen}
         onClose={() => setFilterOpen(false)}
         placement="bottom-start"
+        /* @atlaskit/popup@4.17.0 has a documented React 18 strict-mode bug
+           in use-get-memoized-merged-trigger-ref.js where triggerRef stays
+           null until isOpen=true at MOUNT time. Catalyst doesn't run the
+           Atlassian feature-gate service that ships the fix
+           (`platform-design-system-popup-ref`), so the portal never mounts.
+           shouldRenderToParent renders the popper inline (not via portal),
+           sidestepping the broken ref dance entirely. The popup positions
+           via react-popper relative to the trigger span. */
+        shouldRenderToParent
         content={() => (
           <div
             data-testid="catalyst-allwork-toolbar.filter-popup"
@@ -480,16 +511,41 @@ export function AllWorkToolbar({
           </div>
         )}
         trigger={(triggerProps) => (
-          <Button
-            {...triggerProps}
-            appearance="default"
-            spacing="compact"
-            iconBefore={FilterIcon}
-            onClick={() => setFilterOpen(!filterOpen)}
-            testId="catalyst-allwork-toolbar.filter"
+          /* jira-compare 2026-05-03 Round 5 (re-probe live):
+             - Popup content was never mounting on click despite isOpen=true
+               reaching the React tree. Root cause in
+               @atlaskit/popup@4.17.0 use-get-memoized-merged-trigger-ref.js
+               line 19: `if (node && isOpen)` — the trigger ref callback
+               only sets triggerRef when isOpen=true AT MOUNT, but on initial
+               render isOpen=false, so triggerRef stays null forever and the
+               popper has no anchor.
+             - Spreading triggerProps onto Atlaskit Button via {...triggerProps}
+               compounds the problem because Button's forwardRef chain doesn't
+               re-fire the ref callback when isOpen toggles.
+             - Fix: own the ref ourselves on a wrapping span. Span gives the
+               Popup a stable DOM anchor independent of Button's ref forwarding.
+               Click handler on the inner Button toggles state.
+             - Visual props preserved: subtle appearance (transparent bg),
+               default spacing (h=32), explicit color on icon + label span
+               (Atlaskit Button atomic class beats inline style otherwise). */
+          <span
+            ref={triggerProps.ref as React.Ref<HTMLSpanElement>}
+            style={{ display: 'inline-flex' }}
           >
-            Filter{totalCount > 0 ? ` (${totalCount})` : ''}
-          </Button>
+            <Button
+              appearance="subtle"
+              iconBefore={FilterIcon}
+              onClick={() => setFilterOpen(!filterOpen)}
+              testId="catalyst-allwork-toolbar.filter"
+              aria-haspopup={triggerProps['aria-haspopup']}
+              aria-expanded={triggerProps['aria-expanded']}
+              aria-controls={triggerProps['aria-controls']}
+            >
+              <span style={{ color: SUBTLE }}>
+                Filter{totalCount > 0 ? ` (${totalCount})` : ''}
+              </span>
+            </Button>
+          </span>
         )}
       />
 

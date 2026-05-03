@@ -1681,3 +1681,19 @@
 /* SubtasksPanel DARK MODE overrides moved to SubtasksPanel.css — see
    src/modules/project-work-hub/components/SubtasksPanel/SubtasksPanel.css
    (consolidated per CLAUDE.md L35). */
+
+/* ═══════════════════════════════════════════════════════════════════════
+   ALL WORK TOOLBAR (jira-compare 2026-05-03 — LLM Council Round 4)
+   Atlaskit Button @atlaskit/button/new sets `color: var(--ds-text)` via
+   an atomic class that beats inline `style` on the button or any
+   wrapping span. Jira's filter-refinement Filter button renders at
+   --ds-text-subtle (probed: rgb 80,82,88). Selector-targeted override
+   is the only path that wins; scoped to the toolbar testid so it
+   doesn't leak to other Atlaskit subtle buttons elsewhere.
+   ═══════════════════════════════════════════════════════════════════════ */
+[data-testid="catalyst-allwork-toolbar.filter"],
+[data-testid="catalyst-allwork-toolbar.filter"] > span,
+[data-testid="catalyst-allwork-toolbar.ask-caty"],
+[data-testid="catalyst-allwork-toolbar.ask-caty"] > span {
+  color: var(--ds-text-subtle, #505258) !important;
+}

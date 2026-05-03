@@ -21,7 +21,17 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 
-export type IconCategory = 'work-type' | 'priority' | 'project-avatar';
+/**
+ * Bundled categories ship with a typed registry. Dynamic categories
+ * (created via /admin/icons → "+ New category") are arbitrary slugs
+ * stored in catalyst_icon_categories — they go through the `byCategory`
+ * map on the override result. Hence: string union for known + open string.
+ */
+export type IconCategory =
+  | 'work-type'
+  | 'priority'
+  | 'project-avatar'
+  | (string & {}); // dynamic categories
 
 export interface IconOverride {
   category: IconCategory;
@@ -35,12 +45,18 @@ interface OverrideMaps {
   workType: Record<string, { light?: string; dark?: string }>;
   priority: Record<string, { light?: string; dark?: string }>;
   projectAvatar: Record<string, string>;
+  /**
+   * Dynamic categories created via /admin/icons. Keyed by category name,
+   * then by item key. Variant-aware like work-type / priority.
+   */
+  byCategory: Record<string, Record<string, { light?: string; dark?: string }>>;
 }
 
 const EMPTY_MAPS: OverrideMaps = {
   workType: {},
   priority: {},
   projectAvatar: {},
+  byCategory: {},
 };
 
 async function fetchOverrides(): Promise<OverrideMaps> {
@@ -60,6 +76,7 @@ async function fetchOverrides(): Promise<OverrideMaps> {
     workType: {},
     priority: {},
     projectAvatar: {},
+    byCategory: {},
   };
 
   for (const row of data as IconOverride[]) {
@@ -72,6 +89,11 @@ async function fetchOverrides(): Promise<OverrideMaps> {
       maps.priority[row.key][row.variant] = row.override_url;
     } else if (row.category === 'project-avatar') {
       maps.projectAvatar[row.key] = row.override_url;
+    } else {
+      // Dynamic category from catalyst_icon_categories.
+      maps.byCategory[row.category] ??= {};
+      maps.byCategory[row.category][row.key] ??= {};
+      maps.byCategory[row.category][row.key][row.variant] = row.override_url;
     }
   }
 

@@ -84,6 +84,47 @@ export async function uploadIconOverride(
   return data as IconOverrideRow;
 }
 
+// ─── Dynamic categories ────────────────────────────────────────────────
+
+export interface CreateIconCategoryInput {
+  name: string;     // slug, e.g. "severity"
+  label: string;    // display, e.g. "Severity"
+  description?: string;
+  createdBy: string;
+}
+
+export async function createIconCategory(input: CreateIconCategoryInput) {
+  const slug = input.name.trim().toLowerCase();
+  if (!/^[a-z][a-z0-9_-]{1,40}$/.test(slug)) {
+    throw new Error('Name must be lowercase letters, digits, hyphens, or underscores (max 41 chars)');
+  }
+  if (['work-type', 'priority', 'project-avatar'].includes(slug)) {
+    throw new Error(`"${slug}" is reserved`);
+  }
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { data, error } = await (supabase.from as any)('catalyst_icon_categories')
+    .insert({
+      name: slug,
+      label: input.label.trim(),
+      description: input.description?.trim() || null,
+      created_by: input.createdBy,
+    })
+    .select()
+    .single();
+  if (error) throw error;
+  return data;
+}
+
+export async function deleteIconCategory(name: string): Promise<void> {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { error } = await (supabase.from as any)('catalyst_icon_categories')
+    .delete()
+    .eq('name', name);
+  if (error) throw error;
+}
+
+// ─── Override removal ─────────────────────────────────────────────────
+
 export async function removeIconOverride(
   category: IconCategory,
   key: string,

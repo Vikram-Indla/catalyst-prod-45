@@ -48,7 +48,10 @@ import Modal, {
   ModalTitle,
   ModalTransition,
 } from '@atlaskit/modal-dialog';
-import { Box, Stack, Inline, xcss } from '@atlaskit/primitives';
+// Atlaskit primitives (Box / Stack / Inline / xcss) deliberately not used:
+// xcss silently drops non-token CSS values which collapsed the layout to a
+// narrow column. Plain <div style={…}> with token-backed CSS variables is
+// the pragmatic choice for arbitrary widths and grid-template strings.
 
 import {
   WorkItemTypeIcon,
@@ -62,16 +65,20 @@ import {
   PRIORITY_REGISTRY,
   PROJECT_AVATAR_REGISTRY,
   useIconOverrides,
+  useIconCategories,
   type WorkItemType,
   type PriorityLevel,
   type ProjectKey,
   type StockAvatarId,
   type IconCategory,
+  type IconCategoryRow,
 } from '@/components/icons';
 import { useAuth } from '@/hooks/useAuth';
 import {
   uploadIconOverride,
   removeIconOverride,
+  createIconCategory,
+  deleteIconCategory,
 } from '@/services/iconOverrideService';
 
 // ─── Where each category renders across Catalyst ─────────────────────
@@ -102,11 +109,18 @@ const SURFACES_BY_CATEGORY: Record<IconCategory, string[]> = {
 };
 
 function announceSurfaces(category: IconCategory, label: string) {
-  const surfaces = SURFACES_BY_CATEGORY[category];
-  toast.success(`${label} updated`, {
-    description: `Now visible in: ${surfaces.join(' · ')}`,
-    duration: 9000,
-  });
+  const surfaces = SURFACES_BY_CATEGORY[category as keyof typeof SURFACES_BY_CATEGORY];
+  if (surfaces) {
+    toast.success(`${label} updated`, {
+      description: `Now visible in: ${surfaces.join(' · ')}`,
+      duration: 9000,
+    });
+  } else {
+    toast.success(`${label} updated`, {
+      description: `Available wherever code references "${category}".`,
+      duration: 6000,
+    });
+  }
 }
 
 // ─── Layout primitives (plain CSS for non-token values; xcss for tokens) ──
@@ -119,55 +133,51 @@ function announceSurfaces(category: IconCategory, label: string) {
 
 const pageContainerStyle: React.CSSProperties = {
   width: '100%',
-  maxWidth: 1440,
+  maxWidth: 1600,
   marginInline: 'auto',
   paddingBlock: 24,
-  paddingInline: 32,
+  paddingInline: 24,
   boxSizing: 'border-box',
 };
 
 const gridStyle: React.CSSProperties = {
   display: 'grid',
-  gap: 16,
-  gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))',
+  gap: 12,
+  width: '100%',
+  // Tighter min — at 1280px content width that's 8 columns; at 720 it's 4;
+  // at 360 it's 2. Way more efficient than the 220px v3 baseline.
+  gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))',
 };
 
-const cardStyles = xcss({
+const cardOuterStyle: React.CSSProperties = {
   display: 'flex',
   flexDirection: 'column',
-  padding: 'space.200',
-  borderRadius: 'border.radius.200',
-  backgroundColor: 'elevation.surface',
-  borderColor: 'color.border',
-  borderStyle: 'solid',
-  borderWidth: 'border.width',
-  transitionDuration: '150ms',
-  transitionProperty: 'all',
-  ':hover': {
-    backgroundColor: 'elevation.surface.hovered',
-    borderColor: 'color.border.bold',
-    boxShadow: 'elevation.shadow.raised',
-  },
-});
+  padding: 10,
+  borderRadius: 6,
+  backgroundColor: 'var(--ds-surface, #FFFFFF)',
+  border: '1px solid var(--ds-border, #DCDFE4)',
+  transition: 'all 150ms ease',
+  minWidth: 0,
+};
 
 const previewWellLightStyle: React.CSSProperties = {
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
-  height: 88,
-  borderRadius: 6,
+  height: 64,
+  borderRadius: 4,
   backgroundColor: 'var(--ds-surface-sunken, #F4F5F7)',
-  marginBottom: 12,
+  marginBottom: 8,
 };
 
 const previewWellDarkStyle: React.CSSProperties = {
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
-  height: 88,
-  borderRadius: 6,
-  backgroundColor: '#1D2125', // ADS dark surface
-  marginBottom: 12,
+  height: 64,
+  borderRadius: 4,
+  backgroundColor: '#1D2125',
+  marginBottom: 8,
 };
 
 const cardLabelRowStyles = xcss({
@@ -258,21 +268,37 @@ function IconCard({
   const wellStyle = variant === 'dark' ? previewWellDarkStyle : previewWellLightStyle;
 
   return (
-    <Box xcss={cardStyles} testId={`icon-card--${category}--${itemKey}`}>
+    <div style={cardOuterStyle} data-testid={`icon-card--${category}--${itemKey}`}>
       <div style={wellStyle}>{preview}</div>
 
-      <Inline xcss={cardLabelRowStyles} alignBlock="center" spread="space-between" space="space.100">
+      <div style={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        gap: 6,
+        marginBottom: 6,
+        minWidth: 0,
+      }}>
         <Tooltip content={label} position="top">
-          <Box xcss={labelTextStyles}>{label}</Box>
+          <div style={{
+            flex: 1,
+            fontSize: 12,
+            fontWeight: 500,
+            color: 'var(--ds-text, #172B4D)',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            whiteSpace: 'nowrap',
+            minWidth: 0,
+          }}>{label}</div>
         </Tooltip>
-        <Inline space="space.050" alignBlock="center">
+        <div style={{ display: 'flex', gap: 4, alignItems: 'center', flexShrink: 0 }}>
           {isCustom && <Lozenge appearance="new">CUSTOM</Lozenge>}
-          {hasOverride && <Lozenge appearance="success">OVERRIDE</Lozenge>}
-        </Inline>
-      </Inline>
+          {hasOverride && <Lozenge appearance="success">SET</Lozenge>}
+        </div>
+      </div>
 
       {supportsDarkVariant && (
-        <div style={{ marginBottom: 8 }}>
+        <div style={{ marginBottom: 6, fontSize: 12 }}>
           <RadioGroup
             name={`variant-${category}-${itemKey}`}
             isDisabled={busy}
@@ -286,7 +312,7 @@ function IconCard({
         </div>
       )}
 
-      <Stack xcss={cardActionsStyles} space="space.100">
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 4, marginTop: 'auto' }}>
         <input
           type="file"
           ref={fileInputRef}
@@ -298,6 +324,7 @@ function IconCard({
         <Button
           appearance="primary"
           isDisabled={busy}
+          spacing="compact"
           shouldFitContainer
           onClick={() => fileInputRef.current?.click()}
         >
@@ -307,14 +334,15 @@ function IconCard({
           <Button
             appearance="subtle"
             isDisabled={busy}
+            spacing="compact"
             shouldFitContainer
             onClick={handleReset}
           >
-            Reset to bundled
+            Reset
           </Button>
         )}
-      </Stack>
-    </Box>
+      </div>
+    </div>
   );
 }
 
@@ -487,8 +515,11 @@ function CategoryGrid({ cards, filter }: CategoryGridProps) {
 
 export default function AdminIconsPage() {
   const { data: overrides, isLoading } = useIconOverrides();
+  const { data: dynamicCategories = [] } = useIconCategories();
   const [filter, setFilter] = useState('');
   const [addModalCategory, setAddModalCategory] = useState<IconCategory | null>(null);
+  const [newCategoryOpen, setNewCategoryOpen] = useState(false);
+  const [confirmDeleteCategory, setConfirmDeleteCategory] = useState<IconCategoryRow | null>(null);
 
   function workTypeOverridden(t: WorkItemType): boolean {
     return Boolean(overrides?.workType?.[t]?.light || overrides?.workType?.[t]?.dark);
@@ -602,6 +633,24 @@ export default function AdminIconsPage() {
     [overrides],
   );
 
+  // Per-dynamic-category cards: items live in overrides.byCategory[name].
+  const dynamicCardsByCategory = useMemo(() => {
+    const map: Record<string, IconCardProps[]> = {};
+    for (const cat of dynamicCategories) {
+      const items = overrides?.byCategory?.[cat.name] ?? {};
+      map[cat.name] = Object.entries(items).map(([k, urls]) => ({
+        category: cat.name,
+        itemKey: k,
+        label: k,
+        preview: <CustomPreview url={urls.light ?? urls.dark} size={36} />,
+        hasOverride: true,
+        isCustom: true,
+        supportsDarkVariant: true,
+      }));
+    }
+    return map;
+  }, [dynamicCategories, overrides]);
+
   const counts = {
     workType: { total: workTypeCards.length, overridden: workTypeCards.filter((c) => c.hasOverride).length },
     priority: { total: priorityCards.length, overridden: priorityCards.filter((c) => c.hasOverride).length },
@@ -634,8 +683,8 @@ export default function AdminIconsPage() {
         </SectionMessage>
       </div>
 
-      <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 24 }}>
-        <div style={{ flex: 1, maxWidth: 420 }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16, flexWrap: 'wrap' }}>
+        <div style={{ flex: 1, minWidth: 280, maxWidth: 420 }}>
           <Textfield
             placeholder="Filter by name or key (e.g. story, BAU, highest)"
             value={filter}
@@ -643,6 +692,9 @@ export default function AdminIconsPage() {
             isCompact
           />
         </div>
+        <Button appearance="primary" onClick={() => setNewCategoryOpen(true)}>
+          + New category
+        </Button>
         {isLoading && (
           <Tooltip content="Loading current overrides…" position="bottom">
             <span><Spinner size="small" /></span>
@@ -656,6 +708,14 @@ export default function AdminIconsPage() {
           <Tab>{tabLabel('Priorities', counts.priority)}</Tab>
           <Tab>{tabLabel('Project avatars', counts.projectAvatar)}</Tab>
           <Tab>{tabLabel('Stock pool', counts.stock)}</Tab>
+          {dynamicCategories.map((cat) => (
+            <Tab key={cat.id}>
+              {tabLabel(cat.label, {
+                total: dynamicCardsByCategory[cat.name]?.length ?? 0,
+                overridden: dynamicCardsByCategory[cat.name]?.filter((c) => c.hasOverride).length ?? 0,
+              })}
+            </Tab>
+          ))}
         </TabList>
 
         <TabPanel>
@@ -701,6 +761,27 @@ export default function AdminIconsPage() {
             <CategoryGrid cards={stockCards} filter={filter} />
           </div>
         </TabPanel>
+
+        {dynamicCategories.map((cat) => (
+          <TabPanel key={cat.id}>
+            <div style={tabPanelPadStyle}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
+                <Button appearance="default" onClick={() => setAddModalCategory(cat.name)}>
+                  + Add {cat.label.toLowerCase()} icon
+                </Button>
+                <Button appearance="subtle" onClick={() => setConfirmDeleteCategory(cat)}>
+                  Delete category
+                </Button>
+              </div>
+              {cat.description && (
+                <div style={{ marginBottom: 16, fontSize: 13, color: 'var(--ds-text-subtle, #626F86)' }}>
+                  {cat.description}
+                </div>
+              )}
+              <CategoryGrid cards={dynamicCardsByCategory[cat.name] ?? []} filter={filter} />
+            </div>
+          </TabPanel>
+        ))}
       </Tabs>
 
       <AddCustomIconModal
@@ -708,7 +789,188 @@ export default function AdminIconsPage() {
         category={addModalCategory ?? 'work-type'}
         onClose={() => setAddModalCategory(null)}
       />
+
+      <NewCategoryModal
+        isOpen={newCategoryOpen}
+        onClose={() => setNewCategoryOpen(false)}
+      />
+
+      <ConfirmDeleteCategoryModal
+        category={confirmDeleteCategory}
+        onClose={() => setConfirmDeleteCategory(null)}
+      />
     </div>
+  );
+}
+
+// ─── New category modal ──────────────────────────────────────────────
+
+function NewCategoryModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
+  const { user } = useAuth();
+  const queryClient = useQueryClient();
+  const [name, setName] = useState('');
+  const [label, setLabel] = useState('');
+  const [description, setDescription] = useState('');
+  const [busy, setBusy] = useState(false);
+
+  const reset = () => {
+    setName('');
+    setLabel('');
+    setDescription('');
+    setBusy(false);
+  };
+
+  async function handleCreate() {
+    if (!user?.id) {
+      toast.error('Not signed in');
+      return;
+    }
+    setBusy(true);
+    try {
+      await createIconCategory({
+        name: name.trim().toLowerCase(),
+        label: label.trim() || name.trim(),
+        description: description.trim() || undefined,
+        createdBy: user.id,
+      });
+      await queryClient.invalidateQueries({ queryKey: ['icon-categories'] });
+      toast.success(`Category "${label || name}" created`, {
+        description: 'A new tab is now visible above. Add icons to populate it.',
+        duration: 6000,
+      });
+      reset();
+      onClose();
+    } catch (err) {
+      toast.error(`Create failed: ${err instanceof Error ? err.message : String(err)}`);
+      setBusy(false);
+    }
+  }
+
+  return (
+    <ModalTransition>
+      {isOpen && (
+        <Modal onClose={onClose}>
+          <ModalHeader>
+            <ModalTitle>Create new icon category</ModalTitle>
+          </ModalHeader>
+          <ModalBody>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+              <SectionMessage appearance="information" title="What is a category?">
+                <p>
+                  A category groups icons that share a purpose — e.g. <em>severity</em>,
+                  <em> risk</em>, <em>environment</em>. Each category becomes its own tab
+                  here. Icons inside a custom category render anywhere your code references
+                  the category + key.
+                </p>
+              </SectionMessage>
+
+              <div>
+                <label htmlFor="cat-name" style={{ display: 'block', marginBottom: 4, fontSize: 14, fontWeight: 500 }}>
+                  Name (slug)
+                </label>
+                <Textfield
+                  id="cat-name"
+                  value={name}
+                  onChange={(e) => setName((e.target as HTMLInputElement).value)}
+                  placeholder="severity"
+                  isDisabled={busy}
+                />
+                <div style={{ marginTop: 4, fontSize: 12, color: 'var(--ds-text-subtle, #626F86)' }}>
+                  Lowercase letters, digits, hyphens, underscores. Used as the database identifier.
+                </div>
+              </div>
+
+              <div>
+                <label htmlFor="cat-label" style={{ display: 'block', marginBottom: 4, fontSize: 14, fontWeight: 500 }}>
+                  Label (display name)
+                </label>
+                <Textfield
+                  id="cat-label"
+                  value={label}
+                  onChange={(e) => setLabel((e.target as HTMLInputElement).value)}
+                  placeholder="Severity"
+                  isDisabled={busy}
+                />
+              </div>
+
+              <div>
+                <label htmlFor="cat-desc" style={{ display: 'block', marginBottom: 4, fontSize: 14, fontWeight: 500 }}>
+                  Description (optional)
+                </label>
+                <Textfield
+                  id="cat-desc"
+                  value={description}
+                  onChange={(e) => setDescription((e.target as HTMLInputElement).value)}
+                  placeholder="Severity levels for incident response (SEV-1, SEV-2, …)"
+                  isDisabled={busy}
+                />
+              </div>
+            </div>
+          </ModalBody>
+          <ModalFooter>
+            <Button appearance="subtle" isDisabled={busy} onClick={() => { reset(); onClose(); }}>
+              Cancel
+            </Button>
+            <Button
+              appearance="primary"
+              isDisabled={busy || !name.trim()}
+              onClick={handleCreate}
+            >
+              {busy ? <Spinner size="small" /> : 'Create category'}
+            </Button>
+          </ModalFooter>
+        </Modal>
+      )}
+    </ModalTransition>
+  );
+}
+
+// ─── Confirm delete category modal ───────────────────────────────────
+
+function ConfirmDeleteCategoryModal({
+  category, onClose,
+}: { category: IconCategoryRow | null; onClose: () => void }) {
+  const queryClient = useQueryClient();
+  const [busy, setBusy] = useState(false);
+
+  async function handleDelete() {
+    if (!category) return;
+    setBusy(true);
+    try {
+      await deleteIconCategory(category.name);
+      await queryClient.invalidateQueries({ queryKey: ['icon-categories'] });
+      await queryClient.invalidateQueries({ queryKey: ['icon-overrides'] });
+      toast.success(`Category "${category.label}" removed`);
+      onClose();
+    } catch (err) {
+      toast.error(`Delete failed: ${err instanceof Error ? err.message : String(err)}`);
+      setBusy(false);
+    }
+  }
+
+  return (
+    <ModalTransition>
+      {category && (
+        <Modal onClose={onClose}>
+          <ModalHeader>
+            <ModalTitle>Delete category "{category.label}"?</ModalTitle>
+          </ModalHeader>
+          <ModalBody>
+            <p>
+              This removes the category tab. Existing icons uploaded under this category will
+              remain in storage as orphaned override rows until manually cleaned up. Components
+              referencing this category will fall back to bundled assets.
+            </p>
+          </ModalBody>
+          <ModalFooter>
+            <Button appearance="subtle" isDisabled={busy} onClick={onClose}>Cancel</Button>
+            <Button appearance="warning" isDisabled={busy} onClick={handleDelete}>
+              {busy ? <Spinner size="small" /> : 'Delete category'}
+            </Button>
+          </ModalFooter>
+        </Modal>
+      )}
+    </ModalTransition>
   );
 }
 

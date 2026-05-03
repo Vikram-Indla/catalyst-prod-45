@@ -15,6 +15,9 @@ export type { ProjectAvatarProps, ProjectAvatarSize } from './ProjectAvatar';
 export { useIconOverrides } from './useIconOverrides';
 export type { IconOverride, IconCategory } from './useIconOverrides';
 
+export { useIconCategories } from './useIconCategories';
+export type { IconCategoryRow } from './useIconCategories';
+
 export {
   WORK_TYPE_REGISTRY,
   PRIORITY_REGISTRY,
