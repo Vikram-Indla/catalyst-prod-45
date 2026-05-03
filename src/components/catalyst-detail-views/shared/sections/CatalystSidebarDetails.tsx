@@ -17,9 +17,11 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import ChevronDownIcon from '@atlaskit/icon/glyph/chevron-down';
 import CheckIcon from '@atlaskit/icon/glyph/check';
+import AutomationIcon from '@atlaskit/icon/core/automation';
+import SettingsIcon from '@atlaskit/icon/core/settings';
 import { Heading } from '@/components/ads';
 import Modal, { ModalBody, ModalFooter, ModalHeader, ModalTitle, ModalTransition } from '@atlaskit/modal-dialog';
-import Button from '@atlaskit/button/new';
+import Button, { IconButton } from '@atlaskit/button/new';
 import Lozenge from '@atlaskit/lozenge';
 import { Inline } from '@atlaskit/primitives';
 import { useWorkflow } from '@/lib/workflows';
@@ -78,7 +80,10 @@ import { EditableAssignee, EditableReporter, EditableLabels, EditableFixVersions
 import { CatalystParentLinker } from './CatalystParentLinker';
 import type { CatalystItemType } from '../types';
 import { EpicDueDateField } from '@/components/project/EpicDueDateField';
-/* MDT Ref dropped from the rail per Vikram directive (2026-05-02) — import removed.
+import { CatalystMdtRefField } from './CatalystMdtRefField';
+/* MDT Ref restored to the rail 2026-05-03 per Vikram directive — DOM-probed
+   Jira BAU-5609 Story rail showed Labels + MDT Ref present in Details container,
+   contradicting prior 2026-05-02 / 05-03 removal directives. Reinstated. Old note:
    CatalystAssessmentFeatureField removed from Details sidebar 2026-05-03 — belongs
    in Key details, not right rail. CatalystServiceNowDisplay removed 2026-05-03 —
    not in Jira's Details panel. */
@@ -125,6 +130,32 @@ import {
   fmtDate, getStatusCategory, getStatusStyle, getInitials, getAvatarColor,
 } from '@/modules/project-work-hub/components/dialogs/story-detail-modules/helpers';
 
+/**
+ * jira-compare 2026-05-03 — Patch A6 · Hybrid time format helper.
+ * Returns a relative description like "4 days ago" / "yesterday" / "just now".
+ * Pair with absolute fmtDate(...) for the "29 Apr 2026 · 4 days ago" hybrid
+ * mirroring Jira's BAU-5737 footer timestamps.
+ */
+function fmtRelative(iso: string | null | undefined): string {
+  if (!iso) return '';
+  const ts = new Date(iso).getTime();
+  if (Number.isNaN(ts)) return '';
+  const diffMs = Date.now() - ts;
+  const sec = Math.round(diffMs / 1000);
+  if (sec < 60) return 'just now';
+  const min = Math.round(sec / 60);
+  if (min < 60) return `${min} min ago`;
+  const hr = Math.round(min / 60);
+  if (hr < 24) return `${hr} hour${hr === 1 ? '' : 's'} ago`;
+  const day = Math.round(hr / 24);
+  if (day === 1) return 'yesterday';
+  if (day < 30) return `${day} days ago`;
+  const mon = Math.round(day / 30);
+  if (mon < 12) return `${mon} month${mon === 1 ? '' : 's'} ago`;
+  const yr = Math.round(mon / 12);
+  return `${yr} year${yr === 1 ? '' : 's'} ago`;
+}
+
 interface CatalystSidebarDetailsProps {
   issue: PhIssue | null;
   itemId: string;
@@ -134,6 +165,22 @@ interface CatalystSidebarDetailsProps {
   onDelete: () => void;
   /** Type-specific fields rendered between the "Details" header and Priority */
   children?: React.ReactNode;
+  /**
+   * jira-compare 2026-05-03 — slot for the ImproveIssueDropdown trigger.
+   * Rendered next to the Status row at the top of the rail, mirroring
+   * Jira's Status-pill / Improve-Story button layout. Each CatalystView*
+   * passes its own <ImproveIssueDropdown> here and removes the inline
+   * leftContent render so the affordance lives in one place.
+   */
+  improveDropdown?: React.ReactNode;
+  /**
+   * jira-compare 2026-05-03 (Patch E) — slot for the CatalystStatusPill.
+   * Rendered alongside improveDropdown at the rail header to mirror Jira's
+   * top-right layout where Status + Improve sit on the same line above
+   * Details. Each CatalystView* passes its own <CatalystStatusPill> here
+   * and removes the inline leftContent render.
+   */
+  statusPill?: React.ReactNode;
   /** Label for the work item type in the delete confirmation */
   typeLabel?: string;
   /** External trigger to open the delete confirmation */
@@ -150,7 +197,7 @@ interface CatalystSidebarDetailsProps {
 
 export function CatalystSidebarDetails({
   issue, itemId, projectId, onStatusChange, onClose, onDelete,
-  children, typeLabel = 'item',
+  children, improveDropdown, statusPill, typeLabel = 'item',
   deleteRequested, onDeleteDismiss,
   parentSource, projectKey, onOpenItem,
 }: CatalystSidebarDetailsProps) {
@@ -239,6 +286,23 @@ export function CatalystSidebarDetails({
 
   return (
     <>
+      {/* jira-compare 2026-05-03 — Patch D + E + A1 · Status pill + Automate trigger + Improve dropdown
+          rendered together at the top of the rail. Mirrors Jira BAU-5737 where
+          [Status ▾] [⚡] sit on row 1 and [💬 Improve <Type>] sits on row 2 above Details.
+          Catalyst keeps them flex-wrap so wide rails get one row, narrow rails wrap. */}
+      {(statusPill || improveDropdown) && (
+        <div style={{ marginBottom: 14, display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+          {statusPill}
+          <IconButton
+            icon={(iconProps) => <AutomationIcon {...iconProps} label="" />}
+            label="Automate"
+            appearance="subtle"
+            spacing="compact"
+            onClick={() => toast('Automation rules — coming soon (A4 trays)')}
+          />
+          {improveDropdown}
+        </div>
+      )}
       {SHOW_RAIL_STATUS && (workflow && currentWorkflowState ? (
         <div style={{ marginBottom: 14 }}>
           {/* jira-compare A2 (2026-04-28): label every right-rail field for
@@ -437,10 +501,19 @@ export function CatalystSidebarDetails({
             )}
           </FieldRow>
 
-          {/* ── Labels ──── REMOVED 2026-05-03 per Vikram directive.
-              Jira's Details sidebar does NOT show Labels. Catalyst was
-              incorrectly displaying Labels in the right sidebar. Labels
-              belong in the "More fields" tray for types that support them. */}
+          {/* ── Labels ──── jira-compare 2026-05-03 RESTORED per Vikram directive.
+              DOM-probe of Jira BAU-5609 Story rail showed Labels in Details
+              container (not More fields tray as previously assumed). Reinstated. */}
+          <FieldRow label="Labels" labelTopPad>
+            {issue && (
+              <EditableLabels
+                issueId={issue.id}
+                issueKey={issue.issue_key}
+                currentLabels={(issue as any).labels ?? []}
+                onUpdate={invalidateIssue}
+              />
+            )}
+          </FieldRow>
 
           {/* ── Parent ──── REMOVED 2026-05-03 per Vikram directive.
               Parent belongs in Jira's left "Key details" section, not the
@@ -476,14 +549,12 @@ export function CatalystSidebarDetails({
             </FieldRow>
           )}
 
-          {/* ── MDT Ref ──── REMOVED 2026-05-02 per Vikram directive.
-              Was a universal custom field surfacing customfield_10882 from
-              the digital-transformation Jira tenant. Catalyst no longer
-              renders it. The CatalystMdtRefField component file is left
-              in place but unmounted — safe to delete in a follow-up
-              cleanup pass once nothing else imports it. The
-              ph_issues.mdt_ref column is also harmless to leave; deleting
-              it is a Lovable migration question. */}
+          {/* ── MDT Ref ──── jira-compare 2026-05-03 RESTORED per Vikram directive.
+              DOM-probe of Jira BAU-5609 Story rail showed MDT Ref custom field
+              with "Add text" placeholder in Details container. Reinstated. */}
+          <FieldRow label="MDT Ref" alignBlock="center">
+            <CatalystMdtRefField issue={issue ?? null} onUpdate={invalidateIssue} />
+          </FieldRow>
 
           {/* ── Epic-specific date fields ──── jira-compare Phase 2
               (2026-05-02). Relocated from above-Assignee to after-MDT-Ref
@@ -565,14 +636,30 @@ export function CatalystSidebarDetails({
         </div>
       </div>
 
-      {/* ── Timestamps (canonical) ────────────── */}
-      <div style={{ marginTop: 'auto', padding: '12px 0 0' }}>
-        <div style={{ fontSize: 12, color: '#5E6C84', marginBottom: 4, lineHeight: 1.6 }}>
-          <span style={{ color: '#42526E', fontWeight: 500 }}>Created</span> {fmtDate(issue?.jira_created_at)}
+      {/* ── Timestamps + Configure CTA (canonical) ──────────────
+          jira-compare 2026-05-03 — Patch A5 · ⚙ Configure CTA added
+          alongside Created / Updated, mirroring Jira BAU-5737 footer. */}
+      <div style={{ marginTop: 'auto', padding: '12px 0 0', display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', gap: 12 }}>
+        <div style={{ flex: 1, minWidth: 0 }}>
+          {/* jira-compare 2026-05-03 — Patch A6 · Hybrid time format
+              (absolute · relative). Title attr exposes the ISO on hover. */}
+          <div style={{ fontSize: 12, color: '#5E6C84', marginBottom: 4, lineHeight: 1.6 }} title={issue?.jira_created_at ?? undefined}>
+            <span style={{ color: '#42526E', fontWeight: 500 }}>Created</span> {fmtDate(issue?.jira_created_at)}
+            {issue?.jira_created_at && <span style={{ color: '#7A869A' }}> · {fmtRelative(issue.jira_created_at)}</span>}
+          </div>
+          <div style={{ fontSize: 12, color: '#5E6C84', lineHeight: 1.6 }} title={issue?.jira_updated_at ?? undefined}>
+            <span style={{ color: '#42526E', fontWeight: 500 }}>Updated</span> {fmtDate(issue?.jira_updated_at)}
+            {issue?.jira_updated_at && <span style={{ color: '#7A869A' }}> · {fmtRelative(issue.jira_updated_at)}</span>}
+          </div>
         </div>
-        <div style={{ fontSize: 12, color: '#5E6C84', lineHeight: 1.6 }}>
-          <span style={{ color: '#42526E', fontWeight: 500 }}>Updated</span> {fmtDate(issue?.jira_updated_at)}
-        </div>
+        <Button
+          appearance="subtle"
+          spacing="compact"
+          iconBefore={(iconProps) => <SettingsIcon {...iconProps} label="" />}
+          onClick={() => toast('Configure issue layout — coming soon')}
+        >
+          Configure
+        </Button>
       </div>
 
       {/* ── Delete confirmation (canonical) ─────────────────────────────

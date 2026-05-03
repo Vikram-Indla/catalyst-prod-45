@@ -17,7 +17,7 @@ import { CommentAction } from '../comments/CommentAction';
 import { CommentEditor } from '../comments/CommentEditor';
 import { ActivityItem } from './ActivityItem';
 
-export type ActivityTabKey = 'all' | 'comments' | 'history';
+export type ActivityTabKey = 'all' | 'comments' | 'history' | 'worklog';
 
 export interface ActivityPanelProps {
   comments: CdsComment[];
@@ -70,10 +70,14 @@ function ActivityPanel({
   const [sortOrder, setSortOrder] = useState<CdsSortOrder>(defaultSortOrder);
   const [sortOpen, setSortOpen] = useState(false);
 
+  /* jira-compare 2026-05-03 — Patch A2 · Worklog tab parity with Jira's
+     Activity tabs. Data source (ph_worklogs) is the next-session follow-up;
+     this lands the tab UI so parity is visible. */
   const tabs: { key: ActivityTabKey; label: string }[] = [
     { key: 'all', label: 'All' },
     { key: 'comments', label: 'Comments' },
     { key: 'history', label: 'History' },
+    { key: 'worklog', label: 'Worklog' },
   ];
 
   const mergedAll = useMemo(() => {
@@ -190,6 +194,19 @@ function ActivityPanel({
           isLoadingMore={isLoadingMoreHistory}
           jiraUserMap={jiraUserMap}
         />
+      )}
+
+      {/* jira-compare 2026-05-03 — Patch A2 · Worklog tab. Empty state until
+          ph_worklogs data source is wired (Supabase work, next session). */}
+      {activeTab === 'worklog' && (
+        <div className="text-center py-10">
+          <p className="text-[13px] text-[var(--ds-text-subtlest,#6B778C)] dark:text-[var(--ds-text-subtlest,#878787)]">
+            No worklog entries yet
+          </p>
+          <p className="text-[12px] text-[var(--ds-text-subtlest,#6B778C)] dark:text-[var(--ds-text-subtlest,#878787)] mt-2">
+            Track time spent on this work item via the Worklog tab. Coming soon.
+          </p>
+        </div>
       )}
 
       {activeTab === 'all' && (

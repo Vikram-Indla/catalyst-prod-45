@@ -43,9 +43,9 @@ export default function CatalystViewIncident({
       </div>
 
       <CatalystTitleEditor issue={issue ?? null} onTitleChange={(t) => mutations.updateField.mutate({ field: 'summary', value: t, oldValue: issue?.summary ?? '' })} />
-      <CatalystStatusPill status={issue?.status} onStatusChange={(st) => mutations.updateStatus.mutate(st)} />
+      {/* jira-compare 2026-05-03 — Patch E · CatalystStatusPill relocated to right-rail header in CatalystSidebarDetails. */}
       <CatalystQuickActions />
-      <ImproveIssueDropdown issue={issue ?? null} {...improveHandlers} />
+      {/* jira-compare 2026-05-03 — Improve relocated to right-rail slot in CatalystSidebarDetails (Patch D). */}
       {/* jira-compare follow-up (2026-05-02): Parent moved to right rail
           for consistency with Story / Defect. KeyDetails left block kept
           for Priority (Incident has no extraRows yet). */}
@@ -82,6 +82,8 @@ export default function CatalystViewIncident({
       parentSource="incident"
       projectKey={projectKey}
       onOpenItem={onOpenItem}
+      statusPill={<CatalystStatusPill status={issue?.status} onStatusChange={(st) => mutations.updateStatus.mutate(st)} />}
+      improveDropdown={<ImproveIssueDropdown issue={issue ?? null} {...improveHandlers} />}
     />
   );
 

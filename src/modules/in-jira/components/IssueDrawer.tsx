@@ -3,12 +3,11 @@
  * Full Jira-style drawer with two-column layout, inline editing, and activity tabs
  */
 
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useRef } from 'react';
 import { useParams } from 'react-router-dom';
-import { 
-  X, 
+import {
+  X,
   ExternalLink,
-  ChevronLeft,
   ChevronRight,
   Maximize2,
   Minimize2,
@@ -23,6 +22,9 @@ import { toast } from 'sonner';
 import { useInJira } from '../context/InJiraContext';
 import { cn } from '@/lib/utils';
 import { InlineEdit } from './drawer/InlineEdit';
+import AtlaskitEditor, { type AtlaskitEditorRef } from '@/components/shared/AtlaskitEditor';
+import AtlaskitRenderer from '@/components/shared/AtlaskitRenderer';
+import { parseADF, createEmptyADF, isADFEmpty, plainTextToADF } from '@/utils/adf';
 import { IssueActionsMenu } from './drawer/IssueActionsMenu';
 import { ActivityTabs } from './drawer/ActivityTabs';
 import { DetailsPanel } from './drawer/DetailsPanel';
@@ -71,6 +73,8 @@ export function IssueDrawer() {
   const [isExpanded, setIsExpanded] = useState(false);
   const [issue, setIssue] = useState<Issue | null>(null);
   const [comments, setComments] = useState(MOCK_COMMENTS);
+  const [editingDesc, setEditingDesc] = useState(false);
+  const editorRef = useRef<AtlaskitEditorRef>(null);
 
   // Sync local issue state with selected issue
   React.useEffect(() => {
@@ -159,7 +163,7 @@ export function IssueDrawer() {
   if (!issue) {
     return (
       <Sheet open={isDrawerOpen} onOpenChange={() => closeIssueDrawer()}>
-        <SheetContent side="right" className="w-full sm:max-w-4xl p-0">
+        <SheetContent side="right" hideClose className="w-full sm:max-w-4xl p-0">
           <div className="h-full flex items-center justify-center text-text-tertiary">
             No issue selected
           </div>
@@ -170,8 +174,9 @@ export function IssueDrawer() {
 
   return (
     <Sheet open={isDrawerOpen} onOpenChange={() => closeIssueDrawer()}>
-      <SheetContent 
-        side="right" 
+      <SheetContent
+        side="right"
+        hideClose
         className={cn(
           "p-0 flex flex-col transition-all duration-200",
           isExpanded ? "w-full sm:max-w-6xl" : "w-full sm:max-w-4xl"
@@ -271,16 +276,50 @@ export function IssueDrawer() {
                   className="mb-4"
                 />
 
-                {/* Description - Inline Editable */}
+                {/* Description — ADF rich-text editor (Atlaskit parity) */}
                 <div className="mb-6">
                   <h3 className="text-sm font-medium text-text-secondary mb-2">Description</h3>
-                  <InlineEdit
-                    value={issue.description || ''}
-                    onSave={(val) => handleFieldChange('description', val)}
-                    placeholder="Add a description..."
-                    multiline
-                    displayClassName="text-sm text-text-secondary prose prose-sm max-w-none"
-                  />
+                  {editingDesc ? (
+                    <AtlaskitEditor
+                      ref={editorRef}
+                      appearance="comment"
+                      defaultValue={(() => {
+                        const parsed = parseADF(issue.description ?? null);
+                        if (parsed) return parsed;
+                        if (issue.description?.trim()) return plainTextToADF(issue.description);
+                        return createEmptyADF();
+                      })()}
+                      placeholder="Add a description…"
+                      onSave={(adf) => {
+                        handleFieldChange('description', JSON.stringify(adf));
+                        setEditingDesc(false);
+                      }}
+                      onCancel={() => setEditingDesc(false)}
+                    />
+                  ) : (
+                    <div
+                      role="button"
+                      tabIndex={0}
+                      onClick={() => setEditingDesc(true)}
+                      onKeyDown={(e) => e.key === 'Enter' && setEditingDesc(true)}
+                      className="min-h-[40px] rounded cursor-text hover:bg-surface-hover transition-colors px-1 -mx-1"
+                    >
+                      {(() => {
+                        const adf = parseADF(issue.description ?? null);
+                        if (adf && !isADFEmpty(adf)) {
+                          return <AtlaskitRenderer document={adf} appearance="full-page" />;
+                        }
+                        if (issue.description?.trim()) {
+                          return <AtlaskitRenderer document={plainTextToADF(issue.description)} appearance="full-page" />;
+                        }
+                        return (
+                          <span className="text-sm text-text-tertiary italic">
+                            Add a description…
+                          </span>
+                        );
+                      })()}
+                    </div>
+                  )}
                 </div>
 
                 <Separator className="my-6" />

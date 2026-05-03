@@ -161,13 +161,17 @@ export default function StoryDetailPage() {
 
   return (
     <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column' }}>
-      <CatalystPageHeader title="Story Backlog" />
+      {/* jira-compare 2026-05-03 — removed hardcoded `<CatalystPageHeader title="Story Backlog" />`.
+          Stale placeholder; CatalystViewBase top bar owns breadcrumb + actions in fullPageMode. */}
       <div style={{ flex: 1, minHeight: 0 }}>
         <Suspense fallback={null}>
           <CatalystDetailRouter
             isOpen={true}
             onClose={handleClose}
-            itemId={issue.id}
+            /* jira-compare 2026-05-03 fix — useCatalystIssue queries by issue_key
+               text per F-iter9 PK contract. Passing issue.id (UUID) made every
+               detail page render empty. */
+            itemId={issue.issue_key}
             projectKey={issue.project_key || projectKey || ''}
             itemType={issue.issue_type}
             fullPageMode={true}

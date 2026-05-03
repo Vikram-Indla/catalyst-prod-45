@@ -24,10 +24,16 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Breadcrumbs, type BreadcrumbItem } from '@/components/ads';
 import { IssueIcon } from '@/modules/project-work-hub/components/dialogs/story-detail-modules/shared-components';
+import { ProjectAvatar } from '@/components/icons';
 
 export interface TicketBreadcrumbsProps {
   /** Used to build the parent-navigation href when `onParentClick` isn't set. */
   projectKey: string;
+  /**
+   * Project display name shown as the leading crumb (Jira-parity, 2026-05-03).
+   * Falls back to projectKey when not provided.
+   */
+  projectName?: string;
   itemType: string;
   itemKey: string | null;
   parentKey?: string | null;
@@ -59,6 +65,7 @@ const RouterBreadcrumbLink = React.forwardRef<
 
 export function TicketBreadcrumbs({
   projectKey,
+  projectName,
   itemType,
   itemKey,
   parentKey,
@@ -73,6 +80,20 @@ export function TicketBreadcrumbs({
   const showAddParent = !hasSlot && !isEpic && !parentKey;
 
   const items: BreadcrumbItem[] = [];
+
+  // jira-compare 2026-05-03 — Crumb 0 (project): leading crumb that
+  // matches Jira's "Senaei BAU" segment. Provides project context inside
+  // the breadcrumb hierarchy. Catalyst's higher-level "Spaces" equivalent
+  // lives in the global Hub Switcher chrome, so we stop at project level.
+  if (projectKey) {
+    items.push({
+      key: 'project',
+      text: projectName || projectKey,
+      iconBefore: <ProjectAvatar projectKey={projectKey} size={14} />,
+      href: `/project-hub/${projectKey}/list`,
+      ariaLabel: `Project ${projectName || projectKey}`,
+    });
+  }
 
   // Crumb 1 — parent OR "+ Add parent" (hidden when current is epic).
   if (showParent) {

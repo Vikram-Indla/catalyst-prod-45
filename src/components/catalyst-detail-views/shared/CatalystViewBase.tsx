@@ -129,7 +129,9 @@ export function CatalystViewBase({
   // ~130px after the 96px label + 20px gap. Bumping default to 380 and
   // max to 600 so values have real estate to breathe. Min stays at 220
   // for the compact-drawer (container-query) path used by Backlog.
-  const [rightPanelWidth, setRightPanelWidth] = useState(380);
+  // jira-compare 2026-05-03 — Patch A8 · Default raised 380 → 549 to match
+  // Jira's measured rail width. Resize range stays 220..600.
+  const [rightPanelWidth, setRightPanelWidth] = useState(549);
   const [showDotsMenu, setShowDotsMenu] = useState(false);
   const isDraggingRef = useRef(false);
   const dotsMenuRef = useRef<HTMLDivElement>(null);
@@ -286,6 +288,7 @@ export function CatalystViewBase({
             {projectKey ? (
               <TicketBreadcrumbs
                 projectKey={projectKey}
+                projectName={projectName}
                 itemType={itemType}
                 itemKey={itemKey}
                 parentKey={parentKey}

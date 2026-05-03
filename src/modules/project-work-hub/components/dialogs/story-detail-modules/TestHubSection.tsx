@@ -9,8 +9,28 @@ import type { TmTestCase, ThTestExecution, TestResult } from './types';
 import { LOZENGE, TEST_RESULT_STYLES } from './constants';
 import { getAvatarColor, formatDateShort } from './helpers';
 import { SectionBlock, SkeletonRows, EmptyState } from './shared-components';
-import Lozenge from '@atlaskit/lozenge';
-import { statusToLozenge } from '../../../utils/statusToLozenge';
+import { statusToLozenge, type LozengeAppearance } from '../../../utils/statusToLozenge';
+
+const LOZENGE_STYLES: Record<LozengeAppearance, { bg: string; color: string }> = {
+  default:    { bg: '#DFE1E6', color: '#253858' },
+  inprogress: { bg: '#DEEBFF', color: '#0747A6' },
+  success:    { bg: '#E3FCEF', color: '#006644' },
+  removed:    { bg: '#DFE1E6', color: '#253858' },
+  moved:      { bg: '#DFE1E6', color: '#253858' },
+  new:        { bg: '#DFE1E6', color: '#253858' },
+};
+
+function CatalystLozenge({ appearance, children }: { appearance: LozengeAppearance; children: React.ReactNode }) {
+  const s = LOZENGE_STYLES[appearance] ?? LOZENGE_STYLES.default;
+  return (
+    <span style={{
+      background: s.bg, color: s.color,
+      height: 20, padding: '0 6px', borderRadius: 3,
+      fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '.03em',
+      display: 'inline-flex', alignItems: 'center', flexShrink: 0,
+    }}>{children}</span>
+  );
+}
 
 export function TestHubSection({ storyId }: { storyId: string }) {
   const [activeTab, setActiveTab] = useState<'cases' | 'executions'>('cases');
@@ -56,8 +76,8 @@ export function TestHubSection({ storyId }: { storyId: string }) {
   return (
     <SectionBlock title="TestHub" count={testCases.length} defaultExpanded={testCases.length > 0} headerRight={
       <>
-        <button className="sdm-visibility-btn" style={{ gap: 4 }}><ExternalLink size={10} /> Open TestHub</button>
-        <button className="sdm-create-btn sdm-visibility-btn"><Plus size={10} /> Link test</button>
+        <button className="sdm-visibility-btn" style={{ gap: 4 }}><ExternalLink size={13} /> Open TestHub</button>
+        <button className="sdm-create-btn sdm-visibility-btn"><Plus size={13} /> Link test</button>
       </>
     }>
       <div style={{ display: 'flex', borderBottom: '1px solid rgba(9,30,66,.14)', background: 'var(--ds-surface-sunken, #F8FAFC)' }}>
@@ -87,12 +107,11 @@ export function TestHubSection({ storyId }: { storyId: string }) {
                   </span>
                   <span className="sdm-child-key" style={{ color: '#42526E' }}>{tc.case_key}</span>
                   <span className="sdm-child-summary">{tc.title}</span>
-                  {/* §20 / L41 — Atlaskit Lozenge (was LOZENGE[...] inline). */}
-                  <span className="sdm-status-lozenge"><Lozenge appearance={statusToLozenge(tc.status)}>{tc.status}</Lozenge></span>
+                  <span className="sdm-status-lozenge"><CatalystLozenge appearance={statusToLozenge(tc.status)}>{tc.status}</CatalystLozenge></span>
                   <span className="sdm-date-col">{formatDateShort(tc.created_at)}</span>
                   <div className="sdm-row-actions">
-                    <button className="sdm-row-action-btn" title="Open in TestHub"><ExternalLink size={11} /></button>
-                    <button className="sdm-row-action-btn sdm-row-action-btn--danger" title="Unlink" onClick={e => { e.stopPropagation(); unlinkCase.mutate(tc.id); }}><X size={11} /></button>
+                    <button className="sdm-row-action-btn" title="Open in TestHub"><ExternalLink size={13} aria-label="Open in TestHub" /></button>
+                    <button className="sdm-row-action-btn sdm-row-action-btn--danger" title="Unlink" onClick={e => { e.stopPropagation(); unlinkCase.mutate(tc.id); }}><X size={13} aria-label="Unlink" /></button>
                   </div>
                 </div>
               ))}

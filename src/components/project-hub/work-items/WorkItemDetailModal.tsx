@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useQueryClient, useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { updateWorkItem, createWorkItem } from '@/services/workItemService';
@@ -14,6 +14,9 @@ import {
   Flag, Plus, MoreHorizontal, Share2, Loader2,
 } from 'lucide-react';
 import { toast } from 'sonner';
+import AtlaskitEditor, { type AtlaskitEditorRef } from '@/components/shared/AtlaskitEditor';
+import AtlaskitRenderer from '@/components/shared/AtlaskitRenderer';
+import { parseADF, createEmptyADF, isADFEmpty, plainTextToADF } from '@/utils/adf';
 
 const TYPE_COLORS: Record<string, string> = {
   Epic: '#7C3AED', Feature: 'var(--ds-text-brand, #2563EB)', Story: '#0D9488',
@@ -40,6 +43,8 @@ export function WorkItemDetailModal({ open, itemId, projectId, projectKey, onClo
 
   const [editingTitle, setEditingTitle] = useState(false);
   const [titleDraft, setTitleDraft] = useState('');
+  const [editingDesc, setEditingDesc] = useState(false);
+  const descEditorRef = useRef<AtlaskitEditorRef>(null);
   const [creatingSubtask, setCreatingSubtask] = useState(false);
   const [subtaskTitle, setSubtaskTitle] = useState('');
   const [subtaskSubmitting, setSubtaskSubmitting] = useState(false);
@@ -192,11 +197,49 @@ export function WorkItemDetailModal({ open, itemId, projectId, projectKey, onClo
                 </div>
               </CollapsibleSection>
 
-              {/* Description */}
+              {/* Description — ADF rich-text (Atlaskit parity) */}
               <CollapsibleSection title="Description" defaultOpen={true}>
-                <div className="rounded-md px-3 py-2 min-h-[60px] border border-transparent hover:border-[var(--ds-border,#DFE1E6)] cursor-text transition-colors" style={{ fontSize: 14, lineHeight: '22px', color: item.description ? 'var(--fg-1)' : 'var(--fg-4)' }}>
-                  {item.description || 'Add a description...'}
-                </div>
+                {editingDesc ? (
+                  <AtlaskitEditor
+                    ref={descEditorRef}
+                    appearance="comment"
+                    defaultValue={(() => {
+                      const parsed = parseADF(item.description ?? null);
+                      if (parsed) return parsed;
+                      if (item.description?.trim()) return plainTextToADF(item.description);
+                      return createEmptyADF();
+                    })()}
+                    placeholder="Add a description…"
+                    onSave={async (adf) => {
+                      await handleUpdateField('description', JSON.stringify(adf));
+                      setEditingDesc(false);
+                    }}
+                    onCancel={() => setEditingDesc(false)}
+                  />
+                ) : (
+                  <div
+                    role="button"
+                    tabIndex={0}
+                    onClick={() => setEditingDesc(true)}
+                    onKeyDown={(e) => e.key === 'Enter' && setEditingDesc(true)}
+                    className="rounded-md px-3 py-2 min-h-[60px] border border-transparent hover:border-[var(--ds-border,#DFE1E6)] cursor-text transition-colors"
+                  >
+                    {(() => {
+                      const adf = parseADF(item.description ?? null);
+                      if (adf && !isADFEmpty(adf)) {
+                        return <AtlaskitRenderer document={adf} appearance="full-page" />;
+                      }
+                      if (item.description?.trim()) {
+                        return <AtlaskitRenderer document={plainTextToADF(item.description)} appearance="full-page" />;
+                      }
+                      return (
+                        <span style={{ fontSize: 14, color: 'var(--fg-4)' }}>
+                          Add a description…
+                        </span>
+                      );
+                    })()}
+                  </div>
+                )}
               </CollapsibleSection>
 
               {/* Acceptance Criteria */}

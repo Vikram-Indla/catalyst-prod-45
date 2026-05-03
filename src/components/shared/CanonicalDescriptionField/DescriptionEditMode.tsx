@@ -1,5 +1,7 @@
 import React from 'react';
-import { Check, X, Loader2 } from 'lucide-react';
+import Textfield from '@atlaskit/textfield';
+import Button from '@atlaskit/button';
+import { CheckCircleIcon, CrossIcon, SpinnerIcon } from '@atlaskit/icon';
 import type { DescriptionMention } from './description.types';
 
 interface DescriptionEditModeProps {
@@ -30,31 +32,52 @@ export function DescriptionEditMode({
   onCancel,
 }: DescriptionEditModeProps) {
   return (
-    <div className="space-y-3">
-      {/* Textarea */}
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+      {/* Textarea using Atlaskit */}
       <textarea
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
         maxLength={maxLength}
         disabled={isLoading}
-        className={`w-full min-h-[120px] px-3 py-2 text-sm leading-relaxed bg-white border rounded-md transition-colors resize-vertical focus:outline-none focus:ring-2 focus:ring-offset-2 ${
-          error
-            ? 'border-red-500 focus:ring-red-500'
-            : isNearLimit
-              ? 'border-yellow-500 focus:ring-yellow-500'
-              : 'border-neutral-300 focus:ring-blue-500'
-        }`}
+        style={{
+          width: '100%',
+          minHeight: '120px',
+          padding: '12px',
+          fontSize: '13px',
+          lineHeight: 1.5,
+          backgroundColor: '#FFFFFF',
+          border: error ? '2px solid #AE2A19' : isNearLimit ? '2px solid #974F0C' : '2px solid #DFE1E6',
+          borderRadius: '4px',
+          fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif',
+          resize: 'vertical',
+          outline: 'none',
+          transition: 'border-color 0.15s ease',
+          cursor: isLoading ? 'not-allowed' : 'text',
+          opacity: isLoading ? 0.6 : 1,
+        }}
         aria-label="Description"
         aria-invalid={!!error}
         aria-describedby={error ? 'description-error' : undefined}
+        onFocus={(e) => {
+          e.currentTarget.style.borderColor = '#0052CC';
+        }}
+        onBlur={(e) => {
+          e.currentTarget.style.borderColor = error ? '#AE2A19' : isNearLimit ? '#974F0C' : '#DFE1E6';
+        }}
       />
 
       {/* Error Message */}
       {error && (
         <div
           id="description-error"
-          className="text-sm text-red-600 flex items-center gap-1"
+          style={{
+            fontSize: '12px',
+            color: '#AE2A19',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '6px',
+          }}
           role="alert"
         >
           ⚠️ {error}
@@ -62,48 +85,43 @@ export function DescriptionEditMode({
       )}
 
       {/* Character Counter */}
-      <div className="flex items-center justify-between text-xs text-neutral-500">
-        <div className="flex gap-2">
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '12px', color: '#626F86' }}>
+        <div style={{ display: 'flex', gap: '12px' }}>
           <span>
             {charCount} / {maxLength} characters
           </span>
-          {isNearLimit && <span className="text-yellow-600">⚠️ Limit approaching</span>}
+          {isNearLimit && <span style={{ color: '#974F0C' }}>⚠️ Limit approaching</span>}
           {mentions.length > 0 && <span>• {mentions.length} mention(s) detected</span>}
         </div>
       </div>
 
       {/* Markdown Hint */}
-      <div className="text-xs text-neutral-500">
-        <strong>Formatting:</strong> <code className="bg-neutral-100 px-1 rounded">**bold**</code>{' '}
-        <code className="bg-neutral-100 px-1 rounded">_italic_</code>{' '}
-        <code className="bg-neutral-100 px-1 rounded">`code`</code> • @mention users and
+      <div style={{ fontSize: '12px', color: '#626F86' }}>
+        <strong>Formatting:</strong> <code style={{ backgroundColor: '#F1F2F4', padding: '2px 4px', borderRadius: '3px' }}>**bold**</code>{' '}
+        <code style={{ backgroundColor: '#F1F2F4', padding: '2px 4px', borderRadius: '3px' }}>_italic_</code>{' '}
+        <code style={{ backgroundColor: '#F1F2F4', padding: '2px 4px', borderRadius: '3px' }}>`code`</code> • @mention users and
         paste links
       </div>
 
-      {/* Action Buttons */}
-      <div className="flex gap-2 justify-end">
-        <button
+      {/* Action Buttons - Atlaskit Buttons */}
+      <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
+        <Button
           onClick={onCancel}
-          disabled={isLoading}
-          className="inline-flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-neutral-700 bg-neutral-100 hover:bg-neutral-200 rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-          aria-label="Cancel editing"
+          isDisabled={isLoading}
+          appearance="subtle"
+          size="compact"
         >
-          <X className="w-4 h-4" />
           Cancel
-        </button>
-        <button
+        </Button>
+        <Button
           onClick={onSave}
-          disabled={isLoading}
-          className="inline-flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-          aria-label="Save description"
+          isDisabled={isLoading}
+          appearance="primary"
+          size="compact"
+          iconBefore={isLoading ? <SpinnerIcon label="Saving" /> : <CheckCircleIcon label="Save" />}
         >
-          {isLoading ? (
-            <Loader2 className="w-4 h-4 animate-spin" />
-          ) : (
-            <Check className="w-4 h-4" />
-          )}
           {isLoading ? 'Saving...' : 'Save'}
-        </button>
+        </Button>
       </div>
     </div>
   );

@@ -7,7 +7,18 @@ import React, { useState, useMemo, useRef, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { catalystToast } from '@/lib/catalystToast';
-import { ChevronDown, ThumbsUp, ThumbsDown, Info, Loader2, RefreshCw } from 'lucide-react';
+/* jira-compare 2026-05-03 — Patch D3 (lucide sweep) ·
+   ChevronDown → @atlaskit/icon/glyph/chevron-down
+   ThumbsUp / ThumbsDown → @atlaskit/icon/core/thumbs-up / thumbs-down
+   Info → @atlaskit/icon/core/information
+   Loader2 → @atlaskit/spinner
+   RefreshCw → @atlaskit/icon/core/refresh */
+import ChevronDown from '@atlaskit/icon/glyph/chevron-down';
+import ThumbsUp from '@atlaskit/icon/core/thumbs-up';
+import ThumbsDown from '@atlaskit/icon/core/thumbs-down';
+import Info from '@atlaskit/icon/core/information';
+import RefreshCw from '@atlaskit/icon/core/refresh';
+import Spinner from '@atlaskit/spinner';
 import { IssueIcon } from './shared-components';
 import { LINK_TYPE_OPTIONS } from './constants';
 
@@ -199,7 +210,7 @@ export function AiLinkSimilarPanel({ issueKey, existingLinkedKeys, onLinked }: A
           <span style={{ fontSize: 14, fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>Link similar work items</span>
         </div>
         {isLoading ? (
-          <Loader2 size={14} className="animate-spin" color="var(--ds-text-subtlest, #6B778C)" />
+          <Spinner size="small" />
         ) : count > 0 ? (
           <button
             onClick={() => setExpanded(true)}
@@ -338,7 +349,7 @@ export function AiLinkSimilarPanel({ issueKey, existingLinkedKeys, onLinked }: A
                     fontFamily: 'inherit', opacity: linkMutation.isPending ? 0.7 : 1,
                   }}
                 >
-                  {linkMutation.isPending ? <Loader2 size={14} className="animate-spin" /> : `Link ${selectedKeys.size} item${selectedKeys.size > 1 ? 's' : ''}`}
+                  {linkMutation.isPending ? <Spinner size="small" /> : `Link ${selectedKeys.size} item${selectedKeys.size > 1 ? 's' : ''}`}
                 </button>
               </div>
             )}

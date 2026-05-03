@@ -27,6 +27,7 @@ import {
 } from '../shared/sections';
 import { SubtasksPanel } from '@/modules/project-work-hub/components/SubtasksPanel';
 import { LinkedWorkItemsSection } from '@/modules/project-work-hub/components/linked-work-items';
+import { ImproveIssueDropdown, useImproveApplyHandlers } from '@/components/catalyst-detail-views/improve';
 import {
   AttachmentsSection, DefectsSection, IncidentsSection, TestHubSection,
 } from '@/modules/project-work-hub/components/dialogs/story-detail-modules';
@@ -40,6 +41,7 @@ export default function CatalystViewStory({
 
   const { data: issue, isLoading } = useCatalystIssue(itemId, isOpen);
   const mutations = useCatalystIssueMutations(itemId, onClose);
+  const improveHandlers = useImproveApplyHandlers(issue ?? null);
   const { user } = useAuth();
 
   /* ── Catalyst-vs-Jira source split ─────────
@@ -98,7 +100,7 @@ export default function CatalystViewStory({
           mount it; Story didn't. Lane A re-probe of BAU-5609 confirmed
           Jira renders a 32px status button immediately under the title
           (testid issue-field-status.ui.status-view.status-button). */}
-      <CatalystStatusPill status={issue?.status} statusCategory={issue?.status_category} onStatusChange={(st) => mutations.updateStatus.mutate(st)} />
+      {/* jira-compare 2026-05-03 — Patch E · CatalystStatusPill relocated to right-rail header in CatalystSidebarDetails. */}
       <CatalystQuickActions />
       {/* jira-compare Phase 1 (2026-05-02): Parent + Priority moved back to
           the right rail (CatalystSidebarDetails) to match Jira BAU-5609
@@ -181,6 +183,11 @@ export default function CatalystViewStory({
       parentSource="story"
       projectKey={projectKey}
       onOpenItem={onOpenItem}
+      /* jira-compare 2026-05-03 — Patch D + E · Status pill + Improve dropdown
+         anchored together at the rail header. Mirrors Jira's "In QA" / "Improve
+         Story" pair on the right side of BAU-5609. */
+      statusPill={<CatalystStatusPill status={issue?.status} statusCategory={issue?.status_category} onStatusChange={(st) => mutations.updateStatus.mutate(st)} />}
+      improveDropdown={<ImproveIssueDropdown issue={issue ?? null} {...improveHandlers} />}
     />
   );
 
