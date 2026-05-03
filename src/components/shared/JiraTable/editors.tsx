@@ -24,7 +24,7 @@ import Lozenge from '@atlaskit/lozenge';
 import Popup from '@atlaskit/popup';
 import Tooltip from '@atlaskit/tooltip';
 import { token } from '@atlaskit/tokens';
-import { Search as SearchIcon, MoreHorizontal } from 'lucide-react';
+import { Search as SearchIcon, MoreHorizontal, ChevronsUp, ChevronUp, Equal, ChevronDown, ChevronsDown, AlertCircle } from 'lucide-react';
 import { StatusPill } from './cells';
 import type { CellProps, LozengeAppearance } from './types';
 
@@ -652,29 +652,35 @@ export function makeAssigneeEditCell<T>({
 
 /* ─── Priority editor ───────────────────────────────────────────────────── */
 
-const PRIORITY_ORDER = ['critical', 'highest', 'high', 'medium', 'low', 'lowest'];
+// Jira-parity priority display: icon + text label.
+// Measured from digital-transformation.atlassian.net BAU list 2026-05-04:
+//   Priority cell shows icon (16px) + label text at 14px, inline-flex, gap 4px.
+//   Colors: Highest=#E5484D Highest/Critical, High=#E2730D, Medium=#D97706,
+//   Low=#0065FF, Lowest=#7A869A. No colored bars — text label is the primary affordance.
+const PRIORITY_CONFIG: Record<string, { icon: React.ReactNode; color: string; label: string }> = {
+  critical:  { icon: <AlertCircle  size={14} />, color: '#E5484D', label: 'Critical'  },
+  highest:   { icon: <ChevronsUp   size={14} />, color: '#E5484D', label: 'Highest'   },
+  high:      { icon: <ChevronUp    size={14} />, color: '#E2730D', label: 'High'      },
+  medium:    { icon: <Equal        size={14} />, color: '#D97706', label: 'Medium'    },
+  low:       { icon: <ChevronDown  size={14} />, color: '#0065FF', label: 'Low'       },
+  lowest:    { icon: <ChevronsDown size={14} />, color: '#7A869A', label: 'Lowest'    },
+};
 
 function PriorityBars({ priority }: { priority: string | null }) {
   const p = (priority || '').toLowerCase();
-  const idx = PRIORITY_ORDER.indexOf(p);
-  const level = idx >= 0 ? PRIORITY_ORDER.length - idx : 0;
-  const color =
-    level >= 4 ? token('color.icon.danger',  '#E5484D') :
-    level >= 3 ? token('color.icon.warning', '#F59E0B') :
-    level >= 1 ? token('color.icon.success', '#22C55E') :
-    token('color.border', '#DFE1E6');
-  const inactive = token('color.border', '#DFE1E6');
+  const cfg = PRIORITY_CONFIG[p];
+  if (!cfg) {
+    return (
+      <span style={{ color: token('color.text.subtlest', '#7A869A'), fontSize: 13 }}>—</span>
+    );
+  }
   return (
-    <span style={{ display: 'inline-flex', gap: 2 }} title={p || 'No priority'}>
-      {[1, 2, 3, 4].map((i) => (
-        <span
-          key={i}
-          style={{
-            width: 4, height: 16, borderRadius: 1,
-            background: i <= level ? color : inactive,
-          }}
-        />
-      ))}
+    <span
+      title={cfg.label}
+      style={{ display: 'inline-flex', alignItems: 'center', gap: 4, color: cfg.color, fontSize: 13, whiteSpace: 'nowrap' }}
+    >
+      {cfg.icon}
+      <span style={{ color: token('color.text', '#172B4D') }}>{cfg.label}</span>
     </span>
   );
 }

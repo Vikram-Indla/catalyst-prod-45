@@ -432,7 +432,11 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
   // dates. The column schema retains both with `defaultVisible: false`
   // so they remain available; this array is the authoritative initial
   // visibility set on first load.
-  const DEFAULT_VISIBLE_COLUMNS = ['key', 'summary', 'status', 'comments', 'parent', 'assignee', 'priority'];
+  // 2026-05-04 jira-compare audit: Jira BAU list default columns (verified live):
+  // Type | Key | Summary | Status | Comments | Assignee | Priority | Created | Updated
+  // Parent is NOT shown by default in Jira — hierarchy is exposed via the row expand
+  // chevron, not a dedicated column. Created + Updated ARE shown by default in Jira.
+  const DEFAULT_VISIBLE_COLUMNS = ['key', 'summary', 'status', 'comments', 'assignee', 'priority', 'created', 'updated'];
   const parseSet = (raw: string | null): Set<string> =>
     raw ? new Set(raw.split(',').filter(Boolean)) : new Set();
 
@@ -444,10 +448,11 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
   const [filterValue, setFilterValue] = useState<JiraFilterValue>(emptyFilterValue);
   const [expandedIds, setExpandedIds] = useState<Set<string>>(() => parseSet(searchParams.get('expanded')));
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
-  // Default sort — Updated DESC (most recently touched first) matches
-  // Jira's default list-view ordering. URL params override.
-  const DEFAULT_SORT_KEY = 'updated';
-  const DEFAULT_SORT_DIR: 'ASC' | 'DESC' = 'DESC';
+  // Default sort — Key ASC matches Jira's default "Rank" ordering which
+  // surfaces oldest issues (BAU-310 first). Updated DESC was incorrect —
+  // live probe 2026-05-04 shows Jira BAU list starts at BAU-310, not newest.
+  const DEFAULT_SORT_KEY = 'key';
+  const DEFAULT_SORT_DIR: 'ASC' | 'DESC' = 'ASC';
   const [sortKey, setSortKey] = useState<string | null>(
     () => searchParams.get('sort') || DEFAULT_SORT_KEY,
   );
@@ -1340,12 +1345,11 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
       // header for the issue-type cell). Setting label to "Type" fixes
       // both findings in one change — visible text doubles as the
       // accessible name on the th element.
-      // Apr 28, 2026 (jira-compare cycle 2 T10): width 8 (~88px) → 11
-      // (~110px) to match Jira's actual probed cell_type width=110px.
-      // Earlier 8 was a conservative under-shoot; the new icon (BAU-5684)
-      // + 8/8 padding + optional 24px chevron gutter need the full 110.
+      // 2026-05-04 jira-compare: live DOM probe of Jira BAU list measures
+      // Type column at x=147→233 = ~86px. width:7 × 12 = 84px ≈ matches.
+      // Previous width:11 (~124px) was 38px too wide, wasting summary space.
       label: 'Type',
-      width: 11,
+      width: 7,
       align: 'start',
       alwaysVisible: true,
       cell: makeTypeIconCell((it: BacklogItem) => {
@@ -1462,11 +1466,10 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
     {
       id: 'comments',
       label: 'Comments',
-      // Apr 27, 2026 (audit pass 8): 6→8. At 6% × 1133 / 1.14 (114%-sum
-      // squash) the header rendered at 53px while "Comments" needs 66px,
-      // so it bled into Parent. 8% × 1180 (new sum=100, new minw=1180) =
-      // ~94px — fits "Comments" + 1-comment count chip.
-      width: 8,
+      // 2026-05-04 jira-compare: Jira Comments column x=873→1018 = ~145px.
+      // width:12 × 12 = 144px ≈ parity. Previous width:8 (~90px) was 55px
+      // too narrow causing "Add comment" to truncate.
+      width: 12,
       // Apr 27, 2026 (L61): default visible — Jira's list view shows
       // Comments column at position 5 between Status and Parent. Probed
       // against Jira BAU list "1 comment" / "Add comment" cells.
@@ -1524,9 +1527,11 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
     },
     {
       id: 'assignee',
-      // 11% × 1180 = ~130px. Avatar 24 + 8 gap + name ~96px.
+      // 2026-05-04 jira-compare: Jira Assignee x=1018→1198 = ~180px.
+      // width:15 × 12 = 180px = exact parity. Previous width:11 (~124px)
+      // truncated names like "Imran Aslam" to "Imran Asla...".
       label: 'Assignee',
-      width: 11,
+      width: 15,
       sortable: true,
       defaultVisible: true,
       cell: makeAssigneeEditCell<BacklogItem>({
@@ -1543,10 +1548,10 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
     {
       id: 'priority',
       label: 'Priority',
-      // Apr 27, 2026 (audit pass 8): 5→7. The 5% allocation gave "Priority"
-      // header exactly 44px while it needs 45px — 1px shy of truncating to
-      // "Priorit…". Bumped to 7 (~83px) for safety + bars space.
-      width: 7,
+      // 2026-05-04 jira-compare: Jira Priority x=1343→1463 = ~120px.
+      // width:10 × 12 = 120px = exact parity. Previous width:7 (~79px)
+      // was too narrow for "Medium" icon+text (now replaced from bars).
+      width: 10,
       sortable: true,
       defaultVisible: true,
       cell: makePriorityEditCell<BacklogItem>({
@@ -1560,31 +1565,25 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
     },
     {
       id: 'created',
-      // Apr 27, 2026: Created added per export-spec parity. Toggle-on
-      // via the column picker; defaultVisible:false to keep the resting
-      // state aligned with Jira BAU list. Sortable for queue triage.
+      // 2026-05-04 jira-compare: Jira shows Created by default (x=1633,
+      // confirmed in live DOM probe). Previous comment incorrectly said
+      // Jira hides it. Width:12 (~144px) matches Jira's ~145px slot.
       label: 'Created',
-      // 8% × 1180 = ~94px. Date chip "📅 27 Apr 26" needs ~88px.
-      width: 8,
+      width: 12,
       sortable: true,
-      defaultVisible: false,
+      defaultVisible: true,
       accessor: (r: BacklogItem) => r.created_at || '',
       cell: makeDateCell((r: BacklogItem) => r.created_at),
     },
     {
       id: 'updated',
-      // Apr 27, 2026 — jira-compare audit P1 #6: Updated column dropped
-      // from defaultVisible. Jira's BAU list at /list?groupBy=status
-      // hides Updated by default; users opt in via the column picker
-      // when they need queue-triage info. Removing from defaults frees
-      // 8% of the row width that Summary + Parent now use to hit
-      // parity targets (≥360 / ≥280px respectively). Width retained
-      // at 8 so toggling Updated back on doesn't reflow the layout.
+      // 2026-05-04 jira-compare: Jira shows Updated by default (x=1778,
+      // confirmed in live DOM probe). Previous comment incorrectly claimed
+      // Jira hides it. Width:12 (~144px) matches Jira's ~145px slot.
       label: 'Updated',
-      // 8% × 1180 = ~94px. Same as Created.
-      width: 8,
+      width: 12,
       sortable: true,
-      defaultVisible: false,
+      defaultVisible: true,
       accessor: (r) => r.updated_at || '',
       cell: makeDateCell((r: BacklogItem) => r.updated_at),
     },

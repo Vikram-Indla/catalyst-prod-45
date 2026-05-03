@@ -139,7 +139,7 @@ function CatalystShellContent() {
   const location = useLocation();
   const page = derivePageFromPath(location.pathname);
   const navigate = useNavigate();
-  const params = useParams<{ programId?: string; portfolioId?: string; teamId?: string; projectId?: string; projectKey?: string }>();
+  const params = useParams<{ programId?: string; portfolioId?: string; teamId?: string; projectId?: string }>();
   const { workspaceType, programId: contextProgramId, projectId: contextProjectId, selectedQuarter, setSelectedQuarter, sidebarExpanded, setSidebarExpanded, sidebarHidden, setSidebarHidden, sidebarPinned, setSidebarPinned, sidebarHoverOpen, cycleSidebarState } = useCatalystContext();
 
   // ─── Sidebar is CLICK-ONLY (April 2026, final) ────────────────────────
@@ -206,8 +206,6 @@ function CatalystShellContent() {
   // Extract IDs from URL params - these take precedence
   const urlProgramId = params.programId || null;
   const urlProjectId = params.projectId || null;
-  // InJira routes use :projectKey (a string key like "BAU"), not :projectId (UUID)
-  const urlProjectKey = params.projectKey || null;
 
   // Determine which ID to use based on route pattern
   const isProgramRoute = location.pathname.startsWith('/program/');
@@ -217,41 +215,20 @@ function CatalystShellContent() {
   const activeProgramId = isProgramRoute ? urlProgramId : contextProgramId;
   const activeProjectId = isProjectRoute ? urlProjectId : contextProjectId;
 
-  // When on an InJira route (/project/:projectKey/...) the route param is
-  // :projectKey (e.g. "BAU"), not a UUID. Look up the project UUID by key so
-  // ProjectSidebar renders instead of the "No Project" fallback.
-  const { data: projectByKey } = useQuery({
-    queryKey: ['project-by-key', urlProjectKey],
-    queryFn: async () => {
-      if (!urlProjectKey) return null;
-      const { data } = await supabase
-        .from('projects')
-        .select('id, name, key')
-        .eq('key', urlProjectKey)
-        .maybeSingle();
-      return data ?? null;
-    },
-    enabled: !!urlProjectKey && !urlProjectId && isProjectRoute,
-  });
-
-  // Resolve the project to display in the sidebar: prefer UUID-based lookup,
-  // fall back to key-based lookup for InJira routes.
-  const resolvedProjectId = activeProjectId || projectByKey?.id || null;
-
   // Fetch project details for sidebar
   const { data: projectData } = useQuery({
-    queryKey: ['project-sidebar', resolvedProjectId],
+    queryKey: ['project-sidebar', activeProjectId],
     queryFn: async () => {
-      if (!resolvedProjectId) return null;
+      if (!activeProjectId) return null;
       const { data, error } = await supabase
         .from('projects')
         .select('id, name, key')
-        .eq('id', resolvedProjectId)
+        .eq('id', activeProjectId)
         .maybeSingle();
       if (error) throw error;
       return data;
     },
-    enabled: !!resolvedProjectId && isProjectRoute,
+    enabled: !!activeProjectId && isProjectRoute,
   });
 
   // Check if on product/producthub route
@@ -603,9 +580,9 @@ function CatalystShellContent() {
             />
           );
         }
-        // Show empty state if no program selected
+        // Show empty state if no program selected — fill full width, no gap
         return (
-          <div className="w-14 h-full flex items-center justify-center p-2 text-center border-r border-border-default bg-surface-2">
+          <div className="w-full h-full flex items-center justify-center p-2 text-center border-r border-border-default bg-surface-2">
             <div className="text-xs text-text-tertiary">
               <p className="font-medium">No Program</p>
             </div>
@@ -613,19 +590,19 @@ function CatalystShellContent() {
         );
 
       case 'project':
-        if (resolvedProjectId) {
+        if (activeProjectId) {
           return (
             <ProjectSidebar
-              projectId={resolvedProjectId}
-              projectName={projectData?.name || projectByKey?.name}
+              projectId={activeProjectId}
+              projectName={projectData?.name}
               expanded={true}
               onToggle={cycleSidebarState}
             />
           );
         }
-        // Show narrow fallback — only 56px so it doesn't create a gap
+        // Fallback — fill full sidebar width so no blank gap appears
         return (
-          <div className="w-14 h-full flex items-center justify-center p-2 text-center border-r border-border-default bg-surface-2">
+          <div className="w-full h-full flex items-center justify-center p-2 text-center border-r border-border-default bg-surface-2">
             <div className="text-xs text-text-tertiary">
               <p className="font-medium">No Project</p>
             </div>

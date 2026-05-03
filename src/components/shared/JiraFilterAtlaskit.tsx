@@ -229,7 +229,8 @@ export function JiraFilterAtlaskit(props: JiraFilterAtlaskitProps) {
         }}
       >
         <FilterIcon size={14} />
-        <span>Filter</span>
+        <span>Filters</span>
+        <LowPriIcon size={12} style={{ marginLeft: -2, opacity: 0.7 }} />
         {count > 0 && (
           <span
             style={{
