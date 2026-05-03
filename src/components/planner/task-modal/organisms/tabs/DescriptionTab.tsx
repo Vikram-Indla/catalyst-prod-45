@@ -1,10 +1,12 @@
 // ============================================================================
-// ORGANISM: DescriptionTab — Description tab content
+// ORGANISM: DescriptionTab — Description tab content (ADS-compliant)
 // NO "Description" header — starts directly with textarea
 // ============================================================================
 
 import React, { useState } from 'react';
-import { COLORS, PRIORITY_COLORS, PRIORITIES } from '../../colors';
+import { CanonicalDescriptionField } from '@/components/shared/CanonicalDescriptionField';
+import { useCanonicalDescription } from '@/hooks/useCanonicalDescription';
+import { PRIORITY_COLORS, PRIORITIES } from '../../colors';
 import { FieldDropdown, DateDropdown } from '../../molecules';
 import { LabelsManager } from '../../molecules/LabelsManager';
 import { Task, TaskPriority } from '../../types';
@@ -25,55 +27,49 @@ export const DescriptionTab: React.FC<DescriptionTabProps> = ({
   onPriorityChange,
   onDueDateChange,
   onStartDateChange,
-  onLabelsChange
+  onLabelsChange,
 }) => {
-  const [isFocused, setIsFocused] = useState(false);
+  const { description: fetchedDescription, save, isSaving, error } = useCanonicalDescription(
+    task.id,
+    'task'
+  );
+  const [isEditing, setIsEditing] = useState(false);
+  const [value, setValue] = useState(task.description || fetchedDescription);
 
-  const priorityOptions = PRIORITIES.map(p => ({ value: p, color: PRIORITY_COLORS[p] }));
+  const handleChange = (newValue: string) => {
+    setValue(newValue);
+    onDescriptionChange(newValue);
+  };
+
+  const handleSave = async () => {
+    await save(value);
+  };
+
+  const priorityOptions = PRIORITIES.map((p) => ({
+    value: p,
+    color: PRIORITY_COLORS[p],
+  }));
 
   return (
     <div>
-      {/* 
-        CRITICAL: NO "Description" HEADER HERE
-        The tab name already says "Description"
-        Start directly with the textarea
-      */}
-
-      {/* DESCRIPTION TEXTAREA */}
-      <textarea
-        value={task.description || ''}
-        onChange={(e) => onDescriptionChange(e.target.value)}
-        onFocus={() => setIsFocused(true)}
-        onBlur={() => setIsFocused(false)}
+      {/* DESCRIPTION — Using CanonicalDescriptionField */}
+      <CanonicalDescriptionField
+        workItemId={task.id}
+        workItemType="task"
+        value={value}
+        onChange={handleChange}
+        onSave={handleSave}
+        isEditing={isEditing}
+        onEditToggle={setIsEditing}
+        isLoading={isSaving}
+        error={error?.message}
+        maxLength={10000}
         placeholder="What is this task about? Add context, requirements, or notes..."
-        style={{
-          width: '100%',
-          minHeight: '160px',
-          padding: '16px 18px',
-          border: `1px solid ${isFocused ? COLORS.borderFocus : COLORS.borderDefault}`,
-          borderRadius: '12px',
-          fontFamily: 'var(--cp-font-body)',
-          fontSize: '14px',
-          lineHeight: 1.6,
-          color: COLORS.textPrimary,
-          backgroundColor: COLORS.surfaceCard,
-          resize: 'vertical',
-          outline: 'none',
-          boxShadow: isFocused ? '0 0 0 3px rgba(59, 130, 246, 0.15)' : 'none',
-          transition: 'border-color 0.15s ease, box-shadow 0.15s ease',
-          boxSizing: 'border-box'
-        }}
+        isRequired={false}
       />
 
       {/* FIELDS ROW — 3 columns */}
-      <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(3, 1fr)',
-          gap: '20px',
-          marginTop: '28px'
-        }}
-      >
+      <div className="grid grid-cols-3 gap-5 mt-7">
         {/* PRIORITY */}
         <FieldDropdown
           label="Priority"
@@ -101,24 +97,11 @@ export const DescriptionTab: React.FC<DescriptionTabProps> = ({
       </div>
 
       {/* LABELS SECTION */}
-      <div style={{ marginTop: '28px' }}>
-        <label
-          style={{
-            display: 'block',
-            fontSize: '12px',
-            fontWeight: 600,
-            color: 'var(--ds-text-subtlest, #64748b)',
-            textTransform: 'uppercase',
-            letterSpacing: '0.03em',
-            marginBottom: '12px'
-          }}
-        >
+      <div className="mt-7">
+        <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-3">
           Labels
         </label>
-        <LabelsManager 
-          taskId={task.id} 
-          onLabelsChange={onLabelsChange}
-        />
+        <LabelsManager taskId={task.id} onLabelsChange={onLabelsChange} />
       </div>
     </div>
   );

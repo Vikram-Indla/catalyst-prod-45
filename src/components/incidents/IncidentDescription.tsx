@@ -1,34 +1,58 @@
-import { Textarea } from '@/components/ui/textarea';
+import { useState } from 'react';
+import { CanonicalDescriptionField } from '@/components/shared/CanonicalDescriptionField';
+import { useCanonicalDescription } from '@/hooks/useCanonicalDescription';
 
 interface IncidentDescriptionProps {
-  description: string;
-  isEditMode: boolean;
-  editedDescription: string;
-  onDescriptionChange: (value: string) => void;
+  incidentId: string;
+  description?: string;
+  isEditMode?: boolean;
+  editedDescription?: string;
+  onDescriptionChange?: (value: string) => void;
+  onSave?: (value: string) => Promise<void>;
 }
 
 export function IncidentDescription({
-  description,
-  isEditMode,
-  editedDescription,
+  incidentId,
+  description = '',
+  isEditMode: initialEditMode = false,
+  editedDescription: _,
   onDescriptionChange,
+  onSave: externalOnSave,
 }: IncidentDescriptionProps) {
+  const { description: fetchedDescription, save, isSaving, error } = useCanonicalDescription(
+    incidentId,
+    'incident'
+  );
+  const [isEditing, setIsEditing] = useState(initialEditMode);
+  const [value, setValue] = useState(description || fetchedDescription);
+
+  const handleChange = (newValue: string) => {
+    setValue(newValue);
+    onDescriptionChange?.(newValue);
+  };
+
+  const handleSave = async () => {
+    if (externalOnSave) {
+      await externalOnSave(value);
+    } else {
+      await save(value);
+    }
+  };
+
   return (
-    <div className="bg-card border border-border rounded-lg overflow-hidden">
-      <div className="p-4">
-        {isEditMode ? (
-          <Textarea
-            value={editedDescription}
-            onChange={(e) => onDescriptionChange(e.target.value)}
-            className="min-h-[150px] border-border bg-card resize-y text-sm"
-            placeholder="Describe the incident in detail..."
-          />
-        ) : (
-          <p className="text-sm text-foreground leading-relaxed whitespace-pre-wrap">
-            {description || 'No description provided.'}
-          </p>
-        )}
-      </div>
-    </div>
+    <CanonicalDescriptionField
+      workItemId={incidentId}
+      workItemType="incident"
+      value={value}
+      onChange={handleChange}
+      onSave={handleSave}
+      isEditing={isEditing}
+      onEditToggle={setIsEditing}
+      isLoading={isSaving}
+      error={error?.message}
+      maxLength={10000}
+      placeholder="Describe the incident in detail..."
+      isRequired={false}
+    />
   );
 }
