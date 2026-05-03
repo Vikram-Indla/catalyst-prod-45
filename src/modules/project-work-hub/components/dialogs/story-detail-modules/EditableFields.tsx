@@ -5,11 +5,11 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { CircleUser } from 'lucide-react';
 import Select, { CreatableSelect } from '@atlaskit/select';
+import CheckIcon from '@atlaskit/icon/glyph/check';
 import type { ProjectMember, ParentIssue } from './types';
 import { PRIORITY_LIST } from './constants';
-import { getAvatarColor } from './helpers';
+import { getAvatarColor, getInitials } from './helpers';
 import { resolveAvatarUrl } from '@/lib/avatars';
 import { PriorityIcon as CanonicalPriorityIcon } from '@/components/icons';
 
@@ -20,11 +20,9 @@ const ATLASSIAN_DROPDOWN: React.CSSProperties = {
   padding: '4px 0', zIndex: 9999,
 };
 
-/** Atlassian checkmark SVG */
-const CheckmarkSVG = () => (
-  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#0052CC" strokeWidth="2.5" style={{ flexShrink: 0 }}>
-    <polyline points="20 6 9 17 4 12"/>
-  </svg>
+/** Atlassian checkmark icon — uses ADS tokens */
+const CheckmarkIcon = () => (
+  <CheckIcon size="small" primaryColor="var(--ds-icon-selected, #0052CC)" />
 );
 
 /** Jira-native priority SVG icons — exact parity */
@@ -62,17 +60,19 @@ const PRIORITY_SVG: Record<string, React.ReactNode> = {
   ),
 };
 
-/* ── Avatar helper — prioritises real image, falls back to face icon (GUARDRAIL) ──
+/* ── Avatar helper — prioritises real image, falls back to initials (GUARDRAIL) ──
    Exported so peer fields (Reporter etc.) can reuse the canonical fallback and
-   we stop fragmenting into hand-rolled initials tiles vs CircleUser SVG tiles
-   for the same user. See CLAUDE.md §19 + 2026-04-20 critique §P0-2. */
+   we stop fragmenting into hand-rolled initials tiles for the same user.
+   Uses ADS tokens for color and text styling. See CLAUDE.md §19 + 2026-04-20 critique §P0-2. */
 export function AvatarCircle({ userId, name, avatarUrl, size = 28 }: { userId: string; name: string; avatarUrl?: string | null; size?: number }) {
   if (avatarUrl) {
     return <img src={avatarUrl} alt={name} style={{ width: size, height: size, borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }} />;
   }
+  const initials = getInitials(name);
+  const fontSize = Math.max(10, Math.round(size * 0.35));
   return (
     <div style={{ width: size, height: size, borderRadius: '50%', background: getAvatarColor(userId), display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-      <CircleUser size={size * 0.7} color="var(--ds-text-inverse, #FFFFFF)" strokeWidth={1.5} />
+      <span style={{ fontSize, fontWeight: 700, color: 'var(--ds-text-inverse, #FFFFFF)' }}>{initials}</span>
     </div>
   );
 }
@@ -432,7 +432,7 @@ export function EditableStoryPoints({ issueId, currentPoints, onUpdate }: {
             onMouseLeave={e => { if (currentPoints != null) (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
           >
             <span style={{ flex: 1 }}>None</span>
-            {currentPoints == null && <CheckmarkSVG />}
+            {currentPoints == null && <CheckmarkIcon />}
           </div>
           {FIBONACCI_POINTS.map(p => (
             <div key={p} onClick={() => updateMutation.mutate(p)}

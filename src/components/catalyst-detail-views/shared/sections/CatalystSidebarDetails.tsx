@@ -15,7 +15,8 @@
  * The `children` slot is where type-specific sidebar fields go.
  */
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { ChevronDown } from 'lucide-react';
+import ChevronDownIcon from '@atlaskit/icon/glyph/chevron-down';
+import CheckIcon from '@atlaskit/icon/glyph/check';
 import { Heading } from '@/components/ads';
 import Modal, { ModalBody, ModalFooter, ModalHeader, ModalTitle, ModalTransition } from '@atlaskit/modal-dialog';
 import Button from '@atlaskit/button/new';
@@ -54,7 +55,7 @@ function FieldRow({
     <div style={{ padding: '11px 0' }}>
       <Inline space="space.250" alignBlock={alignBlock}>
         <span style={{
-          fontSize: 14, fontWeight: 500, lineHeight: '18.67px', color: '#505258',
+          fontSize: 14, fontWeight: 500, lineHeight: '18.67px', color: 'var(--ds-text-secondary, #505258)',
           minWidth: 96, flexShrink: 0,
           paddingTop: labelTopPad ? 2 : undefined,
         }}>{label}</span>
@@ -242,7 +243,7 @@ export function CatalystSidebarDetails({
         <div style={{ marginBottom: 14 }}>
           {/* jira-compare A2 (2026-04-28): label every right-rail field for
               consistency with Fix versions / Assignee / Reporter / Labels. */}
-          <div style={{ fontSize: 12, fontWeight: 600, color: '#292A2E', marginBottom: 4 }}>Status</div>
+          <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text-primary, #292A2E)', marginBottom: 4 }}>Status</div>
           <StatusTransitionDropdown
             issueType={issue?.issue_type ?? 'Defect'}
             currentStateId={currentWorkflowState.id}
@@ -257,7 +258,7 @@ export function CatalystSidebarDetails({
       ) : (
       <div style={{ marginBottom: 14, position: 'relative' }} ref={statusDropdownRef}>
         {/* jira-compare A2 (2026-04-28): label for the rail Status field. */}
-        <div style={{ fontSize: 12, fontWeight: 600, color: '#292A2E', marginBottom: 4 }}>Status</div>
+        <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text-primary, #292A2E)', marginBottom: 4 }}>Status</div>
         <button
           onClick={() => setShowStatusDropdown(!showStatusDropdown)}
           style={{
@@ -271,7 +272,7 @@ export function CatalystSidebarDetails({
             gap: 6,
             transition: 'background 0.15s',
           }}
-          onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-surface-sunken, #F4F5F7)')}
+          onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-surface-hovered, #F4F5F7)')}
           onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
         >
           {/* jira-compare A1 (2026-04-28): wrap with jira-parity attribute so
@@ -283,9 +284,7 @@ export function CatalystSidebarDetails({
           <span data-cp-lozenge-jira-parity style={{ display: 'inline-block' }}>
             <Lozenge appearance={lozengeAppearance} isBold={lozengeAppearance !== 'default'}>{statusValue}</Lozenge>
           </span>
-          <svg width="10" height="10" viewBox="0 0 10 10" fill="none" aria-hidden="true">
-            <path d="M2 4L5 7L8 4" stroke="#42526E" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
+          <ChevronDownIcon size="small" primaryColor="var(--ds-icon-subtle, #42526E)" />
         </button>
         {showStatusDropdown && (
           <div style={{
@@ -312,7 +311,7 @@ export function CatalystSidebarDetails({
                       style={{
                         height: 36, padding: '0 16px', display: 'flex', alignItems: 'center',
                         justifyContent: 'space-between', cursor: 'pointer',
-                        background: isActive ? '#DEEBFF' : 'transparent', transition: 'background 80ms',
+                        background: isActive ? 'var(--ds-background-selected, #DEEBFF)' : 'transparent', transition: 'background 80ms',
                       }}
                       onMouseEnter={e => { if (!isActive) e.currentTarget.style.background = 'var(--ds-surface-sunken, #F4F5F7)'; }}
                       onMouseLeave={e => { if (!isActive) e.currentTarget.style.background = 'transparent'; }}
@@ -325,9 +324,7 @@ export function CatalystSidebarDetails({
                         <Lozenge appearance={optionAppearance} isBold>{st}</Lozenge>
                       </span>
                       {isActive && (
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#0052CC" strokeWidth="2.5">
-                          <polyline points="20 6 9 17 4 12" />
-                        </svg>
+                        <CheckIcon size="small" primaryColor="var(--ds-icon-selected, #0052CC)" />
                       )}
                     </div>
                   );
@@ -335,8 +332,8 @@ export function CatalystSidebarDetails({
               </div>
             ))}
             {/* View workflow link */}
-            <div style={{ borderTop: '1px solid #EBECF0', marginTop: 4, padding: '8px 16px' }}>
-              <span style={{ fontSize: 13, color: '#505258', cursor: 'default' }}>View workflow</span>
+            <div style={{ borderTop: '1px solid var(--ds-border, #EBECF0)', marginTop: 4, padding: '8px 16px' }}>
+              <span style={{ fontSize: 13, color: 'var(--ds-text-secondary, #505258)', cursor: 'default' }}>View workflow</span>
             </div>
           </div>
         )}
@@ -350,7 +347,7 @@ export function CatalystSidebarDetails({
           display: 'flex', alignItems: 'center', gap: 6, height: 49,
           padding: '0 8px', borderRadius: '6px 6px 0 0', background: 'var(--ds-surface, #FFFFFF)',
         }}>
-          <ChevronDown size={14} color="#505258" />
+          <ChevronDownIcon size="small" primaryColor="var(--ds-icon-subtle, #626F86)" />
           {/* Phase D.1 (2026-04-18): Atlaskit Heading owns typography via tokens. */}
           <Heading size="small">Details</Heading>
         </div>

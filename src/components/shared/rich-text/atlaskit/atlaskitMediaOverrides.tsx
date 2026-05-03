@@ -156,6 +156,7 @@ function MediaImageCard({ src, alt, onClick }: { src: string; alt?: string; onCl
   const [dims, setDims] = useState<{ w: number; h: number } | null>(null);
   const [hovered, setHovered] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
+  const issueKey = useContext(IssueKeyContext);
 
   const handleLoad = useCallback((e: React.SyntheticEvent<HTMLImageElement>) => {
     const img = e.currentTarget;
@@ -194,7 +195,6 @@ function MediaImageCard({ src, alt, onClick }: { src: string; alt?: string; onCl
          - "Open" goes to the Jira ISSUE page (where the user's browser
            cookie can render the attachment), not the failing proxy URL
          - copy is honest: "Image hosted on Jira" + auth hint */
-    const issueKey = useContext(IssueKeyContext);
     const fallbackName = (src.split('?')[0].split('/').pop() || 'image').slice(0, 60);
     const filename = (alt && alt.trim()) ? alt.trim().slice(0, 60) : fallbackName;
     const openHref = issueKey

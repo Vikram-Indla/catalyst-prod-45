@@ -28,11 +28,21 @@ import { createPortal } from 'react-dom';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import Textfield from '@atlaskit/textfield';
+import Textarea from '@atlaskit/textarea';
 import AvatarGroup from '@atlaskit/avatar-group';
 import Avatar from '@atlaskit/avatar';
 import Lozenge from '@atlaskit/lozenge';
 import Button, { IconButton } from '@atlaskit/button/new';
 import DropdownMenu, { DropdownItem, DropdownItemGroup } from '@atlaskit/dropdown-menu';
+/* jira-compare 2026-05-03 cycle 5 — Save filter wiring per Vikram directive
+   ("ensure save filter functionality is working"). Atlaskit Modal Dialog is
+   the canonical primitive (https://atlassian.design/components/modal-dialog).
+   Jira's Save filter modal probe: Heading "Save filter", Name (required),
+   Description, Viewers, Editors, Cancel + Save footer. Catalyst MVP omits
+   Viewers/Editors (the saved_filters table has a single is_shared boolean
+   instead of granular sharing — pending Vikram approval to extend). */
+import Modal, { ModalTransition, ModalHeader, ModalTitle, ModalBody, ModalFooter } from '@atlaskit/modal-dialog';
+import { Checkbox } from '@atlaskit/checkbox';
 /* jira-compare 2026-05-03 Round 7 — facet-aware value picker.
    Per Vikram's design-critique: assignee/reporter need canonical avatars,
    priority needs PriorityIcon, work type + parent need WorkItemTypeIcon,
@@ -60,6 +70,10 @@ import SearchIconCore from '@atlaskit/icon/core/search';
 import ListIconCore from '@atlaskit/icon/core/list-bulleted';
 import SplitIconCore from '@atlaskit/icon/core/layout-two-columns-sidebar-right';
 import SparkIconCore from '@atlaskit/icon/core/ai-chat';
+/* jira-compare 2026-05-03 cycle 4 (Vikram caught ADS drift): chevron-down
+   is glyph-only in this Atlaskit version (CLAUDE.md canonical replacement
+   map). Replacing unicode `▾` character with the canonical Atlaskit glyph. */
+import ChevronDownIcon from '@atlaskit/icon/glyph/chevron-down';
 import type { WorkItem } from '@/types/workItem.types';
 
 export type AllWorkView = 'split' | 'list';
@@ -67,10 +81,18 @@ export type AllWorkView = 'split' | 'list';
 /* jira-compare 2026-05-03: 8-facet typed filter state matching Jira's
    Filter popup left-rail order. Each facet stores selected raw values
    (e.g. status display names like "In Progress", priority levels like
-   "high"). Empty array = no filter on that facet. */
+   "high"). Empty array = no filter on that facet.
+
+   Round 9 (cycle 2 jira-compare): Jira's More filters exposes 225 fields,
+   Catalyst was showing 5. Expanded to 11 by adding resolution/sprint/
+   storyPoints (data already lives on WorkItem). Date ranges (created/
+   updated) and custom fields (Service Now#, Assessment Feature, Severity
+   from raw_json) deferred to a separate WO — they need different UI
+   (date range picker + custom-field schema discovery). */
 export type FilterFacet =
   | 'fixVersions' | 'parent' | 'assignee' | 'workType'
-  | 'labels' | 'status' | 'priority' | 'reporter';
+  | 'labels' | 'status' | 'priority' | 'reporter'
+  | 'resolution' | 'sprint' | 'storyPoints';
 
 export type FilterState = Record<FilterFacet, string[]>;
 
@@ -83,21 +105,32 @@ export const EMPTY_FILTERS: FilterState = {
   status: [],
   priority: [],
   reporter: [],
+  resolution: [],
+  sprint: [],
+  storyPoints: [],
 };
 
 const FACET_ORDER: FilterFacet[] = [
   'fixVersions', 'parent', 'assignee', 'workType',
   'labels', 'status', 'priority', 'reporter',
+  'resolution', 'sprint', 'storyPoints',
 ];
 
 /* jira-compare 2026-05-03 Round 8 — chip-bar refactor.
    Jira's Basic-mode refinement bar exposes a few common facets as
    top-level chips (Type, Status, Assignee), and hides the rest behind
    "More filters". Catalyst follows the same split: top-level chips for
-   the 3 most-clicked facets, and a smaller "More filters" popup for
-   the remaining 5. */
+   the 3 most-clicked facets, and a More filters popup for the remaining 8.
+   Round 9: expanded More filters from 5 → 8 by adding resolution/sprint/
+   storyPoints (Vikram: "more filters wrongly implemented, must have
+   other fields"). Jira's full list is 225 — Catalyst exposes the
+   subset that has data in WorkItem; date ranges + custom fields queued
+   as a follow-up WO. */
 const TOP_LEVEL_FACETS: FilterFacet[] = ['workType', 'status', 'assignee'];
-const MORE_FILTERS_FACETS: FilterFacet[] = ['fixVersions', 'parent', 'labels', 'priority', 'reporter'];
+const MORE_FILTERS_FACETS: FilterFacet[] = [
+  'fixVersions', 'parent', 'labels', 'priority', 'reporter',
+  'resolution', 'sprint', 'storyPoints',
+];
 
 const FACET_LABELS: Record<FilterFacet, string> = {
   fixVersions: 'Fix versions',
@@ -108,6 +141,9 @@ const FACET_LABELS: Record<FilterFacet, string> = {
   status: 'Status',
   priority: 'Priority',
   reporter: 'Reporter',
+  resolution: 'Resolution',
+  sprint: 'Sprint',
+  storyPoints: 'Story points',
 };
 
 interface Props {
@@ -388,7 +424,12 @@ function FilterTriggerAndPopup({
 
   return (
     <>
-      <span ref={triggerRef} style={{ display: 'inline-flex' }}>
+      <span ref={triggerRef} style={{
+        display: 'inline-flex',
+        background: 'var(--ds-surface, #FFFFFF)',
+        border: '1px solid var(--ds-border, #DFE1E6)',
+        borderRadius: 3,
+      }}>
         <Button
           appearance="subtle"
           iconBefore={FilterIcon}
@@ -397,6 +438,18 @@ function FilterTriggerAndPopup({
           aria-haspopup="dialog"
           aria-expanded={isOpen}
           aria-controls={isOpen ? popupId : undefined}
+          /* Cycle 4 — same fix as FilterChip: subtle Button so the wrapping
+             span's white bg + grey border show through (Jira's pattern).
+             Chevron via canonical Atlaskit glyph (no unicode drift). */
+          iconAfter={() => (
+            <span aria-hidden="true" style={{
+              display: 'inline-flex',
+              transform: isOpen ? 'rotate(180deg)' : 'none',
+              transition: 'transform 120ms ease',
+            }}>
+              <ChevronDownIcon label="" primaryColor={SUBTLE} size="small" />
+            </span>
+          )}
         >
           <span style={{ color: SUBTLE }}>{triggerLabel}</span>
         </Button>
@@ -588,7 +641,12 @@ function FilterChip({
 
   return (
     <>
-      <span ref={triggerRef} style={{ display: 'inline-flex' }}>
+      <span ref={triggerRef} style={{
+        display: 'inline-flex',
+        background: 'var(--ds-surface, #FFFFFF)',
+        border: '1px solid var(--ds-border, #DFE1E6)',
+        borderRadius: 3,
+      }}>
         <Button
           appearance={isActive ? 'primary' : 'subtle'}
           onClick={() => onOpenChange(!isOpen)}
@@ -596,6 +654,25 @@ function FilterChip({
           aria-haspopup="dialog"
           aria-expanded={isOpen}
           aria-controls={isOpen ? popupId : undefined}
+          /* jira-compare 2026-05-03 cycle 4 (Vikram caught grey-fill + ADS drift):
+             - "default" appearance → Atlaskit's grey button fill (Vikram: "catalyst is grey which is wring").
+               Reverted to "subtle" (transparent bg) so the wrapping span's white background +
+               grey border show through unobscured — matches Jira's white-chip-with-outline.
+             - Unicode `▾` → @atlaskit/icon/glyph/chevron-down (canonical ADS glyph; CLAUDE.md
+               replacement map lists chevron-down as glyph-only in this Atlaskit version). */
+          iconAfter={() => (
+            <span aria-hidden="true" style={{
+              display: 'inline-flex',
+              transform: isOpen ? 'rotate(180deg)' : 'none',
+              transition: 'transform 120ms ease',
+            }}>
+              <ChevronDownIcon
+                label=""
+                primaryColor={isActive ? 'var(--ds-text-inverse, #FFFFFF)' : SUBTLE}
+                size="small"
+              />
+            </span>
+          )}
         >
           <span style={{ color: isActive ? undefined : SUBTLE }}>{chipLabel}</span>
         </Button>
@@ -676,6 +753,248 @@ function FilterChip({
   );
 }
 
+/**
+ * SaveFilterModal — persists current FilterState as a named saved view.
+ *
+ * Atlaskit primitives: @atlaskit/modal-dialog (https://atlassian.design/components/modal-dialog),
+ * @atlaskit/textfield, @atlaskit/textarea, @atlaskit/checkbox, @atlaskit/button/new.
+ *
+ * Backend: INSERT into public.allwork_saved_filters (table created by
+ * Vikram-run SQL on 2026-05-03). RLS auto-restricts rows to auth.uid().
+ *
+ * MVP scope (Vikram: "limited fields only which we know"):
+ * - Name (required, unique per user+project — UNIQUE constraint at DB)
+ * - Description (optional)
+ * - Make this filter shared (boolean → is_shared column)
+ *
+ * Deferred: Viewers/Editors granular sharing (Jira's pattern but the
+ * Catalyst saved_filters table only has one is_shared boolean; extending
+ * needs schema change + Vikram approval).
+ */
+interface SaveFilterModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  currentState: FilterState;
+  projectKey: string;
+  onSaved?: () => void;
+}
+
+function SaveFilterModal({
+  isOpen, onClose, currentState, projectKey, onSaved,
+}: SaveFilterModalProps) {
+  const [name, setName] = useState('');
+  const [description, setDescription] = useState('');
+  const [isShared, setIsShared] = useState(false);
+  const [saving, setSaving] = useState(false);
+
+  // Reset form when modal opens
+  useEffect(() => {
+    if (isOpen) {
+      setName('');
+      setDescription('');
+      setIsShared(false);
+      setSaving(false);
+    }
+  }, [isOpen]);
+
+  const handleSave = async () => {
+    const trimmed = name.trim();
+    if (!trimmed) return;
+    setSaving(true);
+    try {
+      const { data: authData, error: authErr } = await (supabase as any).auth.getUser();
+      if (authErr || !authData?.user?.id) {
+        toast.error('Not signed in — cannot save filter');
+        setSaving(false);
+        return;
+      }
+      const { error } = await (supabase as any)
+        .from('allwork_saved_filters')
+        .insert({
+          user_id: authData.user.id,
+          project_key: projectKey,
+          name: trimmed,
+          description: description.trim() || null,
+          state: currentState,
+          is_shared: isShared,
+        });
+      if (error) {
+        if (error.code === '23505') {
+          toast.error(`A filter named "${trimmed}" already exists in ${projectKey}`);
+        } else {
+          toast.error(`Save failed: ${error.message}`);
+        }
+        setSaving(false);
+        return;
+      }
+      toast.success(`Saved filter "${trimmed}"`);
+      onSaved?.();
+      onClose();
+    } catch (e: any) {
+      toast.error(`Save failed: ${e?.message || String(e)}`);
+      setSaving(false);
+    }
+  };
+
+  return (
+    <ModalTransition>
+      {isOpen && (
+        <Modal onClose={onClose} testId="catalyst-save-filter-modal" width="small">
+          <ModalHeader>
+            <ModalTitle>Save filter</ModalTitle>
+          </ModalHeader>
+          <ModalBody>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+              <div>
+                <label style={{ display: 'block', fontSize: 12, fontWeight: 600, marginBottom: 4, color: 'var(--ds-text, #292A2E)' }}>
+                  Name <span style={{ color: 'var(--ds-text-danger, #DE350B)' }}>*</span>
+                </label>
+                <Textfield
+                  autoFocus
+                  value={name}
+                  onChange={(e) => setName((e.target as HTMLInputElement).value)}
+                  placeholder="e.g. My open bugs"
+                  testId="catalyst-save-filter-modal.name"
+                />
+              </div>
+              <div>
+                <label style={{ display: 'block', fontSize: 12, fontWeight: 600, marginBottom: 4, color: 'var(--ds-text, #292A2E)' }}>
+                  Description
+                </label>
+                <Textarea
+                  value={description}
+                  onChange={(e) => setDescription((e.target as HTMLTextAreaElement).value)}
+                  placeholder="Optional"
+                  minimumRows={2}
+                  maxHeight="120px"
+                  testId="catalyst-save-filter-modal.description"
+                />
+              </div>
+              <Checkbox
+                isChecked={isShared}
+                onChange={(e) => setIsShared(e.target.checked)}
+                label="Make this filter visible to others"
+                testId="catalyst-save-filter-modal.is-shared"
+              />
+            </div>
+          </ModalBody>
+          <ModalFooter>
+            <Button appearance="subtle" onClick={onClose}>Cancel</Button>
+            <Button
+              appearance="primary"
+              onClick={handleSave}
+              isDisabled={!name.trim() || saving}
+              testId="catalyst-save-filter-modal.save"
+            >
+              {saving ? 'Saving…' : 'Save'}
+            </Button>
+          </ModalFooter>
+        </Modal>
+      )}
+    </ModalTransition>
+  );
+}
+
+/**
+ * SavedFiltersDropdown — Read + apply + Delete saved filters (R + D of CRUD).
+ *
+ * Lives next to the Save filter button in the toolbar. Fetches the user's
+ * saved filters for this project (RLS scopes by user_id; shared filters
+ * also visible). Click to apply state to the chip bar; meatball to delete.
+ */
+interface SavedFiltersDropdownProps {
+  projectKey: string;
+  onApply: (state: FilterState) => void;
+  refreshKey: number;
+}
+
+interface SavedFilterRow {
+  id: string;
+  name: string;
+  description: string | null;
+  state: FilterState;
+  is_shared: boolean;
+  user_id: string;
+}
+
+function SavedFiltersDropdown({ projectKey, onApply, refreshKey }: SavedFiltersDropdownProps) {
+  const { data: rows = [], refetch } = useQuery<SavedFilterRow[]>({
+    queryKey: ['allwork-saved-filters', projectKey, refreshKey],
+    enabled: !!projectKey,
+    staleTime: 30 * 1000,
+    queryFn: async () => {
+      const { data, error } = await (supabase as any)
+        .from('allwork_saved_filters')
+        .select('id,name,description,state,is_shared,user_id')
+        .eq('project_key', projectKey)
+        .order('created_at', { ascending: false });
+      if (error) throw error;
+      return (data ?? []) as SavedFilterRow[];
+    },
+  });
+
+  const handleDelete = async (id: string, name: string) => {
+    const ok = window.confirm(`Delete saved filter "${name}"?`);
+    if (!ok) return;
+    const { error } = await (supabase as any)
+      .from('allwork_saved_filters')
+      .delete()
+      .eq('id', id);
+    if (error) {
+      toast.error(`Delete failed: ${error.message}`);
+      return;
+    }
+    toast.success(`Deleted "${name}"`);
+    refetch();
+  };
+
+  if (rows.length === 0) return null;
+
+  return (
+    <DropdownMenu
+      trigger={({ triggerRef, ...props }) => (
+        <Button
+          ref={triggerRef as React.Ref<HTMLButtonElement>}
+          {...props}
+          appearance="subtle"
+          testId="catalyst-allwork-toolbar.saved-filters"
+        >
+          <span style={{ color: SUBTLE }}>Saved filters ({rows.length})</span>
+        </Button>
+      )}
+    >
+      <DropdownItemGroup>
+        {rows.map(row => (
+          <DropdownItem
+            key={row.id}
+            onClick={() => {
+              onApply(row.state);
+              toast.success(`Applied "${row.name}"`);
+            }}
+            elemAfter={
+              <Button
+                appearance="subtle"
+                spacing="compact"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleDelete(row.id, row.name);
+                }}
+              >
+                <span style={{ color: 'var(--ds-text-danger, #DE350B)', fontSize: 11 }}>Delete</span>
+              </Button>
+            }
+          >
+            {row.name}
+            {row.is_shared && (
+              <span style={{ marginLeft: 6, fontSize: 10, color: SUBTLE }}>· shared</span>
+            )}
+          </DropdownItem>
+        ))}
+      </DropdownItemGroup>
+    </DropdownMenu>
+  );
+}
+
 export function AllWorkToolbar({
   projectKey,
   query,
@@ -710,6 +1029,11 @@ export function AllWorkToolbar({
      behaviour). Values: facet key (workType/status/assignee) for top-level
      chips, 'more' for the More filters multi-facet popup, null = all closed. */
   const [openChipKey, setOpenChipKey] = useState<FilterFacet | 'more' | null>(null);
+
+  /* Save filter modal open state + a refresh tick so SavedFiltersDropdown
+     refetches after a successful save. */
+  const [saveModalOpen, setSaveModalOpen] = useState(false);
+  const [savedFiltersRefreshKey, setSavedFiltersRefreshKey] = useState(0);
 
   const facetOptions = useMemo(() => {
     const out = {} as Record<FilterFacet, FacetOption[]>;
@@ -972,20 +1296,40 @@ export function AllWorkToolbar({
         </Button>
       )}
 
-      {/* Save filter — placeholder. Persists current FilterState as a named
-          saved view. SQL emitted as SUPABASE SQL EDITOR block — table
-          `allwork_saved_filters` (id, user_id, project_key, name, state JSONB,
-          timestamps); Vikram runs the migration before this button does
-          real work. */}
+      {/* Save filter — wired to allwork_saved_filters table (Vikram-run SQL).
+          Click → CLOSES any open chip popup (fixes 2026-05-03 overlap defect
+          where Save filter modal sat on top of an open More filters popup),
+          then opens SaveFilterModal. */}
       <Button
         appearance="subtle"
-        onClick={() => toast('Save filter — pending Supabase migration (allwork_saved_filters table)')}
+        onClick={() => {
+          setOpenChipKey(null); // close any open chip popup before modal opens
+          setSaveModalOpen(true);
+        }}
         testId="catalyst-allwork-toolbar.save-filter"
       >
         <span style={{ color: 'var(--ds-text-brand, #0C66E4)' }}>
           Save filter
         </span>
       </Button>
+
+      {/* Saved filters dropdown — Read + Apply + Delete (R + D of CRUD).
+          Shows the user's saved views for this project; click to apply state
+          to the chip bar. Renders nothing if the user has no saved filters. */}
+      <SavedFiltersDropdown
+        projectKey={projectKey}
+        refreshKey={savedFiltersRefreshKey}
+        onApply={(s) => onSelectedFiltersChange?.(s)}
+      />
+
+      {/* Save filter modal — mounted always; visibility controlled by isOpen. */}
+      <SaveFilterModal
+        isOpen={saveModalOpen}
+        onClose={() => setSaveModalOpen(false)}
+        currentState={selectedFilters}
+        projectKey={projectKey}
+        onSaved={() => setSavedFiltersRefreshKey(k => k + 1)}
+      />
 
       <span style={{ flex: 1 }} />
 
