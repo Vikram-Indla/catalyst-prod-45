@@ -70,19 +70,19 @@ import { useAuth } from '@/lib/auth';
 import type { PhIssue } from '../types';
 import { useCatalystAvatarProfile } from '../hooks/useCatalystAvatarProfile';
 /* jira-compare Phase 1 (2026-05-02): Parent + Priority restored to right
-   rail. The 2026-04-20 audit cited BAU-5538 / BAU-5364 and concluded Jira
-   renders a left "Key details" block. Re-probe of Jira BAU-5609 today
-   shows Parent + Priority live in the right rail Details section between
-   Labels and MDT Ref — order: Fix versions → Assignee → Reporter →
-   Labels → Parent → Priority → MDT Ref. Reverting to canonical Jira layout. */
-import { EditableAssignee, EditableLabels, EditableFixVersions, EditablePriority } from '@/modules/project-work-hub/components/dialogs/story-detail-modules/EditableFields';
+   rail per re-probe of Jira BAU-5609. REVERTED 2026-05-03 per Vikram
+   directive: Parent does NOT appear in Jira's Details sidebar, only in
+   the left "Key details" section. Catalyst was incorrectly showing it
+   here. Priority stays in the right rail (conditionally, per issue type). */
+import { EditableAssignee, EditableReporter, EditableLabels, EditableFixVersions, EditablePriority } from '@/modules/project-work-hub/components/dialogs/story-detail-modules/EditableFields';
 import { CatalystParentLinker } from './CatalystParentLinker';
 import type { CatalystItemType } from '../types';
 import { EpicDueDateField } from '@/components/project/EpicDueDateField';
-/* MDT Ref dropped from the rail per Vikram directive (2026-05-02) — import removed. */
-import { CatalystAssessmentFeatureField } from './CatalystAssessmentFeatureField';
+/* MDT Ref dropped from the rail per Vikram directive (2026-05-02) — import removed.
+   CatalystAssessmentFeatureField removed from Details sidebar 2026-05-03 — belongs
+   in Key details, not right rail. CatalystServiceNowDisplay removed 2026-05-03 —
+   not in Jira's Details panel. */
 import {
-  CatalystServiceNowDisplay,
   CatalystIRDemoDateDisplay,
   CatalystIRFigmaApprovedDisplay,
   CatalystIRDemoApprovedDisplay,
@@ -424,66 +424,29 @@ export function CatalystSidebarDetails({
             </FieldRow>
           )}
 
-          {/* ── Reporter ──── */}
+          {/* ── Reporter ──── Defect-2 Cycle 6 (2026-05-03): made editable */}
           <FieldRow label="Reporter" alignBlock="center">
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              {issue?.reporter_display_name ? (
-                <>
-                  {reporterProfile?.avatar_url ? (
-                    <img src={reporterProfile.avatar_url} alt="" style={{ width: 24, height: 24, borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }} />
-                  ) : (
-                    <span style={{
-                      width: 24, height: 24, borderRadius: '50%',
-                      background: getAvatarColor(issue.reporter_account_id ?? issue.reporter_display_name),
-                      color: 'var(--ds-surface, #FFF)', display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-                      fontSize: 10, fontWeight: 700, flexShrink: 0,
-                    }}>{getInitials(issue.reporter_display_name)}</span>
-                  )}
-                  <span style={{ fontSize: 14, fontWeight: 400, color: '#292A2E' }}>{issue.reporter_display_name}</span>
-                </>
-              ) : <span style={{ color: '#6B6E76', fontSize: 14, fontWeight: 400 }}>None</span>}
-            </div>
+            {issue && (
+              <EditableReporter
+                issueId={issue.id}
+                projectId={projectId || ''}
+                currentReporterId={issue.reporter_account_id}
+                currentReporterName={issue.reporter_display_name}
+                onUpdate={invalidateIssue}
+              />
+            )}
           </FieldRow>
 
-          {/* ── Labels ──── jira-compare Phase 2 (2026-05-02): hidden on
-              Epic — Jira NIN omits Labels from Epic context items.
-              Phase 3 (2026-05-02): also hidden on Sub-task — Jira's Sub-task
-              context-items show only Fix versions, Assignee, Reporter,
-              Development; Labels lives in the "More fields" tray (BAU-5569
-              Lane A re-probe). Phase 5 (2026-05-02): also hidden on
-              Production Incident — same hide pattern as Sub-task per
-              BAU-5707 Lane A re-probe. */}
-          {(() => {
-            const bk = normalizeIssueTypeBucket(issue?.issue_type);
-            return issue?.issue_type !== 'Epic' && bk !== 'subtask' && bk !== 'incident';
-          })() && (
-            <FieldRow label="Labels" labelTopPad>
-              {issue && (
-                <EditableLabels
-                  issueId={issue.id}
-                  currentLabels={labelsArray}
-                  onUpdate={invalidateIssue}
-                />
-              )}
-            </FieldRow>
-          )}
+          {/* ── Labels ──── REMOVED 2026-05-03 per Vikram directive.
+              Jira's Details sidebar does NOT show Labels. Catalyst was
+              incorrectly displaying Labels in the right sidebar. Labels
+              belong in the "More fields" tray for types that support them. */}
 
-          {/* ── Parent ──── jira-compare Phase 1 (2026-05-02). Restored to
-              right rail per Lane A re-probe of Jira BAU-5609 — Jira renders
-              Parent in the Details rail between Labels and Priority. */}
-          {parentSource && (
-            <FieldRow label="Parent" alignBlock="center">
-              {issue && (
-                <CatalystParentLinker
-                  issue={issue}
-                  itemId={itemId}
-                  itemType={parentSource}
-                  projectKey={projectKey}
-                  onOpenItem={onOpenItem}
-                />
-              )}
-            </FieldRow>
-          )}
+          {/* ── Parent ──── REMOVED 2026-05-03 per Vikram directive.
+              Parent belongs in Jira's left "Key details" section, not the
+              right Details sidebar. Catalyst was incorrectly showing Parent
+              in the Details rail. The CatalystParentLinker component is still
+              used elsewhere (in CatalystKeyDetails or type-specific views). */}
 
           {/* ── Priority ──── jira-compare Phase 1 (2026-05-02). Restored
               from CatalystKeyDetails left block — Jira's right rail Details
@@ -557,35 +520,19 @@ export function CatalystSidebarDetails({
             </>
           )}
 
-          {/* ── Assessment Feature ──── jira-compare Round 4 follow-up
-              (2026-04-28). Hidden on Epic per Phase 2 audit — Jira's Epic
-              context items omit this field. Phase 3 (2026-05-02): also
-              hidden on Sub-task. Phase 5 (2026-05-02): also hidden on
-              Production Incident — same Jira hide pattern. */}
-          {(() => {
-            const bk = normalizeIssueTypeBucket(issue?.issue_type);
-            return issue?.issue_type !== 'Epic' && bk !== 'subtask' && bk !== 'incident';
-          })() && (
-            <FieldRow label="Assessment Feature" labelTopPad>
-              <CatalystAssessmentFeatureField issue={issue} onUpdate={invalidateIssue} />
-            </FieldRow>
-          )}
+          {/* ── Assessment Feature ──── REMOVED 2026-05-03 per Vikram directive.
+              Assessment Feature is NOT in Jira's Details sidebar. It belongs
+              in the left "Key details" section, not the right Details panel.
+              The CatalystAssessmentFeatureField component is still mounted
+              elsewhere (in CatalystKeyDetails or type-specific views where
+              appropriate). This sidebar was incorrectly surfacing it. */}
 
-          {/* ── Service Now# (Defect / Incident / Task) ──── jira-compare
-              night session (2026-04-28). Read-only surface of
-              customfield_10050. Edit affordance deferred until Lovable
-              lands a typed `service_now_ref` column on ph_issues. */}
-          {(() => {
-            const bucket = normalizeIssueTypeBucket(issue?.issue_type);
-            if (bucket === 'defect' || bucket === 'incident' || bucket === 'task') {
-              return (
-                <FieldRow label="Service Now#">
-                  <CatalystServiceNowDisplay issue={issue} />
-                </FieldRow>
-              );
-            }
-            return null;
-          })()}
+          {/* ── Service Now# ──── REMOVED 2026-05-03 per Vikram directive.
+              Service Now# is NOT in Jira's Details sidebar. This was a
+              custom field from the digital-transformation Jira tenant.
+              It does not belong in the Catalyst right sidebar. If it needs
+              to be surfaced, it should be in a separate custom fields panel
+              or "More fields" tray, not in the canonical Details section. */}
 
           {/* ── Feature IR fields ──── jira-compare night session
               (2026-04-28). Read-only surfaces of:

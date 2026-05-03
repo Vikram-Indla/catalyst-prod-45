@@ -22,7 +22,6 @@ import {
 import { LinkedWorkItemsSection } from '@/modules/project-work-hub/components/linked-work-items';
 import { SubtasksPanel } from '@/modules/project-work-hub/components/SubtasksPanel';
 import { EditablePriority } from '@/modules/project-work-hub/components/dialogs/story-detail-modules/EditableFields';
-import { ImproveIssueDropdown, useImproveApplyHandlers } from '@/components/catalyst-detail-views/improve';
 import type { CatalystViewBaseProps } from '../shared/types';
 import {
   PRIORITY_STYLES,
@@ -37,7 +36,6 @@ export default function CatalystViewDefect({
   const mutations = useCatalystIssueMutations(itemId, onClose);
   const priorityStyle = PRIORITY_STYLES[issue?.priority ?? 'Medium'] ?? PRIORITY_STYLES.Medium;
   const queryClient = useQueryClient();
-  const improveHandlers = useImproveApplyHandlers(issue ?? null);
 
   const leftContent = (
     <>
@@ -45,12 +43,6 @@ export default function CatalystViewDefect({
       <CatalystStatusPill status={issue?.status} onStatusChange={(st) => mutations.updateStatus.mutate(st)} />
       <CatalystQuickActions />
 
-      {/* Apr 28, 2026 (jira-compare cycle 3 — Phase B B2):
-          AI "Improve QA Bug" dropdown (mirrors Jira's
-          issue-improve-issue-dropdown trigger). Per-type prompt
-          focus is selected backend-side from PER_TYPE_FOCUS keyed
-          off `issue.issue_type`. */}
-      <ImproveIssueDropdown issue={issue ?? null} {...improveHandlers} />
 
       {/* Jira-parity: Parent → Severity → Priority → (any populated
           Catalyst-only fields) all render inside the collapsible "Key
@@ -160,7 +152,7 @@ export default function CatalystViewDefect({
       itemType={issue?.issue_type || 'Bug'} itemKey={issue?.issue_key || null}
       projectKey={issue?.project_key || projectKey} projectName={issue?.project_name || undefined}
       parentKey={issue?.parent_key} parentType="Epic"
-      onParentClick={issue?.parent_key ? () => onOpenItem?.(issue.parent_key!) : undefined}
+      onParentClick={issue?.parent_key ? () => {} : undefined}
       /* Canonical Add-parent (Catalyst rule): Defect → Story / Epic / Feature parent. */
       parentSource="story_epic_feature"
       onParentChange={async (newKey) => {

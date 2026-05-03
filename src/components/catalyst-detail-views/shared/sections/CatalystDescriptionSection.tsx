@@ -14,7 +14,7 @@
  * silently dropping users onto a different editor whose output shape
  * we do not accept.
  */
-import React, { Suspense, lazy, useState, useCallback } from 'react';
+import React, { Suspense, useState, useCallback } from 'react';
 /* jira-compare 2026-05-03 (Council P3.2): lucide ChevronRight + Pencil
    removed — CLAUDE.md "ADS-only inside hub scope" violation. Swapped to
    Atlaskit equivalents. Heading wrapper also dropped in favour of an
@@ -28,23 +28,22 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { adfToPlainText, isAdfEmpty } from '@/components/shared/rich-text/atlaskit/adfHelpers';
 import { prefetchEpicEditor } from '@/lib/atlaskitPrefetch';
+import EpicDescriptionEditor from '@/components/shared/rich-text/atlaskit/EpicDescriptionEditor';
+import EpicDescriptionRenderer from '@/components/shared/rich-text/atlaskit/EpicDescriptionRenderer';
 import type { PhIssue } from '../types';
 
 /* Atlaskit description — canonical across ALL issue types.
-   LAYER 1 — STRICT VIEW/EDIT SPLIT (Atlassian-canonical).
-   The renderer chunk (~400–600KB) is loaded on view.
-   The editor-core chunk (~2MB) is loaded only on Edit click.
+   2026-05-03 (Council verdict): Converted lazy imports to static imports
+   to eliminate "Loading editor..." UX delay. The editor chunk (~2MB) now
+   loads eagerly on page init (bundled into the main app chunk) rather than
+   on Edit click. Trade-off: larger initial bundle, but instant edit experience
+   matching Jira's behavior.
 
-   These lazy imports MUST target the component files directly, NOT the
-   `@/components/shared/rich-text/atlaskit` barrel. Rollup treats each
-   `import(...)` specifier as the module boundary for the generated chunk:
-   if both dynamic imports resolve to the same barrel module, Rollup
-   hoists every barrel re-export into one chunk — so loading the
-   Renderer drags `@atlaskit/editor-core` with it. Direct file imports
+   The renderer chunk (~400–600KB) remains optimized.
+
+   These imports target the component files directly, NOT the
+   `@/components/shared/rich-text/atlaskit` barrel. Direct file imports
    keep the two graphs separate and let the renderer load alone on view.
-
-   Wrapped in AtlaskitBoundary so a chunk-load failure or runtime error
-   surfaces in the console and a safe TipTap/HTML path is used as fallback.
 
    Data-contract shim: `parseStoredDescriptionToAdf` (inside the Atlaskit
    Editor/Renderer components) accepts ADF object, ADF JSON string, plain
@@ -56,12 +55,6 @@ import type { PhIssue } from '../types';
    File names still reference "Epic" for historical reasons; the files
    themselves are generic ADF editor/renderer pair. File renames are a
    separate follow-up task. */
-const EpicDescriptionEditor = lazy(
-  () => import('@/components/shared/rich-text/atlaskit/EpicDescriptionEditor'),
-);
-const EpicDescriptionRenderer = lazy(
-  () => import('@/components/shared/rich-text/atlaskit/EpicDescriptionRenderer'),
-);
 
 function AtlaskitFallback({ minHeight = 80 }: { minHeight?: number }) {
   /* jira-compare follow-up (2026-05-02): replaced literal "Loading editor…"

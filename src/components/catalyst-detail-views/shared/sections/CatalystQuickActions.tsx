@@ -12,7 +12,15 @@
  * Also includes the AI Sparkles button matching StoryDetailModal parity.
  */
 import React, { useState, useRef, useEffect } from 'react';
-import { Plus, CheckSquare, Link2, Paperclip, Globe, Palette, Search, X, Sparkles } from 'lucide-react';
+import AddIcon from '@atlaskit/icon/core/add';
+import CheckIcon from '@atlaskit/icon/glyph/check';
+import ArrowRightIcon from '@atlaskit/icon/glyph/arrow-right';
+import AttachmentIcon from '@atlaskit/icon/glyph/attachment';
+import WorldIcon from '@atlaskit/icon/glyph/world';
+import EditIcon from '@atlaskit/icon/core/edit';
+import SearchIcon from '@atlaskit/icon/core/search';
+import CrossIcon from '@atlaskit/icon/glyph/cross';
+import SparklesIcon from '@atlaskit/icon/core/ai-chat';
 import { toast } from 'sonner';
 
 interface CatalystQuickActionsProps {
@@ -58,11 +66,11 @@ export function CatalystQuickActions({
   const borderColor = 'rgba(11, 18, 14, 0.14)';
 
   const menuItems = [
-    { id: 'child', icon: <CheckSquare size={16} color={textColor} />, label: 'Create child work item', section: 'primary', action: () => { setShowMenu(false); setSearch(''); onCreateChild ? onCreateChild() : toast('Create child — scroll to Child work items section'); } },
-    { id: 'link', icon: <Link2 size={16} color={textColor} />, label: 'Link work item', section: 'primary', action: () => { setShowMenu(false); setSearch(''); onLinkItem ? onLinkItem() : toast.info('Link work item — coming soon'); } },
-    { id: 'attachment', icon: <Paperclip size={16} color={textColor} />, label: 'Add attachment', section: 'secondary', action: () => { setShowMenu(false); setSearch(''); onAddAttachment ? onAddAttachment() : toast.info('Add attachment — coming soon'); } },
-    { id: 'weblink', icon: <Globe size={16} color={textColor} />, label: 'Add web link', section: 'secondary', action: () => { setShowMenu(false); setSearch(''); onAddWebLink ? onAddWebLink() : toast.info('Add web link — coming soon'); } },
-    { id: 'design', icon: <Palette size={16} color={textColor} />, label: 'Add design', section: 'secondary', action: () => { setShowMenu(false); setSearch(''); onAddDesign ? onAddDesign() : toast.info('Add design — coming soon'); } },
+    { id: 'child', icon: <CheckIcon size="small" primaryColor={textColor} />, label: 'Create child work item', section: 'primary', action: () => { setShowMenu(false); setSearch(''); onCreateChild ? onCreateChild() : toast('Create child — scroll to Child work items section'); } },
+    { id: 'link', icon: <ArrowRightIcon size="small" primaryColor={textColor} />, label: 'Link work item', section: 'primary', action: () => { setShowMenu(false); setSearch(''); onLinkItem ? onLinkItem() : toast.info('Link work item — coming soon'); } },
+    { id: 'attachment', icon: <AttachmentIcon size="small" primaryColor={textColor} />, label: 'Add attachment', section: 'secondary', action: () => { setShowMenu(false); setSearch(''); onAddAttachment ? onAddAttachment() : toast.info('Add attachment — coming soon'); } },
+    { id: 'weblink', icon: <WorldIcon size="small" primaryColor={textColor} />, label: 'Add web link', section: 'secondary', action: () => { setShowMenu(false); setSearch(''); onAddWebLink ? onAddWebLink() : toast.info('Add web link — coming soon'); } },
+    { id: 'design', icon: <EditIcon size="small" primaryColor={textColor} />, label: 'Add design', section: 'secondary', action: () => { setShowMenu(false); setSearch(''); onAddDesign ? onAddDesign() : toast.info('Add design — coming soon'); } },
   ];
 
   const q = search.toLowerCase();
@@ -107,7 +115,7 @@ export function CatalystQuickActions({
           aria-label="Add"
           title="Add"
         >
-          <Plus size={14} strokeWidth={2} />
+          <AddIcon size="small" primaryColor={textColor} />
         </button>
 
         {showMenu && (
@@ -120,15 +128,15 @@ export function CatalystQuickActions({
             {/* Search */}
             <div style={{ margin: '4px 8px' }}>
               <div style={{ display: 'flex', alignItems: 'center', border: `0.5px solid ${borderColor}`, borderRadius: 3, padding: '1px 0' }}>
-                <Search size={14} color={textColor} style={{ marginLeft: 8, flexShrink: 0 }} />
+                <span style={{ marginLeft: 8, flexShrink: 0, display: 'flex', alignItems: 'center' }}><SearchIcon size="small" primaryColor={textColor} /></span>
                 <input
                   type="text" placeholder="Find menu item" value={search}
                   onChange={e => setSearch(e.target.value)} autoFocus
                   style={{ background: 'transparent', border: 'none', outline: 'none', padding: '4px 4px 4px 8px', fontSize: 14, color: textColor, width: '100%', height: 28, fontFamily: 'inherit' }}
                 />
                 {search && (
-                  <button onClick={() => setSearch('')} style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: textColor, display: 'flex', padding: 0, marginRight: 6 }}>
-                    <X size={14} />
+                  <button onClick={() => setSearch('')} style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: textColor, display: 'flex', padding: 0, marginRight: 6, alignItems: 'center' }}>
+                    <CrossIcon size="small" primaryColor={textColor} />
                   </button>
                 )}
               </div>
@@ -180,7 +188,7 @@ export function CatalystQuickActions({
           aria-label="Catalyst Intelligence"
           title="Catalyst Intelligence"
         >
-          <Sparkles size={14} />
+          <SparklesIcon size="small" />
         </button>
         {showAiMenu && (
           <div style={{

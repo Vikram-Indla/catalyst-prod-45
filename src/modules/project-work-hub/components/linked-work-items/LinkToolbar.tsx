@@ -23,7 +23,7 @@ import React, { useMemo, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import Select, { AsyncSelect } from '@atlaskit/select';
 import Button from '@atlaskit/button/new';
-import { Plus } from 'lucide-react';
+import PlusIcon from '@atlaskit/icon/core/add';
 import { supabase } from '@/integrations/supabase/client';
 import { WORK_ITEM_ICONS } from '../dialogs/story-detail-modules/constants';
 import { LINK_TYPES, DEFAULT_LINK_TYPE } from './constants';
@@ -233,7 +233,7 @@ export function LinkToolbar({
           onClick={() => onCreateNew?.(linkType.value)}
           disabled={!onCreateNew}
         >
-          <Plus size={14} strokeWidth={1.75} /> Create linked work item
+          <PlusIcon label="" size="small" /> Create linked work item
         </button>
         <div className="lwi-toolbar__buttons">
           <Button

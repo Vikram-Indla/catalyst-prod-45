@@ -1,6 +1,10 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Search, Filter, SlidersHorizontal, X, ChevronDown, GripVertical } from 'lucide-react';
 import type { FilterState, GroupByField, ColumnDef, SortColumn } from '@/hooks/useWorkItemListState';
+import SearchIconCore from '@atlaskit/icon/core/search';
+import FilterIconCore from '@atlaskit/icon/core/filter';
+import CrossIconCore from '@atlaskit/icon/glyph/cross';
+import ChevronDownIcon from '@atlaskit/icon/glyph/chevron-down';
+import MenuIcon from '@atlaskit/icon/glyph/menu';
 
 // ─── Types ────────────────────────────────────────────────
 interface WorkItemsToolbarProps {
@@ -76,7 +80,7 @@ export function WorkItemsToolbar(props: WorkItemsToolbarProps) {
         <div className="flex items-center gap-2">
           {/* Search */}
           <div className="relative">
-            <Search size={14} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-[var(--ds-text-subtlest,#94A3B8)]" />
+            <SearchIconCore label="" className="absolute left-2.5 top-1/2 -translate-y-1/2" style={{ color: 'var(--ds-text-subtlest, #94A3B8)' }} />
             <input
               type="text"
               placeholder="Search list"
@@ -90,7 +94,7 @@ export function WorkItemsToolbar(props: WorkItemsToolbarProps) {
                 onClick={() => onSearchChange('')}
                 className="absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 flex items-center justify-center rounded-full hover:bg-[var(--ds-surface-sunken,#F1F5F9)]"
               >
-                <X size={10} className="text-[var(--ds-text-subtlest,#94A3B8)]" />
+                <CrossIconCore label="" style={{ color: 'var(--ds-text-subtlest, #94A3B8)' }} />
               </button>
             )}
           </div>
@@ -137,7 +141,7 @@ export function WorkItemsToolbar(props: WorkItemsToolbarProps) {
                 fontFamily: 'var(--cp-font-body)',
               }}
             >
-              <Filter size={13} />
+              <FilterIconCore label="" style={{ color: 'inherit' }} />
               Filter
               {hasActiveFilters && (
                 <span className="w-4 h-4 rounded-full bg-[var(--ds-text-brand,#2563EB)] text-white text-[9px] flex items-center justify-center font-bold">
@@ -168,7 +172,7 @@ export function WorkItemsToolbar(props: WorkItemsToolbarProps) {
               style={{ borderColor: 'var(--divider)', color: 'var(--fg-2)', fontFamily: 'var(--cp-font-body)' }}
             >
               Group: {GROUP_OPTIONS.find(o => o.value === groupBy)?.label}
-              <ChevronDown size={11} />
+              <ChevronDownIcon label="" primaryColor="var(--fg-2)" size="small" />
             </button>
             {groupOpen && (
               <div
@@ -198,7 +202,7 @@ export function WorkItemsToolbar(props: WorkItemsToolbarProps) {
               style={{ borderColor: 'var(--divider)', color: 'var(--fg-3)' }}
               title="Column settings"
             >
-              <SlidersHorizontal size={14} />
+              <FilterIconCore label="" style={{ color: 'var(--fg-3)' }} />
             </button>
             {colSettingsOpen && (
               <ColumnSettingsDropdown columns={columns} onChange={onColumnsChange} />
@@ -217,7 +221,7 @@ export function WorkItemsToolbar(props: WorkItemsToolbarProps) {
               style={{ color: 'var(--cp-blue)', border: '1px solid var(--cp-primary-20)' }}
             >
               {chip.label}: {chip.value}
-              <button onClick={chip.remove} className="hover:text-[var(--ds-text-danger,#DC2626)]"><X size={9} /></button>
+              <button onClick={chip.remove} className="hover:text-[var(--ds-text-danger,#DC2626)]"><CrossIconCore label="" style={{ color: 'var(--ds-text-danger, #DC2626)' }} /></button>
             </span>
           ))}
           <button
@@ -383,7 +387,7 @@ function ColumnSettingsDropdown({ columns, onChange }: { columns: ColumnDef[]; o
           onDragEnd={() => setDragIdx(null)}
           className="flex items-center gap-2 px-3 py-1.5 cursor-move hover:bg-[var(--ds-surface-sunken,#F8FAFC)]"
         >
-          <GripVertical size={11} className="text-[var(--ds-text-disabled,#CBD5E1)] shrink-0" />
+          <MenuIcon label="" primaryColor="var(--ds-text-disabled, #CBD5E1)" size="small" className="shrink-0" />
           <label className="flex items-center gap-2 flex-1 cursor-pointer">
             <input
               type="checkbox"

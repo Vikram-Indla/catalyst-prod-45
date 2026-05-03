@@ -15,7 +15,9 @@
  */
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { X, Share2, MoreHorizontal } from 'lucide-react';
+import CrossIcon from '@atlaskit/icon/core/close';
+import ShareIcon from '@atlaskit/icon/core/share';
+import MoreIcon from '@atlaskit/icon/core/menu';
 import { toast } from 'sonner';
 import Modal from '@atlaskit/modal-dialog';
 import Button, { IconButton } from '@atlaskit/button/new';
@@ -339,7 +341,7 @@ export function CatalystViewBase({
                 Hover state + typography owned by Atlaskit tokens. */}
             <Button
               appearance="subtle"
-              iconBefore={() => <Share2 size={16} />}
+              iconBefore={() => <ShareIcon size="small" />}
               onClick={handleShare}
             >
               Share
@@ -352,7 +354,7 @@ export function CatalystViewBase({
                 <IconButton
                   appearance="subtle"
                   isSelected={showDotsMenu}
-                  icon={() => <MoreHorizontal size={18} />}
+                  icon={() => <MoreIcon size="small" />}
                   label="More actions"
                   onClick={() => setShowDotsMenu(!showDotsMenu)}
                 />
@@ -410,7 +412,7 @@ export function CatalystViewBase({
               <Tooltip content="Close (Esc)">
                 <IconButton
                   appearance="subtle"
-                  icon={() => <X size={18} />}
+                  icon={() => <CrossIcon size="small" />}
                   label="Close"
                   onClick={onClose}
                 />

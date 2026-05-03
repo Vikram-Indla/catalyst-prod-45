@@ -225,6 +225,134 @@ export function EditableAssignee({ issueId, issueKey, projectId, currentAssignee
   );
 }
 
+/* ── EditableReporter ──────────────────────── */
+/**
+ * Jira parity (2026-05-03, Defect-2 Cycle 6):
+ * Reporter field made editable following the EditableAssignee pattern.
+ * Allows changing who is designated as the reporter for an issue.
+ * Uses @atlaskit/select with project members as options.
+ */
+type ReporterOption = {
+  value: string;
+  label: string;
+  userId: string | null; // null for None
+  avatarUrl: string | null;
+};
+const REPORTER_NONE_VALUE = '__none__';
+
+export function EditableReporter({ issueId, projectId, currentReporterId, currentReporterName, onUpdate }: {
+  issueId: string; projectId: string; currentReporterId: string | null; currentReporterName: string | null; onUpdate: () => void;
+}) {
+  const { data: members = [] } = useQuery({
+    queryKey: ['projectMembers-reporter', projectId],
+    queryFn: async () => {
+      const { data, error } = await supabase.from('project_members').select('user_id, role').eq('project_id', projectId);
+      if (error) throw error;
+      if (!data?.length) return [];
+      const userIds = data.map(d => d.user_id);
+      const { data: profiles } = await supabase.from('profiles').select('id, full_name').in('id', userIds);
+      const profileMap = new Map((profiles ?? []).map(p => [p.id, p]));
+      return data.map(d => {
+        const full_name = profileMap.get(d.user_id)?.full_name ?? 'Unknown';
+        return {
+          user_id: d.user_id,
+          full_name,
+          avatar_url: resolveAvatarUrl(full_name),
+          role: d.role,
+        };
+      }) as ProjectMember[];
+    },
+  });
+
+  const updateMutation = useMutation({
+    mutationFn: async (userId: string | null) => {
+      const updateData = {
+        reporter_account_id: userId,
+        reporter_display_name: userId ? (members.find(m => m.user_id === userId)?.full_name ?? null) : null,
+      };
+      const { error } = await supabase.from('ph_issues').update(updateData as any).eq('id', issueId);
+      if (error) throw error;
+    },
+    onSuccess: () => { onUpdate(); },
+  });
+
+  const options: ReporterOption[] = useMemo(() => {
+    const memberOptions: ReporterOption[] = members.map(m => ({
+      value: m.user_id,
+      label: m.full_name,
+      userId: m.user_id,
+      avatarUrl: m.avatar_url ?? null,
+    }));
+    return [
+      { value: REPORTER_NONE_VALUE, label: 'None', userId: null, avatarUrl: null },
+      ...memberOptions,
+    ];
+  }, [members]);
+
+  const selected: ReporterOption = useMemo(() => {
+    if (!currentReporterId) {
+      return { value: REPORTER_NONE_VALUE, label: 'None', userId: null, avatarUrl: null };
+    }
+    const matched = options.find(o => o.userId === currentReporterId);
+    if (matched) return matched;
+    return {
+      value: currentReporterId,
+      label: currentReporterName ?? 'Unknown',
+      userId: currentReporterId,
+      avatarUrl: currentReporterName ? resolveAvatarUrl(currentReporterName) : null,
+    };
+  }, [currentReporterId, currentReporterName, options]);
+
+  return (
+    <div style={{ flex: 1, minWidth: 0 }}>
+      <Select<ReporterOption>
+        inputId={`reporter-${issueId}`}
+        appearance="subtle"
+        spacing="compact"
+        isSearchable
+        classNamePrefix="cv-reporter-select"
+        placeholder="None"
+        options={options}
+        value={selected}
+        onChange={(v) => {
+          if (!v) return;
+          const nextUserId = v.value === REPORTER_NONE_VALUE ? null : v.userId;
+          if (nextUserId === (currentReporterId ?? null)) return;
+          updateMutation.mutate(nextUserId);
+        }}
+        formatOptionLabel={(opt: ReporterOption) => (
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8, minWidth: 0 }}>
+            {opt.value === REPORTER_NONE_VALUE ? (
+              <div style={{
+                width: 24, height: 24, borderRadius: '50%', flexShrink: 0,
+                border: '1px dashed #C1C7D0', display: 'flex', alignItems: 'center',
+                justifyContent: 'center', fontSize: 14, color: '#C1C7D0',
+              }}>?</div>
+            ) : (
+              <AvatarCircle
+                userId={opt.userId ?? opt.value}
+                name={opt.label}
+                avatarUrl={opt.avatarUrl}
+                size={24}
+              />
+            )}
+            <span style={{
+              fontSize: 14,
+              color: opt.value === REPORTER_NONE_VALUE ? 'var(--ds-text-subtlest, #6B6E76)' : 'var(--ds-text, #172B4D)',
+              fontWeight: 400,
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              whiteSpace: 'nowrap',
+            }}>
+              {opt.label}
+            </span>
+          </span>
+        )}
+      />
+    </div>
+  );
+}
+
 /* ── EditablePriority ──────────────────────── */
 /**
  * Jira parity (2026-04-20, Drawer Phase 5 Atlaskit sweep):

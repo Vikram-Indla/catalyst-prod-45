@@ -3,7 +3,7 @@
  */
 import React from 'react';
 import { toast } from 'sonner';
-import { AlertTriangle } from 'lucide-react';
+import WarningIcon from '@atlaskit/icon/core/warning';
 import { CatalystViewBase } from '../shared/CatalystViewBase';
 import { useCatalystIssue, useCatalystIssueMutations } from '../shared/hooks';
 import {
@@ -35,7 +35,7 @@ export default function CatalystViewIncident({
         display: 'flex', alignItems: 'center', gap: 8, padding: '8px 12px',
         background: '#FFF5F5', borderRadius: 6, marginBottom: 16, border: '1px solid #FFEDEB',
       }}>
-        <AlertTriangle size={16} color="#FF5630" />
+        <WarningIcon size="small" primaryColor="#FF5630" />
         <span style={{ fontSize: 13, fontWeight: 600, color: '#BF2600' }}>Production Incident</span>
         <span style={{ fontSize: 12, color: '#5E6C84', marginLeft: 'auto' }}>
           Priority: <span style={{ color: priorityStyle.color, fontWeight: 700 }}>{priorityStyle.symbol} {issue?.priority ?? 'Medium'}</span>

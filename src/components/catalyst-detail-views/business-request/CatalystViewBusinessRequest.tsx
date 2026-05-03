@@ -8,7 +8,7 @@
  */
 import React from 'react';
 import { toast } from 'sonner';
-import { FileText } from 'lucide-react';
+import FileIcon from '@atlaskit/icon/glyph/document';
 import { CatalystViewBase } from '../shared/CatalystViewBase';
 import { useCatalystIssue, useCatalystIssueMutations } from '../shared/hooks';
 import {
@@ -36,7 +36,7 @@ export default function CatalystViewBusinessRequest({
         display: 'inline-flex', alignItems: 'center', gap: 6, padding: '4px 10px',
         background: 'var(--ds-background-selected, #EFF6FF)', borderRadius: 4, marginBottom: 12, fontSize: 12, fontWeight: 600, color: 'var(--ds-background-brand-bold-hovered, #1D4ED8)',
       }}>
-        <FileText size={14} />
+        <FileIcon size="small" primaryColor="var(--ds-background-brand-bold-hovered, #1D4ED8)" />
         Business Request
       </div>
 

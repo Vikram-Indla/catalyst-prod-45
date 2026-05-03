@@ -1,19 +1,19 @@
 /**
- * WatchersChip — Jira-parity eye + count chip for the detail header.
+ * WatchersChip — Jira-parity watch indicator for the detail header.
  *
  * Placement: between IssueNavChevrons and the Share button in
- * CatalystViewBase. Mirrors Jira's pattern (filled eye when watching,
- * outline eye when not, count next to the icon).
+ * CatalystViewBase. Mirrors Jira's pattern (filled star when watching,
+ * outline star when not, count next to the icon).
  *
  * Atlaskit primitives: @atlaskit/button IconButton (interactive wrapper) +
- * @atlaskit/tooltip. Glyph is lucide Eye / EyeOff to match the rest of
- * this file's icon usage; the @atlaskit/icon `WatchIcon` is the canonical
- * substitute and can be swapped in once it's added to the bundle.
+ * @atlaskit/tooltip. Uses glyph star/star-filled (watch/unwatch icons not
+ * yet in Atlaskit bundle per prior session notes).
  */
 import React from 'react';
 import { IconButton } from '@atlaskit/button/new';
 import Tooltip from '@atlaskit/tooltip';
-import { Eye, EyeOff } from 'lucide-react';
+import StarIcon from '@atlaskit/icon/glyph/star';
+import StarFilledIcon from '@atlaskit/icon/glyph/star-filled';
 import { useCatalystWatchers } from './hooks/useCatalystWatchers';
 
 interface Props {
@@ -32,7 +32,7 @@ export function WatchersChip({ issueKey }: Props) {
         <IconButton
           appearance="subtle"
           isSelected={isWatching}
-          icon={() => isWatching ? <Eye size={16} /> : <EyeOff size={16} />}
+          icon={() => isWatching ? <StarFilledIcon size="small" /> : <StarIcon size="small" />}
           label={label}
           onClick={() => toggle.mutate()}
         />

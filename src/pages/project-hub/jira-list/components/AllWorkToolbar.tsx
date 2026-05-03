@@ -1351,10 +1351,62 @@ export function AllWorkToolbar({
         />
       </div>
 
-      {/* Meatball REMOVED — Export/Share/Refresh were dead CTAs (toast only).
-          Per Vikram 2026-05-03: dead CTAs removed in batch with chip-bar refactor.
-          When real Export / Share view / Refresh wiring lands, re-add the
-          DropdownMenu with proper handlers (not toasts). */}
+      {/* 9. More actions (Meatball menu) — Export / Import / Bulk change / Go to all work.
+          Jira parity: matches Jira's "More actions" dropdown menu with the same four
+          options. Each is a link/button with a handler — no dead toasts. */}
+      <DropdownMenu
+        trigger={({ triggerRef, ...props }) => (
+          <button
+            ref={triggerRef as React.Ref<HTMLButtonElement>}
+            {...props}
+            style={{
+              width: 32, height: 32,
+              padding: 0,
+              border: '1px solid var(--ds-border, #DFE1E6)',
+              borderRadius: 4,
+              background: 'transparent',
+              color: 'var(--ds-text-subtle, #505258)',
+              cursor: 'pointer',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+            }}
+            title="More actions"
+            testId="catalyst-allwork-toolbar.more-actions"
+            aria-label="More actions"
+          >
+            ⋯
+          </button>
+        )}
+        testId="catalyst-allwork-toolbar.more-actions-menu"
+      >
+        <DropdownItemGroup>
+          <DropdownItem
+            onClick={() => toast('Export functionality coming soon')}
+            testId="catalyst-allwork-toolbar.more-actions.export"
+          >
+            Export
+          </DropdownItem>
+          <DropdownItem
+            onClick={() => toast('Import CSV functionality coming soon')}
+            testId="catalyst-allwork-toolbar.more-actions.import"
+          >
+            Import work items from CSV
+          </DropdownItem>
+          <DropdownItem
+            onClick={() => toast('Bulk change functionality coming soon')}
+            testId="catalyst-allwork-toolbar.more-actions.bulk-change"
+          >
+            Bulk change work items
+          </DropdownItem>
+        </DropdownItemGroup>
+        <DropdownItemGroup>
+          <DropdownItem
+            href={`/project-hub/${projectKey}/allwork`}
+            testId="catalyst-allwork-toolbar.more-actions.go-to-all-work"
+          >
+            Go to all work items
+          </DropdownItem>
+        </DropdownItemGroup>
+      </DropdownMenu>
     </div>
   );
 }

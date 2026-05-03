@@ -24,7 +24,12 @@
  */
 
 import React, { useEffect, useRef, useState } from 'react';
-import { Sparkles, ChevronDown, Wand2, MessageSquareText, ListTree, Search } from 'lucide-react';
+import SparklesIcon from '@atlaskit/icon/core/ai-chat';
+import ChevronDownIcon from '@atlaskit/icon/glyph/chevron-down';
+import WandIcon from '@atlaskit/icon/core/magic-wand';
+import CommentIcon from '@atlaskit/icon/core/comment';
+import ListBulletedIcon from '@atlaskit/icon/core/list-bulleted';
+import SearchIcon from '@atlaskit/icon/core/search';
 import { token } from '@atlaskit/tokens';
 import { ImproveDescriptionDialog } from './ImproveDescriptionDialog';
 import { SummarizeCommentsDialog } from './SummarizeCommentsDialog';
@@ -160,9 +165,9 @@ export function ImproveIssueDropdown({
           onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = 'var(--ds-background-neutral-subtle-hovered, #F4F5F7)'; }}
           onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = 'transparent'; }}
         >
-          <Sparkles size={16} color={'var(--ds-text, #292A2E)' as any} />
+          <SparklesIcon size="small" primaryColor="var(--ds-text, #292A2E)" />
           {triggerLabel}
-          <ChevronDown size={14} color={'var(--ds-text-subtle, #42526E)' as any} />
+          <ChevronDownIcon size="small" primaryColor="var(--ds-text-subtle, #42526E)" />
         </button>
 
         {open && (
@@ -204,7 +209,7 @@ export function ImproveIssueDropdown({
               onMouseEnter={(e) => (e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', '#F4F5F7'))}
               onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
             >
-              <Wand2 size={16} color={token('color.icon.subtle', '#6B6E76') as string} />
+              <WandIcon size="small" primaryColor={token('color.icon.subtle', '#6B6E76')} />
               <span style={{ flex: 1 }}>Improve description</span>
             </button>
 
@@ -217,7 +222,7 @@ export function ImproveIssueDropdown({
               onMouseEnter={(e) => (e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', '#F4F5F7'))}
               onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
             >
-              <MessageSquareText size={16} color={token('color.icon.subtle', '#6B6E76') as string} />
+              <CommentIcon size="small" primaryColor={token('color.icon.subtle', '#6B6E76')} />
               <span style={{ flex: 1 }}>Summarize comments</span>
             </button>
 
@@ -231,7 +236,7 @@ export function ImproveIssueDropdown({
                 onMouseEnter={(e) => (e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', '#F4F5F7'))}
                 onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
               >
-                <ListTree size={16} color={token('color.icon.subtle', '#6B6E76') as string} />
+                <ListBulletedIcon size="small" primaryColor={token('color.icon.subtle', '#6B6E76')} />
                 <span style={{ flex: 1 }}>Suggest child work items</span>
               </button>
             )}
@@ -245,7 +250,7 @@ export function ImproveIssueDropdown({
               onMouseEnter={(e) => (e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', '#F4F5F7'))}
               onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
             >
-              <Search size={16} color={token('color.icon.subtle', '#6B6E76') as string} />
+              <SearchIcon size="small" primaryColor={token('color.icon.subtle', '#6B6E76')} />
               <span style={{ flex: 1 }}>Link similar work items</span>
             </button>
           </div>

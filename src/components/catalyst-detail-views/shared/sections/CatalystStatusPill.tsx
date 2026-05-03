@@ -23,7 +23,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import Lozenge from '@atlaskit/lozenge';
 import { token } from '@atlaskit/tokens';
-import { ChevronDown } from 'lucide-react';
+import ChevronDownIcon from '@atlaskit/icon/glyph/chevron-down';
 import { STATUS_OPTION_GROUPS } from '@/modules/project-work-hub/components/dialogs/story-detail-modules/constants';
 import { statusToLozenge } from '@/modules/project-work-hub/utils/statusToLozenge';
 
@@ -137,7 +137,7 @@ export function CatalystStatusPill({ status, statusCategory, onStatusChange }: C
             </span>
           );
         })()}
-        <ChevronDown size={12} color={token('color.icon.subtle', '#42526E') as string} />
+        <ChevronDownIcon size="small" primaryColor={token('color.icon.subtle', '#42526E') as string} />
       </button>
       </div>
 

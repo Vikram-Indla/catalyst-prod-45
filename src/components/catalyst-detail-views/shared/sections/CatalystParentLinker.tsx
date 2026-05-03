@@ -14,7 +14,10 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { Search, X, Check, Plus } from 'lucide-react';
+import SearchIcon from '@atlaskit/icon/core/search';
+import CrossIcon from '@atlaskit/icon/glyph/cross';
+import CheckIcon from '@atlaskit/icon/glyph/check';
+import AddIcon from '@atlaskit/icon/core/add';
 import type { PhIssue, CatalystItemType } from '../types';
 import { PARENT_LINK_RULES, type ParentLinkRule } from '../parent-rules';
 import {
@@ -45,7 +48,7 @@ function SidebarAddTrigger({
       onMouseEnter={e => { e.currentTarget.style.borderColor = '#4C9AFF'; e.currentTarget.style.background = 'var(--ds-surface-sunken, #F4F5F7)'; }}
       onMouseLeave={e => { e.currentTarget.style.borderColor = '#C1C7D0'; e.currentTarget.style.background = 'none'; }}
     >
-      <Plus size={12} /> {label}
+      <AddIcon size="small" primaryColor="#5E6C84" /> {label}
     </button>
   );
 }
@@ -224,13 +227,13 @@ function BusinessRequestParentPicker({
           <IssueIcon type="Business Request" size={16} />
           <span
             style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 14, color: '#0052CC', cursor: 'pointer', flexShrink: 0 }}
-            onClick={() => onOpenItem?.(currentParent.id)}
+            onClick={() => setShowPicker(!showPicker)}
           >{currentParent.request_key}</span>
           <span style={{ fontSize: 14, color: '#292A2E', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', cursor: 'pointer' }}
-            onClick={() => onOpenItem?.(currentParent.id)}
+            onClick={() => setShowPicker(!showPicker)}
           >{currentParent.title}</span>
           <button onClick={() => updateParent.mutate(null)} title="Remove parent" style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 2, color: 'var(--ds-text-subtlest, #6B778C)', display: 'flex' }}>
-            <X size={12} />
+            <CrossIcon size="small" primaryColor="var(--ds-text-subtlest, #6B778C)" />
           </button>
         </div>
       ) : (
@@ -247,10 +250,10 @@ function BusinessRequestParentPicker({
           {/* Search */}
           <div style={{ padding: '8px 12px', borderBottom: '1px solid #F4F5F7' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 6, border: '2px solid #4C9AFF', borderRadius: 4, padding: '4px 8px' }}>
-              <Search size={14} color="#5E6C84" />
+              <SearchIcon size="small" primaryColor="#5E6C84" />
               <input autoFocus value={search} onChange={e => setSearch(e.target.value)} placeholder="Search business requests…"
                 style={{ border: 'none', outline: 'none', fontSize: 13, color: '#292A2E', width: '100%', fontFamily: 'inherit' }} />
-              {search && <button onClick={() => setSearch('')} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--ds-text-subtlest, #6B778C)', display: 'flex', padding: 0 }}><X size={14} /></button>}
+              {search && <button onClick={() => setSearch('')} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--ds-text-subtlest, #6B778C)', display: 'flex', padding: 0 }}><CrossIcon size="small" primaryColor="var(--ds-text-subtlest, #6B778C)" /></button>}
             </div>
           </div>
           <div style={{ overflowY: 'auto', maxHeight: 340 }}>
@@ -291,7 +294,7 @@ function renderBrGroup(
             <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 12, color: '#5E6C84', flexShrink: 0 }}>{item.request_key || '—'}</span>
             <span style={{ fontSize: 13, color: '#292A2E', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.title}</span>
             <StatusLozenge status={item.process_step} category={statusCat} />
-            {isSelected && <Check size={16} color="#0052CC" />}
+            {isSelected && <CheckIcon size="small" primaryColor="#0052CC" />}
           </div>
         );
       })}
@@ -403,10 +406,10 @@ function SingleParentPicker({
             parentType={currentParent.issue_type}
             parentKey={currentParent.issue_key}
             parentSummary={currentParent.summary}
-            onClick={() => onOpenItem?.(currentParent.id)}
+            onClick={() => setShowPicker(!showPicker)}
           />
           <button onClick={() => updateParent.mutate(null)} title="Remove parent" style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 2, color: 'var(--ds-text-subtlest, #6B778C)', display: 'flex' }}>
-            <X size={12} />
+            <CrossIcon size="small" primaryColor="var(--ds-text-subtlest, #6B778C)" />
           </button>
         </div>
       ) : hasRawParent ? (
@@ -424,7 +427,7 @@ function SingleParentPicker({
             parentType={(issue as any)?.parent_issue_type || 'Epic'}
             parentKey={rawParentKey!}
             parentSummary={(issue as any)?.parent_summary}
-            onClick={() => onOpenItem?.(rawParentKey!)}
+            onClick={() => setShowPicker(!showPicker)}
           />
           {/* Apr 27, 2026: removed the "(details unavailable)" italic suffix.
               Vikram flagged it as misleading — it appeared whenever the
@@ -433,7 +436,7 @@ function SingleParentPicker({
               table). The clickable key + icon already signal "parent
               exists"; the suffix made functional rows look broken. */}
           <button onClick={() => updateParent.mutate(null)} title="Remove parent" style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 2, color: 'var(--ds-text-subtlest, #6B778C)', display: 'flex', marginLeft: 'auto' }}>
-            <X size={12} />
+            <CrossIcon size={12} />
           </button>
         </div>
       ) : (
@@ -450,10 +453,10 @@ function SingleParentPicker({
           {/* Search */}
           <div style={{ padding: '8px 12px', borderBottom: '1px solid #F4F5F7' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 6, border: '2px solid #4C9AFF', borderRadius: 4, padding: '4px 8px' }}>
-              <Search size={14} color="#5E6C84" />
+              <SearchIcon size="small" primaryColor="#5E6C84" />
               <input autoFocus value={search} onChange={e => setSearch(e.target.value)} placeholder="Search…"
                 style={{ border: 'none', outline: 'none', fontSize: 13, color: '#292A2E', width: '100%', fontFamily: 'inherit' }} />
-              {search && <button onClick={() => setSearch('')} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--ds-text-subtlest, #6B778C)', display: 'flex', padding: 0 }}><X size={14} /></button>}
+              {search && <button onClick={() => setSearch('')} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--ds-text-subtlest, #6B778C)', display: 'flex', padding: 0 }}><CrossIcon size="small" primaryColor="var(--ds-text-subtlest, #6B778C)" /></button>}
             </div>
           </div>
           <div style={{ overflowY: 'auto', maxHeight: 340 }}>
@@ -584,14 +587,14 @@ function MultiLinkPicker({
                 <IssueIcon type={link.issue_type} size={16} />
                 <span
                   style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 14, color: '#0052CC', cursor: 'pointer', flexShrink: 0 }}
-                  onClick={() => onOpenItem?.(link.id)}
+                  onClick={() => setShowPicker(!showPicker)}
                 >{link.issue_key}</span>
                 <span style={{ fontSize: 14, color: '#292A2E', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', cursor: 'pointer' }}
-                  onClick={() => onOpenItem?.(link.id)}
+                  onClick={() => setShowPicker(!showPicker)}
                 >{link.summary}</span>
                 <StatusLozenge status={link.status} category={link.status_category} />
                 <button onClick={() => removeLink.mutate(link.linkId)} title="Remove link" style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 2, color: 'var(--ds-text-subtlest, #6B778C)', display: 'flex' }}>
-                  <X size={12} />
+                  <CrossIcon size="small" primaryColor="var(--ds-text-subtlest, #6B778C)" />
                 </button>
               </div>
             ))}
@@ -609,10 +612,10 @@ function MultiLinkPicker({
           }}>
             <div style={{ padding: '8px 12px', borderBottom: '1px solid #F4F5F7' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 6, border: '2px solid #4C9AFF', borderRadius: 4, padding: '4px 8px' }}>
-                <Search size={14} color="#5E6C84" />
+                <SearchIcon size="small" primaryColor="#5E6C84" />
                 <input autoFocus value={search} onChange={e => setSearch(e.target.value)} placeholder="Search…"
                   style={{ border: 'none', outline: 'none', fontSize: 13, color: '#292A2E', width: '100%', fontFamily: 'inherit' }} />
-                {search && <button onClick={() => setSearch('')} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--ds-text-subtlest, #6B778C)', display: 'flex', padding: 0 }}><X size={14} /></button>}
+                {search && <button onClick={() => setSearch('')} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--ds-text-subtlest, #6B778C)', display: 'flex', padding: 0 }}><CrossIcon size="small" primaryColor="var(--ds-text-subtlest, #6B778C)" /></button>}
               </div>
             </div>
             <div style={{ overflowY: 'auto', maxHeight: 340 }}>
@@ -655,7 +658,7 @@ function renderGroup(
             <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 12, color: '#5E6C84', flexShrink: 0 }}>{item.issue_key}</span>
             <span style={{ fontSize: 13, color: '#292A2E', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.summary}</span>
             <StatusLozenge status={item.status} category={item.status_category} />
-            {isSelected && <Check size={14} color="#0052CC" />}
+            {isSelected && <CheckIcon size="small" primaryColor="#0052CC" />}
           </div>
         );
       })}
@@ -691,7 +694,7 @@ function renderGroupMulti(
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               transition: 'background 0.12s, border-color 0.12s',
             }}>
-              {isLinked && <Check size={10} color="var(--ds-surface, #FFF)" strokeWidth={3} />}
+              {isLinked && <CheckIcon size="small" primaryColor="var(--ds-surface, #FFF)" />}
             </div>
             <IssueIcon type={item.issue_type} size={14} />
             <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 12, color: '#5E6C84', flexShrink: 0 }}>{item.issue_key}</span>

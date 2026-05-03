@@ -22,18 +22,17 @@
  *   - Output: ADF JSON string passed to `onSave`, parsed by the existing
  *     CatalystDescriptionSection mutation and stored back in `description_adf`.
  */
-import React, { Suspense, lazy, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { ADFEntity } from '@atlaskit/adf-utils/types';
+import { Editor } from '@atlaskit/editor-core';
 import { IntlProvider } from 'react-intl-next';
 import { normalizeAdfForAtlaskit, parseStoredDescriptionToAdf } from './adfNormalizer';
 import { uploadDescriptionImage } from './supabaseImageUpload';
 
-// Lazy-load @atlaskit/editor-core to avoid eager ProseMirror bundling
-// (prevents "Duplicate use of selection JSON ID cell" collision with Tiptap).
-const LazyEditor = lazy(async () => {
-  const mod = await import('@atlaskit/editor-core');
-  return { default: mod.Editor as unknown as React.ComponentType<any> };
-});
+// 2026-05-03 — CONVERTED TO STATIC IMPORT
+// TipTap was removed 2026-04-20 (USER DIRECTIVE). The lazy-load was to prevent
+// "Duplicate use of selection JSON ID cell" collision with Tiptap's prosemirror
+// registration. With TipTap gone, we can load @atlaskit/editor-core eagerly.
 
 // Local type alias — avoid eager type import from @atlaskit/editor-core.
 type EditorActions = {
@@ -242,7 +241,7 @@ export default function EpicDescriptionEditor({
     <IntlProvider locale="en">
       <div ref={wrapperRef} className="epic-desc-atlaskit-wrapper" style={{ position: 'relative' }}>
         <Suspense fallback={<div style={{ padding: 12, fontSize: 13, color: 'var(--ds-text-subtlest, #878787)' }}>Loading editor…</div>}>
-          <LazyEditor
+          <Editor
             appearance={appearanceProp}
             defaultValue={defaultValueString}
             placeholder={placeholder}

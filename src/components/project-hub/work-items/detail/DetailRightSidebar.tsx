@@ -2,12 +2,16 @@ import React, { useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { StatusLozenge } from './StatusLozenge';
-import {
-  ChevronDown, ArrowUp, ArrowRight, ArrowDown, ChevronsUp,
-  Flag, Lock, Settings, Sparkles, Eye, X,
-} from 'lucide-react';
+import ChevronDownIcon from '@atlaskit/icon/glyph/chevron-down';
+import LockIcon from '@atlaskit/icon/core/lock';
+import FlagIcon from '@atlaskit/icon/glyph/flag';
+import SettingsIcon from '@atlaskit/icon/core/settings';
+import AiChatIcon from '@atlaskit/icon/core/ai-chat';
+import EyeIcon from '@atlaskit/icon/core/eye';
+import CrossIcon from '@atlaskit/icon/core/cross';
 import { toast } from 'sonner';
 import { formatDistanceToNow } from 'date-fns';
+import { Button } from '@atlaskit/button/new';
 
 interface SidebarProps {
   item: {
@@ -41,10 +45,10 @@ interface SidebarProps {
 }
 
 const PRIORITIES = [
-  { value: 'Critical', icon: <ChevronsUp size={14} />, color: 'var(--sem-danger)' },
-  { value: 'High', icon: <ArrowUp size={14} />, color: 'var(--sem-warning)' },
-  { value: 'Medium', icon: <ArrowRight size={14} />, color: 'var(--cp-blue)' },
-  { value: 'Low', icon: <ArrowDown size={14} />, color: 'var(--fg-4)' },
+  { value: 'Critical', icon: '🔴', color: 'var(--sem-danger)' },
+  { value: 'High', icon: '🟠', color: 'var(--sem-warning)' },
+  { value: 'Medium', icon: '🔵', color: 'var(--cp-blue)' },
+  { value: 'Low', icon: '⚪', color: 'var(--fg-4)' },
 ];
 
 const STATUS_BG_CLASS: Record<string, string> = {
@@ -150,7 +154,7 @@ export function DetailRightSidebar({ item, statuses, onUpdate, onInvalidate }: S
         className="w-full py-2 rounded-md text-[12px] font-semibold flex items-center justify-center gap-1.5 mb-4 transition-colors hover:bg-[var(--ds-background-selected,#EFF6FF)]"
         style={{ border: '1px solid var(--divider)', color: 'var(--cp-purple)' }}
       >
-        <Sparkles size={14} /> Improve Story with AI
+        <AiChatIcon size="small" /> Improve Story with AI
       </button>
 
       {/* PINNED FIELDS */}
@@ -163,7 +167,7 @@ export function DetailRightSidebar({ item, statuses, onUpdate, onInvalidate }: S
               <span className="text-[13px]" style={{ color: 'var(--fg-4)' }}>Unassigned</span>
             )}
           </div>
-          <button onClick={handleAssignToMe} className="text-[11px] font-medium mt-0.5 hover:underline" style={{ color: 'var(--cp-blue)' }}>Assign to me</button>
+          <Button appearance="link" onClick={handleAssignToMe} className="text-[11px] font-medium mt-0.5">Assign to me</Button>
         </SidebarField>
 
         <SidebarField label="Reporter">
@@ -181,7 +185,7 @@ export function DetailRightSidebar({ item, statuses, onUpdate, onInvalidate }: S
             <button onClick={e => { e.stopPropagation(); setPriorityOpen(!priorityOpen); setStatusOpen(false); }} className="flex items-center gap-1.5 text-[13px] font-medium" style={{ color: 'var(--fg-2)' }}>
               <span style={{ color: PRIORITIES.find(p => p.value === item.priority)?.color }}>{PRIORITIES.find(p => p.value === item.priority)?.icon}</span>
               {item.priority}
-              <ChevronDown size={12} className="text-[var(--ds-text-subtlest,#94A3B8)]" />
+              <ChevronDownIcon size="small" className="text-[var(--ds-text-subtlest,#94A3B8)]" />
             </button>
             {priorityOpen && (
               <div className="absolute left-0 top-full mt-1 rounded-md overflow-hidden bg-[var(--cp-float)]" style={{ width: 160, border: '1px solid var(--divider)', boxShadow: '0 8px 20px rgba(0,0,0,0.18)', zIndex: 9999 }} onClick={e => e.stopPropagation()}>
@@ -249,7 +253,7 @@ export function DetailRightSidebar({ item, statuses, onUpdate, onInvalidate }: S
 
           <SidebarField label="Security Level">
             <div className="flex items-center gap-1.5">
-              <Lock size={12} style={{ color: 'var(--fg-3)' }} />
+              <LockIcon size="small" style={{ color: 'var(--fg-3)' }} />
               <span className="text-[12px] font-medium" style={{ color: 'var(--fg-2)' }}>{item.security_level || 'Standard'}</span>
             </div>
           </SidebarField>
@@ -257,9 +261,9 @@ export function DetailRightSidebar({ item, statuses, onUpdate, onInvalidate }: S
           <SidebarField label="Flag">
             {item.is_flagged ? (
               <div className="flex items-center gap-1.5">
-                <Flag size={12} style={{ color: 'var(--sem-danger)' }} />
+                <FlagIcon size="small" style={{ color: 'var(--sem-danger)' }} />
                 <span className="text-[12px] font-medium" style={{ color: 'var(--sem-danger)' }}>{item.flag_reason || 'Flagged'}</span>
-                <button onClick={() => onUpdate('is_flagged', false)} className="ml-auto p-0.5 rounded hover:bg-[var(--sem-danger-bg)]" title="Unflag"><X size={10} style={{ color: 'var(--sem-danger)' }} /></button>
+                <button onClick={() => onUpdate('is_flagged', false)} className="ml-auto p-0.5 rounded hover:bg-[var(--sem-danger-bg)]" title="Unflag"><CrossIcon size="small" style={{ color: 'var(--sem-danger)' }} /></button>
               </div>
             ) : (
               <button onClick={() => onUpdate('is_flagged', true)} className="text-[12px] font-medium hover:underline" style={{ color: 'var(--fg-4)' }}>None — click to flag</button>
@@ -276,7 +280,7 @@ export function DetailRightSidebar({ item, statuses, onUpdate, onInvalidate }: S
               {watchers.length > 5 && <span className="text-[10px] font-bold" style={{ color: 'var(--fg-3)' }}>+{watchers.length - 5}</span>}
             </div>
             <button onClick={handleWatch} className="flex items-center gap-1 text-[11px] font-medium mt-1 hover:underline" style={{ color: 'var(--cp-blue)' }}>
-              <Eye size={11} /> + Watch
+              <EyeIcon size="small" /> + Watch
             </button>
           </SidebarField>
         </div>
@@ -285,7 +289,7 @@ export function DetailRightSidebar({ item, statuses, onUpdate, onInvalidate }: S
       {/* CONFIGURE */}
       <div style={{ borderTop: '1px solid var(--divider)', marginTop: 12, paddingTop: 10 }}>
         <button onClick={() => setConfigureOpen(!configureOpen)} className="flex items-center gap-1.5 text-[11px] font-medium hover:underline" style={{ color: 'var(--fg-4)' }}>
-          <Settings size={12} /> Configure fields
+          <SettingsIcon size="small" /> Configure fields
         </button>
         {configureOpen && (
           <div className="mt-2 p-3 rounded-md bg-[var(--bg-app)]" style={{ border: '1px solid var(--divider)' }}>
