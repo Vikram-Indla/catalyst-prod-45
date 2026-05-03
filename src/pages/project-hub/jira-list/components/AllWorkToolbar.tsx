@@ -705,6 +705,12 @@ export function AllWorkToolbar({
      state ("Select a field…" placeholder, mirroring Jira's empty pane). */
   const [activeFacet, setActiveFacet] = useState<FilterFacet | null>(null);
 
+  /* jira-compare 2026-05-03 Round 8 — which chip's dropdown is open.
+     Single source of truth so opening one chip closes all others (Jira
+     behaviour). Values: facet key (workType/status/assignee) for top-level
+     chips, 'more' for the More filters multi-facet popup, null = all closed. */
+  const [openChipKey, setOpenChipKey] = useState<FilterFacet | 'more' | null>(null);
+
   const facetOptions = useMemo(() => {
     const out = {} as Record<FilterFacet, FacetOption[]>;
     for (const f of FACET_ORDER) out[f] = distinctOptions(items, f);

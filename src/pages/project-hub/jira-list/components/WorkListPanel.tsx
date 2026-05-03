@@ -12,7 +12,8 @@ import React, { useMemo, useState } from 'react';
 import { Search, Filter, ArrowUpDown, RotateCw } from 'lucide-react';
 import { WorkItemTypeIcon } from '@/components/icons/WorkItemTypeIcon';
 import { WorkCardAssigneePicker } from './WorkCardAssigneePicker';
-import { WorkItemStatusLozenge } from '@/components/workflow';
+// WorkItemStatusLozenge import removed — rail card no longer renders status
+// per Jira parity (2026-05-03). Re-add if a Catalyst-only divergence is approved.
 import type { WorkItem } from '@/types/workItem.types';
 
 interface Props {
@@ -207,17 +208,18 @@ export function WorkListPanel({ items, selectedKey, onSelect, projectId, externa
                   <WorkItemTypeIcon type={item.type} size={14} />
                   {item.jiraKey}
                 </span>
-                {/* Jira-parity status pill — colour derives from the workflow
-                    engine (admin-editable at /admin/workflows) so all surfaces
-                    share a single source of truth.
-                    jira-compare 2026-05-03 (Vikram directive): switched from
-                    variant="bold" → "subtle" so rail and Filter dropdown
-                    lozenges are visually consistent (Jira itself doesn't show
-                    a status lozenge on rail cards at all — Catalyst keeps the
-                    pill for at-a-glance scanning, but uses the subtle treatment
-                    so it matches every other lozenge surface in the app). */}
+                {/* Status pill REMOVED from rail card per Jira parity (verified
+                    triple-probe 2026-05-03):
+                    - DOM: Jira rail card testid `issue-navigator.ui.issue-results.detail-view.card-list.card`
+                      contains 0 lozenge spans. Inner DOM: card.summary + 1 image (type icon) + key + avatar.
+                    - Screenshot: 7 visible cards on BAU navigator, none show a lozenge.
+                    - Rovo: status field exists on every issue but Jira chooses not
+                      to surface it on rail cards (deliberate UX — status is in detail).
+                    Rule 3 (Jira is source of truth) → remove. If at-a-glance status
+                    becomes a real product need, propose adding back as a subtle
+                    Catalyst-only divergence with Vikram approval. */}
                 <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
-                  <WorkItemStatusLozenge item={item} variant="subtle" maxWidth={120} />
+                  {/* WorkItemStatusLozenge removed for Jira parity. */}
                   {/* Interactive assignee picker (replaces previous static avatar).
                       Uses dbId (UUID) — never issue_key (CLAUDE.md §L39). */}
                   <WorkCardAssigneePicker
