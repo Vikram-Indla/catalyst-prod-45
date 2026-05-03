@@ -16225,6 +16225,45 @@ export type Database = {
         }
         Relationships: []
       }
+      jira_bau_reload_runs: {
+        Row: {
+          attachments_skipped_video: number | null
+          attachments_uploaded: number | null
+          errors: Json | null
+          finished_at: string | null
+          id: string
+          issues_processed: number | null
+          issues_upserted: number | null
+          since_timestamp: string | null
+          started_at: string
+          status: string | null
+        }
+        Insert: {
+          attachments_skipped_video?: number | null
+          attachments_uploaded?: number | null
+          errors?: Json | null
+          finished_at?: string | null
+          id?: string
+          issues_processed?: number | null
+          issues_upserted?: number | null
+          since_timestamp?: string | null
+          started_at?: string
+          status?: string | null
+        }
+        Update: {
+          attachments_skipped_video?: number | null
+          attachments_uploaded?: number | null
+          errors?: Json | null
+          finished_at?: string | null
+          id?: string
+          issues_processed?: number | null
+          issues_upserted?: number | null
+          since_timestamp?: string | null
+          started_at?: string
+          status?: string | null
+        }
+        Relationships: []
+      }
       jira_board_mappings: {
         Row: {
           catalyst_team_id: string | null
