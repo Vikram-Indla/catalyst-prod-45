@@ -180,24 +180,6 @@ const previewWellDarkStyle: React.CSSProperties = {
   marginBottom: 8,
 };
 
-const cardLabelRowStyles = xcss({
-  marginBottom: 'space.100',
-  minHeight: '24px',
-});
-
-const labelTextStyles = xcss({
-  flex: '1',
-  font: 'font.body',
-  color: 'color.text',
-  overflow: 'hidden',
-  textOverflow: 'ellipsis',
-  whiteSpace: 'nowrap',
-});
-
-const cardActionsStyles = xcss({
-  marginTop: 'space.100',
-});
-
 const tabPanelPadStyle: React.CSSProperties = { paddingBlockStart: 24 };
 
 // ─── Single icon card ────────────────────────────────────────────────
@@ -692,9 +674,30 @@ export default function AdminIconsPage() {
             isCompact
           />
         </div>
-        <Button appearance="primary" onClick={() => setNewCategoryOpen(true)}>
+        {/* Plain <button> not Atlaskit Button: removes any uncertainty about
+            event propagation, type=submit defaults, or compiled-css wrappers
+            swallowing clicks. Console.log fires so we can confirm the handler
+            runs even if the Modal portal doesn't render. */}
+        <button
+          type="button"
+          onClick={() => {
+            // eslint-disable-next-line no-console
+            console.log('[AdminIcons] + New category clicked');
+            setNewCategoryOpen(true);
+          }}
+          style={{
+            padding: '6px 14px',
+            borderRadius: 4,
+            background: 'var(--ds-background-brand-bold, #1868DB)',
+            color: 'var(--ds-text-inverse, #FFFFFF)',
+            border: 'none',
+            fontWeight: 500,
+            fontSize: 14,
+            cursor: 'pointer',
+          }}
+        >
           + New category
-        </Button>
+        </button>
         {isLoading && (
           <Tooltip content="Loading current overrides…" position="bottom">
             <span><Spinner size="small" /></span>
@@ -789,6 +792,27 @@ export default function AdminIconsPage() {
         category={addModalCategory ?? 'work-type'}
         onClose={() => setAddModalCategory(null)}
       />
+
+      {/* Inline debug indicator — confirms state flips even if Atlaskit
+          Modal portal fails to render. Remove after verifying. */}
+      {newCategoryOpen && (
+        <div
+          style={{
+            position: 'fixed',
+            top: 16,
+            right: 16,
+            zIndex: 9999,
+            background: '#216E4E',
+            color: '#FFFFFF',
+            padding: '8px 12px',
+            borderRadius: 4,
+            fontSize: 12,
+            fontFamily: 'monospace',
+          }}
+        >
+          [debug] newCategoryOpen=true — modal should be visible
+        </div>
+      )}
 
       <NewCategoryModal
         isOpen={newCategoryOpen}

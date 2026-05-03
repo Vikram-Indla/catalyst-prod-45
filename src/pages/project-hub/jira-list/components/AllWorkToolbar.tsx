@@ -23,14 +23,29 @@
  * Filter selections forward via the typed FilterState prop so the parent
  * applies them client-side to the items list.
  */
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useId, useMemo, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import Textfield from '@atlaskit/textfield';
 import AvatarGroup from '@atlaskit/avatar-group';
+import Avatar from '@atlaskit/avatar';
+import Lozenge from '@atlaskit/lozenge';
 import Button, { IconButton } from '@atlaskit/button/new';
 import DropdownMenu, { DropdownItem, DropdownItemGroup } from '@atlaskit/dropdown-menu';
-import Popup from '@atlaskit/popup';
+/* jira-compare 2026-05-03 Round 7 — facet-aware value picker.
+   Per Vikram's design-critique: assignee/reporter need canonical avatars,
+   priority needs PriorityIcon, work type + parent need WorkItemTypeIcon,
+   labels need Lozenge per chip, status needs Lozenge with category-driven
+   appearance. All canonical components imported from the Catalyst icon
+   registry (RESET ICONS, CLAUDE.md 2026-05-03) and Atlaskit. */
+import { WorkItemTypeIcon, PriorityIcon } from '@/components/icons';
+import { statusToLozenge } from '@/modules/project-work-hub/utils/statusToLozenge';
+/* CLAUDE.md §19 — external avatar URLs (gravatar, cdn, supabase storage) are
+   banned. resolveAvatarUrl loads bundled `/src/assets/avatars/<slug>.png`
+   built by `scripts/download-avatars.mjs`. Returns null when no local file
+   matches; Atlaskit Avatar then falls back to initials. */
+import { resolveAvatarUrl } from '@/lib/avatars';
 import { toast } from 'sonner';
 import { EditorMoreIcon } from '@/components/layout/ProjectHeaderChipIcons';
 /* jira-compare 2026-05-03 (LLM Council sweep, anti-pattern #3): lucide
@@ -74,6 +89,15 @@ const FACET_ORDER: FilterFacet[] = [
   'fixVersions', 'parent', 'assignee', 'workType',
   'labels', 'status', 'priority', 'reporter',
 ];
+
+/* jira-compare 2026-05-03 Round 8 — chip-bar refactor.
+   Jira's Basic-mode refinement bar exposes a few common facets as
+   top-level chips (Type, Status, Assignee), and hides the rest behind
+   "More filters". Catalyst follows the same split: top-level chips for
+   the 3 most-clicked facets, and a smaller "More filters" popup for
+   the remaining 5. */
+const TOP_LEVEL_FACETS: FilterFacet[] = ['workType', 'status', 'assignee'];
+const MORE_FILTERS_FACETS: FilterFacet[] = ['fixVersions', 'parent', 'labels', 'priority', 'reporter'];
 
 const FACET_LABELS: Record<FilterFacet, string> = {
   fixVersions: 'Fix versions',
@@ -123,62 +147,113 @@ function toLabel(v: unknown): string {
   try { return String(v); } catch { return ''; }
 }
 
+/* jira-compare 2026-05-03 Round 7 — per-facet enriched metadata.
+   Carries the extra fields the value-picker rows need to render canonical
+   visuals: avatar URL for assignees/reporters, work type id for parent
+   icons, status category for lozenge appearance, etc. Falls back to the
+   original {value, label} shape for facets that don't need icons. */
+interface FacetOption {
+  value: string;
+  label: string;
+  meta?: {
+    rawType?: string | null;       // for parent + workType rows
+    statusCategory?: string | null; // for status rows
+    /* Note: avatar URLs are NOT stored in meta. Per CLAUDE.md §19, external
+       avatar URLs are banned. Avatar rendering uses resolveAvatarUrl(label)
+       at render time, which reads from bundled /src/assets/avatars/*. */
+  };
+}
+
 /** Derive distinct option values for a given facet from the items list. */
-function distinctOptions(items: WorkItem[], facet: FilterFacet): { value: string; label: string }[] {
-  const map = new Map<string, string>();
+function distinctOptions(items: WorkItem[], facet: FilterFacet): FacetOption[] {
+  // Build a parentKey → rawType lookup so parent rows can render the
+  // parent's work-item-type icon. Walks items[] to find any child whose
+  // own row matches the parentKey.
+  const itemByKey = new Map<string, WorkItem>();
+  if (facet === 'parent') {
+    for (const it of items) itemByKey.set(it.id, it);
+  }
+
+  const map = new Map<string, FacetOption>();
   for (const i of items) {
     switch (facet) {
       case 'fixVersions': {
         const v = toLabel(i.fixVersion);
-        if (v) map.set(v, v);
+        if (v && !map.has(v)) map.set(v, { value: v, label: v });
         break;
       }
       case 'parent': {
         const pk = toLabel(i.parentKey);
-        if (pk) {
+        if (pk && !map.has(pk)) {
           const ps = toLabel(i.parentSummary);
-          map.set(pk, ps ? `${pk} · ${ps}` : pk);
+          const parentItem = itemByKey.get(pk);
+          map.set(pk, {
+            value: pk,
+            label: ps ? `${pk} — ${ps}` : pk,
+            meta: { rawType: parentItem?.rawType ?? null },
+          });
         }
         break;
       }
       case 'assignee': {
         const id = toLabel(i.assigneeId);
         const nm = toLabel(i.assignee?.name);
-        if (id && nm) map.set(id, nm);
+        if (id && nm && !map.has(id)) {
+          // Avatar src is resolved at render time via resolveAvatarUrl(name)
+          // — see CLAUDE.md §19 (no external avatar URLs).
+          map.set(id, { value: id, label: nm });
+        }
         break;
       }
       case 'workType': {
         const v = toLabel(i.rawType);
-        if (v) map.set(v, v);
+        if (v && !map.has(v)) {
+          map.set(v, { value: v, label: v, meta: { rawType: v } });
+        }
         break;
       }
       case 'labels': {
         for (const l of (i.labels || [])) {
           const v = toLabel(l);
-          if (v) map.set(v, v);
+          if (v && !map.has(v)) map.set(v, { value: v, label: v });
         }
         break;
       }
       case 'status': {
         const v = toLabel(i.statusName);
-        if (v) map.set(v, v);
+        if (v && !map.has(v)) {
+          map.set(v, {
+            value: v,
+            label: v,
+            meta: { statusCategory: i.statusCategory ?? null },
+          });
+        }
         break;
       }
       case 'priority': {
         const v = toLabel(i.priority);
-        if (v) map.set(v, v.charAt(0).toUpperCase() + v.slice(1));
+        if (v && !map.has(v)) {
+          map.set(v, {
+            value: v,
+            label: v.charAt(0).toUpperCase() + v.slice(1),
+          });
+        }
         break;
       }
       case 'reporter': {
         const id = toLabel(i.reporterId);
         const nm = toLabel(i.reporter?.name);
-        if (id && nm) map.set(id, nm);
+        if (id && nm && !map.has(id)) {
+          // Same as assignee — resolveAvatarUrl(name) at render time. If no
+          // bundled avatar exists for this name, Atlaskit Avatar falls back
+          // to initials derived from the `name` prop.
+          map.set(id, { value: id, label: nm });
+        }
         break;
       }
     }
   }
-  return Array.from(map.entries())
-    .map(([value, label]) => ({ value: String(value), label: String(label) }))
+  return Array.from(map.values())
     .sort((a, b) => a.label.localeCompare(b.label));
 }
 
@@ -229,6 +304,378 @@ const ListIcon = () => <ListIconCore label="" color={SUBTLE} />;
 const SplitIcon = () => <SplitIconCore label="" color={SUBTLE} />;
 const SparkIcon = () => <SparkIconCore label="" color={SUBTLE} />;
 
+/**
+ * FilterTriggerAndPopup — Atlaskit Button trigger + manual portal popup.
+ *
+ * Bypasses @atlaskit/popup@4.17.0's broken trigger-ref behaviour (see
+ * inline comment at the call site for full root-cause). Uses a useRef
+ * for the trigger anchor, getBoundingClientRect for placement, and a
+ * React portal so the popup escapes any overflow:hidden ancestors.
+ *
+ * Position: bottom-start of trigger (matches Jira) with a 4px gap.
+ * Outside-click: closes the popup if the mousedown lands outside both
+ *   the trigger and the popup content.
+ * Escape: closes the popup.
+ * Re-position on resize/scroll: a tiny ResizeObserver + scroll listener
+ *   re-reads the trigger rect so the popup stays anchored.
+ */
+interface FilterTriggerAndPopupProps {
+  triggerLabel: string;
+  isOpen: boolean;
+  onOpenChange: (next: boolean) => void;
+  FilterIcon: () => React.ReactElement;
+  renderContent: () => React.ReactNode;
+}
+
+function FilterTriggerAndPopup({
+  triggerLabel,
+  isOpen,
+  onOpenChange,
+  FilterIcon,
+  renderContent,
+}: FilterTriggerAndPopupProps) {
+  const triggerRef = useRef<HTMLSpanElement>(null);
+  const popupRef = useRef<HTMLDivElement>(null);
+  const popupId = useId();
+  const [pos, setPos] = useState<{ top: number; left: number } | null>(null);
+
+  /* Position the popup below the trigger button. Re-runs whenever the
+     popup opens, the window resizes, or the trigger scrolls (e.g. when
+     the toolbar is inside a scrolling container). 4px vertical gap
+     matches Jira's filter popup offset. */
+  useEffect(() => {
+    if (!isOpen) { setPos(null); return; }
+    const compute = () => {
+      const rect = triggerRef.current?.getBoundingClientRect();
+      if (!rect) return;
+      setPos({ top: rect.bottom + 4, left: rect.left });
+    };
+    compute();
+    window.addEventListener('resize', compute);
+    window.addEventListener('scroll', compute, true);
+    return () => {
+      window.removeEventListener('resize', compute);
+      window.removeEventListener('scroll', compute, true);
+    };
+  }, [isOpen]);
+
+  /* Outside-click: close if the mousedown lands outside both the trigger
+     and the popup content. Mousedown (not click) so the popup closes
+     before any inner button registers a click — matches Atlaskit Popup
+     and Jira's behaviour. */
+  useEffect(() => {
+    if (!isOpen) return;
+    const handler = (e: MouseEvent) => {
+      const target = e.target as Node | null;
+      if (!target) return;
+      if (triggerRef.current?.contains(target)) return;
+      if (popupRef.current?.contains(target)) return;
+      onOpenChange(false);
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, [isOpen, onOpenChange]);
+
+  /* Escape key closes the popup. */
+  useEffect(() => {
+    if (!isOpen) return;
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') { e.preventDefault(); onOpenChange(false); }
+    };
+    document.addEventListener('keydown', handler);
+    return () => document.removeEventListener('keydown', handler);
+  }, [isOpen, onOpenChange]);
+
+  return (
+    <>
+      <span ref={triggerRef} style={{ display: 'inline-flex' }}>
+        <Button
+          appearance="subtle"
+          iconBefore={FilterIcon}
+          onClick={() => onOpenChange(!isOpen)}
+          testId="catalyst-allwork-toolbar.filter"
+          aria-haspopup="dialog"
+          aria-expanded={isOpen}
+          aria-controls={isOpen ? popupId : undefined}
+        >
+          <span style={{ color: SUBTLE }}>{triggerLabel}</span>
+        </Button>
+      </span>
+      {isOpen && pos && createPortal(
+        <div
+          ref={popupRef}
+          id={popupId}
+          role="dialog"
+          aria-label="Filter work items"
+          style={{
+            position: 'fixed',
+            top: pos.top,
+            left: pos.left,
+            zIndex: 510, // above Atlaskit content layer (400) but below modals (700+)
+            background: 'var(--ds-surface-overlay, #FFFFFF)',
+            border: '1px solid var(--ds-border, #DFE1E6)',
+            borderRadius: 4,
+            boxShadow: '0 4px 8px rgba(9,30,66,0.15), 0 0 1px rgba(9,30,66,0.31)',
+          }}
+        >
+          {renderContent()}
+        </div>,
+        document.body,
+      )}
+    </>
+  );
+}
+
+/**
+ * renderFacetRow — per-facet visual treatment for value-picker rows.
+ *
+ * Single source of truth for how each facet's checkbox row renders:
+ * - assignee/reporter → Atlaskit Avatar (via resolveAvatarUrl bundled photo)
+ * - workType/parent   → WorkItemTypeIcon (RESET ICONS registry)
+ * - priority          → PriorityIcon (RESET ICONS registry)
+ * - status            → Atlaskit Lozenge with statusToLozenge appearance
+ * - labels            → Atlaskit Lozenge default chip
+ * - fixVersions       → plain text (Jira doesn't decorate version names)
+ *
+ * Used by both the FilterChip dropdowns (one facet per chip) and the
+ * legacy 600×489 "More filters" popup (multi-facet left rail).
+ */
+function renderFacetRow(
+  facet: FilterFacet,
+  opt: FacetOption,
+  checked: boolean,
+  toggle: () => void,
+): React.ReactElement {
+  return (
+    <label
+      key={opt.value}
+      style={{
+        display: 'flex', alignItems: 'center', gap: 8,
+        padding: '6px 8px', borderRadius: 3,
+        cursor: 'pointer',
+        fontSize: 13, color: 'var(--ds-text, #292A2E)',
+      }}
+      onMouseEnter={e => (e.currentTarget as HTMLElement).style.background = 'var(--ds-surface-sunken, #F4F5F7)'}
+      onMouseLeave={e => (e.currentTarget as HTMLElement).style.background = 'transparent'}
+    >
+      <input
+        type="checkbox"
+        checked={checked}
+        onChange={toggle}
+        style={{ margin: 0, flexShrink: 0 }}
+      />
+      {facet === 'assignee' || facet === 'reporter' ? (
+        <>
+          <Avatar
+            size="small"
+            src={resolveAvatarUrl(opt.label) ?? undefined}
+            name={opt.label}
+            appearance="circle"
+          />
+          <span style={{ flex: 1 }}>{opt.label}</span>
+        </>
+      ) : facet === 'workType' || facet === 'parent' ? (
+        <>
+          {opt.meta?.rawType && (
+            <WorkItemTypeIcon type={opt.meta.rawType} size={16} label="" />
+          )}
+          <span style={{ flex: 1 }}>{opt.label}</span>
+        </>
+      ) : facet === 'priority' ? (
+        <>
+          <PriorityIcon level={opt.value} size={16} label="" />
+          <span style={{ flex: 1 }}>{opt.label}</span>
+        </>
+      ) : facet === 'status' ? (
+        <span style={{ flex: 1 }}>
+          <Lozenge appearance={statusToLozenge(opt.label, opt.meta?.statusCategory)}>
+            {opt.label}
+          </Lozenge>
+        </span>
+      ) : facet === 'labels' ? (
+        <span style={{ flex: 1 }}>
+          <Lozenge appearance="default">{opt.label}</Lozenge>
+        </span>
+      ) : (
+        <span style={{ flex: 1 }}>{opt.label}</span>
+      )}
+    </label>
+  );
+}
+
+/**
+ * FilterChip — single-facet chip with anchored dropdown.
+ *
+ * jira-compare 2026-05-03 Round 8: matches Jira's Basic-mode chip
+ * pattern (Atlaskit Select-style dropdown anchored under the chip).
+ * Reuses the same manual portal + getBoundingClientRect anchoring as
+ * FilterTriggerAndPopup (Atlaskit Popup is broken — see Round 6 notes).
+ *
+ * Active state: when count > 0, the chip uses Atlaskit Button "primary"
+ * appearance (blue background, white text) — matches Jira's selected-
+ * chip styling. Inactive: "default" with subtle styling.
+ */
+interface FilterChipProps {
+  label: string;
+  facet: FilterFacet;
+  options: FacetOption[];
+  selected: string[];
+  onToggle: (value: string) => void;
+  isOpen: boolean;
+  onOpenChange: (next: boolean) => void;
+  /** Optional headline shown at top of dropdown — Jira uses "Status = (equals)" pattern. */
+  headline?: string;
+}
+
+function FilterChip({
+  label, facet, options, selected, onToggle, isOpen, onOpenChange, headline,
+}: FilterChipProps) {
+  const triggerRef = useRef<HTMLSpanElement>(null);
+  const popupRef = useRef<HTMLDivElement>(null);
+  const popupId = useId();
+  const [pos, setPos] = useState<{ top: number; left: number } | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
+
+  useEffect(() => {
+    if (!isOpen) { setPos(null); return; }
+    const compute = () => {
+      const rect = triggerRef.current?.getBoundingClientRect();
+      if (!rect) return;
+      setPos({ top: rect.bottom + 4, left: rect.left });
+    };
+    compute();
+    window.addEventListener('resize', compute);
+    window.addEventListener('scroll', compute, true);
+    return () => {
+      window.removeEventListener('resize', compute);
+      window.removeEventListener('scroll', compute, true);
+    };
+  }, [isOpen]);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    const handler = (e: MouseEvent) => {
+      const target = e.target as Node | null;
+      if (!target) return;
+      if (triggerRef.current?.contains(target)) return;
+      if (popupRef.current?.contains(target)) return;
+      onOpenChange(false);
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, [isOpen, onOpenChange]);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') { e.preventDefault(); onOpenChange(false); }
+    };
+    document.addEventListener('keydown', handler);
+    return () => document.removeEventListener('keydown', handler);
+  }, [isOpen, onOpenChange]);
+
+  const count = selected.length;
+  const isActive = count > 0;
+  const chipLabel = count > 0 ? `${label}: ${count}` : label;
+
+  // Filter options by search query (Jira's Status dropdown has a search input).
+  const filteredOptions = useMemo(
+    () => searchQuery
+      ? options.filter(o => o.label.toLowerCase().includes(searchQuery.toLowerCase()))
+      : options,
+    [options, searchQuery],
+  );
+
+  return (
+    <>
+      <span ref={triggerRef} style={{ display: 'inline-flex' }}>
+        <Button
+          appearance={isActive ? 'primary' : 'subtle'}
+          onClick={() => onOpenChange(!isOpen)}
+          testId={`catalyst-allwork-toolbar.chip.${facet}`}
+          aria-haspopup="dialog"
+          aria-expanded={isOpen}
+          aria-controls={isOpen ? popupId : undefined}
+        >
+          <span style={{ color: isActive ? undefined : SUBTLE }}>{chipLabel}</span>
+        </Button>
+      </span>
+      {isOpen && pos && createPortal(
+        <div
+          ref={popupRef}
+          id={popupId}
+          role="dialog"
+          aria-label={`Filter by ${label}`}
+          data-testid={`catalyst-allwork-toolbar.chip-dropdown.${facet}`}
+          style={{
+            position: 'fixed',
+            top: pos.top,
+            left: pos.left,
+            zIndex: 510,
+            width: 320,
+            maxHeight: 380,
+            display: 'flex', flexDirection: 'column',
+            background: 'var(--ds-surface-overlay, #FFFFFF)',
+            border: '1px solid var(--ds-border, #DFE1E6)',
+            borderRadius: 4,
+            boxShadow: '0 4px 8px rgba(9,30,66,0.15), 0 0 1px rgba(9,30,66,0.31)',
+            fontFamily: "'Atlassian Sans', -apple-system, BlinkMacSystemFont, sans-serif",
+          }}
+        >
+          {headline && (
+            <div style={{
+              padding: '8px 12px', borderBottom: '1px solid var(--ds-border, #DFE1E6)',
+              fontSize: 12, color: 'var(--ds-text-subtle, #505258)',
+            }}>{headline}</div>
+          )}
+          <div style={{ padding: 8, borderBottom: '1px solid var(--ds-border, #DFE1E6)' }}>
+            <input
+              type="text"
+              placeholder={`Search ${label}`}
+              value={searchQuery}
+              onChange={e => setSearchQuery(e.target.value)}
+              autoFocus
+              style={{
+                width: '100%', padding: '6px 8px', fontSize: 13,
+                border: '1px solid var(--ds-border, #DFE1E6)',
+                borderRadius: 3,
+                fontFamily: 'inherit',
+                background: 'var(--ds-surface, #FFFFFF)',
+                color: 'var(--ds-text, #292A2E)',
+              }}
+            />
+          </div>
+          <div style={{ flex: 1, padding: 4, overflowY: 'auto' }}>
+            {filteredOptions.length === 0 ? (
+              <div style={{
+                padding: 16, fontSize: 13,
+                color: 'var(--ds-text-subtle, #505258)',
+                textAlign: 'center',
+              }}>No matches</div>
+            ) : (
+              filteredOptions.map(opt =>
+                renderFacetRow(facet, opt, selected.includes(opt.value), () => onToggle(opt.value))
+              )
+            )}
+          </div>
+          <div style={{
+            padding: '6px 12px',
+            borderTop: '1px solid var(--ds-border, #DFE1E6)',
+            fontSize: 11, color: 'var(--ds-text-subtle, #505258)',
+            display: 'flex', justifyContent: 'space-between',
+          }}>
+            <span>{filteredOptions.length} of {options.length}</span>
+            {count > 0 && (
+              <span>{count} selected</span>
+            )}
+          </div>
+        </div>,
+        document.body,
+      )}
+    </>
+  );
+}
+
 export function AllWorkToolbar({
   projectKey,
   query,
@@ -259,7 +706,7 @@ export function AllWorkToolbar({
   const [activeFacet, setActiveFacet] = useState<FilterFacet | null>(null);
 
   const facetOptions = useMemo(() => {
-    const out = {} as Record<FilterFacet, { value: string; label: string }[]>;
+    const out = {} as Record<FilterFacet, FacetOption[]>;
     for (const f of FACET_ORDER) out[f] = distinctOptions(items, f);
     return out;
   }, [items]);
@@ -365,37 +812,69 @@ export function AllWorkToolbar({
         />
       )}
 
-      {/* 6. Filter popup — Jira shape (no Basic/Advanced/JQL tabs per
-          Vikram 2026-05-03). Lane A canonical: 600w × 489h, left rail
-          140w with 8 facet role=tab buttons, right pane shows value
-          picker for the active facet, "Clear all" bottom-left,
-          "Press Shift + F to open and close" bottom-right hint. */}
-      <Popup
-        isOpen={filterOpen}
-        onClose={() => setFilterOpen(false)}
-        placement="bottom-start"
-        /* @atlaskit/popup@4.17.0 has a documented React 18 strict-mode bug
-           in use-get-memoized-merged-trigger-ref.js where triggerRef stays
-           null until isOpen=true at MOUNT time. Catalyst doesn't run the
-           Atlassian feature-gate service that ships the fix
-           (`platform-design-system-popup-ref`), so the portal never mounts.
-           shouldRenderToParent renders the popper inline (not via portal),
-           sidestepping the broken ref dance entirely. The popup positions
-           via react-popper relative to the trigger span. */
-        shouldRenderToParent
-        content={() => (
+      {/* 6. Filter chip bar — Jira's Basic-mode pattern (jira-compare 2026-05-03 Round 8).
+          REPLACES the prior single Filter button + 600×489 monolithic popup.
+          Now: Type / Status / Assignee as top-level chips (FilterChip with
+          single-facet dropdown), More filters chip for the remaining 5 facets
+          (FilterTriggerAndPopup with multi-facet popup, restricted to
+          MORE_FILTERS_FACETS), Clear filters + Save filter buttons.
+
+          Chip state: single openChipKey tracks which chip's dropdown is open
+          (chip-or-popup). Opening one closes the others (Jira behaviour). */}
+      <FilterChip
+        label={FACET_LABELS.workType}
+        facet="workType"
+        options={facetOptions.workType}
+        selected={selectedFilters.workType}
+        onToggle={(v) => toggleValue('workType', v)}
+        isOpen={openChipKey === 'workType'}
+        onOpenChange={(open) => setOpenChipKey(open ? 'workType' : null)}
+        headline="Type = (equals)"
+      />
+      <FilterChip
+        label={FACET_LABELS.status}
+        facet="status"
+        options={facetOptions.status}
+        selected={selectedFilters.status}
+        onToggle={(v) => toggleValue('status', v)}
+        isOpen={openChipKey === 'status'}
+        onOpenChange={(open) => setOpenChipKey(open ? 'status' : null)}
+        headline="Status = (equals)"
+      />
+      <FilterChip
+        label={FACET_LABELS.assignee}
+        facet="assignee"
+        options={facetOptions.assignee}
+        selected={selectedFilters.assignee}
+        onToggle={(v) => toggleValue('assignee', v)}
+        isOpen={openChipKey === 'assignee'}
+        onOpenChange={(open) => setOpenChipKey(open ? 'assignee' : null)}
+        headline="Assignee = (equals)"
+      />
+
+      {/* More filters → opens the multi-facet popup with the 5 remaining facets
+          (Fix versions, Parent, Labels, Priority, Reporter). Reuses
+          FilterTriggerAndPopup from Round 6 — left-rail tabs + right-pane
+          value picker pattern. Atlaskit primitive: @atlaskit/popup behaviour
+          replicated manually (see Round 6 root-cause comment). */}
+      <FilterTriggerAndPopup
+        triggerLabel={(() => {
+          const moreCount = MORE_FILTERS_FACETS.reduce((n, f) => n + selectedFilters[f].length, 0);
+          return `More filters${moreCount > 0 ? ` (${moreCount})` : ''}`;
+        })()}
+        isOpen={openChipKey === 'more'}
+        onOpenChange={(open) => setOpenChipKey(open ? 'more' : null)}
+        FilterIcon={FilterIcon}
+        renderContent={() => (
           <div
-            data-testid="catalyst-allwork-toolbar.filter-popup"
+            data-testid="catalyst-allwork-toolbar.more-filters-popup"
             style={{
-              width: 600, height: 489, display: 'flex', flexDirection: 'column',
+              width: 520, height: 420, display: 'flex', flexDirection: 'column',
               fontFamily: "'Atlassian Sans', -apple-system, BlinkMacSystemFont, sans-serif",
-            }}
-            onKeyDown={(e) => {
-              if (e.key === 'Escape') setFilterOpen(false);
             }}
           >
             <div style={{ flex: 1, display: 'flex', overflow: 'hidden' }}>
-              {/* Left rail — 8 facet tabs */}
+              {/* Left rail — 5 hidden-facet tabs */}
               <div
                 role="tablist"
                 aria-orientation="vertical"
@@ -405,7 +884,7 @@ export function AllWorkToolbar({
                   overflowY: 'auto', padding: '6px 0',
                 }}
               >
-                {FACET_ORDER.map(f => {
+                {MORE_FILTERS_FACETS.map(f => {
                   const isActive = activeFacet === f;
                   const count = selectedFilters[f].length;
                   return (
@@ -414,7 +893,7 @@ export function AllWorkToolbar({
                       role="tab"
                       aria-selected={isActive}
                       onClick={() => setActiveFacet(f)}
-                      data-testid={`catalyst-allwork-toolbar.filter-popup.facet.${f}`}
+                      data-testid={`catalyst-allwork-toolbar.more-filters.facet.${f}`}
                       style={{
                         width: '100%', textAlign: 'left',
                         padding: '6px 12px', border: 'none',
@@ -440,12 +919,12 @@ export function AllWorkToolbar({
                 })}
               </div>
 
-              {/* Right pane — value picker for the active facet */}
+              {/* Right pane — value picker for the active facet (uses renderFacetRow helper) */}
               <div
                 role="tabpanel"
-                style={{ flex: 1, padding: 16, overflowY: 'auto', minWidth: 0 }}
+                style={{ flex: 1, padding: 12, overflowY: 'auto', minWidth: 0 }}
               >
-                {activeFacet === null ? (
+                {activeFacet === null || !MORE_FILTERS_FACETS.includes(activeFacet) ? (
                   <div style={{
                     color: 'var(--ds-text-subtle, #505258)',
                     fontSize: 13, lineHeight: '20px',
@@ -457,104 +936,54 @@ export function AllWorkToolbar({
                   }}>No values available for this field.</div>
                 ) : (
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-                    {facetOptions[activeFacet].map(opt => {
-                      const checked = selectedFilters[activeFacet].includes(opt.value);
-                      return (
-                        <label
-                          key={opt.value}
-                          style={{
-                            display: 'flex', alignItems: 'center', gap: 8,
-                            padding: '6px 8px', borderRadius: 3,
-                            cursor: 'pointer',
-                            fontSize: 13, color: 'var(--ds-text, #292A2E)',
-                          }}
-                          onMouseEnter={e => (e.currentTarget as HTMLElement).style.background = 'var(--ds-surface-sunken, #F4F5F7)'}
-                          onMouseLeave={e => (e.currentTarget as HTMLElement).style.background = 'transparent'}
-                        >
-                          <input
-                            type="checkbox"
-                            checked={checked}
-                            onChange={() => toggleValue(activeFacet, opt.value)}
-                            style={{ margin: 0 }}
-                          />
-                          <span style={{ flex: 1 }}>{opt.label}</span>
-                        </label>
-                      );
-                    })}
+                    {facetOptions[activeFacet].map(opt =>
+                      renderFacetRow(
+                        activeFacet,
+                        opt,
+                        selectedFilters[activeFacet].includes(opt.value),
+                        () => toggleValue(activeFacet, opt.value),
+                      )
+                    )}
                   </div>
                 )}
               </div>
             </div>
-
-            {/* Bottom bar — Clear all + Shift+F hint */}
-            <div
-              style={{
-                borderTop: '1px solid var(--ds-border, #DFE1E6)',
-                padding: '8px 16px',
-                display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-                fontSize: 12, color: 'var(--ds-text-subtle, #505258)',
-              }}
-            >
-              <button
-                onClick={clearAll}
-                disabled={totalCount === 0}
-                data-testid="catalyst-allwork-toolbar.filter-popup.clear-all"
-                style={{
-                  background: 'none', border: 'none', padding: 0,
-                  color: totalCount > 0 ? 'var(--ds-text-brand, #0C66E4)' : 'var(--ds-text-disabled, #B3B9C4)',
-                  cursor: totalCount > 0 ? 'pointer' : 'default',
-                  fontSize: 13, fontFamily: 'inherit',
-                }}
-              >Clear all</button>
-              <span>Press Shift + F to open and close</span>
-            </div>
           </div>
-        )}
-        trigger={(triggerProps) => (
-          /* jira-compare 2026-05-03 Round 5 (re-probe live):
-             - Popup content was never mounting on click despite isOpen=true
-               reaching the React tree. Root cause in
-               @atlaskit/popup@4.17.0 use-get-memoized-merged-trigger-ref.js
-               line 19: `if (node && isOpen)` — the trigger ref callback
-               only sets triggerRef when isOpen=true AT MOUNT, but on initial
-               render isOpen=false, so triggerRef stays null forever and the
-               popper has no anchor.
-             - Spreading triggerProps onto Atlaskit Button via {...triggerProps}
-               compounds the problem because Button's forwardRef chain doesn't
-               re-fire the ref callback when isOpen toggles.
-             - Fix: own the ref ourselves on a wrapping span. Span gives the
-               Popup a stable DOM anchor independent of Button's ref forwarding.
-               Click handler on the inner Button toggles state.
-             - Visual props preserved: subtle appearance (transparent bg),
-               default spacing (h=32), explicit color on icon + label span
-               (Atlaskit Button atomic class beats inline style otherwise). */
-          <span
-            ref={triggerProps.ref as React.Ref<HTMLSpanElement>}
-            style={{ display: 'inline-flex' }}
-          >
-            <Button
-              appearance="subtle"
-              iconBefore={FilterIcon}
-              onClick={() => setFilterOpen(!filterOpen)}
-              testId="catalyst-allwork-toolbar.filter"
-              aria-haspopup={triggerProps['aria-haspopup']}
-              aria-expanded={triggerProps['aria-expanded']}
-              aria-controls={triggerProps['aria-controls']}
-            >
-              <span style={{ color: SUBTLE }}>
-                Filter{totalCount > 0 ? ` (${totalCount})` : ''}
-              </span>
-            </Button>
-          </span>
         )}
       />
 
+      {/* Clear filters — visible when any chip has a selection.
+          Atlaskit Button "subtle" with brand text colour, matches Jira. */}
+      {totalCount > 0 && (
+        <Button
+          appearance="subtle"
+          onClick={clearAll}
+          testId="catalyst-allwork-toolbar.clear-filters"
+        >
+          <span style={{ color: 'var(--ds-text-brand, #0C66E4)' }}>
+            Clear filters
+          </span>
+        </Button>
+      )}
+
+      {/* Save filter — placeholder. Persists current FilterState as a named
+          saved view. SQL emitted as SUPABASE SQL EDITOR block — table
+          `allwork_saved_filters` (id, user_id, project_key, name, state JSONB,
+          timestamps); Vikram runs the migration before this button does
+          real work. */}
+      <Button
+        appearance="subtle"
+        onClick={() => toast('Save filter — pending Supabase migration (allwork_saved_filters table)')}
+        testId="catalyst-allwork-toolbar.save-filter"
+      >
+        <span style={{ color: 'var(--ds-text-brand, #0C66E4)' }}>
+          Save filter
+        </span>
+      </Button>
+
       <span style={{ flex: 1 }} />
 
-      {/* 7. Saved filters — REMOVED 2026-05-02 per Vikram directive
-          ("saved filters is not required"). */}
-
-      {/* 8. View toggle: list / split */}
+      {/* 7. View toggle: list / split */}
       <div style={{ display: 'inline-flex', border: '1px solid var(--ds-border, #DFE1E6)', borderRadius: 4, overflow: 'hidden' }}>
         <IconButton
           icon={ListIcon}
@@ -572,25 +1001,10 @@ export function AllWorkToolbar({
         />
       </div>
 
-      {/* 9. Meatball */}
-      <DropdownMenu
-        trigger={({ triggerRef, ...props }) => (
-          <IconButton
-            ref={triggerRef as React.Ref<HTMLButtonElement>}
-            {...props}
-            icon={EditorMoreIcon}
-            label="More toolbar actions"
-            appearance="subtle"
-            testId="catalyst-allwork-toolbar.meatball"
-          />
-        )}
-      >
-        <DropdownItemGroup>
-          <DropdownItem onClick={() => toast('Export — coming soon')}>Export</DropdownItem>
-          <DropdownItem onClick={() => toast('Share view — coming soon')}>Share view</DropdownItem>
-          <DropdownItem onClick={() => toast('Refresh data')}>Refresh</DropdownItem>
-        </DropdownItemGroup>
-      </DropdownMenu>
+      {/* Meatball REMOVED — Export/Share/Refresh were dead CTAs (toast only).
+          Per Vikram 2026-05-03: dead CTAs removed in batch with chip-bar refactor.
+          When real Export / Share view / Refresh wiring lands, re-add the
+          DropdownMenu with proper handlers (not toasts). */}
     </div>
   );
 }

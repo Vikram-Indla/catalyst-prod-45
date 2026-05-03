@@ -209,9 +209,15 @@ export function WorkListPanel({ items, selectedKey, onSelect, projectId, externa
                 </span>
                 {/* Jira-parity status pill — colour derives from the workflow
                     engine (admin-editable at /admin/workflows) so all surfaces
-                    share a single source of truth. */}
+                    share a single source of truth.
+                    jira-compare 2026-05-03 (Vikram directive): switched from
+                    variant="bold" → "subtle" so rail and Filter dropdown
+                    lozenges are visually consistent (Jira itself doesn't show
+                    a status lozenge on rail cards at all — Catalyst keeps the
+                    pill for at-a-glance scanning, but uses the subtle treatment
+                    so it matches every other lozenge surface in the app). */}
                 <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
-                  <WorkItemStatusLozenge item={item} variant="bold" maxWidth={120} />
+                  <WorkItemStatusLozenge item={item} variant="subtle" maxWidth={120} />
                   {/* Interactive assignee picker (replaces previous static avatar).
                       Uses dbId (UUID) — never issue_key (CLAUDE.md §L39). */}
                   <WorkCardAssigneePicker
