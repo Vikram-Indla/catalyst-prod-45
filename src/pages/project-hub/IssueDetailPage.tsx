@@ -13,8 +13,6 @@ import { lazy, Suspense, useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { useGlobalSearchStore } from '@/store/globalSearchStore';
-import { CatalystPageHeader } from '@/components/shared/CatalystPageHeader';
-import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 
 const CatalystDetailRouter = lazy(() => import('@/components/catalyst-detail-views/CatalystDetailRouter'));
 
@@ -155,13 +153,22 @@ export default function IssueDetailPage() {
 
   return (
     <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column' }}>
-      <CatalystPageHeader title="Story Backlog" />
+      {/* jira-compare 2026-05-03 — removed hardcoded `<CatalystPageHeader title="Story Backlog" />`.
+          It was a stale placeholder that obscured the real issue title (set via
+          CatalystTitleEditor inside CatalystViewBase) and rendered "Story Backlog"
+          for every type, not just Story. CatalystViewBase's top bar already owns
+          breadcrumb + actions in fullPageMode. */}
       <div style={{ flex: 1, minHeight: 0 }}>
         <Suspense fallback={null}>
           <CatalystDetailRouter
             isOpen={true}
             onClose={handleClose}
-            itemId={issue.id}
+            /* jira-compare 2026-05-03 fix — useCatalystIssue queries
+               ph_issues.eq('issue_key', itemId) per the F-iter9 PK contract
+               (PK is issue_key text, not id UUID). Previously this passed
+               issue.id (UUID) which made every detail page render empty.
+               Pass the issue_key string instead. */
+            itemId={issue.issue_key}
             projectKey={issue.project_key || projectKey || ''}
             itemType={issue.issue_type}
             fullPageMode={true}
