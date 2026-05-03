@@ -4,7 +4,13 @@
 import React, { useState } from 'react';
 import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { Plus, ExternalLink, X } from 'lucide-react';
+/* jira-compare 2026-05-03 — Patch D3 (lucide sweep) ·
+   Plus → @atlaskit/icon/core/add
+   ExternalLink → @atlaskit/icon/core/link-external
+   X → @atlaskit/icon/core/cross */
+import AddIcon from '@atlaskit/icon/core/add';
+import LinkExternalIcon from '@atlaskit/icon/core/link-external';
+import CrossIcon from '@atlaskit/icon/core/cross';
 import type { TmTestCase, ThTestExecution, TestResult } from './types';
 import { LOZENGE, TEST_RESULT_STYLES } from './constants';
 import { getAvatarColor, formatDateShort } from './helpers';
@@ -56,8 +62,8 @@ export function TestHubSection({ storyId }: { storyId: string }) {
   return (
     <SectionBlock title="TestHub" count={testCases.length} defaultExpanded={testCases.length > 0} headerRight={
       <>
-        <button className="sdm-visibility-btn" style={{ gap: 4 }}><ExternalLink size={10} /> Open TestHub</button>
-        <button className="sdm-create-btn sdm-visibility-btn"><Plus size={10} /> Link test</button>
+        <button className="sdm-visibility-btn" style={{ gap: 4 }}><LinkExternalIcon label="" /> Open TestHub</button>
+        <button className="sdm-create-btn sdm-visibility-btn"><AddIcon label="" /> Link test</button>
       </>
     }>
       <div style={{ display: 'flex', borderBottom: '1px solid rgba(9,30,66,.14)', background: 'var(--ds-surface-sunken, #F8FAFC)' }}>
@@ -91,8 +97,8 @@ export function TestHubSection({ storyId }: { storyId: string }) {
                   <span className="sdm-status-lozenge"><Lozenge appearance={statusToLozenge(tc.status)}>{tc.status}</Lozenge></span>
                   <span className="sdm-date-col">{formatDateShort(tc.created_at)}</span>
                   <div className="sdm-row-actions">
-                    <button className="sdm-row-action-btn" title="Open in TestHub"><ExternalLink size={11} /></button>
-                    <button className="sdm-row-action-btn sdm-row-action-btn--danger" title="Unlink" onClick={e => { e.stopPropagation(); unlinkCase.mutate(tc.id); }}><X size={11} /></button>
+                    <button className="sdm-row-action-btn" title="Open in TestHub"><LinkExternalIcon label="Open in TestHub" /></button>
+                    <button className="sdm-row-action-btn sdm-row-action-btn--danger" title="Unlink" onClick={e => { e.stopPropagation(); unlinkCase.mutate(tc.id); }}><CrossIcon label="Unlink" /></button>
                   </div>
                 </div>
               ))}
