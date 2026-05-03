@@ -98,7 +98,7 @@ export const DescriptionTab: React.FC<DescriptionTabProps> = ({
 
       {/* LABELS SECTION */}
       <div className="mt-7">
-        <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-3">
+        <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3">
           Labels
         </label>
         <LabelsManager taskId={task.id} onLabelsChange={onLabelsChange} />

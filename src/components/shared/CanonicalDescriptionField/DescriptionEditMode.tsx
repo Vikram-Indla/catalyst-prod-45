@@ -38,12 +38,12 @@ export function DescriptionEditMode({
         placeholder={placeholder}
         maxLength={maxLength}
         disabled={isLoading}
-        className={`w-full min-h-[120px] px-3 py-2 text-sm leading-relaxed bg-white dark:bg-neutral-950 border rounded-md transition-colors resize-vertical focus:outline-none focus:ring-2 focus:ring-offset-2 dark:focus:ring-offset-0 ${
+        className={`w-full min-h-[120px] px-3 py-2 text-sm leading-relaxed bg-white border rounded-md transition-colors resize-vertical focus:outline-none focus:ring-2 focus:ring-offset-2 ${
           error
-            ? 'border-red-500 dark:border-red-400 focus:ring-red-500'
+            ? 'border-red-500 focus:ring-red-500'
             : isNearLimit
-              ? 'border-yellow-500 dark:border-yellow-400 focus:ring-yellow-500'
-              : 'border-neutral-300 dark:border-neutral-600 focus:ring-blue-500'
+              ? 'border-yellow-500 focus:ring-yellow-500'
+              : 'border-neutral-300 focus:ring-blue-500'
         }`}
         aria-label="Description"
         aria-invalid={!!error}
@@ -54,7 +54,7 @@ export function DescriptionEditMode({
       {error && (
         <div
           id="description-error"
-          className="text-sm text-red-600 dark:text-red-400 flex items-center gap-1"
+          className="text-sm text-red-600 flex items-center gap-1"
           role="alert"
         >
           ⚠️ {error}
@@ -62,21 +62,21 @@ export function DescriptionEditMode({
       )}
 
       {/* Character Counter */}
-      <div className="flex items-center justify-between text-xs text-neutral-500 dark:text-neutral-400">
+      <div className="flex items-center justify-between text-xs text-neutral-500">
         <div className="flex gap-2">
           <span>
             {charCount} / {maxLength} characters
           </span>
-          {isNearLimit && <span className="text-yellow-600 dark:text-yellow-400">⚠️ Limit approaching</span>}
+          {isNearLimit && <span className="text-yellow-600">⚠️ Limit approaching</span>}
           {mentions.length > 0 && <span>• {mentions.length} mention(s) detected</span>}
         </div>
       </div>
 
       {/* Markdown Hint */}
-      <div className="text-xs text-neutral-500 dark:text-neutral-400">
-        <strong>Formatting:</strong> <code className="bg-neutral-100 dark:bg-neutral-800 px-1 rounded">**bold**</code>{' '}
-        <code className="bg-neutral-100 dark:bg-neutral-800 px-1 rounded">_italic_</code>{' '}
-        <code className="bg-neutral-100 dark:bg-neutral-800 px-1 rounded">`code`</code> • @mention users and
+      <div className="text-xs text-neutral-500">
+        <strong>Formatting:</strong> <code className="bg-neutral-100 px-1 rounded">**bold**</code>{' '}
+        <code className="bg-neutral-100 px-1 rounded">_italic_</code>{' '}
+        <code className="bg-neutral-100 px-1 rounded">`code`</code> • @mention users and
         paste links
       </div>
 
@@ -85,7 +85,7 @@ export function DescriptionEditMode({
         <button
           onClick={onCancel}
           disabled={isLoading}
-          className="inline-flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-neutral-700 dark:text-neutral-300 bg-neutral-100 dark:bg-neutral-800 hover:bg-neutral-200 dark:hover:bg-neutral-700 rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          className="inline-flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-neutral-700 bg-neutral-100 hover:bg-neutral-200 rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           aria-label="Cancel editing"
         >
           <X className="w-4 h-4" />
@@ -94,7 +94,7 @@ export function DescriptionEditMode({
         <button
           onClick={onSave}
           disabled={isLoading}
-          className="inline-flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 dark:bg-blue-700 dark:hover:bg-blue-800 rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          className="inline-flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           aria-label="Save description"
         >
           {isLoading ? (
