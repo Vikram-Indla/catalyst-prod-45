@@ -110,24 +110,30 @@ Deno.serve(async (req) => {
     const jqlSinceMin = sinceISO.slice(0, 16).replace("T", " "); // "yyyy-MM-dd HH:mm"
     const jql = `project = ${PROJECT_KEY} AND updated > "${jqlSinceMin}" ORDER BY updated ASC`;
 
-    let startAt = 0;
-    let total = Infinity;
+    let nextPageToken: string | undefined = undefined;
+    let pageNum = 0;
 
-    while (startAt < total) {
-      const params = new URLSearchParams({
+    do {
+      pageNum++;
+      const body: any = {
         jql,
-        startAt: String(startAt),
-        maxResults: String(PAGE_SIZE),
-        fields: "*all",
-        expand: "renderedFields,changelog,attachment",
-      });
-      const page = await jiraFetch(`/rest/api/3/search?${params}`);
-      total = page.total;
-      const issues = page.issues ?? [];
-      console.log(`Page startAt=${startAt} got=${issues.length} total=${total}`);
+        maxResults: PAGE_SIZE,
+        fields: ["summary", "status", "issuetype", "updated"],
+      };
+      if (nextPageToken) body.nextPageToken = nextPageToken;
 
-      for (const issue of issues) {
+      const page = await jiraFetch(`/rest/api/3/search/jql`, {
+        method: "POST",
+        body: JSON.stringify(body),
+      });
+      const liteIssues = page.issues ?? [];
+      nextPageToken = page.nextPageToken;
+      console.log(`Page ${pageNum} got=${liteIssues.length} nextToken=${nextPageToken ? "yes" : "no"}`);
+
+      for (const lite of liteIssues) {
         try {
+          // Fetch full issue (attachments + ADF description + changelog)
+          const issue = await jiraGetIssue(lite.key);
           const f = issue.fields ?? {};
           processed++;
 
@@ -177,7 +183,6 @@ Deno.serve(async (req) => {
             }
           }
 
-          // --- Build description ADF with hydrated images ---
           const descAdf = f.description ? hydrateAdfMedia(f.description, idToUrl) : null;
           const descText =
             typeof f.description === "string"
@@ -187,7 +192,6 @@ Deno.serve(async (req) => {
                   .replace(/\s+/g, " ")
                   .trim();
 
-          // --- Upsert ph_issues ---
           const row = {
             issue_key: issue.key,
             project_key: PROJECT_KEY,
@@ -207,14 +211,10 @@ Deno.serve(async (req) => {
             labels: f.labels ?? [],
             components: (f.components ?? []).map((c: any) => c.name),
             fix_versions: (f.fixVersions ?? []).map((v: any) => ({
-              id: v.id,
-              name: v.name,
-              released: v.released,
+              id: v.id, name: v.name, released: v.released,
             })),
             due_date: f.duedate ?? null,
             resolution: f.resolution?.name ?? null,
-            sprint_name: null,
-            story_points: null,
             jira_created_at: f.created ?? null,
             jira_updated_at: f.updated ?? null,
             description_adf: descAdf,
@@ -237,11 +237,10 @@ Deno.serve(async (req) => {
             upserted++;
           }
         } catch (issueErr) {
-          errors.push({ issueKey: issue.key, error: String(issueErr) });
+          errors.push({ issueKey: lite.key, error: String(issueErr) });
         }
       }
 
-      // Progress checkpoint
       await supabase
         .from("jira_bau_reload_runs")
         .update({
@@ -252,10 +251,7 @@ Deno.serve(async (req) => {
           errors,
         })
         .eq("id", runId);
-
-      startAt += issues.length || PAGE_SIZE;
-      if (!issues.length) break;
-    }
+    } while (nextPageToken);
 
     await supabase
       .from("jira_bau_reload_runs")
