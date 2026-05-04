@@ -6,7 +6,9 @@ import React, { useState, useRef, useEffect, useCallback, lazy, Suspense } from 
 import { useNavigate } from 'react-router-dom';
 import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
-import { Plus, Check, Loader2, ChevronDown, Sparkles } from 'lucide-react';
+import AddIcon from '@atlaskit/icon/core/add';
+import Spinner from '@atlaskit/spinner';
+import ChevronDownIcon from '@atlaskit/icon/glyph/chevron-down';
 import { catalystToast } from '@/lib/catalystToast';
 import { AiLinkSimilarPanel } from './AiLinkSimilarPanel';
 import { CreateStoryModal } from '@/components/workhub/create-story/CreateStoryModal';
@@ -58,7 +60,7 @@ function LinkTypeDropdown({ value, onChange }: { value: string; onChange: (v: st
         transition: 'border-color 0.15s',
       }}>
         <span style={{ flex: 1, textAlign: 'left' }}>{value}</span>
-        <ChevronDown size={14} color="var(--ds-text-subtlest, #6B778C)" />
+        <ChevronDownIcon label="" size="small" />
       </button>
       {open && (
         <div style={{
@@ -300,7 +302,7 @@ function AddLinkRow({ issueKey, onClose, onSuccess, onCreateNew, existingLinkedK
           onMouseEnter={e => { e.currentTarget.style.textDecoration = 'underline'; e.currentTarget.style.color = 'var(--ds-text, #172B4D)'; }}
           onMouseLeave={e => { e.currentTarget.style.textDecoration = 'none'; e.currentTarget.style.color = '#44546F'; }}
         >
-          <Plus size={14} strokeWidth={1.5} /> Create linked work item
+          <AddIcon label="" /> Create linked work item
         </button>
         <div style={{ display: 'flex', gap: 8 }}>
           <button
@@ -313,7 +315,7 @@ function AddLinkRow({ issueKey, onClose, onSuccess, onCreateNew, existingLinkedK
               cursor: selectedItems.length ? 'pointer' : 'not-allowed', fontFamily: 'inherit',
             }}
           >
-            {linkMutation.isPending ? <Loader2 size={14} className="animate-spin" /> : 'Link'}
+            {linkMutation.isPending ? <Spinner size="small" /> : 'Link'}
           </button>
           <button onClick={onClose} style={{
             height: 32, padding: '0 16px', border: 'none', borderRadius: 3,
@@ -483,7 +485,7 @@ export function LinkedIssuesSection({ issueId, issueKey: issueKeyProp, projectKe
         onMouseEnter={e => { e.currentTarget.style.background = 'var(--ds-surface-sunken, #F4F5F7)'; e.currentTarget.style.color = 'var(--ds-text, #172B4D)'; }}
         onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--ds-text-subtlest, #6B778C)'; }}
       >
-        <Plus size={16} strokeWidth={2} />
+        <AddIcon label="Link issue" />
       </button>
     }>
       {/* AI Link Similar panel */}
@@ -539,7 +541,7 @@ export function LinkedIssuesSection({ issueId, issueKey: issueKeyProp, projectKe
                   <span style={{ flex: 1, fontSize: 13, color: 'var(--ds-text, #172B4D)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{target.summary}</span>
                   <span style={{ display: 'inline-flex', alignItems: 'center', gap: 3, flexShrink: 0 }}>
                     <Lozenge appearance={statusToLozenge(target.status)}>{target.status}</Lozenge>
-                    <ChevronDown size={10} color="#42526E" />
+                    <ChevronDownIcon label="" size="small" />
                   </span>
                   {target.assignee_display_name ? (
                     <div style={{

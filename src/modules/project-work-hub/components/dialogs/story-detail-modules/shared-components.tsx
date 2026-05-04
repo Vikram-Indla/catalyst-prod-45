@@ -4,10 +4,17 @@
  * StatusLozenge, JiraStatusPill, IssueIcon, Skel, DetailRow
  */
 import React, { useState, useEffect, useRef } from 'react';
-import {
-  ChevronDown, ChevronRight, Plus, GripVertical, Edit2, Link2, Trash2,
-  Check, Eye, EyeOff, Settings2, Loader2, X, AlertTriangle,
-} from 'lucide-react';
+import ChevronDownIcon from '@atlaskit/icon/glyph/chevron-down';
+import ChevronRightIcon from '@atlaskit/icon/glyph/chevron-right';
+import DragHandlerIcon from '@atlaskit/icon/core/drag-handle';
+import EditIcon from '@atlaskit/icon/core/edit';
+import LinkIcon from '@atlaskit/icon/core/link';
+import DeleteIcon from '@atlaskit/icon/core/delete';
+import CheckMarkIcon from '@atlaskit/icon/core/check-mark';
+import SettingsIcon from '@atlaskit/icon/core/settings';
+import Spinner from '@atlaskit/spinner';
+import CrossIcon from '@atlaskit/icon/glyph/cross';
+import WarningIcon from '@atlaskit/icon/core/warning';
 import type { ColumnConfig, PhIssueRow, StatusCategory } from './types';
 import { LOZENGE, PRIORITY_COLORS, WORK_ITEM_ICONS } from './constants';
 import { getStatusCategory, getAvatarColor, formatDateShort } from './helpers';

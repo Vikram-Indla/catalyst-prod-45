@@ -6,7 +6,15 @@ import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react'
 import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
-import { Plus, Eye, EyeOff, ChevronDown, ChevronUp, Check, Loader2, CornerDownLeft, Sparkles, ArrowUpDown } from 'lucide-react';
+import AddIcon from '@atlaskit/icon/core/add';
+import EyeOpenIcon from '@atlaskit/icon/core/eye-open';
+import EyeOpenStrikethroughIcon from '@atlaskit/icon/core/eye-open-strikethrough';
+import ChevronDownIcon from '@atlaskit/icon/glyph/chevron-down';
+import ChevronUpIcon from '@atlaskit/icon/glyph/chevron-up';
+import CheckMarkIcon from '@atlaskit/icon/core/check-mark';
+import Spinner from '@atlaskit/spinner';
+import ArrowLeftIcon from '@atlaskit/icon/glyph/arrow-left';
+import AiChatIcon from '@atlaskit/icon/core/ai-chat';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import { PriorityBars, normalisePriority } from '@/components/shared/PriorityIndicator';
 import { CANONICAL_WORK_ITEM_OPTIONS } from '@/components/shared/canonicalWorkItemOptions';
@@ -52,7 +60,7 @@ function TypeSelector({ value, onChange }: { value: string; onChange: (v: string
       }}>
         <span style={{ display: 'flex', width: 16, height: 16 }}>{current.icon}</span>
         <span>{current.label}</span>
-        <ChevronDown size={12} color="var(--ds-text-subtlest, #6B778C)" />
+        <ChevronDownIcon label="" size="small" />
       </button>
       {open && (
         <div style={{
@@ -72,7 +80,7 @@ function TypeSelector({ value, onChange }: { value: string; onChange: (v: string
             >
               <span style={{ display: 'flex', width: 16, height: 16 }}>{opt.icon}</span>
               <span>{opt.label}</span>
-              {opt.key === value && <Check size={12} color="#0052CC" style={{ marginLeft: 'auto' }} />}
+              {opt.key === value && <CheckMarkIcon label="" color="#0052CC" />}
             </div>
           ))}
         </div>
@@ -141,7 +149,7 @@ function InlineStatusDropdown({ item, onUpdate }: { item: PhIssueRow; onUpdate: 
                     onMouseLeave={e => { if (!isActive) (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
                   >
                     <span style={{ flex: 1 }}>{s}</span>
-                    {isActive && <Check size={12} color="#0052CC" />}
+                    {isActive && <CheckMarkIcon label="" color="#0052CC" />}
                   </div>
                 );
               })}
@@ -170,9 +178,13 @@ function SortableHeader({ label, sortKey, currentSort, currentDir, onSort, align
       }}
     >
       <span>{label}</span>
-      {isActive && currentDir === 'asc' && <ChevronUp size={10} strokeWidth={2.5} />}
-      {isActive && currentDir === 'desc' && <ChevronDown size={10} strokeWidth={2.5} />}
-      {!isActive && <ArrowUpDown size={9} style={{ opacity: 0.4 }} />}
+      {isActive && currentDir === 'asc' && <ChevronUpIcon label="" size="small" />}
+      {isActive && currentDir === 'desc' && <ChevronDownIcon label="" size="small" />}
+      {!isActive && (
+        <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ opacity: 0.4 }}>
+          <path d="M8 9l4-4 4 4"/><path d="M16 15l-4 4-4-4"/>
+        </svg>
+      )}
     </button>
   );
 }
@@ -387,7 +399,7 @@ export function ChildIssuesSection({ storyKey, storyId, projectKey, onOpenItem }
         <>
           {doneCount > 0 && (
             <button className="sdm-visibility-btn" onClick={() => setShowDone(s => !s)}>
-              {showDone ? <><Eye size={11} /> Hide done</> : <><EyeOff size={11} /> Show done ({doneCount})</>}
+              {showDone ? <><EyeOpenIcon label="" /> Hide done</> : <><EyeOpenStrikethroughIcon label="" /> Show done ({doneCount})</>}
             </button>
           )}
           <ColumnPicker columns={columns} onChange={setColumns} />
@@ -399,7 +411,7 @@ export function ChildIssuesSection({ storyKey, storyId, projectKey, onOpenItem }
             onMouseEnter={e => { e.currentTarget.style.background = 'var(--ds-surface-sunken, #F4F5F7)'; e.currentTarget.style.color = 'var(--ds-text, #172B4D)'; }}
             onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--ds-text-subtlest, #6B778C)'; }}
           >
-            <Plus size={16} strokeWidth={2} />
+            <AddIcon label="Create sub-task" />
           </button>
         </>
       }>
