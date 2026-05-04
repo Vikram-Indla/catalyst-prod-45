@@ -7,8 +7,16 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { JiraDescriptionEditor } from '@/components/shared/jira-description-editor';
 import { supabase } from '@/integrations/supabase/client';
-import { Sheet, SheetContent } from '@/components/ui/sheet';
-import { X, MessageSquare, History, FileText, ChevronDown, ChevronRight, Paperclip, Link as LinkIcon, GitBranch } from 'lucide-react';
+import { Popup } from '@atlaskit/popup';
+import CrossIcon from '@atlaskit/icon/glyph/cross';
+import CommentIcon from '@atlaskit/icon/core/comment';
+import RecentIcon from '@atlaskit/icon/glyph/recent';
+import PageIcon from '@atlaskit/icon/core/page';
+import ChevronDownIcon from '@atlaskit/icon/glyph/chevron-down';
+import ChevronRightIcon from '@atlaskit/icon/glyph/chevron-right';
+import AttachmentIcon from '@atlaskit/icon/core/attachment';
+import AkLinkIcon from '@atlaskit/icon/core/link';
+import BranchIcon from '@atlaskit/icon/core/branch';
 import { StoryActionMenu } from './StoryActionMenu';
 import { SubtasksList } from '@/components/stories/SubtasksList';
 import { StoryLinks } from '@/components/stories/StoryLinks';
@@ -16,7 +24,6 @@ import { StoryAttachments } from '@/components/stories/StoryAttachments';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import { ParentEpicChip } from '../shared/ParentEpicChip';
 import { getLozengeStyle, STORY_STATUS_LOZENGE, getPriorityLabel, getPriorityColor, getInitials } from '../../utils/backlog.utils';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { format, formatDistanceToNow } from 'date-fns';
 import { toast } from 'sonner';
 
@@ -74,6 +81,8 @@ export const StoryDetailDrawer: React.FC<StoryDetailDrawerProps> = ({ isOpen, on
   const [subtasksOpen, setSubtasksOpen] = useState(true);
   const [linksOpen, setLinksOpen] = useState(true);
   const [attachmentsOpen, setAttachmentsOpen] = useState(false);
+  const [statusPopoverOpen, setStatusPopoverOpen] = useState(false);
+  const [assigneePopoverOpen, setAssigneePopoverOpen] = useState(false);
 
   // Main query
   const { data: story, isLoading, error } = useQuery({
@@ -180,39 +189,61 @@ export const StoryDetailDrawer: React.FC<StoryDetailDrawerProps> = ({ isOpen, on
     updateMutation.mutate({ field, value });
   }, [updateMutation]);
 
-  if (!storyId) return null;
+  if (!isOpen || !storyId) return null;
 
   const statusColors = story?.status ? getStatusLozengeColors(story.status) : null;
 
   return (
-    <Sheet open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <SheetContent
-        style={{ width: 560, maxWidth: '100vw', padding: 0, background: '#FFFFFF' }}
-        className="overflow-y-auto border-l"
-      >
-        {/* Sticky Header */}
-        <div style={{
-          position: 'sticky', top: 0, zIndex: 10, background: '#FFFFFF',
-          borderBottom: '0.75px solid rgba(15,23,42,0.06)',
-          padding: '16px 20px', display: 'flex', alignItems: 'center', gap: 10,
-        }}>
-          {story ? (
-            <>
-              <JiraIssueTypeIcon type={story.issue_type || 'story'} size={20} />
-              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 14, fontWeight: 600, color: '#0F172A' }}>{story.issue_key}</span>
-              <span style={{ fontSize: 13, color: '#64748B' }}>· {story.issue_type || 'Story'}</span>
-            </>
-          ) : (
-            <div style={{ height: 20, width: 120, borderRadius: 3, background: '#E2E8F0' }} />
-          )}
-          <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 4 }}>
-            {story && <StoryActionMenu storyId={storyId!} storyKey={story.issue_key} onClose={onClose} />}
-            <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4 }}>
-              <X size={20} color="#64748B" />
-            </button>
-          </div>
+    <div
+      style={{
+        position: 'fixed',
+        top: 0,
+        right: 0,
+        bottom: 0,
+        width: 560,
+        maxWidth: '100vw',
+        background: '#FFFFFF',
+        zIndex: 400,
+        display: 'flex',
+        flexDirection: 'column',
+        overflow: 'hidden',
+        boxShadow: 'var(--ds-shadow-overlay, -4px 0 16px rgba(9,30,66,0.15))',
+        borderLeft: '1px solid var(--ds-border, rgba(9,30,66,0.14))',
+      }}
+    >
+      {/* Sticky Header */}
+      <div style={{
+        flexShrink: 0,
+        background: '#FFFFFF',
+        borderBottom: '0.75px solid rgba(15,23,42,0.06)',
+        padding: '16px 20px',
+        display: 'flex',
+        alignItems: 'center',
+        gap: 10,
+      }}>
+        {story ? (
+          <>
+            <JiraIssueTypeIcon type={story.issue_type || 'story'} size={20} />
+            <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 14, fontWeight: 600, color: '#0F172A' }}>{story.issue_key}</span>
+            <span style={{ fontSize: 13, color: '#64748B' }}>· {story.issue_type || 'Story'}</span>
+          </>
+        ) : (
+          <div style={{ height: 20, width: 120, borderRadius: 3, background: '#E2E8F0' }} />
+        )}
+        <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 4 }}>
+          {story && <StoryActionMenu storyId={storyId!} storyKey={story.issue_key} onClose={onClose} />}
+          <button
+            type="button"
+            onClick={onClose}
+            style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4, display: 'flex', alignItems: 'center' }}
+          >
+            <CrossIcon label="Close" size="small" primaryColor="#64748B" />
+          </button>
         </div>
+      </div>
 
+      {/* Scrollable body */}
+      <div style={{ flex: 1, overflowY: 'auto' }}>
         {isLoading ? (
           <div style={{ padding: '24px 20px' }}>
             {[1,2,3,4,5,6].map(i => (
@@ -225,17 +256,26 @@ export const StoryDetailDrawer: React.FC<StoryDetailDrawerProps> = ({ isOpen, on
         ) : error ? (
           <div style={{ padding: '48px 20px', textAlign: 'center' }}>
             <p style={{ fontSize: 14, color: '#DC2626' }}>Failed to load work item</p>
-            <button onClick={onClose} style={{ marginTop: 12, fontSize: 13, color: '#2563EB', background: 'none', border: 'none', cursor: 'pointer' }}>Close</button>
+            <button type="button" onClick={onClose} style={{ marginTop: 12, fontSize: 13, color: '#2563EB', background: 'none', border: 'none', cursor: 'pointer' }}>Close</button>
           </div>
         ) : story ? (
-          <div style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
+          <div style={{ display: 'flex', flexDirection: 'column' }}>
             {/* Title + Status + Description (always visible) */}
             <div style={{ padding: '16px 20px 0' }}>
               {/* Status lozenge (clickable) */}
               <div style={{ marginBottom: 12 }}>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <button style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
+                <Popup
+                  isOpen={statusPopoverOpen}
+                  onClose={() => setStatusPopoverOpen(false)}
+                  placement="bottom-start"
+                  trigger={({ ref, ...triggerProps }) => (
+                    <button
+                      ref={ref as React.Ref<HTMLButtonElement>}
+                      {...triggerProps}
+                      type="button"
+                      onClick={() => setStatusPopoverOpen(!statusPopoverOpen)}
+                      style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
+                    >
                       {statusColors && (
                         <span style={{
                           display: 'inline-flex', alignItems: 'center', height: 20, padding: '0 6px',
@@ -246,27 +286,34 @@ export const StoryDetailDrawer: React.FC<StoryDetailDrawerProps> = ({ isOpen, on
                         </span>
                       )}
                     </button>
-                  </PopoverTrigger>
-                  <PopoverContent align="start" style={{ width: 220, padding: '4px 0', background: '#FFFFFF', border: '1px solid rgba(15,23,42,0.12)', borderRadius: 6, zIndex: 9999, maxHeight: 320, overflowY: 'auto' }}>
-                    {STATUS_GROUPS.map(group => (
-                      <div key={group.label}>
-                        <div style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#94A3B8', padding: '6px 12px 2px' }}>{group.label}</div>
-                        {group.statuses.map(s => {
-                          const sc = getStatusLozengeColors(s);
-                          return (
-                            <button key={s} onClick={() => handleUpdate('status', s)} style={{
-                              width: '100%', padding: '5px 12px', fontSize: 13, border: 'none', textAlign: 'left',
-                              background: story.status === s ? 'rgba(37,99,235,0.08)' : 'transparent',
-                              color: '#0F172A', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8,
-                            }}>
-                              <span style={{ display: 'inline-flex', alignItems: 'center', height: 20, padding: '0 6px', borderRadius: 3, fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.03em', background: sc.bg, color: sc.text }}>{sc.label}</span>
-                            </button>
-                          );
-                        })}
-                      </div>
-                    ))}
-                  </PopoverContent>
-                </Popover>
+                  )}
+                  content={() => (
+                    <div style={{ width: 220, padding: '4px 0', background: '#FFFFFF', maxHeight: 320, overflowY: 'auto' }}>
+                      {STATUS_GROUPS.map(group => (
+                        <div key={group.label}>
+                          <div style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#94A3B8', padding: '6px 12px 2px' }}>{group.label}</div>
+                          {group.statuses.map(s => {
+                            const sc = getStatusLozengeColors(s);
+                            return (
+                              <button
+                                key={s}
+                                type="button"
+                                onClick={() => { handleUpdate('status', s); setStatusPopoverOpen(false); }}
+                                style={{
+                                  width: '100%', padding: '5px 12px', fontSize: 13, border: 'none', textAlign: 'left',
+                                  background: story.status === s ? 'rgba(37,99,235,0.08)' : 'transparent',
+                                  color: '#0F172A', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8,
+                                }}
+                              >
+                                <span style={{ display: 'inline-flex', alignItems: 'center', height: 20, padding: '0 6px', borderRadius: 3, fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.03em', background: sc.bg, color: sc.text }}>{sc.label}</span>
+                              </button>
+                            );
+                          })}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                />
               </div>
 
               {/* Title */}
@@ -292,20 +339,20 @@ export const StoryDetailDrawer: React.FC<StoryDetailDrawerProps> = ({ isOpen, on
             </div>
 
             {/* Tabs */}
-            <div style={{ borderBottom: '1px solid rgba(15,23,42,0.08)', padding: '0 20px', display: 'flex', gap: 0 }}>
-              <button onClick={() => setActiveTab('details')} style={activeTab === 'details' ? TAB_ACTIVE : TAB_STYLE}>
-                <FileText size={14} /> Details
+            <div style={{ borderBottom: '1px solid rgba(15,23,42,0.08)', padding: '0 20px', display: 'flex', gap: 0, flexShrink: 0 }}>
+              <button type="button" onClick={() => setActiveTab('details')} style={activeTab === 'details' ? TAB_ACTIVE : TAB_STYLE}>
+                <PageIcon label="" size="small" /> Details
               </button>
-              <button onClick={() => setActiveTab('comments')} style={activeTab === 'comments' ? TAB_ACTIVE : TAB_STYLE}>
-                <MessageSquare size={14} /> Comments {comments.length > 0 && `(${comments.length})`}
+              <button type="button" onClick={() => setActiveTab('comments')} style={activeTab === 'comments' ? TAB_ACTIVE : TAB_STYLE}>
+                <CommentIcon label="" size="small" /> Comments {comments.length > 0 && `(${comments.length})`}
               </button>
-              <button onClick={() => setActiveTab('history')} style={activeTab === 'history' ? TAB_ACTIVE : TAB_STYLE}>
-                <History size={14} /> History {changelog.length > 0 && `(${changelog.length})`}
+              <button type="button" onClick={() => setActiveTab('history')} style={activeTab === 'history' ? TAB_ACTIVE : TAB_STYLE}>
+                <RecentIcon label="" size="small" /> History {changelog.length > 0 && `(${changelog.length})`}
               </button>
             </div>
 
             {/* Tab Content */}
-            <div style={{ padding: '16px 20px', flex: 1, overflowY: 'auto' }}>
+            <div style={{ padding: '16px 20px' }}>
               {activeTab === 'details' && (
                 <>
                   {/* Description */}
@@ -335,11 +382,20 @@ export const StoryDetailDrawer: React.FC<StoryDetailDrawerProps> = ({ isOpen, on
                       <span style={{ ...DETAIL_VALUE, color: getPriorityColor(story.priority) }}>{getPriorityLabel(story.priority)}</span>
                     </DetailRow>
 
-                    {/* Assignee (clickable — JIRA-like people picker) */}
+                    {/* Assignee */}
                     <DetailRow label="Assignee">
-                      <Popover>
-                        <PopoverTrigger asChild>
-                          <button style={{ display: 'flex', alignItems: 'center', gap: 6, background: 'none', border: 'none', cursor: 'pointer', padding: '2px 4px', borderRadius: 4, margin: '-2px -4px' }} className="hover:bg-accent">
+                      <Popup
+                        isOpen={assigneePopoverOpen}
+                        onClose={() => setAssigneePopoverOpen(false)}
+                        placement="bottom-start"
+                        trigger={({ ref, ...triggerProps }) => (
+                          <button
+                            ref={ref as React.Ref<HTMLButtonElement>}
+                            {...triggerProps}
+                            type="button"
+                            onClick={() => setAssigneePopoverOpen(!assigneePopoverOpen)}
+                            style={{ display: 'flex', alignItems: 'center', gap: 6, background: 'none', border: 'none', cursor: 'pointer', padding: '2px 4px', borderRadius: 4, margin: '-2px -4px' }}
+                          >
                             {story.assignee_display_name ? (
                               <>
                                 <div style={{ width: 24, height: 24, borderRadius: '50%', background: '#E2E8F0', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 9, fontWeight: 700, color: '#64748B', flexShrink: 0 }}>
@@ -351,15 +407,17 @@ export const StoryDetailDrawer: React.FC<StoryDetailDrawerProps> = ({ isOpen, on
                               <span style={{ fontSize: 14, color: '#94A3B8', fontStyle: 'italic' }}>— Set assignee</span>
                             )}
                           </button>
-                        </PopoverTrigger>
-                        <PopoverContent align="start" style={{ width: 240, padding: '4px 0', background: '#FFFFFF', border: '1px solid rgba(15,23,42,0.12)', borderRadius: 6, zIndex: 9999 }}>
-                          <AssigneePicker
-                            projectId={projectId}
-                            currentAssignee={story.assignee_display_name}
-                            onSelect={(name) => handleUpdate('assignee_display_name', name)}
-                          />
-                        </PopoverContent>
-                      </Popover>
+                        )}
+                        content={() => (
+                          <div style={{ width: 240 }}>
+                            <AssigneePicker
+                              projectId={projectId}
+                              currentAssignee={story.assignee_display_name}
+                              onSelect={(name) => { handleUpdate('assignee_display_name', name); setAssigneePopoverOpen(false); }}
+                            />
+                          </div>
+                        )}
+                      />
                     </DetailRow>
 
                     {/* Reporter */}
@@ -453,14 +511,17 @@ export const StoryDetailDrawer: React.FC<StoryDetailDrawerProps> = ({ isOpen, on
                   {/* ═══════ Child Issues / Subtasks ═══════ */}
                   <div style={{ borderTop: '0.75px solid rgba(15,23,42,0.06)', marginTop: 16 }}>
                     <button
+                      type="button"
                       onClick={() => setSubtasksOpen(!subtasksOpen)}
                       style={{
                         width: '100%', display: 'flex', alignItems: 'center', gap: 8,
                         padding: '12px 0', background: 'none', border: 'none', cursor: 'pointer',
                       }}
                     >
-                      {subtasksOpen ? <ChevronDown size={16} color="#64748B" /> : <ChevronRight size={16} color="#64748B" />}
-                      <GitBranch size={14} color="#64748B" />
+                      {subtasksOpen
+                        ? <ChevronDownIcon label="" size="small" primaryColor="#64748B" />
+                        : <ChevronRightIcon label="" size="small" primaryColor="#64748B" />}
+                      <BranchIcon label="" size="small" primaryColor="#64748B" />
                       <span style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#64748B' }}>
                         Child Issues
                       </span>
@@ -475,14 +536,17 @@ export const StoryDetailDrawer: React.FC<StoryDetailDrawerProps> = ({ isOpen, on
                   {/* ═══════ Linked Issues ═══════ */}
                   <div style={{ borderTop: '0.75px solid rgba(15,23,42,0.06)' }}>
                     <button
+                      type="button"
                       onClick={() => setLinksOpen(!linksOpen)}
                       style={{
                         width: '100%', display: 'flex', alignItems: 'center', gap: 8,
                         padding: '12px 0', background: 'none', border: 'none', cursor: 'pointer',
                       }}
                     >
-                      {linksOpen ? <ChevronDown size={16} color="#64748B" /> : <ChevronRight size={16} color="#64748B" />}
-                      <LinkIcon size={14} color="#64748B" />
+                      {linksOpen
+                        ? <ChevronDownIcon label="" size="small" primaryColor="#64748B" />
+                        : <ChevronRightIcon label="" size="small" primaryColor="#64748B" />}
+                      <AkLinkIcon label="" size="small" primaryColor="#64748B" />
                       <span style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#64748B' }}>
                         Linked Issues
                       </span>
@@ -497,14 +561,17 @@ export const StoryDetailDrawer: React.FC<StoryDetailDrawerProps> = ({ isOpen, on
                   {/* ═══════ Attachments ═══════ */}
                   <div style={{ borderTop: '0.75px solid rgba(15,23,42,0.06)' }}>
                     <button
+                      type="button"
                       onClick={() => setAttachmentsOpen(!attachmentsOpen)}
                       style={{
                         width: '100%', display: 'flex', alignItems: 'center', gap: 8,
                         padding: '12px 0', background: 'none', border: 'none', cursor: 'pointer',
                       }}
                     >
-                      {attachmentsOpen ? <ChevronDown size={16} color="#64748B" /> : <ChevronRight size={16} color="#64748B" />}
-                      <Paperclip size={14} color="#64748B" />
+                      {attachmentsOpen
+                        ? <ChevronDownIcon label="" size="small" primaryColor="#64748B" />
+                        : <ChevronRightIcon label="" size="small" primaryColor="#64748B" />}
+                      <AttachmentIcon label="" size="small" primaryColor="#64748B" />
                       <span style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#64748B' }}>
                         Attachments
                       </span>
@@ -527,8 +594,8 @@ export const StoryDetailDrawer: React.FC<StoryDetailDrawerProps> = ({ isOpen, on
             </div>
           </div>
         ) : null}
-      </SheetContent>
-    </Sheet>
+      </div>
+    </div>
   );
 };
 
@@ -573,13 +640,11 @@ function HistoryPane({ changelog, isLoading }: { changelog: any[]; isLoading: bo
   if (isLoading) return <SkeletonList count={4} />;
   if (!changelog.length) return <EmptyState text="No history from Jira" />;
 
-  // Group by status transitions specifically
   const statusChanges = changelog.filter((c: any) => c.field_name === 'status');
   const otherChanges = changelog.filter((c: any) => c.field_name !== 'status');
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
-      {/* Status Transitions Section */}
       {statusChanges.length > 0 && (
         <div style={{ marginBottom: 20 }}>
           <div style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#64748B', marginBottom: 8 }}>
@@ -621,7 +686,6 @@ function HistoryPane({ changelog, isLoading }: { changelog: any[]; isLoading: bo
         </div>
       )}
 
-      {/* Other field changes */}
       {otherChanges.length > 0 && (
         <div>
           <div style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#64748B', marginBottom: 8 }}>
@@ -714,28 +778,27 @@ function AssigneePicker({ projectId, currentAssignee, onSelect }: {
         />
       </div>
       <div style={{ maxHeight: 240, overflowY: 'auto' }}>
-        {/* Unassigned option */}
         <button
+          type="button"
           onClick={() => onSelect(null)}
           style={{
             width: '100%', padding: '6px 12px', fontSize: 13, border: 'none', textAlign: 'left',
             background: !currentAssignee ? 'rgba(37,99,235,0.08)' : 'transparent',
             color: '#94A3B8', cursor: 'pointer', fontStyle: 'italic',
           }}
-          className="hover:bg-accent"
         >
           Unassigned
         </button>
         {filtered.map((name: string) => (
           <button
             key={name}
+            type="button"
             onClick={() => onSelect(name)}
             style={{
               width: '100%', padding: '6px 12px', fontSize: 13, border: 'none', textAlign: 'left',
               background: currentAssignee === name ? 'rgba(37,99,235,0.08)' : 'transparent',
               color: '#0F172A', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8,
             }}
-            className="hover:bg-accent"
           >
             <div style={{
               width: 22, height: 22, borderRadius: '50%', background: '#E2E8F0',
