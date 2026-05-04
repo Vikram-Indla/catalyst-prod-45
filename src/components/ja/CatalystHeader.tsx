@@ -11,6 +11,7 @@ import { HubSwitcher } from '@/components/layout/HubSwitcher';
 import { GlobalSearch } from '@/components/layout/GlobalSearch';
 import { CreateDropdown } from './CreateDropdown';
 import { NotificationsPanel } from './NotificationsPanel';
+import { Link } from 'react-router-dom';
 import { useCatalystContext } from '@/contexts/CatalystContext';
 import { useNavBreakpoint } from '@/hooks/useNavBreakpoint';
 import catalystWordmark from '@/assets/catalyst-wordmark-3.svg';
@@ -131,8 +132,8 @@ export function CatalystHeader() {
           )}
           <HubSwitcher />
           {!isMobile && (
-            <a
-              href="/for-you"
+            <Link
+              to="/"
               aria-label="Catalyst home"
               style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center' }}
             >
@@ -142,7 +143,7 @@ export function CatalystHeader() {
                 height={28}
                 style={{ height: '28px', width: 'auto', display: 'block' }}
               />
-            </a>
+            </Link>
           )}
         </div>
         {isPinnedOpen && !isNarrow && (
