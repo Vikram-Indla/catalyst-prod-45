@@ -37,7 +37,8 @@ import { draggable, dropTargetForElements, monitorForElements } from '@atlaskit/
 import { attachClosestEdge, extractClosestEdge, type Edge } from '@atlaskit/pragmatic-drag-and-drop-hitbox/closest-edge';
 import { autoScrollForElements } from '@atlaskit/pragmatic-drag-and-drop-auto-scroll/element';
 import { DropIndicator } from '@atlaskit/pragmatic-drag-and-drop-react-drop-indicator/box';
-import { MoreHorizontal, Inbox, Plus } from 'lucide-react';
+import MoreIcon from '@atlaskit/icon/glyph/more';
+import AddIcon from '@atlaskit/icon/core/add';
 import { WorkItemCard } from './WorkItemCard';
 import type { BoardIssue } from './kanban-types';
 import type { KanbanThemeTokens, DensityConfig, KanbanColumnDef } from './kanban-tokens';
@@ -381,7 +382,7 @@ const PragmaticColumn = memo(function PragmaticColumn({
           width: 8, height: 8, borderRadius: '50%', background: categoryDot, flexShrink: 0,
         }} />
         <span style={{
-          fontSize: 12, fontWeight: 500, textTransform: 'uppercase',
+          fontSize: 12, fontWeight: 600,
           color: tk.textMuted, fontFamily: 'var(--cp-font-body)',
           lineHeight: '16px', flex: 1,
         }}>{column.name}</span>
@@ -431,7 +432,7 @@ const PragmaticColumn = memo(function PragmaticColumn({
           onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = tk.surfaceHover; }}
           onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = 'transparent'; }}
         >
-          <MoreHorizontal size={14} />
+          <MoreIcon label="Column actions" size="small" primaryColor={tk.textMuted} />
         </button>
         {meatballAnchor && createPortal(
           <div
@@ -470,7 +471,7 @@ const PragmaticColumn = memo(function PragmaticColumn({
               }}>
                 <span>WIP limit</span>
                 <span style={{ fontFamily: 'var(--cp-font-mono)', fontWeight: 600 }}>
-                  {issueIds.length}/{column.wipLimit}{issueIds.length > column.wipLimit ? ' ⚠' : ''}
+                  {issueIds.length}/{column.wipLimit}
                 </span>
               </div>
             )}
@@ -543,10 +544,7 @@ const PragmaticColumn = memo(function PragmaticColumn({
             {isOver ? (
               <span style={{ color: tk.selectedAccent, fontWeight: 600, fontSize: 13 }}>Drop here</span>
             ) : (
-              <>
-                <Inbox size={20} style={{ opacity: 0.4 }} />
-                <span>No work items</span>
-              </>
+              <span style={{ opacity: 0.5 }}>No work items</span>
             )}
           </div>
         )}
@@ -608,7 +606,7 @@ const PragmaticColumn = memo(function PragmaticColumn({
               (e.currentTarget as HTMLButtonElement).style.color = tk.textMuted;
             }}
           >
-            <Plus size={14} />
+            <AddIcon label="" size="small" primaryColor="currentColor" />
             <span>{actions.createInColumnLabel ?? 'Create issue'}</span>
           </button>
         )}

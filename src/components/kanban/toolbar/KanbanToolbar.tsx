@@ -37,7 +37,11 @@
 
 import { useRef, useEffect, type Dispatch, type SetStateAction } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Search, MoreHorizontal, Settings2, Map as MapIcon, Filter } from 'lucide-react';
+import SearchIcon from '@atlaskit/icon/core/search';
+import MoreIcon from '@atlaskit/icon/glyph/more';
+import SettingsIcon from '@atlaskit/icon/core/settings';
+import LocationIcon from '@atlaskit/icon/core/location';
+import FilterIcon from '@atlaskit/icon/core/filter';
 import type { KanbanThemeTokens, KanbanDensity } from '../kanban-tokens';
 import { AvatarStackFilter } from '../KanbanToolbar';
 import {
@@ -195,7 +199,9 @@ export function KanbanToolbar<TGroupBy extends string = string>({
     }}>
       {/* Search — 32h, 3px radius */}
       <div className="relative" style={{ width: 220 }}>
-        <Search size={14} style={{ color: tk.textMuted }} className="absolute left-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+        <span className="absolute left-2.5 top-1/2 -translate-y-1/2 pointer-events-none flex items-center">
+          <SearchIcon label="" size="small" primaryColor={tk.textMuted} />
+        </span>
         <input
           type="text" placeholder="Search board" value={search}
           onChange={e => onSearchChange(e.target.value)}
@@ -284,7 +290,7 @@ export function KanbanToolbar<TGroupBy extends string = string>({
           onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
           aria-label="Board menu"
         >
-          <MoreHorizontal size={16} style={{ color: tk.textSecondary }} />
+          <MoreIcon label="Board menu" size="small" primaryColor={tk.textSecondary} />
         </button>
         {showBoardMenu && !showViewSettings && (
           <div
@@ -302,20 +308,20 @@ export function KanbanToolbar<TGroupBy extends string = string>({
               Board Options
             </div>
             <BoardMenuItem
-              icon={<Settings2 size={16} style={{ color: tk.textSecondary }} />}
+              icon={<SettingsIcon label="" size="small" primaryColor={tk.textSecondary} />}
               label="View settings"
               onClick={() => { onShowBoardMenuChange(false); onShowViewSettingsChange(true); }}
             />
             {mapStatusesPath && (
               <BoardMenuItem
-                icon={<MapIcon size={16} style={{ color: tk.textSecondary }} />}
+                icon={<LocationIcon label="" size="small" primaryColor={tk.textSecondary} />}
                 label="Map statuses"
                 onClick={() => { onShowBoardMenuChange(false); navigate(mapStatusesPath); }}
               />
             )}
             <div style={{ height: 1, background: tk.borderSubtle, margin: '6px 12px' }} />
             <BoardMenuItem
-              icon={<Filter size={16} style={{ color: tk.textSecondary }} />}
+              icon={<FilterIcon label="" size="small" primaryColor={tk.textSecondary} />}
               label="Advanced filter"
               badge={advFilterCount > 0 ? advFilterCount : undefined}
               onClick={() => { onShowBoardMenuChange(false); onShowAdvancedFilterChange(true); }}

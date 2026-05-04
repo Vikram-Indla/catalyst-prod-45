@@ -175,6 +175,7 @@ export const SortableCard = memo(function SortableCard({ issue, avatarUrl, onCli
         ].map((item) => (
           <button
             key={item.key}
+            type="button"
             role="menuitem"
             onClick={() => { item.act(); setCtxMenu(null); }}
             style={{

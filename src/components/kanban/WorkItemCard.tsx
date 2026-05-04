@@ -7,9 +7,11 @@
  *   FOOTER: type-icon + issue_key (left) + priority + assignee avatar (right)
  */
 import { useState, useRef, useEffect, useCallback, type ReactNode } from 'react';
-import {
-  Flag, MoreHorizontal, Pencil, Check, X,
-} from 'lucide-react';
+import FlagFilledIcon from '@atlaskit/icon/core/flag-filled';
+import MoreIcon from '@atlaskit/icon/glyph/more';
+import EditIcon from '@atlaskit/icon/core/edit';
+import CheckMarkIcon from '@atlaskit/icon/core/check-mark';
+import CloseIcon from '@atlaskit/icon/core/close';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import { KanbanAvatar } from './KanbanAvatar';
 import { AssigneePickerPopover, type AssigneeOption } from './AssigneePickerPopover';
@@ -181,7 +183,7 @@ export function WorkItemCard({
                   }}
                   aria-label="Save"
                 >
-                  <Check size={14} color="#36B37E" />
+                  <CheckMarkIcon label="Save" size="small" primaryColor="#36B37E" />
                 </button>
                 <button
                   onClick={cancelEditing}
@@ -192,7 +194,7 @@ export function WorkItemCard({
                   }}
                   aria-label="Cancel"
                 >
-                  <X size={14} color="#FF5630" />
+                  <CloseIcon label="Cancel" size="small" primaryColor="#FF5630" />
                 </button>
               </div>
             </div>
@@ -222,7 +224,7 @@ export function WorkItemCard({
         {/* Flag + hover-reveal edit + three-dots (hidden during edit) */}
         {!isEditing && (
           <div className="flex items-center gap-0.5 flex-shrink-0" style={{ marginLeft: 4, marginTop: 1 }}>
-            {issue.isFlagged && <Flag size={12} color="#E5493A" fill="#E5493A" />}
+            {issue.isFlagged && <FlagFilledIcon label="Flagged" size="small" primaryColor="#E5493A" />}
             <button
               className="kanban-card-edit-btn"
               onClick={startEditing}
@@ -233,7 +235,7 @@ export function WorkItemCard({
               }}
               aria-label="Edit title"
             >
-              <Pencil size={12} color={tk.textMuted} />
+              <EditIcon label="Edit title" size="small" primaryColor={tk.textMuted} />
             </button>
             <button
               ref={btnRef}
@@ -246,7 +248,7 @@ export function WorkItemCard({
               }}
               aria-label="More actions"
             >
-              <MoreHorizontal size={14} color={tk.textMuted} />
+              <MoreIcon label="More actions" size="small" primaryColor={tk.textMuted} />
             </button>
           </div>
         )}
