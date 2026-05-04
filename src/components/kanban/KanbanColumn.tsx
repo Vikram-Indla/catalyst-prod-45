@@ -6,7 +6,6 @@
 import { memo } from 'react';
 import { useDroppable } from '@dnd-kit/core';
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
-import { Inbox } from 'lucide-react';
 import { SortableCard } from './SortableCard';
 import type { BoardIssue } from './kanban-types';
 import type { KanbanThemeTokens, DensityConfig, KanbanColumnDef } from './kanban-tokens';
@@ -41,7 +40,7 @@ function ColHeader({ name, count, category, tk }: { name: string; count: number;
         width: 8, height: 8, borderRadius: '50%', background: categoryDot, flexShrink: 0,
       }} />
       <span style={{
-        fontSize: 12, fontWeight: 500, textTransform: 'uppercase',
+        fontSize: 12, fontWeight: 600,
         color: tk.textMuted,                            /* no letter-spacing (Jira: normal) */
         fontFamily: 'var(--cp-font-body)',
         lineHeight: '16px',
@@ -126,10 +125,7 @@ export const DroppableColumn = memo(function DroppableColumn({ column, issueIds,
               {isOver ? (
                 <span style={{ color: tk.selectedAccent, fontWeight: 600, fontSize: 13 }}>Drop here</span>
               ) : (
-                <>
-                  <Inbox size={20} style={{ opacity: 0.4 }} />
-                  <span>No work items</span>
-                </>
+                <span style={{ opacity: 0.5 }}>No work items</span>
               )}
             </div>
           )}

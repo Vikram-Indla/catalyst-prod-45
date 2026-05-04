@@ -30,7 +30,6 @@
  * is a pure function. Side effects live in the page mutations.
  */
 import type { ReactNode } from 'react';
-import { CircleDashed } from 'lucide-react';
 import type { Request, RequestStatus } from '@/types/request';
 import { BusinessRequestIcon } from '@/components/producthub/shared/BusinessRequestBadge';
 import type { WorkflowStatus } from '@/hooks/useCatalystWorkflow';
@@ -72,7 +71,7 @@ export function buildColumnsFromWorkflowStatuses(
       const allStatuses = [status.slug, ...aliases];
       return {
         id: `col-${status.slug}`,
-        name: status.name.toUpperCase(),
+        name: status.name,
         category: status.category,
         statuses: allStatuses,
         wipLimit: status.wip_limit ?? null,
