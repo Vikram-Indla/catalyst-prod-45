@@ -15,8 +15,7 @@ import {
 } from 'lucide-react';
 import AiChatIcon from '@atlaskit/icon/core/ai-chat';
 import MagicWandIcon from '@atlaskit/icon/core/magic-wand';
-import { IconButton, Button as AKButton } from '@atlaskit/button/new';
-import { Tooltip as AKTooltip } from '@atlaskit/tooltip';
+import AKButton, { IconButton } from '@atlaskit/button/new';
 import { Sheet, SheetContent } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -156,23 +155,18 @@ export function IssueDrawer() {
   }, [logAction]);
 
   const descToolbarComponents = useMemo(() => [
-    <AKTooltip content="Rovo AI" key="rovo">
-      {(tooltipProps) => (
-        <IconButton
-          {...tooltipProps}
-          icon={AiChatIcon}
-          label="Rovo AI"
-          appearance="subtle"
-        />
-      )}
-    </AKTooltip>,
-    <AKTooltip content="Improve description" key="improve">
-      {(tooltipProps) => (
-        <AKButton {...tooltipProps} appearance="subtle" iconBefore={MagicWandIcon}>
-          Improve
-        </AKButton>
-      )}
-    </AKTooltip>,
+    <Tooltip content="Rovo AI" key="rovo">
+      <IconButton
+        icon={AiChatIcon}
+        label="Rovo AI"
+        appearance="subtle"
+      />
+    </Tooltip>,
+    <Tooltip content="Improve description" key="improve">
+      <AKButton appearance="subtle" iconBefore={MagicWandIcon}>
+        Improve
+      </AKButton>
+    </Tooltip>,
   ], []);
 
   // Handle transition

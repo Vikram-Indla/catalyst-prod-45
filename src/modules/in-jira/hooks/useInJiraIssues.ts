@@ -25,7 +25,9 @@ export function useInJiraIssues(projectId: string) {
         id: issue.id,
         key: issue.key,
         summary: issue.summary,
-        description: typeof issue.description === 'string' ? issue.description : undefined,
+        description: issue.description
+          ? (typeof issue.description === 'string' ? issue.description : JSON.stringify(issue.description))
+          : undefined,
         type: (issue.issue_type_id || 'story') as Issue['type'],
         status: issue.status_id || 'backlog',
         statusCategory: mapStatusCategory(issue.status_id || ''),

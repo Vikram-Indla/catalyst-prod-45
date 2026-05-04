@@ -47,7 +47,7 @@ function lazyWithRetry<T extends ComponentType<any>>(
 
 const CatalystDetailRouter = lazyWithRetry(() => import('@/components/catalyst-detail-views/CatalystDetailRouter'), 'CatalystDetailRouter');
 
-import { useLocation, useParams, Outlet, useNavigate } from 'react-router-dom';
+import { useLocation, useParams, useMatch, Outlet, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 const CatalystHeader = lazyWithRetry(() => import('@/components/ja/CatalystHeader').then(m => ({ default: m.CatalystHeader })), 'CatalystHeader');
@@ -206,7 +206,10 @@ function CatalystShellContent() {
   // Extract IDs from URL params - these take precedence
   const urlProgramId = params.programId || null;
   const urlProjectId = params.projectId || null;
-  const urlProjectKey = params.projectKey || null;
+  // useParams can't see child-route params — use useMatch to extract :projectKey
+  // from the InJira layout route (/project/:projectKey/*) from an ancestor component.
+  const inJiraMatch = useMatch('/project/:projectKey/*');
+  const urlProjectKey = inJiraMatch?.params?.projectKey ?? null;
 
   // Determine which ID to use based on route pattern
   const isProgramRoute = location.pathname.startsWith('/program/');
