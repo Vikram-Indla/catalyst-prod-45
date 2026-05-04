@@ -25,7 +25,27 @@ import Lozenge from '@atlaskit/lozenge';
 import { token } from '@atlaskit/tokens';
 import ChevronDownIcon from '@atlaskit/icon/glyph/chevron-down';
 import { STATUS_OPTION_GROUPS } from '@/modules/project-work-hub/components/dialogs/story-detail-modules/constants';
-import { statusToLozenge } from '@/modules/project-work-hub/utils/statusToLozenge';
+import { statusToLozenge, type LozengeAppearance } from '@/modules/project-work-hub/utils/statusToLozenge';
+import { WorkflowViewerModal } from './WorkflowViewerModal';
+
+/**
+ * jira-compare 2026-05-04 (D1 — P0): Jira header status pill uses a plain
+ * button with a LIGHT category background + dark text (14px/500/#292A2E),
+ * NOT an Atlaskit Lozenge. DOM-probed on BAU-5609 (Story, "In QA"):
+ *   height: 32px, background: rgb(148,199,72), color: #292A2E,
+ *   fontSize: 14px, fontWeight: 500, borderRadius: 3px, border: none.
+ * Using ADS token equivalents per statusCategory appearance.
+ */
+function statusBg(appearance: LozengeAppearance): string {
+  switch (appearance) {
+    case 'success':    return token('color.background.success',    '#DFFCF0');
+    case 'inprogress': return token('color.background.information', '#E9F2FF');
+    case 'moved':      return token('color.background.warning',    '#FFF7D6');
+    case 'removed':    return token('color.background.danger',     '#FFEDEB');
+    case 'new':        return token('color.background.discovery',  '#F3F0FF');
+    default:           return token('color.background.neutral',    '#F1F2F4');
+  }
+}
 
 interface CatalystStatusPillProps {
   /** Current status name (e.g. "To Do", "In Progress", "Ready for QA"). */
@@ -36,11 +56,14 @@ interface CatalystStatusPillProps {
   statusCategory?: string | null;
   /** Called when the user picks a different status from the dropdown. */
   onStatusChange?: (newStatus: string) => void;
+  /** Issue type — used to look up the workflow for "View workflow". */
+  issueType?: string | null;
 }
 
-export function CatalystStatusPill({ status, statusCategory, onStatusChange }: CatalystStatusPillProps) {
+export function CatalystStatusPill({ status, statusCategory, onStatusChange, issueType }: CatalystStatusPillProps) {
   const [open, setOpen] = useState(false);
   const [anchor, setAnchor] = useState<{ top: number; left: number } | null>(null);
+  const [workflowViewerOpen, setWorkflowViewerOpen] = useState(false);
   const triggerRef = useRef<HTMLButtonElement | null>(null);
 
   // Close on click outside.
@@ -109,34 +132,30 @@ export function CatalystStatusPill({ status, statusCategory, onStatusChange }: C
           display: 'inline-flex',
           alignItems: 'center',
           gap: 6,
-          height: 28,
-          padding: '0 8px',
-          border: `1px solid ${token('color.border', '#DFE1E6')}`,
-          borderRadius: 4,
-          background: 'transparent',
+          /* jira-compare 2026-05-04 (D1): 32px height, no border, light
+             ADS category bg, dark text — matches Jira BAU-5609 DOM probe. */
+          height: 32,
+          padding: '0 10px',
+          border: 'none',
+          borderRadius: 3,
+          background: statusBg(statusToLozenge(display, statusCategory)),
           cursor: 'pointer',
           fontFamily: 'inherit',
-          lineHeight: 1,
-          transition: 'background 0.15s, border-color 0.15s',
+          transition: 'filter 0.1s',
         }}
-        onMouseEnter={(e) => {
-          e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', '#F4F5F7');
-          e.currentTarget.style.borderColor = token('color.border.bold', '#C1C7D0');
-        }}
-        onMouseLeave={(e) => {
-          e.currentTarget.style.background = 'transparent';
-          e.currentTarget.style.borderColor = token('color.border', '#DFE1E6');
-        }}
+        onMouseEnter={(e) => { e.currentTarget.style.filter = 'brightness(0.92)'; }}
+        onMouseLeave={(e) => { e.currentTarget.style.filter = 'none'; }}
       >
-        {(() => {
-          const ap = statusToLozenge(display, statusCategory);
-          // jira-compare 2026-05-02: never bold a 'default' lozenge — produces black bg.
-          return (
-            <span data-cp-lozenge-jira-parity style={{ display: 'inline-block' }}>
-              <Lozenge appearance={ap} isBold={ap !== 'default'}>{display}</Lozenge>
-            </span>
-          );
-        })()}
+        {/* jira-compare 2026-05-04 (D1): plain text at 14px/500/color.text
+            replacing @atlaskit/lozenge which rendered 11px white-on-bold. */}
+        <span style={{
+          fontSize: 14,
+          fontWeight: 500,
+          lineHeight: '20px',
+          color: token('color.text', '#292A2E'),
+        }}>
+          {display}
+        </span>
         <ChevronDownIcon size="small" primaryColor={token('color.icon.subtle', '#42526E') as string} />
       </button>
       </div>
@@ -209,9 +228,16 @@ export function CatalystStatusPill({ status, statusCategory, onStatusChange }: C
                         if (!isActive) e.currentTarget.style.background = 'transparent';
                       }}
                     >
-                      {/* jira-compare follow-up (2026-05-02): isBold so each option
-                          inherits the same bold appearance as the rendered status pill. */}
-                      <span data-cp-lozenge-jira-parity style={{ display: 'inline-block' }}><Lozenge appearance={statusToLozenge(st)} isBold={statusToLozenge(st) !== 'default'}>{st}</Lozenge></span>
+                      {/* jira-compare 2026-05-04 (D1 popup correction): Jira's status
+                          picker popup uses solid isBold Lozenges for destination statuses —
+                          same as the isBold pattern used in Jira's workflow-transition
+                          popup (IN DEVELOPMENT, IN UAT etc). Light tokens were wrong here;
+                          reverted to isBold Lozenge which matches the solid-colored pills
+                          Jira renders in the picker. Trigger button keeps the light-bg
+                          statusBg() pattern (header pill, not picker item). */}
+                      <span data-cp-lozenge-jira-parity style={{ display: 'inline-block' }}>
+                        <Lozenge appearance={statusToLozenge(st)} isBold={statusToLozenge(st) !== 'default'}>{st}</Lozenge>
+                      </span>
                       {isActive && (
                         <span style={{ fontSize: 12, color: token('color.text.brand', '#0C66E4'), fontWeight: 600 }}>
                           ✓
@@ -222,9 +248,53 @@ export function CatalystStatusPill({ status, statusCategory, onStatusChange }: C
                 })}
               </div>
             ))}
+            {/* jira-compare 2026-05-04 — "View workflow" / "Explain workflow" footer
+                matches Jira's status picker footer (probed BAU-5609). Stubs for now;
+                clicking either opens a toast until workflow viewer is built. */}
+            <div style={{
+              borderTop: `1px solid ${token('color.border', '#DFE1E6')}`,
+              padding: '4px 0',
+              marginTop: 4,
+            }}>
+              {[
+                { label: 'View workflow',    icon: '⟳' },
+                { label: 'Explain workflow', icon: '✦' },
+              ].map(({ label, icon }) => (
+                <button
+                  key={label}
+                  type="button"
+                  role="menuitem"
+                  onClick={() => {
+                    setOpen(false);
+                    if (label === 'View workflow') setWorkflowViewerOpen(true);
+                  }}
+                  style={{
+                    display: 'flex', alignItems: 'center', gap: 8,
+                    width: '100%', height: 36, padding: '0 12px',
+                    background: 'transparent', border: 'none',
+                    cursor: 'pointer', fontFamily: 'inherit',
+                    fontSize: 14, color: token('color.text', '#292A2E'),
+                    textAlign: 'left',
+                  }}
+                  onMouseEnter={e => { e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', '#F4F5F7'); }}
+                  onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
+                >
+                  <span style={{ fontSize: 12, color: token('color.text.subtle', '#505258') }}>{icon}</span>
+                  <span>{label}</span>
+                </button>
+              ))}
+            </div>
           </div>,
           document.body,
         )}
+
+      {/* View workflow modal — wired to /admin/workflow definitions via WorkflowProvider */}
+      <WorkflowViewerModal
+        isOpen={workflowViewerOpen}
+        onClose={() => setWorkflowViewerOpen(false)}
+        issueType={issueType}
+        currentStatus={status}
+      />
     </>
   );
 }

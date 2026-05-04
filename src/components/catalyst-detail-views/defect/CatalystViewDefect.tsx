@@ -148,7 +148,7 @@ export default function CatalystViewDefect({
       onOpenItem={onOpenItem}
       /* jira-compare 2026-05-03 — Patch B (Defect) · Status pill + Improve dropdown
          anchored together at the rail header. Mirrors CatalystViewStory's Patch D + E. */
-      statusPill={<CatalystStatusPill status={issue?.status} statusCategory={issue?.status_category} onStatusChange={(st) => mutations.updateStatus.mutate(st)} />}
+      statusPill={<CatalystStatusPill status={issue?.status} statusCategory={issue?.status_category} onStatusChange={(st) => mutations.updateStatus.mutate(st)} issueType={issue?.issue_type} />}
       improveDropdown={<ImproveIssueDropdown issue={issue ?? null} {...improveHandlers} />}
     />
   );

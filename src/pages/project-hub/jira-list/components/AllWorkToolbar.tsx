@@ -67,8 +67,7 @@ import { EditorMoreIcon } from '@/components/layout/ProjectHeaderChipIcons';
    color tokens). */
 import FilterIconCore from '@atlaskit/icon/core/filter';
 import SearchIconCore from '@atlaskit/icon/core/search';
-import ListIconCore from '@atlaskit/icon/core/list-bulleted';
-import SplitIconCore from '@atlaskit/icon/core/layout-two-columns-sidebar-right';
+// ListIconCore and SplitIconCore removed — view toggle removed 2026-05-04
 import SparkIconCore from '@atlaskit/icon/core/ai-chat';
 /* jira-compare 2026-05-03 cycle 4 (Vikram caught ADS drift): chevron-down
    is glyph-only in this Atlaskit version (CLAUDE.md canonical replacement
@@ -76,6 +75,8 @@ import SparkIconCore from '@atlaskit/icon/core/ai-chat';
 import ChevronDownIcon from '@atlaskit/icon/glyph/chevron-down';
 import type { WorkItem } from '@/types/workItem.types';
 
+/** Kept for back-compat with any remaining callsite imports — layout is
+ *  always split; the toggle was removed (2026-05-04 jira-compare cycle 2). */
 export type AllWorkView = 'split' | 'list';
 
 /* jira-compare 2026-05-03: 8-facet typed filter state matching Jira's
@@ -150,8 +151,11 @@ interface Props {
   projectKey: string;
   query: string;
   onQueryChange: (q: string) => void;
-  view: AllWorkView;
-  onViewChange: (v: AllWorkView) => void;
+  /** @deprecated view toggle removed 2026-05-04 — layout is always split.
+   *  Kept for back-compat; prop is accepted but ignored. */
+  view?: AllWorkView;
+  /** @deprecated view toggle removed 2026-05-04 — prop accepted but ignored. */
+  onViewChange?: (v: AllWorkView) => void;
   /** Items list — used to derive distinct value options per facet. */
   items?: WorkItem[];
   /** Per-facet selections; parent applies them client-side to items. */
@@ -336,9 +340,8 @@ interface Member {
 const SUBTLE = 'var(--ds-text-subtle, #505258)';
 const SearchIcon = () => <SearchIconCore label="" color={SUBTLE} />;
 const FilterIcon = () => <FilterIconCore label="" color={SUBTLE} />;
-const ListIcon = () => <ListIconCore label="" color={SUBTLE} />;
-const SplitIcon = () => <SplitIconCore label="" color={SUBTLE} />;
 const SparkIcon = () => <SparkIconCore label="" color={SUBTLE} />;
+// ListIcon + SplitIcon removed with view toggle (2026-05-04)
 
 /**
  * FilterTriggerAndPopup — Atlaskit Button trigger + manual portal popup.
@@ -999,8 +1002,9 @@ export function AllWorkToolbar({
   projectKey,
   query,
   onQueryChange,
-  view,
-  onViewChange,
+  // view and onViewChange kept for back-compat but view toggle is removed
+  view: _view,
+  onViewChange: _onViewChange,
   items = [],
   selectedFilters = EMPTY_FILTERS,
   onSelectedFiltersChange,
@@ -1009,6 +1013,116 @@ export function AllWorkToolbar({
   selectedAssignees = [],
   onAssigneesChange,
 }: Props) {
+  /* Ask Caty inline bar — mirrors Jira's "Ask AI" full-width query bar.
+     When open, the entire toolbar row is replaced by the AI input. */
+  const [askCatyOpen, setAskCatyOpen] = useState(false);
+  const [askCatyQuery, setAskCatyQuery] = useState('');
+  const askCatyInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (askCatyOpen) {
+      // Small delay so the input is in the DOM before focus
+      const t = setTimeout(() => askCatyInputRef.current?.focus(), 30);
+      return () => clearTimeout(t);
+    }
+  }, [askCatyOpen]);
+
+  const handleAskCatySubmit = () => {
+    const q = askCatyQuery.trim();
+    if (!q) return;
+    // Open the global AskCatalystPill pill — dispatch a custom event so the
+    // top-nav pill can intercept it and open the Caty overlay with the query.
+    window.dispatchEvent(new CustomEvent('catalyst:ask-caty', { detail: { query: q, projectKey } }));
+    toast.info(`Ask Caty: "${q}"`);
+    setAskCatyOpen(false);
+    setAskCatyQuery('');
+  };
+
+  /* Ask Caty bar — full-width input replacing the toolbar when open.
+     Matches Jira BAU Ask AI probe: 40px height, 8px borderRadius, white bg,
+     blue focus border, 14px/400 placeholder, "Go ←" submit, ✕ close. */
+  if (askCatyOpen) {
+    return (
+      <div
+        data-testid="catalyst-allwork-toolbar.ask-caty-bar"
+        style={{
+          display: 'flex', alignItems: 'center', gap: 8,
+          padding: '8px 12px',
+          borderBottom: '1px solid var(--ds-border, #DFE1E6)',
+          background: 'transparent',
+          flexShrink: 0,
+          fontFamily: "'Atlassian Sans', -apple-system, BlinkMacSystemFont, sans-serif",
+        }}
+      >
+        <div style={{
+          flex: 1,
+          display: 'flex', alignItems: 'center', gap: 8,
+          background: 'var(--ds-surface, #FFFFFF)',
+          border: '2px solid var(--ds-border-focused, #388BFF)',
+          borderRadius: 8,
+          padding: '0 12px',
+          height: 40,
+          boxSizing: 'border-box',
+        }}>
+          <SparkIcon />
+          <input
+            ref={askCatyInputRef}
+            value={askCatyQuery}
+            onChange={e => setAskCatyQuery(e.target.value)}
+            onKeyDown={e => {
+              if (e.key === 'Enter') handleAskCatySubmit();
+              if (e.key === 'Escape') { setAskCatyOpen(false); setAskCatyQuery(''); }
+            }}
+            placeholder={`Ask Caty anything about ${projectKey}…`}
+            style={{
+              flex: 1, border: 'none', outline: 'none',
+              fontSize: 14, lineHeight: '20px',
+              background: 'transparent',
+              color: 'var(--ds-text, #292A2E)',
+              fontFamily: 'inherit',
+            }}
+            aria-label="Ask Caty"
+          />
+          <button
+            onClick={handleAskCatySubmit}
+            disabled={!askCatyQuery.trim()}
+            style={{
+              display: 'inline-flex', alignItems: 'center', gap: 4,
+              padding: '4px 10px',
+              border: 'none',
+              borderRadius: 4,
+              background: askCatyQuery.trim() ? 'var(--ds-background-brand-bold, #0C66E4)' : 'var(--ds-background-neutral, #F4F5F7)',
+              color: askCatyQuery.trim() ? '#FFFFFF' : 'var(--ds-text-disabled, #8590A2)',
+              fontSize: 13, fontWeight: 500,
+              cursor: askCatyQuery.trim() ? 'pointer' : 'default',
+              fontFamily: 'inherit',
+              transition: 'background 120ms ease',
+              flexShrink: 0,
+            }}
+            aria-label="Submit"
+          >
+            Go ←
+          </button>
+        </div>
+        <button
+          onClick={() => { setAskCatyOpen(false); setAskCatyQuery(''); }}
+          style={{
+            width: 28, height: 28,
+            border: 'none', borderRadius: 4,
+            background: 'transparent',
+            cursor: 'pointer',
+            color: 'var(--ds-text-subtle, #505258)',
+            fontSize: 16, lineHeight: 1,
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+          }}
+          aria-label="Close Ask Caty"
+        >
+          ✕
+        </button>
+      </div>
+    );
+  }
+
   /* Controlled-or-uncontrolled filter popup open state. The page level
      mounts a Shift+F handler that drives this via `onFilterOpenChange`
      when supplied; otherwise we manage it locally. */
@@ -1097,14 +1211,14 @@ export function AllWorkToolbar({
         fontFamily: "'Atlassian Sans', -apple-system, BlinkMacSystemFont, sans-serif",
       }}
     >
-      {/* 3. Ask Caty entry — replaces Jira's "Ask AI" with Catalyst's
-          AskCatalystPill semantics. Stubs to a toast for now; real
-          integration mounts the AskCatalystPill / Caty chat widget. */}
+      {/* 3. Ask Caty — replaces Jira's "Ask AI". Click → expands to full-width
+          AI query bar (mirrors Jira BAU Ask AI probe: full toolbar replacement,
+          40px white bar with blue focus border, contextual placeholder). */}
       <Button
         appearance="subtle"
         spacing="compact"
         iconBefore={SparkIcon}
-        onClick={() => toast('Ask Caty — coming soon')}
+        onClick={() => setAskCatyOpen(true)}
         testId="catalyst-allwork-toolbar.ask-caty"
       >
         Ask Caty
@@ -1333,23 +1447,6 @@ export function AllWorkToolbar({
 
       <span style={{ flex: 1 }} />
 
-      {/* 7. View toggle: list / split */}
-      <div style={{ display: 'inline-flex', border: '1px solid var(--ds-border, #DFE1E6)', borderRadius: 4, overflow: 'hidden' }}>
-        <IconButton
-          icon={ListIcon}
-          label="List view"
-          appearance={view === 'list' ? 'primary' : 'subtle'}
-          onClick={() => onViewChange('list')}
-          testId="catalyst-allwork-toolbar.view-list"
-        />
-        <IconButton
-          icon={SplitIcon}
-          label="Split view"
-          appearance={view === 'split' ? 'primary' : 'subtle'}
-          onClick={() => onViewChange('split')}
-          testId="catalyst-allwork-toolbar.view-split"
-        />
-      </div>
 
       {/* 9. More actions (Meatball menu) — Export / Import / Bulk change / Go to all work.
           Jira parity: matches Jira's "More actions" dropdown menu with the same four

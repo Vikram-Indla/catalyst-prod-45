@@ -23,7 +23,7 @@ import { useCatalystIssue, useCatalystIssueMutations } from '../shared/hooks';
 import { useTrackRecentItem } from '@/hooks/useRecentProjectItems';
 import {
   CatalystTitleEditor, CatalystQuickActions, CatalystDescriptionSection, CatalystAcceptanceCriteria,
-  CatalystActivitySection, CatalystSidebarDetails, CatalystStatusPill,
+  CatalystActivitySection, CatalystSidebarDetails, CatalystStatusPill, CatalystKeyDetails,
 } from '../shared/sections';
 import { SubtasksPanel } from '@/modules/project-work-hub/components/SubtasksPanel';
 import { LinkedWorkItemsSection } from '@/modules/project-work-hub/components/linked-work-items';
@@ -102,12 +102,23 @@ export default function CatalystViewStory({
           (testid issue-field-status.ui.status-view.status-button). */}
       {/* jira-compare 2026-05-03 — Patch E · CatalystStatusPill relocated to right-rail header in CatalystSidebarDetails. */}
       <CatalystQuickActions />
-      {/* jira-compare Phase 1 (2026-05-02): Parent + Priority moved back to
-          the right rail (CatalystSidebarDetails) to match Jira BAU-5609
-          live DOM. Story has no Story-unique KeyDetails extraRows, so the
-          entire section is unmounted — Jira's Story body goes straight
-          from title to Description with no "Key details" header. Defect /
-          Incident still mount CatalystKeyDetails for Severity etc. */}
+      {/* jira-compare 2026-05-04 (D5 — Vikram approved): Key details section
+          re-added to Story left body. DOM-probed Jira BAU-5609 (Story):
+          "Key details" header visible with Parent + Priority rows between
+          the quick-actions row and Description. Previous note (2026-05-02)
+          said Story went "straight from title to Description" — that was
+          wrong; the section IS present in Jira for Story. */}
+      {issue && (
+        <CatalystKeyDetails
+          issue={issue}
+          itemId={itemId}
+          itemType="story"
+          projectKey={issue.project_key || projectKey}
+          onOpenItem={onOpenItem}
+          showParent
+          showPriority
+        />
+      )}
       <CatalystDescriptionSection issue={issue ?? null} />
       <CatalystAcceptanceCriteria issue={issue ?? null} />
 
@@ -186,7 +197,7 @@ export default function CatalystViewStory({
       /* jira-compare 2026-05-03 — Patch D + E · Status pill + Improve dropdown
          anchored together at the rail header. Mirrors Jira's "In QA" / "Improve
          Story" pair on the right side of BAU-5609. */
-      statusPill={<CatalystStatusPill status={issue?.status} statusCategory={issue?.status_category} onStatusChange={(st) => mutations.updateStatus.mutate(st)} />}
+      statusPill={<CatalystStatusPill status={issue?.status} statusCategory={issue?.status_category} onStatusChange={(st) => mutations.updateStatus.mutate(st)} issueType={issue?.issue_type} />}
       improveDropdown={<ImproveIssueDropdown issue={issue ?? null} {...improveHandlers} />}
     />
   );

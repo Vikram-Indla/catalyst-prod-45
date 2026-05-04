@@ -80,13 +80,7 @@ import { EditableAssignee, EditableReporter, EditableLabels, EditableFixVersions
 import { CatalystParentLinker } from './CatalystParentLinker';
 import type { CatalystItemType } from '../types';
 import { EpicDueDateField } from '@/components/project/EpicDueDateField';
-import { CatalystMdtRefField } from './CatalystMdtRefField';
-/* MDT Ref restored to the rail 2026-05-03 per Vikram directive — DOM-probed
-   Jira BAU-5609 Story rail showed Labels + MDT Ref present in Details container,
-   contradicting prior 2026-05-02 / 05-03 removal directives. Reinstated. Old note:
-   CatalystAssessmentFeatureField removed from Details sidebar 2026-05-03 — belongs
-   in Key details, not right rail. CatalystServiceNowDisplay removed 2026-05-03 —
-   not in Jira's Details panel. */
+/* MDT Ref removed 2026-05-05 per Vikram directive — "remove MDT ref for good". */
 import {
   CatalystIRDemoDateDisplay,
   CatalystIRFigmaApprovedDisplay,
@@ -548,13 +542,6 @@ export function CatalystSidebarDetails({
               )}
             </FieldRow>
           )}
-
-          {/* ── MDT Ref ──── jira-compare 2026-05-03 RESTORED per Vikram directive.
-              DOM-probe of Jira BAU-5609 Story rail showed MDT Ref custom field
-              with "Add text" placeholder in Details container. Reinstated. */}
-          <FieldRow label="MDT Ref" alignBlock="center">
-            <CatalystMdtRefField issue={issue ?? null} onUpdate={invalidateIssue} />
-          </FieldRow>
 
           {/* ── Epic-specific date fields ──── jira-compare Phase 2
               (2026-05-02). Relocated from above-Assignee to after-MDT-Ref

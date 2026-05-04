@@ -1,6 +1,87 @@
+# WAYS OF WORKING — MANDATORY FOR ALL IMPLEMENTATION
+
+These rules apply to every implementation task. No exceptions.
+
+---
+
+## TDD Cycle (non-negotiable)
+
+1. **Write a failing test first.** No implementation code before a test exists.
+2. **Write the minimal code** to make the test pass — nothing more.
+3. **Refactor** only after the test is green, and only if needed for clarity.
+
+If asked to implement something without a test path (e.g. UI-only, no test harness), state this explicitly and ask Vikram how to proceed before writing any code.
+
+---
+
+## Small Steps — One Logical Change at a Time
+
+After every single logical change (one test, one implementation unit, one refactor):
+
+1. **Stop.**
+2. **Explain** what was done and why.
+3. **Suggest a commit message** (imperative, under 72 chars).
+4. **Ask for confirmation** before proceeding to the next step.
+
+Do NOT generate full solutions in one go. Do NOT bundle multiple logical changes into one response.
+
+---
+
+## Code Quality Rules
+
+- Prefer **simple, readable, maintainable** code over clever code.
+- Follow **clean architecture**: separate concerns, keep components/modules focused on one responsibility.
+- No dead code, no speculative abstractions, no features beyond what the spec asks for.
+- Default to **no comments** — only add one when the WHY is non-obvious.
+- No backwards-compatibility shims for things that don't exist yet.
+
+---
+
+## When Unclear — Ask, Don't Assume
+
+If a spec, requirement, or edge case is ambiguous: **stop and ask Vikram** before writing any code. State exactly what is unclear and offer 2–3 concrete options if possible.
+
+---
+
+## Output Format Per Step
+
+Each response during an implementation session must follow this structure:
+
+```
+**Step N — [brief description]**
+
+Test (failing):
+[test code]
+
+---
+Awaiting approval to proceed with implementation.
+```
+
+After approval:
+
+```
+**Step N — Implementation**
+
+[minimal implementation code only]
+
+Suggested commit: `<imperative message>`
+
+---
+Ready for next step when you confirm.
+```
+
+---
+
 # jira-compare — compounding lessons
 
 Append-only. Newest at top. Each entry: date, pattern, rule, surface.
+
+---
+
+## 2026-05-04 — Ask Vikram before adding or removing any field/component
+**Surface:** any view, any work item type
+**Pattern:** Jira-compare audits identified fields present in Jira but absent in Catalyst (e.g. "Key details", "Development" section) and fields in Catalyst not in Jira. Autonomously adding or removing these breaks the agreed surface contract and may conflict with product decisions.
+**Rule:** Before adding any field/component that exists in Jira but not in Catalyst, OR removing anything in Catalyst not present in Jira — STOP and explicitly ask Vikram for permission in chat. Do NOT make these additions/removals autonomously under any circumstances, even during a jira-compare parity run.
 
 ---
 

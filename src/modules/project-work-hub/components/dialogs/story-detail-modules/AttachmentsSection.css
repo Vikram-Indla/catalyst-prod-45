@@ -54,13 +54,15 @@
 }
 
 /* "Attachments" text label
-   Jira parity (Apr 2026): live Jira computed Atlassian Sans 14px/400/20px
-   color var(--ds-text, #292A2E). Catalyst previously rendered 14px/600, too heavy. */
+   jira-compare 2026-05-04 (D3): re-probed Jira Description H2 = 14px/500/
+   rgb(80,82,88) [--ds-text-subtle]. Attachments heading should match the
+   Description section-header pattern. font-weight raised 400→500, colour
+   updated primary (#292A2E) → secondary (#505258) to match. */
 .att-heading-label {
   display: block;
   font-size: 14px;
-  font-weight: 400;
-  color: var(--ds-text, #292A2E);
+  font-weight: 500;
+  color: var(--ds-text-subtle, #505258);
   line-height: 20px;
   user-select: none;
   font-family: var(--cp-font-body);

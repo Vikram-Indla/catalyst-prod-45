@@ -724,29 +724,39 @@
   padding: 32px 16px;
   text-align: center;
 }
+/* jira-compare 2026-05-04 (D4): corrected stale #172B4D fallback → #292A2E. */
 .sp-empty-heading {
   font-size: 14px;
   font-weight: 600;
-  color: var(--ds-text, #172B4D);
+  color: var(--ds-text, #292A2E);
 }
 .sp-empty-sub {
   font-size: 13px;
-  color: var(--ds-text-subtlest, #6B778C);
+  /* jira-compare 2026-05-04: subtlest token — #6B778C (legacy) → #626F86 (ADS current). */
+  color: var(--ds-text-subtlest, #626F86);
 }
+/* jira-compare 2026-05-04 (D2): ADS Button defaults — 32px height, 14px/500,
+   neutral background (not outlined). Matched to @atlaskit/button default style.
+   font-size 13→14px, font-weight 400→500, stale #172B4D token → #292A2E. */
 .sp-empty-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   margin-top: 8px;
-  padding: 6px 16px;
-  border: 1px solid var(--ds-border, #DFE1E6);
+  height: 32px;
+  padding: 0 12px;
+  border: none;
   border-radius: 3px;
-  background: var(--ds-surface, #FFFFFF);
-  font-size: 13px;
-  color: var(--ds-text, #172B4D);
+  background: var(--ds-background-neutral, #F1F2F4);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--ds-text, #292A2E);
   cursor: pointer;
   font-family: inherit;
   transition: background 0.12s;
 }
 .sp-empty-cta:hover {
-  background: var(--ds-background-neutral-subtle-hovered, #F4F5F7);
+  background: var(--ds-background-neutral-hovered, #E2E3E5);
 }
 
 /* ══════════════════════════════════════════════

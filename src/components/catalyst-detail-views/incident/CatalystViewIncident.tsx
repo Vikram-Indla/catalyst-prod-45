@@ -82,7 +82,7 @@ export default function CatalystViewIncident({
       parentSource="incident"
       projectKey={projectKey}
       onOpenItem={onOpenItem}
-      statusPill={<CatalystStatusPill status={issue?.status} onStatusChange={(st) => mutations.updateStatus.mutate(st)} />}
+      statusPill={<CatalystStatusPill status={issue?.status} onStatusChange={(st) => mutations.updateStatus.mutate(st)} issueType={issue?.issue_type} />}
       improveDropdown={<ImproveIssueDropdown issue={issue ?? null} {...improveHandlers} />}
     />
   );
