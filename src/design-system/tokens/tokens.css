@@ -1,0 +1,237 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   CATALYST DESIGN SYSTEM — TOKENS
+   Atlassian-Design-System-shaped naming, Catalyst V5 / V12 Hybrid Precision values.
+   Import this AFTER src/index.css / src/styles/catalyst-theme.css so it can reference
+   the underlying Catalyst CSS variables.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+:root {
+  /* ─────────────────────────────────────────────────────────────
+     COLOR · BACKGROUND
+     ───────────────────────────────────────────────────────────── */
+  --ds-color-background-input: var(--input-bg, #ffffff);
+  --ds-color-background-input-hovered: var(--row-hover, #f8fafc);
+  --ds-color-background-input-pressed: var(--row-active, #f1f5f9);
+
+  --ds-color-background-neutral: hsl(var(--muted, 0 0% 96%));
+  --ds-color-background-neutral-subtle: transparent;
+  --ds-color-background-neutral-subtle-hovered: var(--row-hover, rgba(15, 23, 42, 0.04));
+  --ds-color-background-neutral-subtle-pressed: var(--row-active, rgba(15, 23, 42, 0.08));
+  --ds-color-background-neutral-hovered: hsl(var(--muted, 0 0% 92%));
+  --ds-color-background-neutral-pressed: hsl(var(--muted, 0 0% 88%));
+  --ds-color-background-neutral-bold: hsl(0 0% 15%);
+  --ds-color-background-neutral-bold-hovered: hsl(0 0% 9%);
+
+  --ds-color-background-selected: hsl(var(--brand-primary, 217 91% 53%) / 0.08);
+  --ds-color-background-selected-hovered: hsl(var(--brand-primary, 217 91% 53%) / 0.12);
+  --ds-color-background-selected-pressed: hsl(var(--brand-primary, 217 91% 53%) / 0.16);
+
+  --ds-color-background-disabled: hsl(var(--muted, 0 0% 96%));
+
+  /* Accent · Brand (blue) */
+  --ds-color-background-accent-blue-subtlest: hsl(var(--brand-primary, 217 91% 53%) / 0.08);
+  --ds-color-background-accent-blue-subtler: hsl(var(--brand-primary, 217 91% 53%) / 0.12);
+  --ds-color-background-accent-blue-subtle: hsl(var(--brand-primary, 217 91% 53%) / 0.20);
+  --ds-color-background-accent-blue-bolder: hsl(var(--brand-primary, 217 91% 53%));
+
+  /* Accent · Teal */
+  --ds-color-background-accent-teal-subtlest: hsl(173 58% 39% / 0.08);
+  --ds-color-background-accent-teal-subtler: hsl(173 58% 39% / 0.14);
+  --ds-color-background-accent-teal-bolder: hsl(173 58% 39%);
+
+  /* Accent · Purple (AI) */
+  --ds-color-background-accent-purple-subtlest: hsl(262 83% 58% / 0.08);
+  --ds-color-background-accent-purple-subtler: hsl(262 83% 58% / 0.14);
+  --ds-color-background-accent-purple-bolder: hsl(262 83% 58%);
+
+  /* Semantic · Information */
+  --ds-color-background-information: hsl(var(--info, 217 91% 53%) / 0.10);
+  --ds-color-background-information-hovered: hsl(var(--info, 217 91% 53%) / 0.16);
+  --ds-color-background-information-pressed: hsl(var(--info, 217 91% 53%) / 0.22);
+  --ds-color-background-information-bold: hsl(var(--info, 217 91% 53%));
+
+  /* Semantic · Success */
+  --ds-color-background-success: hsl(var(--success, 173 58% 39%) / 0.10);
+  --ds-color-background-success-hovered: hsl(var(--success, 173 58% 39%) / 0.16);
+  --ds-color-background-success-pressed: hsl(var(--success, 173 58% 39%) / 0.22);
+  --ds-color-background-success-bold: hsl(var(--success, 173 58% 39%));
+
+  /* Semantic · Warning */
+  --ds-color-background-warning: hsl(var(--warning, 38 92% 50%) / 0.12);
+  --ds-color-background-warning-hovered: hsl(var(--warning, 38 92% 50%) / 0.18);
+  --ds-color-background-warning-pressed: hsl(var(--warning, 38 92% 50%) / 0.24);
+  --ds-color-background-warning-bold: hsl(var(--warning, 38 92% 50%));
+
+  /* Semantic · Danger */
+  --ds-color-background-danger: hsl(var(--danger, 0 84% 60%) / 0.10);
+  --ds-color-background-danger-hovered: hsl(var(--danger, 0 84% 60%) / 0.16);
+  --ds-color-background-danger-pressed: hsl(var(--danger, 0 84% 60%) / 0.22);
+  --ds-color-background-danger-bold: hsl(var(--danger, 0 84% 60%));
+
+  /* Semantic · Discovery (purple — new features / onboarding) */
+  --ds-color-background-discovery: hsl(262 83% 58% / 0.10);
+  --ds-color-background-discovery-bold: hsl(262 83% 58%);
+
+  /* ─────────────────────────────────────────────────────────────
+     COLOR · TEXT
+     ───────────────────────────────────────────────────────────── */
+  --ds-color-text: var(--text-1, #0f172a);
+  --ds-color-text-subtle: var(--text-2, #334155);
+  --ds-color-text-subtlest: var(--text-3, #64748b);
+  --ds-color-text-disabled: var(--text-4, #94a3b8);
+  --ds-color-text-inverse: var(--text-inverse, #ffffff);
+
+  --ds-color-text-brand: hsl(var(--brand-primary, 217 91% 53%));
+  --ds-color-text-selected: hsl(var(--brand-primary, 217 91% 53%));
+  --ds-color-text-information: hsl(var(--info, 217 91% 53%));
+  --ds-color-text-success: hsl(var(--success, 173 58% 39%));
+  --ds-color-text-warning: hsl(var(--warning, 38 92% 45%));
+  --ds-color-text-danger: hsl(var(--danger, 0 84% 55%));
+  --ds-color-text-discovery: hsl(262 83% 58%);
+
+  /* Accent text (for tags, lozenges) */
+  --ds-color-text-accent-blue: hsl(var(--brand-primary, 217 91% 53%));
+  --ds-color-text-accent-teal: hsl(173 58% 33%);
+  --ds-color-text-accent-purple: hsl(262 83% 50%);
+
+  /* ─────────────────────────────────────────────────────────────
+     COLOR · LINK
+     ───────────────────────────────────────────────────────────── */
+  --ds-color-link: hsl(var(--brand-primary, 217 91% 53%));
+  --ds-color-link-hovered: hsl(var(--brand-primary, 217 91% 45%));
+  --ds-color-link-pressed: hsl(var(--brand-primary, 217 91% 40%));
+  --ds-color-link-visited: hsl(262 50% 48%);
+
+  /* ─────────────────────────────────────────────────────────────
+     COLOR · ICON
+     ───────────────────────────────────────────────────────────── */
+  --ds-color-icon: var(--text-2, #334155);
+  --ds-color-icon-subtle: var(--text-3, #64748b);
+  --ds-color-icon-disabled: var(--text-4, #94a3b8);
+  --ds-color-icon-inverse: #ffffff;
+  --ds-color-icon-brand: hsl(var(--brand-primary, 217 91% 53%));
+  --ds-color-icon-information: hsl(var(--info, 217 91% 53%));
+  --ds-color-icon-success: hsl(var(--success, 173 58% 39%));
+  --ds-color-icon-warning: hsl(var(--warning, 38 92% 45%));
+  --ds-color-icon-danger: hsl(var(--danger, 0 84% 55%));
+  --ds-color-icon-discovery: hsl(262 83% 58%);
+
+  /* ─────────────────────────────────────────────────────────────
+     COLOR · BORDER
+     ───────────────────────────────────────────────────────────── */
+  --ds-color-border: var(--stroke-1, hsl(0 0% 90%));
+  --ds-color-border-bold: var(--stroke-2, hsl(0 0% 83%));
+  --ds-color-border-subtle: hsl(0 0% 95%);
+  --ds-color-border-disabled: hsl(0 0% 92%);
+  --ds-color-border-inverse: #ffffff;
+  --ds-color-border-focused: hsl(var(--brand-primary, 217 91% 53%));
+  --ds-color-border-selected: hsl(var(--brand-primary, 217 91% 53%));
+  --ds-color-border-input: var(--input-bd, hsl(0 0% 83%));
+
+  --ds-color-border-brand: hsl(var(--brand-primary, 217 91% 53%));
+  --ds-color-border-information: hsl(var(--info, 217 91% 53%) / 0.30);
+  --ds-color-border-success: hsl(var(--success, 173 58% 39%) / 0.30);
+  --ds-color-border-warning: hsl(var(--warning, 38 92% 50%) / 0.35);
+  --ds-color-border-danger: hsl(var(--danger, 0 84% 60%) / 0.30);
+  --ds-color-border-discovery: hsl(262 83% 58% / 0.30);
+
+  /* ─────────────────────────────────────────────────────────────
+     ELEVATION · SURFACE
+     ───────────────────────────────────────────────────────────── */
+  --ds-elevation-surface: var(--bg-app, #ffffff);
+  --ds-elevation-surface-sunken: var(--bg-0, #f8fafc);
+  --ds-elevation-surface-raised: var(--bg-1, #ffffff);
+  --ds-elevation-surface-overlay: var(--bg-2, #ffffff);
+
+  --ds-elevation-shadow-raised: var(--shadow-elev-1, 0 1px 2px rgba(0, 0, 0, 0.04));
+  --ds-elevation-shadow-overflow: var(--shadow-elev-2, 0 4px 12px rgba(0, 0, 0, 0.08));
+  --ds-elevation-shadow-overlay: var(--shadow-elev-3, 0 12px 32px rgba(0, 0, 0, 0.12));
+
+  /* ─────────────────────────────────────────────────────────────
+     SPACE (4px grid — matches Catalyst spacing scale)
+     ───────────────────────────────────────────────────────────── */
+  --ds-space-0: 0;
+  --ds-space-025: 2px;
+  --ds-space-050: 4px;
+  --ds-space-075: 6px;
+  --ds-space-100: 8px;
+  --ds-space-150: 12px;
+  --ds-space-200: 16px;
+  --ds-space-250: 20px;
+  --ds-space-300: 24px;
+  --ds-space-400: 32px;
+  --ds-space-500: 40px;
+  --ds-space-600: 48px;
+  --ds-space-800: 64px;
+  --ds-space-1000: 80px;
+
+  /* ─────────────────────────────────────────────────────────────
+     RADIUS
+     ───────────────────────────────────────────────────────────── */
+  --ds-radius-0: 0;
+  --ds-radius-100: 4px;
+  --ds-radius-200: 6px;
+  --ds-radius-300: 8px;
+  --ds-radius-400: 12px;
+  --ds-radius-round: 9999px;
+
+  /* ─────────────────────────────────────────────────────────────
+     TYPOGRAPHY
+     ───────────────────────────────────────────────────────────── */
+  --ds-font-family-body: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --ds-font-family-heading: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, sans-serif;
+  --ds-font-family-monospace: "JetBrains Mono", "SF Mono", Monaco, Consolas, monospace;
+
+  --ds-font-size-075: 11px;
+  --ds-font-size-100: 13px; /* body-sm */
+  --ds-font-size-200: 14px; /* body */
+  --ds-font-size-300: 16px; /* body-large */
+  --ds-font-size-400: 18px; /* heading-xs */
+  --ds-font-size-500: 20px; /* heading-sm */
+  --ds-font-size-600: 24px; /* heading-md */
+  --ds-font-size-700: 28px; /* heading-lg */
+  --ds-font-size-800: 32px; /* heading-xl */
+
+  --ds-font-weight-regular: 400;
+  --ds-font-weight-medium: 500;
+  --ds-font-weight-semibold: 600;
+  --ds-font-weight-bold: 700;
+
+  --ds-line-height-100: 16px;
+  --ds-line-height-200: 20px;
+  --ds-line-height-300: 24px;
+  --ds-line-height-400: 28px;
+  --ds-line-height-500: 32px;
+  --ds-line-height-600: 36px;
+
+  /* ─────────────────────────────────────────────────────────────
+     MOTION
+     ───────────────────────────────────────────────────────────── */
+  --ds-motion-duration-small: 100ms;
+  --ds-motion-duration-medium: 200ms;
+  --ds-motion-duration-large: 300ms;
+  --ds-motion-ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ds-motion-ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   DARK THEME OVERRIDES
+   Most tokens reference Catalyst vars that already flip with [data-theme="dark"];
+   we only need to adjust the subset that's hard-coded or has different perceptual
+   contrast in dark mode.
+   ═══════════════════════════════════════════════════════════════════════════ */
+[data-theme="dark"] {
+  --ds-color-border: hsl(0 0% 20%);
+  --ds-color-border-bold: hsl(0 0% 30%);
+  --ds-color-border-subtle: hsl(0 0% 15%);
+  --ds-color-border-disabled: hsl(0 0% 18%);
+  --ds-color-border-inverse: hsl(0 0% 9%);
+
+  --ds-color-background-neutral-bold: hsl(0 0% 90%);
+  --ds-color-background-neutral-bold-hovered: hsl(0 0% 100%);
+
+  --ds-color-text-accent-teal: hsl(173 60% 62%);
+  --ds-color-text-accent-purple: hsl(262 80% 72%);
+
+  --ds-color-link-visited: hsl(262 60% 72%);
+}

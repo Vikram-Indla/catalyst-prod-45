@@ -4,12 +4,13 @@
  */
 
 import React, { useState } from 'react';
-import { 
-  Search, 
-  Filter, 
-  ChevronDown, 
+import { useParams } from 'react-router-dom';
+import {
+  Search,
+  Filter,
+  ChevronDown,
   ChevronRight,
-  MoreHorizontal, 
+  MoreHorizontal,
   Plus,
   Columns3,
   Download,
@@ -35,6 +36,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { cn } from '@/lib/utils';
 import { useInJira } from '../context/InJiraContext';
+import { useInJiraIssues } from '../hooks/useInJiraIssues';
 import { Issue, IssuePriority, IssueType } from '../types';
 
 // All available columns
@@ -60,19 +62,6 @@ const ALL_COLUMNS = [
 // Default visible columns
 const DEFAULT_COLUMNS = ['key', 'type', 'summary', 'status', 'priority', 'assignee', 'storyPoints', 'updated'];
 
-// Mock issues
-const MOCK_ISSUES: Issue[] = [
-  { id: '1', key: 'PROJ-101', summary: 'Implement user profile page with avatar upload and settings', type: 'story', status: 'Backlog', statusCategory: 'to-do', priority: 'medium', createdAt: '2024-01-01', updatedAt: '2024-01-10', storyPoints: 5 },
-  { id: '2', key: 'PROJ-102', summary: 'Add dark mode support across all components', type: 'feature', status: 'In Progress', statusCategory: 'in-progress', priority: 'low', createdAt: '2024-01-02', updatedAt: '2024-01-11', storyPoints: 8, assigneeId: 'user1' },
-  { id: '3', key: 'PROJ-103', summary: 'Fix login button alignment on mobile devices', type: 'defect', status: 'Backlog', statusCategory: 'to-do', priority: 'high', createdAt: '2024-01-03', updatedAt: '2024-01-12' },
-  { id: '4', key: 'PROJ-104', summary: 'API endpoint for real-time notifications', type: 'story', status: 'In Review', statusCategory: 'in-progress', priority: 'high', createdAt: '2024-01-04', updatedAt: '2024-01-13', storyPoints: 3, assigneeId: 'user1' },
-  { id: '5', key: 'PROJ-105', summary: 'Database schema optimization for better query performance', type: 'story', status: 'Ready for Analysis', statusCategory: 'in-progress', priority: 'medium', createdAt: '2024-01-05', updatedAt: '2024-01-14', storyPoints: 5, assigneeId: 'user2' },
-  { id: '6', key: 'PROJ-106', summary: 'Add export to CSV feature for all data tables', type: 'feature', status: 'Done', statusCategory: 'done', priority: 'low', createdAt: '2024-01-06', updatedAt: '2024-01-15', storyPoints: 3 },
-  { id: '7', key: 'PROJ-107', summary: 'Refactor authentication flow for better security', type: 'story', status: 'Implementation Review', statusCategory: 'in-progress', priority: 'highest', createdAt: '2024-01-07', updatedAt: '2024-01-16', storyPoints: 8, assigneeId: 'user1' },
-  { id: '8', key: 'PROJ-108', summary: 'Implement full-text search functionality', type: 'story', status: 'Under Implementation', statusCategory: 'in-progress', priority: 'high', createdAt: '2024-01-08', updatedAt: '2024-01-17', storyPoints: 5, assigneeId: 'user3' },
-  { id: '9', key: 'PROJ-109', summary: 'Fix memory leak in dashboard component', type: 'defect', status: 'Under Implementation', statusCategory: 'in-progress', priority: 'highest', createdAt: '2024-01-09', updatedAt: '2024-01-18', assigneeId: 'user2' },
-  { id: '10', key: 'PROJ-110', summary: 'Setup CI/CD pipeline with automated testing', type: 'story', status: 'Done', statusCategory: 'done', priority: 'medium', createdAt: '2024-01-10', updatedAt: '2024-01-19', storyPoints: 3, assigneeId: 'user1' },
-];
 
 // Priority colors
 const PRIORITY_COLORS: Record<IssuePriority, string> = {
@@ -100,7 +89,9 @@ const STATUS_APPEARANCE: Record<string, LozengeAppearance> = {
 };
 
 export function ListPage() {
+  const { projectKey } = useParams<{ projectKey: string }>();
   const { openIssueDrawer, searchQuery, setSearchQuery } = useInJira();
+  const { data: issues = [], isLoading } = useInJiraIssues(projectKey || '');
   const [visibleColumns, setVisibleColumns] = useState<string[]>(DEFAULT_COLUMNS);
   const [selectedRows, setSelectedRows] = useState<Set<string>>(new Set());
   const [sortColumn, setSortColumn] = useState<string>('key');
@@ -130,10 +121,10 @@ export function ListPage() {
   };
 
   const toggleAllRows = () => {
-    if (selectedRows.size === MOCK_ISSUES.length) {
+    if (selectedRows.size === issues.length) {
       setSelectedRows(new Set());
     } else {
-      setSelectedRows(new Set(MOCK_ISSUES.map(i => i.id)));
+      setSelectedRows(new Set(issues.map(i => i.id)));
     }
   };
 
@@ -286,7 +277,7 @@ export function ListPage() {
           <div className="flex items-center border-b border-border-default bg-surface-2 sticky top-0 z-10">
             <div className="w-10 px-3 py-2 flex-shrink-0">
               <Checkbox
-                checked={selectedRows.size === MOCK_ISSUES.length}
+                checked={issues.length > 0 && selectedRows.size === issues.length}
                 onCheckedChange={toggleAllRows}
               />
             </div>
@@ -306,7 +297,12 @@ export function ListPage() {
           </div>
 
           {/* Rows */}
-          {MOCK_ISSUES.map((issue) => (
+          {isLoading ? (
+            <div className="px-4 py-8 text-center text-sm text-text-tertiary">Loading issues…</div>
+          ) : issues.length === 0 ? (
+            <div className="px-4 py-8 text-center text-sm text-text-tertiary">No issues found.</div>
+          ) : null}
+          {issues.map((issue) => (
             <div
               key={issue.id}
               className={cn(
@@ -342,7 +338,7 @@ export function ListPage() {
       {/* Footer */}
       <div className="px-4 py-2 border-t border-border-default bg-surface-2 flex items-center justify-between">
         <span className="text-sm text-text-tertiary">
-          {MOCK_ISSUES.length} issues
+          {issues.length} issue{issues.length !== 1 ? 's' : ''}
         </span>
       </div>
     </div>

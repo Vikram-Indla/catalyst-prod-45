@@ -3,7 +3,7 @@
  * Full Jira-style drawer with two-column layout, inline editing, and activity tabs
  */
 
-import React, { useState, useCallback, useRef } from 'react';
+import React, { useState, useCallback, useRef, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
 import {
   X,
@@ -13,6 +13,10 @@ import {
   Minimize2,
   Share2
 } from 'lucide-react';
+import AiChatIcon from '@atlaskit/icon/core/ai-chat';
+import MagicWandIcon from '@atlaskit/icon/core/magic-wand';
+import { IconButton, Button as AKButton } from '@atlaskit/button/new';
+import { Tooltip as AKTooltip } from '@atlaskit/tooltip';
 import { Sheet, SheetContent } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -150,6 +154,26 @@ export function IssueDrawer() {
     logAction('comment_added', { isInternal });
     toast.success('Comment added');
   }, [logAction]);
+
+  const descToolbarComponents = useMemo(() => [
+    <AKTooltip content="Rovo AI" key="rovo">
+      {(tooltipProps) => (
+        <IconButton
+          {...tooltipProps}
+          icon={AiChatIcon}
+          label="Rovo AI"
+          appearance="subtle"
+        />
+      )}
+    </AKTooltip>,
+    <AKTooltip content="Improve description" key="improve">
+      {(tooltipProps) => (
+        <AKButton {...tooltipProps} appearance="subtle" iconBefore={MagicWandIcon}>
+          Improve
+        </AKButton>
+      )}
+    </AKTooltip>,
+  ], []);
 
   // Handle transition
   const handleTransition = useCallback((transitionId: string, toStatus: string) => {
@@ -290,6 +314,7 @@ export function IssueDrawer() {
                         return createEmptyADF();
                       })()}
                       placeholder="Add a description…"
+                      primaryToolbarComponents={descToolbarComponents}
                       onSave={(adf) => {
                         handleFieldChange('description', JSON.stringify(adf));
                         setEditingDesc(false);
