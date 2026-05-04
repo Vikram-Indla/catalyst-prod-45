@@ -47,7 +47,7 @@ function lazyWithRetry<T extends ComponentType<any>>(
 
 const CatalystDetailRouter = lazyWithRetry(() => import('@/components/catalyst-detail-views/CatalystDetailRouter'), 'CatalystDetailRouter');
 
-import { useLocation, useParams, Outlet, useNavigate } from 'react-router-dom';
+import { useLocation, useParams, useMatch, Outlet, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 const CatalystHeader = lazyWithRetry(() => import('@/components/ja/CatalystHeader').then(m => ({ default: m.CatalystHeader })), 'CatalystHeader');
@@ -139,7 +139,7 @@ function CatalystShellContent() {
   const location = useLocation();
   const page = derivePageFromPath(location.pathname);
   const navigate = useNavigate();
-  const params = useParams<{ programId?: string; portfolioId?: string; teamId?: string; projectId?: string }>();
+  const params = useParams<{ programId?: string; portfolioId?: string; teamId?: string; projectId?: string; projectKey?: string }>();
   const { workspaceType, programId: contextProgramId, projectId: contextProjectId, selectedQuarter, setSelectedQuarter, sidebarExpanded, setSidebarExpanded, sidebarHidden, setSidebarHidden, sidebarPinned, setSidebarPinned, sidebarHoverOpen, cycleSidebarState } = useCatalystContext();
 
   // ─── Sidebar is CLICK-ONLY (April 2026, final) ────────────────────────
@@ -206,16 +206,22 @@ function CatalystShellContent() {
   // Extract IDs from URL params - these take precedence
   const urlProgramId = params.programId || null;
   const urlProjectId = params.projectId || null;
+  // useParams can't see child-route params — use useMatch to extract :projectKey
+  // from the InJira layout route (/project/:projectKey/*) from an ancestor component.
+  const inJiraMatch = useMatch('/project/:projectKey/*');
+  const urlProjectKey = inJiraMatch?.params?.projectKey ?? null;
 
   // Determine which ID to use based on route pattern
   const isProgramRoute = location.pathname.startsWith('/program/');
   const isProjectRoute = location.pathname.startsWith('/projects/') || location.pathname.startsWith('/project/');
+  // InJira routes use :projectKey (string key like "BAU"), not :projectId (UUID)
+  const isInJiraRoute = isProjectRoute && !!urlProjectKey && !urlProjectId;
 
   // Current active IDs
   const activeProgramId = isProgramRoute ? urlProgramId : contextProgramId;
   const activeProjectId = isProjectRoute ? urlProjectId : contextProjectId;
 
-  // Fetch project details for sidebar
+  // Fetch project details for sidebar (UUID-based routes)
   const { data: projectData } = useQuery({
     queryKey: ['project-sidebar', activeProjectId],
     queryFn: async () => {
@@ -230,6 +236,26 @@ function CatalystShellContent() {
     },
     enabled: !!activeProjectId && isProjectRoute,
   });
+
+  // Fetch project by key for InJira routes (/project/:projectKey/*)
+  const { data: projectByKeyData } = useQuery({
+    queryKey: ['project-sidebar-by-key', urlProjectKey],
+    queryFn: async () => {
+      if (!urlProjectKey) return null;
+      const { data, error } = await supabase
+        .from('projects')
+        .select('id, name, key')
+        .eq('key', urlProjectKey)
+        .maybeSingle();
+      if (error) throw error;
+      return data;
+    },
+    enabled: isInJiraRoute,
+  });
+
+  // Effective project ID and name — prefers UUID param, falls back to key lookup
+  const effectiveProjectId = activeProjectId || projectByKeyData?.id || null;
+  const effectiveProjectName = projectData?.name || projectByKeyData?.name;
 
   // Check if on product/producthub route
   // Ideation is a peer hub at /ideation/*. Must be checked BEFORE isProductRoute
@@ -590,11 +616,11 @@ function CatalystShellContent() {
         );
 
       case 'project':
-        if (activeProjectId) {
+        if (effectiveProjectId) {
           return (
             <ProjectSidebar
-              projectId={activeProjectId}
-              projectName={projectData?.name}
+              projectId={effectiveProjectId}
+              projectName={effectiveProjectName}
               expanded={true}
               onToggle={cycleSidebarState}
             />

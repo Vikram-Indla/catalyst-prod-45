@@ -7,7 +7,9 @@
  * back-compat with the Jira write-back pipeline.
  */
 import React, { useState, useEffect, useRef } from 'react';
-import { CornerDownLeft, Loader2, Plus } from 'lucide-react';
+import AddIcon from '@atlaskit/icon/core/add';
+import Spinner from '@atlaskit/spinner';
+import ArrowLeftIcon from '@atlaskit/icon/glyph/arrow-left';
 import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
@@ -124,7 +126,7 @@ export function DefectsSection({
             onMouseEnter={e => { e.currentTarget.style.background = 'var(--ds-surface-sunken, #F4F5F7)'; e.currentTarget.style.color = 'var(--ds-text, #172B4D)'; }}
             onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--ds-text-subtlest, #6B778C)'; }}
           >
-            <Plus size={16} strokeWidth={2} />
+            <AddIcon label="Log defect" />
           </button>
         </>
       }>
@@ -156,7 +158,7 @@ export function DefectsSection({
                 disabled={!draftSummary.trim() || createMutation.isPending} title="Create (Enter)"
                 style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 28, height: 28, border: '1px solid #DFE1E6', borderRadius: 3, background: 'var(--ds-surface-sunken, #F4F5F7)', cursor: draftSummary.trim() ? 'pointer' : 'not-allowed', color: 'var(--ds-text-subtlest, #6B778C)', opacity: draftSummary.trim() ? 1 : 0.5 }}
               >
-                {createMutation.isPending ? <Loader2 size={14} className="animate-spin" /> : <CornerDownLeft size={14} />}
+                {createMutation.isPending ? <Spinner size="small" /> : <ArrowLeftIcon label="Create" size="small" />}
               </button>
             </div>
           </div>

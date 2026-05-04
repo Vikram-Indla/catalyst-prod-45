@@ -4,3 +4,4 @@ export * from './useVersions';
 export * from './useIssueAudit';
 export * from './useAISuggestions';
 export * from './useReportSharing';
+export * from './useInJiraIssues';

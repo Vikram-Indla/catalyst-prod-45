@@ -3,13 +3,14 @@
  * Similar to List but with additional hierarchy and grouping options
  */
 
-import React, { useState } from 'react';
-import { 
-  Search, 
-  Filter, 
-  ChevronDown, 
+import React, { useState, useMemo } from 'react';
+import { useParams } from 'react-router-dom';
+import {
+  Search,
+  Filter,
+  ChevronDown,
   ChevronRight,
-  MoreHorizontal, 
+  MoreHorizontal,
   Columns3,
   Layers,
   FolderTree,
@@ -28,6 +29,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { cn } from '@/lib/utils';
 import { useInJira } from '../context/InJiraContext';
+import { useInJiraIssues } from '../hooks/useInJiraIssues';
 import { Issue, IssueType } from '../types';
 
 // View modes
@@ -43,57 +45,6 @@ const GROUP_BY_OPTIONS = [
   { id: 'epic', label: 'Epic' },
 ];
 
-// Mock issues with hierarchy
-const MOCK_HIERARCHY: (Issue & { children?: Issue[] })[] = [
-  { 
-    id: 'epic-1', 
-    key: 'PROJ-1', 
-    summary: 'User Authentication System', 
-    type: 'feature', 
-    status: 'In Progress', 
-    statusCategory: 'in-progress', 
-    priority: 'high', 
-    createdAt: '2024-01-01', 
-    updatedAt: '2024-01-15',
-    children: [
-      { id: 's1', key: 'PROJ-101', summary: 'Implement login flow', type: 'story', status: 'Done', statusCategory: 'done', priority: 'high', createdAt: '2024-01-02', updatedAt: '2024-01-10', storyPoints: 5 },
-      { id: 's2', key: 'PROJ-102', summary: 'Add password reset', type: 'story', status: 'In Progress', statusCategory: 'in-progress', priority: 'medium', createdAt: '2024-01-03', updatedAt: '2024-01-12', storyPoints: 3 },
-      { id: 's3', key: 'PROJ-103', summary: 'Setup OAuth providers', type: 'story', status: 'Backlog', statusCategory: 'to-do', priority: 'low', createdAt: '2024-01-04', updatedAt: '2024-01-14', storyPoints: 8 },
-    ]
-  },
-  { 
-    id: 'epic-2', 
-    key: 'PROJ-2', 
-    summary: 'Payment Integration', 
-    type: 'feature', 
-    status: 'Backlog', 
-    statusCategory: 'to-do', 
-    priority: 'high', 
-    createdAt: '2024-01-05', 
-    updatedAt: '2024-01-16',
-    children: [
-      { id: 's4', key: 'PROJ-201', summary: 'Stripe integration', type: 'story', status: 'Backlog', statusCategory: 'to-do', priority: 'high', createdAt: '2024-01-06', updatedAt: '2024-01-16', storyPoints: 8 },
-      { id: 's5', key: 'PROJ-202', summary: 'Subscription management', type: 'story', status: 'Backlog', statusCategory: 'to-do', priority: 'medium', createdAt: '2024-01-07', updatedAt: '2024-01-16', storyPoints: 5 },
-    ]
-  },
-  { 
-    id: 'epic-3', 
-    key: 'PROJ-3', 
-    summary: 'Mobile App MVP', 
-    type: 'feature', 
-    status: 'In Progress', 
-    statusCategory: 'in-progress', 
-    priority: 'highest', 
-    createdAt: '2024-01-08', 
-    updatedAt: '2024-01-17',
-    children: [
-      { id: 's6', key: 'PROJ-301', summary: 'Setup React Native project', type: 'story', status: 'Done', statusCategory: 'done', priority: 'high', createdAt: '2024-01-09', updatedAt: '2024-01-15', storyPoints: 3 },
-      { id: 's7', key: 'PROJ-302', summary: 'Implement navigation', type: 'story', status: 'Done', statusCategory: 'done', priority: 'medium', createdAt: '2024-01-10', updatedAt: '2024-01-16', storyPoints: 5 },
-      { id: 's8', key: 'PROJ-303', summary: 'Build home screen', type: 'story', status: 'In Progress', statusCategory: 'in-progress', priority: 'high', createdAt: '2024-01-11', updatedAt: '2024-01-17', storyPoints: 5 },
-      { id: 's9', key: 'PROJ-304', summary: 'Add push notifications', type: 'story', status: 'Backlog', statusCategory: 'to-do', priority: 'low', createdAt: '2024-01-12', updatedAt: '2024-01-17', storyPoints: 8 },
-    ]
-  },
-];
 
 // Type colors
 const TYPE_COLORS: Record<IssueType, string> = {
@@ -111,11 +62,31 @@ const STATUS_APPEARANCE: Record<string, LozengeAppearance> = {
   'done': 'success',
 };
 
+type HierarchyIssue = Issue & { children?: Issue[] };
+
+function buildHierarchy(issues: Issue[]): HierarchyIssue[] {
+  const byId = new Map<string, HierarchyIssue>(issues.map(i => [i.id, { ...i, children: [] }]));
+  const roots: HierarchyIssue[] = [];
+  for (const item of byId.values()) {
+    if (item.parentId && byId.has(item.parentId)) {
+      byId.get(item.parentId)!.children!.push(item);
+    } else {
+      roots.push(item);
+    }
+  }
+  return roots;
+}
+
 export function AllWorkPage() {
+  const { projectKey } = useParams<{ projectKey: string }>();
   const { openIssueDrawer, searchQuery, setSearchQuery } = useInJira();
+  const { data: flatIssues = [], isLoading } = useInJiraIssues(projectKey || '');
   const [viewMode, setViewMode] = useState<ViewMode>('hierarchy');
   const [groupBy, setGroupBy] = useState('none');
-  const [expandedItems, setExpandedItems] = useState<Set<string>>(new Set(['epic-1', 'epic-3']));
+  const [expandedItems, setExpandedItems] = useState<Set<string>>(new Set());
+
+  const hierarchy = useMemo(() => buildHierarchy(flatIssues), [flatIssues]);
+  const childCount = flatIssues.length - hierarchy.length;
 
   const toggleExpand = (itemId: string) => {
     setExpandedItems(prev => {
@@ -129,7 +100,7 @@ export function AllWorkPage() {
     });
   };
 
-  const renderIssueRow = (issue: Issue & { children?: Issue[] }, depth: number = 0) => {
+  const renderIssueRow = (issue: HierarchyIssue, depth: number = 0) => {
     const hasChildren = issue.children && issue.children.length > 0;
     const isExpanded = expandedItems.has(issue.id);
 
@@ -203,7 +174,7 @@ export function AllWorkPage() {
 
         {/* Render children if expanded */}
         {hasChildren && isExpanded && (
-          issue.children!.map(child => renderIssueRow(child, depth + 1))
+          issue.children!.map(child => renderIssueRow(child as HierarchyIssue, depth + 1))
         )}
       </React.Fragment>
     );
@@ -304,14 +275,19 @@ export function AllWorkPage() {
           </div>
 
           {/* Items */}
-          {MOCK_HIERARCHY.map(item => renderIssueRow(item))}
+          {isLoading ? (
+            <div className="px-4 py-8 text-center text-sm text-text-tertiary">Loading…</div>
+          ) : hierarchy.length === 0 ? (
+            <div className="px-4 py-8 text-center text-sm text-text-tertiary">No issues found.</div>
+          ) : null}
+          {hierarchy.map(item => renderIssueRow(item))}
         </div>
       </ScrollArea>
 
       {/* Footer */}
       <div className="px-4 py-2 border-t border-border-default bg-surface-2 flex items-center justify-between">
         <span className="text-sm text-text-tertiary">
-          {MOCK_HIERARCHY.length} features, {MOCK_HIERARCHY.reduce((sum, h) => sum + (h.children?.length || 0), 0)} stories
+          {hierarchy.length} top-level, {childCount} children
         </span>
       </div>
     </div>

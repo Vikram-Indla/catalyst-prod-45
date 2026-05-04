@@ -4,10 +4,17 @@
  * StatusLozenge, JiraStatusPill, IssueIcon, Skel, DetailRow
  */
 import React, { useState, useEffect, useRef } from 'react';
-import {
-  ChevronDown, ChevronRight, Plus, GripVertical, Edit2, Link2, Trash2,
-  Check, Eye, EyeOff, Settings2, Loader2, X, AlertTriangle,
-} from 'lucide-react';
+import ChevronDownIcon from '@atlaskit/icon/glyph/chevron-down';
+import ChevronRightIcon from '@atlaskit/icon/glyph/chevron-right';
+import DragHandlerIcon from '@atlaskit/icon/core/drag-handle';
+import EditIcon from '@atlaskit/icon/core/edit';
+import LinkIcon from '@atlaskit/icon/core/link';
+import DeleteIcon from '@atlaskit/icon/core/delete';
+import CheckMarkIcon from '@atlaskit/icon/core/check-mark';
+import SettingsIcon from '@atlaskit/icon/core/settings';
+import Spinner from '@atlaskit/spinner';
+import CrossIcon from '@atlaskit/icon/glyph/cross';
+import WarningIcon from '@atlaskit/icon/core/warning';
 import type { ColumnConfig, PhIssueRow, StatusCategory } from './types';
 import { LOZENGE, PRIORITY_COLORS, WORK_ITEM_ICONS } from './constants';
 import { getStatusCategory, getAvatarColor, formatDateShort } from './helpers';
@@ -92,7 +99,7 @@ export function SectionBlock({ title, count, doneCount, defaultExpanded = true, 
       <div className="sdm-child-header">
         <div className="sdm-child-header-left">
           <button className="sdm-chevron-btn" onClick={() => setExpanded(e => !e)} aria-expanded={expanded}>
-            {expanded ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
+            {expanded ? <ChevronDownIcon label="" size="small" /> : <ChevronRightIcon label="" size="small" />}
           </button>
           <span className="sdm-child-title">{title}</span>
           <span className="sdm-count-badge">{count}</span>
@@ -128,7 +135,7 @@ export function IssueRow({ item, columns, onDelete, onCopyLink }: IssueRowProps)
   const avatarInitial = item.assignee_display_name?.charAt(0).toUpperCase() ?? '?';
   return (
     <div className="sdm-child-row" role="listitem">
-      <span className="sdm-drag-handle"><GripVertical size={12} /></span>
+      <span className="sdm-drag-handle"><DragHandlerIcon label="Drag" /></span>
       <span className="sdm-type-icon" dangerouslySetInnerHTML={{ __html: WORK_ITEM_ICONS[item.issue_type] ?? WORK_ITEM_ICONS.task }} />
       <span className="sdm-child-key" style={isDone ? { color: 'rgba(9,30,66,0.4)' } : {}}>{item.issue_key}</span>
       <span className={`sdm-child-summary${isDone ? ' sdm-child-summary--done' : ''}`}>{item.summary}</span>
@@ -151,9 +158,9 @@ export function IssueRow({ item, columns, onDelete, onCopyLink }: IssueRowProps)
         <span className="sdm-date-col" title={item.jira_updated_at ?? ''}>{formatDateShort(item.jira_updated_at)}</span>
       )}
       <div className="sdm-row-actions">
-        <button className="sdm-row-action-btn" title="Edit" onClick={e => e.stopPropagation()}><Edit2 size={11} /></button>
-        <button className="sdm-row-action-btn" title="Copy link" onClick={e => { e.stopPropagation(); onCopyLink(); }}><Link2 size={11} /></button>
-        <button className="sdm-row-action-btn sdm-row-action-btn--danger" title="Delete" onClick={e => { e.stopPropagation(); onDelete(); }}><Trash2 size={11} /></button>
+        <button className="sdm-row-action-btn" title="Edit" onClick={e => e.stopPropagation()}><EditIcon label="Edit" /></button>
+        <button className="sdm-row-action-btn" title="Copy link" onClick={e => { e.stopPropagation(); onCopyLink(); }}><LinkIcon label="Copy link" /></button>
+        <button className="sdm-row-action-btn sdm-row-action-btn--danger" title="Delete" onClick={e => { e.stopPropagation(); onDelete(); }}><DeleteIcon label="Delete" /></button>
       </div>
     </div>
   );
@@ -178,7 +185,7 @@ export function ColumnPicker({ columns, onChange }: { columns: ColumnConfig; onC
   return (
     <div ref={ref} style={{ position: 'relative' }}>
       <button className="sdm-visibility-btn" onClick={() => setOpen(o => !o)} title="Configure visible columns">
-        <Settings2 size={11} /> Columns
+        <SettingsIcon label="Columns" /> Columns
       </button>
       {open && (
         <div style={{ position: 'absolute', top: 'calc(100% + 4px)', right: 0, width: 200, background: 'var(--ds-surface, #fff)', border: '1px solid rgba(9,30,66,.24)', borderRadius: 6, boxShadow: '0 6px 16px rgba(9,30,66,.15)', zIndex: 60, overflow: 'hidden', paddingBottom: 4 }}>
@@ -189,7 +196,7 @@ export function ColumnPicker({ columns, onChange }: { columns: ColumnConfig; onC
               onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
             >
               <div style={{ width: 14, height: 14, borderRadius: 3, border: `1.5px solid ${columns[col.key] ? 'var(--ds-text-brand, #2563EB)' : 'rgba(9,30,66,.24)'}`, background: columns[col.key] ? 'var(--ds-text-brand, #2563EB)' : 'var(--ds-surface, #fff)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, transition: 'background .12s, border-color .12s' }}>
-                {columns[col.key] && <Check size={9} color="var(--ds-surface, #fff)" strokeWidth={3} />}
+                {columns[col.key] && <CheckMarkIcon label="" color="var(--ds-surface, #fff)" />}
               </div>
               <span style={{ fontSize: 12, color: 'var(--ds-text, #172B4D)' }}>{col.label}</span>
             </div>
@@ -223,9 +230,9 @@ export const InlineCreateRow = React.forwardRef<HTMLInputElement, InlineCreateRo
         onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); onSubmit(); } if (e.key === 'Escape') onCancel(); }}
         maxLength={255} />
       <button className="sdm-confirm-btn" onClick={onSubmit} disabled={!value.trim() || pending}>
-        {pending ? <Loader2 size={13} className="animate-spin" /> : <Check size={13} />}
+        {pending ? <Spinner size="small" /> : <CheckMarkIcon label="Confirm" />}
       </button>
-      <button className="sdm-cancel-btn" onClick={onCancel}><X size={13} /></button>
+      <button className="sdm-cancel-btn" onClick={onCancel}><CrossIcon label="Cancel" size="small" /></button>
     </div>
   )
 );
@@ -252,7 +259,7 @@ export function SkeletonRows({ count = 3 }: { count?: number }) {
 export function EmptyState({ heading, sub, cta, onCta }: { heading: string; sub: string; cta?: string; onCta?: () => void }) {
   return (
     <div className="sdm-child-empty">
-      <AlertTriangle size={28} color="#8993A4" />
+      <WarningIcon label="Warning" />
       <div className="sdm-child-empty-heading">{heading}</div>
       <div className="sdm-child-empty-sub">{sub}</div>
       {cta && onCta && <button className="sdm-child-empty-cta" onClick={onCta}>{cta}</button>}

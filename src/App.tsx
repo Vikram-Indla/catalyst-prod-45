@@ -40,6 +40,7 @@ const AdminOverview = lazy(() => import("./pages/admin/AdminOverview"));
 const ResetPassword = lazy(() => import("./pages/ResetPassword"));
 const SubmitDemandRequest = lazy(() => import("./pages/SubmitDemandRequest"));
 const SlackOAuthCallback = lazy(() => import("./pages/SlackOAuthCallback"));
+const DesignSystemShowcase = lazy(() => import("./design-system/showcase/Showcase"));
 const CleanupPage = lazy(() => import("./pages/CleanupPage"));
 const AuditTrailPage = lazy(() => import("./pages/AuditTrailPage"));
 const IssueFullPage = lazy(() => import("./pages/IssueFullPage"));
@@ -143,6 +144,7 @@ function App() {
                 <Route path="/auth/slack/callback" element={<S><SlackOAuthCallback /></S>} />
                 <Route path="/submit-request" element={<S><SubmitDemandRequest /></S>} />
                 <Route path="/reset-password" element={<S><ResetPassword /></S>} />
+                <Route path="/design-system" element={<S><DesignSystemShowcase /></S>} />
 
                 {/* Block A rule 1 (2026-05-01) — canonical URL prefix is
                     `/product-hub`. Legacy `/producthub/*` redirects via

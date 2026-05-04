@@ -1,5 +1,12 @@
 import { useRef, useState, useCallback, useEffect } from 'react';
-import { Bold, Italic, Underline, List, Image, Link, Undo2, Redo2 } from 'lucide-react';
+import TextBoldIcon from '@atlaskit/icon/core/text-bold';
+import TextItalicIcon from '@atlaskit/icon/core/text-italic';
+import TextUnderlineIcon from '@atlaskit/icon/core/text-underline';
+import ListBulletedIcon from '@atlaskit/icon/core/list-bulleted';
+import ImageIcon from '@atlaskit/icon/core/image';
+import LinkIcon from '@atlaskit/icon/core/link';
+import UndoIcon from '@atlaskit/icon/core/undo';
+import RedoIcon from '@atlaskit/icon/core/redo';
 import { supabase } from '@/integrations/supabase/client';
 
 interface RichTextCommentEditorProps {
@@ -213,20 +220,20 @@ export function RichTextCommentEditor({
           <button style={toolbarBtnStyle} onClick={() => execCmd('bold')} title="Bold"
             onMouseEnter={e => (e.currentTarget.style.background = '#EBECF0')}
             onMouseLeave={e => (e.currentTarget.style.background = 'none')}
-          ><Bold size={15} /></button>
+          ><TextBoldIcon label="Bold" /></button>
           <button style={toolbarBtnStyle} onClick={() => execCmd('italic')} title="Italic"
             onMouseEnter={e => (e.currentTarget.style.background = '#EBECF0')}
             onMouseLeave={e => (e.currentTarget.style.background = 'none')}
-          ><Italic size={15} /></button>
+          ><TextItalicIcon label="Italic" /></button>
           <button style={toolbarBtnStyle} onClick={() => execCmd('underline')} title="Underline"
             onMouseEnter={e => (e.currentTarget.style.background = '#EBECF0')}
             onMouseLeave={e => (e.currentTarget.style.background = 'none')}
-          ><Underline size={15} /></button>
+          ><TextUnderlineIcon label="Underline" /></button>
           <div style={{ width: 1, height: 16, background: 'var(--ds-border, #DFE1E6)', margin: '0 4px' }} />
           <button style={toolbarBtnStyle} onClick={() => execCmd('insertUnorderedList')} title="Bullet list"
             onMouseEnter={e => (e.currentTarget.style.background = '#EBECF0')}
             onMouseLeave={e => (e.currentTarget.style.background = 'none')}
-          ><List size={15} /></button>
+          ><ListBulletedIcon label="Bullet list" /></button>
           <button style={toolbarBtnStyle} onClick={() => {
             const input = document.createElement('input');
             input.type = 'file'; input.accept = 'image/*';
@@ -235,23 +242,23 @@ export function RichTextCommentEditor({
           }} title="Insert image"
             onMouseEnter={e => (e.currentTarget.style.background = '#EBECF0')}
             onMouseLeave={e => (e.currentTarget.style.background = 'none')}
-          ><Image size={15} /></button>
+          ><ImageIcon label="Insert image" /></button>
           <button style={toolbarBtnStyle} onClick={() => {
             const url = prompt('Enter link URL:');
             if (url) execCmd('createLink', url);
           }} title="Insert link"
             onMouseEnter={e => (e.currentTarget.style.background = '#EBECF0')}
             onMouseLeave={e => (e.currentTarget.style.background = 'none')}
-          ><Link size={15} /></button>
+          ><LinkIcon label="Insert link" /></button>
           <div style={{ width: 1, height: 16, background: 'var(--ds-border, #DFE1E6)', margin: '0 4px' }} />
           <button style={toolbarBtnStyle} onClick={() => execCmd('undo')} title="Undo"
             onMouseEnter={e => (e.currentTarget.style.background = '#EBECF0')}
             onMouseLeave={e => (e.currentTarget.style.background = 'none')}
-          ><Undo2 size={15} /></button>
+          ><UndoIcon label="Undo" /></button>
           <button style={toolbarBtnStyle} onClick={() => execCmd('redo')} title="Redo"
             onMouseEnter={e => (e.currentTarget.style.background = '#EBECF0')}
             onMouseLeave={e => (e.currentTarget.style.background = 'none')}
-          ><Redo2 size={15} /></button>
+          ><RedoIcon label="Redo" /></button>
         </div>
 
         {/* Editor area */}

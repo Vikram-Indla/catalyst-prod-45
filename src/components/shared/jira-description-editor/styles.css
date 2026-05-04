@@ -1,0 +1,502 @@
+/* ═══════════════════════════════════════════════════════
+   JIRA DESCRIPTION EDITOR — Catalyst Design System
+   Mirrors Atlassian's @atlaskit/editor-core styling
+   ═══════════════════════════════════════════════════════ */
+
+/* ── Root wrapper ──────────────────────────────────────── */
+.jde-root {
+  border: 2px solid #DFE1E6;
+  border-radius: 3px;
+  background: #fff;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Noto Sans', sans-serif;
+  transition: border-color 120ms ease;
+}
+
+.jde-root:focus-within {
+  border-color: #4C9AFF;
+  box-shadow: 0 0 0 1px #4C9AFF;
+}
+
+.jde-root[data-readonly='true'] {
+  border-color: transparent;
+  background: transparent;
+}
+
+/* ── Toolbar ───────────────────────────────────────────── */
+.jde-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 1px;
+  padding: 4px 6px;
+  border-bottom: 1px solid #DFE1E6;
+  background: #F4F5F7;
+  flex-wrap: wrap;
+  border-radius: 2px 2px 0 0;
+}
+
+.jde-tb-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: none;
+  border-radius: 3px;
+  background: transparent;
+  color: #42526E;
+  cursor: pointer;
+  transition: background 80ms;
+  padding: 0;
+  flex-shrink: 0;
+}
+
+.jde-tb-btn:hover:not(.jde-tb-btn--disabled) {
+  background: rgba(9, 30, 66, 0.08);
+  color: #172B4D;
+}
+
+.jde-tb-btn--active {
+  background: rgba(76, 154, 255, 0.15) !important;
+  color: #0052CC !important;
+}
+
+.jde-tb-btn--disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.jde-tb-divider {
+  width: 1px;
+  height: 20px;
+  background: #DFE1E6;
+  margin: 0 3px;
+  flex-shrink: 0;
+}
+
+/* Style selector button */
+.jde-tb-style-btn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  height: 28px;
+  padding: 0 6px;
+  border: none;
+  border-radius: 3px;
+  background: transparent;
+  color: #42526E;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 500;
+  white-space: nowrap;
+  transition: background 80ms;
+}
+
+.jde-tb-style-btn:hover {
+  background: rgba(9, 30, 66, 0.08);
+  color: #172B4D;
+}
+
+.jde-tb-style-label {
+  max-width: 100px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Chevron next to bold / list */
+.jde-tb-chevron {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 14px;
+  height: 28px;
+  border: none;
+  border-radius: 0 3px 3px 0;
+  background: transparent;
+  color: #42526E;
+  cursor: pointer;
+  padding: 0;
+  transition: background 80ms;
+}
+
+.jde-tb-chevron:hover {
+  background: rgba(9, 30, 66, 0.08);
+}
+
+/* ── Dropdowns ─────────────────────────────────────────── */
+.jde-dropdown {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  z-index: 1000;
+  background: #fff;
+  border: 1px solid #DFE1E6;
+  border-radius: 4px;
+  box-shadow: 0 4px 12px rgba(9,30,66,.15), 0 0 1px rgba(9,30,66,.25);
+  padding: 4px;
+  min-width: 160px;
+}
+
+.jde-dropdown--style {
+  min-width: 160px;
+}
+
+.jde-dropdown--marks {
+  min-width: 160px;
+}
+
+.jde-dropdown--insert {
+  min-width: 190px;
+}
+
+.jde-dropdown--colors {
+  display: grid;
+  grid-template-columns: repeat(5, 24px);
+  gap: 4px;
+  min-width: auto;
+  padding: 8px;
+}
+
+.jde-dropdown-item {
+  display: block;
+  width: 100%;
+  padding: 6px 8px;
+  border: none;
+  border-radius: 3px;
+  background: transparent;
+  color: #172B4D;
+  font-size: 13px;
+  text-align: left;
+  cursor: pointer;
+  transition: background 80ms;
+}
+
+.jde-dropdown-item:hover {
+  background: #F4F5F7;
+  color: #172B4D;
+}
+
+.jde-dropdown-item--active {
+  background: #DEEBFF;
+  color: #0052CC;
+}
+
+.jde-dropdown-item--row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.jde-dropdown-icon {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  color: #42526E;
+}
+
+.jde-dropdown-divider {
+  height: 1px;
+  background: #DFE1E6;
+  margin: 4px 0;
+}
+
+/* Color swatches */
+.jde-color-swatch {
+  width: 24px;
+  height: 24px;
+  border-radius: 3px;
+  border: 1px solid rgba(9,30,66,.1);
+  cursor: pointer;
+  transition: transform 80ms;
+}
+
+.jde-color-swatch:hover {
+  transform: scale(1.15);
+}
+
+/* ── Link dialog ───────────────────────────────────────── */
+.jde-link-dialog {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  z-index: 1000;
+  background: #fff;
+  border: 1px solid #DFE1E6;
+  border-radius: 4px;
+  box-shadow: 0 4px 12px rgba(9,30,66,.15);
+  padding: 12px;
+  min-width: 280px;
+}
+
+.jde-link-input {
+  width: 100%;
+  height: 32px;
+  padding: 0 8px;
+  border: 2px solid #DFE1E6;
+  border-radius: 3px;
+  font-size: 13px;
+  color: #172B4D;
+  outline: none;
+  box-sizing: border-box;
+}
+
+.jde-link-input:focus {
+  border-color: #4C9AFF;
+}
+
+.jde-btn-primary {
+  height: 28px;
+  padding: 0 10px;
+  background: #0052CC;
+  color: #fff;
+  border: none;
+  border-radius: 3px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 80ms;
+}
+
+.jde-btn-primary:hover { background: #0065FF; }
+
+.jde-btn-ghost {
+  height: 28px;
+  padding: 0 10px;
+  background: transparent;
+  color: #42526E;
+  border: none;
+  border-radius: 3px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 80ms;
+}
+
+.jde-btn-ghost:hover { background: #F4F5F7; }
+
+/* ── Emoji picker ──────────────────────────────────────── */
+.jde-emoji-picker {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  z-index: 1000;
+  background: #fff;
+  border: 1px solid #DFE1E6;
+  border-radius: 4px;
+  box-shadow: 0 4px 12px rgba(9,30,66,.15);
+  padding: 8px;
+  display: grid;
+  grid-template-columns: repeat(5, 32px);
+  gap: 2px;
+}
+
+.jde-emoji-btn {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  border: none;
+  border-radius: 3px;
+  background: transparent;
+  cursor: pointer;
+  transition: background 80ms;
+}
+
+.jde-emoji-btn:hover { background: #F4F5F7; }
+
+/* ── Editor content area ───────────────────────────────── */
+.jde-content {
+  padding: 8px 12px 12px;
+}
+
+.jde-content .ProseMirror {
+  outline: none;
+  font-size: 14px;
+  line-height: 1.714;
+  color: #172B4D;
+  min-height: inherit;
+}
+
+/* Placeholder */
+.jde-content .ProseMirror .is-editor-empty:first-child::before {
+  content: attr(data-placeholder);
+  color: #A5ADBA;
+  pointer-events: none;
+  float: left;
+  height: 0;
+}
+
+/* Headings — Atlassian sizing */
+.jde-content .ProseMirror h1 { font-size: 24px; font-weight: 600; line-height: 1.333; margin: 16px 0 8px; color: #172B4D; }
+.jde-content .ProseMirror h2 { font-size: 20px; font-weight: 600; line-height: 1.4; margin: 14px 0 6px; color: #172B4D; }
+.jde-content .ProseMirror h3 { font-size: 16px; font-weight: 600; line-height: 1.5; margin: 12px 0 4px; color: #172B4D; }
+.jde-content .ProseMirror h4 { font-size: 14px; font-weight: 600; line-height: 1.571; margin: 10px 0 4px; color: #172B4D; }
+.jde-content .ProseMirror h5 { font-size: 12px; font-weight: 600; line-height: 1.667; margin: 10px 0 4px; color: #172B4D; }
+.jde-content .ProseMirror h6 { font-size: 11px; font-weight: 700; line-height: 1.455; margin: 10px 0 4px; color: #5E6C84; text-transform: uppercase; }
+
+/* Paragraph */
+.jde-content .ProseMirror p { margin: 0 0 8px; }
+.jde-content .ProseMirror p:last-child { margin-bottom: 0; }
+
+/* Lists */
+.jde-content .ProseMirror ul,
+.jde-content .ProseMirror ol { padding-left: 24px; margin: 4px 0 8px; }
+.jde-content .ProseMirror li { margin: 2px 0; }
+.jde-content .ProseMirror li > p { margin: 0; }
+
+/* Task list */
+.jde-content .ProseMirror ul[data-type="taskList"] { padding-left: 4px; list-style: none; }
+.jde-content .ProseMirror ul[data-type="taskList"] li { display: flex; align-items: flex-start; gap: 8px; padding: 2px 0; }
+.jde-content .ProseMirror ul[data-type="taskList"] li > label { margin-top: 2px; flex-shrink: 0; }
+.jde-content .ProseMirror ul[data-type="taskList"] li > div { flex: 1; }
+
+/* Blockquote */
+.jde-content .ProseMirror blockquote {
+  border-left: 3px solid #DFE1E6;
+  padding-left: 12px;
+  margin: 8px 0;
+  color: #5E6C84;
+}
+
+/* Inline code */
+.jde-content .ProseMirror code {
+  background: #F4F5F7;
+  border-radius: 2px;
+  padding: 1px 5px;
+  font-family: 'SFMono-Medium', 'SF Mono', 'Segoe UI Mono', Menlo, monospace;
+  font-size: 0.875em;
+  color: #172B4D;
+}
+
+/* Code block */
+.jde-content .ProseMirror pre {
+  background: #F4F5F7;
+  border-radius: 3px;
+  padding: 10px 14px;
+  margin: 8px 0;
+  overflow-x: auto;
+}
+
+.jde-content .ProseMirror pre code {
+  background: transparent;
+  padding: 0;
+  font-size: 13px;
+  color: #172B4D;
+}
+
+/* HR */
+.jde-content .ProseMirror hr {
+  border: none;
+  border-top: 2px solid #DFE1E6;
+  margin: 16px 0;
+}
+
+/* Link */
+.jde-content .ProseMirror a.jde-link {
+  color: #0052CC;
+  text-decoration: underline;
+}
+
+.jde-content .ProseMirror a.jde-link:hover {
+  color: #0065FF;
+}
+
+/* Image */
+.jde-content .ProseMirror img.jde-media {
+  max-width: 100%;
+  border-radius: 3px;
+  margin: 4px 0;
+}
+
+.jde-content .ProseMirror img.jde-media.ProseMirror-selectednode {
+  outline: 2px solid #4C9AFF;
+  border-radius: 3px;
+}
+
+/* Table */
+.jde-content .ProseMirror table {
+  border-collapse: collapse;
+  margin: 8px 0;
+  width: 100%;
+  font-size: 14px;
+}
+
+.jde-content .ProseMirror td,
+.jde-content .ProseMirror th {
+  border: 1px solid #DFE1E6;
+  padding: 8px 10px;
+  vertical-align: top;
+}
+
+.jde-content .ProseMirror th {
+  background: #F4F5F7;
+  font-weight: 600;
+  text-align: left;
+}
+
+.jde-content .ProseMirror .selectedCell:after {
+  background: rgba(76,154,255,.15);
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.jde-content .ProseMirror td.selectedCell,
+.jde-content .ProseMirror th.selectedCell {
+  background: rgba(76,154,255,.08);
+}
+
+/* ── Panel nodes ───────────────────────────────────────── */
+.jde-content .ProseMirror .jde-panel {
+  display: flex;
+  gap: 12px;
+  border-radius: 3px;
+  padding: 12px 16px;
+  margin: 8px 0;
+  font-size: 14px;
+}
+
+.jde-content .ProseMirror .jde-panel::before {
+  font-size: 16px;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.jde-content .ProseMirror .jde-panel--info    { background: #DEEBFF; border-left: 4px solid #0052CC; }
+.jde-content .ProseMirror .jde-panel--info::before { content: 'ℹ️'; }
+.jde-content .ProseMirror .jde-panel--note    { background: #EAE6FF; border-left: 4px solid #6554C0; }
+.jde-content .ProseMirror .jde-panel--note::before { content: '📝'; }
+.jde-content .ProseMirror .jde-panel--warning { background: #FFFAE6; border-left: 4px solid #FF8B00; }
+.jde-content .ProseMirror .jde-panel--warning::before { content: '⚠️'; }
+.jde-content .ProseMirror .jde-panel--success { background: #E3FCEF; border-left: 4px solid #00875A; }
+.jde-content .ProseMirror .jde-panel--success::before { content: '✅'; }
+.jde-content .ProseMirror .jde-panel--error   { background: #FFEBE6; border-left: 4px solid #DE350B; }
+.jde-content .ProseMirror .jde-panel--error::before { content: '🚨'; }
+
+/* ── Expand node ───────────────────────────────────────── */
+.jde-content .ProseMirror .jde-expand {
+  border: 1px solid #DFE1E6;
+  border-radius: 3px;
+  margin: 8px 0;
+}
+
+.jde-content .ProseMirror .jde-expand__title {
+  padding: 8px 12px;
+  font-weight: 600;
+  font-size: 14px;
+  color: #172B4D;
+  cursor: pointer;
+  background: #F4F5F7;
+  border-radius: 2px 2px 0 0;
+}
+
+.jde-content .ProseMirror .jde-expand__content {
+  padding: 10px 14px;
+}
+
+/* ── Selection ─────────────────────────────────────────── */
+.jde-content .ProseMirror ::selection {
+  background: rgba(76,154,255,.25);
+}

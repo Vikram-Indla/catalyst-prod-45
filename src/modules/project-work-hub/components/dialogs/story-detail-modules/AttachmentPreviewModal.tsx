@@ -5,7 +5,11 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import { supabase } from '@/integrations/supabase/client';
-import { X, ChevronLeft, ChevronRight, Download, FileQuestion } from 'lucide-react';
+import CrossIcon from '@atlaskit/icon/glyph/cross';
+import ChevronLeftIcon from '@atlaskit/icon/glyph/chevron-left';
+import ChevronRightIcon from '@atlaskit/icon/glyph/chevron-right';
+import DownloadIcon from '@atlaskit/icon/core/download';
+import FileIcon from '@atlaskit/icon/core/file';
 import type { PhAttachment } from './AttachmentsSection';
 
 const BUCKET = 'attachments';
@@ -85,7 +89,7 @@ export function AttachmentPreviewModal({ attachments, initialId, onClose }: Prop
               title="Download"
               onClick={e => e.stopPropagation()}
             >
-              <Download size={16} />
+              <DownloadIcon label="Download" />
             </a>
           )}
           <button
@@ -93,7 +97,7 @@ export function AttachmentPreviewModal({ attachments, initialId, onClose }: Prop
             className="flex items-center justify-center w-8 h-8 rounded text-white hover:bg-white/10 transition-colors"
             title="Close (Esc)"
           >
-            <X size={18} />
+            <CrossIcon label="Close" size="small" />
           </button>
         </div>
       </div>
@@ -107,7 +111,7 @@ export function AttachmentPreviewModal({ attachments, initialId, onClose }: Prop
             title="Previous (←)"
             aria-label="Previous attachment"
           >
-            <ChevronLeft size={20} />
+            <ChevronLeftIcon label="Previous" size="medium" />
           </button>
           <button
             onClick={(e) => { e.stopPropagation(); goNext(); }}
@@ -115,7 +119,7 @@ export function AttachmentPreviewModal({ attachments, initialId, onClose }: Prop
             title="Next (→)"
             aria-label="Next attachment"
           >
-            <ChevronRight size={20} />
+            <ChevronRightIcon label="Next" size="medium" />
           </button>
         </>
       )}
@@ -142,7 +146,7 @@ export function AttachmentPreviewModal({ attachments, initialId, onClose }: Prop
           />
         ) : (
           <div className="flex flex-col items-center gap-4 p-12 bg-[var(--ds-surface-raised,#1A1A1A)] rounded-lg text-white">
-            <FileQuestion size={48} className="text-white/50" />
+            <FileIcon label="File" />
             <div className="text-base font-medium">Preview not available</div>
             <div className="text-sm text-white/60">{current.mime_type || 'Unknown type'}</div>
             <a
