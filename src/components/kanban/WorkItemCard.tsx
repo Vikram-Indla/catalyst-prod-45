@@ -299,13 +299,39 @@ export function WorkItemCard({
             : <JiraIssueTypeIcon type={issue.issueType} size={14} />
         )}
         {vf?.workItemKey !== false && (
-          <span style={{
-            fontSize: d.metaSize + 1, fontWeight: 500,
-            color: tk.textMuted, fontFamily: 'var(--cp-font-mono)',
-            lineHeight: '14px',
-          }}>
+          /* Jira parity: clicking the issue key opens the detail panel.
+             Rendered as a button so keyboard users can also trigger it.
+             Hover: underline + slightly darker text, matching Jira's
+             `ds-text-subtlest` → `ds-link` transition. */
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              onOpenDetail?.(issue.id);
+            }}
+            onMouseEnter={(e) => {
+              const el = e.currentTarget as HTMLButtonElement;
+              el.style.textDecoration = 'underline';
+              el.style.color = tk.textPrimary;
+            }}
+            onMouseLeave={(e) => {
+              const el = e.currentTarget as HTMLButtonElement;
+              el.style.textDecoration = 'none';
+              el.style.color = tk.textMuted;
+            }}
+            style={{
+              fontSize: d.metaSize + 1, fontWeight: 500,
+              color: tk.textMuted, fontFamily: 'var(--cp-font-mono)',
+              lineHeight: '14px',
+              background: 'none', border: 'none', padding: 0,
+              cursor: 'pointer', textDecoration: 'none',
+              transition: 'color 80ms ease, text-decoration 80ms ease',
+            }}
+            aria-label={`Open ${issue.issueKey}`}
+            title={`Open ${issue.issueKey}`}
+          >
             {issue.issueKey}
-          </span>
+          </button>
         )}
         {issue.sourceTag && (
           <SourceBadge source={issue.sourceTag} />

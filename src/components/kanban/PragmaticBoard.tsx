@@ -452,21 +452,70 @@ const PragmaticColumn = memo(function PragmaticColumn({
               fontFamily: 'var(--cp-font-body)',
             }}
           >
+            {/* Column name header */}
             <div style={{
-              padding: '4px 16px 6px', fontSize: 11, fontWeight: 600, color: tk.textMuted,
-              textTransform: 'uppercase', letterSpacing: 0.4,
+              padding: '4px 16px 8px', fontSize: 11, fontWeight: 700, color: tk.textMuted,
+              textTransform: 'uppercase', letterSpacing: 0.5,
+              borderBottom: `1px solid ${tk.border}`, marginBottom: 4,
             }}>{column.name}</div>
-            <div style={{ padding: '4px 16px', fontSize: 13, color: tk.textPrimary }}>
-              {`Cards in column: ${issueIds.length}`}
+            {/* Column stats — non-interactive info rows */}
+            <div style={{ padding: '2px 16px', fontSize: 12, color: tk.textPrimary, display: 'flex', justifyContent: 'space-between' }}>
+              <span>Cards</span>
+              <span style={{ fontFamily: 'var(--cp-font-mono)', fontWeight: 600 }}>{issueIds.length}</span>
             </div>
-            <div style={{ padding: '4px 16px', fontSize: 13, color: tk.textPrimary }}>
-              {column.wipLimit != null
-                ? `WIP limit: ${column.wipLimit}${issueIds.length > column.wipLimit ? ' (exceeded)' : ''}`
-                : 'No WIP limit'}
-            </div>
-            <div style={{ padding: '4px 16px 6px', fontSize: 13, color: tk.textPrimary }}>
-              {`Statuses mapped: ${column.statuses.length}`}
-            </div>
+            {column.wipLimit != null && (
+              <div style={{
+                padding: '2px 16px 6px', fontSize: 12, display: 'flex', justifyContent: 'space-between',
+                color: issueIds.length > column.wipLimit ? '#AE2A19' : tk.textPrimary,
+              }}>
+                <span>WIP limit</span>
+                <span style={{ fontFamily: 'var(--cp-font-mono)', fontWeight: 600 }}>
+                  {issueIds.length}/{column.wipLimit}{issueIds.length > column.wipLimit ? ' ⚠' : ''}
+                </span>
+              </div>
+            )}
+            {/* Separator */}
+            <div style={{ height: 1, background: tk.border, margin: '4px 0' }} />
+            {/* Actionable items — Jira parity */}
+            {[
+              {
+                key: 'copy-cards',
+                label: `Copy column stats`,
+                act: () => {
+                  const text = `${column.name}: ${issueIds.length} card${issueIds.length !== 1 ? 's' : ''}${column.wipLimit != null ? ` (WIP: ${column.wipLimit})` : ''}`;
+                  navigator.clipboard.writeText(text).catch(() => {/* silent */});
+                  setMeatballAnchor(null);
+                },
+              },
+              ...(actions.onCreateInColumn ? [{
+                key: 'create',
+                label: actions.createInColumnLabel ?? 'Create issue here',
+                act: () => { actions.onCreateInColumn?.(column.id); setMeatballAnchor(null); },
+              }] : []),
+            ].map((item) => (
+              <button
+                key={item.key}
+                role="menuitem"
+                type="button"
+                onClick={item.act}
+                style={{
+                  display: 'flex',
+                  width: '100%',
+                  padding: '7px 16px',
+                  fontSize: 13,
+                  color: tk.textPrimary,
+                  background: 'none',
+                  border: 'none',
+                  textAlign: 'left',
+                  cursor: 'pointer',
+                  fontFamily: 'var(--cp-font-body)',
+                }}
+                onMouseEnter={(e) => { e.currentTarget.style.background = tk.surfaceHover; }}
+                onMouseLeave={(e) => { e.currentTarget.style.background = 'none'; }}
+              >
+                {item.label}
+              </button>
+            ))}
           </div>,
           document.body,
         )}

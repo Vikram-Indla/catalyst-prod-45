@@ -22,12 +22,17 @@ import type { KanbanThemeTokens } from './kanban-tokens';
  * persisted filter state. The chips themselves no longer render, so
  * those values can never be set from the UI; only legacy bookmarked
  * URLs would carry them, and the predicate is a passthrough no-op.
+ *
+ * `no_assignee` — Jira parity: board 597 exposes an "Unassigned" filter
+ * that surfaces cards without an assignee. Catalyst equivalent: cards
+ * where `assigneeName` is null / empty string.
  */
 export type QuickFilterId =
   | 'internal_portal'
   | 'bau'
   | 'recently_updated'
   | 'assigned_to_me'
+  | 'no_assignee'
   | null;
 
 interface QuickFilterChipsProps {
@@ -37,12 +42,13 @@ interface QuickFilterChipsProps {
 }
 
 const CHIPS: ReadonlyArray<{
-  id: Exclude<QuickFilterId, null>;
+  id: Exclude<QuickFilterId, null | 'internal_portal' | 'bau'>;
   label: string;
   description?: string;
 }> = [
   { id: 'recently_updated', label: 'Recently Updated', description: 'Updated in last 24h' },
   { id: 'assigned_to_me',   label: 'Assigned to me',   description: 'Where I am the assignee' },
+  { id: 'no_assignee',      label: 'Unassigned',        description: 'No assignee' },
 ];
 
 export function QuickFilterChips({ active, onChange, tk }: QuickFilterChipsProps) {
