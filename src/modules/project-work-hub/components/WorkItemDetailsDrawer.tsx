@@ -279,38 +279,51 @@ export const WorkItemDetailsDrawer: React.FC<WorkItemDetailsDrawerProps> = ({
         </TabsList>
         
         <TabsContent value="details" className="flex-1 overflow-y-auto p-4">
-          {/* Status & Priority */}
-          <div className="grid grid-cols-2 gap-4 mb-6">
-            <div>
-              <label className="block text-[11px] font-semibold text-muted-foreground uppercase mb-1">
-                Status
-              </label>
-              {canEdit ? (
-                <Select value={editedStatus} onValueChange={handleStatusChange}>
-                  <SelectTrigger className="w-full">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {statusOptions.map((status) => (
-                      <SelectItem key={status} value={status}>
-                        {status.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              ) : (
-                <StatusLozenge status={item.status} statusCategory={item.statusCategory} />
-              )}
-            </div>
-            <div>
-              <label className="block text-[11px] font-semibold text-muted-foreground uppercase mb-1">
-                Priority
-              </label>
-              <div className="flex items-center gap-1">
-                <PriorityIcon priority={item.priority} />
-                <span className="text-sm text-foreground">
-                  {PRIORITY_CONFIG[item.priority]?.label || item.priority}
-                </span>
+          {/* Status */}
+          <div className="mb-6">
+            <label className="block text-[11px] font-semibold text-muted-foreground uppercase mb-1">
+              Status
+            </label>
+            {canEdit ? (
+              <Select value={editedStatus} onValueChange={handleStatusChange}>
+                <SelectTrigger className="w-full">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {statusOptions.map((status) => (
+                    <SelectItem key={status} value={status}>
+                      {status.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            ) : (
+              <StatusLozenge status={item.status} statusCategory={item.statusCategory} />
+            )}
+          </div>
+
+          {/* Key Details Section */}
+          <div className="mb-6 p-3 bg-muted rounded-md border border-border">
+            <h4 className="text-[11px] font-semibold text-muted-foreground uppercase mb-3">
+              Key Details
+            </h4>
+            <div className="space-y-3">
+              <div>
+                <label className="block text-[11px] font-semibold text-muted-foreground uppercase mb-1">
+                  Parent
+                </label>
+                <span className="text-sm text-foreground">None</span>
+              </div>
+              <div>
+                <label className="block text-[11px] font-semibold text-muted-foreground uppercase mb-1">
+                  Priority
+                </label>
+                <div className="flex items-center gap-1">
+                  <PriorityIcon priority={item.priority} />
+                  <span className="text-sm text-foreground">
+                    {PRIORITY_CONFIG[item.priority]?.label || item.priority}
+                  </span>
+                </div>
               </div>
             </div>
           </div>
@@ -370,6 +383,32 @@ export const WorkItemDetailsDrawer: React.FC<WorkItemDetailsDrawerProps> = ({
                 {item.description || 'No description provided.'}
               </p>
             )}
+          </div>
+
+          {/* Development Section */}
+          <div className="mb-6">
+            <div className="flex items-center gap-2 mb-2">
+              <span className="text-[11px] font-semibold text-muted-foreground uppercase">
+                Development
+              </span>
+              <span className="text-xs text-muted-foreground">(0)</span>
+            </div>
+            <p className="text-sm text-muted-foreground">No commits or pull requests linked</p>
+          </div>
+
+          {/* Automation Section */}
+          <div className="mb-6">
+            <div className="flex items-center gap-2 mb-2">
+              <span className="text-[11px] font-semibold text-muted-foreground uppercase">
+                Automation
+              </span>
+            </div>
+            <div className="text-sm text-muted-foreground">
+              <div className="flex items-center gap-2">
+                <span>Rule executions</span>
+              </div>
+              <p className="text-xs mt-1">No rule executions</p>
+            </div>
           </div>
 
           {/* Child Items Section (for Stories) */}
