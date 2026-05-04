@@ -99,7 +99,7 @@ export function SectionBlock({ title, count, doneCount, defaultExpanded = true, 
       <div className="sdm-child-header">
         <div className="sdm-child-header-left">
           <button className="sdm-chevron-btn" onClick={() => setExpanded(e => !e)} aria-expanded={expanded}>
-            {expanded ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
+            {expanded ? <ChevronDownIcon label="" size="small" /> : <ChevronRightIcon label="" size="small" />}
           </button>
           <span className="sdm-child-title">{title}</span>
           <span className="sdm-count-badge">{count}</span>
@@ -135,7 +135,7 @@ export function IssueRow({ item, columns, onDelete, onCopyLink }: IssueRowProps)
   const avatarInitial = item.assignee_display_name?.charAt(0).toUpperCase() ?? '?';
   return (
     <div className="sdm-child-row" role="listitem">
-      <span className="sdm-drag-handle"><GripVertical size={12} /></span>
+      <span className="sdm-drag-handle"><DragHandlerIcon label="Drag" /></span>
       <span className="sdm-type-icon" dangerouslySetInnerHTML={{ __html: WORK_ITEM_ICONS[item.issue_type] ?? WORK_ITEM_ICONS.task }} />
       <span className="sdm-child-key" style={isDone ? { color: 'rgba(9,30,66,0.4)' } : {}}>{item.issue_key}</span>
       <span className={`sdm-child-summary${isDone ? ' sdm-child-summary--done' : ''}`}>{item.summary}</span>
@@ -158,9 +158,9 @@ export function IssueRow({ item, columns, onDelete, onCopyLink }: IssueRowProps)
         <span className="sdm-date-col" title={item.jira_updated_at ?? ''}>{formatDateShort(item.jira_updated_at)}</span>
       )}
       <div className="sdm-row-actions">
-        <button className="sdm-row-action-btn" title="Edit" onClick={e => e.stopPropagation()}><Edit2 size={11} /></button>
-        <button className="sdm-row-action-btn" title="Copy link" onClick={e => { e.stopPropagation(); onCopyLink(); }}><Link2 size={11} /></button>
-        <button className="sdm-row-action-btn sdm-row-action-btn--danger" title="Delete" onClick={e => { e.stopPropagation(); onDelete(); }}><Trash2 size={11} /></button>
+        <button className="sdm-row-action-btn" title="Edit" onClick={e => e.stopPropagation()}><EditIcon label="Edit" /></button>
+        <button className="sdm-row-action-btn" title="Copy link" onClick={e => { e.stopPropagation(); onCopyLink(); }}><LinkIcon label="Copy link" /></button>
+        <button className="sdm-row-action-btn sdm-row-action-btn--danger" title="Delete" onClick={e => { e.stopPropagation(); onDelete(); }}><DeleteIcon label="Delete" /></button>
       </div>
     </div>
   );
@@ -185,7 +185,7 @@ export function ColumnPicker({ columns, onChange }: { columns: ColumnConfig; onC
   return (
     <div ref={ref} style={{ position: 'relative' }}>
       <button className="sdm-visibility-btn" onClick={() => setOpen(o => !o)} title="Configure visible columns">
-        <Settings2 size={11} /> Columns
+        <SettingsIcon label="Columns" /> Columns
       </button>
       {open && (
         <div style={{ position: 'absolute', top: 'calc(100% + 4px)', right: 0, width: 200, background: 'var(--ds-surface, #fff)', border: '1px solid rgba(9,30,66,.24)', borderRadius: 6, boxShadow: '0 6px 16px rgba(9,30,66,.15)', zIndex: 60, overflow: 'hidden', paddingBottom: 4 }}>
