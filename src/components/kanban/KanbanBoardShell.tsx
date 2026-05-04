@@ -132,6 +132,9 @@ export function KanbanBoardShell<THubRow = unknown>({
       if (quickFilter === 'assigned_to_me') {
         return !!currentUserName && issue.assigneeName === currentUserName;
       }
+      if (quickFilter === 'no_assignee') {
+        return !issue.assigneeName || issue.assigneeName.trim() === '';
+      }
       return true;
     };
     const next: typeof colMap = {};

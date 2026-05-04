@@ -2,7 +2,7 @@
  * SortableCard — DnD-enabled wrapper around WorkItemCard (memoized)
  * Jira parity: 4px radius, shadow-only (no border), dual-stack shadow.
  */
-import React, { useCallback, memo } from 'react';
+import React, { useCallback, memo, useState, useEffect } from 'react';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { WorkItemCard } from './WorkItemCard';
@@ -45,6 +45,22 @@ export const SortableCard = memo(function SortableCard({ issue, avatarUrl, onCli
   const hoverShadow = tk.cardHoverShadow;
   const focusShadow = `0 0 0 2px ${tk.selectedAccent}`;
 
+  /* ─── Right-click context menu — Jira parity for swimlane mode ─── */
+  const [ctxMenu, setCtxMenu] = useState<{ x: number; y: number } | null>(null);
+  useEffect(() => {
+    if (!ctxMenu) return;
+    const close = () => setCtxMenu(null);
+    window.addEventListener('click', close);
+    window.addEventListener('scroll', close, true);
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') close(); };
+    window.addEventListener('keydown', onKey);
+    return () => {
+      window.removeEventListener('click', close);
+      window.removeEventListener('scroll', close, true);
+      window.removeEventListener('keydown', onKey);
+    };
+  }, [ctxMenu]);
+
   const cardStyle: React.CSSProperties = {
     background: tk.cardBg,
     borderRadius: 4,                                    /* Jira parity: 4px */
@@ -69,6 +85,7 @@ export const SortableCard = memo(function SortableCard({ issue, avatarUrl, onCli
   }, [isDragging, onClick]);
 
   return (
+    <>
     <div
       ref={setNodeRef}
       style={cardStyle}
@@ -78,6 +95,7 @@ export const SortableCard = memo(function SortableCard({ issue, avatarUrl, onCli
       onContextMenu={(e) => {
         e.preventDefault();
         e.stopPropagation();
+        setCtxMenu({ x: e.clientX, y: e.clientY });
       }}
       onMouseEnter={e => {
         if (!isDragging) {
@@ -126,6 +144,60 @@ export const SortableCard = memo(function SortableCard({ issue, avatarUrl, onCli
         visibleFields={visibleFields}
       />
     </div>
+    {/* Jira-parity right-click context menu (swimlane mode) */}
+    {ctxMenu && (
+      <div
+        data-testid={`kanban-card-context-menu-${issue.id}`}
+        role="menu"
+        aria-label={`Actions for ${issue.issueKey}`}
+        onClick={(e) => e.stopPropagation()}
+        onContextMenu={(e) => e.preventDefault()}
+        style={{
+          position: 'fixed',
+          left: ctxMenu.x,
+          top: ctxMenu.y,
+          zIndex: 9999,
+          minWidth: 180,
+          background: 'var(--ds-surface, #FFFFFF)',
+          borderRadius: 4,
+          boxShadow: 'rgba(9,30,66,0.31) 0 0 1px, rgba(9,30,66,0.25) 0 4px 8px -2px',
+          padding: '4px 0',
+          fontFamily: 'var(--cp-font-body)',
+        }}
+      >
+        {[
+          { key: 'open',     label: 'Open',            act: () => onClick() },
+          { key: 'copyKey',  label: 'Copy issue key',  act: () => onCopyKey?.(issue.issueKey) },
+          { key: 'copyLink', label: 'Copy link',       act: () => onCopyLink?.(issue.issueKey) },
+          { key: 'flag',     label: issue.isFlagged ? 'Unflag' : 'Flag', act: () => onToggleFlag?.(issue.id) },
+          { key: 'archive',  label: 'Archive',         act: () => onArchive?.(issue.id) },
+          { key: 'delete',   label: 'Delete',          act: () => onDelete?.(issue.id), danger: true },
+        ].map((item) => (
+          <button
+            key={item.key}
+            role="menuitem"
+            onClick={() => { item.act(); setCtxMenu(null); }}
+            style={{
+              display: 'flex',
+              width: '100%',
+              padding: '6px 16px',
+              fontSize: 13,
+              color: (item as { danger?: boolean }).danger ? '#AE2A19' : tk.textPrimary,
+              background: 'none',
+              border: 'none',
+              textAlign: 'left',
+              cursor: 'pointer',
+              fontFamily: 'var(--cp-font-body)',
+            }}
+            onMouseEnter={(e) => { e.currentTarget.style.background = tk.surfaceHover || '#F7F8F9'; }}
+            onMouseLeave={(e) => { e.currentTarget.style.background = 'none'; }}
+          >
+            {item.label}
+          </button>
+        ))}
+      </div>
+    )}
+    </>
   );
 });
 
