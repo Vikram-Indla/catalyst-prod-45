@@ -422,7 +422,7 @@ export function ChildIssuesSection({ storyKey, storyId, projectKey, onOpenItem }
             border: '1px solid #DFE1E6', borderRadius: 8, margin: '0 0 4px 0',
             background: 'var(--ds-surface-sunken, #FAFBFC)',
           }}>
-            <Sparkles size={16} color="var(--ds-text-subtlest, #6B778C)" />
+            <AiChatIcon label="" />
             <span style={{ fontSize: 13, color: 'var(--ds-text, #172B4D)', flex: 1 }}>Create suggested work items</span>
             <button style={{
               height: 28, padding: '0 12px', border: '1px solid #DFE1E6', borderRadius: 3,
@@ -527,7 +527,7 @@ export function ChildIssuesSection({ storyKey, storyId, projectKey, onOpenItem }
                   color: 'var(--ds-text-subtlest, #6B778C)', opacity: draftSummary.trim() ? 1 : 0.5,
                 }}
               >
-                {createMutation.isPending ? <Loader2 size={14} className="animate-spin" /> : <CornerDownLeft size={14} />}
+                {createMutation.isPending ? <Spinner size="small" /> : <ArrowLeftIcon label="Create" size="small" />}
               </button>
             </div>
           </div>
