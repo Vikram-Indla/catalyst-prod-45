@@ -12,9 +12,24 @@ import { GlobalSearch } from '@/components/layout/GlobalSearch';
 import { CreateDropdown } from './CreateDropdown';
 import { NotificationsPanel } from './NotificationsPanel';
 import { Link } from 'react-router-dom';
+import { useSyncExternalStore } from 'react';
 import { useCatalystContext } from '@/contexts/CatalystContext';
 import { useNavBreakpoint } from '@/hooks/useNavBreakpoint';
-import catalystWordmark from '@/assets/catalyst-wordmark-3.svg';
+import catalystWordmarkLight from '@/assets/catalyst-wordmark-3.svg';
+import catalystWordmarkDark from '@/assets/catalyst-wordmark-3-dark.svg';
+
+function useIsDarkTheme() {
+  return useSyncExternalStore(
+    (cb) => {
+      if (typeof window === 'undefined') return () => undefined;
+      const obs = new MutationObserver(cb);
+      obs.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+      return () => obs.disconnect();
+    },
+    () => typeof document !== 'undefined' && document.documentElement.getAttribute('data-theme') === 'dark',
+    () => false,
+  );
+}
 
 const isMacPlatform = () =>
   typeof navigator !== 'undefined' && /Mac|iPod|iPhone|iPad/.test(navigator.userAgent);
@@ -25,6 +40,8 @@ const isMacPlatform = () =>
 // justifyContent:center on the flex wrapper visually centres search+create.
 
 export function CatalystHeader() {
+  const isDark = useIsDarkTheme();
+  const catalystWordmark = isDark ? catalystWordmarkDark : catalystWordmarkLight;
   const {
     sidebarHidden, sidebarPinned, sidebarHoverOpen,
     cycleSidebarState,
@@ -135,7 +152,7 @@ export function CatalystHeader() {
             <Link
               to="/"
               aria-label="Catalyst home"
-              style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center' }}
+              style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', opacity: 1 }}
             >
               <img
                 src={catalystWordmark}
