@@ -4,6 +4,33 @@ Append-only. Newest at top. Each entry: date, pattern, rule, surface.
 
 ---
 
+## 2026-05-04 — Use jira-compare skill for every new feature built
+**Surface:** any new feature implementation
+**Pattern:** New features shipped without a jira-compare audit accumulated visual and wiring defects that were only caught later, requiring costly retroactive fixes.
+**Rule:** Run the `jira-compare` skill on every new feature before marking it complete. No feature is done until jira-compare passes.
+
+## 2026-05-04 — All outputs must be visual maps with before/after comparison
+**Surface:** any audit, diff, or parity report
+**Pattern:** Text-only diffs and lists of findings were hard to scan and easy to misread, slowing review cycles.
+**Rule:** All outputs (audit results, parity reports, defect summaries) must be presented as visual maps showing the before state (current Catalyst) and after state (target Jira parity) side by side. No text-only findings lists.
+
+## 2026-05-04 — Dark/light mode themes must come exclusively from Atlassian Design System
+**Surface:** any theming, color, or token change
+**Pattern:** Custom or third-party theme tokens were used for dark/light mode, causing inconsistency with ADS primitives and breaking parity with Jira's own theming.
+**Rule:** All dark and light mode theme values must come exclusively from https://atlassian.design/ tokens. No custom color values, no third-party theme libraries for theming. If a token doesn't exist in ADS, raise it with Vikram before inventing one.
+
+## 2026-05-04 — Handover: write Obsidian file + copy-paste block for next conversation
+**Surface:** any handover request
+**Pattern:** Handovers written as plain markdown docs required manual re-mapping in the next session, losing context and wasting warm-up time.
+**Rule:** When a handover is requested: (1) write the full handover to the Obsidian vault, (2) produce a self-contained copy-paste block with all file paths, issue keys, component names, and state mapped — ready to paste as the first message of the next conversation. No context should need to be reconstructed manually.
+
+## 2026-05-04 — Warm-up: read Obsidian files first, fall back to Claude memory
+**Surface:** session warm-up / context loading
+**Pattern:** Claude memory alone was stale or incomplete between sessions; Obsidian files contain the most recent handover state but weren't being consulted first.
+**Rule:** At the start of every session, read the relevant Obsidian vault files before consulting Claude memory. Obsidian is the primary source of truth for session state. Claude memory is the fallback for anything not covered by Obsidian.
+
+---
+
 ## 2026-04-28 — Handover items can conflict with in-code prohibitions
 **Surface:** any patch listed in a handover
 **Pattern:** Handover labelled Story Points as the "highest-asked Story-specific field" and option B for the next round. CatalystSidebarDetails.tsx line 422 has the explicit comment `Story Points: BANNED platform-wide. Do NOT re-add.` plus a JSDoc GUARDRAIL — added 2026-04-16 by Lovable co-authored with Vikram, citing Catalyst spec. The handover was written 12 days later and didn't reconcile with the ban. Following the handover blindly would have re-added a field the spec explicitly removed.
