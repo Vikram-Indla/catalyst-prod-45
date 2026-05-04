@@ -196,7 +196,7 @@ export function ColumnPicker({ columns, onChange }: { columns: ColumnConfig; onC
               onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
             >
               <div style={{ width: 14, height: 14, borderRadius: 3, border: `1.5px solid ${columns[col.key] ? 'var(--ds-text-brand, #2563EB)' : 'rgba(9,30,66,.24)'}`, background: columns[col.key] ? 'var(--ds-text-brand, #2563EB)' : 'var(--ds-surface, #fff)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, transition: 'background .12s, border-color .12s' }}>
-                {columns[col.key] && <Check size={9} color="var(--ds-surface, #fff)" strokeWidth={3} />}
+                {columns[col.key] && <CheckMarkIcon label="" color="var(--ds-surface, #fff)" />}
               </div>
               <span style={{ fontSize: 12, color: 'var(--ds-text, #172B4D)' }}>{col.label}</span>
             </div>
@@ -230,9 +230,9 @@ export const InlineCreateRow = React.forwardRef<HTMLInputElement, InlineCreateRo
         onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); onSubmit(); } if (e.key === 'Escape') onCancel(); }}
         maxLength={255} />
       <button className="sdm-confirm-btn" onClick={onSubmit} disabled={!value.trim() || pending}>
-        {pending ? <Loader2 size={13} className="animate-spin" /> : <Check size={13} />}
+        {pending ? <Spinner size="small" /> : <CheckMarkIcon label="Confirm" />}
       </button>
-      <button className="sdm-cancel-btn" onClick={onCancel}><X size={13} /></button>
+      <button className="sdm-cancel-btn" onClick={onCancel}><CrossIcon label="Cancel" size="small" /></button>
     </div>
   )
 );
@@ -259,7 +259,7 @@ export function SkeletonRows({ count = 3 }: { count?: number }) {
 export function EmptyState({ heading, sub, cta, onCta }: { heading: string; sub: string; cta?: string; onCta?: () => void }) {
   return (
     <div className="sdm-child-empty">
-      <AlertTriangle size={28} color="#8993A4" />
+      <WarningIcon label="Warning" />
       <div className="sdm-child-empty-heading">{heading}</div>
       <div className="sdm-child-empty-sub">{sub}</div>
       {cta && onCta && <button className="sdm-child-empty-cta" onClick={onCta}>{cta}</button>}
