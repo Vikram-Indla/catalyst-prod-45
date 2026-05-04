@@ -1,7 +1,17 @@
 {
-  "status": "init",
-  "scope": "codebase",
+  "status": "commited",
   "type": "frontend",
-  "localEndpoint": "http://localhost:5173/testhub",
-  "serverPort": 40919
+  "scope": "diff",
+  "localEndpoint": "http://localhost:8080/project-hub/BAU/allwork",
+  "executionArgs": {
+    "projectName": "catalyst-prod-45",
+    "projectPath": "/Users/vikramindla/Documents/GitHub/catalyst-prod-45",
+    "testIds": [],
+    "additionalInstruction": "Focus on the Catalyst Story detail view at /project-hub/BAU/allwork?issue=BAU-5609. Test: (1) Description section edit/save/cancel and line-height, (2) Fix versions and Labels \"None\" fields have no black bar artifact, (3) Subtasks panel shows list-only (no board/toggle button), subtask CRUD (create, read status, update status, delete with confirm modal), (4) Workflow viewer modal opens from status pill, shows state diagram, closes, (5) Sidebar fields: Assignee, Reporter, Labels, Fix versions, Priority all render cleanly, (6) Navigation: open item from list, prev/next navigation arrows, close panel, deep-link URL, (7) Improve Story dropdown opens, (8) Activity section renders, (9) LinkedWorkItems section renders. Login credentials: use existing Supabase session at localhost:8080 — the app auto-authenticates in dev mode. If login is needed, use email vikramataol@gmail.com.",
+    "serverMode": "development",
+    "envs": {
+      "API_KEY": "sk-user-XvmnH9-9zggKpTbEfVnuUpaL7YF6KvwjNqTGDwgePJGkhRON_3ossR4vdxxJJFVrMhCf2EXe9STGR6G8nrZDMgmSpHQhKyAhA_XsKwyGBzXbfB8JVqN-nn_jed3SVHMAvJQ"
+    }
+  },
+  "serverPort": 61094
 }

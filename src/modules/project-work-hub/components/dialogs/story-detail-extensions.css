@@ -36,14 +36,16 @@
    ════════════════════════════════════════════════════════════════ */
 
 /* Subtasks-style flat expand/collapse — no card wrapper */
+/* jira-compare 2026-05-05: margin-top reduced from 24px → 16px to match
+   SubtasksPanel and LinkedWorkItems section spacing. */
 [data-sdm-scope] .sdm-child-issues {
-  margin-top: 24px;
+  margin-top: 16px;
   border: none;
   border-radius: 0;
   overflow: visible;
 }
 
-/* Section header — flat style matching SubtasksPanel */
+/* Section header — flat style matching SubtasksPanel + Jira parity */
 [data-sdm-scope] .sdm-child-header {
   display: flex;
   align-items: center;
@@ -62,29 +64,30 @@
   margin-left: -4px;
 }
 
+/* jira-compare 2026-05-05: fontWeight 600→500 matches Jira's secondary
+   section headers (Defects, Incidents). Primary (Subtasks) stays at 600
+   via sp-title class. */
 [data-sdm-scope] .sdm-child-title {
   font-size: 14px;
-  font-weight: 600;
-  color: #29292E;
+  font-weight: 500;
+  color: var(--ds-text, #292A2E);
   margin: 0;
   padding: 0 4px 0 0;
   line-height: 1.4;
   font-family: var(--cp-font-body);
 }
 
+/* jira-compare 2026-05-05: Replace circular badge with plain inline count.
+   Jira shows section counts as plain muted text next to the title —
+   no pill/circle. Removed border-radius, background, fixed height.
+   Matches Jira's probed pattern: "Linked work items  0" inline text. */
 [data-sdm-scope] .sdm-count-badge {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 20px;
-  height: 18px;
-  padding: 0 5px;
-  border-radius: 9px;
-  background: var(--ds-border, #DFE1E6);
-  color: #42526E;
-  font-size: 11px;
-  font-weight: 650;
+  display: inline;
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--ds-text-subtle, #626F86);
   font-family: var(--cp-font-body);
+  margin-left: 4px;
 }
 
 [data-sdm-scope] .sdm-chevron-btn {
@@ -1448,5 +1451,6 @@
   --sdm-ai-btn-hover: var(--ds-text-brand, #2563EB);
   --sdm-ai-shimmer: rgba(59, 130, 246, 0.15);
 }
-.dark [data-sdm-scope] .sdm-child-title { color: var(--cp-text-primary, #EDEDED); }
-.dark [data-sdm-scope] .sdm-count-badge { background: var(--cp-bg-sunken, #292929); color: var(--cp-text-tertiary, #A1A1A1); }
+.dark [data-sdm-scope] .sdm-child-title { color: var(--ds-text, #B6C2CF); }
+/* dark mode: plain inline count — no background since badge is now text-only */
+.dark [data-sdm-scope] .sdm-count-badge { color: var(--ds-text-subtle, #8C9BAB); }

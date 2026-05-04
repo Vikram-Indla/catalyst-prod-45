@@ -23,7 +23,7 @@ import Modal, {
 import Button from '@atlaskit/button/new';
 import Lozenge from '@atlaskit/lozenge';
 import { token } from '@atlaskit/tokens';
-import { useWorkflow } from '@/lib/workflows';
+import { useWorkflows } from '@/lib/workflows';
 import { statusToLozenge } from '@/modules/project-work-hub/utils/statusToLozenge';
 import type { Workflow, WorkflowState } from '@/lib/workflows';
 
@@ -164,8 +164,10 @@ function getTransitionVerb(workflow: Workflow, fromId: string, toId: string): st
 export function WorkflowViewerModal({
   isOpen, onClose, issueType, currentStatus,
 }: WorkflowViewerModalProps) {
-  const { getWorkflowForIssueType } = useWorkflow();
-  const workflow = issueType ? getWorkflowForIssueType(issueType) : undefined;
+  const workflowCtx = useWorkflows();
+  const workflow = (issueType && workflowCtx?.getWorkflowForIssueType)
+    ? workflowCtx.getWorkflowForIssueType(issueType)
+    : undefined;
 
   return (
     <ModalTransition>

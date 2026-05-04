@@ -226,11 +226,9 @@ export default function CatalystViewStory({
         navigator.clipboard.writeText(window.location.href);
         toast.success('Link copied');
       }}
+      // jira-compare 2026-05-05: removed dead CTAs (Add flag, Clone, Move, Archive).
+      // Only Delete remains — it has a real implementation.
       moreMenuItems={[
-        { label: 'Add flag', onClick: () => toast('Add flag — coming soon') },
-        { label: 'Clone', onClick: () => toast('Clone — coming soon') },
-        { label: 'Move', onClick: () => toast('Move — coming soon') },
-        { label: 'Archive', onClick: () => toast('Archive — coming soon') },
         { label: 'Delete story', onClick: () => mutations.deleteIssue.mutate(), danger: true },
       ]}
       onTogglePanelMode={onTogglePanelMode}

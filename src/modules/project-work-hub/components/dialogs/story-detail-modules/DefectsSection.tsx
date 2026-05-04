@@ -1,25 +1,39 @@
 /**
- * DefectsSection — extracted from StoryDetailModal
+ * DefectsSection — story-level defect list.
  *
- * Phase 5 (Apr 2026): source-aware create. When the parent story is a
- * Catalyst-native item, new defects land in catalyst_issues with parent_key
- * set. When the parent is Jira-synced, new defects land in ph_issues for
- * back-compat with the Jira write-back pipeline.
+ * jira-compare 2026-05-05 (Patch #10): refactored to use lwi-* CSS classes
+ * matching LinkedWorkItemsSection header + row pattern. The section now
+ * looks structurally identical to Linked Work Items (same chevron header,
+ * same bordered card, same row layout) — it is a filtered view of child
+ * issues where issue_type IN ('QA Bug', 'Defect').
+ *
+ * Data logic (Supabase queries, create, delete) is unchanged.
  */
-import React, { useState, useEffect, useRef } from 'react';
-import AddIcon from '@atlaskit/icon/core/add';
+import React, { useState, useEffect, useRef, useId } from 'react';
+import { ChevronDown, ChevronRight, Plus, X } from 'lucide-react';
+import Lozenge from '@atlaskit/lozenge';
+import Avatar from '@atlaskit/avatar';
 import Spinner from '@atlaskit/spinner';
-import ArrowLeftIcon from '@atlaskit/icon/glyph/arrow-left';
 import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
-import type { ColumnConfig, PhIssueRow } from './types';
-import { DEFAULT_COLUMNS } from './constants';
+import type { PhIssueRow } from './types';
+import { WORK_ITEM_ICONS } from './constants';
 import { nextPos } from './helpers';
-import { SectionBlock, IssueRow, ColumnPicker, SkeletonRows, EmptyState } from './shared-components';
 import { ConfirmDialog } from './ConfirmDialog';
 import { createChildIssue, type WorkItemSource } from '../../../lib/workItemRepo';
+import { PriorityBars, normalisePriority } from '@/components/shared/PriorityIndicator';
+import { resolveAvatarUrl } from '@/lib/avatars';
 import { toast } from 'sonner';
+import '../linked-work-items/linked-work-items.css';
+
+type AllowedAppearance = 'default' | 'inprogress' | 'success';
+function categoryToAppearance(cat: string | null | undefined): AllowedAppearance {
+  const c = (cat ?? '').toLowerCase();
+  if (c === 'done') return 'success';
+  if (c === 'in_progress' || c === 'inprogress') return 'inprogress';
+  return 'default';
+}
 
 export function DefectsSection({
   storyKey,
@@ -32,9 +46,10 @@ export function DefectsSection({
   parentSource?: WorkItemSource;
   parentProjectId?: string | null;
 }) {
+  const bodyId = useId();
   const queryClient = useQueryClient();
   const { user } = useAuth();
-  const [columns, setColumns] = useState<ColumnConfig>(DEFAULT_COLUMNS);
+  const [expanded, setExpanded] = useState(true);
   const [creating, setCreating] = useState(false);
   const [draftSummary, setDraftSummary] = useState('');
   const [deleteTarget, setDeleteTarget] = useState<{ id: string; key: string } | null>(null);
@@ -59,35 +74,28 @@ export function DefectsSection({
       const cat: PhIssueRow[] = (catRes.data ?? [])
         .filter((r: any) => r.issue_key && !seen.has(r.issue_key))
         .map((r: any) => ({
-          id: r.id,
-          issue_key: r.issue_key,
-          summary: r.title,
-          status: r.status,
-          status_category: 'todo',
-          issue_type: r.issue_type,
-          assignee_account_id: r.assignee_id ?? null,
-          assignee_display_name: null,
-          priority: r.priority,
-          position: null,
-          jira_created_at: r.created_at,
-          jira_updated_at: r.updated_at,
-          deleted_at: null,
+          id: r.id, issue_key: r.issue_key, summary: r.title,
+          status: r.status, status_category: 'todo', issue_type: r.issue_type,
+          assignee_account_id: r.assignee_id ?? null, assignee_display_name: null,
+          priority: r.priority, position: null,
+          jira_created_at: r.created_at, jira_updated_at: r.updated_at, deleted_at: null,
         }));
       return [...ph, ...cat];
     },
   });
 
+  /* Auto-collapse when empty on first load. */
+  useEffect(() => {
+    if (!isLoading && defects.length === 0) setExpanded(false);
+  }, [isLoading, defects.length]);
+
   const createMutation = useMutation({
     mutationFn: async (summary: string) => {
       await createChildIssue({
         parent: { source: parentSource, id: '', issueKey: storyKey, projectKey },
-        summary,
-        issueType: 'Defect',
-        projectKey,
-        projectId: parentProjectId,
-        reporterId: user?.id ?? null,
-        priority: 'High',
-        position: nextPos(defects),
+        summary, issueType: 'Defect', projectKey,
+        projectId: parentProjectId, reporterId: user?.id ?? null,
+        priority: 'High', position: nextPos(defects),
       });
     },
     onSuccess: () => {
@@ -98,7 +106,6 @@ export function DefectsSection({
     onError: (err) => toast.error('Failed to log defect', { description: (err as Error).message }),
   });
 
-  // Source-aware soft-delete: try ph_issues first; if no row, try catalyst_issues.
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => {
       const ts = new Date().toISOString();
@@ -111,65 +118,147 @@ export function DefectsSection({
   });
 
   useEffect(() => { if (creating) setTimeout(() => createRef.current?.focus(), 50); }, [creating]);
-  const doneCount = defects.filter(d => d.status_category === 'done').length;
 
   return (
     <>
-      <SectionBlock title="Defects" count={defects.length} doneCount={doneCount} defaultExpanded={defects.length > 0} headerRight={
-        <>
-          <ColumnPicker columns={columns} onChange={setColumns} />
-          <button onClick={() => setCreating(true)} title="Log defect" style={{
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            width: 24, height: 24, border: 'none', borderRadius: 3, background: 'transparent',
-            cursor: 'pointer', color: 'var(--ds-text-subtlest, #6B778C)', transition: 'background 0.15s, color 0.15s',
-          }}
-            onMouseEnter={e => { e.currentTarget.style.background = 'var(--ds-surface-sunken, #F4F5F7)'; e.currentTarget.style.color = 'var(--ds-text, #172B4D)'; }}
-            onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--ds-text-subtlest, #6B778C)'; }}
+      <div className="lwi-root">
+        {/* ── Header ── */}
+        <div className="lwi-header">
+          <button
+            type="button"
+            className="lwi-header__toggle"
+            onClick={() => setExpanded((e) => !e)}
+            aria-expanded={expanded}
+            aria-controls={bodyId}
           >
-            <AddIcon label="Log defect" />
+            {expanded ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
+            <span className="lwi-header__title">Defects</span>
+            <span className="lwi-header__count" aria-label={`${defects.length} defects`}>
+              {defects.length}
+            </span>
           </button>
-        </>
-      }>
-        {isLoading && <SkeletonRows count={2} />}
-        {!isLoading && defects.length === 0 && <EmptyState heading="No defects logged" sub="Log defects found during testing" cta="+ Log defect" onCta={() => setCreating(true)} />}
-        {!isLoading && defects.length > 0 && (
-          <div className="sdm-child-list" role="list">
-            {defects.map(item => (
-              <IssueRow key={item.id} item={item} columns={columns}
-                onDelete={() => setDeleteTarget({ id: item.id, key: item.issue_key })}
-                onCopyLink={() => navigator.clipboard.writeText(`${window.location.origin}/issues/${item.issue_key}`)} />
-            ))}
+          {expanded && (
+            <button
+              type="button"
+              className="lwi-header__add"
+              onClick={() => { setExpanded(true); setCreating(true); }}
+              aria-label="Log defect"
+              title="Log defect"
+            >
+              <Plus size={16} strokeWidth={2} />
+            </button>
+          )}
+        </div>
+
+        {/* ── Body ── */}
+        {expanded && (
+          <div id={bodyId} className="lwi-body">
+            {isLoading && (
+              <div className="lwi-skeleton">
+                {[0, 1].map((i) => (
+                  <div key={i} className="lwi-skeleton__row">
+                    <div className="lwi-skeleton__pulse lwi-skeleton__icon" />
+                    <div className="lwi-skeleton__pulse lwi-skeleton__key" />
+                    <div className="lwi-skeleton__pulse lwi-skeleton__summary" />
+                    <div className="lwi-skeleton__pulse lwi-skeleton__status" />
+                    <div className="lwi-skeleton__pulse lwi-skeleton__avatar" />
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {!isLoading && defects.length === 0 && !creating && (
+              <div className="lwi-empty">
+                <span className="lwi-empty__heading">No defects logged</span>
+                <span className="lwi-empty__sub">Log defects found during testing</span>
+                <div className="lwi-empty__cta">
+                  <button
+                    type="button"
+                    onClick={() => setCreating(true)}
+                    style={{
+                      background: 'none', border: 'none', padding: 0,
+                      fontSize: 14, color: 'var(--ds-text-brand, #0052CC)',
+                      cursor: 'pointer', fontFamily: 'inherit',
+                    }}
+                    onMouseEnter={(e) => { e.currentTarget.style.textDecoration = 'underline'; }}
+                    onMouseLeave={(e) => { e.currentTarget.style.textDecoration = 'none'; }}
+                  >
+                    + Log defect
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {!isLoading && defects.length > 0 && (
+              <div className="lwi-group__rows" role="list">
+                {defects.map((item) => (
+                  <DefectRow
+                    key={item.id}
+                    item={item}
+                    onDelete={() => setDeleteTarget({ id: item.id, key: item.issue_key })}
+                    onCopyLink={() => navigator.clipboard.writeText(`${window.location.origin}/issues/${item.issue_key}`)}
+                  />
+                ))}
+              </div>
+            )}
+
+            {/* ── Inline create ── */}
+            {creating && (
+              <div style={{
+                display: 'flex', alignItems: 'center',
+                border: '2px solid #4C9AFF', borderRadius: 3, marginTop: 4,
+                background: 'var(--ds-surface, #fff)', overflow: 'hidden',
+              }}>
+                <input
+                  ref={createRef}
+                  type="text"
+                  placeholder="Describe the defect…"
+                  value={draftSummary}
+                  onChange={(e) => setDraftSummary(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' && draftSummary.trim()) { e.preventDefault(); createMutation.mutate(draftSummary); }
+                    if (e.key === 'Escape') { setCreating(false); setDraftSummary(''); }
+                  }}
+                  maxLength={255}
+                  style={{
+                    flex: 1, height: 36, padding: '0 12px',
+                    border: 'none', outline: 'none', fontSize: 14,
+                    color: 'var(--ds-text, #172B4D)', fontFamily: 'inherit', background: 'transparent',
+                  }}
+                />
+                <div style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '0 8px', borderLeft: '1px solid #DFE1E6' }}>
+                  <button
+                    onClick={() => { if (draftSummary.trim()) createMutation.mutate(draftSummary); }}
+                    disabled={!draftSummary.trim() || createMutation.isPending}
+                    title="Create (Enter)"
+                    style={{
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      width: 28, height: 28, border: '1px solid #DFE1E6', borderRadius: 3,
+                      background: 'var(--ds-surface-sunken, #F4F5F7)',
+                      cursor: draftSummary.trim() ? 'pointer' : 'not-allowed',
+                      color: 'var(--ds-text-subtlest, #6B778C)',
+                      opacity: draftSummary.trim() ? 1 : 0.5,
+                    }}
+                  >
+                    {createMutation.isPending ? <Spinner size="small" /> : '↵'}
+                  </button>
+                </div>
+              </div>
+            )}
+            {creating && (
+              <div style={{ textAlign: 'right', padding: '6px 0 2px' }}>
+                <button
+                  onClick={() => { setCreating(false); setDraftSummary(''); }}
+                  style={{ background: 'none', border: 'none', fontSize: 13, color: 'var(--ds-text-subtlest, #6B778C)', cursor: 'pointer', fontFamily: 'inherit' }}
+                >
+                  Cancel
+                </button>
+              </div>
+            )}
           </div>
         )}
-        {creating && (
-          <div style={{
-            display: 'flex', alignItems: 'center', gap: 0,
-            border: '2px solid #4C9AFF', borderRadius: 3, margin: '4px 0 0',
-            background: 'var(--ds-surface, #fff)', overflow: 'hidden',
-          }}>
-            <input ref={createRef} type="text" placeholder="Describe the defect…" value={draftSummary}
-              onChange={e => setDraftSummary(e.target.value)}
-              onKeyDown={e => { if (e.key === 'Enter' && draftSummary.trim()) { e.preventDefault(); createMutation.mutate(draftSummary); } if (e.key === 'Escape') { setCreating(false); setDraftSummary(''); } }}
-              maxLength={255}
-              style={{ flex: 1, height: 36, padding: '0 12px', border: 'none', outline: 'none', fontSize: 14, color: 'var(--ds-text, #172B4D)', fontFamily: 'inherit', background: 'transparent' }}
-            />
-            <div style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '0 8px', borderLeft: '1px solid #DFE1E6' }}>
-              <button onClick={() => { if (draftSummary.trim()) createMutation.mutate(draftSummary); }}
-                disabled={!draftSummary.trim() || createMutation.isPending} title="Create (Enter)"
-                style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 28, height: 28, border: '1px solid #DFE1E6', borderRadius: 3, background: 'var(--ds-surface-sunken, #F4F5F7)', cursor: draftSummary.trim() ? 'pointer' : 'not-allowed', color: 'var(--ds-text-subtlest, #6B778C)', opacity: draftSummary.trim() ? 1 : 0.5 }}
-              >
-                {createMutation.isPending ? <Spinner size="small" /> : <ArrowLeftIcon label="Create" size="small" />}
-              </button>
-            </div>
-          </div>
-        )}
-        {creating && (
-          <div style={{ textAlign: 'right', padding: '6px 0 2px' }}>
-            <button onClick={() => { setCreating(false); setDraftSummary(''); }}
-              style={{ background: 'none', border: 'none', fontSize: 13, color: 'var(--ds-text-subtlest, #6B778C)', cursor: 'pointer', fontFamily: 'inherit' }}>Cancel</button>
-          </div>
-        )}
-      </SectionBlock>
+      </div>
+
       <ConfirmDialog
         open={!!deleteTarget}
         title={`Delete ${deleteTarget?.key ?? ''}?`}
@@ -179,5 +268,65 @@ export function DefectsSection({
         onCancel={() => setDeleteTarget(null)}
       />
     </>
+  );
+}
+
+/* ── DefectRow — lwi-row parity ─────────────────────────────────────────── */
+function DefectRow({
+  item,
+  onDelete,
+  onCopyLink,
+}: {
+  item: PhIssueRow;
+  onDelete: () => void;
+  onCopyLink: () => void;
+}) {
+  const typeIcon = WORK_ITEM_ICONS[item.issue_type] ?? WORK_ITEM_ICONS['Defect'] ?? WORK_ITEM_ICONS['Task'] ?? '';
+  const appearance = categoryToAppearance(item.status_category);
+
+  return (
+    <div className="lwi-row" role="listitem">
+      <span className="lwi-row__icon" aria-hidden dangerouslySetInnerHTML={{ __html: typeIcon }} />
+      <button
+        type="button"
+        className="lwi-row__key"
+        onClick={() => onCopyLink()}
+        title={`Copy link to ${item.issue_key}`}
+      >
+        {item.issue_key}
+      </button>
+      <span className="lwi-row__summary" title={item.summary}>
+        {item.summary}
+      </span>
+      <span className="lwi-row__status">
+        <Lozenge appearance={appearance}>{item.status}</Lozenge>
+      </span>
+      <span className="lwi-row__assignee">
+        {item.assignee_display_name ? (
+          <Avatar
+            size="small"
+            name={item.assignee_display_name}
+            src={resolveAvatarUrl(item.assignee_display_name) ?? undefined}
+            borderColor="transparent"
+          />
+        ) : (
+          <span className="lwi-row__avatar-empty" aria-label="Unassigned" />
+        )}
+      </span>
+      <span className="lwi-row__priority" aria-label={`Priority: ${item.priority ?? 'None'}`}>
+        <PriorityBars priority={normalisePriority(item.priority)} />
+      </span>
+      <span className="lwi-row__actions">
+        <button
+          type="button"
+          className="lwi-row__action-btn"
+          onClick={() => onDelete()}
+          aria-label={`Delete ${item.issue_key}`}
+          title="Delete defect"
+        >
+          <X size={16} />
+        </button>
+      </span>
+    </div>
   );
 }

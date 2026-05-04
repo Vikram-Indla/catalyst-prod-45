@@ -1013,6 +1013,8 @@ export function AllWorkToolbar({
   selectedAssignees = [],
   onAssigneesChange,
 }: Props) {
+  /* ── ALL HOOKS FIRST — React Rules of Hooks: no hook after a conditional return ── */
+
   /* Ask Caty inline bar — mirrors Jira's "Ask AI" full-width query bar.
      When open, the entire toolbar row is replaced by the AI input. */
   const [askCatyOpen, setAskCatyOpen] = useState(false);
@@ -1021,111 +1023,12 @@ export function AllWorkToolbar({
 
   useEffect(() => {
     if (askCatyOpen) {
-      // Small delay so the input is in the DOM before focus
       const t = setTimeout(() => askCatyInputRef.current?.focus(), 30);
       return () => clearTimeout(t);
     }
   }, [askCatyOpen]);
 
-  const handleAskCatySubmit = () => {
-    const q = askCatyQuery.trim();
-    if (!q) return;
-    // Open the global AskCatalystPill pill — dispatch a custom event so the
-    // top-nav pill can intercept it and open the Caty overlay with the query.
-    window.dispatchEvent(new CustomEvent('catalyst:ask-caty', { detail: { query: q, projectKey } }));
-    toast.info(`Ask Caty: "${q}"`);
-    setAskCatyOpen(false);
-    setAskCatyQuery('');
-  };
-
-  /* Ask Caty bar — full-width input replacing the toolbar when open.
-     Matches Jira BAU Ask AI probe: 40px height, 8px borderRadius, white bg,
-     blue focus border, 14px/400 placeholder, "Go ←" submit, ✕ close. */
-  if (askCatyOpen) {
-    return (
-      <div
-        data-testid="catalyst-allwork-toolbar.ask-caty-bar"
-        style={{
-          display: 'flex', alignItems: 'center', gap: 8,
-          padding: '8px 12px',
-          borderBottom: '1px solid var(--ds-border, #DFE1E6)',
-          background: 'transparent',
-          flexShrink: 0,
-          fontFamily: "'Atlassian Sans', -apple-system, BlinkMacSystemFont, sans-serif",
-        }}
-      >
-        <div style={{
-          flex: 1,
-          display: 'flex', alignItems: 'center', gap: 8,
-          background: 'var(--ds-surface, #FFFFFF)',
-          border: '2px solid var(--ds-border-focused, #388BFF)',
-          borderRadius: 8,
-          padding: '0 12px',
-          height: 40,
-          boxSizing: 'border-box',
-        }}>
-          <SparkIcon />
-          <input
-            ref={askCatyInputRef}
-            value={askCatyQuery}
-            onChange={e => setAskCatyQuery(e.target.value)}
-            onKeyDown={e => {
-              if (e.key === 'Enter') handleAskCatySubmit();
-              if (e.key === 'Escape') { setAskCatyOpen(false); setAskCatyQuery(''); }
-            }}
-            placeholder={`Ask Caty anything about ${projectKey}…`}
-            style={{
-              flex: 1, border: 'none', outline: 'none',
-              fontSize: 14, lineHeight: '20px',
-              background: 'transparent',
-              color: 'var(--ds-text, #292A2E)',
-              fontFamily: 'inherit',
-            }}
-            aria-label="Ask Caty"
-          />
-          <button
-            onClick={handleAskCatySubmit}
-            disabled={!askCatyQuery.trim()}
-            style={{
-              display: 'inline-flex', alignItems: 'center', gap: 4,
-              padding: '4px 10px',
-              border: 'none',
-              borderRadius: 4,
-              background: askCatyQuery.trim() ? 'var(--ds-background-brand-bold, #0C66E4)' : 'var(--ds-background-neutral, #F4F5F7)',
-              color: askCatyQuery.trim() ? '#FFFFFF' : 'var(--ds-text-disabled, #8590A2)',
-              fontSize: 13, fontWeight: 500,
-              cursor: askCatyQuery.trim() ? 'pointer' : 'default',
-              fontFamily: 'inherit',
-              transition: 'background 120ms ease',
-              flexShrink: 0,
-            }}
-            aria-label="Submit"
-          >
-            Go ←
-          </button>
-        </div>
-        <button
-          onClick={() => { setAskCatyOpen(false); setAskCatyQuery(''); }}
-          style={{
-            width: 28, height: 28,
-            border: 'none', borderRadius: 4,
-            background: 'transparent',
-            cursor: 'pointer',
-            color: 'var(--ds-text-subtle, #505258)',
-            fontSize: 16, lineHeight: 1,
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-          }}
-          aria-label="Close Ask Caty"
-        >
-          ✕
-        </button>
-      </div>
-    );
-  }
-
-  /* Controlled-or-uncontrolled filter popup open state. The page level
-     mounts a Shift+F handler that drives this via `onFilterOpenChange`
-     when supplied; otherwise we manage it locally. */
+  /* Controlled-or-uncontrolled filter popup open state. */
   const [filterOpenLocal, setFilterOpenLocal] = useState(false);
   const filterOpen = filterOpenProp !== undefined ? filterOpenProp : filterOpenLocal;
   const setFilterOpen = (next: boolean) => {
@@ -1133,19 +1036,8 @@ export function AllWorkToolbar({
     else setFilterOpenLocal(next);
   };
 
-  /* jira-compare 2026-05-03: which facet is highlighted in the left
-     rail; right pane shows that facet's value picker. Null = empty
-     state ("Select a field…" placeholder, mirroring Jira's empty pane). */
   const [activeFacet, setActiveFacet] = useState<FilterFacet | null>(null);
-
-  /* jira-compare 2026-05-03 Round 8 — which chip's dropdown is open.
-     Single source of truth so opening one chip closes all others (Jira
-     behaviour). Values: facet key (workType/status/assignee) for top-level
-     chips, 'more' for the More filters multi-facet popup, null = all closed. */
   const [openChipKey, setOpenChipKey] = useState<FilterFacet | 'more' | null>(null);
-
-  /* Save filter modal open state + a refresh tick so SavedFiltersDropdown
-     refetches after a successful save. */
   const [saveModalOpen, setSaveModalOpen] = useState(false);
   const [savedFiltersRefreshKey, setSavedFiltersRefreshKey] = useState(0);
 
@@ -1198,6 +1090,81 @@ export function AllWorkToolbar({
     name: m.name,
     src: m.src ?? undefined,
   }));
+
+  const handleAskCatySubmit = () => {
+    const q = askCatyQuery.trim();
+    if (!q) return;
+    window.dispatchEvent(new CustomEvent('catalyst:ask-caty', { detail: { query: q, projectKey } }));
+    toast.info(`Ask Caty: "${q}"`);
+    setAskCatyOpen(false);
+    setAskCatyQuery('');
+  };
+
+  /* Ask Caty bar — shown when askCatyOpen is true; replaces entire toolbar row.
+     Hooks-safe: all state is declared above; no early return. */
+  if (askCatyOpen) {
+    return (
+      <div
+        data-testid="catalyst-allwork-toolbar.ask-caty-bar"
+        style={{
+          display: 'flex', alignItems: 'center', gap: 8,
+          padding: '8px 12px',
+          borderBottom: '1px solid var(--ds-border, #DFE1E6)',
+          background: 'transparent',
+          flexShrink: 0,
+          fontFamily: "'Atlassian Sans', -apple-system, BlinkMacSystemFont, sans-serif",
+        }}
+      >
+        <div style={{
+          flex: 1, display: 'flex', alignItems: 'center', gap: 8,
+          background: 'var(--ds-surface, #FFFFFF)',
+          border: '2px solid var(--ds-border-focused, #388BFF)',
+          borderRadius: 8, padding: '0 12px', height: 40, boxSizing: 'border-box',
+        }}>
+          <SparkIcon />
+          <input
+            ref={askCatyInputRef}
+            value={askCatyQuery}
+            onChange={e => setAskCatyQuery(e.target.value)}
+            onKeyDown={e => {
+              if (e.key === 'Enter') handleAskCatySubmit();
+              if (e.key === 'Escape') { setAskCatyOpen(false); setAskCatyQuery(''); }
+            }}
+            placeholder={`Ask Caty anything about ${projectKey}…`}
+            style={{
+              flex: 1, border: 'none', outline: 'none', fontSize: 14, lineHeight: '20px',
+              background: 'transparent', color: 'var(--ds-text, #292A2E)', fontFamily: 'inherit',
+            }}
+            aria-label="Ask Caty"
+          />
+          <button
+            onClick={handleAskCatySubmit}
+            disabled={!askCatyQuery.trim()}
+            style={{
+              display: 'inline-flex', alignItems: 'center', gap: 4,
+              padding: '4px 10px', border: 'none', borderRadius: 4,
+              background: askCatyQuery.trim() ? 'var(--ds-background-brand-bold, #0C66E4)' : 'var(--ds-background-neutral, #F4F5F7)',
+              color: askCatyQuery.trim() ? '#FFFFFF' : 'var(--ds-text-disabled, #8590A2)',
+              fontSize: 13, fontWeight: 500,
+              cursor: askCatyQuery.trim() ? 'pointer' : 'default',
+              fontFamily: 'inherit', transition: 'background 120ms ease', flexShrink: 0,
+            }}
+            aria-label="Submit"
+          >Go ←</button>
+        </div>
+        <button
+          onClick={() => { setAskCatyOpen(false); setAskCatyQuery(''); }}
+          style={{
+            width: 28, height: 28, border: 'none', borderRadius: 4,
+            background: 'transparent', cursor: 'pointer',
+            color: 'var(--ds-text-subtle, #505258)', fontSize: 16, lineHeight: 1,
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+          }}
+          aria-label="Close Ask Caty"
+        >✕</button>
+      </div>
+    );
+  }
 
   return (
     <div

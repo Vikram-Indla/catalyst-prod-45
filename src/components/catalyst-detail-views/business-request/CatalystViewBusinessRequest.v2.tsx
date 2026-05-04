@@ -107,12 +107,6 @@ export default function CatalystViewBusinessRequestV2({
     }
   }, [resolvedId, duplicateMutation]);
 
-  const handleArchive = useCallback(() => {
-    // Cycle 4: `business_requests` has no `is_archived` column. Either
-    // add one via migration OR drop archive entirely. Stub for now —
-    // exposing the action keeps Jira-parity until the design call lands.
-    toast('Archive — pending design call (no archive column on business_requests)');
-  }, []);
 
   const handleDelete = useCallback(async () => {
     try {
@@ -155,7 +149,6 @@ export default function CatalystViewBusinessRequestV2({
       onShare={handlePermalink}
       moreMenuItems={[
         { label: 'Clone', onClick: handleClone },
-        { label: 'Archive', onClick: handleArchive },
         { label: 'Delete', onClick: handleDelete, danger: true },
       ]}
       onTogglePanelMode={onTogglePanelMode}

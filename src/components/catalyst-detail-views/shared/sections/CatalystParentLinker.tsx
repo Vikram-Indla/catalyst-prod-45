@@ -25,12 +25,12 @@ import {
 } from '@/modules/project-work-hub/components/dialogs/story-detail-modules/shared-components';
 
 /* ═══════════════════════════════════════════════
-   CANONICAL TRIGGER — single dashed "+ Add …" button reused across
-   all three sidebar pickers (BR / Single / Multi). Previous version
-   duplicated this exact 12-line block three times (Apr 2026 sweep).
-   Styling matches Catalyst sidebar convention (dashed ring + Plus icon);
-   breadcrumb-level Add-parent uses the separate AddParentPicker component
-   with Jira's SquarePen look.
+   CANONICAL TRIGGER — Jira-parity "None" placeholder.
+   jira-compare 2026-05-05: Jira's Parent field shows "None" as a plain
+   muted text placeholder (not a dashed button). Clicking anywhere on the
+   field row opens the picker. Removed dashed border + AddIcon — replaced
+   with an inline plain-text trigger matching Jira's DOM-probed style:
+   fontSize 14px, color #5E6C84, no border, subtle hover background.
    ═══════════════════════════════════════════════ */
 function SidebarAddTrigger({
   label, onClick, isOpen,
@@ -40,15 +40,17 @@ function SidebarAddTrigger({
       onClick={onClick}
       aria-expanded={isOpen}
       style={{
-        display: 'inline-flex', alignItems: 'center', gap: 4, padding: '4px 8px',
-        background: 'none', border: '1px dashed #C1C7D0', borderRadius: 4,
-        cursor: 'pointer', fontSize: 13, color: '#5E6C84', whiteSpace: 'nowrap',
-        transition: 'border-color 0.15s, background 0.15s',
+        display: 'inline-flex', alignItems: 'center', gap: 0,
+        padding: '2px 4px',
+        background: 'none', border: 'none', borderRadius: 3,
+        cursor: 'pointer', fontSize: 14, color: '#5E6C84', whiteSpace: 'nowrap',
+        fontFamily: 'inherit',
+        transition: 'background 0.1s',
       }}
-      onMouseEnter={e => { e.currentTarget.style.borderColor = '#4C9AFF'; e.currentTarget.style.background = 'var(--ds-surface-sunken, #F4F5F7)'; }}
-      onMouseLeave={e => { e.currentTarget.style.borderColor = '#C1C7D0'; e.currentTarget.style.background = 'none'; }}
+      onMouseEnter={e => { e.currentTarget.style.background = 'var(--ds-surface-sunken, #F4F5F7)'; }}
+      onMouseLeave={e => { e.currentTarget.style.background = 'none'; }}
     >
-      <AddIcon size="small" primaryColor="#5E6C84" /> {label}
+      {label === 'Add parent' ? 'None' : label}
     </button>
   );
 }

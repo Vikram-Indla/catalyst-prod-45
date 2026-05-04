@@ -94,8 +94,6 @@ export default function CatalystViewFeature({
       }}
       onShare={() => { navigator.clipboard.writeText(window.location.href); toast.success('Link copied'); }}
       moreMenuItems={[
-        { label: 'Add flag', onClick: () => toast('Add flag — coming soon') },
-        { label: 'Clone', onClick: () => toast('Clone — coming soon') },
         { label: 'Delete feature', onClick: () => mutations.deleteIssue.mutate(), danger: true },
       ]}
       onTogglePanelMode={onTogglePanelMode} navigationItems={navigationItems} currentItemId={itemId} onNavigate={onNavigate}

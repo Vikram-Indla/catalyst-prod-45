@@ -2,300 +2,112 @@ version: "2"
 type: frontend
 tech_stack:
   - TypeScript
-  - React 18.3.1
-  - Tailwind CSS
-  - shadcn/ui (Radix UI primitives)
-  - Supabase (PostgreSQL + Auth + Edge Functions)
-  - TanStack React Query
-  - React Router v6
-  - Zustand
+  - React
   - Vite
+  - Atlaskit
+  - Supabase
 routes:
-  - path: /testhub
-    file: src/pages/testhub/TestHubPage.tsx
+  - path: /project-hub/BAU/allwork
+    file: src/pages/project-hub/jira-list/components/AllWorkToolbar.tsx
     auth_required: true
-    description: TestHub layout shell with sidebar navigation, redirects to /testhub/dashboard
-  - path: /testhub/dashboard
-    file: src/pages/testhub/TestHubDashboardPage.tsx
+    description: All work items list view with issue detail panel
+  - path: /project-hub/:projectKey/allwork
+    file: src/pages/project-hub/jira-list/components/AllWorkToolbar.tsx
     auth_required: true
-    description: Dashboard with KPI stats, active cycles, recent activity, top failing tests
-  - path: /testhub/repository
-    file: src/pages/testhub/TestRepositoryPage.tsx
-    auth_required: true
-    description: Test case repository with folder tree, table/grid views, CRUD operations
-  - path: /testhub/cycles
-    file: src/pages/testhub/TestCyclesPage.tsx
-    auth_required: true
-    description: List and manage test cycles with status tracking
-  - path: /testhub/cycles/:cycleId
-    file: src/pages/testhub/TestCycleDetailPage.tsx
-    auth_required: true
-    description: Test cycle detail view with assigned test cases
-  - path: /testhub/cycles/:cycleId/execute
-    file: src/pages/testhub/TestHubExecutionPage.tsx
-    auth_required: true
-    description: 3-pane test execution view with step runner and keyboard shortcuts
-  - path: /testhub/defects
-    file: src/pages/testhub/DefectsPage.tsx
-    auth_required: true
-    description: Defect list with filtering and status management
-  - path: /testhub/defects/:defectId
-    file: src/pages/testhub/DefectDetailPage.tsx
-    auth_required: true
-    description: Defect detail view
-  - path: /testhub/shared-steps
-    file: src/pages/testhub/SharedStepsPage.tsx
-    auth_required: true
-    description: Manage reusable shared test steps
-  - path: /testhub/test-sets
-    file: src/pages/testhub/TestSetsPage.tsx
-    auth_required: true
-    description: Test set management
-  - path: /testhub/test-sets/:setId
-    file: src/pages/testhub/TestSetDetailPage.tsx
-    auth_required: true
-    description: Test set detail view
-  - path: /testhub/runs
-    file: src/pages/testhub/TestRunsPage.tsx
-    auth_required: true
-    description: Test execution runs history
-  - path: /testhub/requirements
-    file: src/pages/testhub/RequirementsListPage.tsx
-    auth_required: true
-    description: Requirements traceability list
-  - path: /testhub/requirements/:requirementId
-    file: src/pages/testhub/RequirementDetailPage.tsx
-    auth_required: true
-    description: Requirement detail with linked test cases
-  - path: /testhub/coverage-matrix
-    file: src/pages/testhub/CoverageMatrixPage.tsx
-    auth_required: true
-    description: Requirements coverage matrix
-  - path: /testhub/traceability
-    file: src/pages/testhub/TraceabilityPage.tsx
-    auth_required: true
-    description: Traceability matrix view
-  - path: /testhub/environments
-    file: src/pages/testhub/EnvironmentsListPage.tsx
-    auth_required: true
-    description: Test environment management
-  - path: /testhub/reports
-    file: src/pages/testhub/ReportsListPage.tsx
-    auth_required: true
-    description: Test reports with user activity and cycle reports
-  - path: /testhub/tags
-    file: src/pages/testhub/TagsListPage.tsx
-    auth_required: true
-    description: Tag management for test cases
-  - path: /testhub/settings
-    file: src/pages/testhub/SettingsPage.tsx
-    auth_required: true
-    description: TestHub settings and configuration
-  - path: /testhub/activity
-    file: src/pages/testhub/ActivityFeedPage.tsx
-    auth_required: true
-    description: Activity timeline feed
-  - path: /testhub/test-plans
-    file: src/pages/testhub/TestPlansListPage.tsx
-    auth_required: true
-    description: Test plan management
-  - path: /testhub/test-plans/:planId
-    file: src/pages/testhub/PlanDetailPage.tsx
-    auth_required: true
-    description: Test plan detail view
-  - path: /testhub/releases
-    file: src/pages/testhub/ReleasesListPage.tsx
-    auth_required: true
-    description: Release management for test cycles
-  - path: /testhub/releases/:releaseId
-    file: src/pages/testhub/ReleaseDetailPage.tsx
-    auth_required: true
-    description: Release detail view
-  - path: /testhub/caty
-    file: src/pages/testhub/CatyAIPage.tsx
-    auth_required: true
-    description: AI-powered test case generation
-  - path: /testhub/docs
-    file: src/pages/testhub/TestHubDocsPage.tsx
-    auth_required: true
-    description: TestHub documentation page
+    description: Project all-work list with sidebar detail panel
 features:
-  - name: Test Case Repository
-    description: Browse, create, edit, delete, clone test cases with folder organization
+  - name: Description Section - ADF Content Styling
+    description: Canonical description section for all CatalystView* components. Injects global styles for ADF content rendering with Jira-parity typography (14px/400/24px line-height). Includes click-to-edit with Atlaskit editor, image upload via paste/drop/toolbar button, and expand/collapse toggle.
     files:
-      - src/pages/testhub/TestRepositoryPage.tsx
-      - src/components/testhub/TestCasesTable.tsx
-      - src/components/testhub/CreateTestCaseModal.tsx
-      - src/components/testhub/ViewTestCaseModal.tsx
-      - src/components/testhub/DeleteTestCaseModal.tsx
-      - src/components/testhub/CloneTestCaseModal.tsx
-      - src/hooks/test-management/useTestCases.ts
-    entry_route: /testhub/repository
+      - src/components/catalyst-detail-views/shared/sections/CatalystDescriptionSection.tsx
+    entry_route: /project-hub/BAU/allwork?issue=BAU-5609
     user_interactions:
-      - Navigate folder tree to filter test cases
-      - Click +Create to open create test case modal
-      - Fill title, description, priority, type fields
-      - Add test steps with action and expected result
-      - Click Save to create test case
-      - Click on a test case row to view details
-      - Use context menu for edit, clone, delete actions
-      - Toggle between table and grid views
-      - Search test cases by title or case key
-      - Filter by status, priority, type, assignee
-    api_calls:
-      - method: GET
-        endpoint: supabase.from('tm_test_cases').select()
-      - method: POST
-        endpoint: supabase.from('tm_test_cases').insert()
-      - method: PATCH
-        endpoint: supabase.from('tm_test_cases').update()
-      - method: DELETE
-        endpoint: supabase.from('tm_test_cases').delete()
-    auth_required: true
-  - name: Test Cycle Management
-    description: Create and manage test cycles, assign test cases, track execution progress
-    files:
-      - src/pages/testhub/TestCyclesPage.tsx
-      - src/pages/testhub/TestCycleDetailPage.tsx
-      - src/components/testhub/CreateTestCycleModal.tsx
-      - src/components/testhub/TestCycleCard.tsx
-      - src/hooks/test-management/useTestCycles.ts
-    entry_route: /testhub/cycles
-    user_interactions:
-      - Click +Create Cycle to open create modal
-      - Fill cycle name, description, dates
-      - Click Save to create cycle
-      - Click on cycle card to view details
-      - Add test cases to cycle scope
-      - Start cycle execution
-      - Clone or delete cycles via context menu
-    api_calls:
-      - method: GET
-        endpoint: supabase.from('tm_test_cycles').select()
-      - method: POST
-        endpoint: supabase.from('tm_test_cycles').insert()
-      - method: PATCH
-        endpoint: supabase.from('tm_test_cycles').update()
-      - method: DELETE
-        endpoint: supabase.from('tm_test_cycles').delete()
-      - method: RPC
-        endpoint: supabase.rpc('tm_next_entity_key')
-    auth_required: true
-  - name: Test Execution
-    description: 3-pane execution interface with step-by-step test running and keyboard shortcuts
-    files:
-      - src/pages/testhub/TestHubExecutionPage.tsx
-      - src/components/testhub/ExecutionTestCaseView.tsx
-      - src/components/testhub/ExecutionActionBar.tsx
-      - src/components/testhub/execution/ExecutionSidebar.tsx
-      - src/components/testhub/execution/StepProgressIndicator.tsx
-      - src/hooks/test-management/useTestRuns.ts
-    entry_route: /testhub/cycles/:cycleId/execute
-    user_interactions:
-      - Select test case from left panel list
-      - View test steps in center panel
-      - Mark step as Pass (P key), Fail (F key), Blocked (B key), Skip (S key)
-      - Jump to step with number keys 1-9
-      - Toggle keyboard shortcuts guide with ? key
-      - Add failure reason when marking as failed
-      - Link defects during execution
-      - Add attachments to steps
-      - Use Pass All Remaining button
-      - View execution history
+      - Click description area to enter edit mode
+      - Type text in the Atlaskit editor
+      - Click Save to persist description
+      - Click Cancel to discard changes
+      - Click collapse/expand chevron to toggle section
+      - Paste image into editor to upload attachment
+      - Click Image button in editor toolbar to open file picker
     api_calls:
       - method: POST
-        endpoint: supabase.from('tm_test_runs').insert()
-      - method: PATCH
-        endpoint: supabase.from('tm_test_runs').update()
-      - method: POST
-        endpoint: supabase.from('tm_step_results').insert()
+        endpoint: /storage/v1/object/description-images
     auth_required: true
-  - name: Dashboard
-    description: KPI overview with stats, active cycles, recent activity, and charts
+
+  - name: Dark-Theme Select Input Fix
+    description: Fixes black bar artifact before None text in react-select sidebar fields (Fix versions, Labels, Assignee, Reporter, Priority) in dark mode. The global dark stylesheet was setting rgb(10,10,10) background on inputs. Fixed by prefixing selectors with .dark to match specificity.
     files:
-      - src/pages/testhub/TestHubDashboardPage.tsx
-      - src/components/testhub/dashboard/DashboardStatCards.tsx
-      - src/components/testhub/dashboard/ActiveCyclesList.tsx
-      - src/components/testhub/dashboard/RecentActivityFeed.tsx
-      - src/components/testhub/dashboard/TopFailingTests.tsx
-      - src/components/testhub/dashboard/PassRateTrendChart.tsx
-    entry_route: /testhub/dashboard
+      - src/components/catalyst-detail-views/shared/sections/CatalystDescriptionSection.tsx
+    entry_route: /project-hub/BAU/allwork?issue=BAU-5609
     user_interactions:
-      - View total test cases, pass rate, active cycles stats
-      - Click on active cycle to navigate to details
-      - View recent activity feed
-      - View top failing tests list
-      - View pass rate trend chart
-      - View status distribution chart
-    api_calls:
-      - method: GET
-        endpoint: supabase.from('tm_test_cases').select(count)
-      - method: GET
-        endpoint: supabase.from('tm_test_cycles').select()
-      - method: GET
-        endpoint: supabase.from('tm_test_runs').select()
+      - View Fix versions field showing None with no black bar artifact
+      - View Labels field showing None with no black bar artifact
+      - Click Fix versions dropdown to open selector
+      - Click Labels dropdown to open selector
+    api_calls: []
     auth_required: true
-  - name: Defect Management
-    description: Track and manage defects linked to test executions
+
+  - name: Workflow Viewer Modal
+    description: Modal that shows the workflow diagram for a given issue type. Uses useWorkflows() hook with null guard. Renders a linear state chain with arrows, verb labels, and highlights current status.
     files:
-      - src/pages/testhub/DefectsPage.tsx
-      - src/pages/testhub/DefectDetailPage.tsx
-      - src/components/testhub/defects/CreateDefectModal.tsx
-      - src/hooks/test-management/useDefects.ts
-    entry_route: /testhub/defects
+      - src/components/catalyst-detail-views/shared/sections/WorkflowViewerModal.tsx
+    entry_route: /project-hub/BAU/allwork?issue=BAU-5609
     user_interactions:
-      - View defects list with status filters
-      - Create new defect with title, severity, description
-      - Link defect to test case or execution step
-      - Change defect status (Open, In Progress, Fixed, Verified, Closed)
-      - Click on defect to view details
-    api_calls:
-      - method: GET
-        endpoint: supabase.from('tm_defects').select()
-      - method: POST
-        endpoint: supabase.from('tm_defects').insert()
-      - method: PATCH
-        endpoint: supabase.from('tm_defects').update()
+      - Click status pill to open status popover
+      - Click View workflow link in the popover
+      - View workflow diagram with state nodes and arrows
+      - Click Close button to dismiss the modal
+    api_calls: []
     auth_required: true
-  - name: AI Test Generation
-    description: AI-powered test case generation using LLM
+
+  - name: SubtasksPanel - List-Only View
+    description: Child issues panel for Story detail view. List-only - no board/toggle (Jira parity). JiraTable with Type, Key, Summary, Assignee, Status, Fix Versions, Priority columns. Supports inline create, bulk edit, sort, column picker, keyboard navigation.
     files:
-      - src/pages/testhub/CatyAIPage.tsx
-      - src/components/testhub/AIGenerateModal.tsx
-    entry_route: /testhub/caty
+      - src/modules/project-work-hub/components/SubtasksPanel/index.tsx
+    entry_route: /project-hub/BAU/allwork?issue=BAU-5609
     user_interactions:
-      - Enter description or requirements for test generation
-      - Select generation parameters
-      - Click Generate to create AI test cases
-      - Review and approve generated test cases
+      - View subtasks list in JiraTable format
+      - Confirm no list/board toggle button exists in the header
+      - Click + button to create a subtask
+      - Type subtask summary and press Enter to create
+      - Click subtask key to open subtask detail
+      - Click status badge to change subtask status
+      - Click priority icon to change subtask priority
+      - Click row actions menu to delete a subtask
+      - Confirm delete in the Atlaskit modal dialog
+      - Click collapse chevron to collapse the subtasks section
+      - Click column picker to toggle visible columns
     api_calls:
-      - method: POST
-        endpoint: supabase.functions.invoke('kb-query')
+      - method: SELECT
+        endpoint: supabase:ph_issues?parent_key=eq.storyKey
+      - method: INSERT
+        endpoint: supabase:ph_issues
+      - method: UPDATE
+        endpoint: supabase:ph_issues
+      - method: UPDATE
+        endpoint: supabase:ph_issues soft delete
     auth_required: true
-  - name: Reports
-    description: Test reports with user activity and cycle-level reporting
+
+  - name: All Work Toolbar - Issue Detail Panel
+    description: Project all-work list with integrated issue detail overlay. Supports opening story/subtask detail. Navigation arrows, panel/full-page mode toggle.
     files:
-      - src/pages/testhub/ReportsListPage.tsx
-      - src/pages/testhub/ReportDetailPage.tsx
-      - src/components/testhub/reports/CreateReportModal.tsx
-      - src/hooks/test-management/useReports.ts
-    entry_route: /testhub/reports
+      - src/pages/project-hub/jira-list/components/AllWorkToolbar.tsx
+    entry_route: /project-hub/BAU/allwork
     user_interactions:
-      - Select report type (User Activity, Cycle Report)
-      - Select users and date range for activity report
-      - Click Generate to create report
-      - View report results in table format
-      - Export report data
+      - Click any work item row to open detail panel
+      - Navigate between items using prev/next arrows
+      - Toggle panel mode
+      - Close the detail panel
+      - Use URL deep-link to open specific issue
     api_calls:
-      - method: GET
-        endpoint: supabase.from('tm_test_runs').select()
-      - method: GET
-        endpoint: supabase.from('tm_audit_log').select()
+      - method: SELECT
+        endpoint: supabase:ph_issues
     auth_required: true
+
 known_limitations:
-  - issue: All routes require Supabase authentication - tests need valid session
-    location: src/pages/testhub/TestHubPage.tsx
-    impact: Unauthenticated users are redirected to login page
-  - issue: AI generation features require Edge Function deployment
-    location: src/components/testhub/AIGenerateModal.tsx
-    impact: AI test generation will fail without deployed kb-query Edge Function
+  - issue: BoardView and ViewToggle files still exist but are no longer imported - dead code
+    location: src/modules/project-work-hub/components/SubtasksPanel/BoardView.tsx
+    impact: No runtime impact
+  - issue: DnD row reorder wired but not connected to JiraTable
+    location: src/modules/project-work-hub/components/SubtasksPanel/index.tsx
+    impact: Users cannot drag-reorder subtasks

@@ -88,7 +88,7 @@ function AtlaskitRendererPlaceholder({
       className="cv-desc-body"
       // Jira-measured: body 14/400, line-height 1.5, #292A2E, Atlassian Sans
       style={{
-        fontSize: 14, fontWeight: 400, color: '#292A2E', lineHeight: 1.5,
+        fontSize: 14, fontWeight: 400, color: '#292A2E', lineHeight: '24px',
         fontFamily: '"Atlassian Sans", ui-sans-serif, -apple-system, "system-ui", sans-serif',
         whiteSpace: 'pre-wrap',
       }}
@@ -104,7 +104,8 @@ function AtlaskitRendererPlaceholder({
 const DESC_BUILD_ID = 'atlaskit-canonical-v218';
 
 /* ── Scoped styles for ADF content inside CatalystView ── */
-const STYLE_ID = 'cv-desc-styles';
+/* Bump this version when the style block changes — forces re-injection on HMR. */
+const STYLE_ID = 'cv-desc-styles-v5';
 if (typeof document !== 'undefined' && !document.getElementById(STYLE_ID)) {
   const s = document.createElement('style');
   s.id = STYLE_ID;
@@ -157,7 +158,9 @@ if (typeof document !== 'undefined' && !document.getElementById(STYLE_ID)) {
     .atlaskit-renderer-wrapper li,
     .atlaskit-renderer-wrapper div {
       font-size: 14px !important;
-      line-height: 20px !important;
+      /* jira-compare 2026-05-05: Jira body line-height measured at 23.996px
+         (≈24px). Previous override of 20px was under-measured. */
+      line-height: 24px !important;
       color: var(--ds-text, rgb(41,42,46)) !important;
       font-family: "Atlassian Sans", ui-sans-serif, -apple-system, "system-ui", sans-serif !important;
     }
@@ -209,6 +212,46 @@ if (typeof document !== 'undefined' && !document.getElementById(STYLE_ID)) {
     .catalyst-rte-content h6, .catalyst-rte-content li, .catalyst-rte-content blockquote,
     .catalyst-rte-content td, .catalyst-rte-content th
     { unicode-bidi: plaintext; }
+
+    /* jira-compare 2026-05-05 — Dark-theme leak fix (v2):
+       The ~4px black bar before "None" in sidebar selects (Fix versions,
+       Labels, Assignee, etc.) is caused by the Emotion CSS-in-JS class
+       (e.g. css-bxfvr9) on the react-select __input-container div setting
+       a near-black background. The container itself is the source, not the
+       <input> child (which already has inline style transparent).
+
+       Fix: target ALL cv-* __input-container divs directly (not just
+       descendant inputs) plus their children. Using both class-contains
+       approach and direct classname selectors for maximum specificity. */
+    .cv-assignee-select__input-container,
+    .cv-reporter-select__input-container,
+    .cv-priority-select__input-container,
+    .cv-labels-select__input-container,
+    .cv-fixversions-select__input-container,
+    [class*="cv-"][class*="-select__input-container"] {
+      background-color: transparent !important;
+      background: transparent !important;
+    }
+    /* v2 extra rule: the dark-mode global stylesheet has
+       .dark [class*="Drawer"] input { background-color: rgb(10,10,10) !important; }
+       with specificity 0,2,1 — beating our 0,1,1 plain rule. Add .dark prefix
+       to match specificity, and since this style block is appended last in the
+       head it wins source-order tiebreak for equal !important specificity. */
+    .dark .cv-assignee-select__input-container input,
+    .dark .cv-reporter-select__input-container input,
+    .dark .cv-priority-select__input-container input,
+    .dark .cv-labels-select__input-container input,
+    .dark .cv-fixversions-select__input-container input,
+    .dark [class*="cv-"][class*="-select__input-container"] input,
+    .cv-assignee-select__input-container input,
+    .cv-reporter-select__input-container input,
+    .cv-priority-select__input-container input,
+    .cv-labels-select__input-container input,
+    .cv-fixversions-select__input-container input,
+    [class*="cv-"][class*="-select__input-container"] input {
+      background-color: transparent !important;
+      background: transparent !important;
+    }
   `;
   document.head.appendChild(s);
 }

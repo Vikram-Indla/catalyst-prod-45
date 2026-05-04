@@ -15,7 +15,6 @@
  *   • Click assignee → search typeahead against jira_identity_map
  *   • Hover row → ··· row-actions (open / rename / delete)
  *   • Header ··· → Collapse / Clear completed
- *   • ⊞ → toggle list ↔ board (kanban by status category)
  *   • + → inline create row with type selector
  */
 import React, { useState, useEffect, useRef, useMemo } from 'react';
@@ -34,8 +33,8 @@ import { AssigneeCell } from './cells/AssigneeCell';
 import { StatusCell } from './cells/StatusCell';
 import { RowActionsMenu } from './RowActionsMenu';
 import { HeaderOverflowMenu } from './HeaderOverflowMenu';
-import { ViewToggle, type SubtaskView } from './ViewToggle';
-import { BoardView } from './BoardView';
+// ViewToggle and BoardView removed — Jira parity: child-issues panel is list-only.
+// No list/board toggle exists in Jira's child issues section.
 import { BulkEditBar } from './BulkEditBar';
 import { useSubtaskMutations, type SubtaskRow } from './hooks/useSubtaskMutations';
 import { sortRows, cycleSort, type SortField, type SortState } from './sort';
@@ -289,7 +288,6 @@ export function SubtasksPanel({
   const defaultDraftType = allowedTypes[0] ?? 'Sub-task';
 
   const [expanded, setExpanded] = useState(true);
-  const [view, setView] = useState<SubtaskView>('list');
   const [creating, setCreating] = useState(false);
   const [draftType, setDraftType] = useState(defaultDraftType);
   // Re-seed draft type when the allowed set changes (e.g. parent type reload)
@@ -596,7 +594,7 @@ export function SubtasksPanel({
 
   // ─── Rank reorder (Atlaskit DynamicTable) ───────
   // Jira-parity: DnD disabled while a sort is active OR hide-done is on.
-  const dndEnabled = !sort.field && !hideDone && !bulkEditMode && view === 'list';
+  const dndEnabled = !sort.field && !hideDone && !bulkEditMode;
 
   // DynamicTable onRankEnd signature: { sourceIndex, destination: { index } }
   // Indices are into the rows[] array we pass to DynamicTable, which already
@@ -672,7 +670,8 @@ export function SubtasksPanel({
       setFocusedRowId(visibleRows[visibleRows.length - 1].id);
     } else if (e.key === 'Enter' && focusedRowId && !editingId) {
       e.preventDefault();
-      onSubtaskClick?.(focusedRowId);
+      const focusedRow = visibleRows.find(r => r.id === focusedRowId);
+      onSubtaskClick?.(focusedRow?.issue_key ?? focusedRowId);
     } else if (e.key === 'F2' && focusedRowId && !editingId) {
       e.preventDefault();
       setEditingId(focusedRowId);
@@ -722,7 +721,6 @@ export function SubtasksPanel({
               onCycleSort={(field: SortField) => setSort(s => cycleSort(s, field))}
             />
             <ColumnPicker columns={columns} onChange={setColumns} />
-            <ViewToggle view={view} onChange={setView} />
             {canCreate && (
               <button
                 type="button"
@@ -792,17 +790,8 @@ export function SubtasksPanel({
             </div>
           )}
 
-          {/* ═══ Board view ═══ */}
-          {!isLoading && visibleRows.length > 0 && view === 'board' && (
-            <BoardView
-              subtasks={visibleRows}
-              avatarMap={avatarMap}
-              onCardClick={(id) => onSubtaskClick?.(id)}
-            />
-          )}
-
-          {/* ═══ List view — canonical JiraTable ═══ */}
-          {!isLoading && visibleRows.length > 0 && view === 'list' && (() => {
+          {/* ═══ List view — canonical JiraTable (Jira parity: list-only) ═══ */}
+          {!isLoading && visibleRows.length > 0 && (() => {
             // Build column schema once per render. `columns` (from props) is
             // the visibility config; we filter the schema by it instead of
             // emitting ternaries inside cells like the DynamicTable era did.
@@ -825,7 +814,7 @@ export function SubtasksPanel({
                   <a
                     className="sp-issue-key"
                     data-jira-table-row-open
-                    onClick={(e) => { e.stopPropagation(); onSubtaskClick?.((row as any).id); }}
+                    onClick={(e) => { e.stopPropagation(); onSubtaskClick?.((row as any).issue_key ?? (row as any).id); }}
                   >
                     {(row as any).issue_key}
                   </a>
@@ -850,7 +839,7 @@ export function SubtasksPanel({
                         className="sp-issue-summary"
                         onClick={(e) => {
                           if (bulkEditMode) { toggleSelected(child.id); e.stopPropagation(); return; }
-                          onSubtaskClick?.(child.id);
+                          onSubtaskClick?.(child.issue_key ?? child.id);
                           setFocusedRowId(child.id);
                         }}
                       >
@@ -946,7 +935,7 @@ export function SubtasksPanel({
                   return (
                     <div onClick={(e) => e.stopPropagation()}>
                       <RowActionsMenu
-                        onOpen={() => onSubtaskClick?.(child.id)}
+                        onOpen={() => onSubtaskClick?.(child.issue_key ?? child.id)}
                         onRename={() => setEditingId(child.id)}
                         onDelete={() => handleDelete(child)}
                       />
@@ -988,7 +977,7 @@ export function SubtasksPanel({
                   onFocusedRowChange={(id) => setFocusedRowId(id)}
                   onRowClick={(r: any) => {
                     if (bulkEditMode) { toggleSelected(r.id); return; }
-                    onSubtaskClick?.(r.id);
+                    onSubtaskClick?.(r.issue_key ?? r.id);
                   }}
                   enableColumnReorder
                   rowsPerPage={0}

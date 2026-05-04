@@ -42,7 +42,7 @@ export function BoardView({ subtasks, avatarMap, onCardClick }: BoardViewProps) 
               <div
                 key={s.id}
                 className="sp-board-card"
-                onClick={() => onCardClick(s.id)}
+                onClick={() => onCardClick(s.issue_key ?? s.id)}
               >
                 <div className="sp-board-card-summary">{s.summary}</div>
                 <div className="sp-board-card-meta">

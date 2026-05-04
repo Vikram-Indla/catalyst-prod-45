@@ -180,74 +180,88 @@ export function CatalystStatusPill({ status, statusCategory, onStatusChange, iss
               zIndex: 9999,
             }}
           >
-            {STATUS_OPTION_GROUPS.map((group) => (
-              <div key={group.category}>
-                <div
-                  style={{
-                    fontSize: 11,
-                    fontWeight: 700,
-                    color: token('color.text.subtle', '#6B6E76'),
-                    textTransform: 'uppercase',
-                    letterSpacing: '0.06em',
-                    padding: '8px 12px 4px',
-                    marginTop: 4,
-                  }}
-                >
-                  {group.groupLabel}
-                </div>
-                {group.statuses.map((st) => {
-                  const isActive = display === st;
-                  return (
-                    <button
-                      key={st}
-                      type="button"
-                      role="menuitem"
-                      onClick={() => {
-                        if (onStatusChange) onStatusChange(st);
-                        setOpen(false);
-                      }}
-                      style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'space-between',
-                        width: '100%',
-                        height: 36,
-                        padding: '0 12px',
-                        background: isActive
-                          ? token('color.background.selected', '#E9F2FF')
-                          : 'transparent',
-                        border: 'none',
-                        cursor: 'pointer',
-                        fontFamily: 'inherit',
-                        textAlign: 'left',
-                      }}
-                      onMouseEnter={(e) => {
-                        if (!isActive) e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', '#F4F5F7');
-                      }}
-                      onMouseLeave={(e) => {
-                        if (!isActive) e.currentTarget.style.background = 'transparent';
-                      }}
-                    >
-                      {/* jira-compare 2026-05-04 (D1 popup correction): Jira's status
-                          picker popup uses solid isBold Lozenges for destination statuses —
-                          same as the isBold pattern used in Jira's workflow-transition
-                          popup (IN DEVELOPMENT, IN UAT etc). Light tokens were wrong here;
-                          reverted to isBold Lozenge which matches the solid-colored pills
-                          Jira renders in the picker. Trigger button keeps the light-bg
-                          statusBg() pattern (header pill, not picker item). */}
-                      <span data-cp-lozenge-jira-parity style={{ display: 'inline-block' }}>
-                        <Lozenge appearance={statusToLozenge(st)} isBold={statusToLozenge(st) !== 'default'}>{st}</Lozenge>
-                      </span>
-                      {isActive && (
-                        <span style={{ fontSize: 12, color: token('color.text.brand', '#0C66E4'), fontWeight: 600 }}>
-                          ✓
+            {STATUS_OPTION_GROUPS.map((group) => {
+              /* jira-compare 2026-05-05 — Fix: dropdown lozenge appearance must
+                 use the GROUP category (todo/in_progress/done), NOT the status
+                 name lookup. Using statusToLozenge(name) caused "In Requirements"
+                 and "In Design" (which are in the TO DO group) to render as bold
+                 blue because they were individually mapped to 'inprogress' in the
+                 name table. The group.category is the correct source of truth here —
+                 it matches Jira's status-picker where colour = workflow category. */
+              const groupAppearance: 'default' | 'inprogress' | 'success' =
+                group.category === 'done'
+                  ? 'success'
+                  : group.category === 'in_progress'
+                  ? 'inprogress'
+                  : 'default';
+
+              return (
+                <div key={group.category}>
+                  <div
+                    style={{
+                      fontSize: 11,
+                      fontWeight: 700,
+                      color: token('color.text.subtle', '#6B6E76'),
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.06em',
+                      padding: '8px 12px 4px',
+                      marginTop: 4,
+                    }}
+                  >
+                    {group.groupLabel}
+                  </div>
+                  {group.statuses.map((st) => {
+                    const isActive = display === st;
+                    return (
+                      <button
+                        key={st}
+                        type="button"
+                        role="menuitem"
+                        onClick={() => {
+                          if (onStatusChange) onStatusChange(st);
+                          setOpen(false);
+                        }}
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'space-between',
+                          width: '100%',
+                          height: 36,
+                          padding: '0 12px',
+                          background: isActive
+                            ? token('color.background.selected', '#E9F2FF')
+                            : 'transparent',
+                          border: 'none',
+                          cursor: 'pointer',
+                          fontFamily: 'inherit',
+                          textAlign: 'left',
+                        }}
+                        onMouseEnter={(e) => {
+                          if (!isActive) e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', '#F4F5F7');
+                        }}
+                        onMouseLeave={(e) => {
+                          if (!isActive) e.currentTarget.style.background = 'transparent';
+                        }}
+                      >
+                        <span data-cp-lozenge-jira-parity style={{ display: 'inline-block' }}>
+                          <Lozenge
+                            appearance={groupAppearance}
+                            isBold={groupAppearance !== 'default'}
+                          >
+                            {st}
+                          </Lozenge>
                         </span>
-                      )}
-                    </button>
-                  );
-                })}
-              </div>
-            ))}
+                        {isActive && (
+                          <span style={{ fontSize: 12, color: token('color.text.brand', '#0C66E4'), fontWeight: 600 }}>
+                            ✓
+                          </span>
+                        )}
+                      </button>
+                    );
+                  })}
+                </div>
+              );
+            })}
             {/* jira-compare 2026-05-04 — "View workflow" / "Explain workflow" footer
                 matches Jira's status picker footer (probed BAU-5609). Stubs for now;
                 clicking either opens a toast until workflow viewer is built. */}

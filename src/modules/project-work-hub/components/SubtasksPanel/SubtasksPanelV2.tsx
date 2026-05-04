@@ -405,7 +405,7 @@ export function SubtasksPanelV2({
       if (last) focusRow(last.id);
     } else if (e.key === 'Enter' && !editingId) {
       e.preventDefault();
-      onSubtaskClick?.(row.id);
+      onSubtaskClick?.((row as any).issue_key ?? row.id);
     } else if ((e.key === 'Delete' || e.key === 'Backspace') && !editingId && e.shiftKey) {
       e.preventDefault();
       setPendingDelete(row);
@@ -550,7 +550,7 @@ export function SubtasksPanelV2({
                         tabIndex={0}
                         className={`sp-row sp-row--v2 ${isFocused ? 'sp-row--focused' : ''}`}
                         data-testid={`subtask-row-${child.issue_key}`}
-                        onClick={() => onSubtaskClick?.(child.id)}
+                        onClick={() => onSubtaskClick?.(child.issue_key ?? child.id)}
                         onFocus={() => setFocusedRowId(child.id)}
                         onKeyDown={(e) => handleRowKeyDown(e, child, index)}
                       >
@@ -573,7 +573,7 @@ export function SubtasksPanelV2({
                                 issueType={child.issue_type}
                                 issueKey={child.issue_key}
                                 summary={child.summary}
-                                onClick={() => onSubtaskClick?.(child.id)}
+                                onClick={() => onSubtaskClick?.(child.issue_key ?? child.id)}
                               />
                               <DescriptionPopover
                                 subtaskId={child.id}
@@ -613,7 +613,7 @@ export function SubtasksPanelV2({
                         )}
                         <td className="sp-td sp-td--actions" role="gridcell" onClick={(e) => e.stopPropagation()}>
                           <RowActionsMenu
-                            onOpen={() => onSubtaskClick?.(child.id)}
+                            onOpen={() => onSubtaskClick?.(child.issue_key ?? child.id)}
                             onRename={() => setEditingId(child.id)}
                             onDelete={() => setPendingDelete(child)}
                           />

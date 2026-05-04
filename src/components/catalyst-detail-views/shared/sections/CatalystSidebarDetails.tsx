@@ -17,15 +17,17 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import ChevronDownIcon from '@atlaskit/icon/glyph/chevron-down';
 import CheckIcon from '@atlaskit/icon/glyph/check';
-import AutomationIcon from '@atlaskit/icon/core/automation';
+// AutomationIcon removed — jira-compare 2026-05-05: Automate button between
+// status pill and Improve Story is not present in Jira. Removed per Vikram directive.
 import SettingsIcon from '@atlaskit/icon/core/settings';
 import { Heading } from '@/components/ads';
 import Modal, { ModalBody, ModalFooter, ModalHeader, ModalTitle, ModalTransition } from '@atlaskit/modal-dialog';
-import Button, { IconButton } from '@atlaskit/button/new';
+import Button from '@atlaskit/button/new';
 import Lozenge from '@atlaskit/lozenge';
 import { Inline } from '@atlaskit/primitives';
 import { useWorkflow } from '@/lib/workflows';
 import { StatusTransitionDropdown } from '@/components/workflow';
+import { CatalystConfigureDrawer, loadPinnedFields, PINNABLE_FIELDS } from './CatalystConfigureDrawer';
 
 /**
  * FieldRow — sidebar field row atom (Phase E.3, 2026-04-18).
@@ -53,8 +55,11 @@ function FieldRow({
   labelTopPad?: boolean;
   children: React.ReactNode;
 }) {
+  /* jira-compare 2026-05-05: field row vertical padding 11px→8px.
+     Jira's DOM-probed field rows (Fix versions, Assignee, Reporter, Labels)
+     have approx 8px top/bottom padding. 11px was over-spaced. */
   return (
-    <div style={{ padding: '11px 0' }}>
+    <div style={{ padding: '8px 0' }}>
       <Inline space="space.250" alignBlock={alignBlock}>
         <span style={{
           fontSize: 14, fontWeight: 500, lineHeight: '18.67px', color: 'var(--ds-text-secondary, #505258)',
@@ -201,6 +206,10 @@ export function CatalystSidebarDetails({
   const [localStatus, setLocalStatus] = useState<string>('');
   const [showStatusDropdown, setShowStatusDropdown] = useState(false);
   const [showConfirmDelete, setShowConfirmDelete] = useState(false);
+  const [showConfigureDrawer, setShowConfigureDrawer] = useState(false);
+  const [pinnedFields, setPinnedFields] = useState<string[]>(() =>
+    loadPinnedFields(issue?.issue_type ?? 'Story'),
+  );
   const statusDropdownRef = useRef<HTMLDivElement>(null);
 
   const statusValue = localStatus || issue?.status || 'Backlog';
@@ -280,20 +289,17 @@ export function CatalystSidebarDetails({
 
   return (
     <>
-      {/* jira-compare 2026-05-03 — Patch D + E + A1 · Status pill + Automate trigger + Improve dropdown
-          rendered together at the top of the rail. Mirrors Jira BAU-5737 where
-          [Status ▾] [⚡] sit on row 1 and [💬 Improve <Type>] sits on row 2 above Details.
-          Catalyst keeps them flex-wrap so wide rails get one row, narrow rails wrap. */}
-      {(statusPill || improveDropdown) && (
-        <div style={{ marginBottom: 14, display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+      {/* jira-compare 2026-05-05 — Jira parity: status pill on row 1, Improve
+          Story on row 2. Automate button removed — not present in Jira's BAU
+          story view. Two separate rows match Jira's right-rail header layout
+          (probed BAU-5609: status button row → Improve Story button row → Details). */}
+      {statusPill && (
+        <div style={{ marginBottom: 8 }}>
           {statusPill}
-          <IconButton
-            icon={(iconProps) => <AutomationIcon {...iconProps} label="" />}
-            label="Automate"
-            appearance="subtle"
-            spacing="compact"
-            onClick={() => toast('Automation rules — coming soon (A4 trays)')}
-          />
+        </div>
+      )}
+      {improveDropdown && (
+        <div style={{ marginBottom: 14 }}>
           {improveDropdown}
         </div>
       )}
@@ -398,27 +404,109 @@ export function CatalystSidebarDetails({
       </div>
       ))}
 
+      {/* ── Pinned fields section ────────────────────────────────────────
+          Jira parity: when the user has pinned fields via Configure, they
+          surface here above the Details block as a "Pinned fields" group. */}
+      {pinnedFields.length > 0 && (
+        <div style={{ marginBottom: 8 }}>
+          <div style={{
+            fontSize: 11, fontWeight: 700, color: 'var(--ds-text-subtlest, #6B778C)',
+            textTransform: 'uppercase', letterSpacing: '0.06em',
+            padding: '0 0 6px',
+          }}>
+            Pinned fields
+          </div>
+          <div>
+            {pinnedFields.map((fieldId) => {
+              const field = PINNABLE_FIELDS.find((f) => f.id === fieldId);
+              if (!field) return null;
+              /* Render the same FieldRow used below, delegating to the same
+                 editable components — no duplication of logic needed. */
+              if (fieldId === 'assignee') return (
+                <FieldRow key={fieldId} label="Assignee">
+                  <div style={{ display: 'flex', flexDirection: 'column' }}>
+                    {issue && (
+                      <EditableAssignee
+                        issueId={issue.id}
+                        projectId={projectId || ''}
+                        currentAssigneeId={issue.assignee_account_id}
+                        currentAssigneeName={issue.assignee_display_name}
+                        onUpdate={invalidateIssue}
+                      />
+                    )}
+                  </div>
+                </FieldRow>
+              );
+              if (fieldId === 'reporter') return (
+                <FieldRow key={fieldId} label="Reporter" alignBlock="center">
+                  {issue && (
+                    <EditableReporter
+                      issueId={issue.id}
+                      projectId={projectId || ''}
+                      currentReporterId={issue.reporter_account_id}
+                      currentReporterName={issue.reporter_display_name}
+                      onUpdate={invalidateIssue}
+                    />
+                  )}
+                </FieldRow>
+              );
+              if (fieldId === 'priority') return (
+                <FieldRow key={fieldId} label="Priority" alignBlock="center">
+                  {issue && (
+                    <EditablePriority
+                      issueId={issue.id}
+                      currentPriority={issue.priority}
+                      onUpdate={invalidateIssue}
+                    />
+                  )}
+                </FieldRow>
+              );
+              if (fieldId === 'labels') return (
+                <FieldRow key={fieldId} label="Labels" labelTopPad>
+                  {issue && (
+                    <EditableLabels
+                      issueId={issue.id}
+                      issueKey={issue.issue_key}
+                      currentLabels={(issue as any).labels ?? []}
+                      onUpdate={invalidateIssue}
+                    />
+                  )}
+                </FieldRow>
+              );
+              if (fieldId === 'fixVersions' && issue?.issue_type !== 'Epic') return (
+                <FieldRow key={fieldId} label="Fix versions" labelTopPad>
+                  {issue && (
+                    <EditableFixVersions
+                      issueId={issue.id}
+                      currentFixVersions={issue.fix_versions}
+                      projectKey={issue.project_key}
+                      onUpdate={invalidateIssue}
+                    />
+                  )}
+                </FieldRow>
+              );
+              return null;
+            })}
+          </div>
+        </div>
+      )}
+
       {/* ── Details section card ──────────────── */}
+      {/* jira-compare 2026-05-05: Details section header height 49→40px,
+          no borderRadius (Jira has square corners), no left padding on header,
+          left padding moved to the body wrapper for field rows.
+          Body padding: '8px 0' (Jira doesn't have a container left pad —
+          the field rows themselves carry 11px v-padding with 96px label col). */}
       <div style={{ marginBottom: 8 }}>
-        {/* Section header — 49px, Jira spec */}
         <div style={{
-          display: 'flex', alignItems: 'center', gap: 6, height: 49,
-          padding: '0 8px', borderRadius: '6px 6px 0 0', background: 'var(--ds-surface, #FFFFFF)',
+          display: 'flex', alignItems: 'center', gap: 6, height: 40,
+          padding: '0 0', background: 'transparent',
         }}>
           <ChevronDownIcon size="small" primaryColor="var(--ds-icon-subtle, #626F86)" />
-          {/* Phase D.1 (2026-04-18): Atlaskit Heading owns typography via tokens. */}
           <Heading size="small">Details</Heading>
         </div>
 
-        {/* Section body — two-column field grid.
-            2026-04-20 Jira-parity reorder (Drawer Phase 5):
-              Measured on BAU-5538 / BAU-5364 — Jira's Details section
-              renders fields in this order:
-                Fix versions → Assignee → Reporter → Labels → {children}
-              Priority was MOVED out of the sidebar into the new
-              "Key details" block at the top of the main content
-              (CatalystKeyDetails.tsx). */}
-        <div style={{ padding: '8px 12px 8px 19px' }}>
+        <div style={{ padding: '0' }}>
 
           {/* ── Fix Versions ──── jira-compare Phase 2 (2026-05-02): hidden
               on Epic — Jira NIN omits this field from the Epic context
@@ -643,11 +731,20 @@ export function CatalystSidebarDetails({
           appearance="subtle"
           spacing="compact"
           iconBefore={(iconProps) => <SettingsIcon {...iconProps} label="" />}
-          onClick={() => toast('Configure issue layout — coming soon')}
+          onClick={() => setShowConfigureDrawer(true)}
         >
           Configure
         </Button>
       </div>
+
+      {/* ── Configure drawer ─────────────────────────────────────────── */}
+      <CatalystConfigureDrawer
+        isOpen={showConfigureDrawer}
+        onClose={() => setShowConfigureDrawer(false)}
+        issueType={issue?.issue_type ?? 'Story'}
+        pinnedFields={pinnedFields}
+        onPinnedFieldsChange={setPinnedFields}
+      />
 
       {/* ── Delete confirmation (canonical) ─────────────────────────────
           Phase E.1 (2026-04-18): migrated from hand-rolled position:fixed
