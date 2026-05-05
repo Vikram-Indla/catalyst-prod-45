@@ -1,37 +1,8 @@
 [
   {
     "id": "TC001",
-    "title": "Open the workflow viewer from a deep-linked issue",
-    "description": "This test verifies that an authenticated user can land on a deep-linked issue in all work and open its workflow viewer from the status popover.",
-    "category": "Workflow Viewer Modal",
-    "steps": [
-      {
-        "type": "action",
-        "description": "Navigate to /project-hub/BAU/allwork?issue=BAU-5609"
-      },
-      {
-        "type": "action",
-        "description": "Click the issue status control"
-      },
-      {
-        "type": "action",
-        "description": "Click the workflow view link"
-      },
-      {
-        "type": "assertion",
-        "description": "Verify the workflow viewer modal is displayed"
-      },
-      {
-        "type": "assertion",
-        "description": "Verify the workflow diagram is displayed for the selected issue"
-      }
-    ],
-    "priority": "High"
-  },
-  {
-    "id": "TC002",
-    "title": "Open the workflow viewer from an issue status",
-    "description": "This test verifies that a user can open the workflow viewer modal from an issue’s status popover and see the workflow diagram for the selected issue type.",
+    "title": "Open the workflow viewer for a selected issue",
+    "description": "This verifies that a user can open an issue from the all-work list, launch the workflow viewer from the status popover, and see the workflow diagram for that issue.",
     "category": "Workflow Viewer Modal",
     "steps": [
       {
@@ -56,15 +27,44 @@
       },
       {
         "type": "assertion",
-        "description": "Verify the current status is highlighted"
+        "description": "Verify the current status is highlighted in the workflow view"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC002",
+    "title": "Show the workflow for a deep-linked issue",
+    "description": "This verifies that opening a deep-linked issue in the all-work view allows the user to access the correct issue’s workflow diagram.",
+    "category": "Workflow Viewer Modal",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /project-hub/BAU/allwork?issue=BAU-5609"
+      },
+      {
+        "type": "action",
+        "description": "Click the issue status control"
+      },
+      {
+        "type": "action",
+        "description": "Click the workflow view link"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the workflow diagram is displayed for the opened issue"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the current status highlight matches the selected issue"
       }
     ],
     "priority": "High"
   },
   {
     "id": "TC003",
-    "title": "Show the workflow state chain for an issue",
-    "description": "This test verifies that opening the workflow viewer displays the issue’s state sequence with transition arrows and verb labels.",
+    "title": "Close the workflow viewer modal",
+    "description": "This verifies that a user can dismiss the workflow viewer after opening it from an issue detail panel.",
     "category": "Workflow Viewer Modal",
     "steps": [
       {
@@ -84,20 +84,20 @@
         "description": "Click the workflow view link"
       },
       {
-        "type": "assertion",
-        "description": "Verify the workflow state chain is displayed"
+        "type": "action",
+        "description": "Click the modal close control"
       },
       {
         "type": "assertion",
-        "description": "Verify transition arrows and verb labels are displayed"
+        "description": "Verify the workflow viewer modal is no longer displayed"
       }
     ],
     "priority": "Medium"
   },
   {
     "id": "TC004",
-    "title": "Close the workflow viewer modal",
-    "description": "This test verifies that a user can dismiss the workflow viewer modal after opening it from an issue status popover.",
+    "title": "Handle an issue type with no workflow data",
+    "description": "This verifies that the workflow viewer does not break when an issue has no available workflow data and shows an empty or guarded state instead.",
     "category": "Workflow Viewer Modal",
     "steps": [
       {
@@ -106,7 +106,7 @@
       },
       {
         "type": "action",
-        "description": "Click a work item row"
+        "description": "Click a work item row for an issue with no workflow data"
       },
       {
         "type": "action",
@@ -117,16 +117,12 @@
         "description": "Click the workflow view link"
       },
       {
-        "type": "action",
-        "description": "Click the close control"
+        "type": "assertion",
+        "description": "Verify a guarded empty state is displayed"
       },
       {
         "type": "assertion",
-        "description": "Verify the workflow viewer modal is dismissed"
-      },
-      {
-        "type": "assertion",
-        "description": "Verify the issue detail panel remains open"
+        "description": "Verify no workflow diagram is shown"
       }
     ],
     "priority": "Low"

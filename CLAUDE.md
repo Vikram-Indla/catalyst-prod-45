@@ -78,6 +78,26 @@ Append-only. Newest at top. Each entry: date, pattern, rule, surface.
 
 ---
 
+## 2026-05-05 — Status pill colors: ADS bold tokens ≠ Jira actual colors
+**Surface:** CatalystStatusPill (all issue type views)
+**Pattern:** ADS `color.background.success.bold` = `#1F845A` (dark forest green). Jira's actual header status pill for "done" category = `rgb(148,199,72)` = `#94C748` (lime green) with dark text `#292A2E` and `fontWeight: 500` — not white text, not 600 weight. ADS bold tokens are too dark and produce white-on-dark contrast, not matching Jira's light-on-lime. Other probed values: `inprogress` = `#669DF1`, `default/todo` = `rgba(5,21,36,0.06)`.
+**Rule:** Always DOM-probe Jira's actual `getComputedStyle` for status pill background/color/fontWeight before choosing an ADS token. When no ADS token matches, use exact Jira hex (jira-compare bypass applies — Jira parity overrides ADS-token preference).
+
+## 2026-05-05 — Priority and "Assign to me" do not belong in the right rail
+**Surface:** CatalystSidebarDetails (all issue type views)
+**Pattern:** Multiple jira-compare cycles put Priority in the right rail Details section based on earlier probes. Definitive re-probe 2026-05-05 confirmed: Priority is NOT in the right rail for any BAU issue type (Stories, Epics). It belongs only in Key details (left panel). Similarly "Assign to me" is not a persistent link in Jira's idle rail — it appears inside the assignee hover-picker only.
+**Rule:** Priority = Key details left block only, never right rail. "Assign to me" = remove from idle right rail until hover-picker is implemented.
+
+## 2026-05-05 — Section count badges should be plain text, not pill badges
+**Surface:** SubtasksPanel, LinkedWorkItemsSection, DefectsSection, IncidentsSection, AttachmentsSection
+**Pattern:** Prior sessions "promoted" section header counts to round pill badges and flat box badges (border-radius, background). Jira shows NO styled badge on section headers — counts are plain muted text inline after the heading, or absent entirely.
+**Rule:** `.sp-title-count`, `.lwi-header__count`, `.att-badge` must be plain inline text (`display: inline`, no background, no border-radius). Never add pill/badge styling to section header counts.
+
+## 2026-05-05 — Right rail select fields need transparent/borderless idle state
+**Surface:** CatalystSidebarDetails right rail (all issue type views)
+**Pattern:** `@atlaskit/select` controls in the right rail showed visible borders and ▾ dropdown indicators in idle state, making the rail look like a form. Jira's right rail fields appear as plain clickable text in idle state — no border, no indicator — with subtle bg on hover.
+**Rule:** Scope CSS to `.cv-drawer-sidebar [class*="-select__control"]` to set `border-color: transparent; background: transparent; box-shadow: none` in idle, `background: var(--ds-background-neutral-subtle-hovered)` on hover. Hide `__dropdown-indicator` by default, show on `:hover` and `--is-focused`.
+
 ## 2026-05-04 — Ask Vikram before adding or removing any field/component
 **Surface:** any view, any work item type
 **Pattern:** Jira-compare audits identified fields present in Jira but absent in Catalyst (e.g. "Key details", "Development" section) and fields in Catalyst not in Jira. Autonomously adding or removing these breaks the agreed surface contract and may conflict with product decisions.

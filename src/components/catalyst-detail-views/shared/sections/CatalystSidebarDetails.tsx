@@ -24,7 +24,7 @@ import { Heading } from '@/components/ads';
 import Modal, { ModalBody, ModalFooter, ModalHeader, ModalTitle, ModalTransition } from '@atlaskit/modal-dialog';
 import Button from '@atlaskit/button/new';
 import Lozenge from '@atlaskit/lozenge';
-import { Inline } from '@atlaskit/primitives';
+// Inline removed — FieldRow switched to stacked layout (jira-compare 2026-05-05)
 import { useWorkflow } from '@/lib/workflows';
 import { StatusTransitionDropdown } from '@/components/workflow';
 import { CatalystConfigureDrawer, loadPinnedFields, PINNABLE_FIELDS } from './CatalystConfigureDrawer';
@@ -43,31 +43,32 @@ import { CatalystConfigureDrawer, loadPinnedFields, PINNABLE_FIELDS } from './Ca
  */
 function FieldRow({
   label,
-  alignBlock = 'start',
-  labelTopPad = false,
   children,
 }: {
   label: string;
+  /** @deprecated alignBlock and labelTopPad removed — stacked layout makes them irrelevant */
   alignBlock?: 'start' | 'center';
-  /** Add 2px top padding to the label — used for multi-line values like
-   *  Labels / Fix versions where the label should visually align with the
-   *  first line of chips. */
   labelTopPad?: boolean;
   children: React.ReactNode;
 }) {
-  /* jira-compare 2026-05-05: field row vertical padding 11px→8px.
-     Jira's DOM-probed field rows (Fix versions, Assignee, Reporter, Labels)
-     have approx 8px top/bottom padding. 11px was over-spaced. */
+  /* jira-compare 2026-05-05: changed from INLINE (label left 96px + value right)
+     to STACKED (label on its own line, value on next line) to match Jira's
+     Details panel layout. DOM-probed BAU-5609 right rail:
+       label: font-size 12px, font-weight 600, color #626F86, margin-bottom 4px
+       value: font-size 14px, color #292A2E, full width
+     Vertical padding between fields: ~12px top (8px bottom). */
   return (
-    <div style={{ padding: '8px 0' }}>
-      <Inline space="space.250" alignBlock={alignBlock}>
-        <span style={{
-          fontSize: 14, fontWeight: 500, lineHeight: '18.67px', color: 'var(--ds-text-secondary, #505258)',
-          minWidth: 96, flexShrink: 0,
-          paddingTop: labelTopPad ? 2 : undefined,
-        }}>{label}</span>
-        <div style={{ flex: 1, minWidth: 0 }}>{children}</div>
-      </Inline>
+    <div style={{ padding: '4px 0 12px' }}>
+      <div style={{
+        fontSize: 12, fontWeight: 600, lineHeight: '16px',
+        color: 'var(--ds-text-subtlest, #626F86)',
+        marginBottom: 4, textTransform: 'none',
+      }}>
+        {label}
+      </div>
+      <div style={{ fontSize: 14, color: 'var(--ds-text, #292A2E)', minWidth: 0 }}>
+        {children}
+      </div>
     </div>
   );
 }
@@ -289,17 +290,14 @@ export function CatalystSidebarDetails({
 
   return (
     <>
-      {/* jira-compare 2026-05-05 — Jira parity: status pill on row 1, Improve
-          Story on row 2. Automate button removed — not present in Jira's BAU
-          story view. Two separate rows match Jira's right-rail header layout
-          (probed BAU-5609: status button row → Improve Story button row → Details). */}
-      {statusPill && (
-        <div style={{ marginBottom: 8 }}>
+      {/* jira-compare 2026-05-05 (re-probe BAU-5609): Status pill + Improve Story
+          render on ONE horizontal row in Jira — `[In QA ▾] [✦ Improve Story]`.
+          The lightning-bolt Automate button is removed (not present in Jira BAU view,
+          and Vikram directive §9 says remove flash icon). flexWrap so narrow rails
+          gracefully push Improve Story to a second line rather than overflow. */}
+      {(statusPill || improveDropdown) && (
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14, flexWrap: 'wrap' }}>
           {statusPill}
-        </div>
-      )}
-      {improveDropdown && (
-        <div style={{ marginBottom: 14 }}>
           {improveDropdown}
         </div>
       )}
@@ -536,39 +534,16 @@ export function CatalystSidebarDetails({
                   onUpdate={invalidateIssue}
                 />
               )}
-              {/* Assign to me */}
-              {user && issue?.assignee_account_id !== user.id && (
-                <button
-                  onClick={handleAssignToMe}
-                  style={{
-                    background: 'none', border: 'none', padding: 0, cursor: 'pointer',
-                    fontSize: 14, color: '#1868DB', fontFamily: 'inherit', marginTop: 2,
-                    textAlign: 'left', textDecoration: 'none',
-                  }}
-                  onMouseEnter={e => (e.currentTarget.style.textDecoration = 'underline')}
-                  onMouseLeave={e => (e.currentTarget.style.textDecoration = 'none')}
-                >
-                  Assign to me
-                </button>
-              )}
+              {/* jira-compare 2026-05-05: Jira does not show "Assign to me"
+                  as a persistent link in the idle right rail — it appears
+                  only inside the assignee hover-picker. Removed to match Jira. */}
             </div>
           </FieldRow>
 
-          {/* ── Priority (Epic only, before Reporter) ──── jira-compare
-              Phase 2 (2026-05-02). On Epic, Jira renders Priority between
-              Assignee and Reporter (BAU-5419). For all other types Priority
-              renders in the canonical position below (after Parent). */}
-          {issue?.issue_type === 'Epic' && (
-            <FieldRow label="Priority" alignBlock="center">
-              {issue && (
-                <EditablePriority
-                  issueId={issue.id}
-                  currentPriority={issue.priority}
-                  onUpdate={invalidateIssue}
-                />
-              )}
-            </FieldRow>
-          )}
+          {/* ── Priority (Epic) — REMOVED 2026-05-05 per Vikram directive.
+              Jira does not show Priority in the right rail Details section
+              for any issue type probed (Stories, Epics on BAU board).
+              Priority belongs in the Key details left block. */}
 
           {/* ── Reporter ──── Defect-2 Cycle 6 (2026-05-03): made editable */}
           <FieldRow label="Reporter" alignBlock="center">
@@ -603,33 +578,10 @@ export function CatalystSidebarDetails({
               in the Details rail. The CatalystParentLinker component is still
               used elsewhere (in CatalystKeyDetails or type-specific views). */}
 
-          {/* ── Priority ──── jira-compare Phase 1 (2026-05-02). Restored
-              from CatalystKeyDetails left block — Jira's right rail Details
-              section is the canonical location. Phase 2 update (2026-05-02):
-              suppressed for Epic (rendered above between Assignee and
-              Reporter to match Jira Epic ordering). Phase 3 (2026-05-02):
-              suppressed for Sub-task too — Jira hides Priority on Sub-task
-              context-items. Phase 4 (2026-05-02): suppressed for Defect —
-              CatalystViewDefect renders Priority in its own KeyDetails
-              priorityRow slot to match Jira's Severity → Priority order
-              (Apr-28 cycle 2 Phase B5 decision is preserved). Phase 5
-              (2026-05-02): also suppressed for Production Incident —
-              Jira hides Priority on Incident context-items; Catalyst's
-              KeyDetails left block keeps Parent + Priority canonical. */}
-          {(() => {
-            const bk = normalizeIssueTypeBucket(issue?.issue_type);
-            return issue?.issue_type !== 'Epic' && bk !== 'subtask' && bk !== 'defect' && bk !== 'incident';
-          })() && (
-            <FieldRow label="Priority" alignBlock="center">
-              {issue && (
-                <EditablePriority
-                  issueId={issue.id}
-                  currentPriority={issue.priority}
-                  onUpdate={invalidateIssue}
-                />
-              )}
-            </FieldRow>
-          )}
+          {/* ── Priority — REMOVED 2026-05-05 per Vikram "follow Jira" directive.
+              Jira DOM probe: Priority is NOT in the right rail Details section
+              for any BAU issue type (Stories, Epics, Defects etc.).
+              Priority lives in the Key details left block only. */}
 
           {/* ── Epic-specific date fields ──── jira-compare Phase 2
               (2026-05-02). Relocated from above-Assignee to after-MDT-Ref

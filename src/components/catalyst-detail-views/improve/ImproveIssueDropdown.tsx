@@ -24,8 +24,8 @@
  */
 
 import React, { useEffect, useRef, useState } from 'react';
-import SparklesIcon from '@atlaskit/icon/core/ai-chat';
-import ChevronDownIcon from '@atlaskit/icon/glyph/chevron-down';
+import SparklesIcon from '@atlaskit/icon/core/atlassian-intelligence';
+// ChevronDownIcon removed 2026-05-05 — Jira Improve button has no chevron (jira-compare parity)
 import WandIcon from '@atlaskit/icon/core/magic-wand';
 import CommentIcon from '@atlaskit/icon/core/comment';
 import ListBulletedIcon from '@atlaskit/icon/core/list-bulleted';
@@ -130,7 +130,7 @@ export function ImproveIssueDropdown({
 
   return (
     <>
-      <div ref={ref} style={{ position: 'relative', display: 'inline-block', marginBottom: 16 }}>
+      <div ref={ref} style={{ position: 'relative', display: 'inline-block' }}>
         {/* jira-compare 2026-05-02 (cycle 5): Vikram probe — appearance="discovery"
             on @atlaskit/button/new in this theme renders solid bold magenta,
             not Jira's subtle. Reverted to hand-rolled bare button styled
@@ -165,9 +165,11 @@ export function ImproveIssueDropdown({
           onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = 'var(--ds-background-neutral-subtle-hovered, #F4F5F7)'; }}
           onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = 'transparent'; }}
         >
+          {/* jira-compare 2026-05-05: Jira Improve button has NO chevron.
+              DOM probe on live Jira shows only sparkles icon + label text.
+              ChevronDownIcon removed to match Jira parity exactly. */}
           <SparklesIcon size="small" primaryColor="var(--ds-text, #292A2E)" />
           {triggerLabel}
-          <ChevronDownIcon size="small" primaryColor="var(--ds-text-subtle, #42526E)" />
         </button>
 
         {open && (

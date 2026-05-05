@@ -54,7 +54,8 @@ export function StatusPopover({ status, onChange, children, showActive = true }:
                       setIsOpen(false);
                     }}
                   >
-                    <Lozenge appearance={appearance} isBold>{s}</Lozenge>
+                    {/* jira-compare 2026-05-05: isBold removed — matches non-bold picker parity */}
+                    <Lozenge appearance={appearance}>{s}</Lozenge>
                     {active && <Check size={14} color="#0052CC" style={{ marginLeft: 'auto' }} />}
                   </button>
                 );

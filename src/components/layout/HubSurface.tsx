@@ -114,7 +114,13 @@ export function HubSurface({
           borderRadius: '8px',
           padding: typeof panelPadding === 'number' ? `${panelPadding}px` : panelPadding,
           minHeight: 'calc(100% - 2px)',
-          overflow: 'hidden',
+          /* jira-compare 2026-05-05: overflow:clip instead of overflow:hidden.
+             'clip' clips visually (preserves border-radius corners) but does NOT
+             create a scroll container, which allows position:sticky on descendants
+             (e.g. the right rail in CatalystViewBase fullPageMode) to propagate
+             through to the page-level overflow-y:auto scroll container.
+             overflow:hidden creates a stacking/scroll context that breaks sticky. */
+          overflow: 'clip',
           ...panelStyle,
         }}
       >

@@ -25,7 +25,7 @@ import { createChildIssue, type WorkItemSource } from '../../../lib/workItemRepo
 import { PriorityBars, normalisePriority } from '@/components/shared/PriorityIndicator';
 import { resolveAvatarUrl } from '@/lib/avatars';
 import { toast } from 'sonner';
-import '../linked-work-items/linked-work-items.css';
+import '../../linked-work-items/linked-work-items.css';
 
 type AllowedAppearance = 'default' | 'inprogress' | 'success';
 function categoryToAppearance(cat: string | null | undefined): AllowedAppearance {

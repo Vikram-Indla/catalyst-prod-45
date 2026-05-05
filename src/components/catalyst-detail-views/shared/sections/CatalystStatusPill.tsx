@@ -29,21 +29,24 @@ import { statusToLozenge, type LozengeAppearance } from '@/modules/project-work-
 import { WorkflowViewerModal } from './WorkflowViewerModal';
 
 /**
- * jira-compare 2026-05-04 (D1 — P0): Jira header status pill uses a plain
- * button with a LIGHT category background + dark text (14px/500/#292A2E),
- * NOT an Atlaskit Lozenge. DOM-probed on BAU-5609 (Story, "In QA"):
- *   height: 32px, background: rgb(148,199,72), color: #292A2E,
- *   fontSize: 14px, fontWeight: 500, borderRadius: 3px, border: none.
- * Using ADS token equivalents per statusCategory appearance.
+ * jira-compare 2026-05-05 (Lane A DOM probe, 3-lane audit, cycle updated):
+ *   All status pills use DARK text #292A2E and fontWeight 500 — not white.
+ *   Background colours are Jira's own (NOT ADS bold tokens):
+ *     In QA / Done (success):    rgb(148,199,72)  = #94C748  (lime green)
+ *     In Progress (inprogress):  rgb(102,157,241) = #669DF1  (medium blue)
+ *     To Do / Backlog (default): rgba(5,21,36,0.06) ≈ near-transparent grey
+ *   Jira jira-compare bypass: Jira parity overrides ADS-token preference here
+ *   because no ADS token matches the Jira status category colours exactly.
  */
-function statusBg(appearance: LozengeAppearance): string {
+function statusBg(appearance: LozengeAppearance): { bg: string; fg: string } {
+  const fg = '#292A2E'; // universal dark text — same for all Jira status pills
   switch (appearance) {
-    case 'success':    return token('color.background.success',    '#DFFCF0');
-    case 'inprogress': return token('color.background.information', '#E9F2FF');
-    case 'moved':      return token('color.background.warning',    '#FFF7D6');
-    case 'removed':    return token('color.background.danger',     '#FFEDEB');
-    case 'new':        return token('color.background.discovery',  '#F3F0FF');
-    default:           return token('color.background.neutral',    '#F1F2F4');
+    case 'success':    return { bg: '#94C748',                fg };  // Done/In QA — lime green
+    case 'inprogress': return { bg: '#669DF1',                fg };  // In Progress — medium blue
+    case 'moved':      return { bg: '#F7C243',                fg };  // Warning — amber
+    case 'removed':    return { bg: '#F87168',                fg };  // Danger — soft red
+    case 'new':        return { bg: '#9F8FEF',                fg };  // Discovery — purple
+    default:           return { bg: 'rgba(5, 21, 36, 0.06)', fg };  // To Do/Backlog — near-transparent
   }
 }
 
@@ -104,22 +107,10 @@ export function CatalystStatusPill({ status, statusCategory, onStatusChange, iss
 
   return (
     <>
-      {/* Apr 28, 2026 (jira-compare cycle 5 — Phase B B9): pill sticks
-          immediately below the (also-sticky) title editor at
-          `top: 32px` so the title + status form a unified sticky
-          header. Wrapper div carries the sticky positioning so that
-          the popover anchor measurement uses the trigger's static
-          position — wrapping the button avoids breaking the
-          getBoundingClientRect baseline that `toggle()` relies on. */}
-      <div
-        style={{
-          position: 'sticky',
-          top: 32,
-          zIndex: 9,
-          background: 'var(--ds-surface, #FFFFFF)',
-          marginBottom: 12,
-        }}
-      >
+      {/* jira-compare 2026-05-05: removed sticky wrapper — pill lives in the
+          right-rail flex header managed by CatalystSidebarDetails. The button
+          is the direct render target; getBoundingClientRect in toggle() still
+          works because the triggerRef points directly to the button. */}
       <button
         ref={triggerRef}
         type="button"
@@ -132,33 +123,31 @@ export function CatalystStatusPill({ status, statusCategory, onStatusChange, iss
           display: 'inline-flex',
           alignItems: 'center',
           gap: 6,
-          /* jira-compare 2026-05-04 (D1): 32px height, no border, light
-             ADS category bg, dark text — matches Jira BAU-5609 DOM probe. */
+          /* jira-compare 2026-05-05: bold ADS bg tokens + white text to match
+             Jira's saturated status pill (32px height, no border, no radius). */
           height: 32,
           padding: '0 10px',
           border: 'none',
           borderRadius: 3,
-          background: statusBg(statusToLozenge(display, statusCategory)),
+          background: statusBg(statusToLozenge(display, statusCategory)).bg,
           cursor: 'pointer',
           fontFamily: 'inherit',
           transition: 'filter 0.1s',
         }}
-        onMouseEnter={(e) => { e.currentTarget.style.filter = 'brightness(0.92)'; }}
+        onMouseEnter={(e) => { e.currentTarget.style.filter = 'brightness(0.88)'; }}
         onMouseLeave={(e) => { e.currentTarget.style.filter = 'none'; }}
       >
-        {/* jira-compare 2026-05-04 (D1): plain text at 14px/500/color.text
-            replacing @atlaskit/lozenge which rendered 11px white-on-bold. */}
         <span style={{
           fontSize: 14,
           fontWeight: 500,
           lineHeight: '20px',
-          color: token('color.text', '#292A2E'),
+          color: statusBg(statusToLozenge(display, statusCategory)).fg,
+          letterSpacing: '0',
         }}>
           {display}
         </span>
-        <ChevronDownIcon size="small" primaryColor={token('color.icon.subtle', '#42526E') as string} />
+        <ChevronDownIcon size="small" primaryColor={statusBg(statusToLozenge(display, statusCategory)).fg} />
       </button>
-      </div>
 
       {open && anchor && typeof document !== 'undefined' &&
         createPortal(
@@ -244,10 +233,10 @@ export function CatalystStatusPill({ status, statusCategory, onStatusChange, iss
                         }}
                       >
                         <span data-cp-lozenge-jira-parity style={{ display: 'inline-block' }}>
-                          <Lozenge
-                            appearance={groupAppearance}
-                            isBold={groupAppearance !== 'default'}
-                          >
+                          {/* jira-compare 2026-05-05: isBold removed — Jira uses non-bold
+                              standard Lozenge appearance for all status options in the
+                              picker dropdown. Bold variant is too saturated vs Jira parity. */}
+                          <Lozenge appearance={groupAppearance}>
                             {st}
                           </Lozenge>
                         </span>

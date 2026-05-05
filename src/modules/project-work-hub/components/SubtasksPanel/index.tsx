@@ -23,7 +23,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
 import {
-  ChevronDown, ChevronRight, Plus, LayoutGrid,
+  ChevronDown, ChevronRight, Plus,
   Check,
 } from 'lucide-react';
 import { nextPos, resolveStatusCategory } from '../dialogs/story-detail-modules/helpers';
@@ -140,57 +140,6 @@ function TypeSelector({
               <span style={{ display: 'flex', width: 16, height: 16 }}>{opt.icon}</span>
               <span>{opt.label}</span>
               {opt.key === value && <Check size={12} color="#0052CC" style={{ marginLeft: 'auto' }} />}
-            </div>
-          ))}
-        </div>
-      )}
-    </div>
-  );
-}
-
-// ─── Column picker ──────────────────────────────────────
-const ALL_COLUMNS: { key: VisibleColumn; label: string }[] = [
-  { key: 'type', label: 'Issue Type' },
-  { key: 'key', label: 'Key' },
-  { key: 'summary', label: 'Summary' },
-  { key: 'assignee', label: 'Assignee' },
-  { key: 'status', label: 'Status' },
-  { key: 'fixVersions', label: 'Fix versions' },
-  { key: 'priority', label: 'Priority' },
-];
-
-function ColumnPicker({ columns, onChange }: {
-  columns: Record<VisibleColumn, boolean>;
-  onChange: (cols: Record<VisibleColumn, boolean>) => void;
-}) {
-  const [open, setOpen] = useState(false);
-  const ref = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (!open) return;
-    const handler = (e: MouseEvent) => {
-      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
-    };
-    document.addEventListener('mousedown', handler);
-    return () => document.removeEventListener('mousedown', handler);
-  }, [open]);
-
-  const toggle = (key: VisibleColumn) => onChange({ ...columns, [key]: !columns[key] });
-
-  return (
-    <div ref={ref} style={{ position: 'relative' }}>
-      <button type="button" className="sp-icon-btn" onClick={() => setOpen(o => !o)} title="Configure columns">
-        <LayoutGrid size={16} />
-      </button>
-      {open && (
-        <div className="sp-colpicker-dropdown">
-          <div className="sp-colpicker-title">Visible columns</div>
-          {ALL_COLUMNS.map(col => (
-            <div key={col.key} className="sp-colpicker-item" onClick={() => toggle(col.key)}>
-              <div className={`sp-colpicker-check ${columns[col.key] ? 'sp-colpicker-check--active' : ''}`}>
-                {columns[col.key] && <Check size={10} color="var(--ds-surface, #fff)" strokeWidth={3} />}
-              </div>
-              <span>{col.label}</span>
             </div>
           ))}
         </div>
@@ -711,6 +660,9 @@ export function SubtasksPanel({
         </div>
         {expanded && (
           <div className="sp-header-right">
+            {/* jira-compare 2026-05-05: ColumnPicker removed — Jira parity.
+                Jira's child issues panel has no column visibility toggle.
+                Columns are always visible at Jira-default set. */}
             <HeaderOverflowMenu
               hideDone={hideDone}
               onToggleHideDone={() => setHideDone(h => !h)}
@@ -720,7 +672,6 @@ export function SubtasksPanel({
               sort={sort}
               onCycleSort={(field: SortField) => setSort(s => cycleSort(s, field))}
             />
-            <ColumnPicker columns={columns} onChange={setColumns} />
             {canCreate && (
               <button
                 type="button"

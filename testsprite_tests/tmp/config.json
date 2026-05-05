@@ -7,11 +7,11 @@
     "projectName": "catalyst-prod-45",
     "projectPath": "/Users/vikramindla/Documents/GitHub/catalyst-prod-45",
     "testIds": [],
-    "additionalInstruction": "Focus on the Catalyst Story detail view at /project-hub/BAU/allwork?issue=BAU-5609. Test: (1) Description section edit/save/cancel and line-height, (2) Fix versions and Labels \"None\" fields have no black bar artifact, (3) Subtasks panel shows list-only (no board/toggle button), subtask CRUD (create, read status, update status, delete with confirm modal), (4) Workflow viewer modal opens from status pill, shows state diagram, closes, (5) Sidebar fields: Assignee, Reporter, Labels, Fix versions, Priority all render cleanly, (6) Navigation: open item from list, prev/next navigation arrows, close panel, deep-link URL, (7) Improve Story dropdown opens, (8) Activity section renders, (9) LinkedWorkItems section renders. Login credentials: use existing Supabase session at localhost:8080 — the app auto-authenticates in dev mode. If login is needed, use email vikramataol@gmail.com.",
+    "additionalInstruction": "Focus on the issue detail view at http://localhost:8080/project-hub/BAU/allwork?issue=BAU-5740. Test: 1) Navigation to issue via deep-link URL, 2) Status pill click opens dropdown, 3) Status dropdown shows non-bold lozenges grouped by TO DO/IN PROGRESS/DONE, 4) Status change persists, 5) Subtasks section expand/collapse, 6) Subtasks header has NO grid/column-picker icon (only ··· and +), 7) Create sub-task inline, 8) Improve Story button opens dropdown (no chevron on trigger), 9) Improve Story menu items: describe/summarize/suggest/link, 10) Linked work items section expand/collapse, 11) Add linked work item, 12) Attachments section expand, 13) Key details section expand/collapse, 14) Description editor click-to-edit, 15) Configure button opens drawer, 16) Configure pin a field, 17) Priority field visible in Key details, 18) Parent field shows in Key details, 19) Breadcrumb BAU/parent/issue-key navigation, 20) Up/down arrow navigation between issues, 21) Share button visible, 22) View workflow from status picker footer, 23) Assignee field in Details sidebar, 24) Reporter field in Details sidebar, 25) Labels field in Details sidebar, 26) Fix versions field in Details sidebar, 27) Created/Updated timestamps visible in Details",
     "serverMode": "development",
     "envs": {
       "API_KEY": "sk-user-XvmnH9-9zggKpTbEfVnuUpaL7YF6KvwjNqTGDwgePJGkhRON_3ossR4vdxxJJFVrMhCf2EXe9STGR6G8nrZDMgmSpHQhKyAhA_XsKwyGBzXbfB8JVqN-nn_jed3SVHMAvJQ"
     }
   },
-  "serverPort": 61094
+  "serverPort": 49203
 }

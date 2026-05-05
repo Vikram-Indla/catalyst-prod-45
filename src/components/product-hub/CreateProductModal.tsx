@@ -145,12 +145,12 @@ export function CreateProductModal({ open, onClose }: CreateProductModalProps) {
         return;
       }
 
-      toast.success(`Product "${data.name}" created`);
+      toast.success(`Product line "${data.name}" created`);
       queryClient.invalidateQueries({ queryKey: ['product-hub', 'products'] });
       onClose();
       navigate(`/product-hub/${data.code}/dashboard`);
     } catch (e: any) {
-      setErrorMsg(e?.message || 'Failed to create product');
+      setErrorMsg(e?.message || 'Failed to create product line');
       setSubmitting(false);
     }
   }, [name, code, description, color, isValid, navigate, onClose, queryClient]);
@@ -196,7 +196,7 @@ export function CreateProductModal({ open, onClose }: CreateProductModalProps) {
             id="create-product-title"
             style={{ fontSize: 18, fontWeight: 600, margin: 0, color: token('color.text') }}
           >
-            Create product
+            Create product line
           </h2>
           <button
             onClick={onClose}
@@ -334,7 +334,7 @@ export function CreateProductModal({ open, onClose }: CreateProductModalProps) {
               cursor: !isValid || submitting ? 'default' : 'pointer',
             }}
           >
-            {submitting ? 'Creating…' : 'Create product'}
+            {submitting ? 'Creating…' : 'Create product line'}
           </button>
         </div>
       </div>

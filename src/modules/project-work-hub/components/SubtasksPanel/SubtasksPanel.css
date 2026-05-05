@@ -64,15 +64,12 @@
 }
 
 .sp-title-count {
-  display: inline-flex;
-  align-items: center;
-  height: 18px;
-  padding: 0 6px;
-  background: var(--ds-background-neutral, #F1F2F4);
-  color: var(--ds-text-subtle, #44546F);
-  font-size: 11px;
-  font-weight: 600;
-  border-radius: 9px;
+  /* jira-compare 2026-05-05: Jira shows no pill badge on section headers.
+     Changed from round pill to plain muted inline text. */
+  display: inline;
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--ds-text-subtlest, #626F86);
   margin-left: 4px;
 }
 

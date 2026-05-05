@@ -130,6 +130,8 @@ interface SidebarBaseProps {
   className?: string;
   iconResolver?: (itemId: string) => React.ComponentType<{ className?: string }> | undefined;
   children?: React.ReactNode;
+  /** When provided, the header badge+label area becomes a clickable switcher trigger */
+  onHeaderClick?: () => void;
 }
 
 /** Dark mode token set — passed to renderMenuItem */
@@ -145,13 +147,14 @@ interface DarkTokens {
   badgeText: string;
 }
 
-export function SidebarBase({ 
-  config, 
-  expanded, 
-  onToggle, 
+export function SidebarBase({
+  config,
+  expanded,
+  onToggle,
   className,
   iconResolver,
   children,
+  onHeaderClick,
 }: SidebarBaseProps) {
   const location = useLocation();
   const navigate = useNavigate();
@@ -272,31 +275,81 @@ export function SidebarBase({
             background: 'transparent',
           }}
         >
-          <div
-            className="w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0"
-            style={{
-              background: 'var(--cp-blue)',
-              color: 'var(--bg-app)',
-              fontSize: '0.62rem',
-              fontWeight: 700,
-              letterSpacing: '0.02em',
-            }}
-          >
-            {config.badge}
-          </div>
-          {expanded && (
-            <span
-              className="truncate"
+          {onHeaderClick ? (
+            <button
+              onClick={onHeaderClick}
+              title={config.label}
               style={{
-                fontFamily: 'var(--cp-font-heading)',
-                fontSize: '14px',
-                fontWeight: 700,
-                color: hubLabel,
-                letterSpacing: '-0.3px',
+                display: 'flex',
+                alignItems: 'center',
+                gap: 10,
+                background: 'transparent',
+                border: 'none',
+                cursor: 'pointer',
+                padding: 0,
+                minWidth: 0,
+                flex: 1,
               }}
             >
-              {config.label}
-            </span>
+              <div
+                className="w-7 h-7 rounded flex items-center justify-center flex-shrink-0"
+                style={{
+                  background: 'var(--cp-blue)',
+                  color: 'var(--bg-app)',
+                  fontSize: '0.62rem',
+                  fontWeight: 700,
+                  letterSpacing: '0.02em',
+                  borderRadius: 6,
+                }}
+              >
+                {config.badge}
+              </div>
+              {expanded && (
+                <span
+                  className="truncate"
+                  style={{
+                    fontFamily: 'var(--cp-font-heading)',
+                    fontSize: '14px',
+                    fontWeight: 600,
+                    color: hubLabel,
+                    letterSpacing: '-0.3px',
+                    flex: 1,
+                    textAlign: 'left',
+                  }}
+                >
+                  {config.label}
+                </span>
+              )}
+            </button>
+          ) : (
+            <>
+              <div
+                className="w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0"
+                style={{
+                  background: 'var(--cp-blue)',
+                  color: 'var(--bg-app)',
+                  fontSize: '0.62rem',
+                  fontWeight: 700,
+                  letterSpacing: '0.02em',
+                }}
+              >
+                {config.badge}
+              </div>
+              {expanded && (
+                <span
+                  className="truncate"
+                  style={{
+                    fontFamily: 'var(--cp-font-heading)',
+                    fontSize: '14px',
+                    fontWeight: 700,
+                    color: hubLabel,
+                    letterSpacing: '-0.3px',
+                  }}
+                >
+                  {config.label}
+                </span>
+              )}
+            </>
           )}
         </div>
 

@@ -27,7 +27,6 @@ import { Plus } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import DynamicTable from '@atlaskit/dynamic-table';
 import EmptyState from '@atlaskit/empty-state';
-import Lozenge from '@atlaskit/lozenge';
 import Avatar from '@atlaskit/avatar';
 import Textfield from '@atlaskit/textfield';
 import DropdownMenu, {
@@ -37,6 +36,7 @@ import DropdownMenu, {
 import StarIcon from '@atlaskit/icon/glyph/star';
 import StarFilledIcon from '@atlaskit/icon/glyph/star-filled';
 import MoreIcon from '@atlaskit/icon/glyph/more';
+import ChevronDownIcon from '@atlaskit/icon/glyph/chevron-down';
 import { token } from '@atlaskit/tokens';
 import { CatalystPageHeader } from '@/components/shared/CatalystPageHeader';
 
@@ -104,6 +104,8 @@ export default function AllProductsPage() {
   const [createOpen, setCreateOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [favorites, setFavorites] = useState<Set<string>>(() => loadFavorites());
+  const [filterType, setFilterType] = useState<string | null>(null);
+  const [filterLead, setFilterLead] = useState<string | null>(null);
 
   useEffect(() => {
     saveFavorites(favorites);
@@ -134,7 +136,14 @@ export default function AllProductsPage() {
     staleTime: 60_000,
   });
 
-  /** Apply search filter + sort favorites first (matches Jira behaviour). */
+  const hasActiveFilters = filterType !== null || filterLead !== null;
+
+  function clearFilters() {
+    setFilterType(null);
+    setFilterLead(null);
+  }
+
+  /** Apply search + filter + sort favorites first (matches Jira behaviour). */
   const filteredProducts = useMemo(() => {
     if (!products) return [];
     const q = searchQuery.trim().toLowerCase();
@@ -147,13 +156,15 @@ export default function AllProductsPage() {
           (p.description?.toLowerCase().includes(q) ?? false),
       );
     }
+    if (filterLead === 'assigned') out = out.filter((p) => !!p.owner_id);
+    if (filterLead === 'unassigned') out = out.filter((p) => !p.owner_id);
     return out.slice().sort((a, b) => {
       const af = favorites.has(a.id) ? 0 : 1;
       const bf = favorites.has(b.id) ? 0 : 1;
       if (af !== bf) return af - bf;
       return a.sort_order - b.sort_order;
     });
-  }, [products, searchQuery, favorites]);
+  }, [products, searchQuery, favorites, filterLead, filterType]);
 
   const rows = useMemo(() => {
     return filteredProducts.map((p) => {
@@ -411,19 +422,149 @@ export default function AllProductsPage() {
           }}
         >
           <Plus size={16} />
-          Create product
+          Create product line
         </button>
       </div>
 
-      {/* Toolbar: search input — mirrors Jira's project-filter row */}
-      <div style={{ marginTop: 16, maxWidth: 320 }}>
-        <Textfield
-          name="product-search"
-          placeholder="Search products"
-          value={searchQuery}
-          onChange={(e: any) => setSearchQuery(e.target.value)}
-          aria-label="Search products"
-        />
+      {/* Toolbar: search + filter — mirrors Jira /jira/projects toolbar pattern */}
+      <div
+        style={{
+          marginTop: 16,
+          display: 'flex',
+          alignItems: 'center',
+          gap: 8,
+          flexWrap: 'wrap',
+        }}
+      >
+        <div style={{ width: 280 }}>
+          <Textfield
+            name="product-search"
+            placeholder="Search products"
+            value={searchQuery}
+            onChange={(e: any) => setSearchQuery(e.target.value)}
+            aria-label="Search products"
+          />
+        </div>
+
+        {/* Filter ▼ — Type */}
+        <DropdownMenu
+          trigger={({ triggerRef, ...triggerProps }) => (
+            <button
+              {...triggerProps}
+              ref={triggerRef}
+              type="button"
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 4,
+                padding: '6px 10px',
+                fontSize: 14,
+                fontWeight: filterType ? 600 : 400,
+                borderRadius: 3,
+                border: `2px solid ${filterType ? token('color.border.selected') : token('color.border')}`,
+                background: filterType
+                  ? token('color.background.selected')
+                  : token('color.background.input'),
+                color: filterType ? token('color.text.selected') : token('color.text'),
+                cursor: 'pointer',
+                fontFamily: 'inherit',
+              }}
+            >
+              {filterType ? `Type: ${filterType}` : 'Type'}
+              <ChevronDownIcon label="" size="small" />
+            </button>
+          )}
+          placement="bottom-start"
+        >
+          <DropdownItemGroup>
+            <DropdownItem
+              isSelected={filterType === null}
+              onClick={() => setFilterType(null)}
+            >
+              All types
+            </DropdownItem>
+            <DropdownItem
+              isSelected={filterType === 'Product line'}
+              onClick={() => setFilterType('Product line')}
+            >
+              Product line
+            </DropdownItem>
+          </DropdownItemGroup>
+        </DropdownMenu>
+
+        {/* Filter ▼ — Lead */}
+        <DropdownMenu
+          trigger={({ triggerRef, ...triggerProps }) => (
+            <button
+              {...triggerProps}
+              ref={triggerRef}
+              type="button"
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 4,
+                padding: '6px 10px',
+                fontSize: 14,
+                fontWeight: filterLead ? 600 : 400,
+                borderRadius: 3,
+                border: `2px solid ${filterLead ? token('color.border.selected') : token('color.border')}`,
+                background: filterLead
+                  ? token('color.background.selected')
+                  : token('color.background.input'),
+                color: filterLead ? token('color.text.selected') : token('color.text'),
+                cursor: 'pointer',
+                fontFamily: 'inherit',
+              }}
+            >
+              {filterLead === 'assigned'
+                ? 'Lead: Assigned'
+                : filterLead === 'unassigned'
+                  ? 'Lead: Unassigned'
+                  : 'Lead'}
+              <ChevronDownIcon label="" size="small" />
+            </button>
+          )}
+          placement="bottom-start"
+        >
+          <DropdownItemGroup>
+            <DropdownItem
+              isSelected={filterLead === null}
+              onClick={() => setFilterLead(null)}
+            >
+              All leads
+            </DropdownItem>
+            <DropdownItem
+              isSelected={filterLead === 'assigned'}
+              onClick={() => setFilterLead('assigned')}
+            >
+              Assigned
+            </DropdownItem>
+            <DropdownItem
+              isSelected={filterLead === 'unassigned'}
+              onClick={() => setFilterLead('unassigned')}
+            >
+              Unassigned
+            </DropdownItem>
+          </DropdownItemGroup>
+        </DropdownMenu>
+
+        {hasActiveFilters && (
+          <button
+            type="button"
+            onClick={clearFilters}
+            style={{
+              background: 'transparent',
+              border: 'none',
+              padding: '6px 8px',
+              fontSize: 13,
+              color: token('color.link'),
+              cursor: 'pointer',
+              fontFamily: 'inherit',
+            }}
+          >
+            Clear filters
+          </button>
+        )}
       </div>
 
       <div style={{ marginTop: 12 }}>

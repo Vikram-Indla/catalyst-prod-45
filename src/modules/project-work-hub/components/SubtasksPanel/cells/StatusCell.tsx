@@ -40,11 +40,13 @@ export const StatusCell = React.memo(function StatusCell({
     <button
       type="button"
       className="sp-status-btn-ak"
-      onClick={(e) => e.stopPropagation()}
+      // No stopPropagation here — StatusPopover's wrapper span handles
+      // both setIsOpen toggle AND stopPropagation (row-navigation guard).
+      // Stopping here prevented the span's onClick from firing (T03 bug).
       aria-label={readOnly ? `Status ${status}` : `${status} — change status`}
       disabled={readOnly}
     >
-      <span data-cp-lozenge-jira-parity style={{ display: "inline-block" }}><Lozenge appearance={appearance} isBold>{status}</Lozenge></span>
+      <span data-cp-lozenge-jira-parity style={{ display: "inline-block" }}><Lozenge appearance={appearance}>{status}</Lozenge></span>
       {!readOnly && (
         <span className="sp-status-chevron-ak" aria-hidden>
           <svg width="10" height="10" viewBox="0 0 10 10" fill="currentColor">

@@ -6045,3 +6045,41 @@ html[data-presentation="true"] [data-testid="project-dashboard-shell"] [role="re
 .atlaskit-renderer-wrapper h4 {
   unicode-bidi: plaintext;
 }
+
+/* ─── Catalyst Sidebar — Jira-parity right rail field styling ───────────────
+   jira-compare 2026-05-05 (lane A): Jira shows right-rail select fields as
+   plain text (no visible dropdown indicator or border in idle state).
+   Hide the @atlaskit/select dropdown indicator by default; reveal on hover/focus
+   so fields remain interactive. Scoped to .cv-drawer-sidebar to avoid
+   affecting other cv-*-select usages elsewhere in the app.
+   ─────────────────────────────────────────────────────────────────────────── */
+.cv-drawer-sidebar [class$="__dropdown-indicator"],
+.cv-drawer-sidebar [class*="-select__dropdown-indicator"] {
+  opacity: 0;
+  transition: opacity 0.1s;
+}
+
+.cv-drawer-sidebar [class$="__control"]:hover [class$="__dropdown-indicator"],
+.cv-drawer-sidebar [class*="-select__control"]:hover [class*="-select__dropdown-indicator"] {
+  opacity: 1;
+}
+
+.cv-drawer-sidebar [class$="__control--is-focused"] [class$="__dropdown-indicator"],
+.cv-drawer-sidebar [class*="-select__control--is-focused"] [class*="-select__dropdown-indicator"] {
+  opacity: 1;
+}
+
+/* Remove the visible border/background on select controls in idle state */
+.cv-drawer-sidebar [class$="__control"],
+.cv-drawer-sidebar [class*="-select__control"] {
+  border-color: transparent !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  min-height: 32px;
+}
+
+.cv-drawer-sidebar [class$="__control"]:hover,
+.cv-drawer-sidebar [class*="-select__control"]:hover {
+  background: var(--ds-background-neutral-subtle-hovered, #F4F5F7) !important;
+  border-color: transparent !important;
+}
