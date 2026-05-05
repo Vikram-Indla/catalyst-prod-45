@@ -768,7 +768,17 @@ function CatalystShellContent() {
           <div className={`flex-1 min-h-0 w-full max-w-full flex flex-col ${(isProjectHubAllWorkRoute || isIssueFullPageRoute || isProjectHubBacklogRoute) ? 'overflow-hidden' : 'overflow-y-auto overflow-x-hidden'}`}>
             <div className={`w-full max-w-full ${(isProjectHubAllWorkRoute || isIssueFullPageRoute || isProjectHubBacklogRoute) ? 'flex-1 min-h-0 flex flex-col overflow-hidden' : ''}`}>
               {shouldWrapHubSurface ? (
-                <HubSurface panelPadding={0}>
+                /* jira-compare 2026-05-05 cycle 2 — D-4 fix · drop the LEFT
+                   frame padding to 0 on AllWork (and full-page issue) so the
+                   navigator/issue panel sits flush against the global
+                   sidebar's vertical divider. Vikram complaint (image 6):
+                   "left side padding issue empty space left for the
+                   navigator railing by the vertical divider". Top/right/
+                   bottom keep 24px breathing room. */
+                <HubSurface
+                  panelPadding={0}
+                  framePadding={(isProjectHubAllWorkRoute || isIssueFullPageRoute) ? '24px 24px 24px 0' : 24}
+                >
                   <Outlet />
                 </HubSurface>
               ) : (

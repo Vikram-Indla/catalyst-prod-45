@@ -168,8 +168,13 @@ export default function ProjectAllWorkView({ projectKey, projectId }: Props) {
       {/* jira-compare follow-up (2026-05-02): top padding dropped to 0
           so the navigator and right rail "touch the roof" — Jira NIN
           aligns the rail flush against the page-header underline with
-          no extra gap. Side / bottom padding kept. */}
-      <div ref={splitRef} style={{ flex: 1, minHeight: 0, display: 'flex', overflow: 'hidden', gap: 8, padding: '0 8px 8px' }}>
+          no extra gap.
+          jira-compare 2026-05-05 cycle 2 — D-4 fix · LEFT padding dropped
+          from 8px to 0 so the navigator sits flush against the global
+          left rail's vertical divider. Vikram complaint (image 6):
+          "left side padding issue empty space left for the navigator
+          railing by the vertical divider". Right + bottom padding kept. */}
+      <div ref={splitRef} style={{ flex: 1, minHeight: 0, display: 'flex', overflow: 'hidden', gap: 8, padding: '0 8px 8px 0' }}>
           {/* Navigator (left) — always visible; expands to full width when narrow.
               jira-compare 2026-05-02: bg switched from --cp-bg-sunken
               (slate-100 grey) to white. Vikram probe captured rail bg as

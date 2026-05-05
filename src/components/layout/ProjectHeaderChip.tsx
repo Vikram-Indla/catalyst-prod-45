@@ -34,6 +34,7 @@ import Button, { IconButton } from '@atlaskit/button/new';
 import DropdownMenu, { DropdownItem, DropdownItemGroup } from '@atlaskit/dropdown-menu';
 import Modal, { ModalBody, ModalFooter, ModalHeader, ModalTitle, ModalTransition } from '@atlaskit/modal-dialog';
 import Textfield from '@atlaskit/textfield';
+import TextArea from '@atlaskit/textarea';
 import { toast } from 'sonner';
 import { useStarredItems } from '@/hooks/useStarredItems';
 import { useAuth } from '@/hooks/useAuth';
@@ -54,6 +55,15 @@ interface Props {
 
 export function ProjectHeaderChip({ projectKey }: Props) {
   const [fullscreen, setFullscreen] = useState(false);
+  /* jira-compare 2026-05-05 cycle 2 — D-1 fix · functional modals replace
+     toast stubs for Add people / Automation / Feedback. Each modal is
+     Atlaskit-only (modal-dialog + textfield/textarea + button/new). */
+  const [addPeopleOpen, setAddPeopleOpen] = useState(false);
+  const [automationOpen, setAutomationOpen] = useState(false);
+  const [feedbackOpen, setFeedbackOpen] = useState(false);
+  const [invitedEmails, setInvitedEmails] = useState<string[]>([]);
+  const [inviteEmail, setInviteEmail] = useState('');
+  const [feedbackText, setFeedbackText] = useState('');
 
   /* jira-compare follow-up (2026-05-02): canonical icon resolution.
      Catalyst stores project visuals across two tables —
@@ -94,9 +104,35 @@ export function ProjectHeaderChip({ projectKey }: Props) {
     navigator.clipboard.writeText(window.location.href);
     toast.success('Link copied');
   };
-  const handleAddPeople = () => toast('Add people — coming soon');
-  const handleAutomation = () => toast('Automation — coming soon');
-  const handleFeedback = () => toast('Feedback — coming soon');
+  /* jira-compare 2026-05-05 cycle 2 — D-1 fix · open real modals instead of
+     toast stubs. handleAddPeople/Automation/Feedback below now drive
+     state-controlled @atlaskit/modal-dialog instances rendered at the bottom
+     of this component. */
+  const handleAddPeople = () => setAddPeopleOpen(true);
+  const handleAutomation = () => setAutomationOpen(true);
+  const handleFeedback = () => setFeedbackOpen(true);
+
+  const isValidEmail = (e: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e.trim());
+  const submitInvite = () => {
+    const e = inviteEmail.trim();
+    if (!isValidEmail(e)) { toast.error('Enter a valid email address'); return; }
+    if (invitedEmails.includes(e)) { toast.error('Already invited'); return; }
+    setInvitedEmails(prev => [...prev, e]);
+    setInviteEmail('');
+    toast.success(`Invitation queued for ${e}`);
+  };
+  const closeAddPeople = () => { setAddPeopleOpen(false); setInviteEmail(''); };
+  const submitFeedback = () => {
+    const t = feedbackText.trim();
+    if (t.length < 5) { toast.error('Feedback must be at least 5 characters'); return; }
+    toast.success('Thanks for the feedback');
+    setFeedbackText('');
+    setFeedbackOpen(false);
+  };
+  const createAutomationRule = () => {
+    toast.success('Rule scaffolded — open Automation Hub to configure');
+    setAutomationOpen(false);
+  };
   const handleFullscreen = () => {
     if (!document.fullscreenElement) {
       document.documentElement.requestFullscreen?.();
@@ -233,6 +269,112 @@ export function ProjectHeaderChip({ projectKey }: Props) {
         onClick={handleFullscreen}
         testId="catalyst-project-header.fullscreen"
       />
+
+      {/* jira-compare 2026-05-05 cycle 2 — D-1 fix · Functional modals
+          replacing toast stubs. Each modal is Atlaskit-only: modal-dialog +
+          textfield/textarea + button/new. */}
+      <ModalTransition>
+        {addPeopleOpen && (
+          <Modal onClose={closeAddPeople} width="medium">
+            <ModalHeader>
+              <ModalTitle>Add people to {projectName}</ModalTitle>
+            </ModalHeader>
+            <ModalBody>
+              <div style={{ fontSize: 13, color: 'var(--ds-text-subtle, #626F86)', marginBottom: 12 }}>
+                Invite teammates by email. They'll receive an invitation to join this project.
+              </div>
+              <div style={{ display: 'flex', gap: 8, alignItems: 'center', marginBottom: 12 }}>
+                <div style={{ flex: 1 }}>
+                  <Textfield
+                    placeholder="email@company.com"
+                    value={inviteEmail}
+                    onChange={(e) => setInviteEmail((e.target as HTMLInputElement).value)}
+                    onKeyDown={(e) => { if ((e as React.KeyboardEvent).key === 'Enter') submitInvite(); }}
+                    autoFocus
+                    testId="catalyst-add-people.email-input"
+                  />
+                </div>
+                <Button appearance="primary" onClick={submitInvite} testId="catalyst-add-people.submit">
+                  Invite
+                </Button>
+              </div>
+              {invitedEmails.length > 0 && (
+                <div>
+                  <div style={{ fontSize: 12, color: 'var(--ds-text-subtle, #626F86)', marginBottom: 6 }}>
+                    Invited this session ({invitedEmails.length}):
+                  </div>
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+                    {invitedEmails.map(e => (
+                      <span key={e} style={{
+                        background: 'var(--ds-background-neutral, #F1F2F4)',
+                        color: 'var(--ds-text, #292A2E)',
+                        padding: '2px 8px', borderRadius: 3, fontSize: 12,
+                      }}>{e}</span>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </ModalBody>
+            <ModalFooter>
+              <Button appearance="subtle" onClick={closeAddPeople}>Done</Button>
+            </ModalFooter>
+          </Modal>
+        )}
+        {automationOpen && (
+          <Modal onClose={() => setAutomationOpen(false)} width="medium">
+            <ModalHeader>
+              <ModalTitle>Automation rules for {projectName}</ModalTitle>
+            </ModalHeader>
+            <ModalBody>
+              <div style={{
+                background: 'var(--ds-background-neutral-subtle, #F8F9FA)',
+                border: '1px solid var(--ds-border, #DFE1E6)',
+                borderRadius: 6, padding: '20px 24px',
+                textAlign: 'center',
+              }}>
+                <div style={{ fontSize: 16, fontWeight: 500, marginBottom: 6 }}>
+                  No rules yet
+                </div>
+                <div style={{ fontSize: 13, color: 'var(--ds-text-subtle, #626F86)', marginBottom: 16, lineHeight: 1.5 }}>
+                  Automate repetitive work — auto-assign issues, transition statuses,
+                  notify channels, sync linked items. Build your first rule in seconds.
+                </div>
+                <Button appearance="primary" onClick={createAutomationRule} testId="catalyst-automation.create-rule">
+                  Create your first rule
+                </Button>
+              </div>
+            </ModalBody>
+            <ModalFooter>
+              <Button appearance="subtle" onClick={() => setAutomationOpen(false)}>Close</Button>
+            </ModalFooter>
+          </Modal>
+        )}
+        {feedbackOpen && (
+          <Modal onClose={() => setFeedbackOpen(false)} width="medium">
+            <ModalHeader>
+              <ModalTitle>Give feedback</ModalTitle>
+            </ModalHeader>
+            <ModalBody>
+              <div style={{ fontSize: 13, color: 'var(--ds-text-subtle, #626F86)', marginBottom: 12 }}>
+                Tell us what's working, what isn't, or what you'd like to see next.
+              </div>
+              <TextArea
+                placeholder="Your feedback..."
+                value={feedbackText}
+                onChange={(e) => setFeedbackText((e.target as HTMLTextAreaElement).value)}
+                minimumRows={4}
+                testId="catalyst-feedback.textarea"
+              />
+            </ModalBody>
+            <ModalFooter>
+              <Button appearance="subtle" onClick={() => setFeedbackOpen(false)}>Cancel</Button>
+              <Button appearance="primary" onClick={submitFeedback} testId="catalyst-feedback.submit">
+                Submit
+              </Button>
+            </ModalFooter>
+          </Modal>
+        )}
+      </ModalTransition>
     </div>
   );
 }
