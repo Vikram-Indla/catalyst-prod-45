@@ -1,10 +1,10 @@
 /**
- * PriorityPopover — @atlaskit/popup wrapping a 4-level priority picker.
- * Uses the canonical PriorityIndicator (bars + label) — Atlaskit does not
- * ship a priority-level primitive.
+ * PriorityPopover — createPortal-based priority picker (fixed-position dropdown).
+ * Replaced @atlaskit/popup 2026-05-05 — same click-outside race fix as StatusPopover.
  */
-import React from 'react';
-import Popup from '@atlaskit/popup';
+import React, { useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
+import { token } from '@atlaskit/tokens';
 import { PriorityIndicator, normalisePriority } from '@/components/shared/PriorityIndicator';
 import { Check } from 'lucide-react';
 
@@ -24,47 +24,89 @@ const OPTIONS: Array<{ value: 'Critical' | 'High' | 'Medium' | 'Low' }> = [
 ];
 
 export function PriorityPopover({ priority, onChange, children, showActive = true }: PriorityPopoverProps) {
-  const [isOpen, setIsOpen] = React.useState(false);
+  const [isOpen, setIsOpen] = useState(false);
+  const [anchor, setAnchor] = useState<{ top: number; left: number } | null>(null);
+  const triggerRef = useRef<HTMLSpanElement>(null);
   const current = normalisePriority(priority);
 
+  useEffect(() => {
+    if (!isOpen) return;
+    const handler = (e: MouseEvent) => {
+      if (triggerRef.current?.contains(e.target as Node)) return;
+      const pop = document.querySelector('[data-sp-priority-popover]');
+      if (pop?.contains(e.target as Node)) return;
+      setIsOpen(false);
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, [isOpen]);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    const handler = (e: KeyboardEvent) => { if (e.key === 'Escape') setIsOpen(false); };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, [isOpen]);
+
+  const toggle = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!triggerRef.current) return;
+    if (isOpen) { setIsOpen(false); return; }
+    const r = triggerRef.current.getBoundingClientRect();
+    setAnchor({ top: r.bottom + 4, left: r.left });
+    setIsOpen(true);
+  };
+
   return (
-    <Popup
-      isOpen={isOpen}
-      onClose={() => setIsOpen(false)}
-      placement="bottom-start"
-      content={() => (
-        <div className="sp-pop" style={{ width: 180, padding: 4 }} onClick={(e) => e.stopPropagation()}>
-          {OPTIONS.map(({ value }) => {
-            const active = showActive && normalisePriority(value) === current;
-            return (
-              <button
-                key={value}
-                type="button"
-                className="sp-pop-row"
-                onClick={() => {
-                  onChange(value);
-                  setIsOpen(false);
-                }}
-              >
-                <PriorityIndicator priority={value} showLabel fontSize={13} />
-                {active && <Check size={14} color="#0052CC" style={{ marginLeft: 'auto' }} />}
-              </button>
-            );
-          })}
-        </div>
-      )}
-      trigger={(triggerProps) => (
-        <span
-          {...triggerProps}
-          onClick={(e) => {
-            e.stopPropagation();
-            setIsOpen((o) => !o);
-          }}
-          style={{ display: 'inline-flex' }}
-        >
-          {children}
-        </span>
-      )}
-    />
+    <>
+      <span ref={triggerRef} onClick={toggle} style={{ display: 'inline-flex', cursor: 'pointer' }}>
+        {children}
+      </span>
+
+      {isOpen && anchor && typeof document !== 'undefined' &&
+        createPortal(
+          <div
+            data-sp-priority-popover
+            role="menu"
+            style={{
+              position: 'fixed',
+              top: anchor.top,
+              left: anchor.left,
+              width: 180,
+              background: token('elevation.surface.overlay', '#FFFFFF'),
+              border: `1px solid ${token('color.border', '#DFE1E6')}`,
+              borderRadius: 6,
+              boxShadow: '0 8px 24px rgba(9, 30, 66, 0.16)',
+              padding: 4,
+              zIndex: 9999,
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            {OPTIONS.map(({ value }) => {
+              const active = showActive && normalisePriority(value) === current;
+              return (
+                <button
+                  key={value}
+                  type="button"
+                  role="menuitem"
+                  style={{
+                    display: 'flex', alignItems: 'center', width: '100%',
+                    height: 36, padding: '0 10px', gap: 8,
+                    background: active ? token('color.background.selected', '#E9F2FF') : 'transparent',
+                    border: 'none', cursor: 'pointer', fontFamily: 'inherit',
+                  }}
+                  onMouseEnter={(e) => { if (!active) e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', '#F4F5F7'); }}
+                  onMouseLeave={(e) => { if (!active) e.currentTarget.style.background = 'transparent'; }}
+                  onClick={() => { onChange(value); setIsOpen(false); }}
+                >
+                  <PriorityIndicator priority={value} showLabel fontSize={13} />
+                  {active && <Check size={14} color="#0052CC" style={{ marginLeft: 'auto' }} />}
+                </button>
+              );
+            })}
+          </div>,
+          document.body,
+        )}
+    </>
   );
 }
