@@ -10,7 +10,10 @@
  * Data logic (Supabase queries, create, delete) is unchanged.
  */
 import React, { useState, useEffect, useRef, useId } from 'react';
-import { ChevronDown, ChevronRight, Plus, X } from 'lucide-react';
+import ChevronDownIcon from '@atlaskit/icon/glyph/chevron-down';
+import ChevronRightIcon from '@atlaskit/icon/glyph/chevron-right';
+import AddIcon from '@atlaskit/icon/glyph/add';
+import CrossIcon from '@atlaskit/icon/glyph/cross';
 import Lozenge from '@atlaskit/lozenge';
 import Avatar from '@atlaskit/avatar';
 import Spinner from '@atlaskit/spinner';
@@ -131,7 +134,7 @@ export function DefectsSection({
             aria-expanded={expanded}
             aria-controls={bodyId}
           >
-            {expanded ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
+            {expanded ? <ChevronDownIcon label="" size="small" /> : <ChevronRightIcon label="" size="small" />}
             <span className="lwi-header__title">Defects</span>
             <span className="lwi-header__count" aria-label={`${defects.length} defects`}>
               {defects.length}
@@ -145,7 +148,7 @@ export function DefectsSection({
               aria-label="Log defect"
               title="Log defect"
             >
-              <Plus size={16} strokeWidth={2} />
+              <AddIcon label="Add defect" size="small" />
             </button>
           )}
         </div>
@@ -324,7 +327,7 @@ function DefectRow({
           aria-label={`Delete ${item.issue_key}`}
           title="Delete defect"
         >
-          <X size={16} />
+          <CrossIcon label="Remove" size="small" />
         </button>
       </span>
     </div>

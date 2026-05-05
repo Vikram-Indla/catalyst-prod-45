@@ -13,10 +13,10 @@
  *   (14/500/#505258 labels with space.250 / 20px gap).
  *
  *   The section is rendered by each CatalystView* left-content slot,
- *   not by CatalystViewBase, so types that don't yet have a parent
- *   concept (e.g. epic's Business-Request parent is rendered via the
- *   legacy ParentAndLabels block) can opt out by simply not mounting
- *   this section. Future step: unify ParentAndLabels into this.
+ *   not by CatalystViewBase, so types that don't need a parent concept
+ *   can opt out by simply not mounting this section. As of 2026-05-05
+ *   this is the canonical path for ALL types including Epic — the legacy
+ *   ParentAndLabels block has been removed.
  */
 import React, { useState } from 'react';
 import ChevronRightIcon from '@atlaskit/icon/glyph/chevron-right';
@@ -66,8 +66,9 @@ interface CatalystKeyDetailsProps {
   itemType: CatalystItemType;
   projectKey?: string;
   onOpenItem?: (key: string) => void;
-  /** If false, the Parent row is not rendered (for types that use
-   *  ParentAndLabels at a higher level, like Epic). Default true. */
+  /** If false, the Parent row is not rendered (e.g. Defect suppresses
+   *  the Key-details Parent row deliberately, leaving the breadcrumb as
+   *  the only Parent surface). Default true. */
   showParent?: boolean;
   /** If false, Priority is NOT rendered by core — the consumer must
    *  inject a Priority row inside `extraRows` to control its position

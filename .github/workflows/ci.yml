@@ -24,6 +24,11 @@ jobs:
         run: npx tsc --noEmit
         continue-on-error: true  # Remove once strictNullChecks is enabled
 
+      - name: Lint (hub-scope ADS + lucide-react ban — warn during migration)
+        run: npm run lint
+        continue-on-error: true  # Tighten to fail-on-warn once swept files
+                                 # are promoted to error tier in eslint.config.js
+
       - name: Build
         run: npx vite build
         env:
