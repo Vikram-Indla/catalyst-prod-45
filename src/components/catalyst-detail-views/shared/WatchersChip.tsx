@@ -13,8 +13,10 @@
  * jira-compare 2026-05-03 — swapped from star/star-filled (which read as
  * "favourite", not "watcher") to eye/eye-filled to match Jira's parity.
  */
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { IconButton } from '@atlaskit/button/new';
+import Button from '@atlaskit/button/new';
+import Avatar from '@atlaskit/avatar';
 import Tooltip from '@atlaskit/tooltip';
 import { useCatalystWatchers } from './hooks/useCatalystWatchers';
 
@@ -51,25 +53,99 @@ export function WatchersChip({ issueKey }: Props) {
   const { data, toggle } = useCatalystWatchers(issueKey);
   const count = data?.count ?? 0;
   const isWatching = data?.isWatching ?? false;
+  const watchers = data?.watchers ?? [];
   const label = isWatching ? 'Stop watching' : 'Start watching';
 
+  const [open, setOpen] = useState(false);
+  const triggerRef = useRef<HTMLSpanElement>(null);
+  const popupRef = useRef<HTMLDivElement>(null);
+
+  // Self-rolled click-outside (matches AllProjectsTable pattern; @atlaskit/popup
+  // v4.16 has a known empty-portal bug in this codebase).
+  useEffect(() => {
+    if (!open) return;
+    const handler = (e: MouseEvent) => {
+      const target = e.target as Node;
+      if (triggerRef.current?.contains(target)) return;
+      if (popupRef.current?.contains(target)) return;
+      setOpen(false);
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, [open]);
+
   return (
-    <Tooltip content={`${label} · ${count} watcher${count === 1 ? '' : 's'}`} position="bottom">
-      <span style={{ display: 'inline-flex', alignItems: 'center', gap: 2 }}>
+    <span ref={triggerRef} style={{ display: 'inline-flex', alignItems: 'center', gap: 2, position: 'relative' }}>
+      <Tooltip content={`${label} · ${count} watcher${count === 1 ? '' : 's'}`} position="bottom">
         <IconButton
           appearance="subtle"
           isSelected={isWatching}
           icon={() => isWatching ? <EyeFilledIcon size={16} /> : <EyeIcon size={16} />}
-          label={label}
-          onClick={() => toggle.mutate()}
+          label="Manage watchers"
+          onClick={() => setOpen(o => !o)}
         />
-        <span style={{
-          fontSize: 13, color: '#44546F', minWidth: 12, textAlign: 'center',
-          fontFamily: "'Atlassian Sans', -apple-system, sans-serif",
-        }}>
-          {count}
-        </span>
+      </Tooltip>
+      <span style={{
+        fontSize: 13, color: '#44546F', minWidth: 12, textAlign: 'center',
+        fontFamily: "'Atlassian Sans', -apple-system, sans-serif",
+      }}>
+        {count}
       </span>
-    </Tooltip>
+
+      {open && (
+        <div
+          ref={popupRef}
+          role="dialog"
+          aria-label="Manage watchers"
+          style={{
+            position: 'absolute', top: 'calc(100% + 4px)', right: 0,
+            minWidth: 260, maxWidth: 320, zIndex: 200,
+            background: 'var(--ds-surface-overlay, #FFFFFF)',
+            border: '1px solid var(--ds-border, #DFE1E6)',
+            borderRadius: 6,
+            boxShadow: 'var(--ds-shadow-overlay, 0 8px 16px rgba(9,30,66,0.15))',
+            padding: '12px 0',
+          }}
+        >
+          <div style={{
+            padding: '0 16px 8px', fontSize: 12, fontWeight: 500,
+            color: 'var(--ds-text-subtle, #44546F)', textTransform: 'uppercase', letterSpacing: 0.4,
+          }}>
+            Watching this issue
+          </div>
+          <div style={{ maxHeight: 240, overflowY: 'auto' }}>
+            {watchers.length === 0 ? (
+              <div style={{ padding: '8px 16px', fontSize: 13, color: 'var(--ds-text-subtle, #6B6E76)' }}>
+                No watchers yet.
+              </div>
+            ) : (
+              watchers.map(w => (
+                <div key={w.user_id} style={{
+                  display: 'flex', alignItems: 'center', gap: 10,
+                  padding: '6px 16px', fontSize: 13,
+                }}>
+                  <Avatar size="small" name={w.full_name ?? w.email ?? 'Unknown'} src={w.avatar_url ?? undefined} />
+                  <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    {w.full_name ?? w.email ?? 'Unknown'}
+                  </span>
+                </div>
+              ))
+            )}
+          </div>
+          <div style={{
+            borderTop: '1px solid var(--ds-border, #DFE1E6)',
+            padding: '8px 16px 0', display: 'flex', justifyContent: 'flex-end',
+          }}>
+            <Button
+              appearance={isWatching ? 'subtle' : 'primary'}
+              onClick={() => toggle.mutate()}
+              isLoading={toggle.isPending}
+            >
+              {label}
+            </Button>
+          </div>
+        </div>
+      )}
+    </span>
   );
 }
