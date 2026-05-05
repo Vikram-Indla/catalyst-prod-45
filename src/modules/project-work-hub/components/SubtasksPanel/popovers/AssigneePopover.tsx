@@ -78,9 +78,14 @@ export function AssigneePopover({ currentAccountId, onChange, children, showActi
 
   useEffect(() => {
     if (!isOpen) return;
-    const handler = (e: KeyboardEvent) => { if (e.key === 'Escape') setIsOpen(false); };
-    window.addEventListener('keydown', handler);
-    return () => window.removeEventListener('keydown', handler);
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        e.stopImmediatePropagation();
+        setIsOpen(false);
+      }
+    };
+    window.addEventListener('keydown', handler, { capture: true });
+    return () => window.removeEventListener('keydown', handler, { capture: true });
   }, [isOpen]);
 
   // Auto-focus search on open

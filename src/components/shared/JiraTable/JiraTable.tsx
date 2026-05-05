@@ -376,7 +376,12 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
           break;
         }
         case 'Escape': {
-          if (focusedRowId || onEscape) {
+          // Guard: if any SubtasksPanel popover is open, let the popover's
+          // capture-phase handler close it — don't close the detail panel.
+          const spPopoverOpen = !!document.querySelector(
+            '[data-sp-status-popover],[data-sp-priority-popover],[data-sp-assignee-popover]'
+          );
+          if (!spPopoverOpen && (focusedRowId || onEscape)) {
             e.preventDefault();
             setFocusedRow(null);
             onEscape?.();

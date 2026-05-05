@@ -43,9 +43,14 @@ export function PriorityPopover({ priority, onChange, children, showActive = tru
 
   useEffect(() => {
     if (!isOpen) return;
-    const handler = (e: KeyboardEvent) => { if (e.key === 'Escape') setIsOpen(false); };
-    window.addEventListener('keydown', handler);
-    return () => window.removeEventListener('keydown', handler);
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        e.stopImmediatePropagation();
+        setIsOpen(false);
+      }
+    };
+    window.addEventListener('keydown', handler, { capture: true });
+    return () => window.removeEventListener('keydown', handler, { capture: true });
   }, [isOpen]);
 
   const toggle = (e: React.MouseEvent) => {

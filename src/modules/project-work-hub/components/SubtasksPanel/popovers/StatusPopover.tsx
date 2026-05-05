@@ -53,12 +53,18 @@ export function StatusPopover({ status, onChange, children, showActive = true }:
     return () => document.removeEventListener('mousedown', handler);
   }, [isOpen]);
 
-  // Esc to close.
+  // Esc to close — capture phase + stopImmediatePropagation so the panel's own
+  // Escape listener doesn't also fire and close the entire detail drawer.
   useEffect(() => {
     if (!isOpen) return;
-    const handler = (e: KeyboardEvent) => { if (e.key === 'Escape') setIsOpen(false); };
-    window.addEventListener('keydown', handler);
-    return () => window.removeEventListener('keydown', handler);
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        e.stopImmediatePropagation();
+        setIsOpen(false);
+      }
+    };
+    window.addEventListener('keydown', handler, { capture: true });
+    return () => window.removeEventListener('keydown', handler, { capture: true });
   }, [isOpen]);
 
   const toggle = (e: React.MouseEvent) => {
