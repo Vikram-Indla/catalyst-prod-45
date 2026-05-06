@@ -534,9 +534,15 @@ export function CatalystSidebarDetails({
                   onUpdate={invalidateIssue}
                 />
               )}
-              {/* jira-compare 2026-05-05: Jira does not show "Assign to me"
-                  as a persistent link in the idle right rail — it appears
-                  only inside the assignee hover-picker. Removed to match Jira. */}
+              {/* jira-compare 2026-05-06: "Assign to me" is a persistent blue link
+                  in Jira's idle right rail, always visible below the assignee value. */}
+              <button
+                type="button"
+                onClick={handleAssignToMe}
+                style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', color: 'var(--ds-link, #0C66E4)', fontSize: 11, textAlign: 'left', marginTop: 2 }}
+              >
+                Assign to me
+              </button>
             </div>
           </FieldRow>
 

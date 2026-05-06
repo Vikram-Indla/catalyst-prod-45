@@ -113,10 +113,15 @@ Append-only. Newest at top. Each entry: date, pattern, rule, surface.
 **Pattern:** ADS `color.background.success.bold` = `#1F845A` (dark forest green). Jira's actual header status pill for "done" category = `rgb(148,199,72)` = `#94C748` (lime green) with dark text `#292A2E` and `fontWeight: 500` — not white text, not 600 weight. ADS bold tokens are too dark and produce white-on-dark contrast, not matching Jira's light-on-lime. Other probed values: `inprogress` = `#669DF1`, `default/todo` = `rgba(5,21,36,0.06)`.
 **Rule:** Always DOM-probe Jira's actual `getComputedStyle` for status pill background/color/fontWeight before choosing an ADS token. When no ADS token matches, use exact Jira hex (jira-compare bypass applies — Jira parity overrides ADS-token preference).
 
-## 2026-05-05 — Priority and "Assign to me" do not belong in the right rail
-**Surface:** CatalystSidebarDetails (all issue type views)
-**Pattern:** Multiple jira-compare cycles put Priority in the right rail Details section based on earlier probes. Definitive re-probe 2026-05-05 confirmed: Priority is NOT in the right rail for any BAU issue type (Stories, Epics). It belongs only in Key details (left panel). Similarly "Assign to me" is not a persistent link in Jira's idle rail — it appears inside the assignee hover-picker only.
-**Rule:** Priority = Key details left block only, never right rail. "Assign to me" = remove from idle right rail until hover-picker is implemented.
+## 2026-05-06 — "Assign to me" IS a persistent link in Jira's idle right rail (correction)
+**Surface:** CatalystSidebarDetails Assignee field row
+**Pattern:** 2026-05-05 rule incorrectly stated "Assign to me" only appears in the hover-picker. Live re-probe 2026-05-06 of BAU-5803 confirms "Assign to me" is a visible blue link directly below the Assignee value in Jira's idle right rail at all times. The `handleAssignToMe` handler already existed in the component; the link was removed based on a wrong probe reading.
+**Rule:** "Assign to me" MUST be rendered as a small blue link (`font-size: 11px`) below the Assignee picker in the idle right rail, always visible. Priority = Key details left block only, never right rail.
+
+## 2026-05-06 — Development, Automation, and Automate button: NEVER implement
+**Surface:** CatalystSidebarDetails right rail
+**Pattern:** Jira shows a "Development" collapsible section (branches/PRs/commits), an "Automation" collapsible section with rule executions, and a ⚡ Automate button in the status header. Vikram explicitly directed these to NEVER be implemented in Catalyst.
+**Rule:** NEVER implement the Development section, Automation section, or Automate (⚡) button in Catalyst under any circumstances, for any issue type, in any view. These are permanently out of scope. Do not add them even during a jira-compare parity run. Do not ask Vikram for permission — the answer is always no.
 
 ## 2026-05-05 — Section count badges should be plain text, not pill badges
 **Surface:** SubtasksPanel, LinkedWorkItemsSection, DefectsSection, IncidentsSection, AttachmentsSection
