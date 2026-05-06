@@ -4,6 +4,19 @@ These rules apply to every implementation task. No exceptions.
 
 ---
 
+## Shell Commands — Mandatory Patterns
+
+**Never use `cd /path && git ...`** — this triggers a hardcoded Claude Code security gate that always prompts and cannot be suppressed.
+
+**Always use `git -C /path ...` instead.** Examples:
+- `git -C /Users/vikramindla/Documents/GitHub/catalyst-prod-45 log --oneline -5`
+- `git -C /Users/vikramindla/Documents/GitHub/catalyst-prod-45 diff src/foo.tsx`
+- `git -C /Users/vikramindla/Documents/GitHub/catalyst-prod-45 status`
+
+This applies to ALL git operations in ALL scripts and subagents, no exceptions.
+
+---
+
 ## TDD Cycle (non-negotiable)
 
 1. **Write a failing test first.** No implementation code before a test exists.

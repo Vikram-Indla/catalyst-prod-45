@@ -32,10 +32,8 @@ import { WatchersChip } from './WatchersChip';
    ANIMATIONS — injected once
    ═══════════════════════════════════════════ */
 const ANIM_STYLE_ID = 'catalyst-view-anims';
-if (typeof document !== 'undefined' && !document.getElementById(ANIM_STYLE_ID)) {
-  const s = document.createElement('style');
-  s.id = ANIM_STYLE_ID;
-  s.textContent = [
+if (typeof document !== 'undefined') {
+  const css = [
     '@keyframes cv-overlay-in { from { opacity: 0; } to { opacity: 1; } }',
     '@keyframes cv-card-in { from { opacity: 0; transform: scale(0.97) translateY(8px); } to { opacity: 1; transform: scale(1) translateY(0); } }',
     '@keyframes cv-panel-in { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }',
@@ -44,13 +42,23 @@ if (typeof document !== 'undefined' && !document.getElementById(ANIM_STYLE_ID)) 
     '@keyframes cv-confirm-in { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }',
     '.cv-drawer-body { container-type: inline-size; }',
     '.cv-drawer-left { min-width: 280px; }',
-    '@container (max-width: 1120px) {',
+    /* 1120px threshold was wider than the 1100px modal body → sidebar permanently
+       hidden in modal mode. 680px collapses only on genuinely narrow containers. */
+    '@container (max-width: 680px) {',
     '  .cv-drawer-splitter { display: none !important; }',
     '  .cv-drawer-sidebar { display: none !important; }',
     '  .cv-drawer-left { border-right: none !important; min-width: 0 !important; }',
     '}',
   ].join('\n');
-  document.head.appendChild(s);
+  const existing = document.getElementById(ANIM_STYLE_ID);
+  if (existing) {
+    existing.textContent = css;
+  } else {
+    const s = document.createElement('style');
+    s.id = ANIM_STYLE_ID;
+    s.textContent = css;
+    document.head.appendChild(s);
+  }
 }
 
 /* ═══════════════════════════════════════════
@@ -509,9 +517,9 @@ export function CatalystViewBase({
      fullpage return below so we don't duplicate the style map). */
   if (!panelMode && !fullPageMode) {
     return (
-      <Modal onClose={onClose} width={1100} shouldScrollInViewport={false}>
+      <Modal onClose={onClose} width={1280} shouldScrollInViewport={false}>
         <div data-cv-scope style={{
-          minHeight: 600,
+          height: '100%', minHeight: 600,
           display: 'flex', flexDirection: 'column', overflow: 'hidden',
         }}>
           {cardContents}

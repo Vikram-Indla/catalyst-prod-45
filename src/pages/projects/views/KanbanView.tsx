@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import { Card, CardContent } from '@/components/ui/card';
 import { Avatar } from '@/components/ads';
 import { cn } from '@/lib/utils';
 import { ProjectData } from '../../../types/project.types';
+import CatalystDetailRouter from '@/components/catalyst-detail-views/CatalystDetailRouter';
 
 interface KanbanViewProps {
   project: ProjectData;
@@ -19,6 +20,8 @@ interface KanbanItem {
 }
 
 export default function KanbanView({ project }: KanbanViewProps) {
+  const [selectedKey, setSelectedKey] = useState<string | null>(null);
+
   const columns = [
     { id: 'TO DO', title: 'TO DO' },
     { id: 'IN PROGRESS', title: 'IN PROGRESS' },
@@ -87,7 +90,7 @@ export default function KanbanView({ project }: KanbanViewProps) {
                   </div>
                 ) : (
                   items.map((item) => (
-                    <Card key={item.key} className="cursor-pointer hover:shadow-md transition-shadow">
+                    <Card key={item.key} className="cursor-pointer hover:shadow-md transition-shadow" onClick={() => setSelectedKey(item.key)}>
                       <CardContent className="p-3">
                         {/* SUMMARY */}
                         <div className="text-sm text-foreground mb-3 leading-5">
@@ -117,6 +120,13 @@ export default function KanbanView({ project }: KanbanViewProps) {
           );
         })}
       </div>
+
+      <CatalystDetailRouter
+        isOpen={!!selectedKey}
+        onClose={() => setSelectedKey(null)}
+        itemId={selectedKey ?? ''}
+        projectKey={project.key}
+      />
     </div>
   );
 }

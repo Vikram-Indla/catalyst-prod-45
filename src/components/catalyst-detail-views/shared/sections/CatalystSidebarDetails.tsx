@@ -516,7 +516,9 @@ export function CatalystSidebarDetails({
           padding: '0 0', background: 'transparent',
         }}>
           <ChevronDownIcon size="small" primaryColor="var(--ds-icon-subtle, #626F86)" />
-          <Heading size="small">Details</Heading>
+          {/* jira-compare 2026-05-07 T3: Jira "Details" header is fw500, not the bold fw653
+              that Atlaskit <Heading size="small"> produces. Plain div matches Jira exactly. */}
+          <div style={{ fontSize: 16, fontWeight: 500, lineHeight: '20px', color: 'var(--ds-text, #292A2E)' }}>Details</div>
         </div>
 
         <div style={{ padding: '0' }}>
@@ -554,7 +556,7 @@ export function CatalystSidebarDetails({
                 <button
                   type="button"
                   onClick={handleAssignToMe}
-                  style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', color: 'var(--ds-link, #0C66E4)', fontSize: 11, textAlign: 'left', marginTop: 2 }}
+                  style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', color: 'var(--ds-link, #0C66E4)', fontSize: 12, textAlign: 'left', marginTop: 2 }}
                 >
                   Assign to me
                 </button>

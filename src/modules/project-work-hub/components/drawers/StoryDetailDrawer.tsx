@@ -773,7 +773,6 @@ function AssigneePicker({ projectId, currentAssignee, onSelect }: {
           style={{
             width: '100%', height: 32, border: '1px solid rgba(15,23,42,0.12)', borderRadius: 4,
             padding: '0 8px', fontSize: 13, outline: 'none', background: '#F8FAFC',
-            fontFamily: "'Inter', sans-serif",
           }}
         />
       </div>

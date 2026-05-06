@@ -5,13 +5,13 @@
  */
 
 import React, { useState, useMemo } from 'react';
-import { useParams, Link, useNavigate } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { ChevronRight, ChevronDown, Layers, BookOpen, Loader2 } from 'lucide-react';
+import { ChevronRight, ChevronDown, Layers, Loader2 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useWorkItemsHierarchy } from '@/modules/project-work-hub/hooks/useWorkItems';
 import { WorkItemWithChildren, WorkItem } from '@/modules/project-work-hub/types';
-import { WorkItemDetailsDrawer } from '@/modules/project-work-hub/components/WorkItemDetailsDrawer';
+import CatalystDetailRouter from '@/components/catalyst-detail-views/CatalystDetailRouter';
 import { StatusLozenge } from '@/modules/project-work-hub/components/StatusLozenge';
 import { WorkTypeIcon } from '@/modules/project-work-hub/components/WorkTypeIcon';
 import { cn } from '@/lib/utils';
@@ -121,9 +121,8 @@ function FeatureRow({ feature, isExpanded, onToggle, onFeatureClick, onStoryClic
 
 export function ProjectBacklogPage() {
   const { projectId } = useParams<{ projectId: string }>();
-  const navigate = useNavigate();
   const [expandedFeatures, setExpandedFeatures] = useState<Set<string>>(new Set());
-  const [selectedItem, setSelectedItem] = useState<WorkItem | null>(null);
+  const [selectedKey, setSelectedKey] = useState<string | null>(null);
 
   // Fetch project name for breadcrumb
   const { data: project } = useQuery({
@@ -163,12 +162,12 @@ export function ProjectBacklogPage() {
     });
   };
 
-  const handleFeatureClick = (featureId: string) => {
-    navigate(`/projects/${projectId}/features/${featureId}`);
+  const handleStoryClick = (story: WorkItem) => {
+    setSelectedKey(story.key);
   };
 
-  const handleStoryClick = (story: WorkItem) => {
-    setSelectedItem(story);
+  const handleFeatureOpen = (feature: WorkItemWithChildren) => {
+    setSelectedKey(feature.key);
   };
 
   const totalStories = useMemo(() => {
@@ -232,7 +231,7 @@ export function ProjectBacklogPage() {
                     feature={feature}
                     isExpanded={expandedFeatures.has(feature.id)}
                     onToggle={() => toggleFeature(feature.id)}
-                    onFeatureClick={() => handleFeatureClick(feature.id)}
+                    onFeatureClick={() => handleFeatureOpen(feature)}
                     onStoryClick={handleStoryClick}
                   />
                 ))}
@@ -242,11 +241,12 @@ export function ProjectBacklogPage() {
         )}
       </div>
 
-      {/* Work Item Details Drawer - same as Project Room */}
-      <WorkItemDetailsDrawer
-        item={selectedItem}
-        isOpen={!!selectedItem}
-        onClose={() => setSelectedItem(null)}
+      <CatalystDetailRouter
+        isOpen={!!selectedKey}
+        onClose={() => setSelectedKey(null)}
+        itemId={selectedKey ?? ''}
+        projectId={projectId ?? ''}
+        projectKey={project?.key ?? ''}
       />
     </div>
   );

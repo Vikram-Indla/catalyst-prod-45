@@ -3317,8 +3317,8 @@ input[type="range"]::-moz-range-thumb {
    F2 will swap values to Charlie Display; no pixel change until then.
    ═══════════════════════════════════════════════════ */
 :root {
-  --cp-font-body:    'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  --cp-font-heading: 'Sora', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --cp-font-body:    "Atlassian Sans", ui-sans-serif, -apple-system, "system-ui", "Segoe UI", Ubuntu, "Helvetica Neue", sans-serif;
+  --cp-font-heading: "Atlassian Sans", ui-sans-serif, -apple-system, "system-ui", "Segoe UI", Ubuntu, "Helvetica Neue", sans-serif;
   --cp-font-mono:    'JetBrains Mono', ui-monospace, 'SF Mono', Consolas, monospace;
   --cp-font-weight-regular:  400;
   --cp-font-weight-medium:   500;

@@ -63,7 +63,7 @@ export default function KanbanCardComponent({ card, onCardClick }: Props) {
       onClick={(e) => {
         if (!isDragging && onCardClick) {
           e.stopPropagation();
-          onCardClick(card.id);
+          onCardClick(card.key);
         }
       }}
       style={{
