@@ -1069,9 +1069,9 @@ export default function KanbanBoardPage() {
       {selIssueId && (
         <Suspense fallback={null}>
           <CatalystDetailRouter
-            isOpen={!!selIssueId}
+            isOpen={true}
             onClose={() => setSelIssueId(null)}
-            itemId={selIssueId}
+            itemId={issuesById.get(selIssueId)?.issueKey ?? selIssueId}
             projectId={projMeta?.id ?? ''}
             projectKey={key}
           />
