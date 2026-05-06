@@ -13,6 +13,9 @@ import {
 import { LinkedWorkItemsSection } from '@/modules/project-work-hub/components/linked-work-items';
 import { SubtasksPanel } from '@/modules/project-work-hub/components/SubtasksPanel';
 import { ImproveIssueDropdown, useImproveApplyHandlers } from '@/components/catalyst-detail-views/improve';
+import { CatalystSeverityField } from '../shared/sections/CatalystSeverityField';
+import { KeyDetailsFieldRow } from '../shared/sections';
+import { useQueryClient } from '@tanstack/react-query';
 import type { CatalystViewBaseProps } from '../shared/types';
 import {
   PRIORITY_STYLES,
@@ -27,6 +30,7 @@ export default function CatalystViewIncident({
   const mutations = useCatalystIssueMutations(itemId, onClose);
   const improveHandlers = useImproveApplyHandlers(issue ?? null);
   const priorityStyle = PRIORITY_STYLES[issue?.priority ?? 'Medium'] ?? PRIORITY_STYLES.Medium;
+  const queryClient = useQueryClient();
 
   const leftContent = (
     <>
@@ -46,10 +50,21 @@ export default function CatalystViewIncident({
       {/* jira-compare 2026-05-03 — Patch E · CatalystStatusPill relocated to right-rail header in CatalystSidebarDetails. */}
       <CatalystQuickActions />
       {/* jira-compare 2026-05-03 — Improve relocated to right-rail slot in CatalystSidebarDetails (Patch D). */}
-      {/* jira-compare follow-up (2026-05-02): Parent moved to right rail
-          for consistency with Story / Defect. KeyDetails left block kept
-          for Priority (Incident has no extraRows yet). */}
-      <CatalystKeyDetails issue={issue ?? null} itemId={itemId} itemType="incident" projectKey={projectKey} onOpenItem={onOpenItem} showParent={false} />
+      {/* jira-compare 2026-05-07 Fix N: Severity added to Key details.
+          Service Now# + Assessment Feature permanently banned (see CLAUDE.md).
+          Jira PI key order: Priority → Severity. showParent={false} — Jira PI has no Parent row. */}
+      <CatalystKeyDetails
+        issue={issue ?? null} itemId={itemId} itemType="incident"
+        projectKey={projectKey} onOpenItem={onOpenItem} showParent={false}
+        extraRows={
+          <KeyDetailsFieldRow label="Severity" alignBlock="center">
+            <CatalystSeverityField
+              issue={issue ?? null}
+              onUpdate={() => queryClient.invalidateQueries({ queryKey: ['cv-issue-detail', itemId] })}
+            />
+          </KeyDetailsFieldRow>
+        }
+      />
       <CatalystDescriptionSection issue={issue ?? null} />
       <CatalystAcceptanceCriteria issue={issue ?? null} label="Impact / Root Cause" />
 
