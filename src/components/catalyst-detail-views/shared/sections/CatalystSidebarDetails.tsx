@@ -72,7 +72,7 @@ function FieldRow({
     </div>
   );
 }
-import { useQueryClient } from '@tanstack/react-query';
+import { useQueryClient, useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/lib/auth';
 import type { PhIssue } from '../types';
@@ -259,6 +259,21 @@ export function CatalystSidebarDetails({
   /* ── Auth + current user profile ─────────── */
   const { user } = useAuth();
   const { data: currentProfile } = useCatalystAvatarProfile(user?.id);
+
+  /* ── Current user's Jira account ID (for "Assign to me" gate) ── */
+  const { data: currentUserJiraId } = useQuery({
+    queryKey: ['cv-jira-id', user?.id],
+    enabled: !!user?.id,
+    staleTime: 300000,
+    queryFn: async () => {
+      const { data } = await (supabase as any)
+        .from('jira_identity_map')
+        .select('jira_account_id')
+        .eq('catalyst_user_id', user!.id)
+        .maybeSingle();
+      return (data?.jira_account_id as string | null) ?? null;
+    },
+  });
 
   /* ── Avatar resolution for reporter ─────── */
   const { data: reporterProfile } = useCatalystAvatarProfile(issue?.reporter_account_id);
@@ -534,15 +549,16 @@ export function CatalystSidebarDetails({
                   onUpdate={invalidateIssue}
                 />
               )}
-              {/* jira-compare 2026-05-06: "Assign to me" is a persistent blue link
-                  in Jira's idle right rail, always visible below the assignee value. */}
-              <button
-                type="button"
-                onClick={handleAssignToMe}
-                style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', color: 'var(--ds-link, #0C66E4)', fontSize: 11, textAlign: 'left', marginTop: 2 }}
-              >
-                Assign to me
-              </button>
+              {/* jira-compare 2026-05-07: hide when current user IS the assignee (Jira account ID or Supabase UUID match) */}
+              {user && issue?.assignee_account_id !== user.id && issue?.assignee_account_id !== currentUserJiraId && (
+                <button
+                  type="button"
+                  onClick={handleAssignToMe}
+                  style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', color: 'var(--ds-link, #0C66E4)', fontSize: 11, textAlign: 'left', marginTop: 2 }}
+                >
+                  Assign to me
+                </button>
+              )}
             </div>
           </FieldRow>
 
