@@ -442,7 +442,7 @@ export function CatalystViewBase({
             scroll container (the layout's main flex pane) drives scrolling, enabling
             position:sticky on the right rail. Panel/modal modes keep overflow:hidden to
             clip columns within the bounded pane. */}
-        <div className="cv-drawer-body" style={{ flex: 1, display: 'flex', overflow: fullPageMode ? 'visible' : 'hidden', alignItems: 'flex-start' }}>
+        <div className="cv-drawer-body" style={{ flex: 1, display: 'flex', overflow: fullPageMode ? 'visible' : 'hidden', alignItems: fullPageMode ? 'flex-start' : 'stretch' }}>
 
           {/* LEFT PANEL —
               jira-compare follow-up (2026-05-02): data-sdm-scope added so
@@ -456,7 +456,7 @@ export function CatalystViewBase({
               for independent column scroll within the bounded pane. */}
           <div className="cv-drawer-left" data-sdm-scope style={{
             flex: 1, padding: '20px 24px 32px 24px',
-            borderRight: '1px solid #EBECF0', minWidth: 0,
+            borderRight: '1px solid #EBECF0', minWidth: 0, minHeight: 0,
             ...(!fullPageMode ? { overflowY: 'auto' } : {}),
           }}>
             {isLoading ? (
@@ -492,6 +492,7 @@ export function CatalystViewBase({
             width: rightPanelWidth, minWidth: 220, maxWidth: 600,
             background: 'var(--ds-surface, #FFFFFF)', overflowX: 'hidden',
             display: 'flex', flexDirection: 'column', padding: '16px 16px 32px 16px',
+            minHeight: 0,
             ...(fullPageMode
               ? { position: 'sticky', top: 0, maxHeight: '100vh', overflowY: 'auto', alignSelf: 'flex-start' }
               : { overflowY: 'auto' }
@@ -519,7 +520,7 @@ export function CatalystViewBase({
     return (
       <Modal onClose={onClose} width={1280} shouldScrollInViewport={false}>
         <div data-cv-scope style={{
-          height: '100%', minHeight: 600,
+          height: '90vh', minHeight: 600,
           display: 'flex', flexDirection: 'column', overflow: 'hidden',
         }}>
           {cardContents}
