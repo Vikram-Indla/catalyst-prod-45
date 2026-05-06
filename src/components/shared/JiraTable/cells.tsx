@@ -439,7 +439,7 @@ export function makePriorityCell(getPriority: (row: any) => string | null) {
 export function makeDateCell(
   getISO: (row: any) => string | null,
   format: (iso: string) => string = (iso) =>
-    new Date(iso).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: '2-digit' }),
+    new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
 ) {
   return function DateCell({ row }: CellProps<any>) {
     const iso = getISO(row);

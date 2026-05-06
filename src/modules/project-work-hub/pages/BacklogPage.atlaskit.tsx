@@ -51,6 +51,7 @@ import {
   makeStatusEditCell,
   makeStatusEditCellAkPopup,
   makeSummaryInlineEditCell,
+  makeAssigneeCell,
   makeAssigneeEditCell,
   makePriorityEditCell,
   makeParentEditCell,
@@ -154,6 +155,7 @@ export interface BacklogItem {
   source: 'jira' | 'catalyst';
   updated_at: string | null;
   created_at: string | null;
+  due_date: string | null;
   comment_count: number | null;
 }
 
@@ -527,6 +529,8 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
   // row whose status is in DONE_LIKE_STATUSES (Catalyst variants of
   // Jira's "Done" column). When false (default), all rows render.
   const [hideDoneItems, setHideDoneItems] = useState<boolean>(false);
+  const [density, setDensity] = useState<'compact' | 'comfortable'>('compact');
+  const [columnOrder, setColumnOrder] = useState<string[] | null>(null);
 
   // Apr 27 2026 (jira-compare regression iter 3 — Add people modal).
   // Catalyst's Add people CTA in the chrome band opens this modal,
@@ -833,6 +837,7 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
         source: e.source ?? 'jira',
         updated_at: e.jira_updated_at ?? null,
         created_at: e.jira_created_at ?? null,
+        due_date: (e as any).end_date ?? (e as any).due_date ?? null,
         comment_count: e.comment_count ?? null,
       });
     });
@@ -874,6 +879,7 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
           source: 'jira',
           updated_at: ep.jira_updated_at ?? null,
           created_at: ep.jira_created_at ?? null,
+          due_date: null,
           comment_count: null,
         });
       }
@@ -923,6 +929,7 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
         source: s.source ?? 'jira',
         updated_at: s.jira_updated_at ?? null,
         created_at: s.jira_created_at ?? null,
+        due_date: (s as any).start_date ?? (s as any).due_date ?? null,
         comment_count: null,
       });
     });
@@ -1588,6 +1595,28 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
       cell: makeDateCell((r: BacklogItem) => r.updated_at),
     },
     {
+      id: 'due_date',
+      label: 'Due date',
+      width: 10,
+      sortable: true,
+      defaultVisible: false,
+      accessor: (r: BacklogItem) => r.due_date || '',
+      cell: makeDateCell((r: BacklogItem) => r.due_date),
+    },
+    {
+      id: 'reporter',
+      label: 'Reporter',
+      width: 15,
+      sortable: true,
+      defaultVisible: false,
+      accessor: (r: BacklogItem) => r.reporter_name || '',
+      cell: makeAssigneeCell((r: BacklogItem) =>
+        r.reporter_name
+          ? { name: r.reporter_name, avatarUrl: avatarsByName.get(r.reporter_name.toLowerCase()) ?? null }
+          : null,
+      ),
+    },
+    {
       id: '__actions',
       label: '',
       width: 3,
@@ -1803,6 +1832,39 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
     flag.info('Refreshing', 'Reloading backlog data…');
   };
 
+  const handleExportCSV = () => {
+    const rows = filteredVisibleRows.length > 0 ? filteredVisibleRows : items;
+    const headers = ['Key', 'Summary', 'Type', 'Status', 'Priority', 'Assignee', 'Reporter', 'Parent', 'Created', 'Updated', 'Due date'];
+    const escape = (v: string | null | undefined) => {
+      const s = String(v ?? '');
+      return s.includes(',') || s.includes('"') || s.includes('\n') ? `"${s.replace(/"/g, '""')}"` : s;
+    };
+    const lines = [
+      headers.join(','),
+      ...rows.map((r) => [
+        escape(r.key),
+        escape(r.title),
+        escape(r.type),
+        escape(r.status),
+        escape(r.priority),
+        escape(r.assignee_name),
+        escape(r.reporter_name),
+        escape(r.parent_key ? `${r.parent_key} ${r.parent_label || ''}`.trim() : null),
+        escape(r.created_at ? r.created_at.slice(0, 10) : null),
+        escape(r.updated_at ? r.updated_at.slice(0, 10) : null),
+        escape(r.due_date ? r.due_date.slice(0, 10) : null),
+      ].join(',')),
+    ];
+    const blob = new Blob([lines.join('\n')], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `backlog-${projectId}-${new Date().toISOString().slice(0, 10)}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+    flag.success('Exported', `${rows.length} rows exported to CSV`);
+  };
+
   // Shared icon-button styles for the right-cluster toolbar buttons.
   // Matches the visual rhythm of toolbarMaximizeIcon (32×32, transparent,
   // ADS subtle text token).
@@ -1867,6 +1929,20 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
             },
           ],
         },
+        {
+          items: [
+            {
+              id: 'density-compact',
+              label: density === 'compact' ? '✓ Compact' : 'Compact',
+              onClick: () => setDensity('compact'),
+            },
+            {
+              id: 'density-comfortable',
+              label: density === 'comfortable' ? '✓ Comfortable' : 'Comfortable',
+              onClick: () => setDensity('comfortable'),
+            },
+          ],
+        },
       ]}
     />
   );
@@ -1884,7 +1960,7 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
       groups={[
         { items: [
           { id: 'refresh', label: 'Refresh', icon: <RefreshCw size={14} />, onClick: handleRefreshBacklog },
-          { id: 'export', label: 'Export to CSV', icon: <Download size={14} />, onClick: () => flag.info('Export', 'CSV export coming soon.') },
+          { id: 'export', label: 'Export to CSV', icon: <Download size={14} />, onClick: handleExportCSV },
         ]},
       ]}
     />
@@ -2508,7 +2584,10 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
             rowsPerPage={0}
             page={1}
             onPageChange={undefined as any}
-            density="compact"
+            density={density}
+            enableColumnReorder
+            columnOrder={columnOrder ?? undefined}
+            onColumnOrderChange={(next) => setColumnOrder(next)}
             ariaLabel="Unified backlog"
             emptyView={
               <EmptyState
