@@ -52,10 +52,10 @@ const SECTIONS: NavSection[] = [
     items: [
       { label: 'Work types', to: '/admin/v2/work-items/types' },
       { label: 'Workflows', to: '/admin/v2/work-items/workflows', prefixMatch: true },
-      { label: 'Screens', disabled: true },
+      { label: 'Screens', to: '/admin/v2/work-items/screens' },
       { label: 'Custom fields', to: '/admin/v2/work-items/custom-fields' },
       { label: 'Statuses', to: '/admin/v2/work-items/statuses' },
-      { label: 'Notifications', disabled: true },
+      { label: 'Notifications', to: '/admin/v2/work-items/notifications' },
     ],
   },
   {
