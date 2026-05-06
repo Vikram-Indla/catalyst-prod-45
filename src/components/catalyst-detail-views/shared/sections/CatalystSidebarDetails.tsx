@@ -562,10 +562,20 @@ export function CatalystSidebarDetails({
             </div>
           </FieldRow>
 
-          {/* ── Priority (Epic) — REMOVED 2026-05-05 per Vikram directive.
-              Jira does not show Priority in the right rail Details section
-              for any issue type probed (Stories, Epics on BAU board).
-              Priority belongs in the Key details left block. */}
+          {/* ── Priority (Epic only) — jira-compare 2026-05-07: re-probe BAU-5419
+              confirmed Priority IS in Jira's right rail for Epics.
+              All other types: Priority stays in Key details left block. */}
+          {issue?.issue_type === 'Epic' && (
+            <FieldRow label="Priority" alignBlock="center">
+              {issue && (
+                <EditablePriority
+                  issueId={issue.id}
+                  currentPriority={issue.priority}
+                  onUpdate={invalidateIssue}
+                />
+              )}
+            </FieldRow>
+          )}
 
           {/* ── Reporter ──── Defect-2 Cycle 6 (2026-05-03): made editable */}
           <FieldRow label="Reporter" alignBlock="center">

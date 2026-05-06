@@ -116,7 +116,7 @@ Append-only. Newest at top. Each entry: date, pattern, rule, surface.
 ## 2026-05-06 — "Assign to me" IS a persistent link in Jira's idle right rail (correction)
 **Surface:** CatalystSidebarDetails Assignee field row
 **Pattern:** 2026-05-05 rule incorrectly stated "Assign to me" only appears in the hover-picker. Live re-probe 2026-05-06 of BAU-5803 confirms "Assign to me" is a visible blue link directly below the Assignee value in Jira's idle right rail at all times. The `handleAssignToMe` handler already existed in the component; the link was removed based on a wrong probe reading.
-**Rule:** "Assign to me" MUST be rendered as a small blue link (`font-size: 11px`) below the Assignee picker in the idle right rail, always visible. Priority = Key details left block only, never right rail.
+**Rule:** "Assign to me" MUST be rendered as a small blue link (`font-size: 11px`) below the Assignee picker in the idle right rail, only when the current user is not the assignee. Priority = Key details left block for all types EXCEPT Epic. For Epic, Priority belongs in the right rail Details section (between Assignee and Reporter) — confirmed by re-probe of BAU-5419 on 2026-05-07.
 
 ## 2026-05-06 — Development, Automation, and Automate button: NEVER implement
 **Surface:** CatalystSidebarDetails right rail
