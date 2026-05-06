@@ -37,6 +37,7 @@ import Textfield from '@atlaskit/textfield';
 import TextArea from '@atlaskit/textarea';
 import { toast } from 'sonner';
 import { useStarredItems } from '@/hooks/useStarredItems';
+import { useToggleStar, useStarredItemIds } from '@/hooks/home/useStarredItems';
 import { useAuth } from '@/hooks/useAuth';
 import { ProjectIcon } from '@/components/shared/ProjectIcon';
 import {
@@ -74,6 +75,9 @@ export function ProjectHeaderChip({ projectKey }: Props) {
      To honour mem://constraints/canonical-project-icons we read both
      tables in parallel and forward all three signals. Initial-letter
      tiles are explicitly forbidden. */
+  const toggleStarMutation = useToggleStar();
+  const { data: starredIds } = useStarredItemIds();
+
   const { data: project } = useQuery({
     queryKey: ['project-header-chip', projectKey],
     enabled: !!projectKey,
@@ -81,15 +85,16 @@ export function ProjectHeaderChip({ projectKey }: Props) {
     queryFn: async () => {
       const [jiraRes, phRes] = await Promise.all([
         (supabase as any).from('ph_jira_projects')
-          .select('project_key, name, avatar_url, color')
+          .select('id, project_key, name, avatar_url, color')
           .eq('project_key', projectKey).maybeSingle(),
         (supabase as any).from('ph_projects')
           .select('key, name, icon, color')
           .eq('key', projectKey).maybeSingle(),
       ]);
-      const jira = jiraRes.data as { name?: string; avatar_url?: string | null; color?: string | null } | null;
+      const jira = jiraRes.data as { id?: string; name?: string; avatar_url?: string | null; color?: string | null } | null;
       const ph = phRes.data as { name?: string; icon?: string | null; color?: string | null } | null;
       return {
+        id: jira?.id ?? null,
         name: jira?.name ?? ph?.name ?? null,
         avatar_url: jira?.avatar_url ?? null,
         icon: ph?.icon ?? null,
@@ -233,9 +238,15 @@ export function ProjectHeaderChip({ projectKey }: Props) {
         )}
       >
         <DropdownItemGroup>
-          <DropdownItem onClick={() => toast('Open project settings — coming soon')}>Project settings</DropdownItem>
-          <DropdownItem onClick={() => toast('Manage people — coming soon')}>Manage people</DropdownItem>
-          <DropdownItem onClick={() => toast('Star project — coming soon')}>Star project</DropdownItem>
+          <DropdownItem onClick={() => navigate(`/project-hub/${projectKey}/settings`)}>Project settings</DropdownItem>
+          <DropdownItem onClick={handleAddPeople}>Manage people</DropdownItem>
+          <DropdownItem onClick={() => {
+            if (!project?.id) return;
+            const isCurrentlyStarred = starredIds?.has(project.id) ?? false;
+            toggleStarMutation.mutate({ itemId: project.id, itemType: 'project', isCurrentlyStarred });
+          }}>
+            {(project?.id && starredIds?.has(project.id)) ? 'Unstar project' : 'Star project'}
+          </DropdownItem>
         </DropdownItemGroup>
       </DropdownMenu>
 
