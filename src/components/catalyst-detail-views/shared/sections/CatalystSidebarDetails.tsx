@@ -590,15 +590,22 @@ export function CatalystSidebarDetails({
             )}
           </FieldRow>
 
-          {/* ── Labels ──── REMOVED 2026-05-05 per Vikram directive (jira-compare cycle 1
-              on BAU-5737 QA Bug). Lane B Rovo getJiraIssueTypeMetaWithFields(BAU,
-              QA Bug=10012) proves Labels is NOT in the QA Bug screen scheme.
-              The 2026-05-03 "RESTORED" directive came from a Story-only DOM
-              probe and was over-generalised to all types (anti-pattern #18).
-              Banned globally — per CLAUDE.md "no Catalyst-side fields rendered
-              outside the Jira issue-type screen scheme without explicit ask".
-              If Story etc. needs Labels back, gate by issue_type, don't render
-              globally. */}
+          {/* ── Labels ──── Task only (jira-compare 2026-05-07 Fix J).
+              Re-probe BAU-5538 (Task) confirms Labels IS in the Task right
+              rail. Gated strictly on Task — do not widen without per-type
+              Jira screen scheme validation (anti-pattern #18). */}
+          {issue?.issue_type === 'Task' && (
+            <FieldRow label="Labels" labelTopPad>
+              {issue && (
+                <EditableLabels
+                  issueId={issue.id}
+                  issueKey={issue.issue_key}
+                  currentLabels={(issue as any).labels ?? []}
+                  onUpdate={invalidateIssue}
+                />
+              )}
+            </FieldRow>
+          )}
 
           {/* ── Parent ──── REMOVED 2026-05-03 per Vikram directive.
               Parent belongs in Jira's left "Key details" section, not the

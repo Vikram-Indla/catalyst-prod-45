@@ -219,7 +219,12 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
   // Drag-and-drop state for header reorder. `dragId` is the column id being
   // dragged; `dragOverId` is the column the cursor is currently over (used to
   // render the drop indicator on the right edge of that header).
+  // dragIdRef mirrors dragId as a ref so onDragOver can read the current
+  // value synchronously (React state updates are async; without the ref,
+  // onDragOver sees stale null and skips e.preventDefault(), which prevents
+  // the browser from firing onDrop).
   const [dragId, setDragId] = useState<string | null>(null);
+  const dragIdRef = useRef<string | null>(null);
   const [dragOverId, setDragOverId] = useState<string | null>(null);
 
   // Compute the next column order after dropping `sourceId` on `targetId`.
@@ -1478,10 +1483,12 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
                       }
                       e.dataTransfer.effectAllowed = 'move';
                       try { e.dataTransfer.setData('text/plain', meta!.id); } catch { /* some browsers */ }
+                      dragIdRef.current = meta!.id;
                       setDragId(meta!.id);
                     } : undefined}
                     onDragOver={isReorderable ? (e) => {
-                      if (!dragId || dragId === meta!.id) return;
+                      const currentDragId = dragIdRef.current;
+                      if (!currentDragId || currentDragId === meta!.id) return;
                       e.preventDefault();
                       e.dataTransfer.dropEffect = 'move';
                       if (dragOverId !== meta!.id) setDragOverId(meta!.id);
@@ -1491,14 +1498,16 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
                     } : undefined}
                     onDrop={isReorderable ? (e) => {
                       e.preventDefault();
-                      const sourceId = (e.dataTransfer.getData('text/plain') || dragId) as string;
-                      if (!sourceId) { setDragId(null); setDragOverId(null); return; }
+                      const sourceId = (e.dataTransfer.getData('text/plain') || dragIdRef.current) as string;
+                      if (!sourceId) { dragIdRef.current = null; setDragId(null); setDragOverId(null); return; }
                       const next = computeReorder(sourceId, meta!.id);
                       if (next) commitColumnOrder(next);
+                      dragIdRef.current = null;
                       setDragId(null);
                       setDragOverId(null);
                     } : undefined}
                     onDragEnd={isReorderable ? () => {
+                      dragIdRef.current = null;
                       setDragId(null);
                       setDragOverId(null);
                     } : undefined}
