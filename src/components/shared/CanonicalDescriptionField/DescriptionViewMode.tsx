@@ -1,6 +1,7 @@
 import React from 'react';
 import Button from '@atlaskit/button';
-import { EditIcon, AddIcon } from '@atlaskit/icon';
+import EditIcon from '@atlaskit/icon/core/edit';
+import AddIcon from '@atlaskit/icon/core/add';
 import type { DescriptionMention } from './description.types';
 
 interface DescriptionViewModeProps {

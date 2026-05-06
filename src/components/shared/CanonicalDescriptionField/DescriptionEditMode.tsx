@@ -1,7 +1,9 @@
 import React from 'react';
 import Textfield from '@atlaskit/textfield';
 import Button from '@atlaskit/button';
-import { CheckCircleIcon, CrossIcon, SpinnerIcon } from '@atlaskit/icon';
+import CheckMarkCircleIcon from '@atlaskit/icon/core/check-circle';
+import CrossIcon from '@atlaskit/icon/glyph/cross';
+import Spinner from '@atlaskit/spinner';
 import type { DescriptionMention } from './description.types';
 
 interface DescriptionEditModeProps {
@@ -118,7 +120,7 @@ export function DescriptionEditMode({
           isDisabled={isLoading}
           appearance="primary"
           size="compact"
-          iconBefore={isLoading ? <SpinnerIcon label="Saving" /> : <CheckCircleIcon label="Save" />}
+          iconBefore={isLoading ? <Spinner size="small" /> : <CheckMarkCircleIcon label="Save" />}
         >
           {isLoading ? 'Saving...' : 'Save'}
         </Button>
