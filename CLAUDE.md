@@ -78,6 +78,31 @@ Append-only. Newest at top. Each entry: date, pattern, rule, surface.
 
 ---
 
+## 2026-05-05 — Schema-probe before field add, in practice (B4 anti-pattern #18 applied)
+**Surface:** CatalystSidebarDetails right rail
+**Pattern:** B4 4a/4b spec said "add Time tracking + Components + Due date to right rail." Before coding, ran `getJiraIssueTypeMetaWithFields` for all 9 BAU types (Story 10006 / Task 10010 / QA Bug 10012 / PI 10045 / Business Gap 10035 / Backend 10022 / Feature 10173 / CR 10305 / API Req 10206). Result: `timetracking` and `components` are NOT in ANY BAU type's screen scheme. `duedate` is in Backend (subtask family share screen), Production Incident, Change Request, Epic only. Adding Time tracking + Components would have shipped fields with no Jira backing — anti-pattern #18 violation. Only Due date was added, gated on the 3 confirmed types (Epic already had its own block).
+**Rule:** Anti-pattern #18 isn't theoretical. The audit's pending list is a snapshot — re-probe at code time, not just at audit time. The Distilled-note finding "right rail Dev / More fields / Automation trays missing" was framed in terms of standard Jira; the BAU project schemas reject most of that scope. Honor the schema, not the Atlassian stock catalogue.
+
+## 2026-05-05 — EpicDueDateField generalized to non-Epic types
+**Surface:** EpicDueDateField + CatalystSidebarDetails (B4 4a)
+**Pattern:** B4 needed Due date on Backend / Production Incident / Change Request. The existing `EpicDueDateField` had `if (!isEpic) return null;` as a defensive guard. Removed the guard — the `isEpic` prop is kept on the signature so existing Epic callers don't break, but it no longer affects rendering. Component now renders whenever the caller passes it; the schema gate lives at the call site (`normalizeIssueTypeBucket(issue.issue_type) === 'subtask' || issue.issue_type === 'Production Incident' || issue.issue_type === 'Change Request'`).
+**Rule:** When generalizing a component, remove early-return guards rather than passing dummy values from new callers. Keep the prop signature stable so old callers don't break, mark the prop semantically deprecated in the docstring. Don't rename the file just to chase the name — naming churn breaks too many imports.
+
+## 2026-05-05 — Watchers manage-popover (eye glyph + click-outside, B1)
+**Surface:** WatchersChip
+**Pattern:** Eye glyph swap shipped 2026-05-03. Manage-popover added 2026-05-05: `WatchersChip` opens an absolutely-positioned popover (260-320px wide) listing watchers with avatars + names, plus a primary "Start watching" / subtle "Stop watching" button. Self-rolled `useRef` triggerRef + popupRef + `mousedown` listener for click-outside — `@atlaskit/popup` v4.16 has the empty-portal bug noted in `AllProjectsTable.tsx:19-22`. `useCatalystWatchers` extended to hydrate profile rows from `profiles(id, full_name, avatar_url, email)`.
+**Rule:** Self-rolled popups (with `useRef` + mousedown listener) are the canonical pattern in this codebase until @atlaskit/popup is upgraded. Don't introduce yet another popup pattern; mirror `AllProjectsTable`'s `useClickOutside` shape.
+
+## 2026-05-05 — jira-attachment-proxy hardened for performance (D1)
+**Surface:** supabase/functions/jira-attachment-proxy
+**Pattern:** Old proxy buffered the whole attachment via `arrayBuffer()` (OOM risk on large files), did a `ph_jira_connection` DB hit on every request, and returned generic `{ error: 'Jira returned X' }` for all upstream failures. New proxy: streaming pass-through (`new Response(jiraRes.body)` — no buffering), 5-min connection cache per cold-start worker, ETag/If-None-Match passthrough → 304 short-circuit, HEAD method support for size-checks, tiered error codes (`JIRA_UNAUTHORIZED` / `JIRA_FORBIDDEN` / `JIRA_NOT_FOUND` / `JIRA_UPSTREAM_ERROR` / `INTERNAL_ERROR`).
+**Rule:** Edge functions must stream binary content, not buffer it. Connection lookups belong in a per-worker cache. Pass through ETag and conditional headers — let the browser revalidate, don't make the worker round-trip when it doesn't have to.
+
+## 2026-05-05 — Epic ParentAndLabels deleted; CatalystKeyDetails is canonical for all types (C1)
+**Surface:** CatalystViewEpic + CatalystKeyDetails + ParentAndLabels (deleted)
+**Pattern:** Epic was the last view using the legacy `ParentAndLabels` block (parent only, despite the name; Labels was removed globally 2026-05-05). Replaced with `<CatalystKeyDetails issue=… itemType="epic" />`. The component already routes Parent through CatalystParentLinker (Epic → Business Request via `parentSource="business_request"` per parent-rules.ts) and renders Priority via the canonical `EditablePriority` — Priority placement matches the 2026-05-05 directive (Key details left, never right rail). Deleted `epic/ParentAndLabels.tsx`. Updated CatalystKeyDetails docstring to remove the stale "Future step: unify ParentAndLabels into this" note.
+**Rule:** Type-specific legacy blocks die when the canonical primitive can absorb them. Check that the canonical resolves the right `parentSource` via parent-rules.ts before deleting (Epic → BR is the rule; CatalystParentLinker honored it).
+
 ## 2026-05-05 — MDT Ref + Labels banned from CatalystSidebarDetails (jira-compare cycle 1)
 **Surface:** CatalystSidebarDetails (all issue type views, but caught on BAU-5737 QA Bug)
 **Pattern:** Cycle 1 jira-compare audit on BAU-5737. Lane B Rovo `getJiraIssueTypeMetaWithFields(BAU, QA Bug=10012)` returns 11 fields: Assignee, Severity, Assessment Feature, Description, Fix versions, Issue Type, Parent, Priority, Project, Reporter, Summary. **Labels is NOT in the QA Bug screen scheme. MDT Ref is NOT in the QA Bug screen scheme.** Catalyst rendered both globally because the 2026-05-03 "RESTORED" directive (based on a Story-only DOM probe of BAU-5609) was over-generalised to all routing buckets. Vikram caught it: "MDT ref field is banned... how did you leave custom fields of Catalyst on defect when i did not ask for explicitly".

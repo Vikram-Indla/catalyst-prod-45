@@ -1,8 +1,16 @@
 /**
- * EpicDueDateField — Epic due date editor using the Atlassian Design System
+ * EpicDueDateField — Generic due date editor using the Atlassian Design System
  * DatePicker (@atlaskit/datetime-picker).
  *
- * Contract preserved for backwards compatibility with CatalystSidebarDetails:
+ * 2026-05-05: name preserved for backwards compatibility, but the field now
+ * renders for any issue type whose Jira screen scheme contains `duedate` —
+ * verified via getJiraIssueTypeMetaWithFields. The legacy `isEpic` guard was
+ * removed; callers pass `isEpic={false}` for non-Epic types and the field
+ * still renders. Only the storage column / layout context differs (Epic
+ * groups Due date with Actual start / Actual end; non-Epic types render
+ * Due date as a standalone row).
+ *
+ * Contract:
  *   - props: { issueId, dueDate, isEpic, onSave(date | null) }
  *   - onSave receives an ISO 'YYYY-MM-DD' string, or null when cleared.
  *
@@ -30,7 +38,10 @@ export function EpicDueDateField({ issueId, dueDate, isEpic, onSave }: Props) {
     setValue(dueDate ?? '');
   }, [dueDate]);
 
-  if (!isEpic) return null;
+  // 2026-05-05: legacy `if (!isEpic) return null` guard removed. The component
+  // now renders for any caller; isEpic is kept on the prop list for callers
+  // that still pass it but no longer affects rendering.
+  void isEpic;
 
   const handleChange = async (newDate: string) => {
     // Atlaskit returns '' when cleared and 'YYYY-MM-DD' when set.

@@ -579,6 +579,38 @@ export function CatalystSidebarDetails({
               for any BAU issue type (Stories, Epics, Defects etc.).
               Priority lives in the Key details left block only. */}
 
+          {/* ── Due date (non-Epic types where Jira screen scheme has duedate) ──
+              jira-compare 2026-05-05 (B4 4a). Verified via
+              getJiraIssueTypeMetaWithFields against BAU project: `duedate` is
+              present in Backend (subtask family share screen), Production
+              Incident, Change Request. NOT present in Story / Task / QA Bug /
+              Business Gap / Feature / API Requirement → those types do not
+              render Due date here. Per anti-pattern #18 we never render a
+              field that's absent from the type's screen scheme. */}
+          {issue && issue.issue_type !== 'Epic'
+            && (normalizeIssueTypeBucket(issue.issue_type) === 'subtask'
+              || issue.issue_type === 'Production Incident'
+              || issue.issue_type === 'Change Request') && (
+            <FieldRow label="Due date">
+              <EpicDueDateField
+                issueId={issue.id}
+                dueDate={(issue as any).due_date ?? null}
+                isEpic={false}
+                onSave={async (date) => {
+                  const { error } = await (supabase as any)
+                    .from('ph_issues')
+                    .update({ due_date: date })
+                    .eq('issue_key', issue.issue_key);
+                  if (error) {
+                    toast.error('Failed to save due date');
+                    throw error;
+                  }
+                  invalidateIssue();
+                }}
+              />
+            </FieldRow>
+          )}
+
           {/* ── Epic-specific date fields ──── jira-compare Phase 2
               (2026-05-02). Relocated from above-Assignee to after-MDT-Ref
               to match Jira Epic ordering on BAU-5419: Assignee → Priority
