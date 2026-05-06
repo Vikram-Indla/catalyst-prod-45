@@ -297,8 +297,8 @@ export function WorkItemCard({
       <div className="flex items-center" style={{ gap: 6, minHeight: d.footerHeight, marginTop: 6 }}>
         {vf?.workType !== false && (
           resolveIcon
-            ? (resolveIcon(issue) ?? <JiraIssueTypeIcon type={issue.issueType} size={14} />)
-            : <JiraIssueTypeIcon type={issue.issueType} size={14} />
+            ? (resolveIcon(issue) ?? <JiraIssueTypeIcon type={issue.issueType} size={16} />)
+            : <JiraIssueTypeIcon type={issue.issueType} size={16} />
         )}
         {vf?.workItemKey !== false && (
           /* Jira parity: clicking the issue key opens the detail panel.
@@ -322,7 +322,7 @@ export function WorkItemCard({
               el.style.color = tk.textMuted;
             }}
             style={{
-              fontSize: d.metaSize + 1, fontWeight: 500,
+              fontSize: d.metaSize, fontWeight: 500,
               color: tk.textMuted, fontFamily: 'var(--cp-font-mono)',
               lineHeight: '14px',
               background: 'none', border: 'none', padding: 0,

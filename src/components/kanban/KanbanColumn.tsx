@@ -40,7 +40,7 @@ function ColHeader({ name, count, category, tk }: { name: string; count: number;
         width: 8, height: 8, borderRadius: '50%', background: categoryDot, flexShrink: 0,
       }} />
       <span style={{
-        fontSize: 12, fontWeight: 600,
+        fontSize: 12, fontWeight: 500,
         color: tk.textMuted,                            /* no letter-spacing (Jira: normal) */
         fontFamily: 'var(--cp-font-body)',
         lineHeight: '16px',
