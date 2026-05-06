@@ -131,6 +131,8 @@ export function CatalystViewBase({
   // for the compact-drawer (container-query) path used by Backlog.
   // jira-compare 2026-05-03 — Patch A8 · Default raised 380 → 549 to match
   // Jira's measured rail width. Resize range stays 220..600.
+  // Note: live content area = 549 − 32px padding (16L + 16R) = 517px. Both
+  // values are correct — they measure different things. Not a bug.
   const [rightPanelWidth, setRightPanelWidth] = useState(549);
   const [showDotsMenu, setShowDotsMenu] = useState(false);
   const isDraggingRef = useRef(false);
