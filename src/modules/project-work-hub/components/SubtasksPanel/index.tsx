@@ -730,6 +730,34 @@ export function SubtasksPanel({
             </div>
           )}
 
+          {/* ═══ Inline create from empty state ═══
+              InlineCreateWithAI lives inside the visibleRows>0 IIFE when rows
+              already exist. When the list is empty, that IIFE never runs, so we
+              render a standalone copy here — triggered by the header + button or
+              the "+ Create sub-task" CTA in the empty state. */}
+          {creating && canCreate && children.length === 0 && (
+            <InlineCreateWithAI
+              allowedTypes={allowedTypes}
+              draftType={draftType}
+              onDraftTypeChange={(t) => setDraftType(t as typeof draftType)}
+              typeSelectorSlot={
+                <TypeSelector value={draftType} onChange={(v) => setDraftType(v as typeof draftType)} allowed={allowedTypes} />
+              }
+              parentSummary={parentSummary ?? ''}
+              parentType={parentIssueType ?? ''}
+              siblingSummaries={siblingSummaries}
+              excludedIds={siblingIds}
+              projectKey={projectKey}
+              isSubmitting={createMutation.isPending || linkExistingMutation.isPending}
+              onCreate={(summary) => createMutation.mutate(summary)}
+              onLinkExisting={(id) => {
+                linkExistingMutation.mutate(id);
+                setCreating(false);
+              }}
+              onCancel={() => setCreating(false)}
+            />
+          )}
+
           {/* ═══ Empty state (all subtasks hidden by filter) ═══ */}
           {!isLoading && children.length > 0 && visibleRows.length === 0 && hideDone && (
             <div className="sp-empty">
@@ -871,34 +899,61 @@ export function SubtasksPanel({
 
             return (
               <div className="sp-ak-table" onClick={(e) => e.stopPropagation()}>
-                <JiraTable<typeof visibleRows[number]>
-                  columns={schema}
-                  data={visibleRows}
-                  getRowId={(r: any) => r.id}
-                  ariaLabel="Subtasks"
-                  selectable={bulkEditMode}
-                  selection={selectedIds}
-                  onSelectionChange={(next) => {
-                    // Replace the selection set wholesale when JiraTable
-                    // commits a checkbox toggle (single, shift-range, or
-                    // header select-all). The page's existing toggleSelected
-                    // / toggleSelectAll keyboard paths still drive the same
-                    // setSelectedIds setter so behaviour stays consistent.
-                    setSelectedIds(new Set(next));
-                  }}
-                  sortKey={sort.field ?? undefined}
-                  sortOrder={sort.dir === 'desc' ? 'DESC' : 'ASC'}
-                  onSortChange={onSortChangeAdapter}
-                  focusedRowId={focusedRowId ?? undefined}
-                  onFocusedRowChange={(id) => setFocusedRowId(id)}
-                  onRowClick={(r: any) => {
-                    if (bulkEditMode) { toggleSelected(r.id); return; }
-                    onSubtaskClick?.(r.issue_key ?? r.id);
-                  }}
-                  enableColumnReorder
-                  rowsPerPage={0}
-                  emptyView={null}
-                />
+                {/* sp-table-body: shared border/radius container for table rows
+                    + inline create row so the "+ Create" row appears visually
+                    inside the same bordered card as the data rows (Jira parity). */}
+                <div className="sp-table-body">
+                  <JiraTable<typeof visibleRows[number]>
+                    columns={schema}
+                    data={visibleRows}
+                    getRowId={(r: any) => r.id}
+                    ariaLabel="Subtasks"
+                    selectable={bulkEditMode}
+                    selection={selectedIds}
+                    onSelectionChange={(next) => {
+                      // Replace the selection set wholesale when JiraTable
+                      // commits a checkbox toggle (single, shift-range, or
+                      // header select-all). The page's existing toggleSelected
+                      // / toggleSelectAll keyboard paths still drive the same
+                      // setSelectedIds setter so behaviour stays consistent.
+                      setSelectedIds(new Set(next));
+                    }}
+                    sortKey={sort.field ?? undefined}
+                    sortOrder={sort.dir === 'desc' ? 'DESC' : 'ASC'}
+                    onSortChange={onSortChangeAdapter}
+                    focusedRowId={focusedRowId ?? undefined}
+                    onFocusedRowChange={(id) => setFocusedRowId(id)}
+                    onRowClick={(r: any) => {
+                      if (bulkEditMode) { toggleSelected(r.id); return; }
+                      onSubtaskClick?.(r.issue_key ?? r.id);
+                    }}
+                    enableColumnReorder
+                    rowsPerPage={0}
+                    emptyView={null}
+                  />
+                  {creating && canCreate && (
+                    <InlineCreateWithAI
+                      allowedTypes={allowedTypes}
+                      draftType={draftType}
+                      onDraftTypeChange={(t) => setDraftType(t as typeof draftType)}
+                      typeSelectorSlot={
+                        <TypeSelector value={draftType} onChange={(v) => setDraftType(v as typeof draftType)} allowed={allowedTypes} />
+                      }
+                      parentSummary={parentSummary ?? ''}
+                      parentType={parentIssueType ?? ''}
+                      siblingSummaries={siblingSummaries}
+                      excludedIds={siblingIds}
+                      projectKey={projectKey}
+                      isSubmitting={createMutation.isPending || linkExistingMutation.isPending}
+                      onCreate={(summary) => createMutation.mutate(summary)}
+                      onLinkExisting={(id) => {
+                        linkExistingMutation.mutate(id);
+                        setCreating(false);
+                      }}
+                      onCancel={() => setCreating(false)}
+                    />
+                  )}
+                </div>
               </div>
             );
             // NOTE: DnD row-reorder via handleRankEnd is not wired here. The
@@ -978,29 +1033,8 @@ export function SubtasksPanel({
             )}
           </ModalTransition>
 
-          {/* ═══ Inline create (AI-augmented) ═══ */}
-          {creating && canCreate && (
-            <InlineCreateWithAI
-              allowedTypes={allowedTypes}
-              draftType={draftType}
-              onDraftTypeChange={(t) => setDraftType(t as typeof draftType)}
-              typeSelectorSlot={
-                <TypeSelector value={draftType} onChange={(v) => setDraftType(v as typeof draftType)} allowed={allowedTypes} />
-              }
-              parentSummary={parentSummary ?? ''}
-              parentType={parentIssueType ?? ''}
-              siblingSummaries={siblingSummaries}
-              excludedIds={siblingIds}
-              projectKey={projectKey}
-              isSubmitting={createMutation.isPending || linkExistingMutation.isPending}
-              onCreate={(summary) => createMutation.mutate(summary)}
-              onLinkExisting={(id) => {
-                linkExistingMutation.mutate(id);
-                setCreating(false);
-              }}
-              onCancel={() => setCreating(false)}
-            />
-          )}
+          {/* InlineCreateWithAI moved inside sp-table-body (inside the IIFE above)
+              so it appears as the last row within the table's visual border — Jira parity. */}
         </>
       )}
     </div>

@@ -420,10 +420,10 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
          next to the 16px glyph and pushes Key visibly away from Type.
          Tightening to 4px L / 8px R brings the icon flush against the
          column edge and matches Jira's compact icon-column rhythm.
-         Targets BOTH the header cell (col 2 — col 1 is the checkbox)
-         and every body cell at the same index. */
-      .jira-table-grid table thead > tr > th:nth-child(2),
-      .jira-table-grid table tbody > tr > td:nth-child(2) {
+         2026-05-08: col 1=checkbox, col 2=__drag, col 3=type (was col 2
+         before __drag was added). Updated nth-child to 3. */
+      .jira-table-grid table thead > tr > th:nth-child(3),
+      .jira-table-grid table tbody > tr > td:nth-child(3) {
         padding-left: 4px !important;
         padding-right: 8px !important;
       }
@@ -522,7 +522,8 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
            or exceeds natural minimum (type 33 / key 88 / summary 242 /
            status 121 / comments 88 / parent 132 / assignee 121 /
            priority 77 / created 88 / updated 88 / actions 33). */
-        min-width: 1200px;
+        min-width: 1000px;
+        width: 100%;
         border-collapse: separate;
         border-spacing: 0;
         table-layout: fixed;
@@ -727,6 +728,30 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
       /* Row hover tint matches Jira's list view. */
       .jira-table-grid table tbody > tr:hover > td {
         background-color: var(--ds-background-neutral-subtle-hovered, #F7F8F9) !important;
+      }
+      /* ── "Create child" hover button in Type cell (Jira parity) ──
+         Jira's type cell swaps the issue-type icon for a "+" create-child
+         button when the row is hovered. Use opacity/pointer-events (NOT
+         display:none) so the element remains in layout at all times —
+         display:none causes physical clicks to miss because the element
+         isn't laid out when the mousedown fires.
+         .jira-type-icon  — visible at rest, fades out on row hover
+         .jira-create-child-btn — invisible at rest, appears on row hover */
+      .jira-create-child-btn { opacity: 0; pointer-events: none; }
+      .jira-table-grid table tbody > tr:hover .jira-type-icon { opacity: 0; pointer-events: none; }
+      .jira-table-grid table tbody > tr:hover .jira-create-child-btn { opacity: 1; pointer-events: auto; }
+      /* Keep the icon visible when a cell editor is open (don't flash the
+         create button while the user is mid-edit on the same row). */
+      .jira-table-grid table tbody > tr:has([data-jira-table-editor]:focus-within) .jira-type-icon { opacity: 1; pointer-events: auto; }
+      .jira-table-grid table tbody > tr:has([data-jira-table-editor]:focus-within) .jira-create-child-btn { opacity: 0; pointer-events: none; }
+      /* Drag-handle grip — hidden at rest, visible on row hover */
+      .jira-table-grid table tbody > tr:hover .jira-drag-handle {
+        visibility: visible;
+      }
+      /* "Add comment" ghost text — always visible (Jira parity: shown at rest in every row) */
+      .jira-table-grid table tbody > tr td [data-jira-cell-ghost] {
+        visibility: visible;
+        color: var(--ds-text-subtlest, #6B778C);
       }
       /* ─────────────────────────────────────────────────────────────────────
          DARK MODE — Rule 3 paired overrides for !important hex above.
@@ -1365,13 +1390,15 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
   for (const col of visibleColumns) {
     const userOverride = columnWidths[col.id];
     const naturalPx = naturalWidthFor(col);
-    // When the user has resized this column, lock to pixel. Otherwise
-    // prefer percentage so the table flexes with viewport. Data columns
-    // without a schema width default to the natural pixel value.
+    // table-layout:fixed + width:100% on the table:
+    //   - Fixed columns get an explicit pixel width on their <col>.
+    //   - The ONE flex column (Summary) gets NO width on its <col> so the
+    //     browser hands it all remaining space after fixed cols are placed.
+    //   - User resize overrides stay pinned to pixels as before.
     const widthCss = userOverride != null
       ? `${userOverride}px`
-      : col.width != null
-        ? `${col.width}%`
+      : col.flex
+        ? ''          // no width → browser gives it all remaining space
         : `${naturalPx}px`;
     colWidthEntries.push({
       id: col.id,

@@ -91,6 +91,21 @@ Append-only. Newest at top. Each entry: date, pattern, rule, surface.
 
 ---
 
+## 2026-05-08 — SubtasksPanel inline create invisible when children.length === 0
+**Surface:** SubtasksPanel index.tsx (all work item types)
+**Pattern:** `InlineCreateWithAI` was rendered inside the `visibleRows.length > 0` IIFE (the JiraTable block). When a work item has zero subtasks and the user clicks "+ Create sub-task", `creating` becomes `true`, the empty state disappears (guarded by `!creating`), but the inline create never appears because the entire table block is skipped. Fix: add a standalone `{creating && canCreate && children.length === 0 && <InlineCreateWithAI … />}` block outside the `visibleRows.length > 0` guard, positioned between the empty state and the filter-empty-state blocks.
+**Rule:** When InlineCreateWithAI is only rendered inside a `rows.length > 0` block, creating from an empty list is always broken. Always add a standalone rendering path for the `creating && items.length === 0` case.
+
+## 2026-05-08 — WatchersChip Escape propagates to parent modal without capture-phase guard
+**Surface:** WatchersChip.tsx (all detail views)
+**Pattern:** The self-rolled popover used `mousedown` for click-outside but had no keyboard handler. Pressing Escape with the watchers popover open closed both the popover AND the entire kanban modal because the keydown event bubbled up to the modal's own Escape handler. Fix: add `document.addEventListener('keydown', handler, true)` in capture phase (beats the modal's bubble-phase listener) that calls `e.stopPropagation()` before `setOpen(false)`.
+**Rule:** Self-rolled popovers MUST add a capture-phase `keydown` Escape handler (`addEventListener('keydown', fn, true)`) so Escape only closes the popover, not the parent modal. The bubble-phase handler always loses to the modal's bubble-phase handler.
+
+## 2026-05-08 — Section headers must never use @atlaskit/heading size="small" (16px/653)
+**Surface:** CatalystKeyDetails, CatalystSidebarDetails, ActivityPanel (all detail views)
+**Pattern:** `@atlaskit/heading size="small"` renders at 16px/653. K.11 Jira-measured spec for ALL section headers (Key details, Details, Activity, Description) is 14px/600/#172B4D. Using the Atlaskit Heading component for these sections always produces the wrong size.
+**Rule:** For any section header that K.11 specifies at 14px/600, use an inline `<h2 style={{ margin: 0, fontSize: 14, fontWeight: 600, lineHeight: '20px', color: 'var(--ds-text, #172B4D)' }}>` — never `@atlaskit/heading`. Breadcrumb links: 14px/400/#42526E. Rail field labels (stacked): 11px/600/#6B778C. Timestamps: 11px/400/#6B778C.
+
 ## 2026-05-05 — Schema-probe before field add, in practice (B4 anti-pattern #18 applied)
 **Surface:** CatalystSidebarDetails right rail
 **Pattern:** B4 4a/4b spec said "add Time tracking + Components + Due date to right rail." Before coding, ran `getJiraIssueTypeMetaWithFields` for all 9 BAU types (Story 10006 / Task 10010 / QA Bug 10012 / PI 10045 / Business Gap 10035 / Backend 10022 / Feature 10173 / CR 10305 / API Req 10206). Result: `timetracking` and `components` are NOT in ANY BAU type's screen scheme. `duedate` is in Backend (subtask family share screen), Production Incident, Change Request, Epic only. Adding Time tracking + Components would have shipped fields with no Jira backing — anti-pattern #18 violation. Only Due date was added, gated on the 3 confirmed types (Epic already had its own block).
@@ -239,6 +254,13 @@ Append-only. Newest at top. Each entry: date, pattern, rule, surface.
 **Surface:** any
 **Pattern:** Surfaces declared "parity-complete" on visual match shipped wiring defects (composer doesn't submit, reaction increments visually but doesn't persist).
 **Rule:** CRUD parity at C, R, U, D is the acceptance gate. Visual match without CRUD green is a fail. If a surface has no interactive behaviour in scope, state it explicitly and require Vikram sign-off.
+
+---
+
+## 2026-05-08 — Jira list table full parity: key cell border, comment badge, CRUD verified
+**Surface:** BacklogPage JiraTable (cells.tsx + JiraTable.tsx + BacklogPage.atlaskit.tsx)
+**Pattern:** Full Jira list-view parity audit completed. Key lessons: (1) `makeKeyCell` focused state must use `display: block; width: 100%; box-sizing: border-box` — NOT `inline-block` — so the blue border spans the full column cell width, not just the text width. (2) `makeCommentsCell` needs a 6px blue dot badge (`position: absolute; top: 1; right: 1; borderRadius: 50%; background: --ds-background-information-bold`) on the CommentIcon when `n > 0` — Jira shows this indicator on all rows with comments. (3) `DEFAULT_VISIBLE_COLUMNS` must always match column `defaultVisible: true` flags — Jira BAU default is key/summary/status/comments/parent (no Assignee). (4) The `__drag` structural column shifts `nth-child` selectors by 1 — Type moves from nth-child(2) to nth-child(3).
+**Rule:** When a focused-state border must span a full TD cell, switch the element to `display: block; width: 100%` — inline-block shrinks to text width inside a flex container. Always probe `getComputedStyle` on the innermost element of the focused cell to verify width equals TD content width.
 
 ---
 

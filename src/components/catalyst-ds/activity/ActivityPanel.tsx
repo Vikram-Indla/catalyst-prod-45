@@ -104,9 +104,10 @@ function ActivityPanel({
   return (
     <div className={cn('flex flex-col', className)}>
       <div className="flex items-center justify-between mb-4">
+        {/* jira-compare 2026-05-08: K.11 section header = 14px/600/#172B4D */}
         <h3
-          className="text-[16px] font-semibold text-[var(--ds-text,#172B4D)] dark:text-[var(--ds-text,#EDEDED)]"
-          style={{ fontFamily: '"Atlassian Sans", ui-sans-serif, -apple-system, "system-ui", "Segoe UI", Ubuntu, "Helvetica Neue", sans-serif' }}
+          className="text-[var(--ds-text,#172B4D)] dark:text-[var(--ds-text,#EDEDED)]"
+          style={{ margin: 0, fontSize: 14, fontWeight: 600, lineHeight: '20px', fontFamily: '"Atlassian Sans", ui-sans-serif, -apple-system, "system-ui", "Segoe UI", Ubuntu, "Helvetica Neue", sans-serif' }}
         >
           Activity
         </h3>

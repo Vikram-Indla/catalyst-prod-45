@@ -20,7 +20,6 @@
  */
 import React, { useState } from 'react';
 import ChevronRightIcon from '@atlaskit/icon/glyph/chevron-right';
-import { Heading } from '@/components/ads';
 import { Inline } from '@atlaskit/primitives';
 import { EditablePriority } from '@/modules/project-work-hub/components/dialogs/story-detail-modules/EditableFields';
 import { useQueryClient } from '@tanstack/react-query';
@@ -123,7 +122,9 @@ export function CatalystKeyDetails({
         >
           <ChevronRightIcon label="" primaryColor="#5E6C84" size="small" />
         </span>
-        <Heading size="small">Key details</Heading>
+        {/* jira-compare 2026-05-08: Atlaskit Heading size="small" = 16px/653 —
+            K.11 section header spec = 14px/600/#172B4D. Use inline h2. */}
+        <h2 style={{ margin: 0, fontSize: 14, fontWeight: 600, lineHeight: '20px', color: 'var(--ds-text, #172B4D)' }}>Key details</h2>
       </div>
 
       {!collapsed && (

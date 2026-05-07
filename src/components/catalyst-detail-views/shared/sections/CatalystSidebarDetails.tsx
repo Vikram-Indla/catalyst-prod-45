@@ -51,22 +51,20 @@ function FieldRow({
   labelTopPad?: boolean;
   children: React.ReactNode;
 }) {
-  /* jira-compare 2026-05-05: changed from INLINE (label left 96px + value right)
-     to STACKED (label on its own line, value on next line) to match Jira's
-     Details panel layout. DOM-probed BAU-5609 right rail:
-       label: font-size 12px, font-weight 600, color #626F86, margin-bottom 4px
-       value: font-size 14px, color #292A2E, full width
-     Vertical padding between fields: ~12px top (8px bottom). */
+  /* jira-compare 2026-05-08: K.11 multi-probe synthesis:
+       label: 11px/600/#6B778C (--ds-text-subtlest), lineHeight 16px, mb 4px
+       value: 14px/400/#172B4D (--ds-text), lineHeight 20px
+     Prior 2026-05-05 probe said 12px/#626F86 — superseded by K.11. */
   return (
     <div style={{ padding: '4px 0 12px' }}>
       <div style={{
-        fontSize: 12, fontWeight: 600, lineHeight: '16px',
-        color: 'var(--ds-text-subtlest, #626F86)',
+        fontSize: 11, fontWeight: 600, lineHeight: '16px',
+        color: 'var(--ds-text-subtlest, #6B778C)',
         marginBottom: 4, textTransform: 'none',
       }}>
         {label}
       </div>
-      <div style={{ fontSize: 14, color: 'var(--ds-text, #292A2E)', minWidth: 0 }}>
+      <div style={{ fontSize: 14, lineHeight: '20px', color: 'var(--ds-text, #172B4D)', minWidth: 0 }}>
         {children}
       </div>
     </div>
@@ -516,9 +514,9 @@ export function CatalystSidebarDetails({
           padding: '0 0', background: 'transparent',
         }}>
           <ChevronDownIcon size="small" primaryColor="var(--ds-icon-subtle, #626F86)" />
-          {/* jira-compare 2026-05-07 T3: Jira "Details" header is fw500, not the bold fw653
-              that Atlaskit <Heading size="small"> produces. Plain div matches Jira exactly. */}
-          <div style={{ fontSize: 16, fontWeight: 500, lineHeight: '20px', color: 'var(--ds-text, #292A2E)' }}>Details</div>
+          {/* jira-compare 2026-05-08: K.11 section header spec = 14px/600/#172B4D.
+              Prior comment said fw500 but missed the font-size correction (was 16px). */}
+          <div style={{ fontSize: 14, fontWeight: 600, lineHeight: '20px', color: 'var(--ds-text, #172B4D)' }}>Details</div>
         </div>
 
         <div style={{ padding: '0' }}>
@@ -556,7 +554,7 @@ export function CatalystSidebarDetails({
                 <button
                   type="button"
                   onClick={handleAssignToMe}
-                  style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', color: 'var(--ds-link, #0C66E4)', fontSize: 12, textAlign: 'left', marginTop: 2 }}
+                  style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', color: 'var(--ds-link, #0C66E4)', fontSize: 11, textAlign: 'left', marginTop: 2 }}
                 >
                   Assign to me
                 </button>
@@ -739,13 +737,14 @@ export function CatalystSidebarDetails({
         <div style={{ flex: 1, minWidth: 0 }}>
           {/* jira-compare 2026-05-03 — Patch A6 · Hybrid time format
               (absolute · relative). Title attr exposes the ISO on hover. */}
-          <div style={{ fontSize: 12, color: '#5E6C84', marginBottom: 4, lineHeight: 1.6 }} title={issue?.jira_created_at ?? undefined}>
-            <span style={{ color: '#42526E', fontWeight: 500 }}>Created</span> {fmtDate(issue?.jira_created_at)}
-            {issue?.jira_created_at && <span style={{ color: '#7A869A' }}> · {fmtRelative(issue.jira_created_at)}</span>}
+          {/* jira-compare 2026-05-08: K.11 timestamp = 11px/400/#6B778C (--ds-text-subtlest) */}
+          <div style={{ fontSize: 11, color: 'var(--ds-text-subtlest, #6B778C)', marginBottom: 4, lineHeight: '16px' }} title={issue?.jira_created_at ?? undefined}>
+            <span style={{ fontWeight: 400 }}>Created</span> {fmtDate(issue?.jira_created_at)}
+            {issue?.jira_created_at && <span> · {fmtRelative(issue.jira_created_at)}</span>}
           </div>
-          <div style={{ fontSize: 12, color: '#5E6C84', lineHeight: 1.6 }} title={issue?.jira_updated_at ?? undefined}>
-            <span style={{ color: '#42526E', fontWeight: 500 }}>Updated</span> {fmtDate(issue?.jira_updated_at)}
-            {issue?.jira_updated_at && <span style={{ color: '#7A869A' }}> · {fmtRelative(issue.jira_updated_at)}</span>}
+          <div style={{ fontSize: 11, color: 'var(--ds-text-subtlest, #6B778C)', lineHeight: '16px' }} title={issue?.jira_updated_at ?? undefined}>
+            <span style={{ fontWeight: 400 }}>Updated</span> {fmtDate(issue?.jira_updated_at)}
+            {issue?.jira_updated_at && <span> · {fmtRelative(issue.jira_updated_at)}</span>}
           </div>
         </div>
         <Button

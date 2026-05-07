@@ -130,6 +130,27 @@
    ══════════════════════════════════════════════ */
 .sp-ak-table { margin-top: 4px; }
 
+/* sp-table-body: outer border/radius card that wraps both the JiraTable rows and
+   the inline create row — so the "+ Create" row is visually inside the same
+   bordered container as the data rows (Jira parity). */
+.sp-table-body {
+  border: 1px solid var(--ds-border, #DFE1E6);
+  border-radius: 8px;
+  overflow: hidden;
+}
+/* Remove JiraTable's own border/radius since sp-table-body owns the chrome. */
+.sp-table-body .jira-table-grid {
+  border: none !important;
+  border-radius: 0 !important;
+}
+/* Inline create row sits flush at the bottom of the card, separated by a 1px rule. */
+.sp-table-body .sp-create-wrap {
+  margin-top: 0;
+  padding: 4px 8px 4px;
+  border-top: 1px solid var(--ds-border, #DFE1E6);
+  background: var(--ds-surface, #FFFFFF);
+}
+
 /* Jira-parity: table header cells in subtasks panel — compact padding + muted label color */
 .sp-ak-table .jira-table-grid table thead > tr > th {
   padding: 0 8px !important;
