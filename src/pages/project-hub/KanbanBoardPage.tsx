@@ -131,6 +131,7 @@ export default function KanbanBoardPage() {
   const { settings: viewSettings, updateSettings: updateViewSettings } = useKanbanViewSettings(key, currentUserData);
   const visibleFields = viewSettings.visibleFields;
   const cardColorMode = viewSettings.cardColorMode;
+  const enabledQuickFilters = viewSettings.enabledQuickFilters;
 
   // Swimlane expand/collapse all handlers
   const handleExpandAll = useCallback(() => setCollapsedSwimlanes(new Set()), []);
@@ -500,6 +501,18 @@ export default function KanbanBoardPage() {
     if (quickFilters.has('recently-updated')) {
       const cutoff = Date.now() - 7 * 24 * 60 * 60 * 1000;
       issues = issues.filter(i => i.updatedAt && new Date(i.updatedAt).getTime() > cutoff);
+    }
+    if (quickFilters.has('high-priority')) {
+      issues = issues.filter(i => {
+        const p = (i.priority ?? '').toLowerCase();
+        return p === 'highest' || p === 'high' || p === 'critical';
+      });
+    }
+    if (quickFilters.has('unassigned')) {
+      issues = issues.filter(i => !i.assigneeName);
+    }
+    if (quickFilters.has('in-progress')) {
+      issues = issues.filter(i => i.statusCategory === 'inprogress' || i.statusCategory === 'in_progress');
     }
 
     // ── Advanced filters ──
@@ -938,6 +951,7 @@ export default function KanbanBoardPage() {
         onShowArchivedChange={setShowArchived}
         quickFilters={quickFilters}
         onQuickFiltersChange={setQuickFilters}
+        enabledQuickFilters={enabledQuickFilters}
       />
 
       {/* ── Board content (Jira parity: 8px inter-column gap, 16px outer padding) ── */}

@@ -161,9 +161,11 @@ export interface KanbanToolbarProps<TGroupBy extends string = string> {
   showArchived?: boolean;
   onShowArchivedChange?: Dispatch<SetStateAction<boolean>>;
 
-  /* Quick filter pills (Jira parity: Assigned to me, Flagged, Recently updated) */
+  /* Quick filter pills (Jira parity: Assigned to me, Flagged, Recently updated, etc.) */
   quickFilters?: Set<string>;
   onQuickFiltersChange?: Dispatch<SetStateAction<Set<string>>>;
+  /** Which pill keys are visible — controlled by View Settings */
+  enabledQuickFilters?: string[];
 }
 
 /* ═══ KanbanToolbar — composed toolbar, presentational ═══ */
@@ -185,16 +187,19 @@ export function KanbanToolbar<TGroupBy extends string = string>({
   mapStatusesPath,
   projectKey,
   canArchive, showArchived, onShowArchivedChange,
-  quickFilters, onQuickFiltersChange,
+  quickFilters, onQuickFiltersChange, enabledQuickFilters,
 }: KanbanToolbarProps<TGroupBy>) {
   const navigate = useNavigate();
   const boardMenuRef = useRef<HTMLDivElement>(null);
 
-  /* Quick filter pill definitions (Jira parity) */
+  /* Quick filter pill definitions — use view-settings controlled list */
   const QUICK_FILTER_DEFS = [
-    { key: 'assigned-to-me', label: 'Assigned to me' },
-    { key: 'flagged',         label: 'Flagged' },
+    { key: 'assigned-to-me',   label: 'Assigned to me'  },
+    { key: 'flagged',          label: 'Flagged'          },
     { key: 'recently-updated', label: 'Recently updated' },
+    { key: 'high-priority',    label: 'High priority'    },
+    { key: 'unassigned',       label: 'Unassigned'       },
+    { key: 'in-progress',      label: 'In progress'      },
   ] as const;
 
   const toggleQuickFilter = (key: string) => {
@@ -282,8 +287,10 @@ export function KanbanToolbar<TGroupBy extends string = string>({
         noneKey={groupByNoneKey}
       />
 
-      {/* Quick filter pills — Jira parity: Assigned to me, Flagged, Recently updated */}
-      {onQuickFiltersChange && QUICK_FILTER_DEFS.map(({ key, label }) => {
+      {/* Quick filter pills — only show the pills enabled in View Settings */}
+      {onQuickFiltersChange && QUICK_FILTER_DEFS
+        .filter(({ key }) => !enabledQuickFilters || enabledQuickFilters.includes(key))
+        .map(({ key, label }) => {
         const active = quickFilters?.has(key) ?? false;
         return (
           <button

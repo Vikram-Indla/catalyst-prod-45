@@ -5,7 +5,8 @@
  */
 import { useRef, useEffect, useCallback } from 'react';
 import type { KanbanThemeTokens, KanbanDensity } from './kanban-tokens';
-import type { KanbanViewSettings, VisibleFields, CardColorMode } from '@/hooks/useKanbanViewSettings';
+import type { KanbanViewSettings, VisibleFields, CardColorMode, QuickFilterKey } from '@/hooks/useKanbanViewSettings';
+import { ALL_QUICK_FILTERS } from '@/hooks/useKanbanViewSettings';
 
 interface ViewSettingsPanelProps {
   settings: KanbanViewSettings;
@@ -196,6 +197,25 @@ export function ViewSettingsPanel({ settings, onUpdate, onExpandAll, onCollapseA
           </div>
         </>
       )}
+
+      <Divider tk={tk} />
+
+      {/* Quick Filters section — Jira parity: Board config → Quick Filters */}
+      <SectionHeader title="Quick filters" tk={tk} />
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 2, padding: '4px 0' }}>
+        {ALL_QUICK_FILTERS.map(({ key, label }) => {
+          const enabled = (settings.enabledQuickFilters ?? []).includes(key as QuickFilterKey);
+          const toggle = () => {
+            const next = enabled
+              ? (settings.enabledQuickFilters ?? []).filter(k => k !== key)
+              : [...(settings.enabledQuickFilters ?? []), key as QuickFilterKey];
+            onUpdate({ enabledQuickFilters: next });
+          };
+          return (
+            <ToggleRow key={key} label={label} checked={enabled} onChange={toggle} tk={tk} />
+          );
+        })}
+      </div>
 
       <Divider tk={tk} />
 

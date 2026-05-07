@@ -20,6 +20,25 @@ export interface VisibleFields {
 /** Jira parity: color cards by a field. 'none' = no colour stripe. */
 export type CardColorMode = 'none' | 'priority' | 'issueType';
 
+/**
+ * All available quick filter preset keys.
+ * The first 3 are always enabled by default; users can toggle any on/off
+ * via View Settings (Jira: Board config → Quick Filters).
+ */
+export const ALL_QUICK_FILTERS = [
+  { key: 'assigned-to-me',   label: 'Assigned to me',  defaultOn: true  },
+  { key: 'flagged',          label: 'Flagged',          defaultOn: true  },
+  { key: 'recently-updated', label: 'Recently updated', defaultOn: true  },
+  { key: 'high-priority',    label: 'High priority',    defaultOn: false },
+  { key: 'unassigned',       label: 'Unassigned',       defaultOn: false },
+  { key: 'in-progress',      label: 'In progress',      defaultOn: false },
+] as const;
+
+export type QuickFilterKey = (typeof ALL_QUICK_FILTERS)[number]['key'];
+
+/** Set of quick filter keys visible in the toolbar. Persisted per board. */
+export type EnabledQuickFilters = Set<QuickFilterKey>;
+
 export interface KanbanViewSettings {
   openInSidebar: boolean;
   showQuickFilters: boolean;
@@ -27,13 +46,23 @@ export interface KanbanViewSettings {
   visibleFields: VisibleFields;
   /** Card left-border colour rule (Jira: Board config → Card colors) */
   cardColorMode: CardColorMode;
+  /**
+   * Which quick-filter pills are visible in the toolbar.
+   * Stored as an array in JSONB for serialization.
+   */
+  enabledQuickFilters: QuickFilterKey[];
 }
+
+const DEFAULT_ENABLED_QF: QuickFilterKey[] = ALL_QUICK_FILTERS
+  .filter(f => f.defaultOn)
+  .map(f => f.key);
 
 const DEFAULT_SETTINGS: KanbanViewSettings = {
   openInSidebar: false,
   showQuickFilters: false,
   showWorkSuggestions: true,
   cardColorMode: 'none',
+  enabledQuickFilters: DEFAULT_ENABLED_QF,
   visibleFields: {
     cardCover: true,
     workType: true,
@@ -69,6 +98,7 @@ export function useKanbanViewSettings(projectKey: string | undefined, userId: st
         showQuickFilters: data.show_quick_filters ?? false,
         showWorkSuggestions: data.show_work_suggestions ?? true,
         cardColorMode: (vf.__cardColorMode as CardColorMode) ?? 'none',
+        enabledQuickFilters: (vf.__enabledQF as QuickFilterKey[]) ?? DEFAULT_ENABLED_QF,
         visibleFields: { ...DEFAULT_SETTINGS.visibleFields, ...vf as Partial<VisibleFields> },
       };
     },
@@ -85,8 +115,12 @@ export function useKanbanViewSettings(projectKey: string | undefined, userId: st
         open_in_sidebar: newSettings.openInSidebar,
         show_quick_filters: newSettings.showQuickFilters,
         show_work_suggestions: newSettings.showWorkSuggestions,
-        // Piggyback cardColorMode into visible_fields JSONB to avoid a migration
-        visible_fields: { ...newSettings.visibleFields, __cardColorMode: newSettings.cardColorMode } as any,
+        // Piggyback extra settings into visible_fields JSONB to avoid a migration
+        visible_fields: {
+          ...newSettings.visibleFields,
+          __cardColorMode: newSettings.cardColorMode,
+          __enabledQF: newSettings.enabledQuickFilters,
+        } as any,
       };
       await supabase
         .from('kanban_view_settings')
