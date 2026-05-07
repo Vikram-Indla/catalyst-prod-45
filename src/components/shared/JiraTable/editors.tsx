@@ -81,6 +81,9 @@ function EditorPopover({ trigger, children, width = 240, align = 'start' }: Edit
       const target = e.target as Node;
       if (triggerRef.current?.contains(target)) return;
       if (popRef.current?.contains(target)) return;
+      // Don't close if click landed inside an Atlaskit portal child (e.g. DatePicker
+      // calendar, Select dropdown) — those render outside popRef in .atlaskit-portal-container.
+      if (document.querySelector('.atlaskit-portal-container')?.contains(target)) return;
       setIsOpen(false);
     };
     const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') setIsOpen(false); };
@@ -863,6 +866,8 @@ export function makeParentEditCell<T>({
             aria-expanded={isOpen}
             data-jira-cell-editor
             style={{
+              display: 'block',
+              width: '100%',
               background: 'transparent',
               border: 'none',
               padding: '2px 4px',
@@ -871,16 +876,15 @@ export function makeParentEditCell<T>({
               cursor: 'pointer',
               fontFamily: 'inherit',
               fontSize: 'inherit',
+              textAlign: 'left',
             }}
           >
-            {/* Jira renders a BLANK parent cell when there's no parent
-                (measured 2026-04-18 on digital-transformation.atlassian.net
-                — no "Add parent" placeholder). The cell is still clickable
-                because the entire trigger button spans the cell width, so
-                users can open the picker by clicking anywhere in the column
-                — we just don't show placeholder text. */}
+            {/* Jira renders a BLANK parent cell when there's no parent —
+                the entire cell is still clickable. We render an invisible
+                full-width span so the button expands to the column width
+                and any click in the empty cell opens the picker. */}
             {filledDisplay ?? (
-              <span style={{ display: 'inline-block', minWidth: 1, height: 18 }} />
+              <span style={{ display: 'block', width: '100%', height: 18 }} />
             )}
           </button>
         )}

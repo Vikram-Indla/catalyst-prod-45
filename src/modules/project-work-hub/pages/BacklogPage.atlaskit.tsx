@@ -1126,20 +1126,69 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
   // Slicing is handled inside JiraTable now (Round H). We keep `total` +
   // `totalPages` available for the count display in the toolbar.
 
-  // Group definitions — built off the sorted (unpaginated) rows. When the
-  // user picks a group-by the table trades pagination for grouped sections.
+  // Group definitions — built off ALL filtered items (not just expand/collapse-
+  // visible rows). When groupBy is active the table shows every matching item
+  // regardless of hierarchy expand state, so "Group by Parent" shows ALL
+  // stories under their parent epic even when the epic row is collapsed.
   const groupedRows = useMemo(() => {
     if (groupBy === 'none') return null;
+
+    // Apply the same filter logic as visibleRows but WITHOUT the expand/collapse
+    // gate — grouping needs the full flat item set.
+    const q = search.trim().toLowerCase();
+    let rowsForGroup = items.filter((it) => {
+      if (q && !(it.title || '').toLowerCase().includes(q) &&
+          !(it.key || '').toLowerCase().includes(q) &&
+          !(it.assignee_name || '').toLowerCase().includes(q)) return false;
+      if (typeFilter !== 'all' && it.type !== typeFilter) return false;
+      const f = filterValue;
+      if (f.priority.length && (!it.priority || !f.priority.includes(it.priority as any))) return false;
+      if (f.status.length && (!it.status || !f.status.includes(it.status))) return false;
+      if (f.workType.length) {
+        const typeLabel = it.type.charAt(0).toUpperCase() + it.type.slice(1);
+        if (!f.workType.includes(typeLabel)) return false;
+      }
+      if (f.assignees.length && (!it.assignee_name || !f.assignees.includes(it.assignee_name))) return false;
+      if (f.reporter.length && (!it.reporter_name || !f.reporter.includes(it.reporter_name))) return false;
+      if (f.fixVersions.length && (!it.parent_id || !f.fixVersions.includes(it.parent_id))) return false;
+      if (f.updated.from && (!it.updated_at || it.updated_at < f.updated.from)) return false;
+      if (f.updated.to && (!it.updated_at || it.updated_at > f.updated.to + 'T23:59:59')) return false;
+      if (f.created.from && (!it.created_at || it.created_at < f.created.from)) return false;
+      if (f.created.to && (!it.created_at || it.created_at > f.created.to + 'T23:59:59')) return false;
+      if (hideDoneItems && /^(done|closed)$/i.test((it.status || '').trim())) return false;
+      return true;
+    });
+
+    // Apply the same sort as sortedRows.
+    if (sortKey && sortDir) {
+      const getValue = (it: BacklogItem): string | number => {
+        switch (sortKey) {
+          case 'key':      return it.key || '';
+          case 'summary':  return (it.title || '').toLowerCase();
+          case 'status':   return (it.status || '').toLowerCase();
+          case 'parent':   return (it.parent_label || '').toLowerCase();
+          case 'assignee': return (it.assignee_name || '').toLowerCase();
+          case 'priority': {
+            const i = PRIORITY_ORDER.indexOf((it.priority || '').toLowerCase());
+            return i >= 0 ? i : 999;
+          }
+          case 'updated':  return it.updated_at || '';
+          default:         return '';
+        }
+      };
+      rowsForGroup = [...rowsForGroup].sort((a, b) => {
+        const av = getValue(a); const bv = getValue(b);
+        const cmp = typeof av === 'number' && typeof bv === 'number' ? av - bv : String(av).localeCompare(String(bv));
+        return sortDir === 'ASC' ? cmp : -cmp;
+      });
+    }
+
     const groupLabelFor = (it: BacklogItem): string => {
       switch (groupBy) {
         case 'status':   return it.status || 'No status';
         case 'parent':   return it.parent_label || (it.type === 'epic' ? it.title : 'No parent');
         case 'assignee': return it.assignee_name || 'Unassigned';
         case 'priority': return it.priority ? it.priority[0].toUpperCase() + it.priority.slice(1) : 'No priority';
-        // Apr 28, 2026 (jira-compare cycle 2): per-type comparison —
-        // map BacklogItem.type ('story' | 'bug' | 'incident' | 'epic' |
-        // 'feature') to the Jira display label so users see "Story",
-        // "QA Bug", "Production Incident", "Epic", "Feature".
         case 'type': {
           const t = it.type || '';
           if (t === 'epic') return 'Epic';
@@ -1153,7 +1202,7 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
       }
     };
     const buckets = new Map<string, BacklogItem[]>();
-    for (const it of sortedRows) {
+    for (const it of rowsForGroup) {
       const k = groupLabelFor(it);
       if (!buckets.has(k)) buckets.set(k, []);
       buckets.get(k)!.push(it);
@@ -1220,7 +1269,7 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
       }
       return { id: k, label: k, labelNode, rows: buckets.get(k)! };
     });
-  }, [groupBy, sortedRows, avatarsByName]);
+  }, [groupBy, items, search, typeFilter, filterValue, hideDoneItems, sortKey, sortDir, avatarsByName]);
 
   useEffect(() => { setPage(1); }, [typeFilter, search, filterValue, sortKey, sortDir]);
 
@@ -2338,11 +2387,22 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
             appearance="stack"
             size="small"
             maxCount={5}
+            label="Filter by assignee"
             data={assigneeOptions.map((a) => ({
               key: a.id,
               name: a.name,
               src: a.avatarUrl ?? undefined,
             }))}
+            onAvatarClick={(_event, _analytics, index) => {
+              const a = assigneeOptions[index];
+              if (!a) return;
+              setFilterValue((prev) => ({
+                ...prev,
+                assignees: prev.assignees.includes(a.name)
+                  ? prev.assignees.filter((x) => x !== a.name)
+                  : [...prev.assignees, a.name],
+              }));
+            }}
           />
         )}
 
@@ -4617,10 +4677,10 @@ function BottomCreateRow({
       }}
     >
       {/* Type picker — icon + ▾ chevron, Jira parity.
-       * shouldRenderToParent sidesteps focus-trap timing issue (see Apr 28 note). */}
+       * Portal render (no shouldRenderToParent) so Popper uses position:fixed +
+       * getBoundingClientRect — sticky bottom context requires viewport coords. */}
       <DropdownMenu
         placement="top-start"
-        shouldRenderToParent
         trigger={({ triggerRef, isSelected: _isSel, testId: _testId, ...triggerProps }: any) => (
           <button
             {...triggerProps}
