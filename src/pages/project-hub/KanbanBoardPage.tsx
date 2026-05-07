@@ -864,22 +864,18 @@ export default function KanbanBoardPage() {
       {/* ── Page header ── */}
       <CatalystPageHeader title="Board" />
 
-      {/* ── F3: Archived filter chip (admin/owner only) — Atlaskit Button ── */}
-      {canArchive && (
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '6px 16px', borderBottom: '1px solid #DFE1E6', background: 'var(--ds-surface-sunken, #FAFBFC)' }}>
-          <Button
-            appearance={showArchived ? 'primary' : 'subtle'}
-            spacing="compact"
-            onClick={() => setShowArchived(v => !v)}
-            aria-pressed={showArchived}
+      {/* F3: "Show archived" moved into the board ••• menu — no standalone row above toolbar */}
+      {showArchived && (
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '4px 16px', background: 'var(--ds-background-warning-bold, #FFAB00)', color: '#172B4D' }}>
+          <span style={{ fontSize: 12, fontWeight: 500, fontFamily: 'var(--cp-font-body)' }}>
+            Showing archived issues — restore from the issue overflow menu.
+          </span>
+          <button
+            onClick={() => setShowArchived(false)}
+            style={{ marginLeft: 'auto', background: 'none', border: 'none', cursor: 'pointer', fontSize: 12, fontWeight: 600, color: '#172B4D', fontFamily: 'var(--cp-font-body)', padding: '0 4px' }}
           >
-            {showArchived ? 'Archived' : 'Show archived'}
-          </Button>
-          {showArchived && (
-            <span style={{ fontSize: 11, color: '#7A869A' }}>
-              Showing archived issues only — restore from the issue overflow menu.
-            </span>
-          )}
+            Exit
+          </button>
         </div>
       )}
 

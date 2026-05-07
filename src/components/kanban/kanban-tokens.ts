@@ -42,7 +42,7 @@ export const KANBAN_TOKENS: { light: KanbanThemeTokens; dark: KanbanThemeTokens 
     surfaceBg: 'var(--ds-surface, #FFFFFF)',
     surfaceHover: '#F1F2F4',
     surfaceAlt: '#F8F8F8',     /* column surface (Jira: rgb(248,248,248)) */
-    headerBg: '#F8F8F8',       /* column header — matches column body */
+    headerBg: 'rgba(5,21,36,0.06)',  /* column header — Jira tint over #F8F8F8 */
     border: '#DDDEE1',
     borderSubtle: '#EBECF0',
     textPrimary: '#292A2E',    /* Jira primary text */

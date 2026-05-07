@@ -527,7 +527,7 @@ const PragmaticColumn = memo(function PragmaticColumn({
         ref={bodyRef}
         className="flex flex-col overflow-y-auto"
         style={{
-          padding: '0 10px 10px 10px',
+          padding: '6px 10px 10px 10px',  /* Jira: 6px top gap between header and first card */
           gap: d.cardGap,
           flex: 1,
           minHeight: 120,
