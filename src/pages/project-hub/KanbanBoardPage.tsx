@@ -130,6 +130,7 @@ export default function KanbanBoardPage() {
   // View settings
   const { settings: viewSettings, updateSettings: updateViewSettings } = useKanbanViewSettings(key, currentUserData);
   const visibleFields = viewSettings.visibleFields;
+  const cardColorMode = viewSettings.cardColorMode;
 
   // Swimlane expand/collapse all handlers
   const handleExpandAll = useCallback(() => setCollapsedSwimlanes(new Set()), []);
@@ -995,6 +996,7 @@ export default function KanbanBoardPage() {
                   onMoved={handleMoved}
                   onLinked={handleLinked}
                   visibleFields={visibleFields}
+                  cardColorMode={cardColorMode}
                   columns={KANBAN_COLUMNS}
                   statusToColId={STATUS_TO_COL_ID}
                 />
@@ -1037,6 +1039,7 @@ export default function KanbanBoardPage() {
             onMoved={handleMoved}
             onLinked={handleLinked}
             visibleFields={visibleFields}
+            cardColorMode={cardColorMode}
             onDrop={({ cardId, sourceColId, destColId, insertIndex }) => {
               /* 1. Optimistic local reorder. */
               setColMap(prev => {

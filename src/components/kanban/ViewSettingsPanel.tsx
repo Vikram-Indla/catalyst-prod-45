@@ -5,7 +5,7 @@
  */
 import { useRef, useEffect, useCallback } from 'react';
 import type { KanbanThemeTokens, KanbanDensity } from './kanban-tokens';
-import type { KanbanViewSettings, VisibleFields } from '@/hooks/useKanbanViewSettings';
+import type { KanbanViewSettings, VisibleFields, CardColorMode } from '@/hooks/useKanbanViewSettings';
 
 interface ViewSettingsPanelProps {
   settings: KanbanViewSettings;
@@ -196,6 +196,40 @@ export function ViewSettingsPanel({ settings, onUpdate, onExpandAll, onCollapseA
           </div>
         </>
       )}
+
+      <Divider tk={tk} />
+
+      {/* Card colors section — Jira parity: Board config → Card colors */}
+      <SectionHeader title="Card colors" tk={tk} />
+      <div role="radiogroup" aria-label="Card color rule" style={{ display: 'flex', gap: 6, padding: '6px 0 4px' }}>
+        {([
+          { value: 'none',      label: 'None' },
+          { value: 'priority',  label: 'Priority' },
+          { value: 'issueType', label: 'Issue type' },
+        ] as { value: CardColorMode; label: string }[]).map(({ value, label }) => {
+          const active = (settings.cardColorMode ?? 'none') === value;
+          return (
+            <button
+              key={value}
+              role="radio"
+              aria-checked={active}
+              onClick={() => onUpdate({ cardColorMode: value })}
+              style={{
+                flex: 1, height: 28, padding: '0 8px',
+                fontSize: 12, fontWeight: active ? 600 : 500,
+                color: active ? 'var(--ds-surface, #FFFFFF)' : tk.textSecondary,
+                background: active ? tk.selectedAccent : tk.chipBg,
+                border: `1px solid ${active ? tk.selectedAccent : tk.border}`,
+                borderRadius: 4, cursor: 'pointer',
+                fontFamily: 'var(--cp-font-body)',
+                transition: 'background 120ms ease, color 120ms ease',
+              }}
+            >
+              {label}
+            </button>
+          );
+        })}
+      </div>
 
       <Divider tk={tk} />
 

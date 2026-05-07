@@ -41,9 +41,10 @@ import MoreIcon from '@atlaskit/icon/glyph/more';
 import AddIcon from '@atlaskit/icon/core/add';
 import { WorkItemCard } from './WorkItemCard';
 import type { BoardIssue } from './kanban-types';
+import { CARD_COLOR_BY_PRIORITY, CARD_COLOR_BY_TYPE } from './kanban-types';
 import type { KanbanThemeTokens, DensityConfig, KanbanColumnDef } from './kanban-tokens';
 import type { AssigneeOption } from './AssigneePickerPopover';
-import type { VisibleFields } from '@/hooks/useKanbanViewSettings';
+import type { VisibleFields, CardColorMode } from '@/hooks/useKanbanViewSettings';
 
 /* ═════════════════════════════════════════════════════════════════════════
    Shared card-action prop bundle — mirrors existing SortableCard surface so
@@ -65,6 +66,8 @@ interface CardActions {
   onMoved?: (issueId: string, newProjectKey: string) => void;
   onLinked?: () => void;
   visibleFields?: VisibleFields;
+  /** Card left-border colour rule (Jira: Board config → Card colors) */
+  cardColorMode?: CardColorMode;
   /**
    * Per-column inline create — Jira-parity affordance. Renders a
    * "+ Create issue" button at the bottom of every column (subtle,
@@ -96,10 +99,11 @@ interface PragmaticCardProps extends CardActions {
   isSelected?: boolean;
   isFocused?: boolean;
   avatarsByName: Map<string, string>;
+  cardColorMode?: CardColorMode;
 }
 
 const PragmaticCard = memo(function PragmaticCard({
-  issue, colId, avatarUrl, onClick, d, tk, isSelected, isFocused, avatarsByName, ...actions
+  issue, colId, avatarUrl, onClick, d, tk, isSelected, isFocused, avatarsByName, cardColorMode, ...actions
 }: PragmaticCardProps) {
   const ref = useRef<HTMLDivElement>(null);
   const [isDragging, setIsDragging] = useState(false);
@@ -158,7 +162,19 @@ const PragmaticCard = memo(function PragmaticCard({
     background: tk.cardBg,
     borderRadius: 4,                                        /* Jira parity: 4px */
     border: 'none',                                         /* shadow-only */
-    borderLeft: isSelected ? `3px solid ${tk.selectedAccent}` : 'none',
+    borderLeft: isSelected
+      ? `3px solid ${tk.selectedAccent}`
+      : (() => {
+          if (cardColorMode === 'priority') {
+            const c = CARD_COLOR_BY_PRIORITY[(issue.priority ?? '').toLowerCase()];
+            return c ? `3px solid ${c}` : 'none';
+          }
+          if (cardColorMode === 'issueType') {
+            const c = CARD_COLOR_BY_TYPE[(issue.issueType ?? '').toLowerCase()];
+            return c ? `3px solid ${c}` : 'none';
+          }
+          return 'none';
+        })(),
     padding: d.cardPad,
     display: 'flex',
     flexDirection: 'column',
@@ -283,11 +299,12 @@ interface PragmaticColumnProps extends CardActions {
   tk: KanbanThemeTokens;
   selectedId?: string | null;
   focusedId?: string | null;
+  cardColorMode?: CardColorMode;
 }
 
 const PragmaticColumn = memo(function PragmaticColumn({
   column, issueIds, issuesById, avatarsByName, onCardClick, d, tk,
-  selectedId, focusedId, ...actions
+  selectedId, focusedId, cardColorMode, ...actions
 }: PragmaticColumnProps) {
   const bodyRef = useRef<HTMLDivElement>(null);
   const meatballRef = useRef<HTMLButtonElement>(null);
@@ -563,6 +580,7 @@ const PragmaticColumn = memo(function PragmaticColumn({
               isSelected={selectedId === id}
               isFocused={focusedId === id}
               avatarsByName={avatarsByName}
+              cardColorMode={cardColorMode}
               {...actions}
             />
           );
@@ -683,6 +701,8 @@ export interface PragmaticBoardProps extends CardActions {
    */
   swimlaneOf?: (issue: BoardIssue) => string | null;
   swimlaneLabel?: (key: string) => string;
+  /** Card left-border colour rule (Jira: Board config → Card colors) */
+  cardColorMode?: CardColorMode;
   /**
    * Called whenever a drop resolves to a concrete (destColId, insertIndex).
    * Host is responsible for:
@@ -701,6 +721,7 @@ export interface PragmaticBoardProps extends CardActions {
 export function PragmaticBoard({
   columns, colMap, issuesById, avatarsByName, onCardClick,
   d, tk, selectedId, focusedId, onDrop, swimlaneOf, swimlaneLabel,
+  cardColorMode,
   ...actions
 }: PragmaticBoardProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -847,6 +868,7 @@ export function PragmaticBoard({
                     tk={tk}
                     selectedId={selectedId}
                     focusedId={focusedId}
+                    cardColorMode={cardColorMode}
                     {...actions}
                   />
                 ))}
@@ -883,6 +905,7 @@ export function PragmaticBoard({
           tk={tk}
           selectedId={selectedId}
           focusedId={focusedId}
+          cardColorMode={cardColorMode}
           {...actions}
         />
       ))}

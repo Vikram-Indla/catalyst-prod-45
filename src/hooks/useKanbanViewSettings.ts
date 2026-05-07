@@ -17,17 +17,23 @@ export interface VisibleFields {
   fixVersions: boolean;
 }
 
+/** Jira parity: color cards by a field. 'none' = no colour stripe. */
+export type CardColorMode = 'none' | 'priority' | 'issueType';
+
 export interface KanbanViewSettings {
   openInSidebar: boolean;
   showQuickFilters: boolean;
   showWorkSuggestions: boolean;
   visibleFields: VisibleFields;
+  /** Card left-border colour rule (Jira: Board config → Card colors) */
+  cardColorMode: CardColorMode;
 }
 
 const DEFAULT_SETTINGS: KanbanViewSettings = {
   openInSidebar: false,
   showQuickFilters: false,
   showWorkSuggestions: true,
+  cardColorMode: 'none',
   visibleFields: {
     cardCover: true,
     workType: true,
@@ -57,11 +63,13 @@ export function useKanbanViewSettings(projectKey: string | undefined, userId: st
         .maybeSingle();
 
       if (!data) return DEFAULT_SETTINGS;
+      const vf = (data.visible_fields ?? {}) as Record<string, unknown>;
       return {
         openInSidebar: data.open_in_sidebar ?? false,
         showQuickFilters: data.show_quick_filters ?? false,
         showWorkSuggestions: data.show_work_suggestions ?? true,
-        visibleFields: { ...DEFAULT_SETTINGS.visibleFields, ...(data.visible_fields as Partial<VisibleFields> ?? {}) },
+        cardColorMode: (vf.__cardColorMode as CardColorMode) ?? 'none',
+        visibleFields: { ...DEFAULT_SETTINGS.visibleFields, ...vf as Partial<VisibleFields> },
       };
     },
     enabled: !!userId && !!projectKey,
@@ -77,7 +85,8 @@ export function useKanbanViewSettings(projectKey: string | undefined, userId: st
         open_in_sidebar: newSettings.openInSidebar,
         show_quick_filters: newSettings.showQuickFilters,
         show_work_suggestions: newSettings.showWorkSuggestions,
-        visible_fields: newSettings.visibleFields as any,
+        // Piggyback cardColorMode into visible_fields JSONB to avoid a migration
+        visible_fields: { ...newSettings.visibleFields, __cardColorMode: newSettings.cardColorMode } as any,
       };
       await supabase
         .from('kanban_view_settings')

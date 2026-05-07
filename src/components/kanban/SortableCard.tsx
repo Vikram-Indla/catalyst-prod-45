@@ -9,7 +9,8 @@ import { WorkItemCard } from './WorkItemCard';
 import type { BoardIssue } from './kanban-types';
 import type { KanbanThemeTokens, DensityConfig } from './kanban-tokens';
 import type { AssigneeOption } from './AssigneePickerPopover';
-import type { VisibleFields } from '@/hooks/useKanbanViewSettings';
+import type { VisibleFields, CardColorMode } from '@/hooks/useKanbanViewSettings';
+import { CARD_COLOR_BY_PRIORITY, CARD_COLOR_BY_TYPE } from './kanban-types';
 
 interface SortableCardProps {
   issue: BoardIssue;
@@ -36,9 +37,10 @@ interface SortableCardProps {
   onMoved?: (issueId: string, newProjectKey: string) => void;
   onLinked?: () => void;
   visibleFields?: VisibleFields;
+  cardColorMode?: CardColorMode;
 }
 
-export const SortableCard = memo(function SortableCard({ issue, avatarUrl, onClick, d, tk, isSelected, isFocused, onToggleFlag, onCopyLink, onCopyKey, onChangeStatus, onOpenDetail, onSaveSummary, onChangeAssignee, assigneeOptions, avatarsByName, projectKey, onLabelsUpdated, onParentChange, onArchive, onDelete, onMoved, onLinked, visibleFields }: SortableCardProps) {
+export const SortableCard = memo(function SortableCard({ issue, avatarUrl, onClick, d, tk, isSelected, isFocused, onToggleFlag, onCopyLink, onCopyKey, onChangeStatus, onOpenDetail, onSaveSummary, onChangeAssignee, assigneeOptions, avatarsByName, projectKey, onLabelsUpdated, onParentChange, onArchive, onDelete, onMoved, onLinked, visibleFields, cardColorMode }: SortableCardProps) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: issue.id });
 
   const restShadow = tk.cardShadowRest;
@@ -65,7 +67,19 @@ export const SortableCard = memo(function SortableCard({ issue, avatarUrl, onCli
     background: tk.cardBg,
     borderRadius: 4,                                    /* Jira parity: 4px */
     border: 'none',                                     /* Jira: shadow-only, no border */
-    borderLeft: isSelected ? `3px solid ${tk.selectedAccent}` : 'none',
+    borderLeft: isSelected
+      ? `3px solid ${tk.selectedAccent}`
+      : (() => {
+          if (cardColorMode === 'priority') {
+            const c = CARD_COLOR_BY_PRIORITY[(issue.priority ?? '').toLowerCase()];
+            return c ? `3px solid ${c}` : 'none';
+          }
+          if (cardColorMode === 'issueType') {
+            const c = CARD_COLOR_BY_TYPE[(issue.issueType ?? '').toLowerCase()];
+            return c ? `3px solid ${c}` : 'none';
+          }
+          return 'none';
+        })(),
     padding: d.cardPad,
     display: 'flex',
     flexDirection: 'column',

@@ -15,7 +15,7 @@ import { KANBAN_COLUMNS as DEFAULT_KANBAN_COLUMNS, STATUS_TO_COL_ID as DEFAULT_S
 import type { BoardIssue, GroupBucket, GroupByMode } from './kanban-types';
 import type { KanbanThemeTokens, DensityConfig, KanbanColumnDef } from './kanban-tokens';
 import type { AssigneeOption } from './AssigneePickerPopover';
-import type { VisibleFields } from '@/hooks/useKanbanViewSettings';
+import type { VisibleFields, CardColorMode } from '@/hooks/useKanbanViewSettings';
 
 /* ── Status Lozenge (3-color guardrail) ── */
 function StatusLozenge({ status, category, tk }: { status: string; category: string; tk: KanbanThemeTokens }) {
@@ -39,7 +39,7 @@ function StatusLozenge({ status, category, tk }: { status: string; category: str
   );
 }
 
-export function SwimlaneRow({ group, mode, issuesById, avatarsByName, onCardClick, defaultOpen, d, tk, selectedId, onToggleFlag, onCopyLink, onCopyKey, onChangeStatus, onSaveSummary, onChangeAssignee, assigneeOptions, projectKey, onLabelsUpdated, onParentChange, onArchive, onDelete, onMoved, onLinked, visibleFields, columns, statusToColId }: {
+export function SwimlaneRow({ group, mode, issuesById, avatarsByName, onCardClick, defaultOpen, d, tk, selectedId, onToggleFlag, onCopyLink, onCopyKey, onChangeStatus, onSaveSummary, onChangeAssignee, assigneeOptions, projectKey, onLabelsUpdated, onParentChange, onArchive, onDelete, onMoved, onLinked, visibleFields, cardColorMode, columns, statusToColId }: {
   group: GroupBucket;
   mode: GroupByMode;
   issuesById: Map<string, BoardIssue>;
@@ -64,6 +64,7 @@ export function SwimlaneRow({ group, mode, issuesById, avatarsByName, onCardClic
   onMoved?: (issueId: string, newProjectKey: string) => void;
   onLinked?: () => void;
   visibleFields?: VisibleFields;
+  cardColorMode?: CardColorMode;
   columns?: KanbanColumnDef[];
   statusToColId?: Map<string, string>;
 }) {
@@ -168,6 +169,7 @@ export function SwimlaneRow({ group, mode, issuesById, avatarsByName, onCardClic
                 onMoved={onMoved}
                 onLinked={onLinked}
                 visibleFields={visibleFields}
+                cardColorMode={cardColorMode}
               />
             );
           })}
@@ -177,7 +179,7 @@ export function SwimlaneRow({ group, mode, issuesById, avatarsByName, onCardClic
   );
 }
 
-function SwimlaneDndColumn({ colId, groupKey, issueIds, issuesById, avatarsByName, onCardClick, isFirst, d, tk, selectedId, onToggleFlag, onCopyLink, onCopyKey, onChangeStatus, onSaveSummary, onChangeAssignee, assigneeOptions, projectKey, onLabelsUpdated, onParentChange, onArchive, onDelete, onMoved, onLinked, visibleFields }: {
+function SwimlaneDndColumn({ colId, groupKey, issueIds, issuesById, avatarsByName, onCardClick, isFirst, d, tk, selectedId, onToggleFlag, onCopyLink, onCopyKey, onChangeStatus, onSaveSummary, onChangeAssignee, assigneeOptions, projectKey, onLabelsUpdated, onParentChange, onArchive, onDelete, onMoved, onLinked, visibleFields, cardColorMode }: {
   colId: string; groupKey: string; issueIds: string[];
   issuesById: Map<string, BoardIssue>; avatarsByName: Map<string, string>;
   onCardClick: (id: string) => void; isFirst: boolean;
@@ -198,6 +200,7 @@ function SwimlaneDndColumn({ colId, groupKey, issueIds, issuesById, avatarsByNam
   onMoved?: (issueId: string, newProjectKey: string) => void;
   onLinked?: () => void;
   visibleFields?: VisibleFields;
+  cardColorMode?: CardColorMode;
 }) {
   const droppableId = `${groupKey}::${colId}`;
   const { setNodeRef, isOver } = useDroppable({ id: droppableId });
@@ -245,6 +248,7 @@ function SwimlaneDndColumn({ colId, groupKey, issueIds, issuesById, avatarsByNam
                 onMoved={onMoved}
                 onLinked={onLinked}
                 visibleFields={visibleFields}
+                cardColorMode={cardColorMode}
               />
             );
           })}

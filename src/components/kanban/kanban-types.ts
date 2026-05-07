@@ -48,3 +48,30 @@ export interface GroupBucket {
 }
 
 export type ColMap = Record<string, string[]>;
+
+/* ── Card color maps (Jira parity: Board config → Card colors) ── */
+
+export const CARD_COLOR_BY_PRIORITY: Record<string, string> = {
+  highest: '#E5493A',
+  critical: '#E5493A',
+  high:     '#E97F33',
+  medium:   '#FFAB00',
+  low:      '#2D8738',
+  lowest:   '#57A55A',
+};
+
+export const CARD_COLOR_BY_TYPE: Record<string, string> = {
+  epic:             '#9B51E0',
+  feature:          '#FF7452',
+  story:            '#36B37E',
+  improvement:      '#36B37E',
+  task:             '#4BADE8',
+  bug:              '#E5493A',
+  defect:           '#E5493A',
+  'qa bug':         '#E5493A',
+  'production incident': '#FF5630',
+  incident:         '#FF5630',
+  'business gap':   '#FFAB00',
+  'business request': '#FFAB00',
+  'change request': '#FFAB00',
+};
