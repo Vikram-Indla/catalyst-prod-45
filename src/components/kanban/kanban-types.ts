@@ -30,6 +30,17 @@ export interface BoardIssue {
 
 export type GroupByMode = 'none' | 'assignee' | 'epic' | 'priority' | 'fixVersion';
 
+/**
+ * Issue types treated as subtasks in the BAU project.
+ * Jira parity: subtasks are hidden from the kanban board by default
+ * (both in normal and swimlane/grouped modes). They appear only when the
+ * user explicitly adds them via Advanced Filter → Issue Types.
+ */
+export const BOARD_SUBTASK_TYPES = new Set([
+  'Sub-task', 'sub-task', 'subtask',
+  'Backend', 'Frontend', 'Integration', 'Figma', 'Entity Figma',
+]);
+
 export interface GroupBucket {
   groupKey: string;
   groupLabel: string;

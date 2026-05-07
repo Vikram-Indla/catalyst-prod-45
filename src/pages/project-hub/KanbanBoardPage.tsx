@@ -44,6 +44,7 @@ import { arrayMove } from '@dnd-kit/sortable';
 import { KANBAN_TOKENS, DENSITY_CONFIG, KANBAN_COLUMNS as DEFAULT_KANBAN_COLUMNS, COL_PRIMARY_STATUS as DEFAULT_COL_PRIMARY_STATUS, STATUS_TO_COL_ID as DEFAULT_STATUS_TO_COL_ID, COLUMN_ID_SET as DEFAULT_COLUMN_ID_SET } from '@/components/kanban/kanban-tokens';
 import type { KanbanDensity, KanbanColumnDef } from '@/components/kanban/kanban-tokens';
 import type { BoardIssue, GroupByMode, ColMap } from '@/components/kanban/kanban-types';
+import { BOARD_SUBTASK_TYPES } from '@/components/kanban/kanban-types';
 import { groupIssues, findCol } from '@/components/kanban/kanban-utils';
 import { DroppableColumn } from '@/components/kanban/KanbanColumn';
 import { OverlayCard } from '@/components/kanban/SortableCard';
@@ -461,11 +462,11 @@ export default function KanbanBoardPage() {
   /* ═══ FILTERING ═══ */
 
   const filtered = useMemo(() => {
-    // By default show only Stories on board; Epics are metadata for swimlane headers.
-    // When advanced filter specifies issue types, use those instead of the default.
+    // Jira parity: board hides Epics (swimlane metadata) and subtasks by default.
+    // When advanced filter specifies issue types, honour exactly those types instead.
     let issues = advancedFilters.issueTypes.length > 0
       ? rawIssues
-      : rawIssues.filter(i => i.issueType !== 'Epic');
+      : rawIssues.filter(i => i.issueType !== 'Epic' && !BOARD_SUBTASK_TYPES.has(i.issueType));
     if (debSearch.trim()) {
       const q = debSearch.trim().toLowerCase();
       issues = issues.filter(i =>
@@ -934,6 +935,8 @@ export default function KanbanBoardPage() {
         canArchive={canArchive}
         showArchived={showArchived}
         onShowArchivedChange={setShowArchived}
+        quickFilters={quickFilters}
+        onQuickFiltersChange={setQuickFilters}
       />
 
       {/* ── Board content (Jira parity: 8px inter-column gap, 16px outer padding) ── */}

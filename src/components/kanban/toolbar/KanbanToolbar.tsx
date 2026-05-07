@@ -160,6 +160,10 @@ export interface KanbanToolbarProps<TGroupBy extends string = string> {
   canArchive?: boolean;
   showArchived?: boolean;
   onShowArchivedChange?: Dispatch<SetStateAction<boolean>>;
+
+  /* Quick filter pills (Jira parity: Assigned to me, Flagged, Recently updated) */
+  quickFilters?: Set<string>;
+  onQuickFiltersChange?: Dispatch<SetStateAction<Set<string>>>;
 }
 
 /* ═══ KanbanToolbar — composed toolbar, presentational ═══ */
@@ -181,9 +185,25 @@ export function KanbanToolbar<TGroupBy extends string = string>({
   mapStatusesPath,
   projectKey,
   canArchive, showArchived, onShowArchivedChange,
+  quickFilters, onQuickFiltersChange,
 }: KanbanToolbarProps<TGroupBy>) {
   const navigate = useNavigate();
   const boardMenuRef = useRef<HTMLDivElement>(null);
+
+  /* Quick filter pill definitions (Jira parity) */
+  const QUICK_FILTER_DEFS = [
+    { key: 'assigned-to-me', label: 'Assigned to me' },
+    { key: 'flagged',         label: 'Flagged' },
+    { key: 'recently-updated', label: 'Recently updated' },
+  ] as const;
+
+  const toggleQuickFilter = (key: string) => {
+    onQuickFiltersChange?.(prev => {
+      const next = new Set(prev);
+      if (next.has(key)) next.delete(key); else next.add(key);
+      return next;
+    });
+  };
 
   /* Close board menu on outside click — behavior preserved from the
      previous inline effect in KanbanBoardPage.tsx. */
@@ -261,6 +281,31 @@ export function KanbanToolbar<TGroupBy extends string = string>({
         options={groupByOptions}
         noneKey={groupByNoneKey}
       />
+
+      {/* Quick filter pills — Jira parity: Assigned to me, Flagged, Recently updated */}
+      {onQuickFiltersChange && QUICK_FILTER_DEFS.map(({ key, label }) => {
+        const active = quickFilters?.has(key) ?? false;
+        return (
+          <button
+            key={key}
+            onClick={() => toggleQuickFilter(key)}
+            style={{
+              height: 32, padding: '0 10px',
+              border: 'none', borderRadius: 3,
+              fontSize: 14, fontWeight: 500,
+              color: active ? 'var(--ds-link, #0052CC)' : tk.textPrimary,
+              background: active ? 'var(--ds-background-selected, #DEEBFF)' : 'transparent',
+              cursor: 'pointer', fontFamily: 'var(--cp-font-body)',
+              transition: 'background 100ms',
+              whiteSpace: 'nowrap',
+            }}
+            onMouseEnter={e => { if (!active) e.currentTarget.style.background = tk.surfaceHover; }}
+            onMouseLeave={e => { if (!active) e.currentTarget.style.background = 'transparent'; }}
+          >
+            {label}
+          </button>
+        );
+      })}
 
       {/* Clear filters */}
       {activeFilterCount > 0 && (
