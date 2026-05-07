@@ -43,16 +43,10 @@ import ChevronDownIcon from '@atlaskit/icon/glyph/chevron-down';
 import ChevronRightIcon from '@atlaskit/icon/glyph/chevron-right';
 import ArrowUpIcon from '@atlaskit/icon/glyph/arrow-up';
 import ArrowDownIcon from '@atlaskit/icon/glyph/arrow-down';
-// NOTE: useVirtualizer (from @tanstack/react-virtual) was wired here on
-// 2026-04-26 alongside the enableVirtualization prop. The dependency was
-// added to vite.config.ts optimizeDeps.include, but Vite's optimize-deps
-// cold-restart requires a manual `npm run dev` restart that the audit
-// session can't trigger. The virtualized tbody branch is therefore staged
-// behind a comment until the next clean dev start. enableVirtualization is
-// accepted as a prop today (no-op) so consumer code can opt in early — it
-// activates automatically as soon as the import is uncommented after a
-// dev-server restart.
-import { Plus as PlusIcon, Search as SearchIcon, RotateCcw as ResetIcon } from 'lucide-react';
+import { useVirtualizer } from '@tanstack/react-virtual';
+import PlusIcon from '@atlaskit/icon/core/add';
+import SearchIcon from '@atlaskit/icon/core/search';
+import ResetIcon from '@atlaskit/icon/core/refresh';
 import type { Column, JiraTableProps, SortOrder } from './types';
 
 // Simple Atlaskit-tuned button style used by the pagination footer.
@@ -544,7 +538,9 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
         top: 0;
         z-index: 2;
         background: #F7F8F9;
-        padding: 8px 12px;
+        height: 40px;
+        padding: 0 12px;
+        vertical-align: middle;
         text-align: left;
         /* Apr 27, 2026 (Vikram audit pass 8): without overflow:hidden +
            text-overflow:ellipsis the header text BLEEDS into the next
@@ -1232,7 +1228,7 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
                       group label. Click stops propagation so the group expand
                       doesn't toggle. Consumer (BacklogPage) wires onAddToGroup
                       to its create-flow. */}
-                  <PlusIcon size={14} />
+                  <PlusIcon label="" size="small" />
                 </button>
               )}
               {/* Apr 27, 2026 (audit pass 10): if the consumer provided
@@ -1390,20 +1386,17 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
     colWidthEntries.push({ id: '__column-manager', width: px, widthCss: `${px}px`, resizable: false, sortable: false });
   }
 
-  // ── Row virtualization (staged — see import-block comment above) ───────
-  // The full @tanstack/react-virtual wiring is staged behind a dev-server
-  // restart (vite.config.ts optimizeDeps.include was updated on 2026-04-26
-  // but cold-restart needs manual `npm run dev`). For now, the prop is
-  // accepted but ignored — every row renders. To activate after a clean
-  // dev start: (1) re-add `import { useVirtualizer } from '@tanstack/react-virtual';`
-  // at the top of this file, (2) replace this block with the full
-  // virtualizer state, (3) re-add the virtualized tbody branch. Diff is
-  // preserved in audit history (.catalyst/audits/jira-compare/2026-04-26-bau-backlog/).
   const viewportRef = useRef<HTMLDivElement>(null);
-  const useVirtual = false;
-  // Reference enableVirtualization so TS doesn't strip it as unused before
-  // the wiring is restored. (Effectively a no-op today.)
-  if (enableVirtualization && useVirtual) { /* placeholder */ }
+  const useVirtual = enableVirtualization;
+  const virtualizer = useVirtual
+    ? // eslint-disable-next-line react-hooks/rules-of-hooks
+      useVirtualizer({
+        count: rows.length,
+        getScrollElement: () => viewportRef.current,
+        estimateSize: () => d.rowHeight,
+        overscan: 10,
+      })
+    : null;
 
   const handleHeaderClick = (colId: string, sortableLocal: boolean) => {
     if (!sortableLocal) return;
@@ -1439,7 +1432,11 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
         minHeight: 120,
       }}
     >
-      <div className="jira-table-viewport" ref={viewportRef}>
+      <div
+        className="jira-table-viewport"
+        ref={viewportRef}
+        style={useVirtual ? { overflowY: 'auto', flex: 1, minHeight: 0 } : undefined}
+      >
         <table role="grid">
           <colgroup>
             {colWidthEntries.map((e) => (
@@ -1595,7 +1592,7 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
                 </td>
               </tr>
             )}
-            {!isLoading && rows.map((r: any) => {
+            {!isLoading && !virtualizer && rows.map((r: any) => {
               const isGroup = typeof r.key === 'string' && r.key.startsWith('__group-');
               return (
                 <tr
@@ -1613,6 +1610,49 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
                 </tr>
               );
             })}
+            {!isLoading && virtualizer && (() => {
+              const vItems = virtualizer.getVirtualItems();
+              const totalSize = virtualizer.getTotalSize();
+              const paddingTop = vItems.length > 0 ? (vItems[0]?.start ?? 0) : 0;
+              const paddingBottom = vItems.length > 0
+                ? totalSize - (vItems[vItems.length - 1]?.end ?? 0)
+                : 0;
+              return (
+                <>
+                  {paddingTop > 0 && (
+                    <tr style={{ height: paddingTop }}>
+                      <td colSpan={colWidthEntries.length} />
+                    </tr>
+                  )}
+                  {vItems.map((vRow) => {
+                    const r = rows[vRow.index] as any;
+                    if (!r) return null;
+                    const isGroup = typeof r.key === 'string' && r.key.startsWith('__group-');
+                    return (
+                      <tr
+                        key={r.key}
+                        data-index={vRow.index}
+                        className={[r.className, isGroup ? 'jira-table-group-row' : ''].filter(Boolean).join(' ')}
+                        onClick={r.onClick}
+                        onContextMenu={r.onContextMenu}
+                        style={{ height: d.rowHeight }}
+                      >
+                        {r.cells.map((c: any) => (
+                          <td key={c.key} colSpan={c.colSpan} style={{ overflow: 'hidden' }}>
+                            {c.content}
+                          </td>
+                        ))}
+                      </tr>
+                    );
+                  })}
+                  {paddingBottom > 0 && (
+                    <tr style={{ height: paddingBottom }}>
+                      <td colSpan={colWidthEntries.length} />
+                    </tr>
+                  )}
+                </>
+              );
+            })()}
           </tbody>
         </table>
         {/* Apr 27, 2026 (L70): bottomSlot renders INSIDE the viewport
@@ -1883,7 +1923,7 @@ function ColumnManagerTrigger<TRow>({
               }}
               title="Reset to defaults"
             >
-              <ResetIcon size={11} /> Reset
+              <ResetIcon label="" size="small" /> Reset
             </button>
           </div>
           <div style={{ padding: '0 4px 6px' }}>
@@ -1895,7 +1935,7 @@ function ColumnManagerTrigger<TRow>({
               onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearch(e.target.value)}
               elemBeforeInput={
                 <span style={{ paddingInlineStart: 8, color: 'var(--ds-text-subtlest, #6B778C)', display: 'flex', alignItems: 'center' }}>
-                  <SearchIcon size={12} />
+                  <SearchIcon label="" size="small" />
                 </span>
               }
             />

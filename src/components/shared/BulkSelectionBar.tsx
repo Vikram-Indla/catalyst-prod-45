@@ -12,7 +12,15 @@
  */
 
 import { useEffect, useCallback } from 'react';
-import { X, Trash2, FolderInput, UserPlus, CircleCheck, Flag, Link2, Copy, Download } from 'lucide-react';
+import AkCloseIcon from '@atlaskit/icon/core/close';
+import AkTrashIcon from '@atlaskit/icon/glyph/trash';
+import AkFolderIcon from '@atlaskit/icon/core/folder-closed';
+import AkPersonAddIcon from '@atlaskit/icon/core/person-add';
+import AkCheckCircleIcon from '@atlaskit/icon/core/check-circle';
+import AkFlagIcon from '@atlaskit/icon/core/flag';
+import AkLinkIcon from '@atlaskit/icon/core/link';
+import AkCopyIcon from '@atlaskit/icon/core/copy';
+import AkDownloadIcon from '@atlaskit/icon/core/download';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
@@ -79,50 +87,50 @@ export function BulkSelectionBar({
       id: 'move',
       label: 'Move',
       onClick: onMove,
-      icon: <FolderInput className="h-4 w-4" />,
+      icon: <AkFolderIcon label="" size="small" />,
     }] : []),
     ...(onAssign ? [{
       id: 'assign',
       label: 'Assign',
       onClick: onAssign,
-      icon: <UserPlus className="h-4 w-4" />,
+      icon: <AkPersonAddIcon label="" size="small" />,
     }] : []),
     ...(onUpdateStatus ? [{
       id: 'update-status',
       label: 'Status',
       onClick: onUpdateStatus,
-      icon: <CircleCheck className="h-4 w-4" />,
+      icon: <AkCheckCircleIcon label="" size="small" />,
     }] : []),
     ...(onPriority ? [{
       id: 'priority',
       label: 'Priority',
       onClick: onPriority,
-      icon: <Flag className="h-4 w-4" />,
+      icon: <AkFlagIcon label="" size="small" />,
     }] : []),
     ...(onLink ? [{
       id: 'link',
       label: 'Link',
       onClick: onLink,
-      icon: <Link2 className="h-4 w-4" />,
+      icon: <AkLinkIcon label="" size="small" />,
     }] : []),
     ...(onDuplicate ? [{
       id: 'duplicate',
       label: 'Duplicate',
       onClick: onDuplicate,
-      icon: <Copy className="h-4 w-4" />,
+      icon: <AkCopyIcon label="" size="small" />,
     }] : []),
     ...(onExport ? [{
       id: 'export',
       label: 'Export',
       onClick: onExport,
-      icon: <Download className="h-4 w-4" />,
+      icon: <AkDownloadIcon label="" size="small" />,
     }] : []),
     ...(onDelete ? [{
       id: 'delete',
       label: 'Delete',
       onClick: onDelete,
       variant: 'destructive' as const,
-      icon: <Trash2 className="h-4 w-4" />,
+      icon: <AkTrashIcon label="" size="small" />,
     }] : []),
   ];
 
@@ -168,7 +176,7 @@ export function BulkSelectionBar({
         className="h-8 px-2 gap-1 text-sm hover:bg-[var(--surface-3)]"
         style={{ color: 'var(--text-2)' }}
       >
-        <X className="h-4 w-4" />
+        <AkCloseIcon label="" size="small" />
         Clear
       </Button>
 

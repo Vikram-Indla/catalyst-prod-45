@@ -249,93 +249,91 @@ export function StandupModal({ issues, avatarsByName, tk, onClose, onPersonChang
       <PanelHeader tk={tk} onEnd={handleEnd} />
 
       {/* ── Timer block ── */}
-      <div style={{ padding: '14px 16px 10px', borderBottom: `1px solid ${tk.border}` }}>
-        {/* Timer arc + digits */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
-          {/* Circular timer */}
-          <div style={{ position: 'relative', width: 52, height: 52, flexShrink: 0 }}>
-            <svg width="52" height="52" viewBox="0 0 52 52" style={{ transform: 'rotate(-90deg)' }}>
-              <circle cx="26" cy="26" r="22" fill="none" stroke={tk.borderSubtle} strokeWidth="3" />
+      <div style={{ padding: '14px 16px 12px', borderBottom: `1px solid ${tk.border}` }}>
+        {/* Jira parity: timer centered above controls (not side-by-side) */}
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8 }}>
+          {/* Circular timer — 72px, centered */}
+          <div style={{ position: 'relative', width: 72, height: 72, flexShrink: 0 }}>
+            <svg width="72" height="72" viewBox="0 0 72 72" style={{ transform: 'rotate(-90deg)' }}>
+              <circle cx="36" cy="36" r="30" fill="none" stroke={tk.borderSubtle} strokeWidth="4" />
               <circle
-                cx="26" cy="26" r="22" fill="none"
-                stroke={timerColor} strokeWidth="3"
-                strokeDasharray={`${2 * Math.PI * 22}`}
-                strokeDashoffset={`${2 * Math.PI * 22 * timerPct}`}
+                cx="36" cy="36" r="30" fill="none"
+                stroke={timerColor} strokeWidth="4"
+                strokeDasharray={`${2 * Math.PI * 30}`}
+                strokeDashoffset={`${2 * Math.PI * 30 * timerPct}`}
                 strokeLinecap="round"
                 style={{ transition: 'stroke-dashoffset 1s linear, stroke 300ms' }}
               />
             </svg>
             <div style={{
               position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center',
-              fontSize: 13, fontWeight: 700, color: timerColor, fontFamily: 'var(--cp-font-mono)',
-              letterSpacing: '0.03em',
+              fontSize: 18, fontWeight: 700, color: timerColor, fontFamily: 'var(--cp-font-mono)',
+              letterSpacing: '0.02em',
             }}>
               {mm}:{ss}
             </div>
           </div>
-          {/* Controls */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 4, flex: 1 }}>
-            <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
-              {/* Play/Pause */}
-              <IconBtn
-                onClick={() => setRunning(r => !r)}
-                title={running ? 'Pause' : 'Play'}
-                tk={tk}
-                active={running}
-              >
-                {running ? <IcPause size={13} color="var(--ds-text-brand,#0052CC)" /> : <IcPlay size={13} color="var(--ds-text-brand,#0052CC)" />}
+          {/* Controls row — centered below timer */}
+          <div style={{ display: 'flex', gap: 4, alignItems: 'center' }}>
+            {/* Play/Pause */}
+            <IconBtn
+              onClick={() => setRunning(r => !r)}
+              title={running ? 'Pause' : 'Play'}
+              tk={tk}
+              active={running}
+            >
+              {running ? <IcPause size={13} color="var(--ds-text-brand,#0052CC)" /> : <IcPlay size={13} color="var(--ds-text-brand,#0052CC)" />}
+            </IconBtn>
+            {/* Mute */}
+            <IconBtn onClick={() => setMuted(m => !m)} title={muted ? 'Unmute' : 'Mute'} tk={tk}>
+              <IcSpeaker size={14} color={muted ? tk.textDisabled : tk.textSecondary} muted={muted} />
+            </IconBtn>
+            {/* Shuffle */}
+            <IconBtn onClick={shuffle} title="Shuffle order" tk={tk}>
+              <IcShuffle size={14} color={tk.textSecondary} />
+            </IconBtn>
+            {/* Settings */}
+            <div style={{ position: 'relative' }} ref={settingsRef}>
+              <IconBtn onClick={() => { setShowSettings(s => !s); setDraftDuration(String(Math.round(timerDuration / 60))); }} title="Timer settings" tk={tk}>
+                <IcSettings size={14} color={tk.textSecondary} />
               </IconBtn>
-              {/* Mute */}
-              <IconBtn onClick={() => setMuted(m => !m)} title={muted ? 'Unmute' : 'Mute'} tk={tk}>
-                <IcSpeaker size={14} color={muted ? tk.textDisabled : tk.textSecondary} muted={muted} />
-              </IconBtn>
-              {/* Shuffle */}
-              <IconBtn onClick={shuffle} title="Shuffle order" tk={tk}>
-                <IcShuffle size={14} color={tk.textSecondary} />
-              </IconBtn>
-              {/* Settings */}
-              <div style={{ position: 'relative', marginLeft: 'auto' }} ref={settingsRef}>
-                <IconBtn onClick={() => { setShowSettings(s => !s); setDraftDuration(String(Math.round(timerDuration / 60))); }} title="Timer settings" tk={tk}>
-                  <IcSettings size={14} color={tk.textSecondary} />
-                </IconBtn>
-                {showSettings && (
-                  <div style={{
-                    position: 'absolute', top: 'calc(100% + 4px)', right: 0,
-                    width: 180, background: tk.surfaceBg,
-                    border: `1px solid ${tk.border}`, borderRadius: 6,
-                    padding: 12, zIndex: 60,
-                    boxShadow: '0 4px 16px rgba(0,0,0,0.14)',
-                    fontFamily: 'var(--cp-font-body)',
-                  }}>
-                    <div style={{ fontSize: 11, fontWeight: 600, color: tk.textMuted, marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                      Timer duration (min)
-                    </div>
-                    <div style={{ display: 'flex', gap: 6 }}>
-                      {[1, 2, 3, 5].map(m => (
-                        <button key={m}
-                          onClick={() => { const s = m * 60; setTimerDuration(s); setSeconds(s); setShowSettings(false); }}
-                          style={{
-                            flex: 1, height: 28, borderRadius: 4, border: `1px solid ${timerDuration === m * 60 ? 'var(--ds-text-brand,#0052CC)' : tk.border}`,
-                            background: timerDuration === m * 60 ? 'var(--ds-background-selected,#DEEBFF)' : 'transparent',
-                            fontSize: 13, fontWeight: 600, cursor: 'pointer',
-                            color: timerDuration === m * 60 ? 'var(--ds-link,#0052CC)' : tk.textSecondary,
-                          }}>
-                          {m}
-                        </button>
-                      ))}
-                    </div>
+              {showSettings && (
+                <div style={{
+                  position: 'absolute', top: 'calc(100% + 4px)', right: 0,
+                  width: 180, background: tk.surfaceBg,
+                  border: `1px solid ${tk.border}`, borderRadius: 6,
+                  padding: 12, zIndex: 60,
+                  boxShadow: '0 4px 16px rgba(0,0,0,0.14)',
+                  fontFamily: 'var(--cp-font-body)',
+                }}>
+                  <div style={{ fontSize: 11, fontWeight: 600, color: tk.textMuted, marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                    Timer duration (min)
                   </div>
-                )}
-              </div>
+                  <div style={{ display: 'flex', gap: 6 }}>
+                    {[1, 2, 3, 5].map(m => (
+                      <button key={m}
+                        onClick={() => { const s = m * 60; setTimerDuration(s); setSeconds(s); setShowSettings(false); }}
+                        style={{
+                          flex: 1, height: 28, borderRadius: 4, border: `1px solid ${timerDuration === m * 60 ? 'var(--ds-text-brand,#0052CC)' : tk.border}`,
+                          background: timerDuration === m * 60 ? 'var(--ds-background-selected,#DEEBFF)' : 'transparent',
+                          fontSize: 13, fontWeight: 600, cursor: 'pointer',
+                          color: timerDuration === m * 60 ? 'var(--ds-link,#0052CC)' : tk.textSecondary,
+                        }}>
+                        {m}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
-            {/* Person position */}
-            <div style={{ fontSize: 11, color: tk.textMuted, fontFamily: 'var(--cp-font-body)' }}>
-              {step + 1} of {total} — press Space to {running ? 'pause' : 'start'}
-            </div>
+          </div>
+          {/* Person position — centered, muted */}
+          <div style={{ fontSize: 11, color: tk.textMuted, fontFamily: 'var(--cp-font-body)' }}>
+            {step + 1} of {total} — press Space to {running ? 'pause' : 'start'}
           </div>
         </div>
         {/* Progress bar */}
-        <div style={{ height: 3, background: tk.borderSubtle, borderRadius: 2 }}>
+        <div style={{ height: 3, background: tk.borderSubtle, borderRadius: 2, marginTop: 10 }}>
           <div style={{
             height: '100%', borderRadius: 2,
             width: `${((step + 1) / total) * 100}%`,
@@ -359,7 +357,7 @@ export function StandupModal({ issues, avatarsByName, tk, onClose, onPersonChang
                 setStep(listPos);
               }}
               style={{
-                width: '100%', textAlign: 'left', padding: '10px 14px',
+                width: '100%', textAlign: 'left', padding: '8px 12px',
                 display: 'flex', alignItems: 'center', gap: 10,
                 border: 'none', cursor: 'pointer',
                 background: isSelected ? 'var(--ds-background-selected,#DEEBFF)' : 'transparent',
@@ -370,10 +368,10 @@ export function StandupModal({ issues, avatarsByName, tk, onClose, onPersonChang
               onMouseEnter={e => { if (!isSelected) e.currentTarget.style.background = tk.surfaceHover; }}
               onMouseLeave={e => { if (!isSelected) e.currentTarget.style.background = 'transparent'; }}
             >
-              <KanbanAvatar name={b.name} avatarUrl={b.avatarUrl} size={28} />
+              <KanbanAvatar name={b.name} avatarUrl={b.avatarUrl} size={32} />
               <div style={{ flex: 1, minWidth: 0 }}>
                 <div style={{
-                  fontSize: 13, fontWeight: isSelected ? 600 : 400,
+                  fontSize: 14, fontWeight: isSelected ? 600 : 500,
                   color: isSelected ? 'var(--ds-link,#0052CC)' : tk.textPrimary,
                   whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
                 }}>
@@ -447,8 +445,8 @@ function PanelHeader({ tk, onEnd }: { tk: KanbanThemeTokens; onEnd: () => void }
       <button
         onClick={onEnd}
         style={{
-          fontSize: 12, fontWeight: 600, height: 26, padding: '0 10px',
-          borderRadius: 3, border: `1px solid ${tk.border}`,
+          fontSize: 12, fontWeight: 500, height: 26, padding: '0 10px',
+          borderRadius: 3, border: 'none',
           background: 'transparent', cursor: 'pointer',
           color: 'var(--ds-text-danger,#AE2A19)', fontFamily: 'var(--cp-font-body)',
         }}

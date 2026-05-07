@@ -25,7 +25,15 @@ import Popup from '@atlaskit/popup';
 import Tooltip from '@atlaskit/tooltip';
 import { DatePicker } from '@atlaskit/datetime-picker';
 import { token } from '@atlaskit/tokens';
-import { Search as SearchIcon, MoreHorizontal, ChevronsUp, ChevronUp, Equal, ChevronDown, ChevronsDown, AlertCircle, X as XIcon } from 'lucide-react';
+import AkSearchIcon from '@atlaskit/icon/core/search';
+import AkMoreIcon from '@atlaskit/icon/glyph/more';
+import AkPriorityCriticalIcon from '@atlaskit/icon/core/priority-critical';
+import AkPriorityHighestIcon from '@atlaskit/icon/core/priority-highest';
+import AkPriorityHighIcon from '@atlaskit/icon/core/priority-high';
+import AkPriorityMediumIcon from '@atlaskit/icon/core/priority-medium';
+import AkPriorityLowIcon from '@atlaskit/icon/core/priority-low';
+import AkPriorityLowestIcon from '@atlaskit/icon/core/priority-lowest';
+import AkCloseIcon from '@atlaskit/icon/core/close';
 import { StatusPill } from './cells';
 import type { CellProps, LozengeAppearance } from './types';
 
@@ -622,7 +630,7 @@ export function makeAssigneeEditCell<T>({
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearch(e.target.value)}
                 elemBeforeInput={
                   <span style={{ paddingInlineStart: 8, color: token('color.text.subtlest', '#6B778C'), display: 'flex', alignItems: 'center' }}>
-                    <SearchIcon size={12} />
+                    <AkSearchIcon label="" size="small" />
                   </span>
                 }
               />
@@ -659,12 +667,12 @@ export function makeAssigneeEditCell<T>({
 //   Colors: Highest=#E5484D Highest/Critical, High=#E2730D, Medium=#D97706,
 //   Low=#0065FF, Lowest=#7A869A. No colored bars — text label is the primary affordance.
 const PRIORITY_CONFIG: Record<string, { icon: React.ReactNode; color: string; label: string }> = {
-  critical:  { icon: <AlertCircle  size={16} />, color: '#E5484D', label: 'Critical'  },
-  highest:   { icon: <ChevronsUp   size={16} />, color: '#E5484D', label: 'Highest'   },
-  high:      { icon: <ChevronUp    size={16} />, color: '#E2730D', label: 'High'      },
-  medium:    { icon: <Equal        size={16} />, color: '#D97706', label: 'Medium'    },
-  low:       { icon: <ChevronDown  size={16} />, color: '#0065FF', label: 'Low'       },
-  lowest:    { icon: <ChevronsDown size={16} />, color: '#7A869A', label: 'Lowest'    },
+  critical:  { icon: <AkPriorityCriticalIcon label="" size="small" />, color: '#E5484D', label: 'Critical'  },
+  highest:   { icon: <AkPriorityHighestIcon  label="" size="small" />, color: '#E5484D', label: 'Highest'   },
+  high:      { icon: <AkPriorityHighIcon     label="" size="small" />, color: '#E2730D', label: 'High'      },
+  medium:    { icon: <AkPriorityMediumIcon   label="" size="small" />, color: '#D97706', label: 'Medium'    },
+  low:       { icon: <AkPriorityLowIcon      label="" size="small" />, color: '#0065FF', label: 'Low'       },
+  lowest:    { icon: <AkPriorityLowestIcon   label="" size="small" />, color: '#7A869A', label: 'Lowest'    },
 };
 
 function PriorityBars({ priority }: { priority: string | null }) {
@@ -672,13 +680,13 @@ function PriorityBars({ priority }: { priority: string | null }) {
   const cfg = PRIORITY_CONFIG[p];
   if (!cfg) {
     return (
-      <span style={{ color: token('color.text.subtlest', '#7A869A'), fontSize: 13 }}>—</span>
+      <span style={{ color: token('color.text.subtlest', '#7A869A'), fontSize: 14 }}>—</span>
     );
   }
   return (
     <span
       title={cfg.label}
-      style={{ display: 'inline-flex', alignItems: 'center', gap: 4, color: cfg.color, fontSize: 13, whiteSpace: 'nowrap' }}
+      style={{ display: 'inline-flex', alignItems: 'center', gap: 4, color: cfg.color, fontSize: 14, whiteSpace: 'nowrap' }}
     >
       {cfg.icon}
       <span style={{ color: token('color.text', '#172B4D') }}>{cfg.label}</span>
@@ -888,7 +896,7 @@ export function makeParentEditCell<T>({
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearch(e.target.value)}
                 elemBeforeInput={
                   <span style={{ paddingInlineStart: 8, color: token('color.text.subtlest', '#6B778C'), display: 'flex', alignItems: 'center' }}>
-                    <SearchIcon size={12} />
+                    <AkSearchIcon label="" size="small" />
                   </span>
                 }
               />
@@ -971,7 +979,7 @@ export function makeRowActionsCell<T>({
             onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.background = token('color.background.neutral.subtle.hovered', '#F4F5F7'))}
             onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.background = 'transparent')}
           >
-            <MoreHorizontal size={16} />
+            <AkMoreIcon label="" size="small" />
           </button>
         )}
       >
@@ -1056,7 +1064,7 @@ export function makeDateEditCell<T>({
       : null;
 
     const display = formatted
-      ? <span style={{ fontSize: 13, color: token('color.text', '#172B4D') }}>{formatted}</span>
+      ? <span style={{ fontSize: 14, color: token('color.text', '#172B4D') }}>{formatted}</span>
       : <span style={{ display: 'inline-block', minWidth: 1, height: 18 }} />;
 
     if (!editable) return display;
@@ -1249,7 +1257,7 @@ function LabelsPopoverContent<T>({ row, labels, onChange, close }: {
               onClick={() => removeLabel(l)}
               style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, display: 'flex', alignItems: 'center', color: token('color.text.subtlest', '#6B778C') }}
             >
-              <XIcon size={10} />
+              <AkCloseIcon label="" size="small" />
             </button>
           </span>
         ))}

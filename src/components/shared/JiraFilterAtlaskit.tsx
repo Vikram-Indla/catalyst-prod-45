@@ -49,17 +49,15 @@ import Textfield from '@atlaskit/textfield';
 import { Checkbox as AkCheckbox } from '@atlaskit/checkbox';
 import { DatePicker } from '@atlaskit/datetime-picker';
 import { token } from '@atlaskit/tokens';
-import {
-  Filter as FilterIcon,
-  Calendar as CalendarIcon,
-  ChevronsUp as HighestPriIcon,
-  ChevronUp as HighPriIcon,
-  Equal as MediumPriIcon,
-  ChevronDown as LowPriIcon,
-  ChevronsDown as LowestPriIcon,
-  MoreHorizontal as MoreIcon,
-  X as XIcon,
-} from 'lucide-react';
+import FilterIcon from '@atlaskit/icon/core/filter';
+import CalendarIcon from '@atlaskit/icon/core/calendar';
+import HighestPriIcon from '@atlaskit/icon/core/priority-highest';
+import HighPriIcon from '@atlaskit/icon/core/priority-high';
+import MediumPriIcon from '@atlaskit/icon/core/priority-medium';
+import LowPriIcon from '@atlaskit/icon/core/priority-low';
+import LowestPriIcon from '@atlaskit/icon/core/priority-lowest';
+import MoreIcon from '@atlaskit/icon/glyph/more';
+import XIcon from '@atlaskit/icon/core/close';
 import type { LozengeAppearance } from './JiraTable';
 
 // ─── Types ────────────────────────────────────────────────────────────────
@@ -144,11 +142,11 @@ export function countActiveFilters(v: JiraFilterValue): number {
 // ─── Priority fixed vocabulary (Jira canonical) ───────────────────────────
 
 const PRIORITY_LEVELS: Array<{ level: PriorityLevel; label: string; icon: React.ReactNode; color: string }> = [
-  { level: 'highest', label: 'Highest', icon: <HighestPriIcon size={18} />, color: token('color.icon.danger', '#E5484D') },
-  { level: 'high',    label: 'High',    icon: <HighPriIcon    size={18} />, color: token('color.icon.danger', '#E5484D') },
-  { level: 'medium',  label: 'Medium',  icon: <MediumPriIcon  size={18} />, color: token('color.icon.warning', '#F59E0B') },
-  { level: 'low',     label: 'Low',     icon: <LowPriIcon     size={18} />, color: token('color.icon.information', '#0065FF') },
-  { level: 'lowest',  label: 'Lowest',  icon: <LowestPriIcon  size={18} />, color: token('color.icon.information', '#0065FF') },
+  { level: 'highest', label: 'Highest', icon: <HighestPriIcon label="" size="small" />, color: token('color.icon.danger', '#E5484D') },
+  { level: 'high',    label: 'High',    icon: <HighPriIcon    label="" size="small" />, color: token('color.icon.danger', '#E5484D') },
+  { level: 'medium',  label: 'Medium',  icon: <MediumPriIcon  label="" size="small" />, color: token('color.icon.warning', '#F59E0B') },
+  { level: 'low',     label: 'Low',     icon: <LowPriIcon     label="" size="small" />, color: token('color.icon.information', '#0065FF') },
+  { level: 'lowest',  label: 'Lowest',  icon: <LowestPriIcon  label="" size="small" />, color: token('color.icon.information', '#0065FF') },
 ];
 
 // ─── Props ────────────────────────────────────────────────────────────────
@@ -228,9 +226,9 @@ export function JiraFilterAtlaskit(props: JiraFilterAtlaskitProps) {
           cursor: 'pointer',
         }}
       >
-        <FilterIcon size={14} />
+        <FilterIcon label="" size="small" />
         <span>Filters</span>
-        <LowPriIcon size={12} style={{ marginLeft: -2, opacity: 0.7 }} />
+        <LowPriIcon label="" size="small" />
         {count > 0 && (
           <span
             style={{
@@ -575,7 +573,7 @@ function AvatarGrid({
             fontSize: 13,
           }}
         >
-          <MoreIcon size={14} />
+          <MoreIcon label="" size="small" />
         </button>
       )}
     </div>
@@ -648,7 +646,7 @@ function StatusChipGrid({
             justifySelf: 'start',
           }}
         >
-          <MoreIcon size={14} />
+          <MoreIcon label="" size="small" />
         </button>
       )}
     </div>
@@ -731,7 +729,7 @@ function WorkTypeChipGrid({
             justifySelf: 'start',
           }}
         >
-          <MoreIcon size={14} />
+          <MoreIcon label="" size="small" />
         </button>
       )}
     </div>
@@ -815,7 +813,7 @@ function PillChipGrid({
             justifySelf: 'start',
           }}
         >
-          <MoreIcon size={13} />
+          <MoreIcon label="" size="small" />
         </button>
       )}
     </div>

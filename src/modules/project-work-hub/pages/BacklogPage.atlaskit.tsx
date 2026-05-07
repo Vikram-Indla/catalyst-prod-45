@@ -30,6 +30,26 @@ import Breadcrumbs, { BreadcrumbsItem } from '@atlaskit/breadcrumbs';
 import Tooltip from '@atlaskit/tooltip';
 import Button from '@atlaskit/button';
 import AkChevronDownIcon from '@atlaskit/icon/glyph/chevron-down';
+import AkChevronLeftIcon from '@atlaskit/icon/glyph/chevron-left';
+import AkChevronRightIcon from '@atlaskit/icon/glyph/chevron-right';
+import AkMoreIcon from '@atlaskit/icon/glyph/more';
+import AkTrashIcon from '@atlaskit/icon/glyph/trash';
+import AkSearchIcon from '@atlaskit/icon/core/search';
+import AkAddIcon from '@atlaskit/icon/core/add';
+import AkEditIcon from '@atlaskit/icon/core/edit';
+import AkFlagIcon from '@atlaskit/icon/core/flag';
+import AkCopyIcon from '@atlaskit/icon/core/copy';
+import AkCloseIcon from '@atlaskit/icon/core/close';
+import AkMaximizeIcon from '@atlaskit/icon/core/maximize';
+import AkMinimizeIcon from '@atlaskit/icon/core/minimize';
+import AkPersonAvatarIcon from '@atlaskit/icon/core/person-avatar';
+import AkFilterIcon from '@atlaskit/icon/core/filter';
+import AkRefreshIcon from '@atlaskit/icon/core/refresh';
+import AkDownloadIcon from '@atlaskit/icon/core/download';
+import AkCommentIcon from '@atlaskit/icon/core/comment';
+import AkShareIcon from '@atlaskit/icon/core/share';
+import AkWarningIcon from '@atlaskit/icon/core/warning';
+import AkArchiveBoxIcon from '@atlaskit/icon/core/archive-box';
 import Lozenge from '@atlaskit/lozenge';
 import Avatar from '@atlaskit/avatar';
 import DropdownMenu, { DropdownItemRadioGroup, DropdownItemRadio } from '@atlaskit/dropdown-menu';
@@ -92,7 +112,13 @@ import type {
   AssigneeOption,
   FixVersionOption,
 } from '@/components/shared/JiraFilterAtlaskit';
-import { Search as SearchIcon, Plus, Pencil, Trash2, Flag, Copy as CopyIcon, ChevronLeft, ChevronRight, ChevronDown, X as CloseIcon, Maximize2, Minimize2, ChevronsLeft, ChevronsRight, CircleUser, MoreHorizontal, SlidersHorizontal, RefreshCw, Download, MessageSquare, Share2, Zap, AlertTriangle, Archive } from 'lucide-react';
+// ChevronsLeft/ChevronsRight (first/last page) have no ADS equivalent — inline SVG below
+const AkChevronsLeftIcon = () => (
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden><path d="M18.41 16.59L13.82 12l4.59-4.59L17 6l-6 6 6 6zM6 6h2v12H6z"/></svg>
+);
+const AkChevronsRightIcon = () => (
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden><path d="M5.59 7.41L10.18 12l-4.59 4.59L7 18l6-6-6-6zM16 6h2v12h-2z"/></svg>
+);
 
 // Apr 19, 2026 — U-4 (BAU Dashboard Atlaskit Conversion handover §2):
 // migrated outer page wrapper (blue page bg + white card + h1) onto the
@@ -172,12 +198,12 @@ function statusAppearance(status: string | null | undefined): LozengeAppearance 
   const cfg = STORY_STATUS_LOZENGE[status];
   return (cfg?.color as LozengeAppearance) ?? 'default';
 }
-// Jira's list view renders status in sentence case, not uppercase (measured
-// on digital-transformation.atlassian.net 2026-04-18). Return the raw Jira
-// value as-is; the StatusPill itself doesn't re-uppercase.
+// Jira renders status labels uppercase in the list view DOM (the text content
+// is uppercase, not CSS text-transform). Use the STORY_STATUS_LOZENGE label
+// which is already uppercase; fall back to uppercase raw value for unknowns.
 function statusLabel(status: string | null | undefined): string {
   if (!status) return '—';
-  return status;
+  return STORY_STATUS_LOZENGE[status]?.label ?? status.toUpperCase();
 }
 // Apr 27, 2026 — F1 fix: STATUS_OPTIONS was a 9-item subset of the
 // vocabulary that STORY_STATUS_LOZENGE already maps to lozenge colours
@@ -441,8 +467,7 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
   // 2026-05-04 jira-compare audit: Jira BAU list default columns (verified live):
   // Jira BAU list default columns (re-probed 2026-05-07 live DOM):
   // Type | Key | Summary | Status | Comments | Parent | Assignee | Due date | Priority | Labels
-  // Created + Updated are NOT in Jira's default visible set.
-  const DEFAULT_VISIBLE_COLUMNS = ['key', 'summary', 'status', 'comments', 'parent', 'assignee', 'due_date', 'priority', 'labels', 'created'];
+  const DEFAULT_VISIBLE_COLUMNS = ['key', 'summary', 'status', 'parent', 'assignee', 'due_date', 'priority', 'labels', 'created', 'updated'];
   const parseSet = (raw: string | null): Set<string> =>
     raw ? new Set(raw.split(',').filter(Boolean)) : new Set();
 
@@ -508,11 +533,7 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
     return fromUrl;
   });
   // Group-by — matches catalog 076-095. 'none' disables grouping.
-  // Apr 28, 2026 (jira-compare cycle 2): added 'type' + 'storyPoints' to
-  // match Jira /list group-by menu (Status / Assignee / Priority / Story
-  // Points). 'type' also unblocks per-type chevron parity testing requested
-  // by Vikram (Story → Story, Bug → Bug, etc).
-  type GroupByKey = 'none' | 'type' | 'status' | 'parent' | 'assignee' | 'priority' | 'storyPoints';
+  type GroupByKey = 'none' | 'type' | 'status' | 'parent' | 'assignee' | 'priority';
   // Apr 27, 2026 (audit pass 10, IRP-518 alignment): URL param renamed
   // 'group' → 'groupBy' to match Jira's list-view URL contract. Reads
   // both for one release so bookmarked URLs from the old name keep
@@ -1128,10 +1149,6 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
           if (t === 'incident') return 'Production Incident';
           return t ? t[0].toUpperCase() + t.slice(1) : 'No type';
         }
-        case 'storyPoints': {
-          const sp = (it as any).story_points ?? (it as any).storyPoints;
-          return (sp === null || sp === undefined || sp === '') ? 'No estimate' : String(sp);
-        }
         default: return '—';
       }
     };
@@ -1335,13 +1352,13 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
   //   non-destructive items first, destructive items pushed to the bottom
   //   (makeRowActionsCell re-sorts danger into its own section).
   const rowActions = useMemo<RowAction<BacklogItem>[]>(() => ([
-    { id: 'open', label: 'Open', icon: <Pencil size={14} />, onClick: (r) => openDetail(r) },
-    { id: 'edit', label: 'Edit', icon: <Pencil size={14} />, onClick: (r) => setEditingId(r.id) },
-    { id: 'flag', label: 'Flag', icon: <Flag size={14} />, onClick: (r) => flag.info(`Flagged ${r.key || r.id}`) },
-    { id: 'duplicate', label: 'Duplicate', icon: <CopyIcon size={14} />,
+    { id: 'open', label: 'Open', icon: <AkEditIcon label="" size="small" />, onClick: (r) => openDetail(r) },
+    { id: 'edit', label: 'Edit', icon: <AkEditIcon label="" size="small" />, onClick: (r) => setEditingId(r.id) },
+    { id: 'flag', label: 'Flag', icon: <AkFlagIcon label="" size="small" />, onClick: (r) => flag.info(`Flagged ${r.key || r.id}`) },
+    { id: 'duplicate', label: 'Duplicate', icon: <AkCopyIcon label="" size="small" />,
       onClick: (r) => flag.info('Duplicate', `${r.key} — not yet implemented`),
       hidden: (r) => r.source !== 'catalyst' },
-    { id: 'delete', label: 'Delete', icon: <Trash2 size={14} />, danger: true,
+    { id: 'delete', label: 'Delete', icon: <AkTrashIcon label="" size="small" />, danger: true,
       onClick: (r) => setDeleteTarget(r),
       hidden: (r) => r.source !== 'catalyst' },
   ]), [openDetail]);
@@ -1419,8 +1436,8 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
     {
       id: 'key',
       label: 'Key',
-      // 8% of 1180 minw = ~94px. Natural min for "BAU-####" is ~50px.
-      width: 8,
+      // 11 fractions ≈ 130px — enough to show "BAU-5801" without clipping.
+      width: 11,
       sortable: true,
       defaultVisible: true,
       accessor: (r) => r.key || '',
@@ -1477,25 +1494,6 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
         canEdit: () => true,
         onChange: (row, next) => updateField.mutate({ id: row.id, source: row.source, patch: { status: next } }),
       }),
-    },
-    {
-      id: 'comments',
-      label: 'Comments',
-      // 2026-05-04 jira-compare: Jira Comments column x=873→1018 = ~145px.
-      // width:12 × 12 = 144px ≈ parity. Previous width:8 (~90px) was 55px
-      // too narrow causing "Add comment" to truncate.
-      width: 12,
-      // Apr 27, 2026 (L61): default visible — Jira's list view shows
-      // Comments column at position 5 between Status and Parent. Probed
-      // against Jira BAU list "1 comment" / "Add comment" cells.
-      defaultVisible: true,
-      cell: makeCommentsCell(
-        (r: BacklogItem) => r.comment_count,
-        // Clicking the cell opens the side panel — users land on Comments
-        // via the detail view since inline comment authoring requires
-        // the full editor context.
-        (r: BacklogItem) => openDetail(r),
-      ),
     },
     {
       id: 'parent',
@@ -1616,12 +1614,10 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
     },
     {
       id: 'updated',
-      // 2026-05-07 re-probe: Jira BAU list does NOT show Updated by default.
-      // Available as optional column via column manager.
       label: 'Updated',
       width: 12,
       sortable: true,
-      defaultVisible: false,
+      defaultVisible: true,
       accessor: (r) => r.updated_at || '',
       cell: makeDateCell((r: BacklogItem) => r.updated_at),
     },
@@ -1820,7 +1816,7 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
         onMouseEnter={(e) => { e.currentTarget.style.background = '#E4E6EA'; }}
         onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
       >
-        <Maximize2 size={16} />
+        <AkMaximizeIcon label="" size="small" />
       </button>
     </Tooltip>
   ) : lastDetailId ? (
@@ -1838,7 +1834,7 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
         onMouseEnter={(e) => { e.currentTarget.style.background = '#E4E6EA'; }}
         onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
       >
-        <Minimize2 size={16} />
+        <AkMinimizeIcon label="" size="small" />
       </button>
     </Tooltip>
   ) : null;
@@ -1917,7 +1913,7 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
   // state is visible without a real shadcn-style switch on the menu.
   const toolbarViewOptionsButton = (
     <ToolbarMenuButton
-      icon={<SlidersHorizontal size={16} />}
+      icon={<AkFilterIcon label="" size="small" />}
       ariaLabel="View options"
       tooltipContent="View options"
       buttonStyle={toolbarIconButtonStyle}
@@ -1975,14 +1971,14 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
   // operates on the table view, not on a single row.
   const toolbarMoreActionsButton = (
     <ToolbarMenuButton
-      icon={<MoreHorizontal size={16} />}
+      icon={<AkMoreIcon label="" size="small" />}
       ariaLabel="More actions"
       tooltipContent="More actions"
       buttonStyle={toolbarIconButtonStyle}
       groups={[
         { items: [
-          { id: 'refresh', label: 'Refresh', icon: <RefreshCw size={14} />, onClick: handleRefreshBacklog },
-          { id: 'export', label: 'Export to CSV', icon: <Download size={14} />, onClick: handleExportCSV },
+          { id: 'refresh', label: 'Refresh', icon: <AkRefreshIcon label="" size="small" />, onClick: handleRefreshBacklog },
+          { id: 'export', label: 'Export to CSV', icon: <AkDownloadIcon label="" size="small" />, onClick: handleExportCSV },
         ]},
       ]}
     />
@@ -2047,28 +2043,24 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
           onClick={toggleExpanded2}
           isDisabled={panelMode === 'fullscreen'}
         >
-          {panelMode === 'compact' ? <ChevronsLeft size={14} /> : <ChevronsRight size={14} />}
+          {panelMode === 'compact' ? <AkChevronsLeftIcon /> : <AkChevronsRightIcon />}
         </DetailNavIconButton>
         <DetailNavIconButton
           ariaLabel={panelMode === 'fullscreen' ? 'Exit fullscreen' : 'Fullscreen'}
           onClick={toggleFullscreen}
         >
-          {panelMode === 'fullscreen' ? <Minimize2 size={14} /> : <Maximize2 size={14} />}
+          {panelMode === 'fullscreen' ? <AkMinimizeIcon label="" size="small" /> : <AkMaximizeIcon label="" size="small" />}
         </DetailNavIconButton>
-        {/* Apr 28, 2026 (jira-compare cycle 2 P5): open-in-new-tab icon
-            added to match Jira's panel header triad ↗ / ⤢ / ×. Routes
-            to /project-hub/<projectKey>/issues/<key> which mounts the
-            full-page issue view. No side effect on panel state. */}
         <DetailNavIconButton
           ariaLabel="Open issue in full page"
           onClick={() => {
             if (detailItemId) window.open(`/project-hub/${projectKey}/issues/${detailItemId}`, '_blank');
           }}
         >
-          <Maximize2 size={14} style={{ transform: 'rotate(45deg)' }} />
+          <AkMaximizeIcon label="" size="small" />
         </DetailNavIconButton>
         <DetailNavIconButton ariaLabel="Close panel (Esc)" onClick={closeDetail}>
-          <CloseIcon size={14} />
+          <AkCloseIcon label="" size="small" />
         </DetailNavIconButton>
       </div>
       {/* Scrollable detail body (Add parent / BAU-5609 / H1 / fields) */}
@@ -2224,7 +2216,7 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
                     if (!projectMenuAnchor) e.currentTarget.style.background = 'transparent';
                   }}
                 >
-                  <MoreHorizontal size={18} />
+                  <AkMoreIcon label="" size="small" />
                 </button>
               </Tooltip>
             </>
@@ -2241,9 +2233,9 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
               spacing="compact"
               iconBefore={
                 panelMode === 'fullscreen' ? (
-                  <Minimize2 size={14} />
+                  <AkMinimizeIcon label="" size="small" />
                 ) : (
-                  <Maximize2 size={14} />
+                  <AkMaximizeIcon label="" size="small" />
                 )
               }
               onClick={() =>
@@ -2308,7 +2300,7 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
             onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearch(e.target.value)}
             elemBeforeInput={
               <span style={{ paddingInlineStart: 8, color: token('color.text.subtlest', '#6B778C'), display: 'flex', alignItems: 'center' }}>
-                <SearchIcon size={14} />
+                <AkSearchIcon label="" size="small" />
               </span>
             }
           />
@@ -2607,6 +2599,7 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
             page={1}
             onPageChange={undefined as any}
             density={density}
+            enableVirtualization
             enableColumnReorder
             columnOrder={columnOrder ?? undefined}
             onColumnOrderChange={(next) => setColumnOrder(next)}
@@ -2772,14 +2765,14 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
                 onClick={() => navigateDetail(-1)}
                 isDisabled={sortedRows.length < 2}
               >
-                <ChevronLeft size={14} />
+                <AkChevronLeftIcon label="" size="small" />
               </DetailNavIconButton>
               <DetailNavIconButton
                 ariaLabel="Next item (j)"
                 onClick={() => navigateDetail(1)}
                 isDisabled={sortedRows.length < 2}
               >
-                <ChevronRight size={14} />
+                <AkChevronRightIcon label="" size="small" />
               </DetailNavIconButton>
               <span style={{ fontSize: 12, color: token('color.text.subtlest', '#6B778C'), marginLeft: 4, whiteSpace: 'nowrap' }}>
                 {currentDetailIdx >= 0 ? `${currentDetailIdx + 1} of ${sortedRows.length}` : ''}
@@ -2804,16 +2797,16 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
                 onClick={toggleExpanded2}
                 isDisabled={panelMode === 'fullscreen'}
               >
-                {panelMode === 'compact' ? <ChevronsLeft size={14} /> : <ChevronsRight size={14} />}
+                {panelMode === 'compact' ? <AkChevronsLeftIcon /> : <AkChevronsRightIcon />}
               </DetailNavIconButton>
               <DetailNavIconButton
                 ariaLabel={panelMode === 'fullscreen' ? 'Exit fullscreen' : 'Fullscreen'}
                 onClick={toggleFullscreen}
               >
-                {panelMode === 'fullscreen' ? <Minimize2 size={14} /> : <Maximize2 size={14} />}
+                {panelMode === 'fullscreen' ? <AkMinimizeIcon label="" size="small" /> : <AkMaximizeIcon label="" size="small" />}
               </DetailNavIconButton>
               <DetailNavIconButton ariaLabel="Close panel (Esc)" onClick={closeDetail}>
-                <CloseIcon size={14} />
+                <AkCloseIcon label="" size="small" />
               </DetailNavIconButton>
             </div>
             <div style={{ flex: 1, minHeight: 0, overflow: 'auto' }}>
@@ -3061,7 +3054,7 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
                 justifyContent: 'center',
               }}
             >
-              <CloseIcon size={16} />
+              <AkCloseIcon label="" size="small" />
             </button>
           </div>
 
@@ -3127,7 +3120,7 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
                 }}
               >
                 <span>{addPeopleRole}</span>
-                <ChevronDown size={14} />
+                <AkChevronDownIcon label="" size="small" />
               </button>
             </div>
             <p
@@ -3295,7 +3288,7 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
                 justifyContent: 'center',
               }}
             >
-              <CloseIcon size={16} />
+              <AkCloseIcon label="" size="small" />
             </button>
           </div>
 
@@ -3312,7 +3305,7 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
               onChange={(e: React.ChangeEvent<HTMLInputElement>) => setLinkedTeamsSearch(e.target.value)}
               elemBeforeInput={
                 <span style={{ paddingInlineStart: 8, color: token('color.text.subtlest', '#6B778C'), display: 'flex', alignItems: 'center' }}>
-                  <SearchIcon size={14} />
+                  <AkSearchIcon label="" size="small" />
                 </span>
               }
             />
@@ -3390,7 +3383,7 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
           {/* Header — warning appearance (icon + title in warning color). */}
           <div style={{ padding: '20px 24px 12px', display: 'flex', alignItems: 'center', gap: 12 }}>
             <span style={{ color: token('color.icon.warning', '#946F00'), display: 'inline-flex' }}>
-              <AlertTriangle size={20} />
+              <AkWarningIcon label="" size="medium" />
             </span>
             <h2
               id="archive-project-modal-title"
@@ -3420,7 +3413,7 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
             <Button appearance="subtle" onClick={() => setArchiveOpen(false)}>Cancel</Button>
             <Button
               appearance="warning"
-              iconBefore={<Archive size={14} />}
+              iconBefore={<AkArchiveBoxIcon label="" size="small" />}
               onClick={() => {
                 // No `archived_at` column on `projects` yet; archive flag
                 // ships with a follow-on schema change. Surface as info.
@@ -3476,7 +3469,7 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
           {/* Header — danger appearance. */}
           <div style={{ padding: '20px 24px 12px', display: 'flex', alignItems: 'center', gap: 12 }}>
             <span style={{ color: token('color.icon.danger', '#AE2A19'), display: 'inline-flex' }}>
-              <AlertTriangle size={20} />
+              <AkWarningIcon label="" size="medium" />
             </span>
             <h2
               id="delete-project-modal-title"
@@ -3527,7 +3520,7 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
             <Button appearance="subtle" onClick={() => { setDeleteOpen(false); setDeleteConfirmText(''); }}>Cancel</Button>
             <Button
               appearance="danger"
-              iconBefore={<Trash2 size={14} />}
+              iconBefore={<AkTrashIcon label="" size="small" />}
               isDisabled={deleteConfirmText !== projectKey}
               onClick={() => {
                 // No cascade path defined for projects → issues/releases/etc.
@@ -3610,7 +3603,7 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
                 alignItems: 'center', justifyContent: 'center',
               }}
             >
-              <CloseIcon size={14} />
+              <AkCloseIcon label="" size="small" />
             </button>
           </div>
 
@@ -3767,7 +3760,7 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
 // menu is portal-mounted to <body> with position computed from the
 // trigger rect, exactly mirroring the editors.tsx EditorPopover pattern
 // that's been verified working in this exact React tree.
-type GroupByOption = 'none' | 'type' | 'status' | 'parent' | 'assignee' | 'priority' | 'storyPoints';
+type GroupByOption = 'none' | 'type' | 'status' | 'parent' | 'assignee' | 'priority';
 const GROUP_BY_LABELS: Record<GroupByOption, string> = {
   none: 'None',
   type: 'Type',
@@ -3775,7 +3768,6 @@ const GROUP_BY_LABELS: Record<GroupByOption, string> = {
   parent: 'Parent',
   assignee: 'Assignee',
   priority: 'Priority',
-  storyPoints: 'Story Points',
 };
 function GroupByControl({
   value, onChange,
@@ -3792,7 +3784,7 @@ function GroupByControl({
   // Apr 28, 2026 (jira-compare cycle 2): order matches Jira /list:
   // Status / Assignee / Priority / Story Points, with 'type' first as
   // the primary axis users actually want for per-type comparison.
-  const OPTIONS: GroupByOption[] = ['none', 'type', 'status', 'parent', 'assignee', 'priority', 'storyPoints'];
+  const OPTIONS: GroupByOption[] = ['none', 'type', 'status', 'parent', 'assignee', 'priority'];
 
   const triggerText = value === 'none' ? 'Group' : `Group: ${GROUP_BY_LABELS[value]}`;
 
@@ -4389,7 +4381,7 @@ function InlineGroupCreateRow({
         onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSummary(e.target.value)}
         elemBeforeInput={
           <span style={{ paddingInlineStart: 8, color: token('color.text.subtlest', '#6B778C'), display: 'flex', alignItems: 'center' }}>
-            <Plus size={14} />
+            <AkAddIcon label="" size="small" />
           </span>
         }
       />
@@ -4434,7 +4426,7 @@ function InlineGroupCreateRow({
               {currentAssignee ? (
                 <Avatar size="xsmall" src={currentAssignee.src} name={currentAssignee.name} />
               ) : (
-                <CircleUser size={14} />
+                <AkPersonAvatarIcon label="" size="small" />
               )}
               <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                 {currentLabel}
@@ -4592,7 +4584,7 @@ function BottomCreateRow({
             (e.currentTarget as HTMLElement).style.background = 'transparent';
           }}
         >
-          <Plus size={14} />
+          <AkAddIcon label="" size="small" />
           Create
         </button>
       </div>
@@ -4643,7 +4635,7 @@ function BottomCreateRow({
             }}
           >
             <JiraIssueTypeIcon type={issueType} size={16} />
-            <ChevronDown size={12} color={token('color.text.subtlest', '#6B778C')} />
+            <AkChevronDownIcon label="" size="small" />
           </button>
         )}
       >
@@ -4698,7 +4690,7 @@ function BottomCreateRow({
             cursor: 'default',
           }}
         >
-          <CircleUser size={20} />
+          <AkPersonAvatarIcon label="" size="small" />
         </button>
       </Tooltip>
 
@@ -4798,7 +4790,7 @@ function InlineCreateRow({
           (e.currentTarget as HTMLElement).style.borderColor = 'transparent';
         }}
       >
-        <Plus size={14} />
+        <AkAddIcon label="" size="small" />
         {placeholder || `Create ${typeFilter}`}
       </button>
     );
@@ -4924,7 +4916,7 @@ function BulkActionsBar({
           onMouseEnter={(e) => (e.currentTarget.style.background = 'rgba(255,255,255,0.10)')}
           onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
         >
-          <CloseIcon size={18} />
+          <AkCloseIcon label="" size="small" />
         </button>
         <div style={{ width: 1, height: 20, background: 'rgba(255,255,255,0.20)' }} />
 
@@ -5000,7 +4992,7 @@ function BulkActionsBar({
           onMouseEnter={(e) => { if (!isBusy) (e.currentTarget.style.background = 'rgba(220,38,38,0.20)'); }}
           onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
         >
-          <Trash2 size={15} />
+          <AkTrashIcon label="" size="small" />
           Delete
         </button>
       </div>

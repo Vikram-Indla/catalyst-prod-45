@@ -9,11 +9,11 @@
  * own `onCellEdit` wiring (see JiraTable.tsx).
  */
 import React from 'react';
-import Lozenge from '@atlaskit/lozenge';
 import Avatar from '@atlaskit/avatar';
 import CommentIcon from '@atlaskit/icon/glyph/comment';
 import { token } from '@atlaskit/tokens';
-import { ChevronRight, ChevronDown } from 'lucide-react';
+import AkChevronRightIcon from '@atlaskit/icon/glyph/chevron-right';
+import AkChevronDownIcon from '@atlaskit/icon/glyph/chevron-down';
 import type { CellProps } from './types';
 
 // ─── Type Icon Cell ────────────────────────────────────────────────────────
@@ -65,7 +65,7 @@ export function makeCaretCell({
         onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.background = token('color.background.neutral.subtle.hovered', '#F4F5F7'))}
         onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.background = 'transparent')}
       >
-        {expanded ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
+        {expanded ? <AkChevronDownIcon label="" size="small" /> : <AkChevronRightIcon label="" size="small" />}
       </button>
     );
   };
@@ -99,11 +99,13 @@ export function makeKeyCell(getKey: (row: any) => string | null) {
           display: 'inline-block',
           padding: '2px 6px',
           margin: '-2px -6px',
-          fontFamily: 'inherit', // inherit "Atlassian Sans" from JiraTable root
+          fontFamily: 'inherit',
           fontWeight: 400,
           color: token('color.text.subtle', '#505258'),
           fontSize: 14,
           letterSpacing: 0,
+          whiteSpace: 'nowrap',
+          cursor: 'pointer',
         }}
       >
         {key || '—'}
@@ -155,39 +157,28 @@ export type LozengeAppearance =
   | 'new';
 
 /**
- * StatusPill — Jira-faithful status lozenge. CANONICAL across Catalyst.
+ * StatusPill — manually rendered to match exact Jira list DOM measurements.
  *
- * RE-MEASURED 2026-04-26 (Jira BAU-5650 list view, "Ready for QA"):
- *   - font-size       11px           (NOT 14px — earlier reading was the
- *                                      outer wrapper span, not the lozenge)
- *   - font-weight     700            (Jira's Charlie variable axis is 653;
- *                                      we round to the nearest static weight)
- *   - text-transform  UPPERCASE      (NOT sentence case)
- *   - letter-spacing  0.015em        (Jira measured 0.165px / 11px)
- *   - line-height     16px           (rendered box height 16px)
- *   - padding         0 4px
- *   - border-radius   3px
- *   - bg / fg colors per appearance below.
+ * Measured 2026-05-07 from digital-transformation.atlassian.net BAU list:
+ *   success (READY FOR QA, BETA READY, CLOSED):  bg rgb(179,223,114) text rgb(41,42,46)
+ *   inprogress (IMPLEMENTATION):                 bg rgb(143,184,246) text rgb(41,42,46)
+ *   default (TODO):                              bg rgb(221,222,225) text rgb(41,42,46)
+ *   outer: borderRadius 3px, padding 0px 4px, height 16px
+ *   inner: 14px/400/normal letterSpacing/textTransform none (text is uppercase in data)
  *
- * Why this matters: Catalyst's 14px-sentence-case-400 rendering is what
- * the user sees as "washed out" vs Jira. The correct rendering is small,
- * tight, uppercase, and bold — exactly what Atlaskit's @atlaskit/lozenge
- * default produces and what every Jira surface uses. This is the single
- * canonical pill consumed by every Catalyst hub (ProjectHub, IncidentHub,
- * TestHub, TaskHub, ProductHub) — see CLAUDE.md §5.
- *
- * Color families (measured live from Jira's DOM, verified against
- * Atlaskit @atlaskit/lozenge source):
- *   default     to-do, backlog, on-hold        bg #DDDEE1  fg #292A2E
- *   inprogress  in progress, in review, active  bg #DFEDFF  fg #0747A6
- *   success     done, approved, completed       bg #B3DF72  fg #292A2E
- *   removed     cancelled, rejected, blocked   bg #FFD2CC  fg #5D1F1A
- *   moved       same family as inprogress       (same as inprogress)
- *   new         same family as inprogress       (same as inprogress)
- *
- * NEVER override font-size, weight, casing, or letter-spacing per consumer.
- * The pill is canonical — adjustments go in this file, applied everywhere.
+ * Atlaskit Lozenge token resolution in Catalyst's theme differs from Jira's
+ * (success resolves to rgb(239,255,214) vs Jira's rgb(179,223,114)), so we
+ * render the span structure manually with measured values.
  */
+const LOZENGE_BG: Record<LozengeAppearance, string> = {
+  success:    'rgb(179, 223, 114)',
+  inprogress: 'rgb(143, 184, 246)',
+  default:    'rgb(221, 222, 225)',
+  moved:      'rgb(243, 214, 100)',
+  removed:    'rgb(255, 143, 115)',
+  new:        'rgb(184, 172, 246)',
+};
+
 export function StatusPill({
   appearance,
   children,
@@ -195,38 +186,28 @@ export function StatusPill({
   appearance: LozengeAppearance;
   children: React.ReactNode;
 }) {
-  const palette = (() => {
-    switch (appearance) {
-      case 'inprogress':
-      case 'new':
-      case 'moved':
-        return { bg: '#DFEDFF', fg: '#0747A6' };
-      case 'success':
-        return { bg: '#B3DF72', fg: '#292A2E' };
-      case 'removed':
-        return { bg: '#FFD2CC', fg: '#5D1F1A' };
-      case 'default':
-      default:
-        return { bg: '#DDDEE1', fg: '#292A2E' };
-    }
-  })();
-  // hmr-bust 2026-04-26 v2 — second pass to force Vite to reread this file
-  // after the cross-mount FS watcher missed an earlier StatusPill edit.
+  const bg = LOZENGE_BG[appearance] ?? LOZENGE_BG.default;
   return (
-    <span
-      style={{
-        display: 'inline-block',
-        padding: '0 4px',
-        borderRadius: 3,
-        background: palette.bg,
-        color: palette.fg,
-        fontSize: 14,
+    <span style={{
+      display: 'inline-flex',
+      alignItems: 'center',
+      backgroundColor: bg,
+      borderRadius: '3px',
+      padding: '0px 4px',
+      height: '16px',
+      maxWidth: '200px',
+    }}>
+      <span style={{
+        fontSize: '14px',
         fontWeight: 400,
         lineHeight: '16px',
+        color: 'rgb(41, 42, 46)',
+        overflow: 'hidden',
+        textOverflow: 'ellipsis',
         whiteSpace: 'nowrap',
-      }}
-    >
-      {children}
+      }}>
+        {children}
+      </span>
     </span>
   );
 }
@@ -443,7 +424,7 @@ export function makeDateCell(
   getISO: (row: any) => string | null,
   format: (iso: string) => string = (iso) => {
     const d = new Date(iso);
-    return `${d.getDate()}/${d.toLocaleString('en-US', { month: 'short' })}/${d.getFullYear()}`;
+    return d.toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
   },
 ) {
   return function DateCell({ row }: CellProps<any>) {
