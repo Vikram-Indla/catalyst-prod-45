@@ -2,9 +2,9 @@
  * WorkItemCard — Enterprise-grade kanban card matching Jira reference density
  *
  * Layout (top → bottom):
- *   TITLE ROW: summary (bold) + hover-reveal edit icon + three-dots menu
- *   BADGE ROW: dark epic pill + bordered fix-version/sprint pill
- *   FOOTER: type-icon + issue_key (left) + priority + assignee avatar (right)
+ *   TITLE ROW: summary + hover-reveal edit + three-dots menu
+ *   META ROWS: assignee name (plain text) + epic/parent (plain text) + fix-version (plain text)
+ *   FOOTER: type-icon + issue_key (left) + priority chevron + assignee avatar (right)
  */
 import { useState, useRef, useEffect, useCallback, type ReactNode } from 'react';
 import FlagFilledIcon from '@atlaskit/icon/core/flag-filled';
@@ -21,26 +21,62 @@ import type { KanbanThemeTokens, DensityConfig } from './kanban-tokens';
 import { WorkItemOverflowMenu } from './overflow-menu/WorkItemOverflowMenu';
 import type { VisibleFields } from '@/hooks/useKanbanViewSettings';
 
-/* ═══ PRIORITY ICON (= bars, Jira style) ═══ */
+/* ═══ PRIORITY ICON — Jira-parity directional chevrons ═══ */
 
 const PRIORITY_COLORS: Record<string, string> = {
-  highest: '#FF5630',
-  high: '#FF5630',
-  medium: '#FFAB00',
-  low: '#36B37E',
-  lowest: '#36B37E',
+  highest: '#E5493A',
+  high:    '#E97F33',
+  medium:  '#FFAB00',
+  low:     '#2D8738',
+  lowest:  '#57A55A',
 };
 
-function PriorityBars({ priority }: { priority: string }) {
+function PriorityIcon({ priority }: { priority: string }) {
   const p = priority.toLowerCase();
   const color = PRIORITY_COLORS[p] || '#5E6C84';
-  const isHigh = p === 'highest' || p === 'high';
-  const isLow = p === 'lowest' || p === 'low';
+  /* Jira renders priority as stacked upward (high) or downward (low) chevrons.
+     Two chevrons = highest/lowest, one = high/low, dash = medium. */
+  if (p === 'highest') {
+    return (
+      <svg width={14} height={14} viewBox="0 0 14 14" fill="none" aria-label="Highest priority">
+        <path d="M7 1 L12 6 H9 V7 H5 V6 H2 Z" fill={color} />
+        <path d="M7 5.5 L12 10.5 H9 V11.5 H5 V10.5 H2 Z" fill={color} opacity="0.55" />
+      </svg>
+    );
+  }
+  if (p === 'high') {
+    return (
+      <svg width={14} height={14} viewBox="0 0 14 14" fill="none" aria-label="High priority">
+        <path d="M7 2.5 L12 7.5 H9 V9.5 H5 V7.5 H2 Z" fill={color} />
+      </svg>
+    );
+  }
+  if (p === 'medium') {
+    return (
+      <svg width={14} height={14} viewBox="0 0 14 14" fill="none" aria-label="Medium priority">
+        <rect x="2" y="4" width="10" height="2.5" rx="1" fill={color} />
+        <rect x="2" y="7.5" width="10" height="2.5" rx="1" fill={color} opacity="0.45" />
+      </svg>
+    );
+  }
+  if (p === 'low') {
+    return (
+      <svg width={14} height={14} viewBox="0 0 14 14" fill="none" aria-label="Low priority">
+        <path d="M7 11.5 L2 6.5 H5 V4.5 H9 V6.5 H12 Z" fill={color} />
+      </svg>
+    );
+  }
+  if (p === 'lowest') {
+    return (
+      <svg width={14} height={14} viewBox="0 0 14 14" fill="none" aria-label="Lowest priority">
+        <path d="M7 8.5 L2 3.5 H5 V2.5 H9 V3.5 H12 Z" fill={color} opacity="0.55" />
+        <path d="M7 13 L2 8 H5 V7 H9 V8 H12 Z" fill={color} />
+      </svg>
+    );
+  }
   return (
-    <svg width={14} height={14} viewBox="0 0 16 16" fill="none" aria-label={`Priority: ${priority}`}>
-      <rect x="2" y="4" width="12" height="2" rx="0.5" fill={color} />
-      <rect x="2" y="7.5" width="12" height="2" rx="0.5" fill={isLow ? '#C1C7D0' : color} />
-      <rect x="2" y="11" width="12" height="2" rx="0.5" fill={isHigh ? color : '#C1C7D0'} />
+    <svg width={14} height={14} viewBox="0 0 14 14" fill="none" aria-label={`Priority: ${priority}`}>
+      <rect x="2" y="6" width="10" height="2" rx="1" fill={color} />
     </svg>
   );
 }
@@ -254,41 +290,30 @@ export function WorkItemCard({
         )}
       </div>
 
-      {/* ─── BADGE ROW: Jira epic lozenge (light gray) + Fix Version (bordered) ─── */}
-      {(epicLabel || fixVersionLabel) && (
-        <div className="flex items-center flex-wrap" style={{ gap: 4, marginBottom: 4 }}>
-          {epicLabel && (
-            <span style={{
-              fontSize: 11, fontWeight: 700, textTransform: 'uppercase',
-              /* Jira parity: #DDDEE1 surface, #292A2E text, 3px radius, 16px tall */
-              background: tk.epicLozengeBg, color: tk.epicLozengeText,
-              padding: '0 6px', borderRadius: 3,
-              height: 16, lineHeight: '16px',
-              /* Fill available card interior; ellipsis handles overflow.
-                 Previously a hard 200px cap left ~23px of dead space on
-                 the right of 267px columns. */
-              maxWidth: '100%', minWidth: 0,
-              overflow: 'hidden', textOverflow: 'ellipsis',
-              whiteSpace: 'nowrap', display: 'inline-flex', alignItems: 'center',
-              letterSpacing: '0.02em',
-            }}>{epicLabel}</span>
-          )}
-          {fixVersionLabel && (
-            <span style={{
-              fontSize: 11, fontWeight: 600,
-              background: 'transparent', color: tk.textMuted,
-              padding: '0 6px', borderRadius: 3,
-              border: `1px solid ${tk.border}`,
-              height: 16, lineHeight: '14px',
-              /* Same reasoning as epic lozenge above — let flex-wrap +
-                 ellipsis handle overflow, no hard cap. */
-              maxWidth: '100%', minWidth: 0,
-              overflow: 'hidden', textOverflow: 'ellipsis',
-              whiteSpace: 'nowrap', display: 'inline-flex', alignItems: 'center',
-              textTransform: 'uppercase',
-            }}>{fixVersionLabel}</span>
-          )}
-        </div>
+      {/* ─── META ROWS: assignee name + epic/parent + fix-version (Jira: plain muted text, no chips) ─── */}
+      {(vf?.assignee !== false) && issue.assigneeName && (
+        <div style={{
+          fontSize: 12, fontWeight: 400, color: tk.textMuted,
+          lineHeight: '16px', marginBottom: 2,
+          overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+          fontFamily: 'var(--cp-font-body)',
+        }}>{issue.assigneeName}</div>
+      )}
+      {epicLabel && (
+        <div style={{
+          fontSize: 12, fontWeight: 400, color: tk.textMuted,
+          lineHeight: '16px', marginBottom: fixVersionLabel ? 0 : 2,
+          overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+          fontFamily: 'var(--cp-font-body)',
+        }}>{epicLabel}</div>
+      )}
+      {fixVersionLabel && (
+        <div style={{
+          fontSize: 12, fontWeight: 400, color: tk.textMuted,
+          lineHeight: '16px', marginBottom: 2,
+          overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+          fontFamily: 'var(--cp-font-body)',
+        }}>{fixVersionLabel}</div>
       )}
 
       {/* spacer — only used when card has explicit minHeight */}
@@ -322,8 +347,8 @@ export function WorkItemCard({
               el.style.color = tk.textMuted;
             }}
             style={{
-              fontSize: d.metaSize, fontWeight: 500,
-              color: tk.textMuted, fontFamily: 'var(--cp-font-mono)',
+              fontSize: d.metaSize, fontWeight: 400,
+              color: tk.textMuted, fontFamily: 'var(--cp-font-body)',
               lineHeight: '14px',
               background: 'none', border: 'none', padding: 0,
               cursor: 'pointer', textDecoration: 'none',
@@ -340,7 +365,7 @@ export function WorkItemCard({
         )}
         <span className="flex-1" />
         {vf?.priority !== false && issue.priority && (
-          <PriorityBars priority={issue.priority} />
+          <PriorityIcon priority={issue.priority} />
         )}
         {vf?.assignee !== false && (
           onChangeAssignee && assigneeOptions && avatarsByName ? (
