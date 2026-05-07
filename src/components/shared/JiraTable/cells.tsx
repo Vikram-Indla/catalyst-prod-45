@@ -11,7 +11,6 @@
 import React from 'react';
 import Lozenge from '@atlaskit/lozenge';
 import Avatar from '@atlaskit/avatar';
-import CalendarIcon from '@atlaskit/icon/glyph/calendar';
 import CommentIcon from '@atlaskit/icon/glyph/comment';
 import { token } from '@atlaskit/tokens';
 import { ChevronRight, ChevronDown } from 'lucide-react';
@@ -442,8 +441,10 @@ export function makePriorityCell(getPriority: (row: any) => string | null) {
 // component (sweep targets: see L63 lessons).
 export function makeDateCell(
   getISO: (row: any) => string | null,
-  format: (iso: string) => string = (iso) =>
-    new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+  format: (iso: string) => string = (iso) => {
+    const d = new Date(iso);
+    return `${d.getDate()}/${d.toLocaleString('en-US', { month: 'short' })}/${d.getFullYear()}`;
+  },
 ) {
   return function DateCell({ row }: CellProps<any>) {
     const iso = getISO(row);
@@ -456,19 +457,13 @@ export function makeDateCell(
       <span
         title={fullIso}
         style={{
-          display: 'inline-flex',
-          alignItems: 'center',
-          gap: 4,
           color: token('color.text.subtle', '#42526E'),
           fontSize: 14,
-          lineHeight: '16px',
+          lineHeight: '20px',
           fontWeight: 400,
           whiteSpace: 'nowrap',
         }}
       >
-        <span style={{ display: 'inline-flex', flexShrink: 0, color: token('color.icon.subtle', '#6B778C') }}>
-          <CalendarIcon label="" size="small" />
-        </span>
         {display}
       </span>
     );

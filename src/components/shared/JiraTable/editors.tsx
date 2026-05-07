@@ -1046,12 +1046,18 @@ export function makeDateEditCell<T>({
     const editable = canEdit ? canEdit(row) : true;
 
     const formatted = dateVal
-      ? new Date(dateVal).toLocaleDateString('en-AU', { day: 'numeric', month: 'short', year: 'numeric' })
+      ? (() => {
+          const d = new Date(dateVal);
+          const day = d.getDate();
+          const mon = d.toLocaleString('en-US', { month: 'short' });
+          const yr = d.getFullYear();
+          return `${day}/${mon}/${yr}`;
+        })()
       : null;
 
     const display = formatted
       ? <span style={{ fontSize: 13, color: token('color.text', '#172B4D') }}>{formatted}</span>
-      : <span data-jira-cell-ghost style={{ fontSize: 13 }}>None</span>;
+      : <span style={{ display: 'inline-block', minWidth: 1, height: 18 }} />;
 
     if (!editable) return display;
 
@@ -1154,7 +1160,7 @@ export function makeLabelsEditCell<T>({
                 }}
               >{l}</span>
             ))
-          : <span data-jira-cell-ghost style={{ fontSize: 13 }}>None</span>
+          : <span style={{ display: 'inline-block', minWidth: 1, height: 18 }} />
         }
       </span>
     );

@@ -1603,7 +1603,7 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
                   className={[r.className, isGroup ? 'jira-table-group-row' : ''].filter(Boolean).join(' ')}
                   onClick={r.onClick}
                   onContextMenu={r.onContextMenu}
-                  style={{ height: d.rowHeight, borderTop: '1px solid rgba(11, 18, 14, 0.14)' }}
+                  style={{ height: d.rowHeight }}
                 >
                   {r.cells.map((c: any) => (
                     <td key={c.key} colSpan={c.colSpan} style={{ overflow: 'hidden' }}>
