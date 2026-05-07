@@ -53,9 +53,9 @@ export const KANBAN_TOKENS: { light: KanbanThemeTokens; dark: KanbanThemeTokens 
     cardBg: 'var(--ds-surface, #FFFFFF)',
     cardBorder: 'transparent', /* Jira cards are shadow-only, no border */
     cardHoverBg: 'var(--ds-surface, #FFFFFF)',
-    /* Jira dual-stack shadow (rest): 1px offset drop + 1px blur outline */
-    cardShadowRest: 'rgba(30,31,33,.25) 0 1px 1px 0, rgba(30,31,33,.31) 0 0 1px 0',
-    cardHoverShadow: 'rgba(30,31,33,.35) 0 2px 4px 0, rgba(30,31,33,.31) 0 0 1px 0',
+    /* Jira shadow (rest): elevation 2 — 8px/12px drop + 1px outline */
+    cardShadowRest: 'rgba(30,31,33,.15) 0 8px 12px 0, rgba(30,31,33,.31) 0 0 1px 0',
+    cardHoverShadow: 'rgba(30,31,33,.20) 0 12px 20px 0, rgba(30,31,33,.31) 0 0 1px 0',
     cardDragShadow: 'rgba(30,31,33,.45) 0 8px 16px 0, rgba(30,31,33,.31) 0 0 1px 0',
     dropHighlight: '#DFE3E8',  /* Jira drop tint */
     dropIndicator: 'var(--ds-text-brand, #2563EB)',  /* 2px accent line on insertion */

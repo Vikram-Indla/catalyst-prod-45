@@ -239,7 +239,7 @@ export function WorkItemCard({
               fontSize: d.titleSize,
               lineHeight: `${d.titleSize + 6}px`,
               color: tk.textPrimary,
-              fontWeight: 400,                          /* Jira parity: 400 */
+              fontWeight: 600,                          /* Jira parity: 653 variable = ~600 */
               marginBottom: 4,
               /* No paddingRight here: the flex sibling (flag + edit + menu
                  buttons) already reserves ~44px on the right. Adding an
