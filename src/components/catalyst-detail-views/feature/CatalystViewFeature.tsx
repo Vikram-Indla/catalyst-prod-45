@@ -97,7 +97,7 @@ export default function CatalystViewFeature({
         { label: 'Delete feature', onClick: () => mutations.deleteIssue.mutate(), danger: true },
       ]}
       onTogglePanelMode={onTogglePanelMode} navigationItems={navigationItems} currentItemId={itemId} onNavigate={onNavigate}
-      leftContent={leftContent} rightContent={rightContent} isLoading={isLoading}
+      leftContent={leftContent} rightContent={rightContent} isLoading={isLoading} isNotFound={!isLoading && issue === null}
     />
   );
 }

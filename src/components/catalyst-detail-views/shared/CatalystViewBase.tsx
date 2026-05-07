@@ -114,6 +114,8 @@ export interface CatalystViewBaseLayoutProps {
 
   /* Loading */
   isLoading?: boolean;
+  /* True when the query finished but returned no record (deleted/invalid issue key) */
+  isNotFound?: boolean;
 }
 
 /* ═══════════════════════════════════════════
@@ -126,7 +128,7 @@ export function CatalystViewBase({
   onShare, moreMenuItems,
   onTogglePanelMode, navigationItems, currentItemId, onNavigate,
   leftContent, rightContent,
-  isLoading,
+  isLoading, isNotFound,
 }: CatalystViewBaseLayoutProps) {
 
   /* ── State ──────────────────────────────── */
@@ -464,6 +466,12 @@ export function CatalystViewBase({
                 <Skel w={120} /><Skel w="80%" h={24} /><Skel w="60%" h={16} />
                 <div style={{ height: 20 }} /><Skel w="100%" h={200} />
               </div>
+            ) : isNotFound ? (
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '60%', gap: 12, color: 'var(--ds-text-subtlest, #6B778C)', textAlign: 'center' }}>
+                <span style={{ fontSize: 32 }}>⚠️</span>
+                <div style={{ fontSize: 16, fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>Issue not found</div>
+                <div style={{ fontSize: 14 }}>This issue may have been deleted or the key is invalid.</div>
+              </div>
             ) : leftContent}
           </div>
 
@@ -504,7 +512,7 @@ export function CatalystViewBase({
                 <Skel w={60} h={12} /><Skel w="100%" h={16} />
                 <Skel w={60} h={12} /><Skel w="100%" h={16} />
               </div>
-            ) : rightContent}
+            ) : isNotFound ? null : rightContent}
           </div>
         </div>
     </>

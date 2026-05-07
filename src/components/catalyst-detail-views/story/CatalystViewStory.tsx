@@ -238,6 +238,7 @@ export default function CatalystViewStory({
       leftContent={leftContent}
       rightContent={rightContent}
       isLoading={isLoading}
+      isNotFound={!isLoading && issue === null}
     />
   );
 }
