@@ -442,7 +442,7 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
   // Jira BAU list default columns (re-probed 2026-05-07 live DOM):
   // Type | Key | Summary | Status | Comments | Parent | Assignee | Due date | Priority | Labels
   // Created + Updated are NOT in Jira's default visible set.
-  const DEFAULT_VISIBLE_COLUMNS = ['key', 'summary', 'status', 'comments', 'parent', 'assignee', 'due_date', 'priority', 'labels'];
+  const DEFAULT_VISIBLE_COLUMNS = ['key', 'summary', 'status', 'comments', 'parent', 'assignee', 'due_date', 'priority', 'labels', 'created'];
   const parseSet = (raw: string | null): Set<string> =>
     raw ? new Set(raw.split(',').filter(Boolean)) : new Set();
 
@@ -1605,12 +1605,12 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
     },
     {
       id: 'created',
-      // 2026-05-07 re-probe: Jira BAU list does NOT show Created by default.
-      // Available as optional column via column manager.
+      // 2026-05-08 re-probe: Jira BAU list DOES show Created by default.
+      // Live DOM probe returned "Created" in column headers.
       label: 'Created',
       width: 12,
       sortable: true,
-      defaultVisible: false,
+      defaultVisible: true,
       accessor: (r: BacklogItem) => r.created_at || '',
       cell: makeDateCell((r: BacklogItem) => r.created_at),
     },
