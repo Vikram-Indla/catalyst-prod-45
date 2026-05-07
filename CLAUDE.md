@@ -241,3 +241,18 @@ Append-only. Newest at top. Each entry: date, pattern, rule, surface.
 **Rule:** CRUD parity at C, R, U, D is the acceptance gate. Visual match without CRUD green is a fail. If a surface has no interactive behaviour in scope, state it explicitly and require Vikram sign-off.
 
 ---
+
+## 2026-05-07 — StatusPill prior measurement was wrong: 11px/700/uppercase ≠ Jira
+**Surface:** BacklogPage list table (all surfaces using StatusPill in cells.tsx)
+**Pattern:** A 2026-04-26 re-measurement comment in cells.tsx claimed Jira's lozenge is 11px / fontWeight 700 / textTransform uppercase. Fresh probe 2026-05-07 on digital-transformation.atlassian.net returned fontSize 14px / fontWeight 400 / textTransform none on the actual colored `span` element. The old measurement was taken from the outer wrapper, not the inner pill. Always probe the innermost colored element.
+**Rule:** When re-measuring a lozenge/pill, query the specific `span` with background-color set, not the parent wrapper. Use `Array.from(document.querySelectorAll('span')).filter(s => getComputedStyle(s).backgroundColor !== 'rgba(0,0,0,0)')`.
+
+## 2026-05-07 — DEFAULT_VISIBLE_COLUMNS must be updated alongside column `defaultVisible: true`
+**Surface:** BacklogPage column picker
+**Pattern:** Adding `defaultVisible: true` to a column schema definition is not sufficient — the `DEFAULT_VISIBLE_COLUMNS` constant also controls what columns appear by default and what gets auto-merged into URL-saved column sets (line 505 merge logic). Setting one without the other means new columns never appear for users with a clean URL state.
+**Rule:** When adding a column that should be visible by default, add its id to BOTH the column's `defaultVisible: true` AND `DEFAULT_VISIBLE_COLUMNS` array.
+
+## 2026-05-07 — Date cell border/pill styling was Catalyst opinion, not Jira parity
+**Surface:** Created/Updated/Due date cells in BacklogPage table
+**Pattern:** The makeDateCell renderer added a bordered pill (`border: 1px solid`, `borderRadius: 3`, `padding: 2px 8px`) that was documented as "Jira-parity". Fresh DOM probe shows Jira's date cells have no border — just calendar icon + text with no wrapping box.
+**Rule:** Before adding visual chrome to a cell (borders, backgrounds, radius), probe the live Jira DOM first. Catalyst opinions that "look like Jira" often aren't.

@@ -55,6 +55,7 @@ import {
   makeAssigneeEditCell,
   makePriorityEditCell,
   makeParentEditCell,
+  makeLabelsCell,
   makeRowActionsCell,
   FlagsHost,
   flag,
@@ -157,6 +158,7 @@ export interface BacklogItem {
   created_at: string | null;
   due_date: string | null;
   comment_count: number | null;
+  labels: string[] | null;
 }
 
 /* ─── Status mapping (shared with Story Backlog) ────────────────────────── */
@@ -438,7 +440,7 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
   // Type | Key | Summary | Status | Comments | Assignee | Priority | Created | Updated
   // Parent is NOT shown by default in Jira — hierarchy is exposed via the row expand
   // chevron, not a dedicated column. Created + Updated ARE shown by default in Jira.
-  const DEFAULT_VISIBLE_COLUMNS = ['key', 'summary', 'status', 'comments', 'assignee', 'priority', 'created', 'updated'];
+  const DEFAULT_VISIBLE_COLUMNS = ['key', 'summary', 'status', 'comments', 'assignee', 'due_date', 'priority', 'labels', 'created', 'updated'];
   const parseSet = (raw: string | null): Set<string> =>
     raw ? new Set(raw.split(',').filter(Boolean)) : new Set();
 
@@ -807,6 +809,7 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
           updated_at: null,
           created_at: null,
           comment_count: null,
+          labels: null,
         });
       });
     }
@@ -839,6 +842,7 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
         created_at: e.jira_created_at ?? null,
         due_date: (e as any).end_date ?? (e as any).due_date ?? null,
         comment_count: e.comment_count ?? null,
+        labels: (e as any).labels ?? null,
       });
     });
 
@@ -881,6 +885,7 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
           created_at: ep.jira_created_at ?? null,
           due_date: null,
           comment_count: null,
+          labels: null,
         });
       }
     });
@@ -931,6 +936,7 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
         created_at: s.jira_created_at ?? null,
         due_date: (s as any).start_date ?? (s as any).due_date ?? null,
         comment_count: null,
+          labels: null,
       });
     });
     return out;
@@ -1599,9 +1605,18 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
       label: 'Due date',
       width: 10,
       sortable: true,
-      defaultVisible: false,
+      defaultVisible: true,
       accessor: (r: BacklogItem) => r.due_date || '',
       cell: makeDateCell((r: BacklogItem) => r.due_date),
+    },
+    {
+      id: 'labels',
+      label: 'Labels',
+      width: 12,
+      sortable: false,
+      defaultVisible: true,
+      accessor: (r: BacklogItem) => (r.labels || []).join(', '),
+      cell: makeLabelsCell((r: BacklogItem) => r.labels),
     },
     {
       id: 'reporter',

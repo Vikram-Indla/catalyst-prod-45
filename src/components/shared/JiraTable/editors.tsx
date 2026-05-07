@@ -658,12 +658,12 @@ export function makeAssigneeEditCell<T>({
 //   Colors: Highest=#E5484D Highest/Critical, High=#E2730D, Medium=#D97706,
 //   Low=#0065FF, Lowest=#7A869A. No colored bars — text label is the primary affordance.
 const PRIORITY_CONFIG: Record<string, { icon: React.ReactNode; color: string; label: string }> = {
-  critical:  { icon: <AlertCircle  size={14} />, color: '#E5484D', label: 'Critical'  },
-  highest:   { icon: <ChevronsUp   size={14} />, color: '#E5484D', label: 'Highest'   },
-  high:      { icon: <ChevronUp    size={14} />, color: '#E2730D', label: 'High'      },
-  medium:    { icon: <Equal        size={14} />, color: '#D97706', label: 'Medium'    },
-  low:       { icon: <ChevronDown  size={14} />, color: '#0065FF', label: 'Low'       },
-  lowest:    { icon: <ChevronsDown size={14} />, color: '#7A869A', label: 'Lowest'    },
+  critical:  { icon: <AlertCircle  size={16} />, color: '#E5484D', label: 'Critical'  },
+  highest:   { icon: <ChevronsUp   size={16} />, color: '#E5484D', label: 'Highest'   },
+  high:      { icon: <ChevronUp    size={16} />, color: '#E2730D', label: 'High'      },
+  medium:    { icon: <Equal        size={16} />, color: '#D97706', label: 'Medium'    },
+  low:       { icon: <ChevronDown  size={16} />, color: '#0065FF', label: 'Low'       },
+  lowest:    { icon: <ChevronsDown size={16} />, color: '#7A869A', label: 'Lowest'    },
 };
 
 function PriorityBars({ priority }: { priority: string | null }) {

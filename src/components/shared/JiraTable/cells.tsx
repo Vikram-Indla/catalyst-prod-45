@@ -12,6 +12,7 @@ import React from 'react';
 import Lozenge from '@atlaskit/lozenge';
 import Avatar from '@atlaskit/avatar';
 import CalendarIcon from '@atlaskit/icon/glyph/calendar';
+import CommentIcon from '@atlaskit/icon/glyph/comment';
 import { token } from '@atlaskit/tokens';
 import { ChevronRight, ChevronDown } from 'lucide-react';
 import type { CellProps } from './types';
@@ -220,11 +221,9 @@ export function StatusPill({
         borderRadius: 3,
         background: palette.bg,
         color: palette.fg,
-        fontSize: 11,
-        fontWeight: 700,
+        fontSize: 14,
+        fontWeight: 400,
         lineHeight: '16px',
-        letterSpacing: '0.015em',
-        textTransform: 'uppercase',
         whiteSpace: 'nowrap',
       }}
     >
@@ -362,7 +361,12 @@ export function makeCommentsCell(
     const n = getCount(row);
     const hasCount = typeof n === 'number' && n > 0;
     const content = hasCount ? (
-      <span style={{ color: token('color.text.subtle', '#42526E') }}>{n} comment{n === 1 ? '' : 's'}</span>
+      <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, color: token('color.text.subtle', '#42526E') }}>
+        <span style={{ display: 'inline-flex', color: token('color.icon.subtle', '#6B778C') }}>
+          <CommentIcon label="" size="small" />
+        </span>
+        {n} comment{n === 1 ? '' : 's'}
+      </span>
     ) : (
       <span data-jira-cell-ghost>Add comment</span>
     );
@@ -454,12 +458,9 @@ export function makeDateCell(
         style={{
           display: 'inline-flex',
           alignItems: 'center',
-          gap: 6,
-          padding: '2px 8px',
-          border: `1px solid ${token('color.border', '#DFE1E6')}`,
-          borderRadius: 3,
+          gap: 4,
           color: token('color.text.subtle', '#42526E'),
-          fontSize: 12,
+          fontSize: 14,
           lineHeight: '16px',
           fontWeight: 400,
           whiteSpace: 'nowrap',
@@ -469,6 +470,42 @@ export function makeDateCell(
           <CalendarIcon label="" size="small" />
         </span>
         {display}
+      </span>
+    );
+  };
+}
+
+// ─── Labels Cell ─────────────────────────────────────────────────────────────
+// Renders label tags as Jira-style outlined chips. Measured from Jira live DOM:
+//   bg transparent, border 1px solid #DFE1E6, borderRadius 4px, padding 0px 4px,
+//   fontSize 14px, fontWeight 400, color #292A2E.
+export function makeLabelsCell(getLabels: (row: any) => string[] | null) {
+  return function LabelsCell({ row }: CellProps<any>) {
+    const labels = getLabels(row);
+    if (!labels || labels.length === 0) {
+      return <span style={{ color: token('color.text.subtlest', '#7A869A') }}>—</span>;
+    }
+    return (
+      <span style={{ display: 'inline-flex', flexWrap: 'wrap', gap: 4 }}>
+        {labels.map((label) => (
+          <span
+            key={label}
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              padding: '0 4px',
+              borderRadius: 4,
+              border: `1px solid ${token('color.border', '#DFE1E6')}`,
+              fontSize: 14,
+              fontWeight: 400,
+              lineHeight: '20px',
+              color: token('color.text', '#292A2E'),
+              whiteSpace: 'nowrap',
+            }}
+          >
+            {label}
+          </span>
+        ))}
       </span>
     );
   };

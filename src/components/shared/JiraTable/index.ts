@@ -30,6 +30,7 @@ export {
   makeDateCell,
   makeTypeIconCell,
   makeCaretCell,
+  makeLabelsCell,
 } from './cells';
 export type {
   AssigneeCellInput,

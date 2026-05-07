@@ -41,6 +41,8 @@ import Spinner from '@atlaskit/spinner';
 // IconButton pattern + L11 mandate.
 import ChevronDownIcon from '@atlaskit/icon/glyph/chevron-down';
 import ChevronRightIcon from '@atlaskit/icon/glyph/chevron-right';
+import ArrowUpIcon from '@atlaskit/icon/glyph/arrow-up';
+import ArrowDownIcon from '@atlaskit/icon/glyph/arrow-down';
 // NOTE: useVirtualizer (from @tanstack/react-virtual) was wired here on
 // 2026-04-26 alongside the enableVirtualization prop. The dependency was
 // added to vite.config.ts optimizeDeps.include, but Vite's optimize-deps
@@ -1538,8 +1540,10 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
                       )}
                       {cell.content}
                       {meta?.sortable && isSorted && (
-                        <span aria-hidden="true" style={{ color: 'var(--ds-text-subtlest, #6B778C)' }}>
-                          {sortOrder === 'ASC' ? '▲' : '▼'}
+                        <span aria-hidden="true" style={{ display: 'inline-flex', color: 'var(--ds-text-subtlest, #6B778C)', flexShrink: 0 }}>
+                          {sortOrder === 'ASC'
+                            ? <ArrowUpIcon label="" size="small" />
+                            : <ArrowDownIcon label="" size="small" />}
                         </span>
                       )}
                     </span>
