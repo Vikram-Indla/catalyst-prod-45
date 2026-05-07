@@ -528,7 +528,7 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
            or exceeds natural minimum (type 33 / key 88 / summary 242 /
            status 121 / comments 88 / parent 132 / assignee 121 /
            priority 77 / created 88 / updated 88 / actions 33). */
-        min-width: 1100px;
+        min-width: 1200px;
         border-collapse: separate;
         border-spacing: 0;
         table-layout: fixed;
@@ -1603,7 +1603,7 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
                   className={[r.className, isGroup ? 'jira-table-group-row' : ''].filter(Boolean).join(' ')}
                   onClick={r.onClick}
                   onContextMenu={r.onContextMenu}
-                  style={{ height: d.rowHeight }}
+                  style={{ height: d.rowHeight, borderTop: '1px solid rgba(11, 18, 14, 0.14)' }}
                 >
                   {r.cells.map((c: any) => (
                     <td key={c.key} colSpan={c.colSpan} style={{ overflow: 'hidden' }}>

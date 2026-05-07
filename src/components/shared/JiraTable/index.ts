@@ -47,6 +47,8 @@ export {
   makePriorityEditCell,
   makeParentEditCell,
   makeRowActionsCell,
+  makeDateEditCell,
+  makeLabelsEditCell,
 } from './editors';
 export type {
   StatusOption,

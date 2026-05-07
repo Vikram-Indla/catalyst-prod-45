@@ -23,8 +23,9 @@ import Avatar from '@atlaskit/avatar';
 import Lozenge from '@atlaskit/lozenge';
 import Popup from '@atlaskit/popup';
 import Tooltip from '@atlaskit/tooltip';
+import { DatePicker } from '@atlaskit/datetime-picker';
 import { token } from '@atlaskit/tokens';
-import { Search as SearchIcon, MoreHorizontal, ChevronsUp, ChevronUp, Equal, ChevronDown, ChevronsDown, AlertCircle } from 'lucide-react';
+import { Search as SearchIcon, MoreHorizontal, ChevronsUp, ChevronUp, Equal, ChevronDown, ChevronsDown, AlertCircle, X as XIcon } from 'lucide-react';
 import { StatusPill } from './cells';
 import type { CellProps, LozengeAppearance } from './types';
 
@@ -1027,6 +1028,249 @@ export function makeRowActionsCell<T>({
       </EditorPopover>
     );
   };
+}
+
+/* ─── Date editor ─────────────────────────────────────────────────────────── */
+
+export function makeDateEditCell<T>({
+  getDate,
+  canEdit,
+  onChange,
+}: {
+  getDate: (row: T) => string | null | undefined;
+  canEdit?: (row: T) => boolean;
+  onChange: (row: T, next: string | null) => void;
+}) {
+  return function DateEditCell({ row }: CellProps<T>) {
+    const dateVal = getDate(row) ?? null;
+    const editable = canEdit ? canEdit(row) : true;
+
+    const formatted = dateVal
+      ? new Date(dateVal).toLocaleDateString('en-AU', { day: 'numeric', month: 'short', year: 'numeric' })
+      : null;
+
+    const display = formatted
+      ? <span style={{ fontSize: 13, color: token('color.text', '#172B4D') }}>{formatted}</span>
+      : <span data-jira-cell-ghost style={{ fontSize: 13 }}>None</span>;
+
+    if (!editable) return display;
+
+    return (
+      <EditorPopover
+        width={300}
+        trigger={({ onClick, isOpen, ref }) => (
+          <button
+            ref={ref}
+            type="button"
+            onClick={onClick}
+            aria-expanded={isOpen}
+            data-jira-cell-editor
+            style={{
+              background: 'transparent',
+              border: 'none',
+              padding: '2px 4px',
+              margin: '-2px -4px',
+              borderRadius: 3,
+              cursor: 'pointer',
+              fontFamily: 'inherit',
+              fontSize: 'inherit',
+            }}
+          >
+            {display}
+          </button>
+        )}
+      >
+        {(close) => (
+          <div style={{ padding: 8 }}>
+            <DatePicker
+              autoFocus
+              value={dateVal || ''}
+              onChange={(val) => {
+                onChange(row, val || null);
+                close();
+              }}
+              placeholder="Pick a date"
+              dateFormat="DD/MMM/YYYY"
+            />
+            {dateVal && (
+              <button
+                type="button"
+                onClick={() => { onChange(row, null); close(); }}
+                style={{
+                  marginTop: 8,
+                  width: '100%',
+                  padding: '6px 10px',
+                  border: 'none',
+                  background: 'transparent',
+                  color: token('color.text.subtlest', '#6B778C'),
+                  fontSize: 13,
+                  cursor: 'pointer',
+                  textAlign: 'left',
+                  borderRadius: 3,
+                }}
+                onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = token('color.background.neutral.subtle.hovered', '#F4F5F7'); }}
+                onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
+              >
+                Clear date
+              </button>
+            )}
+          </div>
+        )}
+      </EditorPopover>
+    );
+  };
+}
+
+/* ─── Labels editor ──────────────────────────────────────────────────────── */
+
+export function makeLabelsEditCell<T>({
+  getLabels,
+  canEdit,
+  onChange,
+}: {
+  getLabels: (row: T) => string[] | null | undefined;
+  canEdit?: (row: T) => boolean;
+  onChange: (row: T, next: string[]) => void;
+}) {
+  return function LabelsEditCell({ row }: CellProps<T>) {
+    const labels = getLabels(row) || [];
+    const editable = canEdit ? canEdit(row) : true;
+
+    const display = (
+      <span style={{ display: 'inline-flex', flexWrap: 'wrap', gap: 4, alignItems: 'center' }}>
+        {labels.length > 0
+          ? labels.map((l) => (
+              <span
+                key={l}
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  padding: '1px 6px',
+                  borderRadius: 3,
+                  background: token('color.background.neutral', '#F4F5F7'),
+                  color: token('color.text', '#172B4D'),
+                  fontSize: 12,
+                  whiteSpace: 'nowrap',
+                }}
+              >{l}</span>
+            ))
+          : <span data-jira-cell-ghost style={{ fontSize: 13 }}>None</span>
+        }
+      </span>
+    );
+
+    if (!editable) return display;
+
+    return (
+      <EditorPopover
+        width={300}
+        trigger={({ onClick, isOpen, ref }) => (
+          <button
+            ref={ref}
+            type="button"
+            onClick={onClick}
+            aria-expanded={isOpen}
+            data-jira-cell-editor
+            style={{
+              background: 'transparent',
+              border: 'none',
+              padding: '2px 4px',
+              margin: '-2px -4px',
+              borderRadius: 3,
+              cursor: 'pointer',
+              fontFamily: 'inherit',
+              fontSize: 'inherit',
+              maxWidth: '100%',
+              textAlign: 'left',
+            }}
+          >
+            {display}
+          </button>
+        )}
+      >
+        {(close) => <LabelsPopoverContent row={row} labels={labels} onChange={onChange} close={close} />}
+      </EditorPopover>
+    );
+  };
+}
+
+function LabelsPopoverContent<T>({ row, labels, onChange, close }: {
+  row: T;
+  labels: string[];
+  onChange: (row: T, next: string[]) => void;
+  close: () => void;
+}) {
+  const [draft, setDraft] = useState('');
+  const [current, setCurrent] = useState<string[]>(labels);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  const addLabel = (val: string) => {
+    const trimmed = val.trim();
+    if (trimmed && !current.includes(trimmed)) {
+      const next = [...current, trimmed];
+      setCurrent(next);
+      onChange(row, next);
+    }
+    setDraft('');
+  };
+
+  const removeLabel = (l: string) => {
+    const next = current.filter((x) => x !== l);
+    setCurrent(next);
+    onChange(row, next);
+  };
+
+  return (
+    <div style={{ padding: 8 }}>
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4, marginBottom: current.length ? 8 : 0 }}>
+        {current.map((l) => (
+          <span
+            key={l}
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 4,
+              padding: '2px 6px',
+              borderRadius: 3,
+              background: token('color.background.neutral', '#F4F5F7'),
+              color: token('color.text', '#172B4D'),
+              fontSize: 12,
+            }}
+          >
+            {l}
+            <button
+              type="button"
+              onClick={() => removeLabel(l)}
+              style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, display: 'flex', alignItems: 'center', color: token('color.text.subtlest', '#6B778C') }}
+            >
+              <XIcon size={10} />
+            </button>
+          </span>
+        ))}
+      </div>
+      <Textfield
+        ref={inputRef}
+        isCompact
+        autoFocus
+        placeholder="Add label, press Enter"
+        value={draft}
+        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setDraft(e.target.value)}
+        onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
+          if (e.key === 'Enter') { e.preventDefault(); addLabel(draft); }
+          if (e.key === 'Escape') close();
+        }}
+      />
+      <div style={{ marginTop: 8, display: 'flex', gap: 6, justifyContent: 'flex-end' }}>
+        <button
+          type="button"
+          onClick={close}
+          style={{ fontSize: 12, padding: '4px 8px', border: `1px solid ${token('color.border', '#DFE1E6')}`, borderRadius: 3, background: 'transparent', cursor: 'pointer', color: token('color.text', '#172B4D') }}
+        >
+          Done
+        </button>
+      </div>
+    </div>
+  );
 }
 
 // Inject the tiny CSS that reveals the ⋯ button when its row is hovered.

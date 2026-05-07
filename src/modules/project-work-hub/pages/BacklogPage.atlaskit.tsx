@@ -56,6 +56,8 @@ import {
   makePriorityEditCell,
   makeParentEditCell,
   makeLabelsCell,
+  makeLabelsEditCell,
+  makeDateEditCell,
   makeRowActionsCell,
   FlagsHost,
   flag,
@@ -437,10 +439,10 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
   // so they remain available; this array is the authoritative initial
   // visibility set on first load.
   // 2026-05-04 jira-compare audit: Jira BAU list default columns (verified live):
-  // Type | Key | Summary | Status | Comments | Assignee | Priority | Created | Updated
-  // Parent is NOT shown by default in Jira — hierarchy is exposed via the row expand
-  // chevron, not a dedicated column. Created + Updated ARE shown by default in Jira.
-  const DEFAULT_VISIBLE_COLUMNS = ['key', 'summary', 'status', 'comments', 'assignee', 'due_date', 'priority', 'labels', 'created', 'updated'];
+  // Jira BAU list default columns (re-probed 2026-05-07 live DOM):
+  // Type | Key | Summary | Status | Comments | Parent | Assignee | Due date | Priority | Labels
+  // Created + Updated are NOT in Jira's default visible set.
+  const DEFAULT_VISIBLE_COLUMNS = ['key', 'summary', 'status', 'comments', 'parent', 'assignee', 'due_date', 'priority', 'labels'];
   const parseSet = (raw: string | null): Set<string> =>
     raw ? new Set(raw.split(',').filter(Boolean)) : new Set();
 
@@ -1433,7 +1435,7 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
       // from defaultVisible (see Updated col below) to make room — Jira
       // hides Updated by default in the BAU list as well.
       label: 'Summary',
-      width: 33,
+      width: 29,
       sortable: true,
       alwaysVisible: true,
       cell: makeSummaryInlineEditCell<BacklogItem>({
@@ -1458,7 +1460,7 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
       // has horizontal padding that reduces usable width, and the cell
       // wrapper clips on overflow. 15 gives ~180px at typical container
       // widths — enough for every status in the STATUS_OPTIONS vocabulary.
-      width: 11,
+      width: 15,
       sortable: true,
       defaultVisible: true,
       // B.4 verdict: @atlaskit/popup portal mounts on this surface but
@@ -1559,6 +1561,19 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
       }),
     },
     {
+      id: 'due_date',
+      // 2026-05-07 re-probe: Jira BAU list shows Due date between Assignee and Priority.
+      label: 'Due date',
+      width: 10,
+      sortable: true,
+      defaultVisible: true,
+      accessor: (r: BacklogItem) => r.due_date || '',
+      cell: makeDateEditCell<BacklogItem>({
+        getDate: (r) => r.due_date,
+        onChange: (row, next) => updateField.mutate({ id: row.id, source: row.source, patch: { due_date: next } }),
+      }),
+    },
+    {
       id: 'priority',
       label: 'Priority',
       // 2026-05-04 jira-compare: Jira Priority x=1343→1463 = ~120px.
@@ -1577,46 +1592,38 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
       }),
     },
     {
-      id: 'created',
-      // 2026-05-04 jira-compare: Jira shows Created by default (x=1633,
-      // confirmed in live DOM probe). Previous comment incorrectly said
-      // Jira hides it. Width:12 (~144px) matches Jira's ~145px slot.
-      label: 'Created',
-      width: 12,
-      sortable: true,
-      defaultVisible: true,
-      accessor: (r: BacklogItem) => r.created_at || '',
-      cell: makeDateCell((r: BacklogItem) => r.created_at),
-    },
-    {
-      id: 'updated',
-      // 2026-05-04 jira-compare: Jira shows Updated by default (x=1778,
-      // confirmed in live DOM probe). Previous comment incorrectly claimed
-      // Jira hides it. Width:12 (~144px) matches Jira's ~145px slot.
-      label: 'Updated',
-      width: 12,
-      sortable: true,
-      defaultVisible: true,
-      accessor: (r) => r.updated_at || '',
-      cell: makeDateCell((r: BacklogItem) => r.updated_at),
-    },
-    {
-      id: 'due_date',
-      label: 'Due date',
-      width: 10,
-      sortable: true,
-      defaultVisible: true,
-      accessor: (r: BacklogItem) => r.due_date || '',
-      cell: makeDateCell((r: BacklogItem) => r.due_date),
-    },
-    {
       id: 'labels',
       label: 'Labels',
       width: 12,
       sortable: false,
       defaultVisible: true,
       accessor: (r: BacklogItem) => (r.labels || []).join(', '),
-      cell: makeLabelsCell((r: BacklogItem) => r.labels),
+      cell: makeLabelsEditCell<BacklogItem>({
+        getLabels: (r) => r.labels,
+        onChange: (row, next) => updateField.mutate({ id: row.id, source: row.source, patch: { labels: next } }),
+      }),
+    },
+    {
+      id: 'created',
+      // 2026-05-07 re-probe: Jira BAU list does NOT show Created by default.
+      // Available as optional column via column manager.
+      label: 'Created',
+      width: 12,
+      sortable: true,
+      defaultVisible: false,
+      accessor: (r: BacklogItem) => r.created_at || '',
+      cell: makeDateCell((r: BacklogItem) => r.created_at),
+    },
+    {
+      id: 'updated',
+      // 2026-05-07 re-probe: Jira BAU list does NOT show Updated by default.
+      // Available as optional column via column manager.
+      label: 'Updated',
+      width: 12,
+      sortable: true,
+      defaultVisible: false,
+      accessor: (r) => r.updated_at || '',
+      cell: makeDateCell((r: BacklogItem) => r.updated_at),
     },
     {
       id: 'reporter',
