@@ -1,5 +1,5 @@
 /**
- * CANONICAL — Quick actions menu (+ and AI buttons) for all CatalystView* components.
+ * CANONICAL — Quick actions menu (+ button) for all CatalystView* components.
  * Change here → updates all work item types.
  *
  * Matches Jira's + button below the title with dropdown:
@@ -9,7 +9,9 @@
  *   - Add web link
  *   - Add design
  *
- * Also includes the AI Sparkles button matching StoryDetailModal parity.
+ * AI Sparkles button removed (jira-compare 2026-05-07): Jira has no inline
+ * AI button at this position. Improve functionality lives in the right rail
+ * ImproveIssueDropdown only.
  */
 import React, { useState, useRef, useEffect } from 'react';
 import AddIcon from '@atlaskit/icon/core/add';
@@ -20,7 +22,6 @@ import WorldIcon from '@atlaskit/icon/glyph/world';
 import EditIcon from '@atlaskit/icon/core/edit';
 import SearchIcon from '@atlaskit/icon/core/search';
 import CrossIcon from '@atlaskit/icon/glyph/cross';
-import SparklesIcon from '@atlaskit/icon/core/ai-chat';
 import { toast } from 'sonner';
 
 interface CatalystQuickActionsProps {
@@ -29,7 +30,6 @@ interface CatalystQuickActionsProps {
   onAddAttachment?: () => void;
   onAddWebLink?: () => void;
   onAddDesign?: () => void;
-  onAiImprove?: () => void;
 }
 
 export function CatalystQuickActions({
@@ -38,28 +38,22 @@ export function CatalystQuickActions({
   onAddAttachment,
   onAddWebLink,
   onAddDesign,
-  onAiImprove,
 }: CatalystQuickActionsProps) {
   const [showMenu, setShowMenu] = useState(false);
-  const [showAiMenu, setShowAiMenu] = useState(false);
   const [search, setSearch] = useState('');
   const menuRef = useRef<HTMLDivElement>(null);
-  const aiMenuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (!showMenu && !showAiMenu) return;
+    if (!showMenu) return;
     const h = (e: MouseEvent) => {
-      if (showMenu && menuRef.current && !menuRef.current.contains(e.target as Node)) {
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
         setShowMenu(false);
         setSearch('');
-      }
-      if (showAiMenu && aiMenuRef.current && !aiMenuRef.current.contains(e.target as Node)) {
-        setShowAiMenu(false);
       }
     };
     document.addEventListener('mousedown', h);
     return () => document.removeEventListener('mousedown', h);
-  }, [showMenu, showAiMenu]);
+  }, [showMenu]);
 
   const textColor = 'rgb(41, 42, 46)';
   const hoverBg = 'rgba(11, 18, 14, 0.06)';
@@ -87,11 +81,6 @@ export function CatalystQuickActions({
     width: 28, height: 28, border: '1px solid #DFE1E6', background: 'var(--ds-surface-sunken, #FAFBFC)',
     borderRadius: 4, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
     color: '#44546F', transition: 'background 0.15s, border-color 0.15s, color 0.15s',
-  };
-  const aiBtnStyle: React.CSSProperties = {
-    width: 28, height: 28, border: '1px solid #DEEBFF', background: 'var(--ds-background-selected, #EFF6FF)',
-    borderRadius: 4, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
-    color: 'var(--ds-text-brand, #2563EB)', transition: 'background 0.15s',
   };
 
   const itemStyle: React.CSSProperties = {
@@ -176,42 +165,6 @@ export function CatalystQuickActions({
         )}
       </div>
 
-      {/* AI Sparkles button — Jira parity with StoryDetailModal */}
-      <div ref={aiMenuRef} style={{ position: 'relative' }}>
-        <button
-          onClick={() => setShowAiMenu(o => !o)}
-          style={aiBtnStyle}
-          onMouseEnter={e => { e.currentTarget.style.background = '#DEEBFF'; }}
-          onMouseLeave={e => { e.currentTarget.style.background = 'var(--ds-background-selected, #EFF6FF)'; }}
-          aria-haspopup="menu"
-          aria-expanded={showAiMenu}
-          aria-label="Catalyst Intelligence"
-          title="Catalyst Intelligence"
-        >
-          <SparklesIcon size="small" />
-        </button>
-        {showAiMenu && (
-          <div style={{
-            position: 'absolute', left: 0, top: 34, background: 'var(--ds-surface, #FFF)',
-            border: '1px solid #DFE1E6', borderRadius: 8,
-            boxShadow: '0 8px 28px rgba(9,30,66,0.22)', padding: '12px 0 8px',
-            zIndex: 50, minWidth: 280, animation: 'cv-slide-down 0.15s ease-out',
-          }}>
-            <div style={{ padding: '0 16px 10px', fontSize: 11, fontWeight: 700, color: 'var(--ds-text-subtlest, #6B778C)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
-              Catalyst Intelligence
-            </div>
-            {[
-              { icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#5E6C84" strokeWidth="1.8"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>, label: 'Improve description', action: () => { setShowAiMenu(false); onAiImprove ? onAiImprove() : toast.info('AI improve — coming soon'); } },
-            ].map((item, i) => (
-              <button key={i} onClick={item.action}
-                style={{ display: 'flex', alignItems: 'center', gap: 10, width: '100%', padding: '8px 16px', background: 'none', border: 'none', fontSize: 14, color: '#292A2E', cursor: 'pointer', fontFamily: 'inherit', textAlign: 'left' }}
-                onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-surface-sunken, #F4F5F7)')}
-                onMouseLeave={e => (e.currentTarget.style.background = 'none')}
-              >{item.icon}<span>{item.label}</span></button>
-            ))}
-          </div>
-        )}
-      </div>
     </div>
   );
 }
