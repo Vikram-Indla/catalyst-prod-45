@@ -115,6 +115,7 @@ export function CatalystTitleEditor({ issue, onTitleChange }: CatalystTitleEdito
     //   ancestor has `overflow-y: auto`.
     <div
       className="cv-title-edit-hide-label"
+      aria-label="Issue title"
       style={{
         display: 'flex',
         alignItems: 'flex-start',
@@ -132,7 +133,7 @@ export function CatalystTitleEditor({ issue, onTitleChange }: CatalystTitleEdito
         <InlineEdit<string>
           key={issue?.id ?? 'empty'}
           defaultValue={summary}
-          label="Issue title"
+          label=""
           readView={() => (
             // size="large" → 24px/28px natively — matches BAU-5538 Jira
             // measurement (2026-04-20). Scoped CSS above locks weight/

@@ -7,7 +7,7 @@
  * BAU-4771 pilot does not cause perceived layout shifts.
  */
 import React from 'react';
-import { AlertTriangle } from 'lucide-react';
+import WarningIcon from '@atlaskit/icon/core/warning';
 import { LinkTypeGroup } from './LinkTypeGroup';
 import type { LinkedWorkItem } from './types';
 
@@ -58,7 +58,7 @@ export function LinkedWorkItemsBody({
 
       {!isLoading && isError && (
         <div className="lwi-error" role="alert">
-          <AlertTriangle size={18} />
+          <WarningIcon size="small" label="" primaryColor="var(--ds-icon-warning, #FF8B00)" />
           <span>Couldn&rsquo;t load linked work items. Try again.</span>
         </div>
       )}

@@ -56,7 +56,7 @@
 
 .lwi-header__title {
   font-size: 14px;
-  font-weight: 650;
+  font-weight: 653;
   color: var(--ds-text, #172B4D);
 }
 
@@ -74,15 +74,18 @@
 .lwi-header__add {
   display: inline-flex;
   align-items: center;
-  justify-content: center;
-  width: 28px;
+  gap: 4px;
+  padding: 4px 8px;
   height: 28px;
   border: none;
   background: transparent;
   border-radius: 4px;
-  color: #42526E;
+  color: var(--ds-text-subtle, #42526E);
+  font-size: 13px;
+  font-weight: 400;
   cursor: pointer;
   transition: background-color 150ms ease, color 150ms ease;
+  white-space: nowrap;
 }
 
 .lwi-header__add:hover {

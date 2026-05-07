@@ -39,7 +39,7 @@ import { BulkEditBar } from './BulkEditBar';
 import { useSubtaskMutations, type SubtaskRow } from './hooks/useSubtaskMutations';
 import { sortRows, cycleSort, type SortField, type SortState } from './sort';
 import { computeNewPosition, rebalancePositions } from './reorder';
-import { IssueTypeCell } from './cells/IssueTypeCell';
+import { WorkCell } from './cells/WorkCell';
 import { useAtlaskitThemeSync } from './atlaskitTheme';
 import { allowedChildTypes, panelTitleFor } from './hierarchy';
 import { InlineCreateWithAI } from './InlineCreateWithAI';
@@ -66,7 +66,8 @@ import type { Column } from '@/components/shared/JiraTable';
 import { createChildIssue } from '../../lib/workItemRepo';
 import './SubtasksPanel.css';
 
-type VisibleColumn = 'type' | 'key' | 'summary' | 'priority' | 'assignee' | 'status' | 'fixVersions';
+// Jira parity: 4 columns only — Work (type+key+summary), Priority (icon), Assignee (avatar), Status.
+type VisibleColumn = 'work' | 'priority' | 'assignee' | 'status';
 
 interface SubtasksPanelProps {
   storyKey: string;
@@ -270,15 +271,12 @@ export function SubtasksPanel({
     try { window.localStorage.setItem(sortStorageKey, JSON.stringify(sort)); } catch { /* quota */ }
   }, [sort, sortStorageKey]);
 
-  // Defaults match Jira's column picker screenshot (7 columns on by default).
+  // Jira parity: 4 columns only (Work / Priority / Assignee / Status).
   const [columns, setColumns] = useState<Record<VisibleColumn, boolean>>({
-    type: true,
-    key: true,
-    summary: true,
+    work: true,
+    priority: true,
     assignee: true,
     status: true,
-    fixVersions: true,
-    priority: true,
   });
   const [focusedRowId, setFocusedRowId] = useState<string | null>(null);
   const [pendingDelete, setPendingDelete] = useState<SubtaskRow | null>(null);
@@ -743,38 +741,14 @@ export function SubtasksPanel({
 
           {/* ═══ List view — canonical JiraTable (Jira parity: list-only) ═══ */}
           {!isLoading && visibleRows.length > 0 && (() => {
-            // Build column schema once per render. `columns` (from props) is
-            // the visibility config; we filter the schema by it instead of
-            // emitting ternaries inside cells like the DynamicTable era did.
-            // Existing cell components (IssueTypeCell, AssigneeCell, StatusCell,
-            // FixVersionsCell, PriorityCell) are reused as-is — JiraTable
-            // doesn't care about the inner JSX, only the column schema.
+            // Jira-parity 4-column schema: Work | Priority | Assignee | Status.
+            // Work col combines type-icon + issue-key + summary into one clickable cell.
+            // Priority and Assignee are icon-only (40px). FixVersions/Type/Key removed.
             const schema: Column<typeof visibleRows[number]>[] = [];
 
-            if (columns.type) {
+            if (columns.work) {
               schema.push({
-                id: 'type', label: 'Type', width: 5, sortable: false,
-                cell: ({ row }) => <IssueTypeCell issueType={(row as any).issue_type} />,
-              });
-            }
-            if (columns.key) {
-              schema.push({
-                id: 'key', label: 'Key', width: 9, sortable: true,
-                accessor: (r: any) => r.issue_key,
-                cell: ({ row }) => (
-                  <a
-                    className="sp-issue-key"
-                    data-jira-table-row-open
-                    onClick={(e) => { e.stopPropagation(); onSubtaskClick?.((row as any).issue_key ?? (row as any).id); }}
-                  >
-                    {(row as any).issue_key}
-                  </a>
-                ),
-              });
-            }
-            if (columns.summary) {
-              schema.push({
-                id: 'summary', label: 'Summary', width: 30, sortable: false, alwaysVisible: true,
+                id: 'work', label: 'Work', width: 50, sortable: false, alwaysVisible: true,
                 accessor: (r: any) => r.summary,
                 cell: ({ row }) => {
                   const child = row as any;
@@ -786,16 +760,16 @@ export function SubtasksPanel({
                     />
                   ) : (
                     <span className="sp-summary-wrap">
-                      <span
-                        className="sp-issue-summary"
-                        onClick={(e) => {
-                          if (bulkEditMode) { toggleSelected(child.id); e.stopPropagation(); return; }
+                      <WorkCell
+                        issueType={child.issue_type}
+                        issueKey={child.issue_key}
+                        summary={child.summary}
+                        onClick={() => {
+                          if (bulkEditMode) { toggleSelected(child.id); return; }
                           onSubtaskClick?.(child.issue_key ?? child.id);
                           setFocusedRowId(child.id);
                         }}
-                      >
-                        {child.summary}
-                      </span>
+                      />
                       {!bulkEditMode && (
                         <DescriptionPopover
                           subtaskId={child.id}
@@ -808,10 +782,29 @@ export function SubtasksPanel({
                 },
               });
             }
+            if (columns.priority) {
+              schema.push({
+                id: 'priority', label: 'Priority', width: 5, sortable: true,
+                accessor: (r: any) => {
+                  const p = (r.priority ?? 'medium').toLowerCase() as 'critical' | 'high' | 'medium' | 'low';
+                  return ({ critical: 1, high: 2, medium: 3, low: 4 } as const)[p] ?? 3;
+                },
+                cell: ({ row }) => {
+                  const child = row as any;
+                  return (
+                    <PriorityCell
+                      priority={child.priority}
+                      onChange={handlePriorityChange(child)}
+                      readOnly={bulkEditMode}
+                    />
+                  );
+                },
+              });
+            }
             if (columns.assignee) {
               schema.push({
-                id: 'assignee', label: 'Assignee', width: 14, sortable: true,
-                accessor: (r: any) => r.assignee_display_name ?? '\uFFFF', // unassigned sorts last
+                id: 'assignee', label: 'Assignee', width: 5, sortable: true,
+                accessor: (r: any) => r.assignee_display_name ?? '￿',
                 cell: ({ row }) => {
                   const child = row as any;
                   return (
@@ -821,6 +814,7 @@ export function SubtasksPanel({
                       avatarUrl={child.assignee_account_id ? avatarMap[child.assignee_account_id] : null}
                       onChange={handleAssigneeChange(child)}
                       readOnly={bulkEditMode}
+                      iconOnly
                     />
                   );
                 },
@@ -848,36 +842,7 @@ export function SubtasksPanel({
                 },
               });
             }
-            if (columns.fixVersions) {
-              schema.push({
-                id: 'fixVersions', label: 'Fix versions', width: 12, sortable: false,
-                cell: ({ row }) => <FixVersionsCell value={(row as any).fix_versions} />,
-              });
-            }
-            if (columns.priority) {
-              schema.push({
-                id: 'priority', label: 'Priority', width: 10, sortable: true,
-                accessor: (r: any) => {
-                  const p = (r.priority ?? 'medium').toLowerCase() as 'critical' | 'high' | 'medium' | 'low';
-                  return ({ critical: 1, high: 2, medium: 3, low: 4 } as const)[p] ?? 3;
-                },
-                cell: ({ row }) => {
-                  const child = row as any;
-                  return (
-                    <PriorityCell
-                      priority={child.priority}
-                      onChange={handlePriorityChange(child)}
-                      readOnly={bulkEditMode}
-                    />
-                  );
-                },
-              });
-            }
-            // Trailing actions column — shown when not in bulk edit mode. The
-            // RowActionsMenu was the per-row ⋯ trigger in the DynamicTable
-            // era. We surface the same actions via JiraTable's right-click
-            // contextMenuActions below; this trailing column keeps the click
-            // affordance for users who don't right-click.
+            // Trailing RowActionsMenu — hover affordance for open/rename/delete.
             if (!bulkEditMode) {
               schema.push({
                 id: 'actions', label: '', width: 4, sortable: false,

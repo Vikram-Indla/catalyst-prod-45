@@ -11,7 +11,9 @@
  * No routing, no data — pure UI.
  */
 import React from 'react';
-import { ChevronDown, ChevronRight, Plus } from 'lucide-react';
+import ChevronDownIcon from '@atlaskit/icon/glyph/chevron-down';
+import ChevronRightIcon from '@atlaskit/icon/glyph/chevron-right';
+import AddIcon from '@atlaskit/icon/core/add';
 
 export interface LinkedWorkItemsHeaderProps {
   count: number;
@@ -39,7 +41,10 @@ export function LinkedWorkItemsHeader({
         aria-expanded={expanded}
         aria-controls={bodyId}
       >
-        {expanded ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
+        {expanded
+          ? <ChevronDownIcon size="small" label="" primaryColor="var(--ds-icon-subtle, #505258)" />
+          : <ChevronRightIcon size="small" label="" primaryColor="var(--ds-icon-subtle, #505258)" />
+        }
         <span className="lwi-header__title">Linked work items</span>
         <span className="lwi-header__count" aria-label={`${count} linked`}>
           {count}
@@ -53,7 +58,8 @@ export function LinkedWorkItemsHeader({
           aria-label="Add linked work item"
           title="Add linked work item"
         >
-          <Plus size={16} strokeWidth={2} />
+          <AddIcon size="small" label="" primaryColor="var(--ds-icon, #42526E)" />
+          <span>Add a child issue</span>
         </button>
       )}
     </div>
