@@ -28,7 +28,7 @@ export interface BoardIssue {
   sourceTag?: 'catalyst' | 'jira' | null;
 }
 
-export type GroupByMode = 'none' | 'assignee' | 'epic' | 'priority' | 'fixVersion';
+export type GroupByMode = 'none' | 'assignee' | 'epic' | 'priority' | 'fixVersion' | 'queries';
 
 /**
  * Issue types treated as subtasks in the BAU project.

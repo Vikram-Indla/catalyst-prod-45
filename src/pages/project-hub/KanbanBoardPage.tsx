@@ -108,6 +108,7 @@ export default function KanbanBoardPage() {
   const [advancedFilters, setAdvancedFilters] = useState<AdvancedFilters>(EMPTY_ADVANCED_FILTERS);
   const [collapsedSwimlanes, setCollapsedSwimlanes] = useState<Set<string>>(new Set());
   const [showStandup, setShowStandup] = useState(false);
+  const [standupAssignee, setStandupAssignee] = useState<string | null>(null);
   const [activeBoardId, setActiveBoardId] = useState<string | null>(null);
   const [showBoardSwitcher, setShowBoardSwitcher] = useState(false);
   const [showCreateBoard, setShowCreateBoard] = useState(false);
@@ -480,6 +481,7 @@ export default function KanbanBoardPage() {
 
   const BOARD_GROUP_OPTIONS: GroupByOption<GroupByMode>[] = useMemo(() => [
     { key: 'none' as GroupByMode, label: 'None' },
+    { key: 'queries' as GroupByMode, label: 'Queries' },
     { key: 'assignee' as GroupByMode, label: 'Assignee', icon: 'assignee' },
     { key: 'epic' as GroupByMode, label: 'Epic', icon: 'parent' },
     { key: 'priority' as GroupByMode, label: 'Priority', icon: 'priority' },
@@ -589,8 +591,13 @@ export default function KanbanBoardPage() {
       });
     }
 
+    // Standup: when a person is selected, the board shows only their issues (Jira parity)
+    if (standupAssignee) {
+      issues = issues.filter(i => (i.assigneeName || 'Unassigned') === standupAssignee);
+    }
+
     return issues;
-  }, [rawIssues, debSearch, selAssignees, selEpics, selTypes, selPriorities, quickFilters, currentUserName, advancedFilters]);
+  }, [rawIssues, debSearch, selAssignees, selEpics, selTypes, selPriorities, quickFilters, currentUserName, advancedFilters, standupAssignee]);
 
   /* ═══ COLUMN MAPPING ═══ */
 
@@ -1148,6 +1155,8 @@ export default function KanbanBoardPage() {
       )}
 
       {/* ── Toolbar — canonical <KanbanToolbar/> (Phase 1 extraction) ── */}
+      {/* Offset matches standup panel width when open */}
+      <div style={{ marginLeft: showStandup ? 280 : 0, transition: 'margin-left 200ms ease' }}>
       <KanbanToolbar<GroupByMode>
         tk={tk}
         search={search}
@@ -1207,9 +1216,11 @@ export default function KanbanBoardPage() {
         onQuickFiltersChange={setQuickFilters}
         enabledQuickFilters={enabledQuickFilters}
       />
+      </div>
 
       {/* ── Board content (Jira parity: 8px inter-column gap, 16px outer padding) ── */}
-      <div className="flex-1 min-h-0" style={{ overflow: 'auto', padding: '0 16px 16px 16px' }}>
+      {/* When standup panel is open, offset content 280px to the right (Jira parity) */}
+      <div className="flex-1 min-h-0" style={{ overflow: 'auto', padding: '0 16px 16px 16px', marginLeft: showStandup ? 280 : 0, transition: 'margin-left 200ms ease' }}>
         {groupBy !== 'none' ? (
           <DndContext sensors={sensors} collisionDetection={closestCorners} onDragStart={onDragStart} onDragOver={onDragOver} onDragEnd={onDragEnd}>
             <div style={{ background: 'transparent', minWidth: KANBAN_COLUMNS.length * 267 + (KANBAN_COLUMNS.length - 1) * 8 }}>
@@ -1352,10 +1363,11 @@ export default function KanbanBoardPage() {
       )}
       {showStandup && (
         <StandupModal
-          issues={filtered}
+          issues={standupAssignee ? rawIssues.filter(i => i.issueType !== 'Epic' && !BOARD_SUBTASK_TYPES.has(i.issueType)) : filtered}
           avatarsByName={avatarsByName}
           tk={tk}
-          onClose={() => setShowStandup(false)}
+          onPersonChange={name => setStandupAssignee(name === 'Unassigned' ? null : name)}
+          onClose={() => { setStandupAssignee(null); setShowStandup(false); }}
         />
       )}
       <PriToastContainer toasts={toasts} onDismiss={dismissToast} />

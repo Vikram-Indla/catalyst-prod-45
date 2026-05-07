@@ -28,6 +28,27 @@ export function groupIssues(issues: BoardIssue[], mode: GroupByMode): GroupBucke
         key = issue.fixVersion || 'NO_FIX_VERSION';
         label = issue.fixVersion || 'No fix version';
         break;
+      case 'queries': {
+        // Jira standard query swimlanes:
+        //   Expedite   — Highest / Critical priority
+        //   High priority — High
+        //   Standard   — Medium
+        //   Low priority  — Low / Lowest
+        //   Everything else — catch-all
+        const pri = (issue.priority ?? '').toLowerCase();
+        if (pri === 'highest' || pri === 'critical') {
+          key = 'EXPEDITE'; label = 'Expedite';
+        } else if (pri === 'high') {
+          key = 'HIGH'; label = 'High priority';
+        } else if (pri === 'medium') {
+          key = 'STANDARD'; label = 'Standard';
+        } else if (pri === 'low' || pri === 'lowest') {
+          key = 'LOW'; label = 'Low priority';
+        } else {
+          key = 'ELSE'; label = 'Everything else';
+        }
+        break;
+      }
       default:
         key = '__all__'; label = '';
     }
@@ -60,6 +81,13 @@ export function groupIssues(issues: BoardIssue[], mode: GroupByMode): GroupBucke
       if (a[0] === 'NO_FIX_VERSION') return 1;
       if (b[0] === 'NO_FIX_VERSION') return -1;
       return a[1].label.localeCompare(b[1].label);
+    });
+  } else if (mode === 'queries') {
+    const QUERY_ORDER = ['EXPEDITE', 'HIGH', 'STANDARD', 'LOW', 'ELSE'];
+    entries.sort((a, b) => {
+      const ai = QUERY_ORDER.indexOf(a[0]);
+      const bi = QUERY_ORDER.indexOf(b[0]);
+      return (ai >= 0 ? ai : 999) - (bi >= 0 ? bi : 999);
     });
   }
 
