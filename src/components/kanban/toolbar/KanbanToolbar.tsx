@@ -42,6 +42,7 @@ import MoreIcon from '@atlaskit/icon/glyph/more';
 import SettingsIcon from '@atlaskit/icon/core/settings';
 import LocationIcon from '@atlaskit/icon/core/location';
 import FilterIcon from '@atlaskit/icon/core/filter';
+import ArchiveBoxIcon from '@atlaskit/icon/core/archive-box';
 import type { KanbanThemeTokens, KanbanDensity } from '../kanban-tokens';
 import { AvatarStackFilter } from '../KanbanToolbar';
 import {
@@ -154,6 +155,11 @@ export interface KanbanToolbarProps<TGroupBy extends string = string> {
 
   /* Project key for AdvancedFilterPanel (project-scoped advanced filter) */
   projectKey?: string;
+
+  /* Archived view — admin/owner only; defaults to hidden */
+  canArchive?: boolean;
+  showArchived?: boolean;
+  onShowArchivedChange?: Dispatch<SetStateAction<boolean>>;
 }
 
 /* ═══ KanbanToolbar — composed toolbar, presentational ═══ */
@@ -174,6 +180,7 @@ export function KanbanToolbar<TGroupBy extends string = string>({
   enableDensity, density, onDensityChange,
   mapStatusesPath,
   projectKey,
+  canArchive, showArchived, onShowArchivedChange,
 }: KanbanToolbarProps<TGroupBy>) {
   const navigate = useNavigate();
   const boardMenuRef = useRef<HTMLDivElement>(null);
@@ -326,6 +333,16 @@ export function KanbanToolbar<TGroupBy extends string = string>({
               badge={advFilterCount > 0 ? advFilterCount : undefined}
               onClick={() => { onShowBoardMenuChange(false); onShowAdvancedFilterChange(true); }}
             />
+            {canArchive && (
+              <>
+                <div style={{ height: 1, background: tk.borderSubtle, margin: '6px 12px' }} />
+                <BoardMenuItem
+                  icon={<ArchiveBoxIcon label="" size="small" primaryColor={showArchived ? '#0052CC' : tk.textSecondary} />}
+                  label={showArchived ? 'Hide archived issues' : 'Show archived issues'}
+                  onClick={() => { onShowBoardMenuChange(false); onShowArchivedChange?.(v => !v); }}
+                />
+              </>
+            )}
           </div>
         )}
         {showViewSettings && (

@@ -931,6 +931,9 @@ export default function KanbanBoardPage() {
         onDensityChange={onDensityChange}
         mapStatusesPath={`/project-hub/${key}/boards/map-statuses`}
         projectKey={key ?? ''}
+        canArchive={canArchive}
+        showArchived={showArchived}
+        onShowArchivedChange={setShowArchived}
       />
 
       {/* ── Board content (Jira parity: 8px inter-column gap, 16px outer padding) ── */}
