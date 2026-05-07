@@ -43,6 +43,7 @@ import SettingsIcon from '@atlaskit/icon/core/settings';
 import LocationIcon from '@atlaskit/icon/core/location';
 import FilterIcon from '@atlaskit/icon/core/filter';
 import ArchiveBoxIcon from '@atlaskit/icon/core/archive-box';
+import VideoIcon from '@atlaskit/icon/core/video';
 import type { KanbanThemeTokens, KanbanDensity } from '../kanban-tokens';
 import { AvatarStackFilter } from '../KanbanToolbar';
 import {
@@ -161,6 +162,9 @@ export interface KanbanToolbarProps<TGroupBy extends string = string> {
   showArchived?: boolean;
   onShowArchivedChange?: Dispatch<SetStateAction<boolean>>;
 
+  /* Standup modal */
+  onStartStandup?: () => void;
+
   /* Quick filter pills (Jira parity: Assigned to me, Flagged, Recently updated, etc.) */
   quickFilters?: Set<string>;
   onQuickFiltersChange?: Dispatch<SetStateAction<Set<string>>>;
@@ -187,6 +191,7 @@ export function KanbanToolbar<TGroupBy extends string = string>({
   mapStatusesPath,
   projectKey,
   canArchive, showArchived, onShowArchivedChange,
+  onStartStandup,
   quickFilters, onQuickFiltersChange, enabledQuickFilters,
 }: KanbanToolbarProps<TGroupBy>) {
   const navigate = useNavigate();
@@ -385,6 +390,16 @@ export function KanbanToolbar<TGroupBy extends string = string>({
               badge={advFilterCount > 0 ? advFilterCount : undefined}
               onClick={() => { onShowBoardMenuChange(false); onShowAdvancedFilterChange(true); }}
             />
+            {onStartStandup && (
+              <>
+                <div style={{ height: 1, background: tk.borderSubtle, margin: '6px 12px' }} />
+                <BoardMenuItem
+                  icon={<VideoIcon label="" size="small" primaryColor={tk.textSecondary} />}
+                  label="Start standup"
+                  onClick={() => { onShowBoardMenuChange(false); onStartStandup(); }}
+                />
+              </>
+            )}
             {canArchive && (
               <>
                 <div style={{ height: 1, background: tk.borderSubtle, margin: '6px 12px' }} />

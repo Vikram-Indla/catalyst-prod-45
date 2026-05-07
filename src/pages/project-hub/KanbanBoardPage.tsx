@@ -50,6 +50,7 @@ import { DroppableColumn } from '@/components/kanban/KanbanColumn';
 import { OverlayCard } from '@/components/kanban/SortableCard';
 import { SwimlaneRow } from '@/components/kanban/KanbanSwimlane';
 import { PragmaticBoard } from '@/components/kanban/PragmaticBoard';
+import { StandupModal } from '@/components/kanban/StandupModal';
 import { useKanbanRealtime } from '@/components/kanban/useKanbanRealtime';
 import { useKanbanKeyboard } from '@/components/kanban/useKanbanKeyboard';
 
@@ -106,6 +107,7 @@ export default function KanbanBoardPage() {
   const [showBasicFilter, setShowBasicFilter] = useState(false);
   const [advancedFilters, setAdvancedFilters] = useState<AdvancedFilters>(EMPTY_ADVANCED_FILTERS);
   const [collapsedSwimlanes, setCollapsedSwimlanes] = useState<Set<string>>(new Set());
+  const [showStandup, setShowStandup] = useState(false);
   // F3 (Archive) — Archived filter chip. When true, the kanban-issues query
   // inverts archived_at IS NULL → archived_at IS NOT NULL. Admin/owner only;
   // FE gate is cosmetic, RLS enforces server-side.
@@ -949,6 +951,7 @@ export default function KanbanBoardPage() {
         canArchive={canArchive}
         showArchived={showArchived}
         onShowArchivedChange={setShowArchived}
+        onStartStandup={() => setShowStandup(true)}
         quickFilters={quickFilters}
         onQuickFiltersChange={setQuickFilters}
         enabledQuickFilters={enabledQuickFilters}
@@ -1095,6 +1098,14 @@ export default function KanbanBoardPage() {
             projectKey={key}
           />
         </Suspense>
+      )}
+      {showStandup && (
+        <StandupModal
+          issues={filtered}
+          avatarsByName={avatarsByName}
+          tk={tk}
+          onClose={() => setShowStandup(false)}
+        />
       )}
       <PriToastContainer toasts={toasts} onDismiss={dismissToast} />
     </div>
