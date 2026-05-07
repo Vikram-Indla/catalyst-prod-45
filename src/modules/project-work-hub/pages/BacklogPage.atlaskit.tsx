@@ -4491,7 +4491,7 @@ function BottomCreateRow({
   const [summary, setSummary] = useState('');
   const [issueType, setIssueType] = useState<CreatableIssueType>(defaultIssueType);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   // Resync issueType if the user changes the active pill while the form
   // is closed — so opening it later reflects the latest pill choice.
@@ -4501,7 +4501,7 @@ function BottomCreateRow({
 
   useEffect(() => {
     if (isOpen) {
-      const t = setTimeout(() => textareaRef.current?.focus(), 50);
+      const t = setTimeout(() => inputRef.current?.focus(), 50);
       return () => clearTimeout(t);
     }
   }, [isOpen]);
@@ -4515,7 +4515,7 @@ function BottomCreateRow({
   const create = async () => {
     const title = summary.trim();
     // Validation: required + max 255 chars (Jira's documented limit)
-    if (!title) { textareaRef.current?.focus(); return; }
+    if (!title) { inputRef.current?.focus(); return; }
     if (title.length > 255) {
       flag.error('Summary must be 255 characters or fewer');
       return;
@@ -4578,10 +4578,10 @@ function BottomCreateRow({
           aria-label="Create work item"
           style={{
             display: 'flex', alignItems: 'center', gap: 8,
-            width: '100%', padding: '10px 16px',
+            width: '100%', height: 40, padding: '0 16px',
             border: 'none', background: 'transparent',
             color: token('color.text.subtle', '#42526E'),
-            fontSize: 14, fontWeight: 500, fontFamily: 'inherit',
+            fontSize: 14, fontWeight: 400, fontFamily: 'inherit',
             cursor: 'pointer', textAlign: 'left',
           }}
           onMouseEnter={(e) => {
@@ -4599,9 +4599,7 @@ function BottomCreateRow({
     );
   }
 
-  // Expanded state — Jira pattern: type picker | textarea | assignee | Create
-  // Apr 27, 2026 (L70): inline flow inside JiraTable.bottomSlot. Sticky
-  // at viewport bottom for both collapsed and expanded states (Jira parity).
+  // Expanded state — Jira-parity: type picker + chevron | input | assignee | Create
   return (
     <div
       style={{
@@ -4610,12 +4608,14 @@ function BottomCreateRow({
         zIndex: 2,
         borderTop: `1px solid ${token('color.border', '#DFE1E6')}`,
         background: token('elevation.surface', '#FFFFFF'),
-        padding: '10px 16px',
+        height: 40,
         minWidth: '100%',
         display: 'flex',
         alignItems: 'center',
-        gap: 10,
+        gap: 8,
+        padding: '0 16px',
         flexShrink: 0,
+        boxSizing: 'border-box',
       }}
       onKeyDown={(e) => {
         if (e.key === 'Escape') {
@@ -4624,17 +4624,8 @@ function BottomCreateRow({
         }
       }}
     >
-      {/* Type picker dropdown — @atlaskit/dropdown-menu with icon trigger.
-       * Apr 28, 2026 (next session cycle 1): the menu was failing to render
-       * its items even when aria-expanded flipped to true. Two fixes:
-       * (1) destructure non-DOM props (isSelected, testId) out of triggerProps
-       *     so they don't leak as DOM attributes (React warnings + breaks
-       *     Atlaskit's internal trigger contract).
-       * (2) add shouldRenderToParent={true} so the menu mounts inline as a
-       *     sibling instead of via React.Portal — sidesteps focus-trap timing
-       *     where BottomCreateRow's textarea autoFocus (50ms timer) steals
-       *     focus from the menu and closes it before items can mount.
-       */}
+      {/* Type picker — icon + ▾ chevron, Jira parity.
+       * shouldRenderToParent sidesteps focus-trap timing issue (see Apr 28 note). */}
       <DropdownMenu
         placement="top-start"
         shouldRenderToParent
@@ -4645,13 +4636,14 @@ function BottomCreateRow({
             type="button"
             aria-label={`Select work type. ${issueType} currently selected.`}
             style={{
-              display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-              width: 28, height: 28, padding: 0,
+              display: 'inline-flex', alignItems: 'center', gap: 2,
+              height: 28, padding: '0 4px',
               border: 'none', background: 'transparent', borderRadius: 3,
-              cursor: 'pointer',
+              cursor: 'pointer', flexShrink: 0,
             }}
           >
             <JiraIssueTypeIcon type={issueType} size={16} />
+            <ChevronDown size={12} color={token('color.text.subtlest', '#6B778C')} />
           </button>
         )}
       >
@@ -4670,82 +4662,53 @@ function BottomCreateRow({
         </DropdownItemRadioGroup>
       </DropdownMenu>
 
-      {/* Summary textarea — matches Jira's <TEXTAREA> probe */}
-      <textarea
-        ref={textareaRef}
+      {/* Summary input — single-line like Jira (not textarea) */}
+      <input
+        ref={inputRef}
+        type="text"
         value={summary}
         onChange={(e) => setSummary(e.target.value)}
         onKeyDown={(e) => {
-          if (e.key === 'Enter' && !e.shiftKey) {
+          if (e.key === 'Enter') {
             e.preventDefault();
             create();
           }
         }}
         placeholder="What needs to be done?"
-        rows={1}
         style={{
-          flex: 1, minHeight: 28, maxHeight: 120,
+          flex: 1, height: 28,
           border: 'none', outline: 'none',
           fontSize: 14, lineHeight: '20px',
           color: token('color.text', '#292A2E'),
           fontFamily: 'inherit', background: 'transparent',
-          resize: 'none', padding: '4px 0',
+          padding: 0, minWidth: 0,
         }}
       />
 
-      {/* Assignee placeholder — v1 Unassigned. v2 wires @atlaskit/user-picker. */}
+      {/* Assignee avatar — unassigned placeholder */}
       <Tooltip content="Unassigned">
         <button
           type="button"
           aria-label="Unassigned"
           style={{
             display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-            width: 24, height: 24, padding: 0,
+            width: 24, height: 24, padding: 0, flexShrink: 0,
             border: 'none', background: 'transparent', borderRadius: '50%',
             color: token('color.text.subtlest', '#6B778C'),
-            cursor: 'not-allowed',
+            cursor: 'default',
           }}
-          disabled
         >
           <CircleUser size={20} />
         </button>
       </Tooltip>
 
-      {/* Cancel button — soft escape */}
-      <Button
-        appearance="subtle"
-        spacing="compact"
-        onClick={reset}
-        isDisabled={isSubmitting}
-      >
-        Cancel
-      </Button>
-
-      {/* Create submit — ↵ keycap as iconAfter.
-       * Apr 28, 2026 (next session cycle 1): @atlaskit/button (legacy)
-       * iconAfter expects ReactNode, NOT a render function. Passing a
-       * function tripped React's "Functions are not valid as a React
-       * child" warning AND the keycap never rendered. Pass the JSX
-       * element directly. */}
+      {/* Create — plain text, no ↵ icon (Jira parity) */}
       <Button
         appearance="primary"
+        spacing="compact"
         onClick={create}
         isLoading={isSubmitting}
         isDisabled={!summary.trim() || isSubmitting}
-        iconAfter={
-          <span
-            aria-hidden
-            style={{
-              display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-              minWidth: 18, height: 16, marginLeft: 4,
-              padding: '0 4px', borderRadius: 3,
-              background: 'rgba(255,255,255,0.2)',
-              fontSize: 11, fontWeight: 600, lineHeight: '14px',
-            }}
-          >
-            ↵
-          </span>
-        }
       >
         Create
       </Button>
