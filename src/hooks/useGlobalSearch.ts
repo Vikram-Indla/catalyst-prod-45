@@ -85,8 +85,11 @@ export function useSearchResults(query: string, filters: ActiveFilters) {
         .or(`issue_key.ilike.%${query}%,summary.ilike.%${query}%`)
         .order('jira_updated_at', { ascending: false })
         .limit(50);
-      if (filters.project) phQ = phQ.eq('project_key', filters.project);
-      if (filters.assignee) phQ = phQ.ilike('assignee_display_name', `%${filters.assignee}%`);
+      if (filters.projects.length) phQ = phQ.in('project_key', filters.projects);
+      if (filters.assignees.length) {
+        const orClause = filters.assignees.map((a) => `assignee_display_name.ilike.%${a}%`).join(',');
+        phQ = phQ.or(orClause);
+      }
       if (filters.type) phQ = phQ.ilike('issue_type', filters.type.replace('_', ' '));
 
       let catQ: any = (supabase as any)
@@ -95,7 +98,7 @@ export function useSearchResults(query: string, filters: ActiveFilters) {
         .or(`issue_key.ilike.%${query}%,title.ilike.%${query}%`)
         .order('updated_at', { ascending: false })
         .limit(50);
-      if (filters.project) catQ = catQ.eq('projects.key', filters.project);
+      if (filters.projects.length) catQ = catQ.in('projects.key', filters.projects);
       if (filters.type) catQ = catQ.ilike('issue_type', filters.type.replace('_', ' '));
 
       const [phRes, catRes] = await Promise.all([phQ, catQ]);

@@ -65,7 +65,8 @@ export function GlobalSearch({ collapsed = false }: GlobalSearchProps) {
     if (!isOpen) return;
     const handler = (e: MouseEvent) => {
       const t = e.target as Node;
-      if (!triggerRef.current?.contains(t) && !popupRef.current?.contains(t)) {
+      const inFilterPortal = !!(t as Element).closest?.('[data-filter-portal]');
+      if (!triggerRef.current?.contains(t) && !popupRef.current?.contains(t) && !inFilterPortal) {
         handleClose();
       }
     };

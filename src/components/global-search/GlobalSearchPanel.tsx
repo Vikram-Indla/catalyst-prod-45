@@ -16,29 +16,21 @@ import type { SearchResult } from '@/types/global-search';
 
 // ── Data hooks ────────────────────────────────────────────────────────────────
 
-/** Fetch distinct projects from ph_issues (real Jira-synced data). */
+/** Fetch projects from ph_jira_projects — the canonical projects table. */
 function useProjects() {
   return useQuery({
     queryKey: ['global-search-projects'],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('ph_issues')
-        .select('project_key, project_name')
-        .order('project_key')
-        .limit(500);
+        .from('ph_jira_projects')
+        .select('project_key, name')
+        .order('project_key');
       if (error) return [];
-      // Deduplicate by project_key
-      const seen = new Map<string, FilterOption>();
-      for (const row of data ?? []) {
-        if (row.project_key && !seen.has(row.project_key)) {
-          seen.set(row.project_key, {
-            id: row.project_key,
-            name: row.project_name || row.project_key,
-            tag: row.project_key,
-          });
-        }
-      }
-      return [...seen.values()];
+      return (data ?? []).map((row): FilterOption => ({
+        id: row.project_key,
+        name: row.name || row.project_key,
+        tag: row.project_key,
+      }));
     },
     staleTime: 5 * 60 * 1000,
   });
@@ -120,8 +112,8 @@ export function GlobalSearchPanel({ query, onQueryChange, onClose }: GlobalSearc
   const { data: recents = [] } = useRecentItems();
   const { data: searchResults = [] } = useSearchResults(debouncedQuery, {
     hub: null,
-    project: projectKeys[0] ?? null,
-    assignee: assigneeIds[0] ?? null,
+    projects: projectKeys,
+    assignees: assigneeIds,
     type: null,
   });
   const { data: projectOptions = [] } = useProjects();
