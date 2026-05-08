@@ -112,6 +112,9 @@ export interface CreateStoryModalProps {
 // Static option vocabularies (mirrored from legacy modal)
 // ─────────────────────────────────────────────────────────────────────────────
 
+// 2026-05-09 — Task and API Requirement deprecated (Vikram directive):
+//   Task → belongs to task module, not project hub.
+//   API Requirement → removed entirely.
 const WORK_TYPES = [
   'Story',
   'Epic',
@@ -121,14 +124,15 @@ const WORK_TYPES = [
   'QA Bug',
   'Production Incident',
   'Change Request',
-  'Task',
-  'API Requirement',
 ] as const;
 
 const PRIORITIES = ['Highest', 'High', 'Medium', 'Low', 'Lowest'] as const;
 
 // Per type → which initial status appears in the read-only Status lozenge.
 // Matches what the existing useCreateStoryMutation actually writes.
+// Fallback initial statuses — only used when catalyst_workflow_schemes returns
+// no rows for a work type. Canonical source is useWorkflowStatuses (DB-driven).
+// Task + API Requirement removed 2026-05-09 (deprecated from project hub).
 const INITIAL_STATUS_BY_TYPE: Record<string, string> = {
   Story: 'In Requirements',
   Epic: 'To Do',
@@ -137,8 +141,6 @@ const INITIAL_STATUS_BY_TYPE: Record<string, string> = {
   'QA Bug': 'Open',
   'Production Incident': 'Open',
   'Change Request': 'Submitted',
-  Task: 'To Do',
-  'API Requirement': 'To Do',
 };
 
 // Minimal fallback — only shown when catalyst_workflow_schemes returns no rows

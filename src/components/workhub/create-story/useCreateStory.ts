@@ -106,18 +106,21 @@ export function useProjectReleases(projectId: string) {
 // Maps Create-modal work types to the canonical scheme.issue_type values.
 // Unmapped types fall through; caller should provide a hardcoded fallback.
 // ────────────────────────────────────────────────────────────────────────────
-const WORK_TYPE_TO_SCHEME_ISSUE_TYPE: Record<string, string> = {
+// 2026-05-09 — Task and API Requirement deprecated from project hub (Vikram directive).
+// Task belongs to the task module; API Requirement is removed entirely.
+// Exported for unit tests only — do not use outside this module.
+export const WORK_TYPE_TO_SCHEME_ISSUE_TYPE_FOR_TEST: Record<string, string> = {
   'Story': 'Story',
   'Epic': 'Epic',
   'Sub-task': 'Sub-task',
-  'Task': 'Task',
   'QA Bug': 'Defect',
   'Production Incident': 'Defect',
   'Business Gap': 'Business Request',
   'Change Request': 'Business Request',
   'Feature': 'Story',          // best-fit until a Feature scheme exists
-  'API Requirement': 'Story',  // best-fit until an API Requirement scheme exists
 };
+
+const WORK_TYPE_TO_SCHEME_ISSUE_TYPE = WORK_TYPE_TO_SCHEME_ISSUE_TYPE_FOR_TEST;
 
 export interface WorkflowStatusOption {
   value: string;       // status name (what we write to catalyst_issues.status)
