@@ -470,6 +470,8 @@ export function makeSummaryInlineEditCell<T>({
             // pair it with cursor: not-allowed so the inert cell is
             // discoverable on hover (not just via tooltip delay).
             cursor: readOnlyTooltip ? 'not-allowed' : undefined,
+            // Jira-parity: summary text color = --ds-text-subtle (rgb 80,82,88)
+            color: 'var(--ds-text-subtle, #505258)',
           }}
         >
           {summary}
@@ -527,6 +529,9 @@ export function makeSummaryInlineEditCell<T>({
                 textOverflow: 'ellipsis',
                 whiteSpace: 'nowrap',
                 width: '100%',
+                // 2026-05-08 DOM probe: Jira summary = rgb(80,82,88) = --ds-text-subtle.
+                // Inheriting --ds-text (rgb 41,42,46) from tbody td baseline was wrong.
+                color: 'var(--ds-text-subtle, #505258)',
               }}
             >
               {summary || (

@@ -483,6 +483,16 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
       .jira-table-grid table tbody > tr:hover [data-jira-cell-ghost] {
         color: #5E6C84;
       }
+      /* Group header + button: hidden by default, visible on row hover.
+         Jira only shows the + on hover (parity confirmed 2026-05-08 DOM probe). */
+      .jira-group-header-row .jira-group-add-btn {
+        opacity: 0;
+        transition: opacity 120ms ease;
+      }
+      .jira-group-header-row:hover .jira-group-add-btn,
+      .jira-group-header-row:focus-within .jira-group-add-btn {
+        opacity: 1;
+      }
       /* ── Round H additions ─────────────────────────────────────────
          Sticky header + resize handle. The scroll container is the table
          viewport (.jira-table-viewport); position: sticky references
@@ -1167,6 +1177,7 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
           colSpan: totalCellCount - groupCells.length,
           content: (
             <div
+              className="jira-group-header-row"
               role={onToggleGroup ? 'button' : undefined}
               tabIndex={onToggleGroup ? 0 : undefined}
               aria-expanded={onToggleGroup ? !collapsed : undefined}
@@ -1180,11 +1191,6 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
                 gap: 8,
                 padding: '10px 12px',
                 margin: '-10px -12px',  // bleed into the cell padding
-                fontSize: 12,
-                fontWeight: 700,
-                color: '#42526E',
-                textTransform: 'uppercase',
-                letterSpacing: '0.08em',
                 cursor: onToggleGroup ? 'pointer' : 'default',
                 userSelect: 'none',
                 whiteSpace: 'nowrap',
@@ -1201,76 +1207,65 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
                     height: 24,
                     color: '#6B6E76',
                     transform: collapsed ? 'rotate(-90deg)' : 'rotate(0deg)',
-                    transition: 'transform 120ms ease',
+                    // 2026-05-08: increased from 120ms to 200ms for smoother feel
+                    transition: 'transform 200ms ease',
+                    flexShrink: 0,
                   }}
                 >
-                  {/* Apr 27 2026 jira-compare regression F-NEW-3: replaced
-                      literal Unicode ▾ character with @atlaskit/icon
-                      ChevronDownIcon. Sized to 24×24 to match Jira's
-                      group-item.expand-icon-wrapper geometry probed at
-                      /jira/.../list?groupBy=status. The outer span keeps
-                      the rotate-on-collapse animation and click handler
-                      (delegated up to the wrapper div). */}
                   <ChevronDownIcon label="" size="small" />
                 </span>
               )}
-              {onAddToGroup && (
-                <button
-                  type="button"
-                  data-testid="jira-table.group-row.add-issue-button"
-                  aria-label={`Add issue to ${g.label}`}
-                  onClick={(e) => {
-                    // Stop the click bubbling to the wrapper div which
-                    // toggles group expand/collapse — we want this button
-                    // to be a SEPARATE affordance per Jira parity.
-                    e.stopPropagation();
-                    onAddToGroup(g.id);
-                  }}
-                  style={{
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    width: 24,
-                    height: 24,
-                    padding: 0,
-                    border: 'none',
-                    background: 'transparent',
-                    color: '#6B6E76',
-                    borderRadius: 3,
-                    cursor: 'pointer',
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.background = 'rgba(9, 30, 66, 0.06)';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.background = 'transparent';
-                  }}
-                >
-                  {/* Apr 27 2026 jira-compare regression F-NEW-2 (in-session):
-                      per-group "+" affordance matching Jira parity probe
-                      `business-list.common.ui.create-issue-plus-button.child-create-button-wrapper`
-                      at (203, 328), 24×24, after the chevron and before the
-                      group label. Click stops propagation so the group expand
-                      doesn't toggle. Consumer (BacklogPage) wires onAddToGroup
-                      to its create-flow. */}
-                  <PlusIcon label="" size="small" />
-                </button>
-              )}
-              {/* Apr 27, 2026 (audit pass 10): if the consumer provided
-                  a labelNode (Lozenge / Avatar+name / PriorityBars+name /
-                  IssueIcon+key), render it INSTEAD of the plain
-                  uppercase string label. The wrapper still owns the
-                  layout so chevron + label + count line up correctly. */}
+              {/* 2026-05-08 Jira parity: label BEFORE + button.
+                  Jira layout: checkbox > chevron > LABEL > +
+                  Prior Catalyst layout had + before label — wrong. */}
               {(g as any).labelNode != null ? (
-                <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, textTransform: 'none', letterSpacing: 0, fontWeight: 500 }}>
+                <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
                   {(g as any).labelNode}
                 </span>
               ) : (
-                <span>{g.label}</span>
+                <span style={{ fontSize: 12, fontWeight: 700, color: '#42526E', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                  {g.label}
+                </span>
               )}
               {g.meta && (
-                <span style={{ fontWeight: 500, color: 'var(--ds-text-subtlest, #6B778C)', letterSpacing: 0, textTransform: 'none' }}>
+                <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--ds-text-subtlest, #6B778C)' }}>
                   {g.meta}
+                </span>
+              )}
+              {onAddToGroup && (
+                // 2026-05-08: + is AFTER label (Jira parity). Hidden by default,
+                // visible on row hover via .jira-group-header-row:hover .jira-group-add-btn CSS.
+                <span className="jira-group-add-btn" style={{ display: 'inline-flex' }}>
+                  <button
+                    type="button"
+                    data-testid="jira-table.group-row.add-issue-button"
+                    aria-label={`Add issue to ${g.label}`}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onAddToGroup(g.id);
+                    }}
+                    style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      width: 24,
+                      height: 24,
+                      padding: 0,
+                      border: 'none',
+                      background: 'transparent',
+                      color: '#6B6E76',
+                      borderRadius: 3,
+                      cursor: 'pointer',
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.background = 'rgba(9, 30, 66, 0.06)';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.background = 'transparent';
+                    }}
+                  >
+                    <PlusIcon label="" size="small" />
+                  </button>
                 </span>
               )}
             </div>

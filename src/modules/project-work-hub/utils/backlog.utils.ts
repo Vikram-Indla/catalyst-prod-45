@@ -70,8 +70,13 @@ export const FEATURE_STATUS_LOZENGE: Record<string, LozengeConfig> = {
 
 // ─── STORY STATUS (Jira values) ──────────────────
 export const STORY_STATUS_LOZENGE: Record<string, LozengeConfig> = {
-  'In Requirements':        { color: 'inprogress', label: 'IN REQUIREMENTS' },
-  'In Design':              { color: 'inprogress', label: 'IN DESIGN' },
+  // 2026-05-08 DOM probe: In Requirements and In Design are "To Do" category
+  // in the BAU Jira project (grey, rgb(221,222,225)) — NOT In Progress (blue).
+  // They appear as plain text (barely-visible grey bg) in Jira group headers.
+  'In Requirements':        { color: 'default',    label: 'IN REQUIREMENTS' },
+  'IN REQUIREMENTS':        { color: 'default',    label: 'IN REQUIREMENTS' },
+  'In Design':              { color: 'default',    label: 'IN DESIGN' },
+  'IN DESIGN':              { color: 'default',    label: 'IN DESIGN' },
   'Ready for Development':  { color: 'default',    label: 'READY FOR DEV' },
   'In Development':         { color: 'inprogress', label: 'IN DEVELOPMENT' },
   // Jira parity (BAU project workflow): Ready for QA / In QA / Ready for UAT /
@@ -101,18 +106,62 @@ export const STORY_STATUS_LOZENGE: Record<string, LozengeConfig> = {
   'IN PROGRESS':            { color: 'inprogress', label: 'IN PROGRESS' },
   'Done':                   { color: 'success',    label: 'DONE' },
   'DONE':                   { color: 'success',    label: 'DONE' },
-  'Blocked':                { color: 'removed',    label: 'BLOCKED' },
-  'On Hold':                { color: 'moved',      label: 'ON HOLD' },
-  // BAU project statuses measured from Jira list DOM 2026-05-07
+  // 2026-05-08 jira-compare DOM probe: Blocked = grey rgb(221,222,225) in Jira.
+  // Prior mapping 'removed' (red) was wrong — Blocked is a "To Do" category
+  // status in BAU, not a cancelled/removed workflow state.
+  'Blocked':                { color: 'default',    label: 'BLOCKED' },
+  'BLOCKED':                { color: 'default',    label: 'BLOCKED' },
+  'blocked':                { color: 'default',    label: 'BLOCKED' },
+  // 2026-05-08: On Hold = grey in Jira (To Do category). Prior 'moved' (yellow) was wrong.
+  'On Hold':                { color: 'default',    label: 'ON HOLD' },
+  'ON HOLD':                { color: 'default',    label: 'ON HOLD' },
+  // BAU project statuses measured from Jira list DOM 2026-05-07/08
+  // grey (To Do category): rgb(221,222,225)
+  'Prioritized Backlog':    { color: 'default',    label: 'PRIORITIZED BACKLOG' },
+  'PRIORITIZED BACKLOG':    { color: 'default',    label: 'PRIORITIZED BACKLOG' },
+  'Deferred for INT':       { color: 'default',    label: 'DEFERRED FOR INT' },
+  'DEFERRED FOR INT':       { color: 'default',    label: 'DEFERRED FOR INT' },
+  'Hold':                   { color: 'default',    label: 'HOLD' },
+  'HOLD':                   { color: 'default',    label: 'HOLD' },
+  'hold':                   { color: 'default',    label: 'HOLD' },
+  'Demand Validation':      { color: 'default',    label: 'DEMAND VALIDATION' },
+  'DEMAND VALIDATION':      { color: 'default',    label: 'DEMAND VALIDATION' },
+  'Demand Intake':          { color: 'default',    label: 'DEMAND INTAKE' },
+  'DEMAND INTAKE':          { color: 'default',    label: 'DEMAND INTAKE' },
+  // blue (In Progress category): rgb(143,184,246)
+  'In Entity Integration':  { color: 'inprogress', label: 'IN ENTITY INTEGRATION' },
+  'IN ENTITY INTEGRATION':  { color: 'inprogress', label: 'IN ENTITY INTEGRATION' },
+  'Internal QA':            { color: 'inprogress', label: 'INTERNAL QA' },
+  'INTERNAL QA':            { color: 'inprogress', label: 'INTERNAL QA' },
+  'In Integration':         { color: 'inprogress', label: 'IN INTEGRATION' },
+  'IN INTEGRATION':         { color: 'inprogress', label: 'IN INTEGRATION' },
+  'Ready for Entity':       { color: 'inprogress', label: 'READY FOR ENTITY' },
+  'READY FOR ENTITY':       { color: 'inprogress', label: 'READY FOR ENTITY' },
+  'Ready to Implement':     { color: 'inprogress', label: 'READY TO IMPLEMENT' },
+  'READY TO IMPLEMENT':     { color: 'inprogress', label: 'READY TO IMPLEMENT' },
+  'Entity Input':           { color: 'inprogress', label: 'ENTITY INPUT' },
+  'ENTITY INPUT':           { color: 'inprogress', label: 'ENTITY INPUT' },
   'Closed':                 { color: 'success',    label: 'CLOSED' },
   'CLOSED':                 { color: 'success',    label: 'CLOSED' },
   'closed':                 { color: 'success',    label: 'CLOSED' },
+  // green (Done category): rgb(179,223,114)
+  'Awaiting Info':          { color: 'success',    label: 'AWAITING INFO' },
+  'AWAITING INFO':          { color: 'success',    label: 'AWAITING INFO' },
+  'Awaiting info':          { color: 'success',    label: 'AWAITING INFO' },
+  'Monitor':                { color: 'success',    label: 'MONITOR' },
+  'MONITOR':                { color: 'success',    label: 'MONITOR' },
+  'UAT Ready':              { color: 'success',    label: 'UAT READY' },
+  'UAT READY':              { color: 'success',    label: 'UAT READY' },
+  'Re-open':                { color: 'success',    label: 'RE-OPEN' },
+  'RE-OPEN':                { color: 'success',    label: 'RE-OPEN' },
+  'Staging/QA':             { color: 'success',    label: 'STAGING/QA' },
+  'STAGING/QA':             { color: 'success',    label: 'STAGING/QA' },
+  'Beta Ready':             { color: 'success',    label: 'BETA READY' },
   'Implementation':         { color: 'inprogress', label: 'IMPLEMENTATION' },
   'IMPLEMENTATION':         { color: 'inprogress', label: 'IMPLEMENTATION' },
   'In Implementation':      { color: 'inprogress', label: 'IN IMPLEMENTATION' },
   'Retest':                 { color: 'inprogress', label: 'RETEST' },
   'RETEST':                 { color: 'inprogress', label: 'RETEST' },
-  'Ready for Development':  { color: 'default',    label: 'READY FOR DEV' },
   'READY FOR DEV':          { color: 'default',    label: 'READY FOR DEV' },
   'Ready for Production':   { color: 'success',    label: 'READY FOR PRODUCTION' },
   'READY FOR PRODUCTION':   { color: 'success',    label: 'READY FOR PRODUCTION' },

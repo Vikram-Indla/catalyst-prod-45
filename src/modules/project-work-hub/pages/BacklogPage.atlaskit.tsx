@@ -83,6 +83,7 @@ import {
   makeRowActionsCell,
   FlagsHost,
   flag,
+  StatusPill,
 } from '@/components/shared/JiraTable';
 import type {
   Column,
@@ -222,8 +223,9 @@ const STATUS_OPTIONS: StatusOption[] = [
   { value: 'Backlog', label: 'Backlog', appearance: 'default', group: 'To Do' },
   { value: 'In Requirements', label: 'In Requirements', appearance: 'default', group: 'To Do' },
   { value: 'Ready for Development', label: 'Ready for Development', appearance: 'default', group: 'To Do' },
+  // 2026-05-08: In Design = grey in BAU Jira project (To Do category). Prior 'inprogress' was wrong.
+  { value: 'In Design', label: 'In Design', appearance: 'default', group: 'To Do' },
   // In Progress family (statusCategory: indeterminate)
-  { value: 'In Design', label: 'In Design', appearance: 'inprogress', group: 'In Progress' },
   { value: 'In Development', label: 'In Development', appearance: 'inprogress', group: 'In Progress' },
   { value: 'In Progress', label: 'In Progress', appearance: 'inprogress', group: 'In Progress' },
   // Done family (statusCategory: done — Jira treats QA/UAT/BETA as "verifying", green)
@@ -235,9 +237,9 @@ const STATUS_OPTIONS: StatusOption[] = [
   { value: 'In BETA', label: 'In BETA', appearance: 'success', group: 'Done' },
   { value: 'Done', label: 'Done', appearance: 'success', group: 'Done' },
   { value: 'In Production', label: 'In Production', appearance: 'success', group: 'Done' },
-  // Blocked / On Hold (rendered red / yellow regardless of category)
-  { value: 'Blocked', label: 'Blocked', appearance: 'removed', group: 'Done' },
-  { value: 'On Hold', label: 'On Hold', appearance: 'moved', group: 'Done' },
+  // Blocked / On Hold: Jira BAU DOM probe 2026-05-08 = grey (To Do category, rgb(221,222,225))
+  { value: 'Blocked', label: 'Blocked', appearance: 'default', group: 'To Do' },
+  { value: 'On Hold', label: 'On Hold', appearance: 'default', group: 'To Do' },
 ];
 const PRIORITY_ORDER = ['highest', 'critical', 'high', 'medium', 'low', 'lowest'];
 
@@ -1242,8 +1244,15 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
       const sample = buckets.get(k)![0];
       let labelNode: React.ReactNode = null;
       if (groupBy === 'status') {
+        // 2026-05-08: use StatusPill (exact Jira hex colors) instead of Atlaskit
+        // Lozenge — Atlaskit's token resolution in Catalyst's theme differs from
+        // Jira's rendering (e.g. success → rgb(239,255,214) vs Jira's rgb(179,223,114)).
         const appearance = sample.status ? statusAppearance(sample.status) : 'default';
-        labelNode = <Lozenge appearance={appearance as LozengeAppearance}>{k}</Lozenge>;
+        const label = sample.status ? statusLabel(sample.status) : k.toUpperCase();
+        // 2026-05-08 DOM probe confirms: Jira renders ALL status group headers with a
+        // visible pill (including grey/default — bg: rgb(221,222,225)). StatusPill uses
+        // exact Jira-measured hex, not Atlaskit token resolution which diverges.
+        labelNode = <StatusPill appearance={appearance as LozengeAppearance}>{label}</StatusPill>;
       } else if (groupBy === 'assignee') {
         const isUnassigned = !sample.assignee_name;
         const avatarUrl = sample.assignee_name ? avatarsByName?.get(sample.assignee_name) : null;
