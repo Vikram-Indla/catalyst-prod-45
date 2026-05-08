@@ -35,6 +35,10 @@ interface FilterDropdownProps {
   onChange: (next: string[]) => void;
 }
 
+// Step 7.6b (2026-05-08) — every raw hex swapped for --ds-* tokens so the
+// chip honours Atlaskit's light/dark theme switch and inherits any future
+// token shifts. Visual chrome is identical; the values just resolve through
+// the token system now instead of being baked into the source.
 const chipBase: React.CSSProperties = {
   display: 'inline-flex',
   alignItems: 'center',
@@ -42,9 +46,9 @@ const chipBase: React.CSSProperties = {
   height: 36,
   padding: '0 10px 0 8px',
   borderRadius: 4,
-  border: '1px solid #DFE1E6',
-  background: 'var(--ds-surface, #FFFFFF)',
-  color: 'var(--ds-text, #172B4D)',
+  border: '1px solid var(--ds-border)',
+  background: 'var(--ds-surface)',
+  color: 'var(--ds-text)',
   fontSize: 14,
   fontWeight: 500,
   fontFamily: 'var(--cp-font-body)',
@@ -55,9 +59,9 @@ const chipBase: React.CSSProperties = {
 
 const chipActive: React.CSSProperties = {
   ...chipBase,
-  background: '#E9F2FF',
-  border: '1px solid #388BFF',
-  color: '#0C66E4',
+  background: 'var(--ds-background-selected)',
+  border: '1px solid var(--ds-border-selected)',
+  color: 'var(--ds-text-selected)',
 };
 
 export function FilterDropdown({
@@ -104,14 +108,14 @@ export function FilterDropdown({
           }}
         >
           {/* Search */}
-          <div style={{ padding: 10, borderBottom: '1px solid #F1F2F4' }}>
+          <div style={{ padding: 10, borderBottom: '1px solid var(--ds-border)' }}>
             <Textfield
               autoFocus
               value={query}
               onChange={(e) => setQuery((e.target as HTMLInputElement).value)}
               placeholder={searchPlaceholder}
               elemAfterInput={
-                <span style={{ display: 'inline-flex', paddingRight: 8, color: '#626F86' }}>
+                <span style={{ display: 'inline-flex', paddingRight: 8, color: 'var(--ds-text-subtlest)' }}>
                   <SearchIcon label="" />
                 </span>
               }
@@ -124,7 +128,7 @@ export function FilterDropdown({
                 padding: '6px 16px',
                 fontSize: 12,
                 fontWeight: 700,
-                color: '#44546F',
+                color: 'var(--ds-text-subtle)',
               }}
             >
               Suggested
@@ -140,10 +144,10 @@ export function FilterDropdown({
                     gap: 10,
                     padding: '6px 16px',
                     cursor: 'pointer',
-                    background: checked ? '#F1F2F4' : 'transparent',
+                    background: checked ? 'var(--ds-background-neutral)' : 'transparent',
                   }}
                   onMouseEnter={(e) => {
-                    if (!checked) (e.currentTarget as HTMLElement).style.background = '#F7F8F9';
+                    if (!checked) (e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral-subtle-hovered)';
                   }}
                   onMouseLeave={(e) => {
                     if (!checked) (e.currentTarget as HTMLElement).style.background = 'transparent';
@@ -174,7 +178,7 @@ export function FilterDropdown({
                 style={{
                   padding: '12px 16px',
                   fontSize: 13,
-                  color: '#626F86',
+                  color: 'var(--ds-text-subtlest)',
                   fontFamily: 'var(--cp-font-body)',
                 }}
               >
@@ -190,7 +194,7 @@ export function FilterDropdown({
               all: 'unset',
               cursor: 'pointer',
               padding: '12px 16px',
-              borderTop: '1px solid #F1F2F4',
+              borderTop: '1px solid var(--ds-border)',
               fontSize: 14,
               color: 'var(--ds-text, #172B4D)',
               fontFamily: 'var(--cp-font-body)',
@@ -217,7 +221,7 @@ export function FilterDropdown({
                 marginLeft: 2,
                 padding: '0 6px',
                 borderRadius: 8,
-                background: '#0C66E4',
+                background: 'var(--ds-background-brand-bold)',
                 color: 'var(--ds-surface, #FFFFFF)',
                 fontSize: 11,
                 fontWeight: 700,
