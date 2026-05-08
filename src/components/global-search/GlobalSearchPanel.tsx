@@ -1,13 +1,14 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import SearchIcon from '@atlaskit/icon/glyph/search';
 import WorldIcon from '@atlaskit/icon/glyph/world';
 import PersonIcon from '@atlaskit/icon/glyph/person';
+import Spinner from '@atlaskit/spinner';
 import { token } from '@atlaskit/tokens';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
-import { useRecentItems, useSearchResults } from '@/hooks/useGlobalSearch';
+import { useRecentItems, useInfiniteSearchResults } from '@/hooks/useGlobalSearch';
 import WorkItemIcon, { normalizeIconType } from '@/components/shared/WorkItemIcon';
 import ProjectIcon from '@/components/shared/ProjectIcon';
 import { FilterDropdown, FilterOption } from './FilterDropdown';
@@ -82,7 +83,7 @@ function useTeamMembers() {
         .limit(100);
       if (error) return [];
       return (data ?? []).map((m: any): FilterOption => ({
-        id: m.full_name || m.id,   // use display name as filter id for assignee_display_name search
+        id: m.full_name || m.id,
         name: m.full_name || 'Unknown',
         avatarSrc: m.avatar_url ?? undefined,
       }));
@@ -119,6 +120,13 @@ function timeAgo(iso: string): string {
   return `You viewed ${d}d ago`;
 }
 
+/** "50 of 1000+" — Jira-parity count chip shown in results header. */
+function formatCount(loaded: number, total: number | null, hasNextPage: boolean): string {
+  if (total === null) return String(loaded);
+  const cap = total > 1000 ? '1000+' : String(total);
+  return `${loaded} of ${cap}`;
+}
+
 // ── Main component ────────────────────────────────────────────────────────────
 
 interface GlobalSearchPanelProps {
@@ -143,47 +151,72 @@ export function GlobalSearchPanel({ query, onQueryChange, onClose }: GlobalSearc
   }, [query]);
 
   const { data: recents = [] } = useRecentItems();
-  const { data: searchResults = [] } = useSearchResults(debouncedQuery, {
+  const {
+    data: infiniteData,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = useInfiniteSearchResults(debouncedQuery, {
     hub: null,
     projects: projectKeys,
     assignees: assigneeIds,
     type: null,
   });
+
+  const searchResults = useMemo(
+    () => infiniteData?.pages.flatMap((p) => p.results) ?? [],
+    [infiniteData],
+  );
+  // Total count from first page's Supabase COUNT (null when not yet loaded).
+  const totalCount = infiniteData?.pages[0]?.total ?? null;
+
   const { data: projectOptions = [] } = useProjects();
   const { data: memberOptions = [] } = useTeamMembers();
+
+  // ── IntersectionObserver — trigger next page when sentinel enters view ──────
+  const sentinelRef = useCallback(
+    (node: HTMLDivElement | null) => {
+      if (!node) return;
+      const observer = new IntersectionObserver(
+        ([entry]) => {
+          if (entry.isIntersecting && hasNextPage && !isFetchingNextPage) {
+            fetchNextPage();
+          }
+        },
+        { threshold: 0.1 },
+      );
+      observer.observe(node);
+      // Disconnect when the sentinel unmounts (query/filter change re-renders).
+      return () => observer.disconnect();
+    },
+    [fetchNextPage, hasNextPage, isFetchingNextPage],
+  );
 
   // ── Row model ──────────────────────────────────────────────────────────────
   type Row =
     | { kind: 'suggestion'; id: string; label: React.ReactNode; activate: () => void }
     | { kind: 'item'; id: string; item: SearchResult; activate: () => void };
 
-  const itemsToShow: SearchResult[] = debouncedQuery.length >= 2 ? searchResults : recents.slice(0, 7);
+  const isSearching = debouncedQuery.length >= 2;
+  const itemsToShow: SearchResult[] = isSearching ? searchResults : recents.slice(0, 7);
 
   const rows: Row[] = useMemo(() => {
     const out: Row[] = [];
 
-    if (debouncedQuery.length < 2) {
-      // "Show my work items" — filters by current user when clicked
+    if (!isSearching) {
       out.push({
         kind: 'suggestion',
         id: 'sug-mywork',
         label: <>Show my <strong>work items</strong></>,
-        activate: () => {
-          navigate('/for-you?tab=assigned');
-          onClose();
-        },
+        activate: () => { navigate('/for-you?tab=assigned'); onClose(); },
       });
-      // If assignee filter selected, show scoped suggestion
       if (assigneeIds.length > 0) {
         const name = memberOptions.find((o) => o.id === assigneeIds[0])?.name ?? assigneeIds[0];
         out.push({
           kind: 'suggestion',
           id: 'sug-assignee',
           label: <>Work items assigned to <strong>{name}</strong></>,
-          activate: () => {
-            navigate(`/work-hub/all?assignee=${encodeURIComponent(assigneeIds[0])}`);
-            onClose();
-          },
+          activate: () => { navigate(`/work-hub/all?assignee=${encodeURIComponent(assigneeIds[0])}`); onClose(); },
         });
       }
     }
@@ -193,15 +226,12 @@ export function GlobalSearchPanel({ query, onQueryChange, onClose }: GlobalSearc
         kind: 'item',
         id: it.id,
         item: it,
-        activate: () => {
-          navigate(`/work-hub/all?open=${encodeURIComponent(it.item_key)}`);
-          onClose();
-        },
+        activate: () => { navigate(`/work-hub/all?open=${encodeURIComponent(it.item_key)}`); onClose(); },
       });
     });
 
     return out;
-  }, [debouncedQuery, itemsToShow, assigneeIds, memberOptions, navigate, onClose]);
+  }, [isSearching, itemsToShow, assigneeIds, memberOptions, navigate, onClose]);
 
   useEffect(() => { setActiveIndex(0); }, [rows.length]);
 
@@ -250,7 +280,6 @@ export function GlobalSearchPanel({ query, onQueryChange, onClose }: GlobalSearc
 
   const suggestionRows = rows.filter((r) => r.kind === 'suggestion');
   const itemRows = rows.filter((r) => r.kind === 'item');
-  const showRecentLabel = debouncedQuery.length < 2;
 
   return (
     <div
@@ -297,7 +326,7 @@ export function GlobalSearchPanel({ query, onQueryChange, onClose }: GlobalSearc
       {/* ── Scrollable results ───────────────────────────────────────────── */}
       <div ref={listRef} style={{ flex: 1, overflowY: 'auto', padding: '8px 0' }} role="listbox">
 
-        {/* Suggestions */}
+        {/* Suggestions (shown when no search query) */}
         {suggestionRows.map((r) =>
           renderRow(r,
             <>
@@ -312,15 +341,20 @@ export function GlobalSearchPanel({ query, onQueryChange, onClose }: GlobalSearc
           )
         )}
 
-        {/* Recent / Results header */}
+        {/* Recent / Results header with Jira-parity count */}
         {itemRows.length > 0 && (
           <div style={{
+            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
             padding: '10px 16px 4px',
-            fontSize: 11, fontWeight: 700, letterSpacing: '0.04em',
-            textTransform: 'uppercase',
-            color: token('color.text.subtle', '#626F86'),
           }}>
-            {showRecentLabel ? 'Recent' : 'Results'}
+            <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.04em', textTransform: 'uppercase', color: token('color.text.subtle', '#626F86') }}>
+              {isSearching ? 'Results' : 'Recent'}
+            </span>
+            {isSearching && (
+              <span style={{ fontSize: 11, color: token('color.text.subtle', '#626F86') }}>
+                {formatCount(searchResults.length, totalCount, !!hasNextPage)}
+              </span>
+            )}
           </div>
         )}
 
@@ -353,8 +387,20 @@ export function GlobalSearchPanel({ query, onQueryChange, onClose }: GlobalSearc
           );
         })}
 
+        {/* Sentinel — IntersectionObserver watches this to trigger next page */}
+        {isSearching && (
+          <div ref={sentinelRef} style={{ height: 1 }} aria-hidden />
+        )}
+
+        {/* Next-page loading spinner */}
+        {isFetchingNextPage && (
+          <div style={{ display: 'flex', justifyContent: 'center', padding: '12px 0' }}>
+            <Spinner size="small" />
+          </div>
+        )}
+
         {/* Empty state */}
-        {debouncedQuery.length >= 2 && itemRows.length === 0 && (
+        {isSearching && itemRows.length === 0 && !isFetchingNextPage && (
           <div style={{ padding: '24px 16px', textAlign: 'center', color: token('color.text.subtle', '#626F86'), fontSize: 14 }}>
             No results for "<strong>{debouncedQuery}</strong>"
           </div>

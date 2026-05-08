@@ -49,7 +49,7 @@ export function useProjects() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('projects')
-        .select('id, key, name')
+        .select('id, key, name, avatar_url, color')
         .eq('is_archived', false)
         .order('name');
       if (error) throw error;
