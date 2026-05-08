@@ -1,92 +1,248 @@
 /**
- * HubSwitcher — Atlassian-app-switcher-parity popover.
+ * HubSwitcher v2 — sectioned popover with bespoke colored hub tiles.
  *
- * 2026-05-08 rewrite (council-pass):
- *   - Rows migrated from custom <button>+CSS to @atlaskit/menu LinkItem.
- *   - LinkItem renders <a href> for native middle-click / Cmd-click / "open
- *     in new tab" semantics; click handler intercepts plain clicks for SPA
- *     navigation and preserves sidebar pin behaviour.
- *   - Atlaskit primitives (MenuGroup + Section + LinkItem with iconBefore)
- *     drive the active state via `isSelected`; LinkItem itself renders
- *     `aria-current="page"` when selected (no manual accent bar).
- *   - "Hub" suffix dropped from labels; description column dropped.
- *   - Glyphs from @atlaskit/icon/glyph/* (verified against v24.1.1 install).
- *   - Popover dimensions match probed Atlassian baseline (343px, 8px radius).
+ * 2026-05-08 (Step 7.2, council-pass v2):
+ *   The grid icon opens a structured popover (not the global search
+ *   palette — that stays on Cmd+K and the top-bar Search bar). The
+ *   popover renders 11 hubs grouped by SDLC phase:
+ *     DISCOVER     → Home, Strategy, Ideation
+ *     BUILD & SHIP → Product, Project, Release, Test, Incident, Task, Plan
+ *     KNOWLEDGE    → Wiki
  *
- * Shell remains Radix DropdownMenu — @atlaskit/popup v4.16 has the empty-
- * portal bug noted in CLAUDE.md (2026-04-28).
+ *   Each row carries a 32x32 colored tile (ADS accent token), a bespoke
+ *   24x24 hub glyph (HubIcon), the bare label (no "Hub" suffix), and on
+ *   the active row Atlaskit's LinkItem renders aria-current="page".
+ *
+ *   Future steps wired by the same component:
+ *     7.3 — Recent + search-to-filter
+ *     7.4 — ⌘1–⌘0 shortcut chips
+ *
+ *   Shell stays Radix DropdownMenu (Atlaskit popup empty-portal bug,
+ *   CLAUDE.md 2026-04-28).
  */
 import { useNavigate, useLocation } from 'react-router-dom';
-import { useState, type ComponentType, type MouseEvent as ReactMouseEvent } from 'react';
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type MouseEvent as ReactMouseEvent,
+} from 'react';
 import Tooltip from '@atlaskit/tooltip';
 import AppSwitcherIcon from '@atlaskit/icon/core/app-switcher';
+import SearchIcon from '@atlaskit/icon/glyph/search';
 import { MenuGroup, LinkItem, Section } from '@atlaskit/menu';
-import HomeIcon from '@atlaskit/icon/glyph/home';
-import BoardIcon from '@atlaskit/icon/glyph/board';
-import LightbulbIcon from '@atlaskit/icon/glyph/lightbulb';
-import MarketplaceIcon from '@atlaskit/icon/glyph/marketplace';
-import FolderIcon from '@atlaskit/icon/glyph/folder';
-import ShipIcon from '@atlaskit/icon/glyph/ship';
-import CheckCircleOutlineIcon from '@atlaskit/icon/glyph/check-circle-outline';
-import WarningIcon from '@atlaskit/icon/glyph/warning';
-import CheckIcon from '@atlaskit/icon/glyph/check';
-import CalendarIcon from '@atlaskit/icon/glyph/calendar';
-import DocumentIcon from '@atlaskit/icon/glyph/document';
+import { useHubShortcuts } from '@/hooks/useHubShortcuts';
+
+const RECENT_KEY = 'catalyst-recent-hubs';
+const RECENT_MAX = 3;
+
+function readRecentHubs(): string[] {
+  try {
+    const raw = window.localStorage.getItem(RECENT_KEY);
+    const list = raw ? JSON.parse(raw) : [];
+    return Array.isArray(list) ? list.filter((x) => typeof x === 'string') : [];
+  } catch {
+    return [];
+  }
+}
+
+function recordRecentHub(key: string) {
+  try {
+    const prev = readRecentHubs().filter((k) => k !== key);
+    const next = [key, ...prev].slice(0, 6);
+    window.localStorage.setItem(RECENT_KEY, JSON.stringify(next));
+  } catch {
+    /* localStorage may be unavailable in private mode — silent fail */
+  }
+}
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { useCatalystContext } from '@/contexts/CatalystContext';
+import { HubIcon, type HubName } from '@/components/navigation/HubIcon';
 
-type GlyphComponent = ComponentType<{ label: string; primaryColor?: string }>;
+type SectionKey = 'discover' | 'build_ship' | 'knowledge';
 
 interface HubEntry {
+  key: HubName;
   label: string;
   href: string;
-  Icon: GlyphComponent;
+  section: SectionKey;
+  /** ADS accent token suffix — drives both tile bg and glyph color. */
+  tone:
+    | 'blue'
+    | 'purple'
+    | 'orange'
+    | 'teal'
+    | 'green'
+    | 'magenta'
+    | 'lime'
+    | 'red'
+    | 'yellow'
+    | 'gray';
+  /** Keyboard shortcut suffix bound to Cmd/Ctrl. '1'–'9', '0', '-'. */
+  shortcut: string;
 }
 
-// Verified against @atlaskit/icon v24.1.1 (2026-05-08). Glyph mapping locked
-// by council pass: marketplace covers the original "package" intent for
-// Product, ship covers the "shipping" intent for Release.
 const HUBS: HubEntry[] = [
-  { label: 'Home',     href: '/for-you',                    Icon: HomeIcon },
-  { label: 'Strategy', href: '/strategyhub',                Icon: BoardIcon },
-  { label: 'Ideation', href: '/ideation/backlog',           Icon: LightbulbIcon },
-  { label: 'Product',  href: '/product-hub',                Icon: MarketplaceIcon },
-  { label: 'Project',  href: '/project-hub',                Icon: FolderIcon },
-  { label: 'Release',  href: '/release-hub/command-center', Icon: ShipIcon },
-  { label: 'Test',     href: '/testhub/dashboard',          Icon: CheckCircleOutlineIcon },
-  { label: 'Incident', href: '/incident-hub',               Icon: WarningIcon },
-  { label: 'Task',     href: '/taskhub/boards',             Icon: CheckIcon },
-  { label: 'Plan',     href: '/planhub',                    Icon: CalendarIcon },
-  { label: 'Wiki',     href: '/wiki',                       Icon: DocumentIcon },
+  { key: 'home',     label: 'Home',     href: '/for-you',                    section: 'discover',   tone: 'blue',    shortcut: '1' },
+  { key: 'strategy', label: 'Strategy', href: '/strategyhub',                section: 'discover',   tone: 'purple',  shortcut: '2' },
+  { key: 'ideation', label: 'Ideation', href: '/ideation/backlog',           section: 'discover',   tone: 'orange',  shortcut: '3' },
+  { key: 'product',  label: 'Product',  href: '/product-hub',                section: 'build_ship', tone: 'teal',    shortcut: '4' },
+  { key: 'project',  label: 'Project',  href: '/project-hub',                section: 'build_ship', tone: 'green',   shortcut: '5' },
+  { key: 'release',  label: 'Release',  href: '/release-hub/command-center', section: 'build_ship', tone: 'magenta', shortcut: '6' },
+  { key: 'test',     label: 'Test',     href: '/testhub/dashboard',          section: 'build_ship', tone: 'lime',    shortcut: '7' },
+  { key: 'incident', label: 'Incident', href: '/incident-hub',               section: 'build_ship', tone: 'red',     shortcut: '8' },
+  { key: 'task',     label: 'Task',     href: '/taskhub/boards',             section: 'build_ship', tone: 'yellow',  shortcut: '9' },
+  { key: 'plan',     label: 'Plan',     href: '/planhub',                    section: 'build_ship', tone: 'gray',    shortcut: '0' },
+  { key: 'wiki',     label: 'Wiki',     href: '/wiki',                       section: 'knowledge',  tone: 'gray',    shortcut: '-' },
 ];
+
+const SECTIONS: { key: SectionKey; title: string }[] = [
+  { key: 'discover',   title: 'Discover' },
+  { key: 'build_ship', title: 'Build & Ship' },
+  { key: 'knowledge',  title: 'Knowledge' },
+];
+
+const toneToTileBg = (tone: HubEntry['tone']) =>
+  `var(--ds-background-accent-${tone}-subtler)`;
+const toneToGlyphColor = (tone: HubEntry['tone']) =>
+  `var(--ds-text-accent-${tone})`;
+
+interface HubTileProps {
+  hub: HubEntry;
+}
+
+function HubTile({ hub }: HubTileProps) {
+  return (
+    <span
+      data-hub-tile={hub.key}
+      style={{
+        display: 'inline-flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: 32,
+        height: 32,
+        borderRadius: 6,
+        background: toneToTileBg(hub.tone),
+        color: toneToGlyphColor(hub.tone),
+        flexShrink: 0,
+      }}
+    >
+      <HubIcon name={hub.key} size={20} />
+    </span>
+  );
+}
+
+function HubRowLabel({ hub }: { hub: HubEntry }) {
+  return (
+    <span
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        gap: 12,
+        flex: 1,
+      }}
+    >
+      <span data-hub-label={hub.key}>{hub.label}</span>
+      <span
+        data-hub-shortcut={hub.key}
+        style={{
+          fontSize: 11,
+          color: 'var(--ds-text-subtlest, #626F86)',
+          fontFamily: 'var(--ds-font-family-code, ui-monospace, SFMono-Regular, monospace)',
+          fontWeight: 500,
+          letterSpacing: '0.02em',
+        }}
+      >
+        ⌘{hub.shortcut}
+      </span>
+    </span>
+  );
+}
 
 export function HubSwitcher() {
   const [open, setOpen] = useState(false);
+  const [query, setQuery] = useState('');
+  // Lazy-init reads localStorage once on mount — tests that pre-seed the
+  // store before render see the recents immediately, no useEffect timing.
+  const [recentKeys, setRecentKeys] = useState<string[]>(() => readRecentHubs());
   const navigate = useNavigate();
   const location = useLocation();
   const { setSidebarHidden, setSidebarExpanded, setSidebarPinned } = useCatalystContext();
+  const searchRef = useRef<HTMLInputElement>(null);
+
+  // Re-read recents whenever the popover re-opens — keeps the list fresh
+  // across cross-tab updates without polling. Also clears the query.
+  useEffect(() => {
+    if (open) {
+      setRecentKeys(readRecentHubs());
+      setQuery('');
+    }
+  }, [open]);
 
   const isActive = (href: string) =>
     location.pathname === href || location.pathname.startsWith(href + '/');
 
-  const handleNavClick = (e: ReactMouseEvent<HTMLElement>, href: string) => {
-    // Honour browser shortcuts: Cmd/Ctrl-click, Shift-click, middle-click
-    // open in new tab/window. Only intercept plain primary-button clicks
-    // for SPA navigation.
+  const shortcutNavigate = useCallback(
+    (href: string) => {
+      if (href !== '/for-you') {
+        setSidebarHidden(false);
+        setSidebarExpanded(true);
+        setSidebarPinned(true);
+      }
+      navigate(href);
+      setOpen(false);
+    },
+    [navigate, setSidebarHidden, setSidebarExpanded, setSidebarPinned],
+  );
+
+  const shortcutTargets = useMemo(
+    () => HUBS.map((h) => ({ key: h.shortcut, hubKey: h.key, href: h.href })),
+    [],
+  );
+
+  useHubShortcuts({
+    targets: shortcutTargets,
+    navigate: shortcutNavigate,
+    recordRecent: recordRecentHub,
+  });
+
+  const handleNavClick = (e: ReactMouseEvent<HTMLElement>, hub: HubEntry) => {
     if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
     e.preventDefault();
+    recordRecentHub(hub.key);
     setOpen(false);
-    if (href !== '/for-you') {
+    if (hub.href !== '/for-you') {
       setSidebarHidden(false);
       setSidebarExpanded(true);
       setSidebarPinned(true);
     }
-    navigate(href);
+    navigate(hub.href);
   };
+
+  const hubsByKey = useMemo(() => {
+    const map = new Map<string, HubEntry>();
+    for (const h of HUBS) map.set(h.key, h);
+    return map;
+  }, []);
+
+  const normalisedQuery = query.trim().toLowerCase();
+  const matches = (hub: HubEntry) =>
+    !normalisedQuery || hub.label.toLowerCase().includes(normalisedQuery);
+
+  const recentHubs: HubEntry[] = recentKeys
+    .map((k) => hubsByKey.get(k))
+    .filter((h): h is HubEntry => Boolean(h && matches(h)))
+    .slice(0, RECENT_MAX);
+
+  const hubsBySection = (key: SectionKey) =>
+    HUBS.filter((h) => h.section === key && matches(h));
 
   return (
     <DropdownMenu open={open} onOpenChange={setOpen}>
@@ -114,7 +270,9 @@ export function HubSwitcher() {
                 transition: 'background 120ms ease',
               }}
               onMouseEnter={(e) => {
-                if (!open) e.currentTarget.style.background = 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))';
+                if (!open)
+                  e.currentTarget.style.background =
+                    'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))';
               }}
               onMouseLeave={(e) => {
                 e.currentTarget.style.background = open
@@ -135,33 +293,81 @@ export function HubSwitcher() {
         alignOffset={-8}
         avoidCollisions={false}
         className="z-[1000] p-0"
-        // Dimensions match the live probe of Atlassian's "Switch sites or
-        // apps" panel (digital-transformation.atlassian.net 2026-05-08):
-        // 343px wide, 8px radius, ADS surface-overlay, no manual border.
         style={{
           width: 343,
           background: 'var(--ds-surface-overlay, #FFFFFF)',
           borderRadius: 8,
-          fontFamily: 'var(--cp-font-body)',
           padding: 0,
           maxHeight: 'none',
           overflow: 'visible',
         }}
       >
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 8,
+            padding: '10px 12px',
+            borderBottom: '1px solid var(--ds-border, #DFE1E6)',
+          }}
+        >
+          <span style={{ color: 'var(--ds-text-subtlest, #626F86)', display: 'inline-flex' }}>
+            <SearchIcon label="" size="small" />
+          </span>
+          <input
+            ref={searchRef}
+            type="text"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Search hubs"
+            aria-label="Search hubs"
+            style={{
+              flex: 1,
+              border: 'none',
+              outline: 'none',
+              background: 'transparent',
+              fontSize: 14,
+              color: 'var(--ds-text, #172B4D)',
+            }}
+          />
+        </div>
+
         <MenuGroup>
-          <Section>
-            {HUBS.map(({ label, href, Icon }) => (
-              <LinkItem
-                key={href}
-                href={href}
-                isSelected={isActive(href)}
-                iconBefore={<Icon label="" />}
-                onClick={(e) => handleNavClick(e, href)}
-              >
-                {label}
-              </LinkItem>
-            ))}
-          </Section>
+          {recentHubs.length > 0 && (
+            <Section title="Recent">
+              {recentHubs.map((hub) => (
+                <LinkItem
+                  key={`recent-${hub.key}`}
+                  href={hub.href}
+                  isSelected={isActive(hub.href)}
+                  iconBefore={<HubTile hub={hub} />}
+                  onClick={(e) => handleNavClick(e, hub)}
+                >
+                  {hub.label}
+                </LinkItem>
+              ))}
+            </Section>
+          )}
+
+          {SECTIONS.map(({ key, title }) => {
+            const rows = hubsBySection(key);
+            if (rows.length === 0) return null;
+            return (
+              <Section key={key} title={title}>
+                {rows.map((hub) => (
+                  <LinkItem
+                    key={hub.key}
+                    href={hub.href}
+                    isSelected={isActive(hub.href)}
+                    iconBefore={<HubTile hub={hub} />}
+                    onClick={(e) => handleNavClick(e, hub)}
+                  >
+                    <HubRowLabel hub={hub} />
+                  </LinkItem>
+                ))}
+              </Section>
+            );
+          })}
         </MenuGroup>
       </DropdownMenuContent>
     </DropdownMenu>
