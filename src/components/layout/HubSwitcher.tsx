@@ -1,52 +1,67 @@
 /**
- * HubSwitcher — Jira-parity "app switcher" popover.
+ * HubSwitcher — Atlassian-app-switcher-parity popover.
  *
- * Apr 2026 rewrite: previously rendered as a full-height left drawer
- * (translateX from -100%). Per Vikram's reference (Atlassian app switcher),
- * the correct UX is a compact popover anchored directly UNDER the grid
- * trigger, hugging its left edge with a small offset — not a drawer.
+ * 2026-05-08 rewrite (council-pass):
+ *   - Rows migrated from custom <button>+CSS to @atlaskit/menu LinkItem.
+ *   - LinkItem renders <a href> for native middle-click / Cmd-click / "open
+ *     in new tab" semantics; click handler intercepts plain clicks for SPA
+ *     navigation and preserves sidebar pin behaviour.
+ *   - Atlaskit primitives (MenuGroup + Section + LinkItem with iconBefore)
+ *     drive the active state via `isSelected`; LinkItem itself renders
+ *     `aria-current="page"` when selected (no manual accent bar).
+ *   - "Hub" suffix dropped from labels; description column dropped.
+ *   - Glyphs from @atlaskit/icon/glyph/* (verified against v24.1.1 install).
+ *   - Popover dimensions match probed Atlassian baseline (343px, 8px radius).
  *
- * Implementation: Radix DropdownMenu (same primitive as ProfileMenu, proven
- * to portal + anchor reliably in our shell). align="start" + side="bottom"
- * + sideOffset=6 matches the screenshot's tight padding.
+ * Shell remains Radix DropdownMenu — @atlaskit/popup v4.16 has the empty-
+ * portal bug noted in CLAUDE.md (2026-04-28).
  */
 import { useNavigate, useLocation } from 'react-router-dom';
+import { useState, type ComponentType, type MouseEvent as ReactMouseEvent } from 'react';
 import Tooltip from '@atlaskit/tooltip';
 import AppSwitcherIcon from '@atlaskit/icon/core/app-switcher';
+import { MenuGroup, LinkItem, Section } from '@atlaskit/menu';
+import HomeIcon from '@atlaskit/icon/glyph/home';
+import BoardIcon from '@atlaskit/icon/glyph/board';
+import LightbulbIcon from '@atlaskit/icon/glyph/lightbulb';
+import MarketplaceIcon from '@atlaskit/icon/glyph/marketplace';
+import FolderIcon from '@atlaskit/icon/glyph/folder';
+import ShipIcon from '@atlaskit/icon/glyph/ship';
+import CheckCircleOutlineIcon from '@atlaskit/icon/glyph/check-circle-outline';
+import WarningIcon from '@atlaskit/icon/glyph/warning';
+import CheckIcon from '@atlaskit/icon/glyph/check';
+import CalendarIcon from '@atlaskit/icon/glyph/calendar';
+import DocumentIcon from '@atlaskit/icon/glyph/document';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { useState } from 'react';
 import { useCatalystContext } from '@/contexts/CatalystContext';
-import { HubIcon, HubName } from '@/components/navigation/HubIcon';
+
+type GlyphComponent = ComponentType<{ label: string; primaryColor?: string }>;
 
 interface HubEntry {
-  key: HubName;
   label: string;
   href: string;
-  description: string;
+  Icon: GlyphComponent;
 }
 
-// Block A rule 7 (2026-05-01): canonical hub label casing — "ProductHub" → "Product Hub" etc.
-// Block A rule 1 (2026-05-01): canonical URL prefix — '/producthub' → '/product-hub'.
-// Both fixes co-located so the entity model has one source of truth across the app shell.
+// Verified against @atlaskit/icon v24.1.1 (2026-05-08). Glyph mapping locked
+// by council pass: marketplace covers the original "package" intent for
+// Product, ship covers the "shipping" intent for Release.
 const HUBS: HubEntry[] = [
-  { key: 'home',     label: 'Home',          href: '/for-you',                    description: 'Your work across all hubs' },
-  { key: 'strategy', label: 'Strategy Hub',  href: '/strategyhub',                description: 'Vision, themes, OKRs' },
-  // Phase 6 (2026-05-02): Ideation is its own peer hub — org-wide intake,
-  // product binding only at conversion. Sits between Strategy and Product
-  // because that's the actual flow: theme → idea → product/work.
-  { key: 'ideation', label: 'Ideation Hub',  href: '/ideation/backlog',           description: 'Org-wide ideas — convert to product work' },
-  { key: 'product',  label: 'Product Hub',   href: '/product-hub',                description: 'Products, roadmaps, cards' },
-  { key: 'project',  label: 'Project Hub',   href: '/project-hub',                description: 'Delivery projects & backlogs' },
-  { key: 'release',  label: 'Release Hub',   href: '/release-hub/command-center', description: 'Release planning & cutover' },
-  { key: 'test',     label: 'Test Hub',      href: '/testhub/dashboard',          description: 'Test cases, cycles, defects' },
-  { key: 'incident', label: 'Incident Hub',  href: '/incident-hub',               description: 'Incidents & post-mortems' },
-  { key: 'task',     label: 'Task Hub',      href: '/taskhub/boards',             description: 'Personal & team tasks' },
-  { key: 'plan',     label: 'Plan Hub',      href: '/planhub',                    description: 'Capacity & timeline planning' },
-  { key: 'wiki',     label: 'Wiki Hub',      href: '/wiki',                       description: 'Knowledge base & docs' },
+  { label: 'Home',     href: '/for-you',                    Icon: HomeIcon },
+  { label: 'Strategy', href: '/strategyhub',                Icon: BoardIcon },
+  { label: 'Ideation', href: '/ideation/backlog',           Icon: LightbulbIcon },
+  { label: 'Product',  href: '/product-hub',                Icon: MarketplaceIcon },
+  { label: 'Project',  href: '/project-hub',                Icon: FolderIcon },
+  { label: 'Release',  href: '/release-hub/command-center', Icon: ShipIcon },
+  { label: 'Test',     href: '/testhub/dashboard',          Icon: CheckCircleOutlineIcon },
+  { label: 'Incident', href: '/incident-hub',               Icon: WarningIcon },
+  { label: 'Task',     href: '/taskhub/boards',             Icon: CheckIcon },
+  { label: 'Plan',     href: '/planhub',                    Icon: CalendarIcon },
+  { label: 'Wiki',     href: '/wiki',                       Icon: DocumentIcon },
 ];
 
 export function HubSwitcher() {
@@ -58,7 +73,12 @@ export function HubSwitcher() {
   const isActive = (href: string) =>
     location.pathname === href || location.pathname.startsWith(href + '/');
 
-  const go = (href: string) => {
+  const handleNavClick = (e: ReactMouseEvent<HTMLElement>, href: string) => {
+    // Honour browser shortcuts: Cmd/Ctrl-click, Shift-click, middle-click
+    // open in new tab/window. Only intercept plain primary-button clicks
+    // for SPA navigation.
+    if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
+    e.preventDefault();
     setOpen(false);
     if (href !== '/for-you') {
       setSidebarHidden(false);
@@ -86,8 +106,6 @@ export function HubSwitcher() {
                 justifyContent: 'center',
                 border: 'none',
                 borderRadius: 3,
-                // ADS canonical: pressed/hovered = color.background.neutral.{pressed,subtle.hovered}
-                // Dark fallbacks: pressed=#E5E9F640, hovered=#CECED912 (translucent neutrals)
                 background: open
                   ? 'var(--ds-background-neutral-pressed, rgba(9,30,66,0.14))'
                   : 'transparent',
@@ -117,45 +135,34 @@ export function HubSwitcher() {
         alignOffset={-8}
         avoidCollisions={false}
         className="z-[1000] p-0"
-        // ADS canonical overlay shadow — see elevation.shadow.overlay token. Inline so dark
-        // mode resolves through the CSS var; Tailwind arbitrary class can't host a var().
+        // Dimensions match the live probe of Atlassian's "Switch sites or
+        // apps" panel (digital-transformation.atlassian.net 2026-05-08):
+        // 343px wide, 8px radius, ADS surface-overlay, no manual border.
         style={{
-          width: 320,
-          // Phase 12 (2026-04-29): reverted to Atlaskit elevation.surface.overlay
-          // and color.border. Phase 11 unblocked Atlaskit's dark theme so both
-          // tokens flip natively via --ds-* CSS variables.
+          width: 343,
           background: 'var(--ds-surface-overlay, #FFFFFF)',
-          border: '1px solid var(--ds-border, #DFE1E6)',
-          borderRadius: 6,
+          borderRadius: 8,
           fontFamily: 'var(--cp-font-body)',
           padding: 0,
           maxHeight: 'none',
           overflow: 'visible',
         }}
       >
-        <div style={{ padding: '6px 4px' }}>
-          {HUBS.map((hub) => {
-            const active = isActive(hub.href);
-            return (
-              <button
-                key={hub.href}
-                type="button"
-                onClick={() => go(hub.href)}
-                aria-current={active ? 'page' : undefined}
-                className={`hub-nav-item${active ? ' hub-nav-item--active' : ''}`}
+        <MenuGroup>
+          <Section>
+            {HUBS.map(({ label, href, Icon }) => (
+              <LinkItem
+                key={href}
+                href={href}
+                isSelected={isActive(href)}
+                iconBefore={<Icon label="" />}
+                onClick={(e) => handleNavClick(e, href)}
               >
-                {active && <span className="hub-nav-item__bar" aria-hidden />}
-                <span className="hub-nav-item__tile">
-                  <HubIcon name={hub.key} size={18} />
-                </span>
-                <span className="hub-nav-item__text">
-                  <span className="hub-nav-item__label">{hub.label}</span>
-                  <span className="hub-nav-item__desc">{hub.description}</span>
-                </span>
-              </button>
-            );
-          })}
-        </div>
+                {label}
+              </LinkItem>
+            ))}
+          </Section>
+        </MenuGroup>
       </DropdownMenuContent>
     </DropdownMenu>
   );
