@@ -130,22 +130,11 @@ const PRIORITIES = ['Highest', 'High', 'Medium', 'Low', 'Lowest'] as const;
 
 // Per type → which initial status appears in the read-only Status lozenge.
 // Matches what the existing useCreateStoryMutation actually writes.
-// Fallback initial statuses — only used when catalyst_workflow_schemes returns
-// no rows for a work type. Canonical source is useWorkflowStatuses (DB-driven).
-// Task + API Requirement removed 2026-05-09 (deprecated from project hub).
-const INITIAL_STATUS_BY_TYPE: Record<string, string> = {
-  Story: 'In Requirements',
-  Epic: 'To Do',
-  Feature: 'To Do',
-  'Business Gap': 'Open',
-  'QA Bug': 'Open',
-  'Production Incident': 'Open',
-  'Change Request': 'Submitted',
-};
-
 // Minimal fallback — only shown when catalyst_workflow_schemes returns no rows
 // for a work type (e.g. types not yet configured in the DB).
 // Canonical source: useWorkflowStatuses (catalyst_workflow_schemes/_statuses).
+// INITIAL_STATUS_BY_TYPE removed 2026-05-09 (Bucket B): canonical initial
+// status comes from DB (useWorkflowStatuses.is_initial); hard fallback is 'To Do'.
 const DEFAULT_STATUS_OPTIONS = [
   { value: 'To Do', label: 'To Do' },
   { value: 'In Progress', label: 'In Progress' },
@@ -157,7 +146,8 @@ const DEFAULT_STATUS_OPTIONS = [
 //   default (grey)  → To Do / Backlog / Open / In Requirements / Submitted
 //   inprogress (blue) → In Progress / In Review / etc.
 //   success (green) → Done
-function statusAppearance(
+// Exported as `statusAppearanceForTest` for unit tests (Bucket B, 2026-05-09).
+export function statusAppearanceForTest(
   status: string,
 ): 'default' | 'inprogress' | 'success' {
   const s = status.toLowerCase();
@@ -170,6 +160,8 @@ function statusAppearance(
   }
   return 'default';
 }
+// Internal alias — keeps call sites unchanged.
+const statusAppearance = statusAppearanceForTest;
 
 function plainTextToAdf(text: string) {
   const paragraphs = text.split(/\n{2,}/).map((block) => block.trim()).filter(Boolean);
@@ -511,10 +503,12 @@ export function CreateStoryModal({
     }
   }, [projectId, projectKey, projects, form.projectId, updateField]);
 
-  // ── Status auto-syncs to work-type's initial status (DB-first, fallback hardcoded) ──
+  // ── Status auto-syncs to work-type's initial status (DB-first, 'To Do' fallback) ──
+  // Canonical source: catalyst_workflow_schemes/_statuses via useWorkflowStatuses.
+  // INITIAL_STATUS_BY_TYPE removed (Bucket B, 2026-05-09) — DB is the only authority.
   useEffect(() => {
     if (statusesLoading) return;
-    const initial = dbInitialStatus ?? INITIAL_STATUS_BY_TYPE[workType] ?? 'To Do';
+    const initial = dbInitialStatus ?? 'To Do';
     if (form.status !== initial) updateField('status', initial);
   }, [workType, dbInitialStatus, statusesLoading]); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -821,37 +815,32 @@ export function CreateStoryModal({
 
               <Box xcss={dividerStyles} />
 
-              {/* ── Status — Atlaskit Select with Lozenge option label
-                  (Jira-parity: lozenge sits inside select control, full
-                  ADS dark-mode token resolution, no hand-rolled chip). */}
+              {/* ── Status — read-only Lozenge (Jira-parity, Bucket B 2026-05-09).
+                  In Jira's Create modal, status is NOT editable — it is pre-set
+                  to the issue type's initial workflow status and displayed as a
+                  read-only pill. The canonical value comes from useWorkflowStatuses
+                  (catalyst_workflow_schemes/_statuses) with a 'To Do' hard fallback. */}
               <Field name="status" label="Status">
-                {({ fieldProps }) => {
-                  const selected =
-                    resolvedStatusOptions.find((o) => o.value === form.status) ?? null;
-                  return (
-                    <>
-                      <Select
-                        {...(fieldProps as any)}
-                        inputId="create-story-status"
-                        value={selected}
-                        options={resolvedStatusOptions}
-                        isSearchable={false}
-                        isClearable={false}
-                        onChange={(opt: any) =>
-                          opt && updateField('status', opt.value)
-                        }
-                        formatOptionLabel={(opt: any) => (
-                          <Lozenge appearance={statusAppearance(opt.value)} isBold>
-                            {opt.label}
-                          </Lozenge>
-                        )}
-                      />
-                      <HelperMessage>
-                        This is the initial status upon creation
-                      </HelperMessage>
-                    </>
-                  );
-                }}
+                {() => (
+                  <>
+                    <Box
+                      xcss={xcss({
+                        paddingBlock: 'space.050',
+                        paddingInline: 'space.0',
+                      })}
+                    >
+                      <Lozenge
+                        appearance={statusAppearance(form.status || 'To Do')}
+                        isBold
+                      >
+                        {form.status || 'To Do'}
+                      </Lozenge>
+                    </Box>
+                    <HelperMessage>
+                      Initial status — set by the workflow for this work type
+                    </HelperMessage>
+                  </>
+                )}
               </Field>
 
               {/* ── Summary — required ─────────────────────────────── */}
