@@ -3,7 +3,7 @@ import { createRoot } from "react-dom/client";
 import "./index.css";
 import "./styles/catalyst-typography.css";
 import "./styles/catalyst-theme.css";
-import "./design-system/tokens/tokens.css";
+import "./tokens/jira-parity-overrides.css";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Stale-chunk safeguard

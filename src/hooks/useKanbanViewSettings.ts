@@ -5,6 +5,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useCallback, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
+import { FIELD_ID } from '@/canonical';
 
 export interface VisibleFields {
   cardCover: boolean;
@@ -28,11 +29,19 @@ export interface VisibleFields {
  * canonical table-cell field system.
  */
 export const KANBAN_FIELD_MAP: Partial<Record<keyof VisibleFields, string>> = {
+<<<<<<< HEAD
   workType:    'f:type',
   workItemKey: 'f:key',
   epic:        'f:epic_link',
   priority:    'f:priority',
   assignee:    'f:assignee',
+=======
+  workType:    FIELD_ID.TYPE,
+  workItemKey: FIELD_ID.KEY,
+  epic:        FIELD_ID.EPIC_LINK,
+  priority:    FIELD_ID.PRIORITY,
+  assignee:    FIELD_ID.ASSIGNEE,
+>>>>>>> 7437fef1cd3123c39a4b7fa6d798cd8acdb34af1
 } as const;
 
 /** Jira parity: color cards by a field. 'none' = no colour stripe. */

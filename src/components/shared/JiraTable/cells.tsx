@@ -228,12 +228,12 @@ export type LozengeAppearance =
  * render the span structure manually with measured values.
  */
 const LOZENGE_BG: Record<LozengeAppearance, string> = {
-  success:    'rgb(179, 223, 114)',
-  inprogress: 'rgb(143, 184, 246)',
-  default:    'rgb(221, 222, 225)',
-  moved:      'rgb(243, 214, 100)',
-  removed:    'rgb(255, 143, 115)',
-  new:        'rgb(184, 172, 246)',
+  success:    'var(--cp-jira-status-success-bg)',
+  inprogress: 'var(--cp-jira-status-inprogress-bg)',
+  default:    'var(--cp-jira-status-default-bg)',
+  moved:      'var(--cp-jira-status-moved-bg)',
+  removed:    'var(--cp-jira-status-removed-bg)',
+  new:        'var(--cp-jira-status-new-bg)',
 };
 
 export function StatusPill({
@@ -258,7 +258,7 @@ export function StatusPill({
         fontSize: '11px',
         fontWeight: 653,
         lineHeight: '16px',
-        color: 'rgb(41, 42, 46)',
+        color: 'var(--cp-jira-status-fg)',
         textTransform: 'uppercase',
         letterSpacing: '0.165px',
         overflow: 'hidden',
@@ -464,8 +464,8 @@ export function makeParentCell(getParent: (row: any) => ParentCellInput | null) 
           maxWidth: 260,
           padding: '2px 6px',
           borderRadius: 3,
-          background: '#B3DF72',
-          color: '#292A2E',
+          background: 'var(--cp-jira-epic-chip-bg)',
+          color: 'var(--cp-jira-epic-chip-fg)',
           fontSize: 12,
           fontWeight: 500,
           lineHeight: '16px',
