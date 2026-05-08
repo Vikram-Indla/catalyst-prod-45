@@ -123,8 +123,10 @@ export function CatalystStatusPill({ status, statusCategory, onStatusChange, iss
           display: 'inline-flex',
           alignItems: 'center',
           gap: 6,
-          /* jira-compare 2026-05-05: bold ADS bg tokens + white text to match
-             Jira's saturated status pill (32px height, no border, no radius). */
+          /* jira-compare 2026-05-08: set font-size/weight on button element
+             so getComputedStyle(button) matches Jira's 14px/500 exactly —
+             previously only the inner span had these set, so the button's
+             inherited values (16px/400) diverged from the live Jira probe. */
           height: 32,
           padding: '0 10px',
           border: 'none',
@@ -132,6 +134,9 @@ export function CatalystStatusPill({ status, statusCategory, onStatusChange, iss
           background: statusBg(statusToLozenge(display, statusCategory)).bg,
           cursor: 'pointer',
           fontFamily: 'inherit',
+          fontSize: 14,
+          fontWeight: 500,
+          color: statusBg(statusToLozenge(display, statusCategory)).fg,
           transition: 'filter 0.1s',
         }}
         onMouseEnter={(e) => { e.currentTarget.style.filter = 'brightness(0.88)'; }}

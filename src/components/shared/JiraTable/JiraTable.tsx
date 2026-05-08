@@ -739,21 +739,6 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
       .jira-table-grid table tbody > tr:hover > td {
         background-color: var(--ds-background-neutral-subtle-hovered, #F7F8F9) !important;
       }
-      /* ── "Create child" hover button in Type cell (Jira parity) ──
-         Jira's type cell swaps the issue-type icon for a "+" create-child
-         button when the row is hovered. Use opacity/pointer-events (NOT
-         display:none) so the element remains in layout at all times —
-         display:none causes physical clicks to miss because the element
-         isn't laid out when the mousedown fires.
-         .jira-type-icon  — visible at rest, fades out on row hover
-         .jira-create-child-btn — invisible at rest, appears on row hover */
-      .jira-create-child-btn { opacity: 0; pointer-events: none; }
-      .jira-table-grid table tbody > tr:hover .jira-type-icon { opacity: 0; pointer-events: none; }
-      .jira-table-grid table tbody > tr:hover .jira-create-child-btn { opacity: 1; pointer-events: auto; }
-      /* Keep the icon visible when a cell editor is open (don't flash the
-         create button while the user is mid-edit on the same row). */
-      .jira-table-grid table tbody > tr:has([data-jira-table-editor]:focus-within) .jira-type-icon { opacity: 1; pointer-events: auto; }
-      .jira-table-grid table tbody > tr:has([data-jira-table-editor]:focus-within) .jira-create-child-btn { opacity: 0; pointer-events: none; }
       /* Drag-handle grip — hidden at rest, visible on row hover */
       .jira-table-grid table tbody > tr:hover .jira-drag-handle {
         visibility: visible;
@@ -1189,8 +1174,8 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
                 display: 'flex',
                 alignItems: 'center',
                 gap: 8,
-                padding: '10px 12px',
-                margin: '-10px -12px',  // bleed into the cell padding
+                padding: '4px 12px',
+                margin: '-4px -12px',  // bleed into the cell padding
                 cursor: onToggleGroup ? 'pointer' : 'default',
                 userSelect: 'none',
                 whiteSpace: 'nowrap',
@@ -1226,7 +1211,7 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
                   {(g as any).labelNode}
                 </span>
               ) : (
-                <span style={{ fontSize: 12, fontWeight: 700, color: '#42526E', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                <span style={{ fontSize: 12, fontWeight: 500, color: '#42526E', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
                   {g.label}
                 </span>
               )}

@@ -831,7 +831,7 @@ function ParentChip({ choice }: { choice: { key: string | null; label: string; i
           {choice.key}
         </strong>
       )}
-      <span style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>
+      <span style={{ flex: 1, minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
         {choice.label}
       </span>
     </span>

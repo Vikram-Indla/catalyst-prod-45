@@ -578,10 +578,6 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
   // renderGroupInlineRow prop. On submit / cancel / Esc → set back to null.
   const [inlineCreateGroup, setInlineCreateGroup] = useState<string | null>(null);
   const [inlineCreateSubmitting, setInlineCreateSubmitting] = useState(false);
-  // Jira-parity: clicking the "+" hover button on a type cell opens a
-  // quick-create modal pre-wired with parent_id = clicked row's id.
-  const [childCreateParent, setChildCreateParent] = useState<BacklogItem | null>(null);
-
   // Apr 27 2026 (jira-compare regression iter 3 — View options menu
   // parity with Jira). Toggling "Hide done work items" filters out any
   // row whose status is in DONE_LIKE_STATUSES (Catalyst variants of
@@ -1536,10 +1532,6 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
       align: 'start',
       alwaysVisible: true,
       cell: ({ row: it }) => {
-        // Render the type icon wrapped in hover-swap structure:
-        //  .jira-type-icon  — visible at rest, hidden on tr:hover (CSS in JiraTable.tsx)
-        //  .jira-create-child-btn — hidden at rest, shown on tr:hover
-        // initiatives are non-Jira rows and do NOT get the create-child CTA.
         let icon: React.ReactNode;
         if (it.type === 'initiative') {
           const init = initiativesByKey?.get(it.key || '');
@@ -1574,37 +1566,8 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
           icon = <JiraIssueTypeIcon type={typeMap[it.type as Exclude<BacklogType, 'initiative'>]} size={16} />;
         }
         return (
-          <span style={{ position: 'relative', display: 'inline-flex', alignItems: 'center', width: 20, height: 20 }}>
-            {/* Icon visible at rest; CSS hides on tr:hover */}
-            <span className="jira-type-icon" style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
-              {icon}
-            </span>
-            {/* "Create child" "+" button: CSS shows on tr:hover */}
-            {it.type !== 'initiative' && (
-              <button
-                className="jira-create-child-btn"
-                type="button"
-                title="Create child issue"
-                onClick={(e) => { e.stopPropagation(); setChildCreateParent(it); }}
-                style={{
-                  position: 'absolute',
-                  inset: 0,
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  border: `1px solid ${token('color.border', '#DFE1E6')}`,
-                  borderRadius: 3,
-                  background: token('elevation.surface', '#FFFFFF'),
-                  cursor: 'pointer',
-                  padding: 0,
-                  width: 20,
-                  height: 20,
-                  color: token('color.icon', '#44546F'),
-                }}
-              >
-                <AkAddIcon label="" size="small" />
-              </button>
-            )}
+          <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 20, height: 20 }}>
+            {icon}
           </span>
         );
       },
@@ -2967,22 +2930,6 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
           />
           </div>
         </div>
-
-        {/* Jira-parity: "Create child" modal opened by clicking "+" on the
-            type cell. Pre-fills parent_id so the new row immediately nests
-            under the row that was clicked. */}
-        {childCreateParent && (
-          <ChildCreateModal
-            projectKey={projectKey}
-            parent={childCreateParent}
-            onCreated={() => {
-              queryClient.invalidateQueries({ queryKey: ['backlog-stories-v2', projectId] });
-              queryClient.invalidateQueries({ queryKey: ['backlog-epics', projectId] });
-              setChildCreateParent(null);
-            }}
-            onClose={() => setChildCreateParent(null)}
-          />
-        )}
 
         {/* Fullscreen backdrop — dim layer behind the modal panel.
             Click closes back to compact mode (Jira parity). */}
@@ -5730,179 +5677,5 @@ function EditBacklogItemModal({
         </Modal>
       )}
     </ModalTransition>
-  );
-}
-
-/* ─── ChildCreateModal ───────────────────────────────────────────────────── */
-/**
- * Quick-create modal for child issues.
- * Opened when the user clicks the "+" hover button on the type cell of a row.
- * Pre-fills parent_id so the new issue immediately nests under its parent.
- */
-function ChildCreateModal({
-  projectKey,
-  parent,
-  onCreated,
-  onClose,
-}: {
-  projectKey: string;
-  parent: BacklogItem;
-  onCreated: () => void;
-  onClose: () => void;
-}) {
-  const [summary, setSummary] = useState('');
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const inputRef = useRef<HTMLInputElement>(null);
-
-  useEffect(() => {
-    const t = setTimeout(() => inputRef.current?.focus(), 80);
-    return () => clearTimeout(t);
-  }, []);
-
-  const handleCreate = async () => {
-    const title = summary.trim();
-    if (!title) { inputRef.current?.focus(); return; }
-    if (title.length > 255) {
-      flag.error('Summary must be 255 characters or fewer');
-      return;
-    }
-    setIsSubmitting(true);
-    try {
-      const issueKey = await generateIssueKey(projectKey);
-      const nowIso = new Date().toISOString();
-      // Child issue type follows Jira's hierarchy: Epic→Feature, Feature→Story,
-      // Story/Bug/Incident→Sub-task. Default 'Story' for any unrecognised parent.
-      const childTypeMap: Record<BacklogType, string> = {
-        initiative: 'Story',
-        epic: 'Feature',
-        feature: 'Story',
-        story: 'Sub-task',
-        bug: 'Sub-task',
-        incident: 'Sub-task',
-      };
-      const childType = childTypeMap[parent.type] ?? 'Story';
-      const { error } = await supabase.from('ph_issues').insert({
-        issue_key: issueKey,
-        project_key: projectKey,
-        summary: title,
-        issue_type: childType,
-        status: 'To Do',
-        priority: 'medium',
-        source: 'catalyst',
-        // ph_issues uses parent_key (issue key string), not parent_id (UUID)
-        parent_key: parent.key ?? null,
-        parent_summary: parent.title ?? null,
-        jira_created_at: nowIso,
-        jira_updated_at: nowIso,
-      } as any);
-      if (error) throw error;
-      flag.success(`Created ${issueKey} — ${title}`);
-      onCreated();
-    } catch {
-      flag.error('Failed to create child issue');
-      setIsSubmitting(false);
-    }
-  };
-
-  // Use createPortal (same pattern as DangerConfirmModal) — @atlaskit/modal-dialog
-  // ModalTransition has an empty-portal bug on this surface. createPortal is reliable.
-  if (typeof document === 'undefined') return null;
-  return ReactDOM.createPortal(
-    <div
-      role="presentation"
-      style={{
-        position: 'fixed', inset: 0,
-        background: 'rgba(9, 30, 66, 0.54)',
-        zIndex: 9999,
-        display: 'flex', alignItems: 'flex-start', justifyContent: 'center',
-        paddingTop: 80,
-      }}
-      onMouseDown={(e) => { if (e.target === e.currentTarget) onClose(); }}
-    >
-      <div
-        role="dialog"
-        aria-modal="true"
-        aria-label="Create child issue"
-        style={{
-          width: 560, maxWidth: 'calc(100vw - 48px)',
-          background: token('elevation.surface.overlay', '#FFFFFF'),
-          borderRadius: 8,
-          boxShadow: '0 8px 16px -4px rgba(9,30,66,.25), 0 0 0 1px rgba(9,30,66,.08)',
-          display: 'flex', flexDirection: 'column',
-        }}
-      >
-        {/* Header */}
-        <div style={{
-          padding: '20px 24px 0',
-          fontSize: 20, fontWeight: 600,
-          color: token('color.text', '#172B4D'),
-        }}>
-          Create child issue
-        </div>
-
-        {/* Body */}
-        <div style={{ padding: '16px 24px' }}>
-          {/* Parent context chip */}
-          <div style={{
-            display: 'flex', alignItems: 'center', gap: 6,
-            marginBottom: 16,
-            padding: '4px 8px',
-            background: token('color.background.neutral', '#F4F5F7'),
-            borderRadius: 3,
-            fontSize: 12,
-            color: token('color.text.subtle', '#42526E'),
-          }}>
-            <JiraIssueTypeIcon
-              type={{
-                initiative: 'Business Request',
-                epic: 'Epic',
-                feature: 'Feature',
-                story: 'Story',
-                bug: 'QA Bug',
-                incident: 'Production Incident',
-              }[parent.type] ?? 'Story'}
-              size={14}
-            />
-            <span style={{ fontWeight: 500 }}>{parent.key || '—'}</span>
-            <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 300 }}>
-              {parent.title}
-            </span>
-          </div>
-
-          <div style={{ marginBottom: 4, fontSize: 12, fontWeight: 600, color: token('color.text.subtlest', '#6B778C') }}>
-            Summary *
-          </div>
-          <Textfield
-            ref={inputRef}
-            value={summary}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSummary(e.target.value)}
-            onKeyDown={(e: React.KeyboardEvent) => {
-              if (e.key === 'Enter') handleCreate();
-              if (e.key === 'Escape') onClose();
-            }}
-            placeholder="What needs to be done?"
-            isDisabled={isSubmitting}
-          />
-        </div>
-
-        {/* Footer */}
-        <div style={{
-          display: 'flex', justifyContent: 'flex-end', gap: 8,
-          padding: '0 24px 24px',
-        }}>
-          <Button appearance="subtle" onClick={onClose} isDisabled={isSubmitting}>
-            Cancel
-          </Button>
-          <Button
-            appearance="primary"
-            isDisabled={!summary.trim() || isSubmitting}
-            onClick={handleCreate}
-          >
-            {isSubmitting ? 'Creating…' : 'Create'}
-          </Button>
-        </div>
-      </div>
-    </div>,
-    document.body
   );
 }
