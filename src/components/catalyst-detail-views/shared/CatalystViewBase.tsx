@@ -354,6 +354,16 @@ export function CatalystViewBase({
             sit immediately after the issue key with tooltips such as
             "Next work item 'BAU-5421'".
             ──────────────────────────────────────────────────────────────── */}
+
+        {/* ── A. TOP BAR ─────────────────────────────────────────────────────
+            Jira-parity (2026-04-19): breadcrumb + inline Prev/Next chevrons
+            render in ALL modes (panel, modal, full-page). The BAU surface
+            at /project-hub/:key/allwork uses panelMode but has no outer
+            toolbar that owns the breadcrumb, so the detail view itself
+            must render it — matches Atlassian's pattern where chevrons
+            sit immediately after the issue key with tooltips such as
+            "Next work item 'BAU-5421'".
+            ──────────────────────────────────────────────────────────────── */}
         <div style={{
           display: 'flex', alignItems: 'center',
           justifyContent: 'space-between',
@@ -601,11 +611,15 @@ export function CatalystViewBase({
      the modal branch are now dead in this path but kept for the panel /
      fullpage return below so we don't duplicate the style map). */
   if (!panelMode && !fullPageMode) {
+    // jira-compare 2026-05-08: removed height:'90vh' + overflow:'hidden' from the root wrapper.
+    // @atlaskit/modal-dialog's ScrollContainer already has overflow:hidden + its own max-height
+    // context. Setting height:90vh inside it created a double height context that clipped the
+    // top bar (modal header overlap). The modal dialog owns its own sizing; our wrapper just
+    // needs flex layout. Each column (left/right) independently scrolls via overflowY:'auto'.
     return (
       <Modal onClose={onClose} width={1280} shouldScrollInViewport={false}>
         <div data-cv-scope style={{
-          height: '90vh', minHeight: 600,
-          display: 'flex', flexDirection: 'column', overflow: 'hidden',
+          minHeight: 600, display: 'flex', flexDirection: 'column',
         }}>
           {cardContents}
         </div>
