@@ -1,7 +1,7 @@
 import { useState, useMemo, useEffect, lazy, Suspense } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Plus, FolderKanban, FolderOpen, Star, RefreshCw } from 'lucide-react';
-import type { ViewMode, ProjectFilters, SortColumn, SortDirection } from '@/types/projecthub';
+import type { ProjectFilters, SortColumn, SortDirection } from '@/types/projecthub';
 import { DEFAULT_FILTERS } from '@/types/projecthub';
 import {
   useProjects,
@@ -15,7 +15,6 @@ import { useMemberProfiles } from '@/components/projecthub/MemberStack';
 
 import { AllProjectsToolbar } from '@/components/projecthub/AllProjectsToolbar';
 import { AllProjectsTable } from '@/components/projecthub/AllProjectsTable';
-import { AllProjectsCardGrid } from '@/components/projecthub/AllProjectsCardGrid';
 import { ProjectDetailPanel } from '@/components/projecthub/ProjectDetailPanel';
 import { CreateSpaceModal } from '@/spaces';
 import { JiraSyncPanel, SyncCTALabel } from '@/components/projecthub/JiraSyncPanel';
@@ -23,7 +22,8 @@ import { toast } from 'sonner';
 import { CatalystPageHeader } from '@/components/shared/CatalystPageHeader';
 import { useNavBreakpoint } from '@/hooks/useNavBreakpoint';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { supabase, typedQuery } from '@/integrations/supabase/client';
+import { supabase } from '@/integrations/supabase/client';
+import { buildSyncCountFilter, SYNC_COUNT_DATE_BOUNDARY } from '@/hooks/projecthub-sync-utils';
 const WiringAuditLazy = lazy(() => import('@/components/project-hub/WiringAudit').then(m => ({ default: m.WiringAudit })));
 import {
   Select,
@@ -38,7 +38,7 @@ export default function AllProjectsPage() {
   // "Create project" label) into icon-only triggers at <1024px so they fit
   // alongside the title on iPhone/iPad. Desktop ≥1024px untouched.
   const { isNarrow } = useNavBreakpoint();
-  const [view, setView] = useState<ViewMode>('list');
+  // Card view deprecated — list is the only mode.
   const [filters, setFilters] = useState<ProjectFilters>(DEFAULT_FILTERS);
   const [sortCol, setSortCol] = useState<SortColumn>('total_issues');
   const [sortDir, setSortDir] = useState<SortDirection>('desc');
@@ -63,45 +63,32 @@ export default function AllProjectsPage() {
   const toggleFav = useToggleFavorite();
   useProjectsRealtime();
 
-  // Fetch real issue counts from ph_issues + catalyst_issues to enrich sort
+  // Fetch 2026+ issue counts from ph_issues (jira_updated_at >= 2026-01-01 only).
+  // Uses buildSyncCountFilter so the boundary is tested and single-sourced.
   const { data: syncCountMap } = useQuery({
-    queryKey: ['project-sync-counts'],
+    queryKey: ['project-sync-counts-2026'],
     queryFn: async () => {
-      const map: Record<string, number> = {};
-      const [phRes, catRes] = await Promise.all([
-        typedQuery('v_issue_counts').select('project_key, cnt'),
-        (supabase as any).from('catalyst_issues').select('projects!inner(key)'),
-      ]);
-      const phRows = (phRes as any).data;
-      if (phRows) {
-        phRows.forEach((r: any) => {
-          if (r.project_key) map[r.project_key] = (map[r.project_key] || 0) + Number(r.cnt || 0);
-        });
-      }
-      const catRows = catRes.data;
-      if (catRows) {
-        catRows.forEach((r: any) => {
-          const k = r.projects?.key;
-          if (k) map[k] = (map[k] || 0) + 1;
-        });
-      }
-      return map;
+      const { data } = await (supabase as any)
+        .from('ph_issues')
+        .select('project_key, jira_updated_at')
+        .gte('jira_updated_at', SYNC_COUNT_DATE_BOUNDARY)
+        .is('deleted_at', null)
+        .is('jira_removed_at', null)
+        .limit(10000);
+      return buildSyncCountFilter((data ?? []) as Array<{ project_key: string | null; jira_updated_at: string | null }>);
     },
     staleTime: 3 * 60_000,
     gcTime: 10 * 60_000,
     refetchOnWindowFocus: false,
   });
 
-  // Enrich projects with real sync counts so sorting uses actual numbers
+  // Enrich projects with 2026+ Jira issue counts
   const enrichedProjects = useMemo(() => {
     if (!syncCountMap) return projects;
-    return projects.map(p => {
-      const syncCount = syncCountMap[p.project_key];
-      if (syncCount !== undefined && syncCount > (p.total_issues ?? 0)) {
-        return { ...p, total_issues: syncCount };
-      }
-      return p;
-    });
+    return projects.map(p => ({
+      ...p,
+      jira_issue_count: syncCountMap[p.project_key] ?? 0,
+    }));
   }, [projects, syncCountMap]);
 
   const allMemberIds = useMemo(() => enrichedProjects.flatMap(p => p.member_ids ?? []), [enrichedProjects]);
@@ -130,7 +117,7 @@ export default function AllProjectsPage() {
     return { ...base, statusMyProjects: myCount };
   }, [projects, favorites, currentUserId]);
 
-  const effectivePageSize = (view === 'cards' || view === 'card') ? 12 : perPage;
+  const effectivePageSize = perPage;
   const totalPages = Math.max(1, Math.ceil(filtered.length / effectivePageSize));
   const pageData = filtered.slice((page - 1) * effectivePageSize, page * effectivePageSize);
 
@@ -221,8 +208,6 @@ export default function AllProjectsPage() {
         {/* Toolbar */}
         <div className="mb-2.5">
           <AllProjectsToolbar
-            view={view}
-            onViewChange={v => { setView(v); setPage(1); }}
             filters={filters}
             onFilterChange={handleFilterChange}
             stats={stats}
@@ -291,7 +276,8 @@ export default function AllProjectsPage() {
               Try adjusting your search or filter criteria.
             </p>
           </div>
-        ) : view === 'list' ? (
+        ) : (
+          // Card view deprecated — list is the only mode.
           <div className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-lg border border-slate-100 dark:border-slate-700 bg-white dark:!bg-[var(--ds-surface,#0A0A0A)]">
             <div className="flex-1 min-h-0 overflow-auto">
               <AllProjectsTable
@@ -308,7 +294,6 @@ export default function AllProjectsPage() {
                 pageOffset={startIdx}
               />
             </div>
-            {/* Pagination Footer — only when totalPages > 1 */}
             {totalPages > 1 && (
               <div
                 className="flex shrink-0 items-center justify-between px-4 py-2 border-t border-slate-100 dark:border-slate-700 bg-white dark:!bg-[var(--ds-surface,#0A0A0A)]"
@@ -341,40 +326,6 @@ export default function AllProjectsPage() {
                       <SelectItem value="50">50</SelectItem>
                     </SelectContent>
                   </Select>
-                </div>
-              </div>
-            )}
-          </div>
-        ) : (
-          <div className="pb-6">
-            <AllProjectsCardGrid
-              projects={pageData}
-              favoriteIds={favorites}
-              onToggleFav={(id, fav) => toggleFav.mutate({ projectId: id, isFavorited: fav })}
-              onSelectProject={id => setSelectedProject(id)}
-            />
-            {totalPages > 1 && (
-              <div
-                className="mt-6 flex items-center justify-between px-4 py-2 border-t border-slate-100 dark:border-slate-700 bg-white dark:!bg-[var(--ds-surface,#0A0A0A)] rounded-lg"
-                style={{ fontSize: 13 }}
-              >
-                <span className="text-muted-foreground">
-                  Showing {startIdx + 1}–{endIdx} of {filtered.length} projects
-                </span>
-                <div className="flex items-center gap-2">
-                  {Array.from({ length: totalPages }, (_, i) => i + 1).map(n => (
-                    <button
-                      key={n}
-                      onClick={() => setPage(n)}
-                      className={`w-8 h-8 rounded text-sm border focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2 outline-none cursor-pointer ${
-                        page === n
-                          ? 'bg-blue-600 text-white border-blue-600 font-semibold'
-                          : 'bg-transparent border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800'
-                      }`}
-                    >
-                      {n}
-                    </button>
-                  ))}
                 </div>
               </div>
             )}

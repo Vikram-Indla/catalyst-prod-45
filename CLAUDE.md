@@ -4,6 +4,12 @@ These rules apply to every implementation task. No exceptions.
 
 ---
 
+## Dev Server
+
+The Catalyst local dev server always runs on **http://localhost:8080**. Never use 8081. When navigating in Chrome MCP, always use port 8080.
+
+---
+
 ## Shell Commands — Mandatory Patterns
 
 **Never use `cd /path && git ...`** — this triggers a hardcoded Claude Code security gate that always prompts and cannot be suppressed.

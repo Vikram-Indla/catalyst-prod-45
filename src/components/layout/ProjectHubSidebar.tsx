@@ -24,6 +24,7 @@ import {
   Clock,
   X,
 } from 'lucide-react';
+import { ProjectIcon } from '@/components/shared/ProjectIcon';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { SidebarBase, SidebarConfig, SidebarSection } from './SidebarBase';
 import { useProjectFavorites, useProjects } from '@/hooks/useProjectHub';
@@ -62,20 +63,30 @@ export function ProjectHubSidebar({ expanded, onToggle, className }: ProjectHubS
 
   preloadProjectHubChunks();
 
-  // Build favourites section items from starred projects
+  // Build favourites section items from starred projects.
+  // Each item gets a ProjectIcon-based component so the real project avatar
+  // (from /admin/icons or projects.avatar_url) shows instead of FolderKanban.
   const favouritesSection: SidebarSection | null = useMemo(() => {
     const favProjects = projects.filter(p => favoriteIds.has(p.id));
     if (favProjects.length === 0) return null;
     return {
       title: 'Favourites',
-      items: favProjects.map(p => ({
-        id: `fav-${p.id}`,
-        title: p.name,
-        path: `/project-hub/${p.project_key}/dashboard`,
-        icon: FolderKanban,
-        exact: false,
-        alwaysStarred: true,
-      })),
+      items: favProjects.map(p => {
+        const pk = p.project_key;
+        const av = p.icon_avatar_url ?? null;
+        const col = p.icon_color ?? null;
+        const FavIcon = ({ className }: { className?: string }) => (
+          <ProjectIcon projectKey={pk} avatarUrl={av} color={col} size="xsmall" className={className} />
+        );
+        return {
+          id: `fav-${p.id}`,
+          title: p.name,
+          path: `/project-hub/${pk}/dashboard`,
+          icon: FavIcon,
+          exact: false,
+          alwaysStarred: true,
+        };
+      }),
     };
   }, [projects, favoriteIds]);
 
@@ -293,7 +304,7 @@ function ModuleLevelSidebar({ expanded, onToggle, className, favouritesSection }
                   onClick={() => handleRecentClick(item)}
                   className="group"
                   style={{
-                    display: 'flex', alignItems: 'center', gap: 8,
+                    display: 'flex', alignItems: 'flex-start', gap: 8,
                     padding: '5px 12px 5px 28px', cursor: 'pointer',
                     borderRadius: 3, margin: '0 4px',
                     transition: 'background 80ms ease',
@@ -301,37 +312,43 @@ function ModuleLevelSidebar({ expanded, onToggle, className, favouritesSection }
                   onMouseEnter={e => e.currentTarget.style.background = token('color.background.neutral.subtle.hovered')}
                   onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
                 >
+                  {/* Type colour dot — top-aligned so it sits beside the summary line */}
                   <span
                     style={{
                       width: 8, height: 8, borderRadius: 2,
                       background: issueTypeColor(item.entity_type),
-                      flexShrink: 0,
+                      flexShrink: 0, marginTop: 4,
                     }}
                   />
+                  {/* Two-line block: summary (primary) + key (secondary) */}
                   <span
-                    style={{
-                      fontSize: 11,
-                      fontWeight: 600,
-                      color: token('color.text.subtle'),
-                      fontFamily: 'var(--cp-font-mono)',
-                      flexShrink: 0,
-                    }}
+                    style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 1 }}
                   >
-                    {item.entity_key}
-                  </span>
-                  <span
-                    style={{
-                      fontSize: 13,
-                      color: token('color.text'),
-                      fontWeight: 450,
-                      overflow: 'hidden',
-                      textOverflow: 'ellipsis',
-                      whiteSpace: 'nowrap',
-                      flex: 1,
-                      fontFamily: 'var(--cp-font-body)',
-                    }}
-                  >
-                    {item.display_summary}
+                    <span
+                      style={{
+                        fontSize: 13,
+                        fontWeight: 500,
+                        color: token('color.text'),
+                        fontFamily: 'var(--cp-font-body)',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        whiteSpace: 'nowrap',
+                      }}
+                      title={item.display_summary ?? undefined}
+                    >
+                      {item.display_summary}
+                    </span>
+                    <span
+                      style={{
+                        fontSize: 11,
+                        fontWeight: 400,
+                        color: token('color.text.subtlest'),
+                        fontFamily: 'var(--cp-font-mono)',
+                        letterSpacing: '0.01em',
+                      }}
+                    >
+                      {item.entity_key}
+                    </span>
                   </span>
                   <button
                     className="opacity-0 group-hover:opacity-100"
@@ -341,6 +358,7 @@ function ModuleLevelSidebar({ expanded, onToggle, className, favouritesSection }
                       border: 'none', background: 'transparent',
                       cursor: 'pointer', flexShrink: 0,
                       color: token('color.text.subtlest'),
+                      marginTop: 2,
                     }}
                     title="Remove from recents"
                     aria-label="Remove from recents"

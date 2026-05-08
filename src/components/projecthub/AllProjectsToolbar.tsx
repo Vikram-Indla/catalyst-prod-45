@@ -16,7 +16,6 @@ import type { ProjectFilters, ViewMode } from '@/types/projecthub';
 import Tabs, { Tab, TabList } from '@atlaskit/tabs';
 import Select from '@atlaskit/select';
 import Textfield from '@atlaskit/textfield';
-import Button from '@atlaskit/button/new';
 // Block A rule 3 (2026-05-01): swap @atlaskit/badge → @atlaskit/lozenge for
 // tab-count chips. Lozenge is the canonical ADS primitive for state/scalar
 // chips and emits a separate text node so SR reads "All, 9 items" instead of
@@ -25,14 +24,11 @@ import Lozenge from '@atlaskit/lozenge';
 import { token } from '@atlaskit/tokens';
 import SearchIcon from '@atlaskit/icon/glyph/search';
 import CrossIcon from '@atlaskit/icon/glyph/cross';
-// View-toggle: Atlaskit doesn't ship list/grid glyphs. These two Lucide imports
-// are explicitly retained per CLAUDE.md §7A allowance (UI chrome with no
-// Atlaskit equivalent). Replace if @atlaskit/icon-lab adds them.
-import { List as ListIcon, LayoutGrid as GridIcon } from 'lucide-react';
 
 interface ToolbarProps {
-  view: ViewMode;
-  onViewChange: (v: ViewMode) => void;
+  // view/onViewChange retained for API compat but unused — card view deprecated.
+  view?: ViewMode;
+  onViewChange?: (v: ViewMode) => void;
   filters: ProjectFilters;
   onFilterChange: (f: ProjectFilters) => void;
   stats: {
@@ -100,106 +96,81 @@ export function AllProjectsToolbar({
   }
 
   return (
-    <div
-      style={{
-        display: 'flex',
-        alignItems: 'center',
-        gap: 12,
-        flexWrap: 'wrap',
-      }}
-    >
-      {/* Atlaskit Tabs — All / My Projects / Starred */}
-      <div style={{ minWidth: 320 }}>
-        <Tabs
-          id="all-projects-tabs"
-          selected={activeTabIdx}
-          onChange={handleTabSelect}
-        >
-          <TabList>
-            {TABS.map((tab) => {
-              const count = getCount(tab);
-              return (
-                <Tab key={tab}>
-                  <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
-                    {tab}
-                    {/* Visually-hidden comma is the SR pause that makes
-                        "All, 9 items" land correctly. The Lozenge then
-                        carries the visible count chip. */}
-                    <span style={{
-                      position: 'absolute',
-                      width: 1,
-                      height: 1,
-                      padding: 0,
-                      margin: -1,
-                      overflow: 'hidden',
-                      clip: 'rect(0,0,0,0)',
-                      whiteSpace: 'nowrap',
-                      borderWidth: 0,
-                    }}>, </span>
-                    <Lozenge appearance="default">{count}</Lozenge>
-                  </span>
-                </Tab>
-              );
-            })}
-          </TabList>
-        </Tabs>
-      </div>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
+      {/* Row 1: Tabs — full width, own row so Atlaskit's TabList separator
+          doesn't visually bleed into the filters on the same flex line. */}
+      <Tabs
+        id="all-projects-tabs"
+        selected={activeTabIdx}
+        onChange={handleTabSelect}
+      >
+        <TabList>
+          {TABS.map((tab) => {
+            const count = getCount(tab);
+            return (
+              <Tab key={tab}>
+                <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+                  {tab}
+                  <span style={{
+                    position: 'absolute',
+                    width: 1, height: 1, padding: 0, margin: -1,
+                    overflow: 'hidden', clip: 'rect(0,0,0,0)',
+                    whiteSpace: 'nowrap', borderWidth: 0,
+                  }}>, </span>
+                  <Lozenge appearance="default">{count}</Lozenge>
+                </span>
+              </Tab>
+            );
+          })}
+        </TabList>
+      </Tabs>
 
-      {/* Atlaskit Select — Status filter (always shows "Status:" prefix) */}
-      <div style={{ minWidth: 180 }}>
-        <Select<StatusOption>
-          inputId="status-filter"
-          options={STATUS_SELECT_OPTIONS}
-          value={currentStatus}
-          onChange={(v) => handleStatusChange(v)}
-          isSearchable={false}
-          spacing="compact"
-          aria-label="Filter by status"
-          menuPortalTarget={typeof document !== 'undefined' ? document.body : undefined}
-          styles={{
-            menuPortal: (base: any) => ({ ...base, zIndex: 9999 }),
-          }}
-          components={{
-            SingleValue: (props: any) => (
-              <div
-                {...props.innerProps}
-                style={{
-                  gridArea: '1 / 1 / 2 / 3',
-                  color: token('color.text'),
-                  fontSize: 13,
-                  marginLeft: 2,
-                  marginRight: 2,
-                  maxWidth: '100%',
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis',
-                  whiteSpace: 'nowrap',
-                }}
-              >
-                <span style={{ color: token('color.text.subtle') }}>Status: </span>
-                {props.data.label}
-              </div>
-            ),
-          }}
-        />
-      </div>
+      {/* Row 2: Status filter + Search (right-aligned). Card view deprecated —
+          view toggle removed. List is the only mode. */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, paddingTop: 8 }}>
+        <div style={{ minWidth: 180 }}>
+          <Select<StatusOption>
+            inputId="status-filter"
+            options={STATUS_SELECT_OPTIONS}
+            value={currentStatus}
+            onChange={(v) => handleStatusChange(v)}
+            isSearchable={false}
+            spacing="compact"
+            aria-label="Filter by status"
+            menuPortalTarget={typeof document !== 'undefined' ? document.body : undefined}
+            styles={{ menuPortal: (base: any) => ({ ...base, zIndex: 9999 }) }}
+            components={{
+              SingleValue: (props: any) => (
+                <div
+                  {...props.innerProps}
+                  style={{
+                    gridArea: '1 / 1 / 2 / 3',
+                    color: token('color.text'),
+                    fontSize: 13,
+                    marginLeft: 2,
+                    marginRight: 2,
+                    maxWidth: '100%',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    whiteSpace: 'nowrap',
+                  }}
+                >
+                  <span style={{ color: token('color.text.subtle') }}>Status: </span>
+                  {props.data.label}
+                </div>
+              ),
+            }}
+          />
+        </div>
 
-      {/* Right side: Atlaskit Textfield search + view toggle */}
-      <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 8 }}>
-        <div style={{ width: 240 }}>
+        <div style={{ marginLeft: 'auto', width: 240 }}>
           <Textfield
             value={localSearch}
             onChange={(e) => setLocalSearch((e.target as HTMLInputElement).value)}
             placeholder="Search projects..."
             aria-label="Search projects"
             elemBeforeInput={
-              <span
-                style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  paddingLeft: 8,
-                  color: token('color.text.subtle'),
-                }}
-              >
+              <span style={{ display: 'inline-flex', alignItems: 'center', paddingLeft: 8, color: token('color.text.subtle') }}>
                 <SearchIcon label="" size="small" />
               </span>
             }
@@ -209,50 +180,13 @@ export function AllProjectsToolbar({
                   type="button"
                   onClick={() => setLocalSearch('')}
                   aria-label="Clear search"
-                  style={{
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    background: 'transparent',
-                    border: 'none',
-                    cursor: 'pointer',
-                    paddingRight: 8,
-                    color: token('color.text.subtle'),
-                  }}
+                  style={{ display: 'inline-flex', alignItems: 'center', background: 'transparent', border: 'none', cursor: 'pointer', paddingRight: 8, color: token('color.text.subtle') }}
                 >
                   <CrossIcon label="" size="small" />
                 </button>
               ) : undefined
             }
           />
-        </div>
-
-        {/* View toggle — Atlaskit Buttons with isSelected */}
-        <div
-          style={{
-            display: 'inline-flex',
-            border: `1px solid ${token('color.border')}`,
-            borderRadius: 4,
-            overflow: 'hidden',
-          }}
-        >
-          <Button
-            appearance="subtle"
-            spacing="compact"
-            isSelected={view === 'list'}
-            onClick={() => onViewChange('list')}
-            aria-label="List view"
-          >
-            <ListIcon size={14} />
-          </Button>
-          <Button
-            appearance="subtle"
-            spacing="compact"
-            isSelected={view === 'cards' || view === 'card'}
-            onClick={() => onViewChange('cards')}
-            aria-label="Grid view"
-          >
-            <GridIcon size={14} />
-          </Button>
         </div>
       </div>
     </div>

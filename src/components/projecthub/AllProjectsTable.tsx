@@ -27,6 +27,7 @@ import AKModal, { ModalBody, ModalFooter, ModalHeader, ModalTitle, ModalTransiti
 import AKButton from '@atlaskit/button/new';
 import { MenuGroup, ButtonItem, Section } from '@atlaskit/menu';
 import { useTrackRecentItem } from '@/hooks/useRecentProjectItems';
+import { ProjectIcon } from '@/components/shared/ProjectIcon';
 
 // ── Utilities ──────────────────────────────────────────
 const BADGE_COLORS = ['var(--ds-text-brand, #3B82F6)', '#6366F1', '#0891B2', 'var(--ds-text-subtle, #475569)', '#0D9488', '#78716C'];
@@ -216,8 +217,9 @@ function LeadReassignPopover({ project }: { project: ProjectListItem }) {
         onClick={(e) => { e.stopPropagation(); setOpen(o => !o); }}
         aria-label={`Lead: ${displayLead.name || 'unassigned'} (click to reassign)`}
         aria-expanded={open}
-        style={{ pointerEvents: 'auto' }}
-        className="inline-flex items-center gap-2 max-w-full overflow-hidden rounded-md px-1.5 py-1 -ml-1.5 bg-transparent border-0 cursor-pointer hover:bg-slate-100 dark:hover:bg-white/5 transition-colors focus-visible:ring-2 focus-visible:ring-blue-600 outline-none"
+        style={{ display: 'flex', alignItems: 'center', gap: 8, maxWidth: '100%', overflow: 'hidden', borderRadius: 4, padding: '4px 6px', marginLeft: -6, background: 'transparent', border: 0, cursor: 'pointer', outline: 'none', pointerEvents: 'auto' }}
+        onMouseEnter={e => { e.currentTarget.style.background = token('color.background.neutral.subtle.hovered'); }}
+        onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
       >
         {displayLead.name ? (
           <>
@@ -623,7 +625,7 @@ function MemberManagePopover({ project }: { project: ProjectListItem }) {
         aria-label={memberIds.length > 0 ? `${memberIds.length} members. Click to manage.` : 'Add members'}
         aria-expanded={open}
         style={{
-          display: 'inline-flex',
+          display: 'flex',
           alignItems: 'center',
           gap: 8,
           cursor: 'pointer',
@@ -743,7 +745,15 @@ function RowActionMenu({ project }: { project: ProjectListItem }) {
             ref={triggerRef as React.Ref<HTMLButtonElement>}
             onClick={(e) => { e.stopPropagation(); triggerProps.onClick?.(e as any); }}
             aria-label={`Actions for ${project.name}`}
-            className="flex h-7 w-7 items-center justify-center rounded text-slate-500 dark:text-[var(--ds-text-subtlest,#A1A1A1)] hover:bg-slate-100 dark:hover:bg-white/5 hover:text-slate-800 dark:hover:text-[var(--ds-text,#EDEDED)] bg-transparent border-none cursor-pointer focus-visible:ring-2 focus-visible:ring-blue-600 outline-none transition-colors"
+            style={{
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              width: 28, height: 28, borderRadius: 4,
+              color: token('color.text.subtle'),
+              background: 'transparent', border: 'none',
+              cursor: 'pointer', outline: 'none',
+            }}
+            onMouseEnter={e => { e.currentTarget.style.background = token('color.background.neutral.subtle.hovered'); e.currentTarget.style.color = token('color.text'); }}
+            onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = token('color.text.subtle'); }}
           >
             <MoreHorizontal size={16} />
           </button>
@@ -756,11 +766,8 @@ function RowActionMenu({ project }: { project: ProjectListItem }) {
           <DropdownItem onClick={() => { setRenameValue(project.name); setRenameOpen(true); }}>
             Rename
           </DropdownItem>
-          <DropdownItem
-            onClick={() => navigate(`/project-hub/${project.project_key}/sync`)}
-            isDisabled
-          >
-            Sync settings
+          <DropdownItem onClick={() => navigate(`/project-hub/${project.project_key}/settings`)}>
+            Project settings
           </DropdownItem>
         </DropdownItemGroup>
         <DropdownItemGroup hasSeparator>
@@ -884,11 +891,11 @@ const SORTABLE_PROJECT_KEYS = new Set(Object.keys(COL_TO_SORT));
 // additions: Star (left-edge, locked), Members, Sync, Actions (right-edge).
 const PROJECT_COLUMNS: TColDef[] = [
   { key: 'star', label: '', defaultWidth: 32, minWidth: 32, locked: true },
-  { key: 'project_name', label: 'NAME', defaultWidth: 280, minWidth: 200 },
-  { key: 'project_key', label: 'KEY', defaultWidth: 90, minWidth: 70 },
-  { key: 'lead', label: 'LEAD', defaultWidth: 180, minWidth: 130 },
-  { key: 'members', label: 'MEMBERS', defaultWidth: 160, minWidth: 100 },
-  { key: 'sync', label: 'SYNC', defaultWidth: 200, minWidth: 110 },
+  { key: 'project_name', label: 'Name', defaultWidth: 280, minWidth: 200 },
+  { key: 'project_key', label: 'Key', defaultWidth: 90, minWidth: 70 },
+  { key: 'lead', label: 'Lead', defaultWidth: 180, minWidth: 130 },
+  { key: 'members', label: 'Members', defaultWidth: 160, minWidth: 100 },
+  { key: 'sync', label: 'Sync', defaultWidth: 200, minWidth: 110 },
   { key: 'actions', label: '', defaultWidth: 40, minWidth: 40, locked: true },
 ];
 
@@ -961,47 +968,26 @@ export function AllProjectsTable({
     onResizeStart, onDragStart, onDragOver, onDragEnd,
   } = useTableColumns('projects', PROJECT_COLUMNS);
 
-  // Per-project sync data
-  const { data: syncData } = useQuery({
-    queryKey: ['project-sync-data'],
+  // Last sync timestamp from ph_sync_log — used for the "X ago" display.
+  // Issue counts come from p.jira_issue_count (ph_issues 2026+, enriched by AllProjectsPage).
+  const { data: lastSyncAt } = useQuery({
+    queryKey: ['project-last-sync-at'],
     queryFn: async () => {
-      const countMap: Record<string, number> = {};
-      const { data: viewRows, error: viewError } = await typedQuery('v_issue_counts')
-        .select('project_key, cnt');
-
-      if (!viewError && viewRows) {
-        viewRows.forEach((r: any) => {
-          if (r.project_key) {
-            countMap[r.project_key] = (countMap[r.project_key] || 0) + Number(r.cnt || 0);
-          }
-        });
-      }
-
       const { data: lastSync } = await typedQuery('ph_sync_log')
-        .select('completed_at, projects_synced')
+        .select('completed_at')
         .in('status', ['success', 'warning', 'running'])
         .not('completed_at', 'is', null)
         .order('completed_at', { ascending: false })
         .limit(1)
         .maybeSingle();
-
-      let fallbackSyncAt: string | null = null;
-      if (!lastSync?.completed_at) {
-        const { data: recentIssue } = await typedQuery('ph_issues')
-          .select('last_synced_at')
-          .not('last_synced_at', 'is', null)
-          .order('last_synced_at', { ascending: false })
-          .limit(1)
-          .maybeSingle();
-        fallbackSyncAt = recentIssue?.last_synced_at || null;
-      }
-
-      const syncedFromLog = new Set<string>(lastSync?.projects_synced || []);
-      const syncedFromIssues = new Set<string>(Object.keys(countMap).filter(k => countMap[k] > 0));
-      const syncedProjectKeys = new Set<string>([...syncedFromLog, ...syncedFromIssues]);
-      const effectiveSyncAt = lastSync?.completed_at || fallbackSyncAt || null;
-
-      return { countMap, lastSyncAt: effectiveSyncAt, syncedProjectKeys };
+      if (lastSync?.completed_at) return lastSync.completed_at as string;
+      const { data: recentIssue } = await typedQuery('ph_issues')
+        .select('last_synced_at')
+        .not('last_synced_at', 'is', null)
+        .order('last_synced_at', { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      return (recentIssue?.last_synced_at as string | null) ?? null;
     },
     refetchInterval: 5 * 60_000,
     staleTime: 3 * 60_000,
@@ -1012,40 +998,76 @@ export function AllProjectsTable({
   const renderProjectCell = (colKey: string, p: ProjectListItem, idx: number) => {
     const isFav = favoriteIds.has(p.id);
     const active = isActiveStatus(p.status);
-    const badgeColor = getBadgeColor(p.id);
     const rowNum = pageOffset + idx + 1;
-    const issueCount = syncData?.countMap?.[p.project_key] ?? p.total_issues ?? 0;
-    const wasSynced = syncData?.syncedProjectKeys?.has(p.project_key) || !!p.last_synced_at || issueCount > 0;
-    const syncTs = wasSynced ? (syncData?.lastSyncAt || p.last_synced_at) : null;
+    const issueCount = p.jira_issue_count ?? 0;
+    const wasSynced = issueCount > 0 || !!p.last_synced_at;
+    const syncTs = wasSynced ? (lastSyncAt || p.last_synced_at) : null;
     const syncAge = syncTs ? formatDistanceToNowStrict(new Date(syncTs), { addSuffix: false }) : null;
     const syncDotColor = getSyncDotColor(syncTs, null);
     const syncTooltipText = getSyncTooltip(syncTs, null);
 
     switch (colKey) {
-      case 'star': return <td key={colKey} style={{ overflow: 'visible', textOverflow: 'clip' }}><div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}><button onClick={e => { e.stopPropagation(); onToggleFav(p.id, isFav); }} className="bg-transparent border-none cursor-pointer p-0 outline-none rounded flex-shrink-0" style={{ pointerEvents: 'auto' }}><Star size={14} fill={isFav ? 'var(--ds-text-warning, #F59E0B)' : 'none'} className={isFav ? 'text-amber-500' : 'text-slate-300 dark:text-[var(--ds-text-subtlest,#878787)]'} /></button></div></td>;
+      case 'star': return <td key={colKey} style={{ overflow: 'visible', textOverflow: 'clip' }}><div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}><button onClick={e => { e.stopPropagation(); onToggleFav(p.id, isFav); }} style={{ background: 'transparent', border: 'none', cursor: 'pointer', padding: 0, outline: 'none', borderRadius: 4, flexShrink: 0, pointerEvents: 'auto', color: isFav ? token('color.text.warning') : token('color.text.subtlest') }}><Star size={14} fill={isFav ? token('color.text.warning') : 'none'} /></button></div></td>;
       // Block B (2026-05-01) — project_name is now a real anchor (RouterLink).
       // Replaces the previous <span onClick> which lost middle-click new-tab,
       // keyboard focus, and link semantics. Audit S-? (Project list rows had
       // cursor:pointer but no role/tabIndex/href).
-      case 'project_name': return <td key={colKey}><RouterLink to={`/project-hub/${p.project_key}/dashboard`} onClick={() => recordProjectView(p)} title={p.name} style={{ pointerEvents: 'auto', fontSize: 14, fontWeight: 500, color: token('color.link'), fontFamily: 'var(--cp-font-body)', textDecoration: 'none', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', display: 'inline-block', maxWidth: '100%' }} onMouseEnter={(e) => { e.currentTarget.style.textDecoration = 'underline'; }} onMouseLeave={(e) => { e.currentTarget.style.textDecoration = 'none'; }}>{p.name}</RouterLink></td>;
+      case 'project_name': return (
+        <td key={colKey}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, overflow: 'hidden' }}>
+            <ProjectIcon
+              projectKey={p.project_key}
+              avatarUrl={p.icon_avatar_url}
+              color={p.icon_color}
+              size="small"
+            />
+            <RouterLink
+              to={`/project-hub/${p.project_key}/dashboard`}
+              onClick={() => recordProjectView(p)}
+              title={p.name}
+              style={{
+                pointerEvents: 'auto',
+                fontSize: 14,
+                fontWeight: 500,
+                color: token('color.link'),
+                fontFamily: 'var(--cp-font-body)',
+                textDecoration: 'none',
+                whiteSpace: 'nowrap',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                flex: 1,
+                minWidth: 0,
+              }}
+              onMouseEnter={(e) => { e.currentTarget.style.textDecoration = 'underline'; }}
+              onMouseLeave={(e) => { e.currentTarget.style.textDecoration = 'none'; }}
+            >
+              {p.name}
+            </RouterLink>
+          </div>
+        </td>
+      );
       // Block B (2026-05-01) — project_key now wraps in a RouterLink so
       // click/middle-click/Cmd-click all navigate; keyboard focus reaches the
       // key cell via Tab. Visual treatment intentionally subtle (no underline,
       // matches existing key-cell style) so it reads as part of the table cell
       // rather than a flashy link.
       case 'project_key': return <td key={colKey}><RouterLink to={`/project-hub/${p.project_key}/dashboard`} onClick={() => recordProjectView(p)} style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 12, fontWeight: 500, color: token('color.text.subtle'), letterSpacing: '0.02em', textDecoration: 'none' }} onMouseEnter={(e) => { e.currentTarget.style.textDecoration = 'underline'; e.currentTarget.style.color = String(token('color.link')); }} onMouseLeave={(e) => { e.currentTarget.style.textDecoration = 'none'; e.currentTarget.style.color = String(token('color.text.subtle')); }}>{p.project_key}</RouterLink></td>;
-      case 'type': return <td key={colKey}><span className="text-[13px] text-slate-600 dark:text-[var(--ds-text-subtlest,#A1A1A1)]">{formatProjectType((p as any).project_type)}</span></td>;
+      // 'type' column is permanently banned from the Projects list view.
       case 'lead': return <td key={colKey}><LeadReassignPopover project={p} /></td>;
       case 'members': return <td key={colKey}><MemberManagePopover project={p} /></td>;
       case 'sync': return (
         <td key={colKey}>
-          <div className="flex items-center gap-1.5 text-[13px] text-slate-500 dark:text-[var(--ds-text-subtlest,#A1A1A1)]">
-            <Tooltip content={syncTooltipText} position="top"><span className={cn("w-2 h-2 rounded-full flex-shrink-0 cursor-help", syncDotColor)} /></Tooltip>
-            <span className="font-medium">{syncAge ? `${issueCount} issues, ${syncAge} ago` : 'Not synced'}</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, color: token('color.text.subtle'), fontFamily: 'var(--cp-font-body)' }}>
+            <Tooltip content={syncTooltipText} position="top">
+              <span className={cn("w-2 h-2 rounded-full flex-shrink-0 cursor-help", syncDotColor)} />
+            </Tooltip>
+            <span style={{ fontWeight: 500, color: syncAge ? token('color.text') : token('color.text.subtlest') }}>
+              {syncAge ? `${issueCount} issues · ${syncAge} ago` : 'Not synced'}
+            </span>
           </div>
         </td>
       );
-      case 'actions': return <td key={colKey} className="text-center" style={{ pointerEvents: 'auto' }}>{active ? <RowActionMenu project={p} /> : <Lock size={14} className="text-slate-300 dark:text-[var(--ds-text-subtlest,#878787)]" />}</td>;
+      case 'actions': return <td key={colKey} style={{ textAlign: 'center', pointerEvents: 'auto' }}>{active ? <RowActionMenu project={p} /> : <Lock size={14} style={{ color: token('color.text.subtlest') }} />}</td>;
       default: return <td key={colKey} />;
     }
   };
@@ -1096,7 +1118,7 @@ export function AllProjectsTable({
                    row is clickable; here only the project_name and project_key
                    cells are real anchors, so the row body should read as
                    non-clickable. Inline override beats the imported sheet. */
-                style={{ opacity: active ? 1 : 0.45, pointerEvents: active ? 'auto' : 'none', height: 56, cursor: 'default' }}
+                style={{ opacity: active ? 1 : 0.45, pointerEvents: active ? 'auto' : 'none', height: 48, cursor: 'default' }}
               >
                 {orderedColumns.map(c => renderProjectCell(c.key, p, idx))}
               </tr>
