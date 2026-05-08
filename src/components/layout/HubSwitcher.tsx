@@ -108,10 +108,20 @@ const SECTIONS: { key: SectionKey; title: string }[] = [
   { key: 'knowledge',  title: 'Knowledge' },
 ];
 
-const toneToTileBg = (tone: HubEntry['tone']) =>
-  `var(--ds-background-accent-${tone}-subtler)`;
-const toneToGlyphColor = (tone: HubEntry['tone']) =>
-  `var(--ds-text-accent-${tone})`;
+// Phase A (council 2026-05-08): bump default tier from `-subtler` → `-subtle`.
+// `-subtler` was too pale to carry information — Project / Test / Plan tiles
+// read as transparent. `-subtle` is the next ADS step up, still canonical,
+// noticeably more saturated. Wiki keeps `-subtler` so it stays distinguishable
+// from Plan (both share the gray family — only one of two hubs that shares
+// since the ADS accent palette is 10 tokens vs 11 hubs).
+const toneToTileBg = (tone: HubEntry['tone'], hubKey: HubEntry['key']) => {
+  if (hubKey === 'wiki') return 'var(--ds-background-accent-gray-subtler)';
+  return `var(--ds-background-accent-${tone}-subtle)`;
+};
+const toneToGlyphColor = (tone: HubEntry['tone'], hubKey: HubEntry['key']) => {
+  if (hubKey === 'wiki') return 'var(--ds-text-subtle)';
+  return `var(--ds-text-accent-${tone})`;
+};
 
 interface HubTileProps {
   hub: HubEntry;
@@ -128,8 +138,8 @@ function HubTile({ hub }: HubTileProps) {
         width: 32,
         height: 32,
         borderRadius: 6,
-        background: toneToTileBg(hub.tone),
-        color: toneToGlyphColor(hub.tone),
+        background: toneToTileBg(hub.tone, hub.key),
+        color: toneToGlyphColor(hub.tone, hub.key),
         flexShrink: 0,
       }}
     >
