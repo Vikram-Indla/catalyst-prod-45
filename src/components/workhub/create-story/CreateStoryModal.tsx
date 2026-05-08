@@ -66,7 +66,9 @@ import { supabase } from '@/integrations/supabase/client';
 // drop-in for catalystToast). Reset to Jira-canonical toast per audit.
 import { flag } from '@/components/shared/JiraTable/flags';
 import { useAuth } from '@/hooks/useAuth';
-import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
+// WorkItemTypeIcon is the canonical Catalyst icon — backed by useIconOverrides
+// so /admin/icons overrides are honoured automatically (Bucket C, 2026-05-09).
+import { WorkItemTypeIcon } from '@/components/icons/WorkItemTypeIcon';
 import ProjectIcon from '@/components/shared/ProjectIcon';
 // Canonical priority icon — respects admin overrides + bundled registry.
 // Replaces inline custom SVG that bypassed the override system.
@@ -534,7 +536,7 @@ export function CreateStoryModal({
       WORK_TYPES.map((t) => ({
         value: t,
         label: t,
-        icon: <JiraIssueTypeIcon type={t} size={16} />,
+        icon: <WorkItemTypeIcon type={t} size={16} />,
       })),
     [],
   );
@@ -898,7 +900,7 @@ export function CreateStoryModal({
                           value: d.issue_key,
                           label: d.summary,
                           sublabel: d.issue_key,
-                          icon: <JiraIssueTypeIcon type="Epic" size={14} />,
+                          icon: <WorkItemTypeIcon type="Epic" size={14} />,
                         }));
                       }}
                       onChange={(opt) =>
