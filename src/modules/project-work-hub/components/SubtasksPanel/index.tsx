@@ -26,6 +26,8 @@ import {
   ChevronDown, ChevronRight, Plus,
   Check,
 } from 'lucide-react';
+import EditIcon from '@atlaskit/icon/core/edit';
+import DeleteIcon from '@atlaskit/icon/core/delete';
 import { nextPos, resolveStatusCategory } from '../dialogs/story-detail-modules/helpers';
 import { CANONICAL_WORK_ITEM_OPTIONS } from '@/components/shared/canonicalWorkItemOptions';
 import { PriorityCell } from './cells/PriorityCell';
@@ -882,13 +884,53 @@ export function SubtasksPanel({
               });
             }
             // Trailing RowActionsMenu — hover affordance for open/rename/delete.
+            // C5: also renders inline edit (pencil) + delete (trash) icon buttons on row hover.
             if (!bulkEditMode) {
               schema.push({
                 id: 'actions', label: '', width: 4, sortable: false,
                 cell: ({ row }) => {
                   const child = row as any;
                   return (
-                    <div onClick={(e) => e.stopPropagation()}>
+                    <div
+                      onClick={(e) => e.stopPropagation()}
+                      style={{ display: 'inline-flex', alignItems: 'center', gap: 2 }}
+                    >
+                      {/* C5: Inline edit button — hover-only via sp-subtask-inline-action class */}
+                      <button
+                        type="button"
+                        className="sp-subtask-inline-action"
+                        aria-label="Edit summary"
+                        title="Edit summary"
+                        onClick={() => setEditingId(child.id)}
+                        style={{
+                          display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                          width: 24, height: 24, border: 'none', borderRadius: 3,
+                          background: 'transparent', cursor: 'pointer', padding: 0,
+                          color: 'var(--ds-text-subtlest, #6B778C)',
+                        }}
+                        onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))'; }}
+                        onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = 'transparent'; }}
+                      >
+                        <EditIcon label="" size="small" />
+                      </button>
+                      {/* C5: Inline delete button — hover-only */}
+                      <button
+                        type="button"
+                        className="sp-subtask-inline-action"
+                        aria-label="Delete"
+                        title="Delete"
+                        onClick={() => handleDelete(child)}
+                        style={{
+                          display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                          width: 24, height: 24, border: 'none', borderRadius: 3,
+                          background: 'transparent', cursor: 'pointer', padding: 0,
+                          color: 'var(--ds-text-subtlest, #6B778C)',
+                        }}
+                        onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = '#FFEBE6'; (e.currentTarget as HTMLButtonElement).style.color = '#BF2600'; }}
+                        onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = 'transparent'; (e.currentTarget as HTMLButtonElement).style.color = 'var(--ds-text-subtlest, #6B778C)'; }}
+                      >
+                        <DeleteIcon label="" size="small" />
+                      </button>
                       <RowActionsMenu
                         onOpen={() => onSubtaskClick?.(child.issue_key ?? child.id)}
                         onRename={() => setEditingId(child.id)}

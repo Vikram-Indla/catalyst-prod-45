@@ -31,20 +31,52 @@ function formatRelativeTime(dateStr: string): string {
 }
 
 function renderContent(content: string): React.ReactNode {
-  const parts = content.split(/(@\[([^\]]+)\]\([^)]+\))/g);
+  // E4: render @[name](id) and plain @word patterns as chips
+  const parts = content.split(/(@\[([^\]]+)\]\([^)]+\)|@\w+)/g);
   const nodes: React.ReactNode[] = [];
   let i = 0;
 
   while (i < parts.length) {
     const part = parts[i];
     if (part && part.startsWith('@[')) {
+      // ADF mention format: @[Name](accountid:xxx)
       const name = parts[i + 1];
       nodes.push(
-        <span key={i} className="text-[var(--ds-text-brand,#2563EB)] dark:text-[#4C9AFF] font-medium">
+        <span
+          key={i}
+          style={{
+            display: 'inline-block',
+            background: 'var(--ds-background-information, #E9F2FF)',
+            color: 'var(--ds-text-brand, #0C66E4)',
+            borderRadius: 3,
+            padding: '0 4px',
+            fontSize: '0.9em',
+            fontWeight: 500,
+          }}
+        >
           @{name}
         </span>
       );
       i += 3;
+    } else if (part && part.startsWith('@') && part.length > 1) {
+      // Plain @word mention
+      nodes.push(
+        <span
+          key={i}
+          style={{
+            display: 'inline-block',
+            background: 'var(--ds-background-information, #E9F2FF)',
+            color: 'var(--ds-text-brand, #0C66E4)',
+            borderRadius: 3,
+            padding: '0 4px',
+            fontSize: '0.9em',
+            fontWeight: 500,
+          }}
+        >
+          {part}
+        </span>
+      );
+      i += 1;
     } else {
       if (part) nodes.push(<React.Fragment key={i}>{part}</React.Fragment>);
       i += 1;

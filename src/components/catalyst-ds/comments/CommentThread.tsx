@@ -40,6 +40,8 @@ function CommentThread({
 }: CommentThreadProps) {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editValue, setEditValue] = useState('');
+  // E3: quote reply — pre-fills the editor with a blockquote prefix
+  const [quotePrefix, setQuotePrefix] = useState('');
 
   const sortedComments = useMemo(() => {
     const sorted = [...comments];
@@ -70,12 +72,15 @@ function CommentThread({
   return (
     <div className={cn('flex flex-col', className)}>
       <CommentEditor
+        key={quotePrefix}
         currentUser={currentUser}
         mentionableUsers={mentionableUsers}
-        onSubmit={onAddComment}
+        onSubmit={(content) => { setQuotePrefix(''); return onAddComment(content); }}
         quickReplies={quickReplies}
         isSubmitting={isSubmitting}
         shortcutHint="Pro tip: press **M** to comment"
+        defaultValue={quotePrefix}
+        autoFocus={!!quotePrefix}
       />
 
       <div className="mt-4">
@@ -134,13 +139,26 @@ function CommentThread({
               const canEdit = onEditComment && currentUser && comment.author.id === currentUser.id;
               const canDelete = onDeleteComment && currentUser && comment.author.id === currentUser.id;
 
+              const handleQuote = () => {
+                // E3: pre-fill editor with blockquote of this comment's text
+                const lines = comment.content.split('\n').map((l: string) => `> ${l}`).join('\n');
+                setQuotePrefix(`${lines}\n\n`);
+                // Scroll the editor into view
+                setTimeout(() => {
+                  const textarea = document.querySelector<HTMLTextAreaElement>('.cat-comment-editor textarea');
+                  textarea?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }, 50);
+              };
+
               return (
                 <Comment
                   key={comment.id}
                   comment={comment}
                   actions={
-                    (canEdit || canDelete) && !comment.isSystem ? (
+                    !comment.isSystem ? (
                       <>
+                        {/* E3: Quote reply */}
+                        <CommentAction onClick={handleQuote}>Quote</CommentAction>
                         {canEdit && (
                           <CommentAction onClick={() => startEdit(comment)}>Edit</CommentAction>
                         )}

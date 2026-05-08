@@ -18,6 +18,7 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import ChevronDownIcon from '@atlaskit/icon/glyph/chevron-down';
 import ChevronRightIcon from '@atlaskit/icon/glyph/chevron-right';
 import CheckIcon from '@atlaskit/icon/glyph/check';
+import Tooltip from '@atlaskit/tooltip';
 // AutomationIcon removed — jira-compare 2026-05-05: Automate button between
 // status pill and Improve Story is not present in Jira. Removed per Vikram directive.
 import SettingsIcon from '@atlaskit/icon/core/settings';
@@ -584,16 +585,24 @@ export function CatalystSidebarDetails({
             </FieldRow>
           )}
 
-          {/* ── Reporter ──── Defect-2 Cycle 6 (2026-05-03): made editable */}
+          {/* ── Reporter ──── Defect-2 Cycle 6 (2026-05-03): made editable.
+              D1: Tooltip "View profile" on hover per Jira parity. */}
           <FieldRow label="Reporter" alignBlock="center">
             {issue && (
-              <EditableReporter
-                issueId={issue.id}
-                projectId={projectId || ''}
-                currentReporterId={issue.reporter_account_id}
-                currentReporterName={issue.reporter_display_name}
-                onUpdate={invalidateIssue}
-              />
+              <Tooltip content="View profile" position="left">
+                <div
+                  onClick={() => console.log('View profile', issue.reporter_display_name)}
+                  style={{ cursor: 'pointer' }}
+                >
+                  <EditableReporter
+                    issueId={issue.id}
+                    projectId={projectId || ''}
+                    currentReporterId={issue.reporter_account_id}
+                    currentReporterName={issue.reporter_display_name}
+                    onUpdate={invalidateIssue}
+                  />
+                </div>
+              </Tooltip>
             )}
           </FieldRow>
 

@@ -67,6 +67,8 @@ function ChevronButton({
       disabled={disabled}
       title={tooltip ?? fallbackTitle}
       aria-label={tooltip ?? fallbackTitle}
+      data-cv-nav-prev={direction === 'prev' ? '' : undefined}
+      data-cv-nav-next={direction === 'next' ? '' : undefined}
       style={{
         ...BTN_BASE,
         color: disabled ? '#C1C7D0' : '#42526E',

@@ -83,6 +83,14 @@ if (typeof document !== 'undefined' && !document.getElementById(CV_TITLE_STYLE_I
     .dark .cv-title-edit-hide-label input[type="text"] {
       color: var(--ds-text, #B6C2CF) !important;
     }
+    /* C2: title hover underline hint — signals editability to the user.
+       Scoped to the read-view wrapper only (not the edit Textfield).
+       Subtle bg on hover matches Jira's treatment. */
+    .cv-title-edit-hide-label [data-read-view-fit-container-width]:hover h1 {
+      text-decoration: underline;
+      text-decoration-color: var(--ds-border, #DFE1E6);
+      text-decoration-thickness: 1px;
+    }
   `;
   document.head.appendChild(s);
 }

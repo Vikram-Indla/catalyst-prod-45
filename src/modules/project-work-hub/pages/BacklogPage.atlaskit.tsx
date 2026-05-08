@@ -389,6 +389,20 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
   });
 
   const queryClient = useQueryClient();
+
+  // G5: current user for "My work" quick filter
+  const { data: currentUserProfile } = useQuery({
+    queryKey: ['current-user-profile-backlog'],
+    queryFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return null;
+      const { data: profile } = await supabase.from('profiles').select('id, full_name').eq('id', user.id).maybeSingle();
+      return profile;
+    },
+    staleTime: 300_000,
+  });
+  const [myWorkFilter, setMyWorkFilter] = useState(false);
+
   const {
     data: stories = [],
     isLoading: storiesLoading,
@@ -1046,6 +1060,10 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
       if (f.created.from && (!it.created_at || it.created_at < f.created.from)) return false;
       if (f.created.to && (!it.created_at || it.created_at > f.created.to + 'T23:59:59')) return false;
       // Reporter + Labels not wired yet (no data plumbed through BacklogItem)
+      // G5: "My work" quick filter — assignee = current user's display name
+      if (myWorkFilter && currentUserProfile?.full_name) {
+        if (!it.assignee_name || it.assignee_name !== currentUserProfile.full_name) return false;
+      }
       return true;
     };
 
@@ -1175,6 +1193,10 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
       if (f.created.from && (!it.created_at || it.created_at < f.created.from)) return false;
       if (f.created.to && (!it.created_at || it.created_at > f.created.to + 'T23:59:59')) return false;
       if (hideDoneItems && /^(done|closed)$/i.test((it.status || '').trim())) return false;
+      // G5: "My work" filter
+      if (myWorkFilter && currentUserProfile?.full_name) {
+        if (!it.assignee_name || it.assignee_name !== currentUserProfile.full_name) return false;
+      }
       return true;
     });
 
@@ -2538,6 +2560,35 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
             from items + avatarsByName). maxCount=5 with appearance="stack"
             matches Jira's stacked-circle pattern. The "Add people" CTA is a
             future addition; for cycle 1 we ship read-only avatar stack. */}
+        {/* G5: My work quick-filter chip */}
+        <button
+          type="button"
+          onClick={() => setMyWorkFilter((v) => !v)}
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 4,
+            padding: '0 10px',
+            height: 32,
+            borderRadius: 3,
+            border: myWorkFilter
+              ? `2px solid ${token('color.border.selected', '#0C66E4')}`
+              : `1px solid ${token('color.border', '#DFE1E6')}`,
+            background: myWorkFilter
+              ? token('color.background.selected', '#E9F2FF')
+              : token('color.background.neutral', '#F1F2F4'),
+            color: myWorkFilter
+              ? token('color.text.selected', '#0C66E4')
+              : token('color.text', '#172B4D'),
+            fontSize: 14,
+            fontWeight: myWorkFilter ? 600 : 400,
+            cursor: 'pointer',
+            whiteSpace: 'nowrap',
+          }}
+        >
+          My work
+        </button>
+
         {assigneeOptions.length > 0 && (
           <AvatarGroup
             appearance="stack"
@@ -4587,12 +4638,59 @@ function InlineGroupCreateRow({
   const [issueType, setIssueType] = useState<CreatableIssueType>('Story');
   const [assigneeIdx, setAssigneeIdx] = useState<number>(-1); // -1 = Unassigned
   const inputRef = useRef<HTMLInputElement | null>(null);
+  // Type picker dropdown — portal-based (L21 portal-empty bug prevents
+  // @atlaskit/dropdown-menu; mirrors GroupByControl pattern exactly).
+  const [typeMenuOpen, setTypeMenuOpen] = useState(false);
+  const [typeMenuAnchor, setTypeMenuAnchor] = useState<{ top: number; left: number } | null>(null);
+  const typeMenuTriggerRef = useRef<HTMLButtonElement>(null);
+  const typeMenuRef = useRef<HTMLDivElement>(null);
+  const [typeMenuFocusedIdx, setTypeMenuFocusedIdx] = useState(0);
+  const typeMenuItemsRef = useRef<Array<HTMLButtonElement | null>>([]);
 
   useEffect(() => {
     // Focus the input on mount so the user can start typing immediately.
     const t = setTimeout(() => inputRef.current?.focus(), 30);
     return () => clearTimeout(t);
   }, []);
+
+  useLayoutEffect(() => {
+    if (!typeMenuOpen || !typeMenuTriggerRef.current) return;
+    const r = typeMenuTriggerRef.current.getBoundingClientRect();
+    setTypeMenuAnchor({ top: r.bottom + 4, left: r.left });
+    setTypeMenuFocusedIdx(CREATABLE_TYPES.indexOf(issueType) >= 0 ? CREATABLE_TYPES.indexOf(issueType) : 0);
+  }, [typeMenuOpen, issueType]);
+
+  useEffect(() => {
+    if (!typeMenuOpen) return;
+    const el = typeMenuItemsRef.current[typeMenuFocusedIdx];
+    if (el) el.focus();
+  }, [typeMenuOpen, typeMenuFocusedIdx]);
+
+  useEffect(() => {
+    if (!typeMenuOpen) return;
+    const onDocClick = (e: MouseEvent) => {
+      const t = e.target as Node;
+      if (typeMenuTriggerRef.current?.contains(t) || typeMenuRef.current?.contains(t)) return;
+      setTypeMenuOpen(false);
+    };
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') { setTypeMenuOpen(false); typeMenuTriggerRef.current?.focus(); return; }
+      if (e.key === 'ArrowDown') { e.preventDefault(); setTypeMenuFocusedIdx((i) => (i + 1) % CREATABLE_TYPES.length); }
+      else if (e.key === 'ArrowUp') { e.preventDefault(); setTypeMenuFocusedIdx((i) => (i - 1 + CREATABLE_TYPES.length) % CREATABLE_TYPES.length); }
+      else if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        setIssueType(CREATABLE_TYPES[typeMenuFocusedIdx]);
+        setTypeMenuOpen(false);
+        typeMenuTriggerRef.current?.focus();
+      }
+    };
+    document.addEventListener('mousedown', onDocClick);
+    document.addEventListener('keydown', onKey);
+    return () => {
+      document.removeEventListener('mousedown', onDocClick);
+      document.removeEventListener('keydown', onKey);
+    };
+  }, [typeMenuOpen, typeMenuFocusedIdx]);
 
   const trimmed = summary.trim();
   const canSubmit = !!trimmed && !isSubmitting;
@@ -4625,52 +4723,103 @@ function InlineGroupCreateRow({
         }
       }}
     >
-      {/* Type picker — Apr 27 2026 (jira-compare regression F-NEW-2 layer
-          2). Click-to-cycle button. Originally tried `@atlaskit/dropdown-menu`
-          but L21 (BacklogPage portal bug) caused the menu to render empty
-          on this surface — same bug GroupByControl works around with a
-          bespoke createPortal pattern. To avoid building another bespoke
-          portal for a small picker, the trigger now cycles through
-          CREATABLE_TYPES on click. Tooltip shows the next-on-click value
-          so the cycle direction is discoverable. */}
-      {(() => {
-        const idx = CREATABLE_TYPES.indexOf(issueType);
-        const next = CREATABLE_TYPES[(idx + 1) % CREATABLE_TYPES.length];
-        return (
-          <Tooltip content={`Click to cycle issue type (next: ${next})`}>
-            <button
-              type="button"
-              data-testid="jira-table.group-row.inline-create-type-trigger"
-              aria-label={`Issue type: ${issueType}. Click to change.`}
-              onClick={() =>
-                setIssueType(
-                  CREATABLE_TYPES[(CREATABLE_TYPES.indexOf(issueType) + 1) % CREATABLE_TYPES.length]
-                )
-              }
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: 2,
-                height: 24,
-                padding: '0 4px',
-                border: 'none',
-                borderRadius: 3,
-                background: 'transparent',
-                color: token('color.text.subtle', '#42526E'),
-                fontSize: 12,
-                fontFamily: 'inherit',
-                cursor: 'pointer',
-                flexShrink: 0,
-              }}
-              onMouseEnter={(e) => { e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', 'rgba(9,30,66,0.06)'); }}
-              onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
-            >
-              <JiraIssueTypeIcon type={issueType} size={16} />
-              <svg width="10" height="10" viewBox="0 0 10 10" fill="currentColor" aria-hidden><path d="M2.5 3.5 5 6l2.5-2.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" fill="none"/></svg>
-            </button>
-          </Tooltip>
-        );
-      })()}
+      {/* Type picker — 2026-05-08: replaced click-to-cycle with portal
+          dropdown matching Jira's "Select work type" dropdown exactly.
+          Same bespoke createPortal pattern as GroupByControl (L21 bug
+          prevents @atlaskit/dropdown-menu from rendering on this surface). */}
+      <>
+        <button
+          ref={typeMenuTriggerRef}
+          type="button"
+          data-testid="jira-table.group-row.inline-create-type-trigger"
+          aria-label={`Select work type. ${issueType} currently selected.`}
+          aria-haspopup="listbox"
+          aria-expanded={typeMenuOpen}
+          onClick={() => setTypeMenuOpen((v) => !v)}
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: 2,
+            height: 24,
+            padding: '0 4px',
+            border: 'none',
+            borderRadius: 3,
+            background: typeMenuOpen ? token('color.background.neutral.subtle.hovered', 'rgba(9,30,66,0.06)') : 'transparent',
+            color: token('color.text.subtle', '#42526E'),
+            fontSize: 12,
+            fontFamily: 'inherit',
+            cursor: 'pointer',
+            flexShrink: 0,
+          }}
+          onMouseEnter={(e) => { if (!typeMenuOpen) e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', 'rgba(9,30,66,0.06)'); }}
+          onMouseLeave={(e) => { if (!typeMenuOpen) e.currentTarget.style.background = 'transparent'; }}
+        >
+          <JiraIssueTypeIcon type={issueType} size={16} />
+          <svg width="10" height="10" viewBox="0 0 10 10" fill="currentColor" aria-hidden><path d="M2.5 3.5 5 6l2.5-2.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" fill="none"/></svg>
+        </button>
+        {typeMenuOpen && typeMenuAnchor && ReactDOM.createPortal(
+          <div
+            ref={typeMenuRef}
+            role="listbox"
+            aria-label="Select work type"
+            style={{
+              position: 'fixed',
+              top: typeMenuAnchor.top,
+              left: typeMenuAnchor.left,
+              minWidth: 200,
+              background: token('elevation.surface.overlay', '#FFFFFF'),
+              border: `1px solid ${token('color.border', '#DFE1E6')}`,
+              borderRadius: 4,
+              boxShadow: token('elevation.shadow.overlay', '0 8px 16px rgba(9,30,66,0.15)'),
+              padding: '6px 0',
+              zIndex: 9999,
+              fontFamily: 'var(--cp-font-body)',
+              fontSize: 14,
+            }}
+          >
+            {CREATABLE_TYPES.map((t, i) => {
+              const active = issueType === t;
+              const focused = typeMenuFocusedIdx === i;
+              return (
+                <button
+                  key={t}
+                  ref={(el) => { typeMenuItemsRef.current[i] = el; }}
+                  role="option"
+                  aria-selected={active}
+                  tabIndex={focused ? 0 : -1}
+                  type="button"
+                  onMouseEnter={() => setTypeMenuFocusedIdx(i)}
+                  onClick={() => { setIssueType(t); setTypeMenuOpen(false); typeMenuTriggerRef.current?.focus(); }}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 8,
+                    width: '100%',
+                    padding: '6px 16px',
+                    border: 'none',
+                    outline: 'none',
+                    background: active
+                      ? token('color.background.selected', '#E9F2FF')
+                      : focused
+                        ? token('color.background.neutral.subtle.hovered', '#091E4208')
+                        : 'transparent',
+                    color: active ? token('color.text.selected', '#0C66E4') : token('color.text', '#292A2E'),
+                    fontWeight: active ? 500 : 400,
+                    fontSize: 14,
+                    fontFamily: 'inherit',
+                    textAlign: 'left',
+                    cursor: 'pointer',
+                  }}
+                >
+                  <JiraIssueTypeIcon type={t} size={16} />
+                  <span>{t}</span>
+                </button>
+              );
+            })}
+          </div>,
+          document.body
+        )}
+      </>
       <Textfield
         ref={inputRef as any}
         isCompact

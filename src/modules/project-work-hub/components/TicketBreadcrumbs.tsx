@@ -20,11 +20,12 @@
  *
  * Canonical — do NOT fork this for per-surface variants.
  */
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Breadcrumbs, type BreadcrumbItem } from '@/components/ads';
 import { IssueIcon } from '@/modules/project-work-hub/components/dialogs/story-detail-modules/shared-components';
 import { ProjectAvatar } from '@/components/icons';
+import Tooltip from '@atlaskit/tooltip';
 
 export interface TicketBreadcrumbsProps {
   /** Used to build the parent-navigation href when `onParentClick` isn't set. */
@@ -74,6 +75,16 @@ export function TicketBreadcrumbs({
   onAddParent,
   middleSlot,
 }: TicketBreadcrumbsProps) {
+  // B1: copy-to-clipboard state for key chip
+  const [copied, setCopied] = useState(false);
+  const handleCopyKey = () => {
+    if (!itemKey) return;
+    navigator.clipboard.writeText(itemKey).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1500);
+    });
+  };
+
   const isEpic = (itemType || '').toLowerCase().includes('epic');
   const hasSlot = middleSlot !== undefined;
   const showParent = !hasSlot && Boolean(parentKey);
@@ -129,14 +140,22 @@ export function TicketBreadcrumbs({
     });
   }
 
-  // Crumb 2 — current issue (terminal).
+  // Crumb 2 — current issue (terminal). B1: clicking the key copies it.
   items.push({
     key: 'current',
     text: (
-      <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, whiteSpace: 'nowrap' }}>
-        <IssueIcon type={itemType} size={14} />
-        <span>{itemKey ?? '—'}</span>
-      </span>
+      <Tooltip content={copied ? 'Copied!' : 'Click to copy key'} position="bottom">
+        <span
+          role="button"
+          tabIndex={0}
+          onClick={handleCopyKey}
+          onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') handleCopyKey(); }}
+          style={{ display: 'inline-flex', alignItems: 'center', gap: 4, whiteSpace: 'nowrap', cursor: 'pointer' }}
+        >
+          <IssueIcon type={itemType} size={14} />
+          <span>{itemKey ?? '—'}</span>
+        </span>
+      </Tooltip>
     ),
     ariaLabel: itemKey ?? 'Current issue',
     isCurrent: true,

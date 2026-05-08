@@ -18,6 +18,7 @@ import { useNavigate } from 'react-router-dom';
 import CrossIcon from '@atlaskit/icon/core/close';
 import ShareIcon from '@atlaskit/icon/core/share';
 import MoreIcon from '@atlaskit/icon/core/menu';
+import LinkIcon from '@atlaskit/icon/core/link';
 import { toast } from 'sonner';
 import Modal from '@atlaskit/modal-dialog';
 import Button, { IconButton } from '@atlaskit/button/new';
@@ -148,6 +149,20 @@ export function CatalystViewBase({
   const isDraggingRef = useRef(false);
   const dotsMenuRef = useRef<HTMLDivElement>(null);
 
+  /* G4: Track recently visited issues in localStorage (catalyst-recent-issues).
+     Push when the issue key changes and the panel is open. */
+  useEffect(() => {
+    if (!isOpen || !itemKey) return;
+    try {
+      const STORAGE_KEY = 'catalyst-recent-issues';
+      const raw = localStorage.getItem(STORAGE_KEY);
+      const existing: { key: string; title: string; type: string }[] = raw ? JSON.parse(raw) : [];
+      const filtered = existing.filter((e) => e.key !== itemKey);
+      const updated = [{ key: itemKey, title: itemKey, type: itemType }, ...filtered].slice(0, 5);
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+    } catch { /* quota/parse error — ignore */ }
+  }, [isOpen, itemKey, itemType]);
+
   /* ── Resizable splitter ─────────────────── */
   useEffect(() => {
     const onMouseMove = (e: MouseEvent) => {
@@ -181,24 +196,60 @@ export function CatalystViewBase({
          (us + a BacklogPage-level handler) is idempotent. */
   useEffect(() => {
     if (!isOpen || !panelMode) return;
+    const isInputFocused = () => {
+      const t = document.activeElement as HTMLElement | null;
+      return (
+        t instanceof HTMLInputElement ||
+        t instanceof HTMLTextAreaElement ||
+        t?.isContentEditable
+      );
+    };
     const handleEscape = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
         if (showDotsMenu) { setShowDotsMenu(false); return; }
         onClose();
         return;
       }
+      if (e.metaKey || e.ctrlKey || e.altKey) return;
       // 'e' key — activate title inline edit
-      if (e.key === 'e' && !e.metaKey && !e.ctrlKey && !e.altKey) {
-        const target = e.target as HTMLElement | null;
-        if (
-          target instanceof HTMLInputElement ||
-          target instanceof HTMLTextAreaElement ||
-          target?.isContentEditable
-        ) return;
+      if (e.key === 'e') {
+        if (isInputFocused()) return;
         const titleEl = document.querySelector<HTMLElement>(
           '[data-testid="catalyst-title-editor"] [role="textbox"], .cv-title-edit-hide-label h1'
         );
         if (titleEl) { titleEl.click(); }
+        return;
+      }
+      // '[' / ']' — prev / next issue navigation (B3)
+      if (e.key === '[') {
+        if (isInputFocused()) return;
+        const prevBtn = document.querySelector<HTMLElement>('[data-cv-nav-prev]');
+        if (prevBtn) prevBtn.click();
+        return;
+      }
+      if (e.key === ']') {
+        if (isInputFocused()) return;
+        const nextBtn = document.querySelector<HTMLElement>('[data-cv-nav-next]');
+        if (nextBtn) nextBtn.click();
+        return;
+      }
+      // 't' — open status transition picker (B5)
+      if (e.key === 't') {
+        if (isInputFocused()) return;
+        const statusBtn = document.querySelector<HTMLElement>(
+          '[data-testid="status-pill-trigger"], [data-cv-status-trigger]'
+        );
+        if (statusBtn) statusBtn.click();
+        return;
+      }
+      // 'a' — open assignee picker (B6)
+      if (e.key === 'a') {
+        if (isInputFocused()) return;
+        const assigneeBtn = document.querySelector<HTMLElement>(
+          '[data-testid="assignee-field"] [class*="control"], [data-cv-assignee-trigger]'
+        );
+        if (assigneeBtn) assigneeBtn.click();
+        return;
       }
     };
     document.addEventListener('keydown', handleEscape);
@@ -368,6 +419,17 @@ export function CatalystViewBase({
             {/* Watchers eye + count — Jira parity. Lives between the
                 nav chevrons and Share. ph_issue_watchers backs it. */}
             {itemKey && <WatchersChip issueKey={itemKey} />}
+
+            {/* B10: Link issue button — Jira parity: chain-link icon between
+                Watchers and Share. Stub handler for now. */}
+            <Tooltip content="Link issue">
+              <IconButton
+                appearance="subtle"
+                icon={() => <LinkIcon size="small" />}
+                label="Link issue"
+                onClick={() => console.log('Link issue', itemKey)}
+              />
+            </Tooltip>
 
             {/* Phase B (2026-04-18): @atlaskit/button with iconBefore.
                 Hover state + typography owned by Atlaskit tokens. */}
