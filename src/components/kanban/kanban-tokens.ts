@@ -53,9 +53,11 @@ export const KANBAN_TOKENS: { light: KanbanThemeTokens; dark: KanbanThemeTokens 
     cardBg: 'var(--ds-surface, #FFFFFF)',
     cardBorder: 'transparent', /* Jira cards are shadow-only, no border */
     cardHoverBg: 'var(--ds-surface, #FFFFFF)',
-    /* Jira shadow (rest): elevation 2 — 8px/12px drop + 1px outline */
-    cardShadowRest: 'rgba(30,31,33,.15) 0 8px 12px 0, rgba(30,31,33,.31) 0 0 1px 0',
-    cardHoverShadow: 'rgba(30,31,33,.20) 0 12px 20px 0, rgba(30,31,33,.31) 0 0 1px 0',
+    /* jira-compare 2026-05-08 — Jira card shadow: very subtle elevation 1
+       (0 1px 2px rgba(9,30,66,0.25) rest, 0 2px 4px on hover). The prior
+       8px/12px value was 4× too heavy and made cards look like floating modals. */
+    cardShadowRest: 'rgba(9,30,66,0.25) 0 1px 2px 0, rgba(9,30,66,0.31) 0 0 1px 0',
+    cardHoverShadow: 'rgba(9,30,66,0.31) 0 2px 4px 0, rgba(9,30,66,0.31) 0 0 1px 0',
     cardDragShadow: 'rgba(30,31,33,.45) 0 8px 16px 0, rgba(30,31,33,.31) 0 0 1px 0',
     dropHighlight: '#DFE3E8',  /* Jira drop tint */
     dropIndicator: 'var(--ds-text-brand, #2563EB)',  /* 2px accent line on insertion */
@@ -122,7 +124,8 @@ export interface DensityConfig {
 export const DENSITY_CONFIG: Record<KanbanDensity, DensityConfig> = {
   compact:     { cardPad: '6px 8px',   titleSize: 12, titleClamp: 1, metaSize: 10, avatarSize: 20, cardGap: 4, footerHeight: 18, cardMinHeight: 0 },
   dense:       { cardPad: '8px 10px',  titleSize: 13, titleClamp: 2, metaSize: 11, avatarSize: 22, cardGap: 4, footerHeight: 20, cardMinHeight: 0 },
-  comfortable: { cardPad: '12px',      titleSize: 14, titleClamp: 3, metaSize: 12, avatarSize: 24, cardGap: 4, footerHeight: 22, cardMinHeight: 0 },
+  // jira-compare 2026-05-08: metaSize 12→11 (Jira card key is 11px)
+  comfortable: { cardPad: '12px',      titleSize: 14, titleClamp: 3, metaSize: 11, avatarSize: 24, cardGap: 4, footerHeight: 22, cardMinHeight: 0 },
 };
 
 /* ═══ COLUMN CONFIG ═══ */

@@ -1,8 +1,9 @@
 /**
  * KanbanAvatar — Reusable avatar component for kanban board
- * GUARDRAIL: Always renders CircleUser face icon when no photo is available.
+ * GUARDRAIL: Always renders @atlaskit/icon glyph/person when no photo available.
+ * jira-compare 2026-05-08: replaced lucide CircleUser with @atlaskit/icon/glyph/person
  */
-import { CircleUser } from 'lucide-react';
+import PersonIcon from '@atlaskit/icon/glyph/person';
 import type { KanbanThemeTokens } from './kanban-tokens';
 
 const AVATAR_COLORS = ['var(--ds-text-brand, #2563EB)', '#0D9488', '#0284C7', 'var(--ds-text-danger, #DC2626)', '#DB2777', '#FF8B00'];
@@ -34,7 +35,7 @@ export function KanbanAvatar({ name, url, size = 24, tk }: {
       style={{ width: size, height: size, background: bg }}
       title={name || undefined}
     >
-      <CircleUser size={size * 0.7} color="var(--ds-surface, #FFFFFF)" strokeWidth={1.5} />
+      <PersonIcon label={name || 'Unassigned'} size="small" primaryColor="var(--ds-surface, #FFFFFF)" />
     </span>
   );
 }

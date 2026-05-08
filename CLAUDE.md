@@ -91,6 +91,11 @@ Append-only. Newest at top. Each entry: date, pattern, rule, surface.
 
 ---
 
+## 2026-05-08 — InlineGroupCreateRow type picker: click-to-cycle ≠ Jira; portal dropdown required; JS `.click()` fails React 17+ synthetic events
+**Surface:** BacklogPage.atlaskit.tsx — InlineGroupCreateRow type picker
+**Pattern:** Original type picker was click-to-cycle (click the icon to advance to next type). Jira renders `aria-label="Select work type. Story currently selected."` — a named trigger opening a listbox with all 9 types. The click-to-cycle pattern is non-discoverable. Fix: replaced with portal dropdown matching `GroupByControl` pattern (L21 portal-empty bug prevents `@atlaskit/dropdown-menu`). Also discovered: in React 17+ with event delegation, `el.click()` does NOT trigger React synthetic handlers. Must use `el.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true, view: window }))` to fire React's synthetic onClick. Same applies to all Chrome MCP JS test probes.
+**Rule:** Inline create type pickers must be portal dropdowns showing all CREATABLE_TYPES — never click-to-cycle. When testing React component handlers via JS in Chrome MCP, always use `dispatchEvent(new MouseEvent('click', {bubbles:true, cancelable:true, view:window}))` instead of `.click()` — React 17+ event delegation means `.click()` bypasses synthetic handlers.
+
 ## 2026-05-08 — StatusPill inner text must be 11px/653/uppercase/letterSpacing:0.165px; summary cell uses makeSummaryInlineEditCell not makeSummaryCell
 **Surface:** BacklogPage list table (cells.tsx + editors.tsx)
 **Pattern:** StatusPill inner span was set to `14px/400/textTransform:none` — DOM probe of Jira list confirmed inner span is `11px/653/uppercase/letterSpacing:0.165px`. Summary color fix must be applied to `makeSummaryInlineEditCell` readView span in editors.tsx, NOT `makeSummaryCell` in cells.tsx — BacklogPage uses the inline-edit variant. The outer wrapping span from `data-jira-table-editor` inherits `rgb(41,42,46)` from `tbody td`, so finding first span via `querySelector('span')` returns the wrong element; the actual rendered text span is the second/deeper one.

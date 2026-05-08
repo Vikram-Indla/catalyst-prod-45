@@ -239,7 +239,7 @@ export function WorkItemCard({
               fontSize: d.titleSize,
               lineHeight: `${d.titleSize + 6}px`,
               color: tk.textPrimary,
-              fontWeight: 600,                          /* Jira parity: 653 variable = ~600 */
+              fontWeight: 400,                          /* jira-compare 2026-05-08: Jira card titles are 400/regular, NOT bold */
               marginBottom: 4,
               /* No paddingRight here: the flex sibling (flag + edit + menu
                  buttons) already reserves ~44px on the right. Adding an
@@ -290,30 +290,26 @@ export function WorkItemCard({
         )}
       </div>
 
-      {/* ─── META ROWS: assignee name + epic/parent + fix-version (Jira: plain muted text, no chips) ─── */}
-      {(vf?.assignee !== false) && issue.assigneeName && (
+      {/* ─── META ROW: epic/parent chip only (Jira parity 2026-05-08)
+          Jira Kanban cards show:
+          - Epic as a colored label chip BELOW the title (NOT plain text)
+          - NO assignee name text (avatar in footer only)
+          - NO sprint/fix-version text on the card
+          visibleFields.epic controls whether the epic chip shows. ─── */}
+      {epicLabel && (vf?.epic !== false) && (
         <div style={{
-          fontSize: 12, fontWeight: 400, color: tk.textMuted,
-          lineHeight: '16px', marginBottom: 2,
-          overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
-          fontFamily: 'var(--cp-font-body)',
-        }}>{issue.assigneeName}</div>
-      )}
-      {epicLabel && (
-        <div style={{
-          fontSize: 12, fontWeight: 400, color: tk.textMuted,
-          lineHeight: '16px', marginBottom: fixVersionLabel ? 0 : 2,
-          overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
-          fontFamily: 'var(--cp-font-body)',
-        }}>{epicLabel}</div>
-      )}
-      {fixVersionLabel && (
-        <div style={{
-          fontSize: 12, fontWeight: 400, color: tk.textMuted,
-          lineHeight: '16px', marginBottom: 2,
-          overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
-          fontFamily: 'var(--cp-font-body)',
-        }}>{fixVersionLabel}</div>
+          display: 'inline-flex', alignItems: 'center',
+          marginBottom: 4, maxWidth: '100%',
+        }}>
+          <span style={{
+            fontSize: 11, fontWeight: 400, color: tk.epicLozengeText,
+            background: tk.epicLozengeBg,
+            borderRadius: 3, padding: '1px 6px',
+            lineHeight: '16px', fontFamily: 'var(--cp-font-body)',
+            overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+            maxWidth: '100%',
+          }}>{epicLabel}</span>
+        </div>
       )}
 
       {/* spacer — only used when card has explicit minHeight */}

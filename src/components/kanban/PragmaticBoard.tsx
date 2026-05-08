@@ -357,8 +357,10 @@ const PragmaticColumn = memo(function PragmaticColumn({
     });
   }, [column.id]);
 
-  const categoryDot = column.category === 'done' ? '#006644'
-    : column.category === 'in_progress' ? '#0747A6'
+  // jira-compare 2026-05-08 — K.11 measured status category colors
+  // Done: lime green #94C748, In Progress: cornflower #669DF1, To Do: muted grey #5E6C84
+  const categoryDot = column.category === 'done' ? '#94C748'
+    : column.category === 'in_progress' ? '#669DF1'
     : '#5E6C84';
 
   return (
@@ -399,9 +401,11 @@ const PragmaticColumn = memo(function PragmaticColumn({
           width: 8, height: 8, borderRadius: '50%', background: categoryDot, flexShrink: 0,
         }} />
         <span style={{
-          fontSize: 12, fontWeight: 500,
+          // jira-compare 2026-05-08 — Jira column headers: 11px/600/uppercase/0.04em
+          fontSize: 11, fontWeight: 600,
           color: tk.textMuted, fontFamily: 'var(--cp-font-body)',
           lineHeight: '16px', flex: 1,
+          textTransform: 'uppercase', letterSpacing: '0.04em',
         }}>{column.name}</span>
         {/* MAX badge — Jira board 597 surfaces column WIP via `MAX: <n>`. */}
         {column.wipLimit != null && (
@@ -424,9 +428,11 @@ const PragmaticColumn = memo(function PragmaticColumn({
             MAX: {column.wipLimit}
           </span>
         )}
+        {/* jira-compare 2026-05-08 — count: 11px/500/textMuted matching Jira column count style */}
         <span style={{
-          fontSize: 12, fontWeight: 500, color: tk.textPrimary,
+          fontSize: 11, fontWeight: 500, color: tk.textMuted,
           fontFamily: 'var(--cp-font-body)', lineHeight: '16px',
+          minWidth: 14, textAlign: 'right',
         }}>{issueIds.length}</span>
         {/* Per-column meatball — manual popover via createPortal. */}
         <button

@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
-import { X, AlertTriangle } from 'lucide-react';
+// jira-compare 2026-05-08: replaced lucide X/AlertTriangle with @atlaskit equivalents
+import CloseIcon from '@atlaskit/icon/core/close';
+import WarningIcon from '@atlaskit/icon/core/warning';
 import { useNavigate } from 'react-router-dom';
 import { useCreateBoard } from '@/hooks/useBoardMutations';
 import type { BoardVisibility, SwimlaneType } from '@/types/board';
@@ -90,7 +92,7 @@ export default function CreateBoardModal({ projectId, basePath, onClose }: Props
             background: 'transparent', cursor: 'pointer',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
           }}>
-            <X size={16} color="var(--ds-text-subtlest, #94A3B8)" />
+            <CloseIcon label="Close" size="small" primaryColor="var(--ds-text-subtlest, #94A3B8)" />
           </button>
         </div>
 
@@ -190,7 +192,7 @@ export default function CreateBoardModal({ projectId, basePath, onClose }: Props
                     </span>
                     {opt.warning && (
                       <span title="Visible to all users in the organisation. Use with caution.">
-                        <AlertTriangle size={13} color="var(--ds-text-warning, #D97706)" />
+                        <WarningIcon label="Warning" size="small" primaryColor="var(--ds-text-warning, #D97706)" />
                       </span>
                     )}
                   </div>
