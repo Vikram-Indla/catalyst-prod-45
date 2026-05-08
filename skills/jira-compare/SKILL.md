@@ -605,6 +605,25 @@ The full list lives in `CLAUDE.md` at the repo root with override-context commen
 
 ---
 
+## 22.9 Closure Evidence — mandatory when a feature or audit is declared done
+
+When the user declares any surface, feature, or audit cycle "done", "closed", "looks good", or "ship it":
+
+1. **Take maximum visual screenshots** of every state the surface owns:
+   - Default view (list/table/board as applicable)
+   - Any alternate views (card, collapsed, empty state)
+   - Sidebar/panel in expanded AND collapsed states
+   - Any open modals, dropdowns, or flyouts that were changed
+   - Dark mode if the surface supports it
+2. **Annotate every screenshot with directional arrows** (↓ ← → ↑) pointing at each changed element. Every arrow MUST carry a label: `← sentence-case headers (was UPPERCASE)`, `↓ two-line Recent (was truncated single-line)`, `→ ProjectIcon wired (was coloured square)`. **Raw screenshots with no arrows are rejected** — the annotated arrows ARE the closure evidence.
+3. **One caption per screenshot**: view name · what changed · what it replaced.
+4. Update `HANDOVER.md` under `## Closure Evidence` with the annotated screenshots and captions.
+5. Commit the handover before declaring the work done.
+
+A jira-compare cycle that closes without annotated screenshots has NOT closed. The loop re-opens.
+
+---
+
 ## 23. End-of-session protocol (always run before logging off)
 
 In this exact order:

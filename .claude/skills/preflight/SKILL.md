@@ -79,6 +79,25 @@ Execution graph with explicit branch points was originally proposed here. Cut: m
 
 When the surface is `ui-feature`, `design-only`, or `cross-cutting` with a UI component, the relevant Phase 2 row may invoke `mcp__visualize__show_widget` to produce a before/after mockup. This is a callable from within the plan, not a phase of preflight itself.
 
+## Phase 6 — Closure Evidence (mandatory when a module or phase is closed)
+
+When the user declares a module, phase, or feature "done", "closed", "remove from scope", or any equivalent closure signal, **before committing or replying "done"**:
+
+1. **Take maximum visual screenshots** of every distinct view/state the module owns:
+   - Default view (list/table)
+   - Any alternate views (card, kanban, etc.) — even if deprecated, screenshot the removal evidence (empty state or 404)
+   - Sidebar in expanded + collapsed state
+   - Any flyout panels, modals, or popovers that are part of the module
+   - Dark mode if the app supports it
+2. **Annotate every screenshot with directional arrows** (↓ ← → ↑) pointing at each changed element. Each arrow must have a short label: `← sentence-case headers (was UPPERCASE)`, `↓ two-line Recent layout (was truncated)`, etc. Raw screenshots with no arrows are **rejected** — the arrows ARE the evidence.
+3. **One caption per screenshot** summarising: what view, what changed, what was there before.
+4. **Embed the annotated screenshots in the handover** under a `## Closure Evidence` section.
+5. **Commit the handover** with the screenshots referenced so the next session has visual proof.
+
+This is non-negotiable. A closure with no annotated screenshots is an unverified closure. The arrows and labels must exist before the module is considered formally closed.
+
+---
+
 ## Phase 5 — Handover (always prepares; writes incrementally)
 
 Create or update `active/preflight-handover-{YYYY-MM-DD}-{topic-slug}.md` from the moment Phase 2 plan is finalized. Update it as plan rows complete. The handover note is the artifact the next session reads — it must always reflect the current state.
