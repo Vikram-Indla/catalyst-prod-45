@@ -1268,19 +1268,6 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
               ) : (
                 <span>{g.label}</span>
               )}
-              <span
-                style={{
-                  padding: '1px 8px',
-                  background: 'var(--ds-border, #DFE1E6)',
-                  borderRadius: 10,
-                  color: '#42526E',
-                  fontSize: 11,
-                  fontWeight: 700,
-                  letterSpacing: 0,
-                }}
-              >
-                {g.rows.length}
-              </span>
               {g.meta && (
                 <span style={{ fontWeight: 500, color: 'var(--ds-text-subtlest, #6B778C)', letterSpacing: 0, textTransform: 'none' }}>
                   {g.meta}

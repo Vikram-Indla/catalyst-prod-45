@@ -16,6 +16,7 @@
  */
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import ChevronDownIcon from '@atlaskit/icon/glyph/chevron-down';
+import ChevronRightIcon from '@atlaskit/icon/glyph/chevron-right';
 import CheckIcon from '@atlaskit/icon/glyph/check';
 // AutomationIcon removed — jira-compare 2026-05-05: Automate button between
 // status pill and Improve Story is not present in Jira. Removed per Vikram directive.
@@ -205,6 +206,7 @@ export function CatalystSidebarDetails({
   const [localStatus, setLocalStatus] = useState<string>('');
   const [showStatusDropdown, setShowStatusDropdown] = useState(false);
   const [showConfirmDelete, setShowConfirmDelete] = useState(false);
+  const [detailsCollapsed, setDetailsCollapsed] = useState(false);
   const [showConfigureDrawer, setShowConfigureDrawer] = useState(false);
   const [pinnedFields, setPinnedFields] = useState<string[]>(() =>
     loadPinnedFields(issue?.issue_type ?? 'Story'),
@@ -509,17 +511,22 @@ export function CatalystSidebarDetails({
           Body padding: '8px 0' (Jira doesn't have a container left pad —
           the field rows themselves carry 11px v-padding with 96px label col). */}
       <div style={{ marginBottom: 8 }}>
-        <div style={{
-          display: 'flex', alignItems: 'center', gap: 6, height: 40,
-          padding: '0 0', background: 'transparent',
-        }}>
-          <ChevronDownIcon size="small" primaryColor="var(--ds-icon-subtle, #626F86)" />
+        <div
+          onClick={() => setDetailsCollapsed(c => !c)}
+          style={{
+            display: 'flex', alignItems: 'center', gap: 6, height: 40,
+            padding: '0 0', background: 'transparent', cursor: 'pointer', userSelect: 'none',
+          }}
+        >
+          <span style={{ display: 'inline-flex', transition: 'transform 0.15s ease', transform: detailsCollapsed ? 'rotate(0deg)' : 'rotate(90deg)', color: 'var(--ds-icon-subtle, #626F86)' }}>
+            <ChevronRightIcon size="small" primaryColor="currentColor" />
+          </span>
           {/* jira-compare 2026-05-08: K.11 section header spec = 14px/600/#172B4D.
               Prior comment said fw500 but missed the font-size correction (was 16px). */}
           <div style={{ fontSize: 14, fontWeight: 600, lineHeight: '20px', color: 'var(--ds-text, #172B4D)' }}>Details</div>
         </div>
 
-        <div style={{ padding: '0' }}>
+        {!detailsCollapsed && <div style={{ padding: '0' }}>
 
           {/* ── Fix Versions ──── jira-compare Phase 2 (2026-05-02): hidden
               on Epic — Jira NIN omits this field from the Epic context
@@ -727,7 +734,7 @@ export function CatalystSidebarDetails({
 
           {/* Priority MOVED to CatalystKeyDetails (main content).
               Story Points: BANNED platform-wide. Do NOT re-add. */}
-        </div>
+        </div>}
       </div>
 
       {/* ── Timestamps + Configure CTA (canonical) ──────────────

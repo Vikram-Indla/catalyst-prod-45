@@ -723,8 +723,19 @@ export function SubtasksPanel({
                   : 'This work item cannot have children.'}
               </div>
               {canCreate && (
-                <button type="button" className="sp-empty-cta" onClick={() => setCreating(true)}>
-                  + Create {defaultDraftType.toLowerCase()}
+                <button
+                  type="button"
+                  onClick={() => setCreating(true)}
+                  style={{
+                    background: 'none', border: 'none', cursor: 'pointer', padding: '4px 0',
+                    fontSize: 14, color: 'var(--ds-text-subtle, #42526E)',
+                    textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 4,
+                    fontFamily: 'inherit',
+                  }}
+                  onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.textDecoration = 'underline'; }}
+                  onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.textDecoration = 'none'; }}
+                >
+                  + Create a child issue
                 </button>
               )}
             </div>

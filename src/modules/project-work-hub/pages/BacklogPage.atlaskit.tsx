@@ -1284,7 +1284,7 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
           </span>
         );
       }
-      return { id: k, label: k, labelNode, rows: buckets.get(k)! };
+      return { id: k, label: k, labelNode: labelNode ?? undefined, rows: buckets.get(k)! };
     });
   }, [groupBy, items, search, typeFilter, filterValue, hideDoneItems, sortKey, sortDir, avatarsByName]);
 
@@ -1497,11 +1497,11 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
       // header for the issue-type cell). Setting label to "Type" fixes
       // both findings in one change — visible text doubles as the
       // accessible name on the th element.
-      // 2026-05-04 jira-compare: live DOM probe of Jira BAU list measures
-      // Type column at x=147→233 = ~86px. width:7 × 12 = 84px ≈ matches.
-      // Previous width:11 (~124px) was 38px too wide, wasting summary space.
+      // 2026-05-08 re-probe: Jira BAU list measures Type at 110px.
+      // width:9 × 12 = 108px ≈ matches. Previous width:6 (~72px) was
+      // 38px too narrow — header "Type" text was clipped.
       label: 'Type',
-      width: 6,
+      width: 9,
       align: 'start',
       alwaysVisible: true,
       cell: ({ row: it }) => {
@@ -1581,8 +1581,10 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
     {
       id: 'key',
       label: 'Key',
-      // 7 fractions = 84px — enough to show "BAU-5801" without clipping.
-      width: 7,
+      // 2026-05-08 re-probe: Jira BAU list measures Key at 120px.
+      // width:10 × 12 = 120px matches. Previous width:7 (~84px) was too
+      // narrow once sort indicator "↑" is added alongside the key text.
+      width: 10,
       sortable: true,
       defaultVisible: true,
       accessor: (r) => r.key || '',
@@ -1623,10 +1625,12 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
     {
       id: 'status',
       label: 'Status',
-      // 13 fractions = 156px. "Ready for Development" measures ~153px (per
-      // 2026-05-04 audit) so 156px gives 3px margin. Summary flex absorbs
-      // the remaining space.
-      width: 13,
+      // 2026-05-08 re-probe: Jira measures Status at 120px OUTER with 8px
+      // left container padding (112px effective). Catalyst TD has 12px+12px
+      // = 24px cell padding overhead; 144px - 24px = 120px inner = matches
+      // Jira's 112px effective + pill margin. "READY FOR QA" needs ~112px
+      // text — fits at 120px inner without truncation.
+      width: 12,
       sortable: true,
       defaultVisible: true,
       // B.4 verdict: @atlaskit/popup portal mounts on this surface but
@@ -1670,10 +1674,10 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
       // labels to truncate after a single word. Bumped 12 → 26
       // (~286px @ 1100 minw) to hit the audit's ≥280px acceptance
       // target.
-      // Apr 28, 2026 (jira-compare cycle 3 V6): 26 was too greedy and
-      // Summary is now flex so Parent only needs a fixed allocation.
-      // 10 fractions = 120px; parent label truncates with title tooltip.
-      width: 10,
+      // 2026-05-08 re-probe: Jira BAU list measures Parent at 160px.
+      // width:13 × 12 = 156px ≈ matches. Previous width:10 (~120px) was
+      // 40px too narrow — parent key+name was heavily truncated.
+      width: 13,
       sortable: true,
       defaultVisible: true,
       cell: makeParentEditCell<BacklogItem>({
@@ -2474,6 +2478,27 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
                 <AkSearchIcon label="" size="small" />
               </span>
             }
+            elemAfterInput={
+              search ? (
+                <button
+                  type="button"
+                  aria-label="Clear search"
+                  onClick={() => setSearch('')}
+                  style={{
+                    paddingInlineEnd: 6,
+                    display: 'flex',
+                    alignItems: 'center',
+                    background: 'none',
+                    border: 'none',
+                    cursor: 'pointer',
+                    color: token('color.text.subtlest', '#6B778C'),
+                    padding: '0 6px 0 2px',
+                  }}
+                >
+                  <AkCloseIcon label="" size="small" />
+                </button>
+              ) : undefined
+            }
           />
         </div>
         <div style={{ position: 'relative' }}>
@@ -2678,6 +2703,14 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
             // creates an issue with status=groupId (groupBy=status case).
             onAddToGroup={(groupId: string) => {
               setInlineCreateGroup((prev) => (prev === groupId ? null : groupId));
+              // Expand the group so the inline-create row is visible (it only
+              // renders when the group is not collapsed).
+              setCollapsedGroups((prev) => {
+                if (!prev.has(groupId)) return prev;
+                const next = new Set(prev);
+                next.delete(groupId);
+                return next;
+              });
             }}
             renderGroupInlineRow={(groupId: string) => {
               if (inlineCreateGroup !== groupId) return null;
@@ -2998,21 +3031,22 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
                 minHeight: 44,
               }}
             >
+              {detailItem && (
+                <span style={{ display: 'inline-flex', alignItems: 'center', flexShrink: 0 }}>
+                  <JiraIssueTypeIcon type={DETAIL_TYPE_MAP[detailItem.type] ?? 'Story'} size={16} />
+                </span>
+              )}
               <span style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                width: 20,
-                height: 20,
-                borderRadius: 4,
-                background: token('color.icon.accent.blue', '#1868DB'),
-                color: 'var(--ds-text-inverse, #FFFFFF)',
-                justifyContent: 'center',
-                fontSize: 12,
-                fontWeight: 700,
+                fontSize: 14,
+                fontWeight: 600,
+                color: token('color.text.subtle', '#42526E'),
+                whiteSpace: 'nowrap',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                maxWidth: 220,
               }}>
-                ✓
+                {detailItem?.key ?? detailItemId}
               </span>
-              Catalyst work item
             </div>
             {/* Jira-faithful panel toolbar — Expand / Fullscreen / Close triad.
                 Prev/Next row navigation still works via j/k/↑/↓ keyboard. */}
@@ -4621,22 +4655,23 @@ function InlineGroupCreateRow({
               style={{
                 display: 'inline-flex',
                 alignItems: 'center',
-                gap: 6,
-                height: 27,
-                padding: '0 10px',
-                border: `1px solid ${token('color.border', '#DFE1E6')}`,
+                gap: 2,
+                height: 24,
+                padding: '0 4px',
+                border: 'none',
                 borderRadius: 3,
-                background: token('elevation.surface', '#FFFFFF'),
-                color: token('color.text', '#292A2E'),
-                fontSize: 13,
-                fontWeight: 500,
+                background: 'transparent',
+                color: token('color.text.subtle', '#42526E'),
+                fontSize: 12,
                 fontFamily: 'inherit',
                 cursor: 'pointer',
                 flexShrink: 0,
               }}
+              onMouseEnter={(e) => { e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', 'rgba(9,30,66,0.06)'); }}
+              onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
             >
-              <JiraIssueTypeIcon type={issueType} size={14} />
-              <span>{issueType}</span>
+              <JiraIssueTypeIcon type={issueType} size={16} />
+              <svg width="10" height="10" viewBox="0 0 10 10" fill="currentColor" aria-hidden><path d="M2.5 3.5 5 6l2.5-2.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" fill="none"/></svg>
             </button>
           </Tooltip>
         );
@@ -4644,7 +4679,7 @@ function InlineGroupCreateRow({
       <Textfield
         ref={inputRef as any}
         isCompact
-        placeholder={`What needs to be done in ${groupLabel}?`}
+        placeholder="What needs to be done?"
         value={summary}
         onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSummary(e.target.value)}
         elemBeforeInput={
@@ -4717,9 +4752,6 @@ function InlineGroupCreateRow({
         }
       >
         {isSubmitting ? 'Creating…' : 'Create'}
-      </Button>
-      <Button appearance="subtle" spacing="compact" onClick={onCancel}>
-        Cancel
       </Button>
     </div>
   );

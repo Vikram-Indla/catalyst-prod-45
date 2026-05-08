@@ -229,6 +229,8 @@ export default function CatalystViewStory({
       // jira-compare 2026-05-05: removed dead CTAs (Add flag, Clone, Move, Archive).
       // Only Delete remains — it has a real implementation.
       moreMenuItems={[
+        { label: 'Print', onClick: () => window.print() },
+        { label: 'Clone', onClick: () => { console.log('Clone'); } },
         { label: 'Delete story', onClick: () => mutations.deleteIssue.mutate(), danger: true },
       ]}
       onTogglePanelMode={onTogglePanelMode}

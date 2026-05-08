@@ -511,6 +511,7 @@ export function makeSummaryInlineEditCell<T>({
           )}
           readView={() => (
             <span
+              title={summary || undefined}
               style={{
                 display: 'block',
                 padding: '2px 6px',

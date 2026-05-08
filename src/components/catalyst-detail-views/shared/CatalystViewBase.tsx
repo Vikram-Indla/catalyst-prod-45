@@ -185,6 +185,20 @@ export function CatalystViewBase({
       if (e.key === 'Escape') {
         if (showDotsMenu) { setShowDotsMenu(false); return; }
         onClose();
+        return;
+      }
+      // 'e' key — activate title inline edit
+      if (e.key === 'e' && !e.metaKey && !e.ctrlKey && !e.altKey) {
+        const target = e.target as HTMLElement | null;
+        if (
+          target instanceof HTMLInputElement ||
+          target instanceof HTMLTextAreaElement ||
+          target?.isContentEditable
+        ) return;
+        const titleEl = document.querySelector<HTMLElement>(
+          '[data-testid="catalyst-title-editor"] [role="textbox"], .cv-title-edit-hide-label h1'
+        );
+        if (titleEl) { titleEl.click(); }
       }
     };
     document.addEventListener('keydown', handleEscape);

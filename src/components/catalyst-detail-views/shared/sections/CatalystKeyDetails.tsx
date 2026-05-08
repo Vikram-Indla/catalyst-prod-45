@@ -127,7 +127,7 @@ export function CatalystKeyDetails({
         <h2 style={{ margin: 0, fontSize: 14, fontWeight: 600, lineHeight: '20px', color: 'var(--ds-text, #172B4D)' }}>Key details</h2>
       </div>
 
-      {!collapsed && (
+      <div style={{ overflow: 'hidden', maxHeight: collapsed ? 0 : 800, transition: 'max-height 0.15s ease' }}>
         <div style={{ paddingLeft: 20 }}>
           {showParent && (
             <FieldRow label="Parent" alignBlock="center">
@@ -160,7 +160,7 @@ export function CatalystKeyDetails({
               exact 96px label column used by Parent + Priority. */}
           {extraRows}
         </div>
-      )}
+      </div>
     </div>
   );
 }

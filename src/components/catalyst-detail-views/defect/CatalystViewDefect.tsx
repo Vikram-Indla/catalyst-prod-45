@@ -166,6 +166,8 @@ export default function CatalystViewDefect({
       }}
       onShare={() => { navigator.clipboard.writeText(window.location.href); toast.success('Link copied'); }}
       moreMenuItems={[
+        { label: 'Print', onClick: () => window.print() },
+        { label: 'Clone', onClick: () => { console.log('Clone'); } },
         { label: 'Delete defect', onClick: () => mutations.deleteIssue.mutate(), danger: true },
       ]}
       onTogglePanelMode={onTogglePanelMode} navigationItems={navigationItems} currentItemId={itemId} onNavigate={onNavigate}

@@ -81,6 +81,8 @@ export default function CatalystViewBusinessRequest({
       onParentClick={issue?.parent_key ? () => onOpenItem?.(issue.parent_key!) : undefined}
       onShare={() => { navigator.clipboard.writeText(window.location.href); toast.success('Link copied'); }}
       moreMenuItems={[
+        { label: 'Print', onClick: () => window.print() },
+        { label: 'Clone', onClick: () => { console.log('Clone'); } },
         { label: 'Delete request', onClick: () => mutations.deleteIssue.mutate(), danger: true },
       ]}
       onTogglePanelMode={onTogglePanelMode} navigationItems={navigationItems} currentItemId={itemId} onNavigate={onNavigate}

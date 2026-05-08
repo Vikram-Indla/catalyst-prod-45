@@ -91,6 +91,11 @@ Append-only. Newest at top. Each entry: date, pattern, rule, surface.
 
 ---
 
+## 2026-05-08 — Group inline-create row invisible when group is collapsed on BacklogPage
+**Surface:** BacklogPage.atlaskit.tsx (JiraTable grouped view)
+**Pattern:** `renderGroupInlineRow` only renders when `!collapsed`. The `+` button in the group header called `e.stopPropagation()` to avoid toggling the group, so clicking `+` on a collapsed group set `inlineCreateGroup` state but the row never appeared (group stayed collapsed). Also: `JiraTable` independently rendered a `{g.rows.length}` grey pill badge which duplicated a `(N)` text badge added to `labelNode` in BacklogPage — Jira shows NO count badge on group headers at all. Inline create placeholder "What needs to be done in X?" doesn't match Jira's "What needs to be done?".
+**Rule:** `onAddToGroup` callback must call BOTH `setInlineCreateGroup` AND `setCollapsedGroups(prev => { next.delete(groupId); return next; })` so clicking `+` on a collapsed group simultaneously expands it and inserts the inline create row. Never add count badges to group headers — Jira's grouped list shows only the status lozenge/label + `+` button with no count. Inline create placeholder must be "What needs to be done?" with no group-name suffix.
+
 ## 2026-05-08 — SubtasksPanel inline create invisible when children.length === 0
 **Surface:** SubtasksPanel index.tsx (all work item types)
 **Pattern:** `InlineCreateWithAI` was rendered inside the `visibleRows.length > 0` IIFE (the JiraTable block). When a work item has zero subtasks and the user clicks "+ Create sub-task", `creating` becomes `true`, the empty state disappears (guarded by `!creating`), but the inline create never appears because the entire table block is skipped. Fix: add a standalone `{creating && canCreate && children.length === 0 && <InlineCreateWithAI … />}` block outside the `visibleRows.length > 0` guard, positioned between the empty state and the filter-empty-state blocks.
