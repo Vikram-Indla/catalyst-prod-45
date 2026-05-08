@@ -1205,14 +1205,17 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
                     justifyContent: 'center',
                     width: 24,
                     height: 24,
-                    color: '#6B6E76',
+                    // 2026-05-08 DOM probe: Jira group header chevron color = rgb(80,82,88)
+                    // = --ds-text-subtle. Was #6B6E76 (--ds-text-subtlest) — too faint.
+                    color: 'var(--ds-text-subtle, #505258)',
                     transform: collapsed ? 'rotate(-90deg)' : 'rotate(0deg)',
-                    // 2026-05-08: increased from 120ms to 200ms for smoother feel
                     transition: 'transform 200ms ease',
                     flexShrink: 0,
                   }}
                 >
-                  <ChevronDownIcon label="" size="small" />
+                  {/* 2026-05-08 DOM probe: Jira group header chevron = 24×24px (size="medium").
+                      Catalyst was using size="small" (16px) — visually too thin/small vs Jira. */}
+                  <ChevronDownIcon label="" size="medium" />
                 </span>
               )}
               {/* 2026-05-08 Jira parity: label BEFORE + button.

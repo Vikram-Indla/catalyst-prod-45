@@ -91,6 +91,16 @@ Append-only. Newest at top. Each entry: date, pattern, rule, surface.
 
 ---
 
+## 2026-05-08 — StatusPill inner text must be 11px/653/uppercase/letterSpacing:0.165px; summary cell uses makeSummaryInlineEditCell not makeSummaryCell
+**Surface:** BacklogPage list table (cells.tsx + editors.tsx)
+**Pattern:** StatusPill inner span was set to `14px/400/textTransform:none` — DOM probe of Jira list confirmed inner span is `11px/653/uppercase/letterSpacing:0.165px`. Summary color fix must be applied to `makeSummaryInlineEditCell` readView span in editors.tsx, NOT `makeSummaryCell` in cells.tsx — BacklogPage uses the inline-edit variant. The outer wrapping span from `data-jira-table-editor` inherits `rgb(41,42,46)` from `tbody td`, so finding first span via `querySelector('span')` returns the wrong element; the actual rendered text span is the second/deeper one.
+**Rule:** When fixing typography in a cell renderer, always grep for which `make*Cell` variant is actually wired in the page's column definition. `makeSummaryCell` and `makeSummaryInlineEditCell` are different files/functions. Apply the fix to both branches (editable readView + non-editable display) in `makeSummaryInlineEditCell`. Always probe the innermost colored span, not the first span in the tree.
+
+## 2026-05-08 — Status color mapping: use DOM probe, not category assumptions; + button after label; hover-only
+**Surface:** BacklogPage.atlaskit.tsx + JiraTable.tsx + backlog.utils.ts
+**Pattern:** STORY_STATUS_LOZENGE had `Blocked: 'removed'` (red) and `On Hold: 'moved'` (yellow) and `In Design: 'inprogress'` (blue). DOM probe of Jira BAU 2026-05-08 showed: Blocked = grey `rgb(221,222,225)` (To Do category), On Hold = grey, In Design = grey (BAU-specific To Do category). Group header `+` button was positioned BEFORE the label; Jira places it AFTER. `+` was always visible; Jira makes it hover-only. Group header used `@atlaskit/Lozenge` which renders different hex from Jira (token resolution differs) — StatusPill uses exact measured hex.
+**Rule:** Always DOM-probe Jira's `getComputedStyle` for ALL status values before assigning appearance. Never assume "Blocked = red" or "In Design = blue" — status categories are BAU-project-specific config. Group `+` must be (1) after the label and (2) hidden at `opacity:0` with `.jira-group-header-row:hover .jira-group-add-btn { opacity:1 }`. Group header status label must use `StatusPill` (exact hex), NOT `@atlaskit/Lozenge` (token resolution diverges from Jira).
+
 ## 2026-05-08 — Group inline-create row invisible when group is collapsed on BacklogPage
 **Surface:** BacklogPage.atlaskit.tsx (JiraTable grouped view)
 **Pattern:** `renderGroupInlineRow` only renders when `!collapsed`. The `+` button in the group header called `e.stopPropagation()` to avoid toggling the group, so clicking `+` on a collapsed group set `inlineCreateGroup` state but the row never appeared (group stayed collapsed). Also: `JiraTable` independently rendered a `{g.rows.length}` grey pill badge which duplicated a `(N)` text badge added to `labelNode` in BacklogPage — Jira shows NO count badge on group headers at all. Inline create placeholder "What needs to be done in X?" doesn't match Jira's "What needs to be done?".

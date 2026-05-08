@@ -2598,21 +2598,7 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
         {toolbarViewOptionsButton}
         {/* P1 #7 — More actions overflow ⋯: refresh + export. */}
         {toolbarMoreActionsButton}
-        {/* Subtle divider between pills/spacer and the right-side cluster
-            (count + maximize). Mirrors Atlaskit toolbar separators. */}
-        <span aria-hidden style={{
-          display: 'inline-block',
-          width: 1, height: 18,
-          background: token('color.border', '#DFE1E6'),
-          marginRight: 4,
-          marginLeft: 4,
-        }} />
-        <span style={{ fontSize: 13, color: token('color.text.subtlest', '#6B778C') }}>
-          {total} item{total === 1 ? '' : 's'}
-          {selectedIds.size > 0 ? ` · ${selectedIds.size} selected` : ''}
-        </span>
-        {/* Maximize/Restore icon — sits to the RIGHT of the items label.
-            Apr 27, 2026 (L48). */}
+        {/* Maximize/Restore icon — Jira toolbar has no item count label. */}
         {toolbarMaximizeIcon}
       </div>
 
