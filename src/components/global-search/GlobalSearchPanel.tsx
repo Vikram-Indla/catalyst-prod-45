@@ -2,35 +2,68 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import SearchIcon from '@atlaskit/icon/glyph/search';
-import RecentIcon from '@atlaskit/icon/glyph/recent';
 import WorldIcon from '@atlaskit/icon/glyph/world';
 import PersonIcon from '@atlaskit/icon/glyph/person';
-import FilterIcon from '@atlaskit/icon/glyph/filter';
 import { token } from '@atlaskit/tokens';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useRecentItems, useSearchResults } from '@/hooks/useGlobalSearch';
 import WorkItemIcon, { normalizeIconType } from '@/components/shared/WorkItemIcon';
+import ProjectIcon from '@/components/shared/ProjectIcon';
 import { FilterDropdown, FilterOption } from './FilterDropdown';
 import type { SearchResult } from '@/types/global-search';
 
 // ── Data hooks ────────────────────────────────────────────────────────────────
 
-/** Fetch projects from ph_jira_projects — the canonical projects table. */
+/**
+ * Fetch projects using the canonical 3-table pattern (same as useForYouData):
+ *   ph_jira_projects → project_key + name
+ *   projects         → avatar_url + color  (primary icon source)
+ *   ph_projects      → icon + color        (secondary Lucide fallback)
+ */
 function useProjects() {
   return useQuery({
     queryKey: ['global-search-projects'],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('ph_jira_projects')
-        .select('project_key, name')
-        .order('project_key');
-      if (error) return [];
-      return (data ?? []).map((row): FilterOption => ({
-        id: row.project_key,
-        name: row.name || row.project_key,
-        tag: row.project_key,
-      }));
+      const [jiraRes, catRes] = await Promise.all([
+        supabase.from('ph_jira_projects').select('project_key, name').order('project_key'),
+        supabase.from('projects').select('key, avatar_url, color'),
+      ]);
+      if (jiraRes.error) return [];
+
+      const projectKeys = (jiraRes.data ?? []).map((r) => r.project_key).filter(Boolean);
+      const catMap = new Map<string, { avatar_url: string | null; color: string | null }>();
+      (catRes.data ?? []).forEach((p) => { if (p.key) catMap.set(p.key, p); });
+
+      let phIconMap = new Map<string, { icon: string | null; color: string | null }>();
+      if (projectKeys.length > 0) {
+        const { data: phRows } = await supabase
+          .from('ph_projects')
+          .select('key, icon, color')
+          .in('key', projectKeys);
+        (phRows ?? []).forEach((r: { key: string; icon: string | null; color: string | null }) => {
+          phIconMap.set(r.key, r);
+        });
+      }
+
+      return (jiraRes.data ?? []).map((row): FilterOption => {
+        const cat = catMap.get(row.project_key);
+        const ph = phIconMap.get(row.project_key);
+        return {
+          id: row.project_key,
+          name: row.name || row.project_key,
+          tag: row.project_key,
+          icon: (
+            <ProjectIcon
+              projectKey={row.project_key}
+              avatarUrl={cat?.avatar_url ?? null}
+              iconName={ph?.icon ?? undefined}
+              color={ph?.color ?? cat?.color ?? undefined}
+              size="small"
+            />
+          ),
+        };
+      });
     },
     staleTime: 5 * 60 * 1000,
   });
@@ -118,16 +151,6 @@ export function GlobalSearchPanel({ query, onQueryChange, onClose }: GlobalSearc
   });
   const { data: projectOptions = [] } = useProjects();
   const { data: memberOptions = [] } = useTeamMembers();
-
-  // G4: localStorage recently visited items (catalyst-recent-issues)
-  const localRecents = useMemo<{ key: string; title: string; type: string }[]>(() => {
-    try {
-      const raw = localStorage.getItem('catalyst-recent-issues');
-      return raw ? JSON.parse(raw) : [];
-    } catch {
-      return [];
-    }
-  }, []);
 
   // ── Row model ──────────────────────────────────────────────────────────────
   type Row =
@@ -287,44 +310,6 @@ export function GlobalSearchPanel({ query, onQueryChange, onClose }: GlobalSearc
             </>,
             'Suggestion',
           )
-        )}
-
-        {/* G4: Recently visited from localStorage — shown above DB recents when query is empty */}
-        {showRecentLabel && localRecents.length > 0 && (
-          <>
-            <div style={{
-              padding: '10px 16px 4px',
-              fontSize: 11, fontWeight: 700, letterSpacing: '0.04em',
-              textTransform: 'uppercase',
-              color: token('color.text.subtle', '#626F86'),
-            }}>
-              Recently visited
-            </div>
-            {localRecents.map((r, i) => {
-              const iconType = normalizeIconType(r.type);
-              return (
-                <div
-                  key={`lrecent-${r.key}`}
-                  role="option"
-                  aria-selected={false}
-                  onClick={() => { navigate(`/work-hub/all?open=${encodeURIComponent(r.key)}`); onClose(); }}
-                  onMouseEnter={() => {}}
-                  style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '8px 16px', cursor: 'pointer', borderRadius: 3 }}
-                  onMouseOver={(e) => (e.currentTarget.style.background = token('color.background.neutral.hovered', '#F1F2F4'))}
-                  onMouseOut={(e) => (e.currentTarget.style.background = '')}
-                >
-                  <div style={{ width: 28, display: 'flex', justifyContent: 'center', flexShrink: 0 }}>
-                    <WorkItemIcon type={iconType} size={18} />
-                  </div>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: 2, minWidth: 0 }}>
-                    <div style={{ fontSize: 14, color: token('color.text', '#292A2E'), fontWeight: 600 }}>
-                      {r.key}
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
-          </>
         )}
 
         {/* Recent / Results header */}

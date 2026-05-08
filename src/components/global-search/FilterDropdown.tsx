@@ -1,5 +1,5 @@
-import { useMemo, useRef, useEffect, useState, useCallback } from 'react';
-import { createPortal } from 'react-dom';
+import { useMemo, useRef, useEffect, useState, useCallback, type ReactNode } from 'react';
+import { createPortal } from 'react-dom'; // portal-fix
 import Textfield from '@atlaskit/textfield';
 import { Checkbox } from '@atlaskit/checkbox';
 import Avatar from '@atlaskit/avatar';
@@ -19,6 +19,7 @@ export interface FilterOption {
   name: string;
   tag?: string;
   avatarSrc?: string;
+  icon?: ReactNode;
 }
 
 interface FilterDropdownProps {
@@ -180,7 +181,7 @@ export function FilterDropdown({
                   }}
                 >
                   <Checkbox isChecked={checked} onChange={() => toggle(opt.id)} />
-                  <Avatar appearance="circle" size="small" name={opt.name} src={opt.avatarSrc} />
+                  {opt.icon ?? <Avatar appearance="circle" size="small" name={opt.name} src={opt.avatarSrc} />}
                   <span style={{ fontSize: 14, color: 'var(--ds-text, #172B4D)', fontFamily: 'var(--cp-font-body)' }}>
                     {opt.name}
                     {opt.tag ? <span style={{ color: 'var(--ds-text-subtle, #626F86)' }}> ({opt.tag})</span> : null}
