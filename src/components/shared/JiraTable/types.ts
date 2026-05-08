@@ -242,4 +242,19 @@ export interface JiraTableProps<TRow> {
    * Default: false. Existing consumers render every row as before.
    */
   enableVirtualization?: boolean;
+
+  /**
+   * Jira-parity: sticky inline-create footer row always visible at the
+   * bottom of the table. When provided, renders a <tfoot> row pinned to
+   * the viewport bottom. `placeholder` is shown in idle state; `active`
+   * replaces it when the consumer has opened the create form.
+   */
+  stickyCreateFooter?: {
+    /** Placeholder text shown in idle state. Default: '+ What needs to be done?' */
+    placeholder?: string;
+    /** Called when the user clicks the idle placeholder row. */
+    onActivate: () => void;
+    /** When non-null, replaces the placeholder with the actual create form. */
+    active: ReactNode | null;
+  };
 }

@@ -9,6 +9,7 @@
  * own `onCellEdit` wiring (see JiraTable.tsx).
  */
 import React from 'react';
+import ReactDOM from 'react-dom';
 import Avatar from '@atlaskit/avatar';
 import CommentIcon from '@atlaskit/icon/glyph/comment';
 import { token } from '@atlaskit/tokens';
@@ -282,6 +283,107 @@ export function makeStatusCell(
       <StatusPill appearance={appearanceFor(status)}>
         {labelFor ? labelFor(status) : status}
       </StatusPill>
+    );
+  };
+}
+
+// ─── Status Edit Cell ────────────────────────────────────────────────────────
+export function makeStatusEditCell<T>(opts: {
+  getStatus: (row: T) => string | null;
+  options: string[];
+  appearanceFor: (s: string | null) => LozengeAppearance;
+  onChange: (row: T, next: string) => void;
+  canEdit?: (row: T) => boolean;
+}) {
+  return function StatusEditCell({ row }: CellProps<T>) {
+    const [open, setOpen] = React.useState(false);
+    const [pos, setPos] = React.useState({ top: 0, left: 0 });
+    const triggerRef = React.useRef<HTMLButtonElement>(null);
+    const popupRef = React.useRef<HTMLDivElement>(null);
+    const status = opts.getStatus(row);
+    const editable = opts.canEdit ? opts.canEdit(row) : true;
+
+    React.useEffect(() => {
+      if (!open) return;
+      const handler = (e: MouseEvent) => {
+        if (
+          triggerRef.current && !triggerRef.current.contains(e.target as Node) &&
+          popupRef.current && !popupRef.current.contains(e.target as Node)
+        ) setOpen(false);
+      };
+      document.addEventListener('mousedown', handler);
+      return () => document.removeEventListener('mousedown', handler);
+    }, [open]);
+
+    const handleOpen = (e: React.MouseEvent) => {
+      if (!editable) return;
+      e.stopPropagation();
+      const rect = triggerRef.current?.getBoundingClientRect();
+      if (rect) setPos({ top: rect.bottom + window.scrollY + 4, left: rect.left + window.scrollX });
+      setOpen(o => !o);
+    };
+
+    return (
+      <>
+        <button
+          ref={triggerRef}
+          type="button"
+          data-jira-table-editor
+          onClick={handleOpen}
+          style={{
+            background: 'transparent', border: 'none', padding: 0,
+            cursor: editable ? 'pointer' : 'default',
+          }}
+        >
+          <StatusPill appearance={opts.appearanceFor(status)}>
+            {status ?? '—'}
+          </StatusPill>
+        </button>
+        {open && typeof document !== 'undefined' && ReactDOM.createPortal(
+          <div
+            ref={popupRef}
+            style={{
+              position: 'absolute',
+              top: pos.top,
+              left: pos.left,
+              zIndex: 9999,
+              background: token('elevation.surface.overlay', '#FFFFFF'),
+              borderRadius: 4,
+              boxShadow: '0 4px 8px -2px rgba(9,30,66,.25), 0 0 0 1px rgba(9,30,66,.08)',
+              minWidth: 180,
+              maxHeight: 280,
+              overflowY: 'auto',
+              padding: '4px 0',
+            }}
+          >
+            {opts.options.map(s => (
+              <button
+                key={s}
+                type="button"
+                onClick={(e) => { e.stopPropagation(); opts.onChange(row, s); setOpen(false); }}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 8,
+                  width: '100%',
+                  padding: '6px 12px',
+                  border: 'none',
+                  background: s === status ? token('color.background.selected', '#E9F2FF') : 'transparent',
+                  cursor: 'pointer',
+                  textAlign: 'left',
+                  fontSize: 14,
+                  color: token('color.text', '#172B4D'),
+                }}
+                onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = token('color.background.neutral.subtle.hovered', '#F7F8F9'); }}
+                onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = s === status ? token('color.background.selected', '#E9F2FF') : 'transparent'; }}
+              >
+                <StatusPill appearance={opts.appearanceFor(s)}>{s}</StatusPill>
+              </button>
+            ))}
+          </div>,
+          document.body,
+        )}
+      </>
     );
   };
 }

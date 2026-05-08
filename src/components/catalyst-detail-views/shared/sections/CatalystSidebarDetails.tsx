@@ -132,10 +132,21 @@ import {
 } from '@/modules/project-work-hub/components/dialogs/story-detail-modules/helpers';
 
 /**
+ * jira-compare 2026-05-08: Jira-style absolute date — "April 29, 2026 at 5:15 PM".
+ * Replaces the compact "29 Apr 2026" format; matches Jira's footer probe exactly.
+ */
+function fmtJiraDate(iso: string | null | undefined): string {
+  if (!iso) return '';
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return '';
+  const date = d.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+  const time = d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
+  return `${date} at ${time}`;
+}
+
+/**
  * jira-compare 2026-05-03 — Patch A6 · Hybrid time format helper.
  * Returns a relative description like "4 days ago" / "yesterday" / "just now".
- * Pair with absolute fmtDate(...) for the "29 Apr 2026 · 4 days ago" hybrid
- * mirroring Jira's BAU-5737 footer timestamps.
  */
 function fmtRelative(iso: string | null | undefined): string {
   if (!iso) return '';

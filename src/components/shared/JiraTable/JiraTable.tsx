@@ -154,6 +154,7 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
     columnOrder: columnOrderProp,
     onColumnOrderChange,
     enableVirtualization = false,
+    stickyCreateFooter,
   } = props;
 
   // Right-click context menu state — one menu at a time, anchored to cursor.
@@ -673,6 +674,9 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
         z-index: 2;
         background: #F7F8F9;
       }
+      .jira-table-grid thead th {
+        color: var(--ds-text-subtlest, #6B778C) !important;
+      }
       /* Header z-index for non-sticky-left case — no left-pin, just
          keep header floating above body on vertical scroll. */
       .jira-table-grid tbody td:nth-child(3) {
@@ -737,7 +741,7 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
       }
       /* Row hover tint matches Jira's list view. */
       .jira-table-grid table tbody > tr:hover > td {
-        background-color: var(--ds-background-neutral-subtle-hovered, #F7F8F9) !important;
+        background-color: var(--ds-background-neutral-subtle-hovered, rgba(9, 30, 66, 0.04)) !important;
       }
       /* Drag-handle grip — hidden at rest, visible on row hover */
       .jira-table-grid table tbody > tr:hover .jira-drag-handle {
@@ -964,7 +968,8 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
                 color: '#292A2E',
                 paddingTop: d.cellPaddingY - 4,
                 paddingBottom: d.cellPaddingY - 4,
-                paddingLeft: isFirstDataCol && indentPx > 0 ? indentPx : undefined,
+                paddingLeft: isFirstDataCol && indentPx > 0 ? indentPx : (col.align === 'center' ? undefined : 4),
+                paddingRight: col.align === 'center' ? undefined : 4,
                 minHeight: d.rowHeight - 2,
                 display: 'flex',
                 alignItems: 'center',
@@ -1651,6 +1656,49 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
               );
             })()}
           </tbody>
+          {/* Jira-parity: sticky inline-create footer row. Always visible at the
+              bottom of the table, pinned via position:sticky bottom:0.
+              Renders a placeholder "What needs to be done?" row in idle state;
+              switches to `active` content when the consumer opens the create form. */}
+          {stickyCreateFooter && (
+            <tfoot style={{ position: 'sticky', bottom: 0, zIndex: 3 }}>
+              <tr>
+                <td
+                  colSpan={head.cells.length}
+                  style={{
+                    background: 'var(--ds-surface, #FFFFFF)',
+                    boxShadow: 'inset 0 1px 0 0 var(--ds-border, rgba(11,18,14,0.14))',
+                    padding: 0,
+                    height: 40,
+                  }}
+                >
+                  {stickyCreateFooter.active ?? (
+                    <button
+                      type="button"
+                      onClick={stickyCreateFooter.onActivate}
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 6,
+                        width: '100%',
+                        height: 40,
+                        padding: '0 12px',
+                        border: 'none',
+                        background: 'transparent',
+                        cursor: 'text',
+                        color: 'var(--ds-text-subtlest, #6B778C)',
+                        fontSize: 14,
+                        textAlign: 'left',
+                      }}
+                    >
+                      <span style={{ fontSize: 18, lineHeight: 1, marginTop: -1 }}>+</span>
+                      <span>{stickyCreateFooter.placeholder ?? 'What needs to be done?'}</span>
+                    </button>
+                  )}
+                </td>
+              </tr>
+            </tfoot>
+          )}
         </table>
         {/* Apr 27, 2026 (L70): bottomSlot renders INSIDE the viewport
             so the horizontal scrollbar appears BELOW it, not between
