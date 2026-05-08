@@ -5,6 +5,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useCallback, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
+import { FIELD_ID } from '@/canonical';
 
 export interface VisibleFields {
   cardCover: boolean;
@@ -16,6 +17,24 @@ export interface VisibleFields {
   assignee: boolean;
   fixVersions: boolean;
 }
+
+/**
+ * Maps each VisibleFields key to its canonical FIELD_ID constant.
+ * Use this when analytics, audits, or change-propagation tooling needs to
+ * address a kanban card field by its canonical ID rather than the
+ * settings-storage key name.
+ *
+ * Fields without a direct FIELD_ID equivalent (cardCover, linkedWorkItems,
+ * fixVersions) are excluded — they are kanban-specific and not part of the
+ * canonical table-cell field system.
+ */
+export const KANBAN_FIELD_MAP: Partial<Record<keyof VisibleFields, string>> = {
+  workType:    FIELD_ID.TYPE,
+  workItemKey: FIELD_ID.KEY,
+  epic:        FIELD_ID.EPIC_LINK,
+  priority:    FIELD_ID.PRIORITY,
+  assignee:    FIELD_ID.ASSIGNEE,
+} as const;
 
 /** Jira parity: color cards by a field. 'none' = no colour stripe. */
 export type CardColorMode = 'none' | 'priority' | 'issueType';
