@@ -189,6 +189,9 @@ export function makeSummaryCell(getSummary: (row: any) => string) {
           textOverflow: 'ellipsis',
           whiteSpace: 'nowrap',
           flex: 1,
+          // 2026-05-08 DOM probe: Jira summary links = rgb(80,82,88) = --ds-text-subtle.
+          // Catalyst was inheriting --ds-text (rgb 41,42,46 — near-black). Fixed.
+          color: 'var(--ds-text-subtle, #505258)',
         }}
       >
         {summary}
@@ -217,7 +220,7 @@ export type LozengeAppearance =
  *   inprogress (IMPLEMENTATION):                 bg rgb(143,184,246) text rgb(41,42,46)
  *   default (TODO):                              bg rgb(221,222,225) text rgb(41,42,46)
  *   outer: borderRadius 3px, padding 0px 4px, height 16px
- *   inner: 14px/400/normal letterSpacing/textTransform none (text is uppercase in data)
+ *   inner: 11px/653/uppercase/letterSpacing 0.165px — confirmed 2026-05-08 DOM probe
  *
  * Atlaskit Lozenge token resolution in Catalyst's theme differs from Jira's
  * (success resolves to rgb(239,255,214) vs Jira's rgb(179,223,114)), so we
@@ -251,10 +254,12 @@ export function StatusPill({
       maxWidth: '200px',
     }}>
       <span style={{
-        fontSize: '14px',
-        fontWeight: 400,
+        fontSize: '11px',
+        fontWeight: 653,
         lineHeight: '16px',
         color: 'rgb(41, 42, 46)',
+        textTransform: 'uppercase',
+        letterSpacing: '0.165px',
         overflow: 'hidden',
         textOverflow: 'ellipsis',
         whiteSpace: 'nowrap',

@@ -1231,7 +1231,8 @@ export default function KanbanBoardPage() {
                     const issue = issuesById.get(id);
                     return issue ? STATUS_TO_COL_ID.get(issue.status.toLowerCase()) === col.id : false;
                   }).length, 0);
-                  const categoryDot = col.category === 'done' ? '#006644' : col.category === 'in_progress' ? '#0747A6' : '#5E6C84';
+                  // jira-compare 2026-05-08: fix category dot colors + column header typography to match PragmaticBoard patch
+                  const categoryDot = col.category === 'done' ? '#94C748' : col.category === 'in_progress' ? '#669DF1' : '#5E6C84';
                   return (
                     <div key={col.id} className="flex items-center gap-2" style={{
                       width: 267, minWidth: 267, maxWidth: 267, height: 48, flexShrink: 0,
@@ -1240,8 +1241,8 @@ export default function KanbanBoardPage() {
                       borderRadius: '6px 6px 0 0',
                     }}>
                       <span style={{ width: 8, height: 8, borderRadius: '50%', background: categoryDot, flexShrink: 0 }} />
-                      <span style={{ fontSize: 12, fontWeight: 500, textTransform: 'uppercase', color: tk.textMuted, flex: 1, lineHeight: '16px', fontFamily: 'var(--cp-font-body)' }}>{col.name}</span>
-                      <span style={{ fontSize: 12, fontWeight: 500, color: tk.textPrimary, lineHeight: '16px', fontFamily: 'var(--cp-font-body)' }}>{count}</span>
+                      <span style={{ fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.04em', color: tk.textMuted, flex: 1, lineHeight: '16px', fontFamily: 'var(--cp-font-body)' }}>{col.name}</span>
+                      <span style={{ fontSize: 11, fontWeight: 500, color: tk.textMuted, lineHeight: '16px', fontFamily: 'var(--cp-font-body)' }}>{count}</span>
                     </div>
                   );
                 })}

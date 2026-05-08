@@ -127,6 +127,16 @@ export function GlobalSearchPanel({ query, onQueryChange, onClose }: GlobalSearc
   const { data: projectOptions = [] } = useProjects();
   const { data: memberOptions = [] } = useTeamMembers();
 
+  // G4: localStorage recently visited items (catalyst-recent-issues)
+  const localRecents = useMemo<{ key: string; title: string; type: string }[]>(() => {
+    try {
+      const raw = localStorage.getItem('catalyst-recent-issues');
+      return raw ? JSON.parse(raw) : [];
+    } catch {
+      return [];
+    }
+  }, []);
+
   // ── Row model ──────────────────────────────────────────────────────────────
   type Row =
     | { kind: 'suggestion'; id: string; label: React.ReactNode; activate: () => void }
@@ -285,6 +295,44 @@ export function GlobalSearchPanel({ query, onQueryChange, onClose }: GlobalSearc
             </>,
             'Suggestion',
           )
+        )}
+
+        {/* G4: Recently visited from localStorage — shown above DB recents when query is empty */}
+        {showRecentLabel && localRecents.length > 0 && (
+          <>
+            <div style={{
+              padding: '10px 16px 4px',
+              fontSize: 11, fontWeight: 700, letterSpacing: '0.04em',
+              textTransform: 'uppercase',
+              color: token('color.text.subtle', '#626F86'),
+            }}>
+              Recently visited
+            </div>
+            {localRecents.map((r, i) => {
+              const iconType = normalizeIconType(r.type);
+              return (
+                <div
+                  key={`lrecent-${r.key}`}
+                  role="option"
+                  aria-selected={false}
+                  onClick={() => { navigate(`/work-hub/all?open=${encodeURIComponent(r.key)}`); onClose(); }}
+                  onMouseEnter={() => {}}
+                  style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '8px 16px', cursor: 'pointer', borderRadius: 3 }}
+                  onMouseOver={(e) => (e.currentTarget.style.background = token('color.background.neutral.hovered', '#F1F2F4'))}
+                  onMouseOut={(e) => (e.currentTarget.style.background = '')}
+                >
+                  <div style={{ width: 28, display: 'flex', justifyContent: 'center', flexShrink: 0 }}>
+                    <WorkItemIcon type={iconType} size={18} />
+                  </div>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 2, minWidth: 0 }}>
+                    <div style={{ fontSize: 14, color: token('color.text', '#292A2E'), fontWeight: 600 }}>
+                      {r.key}
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </>
         )}
 
         {/* Recent / Results header */}

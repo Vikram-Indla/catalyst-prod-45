@@ -16,7 +16,9 @@
  */
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import ChevronDownIcon from '@atlaskit/icon/glyph/chevron-down';
+import ChevronRightIcon from '@atlaskit/icon/glyph/chevron-right';
 import CheckIcon from '@atlaskit/icon/glyph/check';
+import Tooltip from '@atlaskit/tooltip';
 // AutomationIcon removed — jira-compare 2026-05-05: Automate button between
 // status pill and Improve Story is not present in Jira. Removed per Vikram directive.
 import SettingsIcon from '@atlaskit/icon/core/settings';
@@ -51,16 +53,17 @@ function FieldRow({
   labelTopPad?: boolean;
   children: React.ReactNode;
 }) {
-  /* jira-compare 2026-05-08: K.11 multi-probe synthesis:
-       label: 11px/600/#6B778C (--ds-text-subtlest), lineHeight 16px, mb 4px
+  /* jira-compare 2026-05-08: live DOM re-probe of BAU-5737 right rail:
+       label: 14px/500/#505258 (--ds-text-subtle), lineHeight 20px
        value: 14px/400/#172B4D (--ds-text), lineHeight 20px
-     Prior 2026-05-05 probe said 12px/#626F86 — superseded by K.11. */
+     Supersedes K.11 stale entry (11px/600/#6B778C) — K.11 was measured from
+     a different Jira context surface that no longer reflects BAU right rail. */
   return (
     <div style={{ padding: '4px 0 12px' }}>
       <div style={{
-        fontSize: 11, fontWeight: 600, lineHeight: '16px',
-        color: 'var(--ds-text-subtlest, #6B778C)',
-        marginBottom: 4, textTransform: 'none',
+        fontSize: 14, fontWeight: 500, lineHeight: '20px',
+        color: 'var(--ds-text-subtle, #505258)',
+        marginBottom: 2, textTransform: 'none',
       }}>
         {label}
       </div>
@@ -205,6 +208,7 @@ export function CatalystSidebarDetails({
   const [localStatus, setLocalStatus] = useState<string>('');
   const [showStatusDropdown, setShowStatusDropdown] = useState(false);
   const [showConfirmDelete, setShowConfirmDelete] = useState(false);
+  const [detailsCollapsed, setDetailsCollapsed] = useState(false);
   const [showConfigureDrawer, setShowConfigureDrawer] = useState(false);
   const [pinnedFields, setPinnedFields] = useState<string[]>(() =>
     loadPinnedFields(issue?.issue_type ?? 'Story'),
@@ -509,17 +513,22 @@ export function CatalystSidebarDetails({
           Body padding: '8px 0' (Jira doesn't have a container left pad —
           the field rows themselves carry 11px v-padding with 96px label col). */}
       <div style={{ marginBottom: 8 }}>
-        <div style={{
-          display: 'flex', alignItems: 'center', gap: 6, height: 40,
-          padding: '0 0', background: 'transparent',
-        }}>
-          <ChevronDownIcon size="small" primaryColor="var(--ds-icon-subtle, #626F86)" />
+        <div
+          onClick={() => setDetailsCollapsed(c => !c)}
+          style={{
+            display: 'flex', alignItems: 'center', gap: 6, height: 40,
+            padding: '0 0', background: 'transparent', cursor: 'pointer', userSelect: 'none',
+          }}
+        >
+          <span style={{ display: 'inline-flex', transition: 'transform 0.15s ease', transform: detailsCollapsed ? 'rotate(0deg)' : 'rotate(90deg)', color: 'var(--ds-icon-subtle, #626F86)' }}>
+            <ChevronRightIcon size="small" primaryColor="currentColor" />
+          </span>
           {/* jira-compare 2026-05-08: K.11 section header spec = 14px/600/#172B4D.
               Prior comment said fw500 but missed the font-size correction (was 16px). */}
           <div style={{ fontSize: 14, fontWeight: 600, lineHeight: '20px', color: 'var(--ds-text, #172B4D)' }}>Details</div>
         </div>
 
-        <div style={{ padding: '0' }}>
+        {!detailsCollapsed && <div style={{ padding: '0' }}>
 
           {/* ── Fix Versions ──── jira-compare Phase 2 (2026-05-02): hidden
               on Epic — Jira NIN omits this field from the Epic context
@@ -577,16 +586,24 @@ export function CatalystSidebarDetails({
             </FieldRow>
           )}
 
-          {/* ── Reporter ──── Defect-2 Cycle 6 (2026-05-03): made editable */}
+          {/* ── Reporter ──── Defect-2 Cycle 6 (2026-05-03): made editable.
+              D1: Tooltip "View profile" on hover per Jira parity. */}
           <FieldRow label="Reporter" alignBlock="center">
             {issue && (
-              <EditableReporter
-                issueId={issue.id}
-                projectId={projectId || ''}
-                currentReporterId={issue.reporter_account_id}
-                currentReporterName={issue.reporter_display_name}
-                onUpdate={invalidateIssue}
-              />
+              <Tooltip content="View profile" position="left">
+                <div
+                  onClick={() => console.log('View profile', issue.reporter_display_name)}
+                  style={{ cursor: 'pointer' }}
+                >
+                  <EditableReporter
+                    issueId={issue.id}
+                    projectId={projectId || ''}
+                    currentReporterId={issue.reporter_account_id}
+                    currentReporterName={issue.reporter_display_name}
+                    onUpdate={invalidateIssue}
+                  />
+                </div>
+              </Tooltip>
             )}
           </FieldRow>
 
@@ -727,34 +744,41 @@ export function CatalystSidebarDetails({
 
           {/* Priority MOVED to CatalystKeyDetails (main content).
               Story Points: BANNED platform-wide. Do NOT re-add. */}
-        </div>
+        </div>}
       </div>
 
-      {/* ── Timestamps + Configure CTA (canonical) ──────────────
-          jira-compare 2026-05-03 — Patch A5 · ⚙ Configure CTA added
-          alongside Created / Updated, mirroring Jira BAU-5737 footer. */}
-      <div style={{ marginTop: 'auto', padding: '12px 0 0', display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', gap: 12 }}>
-        <div style={{ flex: 1, minWidth: 0 }}>
-          {/* jira-compare 2026-05-03 — Patch A6 · Hybrid time format
-              (absolute · relative). Title attr exposes the ISO on hover. */}
-          {/* jira-compare 2026-05-08: K.11 timestamp = 11px/400/#6B778C (--ds-text-subtlest) */}
-          <div style={{ fontSize: 11, color: 'var(--ds-text-subtlest, #6B778C)', marginBottom: 4, lineHeight: '16px' }} title={issue?.jira_created_at ?? undefined}>
-            <span style={{ fontWeight: 400 }}>Created</span> {fmtDate(issue?.jira_created_at)}
-            {issue?.jira_created_at && <span> · {fmtRelative(issue.jira_created_at)}</span>}
+      {/* ── Timestamps (canonical) ──────────────────────────────────────
+          jira-compare 2026-05-08: live DOM re-probe of Jira BAU-5737:
+            "Created" label — 14px/500/rgb(80,82,88) = #505258
+            date value      — 12px/400/rgb(80,82,88)
+          Configure CTA removed — Catalyst-specific affordance not present in
+          Jira's right panel. See CatalystConfigureDrawer for the component if
+          re-enabling later. */}
+      <div style={{ marginTop: 'auto', padding: '12px 0 0' }}>
+        {issue?.jira_created_at && (
+          <div style={{ marginBottom: 8 }}>
+            <div style={{ fontSize: 14, fontWeight: 500, lineHeight: '20px', color: 'var(--ds-text-subtle, #505258)' }}>
+              Created
+            </div>
+            <div style={{ fontSize: 12, fontWeight: 400, lineHeight: '16px', color: 'var(--ds-text-subtle, #505258)' }}
+              title={issue.jira_created_at}>
+              {fmtJiraDate(issue.jira_created_at)}
+              <span style={{ color: 'var(--ds-text-subtlest, #6B778C)' }}> · {fmtRelative(issue.jira_created_at)}</span>
+            </div>
           </div>
-          <div style={{ fontSize: 11, color: 'var(--ds-text-subtlest, #6B778C)', lineHeight: '16px' }} title={issue?.jira_updated_at ?? undefined}>
-            <span style={{ fontWeight: 400 }}>Updated</span> {fmtDate(issue?.jira_updated_at)}
-            {issue?.jira_updated_at && <span> · {fmtRelative(issue.jira_updated_at)}</span>}
+        )}
+        {issue?.jira_updated_at && (
+          <div>
+            <div style={{ fontSize: 14, fontWeight: 500, lineHeight: '20px', color: 'var(--ds-text-subtle, #505258)' }}>
+              Updated
+            </div>
+            <div style={{ fontSize: 12, fontWeight: 400, lineHeight: '16px', color: 'var(--ds-text-subtle, #505258)' }}
+              title={issue.jira_updated_at}>
+              {fmtJiraDate(issue.jira_updated_at)}
+              <span style={{ color: 'var(--ds-text-subtlest, #6B778C)' }}> · {fmtRelative(issue.jira_updated_at)}</span>
+            </div>
           </div>
-        </div>
-        <Button
-          appearance="subtle"
-          spacing="compact"
-          iconBefore={(iconProps) => <SettingsIcon {...iconProps} label="" />}
-          onClick={() => setShowConfigureDrawer(true)}
-        >
-          Configure
-        </Button>
+        )}
       </div>
 
       {/* ── Configure drawer ─────────────────────────────────────────── */}

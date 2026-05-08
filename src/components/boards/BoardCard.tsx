@@ -1,6 +1,15 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useTheme } from '@/hooks/useTheme';
-import { Star, Settings, ArrowRight, LayoutGrid, Users, MoreHorizontal, Copy, ClipboardCopy, Trash2 } from 'lucide-react';
+// jira-compare 2026-05-08: replaced all lucide icons with @atlaskit equivalents
+import StarUnstarredIcon from '@atlaskit/icon/core/star-unstarred';
+import StarStarredIcon from '@atlaskit/icon/core/star-starred';
+import SettingsIcon from '@atlaskit/icon/core/settings';
+import ArrowRightIcon from '@atlaskit/icon/core/arrow-right';
+import GridIcon from '@atlaskit/icon/core/grid';
+import PeopleGroupIcon from '@atlaskit/icon/core/people-group';
+import MoreIcon from '@atlaskit/icon/glyph/more';
+import CopyIcon from '@atlaskit/icon/core/copy';
+import DeleteIcon from '@atlaskit/icon/core/delete';
 import { useToggleBoardStar, useUpdateBoardLastViewed, useDeleteBoard } from '@/hooks/useBoardMutations';
 import { useNavigate, useParams } from 'react-router-dom';
 import type { BoardListItem } from '@/types/board';
@@ -106,7 +115,7 @@ export default function BoardCard({ board, projectId, onOpen, onSettings }: Boar
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               opacity: hover || menuOpen ? 1 : 0, transition: 'opacity 150ms',
             }}>
-              <MoreHorizontal size={15} color="var(--ds-text-subtlest, #64748B)" />
+              <MoreIcon label="Board actions" size="small" primaryColor="var(--ds-text-subtlest, #64748B)" />
             </button>
             {menuOpen && (
               <div style={{
@@ -117,14 +126,14 @@ export default function BoardCard({ board, projectId, onOpen, onSettings }: Boar
                 zIndex: 50, padding: '4px 0',
               }}>
                 <MenuItem onClick={() => { navigator.clipboard.writeText(window.location.origin + `/projects/${projectId}/boards/${board.id}`); setMenuOpen(false); }}>
-                  <Copy size={13} /> Copy link
+                  <CopyIcon label="" size="small" /> Copy link
                 </MenuItem>
                 <MenuItem onClick={() => setMenuOpen(false)}>
-                  <ClipboardCopy size={13} /> Duplicate board
+                  <CopyIcon label="" size="small" /> Duplicate board
                 </MenuItem>
                 <div style={{ height: 0.75, background: 'var(--cp-border-subtle, rgba(15,23,42,0.08))', margin: '4px 0' }} />
                 <MenuItem danger onClick={() => { setMenuOpen(false); setDeleteModal(true); }}>
-                  <Trash2 size={13} /> Delete board…
+                  <DeleteIcon label="" size="small" /> Delete board…
                 </MenuItem>
               </div>
             )}
@@ -139,10 +148,10 @@ export default function BoardCard({ board, projectId, onOpen, onSettings }: Boar
             opacity: board.isStarred ? 1 : (hover ? 1 : 0),
             transition: 'opacity 150ms',
           }}>
-            <Star size={15}
-              fill={board.isStarred ? 'var(--ds-text-warning, #D97706)' : 'none'}
-              color={board.isStarred ? 'var(--ds-text-warning, #D97706)' : 'var(--ds-text-subtlest, #94A3B8)'}
-            />
+            {board.isStarred
+              ? <StarStarredIcon label="Starred" size="small" primaryColor="var(--ds-text-warning, #D97706)" />
+              : <StarUnstarredIcon label="Star board" size="small" primaryColor="var(--ds-text-subtlest, #94A3B8)" />
+            }
           </button>
 
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5, marginBottom: 10 }}>
@@ -172,10 +181,10 @@ export default function BoardCard({ board, projectId, onOpen, onSettings }: Boar
             fontSize: 11.5, color: 'var(--fg-3)', fontFamily: 'var(--cp-font-body)',
           }}>
             <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-              <LayoutGrid size={12} /> {board.issueCount} issues
+              <GridIcon label="" size="small" primaryColor="var(--fg-3)" /> {board.issueCount} issues
             </span>
             <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-              <Users size={12} /> {board.columnCount} cols
+              <PeopleGroupIcon label="" size="small" primaryColor="var(--fg-3)" /> {board.columnCount} cols
             </span>
             <span style={{ marginLeft: 'auto', fontSize: 11, color: 'var(--fg-4)' }}>{timeAgo}</span>
           </div>
@@ -192,14 +201,14 @@ export default function BoardCard({ board, projectId, onOpen, onSettings }: Boar
             borderRadius: 6, cursor: 'pointer', fontSize: 11.5, fontWeight: 500,
             color: 'var(--fg-2)', fontFamily: 'var(--cp-font-body)',
           }}>
-            <Settings size={13} /> Settings
+            <SettingsIcon label="" size="small" /> Settings
           </button>
           <button onClick={e => { e.stopPropagation(); handleOpen(); }} style={{
             display: 'flex', alignItems: 'center', gap: 5, height: 30, padding: '8px 12px',
             background: 'var(--cp-blue)', border: 'none', borderRadius: 6, cursor: 'pointer',
             fontSize: 11.5, fontWeight: 600, color: 'var(--ds-surface, #FFFFFF)', fontFamily: 'var(--cp-font-body)',
           }}>
-            Open Board <ArrowRight size={12} />
+            Open Board <ArrowRightIcon label="" size="small" />
           </button>
         </div>
       </div>

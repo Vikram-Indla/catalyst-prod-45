@@ -423,7 +423,7 @@ export function CatalystDescriptionSection({ issue, label = 'Description', defau
             style={{
               fontSize: 14, color: '#97A0AF', fontStyle: 'italic',
               minHeight: 40, cursor: issue ? 'pointer' : 'default',
-              borderRadius: 4, padding: '8px 0',
+              borderRadius: 4, padding: '8px 0 8px 20px', // jira-compare 2026-05-08: align with label
               transition: 'background 0.15s',
             }}
             onMouseEnter={e => { if (issue) e.currentTarget.style.background = 'var(--ds-surface-sunken, #F4F5F7)'; }}
@@ -443,7 +443,11 @@ export function CatalystDescriptionSection({ issue, label = 'Description', defau
             role="button"
             tabIndex={0}
             style={{
-              paddingLeft: 0, minHeight: 40, cursor: 'text', borderRadius: 4,
+              // jira-compare 2026-05-08: align content with label text.
+              // Section header = chevron (16px) + gap (4px) = 20px before h2.
+              // Content must match that offset so body left-edge aligns with label.
+              // DOM probe confirmed: atlasRendererLeft 327.88 vs descLabelLeft 347.87 = 20px gap.
+              paddingLeft: 20, minHeight: 40, cursor: 'text', borderRadius: 4,
               position: 'relative',
               transition: 'background 0.15s',
             }}

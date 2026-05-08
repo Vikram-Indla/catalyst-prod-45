@@ -94,11 +94,29 @@ export function useItemSelection<T extends SelectableItem>(
 
   /* Match on either id (issue_key) OR dbId (UUID) — subtask/link
      callers route through `onOpenItem` with the UUID shape, while
-     list/nav callers use issue_key. Single lookup absorbs both. */
+     list/nav callers use issue_key. Single lookup absorbs both.
+
+     Deep-link guard (2026-05-08): if a ?issue= param is present in the URL
+     but the item isn't in the list (different type, filtered out, not yet
+     loaded), autoSelectFirst must NOT open items[0] — that shows the wrong
+     row while the URL still advertises the wanted key. Only fall back to
+     items[0] when there is no pending URL param OR when items are empty
+     (still loading). The hydration effect will fire once the right item
+     arrives and set activeItemId correctly. */
   const activeItem = useMemo<T | null>(() => {
-    if (!activeItemId) return autoSelectFirst ? (items[0] ?? null) : null;
+    if (!activeItemId) {
+      if (!autoSelectFirst) return null;
+      if (urlParam) {
+        const pendingKey = searchParams.get(urlParam);
+        if (pendingKey && items.length > 0) {
+          const matched = items.some(i => i.jiraKey === pendingKey || i.id === pendingKey);
+          if (!matched) return null; // param unresolved — don't show items[0]
+        }
+      }
+      return items[0] ?? null;
+    }
     return items.find(i => i.id === activeItemId || i.dbId === activeItemId) ?? null;
-  }, [activeItemId, items, autoSelectFirst]);
+  }, [activeItemId, items, autoSelectFirst, urlParam, searchParams]);
 
   /* Normalise whatever-shape id callers hand us down to the list's
      issue_key form. Keeps `activeItemId` canonical so the URL-sync

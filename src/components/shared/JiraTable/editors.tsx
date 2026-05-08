@@ -470,6 +470,8 @@ export function makeSummaryInlineEditCell<T>({
             // pair it with cursor: not-allowed so the inert cell is
             // discoverable on hover (not just via tooltip delay).
             cursor: readOnlyTooltip ? 'not-allowed' : undefined,
+            // Jira-parity: summary text color = --ds-text-subtle (rgb 80,82,88)
+            color: 'var(--ds-text-subtle, #505258)',
           }}
         >
           {summary}
@@ -511,6 +513,7 @@ export function makeSummaryInlineEditCell<T>({
           )}
           readView={() => (
             <span
+              title={summary || undefined}
               style={{
                 display: 'block',
                 padding: '2px 6px',
@@ -526,6 +529,10 @@ export function makeSummaryInlineEditCell<T>({
                 textOverflow: 'ellipsis',
                 whiteSpace: 'nowrap',
                 width: '100%',
+                // 2026-05-08 DOM probe: Jira summary = rgb(80,82,88) = --ds-text-subtle.
+                // Inheriting --ds-text (rgb 41,42,46) from tbody td baseline was wrong.
+                color: 'var(--ds-text-subtle, #505258)',
+                lineHeight: '20px',
               }}
             >
               {summary || (
@@ -824,7 +831,7 @@ function ParentChip({ choice }: { choice: { key: string | null; label: string; i
           {choice.key}
         </strong>
       )}
-      <span style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>
+      <span style={{ flex: 1, minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
         {choice.label}
       </span>
     </span>

@@ -362,6 +362,13 @@
   transition: opacity 0.12s, background 0.12s;
 }
 .sp-ak-table tr:hover .sp-row-actions-btn { opacity: 1; }
+
+/* C5: Inline edit/delete icon buttons — hidden by default, shown on row hover */
+.sp-subtask-inline-action {
+  opacity: 0;
+  transition: opacity 0.12s, background 0.12s, color 0.12s;
+}
+.sp-ak-table tr:hover .sp-subtask-inline-action { opacity: 1; }
 .sp-row-actions-btn:hover,
 .sp-row-actions-btn[aria-expanded="true"] {
   background: var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.08));

@@ -83,6 +83,7 @@ import {
   makeRowActionsCell,
   FlagsHost,
   flag,
+  StatusPill,
 } from '@/components/shared/JiraTable';
 import type {
   Column,
@@ -222,8 +223,9 @@ const STATUS_OPTIONS: StatusOption[] = [
   { value: 'Backlog', label: 'Backlog', appearance: 'default', group: 'To Do' },
   { value: 'In Requirements', label: 'In Requirements', appearance: 'default', group: 'To Do' },
   { value: 'Ready for Development', label: 'Ready for Development', appearance: 'default', group: 'To Do' },
+  // 2026-05-08: In Design = grey in BAU Jira project (To Do category). Prior 'inprogress' was wrong.
+  { value: 'In Design', label: 'In Design', appearance: 'default', group: 'To Do' },
   // In Progress family (statusCategory: indeterminate)
-  { value: 'In Design', label: 'In Design', appearance: 'inprogress', group: 'In Progress' },
   { value: 'In Development', label: 'In Development', appearance: 'inprogress', group: 'In Progress' },
   { value: 'In Progress', label: 'In Progress', appearance: 'inprogress', group: 'In Progress' },
   // Done family (statusCategory: done — Jira treats QA/UAT/BETA as "verifying", green)
@@ -235,9 +237,9 @@ const STATUS_OPTIONS: StatusOption[] = [
   { value: 'In BETA', label: 'In BETA', appearance: 'success', group: 'Done' },
   { value: 'Done', label: 'Done', appearance: 'success', group: 'Done' },
   { value: 'In Production', label: 'In Production', appearance: 'success', group: 'Done' },
-  // Blocked / On Hold (rendered red / yellow regardless of category)
-  { value: 'Blocked', label: 'Blocked', appearance: 'removed', group: 'Done' },
-  { value: 'On Hold', label: 'On Hold', appearance: 'moved', group: 'Done' },
+  // Blocked / On Hold: Jira BAU DOM probe 2026-05-08 = grey (To Do category, rgb(221,222,225))
+  { value: 'Blocked', label: 'Blocked', appearance: 'default', group: 'To Do' },
+  { value: 'On Hold', label: 'On Hold', appearance: 'default', group: 'To Do' },
 ];
 const PRIORITY_ORDER = ['highest', 'critical', 'high', 'medium', 'low', 'lowest'];
 
@@ -387,6 +389,20 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
   });
 
   const queryClient = useQueryClient();
+
+  // G5: current user for "My work" quick filter
+  const { data: currentUserProfile } = useQuery({
+    queryKey: ['current-user-profile-backlog'],
+    queryFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return null;
+      const { data: profile } = await supabase.from('profiles').select('id, full_name').eq('id', user.id).maybeSingle();
+      return profile;
+    },
+    staleTime: 300_000,
+  });
+  const [myWorkFilter, setMyWorkFilter] = useState(false);
+
   const {
     data: stories = [],
     isLoading: storiesLoading,
@@ -562,10 +578,6 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
   // renderGroupInlineRow prop. On submit / cancel / Esc → set back to null.
   const [inlineCreateGroup, setInlineCreateGroup] = useState<string | null>(null);
   const [inlineCreateSubmitting, setInlineCreateSubmitting] = useState(false);
-  // Jira-parity: clicking the "+" hover button on a type cell opens a
-  // quick-create modal pre-wired with parent_id = clicked row's id.
-  const [childCreateParent, setChildCreateParent] = useState<BacklogItem | null>(null);
-
   // Apr 27 2026 (jira-compare regression iter 3 — View options menu
   // parity with Jira). Toggling "Hide done work items" filters out any
   // row whose status is in DONE_LIKE_STATUSES (Catalyst variants of
@@ -1044,6 +1056,10 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
       if (f.created.from && (!it.created_at || it.created_at < f.created.from)) return false;
       if (f.created.to && (!it.created_at || it.created_at > f.created.to + 'T23:59:59')) return false;
       // Reporter + Labels not wired yet (no data plumbed through BacklogItem)
+      // G5: "My work" quick filter — assignee = current user's display name
+      if (myWorkFilter && currentUserProfile?.full_name) {
+        if (!it.assignee_name || it.assignee_name !== currentUserProfile.full_name) return false;
+      }
       return true;
     };
 
@@ -1173,6 +1189,10 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
       if (f.created.from && (!it.created_at || it.created_at < f.created.from)) return false;
       if (f.created.to && (!it.created_at || it.created_at > f.created.to + 'T23:59:59')) return false;
       if (hideDoneItems && /^(done|closed)$/i.test((it.status || '').trim())) return false;
+      // G5: "My work" filter
+      if (myWorkFilter && currentUserProfile?.full_name) {
+        if (!it.assignee_name || it.assignee_name !== currentUserProfile.full_name) return false;
+      }
       return true;
     });
 
@@ -1242,8 +1262,15 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
       const sample = buckets.get(k)![0];
       let labelNode: React.ReactNode = null;
       if (groupBy === 'status') {
+        // 2026-05-08: use StatusPill (exact Jira hex colors) instead of Atlaskit
+        // Lozenge — Atlaskit's token resolution in Catalyst's theme differs from
+        // Jira's rendering (e.g. success → rgb(239,255,214) vs Jira's rgb(179,223,114)).
         const appearance = sample.status ? statusAppearance(sample.status) : 'default';
-        labelNode = <Lozenge appearance={appearance as LozengeAppearance}>{k}</Lozenge>;
+        const label = sample.status ? statusLabel(sample.status) : k.toUpperCase();
+        // 2026-05-08 DOM probe confirms: Jira renders ALL status group headers with a
+        // visible pill (including grey/default — bg: rgb(221,222,225)). StatusPill uses
+        // exact Jira-measured hex, not Atlaskit token resolution which diverges.
+        labelNode = <StatusPill appearance={appearance as LozengeAppearance}>{label}</StatusPill>;
       } else if (groupBy === 'assignee') {
         const isUnassigned = !sample.assignee_name;
         const avatarUrl = sample.assignee_name ? avatarsByName?.get(sample.assignee_name) : null;
@@ -1284,7 +1311,7 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
           </span>
         );
       }
-      return { id: k, label: k, labelNode, rows: buckets.get(k)! };
+      return { id: k, label: k, labelNode: labelNode ?? undefined, rows: buckets.get(k)! };
     });
   }, [groupBy, items, search, typeFilter, filterValue, hideDoneItems, sortKey, sortDir, avatarsByName]);
 
@@ -1497,18 +1524,14 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
       // header for the issue-type cell). Setting label to "Type" fixes
       // both findings in one change — visible text doubles as the
       // accessible name on the th element.
-      // 2026-05-04 jira-compare: live DOM probe of Jira BAU list measures
-      // Type column at x=147→233 = ~86px. width:7 × 12 = 84px ≈ matches.
-      // Previous width:11 (~124px) was 38px too wide, wasting summary space.
+      // 2026-05-08 re-probe: Jira BAU list measures Type at 110px.
+      // width:9 × 12 = 108px ≈ matches. Previous width:6 (~72px) was
+      // 38px too narrow — header "Type" text was clipped.
       label: 'Type',
-      width: 6,
+      width: 9,
       align: 'start',
       alwaysVisible: true,
       cell: ({ row: it }) => {
-        // Render the type icon wrapped in hover-swap structure:
-        //  .jira-type-icon  — visible at rest, hidden on tr:hover (CSS in JiraTable.tsx)
-        //  .jira-create-child-btn — hidden at rest, shown on tr:hover
-        // initiatives are non-Jira rows and do NOT get the create-child CTA.
         let icon: React.ReactNode;
         if (it.type === 'initiative') {
           const init = initiativesByKey?.get(it.key || '');
@@ -1543,37 +1566,8 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
           icon = <JiraIssueTypeIcon type={typeMap[it.type as Exclude<BacklogType, 'initiative'>]} size={16} />;
         }
         return (
-          <span style={{ position: 'relative', display: 'inline-flex', alignItems: 'center', width: 20, height: 20 }}>
-            {/* Icon visible at rest; CSS hides on tr:hover */}
-            <span className="jira-type-icon" style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
-              {icon}
-            </span>
-            {/* "Create child" "+" button: CSS shows on tr:hover */}
-            {it.type !== 'initiative' && (
-              <button
-                className="jira-create-child-btn"
-                type="button"
-                title="Create child issue"
-                onClick={(e) => { e.stopPropagation(); setChildCreateParent(it); }}
-                style={{
-                  position: 'absolute',
-                  inset: 0,
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  border: `1px solid ${token('color.border', '#DFE1E6')}`,
-                  borderRadius: 3,
-                  background: token('elevation.surface', '#FFFFFF'),
-                  cursor: 'pointer',
-                  padding: 0,
-                  width: 20,
-                  height: 20,
-                  color: token('color.icon', '#44546F'),
-                }}
-              >
-                <AkAddIcon label="" size="small" />
-              </button>
-            )}
+          <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 20, height: 20 }}>
+            {icon}
           </span>
         );
       },
@@ -1581,8 +1575,10 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
     {
       id: 'key',
       label: 'Key',
-      // 7 fractions = 84px — enough to show "BAU-5801" without clipping.
-      width: 7,
+      // 2026-05-08 re-probe: Jira BAU list measures Key at 120px.
+      // width:10 × 12 = 120px matches. Previous width:7 (~84px) was too
+      // narrow once sort indicator "↑" is added alongside the key text.
+      width: 10,
       sortable: true,
       defaultVisible: true,
       accessor: (r) => r.key || '',
@@ -1623,10 +1619,12 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
     {
       id: 'status',
       label: 'Status',
-      // 13 fractions = 156px. "Ready for Development" measures ~153px (per
-      // 2026-05-04 audit) so 156px gives 3px margin. Summary flex absorbs
-      // the remaining space.
-      width: 13,
+      // 2026-05-08 re-probe: Jira measures Status at 120px OUTER with 8px
+      // left container padding (112px effective). Catalyst TD has 12px+12px
+      // = 24px cell padding overhead; 144px - 24px = 120px inner = matches
+      // Jira's 112px effective + pill margin. "READY FOR QA" needs ~112px
+      // text — fits at 120px inner without truncation.
+      width: 12,
       sortable: true,
       defaultVisible: true,
       // B.4 verdict: @atlaskit/popup portal mounts on this surface but
@@ -1670,10 +1668,10 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
       // labels to truncate after a single word. Bumped 12 → 26
       // (~286px @ 1100 minw) to hit the audit's ≥280px acceptance
       // target.
-      // Apr 28, 2026 (jira-compare cycle 3 V6): 26 was too greedy and
-      // Summary is now flex so Parent only needs a fixed allocation.
-      // 10 fractions = 120px; parent label truncates with title tooltip.
-      width: 10,
+      // 2026-05-08 re-probe: Jira BAU list measures Parent at 160px.
+      // width:13 × 12 = 156px ≈ matches. Previous width:10 (~120px) was
+      // 40px too narrow — parent key+name was heavily truncated.
+      width: 13,
       sortable: true,
       defaultVisible: true,
       cell: makeParentEditCell<BacklogItem>({
@@ -2474,6 +2472,27 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
                 <AkSearchIcon label="" size="small" />
               </span>
             }
+            elemAfterInput={
+              search ? (
+                <button
+                  type="button"
+                  aria-label="Clear search"
+                  onClick={() => setSearch('')}
+                  style={{
+                    paddingInlineEnd: 6,
+                    display: 'flex',
+                    alignItems: 'center',
+                    background: 'none',
+                    border: 'none',
+                    cursor: 'pointer',
+                    color: token('color.text.subtlest', '#6B778C'),
+                    padding: '0 6px 0 2px',
+                  }}
+                >
+                  <AkCloseIcon label="" size="small" />
+                </button>
+              ) : undefined
+            }
           />
         </div>
         <div style={{ position: 'relative' }}>
@@ -2504,6 +2523,35 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
             from items + avatarsByName). maxCount=5 with appearance="stack"
             matches Jira's stacked-circle pattern. The "Add people" CTA is a
             future addition; for cycle 1 we ship read-only avatar stack. */}
+        {/* G5: My work quick-filter chip */}
+        <button
+          type="button"
+          onClick={() => setMyWorkFilter((v) => !v)}
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 4,
+            padding: '0 10px',
+            height: 32,
+            borderRadius: 3,
+            border: myWorkFilter
+              ? `2px solid ${token('color.border.selected', '#0C66E4')}`
+              : `1px solid ${token('color.border', '#DFE1E6')}`,
+            background: myWorkFilter
+              ? token('color.background.selected', '#E9F2FF')
+              : token('color.background.neutral', '#F1F2F4'),
+            color: myWorkFilter
+              ? token('color.text.selected', '#0C66E4')
+              : token('color.text', '#172B4D'),
+            fontSize: 14,
+            fontWeight: myWorkFilter ? 600 : 400,
+            cursor: 'pointer',
+            whiteSpace: 'nowrap',
+          }}
+        >
+          My work
+        </button>
+
         {assigneeOptions.length > 0 && (
           <AvatarGroup
             appearance="stack"
@@ -2564,21 +2612,7 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
         {toolbarViewOptionsButton}
         {/* P1 #7 — More actions overflow ⋯: refresh + export. */}
         {toolbarMoreActionsButton}
-        {/* Subtle divider between pills/spacer and the right-side cluster
-            (count + maximize). Mirrors Atlaskit toolbar separators. */}
-        <span aria-hidden style={{
-          display: 'inline-block',
-          width: 1, height: 18,
-          background: token('color.border', '#DFE1E6'),
-          marginRight: 4,
-          marginLeft: 4,
-        }} />
-        <span style={{ fontSize: 13, color: token('color.text.subtlest', '#6B778C') }}>
-          {total} item{total === 1 ? '' : 's'}
-          {selectedIds.size > 0 ? ` · ${selectedIds.size} selected` : ''}
-        </span>
-        {/* Maximize/Restore icon — sits to the RIGHT of the items label.
-            Apr 27, 2026 (L48). */}
+        {/* Maximize/Restore icon — Jira toolbar has no item count label. */}
         {toolbarMaximizeIcon}
       </div>
 
@@ -2678,6 +2712,14 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
             // creates an issue with status=groupId (groupBy=status case).
             onAddToGroup={(groupId: string) => {
               setInlineCreateGroup((prev) => (prev === groupId ? null : groupId));
+              // Expand the group so the inline-create row is visible (it only
+              // renders when the group is not collapsed).
+              setCollapsedGroups((prev) => {
+                if (!prev.has(groupId)) return prev;
+                const next = new Set(prev);
+                next.delete(groupId);
+                return next;
+              });
             }}
             renderGroupInlineRow={(groupId: string) => {
               if (inlineCreateGroup !== groupId) return null;
@@ -2889,22 +2931,6 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
           </div>
         </div>
 
-        {/* Jira-parity: "Create child" modal opened by clicking "+" on the
-            type cell. Pre-fills parent_id so the new row immediately nests
-            under the row that was clicked. */}
-        {childCreateParent && (
-          <ChildCreateModal
-            projectKey={projectKey}
-            parent={childCreateParent}
-            onCreated={() => {
-              queryClient.invalidateQueries({ queryKey: ['backlog-stories-v2', projectId] });
-              queryClient.invalidateQueries({ queryKey: ['backlog-epics', projectId] });
-              setChildCreateParent(null);
-            }}
-            onClose={() => setChildCreateParent(null)}
-          />
-        )}
-
         {/* Fullscreen backdrop — dim layer behind the modal panel.
             Click closes back to compact mode (Jira parity). */}
         {isPanelOpen && panelMode === 'fullscreen' && (
@@ -2998,21 +3024,22 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
                 minHeight: 44,
               }}
             >
+              {detailItem && (
+                <span style={{ display: 'inline-flex', alignItems: 'center', flexShrink: 0 }}>
+                  <JiraIssueTypeIcon type={DETAIL_TYPE_MAP[detailItem.type] ?? 'Story'} size={16} />
+                </span>
+              )}
               <span style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                width: 20,
-                height: 20,
-                borderRadius: 4,
-                background: token('color.icon.accent.blue', '#1868DB'),
-                color: 'var(--ds-text-inverse, #FFFFFF)',
-                justifyContent: 'center',
-                fontSize: 12,
-                fontWeight: 700,
+                fontSize: 14,
+                fontWeight: 600,
+                color: token('color.text.subtle', '#42526E'),
+                whiteSpace: 'nowrap',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                maxWidth: 220,
               }}>
-                ✓
+                {detailItem?.key ?? detailItemId}
               </span>
-              Catalyst work item
             </div>
             {/* Jira-faithful panel toolbar — Expand / Fullscreen / Close triad.
                 Prev/Next row navigation still works via j/k/↑/↓ keyboard. */}
@@ -4558,12 +4585,59 @@ function InlineGroupCreateRow({
   const [issueType, setIssueType] = useState<CreatableIssueType>('Story');
   const [assigneeIdx, setAssigneeIdx] = useState<number>(-1); // -1 = Unassigned
   const inputRef = useRef<HTMLInputElement | null>(null);
+  // Type picker dropdown — portal-based (L21 portal-empty bug prevents
+  // @atlaskit/dropdown-menu; mirrors GroupByControl pattern exactly).
+  const [typeMenuOpen, setTypeMenuOpen] = useState(false);
+  const [typeMenuAnchor, setTypeMenuAnchor] = useState<{ top: number; left: number } | null>(null);
+  const typeMenuTriggerRef = useRef<HTMLButtonElement>(null);
+  const typeMenuRef = useRef<HTMLDivElement>(null);
+  const [typeMenuFocusedIdx, setTypeMenuFocusedIdx] = useState(0);
+  const typeMenuItemsRef = useRef<Array<HTMLButtonElement | null>>([]);
 
   useEffect(() => {
     // Focus the input on mount so the user can start typing immediately.
     const t = setTimeout(() => inputRef.current?.focus(), 30);
     return () => clearTimeout(t);
   }, []);
+
+  useLayoutEffect(() => {
+    if (!typeMenuOpen || !typeMenuTriggerRef.current) return;
+    const r = typeMenuTriggerRef.current.getBoundingClientRect();
+    setTypeMenuAnchor({ top: r.bottom + 4, left: r.left });
+    setTypeMenuFocusedIdx(CREATABLE_TYPES.indexOf(issueType) >= 0 ? CREATABLE_TYPES.indexOf(issueType) : 0);
+  }, [typeMenuOpen, issueType]);
+
+  useEffect(() => {
+    if (!typeMenuOpen) return;
+    const el = typeMenuItemsRef.current[typeMenuFocusedIdx];
+    if (el) el.focus();
+  }, [typeMenuOpen, typeMenuFocusedIdx]);
+
+  useEffect(() => {
+    if (!typeMenuOpen) return;
+    const onDocClick = (e: MouseEvent) => {
+      const t = e.target as Node;
+      if (typeMenuTriggerRef.current?.contains(t) || typeMenuRef.current?.contains(t)) return;
+      setTypeMenuOpen(false);
+    };
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') { setTypeMenuOpen(false); typeMenuTriggerRef.current?.focus(); return; }
+      if (e.key === 'ArrowDown') { e.preventDefault(); setTypeMenuFocusedIdx((i) => (i + 1) % CREATABLE_TYPES.length); }
+      else if (e.key === 'ArrowUp') { e.preventDefault(); setTypeMenuFocusedIdx((i) => (i - 1 + CREATABLE_TYPES.length) % CREATABLE_TYPES.length); }
+      else if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        setIssueType(CREATABLE_TYPES[typeMenuFocusedIdx]);
+        setTypeMenuOpen(false);
+        typeMenuTriggerRef.current?.focus();
+      }
+    };
+    document.addEventListener('mousedown', onDocClick);
+    document.addEventListener('keydown', onKey);
+    return () => {
+      document.removeEventListener('mousedown', onDocClick);
+      document.removeEventListener('keydown', onKey);
+    };
+  }, [typeMenuOpen, typeMenuFocusedIdx]);
 
   const trimmed = summary.trim();
   const canSubmit = !!trimmed && !isSubmitting;
@@ -4596,55 +4670,107 @@ function InlineGroupCreateRow({
         }
       }}
     >
-      {/* Type picker — Apr 27 2026 (jira-compare regression F-NEW-2 layer
-          2). Click-to-cycle button. Originally tried `@atlaskit/dropdown-menu`
-          but L21 (BacklogPage portal bug) caused the menu to render empty
-          on this surface — same bug GroupByControl works around with a
-          bespoke createPortal pattern. To avoid building another bespoke
-          portal for a small picker, the trigger now cycles through
-          CREATABLE_TYPES on click. Tooltip shows the next-on-click value
-          so the cycle direction is discoverable. */}
-      {(() => {
-        const idx = CREATABLE_TYPES.indexOf(issueType);
-        const next = CREATABLE_TYPES[(idx + 1) % CREATABLE_TYPES.length];
-        return (
-          <Tooltip content={`Click to cycle issue type (next: ${next})`}>
-            <button
-              type="button"
-              data-testid="jira-table.group-row.inline-create-type-trigger"
-              aria-label={`Issue type: ${issueType}. Click to change.`}
-              onClick={() =>
-                setIssueType(
-                  CREATABLE_TYPES[(CREATABLE_TYPES.indexOf(issueType) + 1) % CREATABLE_TYPES.length]
-                )
-              }
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: 6,
-                height: 27,
-                padding: '0 10px',
-                border: `1px solid ${token('color.border', '#DFE1E6')}`,
-                borderRadius: 3,
-                background: token('elevation.surface', '#FFFFFF'),
-                color: token('color.text', '#292A2E'),
-                fontSize: 13,
-                fontWeight: 500,
-                fontFamily: 'inherit',
-                cursor: 'pointer',
-                flexShrink: 0,
-              }}
-            >
-              <JiraIssueTypeIcon type={issueType} size={14} />
-              <span>{issueType}</span>
-            </button>
-          </Tooltip>
-        );
-      })()}
+      {/* Type picker — 2026-05-08: replaced click-to-cycle with portal
+          dropdown matching Jira's "Select work type" dropdown exactly.
+          Same bespoke createPortal pattern as GroupByControl (L21 bug
+          prevents @atlaskit/dropdown-menu from rendering on this surface). */}
+      <>
+        <button
+          ref={typeMenuTriggerRef}
+          type="button"
+          data-testid="jira-table.group-row.inline-create-type-trigger"
+          aria-label={`Select work type. ${issueType} currently selected.`}
+          aria-haspopup="listbox"
+          aria-expanded={typeMenuOpen}
+          onClick={() => setTypeMenuOpen((v) => !v)}
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: 2,
+            height: 24,
+            padding: '0 4px',
+            border: 'none',
+            borderRadius: 3,
+            background: typeMenuOpen ? token('color.background.neutral.subtle.hovered', 'rgba(9,30,66,0.06)') : 'transparent',
+            color: token('color.text.subtle', '#42526E'),
+            fontSize: 12,
+            fontFamily: 'inherit',
+            cursor: 'pointer',
+            flexShrink: 0,
+          }}
+          onMouseEnter={(e) => { if (!typeMenuOpen) e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', 'rgba(9,30,66,0.06)'); }}
+          onMouseLeave={(e) => { if (!typeMenuOpen) e.currentTarget.style.background = 'transparent'; }}
+        >
+          <JiraIssueTypeIcon type={issueType} size={16} />
+          <svg width="10" height="10" viewBox="0 0 10 10" fill="currentColor" aria-hidden><path d="M2.5 3.5 5 6l2.5-2.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" fill="none"/></svg>
+        </button>
+        {typeMenuOpen && typeMenuAnchor && ReactDOM.createPortal(
+          <div
+            ref={typeMenuRef}
+            role="listbox"
+            aria-label="Select work type"
+            style={{
+              position: 'fixed',
+              top: typeMenuAnchor.top,
+              left: typeMenuAnchor.left,
+              minWidth: 200,
+              background: token('elevation.surface.overlay', '#FFFFFF'),
+              border: `1px solid ${token('color.border', '#DFE1E6')}`,
+              borderRadius: 4,
+              boxShadow: token('elevation.shadow.overlay', '0 8px 16px rgba(9,30,66,0.15)'),
+              padding: '6px 0',
+              zIndex: 9999,
+              fontFamily: 'var(--cp-font-body)',
+              fontSize: 14,
+            }}
+          >
+            {CREATABLE_TYPES.map((t, i) => {
+              const active = issueType === t;
+              const focused = typeMenuFocusedIdx === i;
+              return (
+                <button
+                  key={t}
+                  ref={(el) => { typeMenuItemsRef.current[i] = el; }}
+                  role="option"
+                  aria-selected={active}
+                  tabIndex={focused ? 0 : -1}
+                  type="button"
+                  onMouseEnter={() => setTypeMenuFocusedIdx(i)}
+                  onClick={() => { setIssueType(t); setTypeMenuOpen(false); typeMenuTriggerRef.current?.focus(); }}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 8,
+                    width: '100%',
+                    padding: '6px 16px',
+                    border: 'none',
+                    outline: 'none',
+                    background: active
+                      ? token('color.background.selected', '#E9F2FF')
+                      : focused
+                        ? token('color.background.neutral.subtle.hovered', '#091E4208')
+                        : 'transparent',
+                    color: active ? token('color.text.selected', '#0C66E4') : token('color.text', '#292A2E'),
+                    fontWeight: active ? 500 : 400,
+                    fontSize: 14,
+                    fontFamily: 'inherit',
+                    textAlign: 'left',
+                    cursor: 'pointer',
+                  }}
+                >
+                  <JiraIssueTypeIcon type={t} size={16} />
+                  <span>{t}</span>
+                </button>
+              );
+            })}
+          </div>,
+          document.body
+        )}
+      </>
       <Textfield
         ref={inputRef as any}
         isCompact
-        placeholder={`What needs to be done in ${groupLabel}?`}
+        placeholder="What needs to be done?"
         value={summary}
         onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSummary(e.target.value)}
         elemBeforeInput={
@@ -4717,9 +4843,6 @@ function InlineGroupCreateRow({
         }
       >
         {isSubmitting ? 'Creating…' : 'Create'}
-      </Button>
-      <Button appearance="subtle" spacing="compact" onClick={onCancel}>
-        Cancel
       </Button>
     </div>
   );
@@ -5554,179 +5677,5 @@ function EditBacklogItemModal({
         </Modal>
       )}
     </ModalTransition>
-  );
-}
-
-/* ─── ChildCreateModal ───────────────────────────────────────────────────── */
-/**
- * Quick-create modal for child issues.
- * Opened when the user clicks the "+" hover button on the type cell of a row.
- * Pre-fills parent_id so the new issue immediately nests under its parent.
- */
-function ChildCreateModal({
-  projectKey,
-  parent,
-  onCreated,
-  onClose,
-}: {
-  projectKey: string;
-  parent: BacklogItem;
-  onCreated: () => void;
-  onClose: () => void;
-}) {
-  const [summary, setSummary] = useState('');
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const inputRef = useRef<HTMLInputElement>(null);
-
-  useEffect(() => {
-    const t = setTimeout(() => inputRef.current?.focus(), 80);
-    return () => clearTimeout(t);
-  }, []);
-
-  const handleCreate = async () => {
-    const title = summary.trim();
-    if (!title) { inputRef.current?.focus(); return; }
-    if (title.length > 255) {
-      flag.error('Summary must be 255 characters or fewer');
-      return;
-    }
-    setIsSubmitting(true);
-    try {
-      const issueKey = await generateIssueKey(projectKey);
-      const nowIso = new Date().toISOString();
-      // Child issue type follows Jira's hierarchy: Epic→Feature, Feature→Story,
-      // Story/Bug/Incident→Sub-task. Default 'Story' for any unrecognised parent.
-      const childTypeMap: Record<BacklogType, string> = {
-        initiative: 'Story',
-        epic: 'Feature',
-        feature: 'Story',
-        story: 'Sub-task',
-        bug: 'Sub-task',
-        incident: 'Sub-task',
-      };
-      const childType = childTypeMap[parent.type] ?? 'Story';
-      const { error } = await supabase.from('ph_issues').insert({
-        issue_key: issueKey,
-        project_key: projectKey,
-        summary: title,
-        issue_type: childType,
-        status: 'To Do',
-        priority: 'medium',
-        source: 'catalyst',
-        // ph_issues uses parent_key (issue key string), not parent_id (UUID)
-        parent_key: parent.key ?? null,
-        parent_summary: parent.title ?? null,
-        jira_created_at: nowIso,
-        jira_updated_at: nowIso,
-      } as any);
-      if (error) throw error;
-      flag.success(`Created ${issueKey} — ${title}`);
-      onCreated();
-    } catch {
-      flag.error('Failed to create child issue');
-      setIsSubmitting(false);
-    }
-  };
-
-  // Use createPortal (same pattern as DangerConfirmModal) — @atlaskit/modal-dialog
-  // ModalTransition has an empty-portal bug on this surface. createPortal is reliable.
-  if (typeof document === 'undefined') return null;
-  return ReactDOM.createPortal(
-    <div
-      role="presentation"
-      style={{
-        position: 'fixed', inset: 0,
-        background: 'rgba(9, 30, 66, 0.54)',
-        zIndex: 9999,
-        display: 'flex', alignItems: 'flex-start', justifyContent: 'center',
-        paddingTop: 80,
-      }}
-      onMouseDown={(e) => { if (e.target === e.currentTarget) onClose(); }}
-    >
-      <div
-        role="dialog"
-        aria-modal="true"
-        aria-label="Create child issue"
-        style={{
-          width: 560, maxWidth: 'calc(100vw - 48px)',
-          background: token('elevation.surface.overlay', '#FFFFFF'),
-          borderRadius: 8,
-          boxShadow: '0 8px 16px -4px rgba(9,30,66,.25), 0 0 0 1px rgba(9,30,66,.08)',
-          display: 'flex', flexDirection: 'column',
-        }}
-      >
-        {/* Header */}
-        <div style={{
-          padding: '20px 24px 0',
-          fontSize: 20, fontWeight: 600,
-          color: token('color.text', '#172B4D'),
-        }}>
-          Create child issue
-        </div>
-
-        {/* Body */}
-        <div style={{ padding: '16px 24px' }}>
-          {/* Parent context chip */}
-          <div style={{
-            display: 'flex', alignItems: 'center', gap: 6,
-            marginBottom: 16,
-            padding: '4px 8px',
-            background: token('color.background.neutral', '#F4F5F7'),
-            borderRadius: 3,
-            fontSize: 12,
-            color: token('color.text.subtle', '#42526E'),
-          }}>
-            <JiraIssueTypeIcon
-              type={{
-                initiative: 'Business Request',
-                epic: 'Epic',
-                feature: 'Feature',
-                story: 'Story',
-                bug: 'QA Bug',
-                incident: 'Production Incident',
-              }[parent.type] ?? 'Story'}
-              size={14}
-            />
-            <span style={{ fontWeight: 500 }}>{parent.key || '—'}</span>
-            <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 300 }}>
-              {parent.title}
-            </span>
-          </div>
-
-          <div style={{ marginBottom: 4, fontSize: 12, fontWeight: 600, color: token('color.text.subtlest', '#6B778C') }}>
-            Summary *
-          </div>
-          <Textfield
-            ref={inputRef}
-            value={summary}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSummary(e.target.value)}
-            onKeyDown={(e: React.KeyboardEvent) => {
-              if (e.key === 'Enter') handleCreate();
-              if (e.key === 'Escape') onClose();
-            }}
-            placeholder="What needs to be done?"
-            isDisabled={isSubmitting}
-          />
-        </div>
-
-        {/* Footer */}
-        <div style={{
-          display: 'flex', justifyContent: 'flex-end', gap: 8,
-          padding: '0 24px 24px',
-        }}>
-          <Button appearance="subtle" onClick={onClose} isDisabled={isSubmitting}>
-            Cancel
-          </Button>
-          <Button
-            appearance="primary"
-            isDisabled={!summary.trim() || isSubmitting}
-            onClick={handleCreate}
-          >
-            {isSubmitting ? 'Creating…' : 'Create'}
-          </Button>
-        </div>
-      </div>
-    </div>,
-    document.body
   );
 }
