@@ -410,7 +410,7 @@ export function makeAssigneeCell(getAssignee: (row: any) => AssigneeCellInput | 
         <Avatar size="small" name={a.name} src={a.avatarUrl || undefined} appearance="circle" />
         <span
           style={{
-            color: '#292A2E',
+            color: token('color.text', '#172B4D'),
             overflow: 'hidden',
             textOverflow: 'ellipsis',
             whiteSpace: 'nowrap',

@@ -17,6 +17,24 @@ export interface VisibleFields {
   fixVersions: boolean;
 }
 
+/**
+ * Maps each VisibleFields key to its canonical FIELD_ID constant.
+ * Use this when analytics, audits, or change-propagation tooling needs to
+ * address a kanban card field by its canonical ID rather than the
+ * settings-storage key name.
+ *
+ * Fields without a direct FIELD_ID equivalent (cardCover, linkedWorkItems,
+ * fixVersions) are excluded — they are kanban-specific and not part of the
+ * canonical table-cell field system.
+ */
+export const KANBAN_FIELD_MAP: Partial<Record<keyof VisibleFields, string>> = {
+  workType:    'f:type',
+  workItemKey: 'f:key',
+  epic:        'f:epic_link',
+  priority:    'f:priority',
+  assignee:    'f:assignee',
+} as const;
+
 /** Jira parity: color cards by a field. 'none' = no colour stripe. */
 export type CardColorMode = 'none' | 'priority' | 'issueType';
 
