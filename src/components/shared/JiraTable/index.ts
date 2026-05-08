@@ -22,6 +22,7 @@ export {
   makeKeyCell,
   makeSummaryCell,
   makeStatusCell,
+  makeStatusEditCell,
   StatusPill,
   makeAssigneeCell,
   makeParentCell,
@@ -40,7 +41,6 @@ export type {
 
 // Inline editors (Atlaskit DropdownMenu + InlineEdit + Textfield)
 export {
-  makeStatusEditCell,
   makeStatusEditCellAkPopup,
   makeSummaryInlineEditCell,
   makeAssigneeEditCell,

@@ -241,6 +241,14 @@ const STATUS_OPTIONS: StatusOption[] = [
   { value: 'Blocked', label: 'Blocked', appearance: 'default', group: 'To Do' },
   { value: 'On Hold', label: 'On Hold', appearance: 'default', group: 'To Do' },
 ];
+// All distinct status values used in BAU — drives the status inline-edit dropdown.
+const ALL_BACKLOG_STATUSES = [
+  'To Do', 'In Requirements', 'In Design', 'Ready for Development',
+  'In Development', 'Ready for QA', 'In QA', 'Ready for UAT', 'In UAT',
+  'In Production', 'Done', 'Blocked', 'On Hold', 'Closed', 'Cancelled',
+  'Backlog', 'In Progress', 'In Review', 'Ready to Implement',
+];
+
 const PRIORITY_ORDER = ['highest', 'critical', 'high', 'medium', 'low', 'lowest'];
 
 // Apr 27, 2026 — F2 fix: BAU has rows with priority "Highest" (per the
@@ -497,7 +505,7 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
   // Jira-parity (2026-05-08): Jira's BAU list default columns are Type | Key |
   // Summary | Status | Comments | Parent — NO Assignee by default. Assignee is
   // available via the column picker (+) but hidden in the factory layout.
-  const DEFAULT_VISIBLE_COLUMNS = ['key', 'summary', 'status', 'comments', 'parent'];
+  const DEFAULT_VISIBLE_COLUMNS = ['key', 'summary', 'status', 'assignee', 'priority', 'comments', 'parent'];
   const parseSet = (raw: string | null): Set<string> =>
     raw ? new Set(raw.split(',').filter(Boolean)) : new Set();
 
@@ -578,6 +586,9 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
   // renderGroupInlineRow prop. On submit / cancel / Esc → set back to null.
   const [inlineCreateGroup, setInlineCreateGroup] = useState<string | null>(null);
   const [inlineCreateSubmitting, setInlineCreateSubmitting] = useState(false);
+  // Jira-parity: sticky tfoot create row. When true, the footer placeholder
+  // switches to an InlineGroupCreateRow (creates into the first/default group).
+  const [footerCreateActive, setFooterCreateActive] = useState(false);
   // Apr 27 2026 (jira-compare regression iter 3 — View options menu
   // parity with Jira). Toggling "Hide done work items" filters out any
   // row whose status is in DONE_LIKE_STATUSES (Catalyst variants of
@@ -1466,7 +1477,29 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
     { id: 'edit', label: 'Edit', icon: <AkEditIcon label="" size="small" />, onClick: (r) => setEditingId(r.id) },
     { id: 'flag', label: 'Flag', icon: <AkFlagIcon label="" size="small" />, onClick: (r) => flag.info(`Flagged ${r.key || r.id}`) },
     { id: 'duplicate', label: 'Duplicate', icon: <AkCopyIcon label="" size="small" />,
-      onClick: (r) => flag.info('Duplicate', `${r.key} — not yet implemented`),
+      onClick: async (r) => {
+        try {
+          const issueKey = await generateIssueKey(projectKey);
+          const nowIso = new Date().toISOString();
+          const { error } = await supabase.from('ph_issues').insert({
+            issue_key: issueKey,
+            project_key: projectKey,
+            summary: `Copy of ${r.title}`,
+            issue_type: r.type || 'Story',
+            status: 'To Do',
+            priority: r.priority || 'medium',
+            source: 'catalyst',
+            parent_key: r.parent_key ?? null,
+            jira_created_at: nowIso,
+            jira_updated_at: nowIso,
+          } as any);
+          if (error) throw error;
+          queryClient.invalidateQueries({ queryKey: ['backlog-stories-v2', projectId] });
+          flag.success('Duplicated', `Created ${issueKey}`);
+        } catch (e: any) {
+          flag.error('Duplicate failed', e?.message ?? String(e));
+        }
+      },
       hidden: (r) => r.source !== 'catalyst' },
     { id: 'delete', label: 'Delete', icon: <AkTrashIcon label="" size="small" />, danger: true,
       onClick: (r) => setDeleteTarget(r),
@@ -1566,7 +1599,7 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
           icon = <JiraIssueTypeIcon type={typeMap[it.type as Exclude<BacklogType, 'initiative'>]} size={16} />;
         }
         return (
-          <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 20, height: 20 }}>
+          <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 16, height: 16 }}>
             {icon}
           </span>
         );
@@ -1635,10 +1668,8 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
       // for future experiments once the upstream surface bug is root-caused.
       cell: makeStatusEditCell<BacklogItem>({
         getStatus: (r) => r.status,
+        options: ALL_BACKLOG_STATUSES,
         appearanceFor: (s) => statusAppearance(s) as LozengeAppearance,
-        labelFor: statusLabel,
-        options: STATUS_OPTIONS,
-        canEdit: () => true,
         onChange: (row, next) => updateField.mutate({ id: row.id, source: row.source, patch: { status: next } }),
       }),
     },
@@ -1701,13 +1732,10 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
     },
     {
       id: 'assignee',
-      // 10 fractions = 120px — sufficient for most assignee names.
-      // defaultVisible: false — Jira's BAU list hides Assignee by default;
-      // available via the column picker (+).
       label: 'Assignee',
       width: 10,
       sortable: true,
-      defaultVisible: false,
+      defaultVisible: true,
       cell: makeAssigneeEditCell<BacklogItem>({
         getAssignee: (r) => r.assignee_name
           ? { id: r.assignee_name, name: r.assignee_name, avatarUrl: avatarsByName.get(r.assignee_name.toLowerCase()) ?? null }
@@ -1736,7 +1764,7 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
       label: 'Priority',
       width: 8,
       sortable: true,
-      defaultVisible: false,
+      defaultVisible: true,
       cell: makePriorityEditCell<BacklogItem>({
         getPriority: (r) => r.priority,
         // F2: pass the full Jira BAU priority vocabulary including
@@ -2778,6 +2806,61 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
                   onCancel={() => setInlineCreateGroup(null)}
                 />
               );
+            }}
+            stickyCreateFooter={{
+              placeholder: 'What needs to be done?',
+              onActivate: () => setFooterCreateActive(true),
+              active: footerCreateActive ? (() => {
+                const submitFooter = async (
+                  summaryText: string,
+                  issueType: CreatableIssueType,
+                  assignee: { id: string; name: string } | null,
+                ) => {
+                  const trimmed = summaryText.trim();
+                  if (!trimmed || !projectKey) return;
+                  if (trimmed.length > 255) { flag.error('Summary must be 255 characters or fewer'); return; }
+                  setInlineCreateSubmitting(true);
+                  try {
+                    const issueKey = await generateIssueKey(projectKey);
+                    const nowIso = new Date().toISOString();
+                    // Default status: first group when grouped by status, else 'To Do'
+                    const defaultStatus = groupBy === 'status' && groupedRows[0]
+                      ? groupedRows[0].id
+                      : 'To Do';
+                    const { error } = await supabase.from('ph_issues').insert({
+                      issue_key: issueKey,
+                      project_key: projectKey,
+                      summary: trimmed,
+                      issue_type: issueType,
+                      status: defaultStatus,
+                      priority: 'medium',
+                      source: 'catalyst',
+                      assignee_account_id: assignee?.id ?? null,
+                      assignee_display_name: assignee?.name ?? null,
+                      jira_created_at: nowIso,
+                      jira_updated_at: nowIso,
+                    } as any);
+                    if (error) throw error;
+                    flag.success(`Created ${issueKey} — ${trimmed}`);
+                    queryClient.invalidateQueries({ queryKey: ['backlog-stories-v2', projectId] });
+                    queryClient.invalidateQueries({ queryKey: ['backlog-epics', projectId] });
+                    setFooterCreateActive(false);
+                  } catch {
+                    flag.error('Failed to create');
+                  } finally {
+                    setInlineCreateSubmitting(false);
+                  }
+                };
+                return (
+                  <InlineGroupCreateRow
+                    groupLabel=""
+                    isSubmitting={inlineCreateSubmitting}
+                    members={chromeBandMembers}
+                    onSubmit={submitFooter}
+                    onCancel={() => setFooterCreateActive(false)}
+                  />
+                );
+              })() : null,
             }}
             columnVisibility={visibleColumns}
             onColumnVisibilityChange={setVisibleColumns}
