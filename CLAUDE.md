@@ -10,6 +10,12 @@ The Catalyst local dev server always runs on **http://localhost:8080**. Never us
 
 ---
 
+## Banned integrations — Projects module (`/project-hub/projects`)
+
+**Notion is permanently out of scope for the Projects module.** Do NOT add a Notion column, Notion sync stats, or any Notion data to AllProjectsTable, AllProjectsPage, or any Projects-related component. This was explicitly removed by Vikram 2026-05-09. No exceptions, no re-asks.
+
+---
+
 ## Shell Commands — Mandatory Patterns
 
 **Never use `cd /path && git ...`** — this triggers a hardcoded Claude Code security gate that always prompts and cannot be suppressed.

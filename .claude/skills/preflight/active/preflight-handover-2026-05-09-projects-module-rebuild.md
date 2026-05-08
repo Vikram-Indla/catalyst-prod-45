@@ -66,7 +66,7 @@ See parent preflight response for full table. Summary:
 - [x] P0-2: Failing test
 - [x] P0-3: Type update
 - [x] P0-4: Sync count fix
-- [x] P0-5: ⏸ WAITING Vikram — Notion scope
+- [x] P0-5: ❌ CANCELLED — Notion removed from Projects scope (Vikram directive 2026-05-09)
 - [x] P0-6: ProjectIcon wiring
 - [x] P0-7: Remove banned columns
 - [x] P0-8: Three-dots fix
@@ -82,7 +82,7 @@ See parent preflight response for full table. Summary:
 - [x] P1-3: Card typography ADS pass (moot — file deleted)
 - [x] P1-4: jira-compare card view (moot — card view deprecated entirely)
 - [x] P1-5: Column headers sentence-cased (Key/Name/Lead/Members/Sync); row 48.5px ✓; 2/2 deprecation tests green; browser verified
-- [ ] P2-1..P2-6: BLOCKED on P0-5
+- [x] P2-1..P2-6: ❌ CANCELLED — Notion removed from Projects scope entirely (Vikram directive 2026-05-09)
 
 ## Key files
 - `src/components/projecthub/AllProjectsTable.tsx` — list view (1109 lines); three-dots at RowActionMenu; icons use getBadgeColor div (replace with ProjectIcon)
