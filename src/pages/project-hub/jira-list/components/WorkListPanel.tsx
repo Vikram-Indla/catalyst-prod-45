@@ -9,7 +9,11 @@
  * own click so the two interactions never collide.
  */
 import React, { useMemo, useState } from 'react';
-import { Search, Filter, ArrowUpDown, RotateCw } from 'lucide-react';
+import SearchIcon from '@atlaskit/icon/glyph/search';
+import FilterIcon from '@atlaskit/icon/glyph/filter';
+import ArrowUpIcon from '@atlaskit/icon/glyph/arrow-up';
+import ArrowDownIcon from '@atlaskit/icon/glyph/arrow-down';
+import RefreshIcon from '@atlaskit/icon/glyph/refresh';
 import { WorkItemTypeIcon } from '@/components/icons/WorkItemTypeIcon';
 import { WorkCardAssigneePicker } from './WorkCardAssigneePicker';
 // WorkItemStatusLozenge import removed — rail card no longer renders status
@@ -94,7 +98,9 @@ export function WorkListPanel({ items, selectedKey, onSelect, projectId, externa
           border: '1px solid var(--cp-border-default, #DFE1E6)', borderRadius: 6, padding: '0 8px', height: 32,
           background: 'transparent',
         }}>
-          <Search size={14} style={{ opacity: 0.5, flexShrink: 0 }} />
+          <span style={{ opacity: 0.5, flexShrink: 0, display: 'inline-flex' }}>
+            <SearchIcon label="" size="small" />
+          </span>
           <input
             type="text"
             value={query}
@@ -114,7 +120,7 @@ export function WorkListPanel({ items, selectedKey, onSelect, projectId, externa
           fontSize: 13, fontFamily: 'var(--cp-font-body)', display: 'inline-flex',
           alignItems: 'center', gap: 4, color: 'var(--cp-text-secondary, #44546F)', flexShrink: 0,
         }}>
-          <Filter size={14} />
+          <FilterIcon label="" size="small" />
           Filter
         </button>
       </div>
@@ -140,8 +146,13 @@ export function WorkListPanel({ items, selectedKey, onSelect, projectId, externa
           </svg>
         </button>
         <div style={{ display: 'inline-flex', gap: 4 }}>
-          <SortIconBtn><ArrowUpDown size={16} /></SortIconBtn>
-          <SortIconBtn><RotateCw size={16} /></SortIconBtn>
+          <SortIconBtn>
+            <span style={{ display: 'flex', flexDirection: 'column', gap: 0, lineHeight: 0 }}>
+              <ArrowUpIcon label="" size="small" />
+              <ArrowDownIcon label="" size="small" />
+            </span>
+          </SortIconBtn>
+          <SortIconBtn><RefreshIcon label="" size="small" /></SortIconBtn>
         </div>
       </div>
 

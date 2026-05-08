@@ -1,0 +1,90 @@
+/**
+ * Jira-parity color overrides.
+ *
+ * These are DOM-probed hex values from digital-transformation.atlassian.net.
+ * ADS token() values differ from Jira's actual rendered colors, so we store
+ * exact measurements here as CSS custom properties.
+ *
+ * ANNOTATION FORMAT (required — CI enforces this):
+ *   /* JIRA-PARITY: probed <YYYY-MM-DD> <source-URL-or-issue> — <ADS token> = <ADS value>, actual = <measured> */
+ *
+ * All --cp-jira-* vars must carry that comment or check-field-compliance.mjs will fail.
+ *
+ * Cascade position: import AFTER src/index.css so these override any
+ * earlier --cp-* definitions for the same property names.
+ */
+
+:root {
+  /* ─── StatusPill — table cell lozenges ───────────────────────────────────
+   * Measured 2026-05-07 from BAU list view, digital-transformation.atlassian.net
+   * Atlaskit Lozenge token in Catalyst theme resolves differently (e.g. success
+   * resolves to rgb(239,255,214) vs Jira's rgb(179,223,114)), so we bypass.
+   * All foreground text: rgb(41, 42, 46) — same across all appearances.
+   * ─────────────────────────────────────────────────────────────────────── */
+
+  /* JIRA-PARITY: probed 2026-05-07 BAU list — ADS success.bold=#1F845A, actual=rgb(179,223,114) */
+  --cp-jira-status-success-bg: rgb(179, 223, 114);
+
+  /* JIRA-PARITY: probed 2026-05-07 BAU list — ADS inprogress.bold=#0055CC, actual=rgb(143,184,246) */
+  --cp-jira-status-inprogress-bg: rgb(143, 184, 246);
+
+  /* JIRA-PARITY: probed 2026-05-07 BAU list — ADS default/neutral, actual=rgb(221,222,225) */
+  --cp-jira-status-default-bg: rgb(221, 222, 225);
+
+  /* JIRA-PARITY: probed 2026-05-07 BAU list — moved/on-hold category, actual=rgb(243,214,100) */
+  --cp-jira-status-moved-bg: rgb(243, 214, 100);
+
+  /* JIRA-PARITY: probed 2026-05-07 BAU list — removed/cancelled category, actual=rgb(255,143,115) */
+  --cp-jira-status-removed-bg: rgb(255, 143, 115);
+
+  /* JIRA-PARITY: probed 2026-05-07 BAU list — new/proposed category, actual=rgb(184,172,246) */
+  --cp-jira-status-new-bg: rgb(184, 172, 246);
+
+  /* StatusPill foreground — same for all appearances */
+  /* JIRA-PARITY: probed 2026-05-07 BAU list — ADS text.subtle=#44546F, actual=rgb(41,42,46) */
+  --cp-jira-status-fg: rgb(41, 42, 46);
+
+  /* ─── Parent / Epic chip — table cell parent lozenge ────────────────────
+   * Measured 2026-04-26 digital-transformation.atlassian.net
+   * Green chip used for parent reference in backlog/all-work table rows.
+   * ─────────────────────────────────────────────────────────────────────── */
+
+  /* JIRA-PARITY: probed 2026-04-26 BAU parent chip — ADS background.success=unresolved, actual=#B3DF72 */
+  --cp-jira-epic-chip-bg: #B3DF72;
+
+  /* JIRA-PARITY: probed 2026-04-26 BAU parent chip — text color, actual=#292A2E */
+  --cp-jira-epic-chip-fg: #292A2E;
+
+  /* ─── Kanban / Backlog column category dots ───────────────────────────────
+   * Measured 2026-05-07 from BAU Kanban column headers.
+   * Used for small circular status-category indicator dots.
+   * ─────────────────────────────────────────────────────────────────────── */
+
+  /* JIRA-PARITY: probed 2026-05-07 BAU Kanban — done category dot, actual=#94C748 */
+  --cp-jira-dot-done: #94C748;
+
+  /* JIRA-PARITY: probed 2026-05-07 BAU Kanban — in-progress category dot, actual=#669DF1 */
+  --cp-jira-dot-inprogress: #669DF1;
+
+  /* JIRA-PARITY: probed 2026-05-07 BAU Kanban — to-do category dot, actual=#5E6C84 */
+  --cp-jira-dot-todo: #5E6C84;
+
+  /* ─── Detail-view header status pill ─────────────────────────────────────
+   * Measured 2026-05-07 from BAU issue detail view header.
+   * Larger pill used in CatalystStatusPill (detail header), distinct from
+   * the smaller table-cell StatusPill above.
+   * ─────────────────────────────────────────────────────────────────────── */
+
+  /* JIRA-PARITY: probed 2026-05-07 BAU issue header — done category, actual=#94C748 */
+  --cp-jira-header-status-done-bg: #94C748;
+
+  /* JIRA-PARITY: probed 2026-05-07 BAU issue header — in-progress category, actual=#8FB8F6 */
+  --cp-jira-header-status-inprogress-bg: #8FB8F6;
+
+  /* JIRA-PARITY: probed 2026-05-07 BAU issue header — to-do category, actual=rgba(5,21,36,0.06) */
+  --cp-jira-header-status-todo-bg: rgba(5, 21, 36, 0.06);
+
+  /* Foreground for header status pill */
+  /* JIRA-PARITY: probed 2026-05-07 BAU issue header — text color, actual=#292A2E / fontWeight 500 */
+  --cp-jira-header-status-fg: #292A2E;
+}
