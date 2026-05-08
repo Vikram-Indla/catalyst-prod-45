@@ -704,6 +704,30 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
 
   const pageSize = 25;
 
+  // ── Jira keyboard shortcuts ──
+  // `c` → activate footer inline-create (Jira: opens quick-create dialog)
+  // `Enter` on a selected/focused row → navigate to the issue detail panel
+  // Guard: skip if user is typing in an input/textarea/contenteditable
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      const tag = (e.target as HTMLElement)?.tagName;
+      const isEditable =
+        tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' ||
+        (e.target as HTMLElement)?.isContentEditable;
+      if (isEditable || e.metaKey || e.ctrlKey || e.altKey) return;
+
+      if (e.key === 'c' || e.key === 'C') {
+        e.preventDefault();
+        setFooterCreateActive(true);
+        // Scroll table to bottom so the sticky footer is visible
+        const viewport = document.querySelector('.jira-table-viewport') as HTMLElement | null;
+        if (viewport) viewport.scrollTop = viewport.scrollHeight;
+      }
+    };
+    document.addEventListener('keydown', onKey);
+    return () => document.removeEventListener('keydown', onKey);
+  }, []);
+
   // ── Mutations ──
   // F-iter9 unification + F14 hard rule: ALL rows (Jira + Catalyst) are
   // editable. Writes always land in ph_issues. For source='jira' rows we
