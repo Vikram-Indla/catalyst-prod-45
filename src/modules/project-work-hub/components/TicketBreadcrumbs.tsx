@@ -169,9 +169,10 @@ export function TicketBreadcrumbs({
           align-items: center;
           gap: 4px;
           font-family: var(--cp-font-body);
-          font-size: 13px;
-          font-weight: 500;
-          line-height: 1;
+          font-size: 14px;
+          font-weight: 400;
+          color: var(--ds-text-subtle, #42526E);
+          line-height: 20px;
           padding: 2px 4px;
           border-radius: 3px;
         }

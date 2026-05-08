@@ -50,6 +50,8 @@ import AkCommentIcon from '@atlaskit/icon/core/comment';
 import AkShareIcon from '@atlaskit/icon/core/share';
 import AkWarningIcon from '@atlaskit/icon/core/warning';
 import AkArchiveBoxIcon from '@atlaskit/icon/core/archive-box';
+import AkLinkExternalIcon from '@atlaskit/icon/core/link-external';
+import AkLinkIcon from '@atlaskit/icon/core/link';
 import Lozenge from '@atlaskit/lozenge';
 import Avatar from '@atlaskit/avatar';
 import DropdownMenu, { DropdownItemRadioGroup, DropdownItemRadio } from '@atlaskit/dropdown-menu';
@@ -467,7 +469,19 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
   // 2026-05-04 jira-compare audit: Jira BAU list default columns (verified live):
   // Jira BAU list default columns (re-probed 2026-05-07 live DOM):
   // Type | Key | Summary | Status | Comments | Parent | Assignee | Due date | Priority | Labels
-  const DEFAULT_VISIBLE_COLUMNS = ['key', 'summary', 'status', 'parent', 'assignee', 'due_date', 'priority', 'labels', 'created', 'updated'];
+  // Jira BAU list shows 6 columns above the fold by default (Type | Key |
+  // Summary | Status | Comments | Parent). Catalyst has no Comments column,
+  // so we mirror that as 5: key | summary | status | parent | assignee.
+  // Priority, due_date, labels are off by default (match Jira's behavior
+  // where those require horizontal scroll or column picker). Gives Summary
+  // ~500px of flex width — matching Jira's ~340px summary column.
+  // Jira BAU default columns (re-probed 2026-05-08): Type | Key | Summary |
+  // Status | Comments | Parent | Assignee. Mirror that exactly — Comments is
+  // now visible by default at position 4 (between Status and Parent).
+  // Jira-parity (2026-05-08): Jira's BAU list default columns are Type | Key |
+  // Summary | Status | Comments | Parent — NO Assignee by default. Assignee is
+  // available via the column picker (+) but hidden in the factory layout.
+  const DEFAULT_VISIBLE_COLUMNS = ['key', 'summary', 'status', 'comments', 'parent'];
   const parseSet = (raw: string | null): Set<string> =>
     raw ? new Set(raw.split(',').filter(Boolean)) : new Set();
 
@@ -548,6 +562,9 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
   // renderGroupInlineRow prop. On submit / cancel / Esc → set back to null.
   const [inlineCreateGroup, setInlineCreateGroup] = useState<string | null>(null);
   const [inlineCreateSubmitting, setInlineCreateSubmitting] = useState(false);
+  // Jira-parity: clicking the "+" hover button on a type cell opens a
+  // quick-create modal pre-wired with parent_id = clicked row's id.
+  const [childCreateParent, setChildCreateParent] = useState<BacklogItem | null>(null);
 
   // Apr 27 2026 (jira-compare regression iter 3 — View options menu
   // parity with Jira). Toggling "Hide done work items" filters out any
@@ -959,7 +976,7 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
         created_at: s.jira_created_at ?? null,
         due_date: (s as any).start_date ?? (s as any).due_date ?? null,
         comment_count: null,
-          labels: null,
+        labels: (s as any).labels ?? null,
       });
     });
     return out;
@@ -1402,6 +1419,23 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
   //   (makeRowActionsCell re-sorts danger into its own section).
   const rowActions = useMemo<RowAction<BacklogItem>[]>(() => ([
     { id: 'open', label: 'Open', icon: <AkEditIcon label="" size="small" />, onClick: (r) => openDetail(r) },
+    { id: 'open-in-jira', label: 'Open in Jira',
+      icon: <AkLinkExternalIcon label="" size="small" />,
+      onClick: (r) => {
+        if (r.key) window.open(`https://digital-transformation.atlassian.net/browse/${r.key}`, '_blank', 'noopener');
+        else flag.info('No Jira key', 'This is a Catalyst-native item with no Jira counterpart.');
+      },
+    },
+    { id: 'copy-link', label: 'Copy link',
+      icon: <AkLinkIcon label="" size="small" />,
+      onClick: (r) => {
+        const url = `${window.location.origin}/project-hub/${projectKey}/backlog?selectedIssue=${r.id}`;
+        navigator.clipboard.writeText(url).then(
+          () => flag.success('Link copied'),
+          () => flag.error('Copy failed', 'Clipboard access denied'),
+        );
+      },
+    },
     { id: 'edit', label: 'Edit', icon: <AkEditIcon label="" size="small" />, onClick: (r) => setEditingId(r.id) },
     { id: 'flag', label: 'Flag', icon: <AkFlagIcon label="" size="small" />, onClick: (r) => flag.info(`Flagged ${r.key || r.id}`) },
     { id: 'duplicate', label: 'Duplicate', icon: <AkCopyIcon label="" size="small" />,
@@ -1410,13 +1444,50 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
     { id: 'delete', label: 'Delete', icon: <AkTrashIcon label="" size="small" />, danger: true,
       onClick: (r) => setDeleteTarget(r),
       hidden: (r) => r.source !== 'catalyst' },
-  ]), [openDetail]);
+  ]), [openDetail, projectKey]);
 
   // ── Column schema ──
   // F8 (iter-9): __caret column dropped — caret affordance folded into the
   // Type col cell renderer instead (matches Jira's inline expand pattern).
   // F9 (iter-9): Type col widened from width:3 (~40px) to width:9 (~108px).
   const columns = useMemo<Column<BacklogItem>[]>(() => ([
+    {
+      // Jira-parity: 16px-wide drag-handle column at the leftmost position.
+      // Shows a 6-dot grip icon on row hover; invisible at rest.
+      // CSS in JiraTable.tsx (`.jira-drag-handle`) handles visibility.
+      // No functional DnD yet — visual parity only for Phase 4.
+      id: '__drag',
+      label: '',
+      width: 2,
+      align: 'center' as const,
+      alwaysVisible: true,
+      cell: () => (
+        <span
+          className="jira-drag-handle"
+          aria-hidden
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: 16,
+            height: 16,
+            cursor: 'grab',
+            color: token('color.icon.subtle', '#626F86'),
+            visibility: 'hidden',  /* JiraTable.tsx tr:hover CSS shows it */
+          }}
+        >
+          {/* 6-dot grip — no ADS equivalent; inline SVG */}
+          <svg width="10" height="16" viewBox="0 0 10 16" fill="currentColor" aria-hidden>
+            <circle cx="2" cy="2" r="1.5"/>
+            <circle cx="8" cy="2" r="1.5"/>
+            <circle cx="2" cy="8" r="1.5"/>
+            <circle cx="8" cy="8" r="1.5"/>
+            <circle cx="2" cy="14" r="1.5"/>
+            <circle cx="8" cy="14" r="1.5"/>
+          </svg>
+        </span>
+      ),
+    },
     {
       id: 'type',
       // Apr 27, 2026 — jira-compare audit P1 #5 + P-A11Y #12: Jira's BAU
@@ -1430,18 +1501,19 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
       // Type column at x=147→233 = ~86px. width:7 × 12 = 84px ≈ matches.
       // Previous width:11 (~124px) was 38px too wide, wasting summary space.
       label: 'Type',
-      width: 7,
+      width: 6,
       align: 'start',
       alwaysVisible: true,
-      cell: makeTypeIconCell((it: BacklogItem) => {
-        // Requests render with their own pre-joined color/icon (from
-        // ph_backlog_requests_view). Fall back to the purple Epic lightning
-        // if the view row somehow lacks type metadata. Every other backlog
-        // type uses our canonical JiraIssueTypeIcon.
+      cell: ({ row: it }) => {
+        // Render the type icon wrapped in hover-swap structure:
+        //  .jira-type-icon  — visible at rest, hidden on tr:hover (CSS in JiraTable.tsx)
+        //  .jira-create-child-btn — hidden at rest, shown on tr:hover
+        // initiatives are non-Jira rows and do NOT get the create-child CTA.
+        let icon: React.ReactNode;
         if (it.type === 'initiative') {
           const init = initiativesByKey?.get(it.key || '');
           const bg = init?.initiative_type_color_hex || '#904EE2';
-          return (
+          icon = (
             <span
               title={init?.initiative_type_label || 'Request'}
               style={{
@@ -1457,40 +1529,70 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
                 fontWeight: 700,
               }}
             >
-              {/* Use the first letter of the type key as a glyph — keeps
-                  the icon monochrome-simple; when we source the actual
-                  initiative_type_icon SVG we can swap it in. */}
               {(init?.initiative_type_key || 'I')[0].toUpperCase()}
             </span>
           );
+        } else {
+          const typeMap: Record<Exclude<BacklogType, 'initiative'>, string> = {
+            epic: 'Epic',
+            feature: 'Feature',
+            story: 'Story',
+            bug: 'QA Bug',
+            incident: 'Production Incident',
+          };
+          icon = <JiraIssueTypeIcon type={typeMap[it.type as Exclude<BacklogType, 'initiative'>]} size={16} />;
         }
-        // Apr 27, 2026 — Backlog scope expansion: map 'bug' and 'incident'
-        // to the canonical Jira issue-type strings expected by
-        // JiraIssueTypeIcon. CLAUDE.md §11 calls these out as 'QA Bug'
-        // (red asterisk #E5493A) and 'Production Incident' (orange
-        // question-circle #F97316). size=16 keeps every leaf row's icon
-        // at one consistent visual size — the misalignment the user
-        // surfaced earlier was actually a size mismatch from JiraIssueTypeIcon
-        // rendering different glyphs at different intrinsic heights.
-        const typeMap: Record<Exclude<BacklogType, 'initiative'>, string> = {
-          epic: 'Epic',
-          feature: 'Feature',
-          story: 'Story',
-          bug: 'QA Bug',
-          incident: 'Production Incident',
-        };
-        return <JiraIssueTypeIcon type={typeMap[it.type as Exclude<BacklogType, 'initiative'>]} size={16} />;
-      }),
+        return (
+          <span style={{ position: 'relative', display: 'inline-flex', alignItems: 'center', width: 20, height: 20 }}>
+            {/* Icon visible at rest; CSS hides on tr:hover */}
+            <span className="jira-type-icon" style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
+              {icon}
+            </span>
+            {/* "Create child" "+" button: CSS shows on tr:hover */}
+            {it.type !== 'initiative' && (
+              <button
+                className="jira-create-child-btn"
+                type="button"
+                title="Create child issue"
+                onClick={(e) => { e.stopPropagation(); setChildCreateParent(it); }}
+                style={{
+                  position: 'absolute',
+                  inset: 0,
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  border: `1px solid ${token('color.border', '#DFE1E6')}`,
+                  borderRadius: 3,
+                  background: token('elevation.surface', '#FFFFFF'),
+                  cursor: 'pointer',
+                  padding: 0,
+                  width: 20,
+                  height: 20,
+                  color: token('color.icon', '#44546F'),
+                }}
+              >
+                <AkAddIcon label="" size="small" />
+              </button>
+            )}
+          </span>
+        );
+      },
     },
     {
       id: 'key',
       label: 'Key',
-      // 11 fractions ≈ 130px — enough to show "BAU-5801" without clipping.
-      width: 11,
+      // 7 fractions = 84px — enough to show "BAU-5801" without clipping.
+      width: 7,
       sortable: true,
       defaultVisible: true,
       accessor: (r) => r.key || '',
-      cell: makeKeyCell((r: BacklogItem) => r.key),
+      // Jira-parity: key cell renders as <a> so keyboard nav, middle-click,
+      // and Ctrl+click all work. Left-click preventDefault → opens detail panel.
+      cell: makeKeyCell(
+        (r: BacklogItem) => r.key,
+        (r: BacklogItem) => setDetailItemId(r.id),
+        (r: BacklogItem) => `?selectedIssue=${r.id}`,
+      ),
     },
     {
       id: 'summary',
@@ -1501,7 +1603,7 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
       // from defaultVisible (see Updated col below) to make room — Jira
       // hides Updated by default in the BAU list as well.
       label: 'Summary',
-      width: 29,
+      flex: true,
       sortable: true,
       alwaysVisible: true,
       cell: makeSummaryInlineEditCell<BacklogItem>({
@@ -1521,12 +1623,10 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
     {
       id: 'status',
       label: 'Status',
-      // Width = 15 fractions. The longest pill text on BAU today is
-      // "Ready for Development" which renders ~153px wide; the column div
-      // has horizontal padding that reduces usable width, and the cell
-      // wrapper clips on overflow. 15 gives ~180px at typical container
-      // widths — enough for every status in the STATUS_OPTIONS vocabulary.
-      width: 15,
+      // 13 fractions = 156px. "Ready for Development" measures ~153px (per
+      // 2026-05-04 audit) so 156px gives 3px margin. Summary flex absorbs
+      // the remaining space.
+      width: 13,
       sortable: true,
       defaultVisible: true,
       // B.4 verdict: @atlaskit/popup portal mounts on this surface but
@@ -1545,6 +1645,23 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
       }),
     },
     {
+      id: 'comments',
+      label: 'Comments',
+      // Jira-parity: Comments is the 5th column (after Status) in Jira's BAU
+      // default list view. icon(16) + gap(4) + "Add comment"(~90px) + cell-
+      // padding(24px) = ~134px needed. 12 fractions = 144px (inner 120px) fits.
+      width: 12,
+      sortable: false,
+      defaultVisible: true,
+      alwaysVisible: false,
+      cell: makeCommentsCell(
+        (r: BacklogItem) => r.comment_count,
+        // Clicking the comments cell opens the detail panel so the user
+        // lands in the Comments section — matches Jira's "Add comment" CTA.
+        (r: BacklogItem) => setDetailItemId(r.id),
+      ),
+    },
+    {
       id: 'parent',
       label: 'Parent',
       // Apr 27, 2026 — jira-compare audit P1 #6: Jira's BAU list Parent
@@ -1554,12 +1671,9 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
       // (~286px @ 1100 minw) to hit the audit's ≥280px acceptance
       // target.
       // Apr 28, 2026 (jira-compare cycle 3 V6): 26 was too greedy and
-      // squeezed Summary into excessive truncation (visible in user
-      // image — "Issuance New License - The system isn't display Raw
-      // Materials ins…"). Reduced to 18 (~200px) so Summary regains
-      // ~85px of breathing room. Truncation on parent label is
-      // acceptable since it's secondary; truncation on Summary is not.
-      width: 18,
+      // Summary is now flex so Parent only needs a fixed allocation.
+      // 10 fractions = 120px; parent label truncates with title tooltip.
+      width: 10,
       sortable: true,
       defaultVisible: true,
       cell: makeParentEditCell<BacklogItem>({
@@ -1589,13 +1703,13 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
     },
     {
       id: 'assignee',
-      // 2026-05-04 jira-compare: Jira Assignee x=1018→1198 = ~180px.
-      // width:15 × 12 = 180px = exact parity. Previous width:11 (~124px)
-      // truncated names like "Imran Aslam" to "Imran Asla...".
+      // 10 fractions = 120px — sufficient for most assignee names.
+      // defaultVisible: false — Jira's BAU list hides Assignee by default;
+      // available via the column picker (+).
       label: 'Assignee',
-      width: 15,
+      width: 10,
       sortable: true,
-      defaultVisible: true,
+      defaultVisible: false,
       cell: makeAssigneeEditCell<BacklogItem>({
         getAssignee: (r) => r.assignee_name
           ? { id: r.assignee_name, name: r.assignee_name, avatarUrl: avatarsByName.get(r.assignee_name.toLowerCase()) ?? null }
@@ -1609,11 +1723,10 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
     },
     {
       id: 'due_date',
-      // 2026-05-07 re-probe: Jira BAU list shows Due date between Assignee and Priority.
       label: 'Due date',
-      width: 10,
+      width: 8,
       sortable: true,
-      defaultVisible: true,
+      defaultVisible: false,
       accessor: (r: BacklogItem) => r.due_date || '',
       cell: makeDateEditCell<BacklogItem>({
         getDate: (r) => r.due_date,
@@ -1623,12 +1736,9 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
     {
       id: 'priority',
       label: 'Priority',
-      // 2026-05-04 jira-compare: Jira Priority x=1343→1463 = ~120px.
-      // width:10 × 12 = 120px = exact parity. Previous width:7 (~79px)
-      // was too narrow for "Medium" icon+text (now replaced from bars).
-      width: 10,
+      width: 8,
       sortable: true,
-      defaultVisible: true,
+      defaultVisible: false,
       cell: makePriorityEditCell<BacklogItem>({
         getPriority: (r) => r.priority,
         // F2: pass the full Jira BAU priority vocabulary including
@@ -1641,9 +1751,9 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
     {
       id: 'labels',
       label: 'Labels',
-      width: 12,
+      width: 7,
       sortable: false,
-      defaultVisible: true,
+      defaultVisible: false,
       accessor: (r: BacklogItem) => (r.labels || []).join(', '),
       cell: makeLabelsEditCell<BacklogItem>({
         getLabels: (r) => r.labels,
@@ -1652,21 +1762,19 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
     },
     {
       id: 'created',
-      // 2026-05-08 re-probe: Jira BAU list DOES show Created by default.
-      // Live DOM probe returned "Created" in column headers.
       label: 'Created',
-      width: 12,
+      width: 8,
       sortable: true,
-      defaultVisible: true,
+      defaultVisible: false,
       accessor: (r: BacklogItem) => r.created_at || '',
       cell: makeDateCell((r: BacklogItem) => r.created_at),
     },
     {
       id: 'updated',
       label: 'Updated',
-      width: 12,
+      width: 8,
       sortable: true,
-      defaultVisible: true,
+      defaultVisible: false,
       accessor: (r) => r.updated_at || '',
       cell: makeDateCell((r: BacklogItem) => r.updated_at),
     },
@@ -1722,10 +1830,16 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
         throw new Error('Jira-synced items must be deleted in Jira.');
       }
       // F-iter9 unification: Catalyst-native rows live in ph_issues with
-      // source='catalyst'. Delete by id (PK) — id values are unique across
-      // sources so the source filter is belt-and-suspenders.
+      // source='catalyst'. Soft-delete via jira_removed_at — the guardrail
+      // trigger trg_guard_ph_issues_no_delete blocks hard DELETE on ph_issues
+      // (returns 204 silently via RLS). All backlog queries filter on
+      // jira_removed_at IS NULL so setting it removes the row from all views.
       // F-iter9 PK fix: ph_issues PK is issue_key (item.id is populated from issue_key).
-      const { error } = await supabase.from('ph_issues').delete().eq('issue_key', item.id).eq('source', 'catalyst');
+      const { error } = await supabase
+        .from('ph_issues')
+        .update({ jira_removed_at: new Date().toISOString() })
+        .eq('issue_key', item.id)
+        .eq('source', 'catalyst');
       if (error) throw error;
     },
     onSuccess: (_data, item) => {
@@ -1777,9 +1891,10 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
         throw new Error('All selected items are Jira-synced and must be deleted in Jira.');
       }
       // F-iter9 unification + PK fix: ph_issues PK is issue_key.
+      // Soft-delete via jira_removed_at (hard DELETE blocked by trigger).
       const { error } = await supabase
         .from('ph_issues')
-        .delete()
+        .update({ jira_removed_at: new Date().toISOString() })
         .in('issue_key', editable.map((it) => it.id))
         .eq('source', 'catalyst');
       if (error) throw error;
@@ -1835,6 +1950,12 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
   }
 
   const isPanelOpen = !!detailItemId;
+  // Look up the open item so the panel header can show its key + type icon
+  const detailItem = detailItemId ? (items.find((it) => it.id === detailItemId) ?? null) : null;
+  const DETAIL_TYPE_MAP: Record<string, string> = {
+    epic: 'Epic', feature: 'Feature', story: 'Story', bug: 'QA Bug',
+    incident: 'Production Incident', initiative: 'Epic',
+  };
   const typeCount = {
     all: items.length,
     initiative: items.filter((i) => i.type === 'initiative').length,
@@ -2068,22 +2189,24 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
           minHeight: 44,
         }}
       >
-        {/* Label group — Atlaskit-style checkbox-in-square + text */}
+        {/* Label group — issue type icon + key (Jira parity: "[icon] BAU-1234") */}
+        {detailItem && (
+          <span style={{ display: 'inline-flex', alignItems: 'center', flexShrink: 0 }}>
+            <JiraIssueTypeIcon
+              type={DETAIL_TYPE_MAP[detailItem.type] ?? 'Story'}
+              size={16}
+            />
+          </span>
+        )}
         <span style={{
-          display: 'inline-flex', alignItems: 'center',
-          width: 20, height: 20, borderRadius: 4,
-          background: token('color.icon.accent.blue', '#1868DB'),
-          color: 'var(--ds-text-inverse, #FFFFFF)', justifyContent: 'center',
-          fontSize: 12, fontWeight: 700,
-        }}>✓</span>
-        <span style={{
-          // Apr 28, 2026 (jira-compare cycle 2 P22): fontWeight 653 → 600
-          // to match Atlaskit canonical heading weight token. 653 was a
-          // bespoke value carried over from the old shell.
           fontSize: 14, fontWeight: 600,
-          color: token('color.text', '#292A2E'),
+          color: token('color.text.subtle', '#42526E'),
           letterSpacing: '-0.003em',
-        }}>Catalyst work item</span>
+          whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
+          maxWidth: 180,
+        }}>
+          {detailItem?.key ?? detailItemId}
+        </span>
         <div style={{ flex: 1 }} />
         {/* Controls — Expand/Fullscreen/Close (Jira parity).
             'Open in new tab' deferred (no Catalyst equivalent yet). */}
@@ -2138,11 +2261,10 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
       // the chrome band, not inside the table card). The `title` prop is
       // intentionally NOT passed; passing it would double-render the H1.
       sideRail={useRailAsSideSlot ? railInnerContent : undefined}
-      // Apr 28, 2026 (jira-compare cycle 2 P1): panel width 400 → 528.
-      // Probed Catalyst panelW=399, Jira drawer narrow=528. Catalyst was
-      // ~24% too narrow, cramping field rows + Description column.
-      // Aligns with @atlaskit/drawer narrow preset.
-      sideRailWidth={528}
+      // May 2026 (jira-compare): 528 was crushing the table to ~54% viewport.
+      // Jira list+panel split measured: table ~60%, panel ~40% at 1440px.
+      // 420px gives ~40% at typical 1080-1440px viewports without cramping field rows.
+      sideRailWidth={420}
       flush
       // Apr 27, 2026 — jira-compare iter 3: opt in to Jira's blue page
       // chrome (#E9F2FE probed at https://digital-transformation.atlassian.net/jira/software/c/projects/BAU/list?groupBy=status)
@@ -2631,6 +2753,10 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
               }
               return 0;
             }}
+            // Jira-parity: the currently-open detail row gets the focused-row
+            // highlight (blue left bar + subtle bg). Wire detailItemId as
+            // focusedRowId so the key cell border and row tint track the panel.
+            focusedRowId={detailItemId ?? undefined}
             onRowClick={openDetail}
             onEscape={closeDetail}
             selectable
@@ -2665,10 +2791,76 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
             onColumnOrderChange={(next) => setColumnOrder(next)}
             ariaLabel="Unified backlog"
             emptyView={
-              <EmptyState
-                header="No items match"
-                description="Try clearing the search, filters, or chip."
-              />
+              /* Tailwind base CSS zeroes margins on h2/p so @atlaskit/empty-state
+                 renders inline (heading + description concatenated on one line).
+                 Use explicit block stacking to ensure correct layout. */
+              <div style={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                padding: '48px 24px',
+                gap: 0,
+              }}>
+                <div style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  width: 56,
+                  height: 56,
+                  borderRadius: '50%',
+                  background: token('color.background.neutral', '#F1F2F4'),
+                  marginBottom: 16,
+                  color: token('color.icon.subtle', '#626F86'),
+                }}>
+                  <AkSearchIcon label="" size="medium" />
+                </div>
+                <div style={{
+                  display: 'block',
+                  fontSize: 16,
+                  fontWeight: 600,
+                  color: token('color.text', '#172B4D'),
+                  marginBottom: 8,
+                  textAlign: 'center',
+                }}>
+                  No items match your search
+                </div>
+                <div style={{
+                  display: 'block',
+                  fontSize: 14,
+                  fontWeight: 400,
+                  color: token('color.text.subtle', '#44546F'),
+                  textAlign: 'center',
+                  marginBottom: 16,
+                }}>
+                  Try clearing the search, filters, or assignee filter.
+                </div>
+                {(search || Object.keys(filterValue ?? {}).some(k => (filterValue as any)[k]?.length)) && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setSearch('');
+                      setFilterValue(emptyFilterValue);
+                    }}
+                    style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      padding: '4px 12px',
+                      fontSize: 14,
+                      fontWeight: 500,
+                      color: token('color.link', '#0C66E4'),
+                      background: 'transparent',
+                      border: `1px solid ${token('color.border', '#DFE1E6')}`,
+                      borderRadius: 3,
+                      cursor: 'pointer',
+                    }}
+                    onMouseEnter={e => (e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', '#F1F2F4'))}
+                    onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+                  >
+                    Clear filters
+                  </button>
+                )}
+              </div>
             }
             // Apr 27, 2026 (L70): Create row now renders INSIDE the
             // table viewport via JiraTable's `bottomSlot` prop —
@@ -2696,6 +2888,22 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
           />
           </div>
         </div>
+
+        {/* Jira-parity: "Create child" modal opened by clicking "+" on the
+            type cell. Pre-fills parent_id so the new row immediately nests
+            under the row that was clicked. */}
+        {childCreateParent && (
+          <ChildCreateModal
+            projectKey={projectKey}
+            parent={childCreateParent}
+            onCreated={() => {
+              queryClient.invalidateQueries({ queryKey: ['backlog-stories-v2', projectId] });
+              queryClient.invalidateQueries({ queryKey: ['backlog-epics', projectId] });
+              setChildCreateParent(null);
+            }}
+            onClose={() => setChildCreateParent(null)}
+          />
+        )}
 
         {/* Fullscreen backdrop — dim layer behind the modal panel.
             Click closes back to compact mode (Jira parity). */}
@@ -4633,7 +4841,7 @@ function BottomCreateRow({
             width: '100%', height: 40, padding: '0 16px',
             border: 'none', background: 'transparent',
             color: token('color.text.subtle', '#42526E'),
-            fontSize: 14, fontWeight: 400, fontFamily: 'inherit',
+            fontSize: 14, fontWeight: 500, fontFamily: 'inherit',
             cursor: 'pointer', textAlign: 'left',
           }}
           onMouseEnter={(e) => {
@@ -5346,5 +5554,179 @@ function EditBacklogItemModal({
         </Modal>
       )}
     </ModalTransition>
+  );
+}
+
+/* ─── ChildCreateModal ───────────────────────────────────────────────────── */
+/**
+ * Quick-create modal for child issues.
+ * Opened when the user clicks the "+" hover button on the type cell of a row.
+ * Pre-fills parent_id so the new issue immediately nests under its parent.
+ */
+function ChildCreateModal({
+  projectKey,
+  parent,
+  onCreated,
+  onClose,
+}: {
+  projectKey: string;
+  parent: BacklogItem;
+  onCreated: () => void;
+  onClose: () => void;
+}) {
+  const [summary, setSummary] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    const t = setTimeout(() => inputRef.current?.focus(), 80);
+    return () => clearTimeout(t);
+  }, []);
+
+  const handleCreate = async () => {
+    const title = summary.trim();
+    if (!title) { inputRef.current?.focus(); return; }
+    if (title.length > 255) {
+      flag.error('Summary must be 255 characters or fewer');
+      return;
+    }
+    setIsSubmitting(true);
+    try {
+      const issueKey = await generateIssueKey(projectKey);
+      const nowIso = new Date().toISOString();
+      // Child issue type follows Jira's hierarchy: Epic→Feature, Feature→Story,
+      // Story/Bug/Incident→Sub-task. Default 'Story' for any unrecognised parent.
+      const childTypeMap: Record<BacklogType, string> = {
+        initiative: 'Story',
+        epic: 'Feature',
+        feature: 'Story',
+        story: 'Sub-task',
+        bug: 'Sub-task',
+        incident: 'Sub-task',
+      };
+      const childType = childTypeMap[parent.type] ?? 'Story';
+      const { error } = await supabase.from('ph_issues').insert({
+        issue_key: issueKey,
+        project_key: projectKey,
+        summary: title,
+        issue_type: childType,
+        status: 'To Do',
+        priority: 'medium',
+        source: 'catalyst',
+        // ph_issues uses parent_key (issue key string), not parent_id (UUID)
+        parent_key: parent.key ?? null,
+        parent_summary: parent.title ?? null,
+        jira_created_at: nowIso,
+        jira_updated_at: nowIso,
+      } as any);
+      if (error) throw error;
+      flag.success(`Created ${issueKey} — ${title}`);
+      onCreated();
+    } catch {
+      flag.error('Failed to create child issue');
+      setIsSubmitting(false);
+    }
+  };
+
+  // Use createPortal (same pattern as DangerConfirmModal) — @atlaskit/modal-dialog
+  // ModalTransition has an empty-portal bug on this surface. createPortal is reliable.
+  if (typeof document === 'undefined') return null;
+  return ReactDOM.createPortal(
+    <div
+      role="presentation"
+      style={{
+        position: 'fixed', inset: 0,
+        background: 'rgba(9, 30, 66, 0.54)',
+        zIndex: 9999,
+        display: 'flex', alignItems: 'flex-start', justifyContent: 'center',
+        paddingTop: 80,
+      }}
+      onMouseDown={(e) => { if (e.target === e.currentTarget) onClose(); }}
+    >
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-label="Create child issue"
+        style={{
+          width: 560, maxWidth: 'calc(100vw - 48px)',
+          background: token('elevation.surface.overlay', '#FFFFFF'),
+          borderRadius: 8,
+          boxShadow: '0 8px 16px -4px rgba(9,30,66,.25), 0 0 0 1px rgba(9,30,66,.08)',
+          display: 'flex', flexDirection: 'column',
+        }}
+      >
+        {/* Header */}
+        <div style={{
+          padding: '20px 24px 0',
+          fontSize: 20, fontWeight: 600,
+          color: token('color.text', '#172B4D'),
+        }}>
+          Create child issue
+        </div>
+
+        {/* Body */}
+        <div style={{ padding: '16px 24px' }}>
+          {/* Parent context chip */}
+          <div style={{
+            display: 'flex', alignItems: 'center', gap: 6,
+            marginBottom: 16,
+            padding: '4px 8px',
+            background: token('color.background.neutral', '#F4F5F7'),
+            borderRadius: 3,
+            fontSize: 12,
+            color: token('color.text.subtle', '#42526E'),
+          }}>
+            <JiraIssueTypeIcon
+              type={{
+                initiative: 'Business Request',
+                epic: 'Epic',
+                feature: 'Feature',
+                story: 'Story',
+                bug: 'QA Bug',
+                incident: 'Production Incident',
+              }[parent.type] ?? 'Story'}
+              size={14}
+            />
+            <span style={{ fontWeight: 500 }}>{parent.key || '—'}</span>
+            <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 300 }}>
+              {parent.title}
+            </span>
+          </div>
+
+          <div style={{ marginBottom: 4, fontSize: 12, fontWeight: 600, color: token('color.text.subtlest', '#6B778C') }}>
+            Summary *
+          </div>
+          <Textfield
+            ref={inputRef}
+            value={summary}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSummary(e.target.value)}
+            onKeyDown={(e: React.KeyboardEvent) => {
+              if (e.key === 'Enter') handleCreate();
+              if (e.key === 'Escape') onClose();
+            }}
+            placeholder="What needs to be done?"
+            isDisabled={isSubmitting}
+          />
+        </div>
+
+        {/* Footer */}
+        <div style={{
+          display: 'flex', justifyContent: 'flex-end', gap: 8,
+          padding: '0 24px 24px',
+        }}>
+          <Button appearance="subtle" onClick={onClose} isDisabled={isSubmitting}>
+            Cancel
+          </Button>
+          <Button
+            appearance="primary"
+            isDisabled={!summary.trim() || isSubmitting}
+            onClick={handleCreate}
+          >
+            {isSubmitting ? 'Creating…' : 'Create'}
+          </Button>
+        </div>
+      </div>
+    </div>,
+    document.body
   );
 }

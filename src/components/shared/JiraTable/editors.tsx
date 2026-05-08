@@ -516,7 +516,12 @@ export function makeSummaryInlineEditCell<T>({
                 padding: '2px 6px',
                 margin: '-2px -6px',
                 borderRadius: 3,
-                cursor: 'pointer',
+                // Jira-parity: summary cell shows text cursor on hover (measured
+                // 2026-05-08 from digital-transformation.atlassian.net BAU list —
+                // cursor: text on the .text-cell-wrapper span, matching the
+                // "click anywhere in cell to edit" UX pattern). Previously used
+                // cursor: pointer which implies a navigation action, not a text edit.
+                cursor: 'text',
                 overflow: 'hidden',
                 textOverflow: 'ellipsis',
                 whiteSpace: 'nowrap',
@@ -1198,8 +1203,10 @@ export function makeLabelsEditCell<T>({
               cursor: 'pointer',
               fontFamily: 'inherit',
               fontSize: 'inherit',
+              width: '100%',
               maxWidth: '100%',
               textAlign: 'left',
+              display: 'block',
             }}
           >
             {display}

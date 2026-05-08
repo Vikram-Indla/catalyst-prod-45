@@ -36,8 +36,16 @@ export interface Column<TRow> {
   id: string;
   /** Header label. Empty string for icon-only columns (checkbox, type). */
   label: string;
-  /** Width as a fraction (out of 100). */
+  /** Width as a fraction (out of 100) — resolved to pixels by naturalWidthFor(). */
   width?: number;
+  /**
+   * When true this column acts as the flexible "flex-grow" column — it
+   * receives all remaining space after every other column has taken its
+   * fixed pixel width. Implemented via `width: 1%` + `table-layout: auto`
+   * (the classic "flexible-column" table trick). Only one column per table
+   * should set flex:true; Summary is the canonical target.
+   */
+  flex?: boolean;
   /** Whether the column header is sortable. */
   sortable?: boolean;
   /** Cell content alignment. */

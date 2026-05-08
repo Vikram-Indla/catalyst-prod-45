@@ -405,7 +405,7 @@ export function CatalystDescriptionSection({ issue, label = 'Description', defau
              a TipTap replacement — only Atlaskit's ADF shape is
              accepted by this app. Suspense fallback shows "Loading…"
              until the chunk resolves. */
-          <div style={{ paddingLeft: 20 }}>
+          <div>
             <Suspense fallback={<AtlaskitFallback minHeight={240} />}>
               <EpicDescriptionEditor
                 initialContent={issue.description_adf ?? issue.description_text ?? null}
@@ -422,8 +422,8 @@ export function CatalystDescriptionSection({ issue, label = 'Description', defau
             onClick={() => { if (issue) setEditing(true); }}
             style={{
               fontSize: 14, color: '#97A0AF', fontStyle: 'italic',
-              minHeight: 40, paddingLeft: 20, cursor: issue ? 'pointer' : 'default',
-              borderRadius: 4, padding: '8px 20px',
+              minHeight: 40, cursor: issue ? 'pointer' : 'default',
+              borderRadius: 4, padding: '8px 0',
               transition: 'background 0.15s',
             }}
             onMouseEnter={e => { if (issue) e.currentTarget.style.background = 'var(--ds-surface-sunken, #F4F5F7)'; }}
@@ -443,7 +443,7 @@ export function CatalystDescriptionSection({ issue, label = 'Description', defau
             role="button"
             tabIndex={0}
             style={{
-              paddingLeft: 20, minHeight: 40, cursor: 'text', borderRadius: 4,
+              paddingLeft: 0, minHeight: 40, cursor: 'text', borderRadius: 4,
               position: 'relative',
               transition: 'background 0.15s',
             }}

@@ -6,39 +6,26 @@
  * project identifier on every project surface — Catalyst's solo "Project
  * work" h2 had no project avatar, no project name, and no action cluster.
  *
- * Lane A measurements (testid horizontal-nav-header.ui.project-header.header
- * on https://digital-transformation.atlassian.net/jira/software/c/projects/BAU/issues):
- *   container: display flex · gap 6px · padding 0 24px · height 32px · transparent bg
- *   font: "Atlassian Sans"
- *   icon (testid …project-icon): IMG · 20×20px · radius 3px · src is the project
- *         avatar from /rest/api/2/universal_avatar/view/type/project/avatar/<id>
- *   project name: 14/400 · plain text in a div (no testid, css-4adsoe hash class)
- *   action cluster (right of name):
- *     Add people  · testid invite-people.ui.navigation-add-people-button.trigger
- *     Meatball    · testid navigation-project-action-menu.ui.themed-button
- *     Share       · anonymous icon button
- *     Lightning   · anonymous icon button (automation entry)
- *     Feedback    · testid feedback-button.horizontal-nav-feedback-button
- *     Fullscreen  · testid platform.ui.fullscreen-button.fullscreen-button
- *
- * Cross-hub note: Project Backlog and Project Kanban will also need this
- * chip. This file is the canonical implementation; mount-site changes are
- * a separate cross-hub PR per Vikram's directive to flag changes that
- * may cascade.
+ * 2026-05-08 — portal-bug fix:
+ *   @atlaskit/dropdown-menu (meatball) and @atlaskit/modal-dialog (Add
+ *   people / Automation / Feedback) both use @atlaskit/popup v4.16 which
+ *   has an empty-portal bug. The dropdown anchored at (0,0) instead of
+ *   below the trigger; the modals took ~60s to paint. Both replaced with
+ *   direct ReactDOM.createPortal(content, document.body) — the proven
+ *   pattern used by GroupByControl, BacklogPage project-menu, and
+ *   BacklogPage add-people (jira-compare lesson 2026-04-28).
  */
-import React, { useState } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import React, { useState, useRef } from 'react';
+import ReactDOM from 'react-dom';
+import { useQuery } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
-import { supabase, typedQuery } from '@/integrations/supabase/client';
+import { supabase } from '@/integrations/supabase/client';
 import Button, { IconButton } from '@atlaskit/button/new';
-import DropdownMenu, { DropdownItem, DropdownItemGroup } from '@atlaskit/dropdown-menu';
-import Modal, { ModalBody, ModalFooter, ModalHeader, ModalTitle, ModalTransition } from '@atlaskit/modal-dialog';
 import Textfield from '@atlaskit/textfield';
 import TextArea from '@atlaskit/textarea';
+import { token } from '@atlaskit/tokens';
 import { toast } from 'sonner';
-import { useStarredItems } from '@/hooks/useStarredItems';
 import { useToggleStar, useStarredItemIds } from '@/hooks/home/useStarredItems';
-import { useAuth } from '@/hooks/useAuth';
 import { ProjectIcon } from '@/components/shared/ProjectIcon';
 import {
   PersonAddIcon,
@@ -55,10 +42,15 @@ interface Props {
 }
 
 export function ProjectHeaderChip({ projectKey }: Props) {
+  const navigate = useNavigate();
   const [fullscreen, setFullscreen] = useState(false);
-  /* jira-compare 2026-05-05 cycle 2 — D-1 fix · functional modals replace
-     toast stubs for Add people / Automation / Feedback. Each modal is
-     Atlaskit-only (modal-dialog + textfield/textarea + button/new). */
+
+  // Three-dots menu: bespoke portal popup (replaces @atlaskit/dropdown-menu
+  // which has the known @atlaskit/popup v4.16 empty-portal positioning bug).
+  const meatballRef = useRef<HTMLButtonElement>(null);
+  const [menuAnchor, setMenuAnchor] = useState<{ top: number; left: number } | null>(null);
+
+  // Modal states (Add people / Automation / Feedback)
   const [addPeopleOpen, setAddPeopleOpen] = useState(false);
   const [automationOpen, setAutomationOpen] = useState(false);
   const [feedbackOpen, setFeedbackOpen] = useState(false);
@@ -66,15 +58,6 @@ export function ProjectHeaderChip({ projectKey }: Props) {
   const [inviteEmail, setInviteEmail] = useState('');
   const [feedbackText, setFeedbackText] = useState('');
 
-  /* jira-compare follow-up (2026-05-02): canonical icon resolution.
-     Catalyst stores project visuals across two tables —
-       ph_jira_projects: { project_key, name, avatar_url, color }
-       ph_projects:      { key, name, icon, color }  (Lucide iconName)
-     The shared ProjectIcon component resolves them in this order:
-       avatarUrl (Jira-uploaded) → iconName+color (Catalyst-native) → Folder.
-     To honour mem://constraints/canonical-project-icons we read both
-     tables in parallel and forward all three signals. Initial-letter
-     tiles are explicitly forbidden. */
   const toggleStarMutation = useToggleStar();
   const { data: starredIds } = useStarredItemIds();
 
@@ -109,13 +92,10 @@ export function ProjectHeaderChip({ projectKey }: Props) {
     navigator.clipboard.writeText(window.location.href);
     toast.success('Link copied');
   };
-  /* jira-compare 2026-05-05 cycle 2 — D-1 fix · open real modals instead of
-     toast stubs. handleAddPeople/Automation/Feedback below now drive
-     state-controlled @atlaskit/modal-dialog instances rendered at the bottom
-     of this component. */
-  const handleAddPeople = () => setAddPeopleOpen(true);
-  const handleAutomation = () => setAutomationOpen(true);
-  const handleFeedback = () => setFeedbackOpen(true);
+
+  const handleAddPeople = () => { setMenuAnchor(null); setAddPeopleOpen(true); };
+  const handleAutomation = () => { setMenuAnchor(null); setAutomationOpen(true); };
+  const handleFeedback = () => { setMenuAnchor(null); setFeedbackOpen(true); };
 
   const isValidEmail = (e: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e.trim());
   const submitInvite = () => {
@@ -126,7 +106,8 @@ export function ProjectHeaderChip({ projectKey }: Props) {
     setInviteEmail('');
     toast.success(`Invitation queued for ${e}`);
   };
-  const closeAddPeople = () => { setAddPeopleOpen(false); setInviteEmail(''); };
+  const closeAddPeople = () => { setAddPeopleOpen(false); setInviteEmail(''); setInvitedEmails([]); };
+
   const submitFeedback = () => {
     const t = feedbackText.trim();
     if (t.length < 5) { toast.error('Feedback must be at least 5 characters'); return; }
@@ -134,10 +115,7 @@ export function ProjectHeaderChip({ projectKey }: Props) {
     setFeedbackText('');
     setFeedbackOpen(false);
   };
-  const createAutomationRule = () => {
-    toast.success('Rule scaffolded — open Automation Hub to configure');
-    setAutomationOpen(false);
-  };
+
   const handleFullscreen = () => {
     if (!document.fullscreenElement) {
       document.documentElement.requestFullscreen?.();
@@ -148,153 +126,219 @@ export function ProjectHeaderChip({ projectKey }: Props) {
     }
   };
 
-  return (
-    <div
-      data-testid="catalyst-project-header.chip"
-      style={{
-        /* jira-compare 2026-05-02 — measured Jira values:
-             height 32px, padding 0 24px, gap 6px, transparent bg,
-             "Atlassian Sans". Source: Lane A probe of testid
-             horizontal-nav-header.ui.project-header.header on
-             https://digital-transformation.atlassian.net/jira/software/
-             c/projects/BAU/issues. */
-        display: 'flex',
-        alignItems: 'center',
-        gap: 6,
-        padding: '0 24px',
-        height: 32,
-        background: 'transparent',
-        fontFamily: "'Atlassian Sans', -apple-system, BlinkMacSystemFont, sans-serif",
-        flexShrink: 0,
-      }}
-    >
-      {/* jira-compare 2026-05-03 (re-probe) — measured Jira via
-          [data-testid="horizontal-nav-header.ui.project-header.project-icon"]:
-            IMG · 20×20 · borderRadius 3px · objectFit fill · src is
-            /rest/api/2/universal_avatar/view/type/project/avatar/<id>.
-          ProjectIcon (post-RESET-ICONS) consults PROJECT_AVATAR_REGISTRY
-          first when projectKey matches → renders bundled BAU.png. The
-          handover's "SQL UPDATE on ph_jira_projects.avatar_url" concern
-          is OBSOLETE for the chip — the bundled path bypasses avatar_url. */}
-      <span style={{ display: 'inline-flex' }}>
-        <ProjectIcon
-          size="small"
-          projectKey={projectKey}
-          avatarUrl={project?.avatar_url}
-          iconName={project?.icon || 'mountain'}
-          color={project?.color || '#2563EB'}
-          name={projectName}
-        />
-      </span>
+  const toggleMenu = () => {
+    if (menuAnchor) {
+      setMenuAnchor(null);
+    } else {
+      const r = meatballRef.current?.getBoundingClientRect();
+      if (r) setMenuAnchor({ top: r.bottom + 4, left: r.left });
+    }
+  };
 
-      {/* jira-compare 2026-05-03 (re-probe corrects two prior fabrications) —
-          measured Jira project name (the H1 inside testid
-          horizontal-nav-header.ui.project-header.header):
-            tag H1 · fontSize 20px · fontWeight 653 (variable axis) ·
-            lineHeight 24px · color rgb(41,42,46) · padding 0 ·
-            fontFamily "Atlassian Sans".
-          Both the ORIGINAL "16/600 H1" and the LATER "14/400 div" were
-          unverified. Real value re-measured 2026-05-03 with the chip
-          mounted on /jira/software/c/projects/BAU/issues. We approximate
-          weight 653 EXACTLY (modern browsers honour non-standard ints on
-          variable Atlassian Sans; Jira itself uses 653 via an Atlaskit
-          atomic class with fontVariationSettings:normal). */}
-      <h1
-        data-testid="catalyst-project-header.name"
+  // Shared portal modal wrapper style
+  const overlayStyle: React.CSSProperties = {
+    position: 'fixed',
+    inset: 0,
+    background: 'rgba(9, 30, 66, 0.54)',
+    zIndex: 9999,
+    display: 'flex',
+    alignItems: 'flex-start',
+    justifyContent: 'center',
+    paddingTop: 60,
+  };
+  const dialogStyle: React.CSSProperties = {
+    width: 480,
+    maxWidth: 'calc(100vw - 48px)',
+    background: token('elevation.surface', '#FFFFFF'),
+    borderRadius: 8,
+    boxShadow: '0 8px 32px rgba(9, 30, 66, 0.25)',
+    display: 'flex',
+    flexDirection: 'column',
+    maxHeight: 'calc(100vh - 120px)',
+  };
+  const modalHeaderStyle: React.CSSProperties = {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    padding: '20px 24px 12px',
+    borderBottom: `1px solid ${token('color.border', '#DFE1E6')}`,
+  };
+  const modalTitleStyle: React.CSSProperties = {
+    margin: 0,
+    fontSize: 20,
+    fontWeight: 653,
+    letterSpacing: '-0.003em',
+    color: token('color.text', '#292A2E'),
+  };
+  const modalFooterStyle: React.CSSProperties = {
+    display: 'flex',
+    justifyContent: 'flex-end',
+    gap: 8,
+    padding: '12px 24px 20px',
+    borderTop: `1px solid ${token('color.border', '#DFE1E6')}`,
+  };
+
+  return (
+    <>
+      <div
+        data-testid="catalyst-project-header.chip"
         style={{
-          margin: 0, padding: 0,
-          fontSize: 20, fontWeight: 653, lineHeight: '24px',
-          color: 'var(--ds-text, #292A2E)',
-          fontFamily: 'inherit',
+          display: 'flex',
+          alignItems: 'center',
+          gap: 6,
+          padding: '0 24px',
+          height: 32,
+          background: 'transparent',
+          fontFamily: "'Atlassian Sans', -apple-system, BlinkMacSystemFont, sans-serif",
+          flexShrink: 0,
         }}
       >
-        {projectName}
-      </h1>
+        <span style={{ display: 'inline-flex' }}>
+          <ProjectIcon
+            size="small"
+            projectKey={projectKey}
+            avatarUrl={project?.avatar_url}
+            iconName={project?.icon || 'mountain'}
+            color={project?.color || '#2563EB'}
+            name={projectName}
+          />
+        </span>
 
-      {/* jira-compare 2026-05-02 — measured Jira action buttons:
-            32×32, transparent bg, color rgb(80,82,88) = --ds-text-subtle.
-          Wrapping every IconButton with a colour-overriding span so the
-          icon stroke inherits subtle grey, matching Jira. */}
-      <span style={{ display: 'inline-flex', marginLeft: 4, color: 'var(--ds-text-subtle, #505258)' }}>
-        <IconButton
-          icon={PersonAddIcon}
-          label="Add people"
-          appearance="subtle"
-          onClick={handleAddPeople}
-          testId="catalyst-project-header.add-people"
-        />
-      </span>
+        <h1
+          data-testid="catalyst-project-header.name"
+          style={{
+            margin: 0, padding: 0,
+            fontSize: 20, fontWeight: 653, lineHeight: '24px',
+            color: 'var(--ds-text, #292A2E)',
+            fontFamily: 'inherit',
+          }}
+        >
+          {projectName}
+        </h1>
 
-      <DropdownMenu
-        trigger={({ triggerRef, ...props }) => (
+        {/* Add people icon button — inline, instant open */}
+        <span style={{ display: 'inline-flex', marginLeft: 4, color: 'var(--ds-text-subtle, #505258)' }}>
           <IconButton
-            ref={triggerRef as React.Ref<HTMLButtonElement>}
-            {...props}
+            icon={PersonAddIcon}
+            label="Add people"
+            appearance="subtle"
+            onClick={handleAddPeople}
+            testId="catalyst-project-header.add-people"
+          />
+        </span>
+
+        {/* Three-dots meatball — bespoke portal (replaces @atlaskit/dropdown-menu) */}
+        <span style={{ display: 'inline-flex', color: 'var(--ds-text-subtle, #505258)' }}>
+          <IconButton
+            ref={meatballRef}
             icon={EditorMoreIcon}
             label="More project actions"
             appearance="subtle"
+            isSelected={!!menuAnchor}
+            onClick={toggleMenu}
             testId="catalyst-project-header.meatball"
           />
-        )}
-      >
-        <DropdownItemGroup>
-          <DropdownItem onClick={() => navigate(`/project-hub/${projectKey}/settings`)}>Project settings</DropdownItem>
-          <DropdownItem onClick={handleAddPeople}>Manage people</DropdownItem>
-          <DropdownItem onClick={() => {
-            if (!project?.id) return;
-            const isCurrentlyStarred = starredIds?.has(project.id) ?? false;
-            toggleStarMutation.mutate({ itemId: project.id, itemType: 'project', isCurrentlyStarred });
-          }}>
-            {(project?.id && starredIds?.has(project.id)) ? 'Unstar project' : 'Star project'}
-          </DropdownItem>
-        </DropdownItemGroup>
-      </DropdownMenu>
+        </span>
 
-      <span style={{ flex: 1 }} />
+        <span style={{ flex: 1 }} />
 
-      <IconButton
-        icon={ShareIcon}
-        label="Share"
-        appearance="subtle"
-        onClick={handleShare}
-        testId="catalyst-project-header.share"
-      />
-      <IconButton
-        icon={LightbulbIcon}
-        label="Automation"
-        appearance="subtle"
-        onClick={handleAutomation}
-        testId="catalyst-project-header.automation"
-      />
-      <IconButton
-        icon={FeedbackIcon}
-        label="Give feedback"
-        appearance="subtle"
-        onClick={handleFeedback}
-        testId="catalyst-project-header.feedback"
-      />
-      <IconButton
-        icon={ScreenfullIcon}
-        label={fullscreen ? 'Exit full screen' : 'Enter full screen'}
-        appearance="subtle"
-        onClick={handleFullscreen}
-        testId="catalyst-project-header.fullscreen"
-      />
+        <IconButton icon={ShareIcon} label="Share" appearance="subtle" onClick={handleShare} testId="catalyst-project-header.share" />
+        <IconButton icon={LightbulbIcon} label="Automation" appearance="subtle" onClick={handleAutomation} testId="catalyst-project-header.automation" />
+        <IconButton icon={FeedbackIcon} label="Give feedback" appearance="subtle" onClick={handleFeedback} testId="catalyst-project-header.feedback" />
+        <IconButton
+          icon={ScreenfullIcon}
+          label={fullscreen ? 'Exit full screen' : 'Enter full screen'}
+          appearance="subtle"
+          onClick={handleFullscreen}
+          testId="catalyst-project-header.fullscreen"
+        />
+      </div>
 
-      {/* jira-compare 2026-05-05 cycle 2 — D-1 fix · Functional modals
-          replacing toast stubs. Each modal is Atlaskit-only: modal-dialog +
-          textfield/textarea + button/new. */}
-      <ModalTransition>
-        {addPeopleOpen && (
-          <Modal onClose={closeAddPeople} width="medium">
-            <ModalHeader>
-              <ModalTitle>Add people to {projectName}</ModalTitle>
-            </ModalHeader>
-            <ModalBody>
-              <div style={{ fontSize: 13, color: 'var(--ds-text-subtle, #626F86)', marginBottom: 12 }}>
+      {/* ── Three-dots portal menu ───────────────────────────────────────── */}
+      {menuAnchor && ReactDOM.createPortal(
+        <>
+          {/* Click-outside backdrop */}
+          <div
+            onClick={() => setMenuAnchor(null)}
+            style={{ position: 'fixed', inset: 0, zIndex: 9000 }}
+          />
+          <div
+            role="menu"
+            data-testid="catalyst-project-header.meatball-menu"
+            style={{
+              position: 'fixed',
+              top: menuAnchor.top,
+              left: menuAnchor.left,
+              zIndex: 9001,
+              background: token('elevation.surface.overlay', '#FFFFFF'),
+              border: `1px solid ${token('color.border', '#DFE1E6')}`,
+              borderRadius: 4,
+              boxShadow: '0 4px 16px rgba(9, 30, 66, 0.16)',
+              minWidth: 220,
+              padding: '6px 0',
+            }}
+          >
+            {[
+              { id: 'settings', label: 'Project settings', onClick: () => navigate(`/project-hub/${projectKey}/settings`) },
+              { id: 'people', label: 'Manage people', onClick: handleAddPeople },
+              { id: 'divider1', divider: true },
+              {
+                id: 'star',
+                label: (project?.id && starredIds?.has(project.id)) ? 'Unstar project' : 'Star project',
+                onClick: () => {
+                  if (!project?.id) return;
+                  const isCurrentlyStarred = starredIds?.has(project.id) ?? false;
+                  toggleStarMutation.mutate({ itemId: project.id, itemType: 'project', isCurrentlyStarred });
+                },
+              },
+            ].map((item) => {
+              if ((item as any).divider) {
+                return <div key={item.id} style={{ height: 1, background: token('color.border', '#DFE1E6'), margin: '6px 0' }} />;
+              }
+              return (
+                <button
+                  key={item.id}
+                  type="button"
+                  role="menuitem"
+                  onClick={() => { (item as any).onClick(); setMenuAnchor(null); }}
+                  style={{
+                    display: 'block', width: '100%',
+                    padding: '8px 16px',
+                    border: 'none', background: 'transparent',
+                    textAlign: 'left', fontSize: 14, fontWeight: 400,
+                    fontFamily: 'inherit',
+                    color: token('color.text', '#292A2E'),
+                    cursor: 'pointer',
+                  }}
+                  onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(9, 30, 66, 0.06)'; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
+                >
+                  {(item as any).label}
+                </button>
+              );
+            })}
+          </div>
+        </>,
+        document.body,
+      )}
+
+      {/* ── Add people portal modal ──────────────────────────────────────── */}
+      {addPeopleOpen && ReactDOM.createPortal(
+        <div
+          role="dialog" aria-modal="true" aria-labelledby="phc-add-people-title"
+          data-testid="phc-add-people-modal"
+          style={overlayStyle}
+          onKeyDown={(e) => { if (e.key === 'Escape') closeAddPeople(); }}
+        >
+          <div style={dialogStyle} onClick={(e) => e.stopPropagation()}>
+            <div style={modalHeaderStyle}>
+              <h2 id="phc-add-people-title" style={modalTitleStyle}>Add people to {projectName}</h2>
+            </div>
+            <div style={{ padding: '16px 24px', display: 'flex', flexDirection: 'column', gap: 12 }}>
+              <div style={{ fontSize: 13, color: token('color.text.subtle', '#626F86') }}>
                 Invite teammates by email. They'll receive an invitation to join this project.
               </div>
-              <div style={{ display: 'flex', gap: 8, alignItems: 'center', marginBottom: 12 }}>
+              <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
                 <div style={{ flex: 1 }}>
                   <Textfield
                     placeholder="email@company.com"
@@ -302,16 +346,16 @@ export function ProjectHeaderChip({ projectKey }: Props) {
                     onChange={(e) => setInviteEmail((e.target as HTMLInputElement).value)}
                     onKeyDown={(e) => { if ((e as React.KeyboardEvent).key === 'Enter') submitInvite(); }}
                     autoFocus
-                    testId="catalyst-add-people.email-input"
+                    testId="phc-add-people.email-input"
                   />
                 </div>
-                <Button appearance="primary" onClick={submitInvite} testId="catalyst-add-people.submit">
+                <Button appearance="primary" onClick={submitInvite} testId="phc-add-people.submit">
                   Invite
                 </Button>
               </div>
               {invitedEmails.length > 0 && (
                 <div>
-                  <div style={{ fontSize: 12, color: 'var(--ds-text-subtle, #626F86)', marginBottom: 6 }}>
+                  <div style={{ fontSize: 12, color: token('color.text.subtle', '#626F86'), marginBottom: 6 }}>
                     Invited this session ({invitedEmails.length}):
                   </div>
                   <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
@@ -325,48 +369,67 @@ export function ProjectHeaderChip({ projectKey }: Props) {
                   </div>
                 </div>
               )}
-            </ModalBody>
-            <ModalFooter>
+            </div>
+            <div style={modalFooterStyle}>
               <Button appearance="subtle" onClick={closeAddPeople}>Done</Button>
-            </ModalFooter>
-          </Modal>
-        )}
-        {automationOpen && (
-          <Modal onClose={() => setAutomationOpen(false)} width="medium">
-            <ModalHeader>
-              <ModalTitle>Automation rules for {projectName}</ModalTitle>
-            </ModalHeader>
-            <ModalBody>
+            </div>
+          </div>
+        </div>,
+        document.body,
+      )}
+
+      {/* ── Automation portal modal ──────────────────────────────────────── */}
+      {automationOpen && ReactDOM.createPortal(
+        <div
+          role="dialog" aria-modal="true" aria-labelledby="phc-automation-title"
+          data-testid="phc-automation-modal"
+          style={overlayStyle}
+          onKeyDown={(e) => { if (e.key === 'Escape') setAutomationOpen(false); }}
+          onClick={() => setAutomationOpen(false)}
+        >
+          <div style={dialogStyle} onClick={(e) => e.stopPropagation()}>
+            <div style={modalHeaderStyle}>
+              <h2 id="phc-automation-title" style={modalTitleStyle}>Automation rules for {projectName}</h2>
+            </div>
+            <div style={{ padding: '16px 24px' }}>
               <div style={{
-                background: 'var(--ds-background-neutral-subtle, #F8F9FA)',
-                border: '1px solid var(--ds-border, #DFE1E6)',
-                borderRadius: 6, padding: '20px 24px',
-                textAlign: 'center',
+                background: token('color.background.neutral.subtle', '#F8F9FA'),
+                border: `1px solid ${token('color.border', '#DFE1E6')}`,
+                borderRadius: 6, padding: '20px 24px', textAlign: 'center',
               }}>
-                <div style={{ fontSize: 16, fontWeight: 500, marginBottom: 6 }}>
-                  No rules yet
-                </div>
-                <div style={{ fontSize: 13, color: 'var(--ds-text-subtle, #626F86)', marginBottom: 16, lineHeight: 1.5 }}>
+                <div style={{ fontSize: 16, fontWeight: 500, marginBottom: 6 }}>No rules yet</div>
+                <div style={{ fontSize: 13, color: token('color.text.subtle', '#626F86'), marginBottom: 16, lineHeight: 1.5 }}>
                   Automate repetitive work — auto-assign issues, transition statuses,
-                  notify channels, sync linked items. Build your first rule in seconds.
+                  notify channels, sync linked items.
                 </div>
-                <Button appearance="primary" onClick={createAutomationRule} testId="catalyst-automation.create-rule">
+                <Button appearance="primary" onClick={() => { toast.success('Rule scaffolded — open Automation Hub to configure'); setAutomationOpen(false); }} testId="phc-automation.create-rule">
                   Create your first rule
                 </Button>
               </div>
-            </ModalBody>
-            <ModalFooter>
+            </div>
+            <div style={modalFooterStyle}>
               <Button appearance="subtle" onClick={() => setAutomationOpen(false)}>Close</Button>
-            </ModalFooter>
-          </Modal>
-        )}
-        {feedbackOpen && (
-          <Modal onClose={() => setFeedbackOpen(false)} width="medium">
-            <ModalHeader>
-              <ModalTitle>Give feedback</ModalTitle>
-            </ModalHeader>
-            <ModalBody>
-              <div style={{ fontSize: 13, color: 'var(--ds-text-subtle, #626F86)', marginBottom: 12 }}>
+            </div>
+          </div>
+        </div>,
+        document.body,
+      )}
+
+      {/* ── Feedback portal modal ────────────────────────────────────────── */}
+      {feedbackOpen && ReactDOM.createPortal(
+        <div
+          role="dialog" aria-modal="true" aria-labelledby="phc-feedback-title"
+          data-testid="phc-feedback-modal"
+          style={overlayStyle}
+          onKeyDown={(e) => { if (e.key === 'Escape') setFeedbackOpen(false); }}
+          onClick={() => setFeedbackOpen(false)}
+        >
+          <div style={dialogStyle} onClick={(e) => e.stopPropagation()}>
+            <div style={modalHeaderStyle}>
+              <h2 id="phc-feedback-title" style={modalTitleStyle}>Give feedback</h2>
+            </div>
+            <div style={{ padding: '16px 24px', display: 'flex', flexDirection: 'column', gap: 8 }}>
+              <div style={{ fontSize: 13, color: token('color.text.subtle', '#626F86') }}>
                 Tell us what's working, what isn't, or what you'd like to see next.
               </div>
               <TextArea
@@ -374,18 +437,17 @@ export function ProjectHeaderChip({ projectKey }: Props) {
                 value={feedbackText}
                 onChange={(e) => setFeedbackText((e.target as HTMLTextAreaElement).value)}
                 minimumRows={4}
-                testId="catalyst-feedback.textarea"
+                testId="phc-feedback.textarea"
               />
-            </ModalBody>
-            <ModalFooter>
+            </div>
+            <div style={modalFooterStyle}>
               <Button appearance="subtle" onClick={() => setFeedbackOpen(false)}>Cancel</Button>
-              <Button appearance="primary" onClick={submitFeedback} testId="catalyst-feedback.submit">
-                Submit
-              </Button>
-            </ModalFooter>
-          </Modal>
-        )}
-      </ModalTransition>
-    </div>
+              <Button appearance="primary" onClick={submitFeedback} testId="phc-feedback.submit">Submit</Button>
+            </div>
+          </div>
+        </div>,
+        document.body,
+      )}
+    </>
   );
 }

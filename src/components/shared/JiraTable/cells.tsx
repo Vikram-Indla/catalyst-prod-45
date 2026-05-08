@@ -89,24 +89,77 @@ export function makeCaretCell({
 // pre-2026-04 "opinionated" treatment). The 2026-04-26 audit confirmed Jira
 // has long since moved to neutral subtle for the rest state, with the link
 // affordance reserved for hover. The canonical now matches.
-export function makeKeyCell(getKey: (row: any) => string | null) {
-  return function KeyCell({ row }: CellProps<any>) {
+export function makeKeyCell(
+  getKey: (row: any) => string | null,
+  /**
+   * When provided, the key renders as an `<a>` element (Jira parity: key cell
+   * is `<a class="css-... issue-key">` with href to the issue). Left-click
+   * calls `onOpen` and `preventDefault` so the SPA panel opens instead of
+   * navigating; middle-click / Ctrl+click falls through to the browser (opens
+   * the URL in a new tab) — matching Jira's UX exactly.
+   *
+   * `getHref` lets the caller supply the link URL (e.g. `?selectedIssue=<id>`
+   * or `/project-hub/:key/allwork?issue=<key>`). Defaults to `#` when omitted.
+   */
+  onOpen?: (row: any) => void,
+  getHref?: (row: any) => string,
+) {
+  return function KeyCell({ row, isFocused }: CellProps<any>) {
     const key = getKey(row);
+    // When focused (detail panel open): block + 100% width so the blue border
+    // spans the full column cell width — matching Jira's full-width selection
+    // indicator on the open-detail row's key cell.
+    const sharedStyle: React.CSSProperties = isFocused ? {
+      display: 'block',
+      width: '100%',
+      boxSizing: 'border-box',
+      fontFamily: 'inherit',
+      fontWeight: 400,
+      color: token('color.text.subtle', '#505258'),
+      fontSize: 14,
+      letterSpacing: 0,
+      whiteSpace: 'nowrap',
+      cursor: 'pointer',
+      textDecoration: 'none',
+      border: `2px solid ${token('color.border.focused', '#388BFF')}`,
+      borderRadius: 3,
+      padding: '2px 6px',
+    } : {
+      display: 'inline-block',
+      padding: '2px 6px',
+      margin: '-2px -6px',
+      fontFamily: 'inherit',
+      fontWeight: 400,
+      color: token('color.text.subtle', '#505258'),
+      fontSize: 14,
+      letterSpacing: 0,
+      whiteSpace: 'nowrap',
+      cursor: 'pointer',
+      textDecoration: 'none',
+    };
+    if (onOpen) {
+      const href = getHref ? getHref(row) : '#';
+      return (
+        <a
+          data-jira-table-row-open
+          href={href}
+          onClick={(e) => {
+            // Middle-click or modifier click → let browser open in new tab.
+            if (e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey) return;
+            e.preventDefault();
+            e.stopPropagation();
+            onOpen(row);
+          }}
+          style={sharedStyle}
+        >
+          {key || '—'}
+        </a>
+      );
+    }
     return (
       <span
         data-jira-table-row-open
-        style={{
-          display: 'inline-block',
-          padding: '2px 6px',
-          margin: '-2px -6px',
-          fontFamily: 'inherit',
-          fontWeight: 400,
-          color: token('color.text.subtle', '#505258'),
-          fontSize: 14,
-          letterSpacing: 0,
-          whiteSpace: 'nowrap',
-          cursor: 'pointer',
-        }}
+        style={sharedStyle}
       >
         {key || '—'}
       </span>
@@ -340,15 +393,34 @@ export function makeCommentsCell(
   return function CommentsCell({ row }: CellProps<any>) {
     const n = getCount(row);
     const hasCount = typeof n === 'number' && n > 0;
-    const content = hasCount ? (
+    // Jira-parity: both "N comments" and "Add comment" show the chat icon.
+    // "Add comment" is always visible (not hover-only) — Jira shows it at rest.
+    const content = (
       <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, color: token('color.text.subtle', '#42526E') }}>
-        <span style={{ display: 'inline-flex', color: token('color.icon.subtle', '#6B778C') }}>
+        {/* Icon wrapper: relative container for the blue dot badge when hasCount */}
+        <span style={{ position: 'relative', display: 'inline-flex', color: token('color.icon.subtle', '#6B778C') }}>
           <CommentIcon label="" size="small" />
+          {hasCount && (
+            <span
+              aria-hidden="true"
+              style={{
+                position: 'absolute',
+                top: 1,
+                right: 1,
+                width: 6,
+                height: 6,
+                borderRadius: '50%',
+                backgroundColor: token('color.background.information.bold', '#0C66E4'),
+                border: `1.5px solid ${token('elevation.surface', '#FFFFFF')}`,
+                boxSizing: 'border-box',
+              }}
+            />
+          )}
         </span>
-        {n} comment{n === 1 ? '' : 's'}
+        {hasCount ? `${n} comment${n === 1 ? '' : 's'}` : (
+          <span data-jira-cell-ghost style={{ color: token('color.text.subtlest', '#6B778C') }}>Add comment</span>
+        )}
       </span>
-    ) : (
-      <span data-jira-cell-ghost>Add comment</span>
     );
     if (!onOpen) return content;
     return (

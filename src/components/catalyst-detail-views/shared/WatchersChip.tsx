@@ -64,14 +64,26 @@ export function WatchersChip({ issueKey }: Props) {
   // v4.16 has a known empty-portal bug in this codebase).
   useEffect(() => {
     if (!open) return;
-    const handler = (e: MouseEvent) => {
+    const mouseHandler = (e: MouseEvent) => {
       const target = e.target as Node;
       if (triggerRef.current?.contains(target)) return;
       if (popupRef.current?.contains(target)) return;
       setOpen(false);
     };
-    document.addEventListener('mousedown', handler);
-    return () => document.removeEventListener('mousedown', handler);
+    // Escape closes the popover and stops propagation so the parent modal
+    // doesn't also close (event would otherwise bubble to the modal's Escape handler).
+    const keyHandler = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        e.stopPropagation();
+        setOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', mouseHandler);
+    document.addEventListener('keydown', keyHandler, true); // capture phase beats modal
+    return () => {
+      document.removeEventListener('mousedown', mouseHandler);
+      document.removeEventListener('keydown', keyHandler, true);
+    };
   }, [open]);
 
   return (
@@ -108,10 +120,10 @@ export function WatchersChip({ issueKey }: Props) {
           }}
         >
           <div style={{
-            padding: '0 16px 8px', fontSize: 12, fontWeight: 500,
-            color: 'var(--ds-text-subtle, #44546F)', textTransform: 'uppercase', letterSpacing: 0.4,
+            padding: '0 16px 8px', fontSize: 11, fontWeight: 600,
+            color: 'var(--ds-text-subtlest, #6B778C)',
           }}>
-            Watching this issue
+            Watchers
           </div>
           <div style={{ maxHeight: 240, overflowY: 'auto' }}>
             {watchers.length === 0 ? (
@@ -137,7 +149,7 @@ export function WatchersChip({ issueKey }: Props) {
             padding: '8px 16px 0', display: 'flex', justifyContent: 'flex-end',
           }}>
             <Button
-              appearance={isWatching ? 'subtle' : 'primary'}
+              appearance="subtle"
               onClick={() => toggle.mutate()}
               isLoading={toggle.isPending}
             >
