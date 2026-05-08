@@ -27,7 +27,7 @@ export interface RecentSearchEntry {
 
 export interface ActiveFilters {
   hub: SearchHub | null;
-  project: string | null;
-  assignee: string | null;
+  projects: string[];
+  assignees: string[];
   type: WorkItemType | null;
 }

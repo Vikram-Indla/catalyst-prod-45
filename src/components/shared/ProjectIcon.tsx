@@ -102,13 +102,35 @@ export function ProjectIcon({
   const iconPx = ICON_PX[size];
   const { data: overrides } = useIconOverrides();
 
-  // 0. NEW canonical (RESET ICONS, 2026-05-03): if projectKey maps to a
-  // bundled Catalyst avatar, that wins. Runtime overrides from
-  // /admin/icons take precedence over the bundled URL.
+  // 0. Admin override via /admin/icons — checked for ANY projectKey, not just
+  // the 18 bundled in PROJECT_AVATAR_REGISTRY. This lets COMP, DM, SEC etc.
+  // resolve once their icon is uploaded in the admin UI.
+  if (projectKey && overrides?.projectAvatar?.[projectKey]) {
+    const url = overrides.projectAvatar[projectKey];
+    return (
+      <img
+        src={url}
+        alt={name ?? projectKey}
+        width={px}
+        height={px}
+        className={className}
+        data-project-key={projectKey}
+        data-icon-source="override"
+        style={{
+          width: px,
+          height: px,
+          borderRadius: radius,
+          objectFit: 'fill',
+          flexShrink: 0,
+          display: 'inline-block',
+        }}
+      />
+    );
+  }
+
+  // 0b. Bundled registry avatar (the 18 canonical Catalyst project keys).
   if (projectKey && projectKey in PROJECT_AVATAR_REGISTRY) {
-    const bundled = PROJECT_AVATAR_REGISTRY[projectKey as ProjectKey].url;
-    const override = overrides?.projectAvatar?.[projectKey];
-    const url = override ?? bundled;
+    const url = PROJECT_AVATAR_REGISTRY[projectKey as ProjectKey].url;
     return (
       <img
         src={url}
@@ -117,7 +139,7 @@ export function ProjectIcon({
         height={px}
         className={className}
         data-project-key={projectKey}
-        data-icon-source={override ? 'override' : 'bundled'}
+        data-icon-source="bundled"
         style={{
           width: px,
           height: px,

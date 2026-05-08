@@ -1,4 +1,4 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useInfiniteQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import type { SearchResult, RecentSearchEntry, ActiveFilters } from '@/types/global-search';
 
@@ -85,8 +85,8 @@ export function useSearchResults(query: string, filters: ActiveFilters) {
         .or(`issue_key.ilike.%${query}%,summary.ilike.%${query}%`)
         .order('jira_updated_at', { ascending: false })
         .limit(50);
-      if (filters.project) phQ = phQ.eq('project_key', filters.project);
-      if (filters.assignee) phQ = phQ.ilike('assignee_display_name', `%${filters.assignee}%`);
+      if (filters.projects.length > 0) phQ = phQ.in('project_key', filters.projects);
+      if (filters.assignees.length > 0) phQ = phQ.or(filters.assignees.map((a) => `assignee_display_name.ilike.%${a}%`).join(','));
       if (filters.type) phQ = phQ.ilike('issue_type', filters.type.replace('_', ' '));
 
       let catQ: any = (supabase as any)
@@ -95,7 +95,7 @@ export function useSearchResults(query: string, filters: ActiveFilters) {
         .or(`issue_key.ilike.%${query}%,title.ilike.%${query}%`)
         .order('updated_at', { ascending: false })
         .limit(50);
-      if (filters.project) catQ = catQ.eq('projects.key', filters.project);
+      if (filters.projects.length > 0) catQ = catQ.in('projects.key', filters.projects);
       if (filters.type) catQ = catQ.ilike('issue_type', filters.type.replace('_', ' '));
 
       const [phRes, catRes] = await Promise.all([phQ, catQ]);
@@ -104,6 +104,60 @@ export function useSearchResults(query: string, filters: ActiveFilters) {
       const cat = (catRes.data ?? []).map(mapCatalystToSearchResult);
       return mergeJiraWins(jira, cat, 50);
     },
+    enabled: query.length >= 2,
+    staleTime: 30000,
+  });
+}
+
+const PAGE_SIZE = 50;
+
+export interface SearchPage {
+  results: SearchResult[];
+  /** Total matching issues in ph_issues (only populated on page 0). */
+  total: number | null;
+  /** Offset for the next page, or null when this is the last page. */
+  nextOffset: number | null;
+}
+
+/**
+ * Infinite-scroll variant of useSearchResults.
+ * Mirrors Jira's IssueNavigatorJiraDetailedViewPaginationQuery behaviour:
+ *   • 50 results per page
+ *   • offset-based (.range) — cursor-less Supabase pagination
+ *   • total count fetched on page 0 only (Supabase `count: 'exact'`)
+ *   • hasNextPage = true when a full page (50) was returned
+ */
+export function useInfiniteSearchResults(query: string, filters: ActiveFilters) {
+  return useInfiniteQuery<SearchPage>({
+    queryKey: ['global-search-infinite', query, filters],
+    initialPageParam: 0 as number,
+    queryFn: async ({ pageParam }) => {
+      const offset = pageParam as number;
+      if (!query || query.length < 2) return { results: [], total: 0, nextOffset: null };
+
+      // Only request count on the first page to avoid repeated COUNT(*) scans.
+      const countOpt = offset === 0 ? { count: 'exact' as const } : {};
+      let phQ = supabase
+        .from('ph_issues')
+        .select(SEARCH_SELECT, countOpt)
+        .or(`issue_key.ilike.%${query}%,summary.ilike.%${query}%`)
+        .order('jira_updated_at', { ascending: false })
+        .range(offset, offset + PAGE_SIZE - 1);
+
+      if (filters.projects.length) phQ = phQ.in('project_key', filters.projects);
+      if (filters.assignees.length) {
+        phQ = phQ.or(filters.assignees.map((a) => `assignee_display_name.ilike.%${a}%`).join(','));
+      }
+      if (filters.type) phQ = phQ.ilike('issue_type', filters.type.replace('_', ' '));
+
+      const { data, error, count } = await phQ;
+      if (error) throw error;
+
+      const results = (data ?? []).map(mapIssueToSearchResult);
+      const nextOffset = results.length === PAGE_SIZE ? offset + PAGE_SIZE : null;
+      return { results, total: count ?? null, nextOffset };
+    },
+    getNextPageParam: (lastPage) => lastPage.nextOffset ?? undefined,
     enabled: query.length >= 2,
     staleTime: 30000,
   });

@@ -67,6 +67,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { flag } from '@/components/shared/JiraTable/flags';
 import { useAuth } from '@/hooks/useAuth';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
+import ProjectIcon from '@/components/shared/ProjectIcon';
 import {
   useCreateStoryForm,
   useProjects,
@@ -612,8 +613,13 @@ export function CreateStoryModal({
       projects.map((p: any) => ({
         value: p.id,
         label: p.name,
-        // no sublabel — ProjectKey pill already shows the key; sublabel would duplicate it
-        icon: <ProjectKey k={p.key} />,
+        icon: (
+          <ProjectIcon
+            projectKey={p.key}
+            avatarUrl={p.avatar_url ?? null}
+            size="small"
+          />
+        ),
       })),
     [projects],
   );
