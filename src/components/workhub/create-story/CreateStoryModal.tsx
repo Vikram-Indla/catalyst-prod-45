@@ -68,6 +68,9 @@ import { flag } from '@/components/shared/JiraTable/flags';
 import { useAuth } from '@/hooks/useAuth';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import ProjectIcon from '@/components/shared/ProjectIcon';
+// Canonical priority icon — respects admin overrides + bundled registry.
+// Replaces inline custom SVG that bypassed the override system.
+import { PriorityIcon } from '@/components/icons/PriorityIcon';
 import {
   useCreateStoryForm,
   useProjects,
@@ -138,47 +141,14 @@ const INITIAL_STATUS_BY_TYPE: Record<string, string> = {
   'API Requirement': 'To Do',
 };
 
-// Status options per work type — shown in the Status dropdown as lozenges.
+// Minimal fallback — only shown when catalyst_workflow_schemes returns no rows
+// for a work type (e.g. types not yet configured in the DB).
+// Canonical source: useWorkflowStatuses (catalyst_workflow_schemes/_statuses).
 const DEFAULT_STATUS_OPTIONS = [
   { value: 'To Do', label: 'To Do' },
   { value: 'In Progress', label: 'In Progress' },
   { value: 'Done', label: 'Done' },
 ];
-
-const STATUS_OPTIONS_BY_TYPE: Record<string, { value: string; label: string }[]> = {
-  Story: [
-    { value: 'In Requirements', label: 'In Requirements' },
-    { value: 'In Progress', label: 'In Progress' },
-    { value: 'In QA', label: 'In QA' },
-    { value: 'Done', label: 'Done' },
-  ],
-  Epic: DEFAULT_STATUS_OPTIONS,
-  Feature: DEFAULT_STATUS_OPTIONS,
-  'QA Bug': [
-    { value: 'Open', label: 'Open' },
-    { value: 'In Progress', label: 'In Progress' },
-    { value: 'In QA', label: 'In QA' },
-    { value: 'Closed', label: 'Closed' },
-  ],
-  'Production Incident': [
-    { value: 'Open', label: 'Open' },
-    { value: 'In Progress', label: 'In Progress' },
-    { value: 'Resolved', label: 'Resolved' },
-  ],
-  'Business Gap': [
-    { value: 'Open', label: 'Open' },
-    { value: 'In Progress', label: 'In Progress' },
-    { value: 'Closed', label: 'Closed' },
-  ],
-  'Change Request': [
-    { value: 'Submitted', label: 'Submitted' },
-    { value: 'In Review', label: 'In Review' },
-    { value: 'Approved', label: 'Approved' },
-    { value: 'Rejected', label: 'Rejected' },
-  ],
-  Task: DEFAULT_STATUS_OPTIONS,
-  'API Requirement': DEFAULT_STATUS_OPTIONS,
-};
 
 // Lozenge appearance buckets — Atlaskit gives us 5 named appearances and we
 // map to the 3-color status guardrail (CLAUDE.md §5):
@@ -261,21 +231,6 @@ const helperLinkStyles = xcss({
 });
 
 
-const reporterReadonlyBoxStyles = xcss({
-  display: 'flex',
-  alignItems: 'center',
-  gap: 'space.100',
-  height: '40px',
-  paddingInline: 'space.100',
-  borderRadius: 'border.radius',
-  borderWidth: 'border.width',
-  borderStyle: 'solid',
-  borderColor: 'color.border.input',
-  backgroundColor: 'elevation.surface.sunken',
-  font: 'font.body',
-  color: 'color.text',
-});
-
 const footerLeftStyles = xcss({
   display: 'flex',
   alignItems: 'center',
@@ -322,53 +277,6 @@ const formatIconOption = (option: IconOption) => (
     ) : null}
   </span>
 );
-
-function PriorityIcon({ name }: { name: string }) {
-  // Compact native SVG matching Jira's priority glyphs.
-  const stroke =
-    name === 'Highest' || name === 'High'
-      ? token('color.icon.danger', '#C9372C')
-      : name === 'Medium'
-        ? token('color.icon.warning', '#B38600')
-        : token('color.icon.information', '#1868DB');
-  const paths: Record<string, ReactNode> = {
-    Highest: (
-      <>
-        <path d="M3 8l5-5 5 5" />
-        <path d="M3 12l5-5 5 5" />
-      </>
-    ),
-    High: <path d="M3 10l5-5 5 5" />,
-    Medium: (
-      <>
-        <path d="M3 6h10" />
-        <path d="M3 10h10" />
-      </>
-    ),
-    Low: <path d="M3 6l5 5 5-5" />,
-    Lowest: (
-      <>
-        <path d="M3 4l5 5 5-5" />
-        <path d="M3 8l5 5 5-5" />
-      </>
-    ),
-  };
-  return (
-    <svg
-      width={14}
-      height={14}
-      viewBox="0 0 16 16"
-      fill="none"
-      stroke={stroke}
-      strokeWidth={2}
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      {paths[name]}
-    </svg>
-  );
-}
 
 // Generic Atlaskit avatar fallback — initials in a token-coloured circle.
 // ── Header action buttons — read PortalFix context ──────────────────────────
@@ -553,7 +461,7 @@ export function CreateStoryModal({
   const [createAnother, setCreateAnother] = useState(false);
 
   // Dynamic workflow statuses from catalyst_workflow_schemes/_statuses.
-  // Falls back to hardcoded STATUS_OPTIONS_BY_TYPE when DB returns no rows
+  // Falls back to DEFAULT_STATUS_OPTIONS when DB returns no rows
   // (e.g. unmapped work types like Feature / API Requirement).
   const { data: workflowStatuses = [], isLoading: statusesLoading } =
     useWorkflowStatuses(workType, form.projectId);
@@ -562,10 +470,11 @@ export function CreateStoryModal({
     () => workflowStatuses.map((s) => ({ value: s.value, label: s.label })),
     [workflowStatuses],
   );
+  // DB-first: canonical statuses from catalyst_workflow_schemes.
+  // Falls back to DEFAULT_STATUS_OPTIONS only when the DB returns nothing
+  // (e.g. work type not yet configured in catalyst_workflow_schemes).
   const resolvedStatusOptions =
-    dbStatusOptions.length > 0
-      ? dbStatusOptions
-      : (STATUS_OPTIONS_BY_TYPE[workType] ?? DEFAULT_STATUS_OPTIONS);
+    dbStatusOptions.length > 0 ? dbStatusOptions : DEFAULT_STATUS_OPTIONS;
 
   const dbInitialStatus = useMemo(
     () => workflowStatuses.find((s) => s.is_initial)?.value,
@@ -639,7 +548,7 @@ export function CreateStoryModal({
       PRIORITIES.map((p) => ({
         value: p,
         label: p,
-        icon: <PriorityIcon name={p} />,
+        icon: <PriorityIcon level={p} size={14} />,
       })),
     [],
   );
@@ -1154,45 +1063,39 @@ export function CreateStoryModal({
                 )}
               </Field>
 
-              {/* ── Reporter — required, current user ──────────────── */}
+              {/* ── Reporter — required, current user (ADS: disabled Select) ── */}
               <Field name="reporter" label="Reporter" isRequired>
                 {({ fieldProps }) => {
-                  const reporter = members.find(
-                    (m: any) => m.id === form.reporterId,
-                  );
+                  const reporterOption = memberOptions.find(
+                    (o) => o.value === form.reporterId,
+                  ) ?? null;
+                  // Reporter is pre-filled with the current user and is read-only.
+                  // Render as a disabled @atlaskit/select so it matches the ADS
+                  // form-field visual language without a hand-rolled Box.
                   return (
                     <>
-                      {reporter ? (
-                        <Box xcss={reporterReadonlyBoxStyles}>
-                          <MiniAvatar
-                            name={reporter.full_name ?? reporter.email ?? '?'}
-                            avatarUrl={(reporter as any).avatar_url ?? null}
-                          />
-                          <span>
-                            {reporter.full_name ?? reporter.email ?? '—'}
-                          </span>
-                        </Box>
-                      ) : (
-                        <Select<IconOption>
-                          inputId="cs-reporter"
-                          name={fieldProps.name}
-                          isRequired={fieldProps.isRequired}
-                          isDisabled={fieldProps.isDisabled}
-                          isInvalid={fieldProps.isInvalid}
-                          onBlur={fieldProps.onBlur}
-                          onFocus={fieldProps.onFocus}
-                          options={memberOptions}
-                          value={memberOptions.find((o) => o.value === form.reporterId) ?? null}
-                          onChange={(opt) =>
-                            updateField(
-                              'reporterId',
-                              (opt as IconOption)?.value ?? null,
-                            )
-                          }
-                          formatOptionLabel={formatIconOption}
-                          placeholder="Select reporter"
-                        />
-                      )}
+                      <Select<IconOption>
+                        inputId="cs-reporter"
+                        name={fieldProps.name}
+                        isRequired={fieldProps.isRequired}
+                        isInvalid={fieldProps.isInvalid}
+                        onBlur={fieldProps.onBlur}
+                        onFocus={fieldProps.onFocus}
+                        options={memberOptions}
+                        value={reporterOption}
+                        onChange={(opt) =>
+                          updateField(
+                            'reporterId',
+                            (opt as IconOption)?.value ?? null,
+                          )
+                        }
+                        formatOptionLabel={formatIconOption}
+                        placeholder="Select reporter"
+                        // Disable when a reporter is already set (defaults to current user).
+                        // This preserves Jira's "Reporter = current user, not editable inline"
+                        // pattern while using the ADS Select primitive throughout.
+                        isDisabled={!!form.reporterId}
+                      />
                       {submitAttempted && !form.reporterId && (
                         <ErrorMessage>Reporter is required</ErrorMessage>
                       )}
