@@ -12,8 +12,22 @@ The Catalyst local dev server always runs on **http://localhost:8080**. Never us
 
 ## 2026-05-09 — Always use JiraIssueTypeIcon for work item type display
 **Surface:** Any rail, sidebar, Recent list, card, or row that shows a work item type indicator
-**Pattern:** `ProjectHubSidebar.tsx` used a hardcoded `issueTypeColor()` map returning 8px coloured squares (bug→red, story→green, epic→purple, default→blue). This is non-discoverable colour-recall: the user must know the colour→type mapping, which differs from Jira's icon language. `JiraIssueTypeIcon` at `@/lib/jira-issue-type-icons` is the canonical self-labelling component already used in backlog, allwork, notifications, global search, and kanban surfaces.
-**Rule:** **Never use coloured dots, squares, or colour-recall maps for work item type display.** Always import `JiraIssueTypeIcon` from `@/lib/jira-issue-type-icons` and render at the appropriate size (14px for compact rails, 16px for rows). `WorkItemIcon.tsx` is a deprecated shim — new code imports directly from `@/lib/jira-issue-type-icons`. This applies to sidebars, Recent lists, notification rails, any hover card, and any table cell that indicates type.
+**Pattern:** `ProjectHubSidebar.tsx` used a hardcoded `issueTypeColor()` map returning 8px coloured squares (bug→red, story→green, epic→purple, default→blue). This is non-discoverable colour-recall: the user must know the colour→type mapping, which differs from Jira's icon language. `JiraIssueTypeIcon` at `@/lib/jira-issue-type-icons` is the canonical self-labelling component already used in backlog, allwork, notifications, global search, and kanban surfaces. `SidebarProjectNav.tsx` had the same colored-dot pattern (`ITEM_TYPE_COLORS` map + `getTypeColor` function) — fixed 2026-05-09 by replacing with `JiraIssueTypeIcon` and two-line layout.
+**Rule:** **Never use coloured dots, squares, or colour-recall maps for work item type display.** Always import `JiraIssueTypeIcon` from `@/lib/jira-issue-type-icons` and render at the appropriate size (14px for compact rails, 16px for rows). `WorkItemIcon.tsx` is a deprecated shim — new code imports directly from `@/lib/jira-issue-type-icons`. This applies to sidebars, Recent lists, notification rails, any hover card, and any table cell that indicates type. When adding a Recent items list to ANY sidebar component, use the canonical two-line layout: summary on line 1 (12px/400/primary text), KEY on line 2 (11px/500/mono/secondary text), with `JiraIssueTypeIcon` as the leading icon at 14px.
+
+---
+
+## 2026-05-09 — design-critique: carry the full violation list across sessions (arrow continuity)
+**Surface:** design-critique skill, any session continuation
+**Pattern:** When a design-critique session was interrupted (context limit, reload, new conversation) and resumed, Claude re-injected only a small subset of violations — the green/red progression was lost and the user could not see which P0/P1 items had been resolved vs which were still open.
+**Rule:** When resuming a design-critique on a surface that was already audited, always re-inject the COMPLETE violation list from the previous session. Mark resolved items `fixed: true` (→ green arrow). Mark still-open items `fixed: false` (→ red arrow). Never start a fresh subset — the before/after colour progression is the primary evidence the user reads. The toggle button ("👁 Arrows", bottom-right corner, z-index 100000) hides/shows the overlay without losing state.
+
+---
+
+## 2026-05-09 — Supabase projects DELETE: RLS cascade + policy self-join bug
+**Surface:** AllProjectsTable delete flow (`handleDelete` in `AllProjectsTable.tsx`)
+**Pattern:** `projects.delete()` via REST returned 42501 on CASCADE to `hi_statuses` (no DELETE policy). A second policy on `projects` itself had a self-join bug: `project_members.project_id = project_members.id` (compares two columns of the same row) instead of `project_members.project_id = projects.id`. Both fixed via Lovable SQL editor 2026-05-09.
+**Rule:** When adding a Supabase RLS DELETE policy on a table that has cascading children (`hi_statuses`, `hi_project_sequences`, `project_members` all cascade from `projects`), add a DELETE policy on EACH child table too, or the cascade will be blocked by RLS. When writing `WITH CHECK` / `USING` clauses that JOIN to another table, always verify the join condition references the parent table's primary key — never two columns of the child row.
 
 ---
 

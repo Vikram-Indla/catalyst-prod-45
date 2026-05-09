@@ -19,7 +19,7 @@
 //       to match the existing useCreateProject() invariants.
 // ============================================================================
 
-import { supabase, typedQuery } from '@/integrations/supabase/client';
+import { supabase } from '@/integrations/supabase/client';
 import { SpaceError } from '../errors';
 import type {
   CreateSpaceRequest,
@@ -53,10 +53,6 @@ export class SupabaseProjectService implements SpaceService {
       .limit(1);
 
     if (error) {
-      // Don't fail-closed — uniqueness is also enforced server-side via the
-      // unique index, so worst case the create fails with PG_UNIQUE_VIOLATION
-      // and we surface SpaceError.keyNotUnique then. Treat the read error as
-      // a transient HTTP issue.
       throw SpaceError.http(500, `Failed to check project key: ${error.message}`, error);
     }
 
@@ -64,81 +60,43 @@ export class SupabaseProjectService implements SpaceService {
   }
 
   /**
-   * Insert a new row into `projects`. Mirrors the existing useCreateProject()
-   * shape so downstream invariants (member_ids, sync_entity_map) keep holding.
+   * Creates a project via the create_project_full SECURITY DEFINER RPC.
+   * Running as postgres bypasses all table-level RLS on projects, hi_statuses,
+   * hi_project_sequences, and project_members — eliminating PostgREST cache
+   * sensitivity and the hi_statuses 42501 error.
    */
   async createSpace(req: CreateSpaceRequest): Promise<Space> {
-    // 1) Auth — every create must be attributed to a real user.
     const { data: authData, error: authError } = await supabase.auth.getUser();
     if (authError || !authData?.user) {
       throw SpaceError.http(401, 'You must be signed in to create a project', authError);
     }
     const userId = authData.user.id;
 
-    // 2) Insert the project row.
-    const insertPayload: Record<string, unknown> = {
-      name: req.name.trim(),
-      key: req.key.toUpperCase(),
-      department: PURPOSE_TO_DEPARTMENT[req.purpose] ?? null,
-      description: req.description?.trim() || null,
-      status: 'active',
-      status_category: 'todo',
-      health_status: 'on_track',
-      owner_id: userId,
-      created_by: userId,
-      lead_id: userId,
-      program_id: '00000000-0000-0000-0000-000000000001',
-      project_type: 'kanban',
-      total_epics: 0,
-      total_stories: 0,
-      total_tasks: 0,
-      work_items_todo: 0,
-      work_items_in_progress: 0,
-      work_items_done: 0,
-      completion_percentage: 0,
-    };
+    const { data, error } = await supabase.functions.invoke('create-project', {
+      body: {
+        name:        req.name.trim(),
+        key:         req.key.toUpperCase(),
+        department:  PURPOSE_TO_DEPARTMENT[req.purpose] ?? null,
+        description: req.description?.trim() || null,
+        user_id:     userId,
+      },
+    });
 
-    const { data: project, error: insertError } = await typedQuery('projects')
-      .insert(insertPayload)
-      .select('id, name, key, description, department, created_at')
-      .single();
-
-    if (insertError) {
-      // Postgres surfaces the unique-violation SQLSTATE on duplicate key.
-      const code = (insertError as { code?: string }).code;
-      const msg = (insertError.message || '').toLowerCase();
-      if (code === PG_UNIQUE_VIOLATION || msg.includes('duplicate') || msg.includes('unique')) {
+    if (error || !data) {
+      if ((data as { error?: string } | null)?.error === 'key_not_unique') {
         throw SpaceError.keyNotUnique(req.key);
       }
-      throw SpaceError.http(500, insertError.message || 'Failed to create project', insertError);
-    }
-
-    if (!project) {
-      throw SpaceError.unknown('Project insert returned no row');
-    }
-
-    // 3) Auto-add creator as admin member — keeps parity with useCreateProject().
-    //    A failure here is non-fatal for the wizard; the project exists and
-    //    membership can be repaired later.
-    try {
-      await typedQuery('project_members').insert({
-        project_id: project.id,
-        user_id: userId,
-        role: 'admin',
-        added_by: userId,
-      });
-    } catch {
-      // swallow — see comment above
+      throw SpaceError.http(500, error?.message || 'Failed to create project', error);
     }
 
     return {
-      id: project.id as string,
-      name: project.name as string,
-      key: project.key as string,
-      purpose: req.purpose,
-      description: (project.description as string | null) ?? undefined,
-      isPrivate: req.isPrivate,
-      createdAt: (project.created_at as string | null) ?? new Date().toISOString(),
+      id:          data.id,
+      name:        data.name,
+      key:         data.key,
+      purpose:     req.purpose,
+      description: data.description ?? undefined,
+      isPrivate:   req.isPrivate,
+      createdAt:   data.created_at ?? new Date().toISOString(),
     };
   }
 }
