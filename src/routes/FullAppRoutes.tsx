@@ -264,7 +264,7 @@ const EnterpriseComingSoon = lazy(() => import("../pages/enterprise/ComingSoon")
 const ReleaseDashboardV5Page = lazy(() => import("../pages/releases/ReleaseDashboardV5Page"));
 
 const AdminLayout = lazy(() => import('../pages/admin/AdminLayout').then(m => ({ default: m.AdminLayout })));
-const AdminGuard = lazy(() => import("../components/admin/AdminGuard").then(m => ({ default: m.AdminGuard })));
+// AdminGuard was used by /admin/v2 shell (deprecated 2026-05-09) — removed
 
 const StoriesPage = lazy(() => import('../pages/stories/StoriesPage').then(m => ({ default: m.StoriesPage })));
 const UsersManagement = lazy(() => import("../pages/admin/UsersManagement"));
@@ -282,17 +282,7 @@ const ProductSettings = lazy(() => import("../pages/admin/ProductSettings"));
 const AdminOverview = lazy(() => import("../pages/admin/AdminOverview"));
 const UserAccessPage = lazy(() => import("../pages/admin/UserAccessPage"));
 const ProcessSteps = lazy(() => import("../pages/admin/ProcessSteps"));
-// ── Admin v2 (Phase 0+1) ────────────────────────────────────────────
-const AdminV2Shell = lazy(() => import("../pages/admin/v2/AdminV2Shell"));
-const AdminV2Overview = lazy(() => import("../pages/admin/v2/AdminV2OverviewPage"));
-const AdminV2AuditLog = lazy(() => import("../pages/admin/v2/AuditLogPage"));
-const AdminV2CustomFields = lazy(() => import("../pages/admin/v2/work-items/CustomFieldsPage"));
-const AdminV2Statuses = lazy(() => import("../pages/admin/v2/work-items/StatusesPage"));
-const AdminV2WorkTypes = lazy(() => import("../pages/admin/v2/work-items/WorkTypesPage"));
-const AdminV2Workflows = lazy(() => import("../pages/admin/v2/work-items/WorkflowsPage"));
-const AdminV2WorkflowDetail = lazy(() => import("../pages/admin/v2/work-items/WorkflowDetailPage"));
-const AdminV2Notifications = lazy(() => import("../pages/admin/v2/work-items/NotificationsPage"));
-const AdminV2Screens = lazy(() => import("../pages/admin/v2/work-items/ScreensPage"));
+// Admin v2 deprecated 2026-05-09 — all /admin/v2/* redirect to /admin/overview
 const WorkHubAdminPage = lazy(() => import("../modules/workhub/admin/pages/WorkHubAdmin"));
 const WorkHubHierarchyPage = lazy(() => import("../modules/workhub/admin/pages/WorkHubHierarchyPage"));
 const WorkHubSchedulingPage = lazy(() => import("../modules/workhub/admin/pages/WorkHubSchedulingPage"));
@@ -304,13 +294,7 @@ const EpicStatuses = lazy(() => import("../pages/admin/EpicStatuses"));
 const FeatureStatuses = lazy(() => import("../pages/admin/FeatureStatuses"));
 const ThemeStatuses = lazy(() => import("../pages/admin/ThemeStatuses"));
 const WorkflowAdminPage = lazy(() => import("../pages/admin/workflows/WorkflowAdminPage"));
-const IncidentWorkgroups = lazy(() => import("../pages/admin/incident").then(m => ({ default: m.IncidentWorkgroups })));
-const IncidentFieldsConfig = lazy(() => import("../pages/admin/incident").then(m => ({ default: m.IncidentFieldsConfig })));
-const IncidentSLAPolicies = lazy(() => import("../pages/admin/incident").then(m => ({ default: m.IncidentSLAPolicies })));
-const IncidentCAPPolicy = lazy(() => import("../pages/admin/incident").then(m => ({ default: m.IncidentCAPPolicy })));
-const IncidentConversionRules = lazy(() => import("../pages/admin/incident").then(m => ({ default: m.IncidentConversionRules })));
-const IncidentAuditCompliance = lazy(() => import("../pages/admin/incident").then(m => ({ default: m.IncidentAuditCompliance })));
-const IncidentOwningTeams = lazy(() => import("../pages/admin/incident").then(m => ({ default: m.IncidentOwningTeams })));
+// Incident admin routes deleted 2026-05-09 (Vikram decision: delete all 7)
 const NotificationTriggers = lazy(() => import("../pages/admin/NotificationTriggers"));
 
 const ValueStreamView = lazy(() => import("../pages/ValueStreamView"));
@@ -852,13 +836,6 @@ export default function FullAppRoutes() {
           <Route path="business/FeatureStatus" element={<S><FeatureStatuses /></S>} />
           <Route path="business/ThemeStatus" element={<S><ThemeStatuses /></S>} />
           <Route path="product-settings" element={<S><ProductSettings /></S>} />
-          <Route path="incidents/workgroups" element={<S><IncidentWorkgroups /></S>} />
-          <Route path="incidents/fields" element={<S><IncidentFieldsConfig /></S>} />
-          <Route path="incidents/sla" element={<S><IncidentSLAPolicies /></S>} />
-          <Route path="incidents/cap-policy" element={<S><IncidentCAPPolicy /></S>} />
-          <Route path="incidents/conversion" element={<S><IncidentConversionRules /></S>} />
-          <Route path="incidents/audit" element={<S><IncidentAuditCompliance /></S>} />
-          <Route path="incidents/owning-teams" element={<S><IncidentOwningTeams /></S>} />
           <Route path="workflows" element={<S><WorkflowAdminPage /></S>} />
           <Route path="workhub-connection" element={<Navigate to="/admin/workhub/jira-connection" replace />} />
           <Route path="workhub" element={<Navigate to="/admin/workhub/jira-connection" replace />} />
@@ -880,19 +857,8 @@ export default function FullAppRoutes() {
           <Route path="avatars" element={<S><AdminAvatarsPage /></S>} />
         </Route>
 
-        {/* Admin v2 — Phase 0 + 1. Sibling of /admin (own shell). Gated
-            internally on the admin_v2_enabled feature flag. */}
-        <Route path="/admin/v2" element={<S><AdminGuard><AdminV2Shell /></AdminGuard></S>}>
-          <Route index element={<S><AdminV2Overview /></S>} />
-          <Route path="audit" element={<S><AdminV2AuditLog /></S>} />
-          <Route path="work-items/custom-fields" element={<S><AdminV2CustomFields /></S>} />
-          <Route path="work-items/statuses" element={<S><AdminV2Statuses /></S>} />
-          <Route path="work-items/types" element={<S><AdminV2WorkTypes /></S>} />
-          <Route path="work-items/workflows" element={<S><AdminV2Workflows /></S>} />
-          <Route path="work-items/workflows/:schemeId" element={<S><AdminV2WorkflowDetail /></S>} />
-          <Route path="work-items/notifications" element={<S><AdminV2Notifications /></S>} />
-          <Route path="work-items/screens" element={<S><AdminV2Screens /></S>} />
-        </Route>
+        {/* Admin v2 — deprecated 2026-05-09. Redirects to /admin/* canonical shell. */}
+        <Route path="/admin/v2/*" element={<Navigate to="/admin/overview" replace />} />
 
         <Route path="/value-stream" element={<S><ValueStreamView /></S>} />
         <Route path="/profile" element={<S><UserProfile /></S>} />

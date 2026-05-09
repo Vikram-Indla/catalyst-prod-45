@@ -308,3 +308,110 @@ Append-only. Newest at top. Each entry: date, pattern, rule, surface.
 **Surface:** Created/Updated/Due date cells in BacklogPage table
 **Pattern:** The makeDateCell renderer added a bordered pill (`border: 1px solid`, `borderRadius: 3`, `padding: 2px 8px`) that was documented as "Jira-parity". Fresh DOM probe shows Jira's date cells have no border — just calendar icon + text with no wrapping box.
 **Rule:** Before adding visual chrome to a cell (borders, backgrounds, radius), probe the live Jira DOM first. Catalyst opinions that "look like Jira" often aren't.
+
+---
+
+# EXECUTION GOVERNANCE — MINI-PROJECT PROTOCOL (2026-05-09)
+
+These rules apply to all multi-wave, multi-session execution projects. Established during the Admin UI Cleanup mini-project. Non-negotiable.
+
+---
+
+## Context Indicator + Obsidian Handover Protocol
+
+**Trigger:** When context window reaches ~70% OR at the natural end of a completed wave (whichever comes first).
+
+**Actions (in order):**
+1. Write the full handover to `.claude/active/preflight-handover-{date}-{slug}.md` (update progress checklist, files touched, open items).
+2. Write the same handover to the Obsidian vault at `~/Documents/Obsidian/catalyst-sessions/{date}-{slug}.md`.
+3. Print a visible **🔴 CONTEXT HANDOVER** block in chat:
+
+```
+🔴 CONTEXT HANDOVER — Start a new session
+
+Paste this as your first message:
+─────────────────────────────────────
+Continue admin UI cleanup. Read handover from:
+~/.claude/active/preflight-handover-{date}-{slug}.md
+Wave {N} complete. Next: Wave {N+1} — {description}.
+─────────────────────────────────────
+```
+
+4. Stop. Do not begin the next wave until the new session confirms it has read the handover.
+
+**Rule:** Never let context exhaust silently. Always give Vikram the copy-paste block. The Obsidian file is the primary source of truth for the next session — it must be complete and current before the handover block is printed.
+
+---
+
+## SVG Indicator Protocol (design-intelligence mandatory)
+
+**BEFORE** every wave that touches UI (invoke `design-intelligence` skill):
+- Red SVG arrows injected on the live page at `localhost:8080/admin/{route}` pointing to every violation.
+- Screenshot captured and shown in chat as **BEFORE** state.
+- Violations listed: token violation, component violation, layout issue — each with ADS citation.
+
+**AFTER** every wave that touches UI:
+- Green SVG arrows injected on the live page showing what changed.
+- Screenshot captured and shown in chat as **AFTER** state.
+- Before/After shown side-by-side in the response.
+
+**Rule:** No wave is declared done without BEFORE (red) and AFTER (green) SVG screenshots. Text-only "I fixed X" is not acceptable. If Chrome MCP cannot reach localhost:8080, halt and surface the blocker — do not skip the visual gate.
+
+---
+
+## Regression Mandate
+
+**After every wave, before PR:**
+1. Run `npm run test:visual` (Playwright visual regression) scoped to the changed routes.
+2. Run `npx vitest run` scoped to files changed in the wave.
+3. If any test fails: **stop, do not create PR, diagnose and fix the regression first**.
+4. Attach test pass counts to the wave summary: `vitest: N/N passed · playwright: N/N passed`.
+
+**Regression scope:** Use `mcp__TestSprite__testsprite_generate_backend_test_plan` for data-layer regression on waves that touch Supabase reads/writes.
+
+**Rule:** PR creation is BLOCKED until regression is green. No exceptions for "minor" changes. If no test covers the changed surface, write one before the PR.
+
+---
+
+## PR Autonomy Protocol
+
+When ALL three gates pass:
+1. ✅ `ads-validator` clean (0 violations)
+2. ✅ Regression green (vitest + playwright)
+3. ✅ AFTER SVG screenshot shows correct state
+
+→ **Proceed autonomously to create a PR and merge to main.** Do not ask Vikram for permission. Use `gh pr create` then `gh pr merge --squash --auto`.
+
+**Commit message format:**
+```
+fix(admin): <wave description> — ADS conversion + regression green
+
+Co-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>
+```
+
+**Rule:** Vikram's permission is only required for Wave 0 dead-wood removals (ask-before-remove gate) and the two Vikram-decision items (Incident routes + v2 shell). All other waves merge autonomously when gates pass.
+
+---
+
+## CLAUDE.md + Skill Ownership Protocol
+
+**During execution:** When a new pattern, defect, or lesson emerges that isn't covered by an existing CLAUDE.md entry:
+1. Draft the lesson entry immediately in the wave's handover file under `## Lessons captured`.
+2. Append it to CLAUDE.md **autonomously** (no Vikram approval needed for lessons — only for bans/directives).
+3. If the lesson requires updating a skill file (e.g. MATRIX.md, RUBRIC.md, a skill SKILL.md), update it in the same commit as the lesson.
+
+**Skill maintenance monitor:** At the start of every wave, re-read the relevant sections of CLAUDE.md to check if any prior lesson was violated by the current plan. If yes, halt and reconcile before proceeding.
+
+**Rule:** CLAUDE.md is a living document. Lessons accumulate in real-time, not at session end. Skills are updated in the same commit as the lesson they encode. The skill database must never lag behind the lesson database.
+
+---
+
+## 2026-05-09 — Admin section had zero ADS adoption from inception
+**Surface:** All /admin/* routes (AdminSidebarV2, AdminLayout, all 25 admin pages)
+**Pattern:** The entire admin section (AdminLayout, AdminSidebarV2, all 25 page files) was built with lucide-react + shadcn/Radix + Tailwind from the start. Zero @atlaskit/* imports across 24 of 25 pages. 18 sidebar entries linked to 404 routes. The ADS mandate applied to product surfaces was never enforced on admin. Caught during preflight 2026-05-09.
+**Rule:** Any new admin page MUST use @atlaskit/* components from line 1. PRs adding a new admin page that imports from `@/components/ui/*` or `lucide-react` are rejected. The AdminSidebarV2 sidebar IA must be validated against the router on every PR: `grep -c "path:.*admin" AdminSidebarV2.tsx` must equal the registered route count in FullAppRoutes.tsx.
+
+## 2026-05-09 — Sidebar IA vs router parity check must be automated
+**Surface:** AdminSidebarV2.tsx + FullAppRoutes.tsx
+**Pattern:** 18 of 51 sidebar entries (35%) pointed to unregistered routes, creating live 404s. No CI check existed to catch the drift. The mismatch accumulated silently across multiple sessions.
+**Rule:** Add a vitest snapshot test that extracts all paths from `adminPockets` in AdminSidebarV2.tsx and asserts each one is registered in FullAppRoutes.tsx. This test must be part of Wave 0 before any sidebar cleanup proceeds. If the test doesn't exist yet, write it first (TDD gate applies).

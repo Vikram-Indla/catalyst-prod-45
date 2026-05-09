@@ -4,17 +4,15 @@ import {
   Users,
   Settings,
   Database,
-  Link2,
   ChevronLeft,
   ChevronRight,
   ChevronDown,
   Search,
   Pin,
   Code2,
-  Wallet,
   Cable,
-  BookOpen,
-  GitBranch
+  GitBranch,
+  type LucideIcon,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Input } from '@/components/ui/input';
@@ -22,6 +20,18 @@ import { Tooltip } from '@/components/ads';
 import { useState, useMemo } from 'react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import { adminPockets, getAdminLeafPaths } from './admin-nav';
+
+/** Maps iconName strings (stored in admin-nav.ts) to Lucide components. */
+const ICON_MAP: Record<string, LucideIcon> = {
+  LayoutDashboard,
+  Users,
+  Settings,
+  Database,
+  GitBranch,
+  Cable,
+  Code2,
+};
 
 interface AdminSidebarV2Props {
   expanded: boolean;
@@ -29,153 +39,7 @@ interface AdminSidebarV2Props {
   className?: string;
 }
 
-// New IA: top-level buckets
-const adminPockets = [
-  {
-    id: 'overview',
-    label: 'Overview',
-    icon: LayoutDashboard,
-    path: '/admin/overview',
-  },
-  {
-    id: 'users-access',
-    label: 'Users & Access',
-    icon: Users,
-    path: '/admin/users-access',
-    children: [
-      { label: 'Resource Names', path: '/admin/users' },
-      { label: 'Resource Roles', path: '/admin/roles-permissions' },
-      { label: 'Jira User Sync', path: '/admin/jira-user-sync' },
-      { label: 'Module Access Matrix', path: '/admin/module-matrix' },
-      { label: 'Resource Utilization', path: '/admin/resource-utilization' },
-      { label: 'Resource Departments', path: '/admin/capacity-departments' },
-      { label: 'Resource Assignments', path: '/admin/resource-assignments' },
-      { label: 'Resource Locations', path: '/admin/resource-locations' },
-      { label: 'Resource Countries', path: '/admin/resource-countries' },
-      { label: 'Resource Vendors', path: '/admin/resource-vendors' },
-    ],
-  },
-  {
-    id: 'budget',
-    label: 'Budget & Licensing',
-    icon: Wallet,
-    path: '/admin/budget',
-    children: [
-      { label: 'Software Licenses', path: '/admin/software-licenses' },
-    ],
-  },
-  {
-    id: 'general',
-    label: 'General',
-    icon: Settings,
-    path: '/admin/general',
-    children: [
-      { label: 'User Access', path: '/admin/user-access' },
-      { label: 'Modules & Packages', path: '/admin/modules-packages' },
-      { label: 'Details Panels', path: '/admin/details-panels' },
-      { label: 'General Settings', path: '/admin/general-settings' },
-      { label: 'Announcements', path: '/admin/announcements' },
-      { label: 'Notification Settings', path: '/admin/settings/notifications' },
-      { label: 'Notification Triggers', path: '/admin/notification-triggers' },
-      // RESET ICONS — runtime asset override management. Admin-only.
-      { label: 'Icons', path: '/admin/icons' },
-      { label: 'Avatars', path: '/admin/avatars' },
-    ],
-  },
-  {
-    id: 'workflows',
-    label: 'Workflows',
-    icon: GitBranch,
-    path: '/admin/workflows',
-    children: [
-      { label: 'Status & Transitions', path: '/admin/workflows' },
-    ],
-  },
-  {
-    id: 'field-configuration',
-    label: 'Field Configuration',
-    icon: Database,
-    path: '/admin/field-configuration',
-    children: [
-      { label: 'Create Button', path: '/admin/create-menu-config' },
-      { label: 'Projects', path: '/admin/programs' },
-      { label: 'Programs', path: '/admin/portfolios' },
-      { label: 'Departments', path: '/admin/departments' },
-      { label: 'Business Owners', path: '/admin/business-owners' },
-      { label: 'Business Processes', path: '/admin/business-processes' },
-      { label: 'Product Lines', path: '/admin/product-settings' },
-      { label: 'Strategic Themes', path: '/admin/theme-groups' },
-      { label: 'BR Status', path: '/admin/business/ProcessStep' },
-      { label: 'Theme Status', path: '/admin/business/ThemeStatus' },
-      { label: 'Epic Status', path: '/admin/business/EpicStatus' },
-      { label: 'Feature Status', path: '/admin/business/FeatureStatus' },
-      { label: 'Risk Severity Levels', path: '/admin/business/RiskSeverity' },
-      { label: 'Delivery Platforms', path: '/admin/business/DeliveryPlatforms' },
-    ],
-  },
-  {
-    id: 'workhub',
-    label: 'WorkHub',
-    icon: Cable,
-    path: '/admin/workhub',
-    children: [
-      { label: 'Jira Sync Control', path: '/admin/workhub/jira-sync-control' },
-      { label: 'Jira Connection', path: '/admin/workhub/jira-connection' },
-      { label: 'Hierarchy Mapping', path: '/admin/workhub/hierarchy-mapping' },
-      { label: 'Scheduling Rules', path: '/admin/workhub/scheduling-rules' },
-      { label: 'Status Mapping', path: '/admin/workhub/status-mapping' },
-      { label: 'User Mapping', path: '/admin/workhub/user-mapping' },
-      { label: 'Data Scope', path: '/admin/workhub/data-scope' },
-      { label: 'Sync & Logs', path: '/admin/workhub/sync-logs' },
-      { label: 'Jira Activity Sync', path: '/admin/workhub/activity-sync' },
-    ],
-  },
-  {
-    id: 'integrations',
-    label: 'Integrations',
-    icon: Link2,
-    path: '/admin/integrations-hub',
-    children: [
-      { label: 'Slack', path: '/admin/slack' },
-      { label: 'Notion', path: '/admin/notion' },
-    ],
-  },
-  {
-    id: 'developer',
-    label: 'Developer',
-    icon: Code2,
-    path: '/admin/feature-flags',
-    children: [
-      { label: 'Feature Flags', path: '/admin/feature-flags' },
-    ],
-  },
-  {
-    id: 'knowledge-base',
-    label: 'Knowledge Base',
-    icon: BookOpen,
-    path: '/admin/kb',
-    children: [
-      { label: 'Health', path: '/admin/kb' },
-      { label: 'Query Log', path: '/admin/kb/logs' },
-      { label: 'Access Matrix', path: '/admin/kb/access' },
-      { label: 'Sync Config', path: '/admin/kb/sync' },
-      { label: 'Pipeline', path: '/admin/kb/pipeline' },
-      { label: 'Sources', path: '/admin/kb/sources' },
-      { label: 'Training', path: '/admin/kb/training' },
-    ],
-  },
-  {
-    id: 'wiki-admin',
-    label: 'Wiki Admin',
-    icon: Settings,
-    path: '/admin/wiki',
-    children: [
-      { label: 'Wiki Diagnostic', path: '/admin/wiki-diagnostic' },
-    ],
-  },
-];
-
-// Flatten all paths for search
+// Flatten all paths for search — derived from canonical admin-nav.ts source
 const getAllPaths = () => {
   const paths: { label: string; path: string; parent?: string }[] = [];
   adminPockets.forEach(pocket => {
@@ -187,10 +51,14 @@ const getAllPaths = () => {
   return paths;
 };
 
+// Suppress unused-import warning — getAdminLeafPaths is used by the parity test
+void getAdminLeafPaths;
+
 export function AdminSidebarV2({ expanded, onToggle, className }: AdminSidebarV2Props) {
   const location = useLocation();
   const [searchQuery, setSearchQuery] = useState('');
-  const [pinnedItems] = useState<string[]>(['/admin/users', '/admin/activity']);
+  // Pinned items — must be valid registered routes (no dead links)
+  const [pinnedItems] = useState<string[]>(['/admin/users', '/admin/workhub/sync-logs']);
   
   // Track which sections are expanded - default open sections that have active children
   const [expandedSections, setExpandedSections] = useState<Set<string>>(() => {
@@ -381,7 +249,7 @@ export function AdminSidebarV2({ expanded, onToggle, className }: AdminSidebarV2
         <ScrollArea className="flex-1">
           <nav style={{ padding: '4px 8px' }}>
             {adminPockets.map((pocket) => {
-              const Icon = pocket.icon;
+              const Icon = ICON_MAP[pocket.iconName] ?? Settings;
               const active = isActive(pocket.path) || isChildActive(pocket.children);
               const hasChildren = pocket.children && pocket.children.length > 0;
               const isOpen = expandedSections.has(pocket.id);

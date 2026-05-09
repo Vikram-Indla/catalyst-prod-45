@@ -36,12 +36,12 @@ import { useState } from 'react';
 import { useAdminOverviewMetrics, useRecentAdminChanges, useRecentRooms } from '@/hooks/useAdminOverviewMetrics';
 import { formatDistanceToNow } from 'date-fns';
 
-// Quick actions - static config, no mock data
+// Quick actions — all paths must be registered routes (no dead links)
 const quickActions = [
   { label: 'Invite user', icon: UserPlus, path: '/admin/users', action: 'invite' },
   { label: 'Create role', icon: Shield, path: '/admin/roles-permissions', action: 'create' },
-  { label: 'Open audit log', icon: Activity, path: '/admin/activity' },
-  { label: 'Jira integration', icon: Link2, path: '/admin/jira-config' },
+  { label: 'Sync logs', icon: Activity, path: '/admin/workhub/sync-logs' },
+  { label: 'Jira connection', icon: Link2, path: '/admin/workhub/jira-connection' },
 ];
 
 export default function AdminOverview() {
