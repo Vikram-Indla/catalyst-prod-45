@@ -25326,27 +25326,6 @@ export type Database = {
         }
         Relationships: []
       }
-      ph_issue_watchers: {
-        Row: {
-          id: string
-          issue_key: string
-          user_id: string
-          created_at: string
-        }
-        Insert: {
-          id?: string
-          issue_key: string
-          user_id: string
-          created_at?: string
-        }
-        Update: {
-          id?: string
-          issue_key?: string
-          user_id?: string
-          created_at?: string
-        }
-        Relationships: []
-      }
       ph_issue_links: {
         Row: {
           created_at: string | null

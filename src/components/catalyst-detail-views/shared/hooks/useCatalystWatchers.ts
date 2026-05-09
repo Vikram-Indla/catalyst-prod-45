@@ -32,7 +32,7 @@ export function useCatalystWatchers(issueKey: string | null | undefined) {
       if (!issueKey) return { count: 0, isWatching: false, watchers: [] };
       const { data: { user } } = await supabase.auth.getUser();
 
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('ph_issue_watchers')
         .select('user_id')
         .eq('issue_key', issueKey);
@@ -73,14 +73,14 @@ export function useCatalystWatchers(issueKey: string | null | undefined) {
       if (!user) throw new Error('Not authenticated');
       const isWatching = query.data?.isWatching ?? false;
       if (isWatching) {
-        const { error } = await supabase
+        const { error } = await (supabase as any)
           .from('ph_issue_watchers')
           .delete()
           .eq('issue_key', issueKey)
           .eq('user_id', user.id);
         if (error) throw error;
       } else {
-        const { error } = await supabase
+        const { error } = await (supabase as any)
           .from('ph_issue_watchers')
           .insert({ issue_key: issueKey, user_id: user.id });
         if (error) throw error;

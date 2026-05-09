@@ -70,7 +70,6 @@ export class SupabaseProjectService implements SpaceService {
     if (authError || !authData?.user) {
       throw SpaceError.http(401, 'You must be signed in to create a project', authError);
     }
-    const userId = authData.user.id;
 
     const { data, error } = await supabase.functions.invoke('create-project', {
       body: {
