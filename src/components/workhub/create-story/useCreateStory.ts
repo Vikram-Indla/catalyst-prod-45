@@ -350,9 +350,11 @@ export function useCreateStoryMutation() {
 }
 
 // ── Last-project memory per user ──
-const LAST_PROJECT_KEY = 'catalyst-last-project';
+// Exported so the project-hub shell can write the current project UUID
+// whenever the user navigates into a project context (Bucket D, 2026-05-09).
+export const LAST_PROJECT_KEY = 'catalyst-last-project';
 
-function getLastProjectId(userId: string | undefined): string {
+export function getLastProjectId(userId: string | undefined): string {
   if (!userId) return '';
   try {
     const stored = localStorage.getItem(LAST_PROJECT_KEY);
@@ -364,7 +366,7 @@ function getLastProjectId(userId: string | undefined): string {
   return '';
 }
 
-function setLastProjectId(userId: string | undefined, projectId: string) {
+export function setLastProjectId(userId: string | undefined, projectId: string) {
   if (!userId || !projectId) return;
   try {
     const stored = localStorage.getItem(LAST_PROJECT_KEY);
