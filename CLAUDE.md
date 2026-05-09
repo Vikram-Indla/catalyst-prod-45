@@ -10,6 +10,13 @@ The Catalyst local dev server always runs on **http://localhost:8080**. Never us
 
 ---
 
+## 2026-05-09 — Always use JiraIssueTypeIcon for work item type display
+**Surface:** Any rail, sidebar, Recent list, card, or row that shows a work item type indicator
+**Pattern:** `ProjectHubSidebar.tsx` used a hardcoded `issueTypeColor()` map returning 8px coloured squares (bug→red, story→green, epic→purple, default→blue). This is non-discoverable colour-recall: the user must know the colour→type mapping, which differs from Jira's icon language. `JiraIssueTypeIcon` at `@/lib/jira-issue-type-icons` is the canonical self-labelling component already used in backlog, allwork, notifications, global search, and kanban surfaces.
+**Rule:** **Never use coloured dots, squares, or colour-recall maps for work item type display.** Always import `JiraIssueTypeIcon` from `@/lib/jira-issue-type-icons` and render at the appropriate size (14px for compact rails, 16px for rows). `WorkItemIcon.tsx` is a deprecated shim — new code imports directly from `@/lib/jira-issue-type-icons`. This applies to sidebars, Recent lists, notification rails, any hover card, and any table cell that indicates type.
+
+---
+
 ## Banned integrations — Projects module (`/project-hub/projects`)
 
 **Notion is permanently out of scope for the Projects module.** Do NOT add a Notion column, Notion sync stats, or any Notion data to AllProjectsTable, AllProjectsPage, or any Projects-related component. This was explicitly removed by Vikram 2026-05-09. No exceptions, no re-asks.
