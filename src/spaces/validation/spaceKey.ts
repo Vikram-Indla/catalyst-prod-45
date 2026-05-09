@@ -9,7 +9,7 @@
 // ============================================================================
 
 const SPACE_KEY_PATTERN = /^[A-Za-z0-9]+$/;
-const SPACE_KEY_MAX_LENGTH = 255;
+const SPACE_KEY_MAX_LENGTH = 10;
 
 export interface SpaceKeyValidationResult {
   ok: boolean;

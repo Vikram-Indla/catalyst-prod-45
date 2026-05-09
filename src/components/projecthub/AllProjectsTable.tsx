@@ -1081,7 +1081,7 @@ export function AllProjectsTable({
               style={{
                 pointerEvents: 'auto',
                 fontSize: 14,
-                fontWeight: 500,
+                fontWeight: 400,
                 color: token('color.link'),
                 fontFamily: 'var(--cp-font-body)',
                 textDecoration: 'none',
