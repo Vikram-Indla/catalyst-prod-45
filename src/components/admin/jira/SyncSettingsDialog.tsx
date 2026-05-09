@@ -7,7 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Input } from "@/components/ui/input";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Loader2 } from "lucide-react";
+import Spinner from '@atlaskit/spinner';
 
 interface SyncSettingsDialogProps {
   open: boolean;
@@ -225,7 +225,7 @@ export function SyncSettingsDialog({ open, onOpenChange, connectionId }: SyncSet
             Cancel
           </Button>
           <Button onClick={handleSave} disabled={loading} className="bg-brand-primary hover:bg-brand-primary-hover">
-            {loading && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
+            {loading && <Spinner size="small" />}
             Save Settings
           </Button>
         </DialogFooter>

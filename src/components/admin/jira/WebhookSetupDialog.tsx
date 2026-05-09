@@ -6,7 +6,9 @@ import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Copy, CheckCircle2, AlertCircle } from "lucide-react";
+import CopyIcon from '@atlaskit/icon/core/copy';
+import CheckCircleIcon from '@atlaskit/icon/core/check-circle';
+import WarningIcon from '@atlaskit/icon/core/warning';
 import { Switch } from "@/components/ui/switch";
 
 interface WebhookSetupDialogProps {
@@ -108,7 +110,7 @@ export function WebhookSetupDialog({ open, onOpenChange, connectionId }: Webhook
           {webhookEnabled && (
             <>
               <Alert>
-                <AlertCircle className="h-4 w-4" />
+                <WarningIcon label="" size="small" />
                 <AlertDescription>
                   Copy this webhook URL and configure it in your Jira instance under System → WebHooks
                 </AlertDescription>
@@ -129,9 +131,9 @@ export function WebhookSetupDialog({ open, onOpenChange, connectionId }: Webhook
                     onClick={copyToClipboard}
                   >
                     {copied ? (
-                      <CheckCircle2 className="w-4 h-4 text-green-600" />
+                      <span style={{ display:'inline-flex', color:'var(--ds-icon-success, #22A06B)' }}><CheckCircleIcon label="" size="small" /></span>
                     ) : (
-                      <Copy className="w-4 h-4" />
+                      <CopyIcon label="" size="small" />
                     )}
                   </Button>
                 </div>

@@ -23,14 +23,15 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { 
-  useUserProfile, 
-  useUserProductRole, 
+import {
+  useUserProfile,
+  useUserProductRole,
   useUserOverrides,
   useRolePermissions,
   useSaveUserOverrides,
   PERMISSION_GROUPS
 } from '@/hooks/useProductRoles';
+import Spinner from '@atlaskit/spinner';
 
 interface UserOverridesModalProps {
   isOpen: boolean;
@@ -131,7 +132,7 @@ export function UserOverridesModal({
 
         {isLoading ? (
           <div className="flex items-center justify-center py-8">
-            <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-brand-primary" />
+            <Spinner size="medium" />
           </div>
         ) : (
           <>
