@@ -308,6 +308,10 @@ export default function EpicDescriptionEditor({
   }, [onCancel, appearanceProp]);
 
   const handleEditorSave = useCallback((_view: any) => {
+    if (uploading) {
+      toast.error('Image is still uploading — please wait a moment and save again');
+      return;
+    }
     const actions = actionsRef.current;
     if (!actions) {
       onSave(JSON.stringify(initialAdf));
@@ -320,7 +324,7 @@ export default function EpicDescriptionEditor({
         onSave(JSON.stringify(normalized));
       })
       .catch(() => onSave(JSON.stringify(initialAdf)));
-  }, [onSave, initialAdf]);
+  }, [onSave, initialAdf, uploading]);
 
   // BEH-001: Debounce onChange to avoid queuing dozens of async getValue()
   // calls on rapid keystrokes. 300ms is a good balance between responsiveness
