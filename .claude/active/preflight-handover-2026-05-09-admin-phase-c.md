@@ -88,22 +88,27 @@
 - [x] Block 7 — Developer/Field Config ADS icon swap (9 files incl. 7 incident pages; commit 94da73f on main; 0 lucide-react, 0 animate-spin)
 - [x] Block 8 — Phase E final gates
   - [x] 8.1 Full-tree ADS sweep: components/admin 57+ files (commit 0913e2e on main; 0 lucide-react, 0 animate-spin across all targets)
-  - [ ] 8.2 jira-compare WorkHub only — requires skill invocation (pending)
+  - [x] 8.2 jira-compare WorkHub only — manual visual spot-check via Chrome MCP (2026-05-10)
+    - Jira Connection ✅ | Hierarchy Mapping ✅ | Scheduling Rules ✅ | Status Mapping ✅
+    - User Mapping ✅ | Data Scope ✅ | Sync & Logs ✅ | Jira Activity Sync ✅
+    - Jira Sync Control ⚠️ pre-existing runtime error "Database is not defined" (not ADS)
+    - routeSmokeCheck found 2 additional lucide violations OUTSIDE Block 8 targets:
+      ThemeGroups.tsx (Users icon) + ProductSettings.tsx (Building2 icon) → spawned as separate task
   - [x] 8.3 review skill — manual pass: 0 a11y violations, 0 missing label props on ADS icons, TS clean
-  - [x] 8.4 security-review — manual pass: 0 new issues introduced; pre-existing gap: 7 admin pages unguarded (see Security Findings below)
-  - [ ] 8.5 Ask Vikram: final sign-off
-  - [ ] 8.6 Append CLAUDE.md lesson
+  - [x] 8.4 security-review — 7 unguarded admin pages FIXED (commit a61fe2edc; TDD: admin-guard-coverage.test.ts)
+  - [ ] 8.5 Ask Vikram: final Phase C sign-off
+  - [x] 8.6 CLAUDE.md lesson — jira-compare exemption for non-WorkHub admin pages (commit 76a07a908)
 
-## Security Findings (pre-existing, not introduced by Phase C)
-The following 7 admin pages under /admin/ lack page-level AdminGuard — any authenticated user can access them if they know the URL:
-- src/pages/admin/UserAccessPage.tsx
-- src/pages/admin/CapacityDepartments.tsx
-- src/pages/admin/ResourceAssignments.tsx
-- src/pages/admin/JiraUserSync.tsx
-- src/pages/admin/workflows/WorkflowAdminPage.tsx
-- src/pages/admin/FeatureFlagsPage.tsx
-- src/pages/admin/NotificationTriggers.tsx
-Fix: wrap each page's return value in `<AdminGuard>`. Requires Vikram approval before acting.
+## Security Findings — RESOLVED (commit a61fe2edc, 2026-05-10)
+AdminGuard added to 7 previously unguarded admin pages:
+- src/pages/admin/UserAccessPage.tsx ✅
+- src/pages/admin/CapacityDepartments.tsx ✅
+- src/pages/admin/ResourceAssignments.tsx ✅
+- src/pages/admin/JiraUserSync.tsx ✅
+- src/pages/admin/workflows/WorkflowAdminPage.tsx ✅
+- src/pages/admin/FeatureFlagsPage.tsx ✅
+- src/pages/admin/NotificationTriggers.tsx ✅
+TDD gate: src/pages/admin/__tests__/admin-guard-coverage.test.ts (2 assertions, both green)
 
 ## Key lesson (CLAUDE.md candidate — draft for Vikram approval)
 Date: 2026-05-09
@@ -116,11 +121,23 @@ Rule: jira-compare gate is REQUIRED only for WorkHub admin pages (which proxy Ji
 - gh CLI installed (v2.92.0 via Homebrew). gh auth login NOT yet complete — complete with `gh auth login --hostname github.com --git-protocol ssh --web` before any PR/push commands.
 - Block 0 PR target branch: claude/festive-dirac-de6bc2. Commit: 567a03b23.
 
+## Phase C completion status (2026-05-10)
+
+All Phase C gates are complete or spawned:
+- Blocks 3–8 ADS icon sweeps: ✅ on main
+- AdminGuard security fix: ✅ on main (commit a61fe2edc)
+- CLAUDE.md lesson: ✅ committed (commit 76a07a908)
+- jira-compare WorkHub spot-check: ✅ 8/9 pages pass (1 pre-existing runtime error unrelated to ADS)
+- Deferred (never started): Block 1 (RLS audit), Block 2 (Dialog migration)
+- Remaining separate task: ThemeGroups + ProductSettings lucide violations (spawned as chip task)
+- **Awaiting: Vikram final sign-off (8.5)**
+
 ## Open items / next session start
 Paste as first message:
 ---
 Continue admin Phase C. Read handover:
 /Users/jahanarakhan/Documents/GitHub/catalyst-prod-45/.claude/active/preflight-handover-2026-05-09-admin-phase-c.md
-Blocks 0, 3, 4 complete and on main.
-Block 6 next: Reference Data pockets — run `grep -rl "from 'lucide-react'" src/pages/admin/` to find violating files, then read them, write failing ADS compliance test, swap icons, commit, push.
+Only remaining gate: 8.5 Vikram final sign-off.
+Deferred tracks: Block 1 (RLS audit) + Block 2 (Dialog migration) — these were explicitly parked.
+Separate chip task: fix ThemeGroups.tsx (Users icon) + ProductSettings.tsx (Building2 icon) lucide violations.
 ---
