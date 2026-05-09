@@ -27,6 +27,122 @@ declared done. Pairs with `jira-compare` (pixel parity) and `ads-validator`
 
 ---
 
+## Soft Announcement (mandatory — fires when skill activates)
+
+When this skill fires, emit this exact block in chat BEFORE scoring:
+
+```
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🎯 design-critique · HEURISTIC AUDIT
+Surface: {surface name} · {route}
+Scoring: H1 system status · H2 real-world match · H3 control · H4 consistency
+         H5 error prevention · H6 recognition · H7 efficiency · H8 minimalism
+         H9 typography · H10 help & docs
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+```
+
+When scoring is complete:
+
+```
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🎯 design-critique · SCORE: {X}/30
+{P0 count} P0 blockers · {P1 count} P1 issues · {P2 count} P2 polish
+{SHIP / HALT} — threshold is 22/30
+Red arrows on all findings. Screenshot follows.
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+```
+
+---
+
+## Red → Green Arrow Protocol (mandatory for all violation display)
+
+### Discovery phase — RED arrows
+
+When violations are found, inject SVG arrows directly onto the live page using `javascript_tool`. Every violation gets a red arrow + label.
+
+Arrow injection template:
+```js
+(function injectViolationArrows(violations) {
+  // Remove any existing overlay
+  document.getElementById('__dc_overlay')?.remove();
+  const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+  svg.id = '__dc_overlay';
+  Object.assign(svg.style, {
+    position: 'fixed', top: 0, left: 0,
+    width: '100vw', height: '100vh',
+    pointerEvents: 'none', zIndex: 99999,
+  });
+  // Define red arrowhead marker
+  const defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
+  const marker = document.createElementNS('http://www.w3.org/2000/svg', 'marker');
+  marker.setAttribute('id', 'dc-red-arrow');
+  marker.setAttribute('markerWidth', '10');
+  marker.setAttribute('markerHeight', '7');
+  marker.setAttribute('refX', '10');
+  marker.setAttribute('refY', '3.5');
+  marker.setAttribute('orient', 'auto');
+  const poly = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
+  poly.setAttribute('points', '0 0, 10 3.5, 0 7');
+  poly.setAttribute('fill', '#E5493A');
+  marker.appendChild(poly);
+  defs.appendChild(marker);
+  svg.appendChild(defs);
+
+  violations.forEach(({ x, y, label }) => {
+    // Arrow line
+    const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+    line.setAttribute('x1', String(x - 60));
+    line.setAttribute('y1', String(y));
+    line.setAttribute('x2', String(x - 8));
+    line.setAttribute('y2', String(y));
+    line.setAttribute('stroke', '#E5493A');
+    line.setAttribute('stroke-width', '2');
+    line.setAttribute('marker-end', 'url(#dc-red-arrow)');
+    svg.appendChild(line);
+    // Label background
+    const bg = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+    bg.setAttribute('x', String(x - 220));
+    bg.setAttribute('y', String(y - 11));
+    bg.setAttribute('width', String(Math.min(label.length * 7 + 8, 200)));
+    bg.setAttribute('height', '16');
+    bg.setAttribute('rx', '3');
+    bg.setAttribute('fill', '#E5493A');
+    svg.appendChild(bg);
+    // Label text
+    const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    text.setAttribute('x', String(x - 216));
+    text.setAttribute('y', String(y + 1));
+    text.setAttribute('font-size', '10');
+    text.setAttribute('fill', 'white');
+    text.setAttribute('font-family', 'system-ui, sans-serif');
+    text.setAttribute('font-weight', '600');
+    text.textContent = label.slice(0, 28);
+    svg.appendChild(text);
+  });
+  document.body.appendChild(svg);
+})([/* violations array: {x, y, label} */]);
+```
+
+Rules:
+- Take a screenshot immediately after injection — violations must be visible with red arrows.
+- Display screenshot inline in chat with caption: `🔴 VIOLATIONS — {surface} — {N} issues found`
+
+### Post-fix phase — GREEN arrows
+
+After fixes are applied, replace red arrows with green arrows using the same coordinates + "FIXED" prefix on each label:
+
+```js
+// Same template, replace '#E5493A' with '#22A06B', marker id 'dc-green-arrow'
+// Labels become: 'FIXED: ' + original_label
+```
+
+- Take a screenshot immediately after green injection.
+- Display screenshot inline in chat with caption: `✅ FIXED — {surface} — {N} issues resolved`
+
+Raw screenshots with no arrows are REJECTED. Both red (discovery) and green (post-fix) screenshots are mandatory.
+
+---
+
 ## The 10 Heuristics (scored 0–3 per surface)
 
 | # | Heuristic | What passes |
