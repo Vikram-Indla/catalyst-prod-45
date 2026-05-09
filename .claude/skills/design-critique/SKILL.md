@@ -62,104 +62,156 @@ Red arrows on all findings. Screenshot follows.
 resized. **Fix:** violations now use `{selector, label, side}`. A live `render()` re-queries
 `getBoundingClientRect()` on every resize/scroll event via `requestAnimationFrame`.
 
-### Discovery phase — LIVE RED arrows
+### Discovery phase — LIVE arrows (discovery + progress)
+
+**violations array uses `selector` (CSS selector) + `label` + `side` ('left' | 'right') + `fixed` (bool)**
+`fixed: false` → RED (open violation) · `fixed: true` → GREEN (resolved)
+Arrows reposition automatically on resize and scroll. Toggle button (bottom-right) to show/hide.
 
 ```js
-(function injectArrows(overlayId, color, markerKey, violations) {
-  const prev = document.getElementById(overlayId);
+(function injectArrows(violations) {
+  // violations: [{ selector, label, side ('left'|'right'), fixed (bool) }]
+  // fixed=false → RED (open violation)   fixed=true → GREEN (resolved)
+
+  const ID = '__dc_overlay';
+  const BTN_ID = '__dc_overlay_btn';
+  const RED = '#E5493A', GREEN = '#22A06B';
+
+  // cleanup previous overlay + listeners + toggle button
+  const prev = document.getElementById(ID);
   if (prev && prev._destroy) prev._destroy();
   if (prev) prev.remove();
+  const prevBtn = document.getElementById(BTN_ID);
+  if (prevBtn) prevBtn.remove();
 
+  // SVG canvas
   const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-  svg.id = overlayId;
+  svg.id = ID;
   Object.assign(svg.style, {
     position: 'fixed', top: '0', left: '0',
     width: '100vw', height: '100vh',
-    pointerEvents: 'none', zIndex: '99999',
+    pointerEvents: 'none', zIndex: '99998',
   });
   document.body.appendChild(svg);
 
+  // Both arrowhead markers in defs (red + green)
   const defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
-  const marker = document.createElementNS('http://www.w3.org/2000/svg', 'marker');
-  marker.id = markerKey;
-  marker.setAttribute('markerWidth', '10'); marker.setAttribute('markerHeight', '7');
-  marker.setAttribute('refX', '10');        marker.setAttribute('refY', '3.5');
-  marker.setAttribute('orient', 'auto');
-  const poly = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
-  poly.setAttribute('points', '0 0, 10 3.5, 0 7');
-  poly.setAttribute('fill', color);
-  marker.appendChild(poly); defs.appendChild(marker); svg.appendChild(defs);
+  [['dc-red', RED], ['dc-green', GREEN]].forEach(function(pair) {
+    const m = document.createElementNS('http://www.w3.org/2000/svg', 'marker');
+    m.id = pair[0];
+    m.setAttribute('markerWidth','10'); m.setAttribute('markerHeight','7');
+    m.setAttribute('refX','10'); m.setAttribute('refY','3.5'); m.setAttribute('orient','auto');
+    const p = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
+    p.setAttribute('points','0 0,10 3.5,0 7'); p.setAttribute('fill', pair[1]);
+    m.appendChild(p); defs.appendChild(m);
+  });
+  svg.appendChild(defs);
 
+  // live render — re-queries getBoundingClientRect() on every call
   function render() {
-    Array.from(svg.children).forEach(c => { if (c.tagName !== 'defs') c.remove(); });
+    Array.from(svg.children).forEach(function(c) { if (c.tagName !== 'defs') c.remove(); });
     violations.forEach(function(v) {
       const el = document.querySelector(v.selector);
       if (!el) return;
       const r = el.getBoundingClientRect();
       if (r.width === 0 && r.height === 0) return;
+      const color = v.fixed ? GREEN : RED;
+      const markerRef = v.fixed ? 'dc-green' : 'dc-red';
       const vy = r.top + r.height / 2;
       const side = v.side || 'right';
-      let tipX, lineStartX, lineEndX;
-      if (side === 'right') {
-        tipX = r.right + 8; lineStartX = tipX + 70; lineEndX = tipX + 8;
-      } else {
-        tipX = r.left - 8;  lineStartX = tipX - 70; lineEndX = tipX - 8;
-      }
-      const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      var lineStartX, lineEndX;
+      if (side === 'right') { lineStartX = r.right + 78; lineEndX = r.right + 10; }
+      else                  { lineStartX = r.left - 78;  lineEndX = r.left - 10;  }
+
+      var line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
       line.setAttribute('x1', lineStartX); line.setAttribute('y1', vy);
       line.setAttribute('x2', lineEndX);   line.setAttribute('y2', vy);
       line.setAttribute('stroke', color);  line.setAttribute('stroke-width', '2');
-      line.setAttribute('marker-end', 'url(#' + markerKey + ')');
+      line.setAttribute('marker-end', 'url(#' + markerRef + ')');
       svg.appendChild(line);
-      const badgeW = Math.min((v.label.length * 6.5) + 12, 230);
-      const bx = side === 'right' ? lineStartX : lineStartX - badgeW;
-      const bg = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+
+      var badgeW = Math.min(v.label.length * 6.5 + 12, 240);
+      var bx = side === 'right' ? lineStartX : lineStartX - badgeW;
+      var bg = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
       bg.setAttribute('x', bx); bg.setAttribute('y', vy - 11);
       bg.setAttribute('width', badgeW); bg.setAttribute('height', '16');
       bg.setAttribute('rx', '3'); bg.setAttribute('fill', color);
       svg.appendChild(bg);
-      const txt = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+
+      var txt = document.createElementNS('http://www.w3.org/2000/svg', 'text');
       txt.setAttribute('x', bx + 4); txt.setAttribute('y', vy + 1);
       txt.setAttribute('font-size', '10'); txt.setAttribute('fill', 'white');
-      txt.setAttribute('font-family', 'system-ui, sans-serif');
+      txt.setAttribute('font-family', 'system-ui,sans-serif');
       txt.setAttribute('font-weight', '600');
-      txt.textContent = v.label.slice(0, 34);
+      txt.textContent = v.label.slice(0, 36);
       svg.appendChild(txt);
     });
   }
 
-  render();
-  let rafId;
+  render(); // draw immediately
+
+  // reposition on resize + scroll (capture phase catches nested scroll containers)
+  var rafId;
   function scheduleRender() { cancelAnimationFrame(rafId); rafId = requestAnimationFrame(render); }
   window.addEventListener('resize', scheduleRender);
   window.addEventListener('scroll', scheduleRender, true);
+
+  // floating toggle button
+  var btn = document.createElement('button');
+  btn.id = BTN_ID;
+  var vis = true;
+  Object.assign(btn.style, {
+    position: 'fixed', bottom: '16px', right: '16px', zIndex: '100000',
+    background: '#292A2E', color: '#fff', border: 'none', borderRadius: '6px',
+    padding: '6px 12px', fontSize: '12px', fontFamily: 'system-ui,sans-serif',
+    cursor: 'pointer', fontWeight: '600', boxShadow: '0 2px 8px rgba(0,0,0,0.3)',
+  });
+  btn.textContent = '👁 Arrows';
+  btn.onclick = function() {
+    vis = !vis;
+    svg.style.visibility = vis ? 'visible' : 'hidden';
+    btn.textContent = vis ? '👁 Arrows' : '👁 Arrows (hidden)';
+    btn.style.opacity = vis ? '1' : '0.5';
+  };
+  document.body.appendChild(btn);
+
+  // cleanup — removes listeners + toggle button
   svg._destroy = function() {
     cancelAnimationFrame(rafId);
     window.removeEventListener('resize', scheduleRender);
     window.removeEventListener('scroll', scheduleRender, true);
+    var b = document.getElementById(BTN_ID); if (b) b.remove();
   };
-})(
-  '__dc_overlay', '#E5493A', 'dc-red-arrow',
-  [
-    // { selector: 'h2.column-header', label: 'H9: uppercase header', side: 'right' },
-    // { selector: '[data-testid="row"]:first-child', label: 'H8: row >48px', side: 'left' },
-  ]
-);
+
+  var open = violations.filter(function(v){return !v.fixed;}).length;
+  var fixed = violations.filter(function(v){return v.fixed;}).length;
+  console.log('Overlay ' + ID + ': ' + open + ' open (red), ' + fixed + ' fixed (green)');
+})([
+  // Add violations here. Start all as fixed:false. Flip to fixed:true as each fix lands.
+  // { selector: 'h2.column-header', label: 'H9: uppercase header', side: 'right', fixed: false },
+  // { selector: '[data-testid="row"]:first-child', label: 'H8: row >48px', side: 'left', fixed: false },
+  // After fixing H9: change its fixed to true and re-run this block.
+]);
 ```
 
 - Screenshot immediately after injection.
 - Caption: `🔴 DC VIOLATIONS — {surface} — {N} issues found · resize-stable`
 
-### Post-fix phase — LIVE GREEN arrows
+Workflow for red → green progression:
+1. Paste with all violations `fixed:false` → 🔴 screenshot → caption "X open violations"
+2. Apply fix in code + reload page
+3. Re-paste same block with that violation's `fixed:true` → 🟡 screenshot → "X open, Y fixed"
+4. Repeat until all `fixed:true` → ✅ screenshot → "all resolved"
+5. Toggle button (bottom-right) to hide/show arrows at any point without losing state
 
-Same call, change color + markerKey + label prefix:
+### Post-fix phase — Auto-green: flip fixed:true and re-run
 
-```js
-// '__dc_overlay', '#22A06B', 'dc-green-arrow', violations with label '✓ ...'
-```
-
-- Screenshot after green injection.
-- Caption: `✅ DC FIXED — {surface} — H1-H10 score updated`
+After each fix is confirmed (code deployed, page reloaded):
+1. Re-run the block above with the fixed violation's `fixed` changed from `false` to `true`
+2. The arrow for that violation turns green automatically
+3. Remaining violations stay red
+4. Screenshot → caption: `🟡 DC PROGRESS — {N} open · {M} fixed`
+5. When all `fixed: true` → caption: `✅ DC COMPLETE — H1-H10 score updated`
 
 Raw screenshots with no arrows are REJECTED. Resize after injection to confirm arrows track.
 
