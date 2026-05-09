@@ -2,7 +2,11 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Lozenge, type LozengeAppearance } from "@/components/ads";
-import { Loader2, CheckCircle2, AlertTriangle, XCircle, Activity } from "lucide-react";
+import Spinner from '@atlaskit/spinner';
+import CheckCircleIcon from '@atlaskit/icon/core/check-circle';
+import WarningIcon from '@atlaskit/icon/core/warning';
+import CrossCircleIcon from '@atlaskit/icon/core/cross-circle';
+import RefreshIcon from '@atlaskit/icon/core/refresh';
 import { format } from "date-fns";
 
 interface SyncHealthDashboardProps {
@@ -46,7 +50,7 @@ export function SyncHealthDashboard({ connectionId }: SyncHealthDashboardProps) 
   if (isLoading) {
     return (
       <div className="flex justify-center py-8">
-        <Loader2 className="w-6 h-6 animate-spin text-brand-primary" />
+        <Spinner size="medium" />
       </div>
     );
   }
