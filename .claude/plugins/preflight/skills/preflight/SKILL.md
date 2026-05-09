@@ -79,6 +79,18 @@ This envelope is appended to the Phase 1 council prompt. Every advisor receives 
 - Probe primitive failed (e.g., Chrome MCP unreachable) → halt. Surface the failure to user, don't substitute with assumption.
 - Schema probe returns "field not in screen scheme" for a field the task wants to add → halt. CLAUDE.md anti-pattern #18 — schema-probe before field add.
 
+### Design Intelligence Brief (mandatory sub-step of Phase 0.5 for all UI surfaces)
+
+After evidence acquisition probes complete, run `design-intelligence` skill. Produces:
+- Canonical component audit (❌ = halt)
+- Jira parity gap → opportunity map (MATCH / EXCEED / SKIP)
+- AI use cases specific to this surface (P1 → Phase 2 rows, P2 → Phase 5 Open Items)
+- Sibling surface standardisation check
+- Design Elevation Score /15 (< 11 = halt, redesign)
+- Blocking findings (become mandatory Phase 2 rows)
+
+The brief is the first document every Phase 1 council advisor receives. Evidence-free council verdicts are rejected.
+
 ## Phase 1 — Council (conditional)
 
 - **Trivial** → skip. Go to Phase 2.
@@ -121,6 +133,7 @@ Produce an ordered task list. Every row has six columns. Use the markdown table 
 
 ### Mandatory rows (the planner inserts these even if not asked)
 
+- A **design-intelligence brief** row as row 0 for any UI-touching task — blocking findings from the brief become the next rows.
 - A **failing test** row before any implementation row (TDD non-negotiable, CLAUDE.md).
 - An **ads-validator** row before any UI merge.
 - An **ask Vikram** row before any add/remove of user-visible fields/components.
