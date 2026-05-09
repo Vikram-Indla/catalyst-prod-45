@@ -22,7 +22,9 @@ import { IssueBreakdownPopover } from './IssueBreakdownPopover';
 // future use when the lib is upgraded.
 import Textfield from '@atlaskit/textfield';
 import { token } from '@atlaskit/tokens';
-import AKDropdownMenu, { DropdownItem, DropdownItemGroup } from '@atlaskit/dropdown-menu';
+// AKDropdownMenu removed — passes isSelected + testId to DOM <button> breaking
+// Popper's ref chain in this codebase. Self-rolled positioned menu used instead.
+// See RowActionMenu, useClickOutside, useFixedPopupPosition in this file.
 import AKModal, { ModalBody, ModalFooter, ModalHeader, ModalTitle, ModalTransition } from '@atlaskit/modal-dialog';
 import AKButton from '@atlaskit/button/new';
 import { MenuGroup, ButtonItem, Section } from '@atlaskit/menu';
@@ -688,13 +690,24 @@ function MemberManagePopover({ project }: { project: ProjectListItem }) {
 function RowActionMenu({ project }: { project: ProjectListItem }) {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const [open, setOpen] = useState(false);
   const [renameOpen, setRenameOpen] = useState(false);
   const [renameValue, setRenameValue] = useState(project.name);
   const [renameSaving, setRenameSaving] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const popupRef = useRef<HTMLDivElement>(null);
+  // Self-rolled popup — AKDropdownMenu passes isSelected + testId to DOM <button>
+  // which breaks Popper's ref chain in this codebase (confirmed Apr–May 2026 Chrome MCP probe).
+  // Pattern: same useClickOutside + useFixedPopupPosition used by LeadReassignPopover.
+  useClickOutside(open, [triggerRef, popupRef], () => setOpen(false));
+  const popupPos = useFixedPopupPosition(open, triggerRef, 200);
+
+  const close = () => setOpen(false);
 
   const handleArchive = async () => {
+    close();
     const { error } = await supabase
       .from('projects')
       .update({ status: 'archived', updated_at: new Date().toISOString() } as any)
@@ -735,50 +748,89 @@ function RowActionMenu({ project }: { project: ProjectListItem }) {
     queryClient.invalidateQueries({ queryKey: ['projecthub', 'projects'] });
   };
 
+  // Shared menu item button style
+  const menuItemStyle: React.CSSProperties = {
+    display: 'block', width: '100%', padding: '7px 14px',
+    background: 'transparent', border: 'none', cursor: 'pointer',
+    textAlign: 'left', fontSize: 14, color: token('color.text'),
+    fontFamily: 'var(--cp-font-body)', borderRadius: 0,
+  };
+  const menuItemHover = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.currentTarget.style.background = token('color.background.neutral.subtle.hovered');
+  };
+  const menuItemLeave = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.currentTarget.style.background = 'transparent';
+  };
+
   return (
     <>
-      <AKDropdownMenu
-        placement="bottom-end"
-        trigger={({ triggerRef, ...triggerProps }) => (
-          <button
-            {...triggerProps}
-            ref={triggerRef as React.Ref<HTMLButtonElement>}
-            onClick={(e) => { e.stopPropagation(); triggerProps.onClick?.(e as any); }}
-            aria-label={`Actions for ${project.name}`}
-            style={{
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              width: 28, height: 28, borderRadius: 4,
-              color: token('color.text.subtle'),
-              background: 'transparent', border: 'none',
-              cursor: 'pointer', outline: 'none',
-            }}
-            onMouseEnter={e => { e.currentTarget.style.background = token('color.background.neutral.subtle.hovered'); e.currentTarget.style.color = token('color.text'); }}
-            onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = token('color.text.subtle'); }}
-          >
-            <MoreHorizontal size={16} />
-          </button>
-        )}
+      {/* Trigger — self-rolled: no AKDropdownMenu to avoid isSelected DOM prop bug */}
+      <button
+        ref={triggerRef}
+        type="button"
+        onClick={(e) => { e.stopPropagation(); setOpen(o => !o); }}
+        aria-label={`Actions for ${project.name}`}
+        aria-expanded={open}
+        aria-haspopup="menu"
+        style={{
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          width: 28, height: 28, borderRadius: 4,
+          color: token('color.text.subtle'),
+          background: 'transparent', border: 'none',
+          cursor: 'pointer', outline: 'none',
+        }}
+        onMouseEnter={e => { e.currentTarget.style.background = token('color.background.neutral.subtle.hovered'); e.currentTarget.style.color = token('color.text'); }}
+        onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = token('color.text.subtle'); }}
       >
-        <DropdownItemGroup>
-          <DropdownItem onClick={() => navigate(`/project-hub/${project.project_key}/dashboard`)}>
+        <MoreHorizontal size={16} />
+      </button>
+
+      {/* Self-rolled positioned popup menu */}
+      {open && popupPos && (
+        <div
+          ref={popupRef}
+          data-testid="row-action-menu-popup"
+          role="menu"
+          onClick={(e) => e.stopPropagation()}
+          style={{
+            position: 'fixed',
+            top: popupPos.top,
+            left: popupPos.left,
+            zIndex: 9999,
+            width: 200,
+            background: token('elevation.surface.overlay'),
+            border: `1px solid ${token('color.border')}`,
+            borderRadius: 4,
+            boxShadow: token('elevation.shadow.overlay'),
+            overflow: 'hidden',
+            paddingBlock: 4,
+          }}
+        >
+          <button role="menuitem" style={menuItemStyle} onMouseEnter={menuItemHover} onMouseLeave={menuItemLeave}
+            onClick={() => { close(); navigate(`/project-hub/${project.project_key}/dashboard`); }}>
             Open project
-          </DropdownItem>
-          <DropdownItem onClick={() => { setRenameValue(project.name); setRenameOpen(true); }}>
+          </button>
+          <button role="menuitem" style={menuItemStyle} onMouseEnter={menuItemHover} onMouseLeave={menuItemLeave}
+            onClick={() => { close(); setRenameValue(project.name); setRenameOpen(true); }}>
             Rename
-          </DropdownItem>
-          <DropdownItem onClick={() => navigate(`/project-hub/${project.project_key}/settings`)}>
+          </button>
+          <button role="menuitem" style={menuItemStyle} onMouseEnter={menuItemHover} onMouseLeave={menuItemLeave}
+            onClick={() => { close(); navigate(`/project-hub/${project.project_key}/settings`); }}>
             Project settings
-          </DropdownItem>
-        </DropdownItemGroup>
-        <DropdownItemGroup hasSeparator>
-          <DropdownItem onClick={handleArchive}>
+          </button>
+          <div style={{ height: 1, background: token('color.border'), margin: '4px 0' }} role="separator" />
+          <button role="menuitem" style={menuItemStyle} onMouseEnter={menuItemHover} onMouseLeave={menuItemLeave}
+            onClick={handleArchive}>
             Archive project
-          </DropdownItem>
-          <DropdownItem onClick={() => setDeleteOpen(true)}>
-            <span style={{ color: token('color.text.danger') }}>Delete project…</span>
-          </DropdownItem>
-        </DropdownItemGroup>
-      </AKDropdownMenu>
+          </button>
+          <button role="menuitem" style={{ ...menuItemStyle, color: token('color.text.danger') }}
+            onMouseEnter={e => { e.currentTarget.style.background = token('color.background.danger.hovered'); }}
+            onMouseLeave={menuItemLeave}
+            onClick={() => { close(); setDeleteOpen(true); }}>
+            Delete project…
+          </button>
+        </div>
+      )}
 
       {/* Rename modal */}
       <ModalTransition>
