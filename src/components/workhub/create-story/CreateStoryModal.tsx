@@ -18,7 +18,7 @@
  *   - @atlaskit/lozenge             read-only Status pill
  *   - @atlaskit/primitives          Box / Stack / Inline / xcss
  *   - @atlaskit/tokens              token('space.*') / token('color.*')
- *   - @atlaskit/textarea            Description field in Jira Create-modal form style
+ *   - @atlaskit/editor-core          Description field — ADF ProseMirror editor (Jira-parity)
  *
  * Callers (unchanged contract):
  *   - src/components/ja/CreateDropdown.tsx                (top nav + Create)
@@ -31,6 +31,7 @@ import {
   useMemo,
   useCallback,
   useRef,
+  Suspense,
   type ReactNode,
 } from 'react';
 // @atlaskit/modal-dialog uses @atlaskit/portal which renders empty in this
@@ -47,9 +48,11 @@ import {
 import { Field, ErrorMessage, HelperMessage } from '@atlaskit/form';
 import Select, { AsyncSelect, CreatableSelect } from '@atlaskit/select';
 import Textfield from '@atlaskit/textfield';
-import TextArea from '@atlaskit/textarea';
+import EpicDescriptionEditor from '@/components/shared/rich-text/atlaskit/EpicDescriptionEditor';
 import { Checkbox } from '@atlaskit/checkbox';
+import Avatar from '@atlaskit/avatar';
 import Button, { IconButton } from '@atlaskit/button/new';
+import DropdownMenu, { DropdownItem, DropdownItemGroup } from '@atlaskit/dropdown-menu';
 import Lozenge from '@atlaskit/lozenge';
 import { Box, Stack, Inline, xcss } from '@atlaskit/primitives';
 import { token } from '@atlaskit/tokens';
@@ -58,7 +61,8 @@ import EditorCloseIcon from '@atlaskit/icon/glyph/editor/close';
 import VidFullScreenOnIcon from '@atlaskit/icon/glyph/vid-full-screen-on';
 import VidFullScreenOffIcon from '@atlaskit/icon/glyph/vid-full-screen-off';
 import MoreIcon from '@atlaskit/icon/glyph/more';
-import ShortcutIcon from '@atlaskit/icon/glyph/shortcut';
+
+import './create-story.css';
 
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -66,7 +70,13 @@ import { supabase } from '@/integrations/supabase/client';
 // drop-in for catalystToast). Reset to Jira-canonical toast per audit.
 import { flag } from '@/components/shared/JiraTable/flags';
 import { useAuth } from '@/hooks/useAuth';
-import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
+// WorkItemTypeIcon is the canonical Catalyst icon — backed by useIconOverrides
+// so /admin/icons overrides are honoured automatically (Bucket C, 2026-05-09).
+import { WorkItemTypeIcon } from '@/components/icons/WorkItemTypeIcon';
+import ProjectIcon from '@/components/shared/ProjectIcon';
+// Canonical priority icon — respects admin overrides + bundled registry.
+// Replaces inline custom SVG that bypassed the override system.
+import { PriorityIcon } from '@/components/icons/PriorityIcon';
 import {
   useCreateStoryForm,
   useProjects,
@@ -108,6 +118,9 @@ export interface CreateStoryModalProps {
 // Static option vocabularies (mirrored from legacy modal)
 // ─────────────────────────────────────────────────────────────────────────────
 
+// 2026-05-09 — Task and API Requirement deprecated (Vikram directive):
+//   Task → belongs to task module, not project hub.
+//   API Requirement → removed entirely.
 const WORK_TYPES = [
   'Story',
   'Epic',
@@ -117,74 +130,48 @@ const WORK_TYPES = [
   'QA Bug',
   'Production Incident',
   'Change Request',
-  'Task',
-  'API Requirement',
 ] as const;
 
 const PRIORITIES = ['Highest', 'High', 'Medium', 'Low', 'Lowest'] as const;
 
-// Per type → which initial status appears in the read-only Status lozenge.
-// Matches what the existing useCreateStoryMutation actually writes.
-const INITIAL_STATUS_BY_TYPE: Record<string, string> = {
-  Story: 'In Requirements',
-  Epic: 'To Do',
-  Feature: 'To Do',
-  'Business Gap': 'Open',
-  'QA Bug': 'Open',
-  'Production Incident': 'Open',
-  'Change Request': 'Submitted',
-  Task: 'To Do',
-  'API Requirement': 'To Do',
+// ─────────────────────────────────────────────────────────────────────────────
+// Parent hierarchy rules — Vikram directive 2026-05-09.
+// Maps each work type to the list of eligible parent types.
+// 'Business Request' entries are resolved from business_requests table;
+// all other types from ph_issues.
+// Exported for unit tests.
+// ─────────────────────────────────────────────────────────────────────────────
+export const PARENT_TYPE_RULES: Record<string, string[]> = {
+  'Story':               ['Feature', 'Epic'],
+  'Epic':                ['Business Request'],
+  'Feature':             ['Epic', 'Business Request'],
+  'Business Request':    [],  // top-level, no parent
+  'Business Gap':        ['Business Request', 'Epic'],
+  'QA Bug':              ['Feature', 'Story'],
+  'Production Incident': ['Business Request', 'Story', 'Feature', 'Epic'],
+  'Change Request':      ['Epic', 'Business Request', 'Feature'],
 };
 
-// Status options per work type — shown in the Status dropdown as lozenges.
+// Per type → which initial status appears in the read-only Status lozenge.
+// Matches what the existing useCreateStoryMutation actually writes.
+// Minimal fallback — only shown when catalyst_workflow_schemes returns no rows
+// for a work type (e.g. types not yet configured in the DB).
+// Canonical source: useWorkflowStatuses (catalyst_workflow_schemes/_statuses).
+// INITIAL_STATUS_BY_TYPE removed 2026-05-09 (Bucket B): canonical initial
+// status comes from DB (useWorkflowStatuses.is_initial); hard fallback is 'To Do'.
 const DEFAULT_STATUS_OPTIONS = [
   { value: 'To Do', label: 'To Do' },
   { value: 'In Progress', label: 'In Progress' },
   { value: 'Done', label: 'Done' },
 ];
 
-const STATUS_OPTIONS_BY_TYPE: Record<string, { value: string; label: string }[]> = {
-  Story: [
-    { value: 'In Requirements', label: 'In Requirements' },
-    { value: 'In Progress', label: 'In Progress' },
-    { value: 'In QA', label: 'In QA' },
-    { value: 'Done', label: 'Done' },
-  ],
-  Epic: DEFAULT_STATUS_OPTIONS,
-  Feature: DEFAULT_STATUS_OPTIONS,
-  'QA Bug': [
-    { value: 'Open', label: 'Open' },
-    { value: 'In Progress', label: 'In Progress' },
-    { value: 'In QA', label: 'In QA' },
-    { value: 'Closed', label: 'Closed' },
-  ],
-  'Production Incident': [
-    { value: 'Open', label: 'Open' },
-    { value: 'In Progress', label: 'In Progress' },
-    { value: 'Resolved', label: 'Resolved' },
-  ],
-  'Business Gap': [
-    { value: 'Open', label: 'Open' },
-    { value: 'In Progress', label: 'In Progress' },
-    { value: 'Closed', label: 'Closed' },
-  ],
-  'Change Request': [
-    { value: 'Submitted', label: 'Submitted' },
-    { value: 'In Review', label: 'In Review' },
-    { value: 'Approved', label: 'Approved' },
-    { value: 'Rejected', label: 'Rejected' },
-  ],
-  Task: DEFAULT_STATUS_OPTIONS,
-  'API Requirement': DEFAULT_STATUS_OPTIONS,
-};
-
 // Lozenge appearance buckets — Atlaskit gives us 5 named appearances and we
 // map to the 3-color status guardrail (CLAUDE.md §5):
 //   default (grey)  → To Do / Backlog / Open / In Requirements / Submitted
 //   inprogress (blue) → In Progress / In Review / etc.
 //   success (green) → Done
-function statusAppearance(
+// Exported as `statusAppearanceForTest` for unit tests (Bucket B, 2026-05-09).
+export function statusAppearanceForTest(
   status: string,
 ): 'default' | 'inprogress' | 'success' {
   const s = status.toLowerCase();
@@ -197,20 +184,9 @@ function statusAppearance(
   }
   return 'default';
 }
+// Internal alias — keeps call sites unchanged.
+const statusAppearance = statusAppearanceForTest;
 
-function plainTextToAdf(text: string) {
-  const paragraphs = text.split(/\n{2,}/).map((block) => block.trim()).filter(Boolean);
-  return {
-    type: 'doc',
-    version: 1,
-    content: paragraphs.length
-      ? paragraphs.map((paragraph) => ({
-          type: 'paragraph',
-          content: [{ type: 'text', text: paragraph }],
-        }))
-      : [{ type: 'paragraph' }],
-  };
-}
 
 // ─────────────────────────────────────────────────────────────────────────────
 // xcss styles (token-only)
@@ -249,31 +225,6 @@ const dividerStyles = xcss({
   marginBlock: 'space.100',
 });
 
-const helperLinkStyles = xcss({
-  display: 'inline-flex',
-  alignItems: 'center',
-  gap: 'space.050',
-  marginTop: 'space.075',
-  font: 'font.body.small',
-  color: 'color.link',
-  textDecoration: 'none',
-});
-
-
-const reporterReadonlyBoxStyles = xcss({
-  display: 'flex',
-  alignItems: 'center',
-  gap: 'space.100',
-  height: '40px',
-  paddingInline: 'space.100',
-  borderRadius: 'border.radius',
-  borderWidth: 'border.width',
-  borderStyle: 'solid',
-  borderColor: 'color.border.input',
-  backgroundColor: 'elevation.surface.sunken',
-  font: 'font.body',
-  color: 'color.text',
-});
 
 const footerLeftStyles = xcss({
   display: 'flex',
@@ -322,53 +273,6 @@ const formatIconOption = (option: IconOption) => (
   </span>
 );
 
-function PriorityIcon({ name }: { name: string }) {
-  // Compact native SVG matching Jira's priority glyphs.
-  const stroke =
-    name === 'Highest' || name === 'High'
-      ? token('color.icon.danger', '#C9372C')
-      : name === 'Medium'
-        ? token('color.icon.warning', '#B38600')
-        : token('color.icon.information', '#1868DB');
-  const paths: Record<string, ReactNode> = {
-    Highest: (
-      <>
-        <path d="M3 8l5-5 5 5" />
-        <path d="M3 12l5-5 5 5" />
-      </>
-    ),
-    High: <path d="M3 10l5-5 5 5" />,
-    Medium: (
-      <>
-        <path d="M3 6h10" />
-        <path d="M3 10h10" />
-      </>
-    ),
-    Low: <path d="M3 6l5 5 5-5" />,
-    Lowest: (
-      <>
-        <path d="M3 4l5 5 5-5" />
-        <path d="M3 8l5 5 5-5" />
-      </>
-    ),
-  };
-  return (
-    <svg
-      width={14}
-      height={14}
-      viewBox="0 0 16 16"
-      fill="none"
-      stroke={stroke}
-      strokeWidth={2}
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      {paths[name]}
-    </svg>
-  );
-}
-
 // Generic Atlaskit avatar fallback — initials in a token-coloured circle.
 // ── Header action buttons — read PortalFix context ──────────────────────────
 function MinimizeButton() {
@@ -405,79 +309,27 @@ function FullscreenToggleButton() {
   );
 }
 
-// ── MoreActionsButton — opens a small dropdown with help/feedback actions ────
+// ── MoreActionsButton — @atlaskit/dropdown-menu (canonical ADS primitive) ────
 function MoreActionsButton() {
-  const [open, setOpen] = useState(false);
-  const ref = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (!open) return;
-    const handler = (e: MouseEvent) => {
-      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
-    };
-    document.addEventListener('mousedown', handler);
-    return () => document.removeEventListener('mousedown', handler);
-  }, [open]);
-
-  const items = [
-    { label: 'Give feedback', action: () => window.open('https://jira.atlassian.com/secure/CreateIssue.jspa', '_blank', 'noopener') },
-    { label: 'Help', action: () => window.open('https://support.atlassian.com/jira-software-cloud/', '_blank', 'noopener') },
-  ];
-
   return (
-    <div ref={ref} style={{ position: 'relative', display: 'inline-block' }}>
-      <IconButton
-        appearance="subtle"
-        spacing="default"
-        label="More actions"
-        icon={(iconProps) => <MoreIcon {...iconProps} label="" />}
-        onClick={() => setOpen(o => !o)}
-        isSelected={open}
-      />
-      {open && (
-        <div
-          role="menu"
-          style={{
-            position: 'absolute',
-            top: '100%',
-            right: 0,
-            marginTop: 4,
-            background: token('elevation.surface.overlay', '#FFF'),
-            border: `1px solid ${token('color.border', '#DFE1E6')}`,
-            borderRadius: 4,
-            boxShadow: '0 4px 12px rgba(9,30,66,0.15)',
-            minWidth: 160,
-            padding: '4px 0',
-            zIndex: 10,
-          }}
-        >
-          {items.map(item => (
-            <button
-              key={item.label}
-              role="menuitem"
-              type="button"
-              onClick={() => { item.action(); setOpen(false); }}
-              style={{
-                display: 'block',
-                width: '100%',
-                padding: '8px 14px',
-                background: 'transparent',
-                border: 'none',
-                cursor: 'pointer',
-                fontFamily: 'var(--cp-font-body)',
-                fontSize: 14,
-                color: token('color.text', '#292A2E'),
-                textAlign: 'left',
-              }}
-              onMouseEnter={e => (e.currentTarget.style.background = token('color.background.neutral.hovered', 'rgba(9,30,66,0.06)'))}
-              onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
-            >
-              {item.label}
-            </button>
-          ))}
-        </div>
+    <DropdownMenu
+      trigger={({ triggerRef, ...triggerProps }) => (
+        <IconButton
+          {...triggerProps}
+          ref={triggerRef}
+          appearance="subtle"
+          spacing="default"
+          label="More actions"
+          icon={(iconProps) => <MoreIcon {...iconProps} label="" />}
+        />
       )}
-    </div>
+      placement="bottom-end"
+    >
+      <DropdownItemGroup>
+        <DropdownItem>Give feedback</DropdownItem>
+        <DropdownItem>Help</DropdownItem>
+      </DropdownItemGroup>
+    </DropdownMenu>
   );
 }
 
@@ -486,37 +338,14 @@ function MoreActionsButton() {
 //    full dark-mode token resolution. See lines ~1109 for the new render.
 
 
+// MiniAvatar — canonical @atlaskit/avatar xsmall (24px, ADS-compliant).
 function MiniAvatar({ name, avatarUrl }: { name: string; avatarUrl?: string | null }) {
-  const initial = name?.trim()?.charAt(0)?.toUpperCase() ?? '?';
-  if (avatarUrl) {
-    return (
-      <img
-        src={avatarUrl}
-        alt={name}
-        aria-hidden="true"
-        style={{ width: 24, height: 24, borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }}
-      />
-    );
-  }
   return (
-    <span
-      aria-hidden="true"
-      style={{
-        display: 'inline-flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        width: 24,
-        height: 24,
-        borderRadius: '50%',
-        background: token('color.background.neutral'),
-        color: token('color.text.subtle'),
-        font: token('font.body.small'),
-        fontWeight: 600,
-        flexShrink: 0,
-      }}
-    >
-      {initial}
-    </span>
+    <Avatar
+      size="xsmall"
+      name={name}
+      src={avatarUrl ?? undefined}
+    />
   );
 }
 
@@ -536,23 +365,18 @@ export function CreateStoryModal({
   const { user } = useAuth();
   const { form, updateField, reset } = useCreateStoryForm(projectId);
   const { data: projects = [] } = useProjects();
-  console.log('[CreateModal] form.projectId:', form.projectId, 'projects list:', projects.map((p: any) => ({ id: p.id, name: p.name, key: p.key })));
   const { data: members = [] } = useTeamMembers();
   const { data: releases = [], isLoading: releasesLoading, error: releasesError } = useProjectReleases(form.projectId);
 
-  // Debug — remove after verification
-  useEffect(() => {
-    if (form.projectId) {
-      console.log('[CreateModal] releases for project', form.projectId, ':', releases, 'error:', releasesError);
-    }
-  }, [releases, form.projectId, releasesError]);
   const createMutation = useCreateStoryMutation();
 
   const [workType, setWorkType] = useState<string>('Story');
   const [createAnother, setCreateAnother] = useState(false);
+  // Incremented each time the form is reset — forces EpicDescriptionEditor to remount with empty content.
+  const [editorKey, setEditorKey] = useState(0);
 
   // Dynamic workflow statuses from catalyst_workflow_schemes/_statuses.
-  // Falls back to hardcoded STATUS_OPTIONS_BY_TYPE when DB returns no rows
+  // Falls back to DEFAULT_STATUS_OPTIONS when DB returns no rows
   // (e.g. unmapped work types like Feature / API Requirement).
   const { data: workflowStatuses = [], isLoading: statusesLoading } =
     useWorkflowStatuses(workType, form.projectId);
@@ -561,18 +385,17 @@ export function CreateStoryModal({
     () => workflowStatuses.map((s) => ({ value: s.value, label: s.label })),
     [workflowStatuses],
   );
+  // DB-first: canonical statuses from catalyst_workflow_schemes.
+  // Falls back to DEFAULT_STATUS_OPTIONS only when the DB returns nothing
+  // (e.g. work type not yet configured in catalyst_workflow_schemes).
   const resolvedStatusOptions =
-    dbStatusOptions.length > 0
-      ? dbStatusOptions
-      : (STATUS_OPTIONS_BY_TYPE[workType] ?? DEFAULT_STATUS_OPTIONS);
+    dbStatusOptions.length > 0 ? dbStatusOptions : DEFAULT_STATUS_OPTIONS;
 
   const dbInitialStatus = useMemo(
     () => workflowStatuses.find((s) => s.is_initial)?.value,
     [workflowStatuses],
   );
   const [submitAttempted, setSubmitAttempted] = useState(false);
-  // BEH-003: blur-based summary validation — error shows after leaving empty field
-  const [summaryBlurred, setSummaryBlurred] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
 
   const isCreateLinkedMode = !!linkedSource;
@@ -599,10 +422,12 @@ export function CreateStoryModal({
     }
   }, [projectId, projectKey, projects, form.projectId, updateField]);
 
-  // ── Status auto-syncs to work-type's initial status (DB-first, fallback hardcoded) ──
+  // ── Status auto-syncs to work-type's initial status (DB-first, 'To Do' fallback) ──
+  // Canonical source: catalyst_workflow_schemes/_statuses via useWorkflowStatuses.
+  // INITIAL_STATUS_BY_TYPE removed (Bucket B, 2026-05-09) — DB is the only authority.
   useEffect(() => {
     if (statusesLoading) return;
-    const initial = dbInitialStatus ?? INITIAL_STATUS_BY_TYPE[workType] ?? 'To Do';
+    const initial = dbInitialStatus ?? 'To Do';
     if (form.status !== initial) updateField('status', initial);
   }, [workType, dbInitialStatus, statusesLoading]); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -612,8 +437,18 @@ export function CreateStoryModal({
       projects.map((p: any) => ({
         value: p.id,
         label: p.name,
-        // no sublabel — ProjectKey pill already shows the key; sublabel would duplicate it
-        icon: <ProjectKey k={p.key} />,
+        icon: (
+          // Bucket F (2026-05-09): pass iconName + color so Lucide fallback
+          // works for non-bundled-registry projects (ph_projects data joined).
+          <ProjectIcon
+            projectKey={p.key ?? undefined}
+            avatarUrl={p.avatar_url ?? null}
+            iconName={p.iconName ?? null}
+            color={p.phColor ?? null}
+            name={p.name}
+            size="small"
+          />
+        ),
       })),
     [projects],
   );
@@ -623,7 +458,7 @@ export function CreateStoryModal({
       WORK_TYPES.map((t) => ({
         value: t,
         label: t,
-        icon: <JiraIssueTypeIcon type={t} size={16} />,
+        icon: <WorkItemTypeIcon type={t} size={16} />,
       })),
     [],
   );
@@ -633,7 +468,7 @@ export function CreateStoryModal({
       PRIORITIES.map((p) => ({
         value: p,
         label: p,
-        icon: <PriorityIcon name={p} />,
+        icon: <PriorityIcon level={p} size={14} />,
       })),
     [],
   );
@@ -744,10 +579,12 @@ export function CreateStoryModal({
 
       if (createAnother && !isCreateLinkedMode) {
         reset(true);
+        setEditorKey(k => k + 1);
         setSubmitAttempted(false);
       } else {
         onClose();
         reset();
+        setEditorKey(k => k + 1);
       }
     } catch (err: any) {
       setFormError(err?.message ?? 'Failed to create work item');
@@ -763,20 +600,18 @@ export function CreateStoryModal({
     onClose,
     reset,
     createAnother,
+    setEditorKey,
   ]);
 
   const handleClose = useCallback(() => {
     setSubmitAttempted(false);
-    setSummaryBlurred(false);
     setFormError(null);
     onClose();
   }, [onClose]);
 
-  // BEH-003: error on blur OR after submit attempt
+  // Summary error only shows after an explicit submit attempt — never on load or blur.
   const summaryError =
-    (submitAttempted || summaryBlurred) && !form.summary.trim()
-      ? 'Summary is required'
-      : undefined;
+    submitAttempted && !form.summary.trim() ? 'Summary is required' : undefined;
 
   // ─────────────────────────────────────────────────────────────────────────
   // Render
@@ -851,17 +686,6 @@ export function CreateStoryModal({
                       formatOptionLabel={formatIconOption}
                       isSearchable={false}
                     />
-                    <a
-                      href="https://support.atlassian.com/jira-software-cloud/docs/what-are-issue-types/"
-                      target="jira-help"
-                      rel="noopener noreferrer"
-                      onClick={(e) => { e.preventDefault(); window.open((e.currentTarget as HTMLAnchorElement).href, 'jira-help', 'width=600,height=500,noopener,noreferrer'); }}
-                    >
-                      <Box xcss={helperLinkStyles}>
-                        Learn about work types
-                        <ShortcutIcon label="" size="small" />
-                      </Box>
-                    </a>
                   </>
                 )}
               </Field>
@@ -902,39 +726,59 @@ export function CreateStoryModal({
                 </Field>
               )}
 
-              <Box xcss={dividerStyles} />
-
-              {/* ── Status — Atlaskit Select with Lozenge option label
-                  (Jira-parity: lozenge sits inside select control, full
-                  ADS dark-mode token resolution, no hand-rolled chip). */}
+              {/* ── Status — clickable dropdown button (Jira-parity, 2026-05-09).
+                  Jira DOM probe: BUTTON bg=rgba(5,21,36,0.06) br=3px fw=500 cursor=pointer.
+                  Opens workflow status options from resolvedStatusOptions.
+                  Helper text: "This is the initial status upon creation" (Jira-canonical). */}
               <Field name="status" label="Status">
-                {({ fieldProps }) => {
-                  const selected =
-                    resolvedStatusOptions.find((o) => o.value === form.status) ?? null;
-                  return (
-                    <>
-                      <Select
-                        {...(fieldProps as any)}
-                        inputId="create-story-status"
-                        value={selected}
-                        options={resolvedStatusOptions}
-                        isSearchable={false}
-                        isClearable={false}
-                        onChange={(opt: any) =>
-                          opt && updateField('status', opt.value)
-                        }
-                        formatOptionLabel={(opt: any) => (
-                          <Lozenge appearance={statusAppearance(opt.value)} isBold>
+                {() => (
+                  <>
+                    <DropdownMenu
+                      trigger={({ triggerRef, ...triggerProps }) => (
+                        <button
+                          {...(triggerProps as any)}
+                          ref={triggerRef as any}
+                          type="button"
+                          style={{
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: 4,
+                            background: 'rgba(5,21,36,0.06)',
+                            border: 'none',
+                            borderRadius: 3,
+                            padding: '4px 10px',
+                            fontSize: 14,
+                            fontWeight: 500,
+                            color: token('color.text', '#292A2E'),
+                            cursor: 'pointer',
+                          }}
+                        >
+                          {form.status || 'To Do'}
+                          <svg width="10" height="6" viewBox="0 0 10 6" aria-hidden="true" style={{ flexShrink: 0 }}>
+                            <path d="M1 1l4 4 4-4" stroke="currentColor" strokeWidth="1.5" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
+                          </svg>
+                        </button>
+                      )}
+                    >
+                      <DropdownItemGroup>
+                        {resolvedStatusOptions.map((opt) => (
+                          <DropdownItem
+                            key={opt.value}
+                            isSelected={form.status === opt.value}
+                            onClick={() => updateField('status', opt.value)}
+                          >
                             {opt.label}
-                          </Lozenge>
-                        )}
-                      />
-                      <HelperMessage>
+                          </DropdownItem>
+                        ))}
+                      </DropdownItemGroup>
+                    </DropdownMenu>
+                    <Box xcss={xcss({ marginBlockStart: 'space.025' })}>
+                      <span style={{ fontSize: 12, color: token('color.text.subtlest', '#6B778C') }}>
                         This is the initial status upon creation
-                      </HelperMessage>
-                    </>
-                  );
-                }}
+                      </span>
+                    </Box>
+                  </>
+                )}
               </Field>
 
               {/* ── Summary — required ─────────────────────────────── */}
@@ -949,7 +793,6 @@ export function CreateStoryModal({
                       onChange={(e: any) =>
                         updateField('summary', e.target.value)
                       }
-                      onBlur={() => setSummaryBlurred(true)}
                       maxLength={200}
                     />
                     {summaryError && (
@@ -970,30 +813,40 @@ export function CreateStoryModal({
                       inputId="cs-parent"
                       defaultOptions
                       loadOptions={async (input: string) => {
-                        // Epics live in ph_issues (Jira-synced). Filter by project_key.
-                        // resolvedKey = the Jira project key string e.g. "BAU"
+                        // Bucket E (2026-05-09): parent types driven by PARENT_TYPE_RULES.
+                        // All parent types — including 'Business Request' — live in ph_issues
+                        // for the BAU project (source='catalyst'|'jira', issue_type='Business Request').
+                        // The separate business_requests table is for the Demand Hub module and
+                        // is not used here (it is empty for project-hub BAU items).
                         if (!resolvedKey) return [];
-                        const q = supabase
+                        const eligibleTypes = PARENT_TYPE_RULES[workType] ?? [];
+                        if (eligibleTypes.length === 0) return [];
+
+                        const searchTerm = input.trim();
+                        const results: IconOption[] = [];
+
+                        // All eligible parent types come from ph_issues for this project
+                        let q = supabase
                           .from('ph_issues')
-                          .select('id, issue_key, summary, issue_type')
+                          .select('issue_key, summary, issue_type')
                           .eq('project_key', resolvedKey)
-                          .ilike('issue_type', 'Epic')
+                          .in('issue_type', eligibleTypes)
                           .order('jira_updated_at', { ascending: false })
                           .limit(30);
-                        if (input.trim()) {
-                          q.or(`issue_key.ilike.%${input}%,summary.ilike.%${input}%`);
+                        if (searchTerm) {
+                          q = q.or(`issue_key.ilike.%${searchTerm}%,summary.ilike.%${searchTerm}%`);
                         }
-                        const { data, error } = await q;
-                        if (error) return [];
-                        return (data ?? []).map((d: any) => ({
-                          // Use issue_key as the value — parent_id FK is self-referential
-                          // to catalyst_issues, but Epics live only in ph_issues. We store
-                          // the relationship via ph_issue_links keyed on issue_key.
-                          value: d.issue_key,
-                          label: d.summary,
-                          sublabel: d.issue_key,
-                          icon: <JiraIssueTypeIcon type="Epic" size={14} />,
-                        }));
+                        const { data } = await q;
+                        (data ?? []).forEach((d: any) => {
+                          results.push({
+                            value: d.issue_key,
+                            label: d.summary,
+                            sublabel: d.issue_key,
+                            icon: <WorkItemTypeIcon type={d.issue_type} size={14} />,
+                          });
+                        });
+
+                        return results;
                       }}
                       onChange={(opt) =>
                         updateField(
@@ -1005,10 +858,6 @@ export function CreateStoryModal({
                       formatOptionLabel={formatIconOption}
                       isClearable
                     />
-                    <HelperMessage>
-                      Your work type hierarchy determines the work items
-                      you can select here.
-                    </HelperMessage>
                   </>
                 )}
               </Field>
@@ -1035,36 +884,37 @@ export function CreateStoryModal({
                       formatOptionLabel={formatIconOption}
                       isSearchable={false}
                     />
-                    <a
-                      href="https://support.atlassian.com/jira-software-cloud/docs/what-is-issue-priority/"
-                      target="jira-help"
-                      rel="noopener noreferrer"
-                      onClick={(e) => { e.preventDefault(); window.open((e.currentTarget as HTMLAnchorElement).href, 'jira-help', 'width=600,height=500,noopener,noreferrer'); }}
-                    >
-                      <Box xcss={helperLinkStyles}>
-                        Learn about priority levels
-                        <ShortcutIcon label="" size="small" />
-                      </Box>
-                    </a>
                   </>
                 )}
               </Field>
 
-              {/* ── Description ─────────────────────────────────────── */}
+              {/* ── Description — ADF editor (Jira-parity, non-negotiable) ─── */}
+              {/* appearance="comment" gives the Jira-grade primary toolbar (Tt/B/lists/etc.)
+                  The editor's own Save/Cancel buttons are suppressed via the
+                  cs-adf-desc-wrapper class — modal footer owns submission. */}
               <Field name="description" label="Description">
                 {() => (
-                  <TextArea
-                    name="description"
-                    value={form.description}
-                    minimumRows={4}
-                    resize="vertical"
-                    placeholder="Add a description..."
-                    onChange={(e) => {
-                      const value = (e.target as HTMLTextAreaElement).value;
-                      updateField('description', value);
-                      updateField('descriptionAdf', plainTextToAdf(value));
-                    }}
-                  />
+                  <div className="cs-adf-desc-wrapper" style={{ border: `1px solid ${token('color.border', '#DFE1E6')}`, borderRadius: 3 }}>
+                    <Suspense fallback={<div style={{ padding: '8px 12px', color: token('color.text.subtlest', '#97A0AF'), fontSize: 14 }}>Loading editor…</div>}>
+                      <EpicDescriptionEditor
+                        key={editorKey}
+                        appearance="comment"
+                        initialContent={null}
+                        workItemId="new"
+                        placeholder="Add a description..."
+                        onChange={(adfJson) => {
+                          try {
+                            const adf = JSON.parse(adfJson);
+                            updateField('descriptionAdf', adf);
+                          } catch {
+                            updateField('descriptionAdf', null);
+                          }
+                        }}
+                        onSave={() => {}}
+                        onCancel={() => {}}
+                      />
+                    </Suspense>
+                  </div>
                 )}
               </Field>
 
@@ -1148,45 +998,39 @@ export function CreateStoryModal({
                 )}
               </Field>
 
-              {/* ── Reporter — required, current user ──────────────── */}
+              {/* ── Reporter — required, current user (ADS: disabled Select) ── */}
               <Field name="reporter" label="Reporter" isRequired>
                 {({ fieldProps }) => {
-                  const reporter = members.find(
-                    (m: any) => m.id === form.reporterId,
-                  );
+                  const reporterOption = memberOptions.find(
+                    (o) => o.value === form.reporterId,
+                  ) ?? null;
+                  // Reporter is pre-filled with the current user and is read-only.
+                  // Render as a disabled @atlaskit/select so it matches the ADS
+                  // form-field visual language without a hand-rolled Box.
                   return (
                     <>
-                      {reporter ? (
-                        <Box xcss={reporterReadonlyBoxStyles}>
-                          <MiniAvatar
-                            name={reporter.full_name ?? reporter.email ?? '?'}
-                            avatarUrl={(reporter as any).avatar_url ?? null}
-                          />
-                          <span>
-                            {reporter.full_name ?? reporter.email ?? '—'}
-                          </span>
-                        </Box>
-                      ) : (
-                        <Select<IconOption>
-                          inputId="cs-reporter"
-                          name={fieldProps.name}
-                          isRequired={fieldProps.isRequired}
-                          isDisabled={fieldProps.isDisabled}
-                          isInvalid={fieldProps.isInvalid}
-                          onBlur={fieldProps.onBlur}
-                          onFocus={fieldProps.onFocus}
-                          options={memberOptions}
-                          value={memberOptions.find((o) => o.value === form.reporterId) ?? null}
-                          onChange={(opt) =>
-                            updateField(
-                              'reporterId',
-                              (opt as IconOption)?.value ?? null,
-                            )
-                          }
-                          formatOptionLabel={formatIconOption}
-                          placeholder="Select reporter"
-                        />
-                      )}
+                      <Select<IconOption>
+                        inputId="cs-reporter"
+                        name={fieldProps.name}
+                        isRequired={fieldProps.isRequired}
+                        isInvalid={fieldProps.isInvalid}
+                        onBlur={fieldProps.onBlur}
+                        onFocus={fieldProps.onFocus}
+                        options={memberOptions}
+                        value={reporterOption}
+                        onChange={(opt) =>
+                          updateField(
+                            'reporterId',
+                            (opt as IconOption)?.value ?? null,
+                          )
+                        }
+                        formatOptionLabel={formatIconOption}
+                        placeholder="Select reporter"
+                        // Disable when a reporter is already set (defaults to current user).
+                        // This preserves Jira's "Reporter = current user, not editable inline"
+                        // pattern while using the ADS Select primitive throughout.
+                        isDisabled={!!form.reporterId}
+                      />
                       {submitAttempted && !form.reporterId && (
                         <ErrorMessage>Reporter is required</ErrorMessage>
                       )}
