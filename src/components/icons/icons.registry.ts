@@ -30,6 +30,7 @@
 
 // ─── WORK-TYPE ICONS ──────────────────────────────────────────────────
 
+import businessRequestLight from '@/assets/icons/work-type/business-request.svg?url';
 import storyLight from '@/assets/icons/work-type/story.svg?url';
 import taskLight from '@/assets/icons/work-type/task.svg?url';
 import epicLight from '@/assets/icons/work-type/epic.svg?url';
@@ -95,7 +96,7 @@ import stockYeti from '@/assets/icons/project-avatars/_stock/yeti.png?url';
 export type WorkItemType =
   | 'story' | 'task' | 'epic' | 'sub-task' | 'qa-bug'
   | 'feature' | 'change-request' | 'production-incident'
-  | 'business-gap' | 'api-requirement'
+  | 'business-request' | 'business-gap' | 'api-requirement'
   | 'frontend' | 'backend' | 'integration' | 'figma';
 
 export type PriorityLevel =
@@ -134,7 +135,7 @@ export interface ProjectAvatarMeta {
 
 export const WORK_ITEM_TYPES: readonly WorkItemType[] = [
   'story', 'task', 'epic', 'sub-task', 'qa-bug', 'feature', 'change-request',
-  'production-incident', 'business-gap', 'api-requirement',
+  'production-incident', 'business-request', 'business-gap', 'api-requirement',
   'frontend', 'backend', 'integration', 'figma',
 ] as const;
 
@@ -152,6 +153,7 @@ export const PROJECT_KEYS: readonly ProjectKey[] = [
 // ═══════════════════════════════════════════════════════════════════════
 
 export const WORK_TYPE_REGISTRY: Record<WorkItemType, WorkTypeMeta> = {
+  'business-request':    { id: 'business-request',    label: 'Business Request',    color: '#E2B203', light: businessRequestLight,    dark: businessRequestLight },
   'story':               { id: 'story',               label: 'Story',               color: '#6A9A23', light: storyLight,               dark: storyLight },
   'task':                { id: 'task',                label: 'Task',                color: '#1868DB', light: taskLight,                dark: taskLight },
   'epic':                { id: 'epic',                label: 'Epic',                color: '#AF59E1', light: epicLight,                dark: epicLight },
@@ -224,6 +226,7 @@ export function normalizeWorkItemType(raw: string | null | undefined): WorkItemT
   if (t.includes('qa') && t.includes('bug')) return 'qa-bug';
   if (t === 'bug' || t === 'defect') return 'qa-bug';
   if (t.includes('change') && t.includes('request')) return 'change-request';
+  if (t.includes('business') && t.includes('request')) return 'business-request';
   if (t.includes('business') && t.includes('gap')) return 'business-gap';
   if (t.includes('api') && t.includes('requirement')) return 'api-requirement';
   if (t.includes('sub-task') || t.includes('subtask') || t === 'sub task') return 'sub-task';

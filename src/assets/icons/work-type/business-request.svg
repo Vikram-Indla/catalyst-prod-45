@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" width="20" height="20" fill="none">
+  <!-- Bulb glass body -->
+  <path d="M10 2.5a5.25 5.25 0 0 0-3.2 9.42c.42.33.7.82.7 1.33v.25a.5.5 0 0 0 .5.5h4a.5.5 0 0 0 .5-.5v-.25c0-.51.28-1 .7-1.33A5.25 5.25 0 0 0 10 2.5Z" fill="#E2B203"/>
+  <!-- Filament glow highlight -->
+  <path d="M8.5 9.5 10 7.5l1.5 2" stroke="#FFF0A0" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" opacity="0.7"/>
+  <!-- Base band 1 -->
+  <rect x="7.5" y="14.25" width="5" height="1.25" rx="0.5" fill="#B8860B"/>
+  <!-- Base band 2 (tip) -->
+  <rect x="8.25" y="15.75" width="3.5" height="1.25" rx="0.5" fill="#B8860B"/>
+  <!-- Bottom nub -->
+  <rect x="9" y="17" width="2" height="0.75" rx="0.375" fill="#9A6F00"/>
+</svg>
