@@ -206,7 +206,7 @@ export function StatusMappingDialog({ open, onOpenChange, connectionId }: Status
                 onClick={() => saveMutation.mutate()}
                 disabled={saveMutation.isPending}
               >
-                {saveMutation.isPending && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
+                {saveMutation.isPending && <Spinner size="small" />}
                 Save Mappings
               </Button>
             </div>
