@@ -2,9 +2,12 @@ import { useState } from 'react';
 import { Card, CardHeader, CardContent } from '@/components/ui/card';
 import { useRolePermissions, PERMISSION_GROUPS, useUpdateRolePermissions, PermissionLevel } from '@/hooks/useProductRoles';
 import { useUserRole } from '@/hooks/useUserRole';
-import { Check, Eye, EyeOff, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useQueryClient } from '@tanstack/react-query';
+import Spinner from '@atlaskit/spinner';
+import CheckMarkIcon from '@atlaskit/icon/core/check-mark';
+import EyeOpenIcon from '@atlaskit/icon/core/eye-open';
+import EyeOpenStrikethroughIcon from '@atlaskit/icon/core/eye-open-strikethrough';
 
 interface RoleModuleAccessGridProps {
   roleId: string;
@@ -37,7 +40,7 @@ function AccessBadge({ level, isUpdating, canEdit, onClick }: AccessBadgeProps) 
   if (isUpdating) {
     return (
       <span className={cn(baseClasses, "bg-zinc-100 text-zinc-500")}>
-        <Loader2 className="h-3 w-3 animate-spin" />
+        <Spinner size="small" />
       </span>
     );
   }
@@ -54,7 +57,7 @@ function AccessBadge({ level, isUpdating, canEdit, onClick }: AccessBadgeProps) 
             !canEdit && "hover:bg-emerald-100"
           )}
         >
-          <Check className="h-3 w-3" />
+          <CheckMarkIcon label="" size="small" />
           Full
         </button>
       );
@@ -69,7 +72,7 @@ function AccessBadge({ level, isUpdating, canEdit, onClick }: AccessBadgeProps) 
             !canEdit && "hover:bg-blue-100"
           )}
         >
-          <Eye className="h-3 w-3" />
+          <EyeOpenIcon label="" size="small" />
           View
         </button>
       );
@@ -85,7 +88,7 @@ function AccessBadge({ level, isUpdating, canEdit, onClick }: AccessBadgeProps) 
             !canEdit && "hover:bg-zinc-100"
           )}
         >
-          <EyeOff className="h-3 w-3" />
+          <EyeOpenStrikethroughIcon label="" size="small" />
           Hide
         </button>
       );
@@ -147,7 +150,7 @@ export function RoleModuleAccessGrid({ roleId, roleName }: RoleModuleAccessGridP
         </CardHeader>
         <CardContent className="pt-4">
           <div className="flex items-center justify-center py-8">
-            <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
+            <Spinner size="small" />
           </div>
         </CardContent>
       </Card>

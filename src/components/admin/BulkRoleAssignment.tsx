@@ -9,8 +9,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { toast } from 'sonner';
-import { Users } from 'lucide-react';
-
+import PeopleGroupIcon from '@atlaskit/icon/core/people-group';
 interface BulkRoleAssignmentProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -99,7 +98,7 @@ export function BulkRoleAssignment({ open, onOpenChange }: BulkRoleAssignmentPro
       <DialogContent className="max-w-2xl">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <Users className="h-5 w-5" />
+            <PeopleGroupIcon label="" size="small" />
             Bulk Role Assignment
           </DialogTitle>
           <DialogDescription>

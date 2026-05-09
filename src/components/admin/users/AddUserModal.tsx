@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import {
+import Spinner from '@atlaskit/spinner';
+import AlertIcon from '@atlaskit/icon/core/alert';
   Dialog,
   DialogContent,
   DialogHeader,
@@ -20,7 +22,6 @@ import {
 import { Checkbox } from '@/components/ui/checkbox';
 import { useProductRoles } from '@/hooks/useProductRoles';
 import { useCreateUser, CreateUserInput } from '@/hooks/useUsers';
-import { Loader2, AlertCircle } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 
 interface AddUserModalProps {
@@ -133,7 +134,7 @@ export function AddUserModal({ isOpen, onClose }: AddUserModalProps) {
         <form onSubmit={handleSubmit} className="space-y-4">
           {error && (
             <Alert variant="destructive">
-              <AlertCircle className="h-4 w-4" />
+              <AlertIcon label="" size="small" />
               <AlertDescription>{error}</AlertDescription>
             </Alert>
           )}
@@ -203,7 +204,7 @@ export function AddUserModal({ isOpen, onClose }: AddUserModalProps) {
             <div className={`border rounded-md p-3 space-y-2 max-h-[200px] overflow-y-auto ${fieldErrors.roles ? 'border-destructive' : ''}`}>
               {rolesLoading ? (
                 <div className="flex items-center justify-center py-4">
-                  <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+                  <Spinner size="small" />
                 </div>
               ) : (
                 roles?.map((role) => (
@@ -244,7 +245,7 @@ export function AddUserModal({ isOpen, onClose }: AddUserModalProps) {
             >
               {createUser.isPending ? (
                 <>
-                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  <Spinner size="small" />
                   Creating...
                 </>
               ) : (

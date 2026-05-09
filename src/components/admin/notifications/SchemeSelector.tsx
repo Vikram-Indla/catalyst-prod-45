@@ -5,9 +5,13 @@
  */
 
 import { useState } from 'react';
-import { Plus, Copy, Trash2, Edit2, MoreHorizontal } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
+import AddIcon from '@atlaskit/icon/core/add';
+import CopyIcon from '@atlaskit/icon/core/copy';
+import EditIcon from '@atlaskit/icon/core/edit';
+import ShowMoreHorizontalIcon from '@atlaskit/icon/core/show-more-horizontal';
+import TrashIcon from '@atlaskit/icon/glyph/trash';
   Select,
   SelectContent,
   SelectItem,
@@ -94,16 +98,16 @@ export function SchemeSelector({ selectedSchemeId, onSchemeChange }: SchemeSelec
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" size="sm" className="h-9 w-9 p-0">
-              <MoreHorizontal className="h-4 w-4" />
+              <ShowMoreHorizontalIcon label="" size="small" />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-48">
             <DropdownMenuItem onClick={() => setEditScheme(selectedScheme)}>
-              <Edit2 className="h-3.5 w-3.5 mr-2" />
+              <EditIcon label="" size="small" />
               Edit Scheme
             </DropdownMenuItem>
             <DropdownMenuItem onClick={() => handleClone(selectedScheme)}>
-              <Copy className="h-3.5 w-3.5 mr-2" />
+              <CopyIcon label="" size="small" />
               Clone Scheme
             </DropdownMenuItem>
             {!selectedScheme.is_default && (
@@ -113,7 +117,7 @@ export function SchemeSelector({ selectedSchemeId, onSchemeChange }: SchemeSelec
                   onClick={() => handleDelete(selectedScheme)}
                   className="text-[var(--ds-text-danger,#DC2626)] focus:text-[var(--ds-text-danger,#DC2626)]"
                 >
-                  <Trash2 className="h-3.5 w-3.5 mr-2" />
+                  <TrashIcon label="" size="small" />
                   Delete Scheme
                 </DropdownMenuItem>
               </>
@@ -129,7 +133,7 @@ export function SchemeSelector({ selectedSchemeId, onSchemeChange }: SchemeSelec
         className="h-9 text-xs"
         onClick={() => setShowCreate(true)}
       >
-        <Plus className="h-3.5 w-3.5 mr-1" />
+        <AddIcon label="" size="small" />
         New Scheme
       </Button>
 

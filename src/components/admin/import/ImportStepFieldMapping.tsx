@@ -1,10 +1,12 @@
-import { ArrowRight, AlertTriangle, HelpCircle } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Tooltip } from '@/components/ads';
 import { ImportModuleConfig, isLookupField } from '@/lib/import/importModuleConfig';
 import { cn } from '@/lib/utils';
+import ArrowRightIcon from '@atlaskit/icon/core/arrow-right';
+import InformationCircleIcon from '@atlaskit/icon/core/information-circle';
+import WarningIcon from '@atlaskit/icon/core/warning';
 
 interface ImportStepFieldMappingProps {
   moduleConfig: ImportModuleConfig;
@@ -55,7 +57,7 @@ export function ImportStepFieldMapping({
         
         {!requiredFieldsMapped && (
           <Alert className="border-amber-200 bg-amber-50">
-            <AlertTriangle className="h-4 w-4 text-amber-600" />
+            <WarningIcon label="" size="small" />
             <AlertDescription className="text-amber-700">
               Please note: A Catalyst <strong>{unmappedRequiredField?.label}</strong> field mapping is required to enable import.
             </AlertDescription>
@@ -76,7 +78,7 @@ export function ImportStepFieldMapping({
               <div className="flex items-center justify-center gap-1">
                 <span>Map Value</span>
                 <Tooltip content="Only available for lookup fields (Status, Process Step, Delivery Platform, etc.)">
-                  <HelpCircle className="h-3 w-3 text-muted-foreground cursor-help" />
+                  <InformationCircleIcon label="" size="small" />
                 </Tooltip>
               </div>
             </div>
@@ -124,7 +126,7 @@ export function ImportStepFieldMapping({
                   
                   {/* Arrow */}
                   <div className="flex justify-center">
-                    <ArrowRight className="h-4 w-4 text-muted-foreground" />
+                    <ArrowRightIcon label="" size="small" />
                   </div>
                   
                   {/* Catalyst Field Dropdown */}

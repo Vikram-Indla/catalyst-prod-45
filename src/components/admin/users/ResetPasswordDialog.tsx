@@ -1,5 +1,12 @@
 import { useState } from 'react';
 import {
+import Spinner from '@atlaskit/spinner';
+import CheckMarkIcon from '@atlaskit/icon/core/check-mark';
+import CopyIcon from '@atlaskit/icon/core/copy';
+import EyeOpenIcon from '@atlaskit/icon/core/eye-open';
+import EyeOpenStrikethroughIcon from '@atlaskit/icon/core/eye-open-strikethrough';
+import LinkIcon from '@atlaskit/icon/core/link';
+import LockLockedIcon from '@atlaskit/icon/core/lock-locked';
   Dialog,
   DialogContent,
   DialogDescription,
@@ -10,7 +17,6 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Copy, Check, Loader2, KeyRound, Eye, EyeOff, Link2 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -132,7 +138,7 @@ export function ResetPasswordDialog({ isOpen, onClose, userId, userName }: Reset
           <>
             <DialogHeader>
               <DialogTitle className="flex items-center gap-2">
-                <KeyRound className="h-5 w-5 text-brand-primary" />
+                <LockLockedIcon label="" size="small" />
                 Reset password for {userName || 'user'}
               </DialogTitle>
               <DialogDescription>
@@ -166,9 +172,9 @@ export function ResetPasswordDialog({ isOpen, onClose, userId, userName }: Reset
                       onClick={() => setShowPassword(!showPassword)}
                     >
                       {showPassword ? (
-                        <EyeOff className="h-4 w-4 text-muted-foreground" />
+                        <EyeOpenStrikethroughIcon label="" size="small" />
                       ) : (
-                        <Eye className="h-4 w-4 text-muted-foreground" />
+                        <EyeOpenIcon label="" size="small" />
                       )}
                     </Button>
                   </div>
@@ -183,7 +189,7 @@ export function ResetPasswordDialog({ isOpen, onClose, userId, userName }: Reset
                   <Button onClick={handleSetPassword} disabled={isLoading || !newPassword || newPassword.length < 6}>
                     {isLoading ? (
                       <>
-                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                        <Spinner size="small" />
                         Setting...
                       </>
                     ) : (
@@ -205,12 +211,12 @@ export function ResetPasswordDialog({ isOpen, onClose, userId, userName }: Reset
                   <Button onClick={handleGenerateLink} disabled={isLoading}>
                     {isLoading ? (
                       <>
-                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                        <Spinner size="small" />
                         Generating...
                       </>
                     ) : (
                       <>
-                        <Link2 className="h-4 w-4 mr-2" />
+                        <LinkIcon label="" size="small" />
                         Generate Reset Link
                       </>
                     )}
@@ -225,7 +231,7 @@ export function ResetPasswordDialog({ isOpen, onClose, userId, userName }: Reset
           <>
             <DialogHeader>
               <DialogTitle className="flex items-center gap-2">
-                <Check className="h-5 w-5 text-green-600" />
+                <CheckMarkIcon label="" size="small" />
                 Password reset link created
               </DialogTitle>
               <DialogDescription>
@@ -250,9 +256,9 @@ export function ResetPasswordDialog({ isOpen, onClose, userId, userName }: Reset
                     className="shrink-0"
                   >
                     {copied ? (
-                      <Check className="h-4 w-4 text-green-600" />
+                      <CheckMarkIcon label="" size="small" />
                     ) : (
-                      <Copy className="h-4 w-4" />
+                      <CopyIcon label="" size="small" />
                     )}
                   </Button>
                 </div>
@@ -262,12 +268,12 @@ export function ResetPasswordDialog({ isOpen, onClose, userId, userName }: Reset
               <Button variant="outline" onClick={handleCopyLink}>
                 {copied ? (
                   <>
-                    <Check className="h-4 w-4 mr-2 text-green-600" />
+                    <CheckMarkIcon label="" size="small" />
                     Copied!
                   </>
                 ) : (
                   <>
-                    <Copy className="h-4 w-4 mr-2" />
+                    <CopyIcon label="" size="small" />
                     Copy Link
                   </>
                 )}
@@ -281,7 +287,7 @@ export function ResetPasswordDialog({ isOpen, onClose, userId, userName }: Reset
           <>
             <DialogHeader>
               <DialogTitle className="flex items-center gap-2">
-                <Check className="h-5 w-5 text-green-600" />
+                <CheckMarkIcon label="" size="small" />
                 Default password set
               </DialogTitle>
               <DialogDescription>
@@ -305,9 +311,9 @@ export function ResetPasswordDialog({ isOpen, onClose, userId, userName }: Reset
                     className="shrink-0"
                   >
                     {showPassword ? (
-                      <EyeOff className="h-4 w-4" />
+                      <EyeOpenStrikethroughIcon label="" size="small" />
                     ) : (
-                      <Eye className="h-4 w-4" />
+                      <EyeOpenIcon label="" size="small" />
                     )}
                   </Button>
                   <Button
@@ -317,9 +323,9 @@ export function ResetPasswordDialog({ isOpen, onClose, userId, userName }: Reset
                     className="shrink-0"
                   >
                     {copied ? (
-                      <Check className="h-4 w-4 text-green-600" />
+                      <CheckMarkIcon label="" size="small" />
                     ) : (
-                      <Copy className="h-4 w-4" />
+                      <CopyIcon label="" size="small" />
                     )}
                   </Button>
                 </div>
@@ -332,12 +338,12 @@ export function ResetPasswordDialog({ isOpen, onClose, userId, userName }: Reset
               <Button variant="outline" onClick={handleCopyPassword}>
                 {copied ? (
                   <>
-                    <Check className="h-4 w-4 mr-2 text-green-600" />
+                    <CheckMarkIcon label="" size="small" />
                     Copied!
                   </>
                 ) : (
                   <>
-                    <Copy className="h-4 w-4 mr-2" />
+                    <CopyIcon label="" size="small" />
                     Copy Password
                   </>
                 )}

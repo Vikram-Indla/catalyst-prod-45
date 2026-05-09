@@ -1,18 +1,16 @@
 import { useState } from 'react';
-import {
-  AlertTriangle,
-  CheckCircle2,
-  Database,
-  FolderSync,
-  Lock,
-  ShieldCheck,
-  Users,
-  Zap,
-} from 'lucide-react';
 import { format, formatDistanceToNow } from 'date-fns';
 import { Switch } from '@/components/ui/switch';
 import { Button } from '@/components/ui/button';
 import {
+import AutomationIcon from '@atlaskit/icon/core/automation';
+import CheckCircleIcon from '@atlaskit/icon/core/check-circle';
+import DatabaseIcon from '@atlaskit/icon/core/database';
+import LockLockedIcon from '@atlaskit/icon/core/lock-locked';
+import PeopleGroupIcon from '@atlaskit/icon/core/people-group';
+import RefreshIcon from '@atlaskit/icon/core/refresh';
+import ShieldIcon from '@atlaskit/icon/core/shield';
+import WarningIcon from '@atlaskit/icon/core/warning';
   Dialog,
   DialogContent,
   DialogDescription,
@@ -107,7 +105,7 @@ export function JiraSyncControlPanel() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-40" style={{ color: 'var(--cp-text-muted)' }}>
-        <div className="h-5 w-5 rounded-full border-2 border-current border-t-transparent animate-spin" />
+        <div className="h-5 w-5 rounded-full border-2 border-current border-t-transparent " />
       </div>
     );
   }
@@ -129,9 +127,9 @@ export function JiraSyncControlPanel() {
               style={{ background: isFrozen ? 'var(--ds-border, #DFE1E6)' : '#DEEBFF' }}
             >
               {isFrozen ? (
-                <Lock style={{ width: 18, height: 18, color: 'var(--ds-text, #253858)' }} />
+                <LockLockedIcon label="" size="small" />
               ) : (
-                <Zap style={{ width: 18, height: 18, color: '#0747A6' }} />
+                <AutomationIcon label="" size="small" />
               )}
             </div>
             <div>
@@ -185,7 +183,7 @@ export function JiraSyncControlPanel() {
       {isFrozen && (
         <>
           <div className="flex items-center gap-2 mb-3">
-            <ShieldCheck style={{ width: 14, height: 14, color: '#006644' }} />
+            <ShieldIcon label="" size="small" />
             <span className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--cp-text-muted)' }}>
               Data Preserved in Catalyst (cutoff: {config?.data_cutoff_year ?? 2026})
             </span>
@@ -219,7 +217,7 @@ export function JiraSyncControlPanel() {
               className="flex items-center justify-between px-4 py-2.5 text-xs"
             >
               <div className="flex items-center gap-2">
-                <Database style={{ width: 13, height: 13, color: 'var(--cp-text-muted)' }} />
+                <DatabaseIcon label="" size="small" />
                 <code style={{ color: 'var(--cp-text-primary)', fontFamily: 'var(--cp-font-mono)' }}>
                   {row.name}
                 </code>
@@ -234,7 +232,7 @@ export function JiraSyncControlPanel() {
                     DORMANT
                   </span>
                 ) : (
-                  <CheckCircle2 style={{ width: 13, height: 13, color: '#006644' }} />
+                  <CheckCircleIcon label="" size="small" />
                 )}
               </div>
             </div>
@@ -247,7 +245,7 @@ export function JiraSyncControlPanel() {
         className="mt-4 flex items-start gap-3 rounded-lg px-4 py-3"
         style={{ background: 'var(--ds-surface-sunken, #F8FAFC)', border: '1px solid var(--cp-border-default)' }}
       >
-        <CheckCircle2 style={{ width: 15, height: 15, color: '#006644', flexShrink: 0, marginTop: 1 }} />
+        <CheckCircleIcon label="" size="small" />
         <p className="text-xs leading-relaxed" style={{ color: 'var(--cp-text-secondary)' }}>
           <strong style={{ color: 'var(--cp-text-primary)' }}>69 Jira-only tables permanently removed</strong>
           {' '}— all <code style={{ fontFamily: 'var(--cp-font-mono)' }}>injira_*</code> mirrors,
@@ -263,7 +261,7 @@ export function JiraSyncControlPanel() {
             <>
               <DialogHeader>
                 <DialogTitle className="flex items-center gap-2">
-                  <Lock style={{ width: 16, height: 16, color: 'var(--ds-text, #253858)' }} />
+                  <LockLockedIcon label="" size="small" />
                   Freeze Jira Sync
                 </DialogTitle>
                 <DialogDescription>
@@ -277,7 +275,7 @@ export function JiraSyncControlPanel() {
                 <div className="rounded-md border px-4 py-3 space-y-1"
                   style={{ borderColor: 'var(--ds-border, #DFE1E6)', background: 'var(--ds-surface-sunken, #F8FAFC)' }}>
                   <div className="flex items-center gap-2">
-                    <AlertTriangle style={{ width: 13, height: 13, color: '#FF8B00' }} />
+                    <WarningIcon label="" size="small" />
                     <span className="text-xs font-semibold" style={{ color: 'var(--cp-text-primary)' }}>
                       What stops
                     </span>
@@ -319,7 +317,7 @@ export function JiraSyncControlPanel() {
             <>
               <DialogHeader>
                 <DialogTitle className="flex items-center gap-2">
-                  <Zap style={{ width: 16, height: 16, color: '#0747A6' }} />
+                  <AutomationIcon label="" size="small" />
                   Re-enable Jira Sync
                 </DialogTitle>
                 <DialogDescription>

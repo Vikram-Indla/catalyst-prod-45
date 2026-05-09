@@ -6,7 +6,9 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Loader2, Plus, Trash2 } from "lucide-react";
+import Spinner from '@atlaskit/spinner';
+import AddIcon from '@atlaskit/icon/core/add';
+import TrashIcon from '@atlaskit/icon/core/delete';
 import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface FieldMappingDialogProps {
@@ -181,14 +183,14 @@ export function FieldMappingDialog({ open, onOpenChange, connectionId }: FieldMa
                     size="icon"
                     onClick={() => removeMapping(index)}
                   >
-                    <Trash2 className="w-4 h-4 text-destructive" />
+                    <span style={{ display:'inline-flex', color:'var(--ds-icon-danger, #AE2A19)' }}><TrashIcon label="" size="small" /></span>
                   </Button>
                 </div>
               </div>
             ))}
 
             <Button type="button" variant="outline" onClick={addMapping} className="w-full">
-              <Plus className="w-4 h-4 mr-2" />
+              <AddIcon label="" size="small" />
               Add Mapping
             </Button>
           </div>
@@ -199,7 +201,7 @@ export function FieldMappingDialog({ open, onOpenChange, connectionId }: FieldMa
             Cancel
           </Button>
           <Button onClick={handleSave} disabled={loading} className="bg-brand-primary hover:bg-brand-primary-hover">
-            {loading && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
+            {loading && <Spinner size="small" />}
             Save Mappings
           </Button>
         </div>

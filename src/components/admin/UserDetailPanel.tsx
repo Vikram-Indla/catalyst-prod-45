@@ -1,7 +1,14 @@
 import React, { useState } from 'react';
-import { X, ShieldCheck, Share2, Loader2, RefreshCw, Copy, UserX, Activity } from 'lucide-react';
 import { toast } from 'sonner';
 import { useJiraUserDetail, useToggleUserStatus, useUpdatePerm } from '@/hooks/useJiraUserSync';
+import Spinner from '@atlaskit/spinner';
+import ChartTrendIcon from '@atlaskit/icon/core/chart-trend';
+import CopyIcon from '@atlaskit/icon/core/copy';
+import PersonRemoveIcon from '@atlaskit/icon/core/person-remove';
+import RefreshIcon from '@atlaskit/icon/core/refresh';
+import ShareIcon from '@atlaskit/icon/core/share';
+import ShieldIcon from '@atlaskit/icon/core/shield';
+import CrossIcon from '@atlaskit/icon/glyph/cross';
 
 const AVATAR_COLORS = [
   { bg: '#DBEAFE', text: 'var(--ds-background-brand-bold-hovered, #1D4ED8)' }, { bg: 'var(--ds-background-success, #DCFCE7)', text: '#15803D' },
@@ -225,7 +232,7 @@ const ProjectsTab: React.FC<{ perms: any[]; isDark?: boolean }> = ({ perms, isDa
                                 borderRight: i < 3 ? `1px solid ${'var(--cp-border-default, rgba(15,23,42,0.10))'}` : 'none',
                               }}
                             >
-                              {showSpinner ? <Loader2 size={10} className="animate-spin" /> : level}
+                              {showSpinner ? <Spinner size="small" /> : level}
                             </button>
                           );
                         })}
@@ -261,7 +268,7 @@ const ActivityTab: React.FC<{ events: any[]; isDark?: boolean }> = ({ events, is
       <div style={mkSectionLabel(isDark)}>SYNC ACTIVITY</div>
       {sorted.length === 0 ? (
         <div style={{ textAlign: 'center', padding: '32px 16px' }}>
-          <Activity size={24} color={'var(--cp-text-muted, #94A3B8)'} style={{ margin: '0 auto 8px' }} />
+          <ChartTrendIcon label="" size="small" />
           <div style={{ fontSize: '12px', color: 'var(--cp-text-muted, #94A3B8)', fontWeight: 500 }}>No activity recorded yet</div>
           <div style={{ fontSize: '11px', color: 'var(--cp-text-muted, #CBD5E1)', marginTop: '4px' }}>Events will appear here after the first sync</div>
         </div>
@@ -416,7 +423,7 @@ const UserDetailPanel: React.FC<Props> = ({ userId, onClose, isDark = false }) =
               cursor: 'pointer', color: T.text2,
             }}
           >
-            <X size={12} />
+            <CrossIcon label="" size="small" />
           </button>
         </div>
 
@@ -553,8 +560,8 @@ const UserDetailPanel: React.FC<Props> = ({ userId, onClose, isDark = false }) =
                   : `1px solid rgba(124,58,237,0.25)`,
               }}>
                 {isJiraProxy
-                  ? <ShieldCheck size={13} style={{ color: '#0D9488', flexShrink: 0, marginTop: 1 }} />
-                  : <Share2 size={13} style={{ color: '#7C3AED', flexShrink: 0, marginTop: 1 }} />
+                  ? <ShieldIcon label="" size="small" />
+                  : <ShareIcon label="" size="small" />
                 }
                 <span style={{
                   fontSize: '11px', lineHeight: 1.55,
@@ -585,7 +592,7 @@ const UserDetailPanel: React.FC<Props> = ({ userId, onClose, isDark = false }) =
                     background: T.surface, cursor: toggling ? 'not-allowed' : 'pointer',
                   }}
                 >
-                  {toggling ? <Loader2 size={10} className="animate-spin" /> : <UserX size={10} />}
+                  {toggling ? <Spinner size="small" /> : <PersonRemoveIcon label="" size="small" />}
                   {isInactive ? 'Reactivate' : 'Make Inactive'}
                 </button>
                 <button
@@ -598,7 +605,7 @@ const UserDetailPanel: React.FC<Props> = ({ userId, onClose, isDark = false }) =
                     background: T.surface, cursor: 'pointer',
                   }}
                 >
-                  <Copy size={10} /> Copy Permissions
+                  <CopyIcon label="" size="small" /> Copy Permissions
                 </button>
                 {!isCatalystOnly && (
                   <button
@@ -611,7 +618,7 @@ const UserDetailPanel: React.FC<Props> = ({ userId, onClose, isDark = false }) =
                       background: T.surface, cursor: 'pointer',
                     }}
                   >
-                    <RefreshCw size={10} /> Force Re-sync
+                    <RefreshIcon label="" size="small" /> Force Re-sync
                   </button>
                 )}
               </div>

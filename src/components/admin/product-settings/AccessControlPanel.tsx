@@ -4,9 +4,15 @@ import { Button } from '@/components/ui/button';
 import { Lozenge } from '@/components/ads';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
-import { Search, ExternalLink, Shield, Users, Eye, Edit, Loader2 } from 'lucide-react';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import Spinner from '@atlaskit/spinner';
+import EditIcon from '@atlaskit/icon/core/edit';
+import EyeOpenIcon from '@atlaskit/icon/core/eye-open';
+import LinkExternalIcon from '@atlaskit/icon/core/link-external';
+import PeopleGroupIcon from '@atlaskit/icon/core/people-group';
+import SearchIcon from '@atlaskit/icon/core/search';
+import ShieldIcon from '@atlaskit/icon/core/shield';
 
 // Product-specific permissions
 const PRODUCT_PERMISSIONS = [
@@ -109,7 +115,7 @@ export function AccessControlPanel() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-12">
-        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+        <Spinner size="small" />
       </div>
     );
   }
@@ -125,7 +131,7 @@ export function AccessControlPanel() {
           </p>
         </div>
         <Button variant="outline" disabled>
-          <ExternalLink className="h-4 w-4 mr-2" />
+          <LinkExternalIcon label="" size="small" />
           View Roles
         </Button>
       </div>
@@ -136,7 +142,7 @@ export function AccessControlPanel() {
           <CardContent className="pt-4">
             <div className="flex items-center gap-3">
               <div className="p-2 bg-muted rounded-lg">
-                <Shield className="h-5 w-5 text-muted-foreground" />
+                <ShieldIcon label="" size="small" />
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Roles with Access</p>
@@ -149,7 +155,7 @@ export function AccessControlPanel() {
           <CardContent className="pt-4">
             <div className="flex items-center gap-3">
               <div className="p-2 bg-muted rounded-lg">
-                <Users className="h-5 w-5 text-muted-foreground" />
+                <PeopleGroupIcon label="" size="small" />
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Total Users</p>
@@ -162,7 +168,7 @@ export function AccessControlPanel() {
           <CardContent className="pt-4">
             <div className="flex items-center gap-3">
               <div className="p-2 bg-muted rounded-lg">
-                <Edit className="h-5 w-5 text-muted-foreground" />
+                <EditIcon label="" size="small" />
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Can Edit</p>
@@ -175,7 +181,7 @@ export function AccessControlPanel() {
           <CardContent className="pt-4">
             <div className="flex items-center gap-3">
               <div className="p-2 bg-muted rounded-lg">
-                <Eye className="h-5 w-5 text-muted-foreground" />
+                <EyeOpenIcon label="" size="small" />
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">View Only</p>
@@ -188,7 +194,7 @@ export function AccessControlPanel() {
 
       {/* Search */}
       <div className="relative max-w-md">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+        <SearchIcon label="" size="small" />
         <Input
           placeholder="Search roles or permissions..."
           value={searchQuery}

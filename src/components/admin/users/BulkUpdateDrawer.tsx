@@ -1,5 +1,14 @@
 import { useState, useMemo } from 'react';
 import {
+import Spinner from '@atlaskit/spinner';
+import ArrowRightIcon from '@atlaskit/icon/core/arrow-right';
+import CheckCircleIcon from '@atlaskit/icon/core/check-circle';
+import CrossCircleIcon from '@atlaskit/icon/core/cross-circle';
+import DownloadIcon from '@atlaskit/icon/core/download';
+import InformationCircleIcon from '@atlaskit/icon/core/information-circle';
+import UploadIcon from '@atlaskit/icon/core/upload';
+import VideoPlayIcon from '@atlaskit/icon/core/video-play';
+import WarningIcon from '@atlaskit/icon/core/warning';
   Sheet,
   SheetContent,
   SheetDescription,
@@ -13,17 +22,6 @@ import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { 
-  AlertTriangle, 
-  CheckCircle2, 
-  XCircle, 
-  HelpCircle,
-  Download,
-  Upload,
-  Play,
-  Loader2,
-  ArrowRight
-} from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { UserProfile } from '@/hooks/useUsers';
 import { 
@@ -170,7 +168,7 @@ export function BulkUpdateDrawer({ isOpen, onClose, users }: BulkUpdateDrawerPro
       <SheetContent className="w-[600px] sm:max-w-[600px]">
         <SheetHeader>
           <SheetTitle className="flex items-center gap-2">
-            <Upload className="h-5 w-5" />
+            <UploadIcon label="" size="small" />
             Bulk Update Users
           </SheetTitle>
           <SheetDescription>
@@ -190,7 +188,7 @@ export function BulkUpdateDrawer({ isOpen, onClose, users }: BulkUpdateDrawerPro
             />
             {parseError && (
               <p className="text-sm text-destructive flex items-center gap-1">
-                <XCircle className="h-4 w-4" />
+                <CrossCircleIcon label="" size="small" />
                 {parseError}
               </p>
             )}
@@ -207,7 +205,7 @@ export function BulkUpdateDrawer({ isOpen, onClose, users }: BulkUpdateDrawerPro
               <Label htmlFor="dry-run">Dry Run Mode (Preview Only)</Label>
             </div>
             <Button onClick={handleDryRun} variant="outline">
-              <Play className="h-4 w-4 mr-2" />
+              <VideoPlayIcon label="" size="small" />
               Run Analysis
             </Button>
           </div>
@@ -323,7 +321,7 @@ export function BulkUpdateDrawer({ isOpen, onClose, users }: BulkUpdateDrawerPro
               {/* Export & Apply Buttons */}
               <div className="flex items-center justify-between pt-4 border-t">
                 <Button variant="outline" onClick={exportMismatches} size="sm">
-                  <Download className="h-4 w-4 mr-2" />
+                  <DownloadIcon label="" size="small" />
                   Export Mismatches
                 </Button>
                 <Button 
@@ -333,7 +331,7 @@ export function BulkUpdateDrawer({ isOpen, onClose, users }: BulkUpdateDrawerPro
                 >
                   {bulkUpdate.isPending ? (
                     <>
-                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                      <Spinner size="small" />
                       Updating...
                     </>
                   ) : (
@@ -346,7 +344,7 @@ export function BulkUpdateDrawer({ isOpen, onClose, users }: BulkUpdateDrawerPro
 
               {hasBlockingErrors && !dryRunMode && (
                 <p className="text-xs text-amber-600 flex items-center gap-1">
-                  <AlertTriangle className="h-4 w-4" />
+                  <WarningIcon label="" size="small" />
                   Resolve mismatches or turn off dry-run mode to proceed
                 </p>
               )}
@@ -368,9 +366,9 @@ function MatchedResultRow({ result }: { result: MatchResult }) {
     )}>
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <CheckCircle2 className="h-4 w-4 text-green-600" />
+          <CheckCircleIcon label="" size="small" />
           <span className="font-medium">{result.mapping.name}</span>
-          <ArrowRight className="h-3 w-3 text-muted-foreground" />
+          <ArrowRightIcon label="" size="small" />
           <span className="text-muted-foreground">{result.matchedUser?.full_name}</span>
         </div>
         <Lozenge appearance="default">
@@ -416,16 +414,16 @@ function MismatchResultRow({
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           {linkedUser ? (
-            <CheckCircle2 className="h-4 w-4 text-green-600" />
+            <CheckCircleIcon label="" size="small" />
           ) : result.matchType === 'not_found' ? (
-            <XCircle className="h-4 w-4 text-red-600" />
+            <CrossCircleIcon label="" size="small" />
           ) : (
-            <HelpCircle className="h-4 w-4 text-amber-600" />
+            <InformationCircleIcon label="" size="small" />
           )}
           <span className="font-medium">{result.mapping.name}</span>
           {linkedUser && (
             <>
-              <ArrowRight className="h-3 w-3 text-muted-foreground" />
+              <ArrowRightIcon label="" size="small" />
               <span className="text-green-700 dark:text-green-400">{linkedUser.full_name}</span>
             </>
           )}

@@ -1,5 +1,8 @@
 import { useState, useMemo } from 'react';
 import {
+import Spinner from '@atlaskit/spinner';
+import PersonAddIcon from '@atlaskit/icon/core/person-add';
+import SearchIcon from '@atlaskit/icon/core/search';
   Dialog,
   DialogContent,
   DialogHeader,
@@ -12,7 +15,6 @@ import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { Loader2, Search, UserPlus } from 'lucide-react';
 import { toast } from 'sonner';
 
 interface AddUserToRoleModalProps {
@@ -118,7 +120,7 @@ export function AddUserToRoleModal({
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <UserPlus className="h-5 w-5" />
+            <PersonAddIcon label="" size="small" />
             Add Users to Role
           </DialogTitle>
           <DialogDescription>
@@ -129,7 +131,7 @@ export function AddUserToRoleModal({
         <div className="space-y-4">
           {/* Search Input */}
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <SearchIcon label="" size="small" />
             <Input
               placeholder="Search users by name or email..."
               value={searchQuery}
@@ -142,7 +144,7 @@ export function AddUserToRoleModal({
           <div className="border rounded-md max-h-[300px] overflow-y-auto">
             {isLoading ? (
               <div className="flex items-center justify-center py-8">
-                <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
+                <Spinner size="small" />
               </div>
             ) : filteredUsers.length === 0 ? (
               <p className="text-sm text-muted-foreground text-center py-8">
@@ -195,12 +197,12 @@ export function AddUserToRoleModal({
           >
             {addUsersMutation.isPending ? (
               <>
-                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                <Spinner size="small" />
                 Adding...
               </>
             ) : (
               <>
-                <UserPlus className="h-4 w-4 mr-2" />
+                <PersonAddIcon label="" size="small" />
                 Add Users
               </>
             )}

@@ -1,14 +1,12 @@
 import { cn } from '@/lib/utils';
-import { 
-  Building2, 
-  LayoutGrid, 
-  Workflow, 
-  Eye, 
-  Shield, 
-  Database 
-} from 'lucide-react';
 import type { ProductSettingsTab } from '@/pages/admin/ProductSettings';
 import { useAdminSidebar } from '@/contexts/AdminSidebarContext';
+import BoardsIcon from '@atlaskit/icon/core/boards';
+import DatabaseIcon from '@atlaskit/icon/core/database';
+import EyeOpenIcon from '@atlaskit/icon/core/eye-open';
+import GridIcon from '@atlaskit/icon/core/grid';
+import OfficeBuildingIcon from '@atlaskit/icon/core/office-building';
+import ShieldIcon from '@atlaskit/icon/core/shield';
 
 interface ProductSettingsNavProps {
   activeTab: ProductSettingsTab;

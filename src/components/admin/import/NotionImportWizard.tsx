@@ -10,14 +10,24 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import {
-  AlertCircle, Check, Loader2, ExternalLink, Database,
-  ArrowRight, KeyRound, Link2, FolderKanban, Layers,
-  Table2, ArrowLeftRight, Upload, CheckCircle2, XCircle,
-  SkipForward, Info, ChevronLeft,
-} from 'lucide-react';
 import { fetchNotionDatabase, importNotionRows } from '@/lib/import/notionImportService';
 import type { NotionProperty, NotionRow } from '@/types/notionImport';
+import Spinner from '@atlaskit/spinner';
+import AlertIcon from '@atlaskit/icon/core/alert';
+import ArrowRightIcon from '@atlaskit/icon/core/arrow-right';
+import BoardsIcon from '@atlaskit/icon/core/boards';
+import CheckCircleIcon from '@atlaskit/icon/core/check-circle';
+import CheckMarkIcon from '@atlaskit/icon/core/check-mark';
+import CrossCircleIcon from '@atlaskit/icon/core/cross-circle';
+import DatabaseIcon from '@atlaskit/icon/core/database';
+import GridIcon from '@atlaskit/icon/core/grid';
+import InformationCircleIcon from '@atlaskit/icon/core/information-circle';
+import LinkIcon from '@atlaskit/icon/core/link';
+import LinkExternalIcon from '@atlaskit/icon/core/link-external';
+import LockLockedIcon from '@atlaskit/icon/core/lock-locked';
+import UploadIcon from '@atlaskit/icon/core/upload';
+import VideoNextIcon from '@atlaskit/icon/core/video-next';
+import ChevronLeftIcon from '@atlaskit/icon/glyph/chevron-left';
 
 const CATALYST_FIELDS = [
   { value: '__skip__', label: 'Skip (do not import)' },
@@ -88,7 +98,7 @@ function WizardStepper({ step }: { step: number }) {
                 ${active ? 'bg-[var(--ds-text-brand,#2563EB)] text-white ring-2 ring-[var(--ds-text-brand,#2563EB)]/30 ring-offset-1' : ''}
                 ${!done && !active ? 'bg-[var(--ds-surface-sunken,#F1F5F9)] text-[var(--ds-text-subtlest,#94A3B8)]' : ''}
               `}>
-                {done ? <Check className="h-3.5 w-3.5" /> : <Icon className="h-3.5 w-3.5" />}
+                {done ? <CheckMarkIcon label="" size="small" /> : <Icon className="h-3.5 w-3.5" />}
               </div>
               <span className={`text-xs font-medium hidden sm:block ${
                 active ? 'text-[var(--ds-text-brand,#2563EB)]' : done ? 'text-[var(--ds-text,#0F172A)]' : 'text-[var(--ds-text-subtlest,#94A3B8)]'
@@ -192,7 +202,7 @@ export function NotionImportWizard() {
       <div className="h-14 flex items-center justify-between border-b border-[var(--ds-border,#E2E8F0)] px-6 shrink-0 bg-white">
         <div className="flex items-center gap-3">
           <div className="w-7 h-7 rounded-md bg-[var(--ds-text,#0F172A)] flex items-center justify-center">
-            <Database className="h-3.5 w-3.5 text-white" />
+            <DatabaseIcon label="" size="small" />
           </div>
           <h1 className="text-[15px] font-semibold text-[var(--ds-text,#0F172A)] tracking-[-0.01em]">
             Notion Import
@@ -219,7 +229,7 @@ export function NotionImportWizard() {
                 {/* Token */}
                 <div className="px-4 pt-3.5 pb-3 border-b border-[var(--ds-surface-sunken,#F1F5F9)]">
                   <Label htmlFor="notion-token" className="text-[13px] font-semibold text-[var(--ds-text,#0F172A)] flex items-center gap-1.5 mb-1.5">
-                    <KeyRound className="h-3.5 w-3.5 text-[var(--ds-text-subtlest,#94A3B8)]" />
+                    <LockLockedIcon label="" size="small" />
                     Integration Token
                   </Label>
                   <Input
@@ -243,7 +253,7 @@ export function NotionImportWizard() {
                 {/* Database URL */}
                 <div className="px-4 pt-3.5 pb-3 border-b border-[var(--ds-surface-sunken,#F1F5F9)]">
                   <Label htmlFor="notion-db-url" className="text-[13px] font-semibold text-[var(--ds-text,#0F172A)] flex items-center gap-1.5 mb-1.5">
-                    <Link2 className="h-3.5 w-3.5 text-[var(--ds-text-subtlest,#94A3B8)]" />
+                    <LinkIcon label="" size="small" />
                     Database URL
                   </Label>
                   <Input
@@ -263,7 +273,7 @@ export function NotionImportWizard() {
                 <div className="px-4 pt-3.5 pb-3.5 grid grid-cols-2 gap-3">
                   <div>
                     <Label className="text-[13px] font-semibold text-[var(--ds-text,#0F172A)] flex items-center gap-1.5 mb-1.5">
-                      <FolderKanban className="h-3.5 w-3.5 text-[var(--ds-text-subtlest,#94A3B8)]" />
+                      <BoardsIcon label="" size="small" />
                       Target Project
                     </Label>
                     <Select value={projectId} onValueChange={setProjectId}>
@@ -279,7 +289,7 @@ export function NotionImportWizard() {
                   </div>
                   <div>
                     <Label className="text-[13px] font-semibold text-[var(--ds-text,#0F172A)] flex items-center gap-1.5 mb-1.5">
-                      <Layers className="h-3.5 w-3.5 text-[var(--ds-text-subtlest,#94A3B8)]" />
+                      <BoardsIcon label="" size="small" />
                       Default Type
                     </Label>
                     <Select value={itemType} onValueChange={setItemType}>
@@ -299,7 +309,7 @@ export function NotionImportWizard() {
               {/* Error */}
               {fetchError && (
                 <div className="flex items-start gap-2.5 p-3 rounded-lg bg-[var(--ds-background-danger,#FEF2F2)] border border-[#FECACA]">
-                  <XCircle className="h-4 w-4 text-[var(--ds-text-danger,#DC2626)] mt-0.5 shrink-0" />
+                  <CrossCircleIcon label="" size="small" />
                   <div>
                     <p className="text-[13px] font-semibold text-[var(--ds-text-danger,#DC2626)]">Connection failed</p>
                     <p className="text-[12px] text-[var(--ds-text-danger,#DC2626)]/80 mt-0.5">{fetchError}</p>
@@ -380,7 +390,7 @@ export function NotionImportWizard() {
               <div className="bg-white border border-[var(--ds-border,#E2E8F0)] rounded-lg overflow-hidden">
                 <div className="flex items-center px-4 py-2 bg-[var(--ds-surface-sunken,#F8FAFC)] border-b border-[var(--ds-border,#E2E8F0)]">
                   <span className="flex-1 text-[10px] uppercase tracking-wider font-semibold text-[var(--ds-text-subtlest,#64748B)]">Notion Column</span>
-                  <ArrowRight className="h-3 w-3 text-[var(--ds-text-disabled,#CBD5E1)] mx-2" />
+                  <ArrowRightIcon label="" size="small" />
                   <span className="w-44 text-[10px] uppercase tracking-wider font-semibold text-[var(--ds-text-subtlest,#64748B)] text-right">Catalyst Field</span>
                 </div>
                 {notionProps.map(p => {
@@ -393,7 +403,7 @@ export function NotionImportWizard() {
                         <span className={`text-[13px] font-medium truncate ${isSkip ? 'text-[var(--ds-text-subtlest,#94A3B8)]' : 'text-[var(--ds-text,#0F172A)]'}`}>{p.name}</span>
                         <span className="shrink-0 text-[9px] uppercase tracking-wider font-bold px-1 py-px rounded bg-[var(--ds-surface-sunken,#F1F5F9)] text-[var(--ds-text-subtlest,#94A3B8)]">{p.type}</span>
                       </div>
-                      <ArrowRight className={`h-3 w-3 shrink-0 ${isSkip ? 'text-[var(--ds-border,#E2E8F0)]' : 'text-[var(--ds-text-subtlest,#94A3B8)]'}`} />
+                      <ArrowRightIcon label="" size="small" />
                       <div className="w-44 shrink-0">
                         <Select value={mapped} onValueChange={val => setMappings(prev => ({ ...prev, [p.name]: val }))}>
                           <SelectTrigger className={`h-7 text-[13px] border ${
@@ -415,7 +425,7 @@ export function NotionImportWizard() {
 
               {mapError && !summaryMapped && (
                 <div className="flex items-start gap-2.5 p-3 rounded-lg bg-[var(--ds-background-danger,#FEF2F2)] border border-[#FECACA]">
-                  <AlertCircle className="h-4 w-4 text-[var(--ds-text-danger,#DC2626)] mt-0.5 shrink-0" />
+                  <AlertIcon label="" size="small" />
                   <p className="text-[13px] text-[var(--ds-text-danger,#DC2626)]">Map at least one column to <strong>Summary</strong> to proceed.</p>
                 </div>
               )}
@@ -450,7 +460,7 @@ export function NotionImportWizard() {
                   </div>
 
                   <div className="flex items-start gap-2 p-3 rounded-lg bg-[#F0F9FF] border border-[#BAE6FD]">
-                    <Info className="h-3.5 w-3.5 text-[#0284C7] mt-0.5 shrink-0" />
+                    <InformationCircleIcon label="" size="small" />
                     <p className="text-[12px] text-[#0369A1]">
                       Duplicate rows (matched by Notion page ID) are skipped automatically.
                     </p>
@@ -474,8 +484,8 @@ export function NotionImportWizard() {
                     importResult.failed > 0 && importResult.imported === 0 ? 'bg-[#FEE2E2]' : 'bg-[var(--ds-background-success,#DCFCE7)]'
                   }`}>
                     {importResult.failed > 0 && importResult.imported === 0
-                      ? <XCircle className="h-6 w-6 text-[var(--ds-text-danger,#DC2626)]" />
-                      : <CheckCircle2 className="h-6 w-6 text-[var(--ds-text-success,#16A34A)]" />}
+                      ? <CrossCircleIcon label="" size="small" />
+                      : <CheckCircleIcon label="" size="small" />}
                   </div>
                   <p className="text-[15px] font-semibold text-[var(--ds-text,#0F172A)]">
                     {importResult.imported > 0 ? `${importResult.imported} items imported` : 'Import failed'}
@@ -492,7 +502,7 @@ export function NotionImportWizard() {
                     )}
                   </div>
                   <Button variant="outline" size="sm" className="gap-1.5" onClick={() => navigate('/producthub/backlog')}>
-                    View in ProductHub <ExternalLink className="h-3 w-3" />
+                    View in ProductHub <LinkExternalIcon label="" size="small" />
                   </Button>
                 </div>
               )}
@@ -510,7 +520,7 @@ export function NotionImportWizard() {
             disabled={step === 1 || importing}
             className="gap-1.5 text-[var(--ds-text-subtlest,#64748B)] hover:text-[var(--ds-text,#0F172A)]"
           >
-            <ChevronLeft className="h-4 w-4" />
+            <ChevronLeftIcon label="" size="small" />
             Back
           </Button>
 
@@ -523,13 +533,13 @@ export function NotionImportWizard() {
               >
                 {fetching ? (
                   <>
-                    <Loader2 className="h-4 w-4 animate-spin" />
+                    <Spinner size="small" />
                     Connecting…
                   </>
                 ) : (
                   <>
                     Fetch Database
-                    <ArrowRight className="h-4 w-4" />
+                    <ArrowRightIcon label="" size="small" />
                   </>
                 )}
               </Button>
@@ -540,7 +550,7 @@ export function NotionImportWizard() {
                 className="bg-[var(--ds-text-brand,#2563EB)] hover:bg-[var(--ds-background-brand-bold-hovered,#1D4ED8)] text-white gap-2 h-9 px-5"
               >
                 Continue to Mapping
-                <ArrowRight className="h-4 w-4" />
+                <ArrowRightIcon label="" size="small" />
               </Button>
             )}
             {step === 3 && (
@@ -553,7 +563,7 @@ export function NotionImportWizard() {
                 className="bg-[var(--ds-text-brand,#2563EB)] hover:bg-[var(--ds-background-brand-bold-hovered,#1D4ED8)] text-white gap-2 h-9 px-5"
               >
                 Review & Import
-                <ArrowRight className="h-4 w-4" />
+                <ArrowRightIcon label="" size="small" />
               </Button>
             )}
             {step === 4 && !importResult && (
@@ -564,12 +574,12 @@ export function NotionImportWizard() {
               >
                 {importing ? (
                   <>
-                    <Loader2 className="h-4 w-4 animate-spin" />
+                    <Spinner size="small" />
                     Importing…
                   </>
                 ) : (
                   <>
-                    <Upload className="h-4 w-4" />
+                    <UploadIcon label="" size="small" />
                     Import {notionRows.length} Items
                   </>
                 )}

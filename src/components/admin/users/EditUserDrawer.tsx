@@ -1,5 +1,13 @@
 import { useState, useEffect, useMemo, memo } from 'react';
 import {
+import Spinner from '@atlaskit/spinner';
+import BriefcaseIcon from '@atlaskit/icon/core/briefcase';
+import CheckMarkIcon from '@atlaskit/icon/core/check-mark';
+import OfficeBuildingIcon from '@atlaskit/icon/core/office-building';
+import PersonIcon from '@atlaskit/icon/core/person';
+import ChevronDownIcon from '@atlaskit/icon/glyph/chevron-down';
+import CrossIcon from '@atlaskit/icon/glyph/cross';
+import LocationIcon from '@atlaskit/icon/glyph/location';
   Sheet,
   SheetContent,
   SheetDescription,
@@ -33,7 +41,6 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
-import { Loader2, Save, X, User, Building, MapPin, Briefcase, Check, ChevronsUpDown } from 'lucide-react';
 import { UserProfile } from '@/hooks/useUsers';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
@@ -619,7 +626,7 @@ export const EditUserDrawer = memo(function EditUserDrawer({ isOpen, onClose, us
       <SheetContent width="medium">
         <SheetHeader>
           <SheetTitle className="flex items-center gap-2">
-            <User className="h-5 w-5" />
+            <PersonIcon label="" size="small" />
             Edit User
           </SheetTitle>
           <SheetDescription>
@@ -632,7 +639,7 @@ export const EditUserDrawer = memo(function EditUserDrawer({ isOpen, onClose, us
             {/* Basic Info Section */}
             <div className="space-y-4">
               <h3 className="text-sm font-medium text-muted-foreground flex items-center gap-2">
-                <User className="h-4 w-4" />
+                <PersonIcon label="" size="small" />
                 Basic Information
               </h3>
               
@@ -703,7 +710,7 @@ export const EditUserDrawer = memo(function EditUserDrawer({ isOpen, onClose, us
             {/* Job Role Section - syncs to user list via searchable combobox */}
             <div className="space-y-4">
               <h3 className="text-sm font-medium text-muted-foreground flex items-center gap-2">
-                <Briefcase className="h-4 w-4" />
+                <BriefcaseIcon label="" size="small" />
                 Job Role
               </h3>
               <Popover open={roleSearchOpen} onOpenChange={setRoleSearchOpen}>
@@ -715,7 +722,7 @@ export const EditUserDrawer = memo(function EditUserDrawer({ isOpen, onClose, us
                     className="w-full justify-between"
                   >
                     {selectedJobRole || "Select job role..."}
-                    <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                    <ChevronDownIcon label="" size="small" />
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-full p-0" align="start">
@@ -735,12 +742,7 @@ export const EditUserDrawer = memo(function EditUserDrawer({ isOpen, onClose, us
                             className="flex items-center justify-between"
                           >
                             <div className="flex items-center gap-2">
-                              <Check
-                                className={cn(
-                                  "h-4 w-4",
-                                  selectedJobRole === role ? "opacity-100" : "opacity-0"
-                                )}
-                              />
+                              <CheckMarkIcon label="" size="small" />
                               <span>{role}</span>
                             </div>
                             <Lozenge appearance="default">In Use</Lozenge>
@@ -760,12 +762,7 @@ export const EditUserDrawer = memo(function EditUserDrawer({ isOpen, onClose, us
                                   setRoleSearchOpen(false);
                                 }}
                               >
-                                <Check
-                                  className={cn(
-                                    "mr-2 h-4 w-4",
-                                    selectedJobRole === role.name ? "opacity-100" : "opacity-0"
-                                  )}
-                                />
+                                <CheckMarkIcon label="" size="small" />
                                 {role.name}
                               </CommandItem>
                             ))}
@@ -784,7 +781,7 @@ export const EditUserDrawer = memo(function EditUserDrawer({ isOpen, onClose, us
                     className="h-6 px-2"
                     onClick={() => setSelectedJobRole('')}
                   >
-                    <X className="h-3 w-3" />
+                    <CrossIcon label="" size="small" />
                   </Button>
                 </div>
               )}
@@ -795,7 +792,7 @@ export const EditUserDrawer = memo(function EditUserDrawer({ isOpen, onClose, us
             {/* Vendor/Contract Section */}
             <div className="space-y-4">
               <h3 className="text-sm font-medium text-muted-foreground flex items-center gap-2">
-                <Building className="h-4 w-4" />
+                <OfficeBuildingIcon label="" size="small" />
                 Vendor & Contract
               </h3>
 
@@ -878,7 +875,7 @@ export const EditUserDrawer = memo(function EditUserDrawer({ isOpen, onClose, us
             {/* Assignment Section */}
             <div className="space-y-4">
               <h3 className="text-sm font-medium text-muted-foreground flex items-center gap-2">
-                <Briefcase className="h-4 w-4" />
+                <BriefcaseIcon label="" size="small" />
                 Assignment
               </h3>
 
@@ -908,7 +905,7 @@ export const EditUserDrawer = memo(function EditUserDrawer({ isOpen, onClose, us
             {/* Location Section */}
             <div className="space-y-4">
               <h3 className="text-sm font-medium text-muted-foreground flex items-center gap-2">
-                <MapPin className="h-4 w-4" />
+                <LocationIcon label="" size="small" />
                 Location
               </h3>
 
@@ -953,7 +950,7 @@ export const EditUserDrawer = memo(function EditUserDrawer({ isOpen, onClose, us
 
         <SheetFooter>
           <Button type="button" variant="outline" onClick={onClose}>
-            <X className="h-4 w-4 mr-2" />
+            <CrossIcon label="" size="small" />
             Cancel
           </Button>
           <Button 
@@ -964,12 +961,12 @@ export const EditUserDrawer = memo(function EditUserDrawer({ isOpen, onClose, us
           >
             {updateUser.isPending ? (
               <>
-                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                <Spinner size="small" />
                 Saving...
               </>
             ) : (
               <>
-                <Save className="h-4 w-4 mr-2" />
+                <CheckMarkIcon label="" size="small" />
                 Save Changes
               </>
             )}

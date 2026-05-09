@@ -4,6 +4,18 @@
 
 import React, { useState } from 'react';
 import {
+import AlertIcon from '@atlaskit/icon/core/alert';
+import AutomationIcon from '@atlaskit/icon/core/automation';
+import CheckCircleIcon from '@atlaskit/icon/core/check-circle';
+import CheckMarkIcon from '@atlaskit/icon/core/check-mark';
+import CopyIcon from '@atlaskit/icon/core/copy';
+import LinkIcon from '@atlaskit/icon/core/link';
+import LinkExternalIcon from '@atlaskit/icon/core/link-external';
+import LockLockedIcon from '@atlaskit/icon/core/lock-locked';
+import SettingsIcon from '@atlaskit/icon/core/settings';
+import ToolsIcon from '@atlaskit/icon/core/tools';
+import ChevronLeftIcon from '@atlaskit/icon/glyph/chevron-left';
+import ChevronRightIcon from '@atlaskit/icon/glyph/chevron-right';
   useSaveSlackConfig,
   useSlackInstallUrl,
   useTestSlackConnection,
@@ -16,20 +28,6 @@ import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Lozenge } from '@/components/ads';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import {
-  CheckCircle,
-  ChevronRight,
-  ChevronLeft,
-  Copy,
-  ExternalLink,
-  Key,
-  Link2,
-  Settings,
-  TestTube,
-  Zap,
-  AlertCircle,
-  Check,
-} from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 
@@ -166,7 +164,7 @@ export function SlackSetupWizard({ existingConfig }: WizardProps) {
                       )}
                     >
                       {isCompleted ? (
-                        <CheckCircle className="w-5 h-5" />
+                        <CheckCircleIcon label="" size="small" />
                       ) : (
                         <Icon className="w-5 h-5" />
                       )}
@@ -239,7 +237,7 @@ export function SlackSetupWizard({ existingConfig }: WizardProps) {
                 style={{ backgroundColor: 'var(--cp-blue)' }}
               >
                 I've Created the App
-                <ChevronRight className="w-4 h-4 ml-2" />
+                <ChevronRightIcon label="" size="small" />
               </Button>
 
               <Button
@@ -247,7 +245,7 @@ export function SlackSetupWizard({ existingConfig }: WizardProps) {
                 className="w-full"
                 onClick={() => window.open('https://api.slack.com/apps', '_blank')}
               >
-                <ExternalLink className="w-4 h-4 mr-2" />
+                <LinkExternalIcon label="" size="small" />
                 Open Slack API Console
               </Button>
             </div>
@@ -258,7 +256,7 @@ export function SlackSetupWizard({ existingConfig }: WizardProps) {
             <div className="max-w-2xl mx-auto space-y-6">
               <div className="text-center mb-8">
                 <div className="w-16 h-16 rounded-2xl bg-blue-100 flex items-center justify-center mx-auto mb-4">
-                  <Key className="w-8 h-8 text-blue-600" />
+                  <LockLockedIcon label="" size="small" />
                 </div>
                 <h2 className="text-xl font-semibold text-slate-900">Enter App Credentials</h2>
                 <p className="text-slate-500 mt-2">
@@ -317,7 +315,7 @@ export function SlackSetupWizard({ existingConfig }: WizardProps) {
               </div>
 
               <Alert>
-                <AlertCircle className="h-4 w-4" />
+                <AlertIcon label="" size="small" />
                 <AlertDescription>
                   Your credentials are encrypted before storage and never exposed in the UI.
                 </AlertDescription>
@@ -325,7 +323,7 @@ export function SlackSetupWizard({ existingConfig }: WizardProps) {
 
               <div className="flex gap-3">
                 <Button variant="outline" onClick={handleBack} className="flex-1">
-                  <ChevronLeft className="w-4 h-4 mr-2" />
+                  <ChevronLeftIcon label="" size="small" />
                   Back
                 </Button>
                 <Button
@@ -335,7 +333,7 @@ export function SlackSetupWizard({ existingConfig }: WizardProps) {
                   style={{ backgroundColor: 'var(--cp-blue)' }}
                 >
                   Continue
-                  <ChevronRight className="w-4 h-4 ml-2" />
+                  <ChevronRightIcon label="" size="small" />
                 </Button>
               </div>
             </div>
@@ -346,7 +344,7 @@ export function SlackSetupWizard({ existingConfig }: WizardProps) {
             <div className="max-w-2xl mx-auto space-y-6">
               <div className="text-center mb-8">
                 <div className="w-16 h-16 rounded-2xl bg-blue-100 flex items-center justify-center mx-auto mb-4">
-                  <Settings className="w-8 h-8 text-blue-600" />
+                  <SettingsIcon label="" size="small" />
                 </div>
                 <h2 className="text-xl font-semibold text-slate-900">Configure OAuth Scopes</h2>
                 <p className="text-slate-500 mt-2">
@@ -395,7 +393,7 @@ export function SlackSetupWizard({ existingConfig }: WizardProps) {
                         size="sm"
                         onClick={() => copyToClipboard(scope.id)}
                       >
-                        <Copy className="w-4 h-4" />
+                        <CopyIcon label="" size="small" />
                       </Button>
                     </div>
                   );
@@ -411,7 +409,7 @@ export function SlackSetupWizard({ existingConfig }: WizardProps) {
 
               <div className="flex gap-3">
                 <Button variant="outline" onClick={handleBack} className="flex-1">
-                  <ChevronLeft className="w-4 h-4 mr-2" />
+                  <ChevronLeftIcon label="" size="small" />
                   Back
                 </Button>
                 <Button
@@ -420,7 +418,7 @@ export function SlackSetupWizard({ existingConfig }: WizardProps) {
                   style={{ backgroundColor: 'var(--cp-blue)' }}
                 >
                   I've Added the Scopes
-                  <ChevronRight className="w-4 h-4 ml-2" />
+                  <ChevronRightIcon label="" size="small" />
                 </Button>
               </div>
             </div>
@@ -431,7 +429,7 @@ export function SlackSetupWizard({ existingConfig }: WizardProps) {
             <div className="max-w-2xl mx-auto space-y-6">
               <div className="text-center mb-8">
                 <div className="w-16 h-16 rounded-2xl bg-blue-100 flex items-center justify-center mx-auto mb-4">
-                  <Link2 className="w-8 h-8 text-blue-600" />
+                  <LinkIcon label="" size="small" />
                 </div>
                 <h2 className="text-xl font-semibold text-slate-900">Set Redirect URL</h2>
                 <p className="text-slate-500 mt-2">
@@ -451,7 +449,7 @@ export function SlackSetupWizard({ existingConfig }: WizardProps) {
                     variant="outline"
                     onClick={() => copyToClipboard(formData.redirect_uri)}
                   >
-                    <Copy className="w-4 h-4" />
+                    <CopyIcon label="" size="small" />
                   </Button>
                 </div>
               </div>
@@ -480,7 +478,7 @@ export function SlackSetupWizard({ existingConfig }: WizardProps) {
 
               <div className="flex gap-3">
                 <Button variant="outline" onClick={handleBack} className="flex-1">
-                  <ChevronLeft className="w-4 h-4 mr-2" />
+                  <ChevronLeftIcon label="" size="small" />
                   Back
                 </Button>
                 <Button
@@ -490,7 +488,7 @@ export function SlackSetupWizard({ existingConfig }: WizardProps) {
                   style={{ backgroundColor: 'var(--cp-blue)' }}
                 >
                   {saveConfig.isPending ? 'Saving...' : 'Save & Continue'}
-                  <ChevronRight className="w-4 h-4 ml-2" />
+                  <ChevronRightIcon label="" size="small" />
                 </Button>
               </div>
             </div>
@@ -501,7 +499,7 @@ export function SlackSetupWizard({ existingConfig }: WizardProps) {
             <div className="max-w-2xl mx-auto space-y-6">
               <div className="text-center mb-8">
                 <div className="w-16 h-16 rounded-2xl bg-blue-100 flex items-center justify-center mx-auto mb-4">
-                  <Zap className="w-8 h-8 text-blue-600" />
+                  <AutomationIcon label="" size="small" />
                 </div>
                 <h2 className="text-xl font-semibold text-slate-900">Install to Workspace</h2>
                 <p className="text-slate-500 mt-2">
@@ -535,7 +533,7 @@ export function SlackSetupWizard({ existingConfig }: WizardProps) {
 
               <div className="flex gap-3">
                 <Button variant="outline" onClick={handleBack} className="flex-1">
-                  <ChevronLeft className="w-4 h-4 mr-2" />
+                  <ChevronLeftIcon label="" size="small" />
                   Back
                 </Button>
               </div>
@@ -547,7 +545,7 @@ export function SlackSetupWizard({ existingConfig }: WizardProps) {
             <div className="max-w-2xl mx-auto space-y-6">
               <div className="text-center mb-8">
                 <div className="w-16 h-16 rounded-2xl bg-green-100 flex items-center justify-center mx-auto mb-4">
-                  <CheckCircle className="w-8 h-8 text-green-600" />
+                  <CheckCircleIcon label="" size="small" />
                 </div>
                 <h2 className="text-xl font-semibold text-slate-900">Setup Complete!</h2>
                 <p className="text-slate-500 mt-2">
@@ -556,7 +554,7 @@ export function SlackSetupWizard({ existingConfig }: WizardProps) {
               </div>
 
               <div className="bg-green-50 border border-green-200 rounded-xl p-6 text-center">
-                <Check className="w-8 h-8 text-green-600 mx-auto mb-3" />
+                <CheckMarkIcon label="" size="small" />
                 <p className="text-green-800 font-medium">Slack Integration Active</p>
                 <p className="text-green-600 text-sm mt-1">
                   Users can now connect their Slack accounts to receive notifications
@@ -573,7 +571,7 @@ export function SlackSetupWizard({ existingConfig }: WizardProps) {
                   'Sending...'
                 ) : (
                   <>
-                    <TestTube className="w-4 h-4 mr-2" />
+                    <ToolsIcon label="" size="small" />
                     Send Test Notification
                   </>
                 )}
@@ -581,7 +579,7 @@ export function SlackSetupWizard({ existingConfig }: WizardProps) {
 
               {testConnection.isSuccess && (
                 <Alert className="border-green-200 bg-green-50">
-                  <CheckCircle className="h-4 w-4 text-green-600" />
+                  <CheckCircleIcon label="" size="small" />
                   <AlertDescription className="text-green-800">
                     Test notification sent successfully! Check your Slack.
                   </AlertDescription>
@@ -594,7 +592,7 @@ export function SlackSetupWizard({ existingConfig }: WizardProps) {
                 style={{ backgroundColor: 'var(--cp-blue)' }}
               >
                 Go to Dashboard
-                <ChevronRight className="w-4 h-4 ml-2" />
+                <ChevronRightIcon label="" size="small" />
               </Button>
             </div>
           )}

@@ -5,24 +5,22 @@
 
 import { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  X, 
-  Users, 
-  Building2, 
-  Briefcase, 
-  MapPin, 
-  Globe, 
-  Tag,
-  UserCog,
-  Check,
-  Loader2,
-  ChevronDown,
-  Trash2,
-  Download
-} from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Lozenge } from '@/components/ads';
 import {
+import Spinner from '@atlaskit/spinner';
+import BriefcaseIcon from '@atlaskit/icon/core/briefcase';
+import CheckMarkIcon from '@atlaskit/icon/core/check-mark';
+import DownloadIcon from '@atlaskit/icon/core/download';
+import GlobeIcon from '@atlaskit/icon/core/globe';
+import OfficeBuildingIcon from '@atlaskit/icon/core/office-building';
+import PeopleGroupIcon from '@atlaskit/icon/core/people-group';
+import PersonIcon from '@atlaskit/icon/core/person';
+import TagIcon from '@atlaskit/icon/core/tag';
+import ChevronDownIcon from '@atlaskit/icon/glyph/chevron-down';
+import CrossIcon from '@atlaskit/icon/glyph/cross';
+import LocationIcon from '@atlaskit/icon/glyph/location';
+import TrashIcon from '@atlaskit/icon/glyph/trash';
   Select,
   SelectContent,
   SelectItem,
@@ -94,28 +92,28 @@ export function BulkEditCommandBar({
     {
       key: 'assignment_id',
       label: 'Assignment',
-      icon: <Briefcase className="h-4 w-4" />,
+      icon: <BriefcaseIcon label="" size="small" />,
       type: 'select',
       options: referenceData.assignments.map(a => ({ value: a.id, label: a.name })),
     },
     {
       key: 'department_id',
       label: 'Department',
-      icon: <Building2 className="h-4 w-4" />,
+      icon: <OfficeBuildingIcon label="" size="small" />,
       type: 'select',
       options: referenceData.departments.map(d => ({ value: d.id, label: d.name })),
     },
     {
       key: 'vendor_id',
       label: 'Vendor',
-      icon: <Tag className="h-4 w-4" />,
+      icon: <TagIcon label="" size="small" />,
       type: 'select',
       options: referenceData.vendors.map(v => ({ value: v.id, label: v.name })),
     },
     {
       key: 'resource_type',
       label: 'Resource Type',
-      icon: <UserCog className="h-4 w-4" />,
+      icon: <PersonIcon label="" size="small" />,
       type: 'select',
       options: [
         { value: 'Permanent', label: 'Permanent' },
@@ -127,21 +125,21 @@ export function BulkEditCommandBar({
     {
       key: 'country_id',
       label: 'Country',
-      icon: <Globe className="h-4 w-4" />,
+      icon: <GlobeIcon label="" size="small" />,
       type: 'select',
       options: referenceData.countries.map(c => ({ value: c.id, label: c.name })),
     },
     {
       key: 'location_id',
       label: 'Location',
-      icon: <MapPin className="h-4 w-4" />,
+      icon: <LocationIcon label="" size="small" />,
       type: 'select',
       options: referenceData.locations.map(l => ({ value: l.id, label: l.name })),
     },
     {
       key: 'job_role',
       label: 'Job Role',
-      icon: <Users className="h-4 w-4" />,
+      icon: <PeopleGroupIcon label="" size="small" />,
       type: 'text',
     },
   ], [referenceData]);
@@ -209,7 +207,7 @@ export function BulkEditCommandBar({
           {/* Selection count */}
           <div className="flex items-center gap-2 pr-3 border-r border-border shrink-0">
             <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center">
-              <Users className="h-4 w-4 text-primary" />
+              <PeopleGroupIcon label="" size="small" />
             </div>
             <div className="flex flex-col">
               <span className="text-sm font-semibold whitespace-nowrap">{selectedCount} selected</span>
@@ -247,7 +245,7 @@ export function BulkEditCommandBar({
                           <Lozenge appearance="inprogress">✓</Lozenge>
                         </span>
                       )}
-                      <ChevronDown className="h-3 w-3 opacity-50" />
+                      <ChevronDownIcon label="" size="small" />
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent className="w-64 p-3" align="center" side="top">
@@ -348,12 +346,12 @@ export function BulkEditCommandBar({
             >
               {bulkEdit.isPending ? (
                 <>
-                  <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                  <Spinner size="small" />
                   Updating...
                 </>
               ) : (
                 <>
-                  <Check className="h-3.5 w-3.5" />
+                  <CheckMarkIcon label="" size="small" />
                   Apply
                 </>
               )}
@@ -367,7 +365,7 @@ export function BulkEditCommandBar({
                 className="h-8 gap-1.5 text-xs"
                 onClick={() => onBulkExport(Array.from(selectedIds))}
               >
-                <Download className="h-3.5 w-3.5" />
+                <DownloadIcon label="" size="small" />
                 Export
               </Button>
             )}
@@ -380,7 +378,7 @@ export function BulkEditCommandBar({
                 className="h-8 gap-1.5 text-xs text-destructive hover:text-destructive hover:bg-destructive/10"
                 onClick={() => setShowDeleteDialog(true)}
               >
-                <Trash2 className="h-3.5 w-3.5" />
+                <TrashIcon label="" size="small" />
                 Delete
               </Button>
             )}
@@ -397,7 +395,7 @@ export function BulkEditCommandBar({
                 onClearSelection();
               }}
             >
-              <X className="h-3.5 w-3.5" />
+              <CrossIcon label="" size="small" />
               Clear
             </Button>
           </div>

@@ -3,6 +3,8 @@ import { Card, CardHeader, CardContent } from '@/components/ui/card';
 import { Lozenge } from '@/components/ads';
 import { Button } from '@/components/ui/button';
 import {
+import EditIcon from '@atlaskit/icon/core/edit';
+import PersonAddIcon from '@atlaskit/icon/core/person-add';
   Table,
   TableBody,
   TableCell,
@@ -10,7 +12,6 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { Pencil, UserPlus } from 'lucide-react';
 import { ProductRole, useUsersWithRole, useRolePermissions, PERMISSION_GROUPS } from '@/hooks/useProductRoles';
 import { useUserRole } from '@/hooks/useUserRole';
 import { cn } from '@/lib/utils';
@@ -102,7 +103,7 @@ export function RoleDetails({
               className="h-8 w-8"
               onClick={() => onEditRole(role)}
             >
-              <Pencil className="h-4 w-4" />
+              <EditIcon label="" size="small" />
             </Button>
           )}
         </CardHeader>
@@ -138,7 +139,7 @@ export function RoleDetails({
               onClick={() => setIsAddUserModalOpen(true)}
               className="bg-brand-primary hover:bg-brand-primary-hover text-white"
             >
-              <UserPlus className="h-4 w-4 mr-1.5" />
+              <PersonAddIcon label="" size="small" />
               Add User
             </Button>
           )}
@@ -146,7 +147,7 @@ export function RoleDetails({
         <CardContent className="p-0">
           {usersLoading ? (
             <div className="flex items-center justify-center py-8">
-              <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-brand-primary" />
+              <div className="rounded-full h-6 w-6 border-b-2 border-brand-primary" />
             </div>
           ) : !users || users.length === 0 ? (
             <p className="text-sm text-muted-foreground text-center py-8">

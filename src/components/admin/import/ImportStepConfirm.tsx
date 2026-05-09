@@ -1,9 +1,13 @@
-import { CheckCircle, AlertTriangle, XCircle, FileText, Upload } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { ImportModuleConfig } from '@/lib/import/importModuleConfig';
 import { RowValidationResult } from '@/lib/import/importValidator';
 import { cn } from '@/lib/utils';
+import CheckCircleIcon from '@atlaskit/icon/core/check-circle';
+import CrossCircleIcon from '@atlaskit/icon/core/cross-circle';
+import FileIcon from '@atlaskit/icon/core/file';
+import UploadIcon from '@atlaskit/icon/core/upload';
+import WarningIcon from '@atlaskit/icon/core/warning';
 
 interface ImportStepConfirmProps {
   moduleConfig: ImportModuleConfig;
@@ -45,7 +49,7 @@ export function ImportStepConfirm({
           <div className="text-center py-12">
             {importResult.failed === 0 ? (
               <>
-                <CheckCircle className="h-16 w-16 text-green-500 mx-auto mb-4" />
+                <CheckCircleIcon label="" size="small" />
                 <h3 className="text-xl font-semibold text-foreground mb-2">
                   Successfully imported {importResult.success} {moduleConfig.label.toLowerCase()}
                 </h3>
@@ -55,7 +59,7 @@ export function ImportStepConfirm({
               </>
             ) : (
               <>
-                <AlertTriangle className="h-16 w-16 text-amber-500 mx-auto mb-4" />
+                <WarningIcon label="" size="small" />
                 <h3 className="text-xl font-semibold text-foreground mb-2">
                   Import completed with issues
                 </h3>
@@ -79,7 +83,7 @@ export function ImportStepConfirm({
         
         <div className="border-t pt-6">
           <div className="text-center py-12">
-            <Upload className="h-12 w-12 text-brand-primary mx-auto mb-4 animate-pulse" />
+            <UploadIcon label="" size="small" />
             <h3 className="text-lg font-semibold text-foreground mb-4">
               Importing {moduleConfig.label}
             </h3>
@@ -114,7 +118,7 @@ export function ImportStepConfirm({
             {/* Summary Card */}
             <div className="bg-muted/50 rounded-lg p-6">
               <div className="flex items-center gap-3 mb-6">
-                <FileText className="h-8 w-8 text-brand-primary" />
+                <FileIcon label="" size="small" />
                 <div>
                   <h3 className="font-semibold text-foreground">
                     Import {moduleConfig.label}
@@ -128,7 +132,7 @@ export function ImportStepConfirm({
               <div className="grid grid-cols-3 gap-4">
                 <div className="bg-background rounded-lg p-4 border">
                   <div className="flex items-center gap-2 mb-1">
-                    <CheckCircle className="h-4 w-4 text-green-600" />
+                    <CheckCircleIcon label="" size="small" />
                     <span className="text-sm font-medium">Valid Rows</span>
                   </div>
                   <p className="text-2xl font-bold text-foreground">{summary.valid}</p>
@@ -136,7 +140,7 @@ export function ImportStepConfirm({
                 
                 <div className="bg-background rounded-lg p-4 border">
                   <div className="flex items-center gap-2 mb-1">
-                    <AlertTriangle className="h-4 w-4 text-amber-500" />
+                    <WarningIcon label="" size="small" />
                     <span className="text-sm font-medium">Warnings</span>
                   </div>
                   <p className="text-2xl font-bold text-foreground">{summary.warnings}</p>
@@ -144,7 +148,7 @@ export function ImportStepConfirm({
                 
                 <div className="bg-background rounded-lg p-4 border">
                   <div className="flex items-center gap-2 mb-1">
-                    <XCircle className="h-4 w-4 text-destructive" />
+                    <CrossCircleIcon label="" size="small" />
                     <span className="text-sm font-medium">Invalid Rows</span>
                   </div>
                   <p className="text-2xl font-bold text-foreground">{summary.invalid}</p>
@@ -155,7 +159,7 @@ export function ImportStepConfirm({
             {/* Info */}
             {summary.invalid > 0 && (
               <div className="flex items-start gap-3 p-4 bg-destructive/5 rounded-lg border border-destructive/20">
-                <XCircle className="h-5 w-5 text-destructive flex-shrink-0 mt-0.5" />
+                <CrossCircleIcon label="" size="small" />
                 <div>
                   <p className="text-sm font-medium text-foreground">
                     {summary.invalid} rows will be skipped

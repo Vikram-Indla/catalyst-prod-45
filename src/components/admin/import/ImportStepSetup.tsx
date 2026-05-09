@@ -1,5 +1,4 @@
 import { useState, useCallback } from 'react';
-import { Upload, FileText, X, AlertCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -8,6 +7,10 @@ import { cn } from '@/lib/utils';
 import { useDropzone } from 'react-dropzone';
 import Papa from 'papaparse';
 import { loadXLSX } from '@/lib/exportLoaders';
+import AlertIcon from '@atlaskit/icon/core/alert';
+import FileIcon from '@atlaskit/icon/core/file';
+import UploadIcon from '@atlaskit/icon/core/upload';
+import CrossIcon from '@atlaskit/icon/glyph/cross';
 
 interface ImportStepSetupProps {
   file: File | null;
@@ -161,7 +164,7 @@ export function ImportStepSetup({
               )}
             >
               <input {...getInputProps()} />
-              <Upload className="h-10 w-10 mx-auto mb-3 text-muted-foreground" />
+              <UploadIcon label="" size="small" />
               {isDragActive ? (
                 <p className="text-sm text-brand-primary font-medium">Drop the file here</p>
               ) : (
@@ -177,7 +180,7 @@ export function ImportStepSetup({
             </div>
           ) : (
             <div className="flex items-center gap-3 p-4 bg-muted/50 rounded-lg border">
-              <FileText className="h-8 w-8 text-brand-primary flex-shrink-0" />
+              <FileIcon label="" size="small" />
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium text-foreground truncate">{file.name}</p>
                 <p className="text-xs text-muted-foreground">
@@ -194,7 +197,7 @@ export function ImportStepSetup({
                 }}
                 className="h-8 w-8"
               >
-                <X className="h-4 w-4" />
+                <CrossIcon label="" size="small" />
               </Button>
             </div>
           )}
@@ -206,7 +209,7 @@ export function ImportStepSetup({
         
         {error && (
           <Alert variant="destructive" className="mt-4">
-            <AlertCircle className="h-4 w-4" />
+            <AlertIcon label="" size="small" />
             <AlertDescription>{error}</AlertDescription>
           </Alert>
         )}

@@ -4,10 +4,6 @@
  */
 
 import { useState, useMemo } from 'react';
-import { 
-  AlertTriangle, Filter, Wrench, 
-  FileCode, Zap, Smartphone, Copy, Send
-} from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Lozenge, Tooltip, type LozengeAppearance } from '@/components/ads';
 import { Button } from '@/components/ui/button';
@@ -16,6 +12,14 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { cn } from '@/lib/utils';
 import { 
+import AutomationIcon from '@atlaskit/icon/core/automation';
+import CopyIcon from '@atlaskit/icon/core/copy';
+import FileIcon from '@atlaskit/icon/core/file';
+import FilterIcon from '@atlaskit/icon/core/filter';
+import PhoneIcon from '@atlaskit/icon/core/phone';
+import SendIcon from '@atlaskit/icon/core/send';
+import ToolsIcon from '@atlaskit/icon/core/tools';
+import WarningIcon from '@atlaskit/icon/core/warning';
   detectedGaps, 
   responsivenessGaps,
   type DesignGap,
@@ -140,8 +144,8 @@ export function GapDetectionGrid({ onFixSelected }: GapDetectionGridProps) {
       case 'spacing': return <div className="h-3 w-3 border-2 border-current rounded" />;
       case 'typography': return <span className="text-[10px] font-bold">Aa</span>;
       case 'layout': return <div className="h-3 w-3 grid grid-cols-2 gap-0.5"><div className="bg-current rounded-sm" /><div className="bg-current rounded-sm" /><div className="bg-current rounded-sm" /><div className="bg-current rounded-sm" /></div>;
-      case 'component': return <FileCode className="h-3 w-3" />;
-      case 'responsive': return <Smartphone className="h-3 w-3" />;
+      case 'component': return <FileIcon label="" size="small" />;
+      case 'responsive': return <PhoneIcon label="" size="small" />;
       default: return null;
     }
   };
@@ -183,7 +187,7 @@ export function GapDetectionGrid({ onFixSelected }: GapDetectionGridProps) {
       {/* Filters & Actions */}
       <div className="flex flex-wrap items-center gap-3">
         <div className="flex items-center gap-2">
-          <Filter className="h-4 w-4 text-muted-foreground" />
+          <FilterIcon label="" size="small" />
           <Select value={categoryFilter} onValueChange={setCategoryFilter}>
             <SelectTrigger className="w-[140px] h-8">
               <SelectValue placeholder="Category" />
@@ -221,13 +225,13 @@ export function GapDetectionGrid({ onFixSelected }: GapDetectionGridProps) {
           onClick={() => setShowResponsive(!showResponsive)}
           className={showResponsive ? 'bg-brand-primary/10 border-brand-primary/30' : ''}
         >
-          <Smartphone className="h-4 w-4 mr-1.5" />
+          <PhoneIcon label="" size="small" />
           Responsive Gaps
         </Button>
 
         {selectedGaps.size > 0 && (
           <Button size="sm" onClick={handleFixSelected} className="bg-brand-primary hover:bg-brand-primary-hover">
-            <Wrench className="h-4 w-4 mr-1.5" />
+            <ToolsIcon label="" size="small" />
             Fix Selected ({selectedGaps.size})
           </Button>
         )}
@@ -240,7 +244,7 @@ export function GapDetectionGrid({ onFixSelected }: GapDetectionGridProps) {
             <div className="flex items-center justify-between">
               <div>
                 <CardTitle className="text-base flex items-center gap-2">
-                  <AlertTriangle className="h-4 w-4 text-warning" />
+                  <WarningIcon label="" size="small" />
                   Design Gaps ({filteredGaps.length})
                 </CardTitle>
                 <CardDescription>Pages and components not aligned with baseline</CardDescription>
@@ -308,7 +312,7 @@ export function GapDetectionGrid({ onFixSelected }: GapDetectionGridProps) {
                         className="h-7 px-2 gap-1.5 shrink-0 hover:bg-brand-primary/10 hover:border-brand-primary/30 hover:text-brand-primary"
                         onClick={() => copyFixInstruction(gap)}
                       >
-                        <Send className="h-3.5 w-3.5" />
+                        <SendIcon label="" size="small" />
                         <span className="text-xs">Fix</span>
                       </Button>
                     </Tooltip>
@@ -323,7 +327,7 @@ export function GapDetectionGrid({ onFixSelected }: GapDetectionGridProps) {
         <Card>
           <CardHeader className="py-3">
             <CardTitle className="text-base flex items-center gap-2">
-              <Smartphone className="h-4 w-4 text-brand-primary" />
+              <PhoneIcon label="" size="small" />
               Responsive Gaps ({responsivenessGaps.length})
             </CardTitle>
             <CardDescription>Routes with responsiveness issues by viewport</CardDescription>
@@ -373,7 +377,7 @@ export function GapDetectionGrid({ onFixSelected }: GapDetectionGridProps) {
                             className="h-7 px-2 gap-1.5 hover:bg-brand-primary/10 hover:border-brand-primary/30 hover:text-brand-primary"
                             onClick={() => copyFixInstruction(gap)}
                           >
-                            <Send className="h-3.5 w-3.5" />
+                            <SendIcon label="" size="small" />
                             <span className="text-xs">Fix</span>
                           </Button>
                         </Tooltip>

@@ -2,9 +2,10 @@ import { useState } from 'react';
 import { Card, CardHeader, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Lozenge } from '@/components/ads';
-import { Search, Users } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { ProductRole } from '@/hooks/useProductRoles';
+import PeopleGroupIcon from '@atlaskit/icon/core/people-group';
+import SearchIcon from '@atlaskit/icon/core/search';
 
 interface RolesListProps {
   roles: ProductRole[];
@@ -29,7 +30,7 @@ export function RolesList({ roles, selectedRoleId, onSelectRole, isLoading }: Ro
         </CardHeader>
         <CardContent>
           <div className="flex items-center justify-center py-8">
-            <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-brand-primary" />
+            <div className="rounded-full h-6 w-6 border-b-2 border-brand-primary" />
           </div>
         </CardContent>
       </Card>
@@ -44,7 +45,7 @@ export function RolesList({ roles, selectedRoleId, onSelectRole, isLoading }: Ro
       <CardContent className="pt-4">
         {/* Search Input */}
         <div className="relative mb-4">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <SearchIcon label="" size="small" />
           <Input
             placeholder="Search roles…"
             className="pl-10"
@@ -76,7 +77,7 @@ export function RolesList({ roles, selectedRoleId, onSelectRole, isLoading }: Ro
               </div>
               <div className="flex items-center gap-2 ml-3 flex-shrink-0">
                 <span className="text-xs text-muted-foreground flex items-center gap-1">
-                  <Users className="h-3 w-3" />
+                  <PeopleGroupIcon label="" size="small" />
                   {role.user_count || 0}
                 </span>
                 <Lozenge appearance={role.is_active ? 'inprogress' : 'default'}>

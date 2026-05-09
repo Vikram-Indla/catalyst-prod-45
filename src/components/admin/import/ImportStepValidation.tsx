@@ -1,10 +1,13 @@
 import { useState, useMemo } from 'react';
-import { CheckCircle, XCircle, AlertTriangle, Download } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Lozenge, Tooltip } from '@/components/ads';
 import { ImportModuleConfig } from '@/lib/import/importModuleConfig';
 import { RowValidationResult } from '@/lib/import/importValidator';
 import { cn } from '@/lib/utils';
+import CheckCircleIcon from '@atlaskit/icon/core/check-circle';
+import CrossCircleIcon from '@atlaskit/icon/core/cross-circle';
+import DownloadIcon from '@atlaskit/icon/core/download';
+import WarningIcon from '@atlaskit/icon/core/warning';
 
 interface ImportStepValidationProps {
   moduleConfig: ImportModuleConfig;
@@ -112,15 +115,15 @@ export function ImportStepValidation({
                   <span className="text-sm font-medium">{summary?.total} rows detected</span>
                 </div>
                 <div className="flex items-center gap-1.5">
-                  <CheckCircle className="h-4 w-4 text-green-600" />
+                  <CheckCircleIcon label="" size="small" />
                   <span className="text-sm">{summary?.valid} valid</span>
                 </div>
                 <div className="flex items-center gap-1.5">
-                  <AlertTriangle className="h-4 w-4 text-amber-500" />
+                  <WarningIcon label="" size="small" />
                   <span className="text-sm">{summary?.warning} warnings</span>
                 </div>
                 <div className="flex items-center gap-1.5">
-                  <XCircle className="h-4 w-4 text-destructive" />
+                  <CrossCircleIcon label="" size="small" />
                   <span className="text-sm">{summary?.invalid} invalid</span>
                 </div>
                 
@@ -131,7 +134,7 @@ export function ImportStepValidation({
                     onClick={onDownloadErrors}
                     className="ml-auto"
                   >
-                    <Download className="h-4 w-4 mr-2" />
+                    <DownloadIcon label="" size="small" />
                     Download Errors
                   </Button>
                 )}

@@ -4,9 +4,10 @@
  */
 
 import { useState, useRef, useEffect, useCallback } from 'react';
-import { Pencil, Loader2 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import {
+import Spinner from '@atlaskit/spinner';
+import EditIcon from '@atlaskit/icon/core/edit';
   Select,
   SelectContent,
   SelectItem,
@@ -162,7 +163,7 @@ export function UserInlineCell({
           disabled={isSaving}
         />
         {isSaving && (
-          <Loader2 className="absolute right-2 top-1/2 -translate-y-1/2 h-3 w-3 animate-spin text-muted-foreground" />
+          <Spinner size="small" />
         )}
       </div>
     );
@@ -183,7 +184,7 @@ export function UserInlineCell({
           disabled={isSaving}
         />
         {isSaving && (
-          <Loader2 className="absolute right-2 top-1/2 -translate-y-1/2 h-3 w-3 animate-spin text-muted-foreground" />
+          <Spinner size="small" />
         )}
       </div>
     );
@@ -206,7 +207,7 @@ export function UserInlineCell({
           >
             <SelectValue>
               {isSaving ? (
-                <Loader2 className="h-3 w-3 animate-spin" />
+                <Spinner size="small" />
               ) : (
                 getDisplayContent()
               )}
@@ -237,9 +238,9 @@ export function UserInlineCell({
       onClick={() => setIsEditing(true)}
     >
       <span className="text-sm flex-1">{getDisplayContent()}</span>
-      <Pencil className="h-3 w-3 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity ml-1 flex-shrink-0" />
+      <EditIcon label="" size="small" />
       {isSaving && (
-        <Loader2 className="h-3 w-3 animate-spin text-muted-foreground ml-1" />
+        <Spinner size="small" />
       )}
     </div>
   );

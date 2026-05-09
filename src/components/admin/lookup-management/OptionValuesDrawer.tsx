@@ -1,5 +1,13 @@
 import { useState, useEffect } from 'react';
 import {
+import Spinner from '@atlaskit/spinner';
+import AddIcon from '@atlaskit/icon/core/add';
+import AlertIcon from '@atlaskit/icon/core/alert';
+import CheckMarkIcon from '@atlaskit/icon/core/check-mark';
+import EditIcon from '@atlaskit/icon/core/edit';
+import CrossIcon from '@atlaskit/icon/glyph/cross';
+import DragHandlerIcon from '@atlaskit/icon/glyph/drag-handler';
+import TrashIcon from '@atlaskit/icon/glyph/trash';
   Sheet,
   SheetContent,
   SheetHeader,
@@ -28,17 +36,6 @@ import {
   Draggable,
   DropResult,
 } from '@hello-pangea/dnd';
-import {
-  GripVertical,
-  Plus,
-  Trash2,
-  Save,
-  X,
-  Loader2,
-  AlertCircle,
-  Check,
-  Pencil,
-} from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 
@@ -224,7 +221,7 @@ export function OptionValuesDrawer({ optionSet, open, onOpenChange }: OptionValu
         <SheetBody>
           {isLoading ? (
             <div className="flex items-center justify-center py-12">
-              <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+              <Spinner size="small" />
             </div>
           ) : (
             <div className="space-y-4">
@@ -260,7 +257,7 @@ export function OptionValuesDrawer({ optionSet, open, onOpenChange }: OptionValu
                               >
                                 {/* Drag Handle */}
                                 <div {...provided.dragHandleProps}>
-                                  <GripVertical className="h-4 w-4 text-muted-foreground cursor-grab" />
+                                  <DragHandlerIcon label="" size="small" />
                                 </div>
 
                                 {/* Label */}
@@ -339,7 +336,7 @@ export function OptionValuesDrawer({ optionSet, open, onOpenChange }: OptionValu
                                         onClick={handleSaveEdit}
                                         disabled={updateMutation.isPending}
                                       >
-                                        <Check className="h-3.5 w-3.5 text-emerald-600" />
+                                        <CheckMarkIcon label="" size="small" />
                                       </Button>
                                       <Button
                                         variant="ghost"
@@ -347,7 +344,7 @@ export function OptionValuesDrawer({ optionSet, open, onOpenChange }: OptionValu
                                         className="h-7 w-7"
                                         onClick={handleCancelEdit}
                                       >
-                                        <X className="h-3.5 w-3.5" />
+                                        <CrossIcon label="" size="small" />
                                       </Button>
                                     </>
                                   ) : (
@@ -358,7 +355,7 @@ export function OptionValuesDrawer({ optionSet, open, onOpenChange }: OptionValu
                                         className="h-7 w-7"
                                         onClick={() => handleStartEdit(value)}
                                       >
-                                        <Pencil className="h-3.5 w-3.5" />
+                                        <EditIcon label="" size="small" />
                                       </Button>
                                       <Button
                                         variant="ghost"
@@ -367,7 +364,7 @@ export function OptionValuesDrawer({ optionSet, open, onOpenChange }: OptionValu
                                         onClick={() => handleDelete(value)}
                                         disabled={deleteMutation.isPending}
                                       >
-                                        <Trash2 className="h-3.5 w-3.5" />
+                                        <TrashIcon label="" size="small" />
                                       </Button>
                                     </>
                                   )}
@@ -420,9 +417,9 @@ export function OptionValuesDrawer({ optionSet, open, onOpenChange }: OptionValu
                         disabled={createMutation.isPending}
                       >
                         {createMutation.isPending ? (
-                          <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                          <Spinner size="small" />
                         ) : (
-                          <Check className="h-3.5 w-3.5 text-emerald-600" />
+                          <CheckMarkIcon label="" size="small" />
                         )}
                       </Button>
                       <Button
@@ -431,7 +428,7 @@ export function OptionValuesDrawer({ optionSet, open, onOpenChange }: OptionValu
                         className="h-7 w-7"
                         onClick={() => setIsAddingNew(false)}
                       >
-                        <X className="h-3.5 w-3.5" />
+                        <CrossIcon label="" size="small" />
                       </Button>
                     </div>
                   </div>
@@ -452,7 +449,7 @@ export function OptionValuesDrawer({ optionSet, open, onOpenChange }: OptionValu
                   onClick={() => setIsAddingNew(true)}
                   className="gap-1.5"
                 >
-                  <Plus className="h-4 w-4" />
+                  <AddIcon label="" size="small" />
                   Add Option
                 </Button>
               )}
@@ -460,7 +457,7 @@ export function OptionValuesDrawer({ optionSet, open, onOpenChange }: OptionValu
               {/* Info Box */}
               {optionSet.is_system && (
                 <div className="flex items-start gap-3 p-3 bg-amber-50 border border-amber-200 rounded-lg text-sm">
-                  <AlertCircle className="h-4 w-4 text-amber-600 mt-0.5 shrink-0" />
+                  <AlertIcon label="" size="small" />
                   <div className="text-amber-800">
                     <strong>System Option Set</strong>
                     <p className="text-xs mt-0.5 text-amber-700">

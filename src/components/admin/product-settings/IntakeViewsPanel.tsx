@@ -4,8 +4,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Switch } from '@/components/ui/switch';
 import { Lozenge } from '@/components/ads';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { GripVertical, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import Spinner from '@atlaskit/spinner';
+import DragHandlerIcon from '@atlaskit/icon/glyph/drag-handler';
 
 interface IntakeViewsPanelProps {
   onChanges?: () => void;
@@ -43,7 +44,7 @@ export function IntakeViewsPanel({ onChanges }: IntakeViewsPanelProps) {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-12">
-        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+        <Spinner size="small" />
       </div>
     );
   }
@@ -106,7 +107,7 @@ export function IntakeViewsPanel({ onChanges }: IntakeViewsPanelProps) {
                   key={column.key}
                   className="flex items-center gap-4 px-4 py-3 hover:bg-muted/20"
                 >
-                  <GripVertical className="h-4 w-4 text-muted-foreground cursor-grab" />
+                  <DragHandlerIcon label="" size="small" />
                   <div className="flex-1 flex items-center gap-2">
                     <span className="text-sm">{column.name}</span>
                     {column.is_default_sort && (

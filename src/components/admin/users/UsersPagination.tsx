@@ -3,8 +3,9 @@
  * Matches spec: Previous/Next buttons, page numbers, showing X of Y
  */
 
-import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import ChevronLeftIcon from '@atlaskit/icon/glyph/chevron-left';
+import ChevronRightIcon from '@atlaskit/icon/glyph/chevron-right';
 
 interface UsersPaginationProps {
   page: number;
@@ -61,7 +62,7 @@ export function UsersPagination({ page, pageSize, total, onPageChange }: UsersPa
           disabled={page === 0}
           className="h-8 gap-1 text-xs"
         >
-          <ChevronLeft className="w-3.5 h-3.5" />
+          <ChevronLeftIcon label="" size="small" />
           Previous
         </Button>
         
@@ -89,7 +90,7 @@ export function UsersPagination({ page, pageSize, total, onPageChange }: UsersPa
           className="h-8 gap-1 text-xs"
         >
           Next
-          <ChevronRight className="w-3.5 h-3.5" />
+          <ChevronRightIcon label="" size="small" />
         </Button>
       </div>
     </div>

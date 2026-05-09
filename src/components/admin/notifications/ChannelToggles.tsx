@@ -6,10 +6,13 @@
  */
 
 import { memo } from 'react';
-import { Bell, Mail, Zap, MessageSquare } from 'lucide-react';
 import { Switch } from '@/components/ui/switch';
 import { Tooltip } from '@/components/ads';
 import type { ChannelsConfig } from '@/types/notification-triggers';
+import AutomationIcon from '@atlaskit/icon/core/automation';
+import CommentIcon from '@atlaskit/icon/core/comment';
+import EmailIcon from '@atlaskit/icon/core/email';
+import NotificationIcon from '@atlaskit/icon/core/notification';
 
 // ── Channel metadata ────────────────────────────────────────────
 const CHANNEL_DEFS: {

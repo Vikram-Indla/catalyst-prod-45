@@ -6,6 +6,19 @@ import { Button } from '@/components/ui/button';
 import { Lozenge } from '@/components/ads';
 import { Checkbox } from '@/components/ui/checkbox';
 import {
+import ArrowDownIcon from '@atlaskit/icon/core/arrow-down';
+import ArrowUpIcon from '@atlaskit/icon/core/arrow-up';
+import CheckCircleIcon from '@atlaskit/icon/core/check-circle';
+import ClockIcon from '@atlaskit/icon/core/clock';
+import CrossCircleIcon from '@atlaskit/icon/core/cross-circle';
+import DownloadIcon from '@atlaskit/icon/core/download';
+import EditIcon from '@atlaskit/icon/core/edit';
+import LockLockedIcon from '@atlaskit/icon/core/lock-locked';
+import PowerPlugIcon from '@atlaskit/icon/core/power-plug';
+import SearchIcon from '@atlaskit/icon/core/search';
+import ShowMoreHorizontalIcon from '@atlaskit/icon/core/show-more-horizontal';
+import SortAscendingIcon from '@atlaskit/icon/core/sort-ascending';
+import TrashIcon from '@atlaskit/icon/glyph/trash';
   Select,
   SelectContent,
   SelectItem,
@@ -29,8 +42,6 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/admin/admin-alert-dialog';
-import { Search, MoreHorizontal, Power, PowerOff, Trash2, KeyRound, CheckCircle, XCircle, Clock, Download, Pencil, ArrowUpDown, ArrowUp, ArrowDown } from 'lucide-react';
-
 // Sortable column types
 type SortColumn = 'rid' | 'full_name' | 'job_role' | 'department_name' | 'assignment_name' | 'contract_start_date' | 'contract_end_date' | 'vendor' | 'resource_type' | 'country' | 'location' | 'ctc';
 type SortDirection = 'asc' | 'desc' | null;
@@ -330,12 +341,12 @@ export const UsersTable = memo(function UsersTable({ users, isLoading }: UsersTa
   // Sort icon component
   const SortIcon = ({ column }: { column: SortColumn }) => {
     if (sortColumn !== column) {
-      return <ArrowUpDown className="w-3 h-3 ml-1 opacity-40" />;
+      return <SortAscendingIcon label="" size="small" />;
     }
     if (sortDirection === 'asc') {
-      return <ArrowUp className="w-3 h-3 ml-1" />;
+      return <ArrowUpIcon label="" size="small" />;
     }
-    return <ArrowDown className="w-3 h-3 ml-1" />;
+    return <ArrowDownIcon label="" size="small" />;
   };
 
   // Bulk selection handlers
@@ -456,7 +467,7 @@ export const UsersTable = memo(function UsersTable({ users, isLoading }: UsersTa
         </CardHeader>
         <CardContent>
           <div className="flex items-center justify-center py-12">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-brand-primary" />
+            <div className="rounded-full h-8 w-8 border-b-2 border-brand-primary" />
           </div>
         </CardContent>
       </Card>
@@ -510,7 +521,7 @@ export const UsersTable = memo(function UsersTable({ users, isLoading }: UsersTa
           }}
           className="flex items-center gap-2 w-full sm:w-auto"
         >
-          <Download className="h-4 w-4" />
+          <DownloadIcon label="" size="small" />
           {isExporting ? 'Exporting...' : 'Download Excel'}
         </Button>
       </CardHeader>
@@ -518,7 +529,7 @@ export const UsersTable = memo(function UsersTable({ users, isLoading }: UsersTa
         {/* Filters - Row 1 */}
         <div className="flex flex-col gap-3 mb-3">
           <div className="relative w-full">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <SearchIcon label="" size="small" />
             <Input
               placeholder="Search by name or email..."
               className="pl-10"
@@ -644,32 +655,32 @@ export const UsersTable = memo(function UsersTable({ users, isLoading }: UsersTa
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button variant="ghost" size="icon" className="h-8 w-8 flex-shrink-0">
-                      <MoreHorizontal className="h-4 w-4" />
+                      <ShowMoreHorizontalIcon label="" size="small" />
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
                     {user.approval_status === 'PENDING_APPROVAL' && (
                       <>
                         <DropdownMenuItem onClick={() => handleApprove(user.id)} className="text-green-600">
-                          <CheckCircle className="h-4 w-4 mr-2" />
+                          <CheckCircleIcon label="" size="small" />
                           Approve
                         </DropdownMenuItem>
                         <DropdownMenuItem onClick={() => handleReject(user)} className="text-red-600">
-                          <XCircle className="h-4 w-4 mr-2" />
+                          <CrossCircleIcon label="" size="small" />
                           Reject
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />
                       </>
                     )}
                     <DropdownMenuItem onClick={() => setEditUser(user)}>
-                      <Pencil className="h-4 w-4 mr-2" />
+                      <EditIcon label="" size="small" />
                       Edit User
                     </DropdownMenuItem>
                     {user.approval_status === 'APPROVED' && isSuperAdmin && (
                       <>
                         <DropdownMenuSeparator />
                         <DropdownMenuItem onClick={() => setResetPasswordUser(user)}>
-                          <KeyRound className="h-4 w-4 mr-2" />
+                          <LockLockedIcon label="" size="small" />
                           Reset Password
                         </DropdownMenuItem>
                       </>
@@ -677,19 +688,19 @@ export const UsersTable = memo(function UsersTable({ users, isLoading }: UsersTa
                     <DropdownMenuSeparator />
                     {user.approval_status === 'APPROVED' && (
                       <DropdownMenuItem onClick={() => handleDisable(user.id)}>
-                        <PowerOff className="h-4 w-4 mr-2" />
+                        <PowerPlugIcon label="" size="small" />
                         Disable User
                       </DropdownMenuItem>
                     )}
                     {user.approval_status === 'DISABLED' && (
                       <DropdownMenuItem onClick={() => handleApprove(user.id)}>
-                        <Power className="h-4 w-4 mr-2" />
+                        <PowerPlugIcon label="" size="small" />
                         Enable User
                       </DropdownMenuItem>
                     )}
                     {user.approval_status === 'REJECTED' && (
                       <DropdownMenuItem onClick={() => handleApprove(user.id)} className="text-green-600">
-                        <CheckCircle className="h-4 w-4 mr-2" />
+                        <CheckCircleIcon label="" size="small" />
                         Approve User
                       </DropdownMenuItem>
                     )}
@@ -698,7 +709,7 @@ export const UsersTable = memo(function UsersTable({ users, isLoading }: UsersTa
                       onClick={() => handleDeleteUser(user)}
                       className="text-destructive focus:text-destructive"
                     >
-                      <Trash2 className="h-4 w-4 mr-2" />
+                      <TrashIcon label="" size="small" />
                       Remove User
                     </DropdownMenuItem>
                   </DropdownMenuContent>
@@ -1137,32 +1148,32 @@ export const UsersTable = memo(function UsersTable({ users, isLoading }: UsersTa
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
                             <Button variant="ghost" size="icon" className="h-8 w-8">
-                              <MoreHorizontal className="h-4 w-4" />
+                              <ShowMoreHorizontalIcon label="" size="small" />
                             </Button>
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
                             {user.approval_status === 'PENDING_APPROVAL' && (
                               <>
                                 <DropdownMenuItem onClick={() => handleApprove(user.id)} className="text-green-600">
-                                  <CheckCircle className="h-4 w-4 mr-2" />
+                                  <CheckCircleIcon label="" size="small" />
                                   Approve
                                 </DropdownMenuItem>
                                 <DropdownMenuItem onClick={() => handleReject(user)} className="text-red-600">
-                                  <XCircle className="h-4 w-4 mr-2" />
+                                  <CrossCircleIcon label="" size="small" />
                                   Reject
                                 </DropdownMenuItem>
                                 <DropdownMenuSeparator />
                               </>
                             )}
                             <DropdownMenuItem onClick={() => setEditUser(user)}>
-                              <Pencil className="h-4 w-4 mr-2" />
+                              <EditIcon label="" size="small" />
                               Edit User
                             </DropdownMenuItem>
                             {user.approval_status === 'APPROVED' && isSuperAdmin && (
                               <>
                                 <DropdownMenuSeparator />
                                 <DropdownMenuItem onClick={() => setResetPasswordUser(user)}>
-                                  <KeyRound className="h-4 w-4 mr-2" />
+                                  <LockLockedIcon label="" size="small" />
                                   Reset Password
                                 </DropdownMenuItem>
                               </>
@@ -1170,19 +1181,19 @@ export const UsersTable = memo(function UsersTable({ users, isLoading }: UsersTa
                             <DropdownMenuSeparator />
                             {user.approval_status === 'APPROVED' && (
                               <DropdownMenuItem onClick={() => handleDisable(user.id)}>
-                                <PowerOff className="h-4 w-4 mr-2" />
+                                <PowerPlugIcon label="" size="small" />
                                 Disable User
                               </DropdownMenuItem>
                             )}
                             {user.approval_status === 'DISABLED' && (
                               <DropdownMenuItem onClick={() => handleApprove(user.id)}>
-                                <Power className="h-4 w-4 mr-2" />
+                                <PowerPlugIcon label="" size="small" />
                                 Enable User
                               </DropdownMenuItem>
                             )}
                             {user.approval_status === 'REJECTED' && (
                               <DropdownMenuItem onClick={() => handleApprove(user.id)} className="text-green-600">
-                                <CheckCircle className="h-4 w-4 mr-2" />
+                                <CheckCircleIcon label="" size="small" />
                                 Approve User
                               </DropdownMenuItem>
                             )}
@@ -1191,7 +1202,7 @@ export const UsersTable = memo(function UsersTable({ users, isLoading }: UsersTa
                               onClick={() => handleDeleteUser(user)}
                               className="text-destructive focus:text-destructive"
                             >
-                              <Trash2 className="h-4 w-4 mr-2" />
+                              <TrashIcon label="" size="small" />
                               Remove User
                             </DropdownMenuItem>
                           </DropdownMenuContent>

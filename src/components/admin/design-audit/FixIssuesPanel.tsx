@@ -4,10 +4,6 @@
  */
 
 import { useState } from 'react';
-import { 
-  Wrench, CheckCircle2, XCircle, Clock, Play, Pause, 
-  RefreshCw, FileCode, AlertTriangle, Zap, ArrowRight 
-} from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Lozenge } from '@/components/ads';
 import { Button } from '@/components/ui/button';
@@ -17,6 +13,17 @@ import { Separator } from '@/components/ui/separator';
 import { cn } from '@/lib/utils';
 import { type DesignGap, detectedGaps } from '@/lib/designAudit/designSystemBaseline';
 import { toast } from 'sonner';
+import ArrowRightIcon from '@atlaskit/icon/core/arrow-right';
+import AutomationIcon from '@atlaskit/icon/core/automation';
+import CheckCircleIcon from '@atlaskit/icon/core/check-circle';
+import ClockIcon from '@atlaskit/icon/core/clock';
+import CrossCircleIcon from '@atlaskit/icon/core/cross-circle';
+import FileIcon from '@atlaskit/icon/core/file';
+import RefreshIcon from '@atlaskit/icon/core/refresh';
+import ToolsIcon from '@atlaskit/icon/core/tools';
+import VideoPauseIcon from '@atlaskit/icon/core/video-pause';
+import VideoPlayIcon from '@atlaskit/icon/core/video-play';
+import WarningIcon from '@atlaskit/icon/core/warning';
 
 interface FixTask {
   id: string;
@@ -97,11 +104,11 @@ export function FixIssuesPanel() {
 
   const getStatusIcon = (status: FixTask['status']) => {
     switch (status) {
-      case 'pending': return <Clock className="h-4 w-4 text-muted-foreground" />;
-      case 'running': return <RefreshCw className="h-4 w-4 text-brand-primary animate-spin" />;
-      case 'success': return <CheckCircle2 className="h-4 w-4 text-success" />;
-      case 'failed': return <XCircle className="h-4 w-4 text-destructive" />;
-      case 'skipped': return <ArrowRight className="h-4 w-4 text-muted-foreground" />;
+      case 'pending': return <ClockIcon label="" size="small" />;
+      case 'running': return <RefreshIcon label="" size="small" />;
+      case 'success': return <CheckCircleIcon label="" size="small" />;
+      case 'failed': return <CrossCircleIcon label="" size="small" />;
+      case 'skipped': return <ArrowRightIcon label="" size="small" />;
     }
   };
 
@@ -113,7 +120,7 @@ export function FixIssuesPanel() {
           <CardContent className="py-4">
             <div className="flex items-center gap-3">
               <div className="h-10 w-10 rounded-lg bg-success/10 flex items-center justify-center">
-                <Zap className="h-5 w-5 text-success" />
+                <AutomationIcon label="" size="small" />
               </div>
               <div>
                 <div className="text-2xl font-bold text-success">{autoFixableGaps.length}</div>
@@ -127,7 +134,7 @@ export function FixIssuesPanel() {
           <CardContent className="py-4">
             <div className="flex items-center gap-3">
               <div className="h-10 w-10 rounded-lg bg-warning/10 flex items-center justify-center">
-                <Wrench className="h-5 w-5 text-warning" />
+                <ToolsIcon label="" size="small" />
               </div>
               <div>
                 <div className="text-2xl font-bold text-warning">{manualGaps.length}</div>
@@ -143,7 +150,7 @@ export function FixIssuesPanel() {
           <CardContent className="py-4">
             <div className="flex items-center gap-3">
               <div className="h-10 w-10 rounded-lg bg-brand-primary/10 flex items-center justify-center">
-                <CheckCircle2 className="h-5 w-5 text-brand-primary" />
+                <CheckCircleIcon label="" size="small" />
               </div>
               <div>
                 <div className="text-2xl font-bold text-brand-primary">{successCount}/{tasks.length || autoFixableGaps.length}</div>
@@ -160,7 +167,7 @@ export function FixIssuesPanel() {
           <div className="flex items-center justify-between">
             <div>
               <CardTitle className="text-base flex items-center gap-2">
-                <Wrench className="h-4 w-4 text-brand-primary" />
+                <ToolsIcon label="" size="small" />
                 Fix Queue
               </CardTitle>
               <CardDescription>Apply fixes to align with design system baseline</CardDescription>
@@ -168,7 +175,7 @@ export function FixIssuesPanel() {
             <div className="flex items-center gap-2">
               {tasks.length > 0 && (
                 <Button variant="outline" size="sm" onClick={resetTasks}>
-                  <RefreshCw className="h-4 w-4 mr-1.5" />
+                  <RefreshIcon label="" size="small" />
                   Reset
                 </Button>
               )}
@@ -179,12 +186,12 @@ export function FixIssuesPanel() {
               >
                 {isRunning ? (
                   <>
-                    <Pause className="h-4 w-4 mr-1.5" />
+                    <VideoPauseIcon label="" size="small" />
                     Pause
                   </>
                 ) : (
                   <>
-                    <Play className="h-4 w-4 mr-1.5" />
+                    <VideoPlayIcon label="" size="small" />
                     {tasks.length > 0 ? 'Resume' : 'Start Fixes'}
                   </>
                 )}
@@ -203,15 +210,15 @@ export function FixIssuesPanel() {
               </div>
               <div className="flex items-center gap-4 text-xs text-muted-foreground">
                 <span className="flex items-center gap-1">
-                  <CheckCircle2 className="h-3 w-3 text-success" />
+                  <CheckCircleIcon label="" size="small" />
                   {successCount} Fixed
                 </span>
                 <span className="flex items-center gap-1">
-                  <XCircle className="h-3 w-3 text-destructive" />
+                  <CrossCircleIcon label="" size="small" />
                   {failedCount} Failed
                 </span>
                 <span className="flex items-center gap-1">
-                  <Clock className="h-3 w-3" />
+                  <ClockIcon label="" size="small" />
                   {tasks.filter(t => t.status === 'pending').length} Pending
                 </span>
               </div>
@@ -223,7 +230,7 @@ export function FixIssuesPanel() {
           <ScrollArea className="h-[300px]">
             {tasks.length === 0 ? (
               <div className="p-8 text-center text-muted-foreground">
-                <Wrench className="h-12 w-12 mx-auto mb-3 opacity-20" />
+                <ToolsIcon label="" size="small" />
                 <p className="text-sm">Click "Start Fixes" to begin applying auto-fixes</p>
                 <p className="text-xs mt-1">{autoFixableGaps.length} issues will be processed</p>
               </div>
@@ -253,7 +260,7 @@ export function FixIssuesPanel() {
                     
                     {task.gap.file && (
                       <code className="text-[10px] text-muted-foreground flex items-center gap-1">
-                        <FileCode className="h-3 w-3" />
+                        <FileIcon label="" size="small" />
                         {task.gap.file}
                       </code>
                     )}
@@ -279,7 +286,7 @@ export function FixIssuesPanel() {
         <Card>
           <CardHeader className="py-3">
             <CardTitle className="text-base flex items-center gap-2">
-              <AlertTriangle className="h-4 w-4 text-warning" />
+              <WarningIcon label="" size="small" />
               Manual Fixes Required ({manualGaps.length})
             </CardTitle>
             <CardDescription>These issues require manual code changes</CardDescription>
@@ -289,7 +296,7 @@ export function FixIssuesPanel() {
               <div className="divide-y">
                 {manualGaps.map(gap => (
                   <div key={gap.id} className="flex items-center gap-3 px-4 py-2.5">
-                    <AlertTriangle className="h-4 w-4 text-warning shrink-0" />
+                    <WarningIcon label="" size="small" />
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2">
                         <span className="font-medium text-sm">{gap.component}</span>

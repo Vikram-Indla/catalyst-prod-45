@@ -1,5 +1,8 @@
 import { useState, useEffect } from 'react';
 import {
+import RefreshIcon from '@atlaskit/icon/core/refresh';
+import WarningIcon from '@atlaskit/icon/core/warning';
+import TrashIcon from '@atlaskit/icon/glyph/trash';
   Dialog,
   DialogContent,
   DialogHeader,
@@ -16,7 +19,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { AlertTriangle, Trash2, RefreshCw } from 'lucide-react';
 import { useLinkedTickets, useReassignTickets, useDeleteProcessStep } from '@/hooks/useDeleteProcessStep';
 import { DemandProcessStep } from '@/hooks/useDemandProcessSteps';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -80,7 +82,7 @@ export function DeleteProcessStepDialog({
       <DialogContent className="max-w-lg">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <Trash2 className="h-5 w-5 text-destructive" />
+            <TrashIcon label="" size="small" />
             Delete Process Step
           </DialogTitle>
           <DialogDescription>
@@ -97,7 +99,7 @@ export function DeleteProcessStepDialog({
             <>
               {/* Warning message */}
               <div className="flex items-start gap-3 p-3 bg-destructive/10 border border-destructive/30 rounded-lg">
-                <AlertTriangle className="h-5 w-5 text-destructive shrink-0 mt-0.5" />
+                <WarningIcon label="" size="small" />
                 <div>
                   <p className="font-medium text-destructive">
                     Cannot delete this process step
@@ -161,7 +163,7 @@ export function DeleteProcessStepDialog({
                     onClick={handleReassign}
                     disabled={!newProcessStep || reassignMutation.isPending}
                   >
-                    <RefreshCw className={`h-4 w-4 mr-2 ${reassignMutation.isPending ? 'animate-spin' : ''}`} />
+                    <RefreshIcon label="" size="small" />
                     Reassign
                   </Button>
                 </div>
@@ -196,7 +198,7 @@ export function DeleteProcessStepDialog({
             onClick={handleDelete}
             disabled={!canDelete || deleteMutation.isPending}
           >
-            <Trash2 className="h-4 w-4 mr-2" />
+            <TrashIcon label="" size="small" />
             {deleteMutation.isPending ? 'Deleting...' : 'Delete Process Step'}
           </Button>
         </DialogFooter>

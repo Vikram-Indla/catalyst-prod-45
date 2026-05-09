@@ -5,12 +5,16 @@
  */
 
 import { memo, useCallback } from 'react';
-import { Search, Filter, Shield, RotateCcw, SlidersHorizontal } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Lozenge } from '@/components/ads';
 import { Separator } from '@/components/ui/separator';
 import {
+import CustomizeIcon from '@atlaskit/icon/core/customize';
+import FilterIcon from '@atlaskit/icon/core/filter';
+import RefreshIcon from '@atlaskit/icon/core/refresh';
+import SearchIcon from '@atlaskit/icon/core/search';
+import ShieldIcon from '@atlaskit/icon/core/shield';
   Select,
   SelectContent,
   SelectItem,
@@ -104,7 +108,7 @@ export const TriggerSearch = memo(function TriggerSearch({
       <div className="flex items-center gap-3 flex-wrap">
         {/* Search input */}
         <div className="relative flex-1 min-w-[240px]">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[var(--ds-text-subtlest,#94A3B8)]" />
+          <SearchIcon label="" size="small" />
           <Input
             placeholder="Search triggers by name, key, or description..."
             value={filters.search}
@@ -161,7 +165,7 @@ export const TriggerSearch = memo(function TriggerSearch({
           }`}
           onClick={() => onFiltersChange({ ...filters, enabledOnly: !filters.enabledOnly })}
         >
-          <Filter className="h-3 w-3 mr-1" />
+          <FilterIcon label="" size="small" />
           Enabled
         </Button>
 
@@ -175,7 +179,7 @@ export const TriggerSearch = memo(function TriggerSearch({
           }`}
           onClick={() => onFiltersChange({ ...filters, mandatoryOnly: !filters.mandatoryOnly })}
         >
-          <Shield className="h-3 w-3 mr-1" />
+          <ShieldIcon label="" size="small" />
           Mandatory
         </Button>
 
@@ -187,7 +191,7 @@ export const TriggerSearch = memo(function TriggerSearch({
             className="text-xs h-8 text-[var(--ds-text-subtle,#475569)]"
             onClick={resetFilters}
           >
-            <RotateCcw className="h-3 w-3 mr-1" />
+            <RefreshIcon label="" size="small" />
             Reset
             {activeFilterCount > 0 && (
               <span className="ml-1">
@@ -217,7 +221,7 @@ export const TriggerSearch = memo(function TriggerSearch({
             className="text-xs h-7 text-[var(--ds-text-subtle,#475569)] hover:text-[var(--ds-text,#0F172A)]"
             onClick={onExpandAll}
           >
-            <SlidersHorizontal className="h-3 w-3 mr-1" />
+            <CustomizeIcon label="" size="small" />
             Expand All
           </Button>
           <Button

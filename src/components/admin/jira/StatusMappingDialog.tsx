@@ -12,7 +12,9 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
-import { Loader2, Plus, Trash2 } from "lucide-react";
+import Spinner from '@atlaskit/spinner';
+import AddIcon from '@atlaskit/icon/core/add';
+import TrashIcon from '@atlaskit/icon/core/delete';
 
 interface StatusMappingDialogProps {
   open: boolean;
@@ -119,7 +121,7 @@ export function StatusMappingDialog({ open, onOpenChange, connectionId }: Status
 
         {(loadingStatuses || loadingMappings) ? (
           <div className="flex justify-center py-8">
-            <Loader2 className="w-6 h-6 animate-spin text-brand-primary" />
+            <Spinner size="medium" />
           </div>
         ) : (
           <div className="space-y-4">
@@ -131,7 +133,7 @@ export function StatusMappingDialog({ open, onOpenChange, connectionId }: Status
                 onClick={addMapping}
                 className="border-brand-primary text-brand-primary hover:bg-brand-primary hover:text-white"
               >
-                <Plus className="w-4 h-4 mr-1" />
+                <AddIcon label="" size="small" />
                 Add Mapping
               </Button>
             </div>
@@ -183,7 +185,7 @@ export function StatusMappingDialog({ open, onOpenChange, connectionId }: Status
                     onClick={() => removeMapping(index)}
                     className="text-destructive"
                   >
-                    <Trash2 className="w-4 h-4" />
+                    <TrashIcon label="" size="small" />
                   </Button>
                 </div>
               ))}

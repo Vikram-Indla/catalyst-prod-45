@@ -4,10 +4,6 @@
  */
 
 import { useState } from 'react';
-import { 
-  Palette, Type, Layers, Ruler, Layout, Tag, Square, BarChart3, 
-  ChevronDown, ChevronRight, Copy, Check, Lock 
-} from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Lozenge } from '@/components/ads';
 import { Button } from '@/components/ui/button';
@@ -15,6 +11,19 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
 import { cn } from '@/lib/utils';
 import { 
+import BoardIcon from '@atlaskit/icon/core/board';
+import BoardsIcon from '@atlaskit/icon/core/boards';
+import ChartBarIcon from '@atlaskit/icon/core/chart-bar';
+import CheckMarkIcon from '@atlaskit/icon/core/check-mark';
+import CheckboxUncheckedIcon from '@atlaskit/icon/core/checkbox-unchecked';
+import CopyIcon from '@atlaskit/icon/core/copy';
+import LockLockedIcon from '@atlaskit/icon/core/lock-locked';
+import PaintPaletteIcon from '@atlaskit/icon/core/paint-palette';
+import SettingsIcon from '@atlaskit/icon/core/settings';
+import TagIcon from '@atlaskit/icon/core/tag';
+import TextIcon from '@atlaskit/icon/core/text';
+import ChevronDownIcon from '@atlaskit/icon/glyph/chevron-down';
+import ChevronRightIcon from '@atlaskit/icon/glyph/chevron-right';
   baselineTokens, 
   componentSpecs, 
   tokenCategories,
@@ -55,7 +64,7 @@ export function DesignSystemBaseline() {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div className="h-10 w-10 rounded-lg bg-brand-primary/10 flex items-center justify-center">
-                <Lock className="h-5 w-5 text-brand-primary" />
+                <LockLockedIcon label="" size="small" />
               </div>
               <div>
                 <h3 className="font-semibold text-foreground">Design System Baseline</h3>
@@ -74,7 +83,7 @@ export function DesignSystemBaseline() {
         <Card>
           <CardHeader className="py-3">
             <CardTitle className="text-base flex items-center gap-2">
-              <Palette className="h-4 w-4 text-brand-primary" />
+              <PaintPaletteIcon label="" size="small" />
               Design Tokens ({baselineTokens.length})
             </CardTitle>
             <CardDescription>Semantic tokens defined in index.css</CardDescription>
@@ -92,9 +101,9 @@ export function DesignSystemBaseline() {
                       className="w-full flex items-center gap-2 px-4 py-2.5 hover:bg-secondary/50 transition-colors text-left"
                     >
                       {isExpanded ? (
-                        <ChevronDown className="h-4 w-4 text-muted-foreground" />
+                        <ChevronDownIcon label="" size="small" />
                       ) : (
-                        <ChevronRight className="h-4 w-4 text-muted-foreground" />
+                        <ChevronRightIcon label="" size="small" />
                       )}
                       <Icon className="h-4 w-4 text-brand-primary" />
                       <span className="font-medium text-sm">{category.name}</span>
@@ -135,9 +144,9 @@ export function DesignSystemBaseline() {
                                 }}
                               >
                                 {copiedToken === token.cssVar ? (
-                                  <Check className="h-3 w-3 text-success" />
+                                  <CheckMarkIcon label="" size="small" />
                                 ) : (
-                                  <Copy className="h-3 w-3" />
+                                  <CopyIcon label="" size="small" />
                                 )}
                               </Button>
                             </div>
@@ -156,7 +165,7 @@ export function DesignSystemBaseline() {
         <Card>
           <CardHeader className="py-3">
             <CardTitle className="text-base flex items-center gap-2">
-              <Layout className="h-4 w-4 text-brand-primary" />
+              <BoardIcon label="" size="small" />
               Component Specs ({componentSpecs.length})
             </CardTitle>
             <CardDescription>Target measurements for UI components</CardDescription>

@@ -7,9 +7,14 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/admin/admin-alert-dialog';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-import { Trash2, Download, Upload, ChevronRight, AlertTriangle, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
+import Spinner from '@atlaskit/spinner';
+import DownloadIcon from '@atlaskit/icon/core/download';
+import UploadIcon from '@atlaskit/icon/core/upload';
+import WarningIcon from '@atlaskit/icon/core/warning';
+import ChevronRightIcon from '@atlaskit/icon/glyph/chevron-right';
+import TrashIcon from '@atlaskit/icon/glyph/trash';
 
 const CONFIRM_PHRASE = 'DELETE SEEDED DATA';
 
@@ -96,7 +101,7 @@ export function DataManagementPanel() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-12">
-        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+        <Spinner size="small" />
       </div>
     );
   }
@@ -157,7 +162,7 @@ export function DataManagementPanel() {
         </CardHeader>
         <CardContent>
           <Button onClick={handleExportConfig} variant="outline">
-            <Download className="h-4 w-4 mr-2" />
+            <DownloadIcon label="" size="small" />
             Export Settings
           </Button>
         </CardContent>
@@ -176,7 +181,7 @@ export function DataManagementPanel() {
         </CardHeader>
         <CardContent>
           <Button variant="outline" disabled>
-            <Upload className="h-4 w-4 mr-2" />
+            <UploadIcon label="" size="small" />
             Import Settings
           </Button>
         </CardContent>
@@ -196,10 +201,7 @@ export function DataManagementPanel() {
                     View and manage sample data created for demonstration.
                   </CardDescription>
                 </div>
-                <ChevronRight className={cn(
-                  "h-4 w-4 transition-transform",
-                  seededDataOpen && "rotate-90"
-                )} />
+                <ChevronRightIcon label="" size="small" />
               </div>
             </CardHeader>
           </CollapsibleTrigger>
@@ -237,7 +239,7 @@ export function DataManagementPanel() {
               {/* Danger Zone */}
               <div className="bg-destructive/10 border border-destructive/30 rounded-lg p-4">
                 <div className="flex items-start gap-3">
-                  <AlertTriangle className="h-5 w-5 text-destructive flex-shrink-0 mt-0.5" />
+                  <WarningIcon label="" size="small" />
                   <div className="flex-1">
                     <h4 className="font-medium text-destructive">Danger Zone</h4>
                     <p className="text-sm text-muted-foreground mt-1">
@@ -250,7 +252,7 @@ export function DataManagementPanel() {
                       className="mt-3"
                       onClick={() => setIsDeleteOpen(true)}
                     >
-                      <Trash2 className="h-4 w-4 mr-2" />
+                      <TrashIcon label="" size="small" />
                       Remove Seeded Data
                     </Button>
                   </div>
@@ -296,7 +298,7 @@ export function DataManagementPanel() {
               disabled={confirmInput !== CONFIRM_PHRASE || isDeleting}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >
-              {isDeleting && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+              {isDeleting && <Spinner size="small" />}
               Delete Seeded Data
             </AlertDialogAction>
           </AlertDialogFooter>

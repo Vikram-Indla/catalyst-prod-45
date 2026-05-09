@@ -5,6 +5,9 @@
 
 import { useState, useEffect } from 'react';
 import {
+import ArrowRightIcon from '@atlaskit/icon/core/arrow-right';
+import LinkIcon from '@atlaskit/icon/core/link';
+import WarningIcon from '@atlaskit/icon/core/warning';
   Dialog,
   DialogContent,
   DialogHeader,
@@ -21,7 +24,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { AlertTriangle, Link2, ArrowRight } from 'lucide-react';
 import { 
   useThemeLinkedEpics, 
   useReassignEpicsToTheme, 
@@ -98,7 +100,7 @@ export function DeleteThemeDialog({
       <DialogContent className="max-w-lg">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-destructive">
-            <AlertTriangle className="h-5 w-5" />
+            <WarningIcon label="" size="small" />
             Delete Theme: {theme.name}
           </DialogTitle>
           <DialogDescription>
@@ -113,7 +115,7 @@ export function DeleteThemeDialog({
             {/* Linked items summary */}
             <div className="bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 rounded-lg p-4">
               <div className="flex items-center gap-2 text-amber-800 dark:text-amber-200 font-medium mb-2">
-                <Link2 className="h-4 w-4" />
+                <LinkIcon label="" size="small" />
                 Linked Items
               </div>
               <div className="text-sm text-amber-700 dark:text-amber-300">
@@ -193,7 +195,7 @@ export function DeleteThemeDialog({
               {isPending ? 'Processing...' : (
                 <>
                   Move Items & Delete
-                  <ArrowRight className="h-4 w-4 ml-1" />
+                  <ArrowRightIcon label="" size="small" />
                 </>
               )}
             </Button>

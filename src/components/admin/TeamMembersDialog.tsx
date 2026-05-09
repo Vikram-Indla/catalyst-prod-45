@@ -6,8 +6,9 @@ import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { toast } from 'sonner';
-import { Users, UserPlus, UserMinus } from 'lucide-react';
-
+import PeopleGroupIcon from '@atlaskit/icon/core/people-group';
+import PersonAddIcon from '@atlaskit/icon/core/person-add';
+import PersonRemoveIcon from '@atlaskit/icon/core/person-remove';
 interface TeamMembersDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -111,7 +112,7 @@ export function TeamMembersDialog({ open, onOpenChange, teamId, teamName }: Team
       <DialogContent className="max-w-2xl">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <Users className="h-5 w-5" />
+            <PeopleGroupIcon label="" size="small" />
             Manage Team Members - {teamName}
           </DialogTitle>
         </DialogHeader>
@@ -128,7 +129,7 @@ export function TeamMembersDialog({ open, onOpenChange, teamId, teamName }: Team
                 onClick={handleAddMembers}
                 disabled={selectedUsers.length === 0 || addMembersMutation.isPending}
               >
-                <UserPlus className="h-4 w-4 mr-2" />
+                <PersonAddIcon label="" size="small" />
                 Add to Team
               </Button>
               <Button
@@ -137,7 +138,7 @@ export function TeamMembersDialog({ open, onOpenChange, teamId, teamName }: Team
                 onClick={handleRemoveMembers}
                 disabled={selectedUsers.length === 0 || removeMembersMutation.isPending}
               >
-                <UserMinus className="h-4 w-4 mr-2" />
+                <PersonRemoveIcon label="" size="small" />
                 Remove from Team
               </Button>
             </div>

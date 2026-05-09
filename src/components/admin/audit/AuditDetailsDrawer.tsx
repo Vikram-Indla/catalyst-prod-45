@@ -4,15 +4,13 @@ import { Lozenge, type LozengeAppearance } from '@/components/ads';
 import { Separator } from '@/components/ui/separator';
 import { format, parseISO } from 'date-fns';
 import { Json } from '@/integrations/supabase/types';
-import { 
-  Download, 
-  ExternalLink,
-  Clock,
-  User,
-  Database,
-  FileText
-} from 'lucide-react';
 import { cn } from '@/lib/utils';
+import ClockIcon from '@atlaskit/icon/core/clock';
+import DatabaseIcon from '@atlaskit/icon/core/database';
+import DownloadIcon from '@atlaskit/icon/core/download';
+import FileIcon from '@atlaskit/icon/core/file';
+import LinkExternalIcon from '@atlaskit/icon/core/link-external';
+import PersonIcon from '@atlaskit/icon/core/person';
 
 interface ActivityEvent {
   id: string;
@@ -124,7 +122,7 @@ export function AuditDetailsDrawer({ event, open, onOpenChange }: AuditDetailsDr
           
           <div className="grid grid-cols-2 gap-3 text-sm">
             <div className="flex items-center gap-2 text-muted-foreground">
-              <Clock className="h-4 w-4" />
+              <ClockIcon label="" size="small" />
               <span>Timestamp</span>
             </div>
             <div className="font-medium">
@@ -134,7 +132,7 @@ export function AuditDetailsDrawer({ event, open, onOpenChange }: AuditDetailsDr
             </div>
 
             <div className="flex items-center gap-2 text-muted-foreground">
-              <User className="h-4 w-4" />
+              <PersonIcon label="" size="small" />
               <span>Actor</span>
             </div>
             <div className="font-mono text-xs">
@@ -142,13 +140,13 @@ export function AuditDetailsDrawer({ event, open, onOpenChange }: AuditDetailsDr
             </div>
 
             <div className="flex items-center gap-2 text-muted-foreground">
-              <Database className="h-4 w-4" />
+              <DatabaseIcon label="" size="small" />
               <span>Entity Type</span>
             </div>
             <div className="font-medium">{event.entity_type}</div>
 
             <div className="flex items-center gap-2 text-muted-foreground">
-              <FileText className="h-4 w-4" />
+              <FileIcon label="" size="small" />
               <span>Event ID</span>
             </div>
             <div className="font-mono text-xs truncate">{event.id}</div>
@@ -200,12 +198,12 @@ export function AuditDetailsDrawer({ event, open, onOpenChange }: AuditDetailsDr
         {/* Actions */}
         <div className="flex gap-2">
           <Button variant="outline" size="sm" onClick={handleExport} className="gap-2">
-            <Download className="h-4 w-4" />
+            <DownloadIcon label="" size="small" />
             Export event
           </Button>
           {/* Placeholder for "Open entity" link */}
           <Button variant="ghost" size="sm" className="gap-2" disabled>
-            <ExternalLink className="h-4 w-4" />
+            <LinkExternalIcon label="" size="small" />
             Open entity
           </Button>
         </div>

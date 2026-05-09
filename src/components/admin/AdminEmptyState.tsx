@@ -2,32 +2,27 @@
  * Admin Empty State - Reusable empty state for admin child pages
  * Displays contextual empty state based on the admin section type
  */
-import { 
-  Users, 
-  Shield, 
-  Settings, 
-  Database, 
-  Link2, 
-  Activity,
-  Building2,
-  Briefcase,
-  MapPin,
-  Globe,
-  DollarSign,
-  FolderKanban,
-  Layers,
-  FileText,
-  Bell,
-  Palette,
-  Import,
-  Package,
-  BarChart3,
-  Clock,
-  type LucideIcon
-} from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Plus } from 'lucide-react';
-
+import AddIcon from '@atlaskit/icon/core/add';
+import ArchiveBoxIcon from '@atlaskit/icon/core/archive-box';
+import BoardsIcon from '@atlaskit/icon/core/boards';
+import BriefcaseIcon from '@atlaskit/icon/core/briefcase';
+import ChartBarIcon from '@atlaskit/icon/core/chart-bar';
+import ChartTrendIcon from '@atlaskit/icon/core/chart-trend';
+import ClockIcon from '@atlaskit/icon/core/clock';
+import CreditCardIcon from '@atlaskit/icon/core/credit-card';
+import DatabaseIcon from '@atlaskit/icon/core/database';
+import FileIcon from '@atlaskit/icon/core/file';
+import GlobeIcon from '@atlaskit/icon/core/globe';
+import LinkIcon from '@atlaskit/icon/core/link';
+import NotificationIcon from '@atlaskit/icon/core/notification';
+import OfficeBuildingIcon from '@atlaskit/icon/core/office-building';
+import PaintPaletteIcon from '@atlaskit/icon/core/paint-palette';
+import PeopleGroupIcon from '@atlaskit/icon/core/people-group';
+import SettingsIcon from '@atlaskit/icon/core/settings';
+import ShieldIcon from '@atlaskit/icon/core/shield';
+import UploadIcon from '@atlaskit/icon/core/upload';
+import LocationIcon from '@atlaskit/icon/glyph/location';
 type AdminSectionType = 
   | 'users'
   | 'roles-permissions'
@@ -58,7 +53,7 @@ type AdminSectionType =
   | 'design-audit';
 
 interface SectionConfig {
-  icon: LucideIcon;
+  icon: React.ElementType;
   title: string;
   subtitle: string;
   ctaLabel?: string;
@@ -281,7 +276,7 @@ export function AdminEmptyState({ sectionType, onAction }: AdminEmptyStateProps)
           onClick={onAction}
           className="bg-brand-primary hover:bg-brand-primary-hover text-white"
         >
-          <Plus className="w-4 h-4 mr-2" />
+          <AddIcon label="" size="small" />
           {config.ctaLabel}
         </Button>
       )}

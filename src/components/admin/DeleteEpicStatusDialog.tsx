@@ -1,5 +1,8 @@
 import { useState, useEffect } from 'react';
 import {
+import RefreshIcon from '@atlaskit/icon/core/refresh';
+import WarningIcon from '@atlaskit/icon/core/warning';
+import TrashIcon from '@atlaskit/icon/glyph/trash';
   Dialog,
   DialogContent,
   DialogHeader,
@@ -16,7 +19,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { AlertTriangle, Trash2, RefreshCw } from 'lucide-react';
 import { useLinkedEpics, useReassignEpics, useDeleteEpicStatus, EpicStatus } from '@/hooks/useEpicStatuses';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Lozenge } from '@/components/ads';
@@ -79,7 +81,7 @@ export function DeleteEpicStatusDialog({
       <DialogContent className="max-w-lg">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <Trash2 className="h-5 w-5 text-destructive" />
+            <TrashIcon label="" size="small" />
             Delete Epic Status
           </DialogTitle>
           <DialogDescription>
@@ -96,7 +98,7 @@ export function DeleteEpicStatusDialog({
             <>
               {/* Warning message */}
               <div className="flex items-start gap-3 p-3 bg-destructive/10 border border-destructive/30 rounded-lg">
-                <AlertTriangle className="h-5 w-5 text-destructive shrink-0 mt-0.5" />
+                <WarningIcon label="" size="small" />
                 <div>
                   <p className="font-medium text-destructive">
                     Cannot delete this status
@@ -160,7 +162,7 @@ export function DeleteEpicStatusDialog({
                     onClick={handleReassign}
                     disabled={!newStatus || reassignMutation.isPending}
                   >
-                    <RefreshCw className={`h-4 w-4 mr-2 ${reassignMutation.isPending ? 'animate-spin' : ''}`} />
+                    <RefreshIcon label="" size="small" />
                     Reassign
                   </Button>
                 </div>
@@ -195,7 +197,7 @@ export function DeleteEpicStatusDialog({
             onClick={handleDelete}
             disabled={!canDelete || deleteMutation.isPending}
           >
-            <Trash2 className="h-4 w-4 mr-2" />
+            <TrashIcon label="" size="small" />
             {deleteMutation.isPending ? 'Deleting...' : 'Delete Status'}
           </Button>
         </DialogFooter>

@@ -3,9 +3,13 @@ import { useOptionSets, OptionSet } from '@/hooks/useOptionSets';
 import { Button } from '@/components/ui/button';
 import { Lozenge } from '@/components/ads';
 import { Input } from '@/components/ui/input';
-import { Loader2, Search, Settings2, Database, ChevronRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { OptionValuesDrawer } from './OptionValuesDrawer';
+import Spinner from '@atlaskit/spinner';
+import DatabaseIcon from '@atlaskit/icon/core/database';
+import SearchIcon from '@atlaskit/icon/core/search';
+import SettingsIcon from '@atlaskit/icon/core/settings';
+import ChevronRightIcon from '@atlaskit/icon/glyph/chevron-right';
 
 export function LookupManagementPanel() {
   const { data: optionSets = [], isLoading } = useOptionSets();
@@ -27,7 +31,7 @@ export function LookupManagementPanel() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-12">
-        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+        <Spinner size="small" />
       </div>
     );
   }
@@ -38,7 +42,7 @@ export function LookupManagementPanel() {
       <div className="flex items-center justify-between pb-4 border-b">
         <div className="flex items-center gap-3">
           <div className="p-2 rounded-lg bg-brand-primary/10">
-            <Database className="h-5 w-5 text-brand-primary" />
+            <DatabaseIcon label="" size="small" />
           </div>
           <div>
             <h2 className="text-lg font-semibold">Lookup Management</h2>
@@ -51,7 +55,7 @@ export function LookupManagementPanel() {
 
       {/* Search */}
       <div className="relative">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+        <SearchIcon label="" size="small" />
         <Input
           placeholder="Search option sets..."
           value={searchQuery}
@@ -104,9 +108,9 @@ export function LookupManagementPanel() {
                     onClick={() => handleManageOptions(set)}
                     className="gap-1.5"
                   >
-                    <Settings2 className="h-4 w-4" />
+                    <SettingsIcon label="" size="small" />
                     Manage
-                    <ChevronRight className="h-3 w-3" />
+                    <ChevronRightIcon label="" size="small" />
                   </Button>
                 </td>
               </tr>

@@ -1,6 +1,5 @@
 import { cn } from '@/lib/utils';
-import { Check } from 'lucide-react';
-
+import CheckMarkIcon from '@atlaskit/icon/core/check-mark';
 export interface WizardStep {
   id: number;
   label: string;
@@ -34,7 +33,7 @@ export function ImportWizardStepper({ steps, currentStep, className }: ImportWiz
                 )}
               >
                 {isCompleted ? (
-                  <Check className="h-4 w-4" />
+                  <CheckMarkIcon label="" size="small" />
                 ) : (
                   step.id
                 )}

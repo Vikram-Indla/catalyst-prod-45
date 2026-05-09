@@ -11,7 +11,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { Lozenge } from "@/components/ads";
 import { toast } from "sonner";
-import { Loader2, AlertTriangle } from "lucide-react";
+import Spinner from '@atlaskit/spinner';
+import WarningIcon from '@atlaskit/icon/core/warning';
 import { format } from "date-fns";
 
 interface ConflictResolutionDialogProps {
@@ -96,13 +97,13 @@ export function ConflictResolutionDialog({
 
         {isLoading ? (
           <div className="flex justify-center py-8">
-            <Loader2 className="w-6 h-6 animate-spin text-brand-primary" />
+            <Spinner size="medium" />
           </div>
         ) : conflicts && conflicts.length > 0 ? (
           <div className="space-y-4">
             <div className="flex justify-between items-center pb-3 border-b">
               <div className="flex items-center gap-2">
-                <AlertTriangle className="w-5 h-5 text-amber-500" />
+                <span style={{ display:'inline-flex', color:'var(--ds-icon-warning, #D97008)' }}><WarningIcon label="" size="small" /></span>
                 <span className="font-medium">{conflicts.length} Unresolved Conflicts</span>
               </div>
               <div className="flex gap-2">
@@ -215,7 +216,7 @@ export function ConflictResolutionDialog({
           </div>
         ) : (
           <div className="text-center py-12">
-            <AlertTriangle className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
+            <span style={{ display:'inline-flex', color:'var(--ds-icon-subtle, #6B778C)' }}><WarningIcon label="" size="small" /></span>
             <h3 className="font-medium mb-2">No Conflicts</h3>
             <p className="text-sm text-muted-foreground">
               All synchronization conflicts have been resolved

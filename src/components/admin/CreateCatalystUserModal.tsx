@@ -1,7 +1,11 @@
 import React, { useState } from 'react';
-import { Share2, Eye, EyeOff, Loader2, X } from 'lucide-react';
 import { toast } from 'sonner';
 import {
+import Spinner from '@atlaskit/spinner';
+import EyeOpenIcon from '@atlaskit/icon/core/eye-open';
+import EyeOpenStrikethroughIcon from '@atlaskit/icon/core/eye-open-strikethrough';
+import ShareIcon from '@atlaskit/icon/core/share';
+import CrossIcon from '@atlaskit/icon/glyph/cross';
   Dialog,
   DialogContent,
   DialogTitle,
@@ -98,7 +102,7 @@ const CreateCatalystUserModal: React.FC<Props> = ({ open, onClose, onSuccess }) 
               cursor: 'pointer', color: 'var(--ds-text-subtlest, #64748B)',
             }}
           >
-            <X size={12} />
+            <CrossIcon label="" size="small" />
           </button>
         </div>
 
@@ -110,7 +114,7 @@ const CreateCatalystUserModal: React.FC<Props> = ({ open, onClose, onSuccess }) 
             borderRadius: '6px', padding: '9px 11px', display: 'flex', gap: '8px',
             alignItems: 'flex-start', marginBottom: '16px',
           }}>
-            <Share2 size={13} style={{ color: '#7C3AED', flexShrink: 0, marginTop: '1px' }} />
+            <ShareIcon label="" size="small" />
             <span style={{ fontSize: '11px', color: '#7C3AED', lineHeight: 1.55 }}>
               This user will exist only in Catalyst. Jira bidirectional sync is
               excluded. They authenticate with a Catalyst-managed password.
@@ -164,7 +168,7 @@ const CreateCatalystUserModal: React.FC<Props> = ({ open, onClose, onSuccess }) 
                   background: 'none', border: 'none', cursor: 'pointer', color: 'var(--ds-text-subtlest, #64748B)', padding: 0,
                 }}
               >
-                {showPassword ? <EyeOff size={14} /> : <Eye size={14} />}
+                {showPassword ? <EyeOpenStrikethroughIcon label="" size="small" /> : <EyeOpenIcon label="" size="small" />}
               </button>
             </div>
             <span style={{ fontSize: '10px', color: 'var(--ds-text-subtlest, #94A3B8)', marginTop: '2px', display: 'block' }}>
@@ -229,7 +233,7 @@ const CreateCatalystUserModal: React.FC<Props> = ({ open, onClose, onSuccess }) 
               cursor: isPending ? 'not-allowed' : 'pointer', opacity: isPending ? 0.7 : 1,
             }}
           >
-            {isPending && <Loader2 size={13} className="animate-spin" />}
+            {isPending && <Spinner size="small" />}
             Create User
           </button>
           <button

@@ -1,9 +1,14 @@
 // src/components/admin/RoleDetailDrawer.tsx
 import { Fragment } from 'react';
-import { X, Check, Eye, EyeOff, Shield, Users } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useModuleMatrix, type AccessLevel } from '@/hooks/useModuleMatrix';
 import {
+import CheckMarkIcon from '@atlaskit/icon/core/check-mark';
+import EyeOpenIcon from '@atlaskit/icon/core/eye-open';
+import EyeOpenStrikethroughIcon from '@atlaskit/icon/core/eye-open-strikethrough';
+import PeopleGroupIcon from '@atlaskit/icon/core/people-group';
+import ShieldIcon from '@atlaskit/icon/core/shield';
+import CrossIcon from '@atlaskit/icon/glyph/cross';
   Sheet,
   SheetContent,
   SheetHeader,
@@ -109,9 +114,9 @@ export function RoleDetailDrawer({
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
               {isSystemRole ? (
-                <Shield className="w-5 h-5 text-primary" />
+                <ShieldIcon label="" size="small" />
               ) : (
-                <Users className="w-5 h-5 text-primary" />
+                <PeopleGroupIcon label="" size="small" />
               )}
             </div>
             <div>

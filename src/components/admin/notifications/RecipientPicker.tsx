@@ -6,8 +6,9 @@
  */
 
 import { useState, useEffect, useCallback } from 'react';
-import { Users, X } from 'lucide-react';
 import {
+import PeopleGroupIcon from '@atlaskit/icon/core/people-group';
+import CrossIcon from '@atlaskit/icon/glyph/cross';
   Dialog,
   DialogContent,
   DialogDescription,
@@ -150,7 +151,7 @@ export function RecipientPicker({ trigger, open, onClose, onSave }: RecipientPic
       <DialogContent className="sm:max-w-[520px] max-h-[85vh] overflow-hidden flex flex-col">
         <DialogHeader>
           <DialogTitle className="text-lg font-semibold font-['Sora'] flex items-center gap-2">
-            <Users className="h-5 w-5 text-[var(--ds-text-brand,#2563EB)]" />
+            <PeopleGroupIcon label="" size="small" />
             Recipients
           </DialogTitle>
           <DialogDescription className="text-sm text-[var(--ds-text-subtle,#475569)]">

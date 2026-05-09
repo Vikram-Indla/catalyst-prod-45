@@ -6,10 +6,12 @@
  */
 
 import { memo } from 'react';
-import { Shield, Users, Eye } from 'lucide-react';
 import { Lozenge, Tooltip, type LozengeAppearance } from '@/components/ads';
 import { Switch } from '@/components/ui/switch';
 import type { TriggerRowData, ChannelsConfig } from '@/types/notification-triggers';
+import EyeOpenIcon from '@atlaskit/icon/core/eye-open';
+import PeopleGroupIcon from '@atlaskit/icon/core/people-group';
+import ShieldIcon from '@atlaskit/icon/core/shield';
 
 // ── Hub labels ──────────────────────────────────────────────────
 const HUB_LABELS: Record<string, string> = {
@@ -126,7 +128,7 @@ export const TriggerRow = memo(function TriggerRow({
         {/* Mandatory lock */}
         {isMandatory && (
           <Tooltip delay={200} content="Mandatory — cannot be disabled by users">
-            <Shield className="h-3 w-3 text-[var(--ds-text-danger,#DC2626)] flex-shrink-0" />
+            <ShieldIcon label="" size="small" />
           </Tooltip>
         )}
 
@@ -150,7 +152,7 @@ export const TriggerRow = memo(function TriggerRow({
           className="opacity-0 group-hover:opacity-100 transition-opacity duration-150 ml-auto flex-shrink-0"
           title="Edit recipients"
         >
-          <Users className="h-3 w-3 text-[var(--ds-text-subtlest,#94A3B8)] hover:text-[var(--ds-text-brand,#2563EB)]" />
+          <PeopleGroupIcon label="" size="small" />
         </button>
       </div>
 

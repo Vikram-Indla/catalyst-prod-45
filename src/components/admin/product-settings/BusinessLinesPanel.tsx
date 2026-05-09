@@ -8,8 +8,12 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/admin/admin-dialog';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/admin/admin-alert-dialog';
-import { Plus, GripVertical, Pencil, Trash2, Loader2 } from 'lucide-react';
 import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd';
+import Spinner from '@atlaskit/spinner';
+import AddIcon from '@atlaskit/icon/core/add';
+import EditIcon from '@atlaskit/icon/core/edit';
+import DragHandlerIcon from '@atlaskit/icon/glyph/drag-handler';
+import TrashIcon from '@atlaskit/icon/glyph/trash';
 
 interface BusinessLinesPanelProps {
   onChanges?: () => void;
@@ -112,7 +116,7 @@ export function BusinessLinesPanel({ onChanges }: BusinessLinesPanelProps = {}) 
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-12">
-        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+        <Spinner size="small" />
       </div>
     );
   }
@@ -128,7 +132,7 @@ export function BusinessLinesPanel({ onChanges }: BusinessLinesPanelProps = {}) 
           </p>
         </div>
         <Button onClick={() => handleOpenDialog()} className="bg-brand-primary hover:bg-brand-primary-hover">
-          <Plus className="h-4 w-4 mr-2" />
+          <AddIcon label="" size="small" />
           Add Business Line
         </Button>
       </div>
@@ -153,7 +157,7 @@ export function BusinessLinesPanel({ onChanges }: BusinessLinesPanelProps = {}) 
                       }`}
                     >
                       <div {...provided.dragHandleProps} className="cursor-grab text-muted-foreground">
-                        <GripVertical className="h-5 w-5" />
+                        <DragHandlerIcon label="" size="small" />
                       </div>
                       
                       <div className="flex-1 min-w-0">
@@ -193,7 +197,7 @@ export function BusinessLinesPanel({ onChanges }: BusinessLinesPanelProps = {}) 
                             size="icon"
                             onClick={() => handleOpenDialog(line)}
                           >
-                            <Pencil className="h-4 w-4" />
+                            <EditIcon label="" size="small" />
                           </Button>
                           <Button
                             variant="ghost"
@@ -204,7 +208,7 @@ export function BusinessLinesPanel({ onChanges }: BusinessLinesPanelProps = {}) 
                             }}
                             disabled={line.is_default}
                           >
-                            <Trash2 className="h-4 w-4" />
+                            <TrashIcon label="" size="small" />
                           </Button>
                         </div>
                       </div>
