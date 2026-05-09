@@ -130,6 +130,24 @@ const WORK_TYPES = [
 
 const PRIORITIES = ['Highest', 'High', 'Medium', 'Low', 'Lowest'] as const;
 
+// ─────────────────────────────────────────────────────────────────────────────
+// Parent hierarchy rules — Vikram directive 2026-05-09.
+// Maps each work type to the list of eligible parent types.
+// 'Business Request' entries are resolved from business_requests table;
+// all other types from ph_issues.
+// Exported for unit tests.
+// ─────────────────────────────────────────────────────────────────────────────
+export const PARENT_TYPE_RULES: Record<string, string[]> = {
+  'Story':               ['Feature', 'Epic'],
+  'Epic':                ['Business Request'],
+  'Feature':             ['Epic', 'Business Request'],
+  'Business Request':    [],  // top-level, no parent
+  'Business Gap':        ['Business Request', 'Epic'],
+  'QA Bug':              ['Feature', 'Story'],
+  'Production Incident': ['Business Request', 'Story', 'Feature', 'Epic'],
+  'Change Request':      ['Epic', 'Business Request', 'Feature'],
+};
+
 // Per type → which initial status appears in the read-only Status lozenge.
 // Matches what the existing useCreateStoryMutation actually writes.
 // Minimal fallback — only shown when catalyst_workflow_schemes returns no rows
@@ -878,30 +896,65 @@ export function CreateStoryModal({
                       inputId="cs-parent"
                       defaultOptions
                       loadOptions={async (input: string) => {
-                        // Epics live in ph_issues (Jira-synced). Filter by project_key.
-                        // resolvedKey = the Jira project key string e.g. "BAU"
+                        // Bucket E (2026-05-09): parent types driven by PARENT_TYPE_RULES.
+                        // Two sources: ph_issues (Epic/Feature/Story) and
+                        // business_requests (Business Request).
                         if (!resolvedKey) return [];
-                        const q = supabase
-                          .from('ph_issues')
-                          .select('id, issue_key, summary, issue_type')
-                          .eq('project_key', resolvedKey)
-                          .ilike('issue_type', 'Epic')
-                          .order('jira_updated_at', { ascending: false })
-                          .limit(30);
-                        if (input.trim()) {
-                          q.or(`issue_key.ilike.%${input}%,summary.ilike.%${input}%`);
+                        const eligibleTypes = PARENT_TYPE_RULES[workType] ?? [];
+                        if (eligibleTypes.length === 0) return [];
+
+                        const phTypes = eligibleTypes.filter(t => t !== 'Business Request');
+                        const needsBr = eligibleTypes.includes('Business Request');
+                        const searchTerm = input.trim();
+
+                        const results: IconOption[] = [];
+
+                        // ── ph_issues candidates (Epic / Feature / Story) ──
+                        if (phTypes.length > 0) {
+                          let q = supabase
+                            .from('ph_issues')
+                            .select('issue_key, summary, issue_type')
+                            .eq('project_key', resolvedKey)
+                            .in('issue_type', phTypes)
+                            .order('jira_updated_at', { ascending: false })
+                            .limit(30);
+                          if (searchTerm) {
+                            q = q.or(`issue_key.ilike.%${searchTerm}%,summary.ilike.%${searchTerm}%`);
+                          }
+                          const { data } = await q;
+                          (data ?? []).forEach((d: any) => {
+                            results.push({
+                              value: d.issue_key,
+                              label: d.summary,
+                              sublabel: d.issue_key,
+                              icon: <WorkItemTypeIcon type={d.issue_type} size={14} />,
+                            });
+                          });
                         }
-                        const { data, error } = await q;
-                        if (error) return [];
-                        return (data ?? []).map((d: any) => ({
-                          // Use issue_key as the value — parent_id FK is self-referential
-                          // to catalyst_issues, but Epics live only in ph_issues. We store
-                          // the relationship via ph_issue_links keyed on issue_key.
-                          value: d.issue_key,
-                          label: d.summary,
-                          sublabel: d.issue_key,
-                          icon: <WorkItemTypeIcon type="Epic" size={14} />,
-                        }));
+
+                        // ── business_requests candidates ──
+                        if (needsBr) {
+                          let brQ = supabase
+                            .from('business_requests' as any)
+                            .select('request_key, title')
+                            .is('deleted_at', null)
+                            .order('updated_at', { ascending: false })
+                            .limit(20);
+                          if (searchTerm) {
+                            brQ = brQ.or(`request_key.ilike.%${searchTerm}%,title.ilike.%${searchTerm}%`);
+                          }
+                          const { data: brData } = await brQ;
+                          (brData ?? []).forEach((br: any) => {
+                            results.push({
+                              value: br.request_key,
+                              label: br.title,
+                              sublabel: br.request_key,
+                              icon: <WorkItemTypeIcon type="Business Request" size={14} />,
+                            });
+                          });
+                        }
+
+                        return results;
                       }}
                       onChange={(opt) =>
                         updateField(
