@@ -14,7 +14,7 @@
  * silently dropping users onto a different editor whose output shape
  * we do not accept.
  */
-import React, { Suspense, useState, useCallback } from 'react';
+import React, { Suspense, useState, useCallback, startTransition, lazy, useMemo } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import type { AttachmentUploadMeta } from '@/components/shared/rich-text/atlaskit/EpicDescriptionEditor';
 /* jira-compare 2026-05-03 (Council P3.2): lucide ChevronRight + Pencil
@@ -30,7 +30,15 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { adfToPlainText, isAdfEmpty } from '@/components/shared/rich-text/atlaskit/adfHelpers';
 import { prefetchEpicEditor } from '@/lib/atlaskitPrefetch';
-import EpicDescriptionEditor from '@/components/shared/rich-text/atlaskit/EpicDescriptionEditor';
+import { AdfLightRenderer, hasComplexAdfNodes } from '@/components/shared/rich-text/atlaskit/adfLightRenderer';
+/* Lazy import — editor-core is ~2MB. Keep it out of the initial bundle.
+   prefetchEpicEditor() on hover pre-downloads the chunk so by the time
+   the user clicks, the browser has it cached and mount is near-instant.
+   startTransition around setEditing(true) lets React time-slice the
+   ProseMirror init without blocking the main thread. */
+const EpicDescriptionEditor = lazy(
+  () => import('@/components/shared/rich-text/atlaskit/EpicDescriptionEditor'),
+);
 import EpicDescriptionRenderer from '@/components/shared/rich-text/atlaskit/EpicDescriptionRenderer';
 import type { PhIssue } from '../types';
 
@@ -286,6 +294,10 @@ export function CatalystDescriptionSection({ issue, label = 'Description', defau
   // fallback so the page renders prose instantly while the renderer chunk
   // arrives (or if it fails).
   const plainText = adfToPlainText(descSource);
+  // Tiered renderer: if the ADF has only prose nodes (no media, tables,
+  // panels, expand, etc.) render it with the zero-chunk AdfLightRenderer.
+  // Only complex docs pay the ~500KB @atlaskit/renderer download cost.
+  const isComplex = useMemo(() => hasComplexAdfNodes(descSource), [descSource]);
 
   // Mutation to save description
   const saveDescriptionMutation = useMutation({
@@ -403,7 +415,7 @@ export function CatalystDescriptionSection({ issue, label = 'Description', defau
         {/* Edit pencil — visible on hover, hidden when editing or collapsed */}
         {!collapsed && !editing && issue && (
           <button
-            onClick={() => setEditing(true)}
+            onClick={() => startTransition(() => setEditing(true))}
             title="Edit description"
             style={{
               background: 'none', border: 'none', cursor: 'pointer',
@@ -457,55 +469,61 @@ export function CatalystDescriptionSection({ issue, label = 'Description', defau
         ) : isEmpty ? (
           /* ── Empty placeholder — click to edit ── */
           <div
-            onClick={() => { if (issue) setEditing(true); }}
+            onClick={() => { if (issue) startTransition(() => setEditing(true)); }}
             style={{
-              fontSize: 14, color: '#97A0AF', fontStyle: 'italic',
+              fontSize: 14,
+              /* jira-compare 2026-05-09: Jira empty-state is NOT italic — it uses
+                 #97A0AF (subtlest) with normal font-style, matching the placeholder
+                 text inside the Atlaskit editor itself. */
+              color: 'var(--ds-text-subtlest, #97A0AF)',
+              fontStyle: 'normal',
               minHeight: 40, cursor: issue ? 'pointer' : 'default',
-              borderRadius: 4, padding: '8px 0 8px 20px', // jira-compare 2026-05-08: align with label
+              borderRadius: 4, padding: '8px 0 8px 20px',
               transition: 'background 0.15s',
             }}
-            onMouseEnter={e => { if (issue) e.currentTarget.style.background = 'var(--ds-surface-sunken, #F4F5F7)'; }}
+            onMouseEnter={e => {
+              if (issue) {
+                e.currentTarget.style.background = 'var(--ds-surface-sunken, #F4F5F7)';
+                prefetchEpicEditor();
+              }
+            }}
             onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
           >
             Add a description...
           </div>
         ) : (
-          /* ── Read-only ADF render — canonical Atlaskit renderer only.
-             No error-boundary fallback (USER DIRECTIVE 2026-04-20). The
-             Suspense fallback below is only for chunk-loading, not for
-             error recovery — if the Atlaskit renderer throws at runtime
-             the error propagates and is surfaced as a console error,
-             rather than silently downgrading to a plaintext projection
-             that obscures real renderer bugs. */
+          /* ── Read-only ADF render — tiered renderer.
+             Simple ADF (prose only): AdfLightRenderer — zero chunk cost,
+             synchronous, instant.
+             Complex ADF (media/table/panel/expand): EpicDescriptionRenderer
+             lazy-loads @atlaskit/renderer (~500KB) with a plain-text
+             Suspense fallback so prose is visible immediately. */
           <div
             role="button"
             tabIndex={0}
             style={{
-              // jira-compare 2026-05-08: align content with label text.
-              // Section header = chevron (16px) + gap (4px) = 20px before h2.
-              // Content must match that offset so body left-edge aligns with label.
-              // DOM probe confirmed: atlasRendererLeft 327.88 vs descLabelLeft 347.87 = 20px gap.
               paddingLeft: 20, minHeight: 40, cursor: 'text', borderRadius: 4,
               position: 'relative',
               transition: 'background 0.15s',
             }}
-            /* jira-compare 2026-05-02: prefetch the editor chunk as soon
-               as the user hovers the description body — no spinner flash
-               on click. mousedown so click handlers fire AFTER prefetch. */
             onMouseEnter={e => { e.currentTarget.style.background = 'var(--ds-surface-sunken, #F4F5F7)'; prefetchEpicEditor(); }}
-            onClick={() => { if (issue) setEditing(true); }}
+            onClick={() => { if (issue) startTransition(() => setEditing(true)); }}
             onKeyDown={(e) => {
               if ((e.key === 'Enter' || e.key === ' ') && issue) {
                 e.preventDefault();
-                setEditing(true);
+                startTransition(() => setEditing(true));
               }
             }}
             onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
             title="Click to edit"
           >
-            <Suspense fallback={<AtlaskitRendererPlaceholder plain={plainText} />}>
-              <EpicDescriptionRenderer content={descSource} issueKey={issue?.issue_key} />
-            </Suspense>
+            {isComplex ? (
+              <Suspense fallback={<AtlaskitRendererPlaceholder plain={plainText} />}>
+                <EpicDescriptionRenderer content={descSource} issueKey={issue?.issue_key} />
+              </Suspense>
+            ) : (
+              <AdfLightRenderer adf={descSource} />
+            )}
           </div>
         )
       )}
