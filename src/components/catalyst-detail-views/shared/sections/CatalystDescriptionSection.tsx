@@ -14,9 +14,9 @@
  * silently dropping users onto a different editor whose output shape
  * we do not accept.
  */
-import React, { Suspense, useState, useCallback, startTransition, lazy, useMemo } from 'react';
+import React, { Suspense, useState, useCallback, startTransition, lazy, useMemo, useEffect } from 'react';
 import { useAuth } from '@/hooks/useAuth';
-import type { AttachmentUploadMeta } from '@/components/shared/rich-text/atlaskit/EpicDescriptionEditor';
+import type { AttachmentUploadMeta } from '@/components/shared/rich-text/atlaskit/AdfDescriptionField';
 /* jira-compare 2026-05-03 (Council P3.2): lucide ChevronRight + Pencil
    removed — CLAUDE.md "ADS-only inside hub scope" violation. Swapped to
    Atlaskit equivalents. Heading wrapper also dropped in favour of an
@@ -35,8 +35,8 @@ import { AdfLightRenderer, hasComplexAdfNodes } from '@/components/shared/rich-t
    the user clicks, the browser has it cached and mount is near-instant.
    startTransition around setEditing(true) lets React time-slice the
    ProseMirror init without blocking the main thread. */
-const EpicDescriptionEditor = lazy(
-  () => import('@/components/shared/rich-text/atlaskit/EpicDescriptionEditor'),
+const AdfDescriptionField = lazy(
+  () => import('@/components/shared/rich-text/atlaskit/AdfDescriptionField'),
 );
 import EpicDescriptionRenderer from '@/components/shared/rich-text/atlaskit/EpicDescriptionRenderer';
 import type { PhIssue } from '../types';
@@ -285,6 +285,17 @@ export function CatalystDescriptionSection({ issue, label = 'Description' }: Cat
   const [hovered, setHovered] = useState(false);
   const queryClient = useQueryClient();
 
+  // Idle-time prefetch: kick off editor chunk download after paint so that
+  // by the time the user clicks to edit, the ~2MB chunk is already cached.
+  useEffect(() => {
+    if (typeof requestIdleCallback !== 'undefined') {
+      const id = requestIdleCallback(() => prefetchEpicEditor());
+      return () => cancelIdleCallback(id);
+    }
+    const id = setTimeout(prefetchEpicEditor, 2000);
+    return () => clearTimeout(id);
+  }, []);
+
   /* jira-compare 2026-05-03 (Council P3.2): per-issue console.info removed.
      Build ID still tracked in DESC_BUILD_ID constant; visible by grepping
      the bundle if needed. console.info per render polluted the DevTools
@@ -411,7 +422,7 @@ export function CatalystDescriptionSection({ issue, label = 'Description' }: Cat
       {editing && issue ? (
         <div>
           <Suspense fallback={<AtlaskitFallback minHeight={240} />}>
-            <EpicDescriptionEditor
+            <AdfDescriptionField
               initialContent={issue.description_adf ?? issue.description_text ?? null}
               onSave={handleSave}
               onCancel={handleCancel}

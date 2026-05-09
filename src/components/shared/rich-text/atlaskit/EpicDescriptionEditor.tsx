@@ -468,8 +468,26 @@ export default function EpicDescriptionEditor({
             ]}
           />
         </Suspense>
+        {/* Jira-parity: inline upload progress banner replaces Tip text while uploading */}
+        {uploading && (
+          <div
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 6,
+              fontSize: 11,
+              color: token('color.text.subtlest', '#626F86'),
+              paddingTop: 4,
+              paddingLeft: 2,
+              userSelect: 'none',
+            }}
+          >
+            <Spinner size="small" />
+            Uploading image…
+          </div>
+        )}
         {/* H6/H10: idle affordance — tells users they can paste or drag images */}
-        {!isDragOver && (
+        {!isDragOver && !uploading && (
           <div
             style={{
               fontSize: 11,

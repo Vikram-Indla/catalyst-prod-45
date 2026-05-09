@@ -20,8 +20,8 @@ import Spinner from '@atlaskit/spinner';
 import { token } from '@atlaskit/tokens';
 import type { BusinessRequest } from '@/types/business-request';
 
-const EpicDescriptionEditor = lazy(
-  () => import('@/components/shared/rich-text/atlaskit/EpicDescriptionEditor'),
+const AdfDescriptionField = lazy(
+  () => import('@/components/shared/rich-text/atlaskit/AdfDescriptionField'),
 );
 
 const EpicDescriptionRenderer = lazy(() =>
@@ -94,7 +94,7 @@ export function BrDescriptionSection({ request, onUpdate }: Props) {
             </div>
           }
         >
-          <EpicDescriptionEditor
+          <AdfDescriptionField
             workItemId={request.id}
             initialContent={initialAdf}
             placeholder="Describe what this business request covers..."
