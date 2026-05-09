@@ -9,20 +9,14 @@ import { exportAssignmentsToExcel } from '@/components/admin/assignments/exportA
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { format, parseISO } from 'date-fns';
-import { Switch } from '@/components/ui/switch';
+import Toggle from '@atlaskit/toggle';
+import AdsSelect from '@atlaskit/select';
 import { supabase } from '@/integrations/supabase/client';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { toast } from 'sonner';
 import { useQueryClient, useQuery } from '@tanstack/react-query';
 import { LicenseAllocationSection } from '@/modules/budget';
 import { Lozenge, Tooltip, type LozengeAppearance } from '@/components/ads';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 import {
   DndContext,
   closestCenter,
@@ -185,22 +179,18 @@ function SortableRow({
         )}
       </td>
       <td className="px-4 py-3">
-        <Select
-          value={status}
-          onValueChange={(value) => onStatusChange(assignment, value)}
-        >
-          <SelectTrigger className="h-8 w-[130px] text-xs" style={{ background: 'var(--ds-surface, #FFFFFF)' }}>
-            <Lozenge appearance={statusConfig.appearance}>
-              {statusConfig.label}
-            </Lozenge>
-          </SelectTrigger>
-          <SelectContent className="z-[400]">
-            <SelectItem value="yet_to_start">Yet to Start</SelectItem>
-            <SelectItem value="on_hold">On Hold</SelectItem>
-            <SelectItem value="in_progress">In Progress</SelectItem>
-            <SelectItem value="completed">Completed</SelectItem>
-          </SelectContent>
-        </Select>
+        <AdsSelect
+          menuPortalTarget={document.body}
+          value={{ label: statusConfig.label, value: status }}
+          options={[
+            { label: 'Yet to Start', value: 'yet_to_start' },
+            { label: 'On Hold', value: 'on_hold' },
+            { label: 'In Progress', value: 'in_progress' },
+            { label: 'Completed', value: 'completed' },
+          ]}
+          onChange={(opt) => opt && onStatusChange(assignment, opt.value)}
+          styles={{ control: (base: any) => ({ ...base, minHeight: 32, height: 32, width: 130, fontSize: 12 }) }}
+        />
       </td>
       {/* Budget - Read-only for Insourced (auto-calculated), Editable for Outsourced/Cosourced */}
       <td className="px-4 py-3">
@@ -212,12 +202,11 @@ function SortableRow({
             </div>
           </Tooltip>
         ) : (
-          <Input
+          <Textfield
             type="number"
-            className="h-8 w-[100px] text-sm"
-            defaultValue={assignment.budget || ''}
+            defaultValue={assignment.budget?.toString() || ''}
             onBlur={(e) => {
-              const val = e.target.value ? parseFloat(e.target.value) : null;
+              const val = (e.target as HTMLInputElement).value ? parseFloat((e.target as HTMLInputElement).value) : null;
               if (val !== assignment.budget) {
                 onBudgetChange(assignment, val);
               }
@@ -280,39 +269,43 @@ function SortableRow({
       </td>
       <td className="px-4 py-3">
         {(assignment.assignment_type === 'Outsourced' || assignment.assignment_type === 'Cosourced') ? (
-          <Select
-            value={assignment.vendor_id || '__none__'}
-            onValueChange={(value) => onVendorChange(assignment, value)}
-          >
-            <SelectTrigger className="h-8 w-[110px] text-xs" style={{ background: 'var(--ds-surface, #FFFFFF)' }}>
-              <SelectValue placeholder="Select vendor" />
-            </SelectTrigger>
-            <SelectContent className="z-[400]">
-              <SelectItem value="__none__">Not specified</SelectItem>
-              {vendors.map((v) => (
-                <SelectItem key={v.id} value={v.id}>{v.name}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <AdsSelect
+            menuPortalTarget={document.body}
+            value={assignment.vendor_id
+              ? vendors.find(v => v.id === assignment.vendor_id)
+                ? { label: vendors.find(v => v.id === assignment.vendor_id)!.name, value: assignment.vendor_id }
+                : null
+              : { label: 'Not specified', value: '__none__' }}
+            options={[
+              { label: 'Not specified', value: '__none__' },
+              ...vendors.map(v => ({ label: v.name, value: v.id })),
+            ]}
+            onChange={(opt) => opt && onVendorChange(assignment, opt.value)}
+            styles={{ control: (base: any) => ({ ...base, minHeight: 32, height: 32, width: 110, fontSize: 12 }) }}
+          />
         ) : (
           <span className="text-sm" style={{ color: 'var(--ds-text-subtle, #44546F)' }}>—</span>
         )}
       </td>
       <td className="px-4 py-3">
-        <Select
-          value={normalizeAssignmentType(assignment.assignment_type) === 'Unspecified' ? '__none__' : normalizeAssignmentType(assignment.assignment_type)}
-          onValueChange={(value) => onAssignmentTypeChange(assignment, value)}
-        >
-          <SelectTrigger className="h-8 w-[120px] text-xs" style={{ background: 'var(--ds-surface, #FFFFFF)' }}>
-            <SelectValue placeholder="Select type" />
-          </SelectTrigger>
-          <SelectContent className="z-[400]">
-            <SelectItem value="__none__">Not specified</SelectItem>
-            <SelectItem value="Insourced">Insourced</SelectItem>
-            <SelectItem value="Outsourced">Outsourced</SelectItem>
-            <SelectItem value="Cosourced">Cosourced</SelectItem>
-          </SelectContent>
-        </Select>
+        {(() => {
+          const typeOpts = [
+            { label: 'Not specified', value: '__none__' },
+            { label: 'Insourced', value: 'Insourced' },
+            { label: 'Outsourced', value: 'Outsourced' },
+            { label: 'Cosourced', value: 'Cosourced' },
+          ];
+          const curType = normalizeAssignmentType(assignment.assignment_type) === 'Unspecified' ? '__none__' : normalizeAssignmentType(assignment.assignment_type);
+          return (
+            <AdsSelect
+              menuPortalTarget={document.body}
+              value={typeOpts.find(o => o.value === curType) || null}
+              options={typeOpts}
+              onChange={(opt) => opt && onAssignmentTypeChange(assignment, opt.value)}
+              styles={{ control: (base: any) => ({ ...base, minHeight: 32, height: 32, width: 120, fontSize: 12 }) }}
+            />
+          );
+        })()}
       </td>
       <td className="px-4 py-3">
         {normalizeAssignmentType(assignment.assignment_type) === 'Insourced' || assignment.assignment_type === 'BAU' ? (
@@ -321,30 +314,32 @@ function SortableRow({
             {PAYMENT_STATUS_CONFIG['on_track'].label}
           </Lozenge>
         ) : (assignment.assignment_type === 'Outsourced' || assignment.assignment_type === 'Cosourced') ? (
-          <Select
-            value={assignment.payment_status || 'unpaid'}
-            onValueChange={(value) => onPaymentStatusChange(assignment, value)}
-          >
-            <SelectTrigger className="h-8 w-[100px] text-xs" style={{ background: 'var(--ds-surface, #FFFFFF)' }}>
-              <Lozenge appearance={PAYMENT_STATUS_CONFIG[assignment.payment_status || 'unpaid'].appearance}>
-                {PAYMENT_STATUS_CONFIG[assignment.payment_status || 'unpaid'].label}
-              </Lozenge>
-            </SelectTrigger>
-            <SelectContent className="z-[400]">
-              <SelectItem value="unpaid">Unpaid</SelectItem>
-              <SelectItem value="on_track">On Track</SelectItem>
-              <SelectItem value="paid">Paid</SelectItem>
-              <SelectItem value="closed">Closed</SelectItem>
-            </SelectContent>
-          </Select>
+          (() => {
+            const payOpts = [
+              { label: 'Unpaid', value: 'unpaid' },
+              { label: 'On Track', value: 'on_track' },
+              { label: 'Paid', value: 'paid' },
+              { label: 'Closed', value: 'closed' },
+            ];
+            const curPay = assignment.payment_status || 'unpaid';
+            return (
+              <AdsSelect
+                menuPortalTarget={document.body}
+                value={payOpts.find(o => o.value === curPay) || null}
+                options={payOpts}
+                onChange={(opt) => opt && onPaymentStatusChange(assignment, opt.value)}
+                styles={{ control: (base: any) => ({ ...base, minHeight: 32, height: 32, width: 100, fontSize: 12 }) }}
+              />
+            );
+          })()
         ) : (
           <span className="text-sm" style={{ color: 'var(--ds-text-subtle, #44546F)' }}>—</span>
         )}
       </td>
       <td className="px-4 py-3 text-center">
-        <Switch
-          checked={assignment.is_active}
-          onCheckedChange={() => onToggleActive(assignment)}
+        <Toggle
+          isChecked={assignment.is_active}
+          onChange={() => onToggleActive(assignment)}
         />
       </td>
       <td className="px-4 py-3">
@@ -904,20 +899,22 @@ export default function ResourceAssignmentsPage() {
             </div>
             <div className="space-y-2">
               <label style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>Assignment Type</label>
-              <Select
-                value={formData.assignment_type || '__none__'}
-                onValueChange={(value) => setFormData(f => ({ ...f, assignment_type: value === '__none__' ? '' : value }))}
-              >
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Select type" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="__none__">Not specified</SelectItem>
-                  <SelectItem value="Insourced">Insourced</SelectItem>
-                  <SelectItem value="Outsourced">Outsourced</SelectItem>
-                  <SelectItem value="Cosourced">Cosourced</SelectItem>
-                </SelectContent>
-              </Select>
+              {(() => {
+                const typeOpts = [
+                  { label: 'Not specified', value: '__none__' },
+                  { label: 'Insourced', value: 'Insourced' },
+                  { label: 'Outsourced', value: 'Outsourced' },
+                  { label: 'Cosourced', value: 'Cosourced' },
+                ];
+                return (
+                  <AdsSelect
+                    menuPortalTarget={document.body}
+                    value={typeOpts.find(o => o.value === (formData.assignment_type || '__none__')) || null}
+                    options={typeOpts}
+                    onChange={(opt) => opt && setFormData(f => ({ ...f, assignment_type: opt.value === '__none__' ? '' : opt.value }))}
+                  />
+                );
+              })()}
             </div>
           </div>
           <DialogFooter>
@@ -950,37 +947,39 @@ export default function ResourceAssignmentsPage() {
             </div>
             <div className="space-y-2">
               <label style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>Project</label>
-              <Select
-                value={formData.project_id || '__none__'}
-                onValueChange={(value) => setFormData(f => ({ ...f, project_id: value === '__none__' ? '' : value }))}
-              >
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Select project" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="__none__">No project</SelectItem>
-                  {projects.map((p: any) => (
-                    <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              {(() => {
+                const projectOpts = [
+                  { label: 'No project', value: '__none__' },
+                  ...projects.map((p: any) => ({ label: p.name, value: p.id })),
+                ];
+                return (
+                  <AdsSelect
+                    menuPortalTarget={document.body}
+                    value={projectOpts.find(o => o.value === (formData.project_id || '__none__')) || null}
+                    options={projectOpts}
+                    onChange={(opt) => opt && setFormData(f => ({ ...f, project_id: opt.value === '__none__' ? '' : opt.value }))}
+                  />
+                );
+              })()}
             </div>
             <div className="space-y-2">
               <label style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>Assignment Status</label>
-              <Select
-                value={formData.assignment_status}
-                onValueChange={(value) => setFormData(f => ({ ...f, assignment_status: value as AssignmentStatus }))}
-              >
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Select status" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="yet_to_start">Yet to Start</SelectItem>
-                  <SelectItem value="on_hold">On Hold</SelectItem>
-                  <SelectItem value="in_progress">In Progress</SelectItem>
-                  <SelectItem value="completed">Completed</SelectItem>
-                </SelectContent>
-              </Select>
+              {(() => {
+                const statusOpts = [
+                  { label: 'Yet to Start', value: 'yet_to_start' },
+                  { label: 'On Hold', value: 'on_hold' },
+                  { label: 'In Progress', value: 'in_progress' },
+                  { label: 'Completed', value: 'completed' },
+                ];
+                return (
+                  <AdsSelect
+                    menuPortalTarget={document.body}
+                    value={statusOpts.find(o => o.value === formData.assignment_status) || null}
+                    options={statusOpts}
+                    onChange={(opt) => opt && setFormData(f => ({ ...f, assignment_status: opt.value as AssignmentStatus }))}
+                  />
+                );
+              })()}
             </div>
             <div className="space-y-2">
               <label style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>Budget</label>
@@ -993,37 +992,39 @@ export default function ResourceAssignmentsPage() {
             </div>
             <div className="space-y-2">
               <label style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>Vendor</label>
-              <Select
-                value={formData.vendor_id || '__none__'}
-                onValueChange={(value) => setFormData(f => ({ ...f, vendor_id: value === '__none__' ? '' : value }))}
-              >
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Select vendor" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="__none__">Not specified</SelectItem>
-                  {vendors.map((v) => (
-                    <SelectItem key={v.id} value={v.id}>{v.name}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              {(() => {
+                const vendorOpts = [
+                  { label: 'Not specified', value: '__none__' },
+                  ...vendors.map(v => ({ label: v.name, value: v.id })),
+                ];
+                return (
+                  <AdsSelect
+                    menuPortalTarget={document.body}
+                    value={vendorOpts.find(o => o.value === (formData.vendor_id || '__none__')) || null}
+                    options={vendorOpts}
+                    onChange={(opt) => opt && setFormData(f => ({ ...f, vendor_id: opt.value === '__none__' ? '' : opt.value }))}
+                  />
+                );
+              })()}
             </div>
             <div className="space-y-2">
               <label style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>Assignment Type</label>
-              <Select
-                value={formData.assignment_type || '__none__'}
-                onValueChange={(value) => setFormData(f => ({ ...f, assignment_type: value === '__none__' ? '' : value }))}
-              >
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Select type" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="__none__">Not specified</SelectItem>
-                  <SelectItem value="Insourced">Insourced</SelectItem>
-                  <SelectItem value="Outsourced">Outsourced</SelectItem>
-                  <SelectItem value="Cosourced">Cosourced</SelectItem>
-                </SelectContent>
-              </Select>
+              {(() => {
+                const typeOpts = [
+                  { label: 'Not specified', value: '__none__' },
+                  { label: 'Insourced', value: 'Insourced' },
+                  { label: 'Outsourced', value: 'Outsourced' },
+                  { label: 'Cosourced', value: 'Cosourced' },
+                ];
+                return (
+                  <AdsSelect
+                    menuPortalTarget={document.body}
+                    value={typeOpts.find(o => o.value === (formData.assignment_type || '__none__')) || null}
+                    options={typeOpts}
+                    onChange={(opt) => opt && setFormData(f => ({ ...f, assignment_type: opt.value === '__none__' ? '' : opt.value }))}
+                  />
+                );
+              })()}
             </div>
             
             {/* License Allocation Section */}

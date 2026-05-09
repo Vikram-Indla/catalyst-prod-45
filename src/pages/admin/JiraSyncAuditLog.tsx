@@ -4,11 +4,9 @@ import { supabase } from '@/integrations/supabase/client';
 import { formatDistanceToNow } from 'date-fns';
 import { RefreshCw, AlertCircle, Trash2 } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import {
-  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
-} from '@/components/ui/select';
+import AdsButton from '@atlaskit/button/new';
+import Textfield from '@atlaskit/textfield';
+import AdsSelect from '@atlaskit/select';
 import { Tooltip } from '@/components/ads';
 import { Skeleton } from '@/components/ui/skeleton';
 
@@ -84,14 +82,14 @@ function PaginationBar({ page, setPage, count }: { page: number; setPage: (p: nu
       <span>Showing {start}–{end}</span>
       <div className="flex gap-2">
         {page > 0 && (
-          <Button variant="outline" size="sm" className="h-7 text-xs" onClick={() => setPage(page - 1)}>
+          <AdsButton appearance="default" onClick={() => setPage(page - 1)}>
             Prev
-          </Button>
+          </AdsButton>
         )}
         {count === PAGE_SIZE && (
-          <Button variant="outline" size="sm" className="h-7 text-xs" onClick={() => setPage(page + 1)}>
+          <AdsButton appearance="default" onClick={() => setPage(page + 1)}>
             Next
-          </Button>
+          </AdsButton>
         )}
       </div>
     </div>
@@ -138,23 +136,32 @@ export function SyncEventsTab() {
   return (
       <div className="bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] border border-[var(--bd-default,#E2E8F0)] dark:border-[var(--ds-surface-raised,#1A1A1A)] rounded-md overflow-hidden">
         <div className="flex items-center gap-3 p-3 border-b border-[var(--bd-default,#E2E8F0)] dark:border-[var(--ds-surface-raised,#1A1A1A)]">
-          <Select value={statusFilter} onValueChange={setStatusFilter}>
-            <SelectTrigger className="w-[140px] h-9 text-xs">
-              <SelectValue placeholder="All statuses" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All</SelectItem>
-              <SelectItem value="success">Success</SelectItem>
-              <SelectItem value="error">Error</SelectItem>
-              <SelectItem value="skipped">Skipped</SelectItem>
-            </SelectContent>
-          </Select>
-          <Input
-            placeholder="Filter by Jira Key"
-            value={keyFilter}
-            onChange={(e) => setKeyFilter(e.target.value)}
-            className="h-9 w-48 text-xs"
-          />
+          {(() => {
+            const statusOpts = [
+              { label: 'All', value: 'all' },
+              { label: 'Success', value: 'success' },
+              { label: 'Error', value: 'error' },
+              { label: 'Skipped', value: 'skipped' },
+            ];
+            return (
+              <div style={{ width: 140 }}>
+                <AdsSelect
+                  menuPortalTarget={document.body}
+                  value={statusOpts.find(o => o.value === statusFilter) || null}
+                  options={statusOpts}
+                  onChange={(opt) => opt && setStatusFilter(opt.value)}
+                  styles={{ control: (base: any) => ({ ...base, minHeight: 36, fontSize: 12 }) }}
+                />
+              </div>
+            );
+          })()}
+          <div style={{ width: 192 }}>
+            <Textfield
+              placeholder="Filter by Jira Key"
+              value={keyFilter}
+              onChange={(e) => setKeyFilter((e.target as HTMLInputElement).value)}
+            />
+          </div>
         </div>
 
         <table className="w-full border-collapse">
@@ -242,15 +249,13 @@ export function WriteBackQueueTab() {
                   <td className={tdClass} style={tdStyle}>{formatDistanceToNow(new Date(q.created_at), { addSuffix: true })}</td>
                   <td style={tdStyle}>
                     {q.status === 'pending' && (
-                      <Button
-                        variant="default"
-                        size="sm"
-                        className="h-6 text-xs"
-                        disabled={approveMutation.isPending}
+                      <AdsButton
+                        appearance="primary"
+                        isDisabled={approveMutation.isPending}
                         onClick={() => approveMutation.mutate(q.id)}
                       >
                         Approve
-                      </Button>
+                      </AdsButton>
                     )}
                   </td>
                 </tr>

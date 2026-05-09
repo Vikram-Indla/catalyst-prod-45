@@ -12,13 +12,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
+import AdsSelect from '@atlaskit/select';
 import { toast } from 'sonner';
 import { 
   Search, 
@@ -629,34 +623,30 @@ export default function UserAccessPage() {
                     <td className="px-4 py-3">
                       {/* Role dropdown enabled when email exists */}
                       {user.email ? (
-                        <Select
-                          value={user.role_id || 'none'}
-                          onValueChange={(value) => {
-                            const userId = user.profile_id || user.id;
-                            assignRoleMutation.mutate({
-                              userId,
-                              roleId: value === 'none' ? null : value,
-                            });
-                          }}
-                          disabled={assignRoleMutation.isPending}
-                        >
-                          <SelectTrigger className="w-full h-8 text-sm">
-                            <div className="flex items-center gap-1.5">
-                              <Shield className="h-3.5 w-3.5" style={{ color: 'var(--ds-text-subtle, #44546F)' }} />
-                              <SelectValue placeholder="Select role" />
-                            </div>
-                          </SelectTrigger>
-                          <SelectContent className="z-[9999]">
-                            <SelectItem value="none">
-                              <span style={{ color: 'var(--ds-text-subtle, #44546F)' }}>No role</span>
-                            </SelectItem>
-                            {productRoles.map((role) => (
-                              <SelectItem key={role.id} value={role.id}>
-                                {role.name}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
+                        (() => {
+                          const roleOpts = [
+                            { label: 'No role', value: 'none' },
+                            ...productRoles.map(r => ({ label: r.name, value: r.id })),
+                          ];
+                          const curRole = user.role_id || 'none';
+                          return (
+                            <AdsSelect
+                              menuPortalTarget={document.body}
+                              value={roleOpts.find(o => o.value === curRole) || null}
+                              options={roleOpts}
+                              isDisabled={assignRoleMutation.isPending}
+                              onChange={(opt) => {
+                                if (!opt) return;
+                                const userId = user.profile_id || user.id;
+                                assignRoleMutation.mutate({
+                                  userId,
+                                  roleId: opt.value === 'none' ? null : opt.value,
+                                });
+                              }}
+                              styles={{ control: (base: any) => ({ ...base, minHeight: 32, height: 32, fontSize: 14 }) }}
+                            />
+                          );
+                        })()
                       ) : (
                         <span className="text-xs italic flex items-center gap-1" style={{ color: 'var(--ds-text-subtle, #44546F)' }}>
                           <Shield className="h-3 w-3" />
