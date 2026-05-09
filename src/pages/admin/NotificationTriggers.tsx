@@ -34,6 +34,7 @@ import {
 import { useSchemes, useExportScheme, useImportScheme } from '@/hooks/useNotificationSchemes';
 import { HUB_SOURCES, type HubSource } from '@/constants/notificationEvents';
 import type { TriggerCategory, TriggerFilters, ChannelsConfig, TriggerRowData } from '@/types/notification-triggers';
+import { AdminGuard } from '@/components/admin/AdminGuard';
 
 // ── Hub display config ──────────────────────────────────────────
 const HUB_LABELS: Record<string, string> = {
@@ -154,6 +155,7 @@ export default function NotificationTriggers() {
   ];
 
   return (
+    <AdminGuard>
     <div className="p-6 max-w-[1400px] mx-auto space-y-6">
       {/* ── Page Header ──────────────────────────────────────────── */}
       <div className="flex items-start justify-between">
@@ -408,6 +410,7 @@ export default function NotificationTriggers() {
         </div>
       )}
     </div>
+    </AdminGuard>
   );
 }
 

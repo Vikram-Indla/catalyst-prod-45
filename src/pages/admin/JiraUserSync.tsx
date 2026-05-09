@@ -30,6 +30,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
+import { AdminGuard } from '@/components/admin/AdminGuard';
 
 /* ── Theme tokens (inline style object) ── */
 
@@ -242,6 +243,7 @@ const JiraUserSync: React.FC = () => {
   const showEnd = Math.min(page * PER_PAGE, totalCount);
 
   return (
+    <AdminGuard>
     <div
       className="flex flex-col h-full"
       style={{ background: 'var(--cp-bg-page, #F8FAFC)', minHeight: '100vh' }}
@@ -867,6 +869,7 @@ const JiraUserSync: React.FC = () => {
         onSuccess={() => {}}
       />
     </div>
+    </AdminGuard>
   );
 };
 

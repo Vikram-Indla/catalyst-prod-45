@@ -13,6 +13,7 @@ import GridIcon from '@atlaskit/icon/core/grid';
 import BoardIcon from '@atlaskit/icon/core/board';
 import Spinner from '@atlaskit/spinner';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
+import { AdminGuard } from '@/components/admin/AdminGuard';
 
 const ISSUE_TYPES = [
   { key: 'Story', label: 'Story' },
@@ -31,6 +32,7 @@ export default function WorkflowAdminPage() {
   const { data: schemes = [] } = useAllWorkflowSchemes();
 
   return (
+    <AdminGuard>
     <div className="space-y-0 bg-white min-h-screen text-[var(--ds-text,#0F172A)]">
       {/* Header */}
       <div className="flex items-center justify-between px-6 py-4 border-b border-[var(--ds-border,#E2E8F0)]">
@@ -105,6 +107,7 @@ export default function WorkflowAdminPage() {
         ))}
       </Tabs>
     </div>
+    </AdminGuard>
   );
 }
 

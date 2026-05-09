@@ -45,6 +45,7 @@ import {
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
+import { AdminGuard } from '@/components/admin/AdminGuard';
 
 const STATUS_CONFIG: Record<AssignmentStatus, { label: string; appearance: LozengeAppearance }> = {
   yet_to_start: { label: 'Yet to Start', appearance: 'default' },
@@ -750,6 +751,7 @@ export default function ResourceAssignmentsPage() {
   }
 
   return (
+    <AdminGuard>
     <div className="p-6 space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
@@ -1215,5 +1217,6 @@ export default function ResourceAssignmentsPage() {
         </DialogContent>
       </Dialog>
     </div>
+    </AdminGuard>
   );
 }

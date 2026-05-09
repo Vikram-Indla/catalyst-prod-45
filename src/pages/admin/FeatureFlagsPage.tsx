@@ -48,6 +48,7 @@ import {
   AlertDialog, AlertDialogContent, AlertDialogDescription,
   AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
 } from '@/components/admin/admin-alert-dialog';
+import { AdminGuard } from '@/components/admin/AdminGuard';
 
 // ── Constants ──────────────────────────────────────────────
 
@@ -498,6 +499,7 @@ export default function FeatureFlagsPage() {
   const someSelected = selectedIds.size > 0 && selectedIds.size < filteredFlags.length;
 
   return (
+    <AdminGuard>
     <div className={`flex-1 min-w-0 ${isDark ? "bg-[var(--ds-surface,#0A0A0A)]" : "bg-white"}`} style={{ padding: '24px 32px' }}>
       {/* ── Header ─────────────────────────────────────── */}
       <div className="flex items-start justify-between mb-5">
@@ -872,5 +874,6 @@ export default function FeatureFlagsPage() {
         </AlertDialogContent>
       </AlertDialog>
     </div>
+    </AdminGuard>
   );
 }

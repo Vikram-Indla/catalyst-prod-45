@@ -27,6 +27,7 @@ import ShieldIcon from '@atlaskit/icon/core/shield';
 import CheckMarkIcon from '@atlaskit/icon/core/check-mark';
 import CrossIcon from '@atlaskit/icon/glyph/cross';
 import EditIcon from '@atlaskit/icon/core/edit';
+import { AdminGuard } from '@/components/admin/AdminGuard';
 
 interface ProductRole {
   id: string;
@@ -475,6 +476,7 @@ export default function UserAccessPage() {
   };
 
   return (
+    <AdminGuard>
     <div className="flex-1 p-6 space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
@@ -908,5 +910,6 @@ export default function UserAccessPage() {
         </DialogContent>
       </Dialog>
     </div>
+    </AdminGuard>
   );
 }

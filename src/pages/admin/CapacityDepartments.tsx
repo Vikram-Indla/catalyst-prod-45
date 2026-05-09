@@ -13,6 +13,7 @@ import CopyIcon from '@atlaskit/icon/core/copy';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { Tooltip } from '@/components/ads';
+import { AdminGuard } from '@/components/admin/AdminGuard';
 
 interface LinkedResource {
   id: string;
@@ -106,6 +107,7 @@ export default function CapacityDepartmentsPage() {
   }
 
   return (
+    <AdminGuard>
     <div className="p-6 space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
@@ -312,5 +314,6 @@ export default function CapacityDepartmentsPage() {
         </AlertDialogContent>
       </AlertDialog>
     </div>
+    </AdminGuard>
   );
 }
