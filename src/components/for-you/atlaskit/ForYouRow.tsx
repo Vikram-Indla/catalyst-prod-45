@@ -47,7 +47,7 @@ import Avatar from '@atlaskit/avatar';
 import Lozenge from '@atlaskit/lozenge';
 import Tooltip from '@atlaskit/tooltip';
 import { Star, StarOff } from 'lucide-react';
-import WorkItemIcon, { normalizeIconType } from '@/components/shared/WorkItemIcon';
+import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import { resolveAvatarUrl } from '@/lib/avatars';
 import type { WorkItem } from '@/hooks/useForYouData';
 
@@ -120,7 +120,7 @@ function ForYouRowImpl({ item, alwaysShowStar = false, onSelect, onToggleStar, h
         display: 'flex',
         alignItems: 'center',
         gap: 12,
-        height: 56,
+        height: 48,
         paddingInline: 12,
         paddingBlock: 8,
         borderRadius: 4,
@@ -147,7 +147,7 @@ function ForYouRowImpl({ item, alwaysShowStar = false, onSelect, onToggleStar, h
           flexShrink: 0,
         }}
       >
-        <WorkItemIcon type={normalizeIconType(item.issueType)} size={20} />
+        <JiraIssueTypeIcon type={item.issueType ?? 'Task'} size={20} />
       </div>
 
       {/* Main body */}
@@ -200,7 +200,12 @@ function ForYouRowImpl({ item, alwaysShowStar = false, onSelect, onToggleStar, h
             </Tooltip>
           )}
           {item.status && (
-            <Lozenge appearance={statusToAppearance(item.status)}>{item.status}</Lozenge>
+            // data-cp-lozenge-jira-parity: activates the index.css override that
+            // strips text-transform:uppercase + letter-spacing from Atlaskit's
+            // inner label span (jira-compare 2026-04-28 lesson).
+            <span data-cp-lozenge-jira-parity>
+              <Lozenge appearance={statusToAppearance(item.status)}>{item.status}</Lozenge>
+            </span>
           )}
           <span
             style={{
