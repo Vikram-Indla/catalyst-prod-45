@@ -190,92 +190,159 @@ All text must be `sentence case`. `text-transform: uppercase` is banned on all l
 
 ## SVG Arrow Injection — Mandatory Protocol
 
+### RCA — why arrows drifted on window resize (fixed 2026-05-09)
+
+**Root cause:** Prior versions stored `{x, y}` pixel snapshots from `getBoundingClientRect()` at
+injection time. When the browser window was resized, the DOM elements moved to new positions but the
+SVG arrow coordinates stayed hardcoded — causing the misalignment visible in screenshots.
+
+**Fix:** Arrows now store CSS **selectors**, not coordinates. A `render()` function re-queries
+`getBoundingClientRect()` live on every call. `window.addEventListener('resize', ...)` and a
+capture-phase scroll listener trigger `requestAnimationFrame(render)` so arrows reposition
+instantly as the layout reflows. This is the ONLY correct approach.
+
+---
+
 ### Step 1 — Navigate to the surface
 
 ```
 Navigate to: localhost:8080/{route}
 ```
 
-If the route is unknown, screenshot first and identify from URL bar.
+### Step 2 — Probe to find CSS selectors for each violation
 
-### Step 2 — Probe with DOM inspection
-
-Use `javascript_tool` to identify violation coordinates:
+Use `javascript_tool` to confirm the selector targets the right element:
 
 ```js
-// Probe pattern — get element position for arrow targeting
-const el = document.querySelector('{selector}');
-if (el) {
-  const r = el.getBoundingClientRect();
-  console.log(JSON.stringify({ x: r.right, y: r.top + r.height/2, label: '{violation label}' }));
-}
+// Confirm selector resolves and log its position (for verification only)
+const el = document.querySelector('{your-selector}');
+el ? console.log(el.getBoundingClientRect(), el.textContent.slice(0,40)) : console.log('NOT FOUND');
 ```
 
-### Step 3 — Inject RED arrows (discovery)
+### Step 3 — Inject LIVE RED arrows (discovery)
+
+**violations array uses `selector` (CSS selector) + `label` + `side` ('left' | 'right')**
+Arrows reposition automatically on resize and scroll.
 
 ```js
-(function injectDIArrows(violations) {
-  document.getElementById('__di_overlay')?.remove();
+(function injectArrows(overlayId, color, markerKey, violations) {
+  // Cleanup previous overlay and its event listeners
+  const prev = document.getElementById(overlayId);
+  if (prev && prev._destroy) prev._destroy();
+  if (prev) prev.remove();
+
   const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-  svg.id = '__di_overlay';
+  svg.id = overlayId;
   Object.assign(svg.style, {
-    position: 'fixed', top: 0, left: 0,
+    position: 'fixed', top: '0', left: '0',
     width: '100vw', height: '100vh',
-    pointerEvents: 'none', zIndex: 99999,
+    pointerEvents: 'none', zIndex: '99999',
   });
+  document.body.appendChild(svg);
+
+  // Marker (arrowhead) — written once into <defs>
   const defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
   const marker = document.createElementNS('http://www.w3.org/2000/svg', 'marker');
-  marker.id = 'di-red-arrow';
-  marker.setAttribute('markerWidth', '10');
-  marker.setAttribute('markerHeight', '7');
-  marker.setAttribute('refX', '10');
-  marker.setAttribute('refY', '3.5');
+  marker.id = markerKey;
+  marker.setAttribute('markerWidth', '10'); marker.setAttribute('markerHeight', '7');
+  marker.setAttribute('refX', '10');        marker.setAttribute('refY', '3.5');
   marker.setAttribute('orient', 'auto');
   const poly = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
   poly.setAttribute('points', '0 0, 10 3.5, 0 7');
-  poly.setAttribute('fill', '#E5493A');
-  marker.appendChild(poly);
-  defs.appendChild(marker);
-  svg.appendChild(defs);
+  poly.setAttribute('fill', color);
+  marker.appendChild(poly); defs.appendChild(marker); svg.appendChild(defs);
 
-  violations.forEach(({ x, y, label }) => {
-    // Arrow
-    const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-    line.setAttribute('x1', x - 60); line.setAttribute('y1', y);
-    line.setAttribute('x2', x - 8);  line.setAttribute('y2', y);
-    line.setAttribute('stroke', '#E5493A');
-    line.setAttribute('stroke-width', '2');
-    line.setAttribute('marker-end', 'url(#di-red-arrow)');
-    svg.appendChild(line);
-    // Badge
-    const labelLen = Math.min(label.length * 7 + 8, 210);
-    const bg = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
-    bg.setAttribute('x', x - labelLen - 60); bg.setAttribute('y', y - 11);
-    bg.setAttribute('width', labelLen); bg.setAttribute('height', '16');
-    bg.setAttribute('rx', '3'); bg.setAttribute('fill', '#E5493A');
-    svg.appendChild(bg);
-    const txt = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-    txt.setAttribute('x', x - labelLen - 56); txt.setAttribute('y', y + 1);
-    txt.setAttribute('font-size', '10'); txt.setAttribute('fill', 'white');
-    txt.setAttribute('font-family', 'system-ui, sans-serif');
-    txt.setAttribute('font-weight', '600');
-    txt.textContent = label.slice(0, 30);
-    svg.appendChild(txt);
-  });
-  document.body.appendChild(svg);
-})([
-  /* populate from DOM probe results — {x, y, label} per violation */
+  // render() — re-queries DOM live on every call
+  function render() {
+    // Clear all non-defs children on each render
+    Array.from(svg.children).forEach(c => { if (c.tagName !== 'defs') c.remove(); });
+
+    violations.forEach(function(v) {
+      const el = document.querySelector(v.selector);
+      if (!el) return;
+      const r = el.getBoundingClientRect();
+      if (r.width === 0 && r.height === 0) return; // off-screen / hidden
+
+      const vy = r.top + r.height / 2;
+      const side = v.side || 'right';
+      // Arrow tip sits just outside the element edge
+      // Line runs 70px away from tip, arrow points toward the element
+      let tipX, lineStartX, lineEndX;
+      if (side === 'right') {
+        tipX = r.right + 8; lineStartX = tipX + 70; lineEndX = tipX + 8;
+      } else {
+        tipX = r.left - 8;  lineStartX = tipX - 70; lineEndX = tipX - 8;
+      }
+
+      // Arrow line
+      const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      line.setAttribute('x1', lineStartX); line.setAttribute('y1', vy);
+      line.setAttribute('x2', lineEndX);   line.setAttribute('y2', vy);
+      line.setAttribute('stroke', color);  line.setAttribute('stroke-width', '2');
+      line.setAttribute('marker-end', 'url(#' + markerKey + ')');
+      svg.appendChild(line);
+
+      // Label badge
+      const badgeW = Math.min((v.label.length * 6.5) + 12, 230);
+      const bx = side === 'right' ? lineStartX : lineStartX - badgeW;
+      const bg = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+      bg.setAttribute('x', bx);        bg.setAttribute('y', vy - 11);
+      bg.setAttribute('width', badgeW); bg.setAttribute('height', '16');
+      bg.setAttribute('rx', '3');       bg.setAttribute('fill', color);
+      svg.appendChild(bg);
+
+      const txt = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      txt.setAttribute('x', bx + 4);   txt.setAttribute('y', vy + 1);
+      txt.setAttribute('font-size', '10');
+      txt.setAttribute('fill', 'white');
+      txt.setAttribute('font-family', 'system-ui, sans-serif');
+      txt.setAttribute('font-weight', '600');
+      txt.textContent = v.label.slice(0, 34);
+      svg.appendChild(txt);
+    });
+  }
+
+  render(); // draw immediately
+
+  // Reposition on resize AND scroll (capture phase catches all scroll containers)
+  let rafId;
+  function scheduleRender() { cancelAnimationFrame(rafId); rafId = requestAnimationFrame(render); }
+  window.addEventListener('resize', scheduleRender);
+  window.addEventListener('scroll', scheduleRender, true);
+
+  // Cleanup — called before next overlay injection
+  svg._destroy = function() {
+    cancelAnimationFrame(rafId);
+    window.removeEventListener('resize', scheduleRender);
+    window.removeEventListener('scroll', scheduleRender, true);
+  };
+})(
+  '__di_overlay',   // overlay element id
+  '#E5493A',        // red for discovery
+  'di-red-arrow',   // marker key
+  [
+    // { selector: '[data-testid="for-you-row"]:first-child', label: 'V-1: row height >48px', side: 'right' },
+    // { selector: '.lozenge-wrapper',                        label: 'V-2: missing data-cp-lozenge-jira-parity', side: 'left' },
+  ]
+);
+```
+
+**After injection:** Take screenshot immediately. Arrows reposition if you resize — take a second
+screenshot after resizing to confirm they track. Display both inline in chat:
+`🔴 DI VIOLATIONS — {surface} — {N} issues · resize-stable`
+
+### Step 4 — Inject LIVE GREEN arrows (post-fix)
+
+Same function call, change three arguments:
+
+```js
+// color: '#22A06B', markerKey: 'di-green-arrow', label prefix: '✓ '
+injectArrows('__di_overlay', '#22A06B', 'di-green-arrow', [
+  { selector: '...', label: '✓ V-1: fixed — 48px row height', side: 'right' },
 ]);
 ```
 
-**After injection:** Take screenshot immediately. Display inline in chat:
-`🔴 DI VIOLATIONS — {surface} — {N} issues · ADS citations in brief below`
-
-### Step 4 — Inject GREEN arrows (post-fix)
-
-Same template, replace `#E5493A` → `#22A06B`, marker id `di-green-arrow`, label prefix `✓ `.
-
-**After injection:** Take screenshot immediately. Display inline in chat:
+**After injection:** Screenshot inline:
 `✅ DI FIXED — {surface} — {N} resolved · ADS compliance confirmed`
 
 ---
