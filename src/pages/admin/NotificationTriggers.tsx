@@ -7,20 +7,12 @@
  */
 
 import { useState, useCallback } from 'react';
-import { Bell, Search, Filter, Download, Upload, Info, Shield, ChevronDown, ChevronRight, ToggleLeft, ToggleRight } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import { Bell, Search, Filter, Download, Upload, Shield, ChevronDown, ChevronRight, ToggleLeft, ToggleRight } from 'lucide-react';
+import Button from '@atlaskit/button/new';
+import Textfield from '@atlaskit/textfield';
+import Toggle from '@atlaskit/toggle';
+import Select from '@atlaskit/select';
 import { Lozenge, Tooltip } from '@/components/ads';
-import { Separator } from '@/components/ui/separator';
-import { Switch } from '@/components/ui/switch';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 import {
   useFilteredTriggers,
   useCategoryGroups,
@@ -49,14 +41,6 @@ const HUB_LABELS: Record<string, string> = {
   CrossHub: 'Cross-Hub',
 };
 
-// ── Priority badge colors ───────────────────────────────────────
-const PRIORITY_COLORS: Record<string, string> = {
-  P1: 'bg-[#FFEBE6] text-[#BF2600]',
-  P2: 'bg-[#FFF0B3] text-[#FF8B00]',
-  P3: 'bg-[#DEEBFF] text-[#0747A6]',
-  P4: 'bg-[var(--ds-border,#DFE1E6)] text-[var(--ds-text,#253858)]',
-};
-
 // ── Channel icons ───────────────────────────────────────────────
 const CHANNEL_LABELS: Record<keyof ChannelsConfig, { label: string; short: string }> = {
   in_app: { label: 'In-App', short: 'App' },
@@ -64,6 +48,29 @@ const CHANNEL_LABELS: Record<keyof ChannelsConfig, { label: string; short: strin
   toast: { label: 'Toast', short: 'Toast' },
   slack: { label: 'Slack', short: 'Slack' },
 };
+
+// ── Hub select options ──────────────────────────────────────────
+const hubOptions = [
+  { label: 'All Hubs', value: 'All' },
+  ...HUB_SOURCES.map((hub) => ({ label: HUB_LABELS[hub] || hub, value: hub })),
+];
+
+const categoryOptions = [
+  { label: 'All Categories', value: 'All' },
+  { label: 'Assignments', value: 'assignments' },
+  { label: 'Status Changes', value: 'status_changes' },
+  { label: 'Comments & Mentions', value: 'comments_mentions' },
+  { label: 'Approvals & Sign-offs', value: 'approvals_signoffs' },
+  { label: 'Incidents & SLA', value: 'incidents_sla' },
+  { label: 'Testing', value: 'testing' },
+  { label: 'Strategy & OKRs', value: 'strategy_okrs' },
+  { label: 'Documents & Wiki', value: 'documents_wiki' },
+  { label: 'Dependencies & Links', value: 'dependencies_links' },
+  { label: 'System & AI', value: 'system_ai' },
+  { label: 'Releases', value: 'releases' },
+  { label: 'Planning', value: 'planning' },
+  { label: 'Product & Ideas', value: 'product_ideas' },
+];
 
 // ═══════════════════════════════════════════════════════════════════
 // MAIN PAGE COMPONENT
@@ -132,32 +139,38 @@ export default function NotificationTriggers() {
     selection.clearAll();
   }, [bulkUpdate, selection]);
 
+  const schemeOptions = [
+    { label: 'Global Defaults', value: 'none' },
+    ...(schemes?.map((s) => ({ label: s.name, value: s.id })) ?? []),
+  ];
+
   return (
     <div className="p-6 max-w-[1400px] mx-auto space-y-6">
       {/* ── Page Header ──────────────────────────────────────────── */}
       <div className="flex items-start justify-between">
         <div>
-          <h1 className="text-2xl font-semibold text-[var(--ds-text,#0F172A)] font-['Sora'] tracking-tight flex items-center gap-2">
-            <Bell className="h-6 w-6 text-[var(--ds-text-brand,#2563EB)]" />
+          <h1
+            className="text-2xl font-semibold tracking-tight flex items-center gap-2"
+            style={{ color: 'var(--ds-text, #172B4D)', fontFamily: "'Sora', sans-serif" }}
+          >
+            <Bell className="h-6 w-6" style={{ color: 'var(--ds-text-brand, #0C66E4)' }} />
             Notification Triggers
           </h1>
-          <p className="text-sm text-[var(--ds-text-subtle,#475569)] mt-1">
+          <p className="text-sm mt-1" style={{ color: 'var(--ds-text-subtle, #44546F)' }}>
             Configure which CRUD events trigger notifications, who receives them, and through which channels.
           </p>
         </div>
         <div className="flex items-center gap-2">
           {selectedSchemeId && (
             <Button
-              variant="outline"
-              size="sm"
+              appearance="subtle"
               onClick={() => exportScheme.mutate(selectedSchemeId)}
-              className="text-xs"
             >
               <Download className="h-3.5 w-3.5 mr-1" />
               Export
             </Button>
           )}
-          <Button variant="outline" size="sm" onClick={handleImport} className="text-xs">
+          <Button appearance="subtle" onClick={handleImport}>
             <Upload className="h-3.5 w-3.5 mr-1" />
             Import
           </Button>
@@ -175,142 +188,119 @@ export default function NotificationTriggers() {
       </div>
 
       {/* ── Filters Row ──────────────────────────────────────────── */}
-      <Card>
-        <CardContent className="p-4">
-          <div className="flex items-center gap-3 flex-wrap">
-            {/* Search */}
-            <div className="relative flex-1 min-w-[240px]">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[var(--ds-text-subtlest,#94A3B8)]" />
-              <Input
+      <div style={{ background: 'var(--ds-surface, #FFFFFF)', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px', padding: '16px' }}>
+        <div className="flex items-center gap-3 flex-wrap">
+          {/* Search */}
+          <div className="relative flex-1 min-w-[240px]">
+            <Search
+              className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 pointer-events-none"
+              style={{ color: 'var(--ds-text-subtlest, #626F86)', zIndex: 1 }}
+            />
+            <div style={{ paddingLeft: '32px' }}>
+              <Textfield
                 placeholder="Search triggers by name, key, or description..."
                 value={filters.search}
-                onChange={(e) => setFilters({ ...filters, search: e.target.value })}
-                className="pl-9 h-9 text-sm"
+                onChange={(e) => setFilters({ ...filters, search: (e.target as HTMLInputElement).value })}
               />
             </div>
+          </div>
 
-            {/* Hub filter */}
+          {/* Hub filter */}
+          <div style={{ width: 160 }}>
             <Select
-              value={filters.hub}
-              onValueChange={(v) => setFilters({ ...filters, hub: v as HubSource | 'All' })}
-            >
-              <SelectTrigger className="w-[160px] h-9 text-sm">
-                <SelectValue placeholder="Hub" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="All">All Hubs</SelectItem>
-                {HUB_SOURCES.map((hub) => (
-                  <SelectItem key={hub} value={hub}>
-                    {HUB_LABELS[hub]}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+              options={hubOptions}
+              value={hubOptions.find(o => o.value === filters.hub) || null}
+              onChange={(opt) => opt && setFilters({ ...filters, hub: opt.value as HubSource | 'All' })}
+              placeholder="Hub"
+            />
+          </div>
 
-            {/* Category filter */}
+          {/* Category filter */}
+          <div style={{ width: 200 }}>
             <Select
-              value={filters.category}
-              onValueChange={(v) => setFilters({ ...filters, category: v as TriggerCategory | 'All' })}
-            >
-              <SelectTrigger className="w-[200px] h-9 text-sm">
-                <SelectValue placeholder="Category" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="All">All Categories</SelectItem>
-                <SelectItem value="assignments">Assignments</SelectItem>
-                <SelectItem value="status_changes">Status Changes</SelectItem>
-                <SelectItem value="comments_mentions">Comments & Mentions</SelectItem>
-                <SelectItem value="approvals_signoffs">Approvals & Sign-offs</SelectItem>
-                <SelectItem value="incidents_sla">Incidents & SLA</SelectItem>
-                <SelectItem value="testing">Testing</SelectItem>
-                <SelectItem value="strategy_okrs">Strategy & OKRs</SelectItem>
-                <SelectItem value="documents_wiki">Documents & Wiki</SelectItem>
-                <SelectItem value="dependencies_links">Dependencies & Links</SelectItem>
-                <SelectItem value="system_ai">System & AI</SelectItem>
-                <SelectItem value="releases">Releases</SelectItem>
-                <SelectItem value="planning">Planning</SelectItem>
-                <SelectItem value="product_ideas">Product & Ideas</SelectItem>
-              </SelectContent>
-            </Select>
+              options={categoryOptions}
+              value={categoryOptions.find(o => o.value === filters.category) || null}
+              onChange={(opt) => opt && setFilters({ ...filters, category: opt.value as TriggerCategory | 'All' })}
+              placeholder="Category"
+            />
+          </div>
 
-            {/* Scheme selector */}
-            {schemes && schemes.length > 0 && (
+          {/* Scheme selector */}
+          {schemes && schemes.length > 0 && (
+            <div style={{ width: 180 }}>
               <Select
-                value={selectedSchemeId ?? 'none'}
-                onValueChange={(v) => setSelectedSchemeId(v === 'none' ? null : v)}
-              >
-                <SelectTrigger className="w-[180px] h-9 text-sm">
-                  <SelectValue placeholder="Scheme" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="none">Global Defaults</SelectItem>
-                  {schemes.map((s) => (
-                    <SelectItem key={s.id} value={s.id}>
-                      {s.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            )}
-
-            <Separator orientation="vertical" className="h-6" />
-
-            {/* Quick toggles */}
-            <Button
-              variant={filters.enabledOnly ? 'default' : 'outline'}
-              size="sm"
-              className="text-xs h-8"
-              onClick={() => setFilters({ ...filters, enabledOnly: !filters.enabledOnly })}
-            >
-              <Filter className="h-3 w-3 mr-1" />
-              Enabled Only
-            </Button>
-            <Button
-              variant={filters.mandatoryOnly ? 'default' : 'outline'}
-              size="sm"
-              className="text-xs h-8"
-              onClick={() => setFilters({ ...filters, mandatoryOnly: !filters.mandatoryOnly })}
-            >
-              <Shield className="h-3 w-3 mr-1" />
-              Mandatory
-            </Button>
-          </div>
-
-          {/* Expand/Collapse + result count */}
-          <div className="flex items-center justify-between mt-3 pt-3 border-t border-[var(--bd-default,#E2E8F0)]">
-            <span className="text-xs text-[var(--ds-text-subtlest,#94A3B8)]">
-              Showing {filtered.length} of {totalCount} triggers across {groups.length} categories
-            </span>
-            <div className="flex gap-2">
-              <Button variant="ghost" size="sm" className="text-xs h-7" onClick={expandAll}>
-                Expand All
-              </Button>
-              <Button variant="ghost" size="sm" className="text-xs h-7" onClick={collapseAll}>
-                Collapse All
-              </Button>
+                options={schemeOptions}
+                value={schemeOptions.find(o => o.value === (selectedSchemeId ?? 'none')) || null}
+                onChange={(opt) => opt && setSelectedSchemeId(opt.value === 'none' ? null : opt.value)}
+                placeholder="Scheme"
+              />
             </div>
+          )}
+
+          <hr style={{ border: 'none', borderLeft: '1px solid var(--ds-border-layout, #EBECF0)', height: '24px', margin: '0' }} />
+
+          {/* Quick toggles */}
+          <Button
+            appearance={filters.enabledOnly ? 'primary' : 'subtle'}
+            onClick={() => setFilters({ ...filters, enabledOnly: !filters.enabledOnly })}
+          >
+            <Filter className="h-3 w-3 mr-1" />
+            Enabled Only
+          </Button>
+          <Button
+            appearance={filters.mandatoryOnly ? 'primary' : 'subtle'}
+            onClick={() => setFilters({ ...filters, mandatoryOnly: !filters.mandatoryOnly })}
+          >
+            <Shield className="h-3 w-3 mr-1" />
+            Mandatory
+          </Button>
+        </div>
+
+        {/* Expand/Collapse + result count */}
+        <div
+          className="flex items-center justify-between mt-3 pt-3"
+          style={{ borderTop: '1px solid var(--ds-border-layout, #EBECF0)' }}
+        >
+          <span className="text-xs" style={{ color: 'var(--ds-text-subtlest, #626F86)' }}>
+            Showing {filtered.length} of {totalCount} triggers across {groups.length} categories
+          </span>
+          <div className="flex gap-2">
+            <Button appearance="subtle" onClick={expandAll}>
+              Expand All
+            </Button>
+            <Button appearance="subtle" onClick={collapseAll}>
+              Collapse All
+            </Button>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
 
       {/* ── Bulk Actions Bar (when items selected) ───────────────── */}
       {selection.selectedCount > 0 && (
-        <div className="flex items-center gap-3 bg-[#DEEBFF] rounded-md px-4 py-2.5 border border-[#B3D4FF]">
-          <span className="text-sm font-medium text-[#0747A6]">
+        <div
+          className="flex items-center gap-3 rounded-md px-4 py-2.5"
+          style={{
+            background: 'var(--ds-background-selected, #E9F2FF)',
+            border: '1px solid var(--ds-border, #DCDFE4)',
+          }}
+        >
+          <span className="text-sm font-medium" style={{ color: 'var(--ds-text-brand, #0C66E4)' }}>
             {selection.selectedCount} trigger{selection.selectedCount > 1 ? 's' : ''} selected
           </span>
-          <Separator orientation="vertical" className="h-5" />
-          <Button size="sm" variant="outline" className="text-xs h-7" onClick={handleBulkEnable}>
+          <hr style={{ border: 'none', borderLeft: '1px solid var(--ds-border-layout, #EBECF0)', height: '20px', margin: '0' }} />
+          <Button appearance="subtle" onClick={handleBulkEnable}>
             <ToggleRight className="h-3 w-3 mr-1" />
             Enable All
           </Button>
-          <Button size="sm" variant="outline" className="text-xs h-7" onClick={handleBulkDisable}>
+          <Button appearance="subtle" onClick={handleBulkDisable}>
             <ToggleLeft className="h-3 w-3 mr-1" />
             Disable All
           </Button>
-          <Button size="sm" variant="ghost" className="text-xs h-7 ml-auto" onClick={selection.clearAll}>
-            Clear Selection
-          </Button>
+          <div className="ml-auto">
+            <Button appearance="subtle" onClick={selection.clearAll}>
+              Clear Selection
+            </Button>
+          </div>
         </div>
       )}
 
@@ -318,32 +308,41 @@ export default function NotificationTriggers() {
       {isLoading ? (
         <div className="space-y-3">
           {[1, 2, 3].map((i) => (
-            <div key={i} className="h-14 bg-[var(--ds-surface-sunken,#F1F5F9)] rounded-md animate-pulse" />
+            <div
+              key={i}
+              className="h-14 rounded-md animate-pulse"
+              style={{ background: 'var(--ds-background-neutral, #F7F8F9)' }}
+            />
           ))}
         </div>
       ) : groups.length === 0 ? (
-        <Card>
-          <CardContent className="py-12 text-center">
-            <Bell className="h-10 w-10 text-[var(--ds-text-subtlest,#94A3B8)] mx-auto mb-3" />
-            <p className="text-sm text-[var(--ds-text-subtle,#475569)]">No triggers match your filters.</p>
-          </CardContent>
-        </Card>
+        <div style={{ background: 'var(--ds-surface, #FFFFFF)', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px', padding: '48px 16px', textAlign: 'center' }}>
+          <Bell className="h-10 w-10 mx-auto mb-3" style={{ color: 'var(--ds-text-subtlest, #626F86)' }} />
+          <p className="text-sm" style={{ color: 'var(--ds-text-subtle, #44546F)' }}>No triggers match your filters.</p>
+        </div>
       ) : (
         <div className="space-y-2">
           {groups.map((group) => (
-            <Card key={group.key} className="overflow-hidden">
+            <div
+              key={group.key}
+              className="overflow-hidden"
+              style={{ background: 'var(--ds-surface, #FFFFFF)', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px' }}
+            >
               {/* Category Header */}
               <button
                 onClick={() => toggleGroup(group.key)}
-                className="w-full flex items-center justify-between px-4 py-3 hover:bg-[var(--ds-surface-sunken,#F8FAFC)] transition-colors duration-150"
+                className="w-full flex items-center justify-between px-4 py-3 transition-colors duration-150"
+                style={{ background: 'transparent' }}
+                onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-background-neutral, #F7F8F9)')}
+                onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
               >
                 <div className="flex items-center gap-3">
                   {expandedGroups.has(group.key) ? (
-                    <ChevronDown className="h-4 w-4 text-[var(--ds-text-subtle,#475569)]" />
+                    <ChevronDown className="h-4 w-4" style={{ color: 'var(--ds-text-subtle, #44546F)' }} />
                   ) : (
-                    <ChevronRight className="h-4 w-4 text-[var(--ds-text-subtle,#475569)]" />
+                    <ChevronRight className="h-4 w-4" style={{ color: 'var(--ds-text-subtle, #44546F)' }} />
                   )}
-                  <span className="text-sm font-semibold text-[var(--ds-text,#0F172A)]">{group.label}</span>
+                  <span className="text-sm font-semibold" style={{ color: 'var(--ds-text, #172B4D)' }}>{group.label}</span>
                   <Lozenge appearance="default">
                     {group.enabledCount}/{group.totalCount}
                   </Lozenge>
@@ -352,9 +351,16 @@ export default function NotificationTriggers() {
 
               {/* Trigger Rows (expanded) */}
               {expandedGroups.has(group.key) && (
-                <div className="border-t border-[var(--bd-default,#E2E8F0)]">
+                <div style={{ borderTop: '1px solid var(--ds-border-layout, #EBECF0)' }}>
                   {/* Table Header */}
-                  <div className="grid grid-cols-[32px_1fr_90px_80px_52px_52px_52px_52px_48px] gap-2 px-4 py-2 bg-[var(--ds-surface-sunken,#F8FAFC)] text-[10px] uppercase tracking-wider font-semibold text-[var(--ds-text-subtle,#475569)] border-b border-[var(--bd-default,#E2E8F0)]">
+                  <div
+                    className="grid grid-cols-[32px_1fr_90px_80px_52px_52px_52px_52px_48px] gap-2 px-4 py-2 text-[10px] uppercase tracking-wider font-semibold"
+                    style={{
+                      background: 'var(--ds-background-neutral, #F7F8F9)',
+                      color: 'var(--ds-text-subtle, #44546F)',
+                      borderBottom: '1px solid var(--ds-border-layout, #EBECF0)',
+                    }}
+                  >
                     <div />
                     <div>Trigger</div>
                     <div>Hub</div>
@@ -391,7 +397,7 @@ export default function NotificationTriggers() {
                   ))}
                 </div>
               )}
-            </Card>
+            </div>
           ))}
         </div>
       )}
@@ -412,22 +418,30 @@ function StatsCard({
   value: number;
   variant?: 'default' | 'blue' | 'gray' | 'red' | 'muted' | 'amber';
 }) {
-  const colors: Record<string, string> = {
-    default: 'text-[var(--ds-text,#0F172A)]',
-    blue: 'text-[var(--ds-text-brand,#2563EB)]',
-    gray: 'text-[var(--ds-text-subtle,#475569)]',
-    red: 'text-[var(--ds-text-danger,#DC2626)]',
-    muted: 'text-[var(--ds-text-subtlest,#94A3B8)]',
-    amber: 'text-[var(--ds-text-warning,#D97706)]',
+  const colorMap: Record<string, string> = {
+    default: 'var(--ds-text, #172B4D)',
+    blue: 'var(--ds-text-brand, #0C66E4)',
+    gray: 'var(--ds-text-subtle, #44546F)',
+    red: 'var(--ds-text-danger, #CA3521)',
+    muted: 'var(--ds-text-subtlest, #626F86)',
+    amber: 'var(--ds-text-warning, #974F0C)',
   };
 
   return (
-    <Card>
-      <CardContent className="p-3 text-center">
-        <p className={`text-xl font-semibold font-['JetBrains_Mono'] ${colors[variant]}`}>{value}</p>
-        <p className="text-[10px] uppercase tracking-wider text-[var(--ds-text-subtlest,#94A3B8)] mt-0.5">{label}</p>
-      </CardContent>
-    </Card>
+    <div style={{ background: 'var(--ds-surface, #FFFFFF)', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px', padding: '12px', textAlign: 'center' }}>
+      <p
+        className="text-xl font-semibold"
+        style={{ color: colorMap[variant], fontFamily: "'JetBrains Mono', monospace" }}
+      >
+        {value}
+      </p>
+      <p
+        className="text-[10px] uppercase tracking-wider mt-0.5"
+        style={{ color: 'var(--ds-text-subtlest, #626F86)' }}
+      >
+        {label}
+      </p>
+    </div>
   );
 }
 
@@ -446,10 +460,19 @@ function TriggerRow({
 }) {
   return (
     <div
-      className={`grid grid-cols-[32px_1fr_90px_80px_52px_52px_52px_52px_48px] gap-2 px-4 py-2 items-center border-b border-[var(--ds-surface-sunken,#F1F5F9)] hover:bg-[rgba(0,0,0,0.02)] transition-colors duration-150 ${
-        isSelected ? 'bg-[rgba(37,99,235,0.04)]' : ''
-      }`}
-      style={{ height: 50, maxHeight: 50 }}
+      className="grid grid-cols-[32px_1fr_90px_80px_52px_52px_52px_52px_48px] gap-2 px-4 py-2 items-center transition-colors duration-150"
+      style={{
+        height: 50,
+        maxHeight: 50,
+        borderBottom: '1px solid var(--ds-background-neutral, #F7F8F9)',
+        background: isSelected ? 'var(--ds-background-selected, #E9F2FF)' : 'transparent',
+      }}
+      onMouseEnter={e => {
+        if (!isSelected) (e.currentTarget as HTMLElement).style.background = 'rgba(0,0,0,0.02)';
+      }}
+      onMouseLeave={e => {
+        (e.currentTarget as HTMLElement).style.background = isSelected ? 'var(--ds-background-selected, #E9F2FF)' : 'transparent';
+      }}
     >
       {/* Checkbox */}
       <div>
@@ -458,7 +481,8 @@ function TriggerRow({
           checked={isSelected}
           onChange={onSelect}
           disabled={trigger.isMandatory}
-          className="h-3.5 w-3.5 rounded border-[var(--ds-text-disabled,#CBD5E1)] text-[var(--ds-text-brand,#2563EB)] focus:ring-[var(--ds-text-brand,#2563EB)] disabled:opacity-40"
+          className="h-3.5 w-3.5 rounded disabled:opacity-40"
+          style={{ borderColor: 'var(--ds-border, #DCDFE4)', accentColor: 'var(--ds-text-brand, #0C66E4)' }}
         />
       </div>
 
@@ -470,17 +494,17 @@ function TriggerRow({
           content={
             <>
               <p className="font-medium">{trigger.displayName}</p>
-              <p className="text-muted-foreground mt-0.5">{trigger.description}</p>
-              <p className="text-muted-foreground mt-1 font-mono text-[10px]">Key: {trigger.triggerKey}</p>
+              <p style={{ color: 'var(--ds-text-subtle, #44546F)' }} className="mt-0.5">{trigger.description}</p>
+              <p style={{ color: 'var(--ds-text-subtle, #44546F)' }} className="mt-1 font-mono text-[10px]">Key: {trigger.triggerKey}</p>
             </>
           }
         >
           <div className="flex items-center gap-1.5">
-            <span className="text-xs font-medium text-[var(--ds-text,#0F172A)] truncate">
+            <span className="text-xs font-medium truncate" style={{ color: 'var(--ds-text, #172B4D)' }}>
               {trigger.displayName}
             </span>
             {trigger.isMandatory && (
-              <Shield className="h-3 w-3 text-[var(--ds-text-danger,#DC2626)] flex-shrink-0" />
+              <Shield className="h-3 w-3 flex-shrink-0" style={{ color: 'var(--ds-icon-danger, #CA3521)' }} />
             )}
             {trigger.isSilent && (
               <Lozenge appearance="default">
@@ -488,7 +512,10 @@ function TriggerRow({
               </Lozenge>
             )}
             {trigger.isOverridden && (
-              <span className="h-1.5 w-1.5 rounded-full bg-[var(--ds-text-brand,#2563EB)] flex-shrink-0" />
+              <span
+                className="h-1.5 w-1.5 rounded-full flex-shrink-0"
+                style={{ background: 'var(--ds-background-brand-bold, #0C66E4)' }}
+              />
             )}
           </div>
         </Tooltip>
@@ -511,22 +538,24 @@ function TriggerRow({
       {/* Channel toggles */}
       {(['in_app', 'email', 'toast', 'slack'] as const).map((ch) => (
         <div key={ch} className="flex justify-center">
-          <Switch
-            checked={trigger.channels[ch]}
-            onCheckedChange={(v) => onChannelToggle(ch, v)}
-            disabled={trigger.isSilent}
-            className="h-4 w-7 data-[state=checked]:bg-[var(--ds-text-brand,#2563EB)]"
+          <Toggle
+            isChecked={trigger.channels[ch]}
+            onChange={() => onChannelToggle(ch, !trigger.channels[ch])}
+            isDisabled={trigger.isSilent}
+            label={CHANNEL_LABELS[ch].label}
+            size="regular"
           />
         </div>
       ))}
 
       {/* Master toggle */}
       <div className="flex justify-center">
-        <Switch
-          checked={trigger.enabled}
-          onCheckedChange={onToggle}
-          disabled={trigger.isMandatory || trigger.isSilent}
-          className="h-4 w-7 data-[state=checked]:bg-[var(--ds-text-success,#16A34A)]"
+        <Toggle
+          isChecked={trigger.enabled}
+          onChange={() => onToggle(!trigger.enabled)}
+          isDisabled={trigger.isMandatory || trigger.isSilent}
+          label="Enable trigger"
+          size="regular"
         />
       </div>
     </div>

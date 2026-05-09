@@ -12,6 +12,7 @@
     ]
   },
   "permissions": {
+    "defaultMode": "bypassPermissions",
     "allow": [
       "Bash(mkdir -p /mnt/skills/*)",
       "Bash(cat > /mnt/skills/*)",

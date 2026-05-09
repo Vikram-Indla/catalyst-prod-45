@@ -1,12 +1,10 @@
 import { useState } from 'react';
 import { useCapacityDepartments, type CapacityDepartment } from '@/modules/capacity-planner/hooks/useCapacityDepartments';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import Button from '@atlaskit/button/new';
+import Textfield from '@atlaskit/textfield';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { Plus, Pencil, Trash2, GripVertical, AlertTriangle, Copy } from 'lucide-react';
-import { cn } from '@/lib/utils';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { Tooltip } from '@/components/ads';
@@ -95,8 +93,8 @@ export default function CapacityDepartmentsPage() {
     return (
       <div className="p-6">
         <div className="animate-pulse space-y-4">
-          <div className="h-8 bg-muted rounded w-48" />
-          <div className="h-32 bg-muted rounded" />
+          <div className="h-8 rounded w-48" style={{ background: 'var(--ds-background-neutral, #F7F8F9)' }} />
+          <div className="h-32 rounded" style={{ background: 'var(--ds-background-neutral, #F7F8F9)' }} />
         </div>
       </div>
     );
@@ -107,44 +105,50 @@ export default function CapacityDepartmentsPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-semibold text-foreground">Resource Departments</h1>
-          <p className="text-sm text-muted-foreground mt-1">
+          <h1 className="text-2xl font-semibold" style={{ color: 'var(--ds-text, #172B4D)' }}>Resource Departments</h1>
+          <p className="text-sm mt-1" style={{ color: 'var(--ds-text-subtle, #44546F)' }}>
             Configure departments for resource management. Changes sync in real-time.
           </p>
         </div>
-        <Button 
-          className="gap-2 bg-[var(--ds-text-brand,#2563eb)] hover:bg-[var(--ds-background-brand-bold-hovered,#1d4ed8)]"
+        <Button
+          appearance="primary"
           onClick={() => setCreateModalOpen(true)}
+          iconBefore={<Plus size={16} />}
         >
-          <Plus className="h-4 w-4" />
           Add Department
         </Button>
       </div>
 
       {/* Departments List */}
-      <div className="bg-card border border-border rounded-xl overflow-hidden">
+      <div className="rounded-xl overflow-hidden" style={{ background: 'var(--ds-surface, #FFFFFF)', border: '1px solid var(--ds-border, #DCDFE4)' }}>
           <table className="w-full">
-            <thead className="bg-muted/30">
+            <thead style={{ background: 'var(--ds-background-neutral, #F7F8F9)' }}>
               <tr>
                 <th className="w-10 px-4 py-3"></th>
-                <th className="text-left px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase w-24">DID</th>
-                <th className="text-left px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase">Name</th>
-                <th className="text-center px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase">Actions</th>
+                <th className="text-left px-4 py-3 text-[11px] font-semibold uppercase w-24" style={{ color: 'var(--ds-text-subtlest, #626F86)' }}>DID</th>
+                <th className="text-left px-4 py-3 text-[11px] font-semibold uppercase" style={{ color: 'var(--ds-text-subtlest, #626F86)' }}>Name</th>
+                <th className="text-center px-4 py-3 text-[11px] font-semibold uppercase" style={{ color: 'var(--ds-text-subtlest, #626F86)' }}>Actions</th>
               </tr>
             </thead>
             <tbody>
               {departments.map((dept) => (
-                <tr key={dept.id} className="border-t border-border hover:bg-muted/20">
-                  <td className="px-4 py-3 text-muted-foreground">
+                <tr key={dept.id} style={{ borderTop: '1px solid var(--ds-border, #DCDFE4)' }}
+                  onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-background-neutral-hovered, #F1F2F4)')}
+                  onMouseLeave={e => (e.currentTarget.style.background = '')}
+                >
+                  <td className="px-4 py-3" style={{ color: 'var(--ds-text-subtle, #44546F)' }}>
                     <GripVertical className="h-4 w-4" />
                   </td>
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-2">
-                      <span className="text-sm font-mono font-medium text-primary">{dept.department_id}</span>
+                      <span className="text-sm font-mono font-medium" style={{ color: 'var(--ds-text-brand, #0C66E4)' }}>{dept.department_id}</span>
                       <Tooltip content="Copy DID">
                         <button
                           onClick={() => copyToClipboard(dept.department_id)}
-                          className="w-6 h-6 rounded flex items-center justify-center text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+                          className="w-6 h-6 rounded flex items-center justify-center transition-colors"
+                          style={{ color: 'var(--ds-text-subtle, #44546F)' }}
+                          onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral-hovered, #F1F2F4)'; (e.currentTarget as HTMLElement).style.color = 'var(--ds-text, #172B4D)'; }}
+                          onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = ''; (e.currentTarget as HTMLElement).style.color = 'var(--ds-text-subtle, #44546F)'; }}
                         >
                           <Copy className="h-3 w-3" />
                         </button>
@@ -152,19 +156,25 @@ export default function CapacityDepartmentsPage() {
                     </div>
                   </td>
                   <td className="px-4 py-3">
-                    <span className="text-sm font-medium text-foreground">{dept.name}</span>
+                    <span className="text-sm font-medium" style={{ color: 'var(--ds-text, #172B4D)' }}>{dept.name}</span>
                   </td>
                   <td className="px-4 py-3">
                     <div className="flex items-center justify-center gap-1">
                       <button
                         onClick={() => openEdit(dept)}
-                        className="w-8 h-8 rounded flex items-center justify-center text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+                        className="w-8 h-8 rounded flex items-center justify-center transition-colors"
+                        style={{ color: 'var(--ds-text-subtle, #44546F)' }}
+                        onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral-hovered, #F1F2F4)'; (e.currentTarget as HTMLElement).style.color = 'var(--ds-text, #172B4D)'; }}
+                        onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = ''; (e.currentTarget as HTMLElement).style.color = 'var(--ds-text-subtle, #44546F)'; }}
                       >
                         <Pencil className="h-4 w-4" />
                       </button>
                       <button
                         onClick={() => handleDeleteClick(dept)}
-                        className="w-8 h-8 rounded flex items-center justify-center text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition-colors"
+                        className="w-8 h-8 rounded flex items-center justify-center transition-colors"
+                        style={{ color: 'var(--ds-text-subtle, #44546F)' }}
+                        onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(202,53,33,0.1)'; (e.currentTarget as HTMLElement).style.color = 'var(--ds-icon-danger, #CA3521)'; }}
+                        onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = ''; (e.currentTarget as HTMLElement).style.color = 'var(--ds-text-subtle, #44546F)'; }}
                       >
                         <Trash2 className="h-4 w-4" />
                       </button>
@@ -174,7 +184,7 @@ export default function CapacityDepartmentsPage() {
               ))}
               {departments.length === 0 && (
                 <tr>
-                  <td colSpan={4} className="px-4 py-8 text-center text-muted-foreground">
+                  <td colSpan={4} className="px-4 py-8 text-center" style={{ color: 'var(--ds-text-subtle, #44546F)' }}>
                     No departments configured. Click "Add Department" to create one.
                   </td>
                 </tr>
@@ -191,20 +201,20 @@ export default function CapacityDepartmentsPage() {
           </DialogHeader>
           <div className="space-y-4 py-4">
             <div className="space-y-2">
-              <Label>Name *</Label>
-              <Input
+              <label style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>Name *</label>
+              <Textfield
                 value={formData.name}
-                onChange={(e) => setFormData(f => ({ ...f, name: e.target.value }))}
+                onChange={(e) => setFormData(f => ({ ...f, name: (e.target as HTMLInputElement).value }))}
                 placeholder="e.g., Engineering"
               />
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setCreateModalOpen(false)}>Cancel</Button>
-            <Button 
+            <Button appearance="subtle" onClick={() => setCreateModalOpen(false)}>Cancel</Button>
+            <Button
+              appearance="primary"
               onClick={handleCreate}
-              disabled={createDepartment.isPending}
-              className="bg-[var(--ds-text-brand,#2563eb)] hover:bg-[var(--ds-background-brand-bold-hovered,#1d4ed8)]"
+              isDisabled={createDepartment.isPending}
             >
               {createDepartment.isPending ? 'Creating...' : 'Create'}
             </Button>
@@ -220,20 +230,20 @@ export default function CapacityDepartmentsPage() {
           </DialogHeader>
           <div className="space-y-4 py-4">
             <div className="space-y-2">
-              <Label>Name *</Label>
-              <Input
+              <label style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>Name *</label>
+              <Textfield
                 value={formData.name}
-                onChange={(e) => setFormData(f => ({ ...f, name: e.target.value }))}
+                onChange={(e) => setFormData(f => ({ ...f, name: (e.target as HTMLInputElement).value }))}
                 placeholder="e.g., Engineering"
               />
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setEditingDepartment(null)}>Cancel</Button>
-            <Button 
+            <Button appearance="subtle" onClick={() => setEditingDepartment(null)}>Cancel</Button>
+            <Button
+              appearance="primary"
               onClick={handleUpdate}
-              disabled={updateDepartment.isPending}
-              className="bg-[var(--ds-text-brand,#2563eb)] hover:bg-[var(--ds-background-brand-bold-hovered,#1d4ed8)]"
+              isDisabled={updateDepartment.isPending}
             >
               {updateDepartment.isPending ? 'Saving...' : 'Save'}
             </Button>
@@ -248,7 +258,7 @@ export default function CapacityDepartmentsPage() {
             <AlertDialogTitle className="flex items-center gap-2">
               {linkedResources.length > 0 ? (
                 <>
-                  <AlertTriangle className="h-5 w-5 text-amber-500" />
+                  <AlertTriangle className="h-5 w-5" style={{ color: 'var(--ds-icon-warning, #F79009)' }} />
                   Cannot Delete Department
                 </>
               ) : (
@@ -264,14 +274,14 @@ export default function CapacityDepartmentsPage() {
                     <p>
                       The department <strong>"{departmentToDelete?.name}"</strong> cannot be deleted because it has {linkedResources.length} linked resource(s):
                     </p>
-                    <div className="max-h-40 overflow-y-auto border border-border rounded-md divide-y divide-border">
+                    <div className="max-h-40 overflow-y-auto rounded-md divide-y" style={{ border: '1px solid var(--ds-border, #DCDFE4)', borderColor: 'var(--ds-border, #DCDFE4)' }}>
                       {linkedResources.map((resource) => (
                         <div key={resource.id} className="px-3 py-2 text-sm">
                           {resource.full_name || 'Unnamed Resource'}
                         </div>
                       ))}
                     </div>
-                    <p className="text-sm text-muted-foreground">
+                    <p className="text-sm" style={{ color: 'var(--ds-text-subtle, #44546F)' }}>
                       Please reassign or remove these resources before deleting this department.
                     </p>
                   </div>
@@ -288,7 +298,7 @@ export default function CapacityDepartmentsPage() {
             {linkedResources.length === 0 && !checkingLinks && (
               <AlertDialogAction
                 onClick={handleConfirmDelete}
-                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                style={{ background: 'var(--ds-background-danger-bold, #CA3521)', color: '#FFFFFF' }}
               >
                 Delete
               </AlertDialogAction>

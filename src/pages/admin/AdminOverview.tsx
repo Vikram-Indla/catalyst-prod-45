@@ -12,47 +12,74 @@
  * adminChanges       -> activity_logs table filtered to admin entity types
  *
  * NO seeded/demo data. All counts are from real database.
+ *
+ * ADS-compliant: all colors use var(--ds-*) tokens. No Tailwind color classes.
+ * Dead links fixed 2026-05-09 Wave 2:
+ *   /admin/teams        → /admin/departments
+ *   /admin/jira-config  → /admin/workhub/jira-connection
+ *   /admin/activity     → /admin/workhub/sync-logs (audit card + "View all")
+ *   /admin/security     → /admin/roles-permissions (no security page exists)
  */
 
 import { AdminGuard } from '@/components/admin/AdminGuard';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import Textfield from '@atlaskit/textfield';
+import Spinner from '@atlaskit/spinner';
 import { Link } from 'react-router-dom';
-import { 
-  Search, 
-  UserPlus, 
-  Shield, 
-  Activity, 
+import {
+  Search,
+  UserPlus,
+  Shield,
+  Activity,
   Link2,
   Users,
   Settings,
   Database,
   Clock,
   ArrowRight,
-  Loader2
 } from 'lucide-react';
 import { useState } from 'react';
 import { useAdminOverviewMetrics, useRecentAdminChanges, useRecentRooms } from '@/hooks/useAdminOverviewMetrics';
 import { formatDistanceToNow } from 'date-fns';
 
-// Quick actions - static config, no mock data
+/** ADS token map — all colors via var(--ds-*) with light-mode fallbacks. */
+const T = {
+  surface:        'var(--ds-surface, #FFFFFF)',
+  border:         'var(--ds-border, #DCDFE4)',
+  borderLayout:   'var(--ds-border-layout, #EBECF0)',
+  borderSelected: 'var(--ds-border-selected, #0C66E4)',
+  text:           'var(--ds-text, #172B4D)',
+  textSubtle:     'var(--ds-text-subtle, #44546F)',
+  textSubtlest:   'var(--ds-text-subtlest, #626F86)',
+  textBrand:      'var(--ds-text-brand, #0C66E4)',
+  bgPage:         'var(--ds-background-accent-gray-subtlest, #F7F8F9)',
+  bgNeutralHover: 'var(--ds-background-neutral-hovered, #F1F2F4)',
+  bgBrandSubtle:  'var(--ds-background-selected, #E9F2FF)',
+  iconBrand:      'var(--ds-icon-brand, #0C66E4)',
+  iconSubtle:     'var(--ds-icon-subtle, #44546F)',
+};
+
+/** Quick actions — all paths registered in REGISTERED_ADMIN_ROUTES. */
 const quickActions = [
-  { label: 'Invite user', icon: UserPlus, path: '/admin/users', action: 'invite' },
-  { label: 'Create role', icon: Shield, path: '/admin/roles-permissions', action: 'create' },
-  { label: 'Open audit log', icon: Activity, path: '/admin/activity' },
-  { label: 'Jira integration', icon: Link2, path: '/admin/jira-config' },
+  { label: 'Invite user',     icon: UserPlus, path: '/admin/users' },
+  { label: 'Create role',     icon: Shield,   path: '/admin/roles-permissions' },
+  { label: 'Sync logs',       icon: Activity, path: '/admin/workhub/sync-logs' },
+  { label: 'Jira connection', icon: Link2,    path: '/admin/workhub/jira-connection' },
 ];
 
 export default function AdminOverview() {
-  const [searchQuery, setSearchQuery] = useState('');
-  
-  // Real data from existing hooks - NO MOCK DATA
+  const [searchQuery, setSearchQuery]     = useState('');
+  const [hoveredCard, setHoveredCard]     = useState<string | null>(null);
+  const [hoveredAction, setHoveredAction] = useState<string | null>(null);
+  const [hoveredRoom, setHoveredRoom]     = useState<string | null>(null);
+
   const metrics = useAdminOverviewMetrics();
   const { data: recentChanges, isLoading: changesLoading } = useRecentAdminChanges(5);
   const { recentRooms, loading: roomsLoading } = useRecentRooms({ limit: 4 });
 
-  // Dynamic pocket cards driven by real metrics
+  /**
+   * Pocket cards — all paths registered in REGISTERED_ADMIN_ROUTES.
+   * Security card → /admin/roles-permissions (no /admin/security page exists).
+   */
   const pocketCards = [
     {
       id: 'users-access',
@@ -77,7 +104,7 @@ export default function AdminOverview() {
       title: 'Reference Data',
       description: 'Teams, programs, and master data',
       icon: Database,
-      path: '/admin/teams',
+      path: '/admin/departments',
       count: metrics.referenceDataCount,
       countLabel: 'records',
     },
@@ -86,7 +113,7 @@ export default function AdminOverview() {
       title: 'Integrations',
       description: 'External connections and imports',
       icon: Link2,
-      path: '/admin/jira-config',
+      path: '/admin/workhub/jira-connection',
       count: metrics.integrationsCount,
       countLabel: 'active',
     },
@@ -95,7 +122,7 @@ export default function AdminOverview() {
       title: 'Audit & Usage',
       description: 'Activity logs and usage analytics',
       icon: Activity,
-      path: '/admin/activity',
+      path: '/admin/workhub/sync-logs',
       count: metrics.auditEventsCount,
       countLabel: 'events',
     },
@@ -104,201 +131,317 @@ export default function AdminOverview() {
       title: 'Security',
       description: 'Security settings and policies',
       icon: Shield,
-      path: '/admin/security',
-      // TODO: Security policies table does not exist - showing 0
+      path: '/admin/roles-permissions',
       count: metrics.securityPoliciesCount,
       countLabel: 'policies',
     },
   ];
 
-  // Format action label for display
   const formatActionLabel = (action: string, entityType: string): string => {
     const actionMap: Record<string, string> = {
-      'INSERT': 'Created',
-      'UPDATE': 'Updated',
-      'DELETE': 'Deleted',
+      INSERT: 'Created',
+      UPDATE: 'Updated',
+      DELETE: 'Deleted',
     };
     const entityMap: Record<string, string> = {
-      'user_roles': 'User role',
-      'profiles': 'User profile',
-      'integration_connectors': 'Integration',
-      'teams': 'Team',
-      'programs': 'Program',
-      'departments': 'Department',
-      'business_owners': 'Business owner',
-      'product_roles': 'Product role',
-      'auth_settings': 'Auth setting',
+      user_roles:              'User role',
+      profiles:                'User profile',
+      integration_connectors:  'Integration',
+      teams:                   'Team',
+      programs:                'Program',
+      departments:             'Department',
+      business_owners:         'Business owner',
+      product_roles:           'Product role',
+      auth_settings:           'Auth setting',
     };
     return `${actionMap[action] || action} ${entityMap[entityType] || entityType}`;
   };
 
   return (
     <AdminGuard>
-      <div className="h-full flex flex-col bg-background">
+      <div style={{ height: '100%', display: 'flex', flexDirection: 'column', background: T.bgPage }}>
+
         {/* Header */}
-        <div className="h-[72px] flex items-center justify-between border-b bg-card px-6">
-          <div className="min-w-0">
-            <h1 className="text-xl font-semibold text-foreground">Admin Overview</h1>
-            <p className="text-sm text-muted-foreground">
+        <div style={{
+          height: '72px',
+          display: 'flex',
+          alignItems: 'center',
+          borderBottom: `1px solid ${T.borderLayout}`,
+          background: T.surface,
+          padding: '0 24px',
+          flexShrink: 0,
+        }}>
+          <div>
+            <h1 style={{ margin: 0, fontSize: '20px', fontWeight: 600, color: T.text, lineHeight: '24px' }}>
+              Admin Overview
+            </h1>
+            <p style={{ margin: '2px 0 0', fontSize: '14px', color: T.textSubtle }}>
               System configuration and administration hub
             </p>
           </div>
         </div>
 
-        {/* Content */}
-        <div className="flex-1 overflow-auto p-6 space-y-6">
+        {/* Scrollable content */}
+        <div style={{ flex: 1, overflowY: 'auto', padding: '24px', display: 'flex', flexDirection: 'column', gap: '24px' }}>
+
           {/* Global Search */}
-          <div className="relative max-w-xl">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input
-              placeholder="Search settings, users, integrations..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10 h-10"
-            />
+          <div style={{ maxWidth: '576px', position: 'relative' }}>
+            <div style={{
+              position: 'absolute',
+              left: '10px',
+              top: '50%',
+              transform: 'translateY(-50%)',
+              zIndex: 1,
+              pointerEvents: 'none',
+              display: 'flex',
+              alignItems: 'center',
+            }}>
+              <Search size={16} color={T.iconSubtle} />
+            </div>
+            <div style={{ paddingLeft: '32px' }}>
+              <Textfield
+                value={searchQuery}
+                onChange={(e) => setSearchQuery((e.target as HTMLInputElement).value)}
+                placeholder="Search settings, users, integrations..."
+                aria-label="Search admin settings"
+              />
+            </div>
           </div>
 
           {/* Quick Actions */}
-          <div className="flex flex-wrap gap-2">
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
             {quickActions.map((action) => {
               const Icon = action.icon;
+              const isHovered = hoveredAction === action.label;
               return (
-                <Button
+                <Link
                   key={action.label}
-                  variant="outline"
-                  size="sm"
-                  asChild
-                  className="gap-2"
+                  to={action.path}
+                  onMouseEnter={() => setHoveredAction(action.label)}
+                  onMouseLeave={() => setHoveredAction(null)}
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '6px',
+                    padding: '5px 12px',
+                    borderRadius: '3px',
+                    border: `1px solid ${T.border}`,
+                    background: isHovered ? T.bgNeutralHover : T.surface,
+                    color: T.text,
+                    fontSize: '14px',
+                    fontWeight: 400,
+                    textDecoration: 'none',
+                    transition: 'background 0.1s',
+                    cursor: 'pointer',
+                  }}
                 >
-                  <Link to={action.path}>
-                    <Icon className="h-4 w-4" />
-                    {action.label}
-                  </Link>
-                </Button>
-              );
-            })}
-          </div>
-
-          {/* Pocket Cards Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {pocketCards.map((pocket) => {
-              const Icon = pocket.icon;
-              return (
-                <Link key={pocket.id} to={pocket.path}>
-                  <Card className="hover:border-brand-primary/50 transition-colors cursor-pointer h-full">
-                    <CardHeader className="pb-2">
-                      <div className="flex items-start justify-between">
-                        <div className="w-10 h-10 rounded-lg bg-brand-primary/10 flex items-center justify-center">
-                          <Icon className="h-5 w-5 text-brand-primary" />
-                        </div>
-                        <div className="text-right">
-                          {metrics.isLoading ? (
-                            <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
-                          ) : (
-                            <>
-                              <span className="text-2xl font-bold text-foreground">{pocket.count}</span>
-                              <p className="text-xs text-muted-foreground">{pocket.countLabel}</p>
-                            </>
-                          )}
-                        </div>
-                      </div>
-                    </CardHeader>
-                    <CardContent>
-                      <CardTitle className="text-base mb-1">{pocket.title}</CardTitle>
-                      <p className="text-sm text-muted-foreground">{pocket.description}</p>
-                    </CardContent>
-                  </Card>
+                  <Icon size={14} color={T.iconSubtle} />
+                  {action.label}
                 </Link>
               );
             })}
           </div>
 
-          {/* Bottom Row: Recently Visited + Recent Changes */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* Recently Visited - from real recent_activity table */}
-            <Card>
-              <CardHeader className="pb-3">
-                <div className="flex items-center gap-2">
-                  <Clock className="h-4 w-4 text-muted-foreground" />
-                  <CardTitle className="text-sm font-medium">Recently Visited</CardTitle>
-                </div>
-              </CardHeader>
-              <CardContent className="space-y-1">
+          {/* Pocket Cards Grid */}
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
+            gap: '16px',
+          }}>
+            {pocketCards.map((pocket) => {
+              const Icon = pocket.icon;
+              const isHovered = hoveredCard === pocket.id;
+              return (
+                <Link
+                  key={pocket.id}
+                  to={pocket.path}
+                  onMouseEnter={() => setHoveredCard(pocket.id)}
+                  onMouseLeave={() => setHoveredCard(null)}
+                  style={{ textDecoration: 'none' }}
+                >
+                  <div style={{
+                    background: T.surface,
+                    border: `1px solid ${isHovered ? T.borderSelected : T.border}`,
+                    borderRadius: '3px',
+                    padding: '16px',
+                    cursor: 'pointer',
+                    height: '100%',
+                    boxSizing: 'border-box',
+                    transition: 'border-color 0.15s',
+                  }}>
+                    {/* Icon + count row */}
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '12px' }}>
+                      <div style={{
+                        width: '40px',
+                        height: '40px',
+                        borderRadius: '3px',
+                        background: T.bgBrandSubtle,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        flexShrink: 0,
+                      }}>
+                        <Icon size={20} color={T.iconBrand} />
+                      </div>
+                      <div style={{ textAlign: 'right' }}>
+                        {metrics.isLoading ? (
+                          <Spinner size="medium" />
+                        ) : (
+                          <>
+                            <span style={{ fontSize: '24px', fontWeight: 700, color: T.text, lineHeight: 1 }}>
+                              {pocket.count}
+                            </span>
+                            <p style={{ margin: '2px 0 0', fontSize: '11px', color: T.textSubtlest }}>
+                              {pocket.countLabel}
+                            </p>
+                          </>
+                        )}
+                      </div>
+                    </div>
+                    {/* Title + description */}
+                    <h2 style={{ margin: '0 0 4px', fontSize: '15px', fontWeight: 600, color: T.text }}>
+                      {pocket.title}
+                    </h2>
+                    <p style={{ margin: 0, fontSize: '13px', color: T.textSubtle }}>
+                      {pocket.description}
+                    </p>
+                  </div>
+                </Link>
+              );
+            })}
+          </div>
+
+          {/* Bottom Row: Recently Visited + Recent Admin Changes */}
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fill, minmax(360px, 1fr))',
+            gap: '24px',
+          }}>
+
+            {/* Recently Visited */}
+            <div style={{
+              background: T.surface,
+              border: `1px solid ${T.border}`,
+              borderRadius: '3px',
+              padding: '16px',
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
+                <Clock size={16} color={T.iconSubtle} />
+                <h2 style={{ margin: 0, fontSize: '13px', fontWeight: 500, color: T.text }}>Recently Visited</h2>
+              </div>
+              <div>
                 {roomsLoading ? (
-                  <div className="flex items-center justify-center py-4">
-                    <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
+                  <div style={{ display: 'flex', justifyContent: 'center', padding: '16px 0' }}>
+                    <Spinner size="medium" />
                   </div>
                 ) : recentRooms.length > 0 ? (
                   recentRooms.map((room) => (
                     <Link
                       key={room.id}
                       to={room.room_path}
-                      className="flex items-center justify-between py-2 px-2 -mx-2 rounded hover:bg-muted transition-colors group"
+                      onMouseEnter={() => setHoveredRoom(room.id)}
+                      onMouseLeave={() => setHoveredRoom(null)}
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        padding: '8px',
+                        margin: '0 -8px',
+                        borderRadius: '3px',
+                        background: hoveredRoom === room.id ? T.bgNeutralHover : 'transparent',
+                        textDecoration: 'none',
+                        transition: 'background 0.1s',
+                      }}
                     >
-                      <span className="text-sm text-foreground">{room.room_name}</span>
-                      <div className="flex items-center gap-2">
-                        <span className="text-xs text-muted-foreground">
+                      <span style={{ fontSize: '14px', color: T.text }}>{room.room_name}</span>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <span style={{ fontSize: '12px', color: T.textSubtle }}>
                           {formatDistanceToNow(new Date(room.last_accessed_at), { addSuffix: true })}
                         </span>
-                        <ArrowRight className="h-3.5 w-3.5 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
+                        <ArrowRight
+                          size={14}
+                          color={T.textSubtlest}
+                          style={{ opacity: hoveredRoom === room.id ? 1 : 0, transition: 'opacity 0.1s' }}
+                        />
                       </div>
                     </Link>
                   ))
                 ) : (
-                  <p className="text-sm text-muted-foreground py-4 text-center">
+                  <p style={{ margin: 0, fontSize: '14px', color: T.textSubtle, textAlign: 'center', padding: '16px 0' }}>
                     No recent activity yet
                   </p>
                 )}
-              </CardContent>
-            </Card>
+              </div>
+            </div>
 
-            {/* Recent Admin Changes - from real activity_logs table */}
-            <Card>
-              <CardHeader className="pb-3">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <Activity className="h-4 w-4 text-muted-foreground" />
-                    <CardTitle className="text-sm font-medium">Recent Admin Changes</CardTitle>
-                  </div>
-                  <Button variant="ghost" size="sm" asChild className="text-xs text-[var(--ds-text-brand,#2563eb)] hover:text-[var(--ds-background-brand-bold-hovered,#1d4ed8)]">
-                    <Link to="/admin/activity">View all</Link>
-                  </Button>
+            {/* Recent Admin Changes */}
+            <div style={{
+              background: T.surface,
+              border: `1px solid ${T.border}`,
+              borderRadius: '3px',
+              padding: '16px',
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <Activity size={16} color={T.iconSubtle} />
+                  <h2 style={{ margin: 0, fontSize: '13px', fontWeight: 500, color: T.text }}>Recent Admin Changes</h2>
                 </div>
-              </CardHeader>
-              <CardContent className="space-y-2">
+                <Link
+                  to="/admin/workhub/sync-logs"
+                  style={{ fontSize: '12px', color: T.textBrand, textDecoration: 'none' }}
+                >
+                  View all
+                </Link>
+              </div>
+              <div>
                 {changesLoading ? (
-                  <div className="flex items-center justify-center py-4">
-                    <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
+                  <div style={{ display: 'flex', justifyContent: 'center', padding: '16px 0' }}>
+                    <Spinner size="medium" />
                   </div>
                 ) : recentChanges && recentChanges.length > 0 ? (
-                  recentChanges.map((change) => (
+                  recentChanges.map((change, idx) => (
                     <div
                       key={change.id}
-                      className="flex items-start justify-between py-2 border-b border-border last:border-0"
+                      style={{
+                        display: 'flex',
+                        alignItems: 'flex-start',
+                        justifyContent: 'space-between',
+                        padding: '8px 0',
+                        borderBottom: idx < recentChanges.length - 1
+                          ? `1px solid ${T.borderLayout}`
+                          : 'none',
+                      }}
                     >
-                      <div className="min-w-0">
-                        <p className="text-sm text-foreground truncate">
+                      <div style={{ minWidth: 0 }}>
+                        <p style={{
+                          margin: 0,
+                          fontSize: '14px',
+                          color: T.text,
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                          whiteSpace: 'nowrap',
+                        }}>
                           {formatActionLabel(change.action, change.entity_type)}
                         </p>
-                        <p className="text-xs text-muted-foreground">
+                        <p style={{ margin: '2px 0 0', fontSize: '12px', color: T.textSubtle }}>
                           {change.entity_type} • {change.entity_id.slice(0, 8)}...
                         </p>
                       </div>
-                      <span className="text-xs text-muted-foreground whitespace-nowrap ml-2">
-                        {change.created_at 
+                      <span style={{ fontSize: '12px', color: T.textSubtle, whiteSpace: 'nowrap', marginLeft: '8px' }}>
+                        {change.created_at
                           ? formatDistanceToNow(new Date(change.created_at), { addSuffix: true })
-                          : '-'
-                        }
+                          : '-'}
                       </span>
                     </div>
                   ))
                 ) : (
-                  <p className="text-sm text-muted-foreground py-4 text-center">
+                  <p style={{ margin: 0, fontSize: '14px', color: T.textSubtle, textAlign: 'center', padding: '16px 0' }}>
                     No admin changes yet
                   </p>
                 )}
-              </CardContent>
-            </Card>
+              </div>
+            </div>
+
           </div>
         </div>
       </div>

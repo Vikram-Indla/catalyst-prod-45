@@ -21,9 +21,9 @@ import {
   BookOpen, BarChart3, DollarSign, Box, Settings, MoreHorizontal,
 } from 'lucide-react';
 import { useTheme } from '@/hooks/useTheme';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-import { Switch } from '@/components/ui/switch';
+import AtlasButton from '@atlaskit/button/new';
+import Textfield from '@atlaskit/textfield';
+import Toggle from '@atlaskit/toggle';
 import {
   AlertDialog, AlertDialogContent, AlertDialogDescription,
   AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
@@ -196,15 +196,11 @@ const FlagRow = memo(function FlagRow({ flag, isSelected, isPending, onToggle, o
 
       {/* Toggle — D04: Real switch */}
       <div className="flex items-center justify-center">
-        <Switch
-          checked={flag.enabled}
-          onCheckedChange={(checked) => onToggle(flag, checked)}
-          disabled={isPending}
-          aria-label={`${flag.enabled ? 'Disable' : 'Enable'} ${flag.module_name}`}
-          style={{
-            opacity: isPending ? 0.6 : 1,
-            cursor: isPending ? 'wait' : 'pointer',
-          }}
+        <Toggle
+          isChecked={flag.enabled}
+          onChange={() => onToggle(flag, !flag.enabled)}
+          isDisabled={isPending}
+          label={`${flag.enabled ? 'Disable' : 'Enable'} ${flag.module_name}`}
         />
       </div>
 
@@ -455,15 +451,13 @@ export default function FeatureFlagsPage() {
         <p style={{ fontFamily: 'var(--cp-font-body)', fontSize: 12, color: 'var(--cp-text-tertiary, #71717A)' }}>
           {(error as Error).message}
         </p>
-        <Button
-          variant="outline"
+        <AtlasButton
+          appearance="default"
           onClick={() => refetch()}
-          className="gap-2 focus-visible:ring-2 focus-visible:ring-[var(--ds-text-brand,#2563EB)] focus-visible:ring-offset-2"
-          style={{ borderRadius: 6 }}
+          iconBefore={(iconProps) => <RefreshCw {...iconProps} className="w-4 h-4" />}
         >
-          <RefreshCw className="w-4 h-4" />
           Retry
-        </Button>
+        </AtlasButton>
       </div>
     );
   }
@@ -486,16 +480,13 @@ export default function FeatureFlagsPage() {
             Control module visibility and incremental rollout across the platform
           </p>
         </div>
-        <Button
-          variant="outline"
-          size="sm"
+        <AtlasButton
+          appearance="default"
           onClick={() => refetch()}
-          className="gap-1.5 focus-visible:ring-2 focus-visible:ring-[var(--ds-text-brand,#2563EB)] focus-visible:ring-offset-2"
-          style={{ borderRadius: 6 }}
+          iconBefore={(iconProps) => <RefreshCw {...iconProps} size={13} className={isFetching ? 'animate-spin' : ''} />}
         >
-          <RefreshCw size={13} className={isFetching ? 'animate-spin' : ''} />
           Refresh
-        </Button>
+        </AtlasButton>
       </div>
 
 
@@ -598,15 +589,13 @@ export default function FeatureFlagsPage() {
 
       {/* ── Toolbar ────────────────────────────────────── */}
       <div className="flex items-center gap-2 mb-3 flex-wrap">
-        <div className="relative flex-1 min-w-[200px] max-w-xs">
-          <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5" style={{ color: 'var(--cp-text-muted, #94A3B8)' }} />
-          <Input
+        <div className="flex-1 min-w-[200px] max-w-xs">
+          <Textfield
             placeholder="Search modules..."
             value={searchInput}
-            onChange={(e) => setSearchInput(e.target.value)}
-            className="h-9 pl-8 focus-visible:ring-2 focus-visible:ring-[var(--ds-text-brand,#2563EB)] focus-visible:ring-offset-2"
-            style={{ fontFamily: 'var(--cp-font-body)', fontSize: 13, borderRadius: 4, border: `0.75px solid ${'var(--cp-border-default, rgba(15,23,42,0.14))'}` }}
+            onChange={(e) => setSearchInput((e.target as HTMLInputElement).value)}
             aria-label="Search feature flags"
+            elemBeforeInput={<Search size={14} style={{ color: 'var(--cp-text-muted, #94A3B8)', marginLeft: 8 }} />}
           />
         </div>
 
@@ -660,19 +649,16 @@ export default function FeatureFlagsPage() {
             <span style={{ fontFamily: 'var(--cp-font-body)', fontSize: 12, color: 'var(--cp-text-tertiary, #71717A)' }}>
               {selectedIds.size} selected
             </span>
-            <Button
-              size="sm"
-              variant="outline"
-              className="h-8 gap-1 focus-visible:ring-2 focus-visible:ring-[var(--ds-text-brand,#2563EB)] focus-visible:ring-offset-2"
-              style={{ fontSize: 12, borderRadius: 6 }}
+            <AtlasButton
+              appearance="default"
               onClick={() => {
                 selectedIds.forEach((id) => toggleMutation.mutate({ id, enabled: true, environment }));
                 setSelectedIds(new Set());
               }}
-              disabled={toggleMutation.isPending}
+              isDisabled={toggleMutation.isPending}
             >
               Enable Selected
-            </Button>
+            </AtlasButton>
           </div>
         )}
       </div>
@@ -759,10 +745,13 @@ export default function FeatureFlagsPage() {
                   No modules match your filters
                 </p>
                 {hasActiveFilters && (
-                  <Button variant="outline" size="sm" onClick={clearFilters} className="gap-1.5" style={{ borderRadius: 6 }}>
-                    <X size={13} />
+                  <AtlasButton
+                    appearance="default"
+                    onClick={clearFilters}
+                    iconBefore={(iconProps) => <X {...iconProps} size={13} />}
+                  >
                     Clear Filters
-                  </Button>
+                  </AtlasButton>
                 )}
               </>
             )}
@@ -823,34 +812,30 @@ export default function FeatureFlagsPage() {
               <strong>{environment}</strong> environment. Users will lose access to all hub functionality.
             </AlertDialogDescription>
           </AlertDialogHeader>
-          <Input
-            placeholder='Type "DISABLE" to confirm'
-            value={confirmText}
-            onChange={(e) => setConfirmText(e.target.value)}
-            className="mt-2 focus-visible:ring-2 focus-visible:ring-[var(--ds-text-brand,#2563EB)] focus-visible:ring-offset-2"
-            style={{ borderRadius: 4, border: `0.75px solid ${'var(--cp-border-default, rgba(15,23,42,0.14))'}` }}
-            autoFocus
-            onKeyDown={(e) => { if (e.key === 'Enter') handleBulkDisableConfirm(); if (e.key === 'Escape') { setBulkDisableOpen(false); setConfirmText(''); } }}
-          />
+          <div className="mt-2">
+            <Textfield
+              placeholder='Type "DISABLE" to confirm'
+              value={confirmText}
+              onChange={(e) => setConfirmText((e.target as HTMLInputElement).value)}
+              autoFocus
+              onKeyDown={(e) => { if (e.key === 'Enter') handleBulkDisableConfirm(); if (e.key === 'Escape') { setBulkDisableOpen(false); setConfirmText(''); } }}
+            />
+          </div>
           <AlertDialogFooter className="mt-4">
-            <Button
-              variant="outline"
+            <AtlasButton
+              appearance="subtle"
               onClick={() => { setBulkDisableOpen(false); setConfirmText(''); }}
-              style={{ borderRadius: 6 }}
-              className="focus-visible:ring-2 focus-visible:ring-[var(--ds-text-brand,#2563EB)] focus-visible:ring-offset-2"
             >
               Cancel
-            </Button>
-            <Button
-              variant="destructive"
-              disabled={confirmText !== 'DISABLE' || bulkMutation.isPending}
+            </AtlasButton>
+            <AtlasButton
+              appearance="danger"
+              isDisabled={confirmText !== 'DISABLE' || bulkMutation.isPending}
               onClick={handleBulkDisableConfirm}
-              style={{ borderRadius: 6 }}
-              className="focus-visible:ring-2 focus-visible:ring-[var(--ds-text-brand,#2563EB)] focus-visible:ring-offset-2"
+              iconBefore={bulkMutation.isPending ? (iconProps) => <RefreshCw {...iconProps} size={14} className="animate-spin" /> : undefined}
             >
-              {bulkMutation.isPending && <RefreshCw size={14} className="animate-spin mr-2" />}
               Disable All Modules
-            </Button>
+            </AtlasButton>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>

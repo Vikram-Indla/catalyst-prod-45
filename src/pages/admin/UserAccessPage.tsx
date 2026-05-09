@@ -1,17 +1,9 @@
 import { useState, useMemo } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
+import Textfield from '@atlaskit/textfield';
+import Button from '@atlaskit/button/new';
 import { Lozenge } from '@/components/ads';
-import { 
-  Table, 
-  TableBody, 
-  TableCell, 
-  TableHead, 
-  TableHeader, 
-  TableRow 
-} from '@/components/ui/table';
 import {
   Dialog,
   DialogContent,
@@ -20,14 +12,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import { Label } from '@/components/ui/label';
+import AdsSelect from '@atlaskit/select';
 import { toast } from 'sonner';
 import { 
   Search, 
@@ -496,20 +481,20 @@ export default function UserAccessPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-semibold text-foreground flex items-center gap-2">
-            <UserCog className="h-6 w-6 text-brand-primary" />
+          <h1 className="text-2xl font-semibold flex items-center gap-2" style={{ color: 'var(--ds-text, #172B4D)' }}>
+            <UserCog className="h-6 w-6" style={{ color: 'var(--ds-icon-brand, #0C66E4)' }} />
             User Access
           </h1>
-          <p className="text-sm text-muted-foreground mt-1">
+          <p className="text-sm mt-1" style={{ color: 'var(--ds-text-subtle, #44546F)' }}>
             Manage application access credentials for Catalyst users
           </p>
         </div>
         {usersNeedingAccounts.length > 0 && (
           <Button
+            appearance="primary"
             onClick={() => setBulkCreateOpen(true)}
-            className="gap-2"
+            iconBefore={<Users size={16} />}
           >
-            <Users className="h-4 w-4" />
             Create {usersNeedingAccounts.length} Account{usersNeedingAccounts.length > 1 ? 's' : ''}
           </Button>
         )}
@@ -518,13 +503,14 @@ export default function UserAccessPage() {
       {/* Search */}
       <div className="flex items-center gap-4">
         <div className="relative flex-1 max-w-md">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input
-            placeholder="Search by name, email, RID, or role..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-9"
-          />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 z-10" style={{ color: 'var(--ds-text-subtle, #44546F)' }} />
+          <div style={{ paddingLeft: '36px' }}>
+            <Textfield
+              placeholder="Search by name, email, RID, or role..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery((e.target as HTMLInputElement).value)}
+            />
+          </div>
         </div>
         <Lozenge appearance="default">
           {filteredUsers.length} user{filteredUsers.length !== 1 ? 's' : ''}
@@ -532,66 +518,65 @@ export default function UserAccessPage() {
       </div>
 
       {/* Table */}
-      <div className="border rounded-lg bg-card overflow-hidden">
+      <div className="rounded-lg overflow-hidden" style={{ border: '1px solid var(--ds-border, #DCDFE4)', background: 'var(--ds-surface, #FFFFFF)' }}>
         <div className="overflow-auto h-[calc(100vh-280px)]">
-          <Table className="min-w-full">
-            <TableHeader className="sticky top-0 bg-card z-10">
-              <TableRow>
-                <TableHead className="w-[80px]">RID</TableHead>
-                <TableHead className="min-w-[150px]">Name</TableHead>
-                <TableHead className="min-w-[200px]">Email</TableHead>
-                <TableHead className="min-w-[180px]">Role</TableHead>
-                <TableHead className="w-[80px]">Status</TableHead>
-                <TableHead className="w-[220px] text-right">Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
+          <table className="min-w-full" style={{ borderCollapse: 'collapse' }}>
+            <thead className="sticky top-0 z-10" style={{ background: 'var(--ds-surface, #FFFFFF)', borderBottom: '1px solid var(--ds-border, #DCDFE4)' }}>
+              <tr>
+                <th className="w-[80px] px-4 py-3 text-left text-xs font-semibold uppercase" style={{ color: 'var(--ds-text-subtlest, #626F86)' }}>RID</th>
+                <th className="min-w-[150px] px-4 py-3 text-left text-xs font-semibold uppercase" style={{ color: 'var(--ds-text-subtlest, #626F86)' }}>Name</th>
+                <th className="min-w-[200px] px-4 py-3 text-left text-xs font-semibold uppercase" style={{ color: 'var(--ds-text-subtlest, #626F86)' }}>Email</th>
+                <th className="min-w-[180px] px-4 py-3 text-left text-xs font-semibold uppercase" style={{ color: 'var(--ds-text-subtlest, #626F86)' }}>Role</th>
+                <th className="w-[80px] px-4 py-3 text-left text-xs font-semibold uppercase" style={{ color: 'var(--ds-text-subtlest, #626F86)' }}>Status</th>
+                <th className="w-[220px] px-4 py-3 text-right text-xs font-semibold uppercase" style={{ color: 'var(--ds-text-subtlest, #626F86)' }}>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
               {isLoading ? (
-                <TableRow>
-                  <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
+                <tr>
+                  <td colSpan={6} className="text-center py-8" style={{ color: 'var(--ds-text-subtle, #44546F)' }}>
                     Loading resources...
-                  </TableCell>
-                </TableRow>
+                  </td>
+                </tr>
               ) : filteredUsers.length === 0 ? (
-                <TableRow>
-                  <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
+                <tr>
+                  <td colSpan={6} className="text-center py-8" style={{ color: 'var(--ds-text-subtle, #44546F)' }}>
                     No resources found
-                  </TableCell>
-                </TableRow>
+                  </td>
+                </tr>
               ) : (
                 filteredUsers.map((user) => (
-                  <TableRow key={user.id}>
-                    <TableCell className="font-mono text-sm text-muted-foreground">
+                  <tr key={user.id} style={{ borderTop: '1px solid var(--ds-border-layout, #EBECF0)' }}>
+                    <td className="px-4 py-3 font-mono text-sm" style={{ color: 'var(--ds-text-subtle, #44546F)' }}>
                       {user.rid || '—'}
-                    </TableCell>
-                    <TableCell className="font-medium">{user.name}</TableCell>
-                    <TableCell className="text-muted-foreground">
+                    </td>
+                    <td className="px-4 py-3 font-medium" style={{ color: 'var(--ds-text, #172B4D)' }}>{user.name}</td>
+                    <td className="px-4 py-3" style={{ color: 'var(--ds-text-subtle, #44546F)' }}>
                       {editingEmailId === user.id ? (
                         <div className="flex items-center gap-1">
-                          <Input
-                            type="email"
-                            value={editingEmailValue}
-                            onChange={(e) => setEditingEmailValue(e.target.value)}
-                            placeholder="Enter email..."
-                            className="h-7 text-sm w-[180px]"
-                            autoFocus
-                            onKeyDown={(e) => {
-                              if (e.key === 'Enter') {
-                                updateEmailMutation.mutate({
-                                  resourceId: user.id,
-                                  profileId: user.profile_id,
-                                  email: editingEmailValue,
-                                });
-                              } else if (e.key === 'Escape') {
-                                setEditingEmailId(null);
-                                setEditingEmailValue('');
-                              }
-                            }}
-                          />
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="h-7 w-7"
+                          <div style={{ width: '180px' }}>
+                            <Textfield
+                              type="email"
+                              value={editingEmailValue}
+                              onChange={(e) => setEditingEmailValue((e.target as HTMLInputElement).value)}
+                              placeholder="Enter email..."
+                              autoFocus
+                              onKeyDown={(e) => {
+                                if (e.key === 'Enter') {
+                                  updateEmailMutation.mutate({
+                                    resourceId: user.id,
+                                    profileId: user.profile_id,
+                                    email: editingEmailValue,
+                                  });
+                                } else if (e.key === 'Escape') {
+                                  setEditingEmailId(null);
+                                  setEditingEmailValue('');
+                                }
+                              }}
+                            />
+                          </div>
+                          <button
+                            className="h-7 w-7 flex items-center justify-center rounded"
                             onClick={() => {
                               updateEmailMutation.mutate({
                                 resourceId: user.id,
@@ -601,27 +586,27 @@ export default function UserAccessPage() {
                             }}
                             disabled={updateEmailMutation.isPending}
                           >
-                            <Check className="h-3.5 w-3.5 text-emerald-600" />
-                          </Button>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="h-7 w-7"
+                            <Check className="h-3.5 w-3.5" style={{ color: '#15803D' }} />
+                          </button>
+                          <button
+                            className="h-7 w-7 flex items-center justify-center rounded"
                             onClick={() => {
                               setEditingEmailId(null);
                               setEditingEmailValue('');
                             }}
                           >
-                            <X className="h-3.5 w-3.5 text-muted-foreground" />
-                          </Button>
+                            <X className="h-3.5 w-3.5" style={{ color: 'var(--ds-text-subtle, #44546F)' }} />
+                          </button>
                         </div>
                       ) : (
-                        <div 
-                          className="flex items-center gap-1.5 group cursor-pointer hover:text-foreground transition-colors"
+                        <div
+                          className="flex items-center gap-1.5 group cursor-pointer transition-colors"
                           onClick={() => {
                             setEditingEmailId(user.id);
                             setEditingEmailValue(user.email || '');
                           }}
+                          onMouseEnter={e => ((e.currentTarget as HTMLElement).style.color = 'var(--ds-text, #172B4D)')}
+                          onMouseLeave={e => ((e.currentTarget as HTMLElement).style.color = 'var(--ds-text-subtle, #44546F)')}
                         >
                           {user.email ? (
                             <>
@@ -629,115 +614,97 @@ export default function UserAccessPage() {
                               <span className="truncate">{user.email}</span>
                             </>
                           ) : (
-                            <span className="text-muted-foreground/50 italic">No email</span>
+                            <span style={{ color: 'var(--ds-text-subtlest, #626F86)', fontStyle: 'italic' }}>No email</span>
                           )}
-                          <Pencil className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground" />
+                          <Pencil className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity" style={{ color: 'var(--ds-text-subtle, #44546F)' }} />
                         </div>
                       )}
-                    </TableCell>
-                    <TableCell>
-                      {/* Role dropdown enabled when email exists (user can be authorized with email+role) */}
+                    </td>
+                    <td className="px-4 py-3">
+                      {/* Role dropdown enabled when email exists */}
                       {user.email ? (
-                        <Select
-                          value={user.role_id || 'none'}
-                          onValueChange={(value) => {
-                            // Use profile_id if available, otherwise use resource id
-                            const userId = user.profile_id || user.id;
-                            assignRoleMutation.mutate({
-                              userId,
-                              roleId: value === 'none' ? null : value,
-                            });
-                          }}
-                          disabled={assignRoleMutation.isPending}
-                        >
-                          <SelectTrigger className="w-full h-8 text-sm">
-                            <div className="flex items-center gap-1.5">
-                              <Shield className="h-3.5 w-3.5 text-muted-foreground" />
-                              <SelectValue placeholder="Select role" />
-                            </div>
-                          </SelectTrigger>
-                          <SelectContent className="z-[9999]">
-                            <SelectItem value="none">
-                              <span className="text-muted-foreground">No role</span>
-                            </SelectItem>
-                            {productRoles.map((role) => (
-                              <SelectItem key={role.id} value={role.id}>
-                                {role.name}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
+                        (() => {
+                          const roleOpts = [
+                            { label: 'No role', value: 'none' },
+                            ...productRoles.map(r => ({ label: r.name, value: r.id })),
+                          ];
+                          const curRole = user.role_id || 'none';
+                          return (
+                            <AdsSelect
+                              menuPortalTarget={document.body}
+                              value={roleOpts.find(o => o.value === curRole) || null}
+                              options={roleOpts}
+                              isDisabled={assignRoleMutation.isPending}
+                              onChange={(opt) => {
+                                if (!opt) return;
+                                const userId = user.profile_id || user.id;
+                                assignRoleMutation.mutate({
+                                  userId,
+                                  roleId: opt.value === 'none' ? null : opt.value,
+                                });
+                              }}
+                              styles={{ control: (base: any) => ({ ...base, minHeight: 32, height: 32, fontSize: 14 }) }}
+                            />
+                          );
+                        })()
                       ) : (
-                        <span className="text-xs text-muted-foreground italic flex items-center gap-1">
+                        <span className="text-xs italic flex items-center gap-1" style={{ color: 'var(--ds-text-subtle, #44546F)' }}>
                           <Shield className="h-3 w-3" />
                           No email
                         </span>
                       )}
-                    </TableCell>
-                    <TableCell>
+                    </td>
+                    <td className="px-4 py-3">
                       {user.is_active ? (
-                        <Lozenge appearance="success">
-                          Active
-                        </Lozenge>
+                        <Lozenge appearance="success">Active</Lozenge>
                       ) : (
                         <Lozenge appearance="default">Inactive</Lozenge>
                       )}
-                    </TableCell>
-                    <TableCell className="text-right">
-                      {/* User has profile = show password management */}
+                    </td>
+                    <td className="px-4 py-3 text-right">
                       {user.profile_id ? (
                         <div className="flex items-center justify-end gap-2">
                           <Button
-                            variant="outline"
-                            size="sm"
+                            appearance="default"
                             onClick={() => openChangePassword(user)}
-                            className="gap-1.5 whitespace-nowrap"
+                            iconBefore={<Key size={14} />}
                           >
-                            <Key className="h-3.5 w-3.5" />
                             Change Password
                           </Button>
                           <Button
-                            variant="outline"
-                            size="sm"
+                            appearance="default"
                             onClick={() => openResetPassword(user)}
-                            className="gap-1.5 whitespace-nowrap"
+                            iconBefore={<RotateCcw size={14} />}
                           >
-                            <RotateCcw className="h-3.5 w-3.5" />
                             Reset
                           </Button>
                         </div>
                       ) : user.email && user.role_id ? (
-                        /* Email + Role = Authorized, just needs account creation for password mgmt */
                         <div className="flex items-center justify-end gap-2">
-                          <Lozenge appearance="inprogress">
-                            Authorized
-                          </Lozenge>
+                          <Lozenge appearance="inprogress">Authorized</Lozenge>
                           <Button
-                            variant="outline"
-                            size="sm"
+                            appearance="default"
                             onClick={() => openCreateAccount(user)}
-                            className="gap-1.5 whitespace-nowrap"
+                            iconBefore={<UserPlus size={14} />}
                           >
-                            <UserPlus className="h-3.5 w-3.5" />
                             Create Login
                           </Button>
                         </div>
                       ) : user.email ? (
-                        /* Email but no role = needs role assignment first */
-                        <span className="text-xs text-muted-foreground italic">
+                        <span className="text-xs italic" style={{ color: 'var(--ds-text-subtle, #44546F)' }}>
                           Assign role to authorize
                         </span>
                       ) : (
-                        <span className="text-xs text-muted-foreground italic">
+                        <span className="text-xs italic" style={{ color: 'var(--ds-text-subtle, #44546F)' }}>
                           No email
                         </span>
                       )}
-                    </TableCell>
-                  </TableRow>
+                    </td>
+                  </tr>
                 ))
               )}
-            </TableBody>
-          </Table>
+            </tbody>
+          </table>
         </div>
       </div>
 
@@ -746,7 +713,7 @@ export default function UserAccessPage() {
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
-              <Key className="h-5 w-5 text-brand-primary" />
+              <Key className="h-5 w-5" style={{ color: 'var(--ds-icon-brand, #0C66E4)' }} />
               Change Password
             </DialogTitle>
             <DialogDescription>
@@ -756,52 +723,50 @@ export default function UserAccessPage() {
           </DialogHeader>
           <div className="space-y-4 py-4">
             <div className="space-y-2">
-              <Label htmlFor="new-password">New Password</Label>
+              <label htmlFor="new-password" style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>New Password</label>
               <div className="relative">
-                <Input
+                <Textfield
                   id="new-password"
                   type={showPassword ? 'text' : 'password'}
                   value={newPassword}
-                  onChange={(e) => setNewPassword(e.target.value)}
+                  onChange={(e) => setNewPassword((e.target as HTMLInputElement).value)}
                   placeholder="Enter new password"
-                  className="pr-10"
                 />
-                <Button
+                <button
                   type="button"
-                  variant="ghost"
-                  size="sm"
-                  className="absolute right-1 top-1/2 -translate-y-1/2 h-7 w-7 p-0"
+                  className="absolute right-2 top-1/2 -translate-y-1/2 h-7 w-7 flex items-center justify-center"
                   onClick={() => setShowPassword(!showPassword)}
                 >
                   {showPassword ? (
-                    <EyeOff className="h-4 w-4" />
+                    <EyeOff className="h-4 w-4" style={{ color: 'var(--ds-text-subtle, #44546F)' }} />
                   ) : (
-                    <Eye className="h-4 w-4" />
+                    <Eye className="h-4 w-4" style={{ color: 'var(--ds-text-subtle, #44546F)' }} />
                   )}
-                </Button>
+                </button>
               </div>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="confirm-password">Confirm Password</Label>
-              <Input
+              <label htmlFor="confirm-password" style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>Confirm Password</label>
+              <Textfield
                 id="confirm-password"
                 type={showPassword ? 'text' : 'password'}
                 value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
+                onChange={(e) => setConfirmPassword((e.target as HTMLInputElement).value)}
                 placeholder="Confirm new password"
               />
             </div>
             {newPassword && confirmPassword && newPassword !== confirmPassword && (
-              <p className="text-sm text-destructive">Passwords do not match</p>
+              <p className="text-sm" style={{ color: 'var(--ds-background-danger-bold, #CA3521)' }}>Passwords do not match</p>
             )}
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setChangePasswordOpen(false)}>
+            <Button appearance="subtle" onClick={() => setChangePasswordOpen(false)}>
               Cancel
             </Button>
             <Button
+              appearance="primary"
               onClick={handleChangePassword}
-              disabled={changePasswordMutation.isPending || !newPassword || newPassword !== confirmPassword}
+              isDisabled={changePasswordMutation.isPending || !newPassword || newPassword !== confirmPassword}
             >
               {changePasswordMutation.isPending ? 'Setting...' : 'Set Password'}
             </Button>
@@ -814,7 +779,7 @@ export default function UserAccessPage() {
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
-              <RotateCcw className="h-5 w-5 text-brand-primary" />
+              <RotateCcw className="h-5 w-5" style={{ color: 'var(--ds-icon-brand, #0C66E4)' }} />
               Reset Password
             </DialogTitle>
             <DialogDescription>
@@ -825,18 +790,19 @@ export default function UserAccessPage() {
             </DialogDescription>
           </DialogHeader>
           <div className="py-4">
-            <p className="text-sm text-muted-foreground">
-              This will send a secure password reset link to the user's email address. 
+            <p className="text-sm" style={{ color: 'var(--ds-text-subtle, #44546F)' }}>
+              This will send a secure password reset link to the user's email address.
               The link will expire after a set period.
             </p>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setResetPasswordOpen(false)}>
+            <Button appearance="subtle" onClick={() => setResetPasswordOpen(false)}>
               Cancel
             </Button>
             <Button
+              appearance="primary"
               onClick={handleResetPassword}
-              disabled={resetPasswordMutation.isPending}
+              isDisabled={resetPasswordMutation.isPending}
             >
               {resetPasswordMutation.isPending ? 'Sending...' : 'Send Reset Link'}
             </Button>
@@ -849,7 +815,7 @@ export default function UserAccessPage() {
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
-              <UserPlus className="h-5 w-5 text-brand-primary" />
+              <UserPlus className="h-5 w-5" style={{ color: 'var(--ds-icon-brand, #0C66E4)' }} />
               Create Account
             </DialogTitle>
             <DialogDescription>
@@ -858,18 +824,19 @@ export default function UserAccessPage() {
             </DialogDescription>
           </DialogHeader>
           <div className="py-4">
-            <p className="text-sm text-muted-foreground">
-              This will create a new login account with a temporary password (<code>password@99</code>). 
+            <p className="text-sm" style={{ color: 'var(--ds-text-subtle, #44546F)' }}>
+              This will create a new login account with a temporary password (<code>password@99</code>).
               The user will be required to change this password on their first login.
             </p>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setCreateAccountOpen(false)}>
+            <Button appearance="subtle" onClick={() => setCreateAccountOpen(false)}>
               Cancel
             </Button>
             <Button
+              appearance="primary"
               onClick={handleCreateAccount}
-              disabled={createAccountMutation.isPending}
+              isDisabled={createAccountMutation.isPending}
             >
               {createAccountMutation.isPending ? 'Creating...' : 'Create Account'}
             </Button>
@@ -882,7 +849,7 @@ export default function UserAccessPage() {
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
-              <Users className="h-5 w-5 text-brand-primary" />
+              <Users className="h-5 w-5" style={{ color: 'var(--ds-icon-brand, #0C66E4)' }} />
               Bulk Create Accounts
             </DialogTitle>
             <DialogDescription>
@@ -893,17 +860,17 @@ export default function UserAccessPage() {
           <div className="py-4 space-y-3">
             {bulkProgress ? (
               <div className="space-y-2">
-                <p className="text-sm text-muted-foreground">
+                <p className="text-sm" style={{ color: 'var(--ds-text-subtle, #44546F)' }}>
                   Creating accounts... {bulkProgress.done} / {bulkProgress.total}
                 </p>
-                <div className="w-full bg-muted rounded-full h-2">
-                  <div 
-                    className="bg-brand-primary h-2 rounded-full transition-all"
-                    style={{ width: `${(bulkProgress.done / bulkProgress.total) * 100}%` }}
+                <div className="w-full rounded-full h-2" style={{ background: 'var(--ds-background-neutral, #F7F8F9)' }}>
+                  <div
+                    className="h-2 rounded-full transition-all"
+                    style={{ width: `${(bulkProgress.done / bulkProgress.total) * 100}%`, background: 'var(--ds-background-brand-bold, #0C66E4)' }}
                   />
                 </div>
                 {bulkProgress.errors.length > 0 && (
-                  <div className="text-xs text-destructive max-h-24 overflow-y-auto">
+                  <div className="text-xs max-h-24 overflow-y-auto" style={{ color: 'var(--ds-background-danger-bold, #CA3521)' }}>
                     {bulkProgress.errors.map((err, i) => (
                       <p key={i}>{err}</p>
                     ))}
@@ -912,11 +879,11 @@ export default function UserAccessPage() {
               </div>
             ) : (
               <>
-                <p className="text-sm text-muted-foreground">
-                  Each account will be created with a temporary password (<code>password@99</code>). 
+                <p className="text-sm" style={{ color: 'var(--ds-text-subtle, #44546F)' }}>
+                  Each account will be created with a temporary password (<code>password@99</code>).
                   Users will be required to change it on first login.
                 </p>
-                <div className="max-h-32 overflow-y-auto text-xs text-muted-foreground border rounded p-2">
+                <div className="max-h-32 overflow-y-auto text-xs rounded p-2" style={{ color: 'var(--ds-text-subtle, #44546F)', border: '1px solid var(--ds-border, #DCDFE4)' }}>
                   {usersNeedingAccounts.map(u => (
                     <p key={u.id}>{u.name} ({u.email})</p>
                   ))}
@@ -925,16 +892,17 @@ export default function UserAccessPage() {
             )}
           </div>
           <DialogFooter>
-            <Button 
-              variant="outline" 
+            <Button
+              appearance="subtle"
               onClick={() => setBulkCreateOpen(false)}
-              disabled={!!bulkProgress}
+              isDisabled={!!bulkProgress}
             >
               Cancel
             </Button>
             <Button
+              appearance="primary"
               onClick={handleBulkCreate}
-              disabled={!!bulkProgress}
+              isDisabled={!!bulkProgress}
             >
               {bulkProgress ? 'Creating...' : `Create ${usersNeedingAccounts.length} Account${usersNeedingAccounts.length !== 1 ? 's' : ''}`}
             </Button>

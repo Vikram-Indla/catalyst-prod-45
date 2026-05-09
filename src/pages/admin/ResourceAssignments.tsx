@@ -1,30 +1,22 @@
 import { useState, useEffect, useRef, useMemo } from 'react';
 import { useResourceAssignments, type ResourceAssignment, type AssignmentStatus, type PaymentStatus } from '@/modules/capacity-planner/hooks/useResourceAssignments';
 import { useAssignmentBudgets, type LinkedResource, type AssignmentBudgetData } from '@/modules/capacity-planner/hooks/useInsourcedBudget';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import Button from '@atlaskit/button/new';
+import Textfield from '@atlaskit/textfield';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Plus, Pencil, Trash2, GripVertical, Briefcase, AlertTriangle, ChevronDown, ChevronRight, CalendarIcon, Download, Users, User } from 'lucide-react';
 import { exportAssignmentsToExcel } from '@/components/admin/assignments/exportAssignmentsToExcel';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { format, parseISO } from 'date-fns';
-import { cn } from '@/lib/utils';
-import { Switch } from '@/components/ui/switch';
+import Toggle from '@atlaskit/toggle';
+import AdsSelect from '@atlaskit/select';
 import { supabase } from '@/integrations/supabase/client';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { toast } from 'sonner';
 import { useQueryClient, useQuery } from '@tanstack/react-query';
 import { LicenseAllocationSection } from '@/modules/budget';
 import { Lozenge, Tooltip, type LozengeAppearance } from '@/components/ads';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 import {
   DndContext,
   closestCenter,
@@ -144,26 +136,27 @@ function SortableRow({
   return (
     <tr
       ref={setNodeRef}
-      style={style}
-      className={`border-t border-border hover:bg-muted/20 ${!assignment.is_active ? 'opacity-50' : ''} ${isDragging ? 'bg-muted/40' : ''}`}
+      style={{ ...style, borderTop: '1px solid var(--ds-border, #DCDFE4)', opacity: !assignment.is_active ? 0.5 : isDragging ? 0.7 : 1 }}
+      onMouseEnter={e => { if (!isDragging) (e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral-hovered, #F1F2F4)'; }}
+      onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = isDragging ? 'var(--ds-background-neutral, #F7F8F9)' : ''; }}
     >
-      <td className="px-4 py-3 text-muted-foreground cursor-grab active:cursor-grabbing" {...attributes} {...listeners}>
+      <td className="px-4 py-3 cursor-grab active:cursor-grabbing" style={{ color: 'var(--ds-text-subtle, #44546F)' }} {...attributes} {...listeners}>
         <GripVertical className="h-4 w-4" />
       </td>
       <td className="px-4 py-3">
-        <span className="text-xs font-medium text-primary bg-primary/10 px-2 py-1 rounded">
+        <span className="text-xs font-medium px-2 py-1 rounded" style={{ color: 'var(--ds-text-brand, #0C66E4)', background: 'var(--ds-background-selected, #E9F2FF)' }}>
           {assignment.assignment_id || '—'}
         </span>
       </td>
       <td className="px-4 py-3">
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
-            <Briefcase className="h-4 w-4 text-primary" />
+          <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: 'var(--ds-background-selected, #E9F2FF)' }}>
+            <Briefcase className="h-4 w-4" style={{ color: 'var(--ds-icon-brand, #0C66E4)' }} />
           </div>
           <div className="flex flex-col">
-            <span className="text-sm font-medium text-foreground">{assignment.name}</span>
+            <span className="text-sm font-medium" style={{ color: 'var(--ds-text, #172B4D)' }}>{assignment.name}</span>
             {assignment.project?.name && (
-              <span className="text-xs text-muted-foreground">{assignment.project.name}</span>
+              <span className="text-xs" style={{ color: 'var(--ds-text-subtle, #44546F)' }}>{assignment.project.name}</span>
             )}
           </div>
         </div>
@@ -173,49 +166,47 @@ function SortableRow({
         {resourceCount > 0 ? (
           <button
             onClick={() => onResourceCountClick(assignment, budgetData?.linkedResources || [])}
-            className="flex items-center gap-1.5 px-2 py-1 rounded bg-emerald-500/10 hover:bg-emerald-500/20 transition-colors cursor-pointer"
+            className="flex items-center gap-1.5 px-2 py-1 rounded transition-colors cursor-pointer"
+            style={{ background: 'rgba(34,197,94,0.1)', color: '#15803D' }}
+            onMouseEnter={e => ((e.currentTarget as HTMLElement).style.background = 'rgba(34,197,94,0.2)')}
+            onMouseLeave={e => ((e.currentTarget as HTMLElement).style.background = 'rgba(34,197,94,0.1)')}
           >
-            <Users className="h-3.5 w-3.5 text-emerald-600" />
-            <span className="text-sm font-medium text-emerald-700">{resourceCount}</span>
+            <Users className="h-3.5 w-3.5" />
+            <span className="text-sm font-medium">{resourceCount}</span>
           </button>
         ) : (
-          <span className="text-muted-foreground text-sm">0</span>
+          <span className="text-sm" style={{ color: 'var(--ds-text-subtle, #44546F)' }}>0</span>
         )}
       </td>
       <td className="px-4 py-3">
-        <Select
-          value={status}
-          onValueChange={(value) => onStatusChange(assignment, value)}
-        >
-          <SelectTrigger className="h-8 w-[130px] bg-background text-xs">
-            <Lozenge appearance={statusConfig.appearance}>
-              {statusConfig.label}
-            </Lozenge>
-          </SelectTrigger>
-          <SelectContent className="bg-popover z-[400]">
-            <SelectItem value="yet_to_start">Yet to Start</SelectItem>
-            <SelectItem value="on_hold">On Hold</SelectItem>
-            <SelectItem value="in_progress">In Progress</SelectItem>
-            <SelectItem value="completed">Completed</SelectItem>
-          </SelectContent>
-        </Select>
+        <AdsSelect
+          menuPortalTarget={document.body}
+          value={{ label: statusConfig.label, value: status }}
+          options={[
+            { label: 'Yet to Start', value: 'yet_to_start' },
+            { label: 'On Hold', value: 'on_hold' },
+            { label: 'In Progress', value: 'in_progress' },
+            { label: 'Completed', value: 'completed' },
+          ]}
+          onChange={(opt) => opt && onStatusChange(assignment, opt.value)}
+          styles={{ control: (base: any) => ({ ...base, minHeight: 32, height: 32, width: 130, fontSize: 12 }) }}
+        />
       </td>
       {/* Budget - Read-only for Insourced (auto-calculated), Editable for Outsourced/Cosourced */}
       <td className="px-4 py-3">
         {normalizeAssignmentType(assignment.assignment_type) === 'Insourced' ? (
           <Tooltip content={<p>Sum of {resourceCount} linked resources' CTC (auto-calculated)</p>}>
-            <div className="flex items-center gap-1 px-2 py-1 -mx-2 rounded bg-muted/50 min-w-[80px] cursor-help">
-              <span className="text-xs text-muted-foreground">﷼</span>
-              <span className="text-sm text-foreground">{totalBudget.toLocaleString()}</span>
+            <div className="flex items-center gap-1 px-2 py-1 -mx-2 rounded min-w-[80px] cursor-help" style={{ background: 'var(--ds-background-neutral, #F7F8F9)' }}>
+              <span className="text-xs" style={{ color: 'var(--ds-text-subtle, #44546F)' }}>﷼</span>
+              <span className="text-sm" style={{ color: 'var(--ds-text, #172B4D)' }}>{totalBudget.toLocaleString()}</span>
             </div>
           </Tooltip>
         ) : (
-          <Input
+          <Textfield
             type="number"
-            className="h-8 w-[100px] text-sm"
-            defaultValue={assignment.budget || ''}
+            defaultValue={assignment.budget?.toString() || ''}
             onBlur={(e) => {
-              const val = e.target.value ? parseFloat(e.target.value) : null;
+              const val = (e.target as HTMLInputElement).value ? parseFloat((e.target as HTMLInputElement).value) : null;
               if (val !== assignment.budget) {
                 onBudgetChange(assignment, val);
               }
@@ -227,24 +218,25 @@ function SortableRow({
       <td className="px-4 py-3">
         <Popover>
           <PopoverTrigger asChild>
-            <Button
-              variant="outline"
-              className={cn(
-                "h-8 w-[130px] justify-start text-left font-normal text-xs",
-                !assignment.start_date && "text-muted-foreground"
-              )}
+            <button
+              className="h-8 w-[130px] flex items-center justify-start text-left font-normal text-xs px-2 rounded border"
+              style={{
+                borderColor: 'var(--ds-border, #DCDFE4)',
+                background: 'var(--ds-surface, #FFFFFF)',
+                color: assignment.start_date ? 'var(--ds-text, #172B4D)' : 'var(--ds-text-subtle, #44546F)',
+              }}
             >
               <CalendarIcon className="mr-2 h-3 w-3" />
               {assignment.start_date ? format(parseISO(assignment.start_date), "dd/MM/yyyy") : <span>dd/mm/yyyy</span>}
-            </Button>
+            </button>
           </PopoverTrigger>
-          <PopoverContent className="w-auto p-0 bg-popover z-[500]" align="start">
+          <PopoverContent className="w-auto p-0 z-[500]" align="start">
             <Calendar
               mode="single"
               selected={assignment.start_date ? parseISO(assignment.start_date) : undefined}
               onSelect={(date) => onStartDateChange(assignment, date ? format(date, 'yyyy-MM-dd') : '')}
               initialFocus
-              className={cn("p-3 pointer-events-auto")}
+              className="p-3 pointer-events-auto"
             />
           </PopoverContent>
         </Popover>
@@ -252,63 +244,68 @@ function SortableRow({
       <td className="px-4 py-3">
         <Popover>
           <PopoverTrigger asChild>
-            <Button
-              variant="outline"
-              className={cn(
-                "h-8 w-[130px] justify-start text-left font-normal text-xs",
-                !assignment.end_date && "text-muted-foreground"
-              )}
+            <button
+              className="h-8 w-[130px] flex items-center justify-start text-left font-normal text-xs px-2 rounded border"
+              style={{
+                borderColor: 'var(--ds-border, #DCDFE4)',
+                background: 'var(--ds-surface, #FFFFFF)',
+                color: assignment.end_date ? 'var(--ds-text, #172B4D)' : 'var(--ds-text-subtle, #44546F)',
+              }}
             >
               <CalendarIcon className="mr-2 h-3 w-3" />
               {assignment.end_date ? format(parseISO(assignment.end_date), "dd/MM/yyyy") : <span>dd/mm/yyyy</span>}
-            </Button>
+            </button>
           </PopoverTrigger>
-          <PopoverContent className="w-auto p-0 bg-popover z-[500]" align="start">
+          <PopoverContent className="w-auto p-0 z-[500]" align="start">
             <Calendar
               mode="single"
               selected={assignment.end_date ? parseISO(assignment.end_date) : undefined}
               onSelect={(date) => onEndDateChange(assignment, date ? format(date, 'yyyy-MM-dd') : '')}
               initialFocus
-              className={cn("p-3 pointer-events-auto")}
+              className="p-3 pointer-events-auto"
             />
           </PopoverContent>
         </Popover>
       </td>
       <td className="px-4 py-3">
         {(assignment.assignment_type === 'Outsourced' || assignment.assignment_type === 'Cosourced') ? (
-          <Select
-            value={assignment.vendor_id || '__none__'}
-            onValueChange={(value) => onVendorChange(assignment, value)}
-          >
-            <SelectTrigger className="h-8 w-[110px] bg-background text-xs">
-              <SelectValue placeholder="Select vendor" />
-            </SelectTrigger>
-            <SelectContent className="bg-popover z-[400]">
-              <SelectItem value="__none__">Not specified</SelectItem>
-              {vendors.map((v) => (
-                <SelectItem key={v.id} value={v.id}>{v.name}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <AdsSelect
+            menuPortalTarget={document.body}
+            value={assignment.vendor_id
+              ? vendors.find(v => v.id === assignment.vendor_id)
+                ? { label: vendors.find(v => v.id === assignment.vendor_id)!.name, value: assignment.vendor_id }
+                : null
+              : { label: 'Not specified', value: '__none__' }}
+            options={[
+              { label: 'Not specified', value: '__none__' },
+              ...vendors.map(v => ({ label: v.name, value: v.id })),
+            ]}
+            onChange={(opt) => opt && onVendorChange(assignment, opt.value)}
+            styles={{ control: (base: any) => ({ ...base, minHeight: 32, height: 32, width: 110, fontSize: 12 }) }}
+          />
         ) : (
-          <span className="text-muted-foreground text-sm">—</span>
+          <span className="text-sm" style={{ color: 'var(--ds-text-subtle, #44546F)' }}>—</span>
         )}
       </td>
       <td className="px-4 py-3">
-        <Select
-          value={normalizeAssignmentType(assignment.assignment_type) === 'Unspecified' ? '__none__' : normalizeAssignmentType(assignment.assignment_type)}
-          onValueChange={(value) => onAssignmentTypeChange(assignment, value)}
-        >
-          <SelectTrigger className="h-8 w-[120px] bg-background text-xs">
-            <SelectValue placeholder="Select type" />
-          </SelectTrigger>
-          <SelectContent className="bg-popover z-[400]">
-            <SelectItem value="__none__">Not specified</SelectItem>
-            <SelectItem value="Insourced">Insourced</SelectItem>
-            <SelectItem value="Outsourced">Outsourced</SelectItem>
-            <SelectItem value="Cosourced">Cosourced</SelectItem>
-          </SelectContent>
-        </Select>
+        {(() => {
+          const typeOpts = [
+            { label: 'Not specified', value: '__none__' },
+            { label: 'Insourced', value: 'Insourced' },
+            { label: 'Outsourced', value: 'Outsourced' },
+            { label: 'Cosourced', value: 'Cosourced' },
+          ];
+          const curType = normalizeAssignmentType(assignment.assignment_type) === 'Unspecified' ? '__none__' : normalizeAssignmentType(assignment.assignment_type);
+          return (
+            <AdsSelect
+              menuPortalTarget={document.body}
+              value={typeOpts.find(o => o.value === curType) || null}
+              options={typeOpts}
+              onChange={(opt) => opt && onAssignmentTypeChange(assignment, opt.value)}
+              styles={{ control: (base: any) => ({ ...base, minHeight: 32, height: 32, width: 120, fontSize: 12 }) }}
+            />
+          );
+        })()}
       </td>
       <td className="px-4 py-3">
         {normalizeAssignmentType(assignment.assignment_type) === 'Insourced' || assignment.assignment_type === 'BAU' ? (
@@ -317,43 +314,51 @@ function SortableRow({
             {PAYMENT_STATUS_CONFIG['on_track'].label}
           </Lozenge>
         ) : (assignment.assignment_type === 'Outsourced' || assignment.assignment_type === 'Cosourced') ? (
-          <Select
-            value={assignment.payment_status || 'unpaid'}
-            onValueChange={(value) => onPaymentStatusChange(assignment, value)}
-          >
-            <SelectTrigger className="h-8 w-[100px] bg-background text-xs">
-              <Lozenge appearance={PAYMENT_STATUS_CONFIG[assignment.payment_status || 'unpaid'].appearance}>
-                {PAYMENT_STATUS_CONFIG[assignment.payment_status || 'unpaid'].label}
-              </Lozenge>
-            </SelectTrigger>
-            <SelectContent className="bg-popover z-[400]">
-              <SelectItem value="unpaid">Unpaid</SelectItem>
-              <SelectItem value="on_track">On Track</SelectItem>
-              <SelectItem value="paid">Paid</SelectItem>
-              <SelectItem value="closed">Closed</SelectItem>
-            </SelectContent>
-          </Select>
+          (() => {
+            const payOpts = [
+              { label: 'Unpaid', value: 'unpaid' },
+              { label: 'On Track', value: 'on_track' },
+              { label: 'Paid', value: 'paid' },
+              { label: 'Closed', value: 'closed' },
+            ];
+            const curPay = assignment.payment_status || 'unpaid';
+            return (
+              <AdsSelect
+                menuPortalTarget={document.body}
+                value={payOpts.find(o => o.value === curPay) || null}
+                options={payOpts}
+                onChange={(opt) => opt && onPaymentStatusChange(assignment, opt.value)}
+                styles={{ control: (base: any) => ({ ...base, minHeight: 32, height: 32, width: 100, fontSize: 12 }) }}
+              />
+            );
+          })()
         ) : (
-          <span className="text-muted-foreground text-sm">—</span>
+          <span className="text-sm" style={{ color: 'var(--ds-text-subtle, #44546F)' }}>—</span>
         )}
       </td>
       <td className="px-4 py-3 text-center">
-        <Switch
-          checked={assignment.is_active}
-          onCheckedChange={() => onToggleActive(assignment)}
+        <Toggle
+          isChecked={assignment.is_active}
+          onChange={() => onToggleActive(assignment)}
         />
       </td>
       <td className="px-4 py-3">
         <div className="flex items-center justify-center gap-1">
           <button
             onClick={() => onEdit(assignment)}
-            className="w-8 h-8 rounded flex items-center justify-center text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+            className="w-8 h-8 rounded flex items-center justify-center transition-colors"
+            style={{ color: 'var(--ds-text-subtle, #44546F)' }}
+            onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral-hovered, #F1F2F4)'; (e.currentTarget as HTMLElement).style.color = 'var(--ds-text, #172B4D)'; }}
+            onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = ''; (e.currentTarget as HTMLElement).style.color = 'var(--ds-text-subtle, #44546F)'; }}
           >
             <Pencil className="h-4 w-4" />
           </button>
           <button
             onClick={() => onDelete(assignment)}
-            className="w-8 h-8 rounded flex items-center justify-center text-muted-foreground hover:bg-[var(--ds-text-danger,#dc2626)]/10 hover:text-[var(--ds-text-danger,#dc2626)] transition-colors"
+            className="w-8 h-8 rounded flex items-center justify-center transition-colors"
+            style={{ color: 'var(--ds-text-subtle, #44546F)' }}
+            onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(202,53,33,0.1)'; (e.currentTarget as HTMLElement).style.color = 'var(--ds-icon-danger, #CA3521)'; }}
+            onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = ''; (e.currentTarget as HTMLElement).style.color = 'var(--ds-text-subtle, #44546F)'; }}
           >
             <Trash2 className="h-4 w-4" />
           </button>
@@ -726,8 +731,8 @@ export default function ResourceAssignmentsPage() {
     return (
       <div className="p-6">
         <div className="animate-pulse space-y-4">
-          <div className="h-8 bg-muted rounded w-48" />
-          <div className="h-32 bg-muted rounded" />
+          <div className="h-8 rounded w-48" style={{ background: 'var(--ds-background-neutral, #F7F8F9)' }} />
+          <div className="h-32 rounded" style={{ background: 'var(--ds-background-neutral, #F7F8F9)' }} />
         </div>
       </div>
     );
@@ -738,15 +743,14 @@ export default function ResourceAssignmentsPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-semibold text-foreground">Resource Assignments</h1>
-          <p className="text-sm text-muted-foreground mt-1">
+          <h1 className="text-2xl font-semibold" style={{ color: 'var(--ds-text, #172B4D)' }}>Resource Assignments</h1>
+          <p className="text-sm mt-1" style={{ color: 'var(--ds-text-subtle, #44546F)' }}>
             Configure assignment values for capacity planning resources.
           </p>
         </div>
         <div className="flex items-center gap-2">
-          <Button 
-            variant="outline"
-            className="gap-2"
+          <Button
+            appearance="default"
             onClick={() => {
               try {
                 exportAssignmentsToExcel(allAssignments);
@@ -755,15 +759,15 @@ export default function ResourceAssignmentsPage() {
                 toast.error('No data to export');
               }
             }}
+            iconBefore={<Download size={16} />}
           >
-            <Download className="h-4 w-4" />
             Download Excel
           </Button>
-          <Button 
-            className="gap-2 bg-[var(--ds-text-brand,#2563eb)] hover:bg-[var(--ds-background-brand-bold-hovered,#1d4ed8)]"
+          <Button
+            appearance="primary"
             onClick={() => setCreateModalOpen(true)}
+            iconBefore={<Plus size={16} />}
           >
-            <Plus className="h-4 w-4" />
             Add Assignment
           </Button>
         </div>
@@ -776,21 +780,24 @@ export default function ResourceAssignmentsPage() {
           const typeAppearance = ASSIGNMENT_TYPE_APPEARANCES[group.type] || ASSIGNMENT_TYPE_APPEARANCES.Unspecified;
 
           return (
-            <div key={group.type} className="bg-card border border-border rounded-xl overflow-hidden">
+            <div key={group.type} className="rounded-xl overflow-hidden" style={{ background: 'var(--ds-surface, #FFFFFF)', border: '1px solid var(--ds-border, #DCDFE4)' }}>
               {/* Group Header */}
               <button
                 onClick={() => toggleGroup(group.type)}
-                className="w-full flex items-center gap-3 px-4 py-3 bg-muted/30 hover:bg-muted/50 transition-colors"
+                className="w-full flex items-center gap-3 px-4 py-3 transition-colors"
+                style={{ background: 'var(--ds-background-neutral, #F7F8F9)' }}
+                onMouseEnter={e => ((e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral-hovered, #F1F2F4)')}
+                onMouseLeave={e => ((e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral, #F7F8F9)')}
               >
                 {isCollapsed ? (
-                  <ChevronRight className="h-4 w-4 text-muted-foreground" />
+                  <ChevronRight className="h-4 w-4" style={{ color: 'var(--ds-text-subtle, #44546F)' }} />
                 ) : (
-                  <ChevronDown className="h-4 w-4 text-muted-foreground" />
+                  <ChevronDown className="h-4 w-4" style={{ color: 'var(--ds-text-subtle, #44546F)' }} />
                 )}
                 <Lozenge appearance={typeAppearance}>
                   {group.type}
                 </Lozenge>
-                <span className="text-xs text-muted-foreground">
+                <span className="text-xs" style={{ color: 'var(--ds-text-subtle, #44546F)' }}>
                   {group.items.length} assignment{group.items.length !== 1 ? 's' : ''}
                 </span>
               </button>
@@ -803,21 +810,21 @@ export default function ResourceAssignmentsPage() {
                   onDragEnd={(e) => handleDragEnd(e, group.type)}
                 >
                   <table className="w-full">
-                    <thead className="bg-muted/20">
+                    <thead style={{ background: 'var(--ds-background-neutral, #F7F8F9)' }}>
                       <tr>
                         <th className="w-10 px-4 py-2"></th>
-                        <th className="text-left px-4 py-2 text-[11px] font-semibold text-muted-foreground uppercase w-[60px]">AID</th>
-                        <th className="text-left px-4 py-2 text-[11px] font-semibold text-muted-foreground uppercase">Name</th>
-                        <th className="text-left px-4 py-2 text-[11px] font-semibold text-muted-foreground uppercase w-[80px]">Resources</th>
-                        <th className="text-left px-4 py-2 text-[11px] font-semibold text-muted-foreground uppercase w-[130px]">Status</th>
-                        <th className="text-left px-4 py-2 text-[11px] font-semibold text-muted-foreground uppercase w-[110px]">Budget (SAR)</th>
-                        <th className="text-left px-4 py-2 text-[11px] font-semibold text-muted-foreground uppercase w-[130px]">Assignment Start Date</th>
-                        <th className="text-left px-4 py-2 text-[11px] font-semibold text-muted-foreground uppercase w-[130px]">Assignment End Date</th>
-                        <th className="text-left px-4 py-2 text-[11px] font-semibold text-muted-foreground uppercase w-[120px]">Vendor</th>
-                        <th className="text-left px-4 py-2 text-[11px] font-semibold text-muted-foreground uppercase w-[130px]">Assignment Type</th>
-                        <th className="text-left px-4 py-2 text-[11px] font-semibold text-muted-foreground uppercase w-[120px]">Payment Status</th>
-                        <th className="text-center px-4 py-2 text-[11px] font-semibold text-muted-foreground uppercase">Active</th>
-                        <th className="text-center px-4 py-2 text-[11px] font-semibold text-muted-foreground uppercase">Actions</th>
+                        <th className="text-left px-4 py-2 text-[11px] font-semibold uppercase w-[60px]" style={{ color: 'var(--ds-text-subtlest, #626F86)' }}>AID</th>
+                        <th className="text-left px-4 py-2 text-[11px] font-semibold uppercase" style={{ color: 'var(--ds-text-subtlest, #626F86)' }}>Name</th>
+                        <th className="text-left px-4 py-2 text-[11px] font-semibold uppercase w-[80px]" style={{ color: 'var(--ds-text-subtlest, #626F86)' }}>Resources</th>
+                        <th className="text-left px-4 py-2 text-[11px] font-semibold uppercase w-[130px]" style={{ color: 'var(--ds-text-subtlest, #626F86)' }}>Status</th>
+                        <th className="text-left px-4 py-2 text-[11px] font-semibold uppercase w-[110px]" style={{ color: 'var(--ds-text-subtlest, #626F86)' }}>Budget (SAR)</th>
+                        <th className="text-left px-4 py-2 text-[11px] font-semibold uppercase w-[130px]" style={{ color: 'var(--ds-text-subtlest, #626F86)' }}>Assignment Start Date</th>
+                        <th className="text-left px-4 py-2 text-[11px] font-semibold uppercase w-[130px]" style={{ color: 'var(--ds-text-subtlest, #626F86)' }}>Assignment End Date</th>
+                        <th className="text-left px-4 py-2 text-[11px] font-semibold uppercase w-[120px]" style={{ color: 'var(--ds-text-subtlest, #626F86)' }}>Vendor</th>
+                        <th className="text-left px-4 py-2 text-[11px] font-semibold uppercase w-[130px]" style={{ color: 'var(--ds-text-subtlest, #626F86)' }}>Assignment Type</th>
+                        <th className="text-left px-4 py-2 text-[11px] font-semibold uppercase w-[120px]" style={{ color: 'var(--ds-text-subtlest, #626F86)' }}>Payment Status</th>
+                        <th className="text-center px-4 py-2 text-[11px] font-semibold uppercase" style={{ color: 'var(--ds-text-subtlest, #626F86)' }}>Active</th>
+                        <th className="text-center px-4 py-2 text-[11px] font-semibold uppercase" style={{ color: 'var(--ds-text-subtlest, #626F86)' }}>Actions</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -861,7 +868,7 @@ export default function ResourceAssignmentsPage() {
         })}
 
         {groupedAssignments.length === 0 && (
-          <div className="bg-card border border-border rounded-xl px-4 py-8 text-center text-muted-foreground">
+          <div className="rounded-xl px-4 py-8 text-center" style={{ background: 'var(--ds-surface, #FFFFFF)', border: '1px solid var(--ds-border, #DCDFE4)', color: 'var(--ds-text-subtle, #44546F)' }}>
             No assignments configured. Click "Add Assignment" to create one.
           </div>
         )}
@@ -875,45 +882,47 @@ export default function ResourceAssignmentsPage() {
           </DialogHeader>
           <div className="space-y-4 py-4">
             <div className="space-y-2">
-              <Label>Name *</Label>
-              <Input
+              <label style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>Name *</label>
+              <Textfield
                 value={formData.name}
-                onChange={(e) => setFormData(f => ({ ...f, name: e.target.value }))}
+                onChange={(e) => setFormData(f => ({ ...f, name: (e.target as HTMLInputElement).value }))}
                 placeholder="e.g., Senaei BAU"
               />
             </div>
             <div className="space-y-2">
-              <Label>Description</Label>
-              <Input
+              <label style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>Description</label>
+              <Textfield
                 value={formData.description}
-                onChange={(e) => setFormData(f => ({ ...f, description: e.target.value }))}
+                onChange={(e) => setFormData(f => ({ ...f, description: (e.target as HTMLInputElement).value }))}
                 placeholder="Brief description..."
               />
             </div>
             <div className="space-y-2">
-              <Label>Assignment Type</Label>
-              <Select
-                value={formData.assignment_type || '__none__'}
-                onValueChange={(value) => setFormData(f => ({ ...f, assignment_type: value === '__none__' ? '' : value }))}
-              >
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Select type" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="__none__">Not specified</SelectItem>
-                  <SelectItem value="Insourced">Insourced</SelectItem>
-                  <SelectItem value="Outsourced">Outsourced</SelectItem>
-                  <SelectItem value="Cosourced">Cosourced</SelectItem>
-                </SelectContent>
-              </Select>
+              <label style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>Assignment Type</label>
+              {(() => {
+                const typeOpts = [
+                  { label: 'Not specified', value: '__none__' },
+                  { label: 'Insourced', value: 'Insourced' },
+                  { label: 'Outsourced', value: 'Outsourced' },
+                  { label: 'Cosourced', value: 'Cosourced' },
+                ];
+                return (
+                  <AdsSelect
+                    menuPortalTarget={document.body}
+                    value={typeOpts.find(o => o.value === (formData.assignment_type || '__none__')) || null}
+                    options={typeOpts}
+                    onChange={(opt) => opt && setFormData(f => ({ ...f, assignment_type: opt.value === '__none__' ? '' : opt.value }))}
+                  />
+                );
+              })()}
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setCreateModalOpen(false)}>Cancel</Button>
-            <Button 
+            <Button appearance="subtle" onClick={() => setCreateModalOpen(false)}>Cancel</Button>
+            <Button
+              appearance="primary"
               onClick={handleCreate}
-              disabled={createAssignment.isPending}
-              className="bg-[var(--ds-text-brand,#2563eb)] hover:bg-[var(--ds-background-brand-bold-hovered,#1d4ed8)]"
+              isDisabled={createAssignment.isPending}
             >
               {createAssignment.isPending ? 'Creating...' : 'Create'}
             </Button>
@@ -929,89 +938,93 @@ export default function ResourceAssignmentsPage() {
           </DialogHeader>
           <div className="space-y-4 py-4">
             <div className="space-y-2">
-              <Label>Name *</Label>
-              <Input
+              <label style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>Name *</label>
+              <Textfield
                 value={formData.name}
-                onChange={(e) => setFormData(f => ({ ...f, name: e.target.value }))}
+                onChange={(e) => setFormData(f => ({ ...f, name: (e.target as HTMLInputElement).value }))}
                 placeholder="e.g., Senaei BAU"
               />
             </div>
             <div className="space-y-2">
-              <Label>Project</Label>
-              <Select
-                value={formData.project_id || '__none__'}
-                onValueChange={(value) => setFormData(f => ({ ...f, project_id: value === '__none__' ? '' : value }))}
-              >
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Select project" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="__none__">No project</SelectItem>
-                  {projects.map((p: any) => (
-                    <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <label style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>Project</label>
+              {(() => {
+                const projectOpts = [
+                  { label: 'No project', value: '__none__' },
+                  ...projects.map((p: any) => ({ label: p.name, value: p.id })),
+                ];
+                return (
+                  <AdsSelect
+                    menuPortalTarget={document.body}
+                    value={projectOpts.find(o => o.value === (formData.project_id || '__none__')) || null}
+                    options={projectOpts}
+                    onChange={(opt) => opt && setFormData(f => ({ ...f, project_id: opt.value === '__none__' ? '' : opt.value }))}
+                  />
+                );
+              })()}
             </div>
             <div className="space-y-2">
-              <Label>Assignment Status</Label>
-              <Select
-                value={formData.assignment_status}
-                onValueChange={(value) => setFormData(f => ({ ...f, assignment_status: value as AssignmentStatus }))}
-              >
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Select status" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="yet_to_start">Yet to Start</SelectItem>
-                  <SelectItem value="on_hold">On Hold</SelectItem>
-                  <SelectItem value="in_progress">In Progress</SelectItem>
-                  <SelectItem value="completed">Completed</SelectItem>
-                </SelectContent>
-              </Select>
+              <label style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>Assignment Status</label>
+              {(() => {
+                const statusOpts = [
+                  { label: 'Yet to Start', value: 'yet_to_start' },
+                  { label: 'On Hold', value: 'on_hold' },
+                  { label: 'In Progress', value: 'in_progress' },
+                  { label: 'Completed', value: 'completed' },
+                ];
+                return (
+                  <AdsSelect
+                    menuPortalTarget={document.body}
+                    value={statusOpts.find(o => o.value === formData.assignment_status) || null}
+                    options={statusOpts}
+                    onChange={(opt) => opt && setFormData(f => ({ ...f, assignment_status: opt.value as AssignmentStatus }))}
+                  />
+                );
+              })()}
             </div>
             <div className="space-y-2">
-              <Label>Budget</Label>
-              <Input
+              <label style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>Budget</label>
+              <Textfield
                 type="number"
                 value={formData.budget}
-                onChange={(e) => setFormData(f => ({ ...f, budget: e.target.value }))}
+                onChange={(e) => setFormData(f => ({ ...f, budget: (e.target as HTMLInputElement).value }))}
                 placeholder="e.g., 50000"
               />
             </div>
             <div className="space-y-2">
-              <Label>Vendor</Label>
-              <Select
-                value={formData.vendor_id || '__none__'}
-                onValueChange={(value) => setFormData(f => ({ ...f, vendor_id: value === '__none__' ? '' : value }))}
-              >
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Select vendor" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="__none__">Not specified</SelectItem>
-                  {vendors.map((v) => (
-                    <SelectItem key={v.id} value={v.id}>{v.name}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <label style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>Vendor</label>
+              {(() => {
+                const vendorOpts = [
+                  { label: 'Not specified', value: '__none__' },
+                  ...vendors.map(v => ({ label: v.name, value: v.id })),
+                ];
+                return (
+                  <AdsSelect
+                    menuPortalTarget={document.body}
+                    value={vendorOpts.find(o => o.value === (formData.vendor_id || '__none__')) || null}
+                    options={vendorOpts}
+                    onChange={(opt) => opt && setFormData(f => ({ ...f, vendor_id: opt.value === '__none__' ? '' : opt.value }))}
+                  />
+                );
+              })()}
             </div>
             <div className="space-y-2">
-              <Label>Assignment Type</Label>
-              <Select
-                value={formData.assignment_type || '__none__'}
-                onValueChange={(value) => setFormData(f => ({ ...f, assignment_type: value === '__none__' ? '' : value }))}
-              >
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Select type" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="__none__">Not specified</SelectItem>
-                  <SelectItem value="Insourced">Insourced</SelectItem>
-                  <SelectItem value="Outsourced">Outsourced</SelectItem>
-                  <SelectItem value="Cosourced">Cosourced</SelectItem>
-                </SelectContent>
-              </Select>
+              <label style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>Assignment Type</label>
+              {(() => {
+                const typeOpts = [
+                  { label: 'Not specified', value: '__none__' },
+                  { label: 'Insourced', value: 'Insourced' },
+                  { label: 'Outsourced', value: 'Outsourced' },
+                  { label: 'Cosourced', value: 'Cosourced' },
+                ];
+                return (
+                  <AdsSelect
+                    menuPortalTarget={document.body}
+                    value={typeOpts.find(o => o.value === (formData.assignment_type || '__none__')) || null}
+                    options={typeOpts}
+                    onChange={(opt) => opt && setFormData(f => ({ ...f, assignment_type: opt.value === '__none__' ? '' : opt.value }))}
+                  />
+                );
+              })()}
             </div>
             
             {/* License Allocation Section */}
@@ -1020,11 +1033,11 @@ export default function ResourceAssignmentsPage() {
             )}
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setEditingAssignment(null)}>Cancel</Button>
-            <Button 
+            <Button appearance="subtle" onClick={() => setEditingAssignment(null)}>Cancel</Button>
+            <Button
+              appearance="primary"
               onClick={handleUpdate}
-              disabled={updateAssignment.isPending}
-              className="bg-[var(--ds-text-brand,#2563eb)] hover:bg-[var(--ds-background-brand-bold-hovered,#1d4ed8)]"
+              isDisabled={updateAssignment.isPending}
             >
               {updateAssignment.isPending ? 'Saving...' : 'Save'}
             </Button>
@@ -1045,7 +1058,7 @@ export default function ResourceAssignmentsPage() {
             <DialogTitle className="flex items-center gap-2">
               {linkedRecords.length > 0 ? (
                 <>
-                  <AlertTriangle className="h-5 w-5 text-amber-500" />
+                  <AlertTriangle className="h-5 w-5" style={{ color: 'var(--ds-icon-warning, #F79009)' }} />
                   Cannot Delete Assignment
                 </>
               ) : (
@@ -1055,41 +1068,41 @@ export default function ResourceAssignmentsPage() {
           </DialogHeader>
           
           {isCheckingLinks ? (
-            <div className="py-8 text-center text-muted-foreground">
+            <div className="py-8 text-center" style={{ color: 'var(--ds-text-subtle, #44546F)' }}>
               Checking for linked records...
             </div>
           ) : linkedRecords.length > 0 ? (
             <div className="space-y-4 py-4">
-              <p className="text-sm text-muted-foreground">
+              <p className="text-sm" style={{ color: 'var(--ds-text-subtle, #44546F)' }}>
                 The assignment <strong>"{assignmentToDelete?.name}"</strong> cannot be deleted because it has {linkedRecords.length} linked resource{linkedRecords.length > 1 ? 's' : ''}:
               </p>
-              <ScrollArea className="h-[200px] rounded-md border p-3">
+              <ScrollArea className="h-[200px] rounded-md p-3" style={{ border: '1px solid var(--ds-border, #DCDFE4)' }}>
                 <div className="space-y-2">
                   {linkedRecords.map((record, index) => (
-                    <div key={index} className="flex items-center gap-2 text-sm py-1.5 px-2 bg-muted/50 rounded">
-                      <Briefcase className="h-4 w-4 text-muted-foreground shrink-0" />
+                    <div key={index} className="flex items-center gap-2 text-sm py-1.5 px-2 rounded" style={{ background: 'var(--ds-background-neutral, #F7F8F9)' }}>
+                      <Briefcase className="h-4 w-4 shrink-0" style={{ color: 'var(--ds-text-subtle, #44546F)' }} />
                       <span className="font-medium">{record.resource_name}</span>
-                      <span className="text-xs text-muted-foreground ml-auto">
+                      <span className="text-xs ml-auto" style={{ color: 'var(--ds-text-subtle, #44546F)' }}>
                         ({record.table_source === 'allocation' ? 'Allocation' : 'Assigned'})
                       </span>
                     </div>
                   ))}
                 </div>
               </ScrollArea>
-              <p className="text-xs text-muted-foreground">
+              <p className="text-xs" style={{ color: 'var(--ds-text-subtle, #44546F)' }}>
                 Please reassign or remove these resources from this assignment before deleting.
               </p>
             </div>
           ) : (
             <div className="py-4">
-              <p className="text-sm text-muted-foreground">
+              <p className="text-sm" style={{ color: 'var(--ds-text-subtle, #44546F)' }}>
                 Are you sure you want to delete <strong>"{assignmentToDelete?.name}"</strong>? This action cannot be undone.
               </p>
             </div>
           )}
 
           <DialogFooter>
-            <Button variant="outline" onClick={() => {
+            <Button appearance="subtle" onClick={() => {
               setDeleteModalOpen(false);
               setAssignmentToDelete(null);
               setLinkedRecords([]);
@@ -1097,13 +1110,18 @@ export default function ResourceAssignmentsPage() {
               {linkedRecords.length > 0 ? 'Close' : 'Cancel'}
             </Button>
             {linkedRecords.length === 0 && (
-              <Button 
-                variant="destructive"
+              <button
                 onClick={handleConfirmDelete}
                 disabled={isDeleting}
+                style={{
+                  padding: '6px 14px', borderRadius: '4px', fontSize: '14px', fontWeight: 500,
+                  background: 'var(--ds-background-danger-bold, #CA3521)', color: '#FFFFFF',
+                  border: 'none', cursor: isDeleting ? 'not-allowed' : 'pointer',
+                  opacity: isDeleting ? 0.7 : 1,
+                }}
               >
                 {isDeleting ? 'Deleting...' : 'Delete'}
-              </Button>
+              </button>
             )}
           </DialogFooter>
         </DialogContent>
@@ -1114,12 +1132,12 @@ export default function ResourceAssignmentsPage() {
         <DialogContent className="sm:max-w-lg">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-lg bg-emerald-500/10 flex items-center justify-center">
-                <Users className="h-5 w-5 text-emerald-600" />
+              <div className="w-10 h-10 rounded-lg flex items-center justify-center" style={{ background: 'rgba(34,197,94,0.1)' }}>
+                <Users className="h-5 w-5" style={{ color: '#15803D' }} />
               </div>
               <div>
                 <div className="text-lg font-semibold">Linked Resources</div>
-                <div className="text-sm font-normal text-muted-foreground">
+                <div className="text-sm font-normal" style={{ color: 'var(--ds-text-subtle, #44546F)' }}>
                   {resourceModalAssignment?.name || 'Assignment'}
                 </div>
               </div>
@@ -1128,45 +1146,48 @@ export default function ResourceAssignmentsPage() {
           
           <div className="py-4">
             {resourceModalResources.length === 0 ? (
-              <div className="text-center py-8 text-muted-foreground">
+              <div className="text-center py-8" style={{ color: 'var(--ds-text-subtle, #44546F)' }}>
                 <User className="h-12 w-12 mx-auto mb-3 opacity-30" />
                 <p>No resources linked to this assignment.</p>
               </div>
             ) : (
               <div className="space-y-1">
                 {/* Table Header */}
-                <div className="flex items-center px-4 py-2 bg-muted/50 rounded-lg text-[11px] font-semibold text-muted-foreground uppercase">
+                <div className="flex items-center px-4 py-2 rounded-lg text-[11px] font-semibold uppercase" style={{ background: 'var(--ds-background-neutral, #F7F8F9)', color: 'var(--ds-text-subtlest, #626F86)' }}>
                   <div className="w-16">RID</div>
                   <div className="flex-1">Name</div>
                 </div>
-                
+
                 {/* Table Rows */}
                 <ScrollArea className="h-[280px]">
                   <div className="space-y-1">
                     {resourceModalResources.map((resource) => (
-                      <div 
-                        key={resource.id} 
-                        className="flex items-center px-4 py-3 rounded-lg border border-border bg-card hover:bg-muted/30 transition-colors"
+                      <div
+                        key={resource.id}
+                        className="flex items-center px-4 py-3 rounded-lg transition-colors"
+                        style={{ border: '1px solid var(--ds-border, #DCDFE4)', background: 'var(--ds-surface, #FFFFFF)' }}
+                        onMouseEnter={e => ((e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral-hovered, #F1F2F4)')}
+                        onMouseLeave={e => ((e.currentTarget as HTMLElement).style.background = 'var(--ds-surface, #FFFFFF)')}
                       >
                         <div className="w-16">
-                          <span className="text-xs font-mono font-medium text-primary bg-primary/10 px-2 py-1 rounded">
+                          <span className="text-xs font-mono font-medium px-2 py-1 rounded" style={{ color: 'var(--ds-text-brand, #0C66E4)', background: 'var(--ds-background-selected, #E9F2FF)' }}>
                             {resource.resourceId || '—'}
                           </span>
                         </div>
                         <div className="flex-1 flex items-center gap-3">
-                          <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center">
-                            <User className="h-4 w-4 text-muted-foreground" />
+                          <div className="w-8 h-8 rounded-full flex items-center justify-center" style={{ background: 'var(--ds-background-neutral, #F7F8F9)' }}>
+                            <User className="h-4 w-4" style={{ color: 'var(--ds-text-subtle, #44546F)' }} />
                           </div>
-                          <span className="text-sm font-medium text-foreground">{resource.name}</span>
+                          <span className="text-sm font-medium" style={{ color: 'var(--ds-text, #172B4D)' }}>{resource.name}</span>
                         </div>
                       </div>
                     ))}
                   </div>
                 </ScrollArea>
-                
+
                 {/* Footer Summary */}
-                <div className="flex items-center justify-between px-4 py-3 mt-3 bg-muted/30 rounded-lg border border-border">
-                  <span className="text-sm text-muted-foreground">Total Resources</span>
+                <div className="flex items-center justify-between px-4 py-3 mt-3 rounded-lg" style={{ background: 'var(--ds-background-neutral, #F7F8F9)', border: '1px solid var(--ds-border, #DCDFE4)' }}>
+                  <span className="text-sm" style={{ color: 'var(--ds-text-subtle, #44546F)' }}>Total Resources</span>
                   <Lozenge appearance="success">
                     {resourceModalResources.length}
                   </Lozenge>
@@ -1176,7 +1197,7 @@ export default function ResourceAssignmentsPage() {
           </div>
 
           <DialogFooter>
-            <Button variant="outline" onClick={() => setResourceModalOpen(false)}>
+            <Button appearance="subtle" onClick={() => setResourceModalOpen(false)}>
               Close
             </Button>
           </DialogFooter>
