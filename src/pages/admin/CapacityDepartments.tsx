@@ -4,7 +4,12 @@ import Button from '@atlaskit/button/new';
 import Textfield from '@atlaskit/textfield';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/admin/admin-dialog';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/admin/admin-alert-dialog';
-import { Plus, Pencil, Trash2, GripVertical, AlertTriangle, Copy } from 'lucide-react';
+import AddIcon from '@atlaskit/icon/core/add';
+import EditIcon from '@atlaskit/icon/core/edit';
+import TrashIcon from '@atlaskit/icon/glyph/trash';
+import DragHandlerIcon from '@atlaskit/icon/glyph/drag-handler';
+import WarningIcon from '@atlaskit/icon/core/warning';
+import CopyIcon from '@atlaskit/icon/core/copy';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { Tooltip } from '@/components/ads';
@@ -113,7 +118,7 @@ export default function CapacityDepartmentsPage() {
         <Button
           appearance="primary"
           onClick={() => setCreateModalOpen(true)}
-          iconBefore={<Plus size={16} />}
+          iconBefore={<AddIcon label="" size="small" />}
         >
           Add Department
         </Button>
@@ -137,7 +142,7 @@ export default function CapacityDepartmentsPage() {
                   onMouseLeave={e => (e.currentTarget.style.background = '')}
                 >
                   <td className="px-4 py-3" style={{ color: 'var(--ds-text-subtle, #44546F)' }}>
-                    <GripVertical className="h-4 w-4" />
+                    <span style={{ display: 'inline-flex', cursor: 'grab' }}><DragHandlerIcon label="" size="small" /></span>
                   </td>
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-2">
@@ -150,7 +155,7 @@ export default function CapacityDepartmentsPage() {
                           onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral-hovered, #F1F2F4)'; (e.currentTarget as HTMLElement).style.color = 'var(--ds-text, #172B4D)'; }}
                           onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = ''; (e.currentTarget as HTMLElement).style.color = 'var(--ds-text-subtle, #44546F)'; }}
                         >
-                          <Copy className="h-3 w-3" />
+                          <CopyIcon label="" size="small" />
                         </button>
                       </Tooltip>
                     </div>
@@ -167,7 +172,7 @@ export default function CapacityDepartmentsPage() {
                         onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral-hovered, #F1F2F4)'; (e.currentTarget as HTMLElement).style.color = 'var(--ds-text, #172B4D)'; }}
                         onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = ''; (e.currentTarget as HTMLElement).style.color = 'var(--ds-text-subtle, #44546F)'; }}
                       >
-                        <Pencil className="h-4 w-4" />
+                        <EditIcon label="" size="small" />
                       </button>
                       <button
                         onClick={() => handleDeleteClick(dept)}
@@ -176,7 +181,7 @@ export default function CapacityDepartmentsPage() {
                         onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(202,53,33,0.1)'; (e.currentTarget as HTMLElement).style.color = 'var(--ds-icon-danger, #CA3521)'; }}
                         onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = ''; (e.currentTarget as HTMLElement).style.color = 'var(--ds-text-subtle, #44546F)'; }}
                       >
-                        <Trash2 className="h-4 w-4" />
+                        <TrashIcon label="" size="small" />
                       </button>
                     </div>
                   </td>
@@ -258,7 +263,7 @@ export default function CapacityDepartmentsPage() {
             <AlertDialogTitle className="flex items-center gap-2">
               {linkedResources.length > 0 ? (
                 <>
-                  <AlertTriangle className="h-5 w-5" style={{ color: 'var(--ds-icon-warning, #F79009)' }} />
+                  <span style={{ display: 'inline-flex', color: 'var(--ds-icon-warning, #F79009)' }}><WarningIcon label="" size="medium" /></span>
                   Cannot Delete Department
                 </>
               ) : (

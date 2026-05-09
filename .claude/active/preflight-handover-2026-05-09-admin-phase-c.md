@@ -83,7 +83,7 @@
 - [ ] Block 2 — Dialog migration
 - [x] Block 3 — WorkHub ADS icon swap (7 components; commit on main; PR #127 merged; CI fix: npm install replaces npm ci)
 - [x] Block 4 — Users & Access ADS icon swap (4 pages; commit 30554c004 on main; 0 lucide-react in UserAccessPage/UsersManagement/RolesPermissions/BusinessOwners)
-- [ ] Block 5 — General pockets
+- [x] Block 5 — General ADS icon swap (3 pages with violations; commit 27eed3267 on main; 0 lucide-react in AdminOverview/FeatureFlagsPage/NotificationTriggers; ProductSettings+AdminLayout were already clean)
 - [ ] Block 6 — Reference Data pockets
 - [ ] Block 7 — Developer/Field Config pockets
 - [ ] Block 8 — Phase E final gates
@@ -105,5 +105,5 @@ Paste as first message:
 Continue admin Phase C. Read handover:
 /Users/jahanarakhan/Documents/GitHub/catalyst-prod-45/.claude/active/preflight-handover-2026-05-09-admin-phase-c.md
 Blocks 0, 3, 4 complete and on main.
-Block 5 next: General pockets (AdminOverview, ProductSettings, FeatureFlagsPage, NotificationTriggers, AdminLayout) — read each file, write failing ADS compliance test, swap lucide icons, commit, push.
+Block 6 next: Reference Data pockets — run `grep -rl "from 'lucide-react'" src/pages/admin/` to find violating files, then read them, write failing ADS compliance test, swap icons, commit, push.
 ---
