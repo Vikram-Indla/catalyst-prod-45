@@ -7,7 +7,16 @@
  */
 
 import { useState, useCallback } from 'react';
-import { Bell, Search, Filter, Download, Upload, Shield, ChevronDown, ChevronRight, ToggleLeft, ToggleRight } from 'lucide-react';
+import NotificationIcon from '@atlaskit/icon/core/notification';
+import SearchIcon from '@atlaskit/icon/core/search';
+import FilterIcon from '@atlaskit/icon/core/filter';
+import DownloadIcon from '@atlaskit/icon/core/download';
+import UploadIcon from '@atlaskit/icon/core/upload';
+import ShieldIcon from '@atlaskit/icon/core/shield';
+import ChevronDownIcon from '@atlaskit/icon/glyph/chevron-down';
+import ChevronRightIcon from '@atlaskit/icon/glyph/chevron-right';
+import CheckCircleIcon from '@atlaskit/icon/core/check-circle';
+import CrossCircleIcon from '@atlaskit/icon/core/cross-circle';
 import Button from '@atlaskit/button/new';
 import Textfield from '@atlaskit/textfield';
 import Toggle from '@atlaskit/toggle';
@@ -153,7 +162,7 @@ export default function NotificationTriggers() {
             className="text-2xl font-semibold tracking-tight flex items-center gap-2"
             style={{ color: 'var(--ds-text, #172B4D)', fontFamily: "'Sora', sans-serif" }}
           >
-            <Bell className="h-6 w-6" style={{ color: 'var(--ds-text-brand, #0C66E4)' }} />
+            <span style={{ display: 'inline-flex', color: 'var(--ds-text-brand, #0C66E4)' }}><NotificationIcon label="" size="medium" /></span>
             Notification Triggers
           </h1>
           <p className="text-sm mt-1" style={{ color: 'var(--ds-text-subtle, #44546F)' }}>
@@ -166,12 +175,12 @@ export default function NotificationTriggers() {
               appearance="subtle"
               onClick={() => exportScheme.mutate(selectedSchemeId)}
             >
-              <Download className="h-3.5 w-3.5 mr-1" />
+              <span style={{ display: 'inline-flex', marginRight: 4 }}><DownloadIcon label="" size="small" /></span>
               Export
             </Button>
           )}
           <Button appearance="subtle" onClick={handleImport}>
-            <Upload className="h-3.5 w-3.5 mr-1" />
+            <span style={{ display: 'inline-flex', marginRight: 4 }}><UploadIcon label="" size="small" /></span>
             Import
           </Button>
         </div>
@@ -192,10 +201,7 @@ export default function NotificationTriggers() {
         <div className="flex items-center gap-3 flex-wrap">
           {/* Search */}
           <div className="relative flex-1 min-w-[240px]">
-            <Search
-              className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 pointer-events-none"
-              style={{ color: 'var(--ds-text-subtlest, #626F86)', zIndex: 1 }}
-            />
+            <span style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', display: 'flex', color: 'var(--ds-text-subtlest, #626F86)', zIndex: 1, pointerEvents: 'none' }}><SearchIcon label="" size="small" /></span>
             <div style={{ paddingLeft: '32px' }}>
               <Textfield
                 placeholder="Search triggers by name, key, or description..."
@@ -244,14 +250,14 @@ export default function NotificationTriggers() {
             appearance={filters.enabledOnly ? 'primary' : 'subtle'}
             onClick={() => setFilters({ ...filters, enabledOnly: !filters.enabledOnly })}
           >
-            <Filter className="h-3 w-3 mr-1" />
+            <span style={{ display: 'inline-flex', marginRight: 4 }}><FilterIcon label="" size="small" /></span>
             Enabled Only
           </Button>
           <Button
             appearance={filters.mandatoryOnly ? 'primary' : 'subtle'}
             onClick={() => setFilters({ ...filters, mandatoryOnly: !filters.mandatoryOnly })}
           >
-            <Shield className="h-3 w-3 mr-1" />
+            <span style={{ display: 'inline-flex', marginRight: 4 }}><ShieldIcon label="" size="small" /></span>
             Mandatory
           </Button>
         </div>
@@ -289,11 +295,11 @@ export default function NotificationTriggers() {
           </span>
           <hr style={{ border: 'none', borderLeft: '1px solid var(--ds-border-layout, #EBECF0)', height: '20px', margin: '0' }} />
           <Button appearance="subtle" onClick={handleBulkEnable}>
-            <ToggleRight className="h-3 w-3 mr-1" />
+            <span style={{ display: 'inline-flex', marginRight: 4 }}><CheckCircleIcon label="" size="small" /></span>
             Enable All
           </Button>
           <Button appearance="subtle" onClick={handleBulkDisable}>
-            <ToggleLeft className="h-3 w-3 mr-1" />
+            <span style={{ display: 'inline-flex', marginRight: 4 }}><CrossCircleIcon label="" size="small" /></span>
             Disable All
           </Button>
           <div className="ml-auto">
@@ -317,7 +323,7 @@ export default function NotificationTriggers() {
         </div>
       ) : groups.length === 0 ? (
         <div style={{ background: 'var(--ds-surface, #FFFFFF)', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px', padding: '48px 16px', textAlign: 'center' }}>
-          <Bell className="h-10 w-10 mx-auto mb-3" style={{ color: 'var(--ds-text-subtlest, #626F86)' }} />
+          <span style={{ display: 'flex', justifyContent: 'center', color: 'var(--ds-text-subtlest, #626F86)', marginBottom: 12 }}><NotificationIcon label="" size="large" /></span>
           <p className="text-sm" style={{ color: 'var(--ds-text-subtle, #44546F)' }}>No triggers match your filters.</p>
         </div>
       ) : (
@@ -338,9 +344,9 @@ export default function NotificationTriggers() {
               >
                 <div className="flex items-center gap-3">
                   {expandedGroups.has(group.key) ? (
-                    <ChevronDown className="h-4 w-4" style={{ color: 'var(--ds-text-subtle, #44546F)' }} />
+                    <span style={{ display: 'inline-flex', color: 'var(--ds-text-subtle, #44546F)' }}><ChevronDownIcon label="" size="small" /></span>
                   ) : (
-                    <ChevronRight className="h-4 w-4" style={{ color: 'var(--ds-text-subtle, #44546F)' }} />
+                    <span style={{ display: 'inline-flex', color: 'var(--ds-text-subtle, #44546F)' }}><ChevronRightIcon label="" size="small" /></span>
                   )}
                   <span className="text-sm font-semibold" style={{ color: 'var(--ds-text, #172B4D)' }}>{group.label}</span>
                   <Lozenge appearance="default">
@@ -504,7 +510,7 @@ function TriggerRow({
               {trigger.displayName}
             </span>
             {trigger.isMandatory && (
-              <Shield className="h-3 w-3 flex-shrink-0" style={{ color: 'var(--ds-icon-danger, #CA3521)' }} />
+              <span style={{ display: 'inline-flex', flexShrink: 0, color: 'var(--ds-icon-danger, #CA3521)' }}><ShieldIcon label="" size="small" /></span>
             )}
             {trigger.isSilent && (
               <Lozenge appearance="default">

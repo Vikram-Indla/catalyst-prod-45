@@ -25,18 +25,16 @@ import { AdminGuard } from '@/components/admin/AdminGuard';
 import Textfield from '@atlaskit/textfield';
 import Spinner from '@atlaskit/spinner';
 import { Link } from 'react-router-dom';
-import {
-  Search,
-  UserPlus,
-  Shield,
-  Activity,
-  Link2,
-  Users,
-  Settings,
-  Database,
-  Clock,
-  ArrowRight,
-} from 'lucide-react';
+import SearchIcon from '@atlaskit/icon/core/search';
+import PersonAddIcon from '@atlaskit/icon/core/person-add';
+import ShieldIcon from '@atlaskit/icon/core/shield';
+import ChartTrendIcon from '@atlaskit/icon/core/chart-trend';
+import LinkIcon from '@atlaskit/icon/core/link';
+import PeopleGroupIcon from '@atlaskit/icon/core/people-group';
+import SettingsIcon from '@atlaskit/icon/core/settings';
+import DatabaseIcon from '@atlaskit/icon/core/database';
+import ClockIcon from '@atlaskit/icon/core/clock';
+import ArrowRightIcon from '@atlaskit/icon/core/arrow-right';
 import { useState } from 'react';
 import { useAdminOverviewMetrics, useRecentAdminChanges, useRecentRooms } from '@/hooks/useAdminOverviewMetrics';
 import { formatDistanceToNow } from 'date-fns';
@@ -60,10 +58,10 @@ const T = {
 
 /** Quick actions — all paths registered in REGISTERED_ADMIN_ROUTES. */
 const quickActions = [
-  { label: 'Invite user',     icon: UserPlus, path: '/admin/users' },
-  { label: 'Create role',     icon: Shield,   path: '/admin/roles-permissions' },
-  { label: 'Sync logs',       icon: Activity, path: '/admin/workhub/sync-logs' },
-  { label: 'Jira connection', icon: Link2,    path: '/admin/workhub/jira-connection' },
+  { label: 'Invite user',     icon: PersonAddIcon,   path: '/admin/users' },
+  { label: 'Create role',     icon: ShieldIcon,      path: '/admin/roles-permissions' },
+  { label: 'Sync logs',       icon: ChartTrendIcon,  path: '/admin/workhub/sync-logs' },
+  { label: 'Jira connection', icon: LinkIcon,        path: '/admin/workhub/jira-connection' },
 ];
 
 export default function AdminOverview() {
@@ -85,7 +83,7 @@ export default function AdminOverview() {
       id: 'users-access',
       title: 'Users & Access',
       description: 'Manage users, roles, and permissions',
-      icon: Users,
+      icon: PeopleGroupIcon,
       path: '/admin/users',
       count: metrics.usersCount,
       countLabel: 'users',
@@ -94,7 +92,7 @@ export default function AdminOverview() {
       id: 'configuration',
       title: 'Configuration',
       description: 'System settings and preferences',
-      icon: Settings,
+      icon: SettingsIcon,
       path: '/admin/modules-packages',
       count: metrics.settingsCount,
       countLabel: 'settings',
@@ -103,7 +101,7 @@ export default function AdminOverview() {
       id: 'reference-data',
       title: 'Reference Data',
       description: 'Teams, programs, and master data',
-      icon: Database,
+      icon: DatabaseIcon,
       path: '/admin/departments',
       count: metrics.referenceDataCount,
       countLabel: 'records',
@@ -112,7 +110,7 @@ export default function AdminOverview() {
       id: 'integrations',
       title: 'Integrations',
       description: 'External connections and imports',
-      icon: Link2,
+      icon: LinkIcon,
       path: '/admin/workhub/jira-connection',
       count: metrics.integrationsCount,
       countLabel: 'active',
@@ -121,7 +119,7 @@ export default function AdminOverview() {
       id: 'audit-usage',
       title: 'Audit & Usage',
       description: 'Activity logs and usage analytics',
-      icon: Activity,
+      icon: ChartTrendIcon,
       path: '/admin/workhub/sync-logs',
       count: metrics.auditEventsCount,
       countLabel: 'events',
@@ -130,7 +128,7 @@ export default function AdminOverview() {
       id: 'security',
       title: 'Security',
       description: 'Security settings and policies',
-      icon: Shield,
+      icon: ShieldIcon,
       path: '/admin/roles-permissions',
       count: metrics.securityPoliciesCount,
       countLabel: 'policies',
@@ -196,7 +194,7 @@ export default function AdminOverview() {
               display: 'flex',
               alignItems: 'center',
             }}>
-              <Search size={16} color={T.iconSubtle} />
+              <span style={{ display: 'flex', color: T.iconSubtle }}><SearchIcon label="" size="small" /></span>
             </div>
             <div style={{ paddingLeft: '32px' }}>
               <Textfield
@@ -235,7 +233,7 @@ export default function AdminOverview() {
                     cursor: 'pointer',
                   }}
                 >
-                  <Icon size={14} color={T.iconSubtle} />
+                  <span style={{ display: 'inline-flex', color: T.iconSubtle }}><Icon label="" size="small" /></span>
                   {action.label}
                 </Link>
               );
@@ -281,7 +279,7 @@ export default function AdminOverview() {
                         justifyContent: 'center',
                         flexShrink: 0,
                       }}>
-                        <Icon size={20} color={T.iconBrand} />
+                        <span style={{ display: 'inline-flex', color: T.iconBrand }}><Icon label="" size="medium" /></span>
                       </div>
                       <div style={{ textAlign: 'right' }}>
                         {metrics.isLoading ? (
@@ -326,7 +324,7 @@ export default function AdminOverview() {
               padding: '16px',
             }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
-                <Clock size={16} color={T.iconSubtle} />
+                <span style={{ display: 'inline-flex', color: T.iconSubtle }}><ClockIcon label="" size="small" /></span>
                 <h2 style={{ margin: 0, fontSize: '13px', fontWeight: 500, color: T.text }}>Recently Visited</h2>
               </div>
               <div>
@@ -358,11 +356,9 @@ export default function AdminOverview() {
                         <span style={{ fontSize: '12px', color: T.textSubtle }}>
                           {formatDistanceToNow(new Date(room.last_accessed_at), { addSuffix: true })}
                         </span>
-                        <ArrowRight
-                          size={14}
-                          color={T.textSubtlest}
-                          style={{ opacity: hoveredRoom === room.id ? 1 : 0, transition: 'opacity 0.1s' }}
-                        />
+                        <span style={{ display: 'inline-flex', color: T.textSubtlest, opacity: hoveredRoom === room.id ? 1 : 0, transition: 'opacity 0.1s' }}>
+                          <ArrowRightIcon label="" size="small" />
+                        </span>
                       </div>
                     </Link>
                   ))

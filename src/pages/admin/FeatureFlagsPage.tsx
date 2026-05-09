@@ -13,13 +13,33 @@ import {
 import { featureFlagService } from '@/services/feature-flags';
 import type { FeatureFlag, ModuleCategory } from '@/types/feature-flags';
 import { toast } from 'sonner';
-import {
-  Search, RefreshCw, AlertCircle, Flag, Check, X,
-  ArrowUpDown, ArrowUp, ArrowDown, ChevronDown, ChevronRight,
-  Compass, Calendar, CheckSquare, Package, FolderKanban,
-  Layers, Users, ShieldCheck, Rocket, AlertTriangle,
-  BookOpen, BarChart3, DollarSign, Box, Settings, MoreHorizontal,
-} from 'lucide-react';
+import Spinner from '@atlaskit/spinner';
+import SearchIcon from '@atlaskit/icon/core/search';
+import RefreshIcon from '@atlaskit/icon/core/refresh';
+import CrossCircleIcon from '@atlaskit/icon/core/cross-circle';
+import FlagIcon from '@atlaskit/icon/core/flag';
+import CheckMarkIcon from '@atlaskit/icon/core/check-mark';
+import CrossIcon from '@atlaskit/icon/glyph/cross';
+import SortAscendingIcon from '@atlaskit/icon/core/sort-ascending';
+import ArrowUpIcon from '@atlaskit/icon/core/arrow-up';
+import ArrowDownIcon from '@atlaskit/icon/core/arrow-down';
+import ChevronDownIcon from '@atlaskit/icon/glyph/chevron-down';
+import ChevronRightIcon from '@atlaskit/icon/glyph/chevron-right';
+import CompassIcon from '@atlaskit/icon/core/compass';
+import CalendarIcon from '@atlaskit/icon/core/calendar';
+import CheckboxCheckedIcon from '@atlaskit/icon/core/checkbox-checked';
+import ArchiveBoxIcon from '@atlaskit/icon/core/archive-box';
+import BoardIcon from '@atlaskit/icon/core/board';
+import BoardsIcon from '@atlaskit/icon/core/boards';
+import PeopleGroupIcon from '@atlaskit/icon/core/people-group';
+import ShieldIcon from '@atlaskit/icon/core/shield';
+import CloudArrowUpIcon from '@atlaskit/icon/core/cloud-arrow-up';
+import WarningIcon from '@atlaskit/icon/core/warning';
+import BookWithBookmarkIcon from '@atlaskit/icon/core/book-with-bookmark';
+import ChartBarIcon from '@atlaskit/icon/core/chart-bar';
+import CreditCardIcon from '@atlaskit/icon/core/credit-card';
+import SettingsIcon from '@atlaskit/icon/core/settings';
+import ShowMoreHorizontalIcon from '@atlaskit/icon/core/show-more-horizontal';
 import { useTheme } from '@/hooks/useTheme';
 import AtlasButton from '@atlaskit/button/new';
 import Textfield from '@atlaskit/textfield';
@@ -32,12 +52,24 @@ import {
 // ── Constants ──────────────────────────────────────────────
 
 const ICON_MAP: Record<string, React.ElementType> = {
-  Compass, Calendar, CheckSquare, Package, FolderKanban,
-  Layers, Users, ShieldCheck, Rocket, AlertTriangle,
-  BookOpen, BarChart3, DollarSign, Box, Settings,
+  Compass: CompassIcon,
+  Calendar: CalendarIcon,
+  CheckSquare: CheckboxCheckedIcon,
+  Package: ArchiveBoxIcon,
+  FolderKanban: BoardIcon,
+  Layers: BoardsIcon,
+  Users: PeopleGroupIcon,
+  ShieldCheck: ShieldIcon,
+  Rocket: CloudArrowUpIcon,
+  AlertTriangle: WarningIcon,
+  BookOpen: BookWithBookmarkIcon,
+  BarChart3: ChartBarIcon,
+  DollarSign: CreditCardIcon,
+  Box: ArchiveBoxIcon,
+  Settings: SettingsIcon,
 };
 
-const resolveIcon = (name: string): React.ElementType => ICON_MAP[name] || Box;
+const resolveIcon = (name: string): React.ElementType => ICON_MAP[name] || ArchiveBoxIcon;
 
 const ICON_COLOR_MAP: Record<string, { bg: string; text: string }> = {
   blue:    { bg: '#0C66E4', text: 'var(--ds-text-inverse, #FFFFFF)' },
@@ -129,7 +161,7 @@ const FlagRow = memo(function FlagRow({ flag, isSelected, isPending, onToggle, o
           className="w-[34px] h-[34px] rounded-md flex items-center justify-center flex-shrink-0"
           style={{ background: iconColor.bg, color: iconColor.text }}
         >
-          <Icon size={16} />
+          <Icon label="" size="small" />
         </div>
         <div className="min-w-0">
           <div
@@ -225,14 +257,14 @@ const FlagRow = memo(function FlagRow({ flag, isSelected, isPending, onToggle, o
           aria-label="Configure module"
           style={{ borderRadius: 4 }}
         >
-          <Settings size={16} style={{ color: 'var(--cp-text-tertiary, #64748B)' }} />
+          <span style={{ display: 'inline-flex', color: 'var(--cp-text-tertiary, #64748B)' }}><SettingsIcon label="" size="small" /></span>
         </button>
         <button
           className="w-7 h-7 flex items-center justify-center rounded hover:bg-[rgba(15,23,42,0.04)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ds-text-brand,#2563EB)] focus-visible:ring-offset-2"
           aria-label="More options"
           style={{ borderRadius: 4 }}
         >
-          <MoreHorizontal size={16} style={{ color: 'var(--cp-text-tertiary, #64748B)' }} />
+          <span style={{ display: 'inline-flex', color: 'var(--cp-text-tertiary, #64748B)' }}><ShowMoreHorizontalIcon label="" size="small" /></span>
         </button>
       </div>
     </div>
@@ -265,9 +297,9 @@ const GroupHeaderRow = memo(function GroupHeaderRow({ category, count, isCollaps
       aria-expanded={!isCollapsed}
     >
       {isCollapsed ? (
-        <ChevronRight size={16} style={{ color: 'var(--cp-text-muted, #94A3B8)' }} />
+        <span style={{ display: 'inline-flex', color: 'var(--cp-text-muted, #94A3B8)' }}><ChevronRightIcon label="" size="small" /></span>
       ) : (
-        <ChevronDown size={16} style={{ color: 'var(--cp-text-muted, #94A3B8)' }} />
+        <span style={{ display: 'inline-flex', color: 'var(--cp-text-muted, #94A3B8)' }}><ChevronDownIcon label="" size="small" /></span>
       )}
       <span style={{
         fontFamily: 'var(--cp-font-body)',
@@ -444,7 +476,7 @@ export default function FeatureFlagsPage() {
   if (error) {
     return (
       <div className={`flex-1 flex flex-col items-center justify-center py-20 gap-3 ${isDark ? "bg-[var(--ds-surface,#0A0A0A)]" : "bg-white"}`}>
-        <AlertCircle className="w-12 h-12" style={{ color: 'var(--ds-text-danger, #DC2626)' }} />
+        <span style={{ display: 'flex', color: 'var(--ds-text-danger, #DC2626)' }}><CrossCircleIcon label="" size="large" /></span>
         <p style={{ fontFamily: 'var(--cp-font-body)', fontSize: 14, fontWeight: 650, color: 'var(--cp-text-primary, #0F172A)' }}>
           Failed to load feature flags
         </p>
@@ -454,7 +486,7 @@ export default function FeatureFlagsPage() {
         <AtlasButton
           appearance="default"
           onClick={() => refetch()}
-          iconBefore={(iconProps) => <RefreshCw {...iconProps} className="w-4 h-4" />}
+          iconBefore={(iconProps) => <RefreshIcon {...iconProps} label="" size="small" />}
         >
           Retry
         </AtlasButton>
@@ -471,7 +503,7 @@ export default function FeatureFlagsPage() {
       <div className="flex items-start justify-between mb-5">
         <div>
           <div className="flex items-center gap-2">
-            <Flag size={20} style={{ color: 'var(--ds-text-brand, #2563EB)' }} />
+            <span style={{ display: 'inline-flex', color: 'var(--ds-text-brand, #2563EB)' }}><FlagIcon label="" size="medium" /></span>
             <h1 style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 20, fontWeight: 700, color: 'var(--cp-text-primary, #0F172A)', letterSpacing: '-0.025em', margin: 0 }}>
               Feature Flags
             </h1>
@@ -483,7 +515,7 @@ export default function FeatureFlagsPage() {
         <AtlasButton
           appearance="default"
           onClick={() => refetch()}
-          iconBefore={(iconProps) => <RefreshCw {...iconProps} size={13} className={isFetching ? 'animate-spin' : ''} />}
+          iconBefore={(iconProps) => <RefreshIcon {...iconProps} label="" size="small" />}
         >
           Refresh
         </AtlasButton>
@@ -557,7 +589,7 @@ export default function FeatureFlagsPage() {
               onMouseEnter={(e) => { if (!allEnabled) (e.currentTarget.style.background = '#15803D'); }}
               onMouseLeave={(e) => { e.currentTarget.style.background = 'var(--ds-text-success, #16A34A)'; }}
             >
-              {bulkMutation.isPending ? <RefreshCw size={14} className="animate-spin" /> : <Check size={16} />}
+              {bulkMutation.isPending ? <Spinner size="small" /> : <CheckMarkIcon label="" size="small" />}
               Enable All
             </button>
             <button
@@ -580,7 +612,7 @@ export default function FeatureFlagsPage() {
               onMouseEnter={(e) => { if (!noneEnabled) (e.currentTarget.style.background = 'var(--cp-danger-light, #FEF2F2)'); }}
               onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
             >
-              <X size={16} />
+              <CrossIcon label="" size="small" />
               Disable All
             </button>
           </div>
@@ -595,7 +627,7 @@ export default function FeatureFlagsPage() {
             value={searchInput}
             onChange={(e) => setSearchInput((e.target as HTMLInputElement).value)}
             aria-label="Search feature flags"
-            elemBeforeInput={<Search size={14} style={{ color: 'var(--cp-text-muted, #94A3B8)', marginLeft: 8 }} />}
+            elemBeforeInput={<span style={{ display: 'inline-flex', color: 'var(--cp-text-muted, #94A3B8)', marginLeft: 8 }}><SearchIcon label="" size="small" /></span>}
           />
         </div>
 
@@ -717,9 +749,9 @@ export default function FeatureFlagsPage() {
           >
             Updated
             {sortField === 'updated_at' ? (
-              sortDir === 'asc' ? <ArrowUp size={11} /> : <ArrowDown size={11} />
+              sortDir === 'asc' ? <ArrowUpIcon label="" size="small" /> : <ArrowDownIcon label="" size="small" />
             ) : (
-              <ArrowUpDown size={11} className="opacity-40" />
+              <span style={{ display: 'inline-flex', opacity: 0.4 }}><SortAscendingIcon label="" size="small" /></span>
             )}
           </div>
           <div />
@@ -730,7 +762,7 @@ export default function FeatureFlagsPage() {
           <div className={`flex flex-col items-center justify-center py-16 gap-3 ${isDark ? "bg-[var(--ds-surface,#0A0A0A)]" : "bg-white"}`}>
             {flags?.length === 0 ? (
               <>
-                <Settings size={48} style={{ color: 'rgba(15,23,42,0.15)' }} />
+                <span style={{ display: 'inline-flex', color: 'rgba(15,23,42,0.15)' }}><SettingsIcon label="" size="large" /></span>
                 <p style={{ fontFamily: 'var(--cp-font-body)', fontSize: 14, fontWeight: 650, color: 'var(--cp-text-primary, #0F172A)' }}>
                   No modules configured
                 </p>
@@ -740,7 +772,7 @@ export default function FeatureFlagsPage() {
               </>
             ) : (
               <>
-                <Flag size={48} style={{ color: 'rgba(15,23,42,0.15)' }} />
+                <span style={{ display: 'inline-flex', color: 'rgba(15,23,42,0.15)' }}><FlagIcon label="" size="large" /></span>
                 <p style={{ fontFamily: 'var(--cp-font-body)', fontSize: 14, fontWeight: 650, color: 'var(--cp-text-primary, #0F172A)' }}>
                   No modules match your filters
                 </p>
@@ -748,7 +780,7 @@ export default function FeatureFlagsPage() {
                   <AtlasButton
                     appearance="default"
                     onClick={clearFilters}
-                    iconBefore={(iconProps) => <X {...iconProps} size={13} />}
+                    iconBefore={(iconProps) => <CrossIcon {...iconProps} label="" size="small" />}
                   >
                     Clear Filters
                   </AtlasButton>
@@ -804,7 +836,7 @@ export default function FeatureFlagsPage() {
         <AlertDialogContent className="sm:max-w-md" style={{ borderRadius: 8 }}>
           <AlertDialogHeader>
             <AlertDialogTitle className="flex items-center gap-2" style={{ color: 'var(--ds-text-danger, #DC2626)' }}>
-              <AlertCircle size={18} />
+              <span style={{ display: 'inline-flex' }}><CrossCircleIcon label="" size="small" /></span>
               Disable All Modules?
             </AlertDialogTitle>
             <AlertDialogDescription>
@@ -832,7 +864,7 @@ export default function FeatureFlagsPage() {
               appearance="danger"
               isDisabled={confirmText !== 'DISABLE' || bulkMutation.isPending}
               onClick={handleBulkDisableConfirm}
-              iconBefore={bulkMutation.isPending ? (iconProps) => <RefreshCw {...iconProps} size={14} className="animate-spin" /> : undefined}
+              iconBefore={bulkMutation.isPending ? (iconProps) => <RefreshIcon {...iconProps} label="" size="small" /> : undefined}
             >
               Disable All Modules
             </AtlasButton>

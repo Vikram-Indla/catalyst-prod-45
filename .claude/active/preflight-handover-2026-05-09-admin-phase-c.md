@@ -81,8 +81,8 @@
 - [x] Block 0 — dead-wood deletion + href fix (commit 567a03b23 local; PR deferred — gh auth login incomplete on this machine, push when auth resolves)
 - [ ] Block 1 — D1 RLS audit
 - [ ] Block 2 — Dialog migration
-- [ ] Block 3 — WorkHub pockets
-- [ ] Block 4 — Users & Access pockets
+- [x] Block 3 — WorkHub ADS icon swap (7 components; commit on main; PR #127 merged; CI fix: npm install replaces npm ci)
+- [x] Block 4 — Users & Access ADS icon swap (4 pages; commit 30554c004 on main; 0 lucide-react in UserAccessPage/UsersManagement/RolesPermissions/BusinessOwners)
 - [ ] Block 5 — General pockets
 - [ ] Block 6 — Reference Data pockets
 - [ ] Block 7 — Developer/Field Config pockets
@@ -103,7 +103,7 @@ Rule: jira-compare gate is REQUIRED only for WorkHub admin pages (which proxy Ji
 Paste as first message:
 ---
 Continue admin Phase C. Read handover:
-.claude/worktrees/eloquent-vaughan-300353/.claude/active/preflight-handover-2026-05-09-admin-phase-c.md
-Block 0 complete (commit 567a03b23 local). Push deferred — complete gh auth login first.
-Block 1 next: D1 RLS audit via TestSprite.
+/Users/jahanarakhan/Documents/GitHub/catalyst-prod-45/.claude/active/preflight-handover-2026-05-09-admin-phase-c.md
+Blocks 0, 3, 4 complete and on main.
+Block 5 next: General pockets (AdminOverview, ProductSettings, FeatureFlagsPage, NotificationTriggers, AdminLayout) — read each file, write failing ADS compliance test, swap lucide icons, commit, push.
 ---
