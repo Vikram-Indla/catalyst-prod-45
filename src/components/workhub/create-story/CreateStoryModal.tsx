@@ -18,7 +18,7 @@
  *   - @atlaskit/lozenge             read-only Status pill
  *   - @atlaskit/primitives          Box / Stack / Inline / xcss
  *   - @atlaskit/tokens              token('space.*') / token('color.*')
- *   - @atlaskit/textarea            Description field in Jira Create-modal form style
+ *   - @atlaskit/editor-core          Description field — ADF ProseMirror editor (Jira-parity)
  *
  * Callers (unchanged contract):
  *   - src/components/ja/CreateDropdown.tsx                (top nav + Create)
@@ -31,6 +31,7 @@ import {
   useMemo,
   useCallback,
   useRef,
+  Suspense,
   type ReactNode,
 } from 'react';
 // @atlaskit/modal-dialog uses @atlaskit/portal which renders empty in this
@@ -47,7 +48,7 @@ import {
 import { Field, ErrorMessage, HelperMessage } from '@atlaskit/form';
 import Select, { AsyncSelect, CreatableSelect } from '@atlaskit/select';
 import Textfield from '@atlaskit/textfield';
-import TextArea from '@atlaskit/textarea';
+import EpicDescriptionEditor from '@/components/shared/rich-text/atlaskit/EpicDescriptionEditor';
 import { Checkbox } from '@atlaskit/checkbox';
 import Avatar from '@atlaskit/avatar';
 import Button, { IconButton } from '@atlaskit/button/new';
@@ -60,6 +61,8 @@ import EditorCloseIcon from '@atlaskit/icon/glyph/editor/close';
 import VidFullScreenOnIcon from '@atlaskit/icon/glyph/vid-full-screen-on';
 import VidFullScreenOffIcon from '@atlaskit/icon/glyph/vid-full-screen-off';
 import MoreIcon from '@atlaskit/icon/glyph/more';
+
+import './create-story.css';
 
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -184,19 +187,6 @@ export function statusAppearanceForTest(
 // Internal alias — keeps call sites unchanged.
 const statusAppearance = statusAppearanceForTest;
 
-function plainTextToAdf(text: string) {
-  const paragraphs = text.split(/\n{2,}/).map((block) => block.trim()).filter(Boolean);
-  return {
-    type: 'doc',
-    version: 1,
-    content: paragraphs.length
-      ? paragraphs.map((paragraph) => ({
-          type: 'paragraph',
-          content: [{ type: 'text', text: paragraph }],
-        }))
-      : [{ type: 'paragraph' }],
-  };
-}
 
 // ─────────────────────────────────────────────────────────────────────────────
 // xcss styles (token-only)
@@ -382,6 +372,8 @@ export function CreateStoryModal({
 
   const [workType, setWorkType] = useState<string>('Story');
   const [createAnother, setCreateAnother] = useState(false);
+  // Incremented each time the form is reset — forces EpicDescriptionEditor to remount with empty content.
+  const [editorKey, setEditorKey] = useState(0);
 
   // Dynamic workflow statuses from catalyst_workflow_schemes/_statuses.
   // Falls back to DEFAULT_STATUS_OPTIONS when DB returns no rows
@@ -587,10 +579,12 @@ export function CreateStoryModal({
 
       if (createAnother && !isCreateLinkedMode) {
         reset(true);
+        setEditorKey(k => k + 1);
         setSubmitAttempted(false);
       } else {
         onClose();
         reset();
+        setEditorKey(k => k + 1);
       }
     } catch (err: any) {
       setFormError(err?.message ?? 'Failed to create work item');
@@ -606,6 +600,7 @@ export function CreateStoryModal({
     onClose,
     reset,
     createAnother,
+    setEditorKey,
   ]);
 
   const handleClose = useCallback(() => {
@@ -731,24 +726,55 @@ export function CreateStoryModal({
                 </Field>
               )}
 
-              {/* ── Status — read-only Lozenge (Jira-parity, Bucket B 2026-05-09).
-                  In Jira's Create modal, status is NOT editable — it is pre-set
-                  to the issue type's initial workflow status and displayed as a
-                  read-only pill. The canonical value comes from useWorkflowStatuses
-                  (catalyst_workflow_schemes/_statuses) with a 'To Do' hard fallback. */}
+              {/* ── Status — clickable dropdown button (Jira-parity, 2026-05-09).
+                  Jira DOM probe: BUTTON bg=rgba(5,21,36,0.06) br=3px fw=500 cursor=pointer.
+                  Opens workflow status options from resolvedStatusOptions.
+                  Helper text: "This is the initial status upon creation" (Jira-canonical). */}
               <Field name="status" label="Status">
                 {() => (
                   <>
-                    <Box
-                      xcss={xcss({
-                        paddingBlock: 'space.050',
-                        paddingInline: 'space.0',
-                      })}
-                    >
-                      <span data-cp-lozenge-jira-parity>
-                        <Lozenge appearance={statusAppearance(form.status || 'To Do')}>
+                    <DropdownMenu
+                      trigger={({ triggerRef, ...triggerProps }) => (
+                        <button
+                          {...(triggerProps as any)}
+                          ref={triggerRef as any}
+                          type="button"
+                          style={{
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: 4,
+                            background: 'rgba(5,21,36,0.06)',
+                            border: 'none',
+                            borderRadius: 3,
+                            padding: '4px 10px',
+                            fontSize: 14,
+                            fontWeight: 500,
+                            color: token('color.text', '#292A2E'),
+                            cursor: 'pointer',
+                          }}
+                        >
                           {form.status || 'To Do'}
-                        </Lozenge>
+                          <svg width="10" height="6" viewBox="0 0 10 6" aria-hidden="true" style={{ flexShrink: 0 }}>
+                            <path d="M1 1l4 4 4-4" stroke="currentColor" strokeWidth="1.5" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
+                          </svg>
+                        </button>
+                      )}
+                    >
+                      <DropdownItemGroup>
+                        {resolvedStatusOptions.map((opt) => (
+                          <DropdownItem
+                            key={opt.value}
+                            isSelected={form.status === opt.value}
+                            onClick={() => updateField('status', opt.value)}
+                          >
+                            {opt.label}
+                          </DropdownItem>
+                        ))}
+                      </DropdownItemGroup>
+                    </DropdownMenu>
+                    <Box xcss={xcss({ marginBlockStart: 'space.025' })}>
+                      <span style={{ fontSize: 12, color: token('color.text.subtlest', '#6B778C') }}>
+                        This is the initial status upon creation
                       </span>
                     </Box>
                   </>
@@ -862,21 +888,33 @@ export function CreateStoryModal({
                 )}
               </Field>
 
-              {/* ── Description ─────────────────────────────────────── */}
+              {/* ── Description — ADF editor (Jira-parity, non-negotiable) ─── */}
+              {/* appearance="comment" gives the Jira-grade primary toolbar (Tt/B/lists/etc.)
+                  The editor's own Save/Cancel buttons are suppressed via the
+                  cs-adf-desc-wrapper class — modal footer owns submission. */}
               <Field name="description" label="Description">
                 {() => (
-                  <TextArea
-                    name="description"
-                    value={form.description}
-                    minimumRows={4}
-                    resize="vertical"
-                    placeholder="Add a description..."
-                    onChange={(e) => {
-                      const value = (e.target as HTMLTextAreaElement).value;
-                      updateField('description', value);
-                      updateField('descriptionAdf', plainTextToAdf(value));
-                    }}
-                  />
+                  <div className="cs-adf-desc-wrapper" style={{ border: `1px solid ${token('color.border', '#DFE1E6')}`, borderRadius: 3 }}>
+                    <Suspense fallback={<div style={{ padding: '8px 12px', color: token('color.text.subtlest', '#97A0AF'), fontSize: 14 }}>Loading editor…</div>}>
+                      <EpicDescriptionEditor
+                        key={editorKey}
+                        appearance="comment"
+                        initialContent={null}
+                        workItemId="new"
+                        placeholder="Add a description..."
+                        onChange={(adfJson) => {
+                          try {
+                            const adf = JSON.parse(adfJson);
+                            updateField('descriptionAdf', adf);
+                          } catch {
+                            updateField('descriptionAdf', null);
+                          }
+                        }}
+                        onSave={() => {}}
+                        onCancel={() => {}}
+                      />
+                    </Suspense>
+                  </div>
                 )}
               </Field>
 
