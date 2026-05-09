@@ -83,6 +83,7 @@ When the critique is complete and findings are resolved:
 4. **One caption per screenshot**: surface · what heuristic(s) improved · severity resolved.
 5. Embed the annotated screenshots under `## Design Closure Evidence` in the preflight handover.
 6. Commit before declaring the surface design-complete.
+7. **Open the artifacts folder** — run `open <active-folder-path>` so Finder navigates directly to the closure evidence. Print the full path in chat for the user to bookmark.
 
 A critique that closes without annotated screenshots has NOT closed.
 
