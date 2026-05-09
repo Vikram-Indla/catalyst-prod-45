@@ -5,13 +5,11 @@
 // Per CLAUDE.md §7A page-level scope rule: when AllProjectsPage migrated to
 // ADS, this sibling toolbar came in scope. Bespoke pill-chips and shadcn
 // Popover replaced with @atlaskit/tabs + @atlaskit/select + @atlaskit/textfield.
-// View-toggle uses Atlaskit Button with appearance="subtle" + isSelected.
-// Lucide imports retained ONLY for view-toggle glyphs since @atlaskit/icon
-// doesn't ship clean list/grid analogues; flagged for future swap.
+// View toggle permanently removed — list is the only mode (card view dropped).
 // ============================================================================
 
 import { useState, useEffect, useMemo } from 'react';
-import type { ProjectFilters, ViewMode } from '@/types/projecthub';
+import type { ProjectFilters } from '@/types/projecthub';
 
 import Tabs, { Tab, TabList } from '@atlaskit/tabs';
 import Select from '@atlaskit/select';
@@ -26,9 +24,6 @@ import SearchIcon from '@atlaskit/icon/glyph/search';
 import CrossIcon from '@atlaskit/icon/glyph/cross';
 
 interface ToolbarProps {
-  // view/onViewChange retained for API compat but unused — card view deprecated.
-  view?: ViewMode;
-  onViewChange?: (v: ViewMode) => void;
   filters: ProjectFilters;
   onFilterChange: (f: ProjectFilters) => void;
   stats: {
@@ -50,8 +45,6 @@ type StatusOption = { label: string; value: string };
 const STATUS_SELECT_OPTIONS: StatusOption[] = STATUS_OPTIONS.map((s) => ({ label: s, value: s }));
 
 export function AllProjectsToolbar({
-  view,
-  onViewChange,
   filters,
   onFilterChange,
   stats,

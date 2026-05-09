@@ -997,12 +997,14 @@ interface Props {
   onToggleRow: (id: string) => void;
   onToggleAll: () => void;
   pageOffset?: number;
+  /** Per-project sync stats: count, latest timestamp, 24h activity */
+  projectSyncStats?: Record<string, import('@/hooks/projecthub-sync-utils').ProjectSyncStats>;
 }
 
 // ── Main component ─────────────────────────────────────
 export function AllProjectsTable({
   projects, favoriteIds, onToggleFav, sortCol, sortDir, onSort,
-  selectedRows, onToggleRow, pageOffset = 0,
+  selectedRows, onToggleRow, pageOffset = 0, projectSyncStats,
 }: Props) {
   const navigate = useNavigate();
   const trackRecent = useTrackRecentItem();
@@ -1040,43 +1042,22 @@ export function AllProjectsTable({
     onResizeStart, onDragStart, onDragOver, onDragEnd,
   } = useTableColumns('projects', PROJECT_COLUMNS);
 
-  // Last sync timestamp from ph_sync_log — used for the "X ago" display.
-  // Issue counts come from p.jira_issue_count (ph_issues 2026+, enriched by AllProjectsPage).
-  const { data: lastSyncAt } = useQuery({
-    queryKey: ['project-last-sync-at'],
-    queryFn: async () => {
-      const { data: lastSync } = await typedQuery('ph_sync_log')
-        .select('completed_at')
-        .in('status', ['success', 'warning', 'running'])
-        .not('completed_at', 'is', null)
-        .order('completed_at', { ascending: false })
-        .limit(1)
-        .maybeSingle();
-      if (lastSync?.completed_at) return lastSync.completed_at as string;
-      const { data: recentIssue } = await typedQuery('ph_issues')
-        .select('last_synced_at')
-        .not('last_synced_at', 'is', null)
-        .order('last_synced_at', { ascending: false })
-        .limit(1)
-        .maybeSingle();
-      return (recentIssue?.last_synced_at as string | null) ?? null;
-    },
-    refetchInterval: 5 * 60_000,
-    staleTime: 3 * 60_000,
-    gcTime: 10 * 60_000,
-    refetchOnWindowFocus: false,
-  });
+  // Per-project sync stats are passed in via projectSyncStats prop (built in AllProjectsPage
+  // from ph_issues). No separate query needed here — data flows top-down.
 
   const renderProjectCell = (colKey: string, p: ProjectListItem, idx: number) => {
     const isFav = favoriteIds.has(p.id);
     const active = isActiveStatus(p.status);
     const rowNum = pageOffset + idx + 1;
-    const issueCount = p.jira_issue_count ?? 0;
-    const wasSynced = issueCount > 0 || !!p.last_synced_at;
-    const syncTs = wasSynced ? (lastSyncAt || p.last_synced_at) : null;
-    const syncAge = formatSyncAge(syncTs ?? null);
-    const syncDotColor = getSyncDotColor(syncTs, null);
-    const syncTooltipText = getSyncTooltip(syncTs, null);
+    const perProject = projectSyncStats?.[p.project_key];
+    const issueCount = perProject?.count ?? p.jira_issue_count ?? 0;
+    const latestAt = perProject?.latestAt ?? null;
+    const syncAge = formatSyncAge(latestAt);
+    const syncDotColor = getSyncDotColor(latestAt, null);
+    const syncTooltipText = getSyncTooltip(latestAt, null);
+    const updatedToday = perProject?.updatedToday ?? 0;
+    const createdToday = perProject?.createdToday ?? 0;
+    const hasActivityToday = updatedToday > 0 || createdToday > 0;
 
     switch (colKey) {
       case 'star': return <td key={colKey} style={{ overflow: 'visible', textOverflow: 'clip' }}><div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}><button onClick={e => { e.stopPropagation(); onToggleFav(p.id, isFav); }} style={{ background: 'transparent', border: 'none', cursor: 'pointer', padding: 0, outline: 'none', borderRadius: 4, flexShrink: 0, pointerEvents: 'auto', color: isFav ? token('color.text.warning') : token('color.text.subtlest') }}><Star size={14} fill={isFav ? token('color.text.warning') : 'none'} /></button></div></td>;
@@ -1129,13 +1110,34 @@ export function AllProjectsTable({
       case 'members': return <td key={colKey}><MemberManagePopover project={p} /></td>;
       case 'sync': return (
         <td key={colKey}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, color: token('color.text.subtle'), fontFamily: 'var(--cp-font-body)' }}>
-            <Tooltip content={syncTooltipText} position="top">
-              <span className={cn("w-2 h-2 rounded-full flex-shrink-0 cursor-help", syncDotColor)} />
-            </Tooltip>
-            <span style={{ fontWeight: 500, color: syncAge ? token('color.text') : token('color.text.subtlest') }}>
-              {syncAge ? `${issueCount} issues · ${syncAge}` : 'Not synced'}
-            </span>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+            {/* Line 1: issue count + freshness */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, color: token('color.text.subtle'), fontFamily: 'var(--cp-font-body)' }}>
+              <Tooltip content={syncTooltipText} position="top">
+                <span className={cn("w-2 h-2 rounded-full flex-shrink-0 cursor-help", syncDotColor)} />
+              </Tooltip>
+              <span style={{ fontWeight: 500, color: syncAge ? token('color.text') : token('color.text.subtlest') }}>
+                {syncAge ? `${issueCount} issues · ${syncAge}` : 'Not synced'}
+              </span>
+            </div>
+            {/* Line 2: 24h activity footprint — only when there's activity */}
+            {hasActivityToday && (
+              <div style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11, color: token('color.text.subtlest'), fontFamily: 'var(--cp-font-body)', paddingLeft: 14 }}>
+                {updatedToday > 0 && (
+                  <span title={`${updatedToday} issue${updatedToday === 1 ? '' : 's'} updated in the last 24h`}>
+                    ↑ {updatedToday} updated
+                  </span>
+                )}
+                {updatedToday > 0 && createdToday > 0 && (
+                  <span style={{ color: token('color.border') }}>·</span>
+                )}
+                {createdToday > 0 && (
+                  <span title={`${createdToday} issue${createdToday === 1 ? '' : 's'} created in the last 24h`}>
+                    + {createdToday} new
+                  </span>
+                )}
+              </div>
+            )}
           </div>
         </td>
       );

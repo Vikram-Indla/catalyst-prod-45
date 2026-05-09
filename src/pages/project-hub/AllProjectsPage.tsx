@@ -23,7 +23,8 @@ import { CatalystPageHeader } from '@/components/shared/CatalystPageHeader';
 import { useNavBreakpoint } from '@/hooks/useNavBreakpoint';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { supabase } from '@/integrations/supabase/client';
-import { buildSyncCountFilter, SYNC_COUNT_DATE_BOUNDARY } from '@/hooks/projecthub-sync-utils';
+import { buildProjectSyncStats, SYNC_COUNT_DATE_BOUNDARY } from '@/hooks/projecthub-sync-utils';
+import type { ProjectSyncStats } from '@/hooks/projecthub-sync-utils';
 const WiringAuditLazy = lazy(() => import('@/components/project-hub/WiringAudit').then(m => ({ default: m.WiringAudit })));
 import {
   Select,
@@ -63,33 +64,35 @@ export default function AllProjectsPage() {
   const toggleFav = useToggleFavorite();
   useProjectsRealtime();
 
-  // Fetch 2026+ issue counts from ph_issues (jira_updated_at >= 2026-01-01 only).
-  // Uses buildSyncCountFilter so the boundary is tested and single-sourced.
-  const { data: syncCountMap } = useQuery({
-    queryKey: ['project-sync-counts-2026'],
+  // Fetch 2026+ issue stats from ph_issues — count, latest timestamp, 24h activity.
+  // buildProjectSyncStats aggregates all three in a single client-side pass.
+  const { data: syncStatsMap } = useQuery({
+    queryKey: ['project-sync-stats-2026'],
     queryFn: async () => {
       const { data } = await (supabase as any)
         .from('ph_issues')
-        .select('project_key, jira_updated_at')
+        .select('project_key, jira_updated_at, jira_created_at')
         .gte('jira_updated_at', SYNC_COUNT_DATE_BOUNDARY)
         .is('deleted_at', null)
         .is('jira_removed_at', null)
         .limit(10000);
-      return buildSyncCountFilter((data ?? []) as Array<{ project_key: string | null; jira_updated_at: string | null }>);
+      return buildProjectSyncStats(
+        (data ?? []) as Array<{ project_key: string | null; jira_updated_at: string | null; jira_created_at: string | null }>
+      );
     },
     staleTime: 3 * 60_000,
     gcTime: 10 * 60_000,
     refetchOnWindowFocus: false,
   });
 
-  // Enrich projects with 2026+ Jira issue counts
+  // Enrich projects with per-project sync stats (count + latest timestamp)
   const enrichedProjects = useMemo(() => {
-    if (!syncCountMap) return projects;
+    if (!syncStatsMap) return projects;
     return projects.map(p => ({
       ...p,
-      jira_issue_count: syncCountMap[p.project_key] ?? 0,
+      jira_issue_count: syncStatsMap[p.project_key]?.count ?? 0,
     }));
-  }, [projects, syncCountMap]);
+  }, [projects, syncStatsMap]);
 
   const allMemberIds = useMemo(() => enrichedProjects.flatMap(p => p.member_ids ?? []), [enrichedProjects]);
   useMemberProfiles(allMemberIds);
@@ -292,6 +295,7 @@ export default function AllProjectsPage() {
                 onToggleRow={handleToggleRow}
                 onToggleAll={handleToggleAll}
                 pageOffset={startIdx}
+                projectSyncStats={syncStatsMap}
               />
             </div>
             {totalPages > 1 && (

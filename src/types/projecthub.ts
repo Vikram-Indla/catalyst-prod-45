@@ -137,8 +137,6 @@ export interface ProjectTeamMember {
   project_role: string;  // project_members.role (admin/contributor/viewer)
 }
 
-// Card view deprecated — list is the only supported mode.
-export type ViewMode = 'list';
 export type SortColumn = 'name' | 'department' | 'status' | 'health_status' | 'total_epics' | 'total_stories' | 'total_tasks' | 'total_issues';
 export type SortDirection = 'asc' | 'desc';
 
