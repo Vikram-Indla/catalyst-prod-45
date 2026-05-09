@@ -58,7 +58,6 @@ import EditorCloseIcon from '@atlaskit/icon/glyph/editor/close';
 import VidFullScreenOnIcon from '@atlaskit/icon/glyph/vid-full-screen-on';
 import VidFullScreenOffIcon from '@atlaskit/icon/glyph/vid-full-screen-off';
 import MoreIcon from '@atlaskit/icon/glyph/more';
-import ShortcutIcon from '@atlaskit/icon/glyph/shortcut';
 
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -232,16 +231,6 @@ const dividerStyles = xcss({
   borderBottomStyle: 'solid',
   borderColor: 'color.border',
   marginBlock: 'space.100',
-});
-
-const helperLinkStyles = xcss({
-  display: 'inline-flex',
-  alignItems: 'center',
-  gap: 'space.050',
-  marginTop: 'space.075',
-  font: 'font.body.small',
-  color: 'color.link',
-  textDecoration: 'none',
 });
 
 
@@ -462,12 +451,6 @@ export function CreateStoryModal({
   const { data: members = [] } = useTeamMembers();
   const { data: releases = [], isLoading: releasesLoading, error: releasesError } = useProjectReleases(form.projectId);
 
-  // Debug — remove after verification
-  useEffect(() => {
-    if (form.projectId) {
-      console.log('[CreateModal] releases for project', form.projectId, ':', releases, 'error:', releasesError);
-    }
-  }, [releases, form.projectId, releasesError]);
   const createMutation = useCreateStoryMutation();
 
   const [workType, setWorkType] = useState<string>('Story');
@@ -494,8 +477,6 @@ export function CreateStoryModal({
     [workflowStatuses],
   );
   const [submitAttempted, setSubmitAttempted] = useState(false);
-  // BEH-003: blur-based summary validation — error shows after leaving empty field
-  const [summaryBlurred, setSummaryBlurred] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
 
   const isCreateLinkedMode = !!linkedSource;
@@ -702,16 +683,13 @@ export function CreateStoryModal({
 
   const handleClose = useCallback(() => {
     setSubmitAttempted(false);
-    setSummaryBlurred(false);
     setFormError(null);
     onClose();
   }, [onClose]);
 
-  // BEH-003: error on blur OR after submit attempt
+  // Summary error only shows after an explicit submit attempt — never on load or blur.
   const summaryError =
-    (submitAttempted || summaryBlurred) && !form.summary.trim()
-      ? 'Summary is required'
-      : undefined;
+    submitAttempted && !form.summary.trim() ? 'Summary is required' : undefined;
 
   // ─────────────────────────────────────────────────────────────────────────
   // Render
@@ -786,17 +764,6 @@ export function CreateStoryModal({
                       formatOptionLabel={formatIconOption}
                       isSearchable={false}
                     />
-                    <a
-                      href="https://support.atlassian.com/jira-software-cloud/docs/what-are-issue-types/"
-                      target="jira-help"
-                      rel="noopener noreferrer"
-                      onClick={(e) => { e.preventDefault(); window.open((e.currentTarget as HTMLAnchorElement).href, 'jira-help', 'width=600,height=500,noopener,noreferrer'); }}
-                    >
-                      <Box xcss={helperLinkStyles}>
-                        Learn about work types
-                        <ShortcutIcon label="" size="small" />
-                      </Box>
-                    </a>
                   </>
                 )}
               </Field>
@@ -837,8 +804,6 @@ export function CreateStoryModal({
                 </Field>
               )}
 
-              <Box xcss={dividerStyles} />
-
               {/* ── Status — read-only Lozenge (Jira-parity, Bucket B 2026-05-09).
                   In Jira's Create modal, status is NOT editable — it is pre-set
                   to the issue type's initial workflow status and displayed as a
@@ -853,16 +818,12 @@ export function CreateStoryModal({
                         paddingInline: 'space.0',
                       })}
                     >
-                      <Lozenge
-                        appearance={statusAppearance(form.status || 'To Do')}
-                        isBold
-                      >
-                        {form.status || 'To Do'}
-                      </Lozenge>
+                      <span data-cp-lozenge-jira-parity>
+                        <Lozenge appearance={statusAppearance(form.status || 'To Do')}>
+                          {form.status || 'To Do'}
+                        </Lozenge>
+                      </span>
                     </Box>
-                    <HelperMessage>
-                      Initial status — set by the workflow for this work type
-                    </HelperMessage>
                   </>
                 )}
               </Field>
@@ -879,7 +840,6 @@ export function CreateStoryModal({
                       onChange={(e: any) =>
                         updateField('summary', e.target.value)
                       }
-                      onBlur={() => setSummaryBlurred(true)}
                       maxLength={200}
                     />
                     {summaryError && (
@@ -945,10 +905,6 @@ export function CreateStoryModal({
                       formatOptionLabel={formatIconOption}
                       isClearable
                     />
-                    <HelperMessage>
-                      Your work type hierarchy determines the work items
-                      you can select here.
-                    </HelperMessage>
                   </>
                 )}
               </Field>
@@ -975,17 +931,6 @@ export function CreateStoryModal({
                       formatOptionLabel={formatIconOption}
                       isSearchable={false}
                     />
-                    <a
-                      href="https://support.atlassian.com/jira-software-cloud/docs/what-is-issue-priority/"
-                      target="jira-help"
-                      rel="noopener noreferrer"
-                      onClick={(e) => { e.preventDefault(); window.open((e.currentTarget as HTMLAnchorElement).href, 'jira-help', 'width=600,height=500,noopener,noreferrer'); }}
-                    >
-                      <Box xcss={helperLinkStyles}>
-                        Learn about priority levels
-                        <ShortcutIcon label="" size="small" />
-                      </Box>
-                    </a>
                   </>
                 )}
               </Field>
