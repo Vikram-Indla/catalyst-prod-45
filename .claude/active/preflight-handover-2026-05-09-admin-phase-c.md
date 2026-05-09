@@ -96,7 +96,7 @@
       ThemeGroups.tsx (Users icon) + ProductSettings.tsx (Building2 icon) → spawned as separate task
   - [x] 8.3 review skill — manual pass: 0 a11y violations, 0 missing label props on ADS icons, TS clean
   - [x] 8.4 security-review — 7 unguarded admin pages FIXED (commit a61fe2edc; TDD: admin-guard-coverage.test.ts)
-  - [ ] 8.5 Ask Vikram: final Phase C sign-off
+  - [x] 8.5 Ask Vikram: final Phase C sign-off — approved 2026-05-10
   - [x] 8.6 CLAUDE.md lesson — jira-compare exemption for non-WorkHub admin pages (commit 76a07a908)
 
 ## Security Findings — RESOLVED (commit a61fe2edc, 2026-05-10)
@@ -130,7 +130,7 @@ All Phase C gates are complete or spawned:
 - jira-compare WorkHub spot-check: ✅ 8/9 pages pass (1 pre-existing runtime error unrelated to ADS)
 - Deferred (never started): Block 1 (RLS audit), Block 2 (Dialog migration)
 - Remaining separate task: ThemeGroups + ProductSettings lucide violations (spawned as chip task)
-- **Awaiting: Vikram final sign-off (8.5)**
+- **Phase C COMPLETE — Vikram sign-off received 2026-05-10**
 
 ## Open items / next session start
 Paste as first message:
