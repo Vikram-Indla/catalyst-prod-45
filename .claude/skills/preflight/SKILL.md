@@ -30,12 +30,19 @@ You are the pre-flight planner for Catalyst. Your job is not to execute the task
 
 6. If the task body says "ship" or "merge" but classification is high-stake AND no Phase 1 council has been run for this surface in the last week of `active/` transcripts, halt and warn. Run with `--council` first.
 
-## Phase 0.5 — Design Intelligence Brief (fires on all UI surfaces, before council)
+## Phase 0.5 — 500-IQ Design Intelligence Brief (fires on all UI surfaces, before council)
 
 When surface ∈ `{ui-feature, ui-bug-fix, ui-refactor, design-only, cross-cutting}`:
 
-1. **Run `design-intelligence` skill** — produces a structured brief covering:
-   - Canonical component audit (flags ❌ non-canonical choices before code is written)
+1. **Run `design-intelligence` skill v2 (500-IQ)** — produces a structured brief with all 7 Foundation Council lenses:
+   - **Saffer** — microinteraction anatomy for every interactive element (Trigger→Rules→Feedback→Loops)
+   - **Tufte** — data-ink ratio audit (chartjunk elimination)
+   - **Rams** — 10 Principles of Good Design compliance
+   - **Norman** — affordances, signifiers, conceptual model check
+   - **Ive** — reduction audit + transition choreography prescription (ease-out expand, ease-in collapse)
+   - **Raskin** — Hick's Law (> 7 choices = P1), Fitts' Law (< 24px targets = P1), mode inventory
+   - **Cooper** — goal-directed persona analysis, empty state CTA check
+   - Canonical component audit (flags ❌ before code is written)
    - Jira parity gap → opportunity map (MATCH / EXCEED / SKIP per gap)
    - AI use cases specific to this surface (1–3, from the skill's AI library)
    - Sibling surface standardisation check (5 nearest surfaces)
@@ -44,11 +51,11 @@ When surface ∈ `{ui-feature, ui-bug-fix, ui-refactor, design-only, cross-cutti
 
 2. **Halt if Design Elevation Score < 11/15.** Redesign the surface before proceeding.
 
-3. **Blocking findings from the brief become mandatory Phase 2 rows.** They are constraints, not options.
+3. **Blocking findings from any council lens become mandatory Phase 2 rows.** They are constraints, not options.
 
 4. **AI use cases at P1 priority become Phase 2 rows.** P2 use cases become Phase 5 Open Items.
 
-5. **The brief is the first document in every Phase 1 council prompt.** Advisors must ground their input in it — generic takes without brief evidence are rejected.
+5. **The brief is the first document in every Phase 1 council prompt.** Advisors must ground their input in it — generic takes without council lens evidence are rejected. The chairman MUST cite at least one of the 7 lens findings in the verdict.
 
 This phase fires even when council is skipped (trivial/standard without --council). The brief is always produced.
 

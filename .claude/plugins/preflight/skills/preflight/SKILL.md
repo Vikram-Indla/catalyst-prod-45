@@ -79,17 +79,25 @@ This envelope is appended to the Phase 1 council prompt. Every advisor receives 
 - Probe primitive failed (e.g., Chrome MCP unreachable) → halt. Surface the failure to user, don't substitute with assumption.
 - Schema probe returns "field not in screen scheme" for a field the task wants to add → halt. CLAUDE.md anti-pattern #18 — schema-probe before field add.
 
-### Design Intelligence Brief (mandatory sub-step of Phase 0.5 for all UI surfaces)
+### 500-IQ Design Intelligence Brief (mandatory sub-step of Phase 0.5 for all UI surfaces)
 
-After evidence acquisition probes complete, run `design-intelligence` skill. Produces:
+After evidence acquisition probes complete, run `design-intelligence` skill v2 (500-IQ). Produces a Foundation Council Brief with all 7 lens analyses:
+
+- **Saffer** — microinteraction anatomy (Trigger→Rules→Feedback→Loops) for every interactive element
+- **Tufte** — data-ink ratio audit, chartjunk flagging
+- **Rams** — 10 Principles compliance (especially Principle 8: thorough error states; Principle 10: minimum design)
+- **Norman** — affordances, signifiers, false affordances, async feedback gaps
+- **Ive** — reduction audit, transition choreography (ease-out expand, ease-in collapse, stagger sequences)
+- **Raskin** — Hick's Law (> 7 choices = P1), Fitts' Law, mode inventory with visual indicator check
+- **Cooper** — goal-directed persona analysis, task vs goal labeling, empty state CTA audit
 - Canonical component audit (❌ = halt)
 - Jira parity gap → opportunity map (MATCH / EXCEED / SKIP)
 - AI use cases specific to this surface (P1 → Phase 2 rows, P2 → Phase 5 Open Items)
-- Sibling surface standardisation check
+- Sibling surface standardisation check (5 nearest siblings)
 - Design Elevation Score /15 (< 11 = halt, redesign)
-- Blocking findings (become mandatory Phase 2 rows)
+- Blocking findings from any of the 7 lenses (become mandatory Phase 2 rows)
 
-The brief is the first document every Phase 1 council advisor receives. Evidence-free council verdicts are rejected.
+The brief is the first document every Phase 1 council advisor receives. The chairman MUST cite at least one of the 7 lens findings in the verdict. Evidence-free council verdicts are rejected.
 
 ## Phase 1 — Council (conditional)
 

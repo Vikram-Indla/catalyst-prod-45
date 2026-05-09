@@ -162,10 +162,39 @@ Score per heuristic: **3** = fully met · **2** = minor gap · **1** = significa
 
 ---
 
+## 500-IQ Foundation Council Pre-Scan (mandatory — runs before heuristic scoring)
+
+Before scoring H1–H10, run the Foundation Council scan from `design-intelligence v2`. This takes ~2 minutes and produces council findings that feed DIRECTLY into the heuristic scores:
+
+| Council lens | Heuristics informed |
+|---|---|
+| Saffer (micro-interactions) | H1 (system status feedback), H3 (user control), H7 (efficiency) |
+| Tufte (data-ink) | H8 (minimalism), H9 (visual hierarchy) |
+| Rams (10 principles) | H3 (thoroughness of error states), H8 (as little design as possible) |
+| Norman (affordances) | H2 (real world match), H5 (error prevention), H6 (recognition over recall) |
+| Ive (reduction) | H8 (aesthetic), H9 (typography) |
+| Raskin (cognitive efficiency) | H7 (efficiency — Hick's/Fitts' Law violations), H3 (no mode traps) |
+| Cooper (goal-directed) | H2 (match to user's mental model), H10 (help and documentation — CTAs in empty states) |
+
+Emit this block when this layer activates:
+
+```
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🎯 design-critique · 500-IQ COUNCIL PRE-SCAN
+Surface: {surface} · Route: {route}
+Council: Saffer · Tufte · Rams · Norman · Ive · Raskin · Cooper
+Pre-scan complete → feeding into H1-H10 scores
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+```
+
+Council findings elevate heuristic severity: a Raskin P0 (mode trap) automatically makes H3 = 0/3. A Cooper P0 (empty state without CTA) automatically makes H10 = 0/3. The council cannot be overridden by the heuristic scorer.
+
+---
+
 ## Critique Protocol
 
-### Step 1 — Screenshot all states
-Capture screenshots of the surface in:
+### Step 1 — Screenshot all states + 500-IQ Council Pre-Scan
+First run the 500-IQ Foundation Council Pre-Scan (above). Then capture screenshots of the surface in:
 - Default loaded state
 - Empty state (no data)
 - Loading state (skeleton or spinner)

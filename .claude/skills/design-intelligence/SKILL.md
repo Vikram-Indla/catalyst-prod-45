@@ -1,33 +1,51 @@
 ---
 name: design-intelligence
 description: >-
-  Proactive design intelligence layer for the Catalyst preflight pipeline.
-  Fires automatically on every UI surface task BEFORE the council. Scans
-  the surface under discussion against the Catalyst canonical component
-  inventory, flags anti-patterns before code is written, identifies Jira
-  parity gaps as opportunities (not defects), proposes 1–3 AI use cases
-  specific to the surface, and enforces standardisation against the 5
-  nearest sibling surfaces. Output: a structured "Design Intelligence Brief"
-  that becomes the first input to Phase 1 council deliberation.
-  Triggers on: any preflight with surface ∈ {ui-feature, ui-bug-fix,
-  ui-refactor, design-only, cross-cutting}. Also manually triggerable via
-  `/design-intelligence [surface description]`.
-version: 1.0.0
+  500-IQ proactive design intelligence layer for the Catalyst preflight
+  pipeline. Fires automatically on every UI surface task BEFORE the council.
+  Activates the Foundation Council of 7 design masters (Saffer, Tufte, Rams,
+  Norman, Ive, Raskin, Cooper) as mandatory analysis lenses before any pixel
+  is committed. Scans canonical components, maps Jira parity gaps as
+  opportunities, proposes 1-3 surface-specific AI use cases, enforces sibling
+  standardisation, and scores Design Elevation /15. Output: a structured
+  Design Intelligence Brief v2 that becomes the first input to every Phase 1
+  council deliberation. Triggers on: any preflight with surface ∈
+  {ui-feature, ui-bug-fix, ui-refactor, design-only, cross-cutting}. Manual:
+  /design-intelligence [surface description].
+version: 2.0.0
+iq_level: 500
 author: Vikram × Claude, 2026-05-09
 metadata:
   category: design-quality
-  tags: [design, ai, standardisation, intelligence, preflight, proactive]
+  tags: [design, ai, standardisation, intelligence, preflight, proactive, 500iq, foundation-council]
   maturity: stable
   pipeline_position: Phase 0.5 (fires after evidence acquisition, before council)
+  council:
+    - name: Dan Saffer
+      domain: Microinteractions (Trigger→Rules→Feedback→Loops/Modes)
+    - name: Edward Tufte
+      domain: Data-ink ratio, chartjunk elimination, small multiples
+    - name: Dieter Rams
+      domain: 10 Principles of Good Design (honest, unobtrusive, long-lasting, thorough)
+    - name: Don Norman
+      domain: Affordances, signifiers, feedback loops, conceptual models (The Design of Everyday Things)
+    - name: Jony Ive
+      domain: Material honesty in digital, reduction to essence, inevitable transitions
+    - name: Jef Raskin
+      domain: No modes, minimal attention shifts, GOMS-modeled efficiency
+    - name: Alan Cooper
+      domain: Goal-directed design (design for the goal, not the task), persona-centered flows
 ---
 
-# Design Intelligence — Proactive Surface Brief
+# Design Intelligence v2 — 500-IQ Foundation Council Brief
 
 ## Purpose
 
-Catalyst's quality bar is: **better than Jira on every surface, not merely parity.** Jira parity is the floor, not the ceiling. This skill fills the gap between "does it match Jira?" (jira-compare) and "does it exceed Jira?" (design-intelligence). It runs before implementation starts so recommendations shape the build, not retrofit it.
+Catalyst's quality bar is: **better than Jira on every surface, not merely parity.** Jira parity is the floor, not the ceiling. This skill fills the gap between "does it match Jira?" (jira-compare) and "does it exceed Jira in a way that is principled and defensible?" (design-intelligence v2).
 
-The three questions it answers, for every surface, before a line of code is written:
+The v2 upgrade adds the **Foundation Council** — 7 design masters whose combined lenses constitute 500-IQ design judgment. Every surface is interrogated through all 7 lenses before a line of code is written. This is not a checklist — it is a mandatory epistemological framework.
+
+The three questions from v1, now interrogated by the council:
 
 1. **What anti-patterns are already present or about to be introduced?** (prevent regression)
 2. **What does Jira do here, and what can Catalyst do better?** (identify opportunities)
@@ -41,21 +59,177 @@ When this skill fires, emit this exact block in chat BEFORE producing any output
 
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-🔍 design-intelligence · DISCOVERY
+🔍 design-intelligence v2 · 500-IQ DISCOVERY
 Surface: {surface name} · {route}
-Scanning: canonical components · Jira parity gaps · AI use cases · sibling standardisation
+Council: Saffer · Tufte · Rams · Norman · Ive · Raskin · Cooper
+Scanning: micro-interactions · data-ink · canonical components · AI use cases
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ```
 
-When the brief is complete and violations are injected, emit:
+When the brief is complete:
 
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-🔍 design-intelligence · BRIEF COMPLETE
-{N} violations found · {M} AI opportunities · Score: {X}/15
+🔍 design-intelligence v2 · BRIEF COMPLETE
+{N} council findings · {M} AI opportunities · Score: {X}/15
+{PROCEED / HALT — threshold 11/15}
 Red arrows injected on live page. Screenshot follows.
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ```
+
+---
+
+## The Foundation Council — 7 Lenses, 500-IQ Judgment
+
+Every surface analysis runs ALL 7 lenses. A finding from ANY lens is a blocking finding. The council does not vote — each master has veto power on their domain.
+
+---
+
+### Lens 1 — Dan Saffer: Microinteraction Anatomy
+**Framework:** Trigger → Rules → Feedback → Loops/Modes
+
+For every interactive element on the surface, decompose it into the four components:
+
+| Element | Trigger | Rules | Feedback | Loops/Modes |
+|---|---|---|---|---|
+| {button/input/toggle} | {what initiates it — manual or system} | {what the system does, with constraints} | {what the user sees/hears/feels} | {does it recur? does it change state?} |
+
+**Saffer red flags:**
+- Feedback delay > 100ms (violates perceived immediacy — Fitts' Law for time)
+- Mode switches with no visual mode indicator (Raskin collision — both flag)
+- Trigger that is non-obvious (icon without label in non-expert context)
+- Missing error state in Rules (what happens when the action fails?)
+- Infinite loops with no exit affordance
+
+**Application to Catalyst:** Every star button, inline-create, tab switch, sidebar toggle, status change, and assignee picker must pass Saffer's anatomy. The ageing tab's stale-row hover state must have: trigger (hover), rules (show 3-dot menu at opacity 1), feedback (opacity transition 150ms), loop (menu closes on blur — single mode, no modal trap).
+
+---
+
+### Lens 2 — Edward Tufte: Data-Ink Ratio
+**Principle:** Maximize data-ink ratio. Every pixel that doesn't carry data is chartjunk and should be eliminated.
+
+**Tufte audit for each surface element:**
+
+| Element | Data ink | Non-data ink | Ratio | Verdict |
+|---|---|---|---|---|
+| {element} | {pixels encoding data} | {borders, backgrounds, decorations carrying no data} | {D/(D+N)} | ✅ KEEP / ❌ STRIP |
+
+**Tufte red flags:**
+- Table grid lines thicker than 0.5px hairlines (grid ink should whisper, not shout)
+- Status lozenges with background fill when text color alone would suffice for low-density contexts
+- Redundant labels (title + tooltip + ARIA label all saying the same thing)
+- "Ink for ink's sake" — borders around items that are already separated by whitespace
+- Sparkline axes (the sparkline IS the axis — don't add one)
+
+**Application to Catalyst:** The For You tab bar has 5 tabs. Tufte asks: does each tab label need a badge count? Only if the count is the first thing the user acts on. A badge that says "3" when the user already knows they have 3 items = chartjunk. Reduce until what remains is irreducible.
+
+---
+
+### Lens 3 — Dieter Rams: 10 Principles of Good Design
+**Principles (apply all 10 to every surface):**
+
+1. **Innovative** — does this offer something Jira doesn't? (or is it a copy with worse execution?)
+2. **Useful** — does every element serve a user goal? (not a developer convenience)
+3. **Aesthetic** — is the design as minimal as it can be while remaining beautiful?
+4. **Understandable** — does the product communicate its function without explanation?
+5. **Unobtrusive** — does it allow the user to focus on their work, not on the UI?
+6. **Honest** — does it not deceive? (no fake progressive disclosure, no "instant" AI that isn't)
+7. **Long-lasting** — will this design age well? (no trend-dependent choices)
+8. **Thorough** — is every detail considered? (not just the happy path)
+9. **Environmentally friendly** — does it respect the user's attention budget? (cognitive load)
+10. **As little design as possible** — have you removed everything that doesn't need to be there?
+
+**Rams red flags:**
+- Principle 5 violation: UI chrome that competes with content (the sidebar animating while a user is reading)
+- Principle 8 violation: error state not designed (only happy path mocked)
+- Principle 10 violation: more than 3 actions visible at once on a list row (3-dot menu is the safety valve)
+
+---
+
+### Lens 4 — Don Norman: Affordances, Signifiers, Feedback
+**Framework:** Affordance (what action the object permits) vs Signifier (what communicates that affordance) vs Feedback (response to action)
+
+For every interactive element:
+
+| Element | Affordance | Signifier | Feedback | Gap |
+|---|---|---|---|---|
+| {element} | {what it can do} | {how it communicates that} | {what response the user gets} | {missing signifier / delayed feedback / wrong affordance} |
+
+**Norman red flags:**
+- **False affordance** — something that looks clickable but isn't (a lozenge styled like a button)
+- **Hidden affordance** — hover-only actions with no visible trigger (star button at opacity 0 breaks discoverability for non-hoverers = touch users)
+- **Missing feedback** — async action (save, star, assign) with no success/fail signal
+- **Conceptual model mismatch** — UI uses "Archive" but data says "Close" — user thinks one thing, system does another
+- **Mapping errors** — status pill colors that don't match the user's expectation from Jira (green ≠ done on every surface)
+
+**Application to Catalyst:** The `onToggleStar` handler — does it give feedback (toast? icon state change?) within 100ms? If Supabase write is async and the icon flips optimistically, what happens on write failure? Norman demands the failure feedback be designed before the success feedback.
+
+---
+
+### Lens 5 — Jony Ive: Reduction and Material Honesty
+**Principle:** Design to the point where you cannot remove anything more. Every element must be honest about what it is. Digital "materials" (elevation, shadow, border) must be used only when they communicate genuine hierarchy, not decoration.
+
+**Ive audit:**
+
+| Element | Is it earning its place? | Is the material honest? | Reduction possible? |
+|---|---|---|---|
+| {element} | yes/no | yes/no (fake elevation, decorative shadow) | yes/no + how |
+
+**Ive red flags:**
+- Decorative shadows that don't communicate elevation (a flat list row with a drop shadow is lying)
+- Gradients for decoration rather than information encoding (gradients = state transitions in motion, not backgrounds)
+- "Almost round" radius that doesn't commit to being circular or being rectangular
+- Typography mixing 3+ weights on a single surface (visual noise)
+- Transitions that don't feel "inevitable" — they feel arbitrary (use ease-out for expand, ease-in for collapse — never linear)
+
+**Transition choreography rule (Ive):**
+- Expand (panel open, row expand): `ease-out` — quick start, gentle settle = feels "pulled open"
+- Collapse (panel close, row collapse): `ease-in` — gentle start, quick end = feels "falling shut"
+- Hover state: `ease` (symmetric) — feels "responsive but calm"
+- Error appear: no transition — appears instantly = urgency signal
+- Success appear: `ease-out 300ms` — gentle arrival = calm confirmation
+- Stagger animations: encode priority in sequence. Most important item animates first at t=0, secondary at t=40ms, tertiary at t=80ms. Never animate all items simultaneously — simultaneous = no hierarchy.
+
+---
+
+### Lens 6 — Jef Raskin: Cognitive Efficiency and No-Mode Design
+**Principle:** The interface must demand minimum attention from the user. Every mode (a state where the same input produces different output) is a tax on the user's attention. The goal is locus of attention minimization.
+
+**Raskin audit — modes inventory:**
+
+| Mode | How entered | How exited | Visual indicator | User error risk |
+|---|---|---|---|---|
+| {modal / popover / inline edit} | {trigger} | {ESC / click outside / save} | {visual delta from base state} | high/med/low |
+
+**Raskin red flags:**
+- Mode with no visual indicator (user cannot tell which mode they are in)
+- Two overlapping modes with conflicting keyboard shortcuts (ESC closes popover → ALSO closes modal = WatchersChip bug, already fixed)
+- Mode that auto-activates without user intent (auto-scroll on tab switch = attention hijack)
+- Hick's Law: n choices → decision time T = b·log₂(n+1). More than 7 choices in a menu = measurable slowdown. Cap at 7.
+- Fitts' Law: time to acquire target ∝ distance/size. Tiny targets (< 24px) at the edge of a scrollable container = guaranteed misclick rate.
+
+**Ageing tab example (Hick's Law applied):**
+Current: 16 undifferentiated rows, no grouping = T = b·log₂(17) ≈ 4b units of decision time
+Proposed: 3 age brackets (🔴90+ / 🟠60-90 / 🟡30-60) = T = b·log₂(4) = 2b units. 50% cognitive reduction from grouping alone.
+
+---
+
+### Lens 7 — Alan Cooper: Goal-Directed Design
+**Principle:** Design for the user's goal, not the task. A task is what the user does; a goal is what they want to achieve. The interface should always work toward the goal, even when the task is ambiguous.
+
+**Cooper audit — goal extraction:**
+
+For each user segment visible on the surface:
+
+| Persona | Primary goal on this surface | Tasks they perform | Is the UI optimized for the goal? | Gap |
+|---|---|---|---|---|
+| {persona} | {end goal} | {specific actions} | yes/no | {what's missing} |
+
+**Cooper red flags:**
+- Task-centric labeling ("Prioritized Backlog") when the goal is "what should I work on now?" — labels should answer the goal, not name the task
+- Workflow dead ends (no "next action" affordance after completing an item)
+- Information hierarchy that matches the data model, not the user's mental model (showing all 39 assigned items when the user wants the 3 most urgent)
+- Empty states that are informational but not actionable ("No items starred" without a CTA)
 
 ---
 
@@ -68,7 +242,6 @@ When violations are found, inject SVG arrows directly onto the live page using `
 Arrow injection template:
 ```js
 (function injectViolationArrows(violations) {
-  // Remove any existing overlay
   document.getElementById('__di_overlay')?.remove();
   const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
   svg.id = '__di_overlay';
@@ -77,7 +250,6 @@ Arrow injection template:
     width: '100vw', height: '100vh',
     pointerEvents: 'none', zIndex: 99999,
   });
-  // Define red arrowhead marker
   const defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
   const marker = document.createElementNS('http://www.w3.org/2000/svg', 'marker');
   marker.setAttribute('id', 'red-arrow');
@@ -94,7 +266,6 @@ Arrow injection template:
   svg.appendChild(defs);
 
   violations.forEach(({ x, y, label }) => {
-    // Arrow line
     const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
     line.setAttribute('x1', String(x - 60));
     line.setAttribute('y1', String(y));
@@ -104,7 +275,6 @@ Arrow injection template:
     line.setAttribute('stroke-width', '2');
     line.setAttribute('marker-end', 'url(#red-arrow)');
     svg.appendChild(line);
-    // Label background
     const bg = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
     bg.setAttribute('x', String(x - 220));
     bg.setAttribute('y', String(y - 11));
@@ -113,7 +283,6 @@ Arrow injection template:
     bg.setAttribute('rx', '3');
     bg.setAttribute('fill', '#E5493A');
     svg.appendChild(bg);
-    // Label text
     const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
     text.setAttribute('x', String(x - 216));
     text.setAttribute('y', String(y + 1));
@@ -125,115 +294,132 @@ Arrow injection template:
     svg.appendChild(text);
   });
   document.body.appendChild(svg);
-})([/* violations array: {x, y, label} */]);
+})([/* {x, y, label} per violation */]);
 ```
 
 Rules:
-- Take a screenshot immediately after injection — violations must be visible with red arrows.
-- Display screenshot inline in chat with caption: `🔴 VIOLATIONS — {surface} — {N} issues found`
+- Screenshot immediately after injection.
+- Caption: `🔴 VIOLATIONS — {surface} — {N} issues found — Council: {which lenses fired}`
 
 ### Post-fix phase — GREEN arrows
 
-After fixes are applied, replace red arrows with green arrows using the same coordinates + "FIXED" prefix on each label:
+After fixes, replace red with green using same coordinates + `FIXED:` prefix:
 
 ```js
-// Same template, replace '#E5493A' with '#22A06B', marker id 'green-arrow'
-// Labels become: 'FIXED: ' + original_label
+// Same template: replace '#E5493A' with '#22A06B', marker id 'green-arrow'
+// Labels: 'FIXED: ' + original_label
 ```
 
-- Take a screenshot immediately after green injection.
-- Display screenshot inline in chat with caption: `✅ FIXED — {surface} — {N} issues resolved`
+- Screenshot after green injection.
+- Caption: `✅ FIXED — {surface} — {N} resolved — Council validated`
 
-Raw screenshots with no arrows are REJECTED. Both red (discovery) and green (post-fix) screenshots are mandatory.
+Raw screenshots with no arrows are REJECTED.
+
+---
+
+## The Brief — Full Structure (v2)
+
+Output format for every surface. Council lenses are mandatory sections.
+
+```
+## Design Intelligence Brief v2 — {surface} — {date}
+IQ Level: 500 · Foundation Council: Active
+
+### 1. Canonical Component Audit
+| Component slot | Catalyst canonical | Detected / planned | Status |
+|---|---|---|---|
+| Work item type icon | JiraIssueTypeIcon (@/lib/jira-issue-type-icons) | [planned] | ✅ / ❌ |
+| Project avatar | ProjectIcon (@/components/shared/ProjectIcon) | … | |
+| Status indicator | StatusPill / @atlaskit/lozenge + data-cp-lozenge-jira-parity wrapper | … | |
+| Dropdown / menu | @atlaskit/dropdown-menu | … | |
+| Popup / popover | Self-rolled useRef + mousedown (CLAUDE.md 2026-05-05) | … | |
+| Color / token | token() from @atlaskit/tokens | … | |
+| Typography | 12px/600 headers · 14px/400 body · sentence-case | … | |
+
+❌ rows = H4 violations. Halt implementation until resolved.
+
+### 2. Foundation Council Analysis
+
+#### 2a. Saffer — Microinteraction Anatomy
+[For each interactive element: Trigger → Rules → Feedback → Loops/Modes table]
+[Red flags: missing feedback, hidden triggers, mode traps]
+
+#### 2b. Tufte — Data-Ink Ratio
+[Data ink vs chartjunk table per element]
+[Red flags: decorative borders, redundant labels, axis-for-axis-sake]
+
+#### 2c. Rams — 10 Principles Scan
+[Violations of any of the 10 principles]
+[Especially: Principle 8 (thoroughness — error state), Principle 10 (minimum design)]
+
+#### 2d. Norman — Affordances and Conceptual Model
+[Affordance / Signifier / Feedback table per element]
+[Red flags: false affordances, hidden affordances, missing async feedback]
+
+#### 2e. Ive — Reduction and Transition Choreography
+[Material honesty audit: is every shadow, border, gradient earning its place?]
+[Transition timing: ease-out expand, ease-in collapse, stagger sequence]
+[Red flags: decorative shadows, simultaneous animations, radius indecision]
+
+#### 2f. Raskin — Cognitive Efficiency
+[Modes inventory: what modes exist, how entered, how exited, visual indicator]
+[Hick's Law: n choices → T = b·log₂(n+1). Flag any menu > 7 items]
+[Fitts' Law: flag targets < 24px or far from predicted cursor path]
+
+#### 2g. Cooper — Goal-Directed Design
+[Persona × Goal × Task × Gap table]
+[Red flags: task labels instead of goal labels, workflow dead ends, empty states without CTA]
+
+### 3. Jira Parity Gap → Opportunity Map
+| Gap | Jira approach | Catalyst opportunity | Category | Recommendation |
+|---|---|---|---|---|
+| [gap] | [what Jira does] | [what Catalyst could do] | MATCH/EXCEED/SKIP | [action] |
+
+### 4. AI Use Cases (surface-specific, 1–3)
+| # | AI capability | Data source | ADS token | Priority |
+|---|---|---|---|---|
+| AI-1 | [capability] | [Supabase table/Edge Function] | [token] | P1/P2 |
+
+### 5. Sibling Surface Standardisation
+| Sibling | Shared primitive | Their pattern | Match required? |
+|---|---|---|---|
+| [surface] | [primitive] | [implementation] | yes/no |
+
+Rule: 4 of 5 siblings use X → this surface MUST use X.
+
+### 6. Design Elevation Score (pre-build estimate)
+| Dimension | Score (0–3) | Council lens | Rationale |
+|---|---|---|---|
+| Canonical compliance | /3 | H4 | |
+| Jira parity floor met | /3 | Norman/Cooper | |
+| Catalyst exceed opportunities | /3 | Rams/Ive | |
+| AI use case wired | /3 | Cooper (goal) | |
+| Sibling standardisation | /3 | H4/Raskin | |
+| **Total** | **/15** | | |
+
+Threshold: ≥ 11/15 to proceed. Below 11 = halt and redesign.
+
+### 7. Blocking Findings
+[All ❌ rows from section 1 + P0 council findings. These become mandatory Phase 2 rows.]
+```
 
 ---
 
 ## Trigger Conditions
 
 Fires automatically from preflight Phase 0.5 when:
-- Surface classification ∈ `{ui-feature, ui-bug-fix, ui-refactor, design-only, cross-cutting}`
-- Task body mentions any visible user-facing component
+- Surface ∈ `{ui-feature, ui-bug-fix, ui-refactor, design-only, cross-cutting}`
+- Any user-facing component is mentioned in the task body
 
 Manual trigger: `/design-intelligence [surface or feature description]`
 
----
-
-## The Brief — Structure (always produced)
-
-The output is a **Design Intelligence Brief** in this exact format. It becomes the first document in every Phase 1 council prompt.
-
-```
-## Design Intelligence Brief — {surface} — {date}
-
-### 1. Canonical Component Audit
-| Component slot | Catalyst canonical | Detected / planned | Status |
-|---|---|---|---|
-| Work item type icon | JiraIssueTypeIcon (@/lib/jira-issue-type-icons) | [what the PR/task plans to use] | ✅ / ❌ |
-| Project avatar | ProjectIcon (@/components/shared/ProjectIcon) | … | |
-| Status indicator | StatusPill (custom) / @atlaskit/lozenge + override | … | |
-| Sidebar nav item | SidebarBase + SidebarSection | … | |
-| Dropdown / menu | @atlaskit/dropdown-menu (NOT shadcn DropdownMenu) | … | |
-| Table row | @atlaskit/dynamic-table or JiraTable.tsx | … | |
-| Inline edit | @atlaskit/inline-edit | … | |
-| Color / token | token() from @atlaskit/tokens | … | |
-| Typography | ADS token stack (12/600 headers, 14/400 body) | … | |
-
-❌ rows = H4 violations. Halt implementation until resolved.
-
-### 2. Jira Parity Gap → Opportunity Map
-For each gap between Jira's surface and Catalyst's planned surface:
-| Gap | Jira approach | Catalyst opportunity | Recommendation |
-|---|---|---|---|
-| Recent items typing | No icon — just text truncation | JiraIssueTypeIcon + two-line layout | Already applied 2026-05-09 |
-| [next gap] | … | … | … |
-
-Opportunities are categorised:
-- **MATCH** — implement to Jira parity (floor)
-- **EXCEED** — implement better than Jira (target)
-- **SKIP** — deliberately below Jira (banned columns, Development section, etc.)
-
-### 3. AI Use Cases (surface-specific)
-For each surface, 1–3 AI enhancements that Catalyst can own and Jira cannot:
-
-| # | Surface | AI capability | Implementation hint | Priority |
-|---|---|---|---|---|
-| AI-1 | Sidebar Recent | **Predictive recency** — rank recent items by predicted next-visit probability (staleness × open PR count × last comment delta), not raw timestamp | Supabase Edge Function scoring recent items at query time; client receives pre-ranked list | P1 |
-| AI-2 | Recent list | **Smart resume** — detect "interrupted sessions" (item visited > 3 times in 2h, then abandoned) and surface with "Continue where you left off?" badge | `user_recent_items` frequency + gap analysis; badge renders as ADS `color.background.warning.subtle` pill | P2 |
-| AI-3 | Inline create | **Type prediction** — pre-select work item type in inline create based on the group context (e.g. if group header is a QA Bug status, default type = QA Bug) | Last-used-type per group stored in localStorage; override with LLM call if Jira screen scheme is available | P2 |
-
-### 4. Sibling Surface Standardisation Check
-The 5 nearest surfaces that use overlapping primitives:
-| Sibling surface | Shared primitive | Their pattern | Match planned? |
-|---|---|---|---|
-| BacklogPage list | JiraIssueTypeIcon | size=16, direct import | — |
-| GlobalSearchPanel | JiraIssueTypeIcon | size=16, direct import | — |
-| NotificationsPanel | WorkItemIcon (deprecated shim) | — | — |
-| AllWorkPage | JiraIssueTypeIcon | size=16, direct import | — |
-| KanbanBoardPage | JiraIssueTypeIcon | size=16, direct import | — |
-
-Rule: if 4 of 5 siblings use pattern X, the surface under design MUST use pattern X. No exceptions without explicit Vikram approval.
-
-### 5. Design Elevation Score (pre-build)
-Estimate before implementation. Re-score after implementation (design-critique does the post-build score).
-
-| Dimension | Score (0–3) | Rationale |
-|---|---|---|
-| Canonical compliance | /3 | |
-| Jira parity floor met | /3 | |
-| Catalyst exceed opportunities identified | /3 | |
-| AI use case wired | /3 | |
-| Sibling standardisation | /3 | |
-| **Total** | **/15** | |
-
-Threshold: **≥ 11/15** to proceed. Below 11 = halt and redesign.
-
-### 6. Blocking Findings (must resolve before Phase 1 council)
-List all ❌ rows from section 1 + any EXCEED opportunities that are P0.
-```
+Fires proactively (without preflight) when:
+- A feature is under discussion and no plan exists yet — emit the brief as a recommendation document, not a gate
+- User asks "how should I show X?" — run the 7 lenses and answer with the brief
 
 ---
 
-## Canonical Component Inventory (maintained here — update when a new canonical is established)
+## Canonical Component Inventory
 
 | Slot | Canonical component | Import path | Do NOT use |
 |---|---|---|---|
@@ -245,48 +431,46 @@ List all ❌ rows from section 1 + any EXCEED opportunities that are P0.
 | Table | `JiraTable` (complex) or `@atlaskit/dynamic-table` | project-local / `@atlaskit/dynamic-table` | shadcn Table, plain `<table>` |
 | Inline edit | `@atlaskit/inline-edit` | `@atlaskit/inline-edit` | contenteditable divs, shadcn Input in edit mode |
 | Color tokens | `token()` | `@atlaskit/tokens` | Raw hex, `text-slate-*`, Tailwind color classes |
-| Popup / popover | Self-rolled `useRef` + mousedown (see CLAUDE.md 2026-05-05) | — | `@atlaskit/popup` v4 (empty-portal bug), shadcn Popover |
+| Popup / popover | Self-rolled `useRef` + mousedown (CLAUDE.md 2026-05-05) | — | `@atlaskit/popup` v4 (empty-portal bug), shadcn Popover |
 | Typography | ADS token stack | `token()` | Tailwind text-* sizing |
-| Priority icon | `EditablePriority` | `@/components/catalyst/EditablePriority` | Lucide ArrowUp/Down as raw priority indicators |
+| Priority icon | `EditablePriority` | `@/components/catalyst/EditablePriority` | Lucide ArrowUp/Down raw |
 
 ---
 
 ## AI Use Case Library (surface-indexed)
 
-When this skill fires, pull the relevant rows for the surface under discussion. Add new use cases here as they are identified.
-
 ### Sidebar / Recent / Navigation
-- **Predictive recency rank** — score items by (recency × engagement frequency × open-action count) not raw timestamp. Jira shows raw timestamp; Catalyst can show ranked by predicted relevance.
-- **Smart resume badges** — detect interrupted sessions and surface "Continue?" affordance with ADS `warning.subtle` bg.
-- **Cross-project activity heatmap** — for power users with 5+ projects, show a minimap in the sidebar footer showing which projects had activity in the last 24h (dot size = activity density). Jira has nothing like this.
+- **Predictive recency rank** — score by (recency × engagement frequency × open-action count), not raw timestamp. Cooper lens: goal is "get back to work fast", not "see what I touched"
+- **Smart resume badges** — interrupted session detection. Saffer: trigger = gap > 30min after 3+ visits, feedback = ADS `warning.subtle` badge
+- **Cross-project activity heatmap** — dot-size = activity density, sidebar footer. Tufte: the dot IS the data, no axis
+
+### For You — All Tabs
+- **Archival Intelligence chip** — predicted archive date = last_updated + 90 days. Rams: honest (shows real deadline), Cooper: goal is "don't lose work to archival". ADS `color.background.danger.subtle` progress bar fill 0%→100% as date approaches
+- **Smart grouping** — group by `statusCategory` (not status label text). Raskin: fewer cognitive modes = faster decision. Hick's Law: 3 categories vs 16 labels = 50% reduction in decision time
 
 ### Project Hub / All Projects
-- **AI project health score** — per-project composite: overdue issues ÷ total, recent PR merge rate, blocker count. Single number (0–100) with ADS traffic-light color. Jira shows no such aggregate.
-- **Trend sparklines** — 7-day sparkline of issue throughput per project in the table row. Jira has no sparklines.
-- **Smart "Create project" pre-fill** — when user clicks Create Project, LLM suggests project key, name, and icon based on the name typed. Jira shows blank fields.
+- **AI project health score** — composite: overdue÷total, PR merge rate, blocker count. Tufte: single number encodes more than a full table row
+- **Trend sparklines** — 7-day throughput per project. Tufte: the sparkline is its own axis, no border needed
 
 ### Backlog / Work Lists
-- **AI story point estimator** — when inline create commits a summary, suggest a size (XS/S/M/L/XL) based on semantic similarity to closed issues.
-- **Duplicate detector** — as user types a new issue summary, surface a "similar existing issue" chip if cosine similarity > 0.85 against the project's issue embeddings.
-- **Smart assignee suggest** — suggest assignee based on who resolved the last 5 similar issues (type + label cluster).
+- **AI story point estimator** — semantic similarity to closed issues. Norman: signifier = subtle chip appearing after summary typed
+- **Duplicate detector** — cosine similarity > 0.85. Rams: honest — surfaces the duplicate, doesn't block the user
 
-### Detail Views / Sidebars
-- **AI description enhancer** — already exists as ImproveIssueDropdown in right rail. Ensure it is the ONLY AI entry point (no inline sparkle button — permanently banned).
-- **Relationship suggest** — after saving a new issue, AI scans for likely `is blocked by` / `duplicates` links based on title embedding match. Shows as a dismissible banner.
-
-### Kanban / Board
-- **Bottleneck detection** — highlight columns where average dwell time > project median. ADS `color.background.danger.subtle` column header wash. Jira has WIP limits but no AI dwell-time analysis.
-- **Swimlane auto-grouping** — suggest optimal swimlane dimension (assignee vs epic vs priority) based on current sprint composition.
+### Detail Views
+- **Relationship suggest** — after save, scan for likely `is blocked by` / `duplicates`. Saffer: system trigger (post-save), feedback = dismissible banner, loop = recurs on subsequent saves
 
 ---
 
 ## Hard Rules
 
-1. **AI use cases must be surface-specific.** Generic "add AI" recommendations are worthless. Every AI row must name the exact component it touches, the data source, and the ADS color token it renders with.
-2. **No AI recommendation that requires banned components** (Development section, Automation section, AI sparkle inline button, Service Now#, MDT Ref). AI use cases work within Catalyst's constraints.
-3. **Sibling standardisation rule is binary.** If 4+ of 5 siblings use a canonical, you must match it. There is no "discuss with council" — the council receives this as a constraint, not a question.
-4. **The brief is mandatory input to Phase 1.** No council proceeds without the brief. If the surface is trivial (council skipped), the brief still goes in the Phase 2 plan as a constraint row.
-5. **Update the inventory.** When a new canonical component is established in any session, add it to the Canonical Component Inventory table in this SKILL.md. Don't let it drift.
+1. **All 7 council lenses are mandatory.** Not optional, not "when relevant". Every surface gets all 7.
+2. **AI use cases must be surface-specific.** Generic "add AI" = rejected. Every AI row names exact component, data source, ADS token.
+3. **No AI recommendation that requires banned components.** AI works within Catalyst's constraint envelope.
+4. **Sibling standardisation is binary.** 4+ of 5 siblings use X → must match. No council debate.
+5. **The brief is mandatory input to Phase 1.** No council proceeds without it.
+6. **Update the inventory.** New canonical established = update this file immediately.
+7. **Transition choreography is prescribed.** ease-out expand, ease-in collapse. No negotiation per lens 5 (Ive).
+8. **Hick's Law applies.** > 7 items in any choice set = P1 finding. > 12 = P0.
 
 ---
 
@@ -295,45 +479,47 @@ When this skill fires, pull the relevant rows for the surface under discussion. 
 ```
 Phase 0  — Bootstrap (CLAUDE.md, skills list, prior handovers)
 Phase 0.5 — Evidence acquisition (jira-compare, ads-validator, schema-probe)
-           + design-intelligence Brief ← THIS SKILL (fires here)
-Phase 1  — Council (receives Phase 0.5 evidence + design-intelligence Brief)
+           + design-intelligence Brief v2 ← THIS SKILL (fires here, all 7 lenses)
+Phase 1  — Council (receives Phase 0.5 evidence + DI Brief as first document)
+           Chairman MUST cite at least one DI Brief finding in verdict
 Phase 2  — Plan synthesis (brief's blocking findings become mandatory rows)
 Phase 4  — Visual aid (brief's AI use cases become optional mockup rows)
 Phase 5  — Handover (brief's AI use case list appended to Open Items)
-Phase 6  — Closure Evidence (annotated screenshots, inline in chat)
+Phase 6  — Closure Evidence (annotated screenshots with council-validated green arrows)
 ```
-
-The brief's **Blocking Findings** (section 6) always become mandatory Phase 2 rows — they are not optional.
-The brief's **AI use cases** at P1 priority become Phase 2 rows. P2 become Phase 5 Open Items.
 
 ---
 
-## Worked Example — Sidebar Recent (2026-05-09, retrospective)
+## Worked Example — For You / Ageing Tab (500-IQ, 2026-05-09)
 
-This is what would have fired had the skill existed during the sidebar Recent build:
+**Saffer (microinteraction):** 16 row items with no hover menu. Trigger for "mark done" = invisible. Feedback for "stale" = none. Loop = user returns to the same stale item every session. Verdict: P0 — add hover-reveal 3-dot menu with Reassign / Archive / Escalate.
 
-**Canonical Component Audit:**
-- Work item type icon slot: ❌ — planned as coloured dot via `issueTypeColor()`. Canonical = `JiraIssueTypeIcon`. Halt.
+**Tufte (data-ink):** "Overdue SLA" label is group-header text with 0 data encoding. The TIME the item has been stale is the data. Replace the label with an age bracket (🔴 90+ days, 🟠 60–90, 🟡 30–60). The emoji IS the data-ink; the text bracket range IS the data. No background, no border needed on the group header itself.
 
-**Jira Parity Gap → Opportunity:**
-- Jira shows plain text with timestamp. Catalyst two-line (summary + KEY) already EXCEEDS Jira — keep.
-- Jira shows no type icon in Recent at all. Catalyst adding `JiraIssueTypeIcon` = EXCEED. Apply.
+**Rams (10 principles):** Principle 2 (useful) violated — items updated within 21 days are NOT ageing. BAU-4771 "In Progress" updated 3 weeks ago is a false positive. Filter: exclude `updated_at > now() - interval '21 days'`. Principle 8 (thorough): empty state for "no ageing items" not designed.
 
-**AI Use Cases proposed:**
-- AI-1: Predictive recency rank (P1)
-- AI-2: Smart resume badge (P2)
-- AI-3: Cross-project activity heatmap in sidebar footer (P2)
+**Norman (affordance):** "Overdue SLA" communicates a Jira-internal concept. The user's mental model is "things I should probably deal with". Label should say "Needs attention" — honest to the goal, not the data schema.
 
-**Sibling check:** BacklogPage, GlobalSearch, AllWork, Kanban all use `JiraIssueTypeIcon` size=16. Sidebar must match.
+**Ive (reduction):** Archival chip: `🗄 Archive by {date}` with color-fill progress bar. The bar IS the urgency signal. No border, no shadow. Transition on bar fill: ease-out 500ms on mount (deliberate, calm). The chip should feel inevitable — of course it shows when something is about to be archived.
 
-**Result:** Blocking finding caught before any code written. Council not needed for a trivial fix. Fix applied in < 5 minutes. Zero regression risk.
+**Raskin (cognitive efficiency):** 16 rows ungrouped = T = b·log₂(17) ≈ 4b decision units. 3 brackets = T = b·log₂(4) = 2b. 50% reduction. Mode: clicking "Archive" enters a confirmation mode — must have clear exit (Cancel) and visual indicator (row dims to 40% opacity during confirmation).
+
+**Cooper (goal-directed):** Persona = busy PM with 5 active projects. Goal = "clear the debt without losing context". Task = "identify and act on stale items". Gap: the tab currently shows ALL their assigned items — the goal requires only the STALE ones. Filter by default; add "Show all" toggle secondary.
+
+**Verdict:** Design Elevation Score = 3/15 current → target 13/15 with proposed fixes. HALT on current implementation. 7 mandatory Phase 2 rows emerge from this analysis.
 
 ---
 
 ## References
 
 - `CLAUDE.md` — canonical component rules, ban list, ADS-token mandate
-- `design-critique/SKILL.md` — post-build scoring (pairs with this skill)
-- `jira-compare/SKILL.md` — parity gate (provides evidence for section 2)
+- `design-critique/SKILL.md` — post-build scoring (H1-H10 against this brief's findings)
+- `jira-compare/SKILL.md` — parity gate (provides evidence for section 3)
 - `preflight/SKILL.md` — pipeline host
 - Atlassian Design System: https://atlassian.design/
+- Dan Saffer, *Microinteractions* (O'Reilly, 2013)
+- Edward Tufte, *The Visual Display of Quantitative Information* (Graphics Press, 1983)
+- Dieter Rams, *Less but Better* (Die Gestalten Verlag, 1995)
+- Don Norman, *The Design of Everyday Things* (Basic Books, 1988/2013)
+- Jef Raskin, *The Humane Interface* (Addison-Wesley, 2000)
+- Alan Cooper, *The Inmates Are Running the Asylum* (Sams, 1999)
