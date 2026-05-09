@@ -3,7 +3,7 @@ import { useResourceAssignments, type ResourceAssignment, type AssignmentStatus,
 import { useAssignmentBudgets, type LinkedResource, type AssignmentBudgetData } from '@/modules/capacity-planner/hooks/useInsourcedBudget';
 import Button from '@atlaskit/button/new';
 import Textfield from '@atlaskit/textfield';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/admin/admin-dialog';
 import { Plus, Pencil, Trash2, GripVertical, Briefcase, AlertTriangle, ChevronDown, ChevronRight, CalendarIcon, Download, Users, User } from 'lucide-react';
 import { exportAssignmentsToExcel } from '@/components/admin/assignments/exportAssignmentsToExcel';
 import { Calendar } from '@/components/ui/calendar';

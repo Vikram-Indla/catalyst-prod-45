@@ -201,12 +201,12 @@ export function WorkflowViewerModal({
                 No workflow found for issue type "{issueType ?? 'unknown'}".
                 Configure workflows at{' '}
                 <a
-                  href="/admin/v2/work-items/workflows"
+                  href="/admin/workhub/jira-activity-sync"
                   style={{ color: token('color.text.brand', '#0C66E4') }}
                   target="_blank"
                   rel="noreferrer"
                 >
-                  /admin/workflows
+                  /admin/workhub/jira-activity-sync
                 </a>.
               </div>
             ) : (
@@ -347,7 +347,7 @@ export function WorkflowViewerModal({
                   color: token('color.text.subtle', '#505258'),
                 }}>
                   <a
-                    href="/admin/v2/work-items/workflows"
+                    href="/admin/workhub/jira-activity-sync"
                     style={{ color: token('color.text.brand', '#0C66E4') }}
                     target="_blank"
                     rel="noreferrer"

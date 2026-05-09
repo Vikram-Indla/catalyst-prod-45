@@ -28,7 +28,7 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
+} from '@/components/admin/admin-alert-dialog';
 import { Search, MoreHorizontal, Power, PowerOff, Trash2, KeyRound, CheckCircle, XCircle, Clock, Download, Pencil, ArrowUpDown, ArrowUp, ArrowDown } from 'lucide-react';
 
 // Sortable column types

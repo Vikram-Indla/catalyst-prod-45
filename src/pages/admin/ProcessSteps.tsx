@@ -12,7 +12,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogFooter,
-} from '@/components/ui/dialog';
+} from '@/components/admin/admin-dialog';
 import {
   useDemandProcessSteps,
   useCreateDemandProcessStep,
