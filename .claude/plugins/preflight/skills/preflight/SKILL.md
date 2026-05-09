@@ -149,12 +149,10 @@ When the user declares a module, phase, or feature "done", "closed", "remove fro
    - Sidebar in expanded + collapsed state
    - Any flyout panels, modals, or popovers that are part of the module
    - Dark mode if the app supports it
-2. **Annotate every screenshot with directional arrows** (↓ ← → ↑) pointing at each changed element. Each arrow must have a short label: `← sentence-case headers (was UPPERCASE)`, `↓ two-line Recent layout (was truncated)`, etc. Raw screenshots with no arrows are **rejected** — the arrows ARE the evidence.
-3. **Punch a navigation path badge on every screenshot** — inject a prominent label pointing at the browser URL bar (or top-left of the frame) showing the exact route: `→ /project-hub/projects` or `→ Project Hub › All Projects`. This is the "how to get here" button for the reviewer. No nav path = screenshot is incomplete.
-4. **One caption per screenshot** summarising: what view, what changed, what was there before.
-4. **Embed the annotated screenshots in the handover** under a `## Closure Evidence` section.
-5. **Commit the handover** with the screenshots referenced so the next session has visual proof.
-6. **Open the artifacts folder** — run `open <active-folder-path>` so Finder navigates directly to the closure evidence. Print the full path in chat so the user can bookmark it. The folder is always `.claude/skills/preflight/active/` relative to the worktree root.
+2. **Inject SVG arrow annotations directly on the live page** (↓ ← → ↑) via `javascript_tool` — arrows point at each changed element, each labelled with before/after: `← sentence-case headers (was UPPERCASE)`. Raw screenshots with no arrows are **rejected**.
+3. **Display each annotated screenshot inline in the chat** using the `computer` screenshot action. The image appears directly in the conversation — the chat session IS the artefact. No file export, no folder, no disk storage needed.
+4. **One text caption per screenshot** in the chat: route · what view · what changed · what it replaced.
+5. **Update the handover** under `## Closure Evidence` with the caption list only — visuals live in the chat session above, not in files.
 
 This is non-negotiable. A closure with no annotated screenshots is an unverified closure. The arrows and labels must exist before the module is considered formally closed.
 

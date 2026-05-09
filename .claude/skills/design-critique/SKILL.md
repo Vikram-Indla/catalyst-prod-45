@@ -78,12 +78,10 @@ For each heuristic, state:
 When the critique is complete and findings are resolved:
 
 1. **Take maximum visual screenshots** covering every state listed in Step 1.
-2. **Annotate every screenshot with directional arrows** (↓ ← → ↑) pointing at each finding that was fixed. Every arrow MUST carry a label naming the before and after: `← AKDropdownMenu (was shadcn, dead)`, `↓ sentence-case "Key" (was "KEY")`, `→ 48px rows (was 56px hardcoded)`.
-3. **Raw screenshots with no arrows are rejected** — the annotations ARE the design evidence.
-4. **One caption per screenshot**: surface · what heuristic(s) improved · severity resolved.
-5. Embed the annotated screenshots under `## Design Closure Evidence` in the preflight handover.
-6. Commit before declaring the surface design-complete.
-7. **Open the artifacts folder** — run `open <active-folder-path>` so Finder navigates directly to the closure evidence. Print the full path in chat for the user to bookmark.
+2. **Inject SVG arrow annotations directly on the live page** (↓ ← → ↑) via `javascript_tool`. Every arrow carries a before/after label: `← AKDropdownMenu (was shadcn, dead)`. Raw screenshots with no arrows are **rejected**.
+3. **Display each annotated screenshot inline in the chat** — the conversation IS the artefact. No file export, no folder, no disk storage. Caption each image in chat: surface · heuristic(s) fixed · severity resolved.
+4. Update the preflight handover under `## Design Closure Evidence` with the **caption list only** — visuals live in the chat session above.
+5. Commit before declaring the surface design-complete.
 
 A critique that closes without annotated screenshots has NOT closed.
 

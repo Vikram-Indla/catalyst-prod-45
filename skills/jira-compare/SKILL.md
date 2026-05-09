@@ -615,12 +615,10 @@ When the user declares any surface, feature, or audit cycle "done", "closed", "l
    - Sidebar/panel in expanded AND collapsed states
    - Any open modals, dropdowns, or flyouts that were changed
    - Dark mode if the surface supports it
-2. **Annotate every screenshot with directional arrows** (↓ ← → ↑) pointing at each changed element. Every arrow MUST carry a label: `← sentence-case headers (was UPPERCASE)`, `↓ two-line Recent (was truncated single-line)`, `→ ProjectIcon wired (was coloured square)`. **Raw screenshots with no arrows are rejected** — the annotated arrows ARE the closure evidence.
-2a. **Punch a navigation path badge on every screenshot** — a prominent pill/badge pointing at the URL bar showing `→ /route/path` AND the breadcrumb trail `Project Hub › All Projects`. This lets any reviewer navigate directly to the exact view without guessing. Missing nav path = screenshot rejected.
-3. **One caption per screenshot**: view name · what changed · what it replaced.
-4. Update `HANDOVER.md` under `## Closure Evidence` with the annotated screenshots and captions.
+2. **Inject SVG arrow annotations directly on the live page** (↓ ← → ↑) via `javascript_tool`. Every arrow carries a before/after label: `← sentence-case "Key" (was "KEY")`. Raw screenshots with no arrows are **rejected**.
+3. **Display each annotated screenshot inline in the chat** — the conversation IS the artefact. No file export, no folder, no disk storage. Caption each image in chat: route · view · what changed · what it replaced.
+4. Update `HANDOVER.md` under `## Closure Evidence` with the **caption list only** — the visuals live in the chat session above.
 5. Commit the handover before declaring the work done.
-6. **Open the artifacts folder** — run `open <active-folder-path>` so Finder navigates directly to the closure evidence. Print the full path in chat for the user to bookmark.
 
 A jira-compare cycle that closes without annotated screenshots has NOT closed. The loop re-opens.
 
