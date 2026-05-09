@@ -142,7 +142,7 @@ export default function FeatureStatuses() {
               Manage status options for Features across Catalyst
             </p>
           </div>
-          <Button appearance="primary" onClick={openAddDialog} iconBefore={<AddIcon label="" size="small" />}>
+          <Button appearance="primary" onClick={openAddDialog} iconBefore={AddIcon}>
             Add Feature Status
           </Button>
         </div>
@@ -193,7 +193,7 @@ export default function FeatureStatuses() {
                 appearance="primary"
                 onClick={handleSaveSettings}
                 isDisabled={!hasUnsavedChanges || isSaving}
-               iconBefore={<CheckMarkIcon label="" size="small" />}>
+               iconBefore={CheckMarkIcon}>
                 {isSaving ? 'Saving...' : 'Save Settings'}
               </Button>
             </div>

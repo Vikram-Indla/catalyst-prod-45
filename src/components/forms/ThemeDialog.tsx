@@ -12,7 +12,7 @@ import { format } from 'date-fns';
 import { toast } from 'sonner';
 import { CATALYST_BRAND_COLORS, DEFAULT_THEME_COLOR } from '@/constants/brandColors';
 import { useActiveThemeStatuses } from '@/hooks/useThemeStatuses';
-import { Loader2 } from 'lucide-react';
+import Spinner from '@atlaskit/spinner';
 
 interface ThemeDialogProps {
   open: boolean;
@@ -121,7 +121,7 @@ export function ThemeDialog({ open, onOpenChange, theme }: ThemeDialogProps) {
                 <SelectContent className="z-[400]">
                   {statusesLoading ? (
                     <div className="flex items-center justify-center py-2">
-                      <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+                      <Spinner size="small" />
                     </div>
                   ) : (
                     themeStatuses.map((option) => (

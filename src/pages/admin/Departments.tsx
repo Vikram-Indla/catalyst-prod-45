@@ -108,7 +108,7 @@ export default function Departments() {
               Manage department list for Business Requests
             </p>
           </div>
-          <Button appearance="primary" onClick={openAddDialog} iconBefore={<AddIcon label="" size="small" />}>
+          <Button appearance="primary" onClick={openAddDialog} iconBefore={AddIcon}>
             Add Department
           </Button>
         </div>

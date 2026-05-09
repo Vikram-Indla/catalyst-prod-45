@@ -225,7 +225,7 @@ export default function Portfolios() {
           title="Programs"
           description="Configure program structure and enterprise associations"
           actions={
-            <Button appearance="primary" onClick={openAddDialog} iconBefore={<AddIcon label="" size="small" />}>
+            <Button appearance="primary" onClick={openAddDialog} iconBefore={AddIcon}>
               Add Program
             </Button>
           }

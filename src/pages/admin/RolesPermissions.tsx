@@ -72,7 +72,7 @@ export default function RolesPermissions() {
             <Button
               appearance="primary"
               onClick={handleAddRole}
-              iconBefore={<AddIcon label="" size="small" />}
+              iconBefore={AddIcon}
             >
               Add Role
             </Button>

@@ -772,14 +772,14 @@ export default function ResourceAssignmentsPage() {
                 toast.error('No data to export');
               }
             }}
-            iconBefore={<DownloadIcon label="" size="small" />}
+            iconBefore={DownloadIcon}
           >
             Download Excel
           </Button>
           <Button
             appearance="primary"
             onClick={() => setCreateModalOpen(true)}
-            iconBefore={<AddIcon label="" size="small" />}
+            iconBefore={AddIcon}
           >
             Add Assignment
           </Button>

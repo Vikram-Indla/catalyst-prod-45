@@ -493,7 +493,7 @@ export default function UserAccessPage() {
           <Button
             appearance="primary"
             onClick={() => setBulkCreateOpen(true)}
-            iconBefore={<PeopleGroupIcon label="" size="small" />}
+            iconBefore={PeopleGroupIcon}
           >
             Create {usersNeedingAccounts.length} Account{usersNeedingAccounts.length > 1 ? 's' : ''}
           </Button>
@@ -667,14 +667,14 @@ export default function UserAccessPage() {
                           <Button
                             appearance="default"
                             onClick={() => openChangePassword(user)}
-                            iconBefore={<LockLockedIcon label="" size="small" />}
+                            iconBefore={LockLockedIcon}
                           >
                             Change Password
                           </Button>
                           <Button
                             appearance="default"
                             onClick={() => openResetPassword(user)}
-                            iconBefore={<RefreshIcon label="" size="small" />}
+                            iconBefore={RefreshIcon}
                           >
                             Reset
                           </Button>
@@ -685,7 +685,7 @@ export default function UserAccessPage() {
                           <Button
                             appearance="default"
                             onClick={() => openCreateAccount(user)}
-                            iconBefore={<PersonAddIcon label="" size="small" />}
+                            iconBefore={PersonAddIcon}
                           >
                             Create Login
                           </Button>

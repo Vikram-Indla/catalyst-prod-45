@@ -143,7 +143,7 @@ export default function ProcessSteps() {
               Manage status options for Business Requests
             </p>
           </div>
-          <Button appearance="primary" onClick={openAddDialog} iconBefore={<AddIcon label="" size="small" />}>
+          <Button appearance="primary" onClick={openAddDialog} iconBefore={AddIcon}>
             Add BR Status
           </Button>
         </div>
@@ -194,7 +194,7 @@ export default function ProcessSteps() {
                 appearance="primary"
                 onClick={handleSaveSettings}
                 isDisabled={!hasUnsavedChanges || isSaving}
-               iconBefore={<CheckMarkIcon label="" size="small" />}>
+               iconBefore={CheckMarkIcon}>
                 {isSaving ? 'Saving...' : 'Save Settings'}
               </Button>
             </div>

@@ -160,7 +160,7 @@ export default function ThemeStatuses() {
               Manage status options for Strategic Themes
             </p>
           </div>
-          <Button appearance="primary" onClick={openAddDialog} iconBefore={<AddIcon label="" size="small" />}>
+          <Button appearance="primary" onClick={openAddDialog} iconBefore={AddIcon}>
             Add Theme Status
           </Button>
         </div>
@@ -211,7 +211,7 @@ export default function ThemeStatuses() {
                 appearance="primary"
                 onClick={handleSaveSettings}
                 isDisabled={!hasUnsavedChanges || isSaving}
-               iconBefore={<CheckMarkIcon label="" size="small" />}>
+               iconBefore={CheckMarkIcon}>
                 {isSaving ? 'Saving...' : 'Save Settings'}
               </Button>
             </div>

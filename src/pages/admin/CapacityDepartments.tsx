@@ -120,7 +120,7 @@ export default function CapacityDepartmentsPage() {
         <Button
           appearance="primary"
           onClick={() => setCreateModalOpen(true)}
-          iconBefore={<AddIcon label="" size="small" />}
+          iconBefore={AddIcon}
         >
           Add Department
         </Button>

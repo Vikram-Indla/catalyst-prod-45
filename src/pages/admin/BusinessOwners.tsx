@@ -176,7 +176,7 @@ export default function BusinessOwners() {
               Manage business owners and their department mappings
             </p>
           </div>
-          <Button appearance="primary" onClick={openAddDialog} iconBefore={<AddIcon label="" size="small" />}>
+          <Button appearance="primary" onClick={openAddDialog} iconBefore={AddIcon}>
             Add Business Owner
           </Button>
         </div>

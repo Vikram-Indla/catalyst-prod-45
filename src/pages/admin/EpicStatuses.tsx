@@ -142,7 +142,7 @@ export default function EpicStatuses() {
               Manage status options for Epics across Catalyst
             </p>
           </div>
-          <Button appearance="primary" onClick={openAddDialog} iconBefore={<AddIcon label="" size="small" />}>
+          <Button appearance="primary" onClick={openAddDialog} iconBefore={AddIcon}>
             Add Epic Status
           </Button>
         </div>
@@ -193,7 +193,7 @@ export default function EpicStatuses() {
                 appearance="primary"
                 onClick={handleSaveSettings}
                 isDisabled={!hasUnsavedChanges || isSaving}
-               iconBefore={<CheckMarkIcon label="" size="small" />}>
+               iconBefore={CheckMarkIcon}>
                 {isSaving ? 'Saving...' : 'Save Settings'}
               </Button>
             </div>

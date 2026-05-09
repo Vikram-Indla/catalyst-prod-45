@@ -79,7 +79,7 @@ export default function ThemeGroups() {
           <Button
             appearance="primary"
             onClick={() => setShowCreateDialog(true)}
-            iconBefore={<AddIcon label="" size="small" />}
+            iconBefore={AddIcon}
           >
             Add Theme
           </Button>
