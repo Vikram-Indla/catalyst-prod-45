@@ -49,7 +49,9 @@ import Select, { AsyncSelect, CreatableSelect } from '@atlaskit/select';
 import Textfield from '@atlaskit/textfield';
 import TextArea from '@atlaskit/textarea';
 import { Checkbox } from '@atlaskit/checkbox';
+import Avatar from '@atlaskit/avatar';
 import Button, { IconButton } from '@atlaskit/button/new';
+import DropdownMenu, { DropdownItem, DropdownItemGroup } from '@atlaskit/dropdown-menu';
 import Lozenge from '@atlaskit/lozenge';
 import { Box, Stack, Inline, xcss } from '@atlaskit/primitives';
 import { token } from '@atlaskit/tokens';
@@ -317,79 +319,27 @@ function FullscreenToggleButton() {
   );
 }
 
-// ── MoreActionsButton — opens a small dropdown with help/feedback actions ────
+// ── MoreActionsButton — @atlaskit/dropdown-menu (canonical ADS primitive) ────
 function MoreActionsButton() {
-  const [open, setOpen] = useState(false);
-  const ref = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (!open) return;
-    const handler = (e: MouseEvent) => {
-      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
-    };
-    document.addEventListener('mousedown', handler);
-    return () => document.removeEventListener('mousedown', handler);
-  }, [open]);
-
-  const items = [
-    { label: 'Give feedback', action: () => window.open('https://jira.atlassian.com/secure/CreateIssue.jspa', '_blank', 'noopener') },
-    { label: 'Help', action: () => window.open('https://support.atlassian.com/jira-software-cloud/', '_blank', 'noopener') },
-  ];
-
   return (
-    <div ref={ref} style={{ position: 'relative', display: 'inline-block' }}>
-      <IconButton
-        appearance="subtle"
-        spacing="default"
-        label="More actions"
-        icon={(iconProps) => <MoreIcon {...iconProps} label="" />}
-        onClick={() => setOpen(o => !o)}
-        isSelected={open}
-      />
-      {open && (
-        <div
-          role="menu"
-          style={{
-            position: 'absolute',
-            top: '100%',
-            right: 0,
-            marginTop: 4,
-            background: token('elevation.surface.overlay', '#FFF'),
-            border: `1px solid ${token('color.border', '#DFE1E6')}`,
-            borderRadius: 4,
-            boxShadow: '0 4px 12px rgba(9,30,66,0.15)',
-            minWidth: 160,
-            padding: '4px 0',
-            zIndex: 10,
-          }}
-        >
-          {items.map(item => (
-            <button
-              key={item.label}
-              role="menuitem"
-              type="button"
-              onClick={() => { item.action(); setOpen(false); }}
-              style={{
-                display: 'block',
-                width: '100%',
-                padding: '8px 14px',
-                background: 'transparent',
-                border: 'none',
-                cursor: 'pointer',
-                fontFamily: 'var(--cp-font-body)',
-                fontSize: 14,
-                color: token('color.text', '#292A2E'),
-                textAlign: 'left',
-              }}
-              onMouseEnter={e => (e.currentTarget.style.background = token('color.background.neutral.hovered', 'rgba(9,30,66,0.06)'))}
-              onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
-            >
-              {item.label}
-            </button>
-          ))}
-        </div>
+    <DropdownMenu
+      trigger={({ triggerRef, ...triggerProps }) => (
+        <IconButton
+          {...triggerProps}
+          ref={triggerRef}
+          appearance="subtle"
+          spacing="default"
+          label="More actions"
+          icon={(iconProps) => <MoreIcon {...iconProps} label="" />}
+        />
       )}
-    </div>
+      placement="bottom-end"
+    >
+      <DropdownItemGroup>
+        <DropdownItem>Give feedback</DropdownItem>
+        <DropdownItem>Help</DropdownItem>
+      </DropdownItemGroup>
+    </DropdownMenu>
   );
 }
 
@@ -398,37 +348,14 @@ function MoreActionsButton() {
 //    full dark-mode token resolution. See lines ~1109 for the new render.
 
 
+// MiniAvatar — canonical @atlaskit/avatar xsmall (24px, ADS-compliant).
 function MiniAvatar({ name, avatarUrl }: { name: string; avatarUrl?: string | null }) {
-  const initial = name?.trim()?.charAt(0)?.toUpperCase() ?? '?';
-  if (avatarUrl) {
-    return (
-      <img
-        src={avatarUrl}
-        alt={name}
-        aria-hidden="true"
-        style={{ width: 24, height: 24, borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }}
-      />
-    );
-  }
   return (
-    <span
-      aria-hidden="true"
-      style={{
-        display: 'inline-flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        width: 24,
-        height: 24,
-        borderRadius: '50%',
-        background: token('color.background.neutral'),
-        color: token('color.text.subtle'),
-        font: token('font.body.small'),
-        fontWeight: 600,
-        flexShrink: 0,
-      }}
-    >
-      {initial}
-    </span>
+    <Avatar
+      size="xsmall"
+      name={name}
+      src={avatarUrl ?? undefined}
+    />
   );
 }
 
