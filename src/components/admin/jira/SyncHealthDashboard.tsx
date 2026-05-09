@@ -61,7 +61,7 @@ export function SyncHealthDashboard({ connectionId }: SyncHealthDashboardProps) 
         <Card>
           <CardHeader className="pb-3">
             <CardTitle className="text-sm font-medium flex items-center gap-2">
-              <Activity className="w-4 h-4 text-brand-primary" />
+              <span style={{ display:'inline-flex', color:'var(--ds-icon-brand, #0052CC)' }}><RefreshIcon label="" size="small" /></span>
               Total Syncs
             </CardTitle>
           </CardHeader>
@@ -73,7 +73,7 @@ export function SyncHealthDashboard({ connectionId }: SyncHealthDashboardProps) 
         <Card>
           <CardHeader className="pb-3">
             <CardTitle className="text-sm font-medium flex items-center gap-2">
-              <CheckCircle2 className="w-4 h-4 text-green-500" />
+              <span style={{ display:'inline-flex', color:'var(--ds-icon-success, #22A06B)' }}><CheckCircleIcon label="" size="small" /></span>
               Success Rate
             </CardTitle>
           </CardHeader>
@@ -85,7 +85,7 @@ export function SyncHealthDashboard({ connectionId }: SyncHealthDashboardProps) 
         <Card>
           <CardHeader className="pb-3">
             <CardTitle className="text-sm font-medium flex items-center gap-2">
-              <AlertTriangle className="w-4 h-4 text-amber-500" />
+              <span style={{ display:'inline-flex', color:'var(--ds-icon-warning, #D97008)' }}><WarningIcon label="" size="small" /></span>
               Conflicts
             </CardTitle>
           </CardHeader>
@@ -97,7 +97,7 @@ export function SyncHealthDashboard({ connectionId }: SyncHealthDashboardProps) 
         <Card>
           <CardHeader className="pb-3">
             <CardTitle className="text-sm font-medium flex items-center gap-2">
-              <XCircle className="w-4 h-4 text-destructive" />
+              <span style={{ display:'inline-flex', color:'var(--ds-icon-danger, #AE2A19)' }}><CrossCircleIcon label="" size="small" /></span>
               Failed
             </CardTitle>
           </CardHeader>
