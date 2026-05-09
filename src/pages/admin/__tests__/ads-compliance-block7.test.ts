@@ -26,6 +26,13 @@ const TARGET_FILES = [
   'workflows/WorkflowDiagram.tsx',
   'components/UserDrawer.tsx',
   'components/BulkEditModal.tsx',
+  'incident/IncidentAuditCompliance.tsx',
+  'incident/IncidentCAPPolicy.tsx',
+  'incident/IncidentConversionRules.tsx',
+  'incident/IncidentFieldsConfig.tsx',
+  'incident/IncidentOwningTeams.tsx',
+  'incident/IncidentSLAPolicies.tsx',
+  'incident/IncidentWorkgroups.tsx',
 ].map(f => resolve(ADMIN_DIR, f));
 
 describe('Developer/Field Config admin pages — ADS icon compliance', () => {

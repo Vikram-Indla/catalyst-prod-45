@@ -1,5 +1,9 @@
 import { useState } from 'react';
-import { Pencil, Clock, AlertTriangle, Pause, Info } from 'lucide-react';
+import EditIcon from '@atlaskit/icon/core/edit';
+import ClockIcon from '@atlaskit/icon/core/clock';
+import WarningIcon from '@atlaskit/icon/core/warning';
+import VideoPauseIcon from '@atlaskit/icon/core/video-pause';
+import InformationCircleIcon from '@atlaskit/icon/core/information-circle';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
@@ -160,7 +164,7 @@ export default function IncidentSLAPolicies() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Clock className="h-5 w-5" />
+              <ClockIcon label="" size="medium" />
               SLA Targets by Severity
             </CardTitle>
             <CardDescription>
@@ -222,7 +226,7 @@ export default function IncidentSLAPolicies() {
                             size="icon"
                             onClick={() => handleOpenDialog(sla)}
                           >
-                            <Pencil className="h-4 w-4" />
+                            <EditIcon label="" size="small" />
                           </Button>
                         </TableCell>
                       </TableRow>
@@ -238,7 +242,7 @@ export default function IncidentSLAPolicies() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Pause className="h-5 w-5" />
+              <VideoPauseIcon label="" size="medium" />
               SLA Pause Conditions
             </CardTitle>
             <CardDescription>
@@ -302,7 +306,7 @@ export default function IncidentSLAPolicies() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <AlertTriangle className="h-5 w-5" />
+              <WarningIcon label="" size="medium" />
               Breach Definitions
             </CardTitle>
             <CardDescription>
@@ -313,7 +317,7 @@ export default function IncidentSLAPolicies() {
             <div className="p-4 rounded-lg border bg-muted/30">
               <div className="grid grid-cols-2 gap-4 text-sm">
                 <div className="flex items-start gap-2">
-                  <Info className="h-4 w-4 text-muted-foreground mt-0.5" />
+                  <InformationCircleIcon label="" size="small" />
                   <div>
                     <p className="font-medium">Response Breach</p>
                     <p className="text-muted-foreground">Occurs when first response exceeds response SLA target</p>

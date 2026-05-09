@@ -1,5 +1,11 @@
 import { useState } from 'react';
-import { Download, FileText, Clock, RefreshCw, Vote, Search, Filter } from 'lucide-react';
+import DownloadIcon from '@atlaskit/icon/core/download';
+import FileIcon from '@atlaskit/icon/core/file';
+import ClockIcon from '@atlaskit/icon/core/clock';
+import RefreshIcon from '@atlaskit/icon/core/refresh';
+import ThumbsUpIcon from '@atlaskit/icon/core/thumbs-up';
+import SearchIcon from '@atlaskit/icon/core/search';
+import FilterIcon from '@atlaskit/icon/core/filter';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Lozenge } from '@/components/ads';
@@ -194,19 +200,19 @@ export default function IncidentAuditCompliance() {
         <Tabs value={activeTab} onValueChange={setActiveTab}>
           <TabsList className="grid w-full grid-cols-4">
             <TabsTrigger value="approvals" className="flex items-center gap-2">
-              <Vote className="h-4 w-4" />
+              <ThumbsUpIcon label="" size="small" />
               Approvals
             </TabsTrigger>
             <TabsTrigger value="sla" className="flex items-center gap-2">
-              <Clock className="h-4 w-4" />
+              <ClockIcon label="" size="small" />
               SLA Breaches
             </TabsTrigger>
             <TabsTrigger value="conversions" className="flex items-center gap-2">
-              <RefreshCw className="h-4 w-4" />
+              <RefreshIcon label="" size="small" />
               Conversions
             </TabsTrigger>
             <TabsTrigger value="history" className="flex items-center gap-2">
-              <FileText className="h-4 w-4" />
+              <FileIcon label="" size="small" />
               Timeline
             </TabsTrigger>
           </TabsList>
@@ -225,7 +231,7 @@ export default function IncidentAuditCompliance() {
                     onClick={() => exportToCSV(approvalLogs, 'approval_audit')}
                     disabled={approvalLogs.length === 0}
                   >
-                    <Download className="h-4 w-4 mr-2" />
+                    <span style={{ display: 'inline-flex', marginRight: 6 }}><DownloadIcon label="" size="small" /></span>
                     Export CSV
                   </Button>
                 </div>
@@ -291,7 +297,7 @@ export default function IncidentAuditCompliance() {
                     onClick={() => exportToCSV(slaBreaches, 'sla_breaches')}
                     disabled={slaBreaches.length === 0}
                   >
-                    <Download className="h-4 w-4 mr-2" />
+                    <span style={{ display: 'inline-flex', marginRight: 6 }}><DownloadIcon label="" size="small" /></span>
                     Export CSV
                   </Button>
                 </div>
@@ -372,7 +378,7 @@ export default function IncidentAuditCompliance() {
                     onClick={() => exportToCSV(conversionLogs, 'conversions')}
                     disabled={conversionLogs.length === 0}
                   >
-                    <Download className="h-4 w-4 mr-2" />
+                    <span style={{ display: 'inline-flex', marginRight: 6 }}><DownloadIcon label="" size="small" /></span>
                     Export CSV
                   </Button>
                 </div>
@@ -447,7 +453,7 @@ export default function IncidentAuditCompliance() {
                     onClick={() => exportToCSV(historyLogs, 'incident_history')}
                     disabled={historyLogs.length === 0}
                   >
-                    <Download className="h-4 w-4 mr-2" />
+                    <span style={{ display: 'inline-flex', marginRight: 6 }}><DownloadIcon label="" size="small" /></span>
                     Export CSV
                   </Button>
                 </div>

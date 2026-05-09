@@ -1,5 +1,10 @@
 import { useState, useEffect } from 'react';
-import { Plus, Trash2, Shield, Users, Vote, FileText } from 'lucide-react';
+import AddIcon from '@atlaskit/icon/core/add';
+import TrashIcon from '@atlaskit/icon/glyph/trash';
+import ShieldIcon from '@atlaskit/icon/core/shield';
+import PeopleGroupIcon from '@atlaskit/icon/core/people-group';
+import ThumbsUpIcon from '@atlaskit/icon/core/thumbs-up';
+import FileIcon from '@atlaskit/icon/core/file';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { Lozenge } from '@/components/ads';
@@ -194,7 +199,7 @@ export default function IncidentCAPPolicy() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Vote className="h-5 w-5" />
+              <ThumbsUpIcon label="" size="medium" />
               Approval Settings
             </CardTitle>
             <CardDescription>
@@ -238,7 +243,7 @@ export default function IncidentCAPPolicy() {
                 {/* Veto Enabled */}
                 <div className="flex items-center justify-between rounded-lg border p-4">
                   <div className="flex items-center gap-3">
-                    <Shield className="h-5 w-5 text-muted-foreground" />
+                    <ShieldIcon label="" size="medium" />
                     <div>
                       <p className="font-medium">Veto Power</p>
                       <p className="text-sm text-muted-foreground">
@@ -255,7 +260,7 @@ export default function IncidentCAPPolicy() {
                 {/* Justification Required */}
                 <div className="flex items-center justify-between rounded-lg border p-4">
                   <div className="flex items-center gap-3">
-                    <FileText className="h-5 w-5 text-muted-foreground" />
+                    <FileIcon label="" size="medium" />
                     <div>
                       <p className="font-medium">Justification Required</p>
                       <p className="text-sm text-muted-foreground">
@@ -281,7 +286,7 @@ export default function IncidentCAPPolicy() {
             <div className="flex items-center justify-between">
               <div>
                 <CardTitle className="flex items-center gap-2">
-                  <Users className="h-5 w-5" />
+                  <PeopleGroupIcon label="" size="medium" />
                   Default Committee Members
                 </CardTitle>
                 <CardDescription>
@@ -292,7 +297,7 @@ export default function IncidentCAPPolicy() {
                 onClick={() => setIsMemberDialogOpen(true)}
                 className="bg-brand-primary hover:bg-brand-primary-hover text-white"
               >
-                <Plus className="h-4 w-4 mr-2" />
+                <span style={{ display: 'inline-flex', marginRight: 6 }}><AddIcon label="" size="small" /></span>
                 Add Member
               </Button>
             </div>
@@ -348,7 +353,7 @@ export default function IncidentCAPPolicy() {
                             onClick={() => handleRemoveMember(member.id)}
                             className="text-destructive hover:text-destructive"
                           >
-                            <Trash2 className="h-4 w-4" />
+                            <TrashIcon label="" size="small" />
                           </Button>
                         </TableCell>
                       </TableRow>

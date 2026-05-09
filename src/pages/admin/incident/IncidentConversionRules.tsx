@@ -1,5 +1,7 @@
 import { useState } from 'react';
-import { RefreshCw, Lock, CheckSquare } from 'lucide-react';
+import RefreshIcon from '@atlaskit/icon/core/refresh';
+import LockLockedIcon from '@atlaskit/icon/core/lock-locked';
+import CheckboxCheckedIcon from '@atlaskit/icon/core/checkbox-checked';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { Lozenge } from '@/components/ads';
@@ -146,7 +148,7 @@ export default function IncidentConversionRules() {
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  <CheckSquare className="h-5 w-5" />
+                  <CheckboxCheckedIcon label="" size="medium" />
                   Statuses That Allow Conversion
                 </CardTitle>
                 <CardDescription>
@@ -180,7 +182,7 @@ export default function IncidentConversionRules() {
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  <RefreshCw className="h-5 w-5" />
+                  <RefreshIcon label="" size="medium" />
                   Allowed Target Work Item Types
                 </CardTitle>
                 <CardDescription>
@@ -218,7 +220,7 @@ export default function IncidentConversionRules() {
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  <Lock className="h-5 w-5" />
+                  <LockLockedIcon label="" size="medium" />
                   Post-Conversion Behavior
                 </CardTitle>
                 <CardDescription>

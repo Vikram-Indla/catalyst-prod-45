@@ -1,5 +1,8 @@
 import { useState } from 'react';
-import { Plus, Pencil, Search, Palette } from 'lucide-react';
+import AddIcon from '@atlaskit/icon/core/add';
+import EditIcon from '@atlaskit/icon/core/edit';
+import SearchIcon from '@atlaskit/icon/core/search';
+
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
@@ -209,7 +212,7 @@ export default function IncidentFieldsConfig() {
             {/* Actions */}
             <div className="flex items-center justify-between">
               <div className="relative max-w-sm">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <span style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", display: "flex", color: "var(--ds-text-subtle, #44546F)" }}><SearchIcon label="" size="small" /></span>
                 <Input
                   placeholder={`Search ${currentTabLabel.toLowerCase()}...`}
                   value={search}
@@ -218,7 +221,7 @@ export default function IncidentFieldsConfig() {
                 />
               </div>
               <Button onClick={() => handleOpenDialog()} className="bg-brand-primary hover:bg-brand-primary-hover text-white">
-                <Plus className="h-4 w-4 mr-2" />
+                <span style={{ display: 'inline-flex', marginRight: 6 }}><AddIcon label="" size="small" /></span>
                 Add {currentTabLabel}
               </Button>
             </div>
@@ -278,7 +281,7 @@ export default function IncidentFieldsConfig() {
                             size="icon"
                             onClick={() => handleOpenDialog(option)}
                           >
-                            <Pencil className="h-4 w-4" />
+                            <EditIcon label="" size="small" />
                           </Button>
                         </TableCell>
                       </TableRow>
