@@ -32,7 +32,7 @@ export function useCatalystWatchers(issueKey: string | null | undefined) {
       if (!issueKey) return { count: 0, isWatching: false, watchers: [] };
       const { data: { user } } = await supabase.auth.getUser();
 
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('ph_issue_watchers')
         .select('user_id')
         .eq('issue_key', issueKey);
