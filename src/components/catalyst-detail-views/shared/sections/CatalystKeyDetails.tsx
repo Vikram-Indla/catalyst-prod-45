@@ -116,7 +116,9 @@ export function CatalystKeyDetails({
         <span
           style={{
             display: 'inline-flex',
-            transition: 'transform 0.15s ease',
+            transition: collapsed
+              ? 'transform 150ms cubic-bezier(0.4,0,1,1)'   /* ADS collapse: ease-in */
+              : 'transform 200ms cubic-bezier(0.2,0,0,1)',  /* ADS expand: ease-out */
             transform: collapsed ? 'rotate(0deg)' : 'rotate(90deg)',
           }}
         >
