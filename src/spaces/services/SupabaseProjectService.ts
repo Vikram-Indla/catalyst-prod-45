@@ -64,83 +64,68 @@ export class SupabaseProjectService implements SpaceService {
   }
 
   /**
-   * Insert a new row into `projects`. Mirrors the existing useCreateProject()
-   * shape so downstream invariants (member_ids, sync_entity_map) keep holding.
+   * Create a project via the `create-project` edge function. The function
+   * runs server-side with the service_role key so it bypasses RLS on
+   * `projects`, `hi_statuses`, `hi_project_sequences`, and `project_members`
+   * — avoiding PostgREST schema-cache races on SECURITY DEFINER functions.
    */
   async createSpace(req: CreateSpaceRequest): Promise<Space> {
-    // 1) Auth — every create must be attributed to a real user.
     const { data: authData, error: authError } = await supabase.auth.getUser();
     if (authError || !authData?.user) {
       throw SpaceError.http(401, 'You must be signed in to create a project', authError);
     }
     const userId = authData.user.id;
 
-    // 2) Insert the project row.
-    const insertPayload: Record<string, unknown> = {
-      name: req.name.trim(),
-      project_key: req.key.toUpperCase(),
-      // Legacy mirror — older code paths still read `.key` directly.
-      key: req.key.toUpperCase(),
-      department: PURPOSE_TO_DEPARTMENT[req.purpose] ?? null,
-      description: req.description?.trim() || null,
-      status: 'active',
-      status_category: 'todo',
-      health_status: 'on_track',
-      owner_id: userId,
-      created_by: userId,
-      lead_id: userId,
-      program_id: '00000000-0000-0000-0000-000000000001',
-      project_type: 'kanban',
-      total_epics: 0,
-      total_stories: 0,
-      total_tasks: 0,
-      work_items_todo: 0,
-      work_items_in_progress: 0,
-      work_items_done: 0,
-      completion_percentage: 0,
-    };
+    const { data, error } = await supabase.functions.invoke<{
+      id: string;
+      name: string;
+      key: string;
+      description: string | null;
+      department: string | null;
+      created_at: string;
+      error?: string;
+    }>('create-project', {
+      body: {
+        name: req.name.trim(),
+        key: req.key.toUpperCase(),
+        department: PURPOSE_TO_DEPARTMENT[req.purpose] ?? null,
+        description: req.description?.trim() || null,
+        user_id: userId,
+      },
+    });
 
-    const { data: project, error: insertError } = await typedQuery('projects')
-      .insert(insertPayload)
-      .select('id, name, project_key, description, department, created_at')
-      .single();
+    if (error) {
+      // FunctionsHttpError exposes the response on `error.context`.
+      const ctx = (error as { context?: Response }).context;
+      if (ctx && typeof ctx.json === 'function') {
+        try {
+          const payload = await ctx.json();
+          if (ctx.status === 409 || payload?.error === 'key_not_unique') {
+            throw SpaceError.keyNotUnique(req.key);
+          }
+          throw SpaceError.http(ctx.status || 500, payload?.error || error.message, error);
+        } catch (parseErr) {
+          if (parseErr instanceof SpaceError) throw parseErr;
+        }
+      }
+      throw SpaceError.http(500, error.message || 'Failed to create project', error);
+    }
 
-    if (insertError) {
-      // Postgres surfaces the unique-violation SQLSTATE on duplicate key.
-      const code = (insertError as { code?: string }).code;
-      const msg = (insertError.message || '').toLowerCase();
-      if (code === PG_UNIQUE_VIOLATION || msg.includes('duplicate') || msg.includes('unique')) {
+    if (!data || data.error) {
+      if (data?.error === 'key_not_unique') {
         throw SpaceError.keyNotUnique(req.key);
       }
-      throw SpaceError.http(500, insertError.message || 'Failed to create project', insertError);
-    }
-
-    if (!project) {
-      throw SpaceError.unknown('Project insert returned no row');
-    }
-
-    // 3) Auto-add creator as admin member — keeps parity with useCreateProject().
-    //    A failure here is non-fatal for the wizard; the project exists and
-    //    membership can be repaired later.
-    try {
-      await typedQuery('project_members').insert({
-        project_id: project.id,
-        user_id: userId,
-        role: 'admin',
-        added_by: userId,
-      });
-    } catch {
-      // swallow — see comment above
+      throw SpaceError.unknown(data?.error || 'create-project returned no data');
     }
 
     return {
-      id: project.id as string,
-      name: project.name as string,
-      key: project.project_key as string,
+      id: data.id,
+      name: data.name,
+      key: data.key,
       purpose: req.purpose,
-      description: (project.description as string | null) ?? undefined,
+      description: data.description ?? undefined,
       isPrivate: req.isPrivate,
-      createdAt: (project.created_at as string | null) ?? new Date().toISOString(),
+      createdAt: data.created_at ?? new Date().toISOString(),
     };
   }
 }
