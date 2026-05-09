@@ -1,5 +1,11 @@
 import { useState, useEffect } from 'react';
-import { Eye, EyeOff, Globe, Mail, Key, RefreshCw, Pencil } from 'lucide-react';
+import EyeOpenIcon from '@atlaskit/icon/core/eye-open';
+import EyeOpenStrikethroughIcon from '@atlaskit/icon/core/eye-open-strikethrough';
+import GlobeIcon from '@atlaskit/icon/core/globe';
+import EmailIcon from '@atlaskit/icon/core/email';
+import LockLockedIcon from '@atlaskit/icon/core/lock-locked';
+import RefreshIcon from '@atlaskit/icon/core/refresh';
+import EditIcon from '@atlaskit/icon/core/edit';
 import { ReadOnlyBanner } from './ReadOnlyBanner';
 import { ConnectionStatusBadge } from './ConnectionStatusBadge';
 import { TestConnectionModal } from './TestConnectionModal';
@@ -289,10 +295,10 @@ export function JiraConnection() {
             {/* Actions */}
             <div style={{ display: 'flex', gap: 8, marginTop: 16 }}>
               <button className="wh-btn-secondary" onClick={handleTestOnly} disabled={testMutation.isPending}>
-                <RefreshCw style={{ width: 14, height: 14 }} /> Test Connection
+                <RefreshIcon label="" size="small" /> Test Connection
               </button>
               <button className="wh-btn-secondary" onClick={() => setIsEditing(true)}>
-                <Pencil style={{ width: 14, height: 14 }} /> Edit Credentials
+                <EditIcon label="" size="small" /> Edit Credentials
               </button>
             </div>
           </div>
@@ -328,10 +334,12 @@ export function JiraConnection() {
                   Site URL <span className="wh-required">*</span>
                 </label>
                 <div style={{ position: 'relative' }}>
-                  <Globe style={{
+                  <span style={{
                     position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)',
-                    width: 15, height: 15, color: 'var(--wh-tx4)',
-                  }} />
+                    display: 'flex', color: 'var(--wh-tx4)',
+                  }}>
+                    <GlobeIcon label="" size="small" />
+                  </span>
                   <input
                     id="wh-site-url"
                     className={`wh-input ${touched.url && errors.url ? 'error' : ''}`}
@@ -352,10 +360,12 @@ export function JiraConnection() {
                   Email <span className="wh-required">*</span>
                 </label>
                 <div style={{ position: 'relative' }}>
-                  <Mail style={{
+                  <span style={{
                     position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)',
-                    width: 15, height: 15, color: 'var(--wh-tx4)',
-                  }} />
+                    display: 'flex', color: 'var(--wh-tx4)',
+                  }}>
+                    <EmailIcon label="" size="small" />
+                  </span>
                   <input
                     id="wh-auth-email"
                     className={`wh-input ${touched.email && errors.email ? 'error' : ''}`}
@@ -377,10 +387,12 @@ export function JiraConnection() {
                   API Token <span className="wh-required">*</span>
                 </label>
                 <div style={{ position: 'relative' }}>
-                  <Key style={{
+                  <span style={{
                     position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)',
-                    width: 15, height: 15, color: 'var(--wh-tx4)',
-                  }} />
+                    display: 'flex', color: 'var(--wh-tx4)',
+                  }}>
+                    <LockLockedIcon label="" size="small" />
+                  </span>
                   <input
                     id="wh-auth-token"
                     className={`wh-input ${touched.token && errors.token ? 'error' : ''}`}
@@ -402,7 +414,7 @@ export function JiraConnection() {
                     }}
                     aria-label={showToken ? 'Hide token' : 'Show token'}
                   >
-                    {showToken ? <EyeOff style={{ width: 16, height: 16 }} /> : <Eye style={{ width: 16, height: 16 }} />}
+                    {showToken ? <EyeOpenStrikethroughIcon label="Hide token" size="small" /> : <EyeOpenIcon label="Show token" size="small" />}
                   </button>
                 </div>
                 {touched.token && errors.token && <span id="wh-token-error" style={{ fontSize: 12, color: 'var(--wh-dng)', marginTop: 4, display: 'block' }}>{errors.token}</span>}

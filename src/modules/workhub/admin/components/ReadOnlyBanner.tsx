@@ -1,9 +1,11 @@
-import { ShieldAlert } from 'lucide-react';
+import ShieldIcon from '@atlaskit/icon/core/shield';
 
 export function ReadOnlyBanner() {
   return (
     <div className="wh-readonly-banner">
-      <ShieldAlert style={{ width: 18, height: 18, color: 'var(--wh-warn)', flexShrink: 0, marginTop: 1 }} />
+      <span style={{ color: 'var(--wh-warn)', flexShrink: 0, marginTop: 1, display: 'flex' }}>
+        <ShieldIcon label="" size="small" />
+      </span>
       <div>
         <strong>READ-ONLY INTEGRATION</strong>
         <p style={{ margin: '4px 0 0', lineHeight: 1.5 }}>
