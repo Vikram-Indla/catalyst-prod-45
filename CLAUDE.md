@@ -4,6 +4,17 @@ These rules apply to every implementation task. No exceptions.
 
 ---
 
+## Supabase & Edge Functions — Use a Lovable Prompt, Not Direct Attempts
+
+**Never** attempt Supabase-side fixes via repeated browser fetch probes, pg_notify loops, or manual SQL trial-and-error. Reasons:
+- Lovable's SQL editor and Supabase's PostgREST run on separate connection pools — `pg_notify` from Lovable does NOT reach Supabase's PostgREST listener
+- Edge functions must be deployed via Lovable, not manually copied into the repo
+- Direct REST inserts are subject to PostgREST schema cache (stale until Lovable deploys)
+
+**Rule:** When any Supabase-side change is needed (RLS policy, edge function create/update, SQL migration, schema cache reload), stop immediately and give Vikram a **single self-contained Lovable prompt** to execute. Do not probe, loop, or attempt the change yourself. One prompt, one ask. Vikram will paste it into Lovable and report the result.
+
+---
+
 ## Dev Server
 
 The Catalyst local dev server always runs on **http://localhost:8080**. Never use 8081. When navigating in Chrome MCP, always use port 8080.
