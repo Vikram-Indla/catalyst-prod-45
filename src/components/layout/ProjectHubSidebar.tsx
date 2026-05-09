@@ -25,6 +25,7 @@ import {
   X,
 } from 'lucide-react';
 import { ProjectIcon } from '@/components/shared/ProjectIcon';
+import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { SidebarBase, SidebarConfig, SidebarSection } from './SidebarBase';
 import { useProjectFavorites, useProjects } from '@/hooks/useProjectHub';
@@ -208,13 +209,6 @@ function ModuleLevelSidebar({ expanded, onToggle, className, favouritesSection }
     openDetail({ id: item.entity_id, itemType: item.entity_type as any });
   };
 
-  const issueTypeColor = (t: string) => {
-    const lower = t.toLowerCase();
-    if (lower.includes('bug') || lower.includes('defect')) return '#E5493A';
-    if (lower.includes('story')) return '#63BA3C';
-    if (lower.includes('epic')) return '#904EE2';
-    return '#4BADE8';
-  };
 
   const sections: SidebarSection[] = [
     {
@@ -312,14 +306,10 @@ function ModuleLevelSidebar({ expanded, onToggle, className, favouritesSection }
                   onMouseEnter={e => e.currentTarget.style.background = token('color.background.neutral.subtle.hovered')}
                   onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
                 >
-                  {/* Type colour dot — top-aligned so it sits beside the summary line */}
-                  <span
-                    style={{
-                      width: 8, height: 8, borderRadius: 2,
-                      background: issueTypeColor(item.entity_type),
-                      flexShrink: 0, marginTop: 4,
-                    }}
-                  />
+                  {/* Canonical work item type icon — self-labelling, no colour recall needed */}
+                  <span style={{ flexShrink: 0, marginTop: 2, lineHeight: 0 }}>
+                    <JiraIssueTypeIcon type={item.entity_type} size={14} />
+                  </span>
                   {/* Two-line block: summary (primary) + key (secondary) */}
                   <span
                     style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 1 }}
