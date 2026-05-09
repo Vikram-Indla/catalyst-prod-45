@@ -14,12 +14,12 @@ interface ProductSettingsNavProps {
 }
 
 const navItems: Array<{ id: ProductSettingsTab; label: string; icon: React.ElementType }> = [
-  { id: 'business-lines', label: 'Business Lines', icon: Building2 },
-  { id: 'fields-layout', label: 'Fields & Layout', icon: LayoutGrid },
-  { id: 'workflow-statuses', label: 'Workflow & Statuses', icon: Workflow },
-  { id: 'intake-views', label: 'Intake Views & Kanban', icon: Eye },
-  { id: 'access-control', label: 'Access Control', icon: Shield },
-  { id: 'data-management', label: 'Data Management', icon: Database },
+  { id: 'business-lines', label: 'Business Lines', icon: OfficeBuildingIcon },
+  { id: 'fields-layout', label: 'Fields & Layout', icon: GridIcon },
+  { id: 'workflow-statuses', label: 'Workflow & Statuses', icon: BoardsIcon },
+  { id: 'intake-views', label: 'Intake Views & Kanban', icon: EyeOpenIcon },
+  { id: 'access-control', label: 'Access Control', icon: ShieldIcon },
+  { id: 'data-management', label: 'Data Management', icon: DatabaseIcon },
 ];
 
 export function ProductSettingsNav({ activeTab, onTabChange }: ProductSettingsNavProps) {
@@ -49,7 +49,7 @@ export function ProductSettingsNav({ activeTab, onTabChange }: ProductSettingsNa
                       : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
                   )}
                 >
-                  <Icon className="h-4 w-4 flex-shrink-0" />
+                  <Icon label="" size="small" />
                   <span>{item.label}</span>
                 </button>
               </li>
