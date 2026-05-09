@@ -116,6 +116,12 @@ export interface ProjectListItem {
   lead_name: string | null;
   lead_avatar_url: string | null;
   computed_score?: number | null;
+  // Icon data — fetched in parallel from projects table (avatar_url, color)
+  // Not in v_project_list view; enriched by useProjects hook.
+  icon_avatar_url?: string | null;
+  icon_color?: string | null;
+  // Jira issue count — ph_issues WHERE jira_updated_at >= 2026-01-01 (2026+ only)
+  jira_issue_count?: number | null;
 }
 
 // get_project_team RPC row shape
@@ -131,7 +137,6 @@ export interface ProjectTeamMember {
   project_role: string;  // project_members.role (admin/contributor/viewer)
 }
 
-export type ViewMode = 'list' | 'card' | 'cards';
 export type SortColumn = 'name' | 'department' | 'status' | 'health_status' | 'total_epics' | 'total_stories' | 'total_tasks' | 'total_issues';
 export type SortDirection = 'asc' | 'desc';
 

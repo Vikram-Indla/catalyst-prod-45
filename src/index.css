@@ -195,11 +195,11 @@
   --cp-bg-surface: #FFFFFF;
   --cp-bg-sunken: #F1F5F9;
   --cp-bg-elevated: #FFFFFF;
-  --cp-text-primary: #0F172A;
-  --cp-text-secondary: #334155;
-  --cp-text-tertiary: #64748B;
-  --cp-text-muted: #94A3B8;
-  --cp-text-link: #2563EB;
+  --cp-text-primary: #172B4D;
+  --cp-text-secondary: #44546F;
+  --cp-text-tertiary: #626F86;
+  --cp-text-muted: #626F86;
+  --cp-text-link: #0052CC;
   --cp-border-subtle: rgba(15,23,42,0.06);
   --cp-border-default: rgba(15,23,42,0.12);
   --cp-border-strong: rgba(15,23,42,0.20);
@@ -210,9 +210,9 @@
      measured value rgb(233,242,254). Was Tailwind blue-600/8 which
      rendered the rail card selection ~3 shades too saturated vs Jira. */
   --cp-interact-selected: #E9F2FE;
-  --cp-primary-60: #2563EB;
-  --cp-primary-70: #1D4ED8;
-  --cp-primary-5: #EFF6FF;
+  --cp-primary-60: #0052CC;
+  --cp-primary-70: #0747A6;
+  --cp-primary-5: #E9F2FF;
   --cp-purple-60: #7C3AED;
   --cp-purple-5: #F5F3FF;
   --cp-success-60: #16A34A;

@@ -7,7 +7,7 @@
 //
 // Field mapping (CreateSpaceRequest → projects column)
 //   name              → name
-//   key               → project_key  (and `key` for legacy mirror)
+//   key               → key           (raw projects table column)
 //   description       → description
 //   purpose           → department   (best-fit; preserves existing schema)
 //   isPrivate         → kept on the wizard side; no column today
@@ -39,7 +39,7 @@ const PURPOSE_TO_DEPARTMENT: Record<SpacePurpose, string> = {
 
 export class SupabaseProjectService implements SpaceService {
   /**
-   * Case-insensitive uniqueness check against `projects.project_key`.
+   * Case-insensitive uniqueness check against `projects.key`.
    * Returns true if the key is free.
    */
   async isKeyUnique(key: string): Promise<boolean> {
@@ -49,7 +49,7 @@ export class SupabaseProjectService implements SpaceService {
     const { data, error } = await supabase
       .from('projects')
       .select('id', { count: 'exact', head: false })
-      .ilike('project_key', trimmed)
+      .ilike('key', trimmed)
       .limit(1);
 
     if (error) {
@@ -78,8 +78,6 @@ export class SupabaseProjectService implements SpaceService {
     // 2) Insert the project row.
     const insertPayload: Record<string, unknown> = {
       name: req.name.trim(),
-      project_key: req.key.toUpperCase(),
-      // Legacy mirror — older code paths still read `.key` directly.
       key: req.key.toUpperCase(),
       department: PURPOSE_TO_DEPARTMENT[req.purpose] ?? null,
       description: req.description?.trim() || null,
@@ -102,7 +100,7 @@ export class SupabaseProjectService implements SpaceService {
 
     const { data: project, error: insertError } = await typedQuery('projects')
       .insert(insertPayload)
-      .select('id, name, project_key, description, department, created_at')
+      .select('id, name, key, description, department, created_at')
       .single();
 
     if (insertError) {
@@ -136,7 +134,7 @@ export class SupabaseProjectService implements SpaceService {
     return {
       id: project.id as string,
       name: project.name as string,
-      key: project.project_key as string,
+      key: project.key as string,
       purpose: req.purpose,
       description: (project.description as string | null) ?? undefined,
       isPrivate: req.isPrivate,

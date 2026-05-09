@@ -189,23 +189,11 @@ function ProjectCardButton({ card, onClick }: { card: Project; onClick: () => vo
         >
           {card.name}
         </div>
-        {/* Subtitle — Jira parity: shows the project product type beneath the title.
-            Jira's equivalent text is "Software space" (all spaces in digital-transformation
-            tenant are Software spaces). Catalyst vocab divergence: we say "project" not
-            "space", so this reads "Software project" — consistent with the header's
-            "Recommended projects" and the "View all projects" link. */}
-        <div
-          style={{
-            font: `400 12px/16px "Inter", system-ui, sans-serif`,
-            color: token('color.text.subtlest', '#626F86'),
-            marginTop: 2,
-            overflow: 'hidden',
-            textOverflow: 'ellipsis',
-            whiteSpace: 'nowrap',
-          }}
-        >
-          Software project
-        </div>
+        {/* Subtitle removed 2026-05-09: "Software project" was hardcoded for
+            ALL projects (Project interface has no project_type field). Identical
+            text on every card provides zero differentiation value and wastes
+            12px of vertical space in the card. H8 minimalism — design-intelligence
+            audit finding V1. */}
       </div>
     </button>
   );
