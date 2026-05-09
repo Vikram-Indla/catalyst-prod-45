@@ -236,6 +236,10 @@ export function normalizeWorkItemType(raw: string | null | undefined): WorkItemT
   if (t === 'backend') return 'backend';
   if (t === 'integration') return 'integration';
   if (t === 'figma' || t === 'entity figma') return 'figma';
+  // 'project' is a Catalyst entity type, not a Jira work item type.
+  // Sidebar Recent already routes project entities to ProjectIcon before calling
+  // JiraIssueTypeIcon. This case suppresses the console warning for any other caller.
+  if (t === 'project') return 'task';
 
   return null;
 }

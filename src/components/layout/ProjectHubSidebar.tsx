@@ -306,11 +306,17 @@ function ModuleLevelSidebar({ expanded, onToggle, className, favouritesSection }
                   onMouseEnter={e => e.currentTarget.style.background = token('color.background.neutral.subtle.hovered')}
                   onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
                 >
-                  {/* Canonical work item type icon — self-labelling, no colour recall needed */}
+                  {/* Icon: ProjectIcon for project entities, JiraIssueTypeIcon for work items */}
                   <span style={{ flexShrink: 0, marginTop: 2, lineHeight: 0 }}>
-                    <JiraIssueTypeIcon type={item.entity_type} size={14} />
+                    {item.entity_type === 'project' ? (
+                      <ProjectIcon projectKey={item.entity_key ?? ''} size="xsmall" />
+                    ) : (
+                      <JiraIssueTypeIcon type={item.entity_type} size={14} />
+                    )}
                   </span>
-                  {/* Two-line block: summary (primary) + key (secondary) */}
+                  {/* Two-line block: summary (primary) + key (secondary)
+                      Strip leading bracket tags e.g. "[CRUD-H] Story" → "Story"
+                      so the meaningful name is visible in the narrow sidebar column. */}
                   <span
                     style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 1 }}
                   >
@@ -326,7 +332,7 @@ function ModuleLevelSidebar({ expanded, onToggle, className, favouritesSection }
                       }}
                       title={item.display_summary ?? undefined}
                     >
-                      {item.display_summary}
+                      {(item.display_summary ?? '').replace(/^\[.*?\]\s*/, '') || item.display_summary}
                     </span>
                     <span
                       style={{

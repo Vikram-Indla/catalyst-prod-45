@@ -32,7 +32,15 @@ import { useTrackRecentItem } from '@/hooks/useRecentProjectItems';
 import { ProjectIcon } from '@/components/shared/ProjectIcon';
 
 // ── Utilities ──────────────────────────────────────────
-const BADGE_COLORS = ['var(--ds-text-brand, #3B82F6)', '#6366F1', '#0891B2', 'var(--ds-text-subtle, #475569)', '#0D9488', '#78716C'];
+// ADS tokens only — no raw hex (CLAUDE.md ADS ring-fence rule 2026-05-09)
+const BADGE_COLORS = [
+  'var(--ds-text-brand, #0052CC)',
+  'var(--ds-text-accent-purple, #5243AA)',
+  'var(--ds-text-accent-teal, #0C7E6A)',
+  'var(--ds-text-subtle, #44546F)',
+  'var(--ds-text-accent-green, #216E4E)',
+  'var(--ds-text-subtlest, #626F86)',
+];
 
 function getBadgeColor(id: string): string {
   let hash = 0;
@@ -51,7 +59,8 @@ function formatRole(role: string): string {
     .replace(/\b\w/g, (c) => c.toUpperCase());
 }
 
-// FIX 8: Three-state sync dot color
+// Three-state sync dot color — semantic thresholds (Norman: accurate affordance)
+// green < 15min = fresh · amber 15–120min = stale · red > 120min = error
 function getSyncDotColor(lastSyncAt: string | null, syncStatus: string | null): string {
   if (!lastSyncAt || syncStatus === 'error') return 'bg-red-500';
   const minutesAgo = (Date.now() - new Date(lastSyncAt).getTime()) / 60000;
@@ -61,12 +70,23 @@ function getSyncDotColor(lastSyncAt: string | null, syncStatus: string | null): 
 }
 
 function getSyncTooltip(lastSyncAt: string | null, syncStatus: string | null): string {
-  if (!lastSyncAt || syncStatus === 'error') return 'Sync error — check connection';
+  if (!lastSyncAt || syncStatus === 'error') return 'Sync error — check Jira connection';
   const minutesAgo = (Date.now() - new Date(lastSyncAt).getTime()) / 60000;
   const formatted = format(new Date(lastSyncAt), 'dd MMM yyyy HH:mm');
-  if (minutesAgo > 120) return `Sync error — last sync ${formatted}`;
-  if (minutesAgo > 15) return `Stale — last sync over 15 min ago\n${formatted}`;
-  return `Last synced: ${formatted}\nStatus: OK`;
+  if (minutesAgo > 120) return `Last synced: ${formatted} · Sync may be stalled — check Jira connection`;
+  if (minutesAgo > 15) return `Last synced: ${formatted} · Sync is running or delayed`;
+  return `Last synced: ${formatted} · Up to date`;
+}
+
+// Human-readable sync age label with units appropriate to scale
+function formatSyncAge(lastSyncAt: string | null): string | null {
+  if (!lastSyncAt) return null;
+  const minutesAgo = (Date.now() - new Date(lastSyncAt).getTime()) / 60000;
+  if (minutesAgo < 1) return 'just now';
+  if (minutesAgo < 60) return `${Math.round(minutesAgo)}m ago`;
+  const hoursAgo = minutesAgo / 60;
+  if (hoursAgo < 24) return `${Math.round(hoursAgo)}h ago`;
+  return `${Math.round(hoursAgo / 24)}d ago`;
 }
 
 // ── Shared hooks ───────────────────────────────────────
@@ -1054,7 +1074,7 @@ export function AllProjectsTable({
     const issueCount = p.jira_issue_count ?? 0;
     const wasSynced = issueCount > 0 || !!p.last_synced_at;
     const syncTs = wasSynced ? (lastSyncAt || p.last_synced_at) : null;
-    const syncAge = syncTs ? formatDistanceToNowStrict(new Date(syncTs), { addSuffix: false }) : null;
+    const syncAge = formatSyncAge(syncTs ?? null);
     const syncDotColor = getSyncDotColor(syncTs, null);
     const syncTooltipText = getSyncTooltip(syncTs, null);
 
@@ -1114,7 +1134,7 @@ export function AllProjectsTable({
               <span className={cn("w-2 h-2 rounded-full flex-shrink-0 cursor-help", syncDotColor)} />
             </Tooltip>
             <span style={{ fontWeight: 500, color: syncAge ? token('color.text') : token('color.text.subtlest') }}>
-              {syncAge ? `${issueCount} issues · ${syncAge} ago` : 'Not synced'}
+              {syncAge ? `${issueCount} issues · ${syncAge}` : 'Not synced'}
             </span>
           </div>
         </td>

@@ -117,7 +117,11 @@ export function AllProjectsToolbar({
                     overflow: 'hidden', clip: 'rect(0,0,0,0)',
                     whiteSpace: 'nowrap', borderWidth: 0,
                   }}>, </span>
-                  <Lozenge appearance="default">{count}</Lozenge>
+                  {/* CLAUDE.md 2026-05-09: every Lozenge must be wrapped with
+                      data-cp-lozenge-jira-parity to prevent ALLCAPS rendering */}
+                  <span data-cp-lozenge-jira-parity>
+                    <Lozenge appearance="default">{count}</Lozenge>
+                  </span>
                 </span>
               </Tab>
             );
