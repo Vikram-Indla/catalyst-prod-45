@@ -1,29 +1,21 @@
 import { AdminGuard } from '@/components/admin/AdminGuard';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import Button from '@atlaskit/button/new';
+import Textfield from '@atlaskit/textfield';
+import Toggle from '@atlaskit/toggle';
+import AdsSelect from '@atlaskit/select';
 import { Plus, Search, Edit, GripVertical } from 'lucide-react';
 import { useState } from 'react';
 import { useDepartments, useBusinessOwners, useDepartmentOwnerMappings } from '@/hooks/useDepartmentsAndOwners';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
-import { Switch } from '@/components/ui/switch';
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogFooter,
-} from '@/components/ui/dialog';
-import { Label } from '@/components/ui/label';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
+} from '@/components/admin/admin-dialog';
 
 export default function BusinessOwners() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -31,6 +23,7 @@ export default function BusinessOwners() {
   const [editingOwner, setEditingOwner] = useState<{ id: string; name: string } | null>(null);
   const [newOwnerName, setNewOwnerName] = useState('');
   const [selectedDepartmentId, setSelectedDepartmentId] = useState<string>('');
+  const [hoveredRow, setHoveredRow] = useState<string | null>(null);
   const queryClient = useQueryClient();
 
   const { data: owners = [], isLoading } = useBusinessOwners();
@@ -71,9 +64,9 @@ export default function BusinessOwners() {
 
       const { error: mappingError } = await supabase
         .from('department_owner_mapping')
-        .insert({ 
-          department_id: selectedDepartmentId, 
-          owner_id: newOwnerTyped.id 
+        .insert({
+          department_id: selectedDepartmentId,
+          owner_id: newOwnerTyped.id
         });
 
       if (mappingError) {
@@ -118,9 +111,9 @@ export default function BusinessOwners() {
       // Create new mapping
       const { error: mappingError } = await supabase
         .from('department_owner_mapping')
-        .insert({ 
-          department_id: selectedDepartmentId, 
-          owner_id: editingOwner.id 
+        .insert({
+          department_id: selectedDepartmentId,
+          owner_id: editingOwner.id
         });
 
       if (mappingError) {
@@ -166,92 +159,89 @@ export default function BusinessOwners() {
     setIsDialogOpen(true);
   };
 
+  const departmentOptions = departments
+    .filter(d => d.is_active)
+    .map(dept => ({ label: dept.name, value: dept.id }));
+
   return (
     <AdminGuard>
       <div className="p-6 space-y-6">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold tracking-tight">Business Owners</h1>
-            <p className="text-muted-foreground mt-2">
+            <h1 className="text-3xl font-bold tracking-tight" style={{ color: 'var(--ds-text, #172B4D)' }}>Business Owners</h1>
+            <p className="mt-2" style={{ color: 'var(--ds-text-subtle, #44546F)' }}>
               Manage business owners and their department mappings
             </p>
           </div>
-          <Button className="bg-brand-primary hover:bg-brand-primary-hover" onClick={openAddDialog}>
+          <Button appearance="primary" onClick={openAddDialog}>
             <Plus className="h-4 w-4 mr-2" />
             Add Business Owner
           </Button>
         </div>
 
         <div className="grid gap-4 md:grid-cols-3">
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Business Owners</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{owners.length}</div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Active Owners</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">
-                {owners.filter(o => o.is_active).length}
-              </div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Mapped to Departments</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{mappings.length}</div>
-            </CardContent>
-          </Card>
+          <div style={{ background: 'var(--ds-surface, #FFFFFF)', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px', padding: '16px' }}>
+            <div className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <p className="text-sm font-medium" style={{ color: 'var(--ds-text, #172B4D)' }}>Total Business Owners</p>
+            </div>
+            <div className="text-2xl font-bold" style={{ color: 'var(--ds-text, #172B4D)' }}>{owners.length}</div>
+          </div>
+          <div style={{ background: 'var(--ds-surface, #FFFFFF)', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px', padding: '16px' }}>
+            <div className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <p className="text-sm font-medium" style={{ color: 'var(--ds-text, #172B4D)' }}>Active Owners</p>
+            </div>
+            <div className="text-2xl font-bold" style={{ color: 'var(--ds-text, #172B4D)' }}>
+              {owners.filter(o => o.is_active).length}
+            </div>
+          </div>
+          <div style={{ background: 'var(--ds-surface, #FFFFFF)', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px', padding: '16px' }}>
+            <div className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <p className="text-sm font-medium" style={{ color: 'var(--ds-text, #172B4D)' }}>Mapped to Departments</p>
+            </div>
+            <div className="text-2xl font-bold" style={{ color: 'var(--ds-text, #172B4D)' }}>{mappings.length}</div>
+          </div>
         </div>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Business Owner Configuration</CardTitle>
-            <CardDescription>
+        <div style={{ background: 'var(--ds-surface, #FFFFFF)', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px', padding: '16px' }}>
+          <div style={{ marginBottom: '12px' }}>
+            <h2 className="text-base font-medium" style={{ color: 'var(--ds-text, #172B4D)' }}>Business Owner Configuration</h2>
+            <p className="text-sm" style={{ color: 'var(--ds-text-subtle, #44546F)' }}>
               Configure business owners and their 1:1 department mappings. When a department is selected in a Business Request, the mapped owner is auto-assigned.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
+            </p>
+          </div>
+          <div>
             <div className="flex items-center gap-4 mb-4">
               <div className="relative flex-1">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4" style={{ color: 'var(--ds-text-subtle, #44546F)' }} />
+                <Textfield
                   placeholder="Search business owners..."
-                  className="pl-10"
                   value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
+                  onChange={(e) => setSearchTerm((e.target as HTMLInputElement).value)}
                 />
               </div>
             </div>
 
-            <div className="border rounded-lg">
+            <div style={{ border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px' }}>
               <table className="w-full">
-                <thead className="bg-muted/50">
+                <thead style={{ background: 'var(--ds-background-neutral, #F7F8F9)' }}>
                   <tr>
                     <th className="text-left p-3 text-sm font-medium w-10"></th>
-                    <th className="text-left p-3 text-sm font-medium">Business Owner</th>
-                    <th className="text-left p-3 text-sm font-medium">Mapped Department</th>
-                    <th className="text-left p-3 text-sm font-medium">Status</th>
-                    <th className="text-right p-3 text-sm font-medium">Actions</th>
+                    <th className="text-left p-3 text-sm font-medium" style={{ color: 'var(--ds-text, #172B4D)' }}>Business Owner</th>
+                    <th className="text-left p-3 text-sm font-medium" style={{ color: 'var(--ds-text, #172B4D)' }}>Mapped Department</th>
+                    <th className="text-left p-3 text-sm font-medium" style={{ color: 'var(--ds-text, #172B4D)' }}>Status</th>
+                    <th className="text-right p-3 text-sm font-medium" style={{ color: 'var(--ds-text, #172B4D)' }}>Actions</th>
                   </tr>
                 </thead>
                 <tbody>
                   {isLoading ? (
                     <tr>
-                      <td colSpan={5} className="p-3 text-center text-muted-foreground">
+                      <td colSpan={5} className="p-3 text-center" style={{ color: 'var(--ds-text-subtle, #44546F)' }}>
                         Loading...
                       </td>
                     </tr>
                   ) : filteredOwners.length === 0 ? (
                     <tr>
-                      <td colSpan={5} className="p-3 text-center text-muted-foreground">
+                      <td colSpan={5} className="p-3 text-center" style={{ color: 'var(--ds-text-subtle, #44546F)' }}>
                         No business owners found
                       </td>
                     </tr>
@@ -259,28 +249,33 @@ export default function BusinessOwners() {
                     filteredOwners.map((owner) => {
                       const dept = getDepartmentForOwner(owner.id);
                       return (
-                        <tr key={owner.id} className="border-t hover:bg-muted/50">
+                        <tr
+                          key={owner.id}
+                          style={{ borderTop: '1px solid var(--ds-border, #DCDFE4)', background: hoveredRow === owner.id ? 'var(--ds-background-neutral-hovered, #F1F2F4)' : 'transparent' }}
+                          onMouseEnter={() => setHoveredRow(owner.id)}
+                          onMouseLeave={() => setHoveredRow(null)}
+                        >
                           <td className="p-3">
-                            <GripVertical className="h-4 w-4 text-muted-foreground cursor-grab" />
+                            <GripVertical className="h-4 w-4 cursor-grab" style={{ color: 'var(--ds-text-subtle, #44546F)' }} />
                           </td>
-                          <td className="p-3 text-sm font-medium">{owner.name}</td>
+                          <td className="p-3 text-sm font-medium" style={{ color: 'var(--ds-text, #172B4D)' }}>{owner.name}</td>
                           <td className="p-3 text-sm">
                             {dept ? (
-                              <span className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-brand-primary/10 text-brand-primary">
+                              <span className="inline-flex items-center px-2 py-1 rounded-full text-xs" style={{ background: 'var(--ds-background-brand-subtler, #E9F2FF)', color: 'var(--ds-text-brand, #0C66E4)' }}>
                                 {dept.name}
                               </span>
                             ) : (
-                              <span className="text-muted-foreground">Not mapped</span>
+                              <span style={{ color: 'var(--ds-text-subtle, #44546F)' }}>Not mapped</span>
                             )}
                           </td>
                           <td className="p-3 text-sm">
-                            <Switch
-                              checked={owner.is_active ?? true}
-                              onCheckedChange={() => handleToggleActive(owner.id, owner.is_active ?? true)}
+                            <Toggle
+                              isChecked={owner.is_active ?? true}
+                              onChange={() => handleToggleActive(owner.id, owner.is_active ?? true)}
                             />
                           </td>
                           <td className="p-3 text-sm text-right">
-                            <Button variant="ghost" size="sm" onClick={() => openEditDialog(owner)}>
+                            <Button appearance="subtle" onClick={() => openEditDialog(owner)}>
                               <Edit className="h-4 w-4" />
                             </Button>
                           </td>
@@ -291,8 +286,8 @@ export default function BusinessOwners() {
                 </tbody>
               </table>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
 
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogContent>
@@ -303,39 +298,36 @@ export default function BusinessOwners() {
             </DialogHeader>
             <div className="space-y-4 py-4">
               <div className="space-y-2">
-                <Label htmlFor="name">Business Owner Name</Label>
-                <Input
+                <label htmlFor="name" style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>Business Owner Name</label>
+                <Textfield
                   id="name"
                   value={newOwnerName}
-                  onChange={(e) => setNewOwnerName(e.target.value)}
+                  onChange={(e) => setNewOwnerName((e.target as HTMLInputElement).value)}
                   placeholder="Enter business owner name"
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="department">Mapped Department (1:1)</Label>
-                <Select value={selectedDepartmentId} onValueChange={setSelectedDepartmentId}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select a department" />
-                  </SelectTrigger>
-                  <SelectContent className="z-[400]">
-                    {departments.filter(d => d.is_active).map((dept) => (
-                      <SelectItem key={dept.id} value={dept.id}>
-                        {dept.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <p className="text-xs text-muted-foreground">
+                <label htmlFor="department" style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>Mapped Department (1:1)</label>
+                <AdsSelect
+                  inputId="department"
+                  options={departmentOptions}
+                  value={departmentOptions.find(o => o.value === selectedDepartmentId) || null}
+                  onChange={(opt) => opt && setSelectedDepartmentId(opt.value)}
+                  placeholder="Select a department"
+                  menuPortalTarget={document.body}
+                  styles={{ menuPortal: (base) => ({ ...base, zIndex: 400 }) }}
+                />
+                <p className="text-xs" style={{ color: 'var(--ds-text-subtle, #44546F)' }}>
                   Each department can only be mapped to one business owner.
                 </p>
               </div>
             </div>
             <DialogFooter>
-              <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
+              <Button appearance="subtle" onClick={() => setIsDialogOpen(false)}>
                 Cancel
               </Button>
               <Button
-                className="bg-brand-primary hover:bg-brand-primary-hover"
+                appearance="primary"
                 onClick={editingOwner ? handleUpdateOwner : handleAddOwner}
               >
                 {editingOwner ? 'Update' : 'Add'}

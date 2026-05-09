@@ -1,7 +1,7 @@
 /**
  * Theme Groups Management Page - Configure strategic theme groupings
  * Source: Administration guide PDF, Page 19
- * 
+ *
  * Features:
  * - List all strategic themes with linked item counts
  * - Edit theme details
@@ -10,15 +10,14 @@
  */
 
 import { AdminGuard } from '@/components/admin/AdminGuard';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import Button from '@atlaskit/button/new';
+import Textfield from '@atlaskit/textfield';
+import Toggle from '@atlaskit/toggle';
 import { Plus, Search, Edit, Trash2, Loader2 } from 'lucide-react';
 import { useState } from 'react';
 import { useThemeGroupsWithCounts, useUpdateThemeStatus, ThemeGroupWithCounts } from '@/hooks/useThemeGroups';
 import { ThemeDialog } from '@/components/forms/ThemeDialog';
 import { DeleteThemeDialog } from '@/components/admin/DeleteThemeDialog';
-import { Switch } from '@/components/ui/switch';
 import { Lozenge, Tooltip } from '@/components/ads';
 import { AdminEmptyState } from '@/components/admin/AdminEmptyState';
 
@@ -27,38 +26,39 @@ export default function ThemeGroups() {
   const [editTheme, setEditTheme] = useState<ThemeGroupWithCounts | null>(null);
   const [deleteTheme, setDeleteTheme] = useState<ThemeGroupWithCounts | null>(null);
   const [showCreateDialog, setShowCreateDialog] = useState(false);
-  
+  const [hoveredRow, setHoveredRow] = useState<string | null>(null);
+
   const { data: themes = [], isLoading, error } = useThemeGroupsWithCounts();
   const updateStatusMutation = useUpdateThemeStatus();
-  
+
   const filteredThemes = themes.filter(theme =>
     theme.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     (theme.description?.toLowerCase().includes(searchTerm.toLowerCase()))
   );
-  
+
   const handleToggleStatus = (theme: ThemeGroupWithCounts) => {
     const newStatus = theme.status === 'active' ? 'cancelled' : 'active';
-    updateStatusMutation.mutate({ 
-      id: theme.id, 
+    updateStatusMutation.mutate({
+      id: theme.id,
       status: newStatus as 'active' | 'proposed' | 'done' | 'cancelled'
     });
   };
-  
+
   const getStatusDisplay = (status: string) => {
     switch (status) {
       case 'active':
-        return { label: 'Active', color: 'bg-green-100 text-green-800 dark:bg-[rgba(34,197,94,0.12)] dark:text-green-300' };
+        return { label: 'Active', style: { background: 'rgba(34,197,94,0.12)', color: '#15803d' } };
       case 'proposed':
-        return { label: 'Proposed', color: 'bg-blue-100 text-blue-800 dark:bg-[rgba(59,130,246,0.12)] dark:text-blue-300' };
+        return { label: 'Proposed', style: { background: 'rgba(59,130,246,0.12)', color: '#1d4ed8' } };
       case 'done':
-        return { label: 'Done', color: 'bg-gray-100 text-gray-800 dark:bg-[var(--ds-surface-raised,#1A1A1A)] dark:text-gray-300' };
+        return { label: 'Done', style: { background: 'var(--ds-background-neutral, #F7F8F9)', color: 'var(--ds-text-subtle, #44546F)' } };
       case 'cancelled':
-        return { label: 'Inactive', color: 'bg-gray-100 text-gray-600 dark:bg-[var(--ds-surface-raised,#1A1A1A)] dark:text-gray-400' };
+        return { label: 'Inactive', style: { background: 'var(--ds-background-neutral, #F7F8F9)', color: 'var(--ds-text-subtle, #44546F)' } };
       default:
-        return { label: status, color: 'bg-gray-100 text-gray-800' };
+        return { label: status, style: { background: 'var(--ds-background-neutral, #F7F8F9)', color: 'var(--ds-text-subtle, #44546F)' } };
     }
   };
-  
+
   const activeCount = themes.filter(t => t.status === 'active').length;
   const totalLinkedItems = themes.reduce((acc, t) => acc + t.epic_count + t.objective_count, 0);
 
@@ -67,13 +67,13 @@ export default function ThemeGroups() {
       <div className="p-6 space-y-6">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold tracking-tight">Strategic Themes</h1>
-            <p className="text-muted-foreground mt-2">
+            <h1 className="text-3xl font-bold tracking-tight" style={{ color: 'var(--ds-text, #172B4D)' }}>Strategic Themes</h1>
+            <p className="mt-2" style={{ color: 'var(--ds-text-subtle, #44546F)' }}>
               Manage strategic theme configurations and linked items
             </p>
           </div>
-          <Button 
-            className="bg-brand-primary hover:bg-brand-primary-hover"
+          <Button
+            appearance="primary"
             onClick={() => setShowCreateDialog(true)}
           >
             <Plus className="h-4 w-4 mr-2" />
@@ -82,86 +82,84 @@ export default function ThemeGroups() {
         </div>
 
         <div className="grid gap-4 md:grid-cols-3">
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Themes</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{themes.length}</div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Active Themes</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{activeCount}</div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Linked Items</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{totalLinkedItems}</div>
-            </CardContent>
-          </Card>
+          <div style={{ background: 'var(--ds-surface, #FFFFFF)', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px', padding: '16px' }}>
+            <div className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <p className="text-sm font-medium" style={{ color: 'var(--ds-text, #172B4D)' }}>Total Themes</p>
+            </div>
+            <div className="text-2xl font-bold" style={{ color: 'var(--ds-text, #172B4D)' }}>{themes.length}</div>
+          </div>
+          <div style={{ background: 'var(--ds-surface, #FFFFFF)', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px', padding: '16px' }}>
+            <div className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <p className="text-sm font-medium" style={{ color: 'var(--ds-text, #172B4D)' }}>Active Themes</p>
+            </div>
+            <div className="text-2xl font-bold" style={{ color: 'var(--ds-text, #172B4D)' }}>{activeCount}</div>
+          </div>
+          <div style={{ background: 'var(--ds-surface, #FFFFFF)', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px', padding: '16px' }}>
+            <div className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <p className="text-sm font-medium" style={{ color: 'var(--ds-text, #172B4D)' }}>Linked Items</p>
+            </div>
+            <div className="text-2xl font-bold" style={{ color: 'var(--ds-text, #172B4D)' }}>{totalLinkedItems}</div>
+          </div>
         </div>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Theme Configuration</CardTitle>
-            <CardDescription>
+        <div style={{ background: 'var(--ds-surface, #FFFFFF)', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px', padding: '16px' }}>
+          <div style={{ marginBottom: '12px' }}>
+            <h2 className="text-base font-medium" style={{ color: 'var(--ds-text, #172B4D)' }}>Theme Configuration</h2>
+            <p className="text-sm" style={{ color: 'var(--ds-text-subtle, #44546F)' }}>
               Configure themes for strategic organization. Toggle status or manage linked items.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
+            </p>
+          </div>
+          <div>
             <div className="flex items-center gap-4 mb-4">
               <div className="relative flex-1">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4" style={{ color: 'var(--ds-text-subtle, #44546F)' }} />
+                <Textfield
                   placeholder="Search themes..."
-                  className="pl-10"
                   value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
+                  onChange={(e) => setSearchTerm((e.target as HTMLInputElement).value)}
                 />
               </div>
             </div>
 
             {isLoading ? (
               <div className="flex items-center justify-center py-12">
-                <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+                <Loader2 className="h-8 w-8 animate-spin" style={{ color: 'var(--ds-text-subtle, #44546F)' }} />
               </div>
             ) : error ? (
-              <div className="text-center py-12 text-destructive">
+              <div className="text-center py-12" style={{ color: 'var(--ds-icon-danger, #CA3521)' }}>
                 Failed to load themes. Please try again.
               </div>
             ) : themes.length === 0 ? (
               <AdminEmptyState sectionType="theme-groups" onAction={() => setShowCreateDialog(true)} />
             ) : (
-              <div className="border rounded-lg">
+              <div style={{ border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px' }}>
                 <table className="w-full">
-                  <thead className="bg-muted/50">
+                  <thead style={{ background: 'var(--ds-background-neutral, #F7F8F9)' }}>
                     <tr>
-                      <th className="text-left p-3 text-sm font-medium">Theme Name</th>
-                      <th className="text-left p-3 text-sm font-medium">Description</th>
-                      <th className="text-left p-3 text-sm font-medium">Linked Items</th>
-                      <th className="text-left p-3 text-sm font-medium">Status</th>
-                      <th className="text-center p-3 text-sm font-medium">Active</th>
-                      <th className="text-right p-3 text-sm font-medium">Actions</th>
+                      <th className="text-left p-3 text-sm font-medium" style={{ color: 'var(--ds-text, #172B4D)' }}>Theme Name</th>
+                      <th className="text-left p-3 text-sm font-medium" style={{ color: 'var(--ds-text, #172B4D)' }}>Description</th>
+                      <th className="text-left p-3 text-sm font-medium" style={{ color: 'var(--ds-text, #172B4D)' }}>Linked Items</th>
+                      <th className="text-left p-3 text-sm font-medium" style={{ color: 'var(--ds-text, #172B4D)' }}>Status</th>
+                      <th className="text-center p-3 text-sm font-medium" style={{ color: 'var(--ds-text, #172B4D)' }}>Active</th>
+                      <th className="text-right p-3 text-sm font-medium" style={{ color: 'var(--ds-text, #172B4D)' }}>Actions</th>
                     </tr>
                   </thead>
                   <tbody>
                     {filteredThemes.map((theme) => {
                       const statusDisplay = getStatusDisplay(theme.status);
                       const hasLinkedItems = theme.epic_count > 0 || theme.objective_count > 0;
-                      
+
                       return (
-                        <tr key={theme.id} className="border-t hover:bg-muted/50">
-                          <td className="p-3 text-sm font-medium">
+                        <tr
+                          key={theme.id}
+                          style={{ borderTop: '1px solid var(--ds-border, #DCDFE4)', background: hoveredRow === theme.id ? 'var(--ds-background-neutral-hovered, #F1F2F4)' : 'transparent' }}
+                          onMouseEnter={() => setHoveredRow(theme.id)}
+                          onMouseLeave={() => setHoveredRow(null)}
+                        >
+                          <td className="p-3 text-sm font-medium" style={{ color: 'var(--ds-text, #172B4D)' }}>
                             <div className="flex items-center gap-2">
                               {theme.color_tag && (
-                                <span 
+                                <span
                                   className="w-3 h-3 rounded-full flex-shrink-0"
                                   style={{ backgroundColor: theme.color_tag }}
                                 />
@@ -169,7 +167,7 @@ export default function ThemeGroups() {
                               {theme.name}
                             </div>
                           </td>
-                          <td className="p-3 text-sm max-w-md truncate text-muted-foreground">
+                          <td className="p-3 text-sm max-w-md truncate" style={{ color: 'var(--ds-text-subtle, #44546F)' }}>
                             {theme.description || '—'}
                           </td>
                           <td className="p-3 text-sm">
@@ -185,31 +183,30 @@ export default function ThemeGroups() {
                                 </Lozenge>
                               )}
                               {!hasLinkedItems && (
-                                <span className="text-muted-foreground text-xs">None</span>
+                                <span className="text-xs" style={{ color: 'var(--ds-text-subtle, #44546F)' }}>None</span>
                               )}
                             </div>
                           </td>
                           <td className="p-3 text-sm">
-                            <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs ${statusDisplay.color}`}>
+                            <span className="inline-flex items-center px-2 py-1 rounded-full text-xs" style={statusDisplay.style}>
                               {statusDisplay.label}
                             </span>
                           </td>
                           <td className="p-3 text-sm text-center">
                             <Tooltip content={<p>{theme.status === 'active' ? 'Set to inactive' : 'Set to active'}</p>}>
                               <div className="inline-flex">
-                                <Switch
-                                  checked={theme.status === 'active'}
-                                  onCheckedChange={() => handleToggleStatus(theme)}
-                                  disabled={updateStatusMutation.isPending}
+                                <Toggle
+                                  isChecked={theme.status === 'active'}
+                                  onChange={() => handleToggleStatus(theme)}
+                                  isDisabled={updateStatusMutation.isPending}
                                 />
                               </div>
                             </Tooltip>
                           </td>
                           <td className="p-3 text-sm text-right">
                             <div className="flex justify-end gap-1">
-                              <Button 
-                                variant="ghost" 
-                                size="sm"
+                              <Button
+                                appearance="subtle"
                                 onClick={() => setEditTheme(theme)}
                               >
                                 <Edit className="h-4 w-4" />
@@ -222,12 +219,10 @@ export default function ThemeGroups() {
                                 }
                               >
                                 <Button
-                                  variant="ghost"
-                                  size="sm"
+                                  appearance="subtle"
                                   onClick={() => setDeleteTheme(theme)}
-                                  className="text-destructive hover:text-destructive"
                                 >
-                                  <Trash2 className="h-4 w-4" />
+                                  <Trash2 className="h-4 w-4" style={{ color: 'var(--ds-icon-danger, #CA3521)' }} />
                                 </Button>
                               </Tooltip>
                             </div>
@@ -239,10 +234,10 @@ export default function ThemeGroups() {
                 </table>
               </div>
             )}
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       </div>
-      
+
       {/* Create/Edit Dialog */}
       <ThemeDialog
         open={showCreateDialog || !!editTheme}
@@ -254,7 +249,7 @@ export default function ThemeGroups() {
         }}
         theme={editTheme}
       />
-      
+
       {/* Delete Dialog with reassignment */}
       <DeleteThemeDialog
         open={!!deleteTheme}

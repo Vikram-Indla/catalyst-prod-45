@@ -1,0 +1,71 @@
+{
+  "capturedAt": "2026-05-08T12:37:58.836Z",
+  "source": "digital-transformation.atlassian.net /jira/for-you — Switch sites or apps panel (NAV4)",
+  "trigger": {
+    "width": "32px",
+    "height": "32px",
+    "borderRadius": "3px",
+    "background": "transparent (idle)",
+    "color": "rgb(80,82,88)",
+    "padding": "6px 0",
+    "label": "Switch sites or apps"
+  },
+  "popover": {
+    "width": "343px",
+    "height": "785px (variable, content-driven)",
+    "borderRadius": "8px",
+    "background": "#FFFFFF",
+    "border": "none (relies on portal shadow)",
+    "boxShadow": "rendered by portal wrapper, not dialog itself",
+    "padding": "0px",
+    "position": { "x": 48, "y": 52 },
+    "role": "dialog"
+  },
+  "sectionHeader": {
+    "tag": "H2",
+    "fontSize": "12px",
+    "fontWeight": 653,
+    "color": "rgb(41,42,46) = #292A2E",
+    "textTransform": "none",
+    "letterSpacing": "normal",
+    "marginTop": "0px",
+    "marginBottom": "0px"
+  },
+  "searchInput": "absent — no search row in popover",
+  "itemRow": {
+    "tag": "A (anchor with href)",
+    "height": "48px",
+    "width": "319px (= popover width minus 24px outer padding)",
+    "padding": "8px",
+    "display": "flex",
+    "background": "rgba(0,0,0,0) idle",
+    "fontSize": "14px",
+    "fontWeight": 400,
+    "color": "rgb(41,42,46) = #292A2E",
+    "ariaCurrent": "not used"
+  },
+  "itemIcon": {
+    "wrapperBox": "303x32 flex container (the row's content flex)",
+    "svgIcon": "32x32 (Atlassian brand product icons)",
+    "iconColor": "currentColor (rgb(41,42,46))",
+    "wrapperBg": "transparent",
+    "wrapperBorderRadius": "0px (no tile chrome)"
+  },
+  "itemCount": 11,
+  "sections": "single section, no domain grouping",
+  "perItemBrandColor": "ABSENT — Atlassian app switcher is monochrome, validates council Contrarian's flag",
+  "activeStateMechanism": "ADS-internal styled selector (no aria-current, no manual accent bar)",
+  "councilImplications": {
+    "perHubColor": "SKIP — fails jira-parity gate (validated by live probe)",
+    "searchRow": "SKIP — Atlassian doesn't include one at 11 items either",
+    "domainGrouping": "SKIP — single section is canonical",
+    "rowHeight": "48px target (Catalyst currently variable)",
+    "labelTypography": "14px / 400 / #292A2E (canonical)",
+    "iconSize": "Atlassian uses 32x32 brand icons; Catalyst hub glyphs are functional, 24x24 Atlaskit default is appropriate",
+    "linkItemSemantics": "anchors with href — confirms LinkItem+RouterLink decision",
+    "popoverWidth": "343px — Catalyst at 320px is acceptably close",
+    "popoverBorderRadius": "8px (Catalyst at 6px should bump to 8)",
+    "descriptionColumn": "ABSENT in Atlassian app switcher — supports council drop decision"
+  },
+  "notes": "Atlassian app switcher in NAV4 confirms council recommendations: single-section, no search, no per-app color, ADS fill alone for active, anchors not buttons, 14px/400 label, 48px row, 8px padding, no tile chrome on icon. Catalyst HubSwitcher should mirror this structure with @atlaskit/menu LinkItem + component=RouterLink."
+}

@@ -1,28 +1,27 @@
 import { AdminGuard } from '@/components/admin/AdminGuard';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Plus, Search, Edit, Trash2, GripVertical } from 'lucide-react';
+import Button from '@atlaskit/button/new';
+import Textfield from '@atlaskit/textfield';
+import Toggle from '@atlaskit/toggle';
+import { Plus, Search, Edit, GripVertical } from 'lucide-react';
 import { useState } from 'react';
 import { useDepartments } from '@/hooks/useDepartmentsAndOwners';
 import { supabase } from '@/integrations/supabase/client';
 import { useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
-import { Switch } from '@/components/ui/switch';
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogFooter,
-} from '@/components/ui/dialog';
-import { Label } from '@/components/ui/label';
+} from '@/components/admin/admin-dialog';
 
 export default function Departments() {
   const [searchTerm, setSearchTerm] = useState('');
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingDepartment, setEditingDepartment] = useState<{ id: string; name: string } | null>(null);
   const [newDepartmentName, setNewDepartmentName] = useState('');
+  const [hoveredRow, setHoveredRow] = useState<string | null>(null);
   const queryClient = useQueryClient();
 
   const { data: departments = [], isLoading } = useDepartments();
@@ -101,110 +100,108 @@ export default function Departments() {
       <div className="p-6 space-y-6">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold tracking-tight">Departments</h1>
-            <p className="text-muted-foreground mt-2">
+            <h1 className="text-3xl font-bold tracking-tight" style={{ color: 'var(--ds-text, #172B4D)' }}>Departments</h1>
+            <p className="mt-2" style={{ color: 'var(--ds-text-subtle, #44546F)' }}>
               Manage department list for Business Requests
             </p>
           </div>
-          <Button className="bg-brand-primary hover:bg-brand-primary-hover" onClick={openAddDialog}>
+          <Button appearance="primary" onClick={openAddDialog}>
             <Plus className="h-4 w-4 mr-2" />
             Add Department
           </Button>
         </div>
 
         <div className="grid gap-4 md:grid-cols-3">
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Departments</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{departments.length}</div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Active Departments</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">
-                {departments.filter(d => d.is_active).length}
-              </div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Inactive Departments</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">
-                {departments.filter(d => !d.is_active).length}
-              </div>
-            </CardContent>
-          </Card>
+          <div style={{ background: 'var(--ds-surface, #FFFFFF)', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px', padding: '16px' }}>
+            <div className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <p className="text-sm font-medium" style={{ color: 'var(--ds-text, #172B4D)' }}>Total Departments</p>
+            </div>
+            <div className="text-2xl font-bold" style={{ color: 'var(--ds-text, #172B4D)' }}>{departments.length}</div>
+          </div>
+          <div style={{ background: 'var(--ds-surface, #FFFFFF)', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px', padding: '16px' }}>
+            <div className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <p className="text-sm font-medium" style={{ color: 'var(--ds-text, #172B4D)' }}>Active Departments</p>
+            </div>
+            <div className="text-2xl font-bold" style={{ color: 'var(--ds-text, #172B4D)' }}>
+              {departments.filter(d => d.is_active).length}
+            </div>
+          </div>
+          <div style={{ background: 'var(--ds-surface, #FFFFFF)', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px', padding: '16px' }}>
+            <div className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <p className="text-sm font-medium" style={{ color: 'var(--ds-text, #172B4D)' }}>Inactive Departments</p>
+            </div>
+            <div className="text-2xl font-bold" style={{ color: 'var(--ds-text, #172B4D)' }}>
+              {departments.filter(d => !d.is_active).length}
+            </div>
+          </div>
         </div>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Department Configuration</CardTitle>
-            <CardDescription>
+        <div style={{ background: 'var(--ds-surface, #FFFFFF)', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px', padding: '16px' }}>
+          <div style={{ marginBottom: '12px' }}>
+            <h2 className="text-base font-medium" style={{ color: 'var(--ds-text, #172B4D)' }}>Department Configuration</h2>
+            <p className="text-sm" style={{ color: 'var(--ds-text-subtle, #44546F)' }}>
               Configure departments for Business Requests. Each department maps to a Business Owner.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
+            </p>
+          </div>
+          <div>
             <div className="flex items-center gap-4 mb-4">
               <div className="relative flex-1">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4" style={{ color: 'var(--ds-text-subtle, #44546F)' }} />
+                <Textfield
                   placeholder="Search departments..."
-                  className="pl-10"
                   value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
+                  onChange={(e) => setSearchTerm((e.target as HTMLInputElement).value)}
                 />
               </div>
             </div>
 
-            <div className="border rounded-lg">
+            <div style={{ border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px' }}>
               <table className="w-full">
-                <thead className="bg-muted/50">
+                <thead style={{ background: 'var(--ds-background-neutral, #F7F8F9)' }}>
                   <tr>
                     <th className="text-left p-3 text-sm font-medium w-10"></th>
-                    <th className="text-left p-3 text-sm font-medium w-[80px]">D-ID</th>
-                    <th className="text-left p-3 text-sm font-medium">Department Name</th>
-                    <th className="text-left p-3 text-sm font-medium">Status</th>
-                    <th className="text-right p-3 text-sm font-medium">Actions</th>
+                    <th className="text-left p-3 text-sm font-medium w-[80px]" style={{ color: 'var(--ds-text, #172B4D)' }}>D-ID</th>
+                    <th className="text-left p-3 text-sm font-medium" style={{ color: 'var(--ds-text, #172B4D)' }}>Department Name</th>
+                    <th className="text-left p-3 text-sm font-medium" style={{ color: 'var(--ds-text, #172B4D)' }}>Status</th>
+                    <th className="text-right p-3 text-sm font-medium" style={{ color: 'var(--ds-text, #172B4D)' }}>Actions</th>
                   </tr>
                 </thead>
                 <tbody>
                   {isLoading ? (
                     <tr>
-                      <td colSpan={5} className="p-3 text-center text-muted-foreground">
+                      <td colSpan={5} className="p-3 text-center" style={{ color: 'var(--ds-text-subtle, #44546F)' }}>
                         Loading...
                       </td>
                     </tr>
                   ) : filteredDepartments.length === 0 ? (
                     <tr>
-                      <td colSpan={5} className="p-3 text-center text-muted-foreground">
+                      <td colSpan={5} className="p-3 text-center" style={{ color: 'var(--ds-text-subtle, #44546F)' }}>
                         No departments found
                       </td>
                     </tr>
                   ) : (
                     filteredDepartments.map((dept) => (
-                      <tr key={dept.id} className="border-t hover:bg-muted/50">
+                      <tr
+                        key={dept.id}
+                        style={{ borderTop: '1px solid var(--ds-border, #DCDFE4)', background: hoveredRow === dept.id ? 'var(--ds-background-neutral-hovered, #F1F2F4)' : 'transparent' }}
+                        onMouseEnter={() => setHoveredRow(dept.id)}
+                        onMouseLeave={() => setHoveredRow(null)}
+                      >
                         <td className="p-3">
-                          <GripVertical className="h-4 w-4 text-muted-foreground cursor-grab" />
+                          <GripVertical className="h-4 w-4 cursor-grab" style={{ color: 'var(--ds-text-subtle, #44546F)' }} />
                         </td>
                         <td className="p-3">
-                          <span className="text-sm font-mono font-medium text-primary">{dept.department_code || '—'}</span>
+                          <span className="text-sm font-mono font-medium" style={{ color: 'var(--ds-text-brand, #0C66E4)' }}>{dept.department_code || '—'}</span>
                         </td>
-                        <td className="p-3 text-sm font-medium">{dept.name}</td>
+                        <td className="p-3 text-sm font-medium" style={{ color: 'var(--ds-text, #172B4D)' }}>{dept.name}</td>
                         <td className="p-3 text-sm">
-                          <Switch
-                            checked={dept.is_active ?? true}
-                            onCheckedChange={() => handleToggleActive(dept.id, dept.is_active ?? true)}
+                          <Toggle
+                            isChecked={dept.is_active ?? true}
+                            onChange={() => handleToggleActive(dept.id, dept.is_active ?? true)}
                           />
                         </td>
                         <td className="p-3 text-sm text-right">
-                          <Button variant="ghost" size="sm" onClick={() => openEditDialog(dept)}>
+                          <Button appearance="subtle" onClick={() => openEditDialog(dept)}>
                             <Edit className="h-4 w-4" />
                           </Button>
                         </td>
@@ -214,8 +211,8 @@ export default function Departments() {
                 </tbody>
               </table>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
 
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogContent>
@@ -226,21 +223,21 @@ export default function Departments() {
             </DialogHeader>
             <div className="space-y-4 py-4">
               <div className="space-y-2">
-                <Label htmlFor="name">Department Name</Label>
-                <Input
+                <label htmlFor="name" style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>Department Name</label>
+                <Textfield
                   id="name"
                   value={newDepartmentName}
-                  onChange={(e) => setNewDepartmentName(e.target.value)}
+                  onChange={(e) => setNewDepartmentName((e.target as HTMLInputElement).value)}
                   placeholder="Enter department name"
                 />
               </div>
             </div>
             <DialogFooter>
-              <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
+              <Button appearance="subtle" onClick={() => setIsDialogOpen(false)}>
                 Cancel
               </Button>
               <Button
-                className="bg-brand-primary hover:bg-brand-primary-hover"
+                appearance="primary"
                 onClick={editingDepartment ? handleUpdateDepartment : handleAddDepartment}
               >
                 {editingDepartment ? 'Update' : 'Add'}

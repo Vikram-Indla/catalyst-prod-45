@@ -6,7 +6,7 @@ import {
   DialogTitle,
   DialogDescription,
   DialogFooter,
-} from '@/components/ui/dialog';
+} from '@/components/admin/admin-dialog';
 import { Button } from '@/components/ui/button';
 import {
   Select,

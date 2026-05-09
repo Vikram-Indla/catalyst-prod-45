@@ -1,34 +1,30 @@
-import { useMemo, useState } from 'react';
-import Popup from '@atlaskit/popup';
+import { useMemo, useRef, useEffect, useState, useCallback, type ReactNode } from 'react';
+import { createPortal } from 'react-dom'; // portal-fix
 import Textfield from '@atlaskit/textfield';
 import { Checkbox } from '@atlaskit/checkbox';
 import Avatar from '@atlaskit/avatar';
 import SearchIcon from '@atlaskit/icon/glyph/search';
 import ChevronDownIcon from '@atlaskit/icon/glyph/chevron-down';
 
-// FilterDropdown — generic Jira-parity multi-select filter chip used by the
-// global search panel for App / Space / Assignee.
+// FilterDropdown — Jira-parity multi-select filter chip for GlobalSearchPanel.
 //
-// Pattern: chip button (icon + label + caret) → on click, opens an Atlaskit
-// Popup anchored bottom-start with: search Textfield ("Find <noun>"), a
-// Suggested section listing rows of [Checkbox + Avatar/Icon + Name (KEY?)],
-// and a "Clear filter" footer row. Multi-select; matches reference imagery.
+// Uses createPortal to escape the parent's overflow:hidden (confirmed via
+// getComputedStyle 2026-05-08: panel has overflow:hidden, clipping absolute
+// children). Popup renders to document.body at position:fixed using trigger
+// bounding rect. Self-rolled mousedown click-outside — @atlaskit/popup has
+// empty-portal bug on this surface.
 
 export interface FilterOption {
   id: string;
   name: string;
-  /** Optional secondary tag rendered as " (KEY)" after the name (Spaces). */
   tag?: string;
-  /** Avatar image URL; if omitted we render initials via Atlaskit Avatar. */
   avatarSrc?: string;
+  icon?: ReactNode;
 }
 
 interface FilterDropdownProps {
-  /** Chip label e.g. "App", "Space", "Assignee". */
   label: string;
-  /** Placeholder for the in-popup search field. */
   searchPlaceholder: string;
-  /** Icon rendered on the LEFT side of the chip (Atlaskit icon component). */
   leadingIcon: React.ComponentType<{ label: string }>;
   options: FilterOption[];
   selectedIds: string[];
@@ -42,9 +38,9 @@ const chipBase: React.CSSProperties = {
   height: 36,
   padding: '0 10px 0 8px',
   borderRadius: 4,
-  border: '1px solid #DFE1E6',
-  background: 'var(--ds-surface, #FFFFFF)',
-  color: 'var(--ds-text, #172B4D)',
+  border: '1px solid var(--ds-border)',
+  background: 'var(--ds-surface)',
+  color: 'var(--ds-text)',
   fontSize: 14,
   fontWeight: 500,
   fontFamily: 'var(--cp-font-body)',
@@ -55,9 +51,9 @@ const chipBase: React.CSSProperties = {
 
 const chipActive: React.CSSProperties = {
   ...chipBase,
-  background: '#E9F2FF',
-  border: '1px solid #388BFF',
-  color: '#0C66E4',
+  background: 'var(--ds-background-selected)',
+  border: '1px solid var(--ds-border-selected)',
+  color: 'var(--ds-text-selected)',
 };
 
 export function FilterDropdown({
@@ -70,6 +66,41 @@ export function FilterDropdown({
 }: FilterDropdownProps) {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState('');
+  const [popupPos, setPopupPos] = useState<{ top: number; left: number } | null>(null);
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const popupRef = useRef<HTMLDivElement>(null);
+
+  const close = useCallback(() => { setOpen(false); setQuery(''); }, []);
+
+  // Recompute popup position whenever it opens
+  useEffect(() => {
+    if (!open || !triggerRef.current) return;
+    const rect = triggerRef.current.getBoundingClientRect();
+    setPopupPos({ top: rect.bottom + 4, left: rect.left });
+  }, [open]);
+
+  // Click-outside closes the popup
+  useEffect(() => {
+    if (!open) return;
+    const handler = (e: MouseEvent) => {
+      const target = e.target as Node;
+      const inTrigger = triggerRef.current?.contains(target);
+      const inPopup = popupRef.current?.contains(target);
+      if (!inTrigger && !inPopup) close();
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, [open, close]);
+
+  // Escape closes without bubbling to parent search panel
+  useEffect(() => {
+    if (!open) return;
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') { e.stopPropagation(); close(); }
+    };
+    document.addEventListener('keydown', handler, true);
+    return () => document.removeEventListener('keydown', handler, true);
+  }, [open, close]);
 
   const filtered = useMemo(() => {
     if (!query.trim()) return options;
@@ -80,53 +111,51 @@ export function FilterDropdown({
   }, [query, options]);
 
   const toggle = (id: string) => {
-    if (selectedIds.includes(id)) onChange(selectedIds.filter((x) => x !== id));
-    else onChange([...selectedIds, id]);
+    onChange(selectedIds.includes(id) ? selectedIds.filter((x) => x !== id) : [...selectedIds, id]);
   };
 
   const isActive = selectedIds.length > 0 || open;
 
-  return (
-    <Popup
-      isOpen={open}
-      onClose={() => setOpen(false)}
-      placement="bottom-start"
-      content={() => (
+  const popup = open && popupPos
+    ? createPortal(
         <div
+          ref={popupRef}
+          role="listbox"
+          data-filter-portal="true"
           style={{
+            position: 'fixed',
+            top: popupPos.top,
+            left: popupPos.left,
+            zIndex: 10000,
             width: 460,
             maxHeight: 460,
             display: 'flex',
             flexDirection: 'column',
             background: 'var(--ds-surface, #FFFFFF)',
             borderRadius: 4,
+            border: '1px solid var(--ds-border, #DFE1E6)',
+            boxShadow: '0 8px 24px rgba(9,30,66,0.16), 0 2px 4px rgba(9,30,66,0.08)',
             overflow: 'hidden',
           }}
         >
           {/* Search */}
-          <div style={{ padding: 10, borderBottom: '1px solid #F1F2F4' }}>
+          <div style={{ padding: 10, borderBottom: '1px solid var(--ds-border)' }}>
             <Textfield
               autoFocus
               value={query}
               onChange={(e) => setQuery((e.target as HTMLInputElement).value)}
               placeholder={searchPlaceholder}
               elemAfterInput={
-                <span style={{ display: 'inline-flex', paddingRight: 8, color: '#626F86' }}>
+                <span style={{ display: 'inline-flex', paddingRight: 8, color: 'var(--ds-text-subtlest)' }}>
                   <SearchIcon label="" />
                 </span>
               }
             />
           </div>
+
           {/* List */}
           <div style={{ flex: 1, overflowY: 'auto', padding: '6px 0' }}>
-            <div
-              style={{
-                padding: '6px 16px',
-                fontSize: 12,
-                fontWeight: 700,
-                color: '#44546F',
-              }}
-            >
+            <div style={{ padding: '6px 16px', fontSize: 12, fontWeight: 700, color: 'var(--ds-text-subtle)' }}>
               Suggested
             </div>
             {filtered.map((opt) => {
@@ -134,63 +163,48 @@ export function FilterDropdown({
               return (
                 <label
                   key={opt.id}
+                  role="option"
+                  aria-selected={checked}
                   style={{
                     display: 'flex',
                     alignItems: 'center',
                     gap: 10,
                     padding: '6px 16px',
                     cursor: 'pointer',
-                    background: checked ? '#F1F2F4' : 'transparent',
+                    background: checked ? 'var(--ds-background-neutral)' : 'transparent',
                   }}
                   onMouseEnter={(e) => {
-                    if (!checked) (e.currentTarget as HTMLElement).style.background = '#F7F8F9';
+                    if (!checked) (e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral-subtle-hovered)';
                   }}
                   onMouseLeave={(e) => {
-                    if (!checked) (e.currentTarget as HTMLElement).style.background = 'transparent';
+                    (e.currentTarget as HTMLElement).style.background = checked ? 'var(--ds-background-neutral)' : 'transparent';
                   }}
                 >
                   <Checkbox isChecked={checked} onChange={() => toggle(opt.id)} />
-                  <Avatar
-                    appearance="circle"
-                    size="small"
-                    name={opt.name}
-                    src={opt.avatarSrc}
-                  />
-                  <span
-                    style={{
-                      fontSize: 14,
-                      color: 'var(--ds-text, #172B4D)',
-                      fontFamily: 'var(--cp-font-body)',
-                    }}
-                  >
+                  {opt.icon ?? <Avatar appearance="circle" size="small" name={opt.name} src={opt.avatarSrc} />}
+                  <span style={{ fontSize: 14, color: 'var(--ds-text, #172B4D)', fontFamily: 'var(--cp-font-body)' }}>
                     {opt.name}
-                    {opt.tag ? <span style={{ color: 'var(--ds-text, #172B4D)' }}> ({opt.tag})</span> : null}
+                    {opt.tag ? <span style={{ color: 'var(--ds-text-subtle, #626F86)' }}> ({opt.tag})</span> : null}
                   </span>
                 </label>
               );
             })}
-            {filtered.length === 0 ? (
-              <div
-                style={{
-                  padding: '12px 16px',
-                  fontSize: 13,
-                  color: '#626F86',
-                  fontFamily: 'var(--cp-font-body)',
-                }}
-              >
+            {filtered.length === 0 && (
+              <div style={{ padding: '12px 16px', fontSize: 13, color: 'var(--ds-text-subtlest)', fontFamily: 'var(--cp-font-body)' }}>
                 No matches
               </div>
-            ) : null}
+            )}
           </div>
+
           {/* Clear filter */}
           <button
             type="button"
-            onClick={() => onChange([])}
+            onClick={() => { onChange([]); setQuery(''); }}
             style={{
               all: 'unset',
               cursor: 'pointer',
               padding: '12px 16px',
-              borderTop: '1px solid #F1F2F4',
+              borderTop: '1px solid var(--ds-border)',
               fontSize: 14,
               color: 'var(--ds-text, #172B4D)',
               fontFamily: 'var(--cp-font-body)',
@@ -198,38 +212,42 @@ export function FilterDropdown({
           >
             Clear filter
           </button>
-        </div>
-      )}
-      trigger={(triggerProps) => (
-        <button
-          {...triggerProps}
-          type="button"
-          aria-haspopup="dialog"
-          aria-expanded={open}
-          onClick={() => setOpen((v) => !v)}
-          style={isActive ? chipActive : chipBase}
-        >
-          <LeadingIcon label="" />
-          <span>{label}</span>
-          {selectedIds.length > 0 ? (
-            <span
-              style={{
-                marginLeft: 2,
-                padding: '0 6px',
-                borderRadius: 8,
-                background: '#0C66E4',
-                color: 'var(--ds-surface, #FFFFFF)',
-                fontSize: 11,
-                fontWeight: 700,
-                lineHeight: '16px',
-              }}
-            >
-              {selectedIds.length}
-            </span>
-          ) : null}
-          <ChevronDownIcon label="" />
-        </button>
-      )}
-    />
+        </div>,
+        document.body,
+      )
+    : null;
+
+  return (
+    <>
+      <button
+        ref={triggerRef}
+        type="button"
+        aria-haspopup="listbox"
+        aria-expanded={open}
+        onClick={() => setOpen((v) => !v)}
+        style={isActive ? chipActive : chipBase}
+      >
+        <LeadingIcon label="" />
+        <span>{label}</span>
+        {selectedIds.length > 0 && (
+          <span
+            style={{
+              marginLeft: 2,
+              padding: '0 6px',
+              borderRadius: 8,
+              background: 'var(--ds-background-brand-bold)',
+              color: 'var(--ds-surface, #FFFFFF)',
+              fontSize: 11,
+              fontWeight: 700,
+              lineHeight: '16px',
+            }}
+          >
+            {selectedIds.length}
+          </span>
+        )}
+        <ChevronDownIcon label="" />
+      </button>
+      {popup}
+    </>
   );
 }

@@ -4,6 +4,7 @@ import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { RefreshCw, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
+import { token } from '@atlaskit/tokens';
 
 function formatTimeAgo(date: string | null | undefined): string {
   if (!date) return 'Never';
@@ -82,19 +83,24 @@ export function useSyncHealthLatest() {
 }
 
 export function SyncCTALabel() {
-  const { data: conn } = useSyncConnection();
-  const { data: health } = useSyncHealthLatest();
+  const { data: conn, isLoading: connLoading } = useSyncConnection();
+  const { data: health, isLoading: healthLoading } = useSyncHealthLatest();
+  const loading = connLoading || healthLoading;
 
   return (
     <>
-      <span className={cn("w-2 h-2 rounded-full", conn ? "bg-green-500" : "bg-slate-300")} />
+      <span className={cn("w-2 h-2 rounded-full")} style={{ backgroundColor: loading ? token('color.background.neutral') : conn ? token('color.background.success.bold') : token('color.background.neutral.bold') }} />
       <span>↔ Jira Sync</span>
-      <span className="w-px h-5 bg-slate-200 dark:bg-slate-700" />
-      <span className="text-[11px] text-slate-500 dark:text-slate-400 font-normal">
-        {conn
-          ? `Connected · Synced ${formatTimeAgo(health?.checked_at)}`
-          : 'Not connected'}
-      </span>
+      {!loading && (
+        <>
+          <span className="w-px h-5" style={{ backgroundColor: token('color.border') }} />
+          <span className="text-[11px] font-normal" style={{ color: token('color.text.subtle') }}>
+            {conn
+              ? `Connected · Synced ${formatTimeAgo(health?.checked_at)}`
+              : 'Not connected'}
+          </span>
+        </>
+      )}
     </>
   );
 }

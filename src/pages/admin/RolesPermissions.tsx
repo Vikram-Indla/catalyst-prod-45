@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { AdminGuard } from '@/components/admin/AdminGuard';
-import { Button } from '@/components/ui/button';
+import Button from '@atlaskit/button/new';
 import { Plus } from 'lucide-react';
 import { RolesList } from '@/components/admin/roles-permissions/RolesList';
 import { RoleDetails } from '@/components/admin/roles-permissions/RoleDetails';
@@ -63,17 +63,17 @@ export default function RolesPermissions() {
         {/* Page Header */}
         <div className="flex items-start justify-between">
           <div>
-            <h1 className="text-2xl font-semibold text-foreground">Roles & Permissions</h1>
-            <p className="text-sm text-muted-foreground mt-1">
+            <h1 className="text-2xl font-semibold" style={{ color: 'var(--ds-text, #172B4D)' }}>Roles & Permissions</h1>
+            <p className="text-sm mt-1" style={{ color: 'var(--ds-text-subtle, #44546F)' }}>
               Manage roles, permissions, and access for the Product module.
             </p>
           </div>
           {isAdmin && (
-            <Button 
-              className="bg-brand-primary hover:bg-brand-primary-hover text-white"
+            <Button
+              appearance="primary"
               onClick={handleAddRole}
+              iconBefore={<Plus size={16} />}
             >
-              <Plus className="h-4 w-4 mr-2" />
               Add Role
             </Button>
           )}

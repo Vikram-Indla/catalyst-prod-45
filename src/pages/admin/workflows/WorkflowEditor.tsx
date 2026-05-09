@@ -12,15 +12,9 @@ import {
   Plus, Trash2, GripVertical, ChevronDown, Check, Circle, Zap,
   ArrowRight, Play, Flag
 } from 'lucide-react';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
+import Textfield from '@atlaskit/textfield';
+import AtlasButton from '@atlaskit/button/new';
+import AdsSelect from '@atlaskit/select';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -30,7 +24,7 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
+} from '@/components/admin/admin-alert-dialog';
 
 interface Props {
   scheme: WorkflowScheme;
@@ -278,14 +272,16 @@ export function WorkflowEditor({ scheme, statuses, transitions, onInvalidate }: 
 
               {/* Name */}
               {editingId === s.id ? (
-                <Input
-                  value={editName}
-                  onChange={e => setEditName(e.target.value)}
-                  onBlur={() => handleRename(s.id)}
-                  onKeyDown={e => e.key === 'Enter' && handleRename(s.id)}
-                  className="h-7 text-xs bg-white border-[var(--ds-text-disabled,#CBD5E1)] text-[var(--ds-text,#0F172A)] flex-1"
-                  autoFocus
-                />
+                <div style={{ flex: 1 }}>
+                  <Textfield
+                    value={editName}
+                    onChange={(e) => setEditName((e.target as HTMLInputElement).value)}
+                    onBlur={() => handleRename(s.id)}
+                    onKeyDown={(e: React.KeyboardEvent) => e.key === 'Enter' && handleRename(s.id)}
+                    autoFocus
+                    isCompact
+                  />
+                </div>
               ) : (
                 <span
                   className="text-[13px] text-[var(--ds-text,#0F172A)] flex-1 cursor-pointer hover:underline"
@@ -310,46 +306,46 @@ export function WorkflowEditor({ scheme, statuses, transitions, onInvalidate }: 
               </div>
 
               {/* Category selector */}
-              <Select
-                value={s.category}
-                onValueChange={val => handleUpdateCategory(s.id, val)}
-              >
-                <SelectTrigger className="h-7 w-[100px] text-[11px] bg-white border-[var(--ds-border,#E2E8F0)] text-[var(--ds-text-subtle,#475569)]">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {Object.entries(CATEGORY_CONFIG).map(([k, v]) => (
-                    <SelectItem key={k} value={k} className="text-xs">{v.label}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <div style={{ width: 100 }}>
+                <AdsSelect
+                  isCompact
+                  options={Object.entries(CATEGORY_CONFIG).map(([k, v]) => ({ label: v.label, value: k }))}
+                  value={Object.entries(CATEGORY_CONFIG).map(([k, v]) => ({ label: v.label, value: k })).find(o => o.value === s.category) || null}
+                  onChange={(opt) => opt && handleUpdateCategory(s.id, opt.value)}
+                  menuPortalTarget={document.body}
+                />
+              </div>
 
               {/* WIP limit — numeric input; blank = no limit */}
-              <Input
-                type="number"
-                min={0}
-                placeholder="WIP"
-                defaultValue={(s as WorkflowStatus & { wip_limit?: number | null }).wip_limit ?? ''}
-                onBlur={e => handleUpdateWipLimit(s.id, e.currentTarget.value)}
-                onKeyDown={e => {
-                  if (e.key === 'Enter') (e.currentTarget as HTMLInputElement).blur();
-                }}
-                className="h-7 w-[68px] text-[11px] bg-white border-[var(--ds-border,#E2E8F0)] text-[var(--ds-text-subtle,#475569)] shrink-0"
-                title="Work-in-progress limit (blank for no limit)"
-              />
+              <div style={{ width: 68, flexShrink: 0 }}>
+                <Textfield
+                  type="number"
+                  min={0}
+                  placeholder="WIP"
+                  defaultValue={(s as WorkflowStatus & { wip_limit?: number | null }).wip_limit ?? ''}
+                  onBlur={(e) => handleUpdateWipLimit(s.id, (e.target as HTMLInputElement).value)}
+                  onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
+                    if (e.key === 'Enter') (e.currentTarget as HTMLInputElement).blur();
+                  }}
+                  isCompact
+                  aria-label="Work-in-progress limit (blank for no limit)"
+                />
+              </div>
 
               {/* Aliases — comma-separated slug list (e.g. "in_progress, under_implementation") */}
-              <Input
-                type="text"
-                placeholder="aliases"
-                defaultValue={(((s as WorkflowStatus & { slug_aliases?: string[] | null }).slug_aliases) ?? []).join(', ')}
-                onBlur={e => handleUpdateAliases(s.id, e.currentTarget.value)}
-                onKeyDown={e => {
-                  if (e.key === 'Enter') (e.currentTarget as HTMLInputElement).blur();
-                }}
-                className="h-7 w-[140px] text-[11px] bg-white border-[var(--ds-border,#E2E8F0)] text-[var(--ds-text-subtle,#475569)] shrink-0 font-mono"
-                title="Comma-separated DB enum values that route into this column"
-              />
+              <div style={{ width: 140, flexShrink: 0 }}>
+                <Textfield
+                  type="text"
+                  placeholder="aliases"
+                  defaultValue={(((s as WorkflowStatus & { slug_aliases?: string[] | null }).slug_aliases) ?? []).join(', ')}
+                  onBlur={(e) => handleUpdateAliases(s.id, (e.target as HTMLInputElement).value)}
+                  onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
+                    if (e.key === 'Enter') (e.currentTarget as HTMLInputElement).blur();
+                  }}
+                  isCompact
+                  aria-label="Comma-separated DB enum values that route into this column"
+                />
+              </div>
 
               {/* Active toggle */}
               <button
@@ -401,31 +397,32 @@ export function WorkflowEditor({ scheme, statuses, transitions, onInvalidate }: 
 
         {/* Add status form */}
         <div className="px-4 py-3 border-t border-[var(--ds-border,#E2E8F0)] flex items-center gap-2">
-          <Input
-            value={newStatusName}
-            onChange={e => setNewStatusName(e.target.value)}
-            placeholder="New status name…"
-            className="h-8 text-xs bg-white border-[var(--ds-border,#E2E8F0)] text-[var(--ds-text,#0F172A)] placeholder:text-[var(--ds-text-subtlest,#94A3B8)] flex-1"
-            onKeyDown={e => e.key === 'Enter' && handleAddStatus()}
-          />
-          <Select value={newStatusCategory} onValueChange={setNewStatusCategory}>
-            <SelectTrigger className="h-8 w-[90px] text-[10px] bg-white border-[var(--ds-border,#E2E8F0)] text-[var(--ds-text-subtle,#475569)]">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {Object.entries(CATEGORY_CONFIG).map(([k, v]) => (
-                <SelectItem key={k} value={k} className="text-xs">{v.label}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          <Button
-            size="sm"
+          <div style={{ flex: 1 }}>
+            <Textfield
+              value={newStatusName}
+              onChange={(e) => setNewStatusName((e.target as HTMLInputElement).value)}
+              placeholder="New status name…"
+              onKeyDown={(e: React.KeyboardEvent) => e.key === 'Enter' && handleAddStatus()}
+              isCompact
+            />
+          </div>
+          <div style={{ width: 90 }}>
+            <AdsSelect
+              isCompact
+              options={Object.entries(CATEGORY_CONFIG).map(([k, v]) => ({ label: v.label, value: k }))}
+              value={Object.entries(CATEGORY_CONFIG).map(([k, v]) => ({ label: v.label, value: k })).find(o => o.value === newStatusCategory) || null}
+              onChange={(opt) => opt && setNewStatusCategory(opt.value)}
+              menuPortalTarget={document.body}
+            />
+          </div>
+          <AtlasButton
+            appearance="primary"
             onClick={handleAddStatus}
-            disabled={adding || !newStatusName.trim()}
-            className="h-8 px-3 text-xs bg-[var(--ds-text-brand,#2563EB)] hover:bg-[var(--ds-background-brand-bold-hovered,#1D4ED8)] text-white border border-[var(--ds-text-brand,#2563EB)]"
+            isDisabled={adding || !newStatusName.trim()}
+            iconBefore={() => <Plus size={14} />}
           >
-            <Plus size={14} />
-          </Button>
+            {''}
+          </AtlasButton>
         </div>
       </div>
 

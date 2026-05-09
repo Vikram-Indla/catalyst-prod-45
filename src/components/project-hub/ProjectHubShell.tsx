@@ -2,6 +2,8 @@ import { lazy, Suspense, useState, useEffect } from 'react';
 import { Outlet, useParams, useNavigate, useLocation } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/hooks/useAuth';
+import { setLastProjectId } from '@/components/workhub/create-story/useCreateStory';
 import { TopNav } from './shell/TopNav';
 import { Sidebar } from './shell/Sidebar';
 import { ProjectEntry } from './shell/ProjectSwitcher';
@@ -13,11 +15,27 @@ export function ProjectHubShell() {
   const params = useParams<{ key?: string }>();
   const navigate = useNavigate();
   const location = useLocation();
+  const { user } = useAuth();
   const [collapsed, setCollapsed] = useState(false);
   const [createModalOpen, setCreateModalOpen] = useState(false);
   const [createWorkItemOpen, setCreateWorkItemOpen] = useState(false);
 
   const isInProjectContext = !!params.key && /\/(list|board|backlog|epic-backlog|feature-backlog|story-backlog|timeline|releases|reports|sprint-predictor|risk-scanner|dashboard)/.test(location.pathname);
+
+  // Bucket D (2026-05-09): persist last-accessed project so the global
+  // Create modal pre-selects it. Resolves projects.id (UUID) by key —
+  // the canonical FK used in catalyst_issues / CreateStoryModal.
+  useEffect(() => {
+    if (!params.key || !user?.id) return;
+    supabase
+      .from('projects')
+      .select('id')
+      .eq('key', params.key.toUpperCase())
+      .maybeSingle()
+      .then(({ data }) => {
+        if (data?.id) setLastProjectId(user.id, data.id);
+      });
+  }, [params.key, user?.id]);
 
   useEffect(() => {
     const handleResize = () => {

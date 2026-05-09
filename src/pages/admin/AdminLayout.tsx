@@ -6,7 +6,7 @@ function AdminLayoutContent() {
   const { expanded, setExpanded } = useAdminSidebar();
 
   return (
-    <div className="flex h-screen bg-background">
+    <div style={{ display: 'flex', height: '100vh', background: 'var(--ds-surface, #FFFFFF)' }}>
       <AdminSidebarV2 
         expanded={expanded} 
         onToggle={() => setExpanded(!expanded)} 

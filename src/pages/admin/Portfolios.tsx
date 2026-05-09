@@ -1,15 +1,13 @@
 import { useState } from 'react';
 import { AdminGuard } from '@/components/admin/AdminGuard';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import Button from '@atlaskit/button/new';
+import Textfield from '@atlaskit/textfield';
 import { Plus, Search, Trash2 } from 'lucide-react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { ResponsivePageContainer, ResponsivePageHeader, ResponsiveTableWrapper } from '@/components/layout/ResponsivePageContainer';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/admin/admin-dialog';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/admin/admin-alert-dialog';
 import { toast } from 'sonner';
 
 interface Portfolio {
@@ -47,6 +45,7 @@ export default function Portfolios() {
   const [formData, setFormData] = useState({ name: '', key: '' });
   const [deleteProgram, setDeleteProgram] = useState<Portfolio | null>(null);
   const [deleteError, setDeleteError] = useState<string | null>(null);
+  const [hoveredRow, setHoveredRow] = useState<string | null>(null);
 
   const { data: programs, isLoading } = useQuery({
     queryKey: ['admin-programs'],
@@ -81,9 +80,9 @@ export default function Portfolios() {
     // Check for linked projects
     const linkedProjects = getProjectsForProgram(programId);
     if (linkedProjects.length > 0) {
-      return { 
-        canDelete: false, 
-        reason: `Cannot delete program. It has ${linkedProjects.length} linked project(s): ${linkedProjects.map(p => p.name).join(', ')}. Please remove or reassign projects first.` 
+      return {
+        canDelete: false,
+        reason: `Cannot delete program. It has ${linkedProjects.length} linked project(s): ${linkedProjects.map(p => p.name).join(', ')}. Please remove or reassign projects first.`
       };
     }
 
@@ -99,9 +98,9 @@ export default function Portfolios() {
     }
 
     if (epicCount && epicCount > 0) {
-      return { 
-        canDelete: false, 
-        reason: `Cannot delete program. It has ${epicCount} linked epic(s). Please remove or reassign epics first.` 
+      return {
+        canDelete: false,
+        reason: `Cannot delete program. It has ${epicCount} linked epic(s). Please remove or reassign epics first.`
       };
     }
 
@@ -224,7 +223,7 @@ export default function Portfolios() {
           title="Programs"
           description="Configure program structure and enterprise associations"
           actions={
-            <Button className="bg-brand-primary hover:bg-brand-primary-hover" onClick={openAddDialog}>
+            <Button appearance="primary" onClick={openAddDialog}>
               <Plus className="h-4 w-4 mr-2" />
               Add Program
             </Button>
@@ -232,103 +231,101 @@ export default function Portfolios() {
         />
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Programs</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{programs?.length || 0}</div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Active Programs</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{programs?.filter(p => p.status === 'active').length || 0}</div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Projects</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{totalProjects}</div>
-            </CardContent>
-          </Card>
+          <div style={{ background: 'var(--ds-surface, #FFFFFF)', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px', padding: '16px' }}>
+            <div className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <p className="text-sm font-medium" style={{ color: 'var(--ds-text, #172B4D)' }}>Total Programs</p>
+            </div>
+            <div className="text-2xl font-bold" style={{ color: 'var(--ds-text, #172B4D)' }}>{programs?.length || 0}</div>
+          </div>
+          <div style={{ background: 'var(--ds-surface, #FFFFFF)', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px', padding: '16px' }}>
+            <div className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <p className="text-sm font-medium" style={{ color: 'var(--ds-text, #172B4D)' }}>Active Programs</p>
+            </div>
+            <div className="text-2xl font-bold" style={{ color: 'var(--ds-text, #172B4D)' }}>{programs?.filter(p => p.status === 'active').length || 0}</div>
+          </div>
+          <div style={{ background: 'var(--ds-surface, #FFFFFF)', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px', padding: '16px' }}>
+            <div className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <p className="text-sm font-medium" style={{ color: 'var(--ds-text, #172B4D)' }}>Total Projects</p>
+            </div>
+            <div className="text-2xl font-bold" style={{ color: 'var(--ds-text, #172B4D)' }}>{totalProjects}</div>
+          </div>
         </div>
 
-        <Card className="mt-4">
-          <CardHeader>
-            <CardTitle>Program Configuration</CardTitle>
-            <CardDescription>
+        <div className="mt-4" style={{ background: 'var(--ds-surface, #FFFFFF)', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px', padding: '16px' }}>
+          <div style={{ marginBottom: '12px' }}>
+            <h2 className="text-base font-medium" style={{ color: 'var(--ds-text, #172B4D)' }}>Program Configuration</h2>
+            <p className="text-sm" style={{ color: 'var(--ds-text-subtle, #44546F)' }}>
               Manage programs, their projects, and strategic alignment
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
+            </p>
+          </div>
+          <div>
             <div className="flex items-center gap-4 mb-4">
               <div className="relative flex-1">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4" style={{ color: 'var(--ds-text-subtle, #44546F)' }} />
+                <Textfield
                   placeholder="Search programs..."
-                  className="pl-10"
+                  elemBeforeInput={<span />}
+                  css={{ paddingLeft: '2.5rem' }}
                 />
               </div>
             </div>
 
             {isLoading ? (
-              <div className="text-center py-8 text-muted-foreground">Loading programs...</div>
+              <div className="text-center py-8" style={{ color: 'var(--ds-text-subtle, #44546F)' }}>Loading programs...</div>
             ) : programs?.length === 0 ? (
-              <div className="text-center py-8 text-muted-foreground">
+              <div className="text-center py-8" style={{ color: 'var(--ds-text-subtle, #44546F)' }}>
                 No programs found. Click "Add Program" to create one.
               </div>
             ) : (
               <ResponsiveTableWrapper minWidth={500}>
                 <table className="w-full">
-                  <thead className="bg-muted/50">
+                  <thead style={{ background: 'var(--ds-background-neutral, #F7F8F9)' }}>
                     <tr>
-                      <th className="text-left p-3 text-sm font-medium">Program Name</th>
-                      <th className="text-left p-3 text-sm font-medium">Projects</th>
-                      <th className="text-left p-3 text-sm font-medium">Status</th>
-                      <th className="text-right p-3 text-sm font-medium">Actions</th>
+                      <th className="text-left p-3 text-sm font-medium" style={{ color: 'var(--ds-text, #172B4D)' }}>Program Name</th>
+                      <th className="text-left p-3 text-sm font-medium" style={{ color: 'var(--ds-text, #172B4D)' }}>Projects</th>
+                      <th className="text-left p-3 text-sm font-medium" style={{ color: 'var(--ds-text, #172B4D)' }}>Status</th>
+                      <th className="text-right p-3 text-sm font-medium" style={{ color: 'var(--ds-text, #172B4D)' }}>Actions</th>
                     </tr>
                   </thead>
                   <tbody>
                     {programs?.map((program) => {
                       const programProjects = getProjectsForProgram(program.id);
                       return (
-                        <tr key={program.id} className="border-t hover:bg-muted/50">
-                          <td className="p-3 text-sm font-medium">{program.name}</td>
+                        <tr
+                          key={program.id}
+                          style={{ borderTop: '1px solid var(--ds-border, #DCDFE4)', background: hoveredRow === program.id ? 'var(--ds-background-neutral-hovered, #F1F2F4)' : 'transparent' }}
+                          onMouseEnter={() => setHoveredRow(program.id)}
+                          onMouseLeave={() => setHoveredRow(null)}
+                        >
+                          <td className="p-3 text-sm font-medium" style={{ color: 'var(--ds-text, #172B4D)' }}>{program.name}</td>
                           <td className="p-3 text-sm">
                             {programProjects.length === 0 ? (
-                              <span className="text-muted-foreground">-</span>
+                              <span style={{ color: 'var(--ds-text-subtle, #44546F)' }}>-</span>
                             ) : (
-                              <span className="text-foreground">
+                              <span style={{ color: 'var(--ds-text, #172B4D)' }}>
                                 {programProjects.map(p => p.name).join(', ')}
                               </span>
                             )}
                           </td>
                           <td className="p-3 text-sm">
                             <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs ${
-                              program.status === 'active' 
-                                ? 'bg-[var(--sem-success-bg)] text-[var(--sem-success)]' 
-                                : 'bg-muted text-muted-foreground'
-                            }`}>
+                              program.status === 'active'
+                                ? 'bg-[var(--sem-success-bg)] text-[var(--sem-success)]'
+                                : ''
+                            }`} style={program.status !== 'active' ? { background: 'var(--ds-background-neutral, #F7F8F9)', color: 'var(--ds-text-subtle, #44546F)' } : {}}>
                               {program.status === 'active' ? 'Active' : 'Archived'}
                             </span>
                           </td>
                           <td className="p-3 text-sm text-right">
                             <div className="flex items-center justify-end gap-2">
-                              <Button variant="ghost" size="sm" onClick={() => handleEdit(program)}>
+                              <Button appearance="subtle" onClick={() => handleEdit(program)}>
                                 Edit
                               </Button>
-                              <Button 
-                                variant="ghost" 
-                                size="sm" 
+                              <Button
+                                appearance="subtle"
                                 onClick={() => handleDeleteClick(program)}
-                                className="text-destructive hover:text-destructive hover:bg-destructive/10"
                               >
-                                <Trash2 className="h-4 w-4" />
+                                <Trash2 className="h-4 w-4" style={{ color: 'var(--ds-icon-danger, #CA3521)' }} />
                               </Button>
                             </div>
                           </td>
@@ -339,8 +336,8 @@ export default function Portfolios() {
                 </table>
               </ResponsiveTableWrapper>
             )}
-          </CardContent>
-        </Card>
+          </div>
+        </div>
 
         {/* Add Program Dialog */}
         <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
@@ -350,23 +347,23 @@ export default function Portfolios() {
             </DialogHeader>
             <div className="space-y-4 py-4">
               <div className="space-y-2">
-                <Label htmlFor="add-name">Program Name</Label>
-                <Input
+                <label htmlFor="add-name" style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>Program Name</label>
+                <Textfield
                   id="add-name"
                   value={formData.name}
-                  onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
+                  onChange={(e) => setFormData(prev => ({ ...prev, name: (e.target as HTMLInputElement).value }))}
                   placeholder="Enter program name"
                 />
               </div>
             </div>
             <DialogFooter>
-              <Button variant="outline" onClick={() => setIsAddDialogOpen(false)}>
+              <Button appearance="subtle" onClick={() => setIsAddDialogOpen(false)}>
                 Cancel
               </Button>
-              <Button 
-                onClick={handleCreate} 
-                disabled={createMutation.isPending}
-                className="bg-brand-primary hover:bg-brand-primary-hover"
+              <Button
+                appearance="primary"
+                onClick={handleCreate}
+                isDisabled={createMutation.isPending}
               >
                 {createMutation.isPending ? 'Creating...' : 'Create'}
               </Button>
@@ -382,22 +379,22 @@ export default function Portfolios() {
             </DialogHeader>
             <div className="space-y-4 py-4">
               <div className="space-y-2">
-                <Label htmlFor="edit-name">Program Name</Label>
-                <Input
+                <label htmlFor="edit-name" style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>Program Name</label>
+                <Textfield
                   id="edit-name"
                   value={formData.name}
-                  onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
+                  onChange={(e) => setFormData(prev => ({ ...prev, name: (e.target as HTMLInputElement).value }))}
                 />
               </div>
             </div>
             <DialogFooter>
-              <Button variant="outline" onClick={() => setEditingProgram(null)}>
+              <Button appearance="subtle" onClick={() => setEditingProgram(null)}>
                 Cancel
               </Button>
-              <Button 
-                onClick={handleSave} 
-                disabled={updateMutation.isPending}
-                className="bg-brand-primary hover:bg-brand-primary-hover"
+              <Button
+                appearance="primary"
+                onClick={handleSave}
+                isDisabled={updateMutation.isPending}
               >
                 {updateMutation.isPending ? 'Saving...' : 'Save'}
               </Button>
@@ -419,7 +416,7 @@ export default function Portfolios() {
               </AlertDialogTitle>
               <AlertDialogDescription>
                 {deleteError ? (
-                  <span className="text-destructive">{deleteError}</span>
+                  <span style={{ color: 'var(--ds-icon-danger, #CA3521)' }}>{deleteError}</span>
                 ) : (
                   `Are you sure you want to delete "${deleteProgram?.name}"? This action cannot be undone.`
                 )}

@@ -12,6 +12,7 @@
 
 import React from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { hubAccentToken } from '@/lib/hub-tone';
 import { PanelLeftClose, PanelLeftOpen, Star, LucideIcon } from 'lucide-react';
 import HomeIcon from '@atlaskit/icon/glyph/home';
 import OfficeBuildingIcon from '@atlaskit/icon/glyph/office-building';
@@ -511,13 +512,17 @@ function renderMenuItem(
           per the "do not touch light mode tokens" directive. */}
       {active && expanded && !tk.isDark && (
         <span
+          data-hub-accent
           style={{
             position: 'absolute',
             left: 0,
             top: '4px',
             bottom: '4px',
             width: '3px',
-            background: 'var(--cp-blue)',
+            // Step 7.6 — sidebar accent bar echoes the active hub's tile
+            // colour from the HubSwitcher. Turns "colourful popover" into
+            // a navigation language that lives in two places.
+            background: hubAccentToken(item.path),
             borderRadius: '0 3px 3px 0',
           }}
         />

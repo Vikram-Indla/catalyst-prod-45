@@ -500,3 +500,12 @@
 .dark .csProjectIcon { background: #0C66E4; }
 .dark .csParentBadge { background: var(--ds-border-bold, #454545); color: var(--ds-text-subtlest, #A1A1A1); }
 .dark .csShowDoneLabel { color: var(--ds-text-subtlest, #A1A1A1); border-color: var(--ds-border, #2E2E2E); }
+
+/* ── ADF Editor in Create modal ──────────────────────────────────────
+   The @atlaskit/editor-core "comment" appearance renders its own
+   Save/Cancel toolbar (ak-editor-secondary-toolbar). The modal footer
+   owns submission, so we suppress the editor's built-in toolbar.
+   Target is stable: data-testid="ak-editor-secondary-toolbar"         */
+.cs-adf-desc-wrapper [data-testid="ak-editor-secondary-toolbar"] {
+  display: none !important;
+}

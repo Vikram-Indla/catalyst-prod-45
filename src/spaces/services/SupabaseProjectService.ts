@@ -7,7 +7,7 @@
 //
 // Field mapping (CreateSpaceRequest → projects column)
 //   name              → name
-//   key               → project_key  (and `key` for legacy mirror)
+//   key               → key           (raw projects table column)
 //   description       → description
 //   purpose           → department   (best-fit; preserves existing schema)
 //   isPrivate         → kept on the wizard side; no column today
@@ -19,7 +19,7 @@
 //       to match the existing useCreateProject() invariants.
 // ============================================================================
 
-import { supabase, typedQuery } from '@/integrations/supabase/client';
+import { supabase } from '@/integrations/supabase/client';
 import { SpaceError } from '../errors';
 import type {
   CreateSpaceRequest,
@@ -39,7 +39,7 @@ const PURPOSE_TO_DEPARTMENT: Record<SpacePurpose, string> = {
 
 export class SupabaseProjectService implements SpaceService {
   /**
-   * Case-insensitive uniqueness check against `projects.project_key`.
+   * Case-insensitive uniqueness check against `projects.key`.
    * Returns true if the key is free.
    */
   async isKeyUnique(key: string): Promise<boolean> {
@@ -49,14 +49,10 @@ export class SupabaseProjectService implements SpaceService {
     const { data, error } = await supabase
       .from('projects')
       .select('id', { count: 'exact', head: false })
-      .ilike('project_key', trimmed)
+      .ilike('key', trimmed)
       .limit(1);
 
     if (error) {
-      // Don't fail-closed — uniqueness is also enforced server-side via the
-      // unique index, so worst case the create fails with PG_UNIQUE_VIOLATION
-      // and we surface SpaceError.keyNotUnique then. Treat the read error as
-      // a transient HTTP issue.
       throw SpaceError.http(500, `Failed to check project key: ${error.message}`, error);
     }
 
@@ -64,10 +60,10 @@ export class SupabaseProjectService implements SpaceService {
   }
 
   /**
-   * Create a project via the `create-project` edge function. The function
-   * runs server-side with the service_role key so it bypasses RLS on
-   * `projects`, `hi_statuses`, `hi_project_sequences`, and `project_members`
-   * — avoiding PostgREST schema-cache races on SECURITY DEFINER functions.
+   * Creates a project via the create_project_full SECURITY DEFINER RPC.
+   * Running as postgres bypasses all table-level RLS on projects, hi_statuses,
+   * hi_project_sequences, and project_members — eliminating PostgREST cache
+   * sensitivity and the hi_statuses 42501 error.
    */
   async createSpace(req: CreateSpaceRequest): Promise<Space> {
     const { data: authData, error: authError } = await supabase.auth.getUser();
@@ -77,27 +73,29 @@ export class SupabaseProjectService implements SpaceService {
 
     const { data, error } = await supabase.functions.invoke('create-project', {
       body: {
-        name: req.name.trim(),
-        key: req.key.toUpperCase(),
-        department: PURPOSE_TO_DEPARTMENT[req.purpose] ?? null,
+        name:        req.name.trim(),
+        key:         req.key.toUpperCase(),
+        department:  PURPOSE_TO_DEPARTMENT[req.purpose] ?? null,
         description: req.description?.trim() || null,
-        user_id: authData.user.id,
+        user_id:     userId,
       },
     });
 
     if (error || !data) {
-      if ((data as { error?: string } | null)?.error === 'key_not_unique') throw SpaceError.keyNotUnique(req.key);
+      if ((data as { error?: string } | null)?.error === 'key_not_unique') {
+        throw SpaceError.keyNotUnique(req.key);
+      }
       throw SpaceError.http(500, error?.message || 'Failed to create project', error);
     }
 
     return {
-      id: data.id,
-      name: data.name,
-      key: data.key,
-      purpose: req.purpose,
+      id:          data.id,
+      name:        data.name,
+      key:         data.key,
+      purpose:     req.purpose,
       description: data.description ?? undefined,
-      isPrivate: req.isPrivate,
-      createdAt: data.created_at ?? new Date().toISOString(),
+      isPrivate:   req.isPrivate,
+      createdAt:   data.created_at ?? new Date().toISOString(),
     };
   }
 }

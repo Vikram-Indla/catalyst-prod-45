@@ -1,44 +1,70 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import SearchIcon from '@atlaskit/icon/glyph/search';
-import RecentIcon from '@atlaskit/icon/glyph/recent';
 import WorldIcon from '@atlaskit/icon/glyph/world';
 import PersonIcon from '@atlaskit/icon/glyph/person';
-import FilterIcon from '@atlaskit/icon/glyph/filter';
+import Spinner from '@atlaskit/spinner';
 import { token } from '@atlaskit/tokens';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
-import { useRecentItems, useSearchResults } from '@/hooks/useGlobalSearch';
+import { useRecentItems, useInfiniteSearchResults } from '@/hooks/useGlobalSearch';
 import WorkItemIcon, { normalizeIconType } from '@/components/shared/WorkItemIcon';
+import ProjectIcon from '@/components/shared/ProjectIcon';
 import { FilterDropdown, FilterOption } from './FilterDropdown';
 import type { SearchResult } from '@/types/global-search';
 
 // ── Data hooks ────────────────────────────────────────────────────────────────
 
-/** Fetch distinct projects from ph_issues (real Jira-synced data). */
+/**
+ * Fetch projects using the canonical 3-table pattern (same as useForYouData):
+ *   ph_jira_projects → project_key + name
+ *   projects         → avatar_url + color  (primary icon source)
+ *   ph_projects      → icon + color        (secondary Lucide fallback)
+ */
 function useProjects() {
   return useQuery({
     queryKey: ['global-search-projects'],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('ph_issues')
-        .select('project_key, project_name')
-        .order('project_key')
-        .limit(500);
-      if (error) return [];
-      // Deduplicate by project_key
-      const seen = new Map<string, FilterOption>();
-      for (const row of data ?? []) {
-        if (row.project_key && !seen.has(row.project_key)) {
-          seen.set(row.project_key, {
-            id: row.project_key,
-            name: row.project_name || row.project_key,
-            tag: row.project_key,
-          });
-        }
+      const [jiraRes, catRes] = await Promise.all([
+        supabase.from('ph_jira_projects').select('project_key, name').order('project_key'),
+        supabase.from('projects').select('key, avatar_url, color'),
+      ]);
+      if (jiraRes.error) return [];
+
+      const projectKeys = (jiraRes.data ?? []).map((r) => r.project_key).filter(Boolean);
+      const catMap = new Map<string, { avatar_url: string | null; color: string | null }>();
+      (catRes.data ?? []).forEach((p) => { if (p.key) catMap.set(p.key, p); });
+
+      let phIconMap = new Map<string, { icon: string | null; color: string | null }>();
+      if (projectKeys.length > 0) {
+        const { data: phRows } = await supabase
+          .from('ph_projects')
+          .select('key, icon, color')
+          .in('key', projectKeys);
+        (phRows ?? []).forEach((r: { key: string; icon: string | null; color: string | null }) => {
+          phIconMap.set(r.key, r);
+        });
       }
-      return [...seen.values()];
+
+      return (jiraRes.data ?? []).map((row): FilterOption => {
+        const cat = catMap.get(row.project_key);
+        const ph = phIconMap.get(row.project_key);
+        return {
+          id: row.project_key,
+          name: row.name || row.project_key,
+          tag: row.project_key,
+          icon: (
+            <ProjectIcon
+              projectKey={row.project_key}
+              avatarUrl={cat?.avatar_url ?? null}
+              iconName={ph?.icon ?? undefined}
+              color={ph?.color ?? cat?.color ?? undefined}
+              size="small"
+            />
+          ),
+        };
+      });
     },
     staleTime: 5 * 60 * 1000,
   });
@@ -57,7 +83,7 @@ function useTeamMembers() {
         .limit(100);
       if (error) return [];
       return (data ?? []).map((m: any): FilterOption => ({
-        id: m.full_name || m.id,   // use display name as filter id for assignee_display_name search
+        id: m.full_name || m.id,
         name: m.full_name || 'Unknown',
         avatarSrc: m.avatar_url ?? undefined,
       }));
@@ -94,6 +120,13 @@ function timeAgo(iso: string): string {
   return `You viewed ${d}d ago`;
 }
 
+/** "50 of 1000+" — Jira-parity count chip shown in results header. */
+function formatCount(loaded: number, total: number | null, hasNextPage: boolean): string {
+  if (total === null) return String(loaded);
+  const cap = total > 1000 ? '1000+' : String(total);
+  return `${loaded} of ${cap}`;
+}
+
 // ── Main component ────────────────────────────────────────────────────────────
 
 interface GlobalSearchPanelProps {
@@ -118,57 +151,72 @@ export function GlobalSearchPanel({ query, onQueryChange, onClose }: GlobalSearc
   }, [query]);
 
   const { data: recents = [] } = useRecentItems();
-  const { data: searchResults = [] } = useSearchResults(debouncedQuery, {
+  const {
+    data: infiniteData,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = useInfiniteSearchResults(debouncedQuery, {
     hub: null,
-    project: projectKeys[0] ?? null,
-    assignee: assigneeIds[0] ?? null,
+    projects: projectKeys,
+    assignees: assigneeIds,
     type: null,
   });
+
+  const searchResults = useMemo(
+    () => infiniteData?.pages.flatMap((p) => p.results) ?? [],
+    [infiniteData],
+  );
+  // Total count from first page's Supabase COUNT (null when not yet loaded).
+  const totalCount = infiniteData?.pages[0]?.total ?? null;
+
   const { data: projectOptions = [] } = useProjects();
   const { data: memberOptions = [] } = useTeamMembers();
 
-  // G4: localStorage recently visited items (catalyst-recent-issues)
-  const localRecents = useMemo<{ key: string; title: string; type: string }[]>(() => {
-    try {
-      const raw = localStorage.getItem('catalyst-recent-issues');
-      return raw ? JSON.parse(raw) : [];
-    } catch {
-      return [];
-    }
-  }, []);
+  // ── IntersectionObserver — trigger next page when sentinel enters view ──────
+  const sentinelRef = useCallback(
+    (node: HTMLDivElement | null) => {
+      if (!node) return;
+      const observer = new IntersectionObserver(
+        ([entry]) => {
+          if (entry.isIntersecting && hasNextPage && !isFetchingNextPage) {
+            fetchNextPage();
+          }
+        },
+        { threshold: 0.1 },
+      );
+      observer.observe(node);
+      // Disconnect when the sentinel unmounts (query/filter change re-renders).
+      return () => observer.disconnect();
+    },
+    [fetchNextPage, hasNextPage, isFetchingNextPage],
+  );
 
   // ── Row model ──────────────────────────────────────────────────────────────
   type Row =
     | { kind: 'suggestion'; id: string; label: React.ReactNode; activate: () => void }
     | { kind: 'item'; id: string; item: SearchResult; activate: () => void };
 
-  const itemsToShow: SearchResult[] = debouncedQuery.length >= 2 ? searchResults : recents.slice(0, 7);
+  const isSearching = debouncedQuery.length >= 2;
+  const itemsToShow: SearchResult[] = isSearching ? searchResults : recents.slice(0, 7);
 
   const rows: Row[] = useMemo(() => {
     const out: Row[] = [];
 
-    if (debouncedQuery.length < 2) {
-      // "Show my work items" — filters by current user when clicked
+    if (!isSearching) {
       out.push({
         kind: 'suggestion',
         id: 'sug-mywork',
         label: <>Show my <strong>work items</strong></>,
-        activate: () => {
-          navigate('/for-you?tab=assigned');
-          onClose();
-        },
+        activate: () => { navigate('/for-you?tab=assigned'); onClose(); },
       });
-      // If assignee filter selected, show scoped suggestion
       if (assigneeIds.length > 0) {
         const name = memberOptions.find((o) => o.id === assigneeIds[0])?.name ?? assigneeIds[0];
         out.push({
           kind: 'suggestion',
           id: 'sug-assignee',
           label: <>Work items assigned to <strong>{name}</strong></>,
-          activate: () => {
-            navigate(`/work-hub/all?assignee=${encodeURIComponent(assigneeIds[0])}`);
-            onClose();
-          },
+          activate: () => { navigate(`/work-hub/all?assignee=${encodeURIComponent(assigneeIds[0])}`); onClose(); },
         });
       }
     }
@@ -178,15 +226,12 @@ export function GlobalSearchPanel({ query, onQueryChange, onClose }: GlobalSearc
         kind: 'item',
         id: it.id,
         item: it,
-        activate: () => {
-          navigate(`/work-hub/all?open=${encodeURIComponent(it.item_key)}`);
-          onClose();
-        },
+        activate: () => { navigate(`/work-hub/all?open=${encodeURIComponent(it.item_key)}`); onClose(); },
       });
     });
 
     return out;
-  }, [debouncedQuery, itemsToShow, assigneeIds, memberOptions, navigate, onClose]);
+  }, [isSearching, itemsToShow, assigneeIds, memberOptions, navigate, onClose]);
 
   useEffect(() => { setActiveIndex(0); }, [rows.length]);
 
@@ -235,7 +280,6 @@ export function GlobalSearchPanel({ query, onQueryChange, onClose }: GlobalSearc
 
   const suggestionRows = rows.filter((r) => r.kind === 'suggestion');
   const itemRows = rows.filter((r) => r.kind === 'item');
-  const showRecentLabel = debouncedQuery.length < 2;
 
   return (
     <div
@@ -282,7 +326,7 @@ export function GlobalSearchPanel({ query, onQueryChange, onClose }: GlobalSearc
       {/* ── Scrollable results ───────────────────────────────────────────── */}
       <div ref={listRef} style={{ flex: 1, overflowY: 'auto', padding: '8px 0' }} role="listbox">
 
-        {/* Suggestions */}
+        {/* Suggestions (shown when no search query) */}
         {suggestionRows.map((r) =>
           renderRow(r,
             <>
@@ -297,53 +341,20 @@ export function GlobalSearchPanel({ query, onQueryChange, onClose }: GlobalSearc
           )
         )}
 
-        {/* G4: Recently visited from localStorage — shown above DB recents when query is empty */}
-        {showRecentLabel && localRecents.length > 0 && (
-          <>
-            <div style={{
-              padding: '10px 16px 4px',
-              fontSize: 11, fontWeight: 700, letterSpacing: '0.04em',
-              textTransform: 'uppercase',
-              color: token('color.text.subtle', '#626F86'),
-            }}>
-              Recently visited
-            </div>
-            {localRecents.map((r, i) => {
-              const iconType = normalizeIconType(r.type);
-              return (
-                <div
-                  key={`lrecent-${r.key}`}
-                  role="option"
-                  aria-selected={false}
-                  onClick={() => { navigate(`/work-hub/all?open=${encodeURIComponent(r.key)}`); onClose(); }}
-                  onMouseEnter={() => {}}
-                  style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '8px 16px', cursor: 'pointer', borderRadius: 3 }}
-                  onMouseOver={(e) => (e.currentTarget.style.background = token('color.background.neutral.hovered', '#F1F2F4'))}
-                  onMouseOut={(e) => (e.currentTarget.style.background = '')}
-                >
-                  <div style={{ width: 28, display: 'flex', justifyContent: 'center', flexShrink: 0 }}>
-                    <WorkItemIcon type={iconType} size={18} />
-                  </div>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: 2, minWidth: 0 }}>
-                    <div style={{ fontSize: 14, color: token('color.text', '#292A2E'), fontWeight: 600 }}>
-                      {r.key}
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
-          </>
-        )}
-
-        {/* Recent / Results header */}
+        {/* Recent / Results header with Jira-parity count */}
         {itemRows.length > 0 && (
           <div style={{
+            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
             padding: '10px 16px 4px',
-            fontSize: 11, fontWeight: 700, letterSpacing: '0.04em',
-            textTransform: 'uppercase',
-            color: token('color.text.subtle', '#626F86'),
           }}>
-            {showRecentLabel ? 'Recent' : 'Results'}
+            <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.04em', textTransform: 'uppercase', color: token('color.text.subtle', '#626F86') }}>
+              {isSearching ? 'Results' : 'Recent'}
+            </span>
+            {isSearching && (
+              <span style={{ fontSize: 11, color: token('color.text.subtle', '#626F86') }}>
+                {formatCount(searchResults.length, totalCount, !!hasNextPage)}
+              </span>
+            )}
           </div>
         )}
 
@@ -376,8 +387,20 @@ export function GlobalSearchPanel({ query, onQueryChange, onClose }: GlobalSearc
           );
         })}
 
+        {/* Sentinel — IntersectionObserver watches this to trigger next page */}
+        {isSearching && (
+          <div ref={sentinelRef} style={{ height: 1 }} aria-hidden />
+        )}
+
+        {/* Next-page loading spinner */}
+        {isFetchingNextPage && (
+          <div style={{ display: 'flex', justifyContent: 'center', padding: '12px 0' }}>
+            <Spinner size="small" />
+          </div>
+        )}
+
         {/* Empty state */}
-        {debouncedQuery.length >= 2 && itemRows.length === 0 && (
+        {isSearching && itemRows.length === 0 && !isFetchingNextPage && (
           <div style={{ padding: '24px 16px', textAlign: 'center', color: token('color.text.subtle', '#626F86'), fontSize: 14 }}>
             No results for "<strong>{debouncedQuery}</strong>"
           </div>

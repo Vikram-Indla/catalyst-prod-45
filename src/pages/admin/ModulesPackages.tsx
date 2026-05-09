@@ -1,19 +1,17 @@
 import { useState, useEffect } from 'react';
 import { AdminGuard } from '@/components/admin/AdminGuard';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Label } from '@/components/ui/label';
-import { Switch } from '@/components/ui/switch';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import Button from '@atlaskit/button/new';
+import Toggle from '@atlaskit/toggle';
+import Select from '@atlaskit/select';
 import { Lozenge } from '@/components/ads';
 import { Package, Building2, Briefcase, Layers, Users, Loader2 } from 'lucide-react';
-import { 
-  useModules, 
-  useOrgModules, 
-  useModulePackages, 
+import {
+  useModules,
+  useOrgModules,
+  useModulePackages,
   useActivePackage,
   usePackageModules,
-  useUpdateModuleSettings 
+  useUpdateModuleSettings
 } from '@/hooks/useModules';
 
 const MODULE_ICONS: Record<string, React.ReactNode> = {
@@ -29,21 +27,21 @@ export default function ModulesPackages() {
   const { data: orgModules, isLoading: orgModulesLoading } = useOrgModules();
   const { data: packages, isLoading: packagesLoading } = useModulePackages();
   const { data: activePackage, isLoading: activePackageLoading } = useActivePackage();
-  
+
   const [selectedPackage, setSelectedPackage] = useState<string>('CUSTOM');
   const [moduleSettings, setModuleSettings] = useState<Record<string, boolean>>({});
   const [hasChanges, setHasChanges] = useState(false);
-  
+
   const { data: packageModules } = usePackageModules(selectedPackage);
   const updateSettings = useUpdateModuleSettings();
-  
+
   // Initialize state from database
   useEffect(() => {
     if (activePackage) {
       setSelectedPackage(activePackage.package_code || 'CUSTOM');
     }
   }, [activePackage]);
-  
+
   useEffect(() => {
     if (orgModules) {
       const settings: Record<string, boolean> = {};
@@ -53,13 +51,13 @@ export default function ModulesPackages() {
       setModuleSettings(settings);
     }
   }, [orgModules]);
-  
+
   // Apply package preset when package changes
   const handlePackageChange = (packageCode: string) => {
     setSelectedPackage(packageCode);
     setHasChanges(true);
   };
-  
+
   // Update settings when package modules are loaded
   useEffect(() => {
     if (packageModules && selectedPackage !== 'CUSTOM') {
@@ -70,17 +68,17 @@ export default function ModulesPackages() {
       setModuleSettings(newSettings);
     }
   }, [packageModules, selectedPackage, modules]);
-  
+
   const handleModuleToggle = (moduleCode: string, enabled: boolean) => {
     setModuleSettings(prev => ({ ...prev, [moduleCode]: enabled }));
     setHasChanges(true);
-    
+
     // If manually changing, set to custom
     if (selectedPackage !== 'CUSTOM') {
       setSelectedPackage('CUSTOM');
     }
   };
-  
+
   const handleSave = () => {
     updateSettings.mutate({
       moduleSettings,
@@ -92,23 +90,23 @@ export default function ModulesPackages() {
       }
     });
   };
-  
+
   const isLoading = modulesLoading || orgModulesLoading || packagesLoading || activePackageLoading;
-  
+
   if (isLoading) {
     return (
       <AdminGuard>
         <div className="flex items-center justify-center h-full p-6">
-          <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+          <Loader2 className="h-8 w-8 animate-spin" style={{ color: 'var(--ds-text-subtle, #44546F)' }} />
         </div>
       </AdminGuard>
     );
   }
-  
+
   const enabledCount = Object.values(moduleSettings).filter(Boolean).length;
   const totalCount = modules?.length || 0;
   const activePackageName = packages?.find(p => p.code === selectedPackage)?.name || 'None / Custom';
-  
+
   // Find which package includes each module
   const getPackagesForModule = (moduleCode: string): string[] => {
     const packageMap: Record<string, string[]> = {
@@ -121,20 +119,33 @@ export default function ModulesPackages() {
     return packageMap[moduleCode] || [];
   };
 
+  const packageOptions = packages?.map(pkg => ({ label: pkg.name, value: pkg.code })) ?? [];
+
   return (
     <AdminGuard>
-      <div className="h-full flex flex-col bg-background">
-        <div className="h-[72px] flex items-center justify-between border-b bg-card px-6">
+      <div className="h-full flex flex-col" style={{ background: 'var(--ds-surface, #FFFFFF)' }}>
+        <div
+          className="h-[72px] flex items-center justify-between px-6"
+          style={{
+            borderBottom: '1px solid var(--ds-border-layout, #EBECF0)',
+            background: 'var(--ds-surface, #FFFFFF)',
+          }}
+        >
           <div className="min-w-0">
-            <h1 className="text-2xl font-semibold text-foreground truncate">Modules & Packages</h1>
-            <p className="text-sm text-muted-foreground truncate">
+            <h1
+              className="text-2xl font-semibold truncate"
+              style={{ color: 'var(--ds-text, #172B4D)' }}
+            >
+              Modules &amp; Packages
+            </h1>
+            <p className="text-sm truncate" style={{ color: 'var(--ds-text-subtle, #44546F)' }}>
               Configure which Catalyst modules are available for this organization
             </p>
           </div>
-          <Button 
-            className="bg-brand-primary hover:bg-brand-primary-hover flex-shrink-0"
+          <Button
+            appearance="primary"
             onClick={handleSave}
-            disabled={!hasChanges || updateSettings.isPending}
+            isDisabled={!hasChanges || updateSettings.isPending}
           >
             {updateSettings.isPending && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
             Save Changes
@@ -144,113 +155,104 @@ export default function ModulesPackages() {
 
         {/* Summary Cards */}
         <div className="grid gap-4 md:grid-cols-3">
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Enabled Modules</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{enabledCount}</div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Available Modules</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{totalCount}</div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Active Package</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{activePackageName}</div>
-            </CardContent>
-          </Card>
+          <div style={{ background: 'var(--ds-surface, #FFFFFF)', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px', padding: '16px' }}>
+            <div className="flex flex-row items-center justify-between pb-2">
+              <p className="text-sm font-medium" style={{ color: 'var(--ds-text, #172B4D)' }}>Enabled Modules</p>
+            </div>
+            <div className="text-2xl font-bold" style={{ color: 'var(--ds-text, #172B4D)' }}>{enabledCount}</div>
+          </div>
+          <div style={{ background: 'var(--ds-surface, #FFFFFF)', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px', padding: '16px' }}>
+            <div className="flex flex-row items-center justify-between pb-2">
+              <p className="text-sm font-medium" style={{ color: 'var(--ds-text, #172B4D)' }}>Available Modules</p>
+            </div>
+            <div className="text-2xl font-bold" style={{ color: 'var(--ds-text, #172B4D)' }}>{totalCount}</div>
+          </div>
+          <div style={{ background: 'var(--ds-surface, #FFFFFF)', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px', padding: '16px' }}>
+            <div className="flex flex-row items-center justify-between pb-2">
+              <p className="text-sm font-medium" style={{ color: 'var(--ds-text, #172B4D)' }}>Active Package</p>
+            </div>
+            <div className="text-2xl font-bold" style={{ color: 'var(--ds-text, #172B4D)' }}>{activePackageName}</div>
+          </div>
         </div>
 
         {/* Package Selector */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Assigned Package</CardTitle>
-            <CardDescription>
-              Select a package to apply default module settings, or choose Custom to configure individually
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="max-w-md">
-              <Select value={selectedPackage} onValueChange={handlePackageChange}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select a package" />
-                </SelectTrigger>
-                <SelectContent>
-                  {packages?.map((pkg) => (
-                    <SelectItem key={pkg.code} value={pkg.code}>
-                      {pkg.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              {selectedPackage !== 'CUSTOM' && (
-                <p className="text-xs text-muted-foreground mt-2">
-                  Selecting a package pre-populates module settings. You can override individual modules below.
-                </p>
-              )}
-            </div>
-          </CardContent>
-        </Card>
+        <div style={{ background: 'var(--ds-surface, #FFFFFF)', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px', padding: '16px' }}>
+          <h2 style={{ margin: '0 0 4px', fontSize: '15px', fontWeight: 600, color: 'var(--ds-text, #172B4D)' }}>
+            Assigned Package
+          </h2>
+          <p style={{ margin: '0 0 12px', fontSize: '14px', color: 'var(--ds-text-subtle, #44546F)' }}>
+            Select a package to apply default module settings, or choose Custom to configure individually
+          </p>
+          <div className="max-w-md">
+            <Select
+              options={packageOptions}
+              value={packageOptions.find(o => o.value === selectedPackage) || null}
+              onChange={(opt) => opt && handlePackageChange(opt.value)}
+              placeholder="Select a package"
+            />
+            {selectedPackage !== 'CUSTOM' && (
+              <p className="text-xs mt-2" style={{ color: 'var(--ds-text-subtle, #44546F)' }}>
+                Selecting a package pre-populates module settings. You can override individual modules below.
+              </p>
+            )}
+          </div>
+        </div>
 
         {/* Modules List */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Module Configuration</CardTitle>
-            <CardDescription>
-              Toggle modules on or off for your organization
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {modules?.map((module) => {
-                const isEnabled = moduleSettings[module.code] ?? false;
-                const includedInPackages = getPackagesForModule(module.code);
-                
-                return (
-                  <div 
-                    key={module.id} 
-                    className="flex items-center justify-between p-4 border rounded-lg"
-                  >
-                    <div className="flex items-center gap-4">
-                      <div className="p-2 rounded-md bg-muted">
-                        {MODULE_ICONS[module.code] || <Package className="h-5 w-5" />}
-                      </div>
-                      <div className="space-y-1">
-                        <div className="flex items-center gap-2">
-                          <Label className="text-base font-medium">{module.name}</Label>
-                          <Lozenge appearance={isEnabled ? 'success' : 'default'}>
-                            {isEnabled ? 'Enabled' : 'Disabled'}
-                          </Lozenge>
-                        </div>
-                        <p className="text-sm text-muted-foreground">
-                          {module.description}
-                        </p>
-                        {includedInPackages.length > 0 && (
-                          <p className="text-xs text-muted-foreground">
-                            Included in: {includedInPackages.join(', ')}
-                          </p>
-                        )}
-                      </div>
+        <div style={{ background: 'var(--ds-surface, #FFFFFF)', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px', padding: '16px' }}>
+          <h2 style={{ margin: '0 0 4px', fontSize: '15px', fontWeight: 600, color: 'var(--ds-text, #172B4D)' }}>
+            Module Configuration
+          </h2>
+          <p style={{ margin: '0 0 16px', fontSize: '14px', color: 'var(--ds-text-subtle, #44546F)' }}>
+            Toggle modules on or off for your organization
+          </p>
+          <div className="space-y-4">
+            {modules?.map((module) => {
+              const isEnabled = moduleSettings[module.code] ?? false;
+              const includedInPackages = getPackagesForModule(module.code);
+
+              return (
+                <div
+                  key={module.id}
+                  className="flex items-center justify-between p-4 rounded-lg"
+                  style={{ border: '1px solid var(--ds-border, #DCDFE4)' }}
+                >
+                  <div className="flex items-center gap-4">
+                    <div
+                      className="p-2 rounded-md"
+                      style={{ background: 'var(--ds-background-neutral, #F7F8F9)' }}
+                    >
+                      {MODULE_ICONS[module.code] || <Package className="h-5 w-5" />}
                     </div>
-                    <Switch
-                      checked={isEnabled}
-                      onCheckedChange={(checked) => handleModuleToggle(module.code, checked)}
-                    />
+                    <div className="space-y-1">
+                      <div className="flex items-center gap-2">
+                        <label style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>
+                          {module.name}
+                        </label>
+                        <Lozenge appearance={isEnabled ? 'success' : 'default'}>
+                          {isEnabled ? 'Enabled' : 'Disabled'}
+                        </Lozenge>
+                      </div>
+                      <p className="text-sm" style={{ color: 'var(--ds-text-subtle, #44546F)' }}>
+                        {module.description}
+                      </p>
+                      {includedInPackages.length > 0 && (
+                        <p className="text-xs" style={{ color: 'var(--ds-text-subtle, #44546F)' }}>
+                          Included in: {includedInPackages.join(', ')}
+                        </p>
+                      )}
+                    </div>
                   </div>
-                );
-              })}
-            </div>
-          </CardContent>
-        </Card>
+                  <Toggle
+                    isChecked={isEnabled}
+                    onChange={() => handleModuleToggle(module.code, !isEnabled)}
+                    label={`Enable ${module.name}`}
+                  />
+                </div>
+              );
+            })}
+          </div>
+        </div>
         </div>
       </div>
     </AdminGuard>

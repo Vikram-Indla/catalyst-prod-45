@@ -704,6 +704,30 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
 
   const pageSize = 25;
 
+  // ── Jira keyboard shortcuts ──
+  // `c` → activate footer inline-create (Jira: opens quick-create dialog)
+  // `Enter` on a selected/focused row → navigate to the issue detail panel
+  // Guard: skip if user is typing in an input/textarea/contenteditable
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      const tag = (e.target as HTMLElement)?.tagName;
+      const isEditable =
+        tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' ||
+        (e.target as HTMLElement)?.isContentEditable;
+      if (isEditable || e.metaKey || e.ctrlKey || e.altKey) return;
+
+      if (e.key === 'c' || e.key === 'C') {
+        e.preventDefault();
+        setFooterCreateActive(true);
+        // Scroll table to bottom so the sticky footer is visible
+        const viewport = document.querySelector('.jira-table-viewport') as HTMLElement | null;
+        if (viewport) viewport.scrollTop = viewport.scrollHeight;
+      }
+    };
+    document.addEventListener('keydown', onKey);
+    return () => document.removeEventListener('keydown', onKey);
+  }, []);
+
   // ── Mutations ──
   // F-iter9 unification + F14 hard rule: ALL rows (Jira + Catalyst) are
   // editable. Writes always land in ph_issues. For source='jira' rows we
@@ -4671,7 +4695,7 @@ function InlineGroupCreateRow({
   // Type picker dropdown — portal-based (L21 portal-empty bug prevents
   // @atlaskit/dropdown-menu; mirrors GroupByControl pattern exactly).
   const [typeMenuOpen, setTypeMenuOpen] = useState(false);
-  const [typeMenuAnchor, setTypeMenuAnchor] = useState<{ top: number; left: number } | null>(null);
+  const [typeMenuAnchor, setTypeMenuAnchor] = useState<{ top?: number; bottom?: number; left: number } | null>(null);
   const typeMenuTriggerRef = useRef<HTMLButtonElement>(null);
   const typeMenuRef = useRef<HTMLDivElement>(null);
   const [typeMenuFocusedIdx, setTypeMenuFocusedIdx] = useState(0);
@@ -4686,7 +4710,13 @@ function InlineGroupCreateRow({
   useLayoutEffect(() => {
     if (!typeMenuOpen || !typeMenuTriggerRef.current) return;
     const r = typeMenuTriggerRef.current.getBoundingClientRect();
-    setTypeMenuAnchor({ top: r.bottom + 4, left: r.left });
+    const estimatedHeight = CREATABLE_TYPES.length * 36 + 16;
+    const spaceBelow = window.innerHeight - r.bottom - 8;
+    // Open upward when near the bottom of the viewport (sticky footer case)
+    const anchor = spaceBelow < estimatedHeight && r.top > estimatedHeight
+      ? { bottom: window.innerHeight - r.top + 4, left: r.left }
+      : { top: r.bottom + 4, left: r.left };
+    setTypeMenuAnchor(anchor);
     setTypeMenuFocusedIdx(CREATABLE_TYPES.indexOf(issueType) >= 0 ? CREATABLE_TYPES.indexOf(issueType) : 0);
   }, [typeMenuOpen, issueType]);
 
@@ -4795,8 +4825,11 @@ function InlineGroupCreateRow({
             style={{
               position: 'fixed',
               top: typeMenuAnchor.top,
+              bottom: typeMenuAnchor.bottom,
               left: typeMenuAnchor.left,
               minWidth: 200,
+              maxHeight: '60vh',
+              overflowY: 'auto',
               background: token('elevation.surface.overlay', '#FFFFFF'),
               border: `1px solid ${token('color.border', '#DFE1E6')}`,
               borderRadius: 4,

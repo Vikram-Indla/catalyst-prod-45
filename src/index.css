@@ -195,11 +195,11 @@
   --cp-bg-surface: #FFFFFF;
   --cp-bg-sunken: #F1F5F9;
   --cp-bg-elevated: #FFFFFF;
-  --cp-text-primary: #0F172A;
-  --cp-text-secondary: #334155;
-  --cp-text-tertiary: #64748B;
-  --cp-text-muted: #94A3B8;
-  --cp-text-link: #2563EB;
+  --cp-text-primary: #172B4D;
+  --cp-text-secondary: #44546F;
+  --cp-text-tertiary: #626F86;
+  --cp-text-muted: #626F86;
+  --cp-text-link: #0052CC;
   --cp-border-subtle: rgba(15,23,42,0.06);
   --cp-border-default: rgba(15,23,42,0.12);
   --cp-border-strong: rgba(15,23,42,0.20);
@@ -210,9 +210,9 @@
      measured value rgb(233,242,254). Was Tailwind blue-600/8 which
      rendered the rail card selection ~3 shades too saturated vs Jira. */
   --cp-interact-selected: #E9F2FE;
-  --cp-primary-60: #2563EB;
-  --cp-primary-70: #1D4ED8;
-  --cp-primary-5: #EFF6FF;
+  --cp-primary-60: #0052CC;
+  --cp-primary-70: #0747A6;
+  --cp-primary-5: #E9F2FF;
   --cp-purple-60: #7C3AED;
   --cp-purple-5: #F5F3FF;
   --cp-success-60: #16A34A;
@@ -225,27 +225,6 @@
   --cp-lozenge-blue-text: #FFFFFF;
   --cp-lozenge-green-bg: #1B7F37;
   --cp-lozenge-green-text: #FFFFFF;
-
-  /* ══════════════════════════════════════════════════════════════ */
-  /*  HUB NAVIGATION TOKENS — ring-fenced to sidebar hub nav only   */
-  /*  Source of truth: Atlaskit Blue 50 / 500 / 700 + Navy N200/800 */
-  /*  DO NOT override from component-level styles.                  */
-  /* ══════════════════════════════════════════════════════════════ */
-  --hub-tile-rest:      #DEEBFF;           /* Atlaskit Blue 50  */
-  --hub-tile-selected:  #0052CC;           /* Atlaskit Blue 500 */
-  --hub-tile-pressed:   #0747A6;           /* Atlaskit Blue 700 */
-
-  --hub-ink-rest:       #0052CC;
-  --hub-ink-inverse:    #FFFFFF;
-
-  --hub-row-rest:       transparent;
-  --hub-row-hover:      rgba(9, 30, 66, 0.04);
-  --hub-row-selected:   #DEEBFF;
-  --hub-row-pressed:    #B3D4FF;           /* Atlaskit Blue 100 */
-
-  --hub-bar-selected:   #0052CC;
-  --hub-label-rest:     #091E42;
-  --hub-label-sub:      #6B778C;
 
   /* ═══ ProjectHub Work Views — Ringfenced tokens ═══ */
   --cp-primary: #2563EB;
@@ -414,108 +393,6 @@
   --c10-input-height-sm: 28px;
   /* Header */
   --c10-header-height: 56px;
-}
-
-/* ════════════════════════════════════════════════════════════════ */
-/*  Hub nav item — ring-fenced to --hub-* tokens                    */
-/*  Four states: Rest · Hover · Selected · Pressed                  */
-/* ════════════════════════════════════════════════════════════════ */
-.hub-nav-item {
-  position: relative;
-  display: grid;
-  grid-template-columns: 32px 1fr;
-  gap: 12px;
-  align-items: center;
-  padding: 8px 10px;
-  border-radius: 4px;
-  text-decoration: none;
-  background: var(--hub-row-rest);
-  transition: background 120ms ease, padding-left 120ms ease;
-  cursor: pointer;
-  border: none;
-  width: 100%;
-  text-align: left;
-  font-family: var(--cp-font-body);
-}
-
-.hub-nav-item:hover {
-  background: var(--hub-row-hover);
-}
-
-.hub-nav-item:active {
-  background: var(--hub-row-pressed);
-}
-
-.hub-nav-item__tile {
-  width: 32px;
-  height: 32px;
-  border-radius: 6px;
-  display: grid;
-  place-items: center;
-  background: var(--hub-tile-rest);
-  color: var(--hub-ink-rest);
-  transition: background 120ms ease, color 120ms ease;
-}
-
-.hub-nav-item:active .hub-nav-item__tile {
-  background: var(--hub-tile-pressed);
-  color: var(--hub-ink-inverse);
-}
-
-.hub-nav-item__text {
-  display: flex;
-  flex-direction: column;
-  gap: 1px;
-  min-width: 0;
-}
-
-.hub-nav-item__label {
-  font-family: var(--cp-font-heading);
-  font-weight: 650;
-  font-size: 13px;
-  letter-spacing: -0.005em;
-  color: var(--hub-label-rest);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.hub-nav-item__desc {
-  font-family: var(--cp-font-body);
-  font-size: 11.5px;
-  color: var(--hub-label-sub);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.hub-nav-item--active {
-  background: var(--hub-row-selected);
-  padding-left: 13px;
-}
-
-.hub-nav-item--active .hub-nav-item__tile {
-  background: var(--hub-tile-selected);
-  color: var(--hub-ink-inverse);
-}
-
-.hub-nav-item--active .hub-nav-item__label {
-  font-weight: 700;
-}
-
-.hub-nav-item__bar {
-  position: absolute;
-  left: 0;
-  top: 4px;
-  bottom: 4px;
-  width: 3px;
-  background: var(--hub-bar-selected);
-  border-radius: 0 2px 2px 0;
-}
-
-.hub-nav-item:focus-visible {
-  outline: 2px solid var(--hub-bar-selected);
-  outline-offset: 2px;
 }
 
 /* ═══ V12 Dark Mode Tokens ═══ */
@@ -3446,29 +3323,6 @@ input[type="range"]::-moz-range-thumb {
   --text-1: #EDEDED;
   --text-2: #A1A1A1;
   --text-3: #878787;
-
-  /* ── Hub navigation tokens — dark mode overrides (Phase 7+9, 2026-04-28) ──
-     Light defaults at line 230 use Atlaskit Blue 50/500/700 + Navy N200/800.
-     In dark mode the original light-blue tile bg (#DEEBFF) and dark navy
-     label (#091E42) inverted into nearly-invisible dark-blue-on-dark. The
-     screenshot evidence: every hub name in the HubSwitcher dropdown was
-     unreadable except the selected ProductHub, which kept its bright #DEEBFF
-     bg (glaring near-white in dark).
-     Phase 9 (2026-04-28): replaced the Phase-7 Tailwind slate-800 / blue-300
-     literals (#1F2937, #93C5FD — out-of-palette) with canonical Atlassian
-     Blue 900 / Blue 200 (#0C2D6B / #85B8FF) per ADS dark-mode guidance. */
-  --hub-tile-rest:      #0C2D6B;          /* Atlassian Blue 900 */
-  --hub-tile-selected:  #1D7AFC;          /* Atlassian Blue 400 (dark accent) */
-  --hub-tile-pressed:   #0C66E4;          /* Atlassian Blue 600 */
-  --hub-ink-rest:       #85B8FF;          /* Atlassian Blue 200 */
-  --hub-ink-inverse:    #FFFFFF;
-  --hub-row-rest:       transparent;
-  --hub-row-hover:      rgba(255,255,255,0.04);
-  --hub-row-selected:   rgba(29,122,252,0.14);
-  --hub-row-pressed:    rgba(29,122,252,0.22);
-  --hub-bar-selected:   #1D7AFC;
-  --hub-label-rest:     #EDEDED;
-  --hub-label-sub:      #A1A1A1;
 }
 
 .dark ::-webkit-scrollbar-track,

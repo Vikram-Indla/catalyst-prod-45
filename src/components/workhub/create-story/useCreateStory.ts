@@ -2,7 +2,7 @@
  * useCreateStory — Hook for creating stories in catalyst_issues.
  * Handles key generation, form state, and submission.
  */
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
@@ -42,18 +42,44 @@ const INITIAL_FORM: CreateStoryFormData = {
   labels: [],
 };
 
-// Fetch projects for the project selector
+// Fetch projects for the project selector.
+// Bucket F (2026-05-09): enriches with ph_projects.icon + ph_projects.color so
+// the ProjectIcon Lucide fallback works for non-bundled-registry projects.
+// Resolution order inside ProjectIcon:
+//   admin override (catalyst_icon_overrides) > bundled SVG registry >
+//   avatar_url (Jira image) > ph_projects Lucide icon > grey folder.
 export function useProjects() {
   return useQuery({
     queryKey: ['create-story-projects'],
     queryFn: async () => {
+      // Primary: projects table (UUID id, Jira-synced avatar_url).
       const { data, error } = await supabase
         .from('projects')
-        .select('id, key, name')
+        .select('id, key, name, avatar_url, color')
         .eq('is_archived', false)
         .order('name');
       if (error) throw error;
-      return data ?? [];
+      const rows = data ?? [];
+
+      // Secondary: ph_projects for Lucide icon + color (fallback for non-Jira projects).
+      const { data: phRows } = await supabase
+        .from('ph_projects')
+        .select('key, icon, color')
+        .eq('is_archived', false);
+
+      const phByKey = new Map(
+        (phRows ?? []).map((r: any) => [r.key?.toUpperCase(), r])
+      );
+
+      return rows.map((p: any) => {
+        const ph = phByKey.get(p.key?.toUpperCase());
+        return {
+          ...p,
+          // Only use ph icon/color if no avatar_url (lower priority in ProjectIcon cascade).
+          iconName: ph?.icon ?? null,
+          phColor:  ph?.color ?? null,
+        };
+      });
     },
     staleTime: 5 * 60 * 1000,
   });
@@ -106,18 +132,21 @@ export function useProjectReleases(projectId: string) {
 // Maps Create-modal work types to the canonical scheme.issue_type values.
 // Unmapped types fall through; caller should provide a hardcoded fallback.
 // ────────────────────────────────────────────────────────────────────────────
-const WORK_TYPE_TO_SCHEME_ISSUE_TYPE: Record<string, string> = {
+// 2026-05-09 — Task and API Requirement deprecated from project hub (Vikram directive).
+// Task belongs to the task module; API Requirement is removed entirely.
+// Exported for unit tests only — do not use outside this module.
+export const WORK_TYPE_TO_SCHEME_ISSUE_TYPE_FOR_TEST: Record<string, string> = {
   'Story': 'Story',
   'Epic': 'Epic',
   'Sub-task': 'Sub-task',
-  'Task': 'Task',
   'QA Bug': 'Defect',
   'Production Incident': 'Defect',
   'Business Gap': 'Business Request',
   'Change Request': 'Business Request',
   'Feature': 'Story',          // best-fit until a Feature scheme exists
-  'API Requirement': 'Story',  // best-fit until an API Requirement scheme exists
 };
+
+const WORK_TYPE_TO_SCHEME_ISSUE_TYPE = WORK_TYPE_TO_SCHEME_ISSUE_TYPE_FOR_TEST;
 
 export interface WorkflowStatusOption {
   value: string;       // status name (what we write to catalyst_issues.status)
@@ -347,9 +376,11 @@ export function useCreateStoryMutation() {
 }
 
 // ── Last-project memory per user ──
-const LAST_PROJECT_KEY = 'catalyst-last-project';
+// Exported so the project-hub shell can write the current project UUID
+// whenever the user navigates into a project context (Bucket D, 2026-05-09).
+export const LAST_PROJECT_KEY = 'catalyst-last-project';
 
-function getLastProjectId(userId: string | undefined): string {
+export function getLastProjectId(userId: string | undefined): string {
   if (!userId) return '';
   try {
     const stored = localStorage.getItem(LAST_PROJECT_KEY);
@@ -361,7 +392,7 @@ function getLastProjectId(userId: string | undefined): string {
   return '';
 }
 
-function setLastProjectId(userId: string | undefined, projectId: string) {
+export function setLastProjectId(userId: string | undefined, projectId: string) {
   if (!userId || !projectId) return;
   try {
     const stored = localStorage.getItem(LAST_PROJECT_KEY);
@@ -373,12 +404,27 @@ function setLastProjectId(userId: string | undefined, projectId: string) {
 
 export function useCreateStoryForm(defaultProjectId?: string) {
   const { user } = useAuth();
-  const rememberedProjectId = getLastProjectId(user?.id);
 
   const [form, setForm] = useState<CreateStoryFormData>({
     ...INITIAL_FORM,
-    projectId: defaultProjectId ?? rememberedProjectId ?? '',
+    // user may be null on first render (auth async); effect below will hydrate
+    // once user is available. defaultProjectId takes priority over localStorage.
+    projectId: defaultProjectId ?? '',
   });
+
+  // Once user is resolved, apply the remembered project — but only if no
+  // defaultProjectId was given and the form still has no project set.
+  const [rememberedApplied, setRememberedApplied] = useState(false);
+  useEffect(() => {
+    if (rememberedApplied) return;
+    if (!user?.id) return;
+    if (defaultProjectId) { setRememberedApplied(true); return; }
+    const remembered = getLastProjectId(user.id);
+    if (remembered) {
+      setForm(prev => prev.projectId ? prev : { ...prev, projectId: remembered });
+    }
+    setRememberedApplied(true);
+  }, [user?.id, defaultProjectId, rememberedApplied]);
 
   const updateField = useCallback(<K extends keyof CreateStoryFormData>(
     key: K, value: CreateStoryFormData[K]
@@ -399,6 +445,9 @@ export function useCreateStoryForm(defaultProjectId?: string) {
       projectId: keepProject ? prev.projectId : '',
       reporterId: keepProject ? prev.reporterId : null,
     }));
+    // Allow the remembered-project effect to re-fire so the next modal
+    // open pre-selects the last-used project again.
+    if (!keepProject) setRememberedApplied(false);
   }, []);
 
   return { form, updateField, reset, setForm };

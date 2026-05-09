@@ -356,30 +356,64 @@ export function makeStatusEditCell<T>(opts: {
               padding: '4px 0',
             }}
           >
-            {opts.options.map(s => (
-              <button
-                key={s}
-                type="button"
-                onClick={(e) => { e.stopPropagation(); opts.onChange(row, s); setOpen(false); }}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 8,
-                  width: '100%',
-                  padding: '6px 12px',
-                  border: 'none',
-                  background: s === status ? token('color.background.selected', '#E9F2FF') : 'transparent',
-                  cursor: 'pointer',
-                  textAlign: 'left',
-                  fontSize: 14,
-                  color: token('color.text', '#172B4D'),
-                }}
-                onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = token('color.background.neutral.subtle.hovered', '#F7F8F9'); }}
-                onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = s === status ? token('color.background.selected', '#E9F2FF') : 'transparent'; }}
-              >
-                <StatusPill appearance={opts.appearanceFor(s)}>{s}</StatusPill>
-              </button>
-            ))}
+            {opts.options.map(s => {
+              const ap = opts.appearanceFor(s);
+              // Jira-parity: dropdown shows a small 8px color dot + plain text
+              // (sentence case, 14px) — NOT the full uppercase StatusPill.
+              // Dot color maps to the same LOZENGE_BG token as the pill bg.
+              // Measured from Jira list status dropdown 2026-05-08.
+              // Inline hex — measured from Jira BAU list DOM 2026-05-07/08.
+              // Do NOT use CSS vars here: the portal renders to document.body
+              // outside any theme-provider scope and vars may not resolve.
+              const dotColors: Record<string, string> = {
+                success:    'rgb(179, 223, 114)',
+                inprogress: 'rgb(143, 184, 246)',
+                default:    'rgb(221, 222, 225)',
+                moved:      'rgb(243, 214, 100)',
+                removed:    'rgb(255, 143, 115)',
+                new:        'rgb(184, 172, 246)',
+              };
+              const dotBg = dotColors[ap] ?? dotColors.default;
+              const isActive = s === status;
+              return (
+                <button
+                  key={s}
+                  type="button"
+                  onClick={(e) => { e.stopPropagation(); opts.onChange(row, s); setOpen(false); }}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 8,
+                    width: '100%',
+                    padding: '6px 12px',
+                    border: 'none',
+                    background: isActive ? token('color.background.selected', '#E9F2FF') : 'transparent',
+                    cursor: 'pointer',
+                    textAlign: 'left',
+                    fontSize: 14,
+                    color: token('color.text', '#172B4D'),
+                  }}
+                  onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = isActive ? token('color.background.selected', '#E9F2FF') : token('color.background.neutral.subtle.hovered', '#F7F8F9'); }}
+                  onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = isActive ? token('color.background.selected', '#E9F2FF') : 'transparent'; }}
+                >
+                  {/* 8px color dot — Jira-parity status category indicator */}
+                  <span
+                    aria-hidden
+                    style={{
+                      width: 8, height: 8, borderRadius: '50%',
+                      background: dotBg,
+                      flexShrink: 0,
+                      border: ap === 'default' ? '1px solid var(--ds-border, #DFE1E6)' : 'none',
+                    }}
+                  />
+                  <span style={{ flex: 1 }}>{s}</span>
+                  {/* Checkmark on selected item */}
+                  {isActive && (
+                    <span style={{ marginLeft: 4, color: token('color.icon.brand', '#0052CC') }}>✓</span>
+                  )}
+                </button>
+              );
+            })}
           </div>,
           document.body,
         )}
