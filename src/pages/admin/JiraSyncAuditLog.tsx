@@ -2,7 +2,9 @@ import { useState, useMemo } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { formatDistanceToNow } from 'date-fns';
-import { RefreshCw, AlertCircle, Trash2 } from 'lucide-react';
+import RefreshIcon from '@atlaskit/icon/core/refresh';
+import CrossCircleIcon from '@atlaskit/icon/core/cross-circle';
+import TrashIcon from '@atlaskit/icon/glyph/trash';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import AdsButton from '@atlaskit/button/new';
 import Textfield from '@atlaskit/textfield';
@@ -65,7 +67,7 @@ function ErrorRow({ cols }: { cols: number }) {
       <tr>
         <td colSpan={cols} className="text-center py-8">
           <div className="flex items-center justify-center gap-2">
-            <AlertCircle size={16} className="text-red-400" />
+            <CrossCircleIcon label="" size="small" />
             <span className="text-red-400" style={{ fontSize: 13 }}>Failed to load data</span>
           </div>
         </td>
@@ -286,7 +288,7 @@ export function DeletedItemsTab() {
       <div className="bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)] border border-[var(--bd-default,#E2E8F0)] dark:border-[var(--ds-surface-raised,#1A1A1A)] rounded-md overflow-hidden">
         {!isLoading && !isError && (!deletedItems || deletedItems.length === 0) ? (
           <div className="flex flex-col items-center justify-center py-10 gap-2">
-            <Trash2 size={32} className="text-gray-300 dark:text-gray-600" />
+            <TrashIcon label="" size="large" />
             <span style={{ fontSize: 13 }} className="text-[var(--ds-text-subtlest,#94A3B8)] dark:text-gray-400">No deleted items archived</span>
           </div>
         ) : (

@@ -8,7 +8,10 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { UserProfile } from '@/hooks/useUsers';
-import { X, Save, Trash2, Loader2 } from 'lucide-react';
+import CrossIcon from '@atlaskit/icon/glyph/cross';
+import CheckMarkIcon from '@atlaskit/icon/core/check-mark';
+import TrashIcon from '@atlaskit/icon/glyph/trash';
+import Spinner from '@atlaskit/spinner';
 import { format } from 'date-fns';
 
 interface UserDrawerProps {
@@ -335,7 +338,7 @@ export function UserDrawer({ isOpen, user, onClose, onSuccess }: UserDrawerProps
             <p>{isEditMode ? `Update profile for ${user?.full_name}` : 'Create a new resource'}</p>
           </div>
           <button className="um-drawer-close" onClick={onClose}>
-            <X size={18} />
+            <CrossIcon label="" size="small" />
           </button>
         </div>
         
@@ -540,7 +543,7 @@ export function UserDrawer({ isOpen, user, onClose, onSuccess }: UserDrawerProps
               onClick={handleDelete}
               disabled={isDeleting}
             >
-              {isDeleting ? <Loader2 size={14} className="animate-spin" /> : <Trash2 size={14} />}
+              {isDeleting ? <Spinner size="small" /> : <TrashIcon label="" size="small" />}
               Delete
             </button>
           )}
@@ -553,7 +556,7 @@ export function UserDrawer({ isOpen, user, onClose, onSuccess }: UserDrawerProps
             onClick={handleSave}
             disabled={isSaving}
           >
-            {isSaving ? <Loader2 size={14} className="animate-spin" /> : <Save size={14} />}
+            {isSaving ? <Spinner size="small" /> : <CheckMarkIcon label="" size="small" />}
             {isEditMode ? 'Save Changes' : 'Create User'}
           </button>
         </div>

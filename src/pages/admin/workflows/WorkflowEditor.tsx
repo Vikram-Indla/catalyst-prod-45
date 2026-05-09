@@ -8,10 +8,13 @@ import { useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import type { WorkflowScheme, WorkflowStatus, WorkflowTransition } from '@/hooks/useCatalystWorkflow';
 import { cn } from '@/lib/utils';
-import {
-  Plus, Trash2, GripVertical, ChevronDown, Check, Circle, Zap,
-  ArrowRight, Play, Flag
-} from 'lucide-react';
+import AddIcon from '@atlaskit/icon/core/add';
+import TrashIcon from '@atlaskit/icon/glyph/trash';
+import DragHandlerIcon from '@atlaskit/icon/glyph/drag-handler';
+import CheckMarkIcon from '@atlaskit/icon/core/check-mark';
+import CheckCircleIcon from '@atlaskit/icon/core/check-circle';
+import VidPlayIcon from '@atlaskit/icon/glyph/vid-play';
+import FlagIcon from '@atlaskit/icon/core/flag';
 import Textfield from '@atlaskit/textfield';
 import AtlasButton from '@atlaskit/button/new';
 import AdsSelect from '@atlaskit/select';
@@ -259,7 +262,7 @@ export function WorkflowEditor({ scheme, statuses, transitions, onInvalidate }: 
               key={s.id}
               className="group flex items-center gap-2 px-4 py-2.5 hover:bg-[var(--ds-surface-sunken,#F8FAFC)] transition-colors"
             >
-              <GripVertical size={14} className="text-[var(--ds-text-disabled,#CBD5E1)] shrink-0" />
+              <span style={{ display: 'inline-flex', color: 'var(--ds-text-disabled,#CBD5E1)', flexShrink: 0 }}><DragHandlerIcon label="" size="small" /></span>
 
               {/* Category dot */}
               <div
@@ -371,7 +374,7 @@ export function WorkflowEditor({ scheme, statuses, transitions, onInvalidate }: 
                   )}
                   title="Set as initial status"
                 >
-                  <Play size={12} />
+                  <VidPlayIcon label="" size="small" />
                 </button>
                 <button
                   onClick={() => handleToggleFlag(s.id, 'is_final', s.is_final)}
@@ -381,14 +384,14 @@ export function WorkflowEditor({ scheme, statuses, transitions, onInvalidate }: 
                   )}
                   title="Set as final status"
                 >
-                  <Flag size={12} />
+                  <FlagIcon label="" size="small" />
                 </button>
                 <button
                   onClick={() => setDeleteTarget(s)}
                   className="p-1 rounded hover:bg-[#FEE2E2] text-[var(--ds-text-disabled,#CBD5E1)] hover:text-red-600 transition-colors"
                   title="Delete status"
                 >
-                  <Trash2 size={12} />
+                  <TrashIcon label="" size="small" />
                 </button>
               </div>
             </div>
@@ -419,7 +422,7 @@ export function WorkflowEditor({ scheme, statuses, transitions, onInvalidate }: 
             appearance="primary"
             onClick={handleAddStatus}
             isDisabled={adding || !newStatusName.trim()}
-            iconBefore={() => <Plus size={14} />}
+            iconBefore={() => <AddIcon label="" size="small" />}
           >
             {''}
           </AtlasButton>
@@ -470,7 +473,7 @@ export function WorkflowEditor({ scheme, statuses, transitions, onInvalidate }: 
                 <tr className="bg-[#FFFBEB]">
                   <td className="sticky left-0 z-10 bg-[#FFFBEB] border-b border-r border-[var(--ds-border,#E2E8F0)] px-3 py-2 text-[var(--ds-text,#0F172A)] font-medium">
                     <span className="flex items-center gap-1.5">
-                      <Zap size={12} className="text-amber-500" />
+                      <span style={{ display: 'inline-flex', color: '#F59E0B' }}><CheckCircleIcon label="" size="small" /></span>
                       Any (Global)
                     </span>
                   </td>
@@ -564,7 +567,7 @@ function TransitionCell({ active, onClick }: { active: boolean; onClick: () => v
           : 'bg-white border-[var(--ds-border,#E2E8F0)] text-transparent hover:border-[var(--ds-text-brand,#2563EB)] hover:bg-[var(--ds-background-selected,#EFF6FF)]'
       )}
     >
-      <Check size={12} />
+      <CheckMarkIcon label="" size="small" />
     </button>
   );
 }

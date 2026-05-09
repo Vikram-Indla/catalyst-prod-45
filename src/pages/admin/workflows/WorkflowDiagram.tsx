@@ -5,7 +5,8 @@
 import React from 'react';
 import type { WorkflowStatus, WorkflowTransition } from '@/hooks/useCatalystWorkflow';
 import { cn } from '@/lib/utils';
-import { ArrowRight, Zap } from 'lucide-react';
+import ArrowRightIcon from '@atlaskit/icon/core/arrow-right';
+import FlagIcon from '@atlaskit/icon/core/flag';
 
 interface Props {
   statuses: WorkflowStatus[];
@@ -88,9 +89,9 @@ export function WorkflowDiagram({ statuses, transitions, schemeName }: Props) {
                 key={t.id}
                 className="flex items-center gap-2 px-3 py-2 rounded border border-[var(--ds-border,#2E2E2E)] bg-[var(--ds-surface-raised,#1A1A1A)]"
               >
-                <Zap size={12} className="text-amber-400 shrink-0" />
+                <span style={{ display: 'inline-flex', color: '#F59E0B', flexShrink: 0 }}><FlagIcon label="" size="small" /></span>
                 <span className="text-xs text-amber-400 font-medium">Any</span>
-                <ArrowRight size={12} className="text-[var(--ds-border-bold,#454545)] shrink-0" />
+                <span style={{ display: 'inline-flex', color: 'var(--ds-border-bold,#454545)', flexShrink: 0 }}><ArrowRightIcon label="" size="small" /></span>
                 <span className="text-xs text-[var(--ds-text,#EDEDED)]">{toStatus?.name || '?'}</span>
               </div>
             );
@@ -105,7 +106,7 @@ export function WorkflowDiagram({ statuses, transitions, schemeName }: Props) {
               >
                 <StatusDot category={fromStatus?.category || 'todo'} />
                 <span className="text-xs text-[var(--ds-text,#EDEDED)] truncate">{fromStatus?.name || '?'}</span>
-                <ArrowRight size={12} className="text-[var(--ds-border-bold,#454545)] shrink-0" />
+                <span style={{ display: 'inline-flex', color: 'var(--ds-border-bold,#454545)', flexShrink: 0 }}><ArrowRightIcon label="" size="small" /></span>
                 <StatusDot category={toStatus?.category || 'todo'} />
                 <span className="text-xs text-[var(--ds-text,#EDEDED)] truncate">{toStatus?.name || '?'}</span>
               </div>

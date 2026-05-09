@@ -4,7 +4,9 @@
  */
 
 import { useState } from 'react';
-import { X, ChevronDown, Check } from 'lucide-react';
+import CrossIcon from '@atlaskit/icon/glyph/cross';
+import ChevronDownIcon from '@atlaskit/icon/glyph/chevron-down';
+import CheckMarkIcon from '@atlaskit/icon/core/check-mark';
 
 interface BulkEditModalProps {
   isOpen: boolean;
@@ -92,7 +94,7 @@ export function BulkEditModal({
           <div className="ct-modal-header">
             <h2>Bulk Edit {selectedCount} Users</h2>
             <button className="ct-modal-close" onClick={onClose}>
-              <X size={18} />
+              <CrossIcon label="" size="small" />
             </button>
           </div>
 
@@ -130,7 +132,7 @@ export function BulkEditModal({
                         onClick={() => isEnabled && setOpenDropdown(isOpen ? null : key)}
                       >
                         {getDisplayValue(key, options, placeholder)}
-                        <ChevronDown size={16} />
+                        <ChevronDownIcon label="" size="small" />
                       </button>
 
                       {isOpen && isEnabled && (
@@ -142,7 +144,7 @@ export function BulkEditModal({
                               onClick={() => selectValue(key, option.id)}
                             >
                               <span className="checkmark">
-                                {currentValue === option.id && <Check size={14} />}
+                                {currentValue === option.id && <CheckMarkIcon label="" size="small" />}
                               </span>
                               {option.name}
                             </div>

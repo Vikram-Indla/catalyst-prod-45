@@ -1,5 +1,16 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Plus, RefreshCw, Search, ChevronLeft, ChevronRight, UserX, Copy, Loader2, Share2, Download, Users2, FolderSearch, FolderPlus, Check } from 'lucide-react';
+import AddIcon from '@atlaskit/icon/core/add';
+import RefreshIcon from '@atlaskit/icon/core/refresh';
+import SearchIcon from '@atlaskit/icon/core/search';
+import ChevronLeftIcon from '@atlaskit/icon/glyph/chevron-left';
+import ChevronRightIcon from '@atlaskit/icon/glyph/chevron-right';
+import CrossCircleIcon from '@atlaskit/icon/core/cross-circle';
+import CopyIcon from '@atlaskit/icon/core/copy';
+import Spinner from '@atlaskit/spinner';
+import ShareIcon from '@atlaskit/icon/core/share';
+import DownloadIcon from '@atlaskit/icon/core/download';
+import PeopleGroupIcon from '@atlaskit/icon/core/people-group';
+import CheckMarkIcon from '@atlaskit/icon/core/check-mark';
 import { useTheme } from '@/hooks/useTheme';
 import UserDetailPanel from '@/components/admin/UserDetailPanel';
 import { toast } from 'sonner';
@@ -268,7 +279,7 @@ const JiraUserSync: React.FC = () => {
                   color: 'var(--cp-text-secondary, #334155)',
                   border: `1px solid ${'var(--cp-border-default, rgba(15,23,42,0.10))'}`,
                 }}>
-                <Plus size={11} /> Create User
+                <AddIcon label="" size="small" /> Create User
               </button>
               <button
                 onClick={handleSync}
@@ -279,7 +290,7 @@ const JiraUserSync: React.FC = () => {
                   padding: '6px 14px', borderRadius: '6px', fontSize: '12px', fontWeight: 600,
                   cursor: isSyncing ? 'not-allowed' : 'pointer', opacity: isSyncing ? 0.7 : 1, lineHeight: 1,
                 }}>
-                <RefreshCw size={11} className={isSyncing ? 'animate-spin' : ''} />
+                {isSyncing ? <Spinner size="small" /> : <RefreshIcon label="" size="small" />}
                 {isSyncing ? 'Syncing…' : 'Sync Now'}
               </button>
             </div>
@@ -321,7 +332,7 @@ const JiraUserSync: React.FC = () => {
         <div className="jira-toolbar shrink-0 flex items-center gap-[7px] flex-wrap"
           style={{ padding: '9px 18px', background: 'var(--cp-bg-elevated, #FFFFFF)', borderBottom: `0.75px solid ${'var(--cp-border-subtle, rgba(15,23,42,0.06))'}` }}>
           <div className="relative w-[220px]">
-            <Search size={12} className="absolute left-2 top-1/2 -translate-y-1/2" style={{ color: 'var(--cp-text-tertiary, #64748B)' }} />
+            <span className="absolute left-2 top-1/2 -translate-y-1/2" style={{ display: 'inline-flex', color: 'var(--cp-text-tertiary, #64748B)' }}><SearchIcon label="" size="small" /></span>
             <input
               className="jira-input w-full"
               value={search}
@@ -369,7 +380,7 @@ const JiraUserSync: React.FC = () => {
                   color: 'var(--cp-text-secondary, #334155)',
                   border: `1px solid ${'var(--cp-border-default, rgba(15,23,42,0.10))'}`,
                 }}>
-                <Copy size={11} /> Copy Permissions
+                <CopyIcon label="" size="small" /> Copy Permissions
               </button>
             )}
             <button
@@ -381,7 +392,7 @@ const JiraUserSync: React.FC = () => {
                 color: 'var(--cp-text-secondary, #334155)',
                 border: `1px solid ${'var(--cp-border-default, rgba(15,23,42,0.10))'}`,
               }}>
-              <Download size={11} /> Export
+              <DownloadIcon label="" size="small" /> Export
             </button>
           </div>
         </div>
@@ -408,7 +419,7 @@ const JiraUserSync: React.FC = () => {
                     padding: '3px 10px', borderRadius: '4px', fontSize: '11px', fontWeight: 600,
                     cursor: 'pointer', border: 'none', background: 'var(--ds-text-brand, #2563EB)', color: 'var(--ds-text-inverse, #FFFFFF)',
                   }}>
-                  <FolderPlus size={11} /> Assign to Project ▾
+                  <AddIcon label="" size="small" /> Assign to Project ▾
                 </button>
               </PopoverTrigger>
               <PopoverContent
@@ -500,7 +511,7 @@ const JiraUserSync: React.FC = () => {
                         <span style={{ fontSize: '11px', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', color: 'var(--cp-text-secondary, #334155)' }}>
                           {proj.project_name || proj.project_key}
                         </span>
-                        <Check size={10} style={{ color: 'var(--ds-text-subtlest, #94A3B8)', opacity: 0 }} />
+                        <CheckMarkIcon label="" size="small" />
                       </button>
                     ))}
                   {(jiraProjects || []).filter(p => !assignSearch || p.project_key.toLowerCase().includes(assignSearch.toLowerCase())).length === 0 && (
@@ -520,7 +531,7 @@ const JiraUserSync: React.FC = () => {
                 color: 'var(--ds-text-danger, #DC2626)',
                 border: `1px solid ${'var(--cp-border-default, rgba(15,23,42,0.10))'}`,
               }}>
-              <UserX size={11} /> Deactivate
+              <CrossCircleIcon label="" size="small" /> Deactivate
             </button>
             <button onClick={handleCopyPermissions}
               style={{
@@ -600,14 +611,14 @@ const JiraUserSync: React.FC = () => {
                   <td colSpan={9} style={{ textAlign: 'center', padding: '60px 20px' }}>
                     {debouncedSearch ? (
                       <>
-                        <Search size={24} style={{ color: 'var(--cp-text-muted, #94A3B8)', margin: '0 auto 10px', display: 'block' }} />
+                        <span style={{ display: 'flex', justifyContent: 'center', color: 'var(--cp-text-muted, #94A3B8)', marginBottom: 10 }}><SearchIcon label="" size="large" /></span>
                         <div className="jira-text-primary" style={{ fontSize: '14px', fontWeight: 500, color: 'var(--cp-text-secondary, #334155)' }}>No users match '{debouncedSearch}'</div>
                         <button onClick={() => setSearch('')}
                           style={{ marginTop: 8, fontSize: '12px', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--ds-text-brand, #2563EB)' }}>Clear search</button>
                       </>
                     ) : filter !== 'all' ? (
                       <>
-                        <FolderSearch size={24} style={{ color: 'var(--cp-text-muted, #94A3B8)', margin: '0 auto 10px', display: 'block' }} />
+                        <span style={{ display: 'flex', justifyContent: 'center', color: 'var(--cp-text-muted, #94A3B8)', marginBottom: 10 }}><SearchIcon label="" size="large" /></span>
                         <div className="jira-text-primary" style={{ fontSize: '14px', fontWeight: 500, color: 'var(--cp-text-secondary, #334155)' }}>
                           {filter === 'conflict' ? 'No conflicts found' : filter === 'inactive' ? 'No inactive users' : `No ${filter} users found`}
                         </div>
@@ -616,11 +627,11 @@ const JiraUserSync: React.FC = () => {
                       </>
                     ) : (
                       <>
-                        <Users2 size={32} style={{ color: 'var(--cp-text-muted, #94A3B8)', margin: '0 auto 10px', display: 'block' }} />
+                        <span style={{ display: 'flex', justifyContent: 'center', color: 'var(--cp-text-muted, #94A3B8)', marginBottom: 10 }}><PeopleGroupIcon label="" size="large" /></span>
                         <div className="jira-text-primary" style={{ fontSize: '14px', fontWeight: 500, color: 'var(--cp-text-secondary, #334155)' }}>No synced users yet</div>
                         <button onClick={handleSync} disabled={isSyncing}
                           style={{ marginTop: 10, display: 'inline-flex', alignItems: 'center', gap: '5px', background: 'var(--ds-text-brand, #2563EB)', color: 'var(--ds-text-inverse, #FFFFFF)', border: 'none', padding: '6px 14px', borderRadius: '6px', fontSize: '12px', fontWeight: 600, cursor: isSyncing ? 'not-allowed' : 'pointer' }}>
-                          <RefreshCw size={11} className={isSyncing ? 'animate-spin' : ''} />
+                          {isSyncing ? <Spinner size="small" /> : <RefreshIcon label="" size="small" />}
                           Sync Now to pull users from Jira
                         </button>
                       </>
@@ -687,7 +698,7 @@ const JiraUserSync: React.FC = () => {
                           background: 'var(--cp-primary-light, #EFF6FF)',
                           color: 'var(--cp-primary-hover, #1D4ED8)',
                           border: `0.75px solid ${isDark ? 'rgba(37,99,235,0.30)' : 'rgba(37,99,235,0.25)'}`,
-                        }}><Share2 size={9} /> JIRA</span>
+                        }}><ShareIcon label="" size="small" /> JIRA</span>
                       ) : (
                         <span className="jira-badge-catalyst" style={{
                           display: 'inline-flex', alignItems: 'center', gap: '3px',
@@ -767,7 +778,7 @@ const JiraUserSync: React.FC = () => {
                           cursor: togglingId === user.id ? 'not-allowed' : 'pointer',
                           opacity: togglingId === user.id ? 0.6 : undefined, whiteSpace: 'nowrap',
                         }}>
-                        {togglingId === user.id ? <Loader2 size={10} className="animate-spin" /> : <UserX size={10} />}
+                        {togglingId === user.id ? <Spinner size="small" /> : <CrossCircleIcon label="" size="small" />}
                         {user.is_active_in_catalyst ? 'Deactivate' : 'Reactivate'}
                       </button>
                     </td>
@@ -798,7 +809,7 @@ const JiraUserSync: React.FC = () => {
                 color: 'var(--cp-text-secondary, #334155)',
               }}
             >
-              <ChevronLeft size={13} />
+              <ChevronLeftIcon label="" size="small" />
             </button>
             {getPageNumbers(page, totalPages).map((p, i) =>
               p === '...' ? (
@@ -832,7 +843,7 @@ const JiraUserSync: React.FC = () => {
                 color: 'var(--cp-text-secondary, #334155)',
               }}
             >
-              <ChevronRight size={13} />
+              <ChevronRightIcon label="" size="small" />
             </button>
           </div>
         </div>
