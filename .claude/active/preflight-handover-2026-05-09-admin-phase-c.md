@@ -79,8 +79,17 @@
 - [x] Phase B (ADS chrome) — PR #121 merged
 - [x] Council run — chairman verdict recorded
 - [x] Block 0 — dead-wood deletion + href fix (commit 567a03b23 local; PR deferred — gh auth login incomplete on this machine, push when auth resolves)
-- [ ] Block 1 — D1 RLS audit (deferred — never started)
-- [ ] Block 2 — Dialog migration (deferred — never started)
+- [x] Block 1 — D1 RLS audit — SQL artifacts committed in prior session (2026-05-09):
+  - Migration: supabase/migrations/20260509000001_fix_rls_activity_logs_integration_connectors.sql (drops USING(true), replaces with is_user_admin() gated policies)
+  - Tests: supabase/tests/rls_activity_logs.test.sql (5 PgTAP) + rls_integration_connectors.test.sql (6 PgTAP)
+  - profiles: already well-gated in initial migration (no gap found)
+  - ⚠️ OPEN: Migration needs to be applied to remote Supabase project mqgshobotcvcjouzxdbi — paste supabase/migrations/20260509000001_... into Supabase SQL editor or run `supabase db push` with service role credentials. Cannot test locally (no CLI, no postgres connection string in .env).
+- [x] Block 2 — Dialog migration — completed in prior session (2026-05-09):
+  - admin-dialog.tsx: ADS ModalDialog wrapper (drop-in shadcn Dialog shim)
+  - admin-alert-dialog.tsx: ADS ModalDialog + AkButton wrapper (drop-in shadcn AlertDialog shim)
+  - src/components/admin/__tests__/admin-dialog.test.ts: API contract test
+  - DeleteThemeDialog.tsx: already migrated to admin-dialog
+  - 0 shadcn dialog imports in src/pages/admin/ + src/components/admin/ (ads-validator CLEAN, 2026-05-10)
 - [x] Block 3 — WorkHub ADS icon swap (7 components; commit on main; PR #127 merged; CI fix: npm install replaces npm ci)
 - [x] Block 4 — Users & Access ADS icon swap (4 pages; commit 30554c004 on main; 0 lucide-react in UserAccessPage/UsersManagement/RolesPermissions/BusinessOwners)
 - [x] Block 5 — General ADS icon swap (3 pages with violations; commit 27eed3267 on main; 0 lucide-react in AdminOverview/FeatureFlagsPage/NotificationTriggers; ProductSettings+AdminLayout were already clean)
@@ -128,8 +137,9 @@ All Phase C gates are complete or spawned:
 - AdminGuard security fix: ✅ on main (commit a61fe2edc)
 - CLAUDE.md lesson: ✅ committed (commit 76a07a908)
 - jira-compare WorkHub spot-check: ✅ 8/9 pages pass (1 pre-existing runtime error unrelated to ADS)
-- Deferred (never started): Block 1 (RLS audit), Block 2 (Dialog migration)
-- Remaining separate task: ThemeGroups + ProductSettings lucide violations (spawned as chip task)
+- Block 1 (RLS audit): SQL migration + PgTAP tests committed. ⚠️ Migration not yet applied to remote DB — apply via Supabase SQL editor (project mqgshobotcvcjouzxdbi).
+- Block 2 (Dialog migration): admin-dialog + admin-alert-dialog wrappers committed. DeleteThemeDialog migrated. 0 shadcn dialog imports in admin scope.
+- Chip task (ThemeGroups/ProductSettings lucide): RESOLVED — AdminEmptyState + ProductSettingsNav fixed (commit e1adbf5e0); iconBefore={<Icon/>}→iconBefore={Icon} across 12 admin pages + ThemeDialog Loader2→Spinner (commit 8887c54b9).
 - **Phase C COMPLETE — Vikram sign-off received 2026-05-10**
 
 ## Open items / next session start
