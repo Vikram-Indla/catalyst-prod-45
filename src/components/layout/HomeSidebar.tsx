@@ -26,10 +26,12 @@
  *     not a project, surfacing it was misleading).
  */
 import React, { useMemo } from 'react';
-import { Clock, FolderOpen } from 'lucide-react';
+import {
+  Clock, FolderOpen, Kanban, ListOrdered, LayoutDashboard,
+  Table2, CircleDot, Layers, Map as MapIcon, BarChart2, Settings, Calendar,
+} from 'lucide-react';
 import { SidebarBase, type SidebarConfig, type SidebarMenuItem } from './SidebarBase';
 import { useRecentProjects, type RecentLocation } from '@/hooks/home/useRecentProjects';
-import { ProjectIcon } from '@/components/shared/ProjectIcon';
 
 const RECENT_LIMIT = 8;
 
@@ -83,7 +85,7 @@ function LocationRowTitle({ location }: { location: RecentLocation }) {
         }}
         title={`${location.projectName} › ${location.sectionLabel}`}
       >
-        {location.projectName}
+        {location.projectKey}
       </span>
       <span
         style={{
@@ -112,38 +114,50 @@ function LocationRowTitle({ location }: { location: RecentLocation }) {
   );
 }
 
-/**
- * Branded ProjectIcon adapter — renders the canonical icon inside
- * SidebarBase's icon slot. Cached per (projectKey, iconName, color) so
- * React reconciles by stable reference across config rebuilds.
- */
-const PROJECT_ICON_COMPONENTS = new Map<
-  string,
-  React.FC<{ className?: string; style?: React.CSSProperties }>
->();
-function getProjectIconComponent(loc: RecentLocation) {
-  const cacheKey = `${loc.projectKey}|${loc.iconName ?? ''}|${loc.color ?? ''}`;
-  let cached = PROJECT_ICON_COMPONENTS.get(cacheKey);
+// ─── Section-type icon map ────────────────────────────────────────────────────
+// Maps sectionLabel → Lucide icon component. This replaces the repeated
+// project avatar so each recent row communicates WHERE you're going (view type)
+// rather than WHICH project — the project key text already covers that.
+// Matching is case-insensitive substring so "All work", "all-work" etc. all hit.
+type LucideIcon = React.FC<{ size?: number; strokeWidth?: number; style?: React.CSSProperties }>;
+
+const SECTION_ICON_MAP: Array<[RegExp, LucideIcon]> = [
+  [/board/i,      Kanban],
+  [/backlog/i,    ListOrdered],
+  [/dashboard/i,  LayoutDashboard],
+  [/list/i,       Table2],
+  [/issue/i,      CircleDot],
+  [/roadmap/i,    MapIcon],
+  [/report/i,     BarChart2],
+  [/setting/i,    Settings],
+  [/calendar/i,   Calendar],
+  [/all.?work/i,  Layers],
+];
+
+function iconForSection(label: string): LucideIcon {
+  for (const [pattern, Icon] of SECTION_ICON_MAP) {
+    if (pattern.test(label)) return Icon;
+  }
+  return FolderOpen;
+}
+
+// Stable component cache keyed by section label so React reconciles correctly.
+const SECTION_ICON_COMPONENTS = new Map<string, React.FC<{ className?: string; style?: React.CSSProperties }>>();
+
+function getSectionIconComponent(label: string) {
+  let cached = SECTION_ICON_COMPONENTS.get(label);
   if (!cached) {
-    const Component: React.FC<{ className?: string; style?: React.CSSProperties }> = ({
-      className,
-      style,
-    }) => (
+    const Icon = iconForSection(label);
+    const Component: React.FC<{ className?: string; style?: React.CSSProperties }> = ({ className, style }) => (
       <span
         className={className}
-        style={{ display: 'inline-flex', alignItems: 'center', ...style }}
+        style={{ display: 'inline-flex', alignItems: 'center', color: 'var(--ds-icon-subtle, #6B778C)', ...style }}
       >
-        <ProjectIcon
-          iconName={loc.iconName}
-          color={loc.color}
-          name={loc.projectName}
-          size="small"
-          variant="ghost"
-        />
+        <Icon size={16} strokeWidth={1.75} />
       </span>
     );
-    Component.displayName = `ProjectIcon(${loc.projectKey})`;
-    PROJECT_ICON_COMPONENTS.set(cacheKey, Component);
+    Component.displayName = `SectionIcon(${label})`;
+    SECTION_ICON_COMPONENTS.set(label, Component);
     cached = Component;
   }
   return cached;
@@ -182,7 +196,7 @@ export default function HomeSidebar({
           id: `recent-${loc.path}`,
           title: <LocationRowTitle location={loc} />,
           path: loc.path,
-          icon: getProjectIconComponent(loc),
+          icon: getSectionIconComponent(loc.sectionLabel),
         }));
 
     return {

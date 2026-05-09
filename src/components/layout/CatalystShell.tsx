@@ -442,7 +442,7 @@ function CatalystShellContent() {
     // reading as a broken state rather than a deliberate "no nav".
     // HomeSidebar fills the rail with Pinned / Recent / Jump-to sections,
     // turning that real estate into the user's own navigation surface.
-    if (location.pathname === '/') {
+    if (location.pathname === '/' || location.pathname === '/for-you') {
       // HomeSidebar now composes SidebarBase, so it shares the canonical
       // hub-rail props (expanded + onToggle) with every other panel —
       // identical density, active-state, and collapse behaviour.
@@ -454,8 +454,8 @@ function CatalystShellContent() {
       );
     }
 
-    // No sidebar for legacy /for-you or Admin routes
-    if (location.pathname === '/for-you' || location.pathname.startsWith('/admin')) {
+    // No sidebar for Admin routes
+    if (location.pathname.startsWith('/admin')) {
       return null;
     }
 

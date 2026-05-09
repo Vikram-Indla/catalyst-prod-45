@@ -166,7 +166,7 @@ function App() {
                 {/* Protected shell with minimal routes */}
                 <Route element={<ProtectedRoute><S><CatalystShell /></S></ProtectedRoute>}>
                   <Route index element={<S><ForYouPage /></S>} />
-                  <Route path="for-you" element={<Navigate to="/" replace />} />
+                  <Route path="for-you" element={<S><ForYouPage /></S>} />
                   <Route path="home" element={<Navigate to="/" replace />} />
 
                   {/* Admin routes — always available for incremental publishing control */}
