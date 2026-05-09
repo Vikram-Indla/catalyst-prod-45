@@ -5819,6 +5819,10 @@ html[data-presentation="true"] [data-testid="project-dashboard-shell"] [role="re
      earlier 600 override was inferred from Atlaskit's old default and
      never re-validated. Aligning to live Jira measurement. */
   font-weight: 500 !important;
+  /* V-2 (2026-05-10): Atlaskit lozenge inner span defaults to 11px.
+     ForYouRow meta row is 12px/400 — lozenge at 11px reads smaller than
+     surrounding meta text. Bump to 12px for visual balance. */
+  font-size: 12px !important;
 }
 
 /* ────────────────────────────────────────────────────────────────────────
