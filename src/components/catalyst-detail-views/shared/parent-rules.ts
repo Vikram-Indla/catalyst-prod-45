@@ -91,4 +91,9 @@ export const PARENT_LINK_RULES: Record<CatalystItemType, ParentLinkRule> = {
     mode: 'single',
     pickerLabel: 'Parent',
   },
+  idea: {
+    allowedParentTypes: [],
+    mode: 'single',
+    pickerLabel: 'Parent',
+  },
 };
