@@ -1,4 +1,3 @@
-import { Check } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import {
   Popover,
@@ -6,6 +5,7 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover';
 import { Button } from '@/components/ui/button';
+import CheckMarkIcon from '@atlaskit/icon/core/check-mark';
 
 // Catalyst Brand Color Palette
 export const BRAND_COLORS = [
@@ -76,7 +76,7 @@ export function BrandColorPicker({ value, onChange, disabled }: BrandColorPicker
                 title={color.name}
               >
                 {value === color.value && (
-                  <Check className="h-4 w-4 text-white drop-shadow-md" />
+                  <CheckMarkIcon label="" size="small" />
                 )}
               </button>
             ))}
