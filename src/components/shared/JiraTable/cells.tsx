@@ -362,13 +362,16 @@ export function makeStatusEditCell<T>(opts: {
               // (sentence case, 14px) — NOT the full uppercase StatusPill.
               // Dot color maps to the same LOZENGE_BG token as the pill bg.
               // Measured from Jira list status dropdown 2026-05-08.
+              // Inline hex — measured from Jira BAU list DOM 2026-05-07/08.
+              // Do NOT use CSS vars here: the portal renders to document.body
+              // outside any theme-provider scope and vars may not resolve.
               const dotColors: Record<string, string> = {
-                success:    'var(--cp-jira-status-success-bg)',
-                inprogress: 'var(--cp-jira-status-inprogress-bg)',
-                default:    'var(--cp-jira-status-default-bg)',
-                moved:      'var(--cp-jira-status-moved-bg)',
-                removed:    'var(--cp-jira-status-removed-bg)',
-                new:        'var(--cp-jira-status-new-bg)',
+                success:    'rgb(179, 223, 114)',
+                inprogress: 'rgb(143, 184, 246)',
+                default:    'rgb(221, 222, 225)',
+                moved:      'rgb(243, 214, 100)',
+                removed:    'rgb(255, 143, 115)',
+                new:        'rgb(184, 172, 246)',
               };
               const dotBg = dotColors[ap] ?? dotColors.default;
               const isActive = s === status;

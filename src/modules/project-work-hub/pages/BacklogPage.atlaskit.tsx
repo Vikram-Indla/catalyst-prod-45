@@ -4695,7 +4695,7 @@ function InlineGroupCreateRow({
   // Type picker dropdown — portal-based (L21 portal-empty bug prevents
   // @atlaskit/dropdown-menu; mirrors GroupByControl pattern exactly).
   const [typeMenuOpen, setTypeMenuOpen] = useState(false);
-  const [typeMenuAnchor, setTypeMenuAnchor] = useState<{ top: number; left: number } | null>(null);
+  const [typeMenuAnchor, setTypeMenuAnchor] = useState<{ top?: number; bottom?: number; left: number } | null>(null);
   const typeMenuTriggerRef = useRef<HTMLButtonElement>(null);
   const typeMenuRef = useRef<HTMLDivElement>(null);
   const [typeMenuFocusedIdx, setTypeMenuFocusedIdx] = useState(0);
@@ -4710,7 +4710,13 @@ function InlineGroupCreateRow({
   useLayoutEffect(() => {
     if (!typeMenuOpen || !typeMenuTriggerRef.current) return;
     const r = typeMenuTriggerRef.current.getBoundingClientRect();
-    setTypeMenuAnchor({ top: r.bottom + 4, left: r.left });
+    const estimatedHeight = CREATABLE_TYPES.length * 36 + 16;
+    const spaceBelow = window.innerHeight - r.bottom - 8;
+    // Open upward when near the bottom of the viewport (sticky footer case)
+    const anchor = spaceBelow < estimatedHeight && r.top > estimatedHeight
+      ? { bottom: window.innerHeight - r.top + 4, left: r.left }
+      : { top: r.bottom + 4, left: r.left };
+    setTypeMenuAnchor(anchor);
     setTypeMenuFocusedIdx(CREATABLE_TYPES.indexOf(issueType) >= 0 ? CREATABLE_TYPES.indexOf(issueType) : 0);
   }, [typeMenuOpen, issueType]);
 
@@ -4819,8 +4825,11 @@ function InlineGroupCreateRow({
             style={{
               position: 'fixed',
               top: typeMenuAnchor.top,
+              bottom: typeMenuAnchor.bottom,
               left: typeMenuAnchor.left,
               minWidth: 200,
+              maxHeight: '60vh',
+              overflowY: 'auto',
               background: token('elevation.surface.overlay', '#FFFFFF'),
               border: `1px solid ${token('color.border', '#DFE1E6')}`,
               borderRadius: 4,
