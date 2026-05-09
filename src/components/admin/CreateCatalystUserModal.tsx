@@ -5,7 +5,7 @@ import {
   Dialog,
   DialogContent,
   DialogTitle,
-} from '@/components/ui/dialog';
+} from '@/components/admin/admin-dialog';
 import { Input } from '@/components/ui/input';
 import {
   Select,

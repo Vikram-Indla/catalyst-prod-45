@@ -14,7 +14,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogFooter,
-} from '@/components/ui/dialog';
+} from '@/components/admin/admin-dialog';
 
 export default function Departments() {
   const [searchTerm, setSearchTerm] = useState('');

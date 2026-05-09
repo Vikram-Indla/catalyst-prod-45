@@ -15,7 +15,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogFooter,
-} from '@/components/ui/dialog';
+} from '@/components/admin/admin-dialog';
 
 export default function BusinessOwners() {
   const [searchTerm, setSearchTerm] = useState('');

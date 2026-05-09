@@ -27,7 +27,7 @@ import Toggle from '@atlaskit/toggle';
 import {
   AlertDialog, AlertDialogContent, AlertDialogDescription,
   AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
+} from '@/components/admin/admin-alert-dialog';
 
 // ── Constants ──────────────────────────────────────────────
 

@@ -20,7 +20,7 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog';
+} from '@/components/admin/admin-dialog';
 import { Label } from '@/components/ui/label';
 import { AdminGuard } from '@/components/admin/AdminGuard';
 import { supabase } from '@/integrations/supabase/client';

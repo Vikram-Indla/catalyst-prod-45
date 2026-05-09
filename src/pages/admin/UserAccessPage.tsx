@@ -11,7 +11,7 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog';
+} from '@/components/admin/admin-dialog';
 import AdsSelect from '@atlaskit/select';
 import { toast } from 'sonner';
 import { 

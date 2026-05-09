@@ -7,7 +7,7 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
+} from '@/components/admin/admin-dialog';
 import { Button } from "@/components/ui/button";
 import { Lozenge } from "@/components/ads";
 import { toast } from "sonner";
