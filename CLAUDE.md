@@ -124,6 +124,13 @@ Append-only. Newest at top. Each entry: date, pattern, rule, surface.
 
 ---
 
+## 2026-05-10 — jira-compare exemption: Catalyst-specific admin pages need schema-probe, not jira-compare
+**Surface:** All /admin/* non-WorkHub pages (Admin Phase C, 2026-05-09/10)
+**Pattern:** CLAUDE.md "jira-compare on every new feature" was written for product surfaces (backlog, allwork, detail views). Admin Phase C applied the ADS icon sweep to pages like Modules & Packages, Resource Assignments, Feature Flags, Reference Data, and Workflow admin. These pages are Catalyst-specific configuration surfaces — they have no Jira equivalent. Running jira-compare produces no signal (no Jira page to compare against) and wastes session budget on dead comparisons.
+**Rule:** jira-compare gate is **REQUIRED only for WorkHub admin pages** (which proxy live Jira data: jira-connection, jira-sync-control, hierarchy-mapping, status-mapping, user-mapping, activity-sync) and any admin surface that has a direct Jira equivalent. For Catalyst-specific admin pages, replace the jira-compare gate with a **schema-probe gate**: confirm every UI field has a DB column + RLS policy + hook backing it. Admin security gate: every page reachable under /admin/* must wrap its root JSX in `<AdminGuard>` — enforced by `admin-guard-coverage.test.ts`.
+
+---
+
 ## 2026-05-08 — GlobalSearchPanel filter chips: overflow:hidden parent + @atlaskit/popup empty-portal bug; multi-select array truncation; wrong projects table
 **Surface:** GlobalSearchPanel / FilterDropdown (global search)
 **Pattern:** Three compounding bugs: (1) `@atlaskit/popup` v4.16 has an empty-portal bug on this surface — the popup never renders. GlobalSearchPanel also has `overflow: hidden`, which clips `position: absolute` children. Fix: self-rolled `createPortal` to `document.body` with `position: fixed`, `getBoundingClientRect()` for placement. (2) Click-outside handler in `GlobalSearch.tsx` fired `handleClose()` on every portal click because the portal renders to `document.body`, outside `popupRef`. Fix: add `data-filter-portal="true"` to the portal div and guard with `(t as Element).closest?.('[data-filter-portal]')` in the handler. (3) `ActiveFilters` interface used `project: string | null` / `assignee: string | null` — only the first selected value was passed to the query. Fix: changed to `projects: string[]` / `assignees: string[]` and used `.in()` for projects and `.or()` with `ilike` for assignees. (4) `useProjects()` queried `ph_issues` with limit 500 + client-side dedup — incomplete and inefficient. Fix: query `ph_jira_projects` directly.
