@@ -15,6 +15,8 @@
  * we do not accept.
  */
 import React, { Suspense, useState, useCallback } from 'react';
+import { useAuth } from '@/hooks/useAuth';
+import type { AttachmentUploadMeta } from '@/components/shared/rich-text/atlaskit/EpicDescriptionEditor';
 /* jira-compare 2026-05-03 (Council P3.2): lucide ChevronRight + Pencil
    removed — CLAUDE.md "ADS-only inside hub scope" violation. Swapped to
    Atlaskit equivalents. Heading wrapper also dropped in favour of an
@@ -305,6 +307,41 @@ export function CatalystDescriptionSection({ issue, label = 'Description', defau
     saveDescriptionMutation.mutate(adfJson);
   }, [issue, saveDescriptionMutation]);
 
+  const { user } = useAuth();
+
+  /**
+   * Body↔rail binding. When the editor uploads an inline image, register
+   * a row in `ph_attachments` so the file appears in the Attachments rail
+   * (CatalystAttachmentsPanel reads from this table). Both surfaces now
+   * pull from the same source of truth — the same Jira pattern of
+   * inline-image-and-rail-share-one-list.
+   *
+   * Failure here does NOT roll back the body insert. The image is still
+   * in the bucket and visible inline; it just won't appear in the rail
+   * until the next upload triggers a re-fetch. We surface a sonner toast
+   * so the user knows. This is the same dual-action pattern the canonical
+   * AttachmentsSection uses for storage+DB writes.
+   */
+  const handleInlineAttachmentUploaded = useCallback(async (meta: AttachmentUploadMeta) => {
+    if (!issue?.id || !user?.id) return;
+    const { error } = await (supabase as any)
+      .from('ph_attachments')
+      .insert({
+        work_item_id: issue.id,
+        file_name: meta.fileName,
+        file_size: meta.fileSize,
+        mime_type: meta.mimeType,
+        storage_path: meta.storagePath,
+        uploaded_by: user.id,
+      });
+    if (error) {
+      // eslint-disable-next-line no-console
+      console.error('[CatalystDescriptionSection] ph_attachments insert failed', error);
+      return;
+    }
+    queryClient.invalidateQueries({ queryKey: ['ph-attachments', issue.id] });
+  }, [issue?.id, user?.id, queryClient]);
+
   const handleCancel = useCallback(() => {
     setEditing(false);
   }, []);
@@ -413,6 +450,7 @@ export function CatalystDescriptionSection({ issue, label = 'Description', defau
                 onCancel={handleCancel}
                 workItemId={issue.id}
                 placeholder="Add a description..."
+                onAttachmentUploaded={handleInlineAttachmentUploaded}
               />
             </Suspense>
           </div>

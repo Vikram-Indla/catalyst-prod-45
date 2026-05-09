@@ -26,6 +26,11 @@ import React, { Suspense, useCallback, useEffect, useMemo, useRef, useState } fr
 import type { ADFEntity } from '@atlaskit/adf-utils/types';
 import { Editor } from '@atlaskit/editor-core';
 import { IntlProvider } from 'react-intl-next';
+import Button from '@atlaskit/button/new';
+import ImageIcon from '@atlaskit/icon/core/image';
+import Spinner from '@atlaskit/spinner';
+import { token } from '@atlaskit/tokens';
+import { toast } from 'sonner';
 import { normalizeAdfForAtlaskit, parseStoredDescriptionToAdf } from './adfNormalizer';
 import { uploadDescriptionImage } from './supabaseImageUpload';
 
@@ -39,6 +44,31 @@ type EditorActions = {
   getValue: () => Promise<any>;
   replaceSelection: (node: any) => void;
 };
+
+/**
+ * Metadata emitted after an inline image successfully uploads to Supabase
+ * Storage. The caller decides which table to write the metadata into:
+ *   - work-item modals (CatalystDescriptionSection, IssueContentView) →
+ *     insert a row in `ph_attachments` so the file appears in the rail
+ *     side-by-side with loose attachments (Jira-parity body↔rail binding).
+ *   - business-request flow → insert into `business_request_links`.
+ *   - Create modal ("new" workItemId) → defer until the entity is created,
+ *     or skip entirely.
+ *
+ * This callback is the canonical hook for keeping the editor body and the
+ * attachments rail in sync: both surfaces read from the same source of
+ * truth, so an image dropped into the body is also listed in the rail
+ * (and downloadable via the rail's preview / download-all flow).
+ */
+export interface AttachmentUploadMeta {
+  storagePath: string;
+  publicUrl: string;
+  fileName: string;
+  fileSize: number;
+  mimeType: string;
+  width?: number;
+  height?: number;
+}
 
 export interface EpicDescriptionEditorProps {
   /** Raw stored description (ADF object, ADF JSON string, or null). */
@@ -60,6 +90,12 @@ export interface EpicDescriptionEditorProps {
    * Save/Cancel buttons (the modal footer handles submit). Defaults to 'comment'.
    */
   appearance?: 'comment' | 'chromeless' | 'full-page';
+  /**
+   * Fired after an inline image successfully uploads. Caller is responsible
+   * for inserting the metadata into the appropriate domain table so the
+   * attachments rail re-renders with the new file. See AttachmentUploadMeta.
+   */
+  onAttachmentUploaded?: (meta: AttachmentUploadMeta) => void;
 }
 
 function buildExternalMediaSingle(url: string, filename: string, width?: number, height?: number): ADFEntity {
@@ -106,6 +142,7 @@ export default function EpicDescriptionEditor({
   placeholder = 'Add a description...',
   onChange,
   appearance: appearanceProp = 'comment',
+  onAttachmentUploaded,
 }: EpicDescriptionEditorProps) {
   const initialAdf = useMemo(() => parseStoredDescriptionToAdf(initialContent), [initialContent]);
   const defaultValueString = useMemo(() => JSON.stringify(initialAdf), [initialAdf]);
@@ -139,27 +176,46 @@ export default function EpicDescriptionEditor({
   const actionsRef = useRef<EditorActions | null>(null);
   const wrapperRef = useRef<HTMLDivElement>(null);
   const [uploading, setUploading] = useState(false);
-  const [uploadError, setUploadError] = useState<string | null>(null);
+  const [isDragOver, setIsDragOver] = useState(false);
+  const dragCounter = useRef(0);
 
   const handleEditorReady = useCallback((actions: EditorActions) => {
     actionsRef.current = actions;
   }, []);
 
   const insertExternalMedia = useCallback((file: File) => {
-    setUploadError(null);
     setUploading(true);
     uploadDescriptionImage(file, { workItemId })
       .then((uploaded) => {
         if (!uploaded) {
-          setUploadError('Image upload failed');
+          toast.error(`Couldn't upload ${file.name}`);
           return;
+        }
+        // Notify caller so the attachments rail can stay in sync with the
+        // body. Without this, the rail and body are independent surfaces
+        // even though they share a bucket — the user sees an inline image
+        // that doesn't appear in the rail's "Attachments" list.
+        try {
+          onAttachmentUploaded?.({
+            storagePath: uploaded.storagePath,
+            publicUrl: uploaded.url,
+            fileName: uploaded.filename,
+            fileSize: file.size,
+            mimeType: file.type || 'application/octet-stream',
+            width: uploaded.width,
+            height: uploaded.height,
+          });
+        } catch {
+          // Caller-side errors (DB insert failure) are surfaced by the
+          // caller's own error handler. The image is still in the bucket
+          // and inserted into the body — the rail will catch up on reload.
         }
         const node = buildExternalMediaSingle(uploaded.url, uploaded.filename, uploaded.width, uploaded.height);
         actionsRef.current?.replaceSelection(node as any);
       })
-      .catch(() => setUploadError('Image upload failed'))
+      .catch(() => toast.error(`Couldn't upload ${file.name}`))
       .finally(() => setUploading(false));
-  }, [workItemId]);
+  }, [workItemId, onAttachmentUploaded]);
 
   useEffect(() => {
     const root = wrapperRef.current;
@@ -174,17 +230,43 @@ export default function EpicDescriptionEditor({
       e.stopPropagation();
       insertExternalMedia(file);
     };
+    // Drop-zone affordance: track dragenter/dragleave at counter level so
+    // bubbling through nested elements doesn't flicker the overlay. The
+    // dragover handler is required to make the area droppable at all.
+    const onDragEnter = (e: DragEvent) => {
+      if (!Array.from(e.dataTransfer?.types || []).includes('Files')) return;
+      e.preventDefault();
+      dragCounter.current += 1;
+      setIsDragOver(true);
+    };
+    const onDragLeave = (e: DragEvent) => {
+      if (!Array.from(e.dataTransfer?.types || []).includes('Files')) return;
+      dragCounter.current = Math.max(0, dragCounter.current - 1);
+      if (dragCounter.current === 0) setIsDragOver(false);
+    };
+    const onDragOver = (e: DragEvent) => {
+      if (!Array.from(e.dataTransfer?.types || []).includes('Files')) return;
+      e.preventDefault();
+    };
     const onDrop = (e: DragEvent) => {
       const files = Array.from(e.dataTransfer?.files ?? []).filter((f) => f.type.startsWith('image/'));
+      dragCounter.current = 0;
+      setIsDragOver(false);
       if (files.length === 0) return;
       e.preventDefault();
       e.stopPropagation();
       files.forEach(insertExternalMedia);
     };
     root.addEventListener('paste', onPaste, true);
+    root.addEventListener('dragenter', onDragEnter, true);
+    root.addEventListener('dragleave', onDragLeave, true);
+    root.addEventListener('dragover', onDragOver, true);
     root.addEventListener('drop', onDrop, true);
     return () => {
       root.removeEventListener('paste', onPaste, true);
+      root.removeEventListener('dragenter', onDragEnter, true);
+      root.removeEventListener('dragleave', onDragLeave, true);
+      root.removeEventListener('dragover', onDragOver, true);
       root.removeEventListener('drop', onDrop, true);
     };
   }, [insertExternalMedia]);
@@ -239,8 +321,47 @@ export default function EpicDescriptionEditor({
 
   return (
     <IntlProvider locale="en">
-      <div ref={wrapperRef} className="epic-desc-atlaskit-wrapper" style={{ position: 'relative' }}>
-        <Suspense fallback={<div style={{ padding: 12, fontSize: 13, color: 'var(--ds-text-subtlest, #878787)' }}>Loading editor…</div>}>
+      <div
+        ref={wrapperRef}
+        className="epic-desc-atlaskit-wrapper"
+        style={{
+          position: 'relative',
+          // Drop-zone affordance — appears only while a file is being dragged
+          // over the editor. ADS tokens make this respect dark mode + theme
+          // overrides without hardcoding hex.
+          // https://atlassian.design/foundations/tokens
+          outline: isDragOver
+            ? `2px dashed ${token('color.border.focused', '#388BFF')}`
+            : '2px dashed transparent',
+          outlineOffset: '2px',
+          borderRadius: 3,
+          backgroundColor: isDragOver
+            ? token('color.background.information.subtle', '#E9F2FF')
+            : 'transparent',
+          // ADS motion — hover-curve, 150ms.
+          // https://atlassian.design/foundations/motion
+          transition: 'outline-color 150ms cubic-bezier(0.15,1,0.3,1), background-color 150ms cubic-bezier(0.15,1,0.3,1)',
+        }}
+      >
+        <Suspense
+          fallback={
+            <div
+              style={{
+                padding: 12,
+                fontSize: 13,
+                color: token('color.text.subtlest', '#626F86'),
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 8,
+              }}
+              role="status"
+              aria-live="polite"
+            >
+              <Spinner size="small" />
+              <span>Loading editor…</span>
+            </div>
+          }
+        >
           <Editor
             appearance={appearanceProp}
             defaultValue={defaultValueString}
@@ -274,32 +395,25 @@ export default function EpicDescriptionEditor({
                stole focus from the Summary field which is the canonical
                first-focus target in Atlassian's Create dialog. */
             primaryToolbarComponents={[
-              <button
+              <Button
                 key="insert-image"
-                type="button"
+                appearance="subtle"
+                spacing="compact"
+                isDisabled={uploading}
                 onClick={triggerImagePicker}
-                disabled={uploading}
-                title="Insert image"
-                style={{
-                  height: 28, padding: '0 8px', borderRadius: 3, border: 'none',
-                  background: 'transparent', cursor: uploading ? 'wait' : 'pointer',
-                  color: uploading ? '#A5ADBA' : '#42526E', fontSize: 12,
-                  fontFamily: 'inherit', display: 'inline-flex', alignItems: 'center',
-                }}
+                iconBefore={
+                  uploading
+                    ? (() => <Spinner size="small" />)
+                    : (iconProps: React.ComponentProps<typeof ImageIcon>) => (
+                        <ImageIcon {...iconProps} label="" />
+                      )
+                }
               >
-                {uploading ? 'Uploading…' : 'Image'}
-              </button>,
+                {uploading ? 'Uploading' : 'Image'}
+              </Button>,
             ]}
           />
         </Suspense>
-        {uploadError && (
-          <div role="alert" style={{
-            padding: '6px 12px', fontSize: 12, color: '#BF2600',
-            background: '#FFEBE6', borderTop: '1px solid #FFBDAD',
-          }}>
-            {uploadError}
-          </div>
-        )}
       </div>
     </IntlProvider>
   );
