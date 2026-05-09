@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { AdminGuard } from '@/components/admin/AdminGuard';
 import Button from '@atlaskit/button/new';
-import { Plus } from 'lucide-react';
+import AddIcon from '@atlaskit/icon/core/add';
 import { RolesList } from '@/components/admin/roles-permissions/RolesList';
 import { RoleDetails } from '@/components/admin/roles-permissions/RoleDetails';
 import { UserOverridesModal } from '@/components/admin/roles-permissions/UserOverridesModal';
@@ -72,7 +72,7 @@ export default function RolesPermissions() {
             <Button
               appearance="primary"
               onClick={handleAddRole}
-              iconBefore={<Plus size={16} />}
+              iconBefore={<AddIcon label="" size="small" />}
             >
               Add Role
             </Button>

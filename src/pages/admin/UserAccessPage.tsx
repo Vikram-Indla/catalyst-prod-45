@@ -14,21 +14,19 @@ import {
 } from '@/components/admin/admin-dialog';
 import AdsSelect from '@atlaskit/select';
 import { toast } from 'sonner';
-import { 
-  Search, 
-  Key, 
-  RotateCcw, 
-  UserCog,
-  Mail,
-  Eye,
-  EyeOff,
-  UserPlus,
-  Users,
-  Shield,
-  Check,
-  X,
-  Pencil
-} from 'lucide-react';
+import SearchIcon from '@atlaskit/icon/core/search';
+import LockLockedIcon from '@atlaskit/icon/core/lock-locked';
+import RefreshIcon from '@atlaskit/icon/core/refresh';
+import PersonIcon from '@atlaskit/icon/core/person';
+import EmailIcon from '@atlaskit/icon/core/email';
+import EyeOpenIcon from '@atlaskit/icon/core/eye-open';
+import EyeOpenStrikethroughIcon from '@atlaskit/icon/core/eye-open-strikethrough';
+import PersonAddIcon from '@atlaskit/icon/core/person-add';
+import PeopleGroupIcon from '@atlaskit/icon/core/people-group';
+import ShieldIcon from '@atlaskit/icon/core/shield';
+import CheckMarkIcon from '@atlaskit/icon/core/check-mark';
+import CrossIcon from '@atlaskit/icon/glyph/cross';
+import EditIcon from '@atlaskit/icon/core/edit';
 
 interface ProductRole {
   id: string;
@@ -482,7 +480,7 @@ export default function UserAccessPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-semibold flex items-center gap-2" style={{ color: 'var(--ds-text, #172B4D)' }}>
-            <UserCog className="h-6 w-6" style={{ color: 'var(--ds-icon-brand, #0C66E4)' }} />
+            <span style={{ display: 'inline-flex', color: 'var(--ds-icon-brand, #0C66E4)' }}><PersonIcon label="" size="medium" /></span>
             User Access
           </h1>
           <p className="text-sm mt-1" style={{ color: 'var(--ds-text-subtle, #44546F)' }}>
@@ -493,7 +491,7 @@ export default function UserAccessPage() {
           <Button
             appearance="primary"
             onClick={() => setBulkCreateOpen(true)}
-            iconBefore={<Users size={16} />}
+            iconBefore={<PeopleGroupIcon label="" size="small" />}
           >
             Create {usersNeedingAccounts.length} Account{usersNeedingAccounts.length > 1 ? 's' : ''}
           </Button>
@@ -503,7 +501,7 @@ export default function UserAccessPage() {
       {/* Search */}
       <div className="flex items-center gap-4">
         <div className="relative flex-1 max-w-md">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 z-10" style={{ color: 'var(--ds-text-subtle, #44546F)' }} />
+          <span style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', display: 'flex', color: 'var(--ds-text-subtle, #44546F)', zIndex: 10 }}><SearchIcon label="" size="small" /></span>
           <div style={{ paddingLeft: '36px' }}>
             <Textfield
               placeholder="Search by name, email, RID, or role..."
@@ -586,7 +584,7 @@ export default function UserAccessPage() {
                             }}
                             disabled={updateEmailMutation.isPending}
                           >
-                            <Check className="h-3.5 w-3.5" style={{ color: '#15803D' }} />
+                            <span style={{ display: 'inline-flex', color: '#15803D' }}><CheckMarkIcon label="" size="small" /></span>
                           </button>
                           <button
                             className="h-7 w-7 flex items-center justify-center rounded"
@@ -595,7 +593,7 @@ export default function UserAccessPage() {
                               setEditingEmailValue('');
                             }}
                           >
-                            <X className="h-3.5 w-3.5" style={{ color: 'var(--ds-text-subtle, #44546F)' }} />
+                            <span style={{ display: 'inline-flex', color: 'var(--ds-text-subtle, #44546F)' }}><CrossIcon label="" size="small" /></span>
                           </button>
                         </div>
                       ) : (
@@ -610,13 +608,13 @@ export default function UserAccessPage() {
                         >
                           {user.email ? (
                             <>
-                              <Mail className="h-3.5 w-3.5 flex-shrink-0" />
+                              <span style={{ display: 'inline-flex', flexShrink: 0 }}><EmailIcon label="" size="small" /></span>
                               <span className="truncate">{user.email}</span>
                             </>
                           ) : (
                             <span style={{ color: 'var(--ds-text-subtlest, #626F86)', fontStyle: 'italic' }}>No email</span>
                           )}
-                          <Pencil className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity" style={{ color: 'var(--ds-text-subtle, #44546F)' }} />
+                          <span className="opacity-0 group-hover:opacity-100 transition-opacity" style={{ display: 'inline-flex', color: 'var(--ds-text-subtle, #44546F)' }}><EditIcon label="" size="small" /></span>
                         </div>
                       )}
                     </td>
@@ -649,7 +647,7 @@ export default function UserAccessPage() {
                         })()
                       ) : (
                         <span className="text-xs italic flex items-center gap-1" style={{ color: 'var(--ds-text-subtle, #44546F)' }}>
-                          <Shield className="h-3 w-3" />
+                          <span style={{ display: 'inline-flex' }}><ShieldIcon label="" size="small" /></span>
                           No email
                         </span>
                       )}
@@ -667,14 +665,14 @@ export default function UserAccessPage() {
                           <Button
                             appearance="default"
                             onClick={() => openChangePassword(user)}
-                            iconBefore={<Key size={14} />}
+                            iconBefore={<LockLockedIcon label="" size="small" />}
                           >
                             Change Password
                           </Button>
                           <Button
                             appearance="default"
                             onClick={() => openResetPassword(user)}
-                            iconBefore={<RotateCcw size={14} />}
+                            iconBefore={<RefreshIcon label="" size="small" />}
                           >
                             Reset
                           </Button>
@@ -685,7 +683,7 @@ export default function UserAccessPage() {
                           <Button
                             appearance="default"
                             onClick={() => openCreateAccount(user)}
-                            iconBefore={<UserPlus size={14} />}
+                            iconBefore={<PersonAddIcon label="" size="small" />}
                           >
                             Create Login
                           </Button>
@@ -713,7 +711,7 @@ export default function UserAccessPage() {
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
-              <Key className="h-5 w-5" style={{ color: 'var(--ds-icon-brand, #0C66E4)' }} />
+              <span style={{ display: 'inline-flex', color: 'var(--ds-icon-brand, #0C66E4)' }}><LockLockedIcon label="" size="medium" /></span>
               Change Password
             </DialogTitle>
             <DialogDescription>
@@ -738,9 +736,9 @@ export default function UserAccessPage() {
                   onClick={() => setShowPassword(!showPassword)}
                 >
                   {showPassword ? (
-                    <EyeOff className="h-4 w-4" style={{ color: 'var(--ds-text-subtle, #44546F)' }} />
+                    <span style={{ display: 'inline-flex', color: 'var(--ds-text-subtle, #44546F)' }}><EyeOpenStrikethroughIcon label="Hide password" size="small" /></span>
                   ) : (
-                    <Eye className="h-4 w-4" style={{ color: 'var(--ds-text-subtle, #44546F)' }} />
+                    <span style={{ display: 'inline-flex', color: 'var(--ds-text-subtle, #44546F)' }}><EyeOpenIcon label="Show password" size="small" /></span>
                   )}
                 </button>
               </div>
@@ -779,7 +777,7 @@ export default function UserAccessPage() {
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
-              <RotateCcw className="h-5 w-5" style={{ color: 'var(--ds-icon-brand, #0C66E4)' }} />
+              <span style={{ display: 'inline-flex', color: 'var(--ds-icon-brand, #0C66E4)' }}><RefreshIcon label="" size="medium" /></span>
               Reset Password
             </DialogTitle>
             <DialogDescription>
@@ -815,7 +813,7 @@ export default function UserAccessPage() {
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
-              <UserPlus className="h-5 w-5" style={{ color: 'var(--ds-icon-brand, #0C66E4)' }} />
+              <span style={{ display: 'inline-flex', color: 'var(--ds-icon-brand, #0C66E4)' }}><PersonAddIcon label="" size="medium" /></span>
               Create Account
             </DialogTitle>
             <DialogDescription>
@@ -849,7 +847,7 @@ export default function UserAccessPage() {
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
-              <Users className="h-5 w-5" style={{ color: 'var(--ds-icon-brand, #0C66E4)' }} />
+              <span style={{ display: 'inline-flex', color: 'var(--ds-icon-brand, #0C66E4)' }}><PeopleGroupIcon label="" size="medium" /></span>
               Bulk Create Accounts
             </DialogTitle>
             <DialogDescription>
