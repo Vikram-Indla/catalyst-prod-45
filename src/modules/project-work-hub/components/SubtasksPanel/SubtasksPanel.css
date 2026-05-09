@@ -56,11 +56,11 @@
 }
 
 .sp-title {
-  font-size: 14px;
-  font-weight: 600;
+  font-size: 16px;
+  font-weight: 653;
   color: var(--ds-text, #29292E);
   padding: 0 4px;
-  line-height: 1.4;
+  line-height: 1.25;
 }
 
 .sp-title-count {
