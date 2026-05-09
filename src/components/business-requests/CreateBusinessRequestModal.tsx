@@ -84,6 +84,8 @@ import {
   STAKEHOLDER_OPTIONS,
   REQUEST_TYPE_OPTIONS,
 } from '@/types/business-request';
+// Canonical Catalyst icon — backed by useIconOverrides (admin overrides via /admin/icons).
+import { WorkItemTypeIcon } from '@/components/icons/WorkItemTypeIcon';
 
 // ── ADF editor — lazy, identical to CreateStoryModal ─────────────────────────
 const EpicDescriptionEditor = lazy(
@@ -744,7 +746,8 @@ export function CreateBusinessRequestModal({ isOpen, onClose }: CreateBusinessRe
           <ModalHeader>
             <Box xcss={headerWrapperStyles}>
               <div style={{ display: 'flex', alignItems: 'center', gap: token('space.100') }}>
-                <img src="/admin/icons/jira/business-request-16.svg" width={16} height={16} alt="" aria-hidden="true" style={{ flexShrink: 0 }} />
+                {/* WorkItemTypeIcon is canonical — respects /admin/icons overrides (G, 2026-05-09) */}
+                <WorkItemTypeIcon type="Business Request" size={16} label="" />
                 <ModalTitle>Create Business Request</ModalTitle>
               </div>
               <Box xcss={headerActionsStyles}>
