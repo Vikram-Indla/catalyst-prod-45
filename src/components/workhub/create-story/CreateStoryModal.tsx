@@ -459,7 +459,6 @@ export function CreateStoryModal({
   const { user } = useAuth();
   const { form, updateField, reset } = useCreateStoryForm(projectId);
   const { data: projects = [] } = useProjects();
-  console.log('[CreateModal] form.projectId:', form.projectId, 'projects list:', projects.map((p: any) => ({ id: p.id, name: p.name, key: p.key })));
   const { data: members = [] } = useTeamMembers();
   const { data: releases = [], isLoading: releasesLoading, error: releasesError } = useProjectReleases(form.projectId);
 
@@ -539,9 +538,14 @@ export function CreateStoryModal({
         value: p.id,
         label: p.name,
         icon: (
+          // Bucket F (2026-05-09): pass iconName + color so Lucide fallback
+          // works for non-bundled-registry projects (ph_projects data joined).
           <ProjectIcon
-            projectKey={p.key}
+            projectKey={p.key ?? undefined}
             avatarUrl={p.avatar_url ?? null}
+            iconName={p.iconName ?? null}
+            color={p.phColor ?? null}
+            name={p.name}
             size="small"
           />
         ),

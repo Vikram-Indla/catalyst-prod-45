@@ -42,18 +42,44 @@ const INITIAL_FORM: CreateStoryFormData = {
   labels: [],
 };
 
-// Fetch projects for the project selector
+// Fetch projects for the project selector.
+// Bucket F (2026-05-09): enriches with ph_projects.icon + ph_projects.color so
+// the ProjectIcon Lucide fallback works for non-bundled-registry projects.
+// Resolution order inside ProjectIcon:
+//   admin override (catalyst_icon_overrides) > bundled SVG registry >
+//   avatar_url (Jira image) > ph_projects Lucide icon > grey folder.
 export function useProjects() {
   return useQuery({
     queryKey: ['create-story-projects'],
     queryFn: async () => {
+      // Primary: projects table (UUID id, Jira-synced avatar_url).
       const { data, error } = await supabase
         .from('projects')
         .select('id, key, name, avatar_url, color')
         .eq('is_archived', false)
         .order('name');
       if (error) throw error;
-      return data ?? [];
+      const rows = data ?? [];
+
+      // Secondary: ph_projects for Lucide icon + color (fallback for non-Jira projects).
+      const { data: phRows } = await supabase
+        .from('ph_projects')
+        .select('key, icon, color')
+        .eq('is_archived', false);
+
+      const phByKey = new Map(
+        (phRows ?? []).map((r: any) => [r.key?.toUpperCase(), r])
+      );
+
+      return rows.map((p: any) => {
+        const ph = phByKey.get(p.key?.toUpperCase());
+        return {
+          ...p,
+          // Only use ph icon/color if no avatar_url (lower priority in ProjectIcon cascade).
+          iconName: ph?.icon ?? null,
+          phColor:  ph?.color ?? null,
+        };
+      });
     },
     staleTime: 5 * 60 * 1000,
   });
