@@ -9,12 +9,12 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Lozenge } from '@/components/ads';
 import { Separator } from '@/components/ui/separator';
-import {
 import CustomizeIcon from '@atlaskit/icon/core/customize';
 import FilterIcon from '@atlaskit/icon/core/filter';
 import RefreshIcon from '@atlaskit/icon/core/refresh';
 import SearchIcon from '@atlaskit/icon/core/search';
 import ShieldIcon from '@atlaskit/icon/core/shield';
+import {
   Select,
   SelectContent,
   SelectItem,

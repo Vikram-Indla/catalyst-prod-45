@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import {
 import Spinner from '@atlaskit/spinner';
 import AddIcon from '@atlaskit/icon/core/add';
 import AlertIcon from '@atlaskit/icon/core/alert';
@@ -8,6 +7,7 @@ import EditIcon from '@atlaskit/icon/core/edit';
 import CrossIcon from '@atlaskit/icon/glyph/cross';
 import DragHandlerIcon from '@atlaskit/icon/glyph/drag-handler';
 import TrashIcon from '@atlaskit/icon/glyph/trash';
+import {
   Sheet,
   SheetContent,
   SheetHeader,

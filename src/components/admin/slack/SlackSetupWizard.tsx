@@ -3,7 +3,6 @@
 // ============================================================
 
 import React, { useState } from 'react';
-import {
 import AlertIcon from '@atlaskit/icon/core/alert';
 import AutomationIcon from '@atlaskit/icon/core/automation';
 import CheckCircleIcon from '@atlaskit/icon/core/check-circle';
@@ -16,6 +15,7 @@ import SettingsIcon from '@atlaskit/icon/core/settings';
 import ToolsIcon from '@atlaskit/icon/core/tools';
 import ChevronLeftIcon from '@atlaskit/icon/glyph/chevron-left';
 import ChevronRightIcon from '@atlaskit/icon/glyph/chevron-right';
+import {
   useSaveSlackConfig,
   useSlackInstallUrl,
   useTestSlackConnection,

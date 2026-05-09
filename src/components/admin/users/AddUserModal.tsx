@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import {
 import Spinner from '@atlaskit/spinner';
 import AlertIcon from '@atlaskit/icon/core/alert';
+import {
   Dialog,
   DialogContent,
   DialogHeader,

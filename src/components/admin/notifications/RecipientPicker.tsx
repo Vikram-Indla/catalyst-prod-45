@@ -6,9 +6,9 @@
  */
 
 import { useState, useEffect, useCallback } from 'react';
-import {
 import PeopleGroupIcon from '@atlaskit/icon/core/people-group';
 import CrossIcon from '@atlaskit/icon/glyph/cross';
+import {
   Dialog,
   DialogContent,
   DialogDescription,

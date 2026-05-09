@@ -3,7 +3,6 @@
 // ============================================================
 
 import React, { useState } from 'react';
-import {
 import ChartTrendIcon from '@atlaskit/icon/core/chart-trend';
 import CheckCircleIcon from '@atlaskit/icon/core/check-circle';
 import CopyIcon from '@atlaskit/icon/core/copy';
@@ -19,6 +18,7 @@ import SettingsIcon from '@atlaskit/icon/core/settings';
 import ShowMoreHorizontalIcon from '@atlaskit/icon/core/show-more-horizontal';
 import ToolsIcon from '@atlaskit/icon/core/tools';
 import WarningIcon from '@atlaskit/icon/core/warning';
+import {
   SlackConfig,
   SlackStats,
   useSlackUsers,

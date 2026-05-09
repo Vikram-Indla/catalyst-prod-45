@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
-import {
 import RefreshIcon from '@atlaskit/icon/core/refresh';
 import WarningIcon from '@atlaskit/icon/core/warning';
 import TrashIcon from '@atlaskit/icon/glyph/trash';
+import {
   Dialog,
   DialogContent,
   DialogHeader,

@@ -1,5 +1,4 @@
 import { useState, useMemo } from 'react';
-import {
 import Spinner from '@atlaskit/spinner';
 import ArrowRightIcon from '@atlaskit/icon/core/arrow-right';
 import CheckCircleIcon from '@atlaskit/icon/core/check-circle';
@@ -9,6 +8,7 @@ import InformationCircleIcon from '@atlaskit/icon/core/information-circle';
 import UploadIcon from '@atlaskit/icon/core/upload';
 import VideoPlayIcon from '@atlaskit/icon/core/video-play';
 import WarningIcon from '@atlaskit/icon/core/warning';
+import {
   Sheet,
   SheetContent,
   SheetDescription,

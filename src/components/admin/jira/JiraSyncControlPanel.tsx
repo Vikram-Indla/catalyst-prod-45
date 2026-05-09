@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { format, formatDistanceToNow } from 'date-fns';
 import { Switch } from '@/components/ui/switch';
 import { Button } from '@/components/ui/button';
-import {
 import AutomationIcon from '@atlaskit/icon/core/automation';
 import CheckCircleIcon from '@atlaskit/icon/core/check-circle';
 import DatabaseIcon from '@atlaskit/icon/core/database';
@@ -11,6 +10,7 @@ import PeopleGroupIcon from '@atlaskit/icon/core/people-group';
 import RefreshIcon from '@atlaskit/icon/core/refresh';
 import ShieldIcon from '@atlaskit/icon/core/shield';
 import WarningIcon from '@atlaskit/icon/core/warning';
+import {
   Dialog,
   DialogContent,
   DialogDescription,

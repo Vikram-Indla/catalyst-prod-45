@@ -8,7 +8,6 @@
 import { memo } from 'react';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
-import {
 import AutomationIcon from '@atlaskit/icon/core/automation';
 import CheckCircleIcon from '@atlaskit/icon/core/check-circle';
 import CommentIcon from '@atlaskit/icon/core/comment';
@@ -17,6 +16,7 @@ import EmailIcon from '@atlaskit/icon/core/email';
 import NotificationIcon from '@atlaskit/icon/core/notification';
 import RefreshIcon from '@atlaskit/icon/core/refresh';
 import CrossIcon from '@atlaskit/icon/glyph/cross';
+import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,

@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { toast } from 'sonner';
-import {
 import Spinner from '@atlaskit/spinner';
 import EyeOpenIcon from '@atlaskit/icon/core/eye-open';
 import EyeOpenStrikethroughIcon from '@atlaskit/icon/core/eye-open-strikethrough';
 import ShareIcon from '@atlaskit/icon/core/share';
 import CrossIcon from '@atlaskit/icon/glyph/cross';
+import {
   Dialog,
   DialogContent,
   DialogTitle,

@@ -4,10 +4,10 @@
  */
 
 import { useState, useEffect } from 'react';
-import {
 import ArrowRightIcon from '@atlaskit/icon/core/arrow-right';
 import LinkIcon from '@atlaskit/icon/core/link';
 import WarningIcon from '@atlaskit/icon/core/warning';
+import {
   Dialog,
   DialogContent,
   DialogHeader,

@@ -1,8 +1,8 @@
 import { useState, useMemo } from 'react';
-import {
 import Spinner from '@atlaskit/spinner';
 import PersonAddIcon from '@atlaskit/icon/core/person-add';
 import SearchIcon from '@atlaskit/icon/core/search';
+import {
   Dialog,
   DialogContent,
   DialogHeader,

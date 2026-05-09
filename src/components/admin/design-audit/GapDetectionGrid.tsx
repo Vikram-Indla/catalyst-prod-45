@@ -11,7 +11,6 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { cn } from '@/lib/utils';
-import { 
 import AutomationIcon from '@atlaskit/icon/core/automation';
 import CopyIcon from '@atlaskit/icon/core/copy';
 import FileIcon from '@atlaskit/icon/core/file';
@@ -20,6 +19,7 @@ import PhoneIcon from '@atlaskit/icon/core/phone';
 import SendIcon from '@atlaskit/icon/core/send';
 import ToolsIcon from '@atlaskit/icon/core/tools';
 import WarningIcon from '@atlaskit/icon/core/warning';
+import { 
   detectedGaps, 
   responsivenessGaps,
   type DesignGap,

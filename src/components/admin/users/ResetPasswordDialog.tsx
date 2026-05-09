@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import {
 import Spinner from '@atlaskit/spinner';
 import CheckMarkIcon from '@atlaskit/icon/core/check-mark';
 import CopyIcon from '@atlaskit/icon/core/copy';
@@ -7,6 +6,7 @@ import EyeOpenIcon from '@atlaskit/icon/core/eye-open';
 import EyeOpenStrikethroughIcon from '@atlaskit/icon/core/eye-open-strikethrough';
 import LinkIcon from '@atlaskit/icon/core/link';
 import LockLockedIcon from '@atlaskit/icon/core/lock-locked';
+import {
   Dialog,
   DialogContent,
   DialogDescription,

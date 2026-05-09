@@ -16,7 +16,7 @@ import { Tooltip } from '@/components/ads';
 import { useState, useMemo } from 'react';
 import { adminPockets } from './admin-nav';
 import BoardIcon from '@atlaskit/icon/core/board';
-import CodeIcon from '@atlaskit/icon/core/code';
+import AngleBracketsIcon from '@atlaskit/icon/core/angle-brackets';
 import DatabaseIcon from '@atlaskit/icon/core/database';
 import PeopleGroupIcon from '@atlaskit/icon/core/people-group';
 import PinIcon from '@atlaskit/icon/core/pin';
@@ -34,8 +34,8 @@ const ICON_MAP: Record<string, React.ElementType> = {
   Settings: SettingsIcon,
   Database: DatabaseIcon,
   GitBranch: BranchIcon,
-  Cable: CodeIcon,
-  Code2: CodeIcon,
+  Cable: AngleBracketsIcon,
+  Code2: AngleBracketsIcon,
 };
 
 // ── ADS token constants ─────────────────────────────────────────────────────

@@ -10,7 +10,6 @@ import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
 import { cn } from '@/lib/utils';
-import { 
 import BoardIcon from '@atlaskit/icon/core/board';
 import BoardsIcon from '@atlaskit/icon/core/boards';
 import ChartBarIcon from '@atlaskit/icon/core/chart-bar';
@@ -24,6 +23,7 @@ import TagIcon from '@atlaskit/icon/core/tag';
 import TextIcon from '@atlaskit/icon/core/text';
 import ChevronDownIcon from '@atlaskit/icon/glyph/chevron-down';
 import ChevronRightIcon from '@atlaskit/icon/glyph/chevron-right';
+import { 
   baselineTokens, 
   componentSpecs, 
   tokenCategories,

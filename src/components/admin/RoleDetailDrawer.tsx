@@ -2,13 +2,13 @@
 import { Fragment } from 'react';
 import { cn } from '@/lib/utils';
 import { useModuleMatrix, type AccessLevel } from '@/hooks/useModuleMatrix';
-import {
 import CheckMarkIcon from '@atlaskit/icon/core/check-mark';
 import EyeOpenIcon from '@atlaskit/icon/core/eye-open';
 import EyeOpenStrikethroughIcon from '@atlaskit/icon/core/eye-open-strikethrough';
 import PeopleGroupIcon from '@atlaskit/icon/core/people-group';
 import ShieldIcon from '@atlaskit/icon/core/shield';
 import CrossIcon from '@atlaskit/icon/glyph/cross';
+import {
   Sheet,
   SheetContent,
   SheetHeader,

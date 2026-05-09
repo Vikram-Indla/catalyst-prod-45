@@ -5,7 +5,6 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Lozenge } from '@/components/ads';
 import { Checkbox } from '@/components/ui/checkbox';
-import {
 import ArrowDownIcon from '@atlaskit/icon/core/arrow-down';
 import ArrowUpIcon from '@atlaskit/icon/core/arrow-up';
 import CheckCircleIcon from '@atlaskit/icon/core/check-circle';
@@ -19,6 +18,7 @@ import SearchIcon from '@atlaskit/icon/core/search';
 import ShowMoreHorizontalIcon from '@atlaskit/icon/core/show-more-horizontal';
 import SortAscendingIcon from '@atlaskit/icon/core/sort-ascending';
 import TrashIcon from '@atlaskit/icon/glyph/trash';
+import {
   Select,
   SelectContent,
   SelectItem,

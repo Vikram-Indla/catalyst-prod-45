@@ -7,7 +7,6 @@ import { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Lozenge } from '@/components/ads';
-import {
 import Spinner from '@atlaskit/spinner';
 import BriefcaseIcon from '@atlaskit/icon/core/briefcase';
 import CheckMarkIcon from '@atlaskit/icon/core/check-mark';
@@ -21,6 +20,7 @@ import ChevronDownIcon from '@atlaskit/icon/glyph/chevron-down';
 import CrossIcon from '@atlaskit/icon/glyph/cross';
 import LocationIcon from '@atlaskit/icon/glyph/location';
 import TrashIcon from '@atlaskit/icon/glyph/trash';
+import {
   Select,
   SelectContent,
   SelectItem,

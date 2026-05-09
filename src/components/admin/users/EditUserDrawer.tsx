@@ -1,5 +1,4 @@
 import { useState, useEffect, useMemo, memo } from 'react';
-import {
 import Spinner from '@atlaskit/spinner';
 import BriefcaseIcon from '@atlaskit/icon/core/briefcase';
 import CheckMarkIcon from '@atlaskit/icon/core/check-mark';
@@ -8,6 +7,7 @@ import PersonIcon from '@atlaskit/icon/core/person';
 import ChevronDownIcon from '@atlaskit/icon/glyph/chevron-down';
 import CrossIcon from '@atlaskit/icon/glyph/cross';
 import LocationIcon from '@atlaskit/icon/glyph/location';
+import {
   Sheet,
   SheetContent,
   SheetDescription,
