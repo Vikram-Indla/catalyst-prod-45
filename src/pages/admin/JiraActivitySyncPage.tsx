@@ -8,10 +8,9 @@ import { supabase } from '@/integrations/supabase/client';
 import { ArrowDownLeft, ArrowUpRight, RefreshCw, Search, Filter, Clock, CheckCircle2, XCircle, SkipForward, Loader2, AlertTriangle, ChevronDown } from 'lucide-react';
 import { StatusBadge } from '@/components/ui/StatusBadge';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
-import { Input } from '@/components/ui/input';
+import Textfield from '@atlaskit/textfield';
 import { formatDistanceToNowStrict, format } from 'date-fns';
 import { Tooltip } from '@/components/ads';
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 
 /* ── Types ──────────────────────────────────────────────── */
 interface SyncActivity {
@@ -108,18 +107,19 @@ function ChangedFieldsDetail({ fields }: { fields: Record<string, { from?: strin
   const entries = Object.entries(fields);
 
   return (
-    <Collapsible open={open} onOpenChange={setOpen}>
-      <CollapsibleTrigger asChild>
-        <button style={{
+    <div>
+      <button
+        onClick={() => setOpen(prev => !prev)}
+        style={{
           display: 'inline-flex', alignItems: 'center', gap: 4,
           fontSize: 11, color: 'var(--cp-blue, #2563EB)', cursor: 'pointer',
           background: 'none', border: 'none', padding: 0, fontWeight: 500,
-        }}>
-          {entries.length} field{entries.length > 1 ? 's' : ''} changed
-          <ChevronDown size={12} style={{ transform: open ? 'rotate(180deg)' : 'none', transition: 'transform 150ms' }} />
-        </button>
-      </CollapsibleTrigger>
-      <CollapsibleContent>
+        }}
+      >
+        {entries.length} field{entries.length > 1 ? 's' : ''} changed
+        <ChevronDown size={12} style={{ transform: open ? 'rotate(180deg)' : 'none', transition: 'transform 150ms' }} />
+      </button>
+      {open && (
         <div style={{ marginTop: 6, display: 'flex', flexDirection: 'column', gap: 3 }}>
           {entries.map(([field, val]) => (
             <div key={field} style={{ fontSize: 11, color: 'var(--cp-t2, #475569)', display: 'flex', gap: 4, alignItems: 'baseline' }}>
@@ -130,8 +130,8 @@ function ChangedFieldsDetail({ fields }: { fields: Record<string, { from?: strin
             </div>
           ))}
         </div>
-      </CollapsibleContent>
-    </Collapsible>
+      )}
+    </div>
   );
 }
 
@@ -293,11 +293,10 @@ export default function JiraActivitySyncPage() {
         {/* Search */}
         <div style={{ position: 'relative', width: 260 }}>
           <Search size={14} style={{ position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)', color: 'var(--cp-t3, #94A3B8)' }} />
-          <Input
+          <Textfield
             placeholder="Search key, title, project…"
             value={search}
-            onChange={e => setSearch(e.target.value)}
-            style={{ paddingLeft: 32, height: 32, fontSize: 13 }}
+            onChange={e => setSearch((e.target as HTMLInputElement).value)}
           />
         </div>
 
