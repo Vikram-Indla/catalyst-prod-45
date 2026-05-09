@@ -26,10 +26,8 @@ function Row({ label, children }: RowProps) {
       <div style={{ width: 140, flexShrink: 0 }}>
         <span
           style={{
-            fontSize: 12,
+            fontSize: 11,
             fontWeight: 600,
-            textTransform: 'uppercase',
-            letterSpacing: '0.04em',
             color: token('color.text.subtlest'),
           }}
         >
@@ -99,11 +97,13 @@ export function StepReview({ draft }: Props) {
         </Row>
         <Row label="Permissions">{SPACE_PERMISSION_LABEL[draft.permissionScheme]}</Row>
         <Row label="Visibility">
-          {draft.isPrivate ? (
-            <Lozenge appearance="moved">Private</Lozenge>
-          ) : (
-            <Lozenge appearance="default">Workspace</Lozenge>
-          )}
+          <span data-cp-lozenge-jira-parity>
+            {draft.isPrivate ? (
+              <Lozenge appearance="moved">Private</Lozenge>
+            ) : (
+              <Lozenge appearance="default">Workspace</Lozenge>
+            )}
+          </span>
         </Row>
         <Row label="Features">
           {enabledFeatures.length === 0
