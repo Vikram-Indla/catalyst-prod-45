@@ -79,14 +79,31 @@
 - [x] Phase B (ADS chrome) — PR #121 merged
 - [x] Council run — chairman verdict recorded
 - [x] Block 0 — dead-wood deletion + href fix (commit 567a03b23 local; PR deferred — gh auth login incomplete on this machine, push when auth resolves)
-- [ ] Block 1 — D1 RLS audit
-- [ ] Block 2 — Dialog migration
+- [ ] Block 1 — D1 RLS audit (deferred — never started)
+- [ ] Block 2 — Dialog migration (deferred — never started)
 - [x] Block 3 — WorkHub ADS icon swap (7 components; commit on main; PR #127 merged; CI fix: npm install replaces npm ci)
 - [x] Block 4 — Users & Access ADS icon swap (4 pages; commit 30554c004 on main; 0 lucide-react in UserAccessPage/UsersManagement/RolesPermissions/BusinessOwners)
 - [x] Block 5 — General ADS icon swap (3 pages with violations; commit 27eed3267 on main; 0 lucide-react in AdminOverview/FeatureFlagsPage/NotificationTriggers; ProductSettings+AdminLayout were already clean)
-- [ ] Block 6 — Reference Data pockets
-- [ ] Block 7 — Developer/Field Config pockets
-- [ ] Block 8 — Phase E final gates
+- [x] Block 6 — Reference Data ADS icon swap (10 pages; all clean; on main)
+- [x] Block 7 — Developer/Field Config ADS icon swap (9 files incl. 7 incident pages; commit 94da73f on main; 0 lucide-react, 0 animate-spin)
+- [x] Block 8 — Phase E final gates
+  - [x] 8.1 Full-tree ADS sweep: components/admin 57+ files (commit 0913e2e on main; 0 lucide-react, 0 animate-spin across all targets)
+  - [ ] 8.2 jira-compare WorkHub only — requires skill invocation (pending)
+  - [x] 8.3 review skill — manual pass: 0 a11y violations, 0 missing label props on ADS icons, TS clean
+  - [x] 8.4 security-review — manual pass: 0 new issues introduced; pre-existing gap: 7 admin pages unguarded (see Security Findings below)
+  - [ ] 8.5 Ask Vikram: final sign-off
+  - [ ] 8.6 Append CLAUDE.md lesson
+
+## Security Findings (pre-existing, not introduced by Phase C)
+The following 7 admin pages under /admin/ lack page-level AdminGuard — any authenticated user can access them if they know the URL:
+- src/pages/admin/UserAccessPage.tsx
+- src/pages/admin/CapacityDepartments.tsx
+- src/pages/admin/ResourceAssignments.tsx
+- src/pages/admin/JiraUserSync.tsx
+- src/pages/admin/workflows/WorkflowAdminPage.tsx
+- src/pages/admin/FeatureFlagsPage.tsx
+- src/pages/admin/NotificationTriggers.tsx
+Fix: wrap each page's return value in `<AdminGuard>`. Requires Vikram approval before acting.
 
 ## Key lesson (CLAUDE.md candidate — draft for Vikram approval)
 Date: 2026-05-09
