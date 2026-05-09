@@ -84,6 +84,67 @@ See parent preflight response for full table. Summary:
 - [x] P1-5: Column headers sentence-cased (Key/Name/Lead/Members/Sync); row 48.5px ✓; 2/2 deprecation tests green; browser verified
 - [x] P2-1..P2-6: ❌ CANCELLED — Notion removed from Projects scope entirely (Vikram directive 2026-05-09)
 
+## Closure Evidence
+
+Screenshots taken 2026-05-09 with SVG arrow annotations. Each arrow labels the specific change and what it replaced.
+
+---
+
+**SS-1 — List view · light mode · full sidebar (annotated)**
+`ss_1320e3u2n`
+- ↓ "Key" / "Name" / "Lead" / "Members" / "Sync" — sentence-case headers (were "KEY" / "NAME" / "LEAD" / "MEMBERS" / "SYNC")
+- ↓ ProjectIcon real icon in BAU row (was plain colour div)
+- ← 569 issues · 2026 filter — live Jira sync count (was wrong/stale)
+- ← "Not synced" state on unlinked projects (was showing bad counts)
+- ← AKDropdownMenu three-dots (was shadcn dead)
+- ↕ 48px rows (was 56px hardcoded)
+- ← Favourites ProjectIcon (was colour badge)
+- ← Two-line Recent: summary line 1 + KEY line 2 (was truncated single line)
+
+---
+
+**SS-2 — Sidebar expanded · Recent two-line layout (annotated)**
+`ss_155109pqq`
+- ← "Favourites" section label with gold star
+- ← ProjectIcon per favourite project (was colour badge eating width)
+- ← RECENT header + count (14 items)
+- ← Time bucket "TODAY" grouping (was flat unsorted list)
+- ← Summary line 1: full text 13px/500 — no more "Parity au..." truncation
+- ← KEY sub-line: 11px/mono/muted — was 64px KEY badge consuming the rail
+- ← "YESTERDAY" time bucket
+- ← X dismiss button on hover
+
+---
+
+**SS-3 — Dark mode · full sidebar (annotated)**
+`ss_2960ukt7f`
+- ↓ All ADS tokens render correctly in dark mode — no custom hex
+- ↓ Sentence-case headers persist in dark mode
+- ↓ Sync column uses ADS token colour in dark
+- ← ProjectIcon renders correctly in dark (ADS-compatible)
+- ← Recent section uses ADS token colours in dark
+
+---
+
+**SS-4 — Dark mode · three-dots button visible + Jira Sync indicator (annotated)**
+`ss_1768wrqpl`
+- ← ⋯ AKDropdownMenu button active/highlighted (was shadcn dead — no menu rendered)
+- ↓ ADS token colours confirmed dark mode
+- ← Recent section ADS tokens in dark
+- ↓ Jira Sync: Connected · live (2026 filter active)
+
+---
+
+**SS-5 — Sidebar collapsed · light mode · full-width table (annotated)**
+`ss_6751lvctn`
+- ← Sidebar collapsed — full table width gained (sidebar toggle working)
+- ↓ Sentence-case headers persist with no sidebar
+- ← ProjectIcon persists in collapsed layout
+- ↓ Light mode — all ADS tokens, no custom hex
+- ↓ Sync count live · 2026 filter confirmed
+
+---
+
 ## Key files
 - `src/components/projecthub/AllProjectsTable.tsx` — list view (1109 lines); three-dots at RowActionMenu; icons use getBadgeColor div (replace with ProjectIcon)
 - `src/components/projecthub/AllProjectsCardGrid.tsx` — card view (250 lines); REMOVE: RequestMetrics (line 8), PriorityChip, HealthChip, total_epics/stories/tasks grid, completion_percentage bar
