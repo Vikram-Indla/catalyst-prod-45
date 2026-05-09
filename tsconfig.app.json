@@ -19,7 +19,10 @@
     "paths": {
       "@/*": [
         "./src/*"
-      ]
+      ],
+      "@atlaskit/icon/core/*": ["./src/types/atlaskit-icon-shim.d.ts"],
+      "@atlaskit/icon/glyph/*": ["./src/types/atlaskit-icon-shim.d.ts"],
+      "@atlaskit/icon/utility/*": ["./src/types/atlaskit-icon-shim.d.ts"]
     },
     "skipLibCheck": true,
     "strict": false,
