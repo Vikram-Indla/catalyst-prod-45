@@ -901,62 +901,37 @@ export function CreateStoryModal({
                       defaultOptions
                       loadOptions={async (input: string) => {
                         // Bucket E (2026-05-09): parent types driven by PARENT_TYPE_RULES.
-                        // Two sources: ph_issues (Epic/Feature/Story) and
-                        // business_requests (Business Request).
+                        // All parent types — including 'Business Request' — live in ph_issues
+                        // for the BAU project (source='catalyst'|'jira', issue_type='Business Request').
+                        // The separate business_requests table is for the Demand Hub module and
+                        // is not used here (it is empty for project-hub BAU items).
                         if (!resolvedKey) return [];
                         const eligibleTypes = PARENT_TYPE_RULES[workType] ?? [];
                         if (eligibleTypes.length === 0) return [];
 
-                        const phTypes = eligibleTypes.filter(t => t !== 'Business Request');
-                        const needsBr = eligibleTypes.includes('Business Request');
                         const searchTerm = input.trim();
-
                         const results: IconOption[] = [];
 
-                        // ── ph_issues candidates (Epic / Feature / Story) ──
-                        if (phTypes.length > 0) {
-                          let q = supabase
-                            .from('ph_issues')
-                            .select('issue_key, summary, issue_type')
-                            .eq('project_key', resolvedKey)
-                            .in('issue_type', phTypes)
-                            .order('jira_updated_at', { ascending: false })
-                            .limit(30);
-                          if (searchTerm) {
-                            q = q.or(`issue_key.ilike.%${searchTerm}%,summary.ilike.%${searchTerm}%`);
-                          }
-                          const { data } = await q;
-                          (data ?? []).forEach((d: any) => {
-                            results.push({
-                              value: d.issue_key,
-                              label: d.summary,
-                              sublabel: d.issue_key,
-                              icon: <WorkItemTypeIcon type={d.issue_type} size={14} />,
-                            });
-                          });
+                        // All eligible parent types come from ph_issues for this project
+                        let q = supabase
+                          .from('ph_issues')
+                          .select('issue_key, summary, issue_type')
+                          .eq('project_key', resolvedKey)
+                          .in('issue_type', eligibleTypes)
+                          .order('jira_updated_at', { ascending: false })
+                          .limit(30);
+                        if (searchTerm) {
+                          q = q.or(`issue_key.ilike.%${searchTerm}%,summary.ilike.%${searchTerm}%`);
                         }
-
-                        // ── business_requests candidates ──
-                        if (needsBr) {
-                          let brQ = supabase
-                            .from('business_requests' as any)
-                            .select('request_key, title')
-                            .is('deleted_at', null)
-                            .order('updated_at', { ascending: false })
-                            .limit(20);
-                          if (searchTerm) {
-                            brQ = brQ.or(`request_key.ilike.%${searchTerm}%,title.ilike.%${searchTerm}%`);
-                          }
-                          const { data: brData } = await brQ;
-                          (brData ?? []).forEach((br: any) => {
-                            results.push({
-                              value: br.request_key,
-                              label: br.title,
-                              sublabel: br.request_key,
-                              icon: <WorkItemTypeIcon type="Business Request" size={14} />,
-                            });
+                        const { data } = await q;
+                        (data ?? []).forEach((d: any) => {
+                          results.push({
+                            value: d.issue_key,
+                            label: d.summary,
+                            sublabel: d.issue_key,
+                            icon: <WorkItemTypeIcon type={d.issue_type} size={14} />,
                           });
-                        }
+                        });
 
                         return results;
                       }}
