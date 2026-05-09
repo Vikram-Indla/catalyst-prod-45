@@ -11,6 +11,13 @@ const MAX_BYTES = 10 * 1024 * 1024;
 export interface UploadedImage {
   url: string;
   filename: string;
+  /**
+   * Path inside the Supabase Storage bucket (NOT a full URL). Lets the
+   * caller register the upload in a domain table (`ph_attachments`,
+   * `business_request_links`, …) so the attachments rail can find it
+   * later — same source of truth as inline body images.
+   */
+  storagePath: string;
   width?: number;
   height?: number;
 }
@@ -46,6 +53,7 @@ export async function uploadDescriptionImage(file: File, opts: UploadOptions): P
   return {
     url: data.publicUrl,
     filename: file.name || 'image',
+    storagePath: path,
     width: dims?.width,
     height: dims?.height,
   };

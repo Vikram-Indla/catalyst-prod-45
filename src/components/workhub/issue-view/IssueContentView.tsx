@@ -38,6 +38,7 @@ import { FlagPopover, isFlagged as checkFlagged, CloneWizard, MoveWizard, Archiv
 // AtlaskitBoundary removed along with it — no editor fallback path.
 import EpicDescriptionRenderer from '@/components/shared/rich-text/atlaskit/EpicDescriptionRenderer';
 import { isAdfEmpty } from '@/components/shared/rich-text/atlaskit/adfHelpers';
+import Spinner from '@atlaskit/spinner';
 /* §19 chokepoint — ALL user-avatar lookups on this surface resolve
    through `resolveAvatarUrl`. Never read `profiles.avatar_url`
    (Gravatar CDN, banned) and never display an external URL. */
@@ -655,8 +656,21 @@ export function IssueContentView({
                   <div style={{ position: 'relative', borderRadius: 3, backgroundColor: 'var(--ds-text-inverse, #FFFFFF)' }}>
                     <Suspense
                       fallback={
-                        <div style={{ minHeight: 150, padding: '8px 0', color: '#97A0AF', fontSize: 13 }}>
-                          Loading editor…
+                        <div
+                          style={{
+                            minHeight: 150,
+                            padding: '8px 0',
+                            color: 'var(--ds-text-subtlest, #626F86)',
+                            fontSize: 13,
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: 8,
+                          }}
+                          role="status"
+                          aria-live="polite"
+                        >
+                          <Spinner size="small" />
+                          <span>Loading editor…</span>
                         </div>
                       }
                     >
@@ -676,6 +690,29 @@ export function IssueContentView({
                         }}
                         onCancel={() => setDescEditMode(false)}
                         placeholder="Add a description..."
+                        onAttachmentUploaded={async (meta) => {
+                          // Body↔rail binding — see CatalystDescriptionSection
+                          // for the rationale. Both surfaces read from
+                          // `ph_attachments` so an inline image dropped here
+                          // appears in the rail's list immediately.
+                          if (!item?.id || !user?.id) return;
+                          const { error } = await (supabase as any)
+                            .from('ph_attachments')
+                            .insert({
+                              work_item_id: item.id,
+                              file_name: meta.fileName,
+                              file_size: meta.fileSize,
+                              mime_type: meta.mimeType,
+                              storage_path: meta.storagePath,
+                              uploaded_by: user.id,
+                            });
+                          if (error) {
+                            // eslint-disable-next-line no-console
+                            console.error('[IssueContentView] ph_attachments insert failed', error);
+                            return;
+                          }
+                          queryClient.invalidateQueries({ queryKey: ['ph-attachments', item.id] });
+                        }}
                       />
                     </Suspense>
                   </div>
