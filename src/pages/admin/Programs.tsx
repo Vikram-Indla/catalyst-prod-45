@@ -1,6 +1,5 @@
 import { AdminGuard } from '@/components/admin/AdminGuard';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
+import Button from '@atlaskit/button/new';
 
 /**
  * Programs Management Page - Manage programs in the organization
@@ -8,32 +7,32 @@ import { Button } from '@/components/ui/button';
 export default function Programs() {
   return (
     <AdminGuard>
-      <div className="h-full flex flex-col bg-background">
-        <div className="flex items-center justify-between border-b bg-card px-6 py-4">
+      <div className="h-full flex flex-col" style={{ background: 'var(--ds-background-neutral, #F7F8F9)' }}>
+        <div className="flex items-center justify-between px-6 py-4" style={{ background: 'var(--ds-surface, #FFFFFF)', borderBottom: '1px solid var(--ds-border, #DCDFE4)' }}>
           <div>
-            <h1 className="text-2xl font-semibold text-foreground">Programs</h1>
-            <p className="text-sm text-muted-foreground mt-1">
+            <h1 className="text-2xl font-semibold" style={{ color: 'var(--ds-text, #172B4D)' }}>Programs</h1>
+            <p className="text-sm mt-1" style={{ color: 'var(--ds-text-subtle, #44546F)' }}>
               Manage programs and their configurations.
             </p>
           </div>
-          <Button variant="default" className="bg-brand-primary hover:bg-brand-primary-hover">
+          <Button appearance="primary">
             Add Program
           </Button>
         </div>
         <div className="flex-1 overflow-auto p-6 space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>Program Management</CardTitle>
-              <CardDescription>
+          <div style={{ background: 'var(--ds-surface, #FFFFFF)', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px', padding: '16px' }}>
+            <div style={{ marginBottom: '4px' }}>
+              <h2 className="text-base font-medium" style={{ color: 'var(--ds-text, #172B4D)' }}>Program Management</h2>
+              <p className="text-sm" style={{ color: 'var(--ds-text-subtle, #44546F)' }}>
                 Create and manage programs across your organization.
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm text-muted-foreground">
+              </p>
+            </div>
+            <div style={{ marginTop: '12px' }}>
+              <p className="text-sm" style={{ color: 'var(--ds-text-subtle, #44546F)' }}>
                 Program management functionality coming soon.
               </p>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
         </div>
       </div>
     </AdminGuard>
