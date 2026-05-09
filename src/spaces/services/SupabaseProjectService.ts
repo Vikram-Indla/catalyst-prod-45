@@ -74,48 +74,20 @@ export class SupabaseProjectService implements SpaceService {
     if (authError || !authData?.user) {
       throw SpaceError.http(401, 'You must be signed in to create a project', authError);
     }
-    const userId = authData.user.id;
 
-    const { data, error } = await supabase.functions.invoke<{
-      id: string;
-      name: string;
-      key: string;
-      description: string | null;
-      department: string | null;
-      created_at: string;
-      error?: string;
-    }>('create-project', {
+    const { data, error } = await supabase.functions.invoke('create-project', {
       body: {
         name: req.name.trim(),
         key: req.key.toUpperCase(),
         department: PURPOSE_TO_DEPARTMENT[req.purpose] ?? null,
         description: req.description?.trim() || null,
-        user_id: userId,
+        user_id: authData.user.id,
       },
     });
 
-    if (error) {
-      // FunctionsHttpError exposes the response on `error.context`.
-      const ctx = (error as { context?: Response }).context;
-      if (ctx && typeof ctx.json === 'function') {
-        try {
-          const payload = await ctx.json();
-          if (ctx.status === 409 || payload?.error === 'key_not_unique') {
-            throw SpaceError.keyNotUnique(req.key);
-          }
-          throw SpaceError.http(ctx.status || 500, payload?.error || error.message, error);
-        } catch (parseErr) {
-          if (parseErr instanceof SpaceError) throw parseErr;
-        }
-      }
-      throw SpaceError.http(500, error.message || 'Failed to create project', error);
-    }
-
-    if (!data || data.error) {
-      if (data?.error === 'key_not_unique') {
-        throw SpaceError.keyNotUnique(req.key);
-      }
-      throw SpaceError.unknown(data?.error || 'create-project returned no data');
+    if (error || !data) {
+      if ((data as { error?: string } | null)?.error === 'key_not_unique') throw SpaceError.keyNotUnique(req.key);
+      throw SpaceError.http(500, error?.message || 'Failed to create project', error);
     }
 
     return {
