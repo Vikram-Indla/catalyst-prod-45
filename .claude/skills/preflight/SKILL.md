@@ -30,6 +30,35 @@ You are the pre-flight planner for Catalyst. Your job is not to execute the task
 
 6. If the task body says "ship" or "merge" but classification is high-stake AND no Phase 1 council has been run for this surface in the last week of `active/` transcripts, halt and warn. Run with `--council` first.
 
+## Phase 0.5 — 500-IQ Design Intelligence Brief (fires on all UI surfaces, before council)
+
+When surface ∈ `{ui-feature, ui-bug-fix, ui-refactor, design-only, cross-cutting}`:
+
+1. **Run `design-intelligence` skill v2 (500-IQ)** — produces a structured brief with all 7 Foundation Council lenses:
+   - **Saffer** — microinteraction anatomy for every interactive element (Trigger→Rules→Feedback→Loops)
+   - **Tufte** — data-ink ratio audit (chartjunk elimination)
+   - **Rams** — 10 Principles of Good Design compliance
+   - **Norman** — affordances, signifiers, conceptual model check
+   - **Ive** — reduction audit + transition choreography prescription (ease-out expand, ease-in collapse)
+   - **Raskin** — Hick's Law (> 7 choices = P1), Fitts' Law (< 24px targets = P1), mode inventory
+   - **Cooper** — goal-directed persona analysis, empty state CTA check
+   - Canonical component audit (flags ❌ before code is written)
+   - Jira parity gap → opportunity map (MATCH / EXCEED / SKIP per gap)
+   - AI use cases specific to this surface (1–3, from the skill's AI library)
+   - Sibling surface standardisation check (5 nearest surfaces)
+   - Design Elevation Score pre-build (/15)
+   - Blocking findings list
+
+2. **Halt if Design Elevation Score < 11/15.** Redesign the surface before proceeding.
+
+3. **Blocking findings from any council lens become mandatory Phase 2 rows.** They are constraints, not options.
+
+4. **AI use cases at P1 priority become Phase 2 rows.** P2 use cases become Phase 5 Open Items.
+
+5. **The brief is the first document in every Phase 1 council prompt.** Advisors must ground their input in it — generic takes without council lens evidence are rejected. The chairman MUST cite at least one of the 7 lens findings in the verdict.
+
+This phase fires even when council is skipped (trivial/standard without --council). The brief is always produced.
+
 ## Phase 1 — Council (conditional)
 
 - **Trivial** → skip. Go to Phase 2.
@@ -38,6 +67,7 @@ You are the pre-flight planner for Catalyst. Your job is not to execute the task
 - **High-stake** → full 5-advisor (Contrarian, First Principles, Expansionist, Outsider, Executor) + anonymized peer review (3 reviewers minimum) + chairman verdict. Use the protocol from `~/.claude/skills/llm-council/SKILL.md` if installed; otherwise inline the prompts.
 
 The chairman verdict MUST reject any plan that omits an `ads-validator` gate when the task touches UI. This is non-negotiable.
+The chairman verdict MUST cite at least one finding from the design-intelligence brief. An evidence-free council verdict is rejected.
 
 ## Phase 2 — Plan synthesis (always runs)
 
@@ -63,6 +93,7 @@ Produce an ordered task list. Every row has six columns. Use the markdown table 
 
 ### Mandatory rows (the planner inserts these even if not asked)
 
+- A **design-intelligence brief** row as the first row for any UI-touching task (Phase 0.5 output, blocking findings become subsequent rows).
 - A **failing test** row before any implementation row (TDD non-negotiable, CLAUDE.md).
 - An **ads-validator** row before any UI merge.
 - An **ask Vikram** row before any add/remove of user-visible fields/components.
@@ -78,6 +109,25 @@ Execution graph with explicit branch points was originally proposed here. Cut: m
 ## Phase 4 — Visual aid (delegated)
 
 When the surface is `ui-feature`, `design-only`, or `cross-cutting` with a UI component, the relevant Phase 2 row may invoke `mcp__visualize__show_widget` to produce a before/after mockup. This is a callable from within the plan, not a phase of preflight itself.
+
+## Phase 6 — Closure Evidence (mandatory when a module or phase is closed)
+
+When the user declares a module, phase, or feature "done", "closed", "remove from scope", or any equivalent closure signal, **before committing or replying "done"**:
+
+1. **Take maximum visual screenshots** of every distinct view/state the module owns:
+   - Default view (list/table)
+   - Any alternate views (card, kanban, etc.) — even if deprecated, screenshot the removal evidence (empty state or 404)
+   - Sidebar in expanded + collapsed state
+   - Any flyout panels, modals, or popovers that are part of the module
+   - Dark mode if the app supports it
+2. **Inject SVG arrow annotations directly on the live page** (↓ ← → ↑) via `javascript_tool` — arrows point at each changed element, each labelled with before/after: `← sentence-case headers (was UPPERCASE)`. Raw screenshots with no arrows are **rejected**.
+3. **Display each annotated screenshot inline in the chat** using the `computer` screenshot action. The image appears directly in the conversation — the chat session IS the artefact. No file export, no folder, no disk storage needed.
+4. **One text caption per screenshot** in the chat: route · what view · what changed · what it replaced.
+5. **Update the handover** under `## Closure Evidence` with the caption list only — visuals live in the chat session above, not in files.
+
+This is non-negotiable. A closure with no annotated screenshots is an unverified closure. The arrows and labels must exist before the module is considered formally closed.
+
+---
 
 ## Phase 5 — Handover (always prepares; writes incrementally)
 

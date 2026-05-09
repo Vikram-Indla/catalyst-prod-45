@@ -79,6 +79,26 @@ This envelope is appended to the Phase 1 council prompt. Every advisor receives 
 - Probe primitive failed (e.g., Chrome MCP unreachable) → halt. Surface the failure to user, don't substitute with assumption.
 - Schema probe returns "field not in screen scheme" for a field the task wants to add → halt. CLAUDE.md anti-pattern #18 — schema-probe before field add.
 
+### 500-IQ Design Intelligence Brief (mandatory sub-step of Phase 0.5 for all UI surfaces)
+
+After evidence acquisition probes complete, run `design-intelligence` skill v2 (500-IQ). Produces a Foundation Council Brief with all 7 lens analyses:
+
+- **Saffer** — microinteraction anatomy (Trigger→Rules→Feedback→Loops) for every interactive element
+- **Tufte** — data-ink ratio audit, chartjunk flagging
+- **Rams** — 10 Principles compliance (especially Principle 8: thorough error states; Principle 10: minimum design)
+- **Norman** — affordances, signifiers, false affordances, async feedback gaps
+- **Ive** — reduction audit, transition choreography (ease-out expand, ease-in collapse, stagger sequences)
+- **Raskin** — Hick's Law (> 7 choices = P1), Fitts' Law, mode inventory with visual indicator check
+- **Cooper** — goal-directed persona analysis, task vs goal labeling, empty state CTA audit
+- Canonical component audit (❌ = halt)
+- Jira parity gap → opportunity map (MATCH / EXCEED / SKIP)
+- AI use cases specific to this surface (P1 → Phase 2 rows, P2 → Phase 5 Open Items)
+- Sibling surface standardisation check (5 nearest siblings)
+- Design Elevation Score /15 (< 11 = halt, redesign)
+- Blocking findings from any of the 7 lenses (become mandatory Phase 2 rows)
+
+The brief is the first document every Phase 1 council advisor receives. The chairman MUST cite at least one of the 7 lens findings in the verdict. Evidence-free council verdicts are rejected.
+
 ## Phase 1 — Council (conditional)
 
 - **Trivial** → skip. Go to Phase 2.
@@ -121,6 +141,7 @@ Produce an ordered task list. Every row has six columns. Use the markdown table 
 
 ### Mandatory rows (the planner inserts these even if not asked)
 
+- A **design-intelligence brief** row as row 0 for any UI-touching task — blocking findings from the brief become the next rows.
 - A **failing test** row before any implementation row (TDD non-negotiable, CLAUDE.md).
 - An **ads-validator** row before any UI merge.
 - An **ask Vikram** row before any add/remove of user-visible fields/components.
@@ -138,6 +159,25 @@ Execution graph with explicit branch points was originally proposed here. Cut: m
 ## Phase 4 — Visual aid (delegated)
 
 When the surface is `ui-feature`, `design-only`, or `cross-cutting` with a UI component, the relevant Phase 2 row may invoke `mcp__visualize__show_widget` to produce a before/after mockup. This is a callable from within the plan, not a phase of preflight itself.
+
+## Phase 6 — Closure Evidence (mandatory when a module or phase is closed)
+
+When the user declares a module, phase, or feature "done", "closed", "remove from scope", or any equivalent closure signal, **before committing or replying "done"**:
+
+1. **Take maximum visual screenshots** of every distinct view/state the module owns:
+   - Default view (list/table)
+   - Any alternate views (card, kanban, etc.) — even if deprecated, screenshot the removal evidence (empty state or 404)
+   - Sidebar in expanded + collapsed state
+   - Any flyout panels, modals, or popovers that are part of the module
+   - Dark mode if the app supports it
+2. **Inject SVG arrow annotations directly on the live page** (↓ ← → ↑) via `javascript_tool` — arrows point at each changed element, each labelled with before/after: `← sentence-case headers (was UPPERCASE)`. Raw screenshots with no arrows are **rejected**.
+3. **Display each annotated screenshot inline in the chat** using the `computer` screenshot action. The image appears directly in the conversation — the chat session IS the artefact. No file export, no folder, no disk storage needed.
+4. **One text caption per screenshot** in the chat: route · what view · what changed · what it replaced.
+5. **Update the handover** under `## Closure Evidence` with the caption list only — visuals live in the chat session above, not in files.
+
+This is non-negotiable. A closure with no annotated screenshots is an unverified closure. The arrows and labels must exist before the module is considered formally closed.
+
+---
 
 ## Phase 5 — Handover (always prepares; writes incrementally)
 

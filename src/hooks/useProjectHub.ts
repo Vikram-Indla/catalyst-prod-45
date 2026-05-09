@@ -34,29 +34,44 @@ export function useProjects() {
         .order('name', { ascending: true });
 
       if (error) throw new Error(`Failed to fetch projects: ${error.message}`);
-      // Exclude non-ProjectHub/legacy keys from the ProjectHub listing
       const excludedProjectKeys = new Set(['TH-DEFAULT', 'MDT']);
 
       const projectData = ((data ?? []) as ProjectListItem[]).filter(
         (p) => !excludedProjectKeys.has(p.project_key)
       );
 
-      // Parallel fetch of project_scores; merge by project_id
-      const scoreMap = new Map<string, number>();
-      if (projectData.length > 0) {
-        const ids = projectData.map((p) => p.id);
-        const { data: scoreRows } = await (supabase as any)
+      if (projectData.length === 0) return [];
+
+      const keys = projectData.map((p) => p.project_key);
+
+      // Parallel fetches: scores + icon data (avatar_url, color) from projects table
+      const [scoreResult, iconResult] = await Promise.all([
+        (supabase as any)
           .from('project_scores')
           .select('project_id, computed_score')
-          .in('project_id', ids);
-        for (const row of (scoreRows ?? []) as Array<{ project_id: string; computed_score: number | null }>) {
-          if (row.computed_score != null) scoreMap.set(row.project_id, Number(row.computed_score));
-        }
+          .in('project_id', projectData.map((p) => p.id)),
+        supabase
+          .from('projects')
+          .select('key, avatar_url, color')
+          .in('key', keys),
+      ]);
+
+      const scoreMap = new Map<string, number>();
+      for (const row of (scoreResult.data ?? []) as Array<{ project_id: string; computed_score: number | null }>) {
+        if (row.computed_score != null) scoreMap.set(row.project_id, Number(row.computed_score));
+      }
+
+      // icon fields: keyed by project key (projects.key = v_project_list.project_key)
+      const iconMap = new Map<string, { avatar_url: string | null; color: string | null }>();
+      for (const row of (iconResult.data ?? []) as Array<{ key: string; avatar_url: string | null; color: string | null }>) {
+        iconMap.set(row.key, { avatar_url: row.avatar_url, color: row.color });
       }
 
       return projectData.map((row) => ({
         ...row,
         computed_score: scoreMap.get(row.id) ?? null,
+        icon_avatar_url: iconMap.get(row.project_key)?.avatar_url ?? null,
+        icon_color: iconMap.get(row.project_key)?.color ?? null,
       }));
     },
     staleTime: 60_000,

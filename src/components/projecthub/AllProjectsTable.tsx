@@ -1116,7 +1116,10 @@ export function AllProjectsTable({
               <Tooltip content={syncTooltipText} position="top">
                 <span className={cn("w-2 h-2 rounded-full flex-shrink-0 cursor-help", syncDotColor)} />
               </Tooltip>
-              <span style={{ fontWeight: 500, color: syncAge ? token('color.text') : token('color.text.subtlest') }}>
+              <span
+                style={{ fontWeight: 500, color: syncAge ? token('color.text') : token('color.text.subtlest'), cursor: syncAge ? 'default' : 'help' }}
+                title={syncAge ? undefined : 'Jira not connected for this project — go to Project Settings to link Jira'}
+              >
                 {syncAge ? `${issueCount} issues · ${syncAge}` : 'Not synced'}
               </span>
             </div>
