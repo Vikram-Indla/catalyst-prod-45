@@ -1,5 +1,8 @@
 import { useEffect, useState, useRef, useCallback } from 'react';
-import { X, Check, AlertCircle, Loader2, Circle } from 'lucide-react';
+import Spinner from '@atlaskit/spinner';
+import CloseIcon from '@atlaskit/icon/core/close';
+import CheckMarkIcon from '@atlaskit/icon/core/check-mark';
+import ErrorIcon from '@atlaskit/icon/core/error';
 
 interface CheckResult {
   name: string;
@@ -111,7 +114,7 @@ export function TestConnectionModal({ isOpen, onClose, checks, isRunning, error 
               color: 'var(--wh-tx3)', padding: 4,
             }}
           >
-            <X style={{ width: 18, height: 18 }} />
+            <CloseIcon label="Close dialog" size="small" />
           </button>
         </div>
 
@@ -148,13 +151,13 @@ export function TestConnectionModal({ isOpen, onClose, checks, isRunning, error 
                   {/* Icon */}
                   <div style={{ width: 22, height: 22, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                     {check?.passed && isRevealed ? (
-                      <Check style={{ width: 18, height: 18, color: 'var(--wh-suc)' }} />
+                      <span style={{ color: 'var(--wh-suc)', display: 'flex' }}><CheckMarkIcon label="" size="small" /></span>
                     ) : check && !check.passed && isRevealed ? (
-                      <AlertCircle style={{ width: 18, height: 18, color: 'var(--wh-dng)' }} />
+                      <span style={{ color: 'var(--wh-dng)', display: 'flex' }}><ErrorIcon label="" size="small" /></span>
                     ) : isCurrentlyRunning ? (
-                      <Loader2 style={{ width: 18, height: 18, color: 'var(--wh-pri)', animation: 'spin 1s linear infinite' }} />
+                      <Spinner size="small" />
                     ) : (
-                      <Circle style={{ width: 16, height: 16, color: 'var(--wh-tx4)' }} />
+                      <span style={{ width: 16, height: 16, borderRadius: '50%', border: '2px solid var(--wh-tx4)', display: 'inline-block', flexShrink: 0 }} />
                     )}
                   </div>
 

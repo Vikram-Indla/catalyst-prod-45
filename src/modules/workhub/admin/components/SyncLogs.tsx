@@ -1,5 +1,15 @@
 import { useState, useEffect, useMemo } from 'react'
-import { Loader2, CheckCircle2, XCircle, AlertTriangle, Clock, RefreshCw, Trash2, Filter, ChevronDown, ChevronRight, Save } from 'lucide-react'
+import Spinner from '@atlaskit/spinner';
+import CheckCircleIcon from '@atlaskit/icon/core/check-circle';
+import CrossCircleIcon from '@atlaskit/icon/core/cross-circle';
+import WarningIcon from '@atlaskit/icon/core/warning';
+import ClockIcon from '@atlaskit/icon/core/clock';
+import RefreshIcon from '@atlaskit/icon/core/refresh';
+import DeleteIcon from '@atlaskit/icon/core/delete';
+import FilterIcon from '@atlaskit/icon/core/filter';
+import DownloadIcon from '@atlaskit/icon/core/download';
+import ChevronDownIcon from '@atlaskit/icon/glyph/chevron-down';
+import ChevronRightIcon from '@atlaskit/icon/glyph/chevron-right';
 import { toast } from 'sonner'
 import { formatDistanceToNow } from 'date-fns'
 import {
@@ -179,7 +189,7 @@ export function SyncLogs() {
       {/* Error Banner */}
       {syncStatus === 'error' && lastError && (
         <div style={{ background: 'var(--ds-background-danger, #FEF2F2)', border: '1px solid #FCA5A5', borderRadius: '8px', padding: '16px 20px', display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
-          <XCircle style={{ width: 20, height: 20, color: 'var(--ds-text-danger, #EF4444)', flexShrink: 0, marginTop: 2 }} />
+          <span style={{ flexShrink: 0, marginTop: 2, display: 'flex', color: 'var(--ds-text-danger, #EF4444)' }}><CrossCircleIcon label="" size="small" /></span>
           <div>
             <div style={{ fontFamily: 'var(--cp-font-heading)', fontWeight: 600, fontSize: '13px', color: 'var(--ds-text-danger, #EF4444)' }}>Sync Failed</div>
             <div style={{ fontSize: '12px', color: 'var(--ds-text-subtle, #334155)', marginTop: '4px' }}>{lastError.error_message || 'An unknown error occurred.'}</div>
@@ -197,7 +207,7 @@ export function SyncLogs() {
           }}
         >
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <Filter size={14} style={{ color: 'var(--ds-text-subtlest, #64748B)' }} />
+            <FilterIcon label="" size="small" />
             <span style={{ fontFamily: 'var(--cp-font-heading)', fontSize: '13px', fontWeight: 700, color: 'var(--fg-1, #0F172A)' }}>
               Sync Filters
             </span>
@@ -207,7 +217,10 @@ export function SyncLogs() {
               </span>
             )}
           </div>
-          {filtersOpen ? <ChevronDown size={14} style={{ color: 'var(--ds-text-subtlest, #94A3B8)' }} /> : <ChevronRight size={14} style={{ color: 'var(--ds-text-subtlest, #94A3B8)' }} />}
+          {filtersOpen
+            ? <span style={{ color: 'var(--ds-text-subtlest, #94A3B8)', display: 'inline-flex' }}><ChevronDownIcon label="" size="small" /></span>
+            : <span style={{ color: 'var(--ds-text-subtlest, #94A3B8)', display: 'inline-flex' }}><ChevronRightIcon label="" size="small" /></span>
+          }
         </button>
 
         {filtersOpen && (
@@ -291,7 +304,7 @@ export function SyncLogs() {
                   cursor: saveFilters.isPending ? 'not-allowed' : 'pointer', fontFamily: 'var(--cp-font-body)',
                 }}
               >
-                <Save size={13} />
+                <DownloadIcon label="" size="small" />
                 {saveFilters.isPending ? 'Saving…' : 'Save Filter Settings'}
               </button>
             </div>
@@ -313,7 +326,7 @@ export function SyncLogs() {
             fontFamily: 'var(--cp-font-body)',
           }}
         >
-          {isSyncing ? <Loader2 size={14} className="animate-spin" /> : <RefreshCw size={14} />}
+          {isSyncing ? <Spinner size="small" /> : <RefreshIcon label="" size="small" />}
           {isSyncing ? 'Syncing…' : 'Sync with Filters'}
         </button>
         {hasFilters && !isSyncing && (
@@ -376,7 +389,7 @@ export function SyncLogs() {
               fontSize: '12px', fontWeight: 600, cursor: 'pointer', fontFamily: 'var(--cp-font-body)',
             }}
           >
-            <Trash2 size={14} />
+            <DeleteIcon label="" size="small" />
             Clear Error & Retry
           </button>
         )}
@@ -427,10 +440,10 @@ export function SyncLogs() {
             ))}
           </div>
           {logsLoading ? (
-            <div style={{ padding: '40px', textAlign: 'center' }}><Loader2 size={20} className="animate-spin" style={{ color: 'var(--ds-text-subtlest, #94A3B8)', margin: '0 auto' }} /></div>
+            <div style={{ padding: '40px', textAlign: 'center', display: 'flex', justifyContent: 'center' }}><Spinner size="medium" /></div>
           ) : !logs || logs.length === 0 ? (
             <div style={{ padding: '40px', textAlign: 'center', color: 'var(--ds-text-subtlest, #94A3B8)', fontSize: '13px' }}>
-              <Clock size={24} style={{ margin: '0 auto 8px', color: 'var(--ds-text-disabled, #CBD5E1)' }} />
+              <span style={{ display: 'flex', justifyContent: 'center', marginBottom: 8, color: 'var(--ds-text-disabled, #CBD5E1)' }}><ClockIcon label="" size="medium" /></span>
               No sync runs yet. Click "Force Sync Now" to run the first sync.
             </div>
           ) : (
@@ -446,10 +459,10 @@ function HealthBox({ label, value, valueColor, loading, spinning }: { label: str
   return (
     <div style={{ background: 'var(--bg-1, #F8FAFC)', border: '1px solid var(--bd-default, #E2E8F0)', borderRadius: '6px', padding: '14px', textAlign: 'center' }}>
       {loading ? (
-        <Loader2 size={18} className="animate-spin" style={{ color: 'var(--ds-text-subtlest, #94A3B8)', margin: '0 auto 4px' }} />
+        <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 4 }}><Spinner size="medium" /></div>
       ) : (
         <div style={{ fontFamily: 'var(--cp-font-heading)', fontSize: '18px', fontWeight: 700, color: valueColor, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
-          {spinning && <Loader2 size={14} className="animate-spin" />}
+          {spinning && <Spinner size="small" />}
           {value}
         </div>
       )}
