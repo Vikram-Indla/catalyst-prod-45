@@ -34,7 +34,7 @@
     "@atlaskit/drawer": "^12.0.7",
     "@atlaskit/dropdown-menu": "^13.1.0",
     "@atlaskit/dynamic-table": "^18.4.0",
-    "@atlaskit/editor-common": "^112.19.0",
+    "@atlaskit/editor-common": "^112.22.0",
     "@atlaskit/editor-core": "^217.12.4",
     "@atlaskit/editor-toolbar": "^1.0.8",
     "@atlaskit/empty-state": "^10.2.0",

@@ -170,6 +170,10 @@ export default defineConfig(({ mode, command }) => {
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
+      // @atlaskit/portal v5.5.1 (nested) imports this subpath which doesn't
+      // exist as a package export in @atlaskit/app-provider@4.3.0. Point it
+      // directly to the ESM implementation file so Vite can resolve it.
+      "@atlaskit/app-provider/use-is-inside-theme-provider": path.resolve(__dirname, "./node_modules/@atlaskit/app-provider/dist/esm/theme-provider/hooks/use-is-inside-theme-provider.js"),
       "react": path.resolve(__dirname, "./node_modules/react"),
       "react-dom": path.resolve(__dirname, "./node_modules/react-dom"),
       "react-is": path.resolve(__dirname, "./node_modules/react-is"),
