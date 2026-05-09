@@ -1,0 +1,10 @@
+{
+  "name": "preflight",
+  "version": "0.1.0",
+  "description": "Universal pre-flight planner for Catalyst engineering tasks. Classifies tasks as trivial/standard/high-stake, acquires evidence via probe primitives (jira-compare, Atlassian MCP, ads-validator), runs 5-advisor council deliberation when warranted, and produces phased plans with mandatory ADS/TDD/ask-before-add gates and re-probe loops. Replaces ad-hoc planning at session start.",
+  "author": {
+    "name": "Vikram Indla"
+  },
+  "keywords": ["catalyst", "planning", "council", "ads", "jira-parity", "preflight", "atlassian", "tdd"],
+  "license": "MIT"
+}

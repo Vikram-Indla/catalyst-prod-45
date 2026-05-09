@@ -2,7 +2,7 @@
  * useCreateStory — Hook for creating stories in catalyst_issues.
  * Handles key generation, form state, and submission.
  */
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
@@ -404,12 +404,27 @@ export function setLastProjectId(userId: string | undefined, projectId: string) 
 
 export function useCreateStoryForm(defaultProjectId?: string) {
   const { user } = useAuth();
-  const rememberedProjectId = getLastProjectId(user?.id);
 
   const [form, setForm] = useState<CreateStoryFormData>({
     ...INITIAL_FORM,
-    projectId: defaultProjectId ?? rememberedProjectId ?? '',
+    // user may be null on first render (auth async); effect below will hydrate
+    // once user is available. defaultProjectId takes priority over localStorage.
+    projectId: defaultProjectId ?? '',
   });
+
+  // Once user is resolved, apply the remembered project — but only if no
+  // defaultProjectId was given and the form still has no project set.
+  const [rememberedApplied, setRememberedApplied] = useState(false);
+  useEffect(() => {
+    if (rememberedApplied) return;
+    if (!user?.id) return;
+    if (defaultProjectId) { setRememberedApplied(true); return; }
+    const remembered = getLastProjectId(user.id);
+    if (remembered) {
+      setForm(prev => prev.projectId ? prev : { ...prev, projectId: remembered });
+    }
+    setRememberedApplied(true);
+  }, [user?.id, defaultProjectId, rememberedApplied]);
 
   const updateField = useCallback(<K extends keyof CreateStoryFormData>(
     key: K, value: CreateStoryFormData[K]
@@ -430,6 +445,9 @@ export function useCreateStoryForm(defaultProjectId?: string) {
       projectId: keepProject ? prev.projectId : '',
       reporterId: keepProject ? prev.reporterId : null,
     }));
+    // Allow the remembered-project effect to re-fire so the next modal
+    // open pre-selects the last-used project again.
+    if (!keepProject) setRememberedApplied(false);
   }, []);
 
   return { form, updateField, reset, setForm };

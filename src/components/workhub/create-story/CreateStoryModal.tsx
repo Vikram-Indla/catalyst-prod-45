@@ -49,7 +49,9 @@ import Select, { AsyncSelect, CreatableSelect } from '@atlaskit/select';
 import Textfield from '@atlaskit/textfield';
 import TextArea from '@atlaskit/textarea';
 import { Checkbox } from '@atlaskit/checkbox';
+import Avatar from '@atlaskit/avatar';
 import Button, { IconButton } from '@atlaskit/button/new';
+import DropdownMenu, { DropdownItem, DropdownItemGroup } from '@atlaskit/dropdown-menu';
 import Lozenge from '@atlaskit/lozenge';
 import { Box, Stack, Inline, xcss } from '@atlaskit/primitives';
 import { token } from '@atlaskit/tokens';
@@ -58,7 +60,6 @@ import EditorCloseIcon from '@atlaskit/icon/glyph/editor/close';
 import VidFullScreenOnIcon from '@atlaskit/icon/glyph/vid-full-screen-on';
 import VidFullScreenOffIcon from '@atlaskit/icon/glyph/vid-full-screen-off';
 import MoreIcon from '@atlaskit/icon/glyph/more';
-import ShortcutIcon from '@atlaskit/icon/glyph/shortcut';
 
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -234,16 +235,6 @@ const dividerStyles = xcss({
   marginBlock: 'space.100',
 });
 
-const helperLinkStyles = xcss({
-  display: 'inline-flex',
-  alignItems: 'center',
-  gap: 'space.050',
-  marginTop: 'space.075',
-  font: 'font.body.small',
-  color: 'color.link',
-  textDecoration: 'none',
-});
-
 
 const footerLeftStyles = xcss({
   display: 'flex',
@@ -328,79 +319,27 @@ function FullscreenToggleButton() {
   );
 }
 
-// ── MoreActionsButton — opens a small dropdown with help/feedback actions ────
+// ── MoreActionsButton — @atlaskit/dropdown-menu (canonical ADS primitive) ────
 function MoreActionsButton() {
-  const [open, setOpen] = useState(false);
-  const ref = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (!open) return;
-    const handler = (e: MouseEvent) => {
-      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
-    };
-    document.addEventListener('mousedown', handler);
-    return () => document.removeEventListener('mousedown', handler);
-  }, [open]);
-
-  const items = [
-    { label: 'Give feedback', action: () => window.open('https://jira.atlassian.com/secure/CreateIssue.jspa', '_blank', 'noopener') },
-    { label: 'Help', action: () => window.open('https://support.atlassian.com/jira-software-cloud/', '_blank', 'noopener') },
-  ];
-
   return (
-    <div ref={ref} style={{ position: 'relative', display: 'inline-block' }}>
-      <IconButton
-        appearance="subtle"
-        spacing="default"
-        label="More actions"
-        icon={(iconProps) => <MoreIcon {...iconProps} label="" />}
-        onClick={() => setOpen(o => !o)}
-        isSelected={open}
-      />
-      {open && (
-        <div
-          role="menu"
-          style={{
-            position: 'absolute',
-            top: '100%',
-            right: 0,
-            marginTop: 4,
-            background: token('elevation.surface.overlay', '#FFF'),
-            border: `1px solid ${token('color.border', '#DFE1E6')}`,
-            borderRadius: 4,
-            boxShadow: '0 4px 12px rgba(9,30,66,0.15)',
-            minWidth: 160,
-            padding: '4px 0',
-            zIndex: 10,
-          }}
-        >
-          {items.map(item => (
-            <button
-              key={item.label}
-              role="menuitem"
-              type="button"
-              onClick={() => { item.action(); setOpen(false); }}
-              style={{
-                display: 'block',
-                width: '100%',
-                padding: '8px 14px',
-                background: 'transparent',
-                border: 'none',
-                cursor: 'pointer',
-                fontFamily: 'var(--cp-font-body)',
-                fontSize: 14,
-                color: token('color.text', '#292A2E'),
-                textAlign: 'left',
-              }}
-              onMouseEnter={e => (e.currentTarget.style.background = token('color.background.neutral.hovered', 'rgba(9,30,66,0.06)'))}
-              onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
-            >
-              {item.label}
-            </button>
-          ))}
-        </div>
+    <DropdownMenu
+      trigger={({ triggerRef, ...triggerProps }) => (
+        <IconButton
+          {...triggerProps}
+          ref={triggerRef}
+          appearance="subtle"
+          spacing="default"
+          label="More actions"
+          icon={(iconProps) => <MoreIcon {...iconProps} label="" />}
+        />
       )}
-    </div>
+      placement="bottom-end"
+    >
+      <DropdownItemGroup>
+        <DropdownItem>Give feedback</DropdownItem>
+        <DropdownItem>Help</DropdownItem>
+      </DropdownItemGroup>
+    </DropdownMenu>
   );
 }
 
@@ -409,37 +348,14 @@ function MoreActionsButton() {
 //    full dark-mode token resolution. See lines ~1109 for the new render.
 
 
+// MiniAvatar — canonical @atlaskit/avatar xsmall (24px, ADS-compliant).
 function MiniAvatar({ name, avatarUrl }: { name: string; avatarUrl?: string | null }) {
-  const initial = name?.trim()?.charAt(0)?.toUpperCase() ?? '?';
-  if (avatarUrl) {
-    return (
-      <img
-        src={avatarUrl}
-        alt={name}
-        aria-hidden="true"
-        style={{ width: 24, height: 24, borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }}
-      />
-    );
-  }
   return (
-    <span
-      aria-hidden="true"
-      style={{
-        display: 'inline-flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        width: 24,
-        height: 24,
-        borderRadius: '50%',
-        background: token('color.background.neutral'),
-        color: token('color.text.subtle'),
-        font: token('font.body.small'),
-        fontWeight: 600,
-        flexShrink: 0,
-      }}
-    >
-      {initial}
-    </span>
+    <Avatar
+      size="xsmall"
+      name={name}
+      src={avatarUrl ?? undefined}
+    />
   );
 }
 
@@ -462,12 +378,6 @@ export function CreateStoryModal({
   const { data: members = [] } = useTeamMembers();
   const { data: releases = [], isLoading: releasesLoading, error: releasesError } = useProjectReleases(form.projectId);
 
-  // Debug — remove after verification
-  useEffect(() => {
-    if (form.projectId) {
-      console.log('[CreateModal] releases for project', form.projectId, ':', releases, 'error:', releasesError);
-    }
-  }, [releases, form.projectId, releasesError]);
   const createMutation = useCreateStoryMutation();
 
   const [workType, setWorkType] = useState<string>('Story');
@@ -494,8 +404,6 @@ export function CreateStoryModal({
     [workflowStatuses],
   );
   const [submitAttempted, setSubmitAttempted] = useState(false);
-  // BEH-003: blur-based summary validation — error shows after leaving empty field
-  const [summaryBlurred, setSummaryBlurred] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
 
   const isCreateLinkedMode = !!linkedSource;
@@ -702,16 +610,13 @@ export function CreateStoryModal({
 
   const handleClose = useCallback(() => {
     setSubmitAttempted(false);
-    setSummaryBlurred(false);
     setFormError(null);
     onClose();
   }, [onClose]);
 
-  // BEH-003: error on blur OR after submit attempt
+  // Summary error only shows after an explicit submit attempt — never on load or blur.
   const summaryError =
-    (submitAttempted || summaryBlurred) && !form.summary.trim()
-      ? 'Summary is required'
-      : undefined;
+    submitAttempted && !form.summary.trim() ? 'Summary is required' : undefined;
 
   // ─────────────────────────────────────────────────────────────────────────
   // Render
@@ -786,17 +691,6 @@ export function CreateStoryModal({
                       formatOptionLabel={formatIconOption}
                       isSearchable={false}
                     />
-                    <a
-                      href="https://support.atlassian.com/jira-software-cloud/docs/what-are-issue-types/"
-                      target="jira-help"
-                      rel="noopener noreferrer"
-                      onClick={(e) => { e.preventDefault(); window.open((e.currentTarget as HTMLAnchorElement).href, 'jira-help', 'width=600,height=500,noopener,noreferrer'); }}
-                    >
-                      <Box xcss={helperLinkStyles}>
-                        Learn about work types
-                        <ShortcutIcon label="" size="small" />
-                      </Box>
-                    </a>
                   </>
                 )}
               </Field>
@@ -837,8 +731,6 @@ export function CreateStoryModal({
                 </Field>
               )}
 
-              <Box xcss={dividerStyles} />
-
               {/* ── Status — read-only Lozenge (Jira-parity, Bucket B 2026-05-09).
                   In Jira's Create modal, status is NOT editable — it is pre-set
                   to the issue type's initial workflow status and displayed as a
@@ -853,16 +745,12 @@ export function CreateStoryModal({
                         paddingInline: 'space.0',
                       })}
                     >
-                      <Lozenge
-                        appearance={statusAppearance(form.status || 'To Do')}
-                        isBold
-                      >
-                        {form.status || 'To Do'}
-                      </Lozenge>
+                      <span data-cp-lozenge-jira-parity>
+                        <Lozenge appearance={statusAppearance(form.status || 'To Do')}>
+                          {form.status || 'To Do'}
+                        </Lozenge>
+                      </span>
                     </Box>
-                    <HelperMessage>
-                      Initial status — set by the workflow for this work type
-                    </HelperMessage>
                   </>
                 )}
               </Field>
@@ -879,7 +767,6 @@ export function CreateStoryModal({
                       onChange={(e: any) =>
                         updateField('summary', e.target.value)
                       }
-                      onBlur={() => setSummaryBlurred(true)}
                       maxLength={200}
                     />
                     {summaryError && (
@@ -901,62 +788,37 @@ export function CreateStoryModal({
                       defaultOptions
                       loadOptions={async (input: string) => {
                         // Bucket E (2026-05-09): parent types driven by PARENT_TYPE_RULES.
-                        // Two sources: ph_issues (Epic/Feature/Story) and
-                        // business_requests (Business Request).
+                        // All parent types — including 'Business Request' — live in ph_issues
+                        // for the BAU project (source='catalyst'|'jira', issue_type='Business Request').
+                        // The separate business_requests table is for the Demand Hub module and
+                        // is not used here (it is empty for project-hub BAU items).
                         if (!resolvedKey) return [];
                         const eligibleTypes = PARENT_TYPE_RULES[workType] ?? [];
                         if (eligibleTypes.length === 0) return [];
 
-                        const phTypes = eligibleTypes.filter(t => t !== 'Business Request');
-                        const needsBr = eligibleTypes.includes('Business Request');
                         const searchTerm = input.trim();
-
                         const results: IconOption[] = [];
 
-                        // ── ph_issues candidates (Epic / Feature / Story) ──
-                        if (phTypes.length > 0) {
-                          let q = supabase
-                            .from('ph_issues')
-                            .select('issue_key, summary, issue_type')
-                            .eq('project_key', resolvedKey)
-                            .in('issue_type', phTypes)
-                            .order('jira_updated_at', { ascending: false })
-                            .limit(30);
-                          if (searchTerm) {
-                            q = q.or(`issue_key.ilike.%${searchTerm}%,summary.ilike.%${searchTerm}%`);
-                          }
-                          const { data } = await q;
-                          (data ?? []).forEach((d: any) => {
-                            results.push({
-                              value: d.issue_key,
-                              label: d.summary,
-                              sublabel: d.issue_key,
-                              icon: <WorkItemTypeIcon type={d.issue_type} size={14} />,
-                            });
-                          });
+                        // All eligible parent types come from ph_issues for this project
+                        let q = supabase
+                          .from('ph_issues')
+                          .select('issue_key, summary, issue_type')
+                          .eq('project_key', resolvedKey)
+                          .in('issue_type', eligibleTypes)
+                          .order('jira_updated_at', { ascending: false })
+                          .limit(30);
+                        if (searchTerm) {
+                          q = q.or(`issue_key.ilike.%${searchTerm}%,summary.ilike.%${searchTerm}%`);
                         }
-
-                        // ── business_requests candidates ──
-                        if (needsBr) {
-                          let brQ = supabase
-                            .from('business_requests' as any)
-                            .select('request_key, title')
-                            .is('deleted_at', null)
-                            .order('updated_at', { ascending: false })
-                            .limit(20);
-                          if (searchTerm) {
-                            brQ = brQ.or(`request_key.ilike.%${searchTerm}%,title.ilike.%${searchTerm}%`);
-                          }
-                          const { data: brData } = await brQ;
-                          (brData ?? []).forEach((br: any) => {
-                            results.push({
-                              value: br.request_key,
-                              label: br.title,
-                              sublabel: br.request_key,
-                              icon: <WorkItemTypeIcon type="Business Request" size={14} />,
-                            });
+                        const { data } = await q;
+                        (data ?? []).forEach((d: any) => {
+                          results.push({
+                            value: d.issue_key,
+                            label: d.summary,
+                            sublabel: d.issue_key,
+                            icon: <WorkItemTypeIcon type={d.issue_type} size={14} />,
                           });
-                        }
+                        });
 
                         return results;
                       }}
@@ -970,10 +832,6 @@ export function CreateStoryModal({
                       formatOptionLabel={formatIconOption}
                       isClearable
                     />
-                    <HelperMessage>
-                      Your work type hierarchy determines the work items
-                      you can select here.
-                    </HelperMessage>
                   </>
                 )}
               </Field>
@@ -1000,17 +858,6 @@ export function CreateStoryModal({
                       formatOptionLabel={formatIconOption}
                       isSearchable={false}
                     />
-                    <a
-                      href="https://support.atlassian.com/jira-software-cloud/docs/what-is-issue-priority/"
-                      target="jira-help"
-                      rel="noopener noreferrer"
-                      onClick={(e) => { e.preventDefault(); window.open((e.currentTarget as HTMLAnchorElement).href, 'jira-help', 'width=600,height=500,noopener,noreferrer'); }}
-                    >
-                      <Box xcss={helperLinkStyles}>
-                        Learn about priority levels
-                        <ShortcutIcon label="" size="small" />
-                      </Box>
-                    </a>
                   </>
                 )}
               </Field>
