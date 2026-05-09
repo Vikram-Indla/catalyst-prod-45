@@ -290,6 +290,23 @@ export default function EpicDescriptionEditor({
     insertExternalMedia(file);
   }, [insertExternalMedia]);
 
+  // Escape key — close editor without saving (Jira parity).
+  // Capture phase beats @atlaskit/modal-dialog's bubble-phase handler so
+  // pressing Escape collapses the editor, not the parent modal.
+  // Guard: only add when appearance has Save/Cancel chrome (not chromeless).
+  useEffect(() => {
+    if (appearanceProp === 'chromeless') return;
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key !== 'Escape') return;
+      e.stopPropagation();
+      onCancel();
+    };
+    document.addEventListener('keydown', onKeyDown, true);
+    return () => {
+      document.removeEventListener('keydown', onKeyDown, true);
+    };
+  }, [onCancel, appearanceProp]);
+
   const handleEditorSave = useCallback((_view: any) => {
     const actions = actionsRef.current;
     if (!actions) {

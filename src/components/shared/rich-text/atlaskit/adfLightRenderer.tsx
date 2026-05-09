@@ -22,8 +22,6 @@ import { token } from '@atlaskit/tokens';
 
 const COMPLEX_TYPES = new Set([
   'mediaSingle', 'mediaGroup', 'media',
-  'table', 'tableRow', 'tableCell', 'tableHeader',
-  'panel',
   'expand', 'nestedExpand',
   'layoutSection', 'layoutColumn',
   'extension', 'inlineExtension', 'bodiedExtension',
@@ -233,6 +231,80 @@ function renderBlock(node: AdfNode, index: number): React.ReactNode {
           borderTop: `1px solid ${token('color.border', 'rgba(11,18,14,0.14)')}`,
           margin: '16px 0',
         }} />
+      );
+
+    // ── Panel (info / note / warning / error / success / tip) ────────────
+    case 'panel': {
+      const panelType = String(node.attrs?.panelType ?? 'info');
+      const panelStyles: Record<string, { bg: string; border: string; icon: string }> = {
+        info:    { bg: token('color.background.information.subtle', '#E9F2FF'), border: token('color.border', 'rgba(11,18,14,0.14)'), icon: 'ℹ' },
+        note:    { bg: token('color.background.information.subtle', '#E9F2FF'), border: token('color.border', 'rgba(11,18,14,0.14)'), icon: '📝' },
+        tip:     { bg: token('color.background.success.subtle', '#DCFFF1'), border: token('color.border', 'rgba(11,18,14,0.14)'), icon: '💡' },
+        success: { bg: token('color.background.success.subtle', '#DCFFF1'), border: token('color.border', 'rgba(11,18,14,0.14)'), icon: '✓' },
+        warning: { bg: token('color.background.warning.subtle', '#FFF7D6'), border: token('color.border', 'rgba(11,18,14,0.14)'), icon: '⚠' },
+        error:   { bg: token('color.background.danger.subtle', '#FFEDEB'),  border: token('color.border.danger', '#FF5630'), icon: '✕' },
+      };
+      const style = panelStyles[panelType] ?? panelStyles.info;
+      return (
+        <div key={key} style={{
+          display: 'flex', gap: 8, padding: '10px 12px',
+          background: style.bg,
+          border: `1px solid ${style.border}`,
+          borderRadius: 4, margin: '8px 0',
+        }}>
+          <span style={{ flexShrink: 0, fontSize: 14, lineHeight: '24px' }} aria-hidden="true">{style.icon}</span>
+          <div style={{ flex: 1 }}>
+            {(node.content ?? []).map((c, i) => renderBlock(c, i))}
+          </div>
+        </div>
+      );
+    }
+
+    // ── Table ─────────────────────────────────────────────────────────────
+    case 'table':
+      return (
+        <div key={key} style={{ overflowX: 'auto', margin: '8px 0 12px' }}>
+          <table style={{
+            borderCollapse: 'collapse', width: '100%',
+            fontSize: 14, lineHeight: '20px',
+          }}>
+            <tbody>
+              {(node.content ?? []).map((row, i) => renderBlock(row, i))}
+            </tbody>
+          </table>
+        </div>
+      );
+
+    case 'tableRow':
+      return (
+        <tr key={key}>
+          {(node.content ?? []).map((cell, i) => renderBlock(cell, i))}
+        </tr>
+      );
+
+    case 'tableHeader':
+      return (
+        <th key={key} style={{
+          border: `1px solid ${token('color.border', 'rgba(11,18,14,0.14)')}`,
+          padding: '6px 10px', textAlign: 'left',
+          background: token('elevation.surface.sunken', '#F7F8F9'),
+          fontWeight: 600, fontSize: 12,
+          color: token('color.text', 'rgb(41,42,46)'),
+        }}>
+          {(node.content ?? []).map((c, i) => renderBlock(c, i))}
+        </th>
+      );
+
+    case 'tableCell':
+      return (
+        <td key={key} style={{
+          border: `1px solid ${token('color.border', 'rgba(11,18,14,0.14)')}`,
+          padding: '6px 10px',
+          verticalAlign: 'top',
+          color: token('color.text', 'rgb(41,42,46)'),
+        }}>
+          {(node.content ?? []).map((c, i) => renderBlock(c, i))}
+        </td>
       );
 
     default:
