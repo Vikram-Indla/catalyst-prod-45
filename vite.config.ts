@@ -329,6 +329,11 @@ export default defineConfig(({ mode, command }) => {
       // pre-bundle IDs so the manifest survives re-optimization.
       '@popperjs/core',
       'react-popper',
+      // lucide-react exports 1000+ named icon exports (Activity, ActivityIcon, etc).
+      // Without pre-bundling, esbuild on-demand optimization can lose exports under HMR,
+      // causing ReferenceError: "Activity is not defined" at runtime. Eager pre-bundling
+      // guarantees all exports are available when the module first loads.
+      'lucide-react',
       // NOTE: @atlaskit/editor-core and @atlaskit/renderer are intentionally
       // EXCLUDED here. They bundle their own ProseMirror tree and clash with
       // Tiptap if eagerly loaded. AtlaskitEditor.tsx lazy-imports editor-core
