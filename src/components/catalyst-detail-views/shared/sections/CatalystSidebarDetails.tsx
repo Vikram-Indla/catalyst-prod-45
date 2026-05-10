@@ -499,7 +499,7 @@ export function CatalystSidebarDetails({
                   )}
                 </FieldRow>
               );
-              if (fieldId === 'fixVersions' && issue?.issue_type !== 'Epic') return (
+              if (fieldId === 'fixVersions' && issue?.issue_type !== 'Epic' && issue?.issue_type !== 'Feature') return (
                 <FieldRow key={fieldId} label="Fix versions" labelTopPad>
                   {issue && (
                     <EditableFixVersions
@@ -543,8 +543,10 @@ export function CatalystSidebarDetails({
 
           {/* ── Fix Versions ──── jira-compare Phase 2 (2026-05-02): hidden
               on Epic — Jira NIN omits this field from the Epic context
-              items (BAU-5419 Lane A re-probe). */}
-          {issue?.issue_type !== 'Epic' && (
+              items (BAU-5419 Lane A re-probe).
+              jira-compare 2026-05-10: also hidden on Feature — Fix versions
+              is NOT in the Feature screen scheme (type 10173, BAU project). */}
+          {issue?.issue_type !== 'Epic' && issue?.issue_type !== 'Feature' && (
             <FieldRow label="Fix versions" labelTopPad>
               {issue && (
                 <EditableFixVersions
