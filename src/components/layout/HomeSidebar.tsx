@@ -27,7 +27,7 @@
  */
 import React, { useMemo } from 'react';
 import {
-  Clock, FolderOpen, Kanban, ListOrdered, LayoutDashboard,
+  Clock, FolderOpen, Columns3, GitBranch, LayoutDashboard,
   Table2, CircleDot, Layers, Map as MapIcon, BarChart2, Settings, Calendar,
 } from 'lucide-react';
 import { SidebarBase, type SidebarConfig, type SidebarMenuItem } from './SidebarBase';
@@ -127,17 +127,19 @@ function LocationRowTitle({ location }: { location: RecentLocation }) {
 // Matching is case-insensitive substring so "All work", "all-work" etc. all hit.
 type LucideIcon = React.FC<{ size?: number; strokeWidth?: number; style?: React.CSSProperties }>;
 
+// Icons MUST match ProjectHubSidebar.tsx exactly — same section, same icon.
+// dashboard→LayoutDashboard, boards→Columns3, backlog→Layers, allwork→GitBranch
 const SECTION_ICON_MAP: Array<[RegExp, LucideIcon]> = [
-  [/board/i,      Kanban],
-  [/backlog/i,    ListOrdered],
+  [/all.?work/i,  GitBranch],     // ProjectHubSidebar: allwork → GitBranch
+  [/backlog/i,    Layers],        // ProjectHubSidebar: backlog → Layers
+  [/\bboard/i,    Columns3],      // ProjectHubSidebar: boards → Columns3 (\b prevents matching "dashboard")
   [/dashboard/i,  LayoutDashboard],
-  [/list/i,       Table2],
-  [/issue/i,      CircleDot],
-  [/roadmap/i,    MapIcon],
   [/report/i,     BarChart2],
   [/setting/i,    Settings],
   [/calendar/i,   Calendar],
-  [/all.?work/i,  Layers],
+  [/roadmap/i,    MapIcon],
+  [/list/i,       Table2],
+  [/issue/i,      CircleDot],
 ];
 
 function iconForSection(label: string): LucideIcon {
