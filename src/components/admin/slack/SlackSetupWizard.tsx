@@ -21,10 +21,8 @@ import {
   useTestSlackConnection,
   SlackConfig,
 } from '@/hooks/useSlackAdmin';
-import { Card, CardContent } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import Button from '@atlaskit/button/new';
+import Textfield from '@atlaskit/textfield';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Lozenge } from '@/components/ads';
 import { Alert, AlertDescription } from '@/components/ui/alert';
@@ -144,58 +142,55 @@ export function SlackSetupWizard({ existingConfig }: WizardProps) {
   return (
     <div className="space-y-6">
       {/* Progress Steps */}
-      <Card>
-        <CardContent className="py-6">
-          <div className="flex items-center justify-between">
-            {STEPS.map((step, index) => {
-              const Icon = step.icon;
-              const isActive = step.id === currentStep;
-              const isCompleted = step.id < currentStep;
+      <div style={{ background: 'var(--ds-surface, #FFFFFF)', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px', padding: '24px' }}>
+        <div className="flex items-center justify-between">
+          {STEPS.map((step, index) => {
+            const Icon = step.icon;
+            const isActive = step.id === currentStep;
+            const isCompleted = step.id < currentStep;
 
-              return (
-                <React.Fragment key={step.id}>
-                  <div className="flex flex-col items-center">
-                    <div
-                      className={cn(
-                        'w-10 h-10 rounded-full flex items-center justify-center transition-colors',
-                        isCompleted && 'bg-green-500 text-white',
-                        isActive && 'bg-blue-600 text-white',
-                        !isCompleted && !isActive && 'bg-slate-100 text-slate-400'
-                      )}
-                    >
-                      {isCompleted ? (
-                        <CheckCircleIcon label="" size="small" />
-                      ) : (
-                        <Icon className="w-5 h-5" />
-                      )}
-                    </div>
-                    <span
-                      className={cn(
-                        'text-xs mt-2 font-medium',
-                        isActive ? 'text-blue-600' : 'text-slate-500'
-                      )}
-                    >
-                      {step.title}
-                    </span>
+            return (
+              <React.Fragment key={step.id}>
+                <div className="flex flex-col items-center">
+                  <div
+                    className={cn(
+                      'w-10 h-10 rounded-full flex items-center justify-center transition-colors',
+                      isCompleted && 'bg-green-500 text-white',
+                      isActive && 'bg-blue-600 text-white',
+                      !isCompleted && !isActive && 'bg-slate-100 text-slate-400'
+                    )}
+                  >
+                    {isCompleted ? (
+                      <CheckCircleIcon label="" size="small" />
+                    ) : (
+                      <Icon className="w-5 h-5" />
+                    )}
                   </div>
-                  {index < STEPS.length - 1 && (
-                    <div
-                      className={cn(
-                        'flex-1 h-0.5 mx-2',
-                        step.id < currentStep ? 'bg-green-500' : 'bg-slate-200'
-                      )}
-                    />
-                  )}
-                </React.Fragment>
-              );
-            })}
-          </div>
-        </CardContent>
-      </Card>
+                  <span
+                    className={cn(
+                      'text-xs mt-2 font-medium',
+                      isActive ? 'text-blue-600' : 'text-slate-500'
+                    )}
+                  >
+                    {step.title}
+                  </span>
+                </div>
+                {index < STEPS.length - 1 && (
+                  <div
+                    className={cn(
+                      'flex-1 h-0.5 mx-2',
+                      step.id < currentStep ? 'bg-green-500' : 'bg-slate-200'
+                    )}
+                  />
+                )}
+              </React.Fragment>
+            );
+          })}
+        </div>
+      </div>
 
       {/* Step Content */}
-      <Card>
-        <CardContent className="py-8">
+      <div style={{ background: 'var(--ds-surface, #FFFFFF)', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px', padding: '32px' }}>
           {/* Step 1: Create Slack App */}
           {currentStep === 1 && (
             <div className="max-w-2xl mx-auto space-y-6">
@@ -232,20 +227,20 @@ export function SlackSetupWizard({ existingConfig }: WizardProps) {
               </div>
 
               <Button
+                appearance="primary"
+                iconAfter={ChevronRightIcon}
                 onClick={handleNext}
-                className="w-full"
-                style={{ backgroundColor: 'var(--cp-blue)' }}
+                shouldFitContainer
               >
                 I've Created the App
-                <ChevronRightIcon label="" size="small" />
               </Button>
 
               <Button
-                variant="outline"
-                className="w-full"
+                appearance="default"
+                iconBefore={LinkExternalIcon}
                 onClick={() => window.open('https://api.slack.com/apps', '_blank')}
+                shouldFitContainer
               >
-                <LinkExternalIcon label="" size="small" />
                 Open Slack API Console
               </Button>
             </div>
@@ -266,51 +261,59 @@ export function SlackSetupWizard({ existingConfig }: WizardProps) {
 
               <div className="space-y-4">
                 <div>
-                  <Label htmlFor="app_id">App ID</Label>
-                  <Input
-                    id="app_id"
-                    placeholder="A0A92EJ6TFZ"
-                    value={formData.app_id}
-                    onChange={(e) => updateFormData('app_id', e.target.value)}
-                    className="mt-1.5"
-                  />
+                  <label htmlFor="app_id" style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>App ID</label>
+                  <div className="mt-1.5">
+                    <Textfield
+                      id="app_id"
+                      placeholder="A0A92EJ6TFZ"
+                      value={formData.app_id}
+                      onChange={(e) => updateFormData('app_id', (e.target as HTMLInputElement).value)}
+                    />
+                  </div>
                   <p className="text-xs text-slate-500 mt-1">Found at the top of Basic Information</p>
                 </div>
 
                 <div>
-                  <Label htmlFor="client_id">Client ID <span className="text-red-500">*</span></Label>
-                  <Input
-                    id="client_id"
-                    placeholder="6918807045377.10308494231543"
-                    value={formData.client_id}
-                    onChange={(e) => updateFormData('client_id', e.target.value)}
-                    className="mt-1.5"
-                  />
+                  <label htmlFor="client_id" style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>
+                    Client ID <span style={{ color: 'var(--ds-text-danger, #AE2A19)' }}>*</span>
+                  </label>
+                  <div className="mt-1.5">
+                    <Textfield
+                      id="client_id"
+                      placeholder="6918807045377.10308494231543"
+                      value={formData.client_id}
+                      onChange={(e) => updateFormData('client_id', (e.target as HTMLInputElement).value)}
+                    />
+                  </div>
                 </div>
 
                 <div>
-                  <Label htmlFor="client_secret">Client Secret <span className="text-red-500">*</span></Label>
-                  <Input
-                    id="client_secret"
-                    type="password"
-                    placeholder="Click 'Show' in Slack to reveal, then paste here"
-                    value={formData.client_secret}
-                    onChange={(e) => updateFormData('client_secret', e.target.value)}
-                    className="mt-1.5"
-                  />
+                  <label htmlFor="client_secret" style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>
+                    Client Secret <span style={{ color: 'var(--ds-text-danger, #AE2A19)' }}>*</span>
+                  </label>
+                  <div className="mt-1.5">
+                    <Textfield
+                      id="client_secret"
+                      type="password"
+                      placeholder="Click 'Show' in Slack to reveal, then paste here"
+                      value={formData.client_secret}
+                      onChange={(e) => updateFormData('client_secret', (e.target as HTMLInputElement).value)}
+                    />
+                  </div>
                   <p className="text-xs text-slate-500 mt-1">Click "Show" button in Slack to reveal</p>
                 </div>
 
                 <div>
-                  <Label htmlFor="signing_secret">Signing Secret (optional)</Label>
-                  <Input
-                    id="signing_secret"
-                    type="password"
-                    placeholder="For verifying Slack requests"
-                    value={formData.signing_secret}
-                    onChange={(e) => updateFormData('signing_secret', e.target.value)}
-                    className="mt-1.5"
-                  />
+                  <label htmlFor="signing_secret" style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>Signing Secret (optional)</label>
+                  <div className="mt-1.5">
+                    <Textfield
+                      id="signing_secret"
+                      type="password"
+                      placeholder="For verifying Slack requests"
+                      value={formData.signing_secret}
+                      onChange={(e) => updateFormData('signing_secret', (e.target as HTMLInputElement).value)}
+                    />
+                  </div>
                 </div>
               </div>
 
@@ -322,18 +325,17 @@ export function SlackSetupWizard({ existingConfig }: WizardProps) {
               </Alert>
 
               <div className="flex gap-3">
-                <Button variant="outline" onClick={handleBack} className="flex-1">
-                  <ChevronLeftIcon label="" size="small" />
+                <Button appearance="subtle" iconBefore={ChevronLeftIcon} onClick={handleBack} shouldFitContainer>
                   Back
                 </Button>
                 <Button
+                  appearance="primary"
+                  iconAfter={ChevronRightIcon}
                   onClick={handleNext}
-                  disabled={!formData.client_id || !formData.client_secret}
-                  className="flex-1"
-                  style={{ backgroundColor: 'var(--cp-blue)' }}
+                  isDisabled={!formData.client_id || !formData.client_secret}
+                  shouldFitContainer
                 >
                   Continue
-                  <ChevronRightIcon label="" size="small" />
                 </Button>
               </div>
             </div>
@@ -389,12 +391,10 @@ export function SlackSetupWizard({ existingConfig }: WizardProps) {
                         </div>
                       </div>
                       <Button
-                        variant="ghost"
-                        size="sm"
+                        appearance="subtle"
+                        iconBefore={CopyIcon}
                         onClick={() => copyToClipboard(scope.id)}
-                      >
-                        <CopyIcon label="" size="small" />
-                      </Button>
+                      />
                     </div>
                   );
                 })}
@@ -408,17 +408,11 @@ export function SlackSetupWizard({ existingConfig }: WizardProps) {
               </div>
 
               <div className="flex gap-3">
-                <Button variant="outline" onClick={handleBack} className="flex-1">
-                  <ChevronLeftIcon label="" size="small" />
+                <Button appearance="subtle" iconBefore={ChevronLeftIcon} onClick={handleBack} shouldFitContainer>
                   Back
                 </Button>
-                <Button
-                  onClick={handleNext}
-                  className="flex-1"
-                  style={{ backgroundColor: 'var(--cp-blue)' }}
-                >
+                <Button appearance="primary" iconAfter={ChevronRightIcon} onClick={handleNext} shouldFitContainer>
                   I've Added the Scopes
-                  <ChevronRightIcon label="" size="small" />
                 </Button>
               </div>
             </div>
@@ -438,19 +432,19 @@ export function SlackSetupWizard({ existingConfig }: WizardProps) {
               </div>
 
               <div>
-                <Label>Redirect URL</Label>
+                <label style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>Redirect URL</label>
                 <div className="flex gap-2 mt-1.5">
-                  <Input
-                    value={formData.redirect_uri}
-                    onChange={(e) => updateFormData('redirect_uri', e.target.value)}
-                    className="flex-1 font-mono text-sm"
-                  />
+                  <div className="flex-1">
+                    <Textfield
+                      value={formData.redirect_uri}
+                      onChange={(e) => updateFormData('redirect_uri', (e.target as HTMLInputElement).value)}
+                    />
+                  </div>
                   <Button
-                    variant="outline"
+                    appearance="default"
+                    iconBefore={CopyIcon}
                     onClick={() => copyToClipboard(formData.redirect_uri)}
-                  >
-                    <CopyIcon label="" size="small" />
-                  </Button>
+                  />
                 </div>
               </div>
 
@@ -477,18 +471,17 @@ export function SlackSetupWizard({ existingConfig }: WizardProps) {
               </div>
 
               <div className="flex gap-3">
-                <Button variant="outline" onClick={handleBack} className="flex-1">
-                  <ChevronLeftIcon label="" size="small" />
+                <Button appearance="subtle" iconBefore={ChevronLeftIcon} onClick={handleBack} shouldFitContainer>
                   Back
                 </Button>
                 <Button
+                  appearance="primary"
+                  iconAfter={ChevronRightIcon}
                   onClick={handleSaveAndContinue}
-                  disabled={saveConfig.isPending}
-                  className="flex-1"
-                  style={{ backgroundColor: 'var(--cp-blue)' }}
+                  isDisabled={saveConfig.isPending}
+                  shouldFitContainer
                 >
                   {saveConfig.isPending ? 'Saving...' : 'Save & Continue'}
-                  <ChevronRightIcon label="" size="small" />
                 </Button>
               </div>
             </div>
@@ -514,26 +507,16 @@ export function SlackSetupWizard({ existingConfig }: WizardProps) {
                   You'll be redirected to Slack to approve the permissions.
                 </p>
                 <Button
+                  appearance="primary"
                   onClick={handleInstall}
-                  disabled={getInstallUrl.isPending}
-                  size="lg"
-                  className="px-8"
-                  style={{ backgroundColor: 'var(--cp-blue)' }}
+                  isDisabled={getInstallUrl.isPending}
                 >
-                  {getInstallUrl.isPending ? (
-                    'Preparing...'
-                  ) : (
-                    <>
-                      <SlackIcon className="w-5 h-5 mr-2" />
-                      Add to Slack
-                    </>
-                  )}
+                  {getInstallUrl.isPending ? 'Preparing...' : 'Add to Slack'}
                 </Button>
               </div>
 
               <div className="flex gap-3">
-                <Button variant="outline" onClick={handleBack} className="flex-1">
-                  <ChevronLeftIcon label="" size="small" />
+                <Button appearance="subtle" iconBefore={ChevronLeftIcon} onClick={handleBack} shouldFitContainer>
                   Back
                 </Button>
               </div>
@@ -562,19 +545,13 @@ export function SlackSetupWizard({ existingConfig }: WizardProps) {
               </div>
 
               <Button
+                appearance="default"
+                iconBefore={ToolsIcon}
                 onClick={handleTest}
-                disabled={testConnection.isPending}
-                variant="outline"
-                className="w-full"
+                isDisabled={testConnection.isPending}
+                shouldFitContainer
               >
-                {testConnection.isPending ? (
-                  'Sending...'
-                ) : (
-                  <>
-                    <ToolsIcon label="" size="small" />
-                    Send Test Notification
-                  </>
-                )}
+                {testConnection.isPending ? 'Sending...' : 'Send Test Notification'}
               </Button>
 
               {testConnection.isSuccess && (
@@ -587,17 +564,17 @@ export function SlackSetupWizard({ existingConfig }: WizardProps) {
               )}
 
               <Button
+                appearance="primary"
+                iconAfter={ChevronRightIcon}
                 onClick={() => window.location.reload()}
-                className="w-full"
-                style={{ backgroundColor: 'var(--cp-blue)' }}
+                shouldFitContainer
               >
                 Go to Dashboard
-                <ChevronRightIcon label="" size="small" />
               </Button>
             </div>
           )}
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     </div>
   );
 }
