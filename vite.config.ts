@@ -177,6 +177,12 @@ export default defineConfig(({ mode, command }) => {
       "react": path.resolve(__dirname, "./node_modules/react"),
       "react-dom": path.resolve(__dirname, "./node_modules/react-dom"),
       "react-is": path.resolve(__dirname, "./node_modules/react-is"),
+      // Force single copy of adf-schema — 15 nested copies each register
+      // Step.jsonID("atlaskit-insert-type-ahead") at module load time, causing
+      // RangeError "Duplicate use of step JSON ID" on first page load.
+      // Root packages: prosemirror-collab, editor-plugin-analytics,
+      // editor-plugin-type-ahead, editor-core, editor-common, and 10 others.
+      "@atlaskit/adf-schema": path.resolve(__dirname, "./node_modules/@atlaskit/adf-schema"),
       // Browser polyfill for Node's `events` — @atlaskit/editor-plugin-block-controls
       // imports { EventEmitter } from 'events'; Vite treats 'events' as a Node built-in
       // by default, so we force it to the npm `events` package.
@@ -224,6 +230,9 @@ export default defineConfig(({ mode, command }) => {
       'react',
       'react-dom',
       'react-is',
+      '@atlaskit/adf-schema',
+      '@atlaskit/editor-plugins',
+      '@atlaskit/editor-common',
       'prosemirror-state',
       'prosemirror-model',
       'prosemirror-view',
@@ -333,8 +342,6 @@ export default defineConfig(({ mode, command }) => {
       'prosemirror-keymap',
       'prosemirror-commands',
       'prosemirror-history',
-      'prosemirror-inputrules',
-      'prosemirror-schema-basic',
       'prosemirror-schema-list',
       'prosemirror-dropcursor',
       'prosemirror-gapcursor',

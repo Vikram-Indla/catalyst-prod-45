@@ -86,11 +86,26 @@ const SECTION_LABELS: Record<string, string> = {
  * HomeSidebar Recent list. Anything not in this set is a ticket-grain
  * or non-navigable sub-path and is excluded at record time.
  */
+// Exact section slugs that appear as nav items in ProjectHubSidebar.
+// Derived from the actual `id` values in ProjectHubSidebar.tsx — do not
+// add slugs speculatively. If a new sidebar item is added there, add its
+// slug here too.
 const CANONICAL_NAV_SECTIONS = new Set([
-  'dashboard', 'backlog', 'board', 'allwork',
-  'list', 'timeline', 'reports', 'settings', 'hierarchy',
-  'sprint-predictor', 'risk-scanner', 'epic-backlog',
-  'feature-backlog', 'story-backlog', 'releases',
+  'dashboard',
+  'boards',
+  'backlog',
+  'allwork',
+  'settings',
+  // Additional hub-specific sections that have real sidebar routes:
+  'sprint-predictor',
+  'risk-scanner',
+  'epic-backlog',
+  'feature-backlog',
+  'story-backlog',
+  'releases',
+  'hierarchy',
+  'timeline',
+  'reports',
 ]);
 
 /** Section slugs we never want to record (ticket detail / modal). */
