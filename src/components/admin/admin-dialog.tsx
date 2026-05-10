@@ -47,8 +47,8 @@ Dialog.displayName = 'Dialog';
 
 export interface DialogContentProps {
   children?: React.ReactNode;
-  /** shadcn passes className for max-width hints — ignored in ADS context. */
   className?: string;
+  style?: React.CSSProperties;
 }
 
 export function DialogContent({ children }: DialogContentProps) {
