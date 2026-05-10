@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useBusinessLines, useProductStatusConfigs } from '@/hooks/useProductSettings';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Switch } from '@/components/ui/switch';
+import AdsSelect from '@atlaskit/select';
+import Toggle from '@atlaskit/toggle';
 import { Lozenge } from '@/components/ads';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { cn } from '@/lib/utils';
@@ -72,19 +72,20 @@ export function IntakeViewsPanel({ onChanges }: IntakeViewsPanelProps) {
       {/* Scope Selector */}
       <div className="flex items-center gap-4">
         <span className="text-sm font-medium">Configuration Scope:</span>
-        <Select value={selectedScope} onValueChange={setSelectedScope}>
-          <SelectTrigger className="w-48">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="global">Global (All Business Lines)</SelectItem>
-            {businessLines.map(line => (
-              <SelectItem key={line.id} value={line.id}>
-                {line.name}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+        <div style={{ minWidth: '192px' }}>
+          <AdsSelect
+            value={
+              selectedScope === 'global'
+                ? { label: 'Global (All Business Lines)', value: 'global' }
+                : { label: businessLines.find(l => l.id === selectedScope)?.name || selectedScope, value: selectedScope }
+            }
+            options={[
+              { label: 'Global (All Business Lines)', value: 'global' },
+              ...businessLines.map(line => ({ label: line.name, value: line.id })),
+            ]}
+            onChange={(opt) => setSelectedScope(opt?.value ?? 'global')}
+          />
+        </div>
       </div>
 
       <Tabs defaultValue="list" className="w-full">
@@ -116,9 +117,9 @@ export function IntakeViewsPanel({ onChanges }: IntakeViewsPanelProps) {
                       </Lozenge>
                     )}
                   </div>
-                  <Switch
-                    checked={column.is_visible}
-                    onCheckedChange={() => handleColumnToggle(column.key)}
+                  <Toggle
+                    isChecked={column.is_visible}
+                    onChange={() => handleColumnToggle(column.key)}
                   />
                 </div>
               ))}
