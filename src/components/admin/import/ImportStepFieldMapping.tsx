@@ -1,4 +1,4 @@
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import AdsSelect from '@atlaskit/select';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Tooltip } from '@/components/ads';
@@ -131,35 +131,28 @@ export function ImportStepFieldMapping({
                   
                   {/* Catalyst Field Dropdown */}
                   <div>
-                    <Select
-                      value={mappedFieldKey || 'skip'}
-                      onValueChange={(value) => {
-                        const newFieldKey = value === 'skip' ? '' : value;
+                    <AdsSelect
+                      value={
+                        mappedFieldKey
+                          ? { label: (moduleConfig.fields.find(f => f.key === mappedFieldKey)?.label || mappedFieldKey) + (moduleConfig.fields.find(f => f.key === mappedFieldKey)?.required ? ' *' : '') + (moduleConfig.fields.find(f => f.key === mappedFieldKey)?.isLookup ? ' (lookup)' : ''), value: mappedFieldKey }
+                          : { label: "Don't map this field", value: 'skip' }
+                      }
+                      options={[
+                        { label: "Don't map this field", value: 'skip' },
+                        ...moduleConfig.fields.map((field) => ({
+                          label: field.label + (field.required ? ' *' : '') + (field.isLookup ? ' (lookup)' : ''),
+                          value: field.key,
+                        })),
+                      ]}
+                      onChange={(opt) => {
+                        const newFieldKey = (!opt || opt.value === 'skip') ? '' : opt.value;
                         onFieldMappingChange(header, newFieldKey);
-                        // Auto-disable value mapping if field doesn't support it
                         const newFieldConfig = moduleConfig.fields.find(f => f.key === newFieldKey);
                         if (!isLookupField(newFieldConfig)) {
                           onValueMappingToggle(header, false);
                         }
                       }}
-                    >
-                      <SelectTrigger className={cn(
-                        'w-full bg-background',
-                        mappedFieldKey && 'border-brand-primary/50'
-                      )}>
-                        <SelectValue placeholder="Don't map this field" />
-                      </SelectTrigger>
-                      <SelectContent className="bg-popover border shadow-lg z-50">
-                        <SelectItem value="skip">Don't map this field</SelectItem>
-                        {moduleConfig.fields.map((field) => (
-                          <SelectItem key={field.key} value={field.key}>
-                            {field.label}
-                            {field.required && ' *'}
-                            {field.isLookup && ' (lookup)'}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                    />
                   </div>
                   
                   {/* Value Mapping Checkbox with Tooltip */}

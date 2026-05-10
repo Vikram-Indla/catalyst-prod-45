@@ -1,9 +1,8 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { Button } from '@/components/ui/button';
+import Button from '@atlaskit/button/new';
 import { Lozenge } from '@/components/ads';
-import { Input } from '@/components/ui/input';
-import { Card, CardContent } from '@/components/ui/card';
+import Textfield from '@atlaskit/textfield';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import Spinner from '@atlaskit/spinner';
@@ -130,76 +129,70 @@ export function AccessControlPanel() {
             View and manage Product module permissions through System Roles.
           </p>
         </div>
-        <Button variant="outline" disabled>
-          <LinkExternalIcon label="" size="small" />
+        <Button appearance="default" isDisabled iconBefore={LinkExternalIcon}>
           View Roles
         </Button>
       </div>
 
       {/* Stats Cards */}
       <div className="grid grid-cols-4 gap-4">
-        <Card>
-          <CardContent className="pt-4">
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-muted rounded-lg">
-                <ShieldIcon label="" size="small" />
-              </div>
-              <div>
-                <p className="text-sm text-muted-foreground">Roles with Access</p>
-                <p className="text-2xl font-semibold">{roleCards.length}</p>
-              </div>
+        <div style={{ background: 'var(--ds-surface, #FFFFFF)', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px', padding: '16px' }}>
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-muted rounded-lg">
+              <ShieldIcon label="" size="small" />
             </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="pt-4">
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-muted rounded-lg">
-                <PeopleGroupIcon label="" size="small" />
-              </div>
-              <div>
-                <p className="text-sm text-muted-foreground">Total Users</p>
-                <p className="text-2xl font-semibold">{usersWithRoles.length}</p>
-              </div>
+            <div>
+              <p className="text-sm text-muted-foreground">Roles with Access</p>
+              <p className="text-2xl font-semibold">{roleCards.length}</p>
             </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="pt-4">
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-muted rounded-lg">
-                <EditIcon label="" size="small" />
-              </div>
-              <div>
-                <p className="text-sm text-muted-foreground">Can Edit</p>
-                <p className="text-2xl font-semibold">{adminCount + programManagerCount + teamLeadCount}</p>
-              </div>
+          </div>
+        </div>
+        <div style={{ background: 'var(--ds-surface, #FFFFFF)', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px', padding: '16px' }}>
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-muted rounded-lg">
+              <PeopleGroupIcon label="" size="small" />
             </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="pt-4">
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-muted rounded-lg">
-                <EyeOpenIcon label="" size="small" />
-              </div>
-              <div>
-                <p className="text-sm text-muted-foreground">View Only</p>
-                <p className="text-2xl font-semibold">{userCount}</p>
-              </div>
+            <div>
+              <p className="text-sm text-muted-foreground">Total Users</p>
+              <p className="text-2xl font-semibold">{usersWithRoles.length}</p>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
+        <div style={{ background: 'var(--ds-surface, #FFFFFF)', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px', padding: '16px' }}>
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-muted rounded-lg">
+              <EditIcon label="" size="small" />
+            </div>
+            <div>
+              <p className="text-sm text-muted-foreground">Can Edit</p>
+              <p className="text-2xl font-semibold">{adminCount + programManagerCount + teamLeadCount}</p>
+            </div>
+          </div>
+        </div>
+        <div style={{ background: 'var(--ds-surface, #FFFFFF)', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px', padding: '16px' }}>
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-muted rounded-lg">
+              <EyeOpenIcon label="" size="small" />
+            </div>
+            <div>
+              <p className="text-sm text-muted-foreground">View Only</p>
+              <p className="text-2xl font-semibold">{userCount}</p>
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* Search */}
-      <div className="relative max-w-md">
-        <SearchIcon label="" size="small" />
-        <Input
+      <div className="max-w-md">
+        <Textfield
           placeholder="Search roles or permissions..."
           value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          className="pl-10"
+          onChange={(e) => setSearchQuery((e.target as HTMLInputElement).value)}
+          elemBeforeInput={
+            <span style={{ display: 'flex', alignItems: 'center', padding: '0 8px' }}>
+              <SearchIcon label="" size="small" />
+            </span>
+          }
         />
       </div>
 
@@ -222,7 +215,7 @@ export function AccessControlPanel() {
                   {role.description}
                 </p>
               </div>
-              <Button variant="outline" size="sm" disabled>
+              <Button appearance="default" isDisabled>
                 View Details
               </Button>
             </div>

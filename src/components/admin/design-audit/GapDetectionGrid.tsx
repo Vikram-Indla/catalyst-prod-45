@@ -4,12 +4,11 @@
  */
 
 import { useState, useMemo } from 'react';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import Button from '@atlaskit/button/new';
+import AdsSelect from '@atlaskit/select';
 import { Lozenge, Tooltip, type LozengeAppearance } from '@/components/ads';
-import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { cn } from '@/lib/utils';
 import AutomationIcon from '@atlaskit/icon/core/automation';
 import CopyIcon from '@atlaskit/icon/core/copy';
@@ -154,84 +153,93 @@ export function GapDetectionGrid({ onFixSelected }: GapDetectionGridProps) {
     <div className="space-y-6">
       {/* Stats Overview */}
       <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-3">
-        <Card className="p-3">
+        <div style={{ background: 'var(--ds-surface, #FFFFFF)', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px', padding: '12px' }}>
           <div className="text-2xl font-bold text-foreground">{stats.total}</div>
           <div className="text-xs text-muted-foreground">Total Gaps</div>
-        </Card>
-        <Card className={cn("p-3", stats.p0 > 0 && "border-destructive/50")}>
+        </div>
+        <div style={{ background: 'var(--ds-surface, #FFFFFF)', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px', padding: '12px' }}>
           <div className="text-2xl font-bold text-destructive">{stats.p0}</div>
           <div className="text-xs text-muted-foreground">P0 Critical</div>
-        </Card>
-        <Card className={cn("p-3", stats.p1 > 0 && "border-warning/50")}>
+        </div>
+        <div style={{ background: 'var(--ds-surface, #FFFFFF)', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px', padding: '12px' }}>
           <div className="text-2xl font-bold text-warning">{stats.p1}</div>
           <div className="text-xs text-muted-foreground">P1 Major</div>
-        </Card>
-        <Card className="p-3">
+        </div>
+        <div style={{ background: 'var(--ds-surface, #FFFFFF)', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px', padding: '12px' }}>
           <div className="text-2xl font-bold text-info">{stats.p2}</div>
           <div className="text-xs text-muted-foreground">P2 Medium</div>
-        </Card>
-        <Card className="p-3">
+        </div>
+        <div style={{ background: 'var(--ds-surface, #FFFFFF)', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px', padding: '12px' }}>
           <div className="text-2xl font-bold text-muted-foreground">{stats.p3}</div>
           <div className="text-xs text-muted-foreground">P3 Minor</div>
-        </Card>
-        <Card className="p-3 border-success/50">
+        </div>
+        <div style={{ background: 'var(--ds-surface, #FFFFFF)', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px', padding: '12px' }}>
           <div className="text-2xl font-bold text-success">{stats.autoFixable}</div>
           <div className="text-xs text-muted-foreground">Auto-fixable</div>
-        </Card>
-        <Card className="p-3">
+        </div>
+        <div style={{ background: 'var(--ds-surface, #FFFFFF)', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px', padding: '12px' }}>
           <div className="text-2xl font-bold text-brand-primary">{stats.responsive}</div>
           <div className="text-xs text-muted-foreground">Responsive</div>
-        </Card>
+        </div>
       </div>
 
       {/* Filters & Actions */}
       <div className="flex flex-wrap items-center gap-3">
         <div className="flex items-center gap-2">
           <FilterIcon label="" size="small" />
-          <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-            <SelectTrigger className="w-[140px] h-8">
-              <SelectValue placeholder="Category" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Categories</SelectItem>
-              <SelectItem value="color">Color</SelectItem>
-              <SelectItem value="spacing">Spacing</SelectItem>
-              <SelectItem value="typography">Typography</SelectItem>
-              <SelectItem value="layout">Layout</SelectItem>
-              <SelectItem value="component">Component</SelectItem>
-              <SelectItem value="responsive">Responsive</SelectItem>
-            </SelectContent>
-          </Select>
-          
-          <Select value={severityFilter} onValueChange={setSeverityFilter}>
-            <SelectTrigger className="w-[120px] h-8">
-              <SelectValue placeholder="Severity" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Severity</SelectItem>
-              <SelectItem value="P0">P0 Critical</SelectItem>
-              <SelectItem value="P1">P1 Major</SelectItem>
-              <SelectItem value="P2">P2 Medium</SelectItem>
-              <SelectItem value="P3">P3 Minor</SelectItem>
-            </SelectContent>
-          </Select>
+          <div style={{ width: '160px' }}>
+            <AdsSelect
+              value={{
+                label: categoryFilter === 'all' ? 'All Categories' :
+                  categoryFilter.charAt(0).toUpperCase() + categoryFilter.slice(1),
+                value: categoryFilter,
+              }}
+              options={[
+                { label: 'All Categories', value: 'all' },
+                { label: 'Color', value: 'color' },
+                { label: 'Spacing', value: 'spacing' },
+                { label: 'Typography', value: 'typography' },
+                { label: 'Layout', value: 'layout' },
+                { label: 'Component', value: 'component' },
+                { label: 'Responsive', value: 'responsive' },
+              ]}
+              onChange={(opt) => setCategoryFilter(opt?.value ?? 'all')}
+            />
+          </div>
+
+          <div style={{ width: '140px' }}>
+            <AdsSelect
+              value={{
+                label: severityFilter === 'all' ? 'All Severity' :
+                  severityFilter === 'P0' ? 'P0 Critical' :
+                  severityFilter === 'P1' ? 'P1 Major' :
+                  severityFilter === 'P2' ? 'P2 Medium' : 'P3 Minor',
+                value: severityFilter,
+              }}
+              options={[
+                { label: 'All Severity', value: 'all' },
+                { label: 'P0 Critical', value: 'P0' },
+                { label: 'P1 Major', value: 'P1' },
+                { label: 'P2 Medium', value: 'P2' },
+                { label: 'P3 Minor', value: 'P3' },
+              ]}
+              onChange={(opt) => setSeverityFilter(opt?.value ?? 'all')}
+            />
+          </div>
         </div>
 
         <div className="flex-1" />
 
         <Button
-          variant="outline"
-          size="sm"
+          appearance={showResponsive ? 'primary' : 'default'}
+          iconBefore={PhoneIcon}
           onClick={() => setShowResponsive(!showResponsive)}
-          className={showResponsive ? 'bg-brand-primary/10 border-brand-primary/30' : ''}
         >
-          <PhoneIcon label="" size="small" />
           Responsive Gaps
         </Button>
 
         {selectedGaps.size > 0 && (
-          <Button size="sm" onClick={handleFixSelected} className="bg-brand-primary hover:bg-brand-primary-hover">
-            <ToolsIcon label="" size="small" />
+          <Button appearance="primary" iconBefore={ToolsIcon} onClick={handleFixSelected}>
             Fix Selected ({selectedGaps.size})
           </Button>
         )}
@@ -239,26 +247,26 @@ export function GapDetectionGrid({ onFixSelected }: GapDetectionGridProps) {
 
       {/* Gap Grid */}
       {!showResponsive ? (
-        <Card>
-          <CardHeader className="py-3">
+        <div style={{ background: 'var(--ds-surface, #FFFFFF)', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px' }}>
+          <div style={{ padding: '12px 24px', borderBottom: '1px solid var(--ds-border-layout, #EBECF0)' }}>
             <div className="flex items-center justify-between">
               <div>
-                <CardTitle className="text-base flex items-center gap-2">
+                <h3 className="text-base flex items-center gap-2" style={{ fontWeight: 500, margin: 0 }}>
                   <WarningIcon label="" size="small" />
                   Design Gaps ({filteredGaps.length})
-                </CardTitle>
-                <CardDescription>Pages and components not aligned with baseline</CardDescription>
+                </h3>
+                <p style={{ fontSize: '14px', color: 'var(--ds-text-subtlest, #626F86)', margin: '4px 0 0' }}>Pages and components not aligned with baseline</p>
               </div>
-              <Button variant="ghost" size="sm" onClick={selectAll}>
+              <Button appearance="subtle" onClick={selectAll}>
                 {selectedGaps.size === filteredGaps.length ? 'Deselect All' : 'Select All'}
               </Button>
             </div>
-          </CardHeader>
-          <CardContent className="p-0">
+          </div>
+          <div>
             <ScrollArea className="h-[400px]">
               <div className="divide-y">
                 {filteredGaps.map(gap => (
-                  <div 
+                  <div
                     key={gap.id}
                     className={cn(
                       "flex items-center gap-3 px-4 py-3 hover:bg-secondary/30 transition-colors",
@@ -269,16 +277,16 @@ export function GapDetectionGrid({ onFixSelected }: GapDetectionGridProps) {
                       checked={selectedGaps.has(gap.id)}
                       onCheckedChange={() => toggleGap(gap.id)}
                     />
-                    
+
                     <Lozenge appearance={getSeverityAppearance(gap.severity)}>
                       {gap.severity}
                     </Lozenge>
-                    
+
                     <div className="flex items-center gap-1.5 shrink-0 text-muted-foreground">
                       {getCategoryIcon(gap.category)}
                       <span className="text-xs capitalize">{gap.category}</span>
                     </div>
-                    
+
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2">
                         <span className="font-medium text-sm">{gap.component}</span>
@@ -293,13 +301,13 @@ export function GapDetectionGrid({ onFixSelected }: GapDetectionGridProps) {
                         <span className="ml-2 text-muted-foreground">({gap.property})</span>
                       </div>
                     </div>
-                    
+
                     {gap.autoFixable ? (
                       <Lozenge appearance="success">Auto-fix</Lozenge>
                     ) : (
                       <Lozenge appearance="default">Manual</Lozenge>
                     )}
-                    
+
                     {gap.file && (
                       <code className="text-[10px] text-muted-foreground shrink-0">{gap.file}</code>
                     )}
@@ -307,35 +315,33 @@ export function GapDetectionGrid({ onFixSelected }: GapDetectionGridProps) {
                     {/* Fix Button */}
                     <Tooltip content="Copy fix instruction to clipboard, then paste in chat to fix this issue" position="left">
                       <Button
-                        variant="outline"
-                        size="sm"
-                        className="h-7 px-2 gap-1.5 shrink-0 hover:bg-brand-primary/10 hover:border-brand-primary/30 hover:text-brand-primary"
+                        appearance="default"
+                        iconBefore={SendIcon}
                         onClick={() => copyFixInstruction(gap)}
                       >
-                        <SendIcon label="" size="small" />
-                        <span className="text-xs">Fix</span>
+                        Fix
                       </Button>
                     </Tooltip>
                   </div>
                 ))}
               </div>
             </ScrollArea>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       ) : (
         /* Responsive Gaps View */
-        <Card>
-          <CardHeader className="py-3">
-            <CardTitle className="text-base flex items-center gap-2">
+        <div style={{ background: 'var(--ds-surface, #FFFFFF)', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px' }}>
+          <div style={{ padding: '12px 24px', borderBottom: '1px solid var(--ds-border-layout, #EBECF0)' }}>
+            <h3 className="text-base flex items-center gap-2" style={{ fontWeight: 500, margin: 0 }}>
               <PhoneIcon label="" size="small" />
               Responsive Gaps ({responsivenessGaps.length})
-            </CardTitle>
-            <CardDescription>Routes with responsiveness issues by viewport</CardDescription>
-          </CardHeader>
-          <CardContent className="p-0">
+            </h3>
+            <p style={{ fontSize: '14px', color: 'var(--ds-text-subtlest, #626F86)', margin: '4px 0 0' }}>Routes with responsiveness issues by viewport</p>
+          </div>
+          <div>
             <ScrollArea className="h-[400px]">
               <table className="w-full text-sm">
-                <thead className="sticky top-0 bg-card border-b">
+                <thead className="sticky top-0 border-b" style={{ background: 'var(--ds-surface, #FFFFFF)' }}>
                   <tr>
                     <th className="text-left font-medium px-4 py-2">Route</th>
                     <th className="text-left font-medium px-4 py-2">Viewport</th>
@@ -372,13 +378,11 @@ export function GapDetectionGrid({ onFixSelected }: GapDetectionGridProps) {
                       <td className="px-4 py-2 text-right">
                         <Tooltip content="Copy fix instruction to clipboard, then paste in chat" position="left">
                           <Button
-                            variant="outline"
-                            size="sm"
-                            className="h-7 px-2 gap-1.5 hover:bg-brand-primary/10 hover:border-brand-primary/30 hover:text-brand-primary"
+                            appearance="default"
+                            iconBefore={SendIcon}
                             onClick={() => copyFixInstruction(gap)}
                           >
-                            <SendIcon label="" size="small" />
-                            <span className="text-xs">Fix</span>
+                            Fix
                           </Button>
                         </Tooltip>
                       </td>
@@ -387,8 +391,8 @@ export function GapDetectionGrid({ onFixSelected }: GapDetectionGridProps) {
                 </tbody>
               </table>
             </ScrollArea>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       )}
     </div>
   );

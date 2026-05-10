@@ -1,6 +1,5 @@
 import { useState, useCallback } from 'react';
-import { Button } from '@/components/ui/button';
-import { Label } from '@/components/ui/label';
+import Button from '@atlaskit/button/new';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { cn } from '@/lib/utils';
@@ -149,9 +148,9 @@ export function ImportStepSetup({
         {/* File Upload */}
         <div className="space-y-4">
           <div>
-            <Label className="text-sm font-medium">
-              Source File <span className="text-destructive">*</span>
-            </Label>
+            <label style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>
+              Source File <span style={{ color: 'var(--ds-text-danger, #AE2A19)' }}>*</span>
+            </label>
           </div>
           
           {!file ? (
@@ -188,17 +187,14 @@ export function ImportStepSetup({
                 </p>
               </div>
               <Button
-                variant="ghost"
-                size="icon"
+                appearance="subtle"
                 onClick={(e) => {
                   e.stopPropagation();
                   onClearFile();
                   setError(null);
                 }}
-                className="h-8 w-8"
-              >
-                <CrossIcon label="" size="small" />
-              </Button>
+                iconBefore={CrossIcon}
+              />
             </div>
           )}
           
@@ -222,9 +218,9 @@ export function ImportStepSetup({
             onCheckedChange={(checked) => onUseExistingConfigChange(checked === true)}
           />
           <div className="space-y-1">
-            <Label htmlFor="use-existing" className="text-sm font-medium cursor-pointer">
+            <label htmlFor="use-existing" style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, #172B4D)', cursor: 'pointer' }}>
               Use an existing configuration file
-            </Label>
+            </label>
             <p className="text-xs text-muted-foreground">
               If you have used this importer before, you may have saved the configuration you used.
               You can use that configuration again to save time.

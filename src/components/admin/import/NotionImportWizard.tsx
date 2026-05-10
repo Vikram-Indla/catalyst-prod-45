@@ -6,10 +6,9 @@ import { useState, useMemo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import Button from '@atlaskit/button/new';
+import Textfield from '@atlaskit/textfield';
+import AdsSelect from '@atlaskit/select';
 import { fetchNotionDatabase, importNotionRows } from '@/lib/import/notionImportService';
 import type { NotionProperty, NotionRow } from '@/types/notionImport';
 import Spinner from '@atlaskit/spinner';
@@ -228,17 +227,16 @@ export function NotionImportWizard() {
               <div className="bg-white border border-[var(--ds-border,#E2E8F0)] rounded-lg overflow-hidden">
                 {/* Token */}
                 <div className="px-4 pt-3.5 pb-3 border-b border-[var(--ds-surface-sunken,#F1F5F9)]">
-                  <Label htmlFor="notion-token" className="text-[13px] font-semibold text-[var(--ds-text,#0F172A)] flex items-center gap-1.5 mb-1.5">
+                  <label htmlFor="notion-token" style={{ fontSize: '13px', fontWeight: 600, color: 'var(--ds-text, #0F172A)', display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '6px' }}>
                     <LockLockedIcon label="" size="small" />
                     Integration Token
-                  </Label>
-                  <Input
+                  </label>
+                  <Textfield
                     id="notion-token"
                     type="password"
                     placeholder="secret_..."
                     value={token}
-                    onChange={e => setToken(e.target.value)}
-                    className="h-9 text-[13px] bg-[var(--ds-surface-sunken,#F8FAFC)] border-[var(--ds-border,#E2E8F0)] focus:bg-white"
+                    onChange={e => setToken((e.target as HTMLInputElement).value)}
                   />
                   <p className="text-[11px] text-[var(--ds-text-subtlest,#94A3B8)] mt-1.5">
                     Create at{' '}
@@ -252,17 +250,15 @@ export function NotionImportWizard() {
 
                 {/* Database URL */}
                 <div className="px-4 pt-3.5 pb-3 border-b border-[var(--ds-surface-sunken,#F1F5F9)]">
-                  <Label htmlFor="notion-db-url" className="text-[13px] font-semibold text-[var(--ds-text,#0F172A)] flex items-center gap-1.5 mb-1.5">
+                  <label htmlFor="notion-db-url" style={{ fontSize: '13px', fontWeight: 600, color: 'var(--ds-text, #0F172A)', display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '6px' }}>
                     <LinkIcon label="" size="small" />
                     Database URL
-                  </Label>
-                  <Input
+                  </label>
+                  <Textfield
                     id="notion-db-url"
-                    type="text"
                     placeholder="https://www.notion.so/workspace/..."
                     value={dbUrl}
-                    onChange={e => setDbUrl(e.target.value)}
-                    className="h-9 text-[13px] bg-[var(--ds-surface-sunken,#F8FAFC)] border-[var(--ds-border,#E2E8F0)] focus:bg-white"
+                    onChange={e => setDbUrl((e.target as HTMLInputElement).value)}
                   />
                   <p className="text-[11px] text-[var(--ds-text-subtlest,#94A3B8)] mt-1.5">
                     Open your database in Notion, copy the full URL from the browser bar
@@ -272,36 +268,27 @@ export function NotionImportWizard() {
                 {/* Project + Type */}
                 <div className="px-4 pt-3.5 pb-3.5 grid grid-cols-2 gap-3">
                   <div>
-                    <Label className="text-[13px] font-semibold text-[var(--ds-text,#0F172A)] flex items-center gap-1.5 mb-1.5">
+                    <label style={{ fontSize: '13px', fontWeight: 600, color: 'var(--ds-text, #0F172A)', display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '6px' }}>
                       <BoardsIcon label="" size="small" />
                       Target Project
-                    </Label>
-                    <Select value={projectId} onValueChange={setProjectId}>
-                      <SelectTrigger className="h-9 text-[13px] bg-[var(--ds-surface-sunken,#F8FAFC)] border-[var(--ds-border,#E2E8F0)]">
-                        <SelectValue placeholder="Select project…" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {(projects || []).map(p => (
-                          <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                    </label>
+                    <AdsSelect
+                      value={projectId ? { label: (projects || []).find(p => p.id === projectId)?.name || projectId, value: projectId } : null}
+                      options={(projects || []).map(p => ({ label: p.name, value: p.id }))}
+                      placeholder="Select project…"
+                      onChange={(opt) => setProjectId(opt?.value ?? '')}
+                    />
                   </div>
                   <div>
-                    <Label className="text-[13px] font-semibold text-[var(--ds-text,#0F172A)] flex items-center gap-1.5 mb-1.5">
+                    <label style={{ fontSize: '13px', fontWeight: 600, color: 'var(--ds-text, #0F172A)', display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '6px' }}>
                       <BoardsIcon label="" size="small" />
                       Default Type
-                    </Label>
-                    <Select value={itemType} onValueChange={setItemType}>
-                      <SelectTrigger className="h-9 text-[13px] bg-[var(--ds-surface-sunken,#F8FAFC)] border-[var(--ds-border,#E2E8F0)]">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {ITEM_TYPES.map(t => (
-                          <SelectItem key={t} value={t}>{t}</SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                    </label>
+                    <AdsSelect
+                      value={{ label: itemType, value: itemType }}
+                      options={ITEM_TYPES.map(t => ({ label: t, value: t }))}
+                      onChange={(opt) => setItemType(opt?.value ?? 'Story')}
+                    />
                   </div>
                 </div>
               </div>
@@ -405,18 +392,11 @@ export function NotionImportWizard() {
                       </div>
                       <ArrowRightIcon label="" size="small" />
                       <div className="w-44 shrink-0">
-                        <Select value={mapped} onValueChange={val => setMappings(prev => ({ ...prev, [p.name]: val }))}>
-                          <SelectTrigger className={`h-7 text-[13px] border ${
-                            isSummary ? 'border-[var(--ds-text-success,#16A34A)] bg-[#F0FDF4]' : isSkip ? 'border-[var(--ds-border,#E2E8F0)] text-[var(--ds-text-subtlest,#94A3B8)]' : 'border-[var(--ds-border,#E2E8F0)]'
-                          }`}>
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {CATALYST_FIELDS.map(f => (
-                              <SelectItem key={f.value} value={f.value}>{f.label}</SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
+                        <AdsSelect
+                          value={{ label: CATALYST_FIELDS.find(f => f.value === mapped)?.label || mapped, value: mapped }}
+                          options={CATALYST_FIELDS.map(f => ({ label: f.label, value: f.value }))}
+                          onChange={(opt) => setMappings(prev => ({ ...prev, [p.name]: opt?.value ?? '__skip__' }))}
+                        />
                       </div>
                     </div>
                   );
@@ -501,8 +481,8 @@ export function NotionImportWizard() {
                       <span className="px-2.5 py-1 rounded-full bg-[#FEE2E2] text-[var(--ds-text-danger,#DC2626)]">{importResult.failed} failed</span>
                     )}
                   </div>
-                  <Button variant="outline" size="sm" className="gap-1.5" onClick={() => navigate('/producthub/backlog')}>
-                    View in ProductHub <LinkExternalIcon label="" size="small" />
+                  <Button appearance="default" onClick={() => navigate('/producthub/backlog')} iconAfter={LinkExternalIcon}>
+                    View in ProductHub
                   </Button>
                 </div>
               )}
@@ -515,74 +495,59 @@ export function NotionImportWizard() {
       <div className="shrink-0 border-t border-[var(--ds-border,#E2E8F0)] bg-white px-6 py-3">
         <div className="max-w-3xl mx-auto flex items-center justify-between">
           <Button
+            appearance="subtle"
             onClick={() => setStep(s => Math.max(1, s - 1))}
-            variant="ghost"
-            disabled={step === 1 || importing}
-            className="gap-1.5 text-[var(--ds-text-subtlest,#64748B)] hover:text-[var(--ds-text,#0F172A)]"
+            isDisabled={step === 1 || importing}
+            iconBefore={ChevronLeftIcon}
           >
-            <ChevronLeftIcon label="" size="small" />
             Back
           </Button>
 
           <div className="flex items-center gap-3">
             {step === 1 && (
               <Button
+                appearance="primary"
                 onClick={handleFetch}
-                disabled={!canFetch || fetching}
-                className="bg-[var(--ds-text-brand,#2563EB)] hover:bg-[var(--ds-background-brand-bold-hovered,#1D4ED8)] text-white gap-2 h-9 px-5"
+                isDisabled={!canFetch || fetching}
+                iconAfter={fetching ? undefined : ArrowRightIcon}
               >
                 {fetching ? (
-                  <>
-                    <Spinner size="small" />
-                    Connecting…
-                  </>
-                ) : (
-                  <>
-                    Fetch Database
-                    <ArrowRightIcon label="" size="small" />
-                  </>
-                )}
+                  <span className="flex items-center gap-2"><Spinner size="small" /> Connecting…</span>
+                ) : 'Fetch Database'}
               </Button>
             )}
             {step === 2 && (
               <Button
+                appearance="primary"
                 onClick={() => setStep(3)}
-                className="bg-[var(--ds-text-brand,#2563EB)] hover:bg-[var(--ds-background-brand-bold-hovered,#1D4ED8)] text-white gap-2 h-9 px-5"
+                iconAfter={ArrowRightIcon}
               >
                 Continue to Mapping
-                <ArrowRightIcon label="" size="small" />
               </Button>
             )}
             {step === 3 && (
               <Button
+                appearance="primary"
                 onClick={() => {
                   if (!summaryMapped) { setMapError(true); return; }
                   setMapError(false);
                   setStep(4);
                 }}
-                className="bg-[var(--ds-text-brand,#2563EB)] hover:bg-[var(--ds-background-brand-bold-hovered,#1D4ED8)] text-white gap-2 h-9 px-5"
+                iconAfter={ArrowRightIcon}
               >
-                Review & Import
-                <ArrowRightIcon label="" size="small" />
+                Review &amp; Import
               </Button>
             )}
             {step === 4 && !importResult && (
               <Button
+                appearance="primary"
                 onClick={handleImport}
-                disabled={importing}
-                className="bg-[var(--ds-text-brand,#2563EB)] hover:bg-[var(--ds-background-brand-bold-hovered,#1D4ED8)] text-white gap-2 h-9 px-5"
+                isDisabled={importing}
+                iconBefore={importing ? undefined : UploadIcon}
               >
                 {importing ? (
-                  <>
-                    <Spinner size="small" />
-                    Importing…
-                  </>
-                ) : (
-                  <>
-                    <UploadIcon label="" size="small" />
-                    Import {notionRows.length} Items
-                  </>
-                )}
+                  <span className="flex items-center gap-2"><Spinner size="small" /> Importing…</span>
+                ) : `Import ${notionRows.length} Items`}
               </Button>
             )}
           </div>

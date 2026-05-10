@@ -5,19 +5,13 @@
  */
 
 import { useState } from 'react';
-import { Button } from '@/components/ui/button';
+import Button from '@atlaskit/button/new';
+import AdsSelect from '@atlaskit/select';
 import AddIcon from '@atlaskit/icon/core/add';
 import CopyIcon from '@atlaskit/icon/core/copy';
 import EditIcon from '@atlaskit/icon/core/edit';
 import ShowMoreHorizontalIcon from '@atlaskit/icon/core/show-more-horizontal';
 import TrashIcon from '@atlaskit/icon/glyph/trash';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -68,38 +62,27 @@ export function SchemeSelector({ selectedSchemeId, onSchemeChange }: SchemeSelec
   return (
     <div className="flex items-center gap-2">
       {/* Scheme dropdown */}
-      <Select
-        value={selectedSchemeId ?? 'global'}
-        onValueChange={(v) => onSchemeChange(v === 'global' ? null : v)}
-      >
-        <SelectTrigger className="w-[200px] h-9 text-sm">
-          <SelectValue placeholder="Select scheme..." />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="global">
-            <span className="flex items-center gap-2">
-              <span className="h-2 w-2 rounded-full bg-[var(--ds-text-success,#16A34A)]" />
-              Global Defaults
-            </span>
-          </SelectItem>
-          {schemes?.map((s) => (
-            <SelectItem key={s.id} value={s.id}>
-              <span className="flex items-center gap-2">
-                {s.is_default && <span className="h-2 w-2 rounded-full bg-[var(--ds-text-brand,#2563EB)]" />}
-                {s.name}
-              </span>
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
+      <div style={{ minWidth: '200px' }}>
+        <AdsSelect
+          value={{
+            label: selectedScheme?.name ?? 'Global Defaults',
+            value: selectedSchemeId ?? 'global',
+          }}
+          options={[
+            { label: 'Global Defaults', value: 'global' },
+            ...(schemes?.map(s => ({ label: s.name, value: s.id })) || []),
+          ]}
+          placeholder="Select scheme..."
+          onChange={(opt) => onSchemeChange(opt?.value === 'global' ? null : opt?.value ?? null)}
+          isLoading={isLoading}
+        />
+      </div>
 
       {/* Actions for selected scheme */}
       {selectedScheme && (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="outline" size="sm" className="h-9 w-9 p-0">
-              <ShowMoreHorizontalIcon label="" size="small" />
-            </Button>
+            <Button appearance="default" iconBefore={ShowMoreHorizontalIcon} />
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-48">
             <DropdownMenuItem onClick={() => setEditScheme(selectedScheme)}>
@@ -128,12 +111,10 @@ export function SchemeSelector({ selectedSchemeId, onSchemeChange }: SchemeSelec
 
       {/* Create new scheme button */}
       <Button
-        variant="outline"
-        size="sm"
-        className="h-9 text-xs"
+        appearance="default"
         onClick={() => setShowCreate(true)}
+        iconBefore={AddIcon}
       >
-        <AddIcon label="" size="small" />
         New Scheme
       </Button>
 

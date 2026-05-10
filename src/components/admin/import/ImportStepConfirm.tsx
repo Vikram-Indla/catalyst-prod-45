@@ -1,4 +1,5 @@
-import { Button } from '@/components/ui/button';
+import Button from '@atlaskit/button/new';
+import DownloadIcon from '@atlaskit/icon/core/download';
 import { Progress } from '@/components/ui/progress';
 import { ImportModuleConfig } from '@/lib/import/importModuleConfig';
 import { RowValidationResult } from '@/lib/import/importValidator';
@@ -174,13 +175,13 @@ export function ImportStepConfirm({
             {/* Actions */}
             <div className="flex items-center gap-3 pt-4">
               <Button
+                appearance="primary"
                 onClick={onBeginImport}
-                disabled={summary.valid === 0}
-                className="bg-brand-primary hover:bg-brand-primary-hover text-white"
+                isDisabled={summary.valid === 0}
               >
                 Begin Import
               </Button>
-              <Button variant="outline" onClick={onDownloadPreview}>
+              <Button appearance="default" onClick={onDownloadPreview} iconBefore={DownloadIcon}>
                 Download Preview
               </Button>
             </div>

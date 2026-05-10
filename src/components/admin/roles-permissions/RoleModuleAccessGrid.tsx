@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Card, CardHeader, CardContent } from '@/components/ui/card';
+
 import { useRolePermissions, PERMISSION_GROUPS, useUpdateRolePermissions, PermissionLevel } from '@/hooks/useProductRoles';
 import { useUserRole } from '@/hooks/useUserRole';
 import { cn } from '@/lib/utils';
@@ -144,16 +144,16 @@ export function RoleModuleAccessGrid({ roleId, roleName }: RoleModuleAccessGridP
 
   if (isLoading) {
     return (
-      <Card>
-        <CardHeader className="pb-3 border-b">
-          <h2 className="text-sm font-semibold text-foreground">Module Access</h2>
-        </CardHeader>
-        <CardContent className="pt-4">
+      <div style={{ background: 'var(--ds-surface, #FFFFFF)', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px' }}>
+        <div style={{ padding: '12px 16px', borderBottom: '1px solid var(--ds-border-layout, #EBECF0)' }}>
+          <h2 className="text-sm font-semibold" style={{ color: 'var(--ds-text, #172B4D)' }}>Module Access</h2>
+        </div>
+        <div style={{ padding: '16px' }}>
           <div className="flex items-center justify-center py-8">
             <Spinner size="small" />
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     );
   }
 
@@ -163,11 +163,11 @@ export function RoleModuleAccessGrid({ roleId, roleName }: RoleModuleAccessGridP
   const hideCount = PERMISSION_GROUPS.filter(g => !permissionLookup[g] || permissionLookup[g] === 'None').length;
 
   return (
-    <Card>
-      <CardHeader className="pb-3 border-b">
+    <div style={{ background: 'var(--ds-surface, #FFFFFF)', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px' }}>
+      <div style={{ padding: '12px 16px', borderBottom: '1px solid var(--ds-border-layout, #EBECF0)' }}>
         <div className="flex items-center justify-between">
-          <h2 className="text-sm font-semibold text-foreground">Module Access</h2>
-          <div className="flex items-center gap-3 text-xs text-muted-foreground">
+          <h2 className="text-sm font-semibold" style={{ color: 'var(--ds-text, #172B4D)' }}>Module Access</h2>
+          <div className="flex items-center gap-3 text-xs" style={{ color: 'var(--ds-text-subtle, #44546F)' }}>
             <span className="flex items-center gap-1">
               <span className="h-2 w-2 rounded-full bg-emerald-500" />
               Full: {fullCount}
@@ -182,10 +182,10 @@ export function RoleModuleAccessGrid({ roleId, roleName }: RoleModuleAccessGridP
             </span>
           </div>
         </div>
-      </CardHeader>
-      <CardContent className="pt-4">
+      </div>
+      <div style={{ padding: '16px' }}>
         {canEdit && (
-          <p className="text-xs text-muted-foreground mb-4">
+          <p className="text-xs mb-4" style={{ color: 'var(--ds-text-subtle, #44546F)' }}>
             Click on any access level to toggle between Hide → View → Full
           </p>
         )}
@@ -194,14 +194,14 @@ export function RoleModuleAccessGrid({ roleId, roleName }: RoleModuleAccessGridP
             const level = permissionLookup[module];
             const isHidden = !level || level === 'None';
             const isUpdating = updatingModule === module;
-            
+
             return (
-              <div 
+              <div
                 key={module}
                 className={cn(
                   "flex items-center justify-between p-3 rounded-lg border transition-colors",
-                  isHidden 
-                    ? "bg-muted/30 border-border/50" 
+                  isHidden
+                    ? "bg-muted/30 border-border/50"
                     : "bg-background border-border",
                   isUpdating && "opacity-70"
                 )}
@@ -222,7 +222,7 @@ export function RoleModuleAccessGrid({ roleId, roleName }: RoleModuleAccessGridP
             );
           })}
         </div>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }

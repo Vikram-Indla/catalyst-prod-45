@@ -1,6 +1,5 @@
 import React from 'react';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { Label } from '@/components/ui/label';
 import { WorkItemIcon } from '@/components/ja/icons/WorkItemIcon';
 import type { IconStyle } from '@/hooks/useWorkItemIconPreferences';
 import { cn } from '@/lib/utils';
@@ -45,7 +44,7 @@ export function IconStyleSelector({
     >
       {STYLE_OPTIONS.map((option) => (
         <div key={option.value} className="flex-1">
-          <Label
+          <label
             htmlFor={`${workItemType}-${option.value}`}
             className={cn(
               "flex flex-col items-center gap-2 p-3 rounded-lg border-2 cursor-pointer transition-all",
@@ -71,7 +70,7 @@ export function IconStyleSelector({
             <span className="text-xs font-medium text-center">
               {option.label}
             </span>
-          </Label>
+          </label>
         </div>
       ))}
     </RadioGroup>

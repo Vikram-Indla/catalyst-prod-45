@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { useOptionSets, OptionSet } from '@/hooks/useOptionSets';
-import { Button } from '@/components/ui/button';
+import Button from '@atlaskit/button/new';
 import { Lozenge } from '@/components/ads';
-import { Input } from '@/components/ui/input';
+import Textfield from '@atlaskit/textfield';
 import { cn } from '@/lib/utils';
 import { OptionValuesDrawer } from './OptionValuesDrawer';
 import Spinner from '@atlaskit/spinner';
@@ -54,13 +54,16 @@ export function LookupManagementPanel() {
       </div>
 
       {/* Search */}
-      <div className="relative">
-        <SearchIcon label="" size="small" />
-        <Input
+      <div>
+        <Textfield
           placeholder="Search option sets..."
           value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          className="pl-9"
+          onChange={(e) => setSearchQuery((e.target as HTMLInputElement).value)}
+          elemBeforeInput={
+            <span style={{ display: 'flex', alignItems: 'center', padding: '0 8px' }}>
+              <SearchIcon label="" size="small" />
+            </span>
+          }
         />
       </div>
 
@@ -103,14 +106,11 @@ export function LookupManagementPanel() {
                 </td>
                 <td className="px-4 py-3 text-right">
                   <Button
-                    variant="ghost"
-                    size="sm"
+                    appearance="subtle"
                     onClick={() => handleManageOptions(set)}
-                    className="gap-1.5"
+                    iconBefore={SettingsIcon}
                   >
-                    <SettingsIcon label="" size="small" />
                     Manage
-                    <ChevronRightIcon label="" size="small" />
                   </Button>
                 </td>
               </tr>

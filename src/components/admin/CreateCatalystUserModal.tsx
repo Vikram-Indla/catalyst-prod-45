@@ -10,14 +10,8 @@ import {
   DialogContent,
   DialogTitle,
 } from '@/components/admin/admin-dialog';
-import { Input } from '@/components/ui/input';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
+import Textfield from '@atlaskit/textfield';
+import AdsSelect from '@atlaskit/select';
 import { useCreateCatalystUser } from '@/hooks/useJiraUserSync';
 
 interface Props {
@@ -124,12 +118,11 @@ const CreateCatalystUserModal: React.FC<Props> = ({ open, onClose, onSuccess }) 
           {/* Full Name */}
           <div style={{ marginBottom: '12px' }}>
             <label style={labelStyle}>Full Name <span style={{ color: 'var(--ds-text-danger, #DC2626)' }}>*</span></label>
-            <Input
+            <Textfield
               value={displayName}
-              onChange={e => { setDisplayName(e.target.value); setErrors(p => ({ ...p, displayName: '' })); }}
+              onChange={e => { setDisplayName((e.target as HTMLInputElement).value); setErrors(p => ({ ...p, displayName: '' })); }}
               placeholder="e.g. Dr. Ahmed Al-Rashid"
-              className="!bg-white dark:!bg-[var(--ds-surface-raised,#1A1A1A)] !text-slate-900 dark:!text-[var(--ds-text,#EDEDED)] !border-slate-200 dark:!border-[var(--ds-border,#2E2E2E)]"
-              style={{ fontSize: '12px', height: '34px' }}
+              isInvalid={!!errors.displayName}
             />
             {errors.displayName && <span style={{ fontSize: '10px', color: 'var(--ds-text-danger, #DC2626)', marginTop: '2px', display: 'block' }}>{errors.displayName}</span>}
           </div>
@@ -137,13 +130,12 @@ const CreateCatalystUserModal: React.FC<Props> = ({ open, onClose, onSuccess }) 
           {/* Email */}
           <div style={{ marginBottom: '12px' }}>
             <label style={labelStyle}>Email <span style={{ color: 'var(--ds-text-danger, #DC2626)' }}>*</span></label>
-            <Input
+            <Textfield
               type="email"
               value={email}
-              onChange={e => { setEmail(e.target.value); setErrors(p => ({ ...p, email: '' })); }}
+              onChange={e => { setEmail((e.target as HTMLInputElement).value); setErrors(p => ({ ...p, email: '' })); }}
               placeholder="user@moi.gov.sa"
-              className="!bg-white dark:!bg-[var(--ds-surface-raised,#1A1A1A)] !text-slate-900 dark:!text-[var(--ds-text,#EDEDED)] !border-slate-200 dark:!border-[var(--ds-border,#2E2E2E)]"
-              style={{ fontSize: '12px', height: '34px' }}
+              isInvalid={!!errors.email}
             />
             {errors.email && <span style={{ fontSize: '10px', color: 'var(--ds-text-danger, #DC2626)', marginTop: '2px', display: 'block' }}>{errors.email}</span>}
           </div>
@@ -151,26 +143,22 @@ const CreateCatalystUserModal: React.FC<Props> = ({ open, onClose, onSuccess }) 
           {/* Password */}
           <div style={{ marginBottom: '12px' }}>
             <label style={labelStyle}>Password <span style={{ color: 'var(--ds-text-danger, #DC2626)' }}>*</span></label>
-            <div style={{ position: 'relative' }}>
-              <Input
-                type={showPassword ? 'text' : 'password'}
-                value={password}
-                onChange={e => { setPassword(e.target.value); setErrors(p => ({ ...p, password: '' })); }}
-                placeholder="Min 8 characters"
-                className="!bg-white dark:!bg-[var(--ds-surface-raised,#1A1A1A)] !text-slate-900 dark:!text-[var(--ds-text,#EDEDED)] !border-slate-200 dark:!border-[var(--ds-border,#2E2E2E)] pr-9"
-                style={{ fontSize: '12px', height: '34px' }}
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                style={{
-                  position: 'absolute', right: '8px', top: '50%', transform: 'translateY(-50%)',
-                  background: 'none', border: 'none', cursor: 'pointer', color: 'var(--ds-text-subtlest, #64748B)', padding: 0,
-                }}
-              >
-                {showPassword ? <EyeOpenStrikethroughIcon label="" size="small" /> : <EyeOpenIcon label="" size="small" />}
-              </button>
-            </div>
+            <Textfield
+              type={showPassword ? 'text' : 'password'}
+              value={password}
+              onChange={e => { setPassword((e.target as HTMLInputElement).value); setErrors(p => ({ ...p, password: '' })); }}
+              placeholder="Min 8 characters"
+              isInvalid={!!errors.password}
+              elemAfterInput={
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  style={{ display: 'flex', alignItems: 'center', padding: '0 8px', border: 'none', background: 'transparent', cursor: 'pointer', color: 'var(--ds-text-subtlest, #64748B)' }}
+                >
+                  {showPassword ? <EyeOpenStrikethroughIcon label="" size="small" /> : <EyeOpenIcon label="" size="small" />}
+                </button>
+              }
+            />
             <span style={{ fontSize: '10px', color: 'var(--ds-text-subtlest, #94A3B8)', marginTop: '2px', display: 'block' }}>
               Min 8 characters. Stored securely in Catalyst (bcrypt).
             </span>
@@ -181,29 +169,21 @@ const CreateCatalystUserModal: React.FC<Props> = ({ open, onClose, onSuccess }) 
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginBottom: '14px' }}>
             <div>
               <label style={labelStyle}>Resource Role</label>
-              <Select value={roleId} onValueChange={setRoleId}>
-                <SelectTrigger className="!bg-white dark:!bg-[var(--ds-surface-raised,#1A1A1A)] !text-slate-900 dark:!text-[var(--ds-text,#EDEDED)] !border-slate-200 dark:!border-[var(--ds-border,#2E2E2E)]" style={{ height: '34px', fontSize: '12px' }}>
-                  <SelectValue placeholder="Select role" />
-                </SelectTrigger>
-                <SelectContent className="!bg-white dark:!bg-[var(--ds-surface-raised,#1A1A1A)] !text-slate-900 dark:!text-[var(--ds-text,#EDEDED)]">
-                  {ROLES.map(r => (
-                    <SelectItem key={r} value={r} style={{ fontSize: '12px' }}>{r}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <AdsSelect
+                value={roleId ? { label: roleId, value: roleId } : null}
+                options={ROLES.map(r => ({ label: r, value: r }))}
+                placeholder="Select role"
+                onChange={(opt) => setRoleId(opt?.value ?? '')}
+              />
             </div>
             <div>
               <label style={labelStyle}>Department</label>
-              <Select value={department} onValueChange={setDepartment}>
-                <SelectTrigger className="!bg-white dark:!bg-[var(--ds-surface-raised,#1A1A1A)] !text-slate-900 dark:!text-[var(--ds-text,#EDEDED)] !border-slate-200 dark:!border-[var(--ds-border,#2E2E2E)]" style={{ height: '34px', fontSize: '12px' }}>
-                  <SelectValue placeholder="Select department" />
-                </SelectTrigger>
-                <SelectContent className="!bg-white dark:!bg-[var(--ds-surface-raised,#1A1A1A)] !text-slate-900 dark:!text-[var(--ds-text,#EDEDED)]">
-                  {DEPARTMENTS.map(d => (
-                    <SelectItem key={d} value={d} style={{ fontSize: '12px' }}>{d}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <AdsSelect
+                value={department ? { label: department, value: department } : null}
+                options={DEPARTMENTS.map(d => ({ label: d, value: d }))}
+                placeholder="Select department"
+                onChange={(opt) => setDepartment(opt?.value ?? '')}
+              />
             </div>
           </div>
 

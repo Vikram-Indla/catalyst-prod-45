@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { Button } from '@/components/ui/button';
+import Button from '@atlaskit/button/new';
 import { Lozenge, Tooltip } from '@/components/ads';
 import { ImportModuleConfig } from '@/lib/import/importModuleConfig';
 import { RowValidationResult } from '@/lib/import/importValidator';
@@ -103,7 +103,7 @@ export function ImportStepValidation({
               <p className="text-muted-foreground mb-4">
                 Click "Validate" to check your data for errors before importing.
               </p>
-              <Button onClick={onValidate} className="bg-brand-primary hover:bg-brand-primary-hover text-white">
+              <Button appearance="primary" onClick={onValidate}>
                 Validate Data
               </Button>
             </div>
@@ -128,15 +128,15 @@ export function ImportStepValidation({
                 </div>
                 
                 {(summary?.invalid || 0) > 0 && (
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={onDownloadErrors}
-                    className="ml-auto"
-                  >
-                    <DownloadIcon label="" size="small" />
-                    Download Errors
-                  </Button>
+                  <div style={{ marginLeft: 'auto' }}>
+                    <Button
+                      appearance="default"
+                      onClick={onDownloadErrors}
+                      iconBefore={DownloadIcon}
+                    >
+                      Download Errors
+                    </Button>
+                  </div>
                 )}
               </div>
               
@@ -146,12 +146,8 @@ export function ImportStepValidation({
                 {(['all', 'valid', 'warning', 'invalid'] as const).map((f) => (
                   <Button
                     key={f}
-                    variant={filter === f ? 'default' : 'outline'}
-                    size="sm"
+                    appearance={filter === f ? 'primary' : 'default'}
                     onClick={() => setFilter(f)}
-                    className={cn(
-                      filter === f && 'bg-brand-primary hover:bg-brand-primary-hover'
-                    )}
                   >
                     {f.charAt(0).toUpperCase() + f.slice(1)}
                   </Button>

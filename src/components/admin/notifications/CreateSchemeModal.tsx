@@ -13,11 +13,10 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/admin/admin-dialog';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { Switch } from '@/components/ui/switch';
+import Button from '@atlaskit/button/new';
+import Textfield from '@atlaskit/textfield';
+import TextArea from '@atlaskit/textarea';
+import Toggle from '@atlaskit/toggle';
 import { useCreateScheme, useUpdateScheme } from '@/hooks/useNotificationSchemes';
 import type { NotificationScheme } from '@/types/notification-triggers';
 
@@ -104,65 +103,58 @@ export function CreateSchemeModal({ scheme, open, onClose, onCreated }: CreateSc
         <div className="space-y-4 py-2">
           {/* Name */}
           <div className="space-y-1.5">
-            <Label htmlFor="scheme-name" className="text-xs font-medium text-[var(--ds-text,#0F172A)]">
+            <label htmlFor="scheme-name" style={{ fontSize: '12px', fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>
               Scheme Name
-            </Label>
-            <Input
+            </label>
+            <Textfield
               id="scheme-name"
               placeholder="e.g. Development Team, QA Team, Minimal..."
               value={name}
-              onChange={(e) => setName(e.target.value)}
-              className="h-9 text-sm"
-              autoFocus
+              onChange={(e) => setName((e.target as HTMLInputElement).value)}
             />
           </div>
 
           {/* Description */}
           <div className="space-y-1.5">
-            <Label htmlFor="scheme-desc" className="text-xs font-medium text-[var(--ds-text,#0F172A)]">
+            <label htmlFor="scheme-desc" style={{ fontSize: '12px', fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>
               Description
-            </Label>
-            <Textarea
+            </label>
+            <TextArea
               id="scheme-desc"
               placeholder="Describe what this scheme is for..."
               value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              className="text-sm min-h-[80px] resize-none"
+              onChange={(e) => setDescription((e.target as HTMLTextAreaElement).value)}
+              minimumRows={3}
             />
           </div>
 
           {/* Default toggle */}
           <div className="flex items-center justify-between rounded-md border border-[var(--bd-default,#E2E8F0)] px-3 py-2.5">
             <div>
-              <p className="text-xs font-medium text-[var(--ds-text,#0F172A)]">Set as Default Scheme</p>
-              <p className="text-[11px] text-[var(--ds-text-subtle,#475569)] mt-0.5">
+              <p className="text-xs font-medium" style={{ color: 'var(--ds-text, #172B4D)' }}>Set as Default Scheme</p>
+              <p className="text-[11px] mt-0.5" style={{ color: 'var(--ds-text-subtle, #44546F)' }}>
                 New projects will automatically use this scheme.
               </p>
             </div>
-            <Switch
-              checked={isDefault}
-              onCheckedChange={setIsDefault}
-              className="data-[state=checked]:bg-[var(--ds-text-brand,#2563EB)]"
+            <Toggle
+              isChecked={isDefault}
+              onChange={() => setIsDefault(v => !v)}
             />
           </div>
         </div>
 
         <DialogFooter>
-          <Button variant="outline" onClick={onClose} disabled={isPending} className="text-sm">
+          <Button appearance="default" onClick={onClose} isDisabled={isPending}>
             Cancel
           </Button>
           <Button
+            appearance="primary"
             onClick={handleSubmit}
-            disabled={!name.trim() || isPending}
-            className="bg-[var(--ds-text-brand,#2563EB)] hover:bg-[var(--ds-background-brand-bold-hovered,#1D4ED8)] text-white text-sm"
+            isDisabled={!name.trim() || isPending}
           >
             {isPending
-              ? isEdit
-                ? 'Saving...'
-                : 'Creating...'
-              : isEdit
-                ? 'Save Changes'
-                : 'Create Scheme'}
+              ? isEdit ? 'Saving...' : 'Creating...'
+              : isEdit ? 'Save Changes' : 'Create Scheme'}
           </Button>
         </DialogFooter>
       </DialogContent>

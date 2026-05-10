@@ -3,8 +3,8 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/admin/admin-dialog';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Button } from '@/components/ui/button';
+import AdsSelect from '@atlaskit/select';
+import Button from '@atlaskit/button/new';
 import { Checkbox } from '@/components/ui/checkbox';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
@@ -120,20 +120,14 @@ export function PermissionGrantDialog({ open, onOpenChange, grant }: PermissionG
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Role</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select role" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {roles?.map((role) => (
-                        <SelectItem key={role.id} value={role.id}>
-                          {role.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <FormControl>
+                    <AdsSelect
+                      value={field.value ? { label: roles?.find(r => r.id === field.value)?.name || field.value, value: field.value } : null}
+                      options={roles?.map(r => ({ label: r.name, value: r.id })) || []}
+                      placeholder="Select role"
+                      onChange={(opt) => field.onChange(opt?.value || '')}
+                    />
+                  </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
@@ -144,20 +138,14 @@ export function PermissionGrantDialog({ open, onOpenChange, grant }: PermissionG
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Entity Type</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select entity type" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {entityTypes.map((type) => (
-                        <SelectItem key={type} value={type}>
-                          {type.replace(/_/g, ' ')}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <FormControl>
+                    <AdsSelect
+                      value={field.value ? { label: field.value.replace(/_/g, ' '), value: field.value } : null}
+                      options={entityTypes.map(type => ({ label: type.replace(/_/g, ' '), value: type }))}
+                      placeholder="Select entity type"
+                      onChange={(opt) => field.onChange(opt?.value || '')}
+                    />
+                  </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
@@ -168,22 +156,22 @@ export function PermissionGrantDialog({ open, onOpenChange, grant }: PermissionG
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Action</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select action" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      <SelectItem value="view">View</SelectItem>
-                      <SelectItem value="create">Create</SelectItem>
-                      <SelectItem value="edit">Edit</SelectItem>
-                      <SelectItem value="delete">Delete</SelectItem>
-                      <SelectItem value="link">Link</SelectItem>
-                      <SelectItem value="move">Move</SelectItem>
-                      <SelectItem value="configure">Configure</SelectItem>
-                    </SelectContent>
-                  </Select>
+                  <FormControl>
+                    <AdsSelect
+                      value={field.value ? { label: field.value.charAt(0).toUpperCase() + field.value.slice(1), value: field.value } : null}
+                      options={[
+                        { label: 'View', value: 'view' },
+                        { label: 'Create', value: 'create' },
+                        { label: 'Edit', value: 'edit' },
+                        { label: 'Delete', value: 'delete' },
+                        { label: 'Link', value: 'link' },
+                        { label: 'Move', value: 'move' },
+                        { label: 'Configure', value: 'configure' },
+                      ]}
+                      placeholder="Select action"
+                      onChange={(opt) => field.onChange(opt?.value || 'view')}
+                    />
+                  </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
@@ -194,19 +182,19 @@ export function PermissionGrantDialog({ open, onOpenChange, grant }: PermissionG
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Scope</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select scope" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      <SelectItem value="global">Global</SelectItem>
-                      <SelectItem value="portfolio">Portfolio</SelectItem>
-                      <SelectItem value="program">Program</SelectItem>
-                      <SelectItem value="team">Team</SelectItem>
-                    </SelectContent>
-                  </Select>
+                  <FormControl>
+                    <AdsSelect
+                      value={field.value ? { label: field.value.charAt(0).toUpperCase() + field.value.slice(1), value: field.value } : null}
+                      options={[
+                        { label: 'Global', value: 'global' },
+                        { label: 'Portfolio', value: 'portfolio' },
+                        { label: 'Program', value: 'program' },
+                        { label: 'Team', value: 'team' },
+                      ]}
+                      placeholder="Select scope"
+                      onChange={(opt) => field.onChange(opt?.value || 'global')}
+                    />
+                  </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
@@ -225,10 +213,10 @@ export function PermissionGrantDialog({ open, onOpenChange, grant }: PermissionG
               )}
             />
             <div className="flex justify-end gap-2">
-              <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
+              <Button appearance="default" onClick={() => onOpenChange(false)}>
                 Cancel
               </Button>
-              <Button type="submit" disabled={mutation.isPending}>
+              <Button appearance="primary" type="submit" isDisabled={mutation.isPending}>
                 {mutation.isPending ? 'Saving...' : isEditing ? 'Update' : 'Create'}
               </Button>
             </div>

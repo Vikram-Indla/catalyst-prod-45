@@ -6,7 +6,7 @@
  */
 
 import { memo } from 'react';
-import { Switch } from '@/components/ui/switch';
+import Toggle from '@atlaskit/toggle';
 import { Tooltip } from '@/components/ads';
 import type { ChannelsConfig } from '@/types/notification-triggers';
 import AutomationIcon from '@atlaskit/icon/core/automation';
@@ -68,11 +68,10 @@ export const InlineChannelToggles = memo(function InlineChannelToggles({
         <Tooltip key={key} delay={200} content={`${label}: ${channels[key] ? 'Enabled' : 'Disabled'}`}>
           <div className="flex items-center gap-1">
             <Icon className="h-3 w-3 text-[var(--ds-text-subtlest,#94A3B8)]" />
-            <Switch
-              checked={channels[key]}
-              onCheckedChange={(v) => onChange(key, v)}
-              disabled={disabled}
-              className="h-4 w-7 data-[state=checked]:bg-[var(--ds-text-brand,#2563EB)] disabled:opacity-30"
+            <Toggle
+              isChecked={channels[key]}
+              onChange={() => onChange(key, !channels[key])}
+              isDisabled={disabled}
             />
           </div>
         </Tooltip>
@@ -127,11 +126,10 @@ export function ChannelToggleCard({
               <p className="text-xs font-medium text-[var(--ds-text,#0F172A)]">{label}</p>
               <p className="text-[10px] text-[var(--ds-text-subtle,#475569)] truncate">{description}</p>
             </div>
-            <Switch
-              checked={channels[key]}
-              onCheckedChange={(v) => onChange(key, v)}
-              disabled={disabled}
-              className="h-4 w-7 data-[state=checked]:bg-[var(--ds-text-brand,#2563EB)] flex-shrink-0"
+            <Toggle
+              isChecked={channels[key]}
+              onChange={() => onChange(key, !channels[key])}
+              isDisabled={disabled}
             />
           </button>
         ))}

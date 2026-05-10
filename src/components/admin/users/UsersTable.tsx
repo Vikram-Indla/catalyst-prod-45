@@ -1,8 +1,8 @@
 import { useState, useMemo, useCallback, memo } from 'react';
 import { UserAvatar } from './UserAvatar';
-import { Card, CardHeader, CardContent, CardDescription, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
+import Button from '@atlaskit/button/new';
+import Textfield from '@atlaskit/textfield';
+import AdsSelect from '@atlaskit/select';
 import { Lozenge } from '@/components/ads';
 import { Checkbox } from '@/components/ui/checkbox';
 import ArrowDownIcon from '@atlaskit/icon/core/arrow-down';
@@ -18,13 +18,6 @@ import SearchIcon from '@atlaskit/icon/core/search';
 import ShowMoreHorizontalIcon from '@atlaskit/icon/core/show-more-horizontal';
 import SortAscendingIcon from '@atlaskit/icon/core/sort-ascending';
 import TrashIcon from '@atlaskit/icon/glyph/trash';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -460,31 +453,31 @@ export const UsersTable = memo(function UsersTable({ users, isLoading }: UsersTa
 
   if (isLoading) {
     return (
-      <Card>
-        <CardHeader>
-          <CardTitle>User List</CardTitle>
-          <CardDescription>View and manage all users in the system</CardDescription>
-        </CardHeader>
-        <CardContent>
+      <div style={{ background: 'var(--ds-surface, #FFFFFF)', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px' }}>
+        <div style={{ padding: '16px 24px' }}>
+          <h2 style={{ fontSize: '18px', fontWeight: 600, color: 'var(--ds-text, #172B4D)', margin: 0 }}>User List</h2>
+          <p style={{ fontSize: '13px', color: 'var(--ds-text-subtle, #44546F)', marginTop: '4px' }}>View and manage all users in the system</p>
+        </div>
+        <div style={{ padding: '0 24px 24px' }}>
           <div className="flex items-center justify-center py-12">
             <div className="rounded-full h-8 w-8 border-b-2 border-brand-primary" />
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     );
   }
 
   return (
-    <Card>
-      <CardHeader className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+    <div style={{ background: 'var(--ds-surface, #FFFFFF)', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px' }}>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3" style={{ padding: '16px 24px' }}>
         <div>
-          <CardTitle className="text-lg sm:text-xl">User List</CardTitle>
-          <CardDescription className="text-xs sm:text-sm">View and manage all users in the system</CardDescription>
+          <h2 className="text-lg sm:text-xl" style={{ fontWeight: 600, color: 'var(--ds-text, #172B4D)', margin: 0 }}>User List</h2>
+          <p className="text-xs sm:text-sm" style={{ color: 'var(--ds-text-subtle, #44546F)', marginTop: '4px' }}>View and manage all users in the system</p>
         </div>
-        <Button 
-          variant="outline" 
-          size="sm"
-          disabled={isExporting || filteredUsers.length === 0}
+        <Button
+          appearance="default"
+          isDisabled={isExporting || filteredUsers.length === 0}
+          iconBefore={DownloadIcon}
           onClick={async () => {
             setIsExporting(true);
             try {
@@ -519,114 +512,84 @@ export const UsersTable = memo(function UsersTable({ users, isLoading }: UsersTa
               setIsExporting(false);
             }
           }}
-          className="flex items-center gap-2 w-full sm:w-auto"
         >
-          <DownloadIcon label="" size="small" />
           {isExporting ? 'Exporting...' : 'Download Excel'}
         </Button>
-      </CardHeader>
-      <CardContent>
+      </div>
+      <div style={{ padding: '0 24px 24px' }}>
         {/* Filters - Row 1 */}
         <div className="flex flex-col gap-3 mb-3">
           <div className="relative w-full">
-            <SearchIcon label="" size="small" />
-            <Input
+            <Textfield
               placeholder="Search by name or email..."
-              className="pl-10"
               value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
+              onChange={(e) => setSearchTerm((e.target as HTMLInputElement).value)}
+              elemBeforeInput={<span style={{ display: 'flex', alignItems: 'center', padding: '0 8px' }}><SearchIcon label="" size="small" /></span>}
             />
           </div>
           <div className="grid grid-cols-2 sm:flex sm:flex-wrap gap-2">
-            <Select value={roleFilter} onValueChange={setRoleFilter}>
-              <SelectTrigger className="w-full sm:w-[130px] h-9 text-xs sm:text-sm">
-                <SelectValue placeholder="All Roles" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Roles</SelectItem>
-                {allRoles.map(role => (
-                  <SelectItem key={role} value={role}>{role}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <Select value={approvalFilter} onValueChange={setApprovalFilter}>
-              <SelectTrigger className="w-full sm:w-[130px] h-9 text-xs sm:text-sm">
-                <SelectValue placeholder="Approval" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Status</SelectItem>
-                <SelectItem value="PENDING_APPROVAL">Pending</SelectItem>
-                <SelectItem value="APPROVED">Approved</SelectItem>
-                <SelectItem value="REJECTED">Rejected</SelectItem>
-                <SelectItem value="DISABLED">Disabled</SelectItem>
-              </SelectContent>
-            </Select>
-            <Select value={departmentFilter} onValueChange={setDepartmentFilter}>
-              <SelectTrigger className="w-full sm:w-[130px] h-9 text-xs sm:text-sm">
-                <SelectValue placeholder="Department" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Depts</SelectItem>
-                {uniqueDepartments.map(dept => (
-                  <SelectItem key={dept} value={dept!}>{dept}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <Select value={assignmentFilter} onValueChange={setAssignmentFilter}>
-              <SelectTrigger className="w-full sm:w-[130px] h-9 text-xs sm:text-sm">
-                <SelectValue placeholder="Assignment" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Assign</SelectItem>
-                {uniqueAssignments.map(asn => (
-                  <SelectItem key={asn} value={asn!}>{asn}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <Select value={resourceTypeFilter} onValueChange={setResourceTypeFilter}>
-              <SelectTrigger className="w-full sm:w-[130px] h-9 text-xs sm:text-sm">
-                <SelectValue placeholder="Resource Type" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Types</SelectItem>
-                {uniqueResourceTypes.map(type => (
-                  <SelectItem key={type} value={type!}>{type}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <Select value={vendorFilter} onValueChange={setVendorFilter}>
-              <SelectTrigger className="w-full sm:w-[130px] h-9 text-xs sm:text-sm">
-                <SelectValue placeholder="Vendor" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Vendors</SelectItem>
-                {uniqueVendors.map(vendor => (
-                  <SelectItem key={vendor} value={vendor!}>{vendor}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <Select value={countryFilter} onValueChange={setCountryFilter}>
-              <SelectTrigger className="w-full sm:w-[130px] h-9 text-xs sm:text-sm">
-                <SelectValue placeholder="Country" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Countries</SelectItem>
-                {uniqueCountries.map(country => (
-                  <SelectItem key={country} value={country!}>{country}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <Select value={locationFilter} onValueChange={setLocationFilter}>
-              <SelectTrigger className="w-full sm:w-[130px] h-9 text-xs sm:text-sm">
-                <SelectValue placeholder="Location" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Locations</SelectItem>
-                {uniqueLocations.map(loc => (
-                  <SelectItem key={loc} value={loc!}>{loc}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <div style={{ minWidth: '130px' }}>
+              <AdsSelect
+                value={{ label: roleFilter === 'all' ? 'All Roles' : roleFilter, value: roleFilter }}
+                options={[{ label: 'All Roles', value: 'all' }, ...allRoles.map(r => ({ label: r, value: r }))]}
+                onChange={(opt) => setRoleFilter(opt?.value ?? 'all')}
+              />
+            </div>
+            <div style={{ minWidth: '130px' }}>
+              <AdsSelect
+                value={{ label: approvalFilter === 'all' ? 'All Status' : approvalFilter === 'PENDING_APPROVAL' ? 'Pending' : approvalFilter === 'APPROVED' ? 'Approved' : approvalFilter === 'REJECTED' ? 'Rejected' : 'Disabled', value: approvalFilter }}
+                options={[
+                  { label: 'All Status', value: 'all' },
+                  { label: 'Pending', value: 'PENDING_APPROVAL' },
+                  { label: 'Approved', value: 'APPROVED' },
+                  { label: 'Rejected', value: 'REJECTED' },
+                  { label: 'Disabled', value: 'DISABLED' },
+                ]}
+                onChange={(opt) => setApprovalFilter(opt?.value ?? 'all')}
+              />
+            </div>
+            <div style={{ minWidth: '130px' }}>
+              <AdsSelect
+                value={{ label: departmentFilter === 'all' ? 'All Depts' : departmentFilter, value: departmentFilter }}
+                options={[{ label: 'All Depts', value: 'all' }, ...uniqueDepartments.map(d => ({ label: d!, value: d! }))]}
+                onChange={(opt) => setDepartmentFilter(opt?.value ?? 'all')}
+              />
+            </div>
+            <div style={{ minWidth: '130px' }}>
+              <AdsSelect
+                value={{ label: assignmentFilter === 'all' ? 'All Assign' : assignmentFilter, value: assignmentFilter }}
+                options={[{ label: 'All Assign', value: 'all' }, ...uniqueAssignments.map(a => ({ label: a!, value: a! }))]}
+                onChange={(opt) => setAssignmentFilter(opt?.value ?? 'all')}
+              />
+            </div>
+            <div style={{ minWidth: '130px' }}>
+              <AdsSelect
+                value={{ label: resourceTypeFilter === 'all' ? 'All Types' : resourceTypeFilter, value: resourceTypeFilter }}
+                options={[{ label: 'All Types', value: 'all' }, ...uniqueResourceTypes.map(t => ({ label: t!, value: t! }))]}
+                onChange={(opt) => setResourceTypeFilter(opt?.value ?? 'all')}
+              />
+            </div>
+            <div style={{ minWidth: '130px' }}>
+              <AdsSelect
+                value={{ label: vendorFilter === 'all' ? 'All Vendors' : vendorFilter, value: vendorFilter }}
+                options={[{ label: 'All Vendors', value: 'all' }, ...uniqueVendors.map(v => ({ label: v!, value: v! }))]}
+                onChange={(opt) => setVendorFilter(opt?.value ?? 'all')}
+              />
+            </div>
+            <div style={{ minWidth: '130px' }}>
+              <AdsSelect
+                value={{ label: countryFilter === 'all' ? 'All Countries' : countryFilter, value: countryFilter }}
+                options={[{ label: 'All Countries', value: 'all' }, ...uniqueCountries.map(c => ({ label: c!, value: c! }))]}
+                onChange={(opt) => setCountryFilter(opt?.value ?? 'all')}
+              />
+            </div>
+            <div style={{ minWidth: '130px' }}>
+              <AdsSelect
+                value={{ label: locationFilter === 'all' ? 'All Locations' : locationFilter, value: locationFilter }}
+                options={[{ label: 'All Locations', value: 'all' }, ...uniqueLocations.map(l => ({ label: l!, value: l! }))]}
+                onChange={(opt) => setLocationFilter(opt?.value ?? 'all')}
+              />
+            </div>
           </div>
         </div>
 
@@ -654,9 +617,7 @@ export const UsersTable = memo(function UsersTable({ users, isLoading }: UsersTa
                 </div>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" size="icon" className="h-8 w-8 flex-shrink-0">
-                      <ShowMoreHorizontalIcon label="" size="small" />
-                    </Button>
+                    <Button appearance="subtle" iconBefore={ShowMoreHorizontalIcon} />
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
                     {user.approval_status === 'PENDING_APPROVAL' && (
@@ -1229,7 +1190,7 @@ export const UsersTable = memo(function UsersTable({ users, isLoading }: UsersTa
           total={sortedUsers.length}
           onPageChange={handlePageChange}
         />
-      </CardContent>
+      </div>
 
       {/* Delete User Confirmation Dialog */}
       <AlertDialog open={!!userToDelete} onOpenChange={(open) => !open && setUserToDelete(null)}>
@@ -1315,6 +1276,6 @@ export const UsersTable = memo(function UsersTable({ users, isLoading }: UsersTa
           );
         }}
       />
-    </Card>
+    </div>
   );
 });

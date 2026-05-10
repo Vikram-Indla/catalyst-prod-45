@@ -2,10 +2,10 @@ import { useState, useEffect } from 'react';
 import { useBusinessLines } from '@/hooks/useProductSettings';
 import { useDrawerTabConfigs, useBulkUpdateDrawerTabConfigs, DrawerTabConfig } from '@/hooks/useDrawerTabConfigs';
 import { useOptionSets, OptionSet } from '@/hooks/useOptionSets';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Switch } from '@/components/ui/switch';
+import AdsSelect from '@atlaskit/select';
+import Toggle from '@atlaskit/toggle';
 import { Lozenge } from '@/components/ads';
-import { Button } from '@/components/ui/button';
+import Button from '@atlaskit/button/new';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
@@ -182,19 +182,20 @@ export function FieldsLayoutPanel({ onChanges }: FieldsLayoutPanelProps) {
       {/* Scope Selector */}
       <div className="flex items-center gap-4">
         <span className="text-sm font-medium">Configuration Scope:</span>
-        <Select value={selectedScope} onValueChange={setSelectedScope}>
-          <SelectTrigger className="w-48">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="global">Global (All Business Lines)</SelectItem>
-            {businessLines.map(line => (
-              <SelectItem key={line.id} value={line.id}>
-                {line.name}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+        <div style={{ minWidth: '192px' }}>
+          <AdsSelect
+            value={
+              selectedScope === 'global'
+                ? { label: 'Global (All Business Lines)', value: 'global' }
+                : { label: businessLines.find(l => l.id === selectedScope)?.name || selectedScope, value: selectedScope }
+            }
+            options={[
+              { label: 'Global (All Business Lines)', value: 'global' },
+              ...businessLines.map(line => ({ label: line.name, value: line.id })),
+            ]}
+            onChange={(opt) => setSelectedScope(opt?.value ?? 'global')}
+          />
+        </div>
       </div>
 
       {/* Tabs Configuration */}
@@ -213,10 +214,10 @@ export function FieldsLayoutPanel({ onChanges }: FieldsLayoutPanelProps) {
                   <Lozenge appearance="inprogress">Required</Lozenge>
                 )}
               </div>
-              <Switch
-                checked={tab.is_visible}
-                onCheckedChange={() => handleTabToggle(tab.tab_key)}
-                disabled={tab.is_required}
+              <Toggle
+                isChecked={tab.is_visible}
+                onChange={() => handleTabToggle(tab.tab_key)}
+                isDisabled={tab.is_required}
               />
             </div>
           ))}
@@ -249,17 +250,17 @@ export function FieldsLayoutPanel({ onChanges }: FieldsLayoutPanelProps) {
                   <div className="flex items-center gap-4">
                     <div className="flex items-center gap-2">
                       <span className="text-xs text-muted-foreground">Visible</span>
-                      <Switch
-                        checked={section.is_visible}
-                        onCheckedChange={() => handleSectionToggle(section.key, 'is_visible')}
-                        disabled={section.is_required}
+                      <Toggle
+                        isChecked={section.is_visible}
+                        onChange={() => handleSectionToggle(section.key, 'is_visible')}
+                        isDisabled={section.is_required}
                       />
                     </div>
                     <div className="flex items-center gap-2">
                       <span className="text-xs text-muted-foreground">Collapsed</span>
-                      <Switch
-                        checked={section.collapsed_by_default}
-                        onCheckedChange={() => handleSectionToggle(section.key, 'collapsed_by_default')}
+                      <Toggle
+                        isChecked={section.collapsed_by_default}
+                        onChange={() => handleSectionToggle(section.key, 'collapsed_by_default')}
                       />
                     </div>
                   </div>
@@ -308,37 +309,34 @@ export function FieldsLayoutPanel({ onChanges }: FieldsLayoutPanelProps) {
                   </Lozenge>
                 </td>
                 <td className="px-4 py-2 text-center">
-                  <Switch
-                    checked={true}
-                    disabled={field.is_system}
+                  <Toggle
+                    isChecked={true}
+                    isDisabled={field.is_system}
+                    onChange={() => {}}
                   />
                 </td>
                 <td className="px-4 py-2 text-center">
-                  <Switch
-                    checked={field.is_required}
-                    onCheckedChange={() => handleFieldToggle(field.key, 'is_required')}
-                    disabled={field.is_system && field.is_required}
+                  <Toggle
+                    isChecked={field.is_required}
+                    onChange={() => handleFieldToggle(field.key, 'is_required')}
+                    isDisabled={field.is_system && field.is_required}
                   />
                 </td>
                 <td className="px-4 py-2 text-center">
                   {field.fieldType === 'select' && field.optionsSourceKey ? (
                     <Button
-                      variant="ghost"
-                      size="sm"
-                      className="h-8 gap-1.5 text-brand-primary hover:text-brand-primary hover:bg-brand-primary/10"
+                      appearance="subtle"
                       onClick={() => handleConfigureValues(field)}
+                      iconBefore={ListBulletedIcon}
                     >
-                      <ListBulletedIcon label="" size="small" />
-                      <span className="text-xs">Configure</span>
+                      Configure
                     </Button>
                   ) : (
                     <span className="text-xs text-muted-foreground">—</span>
                   )}
                 </td>
                 <td className="px-4 py-2 text-center">
-                  <Button variant="ghost" size="icon" className="h-8 w-8">
-                    <SettingsIcon label="" size="small" />
-                  </Button>
+                  <Button appearance="subtle" iconBefore={SettingsIcon} />
                 </td>
               </tr>
             ))}

@@ -7,11 +7,10 @@ import {
   DialogDescription,
   DialogFooter,
 } from '@/components/admin/admin-dialog';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { Switch } from '@/components/ui/switch';
+import Button from '@atlaskit/button/new';
+import Textfield from '@atlaskit/textfield';
+import TextArea from '@atlaskit/textarea';
+import Toggle from '@atlaskit/toggle';
 import { 
   ProductRole, 
   useCreateRole, 
@@ -122,69 +121,70 @@ export function AddEditRoleModal({
         <div className="space-y-4 py-4">
           {/* Role Name */}
           <div className="space-y-2">
-            <Label htmlFor="role-name">
-              Role Name <span className="text-destructive">*</span>
-            </Label>
-            <Input
+            <label htmlFor="role-name" style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>
+              Role Name <span style={{ color: 'var(--ds-text-danger, #AE2A19)' }}>*</span>
+            </label>
+            <Textfield
               id="role-name"
               value={name}
               onChange={(e) => {
-                setName(e.target.value);
+                setName((e.target as HTMLInputElement).value);
                 if (errors.name) setErrors({});
               }}
               placeholder="e.g. Business Analyst"
-              disabled={isPending}
+              isDisabled={isPending}
+              isInvalid={!!errors.name}
             />
             {errors.name && (
-              <p className="text-xs text-destructive">{errors.name}</p>
+              <p className="text-xs" style={{ color: 'var(--ds-text-danger, #AE2A19)' }}>{errors.name}</p>
             )}
           </div>
 
           {/* Description */}
           <div className="space-y-2">
-            <Label htmlFor="role-description">Description</Label>
-            <Textarea
+            <label htmlFor="role-description" style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>Description</label>
+            <TextArea
               id="role-description"
               value={description}
-              onChange={(e) => setDescription(e.target.value)}
+              onChange={(e) => setDescription((e.target as HTMLTextAreaElement).value)}
               placeholder="Brief description of this role's responsibilities..."
-              rows={3}
-              disabled={isPending}
+              minimumRows={3}
+              isDisabled={isPending}
             />
           </div>
 
           {/* Active Toggle */}
-          <div className="flex items-center justify-between rounded-lg border p-3">
+          <div className="flex items-center justify-between rounded-lg border p-3" style={{ borderColor: 'var(--ds-border, #DCDFE4)' }}>
             <div className="space-y-0.5">
-              <Label htmlFor="role-active">Active Status</Label>
-              <p className="text-xs text-muted-foreground">
+              <label htmlFor="role-active" style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>Active Status</label>
+              <p className="text-xs" style={{ color: 'var(--ds-text-subtle, #44546F)' }}>
                 Inactive roles cannot be assigned to users
               </p>
             </div>
-            <Switch
+            <Toggle
               id="role-active"
-              checked={isActive}
-              onCheckedChange={setIsActive}
-              disabled={isPending}
+              isChecked={isActive}
+              onChange={() => setIsActive(v => !v)}
+              isDisabled={isPending}
             />
           </div>
         </div>
 
         <DialogFooter>
           <Button
-            variant="outline"
+            appearance="default"
             onClick={handleCancel}
-            disabled={isPending}
+            isDisabled={isPending}
           >
             Cancel
           </Button>
           <Button
-            className="bg-brand-primary hover:bg-brand-primary-hover text-white"
+            appearance="primary"
             onClick={handleSubmit}
-            disabled={isPending}
+            isDisabled={isPending}
           >
-            {isPending 
-              ? (isEditing ? 'Saving...' : 'Creating...') 
+            {isPending
+              ? (isEditing ? 'Saving...' : 'Creating...')
               : (isEditing ? 'Save Changes' : 'Create Role')}
           </Button>
         </DialogFooter>

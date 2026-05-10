@@ -1,7 +1,6 @@
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from '@/components/ui/sheet';
-import { Button } from '@/components/ui/button';
+import Button from '@atlaskit/button/new';
 import { Lozenge, type LozengeAppearance } from '@/components/ads';
-import { Separator } from '@/components/ui/separator';
 import { format, parseISO } from 'date-fns';
 import { Json } from '@/integrations/supabase/types';
 import { cn } from '@/lib/utils';
@@ -114,7 +113,7 @@ export function AuditDetailsDrawer({ event, open, onOpenChange }: AuditDetailsDr
           </SheetDescription>
         </SheetHeader>
 
-        <Separator className="my-4" />
+        <hr style={{ margin: '16px 0', border: 'none', borderTop: '1px solid var(--ds-border-layout, #EBECF0)' }} />
 
         {/* Metadata */}
         <div className="space-y-4">
@@ -153,7 +152,7 @@ export function AuditDetailsDrawer({ event, open, onOpenChange }: AuditDetailsDr
           </div>
         </div>
 
-        <Separator className="my-4" />
+        <hr style={{ margin: '16px 0', border: 'none', borderTop: '1px solid var(--ds-border-layout, #EBECF0)' }} />
 
         {/* Field-level Diff */}
         <div className="space-y-3">
@@ -193,17 +192,15 @@ export function AuditDetailsDrawer({ event, open, onOpenChange }: AuditDetailsDr
           )}
         </div>
 
-        <Separator className="my-4" />
+        <hr style={{ margin: '16px 0', border: 'none', borderTop: '1px solid var(--ds-border-layout, #EBECF0)' }} />
 
         {/* Actions */}
         <div className="flex gap-2">
-          <Button variant="outline" size="sm" onClick={handleExport} className="gap-2">
-            <DownloadIcon label="" size="small" />
+          <Button appearance="default" iconBefore={DownloadIcon} onClick={handleExport}>
             Export event
           </Button>
           {/* Placeholder for "Open entity" link */}
-          <Button variant="ghost" size="sm" className="gap-2" disabled>
-            <LinkExternalIcon label="" size="small" />
+          <Button appearance="subtle" iconBefore={LinkExternalIcon} isDisabled>
             Open entity
           </Button>
         </div>

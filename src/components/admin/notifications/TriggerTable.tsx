@@ -6,7 +6,7 @@
  */
 
 import { useState, useCallback, useMemo } from 'react';
-import { Card } from '@/components/ui/card';
+
 import { Lozenge } from '@/components/ads';
 import { TriggerRow } from './TriggerRow';
 import type { TriggerCategoryGroup, TriggerRowData, ChannelsConfig } from '@/types/notification-triggers';
@@ -108,7 +108,7 @@ function CategoryAccordion({
   );
 
   return (
-    <Card className="overflow-hidden border-[var(--bd-default,#E2E8F0)]">
+    <div style={{ background: 'var(--ds-surface, #FFFFFF)', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px', overflow: 'hidden' }}>
       {/* ── Category Header ──────────────────────────────────────── */}
       <button
         onClick={onToggle}
@@ -218,6 +218,6 @@ function CategoryAccordion({
           ))}
         </div>
       )}
-    </Card>
+    </div>
   );
 }

@@ -16,10 +16,9 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/admin/admin-dialog';
-import { Button } from '@/components/ui/button';
-import { Switch } from '@/components/ui/switch';
+import Button from '@atlaskit/button/new';
+import Toggle from '@atlaskit/toggle';
 import { Lozenge } from '@/components/ads';
-import { Separator } from '@/components/ui/separator';
 import type { RecipientsConfig, TriggerRowData } from '@/types/notification-triggers';
 
 // ── Recipient metadata ──────────────────────────────────────────
@@ -188,29 +187,25 @@ export function RecipientPicker({ trigger, open, onClose, onSave }: RecipientPic
                   <p className="text-[11px] text-[var(--ds-text-subtle,#475569)] truncate">{def.description}</p>
                 </div>
               </div>
-              <Switch
-                checked={config[def.key]}
-                onCheckedChange={() => handleToggle(def.key)}
-                className="h-4 w-7 data-[state=checked]:bg-[var(--ds-text-brand,#2563EB)] flex-shrink-0 ml-3"
+              <Toggle
+                isChecked={config[def.key]}
+                onChange={() => handleToggle(def.key)}
               />
             </button>
           ))}
         </div>
 
-        <Separator />
+        <hr style={{ border: 'none', borderTop: '1px solid var(--ds-border-layout, #EBECF0)', margin: 0 }} />
 
         <DialogFooter className="flex items-center justify-between">
           <span className="text-xs text-[var(--ds-text-subtlest,#94A3B8)]">
             {enabledCount} of {RECIPIENT_DEFS.length} recipient types enabled
           </span>
           <div className="flex gap-2">
-            <Button variant="outline" onClick={onClose} className="text-sm">
+            <Button appearance="default" onClick={onClose}>
               Cancel
             </Button>
-            <Button
-              onClick={handleSave}
-              className="bg-[var(--ds-text-brand,#2563EB)] hover:bg-[var(--ds-background-brand-bold-hovered,#1D4ED8)] text-white text-sm"
-            >
+            <Button appearance="primary" onClick={handleSave}>
               Save Recipients
             </Button>
           </div>

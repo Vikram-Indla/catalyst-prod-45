@@ -3,9 +3,9 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/admin/admin-dialog';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Button } from '@/components/ui/button';
+import Textfield from '@atlaskit/textfield';
+import TextArea from '@atlaskit/textarea';
+import Button from '@atlaskit/button/new';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -82,7 +82,13 @@ export function PermissionRoleDialog({ open, onOpenChange, role }: PermissionRol
                 <FormItem>
                   <FormLabel>Role Name</FormLabel>
                   <FormControl>
-                    <Input {...field} placeholder="e.g., Portfolio Manager" />
+                    <Textfield
+                      value={field.value}
+                      onChange={(e) => field.onChange((e.target as HTMLInputElement).value)}
+                      onBlur={field.onBlur}
+                      name={field.name}
+                      placeholder="e.g., Portfolio Manager"
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -95,17 +101,24 @@ export function PermissionRoleDialog({ open, onOpenChange, role }: PermissionRol
                 <FormItem>
                   <FormLabel>Description</FormLabel>
                   <FormControl>
-                    <Textarea {...field} placeholder="Role description..." />
+                    <TextArea
+                      value={field.value}
+                      onChange={(e) => field.onChange((e.target as HTMLTextAreaElement).value)}
+                      onBlur={field.onBlur}
+                      name={field.name}
+                      placeholder="Role description..."
+                      minimumRows={3}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
             <div className="flex justify-end gap-2">
-              <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
+              <Button appearance="default" onClick={() => onOpenChange(false)}>
                 Cancel
               </Button>
-              <Button type="submit" disabled={mutation.isPending}>
+              <Button appearance="primary" type="submit" isDisabled={mutation.isPending}>
                 {mutation.isPending ? 'Saving...' : isEditing ? 'Update' : 'Create'}
               </Button>
             </div>
