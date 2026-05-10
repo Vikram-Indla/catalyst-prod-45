@@ -143,8 +143,8 @@ Append-only. Newest at top. Each entry: date, pattern, rule, surface.
 
 ## 2026-05-10 — Fix versions must be gated per type, not just Epic exclusion
 **Surface:** CatalystSidebarDetails (all issue type views)
-**Pattern:** Fix versions was gated as `issue_type !== 'Epic'` — meaning it rendered for ALL other types including Feature. Jira Feature screen scheme (10173) does NOT include Fix versions. The guard was expanded to also exclude Feature after Lane B confirmation via `getJiraIssueTypeMetaWithFields`.
-**Rule:** Fix versions guard must reflect the actual Jira screen scheme per type. Currently excluded for: Epic, Feature. All other types (Story 10006, Task 10010, Change Request 10305, Production Incident 10045, QA Bug) DO have Fix versions in their schemes. When adding a new work item type to Catalyst, always check Fix versions membership in the scheme before deciding whether to include it.
+**Pattern:** Fix versions was gated as `issue_type !== 'Epic'` — meaning it rendered for ALL other types including Feature. Jira Feature screen scheme (10173) does NOT include Fix versions. The guard was expanded to also exclude Feature after Lane B confirmation via `getJiraIssueTypeMetaWithFields`. Epic was later RE-PROBED (2026-05-10 Epic field sweep) — Lane B confirmed `fixVersions` IS in the Epic scheme (type 10000). Epic exclusion removed; Vikram approved 2026-05-10.
+**Rule:** Fix versions guard must reflect the actual Jira screen scheme per type. Currently excluded for: **Feature only**. All other types (Epic 10000, Story 10006, Task 10010, Change Request 10305, Production Incident 10045, QA Bug) have Fix versions in their schemes. When adding a new work item type to Catalyst, always check Fix versions membership in the scheme before deciding whether to include it.
 
 ## 2026-05-10 — Severity wiring: only Incident/BusinessGap had extraRows; Task was missed
 **Surface:** CatalystViewTask (Key details section)
