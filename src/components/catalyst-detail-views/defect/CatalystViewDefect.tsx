@@ -47,7 +47,7 @@ export default function CatalystViewDefect({
       <CatalystTitleEditor issue={issue ?? null} onTitleChange={(t) => mutations.updateField.mutate({ field: 'summary', value: t, oldValue: issue?.summary ?? '' })} />
       {/* jira-compare 2026-05-03 — Patch B (Defect) · CatalystStatusPill relocated to right-rail header in CatalystSidebarDetails (slot-prop pattern). */}
       <CatalystQuickActions />
-      <ImproveIssueDropdown issue={issue ?? null} {...improveHandlers} />
+      {/* jira-compare 2026-05-10: ImproveIssueDropdown relocated to right-rail improveDropdown slot (Vikram "follow jira"). */}
 
       {/* Jira-parity: Parent → Severity → Priority → (any populated
           Catalyst-only fields) all render inside the collapsible "Key
@@ -150,6 +150,7 @@ export default function CatalystViewDefect({
       /* jira-compare 2026-05-03 — Patch B (Defect) · Status pill + Improve dropdown
          anchored together at the rail header. Mirrors CatalystViewStory's Patch D + E. */
       statusPill={<CatalystStatusPill status={issue?.status} statusCategory={issue?.status_category} onStatusChange={(st) => mutations.updateStatus.mutate(st)} issueType={issue?.issue_type} />}
+      improveDropdown={<ImproveIssueDropdown issue={issue ?? null} {...improveHandlers} />}
     />
   );
 
