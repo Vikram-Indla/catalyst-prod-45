@@ -7,7 +7,7 @@
 import React, { useRef, useState, useCallback, useEffect } from 'react';
 import { cn } from '@/lib/utils';
 import { useAllocationMutation } from '@/hooks/useAllocationMutation';
-import { Loader2, Check, AlertTriangle } from 'lucide-react';
+import { Loader2, Check, AlertTriangle } from '@/lib/atlaskit-icons';
 import { getTimelineBarStyle } from '@/lib/constants/catalyst-colors';
 import styles from './Timeline.module.css';
 

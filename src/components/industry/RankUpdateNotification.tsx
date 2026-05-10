@@ -1,4 +1,4 @@
-import { AlarmClock, X } from 'lucide-react';
+import { AlarmClock, X } from '@/lib/atlaskit-icons';
 import { useEffect } from 'react';
 
 interface RankUpdateNotificationProps {

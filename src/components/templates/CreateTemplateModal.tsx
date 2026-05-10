@@ -25,7 +25,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { RefreshCw, Zap, UserCheck, Settings, ChevronLeft, ChevronRight, Loader2, Check } from 'lucide-react';
+import { RefreshCw, Zap, UserCheck, Settings, ChevronLeft, ChevronRight, Loader2, Check } from '@/lib/atlaskit-icons';
 import { TemplateTestSelector } from './TemplateTestSelector';
 import { TemplateAssignmentRules } from './TemplateAssignmentRules';
 import { TemplateMilestones } from './TemplateMilestones';

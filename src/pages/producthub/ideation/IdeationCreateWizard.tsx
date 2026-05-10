@@ -3,7 +3,7 @@
  */
 import React, { useState, useEffect, useCallback } from 'react';
 import { useTheme } from '@/hooks/useTheme';
-import { X, Sparkles } from 'lucide-react';
+import { X, Sparkles } from '@/lib/atlaskit-icons';
 import { toast } from 'sonner';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';

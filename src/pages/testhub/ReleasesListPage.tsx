@@ -8,7 +8,7 @@ import {
   Package, Plus, Search, X, LayoutGrid, List, 
   Calendar, Shield, ChevronRight, Clock, CheckCircle2,
   AlertTriangle, XCircle, Archive, Rocket, Beaker, Settings2, Monitor,
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import { useReleases, type Release, type ReleaseFilters } from '@/hooks/testhub/useReleases';
 import { CreateReleaseModal } from '@/components/testhub/releases/CreateReleaseModal';
 import { format } from 'date-fns';

@@ -7,7 +7,7 @@
 
 import { useState, useMemo, useCallback, useRef, useLayoutEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { ChevronLeft, ChevronRight, AlertTriangle, Clock, CheckCircle, XCircle, Database } from 'lucide-react';
+import { ChevronLeft, ChevronRight, AlertTriangle, Clock, CheckCircle, XCircle, Database } from '@/lib/atlaskit-icons';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import {

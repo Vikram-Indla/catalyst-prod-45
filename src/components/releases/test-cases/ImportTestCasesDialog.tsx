@@ -17,7 +17,7 @@ import {
   X,
   ArrowRight,
   Download,
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import {
   Dialog,
   DialogContent,

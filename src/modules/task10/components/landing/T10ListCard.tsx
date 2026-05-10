@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { MoreVertical, Edit, Trash2, Clock, Check, ChevronDown } from 'lucide-react';
+import { MoreVertical, Edit, Trash2, Clock, Check, ChevronDown } from '@/lib/atlaskit-icons';
 import type { T10List, T10Week } from '../../types';
 import { formatWeekDate, formatShortDate } from '../../utils';
 

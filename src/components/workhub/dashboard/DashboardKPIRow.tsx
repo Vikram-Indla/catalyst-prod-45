@@ -3,7 +3,7 @@
  * Phase 8
  */
 import { useNavigate } from 'react-router-dom';
-import { Rocket, AlertTriangle, FileStack, Clock, AlertCircle } from 'lucide-react';
+import { Rocket, AlertTriangle, FileStack, Clock, AlertCircle } from '@/lib/atlaskit-icons';
 import type { DashboardKPIs } from '@/types/workhub.types';
 
 interface KPICardDef {

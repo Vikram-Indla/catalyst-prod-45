@@ -1,4 +1,4 @@
-import { X, AlertCircle, Info, AlertTriangle } from 'lucide-react';
+import { X, AlertCircle, Info, AlertTriangle } from '@/lib/atlaskit-icons';
 import { Button } from '@/components/ui/button';
 import { useAnnouncements } from '@/hooks/useAnnouncements';
 import { cn } from '@/lib/utils';

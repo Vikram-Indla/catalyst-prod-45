@@ -3,7 +3,7 @@
  * Collapsible, sortable table with inline delete confirm, drag-drop, signed URLs
  */
 import React, { useState, useCallback, useRef } from 'react';
-import { Paperclip, Upload, FileText, FileImage, FileVideo, File, Eye, Download, Trash2, Loader2, ChevronDown, Plus } from 'lucide-react';
+import { Paperclip, Upload, FileText, FileImage, FileVideo, File, Eye, Download, Trash2, Loader2, ChevronDown, Plus } from '@/lib/atlaskit-icons';
 import {
   useEntityAttachments,
   useUploadEntityAttachment,

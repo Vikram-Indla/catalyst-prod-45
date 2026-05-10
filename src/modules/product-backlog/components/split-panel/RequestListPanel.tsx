@@ -5,7 +5,7 @@
 
 import React from 'react';
 import { cn } from '@/lib/utils';
-import { Search, Plus, Circle, Paperclip } from 'lucide-react';
+import { Search, Plus, Circle, Paperclip } from '@/lib/atlaskit-icons';
 import { Tooltip } from '@/components/ads';
 
 interface RequestItem {

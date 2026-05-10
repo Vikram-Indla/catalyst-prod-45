@@ -24,7 +24,7 @@
 
 import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { AlertTriangle, Search, Download, Plus } from 'lucide-react';
+import { AlertTriangle, Search, Download, Plus } from '@/lib/atlaskit-icons';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useIncidentListView, useIncidentStats } from '@/hooks/useIncidentHub';

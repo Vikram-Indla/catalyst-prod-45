@@ -21,7 +21,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
 import { StatusBadge } from '@/components/ui/StatusBadge';
-import { ChevronDown, ChevronRight, ChevronLeft, Plus, Pencil, Trash2, BookOpen, Search, X, Star } from 'lucide-react';
+import { ChevronDown, ChevronRight, ChevronLeft, Plus, Pencil, Trash2, BookOpen, Search, X, Star } from '@/lib/atlaskit-icons';
 import { GroupByPopover as SharedGroupByPopover } from '@/components/shared/GroupByPopover';
 import type { GroupByOption } from '@/components/shared/GroupByPopover';
 import { PriorityBars, normalisePriority } from '@/components/shared/PriorityIndicator';

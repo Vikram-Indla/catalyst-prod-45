@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
-import { Search, Filter, MoreHorizontal, ChevronRight, ChevronDown } from 'lucide-react';
+import { Search, Filter, MoreHorizontal, ChevronRight, ChevronDown } from '@/lib/atlaskit-icons';
 import { ProjectData } from '../../../types/project.types';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';

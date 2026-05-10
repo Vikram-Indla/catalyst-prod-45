@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Check, X, Users, AlertTriangle, UserPlus, Shield } from 'lucide-react';
+import { Check, X, Users, AlertTriangle, UserPlus, Shield } from '@/lib/atlaskit-icons';
 import { Button } from '@/components/ui/button';
 import { Avatar, Lozenge, type LozengeAppearance } from '@/components/ads';
 import { Textarea } from '@/components/ui/textarea';

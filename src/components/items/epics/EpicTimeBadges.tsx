@@ -3,7 +3,7 @@
  * Phase II Step 3: Time & Roadmap Alignment
  */
 
-import { AlertCircle, Clock } from 'lucide-react';
+import { AlertCircle, Clock } from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 import { isEpicOverdue, isEpicDueThisQuarter, getQuarterLabel } from '@/lib/epic-time-utils';
 

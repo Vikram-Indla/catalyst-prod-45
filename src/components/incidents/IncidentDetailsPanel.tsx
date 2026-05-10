@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Lozenge } from '@/components/ads';
 import { CatalystOwnerAvatar } from '@/components/ui/catalyst';
 import { PriorityBadge } from '@/components/release/PriorityBadge';
-import { X } from 'lucide-react';
+import { X } from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 import { IncidentStatusDropdown } from './IncidentStatusDropdown';
 import type { Incident, Assignee } from '@/types/release';

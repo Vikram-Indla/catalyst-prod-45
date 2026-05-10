@@ -4,7 +4,7 @@
  */
 
 import { memo, useMemo } from 'react';
-import { ChevronDown, X, Users } from 'lucide-react';
+import { ChevronDown, X, Users } from '@/lib/atlaskit-icons';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';

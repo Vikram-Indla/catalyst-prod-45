@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Plus, X } from 'lucide-react';
+import { Plus, X } from '@/lib/atlaskit-icons';
 
 // NEW: Standard skills list for quick selection
 export const STANDARD_SKILLS = [

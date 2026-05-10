@@ -49,7 +49,7 @@ import {
   ChevronDown,
   FileIcon,
   Paperclip
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import { useWorkItemAttachments, downloadAttachment, type UnifiedAttachment } from '@/hooks/useUnifiedAttachments';

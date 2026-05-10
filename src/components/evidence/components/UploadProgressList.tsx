@@ -3,7 +3,7 @@
 // ═══════════════════════════════════════════════════════════════════════════
 
 import React from 'react';
-import { Check, AlertCircle, X, FileIcon, RefreshCw } from 'lucide-react';
+import { Check, AlertCircle, X, FileIcon, RefreshCw } from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 import { UploadProgress } from '../types';
 import { formatFileSize } from '../utils/validation';

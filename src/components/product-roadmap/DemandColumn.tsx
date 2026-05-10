@@ -1,6 +1,6 @@
 import React, { forwardRef, useRef, useEffect, useCallback, useState, useMemo } from 'react';
 import { Demand, DemandOwner } from '@/types/product-roadmap';
-import { ChevronDown } from 'lucide-react';
+import { ChevronDown } from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 import { DemandGroupBy } from './ProductRoadmapToolbar';
 import { format } from 'date-fns';

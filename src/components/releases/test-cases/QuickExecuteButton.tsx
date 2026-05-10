@@ -17,7 +17,7 @@ import {
   XCircle,
   AlertTriangle,
   SkipForward,
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 

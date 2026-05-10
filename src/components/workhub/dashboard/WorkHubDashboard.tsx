@@ -4,7 +4,7 @@
  */
 import { useState, useCallback } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
-import { AlertTriangle } from 'lucide-react';
+import { AlertTriangle } from '@/lib/atlaskit-icons';
 import { CommandCenterHeader } from '@/components/shared/CommandCenterHeader';
 import { useDashboardKPIs } from '@/hooks/workhub/useDashboardKPIs';
 import { useReleaseProgress } from '@/hooks/workhub/useReleases';

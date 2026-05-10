@@ -19,7 +19,7 @@ import { FeatureDetailsPanel } from '@/components/items/features/FeatureDetailsP
 import { FeatureToolbar } from '@/components/items/features/FeatureToolbar';
 import { FeatureTable } from '@/components/items/features/FeatureTable';
 import { FeatureMassMoveDialog } from '@/components/items/features/FeatureMassMoveDialog';
-import { Search, Plus } from 'lucide-react';
+import { Search, Plus } from '@/lib/atlaskit-icons';
 import { toast } from 'sonner';
 import type { Feature } from '@/types/feature.types';
 

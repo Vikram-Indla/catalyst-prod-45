@@ -5,7 +5,7 @@
 import { cn } from '@/lib/utils';
 import {
   GitPullRequest, GitCommit, GitBranch, Hammer, Rocket, ExternalLink,
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import type { DevelopmentItem, DevItemType } from '@/types/issue-view.types';
 import { formatDistanceToNow } from 'date-fns';
 

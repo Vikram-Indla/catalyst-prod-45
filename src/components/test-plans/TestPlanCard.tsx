@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { Calendar, Users, BarChart3, MoreVertical, Trash2, Copy } from 'lucide-react';
+import { Calendar, Users, BarChart3, MoreVertical, Trash2, Copy } from '@/lib/atlaskit-icons';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';

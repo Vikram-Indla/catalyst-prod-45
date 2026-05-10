@@ -3,7 +3,7 @@
  * Queries ph_issues by resource name + claim context (closures, defects, items, etc.)
  */
 import { useState, useEffect } from 'react';
-import { X, ExternalLink, Clock } from 'lucide-react';
+import { X, ExternalLink, Clock } from '@/lib/atlaskit-icons';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import { formatDistanceToNow } from 'date-fns';

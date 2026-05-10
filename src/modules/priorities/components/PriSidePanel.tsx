@@ -3,7 +3,7 @@
 // ============================================================
 
 import { useState, useEffect } from 'react';
-import { X } from 'lucide-react';
+import { X } from '@/lib/atlaskit-icons';
 import type { PriItemFull, PriUpdateItemInput, PriAssigneeOption, PriLabel } from '../types';
 import { PriLabelBadge } from './PriLabelBadge';
 import styles from '../styles/priorities.module.css';

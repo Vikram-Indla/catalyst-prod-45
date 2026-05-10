@@ -29,7 +29,7 @@
  */
 import React from 'react';
 import { token } from '@atlaskit/tokens';
-import { Sparkles } from 'lucide-react';
+import { Sparkles } from '@/lib/atlaskit-icons';
 import type { TabType } from '@/hooks/useForYouData';
 import { useAgeingCount } from '@/components/notifications/AgeingTab';
 

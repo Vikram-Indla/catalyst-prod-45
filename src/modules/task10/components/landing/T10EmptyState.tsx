@@ -4,7 +4,7 @@
 // ═══════════════════════════════════════════════════════════════════════════════
 
 import React from 'react';
-import { ListChecks, BarChart3, CalendarCheck } from 'lucide-react';
+import { ListChecks, BarChart3, CalendarCheck } from '@/lib/atlaskit-icons';
 
 interface T10EmptyStateProps {
   onCreateList: () => void;

@@ -5,7 +5,7 @@
 
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Zap, Plus, Calendar } from 'lucide-react';
+import { ArrowLeft, Zap, Plus, Calendar } from '@/lib/atlaskit-icons';
 import { T10WeekSelector } from './T10WeekSelector';
 import { formatT10WeekRange } from '../../utils';
 import type { T10List, T10Week } from '../../types';

@@ -16,7 +16,7 @@ import {
   Trash2,
   ChevronRight,
   Check,
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import type { PlannerTask } from '../../types';
 import '../../styles/planner-calendar.css';
 

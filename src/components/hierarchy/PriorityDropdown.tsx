@@ -2,7 +2,7 @@
  * PriorityDropdown — Inline priority change with bar visualization
  */
 import { useRef, useEffect } from 'react';
-import { Check } from 'lucide-react';
+import { Check } from '@/lib/atlaskit-icons';
 import { useTheme } from '@/hooks/useTheme';
 
 const PRIORITIES = [

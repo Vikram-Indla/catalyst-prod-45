@@ -4,7 +4,7 @@ import { Card } from '@/components/ui/card';
 import { Lozenge } from '@/components/ads';
 import { HealthBadge } from '@/components/shared/HealthBadge';
 import { Button } from '@/components/ui/button';
-import { Plus, MoreVertical, Settings, Trash2 } from 'lucide-react';
+import { Plus, MoreVertical, Settings, Trash2 } from '@/lib/atlaskit-icons';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';

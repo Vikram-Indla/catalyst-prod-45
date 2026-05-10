@@ -15,7 +15,7 @@ import {
   ChevronDown,
   X,
   Layers
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';

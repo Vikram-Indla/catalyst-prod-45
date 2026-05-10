@@ -5,7 +5,7 @@
  */
 
 import { useState } from 'react';
-import { Check } from 'lucide-react';
+import { Check } from '@/lib/atlaskit-icons';
 import { useActiveDemandProcessSteps } from '@/hooks/useDemandProcessSteps';
 import {
   Popover,

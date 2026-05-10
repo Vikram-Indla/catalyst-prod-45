@@ -6,7 +6,7 @@ import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
-import { Upload, FileText, Download, Trash2, Paperclip } from 'lucide-react';
+import { Upload, FileText, Download, Trash2, Paperclip } from '@/lib/atlaskit-icons';
 import {
   AlertDialog,
   AlertDialogAction,

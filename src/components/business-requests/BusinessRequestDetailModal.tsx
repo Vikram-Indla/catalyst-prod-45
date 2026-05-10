@@ -13,7 +13,7 @@ import { toast } from 'sonner';
 import {
   X, Share2, MoreHorizontal, ChevronDown, Copy, Trash2, Loader2,
   Check, Pencil, Calendar, Archive, ExternalLink,
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import {
   useBusinessRequest, useUpdateBusinessRequest,
   useDeleteBusinessRequest, useDuplicateBusinessRequest,

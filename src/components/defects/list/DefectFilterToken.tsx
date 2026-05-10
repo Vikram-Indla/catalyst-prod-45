@@ -3,7 +3,7 @@
 // Individual filter chip with remove functionality
 // =====================================================
 
-import { X } from 'lucide-react';
+import { X } from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 import type { FilterType } from '@/types/defect.types';
 import { CATALYST_V5 } from '@/lib/catalyst-colors';

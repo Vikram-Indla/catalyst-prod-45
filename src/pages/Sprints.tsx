@@ -10,7 +10,7 @@ import { Lozenge } from '@/components/ads';
 import { ListScreenToolbar } from '@/components/shared/ListScreenToolbar';
 import { SprintDialog } from '@/components/forms/SprintDialog';
 import { format } from 'date-fns';
-import { Plus } from 'lucide-react';
+import { Plus } from '@/lib/atlaskit-icons';
 import { PermissionGuard } from '@/components/shared/PermissionGuard';
 
 export default function Sprints() {

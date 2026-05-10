@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, GripVertical, Trash2, Plus, AlertTriangle } from 'lucide-react';
+import { X, GripVertical, Trash2, Plus, AlertTriangle } from '@/lib/atlaskit-icons';
 import { useNavigate, useParams } from 'react-router-dom';
 import type { BoardListItem, BoardVisibility, SwimlaneType } from '@/types/board';
 import { useBoard } from '@/hooks/useBoard';

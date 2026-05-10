@@ -3,7 +3,7 @@
 // ═══════════════════════════════════════════════════════════════════════════
 
 import React, { useState, useCallback } from 'react';
-import { Search, Loader2, FileText, X } from 'lucide-react';
+import { Search, Loader2, FileText, X } from '@/lib/atlaskit-icons';
 import { supabase } from '@/integrations/supabase/client';
 import { cn } from '@/lib/utils';
 import { Input } from '@/components/ui/input';

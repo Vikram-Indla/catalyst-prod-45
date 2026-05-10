@@ -6,7 +6,7 @@ import React, { useState, useEffect } from 'react';
 import { 
   X, ZoomIn, ZoomOut, Maximize2, Pencil, Download, Trash2,
   ChevronLeft, ChevronRight, Loader2, Play, FileText
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import { Attachment } from '../types';
 import { cn } from '@/lib/utils';
 

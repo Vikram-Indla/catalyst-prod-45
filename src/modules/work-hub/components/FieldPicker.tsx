@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Plus, Search, Check, Calendar, Type, List, Tag, User, Hash, FileText } from 'lucide-react';
+import { Plus, Search, Check, Calendar, Type, List, Tag, User, Hash, FileText } from '@/lib/atlaskit-icons';
 import {
   Popover,
   PopoverContent,

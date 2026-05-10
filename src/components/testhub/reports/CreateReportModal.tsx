@@ -2,7 +2,7 @@
  * CreateReportModal — Generate new test reports
  */
 import { useState, useEffect } from 'react';
-import { X, FileBarChart, Calendar, FileText, BarChart3, Shield, TrendingUp, AlertCircle } from 'lucide-react';
+import { X, FileBarChart, Calendar, FileText, BarChart3, Shield, TrendingUp, AlertCircle } from '@/lib/atlaskit-icons';
 import { supabase, typedQuery, typedRpc } from '@/integrations/supabase/client';
 import { catalystToast } from '@/components/ui/CatalystToast';
 

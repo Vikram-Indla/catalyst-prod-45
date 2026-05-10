@@ -5,7 +5,7 @@
 
 import React, { useState, useMemo, useRef, useEffect } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
-import { Calendar, Link2 } from 'lucide-react';
+import { Calendar, Link2 } from '@/lib/atlaskit-icons';
 import { Button } from '@/components/ui/button';
 import { TimelineSidebar } from '@/components/timeline/TimelineSidebar';
 import { TimelineHeader } from '@/components/timeline/TimelineHeader';

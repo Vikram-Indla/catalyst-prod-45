@@ -4,7 +4,7 @@
  */
 
 import { useState } from 'react';
-import { Plus, ArrowRight, ArrowLeft, AlertTriangle, ExternalLink } from 'lucide-react';
+import { Plus, ArrowRight, ArrowLeft, AlertTriangle, ExternalLink } from '@/lib/atlaskit-icons';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { CreateDependencyDialog } from '@/components/dependencies/CreateDependencyDialog';

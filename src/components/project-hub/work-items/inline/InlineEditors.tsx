@@ -4,7 +4,7 @@
  */
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { createPortal } from 'react-dom';
-import { ArrowUp, ArrowDown, ArrowRight, ChevronsUp, Check, Search, Calendar as CalendarIcon } from 'lucide-react';
+import { ArrowUp, ArrowDown, ArrowRight, ChevronsUp, Check, Search, Calendar as CalendarIcon } from '@/lib/atlaskit-icons';
 import { Calendar } from '@/components/ui/calendar';
 import { format } from 'date-fns';
 

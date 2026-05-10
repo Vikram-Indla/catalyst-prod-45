@@ -3,7 +3,7 @@
  * Shows attachments, linked defects, and previous run history
  */
 import { useState } from 'react';
-import { Bug, Paperclip, ExternalLink, Plus, Loader2, History } from 'lucide-react';
+import { Bug, Paperclip, ExternalLink, Plus, Loader2, History } from '@/lib/atlaskit-icons';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { ExecutionAttachments } from '@/components/testhub/ExecutionAttachments';

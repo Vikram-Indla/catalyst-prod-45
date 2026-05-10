@@ -14,7 +14,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { cn } from '@/lib/utils';
-import { Folder, Loader2 } from 'lucide-react';
+import { Folder, Loader2 } from '@/lib/atlaskit-icons';
 import { TestCaseFormData, PRIORITY_CONFIG, TYPE_OPTIONS, PriorityLevel, TestCaseType } from './types';
 
 /** Folder option from tm_folders */

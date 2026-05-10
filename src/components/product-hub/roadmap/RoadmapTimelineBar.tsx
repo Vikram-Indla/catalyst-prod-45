@@ -4,7 +4,7 @@
  */
 import React, { useState, useCallback, useRef } from 'react';
 import { createPortal } from 'react-dom';
-import { Calendar } from 'lucide-react';
+import { Calendar } from '@/lib/atlaskit-icons';
 import { format, parseISO } from 'date-fns';
 import { useTheme } from '@/hooks/useTheme';
 import type { RoadmapRequest } from './types/roadmap.types';

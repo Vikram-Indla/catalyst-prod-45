@@ -18,7 +18,7 @@ import {
   Play,
   Command,
   RefreshCw
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import { Input } from '@/components/ui/input';
 
 // Components

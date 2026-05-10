@@ -6,7 +6,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Lozenge } from '@/components/ads';
-import { Search, RotateCcw, Trash2, ArrowLeft } from 'lucide-react';
+import { Search, RotateCcw, Trash2, ArrowLeft } from '@/lib/atlaskit-icons';
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
 import {

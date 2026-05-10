@@ -13,7 +13,7 @@
 import React from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { hubAccentToken } from '@/lib/hub-tone';
-import { PanelLeftClose, PanelLeftOpen, Star, LucideIcon } from 'lucide-react';
+import { PanelLeftClose, PanelLeftOpen, Star, LucideIcon } from '@/lib/atlaskit-icons';
 import HomeIcon from '@atlaskit/icon/glyph/home';
 import OfficeBuildingIcon from '@atlaskit/icon/glyph/office-building';
 import PortfolioIcon from '@atlaskit/icon/glyph/portfolio';

@@ -5,7 +5,7 @@
 // ============================================================
 
 import { useState } from 'react';
-import { Check, ChevronDown, Layers } from 'lucide-react';
+import { Check, ChevronDown, Layers } from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import {

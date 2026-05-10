@@ -3,7 +3,7 @@
  * Matches Jira's exact pattern: X | "N work item(s) selected" | Edit | Copy to clipboard | Delete
  */
 import { useCallback, useState } from 'react';
-import { X, Pencil, Clipboard, Trash2 } from 'lucide-react';
+import { X, Pencil, Clipboard, Trash2 } from '@/lib/atlaskit-icons';
 import { createPortal } from 'react-dom';
 import { toast } from 'sonner';
 import { supabase, typedQuery } from '@/integrations/supabase/client';

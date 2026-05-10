@@ -10,7 +10,7 @@ import { useState, useRef, lazy, Suspense } from 'react';
 import { 
   Printer, Loader2, AlertTriangle, TrendingUp, TrendingDown, Minus, 
   Clock, ArrowRight, FileText, ChevronUp, ChevronDown, ExternalLink
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { GlobalPageHeader } from '@/components/layout/GlobalPageHeader';

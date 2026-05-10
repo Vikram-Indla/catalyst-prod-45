@@ -4,7 +4,7 @@
 // ═══════════════════════════════════════════════════════════════════════════
 
 import React, { useState } from 'react';
-import { Eye, EyeOff, GripVertical, RotateCcw, Check, X } from 'lucide-react';
+import { Eye, EyeOff, GripVertical, RotateCcw, Check, X } from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import {

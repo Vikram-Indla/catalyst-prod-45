@@ -10,7 +10,7 @@ import { Lozenge } from '@/components/ads';
 import { DELIVERY_PLATFORM_OPTIONS } from '@/types/business-request';
 import { useProcessSteps } from '@/contexts/ProcessStepsContext';
 import { useDepartments } from '@/hooks/useDepartmentsAndOwners';
-import { X, Sparkles, Clock, AlertTriangle, CalendarDays, User, Zap } from 'lucide-react';
+import { X, Sparkles, Clock, AlertTriangle, CalendarDays, User, Zap } from '@/lib/atlaskit-icons';
 import { format, subDays, addQuarters } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/lib/auth';

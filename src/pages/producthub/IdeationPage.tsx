@@ -8,7 +8,7 @@ import React, { useState, useMemo, useCallback } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useTheme } from '@/hooks/useTheme';
 import { DK, LK } from '@/utils/dark-mode-styles';
-import { Search, Download, Plus } from 'lucide-react';
+import { Search, Download, Plus } from '@/lib/atlaskit-icons';
 import { CatalystPageHeader } from '@/components/shared/CatalystPageHeader';
 import { AIIntelligenceButton } from '@/components/ui/AIIntelligenceButton';
 import {

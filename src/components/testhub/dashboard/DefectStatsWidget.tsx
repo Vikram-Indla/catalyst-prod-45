@@ -3,7 +3,7 @@
  * Displays defect statistics from get_defect_stats RPC
  */
 
-import { Bug, AlertCircle, CheckCircle2, Clock, TrendingDown } from 'lucide-react';
+import { Bug, AlertCircle, CheckCircle2, Clock, TrendingDown } from '@/lib/atlaskit-icons';
 import { useNavigate } from 'react-router-dom';
 
 export interface DefectStats {

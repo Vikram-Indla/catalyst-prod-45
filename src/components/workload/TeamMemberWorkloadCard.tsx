@@ -7,7 +7,7 @@ import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Lozenge, type LozengeAppearance } from '@/components/ads';
 import { Button } from '@/components/ui/button';
-import { Eye, RefreshCw, ChevronDown, ChevronUp } from 'lucide-react';
+import { Eye, RefreshCw, ChevronDown, ChevronUp } from '@/lib/atlaskit-icons';
 import { CATALYST_V5 } from '@/lib/catalyst-colors';
 import { WorkloadProgressBar } from './WorkloadProgressBar';
 import type { TeamMemberWorkload } from '@/types/workload.types';

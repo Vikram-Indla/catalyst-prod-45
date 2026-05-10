@@ -10,7 +10,7 @@
  */
 
 import { useState, useMemo, useEffect, memo } from 'react';
-import { Plus, GitBranch, GitCompare } from 'lucide-react';
+import { Plus, GitBranch, GitCompare } from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 import { formatCurrency, type BudgetPeriod, type BudgetResource, type DepartmentBudget } from '@/hooks/budget/useBudgetData';
 import {

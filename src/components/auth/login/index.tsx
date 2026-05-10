@@ -13,7 +13,7 @@ import { LoginHeroPanel } from './LoginHeroPanel';
 import { LoginFormPanel } from './LoginFormPanel';
 import { useLoginState } from './useLoginState';
 import { ForcePasswordReset } from '@/components/auth/ForcePasswordReset';
-import { FileText } from 'lucide-react';
+import { FileText } from '@/lib/atlaskit-icons';
 import './login-styles.css';
 
 const REMEMBERED_EMAIL_KEY = 'catalyst_remembered_email';

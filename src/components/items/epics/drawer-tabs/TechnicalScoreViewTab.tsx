@@ -15,7 +15,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-import { ChevronDown, Lock, Save } from 'lucide-react';
+import { ChevronDown, Lock, Save } from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';

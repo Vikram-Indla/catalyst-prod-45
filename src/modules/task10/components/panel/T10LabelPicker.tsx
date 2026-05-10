@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { Check, Plus, X, Search } from 'lucide-react';
+import { Check, Plus, X, Search } from '@/lib/atlaskit-icons';
 
 // No default labels - user creates their own
 const DEFAULT_LABELS: string[] = [];

@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Scale, GroupBy, Theme, Owner } from '@/types/objective-roadmap';
 import { FilterState, ProgressRange, KRCondition } from '@/types/canonical-roadmap-filters';
-import { Search, Layers, Filter, ChevronDown, Check, X, Info } from 'lucide-react';
+import { Search, Layers, Filter, ChevronDown, Check, X, Info } from '@/lib/atlaskit-icons';
 import { RoadmapDateFilterV2, RoadmapViewport } from '@/components/roadmaps/RoadmapDateFilterV2';
 import { cn } from '@/lib/utils';
 import { Tooltip } from '@/components/ads';

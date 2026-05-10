@@ -3,7 +3,7 @@
  * Extracted from R360MemberDetail.tsx
  */
 import React from 'react';
-import { X } from 'lucide-react';
+import { X } from '@/lib/atlaskit-icons';
 import { useTheme } from '@/hooks/useTheme';
 import { getJiraIcon } from '@/components/r360/R360JiraIcons';
 import type { R360WorkItem } from '@/types/r360';

@@ -6,7 +6,7 @@ import {
   X, ExternalLink, MoreHorizontal, Eye, Share2, Zap, Settings2,
   ChevronDown, ChevronUp, Download, FileText, Plus, Paperclip, Link as LinkIcon, 
   MessageSquare, Clock
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import { Button } from '@/components/ui/button';
 import { Avatar } from '@/components/ads';

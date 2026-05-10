@@ -4,7 +4,7 @@
  * Groups by column category for visual clarity.
  */
 import { useState, useRef, useEffect } from 'react';
-import { Check, Search } from 'lucide-react';
+import { Check, Search } from '@/lib/atlaskit-icons';
 import { KANBAN_COLUMNS } from '../kanban-tokens';
 import type { KanbanThemeTokens } from '../kanban-tokens';
 

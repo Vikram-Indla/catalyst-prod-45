@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
-import { TrendingUp } from 'lucide-react';
+import { TrendingUp } from '@/lib/atlaskit-icons';
 import { WSJFScoringModal } from './WSJFScoringModal';
 
 /**

@@ -11,7 +11,7 @@ import {
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { AlertCircle, CheckCircle2 } from 'lucide-react';
+import { AlertCircle, CheckCircle2 } from '@/lib/atlaskit-icons';
 import { useToast } from '@/hooks/use-toast';
 
 interface ApplyWSJFToRankDialogProps {

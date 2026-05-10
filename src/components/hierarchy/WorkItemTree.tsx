@@ -4,7 +4,7 @@
  */
 
 import { useState, useCallback, useRef, useEffect } from 'react';
-import { ChevronRight, ChevronDown, GripVertical, MoreHorizontal, Trash2 } from 'lucide-react';
+import { ChevronRight, ChevronDown, GripVertical, MoreHorizontal, Trash2 } from '@/lib/atlaskit-icons';
 import { useTheme } from '@/hooks/useTheme';
 import type { WorkItem } from '@/types/hierarchy';
 import { canBeParentOf, HIERARCHY_LEVELS } from '@/types/hierarchy';

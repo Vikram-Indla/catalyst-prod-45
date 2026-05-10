@@ -5,7 +5,7 @@
 // ============================================================
 
 import { useState, useRef } from 'react';
-import { Check, Calendar, Clock, Edit2, Trash2 } from 'lucide-react';
+import { Check, Calendar, Clock, Edit2, Trash2 } from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 import { useCompleteMyTaskWithUndo } from '../../hooks/useCompleteMyTaskWithUndo';
 import type { MyTask, TimeSection } from '../../types/my-tasks';

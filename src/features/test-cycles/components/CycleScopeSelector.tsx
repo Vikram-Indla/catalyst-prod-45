@@ -3,7 +3,7 @@
 // ============================================================================
 
 import { memo, useState, useMemo } from 'react';
-import { Plus, Search, CheckCircle2, Loader2, FileCheck, X } from 'lucide-react';
+import { Plus, Search, CheckCircle2, Loader2, FileCheck, X } from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';

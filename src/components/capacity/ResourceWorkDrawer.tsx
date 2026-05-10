@@ -3,7 +3,7 @@
  * Story-first hierarchy with subtasks nested underneath
  * Jira icons, sync, nav, dates, clickable links
  */
-import { X, ChevronDown, ChevronRight, ChevronLeft, RefreshCw, Calendar } from 'lucide-react';
+import { X, ChevronDown, ChevronRight, ChevronLeft, RefreshCw, Calendar } from '@/lib/atlaskit-icons';
 import { useEffect, useState, useCallback } from 'react';
 import { useResourceJiraWork, useSyncResourceJira, type StoryGroup, type JiraWorkItem } from '@/hooks/capacity/useResourceJiraWork';
 import { cn } from '@/lib/utils';

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { format, addDays } from 'date-fns';
-import { Calendar, ArrowRight, AlertTriangle, Minus, Plus } from 'lucide-react';
+import { Calendar, ArrowRight, AlertTriangle, Minus, Plus } from '@/lib/atlaskit-icons';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';

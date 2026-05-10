@@ -4,7 +4,7 @@
  */
 
 import { useNavigate } from 'react-router-dom';
-import { Play, ChevronRight, CheckCircle2, XCircle, Clock } from 'lucide-react';
+import { Play, ChevronRight, CheckCircle2, XCircle, Clock } from '@/lib/atlaskit-icons';
 
 export interface ActiveCycle {
   id: string;

@@ -13,7 +13,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
-import { Link2, Plus, X, ExternalLink, Loader2 } from 'lucide-react';
+import { Link2, Plus, X, ExternalLink, Loader2 } from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';

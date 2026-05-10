@@ -27,7 +27,7 @@ import {
   Bug,
   ClipboardList,
   FolderKanban,
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import { SidebarBase, SidebarConfig, SidebarSection } from './SidebarBase';
 
 interface ReleasesManagementSidebarProps {

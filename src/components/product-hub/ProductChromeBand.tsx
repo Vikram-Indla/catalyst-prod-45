@@ -17,7 +17,7 @@
 import { type ReactNode } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import Breadcrumbs, { BreadcrumbsItem } from '@atlaskit/breadcrumbs';
-import { Package } from 'lucide-react';
+import { Package } from '@/lib/atlaskit-icons';
 
 export interface ProductChromeBandProps {
   productName: string;

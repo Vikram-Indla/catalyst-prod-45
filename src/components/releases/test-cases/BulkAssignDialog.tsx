@@ -5,7 +5,7 @@
 
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { UserPlus, Search, Check } from 'lucide-react';
+import { UserPlus, Search, Check } from '@/lib/atlaskit-icons';
 import {
   Dialog,
   DialogContent,

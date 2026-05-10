@@ -5,7 +5,7 @@ import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Lozenge, type LozengeAppearance } from '@/components/ads';
-import { GripVertical } from 'lucide-react';
+import { GripVertical } from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 import { StoryWithRelations, STORY_STATUS_LABELS, type StoryStatus } from '@/types/story.types';
 import { useWorkItemRanking, RankingContext } from '@/hooks/useWorkItemRanking';

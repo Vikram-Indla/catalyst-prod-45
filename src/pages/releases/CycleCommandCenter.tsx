@@ -8,7 +8,7 @@ import {
   Gauge, Columns, Table, Calendar, BarChart3,
   Download, RefreshCw, Pause, CheckCircle, ArrowLeft, Plus,
   FileText, FileSpreadsheet, Loader2
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import {

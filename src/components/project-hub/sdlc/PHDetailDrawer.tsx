@@ -3,7 +3,7 @@
  * Cycle 2: Replaced native <select> with custom status dropdown
  */
 import React, { useEffect, useCallback, useState, useRef } from 'react';
-import { X, ChevronDown } from 'lucide-react';
+import { X, ChevronDown } from '@/lib/atlaskit-icons';
 import type { PHIssue, PHRelease } from '@/services/project-hub.service';
 import { getDisplayKey } from '@/services/project-hub.service';
 import { PHIssueTypeIcon } from './PHIssueTypeIcon';

@@ -3,7 +3,7 @@
  */
 
 import React from 'react';
-import { Zap } from 'lucide-react';
+import { Zap } from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 
 interface AIToggleButtonProps {

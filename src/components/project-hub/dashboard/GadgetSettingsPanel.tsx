@@ -16,7 +16,7 @@
  */
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { X, Info, ChevronDown, Check } from 'lucide-react';
+import { X, Info, ChevronDown, Check } from '@/lib/atlaskit-icons';
 import { token } from '@atlaskit/tokens';
 import { Lozenge } from '@/components/ads';
 

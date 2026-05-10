@@ -5,7 +5,7 @@ import { useState, useEffect } from 'react';
 import { 
   Activity, FileText, Play, Bug, CheckCircle2, XCircle, 
   Plus, Edit2, Trash2, RefreshCw, User, Clock
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import { supabase, typedQuery, typedRpc } from '@/integrations/supabase/client';
 
 interface ActivityItem {

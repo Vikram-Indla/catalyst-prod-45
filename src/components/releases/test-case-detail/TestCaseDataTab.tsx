@@ -17,7 +17,7 @@ import {
   Grid3X3,
   Loader2,
   Check,
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';

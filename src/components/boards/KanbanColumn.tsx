@@ -1,7 +1,7 @@
 import React from 'react';
 import { useDroppable } from '@dnd-kit/core';
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
-import { Plus } from 'lucide-react';
+import { Plus } from '@/lib/atlaskit-icons';
 import KanbanCardComponent from './KanbanCard';
 import type { BoardColumn as ColumnType, KanbanCard } from '@/types/board';
 

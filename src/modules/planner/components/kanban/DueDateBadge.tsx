@@ -3,7 +3,7 @@
 // Shows due date with contextual status (overdue, soon, etc.)
 // ============================================================
 
-import { Calendar, Clock, Check } from 'lucide-react';
+import { Calendar, Clock, Check } from '@/lib/atlaskit-icons';
 import { format, isPast, isToday, isTomorrow, differenceInDays, startOfDay } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { CATALYST_COLORS } from '../../types/kanban';

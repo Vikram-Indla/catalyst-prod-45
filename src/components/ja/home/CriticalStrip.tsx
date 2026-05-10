@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { AlertTriangle, Clock, Bell, Ban } from 'lucide-react';
+import { AlertTriangle, Clock, Bell, Ban } from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 import type { HomeRoleMode } from './HomeRoleModeSelector';
 

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Zap, ChevronDown, Info, Plus, Loader2, Sparkles } from 'lucide-react';
+import { Zap, ChevronDown, Info, Plus, Loader2, Sparkles } from '@/lib/atlaskit-icons';
 import { useT10AISuggestions, useAddSuggestionToT10, T10AISuggestion } from '../../hooks/useT10AISuggestions';
 import { formatShortDate } from '../../utils';
 

@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Lock } from 'lucide-react';
+import { Lock } from '@/lib/atlaskit-icons';
 
 export default function UnauthorizedPage() {
   const navigate = useNavigate();

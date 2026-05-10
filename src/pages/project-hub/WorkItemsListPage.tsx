@@ -17,7 +17,7 @@ import { SourceFilterPills } from '@/components/project-hub/source-filter/Source
 import { ConflictResolutionDrawer } from '@/components/project-hub/jira-sync/ConflictResolutionDrawer';
 import { JiraSyncDrawer } from '@/components/project-hub/jira-sync/JiraSyncDrawer';
 import { updateWorkItem, createWorkItem, deleteWorkItem } from '@/services/workItemService';
-import { Loader2, History } from 'lucide-react';
+import { Loader2, History } from '@/lib/atlaskit-icons';
 import { toast } from 'sonner';
 
 export default function WorkItemsListPage() {

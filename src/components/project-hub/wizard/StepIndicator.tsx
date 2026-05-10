@@ -1,4 +1,4 @@
-import { Check } from 'lucide-react';
+import { Check } from '@/lib/atlaskit-icons';
 
 const STEPS = ['Project Details', 'Workflow', 'Team Members'];
 

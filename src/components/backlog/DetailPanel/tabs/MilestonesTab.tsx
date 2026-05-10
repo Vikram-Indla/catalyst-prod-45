@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Plus, ChevronDown, Calendar, MoreVertical } from 'lucide-react';
+import { Plus, ChevronDown, Calendar, MoreVertical } from '@/lib/atlaskit-icons';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Milestone } from '@/types/backlog.types';
 import { AddMilestoneModal } from '../modals/AddMilestoneModal';

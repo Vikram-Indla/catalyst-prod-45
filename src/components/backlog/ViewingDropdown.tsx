@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { ViewingOption } from '@/types/backlog.types';
-import { Check } from 'lucide-react';
+import { Check } from '@/lib/atlaskit-icons';
 
 interface ViewingDropdownProps {
   options: ViewingOption[];

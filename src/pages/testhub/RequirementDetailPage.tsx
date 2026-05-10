@@ -10,7 +10,7 @@ import {
   ArrowLeft, FileCheck, Trash2, Plus, Link2, Unlink,
   CheckCircle2, XCircle, Clock, AlertTriangle, User, Tag,
   ExternalLink, RefreshCw, FileText, ChevronRight, Bug
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { catalystToast } from '@/components/ui/CatalystToast';
 import { LinkTestCaseModal } from '@/components/testhub/requirements/LinkTestCaseModal';

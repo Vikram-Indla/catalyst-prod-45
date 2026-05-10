@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useKeyResultsV2, useDeleteKeyResultV2, KeyResultV2 } from '@/hooks/useKeyResultsV2';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Plus, Trash2, TrendingUp, TrendingDown, Minus, Edit, ChevronDown, ChevronRight, Link2, Calendar } from 'lucide-react';
+import { Plus, Trash2, TrendingUp, TrendingDown, Minus, Edit, ChevronDown, ChevronRight, Link2, Calendar } from '@/lib/atlaskit-icons';
 import { KeyResultDialogV2 } from './KeyResultDialogV2';
 import { KRWorkAlignmentDrawer } from './KRWorkAlignmentDrawer';
 import { format } from 'date-fns';

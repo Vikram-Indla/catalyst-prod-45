@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { Search, CheckSquare } from 'lucide-react';
+import { Search, CheckSquare } from '@/lib/atlaskit-icons';
 import { useTheme } from '@/hooks/useTheme';
 import { usePendingSignOffs, useApproveSignoff, useRejectSignoff } from '@/hooks/useReleaseHub';
 import { RH, SIGNOFF_LOZENGE, LOZENGE } from '@/constants/releasehub.design';

@@ -4,7 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { TableRow, TableCell } from '@/components/ui/table';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Plus, X, Check } from 'lucide-react';
+import { Plus, X, Check } from '@/lib/atlaskit-icons';
 import { toast } from 'sonner';
 
 interface QuickAddEpicRowProps {

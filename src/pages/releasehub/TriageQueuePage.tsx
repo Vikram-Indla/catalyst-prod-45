@@ -5,7 +5,7 @@ import { StatusLozenge } from '@/components/releasehub/StatusLozenge';
 import { SourceBadge } from '@/components/releasehub/SourceBadge';
 import { RiskBadge } from '@/components/releasehub/RiskBadge';
 import { SkeletonRows } from '@/components/releasehub/SkeletonRows';
-import { CheckCircle, ChevronDown, Sparkles } from 'lucide-react';
+import { CheckCircle, ChevronDown, Sparkles } from '@/lib/atlaskit-icons';
 import { supabase } from '@/integrations/supabase/client';
 import { useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';

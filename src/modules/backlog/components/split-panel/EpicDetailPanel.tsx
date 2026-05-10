@@ -10,7 +10,7 @@ import { cn } from '@/lib/utils';
 import { 
   Link2, Edit, Copy, Trash2, 
   FileText, Check, ArrowLeft, ExternalLink
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import { Lozenge } from '@/components/ads';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';

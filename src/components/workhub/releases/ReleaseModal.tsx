@@ -2,7 +2,7 @@
  * ReleaseModal — Create / Edit release form
  */
 import { useState, useEffect } from 'react';
-import { X } from 'lucide-react';
+import { X } from '@/lib/atlaskit-icons';
 import type { Release, ReleaseStatus } from '@/types/workhub.types';
 import { useCreateRelease, useUpdateRelease } from '@/hooks/workhub/useReleases';
 

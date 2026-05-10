@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { X, AlertTriangle } from 'lucide-react';
+import { X, AlertTriangle } from '@/lib/atlaskit-icons';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 

@@ -3,7 +3,7 @@
  */
 
 import React from 'react';
-import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from '@/lib/atlaskit-icons';
 import { Button } from '@/components/ui/button';
 import {
   Select,

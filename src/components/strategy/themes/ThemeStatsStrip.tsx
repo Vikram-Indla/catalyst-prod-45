@@ -2,7 +2,7 @@
  * ThemeStatsStrip — 5 KPI cards with enterprise visual hierarchy
  * ECLIPSE D8-R4: Dark mode parity
  */
-import { TrendingUp, TrendingDown, Target, DollarSign, AlertTriangle, Layers } from 'lucide-react';
+import { TrendingUp, TrendingDown, Target, DollarSign, AlertTriangle, Layers } from '@/lib/atlaskit-icons';
 import type { StrategicTheme } from '@/types/strategic-themes';
 import { formatBudget, deriveHealthStatus, DK } from './theme-utils';
 

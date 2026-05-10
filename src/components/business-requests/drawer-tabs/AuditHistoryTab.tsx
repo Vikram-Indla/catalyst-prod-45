@@ -1,7 +1,7 @@
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { format } from 'date-fns';
-import { History, ArrowRight, Loader2 } from 'lucide-react';
+import { History, ArrowRight, Loader2 } from '@/lib/atlaskit-icons';
 import { useEffect, useRef, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 

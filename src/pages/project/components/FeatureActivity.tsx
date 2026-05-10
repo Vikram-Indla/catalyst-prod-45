@@ -7,7 +7,7 @@ import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { formatDistanceToNow } from 'date-fns';
-import { Loader2, Send } from 'lucide-react';
+import { Loader2, Send } from '@/lib/atlaskit-icons';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import styles from '../FeatureViewPage.module.css';

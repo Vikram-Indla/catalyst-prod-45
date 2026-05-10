@@ -23,7 +23,7 @@ import {
   X,
   Check,
   Loader2,
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import { Lozenge, Avatar } from '@/components/ads';
 import type { LozengeAppearance } from '@/components/ads';
 import { Button } from '@/components/ui/button';

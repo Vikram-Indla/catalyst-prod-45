@@ -1,4 +1,4 @@
-import { Edit, Save, X } from 'lucide-react';
+import { Edit, Save, X } from '@/lib/atlaskit-icons';
 import { Button } from '@/components/ui/button';
 import { Lozenge, type LozengeAppearance } from '@/components/ads';
 import { Input } from '@/components/ui/input';

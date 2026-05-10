@@ -24,7 +24,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Lozenge, Tooltip } from '@/components/ads';
-import { Search, Filter, Copy, UserPlus, Plus, Users, LayoutGrid, Calendar, Clock, FileText, ChevronLeft, ChevronRight, Lock, LockOpen, Info } from 'lucide-react';
+import { Search, Filter, Copy, UserPlus, Plus, Users, LayoutGrid, Calendar, Clock, FileText, ChevronLeft, ChevronRight, Lock, LockOpen, Info } from '@/lib/atlaskit-icons';
 import { toast } from 'sonner';
 
 type CapacityTab = 'roster' | 'grid' | 'timeline' | 'available' | 'vacancies' | 'reports';

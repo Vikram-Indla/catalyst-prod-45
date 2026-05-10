@@ -44,7 +44,7 @@ import {
   Grid3x3,
   Gauge,
   GitCompare,
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import {
   useCustomDashboards,
   useCustomDashboard,

@@ -6,7 +6,7 @@ import React from 'react';
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Legend } from 'recharts';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Bug } from 'lucide-react';
+import { Bug } from '@/lib/atlaskit-icons';
 import { CATALYST_V5 } from '@/lib/catalyst-colors';
 import { useCycleDefectTrends } from '@/hooks/test-cycles/useCycleAnalytics';
 

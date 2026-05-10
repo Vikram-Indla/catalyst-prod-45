@@ -1,7 +1,7 @@
 import React, { useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useWikiVerificationQueue } from '@/hooks/useWikiHub';
-import { ChevronRight, ShieldCheck, RotateCcw, AlertTriangle } from 'lucide-react';
+import { ChevronRight, ShieldCheck, RotateCcw, AlertTriangle } from '@/lib/atlaskit-icons';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { useQueryClient } from '@tanstack/react-query';

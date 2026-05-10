@@ -4,7 +4,7 @@
 // ============================================================
 
 import { useNavigate } from 'react-router-dom';
-import { CheckSquare, AlertTriangle, Ban, TrendingUp } from 'lucide-react';
+import { CheckSquare, AlertTriangle, Ban, TrendingUp } from '@/lib/atlaskit-icons';
 import type { DashboardMetrics } from '../../types/planner-dashboard';
 import { cn } from '@/lib/utils';
 

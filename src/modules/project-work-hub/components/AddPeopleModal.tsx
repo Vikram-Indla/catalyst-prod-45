@@ -10,7 +10,7 @@ import { token } from '@atlaskit/tokens';
 import Textfield from '@atlaskit/textfield';
 import Button from '@atlaskit/button';
 import CloseIcon from '@atlaskit/icon/glyph/cross';
-import { ChevronDown } from 'lucide-react';
+import { ChevronDown } from '@/lib/atlaskit-icons';
 import { supabase } from '@/integrations/supabase/client';
 import { flag } from '@/components/shared/JiraTable';
 import { useAddPeopleModalStore } from '@/stores/addPeopleModalStore';

@@ -15,7 +15,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { ChevronDown, ChevronRight, Search, Calendar, Star } from 'lucide-react';
+import { ChevronDown, ChevronRight, Search, Calendar, Star } from '@/lib/atlaskit-icons';
 import { EpicTimeBadges } from '@/components/items/epics/EpicTimeBadges';
 import { groupEpicsByQuarter, getQuarterLabel, getCurrentQuarter } from '@/lib/epic-time-utils';
 import { cn } from '@/lib/utils';

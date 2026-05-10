@@ -4,7 +4,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { token } from '@atlaskit/tokens';
 import { supabase } from '@/integrations/supabase/client';
 import { useAgeingItems } from '@/hooks/useAgeingItems';
-import { Loader2, ChevronDown, ChevronRight, Sparkles } from 'lucide-react';
+import { Loader2, ChevronDown, ChevronRight, Sparkles } from '@/lib/atlaskit-icons';
 import AgeingSkeleton from './AgeingSkeleton';
 import { useGovernanceScore } from '@/hooks/useGovernanceScore';
 import { useAuth } from '@/hooks/useAuth';

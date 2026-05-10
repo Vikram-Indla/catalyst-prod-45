@@ -16,7 +16,7 @@ import { useCapacityDepartments, useResourceAssignments } from '@/modules/capaci
 import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { useQueryClient } from '@tanstack/react-query';
-import { Loader2, Users } from 'lucide-react';
+import { Loader2, Users } from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 
 interface BulkEditResource {

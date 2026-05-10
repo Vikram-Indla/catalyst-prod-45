@@ -14,7 +14,7 @@ import { toast } from 'sonner';
 import {
   X, Pencil, Copy, Star, Trash2,
   Map,
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import type { RoadmapRequest } from './types/roadmap.types';
 import { useApprovedProfiles } from '@/hooks/useApprovedProfiles';
 

@@ -3,7 +3,7 @@
  */
 
 import React from 'react';
-import { Clock, Play } from 'lucide-react';
+import { Clock, Play } from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 import { WorkItemIcon } from '@/components/ja/icons/WorkItemIcon';
 import type { AIPriorityItem } from './CatalystAIPanel';

@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Search } from 'lucide-react';
+import { Search } from '@/lib/atlaskit-icons';
 import { format, parseISO } from 'date-fns';
 
 interface PIFilterSidebarProps {

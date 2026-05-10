@@ -6,7 +6,7 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Home, ChevronRight, Edit2, CheckCircle2, Calendar, User, Clock } from 'lucide-react';
+import { Home, ChevronRight, Edit2, CheckCircle2, Calendar, User, Clock } from '@/lib/atlaskit-icons';
 import { Button } from '@/components/ui/button';
 import { Lozenge, type LozengeAppearance } from '@/components/ads';
 import type { ReleaseDetail, HealthScore, QualityGate, ReleaseMetrics } from '../types';

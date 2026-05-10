@@ -6,7 +6,7 @@
 
 import { useState, useCallback, useMemo, useRef, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { Kanban } from 'lucide-react';
+import { Kanban } from '@/lib/atlaskit-icons';
 import { BoardKanban } from './BoardKanban';
 import type { BoardFilters, BoardTask } from '../../types/planner-boards';
 import { CreateTaskModal } from '../kanban';

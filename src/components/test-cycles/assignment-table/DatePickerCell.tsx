@@ -4,7 +4,7 @@
 
 import React, { useState } from 'react';
 import { format, parseISO } from 'date-fns';
-import { Calendar as CalendarIcon, X } from 'lucide-react';
+import { Calendar as CalendarIcon, X } from '@/lib/atlaskit-icons';
 import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';

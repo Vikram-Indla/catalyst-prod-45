@@ -16,7 +16,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Avatar } from '@/components/ads';
-import { X, Save, FileText, Layers, User, FolderTree, Loader2 } from 'lucide-react';
+import { X, Save, FileText, Layers, User, FolderTree, Loader2 } from '@/lib/atlaskit-icons';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';

@@ -2,7 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import type { RaDocument } from '@/types/requirement-assist';
 import { CoverageMatrix } from './CoverageMatrix';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft } from '@/lib/atlaskit-icons';
 
 /* ── Demo UAT scenarios ── */
 interface UatStep {

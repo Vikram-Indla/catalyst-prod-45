@@ -3,7 +3,7 @@
  * V12: Lucide icons only (no emoji), proper progress bars
  */
 import React, { useState } from 'react';
-import { Plus, Building2, Bot, Leaf, Target, Zap, Globe, TrendingUp, Lightbulb } from 'lucide-react';
+import { Plus, Building2, Bot, Leaf, Target, Zap, Globe, TrendingUp, Lightbulb } from '@/lib/atlaskit-icons';
 import { useTheme } from '@/hooks/useTheme';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';

@@ -1,6 +1,6 @@
 import { useState, useRef } from 'react';
 import DOMPurify from 'dompurify';
-import { Plus, MoreHorizontal, Download, Trash2, ChevronDown } from 'lucide-react';
+import { Plus, MoreHorizontal, Download, Trash2, ChevronDown } from '@/lib/atlaskit-icons';
 import type { Incident, Attachment } from '@/types/release';
 import { IncidentActivitySection } from './IncidentActivitySection';
 import { toast } from 'sonner';

@@ -5,7 +5,7 @@
 
 import { useCallback, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Upload, Trash2, FileImage, File, FileText, Download } from 'lucide-react';
+import { Upload, Trash2, FileImage, File, FileText, Download } from '@/lib/atlaskit-icons';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';

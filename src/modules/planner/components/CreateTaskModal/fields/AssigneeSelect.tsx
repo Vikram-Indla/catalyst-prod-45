@@ -4,7 +4,7 @@
  */
 
 import { useState, useRef, useEffect, useMemo } from 'react';
-import { ChevronDown, Check, Search, X } from 'lucide-react';
+import { ChevronDown, Check, Search, X } from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';

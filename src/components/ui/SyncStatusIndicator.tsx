@@ -7,7 +7,7 @@ import {
   AlertCircle, 
   WifiOff,
   RefreshCw 
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import { Tooltip } from '@/components/ads';
 
 export function SyncStatusIndicator() {

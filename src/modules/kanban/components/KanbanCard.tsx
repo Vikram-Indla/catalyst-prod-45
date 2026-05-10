@@ -11,7 +11,7 @@
 
 import React, { useState } from 'react';
 import { KanbanTicket, DEPARTMENTS, COLUMNS_CONFIG } from '../types';
-import { Clock, GripVertical, Tag, MoreHorizontal } from 'lucide-react';
+import { Clock, GripVertical, Tag, MoreHorizontal } from '@/lib/atlaskit-icons';
 
 // Helper to get a human-readable label for a status
 function getStatusLabel(status: string): string {

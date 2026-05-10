@@ -15,7 +15,7 @@ import {
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { Check } from 'lucide-react';
+import { Check } from '@/lib/atlaskit-icons';
 
 // Epic Status values as per spec
 const EPIC_STATUSES = [

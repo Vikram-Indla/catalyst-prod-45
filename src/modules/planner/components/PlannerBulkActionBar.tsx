@@ -1,4 +1,4 @@
-import { X, Trash2 } from 'lucide-react';
+import { X, Trash2 } from '@/lib/atlaskit-icons';
 import { Button } from '@/components/ui/button';
 import { motion, AnimatePresence } from 'framer-motion';
 

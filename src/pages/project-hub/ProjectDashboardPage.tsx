@@ -17,7 +17,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { Plus, LayoutGrid, RotateCcw, Tv, TvMinimal } from 'lucide-react';
+import { Plus, LayoutGrid, RotateCcw, Tv, TvMinimal } from '@/lib/atlaskit-icons';
 import { token } from '@atlaskit/tokens';
 
 import { supabase } from '@/integrations/supabase/client';

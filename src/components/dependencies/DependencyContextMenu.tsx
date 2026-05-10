@@ -5,7 +5,7 @@ import {
   ContextMenuSeparator,
   ContextMenuTrigger,
 } from '@/components/ui/context-menu';
-import { Copy, Edit, Trash2, CheckCircle2, XCircle, Clock } from 'lucide-react';
+import { Copy, Edit, Trash2, CheckCircle2, XCircle, Clock } from '@/lib/atlaskit-icons';
 
 interface DependencyContextMenuProps {
   children: React.ReactNode;

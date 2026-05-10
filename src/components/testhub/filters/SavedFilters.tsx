@@ -2,7 +2,7 @@
  * SavedFilters — Reusable saved filter presets component
  */
 import { useState, useEffect } from 'react';
-import { Filter, Plus, Star, Trash2, Save, X } from 'lucide-react';
+import { Filter, Plus, Star, Trash2, Save, X } from '@/lib/atlaskit-icons';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { catalystToast } from '@/components/ui/CatalystToast';
 

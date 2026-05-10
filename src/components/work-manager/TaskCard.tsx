@@ -10,7 +10,7 @@ import {
   Folder,
   CheckSquare,
   FileText
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import { getUserById } from '@/lib/work-manager-data';
 import type { TaskExtended } from './types';
 import { cn } from '@/lib/utils';

@@ -3,7 +3,7 @@ import {
   X, Shield, Navigation2, FormInput, Plug, CheckCircle,
   Database, Eye, Gauge, Folder, Tag, Settings, Users,
   FileText, Zap, Globe, Lock, Bell, Heart, Star,
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import { supabase } from '@/integrations/supabase/client';
 import { catalystToast } from '@/components/ui/CatalystToast';
 

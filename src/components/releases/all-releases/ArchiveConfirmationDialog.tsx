@@ -4,7 +4,7 @@
  */
 
 import { useState } from 'react';
-import { AlertTriangle, Loader2 } from 'lucide-react';
+import { AlertTriangle, Loader2 } from '@/lib/atlaskit-icons';
 import {
   Dialog,
   DialogContent,

@@ -1,6 +1,6 @@
 import { memo } from 'react';
 import { Button } from '@/components/ui/button';
-import { Plus, Download } from 'lucide-react';
+import { Plus, Download } from '@/lib/atlaskit-icons';
 import { DefectViewTabs } from './DefectViewTabs';
 import type { SavedView, DefectFilters } from '@/types/defect.types';
 

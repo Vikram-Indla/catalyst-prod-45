@@ -3,7 +3,7 @@
 // ============================================================================
 
 import React from 'react';
-import { Check, Loader2 } from 'lucide-react';
+import { Check, Loader2 } from '@/lib/atlaskit-icons';
 import { COLORS } from '../colors';
 import { Task } from '../types';
 import { formatDate } from '../utils/formatDate';

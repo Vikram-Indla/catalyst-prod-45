@@ -4,7 +4,7 @@
 // ============================================================
 
 import { useState, useCallback, useRef } from 'react';
-import { Upload, FileText, X, Loader2 } from 'lucide-react';
+import { Upload, FileText, X, Loader2 } from '@/lib/atlaskit-icons';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import { supabase } from '@/integrations/supabase/client';

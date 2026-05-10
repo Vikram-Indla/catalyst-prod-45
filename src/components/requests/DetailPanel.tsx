@@ -2,7 +2,7 @@ import { format } from 'date-fns';
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Pencil, Copy, Star, Target, Trash2, ChevronLeft, ChevronDown, AlertTriangle, Plus, Activity, ArrowRight, TrendingUp, FolderKanban, Zap, Wrench, Map, Network, DollarSign, Flag, Link as LinkIcon, ClipboardList, Paperclip, ExternalLink, Upload } from 'lucide-react';
+import { X, Pencil, Copy, Star, Target, Trash2, ChevronLeft, ChevronDown, AlertTriangle, Plus, Activity, ArrowRight, TrendingUp, FolderKanban, Zap, Wrench, Map, Network, DollarSign, Flag, Link as LinkIcon, ClipboardList, Paperclip, ExternalLink, Upload } from '@/lib/atlaskit-icons';
 import { RequestRisksTab } from './tabs/RequestRisksTab';
 import { RequestBudgetTab } from './tabs/RequestBudgetTab';
 import { RequestAuditTab } from './tabs/RequestAuditTab';

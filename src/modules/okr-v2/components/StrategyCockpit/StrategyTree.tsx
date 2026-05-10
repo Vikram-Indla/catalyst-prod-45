@@ -7,7 +7,7 @@
 
 import { useMemo } from 'react';
 import { cn } from '@/lib/utils';
-import { ChevronDown, ChevronRight, Target, Diamond, Hexagon } from 'lucide-react';
+import { ChevronDown, ChevronRight, Target, Diamond, Hexagon } from '@/lib/atlaskit-icons';
 import { Tooltip } from '@/components/ads';
 import { format } from 'date-fns';
 import type { Theme, Objective, KeyResult, WorkItem, TreeItem } from '../../lib/okrTypes';

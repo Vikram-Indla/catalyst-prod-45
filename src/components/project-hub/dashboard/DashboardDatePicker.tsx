@@ -10,7 +10,7 @@
  * inline custom-range calendar (FP-001).
  */
 import { useMemo, useState } from 'react';
-import { Calendar, ChevronDown, Check } from 'lucide-react';
+import { Calendar, ChevronDown, Check } from '@/lib/atlaskit-icons';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import {
   buildPreset,

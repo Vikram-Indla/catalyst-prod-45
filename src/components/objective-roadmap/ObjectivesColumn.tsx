@@ -1,7 +1,7 @@
 import React, { forwardRef, useRef, useEffect, useCallback } from 'react';
 import { ObjectiveGroup, GroupBy, Theme, Owner } from '@/types/objective-roadmap';
 import { formatShortDate } from '@/utils/objective-roadmap-utils';
-import { ChevronDown, Target } from 'lucide-react';
+import { ChevronDown, Target } from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 import { Tooltip } from '@/components/ads';
 

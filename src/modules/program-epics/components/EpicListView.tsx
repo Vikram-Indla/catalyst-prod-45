@@ -12,7 +12,7 @@ import {
   Search, ChevronRight, ChevronDown, 
   MessageSquare, Minus, ArrowUp, ArrowDown, ChevronsUp, ChevronsDown,
   Settings2, GripVertical, Plus, MoreHorizontal, Square
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';

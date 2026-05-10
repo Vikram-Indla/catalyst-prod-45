@@ -5,7 +5,7 @@ import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { ChevronDown, ChevronRight, Plus, Undo2 } from 'lucide-react';
+import { ChevronDown, ChevronRight, Plus, Undo2 } from '@/lib/atlaskit-icons';
 import { toast } from 'sonner';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 

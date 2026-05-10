@@ -3,7 +3,7 @@
  */
 
 import React from 'react';
-import { GripVertical, Eye, EyeOff, RotateCcw } from 'lucide-react';
+import { GripVertical, Eye, EyeOff, RotateCcw } from '@/lib/atlaskit-icons';
 import { Button } from '@/components/ui/button';
 import {
   Sheet,

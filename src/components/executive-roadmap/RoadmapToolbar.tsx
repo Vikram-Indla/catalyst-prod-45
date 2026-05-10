@@ -14,7 +14,7 @@ import {
   Info,
   Minimize2,
   Maximize2,
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import {
   TimeScale,
   Language,

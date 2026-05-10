@@ -3,7 +3,7 @@
  * ════════════════════════════════════════════════════════════════════════════
  */
 import { cn } from '@/lib/utils';
-import { ArrowUp, ArrowDown, Plus, ExternalLink } from 'lucide-react';
+import { ArrowUp, ArrowDown, Plus, ExternalLink } from '@/lib/atlaskit-icons';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import { StatusLozenge } from '@/components/ui/StatusLozenge';
 import type { AllWorkItem } from '@/types/allwork.types';

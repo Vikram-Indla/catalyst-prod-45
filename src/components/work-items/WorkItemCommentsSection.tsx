@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Avatar } from '@/components/ads';
-import { MessageSquare, Send, Loader2, MoreVertical, Pencil, Trash2 } from 'lucide-react';
+import { MessageSquare, Send, Loader2, MoreVertical, Pencil, Trash2 } from '@/lib/atlaskit-icons';
 import {
   DropdownMenu,
   DropdownMenuContent,

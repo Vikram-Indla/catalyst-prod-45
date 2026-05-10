@@ -6,7 +6,7 @@
  */
 
 import React from 'react';
-import { LucideIcon, Plus, FileQuestion } from 'lucide-react';
+import { LucideIcon, Plus, FileQuestion } from '@/lib/atlaskit-icons';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 

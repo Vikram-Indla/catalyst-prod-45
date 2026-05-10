@@ -5,7 +5,7 @@
  */
 import { useState, useCallback, useMemo, useEffect, useRef, lazy, Suspense } from 'react';
 import { useAuth } from '@/hooks/useAuth';
-import { ArrowRight, ChevronDown, Loader2 } from 'lucide-react';
+import { ArrowRight, ChevronDown, Loader2 } from '@/lib/atlaskit-icons';
 import { formatDistanceToNow } from 'date-fns';
 import { parseADF, adfToPlainText, isADFEmpty } from '@/utils/adf';
 import type { ADFEntity } from '@atlaskit/adf-utils/types';

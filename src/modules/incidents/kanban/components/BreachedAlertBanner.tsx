@@ -4,7 +4,7 @@
  */
 
 import { memo } from 'react';
-import { AlertTriangle } from 'lucide-react';
+import { AlertTriangle } from '@/lib/atlaskit-icons';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 

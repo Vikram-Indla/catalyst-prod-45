@@ -25,7 +25,7 @@ import {
   TrendingUp, TrendingDown, Minus,
   Calendar, Clock, User, MessageSquare,
   Shield, Target, Users, Flag, FileText, FileSpreadsheet, Table2
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Lozenge, Tooltip as UITooltip } from '@/components/ads';

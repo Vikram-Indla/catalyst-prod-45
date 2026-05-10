@@ -4,7 +4,7 @@
  */
 import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
-import { X, Search, Plus, Loader2, AlertCircle, CheckCircle2 } from 'lucide-react';
+import { X, Search, Plus, Loader2, AlertCircle, CheckCircle2 } from '@/lib/atlaskit-icons';
 import { INK, SURFACE, FONT } from './constants/roadmap.constants';
 import { useBacklogItemsNotOnRoadmap, useAddToRoadmap } from './hooks/useRoadmapData';
 import { SourceBadge } from '@/components/producthub/shared/SourceBadge';

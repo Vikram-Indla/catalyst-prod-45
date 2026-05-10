@@ -1,7 +1,7 @@
 import {
   Flame, RefreshCcw, Target, Puzzle, Route,
   Gauge, Shield, Eye, Layers,
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import { TestSetType, TEST_SET_TYPE_CONFIG } from '@/types/test-sets';
 import { cn } from '@/lib/utils';
 

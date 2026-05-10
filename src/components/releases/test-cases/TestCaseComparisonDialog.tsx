@@ -17,7 +17,7 @@ import {
   Clock,
   User,
   Tag,
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import {
   Dialog,
   DialogContent,

@@ -4,7 +4,7 @@
 // ═══════════════════════════════════════════════════════════════════════════════
 
 import React, { useState } from 'react';
-import { ChevronDown, ChevronRight } from 'lucide-react';
+import { ChevronDown, ChevronRight } from '@/lib/atlaskit-icons';
 import { useT10CompletedWeeks } from '../../hooks/useT10Completed';
 import { T10CompletedItemsList } from './T10CompletedItemsList';
 import { formatT10DateRange } from '../../utils';

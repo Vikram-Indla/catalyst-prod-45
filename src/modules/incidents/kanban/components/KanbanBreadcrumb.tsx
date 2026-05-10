@@ -5,7 +5,7 @@
 
 import { memo } from 'react';
 import { Link } from 'react-router-dom';
-import { ChevronRight } from 'lucide-react';
+import { ChevronRight } from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 
 export const KanbanBreadcrumb = memo(function KanbanBreadcrumb() {

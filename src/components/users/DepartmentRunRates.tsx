@@ -4,7 +4,7 @@
  */
 
 import { useMemo, ReactNode } from 'react';
-import { Users, AlertTriangle } from 'lucide-react';
+import { Users, AlertTriangle } from '@/lib/atlaskit-icons';
 import { UserProfile } from '@/hooks/useUsers';
 
 interface DepartmentRunRatesProps {

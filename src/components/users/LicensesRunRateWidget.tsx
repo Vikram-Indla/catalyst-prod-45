@@ -3,7 +3,7 @@
  * Displays monthly and yearly software license run rates with next renewal
  */
 
-import { CreditCard, Calendar } from 'lucide-react';
+import { CreditCard, Calendar } from '@/lib/atlaskit-icons';
 import { useSoftwareLicenses } from '@/modules/budget/hooks/useSoftwareLicenses';
 import { format } from 'date-fns';
 

@@ -4,7 +4,7 @@
 // =====================================================
 
 import React from 'react';
-import { ChevronDown } from 'lucide-react';
+import { ChevronDown } from '@/lib/atlaskit-icons';
 import { TimelineRelease } from '@/services/timelineService';
 import { PRIORITY_CONFIG } from '@/types/views';
 import { cn } from '@/lib/utils';

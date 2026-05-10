@@ -17,7 +17,7 @@ import {
   Workflow,
   Database,
   Bell
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import { ImportWizard } from '../components/import/ImportWizard';
 
 // Default tenant ID for demo - in production, this would come from auth context

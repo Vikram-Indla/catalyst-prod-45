@@ -3,7 +3,7 @@
  */
 
 import React, { useEffect } from 'react';
-import { Keyboard, X } from 'lucide-react';
+import { Keyboard, X } from '@/lib/atlaskit-icons';
 
 interface RoadmapKeyboardOverlayProps {
   isOpen: boolean;

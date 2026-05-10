@@ -10,7 +10,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Lozenge } from '@/components/ads';
 import { Input } from '@/components/ui/input';
 import { Skeleton } from '@/components/ui/skeleton';
-import { TestTube, Clock, Tag, X } from 'lucide-react';
+import { TestTube, Clock, Tag, X } from '@/lib/atlaskit-icons';
 import { useTemplatePreview, useFilterOptions } from '@/hooks/templates';
 import type { TestCriteria } from '@/types/template.types';
 

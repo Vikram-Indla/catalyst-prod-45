@@ -16,7 +16,7 @@ import {
   RotateCcw,
   Loader2,
   Database
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Lozenge, Tooltip } from '@/components/ads';

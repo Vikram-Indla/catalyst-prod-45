@@ -4,7 +4,7 @@
  * Provides a visually appealing, downloadable functional flow guide.
  */
 import { useState } from 'react';
-import { Download, BookOpen, ChevronDown, ChevronRight, Database, ArrowRight, CheckCircle2, AlertTriangle, Layers, GitBranch } from 'lucide-react';
+import { Download, BookOpen, ChevronDown, ChevronRight, Database, ArrowRight, CheckCircle2, AlertTriangle, Layers, GitBranch } from '@/lib/atlaskit-icons';
 import { useTheme } from '@/hooks/useTheme';
 
 // ── Markdown content ──

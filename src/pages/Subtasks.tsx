@@ -9,7 +9,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Lozenge } from '@/components/ads';
 import { ListScreenToolbar } from '@/components/shared/ListScreenToolbar';
 import { SubtaskDialog } from '@/components/forms/SubtaskDialog';
-import { Plus } from 'lucide-react';
+import { Plus } from '@/lib/atlaskit-icons';
 import { PermissionGuard } from '@/components/shared/PermissionGuard';
 import { useSubtaskRealtime } from '@/hooks/useWorkItemRealtime';
 

@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { 
   Check, X, Pencil, Eye, EyeOff, Plus, Users, ChevronDown 
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import { Button } from '@/components/ui/button';
 import { Avatar, Lozenge, Tooltip } from '@/components/ads';
 import { Input } from '@/components/ui/input';

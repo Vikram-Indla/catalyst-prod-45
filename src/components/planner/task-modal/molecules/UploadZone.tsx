@@ -3,7 +3,7 @@
 // ============================================================================
 
 import React, { useState, useRef } from 'react';
-import { Upload } from 'lucide-react';
+import { Upload } from '@/lib/atlaskit-icons';
 import { COLORS } from '../colors';
 
 interface UploadZoneProps {

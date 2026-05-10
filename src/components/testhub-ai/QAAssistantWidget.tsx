@@ -6,7 +6,7 @@
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import ReactMarkdown from 'react-markdown';
-import { Minus, RefreshCw, Send, Paperclip } from 'lucide-react';
+import { Minus, RefreshCw, Send, Paperclip } from '@/lib/atlaskit-icons';
 import { HubIcon } from '@/components/caty-ai/constants';
 import '@/components/caty-ai/CatyWidget.css';
 import '@/styles/caty.css';

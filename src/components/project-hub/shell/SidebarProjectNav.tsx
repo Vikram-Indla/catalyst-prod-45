@@ -21,7 +21,7 @@ import {
   Network,
   Clock,
   X,
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import { NavItem } from './NavItem';
 import { ProjectSwitcher, ProjectEntry } from './ProjectSwitcher';
 import { useQuery } from '@tanstack/react-query';

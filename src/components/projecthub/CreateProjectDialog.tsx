@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo, useRef } from 'react';
-import { X, Search, ChevronDown, Loader2 } from 'lucide-react';
+import { X, Search, ChevronDown, Loader2 } from '@/lib/atlaskit-icons';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import { useCreateProject, useProjects } from '@/hooks/useProjectHub';

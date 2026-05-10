@@ -11,7 +11,7 @@ import {
   LayoutGrid, Clock, Table2, FileText, FileSpreadsheet, FileDown,
   Clipboard, Check, Loader2, ArrowUpDown, Calendar, Rocket,
   AlertTriangle, Package, RefreshCw,
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import { toast } from 'sonner';
 import { useAllReleases } from '@/hooks/releases/useAllReleases';
 import { useQueryClient, useMutation } from '@tanstack/react-query';

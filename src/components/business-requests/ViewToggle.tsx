@@ -1,4 +1,4 @@
-import { List, LayoutGrid, Table2 } from 'lucide-react';
+import { List, LayoutGrid, Table2 } from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 
 export type ViewMode = 'list' | 'kanban' | 'table';

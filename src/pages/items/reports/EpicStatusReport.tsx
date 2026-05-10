@@ -7,7 +7,7 @@ import { Lozenge } from '@/components/ads';
 import { Progress } from '@/components/ui/progress';
 import { HealthBadge } from '@/components/shared/HealthBadge';
 import { Button } from '@/components/ui/button';
-import { Download, Printer, FileText } from 'lucide-react';
+import { Download, Printer, FileText } from '@/lib/atlaskit-icons';
 import { format } from 'date-fns';
 import { ReportTemplatesDialog } from '@/components/items/epics/dialogs/ReportTemplatesDialog';
 

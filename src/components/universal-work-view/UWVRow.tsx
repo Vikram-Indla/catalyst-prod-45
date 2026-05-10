@@ -6,7 +6,7 @@
  */
 
 import React from 'react';
-import { ChevronDown, ChevronRight } from 'lucide-react';
+import { ChevronDown, ChevronRight } from '@/lib/atlaskit-icons';
 import Checkbox from '@atlaskit/checkbox';
 import Avatar from '@atlaskit/avatar';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';

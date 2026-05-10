@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { ChevronRight, Bell, Layers, Tag, FileText, X, Plus } from 'lucide-react';
+import { ChevronRight, Bell, Layers, Tag, FileText, X, Plus } from '@/lib/atlaskit-icons';
 import { useTheme } from '@/hooks/useTheme';
 
 const F = {

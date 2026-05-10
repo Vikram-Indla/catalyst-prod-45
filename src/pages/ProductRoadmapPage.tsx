@@ -11,7 +11,7 @@ import { useProductRoadmapData } from '@/hooks/useProductRoadmapData';
 import { useProductRoadmapFilters } from '@/hooks/useProductRoadmapFilters';
 import { BusinessRequestDetailModal } from '@/components/business-requests/BusinessRequestDetailModal';
 import GlobalPageHeader from '@/components/layout/GlobalPageHeader';
-import { Loader2 } from 'lucide-react';
+import { Loader2 } from '@/lib/atlaskit-icons';
 import { RoadmapViewport, RoadmapDebugOverlay } from '@/components/roadmaps/RoadmapDateFilterV2';
 import { TimelineFilterState, DEFAULT_TIMELINE_FILTER } from '@/components/roadmap/TimelineFilterPopover';
 

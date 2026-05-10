@@ -1,4 +1,4 @@
-import { FileText, Search, Zap, BarChart3 } from 'lucide-react';
+import { FileText, Search, Zap, BarChart3 } from '@/lib/atlaskit-icons';
 import { Button } from '@/components/ui/button';
 
 interface Props { onAction: (action: string) => void; }

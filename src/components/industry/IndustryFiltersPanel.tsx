@@ -1,4 +1,4 @@
-import { X, Filter, Calendar, Loader2 } from 'lucide-react';
+import { X, Filter, Calendar, Loader2 } from '@/lib/atlaskit-icons';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';

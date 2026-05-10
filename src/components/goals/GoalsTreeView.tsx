@@ -2,7 +2,7 @@
  * GoalsTreeView — 3-level expandable tree: Theme → Goal → Key Result
  * ECLIPSE D8: Dark mode parity
  */
-import { ChevronRight, Sparkles, ClipboardCheck, Target, X } from 'lucide-react';
+import { ChevronRight, Sparkles, ClipboardCheck, Target, X } from '@/lib/atlaskit-icons';
 import type { Goal, KeyResult } from '@/types/goals';
 
 interface Theme { id: string; title: string; color: string; status: string; }

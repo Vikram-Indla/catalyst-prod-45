@@ -5,7 +5,7 @@
 
 import { useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Play, Loader2 } from 'lucide-react';
+import { Play, Loader2 } from '@/lib/atlaskit-icons';
 import { Button, type ButtonProps } from '@/components/ui/button';
 import { DataRowSelectionModal } from '@/components/test-management/DataRowSelectionModal';
 import { 

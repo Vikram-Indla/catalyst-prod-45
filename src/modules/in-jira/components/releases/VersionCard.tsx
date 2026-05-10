@@ -17,7 +17,7 @@ import {
   Rocket,
   Trash2,
   RotateCcw
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Lozenge, type LozengeAppearance } from '@/components/ads';

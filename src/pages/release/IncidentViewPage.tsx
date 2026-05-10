@@ -6,7 +6,7 @@ import {
   Eye, FileText, Upload, Link2, Edit2, 
   CheckCircle, XCircle, AlertTriangle, Clock,
   UserPlus, Loader2
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import { Button } from '@/components/ui/button';
 import { Avatar, Lozenge } from '@/components/ads';
 import { Textarea } from '@/components/ui/textarea';

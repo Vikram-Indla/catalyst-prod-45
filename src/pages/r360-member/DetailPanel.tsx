@@ -3,7 +3,7 @@
  * Extracted from R360MemberDetail.tsx
  */
 import React from 'react';
-import { X } from 'lucide-react';
+import { X } from '@/lib/atlaskit-icons';
 import { useTheme } from '@/hooks/useTheme';
 import { useR360Siblings } from '@/hooks/useR360';
 import { formatRelativeDate, formatDate, ageBarPercent, ageBarColor } from '@/utils/r360Utils';

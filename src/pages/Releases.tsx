@@ -15,7 +15,7 @@ import { RightDetailsPanel } from '@/components/shared/RightDetailsPanel';
 import { lazy, Suspense } from 'react';
 const ReleaseDialog = lazy(() => import('@/components/forms/ReleaseDialog').then(m => ({ default: m.ReleaseDialog })));
 import { format } from 'date-fns';
-import { Plus, CheckCircle, AlertCircle } from 'lucide-react';
+import { Plus, CheckCircle, AlertCircle } from '@/lib/atlaskit-icons';
 import { PermissionGuard } from '@/components/shared/PermissionGuard';
 
 export default function Releases() {

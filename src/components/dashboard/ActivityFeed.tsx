@@ -8,7 +8,7 @@ import {
   Sparkles, 
   Package, 
   AlertTriangle 
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import { formatDistanceToNow } from 'date-fns';
 
 export interface ActivityItem {

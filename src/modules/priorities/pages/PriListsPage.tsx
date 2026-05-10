@@ -6,7 +6,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Plus, Search, Tag, User, Calendar, Clock, MoreVertical,
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import { usePriLists, useCreatePriList } from '../hooks';
 import { PriEmptyState } from '../components';
 import type { PriListFull, PriTabView } from '../types';

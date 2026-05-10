@@ -4,7 +4,7 @@
  */
 
 import { useNavigate } from 'react-router-dom';
-import { Activity, CheckCircle2, XCircle, AlertTriangle, Clock, SkipForward } from 'lucide-react';
+import { Activity, CheckCircle2, XCircle, AlertTriangle, Clock, SkipForward } from '@/lib/atlaskit-icons';
 import { formatTimeAbbreviated } from '@/lib/formatTimeAgo';
 
 export interface RecentActivity {

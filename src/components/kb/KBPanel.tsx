@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { X, AlertCircle, RefreshCw, MessageSquarePlus } from 'lucide-react';
+import { X, AlertCircle, RefreshCw, MessageSquarePlus } from '@/lib/atlaskit-icons';
 import { useKBQuery } from '@/hooks/useKnowledgeBase';
 import { useAuth } from '@/hooks/useAuth';
 import { KBResponseRenderer } from './KBResponseRenderer';

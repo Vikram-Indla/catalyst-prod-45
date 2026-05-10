@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import { Upload, FileText, Image, Film, Download, Trash2, Loader2 } from 'lucide-react';
+import { Upload, FileText, Image, Film, Download, Trash2, Loader2 } from '@/lib/atlaskit-icons';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { supabase } from '@/integrations/supabase/client';

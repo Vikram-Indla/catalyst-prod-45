@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { X, Send, MessageCircle, Loader2 } from 'lucide-react';
+import { X, Send, MessageCircle, Loader2 } from '@/lib/atlaskit-icons';
 import { supabase } from '@/integrations/supabase/client';
 import ReactMarkdown from 'react-markdown';
 import { useNavigate } from 'react-router-dom';

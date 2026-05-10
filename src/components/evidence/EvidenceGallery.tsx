@@ -3,7 +3,7 @@
 // ═══════════════════════════════════════════════════════════════════════════
 
 import React, { useState } from 'react';
-import { RefreshCw } from 'lucide-react';
+import { RefreshCw } from '@/lib/atlaskit-icons';
 import { EvidenceGalleryProps, Attachment } from './types';
 import { ThumbnailCard } from './gallery/ThumbnailCard';
 import { EmptyState } from './gallery/EmptyState';

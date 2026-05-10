@@ -4,7 +4,7 @@
  * Jira-style sort: click header label to toggle asc → desc → asc.
  */
 import { cn } from '@/lib/utils';
-import { GripVertical, ChevronUp, ChevronDown } from 'lucide-react';
+import { GripVertical, ChevronUp, ChevronDown } from '@/lib/atlaskit-icons';
 import { useRef } from 'react';
 
 export type SortDir = 'asc' | 'desc' | null;

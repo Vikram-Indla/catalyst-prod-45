@@ -4,7 +4,7 @@
 // ============================================================
 
 import { useNavigate } from 'react-router-dom';
-import { Calendar, Clock, AlertTriangle, User } from 'lucide-react';
+import { Calendar, Clock, AlertTriangle, User } from '@/lib/atlaskit-icons';
 import type { UpcomingDeadline } from '../../types/planner-dashboard';
 import { cn } from '@/lib/utils';
 import { format, parseISO } from 'date-fns';

@@ -19,7 +19,7 @@ import { StoriesColumnConfig } from '@/components/stories/StoriesColumnConfig';
 import { StoryQuickAdd } from '@/components/stories/StoryQuickAdd';
 import { StoriesListView } from '@/components/stories/StoriesListView';
 import { PullRankDialog } from '@/components/stories/PullRankDialog';
-import { Plus, List, LayoutGrid, Filter, Columns } from 'lucide-react';
+import { Plus, List, LayoutGrid, Filter, Columns } from '@/lib/atlaskit-icons';
 import { PermissionGuard } from '@/components/shared/PermissionGuard';
 import { STORY_STATUS_LABELS, StoryWithRelations } from '@/types/story.types';
 import { useWorkItemRanking } from '@/hooks/useWorkItemRanking';

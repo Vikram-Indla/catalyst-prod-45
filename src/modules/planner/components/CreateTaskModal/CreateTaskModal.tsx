@@ -4,7 +4,7 @@
  */
 
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { X, Plus, Check, Loader2, ChevronDown, Calendar, ChevronLeft, ChevronRight, Search } from 'lucide-react';
+import { X, Plus, Check, Loader2, ChevronDown, Calendar, ChevronLeft, ChevronRight, Search } from '@/lib/atlaskit-icons';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useCreateTaskMutation, type CreateTaskInput } from './hooks/useCreateTaskMutation';
 import type { TaskPriority } from '../../types';

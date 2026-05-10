@@ -14,7 +14,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { toast } from 'sonner';
-import { Plus, MoreHorizontal, Trash2, Edit2, CheckCircle2, Circle } from 'lucide-react';
+import { Plus, MoreHorizontal, Trash2, Edit2, CheckCircle2, Circle } from '@/lib/atlaskit-icons';
 import {
   AlertDialog,
   AlertDialogAction,

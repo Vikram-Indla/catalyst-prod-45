@@ -4,7 +4,7 @@
 // =====================================================
 
 import React from 'react';
-import { Search } from 'lucide-react';
+import { Search } from '@/lib/atlaskit-icons';
 import { Input } from '@/components/ui/input';
 import { 
   Select,

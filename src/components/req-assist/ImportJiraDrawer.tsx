@@ -1,5 +1,5 @@
 import { useState, useMemo, useCallback } from 'react';
-import { X, FileText, Search, Inbox, Loader2, CheckCircle, XCircle, AlertTriangle, RefreshCw } from 'lucide-react';
+import { X, FileText, Search, Inbox, Loader2, CheckCircle, XCircle, AlertTriangle, RefreshCw } from '@/lib/atlaskit-icons';
 import { Sheet, SheetPortal, SheetTitle, SheetDescription } from '@/components/ui/sheet';
 import * as SheetPrimitive from "@radix-ui/react-dialog";
 // Checkbox replaced with native <input type="checkbox"> to avoid Radix Dialog event interception

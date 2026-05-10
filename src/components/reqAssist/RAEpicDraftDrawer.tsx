@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { X, Clock, Pencil, Archive, Loader2, ChevronLeft } from 'lucide-react';
+import { X, Clock, Pencil, Archive, Loader2, ChevronLeft } from '@/lib/atlaskit-icons';
 import { useTheme } from '@/hooks/useTheme';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { useQueryClient } from '@tanstack/react-query';

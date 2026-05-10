@@ -7,7 +7,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import { Lozenge } from '@/components/ads';
-import { Plus, Trash2, GripVertical } from 'lucide-react';
+import { Plus, Trash2, GripVertical } from '@/lib/atlaskit-icons';
 import { toast } from 'sonner';
 
 interface GateRule {

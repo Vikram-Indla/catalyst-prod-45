@@ -5,7 +5,7 @@
  */
 
 import { useState, useMemo } from 'react';
-import { RefreshCw } from 'lucide-react';
+import { RefreshCw } from '@/lib/atlaskit-icons';
 import { Drawer } from '../shared/Drawer';
 import { KrListItem } from '../shared/KrListItem';
 import { SectionTitle } from '../shared/SectionTitle';

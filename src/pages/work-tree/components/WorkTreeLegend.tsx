@@ -1,5 +1,5 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Star, Target, FileText, CheckSquare, ListTodo, AlertCircle } from 'lucide-react';
+import { Star, Target, FileText, CheckSquare, ListTodo, AlertCircle } from '@/lib/atlaskit-icons';
 import { Lozenge } from '@/components/ads';
 
 interface WorkTreeLegendProps {

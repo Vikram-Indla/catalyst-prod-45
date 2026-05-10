@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useModuleAccess, ModuleAccessLevel } from '@/hooks/useModuleAccess';
 import { useUserRole } from '@/hooks/useUserRole';
 import { Button } from '@/components/ui/button';
-import { Lock, Settings, Home } from 'lucide-react';
+import { Lock, Settings, Home } from '@/lib/atlaskit-icons';
 
 interface ModuleGuardProps {
   moduleCode: string;

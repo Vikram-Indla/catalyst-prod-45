@@ -3,7 +3,7 @@
  */
 
 import { useState } from 'react';
-import { AlertTriangle, Trash2 } from 'lucide-react';
+import { AlertTriangle, Trash2 } from '@/lib/atlaskit-icons';
 import {
   AlertDialog,
   AlertDialogAction,

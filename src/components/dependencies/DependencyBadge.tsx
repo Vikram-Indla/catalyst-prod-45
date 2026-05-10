@@ -4,7 +4,7 @@
 // =====================================================
 
 import React from 'react';
-import { Link2, AlertTriangle } from 'lucide-react';
+import { Link2, AlertTriangle } from '@/lib/atlaskit-icons';
 import { useDependencyCounts } from '@/hooks/useDependencies';
 import { WorkItemType } from '@/types/views';
 import { cn } from '@/lib/utils';

@@ -3,7 +3,7 @@
 // Ring-fenced CSS: mytasks-section-header, uppercase labels
 // ============================================================
 
-import { AlertCircle, Clock, Calendar } from 'lucide-react';
+import { AlertCircle, Clock, Calendar } from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 import { TaskRow } from './TaskRow';
 import type { MyTask } from '../../types/my-tasks';

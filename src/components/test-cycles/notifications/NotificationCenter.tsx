@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Bell, BellOff, Check, ExternalLink } from 'lucide-react';
+import { Bell, BellOff, Check, ExternalLink } from '@/lib/atlaskit-icons';
 import { Button } from '@/components/ui/button';
 import {
   Popover,

@@ -8,7 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Avatar, Lozenge, type LozengeAppearance } from '@/components/ads';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { toast } from 'sonner';
-import { User, Mail, Briefcase, Save, Shield, History } from 'lucide-react';
+import { User, Mail, Briefcase, Save, Shield, History } from '@/lib/atlaskit-icons';
 import { useUserRole } from '@/hooks/useUserRole';
 import { formatDistanceToNow } from 'date-fns';
 

@@ -3,7 +3,7 @@
  */
 
 import { motion } from 'framer-motion';
-import { CheckCircle2, Bug, AlertTriangle, Package } from 'lucide-react';
+import { CheckCircle2, Bug, AlertTriangle, Package } from '@/lib/atlaskit-icons';
 import type { ActivityItem } from '../types';
 
 interface ActivityFeedProps {

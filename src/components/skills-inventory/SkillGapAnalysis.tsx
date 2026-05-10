@@ -1,5 +1,5 @@
 import React from 'react';
-import { AlertTriangle, FileText } from 'lucide-react';
+import { AlertTriangle, FileText } from '@/lib/atlaskit-icons';
 
 interface SkillGap {
   skill: string;

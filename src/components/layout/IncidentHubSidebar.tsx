@@ -11,7 +11,7 @@ import {
   LayoutGrid,
   FileText,
   Users,
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import { SidebarBase, SidebarConfig, SidebarSection } from './SidebarBase';
 
 interface IncidentHubSidebarProps {

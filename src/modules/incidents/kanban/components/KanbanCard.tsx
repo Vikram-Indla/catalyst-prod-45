@@ -17,7 +17,7 @@ import {
   Settings,
   UserPlus,
   ArrowUp,
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 import { Lozenge, Tooltip } from '@/components/ads';
 import { Button } from '@/components/ui/button';

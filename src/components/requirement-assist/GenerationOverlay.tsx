@@ -4,7 +4,7 @@ import { cn } from '@/lib/utils';
 import type { RaDocument } from '@/types/requirement-assist';
 import { CAPABILITY_CONFIGS } from '@/types/requirement-assist';
 import { useRaRealtimeProgress } from '@/hooks/useRaRealtimeProgress';
-import { Check } from 'lucide-react';
+import { Check } from '@/lib/atlaskit-icons';
 
 /* ── Agent step display names ── */
 const AGENT_LABELS: Record<string, { name: string; description: string }> = {

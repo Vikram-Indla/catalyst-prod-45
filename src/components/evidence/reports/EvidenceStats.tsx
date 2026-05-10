@@ -11,7 +11,7 @@ import {
   FileText, 
   Pencil, 
   AlertTriangle 
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import { Card, CardContent } from '@/components/ui/card';
 import { supabase } from '@/integrations/supabase/client';
 import { cn } from '@/lib/utils';

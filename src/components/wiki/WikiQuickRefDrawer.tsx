@@ -1,5 +1,5 @@
 import React from 'react';
-import { X, FileText, Eye } from 'lucide-react';
+import { X, FileText, Eye } from '@/lib/atlaskit-icons';
 import { useTheme } from '@/hooks/useTheme';
 
 interface Props {

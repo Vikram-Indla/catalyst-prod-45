@@ -3,7 +3,7 @@
  */
 
 import React from 'react';
-import { CheckCircle, XCircle, AlertTriangle, Clock, PlayCircle, ChevronDown } from 'lucide-react';
+import { CheckCircle, XCircle, AlertTriangle, Clock, PlayCircle, ChevronDown } from '@/lib/atlaskit-icons';
 import { Lozenge, type LozengeAppearance } from '@/components/ads';
 import {
   DropdownMenu,

@@ -1,6 +1,6 @@
 import React from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { ChevronRight, Construction } from 'lucide-react';
+import { ChevronRight, Construction } from '@/lib/atlaskit-icons';
 import { Button } from '@/components/ui/button';
 
 interface ProjectComingSoonPageProps {

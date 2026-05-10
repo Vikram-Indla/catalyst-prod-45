@@ -9,7 +9,7 @@ import {
   ListTodo,
   Plus,
   CheckCircle2
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import { getUserById, getTeamById } from '@/lib/work-manager-data';
 import type { TaskExtended } from './types';
 import { cn } from '@/lib/utils';

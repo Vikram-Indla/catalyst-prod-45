@@ -1,4 +1,4 @@
-import { X, Plus } from 'lucide-react';
+import { X, Plus } from '@/lib/atlaskit-icons';
 import { Program } from '@/types/backlog.types';
 
 interface TagsInputProps {

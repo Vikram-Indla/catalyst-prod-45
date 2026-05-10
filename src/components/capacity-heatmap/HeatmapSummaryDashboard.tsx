@@ -5,7 +5,7 @@
 
 import { memo } from 'react';
 import { motion } from 'framer-motion';
-import { AlertTriangle, Clock, AlertCircle, CheckCircle, TrendingDown, Battery } from 'lucide-react';
+import { AlertTriangle, Clock, AlertCircle, CheckCircle, TrendingDown, Battery } from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 import { CATALYST_COLORS } from '@/types/capacity-heatmap';
 import type { OrgStats, HeatmapResource } from '@/types/capacity-heatmap';

@@ -5,7 +5,7 @@
 
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { AlertTriangle, ChevronRight, Clock, Plus, Loader2 } from 'lucide-react';
+import { AlertTriangle, ChevronRight, Clock, Plus, Loader2 } from '@/lib/atlaskit-icons';
 import { useTheme } from '@/hooks/useTheme';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';

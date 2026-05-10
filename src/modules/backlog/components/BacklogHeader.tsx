@@ -5,7 +5,7 @@
 import { useBacklogState } from '../hooks/useBacklogState';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Filter, Download, Search, List, LayoutGrid, Table, Plus, Columns } from 'lucide-react';
+import { Filter, Download, Search, List, LayoutGrid, Table, Plus, Columns } from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 import { Tooltip } from '@/components/ads';
 

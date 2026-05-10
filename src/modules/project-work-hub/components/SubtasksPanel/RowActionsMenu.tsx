@@ -4,7 +4,7 @@
  */
 import React from 'react';
 import DropdownMenu, { DropdownItem, DropdownItemGroup } from '@atlaskit/dropdown-menu';
-import { MoreHorizontal, ExternalLink, Pencil, Trash2 } from 'lucide-react';
+import { MoreHorizontal, ExternalLink, Pencil, Trash2 } from '@/lib/atlaskit-icons';
 
 interface RowActionsMenuProps {
   onOpen: () => void;

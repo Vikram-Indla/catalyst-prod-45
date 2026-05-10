@@ -6,7 +6,7 @@
  */
 import React, { useCallback, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Search, Plus, Settings, Package, Lock } from 'lucide-react';
+import { Search, Plus, Settings, Package, Lock } from '@/lib/atlaskit-icons';
 import { Input } from '@/components/ui/input';
 import { useUserRole } from '@/hooks/useUserRole';
 import { useBusinessLines } from '@/hooks/useProductSettings';

@@ -52,7 +52,7 @@ import {
   MoreVertical,
   Trash2,
   Copy
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 

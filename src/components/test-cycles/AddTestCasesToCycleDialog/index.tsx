@@ -4,7 +4,7 @@
  */
 
 import React, { useState, useMemo } from 'react';
-import { Search, FileText, Check, X, Folder } from 'lucide-react';
+import { Search, FileText, Check, X, Folder } from '@/lib/atlaskit-icons';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';

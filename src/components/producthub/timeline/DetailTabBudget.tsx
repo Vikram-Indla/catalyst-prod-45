@@ -9,7 +9,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { logRequestAudit } from '@/lib/requestAudit';
-import { Pencil, Trash2, FolderOpen, X } from 'lucide-react';
+import { Pencil, Trash2, FolderOpen, X } from '@/lib/atlaskit-icons';
 
 interface DetailTabBudgetProps {
   requestId: string;

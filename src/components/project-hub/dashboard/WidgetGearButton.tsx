@@ -14,7 +14,7 @@
  * are active (FP-010). Opens the per-gadget settings panel via popup.
  */
 import { useState } from 'react';
-import { Settings } from 'lucide-react';
+import { Settings } from '@/lib/atlaskit-icons';
 import { token } from '@atlaskit/tokens';
 import { IconButton as AkIconButton } from '@atlaskit/button/new';
 import { Popup } from '@/components/ads';

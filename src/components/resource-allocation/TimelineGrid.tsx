@@ -6,7 +6,7 @@
 
 import { useState } from 'react';
 import { cn } from '@/lib/utils';
-import { Plus, Pencil, Trash2, AlertTriangle } from 'lucide-react';
+import { Plus, Pencil, Trash2, AlertTriangle } from '@/lib/atlaskit-icons';
 import { Button } from '@/components/ui/button';
 import {
   AlertDialog,

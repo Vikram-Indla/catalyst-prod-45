@@ -4,7 +4,7 @@
  */
 
 import React, { useState, useRef, useEffect } from 'react';
-import { X, ChevronDown } from 'lucide-react';
+import { X, ChevronDown } from '@/lib/atlaskit-icons';
 import { PriorityBars, normalisePriority } from '@/components/shared/PriorityIndicator';
 import {
   Dialog,

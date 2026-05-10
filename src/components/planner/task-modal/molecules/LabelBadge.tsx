@@ -3,7 +3,7 @@
 // ============================================================================
 
 import React, { useState } from 'react';
-import { X } from 'lucide-react';
+import { X } from '@/lib/atlaskit-icons';
 import { Label } from '../types/labels';
 
 interface LabelBadgeProps {

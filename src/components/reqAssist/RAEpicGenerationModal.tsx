@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { useQueryClient } from '@tanstack/react-query';
 import { RA_KEYS } from '@/hooks/useReqAssist';
-import { CheckCircle2, XCircle, Sparkles, Check, Loader2 } from 'lucide-react';
+import { CheckCircle2, XCircle, Sparkles, Check, Loader2 } from '@/lib/atlaskit-icons';
 import { toast } from 'sonner';
 import type { RADocumentWithArtifacts } from '@/types/reqAssistV2';
 import { sanitiseError } from '@/lib/errorUtils';

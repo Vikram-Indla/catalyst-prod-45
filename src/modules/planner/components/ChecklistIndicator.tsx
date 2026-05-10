@@ -3,7 +3,7 @@
 // Shows checklist progress on task cards
 // ============================================================
 
-import { CheckSquare } from 'lucide-react';
+import { CheckSquare } from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';

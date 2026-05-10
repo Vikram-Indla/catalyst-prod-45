@@ -3,7 +3,7 @@
  * Platform standard: gradient bg, white text, pill shape, Zap icon
  */
 import React from 'react';
-import { Zap } from 'lucide-react';
+import { Zap } from '@/lib/atlaskit-icons';
 
 export interface AIIntelligenceButtonProps {
   label: string;

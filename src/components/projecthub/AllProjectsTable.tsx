@@ -1,5 +1,5 @@
 import { useState, useMemo, useRef, useCallback, useEffect } from 'react';
-import { Star, MoreHorizontal, Lock, ChevronUp, ChevronDown, ExternalLink, Settings, Archive, Search, Pencil } from 'lucide-react';
+import { Star, MoreHorizontal, Lock, ChevronUp, ChevronDown, ExternalLink, Settings, Archive, Search, Pencil } from '@/lib/atlaskit-icons';
 import { useNavigate, Link as RouterLink } from 'react-router-dom';
 import '@/styles/product-backlog.css';
 import { useTableColumns, type ColumnDef as TColDef } from '@/hooks/useTableColumns';

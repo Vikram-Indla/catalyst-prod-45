@@ -3,7 +3,7 @@
 // ═══════════════════════════════════════════════════════════════════════════
 
 import React, { useEffect, useCallback } from 'react';
-import { Clipboard } from 'lucide-react';
+import { Clipboard } from '@/lib/atlaskit-icons';
 import { toast } from 'sonner';
 
 interface ClipboardPasteButtonProps {

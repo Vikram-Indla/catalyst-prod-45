@@ -5,7 +5,7 @@
 
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { createPortal } from 'react-dom';
-import { ArrowLeft, X, ExternalLink, Copy, Loader2 } from 'lucide-react';
+import { ArrowLeft, X, ExternalLink, Copy, Loader2 } from '@/lib/atlaskit-icons';
 import { useQuery } from '@tanstack/react-query';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';

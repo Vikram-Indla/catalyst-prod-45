@@ -2,7 +2,7 @@
  * BulkOpsHistory — Audit trail panel for bulk operations
  * Phase 9
  */
-import { Clock, X } from 'lucide-react';
+import { Clock, X } from '@/lib/atlaskit-icons';
 import { useBulkOpsLog } from '@/hooks/workhub/useBulkOpsLog';
 
 const OP_CONFIG: Record<string, { label: string; bg: string; color: string }> = {

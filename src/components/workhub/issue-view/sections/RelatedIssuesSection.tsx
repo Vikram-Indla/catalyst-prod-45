@@ -6,7 +6,7 @@
  */
 import { useMemo } from 'react';
 import { cn } from '@/lib/utils';
-import { Link2, Trash2, ExternalLink } from 'lucide-react';
+import { Link2, Trash2, ExternalLink } from '@/lib/atlaskit-icons';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import { StatusLozenge } from '@/components/ui/StatusLozenge';
 

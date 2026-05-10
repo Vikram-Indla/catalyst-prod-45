@@ -5,7 +5,7 @@
 
 import { useState, useCallback, useRef, useMemo, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Plus, Download, FileText } from 'lucide-react';
+import { Plus, Download, FileText } from '@/lib/atlaskit-icons';
 import type { PlannerView, PlannerTask, TaskStatus, AIInsight, GroupByOption } from './types';
 import type { KanbanTask } from './types/kanban';
 import { KanbanBoard, TaskDetailDrawer } from './components/kanban';

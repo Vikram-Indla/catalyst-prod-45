@@ -6,7 +6,7 @@
 
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { RefreshCw, Play, Filter, UserCheck, Clock, AlertTriangle } from 'lucide-react';
+import { RefreshCw, Play, Filter, UserCheck, Clock, AlertTriangle } from '@/lib/atlaskit-icons';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { useAuth } from '@/lib/auth';
 

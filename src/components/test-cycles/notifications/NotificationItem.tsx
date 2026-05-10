@@ -1,4 +1,4 @@
-import { UserPlus, RefreshCw, CheckCircle, Clock, AtSign, Bug, MessageSquare } from 'lucide-react';
+import { UserPlus, RefreshCw, CheckCircle, Clock, AtSign, Bug, MessageSquare } from '@/lib/atlaskit-icons';
 import { formatDistanceToNow } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { useNotifications, Notification, NotificationType } from '@/hooks/useNotifications';

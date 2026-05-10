@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useWikiHomeStats } from '@/hooks/useWikiHub';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { ChevronRight } from 'lucide-react';
+import { ChevronRight } from '@/lib/atlaskit-icons';
 import { useTheme } from '@/hooks/useTheme';
 import { BarChart, Bar, LineChart, Line, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 

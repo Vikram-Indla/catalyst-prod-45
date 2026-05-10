@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useWikiArticleTemplates } from '@/hooks/useWikiHub';
 import { useTheme } from '@/hooks/useTheme';
-import { ChevronRight, FileText, AlertTriangle, CalendarIcon, Clock, X } from 'lucide-react';
+import { ChevronRight, FileText, AlertTriangle, CalendarIcon, Clock, X } from '@/lib/atlaskit-icons';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { format } from 'date-fns';

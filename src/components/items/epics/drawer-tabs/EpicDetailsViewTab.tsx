@@ -29,7 +29,7 @@ import { CatalystDatePicker } from '@/components/ui/catalyst-date-picker';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Lozenge } from '@/components/ads';
-import { Lock, Unlock, Check, ChevronsUpDown, X } from 'lucide-react';
+import { Lock, Unlock, Check, ChevronsUpDown, X } from '@/lib/atlaskit-icons';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';

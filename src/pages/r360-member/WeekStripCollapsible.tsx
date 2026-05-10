@@ -3,7 +3,7 @@
  * Extracted from R360MemberDetail.tsx
  */
 import React, { useState, useMemo } from 'react';
-import { ChevronDown } from 'lucide-react';
+import { ChevronDown } from '@/lib/atlaskit-icons';
 import { useTheme } from '@/hooks/useTheme';
 import type { R360WorkItem } from '@/types/r360';
 import { getSaudiWorkDays, getWeekCells } from './helpers';

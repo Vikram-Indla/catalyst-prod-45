@@ -1,5 +1,5 @@
 import React from 'react';
-import { Undo2 } from 'lucide-react';
+import { Undo2 } from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 

@@ -18,7 +18,7 @@ import {
   CheckCircle2,
   X,
   RotateCcw,
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import {
   Dialog,
   DialogContent,

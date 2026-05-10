@@ -3,7 +3,7 @@
  * 44px rows, RGBA hover, hierarchy expand/collapse, React.memo rows
  */
 import { useState, useMemo, useCallback, memo } from 'react';
-import { ChevronDown, ChevronRight, ArrowUp, ArrowDown, GripVertical, ExternalLink, Plus, MoreHorizontal } from 'lucide-react';
+import { ChevronDown, ChevronRight, ArrowUp, ArrowDown, GripVertical, ExternalLink, Plus, MoreHorizontal } from '@/lib/atlaskit-icons';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import { PriorityBars, normalisePriority } from '@/components/shared/PriorityIndicator';
 import { StatusLozengeByType } from '@/components/workflow';

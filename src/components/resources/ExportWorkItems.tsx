@@ -3,7 +3,7 @@
  * Replaces old CSV/JSON export dropdown on /project-hub/resources
  */
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { Download, ChevronDown, Calendar, Loader2, Check } from 'lucide-react';
+import { Download, ChevronDown, Calendar, Loader2, Check } from '@/lib/atlaskit-icons';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { loadExcelJS } from '@/lib/exportLoaders';

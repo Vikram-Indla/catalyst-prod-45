@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Search, Loader2, CheckCircle2 } from 'lucide-react';
+import { Search, Loader2, CheckCircle2 } from '@/lib/atlaskit-icons';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';

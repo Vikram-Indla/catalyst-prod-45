@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useChangeDefectStatusG25 } from '@/hooks/useDefectsG25';
-import { Loader2 } from 'lucide-react';
+import { Loader2 } from '@/lib/atlaskit-icons';
 
 const STATUSES = [
   { value: 'new', label: 'New' }, { value: 'open', label: 'Open' },

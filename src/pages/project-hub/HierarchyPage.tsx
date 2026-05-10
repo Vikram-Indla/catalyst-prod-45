@@ -10,7 +10,7 @@ import { useParams } from 'react-router-dom';
 import { useTheme } from '@/hooks/useTheme';
 import {
   Search, Filter, GitBranch, TableProperties, X, ChevronDown, RefreshCw,
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { WorkItem } from '@/types/hierarchy';
 import { useJiraHierarchyTree } from '@/hooks/useJiraHierarchy';

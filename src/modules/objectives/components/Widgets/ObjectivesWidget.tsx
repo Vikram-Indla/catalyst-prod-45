@@ -1,6 +1,6 @@
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Plus, ArrowRight, Target } from 'lucide-react';
+import { Plus, ArrowRight, Target } from '@/lib/atlaskit-icons';
 import { useObjectives } from '@/hooks/useObjectives';
 import { ObjectiveStatusBadge } from '../shared/ObjectiveStatusBadge';
 import { ObjectiveScoreBadge } from '../shared/ObjectiveScoreBadge';

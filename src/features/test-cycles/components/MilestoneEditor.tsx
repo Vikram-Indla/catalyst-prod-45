@@ -3,7 +3,7 @@
 // ============================================================================
 
 import { memo, useState } from 'react';
-import { Plus, Trash2, CheckCircle2, Circle, Flag, Calendar, Loader2 } from 'lucide-react';
+import { Plus, Trash2, CheckCircle2, Circle, Flag, Calendar, Loader2 } from '@/lib/atlaskit-icons';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';

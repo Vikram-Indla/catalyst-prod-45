@@ -6,7 +6,7 @@ import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Link } from 'react-router-dom';
-import { Plus, ChevronDown, Search, ArrowUpDown } from 'lucide-react';
+import { Plus, ChevronDown, Search, ArrowUpDown } from '@/lib/atlaskit-icons';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Lozenge, type LozengeAppearance } from '@/components/ads';

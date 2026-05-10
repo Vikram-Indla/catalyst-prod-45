@@ -4,7 +4,7 @@
  */
 
 import { useState } from 'react';
-import { Tags, X, Plus } from 'lucide-react';
+import { Tags, X, Plus } from '@/lib/atlaskit-icons';
 import {
   Dialog,
   DialogContent,

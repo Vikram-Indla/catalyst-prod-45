@@ -3,7 +3,7 @@
  * body switches between AllWorkTab and FieldsTab.
  */
 import { useState, useMemo } from 'react';
-import { Copy } from 'lucide-react';
+import { Copy } from '@/lib/atlaskit-icons';
 import { AllWorkTab } from './AllWorkTab';
 import { FieldsTab } from './FieldsTab';
 import { CopyMenu } from './copy/CopyMenu';

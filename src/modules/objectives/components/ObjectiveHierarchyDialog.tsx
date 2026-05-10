@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { GitBranch, Loader2, Target, ChevronRight } from 'lucide-react';
+import { GitBranch, Loader2, Target, ChevronRight } from '@/lib/atlaskit-icons';
 import { useObjectiveHierarchy } from '../hooks/useObjectiveHierarchy';
 import { ObjectiveTierBadge } from './shared/ObjectiveTierBadge';
 import { ObjectiveStatusBadge } from './shared/ObjectiveStatusBadge';

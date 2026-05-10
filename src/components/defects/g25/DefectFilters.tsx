@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Search, X, ChevronDown, Check, UserRound } from 'lucide-react';
+import { Search, X, ChevronDown, Check, UserRound } from '@/lib/atlaskit-icons';
 import { Input } from '@/components/ui/input';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Command, CommandInput, CommandList, CommandItem, CommandEmpty } from '@/components/ui/command';

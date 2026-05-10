@@ -15,7 +15,7 @@ import { useActiveDemandProcessSteps } from '@/hooks/useDemandProcessSteps';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { format, parseISO } from 'date-fns';
-import { Calendar as CalendarIcon, Lock } from 'lucide-react';
+import { Calendar as CalendarIcon, Lock } from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 

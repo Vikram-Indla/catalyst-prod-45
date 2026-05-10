@@ -11,7 +11,7 @@ import {
 } from '@tanstack/react-table';
 import { DragDropContext, Droppable, Draggable, type DropResult } from '@hello-pangea/dnd';
 import { format } from 'date-fns';
-import { Star, GripVertical, ChevronUp, ChevronDown, Check } from 'lucide-react';
+import { Star, GripVertical, ChevronUp, ChevronDown, Check } from '@/lib/atlaskit-icons';
 import type { Request, RequestStatus, Density } from '@/types/request';
 import { getPriorityLevel } from '@/types/request';
 import { StatusBadge } from './StatusBadge';

@@ -9,7 +9,7 @@ import { useNavigate } from 'react-router-dom';
 import {
   GitBranch, Search, CheckCircle2, XCircle, AlertTriangle, Clock,
   ChevronRight, ChevronDown, Target, FileText, ArrowRight, Download,
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { CatalystPageHeader } from '@/components/shared/CatalystPageHeader';
 import { EmptyState } from '@/components/ui/EmptyState';

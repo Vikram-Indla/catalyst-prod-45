@@ -16,7 +16,7 @@ import { Label } from '@/components/ui/label';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
 import { Lozenge } from '@/components/ads';
-import { X, RotateCcw } from 'lucide-react';
+import { X, RotateCcw } from '@/lib/atlaskit-icons';
 import type { RoadmapFilters } from '../types/roadmap';
 import { EMPTY_FILTERS, STATUS_CONFIG, PRIORITY_CONFIG } from '../types/roadmap';
 import { useProducts } from '../hooks/useProducts';

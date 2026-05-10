@@ -6,7 +6,7 @@
 import React, { useState, useMemo, useCallback } from 'react';
 import { DragDropContext, DropResult } from '@hello-pangea/dnd';
 import { useVirtualizer } from '@tanstack/react-virtual';
-import { Plus, Settings, RefreshCw, Filter } from 'lucide-react';
+import { Plus, Settings, RefreshCw, Filter } from '@/lib/atlaskit-icons';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';

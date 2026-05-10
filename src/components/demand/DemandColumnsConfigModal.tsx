@@ -11,7 +11,7 @@ import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd';
-import { GripVertical, RotateCcw } from 'lucide-react';
+import { GripVertical, RotateCcw } from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 
 interface Column {

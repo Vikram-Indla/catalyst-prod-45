@@ -5,7 +5,7 @@
 
 import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { TrendingUp, TrendingDown, ArrowUp, ArrowDown } from 'lucide-react';
+import { TrendingUp, TrendingDown, ArrowUp, ArrowDown } from '@/lib/atlaskit-icons';
 import { AvatarChip } from '@/components/workhub/shared/AvatarChip';
 import { DepartmentBadge } from '@/components/workhub/shared/DepartmentBadge';
 import { UtilizationBar } from '@/components/workhub/shared/UtilizationBar';

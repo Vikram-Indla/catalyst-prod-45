@@ -17,7 +17,7 @@ import {
   sortableKeyboardCoordinates,
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
-import { ArrowUpDown, ChevronDown } from 'lucide-react';
+import { ArrowUpDown, ChevronDown } from '@/lib/atlaskit-icons';
 import { T10PriorityCard } from './T10PriorityCard';
 import type { T10Item } from '../../types';
 

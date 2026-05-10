@@ -4,7 +4,7 @@
  */
 
 import { motion } from 'framer-motion';
-import { AlertCircle, RefreshCw, WifiOff } from 'lucide-react';
+import { AlertCircle, RefreshCw, WifiOff } from '@/lib/atlaskit-icons';
 import { Button } from '@/components/ui/button';
 
 interface HeatmapErrorStateProps {

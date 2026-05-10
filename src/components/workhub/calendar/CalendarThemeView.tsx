@@ -4,7 +4,7 @@
 
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Palette } from 'lucide-react';
+import { Palette } from '@/lib/atlaskit-icons';
 import type { CalendarEvent } from '@/types/workhub.types';
 import { getMonthName, toDateString, isToday, eventOverlapsMonth } from '@/lib/workhub/calendarHelpers';
 

@@ -10,7 +10,7 @@ import { DeleteConfirmDialog } from '../components/dialogs/DeleteConfirmDialog';
 import { CreateFeatureDialog } from '../components/dialogs/CreateFeatureDialog';
 import { EditFeatureDialog } from '../components/dialogs/EditFeatureDialog';
 import { Button } from '@/components/ui/button';
-import { ChevronDown, ChevronRight, Plus, Pencil, Trash2, Layers } from 'lucide-react';
+import { ChevronDown, ChevronRight, Plus, Pencil, Trash2, Layers } from '@/lib/atlaskit-icons';
 import { toast } from 'sonner';
 import { useTheme } from '@/hooks/useTheme';
 import { DK, LK } from '@/utils/dark-mode-styles';

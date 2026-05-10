@@ -11,7 +11,7 @@ import {
   BarChart3,
   GitBranch,
   AlertTriangle
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';

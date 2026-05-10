@@ -13,7 +13,7 @@ import {
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { FolderInput, Folder, FolderOpen, ChevronRight, Home } from 'lucide-react';
+import { FolderInput, Folder, FolderOpen, ChevronRight, Home } from '@/lib/atlaskit-icons';
 import { useToast } from '@/hooks/use-toast';
 import { mockFolders } from '@/data/mockTestRepositoryData';
 import { cn } from '@/lib/utils';

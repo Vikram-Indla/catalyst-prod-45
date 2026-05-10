@@ -5,7 +5,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
-import { Columns3 } from 'lucide-react';
+import { Columns3 } from '@/lib/atlaskit-icons';
 import { TableColumn } from './types';
 import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd';
 import { cn } from '@/lib/utils';

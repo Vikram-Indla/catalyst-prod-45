@@ -4,7 +4,7 @@
  */
 
 import { useState, useEffect, useRef } from 'react';
-import { Settings, GripVertical, Check } from 'lucide-react';
+import { Settings, GripVertical, Check } from '@/lib/atlaskit-icons';
 
 export interface ColumnDef {
   id: string;

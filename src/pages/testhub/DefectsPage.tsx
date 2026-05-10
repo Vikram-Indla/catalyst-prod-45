@@ -6,7 +6,7 @@ import { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useTheme } from '@/hooks/useTheme';
 import { cn } from '@/lib/utils';
-import { Bug, Plus, Download, List, LayoutGrid, Settings2 } from 'lucide-react';
+import { Bug, Plus, Download, List, LayoutGrid, Settings2 } from '@/lib/atlaskit-icons';
 import { TestHubPageHeader } from '@/components/testhub/TestHubPageHeader';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';

@@ -6,7 +6,7 @@ import React from 'react';
 import { 
   Undo2, Redo2, ZoomIn, ZoomOut, Filter, 
   Presentation, FileText, HelpCircle, Calendar, Menu
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 import type { TimesliceMode } from '@/types/roadmap';
 

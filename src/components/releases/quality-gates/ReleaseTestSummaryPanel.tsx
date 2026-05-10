@@ -16,7 +16,7 @@ import {
   Bug, 
   TestTube2,
   TrendingUp
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import { useReleaseTestSummary } from '@/lib/shared-quality/hooks/useQualityGates';
 
 const CYCLE_STATUS_APPEARANCE: Record<string, LozengeAppearance> = {

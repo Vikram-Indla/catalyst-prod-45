@@ -7,7 +7,7 @@ import { useState, useEffect, Fragment } from 'react';
 import {
   X, Pencil, Trash2, Copy, Tag, Clock,
   Variable, Link2, CheckCircle, ExternalLink,
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import { useNavigate } from 'react-router-dom';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { formatTimestamp } from '@/lib/formatTimestamp';

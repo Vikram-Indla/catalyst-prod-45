@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { Filter, X, Check } from 'lucide-react';
+import { Filter, X, Check } from '@/lib/atlaskit-icons';
 import { useTheme } from '@/hooks/useTheme';
 
 export interface FilterState {

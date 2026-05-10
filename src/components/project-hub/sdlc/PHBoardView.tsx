@@ -2,7 +2,7 @@
  * ProjectHub Board View — Full Kanban with board switcher, typed cards, WIP limits, hover actions
  */
 import React, { useState, useMemo } from 'react';
-import { Plus, Check, UserPlus, Flag, MoreHorizontal, AlertTriangle, Calendar } from 'lucide-react';
+import { Plus, Check, UserPlus, Flag, MoreHorizontal, AlertTriangle, Calendar } from '@/lib/atlaskit-icons';
 import type { PHIssue, PHBoard } from '@/services/project-hub.service';
 import { getDisplayKey } from '@/services/project-hub.service';
 import type { IssueType } from '@/types/project-hub.types';

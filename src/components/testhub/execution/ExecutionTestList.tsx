@@ -3,7 +3,7 @@
  * Extracted from TestHubExecutionPage.tsx
  */
 import React from 'react';
-import { User } from 'lucide-react';
+import { User } from '@/lib/atlaskit-icons';
 
 interface TestCycle {
   id: string;

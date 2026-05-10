@@ -3,7 +3,7 @@ import { useSearchParams, useNavigate } from 'react-router-dom';
 import {
   Search, ChevronRight, Sparkles, FileText, FileDown, Video,
   ShieldCheck, Filter, Clock, Zap, BookOpen,
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import { useWikiKeywordSearch, useWikiAISearch } from '@/hooks/useWikiHub';
 import { useDebouncedValue } from '@/hooks/useWikiData';
 import { useTheme } from '@/hooks/useTheme';

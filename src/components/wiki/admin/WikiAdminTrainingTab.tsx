@@ -7,7 +7,7 @@ import { useQueryClient, useMutation } from '@tanstack/react-query';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { SkeletonBlock } from '@/components/wiki/WikiTokens';
 import { EmptyState } from './WikiAdminSyncTab';
-import { Search, Plus, Trash2, ChevronLeft, ChevronRight, GraduationCap } from 'lucide-react';
+import { Search, Plus, Trash2, ChevronLeft, ChevronRight, GraduationCap } from '@/lib/atlaskit-icons';
 import { toast } from 'sonner';
 
 const fromAny = (t: string) => typedQuery(t);

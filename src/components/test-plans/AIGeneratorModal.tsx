@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Sparkles, Loader2 } from 'lucide-react';
+import { Sparkles, Loader2 } from '@/lib/atlaskit-icons';
 import {
   Dialog,
   DialogContent,

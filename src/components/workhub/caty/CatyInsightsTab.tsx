@@ -11,7 +11,7 @@ import {
   Info,
   CheckCircle,
   RotateCcw,
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import { useCatyInsights } from '@/hooks/workhub/useCatyAI';
 import { ProgressRing } from '../shared/ProgressRing';
 

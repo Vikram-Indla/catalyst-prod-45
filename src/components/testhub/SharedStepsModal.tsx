@@ -4,7 +4,7 @@
  */
 
 import { useState, useEffect } from 'react';
-import { X, Search, Plus } from 'lucide-react';
+import { X, Search, Plus } from '@/lib/atlaskit-icons';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { CreateSharedStepModal } from './CreateSharedStepModal';
 

@@ -4,7 +4,7 @@
  */
 
 import { useState, useCallback, KeyboardEvent } from 'react';
-import { X, Plus, Link2, Bot, Clock, Hash, ChevronDown, ChevronUp } from 'lucide-react';
+import { X, Plus, Link2, Bot, Clock, Hash, ChevronDown, ChevronUp } from '@/lib/atlaskit-icons';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';

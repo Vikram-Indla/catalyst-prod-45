@@ -14,7 +14,7 @@
  */
 
 import React from 'react';
-import { Sun, Moon } from 'lucide-react';
+import { Sun, Moon } from '@/lib/atlaskit-icons';
 import { useThemeMode } from '@/providers/ThemeProvider';
 import { Tooltip } from '@/components/ads/Tooltip';
 import { token } from '@atlaskit/tokens';

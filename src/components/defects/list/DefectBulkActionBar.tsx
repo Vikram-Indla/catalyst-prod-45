@@ -3,7 +3,7 @@
 // Floating bar at bottom for bulk operations
 // =====================================================
 
-import { X, CheckCircle, UserPlus, AlertTriangle, XCircle } from 'lucide-react';
+import { X, CheckCircle, UserPlus, AlertTriangle, XCircle } from '@/lib/atlaskit-icons';
 import { Button } from '@/components/ui/button';
 import { CATALYST_V5 } from '@/lib/catalyst-colors';
 

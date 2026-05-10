@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Input } from '@/components/ui/input';
-import { Search, Layers, Target, Map, Briefcase, Users, FileText, Box } from 'lucide-react';
+import { Search, Layers, Target, Map, Briefcase, Users, FileText, Box } from '@/lib/atlaskit-icons';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useStarredItems } from '@/hooks/useStarredItems';
 import { Skeleton } from '@/components/ui/skeleton';

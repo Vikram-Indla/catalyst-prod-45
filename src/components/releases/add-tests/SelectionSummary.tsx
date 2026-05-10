@@ -3,7 +3,7 @@
  */
 
 import React, { useState } from 'react';
-import { X, Clock, ChevronDown, ChevronUp } from 'lucide-react';
+import { X, Clock, ChevronDown, ChevronUp } from '@/lib/atlaskit-icons';
 import { Button } from '@/components/ui/button';
 import { Lozenge } from '@/components/ads';
 import type { LozengeAppearance } from '@/components/ads';

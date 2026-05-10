@@ -4,7 +4,7 @@
  */
 
 import { useState, useEffect, Fragment } from 'react';
-import { X, Plus, Trash2, Variable, AlertCircle } from 'lucide-react';
+import { X, Plus, Trash2, Variable, AlertCircle } from '@/lib/atlaskit-icons';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { catalystToast } from '@/components/ui/CatalystToast';
 

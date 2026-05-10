@@ -4,7 +4,7 @@
  */
 
 import React, { useCallback, useEffect } from 'react';
-import { X } from 'lucide-react';
+import { X } from '@/lib/atlaskit-icons';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { CATALYST_V5 } from '@/lib/catalyst-colors';

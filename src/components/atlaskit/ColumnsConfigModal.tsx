@@ -9,7 +9,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd';
-import { GripVertical } from 'lucide-react';
+import { GripVertical } from '@/lib/atlaskit-icons';
 
 interface Column {
   key: string;

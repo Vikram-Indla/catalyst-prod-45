@@ -53,7 +53,7 @@ import {
   XCircle,
   LayoutList,
   LayoutGrid
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import { toast } from 'sonner';
 
 export default function EpicsPage() {

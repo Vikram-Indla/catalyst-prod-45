@@ -18,7 +18,7 @@
  */
 
 import { useState, useCallback, useMemo, useRef, useLayoutEffect, useEffect, type ReactNode } from 'react';
-import { ChevronDown } from 'lucide-react';
+import { ChevronDown } from '@/lib/atlaskit-icons';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { cn } from '@/lib/utils';

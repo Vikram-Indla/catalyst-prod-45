@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Search, X } from 'lucide-react';
+import { Search, X } from '@/lib/atlaskit-icons';
 import { supabase } from '@/integrations/supabase/client';
 
 export interface MemberEntry {

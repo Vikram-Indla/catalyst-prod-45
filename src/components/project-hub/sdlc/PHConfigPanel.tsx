@@ -3,7 +3,7 @@
  * Cycle 3: ESC close, save prompt
  */
 import React, { useState, useEffect, useCallback } from 'react';
-import { X, GripVertical, Trash2 } from 'lucide-react';
+import { X, GripVertical, Trash2 } from '@/lib/atlaskit-icons';
 import type { PHBoard } from '@/services/project-hub.service';
 import type { CardFieldConfig } from '@/types/project-hub.types';
 import { STATUS_CONFIG } from '@/types/project-hub.types';

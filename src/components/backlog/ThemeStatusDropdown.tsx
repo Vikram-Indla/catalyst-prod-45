@@ -3,7 +3,7 @@
  * Pulls statuses from theme_statuses table with real-time updates
  */
 
-import { ChevronDown, Loader2 } from 'lucide-react';
+import { ChevronDown, Loader2 } from '@/lib/atlaskit-icons';
 import {
   DropdownMenu,
   DropdownMenuContent,

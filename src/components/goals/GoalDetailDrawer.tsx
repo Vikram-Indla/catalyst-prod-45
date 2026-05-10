@@ -3,7 +3,7 @@
  * Fix 3: Field labels var(--ds-text-subtlest, #94A3B8) 10px uppercase, Fix 4: circular avatars
  */
 import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
-import { X, Sparkles, Rocket, Clock, Activity, Trash2, Pencil, BarChart3, Plus, Save, Search, Link2, Unlink } from 'lucide-react';
+import { X, Sparkles, Rocket, Clock, Activity, Trash2, Pencil, BarChart3, Plus, Save, Search, Link2, Unlink } from '@/lib/atlaskit-icons';
 import { useTheme } from '@/hooks/useTheme';
 import { useGoals, useKeyResults, useThemes, useDeleteGoal, useUpdateGoal, useGoalInitiatives, useLinkInitiative, useUnlinkInitiative, useSearchInitiatives } from '@/hooks/useGoals';
 import { goalsService } from '@/services/goalsService';

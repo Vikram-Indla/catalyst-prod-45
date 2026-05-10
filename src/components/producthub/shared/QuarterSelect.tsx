@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { ChevronDown, Check, Calendar } from 'lucide-react';
+import { ChevronDown, Check, Calendar } from '@/lib/atlaskit-icons';
 
 const QUARTER_GROUPS = [
   { group: '2025', items: ['Q1 2025', 'Q2 2025', 'Q3 2025', 'Q4 2025'] },

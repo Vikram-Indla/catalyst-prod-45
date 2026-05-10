@@ -6,7 +6,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { ArrowLeft, Plus, Search, GripVertical } from 'lucide-react';
+import { ArrowLeft, Plus, Search, GripVertical } from '@/lib/atlaskit-icons';
 import { toast } from 'sonner';
 import {
   Dialog,

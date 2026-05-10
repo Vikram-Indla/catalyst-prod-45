@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { cn } from '@/lib/utils';
 import { useRaCategories, useCreateRaCategory } from '@/hooks/useRaCategories';
 import type { RaCategory } from '@/types/requirement-assist';
-import { ChevronRight, ChevronDown, Plus } from 'lucide-react';
+import { ChevronRight, ChevronDown, Plus } from '@/lib/atlaskit-icons';
 
 interface CategoryTreeProps {
   selectedId: string | null;

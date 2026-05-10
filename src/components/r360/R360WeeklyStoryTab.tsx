@@ -3,7 +3,7 @@
  * Extracted from R360ProfileDrawer.tsx
  */
 import React, { useMemo } from 'react';
-import { CalendarX } from 'lucide-react';
+import { CalendarX } from '@/lib/atlaskit-icons';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import {
   INK1, INK2, INK4, MUTED, BORDER_LIGHT,

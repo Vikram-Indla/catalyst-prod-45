@@ -46,7 +46,7 @@ import { token } from '@atlaskit/tokens';
 import Avatar from '@atlaskit/avatar';
 import Lozenge from '@atlaskit/lozenge';
 import Tooltip from '@atlaskit/tooltip';
-import { Star, StarOff } from 'lucide-react';
+import { Star, StarOff } from '@/lib/atlaskit-icons';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import { resolveAvatarUrl } from '@/lib/avatars';
 import type { WorkItem } from '@/hooks/useForYouData';

@@ -12,7 +12,7 @@ import { useWorkItemDetail, type ChildItem } from '@/hooks/useWorkItemDetail';
 import {
   X, Copy, Bookmark, Eye, Zap, Layers, Bug, CheckSquare, CornerDownRight,
   Flag, Plus, MoreHorizontal, Share2, Loader2,
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import { toast } from 'sonner';
 import AtlaskitEditor, { type AtlaskitEditorRef } from '@/components/shared/AtlaskitEditor';
 import AtlaskitRenderer from '@/components/shared/AtlaskitRenderer';

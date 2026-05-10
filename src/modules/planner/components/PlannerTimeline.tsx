@@ -14,7 +14,7 @@ import {
   Check, 
   X, 
   AlertTriangle 
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';

@@ -5,7 +5,7 @@
 
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { X, Info, ArrowRight, Users, Calendar, Download } from 'lucide-react';
+import { X, Info, ArrowRight, Users, Calendar, Download } from '@/lib/atlaskit-icons';
 import { formatCurrency } from '@/lib/currencyConfig';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';

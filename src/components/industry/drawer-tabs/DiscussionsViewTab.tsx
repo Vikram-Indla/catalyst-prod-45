@@ -4,7 +4,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Avatar } from '@/components/ads';
-import { Send, MessageSquare } from 'lucide-react';
+import { Send, MessageSquare } from '@/lib/atlaskit-icons';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { useAuth } from '@/lib/auth';
 import { format } from 'date-fns';

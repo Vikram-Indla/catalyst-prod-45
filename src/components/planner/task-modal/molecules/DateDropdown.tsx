@@ -3,7 +3,7 @@
 // ============================================================================
 
 import React, { useState, useRef, useEffect } from 'react';
-import { ChevronDown, ChevronLeft, ChevronRight, Calendar, X } from 'lucide-react';
+import { ChevronDown, ChevronLeft, ChevronRight, Calendar, X } from '@/lib/atlaskit-icons';
 import { COLORS } from '../colors';
 import { Label } from '../atoms';
 

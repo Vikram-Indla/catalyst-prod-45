@@ -7,7 +7,7 @@ import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Lozenge } from '@/components/ads';
-import { Scale, Download, X } from 'lucide-react';
+import { Scale, Download, X } from '@/lib/atlaskit-icons';
 import { CATALYST_V5 } from '@/lib/catalyst-colors';
 import type { WorkloadFilters } from '@/types/workload.types';
 

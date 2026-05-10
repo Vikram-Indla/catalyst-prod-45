@@ -3,7 +3,7 @@
  * C7: Catalyst version left, Jira version right. Slide 250ms in, 200ms out.
  */
 import React, { useState, useEffect } from 'react';
-import { X, AlertCircle } from 'lucide-react';
+import { X, AlertCircle } from '@/lib/atlaskit-icons';
 
 interface ConflictItem {
   id: string;

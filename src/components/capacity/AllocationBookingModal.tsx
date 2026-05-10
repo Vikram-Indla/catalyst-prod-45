@@ -4,7 +4,7 @@
  */
 
 import { useState, useEffect, useMemo, useRef } from 'react';
-import { X, Plus, Trash2, Pencil, Calendar, AlertTriangle, Zap, Clock, UserMinus, Building2 } from 'lucide-react';
+import { X, Plus, Trash2, Pencil, Calendar, AlertTriangle, Zap, Clock, UserMinus, Building2 } from '@/lib/atlaskit-icons';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button';

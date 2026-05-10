@@ -1,4 +1,4 @@
-import { Bell } from 'lucide-react';
+import { Bell } from '@/lib/atlaskit-icons';
 
 const NOTIFICATION_OPTIONS = [
   'Item assigned to me',

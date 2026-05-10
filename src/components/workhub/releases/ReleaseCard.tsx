@@ -2,7 +2,7 @@
  * ReleaseCard — Shows real Jira fix version data with project groupings and assignee avatars
  */
 import { useState } from 'react';
-import { ArrowRight, AlertTriangle, FolderGit2 } from 'lucide-react';
+import { ArrowRight, AlertTriangle, FolderGit2 } from '@/lib/atlaskit-icons';
 import type { JiraRelease } from '@/hooks/workhub/useJiraReleases';
 import { StackedProgressBar } from '../shared/StackedProgressBar';
 

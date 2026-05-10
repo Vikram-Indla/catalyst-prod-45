@@ -7,7 +7,7 @@ import {
   Target,
   Bug,
   Briefcase
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import type { WorkItemAssignment } from '@/types/resource360';
 import { CategoryColors } from '@/lib/capacity/work-item-tokens';

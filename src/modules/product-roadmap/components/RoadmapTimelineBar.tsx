@@ -7,7 +7,7 @@
 import React, { useState, useCallback, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { cn } from '@/lib/utils';
-import { Calendar } from 'lucide-react';
+import { Calendar } from '@/lib/atlaskit-icons';
 import type { RoadmapDemand } from '../types/roadmap';
 import { format, parseISO } from 'date-fns';
 

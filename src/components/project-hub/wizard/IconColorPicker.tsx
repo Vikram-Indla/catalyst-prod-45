@@ -1,6 +1,6 @@
 import {
   Rocket, BarChart, Shield, FileText, Settings, Folder, Lightbulb, Target,
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 
 const ICONS = [
   { name: 'rocket', Icon: Rocket },

@@ -20,7 +20,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Loader2, AlertCircle } from 'lucide-react';
+import { Loader2, AlertCircle } from '@/lib/atlaskit-icons';
 import { BulkOperationConfig, BulkOperationField, BulkOperationSummary } from '../types';
 import { BulkResultsSummary } from '../BulkResultsSummary';
 

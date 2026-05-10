@@ -7,7 +7,7 @@
 import React, { useState, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
 import { ProgramPageLayout } from '@/components/program/ProgramPageLayout';
-import { Loader2, Table2 } from 'lucide-react';
+import { Loader2, Table2 } from '@/lib/atlaskit-icons';
 import { WorkItem, WorkbenchFilters, DEFAULT_WORKBENCH_FILTERS } from './types';
 import { WorkbenchFiltersDialog } from './WorkbenchFiltersDialog';
 import { WorkbenchDetailsDrawer } from './WorkbenchDetailsDrawer';

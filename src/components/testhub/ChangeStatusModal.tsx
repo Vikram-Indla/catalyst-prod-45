@@ -4,7 +4,7 @@
  */
 
 import { useState, useEffect } from 'react';
-import { X, Clock, FileCheck, CheckCircle, Archive, Loader2 } from 'lucide-react';
+import { X, Clock, FileCheck, CheckCircle, Archive, Loader2 } from '@/lib/atlaskit-icons';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 

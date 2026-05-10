@@ -8,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { DELIVERY_PLATFORM_OPTIONS } from '@/types/business-request';
 import { useProcessSteps } from '@/contexts/ProcessStepsContext';
 import { useDepartments } from '@/hooks/useDepartmentsAndOwners';
-import { ChevronUp, X, CalendarIcon } from 'lucide-react';
+import { ChevronUp, X, CalendarIcon } from '@/lib/atlaskit-icons';
 import { format, subDays, addQuarters } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/lib/auth';

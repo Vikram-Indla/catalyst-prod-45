@@ -26,7 +26,7 @@ import {
   BarChart3,
   Inbox,
   Sparkles,
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import { SidebarBase, SidebarConfig } from './SidebarBase';
 
 interface IdeationSidebarProps {

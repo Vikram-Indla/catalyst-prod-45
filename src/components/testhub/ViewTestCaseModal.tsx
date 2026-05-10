@@ -7,7 +7,7 @@
  */
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { createPortal } from 'react-dom';
-import { X, Edit2, Copy, ClipboardList, Paperclip, Link2, History, Play, Plus, Trash2, Bug, BookOpen, MessageSquare, Search, Loader2, GitBranch, ChevronRight, FileText, Settings2, Share2, MoreHorizontal, Check } from 'lucide-react';
+import { X, Edit2, Copy, ClipboardList, Paperclip, Link2, History, Play, Plus, Trash2, Bug, BookOpen, MessageSquare, Search, Loader2, GitBranch, ChevronRight, FileText, Settings2, Share2, MoreHorizontal, Check } from '@/lib/atlaskit-icons';
 import { toast } from 'sonner';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { PriorityIndicator } from '@/components/shared/PriorityIndicator';

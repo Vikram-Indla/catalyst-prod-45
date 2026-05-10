@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { cn } from '@/lib/utils';
-import { X } from 'lucide-react';
+import { X } from '@/lib/atlaskit-icons';
 import { Resource360Header } from './Resource360Header';
 import { MetricsRow } from './MetricsRow';
 import { HierarchyTreeView } from './HierarchyTreeView';

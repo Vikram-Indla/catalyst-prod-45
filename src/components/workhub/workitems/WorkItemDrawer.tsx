@@ -5,7 +5,7 @@
  */
 
 import { useState, useRef, useEffect } from 'react';
-import { X, MessageSquare, Clock, User, Check, Palette } from 'lucide-react';
+import { X, MessageSquare, Clock, User, Check, Palette } from '@/lib/atlaskit-icons';
 import type { JiraIssue } from '@/hooks/workhub/useWorkItems';
 import { useUpdateWorkItem } from '@/hooks/workhub/useWorkItems';
 import { useWHThemes } from '@/hooks/workhub/useThemes';

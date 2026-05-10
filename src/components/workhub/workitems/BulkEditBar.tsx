@@ -4,7 +4,7 @@
  */
 
 import { useState } from 'react';
-import { X, ChevronDown } from 'lucide-react';
+import { X, ChevronDown } from '@/lib/atlaskit-icons';
 import { useWHReleases } from '@/hooks/workhub/useReleases';
 import { useWHThemes } from '@/hooks/workhub/useThemes';
 import { useBulkUpdateWorkItems } from '@/hooks/workhub/useWorkItems';

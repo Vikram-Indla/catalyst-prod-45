@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Search, Link as LinkIcon, X, Loader2 } from 'lucide-react';
+import { Search, Link as LinkIcon, X, Loader2 } from '@/lib/atlaskit-icons';
 import {
   Dialog,
   DialogContent,

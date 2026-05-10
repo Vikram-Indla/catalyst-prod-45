@@ -17,7 +17,7 @@ import {
   Upload,
   Paperclip,
   Bug
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import { ExecutionStep, StepResult } from '@/data/testExecutionData';
 
 interface StepExecutionCardProps {

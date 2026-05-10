@@ -4,7 +4,7 @@
 // ============================================================
 
 import { useNavigate } from 'react-router-dom';
-import { AlertTriangle, Users } from 'lucide-react';
+import { AlertTriangle, Users } from '@/lib/atlaskit-icons';
 import type { DashboardMetrics } from '../../types/planner-dashboard';
 import { cn } from '@/lib/utils';
 

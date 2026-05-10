@@ -1,4 +1,4 @@
-import { Activity, ChevronDown, ChevronUp } from 'lucide-react';
+import { Activity, ChevronDown, ChevronUp } from '@/lib/atlaskit-icons';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Avatar, Lozenge, type LozengeAppearance } from '@/components/ads';

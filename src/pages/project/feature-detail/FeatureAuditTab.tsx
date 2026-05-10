@@ -5,7 +5,7 @@
 
 import { useQuery } from '@tanstack/react-query';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
-import { CheckCircle2, XCircle, Clock, Shield, AlertTriangle, User, MinusCircle } from 'lucide-react';
+import { CheckCircle2, XCircle, Clock, Shield, AlertTriangle, User, MinusCircle } from '@/lib/atlaskit-icons';
 import { Lozenge } from '@/components/ads';
 import { cn } from '@/lib/utils';
 import {

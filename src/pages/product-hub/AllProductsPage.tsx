@@ -23,7 +23,7 @@
 import { useMemo, useState, useCallback, useEffect, lazy, Suspense } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Link as RouterLink } from 'react-router-dom';
-import { Plus } from 'lucide-react';
+import { Plus } from '@/lib/atlaskit-icons';
 import { supabase } from '@/integrations/supabase/client';
 import DynamicTable from '@atlaskit/dynamic-table';
 import EmptyState from '@atlaskit/empty-state';

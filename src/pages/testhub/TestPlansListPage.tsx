@@ -5,7 +5,7 @@
 import { useState } from 'react';
 import { CatalystPageHeader } from '@/components/shared/CatalystPageHeader';
 import { useNavigate } from 'react-router-dom';
-import { ClipboardList, Plus, Search, X, ChevronDown, Trash2, Loader2, Sparkles, FileText } from 'lucide-react';
+import { ClipboardList, Plus, Search, X, ChevronDown, Trash2, Loader2, Sparkles, FileText } from '@/lib/atlaskit-icons';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';

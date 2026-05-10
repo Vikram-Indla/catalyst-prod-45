@@ -10,7 +10,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Upload, FileText, AlertCircle, CheckCircle2 } from 'lucide-react';
+import { Upload, FileText, AlertCircle, CheckCircle2 } from '@/lib/atlaskit-icons';
 import { toast } from 'sonner';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';

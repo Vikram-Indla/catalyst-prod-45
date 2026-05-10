@@ -5,7 +5,7 @@
  */
 
 import { useMemo } from 'react';
-import { Database, Info } from 'lucide-react';
+import { Database, Info } from '@/lib/atlaskit-icons';
 import { Lozenge, Tooltip } from '@/components/ads';
 import { cn } from '@/lib/utils';
 

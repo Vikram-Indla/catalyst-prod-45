@@ -4,7 +4,7 @@
  */
 
 import { forwardRef, KeyboardEvent } from 'react';
-import { Send, Mic } from 'lucide-react';
+import { Send, Mic } from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 
 interface CatyInputProps {

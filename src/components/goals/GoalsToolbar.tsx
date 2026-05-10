@@ -3,7 +3,7 @@
  * ECLIPSE D8: Dark mode parity
  */
 import { useState, useRef, useEffect } from 'react';
-import { Search, ChevronDown, ChevronsUpDown, List, Network, Grid3X3, X } from 'lucide-react';
+import { Search, ChevronDown, ChevronsUpDown, List, Network, Grid3X3, X } from '@/lib/atlaskit-icons';
 
 interface GoalsToolbarProps {
   currentView: 'tree' | 'list' | 'heatmap';

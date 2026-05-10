@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Folder, FileText, Plus, X, MinusCircle } from 'lucide-react';
+import { Folder, FileText, Plus, X, MinusCircle } from '@/lib/atlaskit-icons';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';

@@ -5,7 +5,7 @@
  */
 
 import { Button } from '@/components/ui/button';
-import { Check, ArrowRight } from 'lucide-react';
+import { Check, ArrowRight } from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 
 // Workflow step definitions

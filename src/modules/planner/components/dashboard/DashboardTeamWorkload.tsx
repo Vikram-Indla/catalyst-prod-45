@@ -4,7 +4,7 @@
 // ============================================================
 
 import { useNavigate } from 'react-router-dom';
-import { Users, UserX, AlertCircle } from 'lucide-react';
+import { Users, UserX, AlertCircle } from '@/lib/atlaskit-icons';
 import type { TeamWorkload } from '../../types/planner-dashboard';
 import { cn } from '@/lib/utils';
 import { Avatar } from '@/components/ads';

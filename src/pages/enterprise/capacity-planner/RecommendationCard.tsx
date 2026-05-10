@@ -1,4 +1,4 @@
-import { TrendingUp, Users, AlertTriangle, GanttChart } from 'lucide-react';
+import { TrendingUp, Users, AlertTriangle, GanttChart } from '@/lib/atlaskit-icons';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import type { AiRecommendation } from './types';

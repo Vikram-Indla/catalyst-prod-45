@@ -1,6 +1,6 @@
 import React from 'react';
 import { WorkItemType, WORK_ITEM_TYPE_CONFIG } from '../types';
-import { Zap, Bookmark, CheckSquare, Bug, AlertTriangle } from 'lucide-react';
+import { Zap, Bookmark, CheckSquare, Bug, AlertTriangle } from '@/lib/atlaskit-icons';
 
 interface WorkTypeIconProps {
   type: WorkItemType;

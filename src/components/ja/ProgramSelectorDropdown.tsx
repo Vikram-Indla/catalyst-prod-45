@@ -7,7 +7,7 @@
  */
 import React, { useCallback, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Search, Plus, Settings, Folder, Lock } from 'lucide-react';
+import { Search, Plus, Settings, Folder, Lock } from '@/lib/atlaskit-icons';
 import { Input } from '@/components/ui/input';
 import { useWorkspaceAccess } from '@/hooks/useWorkspaceAccess';
 import { useCatalystContext } from '@/contexts/CatalystContext';

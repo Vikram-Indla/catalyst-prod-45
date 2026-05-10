@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, Folder, FolderOpen, ChevronRight, MoreHorizontal, Layers, FolderPlus, Pencil, Trash2 } from 'lucide-react';
+import { Plus, Folder, FolderOpen, ChevronRight, MoreHorizontal, Layers, FolderPlus, Pencil, Trash2 } from '@/lib/atlaskit-icons';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import {

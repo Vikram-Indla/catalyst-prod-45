@@ -6,7 +6,7 @@
  * FIX #8: Colored left bar for group distinction
  */
 
-import { ChevronRight, Users, AlertCircle } from 'lucide-react';
+import { ChevronRight, Users, AlertCircle } from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 import { getAssignmentTheme, getAllocationTheme } from '@/lib/catalyst-colors';
 

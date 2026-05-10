@@ -1,4 +1,4 @@
-import { FileText, Palette, Inbox, TrendingUp, Gem, Target, DollarSign, BarChart3, Link as LinkIcon, Zap } from 'lucide-react';
+import { FileText, Palette, Inbox, TrendingUp, Gem, Target, DollarSign, BarChart3, Link as LinkIcon, Zap } from '@/lib/atlaskit-icons';
 
 interface TabConfig {
   id: string;

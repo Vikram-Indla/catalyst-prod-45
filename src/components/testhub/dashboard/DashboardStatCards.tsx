@@ -3,7 +3,7 @@
  * 4 KPI cards for TestHub Dashboard
  */
 
-import { FileText, TrendingUp, Play, AlertTriangle } from 'lucide-react';
+import { FileText, TrendingUp, Play, AlertTriangle } from '@/lib/atlaskit-icons';
 
 export interface DashboardStats {
   total_test_cases: number;

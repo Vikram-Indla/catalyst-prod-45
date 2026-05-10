@@ -4,7 +4,7 @@
 // ============================================================
 
 import { useState, useMemo, useRef, useEffect } from 'react';
-import { Check, ChevronDown, Star, User, Plus, Loader2, X, Tag } from 'lucide-react';
+import { Check, ChevronDown, Star, User, Plus, Loader2, X, Tag } from '@/lib/atlaskit-icons';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Lozenge } from '@/components/ads';
 import { cn } from '@/lib/utils';

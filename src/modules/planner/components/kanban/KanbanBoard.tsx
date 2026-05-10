@@ -30,7 +30,7 @@ import { KanbanCard } from './KanbanCard';
 import { SwimlaneRow } from './SwimlaneRow';
 import { AddColumnButton } from './AddColumnButton';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
-import { Loader2, User, Flag, Layers } from 'lucide-react';
+import { Loader2, User, Flag, Layers } from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 
 export type SwimlaneGrouping = 'none' | 'assignee' | 'priority' | 'workstream';

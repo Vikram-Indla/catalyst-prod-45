@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Lozenge } from '@/components/ads';
 import { Label } from '@/components/ui/label';
-import { CalendarDays, Users } from 'lucide-react';
+import { CalendarDays, Users } from '@/lib/atlaskit-icons';
 import { format, isWithinInterval, parseISO } from 'date-fns';
 import { toast } from 'sonner';
 

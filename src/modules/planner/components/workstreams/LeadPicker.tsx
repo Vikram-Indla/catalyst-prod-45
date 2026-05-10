@@ -4,7 +4,7 @@
 // ============================================================================
 
 import { useState, useRef, useEffect, useMemo } from 'react';
-import { Check, ChevronDown, User } from 'lucide-react';
+import { Check, ChevronDown, User } from '@/lib/atlaskit-icons';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { useResourceInventory } from '../../hooks/useResourceInventory';
 import { getWorkstreamColor } from '@/lib/workstream-colors';

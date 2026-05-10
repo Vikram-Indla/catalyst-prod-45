@@ -12,7 +12,7 @@ import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Plus, X, Info } from 'lucide-react';
+import { Plus, X, Info } from '@/lib/atlaskit-icons';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 

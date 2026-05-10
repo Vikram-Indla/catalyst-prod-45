@@ -3,7 +3,7 @@
  */
 
 import { useState, useRef, useEffect } from 'react';
-import { Search, Check } from 'lucide-react';
+import { Search, Check } from '@/lib/atlaskit-icons';
 import { useDepartments } from '@/hooks/useDepartmentsAndOwners';
 import {
   Popover,

@@ -3,7 +3,7 @@
 // ============================================================================
 
 import React, { useState } from 'react';
-import { Tag } from 'lucide-react';
+import { Tag } from '@/lib/atlaskit-icons';
 import { COLORS } from '../colors';
 
 interface AddLabelsButtonProps {

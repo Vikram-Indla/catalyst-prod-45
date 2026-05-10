@@ -7,7 +7,7 @@ import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import {
   ArrowLeft, Pencil, Play, Pause, CheckCircle2, XCircle, AlertTriangle,
   Clock, Plus, User, Calendar, RefreshCw, Trash2, Download, Users, BarChart3, Server, Bug
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { catalystToast } from '@/components/ui/CatalystToast';
 import { AddTestCasesModal } from '@/components/testhub/AddTestCasesModal';

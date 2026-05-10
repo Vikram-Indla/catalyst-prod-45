@@ -18,7 +18,7 @@ import {
   AlertTriangle, Clock, GitBranch, UserX, Link2, ShieldOff, Copy, AlertCircle,
   CheckCircle, Bell, MessageSquare, Ghost,
   LayoutGrid, List as ListIcon,
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import { JiraIssueTypeIcon } from '@/components/shared/JiraIssueTypeIcon';
 import {
   Dialog, DialogContent,

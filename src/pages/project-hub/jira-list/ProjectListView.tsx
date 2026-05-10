@@ -10,7 +10,7 @@ import { AllWorkTable } from './components/AllWorkTable';
 import { WorkItemDetailPanel } from './components/WorkItemDetailPanel';
 import { WorkListPanel } from './components/WorkListPanel';
 import { useProjectListItems } from '@/hooks/useProjectListItems';
-import { LayoutGrid, Columns } from 'lucide-react';
+import { LayoutGrid, Columns } from '@/lib/atlaskit-icons';
 
 interface Props {
   projectKey: string;

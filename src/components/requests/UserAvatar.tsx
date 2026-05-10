@@ -1,4 +1,4 @@
-import { CircleUser } from 'lucide-react';
+import { CircleUser } from '@/lib/atlaskit-icons';
 import { getAvatarColor } from '@/types/request';
 import { formatShortName } from '@/lib/format-name';
 import { Tooltip } from '@/components/ads';

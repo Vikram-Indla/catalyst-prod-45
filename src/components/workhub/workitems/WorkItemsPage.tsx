@@ -4,7 +4,7 @@
  */
 
 import { useState, useMemo, useCallback } from 'react';
-import { RefreshCw, Loader2, ChevronLeft, ChevronRight, Download, History, SlidersHorizontal } from 'lucide-react';
+import { RefreshCw, Loader2, ChevronLeft, ChevronRight, Download, History, SlidersHorizontal } from '@/lib/atlaskit-icons';
 import { CommandCenterHeader } from '@/components/shared/CommandCenterHeader';
 import { toast } from 'sonner';
 import { useWorkItems } from '@/hooks/workhub/useWorkItems';

@@ -5,7 +5,7 @@
 // ============================================================
 
 import React, { ReactNode } from 'react';
-import { Plus } from 'lucide-react';
+import { Plus } from '@/lib/atlaskit-icons';
 import { Button } from '@/components/ui/button';
 
 interface PlannerViewHeaderProps {

@@ -53,7 +53,7 @@ import { useMemo, useCallback } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import type { BRDTask } from '@/hooks/useRequestsBacklog';
-import { Star, Map as MapIcon, LayoutGrid, Paperclip, Pencil, MoreVertical } from 'lucide-react';
+import { Star, Map as MapIcon, LayoutGrid, Paperclip, Pencil, MoreVertical } from '@/lib/atlaskit-icons';
 import type { Request, RequestStatus, Density } from '@/types/request';
 import { STATUS_DISPLAY, getPriorityLevel } from '@/types/request';
 import type { GroupByField } from '@/components/producthub/listing/ListingToolbar';

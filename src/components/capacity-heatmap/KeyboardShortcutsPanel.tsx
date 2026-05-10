@@ -5,7 +5,7 @@
 
 import { memo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Keyboard } from 'lucide-react';
+import { X, Keyboard } from '@/lib/atlaskit-icons';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { useHeatmapStore } from '@/stores/capacity-heatmap-store';

@@ -7,7 +7,7 @@ import {
   Star, ExternalLink, CheckCircle, 
   UserPlus, Clock, MessageSquare, History, Eye, 
   FileText, HelpCircle, Calendar
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import { WorkItemIcon } from '../icons/WorkItemIcon';
 import type { WorkItemType } from '../icons/WorkItemTypeIcon';
 import { Avatar } from '@/components/ads';

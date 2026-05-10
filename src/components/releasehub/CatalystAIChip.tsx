@@ -1,5 +1,5 @@
 import React from 'react';
-import { Sparkles } from 'lucide-react';
+import { Sparkles } from '@/lib/atlaskit-icons';
 
 interface Props {
   label?: string;

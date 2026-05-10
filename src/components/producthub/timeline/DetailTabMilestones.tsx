@@ -9,7 +9,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { logRequestAudit } from '@/lib/requestAudit';
-import { CheckCircle2, RotateCcw, Pencil, Trash2, Flag, CircleDot, X } from 'lucide-react';
+import { CheckCircle2, RotateCcw, Pencil, Trash2, Flag, CircleDot, X } from '@/lib/atlaskit-icons';
 
 interface DetailTabMilestonesProps {
   requestId: string;

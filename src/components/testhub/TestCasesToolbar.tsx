@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { Search, Filter, ArrowUpDown, List, LayoutGrid, ArrowUp, ArrowDown } from 'lucide-react';
+import { Search, Filter, ArrowUpDown, List, LayoutGrid, ArrowUp, ArrowDown } from '@/lib/atlaskit-icons';
 
 interface FilterState {
   priorities: string[];

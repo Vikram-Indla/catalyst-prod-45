@@ -8,7 +8,7 @@ import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   RefreshCw, Download, AlertTriangle, ChevronRight, Plus, Play, FileText,
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import { CatalystPageHeader } from '@/components/shared/CatalystPageHeader';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { catalystToast } from '@/components/ui/CatalystToast';

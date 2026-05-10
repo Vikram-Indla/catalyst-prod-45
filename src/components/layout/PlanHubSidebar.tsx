@@ -16,7 +16,7 @@ import {
   FileBarChart,
   Settings,
   Wallet,
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import { supabase } from '@/integrations/supabase/client';
 import { SidebarBase, SidebarConfig, SidebarMenuItem } from './SidebarBase';
 // Local types for settings

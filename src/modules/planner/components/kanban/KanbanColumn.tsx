@@ -8,7 +8,7 @@ import { useDroppable } from '@dnd-kit/core';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
-import { Plus, Inbox, GripVertical } from 'lucide-react';
+import { Plus, Inbox, GripVertical } from '@/lib/atlaskit-icons';
 import type { PlannerStatus, KanbanTask } from '../../types/kanban';
 import { KanbanCard } from './KanbanCard';
 import { cn } from '@/lib/utils';

@@ -1,5 +1,5 @@
 import { useState, useMemo, useRef, useEffect } from 'react';
-import { Target, Users, BarChart3, AlertTriangle, Filter, Download, Plus, TrendingUp, TrendingDown, X, List, Grid3X3, PieChart, ChevronDown, FileSpreadsheet, FileText, Loader2, Edit2, Trash2, Calendar } from 'lucide-react';
+import { Target, Users, BarChart3, AlertTriangle, Filter, Download, Plus, TrendingUp, TrendingDown, X, List, Grid3X3, PieChart, ChevronDown, FileSpreadsheet, FileText, Loader2, Edit2, Trash2, Calendar } from '@/lib/atlaskit-icons';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -12,7 +12,7 @@ import { DeleteSkillDialog } from '@/components/skills-inventory/DeleteSkillDial
 import { AddTeamMemberModal, STANDARD_SKILLS } from '@/components/skills-inventory/AddTeamMemberModal';
 import { CapacityPlanningPage } from '@/components/capacity/CapacityPlanningPage';
 import { toast } from 'sonner';
-import { UserPlus } from 'lucide-react';
+import { UserPlus } from '@/lib/atlaskit-icons';
 
 type ViewMode = 'table' | 'matrix' | 'gap-analysis' | 'report' | 'capacity';
 

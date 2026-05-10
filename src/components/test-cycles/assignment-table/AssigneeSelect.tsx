@@ -3,7 +3,7 @@
  */
 
 import React, { useState } from 'react';
-import { ChevronDown, Search, UserMinus, Check } from 'lucide-react';
+import { ChevronDown, Search, UserMinus, Check } from '@/lib/atlaskit-icons';
 import { Avatar } from '@/components/ads';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Input } from '@/components/ui/input';

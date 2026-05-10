@@ -5,7 +5,7 @@
 
 import { useState, useCallback, useRef } from 'react';
 import { exportAnalyticsReportToPDF } from '../lib/exportAnalyticsReportToPDF';
-import { X, TrendingUp, TrendingDown, Minus, AlertTriangle, Clock, Link, Download, BarChart3, Target, ChevronRight, ChevronDown, Check } from 'lucide-react';
+import { X, TrendingUp, TrendingDown, Minus, AlertTriangle, Clock, Link, Download, BarChart3, Target, ChevronRight, ChevronDown, Check } from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 import { RISK_COLORS } from '@/config/riskColors';
 import { Skeleton } from '@/components/ui/skeleton';

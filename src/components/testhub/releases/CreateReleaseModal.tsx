@@ -2,7 +2,7 @@
  * Create Release Modal — TestHub (Group 15)
  */
 import { useState, useEffect } from 'react';
-import { X, Package } from 'lucide-react';
+import { X, Package } from '@/lib/atlaskit-icons';
 import { supabase } from '@/integrations/supabase/client';
 import { createRelease } from '@/hooks/testhub/useReleases';
 import { catalystToast } from '@/components/ui/CatalystToast';

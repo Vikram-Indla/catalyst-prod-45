@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Input } from '@/components/ui/input';
-import { Search, Users, Star } from 'lucide-react';
+import { Search, Users, Star } from '@/lib/atlaskit-icons';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useStarredItems } from '@/hooks/useStarredItems';

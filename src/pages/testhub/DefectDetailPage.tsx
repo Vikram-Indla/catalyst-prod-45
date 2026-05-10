@@ -5,7 +5,7 @@
 import { useState, useEffect } from 'react';
 import { CatalystPageHeader } from '@/components/shared/CatalystPageHeader';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ChevronLeft, Edit, MoreVertical, Trash2, Bug, Play } from 'lucide-react';
+import { ChevronLeft, Edit, MoreVertical, Trash2, Bug, Play } from '@/lib/atlaskit-icons';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';

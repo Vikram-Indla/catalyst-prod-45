@@ -1,4 +1,4 @@
-import { Link2, Plus, ExternalLink, X } from 'lucide-react';
+import { Link2, Plus, ExternalLink, X } from '@/lib/atlaskit-icons';
 import { Button } from '@/components/ui/button';
 import { Lozenge } from '@/components/ads';
 import type { LinkedItem } from '@/types/release';

@@ -4,7 +4,7 @@
  */
 import React from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { ChevronLeft, Inbox } from 'lucide-react';
+import { ChevronLeft, Inbox } from '@/lib/atlaskit-icons';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import { fetchItemDetail, calcDaysSitting } from '@/lib/r360/fetchItemDetail';
 

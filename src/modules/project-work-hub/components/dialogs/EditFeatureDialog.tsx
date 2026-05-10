@@ -23,7 +23,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { catalystToast as toast } from '@/lib/catalystToast';
-import { Loader2 } from 'lucide-react';
+import { Loader2 } from '@/lib/atlaskit-icons';
 
 interface EditFeatureDialogProps {
   isOpen: boolean;

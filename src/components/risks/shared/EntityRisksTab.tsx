@@ -12,7 +12,7 @@ import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
-import { Plus, MoreHorizontal, ArrowDownAZ, ArrowUpAZ, Pencil, Trash2, AlertTriangle } from 'lucide-react';
+import { Plus, MoreHorizontal, ArrowDownAZ, ArrowUpAZ, Pencil, Trash2, AlertTriangle } from '@/lib/atlaskit-icons';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';

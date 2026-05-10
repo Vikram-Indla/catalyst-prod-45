@@ -2,7 +2,7 @@
  * SyncStatusCard — 4 KPI cards summary bar
  * Phase 3, Task 3
  */
-import { FolderGit2, FileStack, RefreshCw, AlertTriangle } from 'lucide-react';
+import { FolderGit2, FileStack, RefreshCw, AlertTriangle } from '@/lib/atlaskit-icons';
 import type { JiraProject, SyncLogEntry } from '@/types/workhub.types';
 
 interface SyncStatusCardProps {

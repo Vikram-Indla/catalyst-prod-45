@@ -7,7 +7,7 @@ import { useTheme } from '@/hooks/useTheme';
 import {
   Settings, Bell, Palette, Layout, Clock, Save,
   Sun, Moon, Monitor, Check, RefreshCw, Activity
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import { supabase, typedQuery, typedRpc } from '@/integrations/supabase/client';
 import { catalystToast } from '@/components/ui/CatalystToast';
 import { CatalystPageHeader } from '@/components/shared/CatalystPageHeader';

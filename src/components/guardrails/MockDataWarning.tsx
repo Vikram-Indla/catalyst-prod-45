@@ -6,7 +6,7 @@
  * the data source has been cleaned and must stay clean.
  */
 
-import { AlertTriangle, ShieldAlert } from 'lucide-react';
+import { AlertTriangle, ShieldAlert } from '@/lib/atlaskit-icons';
 
 interface MockDataWarningProps {
   /** Which module/hook was cleaned */

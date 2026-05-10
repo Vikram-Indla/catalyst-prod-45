@@ -2,7 +2,7 @@
 // File: src/modules/priorities/components/PriEmptyState.tsx
 // ============================================================
 
-import { CheckSquare, Plus } from 'lucide-react';
+import { CheckSquare, Plus } from '@/lib/atlaskit-icons';
 import styles from '../styles/priorities.module.css';
 
 interface PriEmptyStateProps {

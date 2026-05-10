@@ -29,7 +29,7 @@ import {
   Rows4,
   Plus,
   Star,
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Lozenge } from '@/components/ads';

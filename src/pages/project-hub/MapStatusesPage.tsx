@@ -16,7 +16,7 @@ import { SortableContext, verticalListSortingStrategy, horizontalListSortingStra
 import { CSS } from '@dnd-kit/utilities';
 import {
   ArrowLeft, Plus, GripVertical, Trash2, Check, X, Pencil,
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 
 /* ═══ STATUS PILL (draggable) ═══ */
 function StatusPill({

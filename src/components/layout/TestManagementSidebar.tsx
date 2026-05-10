@@ -16,7 +16,7 @@ import {
   Play,
   Target,
   GitBranch,
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import { SidebarBase, SidebarConfig } from './SidebarBase';
 
 interface TestManagementSidebarProps {

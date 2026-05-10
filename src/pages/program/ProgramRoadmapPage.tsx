@@ -15,7 +15,7 @@
 import React, { useState, useRef, useCallback, useMemo, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { ProgramPageLayout } from '@/components/program/ProgramPageLayout';
-import { Search, Layers, Filter, Info, ChevronDown, Check, X, Home } from 'lucide-react';
+import { Search, Layers, Filter, Info, ChevronDown, Check, X, Home } from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 import { ProgramRoadmapFiltersDialog, ProgramFilters, DEFAULT_FILTERS, getCurrentQuarterDates, getNextQuarterDates } from '@/components/program/ProgramRoadmapFiltersDialog';
 import GlobalPageHeader from '@/components/layout/GlobalPageHeader';

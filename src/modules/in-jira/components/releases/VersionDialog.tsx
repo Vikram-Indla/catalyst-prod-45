@@ -3,7 +3,7 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { Calendar, Package } from 'lucide-react';
+import { Calendar, Package } from '@/lib/atlaskit-icons';
 import {
   Dialog,
   DialogContent,

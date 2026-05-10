@@ -28,7 +28,7 @@ import {
   Clock,
   TestTube,
   Calendar,
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import { format, formatDistanceToNow } from 'date-fns';
 import type { CycleTemplate, TemplateType, TemplateConfig } from '@/types/template.types';
 import { TEMPLATE_TYPES } from '@/types/template.types';

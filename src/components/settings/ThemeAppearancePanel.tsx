@@ -5,7 +5,7 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Switch } from '@/components/ui/switch';
 import { Button } from '@/components/ui/button';
 import { ThemePreferences, DEFAULT_THEME_PREFERENCES, ACCENT_COLOR_PRESETS } from '@/types/userSettings.types';
-import { Sun, Moon, Monitor, Check } from 'lucide-react';
+import { Sun, Moon, Monitor, Check } from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 
 interface ThemeAppearancePanelProps {

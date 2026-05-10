@@ -2,7 +2,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Download, TrendingUp, Calendar, Target } from 'lucide-react';
+import { Download, TrendingUp, Calendar, Target } from '@/lib/atlaskit-icons';
 import type { KeyResult } from '../../types/keyResult.types';
 import { format } from 'date-fns';
 import { ProgressBar } from '../shared/ProgressBar';

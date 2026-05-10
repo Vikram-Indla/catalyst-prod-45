@@ -21,7 +21,7 @@ import {
   ChevronDown,
   RefreshCw,
   Radio,
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';

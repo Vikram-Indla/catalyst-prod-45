@@ -6,7 +6,7 @@
  * - Supports various file types
  */
 import { useState, useCallback } from 'react';
-import { Paperclip, Upload, File, Trash2, Download, FileText, Image, FileArchive } from 'lucide-react';
+import { Paperclip, Upload, File, Trash2, Download, FileText, Image, FileArchive } from '@/lib/atlaskit-icons';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Lozenge } from '@/components/ads';

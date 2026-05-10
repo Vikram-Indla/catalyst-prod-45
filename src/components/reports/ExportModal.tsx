@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Download, FileText, FileSpreadsheet, File, Loader2 } from 'lucide-react';
+import { Download, FileText, FileSpreadsheet, File, Loader2 } from '@/lib/atlaskit-icons';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';

@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import { X as XIcon, Download, RefreshCw, ExternalLink, CheckCircle2, XCircle, Minus, Activity, Sparkles, FileText, Loader2, AlertCircle, Copy, Pencil, Check, X } from 'lucide-react';
+import { X as XIcon, Download, RefreshCw, ExternalLink, CheckCircle2, XCircle, Minus, Activity, Sparkles, FileText, Loader2, AlertCircle, Copy, Pencil, Check, X } from '@/lib/atlaskit-icons';
 import { RH } from '@/constants/releasehub.design';
 import { StatusLozenge } from './StatusLozenge';
 import { SourceBadge } from './SourceBadge';

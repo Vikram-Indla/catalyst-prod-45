@@ -4,7 +4,7 @@
 // ============================================================
 
 import { useState, useEffect } from 'react';
-import { BarChart3 } from 'lucide-react';
+import { BarChart3 } from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 import { Input } from '@/components/ui/input';
 import { Slider } from '@/components/ui/slider';

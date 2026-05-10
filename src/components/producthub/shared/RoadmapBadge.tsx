@@ -1,7 +1,7 @@
 /**
  * RoadmapBadge — Shows whether an request is on the roadmap
  */
-import { Map } from 'lucide-react';
+import { Map } from '@/lib/atlaskit-icons';
 import { Tooltip } from '@/components/ads';
 
 interface Props {

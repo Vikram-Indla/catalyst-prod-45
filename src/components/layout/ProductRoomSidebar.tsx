@@ -27,7 +27,7 @@ import {
   ChevronDown,
   Search,
   X,
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { SidebarBase, SidebarConfig } from './SidebarBase';

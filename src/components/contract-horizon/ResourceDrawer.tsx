@@ -3,7 +3,7 @@
  * Side panel with detailed resource contract information
  */
 
-import { X } from 'lucide-react';
+import { X } from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 import type { ContractResourceWithStatus } from '@/types/contract-horizon';
 import { DEPARTMENT_COLORS } from '@/types/contract-horizon';

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Plus, Upload, Download, Archive, TrendingUp, PanelRightClose, PanelRight } from 'lucide-react';
+import { Plus, Upload, Download, Archive, TrendingUp, PanelRightClose, PanelRight } from '@/lib/atlaskit-icons';
 import {
   DropdownMenu,
   DropdownMenuContent,

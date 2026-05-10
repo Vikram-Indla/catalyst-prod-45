@@ -35,7 +35,7 @@ import {
   AlertTriangle,
   Loader2,
   Trash2,
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import {
   DropdownMenu,
   DropdownMenuContent,

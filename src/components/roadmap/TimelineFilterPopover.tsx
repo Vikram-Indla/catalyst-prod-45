@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { Calendar, ChevronUp } from 'lucide-react';
+import { Calendar, ChevronUp } from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 import { format, startOfYear, endOfYear, startOfQuarter, endOfQuarter, setMonth, setYear as setDateYear } from 'date-fns';
 import {

@@ -3,7 +3,7 @@
 // Consistent section header with icon, title, badge, action
 // ============================================================
 
-import { LucideIcon, Plus } from 'lucide-react';
+import { LucideIcon, Plus } from '@/lib/atlaskit-icons';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 

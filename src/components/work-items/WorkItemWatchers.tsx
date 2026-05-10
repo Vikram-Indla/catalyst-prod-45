@@ -1,4 +1,4 @@
-import { Eye, EyeOff, Users } from 'lucide-react';
+import { Eye, EyeOff, Users } from '@/lib/atlaskit-icons';
 import { Button } from '@/components/ui/button';
 import { Avatar, Tooltip } from '@/components/ads';
 import {

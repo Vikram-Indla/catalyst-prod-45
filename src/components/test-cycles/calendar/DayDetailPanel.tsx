@@ -1,6 +1,6 @@
 import React from 'react';
 import { format, isSameDay } from 'date-fns';
-import { X, Calendar, User, ExternalLink } from 'lucide-react';
+import { X, Calendar, User, ExternalLink } from '@/lib/atlaskit-icons';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Avatar, Lozenge } from '@/components/ads';

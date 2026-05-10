@@ -7,7 +7,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import {
   ArrowLeft, FileText, CheckCircle2, XCircle, AlertTriangle,
   Clock, User, Calendar, BarChart3, Users, Flag, RefreshCw, SkipForward
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
   PieChart, Pie, Cell,

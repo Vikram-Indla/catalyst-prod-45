@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Sparkles, Check, X, BookOpen, Flag, RefreshCw, Loader2, FileText, AlertTriangle, Eye, RotateCcw } from 'lucide-react';
+import { ArrowLeft, Sparkles, Check, X, BookOpen, Flag, RefreshCw, Loader2, FileText, AlertTriangle, Eye, RotateCcw } from '@/lib/atlaskit-icons';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { useQueryClient } from '@tanstack/react-query';

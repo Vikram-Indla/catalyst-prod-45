@@ -4,7 +4,7 @@
 // ═══════════════════════════════════════════════════════════════════════════════
 
 import React from 'react';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight } from '@/lib/atlaskit-icons';
 import type { T10Week } from '../../types';
 
 interface T10WeekSelectorProps {

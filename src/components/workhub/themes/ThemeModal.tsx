@@ -2,7 +2,7 @@
  * ThemeModal — Create / Edit theme form
  */
 import { useState, useEffect } from 'react';
-import { X } from 'lucide-react';
+import { X } from '@/lib/atlaskit-icons';
 import { useCreateTheme, useUpdateTheme } from '@/hooks/workhub/useThemes';
 import type { Theme } from '@/types/workhub.types';
 import toast from 'react-hot-toast';

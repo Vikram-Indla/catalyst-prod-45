@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ChevronRight, FileText, Check, X, Trash2, Tag, FolderOpen } from 'lucide-react';
+import { ChevronRight, FileText, Check, X, Trash2, Tag, FolderOpen } from '@/lib/atlaskit-icons';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useTheme } from '@/hooks/useTheme';

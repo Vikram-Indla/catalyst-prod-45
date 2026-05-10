@@ -11,7 +11,7 @@ import { useCalendarNavigation } from '@/hooks/test-cycles/useCalendarNavigation
 import { useCalendarData, useCalendarFilters } from '@/hooks/test-cycles/useCalendarData';
 import { useTestReschedule } from '@/hooks/test-cycles/useTestReschedule';
 import { DEFAULT_CALENDAR_FILTERS, type CalendarEvent, type CalendarFilters } from '@/types/calendar.types';
-import { Loader2 } from 'lucide-react';
+import { Loader2 } from '@/lib/atlaskit-icons';
 
 interface CycleCalendarViewProps {
   cycleId: string;

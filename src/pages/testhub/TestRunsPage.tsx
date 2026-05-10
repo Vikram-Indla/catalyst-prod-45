@@ -10,7 +10,7 @@ import { useNavigate } from 'react-router-dom';
 import {
   Beaker, Search, Filter, Clock, CheckCircle2, XCircle,
   AlertTriangle, SkipForward, ChevronRight, Calendar, User, Timer,
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { EmptyState } from '@/components/ui/EmptyState';
 

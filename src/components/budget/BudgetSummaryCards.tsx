@@ -4,7 +4,7 @@
  */
 
 import { useState, Fragment } from 'react';
-import { X, ChevronDown, ChevronUp } from 'lucide-react';
+import { X, ChevronDown, ChevronUp } from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 import { formatCurrency, formatFull, type BudgetResource, type BudgetPeriod } from '@/hooks/budget/useBudgetData';
 import type { BudgetAssignment, DepartmentBudget, BudgetLicense } from '@/hooks/budget/useBudgetData';

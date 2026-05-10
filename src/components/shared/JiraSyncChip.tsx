@@ -2,7 +2,7 @@
  * JiraSyncChip — Reusable Jira origin indicator
  * Shows a small chip with Jira icon + key when an item originates from Jira
  */
-import { ExternalLink } from 'lucide-react';
+import { ExternalLink } from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 import { Tooltip } from '@/components/ads';
 

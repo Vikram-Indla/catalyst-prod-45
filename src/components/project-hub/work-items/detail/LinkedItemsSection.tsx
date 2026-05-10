@@ -3,7 +3,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { CollapsibleSection } from './CollapsibleSection';
 import { StatusLozenge } from './StatusLozenge';
-import { Plus, Search, X, Link as LinkIcon, Check } from 'lucide-react';
+import { Plus, Search, X, Link as LinkIcon, Check } from '@/lib/atlaskit-icons';
 import { toast } from 'sonner';
 
 const TYPE_COLORS: Record<string, string> = {

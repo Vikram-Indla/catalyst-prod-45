@@ -4,7 +4,7 @@
  * - Star pages to save them to favorites
  * - Quick access to starred pages
  */
-import { Star } from 'lucide-react';
+import { Star } from '@/lib/atlaskit-icons';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';

@@ -17,7 +17,7 @@ import {
   Target, Layers, Clock, FileText, History, BarChart3,
   AlertTriangle, Search, ArrowUpDown, Eye, ChevronDown,
   TrendingUp, HelpCircle, Sparkles, CheckCircle2
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';

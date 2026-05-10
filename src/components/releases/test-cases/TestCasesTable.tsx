@@ -20,7 +20,7 @@ import {
   FolderInput,
   Trash2,
   ListChecks,
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Button } from '@/components/ui/button';
 import { Avatar, Tooltip } from '@/components/ads';

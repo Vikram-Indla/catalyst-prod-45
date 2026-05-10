@@ -4,7 +4,7 @@
  */
 import React, { useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Plus, Settings, Siren } from 'lucide-react';
+import { Plus, Settings, Siren } from '@/lib/atlaskit-icons';
 import { useUserRole } from '@/hooks/useUserRole';
 
 interface ReleaseDropdownProps {

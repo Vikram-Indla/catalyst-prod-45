@@ -6,7 +6,7 @@ import { TestPlanFormState, TestPlanFormErrors, TeamMemberOption } from '../Crea
 import { TeamMemberCard } from '../components/TeamMemberCard';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Search, Users, Sparkles } from 'lucide-react';
+import { Search, Users, Sparkles } from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 
 interface TeamTabProps {

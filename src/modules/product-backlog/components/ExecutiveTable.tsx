@@ -7,7 +7,7 @@
 import React, { useState, useMemo, useCallback, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
-import { Plus } from 'lucide-react';
+import { Plus } from '@/lib/atlaskit-icons';
 import { useDepartments } from '@/hooks/useDepartmentsAndOwners';
 import { EnterpriseToolbar } from './EnterpriseToolbar';
 import { FilterDrawer } from './FilterDrawer';

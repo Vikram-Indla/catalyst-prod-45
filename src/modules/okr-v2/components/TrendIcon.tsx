@@ -1,4 +1,4 @@
-import { TrendingUp, TrendingDown, Minus } from 'lucide-react';
+import { TrendingUp, TrendingDown, Minus } from '@/lib/atlaskit-icons';
 import { Tooltip } from '@/components/ads';
 import type { TrendCode } from '../lib/okrTypes';
 

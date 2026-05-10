@@ -4,7 +4,7 @@
  */
 
 import { useState } from 'react';
-import { ChevronDown, Check } from 'lucide-react';
+import { ChevronDown, Check } from '@/lib/atlaskit-icons';
 import {
   DropdownMenu,
   DropdownMenuContent,

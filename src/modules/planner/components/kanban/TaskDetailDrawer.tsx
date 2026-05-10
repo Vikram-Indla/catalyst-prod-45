@@ -4,7 +4,7 @@
 // ============================================================
 
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { X, Calendar, User, Flag, Activity, Tag, AlertTriangle, Trash2, Clock } from 'lucide-react';
+import { X, Calendar, User, Flag, Activity, Tag, AlertTriangle, Trash2, Clock } from '@/lib/atlaskit-icons';
 import type { KanbanTask, KanbanTaskPriority } from '../../types/kanban';
 import { useKanbanStatuses } from '../../hooks/useKanbanStatuses';
 import { useUpdateKanbanTask, useDeleteKanbanTask } from '../../hooks/useKanbanTasks';

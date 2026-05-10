@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ThumbsUp, ThumbsDown, Clock, ArrowUpRight } from 'lucide-react';
+import { ThumbsUp, ThumbsDown, Clock, ArrowUpRight } from '@/lib/atlaskit-icons';
 import type { KBQueryResponse } from '@/services/knowledgeBase';
 
 interface KBResponseRendererProps {

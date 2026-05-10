@@ -1,5 +1,5 @@
 import React from 'react';
-import { ArrowUp, ArrowDown, X, EyeOff, Plus } from 'lucide-react';
+import { ArrowUp, ArrowDown, X, EyeOff, Plus } from '@/lib/atlaskit-icons';
 import {
   DropdownMenu,
   DropdownMenuContent,

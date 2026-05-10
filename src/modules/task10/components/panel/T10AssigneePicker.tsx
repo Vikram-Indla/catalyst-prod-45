@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
-import { Search, X, User, Check, Loader2 } from 'lucide-react';
+import { Search, X, User, Check, Loader2 } from '@/lib/atlaskit-icons';
 import { useProfiles, T10Profile } from '../../hooks/useProfiles';
 
 interface T10AssigneePickerProps {

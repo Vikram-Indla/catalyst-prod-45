@@ -1,6 +1,6 @@
 // @ts-nocheck
 import { useState, useEffect, useCallback } from 'react';
-import { Filter, ArrowUpDown } from 'lucide-react';
+import { Filter, ArrowUpDown } from '@/lib/atlaskit-icons';
 import type { Incident } from '@/types/release';
 import { cn } from '@/lib/utils';
 import { supabase } from '@/integrations/supabase/client';

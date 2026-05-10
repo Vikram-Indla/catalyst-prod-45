@@ -38,7 +38,7 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover';
 import { Lozenge } from '@/components/ads';
-import { Check, ChevronsUpDown, Upload, X, FileText, Box } from 'lucide-react';
+import { Check, ChevronsUpDown, Upload, X, FileText, Box } from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 import { 
   useCreateUploadSession, 

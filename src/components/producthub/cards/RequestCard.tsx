@@ -1,6 +1,6 @@
 import React from 'react';
 import { cn } from '@/lib/utils';
-import { Star, MoreHorizontal, Pencil, MessageSquare, Link2, AlertTriangle, Calendar } from 'lucide-react';
+import { Star, MoreHorizontal, Pencil, MessageSquare, Link2, AlertTriangle, Calendar } from '@/lib/atlaskit-icons';
 import type { Request } from '@/types/request';
 import { STATUS_DISPLAY, getAvatarColor, getInitials } from '@/types/request';
 import { CardScoreRing } from './CardScoreRing';

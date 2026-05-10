@@ -4,7 +4,7 @@
  * Features: search, status filter, 25-row pagination, sort by created/updated
  */
 import React, { useMemo, useState, useCallback } from 'react';
-import { Search } from 'lucide-react';
+import { Search } from '@/lib/atlaskit-icons';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import { WorkItemStatusLozenge } from '@/components/workflow';
 import type { WorkItem } from '@/types/workItem.types';

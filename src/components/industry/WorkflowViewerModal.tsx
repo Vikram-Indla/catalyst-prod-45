@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { GitBranch, ArrowRight, Pause, Clock, Check, XCircle, Loader2 } from 'lucide-react';
+import { GitBranch, ArrowRight, Pause, Clock, Check, XCircle, Loader2 } from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 import { useProcessSteps } from '@/contexts/ProcessStepsContext';
 import { useQuery } from '@tanstack/react-query';

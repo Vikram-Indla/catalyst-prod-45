@@ -5,7 +5,7 @@
 
 import { useState } from 'react';
 import { CatalystPageHeader } from '@/components/shared/CatalystPageHeader';
-import { Plus, Layers, MoreHorizontal, Play, RefreshCw, Zap, TestTubes, AlertCircle } from 'lucide-react';
+import { Plus, Layers, MoreHorizontal, Play, RefreshCw, Zap, TestTubes, AlertCircle } from '@/lib/atlaskit-icons';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -21,7 +21,7 @@ import {
 import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogHeader, AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
-import { Search } from 'lucide-react';
+import { Search } from '@/lib/atlaskit-icons';
 import { useTestSets, useDeleteTestSet, useRefreshDynamicSet, useCloneTestSet, useArchiveTestSet } from '@/hooks/useTestSets';
 import { useProjectContext } from '@/hooks/useProjectContext';
 

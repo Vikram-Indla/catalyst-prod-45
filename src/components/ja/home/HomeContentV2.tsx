@@ -7,7 +7,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { 
   ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight,
   AlertTriangle, Briefcase, Clock, Calendar, FileText
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 import { UnifiedToolbar } from '@/components/ui/unified-toolbar';
 import { CriticalStrip, ActiveFilter } from './CriticalStrip';

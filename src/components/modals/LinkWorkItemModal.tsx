@@ -4,7 +4,7 @@
 // =====================================================
 
 import React, { useState, useMemo } from 'react';
-import { X, Search, Link2 } from 'lucide-react';
+import { X, Search, Link2 } from '@/lib/atlaskit-icons';
 import {
   Dialog,
   DialogContent,

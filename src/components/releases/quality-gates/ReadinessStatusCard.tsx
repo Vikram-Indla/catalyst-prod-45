@@ -16,7 +16,7 @@ import {
   RefreshCw,
   ThumbsUp,
   Shield
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import { 
   useLatestReadiness, 
   useCreateReadinessSnapshot,

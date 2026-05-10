@@ -4,7 +4,7 @@
 // ═══════════════════════════════════════════════════════════════════════════════
 
 import React, { useState, useEffect } from 'react';
-import { Clock } from 'lucide-react';
+import { Clock } from '@/lib/atlaskit-icons';
 import { T10FilterDropdown } from './T10FilterDropdown';
 import type { T10ListStatus } from '../../types';
 

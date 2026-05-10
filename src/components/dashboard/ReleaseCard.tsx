@@ -1,6 +1,6 @@
 import React from 'react';
 import { cn } from '@/lib/utils';
-import { Calendar, FileText, FlaskConical, RotateCcw } from 'lucide-react';
+import { Calendar, FileText, FlaskConical, RotateCcw } from '@/lib/atlaskit-icons';
 import { AvatarGroup, Lozenge, type LozengeAppearance } from '@/components/ads';
 import { QualityGauge } from './QualityGauge';
 

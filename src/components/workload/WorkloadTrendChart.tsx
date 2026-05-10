@@ -6,7 +6,7 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Lozenge, type LozengeAppearance } from '@/components/ads';
-import { TrendingUp, TrendingDown, Minus } from 'lucide-react';
+import { TrendingUp, TrendingDown, Minus } from '@/lib/atlaskit-icons';
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, Area, AreaChart } from 'recharts';
 import { CATALYST_V5 } from '@/lib/catalyst-colors';
 import { useWorkloadTrends } from '@/hooks/workload';

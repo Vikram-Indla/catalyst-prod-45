@@ -7,7 +7,7 @@
 import React, { useState, useMemo } from 'react';
 import { ReleaseCompare, ComparedRelease, ReleaseOption } from '@/features/release-compare';
 import { useAvailableReleases, useCompareMetrics } from '@/features/release-compare/hooks';
-import { Loader2 } from 'lucide-react';
+import { Loader2 } from '@/lib/atlaskit-icons';
 
 export default function ComparePage() {
   const { data: availableReleases = [], isLoading: isLoadingReleases } = useAvailableReleases();

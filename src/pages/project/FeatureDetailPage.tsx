@@ -36,7 +36,7 @@ import {
   Clock,
   Target,
   Layers
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import { format, formatDistanceToNow } from 'date-fns';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';

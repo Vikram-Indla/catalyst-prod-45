@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useTheme } from '@/hooks/useTheme';
-import { MoreVertical, ChevronUp, ChevronDown } from 'lucide-react';
+import { MoreVertical, ChevronUp, ChevronDown } from '@/lib/atlaskit-icons';
 import { PriorityIndicator } from '@/components/shared/PriorityIndicator';
 
 interface TestCase {

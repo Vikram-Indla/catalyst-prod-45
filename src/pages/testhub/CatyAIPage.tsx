@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Plus, History, Brain, Settings } from 'lucide-react';
+import { Plus, History, Brain, Settings } from '@/lib/atlaskit-icons';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { CatyAIChat } from '@/components/caty-ai-chat/CatyAIChat';

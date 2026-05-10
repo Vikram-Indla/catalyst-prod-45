@@ -14,7 +14,7 @@
 
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { createPortal } from 'react-dom';
-import { ArrowLeft, X, Archive, Link2, Share2, Eye } from 'lucide-react';
+import { ArrowLeft, X, Archive, Link2, Share2, Eye } from '@/lib/atlaskit-icons';
 import Tabs, { Tab, TabList } from '@atlaskit/tabs';
 import {
   Modal,

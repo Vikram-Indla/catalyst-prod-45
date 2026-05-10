@@ -4,7 +4,7 @@
  */
 
 import { useState, useEffect, useMemo } from 'react';
-import { Loader2, AlertCircle } from 'lucide-react';
+import { Loader2, AlertCircle } from '@/lib/atlaskit-icons';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';

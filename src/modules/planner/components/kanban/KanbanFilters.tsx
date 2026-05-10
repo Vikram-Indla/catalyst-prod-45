@@ -4,7 +4,7 @@
 // Workstreams are filtered based on user access (RLS)
 // ============================================================
 
-import { Search, X, LayoutGrid, Rows3 } from 'lucide-react';
+import { Search, X, LayoutGrid, Rows3 } from '@/lib/atlaskit-icons';
 import type { KanbanTaskFilters, KanbanTaskPriority } from '../../types/kanban';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';

@@ -3,7 +3,7 @@
 // ═══════════════════════════════════════════════════════════════════════════
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { Camera, Loader2 } from 'lucide-react';
+import { Camera, Loader2 } from '@/lib/atlaskit-icons';
 import { toast } from 'sonner';
 import { showCaptureFlash } from '../utils/validation';
 

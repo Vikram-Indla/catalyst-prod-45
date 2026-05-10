@@ -4,7 +4,7 @@
 // ═══════════════════════════════════════════════════════════════════════════════
 
 import React from 'react';
-import { X, Check, Circle, ArrowRight, Trash2 } from 'lucide-react';
+import { X, Check, Circle, ArrowRight, Trash2 } from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 import { useT10WeekItemsView } from '../../hooks/useTask10ListCards';
 import type { T10CompletedWeekView } from '../../types/listCards';

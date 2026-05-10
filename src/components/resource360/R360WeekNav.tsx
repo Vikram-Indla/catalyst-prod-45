@@ -1,5 +1,5 @@
 import React from 'react';
-import { Calendar, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Calendar, ChevronLeft, ChevronRight } from '@/lib/atlaskit-icons';
 
 interface Props {
   totalItems: number;

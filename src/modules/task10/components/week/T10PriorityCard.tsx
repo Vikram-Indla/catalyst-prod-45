@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Check, ArrowUp, ArrowDown, User, Calendar } from 'lucide-react';
+import { Check, ArrowUp, ArrowDown, User, Calendar } from '@/lib/atlaskit-icons';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import type { T10Item } from '../../types';

@@ -3,7 +3,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Lozenge } from '@/components/ads';
-import { ArrowUpDown } from 'lucide-react';
+import { ArrowUpDown } from '@/lib/atlaskit-icons';
 
 interface WSJFPrioritizationDialogProps {
   open: boolean;

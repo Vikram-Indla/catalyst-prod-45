@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { useState, useMemo } from 'react';
 import { cn } from '@/lib/utils';
-import { ChevronDown } from 'lucide-react';
+import { ChevronDown } from '@/lib/atlaskit-icons';
 import type {
   CdsComment,
   CdsActivityItem,

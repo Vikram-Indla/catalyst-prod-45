@@ -3,7 +3,7 @@
 // ═══════════════════════════════════════════════════════════════════════════
 
 import React, { useState } from 'react';
-import { Play, FileText, Loader2, Pencil, AlertTriangle, Eye, Download, Trash2 } from 'lucide-react';
+import { Play, FileText, Loader2, Pencil, AlertTriangle, Eye, Download, Trash2 } from '@/lib/atlaskit-icons';
 import { Attachment } from '../types';
 import { cn } from '@/lib/utils';
 

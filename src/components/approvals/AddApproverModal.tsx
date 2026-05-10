@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { Search, AlertTriangle } from 'lucide-react';
+import { Search, AlertTriangle } from '@/lib/atlaskit-icons';
 import {
   Dialog,
   DialogContent,

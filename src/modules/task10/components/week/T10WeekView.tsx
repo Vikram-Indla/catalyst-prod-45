@@ -5,7 +5,7 @@
 
 import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { AlertCircle } from 'lucide-react';
+import { AlertCircle } from '@/lib/atlaskit-icons';
 import { T10WeekHeader } from './T10WeekHeader';
 import { T10AIBanner } from './T10AIBanner';
 import {

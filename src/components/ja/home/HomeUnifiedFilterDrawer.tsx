@@ -2,7 +2,7 @@
 // Unified filter drawer for all Home modes
 
 import React from 'react';
-import { X, Calendar } from 'lucide-react';
+import { X, Calendar } from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Switch } from '@/components/ui/switch';

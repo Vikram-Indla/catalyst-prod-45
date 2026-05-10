@@ -5,7 +5,7 @@
 // ═══════════════════════════════════════════════════════════════════════════════
 
 import React, { useRef, useEffect } from 'react';
-import { Search } from 'lucide-react';
+import { Search } from '@/lib/atlaskit-icons';
 
 interface T10SearchBarV3Props {
   value: string;

@@ -8,7 +8,7 @@ import { useNavigate } from 'react-router-dom';
 import { 
   MoreHorizontal, Eye, Play, Pencil, Copy, Trash2, Archive,
   Package, FileText, CheckCircle, XCircle, Clock 
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import { Button } from '@/components/ui/button';
 import { Lozenge, type LozengeAppearance } from '@/components/ads';
 import {

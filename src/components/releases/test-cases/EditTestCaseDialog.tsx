@@ -33,7 +33,7 @@ import {
   Save,
   X,
   Loader2,
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';

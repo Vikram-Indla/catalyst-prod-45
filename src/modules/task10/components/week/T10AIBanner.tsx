@@ -4,7 +4,7 @@
 // ═══════════════════════════════════════════════════════════════════════════════
 
 import React, { useState } from 'react';
-import { Sparkles, ArrowRight, X, ArrowUp, Clock, AlertTriangle } from 'lucide-react';
+import { Sparkles, ArrowRight, X, ArrowUp, Clock, AlertTriangle } from '@/lib/atlaskit-icons';
 
 export interface AISuggestion {
   id: string;

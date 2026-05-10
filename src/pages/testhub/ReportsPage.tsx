@@ -5,7 +5,7 @@
 import { useState } from 'react';
 import { CatalystPageHeader } from '@/components/shared/CatalystPageHeader';
 import { subDays } from 'date-fns';
-import { BarChart3, TrendingUp, Target, FileText, Bug, Download } from 'lucide-react';
+import { BarChart3, TrendingUp, Target, FileText, Bug, Download } from '@/lib/atlaskit-icons';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Skeleton } from '@/components/ui/skeleton';

@@ -4,7 +4,7 @@
  */
 
 import { useState } from 'react';
-import { ChevronRight, ChevronDown } from 'lucide-react';
+import { ChevronRight, ChevronDown } from '@/lib/atlaskit-icons';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import { StatusLozenge } from '@/components/ui/StatusLozenge';
 import type { JiraIssue } from '@/hooks/workhub/useWorkItems';

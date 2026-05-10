@@ -13,7 +13,7 @@ import { Progress } from '@/components/ui/progress';
 import { ListScreenToolbar } from '@/components/shared/ListScreenToolbar';
 import { RightDetailsPanel } from '@/components/shared/RightDetailsPanel';
 import { DependencyDialog } from '@/components/forms/DependencyDialog';
-import { AlertCircle, ArrowRight, Plus, AlertTriangle, Network } from 'lucide-react';
+import { AlertCircle, ArrowRight, Plus, AlertTriangle, Network } from '@/lib/atlaskit-icons';
 import { PermissionGuard } from '@/components/shared/PermissionGuard';
 import { useToast } from '@/hooks/use-toast';
 

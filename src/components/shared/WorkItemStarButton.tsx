@@ -3,7 +3,7 @@
  * Uses user_starred_items table for persistence
  */
 
-import { Star } from 'lucide-react';
+import { Star } from '@/lib/atlaskit-icons';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { useStarredItemIds, useToggleStar, StarredItemType } from '@/hooks/home/useStarredItems';

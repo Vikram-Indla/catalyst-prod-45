@@ -4,7 +4,7 @@
  */
 
 import React from 'react';
-import { RotateCcw, Briefcase, Target, Zap, Calendar } from 'lucide-react';
+import { RotateCcw, Briefcase, Target, Zap, Calendar } from '@/lib/atlaskit-icons';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Slider } from '@/components/ui/slider';

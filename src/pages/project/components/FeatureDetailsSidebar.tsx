@@ -3,7 +3,7 @@
  * Shows real data only, displays "—" or "None" for missing fields.
  */
 
-import { Pencil, AlertTriangle } from 'lucide-react';
+import { Pencil, AlertTriangle } from '@/lib/atlaskit-icons';
 import { format } from 'date-fns';
 import styles from '../FeatureViewPage.module.css';
 

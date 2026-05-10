@@ -1,6 +1,6 @@
 import React from 'react';
 import { cn } from '@/lib/utils';
-import { Check } from 'lucide-react';
+import { Check } from '@/lib/atlaskit-icons';
 
 interface RoadmapLegendProps {
   isVisible: boolean;

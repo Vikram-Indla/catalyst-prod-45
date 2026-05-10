@@ -18,7 +18,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { CatalystDatePicker } from '@/components/ui/catalyst-date-picker';
-import { AlertCircle } from 'lucide-react';
+import { AlertCircle } from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 import { format, parseISO } from 'date-fns';
 import { useQuery } from '@tanstack/react-query';

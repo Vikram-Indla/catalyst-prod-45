@@ -4,7 +4,7 @@
 
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ListChecks, Check } from 'lucide-react';
+import { ListChecks, Check } from '@/lib/atlaskit-icons';
 import { Avatar } from '@/components/ads';
 import { Checkbox } from '@/components/ui/checkbox';
 import { TestCase } from '@/types/test-cases';

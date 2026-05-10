@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Check, ChevronsUpDown, X, Settings } from 'lucide-react';
+import { Check, ChevronsUpDown, X, Settings } from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Lozenge } from '@/components/ads';

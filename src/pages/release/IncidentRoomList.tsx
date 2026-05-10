@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
 import { Link, useSearchParams, useNavigate, useLocation } from 'react-router-dom';
-import { Search, AlertCircle, RefreshCw, ArrowUpDown, Columns3, LayoutGrid, LayoutList, Plus } from 'lucide-react';
+import { Search, AlertCircle, RefreshCw, ArrowUpDown, Columns3, LayoutGrid, LayoutList, Plus } from '@/lib/atlaskit-icons';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { GlobalPageHeader } from '@/components/layout/GlobalPageHeader';

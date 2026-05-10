@@ -11,7 +11,7 @@ import { RoadmapTodayMarker } from './RoadmapTodayMarker';
 import { generateTimelinePeriods, calculateBarPosition } from '../utils/timeline';
 import type { RoadmapDemand, TimelineConfig } from '../types/roadmap';
 import { addMonths } from 'date-fns';
-import { User } from 'lucide-react';
+import { User } from '@/lib/atlaskit-icons';
 
 const AVATAR_COLORS = ['var(--ds-text-brand, #2563EB)', '#6366F1', '#0D9488', 'var(--ds-text-warning, #D97706)', 'var(--ds-text-success, #16A34A)', '#0891B2', 'var(--ds-text-danger, #DC2626)', 'var(--ds-text-subtle, #334155)'];
 

@@ -6,7 +6,7 @@ import { useState, useEffect, useCallback, useMemo } from 'react';
 import DOMPurify from 'dompurify';
 import { useQuery } from '@tanstack/react-query';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
-import { ChevronLeft, ChevronRight, Sparkles, X, FileText, Trophy, Code, CheckSquare, BookOpen, PenTool, Users, Server, ChevronRightIcon } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Sparkles, X, FileText, Trophy, Code, CheckSquare, BookOpen, PenTool, Users, Server, ChevronRightIcon } from '@/lib/atlaskit-icons';
 import { useDeptIntelligenceAI, type DigestEvent, type ExecSummaryV5, type Recommendation, type RoleContribution, type ProjectActivity } from '@/hooks/useDeptIntelligenceAI';
 import { useProfileAvatarsByName } from '@/hooks/useProfileAvatars';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';

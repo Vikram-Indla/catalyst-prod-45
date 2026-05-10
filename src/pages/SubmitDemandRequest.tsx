@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { CheckCircle2, Download, ArrowLeft, Upload, X, Loader2 } from 'lucide-react';
+import { CheckCircle2, Download, ArrowLeft, Upload, X, Loader2 } from '@/lib/atlaskit-icons';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';

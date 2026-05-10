@@ -1,7 +1,7 @@
 // @ts-nocheck
 import type { WidgetProps } from '../widget-registry';
 import WidgetWrapper from '../WidgetWrapper';
-import { Settings } from 'lucide-react';
+import { Settings } from '@/lib/atlaskit-icons';
 import { Button, EmptyState } from '@/components/ads';
 
 export default function KeyMilestonesWidget({ projectId, projectKey, collapsed, onToggleCollapse }: WidgetProps) {

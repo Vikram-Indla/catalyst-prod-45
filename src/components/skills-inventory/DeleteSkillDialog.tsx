@@ -1,4 +1,4 @@
-import { AlertTriangle } from 'lucide-react';
+import { AlertTriangle } from '@/lib/atlaskit-icons';
 
 interface DeleteSkillDialogProps {
   open: boolean;

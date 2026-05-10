@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from 'react';
-import { Upload, X, Check, FileText, ChevronRight, AlertCircle } from 'lucide-react';
+import { Upload, X, Check, FileText, ChevronRight, AlertCircle } from '@/lib/atlaskit-icons';
 import { DomainBadge } from './WikiTokens';
 import { useTheme } from '@/hooks/useTheme';
 import { useWikiDocumentUpload, useWikiDocumentStatus } from '@/hooks/useWikiData';

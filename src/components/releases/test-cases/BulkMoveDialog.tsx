@@ -5,7 +5,7 @@
 
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { FolderInput, Check, Package } from 'lucide-react';
+import { FolderInput, Check, Package } from '@/lib/atlaskit-icons';
 import {
   Dialog,
   DialogContent,

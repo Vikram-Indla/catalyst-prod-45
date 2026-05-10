@@ -20,7 +20,7 @@ import { DashboardSkeleton } from './DashboardSkeleton';
 const CreateTaskModal = React.lazy(() => import('../kanban').then(m => ({ default: m.CreateTaskModal })));
 const TaskDetailDrawer = React.lazy(() => import('../TaskDetailDrawer/TaskDetailDrawer').then(m => ({ default: m.TaskDetailDrawer })));
 import { Button } from '@/components/ui/button';
-import { RefreshCw, LayoutDashboard, Calendar, Plus } from 'lucide-react';
+import { RefreshCw, LayoutDashboard, Calendar, Plus } from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 import {
   Select,

@@ -5,7 +5,7 @@ import {
   CheckCircle2, AlertTriangle, XCircle, HelpCircle, RefreshCw,
   ExternalLink, Settings, Activity, ChevronRight, Key,
   Eye, EyeOff, Copy, FileText
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import { supabase, typedQuery, typedRpc } from '@/integrations/supabase/client';
 import { catalystToast } from '@/components/ui/CatalystToast';
 import { useTheme } from '@/hooks/useTheme';

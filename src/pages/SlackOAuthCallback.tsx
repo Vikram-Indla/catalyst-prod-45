@@ -6,7 +6,7 @@ import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useSlackConnection } from '@/hooks/useSlackConnection';
 import { Card, CardContent } from '@/components/ui/card';
-import { Loader2, CheckCircle, XCircle } from 'lucide-react';
+import { Loader2, CheckCircle, XCircle } from '@/lib/atlaskit-icons';
 
 export default function SlackOAuthCallback() {
   const [searchParams] = useSearchParams();

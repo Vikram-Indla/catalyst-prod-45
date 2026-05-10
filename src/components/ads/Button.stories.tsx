@@ -8,7 +8,7 @@
  */
 import type { Meta, StoryObj } from '@storybook/react';
 import { Button, IconButton } from '@/components/ads';
-import { Plus, Check, Trash2, ChevronDown } from 'lucide-react';
+import { Plus, Check, Trash2, ChevronDown } from '@/lib/atlaskit-icons';
 
 const meta: Meta<typeof Button> = {
   title: 'ADS/Button',

@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { cn } from '@/lib/utils';
-import { ArrowRight, Plus, Pencil, Trash2, Zap } from 'lucide-react';
+import { ArrowRight, Plus, Pencil, Trash2, Zap } from '@/lib/atlaskit-icons';
 import Avatar from '@atlaskit/avatar';
 import { formatDistanceToNow } from 'date-fns';
 import type { CdsActivityItem, CdsActivityAction, CdsAppearance } from '../types';

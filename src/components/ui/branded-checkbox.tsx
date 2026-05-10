@@ -1,5 +1,5 @@
 import { cn } from '@/lib/utils';
-import { Check } from 'lucide-react';
+import { Check } from '@/lib/atlaskit-icons';
 
 interface BrandedCheckboxProps {
   checked: boolean;

@@ -4,7 +4,7 @@
  */
 
 import React, { useState, useMemo } from 'react';
-import { Check, Package, Plus, X } from 'lucide-react';
+import { Check, Package, Plus, X } from '@/lib/atlaskit-icons';
 import { Button } from '@/components/ui/button';
 import { Lozenge } from '@/components/ads';
 import {

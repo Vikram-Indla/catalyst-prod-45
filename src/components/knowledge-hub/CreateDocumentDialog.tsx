@@ -8,7 +8,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { FileText, ListChecks, Lightbulb, BookOpen, Target, Users } from 'lucide-react';
+import { FileText, ListChecks, Lightbulb, BookOpen, Target, Users } from '@/lib/atlaskit-icons';
 import { adfToPlainText } from '@/components/shared/rich-text/atlaskit/adfHelpers';
 
 // 2026-04-20 — Templates switched from HTML (TipTap consumer) to ADF

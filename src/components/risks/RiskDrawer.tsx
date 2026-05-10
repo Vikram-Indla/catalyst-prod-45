@@ -39,7 +39,7 @@ import {
   Trash2,
   Copy,
   Star
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import { Risk, RiskFormData, RoamStatus, RiskStatus, SeverityLevel, YesNo } from '@/types/risks';
 import { RiskFormV2, RiskFormDataV2 } from './shared/RiskFormV2';
 import { RiskLinksTab } from './drawer-tabs/RiskLinksTab';

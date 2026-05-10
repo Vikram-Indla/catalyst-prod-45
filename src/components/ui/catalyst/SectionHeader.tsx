@@ -1,4 +1,4 @@
-import { LucideIcon } from 'lucide-react';
+import { LucideIcon } from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 
 interface SectionHeaderProps {

@@ -3,7 +3,7 @@
 // Display and manage active calendar filters
 // ============================================================
 
-import { X } from 'lucide-react';
+import { X } from '@/lib/atlaskit-icons';
 import '../../styles/planner-calendar.css';
 
 interface FilterChip {

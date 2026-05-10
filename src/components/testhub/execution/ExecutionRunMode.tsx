@@ -6,7 +6,7 @@ import React from 'react';
 import {
   CheckCircle2, XCircle, AlertTriangle, SkipForward, Zap,
   ChevronLeft, ChevronRight, RotateCcw,
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import { StepProgressIndicator } from '@/components/testhub/execution/StepProgressIndicator';
 
 interface ExecutionHistoryRecord {

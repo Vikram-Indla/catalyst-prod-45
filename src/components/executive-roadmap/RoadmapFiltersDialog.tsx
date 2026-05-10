@@ -3,7 +3,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-import { ChevronUp, X } from 'lucide-react';
+import { ChevronUp, X } from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 import { PLATFORM_INFO, STAGE_NAMES } from '@/types/roadmapTypes';
 

@@ -4,7 +4,7 @@ import {
   Search, ChevronRight, ChevronDown, 
   MessageSquare, Calendar, Minus, ArrowUp, ArrowDown, ChevronsUp, ChevronsDown,
   Settings2, GripVertical, Plus, MoreHorizontal
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';

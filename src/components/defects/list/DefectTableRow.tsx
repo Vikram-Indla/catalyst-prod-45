@@ -4,7 +4,7 @@
 // =====================================================
 
 import { formatDistanceToNowStrict } from 'date-fns';
-import { MoreHorizontal, Ban, RotateCcw, ExternalLink } from 'lucide-react';
+import { MoreHorizontal, Ban, RotateCcw, ExternalLink } from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Avatar } from '@/components/ads';

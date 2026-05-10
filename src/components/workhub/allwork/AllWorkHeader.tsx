@@ -1,7 +1,7 @@
 /**
  * AllWorkHeader — Breadcrumb + title + tabs (V12 compliant)
  */
-import { Star, Share2, MoreHorizontal } from 'lucide-react';
+import { Star, Share2, MoreHorizontal } from '@/lib/atlaskit-icons';
 
 type TabKey = 'all-work' | 'board' | 'timeline' | 'calendar' | 'backlog' | 'reports';
 

@@ -10,7 +10,7 @@
  */
 
 import { useState, useMemo, useEffect } from 'react';
-import { ChevronRight, ChevronDown, Calendar, Download, AlertTriangle, Check, Users, Pencil, AlertCircle, Loader2 } from 'lucide-react';
+import { ChevronRight, ChevronDown, Calendar, Download, AlertTriangle, Check, Users, Pencil, AlertCircle, Loader2 } from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { formatCurrency, type BudgetPeriod, type BudgetResource } from '@/hooks/budget/useBudgetData';

@@ -6,7 +6,7 @@ import {
   Link, Image, Table, Minus, Quote, ChevronDown, MoreHorizontal, Undo2, Redo2,
   Type, Columns, Info, AlertTriangle, CheckCircle, AlertCircle, StickyNote,
   ChevronRight, Sparkles, AtSign, CheckSquare, Lightbulb, RemoveFormatting,
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import { uploadImageToSupabase } from './mediaUpload';
 
 // ─── Jira's 13 text colors ────────────────────────────────────────────────────

@@ -52,7 +52,7 @@ import {
   makeRowActionsCell,
 } from '@/components/shared/JiraTable';
 import type { Column, LozengeAppearance, StatusOption, AssigneeChoice, ParentChoice, RowAction } from '@/components/shared/JiraTable';
-import { Pencil, Copy as CopyIcon, Trash2, Flag } from 'lucide-react';
+import { Pencil, Copy as CopyIcon, Trash2, Flag } from '@/lib/atlaskit-icons';
 
 // ── Catalyst hooks + utilities (PRESERVED) ──────────
 import { useStoryBacklog, useEpicBacklog } from '../hooks/useBacklogData';
@@ -68,7 +68,7 @@ import { DeleteConfirmDialog } from '../components/dialogs/DeleteConfirmDialog';
 import { EditStoryDialog } from '../components/dialogs/EditStoryDialog';
 import { useAtlaskitThemeSync } from '../components/SubtasksPanel/atlaskitTheme';
 import type { BacklogStory } from '../types/backlog.types';
-import { Search as SearchIcon, Filter as FilterIcon, ChevronDown, Settings, MoreHorizontal, Star, Plus } from 'lucide-react';
+import { Search as SearchIcon, Filter as FilterIcon, ChevronDown, Settings, MoreHorizontal, Star, Plus } from '@/lib/atlaskit-icons';
 
 const CatalystDetailRouter = lazy(() => import('@/components/catalyst-detail-views/CatalystDetailRouter'));
 

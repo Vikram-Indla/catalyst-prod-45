@@ -1,6 +1,6 @@
 import React from 'react';
 import { cn } from '@/lib/utils';
-import { Grid3X3, LayoutGrid, Square } from 'lucide-react';
+import { Grid3X3, LayoutGrid, Square } from '@/lib/atlaskit-icons';
 
 export type GridSize = 'small' | 'medium' | 'large';
 

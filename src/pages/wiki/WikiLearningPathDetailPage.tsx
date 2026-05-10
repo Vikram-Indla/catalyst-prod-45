@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { ChevronRight, GraduationCap, CheckCircle2, Circle, Clock, FileText } from 'lucide-react';
+import { ChevronRight, GraduationCap, CheckCircle2, Circle, Clock, FileText } from '@/lib/atlaskit-icons';
 import { useTheme } from '@/hooks/useTheme';
 
 const F = {

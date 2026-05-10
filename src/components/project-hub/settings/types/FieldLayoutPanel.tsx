@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { X } from 'lucide-react';
+import { X } from '@/lib/atlaskit-icons';
 
 interface FieldLayoutPanelProps {
   typeId: string;

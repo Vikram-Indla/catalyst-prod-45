@@ -8,7 +8,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { usePermission } from '@/hooks/usePermission';
 import { WSJFBadge } from '@/components/shared/WSJFBadge';
-import { TrendingUp, Save } from 'lucide-react';
+import { TrendingUp, Save } from '@/lib/atlaskit-icons';
 
 // Fibonacci scale per Jira Align spec
 const FIBONACCI_VALUES = [0, 1, 2, 3, 5, 8, 13, 20, 40, 100];

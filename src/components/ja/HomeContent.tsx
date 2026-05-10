@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { 
   ChevronDown, ChevronUp, Star, MoreHorizontal, ExternalLink, CheckCircle, 
   Clock, Pin, Settings, Kanban, List, AlertTriangle, Briefcase, Calendar, FileText
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import { WorkItemIcon } from './icons/WorkItemIcon';
 import { cn } from '@/lib/utils';
 import { formatDistanceToNow } from 'date-fns';

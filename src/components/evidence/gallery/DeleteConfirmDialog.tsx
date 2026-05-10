@@ -3,7 +3,7 @@
 // ═══════════════════════════════════════════════════════════════════════════
 
 import React from 'react';
-import { Trash2 } from 'lucide-react';
+import { Trash2 } from '@/lib/atlaskit-icons';
 import { Button } from '@/components/ui/button';
 
 interface DeleteConfirmDialogProps {

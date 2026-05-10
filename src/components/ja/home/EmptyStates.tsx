@@ -3,7 +3,7 @@
 // No generic "No data" messages - all contextual
 
 import React from 'react';
-import { AlertTriangle, Briefcase, Calendar, Search, Star, Clock, FileX } from 'lucide-react';
+import { AlertTriangle, Briefcase, Calendar, Search, Star, Clock, FileX } from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 import type { HomeRoleMode } from './HomeRoleModeSelector';
 

@@ -8,7 +8,7 @@ import React from 'react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Lozenge, type LozengeAppearance } from '@/components/ads';
-import { ExternalLink, Copy, Trash2, ChevronLeft, Edit } from 'lucide-react';
+import { ExternalLink, Copy, Trash2, ChevronLeft, Edit } from '@/lib/atlaskit-icons';
 import { format } from 'date-fns';
 import type { FeatureBacklogItem } from '../../types';
 

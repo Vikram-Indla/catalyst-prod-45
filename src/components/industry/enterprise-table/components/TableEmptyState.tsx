@@ -1,5 +1,5 @@
 import React from 'react';
-import { Database, Search, Filter, AlertCircle } from 'lucide-react';
+import { Database, Search, Filter, AlertCircle } from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 
 interface TableEmptyStateProps {

@@ -5,7 +5,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sh
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button';
 import { Lozenge } from '@/components/ads';
-import { History, Clock, User, Eye } from 'lucide-react';
+import { History, Clock, User, Eye } from '@/lib/atlaskit-icons';
 import { format } from 'date-fns';
 
 interface DocumentVersionHistoryProps {

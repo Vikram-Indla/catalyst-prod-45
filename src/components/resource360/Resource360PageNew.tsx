@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useMemo, useRef, useEffect } from 'react';
-import { Zap } from 'lucide-react';
+import { Zap } from '@/lib/atlaskit-icons';
 import { useParams } from 'react-router-dom';
 import type { Resource360Item, StatusCategory, ViewMode } from '@/types/resource360';
 import { getStaleIndicator } from '@/types/resource360';

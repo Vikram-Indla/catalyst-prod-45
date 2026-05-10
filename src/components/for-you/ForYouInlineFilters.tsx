@@ -3,7 +3,7 @@
  */
 
 import React, { useState, useRef, useEffect } from 'react';
-import { X, ChevronDown, Search, Check } from 'lucide-react';
+import { X, ChevronDown, Search, Check } from '@/lib/atlaskit-icons';
 import { useProfileAvatarsByName } from '@/hooks/useProfileAvatars';
 
 const HUB_DOT_COLORS: Record<string, string> = {

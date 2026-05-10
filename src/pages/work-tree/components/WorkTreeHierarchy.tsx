@@ -5,7 +5,7 @@
 
 import { useState, useMemo } from 'react';
 import { cn } from '@/lib/utils';
-import { ChevronRight, ChevronDown } from 'lucide-react';
+import { ChevronRight, ChevronDown } from '@/lib/atlaskit-icons';
 import { Tooltip } from '@/components/ads';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 

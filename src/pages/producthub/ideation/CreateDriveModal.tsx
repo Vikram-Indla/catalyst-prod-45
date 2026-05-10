@@ -7,8 +7,8 @@ import { useTheme } from '@/hooks/useTheme';
 import {
   X, Minus, Plus, Loader2, CalendarIcon,
   Building2, Bot, Leaf, Rocket, Lightbulb, Target, BarChart3, Microscope,
-} from 'lucide-react';
-import type { LucideIcon } from 'lucide-react';
+} from '@/lib/atlaskit-icons';
+import type { LucideIcon } from '@/lib/atlaskit-icons';
 import { format, addDays } from 'date-fns';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';

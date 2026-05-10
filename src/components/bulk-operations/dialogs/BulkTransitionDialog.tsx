@@ -18,7 +18,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Loader2, ArrowRight } from 'lucide-react';
+import { Loader2, ArrowRight } from '@/lib/atlaskit-icons';
 import { BulkOperationConfig, BulkOperationSummary } from '../types';
 import { BulkResultsSummary } from '../BulkResultsSummary';
 

@@ -7,7 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Card } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-import { ChevronDown, Settings, Filter, ArrowUpDown, Download } from 'lucide-react';
+import { ChevronDown, Settings, Filter, ArrowUpDown, Download } from '@/lib/atlaskit-icons';
 import { toast } from 'sonner';
 import { ForecastGrid } from '@/components/forecast/ForecastGrid';
 import { ForecastFiltersDialog } from '@/components/forecast/ForecastFiltersDialog';

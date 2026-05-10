@@ -16,7 +16,7 @@ import {
   AlertCircle,
   CheckCircle2,
   AlertTriangle,
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import {
   usePlannerWorkstreams,

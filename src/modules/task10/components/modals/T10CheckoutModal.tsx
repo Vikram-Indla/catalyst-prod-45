@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { CheckCircle, RotateCcw, Trash2, Info, Check } from 'lucide-react';
+import { CheckCircle, RotateCcw, Trash2, Info, Check } from '@/lib/atlaskit-icons';
 import type { T10Item, T10CheckoutDecision } from '../../types';
 
 interface T10CheckoutModalProps {

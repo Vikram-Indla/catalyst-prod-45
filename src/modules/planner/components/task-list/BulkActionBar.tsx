@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Clock, User, Flag, Trash2, X, Check, ChevronDown, ShieldAlert } from 'lucide-react';
+import { Clock, User, Flag, Trash2, X, Check, ChevronDown, ShieldAlert } from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 import {
   DropdownMenu,

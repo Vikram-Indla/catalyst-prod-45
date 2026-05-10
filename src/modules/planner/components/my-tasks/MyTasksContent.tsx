@@ -5,7 +5,7 @@
 // ============================================================
 
 import { useMemo, useEffect } from 'react';
-import { Plus, Layers } from 'lucide-react';
+import { Plus, Layers } from '@/lib/atlaskit-icons';
 import { useMyTasks } from '../../hooks/useMyTasks';
 import { useMyTasksUndo } from '../../hooks/useMyTasksUndo';
 import { useUncompleteMyTask } from '../../hooks/useUncompleteMyTask';

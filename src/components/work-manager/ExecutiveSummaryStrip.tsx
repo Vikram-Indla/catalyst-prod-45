@@ -1,7 +1,7 @@
 // src/components/work-manager/ExecutiveSummaryStrip.tsx
 // Compact Executive Micro-Summary - Bloomberg-grade signal strip
 
-import { AlertTriangle, Clock, Flame, CheckCircle2 } from 'lucide-react';
+import { AlertTriangle, Clock, Flame, CheckCircle2 } from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 import type { TaskExtended } from './types';
 

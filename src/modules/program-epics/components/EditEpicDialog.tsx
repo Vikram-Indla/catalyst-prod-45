@@ -28,7 +28,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
-import { Check, ChevronsUpDown, X, Box, Loader2 } from 'lucide-react';
+import { Check, ChevronsUpDown, X, Box, Loader2 } from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 
 interface EditEpicDialogProps {

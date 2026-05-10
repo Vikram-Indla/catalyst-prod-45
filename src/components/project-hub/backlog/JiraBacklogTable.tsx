@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { Search, ChevronDown, ChevronUp, ExternalLink } from 'lucide-react';
+import { Search, ChevronDown, ChevronUp, ExternalLink } from '@/lib/atlaskit-icons';
 import { JiraBacklogIssue } from '@/hooks/useJiraBacklogIssues';
 import WatchButton from '@/components/shared/WatchButton';
 

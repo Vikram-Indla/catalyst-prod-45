@@ -47,7 +47,7 @@
  *   into the canonical shell (tracked under Phase 9 / pixel parity).
  */
 import type { ReactNode } from 'react';
-import { Bookmark, Bug, CheckSquare, Link2, ShieldAlert, Zap, Layers, CircleDashed } from 'lucide-react';
+import { Bookmark, Bug, CheckSquare, Link2, ShieldAlert, Zap, Layers, CircleDashed } from '@/lib/atlaskit-icons';
 import type { KanbanBoard, KanbanCard, KanbanColumn, CardType } from '@/types/kanban.types';
 import type { KanbanColumnDef } from '../kanban-tokens';
 import type { BoardIssue } from '../kanban-types';

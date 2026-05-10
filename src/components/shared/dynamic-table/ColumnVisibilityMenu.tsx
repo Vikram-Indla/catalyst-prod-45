@@ -2,7 +2,7 @@
  * ColumnVisibilityMenu — the "+" header affordance.
  * Mirrors Atlaskit's DropdownMenu + CheckboxItem pattern; uses Radix under the hood.
  */
-import { Plus } from 'lucide-react';
+import { Plus } from '@/lib/atlaskit-icons';
 import type { Table } from '@tanstack/react-table';
 import {
   DropdownMenu,

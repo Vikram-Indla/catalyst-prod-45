@@ -6,7 +6,7 @@
 
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { createPortal } from 'react-dom';
-import { X, Pencil, Paperclip, Copy, Link2, Star, Trash2 } from 'lucide-react';
+import { X, Pencil, Paperclip, Copy, Link2, Star, Trash2 } from '@/lib/atlaskit-icons';
 import { format, parseISO } from 'date-fns';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Loader2, Sparkles, FileText } from 'lucide-react';
+import { Loader2, Sparkles, FileText } from '@/lib/atlaskit-icons';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
@@ -14,7 +14,7 @@ import { useAuth } from '@/lib/auth';
 import { CatyAIAvatar } from './CatyAIAvatar';
 import { GeneratedTestCase } from '@/types/caty-ai';
 import { cn } from '@/lib/utils';
-import { ArrowLeft, Save, ChevronDown, ChevronUp } from 'lucide-react';
+import { ArrowLeft, Save, ChevronDown, ChevronUp } from '@/lib/atlaskit-icons';
 
 interface Props { open: boolean; onClose: () => void; projectId: string; }
 

@@ -25,7 +25,7 @@ import { toast } from 'sonner';
 import {
   ChevronDown, ChevronRight, Plus,
   Check,
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import EditIcon from '@atlaskit/icon/core/edit';
 import DeleteIcon from '@atlaskit/icon/core/delete';
 import { nextPos, resolveStatusCategory } from '../dialogs/story-detail-modules/helpers';

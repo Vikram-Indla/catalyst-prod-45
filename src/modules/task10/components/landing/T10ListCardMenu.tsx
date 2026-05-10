@@ -4,7 +4,7 @@
 // ═══════════════════════════════════════════════════════════════════════════════
 
 import React, { useState, useRef, useEffect } from 'react';
-import { MoreVertical, Edit2, Trash2 } from 'lucide-react';
+import { MoreVertical, Edit2, Trash2 } from '@/lib/atlaskit-icons';
 
 interface T10ListCardMenuProps {
   onRename: () => void;

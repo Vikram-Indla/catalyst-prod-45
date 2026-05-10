@@ -3,7 +3,7 @@
  * DARK MODE dark mode support via useTheme
  */
 
-import { Sparkles } from 'lucide-react';
+import { Sparkles } from '@/lib/atlaskit-icons';
 import { useIncidentListView } from '@/hooks/useIncidentHub';
 import { useTheme } from '@/hooks/useTheme';
 

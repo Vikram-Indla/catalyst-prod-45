@@ -3,7 +3,7 @@
  * Exports task list to CSV/Excel
  */
 
-import { Download } from 'lucide-react';
+import { Download } from '@/lib/atlaskit-icons';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,

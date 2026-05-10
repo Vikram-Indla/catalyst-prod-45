@@ -5,7 +5,7 @@
 
 import { useState, lazy, Suspense } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Printer, Loader2 } from 'lucide-react';
+import { Printer, Loader2 } from '@/lib/atlaskit-icons';
 import { Button } from '@/components/ui/button';
 import { GlobalPageHeader } from '@/components/layout/GlobalPageHeader';
 import { IncidentCommandBar } from '@/components/incidents/IncidentCommandBar';

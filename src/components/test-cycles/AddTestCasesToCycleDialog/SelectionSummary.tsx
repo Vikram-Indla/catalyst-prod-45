@@ -4,7 +4,7 @@
  */
 
 import React from 'react';
-import { Clock, Trash2 } from 'lucide-react';
+import { Clock, Trash2 } from '@/lib/atlaskit-icons';
 import { Button } from '@/components/ui/button';
 import { Lozenge } from '@/components/ads';
 import { formatDuration } from './utils';

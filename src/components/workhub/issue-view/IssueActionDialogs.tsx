@@ -7,7 +7,7 @@
  *   5. Delete Issue
  */
 import { useState, useMemo } from 'react';
-import { X, Search, Loader2, AlertTriangle, Flag, Copy, ArrowRight, Archive, Trash2 } from 'lucide-react';
+import { X, Search, Loader2, AlertTriangle, Flag, Copy, ArrowRight, Archive, Trash2 } from '@/lib/atlaskit-icons';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';

@@ -5,7 +5,7 @@
 // ═══════════════════════════════════════════════════════════════════════════════
 
 import React from 'react';
-import { Plus } from 'lucide-react';
+import { Plus } from '@/lib/atlaskit-icons';
 import { useNavigate } from 'react-router-dom';
 import { T10StatusBadge } from './T10StatusBadge';
 import { T10ProgressBar } from './T10ProgressBar';

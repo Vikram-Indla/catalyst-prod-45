@@ -1,5 +1,5 @@
 import { useState, ReactNode } from 'react';
-import { ChevronDown, Zap, Calendar, BarChart3, Tag, Trophy, XCircle, Wrench, Flame, AlertTriangle, CheckCircle, TrendingUp, Sparkles, Globe, Send, X, type LucideIcon } from 'lucide-react';
+import { ChevronDown, Zap, Calendar, BarChart3, Tag, Trophy, XCircle, Wrench, Flame, AlertTriangle, CheckCircle, TrendingUp, Sparkles, Globe, Send, X, type LucideIcon } from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 import { useTheme } from '@/hooks/useTheme';
 

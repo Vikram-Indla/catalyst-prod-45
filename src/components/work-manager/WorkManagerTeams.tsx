@@ -2,7 +2,7 @@
 // Teams Management View - 9.8 Executive UX + Dark Mode Enforcement
 
 import { useMemo, useState } from 'react';
-import { Plus, MoreHorizontal, Users, ChevronRight, UserPlus, Trash2 } from 'lucide-react';
+import { Plus, MoreHorizontal, Users, ChevronRight, UserPlus, Trash2 } from '@/lib/atlaskit-icons';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { NewTeamDialog } from './NewTeamDialog';

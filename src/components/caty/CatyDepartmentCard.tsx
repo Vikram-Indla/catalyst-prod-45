@@ -3,7 +3,7 @@
  * Expandable department with capacity bar and resource list
  */
 
-import { ChevronDown } from 'lucide-react';
+import { ChevronDown } from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 import { 
   type DepartmentStats, 

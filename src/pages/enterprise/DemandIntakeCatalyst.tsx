@@ -21,7 +21,7 @@ import {
   ChevronRight,
   Plus, 
   AlertTriangle,
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 
 // CatalystEnterpriseTable component
 import { CatalystEnterpriseTable, CatalystColumn } from '@/components/industry/CatalystEnterpriseTable';

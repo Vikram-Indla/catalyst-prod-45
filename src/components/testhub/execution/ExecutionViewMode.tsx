@@ -3,7 +3,7 @@
  * Extracted from TestHubExecutionPage.tsx
  */
 import React from 'react';
-import { ArrowLeft, Play, AlertTriangle } from 'lucide-react';
+import { ArrowLeft, Play, AlertTriangle } from '@/lib/atlaskit-icons';
 
 interface ExecutionHistoryRecord {
   id: string;

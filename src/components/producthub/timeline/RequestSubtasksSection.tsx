@@ -11,7 +11,7 @@
  * lucide icons). No DnD reorder yet — sort is created_at ASC.
  */
 import React, { useState, useCallback, useMemo } from 'react';
-import { Plus, Trash2 } from 'lucide-react';
+import { Plus, Trash2 } from '@/lib/atlaskit-icons';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { typedQuery, supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';

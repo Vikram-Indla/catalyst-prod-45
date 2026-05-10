@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react';
-import { Mic, ArrowUp } from 'lucide-react';
+import { Mic, ArrowUp } from '@/lib/atlaskit-icons';
 
 type Lang = 'en';
 

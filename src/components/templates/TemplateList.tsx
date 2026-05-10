@@ -7,7 +7,7 @@
 import React from 'react';
 import { TemplateCard } from './TemplateCard';
 import { Skeleton } from '@/components/ui/skeleton';
-import { FileX } from 'lucide-react';
+import { FileX } from '@/lib/atlaskit-icons';
 import type { CycleTemplate } from '@/types/template.types';
 
 interface TemplateListProps {

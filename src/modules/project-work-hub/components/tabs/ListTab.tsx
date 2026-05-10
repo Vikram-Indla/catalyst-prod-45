@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Search, Filter, ChevronDown, ChevronRight, MessageSquare, Settings2 } from 'lucide-react';
+import { Search, Filter, ChevronDown, ChevronRight, MessageSquare, Settings2 } from '@/lib/atlaskit-icons';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';

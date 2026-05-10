@@ -11,7 +11,7 @@
 import React, { useMemo, useCallback, useState } from 'react';
 import './capacity-planner-gantt.css';
 import '@/styles/capacity-module.css';
-import { ChevronLeft, ChevronRight, Calendar, Download, LayoutGrid } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Calendar, Download, LayoutGrid } from '@/lib/atlaskit-icons';
 import type { ResourceAllocation } from '@/modules/capacity-planner/types';
 import { getContractStatus } from '@/lib/constants/catalyst-colors';
 import { useRealtimeAllocations } from '@/hooks/useRealtimeAllocations';

@@ -15,7 +15,7 @@ import { useNavigate } from 'react-router-dom';
 import { PageChrome } from '@/components/layout/PageChrome';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { AlertTriangle, Search, Wallet, BarChart3, GitBranch, Lock, Home, Calendar } from 'lucide-react';
+import { AlertTriangle, Search, Wallet, BarChart3, GitBranch, Lock, Home, Calendar } from '@/lib/atlaskit-icons';
 import { CatalystPageHeader } from '@/components/shared/CatalystPageHeader';
 import { cn } from '@/lib/utils';
 import { useBudgetData, formatCurrency, type BudgetPeriod } from '@/hooks/budget/useBudgetData';
@@ -30,7 +30,7 @@ import { BudgetLedgerTable } from '@/components/budget/BudgetLedgerTable';
 import { BudgetSummaryTab } from '@/components/budget/BudgetSummaryTab';
 import { BudgetScenarioTab } from '@/components/budget/BudgetScenarioTab';
 import { BudgetDataQualityTab } from '@/components/budget/BudgetDataQualityTab';
-import { FileCheck } from 'lucide-react';
+import { FileCheck } from '@/lib/atlaskit-icons';
 
 type BudgetPlannerTab = 'summary' | 'budget' | 'scenario' | 'quality';
 

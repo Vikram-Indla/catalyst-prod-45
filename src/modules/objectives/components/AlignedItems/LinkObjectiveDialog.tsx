@@ -12,7 +12,7 @@ import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { Search, Target } from 'lucide-react';
+import { Search, Target } from '@/lib/atlaskit-icons';
 import type { ObjectiveTier } from '../../types/objective.types';
 
 interface LinkObjectiveDialogProps {

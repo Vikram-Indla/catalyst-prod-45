@@ -10,7 +10,7 @@ import { useMemo, useCallback, useState, useEffect } from 'react';
 import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd';
 import { cn } from '@/lib/utils';
 import { Checkbox } from '@/components/ui/checkbox';
-import { ChevronUp, ChevronDown, GripVertical, Pencil, Check } from 'lucide-react';
+import { ChevronUp, ChevronDown, GripVertical, Pencil, Check } from '@/lib/atlaskit-icons';
 // 2026-04-27 — Notion Features unification: theme label lookup
 import { THEME_OPTIONS } from '@/types/business-request';
 import { Skeleton } from '@/components/ui/skeleton';

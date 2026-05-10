@@ -5,7 +5,7 @@
  */
 
 import { useState, useRef, useEffect, memo } from 'react';
-import { Lock, MoreHorizontal, ExternalLink, Copy, Trash2 } from 'lucide-react';
+import { Lock, MoreHorizontal, ExternalLink, Copy, Trash2 } from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Calendar } from '@/components/ui/calendar';

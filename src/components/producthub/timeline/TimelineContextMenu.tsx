@@ -4,7 +4,7 @@
 
 import React, { useEffect, useRef, useCallback, useState } from 'react';
 import { cn } from '@/lib/utils';
-import { Eye, Pencil, RefreshCw, User, ClipboardCopy, Copy, Archive, Trash2 } from 'lucide-react';
+import { Eye, Pencil, RefreshCw, User, ClipboardCopy, Copy, Archive, Trash2 } from '@/lib/atlaskit-icons';
 import { useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import type { TimelineRequest, RequestStatus } from '@/types/producthub/request';

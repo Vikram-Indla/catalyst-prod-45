@@ -10,7 +10,7 @@ import { supabase, typedQuery } from '@/integrations/supabase/client';
 import {
   Search, RotateCw, Clock, LayoutGrid, Zap,
   ChevronDown, ChevronUp, ChevronLeft, ChevronRight,
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import { Tooltip } from '@/components/ads';
 import ExportWorkItems from '@/components/resources/ExportWorkItems';
 import { CatalystPageHeader } from '@/components/shared/CatalystPageHeader';

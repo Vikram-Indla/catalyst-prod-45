@@ -4,7 +4,7 @@
  */
 
 import { useState } from 'react';
-import { X, ArrowRightLeft, Users, Flag, Trash2, FolderInput } from 'lucide-react';
+import { X, ArrowRightLeft, Users, Flag, Trash2, FolderInput } from '@/lib/atlaskit-icons';
 import { StatusDropdown } from './StatusDropdown';
 import { PriorityDropdown } from './PriorityDropdown';
 import { AssigneeDropdown, type AssigneeOption } from './AssigneeDropdown';

@@ -11,7 +11,7 @@ import { WorkItemRow } from './WorkItemRow';
 import type { JiraIssue } from '@/hooks/workhub/useWorkItems';
 import { buildTree, flattenTree } from '@/hooks/workhub/useWorkItems';
 import { useWHThemes } from '@/hooks/workhub/useThemes';
-import { AlertCircle, FileStack } from 'lucide-react';
+import { AlertCircle, FileStack } from '@/lib/atlaskit-icons';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
 
 interface WorkItemsTableProps {

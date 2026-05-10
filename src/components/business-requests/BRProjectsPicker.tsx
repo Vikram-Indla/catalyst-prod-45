@@ -6,7 +6,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { FolderKanban } from 'lucide-react';
+import { FolderKanban } from '@/lib/atlaskit-icons';
 
 const ATLASSIAN_DROPDOWN: React.CSSProperties = {
   background: 'var(--ds-surface, #FFFFFF)', borderRadius: 4, border: 'none',

@@ -18,7 +18,7 @@ import {
   Trash2,
   Archive,
   Calendar
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import { ReactNode } from 'react';
 
 interface BacklogContextMenuProps {

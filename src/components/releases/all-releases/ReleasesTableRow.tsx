@@ -10,7 +10,7 @@ import { Lozenge, Avatar } from '@/components/ads';
 import type { LozengeAppearance } from '@/components/ads';
 import { Progress } from '@/components/ui/progress';
 import { Button } from '@/components/ui/button';
-import { Pencil, Archive, Trash2 } from 'lucide-react';
+import { Pencil, Archive, Trash2 } from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 import { differenceInDays, parseISO } from 'date-fns';
 

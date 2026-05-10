@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { Lozenge } from '@/components/ads';
-import { AlertTriangle, History, Trash2 } from 'lucide-react';
+import { AlertTriangle, History, Trash2 } from '@/lib/atlaskit-icons';
 
 interface QualityGate {
   id: string;

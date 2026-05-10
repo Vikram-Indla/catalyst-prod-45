@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useMemo } from 'react';
-import { ChevronDown, Search, X, Check, User } from 'lucide-react';
+import { ChevronDown, Search, X, Check, User } from '@/lib/atlaskit-icons';
 
 const AVATAR_COLORS = ['var(--ds-text-brand, #2563eb)', '#0d9488', '#0369a1', 'var(--ds-text-warning, #d97706)', '#0891b2', '#1e40af', '#b45309', '#0f766e', 'var(--ds-text-subtle, #475569)', 'var(--ds-text-subtle, #334155)'];
 

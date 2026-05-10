@@ -29,7 +29,7 @@ import React, { useMemo } from 'react';
 import {
   Clock, FolderOpen, Columns3, GitBranch, LayoutDashboard,
   Table2, CircleDot, Layers, Map as MapIcon, BarChart2, Settings, Calendar,
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import { SidebarBase, type SidebarConfig, type SidebarMenuItem } from './SidebarBase';
 import { useRecentProjects, type RecentLocation } from '@/hooks/home/useRecentProjects';
 

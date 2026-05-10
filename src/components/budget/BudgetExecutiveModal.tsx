@@ -4,7 +4,7 @@
  */
 
 import { useState, useEffect } from 'react';
-import { X, ChevronLeft, ChevronRight, FileText } from 'lucide-react';
+import { X, ChevronLeft, ChevronRight, FileText } from '@/lib/atlaskit-icons';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { formatCurrency, formatFull, formatSAR } from '@/hooks/budget/useBudgetData';

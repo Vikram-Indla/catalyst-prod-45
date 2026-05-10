@@ -6,7 +6,7 @@ import React from 'react';
 import { 
   Layers, CheckCircle, XCircle, AlertTriangle, 
   PlayCircle, Clock 
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 import { CATALYST_V5, TEST_STATUS_COLORS } from '@/lib/catalyst-colors';
 import type { CycleStats } from '@/hooks/test-cycles/useCycleDetails';

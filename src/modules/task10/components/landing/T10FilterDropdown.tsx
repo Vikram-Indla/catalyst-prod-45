@@ -4,7 +4,7 @@
 // ═══════════════════════════════════════════════════════════════════════════════
 
 import React, { useState, useRef, useEffect, ReactNode } from 'react';
-import { ChevronDown } from 'lucide-react';
+import { ChevronDown } from '@/lib/atlaskit-icons';
 
 interface T10FilterDropdownProps {
   icon: ReactNode;

@@ -5,7 +5,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Lozenge } from '@/components/ads';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-import { ChevronDown, Wallet, TrendingUp, X } from 'lucide-react';
+import { ChevronDown, Wallet, TrendingUp, X } from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 import { UserPicker } from '@/components/ui/user-picker';
 import { BusinessRequest } from '@/types/business-request';

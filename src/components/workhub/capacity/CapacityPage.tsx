@@ -3,7 +3,7 @@
  * Phase 11
  */
 
-import { BarChart3, Users, Clock, TrendingUp } from 'lucide-react';
+import { BarChart3, Users, Clock, TrendingUp } from '@/lib/atlaskit-icons';
 import { useDepartmentCapacity } from '@/hooks/workhub/useCapacityData';
 import { getUtilColor } from '@/components/workhub/shared/UtilizationBar';
 import { CommandCenterHeader } from '@/components/shared/CommandCenterHeader';

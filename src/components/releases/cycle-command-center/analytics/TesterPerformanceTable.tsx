@@ -5,7 +5,7 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Users, Trophy, TrendingUp, TrendingDown, Minus } from 'lucide-react';
+import { Users, Trophy, TrendingUp, TrendingDown, Minus } from '@/lib/atlaskit-icons';
 import { CATALYST_V5 } from '@/lib/catalyst-colors';
 import { useTesterPerformance, TesterPerformance } from '@/hooks/test-cycles/useCycleAnalytics';
 import { cn } from '@/lib/utils';

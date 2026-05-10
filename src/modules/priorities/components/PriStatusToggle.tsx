@@ -2,7 +2,7 @@
 // File: src/modules/priorities/components/PriStatusToggle.tsx
 // ============================================================
 
-import { Check } from 'lucide-react';
+import { Check } from '@/lib/atlaskit-icons';
 import type { PriItemStatus } from '../types';
 import { getStatusLabel, getStatusClass } from '../utils';
 import styles from '../styles/priorities.module.css';

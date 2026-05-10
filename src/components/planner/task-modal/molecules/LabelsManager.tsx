@@ -3,7 +3,7 @@
 // ============================================================================
 
 import React, { useState, useRef, useEffect } from 'react';
-import { Tag, Plus, Search, Check, Loader2 } from 'lucide-react';
+import { Tag, Plus, Search, Check, Loader2 } from '@/lib/atlaskit-icons';
 import { useLabels } from '../hooks/useLabels';
 import { useTaskLabels } from '../hooks/useTaskLabels';
 import { Label, LABEL_COLORS } from '../types/labels';

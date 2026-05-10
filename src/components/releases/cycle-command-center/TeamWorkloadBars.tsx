@@ -6,7 +6,7 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Users, AlertTriangle } from 'lucide-react';
+import { Users, AlertTriangle } from '@/lib/atlaskit-icons';
 import { Skeleton } from '@/components/ui/skeleton';
 import { CATALYST_V5 } from '@/lib/catalyst-colors';
 import { useCycleTeamWorkload } from '@/hooks/test-cycles/useCycleTeamWorkload';

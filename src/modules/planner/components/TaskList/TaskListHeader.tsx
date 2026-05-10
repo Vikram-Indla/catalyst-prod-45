@@ -3,7 +3,7 @@
  * Page title with quick stats
  */
 
-import { List, AlertCircle, PlayCircle, CheckCircle2 } from 'lucide-react';
+import { List, AlertCircle, PlayCircle, CheckCircle2 } from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 
 interface TaskListHeaderProps {

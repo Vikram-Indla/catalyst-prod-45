@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FileText, Plus, ExternalLink, ChevronDown, ChevronUp, BookOpen } from 'lucide-react';
+import { FileText, Plus, ExternalLink, ChevronDown, ChevronUp, BookOpen } from '@/lib/atlaskit-icons';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';

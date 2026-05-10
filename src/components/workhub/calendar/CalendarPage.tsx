@@ -9,7 +9,7 @@ import {
   ChevronLeft,
   ChevronRight,
   AlertTriangle,
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import { useCalendarEvents, useCalendarNavigation } from '@/hooks/workhub/useCalendarEvents';
 import { getMonthName, getEventsForDate, eventOverlapsMonth } from '@/lib/workhub/calendarHelpers';
 import { CommandCenterHeader } from '@/components/shared/CommandCenterHeader';

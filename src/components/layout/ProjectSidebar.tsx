@@ -16,7 +16,7 @@ import {
   FileText,
   Settings,
   Columns3,
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import { SidebarBase, SidebarConfig } from './SidebarBase';
 
 interface ProjectSidebarProps {

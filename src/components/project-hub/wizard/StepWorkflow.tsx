@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight } from '@/lib/atlaskit-icons';
 
 const DEFAULT_WORKFLOW = [
   { name: 'To Do', color: '#A3A3A3' },

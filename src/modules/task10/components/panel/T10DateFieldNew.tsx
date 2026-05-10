@@ -6,7 +6,7 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { ChevronDown, X, Calendar } from 'lucide-react';
+import { ChevronDown, X, Calendar } from '@/lib/atlaskit-icons';
 import { formatT10Date } from '../../utils';
 
 // Date presets

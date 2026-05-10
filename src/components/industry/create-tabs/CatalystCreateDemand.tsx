@@ -10,7 +10,7 @@ import { DepartmentSelect } from '@/components/business-requests/DepartmentSelec
 import { BusinessOwnerSelect } from '@/components/business-requests/BusinessOwnerSelect';
 import { useDepartments, useBusinessOwners, useDepartmentOwnerMappings, getOwnerIdForDepartment } from '@/hooks/useDepartmentsAndOwners';
 import { RichTextEditor } from '@/components/business-requests/RichTextEditor';
-import { FileText, Users, Building2, Briefcase, CalendarDays, Target } from 'lucide-react';
+import { FileText, Users, Building2, Briefcase, CalendarDays, Target } from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 
 // Unified quarter options - consistent with DemandDetailsViewTab

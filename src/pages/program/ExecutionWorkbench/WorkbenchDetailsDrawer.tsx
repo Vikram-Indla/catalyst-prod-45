@@ -13,7 +13,7 @@ import {
 import { Lozenge, type LozengeAppearance } from '@/components/ads';
 import { Button } from '@/components/ui/button';
 import { WorkItem, ItemStatus } from './types';
-import { ExternalLink, Calendar, User, Link2, X } from 'lucide-react';
+import { ExternalLink, Calendar, User, Link2, X } from '@/lib/atlaskit-icons';
 import { format } from 'date-fns';
 
 interface WorkbenchDetailsDrawerProps {

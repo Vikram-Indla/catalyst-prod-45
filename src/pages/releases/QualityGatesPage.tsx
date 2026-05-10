@@ -10,7 +10,7 @@ import {
   RefreshCw, Plus, Shield, TrendingUp, TrendingDown, Minus,
   MoreVertical, Edit, Trash2, History, Search, AlertCircle, ShieldCheck,
   ShieldAlert, ShieldOff, Calendar
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Lozenge } from '@/components/ads';

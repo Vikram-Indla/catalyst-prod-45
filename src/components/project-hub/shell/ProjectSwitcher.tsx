@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { Search, Star } from 'lucide-react';
+import { Search, Star } from '@/lib/atlaskit-icons';
 
 export interface ProjectEntry {
   key: string;

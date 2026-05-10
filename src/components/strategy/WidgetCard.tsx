@@ -4,7 +4,7 @@
  */
 
 import React from 'react';
-import { Maximize2, MoreHorizontal, LucideIcon } from 'lucide-react';
+import { Maximize2, MoreHorizontal, LucideIcon } from '@/lib/atlaskit-icons';
 
 interface WidgetCardProps {
   title: string;

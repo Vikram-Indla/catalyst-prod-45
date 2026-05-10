@@ -1,4 +1,4 @@
-import { Briefcase, FolderKanban } from 'lucide-react';
+import { Briefcase, FolderKanban } from '@/lib/atlaskit-icons';
 import { Lozenge, type LozengeAppearance } from '@/components/ads';
 import type { ObjectiveTier } from '../../types/objective.types';
 import { cn } from '@/lib/utils';

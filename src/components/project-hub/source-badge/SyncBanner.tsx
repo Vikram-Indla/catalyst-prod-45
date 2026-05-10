@@ -3,7 +3,7 @@
  * C3: Full-width strip below project tab bar. Fades out 200ms on dismiss.
  */
 import React, { useState, useEffect } from 'react';
-import { AlertTriangle } from 'lucide-react';
+import { AlertTriangle } from '@/lib/atlaskit-icons';
 
 interface SyncBannerProps {
   conflictCount: number;

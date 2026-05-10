@@ -1,6 +1,6 @@
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
-import { X } from 'lucide-react';
+import { X } from '@/lib/atlaskit-icons';
 
 export interface Filters {
   cycle: string;

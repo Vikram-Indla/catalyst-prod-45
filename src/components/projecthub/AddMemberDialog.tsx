@@ -2,7 +2,7 @@ import { useState, useMemo } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
-import { Search, UserPlus, Loader2 } from 'lucide-react';
+import { Search, UserPlus, Loader2 } from '@/lib/atlaskit-icons';
 import { toast } from 'sonner';
 
 interface Props {

@@ -4,7 +4,7 @@
  */
 
 import { useCallback } from 'react';
-import { Plus, Trash2, Upload, FileSpreadsheet } from 'lucide-react';
+import { Plus, Trash2, Upload, FileSpreadsheet } from '@/lib/atlaskit-icons';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';

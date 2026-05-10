@@ -3,7 +3,7 @@
  */
 
 import React from 'react';
-import { LucideIcon } from 'lucide-react';
+import { LucideIcon } from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 import { CATALYST_V5 } from '@/lib/catalyst-colors';
 import type { CycleViewTab } from '@/pages/releases/CycleCommandCenter';

@@ -5,7 +5,7 @@
 import { useState, useRef, useCallback, useMemo, useEffect } from 'react';
 import { CatalystPageHeader } from '@/components/shared/CatalystPageHeader';
 import { supabase } from '@/integrations/supabase/client';
-import { ArrowLeft, X, Minus, Plus, RotateCcw, Unlink, Sparkles, RefreshCw, Copy, ChevronRight } from 'lucide-react';
+import { ArrowLeft, X, Minus, Plus, RotateCcw, Unlink, Sparkles, RefreshCw, Copy, ChevronRight } from '@/lib/atlaskit-icons';
 import ReactMarkdown from 'react-markdown';
 import {
   Select,

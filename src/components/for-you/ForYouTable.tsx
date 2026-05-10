@@ -5,7 +5,7 @@
  */
 
 import React, { useState, useCallback, useRef, useEffect, useMemo } from 'react';
-import { Star, Paperclip, ChevronRight, ChevronDown } from 'lucide-react';
+import { Star, Paperclip, ChevronRight, ChevronDown } from '@/lib/atlaskit-icons';
 import { PriorityBars, normalisePriority } from '@/components/shared/PriorityIndicator';
 import { Checkbox } from '@/components/ui/checkbox';
 import { JiraIssueTypeIcon } from '@/components/shared/JiraIssueTypeIcon';

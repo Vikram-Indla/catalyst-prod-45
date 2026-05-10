@@ -24,7 +24,7 @@ import {
   Package,
   Siren,
   FolderKanban,
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 
 interface ItemsDropdownProps {
   trigger?: React.ReactNode;

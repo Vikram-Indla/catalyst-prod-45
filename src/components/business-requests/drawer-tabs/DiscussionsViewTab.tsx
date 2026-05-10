@@ -8,7 +8,7 @@ import { Avatar } from '@/components/ads';
 import { Card } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { format } from 'date-fns';
-import { Send, MessageSquare, AtSign } from 'lucide-react';
+import { Send, MessageSquare, AtSign } from '@/lib/atlaskit-icons';
 import { toast } from 'sonner';
 import {
   Popover,

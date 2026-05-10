@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, lazy, Suspense, ComponentType, useSyncExternalStore } from 'react';
-import { Menu } from 'lucide-react';
+import { Menu } from '@/lib/atlaskit-icons';
 import { useGlobalSearchStore } from '@/store/globalSearchStore';
 import { useNavBreakpoint } from '@/hooks/useNavBreakpoint';
 import { GlobalMobileDrawer } from './GlobalMobileDrawer';

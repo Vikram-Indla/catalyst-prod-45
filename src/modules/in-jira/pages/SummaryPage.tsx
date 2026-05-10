@@ -14,7 +14,7 @@ import {
   BarChart3,
   PieChart,
   Layers
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { ScrollArea } from '@/components/ui/scroll-area';

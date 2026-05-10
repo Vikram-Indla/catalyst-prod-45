@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Globe, Grid3X3, List, Package, Archive, Users, MoreHorizontal, ChevronRight } from 'lucide-react';
+import { Globe, Grid3X3, List, Package, Archive, Users, MoreHorizontal, ChevronRight } from '@/lib/atlaskit-icons';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { Tooltip } from '@/components/ads';

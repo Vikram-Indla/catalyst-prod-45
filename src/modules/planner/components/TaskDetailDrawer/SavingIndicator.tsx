@@ -4,7 +4,7 @@
  */
 
 import { cn } from '@/lib/utils';
-import { Loader2, Check } from 'lucide-react';
+import { Loader2, Check } from '@/lib/atlaskit-icons';
 
 export type SaveStatus = 'idle' | 'saving' | 'saved' | 'error';
 

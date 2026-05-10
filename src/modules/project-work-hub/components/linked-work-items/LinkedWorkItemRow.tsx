@@ -18,7 +18,7 @@
 import React from 'react';
 import Lozenge from '@atlaskit/lozenge';
 import Avatar from '@atlaskit/avatar';
-import { X } from 'lucide-react';
+import { X } from '@/lib/atlaskit-icons';
 import { PriorityBars, normalisePriority } from '@/components/shared/PriorityIndicator';
 import { WORK_ITEM_ICONS } from '../dialogs/story-detail-modules/constants';
 import { resolveAvatarUrl } from '@/lib/avatars';

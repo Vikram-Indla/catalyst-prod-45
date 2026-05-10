@@ -3,7 +3,7 @@ import { useKanbanBoard } from '@/hooks/useKanbanBoards';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { ArrowLeft, Download, RefreshCw, TrendingUp, Clock, BarChart3 } from 'lucide-react';
+import { ArrowLeft, Download, RefreshCw, TrendingUp, Clock, BarChart3 } from '@/lib/atlaskit-icons';
 
 export default function KanbanBoardAnalytics() {
   const { boardId, teamId, programId } = useParams<{ boardId: string; teamId?: string; programId?: string }>();

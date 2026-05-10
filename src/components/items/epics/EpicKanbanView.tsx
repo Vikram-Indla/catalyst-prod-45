@@ -3,7 +3,7 @@ import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import { Card } from '@/components/ui/card';
 import { Lozenge } from '@/components/ads';
 import { HealthBadge } from '@/components/shared/HealthBadge';
-import { MoreVertical } from 'lucide-react';
+import { MoreVertical } from '@/lib/atlaskit-icons';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';

@@ -2,7 +2,7 @@
  * GoalsListView — ECLIPSE D8: Dark mode parity
  */
 import { useState } from 'react';
-import { ChevronUp, ChevronDown } from 'lucide-react';
+import { ChevronUp, ChevronDown } from '@/lib/atlaskit-icons';
 import type { Goal } from '@/types/goals';
 
 interface Theme { id: string; title: string; color: string; }

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Layers } from 'lucide-react';
+import { Layers } from '@/lib/atlaskit-icons';
 
 export default function MasterPlan() {
   return (

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Upload, FileText, ChevronRight } from 'lucide-react';
+import { Upload, FileText, ChevronRight } from '@/lib/atlaskit-icons';
 import { useWikiDomains, useWikiCategories, useWikiCategoryPages } from '@/hooks/useWikiData';
 import { sectionHeaderStyle, DomainBadge, ConfidenceBadge, SkeletonArticleRow, SkeletonBlock, truncateStyle } from '@/components/wiki/WikiTokens';
 import { WikiUploadWizard } from '@/components/wiki/WikiUploadWizard';

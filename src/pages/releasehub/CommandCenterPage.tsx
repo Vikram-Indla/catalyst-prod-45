@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { Rocket, ArrowLeftRight, CheckSquare, FlaskConical, Sparkles, ChevronRight, CheckCircle2, XCircle, Minus, Clock } from 'lucide-react';
+import { Rocket, ArrowLeftRight, CheckSquare, FlaskConical, Sparkles, ChevronRight, CheckCircle2, XCircle, Minus, Clock } from '@/lib/atlaskit-icons';
 import { useReleases, useChanges, useCommandCenterKPIs, usePendingSignOffs, useProductionEvents } from '@/hooks/useReleaseHub';
 import { RH, CHG_STATUS_LABELS, CHG_STATUS_ORDER } from '@/constants/releasehub.design';
 import { useTheme } from '@/hooks/useTheme';

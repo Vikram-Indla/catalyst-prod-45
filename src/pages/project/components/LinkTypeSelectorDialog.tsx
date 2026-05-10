@@ -2,7 +2,7 @@
  * LinkTypeSelectorDialog - Step 1: Choose link type (Dependency or Risk)
  */
 
-import { Link2, AlertTriangle } from 'lucide-react';
+import { Link2, AlertTriangle } from '@/lib/atlaskit-icons';
 import {
   Dialog,
   DialogContent,

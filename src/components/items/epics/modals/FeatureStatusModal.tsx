@@ -11,7 +11,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Lozenge } from '@/components/ads';
 import { Progress } from '@/components/ui/progress';
-import { Search, ChevronRight } from 'lucide-react';
+import { Search, ChevronRight } from '@/lib/atlaskit-icons';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { FeatureDetailsPanel } from '@/components/items/features/FeatureDetailsPanel';

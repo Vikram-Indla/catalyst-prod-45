@@ -3,7 +3,7 @@
 // ============================================================================
 
 import React from 'react';
-import { Link2 } from 'lucide-react';
+import { Link2 } from '@/lib/atlaskit-icons';
 import { AddLinkForm, LinkItem, EmptyState } from '../../molecules';
 import { TaskLink } from '../../types';
 

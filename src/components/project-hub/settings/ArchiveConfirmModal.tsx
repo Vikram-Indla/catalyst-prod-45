@@ -1,4 +1,4 @@
-import { X, AlertTriangle } from 'lucide-react';
+import { X, AlertTriangle } from '@/lib/atlaskit-icons';
 import { useEffect } from 'react';
 
 interface ArchiveConfirmModalProps {

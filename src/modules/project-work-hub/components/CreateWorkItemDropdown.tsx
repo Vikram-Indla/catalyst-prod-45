@@ -1,5 +1,5 @@
 import React from 'react';
-import { Plus, ChevronDown, Zap, Bookmark, CheckSquare, Bug, AlertTriangle } from 'lucide-react';
+import { Plus, ChevronDown, Zap, Bookmark, CheckSquare, Bug, AlertTriangle } from '@/lib/atlaskit-icons';
 import { WorkItemType } from '../types';
 import { Button } from '@/components/ui/button';
 import {

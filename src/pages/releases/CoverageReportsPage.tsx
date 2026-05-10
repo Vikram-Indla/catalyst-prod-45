@@ -77,8 +77,8 @@ import {
   Sparkles,
   FileSpreadsheet,
   FileDown,
-} from 'lucide-react';
-import { Plus } from 'lucide-react';
+} from '@/lib/atlaskit-icons';
+import { Plus } from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 import { AddTestsToCoverageDialog } from '@/components/releases/coverage';
 

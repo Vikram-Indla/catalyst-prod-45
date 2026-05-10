@@ -5,7 +5,7 @@
  * - Supports user and group restrictions
  */
 import { useState } from 'react';
-import { Lock, Unlock, Plus, X, Shield, Eye, Edit } from 'lucide-react';
+import { Lock, Unlock, Plus, X, Shield, Eye, Edit } from '@/lib/atlaskit-icons';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Lozenge } from '@/components/ads';

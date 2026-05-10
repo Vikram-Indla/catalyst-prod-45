@@ -15,7 +15,7 @@ import {
   AlertCircle,
   Trash2,
   Check
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import {
   Sheet,
   SheetContent,

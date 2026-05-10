@@ -3,7 +3,7 @@
 // ============================================================================
 
 import React from 'react';
-import { Clock } from 'lucide-react';
+import { Clock } from '@/lib/atlaskit-icons';
 import { COLORS } from '../colors';
 
 interface HistoryItemProps {

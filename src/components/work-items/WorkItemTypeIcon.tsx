@@ -5,7 +5,7 @@
  */
 
 import React from 'react';
-import { FileText, CheckSquare, CircleDot, Circle } from 'lucide-react';
+import { FileText, CheckSquare, CircleDot, Circle } from '@/lib/atlaskit-icons';
 import { WorkItemType, TYPE_ICON_CONFIG } from '@/types/work-items';
 import { cn } from '@/lib/utils';
 

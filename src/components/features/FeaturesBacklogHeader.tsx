@@ -1,6 +1,6 @@
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { LayoutList, LayoutGrid, Plus, MoreVertical, Search, Grid3x3, Filter, TrendingUp, ArrowUpDown } from 'lucide-react';
+import { LayoutList, LayoutGrid, Plus, MoreVertical, Search, Grid3x3, Filter, TrendingUp, ArrowUpDown } from '@/lib/atlaskit-icons';
 import {
   DropdownMenu,
   DropdownMenuContent,

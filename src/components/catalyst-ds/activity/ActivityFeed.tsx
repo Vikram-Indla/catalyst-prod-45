@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { useMemo, useRef, useCallback, useEffect } from 'react';
 import { cn } from '@/lib/utils';
-import { History, Loader2 } from 'lucide-react';
+import { History, Loader2 } from '@/lib/atlaskit-icons';
 import type { CdsActivityItem, CdsSortOrder } from '../types';
 import type { JiraUserMap } from '../utils/jiraContent';
 import { ActivityItem } from './ActivityItem';

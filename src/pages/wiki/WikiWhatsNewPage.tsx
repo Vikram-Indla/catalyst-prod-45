@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ChevronRight } from 'lucide-react';
+import { ChevronRight } from '@/lib/atlaskit-icons';
 import { DomainBadge, sectionHeaderStyle, SkeletonBlock, truncateStyle } from '@/components/wiki/WikiTokens';
 import { useWikiWhatsNew } from '@/hooks/useWikiData';
 

@@ -20,7 +20,7 @@ import Modal, {
   ModalTransition,
 } from '@atlaskit/modal-dialog';
 import Button, { IconButton } from '@atlaskit/button/new';
-import { X } from 'lucide-react';
+import { X } from '@/lib/atlaskit-icons';
 import {
   useTimeInStatusMatrix,
   type TimeInStatusMatrixRow,

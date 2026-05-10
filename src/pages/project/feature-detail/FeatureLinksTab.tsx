@@ -2,7 +2,7 @@
  * FeatureLinksTab — Links and dependencies view for Feature detail page
  */
 
-import { Zap, FileText, Link2, ArrowUp, ArrowDown, Ban, ExternalLink } from 'lucide-react';
+import { Zap, FileText, Link2, ArrowUp, ArrowDown, Ban, ExternalLink } from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 import { Lozenge, type LozengeAppearance } from '@/components/ads';
 import { Button } from '@/components/ui/button';

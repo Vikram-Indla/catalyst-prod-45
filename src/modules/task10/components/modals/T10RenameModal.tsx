@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { X } from 'lucide-react';
+import { X } from '@/lib/atlaskit-icons';
 
 interface T10RenameModalProps {
   isOpen: boolean;

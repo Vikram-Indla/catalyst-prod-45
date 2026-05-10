@@ -4,7 +4,7 @@
 // ============================================================
 
 import { useState, useEffect } from 'react';
-import { X, Users } from 'lucide-react';
+import { X, Users } from '@/lib/atlaskit-icons';
 import {
   Dialog,
   DialogContent,

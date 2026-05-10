@@ -18,7 +18,7 @@ const FeatureDialog = lazy(() => import('@/components/forms/FeatureDialog').then
 import { Progress } from '@/components/ui/progress';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Plus, Search, Edit } from 'lucide-react';
+import { Plus, Search, Edit } from '@/lib/atlaskit-icons';
 import { PermissionGuard } from '@/components/shared/PermissionGuard';
 
 export default function Features() {

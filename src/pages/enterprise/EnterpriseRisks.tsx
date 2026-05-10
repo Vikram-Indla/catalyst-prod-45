@@ -2,7 +2,7 @@
 // Route: /enterprise/risks
 
 import { useState, useMemo } from 'react';
-import { Search, Filter, MoreVertical, Plus, Star, X, Check, Circle, Diamond } from 'lucide-react';
+import { Search, Filter, MoreVertical, Plus, Star, X, Check, Circle, Diamond } from '@/lib/atlaskit-icons';
 import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Tooltip } from 'recharts';
 import { useQuery } from '@tanstack/react-query';
 import { useRisks, RiskWithBR } from '@/hooks/risks/useRisks';

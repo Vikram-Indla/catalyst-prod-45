@@ -13,7 +13,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Search, List, Layers, Bug } from 'lucide-react';
+import { Search, List, Layers, Bug } from '@/lib/atlaskit-icons';
 import type { TestScopeFilters } from '../types';
 
 interface FilterOption {

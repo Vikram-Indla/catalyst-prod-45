@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ChevronDown, ChevronUp, Settings } from 'lucide-react';
+import { ChevronDown, ChevronUp, Settings } from '@/lib/atlaskit-icons';
 import type { Incident } from '@/types/release';
 
 interface IncidentModalSidebarProps {

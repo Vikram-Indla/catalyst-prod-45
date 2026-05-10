@@ -4,7 +4,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { ArrowLeft, RefreshCw, AlertTriangle, Scale } from 'lucide-react';
+import { ArrowLeft, RefreshCw, AlertTriangle, Scale } from '@/lib/atlaskit-icons';
 import { useEpicBalancingData } from '../hooks/useEpicBalancingData';
 import { EpicBalancingChart } from './EpicBalancingChart';
 import { EpicBalancingLegend } from './EpicBalancingLegend';

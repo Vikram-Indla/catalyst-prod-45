@@ -5,7 +5,7 @@
  */
 
 import { useState, useMemo } from 'react';
-import { ChevronDown, ChevronRight } from 'lucide-react';
+import { ChevronDown, ChevronRight } from '@/lib/atlaskit-icons';
 import { ProgressBar } from '../shared/ProgressBar';
 import { useStrategicThemes, useGoals } from '@/hooks/strategy/useStrategyData';
 

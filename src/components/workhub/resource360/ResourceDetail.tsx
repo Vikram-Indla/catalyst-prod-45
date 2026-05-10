@@ -7,7 +7,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import {
   ArrowLeft, Users, BarChart3, CheckCircle2, Clock,
   AlertTriangle, FileStack, Zap, AlertCircle, Mail,
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import { AvatarChip } from '@/components/workhub/shared/AvatarChip';
 import { DepartmentBadge } from '@/components/workhub/shared/DepartmentBadge';
 import { UtilizationBar } from '@/components/workhub/shared/UtilizationBar';

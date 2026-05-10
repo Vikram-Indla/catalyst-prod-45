@@ -1,6 +1,6 @@
 import { Avatar, Tooltip } from '@/components/ads';
 import { useWorkItemPresence } from '@/hooks/useWorkItemPresence';
-import { Eye, Pencil } from 'lucide-react';
+import { Eye, Pencil } from '@/lib/atlaskit-icons';
 
 interface WorkItemPresenceProps {
   workItemType: string;

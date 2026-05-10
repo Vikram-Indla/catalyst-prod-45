@@ -32,7 +32,7 @@ import {
   Trash2,
   Copy,
   Check
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import { useBusinessRequest, useUpdateBusinessRequest, useDeleteBusinessRequest, useDuplicateBusinessRequest } from '@/hooks/useBusinessRequests';
 import { PriorityPill } from './PriorityPill';
 import { PriorityTier } from '@/hooks/usePrioritizationConfig';
@@ -60,7 +60,7 @@ import { EAReviewTab } from './drawer-tabs/EAReviewTab';
 import { ScoringReviewTab } from './drawer-tabs/ScoringReviewTab';
 import { PlanningViewTab } from './drawer-tabs/PlanningViewTab';
 import { cn } from '@/lib/utils';
-import { Loader2 } from 'lucide-react';
+import { Loader2 } from '@/lib/atlaskit-icons';
 import { WorkItemStarButton } from '@/components/shared/WorkItemStarButton';
 
 // Debounce delay for auto-save (ms)

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { CircleUser } from 'lucide-react';
+import { CircleUser } from '@/lib/atlaskit-icons';
 import { supabase } from '@/integrations/supabase/client';
 import { getAvatarColor, getUserInitials } from '@/utils/avatarColor';
 import { Tooltip } from '@/components/ads';

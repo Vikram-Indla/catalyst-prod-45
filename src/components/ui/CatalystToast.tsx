@@ -1,4 +1,4 @@
-import { CheckCircle, XCircle, AlertTriangle, Info, X } from 'lucide-react';
+import { CheckCircle, XCircle, AlertTriangle, Info, X } from '@/lib/atlaskit-icons';
 import { toast as sonnerToast } from 'sonner';
 
 type ToastType = 'success' | 'error' | 'warning' | 'info';

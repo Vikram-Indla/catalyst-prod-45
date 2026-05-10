@@ -11,7 +11,7 @@ import '@/styles/resource-allocation-enterprise.css';
 import '@/styles/resource-allocation-override.css';
 import { cn } from '@/lib/utils';
 import { Skeleton } from '@/components/ui/skeleton';
-import { AlertCircle, Users, AlertTriangle, ChevronDown, ChevronUp, X } from 'lucide-react';
+import { AlertCircle, Users, AlertTriangle, ChevronDown, ChevronUp, X } from '@/lib/atlaskit-icons';
 import { Button } from '@/components/ui/button';
 import { useAnalyticsData } from './useAnalyticsData';
 import { useRunRateData, type RunRateResource } from './useRunRateData';

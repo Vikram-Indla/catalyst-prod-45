@@ -7,7 +7,7 @@ import { useState, useMemo } from 'react';
 import { CatalystPageHeader } from '@/components/shared/CatalystPageHeader';
 import { PageChrome } from '@/components/layout/PageChrome';
 import { Button } from '@/components/ui/button';
-import { Info, Download, RefreshCw, BarChart3, AlertTriangle, Eye, EyeOff } from 'lucide-react';
+import { Info, Download, RefreshCw, BarChart3, AlertTriangle, Eye, EyeOff } from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 import { useBudgetData, formatCurrency, formatFull } from '@/hooks/budget/useBudgetData';
 import type { BudgetAssignment, BudgetResource, DepartmentBudget } from '@/hooks/budget/useBudgetData';

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Search, Plus, MoreHorizontal } from 'lucide-react';
+import { Search, Plus, MoreHorizontal } from '@/lib/atlaskit-icons';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import {

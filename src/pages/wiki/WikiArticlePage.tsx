@@ -6,7 +6,7 @@ import {
   Star, ThumbsUp, ThumbsDown, ChevronRight, Clock, GitBranch, Sparkles,
   FileText, FileDown, Video, ShieldCheck, BookOpen, ArrowRight, History,
   Printer, Download, Link2, RotateCcw, ExternalLink, ChevronDown, X,
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { useQuery, useQueryClient } from '@tanstack/react-query';

@@ -3,7 +3,7 @@ import {
   FileText, Paperclip, Link as LinkIcon, MessageSquare,
   Upload, Download, Trash2, Clock, Users, History, 
   Plus, AlertTriangle, Check
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Avatar, Lozenge } from '@/components/ads';

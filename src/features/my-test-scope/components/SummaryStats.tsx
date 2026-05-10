@@ -6,7 +6,7 @@
 import React from 'react';
 import { cn } from '@/lib/utils';
 import { Card, CardContent } from '@/components/ui/card';
-import { CheckCircle, XCircle, AlertTriangle, Clock } from 'lucide-react';
+import { CheckCircle, XCircle, AlertTriangle, Clock } from '@/lib/atlaskit-icons';
 import type { TestScopeSummary } from '../types';
 
 interface SummaryStatsProps {

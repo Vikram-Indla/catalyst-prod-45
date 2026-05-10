@@ -23,7 +23,7 @@ import {
 } from '@/components/ui/select';
 import { toast } from 'sonner';
 import { getProjectLandingRoute } from '@/lib/workspaceContext';
-import { Search } from 'lucide-react';
+import { Search } from '@/lib/atlaskit-icons';
 
 interface CreateProjectDialogProps {
   open: boolean;

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { AlertTriangle, ExternalLink } from 'lucide-react';
+import { AlertTriangle, ExternalLink } from '@/lib/atlaskit-icons';
 import { AcceptedStory } from '@/types/backlog.types';
 import { SpendDrilldown } from './SpendDrilldown';
 

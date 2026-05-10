@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Calendar, RefreshCw } from 'lucide-react';
+import { Calendar, RefreshCw } from '@/lib/atlaskit-icons';
 import { Button } from '@/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';

@@ -8,7 +8,7 @@
  *   - Update STATUS_MAP labels to sentence-case strings exactly as Jira
  *     renders them: "In QA", "Ready for QA", "Done", "In UAT", etc.
  */
-import { ChevronDown } from 'lucide-react';
+import { ChevronDown } from '@/lib/atlaskit-icons';
 
 const STATUS_MAP: Record<string, { bg: string; text: string; label: string }> = {
   backlog:         { bg: 'var(--ds-border, #DFE1E6)', text: 'var(--ds-text, #253858)', label: 'Backlog' },

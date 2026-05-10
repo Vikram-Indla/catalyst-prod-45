@@ -4,7 +4,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Checkbox } from '@/components/ui/checkbox';
 import { Lozenge, type LozengeAppearance } from '@/components/ads';
 import { Progress } from '@/components/ui/progress';
-import { GripVertical } from 'lucide-react';
+import { GripVertical } from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';

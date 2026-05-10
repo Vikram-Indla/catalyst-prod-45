@@ -4,7 +4,7 @@ import {
   Server, Plus, Search, X, CheckCircle2, AlertTriangle, XCircle,
   HelpCircle, RefreshCw, ExternalLink, ChevronRight,
   Wrench, Power
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import { supabase, typedQuery, typedRpc } from '@/integrations/supabase/client';
 import { catalystToast } from '@/components/ui/CatalystToast';
 import { useTheme } from '@/hooks/useTheme';

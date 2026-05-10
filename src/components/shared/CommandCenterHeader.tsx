@@ -20,7 +20,7 @@
  */
 
 import React from 'react';
-import { RefreshCw } from 'lucide-react';
+import { RefreshCw } from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Tooltip } from '@/components/ads';

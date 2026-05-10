@@ -4,7 +4,7 @@
 // ============================================================
 
 import { useState, useMemo } from 'react';
-import { Search, X, Filter, ChevronDown, Users, Layers, Plus, ArrowRight, Columns3, Check } from 'lucide-react';
+import { Search, X, Filter, ChevronDown, Users, Layers, Plus, ArrowRight, Columns3, Check } from '@/lib/atlaskit-icons';
 import { useNavigate } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import type { PlannerFilters } from '../hooks/usePlannerSearch';

@@ -2,7 +2,7 @@
  * AllWorkToolbar — Filters, search, avatar stack, view toggle (V12 compliant)
  */
 import { useState, useRef, useEffect } from 'react';
-import { Search, ChevronDown, Check, X, LayoutGrid, Columns2, Loader2 } from 'lucide-react';
+import { Search, ChevronDown, Check, X, LayoutGrid, Columns2, Loader2 } from '@/lib/atlaskit-icons';
 import { useIssueTypes, useIssueStatuses } from '@/hooks/workhub/useWorkItems';
 import type { AllWorkFilters } from '@/pages/workhub/AllWork';
 

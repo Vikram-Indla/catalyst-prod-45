@@ -9,7 +9,7 @@ import {
   QUARTER_CONFIG,
   MILESTONE_CONDITION_CONFIG,
 } from '@/types/product-roadmap';
-import { Search, Filter, Check, X, ChevronDown, Info, Layers } from 'lucide-react';
+import { Search, Filter, Check, X, ChevronDown, Info, Layers } from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 import { Tooltip } from '@/components/ads';
 import {

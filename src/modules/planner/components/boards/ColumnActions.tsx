@@ -4,7 +4,7 @@
  */
 
 import { useState } from 'react';
-import { MoreHorizontal, Trash2, Palette, Check } from 'lucide-react';
+import { MoreHorizontal, Trash2, Palette, Check } from '@/lib/atlaskit-icons';
 import {
   DropdownMenu,
   DropdownMenuContent,

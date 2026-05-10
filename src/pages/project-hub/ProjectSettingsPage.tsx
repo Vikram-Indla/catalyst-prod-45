@@ -3,7 +3,7 @@ import { CatalystPageHeader } from '@/components/shared/CatalystPageHeader';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { ChevronRight, Settings } from 'lucide-react';
+import { ChevronRight, Settings } from '@/lib/atlaskit-icons';
 import { SettingsTabs, type SettingsTab } from '@/components/project-hub/settings/SettingsTabs';
 import { GeneralTab } from '@/components/project-hub/settings/GeneralTab';
 import { MembersTab } from '@/components/project-hub/settings/MembersTab';

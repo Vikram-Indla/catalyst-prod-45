@@ -4,7 +4,7 @@
 // ═══════════════════════════════════════════════════════════════════════════════
 
 import React from 'react';
-import { CheckCircle, TrendingUp, ArrowRight, XCircle } from 'lucide-react';
+import { CheckCircle, TrendingUp, ArrowRight, XCircle } from '@/lib/atlaskit-icons';
 import { useT10CompletedSummary } from '../../hooks/useT10Completed';
 
 export function T10CompletedSummaryCards() {

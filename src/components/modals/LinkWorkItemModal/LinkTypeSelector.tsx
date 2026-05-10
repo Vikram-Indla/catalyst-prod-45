@@ -4,7 +4,7 @@
 // =====================================================
 
 import React from 'react';
-import { Ban, AlertTriangle, Link2, ChevronUp, ChevronDown, Copy } from 'lucide-react';
+import { Ban, AlertTriangle, Link2, ChevronUp, ChevronDown, Copy } from '@/lib/atlaskit-icons';
 import { LinkType, LINK_TYPE_CONFIG } from '@/types/views';
 import { cn } from '@/lib/utils';
 

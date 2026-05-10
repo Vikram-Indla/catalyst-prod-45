@@ -7,7 +7,7 @@
 import React, { useState, useMemo } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { ChevronRight, ChevronDown, Layers, Loader2 } from 'lucide-react';
+import { ChevronRight, ChevronDown, Layers, Loader2 } from '@/lib/atlaskit-icons';
 import { supabase } from '@/integrations/supabase/client';
 import { useWorkItemsHierarchy } from '@/modules/project-work-hub/hooks/useWorkItems';
 import { WorkItemWithChildren, WorkItem } from '@/modules/project-work-hub/types';

@@ -3,7 +3,7 @@
  */
 
 import React, { useState } from 'react';
-import { Paperclip, Send } from 'lucide-react';
+import { Paperclip, Send } from '@/lib/atlaskit-icons';
 
 interface CatyInputAreaProps {
   onSend: (message: string) => void;

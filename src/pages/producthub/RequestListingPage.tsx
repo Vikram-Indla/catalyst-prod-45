@@ -32,7 +32,7 @@ import { JiraBulkActionBar } from '@/components/shared/JiraBulkActionBar';
 
 import type { Request, RequestStatus, Density } from '@/types/request';
 import { getPriorityLevel, STATUS_DISPLAY, getAvatarColor, getInitials } from '@/types/request';
-import { Search, X, Plus, Download, Calendar, Clock, LayoutGrid } from 'lucide-react';
+import { Search, X, Plus, Download, Calendar, Clock, LayoutGrid } from '@/lib/atlaskit-icons';
 import { PriorityBars } from '@/components/shared/PriorityIndicator';
 import { CatalystPageHeader } from '@/components/shared/CatalystPageHeader';
 import { ProductChromeBand } from '@/components/product-hub/ProductChromeBand';

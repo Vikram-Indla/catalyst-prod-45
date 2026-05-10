@@ -3,7 +3,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useWikiLearningPaths } from '@/hooks/useWikiHub';
 import { useTheme } from '@/hooks/useTheme';
-import { GraduationCap, ChevronRight, Check, Sparkles } from 'lucide-react';
+import { GraduationCap, ChevronRight, Check, Sparkles } from '@/lib/atlaskit-icons';
 
 const F = {
   sora: "'Sora', sans-serif",

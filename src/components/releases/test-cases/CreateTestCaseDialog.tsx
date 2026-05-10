@@ -31,7 +31,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { toast } from 'sonner';
-import { Loader2 } from 'lucide-react';
+import { Loader2 } from '@/lib/atlaskit-icons';
 import type { PrefilledTestCase } from './utils';
 
 // Zod schema for validation

@@ -29,7 +29,7 @@ import {
   Maximize2, 
   Minimize2,
   MoreVertical
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 
 interface EnterpriseDrawerShellProps {

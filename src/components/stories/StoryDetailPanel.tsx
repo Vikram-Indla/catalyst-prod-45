@@ -12,7 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Lozenge, type LozengeAppearance } from '@/components/ads';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { toast } from 'sonner';
-import { Edit2, Save, Calendar, User, Flag, MoreVertical, Bell, MessageSquare, History, Link as LinkIcon, Copy, ArrowDown, Trash2 } from 'lucide-react';
+import { Edit2, Save, Calendar, User, Flag, MoreVertical, Bell, MessageSquare, History, Link as LinkIcon, Copy, ArrowDown, Trash2 } from '@/lib/atlaskit-icons';
 import { WorkItemPresence } from '@/components/work-items/WorkItemPresence';
 import { WorkItemWatchers } from '@/components/work-items/WorkItemWatchers';
 import { WorkItemVersionsSection } from '@/components/work-items/WorkItemVersionsSection';

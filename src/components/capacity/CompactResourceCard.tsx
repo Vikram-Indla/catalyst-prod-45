@@ -10,7 +10,7 @@
 
 import { useMemo } from 'react';
 import { cn } from '@/lib/utils';
-import { AlertTriangle, Clock } from 'lucide-react';
+import { AlertTriangle, Clock } from '@/lib/atlaskit-icons';
 import { 
   getAssignmentTheme, 
   getAllocationTheme,

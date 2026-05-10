@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { Search, LayoutGrid, List, Plus, Package, Download, Clock, AlertTriangle } from 'lucide-react';
+import { Search, LayoutGrid, List, Plus, Package, Download, Clock, AlertTriangle } from '@/lib/atlaskit-icons';
 import { useReleaseSummary, useFreezeWindows } from '@/hooks/useReleaseHub';
 import { RH } from '@/constants/releasehub.design';
 import { useTheme } from '@/hooks/useTheme';

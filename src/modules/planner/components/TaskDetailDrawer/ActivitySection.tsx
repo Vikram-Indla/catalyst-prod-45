@@ -4,7 +4,7 @@
 // ============================================================
 
 import { useState, useEffect } from 'react';
-import { MessageSquare, Send, History, ListFilter } from 'lucide-react';
+import { MessageSquare, Send, History, ListFilter } from '@/lib/atlaskit-icons';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { formatDistanceToNow } from 'date-fns';

@@ -2,7 +2,7 @@
  * ArchiveConfirmDialog — Confirmation before archiving a work item
  */
 import { useEffect, useRef } from 'react';
-import { Archive } from 'lucide-react';
+import { Archive } from '@/lib/atlaskit-icons';
 import type { KanbanThemeTokens } from '../kanban-tokens';
 
 interface Props {

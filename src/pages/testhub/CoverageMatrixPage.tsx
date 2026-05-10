@@ -11,7 +11,7 @@ import {
   LayoutGrid, ChevronDown, ChevronRight, CheckCircle2, XCircle,
   AlertTriangle, Clock, RefreshCw, FileText, Target, Download,
   Flame, Search, Filter, Plus, ArrowRight, ExternalLink,
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import { supabase, typedQuery, typedRpc } from '@/integrations/supabase/client';
 import { catalystToast } from '@/components/ui/CatalystToast';
 import { CatalystPageHeader } from '@/components/shared/CatalystPageHeader';

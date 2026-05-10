@@ -8,7 +8,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { logRequestAudit } from '@/lib/requestAudit';
-import { Upload, Paperclip, Download, Pin, PinOff, Trash2 } from 'lucide-react';
+import { Upload, Paperclip, Download, Pin, PinOff, Trash2 } from '@/lib/atlaskit-icons';
 
 interface DetailTabAttachmentsProps {
   requestId: string;

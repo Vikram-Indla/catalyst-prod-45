@@ -14,7 +14,7 @@ import { Progress } from '@/components/ui/progress';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { format, startOfQuarter, endOfQuarter, addQuarters, differenceInDays, parseISO, isSameQuarter } from 'date-fns';
 import { cn } from '@/lib/utils';
-import { Calendar, Filter, ChevronRight, Layers, Target, TrendingUp, AlertCircle } from 'lucide-react';
+import { Calendar, Filter, ChevronRight, Layers, Target, TrendingUp, AlertCircle } from '@/lib/atlaskit-icons';
 
 export default function PortfolioRoadmap() {
   const { selectedProgramId, selectedProjectId } = useNavigation();

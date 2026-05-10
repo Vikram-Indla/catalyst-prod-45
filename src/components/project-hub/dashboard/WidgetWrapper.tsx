@@ -32,7 +32,7 @@ import {
   Plus,
   Download,
   Focus,
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import { IconButton as AkIconButton } from '@atlaskit/button/new';
 import Tooltip from '@atlaskit/tooltip';
 import { draggable, dropTargetForElements } from '@atlaskit/pragmatic-drag-and-drop/element/adapter';

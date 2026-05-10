@@ -16,7 +16,7 @@ import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Lozenge } from '@/components/ads';
-import { Loader2, Database, Play } from 'lucide-react';
+import { Loader2, Database, Play } from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 import type { DataRowSelection } from '@/hooks/test-management/useCreateRunWithDataRows';
 

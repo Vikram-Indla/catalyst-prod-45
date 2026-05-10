@@ -10,7 +10,7 @@ import { useAuth } from '@/hooks/useAuth';
 import {
   MessageSquare, History, Clock, Paperclip, FileText,
   ArrowRight, Loader2, AlertCircle, Send,
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import { formatDistanceToNow } from 'date-fns';
 
 type ActivityFilter = 'all' | 'comments' | 'history';

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { X } from 'lucide-react';
+import { X } from '@/lib/atlaskit-icons';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 

@@ -5,7 +5,7 @@
  */
 
 import { useEffect } from 'react';
-import { X, ChevronLeft, ChevronRight } from 'lucide-react';
+import { X, ChevronLeft, ChevronRight } from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 import { format, parseISO, getISOWeek } from 'date-fns';
 import { useAllocationDrawer } from '@/hooks/useAllocationDrawer';
@@ -13,7 +13,7 @@ import type { AllocationResource, Assignment, WeeklyAllocation, WeekColumn, Visu
 import { DEPARTMENT_GRADIENTS, ASSIGNMENT_COLORS } from '@/types/resource-allocation.types';
 import { getVisualState, isCellEditable, getAllocationForCell, getTotalForWeek } from '@/utils/allocation.utils';
 import { Button } from '@/components/ui/button';
-import { Loader2 } from 'lucide-react';
+import { Loader2 } from '@/lib/atlaskit-icons';
 
 interface AllocationDrawerProps {
   resource: AllocationResource;

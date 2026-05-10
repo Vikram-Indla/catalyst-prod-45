@@ -27,7 +27,7 @@ import {
   ChevronDown,
   AlertTriangle,
   Calendar,
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import { token } from '@atlaskit/tokens';
 import Tabs, { Tab, TabList, TabPanel } from '@atlaskit/tabs';
 

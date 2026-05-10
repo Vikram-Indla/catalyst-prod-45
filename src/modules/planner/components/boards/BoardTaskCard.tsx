@@ -12,7 +12,7 @@
 
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { AlertTriangle, Calendar } from 'lucide-react';
+import { AlertTriangle, Calendar } from '@/lib/atlaskit-icons';
 import type { BoardTask } from '../../types/planner-boards';
 import { cn } from '@/lib/utils';
 import { format, parseISO, isToday, isTomorrow, isPast } from 'date-fns';

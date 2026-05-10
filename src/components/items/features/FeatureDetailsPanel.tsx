@@ -29,7 +29,7 @@ import {
   FileText,
   Ban,
   X,
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import { useFeatureProgress } from '@/hooks/useFeatureProgress';
 import { useProjects } from '@/hooks/useProjects';
 import { WorkItemPresence } from '@/components/work-items/WorkItemPresence';

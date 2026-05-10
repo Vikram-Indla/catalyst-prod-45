@@ -4,7 +4,7 @@
 // ============================================================================
 
 import React from 'react';
-import { CircleUser } from 'lucide-react';
+import { CircleUser } from '@/lib/atlaskit-icons';
 
 interface AvatarProps {
   initials: string;

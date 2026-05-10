@@ -21,7 +21,7 @@
  *   Status pill    sentence case, weight 500 (NOT uppercase/700)
  */
 import React, { useState } from 'react';
-import { Eye, Plus, Settings, MoreHorizontal, Trash2, ChevronDown, ChevronRight, Zap } from 'lucide-react';
+import { Eye, Plus, Settings, MoreHorizontal, Trash2, ChevronDown, ChevronRight, Zap } from '@/lib/atlaskit-icons';
 import { JiraStatusLozenge } from '@/components/ui/JiraStatusLozenge';
 import { WorkItemTypeIcon } from '@/components/icons/WorkItemTypeIcon';
 import { useWorkItemChildren, useUpdateWorkItemStatus } from '@/hooks/useProjectListItems';

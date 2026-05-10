@@ -3,7 +3,7 @@
  * Uses awCard/awCardHeader/awCardBody classes from allwork.css
  */
 import { useState, useCallback, useEffect } from 'react';
-import { ChevronDown, ChevronRight, Link2, Send } from 'lucide-react';
+import { ChevronDown, ChevronRight, Link2, Send } from '@/lib/atlaskit-icons';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import { StatusLozenge } from '@/components/ui/StatusLozenge';
 import { useAuth } from '@/hooks/useAuth';

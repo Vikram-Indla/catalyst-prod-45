@@ -2,7 +2,7 @@
  * ThemeItemLinker — Popover to link unlinked work items to a theme
  */
 import { useState, useRef, useEffect } from 'react';
-import { Search, Link2 } from 'lucide-react';
+import { Search, Link2 } from '@/lib/atlaskit-icons';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import toast from 'react-hot-toast';

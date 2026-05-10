@@ -10,7 +10,7 @@ import {
   Plus, 
   Package,
   Loader2
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { BacklogItem, BacklogMeta } from '../types';
 import { Button } from '@/components/ui/button';
-import { X, Search } from 'lucide-react';
+import { X, Search } from '@/lib/atlaskit-icons';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { cn } from '@/lib/utils';

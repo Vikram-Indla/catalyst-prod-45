@@ -6,7 +6,7 @@
 import '@/styles/workstreams.css';
 import { useState, useMemo } from 'react';
 import { useProfileAvatars } from '@/hooks/useProfileAvatars';
-import { X, Check, ChevronRight, Search, Crown, Info, Users } from 'lucide-react';
+import { X, Check, ChevronRight, Search, Crown, Info, Users } from '@/lib/atlaskit-icons';
 import { useCreateWorkstream, useAddWorkstreamMember } from '../../hooks/usePlannerWorkstreams';
 import { useResourceInventory, Resource } from '../../hooks/useResourceInventory';
 import { catalystToast } from '@/lib/catalystToast';

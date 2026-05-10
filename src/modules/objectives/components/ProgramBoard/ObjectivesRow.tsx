@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Target, Plus } from 'lucide-react';
+import { Target, Plus } from '@/lib/atlaskit-icons';
 import { Button } from '@/components/ui/button';
 import { useObjectives } from '@/hooks/useObjectives';
 import { CreateObjectiveDialogV2 } from '@/modules/okr-v2/components/CreateObjectiveDialogV2';

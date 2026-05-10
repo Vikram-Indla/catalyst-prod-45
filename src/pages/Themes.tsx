@@ -11,7 +11,7 @@ import { ImportDialog } from '@/components/shared/ImportDialog';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Plus, Search, Edit } from 'lucide-react';
+import { Plus, Search, Edit } from '@/lib/atlaskit-icons';
 import { exportToCSV } from '@/lib/exportUtils';
 import { useToast } from '@/hooks/use-toast';
 import { CommentsSection } from '@/components/shared/CommentsSection';

@@ -2,7 +2,7 @@
  * IdeationAnalyticsView — Analytics dashboard computed from real ph_ideas data
  */
 import React, { useMemo } from 'react';
-import { ClipboardList, BarChart3, RefreshCw, Sparkles, Rocket } from 'lucide-react';
+import { ClipboardList, BarChart3, RefreshCw, Sparkles, Rocket } from '@/lib/atlaskit-icons';
 import type { Idea } from './ideation-data';
 import { useTheme } from '@/hooks/useTheme';
 import { DK, LK } from '@/utils/dark-mode-styles';

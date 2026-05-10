@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { AlertTriangle } from 'lucide-react';
+import { AlertTriangle } from '@/lib/atlaskit-icons';
 import { RH } from '@/constants/releasehub.design';
 import { useLinkWorkItem } from '@/hooks/useReleaseHub';
 

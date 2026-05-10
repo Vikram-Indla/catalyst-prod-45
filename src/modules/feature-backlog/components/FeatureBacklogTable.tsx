@@ -8,7 +8,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Lozenge, type LozengeAppearance } from '@/components/ads';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { ChevronLeft, ChevronRight, ArrowUpDown, ArrowUp, ArrowDown } from 'lucide-react';
+import { ChevronLeft, ChevronRight, ArrowUpDown, ArrowUp, ArrowDown } from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 import { formatDistanceToNow, format } from 'date-fns';
 import type { FeatureBacklogItem } from '../types';

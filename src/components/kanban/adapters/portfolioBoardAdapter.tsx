@@ -26,7 +26,7 @@
  *                - raw        ← full EpicRow
  */
 import type { ReactNode } from 'react';
-import { Zap } from 'lucide-react';
+import { Zap } from '@/lib/atlaskit-icons';
 import type { KanbanColumnDef } from '../kanban-tokens';
 import type { BoardIssue } from '../kanban-types';
 import type {

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Filter, X, Calendar as CalendarIcon } from 'lucide-react';
+import { Filter, X, Calendar as CalendarIcon } from '@/lib/atlaskit-icons';
 import { Button } from '@/components/ui/button';
 import { Lozenge } from '@/components/ads';
 import {

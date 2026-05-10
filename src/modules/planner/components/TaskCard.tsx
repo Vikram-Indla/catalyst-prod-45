@@ -4,7 +4,7 @@
 // ============================================================
 
 import { useMemo, useState } from 'react';
-import { AlertTriangle, Calendar, Link2, MessageSquare, Paperclip, MoreVertical, Pencil, Copy, Trash2, ArrowUp, ArrowDown } from 'lucide-react';
+import { AlertTriangle, Calendar, Link2, MessageSquare, Paperclip, MoreVertical, Pencil, Copy, Trash2, ArrowUp, ArrowDown } from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 import type { PlannerTask, TaskPriority } from '../types';
 import { motion } from 'framer-motion';

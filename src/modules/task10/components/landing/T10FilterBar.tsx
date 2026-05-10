@@ -4,7 +4,7 @@
 // ═══════════════════════════════════════════════════════════════════════════════
 
 import React from 'react';
-import { X } from 'lucide-react';
+import { X } from '@/lib/atlaskit-icons';
 import { T10LabelFilter } from './T10LabelFilter';
 import { T10AssigneeFilter } from './T10AssigneeFilter';
 import { T10DateRangeFilter } from './T10DateRangeFilter';

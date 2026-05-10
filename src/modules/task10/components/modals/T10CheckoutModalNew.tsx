@@ -6,7 +6,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { Zap, X, Check, CheckCircle } from 'lucide-react';
+import { Zap, X, Check, CheckCircle } from '@/lib/atlaskit-icons';
 import { useCheckoutT10Week, useT10CreateWeek, getCurrentWeekRange } from '../../hooks';
 import type { T10ItemFull } from '../../types';
 

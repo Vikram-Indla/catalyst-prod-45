@@ -3,7 +3,7 @@
 // ============================================================
 
 import { useState, useRef } from 'react';
-import { Plus } from 'lucide-react';
+import { Plus } from '@/lib/atlaskit-icons';
 import styles from '../styles/priorities.module.css';
 
 interface PriQuickAddProps {

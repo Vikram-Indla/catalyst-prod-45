@@ -11,7 +11,7 @@ import {
   TrendingDown,
   Clock,
   BarChart3,
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 
 /** Execution history item shape for UI display */

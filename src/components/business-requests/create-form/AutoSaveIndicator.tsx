@@ -1,4 +1,4 @@
-import { Check, Loader2, AlertCircle } from 'lucide-react';
+import { Check, Loader2, AlertCircle } from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 
 export type AutoSaveStatus = 'idle' | 'saving' | 'saved' | 'error';

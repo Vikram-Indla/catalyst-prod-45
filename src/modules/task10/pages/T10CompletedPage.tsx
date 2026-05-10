@@ -5,7 +5,7 @@
 
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft } from '@/lib/atlaskit-icons';
 import { T10CompletedSummaryCards } from '../components/completed/T10CompletedSummaryCards';
 import { T10CompletedFilters } from '../components/completed/T10CompletedFilters';
 import { T10CompletedWeeksTable } from '../components/completed/T10CompletedWeeksTable';

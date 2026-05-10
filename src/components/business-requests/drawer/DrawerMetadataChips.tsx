@@ -3,7 +3,7 @@
  * Catalyst Design System: Champagne (#D4B896), Bronze (#8B7355), Olive (#5C7C5C)
  */
 
-import { Star, Hash } from 'lucide-react';
+import { Star, Hash } from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 import { getTierDisplayInfo, PriorityTier } from '@/hooks/usePrioritizationConfig';
 

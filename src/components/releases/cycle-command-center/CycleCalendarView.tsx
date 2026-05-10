@@ -8,7 +8,7 @@
 import React, { useMemo } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight } from '@/lib/atlaskit-icons';
 import { CATALYST_V5 } from '@/lib/catalyst-colors';
 import { 
   useCycleExecutionItems, 

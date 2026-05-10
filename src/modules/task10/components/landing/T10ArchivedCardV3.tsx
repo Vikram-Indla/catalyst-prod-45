@@ -4,7 +4,7 @@
 // ═══════════════════════════════════════════════════════════════════════════════
 
 import React from 'react';
-import { Archive, RotateCcw, Trash2 } from 'lucide-react';
+import { Archive, RotateCcw, Trash2 } from '@/lib/atlaskit-icons';
 import type { T10ListCardView } from '../../types/listCards';
 
 interface T10ArchivedCardV3Props {

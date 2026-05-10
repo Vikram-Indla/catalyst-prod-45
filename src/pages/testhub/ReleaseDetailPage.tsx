@@ -9,7 +9,7 @@ import {
   AlertTriangle, Shield, Users, Milestone as MilestoneIcon,
   RefreshCw, Bug, ChevronRight, Beaker, Archive, Monitor,
   Rocket, Settings2,
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import { useRelease, useReleaseCycles } from '@/hooks/testhub/useReleases';
 import { useTheme } from '@/hooks/useTheme';
 import { format } from 'date-fns';

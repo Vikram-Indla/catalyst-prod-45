@@ -3,7 +3,7 @@
  */
 
 import React, { useState, useEffect, useMemo } from 'react';
-import { Info, AlertTriangle, CheckCircle } from 'lucide-react';
+import { Info, AlertTriangle, CheckCircle } from '@/lib/atlaskit-icons';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from '@/components/ui/alert';

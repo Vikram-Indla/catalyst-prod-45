@@ -12,7 +12,7 @@ import {
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-import { ExternalLink, Copy, ArrowUp, ArrowDown, MoveVertical, Calendar, Trash2 } from 'lucide-react';
+import { ExternalLink, Copy, ArrowUp, ArrowDown, MoveVertical, Calendar, Trash2 } from '@/lib/atlaskit-icons';
 
 interface FeatureContextMenuProps {
   featureId: string;

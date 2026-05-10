@@ -3,7 +3,7 @@
 import React from 'react';
 import { cn } from '@/lib/utils';
 import { Tooltip } from '@/components/ads';
-import { ChevronUp, ChevronDown, Lock } from 'lucide-react';
+import { ChevronUp, ChevronDown, Lock } from '@/lib/atlaskit-icons';
 import { BusinessRequestRoadmapItem, PLATFORM_INFO } from '@/types/roadmapTypes';
 import { SortOrder, ROW_HEIGHT, HEADER_HEIGHT } from './roadmapConstants';
 import { formatDisplayKey } from './roadmapTimeUtils';

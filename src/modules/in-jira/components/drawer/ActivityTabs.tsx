@@ -16,7 +16,7 @@ import {
   MoreHorizontal,
   Pencil,
   Trash2
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';

@@ -29,7 +29,7 @@ import {
   Sparkles,
   Bell,
   Loader2,
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import { format, addDays } from 'date-fns';
 import { useApplyTemplate } from '@/hooks/templates';
 import type { CycleTemplate, TemplateConfig, TemplateMilestone } from '@/types/template.types';

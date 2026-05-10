@@ -7,7 +7,7 @@
  * + aria-labelledby are all provided by Atlaskit automatically.
  */
 import { token } from '@atlaskit/tokens';
-import { RotateCcw } from 'lucide-react';
+import { RotateCcw } from '@/lib/atlaskit-icons';
 import {
   Modal,
   ModalHeader,

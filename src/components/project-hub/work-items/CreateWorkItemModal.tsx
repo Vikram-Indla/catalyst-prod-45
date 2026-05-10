@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { createWorkItem } from '@/services/workItemService';
-import { X, ArrowUp, ArrowRight, ArrowDown, ChevronsUp, Calendar, Search, ChevronDown } from 'lucide-react';
+import { X, ArrowUp, ArrowRight, ArrowDown, ChevronsUp, Calendar, Search, ChevronDown } from '@/lib/atlaskit-icons';
 import { toast } from 'sonner';
 
 // ─── Types ────────────────────────────────────────────────

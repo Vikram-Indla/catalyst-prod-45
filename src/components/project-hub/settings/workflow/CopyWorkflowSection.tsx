@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { Copy, X } from 'lucide-react';
+import { Copy, X } from '@/lib/atlaskit-icons';
 
 interface CopyWorkflowSectionProps {
   projectId: string;

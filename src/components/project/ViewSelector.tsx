@@ -5,7 +5,7 @@
 
 import React from 'react';
 import { useNavigate, useLocation, useSearchParams } from 'react-router-dom';
-import { Map, Kanban, Calendar, FlaskConical } from 'lucide-react';
+import { Map, Kanban, Calendar, FlaskConical } from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 
 interface ViewSelectorProps {

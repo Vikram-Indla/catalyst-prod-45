@@ -2,7 +2,7 @@
  * CreateTagModal — Create and edit tags with color picker
  */
 import { useState, useEffect } from 'react';
-import { X, Tags, Palette, Hash, AlertCircle } from 'lucide-react';
+import { X, Tags, Palette, Hash, AlertCircle } from '@/lib/atlaskit-icons';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { catalystToast } from '@/components/ui/CatalystToast';
 

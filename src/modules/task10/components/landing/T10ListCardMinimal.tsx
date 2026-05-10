@@ -4,7 +4,7 @@
 // ═══════════════════════════════════════════════════════════════════════════════
 
 import React, { useState } from 'react';
-import { MoreHorizontal, Pencil, Trash2, ChevronDown, ChevronUp, Play } from 'lucide-react';
+import { MoreHorizontal, Pencil, Trash2, ChevronDown, ChevronUp, Play } from '@/lib/atlaskit-icons';
 import { useNavigate } from 'react-router-dom';
 import { useT10WeekHistory, useT10CreateWeek, getCurrentWeekRange } from '../../hooks';
 import { formatT10Date, getT10Progress } from '../../utils';

@@ -9,7 +9,7 @@ import { useQuery } from '@tanstack/react-query';
 import Avatar from '@atlaskit/avatar';
 import { token } from '@atlaskit/tokens';
 import { supabase } from '@/integrations/supabase/client';
-import { Check, Search, UserX } from 'lucide-react';
+import { Check, Search, UserX } from '@/lib/atlaskit-icons';
 import { resolveAvatarUrl } from '@/lib/avatars';
 
 export interface AssigneeOption {

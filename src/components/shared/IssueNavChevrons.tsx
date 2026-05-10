@@ -23,7 +23,7 @@
  *   - any future ad-hoc chevron buttons
  */
 import React from 'react';
-import { ChevronUp, ChevronDown } from 'lucide-react';
+import { ChevronUp, ChevronDown } from '@/lib/atlaskit-icons';
 
 export interface IssueNavChevronsProps {
   onPrev?: () => void;

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { X, Library } from 'lucide-react';
+import { X, Library } from '@/lib/atlaskit-icons';
 import { StepsEditor, Step, StepAttachment } from './StepsEditor';
 import { SharedStepsModal } from './SharedStepsModal';
 import { supabase, typedQuery } from '@/integrations/supabase/client';

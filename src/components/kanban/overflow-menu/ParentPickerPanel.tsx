@@ -6,7 +6,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { Search, X } from 'lucide-react';
+import { Search, X } from '@/lib/atlaskit-icons';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import type { KanbanThemeTokens } from '../kanban-tokens';
 

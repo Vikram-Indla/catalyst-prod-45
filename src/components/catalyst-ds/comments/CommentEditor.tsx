@@ -27,7 +27,7 @@ import {
   Redo2,
   AtSign,
   Loader2,
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import type { CdsUser, CdsQuickReply } from '../types';
 
 export interface CommentEditorProps {

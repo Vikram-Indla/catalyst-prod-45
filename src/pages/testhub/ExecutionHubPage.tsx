@@ -10,7 +10,7 @@ import { useNavigate } from 'react-router-dom';
 import {
   Play, CheckCircle2, XCircle, AlertTriangle, Clock,
   RefreshCw, ChevronRight, Zap, BarChart3, Target, Bug,
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { EmptyState } from '@/components/ui/EmptyState';
 

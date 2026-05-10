@@ -1,5 +1,5 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Download, FileSpreadsheet, FileText, FileJson } from 'lucide-react';
+import { Download, FileSpreadsheet, FileText, FileJson } from '@/lib/atlaskit-icons';
 import type { ProjectListItem } from '@/types/projecthub';
 import { toast } from 'sonner';
 

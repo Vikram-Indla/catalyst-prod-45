@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { BookOpen } from 'lucide-react';
+import { BookOpen } from '@/lib/atlaskit-icons';
 import { KBPanel } from '@/components/kb/KBPanel';
 
 const HUB_TABS = [

@@ -14,7 +14,7 @@ import {
   RemoveFormatting,
   ChevronDown,
   Type
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 import {
   DropdownMenu,

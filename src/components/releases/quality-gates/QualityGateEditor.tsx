@@ -11,7 +11,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import { Lozenge } from '@/components/ads';
-import { Plus, Trash2, GripVertical, Shield, ShieldCheck, ShieldAlert } from 'lucide-react';
+import { Plus, Trash2, GripVertical, Shield, ShieldCheck, ShieldAlert } from '@/lib/atlaskit-icons';
 import {
   useReleaseQualityGates,
   useCreateQualityGate,

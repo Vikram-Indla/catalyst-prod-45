@@ -15,7 +15,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import Lozenge from '@atlaskit/lozenge';
-import { Check } from 'lucide-react';
+import { Check } from '@/lib/atlaskit-icons';
 import { token } from '@atlaskit/tokens';
 import { STATUS_OPTION_GROUPS } from '../../dialogs/story-detail-modules/constants';
 

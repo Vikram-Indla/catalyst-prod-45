@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ArrowUpDown, ArrowUp, ArrowDown } from 'lucide-react';
+import { ArrowUpDown, ArrowUp, ArrowDown } from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 
 export type SortDirection = 'asc' | 'desc' | null;

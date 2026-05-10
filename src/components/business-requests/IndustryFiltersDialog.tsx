@@ -4,7 +4,7 @@ import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-import { ChevronUp, ChevronDown } from 'lucide-react';
+import { ChevronUp, ChevronDown } from '@/lib/atlaskit-icons';
 import { DELIVERY_PLATFORM_OPTIONS } from '@/types/business-request';
 import { useProcessSteps } from '@/contexts/ProcessStepsContext';
 

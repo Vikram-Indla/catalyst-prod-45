@@ -4,7 +4,7 @@
 
 import { cn } from '@/lib/utils';
 import { Lozenge } from '@/components/ads';
-import { AlertTriangle, Clock, User, Layers } from 'lucide-react';
+import { AlertTriangle, Clock, User, Layers } from '@/lib/atlaskit-icons';
 import { ExecutionTestCase } from '@/data/testExecutionData';
 
 interface ExecutionHeaderProps {

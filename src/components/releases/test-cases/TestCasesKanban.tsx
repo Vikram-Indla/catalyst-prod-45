@@ -12,7 +12,7 @@ import {
   Play,
   Pencil,
   ListChecks,
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import { Button } from '@/components/ui/button';
 import { Lozenge, Avatar, Tooltip } from '@/components/ads';
 import { ScrollArea } from '@/components/ui/scroll-area';

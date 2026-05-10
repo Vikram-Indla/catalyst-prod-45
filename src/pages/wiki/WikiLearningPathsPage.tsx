@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useWikiLearningPaths } from '@/hooks/useWikiHub';
-import { ChevronRight, GraduationCap } from 'lucide-react';
+import { ChevronRight, GraduationCap } from '@/lib/atlaskit-icons';
 import { useTheme } from '@/hooks/useTheme';
 
 export default function WikiLearningPathsPage() {

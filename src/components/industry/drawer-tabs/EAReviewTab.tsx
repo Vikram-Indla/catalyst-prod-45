@@ -17,7 +17,7 @@ import {
   SelectValue 
 } from '@/components/ui/select';
 import { BusinessRequest } from '@/types/business-request';
-import { AlertCircle, Lock, CheckCircle2, XCircle, Clock } from 'lucide-react';
+import { AlertCircle, Lock, CheckCircle2, XCircle, Clock } from '@/lib/atlaskit-icons';
 
 interface EAReviewTabProps {
   data: Partial<BusinessRequest> & Record<string, any>;

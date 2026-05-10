@@ -28,7 +28,7 @@ import {
   Users,
   RefreshCw,
   Loader2,
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 import { useGoNoGoAssessment, useRecordDecision } from '../hooks/useGoNoGo';
 import {

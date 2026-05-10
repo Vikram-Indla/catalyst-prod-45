@@ -8,7 +8,7 @@ import {
   ContextMenuSubTrigger,
   ContextMenuTrigger,
 } from '@/components/ui/context-menu';
-import { ArrowUp, ArrowDown, ArrowUpToLine, ArrowDownToLine } from 'lucide-react';
+import { ArrowUp, ArrowDown, ArrowUpToLine, ArrowDownToLine } from '@/lib/atlaskit-icons';
 
 interface ForecastContextMenuProps {
   children: React.ReactNode;

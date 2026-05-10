@@ -7,7 +7,7 @@ import React from 'react';
 import { cn } from '@/lib/utils';
 import { TeamMemberOption } from '../CreateEditTestPlanDialog.types';
 import { Avatar } from '@/components/ads';
-import { Check, Minus } from 'lucide-react';
+import { Check, Minus } from '@/lib/atlaskit-icons';
 
 interface TeamMemberCardProps {
   member: TeamMemberOption;

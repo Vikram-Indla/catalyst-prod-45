@@ -4,7 +4,7 @@ import { generateTimeUnits, calcPosition } from '@/utils/objective-roadmap-utils
 import { cn } from '@/lib/utils';
 import { TODAY_LINE_COLOR, getKRStatusStyle } from '@/constants/krStatusStyles';
 import { DemandGroupBy } from './ProductRoadmapToolbar';
-import { ChevronDown } from 'lucide-react';
+import { ChevronDown } from '@/lib/atlaskit-icons';
 import { Tooltip } from '@/components/ads';
 import { format } from 'date-fns';
 import { useProcessSteps } from '@/modules/kanban/hooks/useProcessSteps';

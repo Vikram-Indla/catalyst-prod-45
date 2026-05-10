@@ -15,7 +15,7 @@ import {
   Settings,
   Plus,
   FlaskConical,
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { InJiraProvider, useInJira } from '../context/InJiraContext';

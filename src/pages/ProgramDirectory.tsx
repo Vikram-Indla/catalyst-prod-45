@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
-import { Plus, Search, LayoutGrid, List, Star, Loader2 } from 'lucide-react';
+import { Plus, Search, LayoutGrid, List, Star, Loader2 } from '@/lib/atlaskit-icons';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Avatar, Lozenge, Tooltip } from '@/components/ads';

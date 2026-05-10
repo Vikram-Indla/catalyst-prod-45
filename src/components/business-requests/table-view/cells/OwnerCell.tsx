@@ -1,4 +1,4 @@
-import { Plus } from 'lucide-react';
+import { Plus } from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 import { Tooltip } from '@/components/ads';
 

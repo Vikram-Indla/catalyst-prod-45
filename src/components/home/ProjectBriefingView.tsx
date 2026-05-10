@@ -3,7 +3,7 @@
  * Replaces the old flat list + stat cards.
  */
 import { useState, useMemo } from 'react';
-import { Loader2, ChevronDown, ChevronRight, AlertTriangle } from 'lucide-react';
+import { Loader2, ChevronDown, ChevronRight, AlertTriangle } from '@/lib/atlaskit-icons';
 import type { UserContext } from './hooks/useUserContext';
 import type { ProjectGroup, CollapsedGroup, BriefingItem, WeekNarrative } from './hooks/useProjectBriefing';
 import { useProjectBriefing } from './hooks/useProjectBriefing';

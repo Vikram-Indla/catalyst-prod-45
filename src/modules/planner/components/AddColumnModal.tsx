@@ -4,7 +4,7 @@
 // ============================================================
 
 import { useState } from 'react';
-import { X, Palette } from 'lucide-react';
+import { X, Palette } from '@/lib/atlaskit-icons';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';

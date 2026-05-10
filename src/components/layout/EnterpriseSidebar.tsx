@@ -15,7 +15,7 @@ import {
   Sparkles,
   Users,
   Settings,
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import { SidebarBase, SidebarConfig } from './SidebarBase';
 
 interface EnterpriseSidebarProps {

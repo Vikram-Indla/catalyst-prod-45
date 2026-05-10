@@ -17,7 +17,7 @@ import AvatarGroup from '@atlaskit/avatar-group';
 import DropdownMenu, { DropdownItem } from '@atlaskit/dropdown-menu';
 import Select from '@atlaskit/select';
 import Lozenge from '@atlaskit/lozenge';
-import { X as XIcon } from 'lucide-react';
+import { X as XIcon } from '@/lib/atlaskit-icons';
 import { UWVExport } from './UWVExport';
 import { UWVColumnPicker } from './UWVColumnPicker';
 import { UWVBulkActions } from './UWVBulkActions';

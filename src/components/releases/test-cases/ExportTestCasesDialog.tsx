@@ -13,7 +13,7 @@ import {
   CheckCircle2,
   Loader2,
   Settings2,
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import {
   Dialog,
   DialogContent,

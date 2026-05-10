@@ -4,7 +4,7 @@
 // =====================================================
 
 import { useState, useRef, useEffect } from 'react';
-import { Check, Search } from 'lucide-react';
+import { Check, Search } from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';

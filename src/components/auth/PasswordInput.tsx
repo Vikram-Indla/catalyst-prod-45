@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Eye, EyeOff } from 'lucide-react';
+import { Eye, EyeOff } from '@/lib/atlaskit-icons';
 
 interface PasswordInputProps {
   id: string;

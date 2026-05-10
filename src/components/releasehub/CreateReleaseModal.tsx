@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, CalendarIcon } from 'lucide-react';
+import { X, CalendarIcon } from '@/lib/atlaskit-icons';
 import { RH } from '@/constants/releasehub.design';
 import { useCreateRelease } from '@/hooks/useReleaseHub';
 import { toast } from 'sonner';

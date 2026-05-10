@@ -15,7 +15,7 @@ import {
   ChevronDown, 
   ChevronUp,
   X
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import { CATALYST_V5 } from '@/lib/catalyst-colors';
 import type { WorkloadAlert } from '@/types/workload.types';
 

@@ -3,7 +3,7 @@
  * Donut chart showing execution status breakdown
  */
 
-import { Activity } from 'lucide-react';
+import { Activity } from '@/lib/atlaskit-icons';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
 import type { DashboardStats } from './DashboardStatCards';
 

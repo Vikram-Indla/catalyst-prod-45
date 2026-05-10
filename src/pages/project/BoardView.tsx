@@ -5,7 +5,7 @@
 
 import React, { useState, useCallback } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
-import { Plus } from 'lucide-react';
+import { Plus } from '@/lib/atlaskit-icons';
 import { Button } from '@/components/ui/button';
 import { BoardColumn } from '@/components/board/BoardColumn';
 import { BoardToolbar } from '@/components/board/BoardToolbar';

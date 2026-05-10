@@ -6,7 +6,7 @@ import { ProgressIndicators } from '../ProgressIndicators';
 import { QuickActions } from '../QuickActions';
 import { ContainedInLink } from '../ContainedInLink';
 import { EpicDetail, Program, User, Theme, ProgramIncrement, Feature } from '@/types/backlog.types';
-import { ChevronRight, ChevronDown, Plus, X, Info } from 'lucide-react';
+import { ChevronRight, ChevronDown, Plus, X, Info } from '@/lib/atlaskit-icons';
 import { WSJFModal } from '../modals/WSJFModal';
 import { FeatureStatusModal } from '../modals/FeatureStatusModal';
 

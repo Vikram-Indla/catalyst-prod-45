@@ -1,7 +1,7 @@
 import { useWorkItemKeyHistory } from '@/hooks/useWorkItemKeyHistory';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Lozenge } from '@/components/ads';
-import { History, ArrowRight } from 'lucide-react';
+import { History, ArrowRight } from '@/lib/atlaskit-icons';
 import { format } from 'date-fns';
 
 interface KeyHistorySectionProps {

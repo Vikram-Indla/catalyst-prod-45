@@ -3,7 +3,7 @@
  * Shows read-only text by default; transforms to input in edit mode.
  */
 import React, { useState, useRef, useEffect } from 'react';
-import { Pencil } from 'lucide-react';
+import { Pencil } from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 import type { RequestStatus } from '@/types/request';
 import { STATUS_DISPLAY } from '@/types/request';

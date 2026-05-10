@@ -17,7 +17,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
-import { Target, Plus, Trash2, Pencil, AlertCircle, ChevronDown, ChevronRight } from 'lucide-react';
+import { Target, Plus, Trash2, Pencil, AlertCircle, ChevronDown, ChevronRight } from '@/lib/atlaskit-icons';
 import { KRWorkAlignmentDrawer } from './KRWorkAlignmentDrawer';
 import { KeyResultV2 } from '@/hooks/useKeyResultsV2';
 import { EpicDetailsPanel } from '@/components/items/epics/EpicDetailsPanel';

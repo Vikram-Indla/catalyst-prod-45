@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { CircleUser } from 'lucide-react';
+import { CircleUser } from '@/lib/atlaskit-icons';
 import { getAvatarColor, getCountryFlag } from '@/constants/users';
 import { resolveAvatarUrl } from '@/lib/avatars';
 

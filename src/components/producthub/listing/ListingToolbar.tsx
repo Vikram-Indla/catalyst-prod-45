@@ -4,7 +4,7 @@
  */
 
 import { useState, useRef, useEffect, useCallback } from 'react';
-import { Search, X, Download, Plus, Check } from 'lucide-react';
+import { Search, X, Download, Plus, Check } from '@/lib/atlaskit-icons';
 import { createPortal } from 'react-dom';
 import type { Density } from '@/types/request';
 

@@ -3,7 +3,7 @@
  */
 
 import { useState } from 'react';
-import { Users, Plus } from 'lucide-react';
+import { Users, Plus } from '@/lib/atlaskit-icons';
 import { useTheme } from '@/hooks/useTheme';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';

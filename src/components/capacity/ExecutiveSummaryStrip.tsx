@@ -14,7 +14,7 @@ import {
   TrendingUp,
   Calendar,
   AlertCircle
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 
 interface SimpleAllocation {
   id: string;

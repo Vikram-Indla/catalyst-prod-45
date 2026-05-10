@@ -20,7 +20,7 @@ import {
   Filter,
   ArrowLeft,
   Eye
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import { toast } from 'sonner';
 import { useNavigate, useParams } from 'react-router-dom';
 

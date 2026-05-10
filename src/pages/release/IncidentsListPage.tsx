@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react';
 import { CatalystPageHeader } from '@/components/shared/CatalystPageHeader';
 import { useNavigate, useSearchParams, Link } from 'react-router-dom';
-import { Search, ChevronLeft, ChevronRight, Filter, Download, Loader2, Plus, ArrowUpDown, ArrowUp, ArrowDown, X, AlertTriangle } from 'lucide-react';
+import { Search, ChevronLeft, ChevronRight, Filter, Download, Loader2, Plus, ArrowUpDown, ArrowUp, ArrowDown, X, AlertTriangle } from '@/lib/atlaskit-icons';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Lozenge } from '@/components/ads';

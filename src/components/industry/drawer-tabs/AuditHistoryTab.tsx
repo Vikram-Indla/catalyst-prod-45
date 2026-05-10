@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { formatDistanceToNow, format } from 'date-fns';
-import { History, ArrowRight } from 'lucide-react';
+import { History, ArrowRight } from '@/lib/atlaskit-icons';
 import { BusinessRequest } from '@/types/business-request';
 
 interface AuditHistoryTabProps {

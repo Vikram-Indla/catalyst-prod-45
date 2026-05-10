@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Avatar, Lozenge } from '@/components/ads';
 import { Progress } from '@/components/ui/progress';
-import { Filter, CheckCircle, Edit, Plus, Calendar, Maximize2, ExternalLink, FileText, CheckSquare, Square } from 'lucide-react';
+import { Filter, CheckCircle, Edit, Plus, Calendar, Maximize2, ExternalLink, FileText, CheckSquare, Square } from '@/lib/atlaskit-icons';
 import { WorkItemIcon } from '@/components/ja/icons/WorkItemIcon';
 import { Skeleton } from '@/components/ui/skeleton';
 import { cn } from '@/lib/utils';

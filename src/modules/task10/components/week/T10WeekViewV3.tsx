@@ -9,7 +9,7 @@ import {
   LayoutGrid, ChevronLeft, ChevronRight, Calendar, 
   Zap, ChevronDown, Plus, Check, Layers, Info,
   AlertCircle, GripVertical, User, X, StickyNote, Pencil, Trash2, AlertTriangle
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import {
   DndContext,
   closestCenter,

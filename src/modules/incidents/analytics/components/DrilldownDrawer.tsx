@@ -4,7 +4,7 @@
  * Enterprise-grade table with proper header and controls
  */
 
-import { X, ArrowLeft, RotateCcw, ExternalLink } from 'lucide-react';
+import { X, ArrowLeft, RotateCcw, ExternalLink } from '@/lib/atlaskit-icons';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Lozenge } from '@/components/ads';

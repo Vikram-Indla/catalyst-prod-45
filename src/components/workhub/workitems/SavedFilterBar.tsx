@@ -3,7 +3,7 @@
  * Phase 9
  */
 import { useState, useRef, useEffect } from 'react';
-import { Bookmark, Users2, X, MoreVertical } from 'lucide-react';
+import { Bookmark, Users2, X, MoreVertical } from '@/lib/atlaskit-icons';
 import { useSavedFilters, useCreateSavedFilter, useUpdateSavedFilter, useDeleteSavedFilter } from '@/hooks/workhub/useSavedFilters';
 import type { WorkItemFilterConfig } from '@/hooks/workhub/useWorkItems';
 

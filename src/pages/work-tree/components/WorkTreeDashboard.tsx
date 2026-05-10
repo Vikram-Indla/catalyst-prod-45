@@ -1,5 +1,5 @@
 import { Card, CardContent } from '@/components/ui/card';
-import { Loader2, X } from 'lucide-react';
+import { Loader2, X } from '@/lib/atlaskit-icons';
 
 interface WorkTreeDashboardProps {
   view: 'top-down' | 'bottom-up' | 'team';

@@ -6,7 +6,7 @@
 
 import React, { useState, useMemo } from 'react';
 import { WorkItem, ItemStatus, ColumnConfig, DEFAULT_COLUMNS, DensityMode, WorkTreeCounts, Owner } from '../types';
-import { ChevronRight, ChevronDown, MoreHorizontal, ChevronsUpDown, ChevronsDownUp, Columns, Copy, Eye } from 'lucide-react';
+import { ChevronRight, ChevronDown, MoreHorizontal, ChevronsUpDown, ChevronsDownUp, Columns, Copy, Eye } from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
 import { Lozenge } from '@/components/ads';

@@ -14,7 +14,7 @@ import {
   ArrowLeft, Save, ClipboardList, SendHorizontal, Loader2,
   FileText, Target, Users, Calendar, ShieldCheck, BookCopy, MoreVertical, Trash2,
   Link2, Plus, PlayCircle, X, ExternalLink, Bug, MessageSquare, Paperclip
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';

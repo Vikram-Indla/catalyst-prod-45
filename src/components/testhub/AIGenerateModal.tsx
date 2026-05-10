@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { X, Sparkles, Loader2, CheckCircle2, XCircle, AlertTriangle, FolderOpen, ChevronRight } from 'lucide-react';
+import { X, Sparkles, Loader2, CheckCircle2, XCircle, AlertTriangle, FolderOpen, ChevronRight } from '@/lib/atlaskit-icons';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 

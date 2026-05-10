@@ -19,7 +19,7 @@ import {
   Package,
   Timer,
   Minus,
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import { useIncidentCommandCenter, type KPITile, type MajorIncident } from '@/hooks/useIncidentCommandCenter';
 import { cn } from '@/lib/utils';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend, BarChart, Bar, Cell, PieChart, Pie } from 'recharts';

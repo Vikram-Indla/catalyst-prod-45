@@ -7,7 +7,7 @@ import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { CalendarIcon } from 'lucide-react';
+import { CalendarIcon } from '@/lib/atlaskit-icons';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { 

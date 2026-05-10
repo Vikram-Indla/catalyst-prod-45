@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
-import { ChevronDown, Check, Calendar } from 'lucide-react';
+import { ChevronDown, Check, Calendar } from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 import { CatalystDatePicker } from '@/components/ui/catalyst-date-picker';
 import { startOfQuarter, endOfQuarter, addMonths } from 'date-fns';

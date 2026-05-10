@@ -5,7 +5,7 @@
  */
 
 import { useState, useEffect } from 'react';
-import { X } from 'lucide-react';
+import { X } from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Slider } from '@/components/ui/slider';

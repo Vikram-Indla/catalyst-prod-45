@@ -22,7 +22,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Plus, Trash2 } from 'lucide-react';
+import { Plus, Trash2 } from '@/lib/atlaskit-icons';
 import { useToast } from '@/hooks/use-toast';
 import type { TestCasePriority } from '@/types/test-repository';
 

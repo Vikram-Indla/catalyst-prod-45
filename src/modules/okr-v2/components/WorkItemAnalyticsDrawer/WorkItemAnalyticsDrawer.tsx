@@ -5,7 +5,7 @@
 // ═══════════════════════════════════════════════════════════════════════════════
 
 import { useState } from 'react';
-import { X, Shield, Lightbulb, ChevronDown, ChevronUp, ArrowRight, TrendingUp, TrendingDown, Clock, Hexagon } from 'lucide-react';
+import { X, Shield, Lightbulb, ChevronDown, ChevronUp, ArrowRight, TrendingUp, TrendingDown, Clock, Hexagon } from '@/lib/atlaskit-icons';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { Skeleton } from '@/components/ui/skeleton';
 import { cn } from '@/lib/utils';

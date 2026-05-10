@@ -11,7 +11,7 @@ import {
 } from '@/components/ui/select';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Lozenge } from '@/components/ads';
-import { X } from 'lucide-react';
+import { X } from '@/lib/atlaskit-icons';
 import { TestSet, TEST_SET_TYPE_CONFIG, TestSetType, TestSetMembership, DynamicCriteria } from '@/types/test-sets';
 import { useCreateTestSet, useUpdateTestSet } from '@/hooks/useTestSets';
 import { useFolders } from '@/hooks/test-management/useFolders';

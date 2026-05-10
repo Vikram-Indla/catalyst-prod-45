@@ -3,7 +3,7 @@
  * Urgent notification for contracts ending within 90 days
  */
 
-import { AlertCircle, ArrowRight } from 'lucide-react';
+import { AlertCircle, ArrowRight } from '@/lib/atlaskit-icons';
 import type { ContractResourceWithStatus } from '@/types/contract-horizon';
 
 interface CriticalAlertProps {

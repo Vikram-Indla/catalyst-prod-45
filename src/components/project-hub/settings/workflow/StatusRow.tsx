@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { GripVertical, MoreHorizontal } from 'lucide-react';
+import { GripVertical, MoreHorizontal } from '@/lib/atlaskit-icons';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 

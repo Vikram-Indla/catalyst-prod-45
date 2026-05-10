@@ -3,7 +3,7 @@
 // ============================================================
 
 import { useState } from 'react';
-import { X } from 'lucide-react';
+import { X } from '@/lib/atlaskit-icons';
 import type { PriItemFull, PriWeekFull, PriCheckoutDecision, PriCheckoutDecisionItem } from '../types';
 import { PriStatusToggle } from './PriStatusToggle';
 import styles from '../styles/priorities.module.css';

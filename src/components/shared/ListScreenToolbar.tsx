@@ -1,5 +1,5 @@
 import { Button } from '@/components/ui/button';
-import { Download, Upload, Settings2, Edit3 } from 'lucide-react';
+import { Download, Upload, Settings2, Edit3 } from '@/lib/atlaskit-icons';
 import { usePermission } from '@/hooks/usePermission';
 import type { Database } from '@/integrations/supabase/types';
 

@@ -4,7 +4,7 @@
 import React from 'react';
 import { TestPlanFormState, CoverageStats } from '../CreateEditTestPlanDialog.types';
 import { CoverageRing } from '../components/CoverageRing';
-import { Target, Search, AlertCircle } from 'lucide-react';
+import { Target, Search, AlertCircle } from '@/lib/atlaskit-icons';
 import { Input } from '@/components/ui/input';
 
 interface ScopeTabProps {

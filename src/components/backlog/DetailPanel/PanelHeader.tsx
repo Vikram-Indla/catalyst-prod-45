@@ -1,4 +1,4 @@
-import { Check, Link, X, FileText, HelpCircle, Edit2 } from 'lucide-react';
+import { Check, Link, X, FileText, HelpCircle, Edit2 } from '@/lib/atlaskit-icons';
 import { EpicDetail } from '@/types/backlog.types';
 
 interface PanelHeaderProps {

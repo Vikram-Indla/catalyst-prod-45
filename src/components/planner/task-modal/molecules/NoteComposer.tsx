@@ -3,7 +3,7 @@
 // ============================================================================
 
 import React, { useState } from 'react';
-import { Send } from 'lucide-react';
+import { Send } from '@/lib/atlaskit-icons';
 import { COLORS } from '../colors';
 import { Avatar } from '../atoms';
 

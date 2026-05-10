@@ -2,7 +2,7 @@
  * Product Roadmap — Search + Quick Filter Pills
  */
 import React, { useRef, useEffect } from 'react';
-import { Search } from 'lucide-react';
+import { Search } from '@/lib/atlaskit-icons';
 import type { RequestType, QuickFilter } from './types/roadmap.types';
 import { INK, INK_DARK, SURFACE, SURFACE_DARK } from './constants/roadmap.constants';
 import { useTheme } from '@/hooks/useTheme';

@@ -1,5 +1,5 @@
 import React from 'react';
-import { ChevronDown, Check, LayoutList, User, Flag, Hash } from 'lucide-react';
+import { ChevronDown, Check, LayoutList, User, Flag, Hash } from '@/lib/atlaskit-icons';
 import {
   DropdownMenu,
   DropdownMenuContent,

@@ -4,7 +4,7 @@
  */
 
 import { useState, useEffect } from 'react';
-import { X, Link2, Search, CheckSquare, Square } from 'lucide-react';
+import { X, Link2, Search, CheckSquare, Square } from '@/lib/atlaskit-icons';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { catalystToast } from '@/components/ui/CatalystToast';
 import { useTheme } from '@/hooks/useTheme';

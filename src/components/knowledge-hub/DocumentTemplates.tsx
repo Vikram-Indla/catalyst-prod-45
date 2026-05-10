@@ -1,7 +1,7 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { FileText, ListChecks, Lightbulb, BookOpen, Target, Users } from 'lucide-react';
+import { FileText, ListChecks, Lightbulb, BookOpen, Target, Users } from '@/lib/atlaskit-icons';
 
 interface DocumentTemplatesProps {
   open: boolean;

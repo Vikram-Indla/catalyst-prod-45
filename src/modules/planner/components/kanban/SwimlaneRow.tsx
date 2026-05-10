@@ -5,7 +5,7 @@
 
 import { useDroppable } from '@dnd-kit/core';
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
-import { ChevronDown, ChevronRight, User, Flag, Layers } from 'lucide-react';
+import { ChevronDown, ChevronRight, User, Flag, Layers } from '@/lib/atlaskit-icons';
 import type { KanbanTask, PlannerStatus } from '../../types/kanban';
 import { SwimlaneCard } from './SwimlaneCard';
 import { cn } from '@/lib/utils';

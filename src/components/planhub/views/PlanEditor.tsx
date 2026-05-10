@@ -2,7 +2,7 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { 
   ChevronLeft, Plus, Flag, LayoutGrid, BarChart2, 
   Columns, History, Play
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { usePlanSubscription } from '@/hooks/usePlanHubSubscriptions';

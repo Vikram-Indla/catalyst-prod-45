@@ -43,7 +43,7 @@ import {
   Filter,
   ChevronRight,
   ChevronDown,
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 
 // ============================================
 // STATUS → LOZENGE APPEARANCE

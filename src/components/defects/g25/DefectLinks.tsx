@@ -1,11 +1,11 @@
-import { FileText, Play, Bug, Link, RefreshCw, BookOpen, GitBranch, Tag, AlertCircle, Plus, X } from 'lucide-react';
+import { FileText, Play, Bug, Link, RefreshCw, BookOpen, GitBranch, Tag, AlertCircle, Plus, X } from '@/lib/atlaskit-icons';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Lozenge } from '@/components/ads';
 import { useDefectLinksG25, useDeleteDefectLinkG25 } from '@/hooks/useDefectsG25';
 import { Skeleton } from '@/components/ui/skeleton';
 import { DefectLink } from '@/types/defects';
-import type { LucideIcon } from 'lucide-react';
+import type { LucideIcon } from '@/lib/atlaskit-icons';
 
 const LINK_TYPE_CONFIG: Record<string, { icon: LucideIcon; label: string; color: string }> = {
   test_case:      { icon: FileText,    label: 'Test Case',       color: 'text-blue-500' },

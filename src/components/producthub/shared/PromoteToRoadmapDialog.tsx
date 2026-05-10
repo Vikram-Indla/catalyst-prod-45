@@ -3,7 +3,7 @@
  */
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Loader2, Map } from 'lucide-react';
+import { Loader2, Map } from '@/lib/atlaskit-icons';
 import { usePromoteToRoadmap } from '@/hooks/useRoadmapPromotion';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { useQueryClient } from '@tanstack/react-query';

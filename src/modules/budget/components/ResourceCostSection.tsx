@@ -5,7 +5,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { format } from 'date-fns';
-import { ChevronDown, ChevronRight, DollarSign, History } from 'lucide-react';
+import { ChevronDown, ChevronRight, DollarSign, History } from '@/lib/atlaskit-icons';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -26,7 +26,7 @@ import {
   CollapsibleTrigger,
 } from '@/components/ui/collapsible';
 import { cn } from '@/lib/utils';
-import { CalendarIcon } from 'lucide-react';
+import { CalendarIcon } from '@/lib/atlaskit-icons';
 import { 
   useResourceCostHistory, 
   useResourceCurrentCost, 

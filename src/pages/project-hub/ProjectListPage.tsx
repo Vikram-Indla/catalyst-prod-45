@@ -3,7 +3,7 @@ import { CatalystPageHeader } from '@/components/shared/CatalystPageHeader';
 import { useNavigate } from 'react-router-dom';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { ChevronRight, FolderKanban, Plus, ChevronLeft, ChevronRight as ChevronRightIcon, ExternalLink, Copy, Star, Archive } from 'lucide-react';
+import { ChevronRight, FolderKanban, Plus, ChevronLeft, ChevronRight as ChevronRightIcon, ExternalLink, Copy, Star, Archive } from '@/lib/atlaskit-icons';
 import { toast } from 'sonner';
 import { ProjectToolbar } from '@/components/project-hub/ProjectToolbar';
 import { ProjectTable } from '@/components/project-hub/ProjectTable';

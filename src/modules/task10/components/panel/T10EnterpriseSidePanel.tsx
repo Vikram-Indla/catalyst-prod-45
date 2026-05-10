@@ -3,7 +3,7 @@ import { createPortal } from 'react-dom';
 import { 
   X, Check, User, Calendar, Tag, FileText, Plus, Clock, 
   Trash2, ChevronDown, Search, Loader2, Copy
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import { toast } from 'sonner';
 import { useT10Users } from '../../hooks/useT10Users';
 import { useT10Labels, useCreateT10Label } from '../../hooks/useT10Labels';

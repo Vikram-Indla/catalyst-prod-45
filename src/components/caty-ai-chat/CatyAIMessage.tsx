@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ThumbsUp, ThumbsDown, Copy, Check, User } from 'lucide-react';
+import { ThumbsUp, ThumbsDown, Copy, Check, User } from '@/lib/atlaskit-icons';
 import { Button } from '@/components/ui/button';
 import { CatyAIAvatar } from './CatyAIAvatar';
 import { CatyMessage as Msg } from '@/types/caty-ai';

@@ -1,6 +1,6 @@
 import React from 'react';
 import { useParams, useNavigate, useLocation, Outlet } from 'react-router-dom';
-import { Globe, List, Layers, Package, Plus, MoreHorizontal, Users } from 'lucide-react';
+import { Globe, List, Layers, Package, Plus, MoreHorizontal, Users } from '@/lib/atlaskit-icons';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 

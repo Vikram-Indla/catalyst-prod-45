@@ -4,7 +4,7 @@
  */
 
 import React from 'react';
-import { CheckCircle2, XCircle, Ban, Circle } from 'lucide-react';
+import { CheckCircle2, XCircle, Ban, Circle } from '@/lib/atlaskit-icons';
 import type { TestScopeSummary } from '../types';
 
 interface ProgressGaugeProps {

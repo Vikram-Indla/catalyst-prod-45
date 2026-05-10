@@ -1,7 +1,7 @@
 import { ReactNode } from 'react';
 import { useUserRole, UserRole } from '@/hooks/useUserRole';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Lock } from 'lucide-react';
+import { Lock } from '@/lib/atlaskit-icons';
 
 interface PermissionGuardProps {
   children: ReactNode;

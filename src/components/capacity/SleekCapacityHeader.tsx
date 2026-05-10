@@ -9,7 +9,7 @@ import {
   LayoutGrid, Table2, CalendarDays, Grid3X3, 
   Presentation, Briefcase, Users, Layers, FileText, Calendar,
   ChevronLeft, ChevronRight, BarChart3, RefreshCw, Wallet
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import { CommandCenterHeader } from '@/components/shared/CommandCenterHeader';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';

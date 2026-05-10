@@ -3,7 +3,7 @@
 // ============================================================================
 
 import React, { useState } from 'react';
-import { List, MessageSquare, Clock } from 'lucide-react';
+import { List, MessageSquare, Clock } from '@/lib/atlaskit-icons';
 import { COLORS } from '../../colors';
 import { ActivityItem, HistoryItem, CommentComposer } from '../../molecules';
 import { Comment, HistoryEvent } from '../../types';

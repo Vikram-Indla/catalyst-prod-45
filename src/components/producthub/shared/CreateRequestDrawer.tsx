@@ -4,7 +4,7 @@
  */
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { createPortal } from 'react-dom';
-import { X, Loader2, FileText, Users, Calendar, RefreshCw, GitMerge } from 'lucide-react';
+import { X, Loader2, FileText, Users, Calendar, RefreshCw, GitMerge } from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 import { useTheme } from '@/hooks/useTheme';
 import { supabase, typedQuery } from '@/integrations/supabase/client';

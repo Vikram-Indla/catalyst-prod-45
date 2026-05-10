@@ -4,7 +4,7 @@
  */
 import { useState, useMemo, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Rocket, Loader2, FolderGit2, Milestone, ChevronDown, X, Search } from 'lucide-react';
+import { Rocket, Loader2, FolderGit2, Milestone, ChevronDown, X, Search } from '@/lib/atlaskit-icons';
 import { useJiraReleases } from '@/hooks/workhub/useJiraReleases';
 import type { JiraRelease } from '@/hooks/workhub/useJiraReleases';
 import { CommandCenterHeader } from '@/components/shared/CommandCenterHeader';

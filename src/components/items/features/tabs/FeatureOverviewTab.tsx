@@ -17,7 +17,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Checkbox } from '@/components/ui/checkbox';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
-import { CalendarIcon, AlertCircle, CheckCircle2, Clock, CircleDashed, FolderKanban } from 'lucide-react';
+import { CalendarIcon, AlertCircle, CheckCircle2, Clock, CircleDashed, FolderKanban } from '@/lib/atlaskit-icons';
 import type { Feature, FeatureProgress, FeatureStatus } from '@/types/feature.types';
 import { suggestFeatureStatus } from '@/hooks/useFeatureProgress';
 import { useProjects } from '@/hooks/useProjects';

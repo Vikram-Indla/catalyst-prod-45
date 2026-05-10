@@ -2,7 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import type { RaDocument } from '@/types/requirement-assist';
 import { AiAssistantPanel } from './AiAssistantPanel';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft } from '@/lib/atlaskit-icons';
 
 /* ── Demo translation sections ── */
 const DEMO_SECTIONS = [

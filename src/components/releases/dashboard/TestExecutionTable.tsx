@@ -4,7 +4,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Lozenge, Avatar } from '@/components/ads';
 import type { LozengeAppearance } from '@/components/ads';
 import { Button } from '@/components/ui/button';
-import { ChevronUp, ChevronDown, ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronUp, ChevronDown, ChevronLeft, ChevronRight } from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 
 interface TestExecutionTableProps {

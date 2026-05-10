@@ -1,6 +1,6 @@
 import { useState, useMemo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { MoreHorizontal, ExternalLink, UserRound, Search, X, Paperclip } from 'lucide-react';
+import { MoreHorizontal, ExternalLink, UserRound, Search, X, Paperclip } from '@/lib/atlaskit-icons';
 import { PriorityIndicator } from '@/components/shared/PriorityIndicator';
 import { Checkbox } from '@/components/ui/checkbox';
 import '@/styles/product-backlog.css';

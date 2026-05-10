@@ -14,7 +14,7 @@ import {
   Download,
   Folder,
   Calendar,
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import { Button } from '@/components/ui/button';
 import { Tooltip } from '@/components/ads';
 import { cn } from '@/lib/utils';

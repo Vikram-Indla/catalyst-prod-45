@@ -23,7 +23,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Plus, Trash2, AlertCircle, Link2, Target, Layers } from 'lucide-react';
+import { Plus, Trash2, AlertCircle, Link2, Target, Layers } from '@/lib/atlaskit-icons';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { KeyResultV2 } from '@/hooks/useKeyResultsV2';
 

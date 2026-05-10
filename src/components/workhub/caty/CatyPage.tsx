@@ -2,7 +2,7 @@
  * CatyPage — AI assistant placeholder
  */
 
-import { Sparkles } from 'lucide-react';
+import { Sparkles } from '@/lib/atlaskit-icons';
 
 export function CatyPage() {
   return (

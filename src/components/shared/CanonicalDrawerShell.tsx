@@ -46,7 +46,7 @@ import {
   Link as LinkIcon,
   ChevronDown,
   MoreVertical,
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import { toast } from 'sonner';
 
 export interface DrawerTab {

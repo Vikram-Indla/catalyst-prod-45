@@ -3,7 +3,7 @@
  * Uses ph_issues table queried by parent_key.
  */
 import { useState, useEffect } from 'react';
-import { Loader2, ListTree } from 'lucide-react';
+import { Loader2, ListTree } from '@/lib/atlaskit-icons';
 import { supabase } from '@/integrations/supabase/client';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import { PriorityIndicator } from '@/components/shared/PriorityIndicator';

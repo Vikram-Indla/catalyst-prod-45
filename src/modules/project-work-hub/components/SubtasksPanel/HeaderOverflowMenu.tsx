@@ -17,7 +17,7 @@ import DropdownMenu, {
   DropdownItemGroup,
 } from '@atlaskit/dropdown-menu';
 import Popup from '@atlaskit/popup';
-import { MoreHorizontal, Edit3, Search, ArrowUp, ArrowDown, ChevronRight } from 'lucide-react';
+import { MoreHorizontal, Edit3, Search, ArrowUp, ArrowDown, ChevronRight } from '@/lib/atlaskit-icons';
 import { SORT_FIELDS, type SortField, type SortState } from './sort';
 
 interface HeaderOverflowMenuProps {

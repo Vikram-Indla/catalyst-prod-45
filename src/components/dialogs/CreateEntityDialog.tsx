@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { Search } from 'lucide-react';
+import { Search } from '@/lib/atlaskit-icons';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { catalystToast } from '@/lib/catalystToast';
 import { useQueryClient, useQuery } from '@tanstack/react-query';

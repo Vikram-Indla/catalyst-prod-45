@@ -7,7 +7,7 @@ import React, { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ReleaseCalendar, CalendarRelease } from '@/features/release-calendar';
 import { useAllReleases } from '@/hooks/releases/useAllReleases';
-import { Loader2 } from 'lucide-react';
+import { Loader2 } from '@/lib/atlaskit-icons';
 import { subDays } from 'date-fns';
 
 // Transform database releases to calendar format

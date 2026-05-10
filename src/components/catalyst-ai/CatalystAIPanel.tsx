@@ -6,7 +6,7 @@
  */
 
 import React from 'react';
-import { X, Zap } from 'lucide-react';
+import { X, Zap } from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 import { AIPriorityCard } from './AIPriorityCard';
 import { AINextItem } from './AINextItem';

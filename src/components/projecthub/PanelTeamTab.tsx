@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react';
 import { getRoleCategory, ROLE_CATEGORY_ORDER } from '@/types/projecthub';
 import type { ProjectTeamMember } from '@/types/projecthub';
-import { Search, UserPlus, Trash2, Loader2 } from 'lucide-react';
+import { Search, UserPlus, Trash2, Loader2 } from '@/lib/atlaskit-icons';
 import { AddMemberDialog } from './AddMemberDialog';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase, typedQuery } from '@/integrations/supabase/client';

@@ -6,7 +6,7 @@ import React from 'react';
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Legend } from 'recharts';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
-import { TrendingUp } from 'lucide-react';
+import { TrendingUp } from '@/lib/atlaskit-icons';
 import { CATALYST_V5 } from '@/lib/catalyst-colors';
 import { useCycleQualityTrends, QualityTrendPoint } from '@/hooks/test-cycles/useCycleAnalytics';
 

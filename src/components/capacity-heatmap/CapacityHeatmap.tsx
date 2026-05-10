@@ -6,7 +6,7 @@
 
 import { memo, useRef, useMemo, useCallback, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Download, Loader2, RefreshCw } from 'lucide-react';
+import { Download, Loader2, RefreshCw } from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 import { useHeatmapStore } from '@/stores/capacity-heatmap-store';
 import { useKeyboardShortcuts } from '@/hooks/use-keyboard-shortcuts';

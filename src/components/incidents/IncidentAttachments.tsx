@@ -1,5 +1,5 @@
 import { useRef } from 'react';
-import { Paperclip, Upload, Download, Trash2, FileText, Image, File } from 'lucide-react';
+import { Paperclip, Upload, Download, Trash2, FileText, Image, File } from '@/lib/atlaskit-icons';
 import { Button } from '@/components/ui/button';
 import type { Attachment } from '@/types/release';
 

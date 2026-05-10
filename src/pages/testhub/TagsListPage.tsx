@@ -3,7 +3,7 @@
  * Route: /testhub/tags
  */
 import { useState, useEffect } from 'react';
-import { Tags, Plus, Search, X, Edit2, Trash2, RefreshCw, Hash } from 'lucide-react';
+import { Tags, Plus, Search, X, Edit2, Trash2, RefreshCw, Hash } from '@/lib/atlaskit-icons';
 import { supabase, typedQuery, typedRpc } from '@/integrations/supabase/client';
 import { catalystToast } from '@/components/ui/CatalystToast';
 import { useTheme } from '@/hooks/useTheme';

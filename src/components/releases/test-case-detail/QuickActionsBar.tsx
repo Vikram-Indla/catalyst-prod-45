@@ -14,7 +14,7 @@ import {
   Bug,
   Link2,
   MoreHorizontal,
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import { Button } from '@/components/ui/button';
 import { Tooltip } from '@/components/ads';
 import {

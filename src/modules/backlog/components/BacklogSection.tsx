@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Droppable, Draggable } from '@hello-pangea/dnd';
 import { BacklogPISection, BacklogItem } from '../types';
 import { Button } from '@/components/ui/button';
-import { ChevronDown, ChevronRight, GripVertical, ChevronLeft, Loader2 } from 'lucide-react';
+import { ChevronDown, ChevronRight, GripVertical, ChevronLeft, Loader2 } from '@/lib/atlaskit-icons';
 import { WorkItemIcon } from '@/components/ja/icons/WorkItemIcon';
 import { Checkbox } from '@/components/ui/checkbox';
 import { cn } from '@/lib/utils';

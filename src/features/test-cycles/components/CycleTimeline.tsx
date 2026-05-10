@@ -3,7 +3,7 @@
 // ============================================================================
 
 import { memo, useMemo } from 'react';
-import { CheckCircle2, Flag, Calendar } from 'lucide-react';
+import { CheckCircle2, Flag, Calendar } from '@/lib/atlaskit-icons';
 import { format, differenceInDays, isAfter, isBefore, isToday } from 'date-fns';
 import { cn } from '@/lib/utils';
 import type { CycleDetail, CycleMilestone } from '../types/cycle-config';

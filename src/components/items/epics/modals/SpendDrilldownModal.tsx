@@ -14,7 +14,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ExternalLink } from 'lucide-react';
+import { ExternalLink } from '@/lib/atlaskit-icons';
 
 interface SpendDrilldownModalProps {
   epicId: string;

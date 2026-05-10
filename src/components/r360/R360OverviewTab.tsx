@@ -3,7 +3,7 @@
  * Extracted from R360ProfileDrawer.tsx
  */
 import React from 'react';
-import { ChevronLeft, ChevronRight, AlertTriangle, Info, BookOpen } from 'lucide-react';
+import { ChevronLeft, ChevronRight, AlertTriangle, Info, BookOpen } from '@/lib/atlaskit-icons';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import {
   INK1, INK2, INK4, MUTED, SUCCESS, WARNING, DANGER, BRAND,

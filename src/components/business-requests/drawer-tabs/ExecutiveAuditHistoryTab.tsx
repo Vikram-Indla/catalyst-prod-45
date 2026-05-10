@@ -7,7 +7,7 @@ import { useState } from 'react';
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { format, isSameMinute, parseISO } from 'date-fns';
-import { History, ArrowRight, Loader2, Eye, EyeOff, ChevronDown, ChevronRight } from 'lucide-react';
+import { History, ArrowRight, Loader2, Eye, EyeOff, ChevronDown, ChevronRight } from '@/lib/atlaskit-icons';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';

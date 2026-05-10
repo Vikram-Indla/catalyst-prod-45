@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { X, Filter } from 'lucide-react';
+import { X, Filter } from '@/lib/atlaskit-icons';
 import { Button } from '@/components/ui/button';
 import { Lozenge } from '@/components/ads';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';

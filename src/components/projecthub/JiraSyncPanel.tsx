@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
-import { RefreshCw, Loader2 } from 'lucide-react';
+import { RefreshCw, Loader2 } from '@/lib/atlaskit-icons';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import { token } from '@atlaskit/tokens';

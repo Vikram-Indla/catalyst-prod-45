@@ -11,7 +11,7 @@ import { Button } from '@/components/ui/button';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Info, FileText, FileSpreadsheet, File } from 'lucide-react';
+import { Info, FileText, FileSpreadsheet, File } from '@/lib/atlaskit-icons';
 
 interface DemandExportModalProps {
   isOpen: boolean;

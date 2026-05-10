@@ -2,7 +2,7 @@
  * AvatarChip — User avatar with photo or face icon fallback
  * GUARDRAIL: Always renders CircleUser face icon when no photo (never bare initials).
  */
-import { CircleUser } from 'lucide-react';
+import { CircleUser } from '@/lib/atlaskit-icons';
 
 interface AvatarChipProps {
   name: string;

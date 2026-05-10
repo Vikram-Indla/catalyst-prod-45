@@ -4,7 +4,7 @@
 // ============================================================
 
 import { useState } from 'react';
-import { Plus } from 'lucide-react';
+import { Plus } from '@/lib/atlaskit-icons';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { useCreateKanbanStatus } from '../../hooks/useKanbanStatuses';

@@ -12,7 +12,7 @@ import React, { useState, useMemo } from 'react';
 import { WorkItem, ItemStatus } from '../types';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
-import { Calendar, ChevronDown, ChevronRight, Link2, AlertTriangle } from 'lucide-react';
+import { Calendar, ChevronDown, ChevronRight, Link2, AlertTriangle } from '@/lib/atlaskit-icons';
 
 interface BoardViewProps {
   items: WorkItem[];

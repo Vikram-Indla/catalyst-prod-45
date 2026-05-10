@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Settings, ChevronDown, ArrowLeft, User } from 'lucide-react';
+import { Settings, ChevronDown, ArrowLeft, User } from '@/lib/atlaskit-icons';
 import { DndContext, DragOverlay, closestCorners, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
 import type { DragEndEvent, DragStartEvent } from '@dnd-kit/core';
 import { useQueryClient } from '@tanstack/react-query';

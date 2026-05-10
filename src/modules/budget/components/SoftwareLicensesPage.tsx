@@ -4,7 +4,7 @@
 
 import React, { useState, useMemo } from 'react';
 import { CatalystPageHeader } from '@/components/shared/CatalystPageHeader';
-import { Plus, Search, Edit, Trash2, Package, AlertCircle } from 'lucide-react';
+import { Plus, Search, Edit, Trash2, Package, AlertCircle } from '@/lib/atlaskit-icons';
 import { format } from 'date-fns';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';

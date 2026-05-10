@@ -4,7 +4,7 @@
  */
 import { useState, useRef, useEffect, useCallback, memo } from 'react';
 import { createPortal } from 'react-dom';
-import { Search, User } from 'lucide-react';
+import { Search, User } from '@/lib/atlaskit-icons';
 import { KanbanAvatar } from './KanbanAvatar';
 import type { KanbanThemeTokens } from './kanban-tokens';
 

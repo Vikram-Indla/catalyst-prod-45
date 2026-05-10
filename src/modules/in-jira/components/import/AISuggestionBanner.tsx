@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Lozenge, type LozengeAppearance } from '@/components/ads';
-import { Sparkles, Check, X, ChevronDown, ChevronUp } from 'lucide-react';
+import { Sparkles, Check, X, ChevronDown, ChevronUp } from '@/lib/atlaskit-icons';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 

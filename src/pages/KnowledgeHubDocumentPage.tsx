@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { ArrowLeft, Save, Edit, Clock, Folder, History, ChevronRight } from 'lucide-react';
+import { ArrowLeft, Save, Edit, Clock, Folder, History, ChevronRight } from '@/lib/atlaskit-icons';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Skeleton } from '@/components/ui/skeleton';

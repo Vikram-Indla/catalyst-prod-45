@@ -13,7 +13,7 @@ import { Button } from '@/components/ui/button';
 import { 
   ClipboardList, Target, FileText, Users, 
   X, Sparkles, FileStack, Loader2, AlertCircle, Save
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 

@@ -5,7 +5,7 @@
 
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Eye, Users, Circle } from 'lucide-react';
+import { Eye, Users, Circle } from '@/lib/atlaskit-icons';
 import { Avatar, Lozenge, Tooltip } from '@/components/ads';
 import {
   HoverCard,

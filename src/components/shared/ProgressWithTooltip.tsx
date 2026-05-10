@@ -7,7 +7,7 @@
 
 import { Progress } from '@/components/ui/progress';
 import { Tooltip } from '@/components/ads';
-import { HelpCircle, TrendingUp, Layers, Target, FileText } from 'lucide-react';
+import { HelpCircle, TrendingUp, Layers, Target, FileText } from '@/lib/atlaskit-icons';
 import { useProgressCalculation, ProgressEntityType, ProgressData } from '@/hooks/useProgressCalculation';
 import { cn } from '@/lib/utils';
 

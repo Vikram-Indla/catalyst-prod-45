@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { AlertTriangle, X } from 'lucide-react';
+import { AlertTriangle, X } from '@/lib/atlaskit-icons';
 
 interface T10DeleteModalProps {
   isOpen: boolean;

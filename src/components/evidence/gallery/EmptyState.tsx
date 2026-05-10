@@ -3,7 +3,7 @@
 // ═══════════════════════════════════════════════════════════════════════════
 
 import React from 'react';
-import { Image as ImageIcon } from 'lucide-react';
+import { Image as ImageIcon } from '@/lib/atlaskit-icons';
 
 export const EmptyState: React.FC = () => (
   <div className="text-center py-12 border-2 border-dashed border-border rounded-xl">

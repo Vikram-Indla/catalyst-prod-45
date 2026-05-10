@@ -3,7 +3,7 @@
  * Numbered cards with gold left border accent
  */
 
-import { Plus, Trash2, GripVertical } from 'lucide-react';
+import { Plus, Trash2, GripVertical } from '@/lib/atlaskit-icons';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { cn } from '@/lib/utils';

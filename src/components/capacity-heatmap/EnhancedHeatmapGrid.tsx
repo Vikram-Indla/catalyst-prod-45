@@ -5,7 +5,7 @@
 
 import { memo, useMemo, useCallback, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronDown, ChevronRight, ArrowDownAZ, SortAsc, Clock, TrendingUp, TrendingDown, AlertTriangle, Calendar, Sparkles, Users } from 'lucide-react';
+import { ChevronDown, ChevronRight, ArrowDownAZ, SortAsc, Clock, TrendingUp, TrendingDown, AlertTriangle, Calendar, Sparkles, Users } from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 import { Tooltip } from '@/components/ads';
 import type { HeatmapResource, MonthlyUtilization } from '@/types/capacity-heatmap';

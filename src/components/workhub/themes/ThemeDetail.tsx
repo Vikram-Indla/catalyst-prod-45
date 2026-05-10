@@ -4,7 +4,7 @@
  */
 import { useState, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Pencil, Trash2, Layers, Plus, Loader2 } from 'lucide-react';
+import { ArrowLeft, Pencil, Trash2, Layers, Plus, Loader2 } from '@/lib/atlaskit-icons';
 import { useThemeProgressById, useDeleteTheme } from '@/hooks/workhub/useThemes';
 import { useWorkItems } from '@/hooks/workhub/useWorkItems';
 import { WorkItemsTable } from '../workitems/WorkItemsTable';

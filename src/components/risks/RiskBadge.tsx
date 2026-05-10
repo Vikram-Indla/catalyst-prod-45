@@ -5,7 +5,7 @@
 // ═══════════════════════════════════════════════════════════════════════════════
 
 import { cn } from '@/lib/utils';
-import { Check } from 'lucide-react';
+import { Check } from '@/lib/atlaskit-icons';
 import {
   RISK_COLORS,
   RISK_LETTER_CODES,

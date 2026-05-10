@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card } from '@/components/ui/card';
 import { Lozenge } from '@/components/ads';
-import { Plus, GripVertical, Settings as SettingsIcon, Trash2 } from 'lucide-react';
+import { Plus, GripVertical, Settings as SettingsIcon, Trash2 } from '@/lib/atlaskit-icons';
 import {
   Dialog,
   DialogContent,

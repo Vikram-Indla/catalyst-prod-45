@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { createPortal } from 'react-dom';
-import { ExternalLink, Pencil, Copy, Link2, ChevronRight, Archive, Trash2, CopyPlus } from 'lucide-react';
+import { ExternalLink, Pencil, Copy, Link2, ChevronRight, Archive, Trash2, CopyPlus } from '@/lib/atlaskit-icons';
 import type { Request, RequestStatus } from '@/types/request';
 import { STATUS_DISPLAY } from '@/types/request';
 import { toast } from 'sonner';

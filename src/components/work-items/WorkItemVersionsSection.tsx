@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Plus, X, Wrench, AlertTriangle } from 'lucide-react';
+import { Plus, X, Wrench, AlertTriangle } from '@/lib/atlaskit-icons';
 import { Button } from '@/components/ui/button';
 import { Lozenge } from '@/components/ads';
 import {

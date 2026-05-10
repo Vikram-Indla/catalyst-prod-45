@@ -6,7 +6,7 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { Plus, X, Check } from 'lucide-react';
+import { Plus, X, Check } from '@/lib/atlaskit-icons';
 import { useT10Labels, useT10CreateLabel } from '../../hooks';
 import { T10_LABEL_COLORS, type T10Label } from '../../types';
 

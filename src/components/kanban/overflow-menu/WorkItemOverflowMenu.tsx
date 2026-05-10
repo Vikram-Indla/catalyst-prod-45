@@ -10,7 +10,7 @@ import { useRef, useEffect, useState, useCallback } from 'react';
 import {
   ArrowRightLeft, RefreshCw, Link2, Copy, Flag, Tag,
   Link as LinkIcon, GitBranch, Archive, Trash2, ChevronRight,
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import type { BoardIssue } from '../kanban-types';
 import type { KanbanThemeTokens } from '../kanban-tokens';
 import { ArchiveConfirmDialog } from './ArchiveConfirmDialog';

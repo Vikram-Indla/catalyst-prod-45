@@ -4,7 +4,7 @@
  */
 
 import { motion } from 'framer-motion';
-import { Keyboard, Command, ArrowUp, ArrowDown, Search, Plus, Trash2, Copy, Edit, Eye, X } from 'lucide-react';
+import { Keyboard, Command, ArrowUp, ArrowDown, Search, Plus, Trash2, Copy, Edit, Eye, X } from '@/lib/atlaskit-icons';
 import {
   Dialog,
   DialogContent,

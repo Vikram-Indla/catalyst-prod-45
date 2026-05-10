@@ -18,7 +18,7 @@ import { FeatureBacklogItem } from '../types';
 import { Card } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
 import { cn } from '@/lib/utils';
-import { ChevronLeft, Inbox, Plus, GripVertical } from 'lucide-react';
+import { ChevronLeft, Inbox, Plus, GripVertical } from '@/lib/atlaskit-icons';
 
 interface FeatureKanbanColumnProps {
   columnId: string;

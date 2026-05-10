@@ -11,7 +11,7 @@
  */
 
 import { useState } from 'react';
-import { Users, Plus, X, Check, XCircle, AlertTriangle, Search, Clock, User } from 'lucide-react';
+import { Users, Plus, X, Check, XCircle, AlertTriangle, Search, Clock, User } from '@/lib/atlaskit-icons';
 import { Button } from '@/components/ui/button';
 import { Avatar, Lozenge, type LozengeAppearance } from '@/components/ads';
 import { Input } from '@/components/ui/input';

@@ -3,7 +3,7 @@
  */
 
 import React from 'react';
-import { UserPlus, Check, Trash2, X } from 'lucide-react';
+import { UserPlus, Check, Trash2, X } from '@/lib/atlaskit-icons';
 
 interface ForYouLightBulkBarProps {
   selectedCount: number;

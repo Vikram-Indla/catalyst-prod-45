@@ -1,4 +1,4 @@
-import { Star } from 'lucide-react';
+import { Star } from '@/lib/atlaskit-icons';
 
 interface StarButtonProps {
   isStarred: boolean;

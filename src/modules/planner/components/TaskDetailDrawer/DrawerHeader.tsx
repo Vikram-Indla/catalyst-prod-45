@@ -4,7 +4,7 @@
 // ============================================================
 
 import { useState, useMemo, useRef, useEffect } from 'react';
-import { X, ChevronDown, Check, Link2, MoreHorizontal, Edit, Copy, Trash2 } from 'lucide-react';
+import { X, ChevronDown, Check, Link2, MoreHorizontal, Edit, Copy, Trash2 } from '@/lib/atlaskit-icons';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import {
   DropdownMenu,

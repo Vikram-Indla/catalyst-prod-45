@@ -8,7 +8,7 @@ import { useCreateRaDocument } from '@/hooks/useRaDocuments';
 import { useRaSourceBrds } from '@/hooks/useRaDocuments';
 import { useRaGenerate } from '@/hooks/useRaGenerate';
 import { RaBadge } from '@/components/requirement-assist/RaBadge';
-import { Zap, Upload, FileText, X } from 'lucide-react';
+import { Zap, Upload, FileText, X } from '@/lib/atlaskit-icons';
 import { toast } from 'sonner';
 
 const METHODOLOGY_OPTIONS: { key: RaMethodology; title: string; sections: number }[] = [

@@ -5,7 +5,7 @@
 
 import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
-import { Users, ClipboardList, AlertTriangle, Calendar } from 'lucide-react';
+import { Users, ClipboardList, AlertTriangle, Calendar } from '@/lib/atlaskit-icons';
 import { CATALYST_V5 } from '@/lib/catalyst-colors';
 import type { WorkloadSummary } from '@/types/workload.types';
 

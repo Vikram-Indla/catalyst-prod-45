@@ -6,7 +6,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Lozenge } from '@/components/ads';
 import type { LozengeAppearance } from '@/components/ads';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Search, FileText, CheckCircle2, Loader2 } from 'lucide-react';
+import { Search, FileText, CheckCircle2, Loader2 } from '@/lib/atlaskit-icons';
 import { toast } from 'sonner';
 
 interface Requirement {

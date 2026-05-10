@@ -4,7 +4,7 @@
  */
 
 import React, { useState, useEffect, useMemo } from 'react';
-import { Loader2, MessageSquare, Clock, ArrowRight, RotateCcw, CheckCircle2, Circle, Timer, Users, BarChart3 } from 'lucide-react';
+import { Loader2, MessageSquare, Clock, ArrowRight, RotateCcw, CheckCircle2, Circle, Timer, Users, BarChart3 } from '@/lib/atlaskit-icons';
 import { StatusLozenge } from '@/components/ui/StatusLozenge';
 import { supabase } from '@/integrations/supabase/client';
 import { useProfileAvatarsByName } from '@/hooks/useProfileAvatars';

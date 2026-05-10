@@ -9,7 +9,7 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Lozenge } from '@/components/ads';
-import { ArrowLeft, Plus, Trash2, Save, Users } from 'lucide-react';
+import { ArrowLeft, Plus, Trash2, Save, Users } from '@/lib/atlaskit-icons';
 import { toast } from 'sonner';
 import {
   Select,

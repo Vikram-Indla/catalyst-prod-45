@@ -3,7 +3,7 @@
 // ═══════════════════════════════════════════════════════════════════════════
 
 import React from 'react';
-import { ArrowLeft, Save, Pencil, Loader2 } from 'lucide-react';
+import { ArrowLeft, Save, Pencil, Loader2 } from '@/lib/atlaskit-icons';
 import { Button } from '@/components/ui/button';
 import { formatDistanceToNow } from 'date-fns';
 

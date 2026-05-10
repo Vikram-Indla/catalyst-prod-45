@@ -31,7 +31,7 @@
  *   when the icon URL is missing.
  */
 import type { ReactNode } from 'react';
-import { AlertTriangle } from 'lucide-react';
+import { AlertTriangle } from '@/lib/atlaskit-icons';
 import type { KanbanColumnDef } from '../kanban-tokens';
 import type { BoardIssue } from '../kanban-types';
 import type {

@@ -6,7 +6,7 @@
  */
 
 import { useState } from 'react';
-import { X, User, Calendar, Building2, Briefcase, Loader2 } from 'lucide-react';
+import { X, User, Calendar, Building2, Briefcase, Loader2 } from '@/lib/atlaskit-icons';
 import { supabase } from '@/integrations/supabase/client';
 import { useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';

@@ -4,7 +4,7 @@
  */
 
 import DOMPurify from 'dompurify';
-import { Copy, RefreshCw, ThumbsUp, ThumbsDown } from 'lucide-react';
+import { Copy, RefreshCw, ThumbsUp, ThumbsDown } from '@/lib/atlaskit-icons';
 import catalystLogoWhite from '@/assets/catalyst-ai-logo-white.svg';
 import { cn } from '@/lib/utils';
 import type { ChatMessage } from './types';

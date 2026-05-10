@@ -4,7 +4,7 @@
 // ═══════════════════════════════════════════════════════════════════════════
 
 import React, { useRef, useCallback } from 'react';
-import { Printer } from 'lucide-react';
+import { Printer } from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import type { CatalystColumn } from '../types';

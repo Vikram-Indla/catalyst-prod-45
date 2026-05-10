@@ -22,7 +22,7 @@ import {
   ChevronRight,
   Clock,
   X,
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import { ProjectIcon } from '@/components/shared/ProjectIcon';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import { useLocation, useNavigate } from 'react-router-dom';

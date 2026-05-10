@@ -10,7 +10,7 @@ import { TimelineHeader } from './TimelineHeader';
 import { DepartmentRow } from './DepartmentRow';
 import { ResourceDrawer } from './ResourceDrawer';
 import { AllocationModal } from '@/components/resource-allocation';
-import { Loader2 } from 'lucide-react';
+import { Loader2 } from '@/lib/atlaskit-icons';
 import type { AllocationResource } from '@/types/resource-allocation.types';
 import '@/styles/capacity-module.css';
 

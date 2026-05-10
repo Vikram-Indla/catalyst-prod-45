@@ -12,7 +12,7 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button';
-import { AlertTriangle, Folder, FileText, ClipboardList } from 'lucide-react';
+import { AlertTriangle, Folder, FileText, ClipboardList } from '@/lib/atlaskit-icons';
 import { useDeleteFolder, useProjects } from '@/hooks/test-management';
 
 interface DeleteConfirmModalProps {

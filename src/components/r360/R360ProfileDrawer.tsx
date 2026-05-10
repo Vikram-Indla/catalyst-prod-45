@@ -11,7 +11,7 @@
  */
 import React, { useState, useMemo, useCallback, useEffect, memo } from 'react';
 import { useTheme } from '@/hooks/useTheme';
-import { ChevronLeft, X, RefreshCw } from 'lucide-react';
+import { ChevronLeft, X, RefreshCw } from '@/lib/atlaskit-icons';
 import { useQuery } from '@tanstack/react-query';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { R360_STATUS_MAP, R360_STATUS_DEFAULT } from '@/constants/r360';

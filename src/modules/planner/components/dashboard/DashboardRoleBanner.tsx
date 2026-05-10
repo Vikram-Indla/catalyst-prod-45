@@ -3,7 +3,7 @@
 // Clean pill badge + context text, no icons
 // ============================================================
 
-import { Users } from 'lucide-react';
+import { Users } from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 
 interface DashboardRoleBannerProps {

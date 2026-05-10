@@ -7,7 +7,7 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { catalystToast } from '@/lib/catalystToast';
 import { logRequestAudit } from '@/lib/requestAudit';
-import { Plus, Wallet, ChevronDown } from 'lucide-react';
+import { Plus, Wallet, ChevronDown } from '@/lib/atlaskit-icons';
 
 interface RequestBudgetTabProps {
   requestId: string;

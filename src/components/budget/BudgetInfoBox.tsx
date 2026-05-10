@@ -3,7 +3,7 @@
  * Per spec: Better spaced, color-coded terms
  */
 
-import { Info } from 'lucide-react';
+import { Info } from '@/lib/atlaskit-icons';
 
 export function BudgetInfoBox() {
   return (

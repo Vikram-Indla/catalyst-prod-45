@@ -11,7 +11,7 @@
 
 import { useState, useMemo, useEffect } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
-import { X, AlertCircle, Check, CheckCircle, Users, Loader2, Pencil } from 'lucide-react';
+import { X, AlertCircle, Check, CheckCircle, Users, Loader2, Pencil } from '@/lib/atlaskit-icons';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';

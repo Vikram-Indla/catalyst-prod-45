@@ -1,4 +1,4 @@
-import { LayoutGrid, Star, ChevronsLeft, ChevronsRight, FolderKanban } from 'lucide-react';
+import { LayoutGrid, Star, ChevronsLeft, ChevronsRight, FolderKanban } from '@/lib/atlaskit-icons';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { NavItem } from './NavItem';
 

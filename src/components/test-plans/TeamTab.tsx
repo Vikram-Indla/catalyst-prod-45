@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { UserPlus, X, Shield, User, Eye } from 'lucide-react';
+import { UserPlus, X, Shield, User, Eye } from '@/lib/atlaskit-icons';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Avatar, Lozenge, type LozengeAppearance } from '@/components/ads';

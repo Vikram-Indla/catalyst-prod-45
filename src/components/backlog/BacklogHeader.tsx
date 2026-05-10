@@ -1,4 +1,4 @@
-import { Eye, Filter, Search, List, LayoutGrid, Circle, TrendingUp, ArrowUpDown } from 'lucide-react';
+import { Eye, Filter, Search, List, LayoutGrid, Circle, TrendingUp, ArrowUpDown } from '@/lib/atlaskit-icons';
 import { ViewingDropdown } from './ViewingDropdown';
 import { ColumnsDropdown, ColumnConfig } from './ColumnsDropdown';
 import { LabelsDropdown, LabelConfig } from './LabelsDropdown';

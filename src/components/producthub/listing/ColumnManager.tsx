@@ -5,7 +5,7 @@
 
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { createPortal } from 'react-dom';
-import { GripVertical, Check } from 'lucide-react';
+import { GripVertical, Check } from '@/lib/atlaskit-icons';
 
 export interface ColumnConfig {
   id: string;

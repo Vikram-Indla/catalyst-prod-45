@@ -1,5 +1,5 @@
 import { useState, useMemo, useCallback, useEffect } from 'react';
-import { Users, Pencil, Trash2, Settings2, Building2 } from 'lucide-react';
+import { Users, Pencil, Trash2, Settings2, Building2 } from '@/lib/atlaskit-icons';
 import { Button } from '@/components/ui/button';
 import { Tooltip } from '@/components/ads';
 import { cn } from '@/lib/utils';

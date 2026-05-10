@@ -4,7 +4,7 @@
  */
 
 import { useState, useMemo } from 'react';
-import { ChevronRight, Folder, FolderOpen, Plus, Trash2, Edit2, MoreHorizontal } from 'lucide-react';
+import { ChevronRight, Folder, FolderOpen, Plus, Trash2, Edit2, MoreHorizontal } from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 import { TMFolder } from '@/types/test-management';
 

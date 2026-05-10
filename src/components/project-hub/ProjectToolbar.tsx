@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Search, List, LayoutGrid } from 'lucide-react';
+import { Search, List, LayoutGrid } from '@/lib/atlaskit-icons';
 import { FilterDropdown, FilterChips, FilterState } from './FilterDropdown';
 
 interface ProjectToolbarProps {

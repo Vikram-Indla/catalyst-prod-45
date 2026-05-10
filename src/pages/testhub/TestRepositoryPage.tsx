@@ -4,7 +4,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { RefreshCw, Plus, Trash2, MoveRight, CheckSquare, Download, Upload, Sparkles, UserPlus, Tag } from 'lucide-react';
+import { RefreshCw, Plus, Trash2, MoveRight, CheckSquare, Download, Upload, Sparkles, UserPlus, Tag } from '@/lib/atlaskit-icons';
 import { CatalystPageHeader } from '@/components/shared/CatalystPageHeader';
 import { FolderPanel } from '@/components/testhub/FolderPanel';
 import { TestCasesTable } from '@/components/testhub/TestCasesTable';

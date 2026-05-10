@@ -5,7 +5,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-import { ChevronDown, Lock, Save, AlertCircle, RefreshCw, X } from 'lucide-react';
+import { ChevronDown, Lock, Save, AlertCircle, RefreshCw, X } from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 import { BusinessRequest } from '@/types/business-request';
 import { useToast } from '@/hooks/use-toast';

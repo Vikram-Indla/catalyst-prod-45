@@ -3,7 +3,7 @@
 // GUARDRAIL: Renders CircleUser face icon (never bare initials)
 // ============================================================
 
-import { CircleUser } from 'lucide-react';
+import { CircleUser } from '@/lib/atlaskit-icons';
 import type { KanbanProfile, KanbanWorkstream } from '../../types/kanban';
 import { cn } from '@/lib/utils';
 import { getWorkstreamColor } from '@/lib/workstream-colors';

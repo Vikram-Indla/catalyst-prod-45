@@ -7,7 +7,7 @@
  */
 
 import React from 'react';
-import { Search } from 'lucide-react';
+import { Search } from '@/lib/atlaskit-icons';
 import { useGlobalSearchStore } from '@/store/globalSearchStore';
 
 interface ForYouToolbarProps {

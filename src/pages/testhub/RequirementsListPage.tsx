@@ -8,7 +8,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
   FileCheck, Plus, Search, X, Link2, RefreshCw, ChevronRight
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { catalystToast } from '@/components/ui/CatalystToast';
 import { useTheme } from '@/hooks/useTheme';

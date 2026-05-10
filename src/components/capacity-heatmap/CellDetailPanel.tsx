@@ -5,7 +5,7 @@
 
 import { memo } from 'react';
 import { motion } from 'framer-motion';
-import { X, AlertTriangle, Calendar, Briefcase, Plus, Edit2 } from 'lucide-react';
+import { X, AlertTriangle, Calendar, Briefcase, Plus, Edit2 } from '@/lib/atlaskit-icons';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import type { HeatmapResource, MonthlyUtilization, GhostAllocation } from '@/types/capacity-heatmap';

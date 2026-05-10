@@ -4,7 +4,7 @@
  */
 
 import { useState, useRef, useEffect, useMemo, useCallback, memo } from 'react';
-import { Check, Plus, Search, Loader2 } from 'lucide-react';
+import { Check, Plus, Search, Loader2 } from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 import {
   Popover,

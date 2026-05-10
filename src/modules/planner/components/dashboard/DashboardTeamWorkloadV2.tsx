@@ -5,7 +5,7 @@
 // ============================================================
 
 import { useNavigate } from 'react-router-dom';
-import { Users, UserMinus } from 'lucide-react';
+import { Users, UserMinus } from '@/lib/atlaskit-icons';
 import type { TeamWorkload } from '../../types/planner-dashboard';
 import { cn } from '@/lib/utils';
 import { Avatar } from '@/components/ads';

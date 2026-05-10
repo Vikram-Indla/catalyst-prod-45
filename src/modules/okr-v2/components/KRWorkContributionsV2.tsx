@@ -21,7 +21,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Plus, Trash2, AlertCircle } from 'lucide-react';
+import { Plus, Trash2, AlertCircle } from '@/lib/atlaskit-icons';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 
 interface KRWorkContributionsV2Props {

@@ -6,7 +6,7 @@
 // ============================================================
 
 import { useState, useEffect } from 'react';
-import { ArrowRight, Link2, Star, Check, Loader2 } from 'lucide-react';
+import { ArrowRight, Link2, Star, Check, Loader2 } from '@/lib/atlaskit-icons';
 import { Button } from '@/components/ui/button';
 import {
   Popover,

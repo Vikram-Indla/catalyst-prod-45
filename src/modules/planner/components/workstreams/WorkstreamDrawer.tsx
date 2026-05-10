@@ -22,7 +22,7 @@ import {
   LayoutGrid,
   List,
   Loader2
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import {

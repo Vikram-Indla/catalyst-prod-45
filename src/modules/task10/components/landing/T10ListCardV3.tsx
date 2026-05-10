@@ -5,7 +5,7 @@
 // ═══════════════════════════════════════════════════════════════════════════════
 
 import React, { useState } from 'react';
-import { Plus, MoreVertical, ChevronDown, Pencil, Trash2 } from 'lucide-react';
+import { Plus, MoreVertical, ChevronDown, Pencil, Trash2 } from '@/lib/atlaskit-icons';
 import { useNavigate } from 'react-router-dom';
 import { formatT10Date, getT10SlotsAvailable } from '../../utils';
 import type { T10ListCardView } from '../../types/listCards';

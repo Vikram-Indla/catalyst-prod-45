@@ -6,7 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { toast } from 'sonner';
-import { Settings, Globe, Layout, Bell } from 'lucide-react';
+import { Settings, Globe, Layout, Bell } from '@/lib/atlaskit-icons';
 
 export function UserPreferencesPanel() {
   const [prefs, setPrefs] = useState({

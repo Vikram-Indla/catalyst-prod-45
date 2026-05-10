@@ -4,7 +4,7 @@
  */
 
 import { useState } from 'react';
-import { Calendar } from 'lucide-react';
+import { Calendar } from '@/lib/atlaskit-icons';
 import { Button } from '@/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar as CalendarComponent } from '@/components/ui/calendar';

@@ -4,7 +4,7 @@
  */
 
 import { useState, useMemo } from 'react';
-import { X, Search, ChevronRight, ChevronDown } from 'lucide-react';
+import { X, Search, ChevronRight, ChevronDown } from '@/lib/atlaskit-icons';
 import { createPortal } from 'react-dom';
 import type { WorkItem } from '@/types/hierarchy';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';

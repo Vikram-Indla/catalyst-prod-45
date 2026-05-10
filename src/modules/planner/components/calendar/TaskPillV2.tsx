@@ -5,7 +5,7 @@
 
 import { useState, useRef, useCallback, useMemo } from 'react';
 import { isBefore, startOfDay, differenceInDays, formatDistanceToNow } from 'date-fns';
-import { GripVertical } from 'lucide-react';
+import { GripVertical } from '@/lib/atlaskit-icons';
 import type { PlannerTask } from '../../types';
 import { TaskHoverCard } from './TaskHoverCard';
 import '../../styles/planner-calendar.css';

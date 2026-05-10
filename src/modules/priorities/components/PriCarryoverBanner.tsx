@@ -2,7 +2,7 @@
 // File: src/modules/priorities/components/PriCarryoverBanner.tsx
 // ============================================================
 
-import { AlertTriangle, Check } from 'lucide-react';
+import { AlertTriangle, Check } from '@/lib/atlaskit-icons';
 import styles from '../styles/priorities.module.css';
 
 interface PriCarryoverBannerProps {

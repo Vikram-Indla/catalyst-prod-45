@@ -4,7 +4,7 @@
 
 import React, { useState } from 'react';
 import DOMPurify from 'dompurify';
-import { FileSearch, FileText, Loader2, Copy, Check, RefreshCw } from 'lucide-react';
+import { FileSearch, FileText, Loader2, Copy, Check, RefreshCw } from '@/lib/atlaskit-icons';
 import { toast } from 'sonner';
 import { formatDistanceToNow } from 'date-fns';
 import { cn } from '@/lib/utils';

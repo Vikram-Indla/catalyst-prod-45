@@ -1,5 +1,5 @@
 import { QualityGate } from '@/types/release-dashboard';
-import { CheckCircle, XCircle, Clock } from 'lucide-react';
+import { CheckCircle, XCircle, Clock } from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 
 interface QualityGatesWidgetProps {

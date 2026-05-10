@@ -4,7 +4,7 @@
  */
 import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Users, TrendingUp, AlertTriangle, BarChart3 } from 'lucide-react';
+import { Users, TrendingUp, AlertTriangle, BarChart3 } from '@/lib/atlaskit-icons';
 import { useResource360People, useResource360Departments } from '@/hooks/workhub/useResource360Data';
 import { CommandCenterHeader } from '@/components/shared/CommandCenterHeader';
 import { ResourceCard } from './ResourceCard';

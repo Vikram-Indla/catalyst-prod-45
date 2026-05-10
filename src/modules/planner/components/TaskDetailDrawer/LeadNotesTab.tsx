@@ -21,7 +21,7 @@ import {
   AlertDialogTitle, 
   AlertDialogTrigger 
 } from '@/components/ui/alert-dialog';
-import { FileText, Pencil, Trash2, Send, X, Check } from 'lucide-react';
+import { FileText, Pencil, Trash2, Send, X, Check } from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 import {
   useLeadNotes,

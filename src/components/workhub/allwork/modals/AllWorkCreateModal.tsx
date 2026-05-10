@@ -2,7 +2,7 @@
  * AllWorkCreateModal — Create work item modal (NO native <select>)
  */
 import { useState, useRef, useEffect } from 'react';
-import { X, Loader2, ChevronDown, Check } from 'lucide-react';
+import { X, Loader2, ChevronDown, Check } from '@/lib/atlaskit-icons';
 import { useIssueTypes } from '@/hooks/workhub/useWorkItems';
 import { toast } from 'sonner';
 import { useQueryClient } from '@tanstack/react-query';

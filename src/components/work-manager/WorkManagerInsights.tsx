@@ -3,7 +3,7 @@
 
 import { useState, useMemo, useRef } from 'react';
 import { useProfileAvatarsByName } from '@/hooks/useProfileAvatars';
-import { CheckCircle, Clock, AlertTriangle, XCircle, FileText, Download } from 'lucide-react';
+import { CheckCircle, Clock, AlertTriangle, XCircle, FileText, Download } from '@/lib/atlaskit-icons';
 import { Button } from '@/components/ui/button';
 import {
   Select,

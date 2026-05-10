@@ -11,7 +11,7 @@ import { toast } from 'sonner';
 import {
   X, ChevronDown, Plus, Share2, Trash2, Copy, Check, Loader2,
   MessageSquare, Clock, MoreHorizontal,
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import {
   IssueIcon, Skel,
 } from '@/modules/project-work-hub/components/dialogs/story-detail-modules/shared-components';

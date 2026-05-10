@@ -3,7 +3,7 @@
  */
 
 import React from 'react';
-import { Clock, Bot, User, Settings } from 'lucide-react';
+import { Clock, Bot, User, Settings } from '@/lib/atlaskit-icons';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Lozenge, Tooltip } from '@/components/ads';
 import type { LozengeAppearance } from '@/components/ads';

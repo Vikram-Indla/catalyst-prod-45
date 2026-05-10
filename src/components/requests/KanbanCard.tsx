@@ -1,6 +1,6 @@
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { Star, AlertTriangle } from 'lucide-react';
+import { Star, AlertTriangle } from '@/lib/atlaskit-icons';
 import type { Request, Density } from '@/types/request';
 import { getPriorityLevel, getAvatarColor, getInitials } from '@/types/request';
 import { cn } from '@/lib/utils';

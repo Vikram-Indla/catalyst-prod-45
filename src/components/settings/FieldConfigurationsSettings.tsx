@@ -3,7 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
-import { Settings2 } from 'lucide-react';
+import { Settings2 } from '@/lib/atlaskit-icons';
 
 // Source: Field_Configurations.doc
 // "AIO Tests allows you to configure the default fields in Cases, Sets, Cycles and Run"

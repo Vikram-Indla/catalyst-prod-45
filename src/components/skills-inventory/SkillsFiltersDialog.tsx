@@ -5,7 +5,7 @@ import { Tooltip } from '@/components/ads';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Slider } from '@/components/ui/slider';
-import { ChevronUp, X } from 'lucide-react';
+import { ChevronUp, X } from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 
 export type SkillsQuickFilter = 'myTeam' | 'expertsOnly' | 'criticalGaps' | 'lowCoverage' | null;

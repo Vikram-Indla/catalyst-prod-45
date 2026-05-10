@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { X, Save, CheckCircle } from 'lucide-react';
+import { X, Save, CheckCircle } from '@/lib/atlaskit-icons';
 import { useCreateBusinessRequest } from '@/hooks/useBusinessRequests';
 import { toast } from 'sonner';
 import { CatalystCreateDemand } from './create-tabs/CatalystCreateDemand';

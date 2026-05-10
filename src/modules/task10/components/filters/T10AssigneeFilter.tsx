@@ -4,7 +4,7 @@
 // ═══════════════════════════════════════════════════════════════════════════════
 
 import React, { useState } from 'react';
-import { User, ChevronDown, Check, X } from 'lucide-react';
+import { User, ChevronDown, Check, X } from '@/lib/atlaskit-icons';
 import {
   Popover,
   PopoverContent,

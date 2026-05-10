@@ -3,7 +3,7 @@
 // Saved view tabs with counts
 // =====================================================
 
-import { Plus } from 'lucide-react';
+import { Plus } from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 import type { SavedView } from '@/types/defect.types';
 

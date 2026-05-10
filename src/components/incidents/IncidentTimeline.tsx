@@ -16,7 +16,7 @@ import {
   Table,
   Code,
   MoreHorizontal
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import { Button } from '@/components/ui/button';
 import { CatalystOwnerAvatar } from '@/components/ui/catalyst';
 import { cn } from '@/lib/utils';

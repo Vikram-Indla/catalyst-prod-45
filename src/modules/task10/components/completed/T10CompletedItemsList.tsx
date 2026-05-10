@@ -4,7 +4,7 @@
 // ═══════════════════════════════════════════════════════════════════════════════
 
 import React from 'react';
-import { Check, ArrowRight, X, Circle } from 'lucide-react';
+import { Check, ArrowRight, X, Circle } from '@/lib/atlaskit-icons';
 import { useT10CompletedItems } from '../../hooks/useT10Completed';
 import { formatT10Date } from '../../utils';
 import type { T10CompletedItem } from '../../types/completed';

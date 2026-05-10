@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { LogOut, Settings as SettingsIcon, User as UserIcon, Users, Sun, Moon, Monitor, Palette } from 'lucide-react';
+import { LogOut, Settings as SettingsIcon, User as UserIcon, Users, Sun, Moon, Monitor, Palette } from '@/lib/atlaskit-icons';
 
 import {
   DropdownMenu,

@@ -20,7 +20,7 @@ import {
   ExternalLink,
   Bell,
   Lock
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,

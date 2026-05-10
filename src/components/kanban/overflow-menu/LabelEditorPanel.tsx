@@ -6,7 +6,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { Check, Search, Plus } from 'lucide-react';
+import { Check, Search, Plus } from '@/lib/atlaskit-icons';
 import type { KanbanThemeTokens } from '../kanban-tokens';
 
 const LABEL_COLORS = ['#4C9AFF', '#00B8D9', '#36B37E', '#FFAB00', '#FF5630', '#6554C0', '#FF7452', '#57D9A3', '#FFC400', '#998DD9', '#79E2F2', '#FF8F73'];

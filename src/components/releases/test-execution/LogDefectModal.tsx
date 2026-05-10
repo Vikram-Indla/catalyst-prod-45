@@ -22,7 +22,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Bug, Upload } from 'lucide-react';
+import { Bug, Upload } from '@/lib/atlaskit-icons';
 
 interface LogDefectModalProps {
   isOpen: boolean;

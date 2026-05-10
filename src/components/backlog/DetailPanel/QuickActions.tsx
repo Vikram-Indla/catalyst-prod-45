@@ -1,4 +1,4 @@
-import { Zap, MessageSquare, Star, Grid, BarChart2, FileText, Link, FileSignature, Activity } from 'lucide-react';
+import { Zap, MessageSquare, Star, Grid, BarChart2, FileText, Link, FileSignature, Activity } from '@/lib/atlaskit-icons';
 
 interface QuickActionsProps {
   discussionCount: number;

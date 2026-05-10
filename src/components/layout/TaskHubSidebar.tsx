@@ -15,7 +15,7 @@ import {
   List,
   Layers,
   LucideProps,
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import { SidebarBase, SidebarConfig } from './SidebarBase';
 
 interface TaskHubSidebarProps {

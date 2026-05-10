@@ -3,7 +3,7 @@
 
 import React, { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Star, Eye, FileText, MoreHorizontal, ExternalLink, Trash2, Search } from 'lucide-react';
+import { Star, Eye, FileText, MoreHorizontal, ExternalLink, Trash2, Search } from '@/lib/atlaskit-icons';
 import { Input } from '@/components/ui/input';
 import { Avatar, Tooltip } from '@/components/ads';
 import { WorkItemIcon } from '@/components/ja/icons/WorkItemIcon';

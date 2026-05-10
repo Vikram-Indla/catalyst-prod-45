@@ -3,7 +3,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { ChevronDown, Check, Calendar } from 'lucide-react';
+import { ChevronDown, Check, Calendar } from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 import { CatalystDatePicker } from '@/components/ui/catalyst-date-picker';
 import { format, startOfQuarter, endOfQuarter, addMonths } from 'date-fns';

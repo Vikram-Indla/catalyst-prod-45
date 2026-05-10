@@ -16,7 +16,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Card, CardContent } from '@/components/ui/card';
-import { Plus, Trash2, Flag, CheckCircle, AlertCircle, GripVertical } from 'lucide-react';
+import { Plus, Trash2, Flag, CheckCircle, AlertCircle, GripVertical } from '@/lib/atlaskit-icons';
 import type { TemplateMilestone } from '@/types/template.types';
 import { v4 as uuidv4 } from 'uuid';
 

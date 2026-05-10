@@ -6,7 +6,7 @@
  * - Comments can be resolved
  */
 import { useState } from 'react';
-import { MessageCircle, Send, Check, MoreVertical, Trash2, Reply } from 'lucide-react';
+import { MessageCircle, Send, Check, MoreVertical, Trash2, Reply } from '@/lib/atlaskit-icons';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Avatar, Lozenge } from '@/components/ads';

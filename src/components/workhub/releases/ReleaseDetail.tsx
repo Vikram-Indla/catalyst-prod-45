@@ -7,7 +7,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import {
   ArrowLeft, Rocket, TrendingUp, FileStack, Users,
   FolderGit2, AlertTriangle, Loader2,
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import { useJiraRelease } from '@/hooks/workhub/useJiraReleases';
 import { useWorkItems } from '@/hooks/workhub/useWorkItems';
 import { StackedProgressBar } from '../shared/StackedProgressBar';

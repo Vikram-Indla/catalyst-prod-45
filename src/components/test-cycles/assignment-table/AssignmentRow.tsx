@@ -7,7 +7,7 @@ import { format } from 'date-fns';
 import { 
   MoreHorizontal, CheckCircle, XCircle, AlertTriangle, Clock, PlayCircle,
   Bot, User, Settings, ExternalLink
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Lozenge, Tooltip } from '@/components/ads';
 import { Button } from '@/components/ui/button';

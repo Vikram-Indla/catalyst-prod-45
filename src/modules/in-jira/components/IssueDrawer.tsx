@@ -12,7 +12,7 @@ import {
   Maximize2,
   Minimize2,
   Share2
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import AiChatIcon from '@atlaskit/icon/core/ai-chat';
 import MagicWandIcon from '@atlaskit/icon/core/magic-wand';
 import AKButton, { IconButton } from '@atlaskit/button/new';

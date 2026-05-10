@@ -1,5 +1,5 @@
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Plus, Bell, Settings, Search } from 'lucide-react';
+import { Plus, Bell, Settings, Search } from '@/lib/atlaskit-icons';
 import { UserAvatar } from './UserAvatar';
 
 const HUB_TABS = [

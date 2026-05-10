@@ -4,7 +4,7 @@ import {
   MoreVertical, Play, Eye, Pencil, Copy, Trash2, 
   CheckCircle2, XCircle, AlertTriangle, Clock,
   Calendar, Archive, RotateCcw
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 
 interface TestCycle {
   id: string;

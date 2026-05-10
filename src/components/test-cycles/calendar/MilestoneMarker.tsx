@@ -1,5 +1,5 @@
 import React from 'react';
-import { Flag, FlagTriangleRight } from 'lucide-react';
+import { Flag, FlagTriangleRight } from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 
 interface MilestoneMarkerProps {

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Search, ChevronDown, ChevronRight, MoreHorizontal, Settings2, BarChart3 } from 'lucide-react';
+import { Search, ChevronDown, ChevronRight, MoreHorizontal, Settings2, BarChart3 } from '@/lib/atlaskit-icons';
 import { useWorkItemsByAssignee, useUpdateWorkItemStatus } from '../../hooks/useWorkItems';
 import { DEFAULT_BOARD_COLUMNS, WorkItem, BoardGrouping, WorkItemType } from '../../types';
 import { WorkTypeIcon } from '../WorkTypeIcon';

@@ -6,7 +6,7 @@
  */
 
 import { useState, useRef, useEffect, useCallback } from 'react';
-import { Check, Loader2, X } from 'lucide-react';
+import { Check, Loader2, X } from '@/lib/atlaskit-icons';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { cn } from '@/lib/utils';

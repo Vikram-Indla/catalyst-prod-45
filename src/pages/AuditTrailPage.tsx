@@ -10,7 +10,7 @@ import { Button } from '@/components/ui/button';
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from '@/components/ui/select';
-import { ChevronLeft, ChevronRight, Download } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Download } from '@/lib/atlaskit-icons';
 
 const CATEGORY_MAP: Record<number, string> = {
   1: 'Ghost',

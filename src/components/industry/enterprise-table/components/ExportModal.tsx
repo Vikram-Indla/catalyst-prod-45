@@ -4,7 +4,7 @@
 // ═══════════════════════════════════════════════════════════════════════════
 
 import React, { useState, useCallback } from 'react';
-import { Download, FileSpreadsheet, FileJson, FileText, File, X, Check, Loader2 } from 'lucide-react';
+import { Download, FileSpreadsheet, FileJson, FileText, File, X, Check, Loader2 } from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import {

@@ -15,7 +15,7 @@ import {
   ChevronDown, 
   Settings, 
   Calendar as CalendarIcon
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import { format } from 'date-fns';
 import { toast } from 'sonner';
 

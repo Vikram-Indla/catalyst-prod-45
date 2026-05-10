@@ -3,7 +3,7 @@
  */
 
 import React from 'react';
-import { Minus, RefreshCw } from 'lucide-react';
+import { Minus, RefreshCw } from '@/lib/atlaskit-icons';
 
 interface CatyHeaderProps {
   isOnline?: boolean;

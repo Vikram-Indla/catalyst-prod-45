@@ -5,7 +5,7 @@
 
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ChevronLeft, Settings, Users, MoreHorizontal, Plus } from 'lucide-react';
+import { ChevronLeft, Settings, Users, MoreHorizontal, Plus } from '@/lib/atlaskit-icons';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,

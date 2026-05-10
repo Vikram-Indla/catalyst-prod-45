@@ -18,7 +18,7 @@ import {
   Bug,
   Network,
   Map
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import {
   Select,
   SelectContent,

@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ChevronDown, Search, Plus, Download, LayoutList, LayoutGrid, Columns3, Package } from 'lucide-react';
+import { ChevronDown, Search, Plus, Download, LayoutList, LayoutGrid, Columns3, Package } from '@/lib/atlaskit-icons';
 import { useRequestsBacklog } from '@/hooks/useRequestsBacklog';
 // jira-compare cycle 4 — RequestDetailPanel replaced by CatalystViewBusinessRequestV2.
 // Legacy import retained as commented sunset breadcrumb.

@@ -9,7 +9,7 @@ import { Lozenge, type LozengeAppearance } from '@/components/ads';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { X, AlertCircle, AlertTriangle, ChevronRight } from 'lucide-react';
+import { X, AlertCircle, AlertTriangle, ChevronRight } from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 import {
   classifyDirection,

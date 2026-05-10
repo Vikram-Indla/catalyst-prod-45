@@ -3,7 +3,7 @@
 // ============================================================================
 
 import React, { useState } from 'react';
-import { FileText, Download, Trash2 } from 'lucide-react';
+import { FileText, Download, Trash2 } from '@/lib/atlaskit-icons';
 import { COLORS } from '../colors';
 
 interface FileItemProps {

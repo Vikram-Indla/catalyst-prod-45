@@ -3,7 +3,7 @@ import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Tooltip } from '@/components/ads';
-import { ChevronUp, X } from 'lucide-react';
+import { ChevronUp, X } from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 import type { IncidentFilters, IncidentStatus, SupportLevel } from '@/types/incident';
 

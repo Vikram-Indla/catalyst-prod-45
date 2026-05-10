@@ -7,7 +7,7 @@ import {
   Grid3x3,
   Layers,
   AlertTriangle,
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import {
   Select,
   SelectContent,

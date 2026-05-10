@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Plus, Filter, Download, Settings2 } from 'lucide-react';
+import { Plus, Filter, Download, Settings2 } from '@/lib/atlaskit-icons';
 import { StoriesGrid } from '@/components/stories/StoriesGrid';
 import { StoryDetailPanel } from '@/components/stories/StoryDetailPanel';
 import { CreateEditStoryPanel } from '@/components/stories/CreateEditStoryPanel';

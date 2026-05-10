@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Check, Clock, Loader2, AlertTriangle } from 'lucide-react';
+import { Check, Clock, Loader2, AlertTriangle } from '@/lib/atlaskit-icons';
 import type { RADocumentWithArtifacts } from '@/types/reqAssistV2';
 import { toast } from 'sonner';
 import { useQueueJob, useRAJobPolling, RA_KEYS } from '@/hooks/useReqAssist';

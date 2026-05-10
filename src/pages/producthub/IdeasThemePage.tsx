@@ -4,7 +4,7 @@
  */
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Building2, Globe, BarChart3, Lightbulb, Target, Zap, TrendingUp, Settings, Info } from 'lucide-react';
+import { Building2, Globe, BarChart3, Lightbulb, Target, Zap, TrendingUp, Settings, Info } from '@/lib/atlaskit-icons';
 import { useIdeaThemeSummary, useIdeasHub } from '@/hooks/useIdeasHub';
 import { useTheme } from '@/hooks/useTheme';
 import { DK, LK } from '@/utils/dark-mode-styles';

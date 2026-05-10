@@ -6,7 +6,7 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { catalystToast } from '@/lib/catalystToast';
 import { logRequestAudit } from '@/lib/requestAudit';
-import { Plus, ShieldAlert, X, ChevronDown, Search } from 'lucide-react';
+import { Plus, ShieldAlert, X, ChevronDown, Search } from '@/lib/atlaskit-icons';
 import { useProfileOptions } from '@/hooks/useRequestLookups';
 
 interface RequestRisksTabProps {

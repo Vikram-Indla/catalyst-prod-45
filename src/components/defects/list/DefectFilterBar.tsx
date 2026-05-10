@@ -4,7 +4,7 @@
 // =====================================================
 
 import { useState, useRef } from 'react';
-import { Search, Plus, X, Keyboard } from 'lucide-react';
+import { Search, Plus, X, Keyboard } from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';

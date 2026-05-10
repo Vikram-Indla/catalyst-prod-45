@@ -1,4 +1,4 @@
-import { Sparkles } from 'lucide-react';
+import { Sparkles } from '@/lib/atlaskit-icons';
 
 interface FeatureComingSoonProps {
   title?: string;

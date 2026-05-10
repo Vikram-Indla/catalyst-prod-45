@@ -4,7 +4,7 @@
  */
 
 import { useNavigate } from 'react-router-dom';
-import { XCircle, Eye, AlertTriangle, TrendingDown } from 'lucide-react';
+import { XCircle, Eye, AlertTriangle, TrendingDown } from '@/lib/atlaskit-icons';
 import { formatTimeAbbreviated } from '@/lib/formatTimeAgo';
 
 export interface FailingTest {

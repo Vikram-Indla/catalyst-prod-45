@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { ChevronDown, Check, X, Filter, Loader2 } from 'lucide-react';
+import { ChevronDown, Check, X, Filter, Loader2 } from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 import { useCatalystContext } from '@/contexts/CatalystContext';
 import { useProcessSteps } from '@/contexts/ProcessStepsContext';

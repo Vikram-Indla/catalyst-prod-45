@@ -17,7 +17,7 @@ import {
   ChevronDown,
   RefreshCw,
   AlertTriangle
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Avatar, Lozenge, Tooltip } from '@/components/ads';

@@ -5,7 +5,7 @@
  */
 
 import { cn } from '@/lib/utils';
-import { Pencil, Trash2 } from 'lucide-react';
+import { Pencil, Trash2 } from '@/lib/atlaskit-icons';
 import type { TimelineBar } from '@/types/resource-allocation.types';
 import { Tooltip } from '@/components/ads';
 import {

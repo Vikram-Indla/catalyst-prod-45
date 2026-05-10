@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Search, SlidersHorizontal, Plus } from 'lucide-react';
+import { Search, SlidersHorizontal, Plus } from '@/lib/atlaskit-icons';
 import { useBoards } from '@/hooks/useBoards';
 import BoardCard from './BoardCard';
 import CreateBoardModal from './CreateBoardModal';

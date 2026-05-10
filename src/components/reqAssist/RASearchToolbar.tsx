@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import { Search, Sparkles, Loader2 } from 'lucide-react';
+import { Search, Sparkles, Loader2 } from '@/lib/atlaskit-icons';
 import type { RAFilterTab } from '@/types/reqAssistV2';
 
 const TABS: { key: RAFilterTab; label: string }[] = [

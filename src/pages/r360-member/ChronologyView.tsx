@@ -3,7 +3,7 @@
  * Extracted from R360MemberDetail.tsx
  */
 import React, { useState, useMemo, useRef } from 'react';
-import { ChevronDown } from 'lucide-react';
+import { ChevronDown } from '@/lib/atlaskit-icons';
 import { useTheme } from '@/hooks/useTheme';
 import { getJiraIcon } from '@/components/r360/R360JiraIcons';
 import type { R360WorkItem } from '@/types/r360';

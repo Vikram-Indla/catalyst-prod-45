@@ -7,7 +7,7 @@ import React from 'react';
 import { 
   Layers, CheckCircle, XCircle, AlertTriangle, 
   PlayCircle, Clock, BarChart3, Users
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { CATALYST_V5, TEST_STATUS_COLORS } from '@/lib/catalyst-colors';

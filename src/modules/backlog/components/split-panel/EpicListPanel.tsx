@@ -6,7 +6,7 @@
 
 import React from 'react';
 import { cn } from '@/lib/utils';
-import { Search, Circle } from 'lucide-react';
+import { Search, Circle } from '@/lib/atlaskit-icons';
 import { Lozenge, Tooltip } from '@/components/ads';
 
 export interface EpicListItem {

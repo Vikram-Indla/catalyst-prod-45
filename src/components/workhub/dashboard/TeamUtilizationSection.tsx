@@ -3,7 +3,7 @@
  * Phase 8
  */
 import { useNavigate } from 'react-router-dom';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight } from '@/lib/atlaskit-icons';
 import type { ResourceUtilization } from '@/types/workhub.types';
 import { AvatarChip } from '../shared/AvatarChip';
 import { UtilizationBar } from '../shared/UtilizationBar';

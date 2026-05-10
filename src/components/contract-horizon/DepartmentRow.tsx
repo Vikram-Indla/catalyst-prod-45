@@ -3,7 +3,7 @@
  * Expandable department with resources organized by month
  */
 
-import { ChevronDown } from 'lucide-react';
+import { ChevronDown } from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 import { ResourceCard } from './ResourceCard';
 import type { DepartmentStats, ContractResourceWithStatus } from '@/types/contract-horizon';

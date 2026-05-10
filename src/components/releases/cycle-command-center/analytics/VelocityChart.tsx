@@ -6,7 +6,7 @@ import React from 'react';
 import { ComposedChart, Bar, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Legend } from 'recharts';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Zap } from 'lucide-react';
+import { Zap } from '@/lib/atlaskit-icons';
 import { CATALYST_V5 } from '@/lib/catalyst-colors';
 import { useCycleExecutionVelocity } from '@/hooks/test-cycles/useCycleExecutionVelocity';
 

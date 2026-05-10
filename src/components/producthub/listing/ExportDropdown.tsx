@@ -5,7 +5,7 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { FileText, FileSpreadsheet } from 'lucide-react';
+import { FileText, FileSpreadsheet } from '@/lib/atlaskit-icons';
 import { format } from 'date-fns';
 import type { Request } from '@/types/request';
 import { STATUS_DISPLAY } from '@/types/request';

@@ -5,7 +5,7 @@
  */
 
 import React, { useState, useEffect, Fragment, createContext, useContext } from 'react';
-import { X, ArrowLeft, ExternalLink, Copy, Layers, MessageSquare, Clock, Link2, Zap, Target, Tag, Calendar, GitBranch, User, CornerDownLeft, Paperclip, FileText, Image, Download, File, ListTree, Loader2, GitPullRequest } from 'lucide-react';
+import { X, ArrowLeft, ExternalLink, Copy, Layers, MessageSquare, Clock, Link2, Zap, Target, Tag, Calendar, GitBranch, User, CornerDownLeft, Paperclip, FileText, Image, Download, File, ListTree, Loader2, GitPullRequest } from '@/lib/atlaskit-icons';
 import { TransitionsTab } from './TransitionsTab';
 import { JiraIssueTypeIcon } from '@/components/shared/JiraIssueTypeIcon';
 import { StatusLozenge } from '@/components/ui/StatusLozenge';

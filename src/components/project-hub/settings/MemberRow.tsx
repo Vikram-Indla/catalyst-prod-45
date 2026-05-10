@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { X } from 'lucide-react';
+import { X } from '@/lib/atlaskit-icons';
 
 const AVATAR_COLORS = ['#7C3AED', 'var(--ds-text-brand, #2563EB)', '#0D9488', 'var(--ds-text-warning, #D97706)', 'var(--ds-text-danger, #DC2626)', '#EA580C', '#0284C7'];
 

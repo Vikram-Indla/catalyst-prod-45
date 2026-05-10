@@ -3,7 +3,7 @@
 // ============================================================================
 
 import { memo, useState, useMemo } from 'react';
-import { Plus, Trash2, Users, Loader2, UserCircle } from 'lucide-react';
+import { Plus, Trash2, Users, Loader2, UserCircle } from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Avatar, Lozenge } from '@/components/ads';

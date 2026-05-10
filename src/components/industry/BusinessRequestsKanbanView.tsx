@@ -5,7 +5,7 @@ import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea
 import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
-import { Star, User, Calendar, Clock, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Star, User, Calendar, Clock, ChevronLeft, ChevronRight } from '@/lib/atlaskit-icons';
 import { useQueryClient } from '@tanstack/react-query';
 // Native scroll used instead of ScrollArea for better horizontal/vertical scroll support
 import { format } from 'date-fns';

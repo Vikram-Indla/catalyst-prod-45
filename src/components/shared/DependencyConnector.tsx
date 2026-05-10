@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Lozenge, type LozengeAppearance } from '@/components/ads';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { AlertTriangle, ArrowRight, Clock } from 'lucide-react';
+import { AlertTriangle, ArrowRight, Clock } from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 
 interface Dependency {

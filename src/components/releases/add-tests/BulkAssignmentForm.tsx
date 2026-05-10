@@ -3,7 +3,7 @@
  */
 
 import React, { useState } from 'react';
-import { Users, AlertTriangle, Wand2, Settings2 } from 'lucide-react';
+import { Users, AlertTriangle, Wand2, Settings2 } from '@/lib/atlaskit-icons';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';

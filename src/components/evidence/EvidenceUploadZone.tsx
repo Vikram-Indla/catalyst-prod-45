@@ -4,7 +4,7 @@
 // ═══════════════════════════════════════════════════════════════════════════
 
 import React, { useState, useCallback } from 'react';
-import { Lock } from 'lucide-react';
+import { Lock } from '@/lib/atlaskit-icons';
 import { v4 as uuidv4 } from 'uuid';
 import { EvidenceUploadZoneProps, UploadProgress, Attachment } from './types';
 import { ScreenCaptureButton } from './components/ScreenCaptureButton';

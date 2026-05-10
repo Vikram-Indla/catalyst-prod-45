@@ -12,7 +12,7 @@ import { useState } from 'react';
 import { useWorkItemDependencies, WorkItemDependency } from '@/hooks/useWorkItemDependencies';
 import { Button } from '@/components/ui/button';
 import { Lozenge, type LozengeAppearance } from '@/components/ads';
-import { Loader2, Plus, ArrowRight, ArrowLeft, AlertTriangle, Clock, CheckCircle2, ExternalLink } from 'lucide-react';
+import { Loader2, Plus, ArrowRight, ArrowLeft, AlertTriangle, Clock, CheckCircle2, ExternalLink } from '@/lib/atlaskit-icons';
 import { CreateDependencyDialog } from '@/components/dependencies/CreateDependencyDialog';
 import { DependencyDetailsDrawer } from '@/components/dependencies/DependencyDetailsDrawer';
 import { DEPENDENCY_TYPE_LABELS, DEPENDENCY_LEVEL_LABELS } from '@/lib/dependencies/types';

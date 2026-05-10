@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { IconButton } from '@atlaskit/button/new';
-import { Bell } from 'lucide-react';
+import { Bell } from '@/lib/atlaskit-icons';
 import { Box, xcss } from '@atlaskit/primitives';
 import Badge from '@atlaskit/badge';
 import NotificationPanel from '@/components/notifications/NotificationPanel';

@@ -10,7 +10,7 @@ import { useTheme } from '@/hooks/useTheme';
 import { useIssueViewData } from '@/hooks/workhub/useIssueViewData';
 import { IssueListPanel } from './IssueListPanel';
 import { IssueContentView } from './IssueContentView';
-import { Search } from 'lucide-react';
+import { Search } from '@/lib/atlaskit-icons';
 import { FilterTriggerButton, JiraBasicFilter } from '@/components/shared/JiraBasicFilter';
 import type { FilterCategory } from '@/components/shared/JiraBasicFilter';
 import { useQuery } from '@tanstack/react-query';

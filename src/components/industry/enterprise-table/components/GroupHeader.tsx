@@ -4,7 +4,7 @@
 // ═══════════════════════════════════════════════════════════════════════════
 
 import React from 'react';
-import { ChevronRight, ChevronDown, FolderOpen, Folder } from 'lucide-react';
+import { ChevronRight, ChevronDown, FolderOpen, Folder } from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 import type { CatalystColumn } from '../types';
 

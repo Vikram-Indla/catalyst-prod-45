@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { FileText, CheckCircle, Zap, Send, Database } from 'lucide-react';
+import { FileText, CheckCircle, Zap, Send, Database } from '@/lib/atlaskit-icons';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { useQuery } from '@tanstack/react-query';
 import { sanitiseError } from '@/lib/errorUtils';

@@ -6,7 +6,7 @@
 
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, FileText, Clock } from 'lucide-react';
+import { ArrowLeft, FileText, Clock } from '@/lib/atlaskit-icons';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { useTheme } from '@/hooks/useTheme';
 

@@ -8,7 +8,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Lozenge } from '@/components/ads';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Tag, Plus, Settings } from 'lucide-react';
+import { Tag, Plus, Settings } from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 
 const LABEL_COLORS: Record<string, string> = {

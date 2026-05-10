@@ -4,7 +4,7 @@
 // ═══════════════════════════════════════════════════════════════════════════════
 
 import React from 'react';
-import { Download, Filter } from 'lucide-react';
+import { Download, Filter } from '@/lib/atlaskit-icons';
 import { useT10Lists } from '../../hooks';
 import { useT10ExportCSV } from '../../hooks/useT10Completed';
 import type { T10CompletedFilters as FilterType } from '../../types/completed';

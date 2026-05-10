@@ -9,7 +9,7 @@ import {
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Info } from 'lucide-react';
+import { Info } from '@/lib/atlaskit-icons';
 import { RankingContext } from '@/hooks/useWorkItemRanking';
 
 interface PullRankDialogProps {

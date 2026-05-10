@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Search, Folder, Filter } from 'lucide-react';
+import { Search, Folder, Filter } from '@/lib/atlaskit-icons';
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter,
 } from '@/components/ui/dialog';

@@ -6,7 +6,7 @@ import React from 'react';
 import { useWikiHealthChecks, useWikiAdminStats } from '@/hooks/useWikiAdminData';
 import { SkeletonBlock } from '@/components/wiki/WikiTokens';
 import { EmptyState } from './WikiAdminSyncTab';
-import { HeartPulse } from 'lucide-react';
+import { HeartPulse } from '@/lib/atlaskit-icons';
 
 export function WikiAdminHealthTab() {
   const { data: checks, isLoading } = useWikiHealthChecks();

@@ -10,7 +10,7 @@
 import React, { useState } from 'react';
 import { KanbanTicket, DynamicColumnConfig, TeamMember, UNCATEGORIZED_COLUMN_ID } from '../types';
 import { KanbanCard } from './KanbanCard';
-import { Inbox, ChevronLeft, Plus } from 'lucide-react';
+import { Inbox, ChevronLeft, Plus } from '@/lib/atlaskit-icons';
 
 interface KanbanColumnProps {
   column: string;

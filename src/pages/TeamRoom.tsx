@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Lozenge } from '@/components/ads';
 import { Progress } from '@/components/ui/progress';
 import { KPIWidgetCard } from '@/components/shared/KPIWidgetCard';
-import { LayoutGrid, ListTodo, Target, AlertTriangle, TrendingUp, TrendingDown, Activity } from 'lucide-react';
+import { LayoutGrid, ListTodo, Target, AlertTriangle, TrendingUp, TrendingDown, Activity } from '@/lib/atlaskit-icons';
 import { useNavigate } from 'react-router-dom';
 import { differenceInDays, format } from 'date-fns';
 

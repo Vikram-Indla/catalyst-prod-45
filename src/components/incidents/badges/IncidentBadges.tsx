@@ -1,6 +1,6 @@
 import { Lozenge, type LozengeAppearance } from '@/components/ads';
 import { cn } from '@/lib/utils';
-import { CheckCircle, AlertTriangle } from 'lucide-react';
+import { CheckCircle, AlertTriangle } from '@/lib/atlaskit-icons';
 import type { IncidentStatus, SeverityLevel, PriorityLevel, SupportLevel } from '@/types/incident';
 
 // ============================================

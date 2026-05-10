@@ -3,7 +3,7 @@
  * Polish: scrollbar CSS injection, fullscreen, search auto-focus
  */
 import React, { useState, useCallback, useEffect, useMemo, useRef } from 'react';
-import { Download, Maximize2, Minimize2, AlertCircle, RefreshCw, Plus } from 'lucide-react';
+import { Download, Maximize2, Minimize2, AlertCircle, RefreshCw, Plus } from '@/lib/atlaskit-icons';
 import { CatalystPageHeader } from '@/components/shared/CatalystPageHeader';
 import { addMonths, subMonths } from 'date-fns';
 import { useCatalystContext } from '@/contexts/CatalystContext';

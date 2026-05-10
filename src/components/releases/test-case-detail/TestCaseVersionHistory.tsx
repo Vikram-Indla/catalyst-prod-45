@@ -11,7 +11,7 @@ import {
   ChevronRight,
   Loader2,
   GitCompare,
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import { Button } from '@/components/ui/button';
 import { Lozenge, Avatar, Tooltip } from '@/components/ads';
 import {

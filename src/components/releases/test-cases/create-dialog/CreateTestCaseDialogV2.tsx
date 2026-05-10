@@ -31,7 +31,7 @@ import {
   Loader2,
   Save,
   Sparkles,
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import { Textarea } from '@/components/ui/textarea';
 import { DetailsTab } from './DetailsTab';
 import { StepsTab } from './StepsTab';

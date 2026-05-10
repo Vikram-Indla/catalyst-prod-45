@@ -4,7 +4,7 @@
  */
 
 import React, { useState, useMemo } from 'react';
-import { Users } from 'lucide-react';
+import { Users } from '@/lib/atlaskit-icons';
 import type { CalendarEvent } from '@/types/workhub.types';
 import { CalendarGrid, CalendarGridSkeleton } from './CalendarGrid';
 import { AvatarChip } from '../shared/AvatarChip';

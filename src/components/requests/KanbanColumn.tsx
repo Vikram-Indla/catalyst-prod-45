@@ -1,6 +1,6 @@
 import { useDroppable } from '@dnd-kit/core';
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
-import { ChevronRight, MoreHorizontal } from 'lucide-react';
+import { ChevronRight, MoreHorizontal } from '@/lib/atlaskit-icons';
 import type { Request, RequestStatus, Density } from '@/types/request';
 import { STATUS_DISPLAY } from '@/types/request';
 import { KanbanCard } from './KanbanCard';

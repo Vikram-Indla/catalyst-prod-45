@@ -4,7 +4,7 @@
  */
 
 import { motion } from 'framer-motion';
-import { Users, Plus, Upload, Calendar } from 'lucide-react';
+import { Users, Plus, Upload, Calendar } from '@/lib/atlaskit-icons';
 import { Button } from '@/components/ui/button';
 
 interface HeatmapEmptyStateProps {

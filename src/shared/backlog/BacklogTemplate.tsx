@@ -12,7 +12,7 @@ import { ReactNode } from 'react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Filter, Download, Search, List, LayoutGrid, Table, Plus } from 'lucide-react';
+import { Filter, Download, Search, List, LayoutGrid, Table, Plus } from '@/lib/atlaskit-icons';
 import { Tooltip } from '@/components/ads';
 
 export type BacklogViewType = 'list' | 'board' | 'table';

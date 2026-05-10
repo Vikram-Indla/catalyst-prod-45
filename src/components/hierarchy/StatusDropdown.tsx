@@ -3,7 +3,7 @@
  */
 
 import { useRef, useEffect } from 'react';
-import { Check } from 'lucide-react';
+import { Check } from '@/lib/atlaskit-icons';
 import { useTheme } from '@/hooks/useTheme';
 import { getStatusStyle } from './StatusBadge';
 

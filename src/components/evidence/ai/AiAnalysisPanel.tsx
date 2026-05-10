@@ -4,7 +4,7 @@
  */
 
 import React, { useState } from 'react';
-import { Loader2, Sparkles, AlertTriangle, CheckCircle, RefreshCw } from 'lucide-react';
+import { Loader2, Sparkles, AlertTriangle, CheckCircle, RefreshCw } from '@/lib/atlaskit-icons';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';

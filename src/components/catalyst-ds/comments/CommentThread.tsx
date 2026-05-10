@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { useState, useMemo } from 'react';
 import { cn } from '@/lib/utils';
-import { MessageSquare } from 'lucide-react';
+import { MessageSquare } from '@/lib/atlaskit-icons';
 import type { CdsComment, CdsSortOrder, CdsUser, CdsQuickReply } from '../types';
 import { Comment } from './Comment';
 import { CommentAction } from './CommentAction';

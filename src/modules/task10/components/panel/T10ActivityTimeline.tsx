@@ -1,5 +1,5 @@
 import React from 'react';
-import { Plus, Check, Edit, ArrowRight, UserPlus, RotateCcw, Loader2, AlertCircle, X, FileText, Calendar, Tag, UserMinus, RefreshCw, CheckCircle } from 'lucide-react';
+import { Plus, Check, Edit, ArrowRight, UserPlus, RotateCcw, Loader2, AlertCircle, X, FileText, Calendar, Tag, UserMinus, RefreshCw, CheckCircle } from '@/lib/atlaskit-icons';
 import { useT10Activity } from '../../hooks/useT10Activity';
 import { getRelativeTime } from '../../utils';
 import type { T10Activity } from '../../types';

@@ -3,7 +3,7 @@
  * Detailed view of project staffing with department breakdown and resource list
  */
 
-import { X, Building2 } from 'lucide-react';
+import { X, Building2 } from '@/lib/atlaskit-icons';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { cn } from '@/lib/utils';
 import type { ProjectUtilization, PeriodRange } from './types';

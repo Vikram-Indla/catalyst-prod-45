@@ -27,7 +27,7 @@ import {
   type VisibilityState,
 } from '@tanstack/react-table';
 import { useVirtualizer } from '@tanstack/react-virtual';
-import { ChevronDown, ChevronRight, ChevronUp } from 'lucide-react';
+import { ChevronDown, ChevronRight, ChevronUp } from '@/lib/atlaskit-icons';
 import { memo, useCallback, useMemo, useRef, useState, type CSSProperties } from 'react';
 import { Checkbox } from '@/components/ui/checkbox';
 import { cn } from '@/lib/utils';

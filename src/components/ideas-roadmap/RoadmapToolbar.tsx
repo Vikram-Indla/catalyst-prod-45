@@ -1,5 +1,5 @@
 import React from 'react';
-import { MonitorPlay, BarChart3 } from 'lucide-react';
+import { MonitorPlay, BarChart3 } from '@/lib/atlaskit-icons';
 import type { RoadmapView } from '@/types/ideasRoadmap';
 
 interface RoadmapToolbarProps {

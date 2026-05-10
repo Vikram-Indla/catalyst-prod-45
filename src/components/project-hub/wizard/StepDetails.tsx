@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { Check, X, ChevronDown, Search } from 'lucide-react';
+import { Check, X, ChevronDown, Search } from '@/lib/atlaskit-icons';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Switch } from '@/components/ui/switch';

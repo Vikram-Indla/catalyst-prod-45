@@ -21,7 +21,7 @@
  *     - raw        ← full CycleExecutionItem
  */
 import type { ReactNode } from 'react';
-import { Beaker } from 'lucide-react';
+import { Beaker } from '@/lib/atlaskit-icons';
 import type { KanbanColumnDef } from '../kanban-tokens';
 import type { BoardIssue } from '../kanban-types';
 import type {

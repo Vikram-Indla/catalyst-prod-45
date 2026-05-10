@@ -2,7 +2,7 @@ import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import { Table, TableBody, TableCell, TableRow } from '@/components/ui/table';
 import { Checkbox } from '@/components/ui/checkbox';
 import { HealthBadge } from '@/components/shared/HealthBadge';
-import { GripVertical } from 'lucide-react';
+import { GripVertical } from '@/lib/atlaskit-icons';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';

@@ -10,7 +10,7 @@ import {
   Archive,
   Edit2,
   Trash2,
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import { Workstream } from '../../hooks/usePlannerWorkstreams';
 import { COLORS, TeamMember, formatDate } from './workstreams-constants';
 import { LeadPickerDropdown } from './WorkstreamLeadPickerDropdown';

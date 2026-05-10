@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, Send } from 'lucide-react';
+import { X, Send } from '@/lib/atlaskit-icons';
 import { supabase } from '@/integrations/supabase/client';
 import { useQueryClient } from '@tanstack/react-query';
 import { useTheme } from '@/hooks/useTheme';

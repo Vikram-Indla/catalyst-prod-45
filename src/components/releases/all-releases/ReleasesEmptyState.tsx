@@ -3,7 +3,7 @@
 // Shown when no releases match filters
 // =====================================================
 
-import { BoxIcon } from 'lucide-react';
+import { BoxIcon } from '@/lib/atlaskit-icons';
 import { Button } from '@/components/ui/button';
 
 interface Props {

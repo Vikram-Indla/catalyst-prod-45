@@ -4,7 +4,7 @@
  */
 
 import { useState, useMemo } from 'react';
-import { ChevronDown, ChevronRight } from 'lucide-react';
+import { ChevronDown, ChevronRight } from '@/lib/atlaskit-icons';
 import { useDroppable } from '@dnd-kit/core';
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';

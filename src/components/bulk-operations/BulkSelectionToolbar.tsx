@@ -14,7 +14,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Edit, ArrowRightLeft, Trash2, ChevronDown, X } from 'lucide-react';
+import { Edit, ArrowRightLeft, Trash2, ChevronDown, X } from '@/lib/atlaskit-icons';
 import { BulkOperationType, BulkOperationConfig } from './types';
 
 interface BulkSelectionToolbarProps {

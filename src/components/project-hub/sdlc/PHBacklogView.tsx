@@ -2,7 +2,7 @@
  * ProjectHub Backlog View — Release-grouped rows with sidebar
  */
 import React, { useState, useMemo } from 'react';
-import { ChevronDown, ChevronRight, GripVertical } from 'lucide-react';
+import { ChevronDown, ChevronRight, GripVertical } from '@/lib/atlaskit-icons';
 import type { PHIssue, PHRelease } from '@/services/project-hub.service';
 import { getDisplayKey } from '@/services/project-hub.service';
 import type { IssueType } from '@/types/project-hub.types';

@@ -4,7 +4,7 @@
  */
 
 import React from 'react';
-import { GripVertical, User } from 'lucide-react';
+import { GripVertical, User } from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 import { useTheme } from '@/hooks/useTheme';
 import type { RoadmapDemand } from '../types/roadmap';

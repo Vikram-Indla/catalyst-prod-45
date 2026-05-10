@@ -2,7 +2,7 @@
  * G19: Keyboard Shortcuts Overlay
  * Triggered by pressing '?' key
  */
-import { X, Keyboard } from 'lucide-react';
+import { X, Keyboard } from '@/lib/atlaskit-icons';
 
 interface KeyboardShortcutsGuideProps {
   isOpen: boolean;

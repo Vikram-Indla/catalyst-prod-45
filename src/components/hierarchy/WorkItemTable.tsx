@@ -6,7 +6,7 @@
  */
 
 import React, { useState, useMemo, useCallback, memo } from 'react';
-import { ChevronRight, ChevronDown, MoreHorizontal, ArrowUp, ArrowDown } from 'lucide-react';
+import { ChevronRight, ChevronDown, MoreHorizontal, ArrowUp, ArrowDown } from '@/lib/atlaskit-icons';
 import { useNavigate } from 'react-router-dom';
 import { useTheme } from '@/hooks/useTheme';
 import type { WorkItem } from '@/types/hierarchy';

@@ -3,7 +3,7 @@
  * Jira parity: count + status/priority/assignee/delete + cancel.
  */
 import React from 'react';
-import { X, Trash2 } from 'lucide-react';
+import { X, Trash2 } from '@/lib/atlaskit-icons';
 import { StatusPopover } from './popovers/StatusPopover';
 import { PriorityPopover } from './popovers/PriorityPopover';
 import { AssigneePopover } from './popovers/AssigneePopover';

@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { ArrowUpDown, ArrowUp, ArrowDown, Filter, X, Check } from 'lucide-react';
+import { ArrowUpDown, ArrowUp, ArrowDown, Filter, X, Check } from '@/lib/atlaskit-icons';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';

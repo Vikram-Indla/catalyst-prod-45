@@ -1,5 +1,5 @@
 import { ActivityItem } from '@/types/release-dashboard';
-import { CheckCircle, XCircle, AlertTriangle, Play } from 'lucide-react';
+import { CheckCircle, XCircle, AlertTriangle, Play } from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 import { formatDistanceToNow } from 'date-fns';
 

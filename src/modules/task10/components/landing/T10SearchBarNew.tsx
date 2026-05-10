@@ -4,7 +4,7 @@
 // ═══════════════════════════════════════════════════════════════════════════════
 
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { Search } from 'lucide-react';
+import { Search } from '@/lib/atlaskit-icons';
 import { debounce } from '../../utils';
 
 interface T10SearchBarNewProps {

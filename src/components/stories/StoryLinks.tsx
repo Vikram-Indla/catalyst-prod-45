@@ -9,7 +9,7 @@ import { Input } from '@/components/ui/input';
 import { Lozenge } from '@/components/ads';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from 'sonner';
-import { Link as LinkIcon, Plus, X, ExternalLink, Trash2 } from 'lucide-react';
+import { Link as LinkIcon, Plus, X, ExternalLink, Trash2 } from '@/lib/atlaskit-icons';
 
 interface StoryLinksProps {
   storyId: string;

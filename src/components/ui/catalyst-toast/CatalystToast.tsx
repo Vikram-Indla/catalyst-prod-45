@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { X, Check, Info, AlertTriangle, Trash2, Loader2 } from 'lucide-react';
+import { X, Check, Info, AlertTriangle, Trash2, Loader2 } from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 
 export type CatalystToastType = 'info' | 'success' | 'error' | 'warning' | 'undo' | 'loading';

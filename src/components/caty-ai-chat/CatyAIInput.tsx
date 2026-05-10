@@ -1,5 +1,5 @@
 import { useState, useRef, KeyboardEvent } from 'react';
-import { Send, Loader2, Paperclip } from 'lucide-react';
+import { Send, Loader2, Paperclip } from '@/lib/atlaskit-icons';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 

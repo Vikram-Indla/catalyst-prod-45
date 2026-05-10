@@ -10,7 +10,7 @@ import { cn } from '@/lib/utils';
 import { 
   Link2, Edit, Paperclip, Copy, Trash2, 
   FileText, Check, Lock, Star, Calendar, ArrowLeft
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import { CatalystOwnerAvatar } from '@/components/ui/catalyst';
 import { Lozenge } from '@/components/ads';
 import { Button } from '@/components/ui/button';

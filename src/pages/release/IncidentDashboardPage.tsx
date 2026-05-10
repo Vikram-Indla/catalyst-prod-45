@@ -4,7 +4,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { 
   AlertCircle, AlertTriangle, Clock, ArrowRight, Loader2, 
   CheckCircle2, GitBranch, Users, Shield, FileText
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Lozenge } from '@/components/ads';
 import { Button } from '@/components/ui/button';

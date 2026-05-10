@@ -1,6 +1,6 @@
 import { useLocation } from 'react-router-dom';
 import { Card } from '@/components/ui/card';
-import { Construction } from 'lucide-react';
+import { Construction } from '@/lib/atlaskit-icons';
 
 export default function PlaceholderPage() {
   const location = useLocation();

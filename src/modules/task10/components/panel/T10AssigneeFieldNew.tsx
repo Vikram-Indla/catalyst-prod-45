@@ -6,7 +6,7 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { ChevronDown, X, Search, Check } from 'lucide-react';
+import { ChevronDown, X, Search, Check } from '@/lib/atlaskit-icons';
 import { useT10Users } from '../../hooks';
 import { getT10Initials } from '../../utils';
 

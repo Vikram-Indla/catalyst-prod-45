@@ -1,4 +1,4 @@
-import { X, MessageSquare, Trash2 } from 'lucide-react';
+import { X, MessageSquare, Trash2 } from '@/lib/atlaskit-icons';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { CatyConversation } from '@/types/caty-ai';

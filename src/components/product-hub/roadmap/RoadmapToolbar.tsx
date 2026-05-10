@@ -2,7 +2,7 @@
  * Product Roadmap — Toolbar (Zoom, Group, Today)
  */
 import React from 'react';
-import { ZoomIn, ZoomOut, Calendar } from 'lucide-react';
+import { ZoomIn, ZoomOut, Calendar } from '@/lib/atlaskit-icons';
 import type { ZoomLevel, GroupBy, ViewMode } from './types/roadmap.types';
 import { SURFACE, SURFACE_DARK, INK, INK_DARK } from './constants/roadmap.constants';
 import { useTheme } from '@/hooks/useTheme';

@@ -8,7 +8,7 @@
  *   C) Timeline (audit trail)
  */
 
-import { AlertTriangle, Clock, CheckCircle, XCircle, Shield, UserPlus, ChevronRight, User } from 'lucide-react';
+import { AlertTriangle, Clock, CheckCircle, XCircle, Shield, UserPlus, ChevronRight, User } from '@/lib/atlaskit-icons';
 import { Button } from '@/components/ui/button';
 import { Lozenge, type LozengeAppearance } from '@/components/ads';
 import { ScrollArea } from '@/components/ui/scroll-area';

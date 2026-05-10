@@ -9,7 +9,7 @@ import { createPortal } from 'react-dom';
 import {
   Edit, Copy, Link, ArrowRightLeft, Flag, Users, FolderInput,
   Plus, Trash2, ChevronRight,
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import type { AssigneeOption } from './AssigneeDropdown';
 
 interface HierarchyContextMenuProps {

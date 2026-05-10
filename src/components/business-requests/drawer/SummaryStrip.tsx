@@ -19,7 +19,7 @@ import {
   Wallet,
   TrendingUp,
   Users
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 
 export interface SummaryMetric {
   icon: LucideIcon;

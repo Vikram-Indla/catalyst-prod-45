@@ -5,7 +5,7 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { X, Save } from 'lucide-react';
+import { X, Save } from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 import { supabase } from '@/integrations/supabase/client';
 import { useMutation, useQueryClient, useQuery } from '@tanstack/react-query';
@@ -26,7 +26,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
-import { Check, ChevronsUpDown } from 'lucide-react';
+import { Check, ChevronsUpDown } from '@/lib/atlaskit-icons';
 
 interface CreateEpicModalProps {
   isOpen: boolean;

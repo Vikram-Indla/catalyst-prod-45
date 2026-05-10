@@ -4,7 +4,7 @@
 // ═══════════════════════════════════════════════════════════════════════════════
 
 import React from 'react';
-import { Check, ChevronRight } from 'lucide-react';
+import { Check, ChevronRight } from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 import type { T10CompletedWeekView } from '../../types/listCards';
 

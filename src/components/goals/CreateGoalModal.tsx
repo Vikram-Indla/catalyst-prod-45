@@ -2,7 +2,7 @@
  * CreateGoalModal — Fix 3: field labels var(--ds-text-subtlest, #94A3B8), Fix 13: section dividers, slider labels, weight helper
  */
 import { useState, useEffect, useCallback } from 'react';
-import { X, Plus } from 'lucide-react';
+import { X, Plus } from '@/lib/atlaskit-icons';
 import { useCreateGoal, useThemes } from '@/hooks/useGoals';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Slider } from '@/components/ui/slider';

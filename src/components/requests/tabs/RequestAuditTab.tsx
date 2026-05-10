@@ -4,7 +4,7 @@
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
-import { Plus, Pencil, Trash2, ArrowRight, Star, ShieldAlert, Flag, CheckCircle, Wallet, Link2, Paperclip, MessageSquare, History, Filter, ChevronDown } from 'lucide-react';
+import { Plus, Pencil, Trash2, ArrowRight, Star, ShieldAlert, Flag, CheckCircle, Wallet, Link2, Paperclip, MessageSquare, History, Filter, ChevronDown } from '@/lib/atlaskit-icons';
 
 interface RequestAuditTabProps {
   requestId: string;

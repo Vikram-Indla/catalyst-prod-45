@@ -12,7 +12,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Lozenge, type LozengeAppearance } from '@/components/ads';
 import { HealthBadge } from '@/components/shared/HealthBadge';
 import { Progress } from '@/components/ui/progress';
-import { ArrowUpDown, AlertCircle } from 'lucide-react';
+import { ArrowUpDown, AlertCircle } from '@/lib/atlaskit-icons';
 import { Button } from '@/components/ui/button';
 import { useMultipleFeatureProgress } from '@/hooks/useFeatureProgress';
 import type { Feature } from '@/types/feature.types';

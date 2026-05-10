@@ -6,7 +6,7 @@
 import { useState } from 'react';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { GripVertical, Plus, MoreHorizontal, Trash2, Palette } from 'lucide-react';
+import { GripVertical, Plus, MoreHorizontal, Trash2, Palette } from '@/lib/atlaskit-icons';
 import {
   DropdownMenu,
   DropdownMenuContent,

@@ -7,7 +7,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useWikiDocuments, useReembedDocument, useDeleteDocument } from '@/hooks/useWikiAdminData';
 import { SkeletonBlock } from '@/components/wiki/WikiTokens';
 import { EmptyState } from './WikiAdminSyncTab';
-import { Download, Trash2, RefreshCw, Database, FileText } from 'lucide-react';
+import { Download, Trash2, RefreshCw, Database, FileText } from '@/lib/atlaskit-icons';
 import { format } from 'date-fns';
 
 export function WikiAdminSourcesTab() {

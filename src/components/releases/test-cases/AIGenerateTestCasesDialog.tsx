@@ -18,7 +18,7 @@ import {
   Zap,
   Shield,
   TrendingUp,
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import {
   Dialog,
   DialogContent,

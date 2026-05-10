@@ -1,4 +1,4 @@
-import { Clock, AlertTriangle, CheckCircle } from 'lucide-react';
+import { Clock, AlertTriangle, CheckCircle } from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 import { Lozenge } from '@/components/ads';
 

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { RefreshCw, AlertTriangle, CheckCircle, TrendingUp, Sparkles, Info, AlertCircle, Download } from 'lucide-react';
+import { RefreshCw, AlertTriangle, CheckCircle, TrendingUp, Sparkles, Info, AlertCircle, Download } from '@/lib/atlaskit-icons';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';

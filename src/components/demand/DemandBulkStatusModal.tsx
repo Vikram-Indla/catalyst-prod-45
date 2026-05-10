@@ -11,7 +11,7 @@ import { Button } from '@/components/ui/button';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
 import { useProcessSteps } from '@/contexts/ProcessStepsContext';
-import { Loader2 } from 'lucide-react';
+import { Loader2 } from '@/lib/atlaskit-icons';
 
 interface DemandBulkStatusModalProps {
   isOpen: boolean;

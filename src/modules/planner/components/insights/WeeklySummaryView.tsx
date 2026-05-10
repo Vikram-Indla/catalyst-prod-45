@@ -7,7 +7,7 @@ import { format } from 'date-fns';
 import { 
   FileText, Download, Rocket, AlertTriangle, Bug, 
   GitBranch, BarChart3, TrendingUp, TrendingDown, Inbox
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import { useWeeklyInsightsData } from '../../hooks/useInsightsData';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';

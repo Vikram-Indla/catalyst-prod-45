@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react';
-import { ChevronRight, Flag, Calendar, ArrowUp, ArrowDown, ArrowRight, ChevronsUp } from 'lucide-react';
+import { ChevronRight, Flag, Calendar, ArrowUp, ArrowDown, ArrowRight, ChevronsUp } from '@/lib/atlaskit-icons';
 import type { WorkItemRow } from '@/hooks/useProjectWorkItems';
 import type { ColumnDef } from '@/hooks/useWorkItemListState';
 import { InlineSummaryEditor, InlineStatusPicker, InlinePriorityPicker, InlineAssigneePicker, InlineDatePicker } from './inline/InlineEditors';

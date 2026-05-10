@@ -24,7 +24,7 @@ import {
   Check,
   Loader2,
   Unplug,
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import { useSlackConnection } from '@/hooks/useSlackConnection';
 
 // ============================================================

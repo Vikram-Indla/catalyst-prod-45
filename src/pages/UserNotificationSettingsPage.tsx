@@ -3,7 +3,7 @@
 // ============================================================
 
 import { NotificationSettings } from '@/components/settings/NotificationSettings';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft } from '@/lib/atlaskit-icons';
 import Button from '@atlaskit/button/new';
 import { useNavigate } from 'react-router-dom';
 

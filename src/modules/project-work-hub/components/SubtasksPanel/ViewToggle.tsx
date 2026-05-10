@@ -1,5 +1,5 @@
 import React from 'react';
-import { LayoutList, Columns3 } from 'lucide-react';
+import { LayoutList, Columns3 } from '@/lib/atlaskit-icons';
 
 export type SubtaskView = 'list' | 'board';
 

@@ -19,7 +19,7 @@ import {
   MoreVertical,
   Download,
   ArrowRight,
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 
 interface FeatureToolbarProps {
   selectedFeatureIds: string[];

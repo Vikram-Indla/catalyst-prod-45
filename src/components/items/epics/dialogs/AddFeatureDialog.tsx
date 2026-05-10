@@ -16,7 +16,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Checkbox } from '@/components/ui/checkbox';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { toast } from 'sonner';
-import { Search, Plus, Loader2 } from 'lucide-react';
+import { Search, Plus, Loader2 } from '@/lib/atlaskit-icons';
 
 interface AddFeatureDialogProps {
   epicId: string;

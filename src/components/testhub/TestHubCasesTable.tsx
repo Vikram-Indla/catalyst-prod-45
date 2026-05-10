@@ -17,7 +17,7 @@ import {
   Clock,
   AlertCircle,
   Sparkles,
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import { TMTestCase } from '@/types/test-management';
 import { cn } from '@/lib/utils';
 

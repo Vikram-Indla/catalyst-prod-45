@@ -11,7 +11,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sh
 import { AnimatePresence, motion } from 'framer-motion';
 import {
   Users, Plus, X, RefreshCw, AlertCircle
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import { useCapacityData, useAssignments, useAiRecommendations, useCapacityDepartments, useResourceManagement, useResourceAssignments, useResourceAllocations, exportCapacityToPdf } from '@/modules/capacity-planner';
 import { AllocationModal } from '@/components/resource-allocation';
 import type { AllocationResource } from '@/types/resource-allocation.types';

@@ -1,5 +1,5 @@
 import { useState, useMemo, useCallback } from 'react';
-import { Users, ChevronRight, AlertTriangle } from 'lucide-react';
+import { Users, ChevronRight, AlertTriangle } from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 import {
   getAssignmentTheme,

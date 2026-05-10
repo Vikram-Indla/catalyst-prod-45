@@ -7,7 +7,7 @@ import {
   Activity, Search, X, RefreshCw, Plus, Edit2, Trash2,
   Play, UserPlus, ArrowRight, FileText, Bug, RefreshCcw,
   ClipboardList, FileCheck, Server, Tags
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import { supabase, typedQuery, typedRpc } from '@/integrations/supabase/client';
 import { catalystToast } from '@/components/ui/CatalystToast';
 import { useTheme } from '@/hooks/useTheme';

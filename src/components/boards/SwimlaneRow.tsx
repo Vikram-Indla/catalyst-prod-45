@@ -1,5 +1,5 @@
 import React from 'react';
-import { ChevronDown } from 'lucide-react';
+import { ChevronDown } from '@/lib/atlaskit-icons';
 import { useBoardStore } from '@/stores/boardStore';
 
 interface Props {

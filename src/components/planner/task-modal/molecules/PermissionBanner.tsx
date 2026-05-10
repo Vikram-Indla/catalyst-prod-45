@@ -3,7 +3,7 @@
 // ============================================================================
 
 import React from 'react';
-import { Lock } from 'lucide-react';
+import { Lock } from '@/lib/atlaskit-icons';
 import { COLORS } from '../colors';
 
 interface PermissionBannerProps {

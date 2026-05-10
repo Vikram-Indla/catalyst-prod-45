@@ -5,7 +5,7 @@
 
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
-import { ArrowLeftRight, UserPen, Archive, X } from 'lucide-react';
+import { ArrowLeftRight, UserPen, Archive, X } from '@/lib/atlaskit-icons';
 
 interface Props {
   selectedCount: number;

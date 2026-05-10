@@ -1,5 +1,5 @@
 import React from 'react';
-import { ChevronRight } from 'lucide-react';
+import { ChevronRight } from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 import { CatalystOwnerAvatar } from '@/components/ui/catalyst';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';

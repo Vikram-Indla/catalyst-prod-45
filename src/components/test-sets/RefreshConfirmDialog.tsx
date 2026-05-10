@@ -8,7 +8,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
-import { RefreshCw, AlertTriangle } from 'lucide-react';
+import { RefreshCw, AlertTriangle } from '@/lib/atlaskit-icons';
 import { TestSet } from '@/types/test-sets';
 
 interface RefreshConfirmDialogProps {

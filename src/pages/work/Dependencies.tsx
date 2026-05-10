@@ -8,7 +8,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Lozenge, type LozengeAppearance } from '@/components/ads';
 import { Card } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Search, Plus, Download, MoreHorizontal, AlertTriangle, CheckCircle2, Clock, Grid3x3, GitBranch, List, Filter, X, Layers } from 'lucide-react';
+import { Search, Plus, Download, MoreHorizontal, AlertTriangle, CheckCircle2, Clock, Grid3x3, GitBranch, List, Filter, X, Layers } from '@/lib/atlaskit-icons';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { DependencyDetailsDrawer } from '@/components/dependencies/DependencyDetailsDrawer';
 import { DependencyAnalyticsPanel } from '@/components/dependencies/DependencyAnalyticsPanel';

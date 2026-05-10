@@ -13,7 +13,7 @@ import {
   ExternalLink, 
   Filter,
   ChevronDown,
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import { Button } from '@/components/ui/button';
 import { Lozenge } from '@/components/ads';
 import {

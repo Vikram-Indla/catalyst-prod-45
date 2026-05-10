@@ -14,7 +14,7 @@ import {
   Clock,
   CalendarOff,
   Settings,
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import { SidebarBase, SidebarConfig, SidebarSection } from './SidebarBase';
 
 interface ReleaseHubSidebarProps {

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { AlertTriangle, Trash2 } from 'lucide-react';
+import { AlertTriangle, Trash2 } from '@/lib/atlaskit-icons';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { catalystToast } from '@/components/ui/CatalystToast';
 import {

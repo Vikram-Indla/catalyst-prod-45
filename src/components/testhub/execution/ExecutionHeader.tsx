@@ -7,7 +7,7 @@ import {
   ArrowLeft, Play, CheckCircle2, XCircle,
   AlertTriangle, Timer, Keyboard, Zap,
   PanelRightClose, PanelRightOpen,
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 
 interface TestCycle {
   id: string;

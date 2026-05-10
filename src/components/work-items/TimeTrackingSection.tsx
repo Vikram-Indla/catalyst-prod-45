@@ -7,7 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Progress } from '@/components/ui/progress';
 import { Lozenge } from '@/components/ads';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Clock, Plus, Trash2, Calendar } from 'lucide-react';
+import { Clock, Plus, Trash2, Calendar } from '@/lib/atlaskit-icons';
 import { format } from 'date-fns';
 
 interface TimeTrackingSectionProps {

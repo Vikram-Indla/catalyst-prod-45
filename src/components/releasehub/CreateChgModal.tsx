@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, ChevronDown, CalendarIcon } from 'lucide-react';
+import { X, ChevronDown, CalendarIcon } from '@/lib/atlaskit-icons';
 import { RH, CATEGORIES } from '@/constants/releasehub.design';
 import { useCreateChange, useReleases } from '@/hooks/useReleaseHub';
 import { toast } from 'sonner';

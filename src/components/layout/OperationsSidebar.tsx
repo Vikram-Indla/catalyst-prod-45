@@ -1,4 +1,4 @@
-import { List, Users, FileText } from 'lucide-react';
+import { List, Users, FileText } from '@/lib/atlaskit-icons';
 import { SidebarBase, SidebarConfig } from './SidebarBase';
 import { useOpenIncidentCount } from '@/hooks/useOpenIncidentCount';
 

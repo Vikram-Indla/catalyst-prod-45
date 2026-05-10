@@ -5,7 +5,7 @@
  */
 
 import { useState, useEffect, useMemo } from 'react';
-import { X, ChevronDown, ArrowRight, Check, ChevronsUpDown, Search } from 'lucide-react';
+import { X, ChevronDown, ArrowRight, Check, ChevronsUpDown, Search } from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';

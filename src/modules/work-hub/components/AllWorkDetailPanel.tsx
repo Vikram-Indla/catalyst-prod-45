@@ -1,5 +1,5 @@
 import React from 'react';
-import { X, ExternalLink, MoreHorizontal, Link2, ChevronRight, MessageSquare, Paperclip, History, Eye, Share2 } from 'lucide-react';
+import { X, ExternalLink, MoreHorizontal, Link2, ChevronRight, MessageSquare, Paperclip, History, Eye, Share2 } from '@/lib/atlaskit-icons';
 import { Button } from '@/components/ui/button';
 import { Avatar } from '@/components/ads';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';

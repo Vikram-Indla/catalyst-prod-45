@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { 
   X, Download, FileText, Bug, FileCheck, Layers, Tags,
   RefreshCcw, Database, Filter
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { catalystToast } from '@/components/ui/CatalystToast';
 

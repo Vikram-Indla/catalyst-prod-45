@@ -6,7 +6,7 @@
 // ============================================================
 
 import { useState, useMemo, useRef, useCallback, useEffect } from 'react';
-import { Calendar as CalendarIcon, ChevronLeft, ChevronRight, CalendarDays, Users } from 'lucide-react';
+import { Calendar as CalendarIcon, ChevronLeft, ChevronRight, CalendarDays, Users } from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import type { PlannerTask, GroupByOption } from '../types';

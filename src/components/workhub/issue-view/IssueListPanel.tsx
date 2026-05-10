@@ -4,7 +4,7 @@
  * Sort dropdown header, face avatars, no status lozenges in cards
  */
 import { useState, useCallback, useRef, useEffect, useMemo } from 'react';
-import { ChevronDown, ArrowUpNarrowWide, ArrowDownNarrowWide, RotateCcw } from 'lucide-react';
+import { ChevronDown, ArrowUpNarrowWide, ArrowDownNarrowWide, RotateCcw } from '@/lib/atlaskit-icons';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import { IssueKeyLink } from '@/components/shared/IssueKeyLink';
 import { CatalystOwnerAvatar } from '@/components/ui/catalyst';

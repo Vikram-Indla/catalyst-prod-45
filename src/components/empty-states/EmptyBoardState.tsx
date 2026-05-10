@@ -4,7 +4,7 @@
 // =====================================================
 
 import React from 'react';
-import { Kanban, Plus, Upload } from 'lucide-react';
+import { Kanban, Plus, Upload } from '@/lib/atlaskit-icons';
 import { Button } from '@/components/ui/button';
 
 interface EmptyBoardStateProps {

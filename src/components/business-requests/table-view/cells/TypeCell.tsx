@@ -3,7 +3,7 @@
  * 20x20px, 4px radius, inline-flex centered
  */
 
-import { Box } from 'lucide-react';
+import { Box } from '@/lib/atlaskit-icons';
 import { Tooltip } from '@/components/ads';
 
 interface TypeCellProps {

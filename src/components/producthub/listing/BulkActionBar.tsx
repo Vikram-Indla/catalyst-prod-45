@@ -4,7 +4,7 @@
  */
 
 import { motion, AnimatePresence } from 'framer-motion';
-import { Archive, Trash2, RefreshCw, UserPlus } from 'lucide-react';
+import { Archive, Trash2, RefreshCw, UserPlus } from '@/lib/atlaskit-icons';
 
 interface Props {
   selectedCount: number;

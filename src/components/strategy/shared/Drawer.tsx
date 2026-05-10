@@ -4,7 +4,7 @@
  */
 
 import React, { useEffect, useRef, useCallback } from 'react';
-import { X } from 'lucide-react';
+import { X } from '@/lib/atlaskit-icons';
 
 interface DrawerProps {
   isOpen: boolean;

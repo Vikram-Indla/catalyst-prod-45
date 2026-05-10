@@ -4,7 +4,7 @@
  */
 
 import React from 'react';
-import { User, CircleDot, ChevronDown, X } from 'lucide-react';
+import { User, CircleDot, ChevronDown, X } from '@/lib/atlaskit-icons';
 import { WorkItemFilters, WorkItemType, WorkItemStatus } from '@/types/work-items';
 import { Button } from '@/components/ui/button';
 import {

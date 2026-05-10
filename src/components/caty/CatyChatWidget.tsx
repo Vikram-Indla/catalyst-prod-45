@@ -6,7 +6,7 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react';
 import DOMPurify from 'dompurify';
-import { X, RotateCw, Send, Minus, ChevronDown, Copy, ThumbsUp, ThumbsDown, Mic } from 'lucide-react';
+import { X, RotateCw, Send, Minus, ChevronDown, Copy, ThumbsUp, ThumbsDown, Mic } from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/lib/auth';
 import { supabase } from '@/integrations/supabase/client';

@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useEffect, useCallback, useRef } from 'react';
-import { Plus, ChevronDown, ChevronRight, ArrowUp, ArrowDown, FileText, SearchX, Link2 } from 'lucide-react';
+import { Plus, ChevronDown, ChevronRight, ArrowUp, ArrowDown, FileText, SearchX, Link2 } from '@/lib/atlaskit-icons';
 import type { WorkItemRow } from '@/hooks/useProjectWorkItems';
 import type { SortColumn, ColumnDef, GroupedItems } from '@/hooks/useWorkItemListState';
 import { WorkItemTableRow } from './WorkItemTableRow';

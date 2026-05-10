@@ -16,7 +16,7 @@ import {
   Calendar,
   Pencil,
   Archive
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import { createPortal } from 'react-dom';
 import { format, parseISO } from 'date-fns';
 import { T10NewListModal } from './T10NewListModal';

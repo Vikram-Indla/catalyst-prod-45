@@ -7,7 +7,7 @@ import React, { useState } from 'react';
 import { 
   Bookmark, BookmarkCheck, ChevronDown, Plus, Edit2, Trash2, 
   Star, StarOff, MoreHorizontal, Check, RotateCcw 
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';

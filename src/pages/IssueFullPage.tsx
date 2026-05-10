@@ -9,7 +9,7 @@ import { lazy, Suspense, useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { useIssueDocumentTitle } from '@/hooks/useIssueDocumentTitle';
-import { Loader2 } from 'lucide-react';
+import { Loader2 } from '@/lib/atlaskit-icons';
 
 const CatalystDetailRouter = lazy(
   () => import('@/components/catalyst-detail-views/CatalystDetailRouter')

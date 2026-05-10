@@ -4,7 +4,7 @@
  */
 
 import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
-import { Search, ChevronDown, Check, X, Milestone, FolderGit2, Layers, Activity, Filter } from 'lucide-react';
+import { Search, ChevronDown, Check, X, Milestone, FolderGit2, Layers, Activity, Filter } from '@/lib/atlaskit-icons';
 import { useIssueProjectKeys, useIssueTypes, useIssueStatuses, useIssueFixVersions } from '@/hooks/workhub/useWorkItems';
 import type { WorkItemFilterConfig } from '@/hooks/workhub/useWorkItems';
 import { useQuery } from '@tanstack/react-query';

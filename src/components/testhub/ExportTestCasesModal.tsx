@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { X, Download } from 'lucide-react';
+import { X, Download } from '@/lib/atlaskit-icons';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 

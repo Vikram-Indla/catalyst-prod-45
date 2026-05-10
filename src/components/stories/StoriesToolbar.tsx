@@ -9,7 +9,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Download, Trash2, Move, UserPlus, MoreHorizontal, ArrowUpDown } from 'lucide-react';
+import { Download, Trash2, Move, UserPlus, MoreHorizontal, ArrowUpDown } from '@/lib/atlaskit-icons';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import {

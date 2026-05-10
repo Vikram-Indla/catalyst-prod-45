@@ -1,6 +1,6 @@
 import React, { useState, useCallback } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import { CheckCircle, Plus, Check, ChevronLeft, ChevronRight, Calendar } from 'lucide-react';
+import { CheckCircle, Plus, Check, ChevronLeft, ChevronRight, Calendar } from '@/lib/atlaskit-icons';
 import { T10UnifiedSortableList } from '../components/week/T10UnifiedSortableList';
 import { T10WeekNavigation } from '../components/week/T10WeekNavigation';
 import { T10EnterpriseSidePanel } from '../components/panel/T10EnterpriseSidePanel';

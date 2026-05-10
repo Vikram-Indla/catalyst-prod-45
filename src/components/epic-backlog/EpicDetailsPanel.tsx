@@ -18,7 +18,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Progress } from '@/components/ui/progress';
-import { FileText, Gem, ClipboardList, TrendingUp, ThumbsUp, Milestone, DollarSign, BarChart3, Link as LinkIcon, MessageSquare, Star, Bell, Grid3x3, FileStack, Grid2x2, CheckSquare, ClipboardCheck, Package } from 'lucide-react';
+import { FileText, Gem, ClipboardList, TrendingUp, ThumbsUp, Milestone, DollarSign, BarChart3, Link as LinkIcon, MessageSquare, Star, Bell, Grid3x3, FileStack, Grid2x2, CheckSquare, ClipboardCheck, Package } from '@/lib/atlaskit-icons';
 import { BusinessProcessesField } from './BusinessProcessesField';
 import { Textarea } from '@/components/ui/textarea';
 import { DetailsTabExtended } from '@/components/backlog/DetailPanel/tabs/DetailsTabExtended';

@@ -7,7 +7,7 @@ import { useMemo, useCallback, useState, useEffect } from 'react';
 import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd';
 import { cn } from '@/lib/utils';
 import { Checkbox } from '@/components/ui/checkbox';
-import { ChevronUp, ChevronDown, GripVertical, Pencil, MoreVertical, Columns, Check } from 'lucide-react';
+import { ChevronUp, ChevronDown, GripVertical, Pencil, MoreVertical, Columns, Check } from '@/lib/atlaskit-icons';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
 import { Lozenge } from '@/components/ads';

@@ -5,7 +5,7 @@
 // ═══════════════════════════════════════════════════════════════════════════════
 
 import React, { useState, useMemo } from 'react';
-import { Calendar, ChevronDown } from 'lucide-react';
+import { Calendar, ChevronDown } from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 

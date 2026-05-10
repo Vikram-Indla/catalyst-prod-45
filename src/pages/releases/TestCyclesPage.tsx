@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { 
   Plus, Download, Search, LayoutGrid, List, 
   Layers, Loader2, FileText, FileSpreadsheet
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Lozenge } from '@/components/ads';

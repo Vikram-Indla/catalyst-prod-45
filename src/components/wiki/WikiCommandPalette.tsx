@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Search, FileText, Folder, ArrowRight } from 'lucide-react';
+import { Search, FileText, Folder, ArrowRight } from '@/lib/atlaskit-icons';
 import { useTheme } from '@/hooks/useTheme';
 import { useWikiDomains, useWikiTitleSearch, useDebouncedValue } from '@/hooks/useWikiData';
 

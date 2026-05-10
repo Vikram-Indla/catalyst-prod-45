@@ -16,7 +16,7 @@ import {
   Pencil,
   Trash2,
   FolderPlus
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 
 interface FolderItem {
   id: string;

@@ -1,4 +1,4 @@
-import { LucideIcon } from 'lucide-react';
+import { LucideIcon } from '@/lib/atlaskit-icons';
 import { useTheme } from '@/hooks/useTheme';
 
 export interface NavItemProps {

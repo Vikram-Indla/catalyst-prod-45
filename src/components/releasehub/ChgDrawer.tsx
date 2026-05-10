@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, ExternalLink, ChevronRight } from 'lucide-react';
+import { X, ExternalLink, ChevronRight } from '@/lib/atlaskit-icons';
 import { RH, CHG_STATUS_ORDER, CHG_STATUS_LABELS } from '@/constants/releasehub.design';
 import { StatusLozenge } from './StatusLozenge';
 import { RiskBadge } from './RiskBadge';

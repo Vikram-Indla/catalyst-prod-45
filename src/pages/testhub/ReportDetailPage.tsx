@@ -9,7 +9,7 @@ import {
   ArrowLeft, FileBarChart, Download, Printer, Trash2,
   RefreshCw, CheckCircle2, XCircle, AlertTriangle, Clock,
   BarChart3, PieChart, Users, FileText
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { catalystToast } from '@/components/ui/CatalystToast';
 

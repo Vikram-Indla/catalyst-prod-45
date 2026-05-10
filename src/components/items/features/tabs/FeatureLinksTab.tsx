@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Plus, ExternalLink, Trash2 } from 'lucide-react';
+import { Plus, ExternalLink, Trash2 } from '@/lib/atlaskit-icons';
 import { toast } from 'sonner';
 import type { Feature } from '@/types/feature.types';
 import { KnowledgeBaseCard } from '@/components/knowledge-hub/KnowledgeBaseCard';

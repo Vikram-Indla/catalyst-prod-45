@@ -4,7 +4,7 @@
  */
 
 import { useState, useEffect, type ReactNode } from 'react';
-import { X, Folder, Loader2, Shield, BarChart3, Users, TrendingUp, Plug, Settings, FlaskConical, ClipboardList, Target, Search, Briefcase } from 'lucide-react';
+import { X, Folder, Loader2, Shield, BarChart3, Users, TrendingUp, Plug, Settings, FlaskConical, ClipboardList, Target, Search, Briefcase } from '@/lib/atlaskit-icons';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 

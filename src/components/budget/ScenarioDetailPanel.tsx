@@ -4,7 +4,7 @@
  */
 
 import { useState, useMemo } from 'react';
-import { GitBranch, Eye, Trash2, RefreshCw, Save } from 'lucide-react';
+import { GitBranch, Eye, Trash2, RefreshCw, Save } from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 import { formatCurrency, type BudgetResource } from '@/hooks/budget/useBudgetData';
 import {

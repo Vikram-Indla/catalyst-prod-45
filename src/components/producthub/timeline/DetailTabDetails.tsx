@@ -16,7 +16,7 @@
 import React, { useState, useCallback, useEffect, useMemo } from 'react';
 import type { TimelineRequest } from '@/types/producthub/request';
 import { format } from 'date-fns';
-import { Trash2 } from 'lucide-react';
+import { Trash2 } from '@/lib/atlaskit-icons';
 import { useQueryClient, useQuery } from '@tanstack/react-query';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { toast } from 'sonner';

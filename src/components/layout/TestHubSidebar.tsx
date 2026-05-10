@@ -31,7 +31,7 @@ import {
   Package,
   Shield,
   UserCheck,
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import { SidebarBase, SidebarConfig, SidebarSection } from './SidebarBase';
 
 interface TestHubSidebarProps {

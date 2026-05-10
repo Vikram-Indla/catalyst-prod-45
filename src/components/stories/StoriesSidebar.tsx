@@ -6,7 +6,7 @@ import {
   Settings,
   Grid3x3,
   BookOpen,
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 
 interface StoriesSidebarProps {

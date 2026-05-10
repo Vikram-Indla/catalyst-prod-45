@@ -4,7 +4,7 @@
  * Fixed 8-slot ring geometry around center avatar
  */
 import React, { useState, useMemo, useCallback, useEffect, useRef } from 'react';
-import { CalendarX2 } from 'lucide-react';
+import { CalendarX2 } from '@/lib/atlaskit-icons';
 import { useTheme } from '@/hooks/useTheme';
 import { initials } from '@/utils/r360Utils';
 import { getJiraIcon } from '@/components/r360/R360JiraIcons';

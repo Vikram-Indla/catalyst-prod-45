@@ -10,7 +10,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
-import { Folder, Layers } from 'lucide-react';
+import { Folder, Layers } from '@/lib/atlaskit-icons';
 import { useFolderTree, useMoveTestCases } from '@/hooks/useFolders';
 import { buildFolderTree } from '@/types/test-folders';
 import type { FolderTreeNode } from '@/types/test-folders';

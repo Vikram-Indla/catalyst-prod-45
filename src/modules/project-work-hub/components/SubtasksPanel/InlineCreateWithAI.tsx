@@ -20,7 +20,7 @@
  */
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import Textfield from '@atlaskit/textfield';
-import { CornerDownLeft, Loader2, Search, Sparkles } from 'lucide-react';
+import { CornerDownLeft, Loader2, Search, Sparkles } from '@/lib/atlaskit-icons';
 import { useAIPredictTitles } from './hooks/useAIPredictTitles';
 import { useFuzzyChildSearch } from './hooks/useFuzzyChildSearch';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';

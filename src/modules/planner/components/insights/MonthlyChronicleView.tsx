@@ -7,7 +7,7 @@ import { format } from 'date-fns';
 import { 
   FileText, Rocket, AlertTriangle, TestTube, Download, 
   ArrowRight, TrendingDown, Inbox, BarChart3
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import { useMonthlyInsightsData } from '../../hooks/useInsightsData';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';

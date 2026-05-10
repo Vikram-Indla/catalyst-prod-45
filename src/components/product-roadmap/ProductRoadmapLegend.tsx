@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { Info } from 'lucide-react';
+import { Info } from '@/lib/atlaskit-icons';
 import { TODAY_LINE_COLOR, PROGRESS_BAR_COLOR, KR_LEGEND_ITEMS } from '@/constants/krStatusStyles';
 import { Tooltip } from '@/components/ads';
 import { useProcessSteps } from '@/modules/kanban/hooks/useProcessSteps';

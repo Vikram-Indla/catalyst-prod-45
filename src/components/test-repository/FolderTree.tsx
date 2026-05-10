@@ -4,7 +4,7 @@
  */
 
 import { useState, useRef, useEffect } from 'react';
-import { ChevronRight, Folder, FolderOpen, FileText } from 'lucide-react';
+import { ChevronRight, Folder, FolderOpen, FileText } from '@/lib/atlaskit-icons';
 import { useRepositoryStore } from '@/stores/repositoryStore';
 import { cn } from '@/lib/utils';
 import type { TreeNode } from '@/types/test-repository';

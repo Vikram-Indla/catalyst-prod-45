@@ -1,5 +1,5 @@
 import { useState, useCallback, useMemo, useEffect, useRef } from 'react';
-import { FileText, FileSearch, Download, Loader2, Zap, RotateCcw, Eye, ArrowRight, Sparkles, FileUp } from 'lucide-react';
+import { FileText, FileSearch, Download, Loader2, Zap, RotateCcw, Eye, ArrowRight, Sparkles, FileUp } from '@/lib/atlaskit-icons';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { useRADocuments, useRAStats, RA_KEYS } from '@/hooks/useReqAssist';

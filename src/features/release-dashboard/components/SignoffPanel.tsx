@@ -41,7 +41,7 @@ import {
   Trash2,
   Send,
   Loader2,
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import { formatDistanceToNow } from 'date-fns';
 import {
   useReleaseSignoffs,

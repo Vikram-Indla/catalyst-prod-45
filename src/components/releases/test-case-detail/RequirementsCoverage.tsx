@@ -10,7 +10,7 @@ import {
   FileText,
   Link2,
   AlertCircle,
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import { Button } from '@/components/ui/button';
 import { Lozenge, Tooltip } from '@/components/ads';
 import type { LozengeAppearance } from '@/components/ads';

@@ -4,7 +4,7 @@
  */
 
 import { useState, useEffect } from 'react';
-import { X, FileCheck, Tag, User, FileText, AlertCircle, ExternalLink } from 'lucide-react';
+import { X, FileCheck, Tag, User, FileText, AlertCircle, ExternalLink } from '@/lib/atlaskit-icons';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { catalystToast } from '@/components/ui/CatalystToast';
 import { useTheme } from '@/hooks/useTheme';

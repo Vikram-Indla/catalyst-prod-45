@@ -4,7 +4,7 @@
  */
 
 import React from 'react';
-import { CheckCircle, XCircle, AlertTriangle, UserPlus, Bug, MessageSquare, Clock, Upload, RefreshCw, Play, Flag, UserMinus } from 'lucide-react';
+import { CheckCircle, XCircle, AlertTriangle, UserPlus, Bug, MessageSquare, Clock, Upload, RefreshCw, Play, Flag, UserMinus } from '@/lib/atlaskit-icons';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Skeleton } from '@/components/ui/skeleton';

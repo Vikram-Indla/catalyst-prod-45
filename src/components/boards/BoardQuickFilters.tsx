@@ -1,5 +1,5 @@
 import React from 'react';
-import { SlidersHorizontal } from 'lucide-react';
+import { SlidersHorizontal } from '@/lib/atlaskit-icons';
 import { useBoardStore } from '@/stores/boardStore';
 
 const FILTERS = [

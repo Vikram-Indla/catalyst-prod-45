@@ -5,7 +5,7 @@
  */
 
 import { useState, useEffect, useCallback, useMemo } from 'react';
-import { Loader2, RefreshCw, Download } from 'lucide-react';
+import { Loader2, RefreshCw, Download } from '@/lib/atlaskit-icons';
 import { supabase } from '@/integrations/supabase/client';
 import TestHubPageHeader from '@/components/testhub/TestHubPageHeader';
 

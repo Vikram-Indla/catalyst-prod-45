@@ -5,7 +5,7 @@ import { useEffect, useRef } from 'react';
 import {
   Eye, MessageSquare, Clock, ArrowUpToLine, ArrowDownToLine,
   Plus, Link2, Copy, Move, Tag, Paperclip, Trash2,
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import type { AllWorkItem } from '@/types/allwork.types';
 import { toast } from 'sonner';
 

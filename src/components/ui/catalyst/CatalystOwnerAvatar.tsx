@@ -1,5 +1,5 @@
 import { Avatar, Tooltip, type AvatarSize as AdsAvatarSize } from '@/components/ads';
-import { Bot, CircleUser, Settings } from 'lucide-react';
+import { Bot, CircleUser, Settings } from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 
 export type OwnerType = 'human' | 'ai' | 'system' | 'placeholder';

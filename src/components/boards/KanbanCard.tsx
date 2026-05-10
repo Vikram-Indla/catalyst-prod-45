@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { MoreHorizontal } from 'lucide-react';
+import { MoreHorizontal } from '@/lib/atlaskit-icons';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import type { KanbanCard } from '@/types/board';
 

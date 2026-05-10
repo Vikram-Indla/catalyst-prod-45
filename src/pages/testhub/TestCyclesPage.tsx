@@ -8,7 +8,7 @@ import { useTheme } from '@/hooks/useTheme';
 import {
   Plus, RefreshCw, Search, Filter, ArrowUpDown,
   Calendar, ChevronDown
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { catalystToast } from '@/components/ui/CatalystToast';
 import { TestHubPageHeader } from '@/components/testhub/TestHubPageHeader';

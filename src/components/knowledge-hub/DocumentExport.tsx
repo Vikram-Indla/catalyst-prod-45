@@ -5,7 +5,7 @@
  * - Preserves document formatting
  */
 import { useState } from 'react';
-import { Download, FileText, File } from 'lucide-react';
+import { Download, FileText, File } from '@/lib/atlaskit-icons';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,

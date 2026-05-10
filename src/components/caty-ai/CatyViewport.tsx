@@ -5,7 +5,7 @@
 
 import React from 'react';
 import DOMPurify from 'dompurify';
-import { AlertTriangle, Clock, Users, TrendingUp, ChevronRight, Zap } from 'lucide-react';
+import { AlertTriangle, Clock, Users, TrendingUp, ChevronRight, Zap } from '@/lib/atlaskit-icons';
 import { useCatyViewportData } from '@/hooks/useCatyViewportData';
 import type { ProbingQuestion, ViewportSection as ViewportSectionType } from '@/types/caty-viewport';
 

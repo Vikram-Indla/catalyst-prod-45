@@ -5,7 +5,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { BusinessRequest } from '@/types/business-request';
-import { Lock, ChevronDown, ChevronUp, Save, Pencil } from 'lucide-react';
+import { Lock, ChevronDown, ChevronUp, Save, Pencil } from '@/lib/atlaskit-icons';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { supabase, typedQuery } from '@/integrations/supabase/client';

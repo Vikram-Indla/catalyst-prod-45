@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Card, CardContent } from '@/components/ui/card';
 import { MetricCard, ReleaseCard, CycleCard, ActivityFeed } from '@/components/dashboard';
-import { Download, Plus, ArrowRight, Package, RefreshCw, FileText, FileSpreadsheet, Loader2 } from 'lucide-react';
+import { Download, Plus, ArrowRight, Package, RefreshCw, FileText, FileSpreadsheet, Loader2 } from '@/lib/atlaskit-icons';
 import {
   DropdownMenu,
   DropdownMenuContent,

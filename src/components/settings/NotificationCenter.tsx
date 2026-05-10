@@ -16,7 +16,7 @@ import {
   AlertCircle,
   Info,
   CheckCircle
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 
 const TYPE_CONFIG: Record<string, { icon: any; color: string }> = {
   mention: { icon: AtSign, color: 'text-blue-500' },

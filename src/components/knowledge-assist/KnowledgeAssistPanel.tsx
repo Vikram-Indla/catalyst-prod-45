@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { X, Mic, Send, RefreshCw, Loader2 } from 'lucide-react';
+import { X, Mic, Send, RefreshCw, Loader2 } from '@/lib/atlaskit-icons';
 import { KAItemDetailPanel } from './KAItemDetailPanel';
 import { useUserContext } from '../home/hooks/useUserContext';
 import { ProjectBriefingView } from '../home/ProjectBriefingView';

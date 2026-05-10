@@ -1,4 +1,4 @@
-import { Eye, Plus, X } from 'lucide-react';
+import { Eye, Plus, X } from '@/lib/atlaskit-icons';
 import { Button } from '@/components/ui/button';
 import { CatalystOwnerAvatar } from '@/components/ui/catalyst';
 import type { Assignee } from '@/types/release';

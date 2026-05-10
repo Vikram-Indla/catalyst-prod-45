@@ -11,7 +11,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { format } from 'date-fns';
 import {
   X, Search, Check, CalendarIcon, ChevronDown, Filter, Trash2,
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 import type { KanbanThemeTokens } from '@/components/kanban/kanban-tokens';
 

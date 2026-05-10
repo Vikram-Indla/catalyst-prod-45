@@ -22,7 +22,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Bug, Loader2, Sparkles, Image as ImageIcon } from 'lucide-react';
+import { Bug, Loader2, Sparkles, Image as ImageIcon } from '@/lib/atlaskit-icons';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { cn } from '@/lib/utils';

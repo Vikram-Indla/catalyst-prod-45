@@ -5,7 +5,7 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { CatalystPageHeader } from '@/components/shared/CatalystPageHeader';
 import { useNavigate } from 'react-router-dom';
-import { Plus, Download } from 'lucide-react';
+import { Plus, Download } from '@/lib/atlaskit-icons';
 import { useGoals, useAllKeyResults, useThemes } from '@/hooks/useGoals';
 import { GoalsStatsStrip, GoalsStatsStripSkeleton } from '@/components/goals/GoalsStatsStrip';
 import { GoalsToolbar } from '@/components/goals/GoalsToolbar';

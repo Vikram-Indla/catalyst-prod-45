@@ -6,7 +6,7 @@
  */
 
 import { useState, Fragment, useMemo } from 'react';
-import { Eye, EyeOff, ChevronRight, Download, ArrowUpDown, ArrowUp, ArrowDown } from 'lucide-react';
+import { Eye, EyeOff, ChevronRight, Download, ArrowUpDown, ArrowUp, ArrowDown } from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 import { formatFull, type BudgetResource } from '@/hooks/budget/useBudgetData';
 import type { BudgetAssignment } from '@/hooks/budget/useBudgetData';

@@ -4,7 +4,7 @@
  */
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FolderGit2, RefreshCw, Loader2 } from 'lucide-react';
+import { FolderGit2, RefreshCw, Loader2 } from '@/lib/atlaskit-icons';
 import { useJiraProjects } from '@/hooks/workhub/useJiraProjects';
 import { useSyncLog, useTriggerSync } from '@/hooks/workhub/useSyncLog';
 import { SyncStatusCards } from './SyncStatusCard';

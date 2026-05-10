@@ -10,7 +10,7 @@ import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { logRequestAudit } from '@/lib/requestAudit';
 import { getInitialsFromName, hashColor } from '@/types/producthub/request';
-import { Pencil, Trash2, Shield, X } from 'lucide-react';
+import { Pencil, Trash2, Shield, X } from '@/lib/atlaskit-icons';
 
 /* ── Custom Dropdown (no native <select>) ── */
 function CustomSelect({ value, options, onChange }: { value: string; options: string[]; onChange: (v: string) => void }) {

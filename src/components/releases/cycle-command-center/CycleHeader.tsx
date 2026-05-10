@@ -4,7 +4,7 @@
  */
 
 import React from 'react';
-import { Clock, Users, Calendar as CalendarIcon, Play, Pause, CheckCircle } from 'lucide-react';
+import { Clock, Users, Calendar as CalendarIcon, Play, Pause, CheckCircle } from '@/lib/atlaskit-icons';
 import { Lozenge } from '@/components/ads';
 import type { LozengeAppearance } from '@/components/ads';
 import { Skeleton } from '@/components/ui/skeleton';

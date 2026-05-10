@@ -4,7 +4,7 @@
 // =====================================================
 
 import { useState } from 'react';
-import { Search, Filter, X, LayoutList, GanttChartSquare } from 'lucide-react';
+import { Search, Filter, X, LayoutList, GanttChartSquare } from '@/lib/atlaskit-icons';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Lozenge } from '@/components/ads';

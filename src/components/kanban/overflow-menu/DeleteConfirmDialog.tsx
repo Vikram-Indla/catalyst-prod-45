@@ -2,7 +2,7 @@
  * DeleteConfirmDialog — Destructive confirmation requiring key input
  */
 import { useState, useEffect, useRef } from 'react';
-import { Trash2 } from 'lucide-react';
+import { Trash2 } from '@/lib/atlaskit-icons';
 import type { KanbanThemeTokens } from '../kanban-tokens';
 
 interface Props {

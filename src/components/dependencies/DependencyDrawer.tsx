@@ -4,7 +4,7 @@
 // =====================================================
 
 import React from 'react';
-import { Link2, Check, Trash2 } from 'lucide-react';
+import { Link2, Check, Trash2 } from '@/lib/atlaskit-icons';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
 import { 

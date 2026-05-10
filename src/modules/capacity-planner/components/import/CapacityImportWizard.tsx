@@ -13,7 +13,7 @@ import { Lozenge } from '@/components/ads';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { cn } from '@/lib/utils';
-import { Upload, AlertCircle, CheckCircle2, ArrowRight, ArrowLeft, RefreshCw } from 'lucide-react';
+import { Upload, AlertCircle, CheckCircle2, ArrowRight, ArrowLeft, RefreshCw } from '@/lib/atlaskit-icons';
 import { useCapacityImport } from './useCapacityImport';
 import { RESOURCE_IMPORT_FIELDS } from './fieldConfig';
 import { WIZARD_STEPS, type ImportMode, type ParsedRow, type ImportPreviewRow } from './types';

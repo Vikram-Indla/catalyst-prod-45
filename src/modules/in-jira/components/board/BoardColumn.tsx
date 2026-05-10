@@ -5,7 +5,7 @@
 
 import React, { useMemo } from 'react';
 import { Droppable, Draggable } from '@hello-pangea/dnd';
-import { AlertTriangle } from 'lucide-react';
+import { AlertTriangle } from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 import { IssueCard } from './IssueCard';
 import type { BoardIssue, DBBoardColumn } from '../../hooks/useBoardData';

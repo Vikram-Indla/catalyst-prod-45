@@ -3,7 +3,7 @@
 // ============================================================================
 
 import React, { useState } from 'react';
-import { Check } from 'lucide-react';
+import { Check } from '@/lib/atlaskit-icons';
 import { COLORS } from '../colors';
 
 interface CheckboxProps {

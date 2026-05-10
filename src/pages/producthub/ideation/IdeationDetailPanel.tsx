@@ -4,7 +4,7 @@
  * Wiring Audit (Sacred Gate): CRUD calls ph_ideas .update(), invalidates all idea query keys
  */
 import React, { useState, useEffect, useRef } from 'react';
-import { X, Edit2, Send } from 'lucide-react';
+import { X, Edit2, Send } from '@/lib/atlaskit-icons';
 import { toast } from 'sonner';
 import { useTheme } from '@/hooks/useTheme';
 import { DK, LK } from '@/utils/dark-mode-styles';

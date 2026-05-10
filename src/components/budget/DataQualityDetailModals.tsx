@@ -8,7 +8,7 @@
  * 4. DataQualityBreakdownModal - Shows department breakdown with progress bars
  */
 
-import { X, AlertTriangle, ChevronRight } from 'lucide-react';
+import { X, AlertTriangle, ChevronRight } from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 import type { BudgetResource } from '@/hooks/budget/useBudgetData';
 

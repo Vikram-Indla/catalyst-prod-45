@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ChevronLeft, Info, TrendingUp, ExternalLink } from 'lucide-react';
+import { ChevronLeft, Info, TrendingUp, ExternalLink } from '@/lib/atlaskit-icons';
 import { AcceptedStory } from '@/types/backlog.types';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { cn } from '@/lib/utils';

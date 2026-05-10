@@ -16,7 +16,7 @@ import {
   Folder,
   Link2,
   Package
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import { PriorityBars, normalisePriority } from '@/components/shared/PriorityIndicator';
 import { Avatar, Lozenge } from '@/components/ads';
 import { Button } from '@/components/ui/button';

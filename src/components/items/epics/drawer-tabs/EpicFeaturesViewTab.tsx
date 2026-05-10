@@ -14,7 +14,7 @@ import { Lozenge } from '@/components/ads';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Plus, ExternalLink, GitBranch, Link as LinkIcon, Search, ArrowLeft } from 'lucide-react';
+import { Plus, ExternalLink, GitBranch, Link as LinkIcon, Search, ArrowLeft } from '@/lib/atlaskit-icons';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 

@@ -3,7 +3,7 @@
  * Phase 9
  */
 import { useState } from 'react';
-import { X, Plus, SlidersHorizontal } from 'lucide-react';
+import { X, Plus, SlidersHorizontal } from '@/lib/atlaskit-icons';
 import { v4 as uuid } from 'uuid';
 
 export interface FilterCondition {

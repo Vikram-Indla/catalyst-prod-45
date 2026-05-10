@@ -10,7 +10,7 @@
  */
 
 import { useState, useRef, useEffect } from 'react';
-import { Search, X, User } from 'lucide-react';
+import { Search, X, User } from '@/lib/atlaskit-icons';
 import {
   Popover,
   PopoverContent,

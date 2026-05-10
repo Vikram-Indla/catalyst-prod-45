@@ -12,7 +12,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '
 import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd';
 import { Database } from '@/integrations/supabase/types';
 import { useToast } from '@/hooks/use-toast';
-import { Settings, AlertCircle } from 'lucide-react';
+import { Settings, AlertCircle } from '@/lib/atlaskit-icons';
 
 type StoryStatus = Database['public']['Enums']['story_status'];
 

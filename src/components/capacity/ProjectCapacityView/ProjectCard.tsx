@@ -3,7 +3,7 @@
  * Displays a single project with staffing status and resource allocations
  */
 
-import { Eye } from 'lucide-react';
+import { Eye } from '@/lib/atlaskit-icons';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import type { ProjectUtilization } from './types';

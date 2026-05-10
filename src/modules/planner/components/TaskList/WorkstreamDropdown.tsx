@@ -4,7 +4,7 @@
  */
 
 import { useState, useRef, useEffect, memo } from 'react';
-import { Check, ChevronDown } from 'lucide-react';
+import { Check, ChevronDown } from '@/lib/atlaskit-icons';
 import { getWorkstreamColor } from '@/lib/workstream-colors';
 import { COLORS, WORKSTREAM_COLORS } from '@/components/planner/task-modal/colors';
 import { usePlannerWorkstreams } from '../../hooks/usePlannerWorkstreams';

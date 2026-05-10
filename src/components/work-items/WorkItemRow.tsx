@@ -5,7 +5,7 @@
 
 import React from 'react';
 import { format, isValid, parseISO } from 'date-fns';
-import { MoreHorizontal } from 'lucide-react';
+import { MoreHorizontal } from '@/lib/atlaskit-icons';
 import { WorkItemWithRelations, PRIORITY_CONFIG } from '@/types/work-items';
 import { WorkItemTypeIcon } from './WorkItemTypeIcon';
 import { StatusLozenge } from '@/components/ui/StatusLozenge';

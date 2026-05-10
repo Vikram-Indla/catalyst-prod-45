@@ -3,7 +3,7 @@ import { useAuth } from '@/lib/auth';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
-import { Lock, Unlock, Upload, X, FileText, Users, CalendarDays, Paperclip, Briefcase, Check } from 'lucide-react';
+import { Lock, Unlock, Upload, X, FileText, Users, CalendarDays, Paperclip, Briefcase, Check } from '@/lib/atlaskit-icons';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';

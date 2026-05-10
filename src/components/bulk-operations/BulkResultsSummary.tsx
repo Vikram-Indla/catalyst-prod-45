@@ -1,7 +1,7 @@
 // Bulk Results Summary - Shows operation results with success/failure counts
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { CheckCircle2, XCircle, AlertCircle, ChevronDown, ChevronUp } from 'lucide-react';
+import { CheckCircle2, XCircle, AlertCircle, ChevronDown, ChevronUp } from '@/lib/atlaskit-icons';
 import { useState } from 'react';
 import { BulkOperationSummary } from './types';
 import { cn } from '@/lib/utils';

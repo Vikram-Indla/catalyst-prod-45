@@ -7,7 +7,7 @@ import React, { useState } from 'react';
 import { Lozenge } from '@/components/ads';
 import { Button } from '@/components/ui/button';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-import { ChevronDown, ChevronUp, CheckCircle, AlertCircle, AlertTriangle, XCircle } from 'lucide-react';
+import { ChevronDown, ChevronUp, CheckCircle, AlertCircle, AlertTriangle, XCircle } from '@/lib/atlaskit-icons';
 import { CATALYST_V5 } from '@/lib/catalyst-colors';
 import type { WorkloadHealth } from '@/types/workload.types';
 

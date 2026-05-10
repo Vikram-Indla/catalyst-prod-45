@@ -3,7 +3,7 @@
 import React from 'react';
 import { cn } from '@/lib/utils';
 import { Tooltip } from '@/components/ads';
-import { Calendar, Check } from 'lucide-react';
+import { Calendar, Check } from '@/lib/atlaskit-icons';
 import { BusinessRequestRoadmapItem } from '@/types/roadmapTypes';
 import { STAGE_NAMES, STAGE_NAMES_AR } from '@/types/roadmapTypes';
 import { MONTH_NAMES, MONTH_NAMES_AR, ROW_HEIGHT, HEADER_HEIGHT, STATUS_BAR_GRADIENTS } from './roadmapConstants';

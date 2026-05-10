@@ -31,7 +31,7 @@ import {
   LayoutList,
   FlaskConical,
   Star,
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 import { Tooltip } from '@/components/ads';
 import { useFavorites } from '@/hooks/useFavorites';

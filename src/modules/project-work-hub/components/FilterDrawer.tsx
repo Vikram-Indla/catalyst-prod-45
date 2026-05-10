@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, User, Calendar, Activity } from 'lucide-react';
+import { X, User, Calendar, Activity } from '@/lib/atlaskit-icons';
 import { WorkHubFilters, QuickFilter } from '../types';
 import { Button } from '@/components/ui/button';
 

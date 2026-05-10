@@ -12,7 +12,7 @@
 
 import { useState, useMemo, useRef, useEffect, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { MoreHorizontal, Eye, Pencil, Trash2, AlertTriangle, Copy, ChevronLeft, ChevronRight } from 'lucide-react';
+import { MoreHorizontal, Eye, Pencil, Trash2, AlertTriangle, Copy, ChevronLeft, ChevronRight } from '@/lib/atlaskit-icons';
 import { Skeleton } from '@/components/ui/skeleton';
 import {
   DropdownMenu,

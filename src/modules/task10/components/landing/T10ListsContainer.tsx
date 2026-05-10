@@ -4,7 +4,7 @@
 // ═══════════════════════════════════════════════════════════════════════════════
 
 import React from 'react';
-import { Inbox } from 'lucide-react';
+import { Inbox } from '@/lib/atlaskit-icons';
 import { T10ListCardNew } from './T10ListCardNew';
 import type { T10List } from '../../types';
 

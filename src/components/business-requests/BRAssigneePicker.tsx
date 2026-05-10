@@ -7,7 +7,7 @@
  * Difference: org-wide users via useActiveUsers (BR has no project scope).
  */
 import React, { useEffect, useRef, useState } from 'react';
-import { CircleUser } from 'lucide-react';
+import { CircleUser } from '@/lib/atlaskit-icons';
 import { useActiveUsers } from '@/hooks/useActiveUsers';
 import { getAvatarColor } from '@/modules/project-work-hub/components/dialogs/story-detail-modules/helpers';
 

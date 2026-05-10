@@ -7,7 +7,7 @@ import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { useDroppable } from '@dnd-kit/core';
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
-import { GripVertical, Plus, Trash2 } from 'lucide-react';
+import { GripVertical, Plus, Trash2 } from '@/lib/atlaskit-icons';
 import { BoardTaskCard } from './BoardTaskCard';
 import type { BoardColumn, BoardTask } from '../../types/planner-boards';
 import { cn } from '@/lib/utils';

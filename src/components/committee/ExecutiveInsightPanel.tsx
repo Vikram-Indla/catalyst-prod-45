@@ -6,7 +6,7 @@
  */
 
 import { useMemo } from 'react';
-import { AlertCircle, CheckCircle, XCircle, Clock, Timer, AlertTriangle } from 'lucide-react';
+import { AlertCircle, CheckCircle, XCircle, Clock, Timer, AlertTriangle } from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 import type { CommitteeQueueItem } from '@/hooks/useCommitteeQueue';
 

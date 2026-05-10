@@ -1,7 +1,7 @@
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { useApplyWSJFToRankFeatures } from '@/hooks/useApplyWSJFToRank';
-import { Loader2 } from 'lucide-react';
+import { Loader2 } from '@/lib/atlaskit-icons';
 
 interface ApplyWSJFToRankDialogProps {
   open: boolean;

@@ -3,7 +3,7 @@
  */
 
 import React, { useState, useCallback } from 'react';
-import { Search, Filter, X, Columns, Download, ChevronDown } from 'lucide-react';
+import { Search, Filter, X, Columns, Download, ChevronDown } from '@/lib/atlaskit-icons';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Lozenge } from '@/components/ads';

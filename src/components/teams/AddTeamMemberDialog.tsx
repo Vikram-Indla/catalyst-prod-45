@@ -14,7 +14,7 @@ import { Input } from '@/components/ui/input';
 import { Progress } from '@/components/ui/progress';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
-import { Search, X, ArrowUp, ArrowDown, CornerDownLeft } from 'lucide-react';
+import { Search, X, ArrowUp, ArrowDown, CornerDownLeft } from '@/lib/atlaskit-icons';
 
 interface AddTeamMemberDialogProps {
   teamId: string;

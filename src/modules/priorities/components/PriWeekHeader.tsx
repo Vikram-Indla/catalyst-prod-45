@@ -2,7 +2,7 @@
 // File: src/modules/priorities/components/PriWeekHeader.tsx
 // ============================================================
 
-import { ChevronLeft, ChevronRight, LogOut } from 'lucide-react';
+import { ChevronLeft, ChevronRight, LogOut } from '@/lib/atlaskit-icons';
 import type { PriListFull, PriWeekFull } from '../types';
 import { formatWeekRange } from '../utils';
 import styles from '../styles/priorities.module.css';

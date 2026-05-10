@@ -3,7 +3,7 @@ import { createPortal } from 'react-dom';
 import { 
   X, Check, User, Calendar, Tag, FileText, Plus, Clock, 
   Trash2, Save
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import type { T10Item } from '../../types';
 import { getRelativeTime, getRankTier, formatShortDate } from '../../utils';
 import { T10AssigneePicker } from './T10AssigneePicker';

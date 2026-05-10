@@ -4,7 +4,7 @@
 // =====================================================
 
 import React from 'react';
-import { Calendar, Plus } from 'lucide-react';
+import { Calendar, Plus } from '@/lib/atlaskit-icons';
 import { Button } from '@/components/ui/button';
 
 interface EmptyTimelineStateProps {

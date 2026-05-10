@@ -3,7 +3,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import '@/components/project-hub/shared/phStyles.css';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { Plus } from 'lucide-react';
+import { Plus } from '@/lib/atlaskit-icons';
 import {
   DndContext,
   closestCenter,

@@ -1,4 +1,4 @@
-import { Construction } from 'lucide-react';
+import { Construction } from '@/lib/atlaskit-icons';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
 

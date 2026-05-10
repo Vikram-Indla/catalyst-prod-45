@@ -16,7 +16,7 @@ import {
   Check,
   Info,
   Search,
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import { Input } from '@/components/ui/input';
 import { Tooltip } from '@/components/ads';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';

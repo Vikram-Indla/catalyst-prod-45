@@ -17,11 +17,11 @@ import {
 } from '@/components/ui/select';
 import { SEVERITY_LEVELS, IMPACT_LEVELS } from '@/constants/risks';
 import { Button } from '@/components/ui/button';
-import { Upload, FileText } from 'lucide-react';
+import { Upload, FileText } from '@/lib/atlaskit-icons';
 import { useState, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { AlertCircle } from 'lucide-react';
+import { AlertCircle } from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 
 interface RiskMitigationTabProps {

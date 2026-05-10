@@ -12,7 +12,7 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Plus, Calendar } from 'lucide-react';
+import { Plus, Calendar } from '@/lib/atlaskit-icons';
 import { useTestCycles } from '@/hooks/test-management/useTestCycles';
 import { TestSet } from '@/types/test-sets';
 import { formatDistanceToNow } from 'date-fns';

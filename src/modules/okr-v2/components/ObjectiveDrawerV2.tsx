@@ -37,7 +37,7 @@ import {
   Trash2, Copy, X, Pencil, Link as LinkIcon, 
   MoreVertical, Download, Target, Clock, Users, Calendar,
   TrendingUp, HelpCircle
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import { ObjectiveOverviewTabV2, ObjectiveFormData } from './ObjectiveOverviewTabV2';
 import { KeyResultsTabV2 } from './KeyResultsTabV2';
 import { LinkedWorkTabV2 } from './LinkedWorkTabV2';

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { CheckCircle, RefreshCw, Plus, Calendar, FileText } from 'lucide-react';
+import { CheckCircle, RefreshCw, Plus, Calendar, FileText } from '@/lib/atlaskit-icons';
 import { useProjectMetrics, useStatusDistribution, usePriorityDistribution, useTypeDistribution } from '../../hooks/useProjectMetrics';
 import { WORK_ITEM_TYPE_CONFIG, PRIORITY_CONFIG } from '../../types';
 import { Button } from '@/components/ui/button';

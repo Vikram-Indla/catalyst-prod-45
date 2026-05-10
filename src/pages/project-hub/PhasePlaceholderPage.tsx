@@ -1,6 +1,6 @@
 import { useParams } from 'react-router-dom';
 import { CatalystPageHeader } from '@/components/shared/CatalystPageHeader';
-import { LucideIcon, List } from 'lucide-react';
+import { LucideIcon, List } from '@/lib/atlaskit-icons';
 
 interface PhasePageProps {
   title: string;

@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Switch } from '@/components/ui/switch';
 import { Button } from '@/components/ui/button';
 import { Avatar } from '@/components/ads';
-import { Lock, Loader2 } from 'lucide-react';
+import { Lock, Loader2 } from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 import { CatalystDatePicker } from '@/components/ui/catalyst-date-picker';
 import { RichTextEditor } from '../RichTextEditor';

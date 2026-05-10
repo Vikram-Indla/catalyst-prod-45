@@ -7,7 +7,7 @@
 
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { MoreHorizontal, AlertTriangle } from 'lucide-react';
+import { MoreHorizontal, AlertTriangle } from '@/lib/atlaskit-icons';
 import type { KanbanTask } from '../../types/kanban';
 import { getProgressColor } from '../../types/kanban';
 import { getWorkstreamColor } from '@/lib/workstream-colors';

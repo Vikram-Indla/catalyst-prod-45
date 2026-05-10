@@ -2,7 +2,7 @@ import React, { useState, useRef, useCallback } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
-import { Search, Plus, Star, MoreHorizontal } from 'lucide-react';
+import { Search, Plus, Star, MoreHorizontal } from '@/lib/atlaskit-icons';
 import { CreateProjectDialog } from '@/components/projects/CreateProjectDialog';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';

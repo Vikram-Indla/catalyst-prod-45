@@ -2,7 +2,7 @@
  * UtilizationBar — Reusable utilization progress bar
  * Phase 6: Resource 360
  */
-import { AlertTriangle } from 'lucide-react';
+import { AlertTriangle } from '@/lib/atlaskit-icons';
 
 export function getUtilColor(pct: number): string {
   if (pct > 80) return 'var(--sem-danger)';

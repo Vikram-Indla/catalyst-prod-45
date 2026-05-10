@@ -4,7 +4,7 @@
 
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Rocket, Palette, FileStack, ArrowRight } from 'lucide-react';
+import { Rocket, Palette, FileStack, ArrowRight } from '@/lib/atlaskit-icons';
 import type { CalendarEvent } from '@/types/workhub.types';
 import { WorkHubDrawer } from '../shared/WorkHubDrawer';
 import { formatCalendarDate } from '@/lib/workhub/calendarHelpers';

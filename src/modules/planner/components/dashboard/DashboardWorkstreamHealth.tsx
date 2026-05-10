@@ -4,7 +4,7 @@
 // ============================================================
 
 import { useNavigate } from 'react-router-dom';
-import { AlertCircle, CheckCircle2, AlertTriangle } from 'lucide-react';
+import { AlertCircle, CheckCircle2, AlertTriangle } from '@/lib/atlaskit-icons';
 import type { WorkstreamHealth } from '../../types/planner-dashboard';
 import { cn } from '@/lib/utils';
 

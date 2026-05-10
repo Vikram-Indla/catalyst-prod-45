@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useWorkItemActivity, type ActivityEntry, type Reaction } from '@/hooks/useWorkItemActivity';
-import { Loader2, Trash2, SmilePlus } from 'lucide-react';
+import { Loader2, Trash2, SmilePlus } from '@/lib/atlaskit-icons';
 
 type Tab = 'all' | 'comments' | 'history';
 

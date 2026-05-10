@@ -1,5 +1,5 @@
 import React from 'react';
-import { Search, ChevronDown, MessageSquare, Clock } from 'lucide-react';
+import { Search, ChevronDown, MessageSquare, Clock } from '@/lib/atlaskit-icons';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Tooltip } from '@/components/ads';

@@ -8,7 +8,7 @@
  */
 
 import { useState } from 'react';
-import { ChevronDown, ChevronUp, Settings, User, Calendar, Zap, Building2 } from 'lucide-react';
+import { ChevronDown, ChevronUp, Settings, User, Calendar, Zap, Building2 } from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 import { Lozenge } from '@/components/ads';
 import { Button } from '@/components/ui/button';

@@ -1,5 +1,5 @@
 import { Card } from '@/components/ui/card';
-import { Target, TrendingUp, AlertTriangle, CheckCircle2 } from 'lucide-react';
+import { Target, TrendingUp, AlertTriangle, CheckCircle2 } from '@/lib/atlaskit-icons';
 import { useObjectives } from '@/hooks/useObjectives';
 import type { ObjectiveTier } from '../../types/objective.types';
 

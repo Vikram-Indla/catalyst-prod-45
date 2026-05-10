@@ -2,7 +2,7 @@
  * InlineEditTitle — Double-click to edit, Enter to save, Escape to cancel
  */
 import { useState, useRef, useEffect, useCallback } from 'react';
-import { Pencil } from 'lucide-react';
+import { Pencil } from '@/lib/atlaskit-icons';
 
 interface InlineEditTitleProps {
   value: string;

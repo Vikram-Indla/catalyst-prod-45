@@ -2,7 +2,7 @@ import { useState, useRef } from 'react';
 import { 
   X, Upload, FileText, Bug, FileCheck, Layers, Tags,
   CheckCircle2, File, Trash2
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { catalystToast } from '@/components/ui/CatalystToast';
 import Papa from 'papaparse';

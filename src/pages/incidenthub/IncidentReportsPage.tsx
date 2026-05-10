@@ -3,7 +3,7 @@
  */
 
 import { useState } from 'react';
-import { FileText } from 'lucide-react';
+import { FileText } from '@/lib/atlaskit-icons';
 import { useIncidentListView } from '@/hooks/useIncidentHub';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useTheme } from '@/hooks/useTheme';

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Plus, Copy, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Plus, Copy, ChevronLeft, ChevronRight } from '@/lib/atlaskit-icons';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';

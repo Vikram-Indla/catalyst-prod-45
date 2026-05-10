@@ -6,7 +6,7 @@
 // ============================================================
 
 import { useRef, useEffect, useState } from 'react';
-import { Plus, Search, X, ChevronDown, Layers, Check } from 'lucide-react';
+import { Plus, Search, X, ChevronDown, Layers, Check } from '@/lib/atlaskit-icons';
 import { useMyTasksSummary, useMyWorkstreams } from '../../hooks/useMyTasks';
 import { COLORS } from '@/components/planner/task-modal/colors';
 import type { FilterConfig } from '../../types/my-tasks';

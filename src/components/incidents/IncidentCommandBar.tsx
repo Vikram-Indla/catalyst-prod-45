@@ -5,7 +5,7 @@
  */
 
 import { useNavigate, useLocation } from 'react-router-dom';
-import { List, BarChart3, Lightbulb, Kanban } from 'lucide-react';
+import { List, BarChart3, Lightbulb, Kanban } from '@/lib/atlaskit-icons';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 

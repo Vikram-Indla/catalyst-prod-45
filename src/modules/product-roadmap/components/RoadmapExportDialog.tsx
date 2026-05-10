@@ -16,7 +16,7 @@ import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Separator } from '@/components/ui/separator';
-import { FileText, FileSpreadsheet, Download, Loader2 } from 'lucide-react';
+import { FileText, FileSpreadsheet, Download, Loader2 } from '@/lib/atlaskit-icons';
 import type { RoadmapDemand, TimelineConfig } from '../types/roadmap';
 import { 
   exportRoadmapToPDF, 

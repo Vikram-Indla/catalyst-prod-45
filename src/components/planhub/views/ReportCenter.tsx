@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { Calendar, Users, DollarSign, AlertTriangle, Sparkles, Download, Loader2, FileText } from 'lucide-react';
+import { Calendar, Users, DollarSign, AlertTriangle, Sparkles, Download, Loader2, FileText } from '@/lib/atlaskit-icons';
 import { useToast } from '@/hooks/use-toast';
-import type { LucideIcon } from 'lucide-react';
+import type { LucideIcon } from '@/lib/atlaskit-icons';
 
 interface Props {
   planId?: string | null;

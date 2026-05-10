@@ -5,7 +5,7 @@
 
 import { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, ChevronDown, ChevronRight, Plus } from 'lucide-react';
+import { X, ChevronDown, ChevronRight, Plus } from '@/lib/atlaskit-icons';
 
 function useIsDark() {
   return typeof document !== 'undefined' && document.documentElement.classList.contains('dark');

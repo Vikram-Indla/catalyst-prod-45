@@ -3,7 +3,7 @@
 // ============================================================================
 
 import React, { useState, useRef, useEffect } from 'react';
-import { Tag, ChevronDown, Check } from 'lucide-react';
+import { Tag, ChevronDown, Check } from '@/lib/atlaskit-icons';
 import { useLabels } from '../task-modal/hooks/useLabels';
 import { useLabelTaskCounts } from '@/modules/planner/hooks/useLabelTaskCounts';
 

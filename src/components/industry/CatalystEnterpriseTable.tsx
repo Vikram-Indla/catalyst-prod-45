@@ -1,6 +1,6 @@
 import React, { memo, useState, useMemo, useCallback, useRef, useEffect } from 'react';
 import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd';
-import { GripVertical, ChevronDown, ChevronUp, Inbox } from 'lucide-react';
+import { GripVertical, ChevronDown, ChevronUp, Inbox } from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 import { Checkbox } from '@/components/ui/checkbox';
 

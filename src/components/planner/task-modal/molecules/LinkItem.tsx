@@ -3,7 +3,7 @@
 // ============================================================================
 
 import React, { useState } from 'react';
-import { Link2, ExternalLink, Trash2 } from 'lucide-react';
+import { Link2, ExternalLink, Trash2 } from '@/lib/atlaskit-icons';
 import { COLORS } from '../colors';
 
 interface LinkItemProps {

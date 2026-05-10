@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Search, Loader2, History, TrendingUp, TrendingDown, Minus } from 'lucide-react';
+import { Search, Loader2, History, TrendingUp, TrendingDown, Minus } from '@/lib/atlaskit-icons';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';

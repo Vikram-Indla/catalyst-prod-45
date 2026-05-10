@@ -22,7 +22,7 @@ import {
   Loader2,
   Check,
   X,
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import {

@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { ChevronUp, ChevronDown, ChevronsUpDown, Filter, Check, X } from 'lucide-react';
+import { ChevronUp, ChevronDown, ChevronsUpDown, Filter, Check, X } from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 import { CatalystColumn, FilterOption } from '../types';
 import { Button } from '@/components/ui/button';

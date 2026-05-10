@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { X, XCircle, Bug, Server, Database, FileWarning, Clock, HelpCircle, Link2, Plus } from 'lucide-react';
+import { X, XCircle, Bug, Server, Database, FileWarning, Clock, HelpCircle, Link2, Plus } from '@/lib/atlaskit-icons';
 import { CreateDefectModal } from '@/components/testhub/defects/CreateDefectModal';
 
 interface FailureReasonModalProps {

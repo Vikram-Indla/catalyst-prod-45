@@ -3,7 +3,7 @@
  * Blue header with Catalyst logo, status, and action buttons
  */
 
-import { X, RotateCw, Minus } from 'lucide-react';
+import { X, RotateCw, Minus } from '@/lib/atlaskit-icons';
 import catalystWordmark from '@/assets/catalyst-wordmark.svg';
 
 interface CatyHeaderProps {

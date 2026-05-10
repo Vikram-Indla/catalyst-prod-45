@@ -6,7 +6,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
-import { X, Calendar, User } from 'lucide-react';
+import { X, Calendar, User } from '@/lib/atlaskit-icons';
 import { useT10CreateItem, useT10Users } from '../../hooks';
 import { getT10Initials } from '../../utils';
 

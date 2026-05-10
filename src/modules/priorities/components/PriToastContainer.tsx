@@ -2,7 +2,7 @@
 // File: src/modules/priorities/components/PriToastContainer.tsx
 // ============================================================
 
-import { X, CheckCircle, AlertCircle, AlertTriangle } from 'lucide-react';
+import { X, CheckCircle, AlertCircle, AlertTriangle } from '@/lib/atlaskit-icons';
 import type { PriToast } from '../types';
 import styles from '../styles/priorities.module.css';
 

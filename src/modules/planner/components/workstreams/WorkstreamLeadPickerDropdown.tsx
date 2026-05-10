@@ -5,7 +5,7 @@
 
 import React, { useState } from 'react';
 import { createPortal } from 'react-dom';
-import { Search, X, Check } from 'lucide-react';
+import { Search, X, Check } from '@/lib/atlaskit-icons';
 import { COLORS, TeamMember } from './workstreams-constants';
 
 const DropdownItem: React.FC<{

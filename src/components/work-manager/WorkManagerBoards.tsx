@@ -3,7 +3,7 @@
 
 import { useMemo, useState } from 'react';
 import { DragDropContext, Droppable, Draggable, type DropResult } from '@hello-pangea/dnd';
-import { MoreHorizontal, CheckCircle2, Plus, Settings, EyeOff, Trash2, Eye, Users, Calendar, User } from 'lucide-react';
+import { MoreHorizontal, CheckCircle2, Plus, Settings, EyeOff, Trash2, Eye, Users, Calendar, User } from '@/lib/atlaskit-icons';
 import { TaskCard } from './TaskCard';
 import { users, teams } from '@/lib/work-manager-data';
 import { useWorkManagerColumns } from '@/hooks/useWorkManagerColumns';

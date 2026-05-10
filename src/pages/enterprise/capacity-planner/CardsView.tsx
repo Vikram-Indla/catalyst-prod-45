@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Users, ChevronUp, ChevronDown, Building2 } from 'lucide-react';
+import { Users, ChevronUp, ChevronDown, Building2 } from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 import { CATALYST, getAssignmentColor } from '@/lib/catalyst-colors';
 import { CompactGroupHeader } from '@/components/capacity/CompactGroupHeader';

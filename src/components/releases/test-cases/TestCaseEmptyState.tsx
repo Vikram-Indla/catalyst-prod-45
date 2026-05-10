@@ -5,7 +5,7 @@
  * - no-results: No test cases match current filters
  */
 
-import { ClipboardList, SearchX, Plus, Upload } from 'lucide-react';
+import { ClipboardList, SearchX, Plus, Upload } from '@/lib/atlaskit-icons';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 

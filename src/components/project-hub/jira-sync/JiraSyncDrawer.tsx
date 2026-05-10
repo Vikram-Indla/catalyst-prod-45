@@ -3,7 +3,7 @@
  * C8: Width 480px. Slide 250ms in, 200ms out.
  */
 import React, { useState, useEffect } from 'react';
-import { X, RefreshCw, Check, Clock, AlertCircle, CheckCircle2, Inbox } from 'lucide-react';
+import { X, RefreshCw, Check, Clock, AlertCircle, CheckCircle2, Inbox } from '@/lib/atlaskit-icons';
 
 interface SyncLogEntry {
   id: string;

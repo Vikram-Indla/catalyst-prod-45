@@ -3,7 +3,7 @@
  */
 
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, History } from 'lucide-react';
+import { X, History } from '@/lib/atlaskit-icons';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { TestCaseVersionHistory } from './TestCaseVersionHistory';

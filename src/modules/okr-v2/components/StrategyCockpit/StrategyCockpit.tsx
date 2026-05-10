@@ -6,7 +6,7 @@
 
 import { useState, useEffect, useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { Search, BarChart3, Download, Plus, X, Filter, Settings2 } from 'lucide-react';
+import { Search, BarChart3, Download, Plus, X, Filter, Settings2 } from '@/lib/atlaskit-icons';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Lozenge } from '@/components/ads';

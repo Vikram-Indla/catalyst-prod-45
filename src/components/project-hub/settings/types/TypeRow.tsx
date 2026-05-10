@@ -1,4 +1,4 @@
-import { Zap, Layers, Bookmark, Bug, CheckSquare, CornerDownRight, MoreHorizontal } from 'lucide-react';
+import { Zap, Layers, Bookmark, Bug, CheckSquare, CornerDownRight, MoreHorizontal } from '@/lib/atlaskit-icons';
 
 const ICON_MAP: Record<string, React.ComponentType<any>> = {
   Zap, Layers, Bookmark, Bug, CheckSquare, CornerDownRight,

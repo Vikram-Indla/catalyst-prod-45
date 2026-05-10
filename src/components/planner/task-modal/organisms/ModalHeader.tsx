@@ -3,7 +3,7 @@
 // ============================================================================
 
 import React, { useState, useRef, useEffect } from 'react';
-import { X, Link2, MoreHorizontal, Edit2, Trash2, Copy, Archive, Star, Check } from 'lucide-react';
+import { X, Link2, MoreHorizontal, Edit2, Trash2, Copy, Archive, Star, Check } from '@/lib/atlaskit-icons';
 import { COLORS } from '../colors';
 import { IconButton } from '../atoms';
 import { Task } from '../types';

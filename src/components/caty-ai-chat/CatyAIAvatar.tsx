@@ -1,4 +1,4 @@
-import { Brain } from 'lucide-react';
+import { Brain } from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 
 interface CatyAIAvatarProps {

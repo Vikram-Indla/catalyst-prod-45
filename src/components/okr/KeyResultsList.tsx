@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Lozenge } from '@/components/ads';
-import { Plus, ChevronDown, ChevronRight, TrendingUp, Edit, Trash2 } from 'lucide-react';
+import { Plus, ChevronDown, ChevronRight, TrendingUp, Edit, Trash2 } from '@/lib/atlaskit-icons';
 import { useKeyResults, useCreateKeyResult, useUpdateKeyResult, useDeleteKeyResult, useCreateCheckIn, type KeyResult } from '@/hooks/useKeyResults';
 import { CheckInModal } from './CheckInModal';
 import { KeyResultDialog } from './KeyResultDialog';

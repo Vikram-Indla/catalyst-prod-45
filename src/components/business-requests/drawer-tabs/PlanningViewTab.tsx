@@ -4,7 +4,7 @@
  */
 
 import { useState } from 'react';
-import { ChevronDown, ChevronRight, DollarSign, Flag, AlertTriangle } from 'lucide-react';
+import { ChevronDown, ChevronRight, DollarSign, Flag, AlertTriangle } from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 import { BudgetViewTab } from './BudgetViewTab';
 import { MilestonesViewTab } from './MilestonesViewTab';

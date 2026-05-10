@@ -8,7 +8,7 @@ import {
   FileBarChart, Plus, Search, X, Download, Trash2,
   RefreshCw, CheckCircle2, AlertCircle, FileText,
   BarChart3, TrendingUp, Shield, Calendar
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import { supabase, typedQuery, typedRpc } from '@/integrations/supabase/client';
 import { catalystToast } from '@/components/ui/CatalystToast';
 import { useTheme } from '@/hooks/useTheme';

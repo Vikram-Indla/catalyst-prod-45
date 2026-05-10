@@ -4,7 +4,7 @@ import { ColumnHeaders } from './ColumnHeaders';
 import { EpicRow } from './EpicRow';
 import { PIProgressBar } from './PIProgressBar';
 import { LabelsDropdown, LabelConfig } from './LabelsDropdown';
-import { Minus, Plus, Move, Zap, Upload } from 'lucide-react';
+import { Minus, Plus, Move, Zap, Upload } from '@/lib/atlaskit-icons';
 
 interface BacklogSectionProps {
   section: BacklogSectionType;

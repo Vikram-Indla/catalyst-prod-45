@@ -5,7 +5,7 @@ import {
   EpicBalancingEpic,
 } from '../types';
 import { cn } from '@/lib/utils';
-import { RotateCcw } from 'lucide-react';
+import { RotateCcw } from '@/lib/atlaskit-icons';
 
 interface EpicBalancingLegendProps {
   hiddenDrivers: Set<PriorityToExecute>;

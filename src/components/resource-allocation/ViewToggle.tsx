@@ -5,7 +5,7 @@
  */
 
 import { cn } from '@/lib/utils';
-import { Calendar, CalendarDays } from 'lucide-react';
+import { Calendar, CalendarDays } from '@/lib/atlaskit-icons';
 import type { TimelineView } from '@/types/resource-allocation.types';
 
 interface ViewToggleProps {

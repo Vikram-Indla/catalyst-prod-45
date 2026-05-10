@@ -5,7 +5,7 @@
 // ============================================================
 
 import { format } from 'date-fns';
-import { Clock, Loader2 } from 'lucide-react';
+import { Clock, Loader2 } from '@/lib/atlaskit-icons';
 import { useDailyScorecardData } from '../../hooks/useDailyScorecardData';
 import { cn } from '@/lib/utils';
 import { ScrollArea } from '@/components/ui/scroll-area';

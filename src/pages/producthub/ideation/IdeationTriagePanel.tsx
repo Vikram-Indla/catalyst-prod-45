@@ -3,7 +3,7 @@
  * Action buttons wired to real mutations.
  */
 import React, { useEffect, useMemo, useState } from 'react';
-import { X, Sparkles, Zap, Eye, GitMerge, FileSearch, Clock } from 'lucide-react';
+import { X, Sparkles, Zap, Eye, GitMerge, FileSearch, Clock } from '@/lib/atlaskit-icons';
 import { toast } from 'sonner';
 import { useTheme } from '@/hooks/useTheme';
 import { supabase } from '@/integrations/supabase/client';

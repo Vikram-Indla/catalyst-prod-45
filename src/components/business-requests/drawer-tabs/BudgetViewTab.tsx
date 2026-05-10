@@ -4,7 +4,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { CatalystDatePicker } from '@/components/ui/catalyst-date-picker';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-import { ChevronDown, Wallet, TrendingUp, X, Calendar } from 'lucide-react';
+import { ChevronDown, Wallet, TrendingUp, X, Calendar } from '@/lib/atlaskit-icons';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { UserPicker } from '@/components/ui/user-picker';

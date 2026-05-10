@@ -6,7 +6,7 @@ import {
   BookOpen, ChevronRight, CheckCircle2, Star, GraduationCap,
   Factory, Ship, FlaskConical, Leaf, Flag, Cpu, Users, Globe, Mountain,
   MessageCircle,
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import {
   useWikiHomeStats, useWikiDomainCards, useWikiRecentArticles,
   useWikiQuickRefs, useWikiLearningPaths, useWikiKnowledgeRequests,

@@ -6,7 +6,7 @@
 import { Release, ReleasesSort } from '@/types/releases';
 import { ReleasesTableRow } from './ReleasesTableRow';
 import { Checkbox } from '@/components/ui/checkbox';
-import { ArrowDown, ArrowUp } from 'lucide-react';
+import { ArrowDown, ArrowUp } from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 
 interface Props {

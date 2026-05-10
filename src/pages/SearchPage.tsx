@@ -3,7 +3,7 @@ import { CatalystPageHeader } from '@/components/shared/CatalystPageHeader';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Search, Save, Star, ChevronDown, Loader2, ExternalLink, Trash2, StarOff } from 'lucide-react';
+import { Search, Save, Star, ChevronDown, Loader2, ExternalLink, Trash2, StarOff } from '@/lib/atlaskit-icons';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import {

@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { MoreHorizontal, Eye, Play, Pencil, Copy, Trash2 } from 'lucide-react';
+import { MoreHorizontal, Eye, Play, Pencil, Copy, Trash2 } from '@/lib/atlaskit-icons';
 import { Button } from '@/components/ui/button';
 import { Lozenge, type LozengeAppearance } from '@/components/ads';
 import {

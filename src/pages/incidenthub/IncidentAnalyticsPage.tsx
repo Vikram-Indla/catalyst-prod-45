@@ -2,7 +2,7 @@
  * IncidentAnalyticsPage — V12 Redesigned Analytics
  */
 
-import { BarChart3, Loader2 } from 'lucide-react';
+import { BarChart3, Loader2 } from '@/lib/atlaskit-icons';
 import { useTheme } from '@/hooks/useTheme';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';

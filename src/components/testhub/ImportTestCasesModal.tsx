@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react';
-import { X, Upload, FileText, Download, AlertCircle } from 'lucide-react';
+import { X, Upload, FileText, Download, AlertCircle } from '@/lib/atlaskit-icons';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 

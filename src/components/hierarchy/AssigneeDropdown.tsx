@@ -2,7 +2,7 @@
  * AssigneeDropdown — Searchable people picker for inline assignee change
  */
 import { useState, useRef, useEffect, useMemo } from 'react';
-import { Check, Search } from 'lucide-react';
+import { Check, Search } from '@/lib/atlaskit-icons';
 
 export interface AssigneeOption {
   displayName: string;

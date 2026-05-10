@@ -23,7 +23,7 @@
  *     forwarded into the hook.
  *   - Footer "View all N releases" link.
  */
-import { AlertTriangle } from 'lucide-react';
+import { AlertTriangle } from '@/lib/atlaskit-icons';
 import { token } from '@atlaskit/tokens';
 import type { WidgetProps } from '../widget-registry';
 import WidgetWrapper from '../WidgetWrapper';

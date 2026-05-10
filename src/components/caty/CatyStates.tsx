@@ -3,7 +3,7 @@
  * Skeleton loading, empty states, and error states
  */
 
-import { RefreshCw } from 'lucide-react';
+import { RefreshCw } from '@/lib/atlaskit-icons';
 
 // ==================== SKELETON COMPONENTS ====================
 export function CatySkeletonCard() {

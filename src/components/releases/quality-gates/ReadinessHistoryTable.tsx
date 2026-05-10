@@ -15,7 +15,7 @@ import {
   ThumbsUp,
   Clock,
   History
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import { useReleaseReadinessHistory } from '@/lib/shared-quality/hooks/useReadiness';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';

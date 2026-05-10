@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, FileText, Sparkles } from 'lucide-react';
+import { X, FileText, Sparkles } from '@/lib/atlaskit-icons';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';

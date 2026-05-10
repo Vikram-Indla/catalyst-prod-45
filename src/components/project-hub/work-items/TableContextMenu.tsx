@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { ExternalLink, Copy, CopyPlus, Flag, Trash2 } from 'lucide-react';
+import { ExternalLink, Copy, CopyPlus, Flag, Trash2 } from '@/lib/atlaskit-icons';
 
 interface ContextMenuProps {
   x: number;

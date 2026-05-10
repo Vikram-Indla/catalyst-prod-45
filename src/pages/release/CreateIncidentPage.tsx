@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { CatalystPageHeader } from '@/components/shared/CatalystPageHeader';
 import { useNavigate, Link } from 'react-router-dom';
-import { ArrowLeft, Paperclip, X, Search, Loader2, AlertTriangle, Plus } from 'lucide-react';
+import { ArrowLeft, Paperclip, X, Search, Loader2, AlertTriangle, Plus } from '@/lib/atlaskit-icons';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';

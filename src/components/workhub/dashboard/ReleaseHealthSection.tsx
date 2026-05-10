@@ -3,7 +3,7 @@
  * Phase 8
  */
 import { useNavigate } from 'react-router-dom';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight } from '@/lib/atlaskit-icons';
 import type { ReleaseProgress } from '@/types/workhub.types';
 import { StackedProgressBar, releaseProgressSegments } from '../shared/StackedProgressBar';
 

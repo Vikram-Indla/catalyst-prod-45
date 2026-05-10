@@ -4,7 +4,7 @@
  */
 
 import { useState } from 'react';
-import { AlertTriangle, Info } from 'lucide-react';
+import { AlertTriangle, Info } from '@/lib/atlaskit-icons';
 
 interface DataQualityIssue {
   name: string;

@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { Check, ChevronsUpDown, User, X, Loader2, AlertCircle } from 'lucide-react';
+import { Check, ChevronsUpDown, User, X, Loader2, AlertCircle } from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import {

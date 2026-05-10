@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useMemo } from 'react';
-import { ChevronDown, Search, Check, Building2, X } from 'lucide-react';
+import { ChevronDown, Search, Check, Building2, X } from '@/lib/atlaskit-icons';
 
 interface Department {
   value: string;

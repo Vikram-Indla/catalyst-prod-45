@@ -4,7 +4,7 @@
  * Breadcrumb parent is clickable. Status pill + Link/Move actions.
  */
 import { useState, useMemo } from 'react';
-import { Link2, ArrowRightLeft, Pencil, MessageSquare, History, FileText } from 'lucide-react';
+import { Link2, ArrowRightLeft, Pencil, MessageSquare, History, FileText } from '@/lib/atlaskit-icons';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import { StatusLozenge } from '@/components/ui/StatusLozenge';
 import type { AllWorkItem } from '@/types/allwork.types';

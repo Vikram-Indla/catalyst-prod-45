@@ -14,7 +14,7 @@ import {
   Trash2,
   Archive,
   ParkingCircle
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 
 interface Epic {
   id: string;

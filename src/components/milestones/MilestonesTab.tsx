@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { CatalystDatePicker } from '@/components/ui/catalyst-date-picker';
-import { Plus, Calendar, MoreHorizontal, ArrowDownAZ, ArrowUpAZ, Pencil, Trash2, AlertCircle, Copy } from 'lucide-react';
+import { Plus, Calendar, MoreHorizontal, ArrowDownAZ, ArrowUpAZ, Pencil, Trash2, AlertCircle, Copy } from '@/lib/atlaskit-icons';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';

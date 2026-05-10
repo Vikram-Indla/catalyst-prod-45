@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from 'framer-motion';
-import { Archive, Trash2 } from 'lucide-react';
+import { Archive, Trash2 } from '@/lib/atlaskit-icons';
 
 interface BulkActionBarProps {
   selectedCount: number;

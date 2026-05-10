@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
-import { X, Upload, Paperclip, Trash2, AlertTriangle, Info, FileText, ChevronDown, ChevronUp } from 'lucide-react';
+import { X, Upload, Paperclip, Trash2, AlertTriangle, Info, FileText, ChevronDown, ChevronUp } from '@/lib/atlaskit-icons';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';

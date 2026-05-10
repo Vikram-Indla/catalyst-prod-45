@@ -31,7 +31,7 @@ import {
   Calculator,
   Trash2,
   XCircle
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import { WorkItemIcon } from '@/components/ja/icons/WorkItemIcon';
 import { toast } from 'sonner';
 import { useNavigate, useSearchParams } from 'react-router-dom';

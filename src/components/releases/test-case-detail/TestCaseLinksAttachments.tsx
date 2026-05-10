@@ -4,7 +4,7 @@
  */
 
 import { useState } from 'react';
-import { Plus, Upload, FileText, Bug, BookOpen, Image, FileSpreadsheet, ExternalLink, X, Loader2, Link2 } from 'lucide-react';
+import { Plus, Upload, FileText, Bug, BookOpen, Image, FileSpreadsheet, ExternalLink, X, Loader2, Link2 } from '@/lib/atlaskit-icons';
 import { Button } from '@/components/ui/button';
 import { Lozenge } from '@/components/ads';
 import { Input } from '@/components/ui/input';

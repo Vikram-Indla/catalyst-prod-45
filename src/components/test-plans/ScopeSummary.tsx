@@ -1,4 +1,4 @@
-import { FileText, Folder, MinusCircle } from 'lucide-react';
+import { FileText, Folder, MinusCircle } from '@/lib/atlaskit-icons';
 import { Card, CardContent } from '@/components/ui/card';
 import { useScopeSummary } from '@/hooks/useTestPlansG26';
 

@@ -12,7 +12,7 @@ import {
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-import { ExternalLink, Copy, ArrowUp, ArrowDown, MoveVertical, Calendar, Trash2, ParkingCircle } from 'lucide-react';
+import { ExternalLink, Copy, ArrowUp, ArrowDown, MoveVertical, Calendar, Trash2, ParkingCircle } from '@/lib/atlaskit-icons';
 
 interface EpicContextMenuProps {
   epicId: string;

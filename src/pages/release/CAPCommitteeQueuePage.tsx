@@ -17,7 +17,7 @@
  */
 
 import { useState, useMemo } from 'react';
-import { Search, ToggleLeft, ToggleRight } from 'lucide-react';
+import { Search, ToggleLeft, ToggleRight } from '@/lib/atlaskit-icons';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { GlobalPageHeader } from '@/components/layout/GlobalPageHeader';

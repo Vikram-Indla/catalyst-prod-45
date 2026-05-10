@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Settings, Maximize2, Minimize2, RotateCcw, Info, AlertCircle, Eye } from 'lucide-react';
+import { Settings, Maximize2, Minimize2, RotateCcw, Info, AlertCircle, Eye } from '@/lib/atlaskit-icons';
 import { WorkTreeDashboard, METRIC_IDS, MetricId } from './components/WorkTreeDashboard';
 import { WorkTreeHierarchy } from './components/WorkTreeHierarchy';
 import { WorkTreeExtraConfigs } from './components/WorkTreeExtraConfigs';

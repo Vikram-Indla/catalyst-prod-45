@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Button } from '@/components/ui/button';
 import { NotificationSettings, DEFAULT_NOTIFICATION_SETTINGS } from '@/types/userSettings.types';
-import { AtSign, UserPlus, Cpu, Bug, CalendarClock, FileText } from 'lucide-react';
+import { AtSign, UserPlus, Cpu, Bug, CalendarClock, FileText } from '@/lib/atlaskit-icons';
 
 interface EmailNotificationsPanelProps {
   settings: NotificationSettings;

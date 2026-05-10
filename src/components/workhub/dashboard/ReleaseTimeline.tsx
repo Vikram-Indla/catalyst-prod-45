@@ -4,7 +4,7 @@
  */
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowRight, Check } from 'lucide-react';
+import { ArrowRight, Check } from '@/lib/atlaskit-icons';
 import type { ReleaseProgress } from '@/types/workhub.types';
 
 interface ReleaseTimelineProps {

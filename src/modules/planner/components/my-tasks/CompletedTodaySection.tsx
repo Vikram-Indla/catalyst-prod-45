@@ -4,7 +4,7 @@
 // ============================================================
 
 import { useState } from 'react';
-import { ChevronDown, CheckCircle2, Check, RotateCcw } from 'lucide-react';
+import { ChevronDown, CheckCircle2, Check, RotateCcw } from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 import { useUncompleteMyTask } from '../../hooks/useUncompleteMyTask';
 import type { MyTask } from '../../types/my-tasks';

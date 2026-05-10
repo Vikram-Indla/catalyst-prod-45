@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Plus } from 'lucide-react';
+import { Plus } from '@/lib/atlaskit-icons';
 import { Button } from '@/components/ui/button';
 import { KeyResultCard } from './KeyResultCard';
 import { KeyResultForm } from './KeyResultForm';

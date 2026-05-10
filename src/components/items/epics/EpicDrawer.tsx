@@ -37,7 +37,7 @@ import {
   Copy,
   Check,
   Loader2
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';

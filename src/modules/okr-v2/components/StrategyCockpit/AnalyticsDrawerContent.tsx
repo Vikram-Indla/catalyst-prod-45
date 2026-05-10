@@ -4,7 +4,7 @@
 // ═══════════════════════════════════════════════════════════════════════════════
 
 import { useState } from 'react';
-import { TrendingUp, Shield, Link2, Lightbulb, ChevronDown, ChevronRight, AlertTriangle, Clock, Target } from 'lucide-react';
+import { TrendingUp, Shield, Link2, Lightbulb, ChevronDown, ChevronRight, AlertTriangle, Clock, Target } from '@/lib/atlaskit-icons';
 import { Lozenge, type LozengeAppearance } from '@/components/ads';
 import { Progress } from '@/components/ui/progress';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';

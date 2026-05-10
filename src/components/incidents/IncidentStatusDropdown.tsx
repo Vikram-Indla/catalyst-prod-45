@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ChevronDown, Zap, ArrowRight } from 'lucide-react';
+import { ChevronDown, Zap, ArrowRight } from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 import {
   Popover,

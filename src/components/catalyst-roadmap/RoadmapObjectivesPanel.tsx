@@ -4,7 +4,7 @@
  */
 
 import React, { useMemo } from 'react';
-import { ChevronDown, GripVertical, X } from 'lucide-react';
+import { ChevronDown, GripVertical, X } from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 import type { RoadmapGroup } from '@/types/roadmap';
 import { STATUS_COLORS, LAYOUT } from '@/types/roadmap';

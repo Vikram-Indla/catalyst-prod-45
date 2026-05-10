@@ -3,7 +3,7 @@
  */
 
 import { useEffect, useRef, useState } from 'react';
-import { Send, MessageSquare } from 'lucide-react';
+import { Send, MessageSquare } from '@/lib/atlaskit-icons';
 import { useCatyChat } from '@/hooks/workhub/useCatyAI';
 
 const SUGGESTION_CHIPS = [

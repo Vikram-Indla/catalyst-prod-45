@@ -1,4 +1,4 @@
-import { MessageSquare, ExternalLink, Plus } from 'lucide-react';
+import { MessageSquare, ExternalLink, Plus } from '@/lib/atlaskit-icons';
 import { Button } from '@/components/ui/button';
 import type { Incident } from '@/types/release';
 

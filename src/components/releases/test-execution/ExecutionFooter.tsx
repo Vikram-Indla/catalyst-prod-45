@@ -3,7 +3,7 @@
  */
 
 import { Button } from '@/components/ui/button';
-import { X, Save, CheckCircle } from 'lucide-react';
+import { X, Save, CheckCircle } from '@/lib/atlaskit-icons';
 
 interface ExecutionFooterProps {
   completedSteps: number;

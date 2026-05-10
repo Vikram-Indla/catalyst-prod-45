@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Send, Bot, User, Loader2, Sparkles } from 'lucide-react';
+import { Send, Bot, User, Loader2, Sparkles } from '@/lib/atlaskit-icons';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import ReactMarkdown from 'react-markdown';

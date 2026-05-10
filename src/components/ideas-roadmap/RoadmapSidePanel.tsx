@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { X, ArrowRight } from 'lucide-react';
+import { X, ArrowRight } from '@/lib/atlaskit-icons';
 import { MILESTONE_CONFIGS } from '@/types/ideasRoadmap';
 import type { RoadmapIdea, RoadmapMilestones, RoadmapQuarter } from '@/types/ideasRoadmap';
 

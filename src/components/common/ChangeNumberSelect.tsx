@@ -12,7 +12,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { getOpenChangeNumbers, getChangeNumbersByRelease } from '@/services/changeNumberService';
-import { Info } from 'lucide-react';
+import { Info } from '@/lib/atlaskit-icons';
 import { Tooltip } from '@/components/ads';
 import { cn } from '@/lib/utils';
 

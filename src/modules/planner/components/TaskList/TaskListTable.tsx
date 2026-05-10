@@ -4,7 +4,7 @@
  */
 
 import { useState, useMemo } from 'react';
-import { ChevronUp, ChevronDown, ArrowUpDown } from 'lucide-react';
+import { ChevronUp, ChevronDown, ArrowUpDown } from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 import { Checkbox } from '@/components/ui/checkbox';
 import { TaskRow } from './TaskRow';

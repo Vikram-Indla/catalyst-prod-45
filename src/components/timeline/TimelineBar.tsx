@@ -4,7 +4,7 @@
 // =====================================================
 
 import React from 'react';
-import { Link2 } from 'lucide-react';
+import { Link2 } from '@/lib/atlaskit-icons';
 import { TimelineFeature } from '@/services/timelineService';
 import { PRIORITY_CONFIG } from '@/types/views';
 import { cn } from '@/lib/utils';

@@ -45,7 +45,7 @@
 import type { ReactNode } from 'react';
 import {
   Lightbulb, Zap, Wrench, CheckCircle2, AlertCircle, Bug, Sparkles, CircleDashed,
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import type { IdeaRow } from '@/hooks/useIdeasHub';
 import type { KanbanColumnDef } from '../kanban-tokens';
 import type { BoardIssue } from '../kanban-types';

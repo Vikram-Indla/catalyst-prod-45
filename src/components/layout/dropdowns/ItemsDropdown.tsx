@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import { 
   Circle, Building2, Square, Gem, FileText, AlertCircle, CheckSquare,
   Target, GitBranch, AlertTriangle, Shield, Calendar, Package, Siren, FolderKanban
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import { useNavigate } from 'react-router-dom';
 import { useEnabledModules } from '@/hooks/useModules';
 

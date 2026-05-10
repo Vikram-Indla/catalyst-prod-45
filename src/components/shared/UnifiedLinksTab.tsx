@@ -34,7 +34,7 @@ import {
   Eye,
   Filter,
   ChevronDown
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 

@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
-import { Calculator, ArrowLeft } from 'lucide-react';
+import { Calculator, ArrowLeft } from '@/lib/atlaskit-icons';
 import { FeatureWSJFDialog } from '@/components/items/features/FeatureWSJFDialog';
 import { useNavigate } from 'react-router-dom';
 import type { Feature } from '@/types/feature.types';

@@ -17,7 +17,7 @@ import {
   ChevronDown,
   Network,
   Lock
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import { toast } from 'sonner';
 import {
   Select,

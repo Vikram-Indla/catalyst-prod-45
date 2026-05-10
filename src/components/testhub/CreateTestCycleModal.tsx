@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { X, Calendar, User, AlertCircle, Server, ChevronDown } from 'lucide-react';
+import { X, Calendar, User, AlertCircle, Server, ChevronDown } from '@/lib/atlaskit-icons';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { useTheme } from '@/hooks/useTheme';
 

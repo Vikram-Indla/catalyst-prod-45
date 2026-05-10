@@ -6,7 +6,7 @@
  */
 
 import { useState, useRef, useEffect } from 'react';
-import { Check, X } from 'lucide-react';
+import { Check, X } from '@/lib/atlaskit-icons';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';

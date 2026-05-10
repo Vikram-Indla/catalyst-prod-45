@@ -1,6 +1,6 @@
 import { useEffect, useCallback, useState, useRef } from 'react';
 import { createPortal } from 'react-dom';
-import { X, Eye, Share2, MoreHorizontal, Maximize2, Minimize2, Plus, Flag, Copy, Move, Archive, Trash2, Printer, FileSpreadsheet, FileText, Star } from 'lucide-react';
+import { X, Eye, Share2, MoreHorizontal, Maximize2, Minimize2, Plus, Flag, Copy, Move, Archive, Trash2, Printer, FileSpreadsheet, FileText, Star } from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 import type { Incident } from '@/types/release';
 import { WorkItemStarButton } from '@/components/shared/WorkItemStarButton';

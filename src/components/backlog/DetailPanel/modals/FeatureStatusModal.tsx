@@ -1,5 +1,5 @@
 import { Dialog, DialogContent } from '@/components/ui/dialog';
-import { X } from 'lucide-react';
+import { X } from '@/lib/atlaskit-icons';
 import { Feature } from '@/types/backlog.types';
 import { Progress } from '@/components/ui/progress';
 

@@ -3,7 +3,7 @@
  */
 
 import React, { useEffect, useRef } from 'react';
-import { Edit3, Link2, Unlink, Trash2 } from 'lucide-react';
+import { Edit3, Link2, Unlink, Trash2 } from '@/lib/atlaskit-icons';
 
 interface RoadmapContextMenuProps {
   position: { x: number; y: number; id: string } | null;

@@ -7,7 +7,7 @@
 import React, { useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
-import { Plus, Flag, Trash2, Check } from 'lucide-react';
+import { Plus, Flag, Trash2, Check } from '@/lib/atlaskit-icons';
 import { logRequestAudit } from '@/lib/requestAudit';
 import { toast } from 'sonner';
 import { format } from 'date-fns';

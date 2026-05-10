@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Plus, Star, MoreVertical, Trash2, Edit, Play, Calendar } from 'lucide-react';
+import { Plus, Star, MoreVertical, Trash2, Edit, Play, Calendar } from '@/lib/atlaskit-icons';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Lozenge } from '@/components/ads';

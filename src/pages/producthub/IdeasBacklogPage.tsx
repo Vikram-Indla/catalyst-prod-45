@@ -8,7 +8,7 @@ import React, { useState, useMemo, useCallback } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useTheme } from '@/hooks/useTheme';
 import { DK, LK } from '@/utils/dark-mode-styles';
-import { Search, Plus, Sparkles, ArrowUpRight } from 'lucide-react';
+import { Search, Plus, Sparkles, ArrowUpRight } from '@/lib/atlaskit-icons';
 import { useIdeasHub, useIdeaStats, useUpdateIdea, useCreateIdea, type IdeaRow } from '@/hooks/useIdeasHub';
 import { useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';

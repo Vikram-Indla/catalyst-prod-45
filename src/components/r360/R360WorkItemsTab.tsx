@@ -3,7 +3,7 @@
  * Extracted from R360ProfileDrawer.tsx
  */
 import React, { useState, useMemo } from 'react';
-import { ChevronLeft, ChevronRight, Inbox } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Inbox } from '@/lib/atlaskit-icons';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import {

@@ -2,7 +2,7 @@
  * ThemeToolbar — Search, filters (Radix Select), view toggle, actions
  * ECLIPSE D8-R4: Dark mode parity
  */
-import { Search, List, LayoutGrid, GanttChart, Download, Plus, Zap } from 'lucide-react';
+import { Search, List, LayoutGrid, GanttChart, Download, Plus, Zap } from '@/lib/atlaskit-icons';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import type { StrategicTheme, ThemeView } from '@/types/strategic-themes';
 import { BSC_FILTER_OPTIONS, DK } from './theme-utils';

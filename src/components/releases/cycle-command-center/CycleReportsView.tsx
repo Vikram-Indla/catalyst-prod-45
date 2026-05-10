@@ -9,7 +9,7 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { CATALYST_V5 } from '@/lib/catalyst-colors';
-import { BarChart3 } from 'lucide-react';
+import { BarChart3 } from '@/lib/atlaskit-icons';
 import { useCycleExecutionItems } from '@/hooks/test-cycles/useCycleExecutionItems';
 import { QualityTrendChart, DefectTrendChart, TesterPerformanceTable, VelocityChart } from './analytics';
 

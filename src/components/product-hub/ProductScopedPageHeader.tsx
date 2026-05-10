@@ -31,7 +31,7 @@ import {
   Columns3,
   GanttChart,
   Network,
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import { CatalystPageHeader } from '@/components/shared/CatalystPageHeader';
 
 export interface ProductScopedHeaderProduct {

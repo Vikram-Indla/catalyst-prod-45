@@ -1,6 +1,6 @@
 import React from 'react';
 import { format, startOfWeek, endOfWeek } from 'date-fns';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight } from '@/lib/atlaskit-icons';
 import { Button } from '@/components/ui/button';
 import type { CalendarView, DateRange } from '@/types/calendar.types';
 

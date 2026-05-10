@@ -24,7 +24,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { toast } from 'sonner';
-import { X, Link2 } from 'lucide-react';
+import { X, Link2 } from '@/lib/atlaskit-icons';
 
 import { ChangeNumberSelect } from '@/components/common/ChangeNumberSelect';
 import { AcceptanceCriteriaEditor } from './AcceptanceCriteriaEditor';

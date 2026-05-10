@@ -2,7 +2,7 @@
  * ThemeCreateModal — Create/Edit form with Radix Select dropdowns
  */
 import { useEffect, useState } from 'react';
-import { X, Plus } from 'lucide-react';
+import { X, Plus } from '@/lib/atlaskit-icons';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { THEME_COLORS, BSC_FILTER_OPTIONS, PRIORITY_CONFIG } from './theme-utils';
 import { useThemeGroups, useCreateThemeGroup } from '@/hooks/use-strategic-themes';

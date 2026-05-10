@@ -8,7 +8,7 @@ import { Droppable, Draggable } from '@hello-pangea/dnd';
 import { RoadmapListRow } from './RoadmapListRow';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import type { RoadmapDemand, RoadmapGroup } from '../types/roadmap';
-import { ChevronDown, ChevronRight, ArrowUpDown, Plus } from 'lucide-react';
+import { ChevronDown, ChevronRight, ArrowUpDown, Plus } from '@/lib/atlaskit-icons';
 
 interface RoadmapListPanelProps {
   items: RoadmapDemand[];

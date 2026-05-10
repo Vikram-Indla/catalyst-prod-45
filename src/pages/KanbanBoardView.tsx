@@ -56,7 +56,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { ArrowLeft, Settings, BarChart3, ChevronDown } from 'lucide-react';
+import { ArrowLeft, Settings, BarChart3, ChevronDown } from '@/lib/atlaskit-icons';
 
 export default function KanbanBoardView() {
   const { boardId, teamId, programId } = useParams<{

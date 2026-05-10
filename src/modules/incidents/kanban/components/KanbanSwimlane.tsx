@@ -5,7 +5,7 @@
  */
 
 import { memo, useState, useMemo, useCallback } from 'react';
-import { ChevronDown, ChevronRight } from 'lucide-react';
+import { ChevronDown, ChevronRight } from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 import { VirtualizedCardList } from './VirtualizedCardList';
 import { 

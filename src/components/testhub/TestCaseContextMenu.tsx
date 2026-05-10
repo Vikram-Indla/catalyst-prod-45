@@ -1,4 +1,4 @@
-import { Eye, Pencil, Copy, FolderInput, Tag, Trash2 } from 'lucide-react';
+import { Eye, Pencil, Copy, FolderInput, Tag, Trash2 } from '@/lib/atlaskit-icons';
 
 interface TestCase {
   id: string;

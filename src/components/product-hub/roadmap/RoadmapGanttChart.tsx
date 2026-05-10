@@ -4,7 +4,7 @@
  */
 import React, { useMemo } from 'react';
 import { RoadmapTimelineBar } from './RoadmapTimelineBar';
-import { ChevronDown } from 'lucide-react';
+import { ChevronDown } from '@/lib/atlaskit-icons';
 import { useTheme } from '@/hooks/useTheme';
 import type { RoadmapGroup, ZoomLevel, TimelinePeriod } from './types/roadmap.types';
 import { TYPE_COLORS, SURFACE, SURFACE_DARK, INK, INK_DARK, FONT, ROW_HEIGHT, GROUP_HEADER_HEIGHT } from './constants/roadmap.constants';

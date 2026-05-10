@@ -6,7 +6,7 @@ import React, { useState, useEffect } from 'react';
 import {
   ArrowLeft, ExternalLink, Copy, Zap, Target, Layers, User, Calendar, Clock,
   Tag, GitBranch, MessageSquare, CornerDownLeft,
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { JiraIssueTypeIcon } from '@/components/shared/JiraIssueTypeIcon';
 import { StatusLozenge } from '@/components/ui/StatusLozenge';

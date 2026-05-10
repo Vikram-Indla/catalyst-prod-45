@@ -5,7 +5,7 @@
 // ═══════════════════════════════════════════════════════════════════════════════
 
 import React, { useState, useRef, useEffect } from 'react';
-import { Calendar, ChevronLeft, ChevronRight, ChevronDown, Check } from 'lucide-react';
+import { Calendar, ChevronLeft, ChevronRight, ChevronDown, Check } from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 
 // ─────────────────────────────────────────────────────────────────────────────────

@@ -1,4 +1,4 @@
-import { Construction } from 'lucide-react';
+import { Construction } from '@/lib/atlaskit-icons';
 
 export default function IndustryComingSoon() {
   return (

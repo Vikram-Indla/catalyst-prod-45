@@ -18,7 +18,7 @@ import {
   ShieldCheck,
   BarChart3,
   FileCode,
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { SidebarBase, SidebarConfig } from './SidebarBase';

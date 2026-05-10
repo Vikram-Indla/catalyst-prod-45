@@ -2,7 +2,7 @@ import { Epic } from '@/types/backlog.types';
 import { StatusDot } from './StatusDot';
 import { LabelPill } from './LabelPill';
 import { DragHandle } from './DragHandle';
-import { Check, ChevronRight } from 'lucide-react';
+import { Check, ChevronRight } from '@/lib/atlaskit-icons';
 
 interface EpicRowProps {
   epic: Epic;

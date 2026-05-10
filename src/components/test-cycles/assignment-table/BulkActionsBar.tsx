@@ -3,7 +3,7 @@
  */
 
 import React, { useState } from 'react';
-import { X, Users, Flag, Activity, Calendar, Trash2 } from 'lucide-react';
+import { X, Users, Flag, Activity, Calendar, Trash2 } from '@/lib/atlaskit-icons';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,

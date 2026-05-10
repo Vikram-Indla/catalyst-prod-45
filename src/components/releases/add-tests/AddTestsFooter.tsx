@@ -3,7 +3,7 @@
  */
 
 import React from 'react';
-import { Loader2, AlertTriangle, Info } from 'lucide-react';
+import { Loader2, AlertTriangle, Info } from '@/lib/atlaskit-icons';
 import { Button } from '@/components/ui/button';
 import { CATALYST_V5 } from '@/lib/catalyst-colors';
 

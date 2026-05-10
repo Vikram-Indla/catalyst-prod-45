@@ -1,5 +1,5 @@
 import React from 'react';
-import { Star, MoreHorizontal, Target } from 'lucide-react';
+import { Star, MoreHorizontal, Target } from '@/lib/atlaskit-icons';
 import type { Request } from '@/types/request';
 import { BusinessRequestBadge } from '@/components/producthub/shared/BusinessRequestBadge';
 import { STATUS_DISPLAY } from '@/types/request';

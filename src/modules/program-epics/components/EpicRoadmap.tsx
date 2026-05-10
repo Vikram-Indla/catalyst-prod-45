@@ -31,7 +31,7 @@ import {
   Calendar,
   ZoomIn,
   ZoomOut,
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import CatalystDetailRouter from '@/components/catalyst-detail-views/CatalystDetailRouter';
 
 /* ---------- types ---------- */

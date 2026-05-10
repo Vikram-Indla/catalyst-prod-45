@@ -1,5 +1,5 @@
 import React, { useState, lazy, Suspense } from 'react';
-import { Search, ChevronDown, ChevronRight, MoreHorizontal, Download, LayoutGrid, List, Zap, AlertCircle, CheckSquare, FileText, Columns, RefreshCw, PanelRightOpen, PanelRightClose, Plus } from 'lucide-react';
+import { Search, ChevronDown, ChevronRight, MoreHorizontal, Download, LayoutGrid, List, Zap, AlertCircle, CheckSquare, FileText, Columns, RefreshCw, PanelRightOpen, PanelRightClose, Plus } from '@/lib/atlaskit-icons';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';

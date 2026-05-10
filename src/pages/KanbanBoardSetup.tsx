@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useKanbanBoard, useKanbanColumns, useSwimLanes } from '@/hooks/useKanbanBoards';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { ArrowLeft, Save } from 'lucide-react';
+import { ArrowLeft, Save } from '@/lib/atlaskit-icons';
 import { ColumnsSetupTab } from '@/components/kanban/setup/ColumnsSetupTab';
 import { SwimLanesSetupTab } from '@/components/kanban/setup/SwimLanesSetupTab';
 import { ManageCardsTab } from '@/components/kanban/setup/ManageCardsTab';

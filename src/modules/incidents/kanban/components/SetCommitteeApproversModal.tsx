@@ -6,7 +6,7 @@
  */
 
 import { useState, useMemo, useCallback, useEffect } from 'react';
-import { Users, Calendar, FileText, AlertCircle, X, Check } from 'lucide-react';
+import { Users, Calendar, FileText, AlertCircle, X, Check } from '@/lib/atlaskit-icons';
 import {
   Dialog,
   DialogContent,

@@ -1,5 +1,5 @@
 import React from 'react';
-import { MoreHorizontal } from 'lucide-react';
+import { MoreHorizontal } from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import {

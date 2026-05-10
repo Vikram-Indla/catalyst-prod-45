@@ -3,7 +3,7 @@
 // ============================================================
 
 import { useState } from 'react';
-import { Plus, X, Check } from 'lucide-react';
+import { Plus, X, Check } from '@/lib/atlaskit-icons';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import type { ChecklistItem } from '../../hooks/useTaskDetails';

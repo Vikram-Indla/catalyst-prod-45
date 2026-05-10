@@ -3,7 +3,7 @@
 // ============================================================================
 
 import { memo } from 'react';
-import { Loader2, Calendar, Settings } from 'lucide-react';
+import { Loader2, Calendar, Settings } from '@/lib/atlaskit-icons';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { Lozenge, type LozengeAppearance } from '@/components/ads';

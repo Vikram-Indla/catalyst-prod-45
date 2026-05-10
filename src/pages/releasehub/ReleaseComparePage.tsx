@@ -4,7 +4,7 @@ import { RH } from '@/constants/releasehub.design';
 import { ReleaseStatusBadge } from '@/components/releasehub/ReleaseStatusBadge';
 import { SkeletonRows } from '@/components/releasehub/SkeletonRows';
 import { EmptyState } from '@/components/releasehub/EmptyState';
-import { BarChart3 } from 'lucide-react';
+import { BarChart3 } from '@/lib/atlaskit-icons';
 import { Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, ResponsiveContainer, Legend } from 'recharts';
 
 const RADAR_COLORS = ['var(--ds-text-brand, #2563EB)', '#0D9488', 'var(--ds-text-danger, #DC2626)', 'var(--ds-text-subtlest, #64748B)'];

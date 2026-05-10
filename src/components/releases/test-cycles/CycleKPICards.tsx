@@ -4,7 +4,7 @@
  */
 
 import React from 'react';
-import { Layers, PlayCircle, CheckCircle, TrendingUp, Clock, LucideIcon } from 'lucide-react';
+import { Layers, PlayCircle, CheckCircle, TrendingUp, Clock, LucideIcon } from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 import { Skeleton } from '@/components/ui/skeleton';
 import type { CycleKPIs } from '@/hooks/test-management/useTestCyclesEnhanced';

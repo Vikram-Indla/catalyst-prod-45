@@ -4,7 +4,7 @@
  */
 
 import { useState, useRef, useEffect, memo } from 'react';
-import { Check, ChevronDown } from 'lucide-react';
+import { Check, ChevronDown } from '@/lib/atlaskit-icons';
 import { COLORS, STATUS_COLORS } from '@/components/planner/task-modal/colors';
 import type { TaskListTask } from '../../hooks/useTaskList';
 

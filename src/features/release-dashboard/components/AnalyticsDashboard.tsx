@@ -20,7 +20,7 @@ import {
   Target,
   Download,
   RefreshCw,
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import {
   AreaChart,
   Area,

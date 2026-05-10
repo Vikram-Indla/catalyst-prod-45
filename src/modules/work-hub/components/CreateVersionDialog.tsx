@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, Calendar as CalendarIcon } from 'lucide-react';
+import { X, Calendar as CalendarIcon } from '@/lib/atlaskit-icons';
 import { format } from 'date-fns';
 import { z } from 'zod';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';

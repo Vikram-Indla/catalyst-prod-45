@@ -4,7 +4,7 @@
 // ============================================================
 
 import { useState, useRef, useEffect } from 'react';
-import { Check, ChevronDown } from 'lucide-react';
+import { Check, ChevronDown } from '@/lib/atlaskit-icons';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { COLORS, STATUS_COLORS } from '@/components/planner/task-modal/colors';

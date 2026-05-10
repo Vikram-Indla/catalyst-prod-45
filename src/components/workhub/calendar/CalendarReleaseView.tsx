@@ -5,7 +5,7 @@
 import React from 'react';
 import type { CalendarEvent } from '@/types/workhub.types';
 import { CalendarGrid, CalendarGridSkeleton } from './CalendarGrid';
-import { CalendarDays } from 'lucide-react';
+import { CalendarDays } from '@/lib/atlaskit-icons';
 import { getMonthName } from '@/lib/workhub/calendarHelpers';
 
 interface Props {

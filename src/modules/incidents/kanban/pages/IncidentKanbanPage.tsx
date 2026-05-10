@@ -6,7 +6,7 @@
 
 import { useState, useMemo, useCallback, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Loader2, AlertCircle, RefreshCw, Settings2, ChevronsLeftRight, ChevronsRightLeft, MoreVertical } from 'lucide-react';
+import { Loader2, AlertCircle, RefreshCw, Settings2, ChevronsLeftRight, ChevronsRightLeft, MoreVertical } from '@/lib/atlaskit-icons';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import {

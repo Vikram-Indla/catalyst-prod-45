@@ -6,7 +6,7 @@ import React from 'react';
 import { 
   MousePointer, ArrowUpRight, Square, Circle, Type, 
   Pencil, EyeOff, Highlighter, Undo, Redo, Trash2, XCircle 
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 import { ToolbarProps, Tool, COLORS, STROKE_WIDTHS, TOOLS } from './types';
 

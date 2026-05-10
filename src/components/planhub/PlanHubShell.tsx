@@ -2,7 +2,7 @@ import React, { lazy, Suspense, useState, useEffect } from 'react';
 import {
   LayoutGrid, FolderOpen, GitCompare, Layers, Users,
   Bot, FileBarChart, ChevronLeft
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import { supabase } from '@/integrations/supabase/client';
 import { useSettingsSubscription } from '@/hooks/usePlanHubSubscriptions';
 import '@/styles/planhub.css';

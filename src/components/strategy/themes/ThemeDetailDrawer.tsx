@@ -4,7 +4,7 @@
  * Dark mode: uses isDark prop for Dark mode surface (var(--ds-surface-raised, #1A1A1A))
  */
 import { useEffect, useState } from 'react';
-import { X, Pencil, Trash2, Plus, Loader2, Target, Rocket, Flag, Clock } from 'lucide-react';
+import { X, Pencil, Trash2, Plus, Loader2, Target, Rocket, Flag, Clock } from '@/lib/atlaskit-icons';
 import type { StrategicTheme, ThemeMilestone } from '@/types/strategic-themes';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import {

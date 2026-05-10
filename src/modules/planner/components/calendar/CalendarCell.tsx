@@ -5,7 +5,7 @@
 
 import { useState, useCallback } from 'react';
 import { format, isBefore, startOfDay, getWeek } from 'date-fns';
-import { Plus, GripVertical } from 'lucide-react';
+import { Plus, GripVertical } from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 import { TaskPillV2 } from './TaskPillV2';
 import { TaskContextMenu } from './TaskContextMenu';

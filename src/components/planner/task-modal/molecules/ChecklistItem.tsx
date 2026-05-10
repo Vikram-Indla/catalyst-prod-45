@@ -3,7 +3,7 @@
 // ============================================================================
 
 import React, { useState } from 'react';
-import { Edit2, Trash2 } from 'lucide-react';
+import { Edit2, Trash2 } from '@/lib/atlaskit-icons';
 import { COLORS } from '../colors';
 import { Checkbox } from '../atoms';
 

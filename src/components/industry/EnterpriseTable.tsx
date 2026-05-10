@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback, memo } from 'react';
-import { ChevronUp, ChevronDown, Filter, Check, X, Pencil, MoreHorizontal, Trash2, Copy, Save, Undo } from 'lucide-react';
+import { ChevronUp, ChevronDown, Filter, Check, X, Pencil, MoreHorizontal, Trash2, Copy, Save, Undo } from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 
 // ============================================================================

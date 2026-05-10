@@ -4,7 +4,7 @@
  */
 
 import React, { useState } from 'react';
-import { Filter, X, ChevronDown } from 'lucide-react';
+import { Filter, X, ChevronDown } from '@/lib/atlaskit-icons';
 import { Button } from '@/components/ui/button';
 import { Lozenge } from '@/components/ads';
 import {

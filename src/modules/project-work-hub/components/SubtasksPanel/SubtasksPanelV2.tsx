@@ -27,7 +27,7 @@ import { toast } from 'sonner';
 import {
   ChevronDown, ChevronRight, Plus, LayoutGrid,
   Check, Loader2, CornerDownLeft,
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import {
   AlertDialog,
   AlertDialogAction,

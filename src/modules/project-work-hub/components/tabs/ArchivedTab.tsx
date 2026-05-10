@@ -1,5 +1,5 @@
 import React from 'react';
-import { Archive, RotateCcw, Loader2 } from 'lucide-react';
+import { Archive, RotateCcw, Loader2 } from '@/lib/atlaskit-icons';
 import { useArchivedItems, useRestoreItem } from '../../hooks/useArchivedItems';
 import { WorkTypeIcon } from '../WorkTypeIcon';
 import { Button } from '@/components/ui/button';

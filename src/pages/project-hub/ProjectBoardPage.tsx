@@ -11,7 +11,7 @@ import {
   Columns3, Kanban, GanttChart,
   AlertTriangle, CheckCircle2, Clock, BarChart3, Sparkles,
   Settings, Filter, Search, ChevronDown, X,
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import { useTheme } from '@/hooks/useTheme';
 import type { ProjectView, IssueType, IssueStatus, IssuePriority, IssueSource } from '@/types/project-hub.types';
 import { STATUS_CONFIG, PRIORITY_CONFIG } from '@/types/project-hub.types';

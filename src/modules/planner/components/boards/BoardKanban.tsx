@@ -27,7 +27,7 @@ import { SortableColumn } from './SortableColumn';
 import { BoardTaskCard } from './BoardTaskCard';
 import { AddColumnModal } from './AddColumnModal';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
-import { Loader2, Plus } from 'lucide-react';
+import { Loader2, Plus } from '@/lib/atlaskit-icons';
 import type { BoardFilters, BoardTask, BoardColumn } from '../../types/planner-boards';
 
 // Import Linear-inspired ring-fenced design system

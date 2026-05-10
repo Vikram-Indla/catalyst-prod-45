@@ -29,7 +29,7 @@
  *     status.
  */
 import type { ReactNode } from 'react';
-import { CheckCircle2 } from 'lucide-react';
+import { CheckCircle2 } from '@/lib/atlaskit-icons';
 import type { KanbanTask, PlannerStatus, KanbanTaskPriority } from '@/modules/planner/types/kanban';
 import type { KanbanColumnDef } from '../kanban-tokens';
 import type { BoardIssue } from '../kanban-types';

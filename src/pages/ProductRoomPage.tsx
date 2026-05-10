@@ -1,6 +1,6 @@
 import React from 'react';
 import { PageChrome } from '@/components/layout/PageChrome';
-import { LayoutGrid } from 'lucide-react';
+import { LayoutGrid } from '@/lib/atlaskit-icons';
 
 export default function ProductRoomPage() {
   return (

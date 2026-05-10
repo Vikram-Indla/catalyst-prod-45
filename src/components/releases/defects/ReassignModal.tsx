@@ -1,5 +1,5 @@
 import { useState, useMemo, useEffect } from 'react';
-import { Search, User, UserPlus, Clock, AlertCircle, CheckCircle, X, Lightbulb, Users } from 'lucide-react';
+import { Search, User, UserPlus, Clock, AlertCircle, CheckCircle, X, Lightbulb, Users } from '@/lib/atlaskit-icons';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';

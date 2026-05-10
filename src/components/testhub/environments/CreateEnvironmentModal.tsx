@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { X, Server, Globe, Link2, Database, User, FileText, AlertCircle } from 'lucide-react';
+import { X, Server, Globe, Link2, Database, User, FileText, AlertCircle } from '@/lib/atlaskit-icons';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { catalystToast } from '@/components/ui/CatalystToast';
 

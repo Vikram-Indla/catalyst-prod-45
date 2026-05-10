@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { Archive, X } from 'lucide-react';
+import { Archive, X } from '@/lib/atlaskit-icons';
 
 interface T10ArchiveModalProps {
   isOpen: boolean;

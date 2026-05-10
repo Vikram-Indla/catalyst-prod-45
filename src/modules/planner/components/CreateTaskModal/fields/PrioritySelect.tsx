@@ -4,7 +4,7 @@
  */
 
 import { useState, useRef, useEffect } from 'react';
-import { ChevronDown, Check } from 'lucide-react';
+import { ChevronDown, Check } from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 import { PRIORITIES, type Priority } from '../types';
 import type { TaskPriority } from '../../../types';

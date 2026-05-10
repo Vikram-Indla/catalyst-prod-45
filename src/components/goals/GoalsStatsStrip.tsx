@@ -2,7 +2,7 @@
  * GoalsStatsStrip — 5-card horizontal stats computed from goals + KRs
  * ECLIPSE D8: Dark mode parity
  */
-import { Target, CheckCircle2, Activity, BarChart3, AlertTriangle } from 'lucide-react';
+import { Target, CheckCircle2, Activity, BarChart3, AlertTriangle } from '@/lib/atlaskit-icons';
 import type { Goal, KeyResult } from '@/types/goals';
 
 interface GoalsStatsStripProps {

@@ -33,7 +33,7 @@ import {
   Paperclip,
   Save,
   RotateCcw,
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import { StatusBadge, PriorityBadge, TypeBadge } from './badges';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';

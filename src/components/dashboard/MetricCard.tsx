@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { cn } from '@/lib/utils';
-import { Package, Play, CheckCircle, Bug, Target, TrendingUp, TrendingDown, Minus } from 'lucide-react';
+import { Package, Play, CheckCircle, Bug, Target, TrendingUp, TrendingDown, Minus } from '@/lib/atlaskit-icons';
 import { Progress } from '@/components/ui/progress';
 
 export interface MetricCardProps {

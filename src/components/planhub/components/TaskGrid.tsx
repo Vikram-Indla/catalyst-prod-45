@@ -1,5 +1,5 @@
 import React, { useState, Fragment } from 'react';
-import { ChevronRight, ChevronDown, Flag, GripVertical } from 'lucide-react';
+import { ChevronRight, ChevronDown, Flag, GripVertical } from '@/lib/atlaskit-icons';
 import type { TaskTreeNode, TaskRow } from '@/types/planhub.types';
 
 interface Props {

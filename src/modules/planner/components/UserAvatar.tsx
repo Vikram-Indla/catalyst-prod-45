@@ -3,7 +3,7 @@
 // GUARDRAIL: Renders CircleUser face icon (never bare initials)
 // ============================================================
 
-import { CircleUser } from 'lucide-react';
+import { CircleUser } from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 import type { PlannerUser } from '../types';
 

@@ -12,7 +12,7 @@ import { PIFilterSidebar } from '@/components/roadmaps/PIFilterSidebar';
 import { 
   Star, Settings, Filter, RefreshCw, Download, ChevronRight, ChevronDown,
   Flag, StarIcon, Calendar, AlertTriangle, CheckCircle2
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import { format, parseISO, differenceInDays, startOfDay } from 'date-fns';
 import { cn } from '@/lib/utils';
 

@@ -5,7 +5,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useTheme } from '@/hooks/useTheme';
 import { useWikiSyncRuns, useWikiAdminStats, useTriggerSync, useWikiSyncRunsPolling } from '@/hooks/useWikiAdminData';
 import { SkeletonBlock } from '@/components/wiki/WikiTokens';
-import { Play, Check, Loader2, AlertTriangle, RefreshCw, Clock, Activity } from 'lucide-react';
+import { Play, Check, Loader2, AlertTriangle, RefreshCw, Clock, Activity } from '@/lib/atlaskit-icons';
 import { format } from 'date-fns';
 
 const PIPELINE_STEPS = [

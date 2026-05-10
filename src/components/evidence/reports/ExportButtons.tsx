@@ -4,7 +4,7 @@
  */
 
 import React, { useState } from 'react';
-import { Archive, FileSpreadsheet, Printer, Loader2 } from 'lucide-react';
+import { Archive, FileSpreadsheet, Printer, Loader2 } from '@/lib/atlaskit-icons';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';

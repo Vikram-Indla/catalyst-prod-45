@@ -3,7 +3,7 @@
 // Month/Year title, navigation, view toggle, today button
 // ============================================================
 
-import { ChevronLeft, ChevronRight, Calendar, CalendarDays } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Calendar, CalendarDays } from '@/lib/atlaskit-icons';
 import { format } from 'date-fns';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';

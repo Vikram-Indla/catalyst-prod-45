@@ -28,7 +28,7 @@ import {
   CheckCircle2,
   Clock,
   RefreshCcw,
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Avatar, Lozenge, type LozengeAppearance } from '@/components/ads';

@@ -18,7 +18,7 @@ import {
   StickyNote,
   Check,
   Trash2,
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import { useToast } from '@/hooks/use-toast';
 import {
   useT10Item,

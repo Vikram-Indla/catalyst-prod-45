@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Move } from 'lucide-react';
+import { Move } from '@/lib/atlaskit-icons';
 import { MILESTONE_CONFIGS } from '@/types/ideasRoadmap';
 import type { RoadmapIdea, RoadmapQuarter } from '@/types/ideasRoadmap';
 import { useTheme } from '@/hooks/useTheme';

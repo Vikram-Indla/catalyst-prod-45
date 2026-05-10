@@ -2,7 +2,7 @@
 // Settings & Configuration View - 9.8 Executive UX + Dark Mode Enforcement
 
 import { useState } from 'react';
-import { Plus, Edit2, Trash2, GripVertical } from 'lucide-react';
+import { Plus, Edit2, Trash2, GripVertical } from '@/lib/atlaskit-icons';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';

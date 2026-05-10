@@ -6,11 +6,11 @@ import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Collapsible, CollapsibleTrigger, CollapsibleContent } from '@/components/ui/collapsible';
-import { ChevronDown, Info } from 'lucide-react';
+import { ChevronDown, Info } from '@/lib/atlaskit-icons';
 import { toast } from 'sonner';
 import { Card } from '@/components/ui/card';
 import { useCapacityWarnings } from '@/hooks/useCapacityWarnings';
-import { AlertTriangle } from 'lucide-react';
+import { AlertTriangle } from '@/lib/atlaskit-icons';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 
 // Estimation system constants

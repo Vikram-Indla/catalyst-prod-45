@@ -4,7 +4,7 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { Camera, ChevronDown, Paperclip, Lock } from 'lucide-react';
+import { Camera, ChevronDown, Paperclip, Lock } from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 import { supabase } from '@/integrations/supabase/client';
 import { EvidenceUploadZone } from '../EvidenceUploadZone';

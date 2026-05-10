@@ -5,7 +5,7 @@
 
 import React, { useState, useMemo, useCallback } from 'react';
 import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd';
-import { Plus, Play, CheckCircle, Calendar, Target, RefreshCw } from 'lucide-react';
+import { Plus, Play, CheckCircle, Calendar, Target, RefreshCw } from '@/lib/atlaskit-icons';
 import { Button } from '@/components/ui/button';
 import { Lozenge } from '@/components/ads';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';

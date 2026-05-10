@@ -1,5 +1,5 @@
 import React from 'react';
-import { RefreshCw, Package, TestTube2, Link2, ShieldCheck, AlertCircle } from 'lucide-react';
+import { RefreshCw, Package, TestTube2, Link2, ShieldCheck, AlertCircle } from '@/lib/atlaskit-icons';
 import { RH } from '@/constants/releasehub.design';
 
 interface Props {

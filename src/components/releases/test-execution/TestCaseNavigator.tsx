@@ -12,7 +12,7 @@ import {
   ChevronLeft,
   ChevronRight,
   AlertTriangle
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import { CycleTestCase } from '@/data/testExecutionData';
 
 interface TestCaseNavigatorProps {

@@ -3,7 +3,7 @@
  */
 
 import { useState } from 'react';
-import { GripVertical, Plus, Trash2, RotateCcw, AlertCircle, Lock } from 'lucide-react';
+import { GripVertical, Plus, Trash2, RotateCcw, AlertCircle, Lock } from '@/lib/atlaskit-icons';
 import {
   Dialog,
   DialogContent,

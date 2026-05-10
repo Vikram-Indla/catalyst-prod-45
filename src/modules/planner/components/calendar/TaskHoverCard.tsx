@@ -5,7 +5,7 @@
 
 import { useEffect, useState, useRef } from 'react';
 import { format, differenceInDays, startOfDay, isBefore } from 'date-fns';
-import { Calendar, User, Layers, Flag, Clock, AlertTriangle } from 'lucide-react';
+import { Calendar, User, Layers, Flag, Clock, AlertTriangle } from '@/lib/atlaskit-icons';
 import { createPortal } from 'react-dom';
 import type { PlannerTask } from '../../types';
 import '../../styles/planner-calendar.css';

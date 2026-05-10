@@ -1,5 +1,5 @@
 import { Sheet, SheetContent } from '@/components/ui/sheet';
-import { ArrowLeft, Star, ExternalLink } from 'lucide-react';
+import { ArrowLeft, Star, ExternalLink } from '@/lib/atlaskit-icons';
 import type { ProjectListItem } from '@/types/projecthub';
 import { useProjectTeam } from '@/hooks/useProjectHub';
 import { ProjectStatusBadge } from './ProjectStatusBadge';

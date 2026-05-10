@@ -9,7 +9,7 @@ import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Slider } from '@/components/ui/slider';
 import { UserPicker } from '@/components/ui/user-picker';
-import { CalendarIcon, X, ChevronUp } from 'lucide-react';
+import { CalendarIcon, X, ChevronUp } from '@/lib/atlaskit-icons';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { ObjectiveStatusV2, ObjectiveHealthV2 } from '@/hooks/useObjectivesV2';

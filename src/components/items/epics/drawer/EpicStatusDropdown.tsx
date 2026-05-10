@@ -3,7 +3,7 @@
  * Catalyst Design System - Uses database-driven epic statuses from admin panel
  */
 
-import { ChevronDown, Loader2 } from 'lucide-react';
+import { ChevronDown, Loader2 } from '@/lib/atlaskit-icons';
 import {
   DropdownMenu,
   DropdownMenuContent,

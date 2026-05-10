@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { ChevronLeft, ChevronRight, ChevronDown, Calendar, Check, Plus, Loader2 } from 'lucide-react';
+import { ChevronLeft, ChevronRight, ChevronDown, Calendar, Check, Plus, Loader2 } from '@/lib/atlaskit-icons';
 import type { T10Week } from '../../types';
 import { formatWeekRange, getWeekStartDate } from '../../utils';
 

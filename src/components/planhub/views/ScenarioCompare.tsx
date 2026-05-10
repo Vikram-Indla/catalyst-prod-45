@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { GitCompare, Check, Plus, Layers } from 'lucide-react';
+import { GitCompare, Check, Plus, Layers } from '@/lib/atlaskit-icons';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 

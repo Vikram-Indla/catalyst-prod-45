@@ -4,7 +4,7 @@
  */
 import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Palette, Plus, Loader2 } from 'lucide-react';
+import { Palette, Plus, Loader2 } from '@/lib/atlaskit-icons';
 import { useThemeProgress } from '@/hooks/workhub/useThemes';
 import type { ThemeProgress } from '@/types/workhub.types';
 import { CommandCenterHeader } from '@/components/shared/CommandCenterHeader';

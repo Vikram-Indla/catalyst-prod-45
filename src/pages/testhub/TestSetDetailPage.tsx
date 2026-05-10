@@ -7,7 +7,7 @@ import { useState, useCallback, useEffect } from 'react';
 import { CatalystPageHeader } from '@/components/shared/CatalystPageHeader';
 import { useTheme } from '@/hooks/useTheme';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Edit, Plus, RefreshCw, Zap, Layers, Users, Calendar, ExternalLink, X, GripVertical, Clock } from 'lucide-react';
+import { ArrowLeft, Edit, Plus, RefreshCw, Zap, Layers, Users, Calendar, ExternalLink, X, GripVertical, Clock } from '@/lib/atlaskit-icons';
 import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors, DragEndEvent } from '@dnd-kit/core';
 import { arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { useSortable } from '@dnd-kit/sortable';

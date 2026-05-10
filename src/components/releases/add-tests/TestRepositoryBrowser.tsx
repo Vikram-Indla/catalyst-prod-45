@@ -3,7 +3,7 @@
  */
 
 import React, { useState, useMemo } from 'react';
-import { Search, ChevronDown, ChevronRight, X, Check, Layers } from 'lucide-react';
+import { Search, ChevronDown, ChevronRight, X, Check, Layers } from '@/lib/atlaskit-icons';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';

@@ -4,7 +4,7 @@
  */
 
 import { useState } from 'react';
-import { ChevronDown, ChevronRight, Calculator, ClipboardCheck } from 'lucide-react';
+import { ChevronDown, ChevronRight, Calculator, ClipboardCheck } from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 import { BusinessScoreViewTab } from './BusinessScoreViewTab';
 import { EAReviewTab } from './EAReviewTab';

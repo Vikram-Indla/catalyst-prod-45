@@ -5,7 +5,7 @@
  */
 
 import { useState, useEffect } from 'react';
-import { Pencil, CheckCircle, XCircle, Circle, AlertTriangle, ArrowUp, Minus, ArrowDown, Loader2, Check, X } from 'lucide-react';
+import { Pencil, CheckCircle, XCircle, Circle, AlertTriangle, ArrowUp, Minus, ArrowDown, Loader2, Check, X } from '@/lib/atlaskit-icons';
 import { Lozenge, Avatar } from '@/components/ads';
 import type { LozengeAppearance } from '@/components/ads';
 import { Button } from '@/components/ui/button';

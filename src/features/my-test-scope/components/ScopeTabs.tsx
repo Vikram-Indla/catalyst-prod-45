@@ -4,7 +4,7 @@
  */
 
 import React from 'react';
-import { FileCheck, Bug, Zap, Network, BarChart3 } from 'lucide-react';
+import { FileCheck, Bug, Zap, Network, BarChart3 } from '@/lib/atlaskit-icons';
 import type { TestScopeTab } from '../types';
 
 interface ScopeTabsProps {

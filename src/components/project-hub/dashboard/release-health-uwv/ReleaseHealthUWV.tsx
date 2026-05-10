@@ -20,7 +20,7 @@
  *   - JetBrains Mono for percentages
  */
 import { useMemo, useState } from 'react';
-import { X, ChevronRight, ChevronDown, Settings } from 'lucide-react';
+import { X, ChevronRight, ChevronDown, Settings } from '@/lib/atlaskit-icons';
 import Spinner from '@atlaskit/spinner';
 import { StatusLozenge, EmptyState, ProgressBar, Avatar } from '@/components/ads';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';

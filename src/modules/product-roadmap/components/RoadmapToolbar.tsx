@@ -8,7 +8,7 @@ import { useTheme } from '@/hooks/useTheme';
 import { 
   Search, Filter, Group, Download, Plus, ChevronLeft, ChevronRight,
   Maximize2, Minimize2, Printer, Contrast,
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import { TimelineFilterPopover, TimelineFilterState, DEFAULT_TIMELINE_FILTER } from '@/components/roadmap/TimelineFilterPopover';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';

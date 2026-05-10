@@ -4,7 +4,7 @@
  */
 
 import React, { useEffect } from 'react';
-import { X, Wand2, Loader2 } from 'lucide-react';
+import { X, Wand2, Loader2 } from '@/lib/atlaskit-icons';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,

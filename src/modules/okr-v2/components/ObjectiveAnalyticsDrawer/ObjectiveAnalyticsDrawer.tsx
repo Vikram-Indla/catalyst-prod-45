@@ -5,7 +5,7 @@
 // ═══════════════════════════════════════════════════════════════════════════════
 
 import { useState } from 'react';
-import { X, Shield, Link2, Lightbulb, ChevronDown, ChevronUp, AlertTriangle, ArrowRight, TrendingUp, TrendingDown, Clock, Target } from 'lucide-react';
+import { X, Shield, Link2, Lightbulb, ChevronDown, ChevronUp, AlertTriangle, ArrowRight, TrendingUp, TrendingDown, Clock, Target } from '@/lib/atlaskit-icons';
 import { RiskBadge } from '@/components/risks/RiskBadge';
 import { RISK_COLORS } from '@/config/riskColors';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';

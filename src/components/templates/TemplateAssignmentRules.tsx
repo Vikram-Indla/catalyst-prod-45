@@ -10,7 +10,7 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Switch } from '@/components/ui/switch';
 import { Slider } from '@/components/ui/slider';
 import { Card, CardContent } from '@/components/ui/card';
-import { Brain, RotateCcw, Hand, Scale, GraduationCap, History, Calendar } from 'lucide-react';
+import { Brain, RotateCcw, Hand, Scale, GraduationCap, History, Calendar } from '@/lib/atlaskit-icons';
 import type { AssignmentRules, AssignmentMethod } from '@/types/template.types';
 
 interface TemplateAssignmentRulesProps {

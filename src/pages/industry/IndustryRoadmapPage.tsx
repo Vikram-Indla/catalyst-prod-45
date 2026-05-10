@@ -8,7 +8,7 @@
 
 import React, { useState, useRef, useCallback, useMemo, useEffect, useLayoutEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { Search, Layers, Filter, Info, ChevronDown, Check, X, Home } from 'lucide-react';
+import { Search, Layers, Filter, Info, ChevronDown, Check, X, Home } from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 import GlobalPageHeader from '@/components/layout/GlobalPageHeader';
 import { TimelineFilterPopover, TimelineFilterState, DEFAULT_TIMELINE_FILTER } from '@/components/roadmap/TimelineFilterPopover';

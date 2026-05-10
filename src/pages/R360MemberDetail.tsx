@@ -28,7 +28,7 @@ import { useR360Overview, useR360WorkItems } from '@/hooks/useR360';
 import { computeCarriedFromLabel } from '@/services/r360Service';
 import { R360_DEPT_COLORS } from '@/constants/r360';
 import { initials } from '@/utils/r360Utils';
-import { ChevronLeft, Calendar } from 'lucide-react';
+import { ChevronLeft, Calendar } from '@/lib/atlaskit-icons';
 import type { R360WorkItem, R360ViewType, R360Filters } from '@/types/r360';
 import { useTheme } from '@/hooks/useTheme';
 import '@/styles/r360.css';

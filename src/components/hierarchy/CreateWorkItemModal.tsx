@@ -4,7 +4,7 @@
  */
 
 import { useState, useRef, useEffect } from 'react';
-import { X, ArrowLeft, ChevronDown } from 'lucide-react';
+import { X, ArrowLeft, ChevronDown } from '@/lib/atlaskit-icons';
 import { HIERARCHY_LEVELS, canBeParentOf } from '@/types/hierarchy';
 import type { WorkItem, HierarchyLevel } from '@/types/hierarchy';
 import { useCreateWorkItem, useStatuses, usePriorities } from '@/hooks/useHierarchy';

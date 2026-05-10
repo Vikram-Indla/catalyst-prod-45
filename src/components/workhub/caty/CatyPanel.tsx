@@ -4,7 +4,7 @@
  */
 
 import { useState } from 'react';
-import { X, Lightbulb, MessageSquare } from 'lucide-react';
+import { X, Lightbulb, MessageSquare } from '@/lib/atlaskit-icons';
 import { CatyInsightsTab } from './CatyInsightsTab';
 import { CatyChatTab } from './CatyChatTab';
 

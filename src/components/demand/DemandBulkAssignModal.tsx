@@ -10,7 +10,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Search, User } from 'lucide-react';
+import { Search, User } from '@/lib/atlaskit-icons';
 import { supabase } from '@/integrations/supabase/client';
 import { cn } from '@/lib/utils';
 

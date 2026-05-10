@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Trash2 } from 'lucide-react';
+import { Trash2 } from '@/lib/atlaskit-icons';
 import { toast } from 'sonner';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';

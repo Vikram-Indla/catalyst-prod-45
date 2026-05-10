@@ -3,7 +3,7 @@
  * Catalyst Design System - Brand-Aligned Colors (Olive, Bronze, Gold, Champagne)
  */
 
-import { ChevronDown, Loader2 } from 'lucide-react';
+import { ChevronDown, Loader2 } from '@/lib/atlaskit-icons';
 import {
   DropdownMenu,
   DropdownMenuContent,

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Settings2, GripVertical, Check } from 'lucide-react';
+import { Settings2, GripVertical, Check } from '@/lib/atlaskit-icons';
 import { Button } from '@/components/ui/button';
 import {
   Popover,

@@ -10,7 +10,7 @@ import {
   AlertTriangle, Users, TrendingUp, TrendingDown, Minus,
   Calendar, Clock, Pause, Play, Shield, Bug, Target,
   Flag, Zap, ChevronRight, RefreshCw,
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import {
   useCommandCenterKPIs,
   useReleaseHealthGrid,

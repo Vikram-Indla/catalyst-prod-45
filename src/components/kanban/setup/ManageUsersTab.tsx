@@ -3,7 +3,7 @@ import { useBoardUsers, useAddBoardUser } from '@/hooks/useKanbanBoards';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Avatar, Lozenge } from '@/components/ads';
-import { Plus, Trash2 } from 'lucide-react';
+import { Plus, Trash2 } from '@/lib/atlaskit-icons';
 import {
   Select,
   SelectContent,

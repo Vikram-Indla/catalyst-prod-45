@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { GripVertical, Paperclip, Copy, ArrowUp, Trash2, Plus, ChevronDown, Library, X } from 'lucide-react';
+import { GripVertical, Paperclip, Copy, ArrowUp, Trash2, Plus, ChevronDown, Library, X } from '@/lib/atlaskit-icons';
 import { SharedStepsModal } from './SharedStepsModal';
 import { toast } from 'sonner';
 import {

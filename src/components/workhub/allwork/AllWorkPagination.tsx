@@ -2,7 +2,7 @@
  * AllWorkPagination — Showing X-Y of Z + pages + per page (no native select)
  */
 import { useState, useRef, useEffect } from 'react';
-import { ChevronLeft, ChevronRight, ChevronDown, Check } from 'lucide-react';
+import { ChevronLeft, ChevronRight, ChevronDown, Check } from '@/lib/atlaskit-icons';
 
 interface Props {
   currentPage: number;

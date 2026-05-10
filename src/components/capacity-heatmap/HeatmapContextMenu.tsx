@@ -8,7 +8,7 @@ import { motion } from 'framer-motion';
 import { 
   AlertTriangle, BarChart2, UserPlus, Calendar,
   MessageSquare, Copy, ExternalLink, Edit2
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import type { HeatmapResource, MonthlyUtilization } from '@/types/capacity-heatmap';
 import { CATALYST_COLORS } from '@/types/capacity-heatmap';
 import { formatMonth } from '@/lib/capacity-heatmap/utils';

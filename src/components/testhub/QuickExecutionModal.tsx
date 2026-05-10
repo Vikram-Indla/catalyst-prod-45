@@ -6,7 +6,7 @@ import { useState, useEffect } from 'react';
 import {
   X, Play, CheckCircle2, XCircle, AlertTriangle,
   SkipForward, Clock, FileText, ChevronRight
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { catalystToast } from '@/components/ui/CatalystToast';
 

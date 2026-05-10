@@ -8,7 +8,7 @@ import { Switch } from '@/components/ui/switch';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Lozenge } from '@/components/ads';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Settings2 } from 'lucide-react';
+import { Settings2 } from '@/lib/atlaskit-icons';
 
 interface CustomFieldsSectionProps {
   entityType: 'epic' | 'feature' | 'story' | 'defect';

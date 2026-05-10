@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { X, Bug, AlertCircle } from 'lucide-react';
+import { X, Bug, AlertCircle } from '@/lib/atlaskit-icons';
 import { useCreateDefect } from '@/hooks/test-management/useDefects';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';

@@ -5,7 +5,7 @@ import React, { useState } from 'react';
 import { useWikiQueryLog } from '@/hooks/useWikiAdminData';
 import { SkeletonBlock } from '@/components/wiki/WikiTokens';
 import { EmptyState } from './WikiAdminSyncTab';
-import { Search, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Search, ChevronLeft, ChevronRight } from '@/lib/atlaskit-icons';
 import { format } from 'date-fns';
 
 export function WikiAdminQueryLogTab() {

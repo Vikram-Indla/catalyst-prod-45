@@ -6,7 +6,7 @@
 // ═══════════════════════════════════════════════════════════════════════════════
 
 import React, { useState } from 'react';
-import { ChevronDown, Check } from 'lucide-react';
+import { ChevronDown, Check } from '@/lib/atlaskit-icons';
 import { useNavigate } from 'react-router-dom';
 import { useT10WeekHistory } from '../../hooks';
 import { formatT10WeekRange } from '../../utils';

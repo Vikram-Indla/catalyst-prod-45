@@ -10,7 +10,7 @@
  * currently has non-empty content.
  */
 import React, { useRef, useState } from 'react';
-import { FileText } from 'lucide-react';
+import { FileText } from '@/lib/atlaskit-icons';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import AtlaskitEditor, { type AtlaskitEditorRef } from '@/components/shared/AtlaskitEditor';
 import type { ADFEntity } from '@atlaskit/adf-utils/types';

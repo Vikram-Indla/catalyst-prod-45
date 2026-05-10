@@ -8,7 +8,7 @@ import React, { useState } from 'react';
 import { useWikiPageAdminList, useUpdatePageStatus, useRegeneratePage } from '@/hooks/useWikiAdminData';
 import { SkeletonBlock } from '@/components/wiki/WikiTokens';
 import { EmptyState } from './WikiAdminSyncTab';
-import { Search, RefreshCw, ExternalLink, FileText, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Search, RefreshCw, ExternalLink, FileText, ChevronLeft, ChevronRight } from '@/lib/atlaskit-icons';
 
 const STATUS_OPTIONS = ['All', 'published', 'draft', 'review', 'archived'];
 

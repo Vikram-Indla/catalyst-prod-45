@@ -4,7 +4,7 @@
 // ═══════════════════════════════════════════════════════════════════════════════
 
 import React, { useState, useMemo, useEffect } from 'react';
-import { User, Search, Check } from 'lucide-react';
+import { User, Search, Check } from '@/lib/atlaskit-icons';
 import { T10FilterDropdown } from './T10FilterDropdown';
 import { useT10Users } from '../../hooks';
 import { getT10Initials } from '../../utils';

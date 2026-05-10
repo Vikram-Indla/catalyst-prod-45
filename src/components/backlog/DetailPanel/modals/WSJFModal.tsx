@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { X } from 'lucide-react';
+import { X } from '@/lib/atlaskit-icons';
 import { WSJFScore } from '@/types/backlog.types';
 
 interface WSJFModalProps {

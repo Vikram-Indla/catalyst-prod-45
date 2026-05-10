@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { Clock, Filter, Check } from 'lucide-react';
+import { Clock, Filter, Check } from '@/lib/atlaskit-icons';
 import { useTheme } from '@/hooks/useTheme';
 import { useProductionEvents } from '@/hooks/useReleaseHub';
 import { RH } from '@/constants/releasehub.design';

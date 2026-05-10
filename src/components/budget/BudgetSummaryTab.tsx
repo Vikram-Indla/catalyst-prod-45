@@ -7,7 +7,7 @@
  */
 
 import { useState, useMemo } from 'react';
-import { AlertTriangle, ExternalLink, ChevronRight, Check } from 'lucide-react';
+import { AlertTriangle, ExternalLink, ChevronRight, Check } from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 import { formatCurrency, formatFull, type BudgetPeriod, type BudgetResource, type BudgetAssignment, type DepartmentBudget, type BudgetLicense } from '@/hooks/budget/useBudgetData';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';

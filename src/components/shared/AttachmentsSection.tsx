@@ -4,7 +4,7 @@ import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { Upload, Download, Trash2, File, FileText, Image as ImageIcon, Film } from 'lucide-react';
+import { Upload, Download, Trash2, File, FileText, Image as ImageIcon, Film } from '@/lib/atlaskit-icons';
 import { formatDistanceToNow } from 'date-fns';
 import { usePermission } from '@/hooks/usePermission';
 import { useAuth } from '@/lib/auth';

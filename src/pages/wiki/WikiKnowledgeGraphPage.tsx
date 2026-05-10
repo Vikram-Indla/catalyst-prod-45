@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { ChevronRight } from 'lucide-react';
+import { ChevronRight } from '@/lib/atlaskit-icons';
 import { useTheme } from '@/hooks/useTheme';
 import type * as D3Type from 'd3';
 

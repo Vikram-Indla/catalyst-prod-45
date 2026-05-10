@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { Clock, CheckCircle2, AlertTriangle, Timer, ToggleLeft, ToggleRight, Save } from 'lucide-react';
+import { Clock, CheckCircle2, AlertTriangle, Timer, ToggleLeft, ToggleRight, Save } from '@/lib/atlaskit-icons';
 import toast from 'react-hot-toast';
 
 interface SyncSchedule {

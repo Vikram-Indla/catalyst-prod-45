@@ -8,7 +8,7 @@
 import { 
   Users, Building2, Globe, FolderKanban,
   PanelRightClose, PanelRight, Cog, User, AlertCircle, Flag, Tag
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import { Button } from '@/components/ui/button';
 import {
   Select,

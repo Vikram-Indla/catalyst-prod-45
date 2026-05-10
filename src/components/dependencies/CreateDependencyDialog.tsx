@@ -28,7 +28,7 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover';
 import { toast } from 'sonner';
-import { CalendarIcon, Calendar as CalendarIcon2 } from 'lucide-react';
+import { CalendarIcon, Calendar as CalendarIcon2 } from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 import type { WorkItemDependencyType, DependencyTypeV2, RiskLevel, DependencyLevelV2 } from '@/lib/dependencies/types';
 import { DEPENDENCY_TYPE_LABELS, DEPENDENCY_LEVEL_LABELS } from '@/lib/dependencies/types';

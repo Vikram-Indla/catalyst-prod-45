@@ -2,7 +2,7 @@
  * SyncLogTable — Sync history table
  * Phase 3, Task 4
  */
-import { History, Loader2, CheckCircle2, XCircle } from 'lucide-react';
+import { History, Loader2, CheckCircle2, XCircle } from '@/lib/atlaskit-icons';
 import type { SyncLogEntry, JiraProject } from '@/types/workhub.types';
 
 interface SyncLogTableProps {

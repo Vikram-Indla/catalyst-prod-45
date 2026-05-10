@@ -13,7 +13,7 @@ import {
   TrendingUp,
   RefreshCw,
   Target
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';

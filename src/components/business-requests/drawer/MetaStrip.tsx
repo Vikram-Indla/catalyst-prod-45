@@ -4,7 +4,7 @@
  */
 
 import { format } from 'date-fns';
-import { User, Building2, Calendar, Layers, Star } from 'lucide-react';
+import { User, Building2, Calendar, Layers, Star } from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 import { DepartmentSelect } from '@/components/business-requests/DepartmentSelect';
 import { BusinessOwnerSelect } from '@/components/business-requests/BusinessOwnerSelect';

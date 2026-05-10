@@ -3,7 +3,7 @@
 // ============================================================
 
 import { useState, useRef, useEffect } from 'react';
-import { Pencil, Trash2, GripVertical, MessageSquare } from 'lucide-react';
+import { Pencil, Trash2, GripVertical, MessageSquare } from '@/lib/atlaskit-icons';
 import type { PriItemFull } from '../types';
 import { formatShortDate } from '../utils';
 import { PriStatusToggle } from './PriStatusToggle';

@@ -6,7 +6,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { token } from '@atlaskit/tokens';
 import { PriorityIndicator, normalisePriority } from '@/components/shared/PriorityIndicator';
-import { Check } from 'lucide-react';
+import { Check } from '@/lib/atlaskit-icons';
 
 interface PriorityPopoverProps {
   priority: string;

@@ -13,7 +13,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useFeatureProgress } from '@/hooks/useFeatureProgress';
-import { Layers, Share2, Link2, MoreHorizontal, ChevronDown, Pencil, Calendar, Ban, Zap, AlertTriangle } from 'lucide-react';
+import { Layers, Share2, Link2, MoreHorizontal, ChevronDown, Pencil, Calendar, Ban, Zap, AlertTriangle } from '@/lib/atlaskit-icons';
 import { format } from 'date-fns';
 import { toast } from 'sonner';
 import {

@@ -1,5 +1,5 @@
 import React from 'react';
-import { AlertTriangle, ChevronDown } from 'lucide-react';
+import { AlertTriangle, ChevronDown } from '@/lib/atlaskit-icons';
 
 interface LoadMoreStripProps {
   visibleCount: number;

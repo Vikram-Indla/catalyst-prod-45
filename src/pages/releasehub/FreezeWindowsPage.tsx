@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { CalendarOff, Plus, Trash2, ChevronLeft, ChevronRight } from 'lucide-react';
+import { CalendarOff, Plus, Trash2, ChevronLeft, ChevronRight } from '@/lib/atlaskit-icons';
 import { useFreezeWindows, useCreateFreezeWindow, useDeleteFreezeWindow } from '@/hooks/useReleaseHub';
 import { RH } from '@/constants/releasehub.design';
 import { useTheme } from '@/hooks/useTheme';

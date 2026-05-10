@@ -16,7 +16,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { useProductRoles } from '@/hooks/useProductRoles';
 import { useCreateUser, CreateUserInput, useUpdateUserRoles } from '@/hooks/useUsers';
 import { useCapacityDepartments, useResourceAssignments } from '@/modules/capacity-planner';
-import { Loader2, AlertCircle } from 'lucide-react';
+import { Loader2, AlertCircle } from '@/lib/atlaskit-icons';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { cn } from '@/lib/utils';
 import { supabase, typedQuery } from '@/integrations/supabase/client';

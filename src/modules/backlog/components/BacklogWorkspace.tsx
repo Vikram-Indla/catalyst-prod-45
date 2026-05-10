@@ -24,7 +24,7 @@ import { toast } from 'sonner';
 import { format } from 'date-fns';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
-import { Trash2, X } from 'lucide-react';
+import { Trash2, X } from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 

@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
 import { cn } from '@/lib/utils';
-import { Maximize2 } from 'lucide-react';
+import { Maximize2 } from '@/lib/atlaskit-icons';
 import { Button } from '@/components/ui/button';
 import { BusinessRequestsKanbanView } from './BusinessRequestsKanbanView';
 import { useActiveDemandProcessSteps } from '@/hooks/useDemandProcessSteps';

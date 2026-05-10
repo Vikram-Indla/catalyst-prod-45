@@ -5,7 +5,7 @@
  */
 
 import { useEffect, useRef, useState } from 'react';
-import { X, ChevronLeft, ChevronRight, Loader2, Plus, Calendar } from 'lucide-react';
+import { X, ChevronLeft, ChevronRight, Loader2, Plus, Calendar } from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 import { format, parseISO, getISOWeek } from 'date-fns';
 import { useResourceAllocationTimeline } from '@/hooks/useResourceAllocationTimeline';

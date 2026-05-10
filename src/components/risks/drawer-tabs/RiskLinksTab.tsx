@@ -38,7 +38,7 @@ import {
   Target,
   Palette,
   Flag
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import { EpicDetailsPanel } from '@/components/items/epics/EpicDetailsPanel';

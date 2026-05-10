@@ -8,7 +8,7 @@ import { useState, useRef, useEffect } from 'react';
 import { CatalystPageHeader } from '@/components/shared/CatalystPageHeader';
 import { useVision } from '@/hooks/strategy/useStrategyData';
 import { useUpdateVision } from '@/hooks/strategy/useStrategyMutations';
-import { Pencil, Check, X } from 'lucide-react';
+import { Pencil, Check, X } from '@/lib/atlaskit-icons';
 
 /* ─── Prop types ─── */
 interface ThemeItem { name: string; status: 'on_track' | 'off_track' | 'at_risk' }

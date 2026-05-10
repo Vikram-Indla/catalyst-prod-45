@@ -15,7 +15,7 @@ import {
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Upload, X, FileText, Image, File, Trash2, Download, Loader2 } from 'lucide-react';
+import { Upload, X, FileText, Image, File, Trash2, Download, Loader2 } from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
 

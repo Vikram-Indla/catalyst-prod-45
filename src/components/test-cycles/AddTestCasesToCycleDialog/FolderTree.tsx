@@ -4,7 +4,7 @@
  */
 
 import React, { useState } from 'react';
-import { ChevronRight, Folder, FolderOpen, Plus } from 'lucide-react';
+import { ChevronRight, Folder, FolderOpen, Plus } from '@/lib/atlaskit-icons';
 import { Button } from '@/components/ui/button';
 import { Lozenge } from '@/components/ads';
 import { cn } from '@/lib/utils';

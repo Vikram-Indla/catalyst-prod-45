@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Zap } from 'lucide-react';
+import { Zap } from '@/lib/atlaskit-icons';
 import { useTheme } from '@/hooks/useTheme';
 
 export type R360View = 'ring' | 'chronology' | 'list';

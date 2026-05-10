@@ -4,7 +4,7 @@
 // ═══════════════════════════════════════════════════════════════════════════════
 
 import { cn } from '@/lib/utils';
-import { TrendingUp, TrendingDown } from 'lucide-react';
+import { TrendingUp, TrendingDown } from '@/lib/atlaskit-icons';
 import type { ProgressBaseline, TrendCode } from '../../lib/okrTypes';
 import { useTheme } from '@/hooks/useTheme';
 

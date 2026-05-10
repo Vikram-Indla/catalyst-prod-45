@@ -32,7 +32,7 @@ import {
   Loader2,
   FileJson,
   FileCode,
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 import { useGenerateReport, useExportReport } from '../hooks/useReport';
 import {

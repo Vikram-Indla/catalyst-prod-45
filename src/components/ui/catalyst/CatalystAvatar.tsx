@@ -1,4 +1,4 @@
-import { CircleUser } from 'lucide-react';
+import { CircleUser } from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 
 interface CatalystAvatarProps {

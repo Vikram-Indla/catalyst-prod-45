@@ -5,7 +5,7 @@ import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea
 import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
-import { Star, User, Calendar, Clock, ChevronLeft, ChevronRight, MoreHorizontal, ExternalLink, Building2 } from 'lucide-react';
+import { Star, User, Calendar, Clock, ChevronLeft, ChevronRight, MoreHorizontal, ExternalLink, Building2 } from '@/lib/atlaskit-icons';
 import { useQueryClient } from '@tanstack/react-query';
 import { format } from 'date-fns';
 import { useActiveDemandProcessSteps } from '@/hooks/useDemandProcessSteps';

@@ -17,7 +17,7 @@ import { Avatar, Lozenge } from '@/components/ads';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { 
   User, Users, Search, X, Check, Circle, Plus, Loader2 
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 import { useTeamMembers, TeamMember, Contributor } from '@/hooks/useFeatureAssignments';
 import { updateFeatureOwner, updateFeatureContributors } from '@/services/featureService';

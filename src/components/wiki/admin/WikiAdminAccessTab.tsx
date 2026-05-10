@@ -8,7 +8,7 @@ import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { useWikiAccessMatrix, useUpdateAccess } from '@/hooks/useWikiAdminData';
 import { SkeletonBlock } from '@/components/wiki/WikiTokens';
 import { EmptyState } from './WikiAdminSyncTab';
-import { ShieldCheck } from 'lucide-react';
+import { ShieldCheck } from '@/lib/atlaskit-icons';
 
 const fromAny = (t: string) => typedQuery(t);
 

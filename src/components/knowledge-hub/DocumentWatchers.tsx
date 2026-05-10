@@ -5,7 +5,7 @@
  * - Shows who is watching a page
  */
 import { useState } from 'react';
-import { Eye, EyeOff, Users } from 'lucide-react';
+import { Eye, EyeOff, Users } from '@/lib/atlaskit-icons';
 import { Button } from '@/components/ui/button';
 import { Avatar } from '@/components/ads';
 import {

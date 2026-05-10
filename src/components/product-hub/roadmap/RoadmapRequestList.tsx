@@ -3,7 +3,7 @@
  * Theme-aware: uses INK/SURFACE dark tokens
  */
 import React from 'react';
-import { ArrowUpDown, ChevronDown, ChevronRight, Plus, Lightbulb, Star } from 'lucide-react';
+import { ArrowUpDown, ChevronDown, ChevronRight, Plus, Lightbulb, Star } from '@/lib/atlaskit-icons';
 import { useTheme } from '@/hooks/useTheme';
 import type { RoadmapRequest, RoadmapGroup } from './types/roadmap.types';
 import { TYPE_COLORS, INK, INK_DARK, SURFACE, SURFACE_DARK, FONT, ROW_HEIGHT, GROUP_HEADER_HEIGHT, LIST_PANEL_WIDTH, AVATAR_BG } from './constants/roadmap.constants';

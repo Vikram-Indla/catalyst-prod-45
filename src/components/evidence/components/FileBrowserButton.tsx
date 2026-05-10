@@ -3,7 +3,7 @@
 // ═══════════════════════════════════════════════════════════════════════════
 
 import React, { useRef } from 'react';
-import { FolderOpen } from 'lucide-react';
+import { FolderOpen } from '@/lib/atlaskit-icons';
 import { validateFile } from '../utils/validation';
 
 interface FileBrowserButtonProps {

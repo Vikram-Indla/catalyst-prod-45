@@ -1,7 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Lozenge } from '@/components/ads';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { FileText, AlertCircle, CheckCircle2, XCircle, ChevronRight, Circle } from 'lucide-react';
+import { FileText, AlertCircle, CheckCircle2, XCircle, ChevronRight, Circle } from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 
 interface WheelNode {

@@ -4,7 +4,7 @@
  */
 
 import React, { useState, useRef, useEffect } from 'react';
-import { Check, X, Pencil } from 'lucide-react';
+import { Check, X, Pencil } from '@/lib/atlaskit-icons';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';

@@ -1,7 +1,7 @@
 /**
  * AllWorkEmptyState — Designed empty states for every scenario (CG-07: 10/10)
  */
-import { FileStack, Search, AlertCircle, Filter, MessageSquare, Clock, History, ListTree, Link2, Paperclip, Tag } from 'lucide-react';
+import { FileStack, Search, AlertCircle, Filter, MessageSquare, Clock, History, ListTree, Link2, Paperclip, Tag } from '@/lib/atlaskit-icons';
 
 type EmptyType =
   | 'no-items' | 'no-results' | 'error' | 'no-filters'

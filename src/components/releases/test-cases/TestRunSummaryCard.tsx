@@ -15,7 +15,7 @@ import {
   Calendar,
   TrendingUp,
   TrendingDown,
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 
 interface TestRunSummaryCardProps {

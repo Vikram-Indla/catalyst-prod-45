@@ -4,7 +4,7 @@ import { cn } from '@/lib/utils';
 import type { RaDocument, QualityBreakdown } from '@/types/requirement-assist';
 import { BrdOutline, type BrdSection } from './BrdOutline';
 import { AiAssistantPanel } from './AiAssistantPanel';
-import { ArrowLeft, Printer } from 'lucide-react';
+import { ArrowLeft, Printer } from '@/lib/atlaskit-icons';
 
 /* ── Demo BRD sections ── */
 const DEMO_SECTIONS: { number: string; title: string; qualityGood: boolean; content: string }[] = [

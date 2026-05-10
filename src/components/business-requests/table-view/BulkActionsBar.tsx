@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { X, UserPlus, Calendar, RefreshCw, Trash2, ChevronDown } from 'lucide-react';
+import { X, UserPlus, Calendar, RefreshCw, Trash2, ChevronDown } from '@/lib/atlaskit-icons';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { DRAWER_PROCESS_STEPS } from '../drawer/StatusDropdown';

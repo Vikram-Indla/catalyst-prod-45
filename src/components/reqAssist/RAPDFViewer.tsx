@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { X, Download, ZoomIn, ZoomOut, ChevronLeft, ChevronRight, Zap, Globe, Info } from 'lucide-react';
+import { X, Download, ZoomIn, ZoomOut, ChevronLeft, ChevronRight, Zap, Globe, Info } from '@/lib/atlaskit-icons';
 import type { RADocumentWithArtifacts } from '@/types/reqAssistV2';
 
 interface Props {

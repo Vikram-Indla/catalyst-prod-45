@@ -4,7 +4,7 @@
  */
 
 import { ReactNode, useEffect, useCallback } from 'react';
-import { X, Download, Clock, FileText, Table2, CalendarDays, Briefcase, BarChart3 } from 'lucide-react';
+import { X, Download, Clock, FileText, Table2, CalendarDays, Briefcase, BarChart3 } from '@/lib/atlaskit-icons';
 import { Button } from '@/components/ui/button';
 import { Logo } from '@/components/brand/Logo';
 import { cn } from '@/lib/utils';

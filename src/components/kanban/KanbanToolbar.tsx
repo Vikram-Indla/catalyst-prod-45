@@ -3,7 +3,7 @@
  * Enterprise-grade, fully theme-aware via KanbanThemeTokens (ADS dark)
  */
 import { useState, useRef, useEffect } from 'react';
-import { Search, ChevronDown, Check, Filter, X } from 'lucide-react';
+import { Search, ChevronDown, Check, Filter, X } from '@/lib/atlaskit-icons';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import { PriorityBars, normalisePriority } from '@/components/shared/PriorityIndicator';
 import { KanbanAvatar } from './KanbanAvatar';

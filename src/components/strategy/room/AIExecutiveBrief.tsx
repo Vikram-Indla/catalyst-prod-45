@@ -11,7 +11,7 @@
  * #71717A  --sri-ink-m   → ONLY: unit suffixes, micro-labels, timestamps, scale ranges
  */
 import React, { useState, useEffect, useCallback } from 'react';
-import { RefreshCw } from 'lucide-react';
+import { RefreshCw } from '@/lib/atlaskit-icons';
 import { usePublishedBrief, useDraftBrief, usePublishBrief, useGenerateBrief, useDiscardBrief } from '@/hooks/useAIBrief';
 import { useStrategyRoomIntelligence } from '@/hooks/useStrategyRoomIntelligence';
 import { generateExecutiveBrief, type ExecutiveBriefAI } from '@/utils/generateExecutiveBrief';

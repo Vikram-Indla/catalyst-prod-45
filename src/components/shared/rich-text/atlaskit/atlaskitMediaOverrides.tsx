@@ -32,7 +32,7 @@ import React, {
   useState,
 } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { Download, Loader2, X } from 'lucide-react';
+import { Download, Loader2, X } from '@/lib/atlaskit-icons';
 import { supabase } from '@/integrations/supabase/client';
 
 /* ─── Types ─────────────────────────────────────────────── */

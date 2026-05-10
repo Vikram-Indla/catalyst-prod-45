@@ -3,7 +3,7 @@
 // ============================================================================
 
 import React from 'react';
-import { FileText } from 'lucide-react';
+import { FileText } from '@/lib/atlaskit-icons';
 import { PermissionBanner, NoteComposer, EmptyState } from '../../molecules';
 
 interface NotesTabProps {

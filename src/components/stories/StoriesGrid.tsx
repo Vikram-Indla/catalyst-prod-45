@@ -1,6 +1,6 @@
 import { Lozenge, type LozengeAppearance } from '@/components/ads';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Loader2 } from 'lucide-react';
+import { Loader2 } from '@/lib/atlaskit-icons';
 
 interface Story {
   id: string;

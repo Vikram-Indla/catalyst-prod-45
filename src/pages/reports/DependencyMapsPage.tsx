@@ -18,7 +18,7 @@ import { WorkItemIcon } from '@/components/dependencies/WorkItemIcon';
 import { GlobalPageHeader } from '@/components/layout/GlobalPageHeader';
 import { buildWorkItemMaps, resolveDependencyWorkItems, extractProgramIdsFromDep } from '@/lib/dependencies/resolveWorkItem';
 import { DEPENDENCY_STATUS_LABELS } from '@/lib/dependencies/types';
-import { Network, ArrowRight, Filter, Loader2 } from 'lucide-react';
+import { Network, ArrowRight, Filter, Loader2 } from '@/lib/atlaskit-icons';
 
 // Generate quarter options
 const generateQuarterOptions = () => {

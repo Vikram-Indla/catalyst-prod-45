@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Lozenge } from '@/components/ads';
 import { Progress } from '@/components/ui/progress';
-import { Plus, Target, AlertCircle } from 'lucide-react';
+import { Plus, Target, AlertCircle } from '@/lib/atlaskit-icons';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';

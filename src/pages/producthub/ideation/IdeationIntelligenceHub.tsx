@@ -3,7 +3,7 @@
  * Uses LIVE data from ph_ideas table
  */
 import React, { useEffect, useMemo } from 'react';
-import { X } from 'lucide-react';
+import { X } from '@/lib/atlaskit-icons';
 import { toast } from 'sonner';
 import type { Idea } from './ideation-data';
 

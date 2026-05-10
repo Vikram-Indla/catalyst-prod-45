@@ -2,7 +2,7 @@
  * CheckinModal — 480px modal for recording a KR check-in
  */
 import { useState, useEffect, useCallback, useMemo } from 'react';
-import { X, ClipboardCheck } from 'lucide-react';
+import { X, ClipboardCheck } from '@/lib/atlaskit-icons';
 import { useAllKeyResults, useCreateCheckin } from '@/hooks/useGoals';
 import { Slider } from '@/components/ui/slider';
 import { toast } from 'sonner';

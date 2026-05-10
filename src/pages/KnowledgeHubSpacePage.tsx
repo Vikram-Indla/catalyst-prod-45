@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { CatalystPageHeader } from '@/components/shared/CatalystPageHeader';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Plus, FileText, FolderOpen, Search, MoreVertical, Trash2, Edit } from 'lucide-react';
+import { ArrowLeft, Plus, FileText, FolderOpen, Search, MoreVertical, Trash2, Edit } from '@/lib/atlaskit-icons';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';

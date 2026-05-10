@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
-import { Loader2 } from 'lucide-react';
+import { Loader2 } from '@/lib/atlaskit-icons';
 import { findByHistoricalKey } from '@/hooks/useWorkItemKeyHistory';
 
 type WorkItemType = 'epic' | 'feature' | 'story' | 'subtask' | 'demand' | null;

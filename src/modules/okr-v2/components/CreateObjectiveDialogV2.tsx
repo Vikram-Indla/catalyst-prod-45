@@ -17,7 +17,7 @@ import {
 import { toast } from 'sonner';
 import { CatalystDatePicker } from '@/components/ui/catalyst-date-picker';
 import { cn } from '@/lib/utils';
-import { Target, X, AlertCircle } from 'lucide-react';
+import { Target, X, AlertCircle } from '@/lib/atlaskit-icons';
 
 interface CreateObjectiveDialogV2Props {
   open: boolean;

@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Lozenge, type LozengeAppearance } from '@/components/ads';
 import { Progress } from '@/components/ui/progress';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { ChevronDown, ChevronUp, TrendingUp, Calendar, MessageSquare, MoreHorizontal, Trash2 } from 'lucide-react';
+import { ChevronDown, ChevronUp, TrendingUp, Calendar, MessageSquare, MoreHorizontal, Trash2 } from '@/lib/atlaskit-icons';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
 import { useDeleteKeyResult } from '@/hooks/useKeyResults';

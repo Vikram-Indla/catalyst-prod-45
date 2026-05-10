@@ -1,4 +1,4 @@
-import { Star } from 'lucide-react';
+import { Star } from '@/lib/atlaskit-icons';
 
 export type ProjectTab = 'all' | 'starred' | 'active' | 'on_hold' | 'planning' | 'completed';
 

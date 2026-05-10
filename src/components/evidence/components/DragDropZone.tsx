@@ -3,7 +3,7 @@
 // ═══════════════════════════════════════════════════════════════════════════
 
 import React, { useState } from 'react';
-import { Upload } from 'lucide-react';
+import { Upload } from '@/lib/atlaskit-icons';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import { validateFile } from '../utils/validation';

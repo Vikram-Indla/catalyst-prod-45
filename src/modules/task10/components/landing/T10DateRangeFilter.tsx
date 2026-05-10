@@ -4,7 +4,7 @@
 // ═══════════════════════════════════════════════════════════════════════════════
 
 import React, { useState, useEffect } from 'react';
-import { Calendar } from 'lucide-react';
+import { Calendar } from '@/lib/atlaskit-icons';
 import { T10FilterDropdown } from './T10FilterDropdown';
 import { getDateRangeFromPreset } from '../../hooks';
 import type { T10DateRangePreset } from '../../types';

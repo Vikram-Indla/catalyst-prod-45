@@ -14,7 +14,7 @@ import {
   TrendingUp, 
   Wallet,
   Users
-} from 'lucide-react';
+} from '@/lib/atlaskit-icons';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { getTierDisplayInfo, PriorityTier } from '@/hooks/usePrioritizationConfig';

@@ -7,7 +7,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Sheet, SheetContent } from '@/components/ui/sheet';
-import { X, MessageSquare, History, FileText } from 'lucide-react';
+import { X, MessageSquare, History, FileText } from '@/lib/atlaskit-icons';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import { getLozengeStyle, EPIC_STATUS_LOZENGE, getInitials } from '../../utils/backlog.utils';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
