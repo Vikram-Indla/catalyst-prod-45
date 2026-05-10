@@ -6,7 +6,7 @@
  */
 
 import { memo } from 'react';
-import { Button } from '@/components/ui/button';
+import Button from '@atlaskit/button/new';
 import { Separator } from '@/components/ui/separator';
 import AutomationIcon from '@atlaskit/icon/core/automation';
 import CheckCircleIcon from '@atlaskit/icon/core/check-circle';
@@ -75,33 +75,25 @@ export const BulkActionsBar = memo(function BulkActionsBar({
 
       {/* Quick actions */}
       <Button
-        size="sm"
-        variant="outline"
-        className="text-xs h-7 bg-white/80 border-[#B3D4FF] text-[#0747A6] hover:bg-white"
+        appearance="default"
         onClick={handleEnableAll}
+        iconBefore={CheckCircleIcon}
       >
-        <CheckCircleIcon label="" size="small" />
         Enable All
       </Button>
 
       <Button
-        size="sm"
-        variant="outline"
-        className="text-xs h-7 bg-white/80 border-[#B3D4FF] text-[#0747A6] hover:bg-white"
+        appearance="default"
         onClick={handleDisableAll}
+        iconBefore={CrossCircleIcon}
       >
-        <CrossCircleIcon label="" size="small" />
         Disable All
       </Button>
 
       {/* Channel bulk set dropdown */}
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button
-            size="sm"
-            variant="outline"
-            className="text-xs h-7 bg-white/80 border-[#B3D4FF] text-[#0747A6] hover:bg-white"
-          >
+          <Button appearance="default">
             Set Channel
           </Button>
         </DropdownMenuTrigger>
@@ -181,15 +173,15 @@ export const BulkActionsBar = memo(function BulkActionsBar({
       </DropdownMenu>
 
       {/* Clear selection */}
-      <Button
-        size="sm"
-        variant="ghost"
-        className="text-xs h-7 ml-auto text-[#0747A6] hover:text-[#0747A6]/80"
-        onClick={onClear}
-      >
-        <CrossIcon label="" size="small" />
-        Clear
-      </Button>
+      <div style={{ marginLeft: 'auto' }}>
+        <Button
+          appearance="subtle"
+          onClick={onClear}
+          iconBefore={CrossIcon}
+        >
+          Clear
+        </Button>
+      </div>
     </div>
   );
 });

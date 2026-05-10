@@ -7,7 +7,7 @@
 
 import { memo } from 'react';
 import { Lozenge, Tooltip, type LozengeAppearance } from '@/components/ads';
-import { Switch } from '@/components/ui/switch';
+import Toggle from '@atlaskit/toggle';
 import type { TriggerRowData, ChannelsConfig } from '@/types/notification-triggers';
 import EyeOpenIcon from '@atlaskit/icon/core/eye-open';
 import PeopleGroupIcon from '@atlaskit/icon/core/people-group';
@@ -173,22 +173,20 @@ export const TriggerRow = memo(function TriggerRow({
       {/* ── Channel Toggles (in_app, email, toast, slack) ────────── */}
       {(['in_app', 'email', 'toast', 'slack'] as const).map((ch) => (
         <div key={ch} className="flex justify-center">
-          <Switch
-            checked={channels[ch]}
-            onCheckedChange={(v) => onChannelToggle(ch, v)}
-            disabled={isSilent || !enabled}
-            className="h-4 w-7 data-[state=checked]:bg-[var(--ds-text-brand,#2563EB)] disabled:opacity-30"
+          <Toggle
+            isChecked={channels[ch]}
+            onChange={() => onChannelToggle(ch, !channels[ch])}
+            isDisabled={isSilent || !enabled}
           />
         </div>
       ))}
 
       {/* ── Master Enable Toggle ─────────────────────────────────── */}
       <div className="flex justify-center">
-        <Switch
-          checked={enabled}
-          onCheckedChange={onToggle}
-          disabled={isMandatory || isSilent}
-          className="h-4 w-7 data-[state=checked]:bg-[var(--ds-text-success,#16A34A)] disabled:opacity-30"
+        <Toggle
+          isChecked={enabled}
+          onChange={() => onToggle(!enabled)}
+          isDisabled={isMandatory || isSilent}
         />
       </div>
     </div>
