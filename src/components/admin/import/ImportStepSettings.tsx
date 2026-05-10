@@ -1,6 +1,5 @@
-import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Input } from '@/components/ui/input';
+import AdsSelect from '@atlaskit/select';
+import Textfield from '@atlaskit/textfield';
 import { ImportModuleConfig } from '@/lib/import/importModuleConfig';
 
 interface ImportStepSettingsProps {
@@ -55,75 +54,65 @@ export function ImportStepSettings({
         {/* Target Project - only for certain modules */}
         {moduleConfig.requiresProject && projects.length > 0 && (
           <div className="space-y-2">
-            <Label htmlFor="target-project">
-              Import to Project <span className="text-destructive">*</span>
-            </Label>
-            <Select value={targetProject} onValueChange={onTargetProjectChange}>
-              <SelectTrigger id="target-project" className="w-80">
-                <SelectValue placeholder="Select project..." />
-              </SelectTrigger>
-              <SelectContent>
-                {projects.map((project) => (
-                  <SelectItem key={project.id} value={project.id}>
-                    {project.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <label htmlFor="target-project-select" style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>
+              Import to Project <span style={{ color: 'var(--ds-text-danger, #AE2A19)' }}>*</span>
+            </label>
+            <div style={{ maxWidth: '320px' }}>
+              <AdsSelect
+                inputId="target-project-select"
+                value={targetProject ? { label: projects.find(p => p.id === targetProject)?.name || targetProject, value: targetProject } : null}
+                options={projects.map((project) => ({ label: project.name, value: project.id }))}
+                placeholder="Select project..."
+                onChange={(opt) => onTargetProjectChange(opt?.value ?? '')}
+              />
+            </div>
           </div>
         )}
-        
+
         {/* File Encoding */}
         <div className="space-y-2">
-          <Label htmlFor="encoding">File encoding</Label>
-          <Select value={encoding} onValueChange={onEncodingChange}>
-            <SelectTrigger id="encoding" className="w-80">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {encodingOptions.map((opt) => (
-                <SelectItem key={opt.value} value={opt.value}>
-                  {opt.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <label htmlFor="encoding-select" style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>File encoding</label>
+          <div style={{ maxWidth: '320px' }}>
+            <AdsSelect
+              inputId="encoding-select"
+              value={{ label: encodingOptions.find(o => o.value === encoding)?.label || encoding, value: encoding }}
+              options={encodingOptions}
+              onChange={(opt) => onEncodingChange(opt?.value ?? 'UTF-8')}
+            />
+          </div>
         </div>
-        
+
         {/* Delimiter */}
         <div className="space-y-2">
-          <Label htmlFor="delimiter">
-            Delimiter <span className="text-destructive">*</span>
-          </Label>
-          <Input
-            id="delimiter"
-            value={delimiter}
-            onChange={(e) => onDelimiterChange(e.target.value)}
-            className="w-80"
-            placeholder=","
-          />
+          <label htmlFor="delimiter" style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>
+            Delimiter <span style={{ color: 'var(--ds-text-danger, #AE2A19)' }}>*</span>
+          </label>
+          <div style={{ maxWidth: '320px' }}>
+            <Textfield
+              id="delimiter"
+              value={delimiter}
+              onChange={(e) => onDelimiterChange((e.target as HTMLInputElement).value)}
+              placeholder=","
+            />
+          </div>
           <p className="text-xs text-muted-foreground">
             Please use \t to have a Tabulator character
           </p>
         </div>
-        
+
         {/* Date Format */}
         <div className="space-y-2">
-          <Label htmlFor="date-format">
-            Date format <span className="text-destructive">*</span>
-          </Label>
-          <Select value={dateFormat} onValueChange={onDateFormatChange}>
-            <SelectTrigger id="date-format" className="w-80">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {dateFormatOptions.map((opt) => (
-                <SelectItem key={opt.value} value={opt.value}>
-                  {opt.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <label htmlFor="date-format-select" style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>
+            Date format <span style={{ color: 'var(--ds-text-danger, #AE2A19)' }}>*</span>
+          </label>
+          <div style={{ maxWidth: '320px' }}>
+            <AdsSelect
+              inputId="date-format-select"
+              value={{ label: dateFormatOptions.find(o => o.value === dateFormat)?.label || dateFormat, value: dateFormat }}
+              options={dateFormatOptions}
+              onChange={(opt) => onDateFormatChange(opt?.value ?? 'dd/MM/yyyy')}
+            />
+          </div>
           <p className="text-xs text-muted-foreground">
             Please specify the format that dates are stored in the file.
           </p>

@@ -1,5 +1,4 @@
-import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import AdsSelect from '@atlaskit/select';
 import { ImportModuleConfig } from '@/lib/import/importModuleConfig';
 
 interface ImportStepMapValuesProps {
@@ -82,7 +81,7 @@ export function ImportStepMapValues({
           return (
             <div key={header} className="space-y-4">
               <div className="flex items-center gap-2">
-                <Label className="text-sm font-semibold">{header}</Label>
+                <span style={{ fontSize: '14px', fontWeight: 600, color: 'var(--ds-text, #172B4D)' }}>{header}</span>
                 <span className="text-xs text-muted-foreground">→</span>
                 <span className="text-sm text-muted-foreground">{fieldConfig.label}</span>
               </div>
@@ -99,24 +98,16 @@ export function ImportStepMapValues({
                   return (
                     <div key={csvValue} className="grid grid-cols-2 gap-4 items-center">
                       <div className="text-sm text-foreground">{csvValue}</div>
-                      <Select
-                        value={mappedValue || 'auto'}
-                        onValueChange={(value) => 
-                          onValueMappingChange(header, csvValue, value === 'auto' ? '' : value)
+                      <AdsSelect
+                        value={{ label: mappedValue || 'Auto-detect', value: mappedValue || 'auto' }}
+                        options={[
+                          { label: 'Auto-detect', value: 'auto' },
+                          ...fieldConfig.options.map((opt) => ({ label: opt, value: opt })),
+                        ]}
+                        onChange={(opt) =>
+                          onValueMappingChange(header, csvValue, (!opt || opt.value === 'auto') ? '' : opt.value)
                         }
-                      >
-                        <SelectTrigger className="w-full">
-                          <SelectValue placeholder="Auto-detect" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="auto">Auto-detect</SelectItem>
-                          {fieldConfig.options.map((opt) => (
-                            <SelectItem key={opt} value={opt}>
-                              {opt}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
+                      />
                     </div>
                   );
                 })}
