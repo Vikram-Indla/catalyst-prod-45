@@ -1744,6 +1744,18 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
         appearanceFor: (s) => statusAppearance(s) as LozengeAppearance,
         onChange: (row, next) => updateField.mutate({ id: row.id, source: row.source, patch: { status: next } }),
       }),
+      // 2026-05-10 Jira-parity per-column filter chevron.
+      filterable: true,
+      hasActiveFilter: filterValue.status.length > 0,
+      renderFilterMenu: (close) => (
+        <ColumnFilterMultiSelect
+          title="Status"
+          options={ALL_BACKLOG_STATUSES}
+          selected={filterValue.status}
+          onChange={(next) => setFilterValue((p) => ({ ...p, status: next }))}
+          onClose={close}
+        />
+      ),
     },
     {
       id: 'comments',
@@ -1818,6 +1830,17 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
           patch: { assignee_id: next?.id ?? null, assignee_name: next?.name ?? null },
         }),
       }),
+      filterable: true,
+      hasActiveFilter: filterValue.assignees.length > 0,
+      renderFilterMenu: (close) => (
+        <ColumnFilterMultiSelect
+          title="Assignee"
+          options={['Unassigned', ...assigneeOptions.map((a) => a.name)]}
+          selected={filterValue.assignees}
+          onChange={(next) => setFilterValue((p) => ({ ...p, assignees: next }))}
+          onClose={close}
+        />
+      ),
     },
     {
       id: 'due_date',
@@ -1845,6 +1868,17 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
         options: PRIORITY_OPTIONS,
         onChange: (row, next) => updateField.mutate({ id: row.id, source: row.source, patch: { priority: next } }),
       }),
+      filterable: true,
+      hasActiveFilter: filterValue.priority.length > 0,
+      renderFilterMenu: (close) => (
+        <ColumnFilterMultiSelect
+          title="Priority"
+          options={PRIORITY_OPTIONS.map((p) => p[0].toUpperCase() + p.slice(1))}
+          selected={filterValue.priority}
+          onChange={(next) => setFilterValue((p) => ({ ...p, priority: next as typeof filterValue.priority }))}
+          onClose={close}
+        />
+      ),
     },
     {
       id: 'labels',
@@ -4688,6 +4722,101 @@ type CreatableIssueType =
   | 'Business Gap'
   | 'API Requirement'
   | 'Change Request';
+
+/**
+ * 2026-05-10 Per-column filter popup body — minimal multi-select.
+ * Shown inside the JiraTable filter chevron portal. Each option is a
+ * checkbox; "Clear" removes all selections. State is fully driven by
+ * `selected` + `onChange` so the parent owns the source of truth
+ * (filterValue at the BacklogPage level).
+ */
+function ColumnFilterMultiSelect({
+  title,
+  options,
+  selected,
+  onChange,
+  onClose,
+}: {
+  title: string;
+  options: string[];
+  selected: string[];
+  onChange: (next: string[]) => void;
+  onClose: () => void;
+}) {
+  const [query, setQuery] = useState('');
+  const filtered = useMemo(
+    () => options.filter((o) => o.toLowerCase().includes(query.toLowerCase())),
+    [options, query],
+  );
+  const toggle = (opt: string) => {
+    onChange(selected.includes(opt)
+      ? selected.filter((s) => s !== opt)
+      : [...selected, opt]);
+  };
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 6, minWidth: 220 }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 4px' }}>
+        <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtle, #42526E)' }}>{title}</span>
+        {selected.length > 0 && (
+          <button
+            type="button"
+            onClick={() => onChange([])}
+            style={{ border: 'none', background: 'transparent', color: 'var(--ds-link, #0C66E4)', fontSize: 12, cursor: 'pointer', padding: '2px 4px' }}
+          >Clear</button>
+        )}
+      </div>
+      <input
+        type="text"
+        value={query}
+        onChange={(e) => setQuery(e.target.value)}
+        placeholder="Search…"
+        style={{
+          padding: '4px 8px', fontSize: 13,
+          border: '1px solid var(--ds-border, #DFE1E6)', borderRadius: 3,
+          outline: 'none', fontFamily: 'inherit',
+        }}
+        autoFocus
+      />
+      <div style={{ maxHeight: 240, overflowY: 'auto', display: 'flex', flexDirection: 'column' }}>
+        {filtered.length === 0 && (
+          <div style={{ padding: '6px 8px', fontSize: 12, color: 'var(--ds-text-subtlest, #6B6E76)' }}>No matches</div>
+        )}
+        {filtered.map((opt) => {
+          const isChecked = selected.includes(opt);
+          return (
+            <label
+              key={opt}
+              style={{
+                display: 'flex', alignItems: 'center', gap: 8,
+                padding: '6px 8px', cursor: 'pointer', fontSize: 14,
+                borderRadius: 3,
+                background: isChecked ? 'var(--ds-background-selected, #E9F2FF)' : 'transparent',
+              }}
+            >
+              <input
+                type="checkbox"
+                checked={isChecked}
+                onChange={() => toggle(opt)}
+                style={{ margin: 0 }}
+              />
+              <span>{opt}</span>
+            </label>
+          );
+        })}
+      </div>
+      <div style={{ display: 'flex', justifyContent: 'flex-end', borderTop: '1px solid var(--ds-border, #DFE1E6)', paddingTop: 6 }}>
+        <button
+          type="button"
+          onClick={onClose}
+          style={{
+            border: '1px solid var(--ds-border, #DFE1E6)', background: 'transparent',
+            padding: '4px 12px', borderRadius: 3, cursor: 'pointer', fontSize: 13,
+          }}
+        >Done</button>
+      </div>
+    </div>
+  );
+}
 
 const CREATABLE_TYPES: CreatableIssueType[] = [
   'Story',

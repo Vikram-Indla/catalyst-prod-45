@@ -58,6 +58,17 @@ export interface Column<TRow> {
   accessor?: (row: TRow) => unknown;
   /** Cell renderer — return any ReactNode. */
   cell: (props: CellProps<TRow>) => ReactNode;
+  /**
+   * 2026-05-10 Jira-parity: when true, header shows a hover-revealed
+   * filter chevron (▾) that opens a portal popup. Consumer provides
+   * `renderFilterMenu(close)` returning the popup body (typically
+   * checkboxes wired to a parent filter state).
+   */
+  filterable?: boolean;
+  /** Renders the per-column filter popup body. `close` dismisses it. */
+  renderFilterMenu?: (close: () => void) => ReactNode;
+  /** When true, the chevron is always visible (filter active indicator). */
+  hasActiveFilter?: boolean;
 }
 
 /** Group definition for grouped rows. */

@@ -160,6 +160,26 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
   // Right-click context menu state — one menu at a time, anchored to cursor.
   const [ctxMenu, setCtxMenu] = useState<{ row: TRow; x: number; y: number } | null>(null);
   const ctxMenuRef = useRef<HTMLDivElement>(null);
+  // 2026-05-10 Per-column filter popup — opens from header chevron click.
+  const [filterMenu, setFilterMenu] = useState<{ colId: string; top: number; left: number } | null>(null);
+  const filterMenuRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (!filterMenu) return;
+    const onDown = (e: MouseEvent) => {
+      const t = e.target as Node;
+      if (filterMenuRef.current?.contains(t)) return;
+      // Don't dismiss when clicking the trigger chevron itself (that toggles).
+      if ((e.target as HTMLElement)?.closest('[data-jira-filter-trigger]')) return;
+      setFilterMenu(null);
+    };
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') setFilterMenu(null); };
+    document.addEventListener('mousedown', onDown);
+    document.addEventListener('keydown', onKey);
+    return () => {
+      document.removeEventListener('mousedown', onDown);
+      document.removeEventListener('keydown', onKey);
+    };
+  }, [filterMenu]);
   useEffect(() => {
     if (!ctxMenu) return;
     const onDown = (e: MouseEvent) => {
@@ -588,6 +608,10 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
          the detail panel. cursor: pointer signals clickability. Inline
          editor cells override with their own cursors (text/pointer). */
       .jira-table-grid tbody tr:not(.jira-table-group-row) { cursor: pointer; }
+      /* 2026-05-10 Per-column filter chevron — hover-reveal on header.
+         Active-filter state keeps chevron visible (opacity:1 inline). */
+      .jira-table-grid thead th:hover .jira-filter-chevron { opacity: 1 !important; }
+      .jira-filter-chevron-active { opacity: 1 !important; }
       .jira-table-grid tbody td {
         padding: 0 12px;
         vertical-align: middle;
@@ -1563,6 +1587,54 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
                             : <ArrowDownIcon label="" size="small" />}
                         </span>
                       )}
+                      {/* 2026-05-10 Jira-parity: hover-revealed filter chevron. */}
+                      {(() => {
+                        const col = meta && !isStructural
+                          ? visibleColumns.find((c) => c.id === meta.id)
+                          : undefined;
+                        if (!col?.filterable) return null;
+                        const isFilterOpen = filterMenu?.colId === col.id;
+                        const showChevron = col.hasActiveFilter || isFilterOpen;
+                        return (
+                          <button
+                            type="button"
+                            data-jira-filter-trigger
+                            aria-label={`Filter ${col.label}`}
+                            aria-haspopup="dialog"
+                            aria-expanded={isFilterOpen}
+                            className={col.hasActiveFilter || isFilterOpen ? 'jira-filter-chevron jira-filter-chevron-active' : 'jira-filter-chevron'}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              if (isFilterOpen) {
+                                setFilterMenu(null);
+                                return;
+                              }
+                              const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
+                              setFilterMenu({ colId: col.id, top: rect.bottom + 4, left: rect.left });
+                            }}
+                            style={{
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              width: 18,
+                              height: 18,
+                              padding: 0,
+                              border: 'none',
+                              borderRadius: 3,
+                              background: showChevron ? 'var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.06))' : 'transparent',
+                              color: col.hasActiveFilter ? 'var(--ds-icon-brand, #0C66E4)' : 'var(--ds-text-subtlest, #6B778C)',
+                              cursor: 'pointer',
+                              flexShrink: 0,
+                              opacity: showChevron ? 1 : 0,
+                              transition: 'opacity 100ms',
+                            }}
+                          >
+                            <svg width="10" height="10" viewBox="0 0 10 10" aria-hidden fill="currentColor">
+                              <path d="M2.5 3.5 5 6l2.5-2.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" fill="none"/>
+                            </svg>
+                          </button>
+                        );
+                      })()}
                     </span>
                     {meta?.resizable && (
                       <span
@@ -1764,6 +1836,35 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
         );
       })()}
 
+      {/* Per-column filter popup (portal, anchored to header chevron). */}
+      {filterMenu && createPortal(
+        <div
+          ref={filterMenuRef}
+          role="dialog"
+          aria-label={`Filter ${filterMenu.colId}`}
+          onClick={(e) => e.stopPropagation()}
+          style={{
+            position: 'fixed',
+            top: filterMenu.top,
+            left: filterMenu.left,
+            zIndex: 9999,
+            background: 'var(--ds-surface-overlay, #FFFFFF)',
+            border: '1px solid var(--ds-border, #DFE1E6)',
+            borderRadius: 4,
+            boxShadow: '0 8px 16px rgba(9,30,66,0.15)',
+            minWidth: 220,
+            maxHeight: 360,
+            overflowY: 'auto',
+            padding: 8,
+          }}
+        >
+          {(() => {
+            const col = visibleColumns.find((c) => c.id === filterMenu.colId);
+            return col?.renderFilterMenu?.(() => setFilterMenu(null)) ?? null;
+          })()}
+        </div>,
+        document.body,
+      )}
       {/* Right-click context menu (portal, cursor-anchored).
           Shares action vocabulary with the per-row ⋯ menu for consistency. */}
       {ctxMenu && contextMenuActions && createPortal(
