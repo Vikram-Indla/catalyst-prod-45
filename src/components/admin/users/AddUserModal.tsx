@@ -9,16 +9,8 @@ import {
   DialogDescription,
   DialogFooter,
 } from '@/components/admin/admin-dialog';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
+import Button from '@atlaskit/button/new';
+import Textfield from '@atlaskit/textfield';
 import { Checkbox } from '@/components/ui/checkbox';
 import { useProductRoles } from '@/hooks/useProductRoles';
 import { useCreateUser, CreateUserInput } from '@/hooks/useUsers';
@@ -141,66 +133,66 @@ export function AddUserModal({ isOpen, onClose }: AddUserModalProps) {
 
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="firstName">First Name *</Label>
-              <Input
+              <label htmlFor="firstName" style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>First Name *</label>
+              <Textfield
                 id="firstName"
                 value={firstName}
                 onChange={(e) => {
-                  setFirstName(e.target.value);
+                  setFirstName((e.target as HTMLInputElement).value);
                   if (fieldErrors.firstName) {
                     setFieldErrors(prev => ({ ...prev, firstName: '' }));
                   }
                 }}
                 placeholder="Enter first name"
-                className={fieldErrors.firstName ? 'border-destructive' : ''}
+                isInvalid={!!fieldErrors.firstName}
               />
               {fieldErrors.firstName && (
-                <p className="text-xs text-destructive">{fieldErrors.firstName}</p>
+                <p className="text-xs" style={{ color: 'var(--ds-text-danger, #AE2A19)' }}>{fieldErrors.firstName}</p>
               )}
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="lastName">Last Name *</Label>
-              <Input
+              <label htmlFor="lastName" style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>Last Name *</label>
+              <Textfield
                 id="lastName"
                 value={lastName}
                 onChange={(e) => {
-                  setLastName(e.target.value);
+                  setLastName((e.target as HTMLInputElement).value);
                   if (fieldErrors.lastName) {
                     setFieldErrors(prev => ({ ...prev, lastName: '' }));
                   }
                 }}
                 placeholder="Enter last name"
-                className={fieldErrors.lastName ? 'border-destructive' : ''}
+                isInvalid={!!fieldErrors.lastName}
               />
               {fieldErrors.lastName && (
-                <p className="text-xs text-destructive">{fieldErrors.lastName}</p>
+                <p className="text-xs" style={{ color: 'var(--ds-text-danger, #AE2A19)' }}>{fieldErrors.lastName}</p>
               )}
             </div>
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="email">Email *</Label>
-            <Input
+            <label htmlFor="email" style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>Email *</label>
+            <Textfield
               id="email"
               type="email"
               value={email}
               onChange={(e) => {
-                setEmail(e.target.value);
+                setEmail((e.target as HTMLInputElement).value);
                 if (fieldErrors.email) {
                   setFieldErrors(prev => ({ ...prev, email: '' }));
                 }
               }}
               placeholder="Enter email address"
-              className={fieldErrors.email ? 'border-destructive' : ''}
+              isInvalid={!!fieldErrors.email}
             />
             {fieldErrors.email && (
-              <p className="text-xs text-destructive">{fieldErrors.email}</p>
+              <p className="text-xs" style={{ color: 'var(--ds-text-danger, #AE2A19)' }}>{fieldErrors.email}</p>
             )}
           </div>
 
           <div className="space-y-2">
-            <Label>Product Roles *</Label>
+            <label style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>Product Roles *</label>
             <div className={`border rounded-md p-3 space-y-2 max-h-[200px] overflow-y-auto ${fieldErrors.roles ? 'border-destructive' : ''}`}>
               {rolesLoading ? (
                 <div className="flex items-center justify-center py-4">
@@ -235,13 +227,13 @@ export function AddUserModal({ isOpen, onClose }: AddUserModalProps) {
           </div>
 
           <DialogFooter>
-            <Button type="button" variant="outline" onClick={handleClose}>
+            <Button type="button" appearance="default" onClick={handleClose}>
               Cancel
             </Button>
-            <Button 
-              type="submit" 
-              className="bg-brand-primary hover:bg-brand-primary-hover"
-              disabled={createUser.isPending}
+            <Button
+              type="submit"
+              appearance="primary"
+              isDisabled={createUser.isPending}
             >
               {createUser.isPending ? (
                 <>

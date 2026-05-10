@@ -16,17 +16,9 @@ import {
   SheetFooter,
   SheetBody,
 } from '@/components/ui/sheet';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import { Separator } from '@/components/ui/separator';
+import Button from '@atlaskit/button/new';
+import Textfield from '@atlaskit/textfield';
+import AdsSelect from '@atlaskit/select';
 import { Lozenge } from '@/components/ads';
 import {
   Command,
@@ -644,85 +636,75 @@ export const EditUserDrawer = memo(function EditUserDrawer({ isOpen, onClose, us
               </h3>
               
               <div className="space-y-2">
-                <Label htmlFor="full_name">Full Name</Label>
-                <Input
+                <label htmlFor="full_name" style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>Full Name</label>
+                <Textfield
                   id="full_name"
                   value={formData.full_name}
-                  aria-invalid={!!fieldErrors.full_name}
-                  className={fieldErrors.full_name ? 'border-destructive focus-visible:ring-destructive' : ''}
+                  isInvalid={!!fieldErrors.full_name}
                   onChange={(e) => {
-                    setFormData((prev) => ({ ...prev, full_name: e.target.value }));
+                    setFormData((prev) => ({ ...prev, full_name: (e.target as HTMLInputElement).value }));
                     if (fieldErrors.full_name) setFieldErrors((prev) => ({ ...prev, full_name: undefined }));
                   }}
                   placeholder="Enter full name"
                 />
                 {fieldErrors.full_name ? (
-                  <p className="text-xs text-destructive">{fieldErrors.full_name}</p>
+                  <p className="text-xs" style={{ color: 'var(--ds-text-danger, #AE2A19)' }}>{fieldErrors.full_name}</p>
                 ) : null}
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
-                <Input
+                <label htmlFor="email" style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>Email</label>
+                <Textfield
                   id="email"
                   type="email"
                   value={formData.email}
-                  aria-invalid={!!fieldErrors.email}
-                  className={fieldErrors.email ? 'border-destructive focus-visible:ring-destructive' : ''}
+                  isInvalid={!!fieldErrors.email}
                   onChange={(e) => {
-                    setFormData((prev) => ({ ...prev, email: e.target.value }));
+                    setFormData((prev) => ({ ...prev, email: (e.target as HTMLInputElement).value }));
                     if (fieldErrors.email) setFieldErrors((prev) => ({ ...prev, email: undefined }));
                   }}
                   placeholder="Enter email address"
                 />
                 {fieldErrors.email ? (
-                  <p className="text-xs text-destructive">{fieldErrors.email}</p>
+                  <p className="text-xs" style={{ color: 'var(--ds-text-danger, #AE2A19)' }}>{fieldErrors.email}</p>
                 ) : null}
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="department">Department</Label>
-                <Select
-                  value={formData.department || '__none__'}
-                  onValueChange={(value) => {
-                    setFormData((prev) => ({ ...prev, department: value === '__none__' ? '' : value }));
+                <label htmlFor="department" style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>Department</label>
+                <AdsSelect
+                  inputId="department"
+                  value={formData.department ? { label: formData.department, value: formData.department } : null}
+                  options={[{ label: 'Not specified', value: '' }, ...departments.map(d => ({ label: d.name, value: d.name }))]}
+                  placeholder="Select department"
+                  onChange={(opt) => {
+                    setFormData((prev) => ({ ...prev, department: opt?.value ?? '' }));
                     if (fieldErrors.department) setFieldErrors((prev) => ({ ...prev, department: undefined }));
                   }}
-                >
-                  <SelectTrigger className={fieldErrors.department ? 'border-destructive focus-visible:ring-destructive' : ''}>
-                    <SelectValue placeholder="Select department" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="__none__">Not specified</SelectItem>
-                    {departments.map((dept) => (
-                      <SelectItem key={dept.id} value={dept.name}>{dept.name}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                />
                 {fieldErrors.department ? (
-                  <p className="text-xs text-destructive">{fieldErrors.department}</p>
+                  <p className="text-xs" style={{ color: 'var(--ds-text-danger, #AE2A19)' }}>{fieldErrors.department}</p>
                 ) : null}
               </div>
             </div>
 
-            <Separator />
+            <hr style={{ borderTop: '1px solid var(--ds-border-layout, #EBECF0)', margin: '8px 0' }} />
 
             {/* Job Role Section - syncs to user list via searchable combobox */}
             <div className="space-y-4">
-              <h3 className="text-sm font-medium text-muted-foreground flex items-center gap-2">
+              <h3 className="text-sm font-medium flex items-center gap-2" style={{ color: 'var(--ds-text-subtle, #44546F)' }}>
                 <BriefcaseIcon label="" size="small" />
                 Job Role
               </h3>
               <Popover open={roleSearchOpen} onOpenChange={setRoleSearchOpen}>
                 <PopoverTrigger asChild>
                   <Button
-                    variant="outline"
+                    appearance="default"
                     role="combobox"
                     aria-expanded={roleSearchOpen}
-                    className="w-full justify-between"
+                    iconAfter={ChevronDownIcon}
                   >
                     {selectedJobRole || "Select job role..."}
-                    <ChevronDownIcon label="" size="small" />
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-full p-0" align="start">
@@ -776,188 +758,150 @@ export const EditUserDrawer = memo(function EditUserDrawer({ isOpen, onClose, us
                 <div className="flex items-center gap-2">
                   <Lozenge appearance="inprogress">{selectedJobRole}</Lozenge>
                   <Button
-                    variant="ghost"
-                    size="sm"
-                    className="h-6 px-2"
+                    appearance="subtle"
                     onClick={() => setSelectedJobRole('')}
-                  >
-                    <CrossIcon label="" size="small" />
-                  </Button>
+                    iconBefore={CrossIcon}
+                  />
                 </div>
               )}
             </div>
 
-            <Separator />
+            <hr style={{ borderTop: '1px solid var(--ds-border-layout, #EBECF0)', margin: '8px 0' }} />
 
             {/* Vendor/Contract Section */}
             <div className="space-y-4">
-              <h3 className="text-sm font-medium text-muted-foreground flex items-center gap-2">
+              <h3 className="text-sm font-medium flex items-center gap-2" style={{ color: 'var(--ds-text-subtle, #44546F)' }}>
                 <OfficeBuildingIcon label="" size="small" />
-                Vendor & Contract
+                Vendor &amp; Contract
               </h3>
 
               <div className="space-y-2">
-                <Label htmlFor="vendor">Vendor</Label>
-                <Select
-                  value={formData.vendor || '__none__'}
-                  onValueChange={handleVendorChange}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select vendor" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="__none__">No vendor</SelectItem>
-                    {vendors.map((v) => (
-                      <SelectItem key={v.id} value={v.name}>{v.name}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <label htmlFor="vendor" style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>Vendor</label>
+                <AdsSelect
+                  inputId="vendor"
+                  value={formData.vendor ? { label: formData.vendor, value: formData.vendor } : null}
+                  options={[{ label: 'No vendor', value: '' }, ...vendors.map(v => ({ label: v.name, value: v.name }))]}
+                  placeholder="Select vendor"
+                  onChange={(opt) => handleVendorChange(opt?.value ?? '')}
+                />
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="resource_type">Resource Type</Label>
-                <Select
-                  value={formData.resource_type || '__none__'}
-                  onValueChange={(value) => setFormData(prev => ({ ...prev, resource_type: value === '__none__' ? '' : value }))}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select resource type" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="__none__">Not specified</SelectItem>
-                    <SelectItem value="Permanent">Permanent</SelectItem>
-                    <SelectItem value="Fixed">Fixed</SelectItem>
-                    <SelectItem value="Variable">Variable</SelectItem>
-                    <SelectItem value="Freelance">Freelance</SelectItem>
-                  </SelectContent>
-                </Select>
+                <label htmlFor="resource_type" style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>Resource Type</label>
+                <AdsSelect
+                  inputId="resource_type"
+                  value={formData.resource_type ? { label: formData.resource_type, value: formData.resource_type } : null}
+                  options={[
+                    { label: 'Not specified', value: '' },
+                    { label: 'Permanent', value: 'Permanent' },
+                    { label: 'Fixed', value: 'Fixed' },
+                    { label: 'Variable', value: 'Variable' },
+                    { label: 'Freelance', value: 'Freelance' },
+                  ]}
+                  placeholder="Select resource type"
+                  onChange={(opt) => setFormData(prev => ({ ...prev, resource_type: opt?.value ?? '' }))}
+                />
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="contract_start_date">Contract Start Date</Label>
-                  <Input
+                  <label htmlFor="contract_start_date" style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>Contract Start Date</label>
+                  <Textfield
                     id="contract_start_date"
                     type="date"
                     value={formData.contract_start_date}
-                    onChange={(e) => setFormData(prev => ({ ...prev, contract_start_date: e.target.value }))}
+                    onChange={(e) => setFormData(prev => ({ ...prev, contract_start_date: (e.target as HTMLInputElement).value }))}
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="contract_end_date">Contract End Date</Label>
-                  <Input
+                  <label htmlFor="contract_end_date" style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>Contract End Date</label>
+                  <Textfield
                     id="contract_end_date"
                     type="date"
                     value={formData.contract_end_date}
-                    onChange={(e) => setFormData(prev => ({ ...prev, contract_end_date: e.target.value }))}
+                    onChange={(e) => setFormData(prev => ({ ...prev, contract_end_date: (e.target as HTMLInputElement).value }))}
                   />
                 </div>
               </div>
-              
+
               <div className="space-y-2">
-                <Label htmlFor="ctc">CTC (Cost to Company)</Label>
-                <div className="relative">
-                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm">ریال</span>
-                  <Input
-                    id="ctc"
-                    type="number"
-                    placeholder="Enter CTC amount"
-                    value={formData.ctc}
-                    onChange={(e) => setFormData(prev => ({ ...prev, ctc: e.target.value }))}
-                    className="pl-12"
-                  />
-                </div>
+                <label htmlFor="ctc" style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>CTC (Cost to Company)</label>
+                <Textfield
+                  id="ctc"
+                  type="number"
+                  placeholder="Enter CTC amount"
+                  value={formData.ctc}
+                  onChange={(e) => setFormData(prev => ({ ...prev, ctc: (e.target as HTMLInputElement).value }))}
+                  elemBeforeInput={<span style={{ padding: '0 8px', color: 'var(--ds-text-subtle, #44546F)', fontSize: '14px' }}>ریال</span>}
+                />
               </div>
             </div>
 
-            <Separator />
+            <hr style={{ borderTop: '1px solid var(--ds-border-layout, #EBECF0)', margin: '8px 0' }} />
 
             {/* Assignment Section */}
             <div className="space-y-4">
-              <h3 className="text-sm font-medium text-muted-foreground flex items-center gap-2">
+              <h3 className="text-sm font-medium flex items-center gap-2" style={{ color: 'var(--ds-text-subtle, #44546F)' }}>
                 <BriefcaseIcon label="" size="small" />
                 Assignment
               </h3>
 
               <div className="space-y-2">
-                <Label htmlFor="assignment">Assignment</Label>
-                <Select
-                  value={selectedAssignmentId || '__none__'}
-                  onValueChange={(value) => setSelectedAssignmentId(value === '__none__' ? '' : value)}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select assignment" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="__none__">Not specified</SelectItem>
-                    {assignments.map((a) => (
-                      <SelectItem key={a.id} value={a.id}>
-                        {a.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <label htmlFor="assignment" style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>Assignment</label>
+                <AdsSelect
+                  inputId="assignment"
+                  value={selectedAssignmentId ? assignments.find(a => a.id === selectedAssignmentId) ? { label: assignments.find(a => a.id === selectedAssignmentId)!.name, value: selectedAssignmentId } : null : null}
+                  options={[{ label: 'Not specified', value: '' }, ...assignments.map(a => ({ label: a.name, value: a.id }))]}
+                  placeholder="Select assignment"
+                  onChange={(opt) => setSelectedAssignmentId(opt?.value ?? '')}
+                />
               </div>
             </div>
 
-            <Separator />
+            <hr style={{ borderTop: '1px solid var(--ds-border-layout, #EBECF0)', margin: '8px 0' }} />
 
             {/* Location Section */}
             <div className="space-y-4">
-              <h3 className="text-sm font-medium text-muted-foreground flex items-center gap-2">
+              <h3 className="text-sm font-medium flex items-center gap-2" style={{ color: 'var(--ds-text-subtle, #44546F)' }}>
                 <LocationIcon label="" size="small" />
                 Location
               </h3>
 
               <div className="space-y-2">
-                <Label htmlFor="location">Work Location</Label>
-                <Select
-                  value={formData.location || '__none__'}
-                  onValueChange={(value) => setFormData(prev => ({ ...prev, location: value === '__none__' ? '' : value }))}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select location type" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="__none__">Not specified</SelectItem>
-                    {locations.map((loc) => (
-                      <SelectItem key={loc.id} value={loc.name}>{loc.name}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <label htmlFor="location" style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>Work Location</label>
+                <AdsSelect
+                  inputId="location"
+                  value={formData.location ? { label: formData.location, value: formData.location } : null}
+                  options={[{ label: 'Not specified', value: '' }, ...locations.map(loc => ({ label: loc.name, value: loc.name }))]}
+                  placeholder="Select location type"
+                  onChange={(opt) => setFormData(prev => ({ ...prev, location: opt?.value ?? '' }))}
+                />
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="country">Country</Label>
-                <Select
-                  value={formData.country || '__none__'}
-                  onValueChange={(value) => setFormData(prev => ({ ...prev, country: value === '__none__' ? '' : value }))}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select country" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="__none__">Not specified</SelectItem>
-                    {countries.map((c) => (
-                      <SelectItem key={c.id} value={c.name}>{c.name}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <label htmlFor="country" style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>Country</label>
+                <AdsSelect
+                  inputId="country"
+                  value={formData.country ? { label: formData.country, value: formData.country } : null}
+                  options={[{ label: 'Not specified', value: '' }, ...countries.map(c => ({ label: c.name, value: c.name }))]}
+                  placeholder="Select country"
+                  onChange={(opt) => setFormData(prev => ({ ...prev, country: opt?.value ?? '' }))}
+                />
               </div>
             </div>
           </form>
         </SheetBody>
 
         <SheetFooter>
-          <Button type="button" variant="outline" onClick={onClose}>
-            <CrossIcon label="" size="small" />
+          <Button type="button" appearance="default" onClick={onClose} iconBefore={CrossIcon}>
             Cancel
           </Button>
-          <Button 
-            type="submit" 
+          <Button
+            type="submit"
             form="edit-user-form"
-            disabled={updateUser.isPending || !isDirty} 
-            className="bg-brand-primary hover:bg-brand-primary-hover"
+            appearance="primary"
+            isDisabled={updateUser.isPending || !isDirty}
+            iconBefore={CheckMarkIcon}
           >
             {updateUser.isPending ? (
               <>
@@ -965,10 +909,7 @@ export const EditUserDrawer = memo(function EditUserDrawer({ isOpen, onClose, us
                 Saving...
               </>
             ) : (
-              <>
-                <CheckMarkIcon label="" size="small" />
-                Save Changes
-              </>
+              'Save Changes'
             )}
           </Button>
         </SheetFooter>

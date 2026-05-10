@@ -5,7 +5,9 @@
 
 import { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Button } from '@/components/ui/button';
+import Button from '@atlaskit/button/new';
+import AdsSelect from '@atlaskit/select';
+import Textfield from '@atlaskit/textfield';
 import { Lozenge } from '@/components/ads';
 import Spinner from '@atlaskit/spinner';
 import BriefcaseIcon from '@atlaskit/icon/core/briefcase';
@@ -21,13 +23,6 @@ import CrossIcon from '@atlaskit/icon/glyph/cross';
 import LocationIcon from '@atlaskit/icon/glyph/location';
 import TrashIcon from '@atlaskit/icon/glyph/trash';
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import {
   Popover,
   PopoverContent,
   PopoverTrigger,
@@ -42,9 +37,6 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/admin/admin-alert-dialog';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Separator } from '@/components/ui/separator';
 import { cn } from '@/lib/utils';
 import { useBulkEditUsers, BulkEditableField } from '@/hooks/useBulkEditUsers';
 import { UserProfile } from '@/hooks/useUsers';
@@ -231,12 +223,7 @@ export function BulkEditCommandBar({
                 >
                   <PopoverTrigger asChild>
                     <Button
-                      variant={hasValue ? 'default' : 'outline'}
-                      size="sm"
-                      className={cn(
-                        "h-8 gap-1.5 text-xs shrink-0 whitespace-nowrap",
-                        hasValue && "bg-primary text-primary-foreground"
-                      )}
+                      appearance={hasValue ? 'primary' : 'default'}
                     >
                       {field.icon}
                       <span>{field.label}</span>
@@ -250,46 +237,33 @@ export function BulkEditCommandBar({
                   </PopoverTrigger>
                   <PopoverContent className="w-64 p-3" align="center" side="top">
                     <div className="space-y-3">
-                      <Label className="text-xs font-medium flex items-center gap-2">
+                      <label style={{ fontSize: '12px', fontWeight: 500, color: 'var(--ds-text, #172B4D)', display: 'flex', alignItems: 'center', gap: '4px' }}>
                         {field.icon}
                         Set {field.label}
-                      </Label>
-                      
+                      </label>
+
                       {field.type === 'select' && field.options && (
-                        <Select
-                          value={currentValue ?? ''}
-                          onValueChange={(value) => {
-                            const option = field.options?.find(o => o.value === value);
-                            handleFieldChange(field, value, option?.label);
+                        <AdsSelect
+                          value={currentValue ? field.options.find(o => o.value === currentValue) ?? null : null}
+                          options={field.options}
+                          placeholder={`Select ${field.label.toLowerCase()}...`}
+                          onChange={(opt) => {
+                            if (opt) handleFieldChange(field, opt.value, opt.label);
                           }}
-                        >
-                          <SelectTrigger className="w-full h-9">
-                            <SelectValue placeholder={`Select ${field.label.toLowerCase()}...`} />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {field.options.map((option) => (
-                              <SelectItem key={option.value} value={option.value}>
-                                {option.label}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
+                        />
                       )}
 
                       {field.type === 'text' && (
-                        <Input
+                        <Textfield
                           placeholder={`Enter ${field.label.toLowerCase()}...`}
                           value={currentValue ?? ''}
-                          onChange={(e) => handleFieldChange(field, e.target.value || null)}
-                          className="h-9"
+                          onChange={(e) => handleFieldChange(field, (e.target as HTMLInputElement).value || null)}
                         />
                       )}
 
                       {hasValue && (
                         <Button
-                          variant="ghost"
-                          size="sm"
-                          className="w-full h-7 text-xs text-muted-foreground"
+                          appearance="subtle"
                           onClick={() => {
                             setPendingUpdates(prev => {
                               const next = { ...prev };
@@ -323,7 +297,7 @@ export function BulkEditCommandBar({
             })}
           </div>
 
-          <Separator orientation="vertical" className="h-6" />
+          <div style={{ width: '1px', height: '24px', background: 'var(--ds-border, #DCDFE4)', flexShrink: 0 }} />
 
           {/* Actions */}
           <div className="flex items-center gap-2">
@@ -331,7 +305,8 @@ export function BulkEditCommandBar({
               <motion.div
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
-                className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-muted text-xs text-muted-foreground"
+                className="flex items-center gap-1.5 px-2 py-1 rounded-md text-xs"
+                style={{ background: 'var(--ds-background-neutral, #F7F8F9)', color: 'var(--ds-text-subtle, #44546F)' }}
               >
                 <span className="font-medium">{Object.keys(pendingUpdates).length}</span>
                 <span>field(s)</span>
@@ -339,10 +314,10 @@ export function BulkEditCommandBar({
             )}
 
             <Button
-              size="sm"
-              className="h-8 gap-1.5 bg-primary hover:bg-primary/90"
+              appearance="primary"
               onClick={handleApply}
-              disabled={!hasChanges || bulkEdit.isPending}
+              isDisabled={!hasChanges || bulkEdit.isPending}
+              iconBefore={CheckMarkIcon}
             >
               {bulkEdit.isPending ? (
                 <>
@@ -350,22 +325,17 @@ export function BulkEditCommandBar({
                   Updating...
                 </>
               ) : (
-                <>
-                  <CheckMarkIcon label="" size="small" />
-                  Apply
-                </>
+                'Apply'
               )}
             </Button>
 
             {/* Export Selected */}
             {onBulkExport && (
               <Button
-                variant="outline"
-                size="sm"
-                className="h-8 gap-1.5 text-xs"
+                appearance="default"
                 onClick={() => onBulkExport(Array.from(selectedIds))}
+                iconBefore={DownloadIcon}
               >
-                <DownloadIcon label="" size="small" />
                 Export
               </Button>
             )}
@@ -373,29 +343,25 @@ export function BulkEditCommandBar({
             {/* Delete Selected */}
             {onBulkDelete && (
               <Button
-                variant="outline"
-                size="sm"
-                className="h-8 gap-1.5 text-xs text-destructive hover:text-destructive hover:bg-destructive/10"
+                appearance="danger"
                 onClick={() => setShowDeleteDialog(true)}
+                iconBefore={TrashIcon}
               >
-                <TrashIcon label="" size="small" />
                 Delete
               </Button>
             )}
 
-            <Separator orientation="vertical" className="h-6" />
+            <div style={{ width: '1px', height: '24px', background: 'var(--ds-border, #DCDFE4)', flexShrink: 0 }} />
 
             {/* Clear button with text label */}
             <Button
-              variant="ghost"
-              size="sm"
-              className="h-8 gap-1.5 text-xs text-muted-foreground"
+              appearance="subtle"
               onClick={() => {
                 handleClear();
                 onClearSelection();
               }}
+              iconBefore={CrossIcon}
             >
-              <CrossIcon label="" size="small" />
               Clear
             </Button>
           </div>
