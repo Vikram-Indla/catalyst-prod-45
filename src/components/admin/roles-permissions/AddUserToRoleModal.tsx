@@ -10,8 +10,8 @@ import {
   DialogDescription,
   DialogFooter,
 } from '@/components/admin/admin-dialog';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import Button from '@atlaskit/button/new';
+import Textfield from '@atlaskit/textfield';
 import { Checkbox } from '@/components/ui/checkbox';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -129,16 +129,17 @@ export function AddUserToRoleModal({
         </DialogHeader>
 
         <div className="space-y-4">
-          {/* Search Input */}
-          <div className="relative">
-            <SearchIcon label="" size="small" />
-            <Input
-              placeholder="Search users by name or email..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-9"
-            />
-          </div>
+          {/* Search */}
+          <Textfield
+            placeholder="Search users by name or email..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery((e.target as HTMLInputElement).value)}
+            elemBeforeInput={
+              <span style={{ display: 'flex', alignItems: 'center', padding: '0 8px' }}>
+                <SearchIcon label="" size="small" />
+              </span>
+            }
+          />
 
           {/* Users List */}
           <div className="border rounded-md max-h-[300px] overflow-y-auto">
@@ -187,25 +188,16 @@ export function AddUserToRoleModal({
         </div>
 
         <DialogFooter>
-          <Button variant="outline" onClick={handleClose}>
+          <Button appearance="default" onClick={handleClose}>
             Cancel
           </Button>
           <Button
+            appearance="primary"
             onClick={handleSave}
-            disabled={selectedUserIds.length === 0 || addUsersMutation.isPending}
-            className="bg-brand-primary hover:bg-brand-primary-hover text-white"
+            isDisabled={selectedUserIds.length === 0 || addUsersMutation.isPending}
+            iconBefore={PersonAddIcon}
           >
-            {addUsersMutation.isPending ? (
-              <>
-                <Spinner size="small" />
-                Adding...
-              </>
-            ) : (
-              <>
-                <PersonAddIcon label="" size="small" />
-                Add Users
-              </>
-            )}
+            {addUsersMutation.isPending ? 'Adding...' : 'Add Users'}
           </Button>
         </DialogFooter>
       </DialogContent>

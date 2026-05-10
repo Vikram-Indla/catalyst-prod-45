@@ -7,14 +7,8 @@ import {
   DialogDescription,
   DialogFooter,
 } from '@/components/admin/admin-dialog';
-import { Button } from '@/components/ui/button';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
+import Button from '@atlaskit/button/new';
+import AdsSelect from '@atlaskit/select';
 import {
   Table,
   TableBody,
@@ -181,20 +175,18 @@ export function UserOverridesModal({
                         {roleDefault}
                       </TableCell>
                       <TableCell>
-                        <Select
-                          value={currentOverride}
-                          onValueChange={(value) => handleOverrideChange(group, value)}
-                          disabled={!isAdmin}
-                        >
-                          <SelectTrigger className="h-8 w-[120px] text-xs">
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="Inherited">Inherited</SelectItem>
-                            <SelectItem value="Allow">Allow</SelectItem>
-                            <SelectItem value="Deny">Deny</SelectItem>
-                          </SelectContent>
-                        </Select>
+                        <div style={{ minWidth: '120px' }}>
+                          <AdsSelect
+                            value={{ label: currentOverride, value: currentOverride }}
+                            options={[
+                              { label: 'Inherited', value: 'Inherited' },
+                              { label: 'Allow', value: 'Allow' },
+                              { label: 'Deny', value: 'Deny' },
+                            ]}
+                            onChange={(opt) => handleOverrideChange(group, opt?.value ?? 'Inherited')}
+                            isDisabled={!isAdmin}
+                          />
+                        </div>
                       </TableCell>
                     </TableRow>
                   );
@@ -206,24 +198,24 @@ export function UserOverridesModal({
 
         <DialogFooter className="flex justify-between items-center">
           <Button
-            variant="ghost"
+            appearance="subtle"
             onClick={handleResetToDefaults}
-            disabled={!isAdmin || saveOverrides.isPending}
+            isDisabled={!isAdmin || saveOverrides.isPending}
           >
             Reset to role defaults
           </Button>
           <div className="flex gap-3">
             <Button
-              variant="outline"
+              appearance="default"
               onClick={handleCancel}
-              disabled={saveOverrides.isPending}
+              isDisabled={saveOverrides.isPending}
             >
               Cancel
             </Button>
             <Button
-              className="bg-brand-primary hover:bg-brand-primary-hover text-white"
+              appearance="primary"
               onClick={handleSave}
-              disabled={!isAdmin || saveOverrides.isPending}
+              isDisabled={!isAdmin || saveOverrides.isPending}
             >
               {saveOverrides.isPending ? 'Saving...' : 'Save overrides'}
             </Button>

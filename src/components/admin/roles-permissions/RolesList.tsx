@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { Card, CardHeader, CardContent } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
+import Textfield from '@atlaskit/textfield';
+import Spinner from '@atlaskit/spinner';
 import { Lozenge } from '@/components/ads';
 import { cn } from '@/lib/utils';
 import { ProductRole } from '@/hooks/useProductRoles';
@@ -24,33 +24,36 @@ export function RolesList({ roles, selectedRoleId, onSelectRole, isLoading }: Ro
 
   if (isLoading) {
     return (
-      <Card>
-        <CardHeader className="pb-3">
-          <h2 className="text-sm font-semibold text-foreground">Product Roles</h2>
-        </CardHeader>
-        <CardContent>
+      <div style={{ background: 'var(--ds-surface, #FFFFFF)', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px' }}>
+        <div style={{ padding: '12px 16px' }}>
+          <h2 className="text-sm font-semibold" style={{ color: 'var(--ds-text, #172B4D)' }}>Product Roles</h2>
+        </div>
+        <div style={{ padding: '16px' }}>
           <div className="flex items-center justify-center py-8">
-            <div className="rounded-full h-6 w-6 border-b-2 border-brand-primary" />
+            <Spinner size="small" />
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     );
   }
 
   return (
-    <Card>
-      <CardHeader className="pb-3 border-b">
-        <h2 className="text-sm font-semibold text-foreground">Product Roles</h2>
-      </CardHeader>
-      <CardContent className="pt-4">
-        {/* Search Input */}
-        <div className="relative mb-4">
-          <SearchIcon label="" size="small" />
-          <Input
+    <div style={{ background: 'var(--ds-surface, #FFFFFF)', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px' }}>
+      <div style={{ padding: '12px 16px', borderBottom: '1px solid var(--ds-border-layout, #EBECF0)' }}>
+        <h2 className="text-sm font-semibold" style={{ color: 'var(--ds-text, #172B4D)' }}>Product Roles</h2>
+      </div>
+      <div style={{ padding: '16px' }}>
+        {/* Search */}
+        <div className="mb-4">
+          <Textfield
             placeholder="Search roles…"
-            className="pl-10"
             value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+            onChange={(e) => setSearchTerm((e.target as HTMLInputElement).value)}
+            elemBeforeInput={
+              <span style={{ display: 'flex', alignItems: 'center', padding: '0 8px' }}>
+                <SearchIcon label="" size="small" />
+              </span>
+            }
           />
         </div>
 
@@ -89,11 +92,11 @@ export function RolesList({ roles, selectedRoleId, onSelectRole, isLoading }: Ro
         </ul>
 
         {filteredRoles.length === 0 && (
-          <p className="text-sm text-muted-foreground text-center py-4">
+          <p className="text-sm text-center py-4" style={{ color: 'var(--ds-text-subtle, #44546F)' }}>
             No roles found matching your search.
           </p>
         )}
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }
