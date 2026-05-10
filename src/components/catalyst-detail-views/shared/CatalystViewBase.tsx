@@ -22,6 +22,7 @@ import LinkIcon from '@atlaskit/icon/core/link';
 import { toast } from 'sonner';
 import Modal from '@atlaskit/modal-dialog';
 import Button, { IconButton } from '@atlaskit/button/new';
+import DropdownMenu, { DropdownItem, DropdownItemGroup } from '@atlaskit/dropdown-menu';
 import Tooltip from '@atlaskit/tooltip';
 import { Skel } from '@/modules/project-work-hub/components/dialogs/story-detail-modules/shared-components';
 import { TicketBreadcrumbs } from '@/modules/project-work-hub/components/TicketBreadcrumbs';
@@ -141,9 +142,7 @@ export function CatalystViewBase({
   // Prior 549 default (Patch A8) was wrongly high — made panels near-equal.
   // Correct split: left ~70% / right ~30% of 1100px modal = right ≈ 285px.
   const [rightPanelWidth, setRightPanelWidth] = useState(285);
-  const [showDotsMenu, setShowDotsMenu] = useState(false);
   const isDraggingRef = useRef(false);
-  const dotsMenuRef = useRef<HTMLDivElement>(null);
 
   /* G4: Track recently visited issues in localStorage (catalyst-recent-issues).
      Push when the issue key changes and the panel is open. */
@@ -175,15 +174,7 @@ export function CatalystViewBase({
     return () => { document.removeEventListener('mousemove', onMouseMove); document.removeEventListener('mouseup', onMouseUp); };
   }, []);
 
-  /* ── Close dots menu on outside click ───── */
-  useEffect(() => {
-    if (!showDotsMenu) return;
-    const h = (e: MouseEvent) => { if (dotsMenuRef.current && !dotsMenuRef.current.contains(e.target as Node)) setShowDotsMenu(false); };
-    document.addEventListener('mousedown', h);
-    return () => document.removeEventListener('mousedown', h);
-  }, [showDotsMenu]);
-
-  /* ── Escape key ───────────────────────────
+/* ── Escape key ───────────────────────────
      Phase A.2 (2026-04-18): gated to panel mode.
        - Modal mode: @atlaskit/modal-dialog handles Escape natively
          (closing via its own onClose + focus-trap semantics).
@@ -202,7 +193,6 @@ export function CatalystViewBase({
     };
     const handleEscape = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
-        if (showDotsMenu) { setShowDotsMenu(false); return; }
         onClose();
         return;
       }
@@ -250,7 +240,7 @@ export function CatalystViewBase({
     };
     document.addEventListener('keydown', handleEscape);
     return () => document.removeEventListener('keydown', handleEscape);
-  }, [isOpen, panelMode, showDotsMenu, onClose]);
+  }, [isOpen, panelMode, onClose]);
 
   if (!isOpen) return null;
 
@@ -299,12 +289,6 @@ export function CatalystViewBase({
     background: 'none', border: 'none', cursor: 'pointer', padding: '6px 10px',
     borderRadius: 4, color: '#42526E', fontSize: 13, fontWeight: 500, display: 'flex', alignItems: 'center',
     gap: 6, transition: 'background 0.15s', fontFamily: 'var(--cp-font-body)',
-  };
-
-  const menuItemStyle: React.CSSProperties = {
-    display: 'flex', alignItems: 'center', gap: 6, width: '100%', padding: '7px 14px',
-    background: 'none', border: 'none', fontSize: 13, color: '#344054', cursor: 'pointer',
-    fontFamily: 'var(--cp-font-body)', textAlign: 'left',
   };
 
   /* ── Navigation (full-page back) ─────────── */
@@ -448,37 +432,37 @@ export function CatalystViewBase({
             </Button>
 
             {moreMenuItems && moreMenuItems.length > 0 && (
-              <div ref={dotsMenuRef} style={{ position: 'relative' }}>
-                {/* Phase B (2026-04-18): Atlaskit IconButton trigger.
-                    Dropdown render below is unchanged — trigger swap only. */}
-                <IconButton
-                  appearance="subtle"
-                  isSelected={showDotsMenu}
-                  icon={() => <MoreIcon size="small" />}
-                  label="More actions"
-                  onClick={() => setShowDotsMenu(!showDotsMenu)}
-                />
-                {showDotsMenu && (
-                  <div style={{
-                    position: 'absolute', right: 0, top: 32, background: 'var(--ds-surface, #FFF)',
-                    border: '1px solid #DFE1E6', borderRadius: 4,
-                    boxShadow: '0 4px 16px rgba(9,30,66,0.18)', padding: '8px 0',
-                    zIndex: 50, minWidth: 200,
-                  }}>
-                    {moreMenuItems.map((item, i) => (
-                      <React.Fragment key={i}>
-                        {item.danger && i > 0 && <div style={{ height: 1, background: '#EBECF0', margin: '6px 0' }} />}
-                        <button
-                          onClick={() => { setShowDotsMenu(false); item.onClick(); }}
-                          style={{ ...menuItemStyle, color: item.danger ? '#DE350B' : '#344054' }}
-                          onMouseEnter={e => (e.currentTarget.style.background = item.danger ? '#FFEBE6' : 'var(--ds-surface-sunken, #F4F5F7)')}
-                          onMouseLeave={e => (e.currentTarget.style.background = 'none')}
-                        >{item.label}</button>
-                      </React.Fragment>
-                    ))}
-                  </div>
+              <DropdownMenu
+                trigger={({ triggerRef, ...props }) => (
+                  <IconButton
+                    {...props}
+                    ref={triggerRef}
+                    appearance="subtle"
+                    icon={() => <MoreIcon size="small" />}
+                    label="More actions"
+                  />
                 )}
-              </div>
+                placement="bottom-end"
+              >
+                {/* Standard items (non-danger) */}
+                <DropdownItemGroup>
+                  {moreMenuItems.filter(item => !item.danger).map((item, i) => (
+                    <DropdownItem key={i} onClick={item.onClick}>
+                      {item.label}
+                    </DropdownItem>
+                  ))}
+                </DropdownItemGroup>
+                {/* Danger items in a separate group (visually separated) */}
+                {moreMenuItems.some(item => item.danger) && (
+                  <DropdownItemGroup>
+                    {moreMenuItems.filter(item => item.danger).map((item, i) => (
+                      <DropdownItem key={i} onClick={item.onClick}>
+                        <span style={{ color: 'var(--ds-text-danger, #AE2A19)' }}>{item.label}</span>
+                      </DropdownItem>
+                    ))}
+                  </DropdownItemGroup>
+                )}
+              </DropdownMenu>
             )}
 
             {/* Panel toggle — hidden in full-page mode AND panel mode
