@@ -23,7 +23,7 @@
  */
 import React, { useState, useMemo, useCallback, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
-import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
+import { useParams, useNavigate, useLocation, useSearchParams } from 'react-router-dom';
 import { useR360Overview, useR360WorkItems } from '@/hooks/useR360';
 import { computeCarriedFromLabel } from '@/services/r360Service';
 import { R360_DEPT_COLORS } from '@/constants/r360';
@@ -53,10 +53,24 @@ import type { PeriodType } from './r360-member';
 // ═══════════════════════════════════════════
 // MAIN COMPONENT
 // ═══════════════════════════════════════════
-export default function R360MemberDetail() {
+interface R360MemberDetailProps {
+  resourceId?: string;
+  projectScope?: string[];
+}
+
+export default function R360MemberDetail({ resourceId: resourceIdProp, projectScope }: R360MemberDetailProps = {}) {
   const { isDark } = useTheme();
-  const { resourceId } = useParams<{ resourceId: string }>();
+  const { resourceId: resourceIdFromParams } = useParams<{ resourceId: string }>();
+  const resourceId = resourceIdProp ?? resourceIdFromParams;
   const navigate = useNavigate();
+  const location = useLocation();
+  const backPath = projectScope != null && projectScope.length > 0
+    ? '/my-team'
+    : location.pathname.startsWith('/my-team')
+    ? '/my-team'
+    : location.pathname.startsWith('/admin/resources')
+    ? '/admin/resources'
+    : '/project-hub/resources';
   const [searchParams] = useSearchParams();
   const initialView = (searchParams.get('view') as R360ViewType) || 'ring';
   const [view, setView] = useState<R360ViewType>(initialView);
@@ -371,7 +385,7 @@ export default function R360MemberDetail() {
                 <div className="r3-tab-spacer" />
                 {/* Back — text button */}
                 <button
-                  onClick={() => navigate('/project-hub/resources')}
+                  onClick={() => navigate(backPath)}
                   style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', background: 'transparent', border: 'none', color: 'var(--cp-text-tertiary, #64748B)', fontSize: '13px', fontWeight: 500, cursor: 'pointer', padding: '4px 8px' }}
                   onMouseEnter={e => { e.currentTarget.style.textDecoration = 'underline'; }}
                   onMouseLeave={e => { e.currentTarget.style.textDecoration = 'none'; }}

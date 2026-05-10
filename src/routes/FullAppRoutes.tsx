@@ -13,6 +13,7 @@ import { FeatureComingSoon } from '../components/common/FeatureComingSoon';
 import { ModuleGate } from '../components/common/ModuleGate';
 import { ProtectedRoute } from "../components/ProtectedRoute";
 import { ErrorBoundary } from "../components/ErrorBoundary";
+import { RouteRoleGuard } from "../components/RouteRoleGuard";
 
 const FeatureFlagsPage = lazy(() => import("../pages/admin/FeatureFlagsPage"));
 const AdminIconsPage = lazy(() => import("../pages/admin/icons/AdminIconsPage"));
@@ -30,6 +31,8 @@ const Resource360MemberDetail = lazy(() => import("../pages/Resource360MemberDet
 const ResourceListingPageLazy = lazy(() => import("../pages/ResourceListingPage"));
 const R360MemberDetailLazy = lazy(() => import("../pages/R360MemberDetail"));
 const R360ProfilePageLazy = lazy(() => import("../pages/R360ProfilePage"));
+const MyResource360PageLazy = lazy(() => import("../pages/MyResource360Page"));
+const MyTeamPageLazy = lazy(() => import("../pages/MyTeamPage"));
 
 // ProjectHub V5
 const ProjectHubShellLazy = lazy(() => import("../components/project-hub/ProjectHubShell").then(m => ({ default: m.ProjectHubShell })));
@@ -398,6 +401,11 @@ function MG({ k, t, children }: { k: string; t: string; children: React.ReactNod
 function Resource360Redirect() {
   const { id } = useParams();
   return <Navigate to={`/project-hub/resource-360/${id || '009'}`} replace />;
+}
+
+function NavigateAdminResourceId() {
+  const { resourceId } = useParams();
+  return <Navigate to={`/admin/resources/${resourceId ?? ''}`} replace />;
 }
 
 /**
@@ -855,6 +863,8 @@ export default function FullAppRoutes() {
           {/* RESET ICONS — runtime asset override management. Admin-only. */}
           <Route path="icons" element={<S><AdminIconsPage /></S>} />
           <Route path="avatars" element={<S><AdminAvatarsPage /></S>} />
+          <Route path="resources" element={<S><RouteRoleGuard><ResourceListingPageLazy /></RouteRoleGuard></S>} />
+          <Route path="resources/:resourceId" element={<S><RouteRoleGuard><R360MemberDetailLazy /></RouteRoleGuard></S>} />
         </Route>
 
         {/* Admin v2 — deprecated 2026-05-09. Redirects to /admin/* canonical shell. */}
@@ -869,10 +879,13 @@ export default function FullAppRoutes() {
         <Route path="/project/all-projects" element={<S><AllProjectsPageLazy /></S>} />
         <Route path="/project-hub/projects-legacy" element={<S><ProjectListPageLazy /></S>} />
         <Route path="/project-hub/portfolio-health" element={<S><div className="flex h-full items-center justify-center" style={{ color: 'var(--text-3)' }}>Portfolio Health — Coming Soon</div></S>} />
-        <Route path="/project-hub/resources" element={<S><ResourceListingPageLazy /></S>} />
-        <Route path="/project-hub/resources/:resourceId" element={<S><R360MemberDetailLazy /></S>} />
-        <Route path="/project-hub/resources-v2" element={<Navigate to="/project-hub/resources" replace />} />
-        <Route path="/project-hub/resources-v2/:resourceId" element={<S><R360MemberDetailLazy /></S>} />
+        <Route path="/me" element={<S><MyResource360PageLazy /></S>} />
+        <Route path="/my-team" element={<S><MyTeamPageLazy /></S>} />
+        <Route path="/my-team/:resourceId" element={<S><R360MemberDetailLazy /></S>} />
+        <Route path="/project-hub/resources" element={<Navigate to="/admin/resources" replace />} />
+        <Route path="/project-hub/resources/:resourceId" element={<NavigateAdminResourceId />} />
+        <Route path="/project-hub/resources-v2" element={<Navigate to="/admin/resources" replace />} />
+        <Route path="/project-hub/resources-v2/:resourceId" element={<NavigateAdminResourceId />} />
         <Route path="/project-hub/resource360" element={<Navigate to="/project-hub/resource-360/009" replace />} />
         <Route path="/project-hub/resource360/:id" element={<Navigate to="/project-hub/resource-360/009" replace />} />
         <Route path="/project-hub/resource-360/:resourceId" element={<S><Resource360PageNew /></S>} />
