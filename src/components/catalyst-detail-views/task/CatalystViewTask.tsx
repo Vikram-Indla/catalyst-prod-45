@@ -17,6 +17,7 @@ import { CatalystSeverityField } from '../shared/sections/CatalystSeverityField'
 import { LinkedWorkItemsSection } from '@/modules/project-work-hub/components/linked-work-items';
 import { SubtasksPanel } from '@/modules/project-work-hub/components/SubtasksPanel';
 import { ImproveIssueDropdown, useImproveApplyHandlers } from '@/components/catalyst-detail-views/improve';
+import { MoveIssueDialog } from '../shared/MoveIssueDialog';
 import type { CatalystViewBaseProps } from '../shared/types';
 
 export default function CatalystViewTask({
@@ -28,6 +29,7 @@ export default function CatalystViewTask({
   const mutations = useCatalystIssueMutations(itemId, onClose);
   const improveHandlers = useImproveApplyHandlers(issue ?? null);
   const queryClient = useQueryClient();
+  const [showMoveDialog, setShowMoveDialog] = React.useState(false);
 
   // Sidebar Recents tracking — top-level tasks only.
   // Subtask exclusion (Apr 2026 owner directive): a task with a `parent_key`
@@ -101,6 +103,7 @@ export default function CatalystViewTask({
   );
 
   return (
+    <>
     <CatalystViewBase isOpen={isOpen} onClose={onClose} panelMode={panelMode} fullPageMode={fullPageMode}
       itemType={issue?.issue_type || 'Task'} itemKey={issue?.issue_key || null}
       projectKey={issue?.project_key || projectKey} projectName={issue?.project_name || undefined}
@@ -128,6 +131,7 @@ export default function CatalystViewTask({
               toast.error('Clone failed', { description: e instanceof Error ? e.message : 'Unknown error' });
             });
         } },
+        { label: 'Move to project…', onClick: () => setShowMoveDialog(true) },
         { label: 'Archive', onClick: () => {
           if (!issue?.issue_key) return;
           if (!window.confirm(`Archive "${issue.summary}"?\nArchived items can be restored later.`)) return;
@@ -140,5 +144,16 @@ export default function CatalystViewTask({
       onTogglePanelMode={onTogglePanelMode} navigationItems={navigationItems} currentItemId={itemId} onNavigate={onNavigate}
       leftContent={leftContent} rightContent={rightContent} isLoading={isLoading} isNotFound={!isLoading && issue === null}
     />
+    {showMoveDialog && issue?.issue_key && (
+      <MoveIssueDialog
+        isOpen={showMoveDialog}
+        onClose={() => setShowMoveDialog(false)}
+        issueKey={issue.issue_key}
+        issueSummary={issue.summary}
+        currentProjectKey={issue.project_key || projectKey}
+        onMoved={onClose}
+      />
+    )}
+    </>
   );
 }

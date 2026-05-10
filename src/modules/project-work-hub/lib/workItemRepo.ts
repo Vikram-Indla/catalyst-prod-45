@@ -282,6 +282,23 @@ export async function createChildIssue(input: CreateChildInput): Promise<Created
   return { id: data!.issue_key as string, issue_key: data!.issue_key as string, source: 'catalyst' };
 }
 
+// ─── Move ────────────────────────────────────────────────────────────────────
+//
+// Moves an issue to a different project by updating project_key + project_id.
+// The issue_key is NOT changed (Jira doesn't renumber on move either).
+// Caller is responsible for showing a project picker and passing the values.
+export async function moveIssue(
+  issueKey: string,
+  targetProjectKey: string,
+  targetProjectId: string | null,
+): Promise<void> {
+  const { error } = await supabase
+    .from('ph_issues')
+    .update({ project_key: targetProjectKey, project_id: targetProjectId } as any)
+    .eq('issue_key', issueKey);
+  if (error) throw error;
+}
+
 // ─── Archive ─────────────────────────────────────────────────────────────────
 //
 // Soft-archives a ph_issues row by setting is_archived = true.

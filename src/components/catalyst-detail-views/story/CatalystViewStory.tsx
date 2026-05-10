@@ -33,6 +33,7 @@ import {
   AttachmentsSection, DefectsSection, IncidentsSection, TestHubSection,
 } from '@/modules/project-work-hub/components/dialogs/story-detail-modules';
 import type { PhAttachment } from '@/modules/project-work-hub/components/dialogs/story-detail-modules/types';
+import { MoveIssueDialog } from '../shared/MoveIssueDialog';
 import type { CatalystViewBaseProps } from '../shared/types';
 
 export default function CatalystViewStory({
@@ -44,6 +45,7 @@ export default function CatalystViewStory({
   const mutations = useCatalystIssueMutations(itemId, onClose);
   const improveHandlers = useImproveApplyHandlers(issue ?? null);
   const { user } = useAuth();
+  const [showMoveDialog, setShowMoveDialog] = React.useState(false);
 
   /* ── Catalyst-vs-Jira source split ─────────
      Mirrors StoryDetailModal line 291. When ph_issues row carries the
@@ -204,62 +206,73 @@ export default function CatalystViewStory({
   );
 
   return (
-    <CatalystViewBase
-      isOpen={isOpen}
-      onClose={onClose}
-      panelMode={panelMode}
-      fullPageMode={fullPageMode}
-      itemType={issue?.issue_type || 'Story'}
-      itemKey={issue?.issue_key || null}
-      projectKey={issue?.project_key || projectKey}
-      projectName={issue?.project_name || undefined}
-      parentKey={issue?.parent_key}
-      parentType="Epic"
-      onParentClick={issue?.parent_key ? () => onOpenItem?.(issue.parent_key!) : undefined}
-      /* Canonical Add-parent (Jira parity): Story → Epic parent. */
-      parentSource="epic"
-      onParentChange={async (newKey) => {
-        await mutations.updateField.mutateAsync({
-          field: 'parent_key', value: newKey, oldValue: issue?.parent_key ?? null,
-        });
-      }}
-      onShare={() => {
-        navigator.clipboard.writeText(window.location.href);
-        toast.success('Link copied');
-      }}
-      // jira-compare 2026-05-05: removed dead CTAs (Add flag, Clone, Move, Archive).
-      // Only Delete remains — it has a real implementation.
-      moreMenuItems={[
-        { label: 'Print', onClick: () => window.print() },
-        { label: 'Clone', onClick: () => {
-          if (!issue?.issue_key) return;
-          cloneIssue(issue.issue_key)
-            .then((newKey) => {
-              toast.success(`Cloned as ${newKey}`, {
-                action: { label: 'Open', onClick: () => onOpenItem?.(newKey) },
+    <>
+      <CatalystViewBase
+        isOpen={isOpen}
+        onClose={onClose}
+        panelMode={panelMode}
+        fullPageMode={fullPageMode}
+        itemType={issue?.issue_type || 'Story'}
+        itemKey={issue?.issue_key || null}
+        projectKey={issue?.project_key || projectKey}
+        projectName={issue?.project_name || undefined}
+        parentKey={issue?.parent_key}
+        parentType="Epic"
+        onParentClick={issue?.parent_key ? () => onOpenItem?.(issue.parent_key!) : undefined}
+        /* Canonical Add-parent (Jira parity): Story → Epic parent. */
+        parentSource="epic"
+        onParentChange={async (newKey) => {
+          await mutations.updateField.mutateAsync({
+            field: 'parent_key', value: newKey, oldValue: issue?.parent_key ?? null,
+          });
+        }}
+        onShare={() => {
+          navigator.clipboard.writeText(window.location.href);
+          toast.success('Link copied');
+        }}
+        moreMenuItems={[
+          { label: 'Print', onClick: () => window.print() },
+          { label: 'Clone', onClick: () => {
+            if (!issue?.issue_key) return;
+            cloneIssue(issue.issue_key)
+              .then((newKey) => {
+                toast.success(`Cloned as ${newKey}`, {
+                  action: { label: 'Open', onClick: () => onOpenItem?.(newKey) },
+                });
+              })
+              .catch((e: unknown) => {
+                toast.error('Clone failed', { description: e instanceof Error ? e.message : 'Unknown error' });
               });
-            })
-            .catch((e: unknown) => {
-              toast.error('Clone failed', { description: e instanceof Error ? e.message : 'Unknown error' });
-            });
-        } },
-        { label: 'Archive', onClick: () => {
-          if (!issue?.issue_key) return;
-          if (!window.confirm(`Archive "${issue.summary}"?\nArchived items can be restored later.`)) return;
-          archiveIssue(issue.issue_key)
-            .then(() => { toast.success('Issue archived'); onClose(); })
-            .catch((e: unknown) => { toast.error('Archive failed', { description: e instanceof Error ? e.message : 'Unknown error' }); });
-        } },
-        { label: 'Delete story', onClick: () => mutations.deleteIssue.mutate(), danger: true },
-      ]}
-      onTogglePanelMode={onTogglePanelMode}
-      navigationItems={navigationItems}
-      currentItemId={itemId}
-      onNavigate={onNavigate}
-      leftContent={leftContent}
-      rightContent={rightContent}
-      isLoading={isLoading}
-      isNotFound={!isLoading && issue === null}
-    />
+          } },
+          { label: 'Move to project…', onClick: () => setShowMoveDialog(true) },
+          { label: 'Archive', onClick: () => {
+            if (!issue?.issue_key) return;
+            if (!window.confirm(`Archive "${issue.summary}"?\nArchived items can be restored later.`)) return;
+            archiveIssue(issue.issue_key)
+              .then(() => { toast.success('Issue archived'); onClose(); })
+              .catch((e: unknown) => { toast.error('Archive failed', { description: e instanceof Error ? e.message : 'Unknown error' }); });
+          } },
+          { label: 'Delete story', onClick: () => mutations.deleteIssue.mutate(), danger: true },
+        ]}
+        onTogglePanelMode={onTogglePanelMode}
+        navigationItems={navigationItems}
+        currentItemId={itemId}
+        onNavigate={onNavigate}
+        leftContent={leftContent}
+        rightContent={rightContent}
+        isLoading={isLoading}
+        isNotFound={!isLoading && issue === null}
+      />
+      {showMoveDialog && issue?.issue_key && (
+        <MoveIssueDialog
+          isOpen={showMoveDialog}
+          onClose={() => setShowMoveDialog(false)}
+          issueKey={issue.issue_key}
+          issueSummary={issue.summary}
+          currentProjectKey={issue.project_key || projectKey}
+          onMoved={onClose}
+        />
+      )}
+    </>
   );
 }

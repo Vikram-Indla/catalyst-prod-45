@@ -15,6 +15,7 @@ import {
 import { LinkedWorkItemsSection } from '@/modules/project-work-hub/components/linked-work-items';
 import { SubtasksPanel } from '@/modules/project-work-hub/components/SubtasksPanel';
 import { ImproveIssueDropdown, useImproveApplyHandlers } from '@/components/catalyst-detail-views/improve';
+import { MoveIssueDialog } from '../shared/MoveIssueDialog';
 import type { CatalystViewBaseProps } from '../shared/types';
 import {
   IssueIcon, StatusLozenge,
@@ -28,6 +29,7 @@ export default function CatalystViewSubtask({
   const { data: issue, isLoading } = useCatalystIssue(itemId, isOpen);
   const mutations = useCatalystIssueMutations(itemId, onClose);
   const improveHandlers = useImproveApplyHandlers(issue ?? null);
+  const [showMoveDialog, setShowMoveDialog] = React.useState(false);
 
   /* ── SUBTASK-UNIQUE: parent issue query ──── */
   const { data: parentIssue } = useQuery({
@@ -94,6 +96,7 @@ export default function CatalystViewSubtask({
   );
 
   return (
+    <>
     <CatalystViewBase isOpen={isOpen} onClose={onClose} panelMode={panelMode} fullPageMode={fullPageMode}
       itemType={issue?.issue_type || 'Sub-task'} itemKey={issue?.issue_key || null}
       projectKey={issue?.project_key || projectKey} projectName={issue?.project_name || undefined}
@@ -121,6 +124,7 @@ export default function CatalystViewSubtask({
               toast.error('Clone failed', { description: e instanceof Error ? e.message : 'Unknown error' });
             });
         } },
+        { label: 'Move to project…', onClick: () => setShowMoveDialog(true) },
         { label: 'Archive', onClick: () => {
           if (!issue?.issue_key) return;
           if (!window.confirm(`Archive "${issue.summary}"?\nArchived items can be restored later.`)) return;
@@ -133,5 +137,16 @@ export default function CatalystViewSubtask({
       onTogglePanelMode={onTogglePanelMode} navigationItems={navigationItems} currentItemId={itemId} onNavigate={onNavigate}
       leftContent={leftContent} rightContent={rightContent} isLoading={isLoading} isNotFound={!isLoading && issue === null}
     />
+    {showMoveDialog && issue?.issue_key && (
+      <MoveIssueDialog
+        isOpen={showMoveDialog}
+        onClose={() => setShowMoveDialog(false)}
+        issueKey={issue.issue_key}
+        issueSummary={issue.summary}
+        currentProjectKey={issue.project_key || projectKey}
+        onMoved={onClose}
+      />
+    )}
+    </>
   );
 }

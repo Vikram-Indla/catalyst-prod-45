@@ -17,6 +17,7 @@ import { ImproveIssueDropdown, useImproveApplyHandlers } from '@/components/cata
 import { CatalystSeverityField } from '../shared/sections/CatalystSeverityField';
 import { KeyDetailsFieldRow } from '../shared/sections';
 import { useQueryClient } from '@tanstack/react-query';
+import { MoveIssueDialog } from '../shared/MoveIssueDialog';
 import type { CatalystViewBaseProps } from '../shared/types';
 import {
   PRIORITY_STYLES,
@@ -31,6 +32,7 @@ export default function CatalystViewIncident({
   const mutations = useCatalystIssueMutations(itemId, onClose);
   const improveHandlers = useImproveApplyHandlers(issue ?? null);
   const priorityStyle = PRIORITY_STYLES[issue?.priority ?? 'Medium'] ?? PRIORITY_STYLES.Medium;
+  const [showMoveDialog, setShowMoveDialog] = React.useState(false);
   const queryClient = useQueryClient();
 
   const leftContent = (
@@ -103,6 +105,7 @@ export default function CatalystViewIncident({
   );
 
   return (
+    <>
     <CatalystViewBase isOpen={isOpen} onClose={onClose} panelMode={panelMode} fullPageMode={fullPageMode}
       itemType={issue?.issue_type || 'Incident'} itemKey={issue?.issue_key || null}
       projectKey={issue?.project_key || projectKey} projectName={issue?.project_name || undefined}
@@ -131,6 +134,7 @@ export default function CatalystViewIncident({
               toast.error('Clone failed', { description: e instanceof Error ? e.message : 'Unknown error' });
             });
         } },
+        { label: 'Move to project…', onClick: () => setShowMoveDialog(true) },
         { label: 'Archive', onClick: () => {
           if (!issue?.issue_key) return;
           if (!window.confirm(`Archive "${issue.summary}"?\nArchived items can be restored later.`)) return;
@@ -143,5 +147,16 @@ export default function CatalystViewIncident({
       onTogglePanelMode={onTogglePanelMode} navigationItems={navigationItems} currentItemId={itemId} onNavigate={onNavigate}
       leftContent={leftContent} rightContent={rightContent} isLoading={isLoading} isNotFound={!isLoading && issue === null}
     />
+    {showMoveDialog && issue?.issue_key && (
+      <MoveIssueDialog
+        isOpen={showMoveDialog}
+        onClose={() => setShowMoveDialog(false)}
+        issueKey={issue.issue_key}
+        issueSummary={issue.summary}
+        currentProjectKey={issue.project_key || projectKey}
+        onMoved={onClose}
+      />
+    )}
+    </>
   );
 }

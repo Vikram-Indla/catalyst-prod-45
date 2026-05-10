@@ -17,6 +17,7 @@ import {
 import { SubtasksPanel } from '@/modules/project-work-hub/components/SubtasksPanel';
 import { LinkedWorkItemsSection } from '@/modules/project-work-hub/components/linked-work-items';
 import { ImproveIssueDropdown, useImproveApplyHandlers } from '@/components/catalyst-detail-views/improve';
+import { MoveIssueDialog } from '../shared/MoveIssueDialog';
 import type { CatalystViewBaseProps } from '../shared/types';
 
 export default function CatalystViewEpic({
@@ -27,6 +28,7 @@ export default function CatalystViewEpic({
   const { data: issue, isLoading } = useCatalystIssue(itemId, isOpen);
   const mutations = useCatalystIssueMutations(itemId, onClose);
   const improveHandlers = useImproveApplyHandlers(issue ?? null);
+  const [showMoveDialog, setShowMoveDialog] = React.useState(false);
 
   // Track this view in user_recent_items so the sidebar Recents rail picks it up.
   // Per CLAUDE.md §7A + the Apr 2026 Recents directive: subtasks are excluded.
@@ -89,6 +91,7 @@ export default function CatalystViewEpic({
   );
 
   return (
+    <>
     <CatalystViewBase isOpen={isOpen} onClose={onClose} panelMode={panelMode} fullPageMode={fullPageMode}
       itemType={issue?.issue_type || 'Epic'} itemKey={issue?.issue_key || null}
       projectKey={issue?.project_key || projectKey} projectName={issue?.project_name || undefined}
@@ -116,6 +119,7 @@ export default function CatalystViewEpic({
               toast.error('Clone failed', { description: e instanceof Error ? e.message : 'Unknown error' });
             });
         } },
+        { label: 'Move to project…', onClick: () => setShowMoveDialog(true) },
         { label: 'Archive', onClick: () => {
           if (!issue?.issue_key) return;
           if (!window.confirm(`Archive "${issue.summary}"?\nArchived items can be restored later.`)) return;
@@ -128,5 +132,16 @@ export default function CatalystViewEpic({
       onTogglePanelMode={onTogglePanelMode} navigationItems={navigationItems} currentItemId={itemId} onNavigate={onNavigate}
       leftContent={leftContent} rightContent={rightContent} isLoading={isLoading} isNotFound={!isLoading && issue === null}
     />
+    {showMoveDialog && issue?.issue_key && (
+      <MoveIssueDialog
+        isOpen={showMoveDialog}
+        onClose={() => setShowMoveDialog(false)}
+        issueKey={issue.issue_key}
+        issueSummary={issue.summary}
+        currentProjectKey={issue.project_key || projectKey}
+        onMoved={onClose}
+      />
+    )}
+    </>
   );
 }
