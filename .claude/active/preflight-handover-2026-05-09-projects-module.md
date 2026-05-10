@@ -91,9 +91,9 @@
 - [x] P1 H1: SyncCTALabel isLoading guard — flicker fixed ✅
 - [x] P1 H10: "Not synced" rows now have tooltip + cursor:help ✅
 - [x] P1 H4/H9: SyncCTALabel Tailwind classes → ADS token() — score 30/30 ✅ (commit a017517c4)
-- [ ] jira-compare: Create Project vs Jira Create Space (not yet run — MANDATORY gate)
-- [ ] jira-compare: AllProjects table vs Jira project list (not yet run — MANDATORY gate)
-- [ ] design-intelligence final pass (not yet run)
+- [x] jira-compare: Create Project vs Jira Create Space ✅ (session 5)
+- [x] jira-compare: AllProjects table vs Jira project list ✅ (session 5)
+- [x] design-intelligence final pass ✅ (session 6 — 2026-05-10, commit 7b79b474d)
 
 ## design-critique result (2026-05-09 session 4 — FINAL)
 Score: **30/30 — SHIP** ✅ (all P0/P1 resolved)
@@ -115,9 +115,17 @@ All 5 drift items resolved. Cycle 1/5. CRUD parity C/R/U/D all green.
 - jira-compare AllProjects: PASS ✅
 - jira-compare Create Project wizard: PASS ✅
 - CRUD parity: C/R/U/D all green ✅
+- design-intelligence v3.0: 15/15 ✅ (session 6 — sync dot P1 resolved, commit 7b79b474d)
+
+## design-intelligence result (2026-05-10 session 6 — FINAL)
+Score: **15/15 — SHIP** ✅
+- 1 P1 found and fixed: sync dots were invisible (AK Tooltip ref-wrapper `width:0px`) and used Tailwind `bg-red-500`/`bg-green-500`/`bg-amber-400` → replaced with `getSyncDotBg()` using ADS `token()` colors; Tooltip moved to wrap parent div
+- 5 prior fixes confirmed green: lozenge parity, name link fw400, row height 48.5px, 3-dot self-rolled popup, tab count sentence-case
+- Commit: 7b79b474d
 
 ## Lessons captured (CLAUDE.md candidates — already written)
 - 2026-05-09: design-critique arrow continuity across sessions (carry full violation list, flip fixed→green)
 - 2026-05-09: Supabase projects DELETE cascade RLS pattern
 - 2026-05-09: SidebarProjectNav two-line + JiraIssueTypeIcon canonical (reinforces existing rule, example added)
+- 2026-05-10: @atlaskit/tooltip ref wrapper collapses child to width:0px — always wrap the parent div, never the child alone
 
