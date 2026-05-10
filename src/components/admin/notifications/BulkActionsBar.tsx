@@ -7,7 +7,6 @@
 
 import { memo } from 'react';
 import Button from '@atlaskit/button/new';
-import { Separator } from '@/components/ui/separator';
 import AutomationIcon from '@atlaskit/icon/core/automation';
 import CheckCircleIcon from '@atlaskit/icon/core/check-circle';
 import CommentIcon from '@atlaskit/icon/core/comment';
@@ -71,7 +70,7 @@ export const BulkActionsBar = memo(function BulkActionsBar({
         {selectedCount} trigger{selectedCount !== 1 ? 's' : ''} selected
       </span>
 
-      <Separator orientation="vertical" className="h-5 bg-[#B3D4FF]" />
+      <div style={{ width: '1px', height: '20px', background: '#B3D4FF', flexShrink: 0 }} />
 
       {/* Quick actions */}
       <Button

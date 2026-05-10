@@ -9,7 +9,6 @@ import Textfield from '@atlaskit/textfield';
 import Button from '@atlaskit/button/new';
 import AdsSelect from '@atlaskit/select';
 import { Lozenge } from '@/components/ads';
-import { Separator } from '@/components/ui/separator';
 import CustomizeIcon from '@atlaskit/icon/core/customize';
 import FilterIcon from '@atlaskit/icon/core/filter';
 import RefreshIcon from '@atlaskit/icon/core/refresh';
@@ -135,7 +134,7 @@ export const TriggerSearch = memo(function TriggerSearch({
           />
         </div>
 
-        <Separator orientation="vertical" className="h-6" />
+        <div style={{ width: '1px', height: '24px', background: 'var(--ds-border-layout, #EBECF0)', flexShrink: 0 }} />
 
         {/* Toggle filters */}
         <Button

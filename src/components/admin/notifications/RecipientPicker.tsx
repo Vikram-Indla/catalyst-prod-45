@@ -19,7 +19,6 @@ import {
 import Button from '@atlaskit/button/new';
 import Toggle from '@atlaskit/toggle';
 import { Lozenge } from '@/components/ads';
-import { Separator } from '@/components/ui/separator';
 import type { RecipientsConfig, TriggerRowData } from '@/types/notification-triggers';
 
 // ── Recipient metadata ──────────────────────────────────────────
@@ -196,7 +195,7 @@ export function RecipientPicker({ trigger, open, onClose, onSave }: RecipientPic
           ))}
         </div>
 
-        <Separator />
+        <hr style={{ border: 'none', borderTop: '1px solid var(--ds-border-layout, #EBECF0)', margin: 0 }} />
 
         <DialogFooter className="flex items-center justify-between">
           <span className="text-xs text-[var(--ds-text-subtlest,#94A3B8)]">
