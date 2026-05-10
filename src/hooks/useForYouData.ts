@@ -28,6 +28,7 @@ export type TabType =
   | 'recommended'
   | 'assigned'
   | 'starred'
+  | 'r360'
   | 'worked'
   | 'viewed'
   | 'ageing';

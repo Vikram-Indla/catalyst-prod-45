@@ -49,6 +49,7 @@ import StarredPanel from '@/components/for-you/atlaskit/StarredPanel';
 // imports around would just be dead wiring.
 import AiThemePanel from '@/components/for-you/atlaskit/AiThemePanel';
 import AgeingPanel from '@/components/for-you/atlaskit/AgeingPanel';
+import R360Panel from '@/components/for-you/atlaskit/R360Panel';
 import { R360AccessTile } from '@/components/R360AccessTile';
 import { ForYouDetailPanel } from '@/components/for-you/ForYouDetailPanel';
 import { useGlobalSearchStore } from '@/store/globalSearchStore';
@@ -207,6 +208,8 @@ export default function ForYouPageAtlaskit() {
       // useForYouData itself — see note in AiThemePanel.tsx for rationale.
       case 'ai-theme':    return <AiThemePanel allUserProjects={allUserProjects} />;
       case 'ageing':      return <AgeingPanel />;
+      // R360 owns its own data pipeline — no row-feed props.
+      case 'r360':        return <R360Panel />;
       case 'recommended': return <RecommendedPanel {...panelProps} mentions={recommendedMentions} comments={recommendedComments} currentUserName={currentUserName} />;
       case 'assigned':    return <AssignedPanel    {...panelProps} />;
       case 'starred':     return <StarredPanel     {...panelProps} />;
@@ -217,7 +220,7 @@ export default function ForYouPageAtlaskit() {
   // AI Theme and Ageing render their own vertical lists/grids internally —
   // neither shares the client-side pagination window that the row-feed tabs
   // use. Suppress Load more + sentinel for those tabs to avoid dead chrome.
-  const showPagination = activeTab !== 'ai-theme' && activeTab !== 'ageing';
+  const showPagination = activeTab !== 'ai-theme' && activeTab !== 'ageing' && activeTab !== 'r360';
 
   return (
     <div
