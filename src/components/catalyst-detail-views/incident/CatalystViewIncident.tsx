@@ -34,18 +34,6 @@ export default function CatalystViewIncident({
 
   const leftContent = (
     <>
-      {/* INCIDENT-UNIQUE: Severity banner */}
-      <div style={{
-        display: 'flex', alignItems: 'center', gap: 8, padding: '8px 12px',
-        background: '#FFF5F5', borderRadius: 6, marginBottom: 16, border: '1px solid #FFEDEB',
-      }}>
-        <WarningIcon size="small" primaryColor="#FF5630" />
-        <span style={{ fontSize: 13, fontWeight: 600, color: '#BF2600' }}>Production Incident</span>
-        <span style={{ fontSize: 12, color: '#5E6C84', marginLeft: 'auto' }}>
-          Priority: <span style={{ color: priorityStyle.color, fontWeight: 700 }}>{priorityStyle.symbol} {issue?.priority ?? 'Medium'}</span>
-        </span>
-      </div>
-
       <CatalystTitleEditor issue={issue ?? null} onTitleChange={(t) => mutations.updateField.mutate({ field: 'summary', value: t, oldValue: issue?.summary ?? '' })} />
       {/* jira-compare 2026-05-03 — Patch E · CatalystStatusPill relocated to right-rail header in CatalystSidebarDetails. */}
       <CatalystQuickActions />
