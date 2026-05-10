@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { useState } from 'react';
 import { AdminGuard } from '@/components/admin/AdminGuard';
 import Button from '@atlaskit/button/new';

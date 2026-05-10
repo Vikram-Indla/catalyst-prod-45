@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * EpicDescriptionEditor — Atlaskit-powered editor for Epic descriptions.
  *

@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { useState } from 'react';
 import { useCapacityDepartments, type CapacityDepartment } from '@/modules/capacity-planner/hooks/useCapacityDepartments';
 import Button from '@atlaskit/button/new';

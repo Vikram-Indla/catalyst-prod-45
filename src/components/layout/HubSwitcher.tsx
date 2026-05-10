@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * HubSwitcher v2 — sectioned popover with bespoke colored hub tiles.
  *

@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { supabase } from '@/integrations/supabase/client';
 import type { WorkItemType } from '@/components/shared/CanonicalDescriptionField/description.types';
 

@@ -76,8 +76,8 @@ AlertDialogHeader.displayName = 'AlertDialogHeader';
 
 // ── AlertDialogTitle ──────────────────────────────────────────────────────────
 
-export function AlertDialogTitle({ children }: { children?: React.ReactNode }) {
-  return <ModalTitle appearance="warning">{children}</ModalTitle>;
+export function AlertDialogTitle({ children }: { children?: React.ReactNode; className?: string }) {
+  return <ModalTitle>{children}</ModalTitle>;
 }
 AlertDialogTitle.displayName = 'AlertDialogTitle';
 
@@ -114,6 +114,7 @@ export function AlertDialogCancel({
 }: {
   children?: React.ReactNode;
   onClick?: React.MouseEventHandler<HTMLElement>;
+  [key: string]: unknown;
 }) {
   return (
     <AkButton appearance="subtle" onClick={onClick}>
@@ -124,20 +125,19 @@ export function AlertDialogCancel({
 AlertDialogCancel.displayName = 'AlertDialogCancel';
 
 // ── AlertDialogAction ─────────────────────────────────────────────────────────
-// Renders as a danger button. Accepts className but ignores it (ADS handles
-// styling); onClick is forwarded to the underlying button.
 
 export function AlertDialogAction({
   children,
   onClick,
-  className: _className,
+  disabled,
 }: {
   children?: React.ReactNode;
   onClick?: React.MouseEventHandler<HTMLElement>;
-  className?: string;
+  disabled?: boolean;
+  [key: string]: unknown;
 }) {
   return (
-    <AkButton appearance="danger" onClick={onClick}>
+    <AkButton appearance="danger" onClick={onClick} isDisabled={disabled}>
       {children ?? 'Confirm'}
     </AkButton>
   );
@@ -169,7 +169,7 @@ export function AdminAlertDialog({
   return (
     <Modal isOpen={open} onClose={onClose} width="small">
       <ModalHeader>
-        <ModalTitle appearance="warning">{title}</ModalTitle>
+        <ModalTitle>{title}</ModalTitle>
         {description && (
           <p
             style={{
