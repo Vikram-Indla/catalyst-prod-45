@@ -49,6 +49,7 @@ import StarredPanel from '@/components/for-you/atlaskit/StarredPanel';
 // imports around would just be dead wiring.
 import AiThemePanel from '@/components/for-you/atlaskit/AiThemePanel';
 import AgeingPanel from '@/components/for-you/atlaskit/AgeingPanel';
+import { R360AccessTile } from '@/components/R360AccessTile';
 import { ForYouDetailPanel } from '@/components/for-you/ForYouDetailPanel';
 import { useGlobalSearchStore } from '@/store/globalSearchStore';
 
@@ -241,6 +242,11 @@ export default function ForYouPageAtlaskit() {
           FIRST, then the "For you" heading + tab strip share a single row
           directly above the feed. */}
       <RecommendedProjectsStrip projects={allUserProjects} />
+
+      {/* R360 access tile — persona-conditional shortcut to the user's R360 surface */}
+      <div style={{ marginBlockStart: 12 }}>
+        <R360AccessTile />
+      </div>
 
       {/* Heading + tabs — single flex row, "For you" left-aligned, tabs
           right-aligned. Jira's DOM ships this as a div with
