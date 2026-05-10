@@ -26,6 +26,22 @@ The Catalyst local dev server always runs on **http://localhost:8080**. Never us
 
 ---
 
+## 2026-05-11 — Use window.innerWidth (not container offsetWidth) for breakpoints inside padded card containers
+**Surface:** R360Panel responsive layout (For You tab), any panel embedded in a padded card
+**Pattern:** R360Panel attempted `ResizeObserver` on the panel's own container `div` to detect wide vs narrow layout. The container reported ~908px while the actual viewport was 965px — a 57px gap eaten by the For You card's padding. The WIDE_THRESHOLD of 900px never triggered because container width underreports.
+**Rule:** For layout breakpoints in any panel that lives inside a padded card (For You page, sidebar panels, detail rail wrappers), always measure `window.innerWidth` with a resize event listener — never `offsetWidth` or a ResizeObserver on the panel container itself. The pattern: `const [isWide, setIsWide] = useState(() => window.innerWidth >= THRESHOLD); useEffect(() => { const h = () => setIsWide(window.innerWidth >= THRESHOLD); window.addEventListener('resize', h); return () => window.removeEventListener('resize', h); }, []);`
+**Severity:** P2 (responsive layout silently fails — correct threshold, wrong measurement point).
+
+---
+
+## 2026-05-11 — Never use ph_project_members for a team roster; query resource_inventory directly
+**Surface:** R360Panel / `useTeamResourceIds` hook, any capacity or team picker
+**Pattern:** `useTeamResourceIds` routed through `ph_project_members` (project membership table) to build the team sidebar roster. The table had only 3 rows — all the admin user — while `resource_inventory` had 38 active resources with `profile_id` set. Result: `teamResources.length === 0` → `hasTeam = false` → sidebar never rendered. Silent empty state with no error.
+**Rule:** For resource capacity views, team roster pickers, and any surface that needs "all team members who have an R360 profile", query `resource_inventory` directly: `.eq('is_active', true).not('profile_id', 'is', null).neq('profile_id', myProfileId).order('name')`. `ph_project_members` reflects project-specific assignments and is not kept in sync as a full team roster — do not use it to enumerate team members.
+**Severity:** P1 (data model mismatch → silent empty state; feature appears broken with no console error).
+
+---
+
 ## 2026-05-10 — Hand-rolled dropdowns must be replaced with @atlaskit/dropdown-menu
 **Surface:** CatalystViewBase (all detail views — applies to any surface with a menu)
 **Pattern:** The ⋯ more-actions menu in `CatalystViewBase.tsx` was self-rolled: `useState(showDotsMenu)` + outside-click `useEffect` + `div` with inline `onClick` handlers. This violated JIRA_ARCHITECT A4 (hand-rolled interactive element): no `role="menuitem"`, no keyboard navigation, no focus trap, no ARIA. WCAG 2.1 AA keyboard-access failure.
