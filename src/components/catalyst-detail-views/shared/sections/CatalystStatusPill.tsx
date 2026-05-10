@@ -158,6 +158,7 @@ export function CatalystStatusPill({ status, statusCategory, onStatusChange, iss
         createPortal(
           <div
             data-testid="catalyst-status-pill-popover"
+            className="cv-status-listbox"
             role="menu"
             style={{
               position: 'fixed',
