@@ -68,39 +68,45 @@ function LocationRowTitle({ location }: { location: RecentLocation }) {
       style={{
         display: 'inline-flex',
         alignItems: 'baseline',
-        gap: 6,
+        gap: 4,
         minWidth: 0,
         maxWidth: '100%',
       }}
     >
+      {/* Project key — primary label, 14px/500, color.text */}
       <span
         style={{
           color: 'var(--ds-text, #172B4D)',
-          fontWeight: 500,
+          fontWeight: 600,
+          fontSize: '13px',
           overflow: 'hidden',
           textOverflow: 'ellipsis',
           whiteSpace: 'nowrap',
-          flex: '0 1 auto',
-          minWidth: 0,
+          flex: '0 0 auto',
         }}
         title={`${location.projectName} › ${location.sectionLabel}`}
       >
         {location.projectKey}
       </span>
+      {/* Separator — 11px, color.text.subtlest — reads as breadcrumb crumb, not competing text */}
       <span
         style={{
-          color: 'var(--ds-text-subtlest, #94A3B8)',
+          color: 'var(--ds-text-subtlest, #626F86)',
           fontWeight: 400,
+          fontSize: '11px',
           flex: '0 0 auto',
+          lineHeight: '20px',
         }}
         aria-hidden="true"
       >
         ›
       </span>
+      {/* Section label — 12px/400, color.text.subtlest (ADS meta size) */}
       <span
         style={{
-          color: 'var(--ds-text-subtle, #626F86)',
+          color: 'var(--ds-text-subtlest, #626F86)',
           fontWeight: 400,
+          fontSize: '12px',
           overflow: 'hidden',
           textOverflow: 'ellipsis',
           whiteSpace: 'nowrap',

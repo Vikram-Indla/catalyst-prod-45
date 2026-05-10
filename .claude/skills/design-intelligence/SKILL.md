@@ -1,31 +1,33 @@
 ---
 name: design-intelligence
 description: >-
-  500-IQ proactive design intelligence layer, ring-fenced exclusively to
+  1000-IQ proactive design intelligence layer, ring-fenced exclusively to
   Atlassian Design System (https://atlassian.design/) for Catalyst
-  (localhost:8080). Fires automatically on every UI surface task BEFORE
-  the council. Activates the Foundation Council of 7 design masters
-  (Saffer, Tufte, Rams, Norman, Ive, Raskin, Cooper) as mandatory analysis
-  lenses. Every recommendation must cite an ADS token, ADS component, or
-  ADS guideline — no Tailwind, no shadcn, no third-party palettes, no
-  generic advice. SVG arrows injected on the live page are MANDATORY on
-  every run — violations shown in-chat with red arrows, fixes shown with
-  green arrows. Output: Design Intelligence Brief v2. Triggers on: any
-  preflight with surface ∈ {ui-feature, ui-bug-fix, ui-refactor,
-  design-only, cross-cutting}. Manual: /design-intelligence [surface].
-version: 2.1.0
-iq_level: 500
+  (localhost:8080). Fires in Preflight v3 Phase 1 (evidence acquisition).
+  Activates the Foundation Council of 7 design masters (Saffer, Tufte, Rams,
+  Norman, Ive, Raskin, Cooper) PLUS the AtlasKit Platform Architect as an 8th
+  mandatory lens. Every recommendation must cite an ADS token, ADS component,
+  or ADS guideline. SVG arrows injected on the live page are MANDATORY on
+  every run. Session-resume continuity: full violation list re-injected on
+  every resume — resolved items green, open items red — no fresh-subset restarts.
+  Lessons-applied scan: checks all CLAUDE.md lesson anchors and
+  JIRA_ARCHITECT.md patterns against the surface before any recommendation.
+  Output: Design Intelligence Brief v3. Triggers on: any preflight with surface
+  ∈ {ui-feature, ui-bug-fix, ui-refactor, design-only, cross-cutting}.
+  Manual: /design-intelligence [surface].
+version: 3.0.0
+iq_level: 1000
 design_system: Atlassian Design System (https://atlassian.design/)
 scope: Catalyst only (localhost:8080) — NOT generic, NOT cross-project
-author: Vikram × Claude, 2026-05-09
+author: Vikram × Claude, 2026-05-10
 metadata:
   category: design-quality
-  tags: [design, ads, atlassian, atlaskit, catalyst, 500iq, foundation-council, ring-fenced]
+  tags: [design, ads, atlassian, atlaskit, catalyst, 1000iq, foundation-council, atlaskit-architect, ring-fenced, lessons-applied]
   maturity: stable
-  pipeline_position: Phase 0.5 (fires after evidence acquisition, before council)
+  pipeline_position: Phase 1 — evidence acquisition (preflight v3)
 ---
 
-# Design Intelligence v2.1 — 500-IQ, ADS Ring-Fenced, Catalyst Only
+# Design Intelligence v3.0 — 1000-IQ, ADS Ring-Fenced, Catalyst Only
 
 ---
 
@@ -76,11 +78,11 @@ When this skill fires, emit this block BEFORE any output:
 
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-🔍 design-intelligence v2.1 · ADS Ring-Fenced · 500-IQ
+🔍 design-intelligence v3.0 · ADS Ring-Fenced · 1000-IQ
 Surface: {surface name} · localhost:8080/{route}
 Design system: Atlassian Design System ONLY
-Council: Saffer · Tufte · Rams · Norman · Ive · Raskin · Cooper
-→ Navigating to surface · Running council scan · Injecting arrows
+Council: Saffer · Tufte · Rams · Norman · Ive · Raskin · Cooper · AtlasKit Architect
+→ Lessons-applied scan → Navigate → Council scan → Injecting arrows
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ```
 
@@ -88,13 +90,69 @@ When complete:
 
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-🔍 design-intelligence v2.1 · BRIEF COMPLETE
+🔍 design-intelligence v3.0 · BRIEF COMPLETE
 {N} violations · {M} AI opportunities · Score: {X}/15
+Lessons-applied: {N} CLAUDE.md anchors checked · {M} active warnings
 ADS citations: {N} tokens · {M} components referenced
 {PROCEED ≥11/15 / HALT <11/15}
 Red arrows injected. Screenshot inline ↓
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ```
+
+---
+
+## Lessons-Applied Pre-Scan (NEW in v3 — runs before council)
+
+> Before any council lens fires, scan the surface against all known CLAUDE.md lessons and JIRA_ARCHITECT.md patterns. This prevents the council from recommending something that is already known-broken or permanently banned.
+
+### Pre-scan checklist (run top-to-bottom against the surface)
+
+| Check | Source | What to look for |
+|---|---|---|
+| JiraIssueTypeIcon | CLAUDE.md 2026-05-09 | Any colored dot, square, or color map for work item type? → P0 halt |
+| Colored lozenge appearance | CLAUDE.md 2026-05-08 | Any lozenge `appearance` not from live DOM probe? → P0 |
+| @atlaskit/popup inside overflow:hidden | CLAUDE.md 2026-05-08 | Any popup in an overflow:hidden parent without createPortal? → P0 |
+| Section header font | CLAUDE.md 2026-05-08 | Any `@atlaskit/heading size="small"` used as a section header? → P1 |
+| Assignee "Assign to me" link | CLAUDE.md 2026-05-06 | Right rail Assignee field without idle "Assign to me" link (11px, blue)? → P1 |
+| Watcher Escape propagation | CLAUDE.md 2026-05-08 | WatchersChip popover without capture-phase Escape handler? → P1 |
+| Row click navigation | CLAUDE.md 2026-05-10 | navigate('/issues/:key') used in any For You / home panel? → P0 |
+| Projects route | CLAUDE.md 2026-05-10 | navigate('/projects') used for "View all projects"? → P0 |
+| Section count badges | CLAUDE.md 2026-05-05 | Any pill/badge on section header counts? → P2 |
+| Right rail idle borders | CLAUDE.md 2026-05-05 | Any visible border on idle select fields in right rail? → P2 |
+| InlineCreateWithAI empty guard | CLAUDE.md 2026-05-08 | InlineCreate only inside rows.length > 0? → P1 |
+| Focused-state border span | CLAUDE.md 2026-05-08 | Key cell focus border uses inline-block instead of block + width:100%? → P1 |
+| Comment badge dot | CLAUDE.md 2026-05-08 | Comments cell missing 6px blue dot on rows with comments? → P2 |
+| Banned items (B1-B8) | JIRA_ARCHITECT.md | MDT Ref / Service Now# / Assessment Feature / Story Points / Dev section / Automation / AI Sparkles / Notion? → P0 halt |
+| Priority in wrong location | CLAUDE.md 2026-05-06 | Priority in right rail for non-Epic types? (Must be in Key details left). Priority in left for Epic? (Must be in right rail). → P1 |
+| Star button dead interaction | CLAUDE.md 2026-05-10 | AgeingPanel star button rendered but no-op? → P1 |
+| Motion not ADS-spec | CLAUDE.md 2026-04-28 | Any linear/ease/custom-bezier animation not from ADS motion spec? → P2 |
+
+**Output of pre-scan:**
+
+```
+📋 Lessons-applied pre-scan: {N} CLAUDE.md anchors checked
+  ✅ {M} clear
+  🔴 {X} active violations (listed below with CLAUDE.md anchor)
+  ⚠️  {Y} warnings (not halt, but flag in brief)
+```
+
+Pre-scan violations are added to the violation list BEFORE council analysis. Council advisors receive the pre-scan result and must reference it.
+
+---
+
+## Session-Resume Continuity (NEW in v3)
+
+When resuming a session on a surface that was already audited in a prior session:
+
+1. Read the prior `active/preflight-handover-*.md` for that surface.
+2. Extract the full violation list from the prior session's SVG injection block.
+3. Mark violations that have been fixed since (check git log / file changes) as `fixed: true`.
+4. Mark violations still open as `fixed: false`.
+5. Re-inject the COMPLETE list — do NOT start a fresh subset.
+6. Emit: `"Resuming {surface} audit: {N} prior violations restored — {M} green (fixed), {X} red (open)."`
+
+**Why:** The red→green progression is the evidence trail the user reads. A fresh-subset restart loses the before-state and makes the "after" meaningless.
+**CLAUDE.md anchor:** 2026-05-09 — "carry the full violation list across sessions (arrow continuity)."
 
 ---
 
@@ -377,8 +435,8 @@ After each fix is confirmed (code deployed, page reloaded):
 Every section cites ADS. Uncited recommendations are invalid.
 
 ```
-## Design Intelligence Brief v2.1 — {surface} — {date}
-Scope: Catalyst localhost:8080/{route} · ADS Ring-Fenced · IQ 500
+## Design Intelligence Brief v3.0 — {surface} — {date}
+Scope: Catalyst localhost:8080/{route} · ADS Ring-Fenced · IQ 1000
 
 ### 1. ADS Canonical Component Audit
 
@@ -396,9 +454,12 @@ Scope: Catalyst localhost:8080/{route} · ADS Ring-Fenced · IQ 500
 
 ❌ = ADS violation → mandatory fix. Implementation halted until resolved.
 
+### 1b. Lessons-Applied Pre-Scan Summary
+{output of pre-scan: N anchors checked, violations found, warnings}
+
 ### 2. Foundation Council Analysis (ADS-anchored)
 
-Each council finding MUST reference an ADS URL or CLAUDE.md ban.
+Each council finding MUST reference an ADS URL or CLAUDE.md ban. Lens 2h (AtlasKit Architect) is mandatory alongside 2a–2g.
 
 #### 2a. Saffer — Microinteraction Anatomy
 For each interactive element:
@@ -451,6 +512,32 @@ ADS `@atlaskit/empty-state` has a `primaryAction` prop — every empty state mus
 Empty states without a `primaryAction` = Cooper P0.
 | Surface | User goal | Empty state? | ADS primaryAction present? |
 |---|---|---|---|
+
+#### 2h. AtlasKit Platform Architect (NEW in v3 — 8th mandatory lens)
+
+This advisor has built Jira's own UI. Knows AtlasKit component internals, version-specific bugs, deprecation paths, and correct usage patterns that no other lens can see.
+
+Mandatory checks — run on every surface:
+
+| Component used | AtlasKit version risk | Known issue | Correct pattern |
+|---|---|---|---|
+| `@atlaskit/popup` | v4.16 — empty-portal bug | Popup never renders inside overflow:hidden | createPortal to document.body + data-portal attr |
+| `@atlaskit/heading` | any | size="small" = 16px/653, not 14px/600 | Inline h2 at 14px/600 for section headers |
+| `@atlaskit/select` | any | classNamePrefix produces custom DOM classes — does NOT mean non-Atlaskit | Check import source, not DOM class |
+| `@atlaskit/modal-dialog` | any | height:Xvh inside ScrollContainer = double height context clipping top bar | Use minHeight only, never height inside modal |
+| `@atlaskit/lozenge` | v11 | Inner span carries text-transform:uppercase, fontWeight:653 — Jira renders sentence-case | Wrap in data-cp-lozenge-jira-parity; CSS override inner span |
+| `react-select` | any | Direct import bypasses ADS token system | Must import from @atlaskit/select |
+| `WorkItemIcon` | deprecated shim | Does not render JiraIssueTypeIcon | Import from @/lib/jira-issue-type-icons directly |
+| `@atlaskit/button` | any | appearance prop is the signifier system — custom buttons break ADS | Always use appearance prop |
+
+AtlasKit Architect output per surface:
+
+```
+🏗️ AtlasKit Architect findings:
+  {component} v{version}: {known issue} → {correct pattern} [P0/P1/P2]
+  Deprecated: {component} — replace with {canonical}
+  Version-specific bugs active: {list}
+```
 
 ### 3. Jira Parity → ADS Opportunity Map
 
@@ -554,22 +641,26 @@ These are banned at CLAUDE.md level AND at ADS level:
 
 ---
 
-## Integration with Preflight Pipeline
+## Integration with Preflight v3 Pipeline
 
 ```
-Phase 0  — Bootstrap (CLAUDE.md, skills list, prior handovers)
-Phase 0.5 — THIS SKILL fires here (all 7 lenses, ADS ring-fenced)
-           → Navigate to localhost:8080/{route}
-           → Run DOM probe (get element coords)
-           → Inject RED arrows on all violations
-           → Screenshot inline in chat
-           → Produce full brief with ADS citations
-           → Blocking findings → mandatory Phase 2 rows
-Phase 1  — Council (receives brief as first document; must cite ADS URLs)
-Phase 2  — Plan (blocking findings become rows; AI use cases at P1 become rows)
-Phase 4  — Visual aid
-Phase 5  — Handover
-Phase 6  — Closure Evidence (GREEN arrows replacing red; screenshot inline in chat)
+Phase 0   — Bootstrap (Obsidian-primary, CLAUDE.md gates, port 8080 lock)
+Phase 0.5 — Jira Architect Scan (28 patterns, always runs)
+Phase 1   — THIS SKILL fires here (all 8 lenses, ADS ring-fenced, 1000-IQ)
+            → Lessons-applied pre-scan (CLAUDE.md anchors + JIRA_ARCHITECT.md patterns)
+            → Session-resume continuity (re-inject full prior violation list if resuming)
+            → Navigate to localhost:8080/{route}
+            → Run DOM probe (get CSS selectors for each violation)
+            → Inject RED arrows on all violations (pre-scan + council)
+            → Screenshot inline in chat (annotated — plain screenshot rejected)
+            → Produce full brief v3.0 with ADS citations
+            → Blocking findings → mandatory Phase 3 rows
+Phase 2   — Council (receives brief as first document; must cite ADS URLs)
+Phase 3   — Plan (blocking findings become rows; AI use cases at P1 become rows)
+Phase 4   — Execution loop (auto-commit on Vikram "go")
+Phase 5   — Visual evidence (GREEN arrows replacing red; before/after screenshot pair)
+Phase 6   — Learning engine (lesson extraction from DI findings)
+Phase 7   — Obsidian handover
 ```
 
 ---
