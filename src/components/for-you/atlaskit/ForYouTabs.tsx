@@ -46,6 +46,7 @@ export const FOR_YOU_TAB_ORDER: ForYouTabDefinition[] = [
   { id: 'recommended', label: 'Recommended',     showCount: false },
   { id: 'assigned',    label: 'Assigned to me',  showCount: true  },
   { id: 'starred',     label: 'Starred',         showCount: false },
+  { id: 'r360',        label: 'Resource 360°',   showCount: false },
   { id: 'ageing',      label: 'Ageing',          showCount: true  },
 ];
 
