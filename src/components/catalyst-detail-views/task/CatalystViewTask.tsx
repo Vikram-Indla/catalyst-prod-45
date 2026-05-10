@@ -2,14 +2,17 @@
  * CatalystViewTask — Task detail overlay.
  */
 import React, { useEffect, useRef } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { CatalystViewBase } from '../shared/CatalystViewBase';
 import { useCatalystIssue, useCatalystIssueMutations } from '../shared/hooks';
 import { useTrackRecentItem } from '@/hooks/useRecentProjectItems';
 import {
   CatalystTitleEditor, CatalystQuickActions, CatalystDescriptionSection, CatalystAcceptanceCriteria,
-  CatalystActivitySection, CatalystAttachmentsPanel, CatalystSidebarDetails, CatalystKeyDetails, CatalystStatusPill,
+  CatalystActivitySection, CatalystAttachmentsPanel, CatalystSidebarDetails, CatalystKeyDetails,
+  CatalystStatusPill, CatalystFooterMeta, KeyDetailsFieldRow,
 } from '../shared/sections';
+import { CatalystSeverityField } from '../shared/sections/CatalystSeverityField';
 import { LinkedWorkItemsSection } from '@/modules/project-work-hub/components/linked-work-items';
 import { SubtasksPanel } from '@/modules/project-work-hub/components/SubtasksPanel';
 import { ImproveIssueDropdown, useImproveApplyHandlers } from '@/components/catalyst-detail-views/improve';
@@ -23,6 +26,7 @@ export default function CatalystViewTask({
   const { data: issue, isLoading } = useCatalystIssue(itemId, isOpen);
   const mutations = useCatalystIssueMutations(itemId, onClose);
   const improveHandlers = useImproveApplyHandlers(issue ?? null);
+  const queryClient = useQueryClient();
 
   // Sidebar Recents tracking — top-level tasks only.
   // Subtask exclusion (Apr 2026 owner directive): a task with a `parent_key`
@@ -51,8 +55,22 @@ export default function CatalystViewTask({
       <CatalystTitleEditor issue={issue ?? null} onTitleChange={(t) => mutations.updateField.mutate({ field: 'summary', value: t, oldValue: issue?.summary ?? '' })} />
       {/* jira-compare 2026-05-03 — Patch E · CatalystStatusPill relocated to right-rail header in CatalystSidebarDetails. */}
       <CatalystQuickActions />
-      <ImproveIssueDropdown issue={issue ?? null} {...improveHandlers} />
-      <CatalystKeyDetails issue={issue ?? null} itemId={itemId} itemType="task" projectKey={projectKey} onOpenItem={onOpenItem} />
+      {/* jira-compare 2026-05-03 — Improve relocated to right-rail slot in CatalystSidebarDetails (Patch D). */}
+      {/* jira-compare 2026-05-10 Fix JC-2: Severity added to Key details.
+          Jira Task screen scheme (10010) includes customfield_10125 (Severity).
+          Mirrors the pattern from CatalystViewIncident. */}
+      <CatalystKeyDetails
+        issue={issue ?? null} itemId={itemId} itemType="task"
+        projectKey={projectKey} onOpenItem={onOpenItem}
+        extraRows={
+          <KeyDetailsFieldRow label="Severity" alignBlock="center">
+            <CatalystSeverityField
+              issue={issue ?? null}
+              onUpdate={() => queryClient.invalidateQueries({ queryKey: ['cv-issue-detail', itemId] })}
+            />
+          </KeyDetailsFieldRow>
+        }
+      />
       <CatalystDescriptionSection issue={issue ?? null} />
       <CatalystAcceptanceCriteria issue={issue ?? null} />
 

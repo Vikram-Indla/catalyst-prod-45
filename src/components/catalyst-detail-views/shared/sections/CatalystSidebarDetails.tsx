@@ -620,11 +620,12 @@ export function CatalystSidebarDetails({
             )}
           </FieldRow>
 
-          {/* ── Labels ──── Task only (jira-compare 2026-05-07 Fix J).
-              Re-probe BAU-5538 (Task) confirms Labels IS in the Task right
-              rail. Gated strictly on Task — do not widen without per-type
-              Jira screen scheme validation (anti-pattern #18). */}
-          {issue?.issue_type === 'Task' && (
+          {/* ── Labels ──── Task + Story (jira-compare 2026-05-07 Fix J + 2026-05-10 Fix JC-3).
+              Task: re-probe BAU-5538 confirmed Labels in scheme (10010).
+              Story: getJiraIssueTypeMetaWithFields confirmed Labels in scheme (10006).
+              Vikram approved Story addition 2026-05-10. Do not widen further without
+              per-type Jira screen scheme validation (anti-pattern #18). */}
+          {(issue?.issue_type === 'Task' || issue?.issue_type === 'Story') && (
             <FieldRow label="Labels" labelTopPad>
               {issue && (
                 <EditableLabels

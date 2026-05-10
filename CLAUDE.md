@@ -136,6 +136,21 @@ Append-only. Newest at top. Each entry: date, pattern, rule, surface.
 
 ---
 
+## 2026-05-10 — Fix versions must be gated per type, not just Epic exclusion
+**Surface:** CatalystSidebarDetails (all issue type views)
+**Pattern:** Fix versions was gated as `issue_type !== 'Epic'` — meaning it rendered for ALL other types including Feature. Jira Feature screen scheme (10173) does NOT include Fix versions. The guard was expanded to also exclude Feature after Lane B confirmation via `getJiraIssueTypeMetaWithFields`.
+**Rule:** Fix versions guard must reflect the actual Jira screen scheme per type. Currently excluded for: Epic, Feature. All other types (Story 10006, Task 10010, Change Request 10305, Production Incident 10045, QA Bug) DO have Fix versions in their schemes. When adding a new work item type to Catalyst, always check Fix versions membership in the scheme before deciding whether to include it.
+
+## 2026-05-10 — Severity wiring: only Incident/BusinessGap had extraRows; Task was missed
+**Surface:** CatalystViewTask (Key details section)
+**Pattern:** Severity (`customfield_10125`) is in the Jira Task screen scheme (10010). It was only wired in `CatalystViewIncident` via `extraRows` on `CatalystKeyDetails`. `CatalystViewTask` had no Severity row at all. The omission was caught by the Bucket H sweep (BAU-4852 probe). Fix mirrors the Incident pattern: `useQueryClient` + `CatalystSeverityField` in `extraRows`.
+**Rule:** When adding a field via `CatalystKeyDetails extraRows` to one view type, immediately audit all other view types whose Jira screen scheme includes that same custom field. Severity is in: PI (10045), Task (10010), QA Bug (10012 — handled via CatalystDefectKeyRows). Any new issue type added later must get Severity if it's in that type's scheme.
+
+## 2026-05-10 — Labels gate expanded to Story after Vikram approval
+**Surface:** CatalystSidebarDetails — Labels FieldRow
+**Pattern:** Labels was restored for Task only (Fix J, 2026-05-07). Story screen scheme (10006) also includes `labels`. Bucket H sweep confirmed Labels absent from Story right rail. Vikram approved Story addition 2026-05-10. Gate extended from `issue_type === 'Task'` to `issue_type === 'Task' || issue_type === 'Story'`.
+**Rule:** Labels gate is now: Task + Story. All other types remain excluded until explicit Vikram approval + Jira screen scheme confirmation.
+
 ## 2026-05-10 — jira-compare exemption: Catalyst-specific admin pages need schema-probe, not jira-compare
 **Surface:** All /admin/* non-WorkHub pages (Admin Phase C, 2026-05-09/10)
 **Pattern:** CLAUDE.md "jira-compare on every new feature" was written for product surfaces (backlog, allwork, detail views). Admin Phase C applied the ADS icon sweep to pages like Modules & Packages, Resource Assignments, Feature Flags, Reference Data, and Workflow admin. These pages are Catalyst-specific configuration surfaces — they have no Jira equivalent. Running jira-compare produces no signal (no Jira page to compare against) and wastes session budget on dead comparisons.
