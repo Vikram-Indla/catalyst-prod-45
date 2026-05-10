@@ -56,9 +56,11 @@ import type { PeriodType } from './r360-member';
 interface R360MemberDetailProps {
   resourceId?: string;
   projectScope?: string[];
+  /** When true: renders inside the For You R360 tab. Hides the Back button. */
+  embedded?: boolean;
 }
 
-export default function R360MemberDetail({ resourceId: resourceIdProp, projectScope }: R360MemberDetailProps = {}) {
+export default function R360MemberDetail({ resourceId: resourceIdProp, projectScope, embedded = false }: R360MemberDetailProps = {}) {
   const { isDark } = useTheme();
   const { resourceId: resourceIdFromParams } = useParams<{ resourceId: string }>();
   const resourceId = resourceIdProp ?? resourceIdFromParams;
@@ -383,15 +385,17 @@ export default function R360MemberDetail({ resourceId: resourceIdProp, projectSc
                   </button>
                 ))}
                 <div className="r3-tab-spacer" />
-                {/* Back — text button */}
-                <button
-                  onClick={() => navigate(backPath)}
-                  style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', background: 'transparent', border: 'none', color: 'var(--cp-text-tertiary, #64748B)', fontSize: '13px', fontWeight: 500, cursor: 'pointer', padding: '4px 8px' }}
-                  onMouseEnter={e => { e.currentTarget.style.textDecoration = 'underline'; }}
-                  onMouseLeave={e => { e.currentTarget.style.textDecoration = 'none'; }}
-                >
-                  <ChevronLeft size={14} /> Back
-                </button>
+                {/* Back — hidden when embedded in For You tab */}
+                {!embedded && (
+                  <button
+                    onClick={() => navigate(backPath)}
+                    style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', background: 'transparent', border: 'none', color: 'var(--cp-text-tertiary, #64748B)', fontSize: '13px', fontWeight: 500, cursor: 'pointer', padding: '4px 8px' }}
+                    onMouseEnter={e => { e.currentTarget.style.textDecoration = 'underline'; }}
+                    onMouseLeave={e => { e.currentTarget.style.textDecoration = 'none'; }}
+                  >
+                    <ChevronLeft size={14} /> Back
+                  </button>
+                )}
                 {/* Quarter label — computed from current date */}
                 <button style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', background: isDark ? 'var(--cp-bg-surface, #242528)' : 'rgba(15,23,42,0.05)', border: isDark ? '1px solid #2E2E2E' : 'none', borderRadius: '6px', color: 'var(--cp-text-primary, #0F172A)', fontSize: '13px', fontWeight: 500, cursor: 'pointer', padding: '5px 12px' }}>
                   <Calendar size={13} /> {`Q${Math.ceil((new Date().getMonth() + 1) / 3)}-${new Date().getFullYear()}`}
