@@ -10,6 +10,18 @@ The Catalyst local dev server always runs on **http://localhost:8080**. Never us
 
 ---
 
+## 2026-05-10 — openDetail must receive issue_key (text), never a UUID
+**Surface:** Any sidebar, panel, notification, or list that calls `useGlobalSearchStore.getState().openDetail({ id: ... })`
+**Pattern:** Five surfaces (ProjectHubSidebar, SidebarProjectNav, AgeingPanel, ThemeIssueList, NotificationPanel) were passing the UUID `id` column from `ph_issues` — causing `CatalystDetailRouter` to always return "Issue not found". `CatalystDetailRouter` queries `ph_issues` exclusively by `.eq('issue_key', itemId)` (text PK like "BAU-5757"). UUID lookups silently no-op.
+**Rule:** Any `openDetail({ id: ... })` call MUST pass the Jira issue key string, never a row UUID. Canonical patterns:
+- `user_recent_items` rows: `item.entity_key || item.entity_id`
+- `ph_issues` rows queried directly: `row.issue_key` (not `row.id`)
+- `WorkItem` objects: `item.id` — only valid if the mapper sets `id: row.issue_key` (not `id: row.id`)
+- Notifications: `n.entity_key || n.entity_id` (key first)
+Before wiring any new click handler → detail modal, grep `CatalystDetailRouter.tsx` to confirm the lookup field, then trace back to confirm the id source is that field.
+
+---
+
 ## 2026-05-09 — Always use JiraIssueTypeIcon for work item type display
 **Surface:** Any rail, sidebar, Recent list, card, or row that shows a work item type indicator
 **Pattern:** `ProjectHubSidebar.tsx` used a hardcoded `issueTypeColor()` map returning 8px coloured squares (bug→red, story→green, epic→purple, default→blue). This is non-discoverable colour-recall: the user must know the colour→type mapping, which differs from Jira's icon language. `JiraIssueTypeIcon` at `@/lib/jira-issue-type-icons` is the canonical self-labelling component already used in backlog, allwork, notifications, global search, and kanban surfaces. `SidebarProjectNav.tsx` had the same colored-dot pattern (`ITEM_TYPE_COLORS` map + `getTypeColor` function) — fixed 2026-05-09 by replacing with `JiraIssueTypeIcon` and two-line layout.
