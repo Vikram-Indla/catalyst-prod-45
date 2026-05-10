@@ -405,22 +405,16 @@ export const WorkItemDetailsDrawer: React.FC<WorkItemDetailsDrawerProps> = ({
                     title={canEdit ? 'Click to edit' : undefined}
                   >
                     <Suspense fallback={<Spinner size="small" />}>
-                      <EpicDescriptionRenderer content={item.description ?? null} />
+                      <EpicDescriptionRenderer
+                        content={item.description ?? null}
+                        issueKey={jiraData?.item_key ?? item.jiraKey ?? item.key ?? undefined}
+                      />
                     </Suspense>
                   </div>
                 )}
               </div>
 
-              {/* Development */}
-              <div className="mb-6">
-                <div className="flex items-center gap-2 mb-2">
-                  <span className="text-[11px] font-semibold text-muted-foreground uppercase">
-                    Development
-                  </span>
-                  <span className="text-xs text-muted-foreground">(0)</span>
-                </div>
-                <p className="text-sm text-muted-foreground">No commits or pull requests linked</p>
-              </div>
+              {/* Development section permanently banned — CLAUDE.md 2026-05-06 */}
 
               {/* Automation */}
               <div className="mb-6">
