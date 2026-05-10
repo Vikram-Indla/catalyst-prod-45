@@ -205,7 +205,9 @@ function ModuleLevelSidebar({ expanded, onToggle, className, favouritesSection }
 
   const handleRecentClick = (item: typeof recentItems[0]) => {
     const { openDetail } = useGlobalSearchStore.getState();
-    openDetail({ id: item.entity_id, itemType: item.entity_type as any });
+    // CatalystDetailRouter queries ph_issues by issue_key (text), not UUID.
+    // entity_key holds the Jira key (e.g. "BAU-5757"); entity_id is the UUID.
+    openDetail({ id: item.entity_key || item.entity_id, itemType: item.entity_type as any });
   };
 
 

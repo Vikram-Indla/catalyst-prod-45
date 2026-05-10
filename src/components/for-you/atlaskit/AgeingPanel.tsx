@@ -99,7 +99,8 @@ function initials(name: string): string {
 function ageingToWorkItem(a: AgeingItem): WorkItem {
   const assigneeName = a.assignee_display_name || 'Unassigned';
   return {
-    id: a.id,
+    // CatalystDetailRouter resolves by issue_key (text), not UUID.
+    id: a.issue_key,
     key: a.issue_key,
     summary: a.summary,
     phIssueId: a.id,
@@ -289,7 +290,8 @@ export default function AgeingPanel() {
 
   const handleSelect = (item: WorkItem) => {
     useGlobalSearchStore.getState().openDetail({
-      id: item.phIssueId || item.id,
+      // item.id is now mapped to a.issue_key in ageingToWorkItem — pass directly.
+      id: item.id,
       itemType: item.issueType,
       projectKey: item.projectKey,
     });

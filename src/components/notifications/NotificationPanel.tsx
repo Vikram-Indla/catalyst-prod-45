@@ -295,9 +295,9 @@ export default function NotificationPanel({ isOpen, onClose }: NotificationPanel
     if (!n.read_at) markAsRead(n.id);
     onClose();
 
-    // StoryDetailModal resolves ph_issues by UUID id, not by display key.
-    // Prefer entity_id and only fall back to entity_key for older rows.
-    const detailId = n.entity_id || n.entity_key;
+    // CatalystDetailRouter queries ph_issues by issue_key (text), not UUID.
+    // Prefer entity_key (the Jira key e.g. "BAU-5757"); fall back to entity_id.
+    const detailId = n.entity_key || n.entity_id;
     if (detailId) {
       const { openDetail } = useGlobalSearchStore.getState();
       openDetail({ id: detailId, itemType: n.entity_icon_type || undefined });
