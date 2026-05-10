@@ -145,10 +145,11 @@ export default function ForYouPageAtlaskit() {
       handleRowClick(item.id);
     } else {
       // Canonical path — same modal everywhere else in Catalyst.
-      // Prefer phIssueId (the real ph_issues row UUID) when present so the
-      // detail modal can resolve the Jira-synced record; fall back to id.
+      // CatalystDetailRouter queries ph_issues by issue_key (text PK),
+      // not by UUID. item.id is already set to row.issue_key in
+      // mapIssueToWorkItem — pass it directly.
       useGlobalSearchStore.getState().openDetail({
-        id: item.phIssueId || item.id,
+        id: item.id,
         itemType: item.issueType,
         projectKey: item.projectKey,
       });
