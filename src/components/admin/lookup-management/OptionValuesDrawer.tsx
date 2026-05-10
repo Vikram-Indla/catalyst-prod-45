@@ -16,11 +16,10 @@ import {
   SheetBody,
   SheetFooter,
 } from '@/components/ui/sheet';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Switch } from '@/components/ui/switch';
+import Button from '@atlaskit/button/new';
+import Textfield from '@atlaskit/textfield';
+import Toggle from '@atlaskit/toggle';
 import { Lozenge } from '@/components/ads';
-import { Label } from '@/components/ui/label';
 import {
   OptionSet,
   OptionValue,
@@ -263,10 +262,9 @@ export function OptionValuesDrawer({ optionSet, open, onOpenChange }: OptionValu
                                 {/* Label */}
                                 <div>
                                   {editingId === value.id ? (
-                                    <Input
+                                    <Textfield
                                       value={editingValue?.label || ''}
-                                      onChange={(e) => setEditingValue(prev => prev ? { ...prev, label: e.target.value } : null)}
-                                      className="h-8 text-sm"
+                                      onChange={(e) => setEditingValue(prev => prev ? { ...prev, label: (e.target as HTMLInputElement).value } : null)}
                                     />
                                   ) : (
                                     <span className="text-sm">{value.label}</span>
@@ -276,10 +274,9 @@ export function OptionValuesDrawer({ optionSet, open, onOpenChange }: OptionValu
                                 {/* Value Key */}
                                 <div>
                                   {editingId === value.id ? (
-                                    <Input
+                                    <Textfield
                                       value={editingValue?.valueKey || ''}
-                                      onChange={(e) => setEditingValue(prev => prev ? { ...prev, valueKey: e.target.value } : null)}
-                                      className="h-8 text-sm font-mono"
+                                      onChange={(e) => setEditingValue(prev => prev ? { ...prev, valueKey: (e.target as HTMLInputElement).value } : null)}
                                     />
                                   ) : (
                                     <code className="text-xs bg-muted px-1.5 py-0.5 rounded">{value.value_key}</code>
@@ -288,29 +285,29 @@ export function OptionValuesDrawer({ optionSet, open, onOpenChange }: OptionValu
 
                                 {/* Active Toggle */}
                                 <div className="flex justify-center">
-                                  <Switch
-                                    checked={editingId === value.id ? editingValue?.isActive : value.is_active}
-                                    onCheckedChange={(checked) => {
+                                  <Toggle
+                                    isChecked={editingId === value.id ? (editingValue?.isActive ?? false) : value.is_active}
+                                    onChange={() => {
                                       if (editingId === value.id) {
-                                        setEditingValue(prev => prev ? { ...prev, isActive: checked } : null);
+                                        setEditingValue(prev => prev ? { ...prev, isActive: !prev.isActive } : null);
                                       } else {
                                         handleToggleActive(value);
                                       }
                                     }}
-                                    disabled={updateMutation.isPending}
+                                    isDisabled={updateMutation.isPending}
                                   />
                                 </div>
 
                                 {/* Default Toggle */}
                                 <div className="flex justify-center">
-                                  <Switch
-                                    checked={editingId === value.id ? editingValue?.isDefault : value.is_default}
-                                    onCheckedChange={(checked) => {
+                                  <Toggle
+                                    isChecked={editingId === value.id ? (editingValue?.isDefault ?? false) : value.is_default}
+                                    onChange={() => {
                                       if (editingId === value.id) {
-                                        setEditingValue(prev => prev ? { ...prev, isDefault: checked } : null);
+                                        setEditingValue(prev => prev ? { ...prev, isDefault: !prev.isDefault } : null);
                                       }
                                     }}
-                                    disabled={editingId !== value.id}
+                                    isDisabled={editingId !== value.id}
                                   />
                                 </div>
 
@@ -330,42 +327,30 @@ export function OptionValuesDrawer({ optionSet, open, onOpenChange }: OptionValu
                                   {editingId === value.id ? (
                                     <>
                                       <Button
-                                        variant="ghost"
-                                        size="icon"
-                                        className="h-7 w-7"
+                                        appearance="subtle"
+                                        iconBefore={CheckMarkIcon}
                                         onClick={handleSaveEdit}
-                                        disabled={updateMutation.isPending}
-                                      >
-                                        <CheckMarkIcon label="" size="small" />
-                                      </Button>
+                                        isDisabled={updateMutation.isPending}
+                                      />
                                       <Button
-                                        variant="ghost"
-                                        size="icon"
-                                        className="h-7 w-7"
+                                        appearance="subtle"
+                                        iconBefore={CrossIcon}
                                         onClick={handleCancelEdit}
-                                      >
-                                        <CrossIcon label="" size="small" />
-                                      </Button>
+                                      />
                                     </>
                                   ) : (
                                     <>
                                       <Button
-                                        variant="ghost"
-                                        size="icon"
-                                        className="h-7 w-7"
+                                        appearance="subtle"
+                                        iconBefore={EditIcon}
                                         onClick={() => handleStartEdit(value)}
-                                      >
-                                        <EditIcon label="" size="small" />
-                                      </Button>
+                                      />
                                       <Button
-                                        variant="ghost"
-                                        size="icon"
-                                        className="h-7 w-7 text-destructive hover:text-destructive"
+                                        appearance="subtle"
+                                        iconBefore={TrashIcon}
                                         onClick={() => handleDelete(value)}
-                                        disabled={deleteMutation.isPending}
-                                      >
-                                        <TrashIcon label="" size="small" />
-                                      </Button>
+                                        isDisabled={deleteMutation.isPending}
+                                      />
                                     </>
                                   )}
                                 </div>
@@ -383,53 +368,43 @@ export function OptionValuesDrawer({ optionSet, open, onOpenChange }: OptionValu
                 {isAddingNew && (
                   <div className="grid grid-cols-[40px_1fr_1fr_80px_80px_80px_80px] gap-2 px-3 py-2 items-center border-t bg-brand-primary/5">
                     <div></div>
-                    <Input
+                    <Textfield
                       placeholder="Label"
                       value={newValue.label || ''}
-                      onChange={(e) => setNewValue(prev => ({ ...prev, label: e.target.value }))}
-                      className="h-8 text-sm"
+                      onChange={(e) => setNewValue(prev => ({ ...prev, label: (e.target as HTMLInputElement).value }))}
                     />
-                    <Input
+                    <Textfield
                       placeholder="value_key"
                       value={newValue.valueKey || ''}
-                      onChange={(e) => setNewValue(prev => ({ ...prev, valueKey: e.target.value }))}
-                      className="h-8 text-sm font-mono"
+                      onChange={(e) => setNewValue(prev => ({ ...prev, valueKey: (e.target as HTMLInputElement).value }))}
                     />
                     <div className="flex justify-center">
-                      <Switch
-                        checked={newValue.isActive ?? true}
-                        onCheckedChange={(checked) => setNewValue(prev => ({ ...prev, isActive: checked }))}
+                      <Toggle
+                        isChecked={newValue.isActive ?? true}
+                        onChange={() => setNewValue(prev => ({ ...prev, isActive: !prev.isActive }))}
                       />
                     </div>
                     <div className="flex justify-center">
-                      <Switch
-                        checked={newValue.isDefault ?? false}
-                        onCheckedChange={(checked) => setNewValue(prev => ({ ...prev, isDefault: checked }))}
+                      <Toggle
+                        isChecked={newValue.isDefault ?? false}
+                        onChange={() => setNewValue(prev => ({ ...prev, isDefault: !prev.isDefault }))}
                       />
                     </div>
                     <div></div>
                     <div className="flex justify-center gap-1">
                       <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-7 w-7"
+                        appearance="subtle"
+                        iconBefore={createMutation.isPending ? undefined : CheckMarkIcon}
                         onClick={handleAddNew}
-                        disabled={createMutation.isPending}
+                        isDisabled={createMutation.isPending}
                       >
-                        {createMutation.isPending ? (
-                          <Spinner size="small" />
-                        ) : (
-                          <CheckMarkIcon label="" size="small" />
-                        )}
+                        {createMutation.isPending ? <Spinner size="small" /> : undefined}
                       </Button>
                       <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-7 w-7"
+                        appearance="subtle"
+                        iconBefore={CrossIcon}
                         onClick={() => setIsAddingNew(false)}
-                      >
-                        <CrossIcon label="" size="small" />
-                      </Button>
+                      />
                     </div>
                   </div>
                 )}
@@ -444,12 +419,10 @@ export function OptionValuesDrawer({ optionSet, open, onOpenChange }: OptionValu
               {/* Add Button */}
               {!isAddingNew && (
                 <Button
-                  variant="outline"
-                  size="sm"
+                  appearance="default"
+                  iconBefore={AddIcon}
                   onClick={() => setIsAddingNew(true)}
-                  className="gap-1.5"
                 >
-                  <AddIcon label="" size="small" />
                   Add Option
                 </Button>
               )}
@@ -471,7 +444,7 @@ export function OptionValuesDrawer({ optionSet, open, onOpenChange }: OptionValu
         </SheetBody>
 
         <SheetFooter>
-          <Button variant="outline" onClick={() => onOpenChange(false)}>
+          <Button appearance="default" onClick={() => onOpenChange(false)}>
             Close
           </Button>
         </SheetFooter>
