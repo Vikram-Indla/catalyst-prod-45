@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, Suspense, startTransition, lazy } from 'react';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import { format } from 'date-fns';
 import { supabase } from '@/integrations/supabase/client';
 import CrossIcon from '@atlaskit/icon/glyph/cross';
@@ -10,14 +10,9 @@ import Spinner from '@atlaskit/spinner';
 import Button, { IconButton } from '@atlaskit/button/new';
 import Tabs, { Tab, TabList, TabPanel } from '@atlaskit/tabs';
 import Textfield from '@atlaskit/textfield';
-import Select from '@atlaskit/select';
-import { WorkItem, PRIORITY_CONFIG } from '../types';
+import { WorkItem } from '../types';
 import { WorkTypeIcon } from './WorkTypeIcon';
-import { PriorityIcon } from './PriorityIcon';
-import { StatusLozenge } from './StatusLozenge';
 import { Avatar, Tooltip } from '@/components/ads';
-import { toast } from '@/components/ui/sonner';
-import { mapToStoryStatus, mapToFeatureStatus } from '../utils/statusMapping';
 const EpicDescriptionEditor = lazy(
   () => import('@/components/shared/rich-text/atlaskit/EpicDescriptionEditor'),
 );
@@ -26,6 +21,16 @@ import { isAdfEmpty } from '@/components/shared/rich-text/atlaskit/adfHelpers';
 import { prefetchEpicEditor } from '@/lib/atlaskitPrefetch';
 import { SubtasksPanel } from '@/modules/project-work-hub/components/SubtasksPanel';
 import { LinkedWorkItemsSection } from '@/modules/project-work-hub/components/linked-work-items';
+import {
+  useCatalystIssue,
+  useCatalystIssueMutations,
+} from '@/components/catalyst-detail-views/shared/hooks';
+import {
+  CatalystActivitySection,
+  CatalystKeyDetails,
+  CatalystStatusPill,
+} from '@/components/catalyst-detail-views/shared/sections';
+import type { CatalystItemType } from '@/components/catalyst-detail-views/shared/types';
 
 interface WorkItemDetailsDrawerProps {
   item: WorkItem | null;
@@ -39,12 +44,11 @@ export const WorkItemDetailsDrawer: React.FC<WorkItemDetailsDrawerProps> = ({
   isOpen,
   onClose,
 }) => {
-  const queryClient = useQueryClient();
   const [isEditing, setIsEditing] = useState(false);
   const [editedSummary, setEditedSummary] = useState('');
-  const [editedStatus, setEditedStatus] = useState('');
   const [isDescriptionEditing, setIsDescriptionEditing] = useState(false);
 
+  // jiraData — sync metadata only (sync status badge at the bottom)
   const { data: jiraData } = useQuery({
     queryKey: ['work-item-jira-sync', item?.id],
     queryFn: async () => {
@@ -58,89 +62,31 @@ export const WorkItemDetailsDrawer: React.FC<WorkItemDetailsDrawerProps> = ({
     enabled: !!item?.id,
   });
 
+  // Canonical data path — resolved once jiraData lands
+  const issueKey = jiraData?.item_key ?? item?.jiraKey ?? null;
+  const { data: issue } = useCatalystIssue(issueKey ?? '', isOpen && !!issueKey);
+  const mutations = useCatalystIssueMutations(issueKey ?? '', onClose);
+
+  // Derived values
+  const displaySummary = issue?.summary ?? item?.summary ?? '';
+  const canEdit = !!issueKey;
+  const descSource = issue?.description_adf ?? item?.description ?? null;
+  const descIsEmpty = isAdfEmpty(descSource);
+  const projectKey = issue?.project_key ?? issueKey?.split('-')[0] ?? item?.key ?? '';
+  const itemType = (item?.type?.toLowerCase() ?? 'story') as CatalystItemType;
+
   useEffect(() => {
     if (item) {
-      setEditedSummary(item.summary);
-      setEditedStatus(item.status);
+      setEditedSummary(issue?.summary ?? item.summary);
       setIsEditing(false);
       setIsDescriptionEditing(false);
     }
-  }, [item]);
-
-  const updateItem = useMutation({
-    mutationFn: async ({
-      id,
-      type,
-      summary,
-      description,
-      status,
-    }: {
-      id: string;
-      type: 'FEATURE' | 'STORY';
-      summary?: string;
-      description?: string;
-      status?: string;
-    }) => {
-      if (type === 'STORY') {
-        const updateData: Record<string, any> = { updated_at: new Date().toISOString() };
-        if (summary !== undefined) updateData.title = summary;
-        if (description !== undefined) updateData.description = description;
-        if (status !== undefined) updateData.status = mapToStoryStatus(status);
-
-        const { error } = await supabase.from('stories').update(updateData).eq('id', id);
-        if (error) throw error;
-      } else if (type === 'FEATURE') {
-        const updateData: Record<string, any> = { updated_at: new Date().toISOString() };
-        if (summary !== undefined) updateData.name = summary;
-        if (description !== undefined) updateData.description = description;
-        if (status !== undefined) updateData.status = mapToFeatureStatus(status);
-
-        const { error } = await supabase.from('features').update(updateData).eq('id', id);
-        if (error) throw error;
-      }
-      return { id };
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['work-items'] });
-      queryClient.invalidateQueries({ queryKey: ['features'] });
-      queryClient.invalidateQueries({ queryKey: ['stories'] });
-      toast.success('Item updated');
-      setIsEditing(false);
-      setIsDescriptionEditing(false);
-    },
-    onError: (error: any) => {
-      toast.error('Failed to update', { description: error.message });
-    },
-  });
-
-  const archiveItem = useMutation({
-    mutationFn: async ({ id, type }: { id: string; type: 'FEATURE' | 'STORY' }) => {
-      const now = new Date().toISOString();
-      if (type === 'STORY') {
-        const { error } = await supabase.from('stories').update({ deleted_at: now, updated_at: now }).eq('id', id);
-        if (error) throw error;
-      } else if (type === 'FEATURE') {
-        const { error } = await supabase.from('features').update({ deleted_at: now, updated_at: now }).eq('id', id);
-        if (error) throw error;
-      }
-      return { id };
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['work-items'] });
-      queryClient.invalidateQueries({ queryKey: ['archived-items'] });
-      queryClient.invalidateQueries({ queryKey: ['features'] });
-      queryClient.invalidateQueries({ queryKey: ['stories'] });
-      toast.success('Item archived');
-      onClose();
-    },
-    onError: (error: any) => {
-      toast.error('Failed to archive', { description: error.message });
-    },
-  });
+  }, [item?.id, issue?.summary]);
 
   if (!isOpen || !item) return null;
 
-  const formatDate = (dateStr: string) => {
+  const formatDate = (dateStr: string | null | undefined) => {
+    if (!dateStr) return '—';
     return new Intl.DateTimeFormat('en-US', {
       month: 'short',
       day: 'numeric',
@@ -149,48 +95,24 @@ export const WorkItemDetailsDrawer: React.FC<WorkItemDetailsDrawerProps> = ({
   };
 
   const handleSave = () => {
-    if (item.type !== 'FEATURE' && item.type !== 'STORY') {
-      toast.error('Editing not supported for this item type');
-      return;
-    }
-    updateItem.mutate({ id: item.id, type: item.type as 'FEATURE' | 'STORY', summary: editedSummary });
-  };
-
-  const handleStatusChange = (newStatus: string) => {
-    setEditedStatus(newStatus);
-    if (item.type === 'FEATURE' || item.type === 'STORY') {
-      updateItem.mutate({ id: item.id, type: item.type as 'FEATURE' | 'STORY', status: newStatus });
-    }
+    if (!canEdit) return;
+    mutations.updateField.mutate({ field: 'summary', value: editedSummary, oldValue: issue?.summary ?? '' });
+    setIsEditing(false);
   };
 
   const handleArchive = () => {
-    if (item.type !== 'FEATURE' && item.type !== 'STORY') {
-      toast.error('Archive not supported for this item type');
-      return;
-    }
-    archiveItem.mutate({ id: item.id, type: item.type as 'FEATURE' | 'STORY' });
+    if (!canEdit) return;
+    mutations.deleteIssue.mutate();
   };
 
   const handleDescriptionSave = useCallback((adfJson: string) => {
-    if (!item || (item.type !== 'FEATURE' && item.type !== 'STORY')) return;
-    updateItem.mutate({ id: item.id, type: item.type as 'FEATURE' | 'STORY', description: adfJson });
-  }, [item, updateItem]);
+    mutations.updateField.mutate({ field: 'description_adf', value: adfJson, oldValue: '' });
+    setIsDescriptionEditing(false);
+  }, [mutations.updateField]);
 
   const handleDescriptionCancel = useCallback(() => {
     setIsDescriptionEditing(false);
   }, []);
-
-  const statusOptions = item.type === 'FEATURE'
-    ? ['funnel', 'analyzing', 'backlog', 'implementing', 'done']
-    : ['todo', 'in_progress', 'done'];
-
-  const statusSelectOptions = statusOptions.map(s => ({
-    label: s.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()),
-    value: s,
-  }));
-
-  const canEdit = item.type === 'FEATURE' || item.type === 'STORY';
-  const descIsEmpty = isAdfEmpty(item.description ?? null);
 
   return (
     <div className="fixed top-0 right-0 bottom-0 w-[480px] bg-background shadow-xl z-[1000] flex flex-col border-l border-border">
@@ -208,7 +130,7 @@ export const WorkItemDetailsDrawer: React.FC<WorkItemDetailsDrawerProps> = ({
               autoFocus
             />
           ) : (
-            <h2 className="text-lg font-semibold text-foreground leading-snug">{item.summary}</h2>
+            <h2 className="text-lg font-semibold text-foreground leading-snug">{displaySummary}</h2>
           )}
         </div>
         <div className="flex items-center gap-1 shrink-0">
@@ -219,10 +141,10 @@ export const WorkItemDetailsDrawer: React.FC<WorkItemDetailsDrawerProps> = ({
                   <IconButton
                     appearance="subtle"
                     spacing="compact"
-                    icon={updateItem.isPending ? () => <Spinner size="small" /> : CheckMarkIcon}
+                    icon={mutations.updateField.isPending ? () => <Spinner size="small" /> : CheckMarkIcon}
                     label="Save"
                     onClick={handleSave}
-                    isDisabled={updateItem.isPending}
+                    isDisabled={mutations.updateField.isPending}
                   />
                 </Tooltip>
               ) : (
@@ -240,10 +162,10 @@ export const WorkItemDetailsDrawer: React.FC<WorkItemDetailsDrawerProps> = ({
                 <IconButton
                   appearance="subtle"
                   spacing="compact"
-                  icon={archiveItem.isPending ? () => <Spinner size="small" /> : ArchiveIcon}
+                  icon={mutations.deleteIssue.isPending ? () => <Spinner size="small" /> : ArchiveIcon}
                   label="Archive"
                   onClick={handleArchive}
-                  isDisabled={archiveItem.isPending}
+                  isDisabled={mutations.deleteIssue.isPending}
                 />
               </Tooltip>
             </>
@@ -273,61 +195,38 @@ export const WorkItemDetailsDrawer: React.FC<WorkItemDetailsDrawerProps> = ({
           {/* Details tab */}
           <TabPanel>
             <div className="overflow-y-auto p-4 h-full">
-              {/* Status */}
-              <div className="mb-6">
-                <label className="block text-[11px] font-semibold text-muted-foreground uppercase mb-1">
-                  Status
-                </label>
-                {canEdit ? (
-                  <Select
-                    options={statusSelectOptions}
-                    value={statusSelectOptions.find(o => o.value === editedStatus) ?? null}
-                    onChange={(opt) => opt && handleStatusChange(opt.value)}
-                    menuPortalTarget={document.body}
+              {/* Status — canonical CatalystStatusPill */}
+              <div className="mb-4">
+                <CatalystStatusPill
+                  status={issue?.status ?? item.status}
+                  statusCategory={issue?.status_category ?? item.statusCategory}
+                  onStatusChange={canEdit ? (s) => mutations.updateStatus.mutate(s) : undefined}
+                  issueType={issue?.issue_type ?? item.type}
+                />
+              </div>
+
+              {/* Key Details — canonical (parent + priority) */}
+              {issueKey && (
+                <div className="mb-6">
+                  <CatalystKeyDetails
+                    issue={issue ?? null}
+                    itemId={issueKey}
+                    itemType={itemType}
+                    projectKey={projectKey}
                   />
-                ) : (
-                  <StatusLozenge status={item.status} statusCategory={item.statusCategory} />
-                )}
-              </div>
-
-              {/* Key Details */}
-              <div className="mb-6 p-3 bg-muted rounded-md border border-border">
-                <h4 className="text-[11px] font-semibold text-muted-foreground uppercase mb-3">
-                  Key Details
-                </h4>
-                <div className="space-y-3">
-                  <div>
-                    <label className="block text-[11px] font-semibold text-muted-foreground uppercase mb-1">
-                      Parent
-                    </label>
-                    <span className="text-sm text-foreground">
-                      {item.parentKey ? `${item.parentKey} — ${item.parentSummary ?? ''}` : 'None'}
-                    </span>
-                  </div>
-                  <div>
-                    <label className="block text-[11px] font-semibold text-muted-foreground uppercase mb-1">
-                      Priority
-                    </label>
-                    <div className="flex items-center gap-1">
-                      <PriorityIcon priority={item.priority} />
-                      <span className="text-sm text-foreground">
-                        {PRIORITY_CONFIG[item.priority]?.label || item.priority}
-                      </span>
-                    </div>
-                  </div>
                 </div>
-              </div>
+              )}
 
-              {/* Assignee & Reporter */}
+              {/* Assignee & Reporter — read from ph_issues */}
               <div className="grid grid-cols-2 gap-4 mb-6">
                 <div>
                   <label className="block text-[11px] font-semibold text-muted-foreground uppercase mb-1">
                     Assignee
                   </label>
-                  {item.assigneeId ? (
+                  {(issue?.assignee_display_name ?? item.assigneeName) ? (
                     <div className="flex items-center gap-2">
-                      <Avatar name={item.assigneeName || 'Assignee'} size="xsmall" />
-                      <span className="text-sm text-foreground">{item.assigneeName || 'Assignee'}</span>
+                      <Avatar name={issue?.assignee_display_name ?? item.assigneeName ?? 'Assignee'} size="xsmall" />
+                      <span className="text-sm text-foreground">{issue?.assignee_display_name ?? item.assigneeName}</span>
                     </div>
                   ) : (
                     <span className="text-sm text-muted-foreground">Unassigned</span>
@@ -337,10 +236,10 @@ export const WorkItemDetailsDrawer: React.FC<WorkItemDetailsDrawerProps> = ({
                   <label className="block text-[11px] font-semibold text-muted-foreground uppercase mb-1">
                     Reporter
                   </label>
-                  {item.reporterId ? (
+                  {(issue?.reporter_display_name ?? item.reporterName) ? (
                     <div className="flex items-center gap-2">
-                      <Avatar name={item.reporterName || 'Reporter'} size="xsmall" />
-                      <span className="text-sm text-foreground">{item.reporterName || 'Reporter'}</span>
+                      <Avatar name={issue?.reporter_display_name ?? item.reporterName ?? 'Reporter'} size="xsmall" />
+                      <span className="text-sm text-foreground">{issue?.reporter_display_name ?? item.reporterName}</span>
                     </div>
                   ) : (
                     <span className="text-sm text-muted-foreground">None</span>
@@ -369,7 +268,7 @@ export const WorkItemDetailsDrawer: React.FC<WorkItemDetailsDrawerProps> = ({
                   <div style={{ paddingLeft: 0 }}>
                     <Suspense fallback={<div style={{ padding: 12, color: 'var(--ds-text-subtlest)', fontSize: 13 }}><Spinner size="small" /></div>}>
                       <EpicDescriptionEditor
-                        initialContent={item.description ?? null}
+                        initialContent={descSource}
                         onSave={handleDescriptionSave}
                         onCancel={handleDescriptionCancel}
                         workItemId={item.id}
@@ -450,8 +349,8 @@ export const WorkItemDetailsDrawer: React.FC<WorkItemDetailsDrawerProps> = ({
               {/* Dates */}
               <div className="border-t border-border pt-4 mt-4">
                 <div className="flex justify-between text-xs text-muted-foreground">
-                  <span>Created: {formatDate(item.createdAt)}</span>
-                  <span>Updated: {formatDate(item.updatedAt)}</span>
+                  <span>Created: {formatDate(issue?.jira_created_at ?? item.createdAt)}</span>
+                  <span>Updated: {formatDate(issue?.jira_updated_at ?? item.updatedAt)}</span>
                 </div>
               </div>
 
@@ -508,56 +407,16 @@ export const WorkItemDetailsDrawer: React.FC<WorkItemDetailsDrawerProps> = ({
             </div>
           </TabPanel>
 
-          {/* Activity tab */}
+          {/* Activity tab — canonical CatalystActivitySection */}
           <TabPanel>
             <div className="overflow-y-auto p-4 h-full">
-              <div className="mb-6">
-                <label className="block text-[11px] font-semibold text-muted-foreground uppercase mb-2">
-                  Add Comment
-                </label>
-                <Tooltip content="Coming soon">
-                  <div
-                    style={{
-                      border: '1px solid var(--ds-border, #DFE1E6)',
-                      borderRadius: 4,
-                      padding: '8px 12px',
-                      minHeight: 60,
-                      color: 'var(--ds-text-subtlest, #97A0AF)',
-                      fontSize: 13,
-                      cursor: 'not-allowed',
-                      background: 'var(--ds-surface-sunken, #F4F5F7)',
-                    }}
-                  >
-                    Add a comment...
-                  </div>
-                </Tooltip>
-                <div className="mt-2 text-right">
-                  <Tooltip content="Coming soon">
-                    <span>
-                      <Button isDisabled>Comment</Button>
-                    </span>
-                  </Tooltip>
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-[11px] font-semibold text-muted-foreground uppercase mb-3">
-                  History
-                </label>
-                <div className="flex flex-col gap-4">
-                  <div className="flex gap-2">
-                    <Avatar name="System" size="xsmall" />
-                    <div className="flex-1">
-                      <p className="text-sm text-foreground">
-                        <strong>System</strong> created this item
-                      </p>
-                      <span className="text-[11px] text-muted-foreground">
-                        {formatDate(item.createdAt)}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              </div>
+              {issueKey ? (
+                <CatalystActivitySection itemId={issueKey} isOpen={isOpen} />
+              ) : (
+                <p className="text-sm text-muted-foreground">
+                  Activity is available once this item is synced with Jira.
+                </p>
+              )}
             </div>
           </TabPanel>
         </Tabs>

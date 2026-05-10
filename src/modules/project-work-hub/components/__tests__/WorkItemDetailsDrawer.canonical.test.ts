@@ -91,4 +91,74 @@ describe('WorkItemDetailsDrawer — canonical parity', () => {
       'Linked work items were absent — add the canonical component.',
     ).toBe(true);
   });
+
+  it('uses useCatalystIssue for ph_issues data (canonical data path)', () => {
+    // useCatalystIssue queries ph_issues by issue_key — the canonical
+    // Jira-synced table. Without it, all canonical components (KeyDetails,
+    // ActivitySection, StatusPill) have no PhIssue row to read from.
+    expect(
+      src.includes("useCatalystIssue"),
+      'WorkItemDetailsDrawer must use useCatalystIssue to load the ph_issues ' +
+      'row. All canonical sections depend on PhIssue shape.',
+    ).toBe(true);
+  });
+
+  it('uses useCatalystIssueMutations (replaces legacy stories/features mutations)', () => {
+    // useCatalystIssueMutations writes to ph_issues via updateField / updateStatus.
+    // The legacy updateItem mutation wrote to stories and features tables directly.
+    expect(
+      src.includes("useCatalystIssueMutations"),
+      'WorkItemDetailsDrawer must use useCatalystIssueMutations. ' +
+      'Legacy mutations writing to stories/features tables must be removed.',
+    ).toBe(true);
+  });
+
+  it('no legacy write to stories table', () => {
+    // updateItem.mutationFn wrote supabase.from("stories").update(...).
+    // Replaced by useCatalystIssueMutations which writes to ph_issues.
+    expect(
+      src.includes("from('stories').update"),
+      "WorkItemDetailsDrawer must NOT write to the legacy 'stories' table. " +
+      'Use useCatalystIssueMutations (writes to ph_issues).',
+    ).toBe(false);
+  });
+
+  it('no legacy write to features table', () => {
+    // updateItem.mutationFn wrote supabase.from("features").update(...).
+    // Replaced by useCatalystIssueMutations which writes to ph_issues.
+    expect(
+      src.includes("from('features').update"),
+      "WorkItemDetailsDrawer must NOT write to the legacy 'features' table. " +
+      'Use useCatalystIssueMutations (writes to ph_issues).',
+    ).toBe(false);
+  });
+
+  it('uses canonical CatalystActivitySection (replaces Coming-soon stub)', () => {
+    // The Activity tab had a "Coming soon" comment box and a fake single
+    // "System created" history entry. CatalystActivitySection provides
+    // real comments, activity log, and the ADF comment composer.
+    expect(
+      src.includes("CatalystActivitySection"),
+      'WorkItemDetailsDrawer must render CatalystActivitySection in the ' +
+      'Activity tab instead of the "Coming soon" stub.',
+    ).toBe(true);
+
+    // Ensure the stub is gone
+    expect(
+      src.includes("Add a comment..."),
+      'WorkItemDetailsDrawer must NOT render the hand-rolled "Add a comment..." ' +
+      '"Coming soon" stub. Use CatalystActivitySection instead.',
+    ).toBe(false);
+  });
+
+  it('uses canonical CatalystKeyDetails (replaces hand-rolled Key Details block)', () => {
+    // The hand-rolled Key Details block showed static parent/priority text.
+    // CatalystKeyDetails provides the canonical editable parent picker +
+    // priority picker with Jira-parity styling.
+    expect(
+      src.includes("CatalystKeyDetails"),
+      'WorkItemDetailsDrawer must render CatalystKeyDetails instead of the ' +
+      'hand-rolled static parent/priority block.',
+    ).toBe(true);
+  });
 });
