@@ -10,6 +10,14 @@ The Catalyst local dev server always runs on **http://localhost:8080**. Never us
 
 ---
 
+## 2026-05-10 — Hand-rolled dropdowns must be replaced with @atlaskit/dropdown-menu
+**Surface:** CatalystViewBase (all detail views — applies to any surface with a menu)
+**Pattern:** The ⋯ more-actions menu in `CatalystViewBase.tsx` was self-rolled: `useState(showDotsMenu)` + outside-click `useEffect` + `div` with inline `onClick` handlers. This violated JIRA_ARCHITECT A4 (hand-rolled interactive element): no `role="menuitem"`, no keyboard navigation, no focus trap, no ARIA. WCAG 2.1 AA keyboard-access failure.
+**Rule:** Any menu, dropdown, or action list with 2+ items MUST use `@atlaskit/dropdown-menu` (`DropdownMenu`, `DropdownItem`, `DropdownItemGroup` from `@atlaskit/dropdown-menu`). Never hand-roll a menu. Structure: standard items in the first `DropdownItemGroup`; danger items in a second `DropdownItemGroup` at the bottom with `<span style={{ color: 'var(--ds-text-danger, #AE2A19)' }}>` wrapper on the label. The trigger must be an `IconButton` with `appearance="subtle"`. This pattern is now canonical for all surfaces — backlog row menus, project cards, admin tables, and detail view headers all share it.
+**Severity:** P0 (WCAG 2.1 AA — keyboard users cannot operate the menu without this).
+
+---
+
 ## 2026-05-10 — openDetail must receive issue_key (text), never a UUID
 **Surface:** Any sidebar, panel, notification, or list that calls `useGlobalSearchStore.getState().openDetail({ id: ... })`
 **Pattern:** Five surfaces (ProjectHubSidebar, SidebarProjectNav, AgeingPanel, ThemeIssueList, NotificationPanel) were passing the UUID `id` column from `ph_issues` — causing `CatalystDetailRouter` to always return "Issue not found". `CatalystDetailRouter` queries `ph_issues` exclusively by `.eq('issue_key', itemId)` (text PK like "BAU-5757"). UUID lookups silently no-op.

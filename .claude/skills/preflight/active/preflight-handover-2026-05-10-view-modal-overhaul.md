@@ -75,16 +75,43 @@ T-A failing test → T-B minimal fix → T-C ads-validator → T-D re-probe → 
 - F7 handover update
 
 ## Progress
+
+### Session 2026-05-10 — BAU-5751 three-dots + ImproveIssueDropdown (SHIPPED ✅)
+Vikram's directive: "the more three dots is very important with options like clone, move, archive, delete — these features must work and come back and present back all the issues."
+
+**Commits pushed to origin/main (`ae8fade28` → `ce26d818b`):**
+- [x] `82fffedd5` — `cloneIssue` TDD (failing test + implementation). Copies all fields, preserves `parent_key`, resets status "To Do". 2 tests green.
+- [x] `34c505dc4` — Clone wired all 8 CatalystView* files. Toast + "Open" action link.
+- [x] `ca71f2fec` — `archiveIssue` TDD + implementation (`is_archived=true`). Archive wired with `window.confirm` guard. 2 tests green.
+- [x] `f80b8b097` — `moveIssue` TDD + `MoveIssueDialog` (AtlasKit modal + project Select). Move wired all 8 views. 2 tests green.
+- [x] `00f6a1b6b` — Hand-rolled ⋯ menu → `@atlaskit/dropdown-menu` (resolves WCAG A4 P0 pattern). Danger items in separate group.
+- [x] `ce26d818b` — `ImproveIssueDropdown` moved from leftContent → right-rail `improveDropdown` slot all 8 views. Smoke test updated (12/12 green).
+
+**Tests added this session: 18 total (6 workItemRepo unit + 12 improve-slot smoke)**
+
+**Gates cleared:**
+- TDD: 18/18 green
+- ADS-validator: 0 violations (all new UI uses canonical ADS components)
+- jira-compare: "More actions" + ImproveIssueDropdown slot confirmed via accessibility tree
+- Phase 0.5 A4 resolved: `@atlaskit/dropdown-menu` replaces hand-rolled menu
+
+**Lesson candidate (approved by Vikram via "go"):**
+> `## 2026-05-10 — Hand-rolled dropdowns must be replaced with @atlaskit/dropdown-menu`
+> Surface: CatalystViewBase (all detail views). Rule: Any menu with 2+ items → `@atlaskit/dropdown-menu`, never hand-rolled. Danger items in separate `DropdownItemGroup` at bottom. Severity: P0 (WCAG 2.1 AA).
+
+### Original view-modal overhaul progress
 - [x] Phase 0 bootstrap
 - [x] Phase 0.5 Jira Architect scan (28 patterns, 0 halts)
 - [x] Phase 1 plan written (4 lanes, 9 types)
 - [x] Phase 2 council verdict (3 panels)
 - [x] Phase 3 plan synthesized
 - [x] Phase 7 handover stub created
+- [x] X1 Improve* inline slot — DONE (ce26d818b, all 8 views, smoke test updated)
+- [x] X2 Top-bar wiring (⋯ menu) — DONE (00f6a1b6b + f80b8b097 + ca71f2fec + 34c505dc4 + 82fffedd5)
 - [ ] Stage 1 #1 — read CatalystViewBusinessRequest.v2.tsx
 - [ ] Stage 1 #10 — Vikram confirms canonical + ordering
-- [ ] Stage 2 round-robin × 9 types
-- [ ] Stage 3 cross-cutting X1–X7
+- [ ] Stage 2 round-robin × 9 types (Defect → Story → Task → Subtask → Feature → Epic → BR → Incident → Idea)
+- [ ] Stage 3 remaining: X3 breadcrumb nav · X4 count badges · X5 ADF media · X6 Activity dedup · X7 status dropdown typography
 - [ ] Stage 4 final gates F1–F7
 
 ## Files (anticipated touch list)
@@ -141,35 +168,40 @@ Read: .claude/skills/preflight/active/preflight-handover-2026-05-10-view-modal-o
 Surface: CatalystDetailRouter modal — round-robin all 9 work item types.
 Tier: high-stake. Phase 0.5 clean (0 halts). Council verdict committed.
 
-Reference issue (screenshot): BAU-5736 (QA Bug/Defect), inside Senaei BAU / BAU-4466.
-Canonical hypothesis: CatalystViewBusinessRequest.v2.tsx is the "new implementation"
-Vikram referenced — confirm at Stage 1 step #1 before any code.
+ALREADY SHIPPED (do NOT re-do):
+- ⋯ three-dots menu: Clone / Move / Archive / Delete all work (Supabase-backed + TDD).
+  cloneIssue, archiveIssue, moveIssue in workItemRepo.ts. MoveIssueDialog.tsx added.
+  @atlaskit/dropdown-menu replaces hand-rolled menu in CatalystViewBase.tsx.
+  All 8 CatalystView* files updated. 18 tests green.
+- ImproveIssueDropdown moved from leftContent → improveDropdown slot (right rail)
+  in all 8 CatalystView* files. Smoke test updated 12/12 green.
+- Lesson candidate (approved): @atlaskit/dropdown-menu mandatory for all menus, P0.
+Commits: ae8fade28 → ce26d818b (pushed to origin/main).
 
-Run order:
-  Stage 1 (#1–#10): Discovery (read v2 → JQL exemplars → schema dump × 9 →
-    ADF probe of BAU-5736 → Jira DOM probe → Catalyst DOM probe at localhost:8080 →
-    pixel probe → ads-validator → red-arrow screenshots → ASK VIKRAM)
+REMAINING WORK (Stage 2+3+4):
+Reference issue: BAU-5736 (QA Bug/Defect), inside Senaei BAU / BAU-4466.
+
   Stage 2: Per-type round-robin × 9, in order:
     Defect/QA Bug → Story → Task → Subtask → Feature → Epic → BR → Incident → Idea.
     Each type: T-A failing test → T-B fix → T-C ads-validator → T-D re-probe →
     T-E green-arrow screenshot → T-F regression-sweep → T-G commit + Vikram review.
     5-cycle cap per type. Halt and surface if exceeded.
-  Stage 3 cross-cutting: X1 Improve→inline panel · X2 top-bar wiring ·
-    X3 breadcrumb nav · X4 remove count badges · X5 ADF media → proxy ·
+  Stage 3 remaining cross-cutting:
+    X3 breadcrumb nav · X4 count badges · X5 ADF media → proxy ·
     X6 Activity dedup · X7 status dropdown typography + transparent parent chip.
   Stage 4: F1 re-probe all 9 (drift=0) · F2 ads-validator (0 violations) ·
     F3 design-critique (≥27/30 each) · F4 all-green screenshots ·
     F5 one PR · F6 lessons → save-memory · F7 handover update.
 
-Hard rules in force:
+Hard rules:
 - localhost:8080 ONLY (no 8081, no preview_*).
-- Chrome MCP for live probes; Atlassian MCP for schema/ADF; Lovable for SQL (none expected).
+- Chrome MCP for live probes; Atlassian MCP for schema/ADF.
 - TDD: failing test before every implementation row.
-- Ask Vikram before any field add/remove or banned-item touch.
-- Banned (NEVER add): MDT Ref, Service Now#, Assessment Feature, Story Points,
+- Ask Vikram before any field add/remove.
+- Banned forever: MDT Ref, Service Now#, Assessment Feature, Story Points,
   Development section, Automation section, AI Sparkles inline, Notion-in-Projects.
-- One PR per session, after all rows committed.
 
-First action: confirm canonical by reading CatalystViewBusinessRequest.v2.tsx,
-then ask Vikram for go on Stage 2 ordering.
+First action: open BAU-5736 in Catalyst (localhost:8080/project-hub/BAU/allwork?issue=BAU-5736),
+run Chrome MCP + Jira DOM probe side-by-side, produce red-arrow annotated screenshot,
+then ask Vikram for go on Stage 2 first type.
 ```
