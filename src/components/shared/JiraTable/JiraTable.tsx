@@ -717,6 +717,15 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
       .jira-table-grid tbody tr.jira-table-group-row > td:nth-child(3) {
         background: var(--ds-surface-sunken, #F4F5F7) !important;
       }
+      /* 2026-05-10 Jira-parity: group header rows stick below the thead
+         while their child rows scroll past. top:40px = thead height.
+         z-index 1 keeps them below the thead (z:2) but above body rows. */
+      .jira-table-grid tbody tr.jira-table-group-row > td {
+        position: sticky;
+        top: 40px;
+        z-index: 1;
+        background: var(--ds-surface-sunken, #F4F5F7);
+      }
       /* ── Critique fixes (2026-04) — ported from the retired legacy table ──
          Center the selection checkbox in its column.
          AkCheckbox renders a hidden <input> inside a <label> that normally
