@@ -47,6 +47,8 @@ function MemberPill({
   return (
     <button
       type="button"
+      role="tab"
+      aria-selected={active}
       onClick={onClick}
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
@@ -158,6 +160,8 @@ export default function R360Panel() {
       {/* ── Team picker — leads only ── */}
       {isTeamLead && !teamLoading && teamResources.length > 0 && (
         <div
+          role="tablist"
+          aria-label="Team member view"
           style={{
             display: 'flex',
             alignItems: 'center',
