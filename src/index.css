@@ -5826,6 +5826,21 @@ html[data-presentation="true"] [data-testid="project-dashboard-shell"] [role="re
 }
 
 /* ────────────────────────────────────────────────────────────────────────
+   Status listbox scoped override (jira-compare DC3 A4, 2026-05-11)
+   ────────────────────────────────────────────────────────────────────────
+   Jira DOM probe BAU-5736: status transition listbox option rows render at
+   14px/400 (not the lozenge-default 11px or the global 12px/500 override).
+   Scope correction to .cv-status-listbox so header pill lozenges (12px/500)
+   are unaffected. jira-compare bypass: measured Jira value, no matching ADS token.
+   ────────────────────────────────────────────────────────────────────── */
+.cv-status-listbox [data-cp-lozenge-jira-parity] > span,
+.cv-status-listbox [data-cp-lozenge-jira-parity] > span > span,
+.cv-status-listbox [data-cp-lozenge-jira-parity] span[class^="css-"] {
+  font-size: 14px !important;
+  font-weight: 400 !important;
+}
+
+/* ────────────────────────────────────────────────────────────────────────
    Dark-mode lozenge color softening (2026-04-30)
    ────────────────────────────────────────────────────────────────────────
    Atlaskit @atlaskit/lozenge applies bold colors via Emotion classNames

@@ -377,7 +377,7 @@ export function CatalystSidebarDetails({
           <ChevronDownIcon size="small" primaryColor="var(--ds-icon-subtle, #42526E)" />
         </button>
         {showStatusDropdown && (
-          <div style={{
+          <div className="cv-status-listbox" style={{
             position: 'absolute', left: 0, top: '100%', marginTop: 4,
             background: 'var(--ds-surface, #FFFFFF)', borderRadius: 8,
             boxShadow: '0 4px 24px rgba(30,31,33,0.16), 0 0 1px rgba(30,31,33,0.31)',

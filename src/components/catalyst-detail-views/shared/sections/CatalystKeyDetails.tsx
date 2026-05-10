@@ -126,7 +126,7 @@ export function CatalystKeyDetails({
         </span>
         {/* jira-compare 2026-05-08: Atlaskit Heading size="small" = 16px/653 —
             K.11 section header spec = 14px/600/#172B4D. Use inline h2. */}
-        <h2 style={{ margin: 0, fontSize: 16, fontWeight: 653, lineHeight: '20px', color: 'var(--ds-text, #172B4D)' }}>Key details</h2>
+        <h2 style={{ margin: 0, fontSize: 14, fontWeight: 600, lineHeight: '20px', color: 'var(--ds-text, #172B4D)' }}>Key details</h2>
       </div>
 
       <div style={{ overflow: 'hidden', maxHeight: collapsed ? 0 : 800, transition: 'max-height 0.15s ease' }}>
