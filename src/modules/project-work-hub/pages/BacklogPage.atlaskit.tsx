@@ -2891,12 +2891,15 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
             contextMenuActions={rowActions}
             getRowId={(r) => r.id}
             getRowDepth={(r) => {
-              // Three-level hierarchy: Request (0) → Epic (1) → Story (2).
+              // 2026-05-10: Indent only in flat view — when grouped, children
+              // share the group's visual scope and additional indent is noise.
+              if (groupBy && groupBy !== 'parent') return 0;
+              // Three-level hierarchy: Request/Epic (0) → child (1) → grandchild (2).
+              // Covers all child types (story/bug/task/subtask/feature/incident).
               if (r.type === 'initiative') return 0;
-              if (r.type === 'epic' && r.parent_id) return 1;       // epic under initiative
-              if (r.type === 'story' && r.parent_id) {
-                // Story under an epic that's under an initiative → depth 2
-                // (the epic it's under has parent_id), otherwise depth 1.
+              if (r.type === 'epic' && r.parent_id) return 1;
+              const childTypes = ['story', 'bug', 'task', 'subtask', 'feature', 'incident'];
+              if (childTypes.includes(r.type) && r.parent_id) {
                 const parent = items.find((it) => it.id === r.parent_id);
                 return parent?.parent_id ? 2 : 1;
               }

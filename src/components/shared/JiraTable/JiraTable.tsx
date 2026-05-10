@@ -584,6 +584,10 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
       .jira-table-grid thead th.jira-th-sortable { cursor: pointer; }
       /* Apr 28, 2026 (jira-compare cycle 4): tokenized — was hardcoded #EBECF0 */
       .jira-table-grid thead th.jira-th-sortable:hover { background: var(--ds-background-neutral-hovered, #EBECF0); }
+      /* 2026-05-10 Jira-parity: row body is the click target for opening
+         the detail panel. cursor: pointer signals clickability. Inline
+         editor cells override with their own cursors (text/pointer). */
+      .jira-table-grid tbody tr:not(.jira-table-group-row) { cursor: pointer; }
       .jira-table-grid tbody td {
         padding: 0 12px;
         vertical-align: middle;
@@ -1081,13 +1085,21 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
         key: id,
         className: isFocused ? 'jira-table-row-focused' : undefined,
         onClick: (e: React.MouseEvent) => {
-          // Jira-style: the ROW itself is not clickable. Only the element
-          // marked with data-jira-table-row-open (set by makeKeyCell) opens
-          // the detail panel. Everything else falls through to that cell's
-          // own editor (or does nothing).
+          // 2026-05-10 Jira-parity fix: clicking ANYWHERE on the row body
+          // (except inline editor cells, form controls, links/buttons with
+          // their own onClick) opens the detail panel. Matches Jira's
+          // BAU list-view behavior where row body is the click target.
+          // Inline editors (status/priority/assignee/summary) carry
+          // `data-jira-cell-editor` and stopPropagation, so they're already
+          // safe — this guard is defensive belt-and-braces.
           const target = e.target as HTMLElement;
-          const opener = target.closest('[data-jira-table-row-open]');
-          if (!opener) return;
+          if (target.closest('[data-jira-cell-editor], [data-jira-table-editor], input, textarea, select, [contenteditable="true"]')) return;
+          // Anchors and buttons inside cells handle their own navigation.
+          // Exception: the Key-cell anchor explicitly carries
+          // `data-jira-table-row-open` and IS a panel-open trigger.
+          const explicitOpen = target.closest('[data-jira-table-row-open]');
+          const interactive = target.closest('a, button');
+          if (interactive && !explicitOpen) return;
           setFocusedRow(id);
           onRowClick?.(row);
         },
