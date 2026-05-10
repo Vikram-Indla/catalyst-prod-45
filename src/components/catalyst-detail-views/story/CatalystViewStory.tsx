@@ -34,6 +34,7 @@ import {
 } from '@/modules/project-work-hub/components/dialogs/story-detail-modules';
 import type { PhAttachment } from '@/modules/project-work-hub/components/dialogs/story-detail-modules/types';
 import { MoveIssueDialog } from '../shared/MoveIssueDialog';
+import { ConfirmArchiveDialog } from '../shared/ConfirmArchiveDialog';
 import type { CatalystViewBaseProps } from '../shared/types';
 
 export default function CatalystViewStory({
@@ -46,6 +47,7 @@ export default function CatalystViewStory({
   const improveHandlers = useImproveApplyHandlers(issue ?? null);
   const { user } = useAuth();
   const [showMoveDialog, setShowMoveDialog] = React.useState(false);
+  const [showArchiveDialog, setShowArchiveDialog] = React.useState(false);
 
   /* ── Catalyst-vs-Jira source split ─────────
      Mirrors StoryDetailModal line 291. When ph_issues row carries the
@@ -220,13 +222,7 @@ export default function CatalystViewStory({
               });
           } },
           { label: 'Move to project…', onClick: () => setShowMoveDialog(true) },
-          { label: 'Archive', onClick: () => {
-            if (!issue?.issue_key) return;
-            if (!window.confirm(`Archive "${issue.summary}"?\nArchived items can be restored later.`)) return;
-            archiveIssue(issue.issue_key)
-              .then(() => { toast.success('Issue archived'); onClose(); })
-              .catch((e: unknown) => { toast.error('Archive failed', { description: e instanceof Error ? e.message : 'Unknown error' }); });
-          } },
+          { label: 'Archive', onClick: () => { if (!issue?.issue_key) return; setShowArchiveDialog(true); } },
           { label: 'Delete story', onClick: () => mutations.deleteIssue.mutate(), danger: true },
         ]}
         onTogglePanelMode={onTogglePanelMode}
@@ -248,6 +244,17 @@ export default function CatalystViewStory({
           onMoved={onClose}
         />
       )}
+      <ConfirmArchiveDialog
+        isOpen={showArchiveDialog}
+        onClose={() => setShowArchiveDialog(false)}
+        issueSummary={issue?.summary}
+        onConfirm={() => {
+          if (!issue?.issue_key) return;
+          archiveIssue(issue.issue_key)
+            .then(() => { toast.success('Issue archived'); onClose(); })
+            .catch((e: unknown) => { toast.error('Archive failed', { description: e instanceof Error ? e.message : 'Unknown error' }); });
+        }}
+      />
     </>
   );
 }

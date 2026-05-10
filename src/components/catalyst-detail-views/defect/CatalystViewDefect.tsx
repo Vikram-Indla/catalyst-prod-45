@@ -25,6 +25,7 @@ import { LinkedWorkItemsSection } from '@/modules/project-work-hub/components/li
 import { SubtasksPanel } from '@/modules/project-work-hub/components/SubtasksPanel';
 import { EditablePriority } from '@/modules/project-work-hub/components/dialogs/story-detail-modules/EditableFields';
 import { MoveIssueDialog } from '../shared/MoveIssueDialog';
+import { ConfirmArchiveDialog } from '../shared/ConfirmArchiveDialog';
 import type { CatalystViewBaseProps } from '../shared/types';
 import {
   PRIORITY_STYLES,
@@ -40,6 +41,7 @@ export default function CatalystViewDefect({
   const improveHandlers = useImproveApplyHandlers(issue ?? null);
   const priorityStyle = PRIORITY_STYLES[issue?.priority ?? 'Medium'] ?? PRIORITY_STYLES.Medium;
   const [showMoveDialog, setShowMoveDialog] = React.useState(false);
+  const [showArchiveDialog, setShowArchiveDialog] = React.useState(false);
   const queryClient = useQueryClient();
 
   const leftContent = (
@@ -184,13 +186,7 @@ export default function CatalystViewDefect({
             });
         } },
         { label: 'Move to project…', onClick: () => setShowMoveDialog(true) },
-        { label: 'Archive', onClick: () => {
-          if (!issue?.issue_key) return;
-          if (!window.confirm(`Archive "${issue.summary}"?\nArchived items can be restored later.`)) return;
-          archiveIssue(issue.issue_key)
-            .then(() => { toast.success('Issue archived'); onClose(); })
-            .catch((e: unknown) => { toast.error('Archive failed', { description: e instanceof Error ? e.message : 'Unknown error' }); });
-        } },
+        { label: 'Archive', onClick: () => { if (!issue?.issue_key) return; setShowArchiveDialog(true); } },
         { label: 'Delete defect', onClick: () => mutations.deleteIssue.mutate(), danger: true },
       ]}
       onTogglePanelMode={onTogglePanelMode} navigationItems={navigationItems} currentItemId={itemId} onNavigate={onNavigate}
