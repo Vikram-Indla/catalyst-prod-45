@@ -213,11 +213,11 @@ function ForYouRowImpl({ item, alwaysShowStar = false, onSelect, onToggleStar, h
           )}
           <span
             style={{
-              font: `400 14px/20px "Inter", system-ui, sans-serif`,
-              color: token('color.text.subtle', '#626F86'),
+              font: `400 12px/16px "Inter", system-ui, sans-serif`,
+              color: token('color.text.subtlest', '#626F86'),
             }}
           >
-            {item.updatedAt}
+            · {item.updatedAt}
           </span>
           {suggestion && (
             // AI Recap meta fragment: 12/16/400, color.text.subtle (same as
