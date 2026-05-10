@@ -4,7 +4,22 @@
  */
 
 import React from 'react';
-import { TrendingUp, TrendingDown, Minus } from 'lucide-react';
+// No @atlaskit/icon equivalent — inline SVG
+const TrendingUpIcon = ({ size = 12 }: { size?: number }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+    <polyline points="22 7 13.5 15.5 8.5 10.5 2 17" /><polyline points="16 7 22 7 22 13" />
+  </svg>
+);
+const TrendingDownIcon = ({ size = 12 }: { size?: number }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+    <polyline points="22 17 13.5 8.5 8.5 13.5 2 7" /><polyline points="16 17 22 17 22 11" />
+  </svg>
+);
+const MinusIcon = ({ size = 12 }: { size?: number }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+    <line x1="5" y1="12" x2="19" y2="12" />
+  </svg>
+);
 import { CompareHealthLevel } from '../types';
 import { getHealthColor, getHealthLabel } from '../utils/compareUtils';
 
@@ -27,11 +42,11 @@ export function HealthGauge({ score, level, trend, isWinner }: HealthGaugeProps)
   const progress = (score / 100) * circumference;
   const offset = circumference - progress;
   
-  const TrendIcon = trend?.direction === 'up' 
-    ? TrendingUp 
-    : trend?.direction === 'down' 
-    ? TrendingDown 
-    : Minus;
+  const TrendIcon = trend?.direction === 'up'
+    ? TrendingUpIcon
+    : trend?.direction === 'down'
+    ? TrendingDownIcon
+    : MinusIcon;
     
   return (
     <div className="flex items-center gap-3 relative">

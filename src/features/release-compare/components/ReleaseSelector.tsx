@@ -4,7 +4,8 @@
  */
 
 import React from 'react';
-import { Plus, X } from 'lucide-react';
+import AddIcon from '@atlaskit/icon/core/add';
+import CloseIcon from '@atlaskit/icon/core/close';
 import { Button } from '@/components/ui/button';
 import {
   Select,
@@ -92,7 +93,7 @@ export function ReleaseSelector({
                 className="h-8 w-8 text-slate-400 hover:text-slate-600"
                 onClick={() => handleRemove(index)}
               >
-                <X className="w-4 h-4" />
+                <CloseIcon label="" size="small" primaryColor="currentColor" />
               </Button>
             )}
           </div>
@@ -105,7 +106,7 @@ export function ReleaseSelector({
             onClick={handleAdd}
             className="text-[var(--ds-text-brand,#2563eb)] border-[var(--ds-text-brand,#2563eb)] hover:bg-blue-50"
           >
-            <Plus className="w-4 h-4 mr-1" />
+            <AddIcon label="" size="small" primaryColor="currentColor" />
             Add
           </Button>
         )}

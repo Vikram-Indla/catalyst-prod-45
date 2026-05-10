@@ -2,7 +2,7 @@
  * Bulk Action Bar — Blue floating action bar when releases are selected
  */
 
-import { X } from 'lucide-react';
+import CloseIcon from '@atlaskit/icon/core/close';
 import { cn } from '@/lib/utils';
 
 interface BulkActionBarProps {
@@ -56,7 +56,7 @@ export function BulkActionBar({
         className="p-1.5 hover:bg-white/15 rounded transition-colors"
         aria-label="Clear selection"
       >
-        <X className="w-4 h-4" />
+        <CloseIcon label="Clear selection" size="small" primaryColor="currentColor" />
       </button>
     </div>
   );

@@ -4,7 +4,18 @@
  */
 
 import React from 'react';
-import { Sparkles, Play, SkipForward } from 'lucide-react';
+import SparklesIcon from '@atlaskit/icon/core/atlassian-intelligence';
+// No @atlaskit/icon equivalent — inline SVG
+const PlayIcon = ({ size = 13 }: { size?: number }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor" stroke="none" aria-hidden>
+    <polygon points="5 3 19 12 5 21 5 3" />
+  </svg>
+);
+const SkipForwardIcon = ({ size = 13 }: { size?: number }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+    <polygon points="5 4 15 12 5 20 5 4" /><line x1="19" y1="5" x2="19" y2="19" />
+  </svg>
+);
 import { getScoreColor } from '../types';
 import type { AIRecommendation } from '../types';
 
@@ -22,7 +33,7 @@ export function AIStartMyDay({ recommendation, onStartTest, onSkip }: AIStartMyD
       <div className="flex-1 p-5 bg-card border border-border rounded-lg font-['Inter']">
         <div className="flex items-center gap-2 mb-3">
           <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-violet-500 to-indigo-500 flex items-center justify-center">
-            <Sparkles className="w-4 h-4 text-white" />
+            <SparklesIcon label="" size="small" primaryColor="currentColor" />
           </div>
           <span className="text-sm font-semibold text-foreground">AI Start My Day</span>
         </div>
@@ -39,7 +50,7 @@ export function AIStartMyDay({ recommendation, onStartTest, onSkip }: AIStartMyD
     <div className="flex-1 p-5 bg-card border border-border rounded-lg font-['Inter']">
       <div className="flex items-center gap-2 mb-3.5">
         <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-violet-500 to-indigo-500 flex items-center justify-center">
-          <Sparkles className="w-4 h-4 text-white" />
+          <SparklesIcon label="" size="small" primaryColor="currentColor" />
         </div>
         <span className="text-sm font-semibold text-foreground">AI Start My Day</span>
       </div>
@@ -73,13 +84,13 @@ export function AIStartMyDay({ recommendation, onStartTest, onSkip }: AIStartMyD
           onClick={() => onStartTest(priorityTest.scopeId)}
           className="inline-flex items-center gap-1 h-8 px-3.5 text-[13px] font-medium text-white bg-gradient-to-br from-violet-500 to-indigo-500 border-none rounded-md cursor-pointer hover:opacity-90 transition-opacity"
         >
-          <Play className="w-[13px] h-[13px]" /> Start This Test
+          <PlayIcon size={13} /> Start This Test
         </button>
         <button
           onClick={onSkip}
           className="inline-flex items-center gap-1 h-8 px-3 text-[13px] font-medium text-muted-foreground bg-transparent border-none rounded-md cursor-pointer hover:text-foreground transition-colors"
         >
-          <SkipForward className="w-[13px] h-[13px]" /> Skip
+          <SkipForwardIcon size={13} /> Skip
         </button>
       </div>
     </div>

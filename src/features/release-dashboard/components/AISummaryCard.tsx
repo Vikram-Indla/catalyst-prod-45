@@ -5,7 +5,13 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Sparkles, ArrowRight, Loader2, X, AlertCircle, AlertTriangle, CheckCircle2 } from 'lucide-react';
+import SparklesIcon from '@atlaskit/icon/core/atlassian-intelligence';
+import ArrowRightIcon from '@atlaskit/icon/core/arrow-right';
+import Spinner from '@atlaskit/spinner';
+import CloseIcon from '@atlaskit/icon/core/close';
+import ErrorIcon from '@atlaskit/icon/core/error';
+import WarningIcon from '@atlaskit/icon/core/warning';
+import CheckCircleIcon from '@atlaskit/icon/core/check-circle';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -17,9 +23,9 @@ interface AISummaryCardProps {
 }
 
 const INSIGHT_ICONS: Record<string, React.ReactNode> = {
-  critical: <AlertCircle className="w-4 h-4 text-red-200 flex-shrink-0" />,
-  warning: <AlertTriangle className="w-4 h-4 text-amber-200 flex-shrink-0" />,
-  positive: <CheckCircle2 className="w-4 h-4 text-emerald-200 flex-shrink-0" />,
+  critical: <ErrorIcon label="" size="small" primaryColor="currentColor" />,
+  warning: <WarningIcon label="" size="small" primaryColor="currentColor" />,
+  positive: <CheckCircleIcon label="" size="small" primaryColor="currentColor" />,
 };
 
 export function AISummaryCard({ insights: staticInsights, releaseData }: AISummaryCardProps) {
@@ -104,20 +110,20 @@ export function AISummaryCard({ insights: staticInsights, releaseData }: AISumma
         style={{ background: 'linear-gradient(135deg, #8b5cf6, #6366f1)' }}
       >
         <div className="flex items-center gap-2 mb-3">
-          <Sparkles className="w-5 h-5" />
+          <SparklesIcon label="" size="small" primaryColor="currentColor" />
           <h3 className="font-semibold">AI Summary</h3>
           {aiInsights && (
             <span className="text-[10px] bg-white/20 px-2 py-0.5 rounded-full font-medium">
               Powered by Gemini
             </span>
           )}
-          {loading && <Loader2 className="w-4 h-4 animate-spin ml-auto" />}
+          {loading && <Spinner size="small" label="Loading" />}
         </div>
 
         <div className="space-y-3">
           {loading && !aiInsights ? (
             <div className="flex items-center gap-2 text-sm opacity-80">
-              <Loader2 className="w-4 h-4 animate-spin" />
+              <Spinner size="small" label="Analyzing" />
               <span>Analyzing release data...</span>
             </div>
           ) : (
@@ -144,11 +150,11 @@ export function AISummaryCard({ insights: staticInsights, releaseData }: AISumma
         >
           {loadingRecs ? (
             <>
-              <Loader2 className="w-4 h-4 mr-1 animate-spin" /> Generating...
+              <Spinner size="small" label="Generating" /> Generating...
             </>
           ) : (
             <>
-              Get Recommendations <ArrowRight className="w-4 h-4 ml-1" />
+              Get Recommendations <ArrowRightIcon label="" size="small" primaryColor="currentColor" />
             </>
           )}
         </Button>
@@ -175,17 +181,17 @@ export function AISummaryCard({ insights: staticInsights, releaseData }: AISumma
                 style={{ background: 'linear-gradient(135deg, #8b5cf6, #6366f1)' }}
               >
                 <div className="flex items-center gap-2 text-white">
-                  <Sparkles className="w-4 h-4" />
+                  <SparklesIcon label="" size="small" primaryColor="currentColor" />
                   <h3 className="font-semibold text-sm">AI Recommendations</h3>
                 </div>
                 <Button variant="ghost" size="sm" onClick={() => setShowRecs(false)} className="h-7 w-7 p-0 text-white hover:bg-white/20">
-                  <X className="w-4 h-4" />
+                  <CloseIcon label="" size="small" primaryColor="currentColor" />
                 </Button>
               </div>
               <div className="p-5 overflow-y-auto" style={{ maxHeight: 'calc(70vh - 52px)' }}>
                 {loadingRecs ? (
                   <div className="flex items-center gap-3 justify-center py-12 text-slate-500">
-                    <Loader2 className="w-5 h-5 animate-spin" />
+                    <Spinner size="medium" label="Generating recommendations" />
                     <span className="text-sm">Generating strategic recommendations...</span>
                   </div>
                 ) : (

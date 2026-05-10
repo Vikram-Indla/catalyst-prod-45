@@ -3,7 +3,29 @@
  */
 
 import { motion } from 'framer-motion';
-import { Package, TestTube2, RefreshCw, Bug, TrendingUp, TrendingDown } from 'lucide-react';
+import RefreshIcon from '@atlaskit/icon/core/refresh';
+import BugIcon from '@atlaskit/icon/core/bug';
+// No @atlaskit/icon equivalent — inline SVG
+const PackageIcon = ({ size = 20, color }: { size?: number; color?: string }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color || 'currentColor'} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+    <line x1="16.5" y1="9.4" x2="7.5" y2="4.21" /><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" /><polyline points="3.27 6.96 12 12.01 20.73 6.96" /><line x1="12" y1="22.08" x2="12" y2="12" />
+  </svg>
+);
+const TestTube2Icon = ({ size = 20, color }: { size?: number; color?: string }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color || 'currentColor'} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+    <path d="M14.5 2v17.5c0 1.4-1.1 2.5-2.5 2.5h0c-1.4 0-2.5-1.1-2.5-2.5V2" /><path d="M8.5 2h7" /><path d="M14.5 16h-5" />
+  </svg>
+);
+const TrendingUpIcon = ({ size = 12 }: { size?: number }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+    <polyline points="22 7 13.5 15.5 8.5 10.5 2 17" /><polyline points="16 7 22 7 22 13" />
+  </svg>
+);
+const TrendingDownIcon = ({ size = 12 }: { size?: number }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+    <polyline points="22 17 13.5 8.5 8.5 13.5 2 7" /><polyline points="16 17 22 17 22 11" />
+  </svg>
+);
 import type { ReleaseMetrics } from '../types';
 
 interface MetricsGridProps {
@@ -16,7 +38,7 @@ export function MetricsGrid({ metrics }: MetricsGridProps) {
       label: 'Work Items',
       value: metrics.workItems.total,
       sub: `${metrics.workItems.complete} complete`,
-      icon: Package,
+      renderIcon: (color: string) => <PackageIcon size={20} color={color} />,
       iconBg: 'var(--ds-background-selected, #eff6ff)',
       iconColor: 'var(--ds-text-brand, #2563eb)',
     },
@@ -24,7 +46,7 @@ export function MetricsGrid({ metrics }: MetricsGridProps) {
       label: 'Test Cases',
       value: metrics.testCases.total,
       trend: metrics.testCases.trend,
-      icon: TestTube2,
+      renderIcon: (color: string) => <TestTube2Icon size={20} color={color} />,
       iconBg: '#ccfbf1',
       iconColor: '#0d9488',
     },
@@ -32,7 +54,7 @@ export function MetricsGrid({ metrics }: MetricsGridProps) {
       label: 'Test Cycles',
       value: metrics.testCycles.total,
       sub: `${metrics.testCycles.active} active`,
-      icon: RefreshCw,
+      renderIcon: (color: string) => <RefreshIcon label="" size="small" primaryColor={color} />,
       iconBg: '#fef3c7',
       iconColor: 'var(--ds-text-warning, #d97706)',
     },
@@ -40,7 +62,7 @@ export function MetricsGrid({ metrics }: MetricsGridProps) {
       label: 'Open Defects',
       value: metrics.openDefects.total,
       trend: metrics.openDefects.trend,
-      icon: Bug,
+      renderIcon: (color: string) => <BugIcon label="" size="small" primaryColor={color} />,
       iconBg: '#fee2e2',
       iconColor: 'var(--ds-text-danger, #ef4444)',
     },
@@ -61,11 +83,11 @@ export function MetricsGrid({ metrics }: MetricsGridProps) {
               className="w-10 h-10 rounded-lg flex items-center justify-center"
               style={{ backgroundColor: card.iconBg }}
             >
-              <card.icon className="w-5 h-5" style={{ color: card.iconColor }} />
+              {card.renderIcon(card.iconColor)}
             </div>
             {card.trend && (
               <div className={`flex items-center text-xs ${card.trend.direction === 'up' ? 'text-[var(--ds-text-danger,#ef4444)]' : 'text-[#0d9488]'}`}>
-                {card.trend.direction === 'up' ? <TrendingUp className="w-3 h-3 mr-0.5" /> : <TrendingDown className="w-3 h-3 mr-0.5" />}
+                {card.trend.direction === 'up' ? <TrendingUpIcon size={12} /> : <TrendingDownIcon size={12} />}
                 {card.trend.value}
               </div>
             )}

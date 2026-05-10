@@ -4,7 +4,15 @@
  */
 
 import React from 'react';
-import { Download, Bookmark, FileText, FileSpreadsheet, Loader2 } from 'lucide-react';
+import DownloadIcon from '@atlaskit/icon/core/download';
+import FileIcon from '@atlaskit/icon/core/file';
+import Spinner from '@atlaskit/spinner';
+// No @atlaskit/icon equivalent — inline SVG
+const BookmarkIcon = ({ size = 16 }: { size?: number }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+    <path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z" />
+  </svg>
+);
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -39,20 +47,20 @@ export function CompareHeader({ onExport, onSaveView, isExporting = false }: Com
               disabled={isExporting}
             >
               {isExporting ? (
-                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                <Spinner size="small" label="Exporting" />
               ) : (
-                <Download className="w-4 h-4 mr-2" />
+                <DownloadIcon label="" size="small" primaryColor="currentColor" />
               )}
               Export
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="bg-white">
             <DropdownMenuItem onClick={() => onExport?.('pdf')}>
-              <FileText className="h-4 w-4 mr-2" />
+              <FileIcon label="" size="small" primaryColor="currentColor" />
               Export as PDF
             </DropdownMenuItem>
             <DropdownMenuItem onClick={() => onExport?.('excel')}>
-              <FileSpreadsheet className="h-4 w-4 mr-2" />
+              <FileIcon label="" size="small" primaryColor="currentColor" />
               Export as Excel
             </DropdownMenuItem>
           </DropdownMenuContent>
@@ -64,7 +72,7 @@ export function CompareHeader({ onExport, onSaveView, isExporting = false }: Com
           onClick={onSaveView}
           className="text-slate-600"
         >
-          <Bookmark className="w-4 h-4 mr-2" />
+          <BookmarkIcon size={16} />
           Save View
         </Button>
       </div>

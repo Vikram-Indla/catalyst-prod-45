@@ -102,7 +102,9 @@ export default function CatalystViewStory({
           (testid issue-field-status.ui.status-view.status-button). */}
       {/* jira-compare 2026-05-03 — Patch E · CatalystStatusPill relocated to right-rail header in CatalystSidebarDetails. */}
       <CatalystQuickActions />
-      <ImproveIssueDropdown issue={issue ?? null} {...improveHandlers} />
+      {/* jira-compare 2026-05-10: ImproveIssueDropdown moved to right-rail
+          improveDropdown slot in CatalystSidebarDetails (CLAUDE.md rule:
+          right rail is the ONLY entry point for AI improve). */}
       {/* jira-compare 2026-05-04 (D5 — Vikram approved): Key details section
           re-added to Story left body. DOM-probed Jira BAU-5609 (Story):
           "Key details" header visible with Parent + Priority rows between
@@ -199,6 +201,7 @@ export default function CatalystViewStory({
          anchored together at the rail header. Mirrors Jira's "In QA" / "Improve
          Story" pair on the right side of BAU-5609. */
       statusPill={<CatalystStatusPill status={issue?.status} statusCategory={issue?.status_category} onStatusChange={(st) => mutations.updateStatus.mutate(st)} issueType={issue?.issue_type} />}
+      improveDropdown={<ImproveIssueDropdown issue={issue ?? null} {...improveHandlers} />}
     />
   );
 

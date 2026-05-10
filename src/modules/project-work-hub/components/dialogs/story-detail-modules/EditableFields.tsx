@@ -13,6 +13,24 @@ import { getAvatarColor, getInitials } from './helpers';
 import { resolveAvatarUrl } from '@/lib/avatars';
 import { PriorityIcon as CanonicalPriorityIcon } from '@/components/icons';
 
+/* jira-compare 2026-05-10 (P2): Hide dropdown indicator chevron from Priority
+   select in Key details at rest — Jira's Key details rows show no visible
+   chevron in idle state. Show only on hover/focus (matching the right-rail
+   select idle-state rule from K.12). Inject once per session. */
+if (typeof document !== 'undefined' && !document.getElementById('cv-priority-select-idle-style')) {
+  const s = document.createElement('style');
+  s.id = 'cv-priority-select-idle-style';
+  s.textContent = `
+    .cv-priority-select__dropdown-indicator { display: none !important; }
+    .cv-priority-select__control:hover .cv-priority-select__dropdown-indicator,
+    .cv-priority-select__control--is-focused .cv-priority-select__dropdown-indicator,
+    .cv-priority-select__control--menu-is-open .cv-priority-select__dropdown-indicator { display: flex !important; }
+    .cv-priority-select__control { border-color: transparent !important; background: transparent !important; box-shadow: none !important; }
+    .cv-priority-select__control:hover { background: var(--ds-background-neutral-subtle-hovered, #F4F5F7) !important; }
+  `;
+  document.head.appendChild(s);
+}
+
 /** Atlassian-spec dropdown container styles */
 const ATLASSIAN_DROPDOWN: React.CSSProperties = {
   background: 'var(--ds-text-inverse, #FFFFFF)', borderRadius: 4, border: 'none',

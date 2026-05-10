@@ -35,22 +35,53 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import {
-  Calendar,
-  Clock,
-  Mail,
-  Plus,
-  Trash2,
-  Play,
-  Pause,
-  Download,
-  FileText,
-  Code,
-  Table as TableIcon,
-  Braces,
-  Sheet,
-  RefreshCw,
-} from 'lucide-react';
+import CalendarIcon from '@atlaskit/icon/core/calendar';
+import ClockIcon from '@atlaskit/icon/core/clock';
+import AddIcon from '@atlaskit/icon/core/add';
+import DownloadIcon from '@atlaskit/icon/core/download';
+import FileIcon from '@atlaskit/icon/core/file';
+import RefreshIcon from '@atlaskit/icon/core/refresh';
+// No @atlaskit/icon equivalent — inline SVG
+const MailIcon = ({ size = 16 }: { size?: number }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+    <rect width="20" height="16" x="2" y="4" rx="2" /><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
+  </svg>
+);
+const Trash2Icon = ({ size = 16 }: { size?: number }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+    <path d="M3 6h18" /><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" /><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" /><line x1="10" x2="10" y1="11" y2="17" /><line x1="14" x2="14" y1="11" y2="17" />
+  </svg>
+);
+const PlayIcon = ({ size = 16 }: { size?: number }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+    <polygon points="5 3 19 12 5 21 5 3" />
+  </svg>
+);
+const PauseIcon = ({ size = 16 }: { size?: number }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+    <rect x="6" y="4" width="4" height="16" /><rect x="14" y="4" width="4" height="16" />
+  </svg>
+);
+const CodeIcon = ({ size = 16 }: { size?: number }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+    <polyline points="16 18 22 12 16 6" /><polyline points="8 6 2 12 8 18" />
+  </svg>
+);
+const TableIcon = ({ size = 16 }: { size?: number }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+    <path d="M9 3H5a2 2 0 0 0-2 2v4m6-6h10a2 2 0 0 1 2 2v4M9 3v18m0 0h10a2 2 0 0 0 2-2V9M9 21H5a2 2 0 0 1-2-2V9m0 0h18" />
+  </svg>
+);
+const BracesIcon = ({ size = 16 }: { size?: number }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+    <path d="M8 3H7a2 2 0 0 0-2 2v5a2 2 0 0 1-2 2 2 2 0 0 1 2 2v5c0 1.1.9 2 2 2h1" /><path d="M16 21h1a2 2 0 0 0 2-2v-5c0-1.1.9-2 2-2a2 2 0 0 1-2-2V5a2 2 0 0 0-2-2h-1" />
+  </svg>
+);
+const SheetIcon = ({ size = 16 }: { size?: number }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+    <rect width="20" height="20" x="2" y="2" rx="2" ry="2" /><path d="M16 2v20" /><path d="M2 12h20" />
+  </svg>
+);
 import {
   useScheduledReports,
   useCreateScheduledReport,
@@ -73,11 +104,11 @@ interface ScheduledReportsPanelProps {
 }
 
 const FORMAT_ICONS: Record<ExportJob['format'], React.ReactNode> = {
-  pdf: <FileText className="h-4 w-4" />,
-  html: <Code className="h-4 w-4" />,
-  csv: <TableIcon className="h-4 w-4" />,
-  json: <Braces className="h-4 w-4" />,
-  xlsx: <Sheet className="h-4 w-4" />,
+  pdf: <FileIcon label="" size="small" primaryColor="currentColor" />,
+  html: <CodeIcon size={16} />,
+  csv: <TableIcon size={16} />,
+  json: <BracesIcon size={16} />,
+  xlsx: <SheetIcon size={16} />,
 };
 
 export function ScheduledReportsPanel({ releaseId }: ScheduledReportsPanelProps) {
@@ -153,7 +184,7 @@ export function ScheduledReportsPanel({ releaseId }: ScheduledReportsPanelProps)
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <div className="p-2 rounded-lg bg-primary/10">
-            <Calendar className="h-5 w-5 text-primary" />
+            <CalendarIcon label="" size="small" primaryColor="currentColor" />
           </div>
           <div>
             <h2 className="text-xl font-bold text-foreground">Scheduled Reports</h2>
@@ -167,7 +198,7 @@ export function ScheduledReportsPanel({ releaseId }: ScheduledReportsPanelProps)
           <Dialog open={isExportDialogOpen} onOpenChange={setIsExportDialogOpen}>
             <DialogTrigger asChild>
               <Button variant="outline">
-                <Download className="h-4 w-4 mr-2" />
+                <DownloadIcon label="" size="small" primaryColor="currentColor" />
                 Quick Export
               </Button>
             </DialogTrigger>
@@ -198,7 +229,7 @@ export function ScheduledReportsPanel({ releaseId }: ScheduledReportsPanelProps)
           <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
             <DialogTrigger asChild>
               <Button>
-                <Plus className="h-4 w-4 mr-2" />
+                <AddIcon label="" size="small" primaryColor="currentColor" />
                 Schedule Report
               </Button>
             </DialogTrigger>
@@ -338,7 +369,7 @@ export function ScheduledReportsPanel({ releaseId }: ScheduledReportsPanelProps)
         <Card>
           <CardHeader>
             <CardTitle className="text-base flex items-center gap-2">
-              <Clock className="h-4 w-4" />
+              <ClockIcon label="" size="small" primaryColor="currentColor" />
               Active Schedules
             </CardTitle>
           </CardHeader>
@@ -347,7 +378,7 @@ export function ScheduledReportsPanel({ releaseId }: ScheduledReportsPanelProps)
               <p className="text-sm text-muted-foreground">Loading...</p>
             ) : scheduledReports?.length === 0 ? (
               <div className="text-center py-8">
-                <Calendar className="h-10 w-10 mx-auto text-muted-foreground mb-3" />
+                <CalendarIcon label="" size="medium" primaryColor="currentColor" />
                 <p className="text-muted-foreground">No scheduled reports yet.</p>
                 <Button
                   variant="link"
@@ -373,11 +404,11 @@ export function ScheduledReportsPanel({ releaseId }: ScheduledReportsPanelProps)
                       </div>
                       <div className="text-xs text-muted-foreground mt-1 flex items-center gap-3">
                         <span className="flex items-center gap-1">
-                          <Clock className="h-3 w-3" />
+                          <ClockIcon label="" size="small" primaryColor="currentColor" />
                           {report.schedule.time}
                         </span>
                         <span className="flex items-center gap-1">
-                          <Mail className="h-3 w-3" />
+                          <MailIcon size={12} />
                           {report.recipients.length} recipients
                         </span>
                       </div>
@@ -393,7 +424,7 @@ export function ScheduledReportsPanel({ releaseId }: ScheduledReportsPanelProps)
                         className="h-8 w-8"
                         onClick={() => deleteScheduledReport.mutate(report.id)}
                       >
-                        <Trash2 className="h-4 w-4 text-muted-foreground" />
+                        <Trash2Icon size={16} />
                       </Button>
                     </div>
                   </div>
@@ -407,14 +438,14 @@ export function ScheduledReportsPanel({ releaseId }: ScheduledReportsPanelProps)
         <Card>
           <CardHeader>
             <CardTitle className="text-base flex items-center gap-2">
-              <Download className="h-4 w-4" />
+              <DownloadIcon label="" size="small" primaryColor="currentColor" />
               Recent Exports
             </CardTitle>
           </CardHeader>
           <CardContent>
             {exportJobs?.length === 0 ? (
               <div className="text-center py-8">
-                <Download className="h-10 w-10 mx-auto text-muted-foreground mb-3" />
+                <DownloadIcon label="" size="medium" primaryColor="currentColor" />
                 <p className="text-muted-foreground">No recent exports.</p>
               </div>
             ) : (
@@ -441,7 +472,7 @@ export function ScheduledReportsPanel({ releaseId }: ScheduledReportsPanelProps)
                       {getStatusBadge(job)}
                       {job.status === 'completed' && job.downloadUrl && (
                         <Button variant="ghost" size="icon" className="h-8 w-8">
-                          <Download className="h-4 w-4" />
+                          <DownloadIcon label="" size="small" primaryColor="currentColor" />
                         </Button>
                       )}
                     </div>

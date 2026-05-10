@@ -4,7 +4,18 @@
  */
 
 import React from 'react';
-import { LayoutGrid, GanttChartSquare, Table2 } from 'lucide-react';
+import GridIcon from '@atlaskit/icon/core/grid';
+// No @atlaskit/icon equivalent — inline SVG
+const GanttChartSquareIcon = ({ size = 16 }: { size?: number }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+    <rect x="3" y="3" width="18" height="18" rx="2" /><path d="M9 8h7" /><path d="M8 12h6" /><path d="M11 16h5" />
+  </svg>
+);
+const Table2Icon = ({ size = 16 }: { size?: number }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+    <path d="M9 3H5a2 2 0 0 0-2 2v4m6-6h10a2 2 0 0 1 2 2v4M9 3v18m0 0h10a2 2 0 0 0 2-2V9M9 21H5a2 2 0 0 1-2-2V9m0 0h18" />
+  </svg>
+);
 import { cn } from '@/lib/utils';
 import { ViewMode } from '../types';
 
@@ -14,9 +25,9 @@ interface ViewToggleProps {
 }
 
 const views: { mode: ViewMode; icon: React.ReactNode; label: string }[] = [
-  { mode: 'cards', icon: <LayoutGrid className="w-4 h-4" />, label: 'Cards' },
-  { mode: 'timeline', icon: <GanttChartSquare className="w-4 h-4" />, label: 'Timeline' },
-  { mode: 'table', icon: <Table2 className="w-4 h-4" />, label: 'Table' },
+  { mode: 'cards', icon: <GridIcon label="" size="small" primaryColor="currentColor" />, label: 'Cards' },
+  { mode: 'timeline', icon: <GanttChartSquareIcon size={16} />, label: 'Timeline' },
+  { mode: 'table', icon: <Table2Icon size={16} />, label: 'Table' },
 ];
 
 export function ViewToggle({ viewMode, onViewModeChange }: ViewToggleProps) {

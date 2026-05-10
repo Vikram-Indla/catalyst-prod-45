@@ -36,7 +36,6 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
-import { SquarePen } from 'lucide-react';
 
 type ParentSource =
   | 'epic'
@@ -322,12 +321,10 @@ export function AddParentPicker({
         </button>
       );
     }
-    // Jira-parity "Add parent" trigger — text + SquarePen icon only.
-    // NO border / no background at rest (verified against Jira Cloud, Apr
-    // 2026). The "square" shape users see is the SquarePen icon itself
-    // (pencil-in-square artwork from lucide), not a button chip. Hover
-    // reveals a light background, focus reveals a border — matching the
-    // Atlassian "subtle" button pattern.
+    // Jira-parity "Add parent" trigger — plain text only.
+    // Jira Cloud renders "Add parent" as a bare text link in the breadcrumb
+    // with no persistent icon. Hover reveals a light background; focus
+    // reveals a border — matching the Atlassian "subtle" button pattern.
     return (
       <button
         className="awAddParentLink"
@@ -335,7 +332,7 @@ export function AddParentPicker({
         aria-label={`Add ${noun}`}
         style={{
           background: 'transparent', border: '1px solid transparent', borderRadius: 4, cursor: 'pointer',
-          height: 28, padding: '0 8px', display: 'inline-flex', alignItems: 'center', gap: 6,
+          height: 28, padding: '0 8px', display: 'inline-flex', alignItems: 'center',
           fontSize: 14, fontWeight: 500, color: '#44546F',
           fontFamily: 'var(--cp-font-body)', lineHeight: 1,
           transition: 'background 150ms, border-color 150ms, color 150ms',
@@ -345,7 +342,6 @@ export function AddParentPicker({
         onFocus={e => { e.currentTarget.style.borderColor = 'var(--ds-text-brand, #2563EB)'; e.currentTarget.style.background = '#F1F2F4'; }}
         onBlur={e => { e.currentTarget.style.borderColor = 'transparent'; e.currentTarget.style.background = 'transparent'; }}
       >
-        <SquarePen size={16} strokeWidth={1.75} aria-hidden="true" color="#44546F" />
         Add parent
       </button>
     );

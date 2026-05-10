@@ -3,7 +3,13 @@
  */
 
 import React, { useState } from 'react';
-import { Sparkles, ChevronDown, ChevronUp, AlertCircle, AlertTriangle, CheckCircle2, ArrowRight } from 'lucide-react';
+import SparklesIcon from '@atlaskit/icon/core/atlassian-intelligence';
+import ChevronDownIcon from '@atlaskit/icon/glyph/chevron-down';
+import ChevronUpIcon from '@atlaskit/icon/glyph/chevron-up';
+import ErrorIcon from '@atlaskit/icon/core/error';
+import WarningIcon from '@atlaskit/icon/core/warning';
+import CheckCircleIcon from '@atlaskit/icon/core/check-circle';
+import ArrowRightIcon from '@atlaskit/icon/core/arrow-right';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { AIReleaseInsight } from '../types';
@@ -25,9 +31,9 @@ export function AIInsightsBar({ insights, onActionClick }: AIInsightsBarProps) {
   
   const getIcon = (type: AIReleaseInsight['type']) => {
     switch (type) {
-      case 'critical': return <AlertCircle className="w-4 h-4 text-red-500" />;
-      case 'warning': return <AlertTriangle className="w-4 h-4 text-[var(--ds-text-subtlest,#64748B)]" />;
-      case 'positive': return <CheckCircle2 className="w-4 h-4 text-green-500" />;
+      case 'critical': return <ErrorIcon label="" size="small" primaryColor="currentColor" />;
+      case 'warning': return <WarningIcon label="" size="small" primaryColor="currentColor" />;
+      case 'positive': return <CheckCircleIcon label="" size="small" primaryColor="currentColor" />;
     }
   };
   
@@ -44,7 +50,7 @@ export function AIInsightsBar({ insights, onActionClick }: AIInsightsBarProps) {
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-2">
           <div className="p-1.5 rounded-lg" style={{ background: '#DBEAFE' }}>
-            <Sparkles className="w-4 h-4" style={{ color: 'var(--ds-text-brand, #2563EB)' }} />
+            <SparklesIcon label="" size="small" primaryColor="var(--ds-text-brand, #2563EB)" />
           </div>
           <span className="font-semibold text-slate-800">AI Insights</span>
           {criticalCount > 0 && (
@@ -61,7 +67,7 @@ export function AIInsightsBar({ insights, onActionClick }: AIInsightsBarProps) {
         
         {insights.length > 2 && (
           <Button variant="ghost" size="sm" onClick={() => setIsExpanded(!isExpanded)} className="text-slate-600 hover:text-slate-900">
-            {isExpanded ? (<>Show Less <ChevronUp className="w-4 h-4 ml-1" /></>) : (<>Show All ({insights.length}) <ChevronDown className="w-4 h-4 ml-1" /></>)}
+            {isExpanded ? (<>Show Less <ChevronUpIcon label="" size="small" primaryColor="currentColor" /></>) : (<>Show All ({insights.length}) <ChevronDownIcon label="" size="small" primaryColor="currentColor" /></>)}
           </Button>
         )}
       </div>
@@ -75,7 +81,7 @@ export function AIInsightsBar({ insights, onActionClick }: AIInsightsBarProps) {
             </div>
             <Button variant="ghost" size="sm" onClick={() => onActionClick?.(insight)} className="text-[var(--ds-text-brand,#2563EB)] hover:text-[var(--ds-background-brand-bold-hovered,#1D4ED8)] text-xs">
               {insight.action}
-              <ArrowRight className="w-3 h-3 ml-1" />
+              <ArrowRightIcon label="" size="small" primaryColor="currentColor" />
             </Button>
           </div>
         ))}

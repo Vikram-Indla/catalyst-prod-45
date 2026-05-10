@@ -7,7 +7,42 @@ import React, { useState, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import { Lozenge, Tooltip, type LozengeAppearance } from '@/components/ads';
 import { cn } from '@/lib/utils';
-import { Play, RotateCcw, ExternalLink, ArrowUpDown, Check, X, Ban, Unlock, Clock, ChevronLeft, ChevronRight } from 'lucide-react';
+import CheckMarkIcon from '@atlaskit/icon/core/check-mark';
+import CloseIcon from '@atlaskit/icon/core/close';
+import ClockIcon from '@atlaskit/icon/core/clock';
+import ChevronLeftIcon from '@atlaskit/icon/glyph/chevron-left';
+import ChevronRightIcon from '@atlaskit/icon/glyph/chevron-right';
+// No @atlaskit/icon equivalent — inline SVG
+const PlayIcon = ({ size = 16 }: { size?: number }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor" stroke="none" aria-hidden>
+    <polygon points="5 3 19 12 5 21 5 3" />
+  </svg>
+);
+const RotateCcwIcon = ({ size = 16 }: { size?: number }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+    <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" /><path d="M3 3v5h5" />
+  </svg>
+);
+const ExternalLinkIcon = ({ size = 16 }: { size?: number }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+    <path d="M15 3h6v6" /><path d="M10 14 21 3" /><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+  </svg>
+);
+const ArrowUpDownIcon = ({ size = 12 }: { size?: number }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+    <path d="m21 16-4 4-4-4" /><path d="M17 20V4" /><path d="m3 8 4-4 4 4" /><path d="M7 4v16" />
+  </svg>
+);
+const BanIcon = ({ size = 14 }: { size?: number }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+    <circle cx="12" cy="12" r="10" /><path d="m4.9 4.9 14.2 14.2" />
+  </svg>
+);
+const UnlockIcon = ({ size = 14 }: { size?: number }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+    <rect width="18" height="11" x="3" y="11" rx="2" ry="2" /><path d="M7 11V7a5 5 0 0 1 9.9-1" />
+  </svg>
+);
 import { PriorityScoreBadge } from './PriorityScoreBadge';
 import { formatDueDate } from '../utils/priorityScore';
 import {
@@ -134,7 +169,7 @@ export function TestsTable({ tests, filters, onFiltersChange, onExecute, onViewD
                   onClick={() => handleSort('score')}
                 >
                   Score
-                  <ArrowUpDown className="h-3 w-3" />
+                  <ArrowUpDownIcon size={12} />
                 </button>
               </th>
               <th className="text-left py-3 px-4">
@@ -143,7 +178,7 @@ export function TestsTable({ tests, filters, onFiltersChange, onExecute, onViewD
                   onClick={() => handleSort('status')}
                 >
                   Status
-                  <ArrowUpDown className="h-3 w-3" />
+                  <ArrowUpDownIcon size={12} />
                 </button>
               </th>
               <th className="text-left py-3 px-4 min-w-[300px]">
@@ -158,7 +193,7 @@ export function TestsTable({ tests, filters, onFiltersChange, onExecute, onViewD
                   onClick={() => handleSort('dueDate')}
                 >
                   Due
-                  <ArrowUpDown className="h-3 w-3" />
+                  <ArrowUpDownIcon size={12} />
                 </button>
               </th>
               <th className="text-left py-3 px-4">
@@ -206,7 +241,7 @@ export function TestsTable({ tests, filters, onFiltersChange, onExecute, onViewD
                   </td>
                   <td className="py-3 px-4">
                     <div className="flex items-center gap-1 text-muted-foreground">
-                      <Clock className="h-3 w-3" />
+                      <ClockIcon label="" size="small" primaryColor="currentColor" />
                       <span className="text-xs">{test.estimatedMinutes}m</span>
                     </div>
                   </td>
@@ -220,7 +255,7 @@ export function TestsTable({ tests, filters, onFiltersChange, onExecute, onViewD
                             className="h-7 w-7 text-muted-foreground hover:text-foreground"
                             onClick={() => onUnblock?.(test.scopeId)}
                           >
-                            <Unlock className="h-3.5 w-3.5" />
+                            <UnlockIcon size={14} />
                           </Button>
                         </Tooltip>
                       ) : (
@@ -233,7 +268,7 @@ export function TestsTable({ tests, filters, onFiltersChange, onExecute, onViewD
                                 className="h-7 w-7 text-success hover:text-success hover:bg-success/10"
                                 onClick={() => onQuickPass?.(test.scopeId)}
                               >
-                                <Check className="h-3.5 w-3.5" />
+                                <CheckMarkIcon label="" size="small" primaryColor="currentColor" />
                               </Button>
                             </Tooltip>
                           )}
@@ -245,7 +280,7 @@ export function TestsTable({ tests, filters, onFiltersChange, onExecute, onViewD
                                 className="h-7 w-7 text-destructive hover:text-destructive hover:bg-destructive/10"
                                 onClick={() => setReasonModal({ scopeId: test.scopeId, type: 'fail' })}
                               >
-                                <X className="h-3.5 w-3.5" />
+                                <CloseIcon label="" size="small" primaryColor="currentColor" />
                               </Button>
                             </Tooltip>
                           )}
@@ -256,7 +291,7 @@ export function TestsTable({ tests, filters, onFiltersChange, onExecute, onViewD
                               className="h-7 w-7 text-warning hover:text-warning hover:bg-warning/10"
                               onClick={() => setReasonModal({ scopeId: test.scopeId, type: 'block' })}
                             >
-                              <Ban className="h-3.5 w-3.5" />
+                              <BanIcon size={14} />
                             </Button>
                           </Tooltip>
                         </>
@@ -270,7 +305,7 @@ export function TestsTable({ tests, filters, onFiltersChange, onExecute, onViewD
                         size="sm"
                         onClick={() => onViewDetails(test.id)}
                       >
-                        <ExternalLink className="h-4 w-4" />
+                        <ExternalLinkIcon size={16} />
                       </Button>
                       <Button
                         variant="default"
@@ -279,12 +314,12 @@ export function TestsTable({ tests, filters, onFiltersChange, onExecute, onViewD
                       >
                         {test.status === 'failed' ? (
                           <>
-                            <RotateCcw className="h-4 w-4 mr-1" />
+                            <RotateCcwIcon size={16} />
                             Re-run
                           </>
                         ) : (
                           <>
-                            <Play className="h-4 w-4 mr-1" />
+                            <PlayIcon size={16} />
                             Execute
                           </>
                         )}
@@ -311,7 +346,7 @@ export function TestsTable({ tests, filters, onFiltersChange, onExecute, onViewD
               disabled={page === 0}
               onClick={() => setPage(p => p - 1)}
             >
-              <ChevronLeft className="h-4 w-4" />
+              <ChevronLeftIcon label="" size="small" primaryColor="currentColor" />
             </Button>
             <span className="text-sm text-muted-foreground px-2">
               {page + 1} / {totalPages}
@@ -322,7 +357,7 @@ export function TestsTable({ tests, filters, onFiltersChange, onExecute, onViewD
               disabled={page >= totalPages - 1}
               onClick={() => setPage(p => p + 1)}
             >
-              <ChevronRight className="h-4 w-4" />
+              <ChevronRightIcon label="" size="small" primaryColor="currentColor" />
             </Button>
           </div>
         </div>

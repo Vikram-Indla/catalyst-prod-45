@@ -4,7 +4,11 @@
  */
 
 import React from 'react';
-import { ChevronLeft, ChevronRight, Calendar, Plus, Download } from 'lucide-react';
+import ChevronLeftIcon from '@atlaskit/icon/glyph/chevron-left';
+import ChevronRightIcon from '@atlaskit/icon/glyph/chevron-right';
+import CalendarIcon from '@atlaskit/icon/core/calendar';
+import AddIcon from '@atlaskit/icon/core/add';
+import DownloadIcon from '@atlaskit/icon/core/download';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { TimeScale } from '../types';
@@ -41,11 +45,11 @@ export function CalendarHeader({
         </div>
         <div className="flex items-center gap-2">
           <Button variant="outline">
-            <Download className="w-4 h-4 mr-2" />
+            <DownloadIcon label="" size="small" primaryColor="currentColor" />
             Export
           </Button>
           <Button className="bg-[var(--ds-text-brand,#2563eb)] hover:bg-[var(--ds-text-brand,#2563eb)]/90">
-            <Plus className="w-4 h-4 mr-2" />
+            <AddIcon label="" size="small" primaryColor="currentColor" />
             New Release
           </Button>
         </div>
@@ -56,15 +60,15 @@ export function CalendarHeader({
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-1">
             <Button variant="outline" size="icon" onClick={onPrev}>
-              <ChevronLeft className="w-4 h-4" />
+              <ChevronLeftIcon label="" size="small" primaryColor="currentColor" />
             </Button>
             <Button variant="outline" size="icon" onClick={onNext}>
-              <ChevronRight className="w-4 h-4" />
+              <ChevronRightIcon label="" size="small" primaryColor="currentColor" />
             </Button>
           </div>
           <h2 className="text-lg font-semibold text-slate-800 min-w-[200px]">{title}</h2>
           <Button variant="outline" size="sm" onClick={onToday}>
-            <Calendar className="w-4 h-4 mr-1" />
+            <CalendarIcon label="" size="small" primaryColor="currentColor" />
             Today
           </Button>
         </div>

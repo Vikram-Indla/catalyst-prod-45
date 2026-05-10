@@ -22,7 +22,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Loader2 } from 'lucide-react';
+import Spinner from '@atlaskit/spinner';
 import { toast } from 'sonner';
 import type { ReleaseDetail } from '../types';
 import { STATUS_LABELS } from '../types';
@@ -154,7 +154,7 @@ export function EditReleaseDialog({ open, onOpenChange, release, onSave }: EditR
           <Button onClick={handleSubmit} disabled={isSubmitting}>
             {isSubmitting ? (
               <>
-                <Loader2 className="w-4 h-4 mr-1.5 animate-spin" />
+                <Spinner size="small" label="Saving" />
                 Saving...
               </>
             ) : (

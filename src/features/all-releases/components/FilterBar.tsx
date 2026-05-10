@@ -4,7 +4,8 @@
  */
 
 import React from 'react';
-import { Search, X, Filter } from 'lucide-react';
+import SearchIcon from '@atlaskit/icon/core/search';
+import CloseIcon from '@atlaskit/icon/core/close';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import {
@@ -80,7 +81,7 @@ export function FilterBar({
     <div className="flex items-center gap-3 flex-wrap">
       {/* Search */}
       <div className="relative flex-1 min-w-[200px] max-w-[300px]">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 dark:text-[var(--ds-text-subtlest,#878787)]" />
+        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 dark:text-[var(--ds-text-subtlest,#878787)] flex items-center"><SearchIcon label="" size="small" primaryColor="currentColor" /></span>
         <Input
           id="release-search"
           placeholder="Search releases..."
@@ -184,7 +185,7 @@ export function FilterBar({
           onClick={onClearFilters}
           className="text-slate-500 hover:text-slate-700 dark:text-[var(--ds-text-subtlest,#A1A1A1)] dark:hover:text-[var(--ds-text,#EDEDED)]"
         >
-          <X className="w-4 h-4 mr-1" />
+          <CloseIcon label="" size="small" primaryColor="currentColor" />
           Clear ({activeFilterCount})
         </Button>
       )}

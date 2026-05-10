@@ -5,7 +5,13 @@
 
 import React, { useState, useCallback, useMemo, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Loader2, PartyPopper } from 'lucide-react';
+import Spinner from '@atlaskit/spinner';
+// No @atlaskit/icon equivalent — inline SVG
+const PartyPopperIcon = ({ size = 20, className }: { size?: number; className?: string }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className={className} aria-hidden>
+    <path d="M5.8 11.3 2 22l10.7-3.79" /><path d="M4 3h.01" /><path d="M22 8h.01" /><path d="M15 2h.01" /><path d="M22 20h.01" /><path d="m22 2-2.24.75a2.9 2.9 0 0 0-1.96 3.12c.1.86-.57 1.63-1.45 1.63h-.38c-.86 0-1.6.6-1.76 1.44L14 10" /><path d="m22 13-.82-.33c-.86-.34-1.82.2-1.98 1.11c-.11.7-.72 1.22-1.43 1.22H17" /><path d="m11 2 .33.82c.34.86-.2 1.82-1.11 1.98C9.52 4.9 9 5.52 9 6.23V7" /><path d="M11 13c1.93 1.93 2.83 4.17 2 5-.83.83-3.07-.07-5-2-1.93-1.93-2.83-4.17-2-5 .83-.83 3.07.07 5 2Z" />
+  </svg>
+);
 import { supabase } from '@/integrations/supabase/client';
 import { useQueryClient } from '@tanstack/react-query';
 import { useMyTestScope, myTestScopeKeys } from '../hooks/useMyTestScope';
@@ -163,7 +169,7 @@ export function MyTestScopeDashboard({ userName = 'Tester' }: MyTestScopeDashboa
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-96">
-        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+        <Spinner size="medium" label="Loading" />
       </div>
     );
   }
@@ -203,7 +209,7 @@ export function MyTestScopeDashboard({ userName = 'Tester' }: MyTestScopeDashboa
 
       {allComplete && (
         <div className="flex items-center gap-3 px-6 py-3 bg-green-50 dark:bg-green-950/30 border-b border-green-200 dark:border-green-800">
-          <PartyPopper className="w-5 h-5 text-green-600" />
+          <PartyPopperIcon size={20} className="text-green-600" />
           <div>
             <p className="font-semibold text-green-600 text-sm m-0">All tests complete!</p>
             <p className="text-[13px] text-muted-foreground mt-0.5">

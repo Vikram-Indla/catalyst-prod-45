@@ -4,7 +4,9 @@
  */
 
 import React from 'react';
-import { Check, AlertTriangle, X } from 'lucide-react';
+import CheckMarkIcon from '@atlaskit/icon/glyph/check';
+import WarningIcon from '@atlaskit/icon/core/warning';
+import CloseIcon from '@atlaskit/icon/core/close';
 
 interface QualityGateBarProps {
   passing: number;
@@ -19,7 +21,7 @@ export function QualityGateBar({ passing, failing, pending, total, isWinner }: Q
   const allPassing = passing === total;
   const majorityFailing = failing > total / 2;
   
-  const Icon = allPassing ? Check : majorityFailing ? X : AlertTriangle;
+  const Icon = allPassing ? CheckMarkIcon : majorityFailing ? CloseIcon : WarningIcon;
   const iconColor = allPassing ? '#0d9488' : majorityFailing ? 'var(--ds-text-danger, #ef4444)' : 'var(--ds-text-warning, #d97706)';
   
   return (
@@ -36,7 +38,7 @@ export function QualityGateBar({ passing, failing, pending, total, isWinner }: Q
       <div className="flex flex-col gap-2">
         {/* Icon + count */}
         <div className="flex items-center gap-2">
-          <Icon className="w-4 h-4" style={{ color: iconColor }} />
+          <Icon label="" size="small" primaryColor={iconColor} />
           <span className="text-sm font-medium text-slate-700">
             {passing} / {total} Passing
           </span>

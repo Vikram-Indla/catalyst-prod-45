@@ -3,7 +3,12 @@
  */
 
 import { useEffect, useCallback } from 'react';
-import { X, AlertCircle, AlertTriangle, CheckCircle2, ArrowRight, Sparkles } from 'lucide-react';
+import CloseIcon from '@atlaskit/icon/core/close';
+import ErrorIcon from '@atlaskit/icon/core/error';
+import WarningIcon from '@atlaskit/icon/core/warning';
+import CheckCircleIcon from '@atlaskit/icon/core/check-circle';
+import ArrowRightIcon from '@atlaskit/icon/core/arrow-right';
+import SparklesIcon from '@atlaskit/icon/core/atlassian-intelligence';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { AIReleaseInsight } from '../types';
@@ -18,15 +23,15 @@ interface AIInsightsDrawerProps {
 function InsightItem({ insight, onActionClick }: { insight: AIReleaseInsight; onActionClick?: (i: AIReleaseInsight) => void }) {
   const config = {
     critical: {
-      icon: <AlertCircle className="w-4 h-4 text-red-500 flex-shrink-0" />,
+      icon: <ErrorIcon label="" size="small" primaryColor="currentColor" />,
       bg: 'bg-red-50 border-red-200',
     },
     warning: {
-      icon: <AlertTriangle className="w-4 h-4 text-[var(--ds-text-subtlest,#64748B)] flex-shrink-0" />,
+      icon: <WarningIcon label="" size="small" primaryColor="currentColor" />,
       bg: 'bg-[var(--ds-surface-sunken,#F1F5F9)] border-[rgba(15,23,42,0.12)]',
     },
     positive: {
-      icon: <CheckCircle2 className="w-4 h-4 text-emerald-500 flex-shrink-0" />,
+      icon: <CheckCircleIcon label="" size="small" primaryColor="currentColor" />,
       bg: 'bg-emerald-50 border-emerald-200',
     },
   }[insight.type];
@@ -45,7 +50,7 @@ function InsightItem({ insight, onActionClick }: { insight: AIReleaseInsight; on
         className="mt-2 flex items-center gap-1 text-[11px] font-medium text-[var(--ds-text-brand,#2563EB)] hover:text-[var(--ds-background-brand-bold-hovered,#1D4ED8)] transition-colors"
       >
         {insight.action}
-        <ArrowRight className="w-3 h-3" />
+        <ArrowRightIcon label="" size="small" primaryColor="currentColor" />
       </button>
     </div>
   );
@@ -86,7 +91,7 @@ export function AIInsightsDrawer({ isOpen, onClose, insights, onActionClick }: A
         <div className="flex items-center justify-between px-5 py-4 border-b border-slate-200">
           <div className="flex items-center gap-2.5">
             <div className="p-1.5 rounded-lg" style={{ background: '#DBEAFE' }}>
-              <Sparkles className="w-4 h-4" style={{ color: 'var(--ds-text-brand, #2563EB)' }} />
+              <SparklesIcon label="" size="small" primaryColor="var(--ds-text-brand, #2563EB)" />
             </div>
             <h2 className="font-semibold text-sm text-slate-900">AI Insights</h2>
             {criticalCount > 0 && (
@@ -101,14 +106,14 @@ export function AIInsightsDrawer({ isOpen, onClose, insights, onActionClick }: A
             )}
           </div>
           <Button variant="ghost" size="sm" onClick={onClose} className="h-7 w-7 p-0">
-            <X className="w-4 h-4" />
+            <CloseIcon label="" size="small" primaryColor="currentColor" />
           </Button>
         </div>
 
         <div className="overflow-y-auto p-5 space-y-3" style={{ height: 'calc(100% - 57px)' }}>
           {insights.length === 0 ? (
             <div className="text-center py-12">
-              <CheckCircle2 className="w-10 h-10 text-emerald-400 mx-auto mb-3" />
+              <CheckCircleIcon label="" size="medium" primaryColor="currentColor" />
               <p className="text-sm font-medium text-slate-700">All Clear</p>
               <p className="text-xs text-slate-500 mt-1">No insights at this time.</p>
             </div>

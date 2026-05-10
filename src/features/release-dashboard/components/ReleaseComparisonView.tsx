@@ -17,16 +17,39 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import {
-  GitCompare,
-  TrendingUp,
-  TrendingDown,
-  Minus,
-  Trophy,
-  AlertTriangle,
-  CheckCircle2,
-  XCircle,
-} from 'lucide-react';
+import WarningIcon from '@atlaskit/icon/core/warning';
+import CheckCircleIcon from '@atlaskit/icon/core/check-circle';
+// No @atlaskit/icon equivalent — inline SVG
+const GitCompareIcon = ({ size = 20 }: { size?: number }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+    <circle cx="18" cy="18" r="3" /><circle cx="6" cy="6" r="3" /><path d="M13 6h3a2 2 0 0 1 2 2v7" /><path d="M11 18H8a2 2 0 0 1-2-2V9" />
+  </svg>
+);
+const TrendingUpIcon = ({ size = 12 }: { size?: number }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+    <polyline points="22 7 13.5 15.5 8.5 10.5 2 17" /><polyline points="16 7 22 7 22 13" />
+  </svg>
+);
+const TrendingDownIcon = ({ size = 12 }: { size?: number }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+    <polyline points="22 17 13.5 8.5 8.5 13.5 2 7" /><polyline points="16 17 22 17 22 11" />
+  </svg>
+);
+const MinusIcon = ({ size = 12 }: { size?: number }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+    <line x1="5" y1="12" x2="19" y2="12" />
+  </svg>
+);
+const TrophyIcon = ({ size = 14 }: { size?: number }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+    <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6" /><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18" /><path d="M4 22h16" /><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22" /><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22" /><path d="M18 2H6v7a6 6 0 0 0 12 0V2z" />
+  </svg>
+);
+const XCircleIcon = ({ size = 16 }: { size?: number }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+    <circle cx="12" cy="12" r="10" /><path d="m15 9-6 6" /><path d="m9 9 6 6" />
+  </svg>
+);
 import {
   RadarChart,
   PolarGrid,
@@ -126,7 +149,7 @@ export function ReleaseComparisonView({ projectId, currentReleaseId }: ReleaseCo
       {/* Header */}
       <div className="flex items-center gap-3">
         <div className="p-2 rounded-lg bg-primary/10">
-          <GitCompare className="h-5 w-5 text-primary" />
+          <GitCompareIcon size={20} />
         </div>
         <div>
           <h2 className="text-xl font-bold text-foreground">Release Comparison</h2>
@@ -338,7 +361,7 @@ function MetricValue({ value, unit = '', isWinner, lowerIsBetter }: MetricValueP
         {value}{unit}
       </span>
       {isWinner && (
-        <Trophy className="h-3.5 w-3.5 text-amber-500" />
+        <TrophyIcon size={14} />
       )}
     </div>
   );

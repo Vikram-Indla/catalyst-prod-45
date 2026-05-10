@@ -5,7 +5,7 @@
 
 import React, { useState, useMemo } from 'react';
 import { toast } from 'sonner';
-import { Loader2 } from 'lucide-react';
+import Spinner from '@atlaskit/spinner';
 import { CompareHeader } from './CompareHeader';
 import { ReleaseSelector } from './ReleaseSelector';
 import { CompareInsightsBar } from './CompareInsightsBar';
@@ -136,7 +136,7 @@ export function ReleaseCompare({
       {isLoadingMetrics && selectedIds.length >= 2 && (
         <div className="flex items-center justify-center py-12">
           <div className="flex flex-col items-center gap-3 text-muted-foreground">
-            <Loader2 className="h-6 w-6 animate-spin" />
+            <Spinner size="medium" label="Loading comparison metrics" />
             <span className="text-sm">Loading comparison metrics...</span>
           </div>
         </div>

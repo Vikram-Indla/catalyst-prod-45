@@ -6,7 +6,8 @@ import { useMemo, useState } from 'react';
 import { cn } from '@/lib/utils';
 import { useNavigate } from 'react-router-dom';
 import { Checkbox } from '@/components/ui/checkbox';
-import { ArrowUp, ArrowDown } from 'lucide-react';
+import ArrowUpIcon from '@atlaskit/icon/core/arrow-up';
+import ArrowDownIcon from '@atlaskit/icon/core/arrow-down';
 import type { Release } from '../types';
 import type { HealthLevel } from '../utils/healthScore';
 
@@ -133,7 +134,7 @@ export function EnterpriseTableView({
     >
       {children}
       {sortCol === col && (
-        sortDir === 'asc' ? <ArrowUp className="w-3 h-3" /> : <ArrowDown className="w-3 h-3" />
+        sortDir === 'asc' ? <ArrowUpIcon label="" size="small" primaryColor="currentColor" /> : <ArrowDownIcon label="" size="small" primaryColor="currentColor" />
       )}
     </button>
   );

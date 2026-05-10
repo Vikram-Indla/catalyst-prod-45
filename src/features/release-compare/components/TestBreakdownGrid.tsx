@@ -4,7 +4,15 @@
  */
 
 import React from 'react';
-import { Check, X, AlertTriangle, Circle } from 'lucide-react';
+import CheckMarkIcon from '@atlaskit/icon/glyph/check';
+import CloseIcon from '@atlaskit/icon/core/close';
+import WarningIcon from '@atlaskit/icon/core/warning';
+// No @atlaskit/icon equivalent — inline SVG
+const CircleIcon = ({ size = 12 }: { size?: number }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} aria-hidden>
+    <circle cx="12" cy="12" r="10" />
+  </svg>
+);
 
 interface TestBreakdownGridProps {
   passed: number;
@@ -16,30 +24,30 @@ interface TestBreakdownGridProps {
 
 export function TestBreakdownGrid({ passed, failed, blocked, notRun, isWinner }: TestBreakdownGridProps) {
   const cells = [
-    { 
-      icon: Check, 
-      count: passed, 
+    {
+      icon: (color: string) => <CheckMarkIcon label="" size="small" primaryColor={color} />,
+      count: passed,
       label: 'Passed',
       bgColor: '#ccfbf1',
       iconColor: '#0d9488'
     },
-    { 
-      icon: X, 
-      count: failed, 
+    {
+      icon: (color: string) => <CloseIcon label="" size="small" primaryColor={color} />,
+      count: failed,
       label: 'Failed',
       bgColor: '#fee2e2',
       iconColor: 'var(--ds-text-danger, #ef4444)'
     },
-    { 
-      icon: AlertTriangle, 
-      count: blocked, 
+    {
+      icon: (color: string) => <WarningIcon label="" size="small" primaryColor={color} />,
+      count: blocked,
       label: 'Blocked',
       bgColor: '#fef3c7',
       iconColor: 'var(--ds-text-warning, #d97706)'
     },
-    { 
-      icon: Circle, 
-      count: notRun, 
+    {
+      icon: (color: string) => <CircleIcon size={12} />,
+      count: notRun,
       label: 'Not Run',
       bgColor: 'var(--ds-surface-sunken, #f1f5f9)',
       iconColor: 'var(--ds-text-subtlest, #64748b)'
@@ -64,7 +72,7 @@ export function TestBreakdownGrid({ passed, failed, blocked, notRun, isWinner }:
             className="flex items-center gap-1.5 px-2 py-1 rounded"
             style={{ backgroundColor: cell.bgColor }}
           >
-            <cell.icon className="w-3 h-3" style={{ color: cell.iconColor }} />
+            {cell.icon(cell.iconColor)}
             <span className="font-medium" style={{ color: cell.iconColor }}>
               {cell.count}
             </span>

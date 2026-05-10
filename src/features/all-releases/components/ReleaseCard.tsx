@@ -3,7 +3,16 @@
  * 5-row compressed layout (~148px height)
  */
 
-import { Calendar, User2, Shield, TestTube2, Bug } from 'lucide-react';
+import CalendarIcon from '@atlaskit/icon/core/calendar';
+import BugIcon from '@atlaskit/icon/core/bug';
+import PersonIcon from '@atlaskit/icon/glyph/person';
+import ShieldIcon from '@atlaskit/icon/core/shield';
+// No @atlaskit/icon equivalent — inline SVG
+const TestTube2Icon = ({ size = 16 }: { size?: number }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+    <path d="M14.5 2v17.5c0 1.4-1.1 2.5-2.5 2.5h0c-1.4 0-2.5-1.1-2.5-2.5V2" /><path d="M8.5 2h7" /><path d="M14.5 16h-5" />
+  </svg>
+);
 import { cn } from '@/lib/utils';
 import { Release } from '../types';
 import { HEALTH_THRESHOLDS, getHealthLevelLabel } from '../utils/healthScore';
@@ -167,7 +176,7 @@ export function ReleaseCard({ release, isSelected = false, onSelect, onClick }: 
             {statusCfg.label}
           </span>
           <div className="flex items-center gap-1 text-slate-400">
-            <Calendar className="w-3 h-3" />
+            <CalendarIcon label="" size="small" primaryColor="currentColor" />
             <span>{format(new Date(release.plannedDate), 'MMM d, yyyy')}</span>
           </div>
           {release.status !== 'released' && release.status !== 'cancelled' && (

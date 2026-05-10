@@ -15,17 +15,32 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { cn } from '@/lib/utils';
-import { 
-  Network, 
-  Search, 
-  ChevronRight, 
-  ChevronDown,
-  CheckCircle2, 
-  XCircle, 
-  Circle,
-  FileText,
-  TestTube
-} from 'lucide-react';
+import SearchIcon from '@atlaskit/icon/core/search';
+import ChevronRightIcon from '@atlaskit/icon/glyph/chevron-right';
+import ChevronDownIcon from '@atlaskit/icon/glyph/chevron-down';
+import CheckCircleIcon from '@atlaskit/icon/core/check-circle';
+import FileIcon from '@atlaskit/icon/core/file';
+// No @atlaskit/icon equivalent — inline SVG
+const NetworkIcon = ({ size = 20 }: { size?: number }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+    <rect x="16" y="16" width="6" height="6" rx="1" /><rect x="2" y="16" width="6" height="6" rx="1" /><rect x="9" y="2" width="6" height="6" rx="1" /><path d="M5 16v-3a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v3" /><path d="M12 12V8" />
+  </svg>
+);
+const XCircleIcon = ({ size = 20 }: { size?: number }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+    <circle cx="12" cy="12" r="10" /><path d="m15 9-6 6" /><path d="m9 9 6 6" />
+  </svg>
+);
+const CircleIcon = ({ size = 20 }: { size?: number }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} aria-hidden>
+    <circle cx="12" cy="12" r="10" />
+  </svg>
+);
+const TestTubeIcon = ({ size = 16 }: { size?: number }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+    <path d="M14.5 2v17.5c0 1.4-1.1 2.5-2.5 2.5h0c-1.4 0-2.5-1.1-2.5-2.5V2" /><path d="M8.5 2h7" /><path d="M14.5 16h-5" />
+  </svg>
+);
 import type { TestAssignment } from '../types';
 
 interface TraceabilityPanelProps {
@@ -119,11 +134,11 @@ const PRIORITY_CONFIG: Record<string, { label: string; appearance: LozengeAppear
   low:      { label: 'Low',      appearance: 'default' },  // grey
 };
 
-const STATUS_CONFIG = {
-  not_run: { icon: Circle, className: 'text-muted-foreground' },
-  passed: { icon: CheckCircle2, className: 'text-success' },
-  failed: { icon: XCircle, className: 'text-danger' },
-  blocked: { icon: Circle, className: 'text-warning' },
+const STATUS_CONFIG: Record<string, { renderIcon: () => React.ReactNode; className: string }> = {
+  not_run: { renderIcon: () => <CircleIcon size={16} />, className: 'text-muted-foreground' },
+  passed:  { renderIcon: () => <CheckCircleIcon label="" size="small" primaryColor="currentColor" />, className: 'text-success' },
+  failed:  { renderIcon: () => <XCircleIcon size={16} />, className: 'text-danger' },
+  blocked: { renderIcon: () => <CircleIcon size={16} />, className: 'text-warning' },
 };
 
 export function TraceabilityPanel({ tests }: TraceabilityPanelProps) {
@@ -169,22 +184,22 @@ export function TraceabilityPanel({ tests }: TraceabilityPanelProps) {
       {/* Stats Overview */}
       <div className="grid grid-cols-4 gap-4">
         <div className="p-4 bg-muted/30 rounded-lg border border-border text-center">
-          <Network className="h-5 w-5 mx-auto text-primary mb-2" />
+          <NetworkIcon size={20} />
           <p className="text-2xl font-bold text-foreground">{totalRequirements}</p>
           <p className="text-xs text-muted-foreground">Requirements</p>
         </div>
         <div className="p-4 bg-success/10 rounded-lg border border-success/20 text-center">
-          <CheckCircle2 className="h-5 w-5 mx-auto text-success mb-2" />
+          <CheckCircleIcon label="" size="small" primaryColor="currentColor" />
           <p className="text-2xl font-bold text-success">{coveredRequirements}</p>
           <p className="text-xs text-muted-foreground">Covered</p>
         </div>
         <div className="p-4 bg-warning/10 rounded-lg border border-warning/20 text-center">
-          <Circle className="h-5 w-5 mx-auto text-warning mb-2" />
+          <CircleIcon size={20} />
           <p className="text-2xl font-bold text-warning">{partialRequirements}</p>
           <p className="text-xs text-muted-foreground">Partial</p>
         </div>
         <div className="p-4 bg-danger/10 rounded-lg border border-danger/20 text-center">
-          <XCircle className="h-5 w-5 mx-auto text-danger mb-2" />
+          <XCircleIcon size={20} />
           <p className="text-2xl font-bold text-danger">{uncoveredRequirements}</p>
           <p className="text-xs text-muted-foreground">Uncovered</p>
         </div>
@@ -193,7 +208,7 @@ export function TraceabilityPanel({ tests }: TraceabilityPanelProps) {
       {/* Filters */}
       <div className="flex items-center gap-3">
         <div className="relative flex-1 max-w-sm">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <span className="absolute left-3 top-1/2 -translate-y-1/2 flex items-center text-muted-foreground"><SearchIcon label="" size="small" primaryColor="currentColor" /></span>
           <Input
             placeholder="Search requirements or tests..."
             value={searchQuery}
@@ -230,11 +245,11 @@ export function TraceabilityPanel({ tests }: TraceabilityPanelProps) {
               >
                 <div className="flex items-center gap-3">
                   {isExpanded ? (
-                    <ChevronDown className="h-4 w-4 text-muted-foreground" />
+                    <ChevronDownIcon label="" size="small" primaryColor="currentColor" />
                   ) : (
-                    <ChevronRight className="h-4 w-4 text-muted-foreground" />
+                    <ChevronRightIcon label="" size="small" primaryColor="currentColor" />
                   )}
-                  <FileText className="h-5 w-5 text-primary" />
+                  <FileIcon label="" size="small" primaryColor="currentColor" />
                   <div className="text-left">
                     <div className="flex items-center gap-2">
                       <span className="font-medium text-foreground">{req.key}</span>
@@ -283,19 +298,18 @@ export function TraceabilityPanel({ tests }: TraceabilityPanelProps) {
                     <div className="divide-y divide-border">
                       {req.tests.map((test) => {
                         const statusConfig = STATUS_CONFIG[test.status];
-                        const StatusIcon = statusConfig.icon;
-                        
+
                         return (
                           <div key={test.id} className="flex items-center justify-between p-3 pl-12 hover:bg-muted/30">
                             <div className="flex items-center gap-3">
-                              <TestTube className="h-4 w-4 text-muted-foreground" />
+                              <TestTubeIcon size={16} />
                               <div>
                                 <span className="text-sm font-medium text-foreground">{test.key}</span>
                                 <p className="text-xs text-muted-foreground">{test.title}</p>
                               </div>
                             </div>
                             <div className="flex items-center gap-2">
-                              <StatusIcon className={cn('h-4 w-4', statusConfig.className)} />
+                              <span className={statusConfig.className}>{statusConfig.renderIcon()}</span>
                               <span className={cn('text-xs capitalize', statusConfig.className)}>
                                 {test.status.replace('_', ' ')}
                               </span>

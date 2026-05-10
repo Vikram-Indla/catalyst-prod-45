@@ -3,7 +3,25 @@
  * Unified search + filter + sort + view toggle (single row, 34px height)
  */
 
-import { Search, X, LayoutGrid, GanttChartSquare, Table2, ArrowUpDown } from 'lucide-react';
+import SearchIcon from '@atlaskit/icon/core/search';
+import CloseIcon from '@atlaskit/icon/core/close';
+import GridIcon from '@atlaskit/icon/core/grid';
+// No @atlaskit/icon equivalent — inline SVG
+const GanttChartSquareIcon = ({ size = 14 }: { size?: number }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+    <rect x="3" y="3" width="18" height="18" rx="2" /><path d="M9 8h7" /><path d="M8 12h6" /><path d="M11 16h5" />
+  </svg>
+);
+const Table2Icon = ({ size = 14 }: { size?: number }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+    <path d="M9 3H5a2 2 0 0 0-2 2v4m6-6h10a2 2 0 0 1 2 2v4M9 3v18m0 0h10a2 2 0 0 0 2-2V9M9 21H5a2 2 0 0 1-2-2V9m0 0h18" />
+  </svg>
+);
+const ArrowUpDownIcon = ({ size = 14 }: { size?: number }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+    <path d="m21 16-4 4-4-4" /><path d="M17 20V4" /><path d="m3 8 4-4 4 4" /><path d="M7 4v16" />
+  </svg>
+);
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import {
@@ -73,9 +91,9 @@ const SORT_LABELS: Record<SortOption, string> = {
 };
 
 const views: { mode: ViewMode; icon: React.ReactNode; label: string }[] = [
-  { mode: 'cards', icon: <LayoutGrid className="w-3.5 h-3.5" />, label: 'Cards' },
-  { mode: 'timeline', icon: <GanttChartSquare className="w-3.5 h-3.5" />, label: 'Timeline' },
-  { mode: 'table', icon: <Table2 className="w-3.5 h-3.5" />, label: 'Table' },
+  { mode: 'cards', icon: <GridIcon label="" size="small" primaryColor="currentColor" />, label: 'Cards' },
+  { mode: 'timeline', icon: <GanttChartSquareIcon size={14} />, label: 'Timeline' },
+  { mode: 'table', icon: <Table2Icon size={14} />, label: 'Table' },
 ];
 
 function FilterButton({ label, count, isActive, children }: { label: string; count: number; isActive: boolean; children: React.ReactNode }) {
@@ -116,7 +134,7 @@ export function Toolbar({
     <div className="flex items-center gap-2 mb-4 flex-wrap">
       {/* Search */}
       <div className="relative min-w-[180px] max-w-[240px]">
-        <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 dark:text-[var(--ds-text-subtlest,#878787)]" />
+        <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400 dark:text-[var(--ds-text-subtlest,#878787)] flex items-center"><SearchIcon label="" size="small" primaryColor="currentColor" /></span>
         <Input
           placeholder="Search releases..."
           value={search}
@@ -183,7 +201,7 @@ export function Toolbar({
       {/* Clear */}
       {activeFilterCount > 0 && (
         <Button variant="ghost" size="sm" onClick={onClearFilters} className="h-[34px] text-xs text-slate-500 dark:text-[var(--ds-text-subtlest,#A1A1A1)]">
-          <X className="w-3.5 h-3.5 mr-1" />
+          <CloseIcon label="" size="small" primaryColor="currentColor" />
           Clear ({activeFilterCount})
         </Button>
       )}
@@ -195,7 +213,7 @@ export function Toolbar({
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="outline" size="sm" className="h-[34px] text-xs bg-white dark:bg-[var(--ds-surface-raised,#1A1A1A)]">
-            <ArrowUpDown className="w-3.5 h-3.5 mr-1.5" />
+            <ArrowUpDownIcon size={14} />
             {SORT_LABELS[sortBy]}
           </Button>
         </DropdownMenuTrigger>

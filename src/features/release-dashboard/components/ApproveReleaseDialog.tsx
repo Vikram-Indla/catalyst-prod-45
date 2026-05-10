@@ -16,7 +16,9 @@ import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { Lozenge, type LozengeAppearance } from '@/components/ads';
-import { CheckCircle2, AlertTriangle, Loader2 } from 'lucide-react';
+import CheckCircleIcon from '@atlaskit/icon/core/check-circle';
+import WarningIcon from '@atlaskit/icon/core/warning';
+import Spinner from '@atlaskit/spinner';
 import { toast } from 'sonner';
 import type { ReleaseDetail } from '../types';
 import { STATUS_LABELS } from '../types';
@@ -130,7 +132,7 @@ export function ApproveReleaseDialog({ open, onOpenChange, release, onApprove }:
       <DialogContent className="max-w-lg">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <CheckCircle2 className="w-5 h-5 text-teal-600" />
+            <CheckCircleIcon label="" size="small" primaryColor="#0d9488" />
             Approve Release
           </DialogTitle>
           <DialogDescription>
@@ -194,7 +196,7 @@ export function ApproveReleaseDialog({ open, onOpenChange, release, onApprove }:
           {/* Warning if not all required checked */}
           {!allRequiredChecked && (
             <div className="flex items-start gap-2 p-3 bg-amber-50 border border-amber-200 rounded-lg text-sm text-amber-700">
-              <AlertTriangle className="w-4 h-4 mt-0.5 flex-shrink-0" />
+              <WarningIcon label="" size="small" primaryColor="currentColor" />
               <span>Complete all required items to enable approval.</span>
             </div>
           )}
@@ -211,12 +213,12 @@ export function ApproveReleaseDialog({ open, onOpenChange, release, onApprove }:
           >
             {isSubmitting ? (
               <>
-                <Loader2 className="w-4 h-4 mr-1.5 animate-spin" />
+                <Spinner size="small" label="Approving" />
                 Approving...
               </>
             ) : (
               <>
-                <CheckCircle2 className="w-4 h-4 mr-1.5" />
+                <CheckCircleIcon label="" size="small" primaryColor="currentColor" />
                 Approve Release
               </>
             )}

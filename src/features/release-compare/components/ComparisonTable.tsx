@@ -10,7 +10,8 @@ import { HealthGauge } from './HealthGauge';
 import { TestBreakdownGrid } from './TestBreakdownGrid';
 import { DefectBreakdown } from './DefectBreakdown';
 import { QualityGateBar } from './QualityGateBar';
-import { AlertTriangle, AlertCircle } from 'lucide-react';
+import WarningIcon from '@atlaskit/icon/core/warning';
+import ErrorIcon from '@atlaskit/icon/core/error';
 
 interface ComparisonTableProps {
   releases: ComparedRelease[];
@@ -139,8 +140,8 @@ export function ComparisonTable({ releases, winners }: ComparisonTableProps) {
             >
               {days}
             </span>
-            {isRisk && <AlertCircle className="w-4 h-4" style={{ color: 'var(--ds-text-danger, #ef4444)' }} />}
-            {!isRisk && isWarning && <AlertTriangle className="w-4 h-4" style={{ color: 'var(--ds-text-warning, #d97706)' }} />}
+            {isRisk && <ErrorIcon label="" size="small" primaryColor="var(--ds-text-danger, #ef4444)" />}
+            {!isRisk && isWarning && <WarningIcon label="" size="small" primaryColor="var(--ds-text-warning, #d97706)" />}
             <span className="text-xs text-slate-400">
               {new Date(release.targetDate).toLocaleDateString()}
             </span>

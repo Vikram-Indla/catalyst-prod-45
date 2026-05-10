@@ -4,7 +4,13 @@
  */
 
 import React, { useState } from 'react';
-import { Sparkles, ChevronDown, ChevronUp, AlertCircle, Clock, AlertTriangle, ArrowRight } from 'lucide-react';
+import SparklesIcon from '@atlaskit/icon/core/atlassian-intelligence';
+import ChevronDownIcon from '@atlaskit/icon/glyph/chevron-down';
+import ChevronUpIcon from '@atlaskit/icon/glyph/chevron-up';
+import ErrorIcon from '@atlaskit/icon/core/error';
+import ClockIcon from '@atlaskit/icon/core/clock';
+import WarningIcon from '@atlaskit/icon/core/warning';
+import ArrowRightIcon from '@atlaskit/icon/core/arrow-right';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { CalendarInsight, ConflictWarning, CATALYST_COLORS } from '../types';
@@ -41,9 +47,9 @@ export function CalendarAIInsights({ insights, conflicts, onInsightClick }: Cale
 
   const getIcon = (type: 'critical' | 'warning' | 'info') => {
     switch (type) {
-      case 'critical': return <AlertCircle className="w-4 h-4 text-[var(--ds-text-danger,#ef4444)]" />;
-      case 'warning': return <AlertTriangle className="w-4 h-4 text-[var(--ds-text-warning,#d97706)]" />;
-      case 'info': return <Clock className="w-4 h-4 text-[var(--ds-text-brand,#2563eb)]" />;
+      case 'critical': return <ErrorIcon label="" size="small" primaryColor="var(--ds-text-danger,#ef4444)" />;
+      case 'warning': return <WarningIcon label="" size="small" primaryColor="var(--ds-text-warning,#d97706)" />;
+      case 'info': return <ClockIcon label="" size="small" primaryColor="var(--ds-text-brand,#2563eb)" />;
     }
   };
 
@@ -70,7 +76,7 @@ export function CalendarAIInsights({ insights, conflicts, onInsightClick }: Cale
             className="p-1.5 rounded-lg"
             style={{ background: `linear-gradient(135deg, ${CATALYST_COLORS.aiPurpleStart}, ${CATALYST_COLORS.aiPurpleEnd})` }}
           >
-            <Sparkles className="w-4 h-4 text-white" />
+            <SparklesIcon label="" size="small" primaryColor="#ffffff" />
           </div>
           <span className="font-semibold text-slate-800">AI Insights</span>
           {criticalCount > 0 && (
@@ -93,9 +99,9 @@ export function CalendarAIInsights({ insights, conflicts, onInsightClick }: Cale
             className="text-slate-600 hover:text-slate-900"
           >
             {isExpanded ? (
-              <>Show Less <ChevronUp className="w-4 h-4 ml-1" /></>
+              <>Show Less <ChevronUpIcon label="" size="small" primaryColor="currentColor" /></>
             ) : (
-              <>Show All ({allItems.length}) <ChevronDown className="w-4 h-4 ml-1" /></>
+              <>Show All ({allItems.length}) <ChevronDownIcon label="" size="small" primaryColor="currentColor" /></>
             )}
           </Button>
         )}
@@ -122,7 +128,7 @@ export function CalendarAIInsights({ insights, conflicts, onInsightClick }: Cale
               className="text-[var(--ds-text-brand,#2563eb)] hover:text-[var(--ds-text-brand,#2563eb)]/80 text-xs"
             >
               {item.action}
-              <ArrowRight className="w-3 h-3 ml-1" />
+              <ArrowRightIcon label="" size="small" primaryColor="currentColor" />
             </Button>
           </div>
         ))}

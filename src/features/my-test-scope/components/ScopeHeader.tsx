@@ -5,7 +5,13 @@
  */
 
 import React from 'react';
-import { Download, Play } from 'lucide-react';
+import DownloadIcon from '@atlaskit/icon/core/download';
+// No @atlaskit/icon equivalent — inline SVG
+const PlayIcon = ({ size = 13 }: { size?: number }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor" stroke="none" aria-hidden>
+    <polygon points="5 3 19 12 5 21 5 3" />
+  </svg>
+);
 import type { TestScopeSummary } from '../types';
 
 interface ScopeHeaderProps {
@@ -31,14 +37,14 @@ export function ScopeHeader({ userName, summary, onExport, onExecuteAll }: Scope
           onClick={onExport}
           className="inline-flex items-center gap-1 h-8 px-3 text-[13px] font-medium text-foreground bg-card border border-border rounded-md cursor-pointer font-['Inter'] hover:bg-muted transition-colors"
         >
-          <Download size={13} /> Export
+          <DownloadIcon label="" size="small" primaryColor="currentColor" /> Export
         </button>
         <button
           onClick={onExecuteAll}
           disabled={summary.notRunTests === 0}
           className="inline-flex items-center gap-1 h-8 px-3 text-[13px] font-medium text-primary-foreground bg-primary border border-primary rounded-md cursor-pointer font-['Inter'] disabled:opacity-50 hover:opacity-90 transition-opacity"
         >
-          <Play size={13} /> Execute All
+          <PlayIcon size={13} /> Execute All
         </button>
       </div>
     </div>

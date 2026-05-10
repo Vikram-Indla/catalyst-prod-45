@@ -11,7 +11,9 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
-import { Download, FileText, FileSpreadsheet, Loader2 } from 'lucide-react';
+import DownloadIcon from '@atlaskit/icon/core/download';
+import FileIcon from '@atlaskit/icon/core/file';
+import Spinner from '@atlaskit/spinner';
 import { toast } from 'sonner';
 import type { ReleaseDetail, ReleaseMetrics, HealthScore, QualityGate } from '../types';
 
@@ -165,20 +167,20 @@ Generated: ${new Date().toISOString()}
       <DropdownMenuTrigger asChild>
         <Button variant={variant} size={size} disabled={isExporting !== null}>
           {isExporting ? (
-            <Loader2 className="w-4 h-4 mr-1 animate-spin" />
+            <Spinner size="small" label="Exporting" />
           ) : (
-            <Download className="w-4 h-4 mr-1" />
+            <DownloadIcon label="" size="small" primaryColor="currentColor" />
           )}
           {isExporting ? 'Exporting...' : 'Export'}
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
         <DropdownMenuItem onClick={generatePDF} disabled={isExporting !== null}>
-          <FileText className="w-4 h-4 mr-2" />
+          <FileIcon label="" size="small" primaryColor="currentColor" />
           Export as PDF
         </DropdownMenuItem>
         <DropdownMenuItem onClick={generateExcel} disabled={isExporting !== null}>
-          <FileSpreadsheet className="w-4 h-4 mr-2" />
+          <FileIcon label="" size="small" primaryColor="currentColor" />
           Export as Excel
         </DropdownMenuItem>
       </DropdownMenuContent>

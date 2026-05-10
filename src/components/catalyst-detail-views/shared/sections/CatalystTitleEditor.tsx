@@ -128,11 +128,6 @@ export function CatalystTitleEditor({ issue, onTitleChange }: CatalystTitleEdito
         display: 'flex',
         alignItems: 'flex-start',
         marginBottom: 12,
-        position: 'sticky',
-        top: 0,
-        zIndex: 10,
-        background: 'var(--ds-surface, #FFFFFF)',
-        paddingTop: 4,
       }}
     >
       <div style={{ flex: 1, minWidth: 0 }}>

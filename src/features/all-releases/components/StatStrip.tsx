@@ -4,7 +4,8 @@
  * Includes AI Insights badge trigger
  */
 
-import { AlertCircle, Sparkles } from 'lucide-react';
+import ErrorIcon from '@atlaskit/icon/core/error';
+import SparklesIcon from '@atlaskit/icon/core/atlassian-intelligence';
 import { cn } from '@/lib/utils';
 import { ReleaseSummary } from '../types';
 
@@ -76,7 +77,7 @@ export function StatStrip({ summary, activeFilter, onFilterClick, aiInsightCount
           onClick={onAIInsightClick}
           className="ml-auto flex items-center gap-1.5 px-3.5 py-1.5 bg-red-50 hover:bg-red-100 border-l border-slate-200 transition-colors h-full"
         >
-          <AlertCircle className="w-3.5 h-3.5 text-red-500" strokeWidth={2} />
+          <ErrorIcon label="" size="small" primaryColor="currentColor" />
           <span className="text-xs font-medium text-red-500">AI Insights</span>
           <span className="px-1.5 py-0.5 text-[10px] font-bold text-red-500 bg-white border border-red-200 rounded-full min-w-[18px] text-center">
             {aiInsightCount}
