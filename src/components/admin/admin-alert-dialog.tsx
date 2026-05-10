@@ -76,7 +76,7 @@ AlertDialogHeader.displayName = 'AlertDialogHeader';
 
 // ── AlertDialogTitle ──────────────────────────────────────────────────────────
 
-export function AlertDialogTitle({ children }: { children?: React.ReactNode }) {
+export function AlertDialogTitle({ children }: { children?: React.ReactNode; className?: string }) {
   return <ModalTitle>{children}</ModalTitle>;
 }
 AlertDialogTitle.displayName = 'AlertDialogTitle';
