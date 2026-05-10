@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { format, formatDistanceToNow } from 'date-fns';
-import { Switch } from '@/components/ui/switch';
-import { Button } from '@/components/ui/button';
+import Toggle from '@atlaskit/toggle';
+import Button from '@atlaskit/button/new';
 import AutomationIcon from '@atlaskit/icon/core/automation';
 import CheckCircleIcon from '@atlaskit/icon/core/check-circle';
 import DatabaseIcon from '@atlaskit/icon/core/database';
@@ -18,8 +18,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/admin/admin-dialog';
-import { Textarea } from '@/components/ui/textarea';
-import { Label } from '@/components/ui/label';
+import TextArea from '@atlaskit/textarea';
 import { useJiraSyncConfig } from '@/hooks/admin/useJiraSyncConfig';
 
 /* ─── Stat card ─────────────────────────────────────────────────────────── */
@@ -169,11 +168,10 @@ export function JiraSyncControlPanel() {
             <span className="text-xs font-medium" style={{ color: 'var(--cp-text-secondary)' }}>
               {isSyncEnabled ? 'Sync ON' : 'Sync OFF'}
             </span>
-            <Switch
-              checked={isSyncEnabled}
-              onCheckedChange={handleToggleClick}
-              disabled={isPending}
-              aria-label="Toggle Jira sync"
+            <Toggle
+              isChecked={isSyncEnabled}
+              onChange={() => handleToggleClick(!isSyncEnabled)}
+              isDisabled={isPending}
             />
           </div>
         </div>
@@ -288,27 +286,25 @@ export function JiraSyncControlPanel() {
                   </ul>
                 </div>
                 <div>
-                  <Label htmlFor="freeze-note" className="text-xs">
+                  <label htmlFor="freeze-note" style={{ fontSize: '12px', fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>
                     Optional freeze note
-                  </Label>
-                  <Textarea
-                    id="freeze-note"
-                    placeholder="e.g. Testing Catalyst-native mode for Q2 sprint..."
-                    value={freezeNote}
-                    onChange={(e) => setFreezeNote(e.target.value)}
-                    className="mt-1 text-xs resize-none h-20"
-                  />
+                  </label>
+                  <div className="mt-1">
+                    <TextArea
+                      id="freeze-note"
+                      placeholder="e.g. Testing Catalyst-native mode for Q2 sprint..."
+                      value={freezeNote}
+                      onChange={(e) => setFreezeNote((e.target as HTMLTextAreaElement).value)}
+                      minimumRows={3}
+                    />
+                  </div>
                 </div>
               </div>
               <DialogFooter>
-                <Button variant="outline" onClick={() => setConfirmOpen(false)} disabled={isPending}>
+                <Button appearance="default" onClick={() => setConfirmOpen(false)} isDisabled={isPending}>
                   Cancel
                 </Button>
-                <Button
-                  onClick={handleConfirm}
-                  disabled={isPending}
-                  style={{ background: 'var(--ds-text, #253858)', color: 'var(--ds-text-inverse, #FFFFFF)' }}
-                >
+                <Button appearance="primary" onClick={handleConfirm} isDisabled={isPending}>
                   {isPending ? 'Freezing…' : 'Freeze sync'}
                 </Button>
               </DialogFooter>
@@ -336,14 +332,10 @@ export function JiraSyncControlPanel() {
                 </p>
               </div>
               <DialogFooter>
-                <Button variant="outline" onClick={() => setConfirmOpen(false)} disabled={isPending}>
+                <Button appearance="default" onClick={() => setConfirmOpen(false)} isDisabled={isPending}>
                   Cancel
                 </Button>
-                <Button
-                  onClick={handleConfirm}
-                  disabled={isPending}
-                  style={{ background: 'var(--ds-text-brand, #2563EB)', color: 'var(--ds-text-inverse, #FFFFFF)' }}
-                >
+                <Button appearance="primary" onClick={handleConfirm} isDisabled={isPending}>
                   {isPending ? 'Enabling…' : 'Enable sync'}
                 </Button>
               </DialogFooter>
