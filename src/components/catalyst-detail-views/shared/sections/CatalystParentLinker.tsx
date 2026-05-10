@@ -227,18 +227,15 @@ function BusinessRequestParentPicker({
     <div style={{ position: 'relative' }} ref={pickerRef}>
       {/* Current parent display */}
       {currentParent ? (
-        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6, cursor: 'pointer' }}
+          onClick={() => setShowPicker(!showPicker)}
+        >
           <IssueIcon type="Business Request" size={16} />
           <span
-            style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 14, color: '#0052CC', cursor: 'pointer', flexShrink: 0 }}
-            onClick={() => setShowPicker(!showPicker)}
+            style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 14, color: '#0052CC', flexShrink: 0 }}
           >{currentParent.request_key}</span>
-          <span style={{ fontSize: 14, color: '#292A2E', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', cursor: 'pointer' }}
-            onClick={() => setShowPicker(!showPicker)}
+          <span style={{ fontSize: 14, color: '#292A2E', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}
           >{currentParent.title}</span>
-          <button onClick={() => updateParent.mutate(null)} title="Remove parent" style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 2, color: 'var(--ds-text-subtlest, #6B778C)', display: 'flex' }}>
-            <CrossIcon size="small" primaryColor="var(--ds-text-subtlest, #6B778C)" />
-          </button>
         </div>
       ) : (
         <SidebarAddTrigger label="Add parent" isOpen={showPicker} onClick={() => setShowPicker(!showPicker)} />
@@ -260,11 +257,29 @@ function BusinessRequestParentPicker({
               {search && <button onClick={() => setSearch('')} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--ds-text-subtlest, #6B778C)', display: 'flex', padding: 0 }}><CrossIcon size="small" primaryColor="var(--ds-text-subtlest, #6B778C)" /></button>}
             </div>
           </div>
-          <div style={{ overflowY: 'auto', maxHeight: 340 }}>
+          <div style={{ overflowY: 'auto', maxHeight: 300 }}>
             {renderBrGroup('ACTIVE', active, issue?.parent_key, (key) => updateParent.mutate(key))}
             {renderBrGroup('DONE', done, issue?.parent_key, (key) => updateParent.mutate(key))}
             {filtered.length === 0 && <div style={{ padding: '16px', fontSize: 13, color: 'var(--ds-text-subtlest, #6B778C)', textAlign: 'center' }}>No matching business requests</div>}
           </div>
+          {currentParent && (
+            <div style={{ borderTop: '1px solid #F4F5F7', padding: '4px 0' }}>
+              <button
+                type="button"
+                onClick={() => { updateParent.mutate(null); setShowPicker(false); }}
+                style={{
+                  display: 'block', width: '100%', textAlign: 'left',
+                  padding: '6px 12px', background: 'none', border: 'none',
+                  cursor: 'pointer', fontSize: 13, color: 'var(--ds-text-danger, #AE2E24)',
+                  fontFamily: 'inherit',
+                }}
+                onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'var(--ds-background-danger-hovered, #FFECEB)'; }}
+                onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'none'; }}
+              >
+                Remove parent
+              </button>
+            </div>
+          )}
         </div>
       )}
     </div>
@@ -405,17 +420,12 @@ function SingleParentPicker({
     <div style={{ position: 'relative' }} ref={pickerRef}>
       {/* Current parent display */}
       {currentParent ? (
-        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-          <ParentLozenge
-            parentType={currentParent.issue_type}
-            parentKey={currentParent.issue_key}
-            parentSummary={currentParent.summary}
-            onClick={() => onOpenItem?.(currentParent.issue_key)}
-          />
-          <button onClick={() => updateParent.mutate(null)} title="Remove parent" style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 2, color: 'var(--ds-text-subtlest, #6B778C)', display: 'flex' }}>
-            <CrossIcon size="small" primaryColor="var(--ds-text-subtlest, #6B778C)" />
-          </button>
-        </div>
+        <ParentLozenge
+          parentType={currentParent.issue_type}
+          parentKey={currentParent.issue_key}
+          parentSummary={currentParent.summary}
+          onClick={() => setShowPicker(!showPicker)}
+        />
       ) : hasRawParent ? (
         /* Resolve returned null OR still loading — surface the raw key so
            users never see "+ Add parent" when a parent actually exists.
@@ -426,23 +436,18 @@ function SingleParentPicker({
            the correct Epic/Request icon, panel showed a blue Feature
            checkbox). Falls back to 'Epic' to match TicketBreadcrumbs'
            default. */
-        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-          <ParentLozenge
-            parentType={(issue as any)?.parent_issue_type || 'Epic'}
-            parentKey={rawParentKey!}
-            parentSummary={(issue as any)?.parent_summary}
-            onClick={() => onOpenItem?.(rawParentKey!)}
-          />
-          {/* Apr 27, 2026: removed the "(details unavailable)" italic suffix.
-              Vikram flagged it as misleading — it appeared whenever the
-              parent_key existed on the issue but the row lived outside
-              ph_issues (e.g. BAU-4466 lives in a separate Features/Epic
-              table). The clickable key + icon already signal "parent
-              exists"; the suffix made functional rows look broken. */}
-          <button onClick={() => updateParent.mutate(null)} title="Remove parent" style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 2, color: 'var(--ds-text-subtlest, #6B778C)', display: 'flex' }}>
-            <CrossIcon size={12} />
-          </button>
-        </div>
+        /* Apr 27, 2026: removed the "(details unavailable)" italic suffix.
+           Vikram flagged it as misleading — it appeared whenever the
+           parent_key existed on the issue but the row lived outside
+           ph_issues (e.g. BAU-4466 lives in a separate Features/Epic
+           table). The clickable key + icon already signal "parent
+           exists"; the suffix made functional rows look broken. */
+        <ParentLozenge
+          parentType={(issue as any)?.parent_issue_type || 'Epic'}
+          parentKey={rawParentKey!}
+          parentSummary={(issue as any)?.parent_summary}
+          onClick={() => setShowPicker(!showPicker)}
+        />
       ) : (
         <SidebarAddTrigger label="Add parent" isOpen={showPicker} onClick={() => setShowPicker(!showPicker)} />
       )}
@@ -463,11 +468,29 @@ function SingleParentPicker({
               {search && <button onClick={() => setSearch('')} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--ds-text-subtlest, #6B778C)', display: 'flex', padding: 0 }}><CrossIcon size="small" primaryColor="var(--ds-text-subtlest, #6B778C)" /></button>}
             </div>
           </div>
-          <div style={{ overflowY: 'auto', maxHeight: 340 }}>
+          <div style={{ overflowY: 'auto', maxHeight: 300 }}>
             {renderGroup('ACTIVE', active, issue?.parent_key, (key) => updateParent.mutate(key))}
             {renderGroup('DONE', done, issue?.parent_key, (key) => updateParent.mutate(key))}
             {filtered.length === 0 && <div style={{ padding: '16px', fontSize: 13, color: 'var(--ds-text-subtlest, #6B778C)', textAlign: 'center' }}>No matching items</div>}
           </div>
+          {(currentParent || hasRawParent) && (
+            <div style={{ borderTop: '1px solid #F4F5F7', padding: '4px 0' }}>
+              <button
+                type="button"
+                onClick={() => { updateParent.mutate(null); setShowPicker(false); }}
+                style={{
+                  display: 'block', width: '100%', textAlign: 'left',
+                  padding: '6px 12px', background: 'none', border: 'none',
+                  cursor: 'pointer', fontSize: 13, color: 'var(--ds-text-danger, #AE2E24)',
+                  fontFamily: 'inherit',
+                }}
+                onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'var(--ds-background-danger-hovered, #FFECEB)'; }}
+                onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'none'; }}
+              >
+                Remove parent
+              </button>
+            </div>
+          )}
         </div>
       )}
     </div>
