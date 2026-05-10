@@ -221,9 +221,11 @@ export default function ForYouPageAtlaskit() {
   // neither shares the client-side pagination window that the row-feed tabs
   // use. Suppress Load more + sentinel for those tabs to avoid dead chrome.
   const showPagination = activeTab !== 'ai-theme' && activeTab !== 'ageing' && activeTab !== 'r360';
+  const isR360Active = activeTab === 'r360';
 
   return (
     <div
+      data-r360-fullscreen={isR360Active ? 'true' : undefined}
       style={{
         minHeight: '100%',
         width: '100%',
@@ -240,41 +242,42 @@ export default function ForYouPageAtlaskit() {
         boxSizing: 'border-box',
       }}
     >
-      {/* Recommended projects strip — account-scoped, stable across tab
-          switches. Jira parity (image ref 2026-04-24): projects strip comes
-          FIRST, then the "For you" heading + tab strip share a single row
-          directly above the feed. */}
-      <RecommendedProjectsStrip projects={allUserProjects} />
+      {/* Recommended projects strip + R360 access tile — hidden when R360 tab
+          is active so the ring view fills the full viewport without noise. */}
+      {!isR360Active && (
+        <>
+          <RecommendedProjectsStrip projects={allUserProjects} />
+          <div style={{ marginBlockStart: 12 }}>
+            <R360AccessTile />
+          </div>
+        </>
+      )}
 
-      {/* R360 access tile — persona-conditional shortcut to the user's R360 surface */}
-      <div style={{ marginBlockStart: 12 }}>
-        <R360AccessTile />
-      </div>
-
-      {/* Heading + tabs — single flex row, "For you" left-aligned, tabs
-          right-aligned. Jira's DOM ships this as a div with
-          `display:flex; justify-content:space-between`. */}
+      {/* Heading + tabs — heading is hidden in R360 full-screen mode; tabs stay
+          visible so the user can switch back to other tabs. */}
       <div
         style={{
           display: 'flex',
           alignItems: 'center',
-          justifyContent: 'space-between',
+          justifyContent: isR360Active ? 'flex-end' : 'space-between',
           gap: 16,
-          marginBlockStart: 20,
-          marginBlockEnd: 16,
+          marginBlockStart: isR360Active ? 8 : 20,
+          marginBlockEnd: 12,
           flexWrap: 'wrap',
         }}
       >
-        <h1
-          style={{
-            font: `500 20px/24px "Inter", system-ui, sans-serif`,
-            color: token('color.text', '#292A2E'),
-            margin: 0,
-            letterSpacing: '-0.003em',
-          }}
-        >
-          For you
-        </h1>
+        {!isR360Active && (
+          <h1
+            style={{
+              font: `500 20px/24px "Inter", system-ui, sans-serif`,
+              color: token('color.text', '#292A2E'),
+              margin: 0,
+              letterSpacing: '-0.003em',
+            }}
+          >
+            For you
+          </h1>
+        )}
         <ForYouTabs
           activeTab={activeTab}
           tabCounts={tabCounts}
@@ -282,11 +285,12 @@ export default function ForYouPageAtlaskit() {
         />
       </div>
 
-      {/* Active panel */}
+      {/* Active panel — R360 gets min-height to fill viewport below the navbar */}
       <div
         role="tabpanel"
         id={`for-you-panel-${activeTab}`}
         aria-labelledby={`for-you-tab-${activeTab}`}
+        style={isR360Active ? { minHeight: 'calc(100vh - 110px)' } : undefined}
       >
         {panel}
       </div>
