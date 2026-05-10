@@ -2951,6 +2951,14 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
                     queryClient.invalidateQueries({ queryKey: ['backlog-stories-v2', projectId] });
                     queryClient.invalidateQueries({ queryKey: ['backlog-epics', projectId] });
                     setFooterCreateActive(false);
+                    // 2026-05-10 UX: with virtualization + 600+ rows, a newly-
+                    // created row at the bottom of an ASC sort is invisible.
+                    // Switch sort to updated_at DESC so the new row appears at
+                    // the top of the visible viewport. User can re-sort later.
+                    if (sortKey !== 'updated' || sortDir !== 'DESC') {
+                      setSortKey('updated');
+                      setSortDir('DESC');
+                    }
                   } catch {
                     flag.error('Failed to create');
                   } finally {
