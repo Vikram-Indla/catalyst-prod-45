@@ -13,7 +13,6 @@ import {
   LayoutGrid,
   LayoutDashboard,
   Settings,
-  UserSearch,
   Layers,
   LayoutList,
   BookOpen,
@@ -215,7 +214,6 @@ function ModuleLevelSidebar({ expanded, onToggle, className, favouritesSection }
       title: '',
       items: [
         { id: 'all-projects', title: 'All Projects', path: '/project-hub/projects', icon: LayoutGrid, exact: false },
-        { id: 'all-resources', title: 'Resource 360™', path: '/project-hub/resources', icon: UserSearch, exact: true },
       ],
     },
   ];

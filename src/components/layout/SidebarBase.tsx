@@ -56,7 +56,7 @@ const HUB_ITEMS = [
  */
 const ROUTE_PREFETCH_MAP: Record<string, () => Promise<unknown>> = {
   '/project-hub/projects': () => import('../../pages/project-hub/AllProjectsPage'),
-  '/project-hub/resources': () => import('../../pages/ResourceListingPage'),
+  '/admin/resources': () => import('../../pages/ResourceListingPage'),
   '/producthub/kanban': () => import('../../pages/producthub/KanbanPage'),
   '/releasehub': () => import('../../pages/releasehub/AllReleasesPage'),
   '/testhub': () => import('../../pages/testhub/TestHubPage'),
