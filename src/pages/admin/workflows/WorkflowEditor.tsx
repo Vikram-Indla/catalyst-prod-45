@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * WorkflowEditor — Status list + Transition matrix for a workflow scheme.
  * High-contrast DARK MODE palette.

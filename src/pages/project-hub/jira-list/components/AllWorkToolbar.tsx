@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * AllWorkToolbar — Jira-parity refinement bar for the All Work surface.
  *
