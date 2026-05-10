@@ -24,6 +24,8 @@ const EpicDescriptionEditor = lazy(
 import EpicDescriptionRenderer from '@/components/shared/rich-text/atlaskit/EpicDescriptionRenderer';
 import { isAdfEmpty } from '@/components/shared/rich-text/atlaskit/adfHelpers';
 import { prefetchEpicEditor } from '@/lib/atlaskitPrefetch';
+import { SubtasksPanel } from '@/modules/project-work-hub/components/SubtasksPanel';
+import { LinkedWorkItemsSection } from '@/modules/project-work-hub/components/linked-work-items';
 
 interface WorkItemDetailsDrawerProps {
   item: WorkItem | null;
@@ -415,74 +417,35 @@ export const WorkItemDetailsDrawer: React.FC<WorkItemDetailsDrawerProps> = ({
               </div>
 
               {/* Development section permanently banned — CLAUDE.md 2026-05-06 */}
+              {/* Automation section permanently banned — CLAUDE.md 2026-05-06 */}
 
-              {/* Automation */}
-              <div className="mb-6">
-                <div className="flex items-center gap-2 mb-2">
-                  <span className="text-[11px] font-semibold text-muted-foreground uppercase">
-                    Automation
-                  </span>
-                </div>
-                <div className="text-sm text-muted-foreground">
-                  <div className="flex items-center gap-2">
-                    <span>Rule executions</span>
-                  </div>
-                  <p className="text-xs mt-1">No rule executions</p>
-                </div>
-              </div>
+              {/* Child issues — canonical SubtasksPanel (CRUD, inline create, Jira parity) */}
+              {(() => {
+                const issueKey = jiraData?.item_key ?? item.jiraKey ?? undefined;
+                const projectKey = issueKey?.split('-')[0] ?? item.key ?? '';
+                return issueKey ? (
+                  <SubtasksPanel
+                    storyKey={issueKey}
+                    storyId={item.id}
+                    projectKey={projectKey}
+                    parentIssueType={item.type}
+                    parentSummary={item.title}
+                  />
+                ) : null;
+              })()}
 
-              {/* Child items (Stories) */}
-              {item.type === 'STORY' && (
-                <>
-                  <div className="mb-6">
-                    <div className="flex items-center justify-between mb-2">
-                      <label className="text-[11px] font-semibold text-muted-foreground uppercase">
-                        Subtasks ({item.subtaskCount || 0})
-                      </label>
-                      <Tooltip content="Coming soon">
-                        <span>
-                          <Button appearance="subtle" isDisabled>+ Add</Button>
-                        </span>
-                      </Tooltip>
-                    </div>
-                    {(item.subtaskCount || 0) === 0 && (
-                      <p className="text-sm text-muted-foreground">No subtasks</p>
-                    )}
-                  </div>
-
-                  <div className="mb-6">
-                    <div className="flex items-center justify-between mb-2">
-                      <label className="text-[11px] font-semibold text-muted-foreground uppercase">
-                        Defects ({item.defectCount || 0})
-                      </label>
-                      <Tooltip content="Coming soon">
-                        <span>
-                          <Button appearance="subtle" isDisabled>+ Log</Button>
-                        </span>
-                      </Tooltip>
-                    </div>
-                    {(item.defectCount || 0) === 0 && (
-                      <p className="text-sm text-muted-foreground">No defects</p>
-                    )}
-                  </div>
-
-                  <div className="mb-6">
-                    <div className="flex items-center justify-between mb-2">
-                      <label className="text-[11px] font-semibold text-muted-foreground uppercase">
-                        Incidents ({item.incidentCount || 0})
-                      </label>
-                      <Tooltip content="Coming soon">
-                        <span>
-                          <Button appearance="subtle" isDisabled>+ Log</Button>
-                        </span>
-                      </Tooltip>
-                    </div>
-                    {(item.incidentCount || 0) === 0 && (
-                      <p className="text-sm text-muted-foreground">No incidents</p>
-                    )}
-                  </div>
-                </>
-              )}
+              {/* Linked work items — canonical LinkedWorkItemsSection */}
+              {(() => {
+                const issueKey = jiraData?.item_key ?? item.jiraKey ?? undefined;
+                const projectKey = issueKey?.split('-')[0] ?? item.key ?? '';
+                return (
+                  <LinkedWorkItemsSection
+                    issueId={issueKey ?? item.id}
+                    issueKey={issueKey ?? ''}
+                    projectKey={projectKey}
+                  />
+                );
+              })()}
 
               {/* Dates */}
               <div className="border-t border-border pt-4 mt-4">

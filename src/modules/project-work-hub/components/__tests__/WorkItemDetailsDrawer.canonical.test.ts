@@ -48,4 +48,47 @@ describe('WorkItemDetailsDrawer — canonical parity', () => {
       'from all Catalyst detail views.',
     ).toBe(false);
   });
+
+  it('Automation section is not rendered (permanently banned)', () => {
+    // CLAUDE.md 2026-05-06: "NEVER implement the Development section,
+    // Automation section, or Automate (⚡) button in Catalyst under any
+    // circumstances, for any issue type, in any view."
+    expect(
+      src.includes('No rule executions'),
+      'WorkItemDetailsDrawer must NOT render an Automation section. ' +
+      'Per CLAUDE.md 2026-05-06, the Automation section is permanently banned ' +
+      'from all Catalyst detail views.',
+    ).toBe(false);
+  });
+
+  it('uses canonical SubtasksPanel (not hand-rolled "Coming soon" stub)', () => {
+    // The hand-rolled stub shows a disabled "+ Add" button and static count.
+    // Canonical replacement is SubtasksPanel from
+    // @/modules/project-work-hub/components/SubtasksPanel — which provides
+    // full CRUD, inline create, drag-reorder, and Jira parity.
+    expect(
+      src.includes("import { SubtasksPanel }"),
+      'WorkItemDetailsDrawer must import canonical SubtasksPanel ' +
+      'instead of the hand-rolled "Coming soon" disabled stub.',
+    ).toBe(true);
+
+    // Ensure the old stub is gone
+    expect(
+      src.includes("Subtasks ({item.subtaskCount || 0})"),
+      'WorkItemDetailsDrawer must NOT render the hand-rolled subtasks stub ' +
+      '(static count badge + disabled "+ Add" button).',
+    ).toBe(false);
+  });
+
+  it('uses canonical LinkedWorkItemsSection (not absent)', () => {
+    // Linked work items were entirely absent from WorkItemDetailsDrawer.
+    // Canonical implementation is LinkedWorkItemsSection from
+    // @/modules/project-work-hub/components/linked-work-items — consistent
+    // with CatalystViewDefect, CatalystViewStory, and all other detail views.
+    expect(
+      src.includes("import { LinkedWorkItemsSection }"),
+      'WorkItemDetailsDrawer must import canonical LinkedWorkItemsSection. ' +
+      'Linked work items were absent — add the canonical component.',
+    ).toBe(true);
+  });
 });
