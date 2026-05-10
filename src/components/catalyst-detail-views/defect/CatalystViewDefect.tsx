@@ -157,7 +157,7 @@ export default function CatalystViewDefect({
       itemType={issue?.issue_type || 'Bug'} itemKey={issue?.issue_key || null}
       projectKey={issue?.project_key || projectKey} projectName={issue?.project_name || undefined}
       parentKey={issue?.parent_key} parentType="Epic"
-      onParentClick={issue?.parent_key ? () => {} : undefined}
+      onParentClick={issue?.parent_key ? () => onOpenItem?.(issue.parent_key!) : undefined}
       /* Canonical Add-parent (Catalyst rule): Defect → Story / Epic / Feature parent. */
       parentSource="story_epic_feature"
       onParentChange={async (newKey) => {
