@@ -137,9 +137,11 @@ export function IncidentsSection({
           >
             {expanded ? <ChevronDownIcon label="" size="small" /> : <ChevronRightIcon label="" size="small" />}
             <span className="lwi-header__title">Production Incidents</span>
-            <span className="lwi-header__count" aria-label={`${incidents.length} incidents`}>
-              {incidents.length}
-            </span>
+            {incidents.length > 0 && (
+              <span className="lwi-header__count" aria-label={`${incidents.length} incidents`}>
+                {incidents.length}
+              </span>
+            )}
           </button>
           {expanded && (
             <button

@@ -137,14 +137,10 @@ export function CatalystViewBase({
   // (digital-transformation.atlassian.net BAU-5419): Jira's right sidebar
   // is 549px wide with 504px of content area. At 280px the Reporter name
   // "Nada alfassam" wraps onto two lines because the value column has only
-  // ~130px after the 96px label + 20px gap. Bumping default to 380 and
-  // max to 600 so values have real estate to breathe. Min stays at 220
-  // for the compact-drawer (container-query) path used by Backlog.
-  // jira-compare 2026-05-03 — Patch A8 · Default raised 380 → 549 to match
-  // Jira's measured rail width. Resize range stays 220..600.
-  // Note: live content area = 549 − 32px padding (16L + 16R) = 517px. Both
-  // values are correct — they measure different things. Not a bug.
-  const [rightPanelWidth, setRightPanelWidth] = useState(549);
+  // jira-compare 2026-05-10: re-probed BAU-5736. Jira right rail ≈ 285px.
+  // Prior 549 default (Patch A8) was wrongly high — made panels near-equal.
+  // Correct split: left ~70% / right ~30% of 1100px modal = right ≈ 285px.
+  const [rightPanelWidth, setRightPanelWidth] = useState(285);
   const [showDotsMenu, setShowDotsMenu] = useState(false);
   const isDraggingRef = useRef(false);
   const dotsMenuRef = useRef<HTMLDivElement>(null);

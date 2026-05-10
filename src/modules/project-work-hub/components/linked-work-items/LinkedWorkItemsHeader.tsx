@@ -46,9 +46,11 @@ export function LinkedWorkItemsHeader({
           : <ChevronRightIcon size="small" label="" primaryColor="var(--ds-icon-subtle, #505258)" />
         }
         <span className="lwi-header__title">Linked work items</span>
-        <span className="lwi-header__count" aria-label={`${count} linked`}>
-          {count}
-        </span>
+        {count > 0 && (
+          <span className="lwi-header__count" aria-label={`${count} linked`}>
+            {count}
+          </span>
+        )}
       </button>
       {expanded && canAdd && onAdd && (
         <button

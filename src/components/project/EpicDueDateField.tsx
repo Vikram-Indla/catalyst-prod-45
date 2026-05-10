@@ -62,7 +62,7 @@ export function EpicDueDateField({ issueId, dueDate, isEpic, onSave }: Props) {
   };
 
   return (
-    <div data-issue-id={issueId} style={{ width: '100%', maxWidth: 240, opacity: saving ? 0.7 : 1 }}>
+    <div data-issue-id={issueId} className="cv-date-field" style={{ width: '100%', maxWidth: 200, opacity: saving ? 0.7 : 1 }}>
       <DatePicker
         value={value}
         onChange={handleChange}

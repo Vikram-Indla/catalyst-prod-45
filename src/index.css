@@ -5941,3 +5941,21 @@ html[data-presentation="true"] [data-testid="project-dashboard-shell"] [role="re
   background: var(--ds-background-neutral-subtle-hovered, #F4F5F7) !important;
   border-color: transparent !important;
 }
+
+/* @atlaskit/datetime-picker v17 uses compiled CSS with obfuscated class names.
+   Target via the cv-date-field wrapper class added to EpicDueDateField. */
+.cv-drawer-sidebar .cv-date-field input,
+.cv-drawer-sidebar .cv-date-field button:not(:focus-visible) {
+  border-color: transparent !important;
+  box-shadow: none !important;
+  background: transparent !important;
+}
+.cv-drawer-sidebar .cv-date-field > div {
+  border-color: transparent !important;
+  box-shadow: none !important;
+  background: transparent !important;
+}
+.cv-drawer-sidebar .cv-date-field:hover > div,
+.cv-drawer-sidebar .cv-date-field:hover input {
+  background: var(--ds-background-neutral-subtle-hovered, #F4F5F7) !important;
+}
