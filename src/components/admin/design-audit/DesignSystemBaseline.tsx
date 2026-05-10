@@ -3,6 +3,7 @@
  * Displays the locked design tokens as source of truth
  */
 
+import type { ComponentType } from 'react';
 import { useState } from 'react';
 import Button from '@atlaskit/button/new';
 import { Lozenge } from '@/components/ads';
@@ -29,8 +30,15 @@ import {
   getBaselineDate,
 } from '@/lib/designAudit/designSystemBaseline';
 
-const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
-  Palette, Type, Layers, Ruler, Layout, Tag, Square, BarChart3,
+const iconMap: Record<string, ComponentType<{ label: string; size?: string }>> = {
+  Palette: PaintPaletteIcon,
+  Type: TextIcon,
+  Layers: BoardsIcon,
+  Ruler: SettingsIcon,
+  Layout: BoardIcon,
+  Tag: TagIcon,
+  Square: CheckboxUncheckedIcon,
+  BarChart3: ChartBarIcon,
 };
 
 export function DesignSystemBaseline() {
@@ -87,7 +95,7 @@ export function DesignSystemBaseline() {
           <div>
             <ScrollArea className="h-[400px]">
               {groupedTokens.map(category => {
-                const Icon = iconMap[category.icon] || Palette;
+                const Icon = iconMap[category.icon] || PaintPaletteIcon;
                 const isExpanded = expandedCategories.includes(category.id);
 
                 return (
@@ -101,7 +109,9 @@ export function DesignSystemBaseline() {
                       ) : (
                         <ChevronRightIcon label="" size="small" />
                       )}
-                      <Icon className="h-4 w-4 text-brand-primary" />
+                      <span className="text-brand-primary" style={{ display: 'flex' }}>
+                        <Icon label="" size="small" />
+                      </span>
                       <span className="font-medium text-sm">{category.name}</span>
                       <span className="ml-auto">
                         <Lozenge appearance="default">{String(category.tokens.length)}</Lozenge>
