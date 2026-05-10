@@ -57,4 +57,18 @@ describe('section count badges must be conditionally rendered (no zeros)', () =>
       'SectionBlock sdm-count-badge must be guarded with count > 0',
     ).toBe(true);
   });
+
+  it('AttachmentsSection: att-badge wrapper must be gated by attachments.length > 0', () => {
+    /* jira-compare 2026-05-10 — A5 (P1): live probe of BAU-5736 detail
+       showed `.att-badge` rendering "0" inside the Attachments section
+       header. Per CLAUDE.md 2026-05-05 lesson, section count badges (and
+       especially zero badges) are permanently banned. Guard with
+       `attachments.length > 0 && (...)`. */
+    const file = src('modules/project-work-hub/components/dialogs/story-detail-modules/AttachmentsSection.tsx');
+    // The wrapper must be immediately preceded by the `attachments.length > 0 && (` gate.
+    expect(
+      /attachments\.length > 0 && \(\s*(\{\/\*[\s\S]*?\*\/\}\s*)?<div className="att-badge-wrapper">/.test(file),
+      'AttachmentsSection must guard att-badge-wrapper with {attachments.length > 0 && (...)}',
+    ).toBe(true);
+  });
 });
