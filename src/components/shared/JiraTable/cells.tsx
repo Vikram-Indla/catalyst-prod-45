@@ -227,14 +227,19 @@ export type LozengeAppearance =
  * (success resolves to rgb(239,255,214) vs Jira's rgb(179,223,114)), so we
  * render the span structure manually with measured values.
  */
+// 2026-05-10: inline measured RGB values. CSS vars from
+// jira-parity-overrides.css don't always resolve in this scope (verified
+// 2026-05-10 via DOM probe — bg returned rgba(0,0,0,0)). Same fix pattern
+// already applied to status dropdown dots.
 const LOZENGE_BG: Record<LozengeAppearance, string> = {
-  success:    'var(--cp-jira-status-success-bg)',
-  inprogress: 'var(--cp-jira-status-inprogress-bg)',
-  default:    'var(--cp-jira-status-default-bg)',
-  moved:      'var(--cp-jira-status-moved-bg)',
-  removed:    'var(--cp-jira-status-removed-bg)',
-  new:        'var(--cp-jira-status-new-bg)',
+  success:    'rgb(179, 223, 114)',
+  inprogress: 'rgb(143, 184, 246)',
+  default:    'rgb(221, 222, 225)',
+  moved:      'rgb(243, 214, 100)',
+  removed:    'rgb(255, 143, 115)',
+  new:        'rgb(184, 172, 246)',
 };
+const LOZENGE_FG = 'rgb(41, 42, 46)';
 
 export function StatusPill({
   appearance,
@@ -258,7 +263,7 @@ export function StatusPill({
         fontSize: '11px',
         fontWeight: 653,
         lineHeight: '16px',
-        color: 'var(--cp-jira-status-fg)',
+        color: LOZENGE_FG,
         textTransform: 'uppercase',
         letterSpacing: '0.165px',
         overflow: 'hidden',

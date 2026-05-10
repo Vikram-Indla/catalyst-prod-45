@@ -4872,6 +4872,13 @@ function InlineGroupCreateRow({
   const [issueType, setIssueType] = useState<CreatableIssueType>('Story');
   const [assigneeIdx, setAssigneeIdx] = useState<number>(-1); // -1 = Unassigned
   const inputRef = useRef<HTMLInputElement | null>(null);
+  // 2026-05-10 Jira-parity: assignee portal dropdown — replaces click-cycle
+  // (matches type picker pattern; CLAUDE.md 2026-05-08 click-cycle ≠ Jira).
+  const [assigneeMenuOpen, setAssigneeMenuOpen] = useState(false);
+  const [assigneeMenuAnchor, setAssigneeMenuAnchor] = useState<{ top?: number; bottom?: number; left: number } | null>(null);
+  const [assigneeQuery, setAssigneeQuery] = useState('');
+  const assigneeTriggerRef = useRef<HTMLButtonElement>(null);
+  const assigneeMenuRef = useRef<HTMLDivElement>(null);
   // Type picker dropdown — portal-based (L21 portal-empty bug prevents
   // @atlaskit/dropdown-menu; mirrors GroupByControl pattern exactly).
   const [typeMenuOpen, setTypeMenuOpen] = useState(false);
@@ -4931,6 +4938,35 @@ function InlineGroupCreateRow({
       document.removeEventListener('keydown', onKey);
     };
   }, [typeMenuOpen, typeMenuFocusedIdx]);
+
+  // Assignee menu — open/position + outside-click + Escape.
+  useLayoutEffect(() => {
+    if (!assigneeMenuOpen || !assigneeTriggerRef.current) return;
+    const r = assigneeTriggerRef.current.getBoundingClientRect();
+    const estimatedHeight = Math.min(360, (members.length + 2) * 36 + 60);
+    const spaceBelow = window.innerHeight - r.bottom - 8;
+    const anchor = spaceBelow < estimatedHeight && r.top > estimatedHeight
+      ? { bottom: window.innerHeight - r.top + 4, left: r.left }
+      : { top: r.bottom + 4, left: r.left };
+    setAssigneeMenuAnchor(anchor);
+    setAssigneeQuery('');
+  }, [assigneeMenuOpen, members.length]);
+  useEffect(() => {
+    if (!assigneeMenuOpen) return;
+    const onDoc = (e: MouseEvent) => {
+      const t = e.target as Node;
+      if (assigneeTriggerRef.current?.contains(t)) return;
+      if (assigneeMenuRef.current?.contains(t)) return;
+      setAssigneeMenuOpen(false);
+    };
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') setAssigneeMenuOpen(false); };
+    document.addEventListener('mousedown', onDoc);
+    document.addEventListener('keydown', onKey);
+    return () => {
+      document.removeEventListener('mousedown', onDoc);
+      document.removeEventListener('keydown', onKey);
+    };
+  }, [assigneeMenuOpen]);
 
   const trimmed = summary.trim();
   const canSubmit = !!trimmed && !isSubmitting;
@@ -5082,19 +5118,18 @@ function InlineGroupCreateRow({
           Tooltip shows next-on-click value. When a member is selected
           the avatar is rendered alongside the name. */}
       {(() => {
-        const totalSlots = members.length + 1; // +1 for Unassigned
-        const nextIdx =
-          assigneeIdx === -1 ? (members.length > 0 ? 0 : -1) : (assigneeIdx + 1 >= members.length ? -1 : assigneeIdx + 1);
-        const nextLabel = nextIdx === -1 ? 'Unassigned' : members[nextIdx]?.name ?? 'Unassigned';
         const currentLabel = currentAssignee ? currentAssignee.name : 'Unassigned';
+        const filteredMembers = members.filter((m) => m.name.toLowerCase().includes(assigneeQuery.toLowerCase()));
         return (
-          <Tooltip content={`Click to cycle assignee (next: ${nextLabel})`}>
+          <>
             <button
+              ref={assigneeTriggerRef}
               type="button"
               data-testid="jira-table.group-row.inline-create-assignee-trigger"
               aria-label={`Assignee: ${currentLabel}. Click to change.`}
-              disabled={totalSlots <= 1}
-              onClick={() => setAssigneeIdx(nextIdx)}
+              aria-haspopup="listbox"
+              aria-expanded={assigneeMenuOpen}
+              onClick={() => setAssigneeMenuOpen((v) => !v)}
               style={{
                 display: 'inline-flex',
                 alignItems: 'center',
@@ -5103,12 +5138,12 @@ function InlineGroupCreateRow({
                 padding: '0 10px',
                 border: `1px solid ${token('color.border', '#DFE1E6')}`,
                 borderRadius: 3,
-                background: token('elevation.surface', '#FFFFFF'),
+                background: assigneeMenuOpen ? token('color.background.neutral.subtle.hovered', 'rgba(9,30,66,0.06)') : token('elevation.surface', '#FFFFFF'),
                 color: token('color.text', '#292A2E'),
                 fontSize: 13,
                 fontWeight: 500,
                 fontFamily: 'inherit',
-                cursor: totalSlots > 1 ? 'pointer' : 'not-allowed',
+                cursor: 'pointer',
                 flexShrink: 0,
                 maxWidth: 180,
               }}
@@ -5121,8 +5156,104 @@ function InlineGroupCreateRow({
               <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                 {currentLabel}
               </span>
+              <svg width="10" height="10" viewBox="0 0 10 10" fill="currentColor" aria-hidden style={{ flexShrink: 0, opacity: 0.6 }}>
+                <path d="M2.5 3.5 5 6l2.5-2.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" fill="none"/>
+              </svg>
             </button>
-          </Tooltip>
+            {assigneeMenuOpen && assigneeMenuAnchor && ReactDOM.createPortal(
+              <div
+                ref={assigneeMenuRef}
+                role="listbox"
+                aria-label="Select assignee"
+                style={{
+                  position: 'fixed',
+                  top: assigneeMenuAnchor.top,
+                  bottom: assigneeMenuAnchor.bottom,
+                  left: assigneeMenuAnchor.left,
+                  minWidth: 240,
+                  maxHeight: '50vh',
+                  overflowY: 'auto',
+                  background: token('elevation.surface.overlay', '#FFFFFF'),
+                  border: `1px solid ${token('color.border', '#DFE1E6')}`,
+                  borderRadius: 4,
+                  boxShadow: token('elevation.shadow.overlay', '0 8px 16px rgba(9,30,66,0.15)'),
+                  padding: 6,
+                  zIndex: 9999,
+                  fontFamily: 'var(--cp-font-body)',
+                  fontSize: 14,
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: 4,
+                }}
+              >
+                <input
+                  type="text"
+                  autoFocus
+                  value={assigneeQuery}
+                  onChange={(e) => setAssigneeQuery(e.target.value)}
+                  placeholder="Search people…"
+                  style={{
+                    padding: '6px 8px', fontSize: 13,
+                    border: `1px solid ${token('color.border', '#DFE1E6')}`,
+                    borderRadius: 3, outline: 'none', fontFamily: 'inherit',
+                  }}
+                />
+                <div style={{ overflowY: 'auto', maxHeight: 280 }}>
+                  <button
+                    type="button"
+                    role="option"
+                    aria-selected={assigneeIdx === -1}
+                    onClick={() => { setAssigneeIdx(-1); setAssigneeMenuOpen(false); }}
+                    style={{
+                      display: 'flex', alignItems: 'center', gap: 8,
+                      width: '100%', padding: '6px 8px',
+                      border: 'none', outline: 'none',
+                      background: assigneeIdx === -1 ? token('color.background.selected', '#E9F2FF') : 'transparent',
+                      color: token('color.text', '#292A2E'),
+                      fontSize: 14, fontFamily: 'inherit', textAlign: 'left',
+                      cursor: 'pointer', borderRadius: 3,
+                    }}
+                  >
+                    <AkPersonAvatarIcon label="" size="small" />
+                    <span>Unassigned</span>
+                  </button>
+                  {filteredMembers.length === 0 && assigneeQuery && (
+                    <div style={{ padding: '6px 8px', fontSize: 12, color: token('color.text.subtlest', '#6B6E76') }}>
+                      No matches
+                    </div>
+                  )}
+                  {filteredMembers.map((m) => {
+                    const idx = members.indexOf(m);
+                    const isActive = idx === assigneeIdx;
+                    return (
+                      <button
+                        key={m.key}
+                        type="button"
+                        role="option"
+                        aria-selected={isActive}
+                        onClick={() => { setAssigneeIdx(idx); setAssigneeMenuOpen(false); }}
+                        style={{
+                          display: 'flex', alignItems: 'center', gap: 8,
+                          width: '100%', padding: '6px 8px',
+                          border: 'none', outline: 'none',
+                          background: isActive ? token('color.background.selected', '#E9F2FF') : 'transparent',
+                          color: token('color.text', '#292A2E'),
+                          fontSize: 14, fontFamily: 'inherit', textAlign: 'left',
+                          cursor: 'pointer', borderRadius: 3,
+                        }}
+                        onMouseEnter={(e) => { if (!isActive) (e.currentTarget as HTMLElement).style.background = token('color.background.neutral.subtle.hovered', '#F7F8F9'); }}
+                        onMouseLeave={(e) => { if (!isActive) (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
+                      >
+                        <Avatar size="xsmall" src={m.src} name={m.name} />
+                        <span>{m.name}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>,
+              document.body,
+            )}
+          </>
         );
       })()}
       <Button
