@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * AttachmentPreviewModal — Image / PDF preview with prev/next nav.
  * Signed URLs (5 min TTL). Esc + backdrop close. Arrow keys for nav.

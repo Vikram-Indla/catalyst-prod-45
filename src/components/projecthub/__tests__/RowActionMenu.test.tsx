@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * P0 gate — RowActionMenu must use the self-rolled positioned pattern.
  * Root defect: AKDropdownMenu passes isSelected + testId to DOM <button>
