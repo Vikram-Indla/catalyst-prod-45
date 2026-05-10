@@ -24,35 +24,14 @@
  *   - Manager+ / Lead:  shows team rail with all direct reports
  *   - IC:               shows team rail with self-card only
  */
-import React, { useMemo } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
 import { token } from '@atlaskit/tokens';
 import { useUserRole } from '@/hooks/useUserRole';
-import { useMyLeadProjects } from '@/hooks/useMyLeadProjects';
-import { useAuth } from '@/lib/auth';
-
-// ─── Types ──────────────────────────────────────────────────────────────────
-
-interface TeamMemberCard {
-  userId: string;
-  name: string;
-  initials: string;
-  role: string;
-  country: string;
-  flagEmoji: string;
-  locationType: 'Onsite' | 'Off-Shore' | 'Hybrid';
-  allocationPct: number;
-  projectBreakdown: Array<{ label: string; pct: number; color: string }>;
-  isYou: boolean;
-  profilePath: string;
-}
+import { useR360ForYouPanel } from '@/hooks/useR360ForYouPanel';
+import type { R360TeamMember } from '@/hooks/useR360ForYouPanel';
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
-
-/** Flag emoji from 2-letter ISO code */
-function flagEmoji(code: string): string {
-  return code.toUpperCase().split('').map(c => String.fromCodePoint(127397 + c.charCodeAt(0))).join('');
-}
 
 /** Thin donut ring SVG — r=15, cx=cy=20, circumference ≈ 94.2 */
 function MiniRing({ pct, color }: { pct: number; color: string }) {
@@ -100,24 +79,24 @@ function LocationBadge({ type }: { type: 'Onsite' | 'Off-Shore' | 'Hybrid' }) {
 
 // ─── Activity heatmap ────────────────────────────────────────────────────────
 
-/** 52 × 7 GitHub-style grid — placeholder colour levels; real data wired in Step 3 */
-function ActivityHeatmap() {
-  const cells = useMemo(() => {
+/**
+ * 52-week GitHub-style heatmap.
+ * `weeks` is a 52-element intensity array (0–4) from useR360ForYouPanel.
+ * Each week is rendered as a 7-tall column of cells.
+ */
+function ActivityHeatmap({ weeks }: { weeks: number[] }) {
+  // Expand: each week intensity → 7 identical day cells (visual parity with
+  // GitHub's contribution graph where day granularity is per-commit).
+  // Real per-day data would require a separate query; per-week is sufficient
+  // for the allocation visualisation purpose.
+  const cells = React.useMemo(() => {
     const out: number[] = [];
     for (let w = 0; w < 52; w++) {
-      for (let d = 0; d < 7; d++) {
-        const progress = w / 52;
-        const r = Math.random();
-        let lvl = 0;
-        if (r > 0.35) lvl = 1;
-        if (r > 0.55) lvl = 2;
-        if (r > 0.70 && progress > 0.3) lvl = 3;
-        if (r > 0.85 && progress > 0.5) lvl = 4;
-        out.push(lvl);
-      }
+      const lvl = weeks[w] ?? 0;
+      for (let d = 0; d < 7; d++) out.push(lvl);
     }
     return out;
-  }, []);
+  }, [weeks]);
 
   const CELL_COLORS = ['#EBECF0', '#BAE6FD', '#38BDF8', '#0EA5E9', '#0052CC'];
 
@@ -154,8 +133,16 @@ function ActivityHeatmap() {
 
 // ─── Velocity sparkline ───────────────────────────────────────────────────────
 
-function VelocitySparkline() {
-  const points = '0,45 75,35 150,40 225,22 300,28 375,15 450,10 525,8 600,5';
+function VelocitySparkline({ values }: { values: number[] }) {
+  // Normalise values to SVG y-coordinates (0 at top, 56 at bottom)
+  const max = Math.max(1, ...values);
+  const pts = values.slice(-8).map((v, i) => ({
+    x: (i / Math.max(values.slice(-8).length - 1, 1)) * 600,
+    y: 50 - (v / max) * 44,
+  }));
+  const areaPath = pts.length > 0
+    ? `M${pts[0].x},${pts[0].y} ${pts.slice(1).map(p => `L${p.x},${p.y}`).join(' ')} L${pts[pts.length - 1].x},56 L${pts[0].x},56 Z`
+    : '';
   return (
     <svg width="100%" height="56" viewBox="0 0 600 56" preserveAspectRatio="none">
       <defs>
@@ -164,14 +151,10 @@ function VelocitySparkline() {
           <stop offset="100%" stopColor="#0052CC" stopOpacity="0" />
         </linearGradient>
       </defs>
-      <path d={`M0,45 L75,35 L150,40 L225,22 L300,28 L375,15 L450,10 L525,8 L600,5 L600,56 L0,56 Z`} fill="url(#r360-vg)" />
+      {areaPath && <path d={areaPath} fill="url(#r360-vg)" />}
       <polyline points={points} fill="none" stroke="#0052CC" strokeWidth="2" strokeLinejoin="round" />
-      {points.split(' ').map((pt, i) => {
-        const [x, y] = pt.split(',').map(Number);
-        return <circle key={i} cx={x} cy={y} r="3" fill={i === 7 ? '#36B37E' : '#0052CC'} />;
-      })}
-      {['v3.5','v3.6','v3.7','v3.8','v4.0','v4.1','v4.2','v4.3↑'].map((label, i) => (
-        <text key={label} x={i * 75} y="56" fontSize="8" fill="#97A0AF">{label}</text>
+      {pts.map((p, i) => (
+        <circle key={i} cx={p.x} cy={p.y} r="3" fill={i === pts.length - 1 ? '#36B37E' : '#0052CC'} />
       ))}
     </svg>
   );
@@ -179,7 +162,7 @@ function VelocitySparkline() {
 
 // ─── Team member card ─────────────────────────────────────────────────────────
 
-function MemberCard({ member }: { member: TeamMemberCard }) {
+function MemberCard({ member }: { member: R360TeamMember }) {
   const color = allocationColor(member.allocationPct);
   const card = (
     <div style={{
@@ -349,64 +332,15 @@ function BubbleChart({ projects }: { projects: Array<{ label: string; pct: numbe
 // ─── Main panel ──────────────────────────────────────────────────────────────
 
 export default function R360Panel() {
-  const { user } = useAuth();
-  const { canAccessEnterprise, isTeamLead } = useUserRole();
-  const { projects: leadProjects } = useMyLeadProjects();
-
-  // Persona routing: admin/pm → /admin/resources/:id, lead → /my-team/:id, IC → /me
-  const profilePath = canAccessEnterprise
-    ? `/admin/resources/${user?.id ?? ''}`
-    : isTeamLead
-    ? `/my-team/${user?.id ?? ''}`
-    : '/me';
-
-  // ── Placeholder data — replaced by useR360ForYouPanel() in Step 2 ──────────
-  const PLACEHOLDER_PROJECTS = [
-    { label: 'Senaei BAU', pct: 55, color: '#0052CC', x: 35, y: 38 },
-    { label: 'Data Analytics', pct: 15, color: '#00B8D9', x: 72, y: 65 },
-    { label: 'ICP Project',  pct: 10, color: '#6554C0', x: 78, y: 32 },
-    { label: 'Buffer',       pct: 20, color: '#C1C7D0', x: 55, y: 78 },
-  ];
-
-  const PLACEHOLDER_TEAM: TeamMemberCard[] = [
-    {
-      userId: user?.id ?? 'self',
-      name: 'Yazeed Daraz', initials: 'YD', role: 'Senior QA Engineer',
-      country: 'Saudi Arabia', flagEmoji: flagEmoji('SA'), locationType: 'Onsite',
-      allocationPct: 80,
-      projectBreakdown: [
-        { label: 'Senaei BAU', pct: 55, color: '#0052CC' },
-        { label: 'Data Analytics', pct: 15, color: '#00B8D9' },
-        { label: 'ICP', pct: 10, color: '#6554C0' },
-      ],
-      isYou: true,
-      profilePath,
-    },
-    {
-      userId: 'sh',
-      name: 'Syed Habib', initials: 'SH', role: 'QA Engineer',
-      country: 'Pakistan', flagEmoji: flagEmoji('PK'), locationType: 'Off-Shore',
-      allocationPct: 95,
-      projectBreakdown: [
-        { label: 'Senaei BAU', pct: 70, color: '#0052CC' },
-        { label: 'ICP', pct: 25, color: '#6554C0' },
-      ],
-      isYou: false,
-      profilePath: `/admin/resources/sh`,
-    },
-    {
-      userId: 'nh',
-      name: 'Nadia Hassan', initials: 'NH', role: 'Junior QA · Contractor',
-      country: 'Saudi Arabia', flagEmoji: flagEmoji('SA'), locationType: 'Onsite',
-      allocationPct: 60,
-      projectBreakdown: [
-        { label: 'Senaei BAU', pct: 45, color: '#0052CC' },
-        { label: 'Data Analytics', pct: 15, color: '#00B8D9' },
-      ],
-      isYou: false,
-      profilePath: `/admin/resources/nh`,
-    },
-  ];
+  const { isTeamLead } = useUserRole();
+  const {
+    bubbleProjects,
+    heatmapWeeks,
+    velocityPoints,
+    releaseStats,
+    teamMembers,
+    isLoading,
+  } = useR360ForYouPanel();
 
   const card: React.CSSProperties = {
     background: token('elevation.surface', '#FFFFFF'),
@@ -439,7 +373,7 @@ export default function R360Panel() {
               </span>
             }
           />
-          <ActivityHeatmap />
+          <ActivityHeatmap weeks={isLoading ? new Array(52).fill(0) : heatmapWeeks} />
         </div>
 
         {/* Project allocation bubble chart */}
@@ -451,29 +385,32 @@ export default function R360Panel() {
               </span>
             }
           />
-          <BubbleChart projects={PLACEHOLDER_PROJECTS} />
+          <BubbleChart projects={bubbleProjects} />
         </div>
 
         {/* Release stats */}
         <div style={card}>
           <SectionHead icon="🚀" title="Release stats" />
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 10, marginBottom: 12 }}>
-            <StatCard value="2"    label="Released (Q2)"    color="#006644" />
-            <StatCard value="4"    label="Issues in RC"     color="#974F0C" />
-            <StatCard value="18"   label="Closed this rel." color="#0052CC" />
-            <StatCard value="94%"  label="Quality score"    color="#006644" />
-            <StatCard value="14"   label="Open total" />
-            <StatCard value="May 15" label="Next release" />
+            <StatCard value={String(releaseStats.releasedThisQuarter)} label="Released (Q2)"    color="#006644" />
+            <StatCard value={String(releaseStats.inProgress)}          label="In progress"      color="#974F0C" />
+            <StatCard value={String(releaseStats.closedThisRelease)}   label="Closed this rel." color="#0052CC" />
+            <StatCard value={`${releaseStats.qualityScore}%`}          label="Quality score"    color="#006644" />
+            {releaseStats.nextReleaseName
+              ? <StatCard value={releaseStats.nextReleaseName} label="Next release" />
+              : <StatCard value="—" label="Next release" />
+            }
+            {releaseStats.nextReleaseDate
+              ? <StatCard value={new Date(releaseStats.nextReleaseDate).toLocaleDateString('en-GB', { day: '2-digit', month: 'short' })} label="Target date" />
+              : <StatCard value="—" label="Target date" />
+            }
           </div>
         </div>
 
         {/* Velocity sparkline */}
         <div style={card}>
-          <SectionHead icon="📈" title="Ticket velocity — last 8 releases" />
-          <VelocitySparkline />
-          <div style={{ fontSize: 10, color: token('color.text.subtle', '#6B778C'), marginTop: 4 }}>
-            Trend: <strong style={{ color: '#36B37E' }}>↑ improving</strong> · 8 consecutive releases with increasing closed count
-          </div>
+          <SectionHead icon="📈" title="Ticket velocity — recent weeks" />
+          <VelocitySparkline values={velocityPoints} />
         </div>
       </div>
 
@@ -484,7 +421,7 @@ export default function R360Panel() {
           fontSize: 11, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase',
           color: token('color.text.subtle', '#6B778C'),
         }}>
-          <span>My Team ({PLACEHOLDER_TEAM.length})</span>
+          <span>My Team ({teamMembers.length})</span>
           {isTeamLead && (
             <Link to="/my-team" style={{ fontSize: 11, color: token('color.link', '#0052CC'), fontWeight: 500, textTransform: 'none', letterSpacing: 0, textDecoration: 'none' }}>
               View all →
@@ -492,25 +429,36 @@ export default function R360Panel() {
           )}
         </div>
 
-        {PLACEHOLDER_TEAM.map(m => (
+        {teamMembers.map(m => (
           <MemberCard key={m.userId} member={m} />
         ))}
 
-        {/* Team summary strip */}
-        <div style={{
-          background: token('color.background.neutral.subtle', '#F4F5F7'),
-          borderRadius: 8, padding: '14px 16px', marginTop: 4,
-        }}>
-          <div style={{ fontSize: 11, fontWeight: 700, color: token('color.text.subtle', '#6B778C'), textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 10 }}>
-            Team capacity summary
-          </div>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
-            <StatCard value="1"   label="Available resource" color="#36B37E" />
-            <StatCard value="1"   label="Near capacity"      color="#FF991F" />
-            <StatCard value="78%" label="Team avg allocation" />
-            <StatCard value="3"   label="Active projects"    color="#0052CC" />
-          </div>
-        </div>
+        {/* Team capacity summary */}
+        {teamMembers.length > 1 && (() => {
+          const nonSelf = teamMembers.filter(m => !m.isYou);
+          const available  = nonSelf.filter(m => m.allocationPct < 80).length;
+          const nearCap    = nonSelf.filter(m => m.allocationPct >= 85).length;
+          const avgAlloc   = nonSelf.length > 0
+            ? Math.round(nonSelf.reduce((s, m) => s + m.allocationPct, 0) / nonSelf.length)
+            : 0;
+          const projectSet = new Set(nonSelf.flatMap(m => m.projectBreakdown.map(p => p.label)));
+          return (
+            <div style={{
+              background: token('color.background.neutral.subtle', '#F4F5F7'),
+              borderRadius: 8, padding: '14px 16px', marginTop: 4,
+            }}>
+              <div style={{ fontSize: 11, fontWeight: 700, color: token('color.text.subtle', '#6B778C'), textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 10 }}>
+                Team capacity summary
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+                <StatCard value={String(available)}          label="Available"         color="#36B37E" />
+                <StatCard value={String(nearCap)}            label="Near capacity"     color="#FF991F" />
+                <StatCard value={`${avgAlloc}%`}             label="Team avg alloc." />
+                <StatCard value={String(projectSet.size)}    label="Active projects"   color="#0052CC" />
+              </div>
+            </div>
+          );
+        })()}
       </div>
     </div>
   );
