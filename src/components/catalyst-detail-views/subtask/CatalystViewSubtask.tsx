@@ -9,7 +9,7 @@ import { CatalystViewBase } from '../shared/CatalystViewBase';
 import { useCatalystIssue, useCatalystIssueMutations } from '../shared/hooks';
 import {
   CatalystTitleEditor, CatalystQuickActions, CatalystDescriptionSection, CatalystAcceptanceCriteria,
-  CatalystActivitySection, CatalystAttachmentsPanel, CatalystSidebarDetails, CatalystStatusPill, CatalystFooterMeta,
+  CatalystActivitySection, CatalystAttachmentsPanel, CatalystSidebarDetails, CatalystStatusPill,
 } from '../shared/sections';
 import { LinkedWorkItemsSection } from '@/modules/project-work-hub/components/linked-work-items';
 import { SubtasksPanel } from '@/modules/project-work-hub/components/SubtasksPanel';
@@ -86,7 +86,6 @@ export default function CatalystViewSubtask({
       />
       <CatalystAttachmentsPanel issueId={issue?.id} projectKey={issue?.project_key || projectKey} isOpen={isOpen} />
       <CatalystActivitySection itemId={itemId} isOpen={isOpen} />
-      <CatalystFooterMeta issue={issue ?? null} />
     </>
   );
 

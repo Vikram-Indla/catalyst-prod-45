@@ -13,7 +13,7 @@ import { useCatalystIssue, useCatalystIssueMutations } from '../shared/hooks';
 import {
   CatalystTitleEditor, CatalystQuickActions, CatalystDescriptionSection, CatalystAcceptanceCriteria,
   CatalystActivitySection, CatalystAttachmentsPanel, CatalystSidebarDetails, CatalystKeyDetails,
-  KeyDetailsFieldRow, CatalystStatusPill, CatalystFooterMeta,
+  KeyDetailsFieldRow, CatalystStatusPill,
 } from '../shared/sections';
 import { ImproveIssueDropdown, useImproveApplyHandlers } from '@/components/catalyst-detail-views/improve';
 import {
@@ -130,7 +130,6 @@ export default function CatalystViewDefect({
       />
       <CatalystAttachmentsPanel issueId={issue?.id} projectKey={issue?.project_key || projectKey} isOpen={isOpen} />
       <CatalystActivitySection itemId={itemId} isOpen={isOpen} />
-      <CatalystFooterMeta issue={issue ?? null} />
     </>
   );
 
