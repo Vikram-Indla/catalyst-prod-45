@@ -130,14 +130,16 @@ AlertDialogCancel.displayName = 'AlertDialogCancel';
 export function AlertDialogAction({
   children,
   onClick,
+  disabled,
   className: _className,
 }: {
   children?: React.ReactNode;
   onClick?: React.MouseEventHandler<HTMLElement>;
+  disabled?: boolean;
   className?: string;
 }) {
   return (
-    <AkButton appearance="danger" onClick={onClick}>
+    <AkButton appearance="danger" onClick={onClick} isDisabled={disabled}>
       {children ?? 'Confirm'}
     </AkButton>
   );
