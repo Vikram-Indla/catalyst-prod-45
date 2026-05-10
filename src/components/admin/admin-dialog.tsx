@@ -47,8 +47,8 @@ Dialog.displayName = 'Dialog';
 
 export interface DialogContentProps {
   children?: React.ReactNode;
-  /** shadcn passes className for max-width hints — ignored in ADS context. */
   className?: string;
+  style?: React.CSSProperties;
 }
 
 export function DialogContent({ children }: DialogContentProps) {
@@ -80,23 +80,23 @@ DialogContent.displayName = 'DialogContent';
 
 // ── DialogHeader ──────────────────────────────────────────────────────────────
 
-export function DialogHeader({ children }: { children?: React.ReactNode }) {
+type AnyProps = { children?: React.ReactNode; className?: string; style?: React.CSSProperties; [key: string]: unknown };
+
+export function DialogHeader({ children }: AnyProps) {
   return <ModalHeader>{children}</ModalHeader>;
 }
 DialogHeader.displayName = 'DialogHeader';
 
 // ── DialogTitle ───────────────────────────────────────────────────────────────
 
-export function DialogTitle({ children }: { children?: React.ReactNode }) {
+export function DialogTitle({ children }: AnyProps) {
   return <ModalTitle>{children}</ModalTitle>;
 }
 DialogTitle.displayName = 'DialogTitle';
 
 // ── DialogDescription ─────────────────────────────────────────────────────────
-// shadcn places this inside DialogHeader below the title.
-// Renders as a muted paragraph; stays inside ModalHeader via DialogHeader's slot.
 
-export function DialogDescription({ children }: { children?: React.ReactNode }) {
+export function DialogDescription({ children }: AnyProps) {
   return (
     <p
       style={{
@@ -114,7 +114,7 @@ DialogDescription.displayName = 'DialogDescription';
 
 // ── DialogFooter ──────────────────────────────────────────────────────────────
 
-export function DialogFooter({ children }: { children?: React.ReactNode }) {
+export function DialogFooter({ children }: AnyProps) {
   return <ModalFooter>{children}</ModalFooter>;
 }
 DialogFooter.displayName = 'DialogFooter';
