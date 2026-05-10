@@ -3,6 +3,7 @@
  */
 import React from 'react';
 import { toast } from 'sonner';
+import { cloneIssue } from '@/modules/project-work-hub/lib/workItemRepo';
 import WarningIcon from '@atlaskit/icon/core/warning';
 import { CatalystViewBase } from '../shared/CatalystViewBase';
 import { useCatalystIssue, useCatalystIssueMutations } from '../shared/hooks';
@@ -118,7 +119,18 @@ export default function CatalystViewIncident({
       onShare={() => { navigator.clipboard.writeText(window.location.href); toast.success('Link copied'); }}
       moreMenuItems={[
         { label: 'Print', onClick: () => window.print() },
-        { label: 'Clone', onClick: () => { console.log('Clone'); } },
+        { label: 'Clone', onClick: () => {
+          if (!issue?.issue_key) return;
+          cloneIssue(issue.issue_key)
+            .then((newKey) => {
+              toast.success(`Cloned as ${newKey}`, {
+                action: { label: 'Open', onClick: () => onOpenItem?.(newKey) },
+              });
+            })
+            .catch((e: unknown) => {
+              toast.error('Clone failed', { description: e instanceof Error ? e.message : 'Unknown error' });
+            });
+        } },
         { label: 'Delete incident', onClick: () => mutations.deleteIssue.mutate(), danger: true },
       ]}
       onTogglePanelMode={onTogglePanelMode} navigationItems={navigationItems} currentItemId={itemId} onNavigate={onNavigate}

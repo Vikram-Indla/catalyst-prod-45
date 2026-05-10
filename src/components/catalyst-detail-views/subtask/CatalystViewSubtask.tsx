@@ -5,6 +5,7 @@ import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { cloneIssue } from '@/modules/project-work-hub/lib/workItemRepo';
 import { CatalystViewBase } from '../shared/CatalystViewBase';
 import { useCatalystIssue, useCatalystIssueMutations } from '../shared/hooks';
 import {
@@ -108,7 +109,18 @@ export default function CatalystViewSubtask({
       onShare={() => { navigator.clipboard.writeText(window.location.href); toast.success('Link copied'); }}
       moreMenuItems={[
         { label: 'Print', onClick: () => window.print() },
-        { label: 'Clone', onClick: () => { console.log('Clone'); } },
+        { label: 'Clone', onClick: () => {
+          if (!issue?.issue_key) return;
+          cloneIssue(issue.issue_key)
+            .then((newKey) => {
+              toast.success(`Cloned as ${newKey}`, {
+                action: { label: 'Open', onClick: () => onOpenItem?.(newKey) },
+              });
+            })
+            .catch((e: unknown) => {
+              toast.error('Clone failed', { description: e instanceof Error ? e.message : 'Unknown error' });
+            });
+        } },
         { label: 'Delete sub-task', onClick: () => mutations.deleteIssue.mutate(), danger: true },
       ]}
       onTogglePanelMode={onTogglePanelMode} navigationItems={navigationItems} currentItemId={itemId} onNavigate={onNavigate}
