@@ -11,14 +11,11 @@
  *   incident-mgmt-focused, Story → decision-focused, etc.) so the
  *   summary matches what a reader of that work-item type expects.
  *
- *   Uses the same `createPortal`-to-body pattern as
- *   `DangerConfirmModal` and `ImproveDescriptionDialog` to dodge
- *   the Atlaskit Modal portal-empty bug on this surface
- *   (CLAUDE.md L1).
+ *   Mounts inline in leftContent — jira-compare 2026-05-10 moved
+ *   from stacked modal to inline panel matching Jira's UX.
  */
 
 import React, { useEffect, useState } from 'react';
-import { createPortal } from 'react-dom';
 import Button from '@atlaskit/button/new';
 import { token } from '@atlaskit/tokens';
 import { toast } from 'sonner';
@@ -139,40 +136,24 @@ export function SummarizeCommentsDialog({
   }, [isOpen, loading, onClose]);
 
   if (!isOpen) return null;
-  if (typeof document === 'undefined') return null;
 
   const triggerLabel = improveTriggerLabel(issueType);
 
-  return createPortal(
+  return (
     <div
+      role="dialog"
+      aria-label={`${triggerLabel} — summarize comments`}
+      data-testid="summarize-comments-dialog"
       style={{
-        position: 'fixed',
-        inset: 0,
-        background: 'rgba(9, 30, 66, 0.54)',
-        zIndex: 9999,
+        width: '100%',
+        background: token('color.background.neutral.subtle', '#F7F8F9'),
+        borderRadius: 6,
+        border: `1px solid ${token('color.border', '#DFE1E6')}`,
         display: 'flex',
-        alignItems: 'flex-start',
-        justifyContent: 'center',
-        paddingTop: 80,
+        flexDirection: 'column',
+        overflow: 'hidden',
+        marginBottom: 16,
       }}
-    >
-      <div
-        role="dialog"
-        aria-modal="true"
-        aria-label={`${triggerLabel} — summarize comments`}
-        data-testid="summarize-comments-dialog"
-        style={{
-          width: 600,
-          maxWidth: 'calc(100vw - 48px)',
-          maxHeight: 'calc(100vh - 120px)',
-          background: token('elevation.surface.overlay', '#FFFFFF'),
-          borderRadius: 8,
-          boxShadow: '0 8px 32px rgba(9, 30, 66, 0.25)',
-          display: 'flex',
-          flexDirection: 'column',
-          overflow: 'hidden',
-        }}
-        onClick={(e) => e.stopPropagation()}
       >
         <div style={{ padding: '20px 24px 8px' }}>
           <h1
@@ -266,8 +247,6 @@ export function SummarizeCommentsDialog({
             Close
           </Button>
         </div>
-      </div>
-    </div>,
-    document.body,
+    </div>
   );
 }

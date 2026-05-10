@@ -49,7 +49,7 @@ export default function CatalystViewIncident({
       <CatalystTitleEditor issue={issue ?? null} onTitleChange={(t) => mutations.updateField.mutate({ field: 'summary', value: t, oldValue: issue?.summary ?? '' })} />
       {/* jira-compare 2026-05-03 — Patch E · CatalystStatusPill relocated to right-rail header in CatalystSidebarDetails. */}
       <CatalystQuickActions />
-      {/* jira-compare 2026-05-03 — Improve relocated to right-rail slot in CatalystSidebarDetails (Patch D). */}
+      <ImproveIssueDropdown issue={issue ?? null} {...improveHandlers} />
       {/* jira-compare 2026-05-07 Fix N: Severity added to Key details.
           Service Now# + Assessment Feature permanently banned (see CLAUDE.md).
           Jira PI key order: Priority → Severity. showParent={false} — Jira PI has no Parent row. */}
@@ -98,7 +98,6 @@ export default function CatalystViewIncident({
       projectKey={projectKey}
       onOpenItem={onOpenItem}
       statusPill={<CatalystStatusPill status={issue?.status} onStatusChange={(st) => mutations.updateStatus.mutate(st)} issueType={issue?.issue_type} />}
-      improveDropdown={<ImproveIssueDropdown issue={issue ?? null} {...improveHandlers} />}
     />
   );
 

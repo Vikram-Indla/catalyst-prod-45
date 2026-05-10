@@ -59,8 +59,7 @@ export default function CatalystViewSubtask({
       <CatalystTitleEditor issue={issue ?? null} onTitleChange={(t) => mutations.updateField.mutate({ field: 'summary', value: t, oldValue: issue?.summary ?? '' })} />
       {/* jira-compare 2026-05-03 — Patch E · CatalystStatusPill relocated to right-rail header in CatalystSidebarDetails. */}
       <CatalystQuickActions />
-      {/* jira-compare 2026-05-03 — ImproveIssueDropdown moved to right-rail slot
-          in CatalystSidebarDetails (Patch D). Was previously inline here. */}
+      <ImproveIssueDropdown issue={issue ?? null} {...improveHandlers} />
       {/* jira-compare Phase 3 (2026-05-02): KeyDetails section removed.
           Sub-task has no extraRows; Parent is shown in the parent-banner
           above + CatalystViewBase header. Priority is hidden on Sub-task
@@ -90,7 +89,7 @@ export default function CatalystViewSubtask({
   );
 
   const rightContent = (
-    <CatalystSidebarDetails issue={issue ?? null} itemId={itemId} projectId={projectId} onStatusChange={(st) => mutations.updateStatus.mutate(st)} onClose={onClose} onDelete={() => mutations.deleteIssue.mutate()} typeLabel="sub-task" statusPill={<CatalystStatusPill status={issue?.status} onStatusChange={(st) => mutations.updateStatus.mutate(st)} issueType={issue?.issue_type} />} improveDropdown={<ImproveIssueDropdown issue={issue ?? null} {...improveHandlers} />} />
+    <CatalystSidebarDetails issue={issue ?? null} itemId={itemId} projectId={projectId} onStatusChange={(st) => mutations.updateStatus.mutate(st)} onClose={onClose} onDelete={() => mutations.deleteIssue.mutate()} typeLabel="sub-task" statusPill={<CatalystStatusPill status={issue?.status} onStatusChange={(st) => mutations.updateStatus.mutate(st)} issueType={issue?.issue_type} />} />
   );
 
   return (

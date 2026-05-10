@@ -13,15 +13,12 @@
  *   marks that field decided. Modal closes when both fields are
  *   either accepted or rejected (or via Cancel).
  *
- *   Implementation uses a manual `createPortal` (not
- *   `@atlaskit/modal-dialog`) — same documented portal-empty
- *   workaround as `DangerConfirmModal` (CLAUDE.md L1, L21,
- *   the new lesson on the BacklogPage surface). Esc closes;
- *   backdrop click does NOT (destructive-style protection).
+ *   Implementation mounts inline in leftContent (not a portal overlay)
+ *   — jira-compare 2026-05-10 moved from stacked modal to inline panel
+ *   matching Jira's own UX. Esc closes; no backdrop click needed.
  */
 
 import React, { useEffect, useState } from 'react';
-import { createPortal } from 'react-dom';
 import Button from '@atlaskit/button/new';
 import Select from '@atlaskit/select';
 import Textfield from '@atlaskit/textfield';
@@ -153,41 +150,25 @@ export function ImproveDescriptionDialog({
   }, [descAccepted, acAccepted, onClose]);
 
   if (!isOpen) return null;
-  if (typeof document === 'undefined') return null;
 
   const triggerLabel = improveTriggerLabel(issueType);
 
-  return createPortal(
+  return (
     <div
+      role="dialog"
+      aria-label={`${triggerLabel} — improve description`}
+      data-testid="improve-description-dialog"
       style={{
-        position: 'fixed',
-        inset: 0,
-        background: 'rgba(9, 30, 66, 0.54)',
-        zIndex: 9999,
+        width: '100%',
+        background: token('color.background.neutral.subtle', '#F7F8F9'),
+        borderRadius: 6,
+        border: `1px solid ${token('color.border', '#DFE1E6')}`,
         display: 'flex',
-        alignItems: 'flex-start',
-        justifyContent: 'center',
-        paddingTop: 56,
+        flexDirection: 'column',
+        overflow: 'hidden',
+        marginBottom: 16,
       }}
     >
-      <div
-        role="dialog"
-        aria-modal="true"
-        aria-label={`${triggerLabel} — improve description`}
-        data-testid="improve-description-dialog"
-        style={{
-          width: 920,
-          maxWidth: 'calc(100vw - 48px)',
-          maxHeight: 'calc(100vh - 96px)',
-          background: token('elevation.surface.overlay', '#FFFFFF'),
-          borderRadius: 8,
-          boxShadow: '0 8px 32px rgba(9, 30, 66, 0.25)',
-          display: 'flex',
-          flexDirection: 'column',
-          overflow: 'hidden',
-        }}
-        onClick={(e) => e.stopPropagation()}
-      >
         {/* Header */}
         <div
           style={{
@@ -360,10 +341,8 @@ export function ImproveDescriptionDialog({
           <Button appearance="subtle" onClick={onClose}>
             Close
           </Button>
-        </div>
       </div>
-    </div>,
-    document.body,
+    </div>
   );
 }
 
