@@ -40,11 +40,11 @@ export default function CatalystViewIncident({
       {/* INCIDENT-UNIQUE: Severity banner */}
       <div style={{
         display: 'flex', alignItems: 'center', gap: 8, padding: '8px 12px',
-        background: '#FFF5F5', borderRadius: 6, marginBottom: 16, border: '1px solid #FFEDEB',
+        background: 'var(--ds-background-danger, #FFEDEB)', borderRadius: 6, marginBottom: 16, border: '1px solid var(--ds-border-danger, #FF8F73)',
       }}>
-        <WarningIcon size="small" primaryColor="#FF5630" />
-        <span style={{ fontSize: 13, fontWeight: 600, color: '#BF2600' }}>{issue?.issue_type || 'Production Incident'}</span>
-        <span style={{ fontSize: 12, color: '#5E6C84', marginLeft: 'auto' }}>
+        <WarningIcon size="small" primaryColor="var(--ds-icon-danger, #C9372C)" />
+        <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--ds-text-danger, #AE2A19)' }}>{issue?.issue_type || 'Production Incident'}</span>
+        <span style={{ fontSize: 12, color: 'var(--ds-text-subtlest, #626F86)', marginLeft: 'auto' }}>
           Priority: <span style={{ color: priorityStyle.color, fontWeight: 700 }}>{priorityStyle.symbol} {issue?.priority ?? 'Medium'}</span>
         </span>
       </div>

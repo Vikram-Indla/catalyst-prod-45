@@ -49,7 +49,7 @@ export default function CatalystViewSubtask({
     <>
       {/* SUBTASK-UNIQUE: Parent story context banner */}
       {parentIssue && (
-        <div onClick={() => onOpenItem?.(parentIssue.id)}
+        <div onClick={() => onOpenItem?.(parentIssue.issue_key)}
           style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 12px', background: 'var(--ds-surface-sunken, #F4F5F7)', borderRadius: 6, marginBottom: 16, cursor: 'pointer', transition: 'background 0.12s' }}
           onMouseEnter={e => (e.currentTarget.style.background = '#EBECF0')} onMouseLeave={e => (e.currentTarget.style.background = 'var(--ds-surface-sunken, #F4F5F7)')}>
           <IssueIcon type={parentIssue.issue_type} size={14} />
@@ -101,7 +101,7 @@ export default function CatalystViewSubtask({
       itemType={issue?.issue_type || 'Sub-task'} itemKey={issue?.issue_key || null}
       projectKey={issue?.project_key || projectKey} projectName={issue?.project_name || undefined}
       parentKey={issue?.parent_key} parentType={parentIssue?.issue_type || 'Story'}
-      onParentClick={parentIssue ? () => onOpenItem?.(parentIssue.id) : undefined}
+      onParentClick={parentIssue ? () => onOpenItem?.(parentIssue.issue_key) : undefined}
       /* Canonical Add-parent (Jira parity): Sub-task → Story parent. */
       parentSource="story"
       onParentChange={async (newKey) => {
