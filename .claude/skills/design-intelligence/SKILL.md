@@ -101,6 +101,35 @@ Red arrows injected. Screenshot inline ↓
 
 ---
 
+## Board Child Protocol (runs immediately after Soft Announcement)
+
+```
+1. Check session file:
+   CARD_KEY=$(cat {project_root}/.catalyst-board-session 2>/dev/null | grep CARD_KEY | cut -d= -f2)
+
+2. If CARD_KEY found (inside a preflight session):
+   → Navigate to localhost:8080/admin/catalyst-features
+   → javascript_tool: window.__catalystBoard.addSkill("design-intelligence", "$CARD_KEY");
+   → Navigate back to localhost:8080/{target-route}
+   → Do NOT create a new card.
+
+3. If CARD_KEY empty (standalone /design-intelligence run):
+   → card_key = "design-intelligence:{surface-slug}:{YYYY-MM-DD}"
+   → Navigate to localhost:8080/admin/catalyst-features
+   → javascript_tool: window.__catalystBoard.write({
+       card_key: "{card_key}", title: "design-intelligence: {surface}",
+       status: "in_progress", feature_group: "{feature_group}",
+       surface: "{surface}", skill_source: ["design-intelligence"],
+       session_id: "{ISO timestamp}",
+     });
+   → echo "CARD_KEY={card_key}" > {project_root}/.catalyst-board-session
+   → Navigate back to target surface.
+```
+
+**Failure mode:** if `window.__catalystBoard` is undefined, wait 2s and retry once. Never halt the skill for a board write failure.
+
+---
+
 ## Lessons-Applied Pre-Scan (NEW in v3 — runs before council)
 
 > Before any council lens fires, scan the surface against all known CLAUDE.md lessons and JIRA_ARCHITECT.md patterns. This prevents the council from recommending something that is already known-broken or permanently banned.

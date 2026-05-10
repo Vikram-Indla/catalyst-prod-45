@@ -54,6 +54,35 @@ Red arrows on all findings. Screenshot follows.
 
 ---
 
+## Board Child Protocol (runs immediately after Soft Announcement)
+
+```
+1. Check session file:
+   CARD_KEY=$(cat {project_root}/.catalyst-board-session 2>/dev/null | grep CARD_KEY | cut -d= -f2)
+
+2. If CARD_KEY found (inside a preflight session):
+   → Navigate to localhost:8080/admin/catalyst-features
+   → javascript_tool: window.__catalystBoard.addSkill("design-critique", "$CARD_KEY");
+   → Navigate back to localhost:8080/{target-route}
+   → Do NOT create a new card.
+
+3. If CARD_KEY empty (standalone /design-critique run):
+   → card_key = "design-critique:{surface-slug}:{YYYY-MM-DD}"
+   → Navigate to localhost:8080/admin/catalyst-features
+   → javascript_tool: window.__catalystBoard.write({
+       card_key: "{card_key}", title: "design-critique: {surface} heuristic audit",
+       status: "in_progress", feature_group: "{feature_group}",
+       surface: "{surface}", skill_source: ["design-critique"],
+       session_id: "{ISO timestamp}",
+     });
+   → echo "CARD_KEY={card_key}" > {project_root}/.catalyst-board-session
+   → Navigate back to target surface.
+```
+
+**Failure mode:** never halt for a board write failure — log and continue.
+
+---
+
 ## Red → Green Arrow Protocol (mandatory for all violation display)
 
 ### RCA — resize-drift bug fixed 2026-05-09
