@@ -1530,7 +1530,13 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
                       boxShadow: isDragOverThis
                         ? 'inset -2px 0 0 0 #0C66E4, inset 0 -2px 0 0 #C1C7D0'
                         : 'inset 0 -2px 0 0 #C1C7D0',
-                      cursor: isReorderable ? (isDraggingThis ? 'grabbing' : 'grab') : undefined,
+                      // 2026-05-10 Jira-parity: sort affordance wins over reorder
+                      // affordance for cursor. Sortable headers always show pointer
+                      // so click-to-sort is discoverable. Active drag shows grabbing.
+                      // Non-sortable reorderable headers fall back to grab.
+                      cursor: isReorderable
+                        ? (isDraggingThis ? 'grabbing' : (meta?.sortable ? 'pointer' : 'grab'))
+                        : undefined,
                       opacity: isDraggingThis ? 0.55 : 1,
                     }}
                   >
