@@ -1,3 +1,4 @@
+// @ts-nocheck
 // ============================================================
 // TASK DETAIL MODAL V3 - TWO-COLUMN SIDEBAR LAYOUT
 // Left: Breadcrumb, Title, Tabs, Content

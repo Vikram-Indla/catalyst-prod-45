@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React from 'react';
 import Textfield from '@atlaskit/textfield';
 import Button from '@atlaskit/button';

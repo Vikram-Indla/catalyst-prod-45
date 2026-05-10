@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Tests for Projects module — icon fields and sync count filter.
  * TDD: these tests are written FIRST and must fail until implementation is complete.

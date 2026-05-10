@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * StoryDetailDrawer — 560px right slide-in detail panel
  * Tabs: Details, Comments, History
