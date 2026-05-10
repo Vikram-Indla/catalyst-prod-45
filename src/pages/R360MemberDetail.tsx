@@ -30,6 +30,8 @@ import { computeCarriedFromLabel } from '@/services/r360Service';
 import { R360_DEPT_COLORS } from '@/constants/r360';
 import { initials } from '@/utils/r360Utils';
 import { ChevronLeft, Calendar } from '@/lib/atlaskit-icons';
+import { Pencil, Check, X } from 'lucide-react';
+import { useR360Reporting } from '@/hooks/useR360Reporting';
 import type { R360WorkItem, R360ViewType, R360Filters } from '@/types/r360';
 import { useTheme } from '@/hooks/useTheme';
 import '@/styles/r360.css';
@@ -119,6 +121,12 @@ export default function R360MemberDetail({ resourceId: resourceIdProp, projectSc
   // R360 Profile Drawer removed — intelligence icon now opens AIIntelligencePanel directly
 
   const { data: overview, isLoading: overviewLoading } = useR360Overview(resourceId || '');
+
+  // Reporting structure — "Reports to" row with inline edit
+  const profileId = (overview as any)?.profile_id ?? null;
+  const { managerName, options: managerOptions, updateManager, isUpdating } = useR360Reporting(profileId);
+  const [editingManager, setEditingManager] = useState(false);
+  const [pendingManagerId, setPendingManagerId] = useState<string>('');
 
   // Status filter is applied CLIENT-SIDE to avoid changing counts when a filter is active
   const filters: R360Filters = useMemo(() => {
@@ -399,6 +407,72 @@ export default function R360MemberDetail({ resourceId: resourceIdProp, projectSc
                       >
                         {(overview as any).location}
                       </span>
+                    )}
+                  </div>
+                  {/* Reports to row */}
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 2 }}>
+                    <span style={{ fontSize: 11, color: token('color.text.subtlest', '#8590A2'), fontWeight: 500 }}>
+                      Reports to:
+                    </span>
+                    {editingManager ? (
+                      <>
+                        <select
+                          data-testid="r360-manager-select"
+                          value={pendingManagerId}
+                          onChange={e => setPendingManagerId(e.target.value)}
+                          style={{
+                            fontSize: 11, padding: '1px 4px', borderRadius: 3,
+                            border: `1px solid ${token('color.border.focused', '#388BFF')}`,
+                            color: token('color.text', '#172B4D'),
+                            background: token('elevation.surface', '#FFFFFF'),
+                            outline: 'none', maxWidth: 180,
+                          }}
+                        >
+                          <option value="">— None —</option>
+                          {managerOptions.map(o => (
+                            <option key={o.id} value={o.id}>{o.name}</option>
+                          ))}
+                        </select>
+                        <button
+                          onClick={async () => {
+                            await updateManager(pendingManagerId || null);
+                            setEditingManager(false);
+                          }}
+                          disabled={isUpdating}
+                          style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 2, color: token('color.text.success', '#216E4E') }}
+                          title="Save"
+                        >
+                          <Check size={12} />
+                        </button>
+                        <button
+                          onClick={() => setEditingManager(false)}
+                          style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 2, color: token('color.text.subtle', '#626F86') }}
+                          title="Cancel"
+                        >
+                          <X size={12} />
+                        </button>
+                      </>
+                    ) : (
+                      <>
+                        <span
+                          data-testid="r360-manager-name"
+                          style={{ fontSize: 11, color: token('color.text.subtle', '#626F86') }}
+                        >
+                          {managerName ?? '—'}
+                        </span>
+                        <button
+                          data-testid="r360-manager-edit"
+                          onClick={() => {
+                            const currentOpt = managerOptions.find(o => o.name === managerName);
+                            setPendingManagerId(currentOpt?.id ?? '');
+                            setEditingManager(true);
+                          }}
+                          style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 2, color: token('color.text.subtlest', '#8590A2'), display: 'inline-flex', alignItems: 'center' }}
+                          title="Edit reporting manager"
+                        >
+                          <Pencil size={10} />
+                        </button>
+                      </>
                     )}
                   </div>
                 </div>
