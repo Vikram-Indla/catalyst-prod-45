@@ -106,8 +106,10 @@ describe('AgeingPanel — row click navigation', () => {
     const row = screen.getByTestId('for-you-row');
     fireEvent.click(row);
 
+    // CLAUDE.md 2026-05-10: openDetail must receive issue_key (text), never UUID.
+    // ageingToWorkItem maps: id = a.issue_key = 'BAU-9999' (NOT a.id = 'test-id-1')
     expect(mockOpenDetail).toHaveBeenCalledWith(
-      expect.objectContaining({ id: 'test-id-1' })
+      expect.objectContaining({ id: 'BAU-9999' })
     );
     expect(mockNavigate).not.toHaveBeenCalledWith(
       expect.stringMatching(/^\/issues\//)

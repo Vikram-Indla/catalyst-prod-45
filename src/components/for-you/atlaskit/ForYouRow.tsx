@@ -127,7 +127,7 @@ function ForYouRowImpl({ item, alwaysShowStar = false, onSelect, onToggleStar, h
         display: 'flex',
         alignItems: 'center',
         gap: 16,
-        height: 62,
+        height: 56,
         paddingInline: 16,
         paddingBlock: 12,
         borderRadius: 8,
