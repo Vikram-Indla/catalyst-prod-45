@@ -51,8 +51,13 @@ export default function CatalystViewEpic({
       <CatalystTitleEditor issue={issue ?? null} onTitleChange={(t) => mutations.updateField.mutate({ field: 'summary', value: t, oldValue: issue?.summary ?? '' })} />
       {/* jira-compare 2026-05-03 — Patch E · CatalystStatusPill relocated to right-rail header in CatalystSidebarDetails. */}
       <CatalystQuickActions />
-      <ImproveIssueDropdown issue={issue ?? null} {...improveHandlers} />
-      <CatalystKeyDetails issue={issue ?? null} itemId={itemId} itemType="epic" projectKey={projectKey} onOpenItem={onOpenItem} />
+      {/* jira-compare 2026-05-03 — Improve relocated to right-rail slot in CatalystSidebarDetails (Patch D). */}
+      {/* jira-compare 2026-05-10 Fix E-1: Priority is EXCLUDED from Epic Key details.
+          Per CLAUDE.md 2026-05-06 directive: Epic Priority belongs only in the right rail
+          Details section (between Assignee and Reporter), never in Key details.
+          showPriority={false} suppresses the Key details Priority row; the right rail
+          already renders Priority via CatalystSidebarDetails. */}
+      <CatalystKeyDetails issue={issue ?? null} itemId={itemId} itemType="epic" projectKey={projectKey} onOpenItem={onOpenItem} showPriority={false} />
       <CatalystDescriptionSection issue={issue ?? null} />
       <CatalystAcceptanceCriteria issue={issue ?? null} />
 

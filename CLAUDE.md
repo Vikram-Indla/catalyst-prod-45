@@ -136,6 +136,11 @@ Append-only. Newest at top. Each entry: date, pattern, rule, surface.
 
 ---
 
+## 2026-05-10 — Epic Priority: Key details must use showPriority={false}
+**Surface:** CatalystViewEpic (Epic detail view)
+**Pattern:** CatalystKeyDetails defaults `showPriority={true}`, rendering Priority in the left Key details block for all types. Epic is the only type where Priority belongs exclusively in the right rail Details section (between Assignee and Reporter) — per CLAUDE.md 2026-05-06 re-probe of BAU-5419. Without `showPriority={false}`, Epic shows Priority twice: once in Key details (left) and once in the right rail (CatalystSidebarDetails). Fixed by passing `showPriority={false}` to `CatalystKeyDetails` in `CatalystViewEpic.tsx`.
+**Rule:** `CatalystViewEpic` MUST pass `showPriority={false}` to `CatalystKeyDetails`. All other view types (Story, Task, Feature, Defect, PI, CR, Business Gap) keep `showPriority` at its default (`true`) and show Priority in Key details. Do not remove this prop without a re-probe of the Jira Epic detail view confirming the placement changed.
+
 ## 2026-05-10 — Fix versions must be gated per type, not just Epic exclusion
 **Surface:** CatalystSidebarDetails (all issue type views)
 **Pattern:** Fix versions was gated as `issue_type !== 'Epic'` — meaning it rendered for ALL other types including Feature. Jira Feature screen scheme (10173) does NOT include Fix versions. The guard was expanded to also exclude Feature after Lane B confirmation via `getJiraIssueTypeMetaWithFields`.
