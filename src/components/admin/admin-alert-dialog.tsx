@@ -114,6 +114,7 @@ export function AlertDialogCancel({
 }: {
   children?: React.ReactNode;
   onClick?: React.MouseEventHandler<HTMLElement>;
+  [key: string]: unknown;
 }) {
   return (
     <AkButton appearance="subtle" onClick={onClick}>
@@ -124,19 +125,16 @@ export function AlertDialogCancel({
 AlertDialogCancel.displayName = 'AlertDialogCancel';
 
 // ── AlertDialogAction ─────────────────────────────────────────────────────────
-// Renders as a danger button. Accepts className but ignores it (ADS handles
-// styling); onClick is forwarded to the underlying button.
 
 export function AlertDialogAction({
   children,
   onClick,
   disabled,
-  className: _className,
 }: {
   children?: React.ReactNode;
   onClick?: React.MouseEventHandler<HTMLElement>;
   disabled?: boolean;
-  className?: string;
+  [key: string]: unknown;
 }) {
   return (
     <AkButton appearance="danger" onClick={onClick} isDisabled={disabled}>
