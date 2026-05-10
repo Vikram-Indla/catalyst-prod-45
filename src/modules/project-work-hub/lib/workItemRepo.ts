@@ -282,6 +282,19 @@ export async function createChildIssue(input: CreateChildInput): Promise<Created
   return { id: data!.issue_key as string, issue_key: data!.issue_key as string, source: 'catalyst' };
 }
 
+// ─── Archive ─────────────────────────────────────────────────────────────────
+//
+// Soft-archives a ph_issues row by setting is_archived = true.
+// The column already exists in the schema (types.ts confirmed 2026-05-10).
+// No SQL migration required.
+export async function archiveIssue(issueKey: string): Promise<void> {
+  const { error } = await supabase
+    .from('ph_issues')
+    .update({ is_archived: true } as any)
+    .eq('issue_key', issueKey);
+  if (error) throw error;
+}
+
 // ─── Clone ───────────────────────────────────────────────────────────────────
 //
 // Duplicates a ph_issues row. The clone:

@@ -5,7 +5,7 @@ import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { cloneIssue } from '@/modules/project-work-hub/lib/workItemRepo';
+import { cloneIssue, archiveIssue } from '@/modules/project-work-hub/lib/workItemRepo';
 import { CatalystViewBase } from '../shared/CatalystViewBase';
 import { useCatalystIssue, useCatalystIssueMutations } from '../shared/hooks';
 import {
@@ -120,6 +120,13 @@ export default function CatalystViewSubtask({
             .catch((e: unknown) => {
               toast.error('Clone failed', { description: e instanceof Error ? e.message : 'Unknown error' });
             });
+        } },
+        { label: 'Archive', onClick: () => {
+          if (!issue?.issue_key) return;
+          if (!window.confirm(`Archive "${issue.summary}"?\nArchived items can be restored later.`)) return;
+          archiveIssue(issue.issue_key)
+            .then(() => { toast.success('Issue archived'); onClose(); })
+            .catch((e: unknown) => { toast.error('Archive failed', { description: e instanceof Error ? e.message : 'Unknown error' }); });
         } },
         { label: 'Delete sub-task', onClick: () => mutations.deleteIssue.mutate(), danger: true },
       ]}
