@@ -73,6 +73,44 @@ vi.mock('@atlaskit/tokens', () => ({
   setGlobalTheme: vi.fn(),
 }));
 
+// DynamicTable stub — renders head cells + row cells in a minimal table so
+// text-content assertions still work in jsdom. Added after jira-compare DC4
+// migrated LinkTypeGroup from div[role="list"] to @atlaskit/dynamic-table.
+vi.mock('@atlaskit/dynamic-table', () => ({
+  __esModule: true,
+  default: ({ head, rows }: { head?: { cells: any[] }; rows?: any[] }) =>
+    React.createElement(
+      'table',
+      { 'data-testid': 'dynamic-table' },
+      head
+        ? React.createElement(
+            'thead',
+            null,
+            React.createElement(
+              'tr',
+              null,
+              head.cells.map((c: any) =>
+                React.createElement('th', { key: c.key }, c.content),
+              ),
+            ),
+          )
+        : null,
+      React.createElement(
+        'tbody',
+        null,
+        (rows ?? []).map((row: any) =>
+          React.createElement(
+            'tr',
+            { key: row.key },
+            (row.cells ?? []).map((cell: any) =>
+              React.createElement('td', { key: cell.key }, cell.content),
+            ),
+          ),
+        ),
+      ),
+    ),
+}));
+
 // --- Internal stubs ---------------------------------------------------------
 vi.mock('@/hooks/useTheme', () => ({
   useTheme: () => ({ isDark: false }),
@@ -128,30 +166,34 @@ const PH_TARGET = {
 };
 
 vi.mock('@/integrations/supabase/client', () => {
+  // Build a thenable chain: ALL chainable methods return `api` so `.is()` and
+  // `.or()` etc. can compose freely. The chain is awaitable via `.then()`,
+  // which resolves to the appropriate fixture data for each table.
+  // Previously `.in()` and `.order()` returned a Promise directly, which broke
+  // the chain when subsequent `.is()` calls were appended (pre-existing bug).
   const chain = (tableName: string) => {
+    const tableData: Record<string, unknown[]> = {
+      ph_issue_links: [PH_LINK],
+      ph_issues: [PH_TARGET],
+    };
+
     const api: any = {
       select: vi.fn(() => api),
       eq: vi.fn(() => api),
-      in: vi.fn(() => {
-        if (tableName === 'ph_issues') {
-          return Promise.resolve({ data: [PH_TARGET], error: null });
-        }
-        return Promise.resolve({ data: [], error: null });
-      }),
+      in: vi.fn(() => api),
       is: vi.fn(() => api),
       or: vi.fn(() => api),
-      order: vi.fn(() => {
-        if (tableName === 'ph_issue_links') {
-          return Promise.resolve({ data: [PH_LINK], error: null });
-        }
-        return Promise.resolve({ data: [], error: null });
-      }),
-      limit: vi.fn(() => Promise.resolve({ data: [], error: null })),
+      order: vi.fn(() => api),
+      limit: vi.fn(() => api),
+      // single() must stay a Promise — callers use it for single-row results
       single: vi.fn(() =>
         Promise.resolve({ data: { id: 'proj-bau', key: 'BAU' }, error: null }),
       ),
       insert: vi.fn(() => Promise.resolve({ data: null, error: null })),
       delete: vi.fn(() => ({ eq: vi.fn(() => Promise.resolve({ error: null })) })),
+      // Make the chain awaitable: `await supabase.from(t).select().is()...`
+      then: (resolve: (v: { data: unknown[]; error: null }) => void) =>
+        Promise.resolve({ data: tableData[tableName] ?? [], error: null }).then(resolve),
     };
     return api;
   };
@@ -197,9 +239,11 @@ describe('LinkedWorkItems (BAU-4771 pilot)', () => {
 
   it('renders the disclosure toggle with correct aria semantics', async () => {
     renderPilot();
-    const toggle = await screen.findByRole('button', {
-      name: /Linked work items/i,
-    });
+    // Wait for data to finish loading before testing collapse — without this
+    // the auto-expand useEffect (links.length 0→1) fires AFTER the click and
+    // re-opens the section, making the aria-expanded assertion flaky.
+    await screen.findByText('clones');
+    const toggle = screen.getByRole('button', { name: /Linked work items/i });
     expect(toggle).toHaveAttribute('aria-expanded', 'true');
     expect(toggle).toHaveAttribute('aria-controls', 'lwi-body-BAU-4771');
     fireEvent.click(toggle);

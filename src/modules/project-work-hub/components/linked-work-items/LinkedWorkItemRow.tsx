@@ -18,7 +18,7 @@
 import React from 'react';
 import Lozenge from '@atlaskit/lozenge';
 import Avatar from '@atlaskit/avatar';
-import { X } from 'lucide-react';
+import CloseIcon from '@atlaskit/icon/core/close';
 import { PriorityBars, normalisePriority } from '@/components/shared/PriorityIndicator';
 import { WORK_ITEM_ICONS } from '../dialogs/story-detail-modules/constants';
 import { resolveAvatarUrl } from '@/lib/avatars';
@@ -119,7 +119,7 @@ export function LinkedWorkItemRow({
             aria-label={`Unlink ${target.issue_key}`}
             title="Unlink work item"
           >
-            <X size={16} />
+            <CloseIcon label="" size="small" />
           </button>
         )}
       </span>

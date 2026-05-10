@@ -501,3 +501,85 @@
 
 .dark .lwi-option__key { color: var(--ds-text-subtlest, #A1A1A1); }
 .dark .lwi-option__summary { color: var(--ds-text, #EDEDED); }
+
+/* ── DynamicTable overrides (jira-compare DC4 2026-05-11) ─────────────────
+   @atlaskit/dynamic-table renders <table> with its own thead/tbody/tr/td
+   styling. These overrides match the existing .lwi-row density/aesthetic
+   and hide the column headers (Jira's linked-items panel has no visible
+   column headers). Scoped to .lwi-group__rows so other DynamicTable
+   instances on the page are unaffected. */
+
+/* Hide column header text while keeping them in the DOM for a11y */
+.lwi-group__rows .lwi-dt-head {
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  height: 1px;
+  overflow: hidden;
+  position: absolute;
+  white-space: nowrap;
+  width: 1px;
+}
+
+/* Remove DynamicTable's default header row bottom border */
+.lwi-group__rows table thead tr {
+  border-bottom: none;
+}
+
+.lwi-group__rows table thead th {
+  height: 0;
+  padding: 0;
+  border: none;
+}
+
+/* Row density: match existing .lwi-row (40px, hover state) */
+.lwi-group__rows table tbody tr {
+  height: 40px;
+  border-bottom: 1px solid var(--ds-surface-sunken, #F4F5F7);
+  background: var(--ds-text-inverse, #FFFFFF);
+  transition: background-color 120ms ease;
+}
+
+.lwi-group__rows table tbody tr:last-child {
+  border-bottom: none;
+}
+
+.lwi-group__rows table tbody tr:hover,
+.lwi-group__rows table tbody tr:focus-within {
+  background-color: rgba(0, 0, 0, 0.03);
+}
+
+.lwi-group__rows table tbody td {
+  padding: 0 5px;
+  vertical-align: middle;
+  border: none;
+}
+
+.lwi-group__rows table tbody td:first-child {
+  padding-left: 10px;
+}
+
+.lwi-group__rows table tbody td:last-child {
+  padding-right: 10px;
+}
+
+/* Show unlink button only on row hover/focus (mirrors .lwi-row__actions opacity trick) */
+.lwi-group__rows table tbody tr .lwi-row__actions {
+  opacity: 0;
+  transition: opacity 120ms ease;
+}
+
+.lwi-group__rows table tbody tr:hover .lwi-row__actions,
+.lwi-group__rows table tbody tr:focus-within .lwi-row__actions {
+  opacity: 1;
+}
+
+/* Dark mode DynamicTable overrides */
+.dark .lwi-group__rows table tbody tr {
+  background: var(--cp-bg-surface, #242528);
+  border-bottom-color: var(--ds-border, #292929);
+}
+
+.dark .lwi-group__rows table tbody tr:hover,
+.dark .lwi-group__rows table tbody tr:focus-within {
+  background-color: var(--ds-surface-overlay, #1F1F1F);
+}

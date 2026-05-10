@@ -44,9 +44,10 @@ if (typeof document !== 'undefined') {
     '@keyframes cv-confirm-in { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }',
     '.cv-drawer-body { container-type: inline-size; }',
     '.cv-drawer-left { min-width: 280px; }',
-    /* 1120px threshold was wider than the 1100px modal body → sidebar permanently
-       hidden in modal mode. 680px collapses only on genuinely narrow containers. */
-    '@container (max-width: 680px) {',
+    /* jira-compare 2026-05-11 DC4: 680px threshold fired at 560px panel-mode body
+       (allwork right pane), hiding the sidebar. Jira shows two columns at 461px.
+       Lowered to 440px so panel mode (~560px) keeps the sidebar visible. */
+    '@container (max-width: 440px) {',
     '  .cv-drawer-splitter { display: none !important; }',
     '  .cv-drawer-sidebar { display: none !important; }',
     '  .cv-drawer-left { border-right: none !important; min-width: 0 !important; }',
@@ -134,14 +135,11 @@ export function CatalystViewBase({
 }: CatalystViewBaseLayoutProps) {
 
   /* ── State ──────────────────────────────── */
-  // Default right sidebar width. Measured against live Jira 2026-04-18
-  // (digital-transformation.atlassian.net BAU-5419): Jira's right sidebar
-  // is 549px wide with 504px of content area. At 280px the Reporter name
-  // "Nada alfassam" wraps onto two lines because the value column has only
-  // jira-compare 2026-05-10: re-probed BAU-5736. Jira right rail ≈ 285px.
-  // Prior 549 default (Patch A8) was wrongly high — made panels near-equal.
-  // Correct split: left ~70% / right ~30% of 1100px modal = right ≈ 285px.
-  const [rightPanelWidth, setRightPanelWidth] = useState(285);
+  // Default right sidebar width.
+  // jira-compare 2026-05-10: re-probed BAU-5736. Modal split: left ~70% / right ~30%.
+  // jira-compare 2026-05-11 DC4: panel mode body = 560px; 285px sidebar left only 269px
+  // for content — too narrow. 220px gives 334px left panel at 560px body — acceptable.
+  const [rightPanelWidth, setRightPanelWidth] = useState(panelMode ? 220 : 285);
   const isDraggingRef = useRef(false);
 
   /* G4: Track recently visited issues in localStorage (catalyst-recent-issues).
@@ -344,11 +342,21 @@ export function CatalystViewBase({
             sit immediately after the issue key with tooltips such as
             "Next work item 'BAU-5421'".
             ──────────────────────────────────────────────────────────────── */}
+        {/* jira-compare 2026-05-11 DC4: sticky top bar for panel/fullpage modes.
+            When the outer page scrolls, the breadcrumb/action bar must remain
+            pinned so subtasks don't scroll behind an inaccessible header.
+            Modal mode omitted — @atlaskit/modal-dialog owns its own scroll context. */}
         <div style={{
           display: 'flex', alignItems: 'center',
           justifyContent: 'space-between',
           padding: '10px 20px', minHeight: 44, flexShrink: 0,
           borderBottom: '1px solid #EBECF0',
+          ...((!panelMode && !fullPageMode) ? {} : {
+            position: 'sticky',
+            top: 0,
+            zIndex: 10,
+            background: 'var(--ds-surface, #FFFFFF)',
+          }),
         }}>
           {/* Canonical breadcrumb — shown in every mode. When the current
               item has no parent and the owning view has wired onParentChange,
