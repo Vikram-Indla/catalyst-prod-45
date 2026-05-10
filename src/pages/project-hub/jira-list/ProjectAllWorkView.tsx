@@ -226,7 +226,11 @@ export default function ProjectAllWorkView({ projectKey, projectId }: Props) {
                     // passing the issue_key here yields a silent 400 and an
                     // empty issue object → title falls back to "—".
                     itemId={activeItem.id}
-                    itemType={activeItem.type}
+                    // Use rawType (the DB's issue_type string) so CatalystDetailRouter's
+                    // resolveItemType gets "Production Incident" / "Business Gap" / etc.
+                    // instead of the collapsed WorkItemType 'task'. Fixes wrong view
+                    // rendering for incident/change-request/business-gap types.
+                    itemType={activeItem.rawType || activeItem.type}
                     projectId={projectId}
                     projectKey={projectKey}
                     // Subtask clicks come in with the child row's UUID.
@@ -267,7 +271,7 @@ export default function ProjectAllWorkView({ projectKey, projectId }: Props) {
               isOpen={true}
               onClose={() => setOverlayItemId(null)}
               itemId={overlayItem.id}
-              itemType={overlayItem.type}
+              itemType={overlayItem.rawType || overlayItem.type}
               projectId={projectId ?? ''}
               projectKey={projectKey}
               onOpenItem={(id) => setOverlayItemId(id)}
