@@ -66,15 +66,15 @@ export default function ForYouTabs({ activeTab, tabCounts, onChange }: ForYouTab
     // Outer wrapper kept at page width so we can left-align the inline
     // pill cluster without it stretching. The inner role="tablist" is the
     // cluster itself — that's what Jira returns as its tablist.
-    <div style={{ display: 'flex', marginBlockEnd: 16 }}>
+    <div style={{ display: 'flex', marginBlockEnd: token('space.200', '16px') }}>
       <div
         role="tablist"
         aria-label="For You tabs"
         style={{
           display: 'inline-flex',
           alignItems: 'center',
-          gap: 4,
-          padding: 4,
+          gap: token('space.050', '4px'),
+          padding: token('space.050', '4px'),
           background: token('color.background.neutral', 'rgba(5,21,36,0.06)'),
           borderRadius: 8,
           height: 32,
@@ -142,9 +142,9 @@ function TabButton({
         position: 'relative',
         display: 'inline-flex',
         alignItems: 'center',
-        gap: 4,
+        gap: token('space.050', '4px'),
         height: 24,
-        padding: '2px 12px',
+        padding: `${token('space.025', '2px')} ${token('space.150', '12px')}`,
         background,
         border: 'none',
         borderRadius: 6,
@@ -186,7 +186,7 @@ function TabButton({
             justifyContent: 'center',
             minWidth: 16,
             height: 16,
-            padding: '0 4px',
+            padding: `0 ${token('space.050', '4px')}`,
             borderRadius: 999,
             background: isAgeingBadge
               ? token('color.background.danger', '#FFECEB')

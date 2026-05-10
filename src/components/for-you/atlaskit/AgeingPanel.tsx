@@ -139,10 +139,10 @@ function SectionHeading({ label, count }: { label: string; count: number }) {
       style={{
         display: 'flex',
         alignItems: 'center',
-        gap: 8,
-        paddingInline: 12,
-        paddingBlockStart: 16,
-        paddingBlockEnd: 8,
+        gap: token('space.100', '8px'),
+        paddingInline: token('space.150', '12px'),
+        paddingBlockStart: token('space.200', '16px'),
+        paddingBlockEnd: token('space.100', '8px'),
       }}
     >
       <span
@@ -160,7 +160,7 @@ function SectionHeading({ label, count }: { label: string; count: number }) {
           font: `400 12px/16px "Inter", system-ui, sans-serif`,
           color: text.subtle,
           backgroundColor: token('elevation.surface.sunken', '#F7F8F9'),
-          paddingInline: 6,
+          paddingInline: token('space.075', '6px'),
           borderRadius: 999,
         }}
       >
@@ -217,9 +217,9 @@ function AiArchiveBanner({ count }: { count: number }) {
         display: 'flex',
         alignItems: 'center',
         gap: 10,
-        marginInline: 12,
-        marginBlockEnd: 8,
-        padding: '8px 12px',
+        marginInline: token('space.150', '12px'),
+        marginBlockEnd: token('space.100', '8px'),
+        padding: `${token('space.100', '8px')} ${token('space.150', '12px')}`,
         borderRadius: 6,
         background: token('color.background.warning.subtle', '#FFF7D6'),
         border: `1px solid ${token('color.border.warning', '#F8E6A0')}`,
@@ -252,7 +252,7 @@ function AiArchiveBanner({ count }: { count: number }) {
           cursor: 'pointer',
           font: `600 12px/16px "Inter", system-ui, sans-serif`,
           color: token('color.text.warning', '#A54800'),
-          padding: '2px 4px',
+          padding: `${token('space.025', '2px')} ${token('space.050', '4px')}`,
           borderRadius: 3,
           textDecoration: 'underline',
           textDecorationColor: 'transparent',
@@ -299,7 +299,7 @@ export default function AgeingPanel() {
 
   if (isLoading) {
     return (
-      <div style={{ padding: 24, display: 'flex', alignItems: 'center', gap: 12 }}>
+      <div style={{ padding: token('space.300', '24px'), display: 'flex', alignItems: 'center', gap: token('space.150', '12px') }}>
         <Spinner size="small" />
         <span style={{ color: token('color.text.subtle', '#626F86'), font: `400 14px/20px "Inter", system-ui, sans-serif` }}>
           Loading ageing items…

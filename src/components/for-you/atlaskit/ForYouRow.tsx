@@ -126,10 +126,10 @@ function ForYouRowImpl({ item, alwaysShowStar = false, onSelect, onToggleStar, h
       style={{
         display: 'flex',
         alignItems: 'center',
-        gap: 16,
+        gap: token('space.200', '16px'),
         height: 56,
-        paddingInline: 16,
-        paddingBlock: 12,
+        paddingInline: token('space.200', '16px'),
+        paddingBlock: token('space.150', '12px'),
         borderRadius: 8,
         cursor: 'pointer',
         backgroundColor: isActive
@@ -158,7 +158,7 @@ function ForYouRowImpl({ item, alwaysShowStar = false, onSelect, onToggleStar, h
       </div>
 
       {/* Main body */}
-      <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 2 }}>
+      <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: token('space.025', '2px') }}>
         <div
           style={{
             font: `500 14px/20px "Inter", system-ui, sans-serif`,
@@ -171,7 +171,7 @@ function ForYouRowImpl({ item, alwaysShowStar = false, onSelect, onToggleStar, h
         >
           {item.summary || item.key}
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: token('space.100', '8px'), flexWrap: 'wrap' }}>
           <span
             style={{
               // Jira renders the key inline in the same Inter stack at
@@ -244,7 +244,7 @@ function ForYouRowImpl({ item, alwaysShowStar = false, onSelect, onToggleStar, h
       </div>
 
       {/* Trailing: assignee + star (star omitted when caller passes no onToggleStar) */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: token('space.100', '8px'), flexShrink: 0 }}>
         <Tooltip content={item.assignee.name}>
           <span>
             <Avatar size="small" src={avatarUrl} name={item.assignee.name} />
