@@ -1,15 +1,18 @@
 import { useState } from 'react';
 import { useBusinessLines, useCreateBusinessLine, useUpdateBusinessLine, useDeleteBusinessLine, BusinessLine } from '@/hooks/useProductSettings';
-import { Button } from '@/components/ui/button';
-import { Switch } from '@/components/ui/switch';
+import Button from '@atlaskit/button/new';
+import Toggle from '@atlaskit/toggle';
 import { Lozenge } from '@/components/ads';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
+import Textfield from '@atlaskit/textfield';
+import TextArea from '@atlaskit/textarea';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/admin/admin-dialog';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/admin/admin-alert-dialog';
-import { Plus, GripVertical, Pencil, Trash2, Loader2 } from 'lucide-react';
 import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd';
+import Spinner from '@atlaskit/spinner';
+import AddIcon from '@atlaskit/icon/core/add';
+import EditIcon from '@atlaskit/icon/core/edit';
+import DragHandlerIcon from '@atlaskit/icon/glyph/drag-handler';
+import TrashIcon from '@atlaskit/icon/glyph/trash';
 
 interface BusinessLinesPanelProps {
   onChanges?: () => void;
@@ -112,7 +115,7 @@ export function BusinessLinesPanel({ onChanges }: BusinessLinesPanelProps = {}) 
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-12">
-        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+        <Spinner size="small" />
       </div>
     );
   }
@@ -127,8 +130,7 @@ export function BusinessLinesPanel({ onChanges }: BusinessLinesPanelProps = {}) 
             Manage industry sectors and business categories for Product demands.
           </p>
         </div>
-        <Button onClick={() => handleOpenDialog()} className="bg-brand-primary hover:bg-brand-primary-hover">
-          <Plus className="h-4 w-4 mr-2" />
+        <Button appearance="primary" onClick={() => handleOpenDialog()} iconBefore={AddIcon}>
           Add Business Line
         </Button>
       </div>
@@ -153,7 +155,7 @@ export function BusinessLinesPanel({ onChanges }: BusinessLinesPanelProps = {}) 
                       }`}
                     >
                       <div {...provided.dragHandleProps} className="cursor-grab text-muted-foreground">
-                        <GripVertical className="h-5 w-5" />
+                        <DragHandlerIcon label="" size="small" />
                       </div>
                       
                       <div className="flex-1 min-w-0">
@@ -180,32 +182,28 @@ export function BusinessLinesPanel({ onChanges }: BusinessLinesPanelProps = {}) 
                           <span className="text-sm text-muted-foreground">
                             {line.is_active ? 'Active' : 'Inactive'}
                           </span>
-                          <Switch
-                            checked={line.is_active}
-                            onCheckedChange={() => handleToggleActive(line)}
-                            disabled={line.is_default}
+                          <Toggle
+                            isChecked={line.is_active}
+                            onChange={() => handleToggleActive(line)}
+                            isDisabled={line.is_default}
                           />
                         </div>
                         
                         <div className="flex items-center gap-1">
                           <Button
-                            variant="ghost"
-                            size="icon"
+                            appearance="subtle"
                             onClick={() => handleOpenDialog(line)}
-                          >
-                            <Pencil className="h-4 w-4" />
-                          </Button>
+                            iconBefore={EditIcon}
+                          />
                           <Button
-                            variant="ghost"
-                            size="icon"
+                            appearance="subtle"
                             onClick={() => {
                               setDeletingLine(line);
                               setIsDeleteOpen(true);
                             }}
-                            disabled={line.is_default}
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
+                            isDisabled={line.is_default}
+                            iconBefore={TrashIcon}
+                          />
                         </div>
                       </div>
                     </div>
@@ -236,70 +234,67 @@ export function BusinessLinesPanel({ onChanges }: BusinessLinesPanelProps = {}) 
           
           <div className="space-y-4 py-4">
             <div className="space-y-2">
-              <Label htmlFor="name">Name</Label>
-              <Input
-                id="name"
+              <label htmlFor="bl-name" style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>Name</label>
+              <Textfield
+                id="bl-name"
                 value={formData.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                onChange={(e) => setFormData({ ...formData, name: (e.target as HTMLInputElement).value })}
                 placeholder="e.g., Industry"
               />
             </div>
-            
+
             <div className="space-y-2">
-              <Label htmlFor="key">Key</Label>
-              <Input
-                id="key"
+              <label htmlFor="bl-key" style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>Key</label>
+              <Textfield
+                id="bl-key"
                 value={formData.key}
-                onChange={(e) => setFormData({ ...formData, key: e.target.value.toUpperCase() })}
+                onChange={(e) => setFormData({ ...formData, key: (e.target as HTMLInputElement).value.toUpperCase() })}
                 placeholder="e.g., IND"
-                disabled={!!editingLine}
-                maxLength={10}
+                isDisabled={!!editingLine}
               />
               <p className="text-xs text-muted-foreground">
                 Short code for the business line. Cannot be changed after creation.
               </p>
             </div>
-            
+
             <div className="space-y-2">
-              <Label htmlFor="description">Description</Label>
-              <Textarea
-                id="description"
+              <label htmlFor="bl-description" style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>Description</label>
+              <TextArea
+                id="bl-description"
                 value={formData.description}
-                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                onChange={(e) => setFormData({ ...formData, description: (e.target as HTMLTextAreaElement).value })}
                 placeholder="Optional description"
-                rows={3}
+                minimumRows={3}
               />
             </div>
-            
+
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-2">
-                <Switch
-                  id="is_default"
-                  checked={formData.is_default}
-                  onCheckedChange={(checked) => setFormData({ ...formData, is_default: checked })}
+                <Toggle
+                  isChecked={formData.is_default}
+                  onChange={() => setFormData(prev => ({ ...prev, is_default: !prev.is_default }))}
                 />
-                <Label htmlFor="is_default">Set as default</Label>
+                <label style={{ fontSize: '14px', color: 'var(--ds-text, #172B4D)' }}>Set as default</label>
               </div>
-              
+
               <div className="flex items-center gap-2">
-                <Switch
-                  id="is_active"
-                  checked={formData.is_active}
-                  onCheckedChange={(checked) => setFormData({ ...formData, is_active: checked })}
+                <Toggle
+                  isChecked={formData.is_active}
+                  onChange={() => setFormData(prev => ({ ...prev, is_active: !prev.is_active }))}
                 />
-                <Label htmlFor="is_active">Active</Label>
+                <label style={{ fontSize: '14px', color: 'var(--ds-text, #172B4D)' }}>Active</label>
               </div>
             </div>
           </div>
-          
+
           <DialogFooter>
-            <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
+            <Button appearance="default" onClick={() => setIsDialogOpen(false)}>
               Cancel
             </Button>
-            <Button 
+            <Button
+              appearance="primary"
               onClick={handleSave}
-              disabled={!formData.name || !formData.key}
-              className="bg-brand-primary hover:bg-brand-primary-hover"
+              isDisabled={!formData.name || !formData.key}
             >
               {editingLine ? 'Update' : 'Create'}
             </Button>

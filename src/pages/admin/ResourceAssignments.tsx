@@ -5,7 +5,18 @@ import { useAssignmentBudgets, type LinkedResource, type AssignmentBudgetData } 
 import Button from '@atlaskit/button/new';
 import Textfield from '@atlaskit/textfield';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/admin/admin-dialog';
-import { Plus, Pencil, Trash2, GripVertical, Briefcase, AlertTriangle, ChevronDown, ChevronRight, CalendarIcon, Download, Users, User } from 'lucide-react';
+import AddIcon from '@atlaskit/icon/core/add';
+import EditIcon from '@atlaskit/icon/core/edit';
+import TrashIcon from '@atlaskit/icon/glyph/trash';
+import DragHandlerIcon from '@atlaskit/icon/glyph/drag-handler';
+import BriefcaseIcon from '@atlaskit/icon/core/briefcase';
+import WarningIcon from '@atlaskit/icon/core/warning';
+import ChevronDownIcon from '@atlaskit/icon/glyph/chevron-down';
+import ChevronRightIcon from '@atlaskit/icon/glyph/chevron-right';
+import CalendarIcon from '@atlaskit/icon/core/calendar';
+import DownloadIcon from '@atlaskit/icon/core/download';
+import PeopleGroupIcon from '@atlaskit/icon/core/people-group';
+import PersonIcon from '@atlaskit/icon/core/person';
 import { exportAssignmentsToExcel } from '@/components/admin/assignments/exportAssignmentsToExcel';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
@@ -35,6 +46,7 @@ import {
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
+import { AdminGuard } from '@/components/admin/AdminGuard';
 
 const STATUS_CONFIG: Record<AssignmentStatus, { label: string; appearance: LozengeAppearance }> = {
   yet_to_start: { label: 'Yet to Start', appearance: 'default' },
@@ -142,7 +154,7 @@ function SortableRow({
       onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = isDragging ? 'var(--ds-background-neutral, #F7F8F9)' : ''; }}
     >
       <td className="px-4 py-3 cursor-grab active:cursor-grabbing" style={{ color: 'var(--ds-text-subtle, #44546F)' }} {...attributes} {...listeners}>
-        <GripVertical className="h-4 w-4" />
+        <span style={{ display: 'inline-flex', cursor: 'grab' }}><DragHandlerIcon label="" size="small" /></span>
       </td>
       <td className="px-4 py-3">
         <span className="text-xs font-medium px-2 py-1 rounded" style={{ color: 'var(--ds-text-brand, #0C66E4)', background: 'var(--ds-background-selected, #E9F2FF)' }}>
@@ -152,7 +164,7 @@ function SortableRow({
       <td className="px-4 py-3">
         <div className="flex items-center gap-3">
           <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: 'var(--ds-background-selected, #E9F2FF)' }}>
-            <Briefcase className="h-4 w-4" style={{ color: 'var(--ds-icon-brand, #0C66E4)' }} />
+            <span style={{ display: 'inline-flex', color: 'var(--ds-icon-brand, #0C66E4)' }}><BriefcaseIcon label="" size="small" /></span>
           </div>
           <div className="flex flex-col">
             <span className="text-sm font-medium" style={{ color: 'var(--ds-text, #172B4D)' }}>{assignment.name}</span>
@@ -172,7 +184,7 @@ function SortableRow({
             onMouseEnter={e => ((e.currentTarget as HTMLElement).style.background = 'rgba(34,197,94,0.2)')}
             onMouseLeave={e => ((e.currentTarget as HTMLElement).style.background = 'rgba(34,197,94,0.1)')}
           >
-            <Users className="h-3.5 w-3.5" />
+            <span style={{ display: 'inline-flex' }}><PeopleGroupIcon label="" size="small" /></span>
             <span className="text-sm font-medium">{resourceCount}</span>
           </button>
         ) : (
@@ -227,7 +239,7 @@ function SortableRow({
                 color: assignment.start_date ? 'var(--ds-text, #172B4D)' : 'var(--ds-text-subtle, #44546F)',
               }}
             >
-              <CalendarIcon className="mr-2 h-3 w-3" />
+              <span style={{ display: 'inline-flex', marginRight: 8 }}><CalendarIcon label="" size="small" /></span>
               {assignment.start_date ? format(parseISO(assignment.start_date), "dd/MM/yyyy") : <span>dd/mm/yyyy</span>}
             </button>
           </PopoverTrigger>
@@ -253,7 +265,7 @@ function SortableRow({
                 color: assignment.end_date ? 'var(--ds-text, #172B4D)' : 'var(--ds-text-subtle, #44546F)',
               }}
             >
-              <CalendarIcon className="mr-2 h-3 w-3" />
+              <span style={{ display: 'inline-flex', marginRight: 8 }}><CalendarIcon label="" size="small" /></span>
               {assignment.end_date ? format(parseISO(assignment.end_date), "dd/MM/yyyy") : <span>dd/mm/yyyy</span>}
             </button>
           </PopoverTrigger>
@@ -352,7 +364,7 @@ function SortableRow({
             onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral-hovered, #F1F2F4)'; (e.currentTarget as HTMLElement).style.color = 'var(--ds-text, #172B4D)'; }}
             onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = ''; (e.currentTarget as HTMLElement).style.color = 'var(--ds-text-subtle, #44546F)'; }}
           >
-            <Pencil className="h-4 w-4" />
+            <EditIcon label="" size="small" />
           </button>
           <button
             onClick={() => onDelete(assignment)}
@@ -361,7 +373,7 @@ function SortableRow({
             onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(202,53,33,0.1)'; (e.currentTarget as HTMLElement).style.color = 'var(--ds-icon-danger, #CA3521)'; }}
             onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = ''; (e.currentTarget as HTMLElement).style.color = 'var(--ds-text-subtle, #44546F)'; }}
           >
-            <Trash2 className="h-4 w-4" />
+            <TrashIcon label="" size="small" />
           </button>
         </div>
       </td>
@@ -740,6 +752,7 @@ export default function ResourceAssignmentsPage() {
   }
 
   return (
+    <AdminGuard>
     <div className="p-6 space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
@@ -760,14 +773,14 @@ export default function ResourceAssignmentsPage() {
                 toast.error('No data to export');
               }
             }}
-            iconBefore={<Download size={16} />}
+            iconBefore={DownloadIcon}
           >
             Download Excel
           </Button>
           <Button
             appearance="primary"
             onClick={() => setCreateModalOpen(true)}
-            iconBefore={<Plus size={16} />}
+            iconBefore={AddIcon}
           >
             Add Assignment
           </Button>
@@ -791,9 +804,9 @@ export default function ResourceAssignmentsPage() {
                 onMouseLeave={e => ((e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral, #F7F8F9)')}
               >
                 {isCollapsed ? (
-                  <ChevronRight className="h-4 w-4" style={{ color: 'var(--ds-text-subtle, #44546F)' }} />
+                  <span style={{ display: 'inline-flex', color: 'var(--ds-text-subtle, #44546F)' }}><ChevronRightIcon label="" size="small" /></span>
                 ) : (
-                  <ChevronDown className="h-4 w-4" style={{ color: 'var(--ds-text-subtle, #44546F)' }} />
+                  <span style={{ display: 'inline-flex', color: 'var(--ds-text-subtle, #44546F)' }}><ChevronDownIcon label="" size="small" /></span>
                 )}
                 <Lozenge appearance={typeAppearance}>
                   {group.type}
@@ -1059,7 +1072,7 @@ export default function ResourceAssignmentsPage() {
             <DialogTitle className="flex items-center gap-2">
               {linkedRecords.length > 0 ? (
                 <>
-                  <AlertTriangle className="h-5 w-5" style={{ color: 'var(--ds-icon-warning, #F79009)' }} />
+                  <span style={{ display: 'inline-flex', color: 'var(--ds-icon-warning, #F79009)' }}><WarningIcon label="" size="medium" /></span>
                   Cannot Delete Assignment
                 </>
               ) : (
@@ -1081,7 +1094,7 @@ export default function ResourceAssignmentsPage() {
                 <div className="space-y-2">
                   {linkedRecords.map((record, index) => (
                     <div key={index} className="flex items-center gap-2 text-sm py-1.5 px-2 rounded" style={{ background: 'var(--ds-background-neutral, #F7F8F9)' }}>
-                      <Briefcase className="h-4 w-4 shrink-0" style={{ color: 'var(--ds-text-subtle, #44546F)' }} />
+                      <span style={{ display: 'inline-flex', flexShrink: 0, color: 'var(--ds-text-subtle, #44546F)' }}><BriefcaseIcon label="" size="small" /></span>
                       <span className="font-medium">{record.resource_name}</span>
                       <span className="text-xs ml-auto" style={{ color: 'var(--ds-text-subtle, #44546F)' }}>
                         ({record.table_source === 'allocation' ? 'Allocation' : 'Assigned'})
@@ -1134,7 +1147,7 @@ export default function ResourceAssignmentsPage() {
           <DialogHeader>
             <DialogTitle className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-lg flex items-center justify-center" style={{ background: 'rgba(34,197,94,0.1)' }}>
-                <Users className="h-5 w-5" style={{ color: '#15803D' }} />
+                <span style={{ display: 'inline-flex', color: '#15803D' }}><PeopleGroupIcon label="" size="small" /></span>
               </div>
               <div>
                 <div className="text-lg font-semibold">Linked Resources</div>
@@ -1148,7 +1161,7 @@ export default function ResourceAssignmentsPage() {
           <div className="py-4">
             {resourceModalResources.length === 0 ? (
               <div className="text-center py-8" style={{ color: 'var(--ds-text-subtle, #44546F)' }}>
-                <User className="h-12 w-12 mx-auto mb-3 opacity-30" />
+                <span style={{ display: 'flex', justifyContent: 'center', opacity: 0.3, marginBottom: 12 }}><PersonIcon label="" size="large" /></span>
                 <p>No resources linked to this assignment.</p>
               </div>
             ) : (
@@ -1177,7 +1190,7 @@ export default function ResourceAssignmentsPage() {
                         </div>
                         <div className="flex-1 flex items-center gap-3">
                           <div className="w-8 h-8 rounded-full flex items-center justify-center" style={{ background: 'var(--ds-background-neutral, #F7F8F9)' }}>
-                            <User className="h-4 w-4" style={{ color: 'var(--ds-text-subtle, #44546F)' }} />
+                            <span style={{ display: 'inline-flex', color: 'var(--ds-text-subtle, #44546F)' }}><PersonIcon label="" size="small" /></span>
                           </div>
                           <span className="text-sm font-medium" style={{ color: 'var(--ds-text, #172B4D)' }}>{resource.name}</span>
                         </div>
@@ -1205,5 +1218,6 @@ export default function ResourceAssignmentsPage() {
         </DialogContent>
       </Dialog>
     </div>
+    </AdminGuard>
   );
 }

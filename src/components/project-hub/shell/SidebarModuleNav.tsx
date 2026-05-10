@@ -1,4 +1,4 @@
-import { LayoutGrid, Star, ChevronsLeft, ChevronsRight, Users, FolderKanban, BarChart3, Calendar, FileText, Clock } from 'lucide-react';
+import { LayoutGrid, Star, ChevronsLeft, ChevronsRight, FolderKanban } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { NavItem } from './NavItem';
 
@@ -59,24 +59,6 @@ export function SidebarModuleNav({ collapsed, onToggle }: SidebarModuleNavProps)
       {/* Nav */}
       <div className="flex-1 py-2 px-1.5 space-y-0.5 overflow-y-auto">
         <NavItem icon={LayoutGrid} label="All Projects" isActive={location.pathname === '/project-hub/projects' || location.pathname === '/project-hub'} onClick={() => navigate('/project-hub/projects')} collapsed={collapsed} />
-
-        {/* Resource 360° Section */}
-        {!collapsed && (
-          <>
-            <div className="my-2 mx-2" style={{ height: 1, backgroundColor: '#EBECF0' }} />
-            <div className="pt-1 pb-1">
-              <div className="text-[var(--ds-text-subtlest,#6B778C)] dark:text-[var(--ds-text-subtlest,#878787)]" style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase' as const, padding: '0 10px 4px' }}>
-                Resource 360°
-              </div>
-            </div>
-          </>
-        )}
-        <NavItem icon={LayoutGrid} label="Dashboard" isActive={location.pathname === '/resource360' || location.pathname === '/project-hub/resource360'} onClick={() => navigate('/project-hub/resource360')} collapsed={collapsed} />
-        <NavItem icon={Users} label="Resource 360™" isActive={location.pathname.startsWith('/project-hub/resources')} onClick={() => navigate('/project-hub/resources')} collapsed={collapsed} />
-        <NavItem icon={BarChart3} label="Workload" isActive={location.pathname.startsWith('/resource360/workload')} onClick={() => navigate('/resource360/workload')} collapsed={collapsed} />
-        <NavItem icon={Calendar} label="Capacity" isActive={location.pathname.startsWith('/resource360/capacity')} onClick={() => navigate('/resource360/capacity')} collapsed={collapsed} />
-        <NavItem icon={FileText} label="Reports" isActive={location.pathname.startsWith('/resource360/reports')} onClick={() => navigate('/resource360/reports')} collapsed={collapsed} />
-        <NavItem icon={Clock} label="Timesheet" isActive={location.pathname.startsWith('/resource360/timesheet')} onClick={() => navigate('/resource360/timesheet')} collapsed={collapsed} />
 
         {/* Favorites section */}
         {!collapsed && (

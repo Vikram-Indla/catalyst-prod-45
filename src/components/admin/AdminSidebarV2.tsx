@@ -11,35 +11,31 @@
  *  - @atlaskit/tooltip (collapsed icon tooltips)
  */
 import { Link, useLocation } from 'react-router-dom';
-import {
-  LayoutDashboard,
-  Users,
-  Settings,
-  Database,
-  ChevronLeft,
-  ChevronRight,
-  ChevronDown,
-  Search,
-  Pin,
-  Code2,
-  Cable,
-  GitBranch,
-  type LucideIcon,
-} from 'lucide-react';
 import Textfield from '@atlaskit/textfield';
 import { Tooltip } from '@/components/ads';
 import { useState, useMemo } from 'react';
 import { adminPockets } from './admin-nav';
+import BoardIcon from '@atlaskit/icon/core/board';
+import AngleBracketsIcon from '@atlaskit/icon/core/angle-brackets';
+import DatabaseIcon from '@atlaskit/icon/core/database';
+import PeopleGroupIcon from '@atlaskit/icon/core/people-group';
+import PinIcon from '@atlaskit/icon/core/pin';
+import SearchIcon from '@atlaskit/icon/core/search';
+import SettingsIcon from '@atlaskit/icon/core/settings';
+import ChevronDownIcon from '@atlaskit/icon/glyph/chevron-down';
+import ChevronLeftIcon from '@atlaskit/icon/glyph/chevron-left';
+import BranchIcon from '@atlaskit/icon/core/branch';
+import ChevronRightIcon from '@atlaskit/icon/glyph/chevron-right';
 
-/** Maps iconName strings (stored in admin-nav.ts) to Lucide components. */
-const ICON_MAP: Record<string, LucideIcon> = {
-  LayoutDashboard,
-  Users,
-  Settings,
-  Database,
-  GitBranch,
-  Cable,
-  Code2,
+/** Maps iconName strings (stored in admin-nav.ts) to ADS icon components. */
+const ICON_MAP: Record<string, React.ElementType> = {
+  LayoutDashboard: BoardIcon,
+  Users: PeopleGroupIcon,
+  Settings: SettingsIcon,
+  Database: DatabaseIcon,
+  GitBranch: BranchIcon,
+  Cable: AngleBracketsIcon,
+  Code2: AngleBracketsIcon,
 };
 
 // ── ADS token constants ─────────────────────────────────────────────────────
@@ -217,8 +213,8 @@ export function AdminSidebarV2({ expanded, onToggle, className }: AdminSidebarV2
           }}
         >
           {expanded
-            ? <ChevronLeft style={{ width: 14, height: 14 }} />
-            : <ChevronRight style={{ width: 14, height: 14 }} />}
+            ? <ChevronLeftIcon label="" size="small" />
+            : <ChevronRightIcon label="" size="small" />}
         </button>
       </div>
 
@@ -226,19 +222,7 @@ export function AdminSidebarV2({ expanded, onToggle, className }: AdminSidebarV2
       {expanded && (
         <div style={{ padding: '8px 12px', borderBottom: `1px solid ${T.border}`, flexShrink: 0 }}>
           <div style={{ position: 'relative' }}>
-            <Search
-              style={{
-                position: 'absolute',
-                left: 8,
-                top: '50%',
-                transform: 'translateY(-50%)',
-                width: 14,
-                height: 14,
-                color: T.textSubtlest,
-                pointerEvents: 'none',
-                zIndex: 1,
-              }}
-            />
+            <SearchIcon label="" size="small" />
             {/* @atlaskit/textfield — ADS-canonical search input */}
             <div style={{ paddingLeft: 24 }}>
               <Textfield
@@ -306,7 +290,7 @@ export function AdminSidebarV2({ expanded, onToggle, className }: AdminSidebarV2
               marginBottom: 4,
             }}
           >
-            <Pin style={{ width: 10, height: 10 }} />
+            <PinIcon label="" size="small" />
             <span>Pinned</span>
           </div>
           {pinnedItems.map(path => {
@@ -521,16 +505,7 @@ export function AdminSidebarV2({ expanded, onToggle, className }: AdminSidebarV2
                   <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1 }}>
                     {pocket.label}
                   </span>
-                  <ChevronDown
-                    style={{
-                      width: 14,
-                      height: 14,
-                      color: T.textSubtlest,
-                      flexShrink: 0,
-                      transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)',
-                      transition: 'transform 200ms ease',
-                    }}
-                  />
+                  <ChevronDownIcon label="" size="small" />
                 </button>
 
                 {/* Children — animated open/close */}

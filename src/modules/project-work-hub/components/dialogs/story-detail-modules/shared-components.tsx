@@ -102,7 +102,7 @@ export function SectionBlock({ title, count, doneCount, defaultExpanded = true, 
             {expanded ? <ChevronDownIcon label="" size="small" /> : <ChevronRightIcon label="" size="small" />}
           </button>
           <span className="sdm-child-title">{title}</span>
-          <span className="sdm-count-badge">{count}</span>
+          {count > 0 && <span className="sdm-count-badge">{count}</span>}
         </div>
         {expanded && doneCount !== undefined && count > 0 && (
           <div className="sdm-progress-block" title={`${doneCount} of ${count} done`}>

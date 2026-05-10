@@ -59,14 +59,14 @@ function formatRole(role: string): string {
     .replace(/\b\w/g, (c) => c.toUpperCase());
 }
 
-// Three-state sync dot color — semantic thresholds (Norman: accurate affordance)
+// Three-state sync dot — ADS token colors (no Tailwind classes).
 // green < 15min = fresh · amber 15–120min = stale · red > 120min = error
-function getSyncDotColor(lastSyncAt: string | null, syncStatus: string | null): string {
-  if (!lastSyncAt || syncStatus === 'error') return 'bg-red-500';
+function getSyncDotBg(lastSyncAt: string | null, syncStatus: string | null): string {
+  if (!lastSyncAt || syncStatus === 'error') return token('color.background.danger.bold');
   const minutesAgo = (Date.now() - new Date(lastSyncAt).getTime()) / 60000;
-  if (minutesAgo > 120) return 'bg-red-500';
-  if (minutesAgo > 15) return 'bg-amber-400';
-  return 'bg-green-500';
+  if (minutesAgo > 120) return token('color.background.danger.bold');
+  if (minutesAgo > 15) return token('color.background.warning.bold');
+  return token('color.background.success.bold');
 }
 
 function getSyncTooltip(lastSyncAt: string | null, syncStatus: string | null): string {
@@ -1053,7 +1053,7 @@ export function AllProjectsTable({
     const issueCount = perProject?.count ?? p.jira_issue_count ?? 0;
     const latestAt = perProject?.latestAt ?? null;
     const syncAge = formatSyncAge(latestAt);
-    const syncDotColor = getSyncDotColor(latestAt, null);
+    const syncDotBg = getSyncDotBg(latestAt, null);
     const syncTooltipText = getSyncTooltip(latestAt, null);
     const updatedToday = perProject?.updatedToday ?? 0;
     const createdToday = perProject?.createdToday ?? 0;
@@ -1081,7 +1081,7 @@ export function AllProjectsTable({
               style={{
                 pointerEvents: 'auto',
                 fontSize: 14,
-                fontWeight: 500,
+                fontWeight: 400,
                 color: token('color.link'),
                 fontFamily: 'var(--cp-font-body)',
                 textDecoration: 'none',
@@ -1111,18 +1111,19 @@ export function AllProjectsTable({
       case 'sync': return (
         <td key={colKey}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-            {/* Line 1: issue count + freshness */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, color: token('color.text.subtle'), fontFamily: 'var(--cp-font-body)' }}>
-              <Tooltip content={syncTooltipText} position="top">
-                <span className={cn("w-2 h-2 rounded-full flex-shrink-0 cursor-help", syncDotColor)} />
-              </Tooltip>
-              <span
-                style={{ fontWeight: 500, color: syncAge ? token('color.text') : token('color.text.subtlest'), cursor: syncAge ? 'default' : 'help' }}
-                title={syncAge ? undefined : 'Jira not connected for this project — go to Project Settings to link Jira'}
-              >
-                {syncAge ? `${issueCount} issues · ${syncAge}` : 'Not synced'}
-              </span>
-            </div>
+            {/* Line 1: issue count + freshness — Tooltip wraps the whole line so the
+                dot's own dimensions are not collapsed by AK Tooltip's ref wrapper */}
+            <Tooltip content={syncTooltipText} position="top">
+              <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 13, color: token('color.text.subtle'), fontFamily: 'var(--cp-font-body)', cursor: 'help' }}>
+                <span style={{ width: 8, height: 8, borderRadius: '50%', flexShrink: 0, backgroundColor: syncDotBg }} />
+                <span
+                  style={{ fontWeight: 500, color: syncAge ? token('color.text') : token('color.text.subtlest') }}
+                  title={syncAge ? undefined : 'Jira not connected for this project — go to Project Settings to link Jira'}
+                >
+                  {syncAge ? `${issueCount} issues · ${syncAge}` : 'Not synced'}
+                </span>
+              </div>
+            </Tooltip>
             {/* Line 2: 24h activity footprint — only when there's activity */}
             {hasActivityToday && (
               <div style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11, color: token('color.text.subtlest'), fontFamily: 'var(--cp-font-body)', paddingLeft: 14 }}>

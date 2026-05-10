@@ -2,8 +2,7 @@ import { ReactNode } from 'react';
 import { Navigate } from 'react-router-dom';
 import { useUserRole } from '@/hooks/useUserRole';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Shield } from 'lucide-react';
-
+import ShieldIcon from '@atlaskit/icon/core/shield';
 interface AdminGuardProps {
   children: ReactNode;
 }
@@ -14,7 +13,7 @@ export function AdminGuard({ children }: AdminGuardProps) {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-screen">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+        <div className="rounded-full h-8 w-8 border-b-2 border-primary"></div>
       </div>
     );
   }
@@ -23,7 +22,7 @@ export function AdminGuard({ children }: AdminGuardProps) {
     return (
       <div className="container mx-auto py-8">
         <Alert variant="destructive">
-          <Shield className="h-4 w-4" />
+          <ShieldIcon label="" size="small" />
           <AlertDescription>
             You don't have permission to access admin features. Only administrators can access this page.
           </AlertDescription>

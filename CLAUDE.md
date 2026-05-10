@@ -10,6 +10,26 @@ The Catalyst local dev server always runs on **http://localhost:8080**. Never us
 
 ---
 
+## 2026-05-10 — Hand-rolled dropdowns must be replaced with @atlaskit/dropdown-menu
+**Surface:** CatalystViewBase (all detail views — applies to any surface with a menu)
+**Pattern:** The ⋯ more-actions menu in `CatalystViewBase.tsx` was self-rolled: `useState(showDotsMenu)` + outside-click `useEffect` + `div` with inline `onClick` handlers. This violated JIRA_ARCHITECT A4 (hand-rolled interactive element): no `role="menuitem"`, no keyboard navigation, no focus trap, no ARIA. WCAG 2.1 AA keyboard-access failure.
+**Rule:** Any menu, dropdown, or action list with 2+ items MUST use `@atlaskit/dropdown-menu` (`DropdownMenu`, `DropdownItem`, `DropdownItemGroup` from `@atlaskit/dropdown-menu`). Never hand-roll a menu. Structure: standard items in the first `DropdownItemGroup`; danger items in a second `DropdownItemGroup` at the bottom with `<span style={{ color: 'var(--ds-text-danger, #AE2A19)' }}>` wrapper on the label. The trigger must be an `IconButton` with `appearance="subtle"`. This pattern is now canonical for all surfaces — backlog row menus, project cards, admin tables, and detail view headers all share it.
+**Severity:** P0 (WCAG 2.1 AA — keyboard users cannot operate the menu without this).
+
+---
+
+## 2026-05-10 — openDetail must receive issue_key (text), never a UUID
+**Surface:** Any sidebar, panel, notification, or list that calls `useGlobalSearchStore.getState().openDetail({ id: ... })`
+**Pattern:** Five surfaces (ProjectHubSidebar, SidebarProjectNav, AgeingPanel, ThemeIssueList, NotificationPanel) were passing the UUID `id` column from `ph_issues` — causing `CatalystDetailRouter` to always return "Issue not found". `CatalystDetailRouter` queries `ph_issues` exclusively by `.eq('issue_key', itemId)` (text PK like "BAU-5757"). UUID lookups silently no-op.
+**Rule:** Any `openDetail({ id: ... })` call MUST pass the Jira issue key string, never a row UUID. Canonical patterns:
+- `user_recent_items` rows: `item.entity_key || item.entity_id`
+- `ph_issues` rows queried directly: `row.issue_key` (not `row.id`)
+- `WorkItem` objects: `item.id` — only valid if the mapper sets `id: row.issue_key` (not `id: row.id`)
+- Notifications: `n.entity_key || n.entity_id` (key first)
+Before wiring any new click handler → detail modal, grep `CatalystDetailRouter.tsx` to confirm the lookup field, then trace back to confirm the id source is that field.
+
+---
+
 ## 2026-05-09 — Always use JiraIssueTypeIcon for work item type display
 **Surface:** Any rail, sidebar, Recent list, card, or row that shows a work item type indicator
 **Pattern:** `ProjectHubSidebar.tsx` used a hardcoded `issueTypeColor()` map returning 8px coloured squares (bug→red, story→green, epic→purple, default→blue). This is non-discoverable colour-recall: the user must know the colour→type mapping, which differs from Jira's icon language. `JiraIssueTypeIcon` at `@/lib/jira-issue-type-icons` is the canonical self-labelling component already used in backlog, allwork, notifications, global search, and kanban surfaces. `SidebarProjectNav.tsx` had the same colored-dot pattern (`ITEM_TYPE_COLORS` map + `getTypeColor` function) — fixed 2026-05-09 by replacing with `JiraIssueTypeIcon` and two-line layout.
@@ -121,6 +141,33 @@ Ready for next step when you confirm.
 # jira-compare — compounding lessons
 
 Append-only. Newest at top. Each entry: date, pattern, rule, surface.
+
+---
+
+## 2026-05-10 — Epic Priority: Key details must use showPriority={false}
+**Surface:** CatalystViewEpic (Epic detail view)
+**Pattern:** CatalystKeyDetails defaults `showPriority={true}`, rendering Priority in the left Key details block for all types. Epic is the only type where Priority belongs exclusively in the right rail Details section (between Assignee and Reporter) — per CLAUDE.md 2026-05-06 re-probe of BAU-5419. Without `showPriority={false}`, Epic shows Priority twice: once in Key details (left) and once in the right rail (CatalystSidebarDetails). Fixed by passing `showPriority={false}` to `CatalystKeyDetails` in `CatalystViewEpic.tsx`.
+**Rule:** `CatalystViewEpic` MUST pass `showPriority={false}` to `CatalystKeyDetails`. All other view types (Story, Task, Feature, Defect, PI, CR, Business Gap) keep `showPriority` at its default (`true`) and show Priority in Key details. Do not remove this prop without a re-probe of the Jira Epic detail view confirming the placement changed.
+
+## 2026-05-10 — Fix versions must be gated per type, not just Epic exclusion
+**Surface:** CatalystSidebarDetails (all issue type views)
+**Pattern:** Fix versions was gated as `issue_type !== 'Epic'` — meaning it rendered for ALL other types including Feature. Jira Feature screen scheme (10173) does NOT include Fix versions. The guard was expanded to also exclude Feature after Lane B confirmation via `getJiraIssueTypeMetaWithFields`. Epic was later RE-PROBED (2026-05-10 Epic field sweep) — Lane B confirmed `fixVersions` IS in the Epic scheme (type 10000). Epic exclusion removed; Vikram approved 2026-05-10.
+**Rule:** Fix versions guard must reflect the actual Jira screen scheme per type. Currently excluded for: **Feature only**. All other types (Epic 10000, Story 10006, Task 10010, Change Request 10305, Production Incident 10045, QA Bug) have Fix versions in their schemes. When adding a new work item type to Catalyst, always check Fix versions membership in the scheme before deciding whether to include it.
+
+## 2026-05-10 — Severity wiring: only Incident/BusinessGap had extraRows; Task was missed
+**Surface:** CatalystViewTask (Key details section)
+**Pattern:** Severity (`customfield_10125`) is in the Jira Task screen scheme (10010). It was only wired in `CatalystViewIncident` via `extraRows` on `CatalystKeyDetails`. `CatalystViewTask` had no Severity row at all. The omission was caught by the Bucket H sweep (BAU-4852 probe). Fix mirrors the Incident pattern: `useQueryClient` + `CatalystSeverityField` in `extraRows`.
+**Rule:** When adding a field via `CatalystKeyDetails extraRows` to one view type, immediately audit all other view types whose Jira screen scheme includes that same custom field. Severity is in: PI (10045), Task (10010), QA Bug (10012 — handled via CatalystDefectKeyRows). Any new issue type added later must get Severity if it's in that type's scheme.
+
+## 2026-05-10 — Labels gate expanded to Story after Vikram approval
+**Surface:** CatalystSidebarDetails — Labels FieldRow
+**Pattern:** Labels was restored for Task only (Fix J, 2026-05-07). Story screen scheme (10006) also includes `labels`. Bucket H sweep confirmed Labels absent from Story right rail. Vikram approved Story addition 2026-05-10. Gate extended from `issue_type === 'Task'` to `issue_type === 'Task' || issue_type === 'Story'`.
+**Rule:** Labels gate is now: Task + Story. All other types remain excluded until explicit Vikram approval + Jira screen scheme confirmation.
+
+## 2026-05-10 — jira-compare exemption: Catalyst-specific admin pages need schema-probe, not jira-compare
+**Surface:** All /admin/* non-WorkHub pages (Admin Phase C, 2026-05-09/10)
+**Pattern:** CLAUDE.md "jira-compare on every new feature" was written for product surfaces (backlog, allwork, detail views). Admin Phase C applied the ADS icon sweep to pages like Modules & Packages, Resource Assignments, Feature Flags, Reference Data, and Workflow admin. These pages are Catalyst-specific configuration surfaces — they have no Jira equivalent. Running jira-compare produces no signal (no Jira page to compare against) and wastes session budget on dead comparisons.
+**Rule:** jira-compare gate is **REQUIRED only for WorkHub admin pages** (which proxy live Jira data: jira-connection, jira-sync-control, hierarchy-mapping, status-mapping, user-mapping, activity-sync) and any admin surface that has a direct Jira equivalent. For Catalyst-specific admin pages, replace the jira-compare gate with a **schema-probe gate**: confirm every UI field has a DB column + RLS policy + hook backing it. Admin security gate: every page reachable under /admin/* must wrap its root JSX in `<AdminGuard>` — enforced by `admin-guard-coverage.test.ts`.
 
 ---
 

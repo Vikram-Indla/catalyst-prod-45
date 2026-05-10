@@ -6,12 +6,15 @@
  */
 
 import { useState, useCallback, useMemo } from 'react';
-import { ChevronDown, ChevronRight, Shield, CheckCircle2 } from 'lucide-react';
-import { Card } from '@/components/ui/card';
+
 import { Lozenge } from '@/components/ads';
 import { TriggerRow } from './TriggerRow';
 import type { TriggerCategoryGroup, TriggerRowData, ChannelsConfig } from '@/types/notification-triggers';
 import type { HubSource } from '@/constants/notificationEvents';
+import CheckCircleIcon from '@atlaskit/icon/core/check-circle';
+import ShieldIcon from '@atlaskit/icon/core/shield';
+import ChevronDownIcon from '@atlaskit/icon/glyph/chevron-down';
+import ChevronRightIcon from '@atlaskit/icon/glyph/chevron-right';
 
 // ── Props ───────────────────────────────────────────────────────
 interface TriggerTableProps {
@@ -105,7 +108,7 @@ function CategoryAccordion({
   );
 
   return (
-    <Card className="overflow-hidden border-[var(--bd-default,#E2E8F0)]">
+    <div style={{ background: 'var(--ds-surface, #FFFFFF)', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px', overflow: 'hidden' }}>
       {/* ── Category Header ──────────────────────────────────────── */}
       <button
         onClick={onToggle}
@@ -113,9 +116,9 @@ function CategoryAccordion({
       >
         <div className="flex items-center gap-3">
           {isExpanded ? (
-            <ChevronDown className="h-4 w-4 text-[var(--ds-text-subtle,#475569)] flex-shrink-0" />
+            <ChevronDownIcon label="" size="small" />
           ) : (
-            <ChevronRight className="h-4 w-4 text-[var(--ds-text-subtle,#475569)] flex-shrink-0" />
+            <ChevronRightIcon label="" size="small" />
           )}
 
           <span className="text-sm font-semibold text-[var(--ds-text,#0F172A)] font-['Inter']">
@@ -130,7 +133,7 @@ function CategoryAccordion({
           {/* Mandatory indicator */}
           {mandatoryCount > 0 && (
             <div className="flex items-center gap-1 text-[10px] text-[var(--ds-text-danger,#DC2626)]">
-              <Shield className="h-3 w-3" />
+              <ShieldIcon label="" size="small" />
               <span>{mandatoryCount} mandatory</span>
             </div>
           )}
@@ -215,6 +218,6 @@ function CategoryAccordion({
           ))}
         </div>
       )}
-    </Card>
+    </div>
   );
 }

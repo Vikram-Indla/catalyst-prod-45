@@ -1,5 +1,7 @@
 import { useState, useRef, useEffect } from 'react'
-import { ChevronDown, X, Search } from 'lucide-react'
+import ChevronDownIcon from '@atlaskit/icon/glyph/chevron-down';
+import CrossIcon from '@atlaskit/icon/glyph/cross';
+import SearchIcon from '@atlaskit/icon/core/search';
 
 export interface MultiSelectOption {
   value: string
@@ -104,11 +106,12 @@ export function MultiSelectDropdown({
                     }}
                   >
                     {opt?.label || v}
-                    <X
-                      size={10}
-                      style={{ cursor: 'pointer', opacity: 0.7 }}
+                    <span
+                      style={{ cursor: 'pointer', opacity: 0.7, display: 'inline-flex' }}
                       onClick={(e) => { e.stopPropagation(); toggle(v) }}
-                    />
+                    >
+                      <CrossIcon label="Remove" size="small" />
+                    </span>
                   </span>
                 )
               })
@@ -118,7 +121,9 @@ export function MultiSelectDropdown({
               </span>
             )}
           </div>
-          <ChevronDown size={14} style={{ color: 'var(--ds-text-subtlest, #94A3B8)', flexShrink: 0, transform: open ? 'rotate(180deg)' : 'none', transition: 'transform .15s' }} />
+          <span style={{ color: 'var(--ds-text-subtlest, #94A3B8)', flexShrink: 0, transform: open ? 'rotate(180deg)' : 'none', transition: 'transform .15s', display: 'inline-flex' }}>
+            <ChevronDownIcon label="" size="small" />
+          </span>
         </button>
 
         {/* Dropdown */}
@@ -130,7 +135,7 @@ export function MultiSelectDropdown({
           }}>
             {/* Search */}
             <div style={{ padding: '8px 10px', borderBottom: '1px solid #F1F5F9', display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <Search size={13} style={{ color: 'var(--ds-text-subtlest, #94A3B8)', flexShrink: 0 }} />
+              <SearchIcon label="" size="small" />
               <input
                 ref={searchRef}
                 value={search}

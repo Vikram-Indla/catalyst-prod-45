@@ -13,7 +13,11 @@ import { AdminGuard } from '@/components/admin/AdminGuard';
 import Button from '@atlaskit/button/new';
 import Textfield from '@atlaskit/textfield';
 import Toggle from '@atlaskit/toggle';
-import { Plus, Search, Edit, Trash2, Loader2 } from 'lucide-react';
+import AddIcon from '@atlaskit/icon/core/add';
+import SearchIcon from '@atlaskit/icon/core/search';
+import EditIcon from '@atlaskit/icon/core/edit';
+import TrashIcon from '@atlaskit/icon/glyph/trash';
+import Spinner from '@atlaskit/spinner';
 import { useState } from 'react';
 import { useThemeGroupsWithCounts, useUpdateThemeStatus, ThemeGroupWithCounts } from '@/hooks/useThemeGroups';
 import { ThemeDialog } from '@/components/forms/ThemeDialog';
@@ -75,8 +79,8 @@ export default function ThemeGroups() {
           <Button
             appearance="primary"
             onClick={() => setShowCreateDialog(true)}
+            iconBefore={AddIcon}
           >
-            <Plus className="h-4 w-4 mr-2" />
             Add Theme
           </Button>
         </div>
@@ -112,7 +116,7 @@ export default function ThemeGroups() {
           <div>
             <div className="flex items-center gap-4 mb-4">
               <div className="relative flex-1">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4" style={{ color: 'var(--ds-text-subtle, #44546F)' }} />
+                <span style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', display: 'flex', color: 'var(--ds-text-subtle, #44546F)' }}><SearchIcon label="" size="small" /></span>
                 <Textfield
                   placeholder="Search themes..."
                   value={searchTerm}
@@ -123,7 +127,7 @@ export default function ThemeGroups() {
 
             {isLoading ? (
               <div className="flex items-center justify-center py-12">
-                <Loader2 className="h-8 w-8 animate-spin" style={{ color: 'var(--ds-text-subtle, #44546F)' }} />
+                <Spinner size="medium" />
               </div>
             ) : error ? (
               <div className="text-center py-12" style={{ color: 'var(--ds-icon-danger, #CA3521)' }}>
@@ -209,7 +213,7 @@ export default function ThemeGroups() {
                                 appearance="subtle"
                                 onClick={() => setEditTheme(theme)}
                               >
-                                <Edit className="h-4 w-4" />
+                                <EditIcon label="" size="small" />
                               </Button>
                               <Tooltip
                                 content={
@@ -222,7 +226,7 @@ export default function ThemeGroups() {
                                   appearance="subtle"
                                   onClick={() => setDeleteTheme(theme)}
                                 >
-                                  <Trash2 className="h-4 w-4" style={{ color: 'var(--ds-icon-danger, #CA3521)' }} />
+                                  <span style={{ display: 'inline-flex', color: 'var(--ds-icon-danger, #CA3521)' }}><TrashIcon label="" size="small" /></span>
                                 </Button>
                               </Tooltip>
                             </div>

@@ -2,7 +2,12 @@ import { AdminGuard } from '@/components/admin/AdminGuard';
 import Button from '@atlaskit/button/new';
 import Textfield from '@atlaskit/textfield';
 import Toggle from '@atlaskit/toggle';
-import { Plus, Search, Edit, GripVertical, Trash2, Save } from 'lucide-react';
+import AddIcon from '@atlaskit/icon/core/add';
+import SearchIcon from '@atlaskit/icon/core/search';
+import EditIcon from '@atlaskit/icon/core/edit';
+import DragHandlerIcon from '@atlaskit/icon/glyph/drag-handler';
+import TrashIcon from '@atlaskit/icon/glyph/trash';
+import CheckMarkIcon from '@atlaskit/icon/core/check-mark';
 import { useState, useMemo } from 'react';
 import { toast } from 'sonner';
 import {
@@ -155,8 +160,7 @@ export default function ThemeStatuses() {
               Manage status options for Strategic Themes
             </p>
           </div>
-          <Button appearance="primary" onClick={openAddDialog}>
-            <Plus className="h-4 w-4 mr-2" />
+          <Button appearance="primary" onClick={openAddDialog} iconBefore={AddIcon}>
             Add Theme Status
           </Button>
         </div>
@@ -196,7 +200,7 @@ export default function ThemeStatuses() {
           <div>
             <div className="flex items-center gap-4 mb-4">
               <div className="relative flex-1">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4" style={{ color: 'var(--ds-text-subtle, #44546F)' }} />
+                <span style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', display: 'flex', color: 'var(--ds-text-subtle, #44546F)' }}><SearchIcon label="" size="small" /></span>
                 <Textfield
                   placeholder="Search theme statuses..."
                   value={searchTerm}
@@ -207,8 +211,7 @@ export default function ThemeStatuses() {
                 appearance="primary"
                 onClick={handleSaveSettings}
                 isDisabled={!hasUnsavedChanges || isSaving}
-              >
-                <Save className="h-4 w-4 mr-2" />
+               iconBefore={CheckMarkIcon}>
                 {isSaving ? 'Saving...' : 'Save Settings'}
               </Button>
             </div>
@@ -248,7 +251,7 @@ export default function ThemeStatuses() {
                         onMouseLeave={() => setHoveredRow(null)}
                       >
                         <td className="p-3">
-                          <GripVertical className="h-4 w-4 cursor-grab" style={{ color: 'var(--ds-text-subtle, #44546F)' }} />
+                          <span style={{ cursor: 'grab', display: 'inline-flex', color: 'var(--ds-text-subtle, #44546F)' }}><DragHandlerIcon label="" size="small" /></span>
                         </td>
                         <td className="p-3">
                           <div className="flex items-center gap-2">
@@ -279,13 +282,13 @@ export default function ThemeStatuses() {
                         <td className="p-3 text-sm text-right">
                           <div className="flex items-center justify-end gap-1">
                             <Button appearance="subtle" onClick={() => openEditDialog(status)}>
-                              <Edit className="h-4 w-4" />
+                              <EditIcon label="" size="small" />
                             </Button>
                             <Button
                               appearance="subtle"
                               onClick={() => openDeleteDialog(status)}
                             >
-                              <Trash2 className="h-4 w-4" style={{ color: 'var(--ds-icon-danger, #CA3521)' }} />
+                              <span style={{ display: 'inline-flex', color: 'var(--ds-icon-danger, #CA3521)' }}><TrashIcon label="" size="small" /></span>
                             </Button>
                           </div>
                         </td>

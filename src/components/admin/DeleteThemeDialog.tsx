@@ -4,6 +4,9 @@
  */
 
 import { useState, useEffect } from 'react';
+import ArrowRightIcon from '@atlaskit/icon/core/arrow-right';
+import LinkIcon from '@atlaskit/icon/core/link';
+import WarningIcon from '@atlaskit/icon/core/warning';
 import {
   Dialog,
   DialogContent,
@@ -12,16 +15,8 @@ import {
   DialogFooter,
   DialogDescription,
 } from '@/components/admin/admin-dialog';
-import { Button } from '@/components/ui/button';
-import { Label } from '@/components/ui/label';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import { AlertTriangle, Link2, ArrowRight } from 'lucide-react';
+import Button from '@atlaskit/button/new';
+import AdsSelect from '@atlaskit/select';
 import { 
   useThemeLinkedEpics, 
   useReassignEpicsToTheme, 
@@ -98,7 +93,7 @@ export function DeleteThemeDialog({
       <DialogContent className="max-w-lg">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-destructive">
-            <AlertTriangle className="h-5 w-5" />
+            <WarningIcon label="" size="small" />
             Delete Theme: {theme.name}
           </DialogTitle>
           <DialogDescription>
@@ -113,7 +108,7 @@ export function DeleteThemeDialog({
             {/* Linked items summary */}
             <div className="bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 rounded-lg p-4">
               <div className="flex items-center gap-2 text-amber-800 dark:text-amber-200 font-medium mb-2">
-                <Link2 className="h-4 w-4" />
+                <LinkIcon label="" size="small" />
                 Linked Items
               </div>
               <div className="text-sm text-amber-700 dark:text-amber-300">
@@ -127,7 +122,7 @@ export function DeleteThemeDialog({
             {/* List of linked epics */}
             {linkedEpics.length > 0 && (
               <div>
-                <Label className="text-sm font-medium mb-2 block">Linked Epics:</Label>
+                <span className="text-sm font-medium mb-2 block" style={{ color: 'var(--ds-text, #172B4D)' }}>Linked Epics:</span>
                 <ScrollArea className="h-32 border rounded-md p-2">
                   <div className="space-y-1">
                     {linkedEpics.map(epic => (
@@ -145,30 +140,17 @@ export function DeleteThemeDialog({
             
             {/* Target theme selection */}
             <div>
-              <Label className="mb-2 block">Move epics to:</Label>
-              <Select value={targetThemeId} onValueChange={setTargetThemeId}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select target theme (or leave empty to unlink)" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="unlink">
-                    <span className="text-muted-foreground italic">Unlink from any theme</span>
-                  </SelectItem>
-                  {availableThemes.map(t => (
-                    <SelectItem key={t.id} value={t.id}>
-                      <div className="flex items-center gap-2">
-                        {t.color_tag && (
-                          <span 
-                            className="w-3 h-3 rounded-full"
-                            style={{ backgroundColor: t.color_tag }}
-                          />
-                        )}
-                        {t.name}
-                      </div>
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <label htmlFor="target-theme-select" style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, #172B4D)', display: 'block', marginBottom: '8px' }}>Move epics to:</label>
+              <AdsSelect
+                inputId="target-theme-select"
+                value={targetThemeId ? { label: availableThemes.find(t => t.id === targetThemeId)?.name || 'Unlink from any theme', value: targetThemeId } : null}
+                options={[
+                  { label: 'Unlink from any theme', value: 'unlink' },
+                  ...availableThemes.map(t => ({ label: t.name, value: t.id })),
+                ]}
+                placeholder="Select target theme (or leave empty to unlink)"
+                onChange={(opt) => setTargetThemeId(opt?.value ?? '')}
+              />
             </div>
           </div>
         ) : (
@@ -180,28 +162,24 @@ export function DeleteThemeDialog({
         )}
         
         <DialogFooter className="gap-2">
-          <Button variant="outline" onClick={() => onOpenChange(false)} disabled={isPending}>
+          <Button appearance="default" onClick={() => onOpenChange(false)} isDisabled={isPending}>
             Cancel
           </Button>
-          
+
           {hasLinkedItems ? (
-            <Button 
-              variant="destructive" 
+            <Button
+              appearance="danger"
               onClick={handleReassignAndDelete}
-              disabled={isPending}
+              isDisabled={isPending}
+              iconAfter={ArrowRightIcon}
             >
-              {isPending ? 'Processing...' : (
-                <>
-                  Move Items & Delete
-                  <ArrowRight className="h-4 w-4 ml-1" />
-                </>
-              )}
+              {isPending ? 'Processing...' : 'Move Items & Delete'}
             </Button>
           ) : (
-            <Button 
-              variant="destructive" 
+            <Button
+              appearance="danger"
               onClick={handleDirectDelete}
-              disabled={isPending}
+              isDisabled={isPending}
             >
               {isPending ? 'Deleting...' : 'Delete Theme'}
             </Button>

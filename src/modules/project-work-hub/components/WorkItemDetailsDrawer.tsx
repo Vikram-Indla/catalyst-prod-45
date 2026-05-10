@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, Suspense } from 'react';
+import React, { useState, useEffect, useCallback, Suspense, startTransition, lazy } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { format } from 'date-fns';
 import { supabase } from '@/integrations/supabase/client';
@@ -18,7 +18,9 @@ import { StatusLozenge } from './StatusLozenge';
 import { Avatar, Tooltip } from '@/components/ads';
 import { toast } from '@/components/ui/sonner';
 import { mapToStoryStatus, mapToFeatureStatus } from '../utils/statusMapping';
-import EpicDescriptionEditor from '@/components/shared/rich-text/atlaskit/EpicDescriptionEditor';
+const EpicDescriptionEditor = lazy(
+  () => import('@/components/shared/rich-text/atlaskit/EpicDescriptionEditor'),
+);
 import EpicDescriptionRenderer from '@/components/shared/rich-text/atlaskit/EpicDescriptionRenderer';
 import { isAdfEmpty } from '@/components/shared/rich-text/atlaskit/adfHelpers';
 import { prefetchEpicEditor } from '@/lib/atlaskitPrefetch';
@@ -375,9 +377,10 @@ export const WorkItemDetailsDrawer: React.FC<WorkItemDetailsDrawerProps> = ({
                   </div>
                 ) : descIsEmpty ? (
                   <div
-                    onClick={() => { if (canEdit) setIsDescriptionEditing(true); }}
+                    onClick={() => { if (canEdit) startTransition(() => setIsDescriptionEditing(true)); }}
                     style={{
-                      fontSize: 14, color: '#97A0AF', fontStyle: 'italic',
+                      fontSize: 14, color: 'var(--ds-text-subtlest, #97A0AF)',
+                      fontStyle: 'normal',
                       minHeight: 40, cursor: canEdit ? 'pointer' : 'default',
                       borderRadius: 4, padding: '8px 0',
                       transition: 'background 0.15s',
@@ -391,8 +394,8 @@ export const WorkItemDetailsDrawer: React.FC<WorkItemDetailsDrawerProps> = ({
                   <div
                     role="button"
                     tabIndex={canEdit ? 0 : -1}
-                    onClick={() => { if (canEdit) setIsDescriptionEditing(true); }}
-                    onKeyDown={(e) => { if ((e.key === 'Enter' || e.key === ' ') && canEdit) { e.preventDefault(); setIsDescriptionEditing(true); }}}
+                    onClick={() => { if (canEdit) startTransition(() => setIsDescriptionEditing(true)); }}
+                    onKeyDown={(e) => { if ((e.key === 'Enter' || e.key === ' ') && canEdit) { e.preventDefault(); startTransition(() => setIsDescriptionEditing(true)); }}}
                     onMouseEnter={e => { if (canEdit) { e.currentTarget.style.background = 'var(--ds-surface-sunken, #F4F5F7)'; prefetchEpicEditor(); }}}
                     onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
                     style={{

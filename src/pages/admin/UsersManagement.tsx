@@ -14,7 +14,14 @@ import { BulkEditModal } from './components/BulkEditModal';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { loadXLSX } from '@/lib/exportLoaders';
 import { toast } from 'sonner';
-import { Search, X, Download, Plus, ChevronLeft, ChevronRight, Edit3, Trash2 } from 'lucide-react';
+import SearchIcon from '@atlaskit/icon/core/search';
+import CrossIcon from '@atlaskit/icon/glyph/cross';
+import DownloadIcon from '@atlaskit/icon/core/download';
+import AddIcon from '@atlaskit/icon/core/add';
+import ChevronLeftIcon from '@atlaskit/icon/glyph/chevron-left';
+import ChevronRightIcon from '@atlaskit/icon/glyph/chevron-right';
+import EditIcon from '@atlaskit/icon/core/edit';
+import TrashIcon from '@atlaskit/icon/glyph/trash';
 
 // V8 Components
 import {
@@ -385,7 +392,7 @@ export default function UsersManagement() {
           disabled={currentPage === 1}
           onClick={() => setCurrentPage(p => p - 1)}
         >
-          <ChevronLeft size={14} />
+          <ChevronLeftIcon label="" size="small" />
         </button>
         {pages.map(p => (
           <button
@@ -401,7 +408,7 @@ export default function UsersManagement() {
           disabled={currentPage === totalPages}
           onClick={() => setCurrentPage(p => p + 1)}
         >
-          <ChevronRight size={14} />
+          <ChevronRightIcon label="" size="small" />
         </button>
       </div>
     );
@@ -431,11 +438,11 @@ export default function UsersManagement() {
           </div>
           <div className="ct-header-actions">
             <button className="ct-btn" onClick={handleExport}>
-              <Download size={16} />
+              <DownloadIcon label="" size="small" />
               Export
             </button>
             <button className="ct-btn ct-btn-primary" onClick={() => openDrawer()}>
-              <Plus size={16} />
+              <AddIcon label="" size="small" />
               Add User
             </button>
           </div>
@@ -504,17 +511,17 @@ export default function UsersManagement() {
           <div className={`ct-bulk-bar ${selectedIds.size > 0 ? 'visible' : ''}`}>
             <strong>{selectedIds.size} selected</strong>
             <button className="ct-bulk-btn" onClick={() => setSelectedIds(new Set())}>
-              <X size={14} /> Clear
+              <CrossIcon label="" size="small" /> Clear
             </button>
             <div className="ct-bulk-bar-actions">
               <button className="ct-bulk-btn" onClick={() => setBulkModalOpen(true)}>
-                <Edit3 size={14} /> Bulk Edit
+                <EditIcon label="" size="small" /> Bulk Edit
               </button>
               <button className="ct-bulk-btn" onClick={handleExport}>
-                <Download size={14} /> Export Selected
+                <DownloadIcon label="" size="small" /> Export Selected
               </button>
               <button className="ct-bulk-btn danger" onClick={handleBulkDelete}>
-                <Trash2 size={14} /> Delete
+                <TrashIcon label="" size="small" /> Delete
               </button>
             </div>
           </div>
@@ -523,7 +530,7 @@ export default function UsersManagement() {
           <div className="ct-toolbar">
             <div className="ct-toolbar-left">
               <div className="ct-search-box">
-                <Search size={16} className="search-icon" />
+                <span className="search-icon" style={{ display: 'inline-flex' }}><SearchIcon label="" size="small" /></span>
                 <input 
                   placeholder="Search users..."
                   value={searchQuery}
@@ -557,7 +564,7 @@ export default function UsersManagement() {
               />
             </div>
             <button className="ct-btn" onClick={clearFilters}>
-              <X size={14} />
+              <CrossIcon label="" size="small" />
               Clear
             </button>
           </div>

@@ -1,4 +1,11 @@
 import { useState } from 'react';
+import Spinner from '@atlaskit/spinner';
+import CheckMarkIcon from '@atlaskit/icon/core/check-mark';
+import CopyIcon from '@atlaskit/icon/core/copy';
+import EyeOpenIcon from '@atlaskit/icon/core/eye-open';
+import EyeOpenStrikethroughIcon from '@atlaskit/icon/core/eye-open-strikethrough';
+import LinkIcon from '@atlaskit/icon/core/link';
+import LockLockedIcon from '@atlaskit/icon/core/lock-locked';
 import {
   Dialog,
   DialogContent,
@@ -7,10 +14,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/admin/admin-dialog';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Copy, Check, Loader2, KeyRound, Eye, EyeOff, Link2 } from 'lucide-react';
+import Button from '@atlaskit/button/new';
+import Textfield from '@atlaskit/textfield';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -132,7 +137,7 @@ export function ResetPasswordDialog({ isOpen, onClose, userId, userName }: Reset
           <>
             <DialogHeader>
               <DialogTitle className="flex items-center gap-2">
-                <KeyRound className="h-5 w-5 text-brand-primary" />
+                <LockLockedIcon label="" size="small" />
                 Reset password for {userName || 'user'}
               </DialogTitle>
               <DialogDescription>
@@ -148,42 +153,35 @@ export function ResetPasswordDialog({ isOpen, onClose, userId, userName }: Reset
               
               <TabsContent value="password" className="space-y-4 mt-4">
                 <div className="space-y-2">
-                  <Label htmlFor="new-password">Default Password</Label>
-                  <div className="relative">
-                    <Input
-                      id="new-password"
-                      type={showPassword ? 'text' : 'password'}
-                      placeholder="Enter a default password..."
-                      value={newPassword}
-                      onChange={(e) => setNewPassword(e.target.value)}
-                      className="pr-10"
-                    />
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="icon"
-                      className="absolute right-0 top-0 h-full px-3 hover:bg-transparent"
-                      onClick={() => setShowPassword(!showPassword)}
-                    >
-                      {showPassword ? (
-                        <EyeOff className="h-4 w-4 text-muted-foreground" />
-                      ) : (
-                        <Eye className="h-4 w-4 text-muted-foreground" />
-                      )}
-                    </Button>
-                  </div>
-                  <p className="text-xs text-muted-foreground">
+                  <label htmlFor="new-password" style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>Default Password</label>
+                  <Textfield
+                    id="new-password"
+                    type={showPassword ? 'text' : 'password'}
+                    placeholder="Enter a default password..."
+                    value={newPassword}
+                    onChange={(e) => setNewPassword((e.target as HTMLInputElement).value)}
+                    elemAfterInput={
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        style={{ display: 'flex', alignItems: 'center', padding: '0 8px', border: 'none', background: 'transparent', cursor: 'pointer', color: 'var(--ds-text-subtle, #44546F)' }}
+                      >
+                        {showPassword ? <EyeOpenStrikethroughIcon label="" size="small" /> : <EyeOpenIcon label="" size="small" />}
+                      </button>
+                    }
+                  />
+                  <p className="text-xs" style={{ color: 'var(--ds-text-subtle, #44546F)' }}>
                     The user will be required to change this password on their next login.
                   </p>
                 </div>
                 <DialogFooter className="sm:justify-end gap-2">
-                  <Button variant="outline" onClick={handleClose} disabled={isLoading}>
+                  <Button appearance="default" onClick={handleClose} isDisabled={isLoading}>
                     Cancel
                   </Button>
-                  <Button onClick={handleSetPassword} disabled={isLoading || !newPassword || newPassword.length < 6}>
+                  <Button appearance="primary" onClick={handleSetPassword} isDisabled={isLoading || !newPassword || newPassword.length < 6}>
                     {isLoading ? (
                       <>
-                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                        <Spinner size="small" />
                         Setting...
                       </>
                     ) : (
@@ -192,27 +190,24 @@ export function ResetPasswordDialog({ isOpen, onClose, userId, userName }: Reset
                   </Button>
                 </DialogFooter>
               </TabsContent>
-              
+
               <TabsContent value="link" className="space-y-4 mt-4">
-                <p className="text-sm text-muted-foreground">
-                  Generate a one-time reset link that the user can use to set their own password. 
+                <p className="text-sm" style={{ color: 'var(--ds-text-subtle, #44546F)' }}>
+                  Generate a one-time reset link that the user can use to set their own password.
                   The link expires in 24 hours.
                 </p>
                 <DialogFooter className="sm:justify-end gap-2">
-                  <Button variant="outline" onClick={handleClose} disabled={isLoading}>
+                  <Button appearance="default" onClick={handleClose} isDisabled={isLoading}>
                     Cancel
                   </Button>
-                  <Button onClick={handleGenerateLink} disabled={isLoading}>
+                  <Button appearance="primary" onClick={handleGenerateLink} isDisabled={isLoading} iconBefore={LinkIcon}>
                     {isLoading ? (
                       <>
-                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                        <Spinner size="small" />
                         Generating...
                       </>
                     ) : (
-                      <>
-                        <Link2 className="h-4 w-4 mr-2" />
-                        Generate Reset Link
-                      </>
+                      'Generate Reset Link'
                     )}
                   </Button>
                 </DialogFooter>
@@ -225,7 +220,7 @@ export function ResetPasswordDialog({ isOpen, onClose, userId, userName }: Reset
           <>
             <DialogHeader>
               <DialogTitle className="flex items-center gap-2">
-                <Check className="h-5 w-5 text-green-600" />
+                <CheckMarkIcon label="" size="small" />
                 Password reset link created
               </DialogTitle>
               <DialogDescription>
@@ -235,44 +230,28 @@ export function ResetPasswordDialog({ isOpen, onClose, userId, userName }: Reset
             </DialogHeader>
             <div className="space-y-4 py-4">
               <div className="space-y-2">
-                <Label htmlFor="reset-link">Reset Link</Label>
+                <label htmlFor="reset-link" style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>Reset Link</label>
                 <div className="flex gap-2">
-                  <Input
-                    id="reset-link"
-                    value={resetLink}
-                    readOnly
-                    className="flex-1 text-xs"
-                  />
+                  <div className="flex-1">
+                    <Textfield
+                      id="reset-link"
+                      value={resetLink}
+                      isReadOnly
+                    />
+                  </div>
                   <Button
-                    variant="outline"
-                    size="icon"
+                    appearance="default"
                     onClick={handleCopyLink}
-                    className="shrink-0"
-                  >
-                    {copied ? (
-                      <Check className="h-4 w-4 text-green-600" />
-                    ) : (
-                      <Copy className="h-4 w-4" />
-                    )}
-                  </Button>
+                    iconBefore={copied ? CheckMarkIcon : CopyIcon}
+                  />
                 </div>
               </div>
             </div>
             <DialogFooter>
-              <Button variant="outline" onClick={handleCopyLink}>
-                {copied ? (
-                  <>
-                    <Check className="h-4 w-4 mr-2 text-green-600" />
-                    Copied!
-                  </>
-                ) : (
-                  <>
-                    <Copy className="h-4 w-4 mr-2" />
-                    Copy Link
-                  </>
-                )}
+              <Button appearance="default" onClick={handleCopyLink} iconBefore={copied ? CheckMarkIcon : CopyIcon}>
+                {copied ? 'Copied!' : 'Copy Link'}
               </Button>
-              <Button onClick={handleClose}>Close</Button>
+              <Button appearance="primary" onClick={handleClose}>Close</Button>
             </DialogFooter>
           </>
         )}
@@ -281,7 +260,7 @@ export function ResetPasswordDialog({ isOpen, onClose, userId, userName }: Reset
           <>
             <DialogHeader>
               <DialogTitle className="flex items-center gap-2">
-                <Check className="h-5 w-5 text-green-600" />
+                <CheckMarkIcon label="" size="small" />
                 Default password set
               </DialogTitle>
               <DialogDescription>
@@ -290,59 +269,36 @@ export function ResetPasswordDialog({ isOpen, onClose, userId, userName }: Reset
             </DialogHeader>
             <div className="space-y-4 py-4">
               <div className="space-y-2">
-                <Label>Password set to:</Label>
+                <label style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>Password set to:</label>
                 <div className="flex gap-2">
-                  <Input
-                    value={newPassword}
-                    readOnly
-                    type={showPassword ? 'text' : 'password'}
-                    className="flex-1"
+                  <div className="flex-1">
+                    <Textfield
+                      value={newPassword}
+                      isReadOnly
+                      type={showPassword ? 'text' : 'password'}
+                    />
+                  </div>
+                  <Button
+                    appearance="default"
+                    onClick={() => setShowPassword(!showPassword)}
+                    iconBefore={showPassword ? EyeOpenStrikethroughIcon : EyeOpenIcon}
                   />
                   <Button
-                    variant="outline"
-                    size="icon"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="shrink-0"
-                  >
-                    {showPassword ? (
-                      <EyeOff className="h-4 w-4" />
-                    ) : (
-                      <Eye className="h-4 w-4" />
-                    )}
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="icon"
+                    appearance="default"
                     onClick={handleCopyPassword}
-                    className="shrink-0"
-                  >
-                    {copied ? (
-                      <Check className="h-4 w-4 text-green-600" />
-                    ) : (
-                      <Copy className="h-4 w-4" />
-                    )}
-                  </Button>
+                    iconBefore={copied ? CheckMarkIcon : CopyIcon}
+                  />
                 </div>
-                <p className="text-xs text-muted-foreground">
+                <p className="text-xs" style={{ color: 'var(--ds-text-subtle, #44546F)' }}>
                   Share this password with the user securely. They will be prompted to set a new password on their first login.
                 </p>
               </div>
             </div>
             <DialogFooter>
-              <Button variant="outline" onClick={handleCopyPassword}>
-                {copied ? (
-                  <>
-                    <Check className="h-4 w-4 mr-2 text-green-600" />
-                    Copied!
-                  </>
-                ) : (
-                  <>
-                    <Copy className="h-4 w-4 mr-2" />
-                    Copy Password
-                  </>
-                )}
+              <Button appearance="default" onClick={handleCopyPassword} iconBefore={copied ? CheckMarkIcon : CopyIcon}>
+                {copied ? 'Copied!' : 'Copy Password'}
               </Button>
-              <Button onClick={handleClose}>Close</Button>
+              <Button appearance="primary" onClick={handleClose}>Close</Button>
             </DialogFooter>
           </>
         )}

@@ -3,8 +3,9 @@
  * Matches spec: Previous/Next buttons, page numbers, showing X of Y
  */
 
-import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import Button from '@atlaskit/button/new';
+import ChevronLeftIcon from '@atlaskit/icon/glyph/chevron-left';
+import ChevronRightIcon from '@atlaskit/icon/glyph/chevron-right';
 
 interface UsersPaginationProps {
   page: number;
@@ -55,13 +56,11 @@ export function UsersPagination({ page, pageSize, total, onPageChange }: UsersPa
       
       <div className="flex items-center gap-1.5">
         <Button
-          variant="outline"
-          size="sm"
+          appearance="default"
           onClick={() => onPageChange(page - 1)}
-          disabled={page === 0}
-          className="h-8 gap-1 text-xs"
+          isDisabled={page === 0}
+          iconBefore={ChevronLeftIcon}
         >
-          <ChevronLeft className="w-3.5 h-3.5" />
           Previous
         </Button>
         
@@ -82,14 +81,12 @@ export function UsersPagination({ page, pageSize, total, onPageChange }: UsersPa
         </div>
         
         <Button
-          variant="outline"
-          size="sm"
+          appearance="default"
           onClick={() => onPageChange(page + 1)}
-          disabled={page >= totalPages - 1}
-          className="h-8 gap-1 text-xs"
+          isDisabled={page >= totalPages - 1}
+          iconAfter={ChevronRightIcon}
         >
           Next
-          <ChevronRight className="w-3.5 h-3.5" />
         </Button>
       </div>
     </div>

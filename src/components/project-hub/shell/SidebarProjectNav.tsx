@@ -122,8 +122,9 @@ export function SidebarProjectNav({
 
   const handleRecentClick = (item: typeof recentItems[0]) => {
     const { openDetail } = useGlobalSearchStore.getState();
+    // CatalystDetailRouter queries ph_issues by issue_key (text), not UUID.
     openDetail({
-      id: item.entity_id,
+      id: item.entity_key || item.entity_id,
       projectKey,
       itemType: item.entity_type,
     });

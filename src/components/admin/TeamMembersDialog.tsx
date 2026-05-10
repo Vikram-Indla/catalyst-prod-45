@@ -2,12 +2,13 @@ import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/admin/admin-dialog';
-import { Button } from '@/components/ui/button';
+import Button from '@atlaskit/button/new';
 import { Checkbox } from '@/components/ui/checkbox';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { toast } from 'sonner';
-import { Users, UserPlus, UserMinus } from 'lucide-react';
-
+import PeopleGroupIcon from '@atlaskit/icon/core/people-group';
+import PersonAddIcon from '@atlaskit/icon/core/person-add';
+import PersonRemoveIcon from '@atlaskit/icon/core/person-remove';
 interface TeamMembersDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -111,7 +112,7 @@ export function TeamMembersDialog({ open, onOpenChange, teamId, teamName }: Team
       <DialogContent className="max-w-2xl">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <Users className="h-5 w-5" />
+            <PeopleGroupIcon label="" size="small" />
             Manage Team Members - {teamName}
           </DialogTitle>
         </DialogHeader>
@@ -123,21 +124,19 @@ export function TeamMembersDialog({ open, onOpenChange, teamId, teamName }: Team
             </p>
             <div className="flex gap-2">
               <Button
-                size="sm"
-                variant="outline"
+                appearance="default"
                 onClick={handleAddMembers}
-                disabled={selectedUsers.length === 0 || addMembersMutation.isPending}
+                isDisabled={selectedUsers.length === 0 || addMembersMutation.isPending}
+                iconBefore={PersonAddIcon}
               >
-                <UserPlus className="h-4 w-4 mr-2" />
                 Add to Team
               </Button>
               <Button
-                size="sm"
-                variant="outline"
+                appearance="default"
                 onClick={handleRemoveMembers}
-                disabled={selectedUsers.length === 0 || removeMembersMutation.isPending}
+                isDisabled={selectedUsers.length === 0 || removeMembersMutation.isPending}
+                iconBefore={PersonRemoveIcon}
               >
-                <UserMinus className="h-4 w-4 mr-2" />
                 Remove from Team
               </Button>
             </div>

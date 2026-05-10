@@ -81,8 +81,35 @@ const SECTION_LABELS: Record<string, string> = {
   'story-backlog': 'Backlog',
 };
 
+/**
+ * Canonical sidebar nav sections — the only sections surfaced in the
+ * HomeSidebar Recent list. Anything not in this set is a ticket-grain
+ * or non-navigable sub-path and is excluded at record time.
+ */
+// Exact section slugs that appear as nav items in ProjectHubSidebar.
+// Derived from the actual `id` values in ProjectHubSidebar.tsx — do not
+// add slugs speculatively. If a new sidebar item is added there, add its
+// slug here too.
+const CANONICAL_NAV_SECTIONS = new Set([
+  'dashboard',
+  'boards',
+  'backlog',
+  'allwork',
+  'settings',
+  // Additional hub-specific sections that have real sidebar routes:
+  'sprint-predictor',
+  'risk-scanner',
+  'epic-backlog',
+  'feature-backlog',
+  'story-backlog',
+  'releases',
+  'hierarchy',
+  'timeline',
+  'reports',
+]);
+
 /** Section slugs we never want to record (ticket detail / modal). */
-const EXCLUDED_SECTIONS = new Set(['story', 'issue', 'epic', 'feature']);
+const EXCLUDED_SECTIONS = new Set(['story', 'issue', 'epic', 'feature', 'issues']);
 
 function titleCase(slug: string): string {
   return slug
@@ -179,6 +206,7 @@ export function useRecordProjectVisit() {
     if (!projectKey || projectKey === 'all-projects' || projectKey === 'resource-360') return;
     if (!section) return; // wait for the redirect to land on a real section
     if (EXCLUDED_SECTIONS.has(section)) return;
+    if (!CANONICAL_NAV_SECTIONS.has(section)) return;
     recordLocationVisit({
       projectKey,
       path: location.pathname,
@@ -202,7 +230,9 @@ export function useRecentProjects(limit = 8) {
     return () => window.removeEventListener('catalyst:recent-locations-updated', handler);
   }, []);
 
-  const entries = readStore().slice(0, limit);
+  const entries = readStore()
+    .filter((e) => CANONICAL_NAV_SECTIONS.has(e.section))
+    .slice(0, limit);
   const keys = Array.from(new Set(entries.map((e) => e.projectKey)));
 
   const { data: locations = [], isLoading } = useQuery({

@@ -135,10 +135,6 @@ export function PlanHubSidebar({ expanded, onToggle, className }: PlanHubSidebar
       items.push({ id: 'master', title: 'Master Plan', path: '/planhub/master', icon: Layers });
     }
 
-    if (features?.resource_management) {
-      items.push({ id: 'resources', title: 'Resources', path: '/planhub/resources', icon: Users });
-    }
-
     if (aiEnabled) {
       items.push({ id: 'ai', title: 'AI Assistant', path: '/planhub/ai', icon: Bot });
     }

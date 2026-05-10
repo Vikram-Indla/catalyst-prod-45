@@ -1,4 +1,4 @@
-import { Loader2 } from 'lucide-react';
+import Spinner from '@atlaskit/spinner';
 
 interface ConnectionStatusBadgeProps {
   status: 'not_configured' | 'testing' | 'connected' | 'error';
@@ -31,7 +31,7 @@ export function ConnectionStatusBadge({ status }: ConnectionStatusBadgeProps) {
         letterSpacing: '0.03em',
       }}
     >
-      {status === 'testing' && <Loader2 style={{ width: 12, height: 12, animation: 'spin 1s linear infinite' }} />}
+      {status === 'testing' && <span style={{ display: 'inline-flex' }}><Spinner size="small" /></span>}
       {status === 'connected' && <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'currentColor' }} />}
       {status === 'error' && <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'currentColor' }} />}
       {config.label}

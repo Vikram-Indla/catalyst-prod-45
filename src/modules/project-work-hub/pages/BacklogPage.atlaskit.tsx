@@ -1339,10 +1339,58 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
       } else if (groupBy === 'parent') {
         const isOrphan = /^(No parent|—)$/i.test(k);
         const parentType = sample.parent_issue_type || (sample.type === 'epic' ? 'Epic' : 'Epic');
+        // 2026-05-10 hierarchy parity: render parent header as
+        // [type icon] [KEY in mono] [summary]
+        // The bucket's `sample` may be the parent itself (epic with no
+        // parent_key) OR a child of the parent (parent_key set). Find a
+        // child to source parent_key; if none, sample is the parent and
+        // we use its own `key`.
+        const bucketRows = buckets.get(k)!;
+        const childWithParentKey = bucketRows.find((row) => !!row.parent_key);
+        const parentKey = isOrphan
+          ? ''
+          : (childWithParentKey?.parent_key || sample.key || '');
+        // Strip "[KEY] " prefix from parent_label if present.
+        const parentSummary = isOrphan
+          ? ''
+          : k.replace(/^\[[^\]]+\]\s*/, '').replace(/^[A-Z]+-\d+\s*[—\-:]\s*/, '');
+        // Parent's status — look it up from the parent row itself if the
+        // parent is in the bucket (epic with no parent_key), else from a
+        // separate items lookup by parent_key. Falls back to undefined.
+        const parentRow = bucketRows.find((row) => !row.parent_key)
+          ?? items.find((it) => it.key === parentKey);
+        const parentStatus = isOrphan ? null : (parentRow?.status ?? null);
+        const parentStatusAppearance = parentStatus ? statusAppearance(parentStatus) : 'default';
         labelNode = (
-          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, minWidth: 0 }}>
             {!isOrphan && <JiraIssueTypeIcon type={parentType} size={14} />}
-            <span style={{ fontFamily: !isOrphan ? 'var(--cp-font-mono)' : 'inherit' }}>{k}</span>
+            {!isOrphan && parentKey && (
+              <span style={{
+                fontFamily: 'var(--cp-font-mono)',
+                fontSize: 12,
+                color: 'var(--ds-text-subtle, #42526E)',
+                fontWeight: 600,
+                flexShrink: 0,
+              }}>{parentKey}</span>
+            )}
+            {!isOrphan && parentSummary && (
+              <span style={{
+                color: 'var(--ds-text, #172B4D)',
+                fontWeight: 500,
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                whiteSpace: 'nowrap',
+                minWidth: 0,
+              }}>{parentSummary}</span>
+            )}
+            {!isOrphan && parentStatus && (
+              <span style={{ flexShrink: 0, marginLeft: 4 }}>
+                <StatusPill appearance={parentStatusAppearance as LozengeAppearance}>
+                  {parentStatus}
+                </StatusPill>
+              </span>
+            )}
+            {isOrphan && <span style={{ color: 'var(--ds-text-subtlest, #6B6E76)' }}>{k}</span>}
           </span>
         );
       }
@@ -1696,6 +1744,18 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
         appearanceFor: (s) => statusAppearance(s) as LozengeAppearance,
         onChange: (row, next) => updateField.mutate({ id: row.id, source: row.source, patch: { status: next } }),
       }),
+      // 2026-05-10 Jira-parity per-column filter chevron.
+      filterable: true,
+      hasActiveFilter: filterValue.status.length > 0,
+      renderFilterMenu: (close) => (
+        <ColumnFilterMultiSelect
+          title="Status"
+          options={ALL_BACKLOG_STATUSES}
+          selected={filterValue.status}
+          onChange={(next) => setFilterValue((p) => ({ ...p, status: next }))}
+          onClose={close}
+        />
+      ),
     },
     {
       id: 'comments',
@@ -1770,6 +1830,17 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
           patch: { assignee_id: next?.id ?? null, assignee_name: next?.name ?? null },
         }),
       }),
+      filterable: true,
+      hasActiveFilter: filterValue.assignees.length > 0,
+      renderFilterMenu: (close) => (
+        <ColumnFilterMultiSelect
+          title="Assignee"
+          options={['Unassigned', ...assigneeOptions.map((a) => a.name)]}
+          selected={filterValue.assignees}
+          onChange={(next) => setFilterValue((p) => ({ ...p, assignees: next }))}
+          onClose={close}
+        />
+      ),
     },
     {
       id: 'due_date',
@@ -1797,6 +1868,17 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
         options: PRIORITY_OPTIONS,
         onChange: (row, next) => updateField.mutate({ id: row.id, source: row.source, patch: { priority: next } }),
       }),
+      filterable: true,
+      hasActiveFilter: filterValue.priority.length > 0,
+      renderFilterMenu: (close) => (
+        <ColumnFilterMultiSelect
+          title="Priority"
+          options={PRIORITY_OPTIONS.map((p) => p[0].toUpperCase() + p.slice(1))}
+          selected={filterValue.priority}
+          onChange={(next) => setFilterValue((p) => ({ ...p, priority: next as typeof filterValue.priority }))}
+          onClose={close}
+        />
+      ),
     },
     {
       id: 'labels',
@@ -2869,6 +2951,14 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
                     queryClient.invalidateQueries({ queryKey: ['backlog-stories-v2', projectId] });
                     queryClient.invalidateQueries({ queryKey: ['backlog-epics', projectId] });
                     setFooterCreateActive(false);
+                    // 2026-05-10 UX: with virtualization + 600+ rows, a newly-
+                    // created row at the bottom of an ASC sort is invisible.
+                    // Switch sort to updated_at DESC so the new row appears at
+                    // the top of the visible viewport. User can re-sort later.
+                    if (sortKey !== 'updated' || sortDir !== 'DESC') {
+                      setSortKey('updated');
+                      setSortDir('DESC');
+                    }
                   } catch {
                     flag.error('Failed to create');
                   } finally {
@@ -2891,12 +2981,15 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
             contextMenuActions={rowActions}
             getRowId={(r) => r.id}
             getRowDepth={(r) => {
-              // Three-level hierarchy: Request (0) → Epic (1) → Story (2).
+              // 2026-05-10: Indent only in flat view — when grouped, children
+              // share the group's visual scope and additional indent is noise.
+              if (groupBy && groupBy !== 'parent') return 0;
+              // Three-level hierarchy: Request/Epic (0) → child (1) → grandchild (2).
+              // Covers all child types (story/bug/task/subtask/feature/incident).
               if (r.type === 'initiative') return 0;
-              if (r.type === 'epic' && r.parent_id) return 1;       // epic under initiative
-              if (r.type === 'story' && r.parent_id) {
-                // Story under an epic that's under an initiative → depth 2
-                // (the epic it's under has parent_id), otherwise depth 1.
+              if (r.type === 'epic' && r.parent_id) return 1;
+              const childTypes = ['story', 'bug', 'task', 'subtask', 'feature', 'incident'];
+              if (childTypes.includes(r.type) && r.parent_id) {
                 const parent = items.find((it) => it.id === r.parent_id);
                 return parent?.parent_id ? 2 : 1;
               }
@@ -4638,6 +4731,101 @@ type CreatableIssueType =
   | 'API Requirement'
   | 'Change Request';
 
+/**
+ * 2026-05-10 Per-column filter popup body — minimal multi-select.
+ * Shown inside the JiraTable filter chevron portal. Each option is a
+ * checkbox; "Clear" removes all selections. State is fully driven by
+ * `selected` + `onChange` so the parent owns the source of truth
+ * (filterValue at the BacklogPage level).
+ */
+function ColumnFilterMultiSelect({
+  title,
+  options,
+  selected,
+  onChange,
+  onClose,
+}: {
+  title: string;
+  options: string[];
+  selected: string[];
+  onChange: (next: string[]) => void;
+  onClose: () => void;
+}) {
+  const [query, setQuery] = useState('');
+  const filtered = useMemo(
+    () => options.filter((o) => o.toLowerCase().includes(query.toLowerCase())),
+    [options, query],
+  );
+  const toggle = (opt: string) => {
+    onChange(selected.includes(opt)
+      ? selected.filter((s) => s !== opt)
+      : [...selected, opt]);
+  };
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 6, minWidth: 220 }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 4px' }}>
+        <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtle, #42526E)' }}>{title}</span>
+        {selected.length > 0 && (
+          <button
+            type="button"
+            onClick={() => onChange([])}
+            style={{ border: 'none', background: 'transparent', color: 'var(--ds-link, #0C66E4)', fontSize: 12, cursor: 'pointer', padding: '2px 4px' }}
+          >Clear</button>
+        )}
+      </div>
+      <input
+        type="text"
+        value={query}
+        onChange={(e) => setQuery(e.target.value)}
+        placeholder="Search…"
+        style={{
+          padding: '4px 8px', fontSize: 13,
+          border: '1px solid var(--ds-border, #DFE1E6)', borderRadius: 3,
+          outline: 'none', fontFamily: 'inherit',
+        }}
+        autoFocus
+      />
+      <div style={{ maxHeight: 240, overflowY: 'auto', display: 'flex', flexDirection: 'column' }}>
+        {filtered.length === 0 && (
+          <div style={{ padding: '6px 8px', fontSize: 12, color: 'var(--ds-text-subtlest, #6B6E76)' }}>No matches</div>
+        )}
+        {filtered.map((opt) => {
+          const isChecked = selected.includes(opt);
+          return (
+            <label
+              key={opt}
+              style={{
+                display: 'flex', alignItems: 'center', gap: 8,
+                padding: '6px 8px', cursor: 'pointer', fontSize: 14,
+                borderRadius: 3,
+                background: isChecked ? 'var(--ds-background-selected, #E9F2FF)' : 'transparent',
+              }}
+            >
+              <input
+                type="checkbox"
+                checked={isChecked}
+                onChange={() => toggle(opt)}
+                style={{ margin: 0 }}
+              />
+              <span>{opt}</span>
+            </label>
+          );
+        })}
+      </div>
+      <div style={{ display: 'flex', justifyContent: 'flex-end', borderTop: '1px solid var(--ds-border, #DFE1E6)', paddingTop: 6 }}>
+        <button
+          type="button"
+          onClick={onClose}
+          style={{
+            border: '1px solid var(--ds-border, #DFE1E6)', background: 'transparent',
+            padding: '4px 12px', borderRadius: 3, cursor: 'pointer', fontSize: 13,
+          }}
+        >Done</button>
+      </div>
+    </div>
+  );
+}
+
 const CREATABLE_TYPES: CreatableIssueType[] = [
   'Story',
   'Epic',
@@ -4692,6 +4880,13 @@ function InlineGroupCreateRow({
   const [issueType, setIssueType] = useState<CreatableIssueType>('Story');
   const [assigneeIdx, setAssigneeIdx] = useState<number>(-1); // -1 = Unassigned
   const inputRef = useRef<HTMLInputElement | null>(null);
+  // 2026-05-10 Jira-parity: assignee portal dropdown — replaces click-cycle
+  // (matches type picker pattern; CLAUDE.md 2026-05-08 click-cycle ≠ Jira).
+  const [assigneeMenuOpen, setAssigneeMenuOpen] = useState(false);
+  const [assigneeMenuAnchor, setAssigneeMenuAnchor] = useState<{ top?: number; bottom?: number; left: number } | null>(null);
+  const [assigneeQuery, setAssigneeQuery] = useState('');
+  const assigneeTriggerRef = useRef<HTMLButtonElement>(null);
+  const assigneeMenuRef = useRef<HTMLDivElement>(null);
   // Type picker dropdown — portal-based (L21 portal-empty bug prevents
   // @atlaskit/dropdown-menu; mirrors GroupByControl pattern exactly).
   const [typeMenuOpen, setTypeMenuOpen] = useState(false);
@@ -4751,6 +4946,35 @@ function InlineGroupCreateRow({
       document.removeEventListener('keydown', onKey);
     };
   }, [typeMenuOpen, typeMenuFocusedIdx]);
+
+  // Assignee menu — open/position + outside-click + Escape.
+  useLayoutEffect(() => {
+    if (!assigneeMenuOpen || !assigneeTriggerRef.current) return;
+    const r = assigneeTriggerRef.current.getBoundingClientRect();
+    const estimatedHeight = Math.min(360, (members.length + 2) * 36 + 60);
+    const spaceBelow = window.innerHeight - r.bottom - 8;
+    const anchor = spaceBelow < estimatedHeight && r.top > estimatedHeight
+      ? { bottom: window.innerHeight - r.top + 4, left: r.left }
+      : { top: r.bottom + 4, left: r.left };
+    setAssigneeMenuAnchor(anchor);
+    setAssigneeQuery('');
+  }, [assigneeMenuOpen, members.length]);
+  useEffect(() => {
+    if (!assigneeMenuOpen) return;
+    const onDoc = (e: MouseEvent) => {
+      const t = e.target as Node;
+      if (assigneeTriggerRef.current?.contains(t)) return;
+      if (assigneeMenuRef.current?.contains(t)) return;
+      setAssigneeMenuOpen(false);
+    };
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') setAssigneeMenuOpen(false); };
+    document.addEventListener('mousedown', onDoc);
+    document.addEventListener('keydown', onKey);
+    return () => {
+      document.removeEventListener('mousedown', onDoc);
+      document.removeEventListener('keydown', onKey);
+    };
+  }, [assigneeMenuOpen]);
 
   const trimmed = summary.trim();
   const canSubmit = !!trimmed && !isSubmitting;
@@ -4902,19 +5126,18 @@ function InlineGroupCreateRow({
           Tooltip shows next-on-click value. When a member is selected
           the avatar is rendered alongside the name. */}
       {(() => {
-        const totalSlots = members.length + 1; // +1 for Unassigned
-        const nextIdx =
-          assigneeIdx === -1 ? (members.length > 0 ? 0 : -1) : (assigneeIdx + 1 >= members.length ? -1 : assigneeIdx + 1);
-        const nextLabel = nextIdx === -1 ? 'Unassigned' : members[nextIdx]?.name ?? 'Unassigned';
         const currentLabel = currentAssignee ? currentAssignee.name : 'Unassigned';
+        const filteredMembers = members.filter((m) => m.name.toLowerCase().includes(assigneeQuery.toLowerCase()));
         return (
-          <Tooltip content={`Click to cycle assignee (next: ${nextLabel})`}>
+          <>
             <button
+              ref={assigneeTriggerRef}
               type="button"
               data-testid="jira-table.group-row.inline-create-assignee-trigger"
               aria-label={`Assignee: ${currentLabel}. Click to change.`}
-              disabled={totalSlots <= 1}
-              onClick={() => setAssigneeIdx(nextIdx)}
+              aria-haspopup="listbox"
+              aria-expanded={assigneeMenuOpen}
+              onClick={() => setAssigneeMenuOpen((v) => !v)}
               style={{
                 display: 'inline-flex',
                 alignItems: 'center',
@@ -4923,12 +5146,12 @@ function InlineGroupCreateRow({
                 padding: '0 10px',
                 border: `1px solid ${token('color.border', '#DFE1E6')}`,
                 borderRadius: 3,
-                background: token('elevation.surface', '#FFFFFF'),
+                background: assigneeMenuOpen ? token('color.background.neutral.subtle.hovered', 'rgba(9,30,66,0.06)') : token('elevation.surface', '#FFFFFF'),
                 color: token('color.text', '#292A2E'),
                 fontSize: 13,
                 fontWeight: 500,
                 fontFamily: 'inherit',
-                cursor: totalSlots > 1 ? 'pointer' : 'not-allowed',
+                cursor: 'pointer',
                 flexShrink: 0,
                 maxWidth: 180,
               }}
@@ -4941,8 +5164,104 @@ function InlineGroupCreateRow({
               <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                 {currentLabel}
               </span>
+              <svg width="10" height="10" viewBox="0 0 10 10" fill="currentColor" aria-hidden style={{ flexShrink: 0, opacity: 0.6 }}>
+                <path d="M2.5 3.5 5 6l2.5-2.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" fill="none"/>
+              </svg>
             </button>
-          </Tooltip>
+            {assigneeMenuOpen && assigneeMenuAnchor && ReactDOM.createPortal(
+              <div
+                ref={assigneeMenuRef}
+                role="listbox"
+                aria-label="Select assignee"
+                style={{
+                  position: 'fixed',
+                  top: assigneeMenuAnchor.top,
+                  bottom: assigneeMenuAnchor.bottom,
+                  left: assigneeMenuAnchor.left,
+                  minWidth: 240,
+                  maxHeight: '50vh',
+                  overflowY: 'auto',
+                  background: token('elevation.surface.overlay', '#FFFFFF'),
+                  border: `1px solid ${token('color.border', '#DFE1E6')}`,
+                  borderRadius: 4,
+                  boxShadow: token('elevation.shadow.overlay', '0 8px 16px rgba(9,30,66,0.15)'),
+                  padding: 6,
+                  zIndex: 9999,
+                  fontFamily: 'var(--cp-font-body)',
+                  fontSize: 14,
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: 4,
+                }}
+              >
+                <input
+                  type="text"
+                  autoFocus
+                  value={assigneeQuery}
+                  onChange={(e) => setAssigneeQuery(e.target.value)}
+                  placeholder="Search people…"
+                  style={{
+                    padding: '6px 8px', fontSize: 13,
+                    border: `1px solid ${token('color.border', '#DFE1E6')}`,
+                    borderRadius: 3, outline: 'none', fontFamily: 'inherit',
+                  }}
+                />
+                <div style={{ overflowY: 'auto', maxHeight: 280 }}>
+                  <button
+                    type="button"
+                    role="option"
+                    aria-selected={assigneeIdx === -1}
+                    onClick={() => { setAssigneeIdx(-1); setAssigneeMenuOpen(false); }}
+                    style={{
+                      display: 'flex', alignItems: 'center', gap: 8,
+                      width: '100%', padding: '6px 8px',
+                      border: 'none', outline: 'none',
+                      background: assigneeIdx === -1 ? token('color.background.selected', '#E9F2FF') : 'transparent',
+                      color: token('color.text', '#292A2E'),
+                      fontSize: 14, fontFamily: 'inherit', textAlign: 'left',
+                      cursor: 'pointer', borderRadius: 3,
+                    }}
+                  >
+                    <AkPersonAvatarIcon label="" size="small" />
+                    <span>Unassigned</span>
+                  </button>
+                  {filteredMembers.length === 0 && assigneeQuery && (
+                    <div style={{ padding: '6px 8px', fontSize: 12, color: token('color.text.subtlest', '#6B6E76') }}>
+                      No matches
+                    </div>
+                  )}
+                  {filteredMembers.map((m) => {
+                    const idx = members.indexOf(m);
+                    const isActive = idx === assigneeIdx;
+                    return (
+                      <button
+                        key={m.key}
+                        type="button"
+                        role="option"
+                        aria-selected={isActive}
+                        onClick={() => { setAssigneeIdx(idx); setAssigneeMenuOpen(false); }}
+                        style={{
+                          display: 'flex', alignItems: 'center', gap: 8,
+                          width: '100%', padding: '6px 8px',
+                          border: 'none', outline: 'none',
+                          background: isActive ? token('color.background.selected', '#E9F2FF') : 'transparent',
+                          color: token('color.text', '#292A2E'),
+                          fontSize: 14, fontFamily: 'inherit', textAlign: 'left',
+                          cursor: 'pointer', borderRadius: 3,
+                        }}
+                        onMouseEnter={(e) => { if (!isActive) (e.currentTarget as HTMLElement).style.background = token('color.background.neutral.subtle.hovered', '#F7F8F9'); }}
+                        onMouseLeave={(e) => { if (!isActive) (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
+                      >
+                        <Avatar size="xsmall" src={m.src} name={m.name} />
+                        <span>{m.name}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>,
+              document.body,
+            )}
+          </>
         );
       })()}
       <Button

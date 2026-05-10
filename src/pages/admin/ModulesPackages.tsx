@@ -4,7 +4,12 @@ import Button from '@atlaskit/button/new';
 import Toggle from '@atlaskit/toggle';
 import Select from '@atlaskit/select';
 import { Lozenge } from '@/components/ads';
-import { Package, Building2, Briefcase, Layers, Users, Loader2 } from 'lucide-react';
+import ArchiveBoxIcon from '@atlaskit/icon/core/archive-box';
+import OfficeBuildingIcon from '@atlaskit/icon/core/office-building';
+import BriefcaseIcon from '@atlaskit/icon/core/briefcase';
+import BoardsIcon from '@atlaskit/icon/core/boards';
+import PeopleGroupIcon from '@atlaskit/icon/core/people-group';
+import Spinner from '@atlaskit/spinner';
 import {
   useModules,
   useOrgModules,
@@ -15,11 +20,11 @@ import {
 } from '@/hooks/useModules';
 
 const MODULE_ICONS: Record<string, React.ReactNode> = {
-  PRODUCT: <Package className="h-5 w-5" />,
-  ENTERPRISE: <Building2 className="h-5 w-5" />,
-  PORTFOLIO: <Briefcase className="h-5 w-5" />,
-  PROGRAM: <Layers className="h-5 w-5" />,
-  TEAMS: <Users className="h-5 w-5" />,
+  PRODUCT: <ArchiveBoxIcon label="" size="medium" />,
+  ENTERPRISE: <OfficeBuildingIcon label="" size="medium" />,
+  PORTFOLIO: <BriefcaseIcon label="" size="medium" />,
+  PROGRAM: <BoardsIcon label="" size="medium" />,
+  TEAMS: <PeopleGroupIcon label="" size="medium" />,
 };
 
 export default function ModulesPackages() {
@@ -97,7 +102,7 @@ export default function ModulesPackages() {
     return (
       <AdminGuard>
         <div className="flex items-center justify-center h-full p-6">
-          <Loader2 className="h-8 w-8 animate-spin" style={{ color: 'var(--ds-text-subtle, #44546F)' }} />
+          <Spinner size="medium" />
         </div>
       </AdminGuard>
     );
@@ -147,7 +152,7 @@ export default function ModulesPackages() {
             onClick={handleSave}
             isDisabled={!hasChanges || updateSettings.isPending}
           >
-            {updateSettings.isPending && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+            {updateSettings.isPending && <span style={{ display: 'inline-flex', marginRight: 8 }}><Spinner size="small" /></span>}
             Save Changes
           </Button>
         </div>
@@ -222,7 +227,7 @@ export default function ModulesPackages() {
                       className="p-2 rounded-md"
                       style={{ background: 'var(--ds-background-neutral, #F7F8F9)' }}
                     >
-                      {MODULE_ICONS[module.code] || <Package className="h-5 w-5" />}
+                      {MODULE_ICONS[module.code] || <ArchiveBoxIcon label="" size="medium" />}
                     </div>
                     <div className="space-y-1">
                       <div className="flex items-center gap-2">

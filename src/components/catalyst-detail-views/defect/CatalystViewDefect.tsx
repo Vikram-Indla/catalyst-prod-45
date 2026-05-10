@@ -7,13 +7,14 @@
  */
 import React from 'react';
 import { toast } from 'sonner';
+import { cloneIssue, archiveIssue } from '@/modules/project-work-hub/lib/workItemRepo';
 import { useQueryClient } from '@tanstack/react-query';
 import { CatalystViewBase } from '../shared/CatalystViewBase';
 import { useCatalystIssue, useCatalystIssueMutations } from '../shared/hooks';
 import {
   CatalystTitleEditor, CatalystQuickActions, CatalystDescriptionSection, CatalystAcceptanceCriteria,
   CatalystActivitySection, CatalystAttachmentsPanel, CatalystSidebarDetails, CatalystKeyDetails,
-  KeyDetailsFieldRow, CatalystStatusPill, CatalystFooterMeta,
+  KeyDetailsFieldRow, CatalystStatusPill,
 } from '../shared/sections';
 import { ImproveIssueDropdown, useImproveApplyHandlers } from '@/components/catalyst-detail-views/improve';
 import {
@@ -23,6 +24,7 @@ import {
 import { LinkedWorkItemsSection } from '@/modules/project-work-hub/components/linked-work-items';
 import { SubtasksPanel } from '@/modules/project-work-hub/components/SubtasksPanel';
 import { EditablePriority } from '@/modules/project-work-hub/components/dialogs/story-detail-modules/EditableFields';
+import { MoveIssueDialog } from '../shared/MoveIssueDialog';
 import type { CatalystViewBaseProps } from '../shared/types';
 import {
   PRIORITY_STYLES,
@@ -37,6 +39,7 @@ export default function CatalystViewDefect({
   const mutations = useCatalystIssueMutations(itemId, onClose);
   const improveHandlers = useImproveApplyHandlers(issue ?? null);
   const priorityStyle = PRIORITY_STYLES[issue?.priority ?? 'Medium'] ?? PRIORITY_STYLES.Medium;
+  const [showMoveDialog, setShowMoveDialog] = React.useState(false);
   const queryClient = useQueryClient();
 
   const leftContent = (
@@ -44,7 +47,7 @@ export default function CatalystViewDefect({
       <CatalystTitleEditor issue={issue ?? null} onTitleChange={(t) => mutations.updateField.mutate({ field: 'summary', value: t, oldValue: issue?.summary ?? '' })} />
       {/* jira-compare 2026-05-03 — Patch B (Defect) · CatalystStatusPill relocated to right-rail header in CatalystSidebarDetails (slot-prop pattern). */}
       <CatalystQuickActions />
-
+      {/* jira-compare 2026-05-10: ImproveIssueDropdown relocated to right-rail improveDropdown slot (Vikram "follow jira"). */}
 
       {/* Jira-parity: Parent → Severity → Priority → (any populated
           Catalyst-only fields) all render inside the collapsible "Key
@@ -130,7 +133,6 @@ export default function CatalystViewDefect({
       />
       <CatalystAttachmentsPanel issueId={issue?.id} projectKey={issue?.project_key || projectKey} isOpen={isOpen} />
       <CatalystActivitySection itemId={itemId} isOpen={isOpen} />
-      <CatalystFooterMeta issue={issue ?? null} />
     </>
   );
 
@@ -153,11 +155,12 @@ export default function CatalystViewDefect({
   );
 
   return (
+    <>
     <CatalystViewBase isOpen={isOpen} onClose={onClose} panelMode={panelMode} fullPageMode={fullPageMode}
       itemType={issue?.issue_type || 'Bug'} itemKey={issue?.issue_key || null}
       projectKey={issue?.project_key || projectKey} projectName={issue?.project_name || undefined}
       parentKey={issue?.parent_key} parentType="Epic"
-      onParentClick={issue?.parent_key ? () => {} : undefined}
+      onParentClick={issue?.parent_key ? () => onOpenItem?.(issue.parent_key!) : undefined}
       /* Canonical Add-parent (Catalyst rule): Defect → Story / Epic / Feature parent. */
       parentSource="story_epic_feature"
       onParentChange={async (newKey) => {
@@ -168,11 +171,41 @@ export default function CatalystViewDefect({
       onShare={() => { navigator.clipboard.writeText(window.location.href); toast.success('Link copied'); }}
       moreMenuItems={[
         { label: 'Print', onClick: () => window.print() },
-        { label: 'Clone', onClick: () => { console.log('Clone'); } },
+        { label: 'Clone', onClick: () => {
+          if (!issue?.issue_key) return;
+          cloneIssue(issue.issue_key)
+            .then((newKey) => {
+              toast.success(`Cloned as ${newKey}`, {
+                action: { label: 'Open', onClick: () => onOpenItem?.(newKey) },
+              });
+            })
+            .catch((e: unknown) => {
+              toast.error('Clone failed', { description: e instanceof Error ? e.message : 'Unknown error' });
+            });
+        } },
+        { label: 'Move to project…', onClick: () => setShowMoveDialog(true) },
+        { label: 'Archive', onClick: () => {
+          if (!issue?.issue_key) return;
+          if (!window.confirm(`Archive "${issue.summary}"?\nArchived items can be restored later.`)) return;
+          archiveIssue(issue.issue_key)
+            .then(() => { toast.success('Issue archived'); onClose(); })
+            .catch((e: unknown) => { toast.error('Archive failed', { description: e instanceof Error ? e.message : 'Unknown error' }); });
+        } },
         { label: 'Delete defect', onClick: () => mutations.deleteIssue.mutate(), danger: true },
       ]}
       onTogglePanelMode={onTogglePanelMode} navigationItems={navigationItems} currentItemId={itemId} onNavigate={onNavigate}
       leftContent={leftContent} rightContent={rightContent} isLoading={isLoading} isNotFound={!isLoading && issue === null}
     />
+    {showMoveDialog && issue?.issue_key && (
+      <MoveIssueDialog
+        isOpen={showMoveDialog}
+        onClose={() => setShowMoveDialog(false)}
+        issueKey={issue.issue_key}
+        issueSummary={issue.summary}
+        currentProjectKey={issue.project_key || projectKey}
+        onMoved={onClose}
+      />
+    )}
+    </>
   );
 }

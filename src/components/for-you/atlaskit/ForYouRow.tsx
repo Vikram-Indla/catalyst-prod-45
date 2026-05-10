@@ -77,7 +77,14 @@ type LozengeAppearance = 'default' | 'inprogress' | 'success' | 'removed' | 'mov
 function statusToAppearance(status: string): LozengeAppearance {
   const s = (status || '').toLowerCase();
   if (s.includes('done') || s.includes('approved') || s.includes('complet') || s === 'closed') return 'success';
-  if (s.includes('progress') || s.includes('review') || s.includes('active') || s === 'in dev') return 'inprogress';
+  if (
+    s.includes('progress') || s.includes('review') || s.includes('active') ||
+    s === 'in dev' || s.includes('integration') || s.includes('development') ||
+    s.includes('testing') || s.includes('staging') || s.includes('in qa') ||
+    s.includes('deployed') || s.includes('in design')
+  ) return 'inprogress';
+  // Amber/yellow for items explicitly flagged as needing re-attention
+  if (s.includes('re-open') || s.includes('reopen') || s.includes('blocked') || s.includes('on hold')) return 'moved';
   return 'default';
 }
 
@@ -119,17 +126,17 @@ function ForYouRowImpl({ item, alwaysShowStar = false, onSelect, onToggleStar, h
       style={{
         display: 'flex',
         alignItems: 'center',
-        gap: 12,
-        height: 48,
-        paddingInline: 12,
-        paddingBlock: 8,
-        borderRadius: 4,
+        gap: token('space.200', '16px'),
+        height: 56,
+        paddingInline: token('space.200', '16px'),
+        paddingBlock: token('space.150', '12px'),
+        borderRadius: 8,
         cursor: 'pointer',
         backgroundColor: isActive
           ? token('elevation.surface.hovered', 'rgba(9,30,66,0.06)')
           : 'transparent',
         color: token('color.text', '#292A2E'),
-        transition: 'background-color 150ms ease',
+        transition: 'background-color 150ms cubic-bezier(0.15, 1, 0.3, 1)',
         outline: 'none',
         minWidth: 0,
       }}
@@ -142,22 +149,19 @@ function ForYouRowImpl({ item, alwaysShowStar = false, onSelect, onToggleStar, h
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          backgroundColor: token('elevation.surface.sunken', '#F7F8F9'),
-          borderRadius: 4,
+          backgroundColor: token('color.background.neutral', 'rgba(5,21,36,0.06)'),
+          borderRadius: '25%',
           flexShrink: 0,
         }}
       >
-        <JiraIssueTypeIcon type={item.issueType ?? 'Task'} size={20} />
+        <JiraIssueTypeIcon type={item.issueType ?? 'Task'} size={16} />
       </div>
 
       {/* Main body */}
-      <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 2 }}>
+      <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: token('space.025', '2px') }}>
         <div
           style={{
-            // Jira parity: flat weight 400, saturated primary color does
-            // the contrast. Bolding row titles made prior builds read as
-            // jittery/faded against Jira's dense scan pattern.
-            font: `400 14px/20px "Inter", system-ui, sans-serif`,
+            font: `500 14px/20px "Inter", system-ui, sans-serif`,
             color: token('color.text', '#292A2E'),
             overflow: 'hidden',
             textOverflow: 'ellipsis',
@@ -167,7 +171,7 @@ function ForYouRowImpl({ item, alwaysShowStar = false, onSelect, onToggleStar, h
         >
           {item.summary || item.key}
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: token('space.100', '8px'), flexWrap: 'wrap' }}>
           <span
             style={{
               // Jira renders the key inline in the same Inter stack at
@@ -210,10 +214,10 @@ function ForYouRowImpl({ item, alwaysShowStar = false, onSelect, onToggleStar, h
           <span
             style={{
               font: `400 12px/16px "Inter", system-ui, sans-serif`,
-              color: token('color.text.subtle', '#626F86'),
+              color: token('color.text.subtlest', '#626F86'),
             }}
           >
-            {item.updatedAt}
+            · {item.updatedAt}
           </span>
           {suggestion && (
             // AI Recap meta fragment: 12/16/400, color.text.subtle (same as
@@ -239,18 +243,20 @@ function ForYouRowImpl({ item, alwaysShowStar = false, onSelect, onToggleStar, h
         </div>
       </div>
 
-      {/* Trailing: assignee + star */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
+      {/* Trailing: assignee + star (star omitted when caller passes no onToggleStar) */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: token('space.100', '8px'), flexShrink: 0 }}>
         <Tooltip content={item.assignee.name}>
           <span>
             <Avatar size="small" src={avatarUrl} name={item.assignee.name} />
           </span>
         </Tooltip>
-        <StarButton
-          isStarred={isStarred}
-          alwaysVisible={alwaysShowStar || isStarred || isActive}
-          onClick={handleStarClick}
-        />
+        {onToggleStar && (
+          <StarButton
+            isStarred={isStarred}
+            alwaysVisible={alwaysShowStar || isStarred || isActive}
+            onClick={handleStarClick}
+          />
+        )}
       </div>
     </div>
   );
@@ -260,7 +266,7 @@ export default memo(ForYouRowImpl);
 
 // ─── Star button ─────────────────────────────────────────────────────────────
 
-const GOLD = '#FFAB00'; // equivalent to Atlaskit's color.icon.accent.yellow
+const GOLD = token('color.icon.accent.yellow', '#FFAB00');
 
 function StarButton({
   isStarred,
@@ -294,7 +300,7 @@ function StarButton({
           borderRadius: 4,
           cursor: 'pointer',
           opacity: alwaysVisible ? 1 : 0,
-          transition: 'opacity 150ms ease, background-color 150ms ease',
+          transition: 'opacity 150ms cubic-bezier(0.15, 1, 0.3, 1), background-color 150ms cubic-bezier(0.15, 1, 0.3, 1)',
           padding: 0,
           color: isStarred ? GOLD : token('color.icon.subtle', '#6B778C'),
         }}

@@ -5,15 +5,17 @@ import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { cloneIssue, archiveIssue } from '@/modules/project-work-hub/lib/workItemRepo';
 import { CatalystViewBase } from '../shared/CatalystViewBase';
 import { useCatalystIssue, useCatalystIssueMutations } from '../shared/hooks';
 import {
   CatalystTitleEditor, CatalystQuickActions, CatalystDescriptionSection, CatalystAcceptanceCriteria,
-  CatalystActivitySection, CatalystAttachmentsPanel, CatalystSidebarDetails, CatalystStatusPill, CatalystFooterMeta,
+  CatalystActivitySection, CatalystAttachmentsPanel, CatalystSidebarDetails, CatalystStatusPill,
 } from '../shared/sections';
 import { LinkedWorkItemsSection } from '@/modules/project-work-hub/components/linked-work-items';
 import { SubtasksPanel } from '@/modules/project-work-hub/components/SubtasksPanel';
 import { ImproveIssueDropdown, useImproveApplyHandlers } from '@/components/catalyst-detail-views/improve';
+import { MoveIssueDialog } from '../shared/MoveIssueDialog';
 import type { CatalystViewBaseProps } from '../shared/types';
 import {
   IssueIcon, StatusLozenge,
@@ -27,6 +29,7 @@ export default function CatalystViewSubtask({
   const { data: issue, isLoading } = useCatalystIssue(itemId, isOpen);
   const mutations = useCatalystIssueMutations(itemId, onClose);
   const improveHandlers = useImproveApplyHandlers(issue ?? null);
+  const [showMoveDialog, setShowMoveDialog] = React.useState(false);
 
   /* ── SUBTASK-UNIQUE: parent issue query ──── */
   const { data: parentIssue } = useQuery({
@@ -59,8 +62,7 @@ export default function CatalystViewSubtask({
       <CatalystTitleEditor issue={issue ?? null} onTitleChange={(t) => mutations.updateField.mutate({ field: 'summary', value: t, oldValue: issue?.summary ?? '' })} />
       {/* jira-compare 2026-05-03 — Patch E · CatalystStatusPill relocated to right-rail header in CatalystSidebarDetails. */}
       <CatalystQuickActions />
-      {/* jira-compare 2026-05-03 — ImproveIssueDropdown moved to right-rail slot
-          in CatalystSidebarDetails (Patch D). Was previously inline here. */}
+      {/* jira-compare 2026-05-10: ImproveIssueDropdown relocated to right-rail improveDropdown slot (Vikram "follow jira"). */}
       {/* jira-compare Phase 3 (2026-05-02): KeyDetails section removed.
           Sub-task has no extraRows; Parent is shown in the parent-banner
           above + CatalystViewBase header. Priority is hidden on Sub-task
@@ -86,7 +88,6 @@ export default function CatalystViewSubtask({
       />
       <CatalystAttachmentsPanel issueId={issue?.id} projectKey={issue?.project_key || projectKey} isOpen={isOpen} />
       <CatalystActivitySection itemId={itemId} isOpen={isOpen} />
-      <CatalystFooterMeta issue={issue ?? null} />
     </>
   );
 
@@ -95,6 +96,7 @@ export default function CatalystViewSubtask({
   );
 
   return (
+    <>
     <CatalystViewBase isOpen={isOpen} onClose={onClose} panelMode={panelMode} fullPageMode={fullPageMode}
       itemType={issue?.issue_type || 'Sub-task'} itemKey={issue?.issue_key || null}
       projectKey={issue?.project_key || projectKey} projectName={issue?.project_name || undefined}
@@ -110,11 +112,41 @@ export default function CatalystViewSubtask({
       onShare={() => { navigator.clipboard.writeText(window.location.href); toast.success('Link copied'); }}
       moreMenuItems={[
         { label: 'Print', onClick: () => window.print() },
-        { label: 'Clone', onClick: () => { console.log('Clone'); } },
+        { label: 'Clone', onClick: () => {
+          if (!issue?.issue_key) return;
+          cloneIssue(issue.issue_key)
+            .then((newKey) => {
+              toast.success(`Cloned as ${newKey}`, {
+                action: { label: 'Open', onClick: () => onOpenItem?.(newKey) },
+              });
+            })
+            .catch((e: unknown) => {
+              toast.error('Clone failed', { description: e instanceof Error ? e.message : 'Unknown error' });
+            });
+        } },
+        { label: 'Move to project…', onClick: () => setShowMoveDialog(true) },
+        { label: 'Archive', onClick: () => {
+          if (!issue?.issue_key) return;
+          if (!window.confirm(`Archive "${issue.summary}"?\nArchived items can be restored later.`)) return;
+          archiveIssue(issue.issue_key)
+            .then(() => { toast.success('Issue archived'); onClose(); })
+            .catch((e: unknown) => { toast.error('Archive failed', { description: e instanceof Error ? e.message : 'Unknown error' }); });
+        } },
         { label: 'Delete sub-task', onClick: () => mutations.deleteIssue.mutate(), danger: true },
       ]}
       onTogglePanelMode={onTogglePanelMode} navigationItems={navigationItems} currentItemId={itemId} onNavigate={onNavigate}
       leftContent={leftContent} rightContent={rightContent} isLoading={isLoading} isNotFound={!isLoading && issue === null}
     />
+    {showMoveDialog && issue?.issue_key && (
+      <MoveIssueDialog
+        isOpen={showMoveDialog}
+        onClose={() => setShowMoveDialog(false)}
+        issueKey={issue.issue_key}
+        issueSummary={issue.summary}
+        currentProjectKey={issue.project_key || projectKey}
+        onMoved={onClose}
+      />
+    )}
+    </>
   );
 }

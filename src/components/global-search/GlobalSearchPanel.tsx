@@ -208,7 +208,7 @@ export function GlobalSearchPanel({ query, onQueryChange, onClose }: GlobalSearc
         kind: 'suggestion',
         id: 'sug-mywork',
         label: <>Show my <strong>work items</strong></>,
-        activate: () => { navigate('/for-you?tab=assigned'); onClose(); },
+        activate: () => { navigate('/?tab=assigned'); onClose(); },
       });
       if (assigneeIds.length > 0) {
         const name = memberOptions.find((o) => o.id === assigneeIds[0])?.name ?? assigneeIds[0];
@@ -216,7 +216,7 @@ export function GlobalSearchPanel({ query, onQueryChange, onClose }: GlobalSearc
           kind: 'suggestion',
           id: 'sug-assignee',
           label: <>Work items assigned to <strong>{name}</strong></>,
-          activate: () => { navigate(`/work-hub/all?assignee=${encodeURIComponent(assigneeIds[0])}`); onClose(); },
+          activate: () => { navigate('/?tab=assigned'); onClose(); },
         });
       }
     }
@@ -226,7 +226,14 @@ export function GlobalSearchPanel({ query, onQueryChange, onClose }: GlobalSearc
         kind: 'item',
         id: it.id,
         item: it,
-        activate: () => { navigate(`/work-hub/all?open=${encodeURIComponent(it.item_key)}`); onClose(); },
+        activate: () => {
+          if (it.project_key) {
+            navigate(`/project-hub/${it.project_key}/allwork?issue=${encodeURIComponent(it.item_key)}`);
+          } else {
+            navigate('/');
+          }
+          onClose();
+        },
       });
     });
 

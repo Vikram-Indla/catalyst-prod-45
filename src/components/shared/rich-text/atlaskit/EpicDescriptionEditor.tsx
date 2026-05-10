@@ -176,6 +176,7 @@ export default function EpicDescriptionEditor({
 
   const actionsRef = useRef<EditorActions | null>(null);
   const wrapperRef = useRef<HTMLDivElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [uploading, setUploading] = useState(false);
   const [isDragOver, setIsDragOver] = useState(false);
   const dragCounter = useRef(0);
@@ -272,18 +273,46 @@ export default function EpicDescriptionEditor({
     };
   }, [insertExternalMedia]);
 
+  const MAX_IMAGE_BYTES = 10 * 1024 * 1024; // 10 MB
+
   const triggerImagePicker = useCallback(() => {
-    const input = document.createElement('input');
-    input.type = 'file';
-    input.accept = 'image/*';
-    input.onchange = () => {
-      const file = input.files?.[0];
-      if (file) insertExternalMedia(file);
-    };
-    input.click();
+    fileInputRef.current?.click();
+  }, []);
+
+  const handleFileInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    // Reset so the same file can be re-selected after cancel
+    e.target.value = '';
+    if (!file) return;
+    if (file.size > MAX_IMAGE_BYTES) {
+      toast.error(`Image too large — max 10 MB (got ${(file.size / 1024 / 1024).toFixed(1)} MB)`);
+      return;
+    }
+    insertExternalMedia(file);
   }, [insertExternalMedia]);
 
+  // Escape key — close editor without saving (Jira parity).
+  // Capture phase beats @atlaskit/modal-dialog's bubble-phase handler so
+  // pressing Escape collapses the editor, not the parent modal.
+  // Guard: only add when appearance has Save/Cancel chrome (not chromeless).
+  useEffect(() => {
+    if (appearanceProp === 'chromeless') return;
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key !== 'Escape') return;
+      e.stopPropagation();
+      onCancel();
+    };
+    document.addEventListener('keydown', onKeyDown, true);
+    return () => {
+      document.removeEventListener('keydown', onKeyDown, true);
+    };
+  }, [onCancel, appearanceProp]);
+
   const handleEditorSave = useCallback((_view: any) => {
+    if (uploading) {
+      toast.error('Image is still uploading — please wait a moment and save again');
+      return;
+    }
     const actions = actionsRef.current;
     if (!actions) {
       onSave(JSON.stringify(initialAdf));
@@ -296,7 +325,7 @@ export default function EpicDescriptionEditor({
         onSave(JSON.stringify(normalized));
       })
       .catch(() => onSave(JSON.stringify(initialAdf)));
-  }, [onSave, initialAdf]);
+  }, [onSave, initialAdf, uploading]);
 
   // BEH-001: Debounce onChange to avoid queuing dozens of async getValue()
   // calls on rapid keystrokes. 300ms is a good balance between responsiveness
@@ -322,6 +351,14 @@ export default function EpicDescriptionEditor({
 
   return (
     <IntlProvider locale="en">
+      {/* Hidden file input — always in DOM so .click() works in all browsers */}
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/*"
+        style={{ display: 'none' }}
+        onChange={handleFileInputChange}
+      />
       <div
         ref={wrapperRef}
         className="epic-desc-atlaskit-wrapper"
@@ -391,6 +428,23 @@ export default function EpicDescriptionEditor({
             allowStatus
             allowDate
             allowBreakout
+            /* media — REQUIRED for ProseMirror to register media/mediaSingle/
+               mediaGroup schema nodes. Without this prop, replaceSelection()
+               with a mediaSingle node is a silent no-op (unknown node type).
+               isExternalMediaUploadDisabled:true suppresses the built-in
+               Atlassian Media Services picker — we handle uploads ourselves
+               via supabaseImageUpload + the hidden file input.
+               Mirror of AtlaskitEditor.tsx mediaOptions. */
+            media={{
+              allowMediaSingle: true,
+              allowMediaGroup: true,
+              allowMediaInlineImages: true,
+              allowAltTextOnImages: true,
+              allowImagePreview: true,
+              allowResizing: true,
+              enableDownloadButton: false,
+              isExternalMediaUploadDisabled: true,
+            }}
             /* shouldFocus removed 2026-05-01 — Jira parity. Auto-focusing
                the editor on mount painted a persistent blue focus halo and
                stole focus from the Summary field which is the canonical
@@ -415,6 +469,38 @@ export default function EpicDescriptionEditor({
             ]}
           />
         </Suspense>
+        {/* Jira-parity: inline upload progress banner replaces Tip text while uploading */}
+        {uploading && (
+          <div
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 6,
+              fontSize: 11,
+              color: token('color.text.subtlest', '#626F86'),
+              paddingTop: 4,
+              paddingLeft: 2,
+              userSelect: 'none',
+            }}
+          >
+            <Spinner size="small" />
+            Uploading image…
+          </div>
+        )}
+        {/* H6/H10: idle affordance — tells users they can paste or drag images */}
+        {!isDragOver && !uploading && (
+          <div
+            style={{
+              fontSize: 11,
+              color: token('color.text.subtlest', '#626F86'),
+              paddingTop: 4,
+              paddingLeft: 2,
+              userSelect: 'none',
+            }}
+          >
+            Tip: paste a screenshot or drag an image into the editor
+          </div>
+        )}
       </div>
     </IntlProvider>
   );

@@ -53,8 +53,12 @@ export function prefetchEpicRenderer(): void {
 }
 
 export function prefetchEpicEditor(): void {
+  // Import from the canonical AdfDescriptionField path — same specifier the
+  // lazy() callers in CatalystDescriptionSection, BrDescriptionSection, and
+  // IssueContentView use, so Vite/browser module cache deduplication is
+  // guaranteed: prefetch primes the exact chunk that React.lazy() needs.
   fireAndForget(
-    () => import('@/components/shared/rich-text/atlaskit/EpicDescriptionEditor'),
+    () => import('@/components/shared/rich-text/atlaskit/AdfDescriptionField'),
   );
 }
 

@@ -1,18 +1,15 @@
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from '@/components/ui/sheet';
-import { Button } from '@/components/ui/button';
+import Button from '@atlaskit/button/new';
 import { Lozenge, type LozengeAppearance } from '@/components/ads';
-import { Separator } from '@/components/ui/separator';
 import { format, parseISO } from 'date-fns';
 import { Json } from '@/integrations/supabase/types';
-import { 
-  Download, 
-  ExternalLink,
-  Clock,
-  User,
-  Database,
-  FileText
-} from 'lucide-react';
 import { cn } from '@/lib/utils';
+import ClockIcon from '@atlaskit/icon/core/clock';
+import DatabaseIcon from '@atlaskit/icon/core/database';
+import DownloadIcon from '@atlaskit/icon/core/download';
+import FileIcon from '@atlaskit/icon/core/file';
+import LinkExternalIcon from '@atlaskit/icon/core/link-external';
+import PersonIcon from '@atlaskit/icon/core/person';
 
 interface ActivityEvent {
   id: string;
@@ -116,7 +113,7 @@ export function AuditDetailsDrawer({ event, open, onOpenChange }: AuditDetailsDr
           </SheetDescription>
         </SheetHeader>
 
-        <Separator className="my-4" />
+        <hr style={{ margin: '16px 0', border: 'none', borderTop: '1px solid var(--ds-border-layout, #EBECF0)' }} />
 
         {/* Metadata */}
         <div className="space-y-4">
@@ -124,7 +121,7 @@ export function AuditDetailsDrawer({ event, open, onOpenChange }: AuditDetailsDr
           
           <div className="grid grid-cols-2 gap-3 text-sm">
             <div className="flex items-center gap-2 text-muted-foreground">
-              <Clock className="h-4 w-4" />
+              <ClockIcon label="" size="small" />
               <span>Timestamp</span>
             </div>
             <div className="font-medium">
@@ -134,7 +131,7 @@ export function AuditDetailsDrawer({ event, open, onOpenChange }: AuditDetailsDr
             </div>
 
             <div className="flex items-center gap-2 text-muted-foreground">
-              <User className="h-4 w-4" />
+              <PersonIcon label="" size="small" />
               <span>Actor</span>
             </div>
             <div className="font-mono text-xs">
@@ -142,20 +139,20 @@ export function AuditDetailsDrawer({ event, open, onOpenChange }: AuditDetailsDr
             </div>
 
             <div className="flex items-center gap-2 text-muted-foreground">
-              <Database className="h-4 w-4" />
+              <DatabaseIcon label="" size="small" />
               <span>Entity Type</span>
             </div>
             <div className="font-medium">{event.entity_type}</div>
 
             <div className="flex items-center gap-2 text-muted-foreground">
-              <FileText className="h-4 w-4" />
+              <FileIcon label="" size="small" />
               <span>Event ID</span>
             </div>
             <div className="font-mono text-xs truncate">{event.id}</div>
           </div>
         </div>
 
-        <Separator className="my-4" />
+        <hr style={{ margin: '16px 0', border: 'none', borderTop: '1px solid var(--ds-border-layout, #EBECF0)' }} />
 
         {/* Field-level Diff */}
         <div className="space-y-3">
@@ -195,17 +192,15 @@ export function AuditDetailsDrawer({ event, open, onOpenChange }: AuditDetailsDr
           )}
         </div>
 
-        <Separator className="my-4" />
+        <hr style={{ margin: '16px 0', border: 'none', borderTop: '1px solid var(--ds-border-layout, #EBECF0)' }} />
 
         {/* Actions */}
         <div className="flex gap-2">
-          <Button variant="outline" size="sm" onClick={handleExport} className="gap-2">
-            <Download className="h-4 w-4" />
+          <Button appearance="default" iconBefore={DownloadIcon} onClick={handleExport}>
             Export event
           </Button>
           {/* Placeholder for "Open entity" link */}
-          <Button variant="ghost" size="sm" className="gap-2" disabled>
-            <ExternalLink className="h-4 w-4" />
+          <Button appearance="subtle" iconBefore={LinkExternalIcon} isDisabled>
             Open entity
           </Button>
         </div>

@@ -1,6 +1,15 @@
 import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { Download, Clock, Loader2, CheckCircle2, AlertCircle, BarChart3, FolderGit2, ChevronDown, ChevronRight, Settings2 } from 'lucide-react';
+import Spinner from '@atlaskit/spinner';
+import DownloadIcon from '@atlaskit/icon/core/download';
+import ClockIcon from '@atlaskit/icon/core/clock';
+import CheckCircleIcon from '@atlaskit/icon/core/check-circle';
+import ErrorIcon from '@atlaskit/icon/core/error';
+import ChartBarIcon from '@atlaskit/icon/core/chart-bar';
+import BranchIcon from '@atlaskit/icon/core/branch';
+import SettingsIcon from '@atlaskit/icon/core/settings';
+import ChevronDownIcon from '@atlaskit/icon/glyph/chevron-down';
+import ChevronRightIcon from '@atlaskit/icon/glyph/chevron-right';
 import { MultiSelectDropdown, type MultiSelectOption } from './MultiSelectDropdown';
 import {
   useAvailableProjects, useForceSync, useSyncConfig,
@@ -309,7 +318,7 @@ export function SyncConfigPanel() {
 
       {isLoading ? (
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, color: 'var(--wh-tx4)', fontSize: 13 }}>
-          <Loader2 size={14} style={{ animation: 'spin 1s linear infinite' }} />
+          <Spinner size="small" />
           Loading configuration...
         </div>
       ) : (
@@ -339,7 +348,7 @@ export function SyncConfigPanel() {
                 fontSize: 11, fontWeight: 600, color: 'var(--wh-tx3)', textTransform: 'uppercase' as const,
                 letterSpacing: '.4px', fontFamily: 'var(--cp-font-body)', display: 'flex', alignItems: 'center', gap: 6,
               }}>
-                <Settings2 size={12} />
+                <SettingsIcon label="" size="small" />
                 Per-Project Sync Criteria
               </label>
 
@@ -369,8 +378,8 @@ export function SyncConfigPanel() {
                       }}
                     >
                       {isExpanded
-                        ? <ChevronDown size={14} style={{ color: 'var(--wh-pri)', flexShrink: 0 }} />
-                        : <ChevronRight size={14} style={{ color: 'var(--wh-tx4)', flexShrink: 0 }} />
+                        ? <span style={{ color: 'var(--wh-pri)', flexShrink: 0, display: 'inline-flex' }}><ChevronDownIcon label="" size="small" /></span>
+                        : <span style={{ color: 'var(--wh-tx4)', flexShrink: 0, display: 'inline-flex' }}><ChevronRightIcon label="" size="small" /></span>
                       }
                       <span style={{
                         fontFamily: 'var(--wh-mo)', fontSize: 12, fontWeight: 700,
@@ -419,7 +428,7 @@ export function SyncConfigPanel() {
                                     fontFamily: 'var(--wh-fn)', cursor: 'pointer', transition: 'all .15s',
                                   }}
                                 >
-                                  <Clock size={10} style={{ display: 'inline', verticalAlign: '-1px', marginRight: 3 }} />
+                                  <span style={{ display: 'inline-flex', verticalAlign: '-2px', marginRight: 3 }}><ClockIcon label="" size="small" /></span>
                                   {opt.label}
                                 </button>
                               );
@@ -500,9 +509,9 @@ export function SyncConfigPanel() {
               style={{ display: 'flex', alignItems: 'center', gap: 6 }}
             >
               {isSyncing ? (
-                <Loader2 size={14} style={{ animation: 'spin 1s linear infinite' }} />
+                <Spinner size="small" />
               ) : (
-                <Download size={14} />
+                <DownloadIcon label="" size="small" />
               )}
               {isSyncing ? 'Syncing...' : 'Sync Now'}
             </button>
@@ -559,9 +568,9 @@ function SyncProgressPanel({
     }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          {phase === 'syncing' && <Loader2 size={14} style={{ color: 'var(--wh-pri)', animation: 'spin 1s linear infinite' }} />}
-          {phase === 'done' && <CheckCircle2 size={14} style={{ color: 'var(--wh-suc)' }} />}
-          {phase === 'error' && <AlertCircle size={14} style={{ color: 'var(--wh-dng)' }} />}
+          {phase === 'syncing' && <Spinner size="small" />}
+          {phase === 'done' && <span style={{ color: 'var(--wh-suc)', display: 'flex' }}><CheckCircleIcon label="" size="small" /></span>}
+          {phase === 'error' && <span style={{ color: 'var(--wh-dng)', display: 'flex' }}><ErrorIcon label="" size="small" /></span>}
           <span style={{ fontFamily: 'var(--wh-fh)', fontSize: 13, fontWeight: 600, color: 'var(--wh-tx)' }}>
             {phase === 'syncing' && currentProject
               ? `Syncing ${currentProject.name}...`
@@ -589,9 +598,9 @@ function SyncProgressPanel({
           }}>
             <div style={{ width: 16, display: 'flex', justifyContent: 'center' }}>
               {p.status === 'pending' && <div style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--wh-tx4)' }} />}
-              {p.status === 'syncing' && <Loader2 size={12} style={{ color: 'var(--wh-pri)', animation: 'spin 1s linear infinite' }} />}
-              {p.status === 'done' && <CheckCircle2 size={12} style={{ color: 'var(--wh-suc)' }} />}
-              {p.status === 'error' && <AlertCircle size={12} style={{ color: 'var(--wh-dng)' }} />}
+              {p.status === 'syncing' && <Spinner size="small" />}
+              {p.status === 'done' && <span style={{ color: 'var(--wh-suc)', display: 'flex' }}><CheckCircleIcon label="" size="small" /></span>}
+              {p.status === 'error' && <span style={{ color: 'var(--wh-dng)', display: 'flex' }}><ErrorIcon label="" size="small" /></span>}
             </div>
             <span style={{
               fontFamily: 'var(--wh-mo)', fontSize: 11, fontWeight: 700,
@@ -662,7 +671,7 @@ function SyncStatisticsBoard({ syncEntry }: { syncEntry: SyncLogEntry }) {
     }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <BarChart3 size={14} style={{ color: 'var(--wh-tx3)' }} />
+          <span style={{ color: 'var(--wh-tx3)', display: 'flex' }}><ChartBarIcon label="" size="small" /></span>
           <span style={{ fontFamily: 'var(--wh-fh)', fontSize: 13, fontWeight: 600, color: 'var(--wh-tx)' }}>
             Last Sync Summary
           </span>
@@ -703,12 +712,12 @@ function SyncStatisticsBoard({ syncEntry }: { syncEntry: SyncLogEntry }) {
         paddingTop: 10, borderTop: '1px solid var(--wh-bdr)',
       }}>
         {syncEntry.duration_ms != null && (
-          <span><Clock size={10} style={{ display: 'inline', verticalAlign: '-1px', marginRight: 3 }} />
+          <span><span style={{ display: 'inline-flex', verticalAlign: '-2px', marginRight: 3 }}><ClockIcon label="" size="small" /></span>
             Duration: <b style={{ color: 'var(--wh-tx2)' }}>{(syncEntry.duration_ms / 1000).toFixed(1)}s</b></span>
         )}
         {syncEntry.projects_synced && syncEntry.projects_synced.length > 0 && (
           <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
-            <FolderGit2 size={10} style={{ verticalAlign: '-1px' }} /> Projects:
+            <span style={{ display: 'inline-flex', verticalAlign: '-2px' }}><BranchIcon label="" size="small" /></span> Projects:
             <span style={{ display: 'inline-flex', gap: 3, flexWrap: 'wrap' }}>
               {syncEntry.projects_synced.map(pk => (
                 <span key={pk} style={{

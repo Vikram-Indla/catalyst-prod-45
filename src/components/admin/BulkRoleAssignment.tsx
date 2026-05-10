@@ -2,15 +2,13 @@ import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/admin/admin-dialog';
-import { Button } from '@/components/ui/button';
+import Button from '@atlaskit/button/new';
+import AdsSelect from '@atlaskit/select';
+import TextArea from '@atlaskit/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Textarea } from '@/components/ui/textarea';
-import { Label } from '@/components/ui/label';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { toast } from 'sonner';
-import { Users } from 'lucide-react';
-
+import PeopleGroupIcon from '@atlaskit/icon/core/people-group';
 interface BulkRoleAssignmentProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -99,7 +97,7 @@ export function BulkRoleAssignment({ open, onOpenChange }: BulkRoleAssignmentPro
       <DialogContent className="max-w-2xl">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <Users className="h-5 w-5" />
+            <PeopleGroupIcon label="" size="small" />
             Bulk Role Assignment
           </DialogTitle>
           <DialogDescription>
@@ -110,49 +108,42 @@ export function BulkRoleAssignment({ open, onOpenChange }: BulkRoleAssignmentPro
         <div className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label>Action</Label>
-              <Select value={action} onValueChange={(v: 'assign' | 'remove') => setAction(v)}>
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="assign">Assign Role</SelectItem>
-                  <SelectItem value="remove">Remove Role</SelectItem>
-                </SelectContent>
-              </Select>
+              <label style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>Action</label>
+              <AdsSelect
+                value={{ label: action === 'assign' ? 'Assign Role' : 'Remove Role', value: action }}
+                options={[
+                  { label: 'Assign Role', value: 'assign' },
+                  { label: 'Remove Role', value: 'remove' },
+                ]}
+                onChange={(opt) => opt && setAction(opt.value as 'assign' | 'remove')}
+              />
             </div>
 
             <div className="space-y-2">
-              <Label>Role</Label>
-              <Select value={selectedRole} onValueChange={setSelectedRole}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select role" />
-                </SelectTrigger>
-                <SelectContent>
-                  {Object.entries(ROLE_LABELS).map(([value, label]) => (
-                    <SelectItem key={value} value={value}>
-                      {label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <label style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>Role</label>
+              <AdsSelect
+                value={selectedRole ? { label: ROLE_LABELS[selectedRole as keyof typeof ROLE_LABELS] || selectedRole, value: selectedRole } : null}
+                options={Object.entries(ROLE_LABELS).map(([value, label]) => ({ value, label }))}
+                placeholder="Select role"
+                onChange={(opt) => opt && setSelectedRole(opt.value)}
+              />
             </div>
           </div>
 
           <div className="space-y-2">
-            <Label>Notes (optional)</Label>
-            <Textarea
+            <label style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>Notes (optional)</label>
+            <TextArea
               value={notes}
-              onChange={(e) => setNotes(e.target.value)}
+              onChange={(e) => setNotes((e.target as HTMLTextAreaElement).value)}
               placeholder="Add notes about this role change..."
-              className="min-h-[80px]"
+              minimumRows={3}
             />
           </div>
 
           <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <Label>Select Users ({selectedUserIds.length} selected)</Label>
-              <Button variant="outline" size="sm" onClick={toggleAll}>
+              <span className="text-sm font-medium" style={{ color: 'var(--ds-text, #172B4D)' }}>Select Users ({selectedUserIds.length} selected)</span>
+              <Button appearance="default" onClick={toggleAll}>
                 {selectedUserIds.length === profiles?.length ? 'Deselect All' : 'Select All'}
               </Button>
             </div>
@@ -174,12 +165,13 @@ export function BulkRoleAssignment({ open, onOpenChange }: BulkRoleAssignmentPro
           </div>
 
           <div className="flex justify-end gap-2">
-            <Button variant="outline" onClick={handleClose}>
+            <Button appearance="default" onClick={handleClose}>
               Cancel
             </Button>
             <Button
+              appearance="primary"
               onClick={() => bulkMutation.mutate()}
-              disabled={selectedUserIds.length === 0 || !selectedRole || bulkMutation.isPending}
+              isDisabled={selectedUserIds.length === 0 || !selectedRole || bulkMutation.isPending}
             >
               {bulkMutation.isPending
                 ? 'Processing...'

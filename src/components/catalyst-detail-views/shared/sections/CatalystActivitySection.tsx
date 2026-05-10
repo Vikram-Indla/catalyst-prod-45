@@ -192,6 +192,11 @@ export function CatalystActivitySection({ itemId, isOpen }: CatalystActivitySect
         .from('ph_activity_log')
         .select('id, work_item_id, action, field_name, old_value, new_value, user_id, metadata, created_at')
         .eq('work_item_id', resolvedWorkItemId!)
+        // Exclude comment-field changelog entries — Jira's API changelog records
+        // comment additions as field_name='comment' rows in ph_activity_log.
+        // These are already rendered in the Comments feed (from ph_comments);
+        // including them here creates a visual duplicate in the All tab.
+        .neq('field_name', 'comment')
         .order('created_at', { ascending: false });
       if (!data?.length) return [];
       const userIds = [...new Set(data.map(e => e.user_id).filter(Boolean))];

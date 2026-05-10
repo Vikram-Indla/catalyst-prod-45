@@ -7,7 +7,7 @@ import {
 } from '@/components/admin/admin-dialog';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { ExternalLink } from "lucide-react";
+import LinkIcon from '@atlaskit/icon/glyph/link';
 
 interface JiraIntegrationHelpProps {
   open: boolean;
@@ -43,7 +43,7 @@ export function JiraIntegrationHelp({ open, onOpenChange }: JiraIntegrationHelpP
                       rel="noopener noreferrer"
                       className="text-brand-primary hover:underline inline-flex items-center gap-1"
                     >
-                      Atlassian Account Settings <ExternalLink className="w-3 h-3" />
+                      Atlassian Account Settings <LinkIcon label="" size="small" />
                     </a>
                   </li>
                   <li>

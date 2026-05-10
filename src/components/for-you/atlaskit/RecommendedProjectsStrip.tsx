@@ -34,6 +34,7 @@ import { useNavigate } from 'react-router-dom';
 import { token } from '@atlaskit/tokens';
 import { ProjectIcon } from '@/components/shared/ProjectIcon';
 import type { Project } from '@/hooks/useForYouData';
+import { useRecentProjects } from '@/hooks/home/useRecentProjects';
 
 interface RecommendedProjectsStripProps {
   projects: Project[];
@@ -42,14 +43,26 @@ interface RecommendedProjectsStripProps {
 
 export default function RecommendedProjectsStrip({ projects, maxCards = 3 }: RecommendedProjectsStripProps) {
   const navigate = useNavigate();
+  const { recentLocations } = useRecentProjects(16);
 
-  // Alpha-sort and cap. No reduce over items, no per-tab dependency — the
-  // same `projects` value produces the same cards every render.
+  // Sort by most-recently-visited project first, fall back to alpha for ties
+  // and unvisited projects. Takes the max visitedAt across all sections of the
+  // same project so "BAU › Backlog" and "BAU › Board" count as one signal.
   const cards = React.useMemo(() => {
+    const recentMap = new Map<string, number>();
+    for (const loc of recentLocations) {
+      const prev = recentMap.get(loc.projectKey) ?? 0;
+      if (loc.visitedAt > prev) recentMap.set(loc.projectKey, loc.visitedAt);
+    }
     return [...projects]
-      .sort((a, b) => a.name.localeCompare(b.name))
+      .sort((a, b) => {
+        const tA = recentMap.get(a.key) ?? 0;
+        const tB = recentMap.get(b.key) ?? 0;
+        if (tB !== tA) return tB - tA;
+        return a.name.localeCompare(b.name);
+      })
       .slice(0, maxCards);
-  }, [projects, maxCards]);
+  }, [projects, maxCards, recentLocations]);
 
   if (cards.length === 0) return null;
 
@@ -86,7 +99,7 @@ export default function RecommendedProjectsStrip({ projects, maxCards = 3 }: Rec
         </h2>
         <button
           type="button"
-          onClick={() => navigate('/projects')}
+          onClick={() => navigate('/project-hub/projects')}
           style={{
             background: 'transparent',
             border: 'none',
@@ -157,7 +170,7 @@ function ProjectCardButton({ card, onClick }: { card: Project; onClick: () => vo
         cursor: 'pointer',
         textAlign: 'left',
         outline: 'none',
-        transition: 'background-color 150ms ease',
+        transition: 'background-color 150ms cubic-bezier(0.15, 1, 0.3, 1)',
         minWidth: 0,
       }}
     >
@@ -177,9 +190,7 @@ function ProjectCardButton({ card, onClick }: { card: Project; onClick: () => vo
       <div style={{ flex: 1, minWidth: 0 }}>
         <div
           style={{
-            // Jira parity: flat weight 400. Primary color provides the
-            // hierarchy against the 400-subtle subtitle beneath.
-            font: `400 14px/20px "Inter", system-ui, sans-serif`,
+            font: `600 14px/20px "Inter", system-ui, sans-serif`,
             color: token('color.text', '#292A2E'),
             overflow: 'hidden',
             textOverflow: 'ellipsis',

@@ -3,12 +3,13 @@
  */
 import React from 'react';
 import { toast } from 'sonner';
+import { cloneIssue, archiveIssue } from '@/modules/project-work-hub/lib/workItemRepo';
 import WarningIcon from '@atlaskit/icon/core/warning';
 import { CatalystViewBase } from '../shared/CatalystViewBase';
 import { useCatalystIssue, useCatalystIssueMutations } from '../shared/hooks';
 import {
   CatalystTitleEditor, CatalystQuickActions, CatalystDescriptionSection, CatalystAcceptanceCriteria,
-  CatalystActivitySection, CatalystAttachmentsPanel, CatalystSidebarDetails, CatalystKeyDetails, CatalystStatusPill, CatalystFooterMeta,
+  CatalystActivitySection, CatalystAttachmentsPanel, CatalystSidebarDetails, CatalystKeyDetails, CatalystStatusPill,
 } from '../shared/sections';
 import { LinkedWorkItemsSection } from '@/modules/project-work-hub/components/linked-work-items';
 import { SubtasksPanel } from '@/modules/project-work-hub/components/SubtasksPanel';
@@ -16,6 +17,7 @@ import { ImproveIssueDropdown, useImproveApplyHandlers } from '@/components/cata
 import { CatalystSeverityField } from '../shared/sections/CatalystSeverityField';
 import { KeyDetailsFieldRow } from '../shared/sections';
 import { useQueryClient } from '@tanstack/react-query';
+import { MoveIssueDialog } from '../shared/MoveIssueDialog';
 import type { CatalystViewBaseProps } from '../shared/types';
 import {
   PRIORITY_STYLES,
@@ -30,14 +32,27 @@ export default function CatalystViewIncident({
   const mutations = useCatalystIssueMutations(itemId, onClose);
   const improveHandlers = useImproveApplyHandlers(issue ?? null);
   const priorityStyle = PRIORITY_STYLES[issue?.priority ?? 'Medium'] ?? PRIORITY_STYLES.Medium;
+  const [showMoveDialog, setShowMoveDialog] = React.useState(false);
   const queryClient = useQueryClient();
 
   const leftContent = (
     <>
+      {/* INCIDENT-UNIQUE: Severity banner */}
+      <div style={{
+        display: 'flex', alignItems: 'center', gap: 8, padding: '8px 12px',
+        background: '#FFF5F5', borderRadius: 6, marginBottom: 16, border: '1px solid #FFEDEB',
+      }}>
+        <WarningIcon size="small" primaryColor="#FF5630" />
+        <span style={{ fontSize: 13, fontWeight: 600, color: '#BF2600' }}>{issue?.issue_type || 'Production Incident'}</span>
+        <span style={{ fontSize: 12, color: '#5E6C84', marginLeft: 'auto' }}>
+          Priority: <span style={{ color: priorityStyle.color, fontWeight: 700 }}>{priorityStyle.symbol} {issue?.priority ?? 'Medium'}</span>
+        </span>
+      </div>
+
       <CatalystTitleEditor issue={issue ?? null} onTitleChange={(t) => mutations.updateField.mutate({ field: 'summary', value: t, oldValue: issue?.summary ?? '' })} />
       {/* jira-compare 2026-05-03 — Patch E · CatalystStatusPill relocated to right-rail header in CatalystSidebarDetails. */}
       <CatalystQuickActions />
-      {/* jira-compare 2026-05-03 — Improve relocated to right-rail slot in CatalystSidebarDetails (Patch D). */}
+      {/* jira-compare 2026-05-10: ImproveIssueDropdown relocated to right-rail improveDropdown slot (Vikram "follow jira"). */}
       {/* jira-compare 2026-05-07 Fix N: Severity added to Key details.
           Service Now# + Assessment Feature permanently banned (see CLAUDE.md).
           Jira PI key order: Priority → Severity. showParent={false} — Jira PI has no Parent row. */}
@@ -74,7 +89,6 @@ export default function CatalystViewIncident({
       />
       <CatalystAttachmentsPanel issueId={issue?.id} projectKey={issue?.project_key || projectKey} isOpen={isOpen} />
       <CatalystActivitySection itemId={itemId} isOpen={isOpen} />
-      <CatalystFooterMeta issue={issue ?? null} />
     </>
   );
 
@@ -92,6 +106,7 @@ export default function CatalystViewIncident({
   );
 
   return (
+    <>
     <CatalystViewBase isOpen={isOpen} onClose={onClose} panelMode={panelMode} fullPageMode={fullPageMode}
       itemType={issue?.issue_type || 'Incident'} itemKey={issue?.issue_key || null}
       projectKey={issue?.project_key || projectKey} projectName={issue?.project_name || undefined}
@@ -108,11 +123,41 @@ export default function CatalystViewIncident({
       onShare={() => { navigator.clipboard.writeText(window.location.href); toast.success('Link copied'); }}
       moreMenuItems={[
         { label: 'Print', onClick: () => window.print() },
-        { label: 'Clone', onClick: () => { console.log('Clone'); } },
+        { label: 'Clone', onClick: () => {
+          if (!issue?.issue_key) return;
+          cloneIssue(issue.issue_key)
+            .then((newKey) => {
+              toast.success(`Cloned as ${newKey}`, {
+                action: { label: 'Open', onClick: () => onOpenItem?.(newKey) },
+              });
+            })
+            .catch((e: unknown) => {
+              toast.error('Clone failed', { description: e instanceof Error ? e.message : 'Unknown error' });
+            });
+        } },
+        { label: 'Move to project…', onClick: () => setShowMoveDialog(true) },
+        { label: 'Archive', onClick: () => {
+          if (!issue?.issue_key) return;
+          if (!window.confirm(`Archive "${issue.summary}"?\nArchived items can be restored later.`)) return;
+          archiveIssue(issue.issue_key)
+            .then(() => { toast.success('Issue archived'); onClose(); })
+            .catch((e: unknown) => { toast.error('Archive failed', { description: e instanceof Error ? e.message : 'Unknown error' }); });
+        } },
         { label: 'Delete incident', onClick: () => mutations.deleteIssue.mutate(), danger: true },
       ]}
       onTogglePanelMode={onTogglePanelMode} navigationItems={navigationItems} currentItemId={itemId} onNavigate={onNavigate}
       leftContent={leftContent} rightContent={rightContent} isLoading={isLoading} isNotFound={!isLoading && issue === null}
     />
+    {showMoveDialog && issue?.issue_key && (
+      <MoveIssueDialog
+        isOpen={showMoveDialog}
+        onClose={() => setShowMoveDialog(false)}
+        issueKey={issue.issue_key}
+        issueSummary={issue.summary}
+        currentProjectKey={issue.project_key || projectKey}
+        onMoved={onClose}
+      />
+    )}
+    </>
   );
 }

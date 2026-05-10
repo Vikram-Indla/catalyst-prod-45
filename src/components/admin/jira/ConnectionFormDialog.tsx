@@ -7,7 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Loader2 } from "lucide-react";
+import Spinner from '@atlaskit/spinner';
 
 interface ConnectionFormDialogProps {
   open: boolean;
@@ -262,11 +262,11 @@ export function ConnectionFormDialog({ open, onOpenChange, connection, onSuccess
               onClick={handleTest}
               disabled={testing || !formData.jira_url}
             >
-              {testing && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
+              {testing && <Spinner size="small" />}
               Test Connection
             </Button>
             <Button type="submit" disabled={loading} className="bg-brand-primary hover:bg-brand-primary-hover">
-              {loading && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
+              {loading && <Spinner size="small" />}
               {connection ? "Update" : "Create"}
             </Button>
           </DialogFooter>

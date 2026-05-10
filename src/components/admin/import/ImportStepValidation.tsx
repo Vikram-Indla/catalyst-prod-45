@@ -1,10 +1,13 @@
 import { useState, useMemo } from 'react';
-import { CheckCircle, XCircle, AlertTriangle, Download } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import Button from '@atlaskit/button/new';
 import { Lozenge, Tooltip } from '@/components/ads';
 import { ImportModuleConfig } from '@/lib/import/importModuleConfig';
 import { RowValidationResult } from '@/lib/import/importValidator';
 import { cn } from '@/lib/utils';
+import CheckCircleIcon from '@atlaskit/icon/core/check-circle';
+import CrossCircleIcon from '@atlaskit/icon/core/cross-circle';
+import DownloadIcon from '@atlaskit/icon/core/download';
+import WarningIcon from '@atlaskit/icon/core/warning';
 
 interface ImportStepValidationProps {
   moduleConfig: ImportModuleConfig;
@@ -100,7 +103,7 @@ export function ImportStepValidation({
               <p className="text-muted-foreground mb-4">
                 Click "Validate" to check your data for errors before importing.
               </p>
-              <Button onClick={onValidate} className="bg-brand-primary hover:bg-brand-primary-hover text-white">
+              <Button appearance="primary" onClick={onValidate}>
                 Validate Data
               </Button>
             </div>
@@ -112,28 +115,28 @@ export function ImportStepValidation({
                   <span className="text-sm font-medium">{summary?.total} rows detected</span>
                 </div>
                 <div className="flex items-center gap-1.5">
-                  <CheckCircle className="h-4 w-4 text-green-600" />
+                  <CheckCircleIcon label="" size="small" />
                   <span className="text-sm">{summary?.valid} valid</span>
                 </div>
                 <div className="flex items-center gap-1.5">
-                  <AlertTriangle className="h-4 w-4 text-amber-500" />
+                  <WarningIcon label="" size="small" />
                   <span className="text-sm">{summary?.warning} warnings</span>
                 </div>
                 <div className="flex items-center gap-1.5">
-                  <XCircle className="h-4 w-4 text-destructive" />
+                  <CrossCircleIcon label="" size="small" />
                   <span className="text-sm">{summary?.invalid} invalid</span>
                 </div>
                 
                 {(summary?.invalid || 0) > 0 && (
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={onDownloadErrors}
-                    className="ml-auto"
-                  >
-                    <Download className="h-4 w-4 mr-2" />
-                    Download Errors
-                  </Button>
+                  <div style={{ marginLeft: 'auto' }}>
+                    <Button
+                      appearance="default"
+                      onClick={onDownloadErrors}
+                      iconBefore={DownloadIcon}
+                    >
+                      Download Errors
+                    </Button>
+                  </div>
                 )}
               </div>
               
@@ -143,12 +146,8 @@ export function ImportStepValidation({
                 {(['all', 'valid', 'warning', 'invalid'] as const).map((f) => (
                   <Button
                     key={f}
-                    variant={filter === f ? 'default' : 'outline'}
-                    size="sm"
+                    appearance={filter === f ? 'primary' : 'default'}
                     onClick={() => setFilter(f)}
-                    className={cn(
-                      filter === f && 'bg-brand-primary hover:bg-brand-primary-hover'
-                    )}
                   >
                     {f.charAt(0).toUpperCase() + f.slice(1)}
                   </Button>

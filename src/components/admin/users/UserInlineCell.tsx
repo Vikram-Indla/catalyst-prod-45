@@ -4,15 +4,10 @@
  */
 
 import { useState, useRef, useEffect, useCallback } from 'react';
-import { Pencil, Loader2 } from 'lucide-react';
-import { Input } from '@/components/ui/input';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
+import Textfield from '@atlaskit/textfield';
+import AdsSelect from '@atlaskit/select';
+import Spinner from '@atlaskit/spinner';
+import EditIcon from '@atlaskit/icon/core/edit';
 import { Lozenge } from '@/components/ads';
 import { cn } from '@/lib/utils';
 import { format, parseISO } from 'date-fns';
@@ -52,7 +47,7 @@ export function UserInlineCell({
   const [isEditing, setIsEditing] = useState(false);
   const [editValue, setEditValue] = useState(value ?? '');
   const [isSaving, setIsSaving] = useState(false);
-  const inputRef = useRef<HTMLInputElement>(null);
+  const inputRef = useRef<HTMLInputElement | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Sync edit value when prop value changes (realtime updates)
@@ -102,12 +97,10 @@ export function UserInlineCell({
     }
   }, [editValue, value, handleSave]);
 
-  const handleSelectChange = useCallback((newValue: string) => {
+  const handleSelectChange = useCallback((newValue: string | null) => {
     const selectedOption = options.find(opt => opt.value === newValue);
     const displayVal = selectedOption?.label;
-    // Handle "none" selection as null
-    const actualValue = newValue === '__none__' ? null : newValue;
-    handleSave(actualValue, displayVal);
+    handleSave(newValue, displayVal);
   }, [options, handleSave]);
 
   const handleDateChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
@@ -152,17 +145,16 @@ export function UserInlineCell({
   if (type === 'text' && isEditing) {
     return (
       <div className={cn("relative", className)} ref={containerRef}>
-        <Input
+        <Textfield
           ref={inputRef}
           value={editValue}
-          onChange={(e) => setEditValue(e.target.value)}
+          onChange={(e) => setEditValue((e.target as HTMLInputElement).value)}
           onBlur={handleTextBlur}
           onKeyDown={handleKeyDown}
-          className="h-7 text-sm py-1 px-2"
-          disabled={isSaving}
+          isDisabled={isSaving}
         />
         {isSaving && (
-          <Loader2 className="absolute right-2 top-1/2 -translate-y-1/2 h-3 w-3 animate-spin text-muted-foreground" />
+          <Spinner size="small" />
         )}
       </div>
     );
@@ -172,57 +164,55 @@ export function UserInlineCell({
   if (type === 'date' && isEditing) {
     return (
       <div className={cn("relative", className)} ref={containerRef}>
-        <Input
+        <Textfield
           ref={inputRef}
           type="date"
           value={editValue}
-          onChange={handleDateChange}
+          onChange={handleDateChange as any}
           onBlur={() => setIsEditing(false)}
-          onKeyDown={(e) => e.key === 'Escape' && setIsEditing(false)}
-          className="h-7 text-sm py-1 px-2"
-          disabled={isSaving}
+          onKeyDown={(e: React.KeyboardEvent) => e.key === 'Escape' && setIsEditing(false)}
+          isDisabled={isSaving}
         />
         {isSaving && (
-          <Loader2 className="absolute right-2 top-1/2 -translate-y-1/2 h-3 w-3 animate-spin text-muted-foreground" />
+          <Spinner size="small" />
         )}
       </div>
     );
   }
 
-  // Select dropdown - always use Select component but show trigger on click
+  // Select dropdown
   if (type === 'select') {
+    const selectOptions = [
+      { value: null as unknown as string, label: 'None' },
+      ...options,
+    ];
+    const currentOption = value ? options.find(o => o.value === value) ?? null : null;
     return (
-      <div className={cn("relative group", className)}>
-        <Select
-          value={value || '__none__'}
-          onValueChange={handleSelectChange}
-          disabled={isSaving}
-        >
-          <SelectTrigger 
-            className={cn(
-              "h-auto min-h-[28px] border-transparent bg-transparent hover:bg-muted/50 hover:border-input transition-colors text-sm py-1 px-2",
-              isSaving && "opacity-50"
-            )}
-          >
-            <SelectValue>
-              {isSaving ? (
-                <Loader2 className="h-3 w-3 animate-spin" />
-              ) : (
-                getDisplayContent()
-              )}
-            </SelectValue>
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="__none__">
-              <span className="text-muted-foreground">None</span>
-            </SelectItem>
-            {options.map((option) => (
-              <SelectItem key={option.value} value={option.value}>
-                {option.label}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+      <div className={cn("relative group", className)} style={{ opacity: isSaving ? 0.5 : 1 }}>
+        <AdsSelect
+          value={currentOption}
+          options={selectOptions}
+          onChange={(opt) => handleSelectChange(opt?.value ?? null)}
+          isDisabled={isSaving}
+          placeholder="None"
+          formatOptionLabel={(opt: SelectOption & { value: string | null }) =>
+            opt.value === null
+              ? <span style={{ color: 'var(--ds-text-subtle, #44546F)' }}>None</span>
+              : showBadge
+                ? <Lozenge appearance="default">{opt.label}</Lozenge>
+                : opt.label
+          }
+          styles={{
+            control: (base: object, state: { isFocused: boolean }) => ({
+              ...base,
+              borderColor: state.isFocused ? 'var(--ds-border-selected, #0C66E4)' : 'transparent',
+              backgroundColor: 'transparent',
+              boxShadow: 'none',
+              minHeight: '28px',
+              '&:hover': { borderColor: 'var(--ds-border, #DCDFE4)' },
+            }),
+          }}
+        />
       </div>
     );
   }
@@ -237,9 +227,9 @@ export function UserInlineCell({
       onClick={() => setIsEditing(true)}
     >
       <span className="text-sm flex-1">{getDisplayContent()}</span>
-      <Pencil className="h-3 w-3 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity ml-1 flex-shrink-0" />
+      <EditIcon label="" size="small" />
       {isSaving && (
-        <Loader2 className="h-3 w-3 animate-spin text-muted-foreground ml-1" />
+        <Spinner size="small" />
       )}
     </div>
   );

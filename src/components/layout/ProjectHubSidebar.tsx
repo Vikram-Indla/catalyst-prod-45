@@ -13,7 +13,6 @@ import {
   LayoutGrid,
   LayoutDashboard,
   Settings,
-  UserSearch,
   Layers,
   LayoutList,
   BookOpen,
@@ -206,7 +205,9 @@ function ModuleLevelSidebar({ expanded, onToggle, className, favouritesSection }
 
   const handleRecentClick = (item: typeof recentItems[0]) => {
     const { openDetail } = useGlobalSearchStore.getState();
-    openDetail({ id: item.entity_id, itemType: item.entity_type as any });
+    // CatalystDetailRouter queries ph_issues by issue_key (text), not UUID.
+    // entity_key holds the Jira key (e.g. "BAU-5757"); entity_id is the UUID.
+    openDetail({ id: item.entity_key || item.entity_id, itemType: item.entity_type as any });
   };
 
 
@@ -215,7 +216,6 @@ function ModuleLevelSidebar({ expanded, onToggle, className, favouritesSection }
       title: '',
       items: [
         { id: 'all-projects', title: 'All Projects', path: '/project-hub/projects', icon: LayoutGrid, exact: false },
-        { id: 'all-resources', title: 'Resource 360™', path: '/project-hub/resources', icon: UserSearch, exact: true },
       ],
     },
   ];

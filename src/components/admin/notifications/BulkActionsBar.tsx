@@ -6,18 +6,15 @@
  */
 
 import { memo } from 'react';
-import {
-  ToggleLeft,
-  ToggleRight,
-  RotateCcw,
-  X,
-  Bell,
-  Mail,
-  Zap,
-  MessageSquare,
-} from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Separator } from '@/components/ui/separator';
+import Button from '@atlaskit/button/new';
+import AutomationIcon from '@atlaskit/icon/core/automation';
+import CheckCircleIcon from '@atlaskit/icon/core/check-circle';
+import CommentIcon from '@atlaskit/icon/core/comment';
+import CrossCircleIcon from '@atlaskit/icon/core/cross-circle';
+import EmailIcon from '@atlaskit/icon/core/email';
+import NotificationIcon from '@atlaskit/icon/core/notification';
+import RefreshIcon from '@atlaskit/icon/core/refresh';
+import CrossIcon from '@atlaskit/icon/glyph/cross';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -73,37 +70,29 @@ export const BulkActionsBar = memo(function BulkActionsBar({
         {selectedCount} trigger{selectedCount !== 1 ? 's' : ''} selected
       </span>
 
-      <Separator orientation="vertical" className="h-5 bg-[#B3D4FF]" />
+      <div style={{ width: '1px', height: '20px', background: '#B3D4FF', flexShrink: 0 }} />
 
       {/* Quick actions */}
       <Button
-        size="sm"
-        variant="outline"
-        className="text-xs h-7 bg-white/80 border-[#B3D4FF] text-[#0747A6] hover:bg-white"
+        appearance="default"
         onClick={handleEnableAll}
+        iconBefore={CheckCircleIcon}
       >
-        <ToggleRight className="h-3 w-3 mr-1" />
         Enable All
       </Button>
 
       <Button
-        size="sm"
-        variant="outline"
-        className="text-xs h-7 bg-white/80 border-[#B3D4FF] text-[#0747A6] hover:bg-white"
+        appearance="default"
         onClick={handleDisableAll}
+        iconBefore={CrossCircleIcon}
       >
-        <ToggleLeft className="h-3 w-3 mr-1" />
         Disable All
       </Button>
 
       {/* Channel bulk set dropdown */}
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button
-            size="sm"
-            variant="outline"
-            className="text-xs h-7 bg-white/80 border-[#B3D4FF] text-[#0747A6] hover:bg-white"
-          >
+          <Button appearance="default">
             Set Channel
           </Button>
         </DropdownMenuTrigger>
@@ -111,7 +100,7 @@ export const BulkActionsBar = memo(function BulkActionsBar({
           {/* In-App */}
           <DropdownMenuSub>
             <DropdownMenuSubTrigger className="text-xs">
-              <Bell className="h-3 w-3 mr-2" />
+              <NotificationIcon label="" size="small" />
               In-App
             </DropdownMenuSubTrigger>
             <DropdownMenuSubContent>
@@ -127,7 +116,7 @@ export const BulkActionsBar = memo(function BulkActionsBar({
           {/* Email */}
           <DropdownMenuSub>
             <DropdownMenuSubTrigger className="text-xs">
-              <Mail className="h-3 w-3 mr-2" />
+              <EmailIcon label="" size="small" />
               Email
             </DropdownMenuSubTrigger>
             <DropdownMenuSubContent>
@@ -143,7 +132,7 @@ export const BulkActionsBar = memo(function BulkActionsBar({
           {/* Toast */}
           <DropdownMenuSub>
             <DropdownMenuSubTrigger className="text-xs">
-              <Zap className="h-3 w-3 mr-2" />
+              <AutomationIcon label="" size="small" />
               Toast
             </DropdownMenuSubTrigger>
             <DropdownMenuSubContent>
@@ -159,7 +148,7 @@ export const BulkActionsBar = memo(function BulkActionsBar({
           {/* Slack */}
           <DropdownMenuSub>
             <DropdownMenuSubTrigger className="text-xs">
-              <MessageSquare className="h-3 w-3 mr-2" />
+              <CommentIcon label="" size="small" />
               Slack
             </DropdownMenuSubTrigger>
             <DropdownMenuSubContent>
@@ -176,22 +165,22 @@ export const BulkActionsBar = memo(function BulkActionsBar({
 
           {/* Reset */}
           <DropdownMenuItem className="text-xs text-[var(--ds-text-danger,#DC2626)]" onClick={handleResetDefaults}>
-            <RotateCcw className="h-3 w-3 mr-2" />
+            <RefreshIcon label="" size="small" />
             Reset to Defaults
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
 
       {/* Clear selection */}
-      <Button
-        size="sm"
-        variant="ghost"
-        className="text-xs h-7 ml-auto text-[#0747A6] hover:text-[#0747A6]/80"
-        onClick={onClear}
-      >
-        <X className="h-3 w-3 mr-1" />
-        Clear
-      </Button>
+      <div style={{ marginLeft: 'auto' }}>
+        <Button
+          appearance="subtle"
+          onClick={onClear}
+          iconBefore={CrossIcon}
+        >
+          Clear
+        </Button>
+      </div>
     </div>
   );
 });

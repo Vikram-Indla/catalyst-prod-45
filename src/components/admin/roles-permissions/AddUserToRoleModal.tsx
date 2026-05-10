@@ -1,4 +1,7 @@
 import { useState, useMemo } from 'react';
+import Spinner from '@atlaskit/spinner';
+import PersonAddIcon from '@atlaskit/icon/core/person-add';
+import SearchIcon from '@atlaskit/icon/core/search';
 import {
   Dialog,
   DialogContent,
@@ -7,12 +10,11 @@ import {
   DialogDescription,
   DialogFooter,
 } from '@/components/admin/admin-dialog';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import Button from '@atlaskit/button/new';
+import Textfield from '@atlaskit/textfield';
 import { Checkbox } from '@/components/ui/checkbox';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { Loader2, Search, UserPlus } from 'lucide-react';
 import { toast } from 'sonner';
 
 interface AddUserToRoleModalProps {
@@ -118,7 +120,7 @@ export function AddUserToRoleModal({
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <UserPlus className="h-5 w-5" />
+            <PersonAddIcon label="" size="small" />
             Add Users to Role
           </DialogTitle>
           <DialogDescription>
@@ -127,22 +129,23 @@ export function AddUserToRoleModal({
         </DialogHeader>
 
         <div className="space-y-4">
-          {/* Search Input */}
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input
-              placeholder="Search users by name or email..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-9"
-            />
-          </div>
+          {/* Search */}
+          <Textfield
+            placeholder="Search users by name or email..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery((e.target as HTMLInputElement).value)}
+            elemBeforeInput={
+              <span style={{ display: 'flex', alignItems: 'center', padding: '0 8px' }}>
+                <SearchIcon label="" size="small" />
+              </span>
+            }
+          />
 
           {/* Users List */}
           <div className="border rounded-md max-h-[300px] overflow-y-auto">
             {isLoading ? (
               <div className="flex items-center justify-center py-8">
-                <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
+                <Spinner size="small" />
               </div>
             ) : filteredUsers.length === 0 ? (
               <p className="text-sm text-muted-foreground text-center py-8">
@@ -185,25 +188,16 @@ export function AddUserToRoleModal({
         </div>
 
         <DialogFooter>
-          <Button variant="outline" onClick={handleClose}>
+          <Button appearance="default" onClick={handleClose}>
             Cancel
           </Button>
           <Button
+            appearance="primary"
             onClick={handleSave}
-            disabled={selectedUserIds.length === 0 || addUsersMutation.isPending}
-            className="bg-brand-primary hover:bg-brand-primary-hover text-white"
+            isDisabled={selectedUserIds.length === 0 || addUsersMutation.isPending}
+            iconBefore={PersonAddIcon}
           >
-            {addUsersMutation.isPending ? (
-              <>
-                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                Adding...
-              </>
-            ) : (
-              <>
-                <UserPlus className="h-4 w-4 mr-2" />
-                Add Users
-              </>
-            )}
+            {addUsersMutation.isPending ? 'Adding...' : 'Add Users'}
           </Button>
         </DialogFooter>
       </DialogContent>

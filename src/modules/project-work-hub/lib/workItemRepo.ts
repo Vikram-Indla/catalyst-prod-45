@@ -281,3 +281,91 @@ export async function createChildIssue(input: CreateChildInput): Promise<Created
   // F-iter9 PK fix: id <- issue_key
   return { id: data!.issue_key as string, issue_key: data!.issue_key as string, source: 'catalyst' };
 }
+
+// ─── Move ────────────────────────────────────────────────────────────────────
+//
+// Moves an issue to a different project by updating project_key + project_id.
+// The issue_key is NOT changed (Jira doesn't renumber on move either).
+// Caller is responsible for showing a project picker and passing the values.
+export async function moveIssue(
+  issueKey: string,
+  targetProjectKey: string,
+  targetProjectId: string | null,
+): Promise<void> {
+  const { error } = await supabase
+    .from('ph_issues')
+    .update({ project_key: targetProjectKey, project_id: targetProjectId } as any)
+    .eq('issue_key', issueKey);
+  if (error) throw error;
+}
+
+// ─── Archive ─────────────────────────────────────────────────────────────────
+//
+// Soft-archives a ph_issues row by setting is_archived = true.
+// The column already exists in the schema (types.ts confirmed 2026-05-10).
+// No SQL migration required.
+export async function archiveIssue(issueKey: string): Promise<void> {
+  const { error } = await supabase
+    .from('ph_issues')
+    .update({ is_archived: true } as any)
+    .eq('issue_key', issueKey);
+  if (error) throw error;
+}
+
+// ─── Clone ───────────────────────────────────────────────────────────────────
+//
+// Duplicates a ph_issues row. The clone:
+//   - Gets a new sequential issue_key in the same project.
+//   - Summary is prefixed "Copy of <original summary>".
+//   - Status resets to "To Do" / status_category "todo".
+//   - is_archived is always false on the clone.
+//   - parent_key is PRESERVED from the original ("with parent" directive 2026-05-10).
+//   - source is set to 'catalyst' (the clone is always a Catalyst-native item).
+//   - description_adf, issue_type, priority, project_key, project_id, reporter_account_id
+//     and acceptance_criteria_adf are carried over from the original.
+//
+// Returns the new issue_key string.
+export async function cloneIssue(issueKey: string): Promise<string> {
+  // 1. Fetch the original
+  const { data: original, error: fetchError } = await supabase
+    .from('ph_issues')
+    .select(
+      'issue_key, summary, description_adf, issue_type, priority, parent_key, ' +
+      'project_key, project_id, reporter_account_id, acceptance_criteria_adf, ' +
+      'status, status_category',
+    )
+    .eq('issue_key', issueKey)
+    .single();
+  if (fetchError) throw fetchError;
+  if (!original) throw new Error(`cloneIssue: issue ${issueKey} not found`);
+
+  const orig = original as Record<string, any>;
+
+  // 2. Generate a new key in the same project
+  const newKey = await generateIssueKey(orig.project_key as string);
+
+  // 3. Insert the clone
+  const { data: inserted, error: insertError } = await supabase
+    .from('ph_issues')
+    .insert({
+      issue_key: newKey,
+      summary: `Copy of ${orig.summary ?? ''}`,
+      description_adf: orig.description_adf ?? null,
+      acceptance_criteria_adf: orig.acceptance_criteria_adf ?? null,
+      issue_type: orig.issue_type ?? null,
+      priority: orig.priority ?? 'Medium',
+      parent_key: orig.parent_key ?? null,
+      project_key: orig.project_key,
+      project_id: orig.project_id ?? null,
+      reporter_account_id: orig.reporter_account_id ?? null,
+      status: 'To Do',
+      status_category: 'todo',
+      is_archived: false,
+      source: 'catalyst',
+    } as any)
+    .select('issue_key')
+    .single();
+  if (insertError) throw insertError;
+
+  return (inserted as any).issue_key as string;
+}

@@ -4,7 +4,10 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Lozenge, type LozengeAppearance } from "@/components/ads";
-import { Loader2, CheckCircle2, XCircle, AlertCircle } from "lucide-react";
+import Spinner from '@atlaskit/spinner';
+import CheckCircleIcon from '@atlaskit/icon/core/check-circle';
+import CrossCircleIcon from '@atlaskit/icon/core/cross-circle';
+import WarningIcon from '@atlaskit/icon/core/warning';
 import { format } from "date-fns";
 
 interface SyncLogsViewerProps {
@@ -45,13 +48,13 @@ export function SyncLogsViewer({ open, onOpenChange, connectionId }: SyncLogsVie
   const getStatusIcon = (status: string) => {
     switch (status) {
       case "success":
-        return <CheckCircle2 className="w-4 h-4 text-[var(--sem-success)]" />;
+        return <span style={{ display:'inline-flex', color:'var(--ds-icon-success, #22A06B)' }}><CheckCircleIcon label="" size="small" /></span>;
       case "error":
-        return <XCircle className="w-4 h-4 text-[var(--sem-danger)]" />;
+        return <span style={{ display:'inline-flex', color:'var(--ds-icon-danger, #AE2A19)' }}><CrossCircleIcon label="" size="small" /></span>;
       case "warning":
-        return <AlertCircle className="w-4 h-4 text-[var(--sem-warning)]" />;
+        return <span style={{ display:'inline-flex', color:'var(--ds-icon-warning, #D97008)' }}><WarningIcon label="" size="small" /></span>;
       default:
-        return <Loader2 className="w-4 h-4 text-muted-foreground" />;
+        return <span style={{ display:'inline-flex', color:'var(--ds-icon-subtle, #6B778C)' }}><Spinner size="small" /></span>;
     }
   };
 
@@ -80,7 +83,7 @@ export function SyncLogsViewer({ open, onOpenChange, connectionId }: SyncLogsVie
 
         {loading ? (
           <div className="flex justify-center items-center h-64">
-            <Loader2 className="w-8 h-8 animate-spin text-brand-primary" />
+            <Spinner size="medium" />
           </div>
         ) : (
           <ScrollArea className="h-[600px] pr-4">

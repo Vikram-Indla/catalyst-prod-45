@@ -1,11 +1,15 @@
 import { useState } from 'react';
 import { useOptionSets, OptionSet } from '@/hooks/useOptionSets';
-import { Button } from '@/components/ui/button';
+import Button from '@atlaskit/button/new';
 import { Lozenge } from '@/components/ads';
-import { Input } from '@/components/ui/input';
-import { Loader2, Search, Settings2, Database, ChevronRight } from 'lucide-react';
+import Textfield from '@atlaskit/textfield';
 import { cn } from '@/lib/utils';
 import { OptionValuesDrawer } from './OptionValuesDrawer';
+import Spinner from '@atlaskit/spinner';
+import DatabaseIcon from '@atlaskit/icon/core/database';
+import SearchIcon from '@atlaskit/icon/core/search';
+import SettingsIcon from '@atlaskit/icon/core/settings';
+import ChevronRightIcon from '@atlaskit/icon/glyph/chevron-right';
 
 export function LookupManagementPanel() {
   const { data: optionSets = [], isLoading } = useOptionSets();
@@ -27,7 +31,7 @@ export function LookupManagementPanel() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-12">
-        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+        <Spinner size="small" />
       </div>
     );
   }
@@ -38,7 +42,7 @@ export function LookupManagementPanel() {
       <div className="flex items-center justify-between pb-4 border-b">
         <div className="flex items-center gap-3">
           <div className="p-2 rounded-lg bg-brand-primary/10">
-            <Database className="h-5 w-5 text-brand-primary" />
+            <DatabaseIcon label="" size="small" />
           </div>
           <div>
             <h2 className="text-lg font-semibold">Lookup Management</h2>
@@ -50,13 +54,16 @@ export function LookupManagementPanel() {
       </div>
 
       {/* Search */}
-      <div className="relative">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-        <Input
+      <div>
+        <Textfield
           placeholder="Search option sets..."
           value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          className="pl-9"
+          onChange={(e) => setSearchQuery((e.target as HTMLInputElement).value)}
+          elemBeforeInput={
+            <span style={{ display: 'flex', alignItems: 'center', padding: '0 8px' }}>
+              <SearchIcon label="" size="small" />
+            </span>
+          }
         />
       </div>
 
@@ -99,14 +106,11 @@ export function LookupManagementPanel() {
                 </td>
                 <td className="px-4 py-3 text-right">
                   <Button
-                    variant="ghost"
-                    size="sm"
+                    appearance="subtle"
                     onClick={() => handleManageOptions(set)}
-                    className="gap-1.5"
+                    iconBefore={SettingsIcon}
                   >
-                    <Settings2 className="h-4 w-4" />
                     Manage
-                    <ChevronRight className="h-3 w-3" />
                   </Button>
                 </td>
               </tr>

@@ -18,7 +18,10 @@ jobs:
           cache: 'npm'
 
       - name: Install dependencies
-        run: npm ci
+        # npm ci fails with EBADPLATFORM on linux/x64 for optional darwin-arm64
+        # rolldown bindings (npm 10 regression — optional packages should warn,
+        # not error, on platform mismatch). npm install correctly skips them.
+        run: npm install
 
       - name: Type check
         run: npx tsc --noEmit

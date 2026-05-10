@@ -5,18 +5,15 @@
  */
 
 import { memo, useCallback } from 'react';
-import { Search, Filter, Shield, RotateCcw, SlidersHorizontal } from 'lucide-react';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
+import Textfield from '@atlaskit/textfield';
+import Button from '@atlaskit/button/new';
+import AdsSelect from '@atlaskit/select';
 import { Lozenge } from '@/components/ads';
-import { Separator } from '@/components/ui/separator';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
+import CustomizeIcon from '@atlaskit/icon/core/customize';
+import FilterIcon from '@atlaskit/icon/core/filter';
+import RefreshIcon from '@atlaskit/icon/core/refresh';
+import SearchIcon from '@atlaskit/icon/core/search';
+import ShieldIcon from '@atlaskit/icon/core/shield';
 import { HUB_SOURCES, type HubSource } from '@/constants/notificationEvents';
 import type { TriggerCategory, TriggerFilters } from '@/types/notification-triggers';
 
@@ -103,91 +100,66 @@ export const TriggerSearch = memo(function TriggerSearch({
       {/* ── Main filter row ──────────────────────────────────────── */}
       <div className="flex items-center gap-3 flex-wrap">
         {/* Search input */}
-        <div className="relative flex-1 min-w-[240px]">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[var(--ds-text-subtlest,#94A3B8)]" />
-          <Input
+        <div className="flex-1 min-w-[240px]">
+          <Textfield
             placeholder="Search triggers by name, key, or description..."
             value={filters.search}
-            onChange={(e) => onFiltersChange({ ...filters, search: e.target.value })}
-            className="pl-9 h-9 text-sm border-[var(--bd-default,#E2E8F0)] focus-visible:ring-[var(--ds-text-brand,#2563EB)]"
+            onChange={(e) => onFiltersChange({ ...filters, search: (e.target as HTMLInputElement).value })}
+            elemBeforeInput={
+              <span style={{ display: 'flex', alignItems: 'center', padding: '0 8px' }}>
+                <SearchIcon label="" size="small" />
+              </span>
+            }
           />
         </div>
 
         {/* Hub filter */}
-        <Select
-          value={filters.hub}
-          onValueChange={(v) => onFiltersChange({ ...filters, hub: v as HubSource | 'All' })}
-        >
-          <SelectTrigger className="w-[150px] h-9 text-sm border-[var(--bd-default,#E2E8F0)]">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="All">All Hubs</SelectItem>
-            {HUB_SOURCES.map((hub) => (
-              <SelectItem key={hub} value={hub}>
-                {HUB_LABELS[hub]}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+        <div style={{ minWidth: '150px' }}>
+          <AdsSelect
+            value={{ label: HUB_LABELS[filters.hub] || filters.hub, value: filters.hub }}
+            options={[
+              { label: 'All Hubs', value: 'All' },
+              ...HUB_SOURCES.map(hub => ({ label: HUB_LABELS[hub], value: hub })),
+            ]}
+            onChange={(opt) => onFiltersChange({ ...filters, hub: (opt?.value ?? 'All') as HubSource | 'All' })}
+          />
+        </div>
 
         {/* Category filter */}
-        <Select
-          value={filters.category}
-          onValueChange={(v) => onFiltersChange({ ...filters, category: v as TriggerCategory | 'All' })}
-        >
-          <SelectTrigger className="w-[190px] h-9 text-sm border-[var(--bd-default,#E2E8F0)]">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            {CATEGORY_OPTIONS.map((opt) => (
-              <SelectItem key={opt.key} value={opt.key}>
-                {opt.label}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+        <div style={{ minWidth: '190px' }}>
+          <AdsSelect
+            value={{ label: CATEGORY_OPTIONS.find(o => o.key === filters.category)?.label || filters.category, value: filters.category }}
+            options={CATEGORY_OPTIONS.map(opt => ({ label: opt.label, value: opt.key }))}
+            onChange={(opt) => onFiltersChange({ ...filters, category: (opt?.value ?? 'All') as TriggerCategory | 'All' })}
+          />
+        </div>
 
-        <Separator orientation="vertical" className="h-6" />
+        <div style={{ width: '1px', height: '24px', background: 'var(--ds-border-layout, #EBECF0)', flexShrink: 0 }} />
 
         {/* Toggle filters */}
         <Button
-          variant={filters.enabledOnly ? 'default' : 'outline'}
-          size="sm"
-          className={`text-xs h-8 ${
-            filters.enabledOnly
-              ? 'bg-[var(--ds-text-brand,#2563EB)] hover:bg-[var(--ds-background-brand-bold-hovered,#1D4ED8)] text-white'
-              : 'border-[var(--bd-default,#E2E8F0)]'
-          }`}
+          appearance={filters.enabledOnly ? 'primary' : 'default'}
           onClick={() => onFiltersChange({ ...filters, enabledOnly: !filters.enabledOnly })}
+          iconBefore={FilterIcon}
         >
-          <Filter className="h-3 w-3 mr-1" />
           Enabled
         </Button>
 
         <Button
-          variant={filters.mandatoryOnly ? 'default' : 'outline'}
-          size="sm"
-          className={`text-xs h-8 ${
-            filters.mandatoryOnly
-              ? 'bg-[var(--ds-text-danger,#DC2626)] hover:bg-[#B91C1C] text-white'
-              : 'border-[var(--bd-default,#E2E8F0)]'
-          }`}
+          appearance={filters.mandatoryOnly ? 'danger' : 'default'}
           onClick={() => onFiltersChange({ ...filters, mandatoryOnly: !filters.mandatoryOnly })}
+          iconBefore={ShieldIcon}
         >
-          <Shield className="h-3 w-3 mr-1" />
           Mandatory
         </Button>
 
         {/* Reset filters */}
         {hasActiveFilters && (
           <Button
-            variant="ghost"
-            size="sm"
-            className="text-xs h-8 text-[var(--ds-text-subtle,#475569)]"
+            appearance="subtle"
             onClick={resetFilters}
+            iconBefore={RefreshIcon}
           >
-            <RotateCcw className="h-3 w-3 mr-1" />
             Reset
             {activeFilterCount > 0 && (
               <span className="ml-1">
@@ -217,7 +189,7 @@ export const TriggerSearch = memo(function TriggerSearch({
             className="text-xs h-7 text-[var(--ds-text-subtle,#475569)] hover:text-[var(--ds-text,#0F172A)]"
             onClick={onExpandAll}
           >
-            <SlidersHorizontal className="h-3 w-3 mr-1" />
+            <CustomizeIcon label="" size="small" />
             Expand All
           </Button>
           <Button

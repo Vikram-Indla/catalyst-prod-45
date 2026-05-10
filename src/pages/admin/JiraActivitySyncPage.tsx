@@ -5,7 +5,18 @@
 import React, { useState, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { ArrowDownLeft, ArrowUpRight, RefreshCw, Search, Filter, Clock, CheckCircle2, XCircle, SkipForward, Loader2, AlertTriangle, ChevronDown } from 'lucide-react';
+import ArrowDownLeftIcon from '@atlaskit/icon/core/arrow-down-left';
+import ArrowUpRightIcon from '@atlaskit/icon/core/arrow-up-right';
+import RefreshIcon from '@atlaskit/icon/core/refresh';
+import SearchIcon from '@atlaskit/icon/core/search';
+import FilterIcon from '@atlaskit/icon/core/filter';
+import ClockIcon from '@atlaskit/icon/core/clock';
+import CheckCircleIcon from '@atlaskit/icon/core/check-circle';
+import CrossCircleIcon from '@atlaskit/icon/core/cross-circle';
+import ArrowRightIcon from '@atlaskit/icon/core/arrow-right';
+import Spinner from '@atlaskit/spinner';
+import WarningIcon from '@atlaskit/icon/core/warning';
+import ChevronDownIcon from '@atlaskit/icon/glyph/chevron-down';
 import { StatusBadge } from '@/components/ui/StatusBadge';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import Textfield from '@atlaskit/textfield';
@@ -40,12 +51,12 @@ type DirectionFilter = 'all' | 'inbound' | 'outbound';
 type StatusFilter = 'all' | 'pending' | 'syncing' | 'success' | 'failed' | 'skipped';
 
 /* ── Sync status config ─────────────────────────────────── */
-const SYNC_STATUS_CFG: Record<string, { icon: React.ElementType; color: string; bg: string; label: string }> = {
-  pending:  { icon: Clock,        color: 'var(--ds-text-warning, #D97706)', bg: 'rgba(217,119,6,0.1)',  label: 'PENDING' },
-  syncing:  { icon: Loader2,      color: 'var(--ds-text-brand, #2563EB)', bg: 'rgba(37,99,235,0.1)',  label: 'SYNCING' },
-  success:  { icon: CheckCircle2, color: '#059669', bg: 'rgba(5,150,105,0.1)',  label: 'SUCCESS' },
-  failed:   { icon: XCircle,      color: 'var(--ds-text-danger, #DC2626)', bg: 'rgba(220,38,38,0.1)',  label: 'FAILED' },
-  skipped:  { icon: SkipForward,  color: '#6B7280', bg: 'rgba(107,114,128,0.1)', label: 'SKIPPED' },
+const SYNC_STATUS_CFG: Record<string, { renderIcon: () => React.ReactNode; color: string; bg: string; label: string }> = {
+  pending:  { renderIcon: () => <ClockIcon label="" size="small" />,        color: 'var(--ds-text-warning, #D97706)', bg: 'rgba(217,119,6,0.1)',  label: 'PENDING' },
+  syncing:  { renderIcon: () => <Spinner size="small" />,                   color: 'var(--ds-text-brand, #2563EB)', bg: 'rgba(37,99,235,0.1)',  label: 'SYNCING' },
+  success:  { renderIcon: () => <CheckCircleIcon label="" size="small" />,  color: '#059669', bg: 'rgba(5,150,105,0.1)',  label: 'SUCCESS' },
+  failed:   { renderIcon: () => <CrossCircleIcon label="" size="small" />,  color: 'var(--ds-text-danger, #DC2626)', bg: 'rgba(220,38,38,0.1)',  label: 'FAILED' },
+  skipped:  { renderIcon: () => <ArrowRightIcon label="" size="small" />,   color: '#6B7280', bg: 'rgba(107,114,128,0.1)', label: 'SKIPPED' },
 };
 
 /* ── Direction badge ─────────────────────────────────────── */
@@ -59,7 +70,7 @@ function DirectionBadge({ dir }: { dir: 'inbound' | 'outbound' }) {
       background: isIn ? 'rgba(37,99,235,0.08)' : 'rgba(217,119,6,0.08)',
       color: isIn ? 'var(--ds-text-brand, #2563EB)' : 'var(--ds-text-warning, #D97706)',
     }}>
-      {isIn ? <ArrowDownLeft size={12} /> : <ArrowUpRight size={12} />}
+      {isIn ? <ArrowDownLeftIcon label="" size="small" /> : <ArrowUpRightIcon label="" size="small" />}
       {isIn ? 'IN' : 'OUT'}
     </span>
   );
@@ -68,7 +79,6 @@ function DirectionBadge({ dir }: { dir: 'inbound' | 'outbound' }) {
 /* ── Sync status pill ────────────────────────────────────── */
 function SyncStatusPill({ status }: { status: string }) {
   const cfg = SYNC_STATUS_CFG[status] || SYNC_STATUS_CFG.pending;
-  const Icon = cfg.icon;
   return (
     <span style={{
       display: 'inline-flex', alignItems: 'center', gap: 4,
@@ -76,7 +86,7 @@ function SyncStatusPill({ status }: { status: string }) {
       background: cfg.bg, color: cfg.color,
       textTransform: 'uppercase', letterSpacing: '0.03em',
     }}>
-      <Icon size={12} className={status === 'syncing' ? 'animate-spin' : ''} />
+      {cfg.renderIcon()}
       {cfg.label}
     </span>
   );
@@ -117,7 +127,7 @@ function ChangedFieldsDetail({ fields }: { fields: Record<string, { from?: strin
         }}
       >
         {entries.length} field{entries.length > 1 ? 's' : ''} changed
-        <ChevronDown size={12} style={{ transform: open ? 'rotate(180deg)' : 'none', transition: 'transform 150ms' }} />
+        <span style={{ display: 'inline-flex', transform: open ? 'rotate(180deg)' : 'none', transition: 'transform 150ms' }}><ChevronDownIcon label="" size="small" /></span>
       </button>
       {open && (
         <div style={{ marginTop: 6, display: 'flex', flexDirection: 'column', gap: 3 }}>
@@ -280,7 +290,7 @@ export default function JiraActivitySyncPage() {
             cursor: 'pointer',
           }}
         >
-          <RefreshCw size={14} />
+          <RefreshIcon label="" size="small" />
           Refresh
         </button>
       </div>
@@ -292,7 +302,7 @@ export default function JiraActivitySyncPage() {
       }}>
         {/* Search */}
         <div style={{ position: 'relative', width: 260 }}>
-          <Search size={14} style={{ position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)', color: 'var(--cp-t3, #94A3B8)' }} />
+          <span style={{ position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)', display: 'inline-flex', color: 'var(--cp-t3, #94A3B8)' }}><SearchIcon label="" size="small" /></span>
           <Textfield
             placeholder="Search key, title, project…"
             value={search}
@@ -326,12 +336,12 @@ export default function JiraActivitySyncPage() {
       <div style={{ flex: 1, overflow: 'auto' }}>
         {isLoading ? (
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: 200, gap: 8 }}>
-            <Loader2 size={20} className="animate-spin" style={{ color: 'var(--cp-t3, #94A3B8)' }} />
+            <Spinner size="medium" />
             <span style={{ fontSize: 13, color: 'var(--cp-t3, #94A3B8)' }}>Loading sync activity…</span>
           </div>
         ) : filtered.length === 0 ? (
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: 300, gap: 12 }}>
-            <RefreshCw size={36} style={{ color: 'var(--cp-t4, #CBD5E1)' }} />
+            <span style={{ display: 'inline-flex', color: 'var(--cp-t4, #CBD5E1)' }}><RefreshIcon label="" size="large" /></span>
             <span style={{ fontSize: 15, fontWeight: 600, color: 'var(--cp-t2, #475569)' }}>No sync activity yet</span>
             <span style={{ fontSize: 13, color: 'var(--cp-t3, #94A3B8)', maxWidth: 360, textAlign: 'center' }}>
               Sync events between Catalyst and Jira will appear here. Activity is retained for 30 days.
@@ -415,7 +425,7 @@ export default function JiraActivitySyncPage() {
                             position="top"
                             content={`Conflict detected${item.conflict_resolution ? `: ${item.conflict_resolution}` : ''}`}
                           >
-                            <AlertTriangle size={14} style={{ color: 'var(--ds-text-danger, #DC2626)' }} />
+                            <WarningIcon label="" size="small" />
                           </Tooltip>
                         )}
                       </div>

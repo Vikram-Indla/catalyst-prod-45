@@ -3,17 +3,25 @@
  * Displays the locked design tokens as source of truth
  */
 
+import type { ComponentType } from 'react';
 import { useState } from 'react';
-import { 
-  Palette, Type, Layers, Ruler, Layout, Tag, Square, BarChart3, 
-  ChevronDown, ChevronRight, Copy, Check, Lock 
-} from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import Button from '@atlaskit/button/new';
 import { Lozenge } from '@/components/ads';
-import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Separator } from '@/components/ui/separator';
 import { cn } from '@/lib/utils';
+import BoardIcon from '@atlaskit/icon/core/board';
+import BoardsIcon from '@atlaskit/icon/core/boards';
+import ChartBarIcon from '@atlaskit/icon/core/chart-bar';
+import CheckMarkIcon from '@atlaskit/icon/core/check-mark';
+import CheckboxUncheckedIcon from '@atlaskit/icon/core/checkbox-unchecked';
+import CopyIcon from '@atlaskit/icon/core/copy';
+import LockLockedIcon from '@atlaskit/icon/core/lock-locked';
+import PaintPaletteIcon from '@atlaskit/icon/core/paint-palette';
+import SettingsIcon from '@atlaskit/icon/core/settings';
+import TagIcon from '@atlaskit/icon/core/tag';
+import TextIcon from '@atlaskit/icon/core/text';
+import ChevronDownIcon from '@atlaskit/icon/glyph/chevron-down';
+import ChevronRightIcon from '@atlaskit/icon/glyph/chevron-right';
 import { 
   baselineTokens, 
   componentSpecs, 
@@ -22,8 +30,15 @@ import {
   getBaselineDate,
 } from '@/lib/designAudit/designSystemBaseline';
 
-const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
-  Palette, Type, Layers, Ruler, Layout, Tag, Square, BarChart3,
+const iconMap: Record<string, ComponentType<{ label: string; size?: string }>> = {
+  Palette: PaintPaletteIcon,
+  Type: TextIcon,
+  Layers: BoardsIcon,
+  Ruler: SettingsIcon,
+  Layout: BoardIcon,
+  Tag: TagIcon,
+  Square: CheckboxUncheckedIcon,
+  BarChart3: ChartBarIcon,
 };
 
 export function DesignSystemBaseline() {
@@ -50,41 +65,39 @@ export function DesignSystemBaseline() {
   return (
     <div className="space-y-6">
       {/* Baseline Header */}
-      <Card className="border-brand-primary/30 bg-brand-primary/5">
-        <CardContent className="py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="h-10 w-10 rounded-lg bg-brand-primary/10 flex items-center justify-center">
-                <Lock className="h-5 w-5 text-brand-primary" />
-              </div>
-              <div>
-                <h3 className="font-semibold text-foreground">Design System Baseline</h3>
-                <p className="text-xs text-muted-foreground">
-                  Version {getBaselineVersion()} · Locked {getBaselineDate()}
-                </p>
-              </div>
+      <div style={{ background: 'var(--ds-background-information, #DEEBFF22)', border: '1px solid var(--ds-border-information, #4C9AFF55)', borderRadius: '3px', padding: '16px' }}>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="h-10 w-10 rounded-lg bg-brand-primary/10 flex items-center justify-center">
+              <LockLockedIcon label="" size="small" />
             </div>
-            <Lozenge appearance="inprogress">Locked</Lozenge>
+            <div>
+              <h3 className="font-semibold text-foreground">Design System Baseline</h3>
+              <p className="text-xs text-muted-foreground">
+                Version {getBaselineVersion()} · Locked {getBaselineDate()}
+              </p>
+            </div>
           </div>
-        </CardContent>
-      </Card>
+          <Lozenge appearance="inprogress">Locked</Lozenge>
+        </div>
+      </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Token Categories */}
-        <Card>
-          <CardHeader className="py-3">
-            <CardTitle className="text-base flex items-center gap-2">
-              <Palette className="h-4 w-4 text-brand-primary" />
+        <div style={{ background: 'var(--ds-surface, #FFFFFF)', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px' }}>
+          <div style={{ padding: '12px 24px', borderBottom: '1px solid var(--ds-border-layout, #EBECF0)' }}>
+            <h3 className="text-base flex items-center gap-2" style={{ fontWeight: 500, margin: 0 }}>
+              <PaintPaletteIcon label="" size="small" />
               Design Tokens ({baselineTokens.length})
-            </CardTitle>
-            <CardDescription>Semantic tokens defined in index.css</CardDescription>
-          </CardHeader>
-          <CardContent className="p-0">
+            </h3>
+            <p style={{ fontSize: '14px', color: 'var(--ds-text-subtlest, #626F86)', margin: '4px 0 0' }}>Semantic tokens defined in index.css</p>
+          </div>
+          <div>
             <ScrollArea className="h-[400px]">
               {groupedTokens.map(category => {
-                const Icon = iconMap[category.icon] || Palette;
+                const Icon = iconMap[category.icon] || PaintPaletteIcon;
                 const isExpanded = expandedCategories.includes(category.id);
-                
+
                 return (
                   <div key={category.id} className="border-b last:border-b-0">
                     <button
@@ -92,28 +105,30 @@ export function DesignSystemBaseline() {
                       className="w-full flex items-center gap-2 px-4 py-2.5 hover:bg-secondary/50 transition-colors text-left"
                     >
                       {isExpanded ? (
-                        <ChevronDown className="h-4 w-4 text-muted-foreground" />
+                        <ChevronDownIcon label="" size="small" />
                       ) : (
-                        <ChevronRight className="h-4 w-4 text-muted-foreground" />
+                        <ChevronRightIcon label="" size="small" />
                       )}
-                      <Icon className="h-4 w-4 text-brand-primary" />
+                      <span className="text-brand-primary" style={{ display: 'flex' }}>
+                        <Icon label="" size="small" />
+                      </span>
                       <span className="font-medium text-sm">{category.name}</span>
                       <span className="ml-auto">
                         <Lozenge appearance="default">{String(category.tokens.length)}</Lozenge>
                       </span>
                     </button>
-                    
+
                     {isExpanded && (
                       <div className="px-4 pb-3 pt-1 space-y-1.5 bg-secondary/20">
                         {category.tokens.map(token => (
-                          <div 
+                          <div
                             key={token.cssVar}
                             className="flex items-center justify-between py-1.5 px-2 rounded hover:bg-background/50 group"
                           >
                             <div className="flex items-center gap-2">
                               {/* Color swatch for color tokens */}
                               {(category.id === 'brand' || category.id === 'text' || category.id === 'status' || category.id === 'palette') && (
-                                <div 
+                                <div
                                   className="h-4 w-4 rounded border border-border"
                                   style={{ backgroundColor: token.value }}
                                 />
@@ -125,21 +140,16 @@ export function DesignSystemBaseline() {
                             </div>
                             <div className="flex items-center gap-2">
                               <code className="text-xs bg-secondary px-1.5 py-0.5 rounded">{token.value}</code>
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                className="h-6 w-6 p-0 opacity-0 group-hover:opacity-100"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  copyToken(token.cssVar);
-                                }}
-                              >
-                                {copiedToken === token.cssVar ? (
-                                  <Check className="h-3 w-3 text-success" />
-                                ) : (
-                                  <Copy className="h-3 w-3" />
-                                )}
-                              </Button>
+                              <span className="opacity-0 group-hover:opacity-100">
+                                <Button
+                                  appearance="subtle"
+                                  iconBefore={copiedToken === token.cssVar ? CheckMarkIcon : CopyIcon}
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    copyToken(token.cssVar);
+                                  }}
+                                />
+                              </span>
                             </div>
                           </div>
                         ))}
@@ -149,19 +159,19 @@ export function DesignSystemBaseline() {
                 );
               })}
             </ScrollArea>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
 
         {/* Component Specifications */}
-        <Card>
-          <CardHeader className="py-3">
-            <CardTitle className="text-base flex items-center gap-2">
-              <Layout className="h-4 w-4 text-brand-primary" />
+        <div style={{ background: 'var(--ds-surface, #FFFFFF)', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px' }}>
+          <div style={{ padding: '12px 24px', borderBottom: '1px solid var(--ds-border-layout, #EBECF0)' }}>
+            <h3 className="text-base flex items-center gap-2" style={{ fontWeight: 500, margin: 0 }}>
+              <BoardIcon label="" size="small" />
               Component Specs ({componentSpecs.length})
-            </CardTitle>
-            <CardDescription>Target measurements for UI components</CardDescription>
-          </CardHeader>
-          <CardContent className="p-0">
+            </h3>
+            <p style={{ fontSize: '14px', color: 'var(--ds-text-subtlest, #626F86)', margin: '4px 0 0' }}>Target measurements for UI components</p>
+          </div>
+          <div>
             <ScrollArea className="h-[400px]">
               {componentSpecs.map(spec => (
                 <div key={spec.name} className="border-b last:border-b-0 p-4">
@@ -182,23 +192,23 @@ export function DesignSystemBaseline() {
                 </div>
               ))}
             </ScrollArea>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       </div>
 
       {/* Color Swatches Preview */}
-      <Card>
-        <CardHeader className="py-3">
-          <CardTitle className="text-base">Golden Hour Chart Palette</CardTitle>
-          <CardDescription>Mandatory palette for all charts, graphs, and data visualizations</CardDescription>
-        </CardHeader>
-        <CardContent>
+      <div style={{ background: 'var(--ds-surface, #FFFFFF)', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px' }}>
+        <div style={{ padding: '12px 24px', borderBottom: '1px solid var(--ds-border-layout, #EBECF0)' }}>
+          <h3 className="text-base" style={{ fontWeight: 500, margin: 0 }}>Golden Hour Chart Palette</h3>
+          <p style={{ fontSize: '14px', color: 'var(--ds-text-subtlest, #626F86)', margin: '4px 0 0' }}>Mandatory palette for all charts, graphs, and data visualizations</p>
+        </div>
+        <div style={{ padding: '24px' }}>
           <div className="flex gap-3 flex-wrap">
             {baselineTokens
               .filter(t => t.category.id === 'palette')
               .map(token => (
                 <div key={token.cssVar} className="text-center">
-                  <div 
+                  <div
                     className="h-12 w-12 rounded-lg border border-border mb-1"
                     style={{ backgroundColor: token.value }}
                   />
@@ -207,8 +217,8 @@ export function DesignSystemBaseline() {
                 </div>
               ))}
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     </div>
   );
 }

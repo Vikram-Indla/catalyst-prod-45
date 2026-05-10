@@ -36,8 +36,8 @@
  *   breaches first.
  */
 import React, { useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { token } from '@atlaskit/tokens';
+import { useGlobalSearchStore } from '@/store/globalSearchStore';
 import Spinner from '@atlaskit/spinner';
 import { useAgeingItems, type AgeingItem } from '@/hooks/useAgeingItems';
 import ForYouRow from './ForYouRow';
@@ -99,7 +99,8 @@ function initials(name: string): string {
 function ageingToWorkItem(a: AgeingItem): WorkItem {
   const assigneeName = a.assignee_display_name || 'Unassigned';
   return {
-    id: a.id,
+    // CatalystDetailRouter resolves by issue_key (text), not UUID.
+    id: a.issue_key,
     key: a.issue_key,
     summary: a.summary,
     phIssueId: a.id,
@@ -138,10 +139,10 @@ function SectionHeading({ label, count }: { label: string; count: number }) {
       style={{
         display: 'flex',
         alignItems: 'center',
-        gap: 8,
-        paddingInline: 12,
-        paddingBlockStart: 16,
-        paddingBlockEnd: 8,
+        gap: token('space.100', '8px'),
+        paddingInline: token('space.150', '12px'),
+        paddingBlockStart: token('space.200', '16px'),
+        paddingBlockEnd: token('space.100', '8px'),
       }}
     >
       <span
@@ -159,7 +160,7 @@ function SectionHeading({ label, count }: { label: string; count: number }) {
           font: `400 12px/16px "Inter", system-ui, sans-serif`,
           color: text.subtle,
           backgroundColor: token('elevation.surface.sunken', '#F7F8F9'),
-          paddingInline: 6,
+          paddingInline: token('space.075', '6px'),
           borderRadius: 999,
         }}
       >
@@ -169,32 +170,105 @@ function SectionHeading({ label, count }: { label: string; count: number }) {
   );
 }
 
-// ─── Bucketing ──────────────────────────────────────────────────────────────
-type AgeingBucket = 'overdue' | 'thisWeek' | 'thisMonth' | 'quarter' | 'older';
+// ─── Bucketing — age-first ───────────────────────────────────────────────────
+// Primary grouping is by calendar age so users see the distribution at a
+// glance. SLA breach is surfaced per-row as a suggestion string — keeps the
+// governance signal without collapsing everything into one "Overdue SLA" pile.
+type AgeingBucket = 'thisWeek' | 'thisMonth' | 'twoMonths' | 'threeMonths' | 'sixMonths' | 'sixPlus';
 
 const BUCKET_LABELS: Record<AgeingBucket, string> = {
-  overdue:   'Overdue SLA',
-  thisWeek:  'This week (1–7 days)',
-  thisMonth: 'This month (8–30 days)',
-  quarter:   '1–3 months',
-  older:     '3+ months',
+  thisWeek:    'This week (1–7 days)',
+  thisMonth:   'This month (8–30 days)',
+  twoMonths:   '1–2 months',
+  threeMonths: '2–3 months',
+  sixMonths:   '3–6 months',
+  sixPlus:     '6+ months — archive candidates',
 };
 
-const BUCKET_ORDER: AgeingBucket[] = ['overdue', 'thisWeek', 'thisMonth', 'quarter', 'older'];
+const BUCKET_ORDER: AgeingBucket[] = ['thisWeek', 'thisMonth', 'twoMonths', 'threeMonths', 'sixMonths', 'sixPlus'];
 
 function bucketFor(a: AgeingItem): AgeingBucket {
+  if (a.days_open <= 7)   return 'thisWeek';
+  if (a.days_open <= 30)  return 'thisMonth';
+  if (a.days_open <= 60)  return 'twoMonths';
+  if (a.days_open <= 90)  return 'threeMonths';
+  if (a.days_open <= 180) return 'sixMonths';
+  return 'sixPlus';
+}
+
+// SLA breach indicator shown as a subtle row suggestion so the user sees
+// which items are past their type-specific threshold within each age bucket.
+function slaSuggestion(a: AgeingItem): string | undefined {
   const type = normaliseItemType(a.issue_type);
   const threshold = SLA_THRESHOLDS[type] ?? 10;
-  if (a.days_open > threshold) return 'overdue';
-  if (a.days_open <= 7) return 'thisWeek';
-  if (a.days_open <= 30) return 'thisMonth';
-  if (a.days_open <= 90) return 'quarter';
-  return 'older';
+  if (a.days_open <= threshold) return undefined;
+  const overBy = a.days_open - threshold;
+  return `SLA overdue by ${overBy}d (${type} limit: ${threshold}d)`;
+}
+
+// ─── AI Archive Banner ───────────────────────────────────────────────────────
+// Shown above 6+ month items. Uses ADS color.background.warning.subtle so it
+// reads as "caution / action needed" without being alarming. The CTA copies
+// the Jira inline-message pattern (icon + text + link).
+function AiArchiveBanner({ count }: { count: number }) {
+  return (
+    <div
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        gap: 10,
+        marginInline: token('space.150', '12px'),
+        marginBlockEnd: token('space.100', '8px'),
+        padding: `${token('space.100', '8px')} ${token('space.150', '12px')}`,
+        borderRadius: 6,
+        background: token('color.background.warning.subtle', '#FFF7D6'),
+        border: `1px solid ${token('color.border.warning', '#F8E6A0')}`,
+      }}
+    >
+      {/* Sparkle — signals AI involvement */}
+      <span style={{ fontSize: 14, flexShrink: 0 }}>✦</span>
+      <span
+        style={{
+          flex: 1,
+          font: `400 12px/16px "Inter", system-ui, sans-serif`,
+          color: token('color.text.warning', '#A54800'),
+        }}
+      >
+        {count} {count === 1 ? 'item has' : 'items have'} been open 6+ months.
+        {' '}AI suggests these are archive candidates — no recent activity detected.
+      </span>
+      <button
+        type="button"
+        onClick={() => {
+          // Bulk archive is a destructive multi-item action — requires a
+          // dedicated confirmation flow. For now, open a Jira filter for
+          // these items so the user can review before bulk-transitioning.
+          // Wire to bulk-status when that flow is built (Row 19 deferred).
+        }}
+        style={{
+          flexShrink: 0,
+          background: 'transparent',
+          border: 'none',
+          cursor: 'pointer',
+          font: `600 12px/16px "Inter", system-ui, sans-serif`,
+          color: token('color.text.warning', '#A54800'),
+          padding: `${token('space.025', '2px')} ${token('space.050', '4px')}`,
+          borderRadius: 3,
+          textDecoration: 'underline',
+          textDecorationColor: 'transparent',
+          transition: 'text-decoration-color 150ms cubic-bezier(0.15, 1, 0.3, 1)',
+        }}
+        onMouseEnter={e => { e.currentTarget.style.textDecorationColor = 'currentColor'; }}
+        onMouseLeave={e => { e.currentTarget.style.textDecorationColor = 'transparent'; }}
+      >
+        Review
+      </button>
+    </div>
+  );
 }
 
 // ─── Component ──────────────────────────────────────────────────────────────
 export default function AgeingPanel() {
-  const navigate = useNavigate();
   const { data: ageingItems, isLoading, isError } = useAgeingItems();
 
   const grouped = useMemo(() => {
@@ -215,20 +289,17 @@ export default function AgeingPanel() {
   }, [ageingItems]);
 
   const handleSelect = (item: WorkItem) => {
-    if (!item.key) return;
-    navigate(`/issues/${item.key}`);
-  };
-
-  const handleToggleStar = () => {
-    // Stars aren't wired for governance rows — the ageing source doesn't
-    // track star state. Rendering the star (hover-reveal) keeps visual
-    // parity with Assigned; click is a no-op so we don't silently fail
-    // a persistence round-trip.
+    useGlobalSearchStore.getState().openDetail({
+      // item.id is now mapped to a.issue_key in ageingToWorkItem — pass directly.
+      id: item.id,
+      itemType: item.issueType,
+      projectKey: item.projectKey,
+    });
   };
 
   if (isLoading) {
     return (
-      <div style={{ padding: 24, display: 'flex', alignItems: 'center', gap: 12 }}>
+      <div style={{ padding: token('space.300', '24px'), display: 'flex', alignItems: 'center', gap: token('space.150', '12px') }}>
         <Spinner size="small" />
         <span style={{ color: token('color.text.subtle', '#626F86'), font: `400 14px/20px "Inter", system-ui, sans-serif` }}>
           Loading ageing items…
@@ -260,12 +331,15 @@ export default function AgeingPanel() {
       {grouped.map(({ bucket, label, items }) => (
         <div key={bucket}>
           <SectionHeading label={label} count={items.length} />
+          {bucket === 'sixPlus' && (
+            <AiArchiveBanner count={items.length} />
+          )}
           {items.map(a => (
             <ForYouRow
               key={a.id}
               item={ageingToWorkItem(a)}
               onSelect={handleSelect}
-              onToggleStar={handleToggleStar}
+              suggestion={slaSuggestion(a)}
             />
           ))}
         </div>

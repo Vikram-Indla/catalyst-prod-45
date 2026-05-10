@@ -3,6 +3,21 @@
 // ============================================================
 
 import React, { useState } from 'react';
+import ChartTrendIcon from '@atlaskit/icon/core/chart-trend';
+import CheckCircleIcon from '@atlaskit/icon/core/check-circle';
+import CopyIcon from '@atlaskit/icon/core/copy';
+import CrossCircleIcon from '@atlaskit/icon/core/cross-circle';
+import EyeOpenIcon from '@atlaskit/icon/core/eye-open';
+import FileIcon from '@atlaskit/icon/core/file';
+import LinkBrokenIcon from '@atlaskit/icon/core/link-broken';
+import LinkExternalIcon from '@atlaskit/icon/core/link-external';
+import NotificationIcon from '@atlaskit/icon/core/notification';
+import PeopleGroupIcon from '@atlaskit/icon/core/people-group';
+import RefreshIcon from '@atlaskit/icon/core/refresh';
+import SettingsIcon from '@atlaskit/icon/core/settings';
+import ShowMoreHorizontalIcon from '@atlaskit/icon/core/show-more-horizontal';
+import ToolsIcon from '@atlaskit/icon/core/tools';
+import WarningIcon from '@atlaskit/icon/core/warning';
 import {
   SlackConfig,
   SlackStats,
@@ -11,8 +26,7 @@ import {
   useTestSlackConnection,
   useDisconnectSlackUser,
 } from '@/hooks/useSlackAdmin';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
+import Button from '@atlaskit/button/new';
 import { Avatar, Lozenge } from '@/components/ads';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -41,24 +55,6 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/admin/admin-alert-dialog';
-import {
-  CheckCircle,
-  XCircle,
-  MoreHorizontal,
-  Users,
-  Bell,
-  Activity,
-  TestTube,
-  Settings,
-  FileText,
-  TrendingUp,
-  AlertTriangle,
-  Unlink,
-  RefreshCw,
-  ExternalLink,
-  Copy,
-  Eye,
-} from 'lucide-react';
 import { formatDistanceToNow, format } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
@@ -107,29 +103,29 @@ function StatCard({
   };
 
   return (
-    <Card>
-      <CardContent className="pt-6">
-        <div className="flex items-start justify-between">
-          <div>
-            <p className="text-sm font-medium text-slate-500">{title}</p>
-            <p className="text-2xl font-bold text-slate-900 mt-1">{value}</p>
-            {subtitle && (
-              <p className="text-xs text-slate-500 mt-1">{subtitle}</p>
-            )}
-            {trend && (
-              <div className="flex items-center gap-1 mt-2">
-                <TrendingUp className="w-3 h-3 text-green-500" />
-                <span className="text-xs text-green-600">+{trend.value}</span>
-                <span className="text-xs text-slate-500">{trend.label}</span>
-              </div>
-            )}
-          </div>
-          <div className={cn('w-10 h-10 rounded-lg flex items-center justify-center', colors[color].bg)}>
-            <Icon className={cn('w-5 h-5', colors[color].icon)} />
-          </div>
+    <div style={{ background: 'var(--ds-surface, #FFFFFF)', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px', padding: '24px' }}>
+      <div className="flex items-start justify-between">
+        <div>
+          <p className="text-sm font-medium text-slate-500">{title}</p>
+          <p className="text-2xl font-bold text-slate-900 mt-1">{value}</p>
+          {subtitle && (
+            <p className="text-xs text-slate-500 mt-1">{subtitle}</p>
+          )}
+          {trend && (
+            <div className="flex items-center gap-1 mt-2">
+              <ChartTrendIcon label="" size="small" />
+              <span className="text-xs text-green-600">+{trend.value}</span>
+              <span className="text-xs text-slate-500">{trend.label}</span>
+            </div>
+          )}
         </div>
-      </CardContent>
-    </Card>
+        <div className={cn('w-10 h-10 rounded-lg flex items-center justify-center', colors[color].bg)}>
+          <span className={colors[color].icon}>
+            <Icon label="" size="small" />
+          </span>
+        </div>
+      </div>
+    </div>
   );
 }
 
@@ -154,18 +150,18 @@ const getActionLabel = (action: string) => {
 };
 
 const getActionIcon = (action: string, status: string) => {
-  if (status === 'failed') return <XCircle className="w-4 h-4 text-red-500" />;
+  if (status === 'failed') return <CrossCircleIcon label="" size="small" />;
   
   const icons: Record<string, React.ReactNode> = {
-    config_created: <Settings className="w-4 h-4 text-blue-500" />,
-    config_updated: <Settings className="w-4 h-4 text-blue-500" />,
+    config_created: <SettingsIcon label="" size="small" />,
+    config_updated: <SettingsIcon label="" size="small" />,
     workspace_installed: <SlackIcon className="w-4 h-4 text-blue-500" />,
-    user_connected: <Users className="w-4 h-4 text-green-500" />,
-    user_disconnected: <Unlink className="w-4 h-4 text-amber-500" />,
-    test_sent: <TestTube className="w-4 h-4 text-blue-500" />,
-    notification_sent: <Bell className="w-4 h-4 text-green-500" />,
+    user_connected: <PeopleGroupIcon label="" size="small" />,
+    user_disconnected: <LinkBrokenIcon label="" size="small" />,
+    test_sent: <ToolsIcon label="" size="small" />,
+    notification_sent: <NotificationIcon label="" size="small" />,
   };
-  return icons[action] || <Activity className="w-4 h-4 text-slate-500" />;
+  return icons[action] || <ChartTrendIcon label="" size="small" />;
 };
 
 // ============================================================
@@ -198,71 +194,66 @@ export function SlackDashboard({ config, stats }: DashboardProps) {
   return (
     <div className="space-y-6">
       {/* Connection Status Banner */}
-      <Card className={cn(
-        'border-l-4',
-        config.is_active ? 'border-l-green-500' : 'border-l-amber-500'
-      )}>
-        <CardContent className="py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <div className={cn(
-                'w-10 h-10 rounded-full flex items-center justify-center',
-                config.is_active ? 'bg-green-100' : 'bg-amber-100'
-              )}>
-                {config.is_active ? (
-                  <CheckCircle className="w-5 h-5 text-green-600" />
-                ) : (
-                  <AlertTriangle className="w-5 h-5 text-amber-600" />
-                )}
-              </div>
-              <div>
-                <div className="flex items-center gap-2">
-                  <h3 className="font-semibold text-slate-900">
-                    {config.workspace_name || 'Slack Integration'}
-                  </h3>
-                  <Lozenge appearance={config.is_active ? 'success' : 'default'}>
-                    {config.is_active ? 'Connected' : 'Not Connected'}
-                  </Lozenge>
-                  {config.last_test_status && (
-                    <Lozenge appearance={config.last_test_status === 'success' ? 'success' : 'removed'}>
-                      Last test: {config.last_test_status}
-                    </Lozenge>
-                  )}
-                </div>
-                <p className="text-sm text-slate-500">
-                  {config.is_active
-                    ? `Last tested: ${config.last_tested_at ? formatDistanceToNow(new Date(config.last_tested_at), { addSuffix: true }) : 'Never'}`
-                    : 'Complete setup to enable notifications'}
-                </p>
-              </div>
+      <div style={{
+        background: 'var(--ds-surface, #FFFFFF)',
+        border: '1px solid var(--ds-border, #DCDFE4)',
+        borderLeft: config.is_active ? '4px solid #22c55e' : '4px solid #f59e0b',
+        borderRadius: '3px',
+        padding: '16px 24px',
+      }}>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <div className={cn(
+              'w-10 h-10 rounded-full flex items-center justify-center',
+              config.is_active ? 'bg-green-100' : 'bg-amber-100'
+            )}>
+              {config.is_active ? (
+                <CheckCircleIcon label="" size="small" />
+              ) : (
+                <WarningIcon label="" size="small" />
+              )}
             </div>
-            <div className="flex items-center gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => testConnection.mutate({})}
-                disabled={testConnection.isPending || !config.is_active}
-              >
-                {testConnection.isPending ? (
-                  <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
-                ) : (
-                  <TestTube className="w-4 h-4 mr-2" />
+            <div>
+              <div className="flex items-center gap-2">
+                <h3 className="font-semibold text-slate-900">
+                  {config.workspace_name || 'Slack Integration'}
+                </h3>
+                <Lozenge appearance={config.is_active ? 'success' : 'default'}>
+                  {config.is_active ? 'Connected' : 'Not Connected'}
+                </Lozenge>
+                {config.last_test_status && (
+                  <Lozenge appearance={config.last_test_status === 'success' ? 'success' : 'removed'}>
+                    Last test: {config.last_test_status}
+                  </Lozenge>
                 )}
-                Send Test
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => window.open('https://api.slack.com/apps/' + config.app_id, '_blank')}
-                disabled={!config.app_id}
-              >
-                <ExternalLink className="w-4 h-4 mr-2" />
-                Slack Console
-              </Button>
+              </div>
+              <p className="text-sm text-slate-500">
+                {config.is_active
+                  ? `Last tested: ${config.last_tested_at ? formatDistanceToNow(new Date(config.last_tested_at), { addSuffix: true }) : 'Never'}`
+                  : 'Complete setup to enable notifications'}
+              </p>
             </div>
           </div>
-        </CardContent>
-      </Card>
+          <div className="flex items-center gap-2">
+            <Button
+              appearance="default"
+              iconBefore={testConnection.isPending ? RefreshIcon : ToolsIcon}
+              onClick={() => testConnection.mutate({})}
+              isDisabled={testConnection.isPending || !config.is_active}
+            >
+              Send Test
+            </Button>
+            <Button
+              appearance="default"
+              iconBefore={LinkExternalIcon}
+              onClick={() => window.open('https://api.slack.com/apps/' + config.app_id, '_blank')}
+              isDisabled={!config.app_id}
+            >
+              Slack Console
+            </Button>
+          </div>
+        </div>
+      </div>
 
       {/* Stats Grid */}
       {stats && (
@@ -271,14 +262,14 @@ export function SlackDashboard({ config, stats }: DashboardProps) {
             title="Connected Users"
             value={stats.active_connected_users}
             subtitle={`${stats.total_connected_users} total`}
-            icon={Users}
+            icon={PeopleGroupIcon}
             color="purple"
           />
           <StatCard
             title="Notifications Sent"
             value={stats.total_notifications_sent.toLocaleString()}
             subtitle="All time"
-            icon={Bell}
+            icon={NotificationIcon}
             trend={stats.notifications_last_24h > 0 ? { value: stats.notifications_last_24h, label: 'today' } : undefined}
             color="green"
           />
@@ -286,14 +277,14 @@ export function SlackDashboard({ config, stats }: DashboardProps) {
             title="Last 7 Days"
             value={stats.notifications_last_7d.toLocaleString()}
             subtitle="Notifications delivered"
-            icon={Activity}
+            icon={ChartTrendIcon}
             color="blue"
           />
           <StatCard
             title="Failed (24h)"
             value={stats.failed_notifications_24h}
             subtitle="Delivery failures"
-            icon={AlertTriangle}
+            icon={WarningIcon}
             color={stats.failed_notifications_24h > 0 ? 'red' : 'green'}
           />
         </div>
@@ -316,24 +307,22 @@ export function SlackDashboard({ config, stats }: DashboardProps) {
         <TabsContent value="overview" className="space-y-4 mt-4">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             {/* Configuration Card */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-base flex items-center gap-2">
-                  <Settings className="w-4 h-4" />
+            <div style={{ background: 'var(--ds-surface, #FFFFFF)', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px' }}>
+              <div style={{ padding: '16px 24px', borderBottom: '1px solid var(--ds-border-layout, #EBECF0)' }}>
+                <h3 className="text-base flex items-center gap-2" style={{ fontWeight: 500, margin: 0 }}>
+                  <SettingsIcon label="" size="small" />
                   Configuration
-                </CardTitle>
-                <CardDescription>Current Slack integration settings</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
+                </h3>
+                <p style={{ fontSize: '14px', color: 'var(--ds-text-subtlest, #626F86)', margin: '4px 0 0' }}>Current Slack integration settings</p>
+              </div>
+              <div style={{ padding: '24px' }} className="space-y-4">
                 <div className="grid grid-cols-2 gap-4 text-sm">
                   <div>
                     <p className="text-slate-500">App ID</p>
                     <div className="flex items-center gap-1">
                       <p className="font-mono">{config.app_id || '—'}</p>
                       {config.app_id && (
-                        <Button variant="ghost" size="sm" className="h-6 w-6 p-0" onClick={() => copyToClipboard(config.app_id!)}>
-                          <Copy className="w-3 h-3" />
-                        </Button>
+                        <Button appearance="subtle" iconBefore={CopyIcon} onClick={() => copyToClipboard(config.app_id!)} />
                       )}
                     </div>
                   </div>
@@ -373,24 +362,22 @@ export function SlackDashboard({ config, stats }: DashboardProps) {
                     ))}
                   </div>
                 </div>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
 
             {/* Recent Activity Card */}
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between">
+            <div style={{ background: 'var(--ds-surface, #FFFFFF)', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px' }}>
+              <div style={{ padding: '16px 24px', borderBottom: '1px solid var(--ds-border-layout, #EBECF0)' }} className="flex flex-row items-center justify-between">
                 <div>
-                  <CardTitle className="text-base flex items-center gap-2">
-                    <Activity className="w-4 h-4" />
+                  <h3 className="text-base flex items-center gap-2" style={{ fontWeight: 500, margin: 0 }}>
+                    <ChartTrendIcon label="" size="small" />
                     Recent Activity
-                  </CardTitle>
-                  <CardDescription>Latest integration events</CardDescription>
+                  </h3>
+                  <p style={{ fontSize: '14px', color: 'var(--ds-text-subtlest, #626F86)', margin: '4px 0 0' }}>Latest integration events</p>
                 </div>
-                <Button variant="ghost" size="sm" onClick={() => refetchAudit()}>
-                  <RefreshCw className="w-4 h-4" />
-                </Button>
-              </CardHeader>
-              <CardContent>
+                <Button appearance="subtle" iconBefore={RefreshIcon} onClick={() => refetchAudit()} />
+              </div>
+              <div style={{ padding: '24px' }}>
                 <ScrollArea className="h-[280px]">
                   {auditLoading ? (
                     <div className="space-y-3">
@@ -428,30 +415,29 @@ export function SlackDashboard({ config, stats }: DashboardProps) {
                     </div>
                   ) : (
                     <div className="text-center py-8 text-slate-500">
-                      <FileText className="w-8 h-8 mx-auto mb-2 opacity-50" />
+                      <FileIcon label="" size="small" />
                       <p className="text-sm">No activity yet</p>
                     </div>
                   )}
                 </ScrollArea>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
           </div>
         </TabsContent>
 
         {/* Connected Users Tab */}
         <TabsContent value="users" className="mt-4">
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between">
+          <div style={{ background: 'var(--ds-surface, #FFFFFF)', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px' }}>
+            <div style={{ padding: '16px 24px', borderBottom: '1px solid var(--ds-border-layout, #EBECF0)' }} className="flex flex-row items-center justify-between">
               <div>
-                <CardTitle className="text-base">Connected Users</CardTitle>
-                <CardDescription>Users who have linked their Slack accounts</CardDescription>
+                <h3 className="text-base" style={{ fontWeight: 500, margin: 0 }}>Connected Users</h3>
+                <p style={{ fontSize: '14px', color: 'var(--ds-text-subtlest, #626F86)', margin: '4px 0 0' }}>Users who have linked their Slack accounts</p>
               </div>
-              <Button variant="outline" size="sm" onClick={() => refetchUsers()}>
-                <RefreshCw className="w-4 h-4 mr-2" />
+              <Button appearance="default" iconBefore={RefreshIcon} onClick={() => refetchUsers()}>
                 Refresh
               </Button>
-            </CardHeader>
-            <CardContent>
+            </div>
+            <div style={{ padding: '24px' }}>
               {usersLoading ? (
                 <div className="space-y-4">
                   {[...Array(5)].map((_, i) => (
@@ -510,15 +496,13 @@ export function SlackDashboard({ config, stats }: DashboardProps) {
                         <TableCell>
                           <DropdownMenu>
                             <DropdownMenuTrigger asChild>
-                              <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                                <MoreHorizontal className="h-4 w-4" />
-                              </Button>
+                              <Button appearance="subtle" iconBefore={ShowMoreHorizontalIcon} />
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end">
                               <DropdownMenuItem
                                 onClick={() => testConnection.mutate({ target_user_id: user.user_id })}
                               >
-                                <TestTube className="w-4 h-4 mr-2" />
+                                <ToolsIcon label="" size="small" />
                                 Send Test
                               </DropdownMenuItem>
                               <DropdownMenuItem
@@ -528,7 +512,7 @@ export function SlackDashboard({ config, stats }: DashboardProps) {
                                   setDisconnectUserName(user.full_name);
                                 }}
                               >
-                                <Unlink className="w-4 h-4 mr-2" />
+                                <LinkBrokenIcon label="" size="small" />
                                 Disconnect
                               </DropdownMenuItem>
                             </DropdownMenuContent>
@@ -540,31 +524,30 @@ export function SlackDashboard({ config, stats }: DashboardProps) {
                 </Table>
               ) : (
                 <div className="text-center py-12">
-                  <Users className="w-12 h-12 mx-auto mb-4 text-slate-300" />
+                  <PeopleGroupIcon label="" size="small" />
                   <h3 className="text-lg font-medium text-slate-900 mb-1">No connected users</h3>
                   <p className="text-slate-500 text-sm">
                     Users can connect their Slack accounts from their notification settings
                   </p>
                 </div>
               )}
-            </CardContent>
-          </Card>
+            </div>
+          </div>
         </TabsContent>
 
         {/* Audit Log Tab */}
         <TabsContent value="audit" className="mt-4">
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between">
+          <div style={{ background: 'var(--ds-surface, #FFFFFF)', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px' }}>
+            <div style={{ padding: '16px 24px', borderBottom: '1px solid var(--ds-border-layout, #EBECF0)' }} className="flex flex-row items-center justify-between">
               <div>
-                <CardTitle className="text-base">Audit Log</CardTitle>
-                <CardDescription>Complete history of integration events</CardDescription>
+                <h3 className="text-base" style={{ fontWeight: 500, margin: 0 }}>Audit Log</h3>
+                <p style={{ fontSize: '14px', color: 'var(--ds-text-subtlest, #626F86)', margin: '4px 0 0' }}>Complete history of integration events</p>
               </div>
-              <Button variant="outline" size="sm" onClick={() => refetchAudit()}>
-                <RefreshCw className="w-4 h-4 mr-2" />
+              <Button appearance="default" iconBefore={RefreshIcon} onClick={() => refetchAudit()}>
                 Refresh
               </Button>
-            </CardHeader>
-            <CardContent>
+            </div>
+            <div style={{ padding: '24px' }}>
               {auditLoading ? (
                 <div className="space-y-4">
                   {[...Array(10)].map((_, i) => (
@@ -609,13 +592,9 @@ export function SlackDashboard({ config, stats }: DashboardProps) {
                         <TableCell>
                           {log.error_message && (
                             <Button
-                              variant="ghost"
-                              size="sm"
-                              className="h-8 w-8 p-0"
-                              title={log.error_message}
-                            >
-                              <Eye className="h-4 w-4" />
-                            </Button>
+                              appearance="subtle"
+                              iconBefore={EyeOpenIcon}
+                            />
                           )}
                         </TableCell>
                       </TableRow>
@@ -624,15 +603,15 @@ export function SlackDashboard({ config, stats }: DashboardProps) {
                 </Table>
               ) : (
                 <div className="text-center py-12">
-                  <FileText className="w-12 h-12 mx-auto mb-4 text-slate-300" />
+                  <FileIcon label="" size="small" />
                   <h3 className="text-lg font-medium text-slate-900 mb-1">No audit logs</h3>
                   <p className="text-slate-500 text-sm">
                     Activity will appear here once the integration is used
                   </p>
                 </div>
               )}
-            </CardContent>
-          </Card>
+            </div>
+          </div>
         </TabsContent>
       </Tabs>
 

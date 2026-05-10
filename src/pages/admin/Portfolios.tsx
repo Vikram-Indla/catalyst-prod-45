@@ -3,7 +3,9 @@ import { useState } from 'react';
 import { AdminGuard } from '@/components/admin/AdminGuard';
 import Button from '@atlaskit/button/new';
 import Textfield from '@atlaskit/textfield';
-import { Plus, Search, Trash2 } from 'lucide-react';
+import AddIcon from '@atlaskit/icon/core/add';
+import SearchIcon from '@atlaskit/icon/core/search';
+import TrashIcon from '@atlaskit/icon/glyph/trash';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { ResponsivePageContainer, ResponsivePageHeader, ResponsiveTableWrapper } from '@/components/layout/ResponsivePageContainer';
@@ -224,8 +226,7 @@ export default function Portfolios() {
           title="Programs"
           description="Configure program structure and enterprise associations"
           actions={
-            <Button appearance="primary" onClick={openAddDialog}>
-              <Plus className="h-4 w-4 mr-2" />
+            <Button appearance="primary" onClick={openAddDialog} iconBefore={AddIcon}>
               Add Program
             </Button>
           }
@@ -262,7 +263,7 @@ export default function Portfolios() {
           <div>
             <div className="flex items-center gap-4 mb-4">
               <div className="relative flex-1">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4" style={{ color: 'var(--ds-text-subtle, #44546F)' }} />
+                <span style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', display: 'flex', color: 'var(--ds-text-subtle, #44546F)' }}><SearchIcon label="" size="small" /></span>
                 <Textfield
                   placeholder="Search programs..."
                   elemBeforeInput={<span />}
@@ -326,7 +327,7 @@ export default function Portfolios() {
                                 appearance="subtle"
                                 onClick={() => handleDeleteClick(program)}
                               >
-                                <Trash2 className="h-4 w-4" style={{ color: 'var(--ds-icon-danger, #CA3521)' }} />
+                                <span style={{ display: 'inline-flex', color: 'var(--ds-icon-danger, #CA3521)' }}><TrashIcon label="" size="small" /></span>
                               </Button>
                             </div>
                           </td>

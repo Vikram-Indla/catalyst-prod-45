@@ -15,6 +15,7 @@ import {
 } from '@/components/ui/table';
 import { ProductRole, useRolePermissions, PERMISSION_GROUPS } from '@/hooks/useProductRoles';
 import { cn } from '@/lib/utils';
+import Spinner from '@atlaskit/spinner';
 
 interface RoleDetailPermissionsModalProps {
   isOpen: boolean;
@@ -55,7 +56,7 @@ export function RoleDetailPermissionsModal({
 
         {isLoading ? (
           <div className="flex items-center justify-center py-8">
-            <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-brand-primary" />
+            <Spinner size="small" />
           </div>
         ) : (
           <Table>

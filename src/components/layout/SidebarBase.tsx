@@ -56,7 +56,7 @@ const HUB_ITEMS = [
  */
 const ROUTE_PREFETCH_MAP: Record<string, () => Promise<unknown>> = {
   '/project-hub/projects': () => import('../../pages/project-hub/AllProjectsPage'),
-  '/project-hub/resources': () => import('../../pages/ResourceListingPage'),
+  '/admin/resources': () => import('../../pages/ResourceListingPage'),
   '/producthub/kanban': () => import('../../pages/producthub/KanbanPage'),
   '/releasehub': () => import('../../pages/releasehub/AllReleasesPage'),
   '/testhub': () => import('../../pages/testhub/TestHubPage'),
@@ -272,7 +272,7 @@ export function SidebarBase({
           style={{
             minHeight: '48px',
             padding: expanded ? '12px 12px 12px 16px' : '12px 0',
-            gap: expanded ? '10px' : '4px',
+            gap: expanded ? '8px' : '4px',
             background: 'transparent',
           }}
         >
@@ -283,7 +283,7 @@ export function SidebarBase({
               style={{
                 display: 'flex',
                 alignItems: 'center',
-                gap: 10,
+                gap: 8,
                 background: 'transparent',
                 border: 'none',
                 cursor: 'pointer',
@@ -479,7 +479,7 @@ function renderMenuItem(
       style={{
         height: '32px',
         padding: expanded ? '0 12px' : '0',
-        gap: '10px',
+        gap: '8px',
         marginBottom: '0',
         fontSize: '14px',
         fontWeight: active ? 600 : 500,
@@ -489,8 +489,7 @@ function renderMenuItem(
         justifyContent: expanded ? 'flex-start' : 'center',
         background: active ? tk.activeBg : 'transparent',
         lineHeight: 1,
-        // ADS canonical: --ds-radius-small (3px). Was 6px (Catalyst pill drift).
-        borderRadius: 'var(--ds-radius-small, 3px)',
+        borderRadius: '4px',
         letterSpacing: '0',
       }}
       onMouseEnter={(e) => {

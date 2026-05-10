@@ -406,7 +406,7 @@ function FeedCard({
         display: 'flex',
         alignItems: 'flex-start',
         gap: 12,
-        padding: '12px 4px',
+        padding: '8px 4px',
         borderRadius: 4,
         backgroundColor: hover
           ? token('elevation.surface.hovered', '#F0F1F2')
@@ -459,7 +459,7 @@ function FeedCard({
       </Tooltip>
 
       {/* Text column takes the full remaining width. */}
-      <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 4, paddingInlineEnd: 28 }}>
+      <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 2, paddingInlineEnd: 28 }}>
         {/* Clickable headline: opens the detail modal. */}
         <button
           type="button"
@@ -499,11 +499,11 @@ function FeedCard({
         {/* Comment body — full text with @-chips rendered inline. */}
         <div
           style={{
-            font: `400 14px/20px "Inter", system-ui, sans-serif`,
-            color: token('color.text', '#292A2E'),
+            font: `400 13px/18px "Inter", system-ui, sans-serif`,
+            color: token('color.text.subtle', '#44546F'),
             whiteSpace: 'pre-wrap',
             wordBreak: 'break-word',
-            marginBlockStart: 4,
+            marginBlockStart: 2,
           }}
         >
           {renderCommentWithMentions(row.commentBody)}
@@ -571,7 +571,7 @@ function ReplyComposer({
   };
 
   return (
-    <div style={{ marginBlockStart: 12 }}>
+    <div style={{ marginBlockStart: 8 }}>
       <div
         style={{
           display: 'flex',
@@ -807,7 +807,7 @@ function ReactionStrip({ commentId }: { commentId: string }) {
         display: 'flex',
         alignItems: 'center',
         gap: 4,
-        marginBlockStart: 8,
+        marginBlockStart: 4,
         flexWrap: 'wrap',
       }}
     >
@@ -815,6 +815,9 @@ function ReactionStrip({ commentId }: { commentId: string }) {
         const live = byEmoji.get(r.key);
         const count = live?.count ?? 0;
         const isActive = !!live?.reactedByMe;
+        // Only render chips that have been used at least once, OR the user
+        // has already reacted — suppress the empty starter strip to keep density.
+        if (count === 0 && !isActive) return null;
         return (
           <ReactionChip
             key={r.key}
@@ -977,7 +980,13 @@ function renderCommentWithMentions(body: string): React.ReactNode {
 
   // Strip ADF mention placeholders (e.g. "[~accountid:abc123]") the sync
   // layer may still leave behind on old comments.
-  const deAdf = body.replace(/\[~[^\]]+\]/g, '').trim();
+  // Also collapse runs of 2+ blank lines into a single newline — the Jira ADF
+  // plaintext flattener leaves double-newlines between paragraphs which balloon
+  // card height without adding information.
+  const deAdf = body
+    .replace(/\[~[^\]]+\]/g, '')
+    .replace(/\n{2,}/g, '\n')
+    .trim();
   if (!deAdf) return null;
 
   // Pre-processor — normalize CC/@-mention variants left by the adfToPlainText
@@ -1007,7 +1016,10 @@ function renderCommentWithMentions(body: string): React.ReactNode {
   //       ccMatch splits on commas / semicolons / " and ".
   const cleaned = deAdf
     .replace(/([a-z0-9])(CC|Cc)\b/g, '$1 $2')
-    .replace(/\b(?:CC|Cc|cc)\s*:?\s*\n+\s*([^\n]+)/g, 'cc: @$1');
+    .replace(/\b(?:CC|Cc|cc)\s*:?\s*\n+\s*([^\n]+)/g, (_, names: string) => {
+      const trimmed = names.trim();
+      return `cc: ${trimmed.startsWith('@') ? trimmed : '@' + trimmed}`;
+    });
 
   const lines = cleaned.split(/\n/);
 
@@ -1108,16 +1120,16 @@ function formatRelativeTimestamp(iso: string): string {
   const diffMs = Date.now() - then;
   const diffMin = Math.floor(diffMs / 60_000);
   if (diffMin < 1) return 'just now';
-  if (diffMin < 60) return `${diffMin} minutes ago`;
+  if (diffMin < 60) return diffMin === 1 ? '1 minute ago' : `${diffMin} minutes ago`;
   const diffH = Math.floor(diffMin / 60);
-  if (diffH < 24) return `${diffH} hours ago`;
+  if (diffH < 24) return diffH === 1 ? '1 hour ago' : `${diffH} hours ago`;
   const diffD = Math.floor(diffH / 24);
   if (diffD === 1) return 'yesterday';
   if (diffD < 7) return `${diffD} days ago`;
   const diffW = Math.floor(diffD / 7);
-  if (diffW < 5) return `${diffW} weeks ago`;
+  if (diffW < 5) return diffW === 1 ? '1 week ago' : `${diffW} weeks ago`;
   const diffMo = Math.floor(diffD / 30);
-  if (diffMo < 12) return `${diffMo} months ago`;
+  if (diffMo < 12) return diffMo === 1 ? '1 month ago' : `${diffMo} months ago`;
   const diffY = Math.floor(diffD / 365);
-  return `${diffY} years ago`;
+  return diffY === 1 ? '1 year ago' : `${diffY} years ago`;
 }

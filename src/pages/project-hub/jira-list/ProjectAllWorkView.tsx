@@ -22,6 +22,7 @@ import React, { lazy, Suspense, useState, useCallback, useRef, useEffect, useMem
 import { WorkListPanel } from './components/WorkListPanel';
 import { useProjectAllWorkItems } from '@/hooks/useProjectListItems';
 import { useItemSelection } from '@/hooks/useItemSelection';
+import { makeOpenItemHandler } from './openItemDispatch';
 import { ProjectHeaderChip } from '@/components/layout/ProjectHeaderChip';
 import { ProjectTabBar } from '@/components/layout/ProjectTabBar';
 import {
@@ -226,14 +227,22 @@ export default function ProjectAllWorkView({ projectKey, projectId }: Props) {
                     // passing the issue_key here yields a silent 400 and an
                     // empty issue object → title falls back to "—".
                     itemId={activeItem.id}
-                    itemType={activeItem.type}
+                    // Use rawType (the DB's issue_type string) so CatalystDetailRouter's
+                    // resolveItemType gets "Production Incident" / "Business Gap" / etc.
+                    // instead of the collapsed WorkItemType 'task'. Fixes wrong view
+                    // rendering for incident/change-request/business-gap types.
+                    itemType={activeItem.rawType || activeItem.type}
                     projectId={projectId}
                     projectKey={projectKey}
                     // Subtask clicks come in with the child row's UUID.
                     // selectItem normalises that back to issue_key so the
                     // URL-sync effect writes `?issue=BAU-XXXX` instead of a
                     // UUID (P1-5 + P1-8 fix from 2026-04-20 critique).
-                    onOpenItem={(id) => selectItem(id)}
+                    // jira-compare 2026-05-10 — N1: parent crumb (often an
+                    // Epic) is NOT in the AllWork items list. Dispatch via
+                    // makeOpenItemHandler so out-of-list targets fall
+                    // through to the overlay router.
+                    onOpenItem={makeOpenItemHandler(items, selectItem, setOverlayItemId)}
                     panelMode={true}
                     navigationItems={filteredItems.map(i => ({ id: i.id, summary: i.summary, issue_key: i.jiraKey }))}
                     onNavigate={handleNavigate}
@@ -258,25 +267,25 @@ export default function ProjectAllWorkView({ projectKey, projectId }: Props) {
             router (same one used in the wide-mode panel above) handles
             all types, so Story / Epic / Feature / Subtask / Task / BR /
             Defect / Incident all render through their own CatalystView*. */}
-      {overlayItemId && (() => {
-        const overlayItem = items.find(i => i.id === overlayItemId);
-        if (!overlayItem) return null;
-        return (
-          <Suspense fallback={null}>
-            <CatalystDetailRouter
-              isOpen={true}
-              onClose={() => setOverlayItemId(null)}
-              itemId={overlayItem.id}
-              itemType={overlayItem.type}
-              projectId={projectId ?? ''}
-              projectKey={projectKey}
-              onOpenItem={(id) => setOverlayItemId(id)}
-              navigationItems={filteredItems.map(i => ({ id: i.id, summary: i.summary, issue_key: i.jiraKey }))}
-              onNavigate={(id) => setOverlayItemId(id)}
-            />
-          </Suspense>
-        );
-      })()}
+      {overlayItemId && (
+        /* jira-compare 2026-05-10 — N1: items.find guard removed. The
+           overlay must open any key, including parents (typically Epics)
+           that AllWork filters out of `items`. CatalystDetailRouter does
+           its own ph_issues lookup by issue_key when itemType is omitted
+           (router.tsx:65-78), so we pass overlayItemId straight through. */
+        <Suspense fallback={null}>
+          <CatalystDetailRouter
+            isOpen={true}
+            onClose={() => setOverlayItemId(null)}
+            itemId={overlayItemId}
+            projectId={projectId ?? ''}
+            projectKey={projectKey}
+            onOpenItem={(id) => setOverlayItemId(id)}
+            navigationItems={filteredItems.map(i => ({ id: i.id, summary: i.summary, issue_key: i.jiraKey }))}
+            onNavigate={(id) => setOverlayItemId(id)}
+          />
+        </Suspense>
+      )}
     </div>
   );
 }

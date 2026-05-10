@@ -1,6 +1,6 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Lozenge } from "@/components/ads";
-import { CheckCircle2, Circle } from "lucide-react";
+import CheckCircleIcon from '@atlaskit/icon/core/check-circle';
 
 interface JiraSetupGuideProps {
   hasConnections: boolean;
@@ -99,9 +99,9 @@ export function JiraSetupGuide({ hasConnections }: JiraSetupGuideProps) {
             >
               <div className="flex-shrink-0 mt-1">
                 {step.completed ? (
-                  <CheckCircle2 className="w-6 h-6 text-green-500" />
+                  <span style={{ display:'inline-flex', color:'var(--ds-icon-success, #22A06B)' }}><CheckCircleIcon label="" size="small" /></span>
                 ) : (
-                  <Circle className="w-6 h-6 text-muted-foreground" />
+                  <span style={{ display:'inline-flex', width:24, height:24, borderRadius:'50%', border:'2px solid var(--ds-border,#C1C7D0)', flexShrink:0 }} />
                 )}
               </div>
               <div className="flex-1">
@@ -135,7 +135,7 @@ export function JiraSetupGuide({ hasConnections }: JiraSetupGuideProps) {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
               <div className="flex items-center gap-2">
-                <CheckCircle2 className="w-5 h-5 text-green-500" />
+                <span style={{ display:'inline-flex', color:'var(--ds-icon-success, #22A06B)' }}><CheckCircleIcon label="" size="small" /></span>
                 <span className="font-medium">Bidirectional Sync</span>
               </div>
               <p className="text-sm text-muted-foreground ml-7">
@@ -145,7 +145,7 @@ export function JiraSetupGuide({ hasConnections }: JiraSetupGuideProps) {
 
             <div className="space-y-2">
               <div className="flex items-center gap-2">
-                <CheckCircle2 className="w-5 h-5 text-green-500" />
+                <span style={{ display:'inline-flex', color:'var(--ds-icon-success, #22A06B)' }}><CheckCircleIcon label="" size="small" /></span>
                 <span className="font-medium">Field Mapping</span>
               </div>
               <p className="text-sm text-muted-foreground ml-7">
@@ -155,7 +155,7 @@ export function JiraSetupGuide({ hasConnections }: JiraSetupGuideProps) {
 
             <div className="space-y-2">
               <div className="flex items-center gap-2">
-                <CheckCircle2 className="w-5 h-5 text-green-500" />
+                <span style={{ display:'inline-flex', color:'var(--ds-icon-success, #22A06B)' }}><CheckCircleIcon label="" size="small" /></span>
                 <span className="font-medium">Conflict Resolution</span>
               </div>
               <p className="text-sm text-muted-foreground ml-7">
@@ -165,7 +165,7 @@ export function JiraSetupGuide({ hasConnections }: JiraSetupGuideProps) {
 
             <div className="space-y-2">
               <div className="flex items-center gap-2">
-                <CheckCircle2 className="w-5 h-5 text-green-500" />
+                <span style={{ display:'inline-flex', color:'var(--ds-icon-success, #22A06B)' }}><CheckCircleIcon label="" size="small" /></span>
                 <span className="font-medium">Real-time Updates</span>
               </div>
               <p className="text-sm text-muted-foreground ml-7">
@@ -175,7 +175,7 @@ export function JiraSetupGuide({ hasConnections }: JiraSetupGuideProps) {
 
             <div className="space-y-2">
               <div className="flex items-center gap-2">
-                <CheckCircle2 className="w-5 h-5 text-green-500" />
+                <span style={{ display:'inline-flex', color:'var(--ds-icon-success, #22A06B)' }}><CheckCircleIcon label="" size="small" /></span>
                 <span className="font-medium">Historical Migration</span>
               </div>
               <p className="text-sm text-muted-foreground ml-7">
@@ -185,7 +185,7 @@ export function JiraSetupGuide({ hasConnections }: JiraSetupGuideProps) {
 
             <div className="space-y-2">
               <div className="flex items-center gap-2">
-                <CheckCircle2 className="w-5 h-5 text-green-500" />
+                <span style={{ display:'inline-flex', color:'var(--ds-icon-success, #22A06B)' }}><CheckCircleIcon label="" size="small" /></span>
                 <span className="font-medium">Sync Health Metrics</span>
               </div>
               <p className="text-sm text-muted-foreground ml-7">

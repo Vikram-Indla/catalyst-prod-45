@@ -1,15 +1,18 @@
 import { useState } from 'react';
 import { useProductStatusConfigs, useUpdateProductStatusConfig, useCreateProductStatusConfig, useDeleteProductStatusConfig, ProductStatusConfig } from '@/hooks/useProductSettings';
-import { Button } from '@/components/ui/button';
+import Button from '@atlaskit/button/new';
 import { Lozenge, type LozengeAppearance } from '@/components/ads';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import Textfield from '@atlaskit/textfield';
+import AdsSelect from '@atlaskit/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/admin/admin-dialog';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/admin/admin-alert-dialog';
-import { Plus, GripVertical, Pencil, Trash2, Loader2 } from 'lucide-react';
 import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd';
 import { cn } from '@/lib/utils';
+import Spinner from '@atlaskit/spinner';
+import AddIcon from '@atlaskit/icon/core/add';
+import EditIcon from '@atlaskit/icon/core/edit';
+import DragHandlerIcon from '@atlaskit/icon/glyph/drag-handler';
+import TrashIcon from '@atlaskit/icon/glyph/trash';
 
 interface WorkflowStatusesPanelProps {
   onChanges?: () => void;
@@ -124,7 +127,7 @@ export function WorkflowStatusesPanel({ onChanges }: WorkflowStatusesPanelProps)
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-12">
-        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+        <Spinner size="small" />
       </div>
     );
   }
@@ -147,8 +150,7 @@ export function WorkflowStatusesPanel({ onChanges }: WorkflowStatusesPanelProps)
             Configure process step statuses and workflow categories.
           </p>
         </div>
-        <Button onClick={() => handleOpenDialog()} className="bg-brand-primary hover:bg-brand-primary-hover">
-          <Plus className="h-4 w-4 mr-2" />
+        <Button appearance="primary" onClick={() => handleOpenDialog()} iconBefore={AddIcon}>
           Add Status
         </Button>
       </div>
@@ -191,7 +193,7 @@ export function WorkflowStatusesPanel({ onChanges }: WorkflowStatusesPanelProps)
                       )}
                     >
                       <div {...provided.dragHandleProps} className="cursor-grab text-muted-foreground">
-                        <GripVertical className="h-5 w-5" />
+                        <DragHandlerIcon label="" size="small" />
                       </div>
                       
                       <div className="flex-1 min-w-0">
@@ -214,23 +216,19 @@ export function WorkflowStatusesPanel({ onChanges }: WorkflowStatusesPanelProps)
 
                       <div className="flex items-center gap-1">
                         <Button
-                          variant="ghost"
-                          size="icon"
+                          appearance="subtle"
                           onClick={() => handleOpenDialog(status)}
-                        >
-                          <Pencil className="h-4 w-4" />
-                        </Button>
+                          iconBefore={EditIcon}
+                        />
                         <Button
-                          variant="ghost"
-                          size="icon"
+                          appearance="subtle"
                           onClick={() => {
                             setDeletingStatus(status);
                             setIsDeleteOpen(true);
                           }}
-                          disabled={status.is_default}
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
+                          isDisabled={status.is_default}
+                          iconBefore={TrashIcon}
+                        />
                       </div>
                     </div>
                   )}
@@ -253,53 +251,50 @@ export function WorkflowStatusesPanel({ onChanges }: WorkflowStatusesPanelProps)
           
           <div className="space-y-4 py-4">
             <div className="space-y-2">
-              <Label htmlFor="name">Name</Label>
-              <Input
-                id="name"
+              <label htmlFor="ws-name" style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>Name</label>
+              <Textfield
+                id="ws-name"
                 value={formData.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                onChange={(e) => setFormData({ ...formData, name: (e.target as HTMLInputElement).value })}
                 placeholder="e.g., Under Review"
               />
             </div>
-            
+
             <div className="space-y-2">
-              <Label htmlFor="status_key">Key</Label>
-              <Input
-                id="status_key"
+              <label htmlFor="ws-key" style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>Key</label>
+              <Textfield
+                id="ws-key"
                 value={formData.status_key}
-                onChange={(e) => setFormData({ ...formData, status_key: e.target.value.toLowerCase().replace(/\s+/g, '_') })}
+                onChange={(e) => setFormData({ ...formData, status_key: (e.target as HTMLInputElement).value.toLowerCase().replace(/\s+/g, '_') })}
                 placeholder="e.g., under_review"
-                disabled={!!editingStatus}
+                isDisabled={!!editingStatus}
               />
             </div>
-            
+
             <div className="space-y-2">
-              <Label htmlFor="category">Category</Label>
-              <Select
-                value={formData.category}
-                onValueChange={(value) => setFormData({ ...formData, category: value as any })}
-              >
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="todo">To Do</SelectItem>
-                  <SelectItem value="inprogress">In Progress</SelectItem>
-                  <SelectItem value="done">Done</SelectItem>
-                  <SelectItem value="other">Other</SelectItem>
-                </SelectContent>
-              </Select>
+              <label htmlFor="ws-category-select" style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>Category</label>
+              <AdsSelect
+                inputId="ws-category-select"
+                value={{ label: CATEGORY_LABELS[formData.category], value: formData.category }}
+                options={[
+                  { label: 'To Do', value: 'todo' },
+                  { label: 'In Progress', value: 'inprogress' },
+                  { label: 'Done', value: 'done' },
+                  { label: 'Other', value: 'other' },
+                ]}
+                onChange={(opt) => setFormData({ ...formData, category: (opt?.value ?? 'todo') as typeof formData.category })}
+              />
             </div>
           </div>
-          
+
           <DialogFooter>
-            <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
+            <Button appearance="default" onClick={() => setIsDialogOpen(false)}>
               Cancel
             </Button>
-            <Button 
+            <Button
+              appearance="primary"
               onClick={handleSave}
-              disabled={!formData.name || !formData.status_key}
-              className="bg-brand-primary hover:bg-brand-primary-hover"
+              isDisabled={!formData.name || !formData.status_key}
             >
               {editingStatus ? 'Update' : 'Create'}
             </Button>

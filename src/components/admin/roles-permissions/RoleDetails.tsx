@@ -1,7 +1,9 @@
 import { useState } from 'react';
-import { Card, CardHeader, CardContent } from '@/components/ui/card';
 import { Lozenge } from '@/components/ads';
-import { Button } from '@/components/ui/button';
+import Button from '@atlaskit/button/new';
+import Spinner from '@atlaskit/spinner';
+import EditIcon from '@atlaskit/icon/core/edit';
+import PersonAddIcon from '@atlaskit/icon/core/person-add';
 import {
   Table,
   TableBody,
@@ -10,7 +12,6 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { Pencil, UserPlus } from 'lucide-react';
 import { ProductRole, useUsersWithRole, useRolePermissions, PERMISSION_GROUPS } from '@/hooks/useProductRoles';
 import { useUserRole } from '@/hooks/useUserRole';
 import { cn } from '@/lib/utils';
@@ -92,22 +93,19 @@ export function RoleDetails({
   return (
     <div className="space-y-6">
       {/* Role Summary Card */}
-      <Card>
-        <CardHeader className="pb-3 border-b flex flex-row items-center justify-between">
-          <h2 className="text-sm font-semibold text-foreground">Role: {role.name}</h2>
+      <div style={{ background: 'var(--ds-surface, #FFFFFF)', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px' }}>
+        <div className="flex flex-row items-center justify-between" style={{ padding: '12px 16px', borderBottom: '1px solid var(--ds-border-layout, #EBECF0)' }}>
+          <h2 className="text-sm font-semibold" style={{ color: 'var(--ds-text, #172B4D)' }}>Role: {role.name}</h2>
           {canManageRoles && (
             <Button
-              variant="ghost"
-              size="icon"
-              className="h-8 w-8"
+              appearance="subtle"
               onClick={() => onEditRole(role)}
-            >
-              <Pencil className="h-4 w-4" />
-            </Button>
+              iconBefore={EditIcon}
+            />
           )}
-        </CardHeader>
-        <CardContent className="pt-4">
-          <p className="text-sm text-muted-foreground mb-3">
+        </div>
+        <div style={{ padding: '16px' }}>
+          <p className="text-sm mb-3" style={{ color: 'var(--ds-text-subtle, #44546F)' }}>
             {role.description || 'No description provided'}
           </p>
 
@@ -122,31 +120,30 @@ export function RoleDetails({
               </Lozenge>
             )}
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
 
       {/* Module Access Grid */}
       <RoleModuleAccessGrid roleId={role.id} roleName={role.name} />
 
       {/* Users with this Role */}
-      <Card>
-        <CardHeader className="pb-3 border-b flex flex-row items-center justify-between">
-          <h2 className="text-sm font-semibold text-foreground">Users with this role</h2>
+      <div style={{ background: 'var(--ds-surface, #FFFFFF)', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px' }}>
+        <div className="flex flex-row items-center justify-between" style={{ padding: '12px 16px', borderBottom: '1px solid var(--ds-border-layout, #EBECF0)' }}>
+          <h2 className="text-sm font-semibold" style={{ color: 'var(--ds-text, #172B4D)' }}>Users with this role</h2>
           {canManageRoles && (
             <Button
-              size="sm"
+              appearance="primary"
               onClick={() => setIsAddUserModalOpen(true)}
-              className="bg-brand-primary hover:bg-brand-primary-hover text-white"
+              iconBefore={PersonAddIcon}
             >
-              <UserPlus className="h-4 w-4 mr-1.5" />
               Add User
             </Button>
           )}
-        </CardHeader>
-        <CardContent className="p-0">
+        </div>
+        <div style={{ padding: '0' }}>
           {usersLoading ? (
             <div className="flex items-center justify-center py-8">
-              <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-brand-primary" />
+              <Spinner size="small" />
             </div>
           ) : !users || users.length === 0 ? (
             <p className="text-sm text-muted-foreground text-center py-8">
@@ -201,8 +198,8 @@ export function RoleDetails({
               </TableBody>
             </Table>
           )}
-        </CardContent>
-      </Card>
+        </div>
+      </div>
 
       {/* Add User Modal */}
       <AddUserToRoleModal

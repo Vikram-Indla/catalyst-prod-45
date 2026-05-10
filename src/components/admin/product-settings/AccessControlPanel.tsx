@@ -1,12 +1,17 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { Button } from '@/components/ui/button';
+import Button from '@atlaskit/button/new';
 import { Lozenge } from '@/components/ads';
-import { Input } from '@/components/ui/input';
-import { Card, CardContent } from '@/components/ui/card';
-import { Search, ExternalLink, Shield, Users, Eye, Edit, Loader2 } from 'lucide-react';
+import Textfield from '@atlaskit/textfield';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import Spinner from '@atlaskit/spinner';
+import EditIcon from '@atlaskit/icon/core/edit';
+import EyeOpenIcon from '@atlaskit/icon/core/eye-open';
+import LinkExternalIcon from '@atlaskit/icon/core/link-external';
+import PeopleGroupIcon from '@atlaskit/icon/core/people-group';
+import SearchIcon from '@atlaskit/icon/core/search';
+import ShieldIcon from '@atlaskit/icon/core/shield';
 
 // Product-specific permissions
 const PRODUCT_PERMISSIONS = [
@@ -109,7 +114,7 @@ export function AccessControlPanel() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-12">
-        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+        <Spinner size="small" />
       </div>
     );
   }
@@ -124,76 +129,70 @@ export function AccessControlPanel() {
             View and manage Product module permissions through System Roles.
           </p>
         </div>
-        <Button variant="outline" disabled>
-          <ExternalLink className="h-4 w-4 mr-2" />
+        <Button appearance="default" isDisabled iconBefore={LinkExternalIcon}>
           View Roles
         </Button>
       </div>
 
       {/* Stats Cards */}
       <div className="grid grid-cols-4 gap-4">
-        <Card>
-          <CardContent className="pt-4">
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-muted rounded-lg">
-                <Shield className="h-5 w-5 text-muted-foreground" />
-              </div>
-              <div>
-                <p className="text-sm text-muted-foreground">Roles with Access</p>
-                <p className="text-2xl font-semibold">{roleCards.length}</p>
-              </div>
+        <div style={{ background: 'var(--ds-surface, #FFFFFF)', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px', padding: '16px' }}>
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-muted rounded-lg">
+              <ShieldIcon label="" size="small" />
             </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="pt-4">
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-muted rounded-lg">
-                <Users className="h-5 w-5 text-muted-foreground" />
-              </div>
-              <div>
-                <p className="text-sm text-muted-foreground">Total Users</p>
-                <p className="text-2xl font-semibold">{usersWithRoles.length}</p>
-              </div>
+            <div>
+              <p className="text-sm text-muted-foreground">Roles with Access</p>
+              <p className="text-2xl font-semibold">{roleCards.length}</p>
             </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="pt-4">
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-muted rounded-lg">
-                <Edit className="h-5 w-5 text-muted-foreground" />
-              </div>
-              <div>
-                <p className="text-sm text-muted-foreground">Can Edit</p>
-                <p className="text-2xl font-semibold">{adminCount + programManagerCount + teamLeadCount}</p>
-              </div>
+          </div>
+        </div>
+        <div style={{ background: 'var(--ds-surface, #FFFFFF)', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px', padding: '16px' }}>
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-muted rounded-lg">
+              <PeopleGroupIcon label="" size="small" />
             </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="pt-4">
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-muted rounded-lg">
-                <Eye className="h-5 w-5 text-muted-foreground" />
-              </div>
-              <div>
-                <p className="text-sm text-muted-foreground">View Only</p>
-                <p className="text-2xl font-semibold">{userCount}</p>
-              </div>
+            <div>
+              <p className="text-sm text-muted-foreground">Total Users</p>
+              <p className="text-2xl font-semibold">{usersWithRoles.length}</p>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
+        <div style={{ background: 'var(--ds-surface, #FFFFFF)', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px', padding: '16px' }}>
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-muted rounded-lg">
+              <EditIcon label="" size="small" />
+            </div>
+            <div>
+              <p className="text-sm text-muted-foreground">Can Edit</p>
+              <p className="text-2xl font-semibold">{adminCount + programManagerCount + teamLeadCount}</p>
+            </div>
+          </div>
+        </div>
+        <div style={{ background: 'var(--ds-surface, #FFFFFF)', border: '1px solid var(--ds-border, #DCDFE4)', borderRadius: '3px', padding: '16px' }}>
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-muted rounded-lg">
+              <EyeOpenIcon label="" size="small" />
+            </div>
+            <div>
+              <p className="text-sm text-muted-foreground">View Only</p>
+              <p className="text-2xl font-semibold">{userCount}</p>
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* Search */}
-      <div className="relative max-w-md">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-        <Input
+      <div className="max-w-md">
+        <Textfield
           placeholder="Search roles or permissions..."
           value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          className="pl-10"
+          onChange={(e) => setSearchQuery((e.target as HTMLInputElement).value)}
+          elemBeforeInput={
+            <span style={{ display: 'flex', alignItems: 'center', padding: '0 8px' }}>
+              <SearchIcon label="" size="small" />
+            </span>
+          }
         />
       </div>
 
@@ -216,7 +215,7 @@ export function AccessControlPanel() {
                   {role.description}
                 </p>
               </div>
-              <Button variant="outline" size="sm" disabled>
+              <Button appearance="default" isDisabled>
                 View Details
               </Button>
             </div>

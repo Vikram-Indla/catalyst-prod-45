@@ -46,8 +46,8 @@ import { resolveAvatarUrl } from '@/lib/avatars';
 /* Canonical Atlaskit editor — lazy-loaded, direct file import (NOT the
    barrel) so Rollup keeps the ~2MB @atlaskit/editor-core chunk isolated
    from the renderer graph. Matches CatalystDescriptionSection. */
-const EpicDescriptionEditor = lazy(
-  () => import('@/components/shared/rich-text/atlaskit/EpicDescriptionEditor'),
+const AdfDescriptionField = lazy(
+  () => import('@/components/shared/rich-text/atlaskit/AdfDescriptionField'),
 );
 import '@/modules/project-work-hub/components/dialogs/story-detail-extensions.css';
 import { ActivityPanelPilot } from './activity/ActivityPanelPilot';
@@ -674,7 +674,7 @@ export function IssueContentView({
                         </div>
                       }
                     >
-                      <EpicDescriptionEditor
+                      <AdfDescriptionField
                         initialContent={(item as any)?.description_adf ?? item?.description_text ?? null}
                         workItemId={item?.id ?? ''}
                         onSave={(adfJson) => {

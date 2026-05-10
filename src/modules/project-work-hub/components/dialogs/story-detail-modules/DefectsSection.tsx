@@ -136,9 +136,11 @@ export function DefectsSection({
           >
             {expanded ? <ChevronDownIcon label="" size="small" /> : <ChevronRightIcon label="" size="small" />}
             <span className="lwi-header__title">Defects</span>
-            <span className="lwi-header__count" aria-label={`${defects.length} defects`}>
-              {defects.length}
-            </span>
+            {defects.length > 0 && (
+              <span className="lwi-header__count" aria-label={`${defects.length} defects`}>
+                {defects.length}
+              </span>
+            )}
           </button>
           {expanded && (
             <button

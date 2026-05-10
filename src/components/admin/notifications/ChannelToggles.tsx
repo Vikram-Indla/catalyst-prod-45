@@ -5,42 +5,46 @@
  * ═══════════════════════════════════════════════════════════════════
  */
 
+import type { ComponentType } from 'react';
 import { memo } from 'react';
-import { Bell, Mail, Zap, MessageSquare } from 'lucide-react';
-import { Switch } from '@/components/ui/switch';
+import Toggle from '@atlaskit/toggle';
 import { Tooltip } from '@/components/ads';
 import type { ChannelsConfig } from '@/types/notification-triggers';
+import AutomationIcon from '@atlaskit/icon/core/automation';
+import CommentIcon from '@atlaskit/icon/core/comment';
+import EmailIcon from '@atlaskit/icon/core/email';
+import NotificationIcon from '@atlaskit/icon/core/notification';
 
 // ── Channel metadata ────────────────────────────────────────────
 const CHANNEL_DEFS: {
   key: keyof ChannelsConfig;
   label: string;
   description: string;
-  Icon: typeof Bell;
+  Icon: ComponentType<{ label: string; size?: string }>;
 }[] = [
   {
     key: 'in_app',
     label: 'In-App',
     description: 'Show in notification panel bell icon',
-    Icon: Bell,
+    Icon: NotificationIcon,
   },
   {
     key: 'email',
     label: 'Email',
     description: 'Send email notification to recipient',
-    Icon: Mail,
+    Icon: EmailIcon,
   },
   {
     key: 'toast',
     label: 'Toast',
     description: 'Show real-time toast popup in browser',
-    Icon: Zap,
+    Icon: AutomationIcon,
   },
   {
     key: 'slack',
     label: 'Slack',
     description: 'Send to connected Slack channel',
-    Icon: MessageSquare,
+    Icon: CommentIcon,
   },
 ];
 
@@ -64,12 +68,13 @@ export const InlineChannelToggles = memo(function InlineChannelToggles({
       {CHANNEL_DEFS.map(({ key, label, Icon }) => (
         <Tooltip key={key} delay={200} content={`${label}: ${channels[key] ? 'Enabled' : 'Disabled'}`}>
           <div className="flex items-center gap-1">
-            <Icon className="h-3 w-3 text-[var(--ds-text-subtlest,#94A3B8)]" />
-            <Switch
-              checked={channels[key]}
-              onCheckedChange={(v) => onChange(key, v)}
-              disabled={disabled}
-              className="h-4 w-7 data-[state=checked]:bg-[var(--ds-text-brand,#2563EB)] disabled:opacity-30"
+            <span style={{ color: 'var(--ds-text-subtlest, #94A3B8)', display: 'flex' }}>
+              <Icon label="" size="small" />
+            </span>
+            <Toggle
+              isChecked={channels[key]}
+              onChange={() => onChange(key, !channels[key])}
+              isDisabled={disabled}
             />
           </div>
         </Tooltip>
@@ -115,20 +120,23 @@ export function ChannelToggleCard({
                 : 'bg-white border-[var(--bd-default,#E2E8F0)] hover:bg-[rgba(0,0,0,0.02)]'
             } ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
           >
-            <Icon
-              className={`h-4 w-4 flex-shrink-0 ${
-                channels[key] ? 'text-[var(--ds-text-brand,#2563EB)]' : 'text-[var(--ds-text-subtlest,#94A3B8)]'
-              }`}
-            />
+            <span
+              style={{
+                color: channels[key] ? 'var(--ds-text-brand, #2563EB)' : 'var(--ds-text-subtlest, #94A3B8)',
+                display: 'flex',
+                flexShrink: 0,
+              }}
+            >
+              <Icon label="" size="small" />
+            </span>
             <div className="min-w-0 flex-1">
               <p className="text-xs font-medium text-[var(--ds-text,#0F172A)]">{label}</p>
               <p className="text-[10px] text-[var(--ds-text-subtle,#475569)] truncate">{description}</p>
             </div>
-            <Switch
-              checked={channels[key]}
-              onCheckedChange={(v) => onChange(key, v)}
-              disabled={disabled}
-              className="h-4 w-7 data-[state=checked]:bg-[var(--ds-text-brand,#2563EB)] flex-shrink-0"
+            <Toggle
+              isChecked={channels[key]}
+              onChange={() => onChange(key, !channels[key])}
+              isDisabled={disabled}
             />
           </button>
         ))}
@@ -159,7 +167,9 @@ export function ChannelBadges({ channels }: ChannelBadgesProps) {
           key={key}
           className="flex items-center gap-1 px-1.5 py-0.5 rounded bg-[var(--ds-surface-sunken,#F1F5F9)] border border-[var(--bd-default,#E2E8F0)]"
         >
-          <Icon className="h-2.5 w-2.5 text-[var(--ds-text-subtle,#475569)]" />
+          <span style={{ color: 'var(--ds-text-subtle, #475569)', display: 'flex' }}>
+            <Icon label="" size="small" />
+          </span>
           <span className="text-[9px] font-medium text-[var(--ds-text-subtle,#475569)]">{label}</span>
         </div>
       ))}

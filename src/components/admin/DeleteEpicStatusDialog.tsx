@@ -1,4 +1,7 @@
 import { useState, useEffect } from 'react';
+import RefreshIcon from '@atlaskit/icon/core/refresh';
+import WarningIcon from '@atlaskit/icon/core/warning';
+import TrashIcon from '@atlaskit/icon/glyph/trash';
 import {
   Dialog,
   DialogContent,
@@ -7,16 +10,8 @@ import {
   DialogFooter,
   DialogDescription,
 } from '@/components/admin/admin-dialog';
-import { Button } from '@/components/ui/button';
-import { Label } from '@/components/ui/label';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import { AlertTriangle, Trash2, RefreshCw } from 'lucide-react';
+import Button from '@atlaskit/button/new';
+import AdsSelect from '@atlaskit/select';
 import { useLinkedEpics, useReassignEpics, useDeleteEpicStatus, EpicStatus } from '@/hooks/useEpicStatuses';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Lozenge } from '@/components/ads';
@@ -79,7 +74,7 @@ export function DeleteEpicStatusDialog({
       <DialogContent className="max-w-lg">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <Trash2 className="h-5 w-5 text-destructive" />
+            <TrashIcon label="" size="small" />
             Delete Epic Status
           </DialogTitle>
           <DialogDescription>
@@ -96,7 +91,7 @@ export function DeleteEpicStatusDialog({
             <>
               {/* Warning message */}
               <div className="flex items-start gap-3 p-3 bg-destructive/10 border border-destructive/30 rounded-lg">
-                <AlertTriangle className="h-5 w-5 text-destructive shrink-0 mt-0.5" />
+                <WarningIcon label="" size="small" />
                 <div>
                   <p className="font-medium text-destructive">
                     Cannot delete this status
@@ -110,9 +105,9 @@ export function DeleteEpicStatusDialog({
 
               {/* Linked epics list */}
               <div className="space-y-2">
-                <Label className="text-sm font-medium">
+                <span className="text-sm font-medium" style={{ color: 'var(--ds-text, #172B4D)' }}>
                   Linked Epics ({linkedData?.count})
-                </Label>
+                </span>
                 <ScrollArea className="h-32 border rounded-md p-2">
                   <div className="space-y-1">
                     {linkedData?.epics.map((epic) => (
@@ -139,28 +134,25 @@ export function DeleteEpicStatusDialog({
 
               {/* Reassign section */}
               <div className="space-y-2 pt-2 border-t">
-                <Label htmlFor="new-status" className="text-sm font-medium">
+                <label htmlFor="new-status-select" style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>
                   Reassign all epics to:
-                </Label>
+                </label>
                 <div className="flex gap-2">
-                  <Select value={newStatus} onValueChange={setNewStatus}>
-                    <SelectTrigger className="flex-1">
-                      <SelectValue placeholder="Select new status..." />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {availableStatuses.map((s) => (
-                        <SelectItem key={s.id} value={s.value}>
-                          {s.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <Button 
-                    variant="secondary" 
+                  <div style={{ flex: 1 }}>
+                    <AdsSelect
+                      inputId="new-status-select"
+                      value={newStatus ? { label: availableStatuses.find(s => s.value === newStatus)?.label || newStatus, value: newStatus } : null}
+                      options={availableStatuses.map(s => ({ label: s.label, value: s.value }))}
+                      placeholder="Select new status..."
+                      onChange={(opt) => setNewStatus(opt?.value ?? '')}
+                    />
+                  </div>
+                  <Button
+                    appearance="default"
                     onClick={handleReassign}
-                    disabled={!newStatus || reassignMutation.isPending}
+                    isDisabled={!newStatus || reassignMutation.isPending}
+                    iconBefore={RefreshIcon}
                   >
-                    <RefreshCw className={`h-4 w-4 mr-2 ${reassignMutation.isPending ? 'animate-spin' : ''}`} />
                     Reassign
                   </Button>
                 </div>
@@ -187,15 +179,15 @@ export function DeleteEpicStatusDialog({
         </div>
 
         <DialogFooter className="gap-2">
-          <Button variant="outline" onClick={() => onOpenChange(false)}>
+          <Button appearance="default" onClick={() => onOpenChange(false)}>
             Cancel
           </Button>
-          <Button 
-            variant="destructive" 
+          <Button
+            appearance="danger"
             onClick={handleDelete}
-            disabled={!canDelete || deleteMutation.isPending}
+            isDisabled={!canDelete || deleteMutation.isPending}
+            iconBefore={TrashIcon}
           >
-            <Trash2 className="h-4 w-4 mr-2" />
             {deleteMutation.isPending ? 'Deleting...' : 'Delete Status'}
           </Button>
         </DialogFooter>

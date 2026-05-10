@@ -228,6 +228,8 @@ export function CatalystStatusPill({ status, statusCategory, onStatusChange, iss
                           border: 'none',
                           cursor: 'pointer',
                           fontFamily: 'inherit',
+                          fontSize: 14,
+                          color: token('color.text', '#292A2E'),
                           textAlign: 'left',
                         }}
                         onMouseEnter={(e) => {

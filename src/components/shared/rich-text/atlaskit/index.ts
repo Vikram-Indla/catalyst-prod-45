@@ -18,6 +18,9 @@
  */
 export { default as EpicDescriptionEditor } from './EpicDescriptionEditor';
 export type { EpicDescriptionEditorProps } from './EpicDescriptionEditor';
+// Canonical alias — new callers should import AdfDescriptionField, not EpicDescriptionEditor
+export { default as AdfDescriptionField } from './AdfDescriptionField';
+export type { AdfDescriptionFieldProps } from './AdfDescriptionField';
 export { default as EpicDescriptionRenderer } from './EpicDescriptionRenderer';
 export { AtlaskitBoundary } from './AtlaskitBoundary';
 export { normalizeAdfForAtlaskit, parseStoredDescriptionToAdf } from './adfNormalizer';

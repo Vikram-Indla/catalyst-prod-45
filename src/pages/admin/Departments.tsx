@@ -2,7 +2,10 @@ import { AdminGuard } from '@/components/admin/AdminGuard';
 import Button from '@atlaskit/button/new';
 import Textfield from '@atlaskit/textfield';
 import Toggle from '@atlaskit/toggle';
-import { Plus, Search, Edit, GripVertical } from 'lucide-react';
+import AddIcon from '@atlaskit/icon/core/add';
+import SearchIcon from '@atlaskit/icon/core/search';
+import EditIcon from '@atlaskit/icon/core/edit';
+import DragHandlerIcon from '@atlaskit/icon/glyph/drag-handler';
 import { useState } from 'react';
 import { useDepartments } from '@/hooks/useDepartmentsAndOwners';
 import { supabase } from '@/integrations/supabase/client';
@@ -105,8 +108,7 @@ export default function Departments() {
               Manage department list for Business Requests
             </p>
           </div>
-          <Button appearance="primary" onClick={openAddDialog}>
-            <Plus className="h-4 w-4 mr-2" />
+          <Button appearance="primary" onClick={openAddDialog} iconBefore={AddIcon}>
             Add Department
           </Button>
         </div>
@@ -146,7 +148,7 @@ export default function Departments() {
           <div>
             <div className="flex items-center gap-4 mb-4">
               <div className="relative flex-1">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4" style={{ color: 'var(--ds-text-subtle, #44546F)' }} />
+                <span style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', display: 'flex', color: 'var(--ds-text-subtle, #44546F)' }}><SearchIcon label="" size="small" /></span>
                 <Textfield
                   placeholder="Search departments..."
                   value={searchTerm}
@@ -188,7 +190,7 @@ export default function Departments() {
                         onMouseLeave={() => setHoveredRow(null)}
                       >
                         <td className="p-3">
-                          <GripVertical className="h-4 w-4 cursor-grab" style={{ color: 'var(--ds-text-subtle, #44546F)' }} />
+                          <span style={{ cursor: 'grab', display: 'inline-flex', color: 'var(--ds-text-subtle, #44546F)' }}><DragHandlerIcon label="" size="small" /></span>
                         </td>
                         <td className="p-3">
                           <span className="text-sm font-mono font-medium" style={{ color: 'var(--ds-text-brand, #0C66E4)' }}>{dept.department_code || '—'}</span>
@@ -202,7 +204,7 @@ export default function Departments() {
                         </td>
                         <td className="p-3 text-sm text-right">
                           <Button appearance="subtle" onClick={() => openEditDialog(dept)}>
-                            <Edit className="h-4 w-4" />
+                            <EditIcon label="" size="small" />
                           </Button>
                         </td>
                       </tr>

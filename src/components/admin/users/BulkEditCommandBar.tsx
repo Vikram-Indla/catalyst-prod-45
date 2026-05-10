@@ -5,30 +5,23 @@
 
 import { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  X, 
-  Users, 
-  Building2, 
-  Briefcase, 
-  MapPin, 
-  Globe, 
-  Tag,
-  UserCog,
-  Check,
-  Loader2,
-  ChevronDown,
-  Trash2,
-  Download
-} from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import Button from '@atlaskit/button/new';
+import AdsSelect from '@atlaskit/select';
+import Textfield from '@atlaskit/textfield';
 import { Lozenge } from '@/components/ads';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
+import Spinner from '@atlaskit/spinner';
+import BriefcaseIcon from '@atlaskit/icon/core/briefcase';
+import CheckMarkIcon from '@atlaskit/icon/core/check-mark';
+import DownloadIcon from '@atlaskit/icon/core/download';
+import GlobeIcon from '@atlaskit/icon/core/globe';
+import OfficeBuildingIcon from '@atlaskit/icon/core/office-building';
+import PeopleGroupIcon from '@atlaskit/icon/core/people-group';
+import PersonIcon from '@atlaskit/icon/core/person';
+import TagIcon from '@atlaskit/icon/core/tag';
+import ChevronDownIcon from '@atlaskit/icon/glyph/chevron-down';
+import CrossIcon from '@atlaskit/icon/glyph/cross';
+import LocationIcon from '@atlaskit/icon/glyph/location';
+import TrashIcon from '@atlaskit/icon/glyph/trash';
 import {
   Popover,
   PopoverContent,
@@ -44,9 +37,6 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/admin/admin-alert-dialog';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Separator } from '@/components/ui/separator';
 import { cn } from '@/lib/utils';
 import { useBulkEditUsers, BulkEditableField } from '@/hooks/useBulkEditUsers';
 import { UserProfile } from '@/hooks/useUsers';
@@ -94,28 +84,28 @@ export function BulkEditCommandBar({
     {
       key: 'assignment_id',
       label: 'Assignment',
-      icon: <Briefcase className="h-4 w-4" />,
+      icon: <BriefcaseIcon label="" size="small" />,
       type: 'select',
       options: referenceData.assignments.map(a => ({ value: a.id, label: a.name })),
     },
     {
       key: 'department_id',
       label: 'Department',
-      icon: <Building2 className="h-4 w-4" />,
+      icon: <OfficeBuildingIcon label="" size="small" />,
       type: 'select',
       options: referenceData.departments.map(d => ({ value: d.id, label: d.name })),
     },
     {
       key: 'vendor_id',
       label: 'Vendor',
-      icon: <Tag className="h-4 w-4" />,
+      icon: <TagIcon label="" size="small" />,
       type: 'select',
       options: referenceData.vendors.map(v => ({ value: v.id, label: v.name })),
     },
     {
       key: 'resource_type',
       label: 'Resource Type',
-      icon: <UserCog className="h-4 w-4" />,
+      icon: <PersonIcon label="" size="small" />,
       type: 'select',
       options: [
         { value: 'Permanent', label: 'Permanent' },
@@ -127,21 +117,21 @@ export function BulkEditCommandBar({
     {
       key: 'country_id',
       label: 'Country',
-      icon: <Globe className="h-4 w-4" />,
+      icon: <GlobeIcon label="" size="small" />,
       type: 'select',
       options: referenceData.countries.map(c => ({ value: c.id, label: c.name })),
     },
     {
       key: 'location_id',
       label: 'Location',
-      icon: <MapPin className="h-4 w-4" />,
+      icon: <LocationIcon label="" size="small" />,
       type: 'select',
       options: referenceData.locations.map(l => ({ value: l.id, label: l.name })),
     },
     {
       key: 'job_role',
       label: 'Job Role',
-      icon: <Users className="h-4 w-4" />,
+      icon: <PeopleGroupIcon label="" size="small" />,
       type: 'text',
     },
   ], [referenceData]);
@@ -209,7 +199,7 @@ export function BulkEditCommandBar({
           {/* Selection count */}
           <div className="flex items-center gap-2 pr-3 border-r border-border shrink-0">
             <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center">
-              <Users className="h-4 w-4 text-primary" />
+              <PeopleGroupIcon label="" size="small" />
             </div>
             <div className="flex flex-col">
               <span className="text-sm font-semibold whitespace-nowrap">{selectedCount} selected</span>
@@ -233,12 +223,7 @@ export function BulkEditCommandBar({
                 >
                   <PopoverTrigger asChild>
                     <Button
-                      variant={hasValue ? 'default' : 'outline'}
-                      size="sm"
-                      className={cn(
-                        "h-8 gap-1.5 text-xs shrink-0 whitespace-nowrap",
-                        hasValue && "bg-primary text-primary-foreground"
-                      )}
+                      appearance={hasValue ? 'primary' : 'default'}
                     >
                       {field.icon}
                       <span>{field.label}</span>
@@ -247,51 +232,38 @@ export function BulkEditCommandBar({
                           <Lozenge appearance="inprogress">✓</Lozenge>
                         </span>
                       )}
-                      <ChevronDown className="h-3 w-3 opacity-50" />
+                      <ChevronDownIcon label="" size="small" />
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent className="w-64 p-3" align="center" side="top">
                     <div className="space-y-3">
-                      <Label className="text-xs font-medium flex items-center gap-2">
+                      <label style={{ fontSize: '12px', fontWeight: 500, color: 'var(--ds-text, #172B4D)', display: 'flex', alignItems: 'center', gap: '4px' }}>
                         {field.icon}
                         Set {field.label}
-                      </Label>
-                      
+                      </label>
+
                       {field.type === 'select' && field.options && (
-                        <Select
-                          value={currentValue ?? ''}
-                          onValueChange={(value) => {
-                            const option = field.options?.find(o => o.value === value);
-                            handleFieldChange(field, value, option?.label);
+                        <AdsSelect
+                          value={currentValue ? field.options.find(o => o.value === currentValue) ?? null : null}
+                          options={field.options}
+                          placeholder={`Select ${field.label.toLowerCase()}...`}
+                          onChange={(opt) => {
+                            if (opt) handleFieldChange(field, opt.value, opt.label);
                           }}
-                        >
-                          <SelectTrigger className="w-full h-9">
-                            <SelectValue placeholder={`Select ${field.label.toLowerCase()}...`} />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {field.options.map((option) => (
-                              <SelectItem key={option.value} value={option.value}>
-                                {option.label}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
+                        />
                       )}
 
                       {field.type === 'text' && (
-                        <Input
+                        <Textfield
                           placeholder={`Enter ${field.label.toLowerCase()}...`}
                           value={currentValue ?? ''}
-                          onChange={(e) => handleFieldChange(field, e.target.value || null)}
-                          className="h-9"
+                          onChange={(e) => handleFieldChange(field, (e.target as HTMLInputElement).value || null)}
                         />
                       )}
 
                       {hasValue && (
                         <Button
-                          variant="ghost"
-                          size="sm"
-                          className="w-full h-7 text-xs text-muted-foreground"
+                          appearance="subtle"
                           onClick={() => {
                             setPendingUpdates(prev => {
                               const next = { ...prev };
@@ -325,7 +297,7 @@ export function BulkEditCommandBar({
             })}
           </div>
 
-          <Separator orientation="vertical" className="h-6" />
+          <div style={{ width: '1px', height: '24px', background: 'var(--ds-border, #DCDFE4)', flexShrink: 0 }} />
 
           {/* Actions */}
           <div className="flex items-center gap-2">
@@ -333,7 +305,8 @@ export function BulkEditCommandBar({
               <motion.div
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
-                className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-muted text-xs text-muted-foreground"
+                className="flex items-center gap-1.5 px-2 py-1 rounded-md text-xs"
+                style={{ background: 'var(--ds-background-neutral, #F7F8F9)', color: 'var(--ds-text-subtle, #44546F)' }}
               >
                 <span className="font-medium">{Object.keys(pendingUpdates).length}</span>
                 <span>field(s)</span>
@@ -341,33 +314,28 @@ export function BulkEditCommandBar({
             )}
 
             <Button
-              size="sm"
-              className="h-8 gap-1.5 bg-primary hover:bg-primary/90"
+              appearance="primary"
               onClick={handleApply}
-              disabled={!hasChanges || bulkEdit.isPending}
+              isDisabled={!hasChanges || bulkEdit.isPending}
+              iconBefore={CheckMarkIcon}
             >
               {bulkEdit.isPending ? (
                 <>
-                  <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                  <Spinner size="small" />
                   Updating...
                 </>
               ) : (
-                <>
-                  <Check className="h-3.5 w-3.5" />
-                  Apply
-                </>
+                'Apply'
               )}
             </Button>
 
             {/* Export Selected */}
             {onBulkExport && (
               <Button
-                variant="outline"
-                size="sm"
-                className="h-8 gap-1.5 text-xs"
+                appearance="default"
                 onClick={() => onBulkExport(Array.from(selectedIds))}
+                iconBefore={DownloadIcon}
               >
-                <Download className="h-3.5 w-3.5" />
                 Export
               </Button>
             )}
@@ -375,29 +343,25 @@ export function BulkEditCommandBar({
             {/* Delete Selected */}
             {onBulkDelete && (
               <Button
-                variant="outline"
-                size="sm"
-                className="h-8 gap-1.5 text-xs text-destructive hover:text-destructive hover:bg-destructive/10"
+                appearance="danger"
                 onClick={() => setShowDeleteDialog(true)}
+                iconBefore={TrashIcon}
               >
-                <Trash2 className="h-3.5 w-3.5" />
                 Delete
               </Button>
             )}
 
-            <Separator orientation="vertical" className="h-6" />
+            <div style={{ width: '1px', height: '24px', background: 'var(--ds-border, #DCDFE4)', flexShrink: 0 }} />
 
             {/* Clear button with text label */}
             <Button
-              variant="ghost"
-              size="sm"
-              className="h-8 gap-1.5 text-xs text-muted-foreground"
+              appearance="subtle"
               onClick={() => {
                 handleClear();
                 onClearSelection();
               }}
+              iconBefore={CrossIcon}
             >
-              <X className="h-3.5 w-3.5" />
               Clear
             </Button>
           </div>

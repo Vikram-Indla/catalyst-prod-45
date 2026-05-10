@@ -8,16 +8,18 @@
  */
 import React from 'react';
 import { toast } from 'sonner';
+import { cloneIssue, archiveIssue } from '@/modules/project-work-hub/lib/workItemRepo';
 import FileIcon from '@atlaskit/icon/glyph/document';
 import { CatalystViewBase } from '../shared/CatalystViewBase';
 import { useCatalystIssue, useCatalystIssueMutations } from '../shared/hooks';
 import {
   CatalystTitleEditor, CatalystQuickActions, CatalystDescriptionSection, CatalystAcceptanceCriteria,
-  CatalystActivitySection, CatalystSidebarDetails, CatalystKeyDetails, CatalystStatusPill, CatalystFooterMeta,
+  CatalystActivitySection, CatalystSidebarDetails, CatalystKeyDetails, CatalystStatusPill,
 } from '../shared/sections';
 import { LinkedWorkItemsSection } from '@/modules/project-work-hub/components/linked-work-items';
 import { SubtasksPanel } from '@/modules/project-work-hub/components/SubtasksPanel';
 import { ImproveIssueDropdown, useImproveApplyHandlers } from '@/components/catalyst-detail-views/improve';
+import { MoveIssueDialog } from '../shared/MoveIssueDialog';
 import type { CatalystViewBaseProps } from '../shared/types';
 
 export default function CatalystViewBusinessRequest({
@@ -28,6 +30,7 @@ export default function CatalystViewBusinessRequest({
   const { data: issue, isLoading } = useCatalystIssue(itemId, isOpen);
   const mutations = useCatalystIssueMutations(itemId, onClose);
   const improveHandlers = useImproveApplyHandlers(issue ?? null);
+  const [showMoveDialog, setShowMoveDialog] = React.useState(false);
 
   const leftContent = (
     <>
@@ -43,7 +46,7 @@ export default function CatalystViewBusinessRequest({
       <CatalystTitleEditor issue={issue ?? null} onTitleChange={(t) => mutations.updateField.mutate({ field: 'summary', value: t, oldValue: issue?.summary ?? '' })} />
       {/* jira-compare 2026-05-03 — Patch E · CatalystStatusPill relocated to right-rail header in CatalystSidebarDetails. */}
       <CatalystQuickActions />
-      {/* jira-compare 2026-05-03 — Improve relocated to right-rail slot in CatalystSidebarDetails (Patch D). */}
+      {/* jira-compare 2026-05-10: ImproveIssueDropdown relocated to right-rail improveDropdown slot (Vikram "follow jira"). */}
       <CatalystKeyDetails issue={issue ?? null} itemId={itemId} itemType="business_request" projectKey={projectKey} onOpenItem={onOpenItem} showParent={false} />
       <CatalystDescriptionSection issue={issue ?? null} />
       <CatalystAcceptanceCriteria issue={issue ?? null} />
@@ -65,7 +68,6 @@ export default function CatalystViewBusinessRequest({
         projectKey={issue?.project_key || projectKey}
       />
       <CatalystActivitySection itemId={itemId} isOpen={isOpen} />
-      <CatalystFooterMeta issue={issue ?? null} />
     </>
   );
 
@@ -74,6 +76,7 @@ export default function CatalystViewBusinessRequest({
   );
 
   return (
+    <>
     <CatalystViewBase isOpen={isOpen} onClose={onClose} panelMode={panelMode} fullPageMode={fullPageMode}
       itemType={issue?.issue_type || 'Business Request'} itemKey={issue?.issue_key || null}
       projectKey={issue?.project_key || projectKey} projectName={issue?.project_name || undefined}
@@ -82,11 +85,41 @@ export default function CatalystViewBusinessRequest({
       onShare={() => { navigator.clipboard.writeText(window.location.href); toast.success('Link copied'); }}
       moreMenuItems={[
         { label: 'Print', onClick: () => window.print() },
-        { label: 'Clone', onClick: () => { console.log('Clone'); } },
+        { label: 'Clone', onClick: () => {
+          if (!issue?.issue_key) return;
+          cloneIssue(issue.issue_key)
+            .then((newKey) => {
+              toast.success(`Cloned as ${newKey}`, {
+                action: { label: 'Open', onClick: () => onOpenItem?.(newKey) },
+              });
+            })
+            .catch((e: unknown) => {
+              toast.error('Clone failed', { description: e instanceof Error ? e.message : 'Unknown error' });
+            });
+        } },
+        { label: 'Move to project…', onClick: () => setShowMoveDialog(true) },
+        { label: 'Archive', onClick: () => {
+          if (!issue?.issue_key) return;
+          if (!window.confirm(`Archive "${issue.summary}"?\nArchived items can be restored later.`)) return;
+          archiveIssue(issue.issue_key)
+            .then(() => { toast.success('Issue archived'); onClose(); })
+            .catch((e: unknown) => { toast.error('Archive failed', { description: e instanceof Error ? e.message : 'Unknown error' }); });
+        } },
         { label: 'Delete request', onClick: () => mutations.deleteIssue.mutate(), danger: true },
       ]}
       onTogglePanelMode={onTogglePanelMode} navigationItems={navigationItems} currentItemId={itemId} onNavigate={onNavigate}
       leftContent={leftContent} rightContent={rightContent} isLoading={isLoading} isNotFound={!isLoading && issue === null}
     />
+    {showMoveDialog && issue?.issue_key && (
+      <MoveIssueDialog
+        isOpen={showMoveDialog}
+        onClose={() => setShowMoveDialog(false)}
+        issueKey={issue.issue_key}
+        issueSummary={issue.summary}
+        currentProjectKey={issue.project_key || projectKey}
+        onMoved={onClose}
+      />
+    )}
+    </>
   );
 }

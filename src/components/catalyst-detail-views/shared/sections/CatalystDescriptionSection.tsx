@@ -14,23 +14,30 @@
  * silently dropping users onto a different editor whose output shape
  * we do not accept.
  */
-import React, { Suspense, useState, useCallback } from 'react';
+import React, { Suspense, useState, useCallback, startTransition, lazy, useMemo, useEffect } from 'react';
 import { useAuth } from '@/hooks/useAuth';
-import type { AttachmentUploadMeta } from '@/components/shared/rich-text/atlaskit/EpicDescriptionEditor';
+import type { AttachmentUploadMeta } from '@/components/shared/rich-text/atlaskit/AdfDescriptionField';
 /* jira-compare 2026-05-03 (Council P3.2): lucide ChevronRight + Pencil
    removed — CLAUDE.md "ADS-only inside hub scope" violation. Swapped to
    Atlaskit equivalents. Heading wrapper also dropped in favour of an
    inline H2 styled to Jira's measured "Description" label values
    (testid issue.views.issue-base.common.description.label probed
    2026-05-03: H2 / 14px / weight 500 / rgb(80,82,88) / lh ~19). */
-import ChevronRightIcon from '@atlaskit/icon/glyph/chevron-right';
 import EditIcon from '@atlaskit/icon/core/edit';
 import Spinner from '@atlaskit/spinner';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { adfToPlainText, isAdfEmpty } from '@/components/shared/rich-text/atlaskit/adfHelpers';
 import { prefetchEpicEditor } from '@/lib/atlaskitPrefetch';
-import EpicDescriptionEditor from '@/components/shared/rich-text/atlaskit/EpicDescriptionEditor';
+import { AdfLightRenderer, hasComplexAdfNodes } from '@/components/shared/rich-text/atlaskit/adfLightRenderer';
+/* Lazy import — editor-core is ~2MB. Keep it out of the initial bundle.
+   prefetchEpicEditor() on hover pre-downloads the chunk so by the time
+   the user clicks, the browser has it cached and mount is near-instant.
+   startTransition around setEditing(true) lets React time-slice the
+   ProseMirror init without blocking the main thread. */
+const AdfDescriptionField = lazy(
+  () => import('@/components/shared/rich-text/atlaskit/AdfDescriptionField'),
+);
 import EpicDescriptionRenderer from '@/components/shared/rich-text/atlaskit/EpicDescriptionRenderer';
 import type { PhIssue } from '../types';
 
@@ -107,7 +114,7 @@ const DESC_BUILD_ID = 'atlaskit-canonical-v218';
 
 /* ── Scoped styles for ADF content inside CatalystView ── */
 /* Bump this version when the style block changes — forces re-injection on HMR. */
-const STYLE_ID = 'cv-desc-styles-v5';
+const STYLE_ID = 'cv-desc-styles-v6';
 if (typeof document !== 'undefined' && !document.getElementById(STYLE_ID)) {
   const s = document.createElement('style');
   s.id = STYLE_ID;
@@ -254,6 +261,15 @@ if (typeof document !== 'undefined' && !document.getElementById(STYLE_ID)) {
       background-color: transparent !important;
       background: transparent !important;
     }
+    /* jira-compare 2026-05-10: Atlaskit comment-mode editor renders
+       Save/Cancel with fw=400 by default; Jira measures fw=500.
+       Target by Atlaskit's stable data-testid attributes. */
+    [data-testid="editor-comment-save-button"],
+    [data-testid="editor-comment-cancel-button"],
+    [data-testid="comment-save-button"],
+    [data-testid="comment-cancel-button"] {
+      font-weight: 500 !important;
+    }
   `;
   document.head.appendChild(s);
 }
@@ -262,15 +278,23 @@ interface CatalystDescriptionSectionProps {
   issue: PhIssue | null;
   /** Override the section heading (default: "Description") */
   label?: string;
-  /** Start collapsed (default: false) */
-  defaultCollapsed?: boolean;
 }
 
-export function CatalystDescriptionSection({ issue, label = 'Description', defaultCollapsed = false }: CatalystDescriptionSectionProps) {
-  const [collapsed, setCollapsed] = useState(defaultCollapsed);
+export function CatalystDescriptionSection({ issue, label = 'Description' }: CatalystDescriptionSectionProps) {
   const [editing, setEditing] = useState(false);
   const [hovered, setHovered] = useState(false);
   const queryClient = useQueryClient();
+
+  // Idle-time prefetch: kick off editor chunk download after paint so that
+  // by the time the user clicks to edit, the ~2MB chunk is already cached.
+  useEffect(() => {
+    if (typeof requestIdleCallback !== 'undefined') {
+      const id = requestIdleCallback(() => prefetchEpicEditor());
+      return () => cancelIdleCallback(id);
+    }
+    const id = setTimeout(prefetchEpicEditor, 2000);
+    return () => clearTimeout(id);
+  }, []);
 
   /* jira-compare 2026-05-03 (Council P3.2): per-issue console.info removed.
      Build ID still tracked in DESC_BUILD_ID constant; visible by grepping
@@ -286,6 +310,10 @@ export function CatalystDescriptionSection({ issue, label = 'Description', defau
   // fallback so the page renders prose instantly while the renderer chunk
   // arrives (or if it fails).
   const plainText = adfToPlainText(descSource);
+  // Tiered renderer: if the ADF has only prose nodes (no media, tables,
+  // panels, expand, etc.) render it with the zero-chunk AdfLightRenderer.
+  // Only complex docs pay the ~500KB @atlaskit/renderer download cost.
+  const isComplex = useMemo(() => hasComplexAdfNodes(descSource), [descSource]);
 
   // Mutation to save description
   const saveDescriptionMutation = useMutation({
@@ -348,78 +376,36 @@ export function CatalystDescriptionSection({ issue, label = 'Description', defau
 
   return (
     <div style={{ marginBottom: 24 }}>
-      {/* Section header with expand/collapse + edit button */}
-      {/* Phase D.1 (2026-04-18): typography moved to Atlaskit Heading (size="small"
-          maps to a semantic h3 styled via @atlaskit/tokens). The outer div keeps
-          flex / gap / hover + click-to-collapse behavior; font styling is no
-          longer inline. */}
+      {/* Section header — always visible, no collapse (jira-compare 2026-05-10:
+          Jira never collapses the description section; chevron removed for parity).
+          Pencil edit button appears on hover. */}
       <div
-        style={{
-          display: 'flex', alignItems: 'center', gap: 4,
-          marginBottom: collapsed ? 0 : 8, userSelect: 'none',
-        }}
+        style={{ display: 'flex', alignItems: 'center', gap: 4, marginBottom: 8, userSelect: 'none' }}
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
       >
-        <div
-          onClick={() => setCollapsed(!collapsed)}
-          style={{ display: 'flex', alignItems: 'center', gap: 4, cursor: 'pointer', flex: 1 }}
+        <h2
+          data-testid="catalyst-description-section.label"
+          style={{
+            margin: 0, padding: 0, flex: 1,
+            fontSize: 14, fontWeight: 500, lineHeight: '19px',
+            color: 'var(--ds-text-subtle, #505258)',
+            fontFamily: '"Atlassian Sans", ui-sans-serif, -apple-system, "system-ui", "Segoe UI", Ubuntu, "Helvetica Neue", sans-serif',
+          }}
         >
-          {/* jira-compare 2026-05-03 (Council P3.2): the chevron is a pure
-              affordance — wrap the Atlaskit glyph with rotation transform
-              so the same icon serves both collapsed (▶) and expanded (▼)
-              states. CSS rotate is faster than swapping icons. */}
-          <span
-            style={{
-              display: 'inline-flex',
-              transition: 'transform 0.15s ease',
-              transform: collapsed ? 'rotate(0deg)' : 'rotate(90deg)',
-              color: 'var(--ds-text-subtle, #5E6C84)',
-            }}
-          >
-            <ChevronRightIcon label="" size="small" primaryColor="currentColor" />
-          </span>
-          {/* jira-compare 2026-05-03 (Council P3.2): inline H2 sized to
-              Jira's measured "Description" label. Atlaskit's <Heading
-              size="small"> renders 16/653 (variable axis), but Jira's
-              section label is the smaller subtle 14/500 — see
-              testid issue.views.issue-base.common.description.label.
-              Wrapping in span isn't needed; render the H2 directly. */}
-          <h2
-            data-testid="catalyst-description-section.label"
-            style={{
-              margin: 0, padding: 0,
-              fontSize: 14, fontWeight: 500, lineHeight: '19px',
-              color: 'var(--ds-text-subtle, #505258)',
-              /* Explicit family — parent context inherits Inter from
-                 Catalyst's Tailwind body, but Jira's section labels use
-                 Atlassian Sans. Don't rely on inheritance. */
-              fontFamily: '"Atlassian Sans", ui-sans-serif, -apple-system, "system-ui", "Segoe UI", Ubuntu, "Helvetica Neue", sans-serif',
-            }}
-          >
-            {label}
-          </h2>
-        </div>
-        {/* Edit pencil — visible on hover, hidden when editing or collapsed */}
-        {!collapsed && !editing && issue && (
+          {label}
+        </h2>
+        {!editing && issue && (
           <button
-            onClick={() => setEditing(true)}
+            onClick={() => startTransition(() => setEditing(true))}
             title="Edit description"
             style={{
               background: 'none', border: 'none', cursor: 'pointer',
               padding: '4px 6px', borderRadius: 4, color: 'var(--ds-text-subtlest, #6B778C)',
               display: 'flex', alignItems: 'center',
               opacity: hovered ? 1 : 0,
-              transition: 'opacity 0.15s, color 0.1s, background 0.1s',
+              transition: 'opacity 150ms cubic-bezier(0.15,1,0.3,1), color 150ms cubic-bezier(0.15,1,0.3,1), background 150ms cubic-bezier(0.15,1,0.3,1)',
             }}
-            /*
-             * Layer 3 — intent-based prefetch.
-             * The Atlaskit editor chunk is ~2MB; start its dynamic import
-             * the moment the user hovers or focuses the pencil. By the
-             * time the click fires, vendor-atlaskit-editor is in the HTTP
-             * cache and the editor mounts synchronously from Suspense.
-             * No visible loading state for 95% of users.
-             */
             onMouseEnter={e => {
               e.currentTarget.style.color = '#292A2E';
               e.currentTarget.style.background = 'var(--ds-surface-sunken, #F4F5F7)';
@@ -433,81 +419,70 @@ export function CatalystDescriptionSection({ issue, label = 'Description', defau
         )}
       </div>
 
-      {/* Collapsible body */}
-      {!collapsed && (
-        editing && issue ? (
-          /* ── Edit mode — canonical Atlaskit editor.
-             No fallback editor (USER DIRECTIVE 2026-04-20). If the
-             @atlaskit/editor-core chunk fails to load we do NOT render
-             a TipTap replacement — only Atlaskit's ADF shape is
-             accepted by this app. Suspense fallback shows "Loading…"
-             until the chunk resolves. */
-          <div>
-            <Suspense fallback={<AtlaskitFallback minHeight={240} />}>
-              <EpicDescriptionEditor
-                initialContent={issue.description_adf ?? issue.description_text ?? null}
-                onSave={handleSave}
-                onCancel={handleCancel}
-                workItemId={issue.id}
-                placeholder="Add a description..."
-                onAttachmentUploaded={handleInlineAttachmentUploaded}
-              />
-            </Suspense>
-          </div>
-        ) : isEmpty ? (
-          /* ── Empty placeholder — click to edit ── */
-          <div
-            onClick={() => { if (issue) setEditing(true); }}
-            style={{
-              fontSize: 14, color: '#97A0AF', fontStyle: 'italic',
-              minHeight: 40, cursor: issue ? 'pointer' : 'default',
-              borderRadius: 4, padding: '8px 0 8px 20px', // jira-compare 2026-05-08: align with label
-              transition: 'background 0.15s',
-            }}
-            onMouseEnter={e => { if (issue) e.currentTarget.style.background = 'var(--ds-surface-sunken, #F4F5F7)'; }}
-            onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
-          >
-            Add a description...
-          </div>
-        ) : (
-          /* ── Read-only ADF render — canonical Atlaskit renderer only.
-             No error-boundary fallback (USER DIRECTIVE 2026-04-20). The
-             Suspense fallback below is only for chunk-loading, not for
-             error recovery — if the Atlaskit renderer throws at runtime
-             the error propagates and is surfaced as a console error,
-             rather than silently downgrading to a plaintext projection
-             that obscures real renderer bugs. */
-          <div
-            role="button"
-            tabIndex={0}
-            style={{
-              // jira-compare 2026-05-08: align content with label text.
-              // Section header = chevron (16px) + gap (4px) = 20px before h2.
-              // Content must match that offset so body left-edge aligns with label.
-              // DOM probe confirmed: atlasRendererLeft 327.88 vs descLabelLeft 347.87 = 20px gap.
-              paddingLeft: 20, minHeight: 40, cursor: 'text', borderRadius: 4,
-              position: 'relative',
-              transition: 'background 0.15s',
-            }}
-            /* jira-compare 2026-05-02: prefetch the editor chunk as soon
-               as the user hovers the description body — no spinner flash
-               on click. mousedown so click handlers fire AFTER prefetch. */
-            onMouseEnter={e => { e.currentTarget.style.background = 'var(--ds-surface-sunken, #F4F5F7)'; prefetchEpicEditor(); }}
-            onClick={() => { if (issue) setEditing(true); }}
-            onKeyDown={(e) => {
-              if ((e.key === 'Enter' || e.key === ' ') && issue) {
-                e.preventDefault();
-                setEditing(true);
-              }
-            }}
-            onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
-            title="Click to edit"
-          >
+      {editing && issue ? (
+        <div>
+          <Suspense fallback={<AtlaskitFallback minHeight={240} />}>
+            <AdfDescriptionField
+              initialContent={issue.description_adf ?? issue.description_text ?? null}
+              onSave={handleSave}
+              onCancel={handleCancel}
+              workItemId={issue.id}
+              placeholder="Add a description..."
+              onAttachmentUploaded={handleInlineAttachmentUploaded}
+            />
+          </Suspense>
+        </div>
+      ) : isEmpty ? (
+        <div
+          onClick={() => { if (issue) startTransition(() => setEditing(true)); }}
+          style={{
+            fontSize: 14,
+            color: 'var(--ds-text-subtlest, #97A0AF)',
+            fontStyle: 'normal',
+            minHeight: 40, cursor: issue ? 'pointer' : 'default',
+            borderRadius: 4, padding: '8px 0',
+            transition: 'background 150ms cubic-bezier(0.15,1,0.3,1)',
+          }}
+          onMouseEnter={e => {
+            if (issue) {
+              e.currentTarget.style.background = 'var(--ds-surface-sunken, #F4F5F7)';
+              prefetchEpicEditor();
+            }
+          }}
+          onPointerDown={() => { if (issue) prefetchEpicEditor(); }}
+          onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
+        >
+          Add a description...
+        </div>
+      ) : (
+        <div
+          role="button"
+          tabIndex={0}
+          style={{
+            minHeight: 40, cursor: 'text', borderRadius: 4,
+            position: 'relative',
+            transition: 'background 150ms cubic-bezier(0.15,1,0.3,1)',
+          }}
+          onMouseEnter={e => { e.currentTarget.style.background = 'var(--ds-surface-sunken, #F4F5F7)'; prefetchEpicEditor(); }}
+          onPointerDown={() => { if (issue) prefetchEpicEditor(); }}
+          onClick={() => { if (issue) startTransition(() => setEditing(true)); }}
+          onKeyDown={(e) => {
+            if ((e.key === 'Enter' || e.key === ' ') && issue) {
+              e.preventDefault();
+              startTransition(() => setEditing(true));
+            }
+          }}
+          onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
+          title="Click to edit"
+        >
+          {isComplex ? (
             <Suspense fallback={<AtlaskitRendererPlaceholder plain={plainText} />}>
               <EpicDescriptionRenderer content={descSource} issueKey={issue?.issue_key} />
             </Suspense>
-          </div>
-        )
+          ) : (
+            <AdfLightRenderer adf={descSource} />
+          )}
+        </div>
       )}
     </div>
   );

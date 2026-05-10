@@ -13,7 +13,8 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Progress } from "@/components/ui/progress";
 import { toast } from "sonner";
-import { Loader2, Database } from "lucide-react";
+import Spinner from '@atlaskit/spinner';
+import WarningIcon from '@atlaskit/icon/core/warning';
 
 interface HistoricalMigrationDialogProps {
   open: boolean;
@@ -135,7 +136,7 @@ export function HistoricalMigrationDialog({
 
           <div className="bg-amber-50 dark:bg-amber-950 border border-amber-200 dark:border-amber-800 rounded-lg p-3">
             <div className="flex gap-2">
-              <Database className="w-4 h-4 text-amber-600 mt-0.5" />
+              <span style={{ display:'inline-flex', color:'var(--ds-icon-warning, #D97008)' }}><WarningIcon label="" size="small" /></span>
               <div className="text-sm text-amber-800 dark:text-amber-200">
                 <strong>Important:</strong> This will create new records in Catalyst for all matched Jira issues.
                 Existing work items will not be affected.
@@ -158,7 +159,7 @@ export function HistoricalMigrationDialog({
             >
               {isRunning ? (
                 <>
-                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  <Spinner size="small" />
                   Migrating...
                 </>
               ) : (

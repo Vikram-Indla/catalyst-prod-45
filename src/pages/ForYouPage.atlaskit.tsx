@@ -49,6 +49,8 @@ import StarredPanel from '@/components/for-you/atlaskit/StarredPanel';
 // imports around would just be dead wiring.
 import AiThemePanel from '@/components/for-you/atlaskit/AiThemePanel';
 import AgeingPanel from '@/components/for-you/atlaskit/AgeingPanel';
+import R360Panel from '@/components/for-you/atlaskit/R360Panel';
+import { R360AccessTile } from '@/components/R360AccessTile';
 import { ForYouDetailPanel } from '@/components/for-you/ForYouDetailPanel';
 import { useGlobalSearchStore } from '@/store/globalSearchStore';
 
@@ -145,10 +147,11 @@ export default function ForYouPageAtlaskit() {
       handleRowClick(item.id);
     } else {
       // Canonical path — same modal everywhere else in Catalyst.
-      // Prefer phIssueId (the real ph_issues row UUID) when present so the
-      // detail modal can resolve the Jira-synced record; fall back to id.
+      // CatalystDetailRouter queries ph_issues by issue_key (text PK),
+      // not by UUID. item.id is already set to row.issue_key in
+      // mapIssueToWorkItem — pass it directly.
       useGlobalSearchStore.getState().openDetail({
-        id: item.phIssueId || item.id,
+        id: item.id,
         itemType: item.issueType,
         projectKey: item.projectKey,
       });
@@ -205,6 +208,8 @@ export default function ForYouPageAtlaskit() {
       // useForYouData itself — see note in AiThemePanel.tsx for rationale.
       case 'ai-theme':    return <AiThemePanel allUserProjects={allUserProjects} />;
       case 'ageing':      return <AgeingPanel />;
+      // R360 owns its own data pipeline — no row-feed props.
+      case 'r360':        return <R360Panel />;
       case 'recommended': return <RecommendedPanel {...panelProps} mentions={recommendedMentions} comments={recommendedComments} currentUserName={currentUserName} />;
       case 'assigned':    return <AssignedPanel    {...panelProps} />;
       case 'starred':     return <StarredPanel     {...panelProps} />;
@@ -215,7 +220,7 @@ export default function ForYouPageAtlaskit() {
   // AI Theme and Ageing render their own vertical lists/grids internally —
   // neither shares the client-side pagination window that the row-feed tabs
   // use. Suppress Load more + sentinel for those tabs to avoid dead chrome.
-  const showPagination = activeTab !== 'ai-theme' && activeTab !== 'ageing';
+  const showPagination = activeTab !== 'ai-theme' && activeTab !== 'ageing' && activeTab !== 'r360';
 
   return (
     <div
@@ -240,6 +245,11 @@ export default function ForYouPageAtlaskit() {
           FIRST, then the "For you" heading + tab strip share a single row
           directly above the feed. */}
       <RecommendedProjectsStrip projects={allUserProjects} />
+
+      {/* R360 access tile — persona-conditional shortcut to the user's R360 surface */}
+      <div style={{ marginBlockStart: 12 }}>
+        <R360AccessTile />
+      </div>
 
       {/* Heading + tabs — single flex row, "For you" left-aligned, tabs
           right-aligned. Jira's DOM ships this as a div with

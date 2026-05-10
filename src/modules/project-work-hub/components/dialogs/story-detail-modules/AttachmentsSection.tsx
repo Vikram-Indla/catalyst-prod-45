@@ -344,9 +344,13 @@ export function AttachmentsSection({ attachments, itemId, userId, projectKey, so
               </button>
               <span className="att-heading-label">Attachments</span>
             </div>
-            <div className="att-badge-wrapper">
-              <span className="att-badge">{attachments.length}</span>
-            </div>
+            {/* jira-compare 2026-05-10 — A5: gated per CLAUDE.md 2026-05-05
+                section-count-badge ban. Never render a zero badge. */}
+            {attachments.length > 0 && (
+              <div className="att-badge-wrapper">
+                <span className="att-badge">{attachments.length}</span>
+              </div>
+            )}
           </div>
 
           {!collapsed && (

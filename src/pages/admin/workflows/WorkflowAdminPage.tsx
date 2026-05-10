@@ -8,8 +8,12 @@ import { useAllWorkflowSchemes, useCatalystWorkflow } from '@/hooks/useCatalystW
 import { WorkflowEditor } from './WorkflowEditor';
 import { WorkflowDiagram } from './WorkflowDiagram';
 import { cn } from '@/lib/utils';
-import { GitBranch, LayoutGrid, Workflow } from 'lucide-react';
+import BoardsIcon from '@atlaskit/icon/core/boards';
+import GridIcon from '@atlaskit/icon/core/grid';
+import BoardIcon from '@atlaskit/icon/core/board';
+import Spinner from '@atlaskit/spinner';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
+import { AdminGuard } from '@/components/admin/AdminGuard';
 
 const ISSUE_TYPES = [
   { key: 'Story', label: 'Story' },
@@ -28,12 +32,13 @@ export default function WorkflowAdminPage() {
   const { data: schemes = [] } = useAllWorkflowSchemes();
 
   return (
+    <AdminGuard>
     <div className="space-y-0 bg-white min-h-screen text-[var(--ds-text,#0F172A)]">
       {/* Header */}
       <div className="flex items-center justify-between px-6 py-4 border-b border-[var(--ds-border,#E2E8F0)]">
         <div className="flex items-center gap-3">
           <div className="w-9 h-9 rounded-lg bg-[var(--ds-surface-sunken,#F1F5F9)] flex items-center justify-center border border-[var(--ds-border,#E2E8F0)]">
-            <GitBranch size={18} className="text-[var(--ds-text,#0F172A)]" />
+            <BoardsIcon label="" size="small" />
           </div>
           <div>
             <h1 className="text-lg font-semibold text-[var(--ds-text,#0F172A)] font-['Sora']">
@@ -56,7 +61,7 @@ export default function WorkflowAdminPage() {
                 : 'text-[var(--ds-text-subtlest,#64748B)] hover:text-[var(--ds-text,#0F172A)]'
             )}
           >
-            <LayoutGrid size={13} />
+            <GridIcon label="" size="small" />
             Editor
           </button>
           <button
@@ -68,7 +73,7 @@ export default function WorkflowAdminPage() {
                 : 'text-[var(--ds-text-subtlest,#64748B)] hover:text-[var(--ds-text,#0F172A)]'
             )}
           >
-            <Workflow size={13} />
+            <BoardIcon label="" size="small" />
             Diagram
           </button>
         </div>
@@ -102,6 +107,7 @@ export default function WorkflowAdminPage() {
         ))}
       </Tabs>
     </div>
+    </AdminGuard>
   );
 }
 
@@ -111,7 +117,7 @@ function WorkflowTabContent({ issueType, viewMode }: { issueType: string; viewMo
   if (workflow.isLoading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <div className="animate-spin w-5 h-5 border-2 border-[var(--ds-text-subtlest,#64748B)] border-t-transparent rounded-full" />
+        <Spinner size="medium" />
       </div>
     );
   }
@@ -119,7 +125,7 @@ function WorkflowTabContent({ issueType, viewMode }: { issueType: string; viewMo
   if (!workflow.scheme) {
     return (
       <div className="flex flex-col items-center justify-center py-20 text-[var(--ds-text-subtlest,#64748B)]">
-        <GitBranch size={32} className="mb-3 opacity-40" />
+        <BoardsIcon label="" size="large" />
         <p className="text-sm">No workflow configured for {issueType}</p>
       </div>
     );

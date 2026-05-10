@@ -5,9 +5,9 @@
  */
 
 import { useState } from 'react';
-import { CircleUser } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { resolveAvatarUrl } from '@/lib/avatars';
+import PersonIcon from '@atlaskit/icon/core/person';
 
 // Avatar colors — neutral blue-gray palette + approved Catalyst hues (no purple/pink/magenta)
 const AVATAR_COLORS = [
@@ -130,7 +130,7 @@ export function UserAvatar({
           )}
           style={{ backgroundColor: bgColor }}
         >
-          <CircleUser className="w-[70%] h-[70%]" strokeWidth={1.5} />
+          <PersonIcon label="" size="small" />
         </div>
       )}
       {(flagUrl || flag) && (

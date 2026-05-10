@@ -177,7 +177,8 @@ export default function ThemeIssueList({ issueKeys }: ThemeIssueListProps) {
               <Pressable
                 xcss={keyPressableStyles}
                 onClick={() => useGlobalSearchStore.getState().openDetail({
-                  id: row.id,
+                  // CatalystDetailRouter queries ph_issues by issue_key, not UUID.
+                  id: row.issue_key,
                   itemType: row.issue_type,
                   projectKey: row.project_key,
                 })}
