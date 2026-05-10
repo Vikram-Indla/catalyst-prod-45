@@ -347,9 +347,60 @@ export default function R360MemberDetail({ resourceId: resourceIdProp, projectSc
                   ) : null}
                   <span style={{ position: 'absolute', pointerEvents: 'none', ...(overview.avatar_url ? { display: 'none' } : {}) }}>{initials(overview.name)}</span>
                 </div>
-                <div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
                   <div className="r3-profile-name">{overview.name}</div>
-                  <div className="r3-profile-role">{overview.role_name} · {overview.department}</div>
+                  <div className="r3-profile-role">{overview.role_name} · {(overview as any).department}</div>
+                  {/* Country flag + location badge */}
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 2, flexWrap: 'wrap' }}>
+                    {(overview as any).country && (
+                      <span
+                        data-testid="r360-country"
+                        style={{
+                          fontSize: 12,
+                          color: token('color.text.subtle', '#626F86'),
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: 4,
+                        }}
+                      >
+                        {(overview as any).country_flag_svg_url ? (
+                          <img
+                            src={(overview as any).country_flag_svg_url}
+                            alt={(overview as any).country_code ?? ''}
+                            style={{ width: 16, height: 11, borderRadius: 2, objectFit: 'cover' }}
+                          />
+                        ) : (overview as any).country_code ? (
+                          <span style={{ fontSize: 14, lineHeight: 1 }}>
+                            {/* Convert ISO code to flag emoji */}
+                            {String.fromCodePoint(
+                              ...((overview as any).country_code as string)
+                                .toUpperCase()
+                                .split('')
+                                .map((c: string) => 0x1F1E6 + c.charCodeAt(0) - 65)
+                            )}
+                          </span>
+                        ) : null}
+                        {(overview as any).country}
+                      </span>
+                    )}
+                    {(overview as any).location && (
+                      <span
+                        data-testid="r360-location"
+                        style={{
+                          fontSize: 11,
+                          fontWeight: 500,
+                          padding: '1px 6px',
+                          borderRadius: 3,
+                          background: token('color.background.neutral', '#F1F2F4'),
+                          color: token('color.text.subtle', '#626F86'),
+                          border: `1px solid ${token('color.border', '#091E4224')}`,
+                          whiteSpace: 'nowrap' as const,
+                        }}
+                      >
+                        {(overview as any).location}
+                      </span>
+                    )}
+                  </div>
                 </div>
                 {/* §9 — Open (blue) + Stale (danger) chips */}
                 <div style={{ display: 'flex', gap: '8px' }}>
