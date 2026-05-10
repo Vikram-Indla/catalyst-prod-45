@@ -1339,10 +1339,44 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
       } else if (groupBy === 'parent') {
         const isOrphan = /^(No parent|—)$/i.test(k);
         const parentType = sample.parent_issue_type || (sample.type === 'epic' ? 'Epic' : 'Epic');
+        // 2026-05-10 hierarchy parity: render parent header as
+        // [type icon] [KEY in mono] [summary]
+        // The bucket's `sample` may be the parent itself (epic with no
+        // parent_key) OR a child of the parent (parent_key set). Find a
+        // child to source parent_key; if none, sample is the parent and
+        // we use its own `key`.
+        const bucketRows = buckets.get(k)!;
+        const childWithParentKey = bucketRows.find((row) => !!row.parent_key);
+        const parentKey = isOrphan
+          ? ''
+          : (childWithParentKey?.parent_key || sample.key || '');
+        // Strip "[KEY] " prefix from parent_label if present.
+        const parentSummary = isOrphan
+          ? ''
+          : k.replace(/^\[[^\]]+\]\s*/, '').replace(/^[A-Z]+-\d+\s*[—\-:]\s*/, '');
         labelNode = (
-          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, minWidth: 0 }}>
             {!isOrphan && <JiraIssueTypeIcon type={parentType} size={14} />}
-            <span style={{ fontFamily: !isOrphan ? 'var(--cp-font-mono)' : 'inherit' }}>{k}</span>
+            {!isOrphan && parentKey && (
+              <span style={{
+                fontFamily: 'var(--cp-font-mono)',
+                fontSize: 12,
+                color: 'var(--ds-text-subtle, #42526E)',
+                fontWeight: 600,
+                flexShrink: 0,
+              }}>{parentKey}</span>
+            )}
+            {!isOrphan && parentSummary && (
+              <span style={{
+                color: 'var(--ds-text, #172B4D)',
+                fontWeight: 500,
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                whiteSpace: 'nowrap',
+                minWidth: 0,
+              }}>{parentSummary}</span>
+            )}
+            {isOrphan && <span style={{ color: 'var(--ds-text-subtlest, #6B6E76)' }}>{k}</span>}
           </span>
         );
       }
