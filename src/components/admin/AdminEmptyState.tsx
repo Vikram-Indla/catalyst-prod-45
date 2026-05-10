@@ -2,7 +2,7 @@
  * Admin Empty State - Reusable empty state for admin child pages
  * Displays contextual empty state based on the admin section type
  */
-import { Button } from '@/components/ui/button';
+import Button from '@atlaskit/button/new';
 import AddIcon from '@atlaskit/icon/core/add';
 import ArchiveBoxIcon from '@atlaskit/icon/core/archive-box';
 import BoardsIcon from '@atlaskit/icon/core/boards';
@@ -272,11 +272,11 @@ export function AdminEmptyState({ sectionType, onAction }: AdminEmptyStateProps)
       </p>
 
       {config.showCta && config.ctaLabel && onAction && (
-        <Button 
+        <Button
+          appearance="primary"
           onClick={onAction}
-          className="bg-brand-primary hover:bg-brand-primary-hover text-white"
+          iconBefore={AddIcon}
         >
-          <AddIcon label="" size="small" />
           {config.ctaLabel}
         </Button>
       )}

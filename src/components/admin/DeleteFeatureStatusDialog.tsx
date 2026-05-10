@@ -10,15 +10,8 @@ import {
   DialogFooter,
   DialogDescription,
 } from '@/components/admin/admin-dialog';
-import { Button } from '@/components/ui/button';
-import { Label } from '@/components/ui/label';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
+import Button from '@atlaskit/button/new';
+import AdsSelect from '@atlaskit/select';
 import { useLinkedFeatures, useReassignFeatures, useDeleteFeatureStatus, FeatureStatus } from '@/hooks/useFeatureStatuses';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Lozenge } from '@/components/ads';
@@ -112,9 +105,9 @@ export function DeleteFeatureStatusDialog({
 
               {/* Linked features list */}
               <div className="space-y-2">
-                <Label className="text-sm font-medium">
+                <span className="text-sm font-medium" style={{ color: 'var(--ds-text, #172B4D)' }}>
                   Linked Features ({linkedData?.count})
-                </Label>
+                </span>
                 <ScrollArea className="h-32 border rounded-md p-2">
                   <div className="space-y-1">
                     {linkedData?.features.map((feature) => (
@@ -141,28 +134,25 @@ export function DeleteFeatureStatusDialog({
 
               {/* Reassign section */}
               <div className="space-y-2 pt-2 border-t">
-                <Label htmlFor="new-status" className="text-sm font-medium">
+                <label htmlFor="new-feature-status-select" style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>
                   Reassign all features to:
-                </Label>
+                </label>
                 <div className="flex gap-2">
-                  <Select value={newStatus} onValueChange={setNewStatus}>
-                    <SelectTrigger className="flex-1">
-                      <SelectValue placeholder="Select new status..." />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {availableStatuses.map((s) => (
-                        <SelectItem key={s.id} value={s.value}>
-                          {s.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <Button 
-                    variant="secondary" 
+                  <div style={{ flex: 1 }}>
+                    <AdsSelect
+                      inputId="new-feature-status-select"
+                      value={newStatus ? { label: availableStatuses.find(s => s.value === newStatus)?.label || newStatus, value: newStatus } : null}
+                      options={availableStatuses.map(s => ({ label: s.label, value: s.value }))}
+                      placeholder="Select new status..."
+                      onChange={(opt) => setNewStatus(opt?.value ?? '')}
+                    />
+                  </div>
+                  <Button
+                    appearance="default"
                     onClick={handleReassign}
-                    disabled={!newStatus || reassignMutation.isPending}
+                    isDisabled={!newStatus || reassignMutation.isPending}
+                    iconBefore={RefreshIcon}
                   >
-                    <RefreshIcon label="" size="small" />
                     Reassign
                   </Button>
                 </div>
@@ -189,15 +179,15 @@ export function DeleteFeatureStatusDialog({
         </div>
 
         <DialogFooter className="gap-2">
-          <Button variant="outline" onClick={() => onOpenChange(false)}>
+          <Button appearance="default" onClick={() => onOpenChange(false)}>
             Cancel
           </Button>
-          <Button 
-            variant="destructive" 
+          <Button
+            appearance="danger"
             onClick={handleDelete}
-            disabled={!canDelete || deleteMutation.isPending}
+            isDisabled={!canDelete || deleteMutation.isPending}
+            iconBefore={TrashIcon}
           >
-            <TrashIcon label="" size="small" />
             {deleteMutation.isPending ? 'Deleting...' : 'Delete Status'}
           </Button>
         </DialogFooter>
