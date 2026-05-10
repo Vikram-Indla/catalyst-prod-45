@@ -10,7 +10,7 @@ import { useTrackRecentItem } from '@/hooks/useRecentProjectItems';
 import {
   CatalystTitleEditor, CatalystQuickActions, CatalystDescriptionSection, CatalystAcceptanceCriteria,
   CatalystActivitySection, CatalystAttachmentsPanel, CatalystSidebarDetails, CatalystKeyDetails,
-  CatalystStatusPill, CatalystFooterMeta, KeyDetailsFieldRow,
+  CatalystStatusPill, KeyDetailsFieldRow,
 } from '../shared/sections';
 import { CatalystSeverityField } from '../shared/sections/CatalystSeverityField';
 import { LinkedWorkItemsSection } from '@/modules/project-work-hub/components/linked-work-items';
@@ -55,7 +55,7 @@ export default function CatalystViewTask({
       <CatalystTitleEditor issue={issue ?? null} onTitleChange={(t) => mutations.updateField.mutate({ field: 'summary', value: t, oldValue: issue?.summary ?? '' })} />
       {/* jira-compare 2026-05-03 — Patch E · CatalystStatusPill relocated to right-rail header in CatalystSidebarDetails. */}
       <CatalystQuickActions />
-      {/* jira-compare 2026-05-03 — Improve relocated to right-rail slot in CatalystSidebarDetails (Patch D). */}
+      <ImproveIssueDropdown issue={issue ?? null} {...improveHandlers} />
       {/* jira-compare 2026-05-10 Fix JC-2: Severity added to Key details.
           Jira Task screen scheme (10010) includes customfield_10125 (Severity).
           Mirrors the pattern from CatalystViewIncident. */}
