@@ -335,6 +335,5 @@ export function SuggestChildIssuesDialog({
           </Button>
         </div>
       </div>
-    </div>
   );
 }
