@@ -1354,6 +1354,13 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
         const parentSummary = isOrphan
           ? ''
           : k.replace(/^\[[^\]]+\]\s*/, '').replace(/^[A-Z]+-\d+\s*[—\-:]\s*/, '');
+        // Parent's status — look it up from the parent row itself if the
+        // parent is in the bucket (epic with no parent_key), else from a
+        // separate items lookup by parent_key. Falls back to undefined.
+        const parentRow = bucketRows.find((row) => !row.parent_key)
+          ?? items.find((it) => it.key === parentKey);
+        const parentStatus = isOrphan ? null : (parentRow?.status ?? null);
+        const parentStatusAppearance = parentStatus ? statusAppearance(parentStatus) : 'default';
         labelNode = (
           <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, minWidth: 0 }}>
             {!isOrphan && <JiraIssueTypeIcon type={parentType} size={14} />}
@@ -1375,6 +1382,13 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
                 whiteSpace: 'nowrap',
                 minWidth: 0,
               }}>{parentSummary}</span>
+            )}
+            {!isOrphan && parentStatus && (
+              <span style={{ flexShrink: 0, marginLeft: 4 }}>
+                <StatusPill appearance={parentStatusAppearance as LozengeAppearance}>
+                  {parentStatus}
+                </StatusPill>
+              </span>
             )}
             {isOrphan && <span style={{ color: 'var(--ds-text-subtlest, #6B6E76)' }}>{k}</span>}
           </span>
