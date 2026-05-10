@@ -79,6 +79,9 @@ export default function R360MemberDetail({ resourceId: resourceIdProp, projectSc
 
   // D-19 Nuclear scroll reset on view tab switch
   useEffect(() => {
+    // When embedded inside the For You tab, do NOT reset scroll — the parent
+    // page owns scroll position and must not be disrupted by view changes.
+    if (embedded) return;
     // Immediate reset
     window.scrollTo(0, 0);
     const r360Root = document.getElementById('r360-root');
