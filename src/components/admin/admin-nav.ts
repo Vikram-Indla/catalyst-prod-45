@@ -111,6 +111,7 @@ export const adminPockets: AdminNavPocket[] = [
     path: '/admin/feature-flags',
     children: [
       { label: 'Feature Flags', path: '/admin/feature-flags' },
+      { label: 'Catalyst Features', path: '/admin/catalyst-features' },
     ],
   },
 ];
@@ -154,6 +155,7 @@ export const REGISTERED_ADMIN_ROUTES = new Set([
   '/admin/workhub/sync-logs',
   '/admin/workhub/activity-sync',
   '/admin/feature-flags',
+  '/admin/catalyst-features',
 ]);
 
 /** Returns all leaf navigation paths (children only; section-level paths excluded). */
