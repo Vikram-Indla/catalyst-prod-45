@@ -48,10 +48,11 @@ export function useTeamResourceIds(myProfileId: string | null | undefined) {
     queryFn: async () => {
       if (!myProfileId) return [];
 
-      // 1 — Projects the current user belongs to
+      // 1 — Projects where the current user is a lead (not just a member)
       const { data: myMemberships } = await typedQuery('ph_project_members')
         .select('project_id')
-        .eq('user_id', myProfileId);
+        .eq('user_id', myProfileId)
+        .eq('role', 'lead');
 
       const projectIds = (myMemberships ?? [])
         .map((m: any) => m.project_id as string)
