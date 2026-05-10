@@ -77,7 +77,7 @@ AlertDialogHeader.displayName = 'AlertDialogHeader';
 // ── AlertDialogTitle ──────────────────────────────────────────────────────────
 
 export function AlertDialogTitle({ children }: { children?: React.ReactNode }) {
-  return <ModalTitle appearance="warning">{children}</ModalTitle>;
+  return <ModalTitle>{children}</ModalTitle>;
 }
 AlertDialogTitle.displayName = 'AlertDialogTitle';
 
@@ -169,7 +169,7 @@ export function AdminAlertDialog({
   return (
     <Modal isOpen={open} onClose={onClose} width="small">
       <ModalHeader>
-        <ModalTitle appearance="warning">{title}</ModalTitle>
+        <ModalTitle>{title}</ModalTitle>
         {description && (
           <p
             style={{
