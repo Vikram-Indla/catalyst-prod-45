@@ -108,11 +108,28 @@ Vikram's directive: "the more three dots is very important with options like clo
 - [x] Phase 7 handover stub created
 - [x] X1 Improve* inline slot — DONE (ce26d818b, all 8 views, smoke test updated)
 - [x] X2 Top-bar wiring (⋯ menu) — DONE (00f6a1b6b + f80b8b097 + ca71f2fec + 34c505dc4 + 82fffedd5)
-- [ ] Stage 1 #1 — read CatalystViewBusinessRequest.v2.tsx
-- [ ] Stage 1 #10 — Vikram confirms canonical + ordering
-- [ ] Stage 2 round-robin × 9 types (Defect → Story → Task → Subtask → Feature → Epic → BR → Incident → Idea)
+- [x] Stage 1 #1 — verified canonical: v2 BR is BR-specific migration; v1 pattern stays canonical for other 8 types
+- [x] **Stage 2 Defect cycle 1 (N1)** — `fix(allwork): N1 parent crumb opens overlay for out-of-list targets` — commit `8df1972ca` — PR [#132](https://github.com/Vikram-Indla/catalyst-prod-45/pull/132)
+- [x] **Stage 2 Defect cycle 2 (A5)** — `fix(attachments): A5 — gate att-badge so zero never renders` — commit `9cf671423` — same PR
+- [ ] **Stage 2 Defect cycles 3–5** — remaining candidates: A3 (parent chip Lozenge tinting, P1) · A4 (status dropdown listbox typography, P0) · top-bar audit (P1)
+- [ ] Stage 2 round-robin types 2–9 (Story → Task → Subtask → Feature → Epic → BR → Incident → Idea)
 - [ ] Stage 3 remaining: X3 breadcrumb nav · X4 count badges · X5 ADF media · X6 Activity dedup · X7 status dropdown typography
 - [ ] Stage 4 final gates F1–F7
+
+### Session 2026-05-10 (continuation) — N1 + A5 shipped, D5 reclassified
+
+**Phase 0.5 corrections (lessons learned this session):**
+- **N1 was misdiagnosed.** Phase 0.5 said "wiring drops the click". Live probe + unit test proved the wrapper stack (`TicketBreadcrumbs` → `@/components/ads/Breadcrumbs` → `@atlaskit/breadcrumbs`) forwards `onClick` correctly. Actual defect was upstream in `ProjectAllWorkView`: its `onOpenItem` called `selectItem(parentEpicKey)`, but AllWork's items list excludes Epic/Feature/Task (CLAUDE.md 2026-04-28), so `activeItem` stayed undefined and the panel never swapped. Fix: dispatch in-list vs out-of-list via new `openItemDispatch.ts` helper + drop `items.find` guard from overlay block so `CatalystDetailRouter` can resolve any key via `ph_issues`.
+- **D5 is infra, not code.** `atlaskitMediaOverrides.tsx` already wires `mediaSingle` → `/functions/v1/jira-attachment-proxy?id=…`. The "image-X.png hosted on Jira · auth required" card we see is the intentional `errored` fallback (lines 186-230 of the overrides file). Network request to the proxy returns 403 — root cause is the Supabase edge function's PAT scope (already named in the in-source comment). Needs Supabase secret rotation OR `local_public_url` sync, not a renderer change. **Deferred to a separate ticket.**
+- **A5 (banned `.att-badge` zero) confirmed regressed.** Live probe found `.att-badge` rendering "0". Lesson-candidate #3 from this handover is now ratified by the commit. Smoke test extended.
+
+**Dev server caveat — important for next session.** The running vite on `:8080` is PID 35631 from `/Users/jahanarakhan/Documents/GitHub/catalyst-prod-45/node_modules/.bin/vite` (main checkout), NOT from this worktree. Edits made in `silly-gagarin-5e611a` are NOT hot-reloaded into the live page. Live T-D re-probe for N1/A5 is deferred until either (a) main vite is stopped + a new one started from the worktree path, or (b) PR is merged to main. Vitest + tsc passed end-to-end here so the fixes are structurally sound.
+
+**Reusable lesson candidate (proposed for CLAUDE.md after Vikram approval):**
+> **2026-05-10 — Phase 0.5 diagnoses are hypotheses; probe before TDD'ing the wrong layer**
+> Surface: any preflight cross-cutting plan with Phase 0.5 violations
+> Pattern: Phase 0.5 N1 listed "breadcrumb crumb click is no-op → wire `onParentClick → openDetail` in every CatalystView*". A unit test that reproduced the alleged failure mode PASSED on the first run — the wiring was correct end-to-end. The actual defect was in the surface above the component, not inside it. Hours of wrong-layer TDD were avoided by probing live + tracing the call chain before writing any test.
+> Rule: Before T-A in a per-type round, run the unit test for the *named* failing layer first. If it passes, stop and trace upstream — don't ship a "fix" that addresses a layer that wasn't broken. Phase 0.5 evidence is a starting hypothesis, not a verdict.
 
 ## Files (anticipated touch list)
 - `src/components/catalyst-detail-views/shared/CatalystViewBase.tsx` — top-bar wiring
@@ -175,20 +192,51 @@ ALREADY SHIPPED (do NOT re-do):
   All 8 CatalystView* files updated. 18 tests green.
 - ImproveIssueDropdown moved from leftContent → improveDropdown slot (right rail)
   in all 8 CatalystView* files. Smoke test updated 12/12 green.
-- Lesson candidate (approved): @atlaskit/dropdown-menu mandatory for all menus, P0.
-Commits: ae8fade28 → ce26d818b (pushed to origin/main).
+- Stage 2 Defect cycle 1 (N1): parent crumb opens overlay for out-of-list
+  targets. NEW openItemDispatch.ts helper; ProjectAllWorkView wired; overlay
+  block's items.find guard dropped. Commit 8df1972ca.
+- Stage 2 Defect cycle 2 (A5): att-badge "0" gated. AttachmentsSection.tsx
+  wrapped with attachments.length > 0. Smoke test extended. Commit 9cf671423.
+- Lesson candidates (approved): @atlaskit/dropdown-menu mandatory, P0;
+  section count zero badges banned (smoke-test enforced).
+PR with the latest 2 Defect cycles: https://github.com/Vikram-Indla/catalyst-prod-45/pull/132
+Branch: claude/silly-gagarin-5e611a (2 commits ahead of origin/main).
 
-REMAINING WORK (Stage 2+3+4):
+PHASE 0.5 CORRECTIONS FROM LAST SESSION:
+- N1 was misdiagnosed. Wrapper stack (TicketBreadcrumbs → ADS Breadcrumbs →
+  @atlaskit/breadcrumbs) is correct. The real defect was upstream in
+  ProjectAllWorkView.onOpenItem (selectItem silent no-op when target not in items).
+  TicketBreadcrumbs.parent-crumb.test.tsx is kept as regression guard.
+- D5 is infra, not code. atlaskitMediaOverrides.tsx already wires MediaSingle
+  through the proxy; the "Open in Jira · auth required" card is the intended
+  errored fallback. Root cause is Supabase edge function PAT scope (3xx/4xx
+  from proxy). Deferred to a separate Supabase config ticket.
+- A5 confirmed regressed; gate added.
+
+DEV SERVER CAVEAT:
+- :8080 vite (PID 35631) runs from /Users/.../catalyst-prod-45/ (main checkout),
+  NOT from this worktree. Edits in silly-gagarin-5e611a do NOT hot-reload into
+  the live page. For live T-D re-probe per cycle, either stop main vite + start
+  from worktree, OR merge PR #132 to main first.
+- bun is required: `PATH="/opt/homebrew/bin:$PATH" bun --bun ./node_modules/.bin/vitest run <path>`
+  (Node 20.12 hits a styleText incompat with rolldown; bun runtime works.)
+
+REMAINING WORK:
 Reference issue: BAU-5736 (QA Bug/Defect), inside Senaei BAU / BAU-4466.
 
-  Stage 2: Per-type round-robin × 9, in order:
-    Defect/QA Bug → Story → Task → Subtask → Feature → Epic → BR → Incident → Idea.
+  Stage 2 Defect cycles 3–5 (still on Defect type, 3 cycles left in 5-cap):
+    - A3 parent chip Lozenge tinting (P1) — DOM probe vs Jira required
+    - A4 status dropdown listbox typography (P0) — DOM probe required
+    - Top-bar audit (Manage watchers / Link issue / Share / More actions wired?)
+  Then pivot to next types in order:
+    Story → Task → Subtask → Feature → Epic → BR → Incident → Idea.
     Each type: T-A failing test → T-B fix → T-C ads-validator → T-D re-probe →
     T-E green-arrow screenshot → T-F regression-sweep → T-G commit + Vikram review.
     5-cycle cap per type. Halt and surface if exceeded.
   Stage 3 remaining cross-cutting:
-    X3 breadcrumb nav · X4 count badges · X5 ADF media → proxy ·
-    X6 Activity dedup · X7 status dropdown typography + transparent parent chip.
+    X3 breadcrumb nav (DONE for N1 case) · X4 count badges (DONE for att-badge) ·
+    X5 ADF media → proxy (deferred — infra) · X6 Activity dedup ·
+    X7 status dropdown typography + transparent parent chip.
   Stage 4: F1 re-probe all 9 (drift=0) · F2 ads-validator (0 violations) ·
     F3 design-critique (≥27/30 each) · F4 all-green screenshots ·
     F5 one PR · F6 lessons → save-memory · F7 handover update.
@@ -196,12 +244,18 @@ Reference issue: BAU-5736 (QA Bug/Defect), inside Senaei BAU / BAU-4466.
 Hard rules:
 - localhost:8080 ONLY (no 8081, no preview_*).
 - Chrome MCP for live probes; Atlassian MCP for schema/ADF.
-- TDD: failing test before every implementation row.
+- TDD: failing test before every implementation row; verify the failure is
+  on the layer you intend to fix, not an unrelated render path.
 - Ask Vikram before any field add/remove.
 - Banned forever: MDT Ref, Service Now#, Assessment Feature, Story Points,
   Development section, Automation section, AI Sparkles inline, Notion-in-Projects.
 
-First action: open BAU-5736 in Catalyst (localhost:8080/project-hub/BAU/allwork?issue=BAU-5736),
-run Chrome MCP + Jira DOM probe side-by-side, produce red-arrow annotated screenshot,
-then ask Vikram for go on Stage 2 first type.
+NEW LESSON CANDIDATE (awaiting Vikram approval for CLAUDE.md append):
+- 2026-05-10 — Phase 0.5 diagnoses are hypotheses; probe before TDD'ing the
+  wrong layer. Run a unit test on the *named* failing layer first; if it
+  passes, trace upstream before writing any fix.
+
+First action: review PR #132. Then either resume Defect cycle 3 (pick A3/A4/
+top-bar) or pivot to Stage 2 type 2 (Story). Live T-D re-probe of N1+A5 needs
+either a worktree-bound vite or PR merge.
 ```
