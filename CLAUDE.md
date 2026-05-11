@@ -10,6 +10,23 @@ The Catalyst local dev server always runs on **http://localhost:8080**. Never us
 
 ---
 
+## Shared Agent Library (Team-wide)
+
+All Catalyst team members have access to **184 shared personas** (committed to `./.claude/agents/` in this repo) for use with the catalyst-agent orchestrator:
+
+**Available skills:**
+- `/catalyst-agent <task>` — probe-first router for engineering tasks (see `./.claude/skills/catalyst-agent/SKILL.md`)
+- `/preflight` — 8-phase strategic planner with multi-agent council
+- `/jira-compare` — CRUD parity audits with acceptance gates
+- `/design-intelligence` — 1000-IQ design intelligence layer
+- `/design-critique` — heuristic UI/UX scoring
+
+**Setup:** After pulling the repo, reload Claude Code (Close → Reopen or restart extension). Skills auto-discover from `./.claude/skills/` and `./.claude/agents/` is accessible to all personas.
+
+**For new machines:** No manual setup needed — agents are version-controlled. Just `git pull` and reload.
+
+---
+
 ## 2026-05-11 — Phase 0.5 diagnoses are hypotheses; probe before TDD'ing the wrong layer
 **Surface:** Any preflight cross-cutting plan with Phase 0.5 violations
 **Pattern:** Phase 0.5 N1 listed "breadcrumb crumb click is no-op → wire `onParentClick → openDetail` in every `CatalystView*`". A unit test reproducing the alleged failure mode PASSED on the first run — the wiring was correct end-to-end. Actual defect was upstream in `ProjectAllWorkView`: its `onOpenItem` called `selectItem(parentEpicKey)`, but AllWork's items list excludes Epic/Feature/Task (CLAUDE.md 2026-04-28), so `activeItem` stayed undefined. Hours of wrong-layer TDD were avoided by probing live + tracing the call chain before writing any test.

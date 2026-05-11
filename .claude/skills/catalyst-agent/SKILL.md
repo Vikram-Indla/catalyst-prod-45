@@ -15,7 +15,7 @@ metadata:
   category: orchestration
   tags: [routing, agents, probe-first, mcp, preflight, jira-compare, design-intelligence, design-critique, catalyst]
   maturity: stable
-  agent_library: ~/.claude/agents/ (184 personas)
+  agent_library: ./.claude/agents/ (184 personas, shared across team)
   wrapper_skills: [preflight, jira-compare, design-intelligence, design-critique]
   mcp_servers: [atlassian, chrome, supabase]
   iq_level: 1000
@@ -104,7 +104,7 @@ Agent({
   description: "<one-line action>",
   subagent_type: "general-purpose",
   prompt: `You are operating as the <persona-name> persona from
-~/.claude/agents/<persona-name>.md. Persona summary: <2-3 line role description>.
+./.claude/agents/<persona-name>.md. Persona summary: <2-3 line role description>.
 
 ROLE: <read-only / write / etc>
 TASK: <specific task>
@@ -127,7 +127,7 @@ Agent({
   prompt: `${read('.claude/skills/catalyst-agent/CORE_DIRECTIVES.md')}
 
 You are operating as the <persona-name> persona from
-~/.claude/agents/<persona-name>.md. Persona summary: <2-3 line role>.
+./.claude/agents/<persona-name>.md. Persona summary: <2-3 line role>.
 
 ROLE: <read-only / write / etc>
 TASK: <specific task>
