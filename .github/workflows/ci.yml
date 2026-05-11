@@ -23,6 +23,14 @@ jobs:
         # not error, on platform mismatch). npm install correctly skips them.
         run: npm install
 
+      - name: Pre-warm sync-deps cache (prevents vite.config.ts from re-installing during build)
+        # vite.config.ts spawns scripts/sync-deps.js on load. If the
+        # node_modules/.catalyst-sync-hash file doesn't exist yet, sync-deps
+        # runs `npm install` and WIPES any explicit installs we did in
+        # subsequent steps (e.g. the rollup hoist below). Running it once
+        # here writes the hash file so the build step takes the fast path.
+        run: node scripts/sync-deps.js
+
       - name: Ensure rollup is hoisted (legacy-peer-deps drops direct devDeps reachable as transitives)
         # With legacy-peer-deps=true in .npmrc, npm 10/11 on Linux silently
         # drops direct devDeps that are also reachable as transitive deps
@@ -36,6 +44,8 @@ jobs:
         # Fix: do a targeted second install of just rollup after the main
         # one. This forces rollup to land at node_modules/rollup at the top
         # level where vite's chunked import can find it.
+        # NOTE: must run AFTER the sync-deps warm-up, otherwise sync-deps
+        # will undo it when vite loads.
         run: npm install rollup@^4.20.0 --no-save
 
       - name: Type check
