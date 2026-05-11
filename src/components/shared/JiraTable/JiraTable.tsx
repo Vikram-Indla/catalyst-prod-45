@@ -593,11 +593,11 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
            treatment was a Catalyst opinion. Matching Jira's actual list
            view here for parity. Apr 27 2026 jira-compare regression
            (D-005 + D-006): fontWeight 700 → 653, color #505258 → #6B6E76.
-           May 12 2026 (design-critique): corrected back to Jira spec —
-           14px/400 (not 12px/653). */
-        font-size: 14px;
-        font-weight: 400;
-        color: #6B6E76;
+           Jira spec (measured 2026-05-12): 12px/653/rgb(80,82,88) — NOT 14px/400.
+           14px/400 is body text. Headers must be bold and smaller. */
+        font-size: 12px;
+        font-weight: 653;
+        color: rgb(80, 82, 88);
         text-transform: none;
         letter-spacing: normal;
         white-space: nowrap;
@@ -708,7 +708,7 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
         background: #F7F8F9;
       }
       .jira-table-grid thead th {
-        color: var(--ds-text-subtlest, #6B778C) !important;
+        color: rgb(80, 82, 88) !important;
       }
       /* Header z-index for non-sticky-left case — no left-pin, just
          keep header floating above body on vertical scroll. */
