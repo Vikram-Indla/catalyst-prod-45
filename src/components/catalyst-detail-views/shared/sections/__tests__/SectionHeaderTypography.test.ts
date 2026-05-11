@@ -104,4 +104,60 @@ describe('Section header typography — canonical Jira spec (live probe 2026-05-
       'linked-work-items.css: .lwi-header__title must be font-weight: 653 (live Jira spec).',
     ).toBe(true);
   });
+
+  it('CatalystSidebarDetails "Details" right-rail header must be fontSize 16, fontWeight 653', () => {
+    const sidebarSrc = readFileSync(
+      resolve(__dirname, '../CatalystSidebarDetails.tsx'),
+      'utf-8',
+    );
+    // Locate the "Details" header div (the one used by the right-rail
+    // collapsible "Details" section, not a layout wrapper).
+    const block = sidebarSrc.match(/<div[\s\S]{0,300}>Details<\/div>/);
+    expect(block, 'Could not locate "Details" header div').not.toBeNull();
+    const text = block![0];
+    expect(
+      /fontSize:\s*16/.test(text),
+      'CatalystSidebarDetails.tsx: "Details" header must be fontSize: 16 (live Jira spec).',
+    ).toBe(true);
+    expect(
+      /fontWeight:\s*653/.test(text),
+      'CatalystSidebarDetails.tsx: "Details" header must be fontWeight: 653 (live Jira spec).',
+    ).toBe(true);
+  });
+
+  it('ActivityPanel "Activity" h3 must be fontSize 16, fontWeight 653', () => {
+    const activityPanelSrc = readFileSync(
+      resolve(__dirname, '../../../../catalyst-ds/activity/ActivityPanel.tsx'),
+      'utf-8',
+    );
+    const block = activityPanelSrc.match(/<h3[\s\S]{0,400}>\s*Activity\s*<\/h3>/);
+    expect(block, 'Could not locate "Activity" h3').not.toBeNull();
+    const text = block![0];
+    expect(
+      /fontSize:\s*16/.test(text),
+      'ActivityPanel.tsx: "Activity" h3 must be fontSize: 16 (live Jira spec).',
+    ).toBe(true);
+    expect(
+      /fontWeight:\s*653/.test(text),
+      'ActivityPanel.tsx: "Activity" h3 must be fontWeight: 653 (live Jira spec).',
+    ).toBe(true);
+  });
+
+  it('AttachmentsSection.css .att-heading-label must be font-size 16px, font-weight 653', () => {
+    const attCss = readFileSync(
+      resolve(__dirname, '../../../../../modules/project-work-hub/components/dialogs/story-detail-modules/AttachmentsSection.css'),
+      'utf-8',
+    );
+    const block = attCss.match(/\.att-heading-label\s*\{[^}]*\}/);
+    expect(block, 'Could not locate .att-heading-label block').not.toBeNull();
+    const text = block![0];
+    expect(
+      /font-size:\s*16px/.test(text),
+      'AttachmentsSection.css: .att-heading-label must be font-size: 16px (live Jira spec).',
+    ).toBe(true);
+    expect(
+      /font-weight:\s*653/.test(text),
+      'AttachmentsSection.css: .att-heading-label must be font-weight: 653 (live Jira spec).',
+    ).toBe(true);
+  });
 });
