@@ -265,6 +265,40 @@ const PRIORITY_ORDER = ['highest', 'critical', 'high', 'medium', 'low', 'lowest'
 // Pass explicit options (including 'highest') at the column wiring site.
 const PRIORITY_OPTIONS = ['highest', 'critical', 'high', 'medium', 'low', 'lowest'];
 
+// Jira-parity column restriction (2026-05-12).
+// Only standard Jira fields are allowed in the column picker.
+// Type-specific custom fields (Gap Classification, IR Demo Date, etc.) are permanently banned.
+// See CLAUDE.md 2026-05-05, 2026-05-07 for the full ban list.
+const ALLOWED_COLUMN_IDS = new Set([
+  'type',
+  'key',
+  'summary',
+  'status',
+  'comments',
+  'parent',
+  'assignee',
+  'priority',
+  'labels',
+  'due_date',
+  'created',
+  'updated',
+  'reporter',
+  '__drag',
+  '__actions',
+]);
+
+// Permanently banned fields that must NEVER appear in column picker
+const BANNED_COLUMN_IDS = new Set([
+  'customfield_10882', // MDT Ref
+  'customfield_10288', // Assessment Feature
+  'customfield_10130', // Service Now #
+  // Type-specific custom fields (all permanently banned per Vikram 2026-05-12)
+  'customfield_10881', 'customfield_10116', 'customfield_10117', 'customfield_10118',
+  'customfield_10139', 'customfield_10140', 'customfield_10141', 'customfield_10142',
+  'customfield_10143', 'customfield_10144', 'customfield_10145', 'customfield_10146',
+  'customfield_10883', 'customfield_10884',
+]);
+
 // Apr 28, 2026 — Set project background palettes. Sourced from Atlassian
 // Design System color tokens (atlassian.design/tokens) for the solids,
 // and from common Jira theme-picker gradient hues for the gradients.
@@ -522,40 +556,6 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
   // NOTE: Comments column is banned (2026-05-11), removed from defaults
   const DEFAULT_VISIBLE_COLUMNS = ['key', 'summary', 'status', 'assignee', 'priority', 'parent'];
 
-  // Jira-parity column restriction (2026-05-12).
-  // Only standard Jira fields are allowed in the column picker.
-  // Type-specific custom fields (Gap Classification, IR Demo Date, etc.) are permanently banned.
-  // See CLAUDE.md 2026-05-05, 2026-05-07 for the full ban list.
-  const ALLOWED_COLUMN_IDS = new Set([
-    'type',
-    'key',
-    'summary',
-    'status',
-    'comments',
-    'parent',
-    'assignee',
-    'priority',
-    'labels',
-    'due_date',
-    'created',
-    'updated',
-    'reporter',
-    '__drag',
-    '__actions',
-  ]);
-
-  // Permanently banned fields that must NEVER appear in column picker
-  const BANNED_COLUMN_IDS = new Set([
-    'customfield_10882', // MDT Ref
-    'customfield_10288', // Assessment Feature
-    'customfield_10130', // Service Now #
-    // Type-specific custom fields (all permanently banned per Vikram 2026-05-12)
-    'customfield_10881', 'customfield_10116', 'customfield_10117', 'customfield_10118',
-    'customfield_10139', 'customfield_10140', 'customfield_10141', 'customfield_10142',
-    'customfield_10143', 'customfield_10144', 'customfield_10145', 'customfield_10146',
-    'customfield_10883', 'customfield_10884',
-  ]);
-
   const parseSet = (raw: string | null): Set<string> =>
     raw ? new Set(raw.split(',').filter(Boolean)) : new Set();
 
@@ -644,6 +644,10 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
   // row whose status is in DONE_LIKE_STATUSES (Catalyst variants of
   // Jira's "Done" column). When false (default), all rows render.
   const [hideDoneItems, setHideDoneItems] = useState<boolean>(false);
+  // 2026-05-12 Jira parity: "Show hierarchy" toggle in toolbar ⋯ menu.
+  // When ON: parent rows show > chevron and children render indented inline.
+  // When OFF: flat row rendering (current behaviour). Defaults ON to match Jira.
+  const [showHierarchy, setShowHierarchy] = useState<boolean>(true);
   const [density, setDensity] = useState<'compact' | 'comfortable'>('compact');
   const [columnOrder, setColumnOrder] = useState<string[] | null>(null);
 
@@ -2351,10 +2355,18 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
     />
   );
 
-  // P1 #7 — More actions overflow ⋯. Refresh is wired (TanStack Query
-  // invalidation); Export is a stub flag.info until the CSV exporter
-  // lands. The kebab matches the row-level ⋯ pattern in JiraTable but
-  // operates on the table view, not on a single row.
+  // 2026-05-12 — More actions overflow ⋯. Probed Jira's 10-item set:
+  //   1. Apply settings from old List view   — Jira-internal migration, N/A
+  //   2. View work items as a chart          — out of scope (no chart pivot)
+  //   3. Format rules                        — Jira-specific, N/A
+  //   4. Hide done work items [toggle]       — implemented (state at L646)
+  //   5. Show hierarchy [toggle]             — implemented (state at L649)
+  //   6. Export →                            — implemented (CSV)
+  //   7. Import work items from CSV          — stub flag
+  //   8. Bulk change work items              — opens bulk wizard (task #7)
+  //   9. Go to all work items                — wired to /allwork route
+  //  10. Give feedback                       — out of scope
+  // Items grouped: view-toggles, data-ops, navigation.
   const toolbarMoreActionsButton = (
     <ToolbarMenuButton
       icon={<AkMoreIcon label="" size="small" />}
@@ -2362,9 +2374,30 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
       tooltipContent="More actions"
       buttonStyle={toolbarIconButtonStyle}
       groups={[
+        // Group 1 — view toggles (Jira parity items 4 + 5)
+        { items: [
+          { id: 'toggle-hide-done',
+            label: hideDoneItems ? 'Show done work items' : 'Hide done work items',
+            icon: <AkArchiveBoxIcon label="" size="small" />,
+            onClick: () => setHideDoneItems((v) => !v) },
+          { id: 'toggle-hierarchy',
+            label: showHierarchy ? 'Hide hierarchy' : 'Show hierarchy',
+            icon: <AkChevronDownIcon label="" size="small" />,
+            onClick: () => setShowHierarchy((v) => !v) },
+        ]},
+        // Group 2 — data ops (Jira parity items 6 + 7 + 8)
         { items: [
           { id: 'refresh', label: 'Refresh', icon: <AkRefreshIcon label="" size="small" />, onClick: handleRefreshBacklog },
           { id: 'export', label: 'Export to CSV', icon: <AkDownloadIcon label="" size="small" />, onClick: handleExportCSV },
+          { id: 'import-csv', label: 'Import work items from CSV', icon: <AkDownloadIcon label="" size="small" />,
+            onClick: () => flag.info('Import CSV', 'CSV importer scope: pending Vikram approval.') },
+          { id: 'bulk-change', label: 'Bulk change work items', icon: <AkEditIcon label="" size="small" />,
+            onClick: () => flag.info('Bulk change', 'Bulk change wizard scope: pending Vikram approval (task #7).') },
+        ]},
+        // Group 3 — navigation (Jira parity item 9)
+        { items: [
+          { id: 'all-work', label: 'Go to all work items', icon: <AkLinkIcon label="" size="small" />,
+            onClick: () => navigate(`/project-hub/${projectKey}/allwork`) },
         ]},
       ]}
     />
