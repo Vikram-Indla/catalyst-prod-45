@@ -9,7 +9,7 @@ import { Resource360Banner } from './Resource360Banner';
 import RingViewV16 from './RingViewV16';
 import { Resource360Chronology } from './Resource360Chronology';
 import { Resource360Board } from './Resource360Board';
-import { R360ItemDetailDrawer } from './R360ItemDetailDrawer';
+import { useGlobalSearchStore } from '@/store/globalSearchStore';
 import AIIntelligencePanel from '@/components/resources/AIIntelligencePanel';
 import './r360-tokens.css';
 
@@ -27,28 +27,19 @@ export default function Resource360PageNew() {
   const [aiOpen, setAIOpen] = useState(false);
   const viewTabsRef = useRef<HTMLDivElement>(null);
 
-  // ─── ITEM DETAIL DRAWER STATE (Stage D — ID-based) ───
-  const [activeItemId, setActiveItemId] = useState<string | null>(null);
-  const [drawerOpen, setDrawerOpen] = useState(false);
-
+  // ─── ITEM DETAIL — canonical CatalystDetailRouter via global store ───
+  // Sweep 2026-05-11: bespoke R360ItemDetailDrawer deleted. Item clicks now
+  // route through useGlobalSearchStore.openDetail() — the same global
+  // pattern used by ForYouPage, notifications, search, and project
+  // sidebars. CatalystShell mounts CatalystDetailRouter for the pending
+  // item, so R360 surfaces (Ring / Chronology / Board) get the full
+  // canonical detail view (per-type CatalystView*, Share, Watchers,
+  // Activity, Comments, etc.) instead of a bespoke 220-line drawer that
+  // duplicated 95% of canonical functionality.
+  const openDetail = useGlobalSearchStore((s) => s.openDetail);
   const handleOpenItemDrawer = useCallback((itemKey: string) => {
-    setActiveItemId(itemKey);
-    setDrawerOpen(true);
-  }, []);
-
-  const handleCloseDrawer = useCallback(() => {
-    setDrawerOpen(false);
-    setTimeout(() => setActiveItemId(null), 250);
-  }, []);
-
-  // ESC key to close drawer
-  useEffect(() => {
-    const handler = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && drawerOpen) handleCloseDrawer();
-    };
-    document.addEventListener('keydown', handler);
-    return () => document.removeEventListener('keydown', handler);
-  }, [drawerOpen, handleCloseDrawer]);
+    openDetail({ id: itemKey });
+  }, [openDetail]);
 
   useEffect(() => {
     if (viewTabsRef.current) {
@@ -184,12 +175,8 @@ export default function Resource360PageNew() {
         />
       )}
 
-      {/* Item Detail Drawer — Stage D: ID-based, fetches from Supabase */}
-      <R360ItemDetailDrawer
-        itemId={activeItemId}
-        isOpen={drawerOpen}
-        onClose={handleCloseDrawer}
-      />
+      {/* Item detail rendered by CatalystShell via global openDetail() —
+          no local mount needed. (R360ItemDetailDrawer deleted 2026-05-11.) */}
     </div>
   );
 }
