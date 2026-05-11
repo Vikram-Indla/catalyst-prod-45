@@ -8,6 +8,10 @@
 -- STATUS: PENDING VIKRAM APPROVAL.
 -- INSTRUCTIONS: Paste the entire block below into the Lovable SQL editor
 -- (Catalyst → Supabase project → SQL editor). Do NOT execute via Claude.
+--
+-- 2026-05-12 CORRECTION: Prior version used `id` column which does not exist
+-- in production ph_issues. The canonical PK is `issue_key` (text). NULLS LAST
+-- added to ORDER BY so rows with null jira_created_at don't break partitioning.
 -- ============================================================================
 
 -- Step 1 — Add rank_order column. NULL allowed initially so existing rows
@@ -16,20 +20,21 @@ ALTER TABLE public.ph_issues
   ADD COLUMN IF NOT EXISTS rank_order INTEGER;
 
 -- Step 2 — Backfill: assign incremental rank within each project_key,
--- ordered by created_at ASC (preserves the historical order users see today).
+-- ordered by jira_created_at ASC (preserves the historical order users see today).
+-- Uses issue_key as the join key (canonical text PK for ph_issues).
 WITH numbered AS (
   SELECT
-    id,
+    issue_key,
     ROW_NUMBER() OVER (
       PARTITION BY project_key
-      ORDER BY jira_created_at ASC, id ASC
+      ORDER BY jira_created_at ASC NULLS LAST, issue_key ASC
     ) * 10 AS new_rank
   FROM public.ph_issues
 )
 UPDATE public.ph_issues p
 SET rank_order = n.new_rank
 FROM numbered n
-WHERE p.id = n.id
+WHERE p.issue_key = n.issue_key
   AND p.rank_order IS NULL;
 
 -- Step 3 — Index for efficient sort by project_key + rank_order.
@@ -37,7 +42,10 @@ WHERE p.id = n.id
 CREATE INDEX IF NOT EXISTS ph_issues_project_rank_idx
   ON public.ph_issues (project_key, rank_order);
 
--- Step 4 — Verification queries (run manually after the migration lands).
+-- ============================================================================
+-- VERIFICATION QUERIES (run separately AFTER the migration completes).
+-- Do NOT paste these into the same Lovable execution as the migration above.
+-- ============================================================================
 -- Should return 0 rows (no NULL ranks left):
 --   SELECT COUNT(*) FROM ph_issues WHERE rank_order IS NULL;
 -- Should return monotonic rank values per project:
@@ -47,8 +55,8 @@ CREATE INDEX IF NOT EXISTS ph_issues_project_rank_idx
 -- ============================================================================
 -- POST-MIGRATION FRONTEND WIRING (already scaffolded — does not require
 -- another SQL step):
--- 1. Rank to top  → UPDATE ph_issues SET rank_order = (MIN(rank_order) - 10) WHERE id = ?
--- 2. Rank to bottom → UPDATE ph_issues SET rank_order = (MAX(rank_order) + 10) WHERE id = ?
--- 3. Drag-drop reorder → UPDATE ph_issues SET rank_order = ((prev_rank + next_rank) / 2) WHERE id = ?
+-- 1. Rank to top  → UPDATE ph_issues SET rank_order = (MIN(rank_order) - 10) WHERE issue_key = ?
+-- 2. Rank to bottom → UPDATE ph_issues SET rank_order = (MAX(rank_order) + 10) WHERE issue_key = ?
+-- 3. Drag-drop reorder → UPDATE ph_issues SET rank_order = ((prev_rank + next_rank) / 2) WHERE issue_key = ?
 --    Re-rank entire project when gaps shrink below threshold (e.g. < 1).
 -- ============================================================================
