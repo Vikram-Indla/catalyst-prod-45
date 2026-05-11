@@ -1181,7 +1181,10 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
       const kids = childrenOf.get(top.id) ?? [];
       const matchingKids = kids.filter((k) => matchesText(k) && matchesType(k) && matchesFilterBar(k));
       if (topVisible) tryPush(top);
-      const showChildren = expandedIds.has(top.id);
+      // 2026-05-12 Jira parity: when showHierarchy is OFF, render ALL children
+      // flat (no parent grouping, no expand/collapse). When ON (default),
+      // children render only when their parent is in expandedIds.
+      const showChildren = !showHierarchy || expandedIds.has(top.id);
       if (showChildren) {
         for (const k of matchingKids) tryPush(k);
       }
@@ -1200,7 +1203,7 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
       }
     }
     return out;
-  }, [topLevel, childrenOf, items, expandedIds, typeFilter, search, filterValue]);
+  }, [topLevel, childrenOf, items, expandedIds, showHierarchy, typeFilter, search, filterValue]);
 
   // ── "Hide done work items" filter (Apr 27 2026 — Jira parity View
   // options menu). When toggled on, rows whose status indicates a
@@ -1693,11 +1696,12 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
       // header for the issue-type cell). Setting label to "Type" fixes
       // both findings in one change — visible text doubles as the
       // accessible name on the th element.
-      // 2026-05-08 re-probe: Jira BAU list measures Type at 110px.
-      // width:9 × 12 = 108px ≈ matches. Previous width:6 (~72px) was
-      // 38px too narrow — header "Type" text was clipped.
+      // 2026-05-12 design-critique H8 fix: reduced from width:9 (108px) to
+      // width:6 (72px) to reduce excessive default spacing. Icon is 16px +
+      // padding; no text wrapping needed. Pairs with companion width
+      // reductions on Status, Comments, Parent, Assignee, Priority, Reporter.
       label: 'Type',
-      width: 9,
+      width: 6,
       align: 'start',
       alwaysVisible: true,
       cell: ({ row: it }) => {
@@ -1817,7 +1821,10 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
       // = 24px cell padding overhead; 144px - 24px = 120px inner = matches
       // Jira's 112px effective + pill margin. "READY FOR QA" needs ~112px
       // text — fits at 120px inner without truncation.
-      width: 12,
+      // 2026-05-12 design-critique H8 fix: reduced from width:12 (144px) to
+      // width:9 (108px) to reduce excessive default spacing. Most BAU status
+      // values are ≤20 chars and fit comfortably at 108px inner.
+      width: 9,
       sortable: true,
       defaultVisible: true,
       // B.4 verdict: @atlaskit/popup portal mounts on this surface but
@@ -1851,7 +1858,9 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
       // Jira-parity: Comments is the 5th column (after Status) in Jira's BAU
       // default list view. icon(16) + gap(4) + "Add comment"(~90px) + cell-
       // padding(24px) = ~134px needed. 12 fractions = 144px (inner 120px) fits.
-      width: 12,
+      // 2026-05-12 design-critique H8 fix: reduced from width:12 (144px) to
+      // width:8 (96px). Icon + count badge is the only content; fits easily.
+      width: 8,
       sortable: false,
       defaultVisible: true,
       alwaysVisible: false,
@@ -1874,7 +1883,10 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
       // 2026-05-08 re-probe: Jira BAU list measures Parent at 160px.
       // width:13 × 12 = 156px ≈ matches. Previous width:10 (~120px) was
       // 40px too narrow — parent key+name was heavily truncated.
-      width: 13,
+      // 2026-05-12 design-critique H8 fix: reduced from width:13 (156px) to
+      // width:10 (120px) to reduce excessive default spacing. Parent links
+      // truncate gracefully at 120px inner with ellipsis.
+      width: 10,
       sortable: true,
       defaultVisible: true,
       cell: makeParentEditCell<BacklogItem>({
@@ -1905,7 +1917,10 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
     {
       id: 'assignee',
       label: 'Assignee',
-      width: 10,
+      // 2026-05-12 design-critique H8 fix: reduced from width:10 (120px) to
+      // width:8 (96px). Avatar (24px) + name fits at 96px inner with common
+      // name lengths; truncates gracefully for longer names.
+      width: 8,
       sortable: true,
       defaultVisible: true,
       cell: makeAssigneeEditCell<BacklogItem>({
@@ -1945,7 +1960,10 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
     {
       id: 'priority',
       label: 'Priority',
-      width: 8,
+      // 2026-05-12 design-critique H8 fix: reduced from width:8 (96px) to
+      // width:6 (72px). Priority is icon + label (High/Medium/Low/Highest) —
+      // all values ≤8 chars fit at 72px inner.
+      width: 6,
       sortable: true,
       defaultVisible: true,
       cell: makePriorityEditCell<BacklogItem>({
@@ -2001,7 +2019,10 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
     {
       id: 'reporter',
       label: 'Reporter',
-      width: 15,
+      // 2026-05-12 design-critique H8 fix: reduced from width:15 (180px) to
+      // width:10 (120px) to reduce excessive default spacing. Reporter is
+      // rarely visible by default; hidden columns don't impact visual density.
+      width: 10,
       sortable: true,
       defaultVisible: false,
       accessor: (r: BacklogItem) => r.reporter_name || '',
@@ -2962,9 +2983,15 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
             // share the same standard semantics: expandedIds tracks
             // explicitly-EXPANDED rows, initial state empty → all
             // chevrons render collapsed. Click to expand. Matches Jira.
-            getRowHasChildren={(row) => childrenOf.has(row.id)}
+            // 2026-05-12 Jira parity: "Show hierarchy" toolbar toggle gates
+            // the expand chevron column. When off, getRowHasChildren returns
+            // false for every row → no chevrons rendered → flat list view.
+            // When on (default), parents render the > chevron and children
+            // expand inline (existing tree flatten in visibleRows).
+            getRowHasChildren={(row) => showHierarchy && childrenOf.has(row.id)}
             expandedRowIds={expandedIds}
             onToggleRowExpanded={(rowId) => {
+              if (!showHierarchy) return;
               setExpandedIds((prev) => {
                 const next = new Set(prev);
                 if (next.has(rowId)) next.delete(rowId);
