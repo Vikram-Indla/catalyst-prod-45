@@ -27,6 +27,20 @@ All Catalyst team members have access to **184 shared personas** (committed to `
 
 ---
 
+## 2026-05-12 — design-critique must audit 360° holistic layout, not just content area in isolation
+**Surface:** Any admin page, any module page — applies to ALL design-critique runs
+**Pattern:** The design-critique of `/admin/access` scored content quality (tables, tabs, modal) but completely missed that the admin module renders its own independent 240px-wide sidebar NEXT TO the Catalyst global nav, creating a double-sidebar that pushes content to x=512px (31% of viewport consumed by navigation chrome). Regular Catalyst pages start content at x=296px. The 216px dead left gutter was invisible to a critique that only looked at the content panel.
+**Rule:** Every design-critique run MUST include a **360° holistic layout check** as Step 0, BEFORE heuristic scoring:
+1. Measure where content starts (x position of first meaningful content element)
+2. Compare against the standard Catalyst app shell baseline: content starts at ~296px (expanded nav) or ~56px (collapsed)
+3. Flag any module that adds its own sidebar container OUTSIDE the standard Catalyst shell pattern — this is always P0
+4. Check whether the module sits inside the correct slot of the Catalyst app shell (right-panel / main-content area), not floating in a parallel container
+5. Check content/chrome width ratio: content should occupy ≥ 70% of viewport
+**The lesson:** A surface can have perfect internal design (good typography, correct tokens, working components) and still be a P0 failure if its macro layout breaks the app shell contract. Layout audit is prerequisite to content audit.
+**Severity:** P0 (missed entirely in prior sessions — now blocking gate for all design-critique runs)
+
+---
+
 ## 2026-05-11 — Phase 0.5 diagnoses are hypotheses; probe before TDD'ing the wrong layer
 **Surface:** Any preflight cross-cutting plan with Phase 0.5 violations
 **Pattern:** Phase 0.5 N1 listed "breadcrumb crumb click is no-op → wire `onParentClick → openDetail` in every `CatalystView*`". A unit test reproducing the alleged failure mode PASSED on the first run — the wiring was correct end-to-end. Actual defect was upstream in `ProjectAllWorkView`: its `onOpenItem` called `selectItem(parentEpicKey)`, but AllWork's items list excludes Epic/Feature/Task (CLAUDE.md 2026-04-28), so `activeItem` stayed undefined. Hours of wrong-layer TDD were avoided by probing live + tracing the call chain before writing any test.
