@@ -271,12 +271,13 @@ export default function R360MemberDetail({ resourceId: resourceIdProp, projectSc
     const handler = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
         if (aiOpen) setAiOpen(false);
+        else if (ticketListMode) setTicketListMode(null);
         else setSelectedItem(null);
       }
     };
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
-  }, [aiOpen]);
+  }, [aiOpen, ticketListMode]);
 
   // CSS injection to force full-width layout regardless of drawer state
   useEffect(() => {
