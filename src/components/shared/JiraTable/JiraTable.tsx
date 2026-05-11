@@ -1985,6 +1985,11 @@ function ColumnManagerTrigger<TRow>({
   const [isOpen, setIsOpen] = useState(false);
   const [anchor, setAnchor] = useState<{ top: number; right: number } | null>(null);
   const [search, setSearch] = useState('');
+  // 2026-05-12 Jira parity: My defaults / System tabs.
+  // "My defaults" shows columns marked defaultVisible:true (the canonical
+  // out-of-box set). "System" shows ALL toggleable columns. Matches Jira's
+  // column-picker tab pattern probed at digital-transformation.atlassian.net.
+  const [activeTab, setActiveTab] = useState<'my-defaults' | 'system'>('system');
   const triggerRef = useRef<HTMLButtonElement>(null);
   const popRef = useRef<HTMLDivElement>(null);
 
@@ -2023,10 +2028,18 @@ function ColumnManagerTrigger<TRow>({
   }, [isOpen]);
 
   const toggleable = columns.filter((c) => !c.alwaysVisible && !c.id.startsWith('__'));
+  // 2026-05-12 Jira parity: My defaults tab filters to defaultVisible:true cols.
+  // System tab shows the full toggleable set. Search applies on top.
+  const tabFiltered = activeTab === 'my-defaults'
+    ? toggleable.filter((c) => c.defaultVisible)
+    : toggleable;
   const q = search.trim().toLowerCase();
   const filtered = q
-    ? toggleable.filter((c) => (c.label || c.id).toLowerCase().includes(q))
-    : toggleable;
+    ? tabFiltered.filter((c) => (c.label || c.id).toLowerCase().includes(q))
+    : tabFiltered;
+  // Jira parity "X of Y" count display at bottom: visible-after-search / total-in-tab.
+  const totalInTab = tabFiltered.length;
+  const matchCount = filtered.length;
 
   const toggle = (id: string, next: boolean) => {
     const out = new Set(visibility);
@@ -2116,6 +2129,48 @@ function ColumnManagerTrigger<TRow>({
               <ResetIcon label="" size="small" /> Reset
             </button>
           </div>
+          {/* 2026-05-12 Jira parity: My defaults / System tabs */}
+          <div
+            role="tablist"
+            aria-label="Column tabs"
+            style={{
+              display: 'flex',
+              gap: 0,
+              borderBottom: '2px solid transparent',
+              padding: '0 4px',
+              marginBottom: 6,
+            }}
+          >
+            {[
+              { id: 'my-defaults' as const, label: 'My defaults' },
+              { id: 'system' as const, label: 'System' },
+            ].map((tab) => {
+              const isActive = activeTab === tab.id;
+              return (
+                <button
+                  key={tab.id}
+                  type="button"
+                  role="tab"
+                  aria-selected={isActive}
+                  onClick={() => setActiveTab(tab.id)}
+                  style={{
+                    background: 'transparent',
+                    border: 'none',
+                    borderBottom: `2px solid ${isActive ? '#0C66E4' : 'transparent'}`,
+                    padding: '6px 10px',
+                    cursor: 'pointer',
+                    fontFamily: 'inherit',
+                    fontSize: 12,
+                    fontWeight: isActive ? 600 : 500,
+                    color: isActive ? '#0C66E4' : 'var(--ds-text-subtle, #44546F)',
+                    marginBottom: -1,
+                  }}
+                >
+                  {tab.label}
+                </button>
+              );
+            })}
+          </div>
           <div style={{ padding: '0 4px 6px' }}>
             <Textfield
               isCompact
@@ -2165,9 +2220,17 @@ function ColumnManagerTrigger<TRow>({
               );
             })}
           </div>
+          {/* 2026-05-12 Jira parity: "X of Y" count display at the bottom */}
+          <div style={{
+            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+            padding: '6px 8px 2px', fontSize: 11, color: '#7A869A',
+            borderTop: '1px solid #DFE1E6', marginTop: 4,
+          }}>
+            <span>{matchCount} of {totalInTab}</span>
+          </div>
           {/* Locked columns hint */}
           {columns.some((c) => c.alwaysVisible) && (
-            <div style={{ padding: '6px 8px 2px', fontSize: 11, color: '#7A869A', borderTop: '1px solid #DFE1E6', marginTop: 4 }}>
+            <div style={{ padding: '6px 8px 2px', fontSize: 11, color: '#7A869A' }}>
               {columns.filter((c) => c.alwaysVisible && !c.id.startsWith('__')).map((c) => c.label || c.id).join(', ')} are required.
             </div>
           )}
