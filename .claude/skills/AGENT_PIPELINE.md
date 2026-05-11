@@ -6,6 +6,17 @@
 
 ---
 
+## Universal preamble — CORE_DIRECTIVES.md (mandatory for every dispatch)
+
+Every agent dispatch — probe or implementer, from any skill — MUST prepend the contents of [`catalyst-agent/CORE_DIRECTIVES.md`](./catalyst-agent/CORE_DIRECTIVES.md) to the prompt. The directives enforce:
+
+1. **ADS ring-fence** — atlassian.design only for components, themes, typography, CSS. Any non-Atlaskit component, hardcoded color/font, or `lucide-react` in hub-scope → HALT.
+2. **Green Signal gate** — the probe stage must cover all 7 dimensions (visual, structural, behavioral, schema, architecture, a11y, CLAUDE.md cross-ref) and emit a 🟢 verdict before execution. RED blocks execution; only Vikram can override.
+
+The directives are non-negotiable. If a task brief later contradicts them, the directives win.
+
+---
+
 ## Activation notification protocol (mandatory whenever an agent is invoked)
 
 Whenever any skill loads an agent, emit ONE line in this exact form before the agent does any work:
