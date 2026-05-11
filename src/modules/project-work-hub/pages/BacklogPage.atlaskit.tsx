@@ -3338,6 +3338,37 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
                 user knows what they're looking at. Atlaskit Heading
                 semibold (Atlassian Sans, 14px/653) for top-row prominence;
                 bottom border separates it from the chevrons toolbar. */}
+            {/* 2026-05-12 Jira parity: breadcrumb back-button when fullscreen.
+                Jira's full-width detail view shows "← Backlog / BAU-XXXX" so
+                the user has a clear escape path. Catalyst previously had no
+                back-button in fullscreen — only the close X, which dropped
+                the user back to the table with no context cue. */}
+            {panelMode === 'fullscreen' && (
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 8,
+                  padding: '10px 14px 6px',
+                  borderBottom: `1px solid ${token('color.border', '#DFE1E6')}`,
+                  flexShrink: 0,
+                  background: 'var(--ds-surface, #FFFFFF)',
+                }}
+              >
+                <Breadcrumbs
+                  onExpand={() => undefined}
+                  label="Detail breadcrumb"
+                >
+                  <BreadcrumbsItem
+                    text="Backlog"
+                    onClick={(e) => { e.preventDefault(); setPanelMode('compact'); }}
+                  />
+                  {detailItem?.key && (
+                    <BreadcrumbsItem text={detailItem.key} />
+                  )}
+                </Breadcrumbs>
+              </div>
+            )}
             <div
               style={{
                 display: 'flex',
