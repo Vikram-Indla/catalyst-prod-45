@@ -14,9 +14,9 @@ export function BoardView({ items, onSelect }: { items: R360WorkItem[]; onSelect
   const { isDark } = useTheme();
   const doneColRef = useRef<HTMLDivElement>(null);
   const columns = useMemo(() => [
-    { key: 'to_do', label: 'TO DO', color: 'var(--ds-text-warning, #D97706)', items: items.filter(i => i.status_category === 'to_do' || i.status_category === 'blocked') },
-    { key: 'in_progress', label: 'IN PROGRESS', color: 'var(--ds-text-brand, #2563EB)', items: items.filter(i => i.status_category === 'in_progress' || i.status_category === 'in_qa') },
-    { key: 'done', label: 'DONE', color: 'var(--ds-text-success, #16A34A)', items: items.filter(i => i.status_category === 'done') },
+    { key: 'to_do', label: 'To do', color: 'var(--ds-text-warning, #D97706)', items: items.filter(i => i.status_category === 'to_do' || i.status_category === 'blocked') },
+    { key: 'in_progress', label: 'In progress', color: 'var(--ds-text-brand, #2563EB)', items: items.filter(i => i.status_category === 'in_progress' || i.status_category === 'in_qa') },
+    { key: 'done', label: 'Done', color: 'var(--ds-text-success, #16A34A)', items: items.filter(i => i.status_category === 'done') },
   ], [items]);
 
   return (
@@ -39,11 +39,20 @@ export function BoardView({ items, onSelect }: { items: R360WorkItem[]; onSelect
               <span className="r3-board-col-count" style={{ background: col.color }}>{col.items.length}</span>
             </div>
             <div className="r3-board-cards">
+              {col.items.length === 0 && (
+                <div style={{
+                  padding: '20px 12px', textAlign: 'center' as const,
+                  fontSize: 12, color: 'var(--ds-text-subtlest, #626F86)',
+                  border: '1px dashed var(--ds-border, #DFE1E6)', borderRadius: 8,
+                }}>
+                  {col.key === 'done' ? 'No completed items this period' : 'Nothing here'}
+                </div>
+              )}
               {col.items.map(item => {
                 const fromClass = getFromTagClass(item.age_days);
                 return (
                   <div key={item.id} className="r3-board-card" onClick={() => onSelect(item)}>
-                    <div style={{ position: 'absolute', left: 0, top: 8, bottom: 8, width: 3, borderRadius: '0 2px 2px 0', background: item.role_on_item === 'Contributor' ? '#7C3AED' : priorityBorderColor(item.priority) }} />
+                    <div style={{ position: 'absolute', left: 0, top: 8, bottom: 8, width: 3, borderRadius: '0 2px 2px 0', background: item.role_on_item === 'Contributor' ? 'var(--ds-background-discovery-bold, #5E4DB2)' : priorityBorderColor(item.priority) }} />
                     {/* Row 1: Type icon + key + project badge + age */}
                     <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6 }}>
                       {getJiraIcon(item.item_type)}

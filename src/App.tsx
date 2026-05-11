@@ -42,6 +42,7 @@ const SubmitDemandRequest = lazy(() => import("./pages/SubmitDemandRequest"));
 const SlackOAuthCallback = lazy(() => import("./pages/SlackOAuthCallback"));
 const CleanupPage = lazy(() => import("./pages/CleanupPage"));
 const AuditTrailPage = lazy(() => import("./pages/AuditTrailPage"));
+const CatalystFeaturesBoard = lazy(() => import("./pages/admin/CatalystFeaturesBoard"));
 const IssueFullPage = lazy(() => import("./pages/IssueFullPage"));
 
 // Full app routes — only imported when ENABLE_FULL_APP=true
@@ -174,6 +175,7 @@ function App() {
                     <Route index element={<Navigate to="/admin/overview" replace />} />
                     <Route path="overview" element={<S><AdminOverview /></S>} />
                     <Route path="feature-flags" element={<S><FeatureFlagsPage /></S>} />
+                    <Route path="catalyst-features" element={<S><CatalystFeaturesBoard /></S>} />
                     <Route path="workflows" element={<S><WorkflowsAdminPage /></S>} />
                   </Route>
 

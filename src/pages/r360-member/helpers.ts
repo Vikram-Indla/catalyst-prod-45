@@ -74,7 +74,7 @@ export function getFromTagPrefix(ageDays: number): string {
 export function getSaudiWorkDays(periodStart: Date): { name: string; date: Date }[] {
   // Saudi work week: Sun–Thu
   const days: { name: string; date: Date }[] = [];
-  const dayNames = ['SUN', 'MON', 'TUE', 'WED', 'THU'];
+  const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu'];
   const d = new Date(periodStart);
   // Find Sunday
   while (d.getDay() !== 0) d.setDate(d.getDate() + 1);
@@ -100,7 +100,7 @@ export function getWeekCells(periodStart: Date): { label: string; weekNum: numbe
 export const CARD_W = 228;
 export const CARD_H = 145;
 export const RING_CANVAS_H = 620;
-export const AVATAR_R = 28; // half of 56px avatar
+export const AVATAR_R = 36; // half of 72px avatar (V13: 56 → 72px)
 export const PAGE_SIZE = 8;
 
 // Slot positions as percentages/px for absolute placement (228x145 cards)
@@ -116,7 +116,7 @@ export const SLOT_POSITIONS: { left: string; top: string }[] = [
 ];
 
 // Compute connector endpoints dynamically from card positions
-// Returns card centre in pixel coords
+// Returns card centre in pixel coords (uses static RING_CANVAS_H for top%)
 export function getCardPixelPos(slotIdx: number, containerW: number): { x: number; y: number } {
   const slot = SLOT_POSITIONS[slotIdx];
   if (!slot) return { x: 0, y: 0 };
@@ -132,6 +132,19 @@ export function getCardPixelPos(slotIdx: number, containerW: number): { x: numbe
   } else {
     topPx = parseFloat(slot.top);
   }
+  return { x: leftPx + CARD_W / 2, y: topPx + CARD_H / 2 };
+}
+
+// Viewport-proportional variant — takes explicit containerH (V13 dynamic height)
+export function getCardPixelPosDynH(slotIdx: number, containerW: number, containerH: number): { x: number; y: number } {
+  const slot = SLOT_POSITIONS[slotIdx];
+  if (!slot) return { x: 0, y: 0 };
+  const leftPx = slot.left.endsWith('%')
+    ? (parseFloat(slot.left) / 100) * containerW
+    : parseFloat(slot.left);
+  const topPx = slot.top.endsWith('%')
+    ? (parseFloat(slot.top) / 100) * containerH
+    : parseFloat(slot.top);
   return { x: leftPx + CARD_W / 2, y: topPx + CARD_H / 2 };
 }
 

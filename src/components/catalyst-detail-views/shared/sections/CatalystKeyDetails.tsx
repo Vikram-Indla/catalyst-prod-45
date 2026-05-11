@@ -124,9 +124,14 @@ export function CatalystKeyDetails({
         >
           <ChevronRightIcon label="" primaryColor="#5E6C84" size="small" />
         </span>
-        {/* jira-compare 2026-05-08: Atlaskit Heading size="small" = 16px/653 —
-            K.11 section header spec = 14px/600/#172B4D. Use inline h2. */}
-        <h2 style={{ margin: 0, fontSize: 14, fontWeight: 600, lineHeight: '20px', color: 'var(--ds-text, #172B4D)' }}>Key details</h2>
+        {/* jira-compare 2026-05-11 re-probe: canonical Jira section header is
+            16px/653/20px/rgb(41,42,46) — measured on the innermost text node of
+            "Key details" / "Subtasks" / "Linked work items" / "Activity" across
+            BAU-5814 (Story), BAU-5824 + BAU-5751 (QA Bug). The atomic CSS class
+            names on the live page match @atlaskit/heading size="small".
+            Corrects 2026-05-08 K.11 lesson which had measured layout-wrapper
+            levels (14px/400) and inner field labels (11–12px/600). */}
+        <h2 style={{ margin: 0, fontSize: 16, fontWeight: 653, lineHeight: '20px', color: 'var(--ds-text, #292A2E)' }}>Key details</h2>
       </div>
 
       <div style={{ overflow: 'hidden', maxHeight: collapsed ? 0 : 800, transition: 'max-height 0.15s ease' }}>

@@ -75,6 +75,74 @@ Why: <one sentence — which classifier marker fired>
 
 Ship/merge on high-stake with no council transcript in `active/` from the past week → HALT. Run with `--council`.
 
+### Step 4 — Board Bootstrap (all tiers, mandatory)
+
+> Fires after Classify, before Phase 0.5. Logs this session to the Catalyst Features Board.
+> Skip only when `--quick` flag used OR surface = `knowledge-save` OR surface = `handover`.
+
+#### 4a — Card key generation
+
+```
+card_key = "{primary-skill}:{surface-slug}:{YYYY-MM-DD}"
+
+primary-skill: always "preflight" when running from /preflight
+surface-slug:  kebab-case of the surface component name
+               e.g. "backlog-page", "catalyst-view-base", "my-resource360-page"
+date:          today UTC — YYYY-MM-DD
+
+Example: "preflight:backlog-page:2026-05-11"
+```
+
+#### 4b — Session file (deduplication gate for child skills)
+
+```bash
+# Write card_key so child skills (design-intelligence, jira-compare, design-critique)
+# can attach to this card instead of creating their own.
+echo "CARD_KEY={card_key}" > {project_root}/.catalyst-board-session
+```
+
+`{project_root}` = `/Users/jahanarakhan/Documents/GitHub/catalyst-prod-45`
+
+#### 4c — Feature group (swimlane assignment)
+
+Map the surface to a feature group:
+
+| Surface matches | feature_group |
+|---|---|
+| CatalystView*, CatalystKeyDetails, CatalystSidebarDetails, ActivityPanel, SubtasksPanel | Detail Views |
+| BacklogPage, JiraTable, InlineCreate | Backlog |
+| AdminLayout, any /admin/* page | Admin |
+| Sidebar*, GlobalSearch*, NavigationBar | Navigation |
+| MyResource360*, ProfileHeader, R360* | Profile |
+| KanbanBoard*, PragmaticBoard | Kanban |
+| *anything else* | General |
+
+#### 4d — Board write (Chrome MCP javascript_tool)
+
+```
+1. Navigate Chrome MCP: localhost:8080/admin/catalyst-features
+2. Wait for page load (Spinner gone, board visible or empty state shown)
+3. Execute javascript_tool:
+
+window.__catalystBoard.write({
+  card_key: "{card_key}",
+  title: "{one-line summary of the task from user's request}",
+  status: "in_progress",
+  feature_group: "{feature_group from 4c}",
+  surface: "{surface component name}",
+  skill_source: ["preflight"],
+  session_id: "{ISO timestamp}",
+  description: "{user's original request verbatim, max 500 chars}",
+  jira_issue_keys: ["{any BAU-XXXX keys mentioned in the task}"]
+});
+
+4. Navigate back: localhost:8080/{target-surface-route}
+```
+
+**If `window.__catalystBoard` is undefined:** page not loaded yet. Wait 2 seconds, retry once.
+**If board write fails:** log the error and continue. Never halt the preflight session for a board write failure.
+**If `{project_root}/.catalyst-board-session` already contains a card_key for the same surface+date:** skip write — resume the existing card instead.
+
 ---
 
 ## Phase 0.5 — Jira Architect Scan
@@ -217,6 +285,93 @@ The chairman MUST:
 
 ---
 
+## Phase 2.5 — On-Site Evidence Report (Post-Council, Pre-Plan)
+
+> Fires after Phase 2 council (or after Phase 1 for Standard without council), before Phase 3 plan.
+> Mandatory for all Standard and High-stake UI tasks. Never skip.
+> This is the complete picture Vikram reads before approving the plan.
+
+Output this block verbatim. Every section heading must appear even if empty:
+
+```
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📊 ON-SITE EVIDENCE REPORT — {surface} — {YYYY-MM-DD}
+Tier: {tier} · Council: {ran/skipped} · Catalyst-native: {yes/no}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+### A. Atlassian MCP — Schema / Data (Lane B)
+
+| Field / Config | Jira screen scheme | In scheme? | Catalyst status |
+|---|---|---|---|
+| {field name} | {type id} | ✅ yes / ❌ no | present / missing / banned |
+
+Anti-pattern #18 violations (field present in Catalyst but NOT in Jira scheme):
+- {field}: REMOVE — not in {issue type} scheme {id}
+
+### B. Chrome MCP / Jira-Compare — Visual / Structural (Lane A)
+
+| Element | Jira (measured) | Catalyst (measured) | Δ | Severity |
+|---|---|---|---|---|
+| {element} | {value} | {value} | {diff} | P0/P1/P2/✅ |
+
+DOM probe evidence (file:line):
+- {file}:{line} — {what was found}
+
+### C. ADS Compliance (Lane C — static analysis)
+
+| File | Component / token | Violation | ADS rule | Fix |
+|---|---|---|---|---|
+| {file}:{line} | {component} | {violation} | {ADS URL} | {fix} |
+
+### D. Design Scores
+
+| Score type | Value | Threshold | Result |
+|---|---|---|---|
+| design-critique (H1-H10) | {X}/30 | 22/30 | {SHIP/HALT} |
+| design-intelligence (ADS) | {Y}/15 | 11/15 | {PROCEED/HALT} |
+| Jira drift (jira-compare) | {N} items | 0 target | {delta} |
+| Phase 0.5 violations | {N} patterns | 0 halt | {clear/HALT} |
+
+### E. [Catalyst-native ONLY — skip when jira-equivalent exists]
+
+**Mock Design Proposal**
+
+This surface has no Jira equivalent. ADS-compliant design mock:
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="utf-8"><title>{surface} — Design Proposal</title>
+<style>
+/* ADS tokens as CSS vars */
+*{box-sizing:border-box;margin:0;padding:0;font-family:-apple-system,system-ui,sans-serif}
+body{background:#F7F8F9;color:#292A2E;font-size:14px;padding:24px}
+/* Write minimal self-contained styles using ADS hex fallbacks */
+</style></head>
+<body>
+<!-- Propose the surface layout using ADS components and spacing -->
+<!-- Every color uses a var(--ds-*) token with hex fallback -->
+<!-- Typography: 20px/500 title, 14px/400 body, 12px/400 meta, 11px/600 labels -->
+<!-- Spacing: 4/8/12/16/24/32px rhythm -->
+</body></html>
+```
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+```
+
+After outputting this block: update the board card with the council verdict + plan:
+
+```
+Chrome MCP javascript_tool (at localhost:8080/admin/catalyst-features):
+window.__catalystBoard.updatePlan(
+  "{card_key from .catalyst-board-session}",
+  "{Phase 3 plan table as markdown string — first 2000 chars}",
+  "{council chairman verdict — first 500 chars}"
+);
+```
+
+---
+
 ## Phase 3 — Plan Synthesis
 
 Produce an ordered task list. Every row has seven columns. Downstream tooling parses this format — do not deviate.
@@ -287,6 +442,21 @@ EOF
 
 Never: `git add -A`, `git add .`, `--no-verify`, `--no-gpg-sign`.
 
+### Board write-back — after each auto-commit
+
+After `git commit` succeeds on each row:
+```
+CARD_KEY=$(cat {project_root}/.catalyst-board-session | grep CARD_KEY | cut -d= -f2)
+BRANCH=$(git -C {project_root} branch --show-current)
+
+Chrome MCP javascript_tool:
+window.__catalystBoard.write({
+  card_key: "$CARD_KEY",
+  branch_name: "$BRANCH",
+  status: "in_progress",
+});
+```
+
 ### PR creation — one per handover session
 
 After all plan rows for the session are committed, before Phase 7 handover:
@@ -312,6 +482,20 @@ gh pr create \
 🤖 Generated with [Claude Code](https://claude.com/claude-code)
 EOF
 )"
+```
+
+After `gh pr create` succeeds — mandatory board PR write-back:
+
+```
+PR_URL=$(gh pr view --json url -q .url)
+PR_NUMBER=$(gh pr view --json number -q .number)
+BRANCH=$(git -C {project_root} branch --show-current)
+CARD_KEY=$(cat {project_root}/.catalyst-board-session | grep CARD_KEY | cut -d= -f2)
+
+Chrome MCP javascript_tool (navigate to localhost:8080/admin/catalyst-features first):
+window.__catalystBoard.updatePR("$CARD_KEY", "$PR_URL", "$BRANCH", $PR_NUMBER);
+
+Then: rm {project_root}/.catalyst-board-session
 ```
 
 ---

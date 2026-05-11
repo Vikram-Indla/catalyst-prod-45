@@ -106,12 +106,20 @@ export const r360Service = {
     if (!resource) return null;
 
     let avatar_url: string | null = null;
+    let country: string | null = null;
+    let country_code: string | null = null;
+    let country_flag_svg_url: string | null = null;
+    let location: string | null = null;
     if (resource.profile_id) {
       const { data: profile } = await typedQuery('profiles')
-        .select('avatar_url')
+        .select('avatar_url, country, country_code, country_flag_svg_url, location')
         .eq('id', resource.profile_id)
         .maybeSingle();
-      avatar_url = profile?.avatar_url ?? null;
+      avatar_url = (profile as any)?.avatar_url ?? null;
+      country = (profile as any)?.country ?? null;
+      country_code = (profile as any)?.country_code ?? null;
+      country_flag_svg_url = (profile as any)?.country_flag_svg_url ?? null;
+      location = (profile as any)?.location ?? null;
     }
 
     // Count assigned work items — prefer jira_account_id for accurate matching
@@ -166,6 +174,10 @@ export const r360Service = {
       role_name: resource.role_name || 'Team Member',
       department: resource.department_name || '',
       avatar_url,
+      country,
+      country_code,
+      country_flag_svg_url,
+      location,
       total_items: all.length,
       open_items: open,
       stale_items: stale,

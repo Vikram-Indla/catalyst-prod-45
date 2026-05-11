@@ -15,6 +15,7 @@ import { SubtasksPanel } from '@/modules/project-work-hub/components/SubtasksPan
 import { LinkedWorkItemsSection } from '@/modules/project-work-hub/components/linked-work-items';
 import { ImproveIssueDropdown, useImproveApplyHandlers } from '@/components/catalyst-detail-views/improve';
 import { MoveIssueDialog } from '../shared/MoveIssueDialog';
+import { ConfirmArchiveDialog } from '../shared/ConfirmArchiveDialog';
 import type { CatalystViewBaseProps } from '../shared/types';
 
 export default function CatalystViewFeature({
@@ -26,6 +27,7 @@ export default function CatalystViewFeature({
   const mutations = useCatalystIssueMutations(itemId, onClose);
   const improveHandlers = useImproveApplyHandlers(issue ?? null);
   const [showMoveDialog, setShowMoveDialog] = React.useState(false);
+  const [showArchiveDialog, setShowArchiveDialog] = React.useState(false);
 
   // Sidebar Recents tracking — entityType 'feature', no subtask exclusion
   // applies (features can't be subtasks).
@@ -112,13 +114,7 @@ export default function CatalystViewFeature({
             });
         } },
         { label: 'Move to project…', onClick: () => setShowMoveDialog(true) },
-        { label: 'Archive', onClick: () => {
-          if (!issue?.issue_key) return;
-          if (!window.confirm(`Archive "${issue.summary}"?\nArchived items can be restored later.`)) return;
-          archiveIssue(issue.issue_key)
-            .then(() => { toast.success('Issue archived'); onClose(); })
-            .catch((e: unknown) => { toast.error('Archive failed', { description: e instanceof Error ? e.message : 'Unknown error' }); });
-        } },
+        { label: 'Archive', onClick: () => { if (!issue?.issue_key) return; setShowArchiveDialog(true); } },
         { label: 'Delete feature', onClick: () => mutations.deleteIssue.mutate(), danger: true },
       ]}
       onTogglePanelMode={onTogglePanelMode} navigationItems={navigationItems} currentItemId={itemId} onNavigate={onNavigate}

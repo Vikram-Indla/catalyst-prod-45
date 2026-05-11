@@ -60,12 +60,12 @@ export function ChronologyView({ items, onSelect, weekStart, weekEnd }: { items:
   // Render a single chronology card
   const renderChronoCard = (item: R360WorkItem) => {
     const fromClass = getFromTagClass(item.age_days);
-    const statusText = (item.status || '').toUpperCase().trim();
+    const statusText = (item.status || '').trim();
     const { background, color } = getChronologyStatusLozengeColors(item.status || '', item.status_category);
 
     return (
       <div key={item.id} className="r3-chrono-card" onClick={() => onSelect(item)}>
-        <div style={{ position: 'absolute', left: 0, top: 8, bottom: 8, width: 3, borderRadius: '0 2px 2px 0', background: item.role_on_item === 'Contributor' ? '#7C3AED' : accentColor(item.status_category) }} />
+        <div style={{ position: 'absolute', left: 0, top: 8, bottom: 8, width: 3, borderRadius: '0 2px 2px 0', background: item.role_on_item === 'Contributor' ? 'var(--ds-background-discovery-bold, #5E4DB2)' : accentColor(item.status_category) }} />
         <div style={{ width: 24, display: 'flex', alignItems: 'center', flexShrink: 0 }}>{getJiraIcon(item.item_type)}</div>
         <div style={{ flex: 1, minWidth: 0 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 4 }}>
@@ -90,8 +90,8 @@ export function ChronologyView({ items, onSelect, weekStart, weekEnd }: { items:
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 4, flexShrink: 0 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
             {item.role_on_item === 'Contributor' && (
-              <span style={{ fontSize: 12.5, color: 'var(--cp-text-secondary, #334155)', display: 'inline-flex', alignItems: 'center', gap: 4 }}>
-                <span style={{ color: 'var(--cp-text-tertiary, #64748B)' }}>{'\u2192'}</span> <MiniAvatar name={item.assignee_name} size={18} /> {item.assignee_name}
+              <span style={{ fontSize: 12.5, color: 'var(--ds-text-subtle, #44546F)', display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+                <span style={{ color: 'var(--ds-text-subtlest, #626F86)' }}>{'\u2192'}</span> <MiniAvatar name={item.assignee_name} size={18} /> {item.assignee_name}
               </span>
             )}
             <span
@@ -103,14 +103,14 @@ export function ChronologyView({ items, onSelect, weekStart, weekEnd }: { items:
                 borderRadius: '4px',
                 fontSize: '11px',
                 fontWeight: 700,
-                textTransform: 'uppercase',
+                textTransform: 'none',
                 letterSpacing: '0.03em',
                 whiteSpace: 'nowrap',
                 background,
                 color,
               }}
             >
-              {statusText || 'TO DO'}
+              {statusText || 'To do'}
             </span>
           </div>
           <AgeBadge days={item.age_days} ageClass={item.age_class} />
@@ -203,7 +203,7 @@ export function ChronologyView({ items, onSelect, weekStart, weekEnd }: { items:
               {todayGroup[1].items.map(renderChronoCard)}
             </div>
           ) : (
-            <div style={{ paddingLeft: '28px', fontSize: '12px', fontStyle: 'italic', color: 'var(--cp-text-muted, #94A3B8)', padding: '8px 0 8px 28px' }}>
+            <div style={{ paddingLeft: '28px', fontSize: '12px', fontStyle: 'italic', color: 'var(--ds-text-subtlest, #626F86)', padding: '8px 0 8px 28px' }}>
               No activity yet today
             </div>
           )
@@ -217,10 +217,10 @@ export function ChronologyView({ items, onSelect, weekStart, weekEnd }: { items:
       {carryoverItems.length > 0 && (
         <div data-testid="r360-chrono-carryover" ref={carryoverRef} className="r3-date-group">
           <div className="r3-date-header" onClick={() => setCollapsed(prev => { const n = new Set(prev); n.has('__carryover__') ? n.delete('__carryover__') : n.add('__carryover__'); return n; })}>
-            <span style={{ width: '10px', height: '10px', borderRadius: '50%', border: '2px solid #D97706', background: 'transparent', flexShrink: 0 }} />
+            <span style={{ width: '10px', height: '10px', borderRadius: '50%', border: '2px solid var(--ds-text-warning, #D97706)', background: 'transparent', flexShrink: 0 }} />
             <span className="r3-date-label" style={{ fontWeight: 650, fontSize: '13px' }}>Carried Over</span>
             <span className="r3-date-count">{carryoverItems.length} items</span>
-            <span style={{ fontSize: '10px', padding: '2px 6px', borderRadius: '4px', background: 'var(--cp-bg-sunken, #F1F5F9)', color: 'var(--cp-text-tertiary, #64748B)' }}>No activity this week</span>
+            <span style={{ fontSize: '10px', padding: '2px 6px', borderRadius: '4px', background: 'var(--ds-surface-sunken, #F8FAFC)', color: 'var(--ds-text-subtlest, #626F86)' }}>No activity this week</span>
             <ChevronDown size={16} className={`r3-date-chevron ${collapsed.has('__carryover__') ? 'r3-date-chevron--collapsed' : ''}`} />
           </div>
           {!collapsed.has('__carryover__') && (

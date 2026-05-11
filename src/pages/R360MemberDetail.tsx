@@ -30,6 +30,8 @@ import { computeCarriedFromLabel } from '@/services/r360Service';
 import { R360_DEPT_COLORS } from '@/constants/r360';
 import { initials } from '@/utils/r360Utils';
 import { ChevronLeft, Calendar } from '@/lib/atlaskit-icons';
+import { Pencil, Check, X } from 'lucide-react';
+import { useR360Reporting } from '@/hooks/useR360Reporting';
 import type { R360WorkItem, R360ViewType, R360Filters } from '@/types/r360';
 import { useTheme } from '@/hooks/useTheme';
 import '@/styles/r360.css';
@@ -119,6 +121,12 @@ export default function R360MemberDetail({ resourceId: resourceIdProp, projectSc
   // R360 Profile Drawer removed — intelligence icon now opens AIIntelligencePanel directly
 
   const { data: overview, isLoading: overviewLoading } = useR360Overview(resourceId || '');
+
+  // Reporting structure — "Reports to" row with inline edit
+  const profileId = (overview as any)?.profile_id ?? null;
+  const { managerName, options: managerOptions, updateManager, isUpdating } = useR360Reporting(profileId);
+  const [editingManager, setEditingManager] = useState(false);
+  const [pendingManagerId, setPendingManagerId] = useState<string>('');
 
   // Status filter is applied CLIENT-SIDE to avoid changing counts when a filter is active
   const filters: R360Filters = useMemo(() => {
@@ -263,12 +271,13 @@ export default function R360MemberDetail({ resourceId: resourceIdProp, projectSc
     const handler = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
         if (aiOpen) setAiOpen(false);
+        else if (ticketListMode) setTicketListMode(null);
         else setSelectedItem(null);
       }
     };
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
-  }, [aiOpen]);
+  }, [aiOpen, ticketListMode]);
 
   // CSS injection to force full-width layout regardless of drawer state
   useEffect(() => {
@@ -347,44 +356,177 @@ export default function R360MemberDetail({ resourceId: resourceIdProp, projectSc
                   ) : null}
                   <span style={{ position: 'absolute', pointerEvents: 'none', ...(overview.avatar_url ? { display: 'none' } : {}) }}>{initials(overview.name)}</span>
                 </div>
-                <div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
                   <div className="r3-profile-name">{overview.name}</div>
-                  <div className="r3-profile-role">{overview.role_name} · {overview.department}</div>
+                  <div className="r3-profile-role">{overview.role_name} · {(overview as any).department}</div>
+                  {/* Country flag + location badge */}
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 2, flexWrap: 'wrap' }}>
+                    {(overview as any).country && (
+                      <span
+                        data-testid="r360-country"
+                        style={{
+                          fontSize: 12,
+                          color: token('color.text.subtle', '#626F86'),
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: 4,
+                        }}
+                      >
+                        {(overview as any).country_flag_svg_url ? (
+                          <img
+                            src={(overview as any).country_flag_svg_url}
+                            alt={(overview as any).country_code ?? ''}
+                            style={{ width: 16, height: 11, borderRadius: 2, objectFit: 'cover' }}
+                          />
+                        ) : (overview as any).country_code ? (
+                          <span style={{ fontSize: 14, lineHeight: 1 }}>
+                            {/* Convert ISO code to flag emoji */}
+                            {String.fromCodePoint(
+                              ...((overview as any).country_code as string)
+                                .toUpperCase()
+                                .split('')
+                                .map((c: string) => 0x1F1E6 + c.charCodeAt(0) - 65)
+                            )}
+                          </span>
+                        ) : null}
+                        {(overview as any).country}
+                      </span>
+                    )}
+                    {(overview as any).location && (
+                      <span
+                        data-testid="r360-location"
+                        style={{
+                          fontSize: 11,
+                          fontWeight: 500,
+                          padding: '1px 6px',
+                          borderRadius: 3,
+                          background: token('color.background.neutral', '#F1F2F4'),
+                          color: token('color.text.subtle', '#626F86'),
+                          whiteSpace: 'nowrap' as const,
+                        }}
+                      >
+                        {(overview as any).location}
+                      </span>
+                    )}
+                  </div>
+                  {/* Reports to row — only render when manager is set or actively editing */}
+                  {(managerName || editingManager) && <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 2 }}>
+                    <span style={{ fontSize: 11, color: token('color.text.subtlest', '#8590A2'), fontWeight: 500 }}>
+                      Reports to:
+                    </span>
+                    {editingManager ? (
+                      <>
+                        <select
+                          data-testid="r360-manager-select"
+                          value={pendingManagerId}
+                          onChange={e => setPendingManagerId(e.target.value)}
+                          style={{
+                            fontSize: 11, padding: '1px 4px', borderRadius: 3,
+                            border: `1px solid ${token('color.border.focused', '#388BFF')}`,
+                            color: token('color.text', '#172B4D'),
+                            background: token('elevation.surface', '#FFFFFF'),
+                            outline: 'none', maxWidth: 180,
+                          }}
+                        >
+                          <option value="">— None —</option>
+                          {managerOptions.map(o => (
+                            <option key={o.id} value={o.id}>{o.name}</option>
+                          ))}
+                        </select>
+                        <button
+                          onClick={async () => {
+                            await updateManager(pendingManagerId || null);
+                            setEditingManager(false);
+                          }}
+                          disabled={isUpdating}
+                          style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 2, color: token('color.text.success', '#216E4E') }}
+                          title="Save"
+                        >
+                          <Check size={12} />
+                        </button>
+                        <button
+                          onClick={() => setEditingManager(false)}
+                          style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 2, color: token('color.text.subtle', '#626F86') }}
+                          title="Cancel"
+                        >
+                          <X size={12} />
+                        </button>
+                      </>
+                    ) : (
+                      <>
+                        <span
+                          data-testid="r360-manager-name"
+                          style={{ fontSize: 11, color: token('color.text.subtle', '#626F86') }}
+                        >
+                          {managerName ?? '—'}
+                        </span>
+                        <button
+                          data-testid="r360-manager-edit"
+                          onClick={() => {
+                            const currentOpt = managerOptions.find(o => o.name === managerName);
+                            setPendingManagerId(currentOpt?.id ?? '');
+                            setEditingManager(true);
+                          }}
+                          style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 2, color: token('color.text.subtlest', '#8590A2'), display: 'inline-flex', alignItems: 'center' }}
+                          title="Edit reporting manager"
+                        >
+                          <Pencil size={10} />
+                        </button>
+                      </>
+                    )}
+                  </div>}
                 </div>
-                {/* §9 — Open (blue) + Stale (danger) chips */}
-                <div style={{ display: 'flex', gap: '8px' }}>
+                {/* §9 — Backlog health chip: single ADS chip, stale as subsidiary indicator */}
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 4, flexShrink: 0 }}>
+                  {/* Main count — shows total active backlog */}
                   <div
                     onClick={() => setTicketListMode(bannerOpenCount > 0 ? 'open' : null)}
+                    title={`${bannerOpenCount} items in your active backlog (not yet done)`}
                     style={{
                       display: 'inline-flex', flexDirection: 'column', alignItems: 'center',
-                      padding: '4px 10px', borderRadius: '4px', gap: '1px',
-                      background: token('color.background.information', '#E9F2FF'),
-                      border: `1px solid ${token('color.border.information', '#CCE0FF')}`,
+                      padding: '6px 14px', borderRadius: 6, gap: 1,
+                      background: bannerStaleCount > 0
+                        ? token('color.background.danger.subtle', '#FFEDEB')
+                        : token('color.background.neutral.subtle', '#F7F8F9'),
+                      border: `1px solid ${bannerStaleCount > 0
+                        ? token('color.border.danger', '#FF8F73')
+                        : token('color.border', '#091E4224')}`,
                       cursor: bannerOpenCount > 0 ? 'pointer' : 'default',
                       transition: 'background 80ms ease',
                     }}
-                    onMouseEnter={e => { if (bannerOpenCount > 0) e.currentTarget.style.background = token('color.background.information.hovered', '#CCE0FF'); }}
-                    onMouseLeave={e => { e.currentTarget.style.background = token('color.background.information', '#E9F2FF'); }}
-                  >
-                    <div style={{ fontSize: '16px', fontWeight: 600, lineHeight: '20px', color: token('color.text.information', '#0055CC') }}>{bannerOpenCount}</div>
-                    <div style={{ fontSize: '10px', fontWeight: 500, lineHeight: '12px', color: token('color.text.information', '#0055CC') }}>Open</div>
-                  </div>
-                  <div
-                    onClick={() => setTicketListMode(bannerStaleCount > 0 ? 'stale' : null)}
-                    style={{
-                      display: 'inline-flex', flexDirection: 'column', alignItems: 'center',
-                      padding: '4px 10px', borderRadius: '4px', gap: '1px',
-                      background: token('color.background.danger', '#FFECEB'),
-                      border: `1px solid ${token('color.border.danger', '#FF8F73')}`,
-                      cursor: bannerStaleCount > 0 ? 'pointer' : 'default',
-                      transition: 'background 80ms ease',
+                    onMouseEnter={e => {
+                      if (bannerOpenCount > 0) (e.currentTarget as HTMLElement).style.background = bannerStaleCount > 0
+                        ? token('color.background.danger.subtle.hovered', '#FFBDAD')
+                        : token('color.background.neutral.subtle.hovered', '#F1F2F4');
                     }}
-                    onMouseEnter={e => { if (bannerStaleCount > 0) e.currentTarget.style.background = token('color.background.danger.hovered', '#FFBDAD'); }}
-                    onMouseLeave={e => { e.currentTarget.style.background = token('color.background.danger', '#FFECEB'); }}
+                    onMouseLeave={e => {
+                      (e.currentTarget as HTMLElement).style.background = bannerStaleCount > 0
+                        ? token('color.background.danger.subtle', '#FFEDEB')
+                        : token('color.background.neutral.subtle', '#F7F8F9');
+                    }}
                   >
-                    <div style={{ fontSize: '16px', fontWeight: 600, lineHeight: '20px', color: token('color.text.danger', '#AE2A19') }}>{bannerStaleCount}</div>
-                    <div style={{ fontSize: '10px', fontWeight: 500, lineHeight: '12px', color: token('color.text.danger', '#AE2A19') }}>Stale</div>
+                    <div style={{ fontSize: 22, fontWeight: 700, lineHeight: '26px', fontVariantNumeric: 'tabular-nums', color: bannerStaleCount > 0 ? token('color.text.danger', '#AE2A19') : token('color.text', '#172B4D') }}>
+                      {bannerOpenCount}
+                    </div>
+                    <div style={{ fontSize: 10, fontWeight: 600, lineHeight: '13px', letterSpacing: '0.04em', color: bannerStaleCount > 0 ? token('color.text.danger', '#AE2A19') : token('color.text.subtle', '#44546F') }}>
+                      active
+                    </div>
                   </div>
+                  {/* Stale sub-indicator — only when > 0, communicates it's a subset of active */}
+                  {bannerStaleCount > 0 && (
+                    <div
+                      onClick={() => setTicketListMode('stale')}
+                      title={`${bannerStaleCount} of ${bannerOpenCount} items untouched for >14 days`}
+                      style={{
+                        display: 'inline-flex', alignItems: 'center', gap: 3,
+                        fontSize: 11, fontWeight: 500, cursor: 'pointer',
+                        color: token('color.text.warning', '#974F0C'),
+                        padding: '1px 4px', borderRadius: 3,
+                      }}
+                    >
+                      ⚠ {bannerStaleCount} stale
+                    </div>
+                  )}
                 </div>
               </div>
 

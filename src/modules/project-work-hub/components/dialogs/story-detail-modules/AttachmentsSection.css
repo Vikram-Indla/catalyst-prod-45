@@ -54,15 +54,19 @@
 }
 
 /* "Attachments" text label
-   jira-compare 2026-05-04 (D3): re-probed Jira Description H2 = 14px/500/
-   rgb(80,82,88) [--ds-text-subtle]. Attachments heading should match the
-   Description section-header pattern. font-weight raised 400→500, colour
-   updated primary (#292A2E) → secondary (#505258) to match. */
+   jira-compare 2026-05-11 re-probe: canonical section header spec is
+   16px/653/lineHeight 20px / rgb(41,42,46) — measured on the innermost
+   text node of "Subtasks" / "Linked work items" / "Activity" across
+   BAU-5814 (Story) and BAU-5824 / BAU-5751 (QA Bug). Atomic CSS classes
+   match @atlaskit/heading size="small".
+   Corrects the 2026-05-04 D3 measurement (14/500/#505258) and the
+   2026-05-08 K.11 lesson (14/600/#172B4D) — both had measured layout
+   wrappers or inner field labels, not the canonical section heading. */
 .att-heading-label {
   display: block;
-  font-size: 14px;
-  font-weight: 500;
-  color: var(--ds-text-subtle, #505258);
+  font-size: 16px;
+  font-weight: 653;
+  color: var(--ds-text, #292A2E);
   line-height: 20px;
   user-select: none;
   font-family: var(--cp-font-body);

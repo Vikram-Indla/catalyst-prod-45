@@ -379,7 +379,7 @@ export default function AdminOverview() {
             }}>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <Activity size={16} color={T.iconSubtle} />
+                  <span style={{ color: T.iconSubtle, display: 'flex' }}><ChartTrendIcon label="" size="small" /></span>
                   <h2 style={{ margin: 0, fontSize: '13px', fontWeight: 500, color: T.text }}>Recent Admin Changes</h2>
                 </div>
                 <Link
