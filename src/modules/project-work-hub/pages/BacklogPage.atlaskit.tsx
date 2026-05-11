@@ -1704,12 +1704,10 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
     {
       id: 'status',
       label: 'Status',
-      // 2026-05-08 re-probe: Jira measures Status at 120px OUTER with 8px
-      // left container padding (112px effective). Catalyst TD has 12px+12px
-      // = 24px cell padding overhead; 144px - 24px = 120px inner = matches
-      // Jira's 112px effective + pill margin. "READY FOR QA" needs ~112px
-      // text — fits at 120px inner without truncation.
-      width: 12,
+      // 2026-05-11: increased to 18 fractions (220px+) to fit "READY FOR PRODUCTION"
+      // without truncation. Prior 144px (12 fractions) was measured from shorter
+      // status values like "READY FOR QA". BAU project uses longer status names.
+      width: 18,
       sortable: true,
       defaultVisible: true,
       // B.4 verdict: @atlaskit/popup portal mounts on this surface but
