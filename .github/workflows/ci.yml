@@ -35,7 +35,11 @@ jobs:
       - name: Build
         run: npx vite build
         env:
-          NODE_OPTIONS: '--max-old-space-size=4096'
+          # Match package.json's `npm run build` heap cap. Catalyst's full
+          # Atlaskit bundle (editor + ui + media + rich) trips V8 Turbofan
+          # OOM under 4 GB on Ubuntu runners. Verified locally: 4 GB aborts,
+          # 8 GB completes in ~4 minutes.
+          NODE_OPTIONS: '--max-old-space-size=8192'
 
       - name: Run tests
         run: npx vitest run --passWithNoTests
