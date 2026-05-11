@@ -48,6 +48,11 @@ const BANNED_PATHS = [
   // proper migration to CatalystViewBusinessRequest v2, not just deletion.
   'components/items/epics/EpicDetailModal.tsx',
   'components/boards/BoardIssueDetailDrawer.tsx',
+  // P3 — file 11 (this PR) — 920 lines, 0 callers. Pre-canonical requests
+  // detail panel. (File 10 hierarchy/DetailPanel was removed from inventory
+  // — renders hierarchy NODES, not issues. File 12 KAItemDetailPanel is
+  // deferred: active issue preview with intentionally smaller UX.)
+  'components/requests/DetailPanel.tsx',
 ];
 
 describe('Canonical sweep — banned non-canonical detail-view files must not exist', () => {
