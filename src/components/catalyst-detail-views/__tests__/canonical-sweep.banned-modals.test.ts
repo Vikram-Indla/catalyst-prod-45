@@ -26,11 +26,15 @@ const BANNED_PATHS = [
   // P1 — file 1
   'components/project-hub/work-items/WorkItemDetailModal.tsx',
   'components/project-hub/work-items/detail/DetailRightSidebar.tsx',
-  // P1 — file 2 (this PR) — ProjectListView.tsx was already @deprecated 2026-04-18;
+  // P1 — file 2 — ProjectListView.tsx was already @deprecated 2026-04-18;
   // WorkItemDetailPanel.tsx was its only detail-view consumer. ProjectAllWorkView
   // is the active, canonical alternative (already uses CatalystDetailRouter).
   'pages/project-hub/jira-list/ProjectListView.tsx',
   'pages/project-hub/jira-list/components/WorkItemDetailPanel.tsx',
+  // P1 — file 3 — 288 lines, 0 callers. Hand-rolled work-item
+  // detail panel built on shadcn primitives (@/components/ui/button etc.),
+  // not Atlaskit. Dead since at least the prior canonical migration.
+  'modules/work-hub/components/AllWorkDetailPanel.tsx',
 ];
 
 describe('Canonical sweep — banned non-canonical detail-view files must not exist', () => {
