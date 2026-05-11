@@ -48,6 +48,23 @@ Catalyst is a full-featured portfolio management system implementing Jira Align 
 - **Forecast View**: Work item effort distribution across PIs
 - **Dependencies**: Visualization and risk tracking
 
+## Agent Installation
+
+This repo vendors the [Agency Agents](https://github.com/msitarzewski/agency-agents) library — 184 specialized agent personas across 16 categories (engineering, design, product, etc.). To install them into your Claude Code config:
+
+```bash
+# Install all agents to ~/.claude/agents/
+./scripts/install.sh --tool claude-code
+
+# Or manually copy a single category
+cp engineering/*.md ~/.claude/agents/
+```
+
+Then activate any agent in your Claude Code sessions:
+> "Hey Claude, activate Frontend Developer mode and help me build a React component"
+
+See `AGENTS_README.md` for the full agent roster and supported tools (Cursor, Gemini CLI, Copilot, Windsurf, Aider, etc.). License: `AGENTS_LICENSE`.
+
 ## Documentation
 
 Comprehensive documentation available in the `/docs` folder:
