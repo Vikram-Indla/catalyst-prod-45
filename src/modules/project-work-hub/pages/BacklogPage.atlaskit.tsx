@@ -1758,7 +1758,7 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
       // reductions on Status, Comments, Parent, Assignee, Priority, Reporter.
       label: 'Type',
       width: 6,
-      align: 'start',
+      align: 'center',
       alwaysVisible: true,
       cell: ({ row: it }) => {
         let icon: React.ReactNode;
