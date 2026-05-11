@@ -67,20 +67,20 @@ const DENSITY = {
   comfortable: {
     cellFontSize: 14,
     headerFontSize: 12,
-    rowHeight: 40,
+    rowHeight: 48,
     cellPaddingY: 10,
     cellPaddingX: 12,
     headerPaddingY: 10,
     avatarSize: 'medium' as const, // 32px
   },
   compact: {
-    // Measured from Jira's BAU list DOM 2026-04-18:
-    //   summary cell color #292A2E, font-size 14px, weight 400, row-height 40px.
+    // Measured from Jira's BAU list DOM 2026-05-08:
+    //   summary cell color #292A2E, font-size 14px, weight 400, row-height 48px.
     // Our previous 13px read "washed out" compared to Jira at 14px — the
     // difference is small on screen but meaningful for body-text density.
     cellFontSize: 14,
     headerFontSize: 12,
-    rowHeight: 40,
+    rowHeight: 48,
     cellPaddingY: 8,
     cellPaddingX: 12,
     headerPaddingY: 8,
@@ -592,9 +592,11 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
            Catalyst's previous UPPERCASE / wide-tracked / muted-grey
            treatment was a Catalyst opinion. Matching Jira's actual list
            view here for parity. Apr 27 2026 jira-compare regression
-           (D-005 + D-006): fontWeight 700 → 653, color #505258 → #6B6E76. */
-        font-size: 12px;
-        font-weight: 653;
+           (D-005 + D-006): fontWeight 700 → 653, color #505258 → #6B6E76.
+           May 12 2026 (design-critique): corrected back to Jira spec —
+           14px/400 (not 12px/653). */
+        font-size: 14px;
+        font-weight: 400;
         color: #6B6E76;
         text-transform: none;
         letter-spacing: normal;
@@ -606,8 +608,10 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
       .jira-table-grid thead th.jira-th-sortable:hover { background: var(--ds-background-neutral-hovered, #EBECF0); }
       /* 2026-05-10 Jira-parity: row body is the click target for opening
          the detail panel. cursor: pointer signals clickability. Inline
-         editor cells override with their own cursors (text/pointer). */
-      .jira-table-grid tbody tr:not(.jira-table-group-row) { cursor: pointer; }
+         editor cells override with their own cursors (text/pointer).
+         May 12 2026 (design-critique): added min-height 48px for Jira
+         density parity (was 40px). */
+      .jira-table-grid tbody tr:not(.jira-table-group-row) { cursor: pointer; min-height: 48px; }
       /* 2026-05-10 Per-column filter chevron — hover-reveal on header.
          Active-filter state keeps chevron visible (opacity:1 inline). */
       .jira-table-grid thead th:hover .jira-filter-chevron { opacity: 1 !important; }
@@ -615,6 +619,7 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
       .jira-table-grid tbody td {
         padding: 0 12px;
         vertical-align: middle;
+        min-height: 48px;
         /* Phase 12 (2026-04-29): reverted to Atlaskit elevation.surface
            token via --ds-surface CSS variable. Phase 11 unblocked Atlaskit's
            bundled dark theme so --ds-surface flips natively. */
