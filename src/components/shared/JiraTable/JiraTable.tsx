@@ -748,6 +748,7 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
         text-align: center;
         padding-left: 0 !important;
         padding-right: 0 !important;
+        border-right: 1px solid #DFE1E6 !important;
       }
       .jira-table-grid table thead > tr > th:first-child > span,
       .jira-table-grid table tbody > tr > td:first-child > [data-jira-table-editor],

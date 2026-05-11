@@ -10,6 +10,18 @@ The Catalyst local dev server always runs on **http://localhost:8080**. Never us
 
 ---
 
+## Claude Preview — Manual Activation Only
+
+**Claude Preview (`preview_*` tools) must NEVER be auto-activated for runtime verification.** Do not call `preview_start`, `preview_screenshot`, `preview_click`, or any preview tool unless:
+1. The user explicitly requests verification ("verify this", "test the change", "check if it works")
+2. The user clicks the preview button or asks "does this look right?"
+
+**Why:** Preview tools auto-starting silently in the background consume credits and slow down iteration. Verification must be user-initiated.
+
+**Rule:** Implementation code → test locally if needed → stop. Only open preview if the user asks or if the change is definitely visual/interactive. Type checking, tests, and reading source code verify code correctness; preview verifies feature correctness only when explicitly requested.
+
+---
+
 ## Shared Agent Library (Team-wide)
 
 All Catalyst team members have access to **184 shared personas** (committed to `./.claude/agents/` in this repo) for use with the catalyst-agent orchestrator:
