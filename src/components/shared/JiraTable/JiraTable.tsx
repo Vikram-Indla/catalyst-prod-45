@@ -795,6 +795,12 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
       .jira-table-grid table tbody > tr:hover .jira-drag-handle {
         visibility: visible;
       }
+      /* 2026-05-12 Jira parity: row hover reveals ↗ open + add child buttons
+         on the right edge of the Summary cell. Pattern mirrors .jira-drag-handle:
+         visibility: hidden at rest (set inline), flip to visible on tr:hover. */
+      .jira-table-grid table tbody > tr:hover [data-jira-row-hover-action] {
+        visibility: visible !important;
+      }
       /* "Add comment" ghost text — always visible (Jira parity: shown at rest in every row) */
       .jira-table-grid table tbody > tr td [data-jira-cell-ghost] {
         visibility: visible;

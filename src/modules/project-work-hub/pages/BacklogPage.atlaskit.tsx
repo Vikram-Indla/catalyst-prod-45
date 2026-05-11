@@ -1721,6 +1721,30 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
         // editors.tsx for other surfaces that may want them, but BAU
         // backlog deliberately does not constrain edits by source.
         onChange: (row, next) => updateField.mutate({ id: row.id, source: row.source, patch: { title: next } }),
+        // 2026-05-12 Jira parity: row hover → ↗ "Open work item" opens the
+        // detail panel for that row (mirrors Jira's full-width detail open).
+        onOpenWorkItem: (row) => openDetail(row),
+        // 2026-05-12 Jira parity: row hover → + "Create child item" triggers
+        // inline create scoped to that row's parent group. For now we route
+        // through the existing inlineCreateGroup state machine so the new
+        // item appears as a sibling under the same parent. Wiring to a true
+        // per-row child-create (sub-task family) is task #4 follow-up — see
+        // ph_issues.parent_key relationship and Jira hierarchy rules.
+        onCreateChild: (row) => {
+          // Default group target = the row's parent key when grouped by parent,
+          // else fall back to row's own id so child inserts as sibling.
+          const groupId = groupBy === 'parent'
+            ? (row.parent_key || row.id)
+            : row.parent_key || row.id;
+          setInlineCreateGroup(groupId);
+        },
+        // Show + button on rows that can have children: Epic, Feature,
+        // Story (sub-task parent). Exclude API Requirement and sub-task
+        // types from the affordance.
+        canCreateChild: (row) => {
+          const t = row.type || '';
+          return t === 'Epic' || t === 'Feature' || t === 'Story' || t === 'Task';
+        },
       }),
     },
     {
