@@ -543,9 +543,9 @@ export function CatalystSidebarDetails({
           <span style={{ display: 'inline-flex', transition: 'transform 0.15s ease', transform: detailsCollapsed ? 'rotate(0deg)' : 'rotate(90deg)', color: 'var(--ds-icon-subtle, #626F86)' }}>
             <ChevronRightIcon size="small" primaryColor="currentColor" />
           </span>
-          {/* jira-compare 2026-05-08: K.11 section header spec = 14px/600/#172B4D.
-              Prior comment said fw500 but missed the font-size correction (was 16px). */}
-          <div style={{ fontSize: 14, fontWeight: 600, lineHeight: '20px', color: 'var(--ds-text, #172B4D)' }}>Details</div>
+          {/* jira-compare 2026-05-11 re-probe: 16/653/20px/rgb(41,42,46) is canonical
+              section header spec (live DOM BAU-5814 + QA Bug). Corrects 2026-05-08. */}
+          <div style={{ fontSize: 16, fontWeight: 653, lineHeight: '20px', color: 'var(--ds-text, #292A2E)' }}>Details</div>
         </div>
 
         {!detailsCollapsed && <div style={{ padding: '0' }}>

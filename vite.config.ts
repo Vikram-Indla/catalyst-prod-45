@@ -19,14 +19,22 @@ import { componentTagger } from "lovable-tagger";
  * adds ~100ms to cold start and 0ms to HMR. It only installs when
  * package.json / lockfiles actually changed since last run.
  */
-try {
-  spawnSync("node", [path.resolve(__dirname, "scripts/sync-deps.js")], {
-    stdio: "inherit",
-    cwd: __dirname,
-  });
-} catch {
-  // sync-deps is best-effort — if it can't run, vite's own errors surface
-  // the real problem more clearly than anything we'd print here.
+// Skipped on CI: GitHub Actions runs `npm install` as a separate workflow
+// step before `vite build`, so node_modules is already in sync. Running
+// sync-deps a second time on npm 10.8.2 (the GH Actions default) was
+// observed to prune `rollup` from node_modules, breaking `vite build` with
+// `Cannot find package 'rollup'`. The CI env var is set automatically by
+// GitHub Actions; locally it's undefined and the sync runs as before.
+if (!process.env.CI) {
+  try {
+    spawnSync("node", [path.resolve(__dirname, "scripts/sync-deps.js")], {
+      stdio: "inherit",
+      cwd: __dirname,
+    });
+  } catch {
+    // sync-deps is best-effort — if it can't run, vite's own errors surface
+    // the real problem more clearly than anything we'd print here.
+  }
 }
 
 /**

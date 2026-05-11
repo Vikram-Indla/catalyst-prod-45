@@ -54,10 +54,13 @@
   outline-offset: 2px;
 }
 
+/* jira-compare 2026-05-11 re-probe: 16/653/20px / #292A2E is canonical Jira spec
+   (live DOM on BAU-5814 Story + QA Bug exemplars).  Corrects 2026-05-08 14/600. */
 .lwi-header__title {
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--ds-text, #172B4D);
+  font-size: 16px;
+  font-weight: 653;
+  line-height: 20px;
+  color: var(--ds-text, #292A2E);
 }
 
 .lwi-header__count {

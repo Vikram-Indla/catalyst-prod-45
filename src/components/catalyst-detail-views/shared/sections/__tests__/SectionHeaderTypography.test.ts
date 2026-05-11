@@ -1,15 +1,25 @@
 /**
- * DC3 — Section header typography (K.11 spec, jira-compare 2026-05-11)
+ * Section header typography — canonical Jira spec
  *
- * Jira K.11 measurement: all section headers in detail views (Key details,
- * Description, Subtasks, Linked work items) must be 14px / fontWeight 600 / #172B4D.
- * Anything rendering at 16px/653 or 14px/500 fails parity.
+ * jira-compare 2026-05-11 (re-probe): live DOM measurement on BAU-5814 (Story),
+ * BAU-5824 (QA Bug), BAU-5751 (QA Bug) — innermost text-bearing element for
+ * "Key details", "Subtasks", "Linked work items", "Activity":
+ *
+ *   fontSize: 16px / fontWeight: 653 / lineHeight: 20px / color: rgb(41,42,46)
+ *
+ * The compiled CSS class names (`_11c81e3o _syazi7uo _1i4q1hna`) match
+ * `@atlaskit/heading size="small"` atomic output — Jira is using Atlaskit
+ * Heading small.
+ *
+ * Corrects 2026-05-08 K.11 lesson (14px/600/#172B4D), which had measured
+ * parent layout wrappers (14px/400) and inner field labels (11–12px/600)
+ * instead of the section header text node.
  *
  * Fix targets:
- *   - CatalystKeyDetails.tsx  : h2 inline style fontSize/fontWeight
- *   - SubtasksPanel.css       : .sp-title font-size/font-weight
- *   - CatalystDescriptionSection.tsx : h2 fontWeight + color
- *   - linked-work-items.css   : .lwi-header__title font-weight
+ *   - CatalystKeyDetails.tsx  : h2 inline 14/600 → 16/653
+ *   - SubtasksPanel.css       : .sp-title 14/600 → 16/653
+ *   - CatalystDescriptionSection.tsx : h2 14/600 → 16/653
+ *   - linked-work-items.css   : .lwi-header__title 14/600 → 16/653
  */
 
 import { describe, it, expect } from 'vitest';
@@ -36,46 +46,118 @@ const lwItemsCss = readFileSync(
   'utf-8',
 );
 
-describe('Section header typography (K.11) — jira-compare DC3 2026-05-11', () => {
-  it('CatalystKeyDetails "Key details" h2 must be fontSize 14, fontWeight 600', () => {
-    // Jira K.11: 14px/600/#172B4D for all section headers
+describe('Section header typography — canonical Jira spec (live probe 2026-05-11)', () => {
+  it('CatalystKeyDetails "Key details" h2 must be fontSize 16, fontWeight 653', () => {
+    // Locate the "Key details" h2 block (whitespace-tolerant)
+    const block = keyDetailsSrc.match(/<h2[\s\S]{0,400}>Key details<\/h2>/);
+    expect(block, 'Could not locate the "Key details" <h2> in CatalystKeyDetails.tsx').not.toBeNull();
+    const text = block![0];
     expect(
-      keyDetailsSrc.includes('fontSize: 16') && keyDetailsSrc.includes('fontWeight: 653'),
-      'CatalystKeyDetails.tsx: "Key details" h2 is still 16px/653 — must be 14px/600.',
-    ).toBe(false);
+      /fontSize:\s*16/.test(text),
+      'CatalystKeyDetails.tsx: "Key details" h2 must use fontSize: 16 (live Jira spec).',
+    ).toBe(true);
     expect(
-      keyDetailsSrc.includes('fontSize: 14') && keyDetailsSrc.includes('fontWeight: 600'),
-      'CatalystKeyDetails.tsx: "Key details" h2 must use fontSize: 14, fontWeight: 600.',
+      /fontWeight:\s*653/.test(text),
+      'CatalystKeyDetails.tsx: "Key details" h2 must use fontWeight: 653 (live Jira spec).',
     ).toBe(true);
   });
 
-  it('SubtasksPanel .sp-title must be font-size 14px, font-weight 600', () => {
-    // sp-title was accidentally set to 16px/653 — Jira K.11 says 14px/600
+  it('SubtasksPanel .sp-title must be font-size 16px, font-weight 653', () => {
+    const block = subtasksCss.match(/\.sp-title\s*\{[^}]*\}/);
+    expect(block, 'Could not locate .sp-title block in SubtasksPanel.css').not.toBeNull();
+    const text = block![0];
     expect(
-      subtasksCss.includes('font-size: 16px'),
-      'SubtasksPanel.css: .sp-title is still font-size: 16px — must be 14px.',
-    ).toBe(false);
+      /font-size:\s*16px/.test(text),
+      'SubtasksPanel.css: .sp-title must be font-size: 16px (live Jira spec).',
+    ).toBe(true);
     expect(
-      subtasksCss.includes('font-weight: 653') && subtasksCss.match(/\.sp-title\s*\{/),
-      'SubtasksPanel.css: .sp-title is still font-weight: 653 — must be 600.',
-    ).toBe(false);
+      /font-weight:\s*653/.test(text),
+      'SubtasksPanel.css: .sp-title must be font-weight: 653 (live Jira spec).',
+    ).toBe(true);
   });
 
-  it('CatalystDescriptionSection "Description" h2 must be fontWeight 600 with primary text color', () => {
-    // Jira K.11: section label must be 600 weight / var(--ds-text, #172B4D) not subtle
-    // Check the section label h2 (data-testid="catalyst-description-section.label")
+  it('CatalystDescriptionSection "Description" h2 must be fontSize 16, fontWeight 653', () => {
+    // Locate the section label h2 (data-testid="catalyst-description-section.label")
+    const block = descSrc.match(/data-testid="catalyst-description-section\.label"[\s\S]{0,800}/);
+    expect(block, 'Could not locate Description section label h2').not.toBeNull();
+    const text = block![0];
     expect(
-      descSrc.includes('fontWeight: 500'),
-      'CatalystDescriptionSection.tsx: section h2 is still fontWeight: 500 — must be 600.',
-    ).toBe(false);
+      /fontSize:\s*16/.test(text),
+      'CatalystDescriptionSection.tsx: section h2 must use fontSize: 16 (live Jira spec).',
+    ).toBe(true);
+    expect(
+      /fontWeight:\s*653/.test(text),
+      'CatalystDescriptionSection.tsx: section h2 must use fontWeight: 653 (live Jira spec).',
+    ).toBe(true);
   });
 
-  it('linked-work-items.css .lwi-header__title must be font-weight 600', () => {
-    // Jira K.11: linked work items section title must be 14px/600
-    const lwTitleBlock = lwItemsCss.match(/\.lwi-header__title\s*\{[^}]*\}/s)?.[0] ?? '';
+  it('linked-work-items.css .lwi-header__title must be font-size 16px, font-weight 653', () => {
+    const block = lwItemsCss.match(/\.lwi-header__title\s*\{[^}]*\}/);
+    expect(block, 'Could not locate .lwi-header__title block').not.toBeNull();
+    const text = block![0];
     expect(
-      lwTitleBlock.includes('font-weight: 653'),
-      'linked-work-items.css: .lwi-header__title is still font-weight: 653 — must be 600.',
-    ).toBe(false);
+      /font-size:\s*16px/.test(text),
+      'linked-work-items.css: .lwi-header__title must be font-size: 16px (live Jira spec).',
+    ).toBe(true);
+    expect(
+      /font-weight:\s*653/.test(text),
+      'linked-work-items.css: .lwi-header__title must be font-weight: 653 (live Jira spec).',
+    ).toBe(true);
+  });
+
+  it('CatalystSidebarDetails "Details" right-rail header must be fontSize 16, fontWeight 653', () => {
+    const sidebarSrc = readFileSync(
+      resolve(__dirname, '../CatalystSidebarDetails.tsx'),
+      'utf-8',
+    );
+    // Locate the "Details" header div (the one used by the right-rail
+    // collapsible "Details" section, not a layout wrapper).
+    const block = sidebarSrc.match(/<div[\s\S]{0,300}>Details<\/div>/);
+    expect(block, 'Could not locate "Details" header div').not.toBeNull();
+    const text = block![0];
+    expect(
+      /fontSize:\s*16/.test(text),
+      'CatalystSidebarDetails.tsx: "Details" header must be fontSize: 16 (live Jira spec).',
+    ).toBe(true);
+    expect(
+      /fontWeight:\s*653/.test(text),
+      'CatalystSidebarDetails.tsx: "Details" header must be fontWeight: 653 (live Jira spec).',
+    ).toBe(true);
+  });
+
+  it('ActivityPanel "Activity" h3 must be fontSize 16, fontWeight 653', () => {
+    const activityPanelSrc = readFileSync(
+      resolve(__dirname, '../../../../catalyst-ds/activity/ActivityPanel.tsx'),
+      'utf-8',
+    );
+    const block = activityPanelSrc.match(/<h3[\s\S]{0,400}>\s*Activity\s*<\/h3>/);
+    expect(block, 'Could not locate "Activity" h3').not.toBeNull();
+    const text = block![0];
+    expect(
+      /fontSize:\s*16/.test(text),
+      'ActivityPanel.tsx: "Activity" h3 must be fontSize: 16 (live Jira spec).',
+    ).toBe(true);
+    expect(
+      /fontWeight:\s*653/.test(text),
+      'ActivityPanel.tsx: "Activity" h3 must be fontWeight: 653 (live Jira spec).',
+    ).toBe(true);
+  });
+
+  it('AttachmentsSection.css .att-heading-label must be font-size 16px, font-weight 653', () => {
+    const attCss = readFileSync(
+      resolve(__dirname, '../../../../../modules/project-work-hub/components/dialogs/story-detail-modules/AttachmentsSection.css'),
+      'utf-8',
+    );
+    const block = attCss.match(/\.att-heading-label\s*\{[^}]*\}/);
+    expect(block, 'Could not locate .att-heading-label block').not.toBeNull();
+    const text = block![0];
+    expect(
+      /font-size:\s*16px/.test(text),
+      'AttachmentsSection.css: .att-heading-label must be font-size: 16px (live Jira spec).',
+    ).toBe(true);
+    expect(
+      /font-weight:\s*653/.test(text),
+      'AttachmentsSection.css: .att-heading-label must be font-weight: 653 (live Jira spec).',
+    ).toBe(true);
   });
 });
