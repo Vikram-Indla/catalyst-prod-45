@@ -49,6 +49,11 @@ import AkFilterIcon from '@atlaskit/icon/core/filter';
 import AkRefreshIcon from '@atlaskit/icon/core/refresh';
 import AkDownloadIcon from '@atlaskit/icon/core/download';
 import AkCommentIcon from '@atlaskit/icon/core/comment';
+import AkClockIcon from '@atlaskit/icon/core/clock';
+import AkArrowUpIcon from '@atlaskit/icon/core/arrow-up';
+import AkArrowDownIcon from '@atlaskit/icon/core/arrow-down';
+import AkAttachmentIcon from '@atlaskit/icon/core/attachment';
+import AkBoardIcon from '@atlaskit/icon/core/board';
 import AkShareIcon from '@atlaskit/icon/core/share';
 import AkWarningIcon from '@atlaskit/icon/core/warning';
 import AkArchiveBoxIcon from '@atlaskit/icon/core/archive-box';
@@ -516,6 +521,41 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
   // available via the column picker (+) but hidden in the factory layout.
   // NOTE: Comments column is banned (2026-05-11), removed from defaults
   const DEFAULT_VISIBLE_COLUMNS = ['key', 'summary', 'status', 'assignee', 'priority', 'parent'];
+
+  // Jira-parity column restriction (2026-05-12).
+  // Only standard Jira fields are allowed in the column picker.
+  // Type-specific custom fields (Gap Classification, IR Demo Date, etc.) are permanently banned.
+  // See CLAUDE.md 2026-05-05, 2026-05-07 for the full ban list.
+  const ALLOWED_COLUMN_IDS = new Set([
+    'type',
+    'key',
+    'summary',
+    'status',
+    'comments',
+    'parent',
+    'assignee',
+    'priority',
+    'labels',
+    'due_date',
+    'created',
+    'updated',
+    'reporter',
+    '__drag',
+    '__actions',
+  ]);
+
+  // Permanently banned fields that must NEVER appear in column picker
+  const BANNED_COLUMN_IDS = new Set([
+    'customfield_10882', // MDT Ref
+    'customfield_10288', // Assessment Feature
+    'customfield_10130', // Service Now #
+    // Type-specific custom fields (all permanently banned per Vikram 2026-05-12)
+    'customfield_10881', 'customfield_10116', 'customfield_10117', 'customfield_10118',
+    'customfield_10139', 'customfield_10140', 'customfield_10141', 'customfield_10142',
+    'customfield_10143', 'customfield_10144', 'customfield_10145', 'customfield_10146',
+    'customfield_10883', 'customfield_10884',
+  ]);
+
   const parseSet = (raw: string | null): Set<string> =>
     raw ? new Set(raw.split(',').filter(Boolean)) : new Set();
 
@@ -1526,20 +1566,40 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
   }, [epics]);
 
   // ── Canonical row action list — shared by the ⋯ menu AND the right-click
-  //   context menu so there's one source of truth. Order is intentional:
-  //   non-destructive items first, destructive items pushed to the bottom
-  //   (makeRowActionsCell re-sorts danger into its own section).
+  //   context menu so there's one source of truth.
+  //
+  // 2026-05-12 — Jira parity: rewritten to match the 8-item set probed
+  // from Jira BAU live (digital-transformation.atlassian.net). Order:
+  //   1. View work item · 2. Comment · 3. Log work · 4. Agile board
+  //   5. Rank to top · 6. Rank to bottom · 7. Attach files
+  // (Connect Slack channel — OUT OF SCOPE per gap registry, no Slack integration)
+  // Catalyst-specific actions (Open in Jira, Copy link, Duplicate, Delete)
+  // kept as secondary group at the end of the menu.
   const rowActions = useMemo<RowAction<BacklogItem>[]>(() => ([
-    { id: 'open', label: 'Open', icon: <AkEditIcon label="" size="small" />, onClick: (r) => openDetail(r) },
-    { id: 'open-in-jira', label: 'Open in Jira',
-      icon: <AkLinkExternalIcon label="" size="small" />,
+    { id: 'view', label: 'View work item', icon: <AkEditIcon label="" size="small" />, onClick: (r) => openDetail(r) },
+    { id: 'comment', label: 'Comment', icon: <AkCommentIcon label="" />,
+      onClick: (r) => { openDetail(r); flag.info('Open comments', 'Activity → Comments in the right rail.'); } },
+    { id: 'log-work', label: 'Log work', icon: <AkClockIcon label="" />,
+      onClick: (r) => { openDetail(r); flag.info('Log work', 'Worklog section in the right rail.'); } },
+    { id: 'agile-board', label: 'Agile board', icon: <AkBoardIcon label="" />,
+      onClick: (r) => {
+        const parent = r.parent_key || r.key;
+        navigate(`/project-hub/${projectKey}/kanban${parent ? `?epic=${parent}` : ''}`);
+      } },
+    { id: 'rank-top', label: 'Rank to top', icon: <AkArrowUpIcon label="" />,
+      onClick: (r) => flag.info('Rank to top', `${r.key || r.id} → position 1 (rank API wires in task #10).`) },
+    { id: 'rank-bottom', label: 'Rank to bottom', icon: <AkArrowDownIcon label="" />,
+      onClick: (r) => flag.info('Rank to bottom', `${r.key || r.id} → last position (rank API wires in task #10).`) },
+    { id: 'attach', label: 'Attach files', icon: <AkAttachmentIcon label="" />,
+      onClick: (r) => { openDetail(r); flag.info('Attach files', 'Attachments section in the right rail.'); } },
+    // ── Secondary group — Catalyst-specific actions ─────────────────────
+    { id: 'open-in-jira', label: 'Open in Jira', icon: <AkLinkExternalIcon label="" size="small" />,
       onClick: (r) => {
         if (r.key) window.open(`https://digital-transformation.atlassian.net/browse/${r.key}`, '_blank', 'noopener');
         else flag.info('No Jira key', 'This is a Catalyst-native item with no Jira counterpart.');
       },
     },
-    { id: 'copy-link', label: 'Copy link',
-      icon: <AkLinkIcon label="" size="small" />,
+    { id: 'copy-link', label: 'Copy link', icon: <AkLinkIcon label="" size="small" />,
       onClick: (r) => {
         const url = `${window.location.origin}/project-hub/${projectKey}/backlog?selectedIssue=${r.id}`;
         navigator.clipboard.writeText(url).then(
@@ -1548,8 +1608,6 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
         );
       },
     },
-    { id: 'edit', label: 'Edit', icon: <AkEditIcon label="" size="small" />, onClick: (r) => setEditingId(r.id) },
-    { id: 'flag', label: 'Flag', icon: <AkFlagIcon label="" size="small" />, onClick: (r) => flag.info(`Flagged ${r.key || r.id}`) },
     { id: 'duplicate', label: 'Duplicate', icon: <AkCopyIcon label="" size="small" />,
       onClick: async (r) => {
         try {
@@ -1578,7 +1636,7 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
     { id: 'delete', label: 'Delete', icon: <AkTrashIcon label="" size="small" />, danger: true,
       onClick: (r) => setDeleteTarget(r),
       hidden: (r) => r.source !== 'catalyst' },
-  ]), [openDetail, projectKey]);
+  ]), [openDetail, projectKey, projectId, navigate, queryClient]);
 
   // ── Column schema ──
   // F8 (iter-9): __caret column dropped — caret affordance folded into the
@@ -2840,8 +2898,16 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
           }}
         >
           <div style={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column' }}>
-          <JiraTable<BacklogItem>
-            columns={columns}
+          {/* Filter columns to only allowed standard Jira fields (2026-05-12).
+              Prevents type-specific custom fields and banned fields from appearing
+              in the column picker. See ALLOWED_COLUMN_IDS + BANNED_COLUMN_IDS above. */}
+          {useMemo(() => {
+            const filteredCols = columns.filter(
+              (col) => ALLOWED_COLUMN_IDS.has(col.id) && !BANNED_COLUMN_IDS.has(col.id)
+            );
+            return (
+              <JiraTable<BacklogItem>
+                columns={filteredCols}
             data={groupedRows ? undefined : sortedRows}
             groups={groupedRows ?? undefined}
             collapsedGroups={collapsedGroups}
@@ -3154,6 +3220,8 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
               />
             }
           />
+            );
+          }, [columns, ALLOWED_COLUMN_IDS, BANNED_COLUMN_IDS])}
           </div>
         </div>
 
