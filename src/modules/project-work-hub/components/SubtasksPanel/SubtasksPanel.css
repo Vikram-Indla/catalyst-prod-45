@@ -55,12 +55,16 @@
   background: var(--ds-background-neutral-subtle-hovered, rgba(9,30,66,0.04));
 }
 
+/* jira-compare 2026-05-11 re-probe: canonical Jira section header is
+   16px/653/lineHeight 20px (live DOM on BAU-5814 Story + QA Bug exemplars).
+   Atomic CSS classes match @atlaskit/heading size="small" output.
+   Corrects 2026-05-08 14/600 lesson which measured wrapper levels. */
 .sp-title {
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--ds-text, #29292E);
+  font-size: 16px;
+  font-weight: 653;
+  color: var(--ds-text, #292A2E);
   padding: 0 4px;
-  line-height: 1.25;
+  line-height: 20px;
 }
 
 .sp-title-count {
