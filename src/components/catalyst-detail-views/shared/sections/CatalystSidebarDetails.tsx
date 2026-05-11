@@ -487,7 +487,16 @@ export function CatalystSidebarDetails({
                   )}
                 </FieldRow>
               );
-              if (fieldId === 'labels') return (
+              // Labels gate (anti-pattern #18, CLAUDE.md 2026-05-10):
+              // Labels is in the Jira screen scheme ONLY for Task + Story
+              // (verified via getJiraIssueTypeMetaWithFields on 2026-05-10).
+              // Even when the user pins Labels for a different type, we must
+              // not render it — the pinned-fields path MUST honor the same
+              // gate as the canonical Details render at line ~624.
+              if (
+                fieldId === 'labels' &&
+                (issue?.issue_type === 'Task' || issue?.issue_type === 'Story')
+              ) return (
                 <FieldRow key={fieldId} label="Labels" labelTopPad>
                   {issue && (
                     <EditableLabels
