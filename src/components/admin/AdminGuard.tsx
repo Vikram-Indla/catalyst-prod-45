@@ -8,7 +8,7 @@ interface AdminGuardProps {
 }
 
 export function AdminGuard({ children }: AdminGuardProps) {
-  const { isAdmin, isLoading } = useUserRole();
+  const { isAdmin, isSuperAdmin, isLoading } = useUserRole();
 
   if (isLoading) {
     return (
@@ -18,7 +18,7 @@ export function AdminGuard({ children }: AdminGuardProps) {
     );
   }
 
-  if (!isAdmin) {
+  if (!isAdmin && !isSuperAdmin) {
     return (
       <div className="container mx-auto py-8">
         <Alert variant="destructive">
