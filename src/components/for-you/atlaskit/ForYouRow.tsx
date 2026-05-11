@@ -141,20 +141,9 @@ function ForYouRowImpl({ item, alwaysShowStar = false, onSelect, onToggleStar, h
         minWidth: 0,
       }}
     >
-      {/* Left tile — work item type icon */}
-      <div
-        style={{
-          width: 32,
-          height: 32,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          backgroundColor: token('color.background.neutral', 'rgba(5,21,36,0.06)'),
-          borderRadius: '25%',
-          flexShrink: 0,
-        }}
-      >
-        <JiraIssueTypeIcon type={item.issueType ?? 'Task'} size={16} />
+      {/* Left — work item type icon, no background tile (Jira parity) */}
+      <div style={{ width: 20, height: 20, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+        <JiraIssueTypeIcon type={item.issueType ?? 'Task'} size={20} />
       </div>
 
       {/* Main body */}
