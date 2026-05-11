@@ -398,19 +398,6 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
 
   const queryClient = useQueryClient();
 
-  // G5: current user for "My work" quick filter
-  const { data: currentUserProfile } = useQuery({
-    queryKey: ['current-user-profile-backlog'],
-    queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return null;
-      const { data: profile } = await supabase.from('profiles').select('id, full_name').eq('id', user.id).maybeSingle();
-      return profile;
-    },
-    staleTime: 300_000,
-  });
-  const [myWorkFilter, setMyWorkFilter] = useState(false);
-
   const {
     data: stories = [],
     isLoading: storiesLoading,
@@ -505,7 +492,8 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
   // Jira-parity (2026-05-08): Jira's BAU list default columns are Type | Key |
   // Summary | Status | Comments | Parent — NO Assignee by default. Assignee is
   // available via the column picker (+) but hidden in the factory layout.
-  const DEFAULT_VISIBLE_COLUMNS = ['key', 'summary', 'status', 'assignee', 'priority', 'comments', 'parent'];
+  // NOTE: Comments column is banned (2026-05-11), removed from defaults
+  const DEFAULT_VISIBLE_COLUMNS = ['key', 'summary', 'status', 'assignee', 'priority', 'parent'];
   const parseSet = (raw: string | null): Set<string> =>
     raw ? new Set(raw.split(',').filter(Boolean)) : new Set();
 
@@ -1091,10 +1079,6 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
       if (f.created.from && (!it.created_at || it.created_at < f.created.from)) return false;
       if (f.created.to && (!it.created_at || it.created_at > f.created.to + 'T23:59:59')) return false;
       // Reporter + Labels not wired yet (no data plumbed through BacklogItem)
-      // G5: "My work" quick filter — assignee = current user's display name
-      if (myWorkFilter && currentUserProfile?.full_name) {
-        if (!it.assignee_name || it.assignee_name !== currentUserProfile.full_name) return false;
-      }
       return true;
     };
 
@@ -1224,10 +1208,6 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
       if (f.created.from && (!it.created_at || it.created_at < f.created.from)) return false;
       if (f.created.to && (!it.created_at || it.created_at > f.created.to + 'T23:59:59')) return false;
       if (hideDoneItems && /^(done|closed)$/i.test((it.status || '').trim())) return false;
-      // G5: "My work" filter
-      if (myWorkFilter && currentUserProfile?.full_name) {
-        if (!it.assignee_name || it.assignee_name !== currentUserProfile.full_name) return false;
-      }
       return true;
     });
 
@@ -2657,35 +2637,6 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
             from items + avatarsByName). maxCount=5 with appearance="stack"
             matches Jira's stacked-circle pattern. The "Add people" CTA is a
             future addition; for cycle 1 we ship read-only avatar stack. */}
-        {/* G5: My work quick-filter chip */}
-        <button
-          type="button"
-          onClick={() => setMyWorkFilter((v) => !v)}
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: 4,
-            padding: '0 10px',
-            height: 32,
-            borderRadius: 3,
-            border: myWorkFilter
-              ? `2px solid ${token('color.border.selected', '#0C66E4')}`
-              : `1px solid ${token('color.border', '#DFE1E6')}`,
-            background: myWorkFilter
-              ? token('color.background.selected', '#E9F2FF')
-              : token('color.background.neutral', '#F1F2F4'),
-            color: myWorkFilter
-              ? token('color.text.selected', '#0C66E4')
-              : token('color.text', '#172B4D'),
-            fontSize: 14,
-            fontWeight: myWorkFilter ? 600 : 400,
-            cursor: 'pointer',
-            whiteSpace: 'nowrap',
-          }}
-        >
-          My work
-        </button>
-
         {assigneeOptions.length > 0 && (
           <AvatarGroup
             appearance="stack"

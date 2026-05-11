@@ -18,6 +18,7 @@ import { RouteRoleGuard } from "../components/RouteRoleGuard";
 const FeatureFlagsPage = lazy(() => import("../pages/admin/FeatureFlagsPage"));
 const AdminIconsPage = lazy(() => import("../pages/admin/icons/AdminIconsPage"));
 const AdminAvatarsPage = lazy(() => import("../pages/admin/avatars/AdminAvatarsPage"));
+const WorkListPageLazy = lazy(() => import("../pages/BacklogPage"));
 
 // ─── Lazy page imports ───────────────────────────────────────────
 const KBAdminSetup = ENABLE_AI ? lazy(() => import("../pages/KBAdminSetup")) : () => <FeatureComingSoon title="KB Admin" />;
@@ -284,6 +285,7 @@ const ModulesPackages = lazy(() => import("../pages/admin/ModulesPackages"));
 const ProductSettings = lazy(() => import("../pages/admin/ProductSettings"));
 const AdminOverview = lazy(() => import("../pages/admin/AdminOverview"));
 const UserAccessPage = lazy(() => import("../pages/admin/UserAccessPage"));
+const AdminAccessPage = lazy(() => import("../pages/admin/AdminAccessPage"));
 const ProcessSteps = lazy(() => import("../pages/admin/ProcessSteps"));
 // Admin v2 deprecated 2026-05-09 — all /admin/v2/* redirect to /admin/overview
 const WorkHubAdminPage = lazy(() => import("../modules/workhub/admin/pages/WorkHubAdmin"));
@@ -456,6 +458,9 @@ export default function FullAppRoutes() {
         </Route>
 
         <Route path="/browse/:key" element={<S><BrowsePage /></S>} />
+
+        {/* ═══ Work Items / BacklogPage ═══ */}
+        <Route path="/workitems" element={<S><Suspense fallback={<div className="p-8">Loading...</div>}><WorkListPageLazy /></Suspense></S>} />
 
         {/* ═══ Product Hub ═══
             Block A rule 1 (2026-05-01): canonical URL prefix is `/product-hub`.
@@ -829,6 +834,7 @@ export default function FullAppRoutes() {
           <Route path="overview" element={<S><AdminOverview /></S>} />
           <Route path="modules-packages" element={<S><ModulesPackages /></S>} />
           <Route path="user-access" element={<S><UserAccessPage /></S>} />
+          <Route path="access" element={<S><AdminAccessPage /></S>} />
           <Route path="users" element={<S><UsersManagement /></S>} />
           <Route path="roles-permissions" element={<S><RolesPermissions /></S>} />
           <Route path="theme-groups" element={<S><ThemeGroups /></S>} />

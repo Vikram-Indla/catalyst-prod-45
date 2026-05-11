@@ -193,6 +193,49 @@ Append-only. Newest at top. Each entry: date, pattern, rule, surface.
 
 ---
 
+## 2026-05-11 — Catalyst's AI persona is CATY (not Kathy). When Vikram says "Ask Kathy" he means Ask CATY — recognize the phonetic immediately.
+**Surface:** Any conversation referencing Catalyst's AI assistant
+**Pattern:** Vikram said "Ask Kathy" in chat. Prior session treated it literally, launched a codebase-onboarding agent to "discover" what Kathy was, only to find CATY (Catalyst AI). The codebase has been on CATY naming for months — `src/components/caty-ai-chat/*`, `src/components/caty/CatyPanelV4`, `src/pages/testhub/CatyAIPage.tsx` (route `/caty`), `useCatyAI` hook, 3 live edge functions (`ai-digest`, `ai-improve-story`, `ai-similar-items`). The `src/features/ask-ai/*` mock module was removed 2026-04-01 (never wired). "Kathy" was a phonetic of CATY. Spending an agent cycle to confirm this is wasted context.
+**Rule:** Catalyst's AI persona is **CATY** (Catalyst AI). Any "Ask Kathy / Catty / Caddy / Cathy" phonetic from Vikram means **Ask CATY**. When mapping Jira's "✦ Ask AI" toolbar button for parity work, the Catalyst equivalent is the existing CATY panel — wire a new entry point to `CatyAIPage` / `CatyFAB`. Do NOT restore the deleted `src/features/ask-ai/` mock. Also clean 3 stale references to the dead `/releases/ask-ai` route in `ReleasesManagementSidebar.tsx:71`, `releaseModuleFeatureTree.ts:1076`, `releaseModuleDocumentation.ts:763`.
+**Severity:** P1 (context-awareness failure — wastes session budget on already-known facts).
+
+---
+
+## 2026-05-11 — Backlog table audit: surface-only DOM probe is REJECTED — must round-robin all 8 issue types AND probe every micro-interaction (drag/menus/bulk/AI/full-width view) before any PASS verdict
+**Surface:** BacklogPage list table at /project-hub/BAU/backlog (compared to /jira/software/c/projects/BAU/list)
+**Pattern:** Cycle 1 jira-compare audit closed with "ACCEPT CURRENT STATE — no changes required" after only measuring column widths and ARIA labels on ONE row of ONE issue type (Story). Vikram corrected: 70% of micro-interactions were never probed. The audit missed structural features that are core to Jira's table UX:
+1. **Row-hover drag handle** — Jira shows a 6-dot drag affordance to the LEFT of each row only when there is no active sort AND no grouping. Catalyst has zero drag affordance for row rank.
+2. **3-dot menu (top-right header)** — Jira opens: Apply old List settings · View work items as a chart · Format rules · Hide done toggle · Show hierarchy toggle · Export · Import from CSV · **Bulk change work items** · Go to all work items · Give feedback. Catalyst missing entirely.
+3. **Bulk-select footer bar** — When N items checked, Jira shows a bottom-anchored bar: "N selected · Select all (in JQL scope) · …options · Delete · X close". Catalyst has no equivalent.
+4. **Bulk-change wizard** — "Bulk change work items" opens 4-step modal/page: Step 2 offers Edit / Move / Transition / Delete / Watch / Stop Watching. Catalyst scope: build Edit + Move + Transition + Delete (Watch / Stop-Watch are explicitly OUT per Vikram).
+5. **Column picker — 228 fields** — Jira's right-side column-config dropdown has "My defaults" / "System" tabs, a search input, scrollable list of 228 fields with checkbox toggles, "Create a field" CTA at the bottom showing "33 of 228" count. Catalyst's ColumnManager only exposes ~17 fields with no tabs and no search.
+6. **Ask AI button** — Jira renders ✦ Ask AI to the left of search. Catalyst previously had "Ask Kathy" — was removed without RCA. Restore it, connect to the existing Claude / Google Gemini API in Catalyst, structurally identical to Jira's Ask AI flow.
+7. **Fix versions cell styling** — Jira renders Fix versions value as a rectangle/pill with border + padding, NOT bare text. Computed style was never measured.
+8. **Group By interactions** — Group By dropdown changes the entire table structure (collapsible group headers with expand chevron, in-group inline-create row, group count, group sort). Never exercised across the 8 work-item types.
+9. **Row click → full-width detail view** — Jira opens the issue in a FULL-WIDTH (not side-panel) detail view with a breadcrumb back-button that returns to the list. Catalyst opens a narrow side panel. This canonical full-width journey is missing.
+10. **Load-more / infinite scroll** — Jira loads 50 of 1000+, scroll triggers next batch smoothly with no jump. Catalyst's scroll behavior, batch size, and skeleton state were never measured.
+11. **Per-issue-type round-robin** — Audit only measured Story rows. Production Incident, QA Bug, Change Request, Task, Feature, Backend, API Req, Business Gap each have different cell renderers (parent click target, status options, severity, custom fields). Each MUST be opened and clicked through individually.
+12. **Catalyst-only "My Work" button** — Catalyst's toolbar shows "My work" — not in Jira's list view. No RCA on why it was added. Per Vikram's standing rule "if not in Jira, justify or remove" — needs investigation.
+13. **MDT Ref + Assessment Feature** — Already banned in CLAUDE.md (2026-05-05, 2026-05-07). Audit failed to verify they are NOT rendered on any of the 8 issue type backlogs.
+
+**Rule:** A jira-compare audit on a TABLE surface is NOT complete until ALL of these are individually probed AND a decision is logged:
+- Every column in the picker (full list, not just visible columns)
+- Every row-hover affordance (drag handle conditions, hover-only buttons)
+- Every cell-renderer for EVERY issue type (round-robin across all 8 BAU types)
+- Every toolbar control (Ask AI, Filter, Group, View toggle, Saved filters, Avatar list)
+- Every menu (3-dot top-right, action menus on rows, column-header menus)
+- Every multi-select interaction (footer bar, bulk-change wizard each step)
+- Every click-target outcome (row → detail view variant: side panel vs full-width + back-button)
+- Load-more / pagination / virtualization behavior
+- Group By scenarios (collapsible groups, in-group create row, group sort, empty groups)
+- All Catalyst-only features must be RCA'd against the "if not in Jira, justify or remove" rule
+
+Surface-level "measured X column widths" reports without per-issue-type round-robin + every-micro-interaction probe are **REJECTED as cycle output**. Triple-probe per micro-interaction is mandatory: live DOM + screenshot + Atlassian MCP schema. The audit can only PASS after all 13 items above carry an explicit verdict and any Catalyst gaps have either landed code or a logged Vikram-approved deferral.
+
+**Severity:** P0 (process failure — produced a false PASS verdict; the cycle had to be re-opened by Vikram and 70% of the work is still ahead).
+
+---
+
 ## 2026-05-10 — Epic Priority: Key details must use showPriority={false}
 **Surface:** CatalystViewEpic (Epic detail view)
 **Pattern:** CatalystKeyDetails defaults `showPriority={true}`, rendering Priority in the left Key details block for all types. Epic is the only type where Priority belongs exclusively in the right rail Details section (between Assignee and Reporter) — per CLAUDE.md 2026-05-06 re-probe of BAU-5419. Without `showPriority={false}`, Epic shows Priority twice: once in Key details (left) and once in the right rail (CatalystSidebarDetails). Fixed by passing `showPriority={false}` to `CatalystKeyDetails` in `CatalystViewEpic.tsx`.

@@ -52,6 +52,7 @@ export const adminPockets: AdminNavPocket[] = [
     path: '/admin/general',
     children: [
       { label: 'User Access', path: '/admin/user-access' },
+      { label: 'Access Management', path: '/admin/access' },
       { label: 'Modules & Packages', path: '/admin/modules-packages' },
       { label: 'Notification Settings', path: '/admin/settings/notifications' },
       { label: 'Notification Triggers', path: '/admin/notification-triggers' },
@@ -129,6 +130,7 @@ export const REGISTERED_ADMIN_ROUTES = new Set([
   '/admin/capacity-departments',
   '/admin/resource-assignments',
   '/admin/user-access',
+  '/admin/access',
   '/admin/modules-packages',
   '/admin/settings/notifications',
   '/admin/notification-triggers',
