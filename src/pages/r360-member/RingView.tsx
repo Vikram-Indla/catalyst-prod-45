@@ -144,7 +144,7 @@ export function RingView({ items, name, role, avatarUrl, onSelect, selected, ove
       <div className={`r3-completed-circle ${doneCount === 0 ? 'empty' : ''}`}>
         {doneCount > 0 ? doneCount : '—'}
       </div>
-      <span className={`r3-completed-text ${doneCount === 0 ? 'empty' : ''}`}>COMPLETED</span>
+      <span className={`r3-completed-text ${doneCount === 0 ? 'empty' : ''}`}>Completed</span>
 
       {/* COMPLETED PANEL POPOVER */}
       {showDone && doneCount > 0 && (
