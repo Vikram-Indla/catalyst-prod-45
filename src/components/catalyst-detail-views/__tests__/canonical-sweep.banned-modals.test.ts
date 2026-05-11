@@ -35,6 +35,13 @@ const BANNED_PATHS = [
   // detail panel built on shadcn primitives (@/components/ui/button etc.),
   // not Atlaskit. Dead since at least the prior canonical migration.
   'modules/work-hub/components/AllWorkDetailPanel.tsx',
+  // P1 — files 4 + 5 + 6 (this PR) — close out the sweep.
+  // All three: 0 imports anywhere in src/ (truly dead). Total 1,740 lines.
+  // IssueDetailPanel: the index.ts barrel still exports a `() => null` stub
+  // by the same name — that's self-contained and out of scope here.
+  'modules/work-hub/components/IssueDetailPanel.tsx',
+  'modules/project-work-hub/components/drawers/EpicDetailDrawer.tsx',
+  'modules/project-work-hub/components/drawers/StoryDetailDrawer.tsx',
 ];
 
 describe('Canonical sweep — banned non-canonical detail-view files must not exist', () => {
