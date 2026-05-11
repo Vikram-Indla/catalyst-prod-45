@@ -30,7 +30,7 @@ import { SubtasksPanel } from '@/modules/project-work-hub/components/SubtasksPan
 import { LinkedWorkItemsSection } from '@/modules/project-work-hub/components/linked-work-items';
 import { ImproveIssueDropdown, useImproveApplyHandlers } from '@/components/catalyst-detail-views/improve';
 import {
-  AttachmentsSection, DefectsSection, IncidentsSection, TestHubSection,
+  AttachmentsSection,
 } from '@/modules/project-work-hub/components/dialogs/story-detail-modules';
 import type { PhAttachment } from '@/modules/project-work-hub/components/dialogs/story-detail-modules/types';
 import { MoveIssueDialog } from '../shared/MoveIssueDialog';
@@ -156,29 +156,6 @@ export default function CatalystViewStory({
         issueKey={issue?.issue_key ?? ''}
         projectKey={issue?.project_key || projectKey}
       />
-
-      {/* STORY-UNIQUE: Defects raised against this story */}
-      {issue?.issue_key && (issue?.project_key || projectKey) && (
-        <DefectsSection
-          storyKey={issue.issue_key}
-          projectKey={issue.project_key || projectKey || ''}
-          parentSource={workItemSource}
-          parentProjectId={projectId ?? null}
-        />
-      )}
-
-      {/* STORY-UNIQUE: Production incidents raised against this story */}
-      {issue?.issue_key && (
-        <IncidentsSection
-          storyKey={issue.issue_key}
-          projectKey={issue.project_key || projectKey}
-          parentSource={workItemSource}
-          parentProjectId={projectId ?? null}
-        />
-      )}
-
-      {/* STORY-UNIQUE: Linked test cases + executions */}
-      {issue?.id && <TestHubSection storyId={issue.id} />}
 
       <CatalystActivitySection itemId={itemId} isOpen={isOpen} />
     </>
