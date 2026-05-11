@@ -726,3 +726,9 @@ Every use case specifies which ADS component renders the AI output.
 - `design-critique/SKILL.md` — post-build H1-H10 scoring (pairs with this skill)
 - `jira-compare/SKILL.md` — parity gate (provides evidence for section 3)
 - `preflight/SKILL.md` — pipeline host (Phase 0.5)
+
+---
+
+## Agent Roster (companion)
+
+When this skill activates, also load `AGENT_ROSTER.md` from this directory and follow its activation-notification protocol. The roster is purely additive and does not change any instruction in this file. See `.claude/skills/AGENT_PIPELINE.md` for the cross-skill rules.
