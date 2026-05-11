@@ -60,7 +60,7 @@ export function WeekStripCollapsible({
 
         {/* Mode Badge */}
         <span className={`r3-mode-badge ${isLive ? 'live' : 'snapshot'}`}>
-          {isLive ? 'LIVE' : 'SNAPSHOT'}
+          {isLive ? 'Live' : 'Snapshot'}
         </span>
 
         <button style={{ width: '28px', height: '28px', border: `1px solid ${'var(--cp-border, #E2E8F0)'}`, borderRadius: '4px', background: isDark ? 'var(--cp-bg-surface, #242528)' : 'var(--ds-surface, #FFF)', cursor: 'pointer', fontSize: '13px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', transition: 'background var(--cp-duration-fast, 0.15s) ease' }} onClick={() => onNavigatePeriod(-1)}

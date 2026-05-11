@@ -103,7 +103,7 @@ export function ChronologyView({ items, onSelect, weekStart, weekEnd }: { items:
                 borderRadius: '4px',
                 fontSize: '11px',
                 fontWeight: 700,
-                textTransform: 'uppercase',
+                textTransform: 'none',
                 letterSpacing: '0.03em',
                 whiteSpace: 'nowrap',
                 background,

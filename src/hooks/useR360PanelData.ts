@@ -59,12 +59,20 @@ export function useTeamResourceIds(myProfileId: string | null | undefined) {
         .neq('profile_id', myProfileId)
         .order('name');
 
-      return ((resources ?? []) as any[]).map(r => ({
-        id:         r.id         as string,
-        name:       r.name       as string,
-        role_name:  r.role_name  as string | null,
-        avatar_url: r.avatar_url as string | null,
-      }));
+      // Exclude management roles — they are not delivery resources and should
+      // not appear in the team picker (Management, Delivery Manager, etc.)
+      const MGMT_PATTERNS = ['manager', 'management'];
+      return ((resources ?? []) as any[])
+        .filter(r => {
+          const role = (r.role_name ?? '').toLowerCase();
+          return !MGMT_PATTERNS.some(p => role.includes(p));
+        })
+        .map(r => ({
+          id:         r.id         as string,
+          name:       r.name       as string,
+          role_name:  r.role_name  as string | null,
+          avatar_url: r.avatar_url as string | null,
+        }));
     },
     enabled: !!myProfileId,
     staleTime: 5 * 60 * 1000,

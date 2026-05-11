@@ -265,7 +265,7 @@ export function RingView({ items, name, role, avatarUrl, onSelect, selected, ove
           {/* Open Items */}
           {nonDone.length > 0 && (
             <div style={{ textAlign: 'left' as const, marginBottom: 16 }}>
-              <div style={{ fontSize: 11, fontWeight: 600, color: T.textSubtle(), letterSpacing: '0.04em', marginBottom: 10, textTransform: 'uppercase' as const }}>Open Items</div>
+              <div style={{ fontSize: 11, fontWeight: 600, color: T.textSubtle(), letterSpacing: '0.04em', marginBottom: 10 }}>Open items</div>
               {nonDone.map(item => {
                 const hasHighP = isHighPriority(item.priority);
                 const hasMedP = isMediumPriority(item.priority);
@@ -307,7 +307,7 @@ export function RingView({ items, name, role, avatarUrl, onSelect, selected, ove
           {/* Completed Section */}
           {doneItems.length > 0 && (
             <div style={{ textAlign: 'left' as const, borderInlineStart: `3px solid ${T.borderSuccess()}`, paddingInlineStart: 12 }}>
-              <div style={{ fontSize: 11, fontWeight: 600, color: T.textSuccess(), textTransform: 'uppercase' as const, letterSpacing: '0.04em', marginBottom: 10 }}>Completed</div>
+              <div style={{ fontSize: 11, fontWeight: 600, color: T.textSuccess(), letterSpacing: '0.04em', marginBottom: 10 }}>Completed</div>
               {doneItems.map(item => {
                 const closedDate = item.resolved_at || item.updated_at;
                 const resolvedLabel = closedDate ? new Date(closedDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '';

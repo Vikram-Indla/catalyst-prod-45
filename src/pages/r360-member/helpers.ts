@@ -74,7 +74,7 @@ export function getFromTagPrefix(ageDays: number): string {
 export function getSaudiWorkDays(periodStart: Date): { name: string; date: Date }[] {
   // Saudi work week: Sun–Thu
   const days: { name: string; date: Date }[] = [];
-  const dayNames = ['SUN', 'MON', 'TUE', 'WED', 'THU'];
+  const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu'];
   const d = new Date(periodStart);
   // Find Sunday
   while (d.getDay() !== 0) d.setDate(d.getDate() + 1);
