@@ -131,11 +131,16 @@ export function EditableAssignee({ issueId, issueKey, projectId, currentAssignee
       if (error) throw error;
       if (!data?.length) return [];
       const userIds = data.map(d => d.user_id);
-      // §19 chokepoint: select full_name only, resolve avatar locally.
-      const { data: profiles } = await supabase.from('profiles').select('id, full_name').in('id', userIds);
+      // §19 chokepoint: select full_name + email so users without a
+      // full_name (common for Jira-synced users) display their email
+      // instead of the literal string "Unknown".
+      // jira-compare 2026-05-11 fix: Vikram defect "Assignee / Reporter
+      // is wrong — shows Unknown" was because the SELECT dropped email.
+      const { data: profiles } = await supabase.from('profiles').select('id, full_name, email').in('id', userIds);
       const profileMap = new Map((profiles ?? []).map(p => [p.id, p]));
       return data.map(d => {
-        const full_name = profileMap.get(d.user_id)?.full_name ?? 'Unknown';
+        const p = profileMap.get(d.user_id);
+        const full_name = p?.full_name ?? p?.email ?? 'Unknown';
         return {
           user_id: d.user_id,
           full_name,
@@ -269,10 +274,12 @@ export function EditableReporter({ issueId, projectId, currentReporterId, curren
       if (error) throw error;
       if (!data?.length) return [];
       const userIds = data.map(d => d.user_id);
-      const { data: profiles } = await supabase.from('profiles').select('id, full_name').in('id', userIds);
+      // Same fallback chain as EditableAssignee — full_name ?? email ?? 'Unknown'
+      const { data: profiles } = await supabase.from('profiles').select('id, full_name, email').in('id', userIds);
       const profileMap = new Map((profiles ?? []).map(p => [p.id, p]));
       return data.map(d => {
-        const full_name = profileMap.get(d.user_id)?.full_name ?? 'Unknown';
+        const p = profileMap.get(d.user_id);
+        const full_name = p?.full_name ?? p?.email ?? 'Unknown';
         return {
           user_id: d.user_id,
           full_name,
