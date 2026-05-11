@@ -48,11 +48,20 @@ const BANNED_PATHS = [
   // proper migration to CatalystViewBusinessRequest v2, not just deletion.
   'components/items/epics/EpicDetailModal.tsx',
   'components/boards/BoardIssueDetailDrawer.tsx',
-  // P3 — file 11 (this PR) — 920 lines, 0 callers. Pre-canonical requests
+  // P3 — file 11 — 920 lines, 0 callers. Pre-canonical requests
   // detail panel. (File 10 hierarchy/DetailPanel was removed from inventory
   // — renders hierarchy NODES, not issues. File 12 KAItemDetailPanel is
   // deferred: active issue preview with intentionally smaller UX.)
   'components/requests/DetailPanel.tsx',
+  // P4 — file 13 (this PR) — 220 lines, was ACTIVE (used by
+  // Resource360PageNew). Duplicated 95% of canonical functionality
+  // (header, pills, title, meta grid, hierarchy) plus a unique "Days
+  // Sitting" indicator. Resource360PageNew now routes item clicks through
+  // useGlobalSearchStore.openDetail() — same global pattern as ForYouPage,
+  // notifications, etc. CatalystShell mounts CatalystDetailRouter for the
+  // pending item, so R360 gets the full canonical view. Days Sitting can
+  // be added back as a CatalystKeyDetails extraRow if needed.
+  'components/resource360/R360ItemDetailDrawer.tsx',
 ];
 
 describe('Canonical sweep — banned non-canonical detail-view files must not exist', () => {
