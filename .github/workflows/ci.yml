@@ -21,15 +21,22 @@ jobs:
         # npm ci fails with EBADPLATFORM on linux/x64 for optional darwin-arm64
         # rolldown bindings (npm 10 regression — optional packages should warn,
         # not error, on platform mismatch). npm install correctly skips them.
-        #
-        # --legacy-peer-deps=false overrides the project-wide .npmrc
-        # (legacy-peer-deps=true). With legacy-peer-deps enabled on Linux + npm
-        # 10/11, direct devDeps that are ALSO reachable as transitives (e.g.
-        # rollup via vite) get silently dropped from node_modules — vite then
-        # crashes at build with ERR_MODULE_NOT_FOUND: rollup. Disabling it for
-        # CI install only keeps local dev unaffected.
-        # --include=dev is explicit insurance against any prod-mode inference.
-        run: npm install --legacy-peer-deps=false --include=dev
+        run: npm install
+
+      - name: Ensure rollup is hoisted (legacy-peer-deps drops direct devDeps reachable as transitives)
+        # With legacy-peer-deps=true in .npmrc, npm 10/11 on Linux silently
+        # drops direct devDeps that are also reachable as transitive deps
+        # (e.g. rollup via vite). The lockfile pins rollup at the top level
+        # but `npm install` skips it. Result: `npx vite build` crashes with
+        # ERR_MODULE_NOT_FOUND: rollup.
+        # legacy-peer-deps=true is REQUIRED by the project (react-intl-next
+        # version conflict between @atlaskit/editor-core peers and root deps
+        # — can't be removed without unrelated upstream pin work), so we
+        # can't disable it project-wide.
+        # Fix: do a targeted second install of just rollup after the main
+        # one. This forces rollup to land at node_modules/rollup at the top
+        # level where vite's chunked import can find it.
+        run: npm install rollup@^4.20.0 --no-save
 
       - name: Type check
         run: npx tsc --noEmit
