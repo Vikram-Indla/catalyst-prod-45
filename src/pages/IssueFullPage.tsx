@@ -17,6 +17,7 @@ const CatalystDetailRouter = lazy(
 
 interface ResolvedIssue {
   id: string;
+  issue_key: string;
   issue_type: string;
   project_key: string;
   summary: string | null;
@@ -57,7 +58,7 @@ export default function IssueFullPage() {
       try {
         const { data, error } = await (supabase as any)
           .from('ph_issues')
-          .select('id, issue_type, project_key, summary')
+          .select('id, issue_key, issue_type, project_key, summary')
           .eq('issue_key', issueKey)
           .maybeSingle();
 
@@ -73,6 +74,7 @@ export default function IssueFullPage() {
         if (data) {
           setIssue({
             id: data.id,
+            issue_key: data.issue_key,
             issue_type: data.issue_type,
             project_key: data.project_key,
             summary: data.summary,
@@ -92,6 +94,7 @@ export default function IssueFullPage() {
         if (catRow) {
           setIssue({
             id: catRow.id,
+            issue_key: catRow.issue_key,
             issue_type: catRow.issue_type,
             project_key: catRow.projects?.key ?? '',
             summary: catRow.title,
@@ -168,7 +171,11 @@ export default function IssueFullPage() {
         <CatalystDetailRouter
           isOpen={true}
           onClose={handleClose}
-          itemId={issue.id}
+          /* F-iter9 PK contract: useCatalystIssue queries ph_issues by
+             .eq('issue_key', itemId). itemId MUST be the issue key string
+             (e.g. "BAU-5824"), NOT the UUID `id` column. Sibling
+             IssueDetailPage.tsx already follows this contract. */
+          itemId={issue.issue_key}
           projectKey={issue.project_key}
           itemType={issue.issue_type}
           fullPageMode={true}

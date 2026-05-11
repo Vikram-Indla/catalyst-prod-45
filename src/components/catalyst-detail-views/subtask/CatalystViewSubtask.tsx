@@ -5,6 +5,7 @@ import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { cloneIssue, archiveIssue } from '@/modules/project-work-hub/lib/workItemRepo';
 import { CatalystViewBase } from '../shared/CatalystViewBase';
 import { useCatalystIssue, useCatalystIssueMutations } from '../shared/hooks';
 import {
@@ -14,6 +15,7 @@ import {
 import { LinkedWorkItemsSection } from '@/modules/project-work-hub/components/linked-work-items';
 import { SubtasksPanel } from '@/modules/project-work-hub/components/SubtasksPanel';
 import { ImproveIssueDropdown, useImproveApplyHandlers } from '@/components/catalyst-detail-views/improve';
+import { MoveIssueDialog } from '../shared/MoveIssueDialog';
 import type { CatalystViewBaseProps } from '../shared/types';
 import {
   IssueIcon, StatusLozenge,
@@ -27,6 +29,7 @@ export default function CatalystViewSubtask({
   const { data: issue, isLoading } = useCatalystIssue(itemId, isOpen);
   const mutations = useCatalystIssueMutations(itemId, onClose);
   const improveHandlers = useImproveApplyHandlers(issue ?? null);
+  const [showMoveDialog, setShowMoveDialog] = React.useState(false);
 
   /* ── SUBTASK-UNIQUE: parent issue query ──── */
   const { data: parentIssue } = useQuery({
@@ -46,12 +49,12 @@ export default function CatalystViewSubtask({
     <>
       {/* SUBTASK-UNIQUE: Parent story context banner */}
       {parentIssue && (
-        <div onClick={() => onOpenItem?.(parentIssue.id)}
+        <div onClick={() => onOpenItem?.(parentIssue.issue_key)}
           style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 12px', background: 'var(--ds-surface-sunken, #F4F5F7)', borderRadius: 6, marginBottom: 16, cursor: 'pointer', transition: 'background 0.12s' }}
           onMouseEnter={e => (e.currentTarget.style.background = '#EBECF0')} onMouseLeave={e => (e.currentTarget.style.background = 'var(--ds-surface-sunken, #F4F5F7)')}>
           <IssueIcon type={parentIssue.issue_type} size={14} />
-          <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 12, color: '#5E6C84' }}>{parentIssue.issue_key}</span>
-          <span style={{ fontSize: 13, color: '#292A2E', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{parentIssue.summary}</span>
+          <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 12, color: 'var(--ds-text-subtlest, #5E6C84)' }}>{parentIssue.issue_key}</span>
+          <span style={{ fontSize: 13, color: 'var(--ds-text, #292A2E)', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{parentIssue.summary}</span>
           <StatusLozenge status={parentIssue.status} category={parentIssue.status_category} />
         </div>
       )}
@@ -59,7 +62,7 @@ export default function CatalystViewSubtask({
       <CatalystTitleEditor issue={issue ?? null} onTitleChange={(t) => mutations.updateField.mutate({ field: 'summary', value: t, oldValue: issue?.summary ?? '' })} />
       {/* jira-compare 2026-05-03 — Patch E · CatalystStatusPill relocated to right-rail header in CatalystSidebarDetails. */}
       <CatalystQuickActions />
-      {/* jira-compare 2026-05-10: ImproveIssueDropdown moved to right-rail slot. */}
+      {/* jira-compare 2026-05-10: ImproveIssueDropdown relocated to right-rail improveDropdown slot (Vikram "follow jira"). */}
       {/* jira-compare Phase 3 (2026-05-02): KeyDetails section removed.
           Sub-task has no extraRows; Parent is shown in the parent-banner
           above + CatalystViewBase header. Priority is hidden on Sub-task
@@ -93,11 +96,12 @@ export default function CatalystViewSubtask({
   );
 
   return (
+    <>
     <CatalystViewBase isOpen={isOpen} onClose={onClose} panelMode={panelMode} fullPageMode={fullPageMode}
       itemType={issue?.issue_type || 'Sub-task'} itemKey={issue?.issue_key || null}
       projectKey={issue?.project_key || projectKey} projectName={issue?.project_name || undefined}
       parentKey={issue?.parent_key} parentType={parentIssue?.issue_type || 'Story'}
-      onParentClick={parentIssue ? () => onOpenItem?.(parentIssue.id) : undefined}
+      onParentClick={parentIssue ? () => onOpenItem?.(parentIssue.issue_key) : undefined}
       /* Canonical Add-parent (Jira parity): Sub-task → Story parent. */
       parentSource="story"
       onParentChange={async (newKey) => {
@@ -105,14 +109,44 @@ export default function CatalystViewSubtask({
           field: 'parent_key', value: newKey, oldValue: issue?.parent_key ?? null,
         });
       }}
-      onShare={() => { navigator.clipboard.writeText(window.location.href); toast.success('Link copied'); }}
+      /* onShare removed 2026-05-10 — canonical handleShare owns ticket URL */
       moreMenuItems={[
         { label: 'Print', onClick: () => window.print() },
-        { label: 'Clone', onClick: () => { console.log('Clone'); } },
+        { label: 'Clone', onClick: () => {
+          if (!issue?.issue_key) return;
+          cloneIssue(issue.issue_key)
+            .then((newKey) => {
+              toast.success(`Cloned as ${newKey}`, {
+                action: { label: 'Open', onClick: () => onOpenItem?.(newKey) },
+              });
+            })
+            .catch((e: unknown) => {
+              toast.error('Clone failed', { description: e instanceof Error ? e.message : 'Unknown error' });
+            });
+        } },
+        { label: 'Move to project…', onClick: () => setShowMoveDialog(true) },
+        { label: 'Archive', onClick: () => {
+          if (!issue?.issue_key) return;
+          if (!window.confirm(`Archive "${issue.summary}"?\nArchived items can be restored later.`)) return;
+          archiveIssue(issue.issue_key)
+            .then(() => { toast.success('Issue archived'); onClose(); })
+            .catch((e: unknown) => { toast.error('Archive failed', { description: e instanceof Error ? e.message : 'Unknown error' }); });
+        } },
         { label: 'Delete sub-task', onClick: () => mutations.deleteIssue.mutate(), danger: true },
       ]}
       onTogglePanelMode={onTogglePanelMode} navigationItems={navigationItems} currentItemId={itemId} onNavigate={onNavigate}
       leftContent={leftContent} rightContent={rightContent} isLoading={isLoading} isNotFound={!isLoading && issue === null}
     />
+    {showMoveDialog && issue?.issue_key && (
+      <MoveIssueDialog
+        isOpen={showMoveDialog}
+        onClose={() => setShowMoveDialog(false)}
+        issueKey={issue.issue_key}
+        issueSummary={issue.summary}
+        currentProjectKey={issue.project_key || projectKey}
+        onMoved={onClose}
+      />
+    )}
+    </>
   );
 }

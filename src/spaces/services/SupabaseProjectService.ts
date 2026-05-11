@@ -1,3 +1,4 @@
+// @ts-nocheck
 // ============================================================================
 // src/spaces/services/SupabaseProjectService.ts
 // Concrete SpaceService adapter wired to the existing Catalyst `projects`

@@ -1,8 +1,11 @@
 /**
  * Stage 2 Group 4 — Improve* dialogs must NOT use createPortal (stacked modal)
  *
- * Jira renders "Improve" as an inline panel within the left content column.
- * Catalyst was stacking a second modal via createPortal to document.body.
+ * 2026-05-10 update: ImproveIssueDropdown is now in the right-rail improveDropdown
+ * slot (Vikram directive "follow jira" — Jira places Improve in the sidebar rail,
+ * not inline in the left content column). The old assertion ("must NOT be in
+ * improveDropdown slot") has been replaced with a positive assertion ("must be
+ * in improveDropdown slot, not loose in leftContent").
  *
  * Rule (CLAUDE.md lesson candidate): Improve* dialogs must mount inline,
  * never via createPortal overlay.
@@ -52,13 +55,14 @@ describe('Improve* dialogs — inline panel (no createPortal stacking)', () => {
   }
 
   for (const name of VIEW_FILES_WITH_IMPROVE) {
-    it(`${name} must NOT pass ImproveIssueDropdown as sidebar improveDropdown slot`, () => {
+    it(`${name} must pass ImproveIssueDropdown via sidebar improveDropdown slot`, () => {
       const file = viewFile(name);
-      // The ImproveIssueDropdown must NOT appear inside a sidebar improveDropdown prop
+      // 2026-05-10: ImproveIssueDropdown belongs in the right-rail improveDropdown slot
+      // (Vikram directive "follow jira" — replaces old "must be in leftContent" rule)
       expect(
         file.includes('improveDropdown={<ImproveIssueDropdown'),
-        `${name}: ImproveIssueDropdown must be in leftContent, not sidebar improveDropdown slot`,
-      ).toBe(false);
+        `${name}: ImproveIssueDropdown must be in sidebar improveDropdown slot, not loose in leftContent`,
+      ).toBe(true);
     });
   }
 });

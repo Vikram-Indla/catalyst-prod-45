@@ -10,6 +10,30 @@ The Catalyst local dev server always runs on **http://localhost:8080**. Never us
 
 ---
 
+## 2026-05-11 — Phase 0.5 diagnoses are hypotheses; probe before TDD'ing the wrong layer
+**Surface:** Any preflight cross-cutting plan with Phase 0.5 violations
+**Pattern:** Phase 0.5 N1 listed "breadcrumb crumb click is no-op → wire `onParentClick → openDetail` in every `CatalystView*`". A unit test reproducing the alleged failure mode PASSED on the first run — the wiring was correct end-to-end. Actual defect was upstream in `ProjectAllWorkView`: its `onOpenItem` called `selectItem(parentEpicKey)`, but AllWork's items list excludes Epic/Feature/Task (CLAUDE.md 2026-04-28), so `activeItem` stayed undefined. Hours of wrong-layer TDD were avoided by probing live + tracing the call chain before writing any test.
+**Rule:** Before T-A in a per-type round, run the unit test for the **named** failing layer first. If it passes, stop and trace upstream — don't ship a "fix" that addresses a layer that wasn't broken. Phase 0.5 evidence is a starting hypothesis, not a verdict.
+**Severity:** P1
+
+---
+
+## 2026-05-11 — K.11 section header spec is global — fix shared components once
+**Surface:** CatalystKeyDetails, CatalystDescriptionSection, SubtasksPanel.css, linked-work-items.css
+**Pattern:** K.11 (14px/600/#172B4D section headers) was re-probed on one type (QA Bug) and the fix was planned per-type. But all 4 failing components are SHARED — one fix covers all 9 work item types simultaneously. The per-type round-robin for this spec was unnecessary overhead.
+**Rule:** Before scheduling per-type round-robin for a visual spec, grep ALL shared section components for the pattern. If the defect lives in a shared file, fix once and verify across all types in a single regression sweep. Per-type TDD only for per-type divergences.
+**Severity:** P1 (process efficiency)
+
+---
+
+## 2026-05-10 — Hand-rolled dropdowns must be replaced with @atlaskit/dropdown-menu
+**Surface:** CatalystViewBase (all detail views — applies to any surface with a menu)
+**Pattern:** The ⋯ more-actions menu in `CatalystViewBase.tsx` was self-rolled: `useState(showDotsMenu)` + outside-click `useEffect` + `div` with inline `onClick` handlers. This violated JIRA_ARCHITECT A4 (hand-rolled interactive element): no `role="menuitem"`, no keyboard navigation, no focus trap, no ARIA. WCAG 2.1 AA keyboard-access failure.
+**Rule:** Any menu, dropdown, or action list with 2+ items MUST use `@atlaskit/dropdown-menu` (`DropdownMenu`, `DropdownItem`, `DropdownItemGroup` from `@atlaskit/dropdown-menu`). Never hand-roll a menu. Structure: standard items in the first `DropdownItemGroup`; danger items in a second `DropdownItemGroup` at the bottom with `<span style={{ color: 'var(--ds-text-danger, #AE2A19)' }}>` wrapper on the label. The trigger must be an `IconButton` with `appearance="subtle"`. This pattern is now canonical for all surfaces — backlog row menus, project cards, admin tables, and detail view headers all share it.
+**Severity:** P0 (WCAG 2.1 AA — keyboard users cannot operate the menu without this).
+
+---
+
 ## 2026-05-10 — openDetail must receive issue_key (text), never a UUID
 **Surface:** Any sidebar, panel, notification, or list that calls `useGlobalSearchStore.getState().openDetail({ id: ... })`
 **Pattern:** Five surfaces (ProjectHubSidebar, SidebarProjectNav, AgeingPanel, ThemeIssueList, NotificationPanel) were passing the UUID `id` column from `ph_issues` — causing `CatalystDetailRouter` to always return "Issue not found". `CatalystDetailRouter` queries `ph_issues` exclusively by `.eq('issue_key', itemId)` (text PK like "BAU-5757"). UUID lookups silently no-op.

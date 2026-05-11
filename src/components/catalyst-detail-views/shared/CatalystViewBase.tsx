@@ -22,6 +22,7 @@ import LinkIcon from '@atlaskit/icon/core/link';
 import { toast } from 'sonner';
 import Modal from '@atlaskit/modal-dialog';
 import Button, { IconButton } from '@atlaskit/button/new';
+import DropdownMenu, { DropdownItem, DropdownItemGroup } from '@atlaskit/dropdown-menu';
 import Tooltip from '@atlaskit/tooltip';
 import { Skel } from '@/modules/project-work-hub/components/dialogs/story-detail-modules/shared-components';
 import { TicketBreadcrumbs } from '@/modules/project-work-hub/components/TicketBreadcrumbs';
@@ -43,9 +44,10 @@ if (typeof document !== 'undefined') {
     '@keyframes cv-confirm-in { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }',
     '.cv-drawer-body { container-type: inline-size; }',
     '.cv-drawer-left { min-width: 280px; }',
-    /* 1120px threshold was wider than the 1100px modal body → sidebar permanently
-       hidden in modal mode. 680px collapses only on genuinely narrow containers. */
-    '@container (max-width: 680px) {',
+    /* jira-compare 2026-05-11 DC4: 680px threshold fired at 560px panel-mode body
+       (allwork right pane), hiding the sidebar. Jira shows two columns at 461px.
+       Lowered to 440px so panel mode (~560px) keeps the sidebar visible. */
+    '@container (max-width: 440px) {',
     '  .cv-drawer-splitter { display: none !important; }',
     '  .cv-drawer-sidebar { display: none !important; }',
     '  .cv-drawer-left { border-right: none !important; min-width: 0 !important; }',
@@ -133,17 +135,12 @@ export function CatalystViewBase({
 }: CatalystViewBaseLayoutProps) {
 
   /* ── State ──────────────────────────────── */
-  // Default right sidebar width. Measured against live Jira 2026-04-18
-  // (digital-transformation.atlassian.net BAU-5419): Jira's right sidebar
-  // is 549px wide with 504px of content area. At 280px the Reporter name
-  // "Nada alfassam" wraps onto two lines because the value column has only
-  // jira-compare 2026-05-10: re-probed BAU-5736. Jira right rail ≈ 285px.
-  // Prior 549 default (Patch A8) was wrongly high — made panels near-equal.
-  // Correct split: left ~70% / right ~30% of 1100px modal = right ≈ 285px.
-  const [rightPanelWidth, setRightPanelWidth] = useState(285);
-  const [showDotsMenu, setShowDotsMenu] = useState(false);
+  // Default right sidebar width.
+  // jira-compare 2026-05-10: re-probed BAU-5736. Modal split: left ~70% / right ~30%.
+  // jira-compare 2026-05-11 DC4: panel mode body = 560px; 285px sidebar left only 269px
+  // for content — too narrow. 220px gives 334px left panel at 560px body — acceptable.
+  const [rightPanelWidth, setRightPanelWidth] = useState(panelMode ? 220 : 285);
   const isDraggingRef = useRef(false);
-  const dotsMenuRef = useRef<HTMLDivElement>(null);
 
   /* G4: Track recently visited issues in localStorage (catalyst-recent-issues).
      Push when the issue key changes and the panel is open. */
@@ -175,15 +172,7 @@ export function CatalystViewBase({
     return () => { document.removeEventListener('mousemove', onMouseMove); document.removeEventListener('mouseup', onMouseUp); };
   }, []);
 
-  /* ── Close dots menu on outside click ───── */
-  useEffect(() => {
-    if (!showDotsMenu) return;
-    const h = (e: MouseEvent) => { if (dotsMenuRef.current && !dotsMenuRef.current.contains(e.target as Node)) setShowDotsMenu(false); };
-    document.addEventListener('mousedown', h);
-    return () => document.removeEventListener('mousedown', h);
-  }, [showDotsMenu]);
-
-  /* ── Escape key ───────────────────────────
+/* ── Escape key ───────────────────────────
      Phase A.2 (2026-04-18): gated to panel mode.
        - Modal mode: @atlaskit/modal-dialog handles Escape natively
          (closing via its own onClose + focus-trap semantics).
@@ -202,7 +191,6 @@ export function CatalystViewBase({
     };
     const handleEscape = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
-        if (showDotsMenu) { setShowDotsMenu(false); return; }
         onClose();
         return;
       }
@@ -250,7 +238,7 @@ export function CatalystViewBase({
     };
     document.addEventListener('keydown', handleEscape);
     return () => document.removeEventListener('keydown', handleEscape);
-  }, [isOpen, panelMode, showDotsMenu, onClose]);
+  }, [isOpen, panelMode, onClose]);
 
   if (!isOpen) return null;
 
@@ -301,12 +289,6 @@ export function CatalystViewBase({
     gap: 6, transition: 'background 0.15s', fontFamily: 'var(--cp-font-body)',
   };
 
-  const menuItemStyle: React.CSSProperties = {
-    display: 'flex', alignItems: 'center', gap: 6, width: '100%', padding: '7px 14px',
-    background: 'none', border: 'none', fontSize: 13, color: '#344054', cursor: 'pointer',
-    fontFamily: 'var(--cp-font-body)', textAlign: 'left',
-  };
-
   /* ── Navigation (full-page back) ─────────── */
   const navigate = useNavigate();
   const handleBack = useCallback(() => {
@@ -321,16 +303,24 @@ export function CatalystViewBase({
     }
   }, [fullPageMode, projectKey, navigate, onClose]);
 
-  /* ── Share handler ──────────────────────── */
+  /* ── Share handler ──────────────────────────────────────────────────
+     2026-05-10 fix: Share must always copy the canonical ticket URL,
+     not the hub URL.  Previously gated on `fullPageMode`, which meant
+     modal mode fell through to `window.location.href` — i.e. the page
+     the modal was opened from (e.g. /project-hub/BAU/allwork), not the
+     ticket itself.  Vikram defect: "When I click Share, it shows the
+     hub URL but not the ticket URL."
+     New contract: whenever itemKey + projectKey are known, the share
+     URL is the canonical permalink, regardless of mode.
+     ──────────────────────────────────────────────────────────────────── */
   const handleShare = useCallback(() => {
     if (onShare) { onShare(); return; }
-    if (fullPageMode && itemKey && projectKey) {
-      navigator.clipboard.writeText(`${window.location.origin}/project-hub/${projectKey}/issue/${itemKey}`);
-    } else {
-      navigator.clipboard.writeText(window.location.href);
-    }
+    const ticketUrl = (itemKey && projectKey)
+      ? `${window.location.origin}/project-hub/${projectKey}/issue/${itemKey}`
+      : null;
+    navigator.clipboard.writeText(ticketUrl ?? window.location.href);
     toast.success('Link copied to clipboard');
-  }, [onShare, fullPageMode, itemKey, projectKey]);
+  }, [onShare, itemKey, projectKey]);
 
   /* ── Card contents ─────────────────────────────────────────────────────
      Top bar + body JSX, extracted as a fragment so all three modes
@@ -360,11 +350,21 @@ export function CatalystViewBase({
             sit immediately after the issue key with tooltips such as
             "Next work item 'BAU-5421'".
             ──────────────────────────────────────────────────────────────── */}
+        {/* jira-compare 2026-05-11 DC4: sticky top bar for panel/fullpage modes.
+            When the outer page scrolls, the breadcrumb/action bar must remain
+            pinned so subtasks don't scroll behind an inaccessible header.
+            Modal mode omitted — @atlaskit/modal-dialog owns its own scroll context. */}
         <div style={{
           display: 'flex', alignItems: 'center',
           justifyContent: 'space-between',
           padding: '10px 20px', minHeight: 44, flexShrink: 0,
           borderBottom: '1px solid #EBECF0',
+          ...((!panelMode && !fullPageMode) ? {} : {
+            position: 'sticky',
+            top: 0,
+            zIndex: 10,
+            background: 'var(--ds-surface, #FFFFFF)',
+          }),
         }}>
           {/* Canonical breadcrumb — shown in every mode. When the current
               item has no parent and the owning view has wired onParentChange,
@@ -448,37 +448,37 @@ export function CatalystViewBase({
             </Button>
 
             {moreMenuItems && moreMenuItems.length > 0 && (
-              <div ref={dotsMenuRef} style={{ position: 'relative' }}>
-                {/* Phase B (2026-04-18): Atlaskit IconButton trigger.
-                    Dropdown render below is unchanged — trigger swap only. */}
-                <IconButton
-                  appearance="subtle"
-                  isSelected={showDotsMenu}
-                  icon={() => <MoreIcon size="small" />}
-                  label="More actions"
-                  onClick={() => setShowDotsMenu(!showDotsMenu)}
-                />
-                {showDotsMenu && (
-                  <div style={{
-                    position: 'absolute', right: 0, top: 32, background: 'var(--ds-surface, #FFF)',
-                    border: '1px solid #DFE1E6', borderRadius: 4,
-                    boxShadow: '0 4px 16px rgba(9,30,66,0.18)', padding: '8px 0',
-                    zIndex: 50, minWidth: 200,
-                  }}>
-                    {moreMenuItems.map((item, i) => (
-                      <React.Fragment key={i}>
-                        {item.danger && i > 0 && <div style={{ height: 1, background: '#EBECF0', margin: '6px 0' }} />}
-                        <button
-                          onClick={() => { setShowDotsMenu(false); item.onClick(); }}
-                          style={{ ...menuItemStyle, color: item.danger ? '#DE350B' : '#344054' }}
-                          onMouseEnter={e => (e.currentTarget.style.background = item.danger ? '#FFEBE6' : 'var(--ds-surface-sunken, #F4F5F7)')}
-                          onMouseLeave={e => (e.currentTarget.style.background = 'none')}
-                        >{item.label}</button>
-                      </React.Fragment>
-                    ))}
-                  </div>
+              <DropdownMenu
+                trigger={({ triggerRef, ...props }) => (
+                  <IconButton
+                    {...props}
+                    ref={triggerRef}
+                    appearance="subtle"
+                    icon={() => <MoreIcon size="small" />}
+                    label="More actions"
+                  />
                 )}
-              </div>
+                placement="bottom-end"
+              >
+                {/* Standard items (non-danger) */}
+                <DropdownItemGroup>
+                  {moreMenuItems.filter(item => !item.danger).map((item, i) => (
+                    <DropdownItem key={i} onClick={item.onClick}>
+                      {item.label}
+                    </DropdownItem>
+                  ))}
+                </DropdownItemGroup>
+                {/* Danger items in a separate group (visually separated) */}
+                {moreMenuItems.some(item => item.danger) && (
+                  <DropdownItemGroup>
+                    {moreMenuItems.filter(item => item.danger).map((item, i) => (
+                      <DropdownItem key={i} onClick={item.onClick}>
+                        <span style={{ color: 'var(--ds-text-danger, #AE2A19)' }}>{item.label}</span>
+                      </DropdownItem>
+                    ))}
+                  </DropdownItemGroup>
+                )}
+              </DropdownMenu>
             )}
 
             {/* Panel toggle — hidden in full-page mode AND panel mode

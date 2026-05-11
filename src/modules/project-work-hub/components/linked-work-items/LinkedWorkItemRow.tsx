@@ -119,7 +119,7 @@ export function LinkedWorkItemRow({
             aria-label={`Unlink ${target.issue_key}`}
             title="Unlink work item"
           >
-            <X size={16} />
+            <X label="" size="small" />
           </button>
         )}
       </span>

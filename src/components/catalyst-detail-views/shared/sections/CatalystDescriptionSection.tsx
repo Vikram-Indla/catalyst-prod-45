@@ -388,8 +388,8 @@ export function CatalystDescriptionSection({ issue, label = 'Description' }: Cat
           data-testid="catalyst-description-section.label"
           style={{
             margin: 0, padding: 0, flex: 1,
-            fontSize: 14, fontWeight: 500, lineHeight: '19px',
-            color: 'var(--ds-text-subtle, #505258)',
+            fontSize: 14, fontWeight: 600, lineHeight: '20px',
+            color: 'var(--ds-text, #172B4D)',
             fontFamily: '"Atlassian Sans", ui-sans-serif, -apple-system, "system-ui", "Segoe UI", Ubuntu, "Helvetica Neue", sans-serif',
           }}
         >

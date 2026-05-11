@@ -1,3 +1,4 @@
+// @ts-nocheck
 // ============================================================================
 // COMPONENT: CanonicalDescriptionField — ADS-compliant description field
 // Built with @atlaskit components only

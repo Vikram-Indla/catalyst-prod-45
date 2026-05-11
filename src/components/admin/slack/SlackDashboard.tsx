@@ -120,7 +120,9 @@ function StatCard({
           )}
         </div>
         <div className={cn('w-10 h-10 rounded-lg flex items-center justify-center', colors[color].bg)}>
-          <Icon className={cn('w-5 h-5', colors[color].icon)} />
+          <span className={colors[color].icon}>
+            <Icon label="" size="small" />
+          </span>
         </div>
       </div>
     </div>
@@ -260,14 +262,14 @@ export function SlackDashboard({ config, stats }: DashboardProps) {
             title="Connected Users"
             value={stats.active_connected_users}
             subtitle={`${stats.total_connected_users} total`}
-            icon={Users}
+            icon={PeopleGroupIcon}
             color="purple"
           />
           <StatCard
             title="Notifications Sent"
             value={stats.total_notifications_sent.toLocaleString()}
             subtitle="All time"
-            icon={Bell}
+            icon={NotificationIcon}
             trend={stats.notifications_last_24h > 0 ? { value: stats.notifications_last_24h, label: 'today' } : undefined}
             color="green"
           />
@@ -275,14 +277,14 @@ export function SlackDashboard({ config, stats }: DashboardProps) {
             title="Last 7 Days"
             value={stats.notifications_last_7d.toLocaleString()}
             subtitle="Notifications delivered"
-            icon={Activity}
+            icon={ChartTrendIcon}
             color="blue"
           />
           <StatCard
             title="Failed (24h)"
             value={stats.failed_notifications_24h}
             subtitle="Delivery failures"
-            icon={AlertTriangle}
+            icon={WarningIcon}
             color={stats.failed_notifications_24h > 0 ? 'red' : 'green'}
           />
         </div>

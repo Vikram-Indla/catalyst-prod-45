@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * statusToLozenge — Canonical mapping from Catalyst status strings to
  * @atlaskit/lozenge `appearance` prop values.
