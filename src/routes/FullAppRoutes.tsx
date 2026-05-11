@@ -18,6 +18,7 @@ import { RouteRoleGuard } from "../components/RouteRoleGuard";
 const FeatureFlagsPage = lazy(() => import("../pages/admin/FeatureFlagsPage"));
 const AdminIconsPage = lazy(() => import("../pages/admin/icons/AdminIconsPage"));
 const AdminAvatarsPage = lazy(() => import("../pages/admin/avatars/AdminAvatarsPage"));
+const WorkListPageLazy = lazy(() => import("../pages/BacklogPage"));
 
 // ─── Lazy page imports ───────────────────────────────────────────
 const KBAdminSetup = ENABLE_AI ? lazy(() => import("../pages/KBAdminSetup")) : () => <FeatureComingSoon title="KB Admin" />;
@@ -456,6 +457,9 @@ export default function FullAppRoutes() {
         </Route>
 
         <Route path="/browse/:key" element={<S><BrowsePage /></S>} />
+
+        {/* ═══ Work Items / BacklogPage ═══ */}
+        <Route path="/workitems" element={<S><Suspense fallback={<div className="p-8">Loading...</div>}><WorkListPageLazy /></Suspense></S>} />
 
         {/* ═══ Product Hub ═══
             Block A rule 1 (2026-05-01): canonical URL prefix is `/product-hub`.
