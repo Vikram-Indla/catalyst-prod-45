@@ -10,6 +10,7 @@ interface AuthContextType {
   signUp: (email: string, password: string, fullName?: string) => Promise<{ error: any }>;
   signOut: () => Promise<void>;
   loading: boolean;
+  isAuthenticated: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -253,7 +254,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }, [toast]);
 
-  const value = useMemo(() => ({ user, session, signIn, signUp, signOut, loading }), [user, session, signIn, signUp, signOut, loading]);
+  const value = useMemo(() => ({ user, session, signIn, signUp, signOut, loading, isAuthenticated: !!user }), [user, session, signIn, signUp, signOut, loading]);
 
   return (
     <AuthContext.Provider value={value}>
