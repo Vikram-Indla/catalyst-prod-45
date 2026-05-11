@@ -12,8 +12,8 @@
 // (Resend test mode — only delivers to the verified account email). Phase 2 switches to
 // a real sending domain once DNS is verified.
 
-import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+const serve = (handler: (req: Request) => Response | Promise<Response>) => Deno.serve(handler);
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
