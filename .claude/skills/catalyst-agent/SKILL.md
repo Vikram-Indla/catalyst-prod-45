@@ -77,18 +77,45 @@ Trivial tier → skip probe (step 4), go straight to step 6. Probe is too expens
 
 ### Step 4 — MCP PROBE (the heart of v2)
 
-Invoke read-only probe agents in parallel via the `Task` tool. Each probe agent has a narrow remit and uses ONLY the MCP servers listed.
+Invoke read-only probe agents in parallel via the `Agent` tool. Each probe agent has a narrow remit and uses ONLY the MCP servers listed.
 
-| Probe lane | Agent | MCP tools | What it returns |
+#### How persona dispatch actually works (important)
+
+The Claude Code harness has a **fixed compiled-in set of subagent types**: `claude-code-guide`, `Explore`, `general-purpose`, `Plan`, `statusline-setup`. Files at `~/.claude/agents/*.md` are **NOT auto-discovered as subagent types** — `Agent({subagent_type: 'engineering-frontend-developer'})` fails with "Agent type not found" (verified 2026-05-11).
+
+**The working dispatch pattern is `general-purpose` + persona content in the prompt:**
+
+```
+Agent({
+  description: "<one-line action>",
+  subagent_type: "general-purpose",
+  prompt: `You are operating as the <persona-name> persona from
+~/.claude/agents/<persona-name>.md. Persona summary: <2-3 line role description>.
+
+ROLE: <read-only / write / etc>
+TASK: <specific task>
+CONTEXT: <files, URLs, prior probes>
+OUTPUT: <format expectation, word cap>
+CONSTRAINTS: <what NOT to touch, time budget>`
+})
+```
+
+This gives real isolation (separate context window, separate tool budget, parallel execution) while reusing the persona's instructions from disk. Cost: read the persona file once and inline its identity into the prompt.
+
+Alternative — **persona overlay** (no dispatch): main Claude reads the persona file and role-plays it inline, printing the activation block manually. Cheaper but no context isolation.
+
+#### The 4 probe lanes
+
+| Probe lane | Persona (loaded into general-purpose) | MCP tools | What it returns |
 |---|---|---|---|
 | **Lane A — Jira schema** | `project-management-jira-workflow-steward` | Atlassian MCP: `getJiraIssueTypeMetaWithFields`, `getJiraProjectIssueTypesMetadata`, `searchJiraIssuesUsingJql`, `getTransitionsForJiraIssue` | Screen scheme fields, workflow states, BAU-specific config, column definitions, sort behaviour |
 | **Lane B — Catalyst DOM** | `engineering-frontend-developer` | Chrome MCP: `javascript_tool`, `read_page`, `find` on `localhost:8080` | Live `getComputedStyle`, DOM structure, click handler wiring, current rendered state, network calls |
-| **Lane C — Supabase schema** | `engineering-database-optimizer` | Supabase access via `~/.claude/agents/` agent's own tools | `ph_*` table columns, indexes, RLS policies, foreign keys (only if task touches backend) |
+| **Lane C — Supabase schema** | `engineering-database-optimizer` | Read, Grep over `supabase/` + Lovable schema dumps (read-only — no SQL execution) | `ph_*` table columns, indexes, RLS policies, foreign keys (only if task touches backend) |
 | **Lane D — Codebase static** | `engineering-codebase-onboarding-engineer` | Read, Grep | File paths involved, call chain, prior CLAUDE.md lessons that touch these files |
 
-Probe agents run **in parallel** when their lanes don't depend on each other. Lane A and B always run for UI surfaces. Lane C only if `backend-migration` or schema signal. Lane D always runs.
+Probe lanes run **in parallel** when independent. Lane A and B always run for UI surfaces. Lane C only if `backend-migration` or schema signal. Lane D always runs.
 
-Probe budget: **2-3 minutes wall-clock max**. If a lane exceeds, mark `partial` and continue with what's available.
+Probe budget: **2-3 minutes wall-clock max per lane**. If exceeded → mark `partial` and continue.
 
 ### Step 5 — Synthesize gap report
 
