@@ -100,9 +100,30 @@ CONSTRAINTS: <what NOT to touch, time budget>`
 })
 ```
 
-This gives real isolation (separate context window, separate tool budget, parallel execution) while reusing the persona's instructions from disk. Cost: read the persona file once and inline its identity into the prompt.
+This gives real isolation (separate context window, separate tool budget, parallel execution) while reusing the persona's instructions from disk.
 
-Alternative — **persona overlay** (no dispatch): main Claude reads the persona file and role-plays it inline, printing the activation block manually. Cheaper but no context isolation.
+**Mandatory: every dispatched prompt prepends the contents of `CORE_DIRECTIVES.md`** before the persona summary. The directives file enforces the ADS ring-fence (atlassian.design only) and the Green Signal gate. Cost: one extra Read at dispatch time; benefit: every agent sees the same non-negotiable rules.
+
+The canonical full template (CORE_DIRECTIVES + persona + task) looks like:
+
+```
+Agent({
+  description: "<one-line action>",
+  subagent_type: "general-purpose",
+  prompt: `${read('.claude/skills/catalyst-agent/CORE_DIRECTIVES.md')}
+
+You are operating as the <persona-name> persona from
+~/.claude/agents/<persona-name>.md. Persona summary: <2-3 line role>.
+
+ROLE: <read-only / write / etc>
+TASK: <specific task>
+CONTEXT: <files, URLs, prior probes>
+OUTPUT: <format expectation, word cap>
+CONSTRAINTS: <what NOT to touch, time budget>`
+})
+```
+
+Alternative — **persona overlay** (no dispatch): main Claude reads the persona file and role-plays it inline, printing the activation block manually. Cheaper but no context isolation. The CORE_DIRECTIVES still apply.
 
 #### The 4 probe lanes
 
@@ -134,6 +155,42 @@ GAP REPORT
 ```
 
 The synthesis is what makes the agent "1000 IQ" — it sees both sides and the codebase before opening its mouth.
+
+### Step 5.5 — Green Signal gate (BLOCKING — see `CORE_DIRECTIVES.md` Directive 2)
+
+Before any execution can be considered, the probe must produce a **GREEN signal**. The verdict block is mandatory and must check coverage on all 7 dimensions:
+
+1. Visual (computed-style measurements on both Catalyst + Jira)
+2. Structural (DOM tree + ARIA + data-*)
+3. Behavioral (handlers + state + network)
+4. Schema (Atlassian MCP + Supabase if backend-touching)
+5. Architecture (file:line refs, hierarchy, hook deps)
+6. Accessibility (WCAG 2.1 AA)
+7. CLAUDE.md cross-reference (anchors scanned, bans flagged)
+
+Verdict block formats (must emit verbatim):
+
+```
+🟢 GREEN SIGNAL — probe complete · cleared for execution
+   Coverage: visual ✓ · structural ✓ · behavioral ✓ · schema ✓ ·
+             architecture ✓ · a11y ✓ · CLAUDE.md ✓
+   Findings: <N> · Halts: 0 · Open questions: <N, list>
+   Probe agents: <list>
+   Probe duration: <wall-clock>
+   Verdict: SAFE TO EXECUTE per CORE_DIRECTIVES.md Directive 2
+```
+
+```
+🔴 RED SIGNAL — probe incomplete · execution BLOCKED
+   Missing dimensions: <list>
+   Halts: <list — CLAUDE.md anchors hit>
+   Required follow-up: <list>
+   Verdict: DO NOT EXECUTE — re-probe required
+```
+
+If RED: loop back to step 4 (re-probe) or escalate to Vikram. **Cap: 3 re-probes per task.** Beyond that → halt and report.
+
+Only Vikram can manually override RED with explicit chat confirmation ("override red, proceed"). The override is logged in the activation block and any post-execution defect is auto-traced to the override.
 
 ### Step 6 — Pick wrapper(s) and implementer agents from `ROUTER.md`
 
@@ -297,16 +354,18 @@ Output:
 
 ## Hard rules (non-negotiable)
 
-1. **CLAUDE.md is law.** Step 2 must execute before step 4. A banned task halts pre-probe.
-2. **No silent re-routing.** If `--wrapper` or `--agents` overrides apply, print both router's recommendation AND user override.
-3. **Probe is read-only.** Probe agents NEVER write code, NEVER mutate Jira / Supabase / DOM. If a probe tool returns a write capability, the probe agent refuses.
-4. **Max 5 implementer + 4 probe agents.** Slop kills signal.
-5. **Activation block is mandatory.** Probe + gap + agents — all three must print before hand-off.
-6. **Per-wrapper rules still apply.** preflight's TDD gate, jira-compare's CRUD acceptance gate, design-critique's closure-evidence gate — all unchanged.
-7. **Port 8080 lock** (CLAUDE.md). Lane B probe MUST hit localhost:8080. Any 8081 → HALT.
-8. **No `preview_*` tools.** Chrome MCP only for Lane B.
-9. **Re-probe loop cap: 3.** Beyond that, escalate to user.
-10. **SQL via Lovable manual paste only.** Lane C probe READS Supabase; never writes.
+1. **CORE_DIRECTIVES.md is the preamble for every dispatch.** Every persona prompt prepends Directive 1 (ADS ring-fence — atlassian.design only) and Directive 2 (Green Signal gate — intensive probe before execution).
+2. **Green Signal required before execution.** Step 5.5 must produce a 🟢 verdict. RED halts the pipeline. Only Vikram can override RED, explicitly in chat.
+3. **CLAUDE.md is law.** Step 2 must execute before step 4. A banned task halts pre-probe.
+4. **No silent re-routing.** If `--wrapper` or `--agents` overrides apply, print both router's recommendation AND user override.
+5. **Probe is read-only.** Probe agents NEVER write code, NEVER mutate Jira / Supabase / DOM. If a probe tool returns a write capability, the probe agent refuses.
+6. **Max 5 implementer + 4 probe agents.** Slop kills signal.
+7. **Activation block is mandatory.** Probe + gap + green-signal + agents — all four must print before hand-off.
+8. **Per-wrapper rules still apply.** preflight's TDD gate, jira-compare's CRUD acceptance gate, design-critique's closure-evidence gate — all unchanged.
+9. **Port 8080 lock** (CLAUDE.md). Lane B probe MUST hit localhost:8080. Any 8081 → HALT.
+10. **No `preview_*` tools.** Chrome MCP only for Lane B.
+11. **Re-probe loop cap: 3.** Beyond that, escalate to user.
+12. **SQL via Lovable manual paste only.** Lane C probe READS Supabase; never writes.
 
 ---
 
