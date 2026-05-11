@@ -11,6 +11,7 @@
  * defined in parent-rules.ts.
  */
 import React, { useState, useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -150,6 +151,46 @@ interface BrCandidate {
   process_step: string;
 }
 
+/* ═══════════════════════════════════════════════════════════════════════════
+   PORTAL POSITIONING HOOK (jira-compare 2026-05-11 — Vikram defect "Priority
+   click shows long text box"). The parent picker's dropdown was rendered
+   `position: absolute; top: 100%` INSIDE the trigger's relative container,
+   which placed it visually over the next FieldRow (Priority).  Clicks on
+   the visually-Priority pixels landed on the picker dropdown (higher
+   z-index), so the click-outside handler treated them as "inside" the
+   picker and never closed → user perceived "clicking Priority opens a
+   text box."
+   Fix: render the dropdown via createPortal to document.body using
+   position:fixed coordinates from the trigger's getBoundingClientRect.
+   This breaks the stacking context so sibling rows (Priority) receive
+   clicks correctly, and the dropdown no longer occupies their visual
+   slot.  Pattern matches CLAUDE.md 2026-05-08 (GlobalSearchPanel filter
+   chips) and WatchersChip self-rolled popover.
+   ═══════════════════════════════════════════════════════════════════════════ */
+function usePickerPosition(
+  triggerRef: React.RefObject<HTMLElement>,
+  isOpen: boolean,
+): { top: number; left: number; width: number } | null {
+  const [pos, setPos] = useState<{ top: number; left: number; width: number } | null>(null);
+  useEffect(() => {
+    if (!isOpen) { setPos(null); return; }
+    const recompute = () => {
+      const el = triggerRef.current;
+      if (!el) return;
+      const r = el.getBoundingClientRect();
+      setPos({ top: r.bottom + 4, left: r.left, width: Math.max(r.width, 280) });
+    };
+    recompute();
+    window.addEventListener('resize', recompute);
+    window.addEventListener('scroll', recompute, true);
+    return () => {
+      window.removeEventListener('resize', recompute);
+      window.removeEventListener('scroll', recompute, true);
+    };
+  }, [isOpen, triggerRef]);
+  return pos;
+}
+
 function BusinessRequestParentPicker({
   issue, itemId, rule, projectKey, onOpenItem,
 }: {
@@ -158,13 +199,20 @@ function BusinessRequestParentPicker({
 }) {
   const [showPicker, setShowPicker] = useState(false);
   const [search, setSearch] = useState('');
-  const pickerRef = useRef<HTMLDivElement>(null);
+  const triggerRef = useRef<HTMLDivElement>(null);
+  const portalRef = useRef<HTMLDivElement>(null);
+  const pickerPos = usePickerPosition(triggerRef, showPicker);
   const queryClient = useQueryClient();
 
-  // Close on outside click
+  // Close on outside click — guards both the trigger and the portaled dropdown.
   useEffect(() => {
     if (!showPicker) return;
-    const h = (e: MouseEvent) => { if (pickerRef.current && !pickerRef.current.contains(e.target as Node)) setShowPicker(false); };
+    const h = (e: MouseEvent) => {
+      const t = e.target as Node;
+      if (triggerRef.current?.contains(t)) return;
+      if (portalRef.current?.contains(t)) return;
+      setShowPicker(false);
+    };
     document.addEventListener('mousedown', h);
     return () => document.removeEventListener('mousedown', h);
   }, [showPicker]);
@@ -224,7 +272,7 @@ function BusinessRequestParentPicker({
      label + left column. This picker returns only the VALUE cell so the
      label doesn't double up. */
   return (
-    <div style={{ position: 'relative' }} ref={pickerRef}>
+    <div style={{ position: 'relative' }} ref={triggerRef}>
       {/* Current parent display */}
       {currentParent ? (
         <div style={{ display: 'flex', alignItems: 'center', gap: 6, cursor: 'pointer' }}
@@ -241,13 +289,17 @@ function BusinessRequestParentPicker({
         <SidebarAddTrigger label="Add parent" isOpen={showPicker} onClick={() => setShowPicker(!showPicker)} />
       )}
 
-      {/* Picker dropdown */}
-      {showPicker && (
-        <div style={{
-          position: 'absolute', left: 0, right: 0, top: '100%', marginTop: 4,
-          background: 'var(--ds-surface, #FFFFFF)', border: '1px solid #DFE1E6', borderRadius: 6,
-          boxShadow: '0 8px 16px rgba(9,30,66,0.15)', zIndex: 100, maxHeight: 400, display: 'flex', flexDirection: 'column',
-        }}>
+      {/* Picker dropdown — portaled to document.body to avoid overlapping sibling rows (Priority) */}
+      {showPicker && pickerPos && createPortal(
+        <div
+          ref={portalRef}
+          data-cv-parent-picker="true"
+          style={{
+            position: 'fixed', top: pickerPos.top, left: pickerPos.left, width: pickerPos.width,
+            background: 'var(--ds-surface, #FFFFFF)', border: '1px solid #DFE1E6', borderRadius: 6,
+            boxShadow: '0 8px 16px rgba(9,30,66,0.15)', zIndex: 1000, maxHeight: 400, display: 'flex', flexDirection: 'column',
+          }}
+        >
           {/* Search */}
           <div style={{ padding: '8px 12px', borderBottom: '1px solid #F4F5F7' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 6, border: '2px solid #4C9AFF', borderRadius: 4, padding: '4px 8px' }}>
@@ -280,7 +332,8 @@ function BusinessRequestParentPicker({
               </button>
             </div>
           )}
-        </div>
+        </div>,
+        document.body,
       )}
     </div>
   );
@@ -332,13 +385,20 @@ function SingleParentPicker({
 }) {
   const [showPicker, setShowPicker] = useState(false);
   const [search, setSearch] = useState('');
-  const pickerRef = useRef<HTMLDivElement>(null);
+  const triggerRef = useRef<HTMLDivElement>(null);
+  const portalRef = useRef<HTMLDivElement>(null);
+  const pickerPos = usePickerPosition(triggerRef, showPicker);
   const queryClient = useQueryClient();
 
-  // Close on outside click
+  // Close on outside click — guards trigger + portaled dropdown
   useEffect(() => {
     if (!showPicker) return;
-    const h = (e: MouseEvent) => { if (pickerRef.current && !pickerRef.current.contains(e.target as Node)) setShowPicker(false); };
+    const h = (e: MouseEvent) => {
+      const t = e.target as Node;
+      if (triggerRef.current?.contains(t)) return;
+      if (portalRef.current?.contains(t)) return;
+      setShowPicker(false);
+    };
     document.addEventListener('mousedown', h);
     return () => document.removeEventListener('mousedown', h);
   }, [showPicker]);
@@ -417,7 +477,7 @@ function SingleParentPicker({
   const rawParentKey = issue?.parent_key ?? null;
   const hasRawParent = !!rawParentKey;
   return (
-    <div style={{ position: 'relative' }} ref={pickerRef}>
+    <div style={{ position: 'relative' }} ref={triggerRef}>
       {/* Current parent display */}
       {currentParent ? (
         <ParentLozenge
@@ -452,13 +512,17 @@ function SingleParentPicker({
         <SidebarAddTrigger label="Add parent" isOpen={showPicker} onClick={() => setShowPicker(!showPicker)} />
       )}
 
-      {/* Picker dropdown */}
-      {showPicker && (
-        <div style={{
-          position: 'absolute', left: 0, right: 0, top: '100%', marginTop: 4,
-          background: 'var(--ds-surface, #FFFFFF)', border: '1px solid #DFE1E6', borderRadius: 6,
-          boxShadow: '0 8px 16px rgba(9,30,66,0.15)', zIndex: 100, maxHeight: 400, display: 'flex', flexDirection: 'column',
-        }}>
+      {/* Picker dropdown — portaled to document.body (jira-compare 2026-05-11 Vikram fix) */}
+      {showPicker && pickerPos && createPortal(
+        <div
+          ref={portalRef}
+          data-cv-parent-picker="true"
+          style={{
+            position: 'fixed', top: pickerPos.top, left: pickerPos.left, width: pickerPos.width,
+            background: 'var(--ds-surface, #FFFFFF)', border: '1px solid #DFE1E6', borderRadius: 6,
+            boxShadow: '0 8px 16px rgba(9,30,66,0.15)', zIndex: 1000, maxHeight: 400, display: 'flex', flexDirection: 'column',
+          }}
+        >
           {/* Search */}
           <div style={{ padding: '8px 12px', borderBottom: '1px solid #F4F5F7' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 6, border: '2px solid #4C9AFF', borderRadius: 4, padding: '4px 8px' }}>
@@ -491,7 +555,8 @@ function SingleParentPicker({
               </button>
             </div>
           )}
-        </div>
+        </div>,
+        document.body,
       )}
     </div>
   );
@@ -508,12 +573,19 @@ function MultiLinkPicker({
 }) {
   const [showPicker, setShowPicker] = useState(false);
   const [search, setSearch] = useState('');
-  const pickerRef = useRef<HTMLDivElement>(null);
+  const triggerRef = useRef<HTMLDivElement>(null);
+  const portalRef = useRef<HTMLDivElement>(null);
+  const pickerPos = usePickerPosition(triggerRef, showPicker);
   const queryClient = useQueryClient();
 
   useEffect(() => {
     if (!showPicker) return;
-    const h = (e: MouseEvent) => { if (pickerRef.current && !pickerRef.current.contains(e.target as Node)) setShowPicker(false); };
+    const h = (e: MouseEvent) => {
+      const t = e.target as Node;
+      if (triggerRef.current?.contains(t)) return;
+      if (portalRef.current?.contains(t)) return;
+      setShowPicker(false);
+    };
     document.addEventListener('mousedown', h);
     return () => document.removeEventListener('mousedown', h);
   }, [showPicker]);
