@@ -1,209 +1,200 @@
-# /catalyst-agent — Router
+# /catalyst-agent — Router (v2, probe-first)
 
-Companion to `SKILL.md`. This is the decision matrix the router consults
-in step 5 of the pipeline. Every row is data, not logic — extend by adding
-rows, do not edit `SKILL.md` to add a new task type.
+Companion to `SKILL.md`. Two matrices:
 
----
+1. **Probe Matrix** — which probe agents to invoke based on signals (step 4)
+2. **Implementer Matrix** — which wrapper + implementer agents to pick based on the gap report (step 6)
 
-## Surface classification cheatsheet
-
-Use the strongest match. If two surfaces match, pick the row with more
-specific signals.
-
-| File / area | Surface |
-|---|---|
-| `BacklogPage*`, `JiraTable*`, `cells.tsx`, `editors.tsx`, group headers, inline create rows | `ui-bug-fix` or `ui-feature` (depending on operation) |
-| `CatalystView*`, `CatalystKeyDetails`, `CatalystSidebarDetails`, modal mode, panel mode | `ui-bug-fix` or `ui-feature` |
-| `ProjectHub*`, sidebars, Recent lists, notification rails | `ui-feature` or `ui-refactor` |
-| `/admin/*` pages | `atlassian-admin` (WorkHub-proxied) or `ui-feature` (Catalyst-specific) |
-| `ph_*` tables, RLS, migrations, `supabase/functions/` | `backend-migration` |
-| Pure look/feel: ADS tokens, lozenges, typography, status pills | `design-only` |
-| Handover notes, lesson appends, CLAUDE.md edits | `knowledge-save` |
-| Multi-surface refactors crossing >2 of the above | `cross-cutting` |
+Every row is data, not logic. Extend by adding rows; do not edit `SKILL.md` to add new task types.
 
 ---
 
-## Operation classification
+## CLAUDE.md ban detection (step 2 — runs BEFORE probe)
 
-| Verb pattern in user text | Operation |
-|---|---|
-| "fix", "broken", "doesn't work", "wrong", "regressed" | `fix-bug` |
-| "add", "new", "create", "build" | `add-feature` |
-| "remove", "delete", "drop" | `remove-feature` |
-| "audit", "compare", "match jira", "parity" | `audit` |
-| "refactor", "clean up", "consolidate", "unify" | `refactor` |
-| "optimize", "speed up", "bundle", "perf" | `optimize` |
-| "test", "coverage", "vitest", "playwright" | `test` |
-| "migrate", "schema", "RLS", "policy" | `migrate` |
+Any of these in the task text → halt, no probe, no agent activation. Cite the CLAUDE.md anchor.
 
----
-
-## The decision matrix
-
-Each row: `surface × operation × dominant signal → wrapper(s) + agents`.
-
-### UI bug fixes
-
-| # | Signals | Wrapper | Primary | Augments | Always-on |
-|---|---|---|---|---|---|
-| 1 | `dynamic table`, `JiraTable`, sort/filter/group/select | preflight + jira-compare | engineering-frontend-developer | design-ui-designer | reality-checker, evidence-collector, code-reviewer |
-| 2 | `CatalystView*` modal/panel, detail view | preflight + jira-compare | engineering-frontend-developer | project-management-jira-workflow-steward | reality-checker, evidence-collector, code-reviewer |
-| 3 | sidebar / right rail field, Field row | preflight + jira-compare | engineering-frontend-developer | project-management-jira-workflow-steward (schema check) | evidence-collector, code-reviewer |
-| 4 | status pill / lozenge / typography drift | design-intelligence + design-critique | design-ui-designer | design-brand-guardian | evidence-collector |
-| 5 | hover card / popover / dropdown / menu | preflight | engineering-frontend-developer | testing-accessibility-auditor (keyboard / ARIA) | evidence-collector, code-reviewer |
-| 6 | inline create row / inline edit cell | preflight + jira-compare | engineering-frontend-developer | testing-reality-checker (React 17 synthetic event trap, CLAUDE.md 2026-05-08) | evidence-collector, code-reviewer |
-| 7 | breadcrumb / navigation / openDetail wiring | preflight | engineering-frontend-developer | engineering-codebase-onboarding-engineer | reality-checker, code-reviewer |
-
-### UI features
-
-| # | Signals | Wrapper | Primary | Augments | Always-on |
-|---|---|---|---|---|---|
-| 8 | new page / new component / new admin surface | preflight (full) | engineering-software-architect | engineering-frontend-developer, design-ux-architect | accessibility-auditor, evidence-collector, code-reviewer |
-| 9 | new field in detail view / rail / panel | preflight + jira-compare | engineering-frontend-developer | project-management-jira-workflow-steward (anti-pattern #18 schema-probe gate) | code-reviewer |
-| 10 | new admin page under `/admin/*` | preflight | engineering-software-architect | engineering-security-engineer (AdminGuard coverage), engineering-database-optimizer | code-reviewer, accessibility-auditor |
-
-### Schema / backend
-
-| # | Signals | Wrapper | Primary | Augments | Always-on |
-|---|---|---|---|---|---|
-| 11 | new `ph_*` table | preflight | engineering-database-optimizer | engineering-security-engineer (RLS), engineering-backend-architect | code-reviewer |
-| 12 | RLS policy / 42501 / permission scheme | preflight | engineering-security-engineer | engineering-database-optimizer | code-reviewer |
-| 13 | edge function (Deno, supabase/functions/) | preflight | engineering-backend-architect | engineering-security-engineer (CORS, secrets) | code-reviewer |
-| 14 | migration with CASCADE / child policies | preflight | engineering-database-optimizer | engineering-security-engineer (CLAUDE.md 2026-05-09 cascade lesson) | code-reviewer |
-
-### Parity / audit
-
-| # | Signals | Wrapper | Primary | Augments | Always-on |
-|---|---|---|---|---|---|
-| 15 | "compare to jira", parity audit, drift check | jira-compare (full 3-lane) | project-management-jira-workflow-steward | engineering-frontend-developer, engineering-database-optimizer | reality-checker, evidence-collector |
-| 16 | regression after a fix on a shared component | jira-compare (regression mode) | testing-reality-checker | engineering-frontend-developer | evidence-collector |
-
-### Design
-
-| # | Signals | Wrapper | Primary | Augments | Always-on |
-|---|---|---|---|---|---|
-| 17 | "audit design", "ADS compliance", token violations | design-intelligence | design-ux-architect | design-brand-guardian | evidence-collector |
-| 18 | "looks wrong", visual drift, "is this Jira-aligned" | design-intelligence + design-critique | design-ui-designer | design-brand-guardian, design-ux-architect | evidence-collector |
-| 19 | "review this design", heuristic scoring | design-critique | design-ui-designer | design-ux-researcher | evidence-collector |
-
-### Accessibility
-
-| # | Signals | Wrapper | Primary | Augments | Always-on |
-|---|---|---|---|---|---|
-| 20 | "WCAG", "a11y", "keyboard", "screen reader" | design-critique | testing-accessibility-auditor | design-inclusive-visuals-specialist | evidence-collector |
-
-### Performance
-
-| # | Signals | Wrapper | Primary | Augments | Always-on |
-|---|---|---|---|---|---|
-| 21 | "slow", "bundle size", "TTI", "perf" | preflight | testing-performance-benchmarker | engineering-frontend-developer | reality-checker |
-
-### Testing
-
-| # | Signals | Wrapper | Primary | Augments | Always-on |
-|---|---|---|---|---|---|
-| 22 | "vitest failing", "flaky test", "playwright fails" | preflight | testing-test-results-analyzer | engineering-senior-developer | reality-checker |
-| 23 | "add test coverage" | preflight | engineering-senior-developer | testing-tool-evaluator | code-reviewer |
-
-### Refactor
-
-| # | Signals | Wrapper | Primary | Augments | Always-on |
-|---|---|---|---|---|---|
-| 24 | consolidate components, replace hand-rolled with @atlaskit/* | preflight | engineering-minimal-change-engineer | engineering-frontend-developer | reality-checker, code-reviewer |
-| 25 | rename / extract / split file | preflight | engineering-minimal-change-engineer | engineering-code-reviewer | reality-checker |
-
-### MCP / integrations
-
-| # | Signals | Wrapper | Primary | Augments | Always-on |
-|---|---|---|---|---|---|
-| 26 | "MCP server", "Atlassian MCP", "Rovo", "tool def" | preflight | specialized-mcp-builder | engineering-backend-architect | code-reviewer |
-
-### Git / PR / handover
-
-| # | Signals | Wrapper | Primary | Augments | Always-on |
-|---|---|---|---|---|---|
-| 27 | "PR", "branch", "merge", "rebase" | direct | engineering-git-workflow-master | engineering-technical-writer | — |
-| 28 | "handover", "next session", "context dump" | preflight `--handover` | engineering-technical-writer | engineering-git-workflow-master | — |
-
-### Fallback
-
-| # | Signals | Wrapper | Primary | Augments | Always-on |
-|---|---|---|---|---|---|
-| 29 | (no row matches) | preflight | agents-orchestrator | engineering-senior-developer | code-reviewer |
-
----
-
-## CLAUDE.md ban detection (HALT before activation)
-
-Step 2 of the pipeline. Any of these in the task text → halt, no router
-selection, no agent activation. Cite the CLAUDE.md anchor in the halt
-message.
-
-| Banned signal in user text | Anchor | Halt message |
+| Banned signal | Anchor | Halt message |
 |---|---|---|
-| "Story Points" + "add"/"re-add" | CatalystSidebarDetails.tsx:422 (in-code, 2026-04-16) | Permanently banned platform-wide. |
+| "Story Points" + add/re-add | CatalystSidebarDetails.tsx:422 (2026-04-16) | Permanently banned platform-wide. |
 | "MDT Ref" + add/show | CLAUDE.md 2026-05-05 | Permanently banned from ALL views, every type. |
 | "Service Now#" + add/show | CLAUDE.md 2026-05-07 | Permanently banned. |
 | "Assessment Feature" + add/show | CLAUDE.md 2026-05-07 | Permanently banned. |
-| "Catalyst Intelligence" / "AI Sparkles" inline | CLAUDE.md 2026-05-07 | Permanently banned. Only entry point is ImproveIssueDropdown right rail. |
-| "Development section" / "Automation section" / "Automate ⚡ button" | CLAUDE.md 2026-05-06 | NEVER implement. Out of scope. Do not ask. |
+| "Catalyst Intelligence" / "AI Sparkles" inline | CLAUDE.md 2026-05-07 | Banned. Only entry: ImproveIssueDropdown right rail. |
+| "Development section" / "Automation section" / "Automate ⚡" | CLAUDE.md 2026-05-06 | NEVER implement. Out of scope. |
 | "Notion" + Projects module | CLAUDE.md "Banned integrations" | Notion permanently out of scope for Projects. |
-| "preview_*" tool usage on Catalyst | CLAUDE.md preflight rules | Chrome MCP only. No Claude preview tools. |
-| "localhost:8081" or port other than 8080 | CLAUDE.md "Dev Server" | Port 8080 lock. Any other port → halt. |
-| "Claude executes SQL" / autonomous migration | CLAUDE.md "Lovable SQL" | SQL goes to Lovable editor, manual paste only. |
+| "preview_*" tool on Catalyst | CLAUDE.md preflight rules | Chrome MCP only. No Claude preview tools. |
+| "localhost:8081" or other port | CLAUDE.md "Dev Server" | Port 8080 lock. |
+| Autonomous SQL execution | CLAUDE.md "Lovable SQL" | SQL → Lovable manual paste only. |
+
+---
+
+## Probe Matrix (step 4 — what probes to run)
+
+For every signal, which lanes fire and which agent owns each lane.
+
+| # | Dominant signals | Lane A (Jira) | Lane B (Catalyst DOM) | Lane C (Supabase) | Lane D (codebase) |
+|---|---|---|---|---|---|
+| 1 | `dynamic table`, `JiraTable`, sort/filter/group | jira-workflow-steward: list view columns + sort mechanism | frontend-developer: DOM probe sort handler + state + render | — | codebase-onboarding-engineer: trace BacklogPage→JiraTable→state |
+| 2 | `CatalystView*`, detail modal/panel | jira-workflow-steward: screen scheme + workflow + fields | frontend-developer: DOM probe rail fields + interactions | — | codebase-onboarding-engineer: trace view→sections |
+| 3 | sidebar / right rail field | jira-workflow-steward: field metadata via `getJiraIssueTypeMetaWithFields` | frontend-developer: DOM probe field rendering | — | codebase-onboarding-engineer: find FieldRow definitions |
+| 4 | status pill / lozenge / typography | — | frontend-developer: `getComputedStyle` on Jira + Catalyst pills | — | codebase-onboarding-engineer: locate pill component |
+| 5 | popover / dropdown / menu | — | frontend-developer: focus trap + ARIA + keyboard nav probe | — | codebase-onboarding-engineer: locate self-rolled vs Atlaskit |
+| 6 | inline create / inline edit | jira-workflow-steward: inline create allowed types | frontend-developer: probe creation flow + React synthetic event | — | codebase-onboarding-engineer: locate InlineCreate row |
+| 7 | breadcrumb / openDetail / navigation | — | frontend-developer: probe click → state propagation | — | codebase-onboarding-engineer: trace openDetail call chain |
+| 8 | new page / new component | — | frontend-developer: probe similar existing pages | (if backend) database-optimizer: similar table patterns | codebase-onboarding-engineer: find route registry + layout |
+| 9 | new field in detail view | jira-workflow-steward: confirm field in screen scheme (anti-pattern #18!) | frontend-developer: probe current rail rendering | — | codebase-onboarding-engineer: locate rail component |
+| 10 | new admin page | — | frontend-developer: probe AdminGuard + similar admin pages | database-optimizer: RLS for new tables if needed | codebase-onboarding-engineer: admin route patterns |
+| 11 | new `ph_*` table | — | — | database-optimizer: parent table FKs + RLS patterns | codebase-onboarding-engineer: locate hook patterns |
+| 12 | RLS / policy / 42501 | — | — | database-optimizer: dump existing policies + cascade tree | codebase-onboarding-engineer: trace query→policy gap |
+| 13 | edge function (Deno) | — | — | database-optimizer: existing functions inventory | codebase-onboarding-engineer: function patterns |
+| 14 | migration with CASCADE | — | — | database-optimizer: child tables + their DELETE policies | — |
+| 15 | parity audit / compare to jira | jira-workflow-steward: full surface metadata | frontend-developer: full surface DOM probe | (if data) database-optimizer | codebase-onboarding-engineer: surface anchors in CLAUDE.md |
+| 16 | regression on shared component | — | frontend-developer: probe 3 most adjacent surfaces | — | codebase-onboarding-engineer: list adjacent surfaces |
+| 17 | design audit / ADS compliance | — | frontend-developer: `getComputedStyle` against ADS tokens | — | codebase-onboarding-engineer: token usage in target file |
+| 18 | accessibility / WCAG | — | frontend-developer: keyboard nav + ARIA + contrast probe | — | codebase-onboarding-engineer: locate handler patterns |
+| 19 | performance / bundle / slow | — | frontend-developer: probe network + render timing + TTI | — | codebase-onboarding-engineer: chunk strategy in vite.config |
+| 20 | flaky test / vitest fails | — | — | — | codebase-onboarding-engineer: locate failing test + recent changes |
+| 21 | refactor / consolidate hand-rolled | — | frontend-developer: list adjacent self-rolled patterns | — | codebase-onboarding-engineer: grep hand-rolled usages |
+| 22 | MCP server / tool def | — | — | — | codebase-onboarding-engineer: existing MCP patterns |
+| 23 | git / PR / branch | — | — | — | codebase-onboarding-engineer: branch state + PR listing |
+| 24 | (no match) | jira-workflow-steward: project-level probe | frontend-developer: surface URL probe | — | codebase-onboarding-engineer: best-effort grep |
+
+**Probe budget rules:**
+- Each lane has a 90-second wall-clock budget. If exceeded → mark `partial`, continue.
+- Lane B always runs on `localhost:8080` (CLAUDE.md port lock).
+- Probe agents are READ-ONLY. They never write code, never mutate Jira, never run SQL.
+
+---
+
+## Implementer Matrix (step 6 — what to do after the probe)
+
+Once the gap report is in hand, pick wrappers + implementers from the **actual gap**, not the original task text.
+
+### Gap pattern → wrapper composition
+
+| Gap pattern | Wrapper(s) — execution order |
+|---|---|
+| UI handler bug, no schema change | preflight (Phase 0.5 only) → jira-compare (CRUD gate) |
+| UI visual drift only | design-intelligence → design-critique |
+| Missing column / field in Catalyst that's in Jira scheme | preflight (Phase 0.5 + 1) → jira-compare (full 3-lane + CRUD) |
+| New table + UI | preflight (full) → Lovable SQL manual paste |
+| New admin page | preflight (full) — includes AdminGuard check, no jira-compare |
+| RLS policy bug | preflight (Phase 0.5 only) → Lovable SQL manual paste |
+| Pure parity audit | jira-compare (full 3-lane only, no preflight) |
+| Pure design audit (no functional change) | design-intelligence → design-critique |
+| Accessibility audit | design-critique with accessibility lens |
+| Performance fix | preflight (Phase 0.5 + 1) |
+| Test flake | preflight (direct, no wrappers nested) |
+| Refactor consolidation | preflight (full) → jira-compare (regression sweep) |
+| Banned signal (caught in step 2) | NONE — halt |
+
+### Implementer agents (by gap type)
+
+For each wrapper composition, who runs the actual code change.
+
+#### UI handler / state bugs
+
+| Sub-pattern | Primary | Augments (0-2) | Always-on verifiers |
+|---|---|---|---|
+| useMemo / useEffect dep array | engineering-frontend-developer | engineering-senior-developer | reality-checker, evidence-collector, code-reviewer |
+| Self-rolled popup missing ARIA | engineering-frontend-developer | testing-accessibility-auditor | evidence-collector, code-reviewer |
+| Escape key bubbling closing parent modal | engineering-frontend-developer | — | reality-checker, code-reviewer |
+| React 17+ synthetic event trap | engineering-frontend-developer | testing-reality-checker | code-reviewer |
+| openDetail wiring with wrong id field | engineering-frontend-developer | engineering-codebase-onboarding-engineer | reality-checker, code-reviewer |
+
+#### Visual drift / ADS compliance
+
+| Sub-pattern | Primary | Augments | Verifiers |
+|---|---|---|---|
+| Hardcoded hex/RGB not ADS token | engineering-frontend-developer | design-brand-guardian | evidence-collector |
+| Typography drift | design-ui-designer | engineering-frontend-developer | evidence-collector |
+| Spacing / padding drift | design-ui-designer | engineering-frontend-developer | evidence-collector |
+| Lozenge / status pill colors | engineering-frontend-developer | design-brand-guardian | evidence-collector |
+| Coloured dots for type indicator (2026-05-09 ban) | engineering-frontend-developer | — | reality-checker, code-reviewer |
+
+#### Missing Jira-side feature in Catalyst
+
+| Sub-pattern | Primary | Augments | Verifiers |
+|---|---|---|---|
+| Field in Jira screen scheme, missing in Catalyst rail | engineering-frontend-developer | project-management-jira-workflow-steward | code-reviewer + ASK-BEFORE-ADD |
+| Column missing from list view | engineering-frontend-developer | design-ui-designer | evidence-collector, code-reviewer |
+| Section in Jira detail view, missing in Catalyst | engineering-frontend-developer | project-management-jira-workflow-steward | code-reviewer + ASK-BEFORE-ADD |
+
+#### Schema / backend
+
+| Sub-pattern | Primary | Augments | Verifiers |
+|---|---|---|---|
+| New `ph_*` table | engineering-database-optimizer | engineering-security-engineer, engineering-backend-architect | code-reviewer |
+| RLS policy + cascade | engineering-database-optimizer | engineering-security-engineer | code-reviewer |
+| Edge function | engineering-backend-architect | engineering-security-engineer | code-reviewer |
+| Migration with DELETE child policies | engineering-database-optimizer | engineering-security-engineer | code-reviewer |
+
+#### Performance / refactor
+
+| Sub-pattern | Primary | Augments | Verifiers |
+|---|---|---|---|
+| Bundle size spike | testing-performance-benchmarker | engineering-frontend-developer | reality-checker |
+| Slow render | engineering-frontend-developer | testing-performance-benchmarker | reality-checker |
+| Replace hand-rolled with @atlaskit/* | engineering-minimal-change-engineer | engineering-frontend-developer | reality-checker, code-reviewer |
+
+#### Testing / git / handover
+
+| Sub-pattern | Primary | Augments | Verifiers |
+|---|---|---|---|
+| Vitest failing | testing-test-results-analyzer | engineering-senior-developer | reality-checker |
+| Add test coverage | engineering-senior-developer | testing-tool-evaluator | code-reviewer |
+| Branch / commit / PR ceremony | engineering-git-workflow-master | engineering-technical-writer | — |
+| Obsidian handover | engineering-technical-writer | engineering-git-workflow-master | — |
+
+#### Fallback
+
+| Sub-pattern | Primary | Augments | Verifiers |
+|---|---|---|---|
+| Unmatched gap, ambiguous | agents-orchestrator | engineering-senior-developer | code-reviewer |
 
 ---
 
 ## Wrapper composition rules
 
-When multiple wrappers are chained:
+When multiple wrappers chain:
 
-1. **`preflight` always runs first** when present. Phase 0 + 0.5 + 1 are
-   evidence acquisition that downstream wrappers need.
-2. **`jira-compare` runs second** when present. It consumes preflight
-   Phase 1 evidence as its starting state.
-3. **`design-intelligence` runs in parallel with `jira-compare`** if both
-   are present — they operate on different evidence streams.
-4. **`design-critique` runs last** — it gates closure with heuristic
-   scoring + arrow annotation.
+1. **preflight always runs first** when present. Phases 0 + 0.5 consume the probe envelope.
+2. **jira-compare consumes preflight Phase 1 evidence** as its lane starting state.
+3. **design-intelligence runs parallel to jira-compare** when both are present.
+4. **design-critique runs last** — gates closure with heuristic score + arrow annotation.
 
-Composition examples:
+When the router has already done the probe (step 4):
 
-- `preflight + jira-compare` → preflight Phase 0/0.5/1, then jira-compare 3 lanes consume the evidence, then preflight Phase 3 plan, then preflight Phase 4 execute, then jira-compare CRUD gate, then preflight Phase 5-7.
-- `design-intelligence + design-critique` → DI scan first (token violations), then DC scores the heuristics (DI's findings become DC's pre-scan input).
-- `preflight` alone → standard 0→7 phases.
+- preflight Phase 0.5 receives the probe envelope and **skips redundant evidence acquisition**.
+- jira-compare receives Lane A + B output and **skips its own initial probes**.
+- This is the value of probe-first routing — wrappers don't re-do work the router already did.
 
 ---
 
-## Always-on verifier selection rules
+## Always-on verifier rules
 
-Add these automatically based on what the task touches:
+Add automatically based on what the gap touches:
 
-| Trigger | Always-on agent |
+| Gap touches | Always-on agent |
 |---|---|
-| Any UI surface | `testing-evidence-collector` (before/after screenshots; SVG arrows per Phase 5) |
-| Any code change | `engineering-code-reviewer` (final gate before commit) |
-| Layer-ambiguous bug, shared component, breadcrumb, openDetail | `testing-reality-checker` (CLAUDE.md 2026-05-11: probe before TDD'ing the wrong layer) |
-| Anything a screen reader / keyboard user touches | `testing-accessibility-auditor` |
-| Any new public API, edge function, or RPC | `engineering-security-engineer` |
+| Any UI surface | testing-evidence-collector |
+| Any code change | engineering-code-reviewer |
+| Layer-ambiguous bug, shared component, breadcrumb, openDetail | testing-reality-checker (CLAUDE.md 2026-05-11) |
+| Screen reader / keyboard impact | testing-accessibility-auditor |
+| New public API / edge function / RPC | engineering-security-engineer |
 
-Cap at 2 always-on agents per task. If 3+ would apply, keep the two with the most CLAUDE.md anchors.
+Cap at 2 always-on per task. If 3+ would apply, drop the one with the fewest CLAUDE.md anchors.
 
 ---
 
 ## How to extend the matrix
 
-When a new lesson lands in CLAUDE.md:
+When a new CLAUDE.md lesson lands:
 
-1. Identify the signal that should trigger the new behaviour (a file
-   path, a keyword, a verb pattern).
-2. Add a new row to the appropriate section above (or a new section if
-   the surface is genuinely new).
-3. Cite the CLAUDE.md anchor inline in the row's "augments" or
-   "always-on" cell so the reasoning stays traceable.
-4. If the lesson contradicts an existing row, REPLACE that row — do not
-   leave both. The router needs unambiguous answers.
+1. Identify the signal that should trigger new behaviour (file path, keyword, verb pattern).
+2. Add a row to the Probe Matrix (if it changes WHAT to probe) AND/OR the Implementer Matrix (if it changes WHO fixes).
+3. Cite the CLAUDE.md anchor in the row.
+4. If the lesson contradicts an existing row, REPLACE — don't leave both.
 
 No code change is needed to extend. The matrix is the surface.
 
@@ -211,8 +202,9 @@ No code change is needed to extend. The matrix is the surface.
 
 ## See also
 
-- `SKILL.md` — pipeline definition and worked examples
-- `INDEX.md` — every agent in `~/.claude/agents/` with relevance flag
-- `../AGENT_PIPELINE.md` — activation line format (shared across all 4 wrapped skills)
-- `../preflight/RUBRIC.md` — tier classification (trivial / standard / high-stake)
-- `CLAUDE.md` (project root) — bans + lessons (every row should cite an anchor when applicable)
+- `SKILL.md` — pipeline definition, worked examples
+- `INDEX.md` — all 184 agents categorised
+- `PREFLIGHT_VS_AGENT.md` — comparison + composition patterns
+- `../AGENT_PIPELINE.md` — shared activation protocol
+- `../preflight/RUBRIC.md` — tier classification
+- `CLAUDE.md` (project root) — bans + lessons

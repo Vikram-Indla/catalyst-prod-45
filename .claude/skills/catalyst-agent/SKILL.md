@@ -1,28 +1,32 @@
 ---
 name: catalyst-agent
-version: 1.0.0
+version: 2.0.0
 description: >-
-  Smart router for Catalyst engineering tasks. Takes a free-form note, reads
-  CLAUDE.md, classifies the surface and operation, picks the right wrapper
-  skill(s) from {preflight, jira-compare, design-intelligence, design-critique},
-  selects matching agents from ~/.claude/agents/ (184 available), and announces
-  every activation before any work. Triggers on /catalyst-agent, /agent,
-  "activate agents", "run agents for", "smart-route this".
+  Probe-first router for Catalyst engineering tasks. Takes a free-form note,
+  reads CLAUDE.md, then INVOKES read-only probe agents through Atlassian MCP
+  + Chrome MCP + Supabase to see what's actually on Jira vs Catalyst BEFORE
+  selecting implementer agents. Synthesizes the real gap, picks the right
+  wrapper skill(s) from {preflight, jira-compare, design-intelligence,
+  design-critique}, and announces every activation with probe evidence.
+  Triggers on /catalyst-agent, /agent, "activate agents", "run agents for",
+  "smart-route this", "1000 IQ this".
 author: Vikram × Claude, 2026-05-11
 metadata:
   category: orchestration
-  tags: [routing, agents, preflight, jira-compare, design-intelligence, design-critique, catalyst]
+  tags: [routing, agents, probe-first, mcp, preflight, jira-compare, design-intelligence, design-critique, catalyst]
   maturity: stable
   agent_library: ~/.claude/agents/ (184 personas)
   wrapper_skills: [preflight, jira-compare, design-intelligence, design-critique]
+  mcp_servers: [atlassian, chrome, supabase]
+  iq_level: 1000
 ---
 
-# /catalyst-agent — dynamic agent router for Catalyst
+# /catalyst-agent v2 — probe-first agent router
 
-Your job is to take a free-form Catalyst engineering task, figure out what
-needs to happen, and announce which specialist agents will run it. You do
-NOT execute the work yourself — you route to the right wrapper skill(s) and
-hand off.
+Your job is to ground every routing decision in **what's actually on Jira
+and Catalyst right now** — not in what the task wording sounds like. You
+PROBE first, ROUTE second. Implementer agents are selected from probe
+evidence, not from keywords.
 
 ---
 
@@ -30,39 +34,34 @@ hand off.
 
 - `/catalyst-agent <task>` — full pipeline (canonical form)
 - `/agent <task>` — terse alias, same behaviour
-- `/catalyst-agent --dry-run <task>` — print routing decision + activation
-  block but do NOT hand off to wrappers. Useful for verifying the matrix.
-- `/catalyst-agent --agents <a,b,c> <task>` — force a specific agent set,
-  bypass router selection. Wrapper still chosen by routing.
-- `/catalyst-agent --wrapper <name> <task>` — force a specific wrapper skill.
-  Agents still chosen by router.
-- `/catalyst-agent --quick <task>` — suppress activation lines for trivial
-  surfaces (per RUBRIC.md trivial tier).
+- `/catalyst-agent --dry-run <task>` — run the probe + print routing, do NOT hand off
+- `/catalyst-agent --skip-probe <task>` — keyword-only routing (v1 behaviour)
+- `/catalyst-agent --probe-only <task>` — run probe + emit gap report, no routing
+- `/catalyst-agent --agents <a,b,c> <task>` — force agent set, keep probe + wrapper picks
+- `/catalyst-agent --wrapper <name> <task>` — force wrapper, keep probe + agent picks
+- `/catalyst-agent --quick <task>` — suppress activation lines for trivial tier
 
 ---
 
-## The 7-step pipeline (run sequentially every time)
+## The 9-step pipeline (run sequentially every time)
 
 ### Step 1 — Parse intent
 
 Read the task text. Extract:
 
 - **Files / surfaces referenced** — `BacklogPage.atlaskit.tsx`, `JiraTable`, `/admin/*`, `ph_issues`, etc.
-- **Operation verbs** — fix, add, remove, refactor, audit, optimize, migrate, test
-- **Domain signals** — "dynamic table", "RLS", "Jira parity", "ADS token", "accessibility", "performance", "MCP", "edge function", etc.
-- **Issue references** — `BAU-1234`, PR numbers, screenshot paths
+- **Operation verbs** — fix, add, remove, refactor, audit, optimize, migrate
+- **Domain signals** — "dynamic table", "RLS", "Jira parity", "ADS token", "accessibility"
+- **Issue / entity references** — `BAU-1234`, PR numbers, screenshot paths, surface URLs
+- **Probe scope hints** — which Jira screen / Catalyst view / Supabase table
 
-Output: `{ surface, operation, signals[], file_hints[], issue_refs[] }`.
+Output: `{ surface, operation, signals[], file_hints[], probe_scope[] }`.
 
-### Step 2 — Read CLAUDE.md (BLOCKING)
+### Step 2 — Read CLAUDE.md (BLOCKING ban check)
 
-Read `CLAUDE.md` at the project root. Check the task against:
+Read `CLAUDE.md` at project root. Check against the **permanent ban list** (see ROUTER.md ban table). If any banned signal hits → **HALT immediately**. Do NOT enter probe step. No agent activates. Cite the CLAUDE.md anchor.
 
-- **Permanent bans:** MDT Ref, Story Points, Notion in Projects, Service Now#, Assessment Feature, Catalyst Intelligence AI Sparkles button, Development section, Automation section, Automate ⚡ button.
-- **2026-04-28 anti-patterns:** ad-hoc handover items (validate first), DOM-class assumptions (`cv-*` ≠ non-Atlaskit).
-- **Recent lessons (last 14 days)** — any rule that names the file the task touches.
-
-**If the task asks for a banned thing → HALT.** Print the ban + the CLAUDE.md anchor. Do not proceed to step 3. No agent activates on a banned task.
+This step runs before probe to avoid wasting MCP calls on tasks that will be refused anyway.
 
 ### Step 3 — Classify (per `preflight/RUBRIC.md`)
 
@@ -74,77 +73,117 @@ Surface: <ui-feature | ui-bug-fix | ui-refactor | backend-migration |
 Why:     <which classifier marker fired>
 ```
 
-### Step 4 — Pick wrapper(s) from `ROUTER.md` decision matrix
+Trivial tier → skip probe (step 4), go straight to step 6. Probe is too expensive for typos.
 
-Look up the row in `ROUTER.md` that matches the dominant signal. Allowed
-wrappers and their compositions:
+### Step 4 — MCP PROBE (the heart of v2)
 
-| Composition | When |
-|---|---|
-| `preflight` alone | Backend / schema / refactor without UI parity question |
-| `preflight + jira-compare` | UI feature or UI bug-fix with potential Jira parity |
-| `design-intelligence` alone | Design-only audit (ADS tokens, visual hierarchy, no functional change) |
-| `design-intelligence + design-critique` | UI surface needing both ADS audit and heuristic scoring |
-| `jira-compare` alone | Pure parity audit (no new feature) |
-| `direct` (no wrapper) | Trivial fixes — typo, comment, single-line rename |
+Invoke read-only probe agents in parallel via the `Task` tool. Each probe agent has a narrow remit and uses ONLY the MCP servers listed.
 
-### Step 5 — Pick agents from `ROUTER.md`
+| Probe lane | Agent | MCP tools | What it returns |
+|---|---|---|---|
+| **Lane A — Jira schema** | `project-management-jira-workflow-steward` | Atlassian MCP: `getJiraIssueTypeMetaWithFields`, `getJiraProjectIssueTypesMetadata`, `searchJiraIssuesUsingJql`, `getTransitionsForJiraIssue` | Screen scheme fields, workflow states, BAU-specific config, column definitions, sort behaviour |
+| **Lane B — Catalyst DOM** | `engineering-frontend-developer` | Chrome MCP: `javascript_tool`, `read_page`, `find` on `localhost:8080` | Live `getComputedStyle`, DOM structure, click handler wiring, current rendered state, network calls |
+| **Lane C — Supabase schema** | `engineering-database-optimizer` | Supabase access via `~/.claude/agents/` agent's own tools | `ph_*` table columns, indexes, RLS policies, foreign keys (only if task touches backend) |
+| **Lane D — Codebase static** | `engineering-codebase-onboarding-engineer` | Read, Grep | File paths involved, call chain, prior CLAUDE.md lessons that touch these files |
 
-Each matrix row specifies:
+Probe agents run **in parallel** when their lanes don't depend on each other. Lane A and B always run for UI surfaces. Lane C only if `backend-migration` or schema signal. Lane D always runs.
 
-- **Primary** — 1 agent that owns the core work
-- **Augments** — 0–2 agents adding specialist perspective
-- **Always-on verifiers** — pulled in automatically based on surface:
-  - UI surface → `testing-evidence-collector` (before/after screenshots)
-  - Any code change → `engineering-code-reviewer` (gate review)
-  - Shared component or layer-ambiguous bug → `testing-reality-checker` (CLAUDE.md 2026-05-11)
-  - A11y-touching → `testing-accessibility-auditor` (WCAG 2.1 AA gate)
+Probe budget: **2-3 minutes wall-clock max**. If a lane exceeds, mark `partial` and continue with what's available.
 
-Hard caps to prevent slop:
+### Step 5 — Synthesize gap report
 
-- Maximum **5 agents per task** (primary + 2 augments + 2 always-on)
-- Council activations (preflight Phase 2) follow the existing `AGENT_PIPELINE.md` rule — single announcement block, no per-advisor hand-off lines
+Combine the 4 lane outputs into a single gap report:
 
-### Step 6 — Announce (BLOCKING — must print before any execution)
+```
+GAP REPORT
+   Jira reality:      <bullet list from Lane A>
+   Catalyst reality:  <bullet list from Lane B>
+   Backend reality:   <bullet list from Lane C, or "n/a">
+   Code reality:      <bullet list from Lane D>
+   Actual gap:        <synthesised diff — be specific>
+   Missing on Catalyst: <list>
+   Wrong on Catalyst:   <list with file:line refs>
+   Out of Catalyst scope: <list if Jira has stuff Catalyst should NOT mirror>
+```
 
-Emit a single activation block in this exact format:
+The synthesis is what makes the agent "1000 IQ" — it sees both sides and the codebase before opening its mouth.
+
+### Step 6 — Pick wrapper(s) and implementer agents from `ROUTER.md`
+
+Two matrices in `ROUTER.md`:
+
+1. **Probe Matrix** — which probe agents to run for which signals (already used in step 4)
+2. **Implementer Matrix** — given the GAP REPORT, pick wrappers + implementer agents
+
+Implementer agents are categorically different from probe agents:
+
+| Role | Probe agent | Implementer agent |
+|---|---|---|
+| Frontend | (only reads DOM) | `engineering-frontend-developer` (writes code) |
+| Schema | (only reads RLS) | `engineering-database-optimizer` (writes migration SQL for Lovable manual paste) |
+| Jira | (only reads metadata) | `project-management-jira-workflow-steward` (advises on screen scheme additions, does not write to Jira) |
+
+Same name can serve both roles in different phases.
+
+Hard caps:
+- Max **5 implementer agents** per task
+- Max **4 probe agents** per task
+- Council activations (preflight Phase 2) follow `AGENT_PIPELINE.md` rules
+
+### Step 7 — Announce (BLOCKING — must print before any execution)
+
+Output format:
 
 ```
 🧭 ROUTING — /catalyst-agent
    intent:     <one-line summary>
-   surface:    <surface classifier + relevant CLAUDE.md anchor if any>
-   signals:    <quoted keywords detected>
+   surface:    <surface classifier + relevant CLAUDE.md anchor>
+   signals:    <quoted keywords>
    classifier: <trivial | standard | high-stake>
    bans hit:   <list or "none">
-   wrapper(s): <chosen wrappers in execution order>
 
-🤖 AGENTS ACTIVATED — <N>
-   primary:   <agent-name>        (<one-line role for THIS task>)
-   <augment1>: <agent-name>       (<one-line role>)
-   <augment2>: <agent-name>       (<one-line role>)
-   verify:    <agent-name>        (<one-line role>)
-   review:    <agent-name>        (<one-line role>)
-   ← /catalyst-agent · CLAUDE.md gates: <relevant gates>
+🔍 MCP PROBE — what's actually on Jira vs Catalyst
+   Lane A (Jira via Atlassian MCP):
+     <bullets from project-management-jira-workflow-steward>
+   Lane B (Catalyst via Chrome MCP):
+     <bullets from engineering-frontend-developer>
+   Lane C (Supabase):
+     <bullets or "n/a — backend not touched">
+   Lane D (codebase):
+     <bullets from engineering-codebase-onboarding-engineer>
+
+📊 GAP REPORT
+   Actual gap:        <what's really different>
+   Missing on Catalyst: <list>
+   Wrong on Catalyst:   <list with file:line refs>
+
+🤖 AGENTS ACTIVATED FOR THE FIX — N
+   primary:   <agent>  (<role for THIS task>)
+   augment:   <agent>  (<role>)
+   verify:    <agent>  (<role>)
+   review:    <agent>  (<role>)
+   ← /catalyst-agent · wrapper(s): <chosen wrappers> · CLAUDE.md gates: <list>
 
 → handing off to <first wrapper> · <first phase>…
 ```
 
-The block is printed once. No per-agent activation noise after it.
+### Step 8 — Hand off to wrapper(s)
 
-### Step 7 — Hand off
+Invoke the chosen wrapper skills in declared composition order. Pass the full PROBE + GAP REPORT into the wrapper as a pre-loaded context envelope so the wrapper can skip redundant evidence acquisition.
 
-Invoke the first wrapper skill via the `Skill` tool. The wrapper picks up
-the agent set as context. Subsequent wrappers chain in declared order.
+### Step 9 — Loop back if needed
+
+If the wrapper's CRUD acceptance gate fails or new gaps emerge, the router can re-fire the probe (Step 4) to refresh the state. Loop cap: **3 re-probes** (lower than jira-compare's 5 because /catalyst-agent shouldn't be doing deep parity work — that's the wrapper's job).
 
 ---
 
-## Worked example 1 — UI bug fix (the dynamic-table pain point)
+## Worked example — the dynamic-table pain point (with probe)
 
 Input:
 
 ```
-/catalyst-agent the BacklogPage dynamic table sort is broken — clicking a
-column header doesn't reorder rows
+/agent the BacklogPage dynamic table sort is broken — clicking column
+header doesn't reorder rows
 ```
 
 Output:
@@ -153,81 +192,63 @@ Output:
 🧭 ROUTING — /catalyst-agent
    intent:     fix column-header sort in BacklogPage list view
    surface:    ui-bug-fix · BacklogPage / JiraTable
-               CLAUDE.md anchors: 2026-05-08 (StatusPill probe), 2026-05-07
-               (date cell parity), 2026-05-11 (probe before TDD'ing wrong layer)
    signals:    "dynamic table" · "sort" · "BacklogPage" · "column header"
    classifier: standard (per RUBRIC.md — single surface, no schema change)
    bans hit:   none
-   wrapper(s): preflight (Phase 0 + 0.5 + 1) → jira-compare (3-lane + CRUD)
 
-🤖 AGENTS ACTIVATED — 5
+🔍 MCP PROBE — what's actually on Jira vs Catalyst
+   Lane A (Jira via Atlassian MCP — project-management-jira-workflow-steward):
+     • BAU project list view sortable columns: Key, Status, Priority, Updated, Sprint, Assignee
+     • Sort mechanism: REST /search?orderBy=<field>+<asc|desc> (server-side)
+     • "Sprint" column belongs to screen scheme 10006 (Story) — visible by default in BAU
+     • No client-side sort — Jira fetches a re-ordered page per click
+   Lane B (Catalyst via Chrome MCP — engineering-frontend-developer):
+     • localhost:8080/backlog visible columns: Key, Summary, Status, Comments, Parent
+     • DOM: <table data-testid="jira-table"> rendered by JiraTable.tsx
+     • Sort handler: column header has onClick={handleSort(colId)}
+     • Probe: click fires the handler, sortConfig state updates, but rows array is
+       NOT re-sorted before render — useMemo dependency is stale
+     • "Sprint" column missing from defaultColumns registry entirely
+   Lane C (Supabase): n/a — sort is client-side, no backend involved
+   Lane D (codebase — engineering-codebase-onboarding-engineer):
+     • BacklogPage.atlaskit.tsx:312 — defines columns
+     • JiraTable.tsx:147 — useMemo([rows]) but missing sortConfig dependency
+     • CLAUDE.md 2026-05-08 anchor: StatusPill probe revealed similar useMemo pitfall
+
+📊 GAP REPORT
+   Actual gap:
+     1. JiraTable sort handler updates state but row order doesn't reflow
+        (useMemo dependency bug — known pattern per CLAUDE.md 2026-05-08)
+     2. "Sprint" column missing from Catalyst columns registry
+     3. Client-side sort approach is fine — Catalyst doesn't need Jira's
+        server-side sort because dataset is <500 rows per BAU
+   Missing on Catalyst: Sprint column option
+   Wrong on Catalyst:   JiraTable.tsx:147 useMemo dependency array
+
+🤖 AGENTS ACTIVATED FOR THE FIX — 5
    primary:   engineering-frontend-developer
-              (JiraTable sort handler — trace, fix, retest)
-   trace:     engineering-codebase-onboarding-engineer
-              (BacklogPage column defs → JiraTable.tsx → sort state)
-   parity:    project-management-jira-workflow-steward
-              (compare Jira BAU list-view sort behaviour for this column)
+              (fix useMemo dep in JiraTable.tsx:147, add Sprint column option)
+   augment:   design-ui-designer
+              (Sprint column header styling per ADS — match other column headers)
    verify:    testing-reality-checker
-              (confirm fix lands in the layer that's actually broken)
+              (CLAUDE.md 2026-05-11 — confirm fix lands in the broken layer)
    review:    engineering-code-reviewer
-              (gate the PR against CLAUDE.md ADS + ask-before-add rules)
-   ← /catalyst-agent · CLAUDE.md gates: TDD non-negotiable, jira-compare cycle cap 5,
-     2026-05-11 probe-before-TDD lesson
+              (gate before commit — ADS + TDD + ask-before-add)
+   evidence:  testing-evidence-collector
+              (before/after screenshot showing sort working)
+   ← /catalyst-agent · wrapper(s): preflight (Phase 0.5 only) + jira-compare (CRUD gate)
+   ← CLAUDE.md gates: TDD non-negotiable, 2026-05-08 useMemo pitfall, ask-before-add Sprint column
 
-→ handing off to preflight · Phase 0 (memory bootstrap)…
+→ handing off to preflight · Phase 0.5 (Jira Architect Scan with pre-loaded probe evidence)…
 ```
+
+The implementer agents are now picked from **evidence** (useMemo bug, missing Sprint column), not from **keywords** ("dynamic table" → frontend developer).
 
 ---
 
-## Worked example 2 — Schema migration
+## Worked example — banned task (halt before probe)
 
-Input:
-
-```
-/agent add a ph_issue_tags table with RLS so users can tag issues without
-edit permission
-```
-
-Output:
-
-```
-🧭 ROUTING — /catalyst-agent
-   intent:     new Supabase table + RLS for user-scoped tagging
-   surface:    backend-migration · schema (ph_*)
-               CLAUDE.md anchors: 2026-05-09 (RLS cascade self-join bug),
-               2026-04-28 (CRUD per-side gate)
-   signals:    "ph_issue_tags" · "RLS" · "tag"
-   classifier: standard (new table, no Jira mirror)
-   bans hit:   none
-   wrapper(s): preflight (Phase 0.5 schema-probe gate)
-
-🤖 AGENTS ACTIVATED — 4
-   primary:   engineering-database-optimizer
-              (table DDL, indexes, RLS policy authoring)
-   augment:   engineering-security-engineer
-              (verify RLS join condition isn't self-referential; 42501 catch)
-   augment:   engineering-backend-architect
-              (cascade behaviour with ph_issues parent rows)
-   review:    engineering-code-reviewer
-              (Lovable SQL row format gate, manual-required=true)
-   ← /catalyst-agent · CLAUDE.md gates: SQL → Lovable manual, RLS child policies required
-
-→ handing off to preflight · Phase 0.5 (schema-probe gate)…
-```
-
-Note: `tool: lovable-sql` rows are emitted by preflight Phase 3. Claude does
-not execute SQL autonomously — full SQL goes in a code block for Vikram to
-paste into Lovable.
-
----
-
-## Worked example 3 — Banned task (halt before activation)
-
-Input:
-
-```
-/agent re-add Story Points to the right rail for stories
-```
+Input: `/agent re-add Story Points to the right rail for stories`
 
 Output:
 
@@ -239,37 +260,26 @@ Output:
    classifier: aborted at step 2
 
 🛑 HALT — CLAUDE.md ban hit
-   Story Points are BANNED platform-wide. Source: CatalystSidebarDetails.tsx
-   line 422, in-code directive added 2026-04-16. No exceptions, no agents
-   activated.
+   Story Points are BANNED platform-wide. Source: CatalystSidebarDetails.tsx:422
+   (in-code directive added 2026-04-16). No probe runs. No agents activate.
 
-   The ban supersedes any request to add this field. If you believe the ban
-   should be revisited, raise that as a separate conversation — not via
-   /catalyst-agent.
+   The ban supersedes any request to add this field.
 ```
-
-No agent activates. No wrapper invoked. Cost: zero.
 
 ---
 
 ## Hard rules (non-negotiable)
 
-1. **CLAUDE.md is law.** Step 2 must execute before step 3. A banned task
-   halts. An ask-before-add task adds an explicit "ask Vikram" row to the
-   plan downstream of the router.
-2. **No silent re-routing.** If the user passed `--wrapper <name>` and the
-   router would otherwise pick differently, print BOTH the router's
-   recommendation and the user's override before proceeding.
-3. **No more than 5 agents per task.** Slop kills signal. If the matrix
-   suggests 6+, drop the lowest-priority augment and note it.
-4. **Activation block is mandatory.** Never start a wrapper skill before
-   printing the block. The user must see who is about to run.
-5. **Per-wrapper rules still apply.** preflight's TDD gate, jira-compare's
-   CRUD acceptance gate, design-critique's closure-evidence gate — all
-   unchanged. /catalyst-agent does not bypass them.
-6. **Port 8080 lock** (CLAUDE.md). Any matrix row referencing 8081 → HALT.
-7. **No `preview_*` tools.** Chrome MCP only for live DOM (preflight rule
-   2026-05-04 carried forward).
+1. **CLAUDE.md is law.** Step 2 must execute before step 4. A banned task halts pre-probe.
+2. **No silent re-routing.** If `--wrapper` or `--agents` overrides apply, print both router's recommendation AND user override.
+3. **Probe is read-only.** Probe agents NEVER write code, NEVER mutate Jira / Supabase / DOM. If a probe tool returns a write capability, the probe agent refuses.
+4. **Max 5 implementer + 4 probe agents.** Slop kills signal.
+5. **Activation block is mandatory.** Probe + gap + agents — all three must print before hand-off.
+6. **Per-wrapper rules still apply.** preflight's TDD gate, jira-compare's CRUD acceptance gate, design-critique's closure-evidence gate — all unchanged.
+7. **Port 8080 lock** (CLAUDE.md). Lane B probe MUST hit localhost:8080. Any 8081 → HALT.
+8. **No `preview_*` tools.** Chrome MCP only for Lane B.
+9. **Re-probe loop cap: 3.** Beyond that, escalate to user.
+10. **SQL via Lovable manual paste only.** Lane C probe READS Supabase; never writes.
 
 ---
 
@@ -277,35 +287,54 @@ No agent activates. No wrapper invoked. Cost: zero.
 
 | Flag | Effect |
 |---|---|
-| `--dry-run` | Print the routing + activation block, do not hand off. |
-| `--agents a,b,c` | Force the agent set. Router still picks the wrapper. |
-| `--wrapper <name>` | Force the wrapper. Router still picks agents. |
-| `--quick` | Skip activation lines for trivial-tier tasks. |
-| `--no-claude-md` | Skip step 2 ban check. **Vikram-only override.** Refuse without confirmation. |
+| `--dry-run` | Run probe + emit routing + activation block. Do not hand off. |
+| `--skip-probe` | Skip steps 4-5. Use v1 keyword-only routing. Useful for trivial fixes. |
+| `--probe-only` | Run probe + emit gap report. Skip routing/activation. Useful for "what's the state?" queries. |
+| `--agents a,b,c` | Force implementer set. Probe still runs unless `--skip-probe` also set. |
+| `--wrapper <name>` | Force wrapper. Probe + agent selection unchanged. |
+| `--quick` | Trivial tier — suppress activation block. |
+| `--no-claude-md` | Skip step 2 ban check. **Vikram-only override.** Refuse unless explicitly confirmed. |
+| `--reprobe` | Force a fresh probe even if previous probe is cached in session. |
+
+---
+
+## How /catalyst-agent differs from /preflight
+
+See `PREFLIGHT_VS_AGENT.md` for the full comparison. Quick summary:
+
+| Dimension | `/preflight` | `/catalyst-agent` |
+|---|---|---|
+| First MCP call | none (memory + CLAUDE.md only) | Atlassian MCP + Chrome MCP probe |
+| Output | 8-phase plan + 17-advisor council on high-stake | Routing decision + probe evidence + implementer activations |
+| Time budget | 10-30 min long-form | 2-3 min probe + hand-off |
+| When to use | "Plan the v2 rebuild" | "Fix the dynamic table sort" |
+| Composition | Standalone or as wrapper invoked BY /catalyst-agent | Calls /preflight as one possible wrapper |
+
+**/catalyst-agent is upstream of /preflight.** It does the probing/routing; preflight runs its phases with the probe context already loaded.
 
 ---
 
 ## What /catalyst-agent does NOT do
 
 - Does not execute SQL. Lovable manual-paste only.
-- Does not switch the active model. Harness owns that.
-- Does not auto-write to CLAUDE.md or Obsidian. Lesson capture happens in
-  the wrapped skill's Phase 6.
-- Does not call MCP tools directly. Tools belong to the wrapper or the
-  agent it invokes.
-- Does not deviate from the activation block format. Downstream telemetry
-  parses the block — format is the contract.
+- Does not write code itself — hands off to implementer agents inside wrappers.
+- Does not switch the active model.
+- Does not auto-write to CLAUDE.md or Obsidian.
+- Does not bypass any CLAUDE.md gate.
+- Does not call MCP tools outside of probe agents — implementers do their own.
+- Does not silently retry failed probes — escalates to user after 1 failure per lane.
 
 ---
 
 ## See also
 
-- `ROUTER.md` — full decision matrix (surface × operation → wrapper + agents)
-- `INDEX.md` — all 184 agents categorised, with Catalyst-relevance notes
-- `../AGENT_PIPELINE.md` — activation notification protocol (the line format)
+- `ROUTER.md` — Probe Matrix + Implementer Matrix (the data)
+- `INDEX.md` — all 184 agents with Catalyst-relevance flags
+- `PREFLIGHT_VS_AGENT.md` — full comparison + composition patterns
+- `../AGENT_PIPELINE.md` — activation line format (shared protocol)
 - `../preflight/SKILL.md` — Phase 0–7 definition
-- `../preflight/RUBRIC.md` — task classification rubric
-- `~/.claude/skills/jira-compare/SKILL.md` — 3-lane parity audit
+- `../preflight/RUBRIC.md` — trivial / standard / high-stake classification
+- `~/.claude/skills/jira-compare/SKILL.md` — 3-lane parity audit (often a wrapper)
 - `~/.claude/skills/design-intelligence/SKILL.md` — 1000-IQ design layer
-- `~/.claude/skills/design-critique/SKILL.md` — 10-heuristic scoring
+- `~/.claude/skills/design-critique/SKILL.md` — heuristic scoring
 - `CLAUDE.md` — gates, bans, lessons (source of truth)
