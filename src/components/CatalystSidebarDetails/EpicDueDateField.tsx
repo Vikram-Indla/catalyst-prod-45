@@ -25,11 +25,19 @@ export const EpicDueDateField = memo(function EpicDueDateField({
       </button>
       {open && (
         <div data-testid="calendar-picker">
-          {[...Array(31)].map((_, i) => (
-            <button key={i + 1} onClick={() => { onDueDateChange(`2026-05-${String(i + 1).padStart(2, '0')}`); setOpen(false); }}>
-              {i + 1}
-            </button>
-          ))}
+          {[...Array(31)].map((_, i) => {
+            const day = i + 1;
+            const currentDay = dueDate ? new Date(dueDate).getDate() : null;
+            return (
+              <button
+                key={day}
+                aria-current={currentDay === day ? 'date' : undefined}
+                onClick={() => { onDueDateChange(`2026-05-${String(day).padStart(2, '0')}`); setOpen(false); }}
+              >
+                {day}
+              </button>
+            );
+          })}
         </div>
       )}
     </div>

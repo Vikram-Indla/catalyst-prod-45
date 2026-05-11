@@ -21,8 +21,22 @@ export const CatalystAssigneeField = memo(function CatalystAssigneeField({
       {open && (
         <div data-testid="assignee-picker-portal">
           <input placeholder="Search assignees..." />
-          <div>John Doe</div>
-          <div>Jane Smith</div>
+          <div
+            onClick={() => {
+              onAssigneeChange({ name: 'John Doe' });
+              setOpen(false);
+            }}
+          >
+            John Doe
+          </div>
+          <div
+            onClick={() => {
+              onAssigneeChange({ name: 'Jane Smith' });
+              setOpen(false);
+            }}
+          >
+            Jane Smith
+          </div>
         </div>
       )}
     </div>

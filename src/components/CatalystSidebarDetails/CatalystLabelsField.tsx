@@ -16,9 +16,12 @@ export const CatalystLabelsField = memo(function CatalystLabelsField({
   return (
     <div>
       <label>Labels</label>
-      <button data-testid="labels-button" onClick={() => setOpen(!open)}>
-        {labels.length ? labels.join(', ') : 'No labels'}
-      </button>
+      <div>
+        <button data-testid="labels-button" onClick={() => setOpen(!open)}>
+          {labels.length ? labels.join(', ') : ''}
+        </button>
+        {!labels.length && <span>No labels</span>}
+      </div>
       {open && (
         <div data-testid="labels-picker">
           {available.map((label) => (
@@ -31,6 +34,7 @@ export const CatalystLabelsField = memo(function CatalystLabelsField({
                     ? [...labels, label]
                     : labels.filter((l) => l !== label);
                   onLabelsChange(newLabels);
+                  setOpen(false);
                 }}
               />
               {label}

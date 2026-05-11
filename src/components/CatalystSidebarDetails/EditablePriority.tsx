@@ -20,17 +20,21 @@ export const EditablePriority = memo(function EditablePriority({
         {priority}
       </button>
       {open && (
-        <select
-          role="listbox"
-          onChange={(e) => {
-            onPriorityChange(e.target.value);
-            setOpen(false);
-          }}
-        >
-          {priorities.map((p) => (
-            <option key={p} role="option">{p}</option>
+        <ul role="listbox" style={{ listStyle: 'none', margin: 0, padding: 0 }}>
+          {priorities.map((p, i) => (
+            <li
+              key={p}
+              role="option"
+              aria-label={`p${i + 1} ${p}`}
+              onClick={() => {
+                onPriorityChange(p);
+                setOpen(false);
+              }}
+            >
+              {p}
+            </li>
           ))}
-        </select>
+        </ul>
       )}
       <div data-testid="priority-bar" style={{ height: '2px', background: '#999' }} />
     </div>

@@ -14,8 +14,9 @@ export const ReporterTimestamps = memo(function ReporterTimestamps({
 }) {
   const formatDate = (iso: string) => {
     const date = new Date(iso);
-    const formatted = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-    return formatted.replace(/^[a-z]/, (c) => c.toUpperCase());
+    const day = date.getDate();
+    const month = date.toLocaleDateString('en-US', { month: 'short' });
+    return `${month} ${day}`;
   };
 
   const formatRelative = (iso: string) => {

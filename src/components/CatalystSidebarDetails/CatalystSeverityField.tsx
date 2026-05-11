@@ -20,17 +20,20 @@ export const CatalystSeverityField = memo(function CatalystSeverityField({
         {severity}
       </button>
       {open && (
-        <select
-          role="listbox"
-          onChange={(e) => {
-            onSeverityChange(e.target.value);
-            setOpen(false);
-          }}
-        >
+        <ul role="listbox" style={{ listStyle: 'none', margin: 0, padding: 0 }}>
           {severities.map((s) => (
-            <option key={s} role="option">{s}</option>
+            <li
+              key={s}
+              role="option"
+              onClick={() => {
+                onSeverityChange(s);
+                setOpen(false);
+              }}
+            >
+              {s}
+            </li>
           ))}
-        </select>
+        </ul>
       )}
     </div>
   );

@@ -505,7 +505,8 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
   // Jira-parity (2026-05-08): Jira's BAU list default columns are Type | Key |
   // Summary | Status | Comments | Parent — NO Assignee by default. Assignee is
   // available via the column picker (+) but hidden in the factory layout.
-  const DEFAULT_VISIBLE_COLUMNS = ['key', 'summary', 'status', 'assignee', 'priority', 'comments', 'parent'];
+  // NOTE: Comments column is banned (2026-05-11), removed from defaults
+  const DEFAULT_VISIBLE_COLUMNS = ['key', 'summary', 'status', 'assignee', 'priority', 'parent'];
   const parseSet = (raw: string | null): Set<string> =>
     raw ? new Set(raw.split(',').filter(Boolean)) : new Set();
 
