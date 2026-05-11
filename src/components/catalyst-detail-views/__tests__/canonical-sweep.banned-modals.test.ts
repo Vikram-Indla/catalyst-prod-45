@@ -42,6 +42,12 @@ const BANNED_PATHS = [
   'modules/work-hub/components/IssueDetailPanel.tsx',
   'modules/project-work-hub/components/drawers/EpicDetailDrawer.tsx',
   'modules/project-work-hub/components/drawers/StoryDetailDrawer.tsx',
+  // P2 — files 7 + 8 (this PR) — both 0 imports, dead code.
+  // File 9 (ForYouDetailPanel) is deferred: ForYouPage.atlaskit.tsx still
+  // routes BRD items (business_request / business_gap) through it. Needs a
+  // proper migration to CatalystViewBusinessRequest v2, not just deletion.
+  'components/items/epics/EpicDetailModal.tsx',
+  'components/boards/BoardIssueDetailDrawer.tsx',
 ];
 
 describe('Canonical sweep — banned non-canonical detail-view files must not exist', () => {
