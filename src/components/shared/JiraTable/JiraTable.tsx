@@ -925,6 +925,8 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
               textTransform: 'none',
               letterSpacing: 'normal',
               whiteSpace: 'nowrap',
+              textAlign: col.align === 'center' ? 'center' : col.align === 'end' ? 'right' : 'left',
+              display: 'block',
             }}
           >
             {col.label}
