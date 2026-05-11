@@ -1594,9 +1594,65 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
         navigate(`/project-hub/${projectKey}/kanban${parent ? `?epic=${parent}` : ''}`);
       } },
     { id: 'rank-top', label: 'Rank to top', icon: <AkArrowUpIcon label="" />,
-      onClick: (r) => flag.info('Rank to top', `${r.key || r.id} → position 1 (rank API wires in task #10).`) },
+      onClick: async (r) => {
+        // 2026-05-12 task #10 — rank-to-top: writes a rank_order lower than
+        // the current MIN within the project scope. Schema migration lives
+        // at supabase/migrations-pending/20260512_ph_issues_rank_order.sql
+        // (PENDING Vikram approval + Lovable manual paste). Until that
+        // lands the column doesn't exist → graceful fallback to info flag.
+        try {
+          const { data: minRow, error: minErr } = await (supabase
+            .from('ph_issues') as any)
+            .select('rank_order')
+            .eq('project_key', projectKey)
+            .not('rank_order', 'is', null)
+            .order('rank_order', { ascending: true })
+            .limit(1)
+            .maybeSingle();
+          if (minErr || !minRow) {
+            flag.info('Rank to top', `Schema pending: rank_order column not yet migrated. See migrations-pending/.`);
+            return;
+          }
+          const newRank = (minRow.rank_order ?? 100) - 10;
+          const { error: updErr } = await (supabase
+            .from('ph_issues') as any)
+            .update({ rank_order: newRank })
+            .eq('id', r.id);
+          if (updErr) throw updErr;
+          queryClient.invalidateQueries({ queryKey: ['backlog-stories-v2', projectId] });
+          flag.success('Ranked to top', r.key || r.id);
+        } catch (e: any) {
+          flag.error('Rank failed', e?.message ?? String(e));
+        }
+      } },
     { id: 'rank-bottom', label: 'Rank to bottom', icon: <AkArrowDownIcon label="" />,
-      onClick: (r) => flag.info('Rank to bottom', `${r.key || r.id} → last position (rank API wires in task #10).`) },
+      onClick: async (r) => {
+        // Symmetric: writes rank_order higher than current MAX in project scope.
+        try {
+          const { data: maxRow, error: maxErr } = await (supabase
+            .from('ph_issues') as any)
+            .select('rank_order')
+            .eq('project_key', projectKey)
+            .not('rank_order', 'is', null)
+            .order('rank_order', { ascending: false })
+            .limit(1)
+            .maybeSingle();
+          if (maxErr || !maxRow) {
+            flag.info('Rank to bottom', `Schema pending: rank_order column not yet migrated.`);
+            return;
+          }
+          const newRank = (maxRow.rank_order ?? 0) + 10;
+          const { error: updErr } = await (supabase
+            .from('ph_issues') as any)
+            .update({ rank_order: newRank })
+            .eq('id', r.id);
+          if (updErr) throw updErr;
+          queryClient.invalidateQueries({ queryKey: ['backlog-stories-v2', projectId] });
+          flag.success('Ranked to bottom', r.key || r.id);
+        } catch (e: any) {
+          flag.error('Rank failed', e?.message ?? String(e));
+        }
+      } },
     { id: 'attach', label: 'Attach files', icon: <AkAttachmentIcon label="" />,
       onClick: (r) => { openDetail(r); flag.info('Attach files', 'Attachments section in the right rail.'); } },
     // ── Secondary group — Catalyst-specific actions ─────────────────────
