@@ -6,6 +6,10 @@
   "engines": {
     "node": ">=20.0.0 <24.0.0"
   },
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
   "scripts": {
     "sync-deps": "node scripts/sync-deps.js",
     "dev": "node scripts/sync-deps.js && vite",
@@ -19,9 +23,14 @@
     "test:visual": "playwright test --config=playwright.ads.config.ts --project=visual",
     "test:visual:webkit": "playwright test --config=playwright.ads.config.ts --project=visual-webkit",
     "test:visual:update": "playwright test --config=playwright.ads.config.ts --project=visual --update-snapshots",
-    "test:a11y": "playwright test --config=playwright.ads.config.ts --project=a11y"
+    "test:a11y": "playwright test --config=playwright.ads.config.ts --project=a11y",
+    "catylast:build": "npm run build --workspace=@catylast/tokens --workspace=@catylast/theme --workspace=@catylast/icons --workspace=@catylast/primitives --workspace=@catylast/card --workspace=@catylast/rich-editor --workspace=@catylast/dynamic-table",
+    "catylast:typecheck": "npm run typecheck --workspace=@catylast/tokens --workspace=@catylast/theme --workspace=@catylast/icons --workspace=@catylast/primitives --workspace=@catylast/card --workspace=@catylast/rich-editor --workspace=@catylast/dynamic-table",
+    "catylast:storybook": "npm run dev --workspace=@catylast/storybook",
+    "catylast:storybook:build": "npm run build --workspace=@catylast/storybook"
   },
   "dependencies": {
+    "@atlaskit/adf-schema": "52.6.6",
     "@atlaskit/atlassian-navigation": "^5.7.0",
     "@atlaskit/avatar": "^25.11.7",
     "@atlaskit/avatar-group": "^12.6.1",
@@ -36,6 +45,7 @@
     "@atlaskit/dynamic-table": "^18.4.0",
     "@atlaskit/editor-common": "^112.22.0",
     "@atlaskit/editor-core": "^217.12.4",
+    "@atlaskit/editor-plugins": "13.0.120",
     "@atlaskit/editor-toolbar": "^1.0.8",
     "@atlaskit/empty-state": "^10.2.0",
     "@atlaskit/flag": "^17.9.8",
@@ -75,9 +85,18 @@
     "@atlaskit/tokens": "^13.0.1",
     "@atlaskit/tooltip": "^21.1.6",
     "@atlaskit/user-picker": "^11",
+    "@catylast/card": "*",
+    "@catylast/dynamic-table": "*",
+    "@catylast/icons": "*",
+    "@catylast/primitives": "*",
+    "@catylast/rich-editor": "*",
+    "@catylast/theme": "*",
+    "@catylast/tokens": "*",
     "@dnd-kit/core": "^6.3.1",
     "@dnd-kit/sortable": "^10.0.0",
     "@dnd-kit/utilities": "^3.2.2",
+    "@fontsource-variable/inter": "^5.2.8",
+    "@fontsource-variable/jetbrains-mono": "^5.2.8",
     "@hello-pangea/dnd": "^18.0.1",
     "@hookform/resolvers": "3.9.0",
     "@notionhq/client": "^5.20.0",

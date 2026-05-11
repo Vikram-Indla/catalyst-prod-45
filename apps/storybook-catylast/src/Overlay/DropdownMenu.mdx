@@ -1,0 +1,485 @@
+import {
+  Canvas,
+  Controls,
+  Meta,
+  Source,
+  Title,
+  Subtitle,
+} from "@storybook/addon-docs/blocks";
+import * as DropdownMenuStories from "./DropdownMenu.stories";
+
+<Meta of={DropdownMenuStories} />
+
+<Title />
+
+<Subtitle>
+  The disclosure menu primitive across Catylast — toolbars, table row
+  actions, work-item-card kebabs, density switchers, view-mode toggles,
+  anywhere a single trigger reveals a focused list of actions or
+  settings.
+</Subtitle>
+
+`DropdownMenu` ships from **`@catylast/primitives`**. The family
+pairs a single container with four item types — regular actions,
+checkbox toggles, radio groups, and visually-grouped sections —
+covering every conceptual slot you'd expect from a modern dropdown
+family. All visual code is original to Catylast.
+
+Built on Radix UI for keyboard navigation, focus trap, ARIA roles, and
+portaling. The visual layer is fully owned by Catylast — every
+dimension exposed as both an enum prop and a CSS variable.
+
+| Component                  | Purpose                                                          |
+| -------------------------- | ---------------------------------------------------------------- |
+| `DropdownMenu`             | The root. Pass a `trigger` and the items as children.            |
+| `DropdownItem`             | Regular action item. Closes the menu on click.                   |
+| `DropdownItemCheckbox`     | Toggleable item. Menu stays open after click.                    |
+| `DropdownItemRadioGroup`   | Single-select group container.                                   |
+| `DropdownItemRadio`        | Single radio inside a `DropdownItemRadioGroup`.                  |
+| `DropdownItemGroup`        | Visually section items with title + optional separator.          |
+| `DropdownMenuSub`*         | Wrap a `DropdownMenuSubTrigger` + `DropdownMenuSubContent`.      |
+| `DropdownMenuSeparator`    | Standalone divider for advanced layouts.                         |
+
+\* Sub-menus inherit the parent menu's `size` automatically.
+
+---
+
+## Install
+
+<Source
+  language="bash"
+  code={`# pnpm
+pnpm add @catylast/primitives @catylast/tokens @catylast/icons
+
+# npm
+npm install @catylast/primitives @catylast/tokens @catylast/icons
+
+# yarn
+yarn add @catylast/primitives @catylast/tokens @catylast/icons`}
+/>
+
+The CSS file ships next to the JS bundle and must be imported once per
+app:
+
+<Source
+  language="ts"
+  code={`// app/layout.tsx
+import "@catylast/tokens/tokens.css";
+import "@catylast/primitives/styles.css";`}
+/>
+
+---
+
+## Quickstart
+
+The minimum viable menu — `trigger` as a string auto-builds a Button
+with a chevron, and items are passed as children:
+
+<Canvas of={DropdownMenuStories.Default} />
+
+<Source
+  language="tsx"
+  code={`import { DropdownMenu, DropdownItem } from "@catylast/primitives";
+
+<DropdownMenu trigger="Choose an action">
+  <DropdownItem onClick={edit}>Edit</DropdownItem>
+  <DropdownItem onClick={move}>Move…</DropdownItem>
+  <DropdownItem onClick={clone}>Clone</DropdownItem>
+  <DropdownItem onClick={del} appearance="danger">Delete</DropdownItem>
+</DropdownMenu>;`}
+/>
+
+Each `DropdownItem` closes the menu on click and fires `onClick`. The
+trailing ellipsis on "Move…" is a useful convention — it tells the
+reader the action opens *another* surface (a sub-menu, a dialog, a
+form). Plain labels means the action commits immediately.
+
+---
+
+## Trigger variants
+
+Triggers can be a string (auto-built button), any custom node, or
+rendered through an explicit `<DropdownMenuTrigger asChild>` for full
+polymorphism. The popup behaviour stays identical regardless of
+trigger shape.
+
+<Canvas of={DropdownMenuStories.TriggerVariants} />
+
+<Source
+  language="tsx"
+  code={`// String — auto-built Button with trailing chevron
+<DropdownMenu trigger="Open menu">…</DropdownMenu>
+
+// String + appearance preset
+<DropdownMenu trigger="Save" triggerAppearance="primary">…</DropdownMenu>
+
+// Custom node (pass a styled Button / IconButton / chip)
+<DropdownMenu trigger={<IconButton icon="more-horizontal" label="More" />}>…</DropdownMenu>
+
+// Explicit trigger for full polymorphism
+<DropdownMenu>
+  <DropdownMenuTrigger asChild>
+    <Button appearance="subtle" iconAfter="chevron-down">Custom</Button>
+  </DropdownMenuTrigger>
+  <DropdownItem>One</DropdownItem>
+  <DropdownItem>Two</DropdownItem>
+</DropdownMenu>`}
+/>
+
+---
+
+## Items
+
+Items support `iconBefore` / `iconAfter` (badges, shortcut hints,
+trailing chevrons), and `description` for a secondary line of text.
+`appearance="danger"` colours destructive actions; `isDisabled` greys
+out unavailable ones.
+
+<Canvas of={DropdownMenuStories.Items} />
+
+<Source
+  language="tsx"
+  code={`<DropdownItem iconBefore="copy" iconAfter={<kbd>⌘C</kbd>}>
+  Copy
+</DropdownItem>
+
+<DropdownItem
+  iconBefore="link"
+  description="Get a sharable link to this issue."
+>
+  Copy link
+</DropdownItem>
+
+<DropdownItem isDisabled iconBefore="lock">
+  Restricted (no permission)
+</DropdownItem>
+
+<DropdownItem iconBefore="trash" appearance="danger">
+  Delete forever
+</DropdownItem>`}
+/>
+
+---
+
+## Groups
+
+Wrap items in `DropdownItemGroup` to add an uppercase title and / or a
+divider. Mixing group types (regular items, checkboxes, radios) inside
+one menu is fine — the visual treatment makes the boundaries obvious.
+
+<Canvas of={DropdownMenuStories.Groups} />
+
+<Source
+  language="tsx"
+  code={`<DropdownMenu trigger="Workflow">
+  <DropdownItemGroup title="Quick actions">
+    <DropdownItem iconBefore="pencil">Edit</DropdownItem>
+    <DropdownItem iconBefore="copy">Duplicate</DropdownItem>
+  </DropdownItemGroup>
+  <DropdownItemGroup title="Move" hasSeparator>
+    <DropdownItem>Move to backlog</DropdownItem>
+    <DropdownItem>Move to in-progress</DropdownItem>
+  </DropdownItemGroup>
+  <DropdownItemGroup hasSeparator>
+    <DropdownItem appearance="danger" iconBefore="trash">
+      Archive
+    </DropdownItem>
+  </DropdownItemGroup>
+</DropdownMenu>`}
+/>
+
+> **Tip:** the last group above has `hasSeparator` but no `title` — a
+> common pattern for the "destructive last" tail of a menu.
+
+---
+
+## Checkbox items
+
+`DropdownItemCheckbox` toggles independently of its siblings. The menu
+stays open after a click so users can flip multiple toggles in one
+session — closing happens via Esc, blur, or any non-checkbox
+`DropdownItem`.
+
+<Canvas of={DropdownMenuStories.CheckboxItems} />
+
+<Source
+  language="tsx"
+  code={`const [showLineNumbers, setShowLineNumbers] = useState(true);
+const [showMinimap, setShowMinimap] = useState(false);
+
+<DropdownMenu trigger="View settings">
+  <DropdownItemGroup title="Editor view">
+    <DropdownItemCheckbox
+      isSelected={showLineNumbers}
+      onClick={setShowLineNumbers}
+      description="Show line numbers in the gutter."
+    >
+      Line numbers
+    </DropdownItemCheckbox>
+    <DropdownItemCheckbox
+      isSelected={showMinimap}
+      onClick={setShowMinimap}
+    >
+      Minimap
+    </DropdownItemCheckbox>
+  </DropdownItemGroup>
+</DropdownMenu>`}
+/>
+
+The `onClick` callback receives the **new** boolean value — no need to
+read the previous state.
+
+---
+
+## Radio groups
+
+`DropdownItemRadioGroup` enforces single-select. Toggling one radio
+deselects the others. Pair with `value` + `onChange` for fully-
+controlled behaviour, or use `defaultValue` for uncontrolled.
+
+<Canvas of={DropdownMenuStories.RadioGroup} />
+
+<Source
+  language="tsx"
+  code={`const [density, setDensity] = useState("comfortable");
+
+<DropdownMenu trigger="Density">
+  <DropdownItemRadioGroup
+    title="Row density"
+    value={density}
+    onChange={setDensity}
+  >
+    <DropdownItemRadio id="compact">Compact</DropdownItemRadio>
+    <DropdownItemRadio id="comfortable">Comfortable</DropdownItemRadio>
+    <DropdownItemRadio id="spacious">Spacious</DropdownItemRadio>
+  </DropdownItemRadioGroup>
+</DropdownMenu>`}
+/>
+
+The `id` on each `DropdownItemRadio` is the value emitted to
+`onChange` — choose strings that are stable identifiers for your
+application state.
+
+---
+
+## Sub-menus
+
+Nest a `<DropdownMenuSub>` block to create a sub-menu — the outer item
+shows a trailing chevron and opens the sub-popup on hover or `→`.
+Sub-menus inherit the parent's `size` automatically.
+
+<Canvas of={DropdownMenuStories.SubMenu} />
+
+<Source
+  language="tsx"
+  code={`<DropdownMenu trigger="Move issue">
+  <DropdownItem>Mark as done</DropdownItem>
+  <DropdownMenuSub>
+    <DropdownMenuSubTrigger iconBefore="folder">
+      Move to project…
+    </DropdownMenuSubTrigger>
+    <DropdownMenuSubContent>
+      <DropdownItem>Catylast (CAT)</DropdownItem>
+      <DropdownItem>Mobile (MOB)</DropdownItem>
+      <DropdownItem>Backend (BE)</DropdownItem>
+    </DropdownMenuSubContent>
+  </DropdownMenuSub>
+  <DropdownMenuSub>
+    <DropdownMenuSubTrigger iconBefore="user">
+      Assign to…
+    </DropdownMenuSubTrigger>
+    <DropdownMenuSubContent>…</DropdownMenuSubContent>
+  </DropdownMenuSub>
+</DropdownMenu>`}
+/>
+
+> **Don't go more than 2 levels deep.** Each level adds friction —
+> users have to track three popovers at once. Flatten further nesting
+> with a search input or a dialog.
+
+---
+
+## Sizes
+
+Three sizes scale padding and font size together. The size propagates
+to all items via context — sub-menus and nested groups inherit
+automatically.
+
+<Canvas of={DropdownMenuStories.Sizes} />
+
+| Size     | Item padding | When to use it                                    |
+| -------- | ------------ | ------------------------------------------------- |
+| `small`  | tight        | Dense surfaces — toolbars, inline cell actions.  |
+| `medium` | default      | Most contexts.                                    |
+| `large`  | roomy        | Touch-first surfaces, hero menus.                 |
+
+---
+
+## Placement
+
+`placement` accepts the four sides plus their `-start` / `-end`
+variants. Radix flips placement automatically when the popup would
+clip the viewport edge.
+
+<Canvas of={DropdownMenuStories.Placements} />
+
+<Source
+  language="tsx"
+  code={`<DropdownMenu trigger="…" placement="bottom-end">…</DropdownMenu>
+<DropdownMenu trigger="…" placement="top-start">…</DropdownMenu>`}
+/>
+
+---
+
+## Polymorphic items
+
+Pass `as="a"` (or any router Link) to make a `DropdownItem` navigate.
+The polymorphic `as` prop forwards element-specific props like `href`
+and `target`.
+
+<Canvas of={DropdownMenuStories.PolymorphicLinkItem} />
+
+<Source
+  language="tsx"
+  code={`<DropdownItem as="a" href="/docs" iconAfter="external-link">
+  Documentation
+</DropdownItem>
+
+// With a router (Next.js, React Router, etc.)
+<DropdownItem as={Link} to="/docs">Documentation</DropdownItem>`}
+/>
+
+---
+
+## CSS variable escape hatch
+
+Every prop maps to a CSS variable on the popup root or on the items.
+Override the same variables via `style` for branded colours, custom
+corner radii, wider menus, or alternate hover backgrounds.
+
+<Canvas of={DropdownMenuStories.CssVariableEscapeHatch} />
+
+### Variables published
+
+| Variable                                   | Default                  | Purpose                                       |
+| ------------------------------------------ | ------------------------ | --------------------------------------------- |
+| `--ddm-bg`                                 | `surface.overlay`        | Popup background.                             |
+| `--ddm-color`                              | `text.primary`           | Default text color.                           |
+| `--ddm-border-color`                       | `border.default`         | Outer border color.                           |
+| `--ddm-border-width`                       | `1px`                    | Outer border width.                           |
+| `--ddm-radius`                             | `radius.md`              | Outer corner radius.                          |
+| `--ddm-padding`                            | per size                 | Inner padding.                                |
+| `--ddm-shadow`                             | `elevation.lg`           | Popup drop shadow.                            |
+| `--ddm-font-size`                          | per size                 | Default font size.                            |
+| `--ddm-min-width` / `-max-width`           | per size                 | Popup min / max width.                        |
+| `--ddm-item-bg` / `-bg-hover`              | (transparent / hover)    | Item background.                              |
+| `--ddm-item-color` / `-color-disabled`     | text tokens              | Item text color.                              |
+| `--ddm-item-padding-x` / `-y`              | per size                 | Item padding.                                 |
+| `--ddm-item-radius`                        | `radius.sm`              | Item corner radius.                           |
+| `--ddm-item-gap`                           | `space.8`                | Gap between icon, label, trailing slot.       |
+| `--ddm-item-icon-size`                     | per size                 | Icon glyph size.                              |
+| `--ddm-item-font-weight`                   | `regular`                | Item label weight.                            |
+| `--ddm-item-description-color`             | `text.subtle`            | Secondary line color.                         |
+| `--ddm-item-description-font-size`         | `font-size.xs`           | Secondary line font size.                     |
+| `--ddm-checkmark-color`                    | `text.accent`            | Selected check / radio glyph color.           |
+| `--ddm-group-title-color`                  | `text.subtle`            | Group title color.                            |
+| `--ddm-group-title-font-size`              | `font-size.xs`           | Group title font size.                        |
+| `--ddm-group-title-font-weight`            | `semibold`               | Group title weight.                           |
+| `--ddm-separator-color`                    | `border.subtle`          | Divider color.                                |
+
+---
+
+## Showcase
+
+A realistic Catylast surface — a work-item card kebab menu with a mix
+of regular items, a destructive item, a checkbox group, a sub-menu of
+statuses, and a radio group of densities.
+
+<Canvas of={DropdownMenuStories.Showcase} />
+
+This is what consumers actually compose. The component family is
+designed so you can mix and match every item type inside a single
+menu without any friction.
+
+---
+
+## Accessibility
+
+- **`role="menu"`** on the popup with `role="menuitem"` /
+  `role="menuitemcheckbox"` / `role="menuitemradio"` on the items —
+  screen readers announce each item type correctly.
+- **Keyboard model:**
+  - `↑` / `↓` move highlight between items.
+  - `→` / `←` open / close sub-menus.
+  - `Enter` / `Space` activate the highlighted item (or toggle a
+    checkbox).
+  - `Esc` closes the menu and returns focus to the trigger.
+  - **Type-ahead** — start typing a label to jump to that item.
+- **Focus return.** When the menu closes, focus returns to the
+  trigger, so the user keeps their place in the surrounding tab order.
+- **`aria-haspopup="menu"`** on the trigger.
+- **`aria-checked`** reflects the toggled state on checkbox / radio
+  items. Radio groups use `role="group"` so screen readers announce
+  the surrounding label.
+- **Disabled items** carry `aria-disabled="true"` and are skipped by
+  arrow-key navigation.
+
+---
+
+## Best practices
+
+- **Keep menus short — 5 to 10 items.** Past that, switch to a
+  searchable list (Combobox) or a dialog.
+- **Lead each item with an icon.** Even simple icons dramatically
+  improve scannability when there are 6+ items.
+- **One destructive item per menu, last.** Pair with `appearance=
+  "danger"` and an ellipsis label ("Archive…") if it opens a confirm
+  dialog.
+- **Group by intent, not type.** Put all the actions for a workflow
+  in one group, settings in another — don't mix "all regular items"
+  / "all checkboxes" sections unless the user mental model demands it.
+- **Don't nest more than two levels.** Each sub-menu adds friction;
+  flatten further with a dialog or a typeahead.
+- **Use radio groups for view-mode / density / sort-order.** Anywhere
+  the user picks one and only one option from a small set.
+- **Use checkbox items for toggles.** Anywhere flipping one option
+  doesn't affect the others.
+
+---
+
+## Theme switching
+
+Use the toolbar at the top of the canvas to flip between **Light**,
+**Dark**, and **System**. The `data-theme` attribute on `<html>`
+drives every token value the menu consumes.
+
+---
+
+## Related
+
+- **`Menu`** — the legacy compound API (`<MenuTrigger>` + `<MenuContent>`
+  + `<MenuItem>`). Still works for backwards compat; new code should
+  prefer `DropdownMenu`.
+- **`ContextMenu`** — same item primitives, opened by right-click on a
+  surface rather than a trigger button.
+- **`Popover`** — the underlying overlay primitive for non-menu
+  popovers (rich tooltips, callouts).
+- **`Combobox`** — when the list is too long for a menu and needs
+  search.
+
+---
+
+## Coming next
+
+- **Search input slot** — a built-in filter row at the top of the
+  popup for menus that occasionally grow past the recommended item
+  count.
+- **Multi-select group** — a `DropdownItemMultiCheckGroup` that
+  enforces an array-shape value across many checkbox items, similar
+  to `DropdownItemRadioGroup` for single-select.
+- **Loading state** — a placeholder shape for menus whose items come
+  from a network fetch.
+- **Hot-key hints** — a `shortcut` prop that auto-formats the right-
+  side `<kbd>` styling.
+
+Track progress in `CLAUDE.md` §3.

@@ -1,0 +1,503 @@
+import {
+  Canvas,
+  Controls,
+  Meta,
+  Source,
+  Title,
+  Subtitle,
+} from "@storybook/addon-docs/blocks";
+import * as CardStories from "./Card.stories";
+
+<Meta of={CardStories} />
+
+<Title />
+
+<Subtitle>
+  The surface primitive for every contained block in Catylast — board cards,
+  dashboard widgets, settings tiles, profile blocks, modal content surfaces.
+</Subtitle>
+
+`Card` is **not a domain-specific component**. It is the building block.
+Three visual variants, five states, four named slots, and an independent
+knob for every styling dimension (size, radius, padding, elevation, tone)
+— all token-driven, all overridable per instance via prop **or** CSS
+variable. The work-item card is a **composition** built on top
+of `Card`, not a separate component.
+
+For the architectural reasoning (why some design-system playbooks don't
+ship a `Card` primitive at all and how we ended up with this two-layer
+approach), see **CLAUDE.md §17** in the repo root.
+
+---
+
+## Install
+
+The package is part of the Catylast monorepo and published under the
+`@catylast` scope.
+
+<Source
+  language="bash"
+  code={`# pnpm
+pnpm add @catylast/card @catylast/tokens
+
+# npm
+npm install @catylast/card @catylast/tokens
+
+# yarn
+yarn add @catylast/card @catylast/tokens`}
+/>
+
+The CSS file ships next to the JS bundle and must be imported once per
+app — typically in your root layout / entry file:
+
+<Source
+  language="ts"
+  code={`// app/layout.tsx (or wherever your global CSS imports live)
+import "@catylast/tokens/tokens.css";
+import "@catylast/card/styles.css";`}
+/>
+
+> The component **requires** `@catylast/tokens` for theme variables. If you
+> already use the design system's `ThemeProvider`, you're done.
+
+---
+
+## Quickstart
+
+The minimum viable card — header, body, footer:
+
+<Canvas of={CardStories.Default} />
+
+<Source
+  language="tsx"
+  code={`import { Card } from "@catylast/card";
+
+<Card variant="elevated">
+  <Card.Header>
+    <h3>Project status</h3>
+  </Card.Header>
+  <Card.Body>
+    Sprint 12 is on track. Three issues blocked, two ready for review.
+  </Card.Body>
+  <Card.Footer>Updated 2 hours ago</Card.Footer>
+</Card>;`}
+/>
+
+All slots are optional. The simplest possible card is just `<Card><Card.Body>...</Card.Body></Card>`.
+
+---
+
+## Use cases
+
+`Card` shows up across the Catylast app whenever a block needs to feel
+contained, focusable, or selectable. The patterns below are the ones the
+team has settled on so far. Each links to a worked example further down
+the page.
+
+| Pattern                         | When to reach for it                                                                | Example                                |
+| ------------------------------- | ----------------------------------------------------------------------------------- | -------------------------------------- |
+| **Static information panel**    | Read-only summary inside a page (project status, "what's new").                     | [Quickstart](#quickstart)              |
+| **Clickable / selectable card** | Pricing tier, board card, settings tile that drills into detail.                    | [Interactive](#interactive)            |
+| **Multi-select grid**           | Pick-many flow — onboarding choices, integration toggles, plan comparison.          | [Selectable grid](#selectable-grid)    |
+| **Hero / marketing card**       | Image-led card promoting an article, feature, or event.                             | [Cover image](#cover-image)            |
+| **Branded callout**             | Status-coded card on a board (priority, risk, severity).                            | [Tones](#tones)                        |
+| **Image-backed dashboard tile** | Big visual block with foreground stats / CTA on top.                                | [Background image](#background-image) |
+| **Composed work-item card**     | Ticket-style card (icon + key + title + assignee + points) — built from `Card`.     | [Work-item composition](#work-item-composition) |
+
+---
+
+## Variants
+
+Three semantic presets. Each one is just a combination of border, shadow,
+and background — you can override any single knob on top.
+
+<Canvas of={CardStories.Variants} />
+
+| Variant    | Border                       | Shadow         | Background           | When to reach for it                                              |
+| ---------- | ---------------------------- | -------------- | -------------------- | ----------------------------------------------------------------- |
+| `outlined` | `1px solid border.subtle`    | none           | `surface.background` | Default surface. Most cards on most pages.                        |
+| `elevated` | none                         | `elevation.sm` | `surface.background` | Card is the primary focus on the page (hero, modal preview).      |
+| `filled`   | none                         | none           | `surface.raised`     | Card sits on `surface.background` and needs subtle distinction.   |
+
+---
+
+## States
+
+Default · hover · pressed · selected · disabled. **Hover** and **pressed**
+fire only when the card is `interactive`. **Selected** indicates membership
+in a selection set (good for multi-select grids). **Disabled** desaturates
+the card, removes it from the tab order, and suppresses every interactive
+effect.
+
+<Canvas of={CardStories.States} />
+
+---
+
+## Slots
+
+`Card` exposes four named slots as compound subcomponents. All four are
+optional, can appear in any order, and each handles its own padding and
+hairline-border-to-the-next-slot.
+
+<Canvas of={CardStories.Slots} />
+
+| Slot           | Purpose                                                                                |
+| -------------- | -------------------------------------------------------------------------------------- |
+| `Card.Cover`   | Full-bleed top region — drop an `<img>` and it fills edge-to-edge. No internal padding. |
+| `Card.Header`  | Top content row. Hairline divider with `Body` underneath.                              |
+| `Card.Body`    | Main content. The only slot most cards need.                                           |
+| `Card.Footer`  | Meta row (timestamps, action links). Hairline divider with `Body` above.               |
+
+---
+
+## Sizing knobs
+
+Each visual dimension is its own prop. Mix and match freely.
+
+### `size` — slot padding scale
+
+<Canvas of={CardStories.Sizes} />
+
+### `radius` — corner radius
+
+<Canvas of={CardStories.Radii} />
+
+### `elevation` — shadow depth
+
+<Canvas of={CardStories.Elevations} />
+
+### `padding` — body padding override
+
+<Canvas of={CardStories.Padding} />
+
+### `tone` — top accent strip
+
+<Canvas of={CardStories.Tones} />
+
+---
+
+## Image patterns
+
+### Cover image
+
+`coverImage` auto-renders a `Card.Cover` with that image — no need to nest
+a slot manually. Combine with `coverHeight` for tall hero shots or compact
+thumbnails.
+
+<Canvas of={CardStories.CoverImage} />
+
+<Source
+  language="tsx"
+  code={`<Card
+  coverImage="/cover.jpg"
+  coverImageAlt="Mountain landscape"
+  coverHeight={140}
+>
+  <Card.Body>...</Card.Body>
+</Card>`}
+/>
+
+### Background image
+
+`backgroundImage` fills the whole card with an image. Pair with
+`backgroundOverlay` (boolean for a sensible darken, or a CSS color/gradient
+string for full control) so foreground text stays legible. Use `textColor`
+to flip the body color for dark backgrounds.
+
+<Canvas of={CardStories.BackgroundImage} />
+
+<Source
+  language="tsx"
+  code={`<Card
+  backgroundImage="/hero.jpg"
+  backgroundOverlay="linear-gradient(135deg, rgba(20,30,55,0.85), rgba(60,30,90,0.55))"
+  textColor="#fff"
+>
+  <Card.Body>...</Card.Body>
+</Card>`}
+/>
+
+### Both at once
+
+A top cover **and** a full-bleed background, layered together. Useful for
+hero blocks where the cover is the primary focus and the background adds
+atmosphere.
+
+<Canvas of={CardStories.CoverPlusBackground} />
+
+---
+
+## Interactive
+
+Set `interactive` to make the entire card a focusable, button-shaped
+affordance. The card gets `role="button"`, `tabIndex={0}`, and handles
+**Enter** / **Space** to fire `onClick`. The focus ring matches the rest
+of the design system.
+
+<Canvas of={CardStories.Interactive} />
+
+<Source
+  language="tsx"
+  code={`<Card interactive onClick={handleOpen}>
+  <Card.Body>Click anywhere on this card.</Card.Body>
+</Card>`}
+/>
+
+### Render as a real link
+
+For navigation cards, render as an anchor instead of a div. The
+polymorphic `as` prop forwards element-specific props like `href`.
+
+<Canvas of={CardStories.AsLink} />
+
+<Source
+  language="tsx"
+  code={`<Card
+  as="a"
+  href="https://example.com"
+  target="_blank"
+  rel="noreferrer"
+  interactive
+  variant="elevated"
+>
+  <Card.Header>Documentation</Card.Header>
+  <Card.Body>Opens in a new tab.</Card.Body>
+</Card>`}
+/>
+
+---
+
+## Selectable grid
+
+Pattern for a multi-select flow — every card is `interactive` and toggles
+its `selected` state on click. Native focus order works without extra
+tabindex management.
+
+<Canvas of={CardStories.SelectableGrid} />
+
+<Source
+  language="tsx"
+  code={`const [picked, setPicked] = useState(new Set());
+
+const toggle = (id) =>
+  setPicked((p) => {
+    const next = new Set(p);
+    next.has(id) ? next.delete(id) : next.add(id);
+    return next;
+  });
+
+<>
+  {plans.map((plan) => (
+    <Card
+      key={plan.id}
+      interactive
+      selected={picked.has(plan.id)}
+      onClick={() => toggle(plan.id)}
+    >
+      <Card.Header>{plan.title}</Card.Header>
+      <Card.Body>{plan.note}</Card.Body>
+    </Card>
+  ))}
+</>;`}
+/>
+
+---
+
+## Work-item composition
+
+The ticket-style work-item card is **not** shipped as its own component. It
+is a **composition** of `Card` + the design-system primitives. This keeps
+the primitive flexible and lets each Catylast surface bend the layout to
+its own context (board card vs. backlog row vs. expanded detail).
+
+<Canvas of={CardStories.WorkItemComposition} />
+
+<Source
+  language="tsx"
+  code={`import { Card } from "@catylast/card";
+import { Avatar, Badge } from "@catylast/primitives";
+import { Icon } from "@catylast/icons";
+
+<Card interactive variant="outlined" tone="warning">
+  <Card.Header>
+    <Icon name="bug" /> CAT-123
+    <span style={{ flex: 1 }} />
+    <Badge variant="warning">In review</Badge>
+  </Card.Header>
+  <Card.Body>
+    <strong>Editor crashes on slash menu</strong>
+    <p>Reported by 3 users. Repro on Chromium 120+.</p>
+  </Card.Body>
+  <Card.Footer>
+    <Avatar size="sm" name="Wasim Khan" />
+    <span style={{ flex: 1 }} />
+    <span>3 SP · Due Mar 12</span>
+  </Card.Footer>
+</Card>;`}
+/>
+
+> Once this composition stabilizes across Catylast surfaces it will be
+> promoted into `@catylast/work-item` as `WorkItemCard` (CLAUDE.md §17.3
+> phase 2). Until then, copy the snippet above.
+
+---
+
+## Props
+
+The full prop API. Edit any control and the **FullyCustom** preview
+updates live.
+
+<Canvas of={CardStories.FullyCustom} />
+
+<Controls of={CardStories.FullyCustom} />
+
+---
+
+## CSS variable escape hatch
+
+Every prop writes one CSS variable on the root element. To go beyond the
+enum vocabulary — e.g. an exact `14px` radius or a brand-specific shadow
+— set the same variables directly via `style`:
+
+<Canvas of={CardStories.CssVariableEscapeHatch} />
+
+<Source
+  language="tsx"
+  code={`<Card
+  variant="outlined"
+  style={
+    {
+      "--card-radius": "14px",
+      "--card-shadow": "0 12px 32px rgba(20, 30, 90, 0.18)",
+      "--card-tone-color": "var(--catylast-color-purple-500)",
+      "--card-tone-height": "4px",
+      "--card-padding": "20px",
+    } as React.CSSProperties
+  }
+>
+  <Card.Body>...</Card.Body>
+</Card>`}
+/>
+
+### Variables published
+
+| Variable                    | Default                | Purpose                              |
+| --------------------------- | ---------------------- | ------------------------------------ |
+| `--card-radius`             | `radius.md`            | Corner radius.                       |
+| `--card-border-color`       | per variant            | Border color.                        |
+| `--card-border-width`       | `1px`                  | Border width.                        |
+| `--card-shadow`             | per variant            | Shadow.                              |
+| `--card-shadow-hover`       | `elevation.md`         | Hover shadow when interactive.       |
+| `--card-bg`                 | `surface.background`   | Card background color.               |
+| `--card-bg-image`           | none                   | Background-image url(...).           |
+| `--card-bg-image-opacity`   | `1`                    | Background image opacity.            |
+| `--card-bg-overlay`         | transparent            | Overlay layer over the image.        |
+| `--card-padding`            | size-derived           | Body padding.                        |
+| `--card-padding-x`          | size-derived           | Header / Footer horizontal padding.  |
+| `--card-padding-y`          | size-derived           | Header / Footer vertical padding.    |
+| `--card-tone-color`         | transparent            | Top accent strip color.              |
+| `--card-tone-height`        | `0`                    | Top accent strip height.             |
+| `--card-cover-height`       | `auto`                 | Auto-cover region height.            |
+| `--card-width`              | `auto`                 | Card width (`100%` when fullWidth).  |
+
+---
+
+## Recipes
+
+A few combinations that come up often.
+
+### Settings tile
+
+```tsx
+<Card variant="outlined" size="sm" interactive onClick={openSettings}>
+  <Card.Header>
+    <Icon name="settings" /> Notifications
+  </Card.Header>
+  <Card.Body>
+    <p>Email, push, and in-app notifications. 3 enabled.</p>
+  </Card.Body>
+</Card>
+```
+
+### Empty-state surface
+
+```tsx
+<Card variant="outlined" radius="lg" padding="lg">
+  <Card.Body style={{ alignItems: "center", textAlign: "center" }}>
+    <Icon name="inbox" size={32} />
+    <strong>No issues yet</strong>
+    <p>Pull issues from your tracker or create one inline.</p>
+    <Button variant="primary">Create issue</Button>
+  </Card.Body>
+</Card>
+```
+
+### Dashboard metric tile
+
+```tsx
+<Card variant="elevated" tone="success" elevation="md">
+  <Card.Body>
+    <p style={{ color: tokens.color.text.subtle }}>Tickets closed</p>
+    <strong style={{ fontSize: 32 }}>247</strong>
+    <p style={{ color: tokens.color.text.success }}>+18% vs last week</p>
+  </Card.Body>
+</Card>
+```
+
+### Image-led announcement
+
+```tsx
+<Card
+  variant="elevated"
+  radius="lg"
+  coverImage="/release-notes-cover.jpg"
+  coverHeight={160}
+  interactive
+  as="a"
+  href="/changelog"
+>
+  <Card.Header>
+    <Badge variant="primary">New</Badge>
+    <strong>v0.4 ships</strong>
+  </Card.Header>
+  <Card.Body>
+    <p>Insert element menu, emoji picker, drag-and-drop sections.</p>
+  </Card.Body>
+</Card>
+```
+
+---
+
+## Accessibility
+
+- `interactive` cards render with `role="button"`, `tabIndex={0}`, and
+  handle Enter / Space; the focus ring matches the design system.
+- `disabled` cards remove the role, set `aria-disabled="true"`, and are
+  excluded from the tab order.
+- Selected interactive cards expose `aria-pressed="true"`.
+- The bg-image and overlay layers carry `aria-hidden` and sit behind the
+  content in z-order — assistive tech sees only the slot content, not the
+  decoration.
+- Foreground colors come from `@catylast/tokens` semantic layer, so
+  light / dark / future high-contrast themes adjust automatically.
+
+---
+
+## Theme switching
+
+Use the toolbar at the top of the canvas to flip between **Light**,
+**Dark**, and **System**. The `data-theme` attribute on `<html>` drives
+every token value the card consumes; nothing in this component reads the
+theme name directly.
+
+---
+
+## Related
+
+- **`@catylast/tokens`** — every default value flows from here. Override
+  the underlying token to retune every card on the page at once.
+- **`@catylast/primitives`** — `Avatar`, `Badge`, `Button`,
+  `Tooltip`, etc. The pieces you compose inside `Card.Body` and
+  `Card.Footer`.
+- **CLAUDE.md §17** — architectural rationale and the planned
+  `@catylast/work-item` composition (phase 2).

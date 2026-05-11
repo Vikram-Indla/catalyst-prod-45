@@ -1,5 +1,16 @@
 import React from "react";
 import { createRoot } from "react-dom/client";
+// Catylast component library — variable fonts + design tokens + component
+// CSS. Loaded before app-specific styles so app overrides win.
+// `Inter Variable` registers the continuous 100-900 weight axis used by
+// the heading/metric/bold-body slots at weight 653.
+import "@fontsource-variable/inter";
+import "@fontsource-variable/jetbrains-mono";
+import "@catylast/tokens/tokens.css";
+import "@catylast/primitives/styles.css";
+import "@catylast/card/styles.css";
+import "@catylast/dynamic-table/styles.css";
+import "@catylast/rich-editor/styles.css";
 import "./index.css";
 import "./styles/catalyst-typography.css";
 import "./styles/catalyst-theme.css";

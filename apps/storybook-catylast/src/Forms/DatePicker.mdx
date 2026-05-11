@@ -1,0 +1,357 @@
+import {
+  Canvas,
+  Controls,
+  Meta,
+  Source,
+  Title,
+  Subtitle,
+} from "@storybook/addon-docs/blocks";
+import * as DatePickerStories from "./DatePicker.stories";
+
+<Meta of={DatePickerStories} />
+
+<Title />
+
+<Subtitle>
+  The input + calendar combo Catylast uses everywhere a user picks a
+  single day — due dates, scheduling, deadlines, filter ranges. The
+  input accepts free typing in a configurable format, and the trailing
+  calendar icon opens a popover with the full Calendar primitive.
+</Subtitle>
+
+`DatePicker` ships from **`@catylast/primitives`**. It composes
+the underlying `Calendar` primitive inside a Radix Popover with a
+custom input trigger. Locale-aware parsing and formatting use
+`Intl.DateTimeFormat`, so the same component works for any region
+without a date library.
+
+The `value` exchanged with consumers is always a canonical ISO
+`YYYY-MM-DD` string. Display formats are purely a presentation concern
+and never round-trip lossy: switching `dateFormat` from `YYYY-MM-DD`
+to `DD/MM/YYYY` doesn't change the data, only the input's display.
+
+---
+
+## Install
+
+<Source
+  language="bash"
+  code={`# pnpm
+pnpm add @catylast/primitives @catylast/tokens @catylast/icons
+
+# npm
+npm install @catylast/primitives @catylast/tokens @catylast/icons
+
+# yarn
+yarn add @catylast/primitives @catylast/tokens @catylast/icons`}
+/>
+
+The CSS file ships next to the JS bundle and must be imported once per
+app:
+
+<Source
+  language="ts"
+  code={`// app/layout.tsx
+import "@catylast/tokens/tokens.css";
+import "@catylast/primitives/styles.css";`}
+/>
+
+---
+
+## Quickstart
+
+The minimum viable picker — uncontrolled, no value, default
+`YYYY-MM-DD` format:
+
+<Canvas of={DatePickerStories.Default} />
+
+<Source
+  language="tsx"
+  code={`import { DatePicker } from "@catylast/primitives";
+
+<DatePicker onChange={(iso) => console.log(iso)} />;`}
+/>
+
+Click the calendar icon to open the popover, or just start typing — the
+parser commits the value on blur.
+
+---
+
+## Controlled vs uncontrolled
+
+Pass `value` + `onChange` for fully-controlled behaviour, or use
+`defaultValue` for uncontrolled. The `onChange` callback always
+receives a canonical ISO `YYYY-MM-DD` string (or `""` when cleared).
+
+<Canvas of={DatePickerStories.Controlled} />
+
+<Source
+  language="tsx"
+  code={`// Uncontrolled
+<DatePicker defaultValue="2026-05-12" />
+
+// Controlled
+const [iso, setIso] = useState("2026-05-12");
+<DatePicker value={iso} onChange={setIso} />`}
+/>
+
+---
+
+## Custom date format
+
+`dateFormat` controls the display + parse pattern. Tokens:
+
+| Token | Meaning                             |
+| ----- | ----------------------------------- |
+| `YYYY` | 4-digit year                       |
+| `MM`   | 2-digit zero-padded month          |
+| `M`    | Month, no leading zero             |
+| `DD`   | 2-digit zero-padded day            |
+| `D`    | Day, no leading zero               |
+
+Free typing is parsed against the same pattern the user sees, so what
+they type is what they get.
+
+<Canvas of={DatePickerStories.CustomFormat} />
+
+<Source
+  language="tsx"
+  code={`<DatePicker dateFormat="DD/MM/YYYY" />          // 12/05/2026
+<DatePicker dateFormat="M/D/YYYY" />            // 5/12/2026
+<DatePicker dateFormat="YYYY/MM/DD" />          // 2026/05/12`}
+/>
+
+For richer parsing — month names, fuzzy strings — pass
+`parseInputValue(input, dateFormat)` and `formatDisplayLabel(iso,
+dateFormat)` to plug in your own logic.
+
+---
+
+## Range constraints
+
+`minDate` / `maxDate` clamp the entire selectable range. Out-of-range
+days disable in the calendar; the prev / next month arrows disable
+themselves when navigation would leave the range.
+
+<Canvas of={DatePickerStories.MinMax} />
+
+<Source
+  language="tsx"
+  code={`<DatePicker minDate="2026-05-04" maxDate="2026-05-22" />`}
+/>
+
+### Disabled dates
+
+Pass an array of ISO strings to `disabledDates` for non-contiguous
+gaps — booked dates, weekends, holidays. Disabled days render with a
+strikethrough and don't fire `onChange`.
+
+<Canvas of={DatePickerStories.DisabledDates} />
+
+<Source
+  language="tsx"
+  code={`<DatePicker
+  disabledDates={[
+    "2026-05-02", "2026-05-03",
+    "2026-05-09", "2026-05-10",
+    // ... weekends
+  ]}
+/>`}
+/>
+
+---
+
+## Locale support
+
+Month and weekday labels go through `Intl.DateTimeFormat`. Pair
+`locale` with `weekStartDay` so the calendar grid feels native to the
+region.
+
+<Canvas of={DatePickerStories.Locales} />
+
+<Source
+  language="tsx"
+  code={`<DatePicker locale="en-GB" weekStartDay={1} dateFormat="DD/MM/YYYY" />
+<DatePicker locale="de-DE" weekStartDay={1} dateFormat="DD.MM.YYYY" />
+<DatePicker locale="ja-JP" weekStartDay={0} dateFormat="YYYY/MM/DD" />`}
+/>
+
+---
+
+## Sizes
+
+Three sizes — `small` for dense surfaces (table cells, compact
+filters), `medium` (default) for most contexts, `large` for hero
+forms.
+
+<Canvas of={DatePickerStories.Sizes} />
+
+---
+
+## States
+
+### Invalid
+
+`isInvalid` flips the border to the danger color and sets
+`aria-invalid`. Always pair with an inline error message — color alone
+is not enough.
+
+<Canvas of={DatePickerStories.Invalid} />
+
+### Disabled
+
+<Canvas of={DatePickerStories.Disabled} />
+
+### Not clearable
+
+Set `isClearable={false}` for forms where a date is mandatory and the
+user shouldn't be able to wipe the value back to empty. The trailing
+icon stays — only the `×` clear button is removed.
+
+<Canvas of={DatePickerStories.NotClearable} />
+
+---
+
+## CSS variable escape hatch
+
+Every prop maps to a CSS variable on the picker root. To go beyond the
+enum vocabulary — branded colors, custom corner radii, unusual sizing
+— override the same variables via `style`:
+
+<Canvas of={DatePickerStories.CssVariableEscapeHatch} />
+
+### Variables published
+
+| Variable                                | Default                  | Purpose                                    |
+| --------------------------------------- | ------------------------ | ------------------------------------------ |
+| `--datepicker-bg`                       | `surface.background`     | Trigger background.                        |
+| `--datepicker-color`                    | `text.primary`           | Trigger text color.                        |
+| `--datepicker-border-color`             | `border.default`         | Default border color.                      |
+| `--datepicker-border-color-hover`       | `border.strong`          | Border on hover.                           |
+| `--datepicker-border-color-focus`       | `border.focus`           | Border on focus.                           |
+| `--datepicker-border-color-invalid`     | `border.danger`          | Border when `isInvalid`.                   |
+| `--datepicker-border-width`             | `1px`                    | Border width.                              |
+| `--datepicker-radius`                   | `radius.sm`              | Trigger corner radius.                     |
+| `--datepicker-padding-x` / `-y`         | per size                 | Trigger padding.                           |
+| `--datepicker-min-height`               | per size                 | Trigger minimum height.                    |
+| `--datepicker-width`                    | `240px`                  | Trigger width.                             |
+| `--datepicker-gap`                      | `space.6`                | Gap between input and icons.               |
+| `--datepicker-font-size`                | per size                 | Trigger font size.                         |
+| `--datepicker-icon-color`               | `text.subtle`            | Calendar / clear icon color.               |
+| `--datepicker-popover-bg`               | `surface.overlay`        | Popover background.                        |
+| `--datepicker-popover-radius`           | `radius.md`              | Popover corner radius.                     |
+| `--datepicker-popover-shadow`           | (see source)             | Popover drop shadow.                       |
+
+The popover content is a `Calendar`, so all `--cal-*` variables also
+work to theme the inner grid (cell size, day radius, selected color,
+etc.). See **Forms / Calendar** for the full list.
+
+---
+
+## Form submission
+
+The picker renders a real `<input type="text">` underneath the trigger,
+so it participates in standard HTML form submission via the `name`
+attribute:
+
+<Source
+  language="tsx"
+  code={`<form action="/save" method="post">
+  <DatePicker name="due_date" defaultValue="2026-05-12" />
+  <button type="submit">Save</button>
+</form>`}
+/>
+
+The submitted value is whatever the user typed (or last picked),
+formatted by `dateFormat`. If you need the canonical ISO on the
+backend, parse it server-side or hold the `value` in React state and
+submit it via `fetch`.
+
+---
+
+## Form pattern (with TimePicker)
+
+How DatePicker composes inside a real form — paired with `TimePicker`
+for a full datetime input, with submit and validation.
+
+<Canvas of={DatePickerStories.FormShowcase} />
+
+<Source
+  language="tsx"
+  code={`<form onSubmit={handleSubmit}>
+  <DatePicker value={date} onChange={setDate} aria-label="Meeting date" />
+  <TimePicker value={time} onChange={setTime} aria-label="Meeting time" />
+  <Button type="submit" appearance="primary">Schedule</Button>
+</form>`}
+/>
+
+---
+
+## Accessibility
+
+- The input is a real `<input type="text">` with `role="combobox"`,
+  `aria-haspopup="dialog"`, and `aria-expanded` wired up.
+- `aria-controls` points at the popover so screen readers can find the
+  associated calendar grid.
+- `aria-invalid` reflects `isInvalid`; pair with descriptive text
+  (e.g. an `aria-describedby` error message).
+- The calendar inside the popover is the same `Calendar` primitive
+  documented under **Forms / Calendar** — the full W3C grid pattern,
+  arrow-key navigation, `aria-selected`, `aria-current="date"` for
+  today, locale-aware long `aria-label` on each day.
+- The clear (`×`) button has `aria-label="Clear date"` and the trigger
+  icon has `aria-label="Open calendar"`.
+- Pressing `↓` in the input opens the popover so keyboard-only users
+  don't need to tab to the icon button.
+
+---
+
+## Best practices
+
+- **Always provide an `aria-label`** when the picker has no visible
+  label. Screen-reader users hear the placeholder otherwise, which
+  rarely conveys meaning.
+- **Constrain ranges with `minDate` / `maxDate`** in booking flows.
+  Otherwise users can navigate to year 5000 by mashing PageDown.
+- **Use the same `dateFormat` across the app.** Switching between
+  `MM/DD/YYYY` and `DD/MM/YYYY` in different places is a classic
+  source of off-by-one bugs in user input.
+- **Persist the canonical ISO, not the formatted display.** The
+  `onChange` value is always `YYYY-MM-DD` — store that in state and on
+  the wire.
+- **Reach for `<TimePicker>` (not the calendar) for time-of-day.** The
+  two compose together for full datetime inputs.
+
+---
+
+## Theme switching
+
+Use the toolbar at the top of the canvas to flip between **Light**,
+**Dark**, and **System**. The `data-theme` attribute on `<html>`
+drives every token value the picker consumes.
+
+---
+
+## Related
+
+- **`Calendar`** — the underlying date-grid primitive (also documented
+  under **Forms / Calendar**).
+- **`TimePicker`** — the natural pair for datetime inputs.
+- **`Combobox`** — picking a date by typing an unstructured string
+  ("next Tuesday").
+- **`Popover`** — the underlying overlay primitive.
+
+---
+
+## Coming next
+
+- **Range picker** — a sibling component that picks a `start` /
+  `end` ISO pair using two adjacent calendars.
+- **Inline mode** — render the calendar without the input + popover
+  for surfaces where the picker is the entire view.
+- **Keyboard shortcut for "today"** — `T` key in the input commits
+  today's date.
+- **Custom day cells** — slot for rendering availability badges,
+  meeting counts, etc. inside individual days.
+
+Track progress in `CLAUDE.md` §3.

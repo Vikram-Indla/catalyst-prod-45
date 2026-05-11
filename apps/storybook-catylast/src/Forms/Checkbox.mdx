@@ -1,0 +1,381 @@
+import {
+  Canvas,
+  Controls,
+  Meta,
+  Source,
+  Title,
+  Subtitle,
+} from "@storybook/addon-docs/blocks";
+import * as CheckboxStories from "./Checkbox.stories";
+
+<Meta of={CheckboxStories} />
+
+<Title />
+
+<Subtitle>
+  The binary-state form input across Catylast — single toggles,
+  multi-select grids, table row selection (with the indeterminate
+  "some children selected" header), and consent forms. Built on
+  Radix UI for the state machine + accessibility wiring; the visual
+  layer is fully owned by Catylast.
+</Subtitle>
+
+`Checkbox` ships from **`@catylast/primitives`** and is the
+component every other "pick one or more" surface in Catylast composes
+on top of — `DynamicTable`'s row selection, the rich editor's task
+lists, settings panels with grouped preferences, and consent forms.
+
+The full state model:
+
+| State                | Prop                  | Meaning                                                          |
+| -------------------- | --------------------- | ---------------------------------------------------------------- |
+| **Unchecked**        | (default)             | Default off state.                                               |
+| **Checked**          | `isChecked` / `defaultChecked` | On state — accent fill + check glyph.                  |
+| **Indeterminate**    | `isIndeterminate`     | Partial / mixed state — accent fill + dash glyph.                |
+| **Disabled**         | `isDisabled`          | No clicks, reduced opacity. Survives all of the above.           |
+| **Invalid**          | `isInvalid`           | Red border (and red filled background when checked).             |
+| **Required**         | `isRequired`          | Red asterisk after the label + native `required` attribute.      |
+
+Every styling dimension is exposed as both an enum prop and a CSS
+variable so consumers can override per-instance via `style` without
+touching the prop API.
+
+---
+
+## Install
+
+<Source
+  language="bash"
+  code={`# pnpm
+pnpm add @catylast/primitives @catylast/tokens @catylast/icons
+
+# npm
+npm install @catylast/primitives @catylast/tokens @catylast/icons
+
+# yarn
+yarn add @catylast/primitives @catylast/tokens @catylast/icons`}
+/>
+
+The CSS file ships next to the JS bundle and must be imported once per
+app:
+
+<Source
+  language="ts"
+  code={`// app/layout.tsx (or wherever your global CSS imports live)
+import "@catylast/tokens/tokens.css";
+import "@catylast/primitives/styles.css";`}
+/>
+
+---
+
+## Quickstart
+
+The minimum viable checkbox — uncontrolled, no label, click to toggle:
+
+<Canvas of={CheckboxStories.Default} />
+
+<Source
+  language="tsx"
+  code={`import { Checkbox } from "@catylast/primitives";
+
+<Checkbox label="I agree to the terms" onChange={setAgreed} />;`}
+/>
+
+When `label` is set the whole label becomes the click target — no need
+to wire up a separate `<label htmlFor>`.
+
+<Canvas of={CheckboxStories.WithLabel} />
+
+---
+
+## Controlled vs uncontrolled
+
+Pass `isChecked` together with `onChange` for fully-controlled
+behaviour, or use `defaultChecked` for uncontrolled. The `onChange`
+callback receives a boolean — toggling out of the indeterminate visual
+produces `true`.
+
+<Canvas of={CheckboxStories.Controlled} />
+
+<Source
+  language="tsx"
+  code={`// Uncontrolled
+<Checkbox defaultChecked label="Send me product updates" />
+
+// Controlled
+<Checkbox
+  isChecked={state.agreed}
+  onChange={(next) => setState({ agreed: next })}
+  label="I agree to the terms"
+/>`}
+/>
+
+---
+
+## States
+
+Every state side by side. The states are independent — a checkbox can
+be **checked + invalid + required** all at once, for example.
+
+<Canvas of={CheckboxStories.States} />
+
+### Indeterminate
+
+Use the indeterminate state on a parent checkbox when *some* — but
+not all — of its children are checked. Toggling the parent should
+select all (or deselect all) its children, depending on your form's
+logic.
+
+<Canvas of={CheckboxStories.Indeterminate} />
+
+<Source
+  language="tsx"
+  code={`<Checkbox
+  isChecked={allSelected}
+  isIndeterminate={someSelected && !allSelected}
+  onChange={(next) => setAllChildren(next)}
+  label="All notifications"
+/>`}
+/>
+
+### Invalid
+
+Use `isInvalid` for validation errors. The border (and filled
+background, when checked) flip to the danger color. **Always pair
+`isInvalid` with an inline error message** so the reason for the
+error is clear — color alone is not enough.
+
+<Canvas of={CheckboxStories.Invalid} />
+
+### Required
+
+`isRequired` adds a red asterisk after the label and sets the native
+`required` attribute on the underlying input so HTML form submission
+validates without extra JavaScript.
+
+<Canvas of={CheckboxStories.Required} />
+
+---
+
+## Sizes
+
+Three sizes:
+
+| Size     | Box dimensions | When to reach for it                                |
+| -------- | -------------- | --------------------------------------------------- |
+| `small`  | 14 × 14 px     | Dense surfaces — table rows, compact filter rails. |
+| `medium` | 16 × 16 px     | Default. Most contexts.                             |
+| `large`  | 20 × 20 px     | Hero settings forms, touch-first surfaces.          |
+
+<Canvas of={CheckboxStories.Sizes} />
+
+> Legacy `sm` / `md` size values are still accepted; they map to
+> `small` / `medium`. New code should use the long form.
+
+---
+
+## Patterns
+
+### Group with parent + indeterminate
+
+The classic "all" parent + child rows pattern. Toggling the parent
+selects / deselects all children at once; toggling any child re-derives
+the parent's state (`all` → checked, `none` → unchecked, otherwise →
+indeterminate).
+
+<Canvas of={CheckboxStories.Group} />
+
+<Source
+  language="tsx"
+  code={`function NotificationGroup({ items }) {
+  const [picked, setPicked] = useState(new Set(["Email"]));
+  const allChecked = picked.size === items.length;
+  const noneChecked = picked.size === 0;
+
+  return (
+    <>
+      <Checkbox
+        label="All channels"
+        isChecked={allChecked}
+        isIndeterminate={!allChecked && !noneChecked}
+        onChange={(next) =>
+          setPicked(next ? new Set(items) : new Set())
+        }
+      />
+      <div style={{ marginLeft: 24 }}>
+        {items.map((label) => (
+          <Checkbox
+            key={label}
+            label={label}
+            isChecked={picked.has(label)}
+            onChange={() => togglePicked(label)}
+          />
+        ))}
+      </div>
+    </>
+  );
+}`}
+/>
+
+### Table row selection (indeterminate header)
+
+The same pattern `DynamicTable` uses internally — a header checkbox
+that toggles every row. Partial selection shows the indeterminate dash
+and the count.
+
+<Canvas of={CheckboxStories.TableRowSelection} />
+
+### Form with required + invalid
+
+The native `required` attribute means HTML form validation works
+without extra JS. Combine with `isInvalid` to show inline errors after
+the user submits.
+
+<Canvas of={CheckboxStories.FormShowcase} />
+
+<Source
+  language="tsx"
+  code={`<form onSubmit={(e) => { e.preventDefault(); setSubmitted(true); }}>
+  <Checkbox
+    isRequired
+    isInvalid={submitted && !agreed}
+    isChecked={agreed}
+    onChange={setAgreed}
+    label="I agree to the terms of service"
+  />
+  {submitted && !agreed && (
+    <div className="error">You must agree before continuing.</div>
+  )}
+  <Button appearance="primary" type="submit">Continue</Button>
+</form>`}
+/>
+
+---
+
+## CSS variable escape hatch
+
+Every prop maps to a CSS variable on the checkbox root. To go beyond
+the enum vocabulary — exact pixel sizes, brand colors, custom corner
+radii — override the same variables via `style`:
+
+<Canvas of={CheckboxStories.CssVariableEscapeHatch} />
+
+### Variables published
+
+| Variable                                | Default              | Purpose                                   |
+| --------------------------------------- | -------------------- | ----------------------------------------- |
+| `--checkbox-size`                       | per size             | Box width / height.                       |
+| `--checkbox-icon-size`                  | per size             | Glyph size inside the box.                |
+| `--checkbox-radius`                     | `radius.xs`          | Box corner radius.                        |
+| `--checkbox-border-width`               | `1.5px`              | Box border width.                         |
+| `--checkbox-border-color`               | `border.strong`      | Default border color.                     |
+| `--checkbox-border-color-hover`         | `accent.background`  | Border color on hover (unchecked).        |
+| `--checkbox-bg`                         | `surface.background` | Box background (unchecked).               |
+| `--checkbox-bg-checked`                 | `accent.background`  | Background when checked / indeterminate.  |
+| `--checkbox-bg-checked-hover`           | `accent.backgroundHover` | Hover background when checked.        |
+| `--checkbox-border-color-checked`       | `accent.background`  | Border color when checked.                |
+| `--checkbox-border-color-checked-hover` | `accent.backgroundHover` | Hover border when checked.            |
+| `--checkbox-color-checked`              | `accent.text`        | Glyph color when checked.                 |
+| `--checkbox-border-color-invalid`       | `border.danger`      | Border color when `isInvalid`.            |
+| `--checkbox-bg-checked-invalid`         | `danger.background`  | Background when checked + invalid.        |
+| `--checkbox-gap`                        | `space.8`            | Gap between box and label.                |
+| `--checkbox-label-color`                | `text.primary`       | Label text color.                         |
+| `--checkbox-label-font-size`            | per size             | Label font size.                          |
+| `--checkbox-required-color`             | `text.danger`        | Required-asterisk color.                  |
+
+---
+
+## Accessibility
+
+- **Native `<button role="checkbox">`** under the hood (via Radix UI),
+  so the box is a real focusable element with full keyboard support.
+- **Space / Enter** toggle the checkbox.
+- **Tab / Shift+Tab** move between checkboxes.
+- **`aria-checked`** reflects the current state — `true`, `false`, or
+  `"mixed"` (indeterminate). Screen-readers announce all three
+  correctly.
+- **`aria-invalid="true"`** is set when `isInvalid` is on.
+- **`aria-required="true"`** is set when `isRequired` is on, in
+  addition to the native `required` HTML attribute on form submission.
+- **Label association** — when the `label` prop is set, the box and
+  label are wrapped in a `<label htmlFor>` so clicking anywhere in the
+  label area toggles the box.
+- **Focus ring** is token-driven (`border.focus`) and survives theme
+  flips automatically.
+- **Color is never the only signal** — the indeterminate state uses a
+  distinct dash glyph; the invalid state pairs with text. Users with
+  color-vision differences aren't blocked.
+
+---
+
+## Best practices
+
+- **Use a label.** A bare checkbox without a label means screen-reader
+  users hear "checkbox" with no context. Use the `label` prop or
+  associate an external label via `aria-labelledby`.
+- **Don't use checkboxes for mutually-exclusive options** — that's
+  what `Radio` is for. If only one option can be selected at a time,
+  reach for a radio group.
+- **Pair `isInvalid` with text.** Color alone is not enough. Render an
+  inline message below the checkbox describing what's wrong.
+- **Don't fake disabled with CSS.** If a checkbox shouldn't be clicked,
+  set `isDisabled` so the click handler is suppressed and the checkbox
+  is removed from the tab order.
+- **Reach for the parent + children pattern** when you have more than
+  three related checkboxes. It saves users from clicking each one
+  individually and gives a clear "select all" affordance.
+- **Memoize `onChange` for big lists.** When a table has hundreds of
+  rows, recreating the handler per render triggers a full Radix
+  re-render. Use `useCallback`.
+
+---
+
+## Migration from v0.1
+
+The v0.1 API used Radix's prop names directly. The new prop names follow
+the `isFoo` boolean convention common in modern React component libraries
+and read better in JSX. Both still work — the new ones are recommended.
+
+| v0.1 prop                            | v0.4 prop                                    |
+| ------------------------------------ | -------------------------------------------- |
+| `checked={true / false}`             | `isChecked={true / false}`                   |
+| `checked="indeterminate"`            | `isIndeterminate={true}`                     |
+| `disabled`                           | `isDisabled`                                 |
+| `onCheckedChange`                    | `onChange` (receives `boolean`, not `boolean \| 'indeterminate'`) |
+| `size="sm" / "md"`                   | `size="small" / "medium" / "large"`          |
+
+No callsites need to change. Eventually drop the legacy short forms
+when comfortable.
+
+---
+
+## Theme switching
+
+Use the toolbar at the top of the canvas to flip between **Light**,
+**Dark**, and **System**. The `data-theme` attribute on `<html>`
+drives every token value the checkbox consumes.
+
+---
+
+## Related
+
+- **`Radio`** — for mutually-exclusive options (planned).
+- **`Toggle`** — for binary on/off settings where the on/off is the
+  *content* of the action, not a form value (planned).
+- **`Field`** — wraps any input with label, helper text, and inline
+  validation message (planned).
+- **`DynamicTable`** — uses Checkbox internally for row selection.
+
+---
+
+## Coming next
+
+- **Group component** — formal `CheckboxGroup` that wraps the
+  parent + children pattern with the indeterminate logic baked in.
+- **Validation message slot** — built-in inline error / helper text
+  next to the box, so the recipe in this page becomes a one-prop
+  invocation.
+- **Keyboard-driven multi-select** — Shift+click to bulk-toggle a
+  range of rows in tables, similar to spreadsheet row pickers.
+
+Track progress in `CLAUDE.md` §3.

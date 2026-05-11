@@ -1,0 +1,392 @@
+import {
+  Canvas,
+  Controls,
+  Meta,
+  Source,
+  Title,
+  Subtitle,
+} from "@storybook/addon-docs/blocks";
+import * as TimePickerStories from "./TimePicker.stories";
+
+<Meta of={TimePickerStories} />
+
+<Title />
+
+<Subtitle>
+  The input + time-list combo Catylast uses for picking a time of day —
+  meeting times, reminder times, opening hours. The input accepts free
+  typing in many shapes (`14:30`, `2:30pm`, `230pm`, `9`), and the
+  trailing clock icon opens a popover with pre-defined options.
+</Subtitle>
+
+`TimePicker` ships from **`@catylast/primitives`**. It pairs a
+custom input trigger with a Radix Popover containing a scrollable list
+of pre-defined times. The `value` exchanged with consumers is always
+canonical 24h `HH:mm` regardless of what format the input is showing —
+display formatting is purely a presentation concern, so switching
+`timeFormat` from 24h to 12h doesn't change the data.
+
+---
+
+## Install
+
+<Source
+  language="bash"
+  code={`# pnpm
+pnpm add @catylast/primitives @catylast/tokens @catylast/icons
+
+# npm
+npm install @catylast/primitives @catylast/tokens @catylast/icons
+
+# yarn
+yarn add @catylast/primitives @catylast/tokens @catylast/icons`}
+/>
+
+The CSS file ships next to the JS bundle and must be imported once per
+app:
+
+<Source
+  language="ts"
+  code={`// app/layout.tsx
+import "@catylast/tokens/tokens.css";
+import "@catylast/primitives/styles.css";`}
+/>
+
+---
+
+## Quickstart
+
+The minimum viable picker — uncontrolled, no value, default 30-minute
+increments across the full 24-hour clock:
+
+<Canvas of={TimePickerStories.Default} />
+
+<Source
+  language="tsx"
+  code={`import { TimePicker } from "@catylast/primitives";
+
+<TimePicker onChange={(value) => console.log(value)} />;`}
+/>
+
+Click the clock icon to open the popover, or just start typing — the
+parser commits the value on blur. Most natural-language inputs work:
+
+| You type | Parsed value |
+| -------- | ------------ |
+| `9`      | `09:00`      |
+| `9:30`   | `09:30`      |
+| `2:30pm` | `14:30`      |
+| `230pm`  | `14:30`      |
+| `21:30`  | `21:30`      |
+| `12am`   | `00:00`      |
+| `12pm`   | `12:00`      |
+
+---
+
+## Controlled vs uncontrolled
+
+Pass `value` + `onChange` for fully-controlled behaviour, or use
+`defaultValue` for uncontrolled. The `onChange` callback always
+receives a canonical 24h `HH:mm` string (or `""` when cleared).
+
+<Canvas of={TimePickerStories.Controlled} />
+
+<Source
+  language="tsx"
+  code={`// Uncontrolled
+<TimePicker defaultValue="14:30" />
+
+// Controlled
+const [time, setTime] = useState("14:30");
+<TimePicker value={time} onChange={setTime} />`}
+/>
+
+---
+
+## 12-hour vs 24-hour display
+
+`timeFormat="hh:mm A"` displays the times in 12-hour format with an
+AM/PM suffix. The `value` and the underlying `times` array are still
+24h — formatting is purely a display concern, so switching format
+never loses data.
+
+<Canvas of={TimePickerStories.TwelveHourFormat} />
+
+<Source
+  language="tsx"
+  code={`<TimePicker timeFormat="HH:mm" defaultValue="14:30" />     // → 14:30
+<TimePicker timeFormat="hh:mm A" defaultValue="14:30" />   // → 02:30 PM
+<TimePicker timeFormat="h:mm A" defaultValue="14:30" />    // → 2:30 PM`}
+/>
+
+| Token | Meaning                            |
+| ----- | ---------------------------------- |
+| `HH`  | 2-digit 24-hour                    |
+| `H`   | 24-hour, no leading zero           |
+| `hh`  | 2-digit 12-hour                    |
+| `h`   | 12-hour, no leading zero           |
+| `mm`  | 2-digit minute                     |
+| `A`   | `AM` / `PM`                        |
+| `a`   | `am` / `pm`                        |
+
+For richer formatting / parsing, pass `parseInputValue(input,
+timeFormat)` and `formatDisplayLabel(value, timeFormat)` to plug in
+your own logic.
+
+---
+
+## Custom time list
+
+Pass `times` to swap the default 30-minute set for a custom list —
+useful for booking flows where slots are 15 minutes apart, or for
+agendas with specific anchors.
+
+<Canvas of={TimePickerStories.CustomTimes} />
+
+<Source
+  language="tsx"
+  code={`// 15-minute slots
+<TimePicker
+  times={[
+    "09:00", "09:15", "09:30", "09:45",
+    "10:00", "10:15", "10:30", "10:45",
+    "11:00",
+  ]}
+/>
+
+// Hourly
+<TimePicker
+  times={["09:00", "10:00", "11:00", "12:00", "13:00", "14:00"]}
+/>`}
+/>
+
+> **Free typing still works** even when `times` is restricted. A user
+> can type `9:23` and that's accepted as the value — the list is just
+> a quick-pick affordance, not a strict whitelist. To enforce, validate
+> in `onChange`.
+
+### Business hours preset
+
+Combine `times` with `timeFormat` for a polished booking input:
+
+<Canvas of={TimePickerStories.BusinessHours} />
+
+<Source
+  language="tsx"
+  code={`const businessTimes: string[] = [];
+for (let h = 9; h <= 17; h++) {
+  businessTimes.push(\`\${pad2(h)}:00\`);
+  if (h < 17) businessTimes.push(\`\${pad2(h)}:30\`);
+}
+
+<TimePicker timeFormat="hh:mm A" times={businessTimes} />`}
+/>
+
+---
+
+## Type-to-filter
+
+Type a hour fragment into the input — `9` narrows the dropdown to
+times starting with `9` (`9:00`, `9:30`, etc.). Try typing `1` for
+ten / eleven / twelve / one o'clock variants.
+
+<Canvas of={TimePickerStories.TypeToFilter} />
+
+The filter looks at the formatted display string, so the same query
+works for both 12h and 24h modes.
+
+---
+
+## Sizes
+
+<Canvas of={TimePickerStories.Sizes} />
+
+| Size     | Min height | When to use it                                  |
+| -------- | ---------- | ----------------------------------------------- |
+| `small`  | 24 px      | Dense surfaces — table cells, compact filters. |
+| `medium` | 32 px      | Default. Most contexts.                         |
+| `large`  | 40 px      | Hero forms, mobile-first surfaces.              |
+
+---
+
+## States
+
+### Invalid
+
+`isInvalid` flips the border to the danger color and sets
+`aria-invalid`. Pair with an inline error message — color alone is
+not enough.
+
+<Canvas of={TimePickerStories.Invalid} />
+
+### Disabled
+
+<Canvas of={TimePickerStories.Disabled} />
+
+### Not clearable
+
+Set `isClearable={false}` for forms where a time is mandatory and the
+user shouldn't be able to wipe the value back to empty. The trailing
+icon stays — only the `×` clear button is removed.
+
+<Canvas of={TimePickerStories.NotClearable} />
+
+---
+
+## Paired with DatePicker
+
+The natural pairing — a `DatePicker` and a `TimePicker` side-by-side
+give you a full datetime input. The two share size and visual
+treatment so the row reads as one widget.
+
+<Canvas of={TimePickerStories.PairedWithDatePicker} />
+
+<Source
+  language="tsx"
+  code={`<div style={{ display: "flex", gap: 8 }}>
+  <DatePicker value={date} onChange={setDate} aria-label="Date" />
+  <TimePicker value={time} onChange={setTime} aria-label="Time" />
+</div>`}
+/>
+
+**ISO assembly** — concatenate the date and time values with a `T`
+between them to produce a standard ISO datetime string. Drop it into
+`new Date()` or send it over the wire as-is:
+
+<Source
+  language="ts"
+  code={`const isoDateTime = date + "T" + time;        // "2026-05-12T14:30"
+const dateObject = new Date(isoDateTime);      // a real JS Date`}
+/>
+
+---
+
+## CSS variable escape hatch
+
+Override the underlying CSS variables for branded colors, custom
+corner radii, or wider popovers:
+
+<Canvas of={TimePickerStories.CssVariableEscapeHatch} />
+
+### Variables published
+
+| Variable                                | Default                  | Purpose                                     |
+| --------------------------------------- | ------------------------ | ------------------------------------------- |
+| `--timepicker-bg`                       | `surface.background`     | Trigger background.                         |
+| `--timepicker-color`                    | `text.primary`           | Trigger text color.                         |
+| `--timepicker-border-color`             | `border.default`         | Default border color.                       |
+| `--timepicker-border-color-hover`       | `border.strong`          | Border on hover.                            |
+| `--timepicker-border-color-focus`       | `border.focus`           | Border on focus.                            |
+| `--timepicker-border-color-invalid`     | `border.danger`          | Border when `isInvalid`.                    |
+| `--timepicker-border-width`             | `1px`                    | Border width.                               |
+| `--timepicker-radius`                   | `radius.sm`              | Trigger corner radius.                      |
+| `--timepicker-padding-x` / `-y`         | per size                 | Trigger padding.                            |
+| `--timepicker-min-height`               | per size                 | Trigger minimum height.                     |
+| `--timepicker-width`                    | `160px`                  | Trigger width.                              |
+| `--timepicker-gap`                      | `space.6`                | Gap between input and icons.                |
+| `--timepicker-font-size`                | per size                 | Trigger font size.                          |
+| `--timepicker-icon-color`               | `text.subtle`            | Clock / clear icon color.                   |
+| `--timepicker-popover-bg`               | `surface.overlay`        | Popover background.                         |
+| `--timepicker-popover-radius`           | `radius.md`              | Popover corner radius.                      |
+| `--timepicker-popover-shadow`           | (see source)             | Popover drop shadow.                        |
+| `--timepicker-popover-width`            | `160px`                  | Popover width.                              |
+| `--timepicker-list-max-height`          | `240px`                  | Scrollable list max height.                 |
+
+---
+
+## Form pattern
+
+How TimePicker composes inside a real form — required + invalid
+states, native form submission via the `name` attribute, validation on
+blur.
+
+<Canvas of={TimePickerStories.FormShowcase} />
+
+---
+
+## Form submission
+
+The picker renders a real `<input type="text">` underneath the trigger,
+so it participates in standard HTML form submission via `name`. The
+submitted value is whatever the input shows (formatted by
+`timeFormat`). To submit the canonical 24h `HH:mm` instead, hold the
+`value` in React state and submit it via `fetch`.
+
+<Source
+  language="tsx"
+  code={`<form action="/save" method="post">
+  <TimePicker name="start_time" defaultValue="09:00" />
+  <button type="submit">Save</button>
+</form>`}
+/>
+
+---
+
+## Accessibility
+
+- The input is a real `<input type="text">` with `role="combobox"`,
+  `aria-haspopup="listbox"`, and `aria-expanded` wired up.
+- `aria-controls` points at the popover listbox.
+- `aria-activedescendant` follows the highlighted option, so screen
+  readers announce the focused item as the user arrow-keys through
+  the list.
+- Each list item has `role="option"` and `aria-selected="true"` when
+  it matches the current value.
+- `aria-invalid` reflects `isInvalid`; pair with descriptive text via
+  `aria-describedby`.
+- Keyboard model:
+  - `↓` / `↑` open the list and move highlight (or move highlight when
+    already open).
+  - `Enter` commits the highlighted option, or parses the input if
+    nothing is highlighted.
+  - `Esc` closes the list.
+  - Free typing keeps working — the list filters live.
+
+---
+
+## Best practices
+
+- **Always provide an `aria-label`** when the picker has no visible
+  label.
+- **Decide 12h vs 24h based on the user's locale** — most regions
+  outside North America expect 24h. Tie `timeFormat` to your i18n
+  setting.
+- **Persist 24h `HH:mm`, not the formatted display.** The `onChange`
+  value is always canonical — store that in state and on the wire.
+- **Match the time list to the use case.** A meeting picker shouldn't
+  show 3 am as the default option; restrict `times` to working hours.
+- **Reach for `<DatePicker>` for the date half.** They're designed to
+  pair.
+
+---
+
+## Theme switching
+
+Use the toolbar at the top of the canvas to flip between **Light**,
+**Dark**, and **System**. The `data-theme` attribute on `<html>`
+drives every token value the picker consumes.
+
+---
+
+## Related
+
+- **`DatePicker`** — the natural pair for datetime inputs.
+- **`Calendar`** — the date-grid primitive used inside `DatePicker`.
+- **`Combobox`** — for picking a non-time value from a typed string.
+- **`Popover`** — the underlying overlay primitive.
+
+---
+
+## Coming next
+
+- **Step prop** — accept a number of minutes (`5` / `10` / `15` / `30`)
+  to auto-generate the `times` array without writing it out by hand.
+- **Min / max time** — analogous to `minDate` / `maxDate` on the
+  DatePicker; clamp the typed input.
+- **Time-zone awareness** — for now, the picker treats `HH:mm` as
+  wall-clock time in whatever zone the consumer is in. A future prop
+  will let you opt into IANA-zone-aware values.
+- **Inline scroll-wheel mode** — a touch-first variant for mobile
+  surfaces.
+
+Track progress in `CLAUDE.md` §3.

@@ -1,0 +1,9 @@
+# build output
+storybook-static
+
+# Playwright
+test-results
+playwright-report
+
+# Snapshots and test results: snapshots are committed; transient runs are not.
+# Keep tests/visual.spec.ts-snapshots/ tracked by NOT excluding it here.

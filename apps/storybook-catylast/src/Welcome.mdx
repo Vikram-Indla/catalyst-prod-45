@@ -1,0 +1,39 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+<Meta title="Welcome" />
+
+# Catylast Component Library
+
+The design system and component library for the Catylast product. Read the project
+record at the repository root for full scope, architecture, conventions, and process.
+
+## Where things go
+
+Components are grouped by category in the sidebar:
+
+- **Foundations** — design tokens, theme provider, icons, typography, layout primitives
+- **Actions** — Button, IconButton, Link, ButtonGroup
+- **Forms** — TextField, Select, Combobox, Checkbox, Radio, Toggle, DatePicker
+- **Display** — Avatar, Badge, Tag, Tooltip, Heading, Text
+- **Feedback** — Toast, Banner, Progress, Spinner, Skeleton, EmptyState
+- **Overlay** — Modal, Drawer, Popover, Menu, ContextMenu
+- **Navigation** — Tabs, Breadcrumbs, Pagination, SideNav, Stepper
+- **Data display** — DynamicTable, Tree, Card, Timeline (later)
+
+Components ship one at a time. Live status for each is tracked in the project record.
+
+## Documentation shape
+
+Every component page has the same set of sub-tabs so the experience is consistent
+across the library:
+
+- **Examples** — interactive stories per variant
+- **Code** — auto-generated from TypeScript types and JSDoc
+- **Usage** — when and why to use the component
+- **Changelog** — rendered from each package CHANGELOG.md file
+
+## Theme switching
+
+Use the toolbar at the top of the canvas to switch between **Light**, **Dark**, and
+**System**. The data-theme attribute on the document root drives all token values.
+No component reads the theme name directly.
