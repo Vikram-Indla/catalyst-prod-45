@@ -55,6 +55,7 @@ const AllProjectsPageLazy = lazy(() => import("../pages/project-hub/AllProjectsP
 const NativeFeatureBacklogPageLazy = lazy(() => import("../pages/project-hub/NativeFeatureBacklogPage"));
 const NativeStoryBacklogPageLazy = lazy(() => import("../pages/project-hub/NativeStoryBacklogPage"));
 const UnifiedBacklogPageLazy = lazy(() => import("../modules/project-work-hub/pages/BacklogPage.atlaskit"));
+const BacklogDetailPageLazy = lazy(() => import("../modules/project-work-hub/pages/BacklogDetailPage"));
 const StoryDetailPageLazy = lazy(() => import("../pages/project-hub/StoryDetailPage"));
 const IssueDetailPageLazy = lazy(() => import("../pages/project-hub/IssueDetailPage"));
 const HierarchyPageLazy = lazy(() => import("../pages/project-hub/HierarchyPage"));
@@ -901,6 +902,7 @@ export default function FullAppRoutes() {
         <Route path="/project-hub/:key/dashboard" element={<S><ProjectDashboardPageLazy /></S>} />
         <Route path="/project-hub/:key/settings" element={<S><PHProjectSettingsPageLazy /></S>} />
         <Route path="/project-hub/:key/backlog" element={<S><UnifiedBacklogPageLazy /></S>} />
+        <Route path="/project-hub/:key/backlog/:issueKey" element={<S><BacklogDetailPageLazy /></S>} />
         {/* Legacy per-type backlog pages — deprecated 2026-04. The unified
             Backlog above combines all work-item types (Epics, Features,
             Stories, Tasks, QA Bugs, Production Incidents, Change Requests,

@@ -584,29 +584,13 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
   // fallback-read supports old bookmarks with ?detail=<uuid>. On write we
   // only emit ?selectedIssue so new URLs stay Jira-native.
   //
-  // Design: selectedIssue carries the backlog item's ID (uuid), not its
-  // Jira issue_key. This matches what CatalystDetailRouter expects and
-  // preserves Catalyst-native items that have no Jira key.
-  const [detailItemId, setDetailItemId] = useState<string | null>(
-    () => searchParams.get('selectedIssue') || searchParams.get('detail') || null,
-  );
-  // Apr 27, 2026 (L44): track the most recently viewed detail item so the
-  // "Maximize table" toolbar button can act as a toggle — when the rail
-  // is closed via Maximize, this lets the same button restore the last
-  // panel without the user having to re-click a row. Cleared when the
-  // user explicitly closes via the rail's X (intentional dismissal).
-  const [lastDetailId, setLastDetailId] = useState<string | null>(null);
+  // 2026-05-12 task E: Full-width detail route (removed detail panel state).
+  // Detail views now navigate to /project-hub/:key/backlog/:issueKey for
+  // full-width rendering. No longer managing detailItemId or lastDetailId.
   const [editingId, setEditingId] = useState<string | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<BacklogItem | null>(null);
   // Panel mode machine — matches Jira's 3 states measured from their DOM:
-  //   'compact'    = 400px right drawer (default)
-  //   'expanded'   = ~60% of viewport (Jira's Expand button)
-  //   'fullscreen' = full viewport (Jira's Enter full screen button)
-  // Stored in URL as ?panel= so bookmarks preserve the user's last state.
-  type PanelMode = 'compact' | 'expanded' | 'fullscreen';
-  const [panelMode, setPanelMode] = useState<PanelMode>(
-    () => (searchParams.get('panel') as PanelMode) || 'compact',
-  );
+  // 2026-05-12 task E: panelMode removed (no longer managing detail panel).
   // Column visibility — seeded from URL if present, else defaults.
   // Apr 27, 2026: when a URL state is present we MERGE with the current
   // DEFAULT_VISIBLE_COLUMNS so columns added to the defaults later (like
@@ -736,8 +720,8 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
     if (sortKey && sortKey !== DEFAULT_SORT_KEY) params.set('sort', sortKey);
     if (sortDir && sortDir !== DEFAULT_SORT_DIR) params.set('dir', sortDir);
     if (page !== 1) params.set('page', String(page));
-    if (detailItemId) params.set('selectedIssue', detailItemId);
-    if (panelMode !== 'compact') params.set('panel', panelMode);
+    // 2026-05-12 task E: detail state (selectedIssue, panel mode) removed.
+    // Detail views now use full-page route /backlog/:issueKey.
     if (groupBy !== 'none') params.set('groupBy', groupBy);
     if (collapsedGroups.size) params.set('collapsed', Array.from(collapsedGroups).join(','));
     if (expandedIds.size) params.set('expanded', Array.from(expandedIds).join(','));
@@ -750,7 +734,7 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
     if (differs) params.set('cols', Array.from(visibleColumns).join(','));
     setSearchParams(params, { replace: true });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [typeFilter, search, sortKey, sortDir, page, detailItemId, panelMode, groupBy, collapsedGroups, expandedIds, visibleColumns]);
+  }, [typeFilter, search, sortKey, sortDir, page, groupBy, collapsedGroups, expandedIds, visibleColumns]);
   // containerRef was declared + attached to the outer wrapper but never
   // read anywhere in this module. Removed Apr 19, 2026 as part of the
   // AtlaskitPageShell migration (handover §4 step (b)). `useRef` import
@@ -760,7 +744,7 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
 
   // ── Jira keyboard shortcuts ──
   // `c` → activate footer inline-create (Jira: opens quick-create dialog)
-  // `Enter` on a selected/focused row → navigate to the issue detail panel
+  // 2026-05-12 task E: Removed `Enter` detail-panel navigation (now full-page route)
   // Guard: skip if user is typing in an input/textarea/contenteditable
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -1449,65 +1433,24 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
 
   useEffect(() => { setPage(1); }, [typeFilter, search, filterValue, sortKey, sortDir]);
 
-  // ── Row click → side panel ──
+  // ── Row click → full-width detail route ──
   const openDetail = useCallback((it: BacklogItem) => {
+    // Save scroll position before navigating to detail view
+    const container = document.querySelector('[data-backlog-scroll-container]');
+    if (container && projectKey) {
+      sessionStorage.setItem(`backlog-scroll-${projectKey}`, Math.max(0, container.scrollTop).toString());
+    }
     writeTicketOrigin({
       fromUrl: `/project-hub/${projectKey}/backlog`,
       fromLabel: 'Backlog',
       fromType: 'story-backlog',
     });
-    setDetailItemId(it.id);
-  }, [projectKey]);
-  const closeDetail = useCallback(() => {
-    // Explicit close via rail's X — clear the restore memory.
-    setLastDetailId(null);
-    setDetailItemId(null);
-    setPanelMode('compact');
-  }, []);
-  // Maximize-table — close the rail BUT remember what was open so the
-  // toolbar button can restore it. Used by the "Maximize table" button.
-  const maximizeTable = useCallback(() => {
-    setLastDetailId((prev) => prev ?? detailItemId);
-    setDetailItemId(null);
-    setPanelMode('compact');
-  }, [detailItemId]);
-  // Restore the last panel that was maximized away.
-  const restoreDetail = useCallback(() => {
-    if (!lastDetailId) return;
-    setDetailItemId(lastDetailId);
-    setLastDetailId(null);
-  }, [lastDetailId]);
+    navigate(`/project-hub/${projectKey}/backlog/${it.issue_key || it.id}`);
+  }, [projectKey, navigate]);
+  // Detail callbacks removed 2026-05-12 task E: no longer managing panel state.
 
-  // Prev / next navigation for the side detail panel. Walks through the
-  // currently-sorted rows (respecting group/filter/search). Wraps at the ends.
-  const currentDetailIdx = useMemo(
-    () => (detailItemId ? sortedRows.findIndex((r) => r.id === detailItemId) : -1),
-    [detailItemId, sortedRows],
-  );
-  const navigateDetail = useCallback((dir: 1 | -1) => {
-    if (currentDetailIdx < 0 || sortedRows.length === 0) return;
-    const nextIdx = (currentDetailIdx + dir + sortedRows.length) % sortedRows.length;
-    setDetailItemId(sortedRows[nextIdx].id);
-  }, [currentDetailIdx, sortedRows]);
-
-  // j / k keys ALSO navigate the detail panel when it's open — no more
-  // having to close the panel to move to the next item.
-  useEffect(() => {
-    if (!detailItemId) return;
-    const onKey = (e: KeyboardEvent) => {
-      const active = document.activeElement as HTMLElement | null;
-      const inEditor =
-        !!active &&
-        (active.tagName === 'INPUT' ||
-          active.tagName === 'TEXTAREA' ||
-          active.isContentEditable);
-      if (inEditor) return;
-      if (e.key === 'j' || e.key === 'ArrowDown') { e.preventDefault(); navigateDetail(1); }
-      if (e.key === 'k' || e.key === 'ArrowUp')   { e.preventDefault(); navigateDetail(-1); }
-    };
-    document.addEventListener('keydown', onKey);
-    return () => document.removeEventListener('keydown', onKey);
-  }, [detailItemId, navigateDetail]);
+  // Detail navigation (j/k keys) removed 2026-05-12 task E: detail view now
+  // full-page route. User can navigate via breadcrumb or back-button.
 
   // ── Toggle expanded ──
   const toggleExpanded = useCallback((it: BacklogItem) => {
@@ -2110,17 +2053,6 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
     [columns, ALLOWED_COLUMN_IDS, BANNED_COLUMN_IDS]
   );
 
-  // ── Panel mode cycling (2026-04-18 drawer redesign).
-  //   Drag-to-resize removed — Jira uses a 3-state machine instead.
-  //   Expand: compact → expanded (~60% viewport).
-  //   Fullscreen: any → fullscreen (100%, table hidden).
-  //   Close: resets panelMode to 'compact' and closes the panel.
-  const toggleExpanded2 = useCallback(() => {
-    setPanelMode((m) => (m === 'compact' ? 'expanded' : 'compact'));
-  }, []);
-  const toggleFullscreen = useCallback(() => {
-    setPanelMode((m) => (m === 'fullscreen' ? 'compact' : 'fullscreen'));
-  }, []);
 
   // Editing state — used by EditBacklogItemModal below.
   const editingItem = useMemo(
@@ -2254,13 +2186,6 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
     );
   }
 
-  const isPanelOpen = !!detailItemId;
-  // Look up the open item so the panel header can show its key + type icon
-  const detailItem = detailItemId ? (items.find((it) => it.id === detailItemId) ?? null) : null;
-  const DETAIL_TYPE_MAP: Record<string, string> = {
-    epic: 'Epic', feature: 'Feature', story: 'Story', bug: 'QA Bug',
-    incident: 'Production Incident', initiative: 'Epic',
-  };
   const typeCount = {
     all: items.length,
     initiative: items.filter((i) => i.type === 'initiative').length,
@@ -2271,48 +2196,6 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
     incident: items.filter((i) => i.type === 'incident').length,
   };
 
-  // Apr 27, 2026 (L48): Maximize/Restore icon now lives in the toolbar,
-  // immediately right of "N items" so the label sits to its LEFT (per
-  // user request — earlier iter put it in the page header's actions slot
-  // which left the label and icon vertically stacked at different y's).
-  // Defined as a JSX expression so we can drop it inline in the toolbar.
-  const toolbarMaximizeIcon = isPanelOpen ? (
-    <Tooltip content="Maximize table — closes the detail panel">
-      <button
-        type="button"
-        onClick={maximizeTable}
-        aria-label="Maximize table"
-        style={{
-          display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-          width: 32, height: 32, padding: 0, marginLeft: 8,
-          border: 'none', background: 'transparent', borderRadius: 3,
-          color: token('color.text.subtle', '#42526E'), cursor: 'pointer',
-        }}
-        onMouseEnter={(e) => { e.currentTarget.style.background = '#E4E6EA'; }}
-        onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
-      >
-        <AkMaximizeIcon label="" size="small" />
-      </button>
-    </Tooltip>
-  ) : lastDetailId ? (
-    <Tooltip content="Restore detail panel">
-      <button
-        type="button"
-        onClick={restoreDetail}
-        aria-label="Restore detail panel"
-        style={{
-          display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-          width: 32, height: 32, padding: 0, marginLeft: 8,
-          border: 'none', background: 'transparent', borderRadius: 3,
-          color: token('color.text.subtle', '#42526E'), cursor: 'pointer',
-        }}
-        onMouseEnter={(e) => { e.currentTarget.style.background = '#E4E6EA'; }}
-        onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
-      >
-        <AkMinimizeIcon label="" size="small" />
-      </button>
-    </Tooltip>
-  ) : null;
 
   // Apr 27, 2026 — jira-compare audit P1 #7: "More actions" overflow ⋯
   // wired to @atlaskit/dropdown-menu with view-level actions (Refresh,
@@ -2359,8 +2242,7 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
   };
 
   // Shared icon-button styles for the right-cluster toolbar buttons.
-  // Matches the visual rhythm of toolbarMaximizeIcon (32×32, transparent,
-  // ADS subtle text token).
+  // All 32×32, transparent bg, ADS subtle text token.
   const toolbarIconButtonStyle: React.CSSProperties = {
     display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
     width: 32, height: 32, padding: 0,
@@ -2488,104 +2370,6 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
     />
   );
 
-  // Apr 27, 2026 (L46): Compact rail is routed through AtlaskitPageShell's
-  // `sideRail` prop so it extends to the TOP of the page card alongside the
-  // H1 — matching Jira's pattern where the rail starts at y=67 alongside
-  // "Senaei BAU" project header (probed). Expanded/fullscreen modes keep
-  // their existing rendering (expanded uses the inline 60% column,
-  // fullscreen uses position:fixed modal with backdrop).
-  const useRailAsSideSlot = isPanelOpen && panelMode === 'compact';
-
-  // Inner content shared by sideRail compact rendering AND the fullscreen
-  // modal — keeps "Catalyst work item" + toolbar + scrollable detail one
-  // source of truth.
-  // Apr 27, 2026 (L47): merged the "Catalyst work item" label band and
-  // the panel controls into ONE row to mirror Jira's pattern
-  // (`☑ Jira work item .......... ↗ ⤢ ×`). Dropped the second toolbar
-  // row entirely along with the Prev/Next chevrons and the "1 of N"
-  // counter — Jira's rail has neither (verified by probe of
-  // platform-issue-preview-panel.preview-panel-expand-btn at y=68).
-  // Row navigation still works via j/k keyboard shortcuts (see
-  // useEffect that registers them).
-  const railInnerContent = !isPanelOpen ? null : (
-    <>
-      {/* Single header row — label on left, controls on right.
-          Bottom border = horizontal divider that Jira shows after the
-          "Jira work item" label. Removed Prev/Next + counter (no Jira
-          equivalent). */}
-      <div
-        style={{
-          display: 'flex', alignItems: 'center', gap: 8,
-          padding: '10px 12px 10px 14px',
-          flexShrink: 0,
-          background: 'var(--ds-surface-sunken, #F4F5F7)',
-          borderBottom: `1px solid ${token('color.border', '#DFE1E6')}`,
-          minHeight: 44,
-        }}
-      >
-        {/* Label group — issue type icon + key (Jira parity: "[icon] BAU-1234") */}
-        {detailItem && (
-          <span style={{ display: 'inline-flex', alignItems: 'center', flexShrink: 0 }}>
-            <JiraIssueTypeIcon
-              type={DETAIL_TYPE_MAP[detailItem.type] ?? 'Story'}
-              size={16}
-            />
-          </span>
-        )}
-        <span style={{
-          fontSize: 14, fontWeight: 600,
-          color: token('color.text.subtle', '#42526E'),
-          letterSpacing: '-0.003em',
-          whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
-          maxWidth: 180,
-        }}>
-          {detailItem?.key ?? detailItemId}
-        </span>
-        <div style={{ flex: 1 }} />
-        {/* Controls — Expand/Fullscreen/Close (Jira parity).
-            'Open in new tab' deferred (no Catalyst equivalent yet). */}
-        <DetailNavIconButton
-          ariaLabel={panelMode === 'compact' ? 'Expand panel' : 'Collapse panel'}
-          onClick={toggleExpanded2}
-          isDisabled={panelMode === 'fullscreen'}
-        >
-          {panelMode === 'compact' ? <AkChevronsLeftIcon /> : <AkChevronsRightIcon />}
-        </DetailNavIconButton>
-        <DetailNavIconButton
-          ariaLabel={panelMode === 'fullscreen' ? 'Exit fullscreen' : 'Fullscreen'}
-          onClick={toggleFullscreen}
-        >
-          {panelMode === 'fullscreen' ? <AkMinimizeIcon label="" size="small" /> : <AkMaximizeIcon label="" size="small" />}
-        </DetailNavIconButton>
-        <DetailNavIconButton
-          ariaLabel="Open issue in full page"
-          onClick={() => {
-            if (detailItemId) window.open(`/project-hub/${projectKey}/issues/${detailItemId}`, '_blank');
-          }}
-        >
-          <AkMaximizeIcon label="" size="small" />
-        </DetailNavIconButton>
-        <DetailNavIconButton ariaLabel="Close panel (Esc)" onClick={closeDetail}>
-          <AkCloseIcon label="" size="small" />
-        </DetailNavIconButton>
-      </div>
-      {/* Scrollable detail body (Add parent / BAU-5609 / H1 / fields) */}
-      <div style={{ flex: 1, minHeight: 0, overflow: 'auto' }}>
-        <Suspense fallback={<div style={{ padding: 24, color: token('color.text.subtlest', '#6B778C') }}>Loading…</div>}>
-          <CatalystDetailRouter
-            isOpen={true}
-            onClose={closeDetail}
-            itemId={detailItemId!}
-            projectId={projectId}
-            projectKey={projectKey}
-            onOpenItem={(id) => setDetailItemId(id)}
-            panelMode={true}
-            onTogglePanelMode={closeDetail}
-          />
-        </Suspense>
-      </div>
-    </>
-  );
 
   return (
     <>
@@ -2594,11 +2378,6 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
       // the white card and INTO the chromeBand (Jira parity — H1 sits in
       // the chrome band, not inside the table card). The `title` prop is
       // intentionally NOT passed; passing it would double-render the H1.
-      sideRail={useRailAsSideSlot ? railInnerContent : undefined}
-      // May 2026 (jira-compare): 528 was crushing the table to ~54% viewport.
-      // Jira list+panel split measured: table ~60%, panel ~40% at 1440px.
-      // 420px gives ~40% at typical 1080-1440px viewports without cramping field rows.
-      sideRailWidth={420}
       flush
       // Apr 27, 2026 — jira-compare iter 3: opt in to Jira's blue page
       // chrome (#E9F2FE probed at https://digital-transformation.atlassian.net/jira/software/c/projects/BAU/list?groupBy=status)
@@ -2733,23 +2512,6 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
           // people icon next to the H1 (in nameAdornment) still opens the
           // Add people modal.
           pageChromeRightCtas={
-            <Button
-              appearance="subtle"
-              spacing="compact"
-              iconBefore={
-                panelMode === 'fullscreen' ? (
-                  <AkMinimizeIcon label="" size="small" />
-                ) : (
-                  <AkMaximizeIcon label="" size="small" />
-                )
-              }
-              onClick={() =>
-                setPanelMode(panelMode === 'fullscreen' ? 'panel' : 'fullscreen')
-              }
-              aria-label={
-                panelMode === 'fullscreen' ? 'Exit full screen' : 'Enter full screen'
-              }
-            />
           }
           // Apr 27 2026 (Vikram instruction): tabs row removed entirely.
           // All work / Releases / "+" not required on this surface.
@@ -2948,8 +2710,6 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
         {toolbarViewOptionsButton}
         {/* P1 #7 — More actions overflow ⋯: refresh + export. */}
         {toolbarMoreActionsButton}
-        {/* Maximize/Restore icon — Jira toolbar has no item count label. */}
-        {toolbarMaximizeIcon}
       </div>
 
       {/* Bulk actions bar — only visible when selection is non-empty.
@@ -2986,18 +2746,9 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
            • fullscreen → table hidden, panel 100% */}
       <div style={{ flex: 1, display: 'flex', minHeight: 0, overflow: 'hidden' }}>
         <div
+          data-backlog-scroll-container
           style={{
-            // Table column width driven by panelMode (no drag-resize).
-            // Apr 27, 2026 (L39): fullscreen no longer hides the table.
-            // The panel renders as a position:fixed modal overlay above
-            // the table (Jira parity), so we keep the table at full
-            // flex width behind the modal — visible at the modal's edges
-            // and contributing to the dim-backdrop perception.
-            ...(isPanelOpen && panelMode === 'expanded'
-              ? { width: '40%', flexShrink: 0 }
-              : isPanelOpen && panelMode !== 'fullscreen'
-                ? { flex: 1 }       // compact — share remainder with fixed 400px panel
-                : { flex: 1 }),     // panel closed OR fullscreen modal — full width
+            // Table container — full width (panel removed)
             minWidth: 0,
             // Apr 27, 2026: page-level overflow was eating the table's own
             // .jira-table-viewport scroll. Switching to overflow:hidden +
@@ -3211,12 +2962,7 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
               }
               return 0;
             }}
-            // Jira-parity: the currently-open detail row gets the focused-row
-            // highlight (blue left bar + subtle bg). Wire detailItemId as
-            // focusedRowId so the key cell border and row tint track the panel.
-            focusedRowId={detailItemId ?? undefined}
             onRowClick={openDetail}
-            onEscape={closeDetail}
             selectable
             selection={selectedIds}
             onSelectionChange={setSelectedIds}
@@ -3347,227 +3093,6 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
           </div>
         </div>
 
-        {/* Fullscreen backdrop — dim layer behind the modal panel.
-            Click closes back to compact mode (Jira parity). */}
-        {isPanelOpen && panelMode === 'fullscreen' && (
-          <div
-            onClick={() => setPanelMode('compact')}
-            aria-hidden
-            style={{
-              position: 'fixed',
-              inset: 0,
-              background: 'rgba(9, 30, 66, 0.54)',
-              zIndex: 510,
-              transition: 'opacity 150ms ease',
-            }}
-          />
-        )}
-        {/* Apr 27, 2026 (L46): compact mode rail is now rendered via
-            AtlaskitPageShell.sideRail (extends to top of page = Jira parity).
-            Only render this inline panel for 'expanded' (60% inline) and
-            'fullscreen' (position:fixed modal) modes. */}
-        {isPanelOpen && panelMode !== 'compact' && (
-          <div
-            style={{
-              // Panel column width driven by panelMode:
-              //  expanded  → 60% of flex row (table at 40% beside)
-              //  fullscreen→ position:fixed modal overlay (Apr 27, 2026 L39)
-              //                — table stays visible behind the dim backdrop;
-              //                  modal centered, capped width/height, scrollable
-              //                  internally. Click backdrop or X/⛶ to close.
-              ...(panelMode === 'fullscreen'
-                ? {
-                    position: 'fixed' as const,
-                    top: '4vh',
-                    left: '50%',
-                    transform: 'translateX(-50%)',
-                    width: 'min(1280px, 92vw)',
-                    height: '92vh',
-                    zIndex: 520,
-                    background: token('elevation.surface', '#FFFFFF'),
-                    borderRadius: 8,
-                    boxShadow: '0 24px 56px rgba(9, 30, 66, 0.32), 0 0 1px rgba(9, 30, 66, 0.31)',
-                    border: 'none',
-                  }
-                : panelMode === 'expanded'
-                  ? {
-                      width: '60%', flexShrink: 0,
-                      borderLeft: `1px solid ${token('color.border', '#DFE1E6')}`,
-                      // Apr 27, 2026 (L45): reverted aggressive sticky+100vh
-                      // clamp — it was causing the rail to overlap the
-                      // global page chrome (search vanishing when rail
-                      // opened). Rely on the parent flex container's
-                      // existing min-height:0 + overflow:hidden to size
-                      // the rail; inner content scrolls via the existing
-                      // flex:1+overflow:auto wrapper at line 1572.
-                    }
-                  : {
-                      width: 400, flexShrink: 0,
-                      borderLeft: `1px solid ${token('color.border', '#DFE1E6')}`,
-                    }),
-              overflow: 'hidden',
-              display: 'flex',
-              flexDirection: 'column',
-              transition: panelMode === 'fullscreen' ? 'none' : 'width 150ms ease',
-            }}
-          >
-            {/* "Catalyst work item" anchor band — mirrors Jira's "Jira work
-                item" label at the top of every issue rail. Apr 27, 2026
-                (L40, iter 2): without this the rail's first content
-                (chevrons + close buttons) reads as "floating against
-                white" — the persistent "roof touch" perception even
-                after the canonical white canvas landed. The label gives
-                the rail a clear top edge and a cognitive anchor so the
-                user knows what they're looking at. Atlaskit Heading
-                semibold (Atlassian Sans, 14px/653) for top-row prominence;
-                bottom border separates it from the chevrons toolbar. */}
-            {/* 2026-05-12 Jira parity: breadcrumb back-button when fullscreen.
-                Jira's full-width detail view shows "← Backlog / BAU-XXXX" so
-                the user has a clear escape path. Catalyst previously had no
-                back-button in fullscreen — only the close X, which dropped
-                the user back to the table with no context cue. */}
-            {panelMode === 'fullscreen' && (
-              <div
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 8,
-                  padding: '10px 14px 6px',
-                  borderBottom: `1px solid ${token('color.border', '#DFE1E6')}`,
-                  flexShrink: 0,
-                  background: 'var(--ds-surface, #FFFFFF)',
-                }}
-              >
-                <Breadcrumbs
-                  onExpand={() => undefined}
-                  label="Detail breadcrumb"
-                >
-                  <BreadcrumbsItem
-                    text="Backlog"
-                    onClick={(e) => { e.preventDefault(); setPanelMode('compact'); }}
-                  />
-                  {detailItem?.key && (
-                    <BreadcrumbsItem text={detailItem.key} />
-                  )}
-                </Breadcrumbs>
-              </div>
-            )}
-            <div
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 8,
-                padding: '10px 14px',
-                fontSize: 14,
-                fontWeight: 653,
-                color: token('color.text', '#292A2E'),
-                letterSpacing: '-0.003em',
-                flexShrink: 0,
-                // Hex literal — `color.background.neutral.subtle` token
-                // resolved to transparent in this theme (probed iter 16),
-                // and CLAUDE.md mandates hex over HSL anyway.
-                background: 'var(--ds-surface-sunken, #F4F5F7)',
-                borderBottom: `1px solid ${token('color.border', '#DFE1E6')}`,
-                minHeight: 44,
-              }}
-            >
-              {detailItem && (
-                <span style={{ display: 'inline-flex', alignItems: 'center', flexShrink: 0 }}>
-                  <JiraIssueTypeIcon type={DETAIL_TYPE_MAP[detailItem.type] ?? 'Story'} size={16} />
-                </span>
-              )}
-              <span style={{
-                fontSize: 14,
-                fontWeight: 600,
-                color: token('color.text.subtle', '#42526E'),
-                whiteSpace: 'nowrap',
-                overflow: 'hidden',
-                textOverflow: 'ellipsis',
-                maxWidth: 220,
-              }}>
-                {detailItem?.key ?? detailItemId}
-              </span>
-            </div>
-            {/* Jira-faithful panel toolbar — Expand / Fullscreen / Close triad.
-                Prev/Next row navigation still works via j/k/↑/↓ keyboard. */}
-            <div
-              role="toolbar"
-              aria-label="Detail panel controls"
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 6,
-                padding: '0 10px 6px',
-                borderBottom: `1px solid ${token('color.border', '#DFE1E6')}`,
-                flexShrink: 0,
-              }}
-            >
-              <DetailNavIconButton
-                ariaLabel="Previous item (k)"
-                onClick={() => navigateDetail(-1)}
-                isDisabled={sortedRows.length < 2}
-              >
-                <AkChevronLeftIcon label="" size="small" />
-              </DetailNavIconButton>
-              <DetailNavIconButton
-                ariaLabel="Next item (j)"
-                onClick={() => navigateDetail(1)}
-                isDisabled={sortedRows.length < 2}
-              >
-                <AkChevronRightIcon label="" size="small" />
-              </DetailNavIconButton>
-              <span style={{ fontSize: 12, color: token('color.text.subtlest', '#6B778C'), marginLeft: 4, whiteSpace: 'nowrap' }}>
-                {currentDetailIdx >= 0 ? `${currentDetailIdx + 1} of ${sortedRows.length}` : ''}
-              </span>
-              <span style={{ width: 1, height: 14, background: token('color.border', '#DFE1E6'), margin: '0 4px' }} />
-              {/* Apr 27, 2026 iter-3 (duplication fix): dropped the
-                  Breadcrumbs from this top row entirely. Row 2 below
-                  ("Add parent / <issue-key> / Share / Actions") already
-                  carries the issue identification. Jira's pattern is:
-                  Row 1 = panel chrome only (label + expand/fullscreen/close);
-                  Row 2 = parent-switcher + current key.
-                  Earlier iters had this row showing
-                  "ProjectHub / BAU / Backlog / BAU-5609 — long title" then
-                  trimmed to "BAU / BAU-5609". Both produced redundant key
-                  display since row 2 also shows BAU-5609. Keep row 1 as
-                  pure chrome to match Jira and remove the duplication. */}
-              <div style={{ flex: '0 1 auto' }} />
-              <div style={{ flex: 1 }} />
-              {/* Jira-faithful icon triad: Expand (←/→) · Fullscreen · Close */}
-              <DetailNavIconButton
-                ariaLabel={panelMode === 'compact' ? 'Expand panel' : 'Collapse panel'}
-                onClick={toggleExpanded2}
-                isDisabled={panelMode === 'fullscreen'}
-              >
-                {panelMode === 'compact' ? <AkChevronsLeftIcon /> : <AkChevronsRightIcon />}
-              </DetailNavIconButton>
-              <DetailNavIconButton
-                ariaLabel={panelMode === 'fullscreen' ? 'Exit fullscreen' : 'Fullscreen'}
-                onClick={toggleFullscreen}
-              >
-                {panelMode === 'fullscreen' ? <AkMinimizeIcon label="" size="small" /> : <AkMaximizeIcon label="" size="small" />}
-              </DetailNavIconButton>
-              <DetailNavIconButton ariaLabel="Close panel (Esc)" onClick={closeDetail}>
-                <AkCloseIcon label="" size="small" />
-              </DetailNavIconButton>
-            </div>
-            <div style={{ flex: 1, minHeight: 0, overflow: 'auto' }}>
-              <Suspense fallback={<div style={{ padding: 24, color: token('color.text.subtlest', '#6B778C') }}>Loading…</div>}>
-                <CatalystDetailRouter
-                  isOpen={true}
-                  onClose={closeDetail}
-                  itemId={detailItemId!}
-                  projectId={projectId}
-                  projectKey={projectKey}
-                  onOpenItem={(id) => setDetailItemId(id)}
-                  panelMode={true}
-                  onTogglePanelMode={closeDetail}
-                />
-              </Suspense>
-            </div>
-          </div>
-        )}
-      </div>
 
       {/* Atlaskit-native Edit modal (replaces shadcn Dialog wrapper).
           Mounts only when editingId is set — ModalTransition handles enter/exit. */}
