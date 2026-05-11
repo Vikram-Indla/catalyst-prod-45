@@ -42,7 +42,7 @@ export const DEFAULT_COLUMNS: ColumnConfig[] = [
   { id: 'initiative_key', label: 'Key', visible: true, locked: true },
   { id: 'title', label: 'Summary', visible: true, locked: true },
   { id: 'status', label: 'Status', visible: true },
-  { id: 'comments', label: 'Comments', visible: true },
+  { id: 'comments', label: 'Comments', visible: false },
   { id: 'parent', label: 'Parent', visible: true },
   { id: 'assignee', label: 'Assignee', visible: true },
   { id: 'priority', label: 'Priority', visible: true },
