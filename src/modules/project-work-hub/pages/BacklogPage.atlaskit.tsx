@@ -1570,7 +1570,7 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
       // No functional DnD yet — visual parity only for Phase 4.
       id: '__drag',
       label: '',
-      width: 2,
+      width: 3,
       align: 'center' as const,
       alwaysVisible: true,
       cell: () => (

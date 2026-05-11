@@ -206,12 +206,20 @@ If RED: loop back to step 4 (re-probe) or escalate to Vikram. **Cap: 3 re-probes
 
 Only Vikram can manually override RED with explicit chat confirmation ("override red, proceed"). The override is logged in the activation block and any post-execution defect is auto-traced to the override.
 
-### Step 6 — Pick wrapper(s) and implementer agents from `ROUTER.md`
+### Step 6 — Pick wrapper(s) and implementer agents from `ROUTER.md` (with Phase 2.5 council gate)
 
 Two matrices in `ROUTER.md`:
 
 1. **Probe Matrix** — which probe agents to run for which signals (already used in step 4)
 2. **Implementer Matrix** — given the GAP REPORT, pick wrappers + implementer agents
+3. **Phase 2.5 Council Gate** — if the gap is ambiguous OR task is high-stake, convene a 5-advisor routing council to deliberate wrapper composition before hand-off
+
+**Phase 2.5 council activates when:**
+- Gap report has multiple valid wrapper paths (ambiguous routing)
+- Task classified as high-stake (per RUBRIC.md)
+- NOT when: trivial tier, single unambiguous wrapper match, or `--quick` mode
+
+The council (engineering-software-architect, senior-developer, jira-workflow-steward, code-reviewer, agents-orchestrator) deliberates for 5-10 min and outputs a binding composition order + rationale. This is the 1000-IQ principle operationalized — probe-first evidence fed into a deliberative council before implementer hand-off.
 
 Implementer agents are categorically different from probe agents:
 
@@ -429,6 +437,7 @@ See `PREFLIGHT_VS_AGENT.md` for the full comparison. Quick summary:
 ## See also
 
 - `ROUTER.md` — Probe Matrix + Implementer Matrix (the data)
+- `AGENT_ROSTER.md` — Phase 0–5 agent dispatch (companion to this skill)
 - `INDEX.md` — all 184 agents with Catalyst-relevance flags
 - `PREFLIGHT_VS_AGENT.md` — full comparison + composition patterns
 - `../AGENT_PIPELINE.md` — activation line format (shared protocol)
@@ -438,3 +447,9 @@ See `PREFLIGHT_VS_AGENT.md` for the full comparison. Quick summary:
 - `~/.claude/skills/design-intelligence/SKILL.md` — 1000-IQ design layer
 - `~/.claude/skills/design-critique/SKILL.md` — heuristic scoring
 - `CLAUDE.md` — gates, bans, lessons (source of truth)
+
+---
+
+## Agent Roster (companion)
+
+When this skill activates, also load `AGENT_ROSTER.md` from this directory and follow its activation-notification protocol. The roster is purely additive and does not change any instruction in this file. See `.claude/skills/AGENT_PIPELINE.md` for the cross-skill rules and Phase 2.5 council gate logic.

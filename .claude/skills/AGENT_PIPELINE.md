@@ -51,6 +51,7 @@ Each skill has a companion `AGENT_ROSTER.md` in its own directory. They map phas
 
 | Skill | Roster path | Top-3 agents per skill |
 |---|---|---|
+| `catalyst-agent` | `.claude/skills/catalyst-agent/AGENT_ROSTER.md` | `engineering-codebase-onboarding-engineer`, `agents-orchestrator`, `engineering-software-architect` (Phase 2.5 council) |
 | `preflight` | `.claude/skills/preflight/AGENT_ROSTER.md` | `engineering-codebase-onboarding-engineer`, `engineering-software-architect`, `engineering-minimal-change-engineer` |
 | `design-intelligence` | `.claude/skills/design-intelligence/AGENT_ROSTER.md` | `design-ux-architect`, `testing-accessibility-auditor`, `testing-evidence-collector` |
 | `design-critique` | `.claude/skills/design-critique/AGENT_ROSTER.md` | `testing-accessibility-auditor`, `design-ui-designer`, `testing-evidence-collector` |
