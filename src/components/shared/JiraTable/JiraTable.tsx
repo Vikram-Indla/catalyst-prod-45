@@ -594,9 +594,15 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
            view here for parity. Apr 27 2026 jira-compare regression
            (D-005 + D-006): fontWeight 700 → 653, color #505258 → #6B6E76.
            Jira spec (measured 2026-05-12): 12px/653/rgb(80,82,88) — NOT 14px/400.
-           14px/400 is body text. Headers must be bold and smaller. */
+           14px/400 is body text. Headers must be bold and smaller.
+           May 12 2026 (design-intelligence RCA): line-height 18px → 16px
+           to match Jira's vertical compaction. Tighter line-height = denser
+           text = perceived darker appearance. Jira uses 16px; Catalyst was
+           18px (browser default). Also changed -webkit-font-smoothing from
+           antialiased to auto (via global index.css update). */
         font-size: 12px;
         font-weight: 653;
+        line-height: 16px;
         color: rgb(80, 82, 88);
         text-transform: none;
         letter-spacing: normal;
