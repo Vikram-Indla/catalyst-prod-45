@@ -19,6 +19,8 @@ import ReactDOM from 'react-dom';
 import { useParams, useSearchParams, useNavigate } from 'react-router-dom';
 import { useQueryClient, useMutation, useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/hooks/useAuth';
+import { useCreateCatyConversation } from '@/hooks/useCatyAI';
 
 import EmptyState from '@atlaskit/empty-state';
 import SectionMessage from '@atlaskit/section-message';
@@ -353,6 +355,26 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
   const pageTitle = projectDisplayName;
   useAtlaskitThemeSync();
   const navigate = useNavigate();
+
+  // 2026-05-12 — Ask CATY entry point. Mirrors Jira's "✦ Ask AI" button
+  // position (left of Search in the list toolbar). On click: creates a
+  // CATY conversation scoped to this project, then navigates to /caty
+  // with the conversation id passed via URLSearchParams.
+  const { user } = useAuth();
+  const createCatyConversation = useCreateCatyConversation();
+  const handleAskCaty = useCallback(async () => {
+    if (!user?.id || !projectId) return;
+    try {
+      const conversation = await createCatyConversation.mutateAsync({
+        userId: user.id,
+        projectId,
+        type: 'chat',
+      });
+      navigate(`/caty?conversationId=${conversation.id}&source=backlog&projectKey=${projectKey}`);
+    } catch (err) {
+      console.error('Failed to start CATY conversation', err);
+    }
+  }, [user?.id, projectId, projectKey, createCatyConversation, navigate]);
 
   // ────────────────────────────────────────────────────────────────────
   // Apr 27 2026 (LOVABLE-01 landed in-session): project members for the
@@ -2572,6 +2594,35 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
             The global-nav Create handles cross-hub creation. Adding a
             third Create CTA on the toolbar was scope creep that broke
             Jira parity. Removed cleanly; toolbar starts with Search. */}
+        {/* 2026-05-12 — Ask CATY button, Jira parity placement.
+            Jira's "✦ Ask AI" sits left of "Search work" in the list
+            toolbar at all times (verified via Chrome MCP probe of
+            digital-transformation.atlassian.net BAU list view). Catalyst
+            previously rendered Ask CATY in the global top nav — wrong
+            location. Moved here per jira-compare 2026-05-12 finding. */}
+        <Tooltip content="Ask CATY about this backlog" position="bottom">
+          <Button
+            appearance="subtle"
+            isLoading={createCatyConversation.isPending}
+            onClick={handleAskCaty}
+            iconBefore={
+              <span style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: 16,
+                height: 16,
+                color: token('color.icon.accent.purple', '#8270DB'),
+                fontSize: 14,
+                lineHeight: 1,
+              }}>
+                ✦
+              </span>
+            }
+          >
+            Ask CATY
+          </Button>
+        </Tooltip>
         {/* Apr 28, 2026 (jira-compare cycle 2 T5): wrapper width fixed
             280 → flex:1 with min/max so the input expands like Jira's
             (probed Jira width=625px) instead of cramming at 280. */}
