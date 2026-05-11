@@ -30,7 +30,7 @@ describe('formatJiraDate', () => {
   it('formats a valid ISO date as DD MMM YYYY (en-GB)', () => {
     // Jira stores dates as YYYY-MM-DD (no time). Sample from BAU-3988.
     const out = formatJiraDate('2025-09-23');
-    expect(out).toMatch(/^\d{2} [A-Za-z]{3} \d{4}$/);
+    expect(out).toMatch(/^\d{2} [A-Za-z]{3,5}\.? \d{4}$/);
     // Verify the day/year survive the parse — month name is locale-dependent
     // in CI runners but day and year are stable.
     expect(out).toContain('2025');

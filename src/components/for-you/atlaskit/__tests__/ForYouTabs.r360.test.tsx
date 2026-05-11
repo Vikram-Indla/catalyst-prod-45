@@ -7,9 +7,17 @@
  */
 import React from 'react';
 import { describe, it, expect, vi } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { render as rtlRender, screen } from '@testing-library/react';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import ForYouTabs, { FOR_YOU_TAB_ORDER } from '@/components/for-you/atlaskit/ForYouTabs';
 import type { TabType } from '@/hooks/useForYouData';
+
+// `useAgeingCount` (consumed by ForYouTabs for the Ageing badge) calls
+// `useQuery`, so every render must be inside a QueryClientProvider.
+function render(ui: React.ReactElement) {
+  const qc = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+  return rtlRender(<QueryClientProvider client={qc}>{ui}</QueryClientProvider>);
+}
 
 // Minimal tabCounts — must include 'r360' once TabType has it
 const COUNTS: Record<TabType, number> = {

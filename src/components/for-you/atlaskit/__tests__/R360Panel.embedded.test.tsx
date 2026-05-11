@@ -32,6 +32,11 @@ vi.mock('@/hooks/useUserRole', () => ({
   useUserRole: () => ({ isTeamLead: true }),
 }));
 
+vi.mock('@/lib/auth', () => ({
+  useAuth: () => ({ user: { id: 'u-vikram', email: 'vikram@test' }, loading: false }),
+  AuthProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+}));
+
 // R360MemberDetail stub — exposes its key props as data attributes for assertions
 vi.mock('@/pages/R360MemberDetail', () => ({
   default: ({ resourceId, embedded }: { resourceId: string; embedded?: boolean }) => (

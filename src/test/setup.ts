@@ -16,12 +16,14 @@ Object.defineProperty(window, "matchMedia", {
   }),
 });
 
-// Mock ResizeObserver
-global.ResizeObserver = vi.fn().mockImplementation(() => ({
-  observe: vi.fn(),
-  unobserve: vi.fn(),
-  disconnect: vi.fn(),
-}));
+// Mock ResizeObserver — must be `new`-able, so use a class rather than an
+// arrow-returning vi.fn() (which is not a constructor under stricter vitest).
+class MockResizeObserver {
+  observe = vi.fn();
+  unobserve = vi.fn();
+  disconnect = vi.fn();
+}
+global.ResizeObserver = MockResizeObserver as unknown as typeof ResizeObserver;
 
 // Mock Supabase client
 vi.mock("@/integrations/supabase/client", () => ({
@@ -49,6 +51,10 @@ vi.mock("@/integrations/supabase/client", () => ({
     })),
     auth: {
       getUser: vi.fn(() => Promise.resolve({ data: { user: { id: "test-user" } }, error: null })),
+      getSession: vi.fn(() => Promise.resolve({ data: { session: null }, error: null })),
+      onAuthStateChange: vi.fn(() => ({
+        data: { subscription: { unsubscribe: vi.fn() } },
+      })),
     },
     channel: vi.fn(() => ({
       on: vi.fn(() => ({
