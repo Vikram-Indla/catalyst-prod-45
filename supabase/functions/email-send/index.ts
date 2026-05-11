@@ -13,6 +13,7 @@
 // a real sending domain once DNS is verified.
 
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+const serve = (handler: (req: Request) => Response | Promise<Response>) => Deno.serve(handler);
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -32,7 +33,7 @@ interface EmailSendRequest {
   recipient_user_id?: string;
 }
 
-Deno.serve(async (req) => {
+serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
 
   try {
