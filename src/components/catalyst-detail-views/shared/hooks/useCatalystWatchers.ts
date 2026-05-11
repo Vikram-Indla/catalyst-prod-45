@@ -2,8 +2,21 @@
  * useCatalystWatchers — read + toggle watcher state on a ph_issues row.
  *
  * Backed by ph_issue_watchers (issue_key text, user_id uuid).
- * jira-compare 2026-05-08: table created via SQL migration; types added to
- * supabase/types.ts; (supabase as any) cast removed; onError toast added.
+ *
+ * Migration: see supabase/migrations/20260511124646_create_ph_issue_watchers.sql
+ *   - SELECT: all authenticated users (so the watcher count is shared visibility)
+ *   - INSERT/DELETE: only user.id = auth.uid() (you can only add/remove yourself)
+ *
+ * Note on `(supabase as any)` cast: ph_issue_watchers is not yet present in
+ * `src/integrations/supabase/types.ts`. The cast is structurally necessary
+ * until types are regenerated via Lovable. Runtime queries work — TypeScript
+ * just can't verify column shapes. Once types are regenerated, remove the
+ * casts at lines 35, 76, 83.
+ *
+ * History:
+ *   2026-05-03 — table first created via Lovable SQL editor; never committed
+ *   2026-05-08 — onError toast added; CLAUDE.md lesson noted cast was a smell
+ *   2026-05-11 — Vikram re-ran SQL via Lovable; migration committed to repo
  */
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
