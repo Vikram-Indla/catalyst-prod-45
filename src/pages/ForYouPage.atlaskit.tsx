@@ -51,7 +51,6 @@ import AiThemePanel from '@/components/for-you/atlaskit/AiThemePanel';
 import AgeingPanel from '@/components/for-you/atlaskit/AgeingPanel';
 import R360Panel from '@/components/for-you/atlaskit/R360Panel';
 import { R360AccessTile } from '@/components/R360AccessTile';
-import { ForYouDetailPanel } from '@/components/for-you/ForYouDetailPanel';
 import { useGlobalSearchStore } from '@/store/globalSearchStore';
 
 const PAGE_SIZE = 20;
@@ -90,11 +89,8 @@ export default function ForYouPageAtlaskit() {
     workItems,
     user,
     isLoading,
-    selectedItem,
-    closeDetailPanel,
     toggleStar,
     trackView,
-    handleRowClick,
     recommendedMentions,
     recommendedComments,
     allUserProjects,
@@ -135,28 +131,26 @@ export default function ForYouPageAtlaskit() {
   }, [setActiveTab]);
 
   // ─── Row click → canonical detail modal (Jira parity) ───────────────────
-  // Route through useGlobalSearchStore.openDetail() — the same entry point
-  // notifications, global search, and project sidebars use to surface the
-  // canonical StoryDetailModal. ForYouDetailPanel is reserved for BRDs
-  // (business_gap / business_request) which have bespoke affordances the
-  // canonical modal doesn't yet support.
+  // Single path for every type, including BRDs (business_request /
+  // business_gap). Routes through useGlobalSearchStore.openDetail() — same
+  // entry point notifications, global search, and project sidebars use.
+  // CatalystShell mounts CatalystDetailRouter for the pending item; the
+  // router resolves business_request → CatalystViewBusinessRequest.
+  //
+  // History: ForYouDetailPanel (929 lines) used to handle BRDs separately
+  // for "bespoke affordances (stakeholders, impact, etc.)". Sweep
+  // 2026-05-11 confirmed that path was a parallel bespoke detail surface
+  // duplicating canonical functionality. Routed through canonical instead;
+  // when v2 BR view's cycle 4 lands (the formal swap of legacy BR mount
+  // sites), the canonical chain will pick it up automatically.
   const handleSelect = useCallback((item: WorkItem) => {
     trackView(item.id, item.issueType === 'planner_task' ? 'task' : 'ph_issue');
-    if (isBusinessRequest(item)) {
-      // Legacy drawer — preserves BRD-specific UI (stakeholders, impact, etc.)
-      handleRowClick(item.id);
-    } else {
-      // Canonical path — same modal everywhere else in Catalyst.
-      // CatalystDetailRouter queries ph_issues by issue_key (text PK),
-      // not by UUID. item.id is already set to row.issue_key in
-      // mapIssueToWorkItem — pass it directly.
-      useGlobalSearchStore.getState().openDetail({
-        id: item.id,
-        itemType: item.issueType,
-        projectKey: item.projectKey,
-      });
-    }
-  }, [handleRowClick, trackView]);
+    useGlobalSearchStore.getState().openDetail({
+      id: item.id,
+      itemType: item.issueType,
+      projectKey: item.projectKey,
+    });
+  }, [trackView]);
 
   // ─── Client-side pagination ─────────────────────────────────────────────
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
@@ -317,16 +311,9 @@ export default function ForYouPageAtlaskit() {
         </div>
       )}
 
-      {/* Detail panel — ONLY for business_gap / business_request items.
-          Everything else routes to the canonical StoryDetailModal via
-          useGlobalSearchStore.openDetail() (see handleSelect above).
-          This gate is what deprecates ForYouDetailPanel for non-BRD work. */}
-      {selectedItem && isBusinessRequest(selectedItem) && (
-        <ForYouDetailPanel
-          item={selectedItem}
-          onClose={closeDetailPanel}
-        />
-      )}
+      {/* Detail rendering: CatalystShell mounts CatalystDetailRouter
+          for the pending item set by handleSelect → openDetail().
+          (Bespoke ForYouDetailPanel deleted 2026-05-11.) */}
     </div>
   );
 }

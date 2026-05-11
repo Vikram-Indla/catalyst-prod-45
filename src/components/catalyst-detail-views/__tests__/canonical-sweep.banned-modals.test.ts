@@ -53,7 +53,15 @@ const BANNED_PATHS = [
   // — renders hierarchy NODES, not issues. File 12 KAItemDetailPanel is
   // deferred: active issue preview with intentionally smaller UX.)
   'components/requests/DetailPanel.tsx',
-  // P4 — file 13 (this PR) — 220 lines, was ACTIVE (used by
+  // P2 — file 9 (deferred → converted 2026-05-11) — 929 lines, was ACTIVE
+  // (used by ForYouPage.atlaskit.tsx for BRDs). Routed BRDs through a
+  // parallel bespoke detail surface. ForYouPage now uses the single
+  // canonical path: useGlobalSearchStore.openDetail() →
+  // CatalystDetailRouter → CatalystViewBusinessRequest. TransitionsTab
+  // was only consumed by ForYouDetailPanel, deleted with it.
+  'components/for-you/ForYouDetailPanel.tsx',
+  'components/for-you/TransitionsTab.tsx',
+  // P4 — file 13 — 220 lines, was ACTIVE (used by
   // Resource360PageNew). Duplicated 95% of canonical functionality
   // (header, pills, title, meta grid, hierarchy) plus a unique "Days
   // Sitting" indicator. Resource360PageNew now routes item clicks through
