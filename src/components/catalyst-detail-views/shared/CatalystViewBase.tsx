@@ -52,6 +52,25 @@ if (typeof document !== 'undefined') {
     '  .cv-drawer-sidebar { display: none !important; }',
     '  .cv-drawer-left { border-right: none !important; min-width: 0 !important; }',
     '}',
+    /* jira-compare 2026-05-11 — burger-menu Print fix.
+       The burger's Print action calls window.print(). Without print-aware
+       rules, the printout includes the right rail, splitter, action chrome
+       (Close/Share/Watchers/More), and the modal overlay backdrop — none
+       of which make sense on paper. Vikram defect: "burger menu print
+       clone does not work."
+       Rules below: collapse to a single-column body, drop chrome, force
+       static layout so the detail view prints like a plain document. */
+    '@media print {',
+    '  .cv-drawer-body { overflow: visible !important; container-type: normal !important; }',
+    '  .cv-drawer-sidebar, .cv-drawer-splitter { display: none !important; }',
+    '  .cv-drawer-left { width: 100% !important; min-width: 0 !important; border-right: none !important; overflow: visible !important; }',
+    '  [data-cv-drawer-topbar-actions], [data-cv-drawer-back], [data-cv-drawer-close] { display: none !important; }',
+    '  .cv-drawer-left button[aria-label="Close"],',
+    '  .cv-drawer-left button[aria-label="Share"],',
+    '  .cv-drawer-left button[aria-label="Manage watchers"],',
+    '  .cv-drawer-left button[aria-label="More options"],',
+    '  .cv-drawer-left button[aria-label="Toggle panel mode"] { display: none !important; }',
+    '}',
   ].join('\n');
   const existing = document.getElementById(ANIM_STYLE_ID);
   if (existing) {
