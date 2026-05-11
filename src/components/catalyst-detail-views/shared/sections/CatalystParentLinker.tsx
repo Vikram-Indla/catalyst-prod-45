@@ -676,7 +676,7 @@ function MultiLinkPicker({
   const done = filtered.filter(c => c.status_category === 'done');
 
   return (
-    <div style={{ position: 'relative' }} ref={pickerRef}>
+    <div style={{ position: 'relative' }} ref={triggerRef}>
       <div>
         {/* Current links display */}
         {existingLinks.length > 0 && (
@@ -702,13 +702,17 @@ function MultiLinkPicker({
 
         <SidebarAddTrigger label="Add link" isOpen={showPicker} onClick={() => setShowPicker(!showPicker)} />
 
-        {/* Picker dropdown */}
-        {showPicker && (
-          <div style={{
-            position: 'absolute', left: 0, right: 0, top: '100%', marginTop: 4,
-            background: 'var(--ds-surface, #FFFFFF)', border: '1px solid #DFE1E6', borderRadius: 6,
-            boxShadow: '0 8px 16px rgba(9,30,66,0.15)', zIndex: 100, maxHeight: 400, display: 'flex', flexDirection: 'column',
-          }}>
+        {/* Picker dropdown — portaled to document.body (jira-compare 2026-05-11 Vikram fix) */}
+        {showPicker && pickerPos && createPortal(
+          <div
+            ref={portalRef}
+            data-cv-parent-picker="true"
+            style={{
+              position: 'fixed', top: pickerPos.top, left: pickerPos.left, width: pickerPos.width,
+              background: 'var(--ds-surface, #FFFFFF)', border: '1px solid #DFE1E6', borderRadius: 6,
+              boxShadow: '0 8px 16px rgba(9,30,66,0.15)', zIndex: 1000, maxHeight: 400, display: 'flex', flexDirection: 'column',
+            }}
+          >
             <div style={{ padding: '8px 12px', borderBottom: '1px solid #F4F5F7' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 6, border: '2px solid #4C9AFF', borderRadius: 4, padding: '4px 8px' }}>
                 <SearchIcon size="small" primaryColor="#5E6C84" />
@@ -722,7 +726,8 @@ function MultiLinkPicker({
               {renderGroupMulti('DONE', done, linkedIds, toggleLink)}
               {filtered.length === 0 && <div style={{ padding: '16px', fontSize: 13, color: 'var(--ds-text-subtlest, #6B778C)', textAlign: 'center' }}>No matching items</div>}
             </div>
-          </div>
+          </div>,
+          document.body,
         )}
       </div>
     </div>
