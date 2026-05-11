@@ -6,7 +6,14 @@ These rules apply to every implementation task. No exceptions.
 
 ## Dev Server
 
-The Catalyst local dev server always runs on **http://localhost:8080**. Never use 8081. When navigating in Chrome MCP, always use port 8080.
+The Catalyst local dev server always runs on **http://localhost:8080**. Never use 8081. When navigating with any browser tool (agent-browser primary, Claude for Chrome fallback — see 2026-05-11 lesson), always use port 8080.
+
+---
+
+## 2026-05-11 — Browser automation: agent-browser primary, Claude for Chrome fallback
+**Surface:** every browser probe — Catalyst localhost:8080 DOM audits, jira-compare Lane A, design-critique screenshots, preflight Phase 1 evidence, CRUD acceptance loops, any task that opens a page.
+**Pattern:** Browser tooling is `agent-browser` (Vercel Labs, native Rust CLI + Chrome via CDP, accessibility-tree snapshots with `@eN` element refs). Installed via `npx skills add vercel-labs/agent-browser` (skill stub at `.claude/skills/agent-browser → ../../.agents/skills/agent-browser/SKILL.md`) + `npm i -g agent-browser && agent-browser install`. Discovery via `Skill agent-browser`; runtime via `agent-browser …` shell commands. Read `agent-browser skills get core` before issuing commands — the CLI serves the canonical workflow doc for the installed version so it never goes stale.
+**Rule:** **Default to agent-browser for every browser task.** Fall back to Claude for Chrome only when agent-browser is not functioning, with one of these explicit triggers: (a) Chrome for Testing not installed yet on this machine (`agent-browser install` failed or never ran — common in sandboxed sessions where `googlechromelabs.github.io` is unreachable), (b) the target surface requires an SSO-authenticated session tied to the user's real Chrome (live Jira at `digital-transformation.atlassian.net`, authenticated Atlassian-hosted pages), (c) agent-browser daemon error that doesn't clear after one retry. When falling back, state which trigger fired in the user-facing update — never silently switch tools mid-task. All prior CLAUDE.md references to "Chrome MCP" carry over to this routing: agent-browser for localhost and unauthenticated probes, Claude for Chrome for authenticated Jira parity work.
 
 ---
 
