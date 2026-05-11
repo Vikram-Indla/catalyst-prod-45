@@ -2025,6 +2025,14 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
     },
   ]), [expandedIds, toggleExpanded, hasChildren, parentOptions, assigneeOptions, avatarsByName, updateField, rowActions]);
 
+  // Filter columns to only allowed standard Jira fields (2026-05-12).
+  // Prevents type-specific custom fields and banned fields from appearing
+  // in the column picker. See ALLOWED_COLUMN_IDS + BANNED_COLUMN_IDS above.
+  const filteredCols = useMemo(() =>
+    columns.filter((col) => ALLOWED_COLUMN_IDS.has(col.id) && !BANNED_COLUMN_IDS.has(col.id)),
+    [columns, ALLOWED_COLUMN_IDS, BANNED_COLUMN_IDS]
+  );
+
   // ── Panel mode cycling (2026-04-18 drawer redesign).
   //   Drag-to-resize removed — Jira uses a 3-state machine instead.
   //   Expand: compact → expanded (~60% viewport).
@@ -2874,6 +2882,14 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
       {selectedIds.size > 0 && (
         <BulkActionsBar
           count={selectedIds.size}
+          // 2026-05-12 Jira parity: total in current filter scope drives the
+          // "Select all (N in scope)" CTA in the bar.
+          totalAvailable={sortedRows.length}
+          onSelectAll={() => setSelectedIds(new Set(sortedRows.map((r) => r.id)))}
+          // 2026-05-12 Jira parity: Edit fields opens bulk-edit wizard.
+          // Wired to inline flag for now; full bulk-edit modal is task #7
+          // follow-up — requires Vikram approval on field scope.
+          onEditFields={() => flag.info('Edit fields', `Bulk edit wizard scope (${selectedIds.size} items): pending Vikram approval.`)}
           onClear={() => setSelectedIds(new Set())}
           statusOptions={STATUS_OPTIONS}
           assigneeOptions={assigneeOptions.map<AssigneeChoice>((a) => ({ id: a.id, name: a.name, avatarUrl: a.avatarUrl ?? null }))}
@@ -2931,16 +2947,8 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
           }}
         >
           <div style={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column' }}>
-          {/* Filter columns to only allowed standard Jira fields (2026-05-12).
-              Prevents type-specific custom fields and banned fields from appearing
-              in the column picker. See ALLOWED_COLUMN_IDS + BANNED_COLUMN_IDS above. */}
-          {useMemo(() => {
-            const filteredCols = columns.filter(
-              (col) => ALLOWED_COLUMN_IDS.has(col.id) && !BANNED_COLUMN_IDS.has(col.id)
-            );
-            return (
-              <JiraTable<BacklogItem>
-                columns={filteredCols}
+          <JiraTable<BacklogItem>
+            columns={filteredCols}
             data={groupedRows ? undefined : sortedRows}
             groups={groupedRows ?? undefined}
             collapsedGroups={collapsedGroups}
@@ -3253,8 +3261,6 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
               />
             }
           />
-            );
-          }, [columns, ALLOWED_COLUMN_IDS, BANNED_COLUMN_IDS])}
           </div>
         </div>
 
@@ -5792,6 +5798,9 @@ function InlineCreateRow({
  */
 function BulkActionsBar({
   count,
+  totalAvailable,
+  onSelectAll,
+  onEditFields,
   onClear,
   statusOptions,
   assigneeOptions,
@@ -5801,6 +5810,17 @@ function BulkActionsBar({
   isBusy,
 }: {
   count: number;
+  /**
+   * 2026-05-12 Jira parity: total rows in current filter scope (used to label
+   * the "Select all (N in scope)" CTA). When omitted, button is hidden.
+   */
+  totalAvailable?: number;
+  onSelectAll?: () => void;
+  /**
+   * 2026-05-12 Jira parity: "Edit fields" opens the bulk-edit modal. When
+   * omitted, the button is hidden (back-compat for callers without bulk edit).
+   */
+  onEditFields?: () => void;
   onClear: () => void;
   statusOptions: StatusOption[];
   assigneeOptions: AssigneeChoice[];
@@ -5888,6 +5908,62 @@ function BulkActionsBar({
           {count} {itemLabel} selected
         </span>
         <div style={{ width: 1, height: 20, background: 'rgba(255,255,255,0.20)' }} />
+
+        {/* 2026-05-12 Jira parity: Select all (in scope) — only when not yet all selected */}
+        {onSelectAll && typeof totalAvailable === 'number' && count < totalAvailable && (
+          <>
+            <button
+              type="button"
+              onClick={onSelectAll}
+              disabled={isBusy}
+              style={{
+                height: 32,
+                padding: '0 12px',
+                margin: '0 6px',
+                background: 'transparent',
+                border: 'none',
+                color: 'var(--ds-text-inverse, #FFFFFF)',
+                fontSize: 14,
+                fontWeight: 500,
+                cursor: 'pointer',
+                borderRadius: 4,
+              }}
+              onMouseEnter={(e) => (e.currentTarget.style.background = 'rgba(255,255,255,0.10)')}
+              onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
+            >
+              Select all ({totalAvailable} in scope)
+            </button>
+            <div style={{ width: 1, height: 20, background: 'rgba(255,255,255,0.20)' }} />
+          </>
+        )}
+
+        {/* 2026-05-12 Jira parity: Edit fields button */}
+        {onEditFields && (
+          <>
+            <button
+              type="button"
+              onClick={onEditFields}
+              disabled={isBusy}
+              style={{
+                height: 32,
+                padding: '0 12px',
+                margin: '0 6px',
+                background: 'transparent',
+                border: 'none',
+                color: 'var(--ds-text-inverse, #FFFFFF)',
+                fontSize: 14,
+                fontWeight: 500,
+                cursor: 'pointer',
+                borderRadius: 4,
+              }}
+              onMouseEnter={(e) => (e.currentTarget.style.background = 'rgba(255,255,255,0.10)')}
+              onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
+            >
+              Edit fields
+            </button>
+            <div style={{ width: 1, height: 20, background: 'rgba(255,255,255,0.20)' }} />
+          </>
+        )}
 
         {/* Change status */}
         <BulkPopover label="Change status" width={240}>
