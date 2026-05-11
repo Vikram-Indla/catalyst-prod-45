@@ -19,6 +19,20 @@ metadata:
   wrapper_skills: [preflight, jira-compare, design-intelligence, design-critique]
   mcp_servers: [atlassian, chrome, supabase]
   iq_level: 1000
+  design_system:
+    source: https://atlassian.design/
+    scope: exclusive                          # components + themes + typography + css — no exceptions
+    components: "@atlaskit/* only"
+    tokens: "@atlaskit/tokens — var(--ds-*) only"
+    typography: "@atlaskit/heading + ADS tokens (live Jira anchors override per CLAUDE.md)"
+    icons: "@atlaskit/icon + @/lib/jira-issue-type-icons only"
+    paired_with: atlassian_mcp_probe          # design decisions must be grounded in MCP probe evidence
+  pre_execution_gate:
+    name: green_signal
+    intensity: intensive                      # all 7 dimensions covered, both sides probed
+    dimensions: [visual, structural, behavioral, schema, architecture, accessibility, claude_md]
+    blocks_execution_until: 🟢
+    override: vikram_only_explicit_chat_confirmation
 ---
 
 # /catalyst-agent v2 — probe-first agent router

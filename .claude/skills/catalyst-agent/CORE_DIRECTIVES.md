@@ -1,3 +1,26 @@
+---
+name: catalyst-agent-core-directives
+applies_to: every dispatched agent (probe + implementer)
+non_negotiable: true
+directive_1:
+  name: ads_ring_fence
+  source: https://atlassian.design/
+  scope: exclusive                            # components + themes + typography + css
+  components: "@atlaskit/* only"
+  tokens: "@atlaskit/tokens — var(--ds-*) only"
+  typography: "@atlaskit/heading + ADS tokens (live Jira anchors override per CLAUDE.md)"
+  icons: "@atlaskit/icon + @/lib/jira-issue-type-icons only"
+  paired_with: atlassian_mcp_probe            # design decisions must be grounded in MCP probe evidence
+directive_2:
+  name: green_signal_gate
+  intensity: intensive                        # all 7 dimensions covered, both sides probed
+  dimensions_required: 7
+  dimensions: [visual, structural, behavioral, schema, architecture, accessibility, claude_md]
+  blocks_execution_until: 🟢
+  override: vikram_only_explicit_chat_confirmation
+enforcement: prepended to every Agent() prompt by /catalyst-agent dispatch template
+---
+
 # Core Directives — every agent reads this before doing work
 
 These are **non-negotiable preamble rules**. Every dispatch made by `/catalyst-agent` (probe OR implementer) MUST have this file's contents prepended to the agent's prompt. The rules are stated as if speaking directly to the dispatched agent.
