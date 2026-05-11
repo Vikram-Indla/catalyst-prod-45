@@ -5982,6 +5982,72 @@ export type Database = {
         }
         Relationships: []
       }
+      email_log: {
+        Row: {
+          attempt_count: number
+          body_html: string | null
+          body_text: string | null
+          created_at: string
+          error_message: string | null
+          from_email: string
+          from_name: string
+          id: string
+          metadata: Json
+          provider: string
+          provider_message_id: string | null
+          recipient_user_id: string | null
+          sent_at: string | null
+          sent_by_user_id: string | null
+          status: string
+          subject: string
+          template_name: string
+          template_props: Json
+          to_email: string
+        }
+        Insert: {
+          attempt_count?: number
+          body_html?: string | null
+          body_text?: string | null
+          created_at?: string
+          error_message?: string | null
+          from_email: string
+          from_name: string
+          id?: string
+          metadata?: Json
+          provider?: string
+          provider_message_id?: string | null
+          recipient_user_id?: string | null
+          sent_at?: string | null
+          sent_by_user_id?: string | null
+          status?: string
+          subject: string
+          template_name: string
+          template_props?: Json
+          to_email: string
+        }
+        Update: {
+          attempt_count?: number
+          body_html?: string | null
+          body_text?: string | null
+          created_at?: string
+          error_message?: string | null
+          from_email?: string
+          from_name?: string
+          id?: string
+          metadata?: Json
+          provider?: string
+          provider_message_id?: string | null
+          recipient_user_id?: string | null
+          sent_at?: string | null
+          sent_by_user_id?: string | null
+          status?: string
+          subject?: string
+          template_name?: string
+          template_props?: Json
+          to_email?: string
+        }
+        Relationships: []
+      }
       enterprise_grid_user_state: {
         Row: {
           active_view_id: string | null
