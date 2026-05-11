@@ -285,6 +285,7 @@ const ModulesPackages = lazy(() => import("../pages/admin/ModulesPackages"));
 const ProductSettings = lazy(() => import("../pages/admin/ProductSettings"));
 const AdminOverview = lazy(() => import("../pages/admin/AdminOverview"));
 const UserAccessPage = lazy(() => import("../pages/admin/UserAccessPage"));
+const AdminAccessPage = lazy(() => import("../pages/admin/AdminAccessPage"));
 const ProcessSteps = lazy(() => import("../pages/admin/ProcessSteps"));
 // Admin v2 deprecated 2026-05-09 — all /admin/v2/* redirect to /admin/overview
 const WorkHubAdminPage = lazy(() => import("../modules/workhub/admin/pages/WorkHubAdmin"));
@@ -833,6 +834,7 @@ export default function FullAppRoutes() {
           <Route path="overview" element={<S><AdminOverview /></S>} />
           <Route path="modules-packages" element={<S><ModulesPackages /></S>} />
           <Route path="user-access" element={<S><UserAccessPage /></S>} />
+          <Route path="access" element={<S><AdminAccessPage /></S>} />
           <Route path="users" element={<S><UsersManagement /></S>} />
           <Route path="roles-permissions" element={<S><RolesPermissions /></S>} />
           <Route path="theme-groups" element={<S><ThemeGroups /></S>} />
