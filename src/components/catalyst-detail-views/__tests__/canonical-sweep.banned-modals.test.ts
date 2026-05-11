@@ -23,9 +23,14 @@ import { resolve } from 'path';
 const repoSrc = resolve(__dirname, '../../..');
 
 const BANNED_PATHS = [
-  // P1 — file 1 (this PR)
+  // P1 — file 1
   'components/project-hub/work-items/WorkItemDetailModal.tsx',
   'components/project-hub/work-items/detail/DetailRightSidebar.tsx',
+  // P1 — file 2 (this PR) — ProjectListView.tsx was already @deprecated 2026-04-18;
+  // WorkItemDetailPanel.tsx was its only detail-view consumer. ProjectAllWorkView
+  // is the active, canonical alternative (already uses CatalystDetailRouter).
+  'pages/project-hub/jira-list/ProjectListView.tsx',
+  'pages/project-hub/jira-list/components/WorkItemDetailPanel.tsx',
 ];
 
 describe('Canonical sweep — banned non-canonical detail-view files must not exist', () => {
