@@ -560,7 +560,10 @@ export function CatalystViewBase({
           <div className="cv-drawer-left" data-sdm-scope style={{
             flex: 1, padding: '20px 24px 32px 24px',
             borderRight: '1px solid #EBECF0', minWidth: 0, minHeight: 0,
-            ...(!fullPageMode ? { overflowY: 'auto' } : {}),
+            // fullPageMode: cap field rows at ~780px (matches modal left-panel width
+            // at 1100px total minus ~320px sidebar). Without this, fields like
+            // Priority and Severity stretch to fill the full viewport width.
+            ...(fullPageMode ? { maxWidth: 780 } : { overflowY: 'auto' }),
           }}>
             {isLoading ? (
               <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
