@@ -257,3 +257,9 @@ Key anchors to apply before every audit:
 - `design-intelligence/SKILL.md` — SVG arrow injection protocol (shared)
 - `preflight/SKILL.md` Phase 1 Lane A — how this skill fits the pipeline
 - `references/JIRA_ARCHITECT.md` — 28-pattern checklist (cross-reference)
+
+---
+
+## Agent Roster (companion)
+
+When this skill activates, also load `AGENT_ROSTER.md` from this directory and follow its activation-notification protocol. The roster is purely additive and does not change any instruction in this file. See `.claude/skills/AGENT_PIPELINE.md` for the cross-skill rules.

@@ -75,21 +75,15 @@ export function makeCaretCell({
 // ─── Key (link) Cell ───────────────────────────────────────────────────────
 // Jira-faithful key cell.
 //
-// Measured directly from Jira production DOM 2026-04-26 (BAU-5650 sample row,
-// digital-transformation.atlassian.net):
-//   - font-family:  "Atlassian Sans" (NOT monospace)
+// Key cell style — re-measured 2026-05-12 against user-provided Jira screenshot
+// (digital-transformation.atlassian.net BAU list view, current production):
 //   - font-size:    14px
-//   - font-weight:  400 (regular, NOT bold)
-//   - color:        rgb(80, 82, 88)  /  #505258  — neutral subtle, NOT link-blue
-//   - text-decoration: none in rest state; underline + bg tint on hover
+//   - font-weight:  400
+//   - color:        color.link (#0C66E4) — blue, underlined at rest
+//   - text-decoration: underline at rest state (Jira parity confirmed visually)
 //
-// The hover affordance lives in JiraTable.tsx:
-//   [data-jira-table-row-open]:hover { background:#E9F2FF; text-decoration: underline; }
-//
-// Previously this cell rendered as monospaced bold link-blue (Catalyst's
-// pre-2026-04 "opinionated" treatment). The 2026-04-26 audit confirmed Jira
-// has long since moved to neutral subtle for the rest state, with the link
-// affordance reserved for hover. The canonical now matches.
+// NOTE: 2026-04-26 comment claiming #505258/grey was stale — current Jira
+// production renders keys as blue+underlined links in rest state.
 export function makeKeyCell(
   getKey: (row: any) => string | null,
   /**
@@ -116,12 +110,12 @@ export function makeKeyCell(
       boxSizing: 'border-box',
       fontFamily: 'inherit',
       fontWeight: 400,
-      color: token('color.text.subtle', '#505258'),
+      color: token('color.link', '#0C66E4'),
       fontSize: 14,
       letterSpacing: 0,
       whiteSpace: 'nowrap',
       cursor: 'pointer',
-      textDecoration: 'none',
+      textDecoration: 'underline',
       border: `2px solid ${token('color.border.focused', '#388BFF')}`,
       borderRadius: 3,
       padding: '2px 6px',
@@ -131,12 +125,12 @@ export function makeKeyCell(
       margin: '-2px -6px',
       fontFamily: 'inherit',
       fontWeight: 400,
-      color: token('color.text.subtle', '#505258'),
+      color: token('color.link', '#0C66E4'),
       fontSize: 14,
       letterSpacing: 0,
       whiteSpace: 'nowrap',
       cursor: 'pointer',
-      textDecoration: 'none',
+      textDecoration: 'underline',
     };
     if (onOpen) {
       const href = getHref ? getHref(row) : '#';
@@ -700,6 +694,24 @@ export function makeLabelsCell(getLabels: (row: any) => string[] | null) {
             {label}
           </span>
         ))}
+      </span>
+    );
+  };
+}
+
+// ─── Fix Versions Cell ─────────────────────────────────────────────────────────
+// Renders fix versions as comma-separated plain text. Fix versions are not
+// inline-editable in this column cell — editing happens via the bulk wizard
+// or detail panel. Matches Jira's list column display.
+export function makeFixVersionsCell(getFixVersions: (row: any) => string[] | null | undefined) {
+  return function FixVersionsCell({ row }: CellProps<any>) {
+    const versions = getFixVersions(row);
+    if (!versions || versions.length === 0) {
+      return <span style={{ color: token('color.text.subtlest', '#7A869A') }}>—</span>;
+    }
+    return (
+      <span style={{ color: token('color.text', '#172B4D'), fontSize: 14, fontWeight: 400 }}>
+        {versions.join(', ')}
       </span>
     );
   };

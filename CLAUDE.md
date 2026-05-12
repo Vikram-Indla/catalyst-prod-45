@@ -10,6 +10,18 @@ The Catalyst local dev server always runs on **http://localhost:8080**. Never us
 
 ---
 
+## Claude Preview — Manual Activation Only
+
+**Claude Preview (`preview_*` tools) must NEVER be auto-activated for runtime verification.** Do not call `preview_start`, `preview_screenshot`, `preview_click`, or any preview tool unless:
+1. The user explicitly requests verification ("verify this", "test the change", "check if it works")
+2. The user clicks the preview button or asks "does this look right?"
+
+**Why:** Preview tools auto-starting silently in the background consume credits and slow down iteration. Verification must be user-initiated.
+
+**Rule:** Implementation code → test locally if needed → stop. Only open preview if the user asks or if the change is definitely visual/interactive. Type checking, tests, and reading source code verify code correctness; preview verifies feature correctness only when explicitly requested.
+
+---
+
 ## Shared Agent Library (Team-wide)
 
 All Catalyst team members have access to **184 shared personas** (committed to `./.claude/agents/` in this repo) for use with the catalyst-agent orchestrator:
@@ -325,10 +337,15 @@ Surface-level "measured X column widths" reports without per-issue-type round-ro
 **Pattern:** The self-rolled popover used `mousedown` for click-outside but had no keyboard handler. Pressing Escape with the watchers popover open closed both the popover AND the entire kanban modal because the keydown event bubbled up to the modal's own Escape handler. Fix: add `document.addEventListener('keydown', handler, true)` in capture phase (beats the modal's bubble-phase listener) that calls `e.stopPropagation()` before `setOpen(false)`.
 **Rule:** Self-rolled popovers MUST add a capture-phase `keydown` Escape handler (`addEventListener('keydown', fn, true)`) so Escape only closes the popover, not the parent modal. The bubble-phase handler always loses to the modal's bubble-phase handler.
 
-## 2026-05-08 — Section headers must never use @atlaskit/heading size="small" (16px/653)
-**Surface:** CatalystKeyDetails, CatalystSidebarDetails, ActivityPanel (all detail views)
-**Pattern:** `@atlaskit/heading size="small"` renders at 16px/653. K.11 Jira-measured spec for ALL section headers (Key details, Details, Activity, Description) is 14px/600/#172B4D. Using the Atlaskit Heading component for these sections always produces the wrong size.
-**Rule:** For any section header that K.11 specifies at 14px/600, use an inline `<h2 style={{ margin: 0, fontSize: 14, fontWeight: 600, lineHeight: '20px', color: 'var(--ds-text, #172B4D)' }}>` — never `@atlaskit/heading`. Breadcrumb links: 14px/400/#42526E. Rail field labels (stacked): 11px/600/#6B778C. Timestamps: 11px/400/#6B778C.
+## 2026-05-12 — Section header spec is PER-SECTION, not a single global value (corrects 2026-05-08 lesson)
+**Surface:** CatalystDescriptionSection, CatalystKeyDetails, SubtasksPanel, LinkedWorkItemsSection, ActivityPanel
+**Pattern:** 2026-05-08 lesson claimed ALL section headers are 14px/600/#172B4D. 2026-05-11 re-probe then overcorrected to 16px/653 for ALL sections. 2026-05-12 TreeWalker text-node probe (authoritative) on BAU-5609 settled the conflict:
+- **Description `<h2>`**: 14px / 500 / rgb(80,82,88) = `var(--ds-text-subtle, #505258)` ← different from all others
+- **Key details span** (text node inside collapsible toggle): 16px / 653 / rgb(41,42,46) = `var(--ds-text, #292A2E)` ✅ matches Catalyst
+- **Subtasks / Child issues span**: 16px / 653 / rgb(41,42,46) ✅ matches Catalyst `.sp-title` CSS
+- **Linked work items `<h2>`**: 16px / 653 / rgb(41,42,46) ✅ already correct
+- **Activity span**: 16px / 653 / rgb(41,42,46) ✅ already correct
+**Rule:** Description section header is the ONLY one that deviates: `<h2 style={{ margin:0, fontSize:14, fontWeight:500, color:'var(--ds-text-subtle, #505258)' }}>`. All other section headers (Key details, Subtasks, LWI, Activity) correctly use 16px/653. Never group all sections under one spec — always TreeWalker-probe the text node directly in Jira before changing a section header style. The 2026-05-08 and 2026-05-11 measurements both hit wrapper elements, not the text node. Breadcrumb links: 14px/400/#42526E. Rail field labels (stacked): 11px/600/#6B778C. Timestamps: 11px/400/#6B778C.
 
 ## 2026-05-05 — Schema-probe before field add, in practice (B4 anti-pattern #18 applied)
 **Surface:** CatalystSidebarDetails right rail

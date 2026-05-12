@@ -14,7 +14,7 @@
  * renders its own content into the left/right slots.
  */
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import CrossIcon from '@atlaskit/icon/core/close';
 import ShareIcon from '@atlaskit/icon/core/share';
 import MoreIcon from '@atlaskit/icon/core/menu';
@@ -310,6 +310,10 @@ export function CatalystViewBase({
 
   /* ── Navigation (full-page back) ─────────── */
   const navigate = useNavigate();
+  const location = useLocation();
+  const projectListHref = location.pathname.includes('/backlog/')
+    ? `/project-hub/${projectKey}/backlog`
+    : `/project-hub/${projectKey}/list`;
   const handleBack = useCallback(() => {
     if (fullPageMode) {
       if (projectKey) {
@@ -399,6 +403,7 @@ export function CatalystViewBase({
                 parentKey={parentKey}
                 parentType={parentType}
                 onParentClick={onParentClick}
+                projectHref={projectListHref}
                 middleSlot={
                   !parentKey && itemKey && onParentChange
                     ? (
@@ -560,7 +565,10 @@ export function CatalystViewBase({
           <div className="cv-drawer-left" data-sdm-scope style={{
             flex: 1, padding: '20px 24px 32px 24px',
             borderRight: '1px solid #EBECF0', minWidth: 0, minHeight: 0,
-            ...(!fullPageMode ? { overflowY: 'auto' } : {}),
+            // fullPageMode: cap field rows at ~780px (matches modal left-panel width
+            // at 1100px total minus ~320px sidebar). Without this, fields like
+            // Priority and Severity stretch to fill the full viewport width.
+            ...(fullPageMode ? { maxWidth: 780 } : { overflowY: 'auto' }),
           }}>
             {isLoading ? (
               <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
