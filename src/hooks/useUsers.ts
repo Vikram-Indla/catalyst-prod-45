@@ -21,6 +21,7 @@ export interface UserProfile {
   created_at: string | null;
   updated_at: string | null;
   system_role: string | null;  // admin, program_manager, team_lead, user (from user_roles table)
+  module_access: Record<string, boolean> | null;  // { "caty": true, "r360": false, ... }
   roles: UserRoleInfo[];
   business_lines: string[];
   // Vendor/Contract metadata
@@ -85,7 +86,7 @@ export function useUsers() {
       // Fetch all profiles with approval and vendor fields
       const { data: profiles, error: profilesError } = await supabase
         .from('profiles')
-        .select('*, rid, approval_status, requested_at, approved_at, rejected_at, rejection_reason, signup_attempts_count, vendor, contract_start_date, contract_end_date, country, country_code, country_flag_svg_url, location, resource_type, ctc')
+        .select('*, rid, approval_status, requested_at, approved_at, rejected_at, rejection_reason, signup_attempts_count, vendor, contract_start_date, contract_end_date, country, country_code, country_flag_svg_url, location, resource_type, ctc, module_access')
         .order('vendor', { ascending: true, nullsFirst: false })
         .order('full_name', { ascending: true })
         .limit(1000);
@@ -277,6 +278,7 @@ export function useUsers() {
             created_at: null,
             updated_at: null,
             system_role: null, // Unlinked users have no system role
+            module_access: null, // Unlinked users have no module access
             roles: [],
             business_lines: [],
             vendor: vendorData?.name || r.vendor_name,

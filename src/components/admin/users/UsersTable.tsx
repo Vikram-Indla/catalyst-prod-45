@@ -865,6 +865,9 @@ export const UsersTable = memo(function UsersTable({ users, isLoading }: UsersTa
                   <th className="text-left py-3 px-3 text-xs font-medium text-muted-foreground select-none">
                     Last Login
                   </th>
+                  <th className="text-left py-3 px-3 text-xs font-medium text-muted-foreground select-none">
+                    Module Access
+                  </th>
                   <th className="text-right py-3 px-3 text-xs font-medium text-muted-foreground">Actions</th>
                 </tr>
               </thead>
@@ -1119,6 +1122,24 @@ export const UsersTable = memo(function UsersTable({ users, isLoading }: UsersTa
                     </td>
                     <td className="py-2 px-3 text-xs text-muted-foreground">
                       {formatLastLogin(user.last_login)}
+                    </td>
+                    <td className="py-2 px-3 text-xs text-muted-foreground">
+                      {user.module_access ? (
+                        <div className="flex flex-wrap gap-1">
+                          {Object.entries(user.module_access)
+                            .filter(([_, enabled]) => enabled)
+                            .map(([module]) => (
+                              <Lozenge key={module} appearance="success">
+                                {module}
+                              </Lozenge>
+                            ))}
+                          {Object.entries(user.module_access).every(([_, enabled]) => !enabled) && (
+                            <span>—</span>
+                          )}
+                        </div>
+                      ) : (
+                        <span>—</span>
+                      )}
                     </td>
                     <td className="py-3 px-3">
                       <div className="flex items-center justify-end gap-2">
