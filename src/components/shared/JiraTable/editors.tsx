@@ -88,12 +88,16 @@ function EditorPopover({ trigger, children, width = 240, align = 'start' }: Edit
       if (document.querySelector('.atlaskit-portal-container')?.contains(target)) return;
       setIsOpen(false);
     };
-    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') setIsOpen(false); };
+    // Capture-phase so Escape closes the popover before any parent modal's
+    // bubble-phase Escape handler fires (prevents CatalystViewBase modal
+    // or @atlaskit/modal-dialog from closing when user dismisses popover).
+    // Per CLAUDE.md 2026-05-08 WatchersChip lesson.
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') { e.stopPropagation(); setIsOpen(false); } };
     document.addEventListener('mousedown', onDown);
-    document.addEventListener('keydown', onKey);
+    document.addEventListener('keydown', onKey, true);
     return () => {
       document.removeEventListener('mousedown', onDown);
-      document.removeEventListener('keydown', onKey);
+      document.removeEventListener('keydown', onKey, true);
     };
   }, [isOpen]);
 
