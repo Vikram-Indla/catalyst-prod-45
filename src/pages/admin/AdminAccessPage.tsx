@@ -850,7 +850,7 @@ export default function AdminAccessPage() {
     <AdminGuard>
       <div style={{ padding: '24px 32px', maxWidth: 1100 }}>
         <div style={{ marginBottom: 24 }}>
-          <Heading size="xlarge">User Access</Heading>
+          <Heading size="large">Access Management</Heading>
           <p style={{ margin: '4px 0 0', fontSize: 14, color: 'var(--ds-text-subtle, #6B778C)' }}>
             Manage Catalyst user accounts, send invitations, and review email activity.
           </p>
