@@ -388,10 +388,11 @@ export function CatalystDescriptionSection({ issue, label = 'Description' }: Cat
           data-testid="catalyst-description-section.label"
           style={{
             margin: 0, padding: 0, flex: 1,
-            /* jira-compare 2026-05-11 re-probe: 16/653/20px is the live Jira spec
-               (BAU-5814 + BAU-5824 + BAU-5751), corrects 2026-05-08 14/600 lesson */
-            fontSize: 16, fontWeight: 653, lineHeight: '20px',
-            color: 'var(--ds-text, #292A2E)',
+            /* jira-compare 2026-05-12 re-probe: Description h2 is 14px/500/rgb(80,82,88).
+               TreeWalker text-node probe confirmed h2 is the direct parent of the "Description"
+               text node at 14px/500. Differs from Key details/Subtasks/LWI/Activity (all 16px/653). */
+            fontSize: 14, fontWeight: 500, lineHeight: '20px',
+            color: 'var(--ds-text-subtle, #505258)',
             fontFamily: '"Atlassian Sans", ui-sans-serif, -apple-system, "system-ui", "Segoe UI", Ubuntu, "Helvetica Neue", sans-serif',
           }}
         >
