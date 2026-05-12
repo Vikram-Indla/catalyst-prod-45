@@ -831,9 +831,32 @@ export function makeFixVersionsCell(getFixVersions: (row: any) => string[] | nul
     if (!versions || versions.length === 0) {
       return <span style={{ color: token('color.text.subtlest', '#7A869A') }}>—</span>;
     }
+    // jira-compare 2026-05-12 (Item 9): Jira renders each fix-version value
+    // as a rectangular pill — border 1px, border-radius 3px, padding 2px 6px,
+    // no background. Confirmed from context pack screenshot probe.
     return (
-      <span style={{ color: token('color.text', '#172B4D'), fontSize: 14, fontWeight: 400 }}>
-        {versions.join(', ')}
+      <span style={{ display: 'inline-flex', flexWrap: 'wrap', gap: 4 }}>
+        {versions.map((v) => (
+          <span
+            key={v}
+            style={{
+              display: 'inline-block',
+              border: `1px solid ${token('color.border', '#DFE1E6')}`,
+              borderRadius: 3,
+              padding: '2px 6px',
+              fontSize: 12,
+              fontWeight: 400,
+              color: token('color.text', '#172B4D'),
+              whiteSpace: 'nowrap',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              maxWidth: 160,
+            }}
+            title={v}
+          >
+            {v}
+          </span>
+        ))}
       </span>
     );
   };
