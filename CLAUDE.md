@@ -10,6 +10,57 @@ The Catalyst local dev server always runs on **http://localhost:8080**. Never us
 
 ---
 
+## Claude Preview — Manual Activation Only
+
+**Claude Preview (`preview_*` tools) must NEVER be auto-activated for runtime verification.** Do not call `preview_start`, `preview_screenshot`, `preview_click`, or any preview tool unless:
+1. The user explicitly requests verification ("verify this", "test the change", "check if it works")
+2. The user clicks the preview button or asks "does this look right?"
+
+**Why:** Preview tools auto-starting silently in the background consume credits and slow down iteration. Verification must be user-initiated.
+
+**Rule:** Implementation code → test locally if needed → stop. Only open preview if the user asks or if the change is definitely visual/interactive. Type checking, tests, and reading source code verify code correctness; preview verifies feature correctness only when explicitly requested.
+
+---
+
+## Shared Agent Library (Team-wide)
+
+All Catalyst team members have access to **184 shared personas** (committed to `./.claude/agents/` in this repo) for use with the catalyst-agent orchestrator:
+
+**Available skills:**
+- `/catalyst-agent <task>` — probe-first router for engineering tasks (see `./.claude/skills/catalyst-agent/SKILL.md`)
+- `/preflight` — 8-phase strategic planner with multi-agent council
+- `/jira-compare` — CRUD parity audits with acceptance gates
+- `/design-intelligence` — 1000-IQ design intelligence layer
+- `/design-critique` — heuristic UI/UX scoring
+
+**Setup:** After pulling the repo, reload Claude Code (Close → Reopen or restart extension). Skills auto-discover from `./.claude/skills/` and `./.claude/agents/` is accessible to all personas.
+
+**For new machines:** No manual setup needed — agents are version-controlled. Just `git pull` and reload.
+
+---
+
+## 2026-05-12 — Data model split: user_roles (system) vs user_product_roles (product) — ALWAYS fetch both for admin pages
+**Surface:** /admin/access, /admin/users, useUsers hook, any admin context showing user roles
+**Pattern:** User complained "role values are wrong" on /admin/access page. RCA trace: AdminGuard (permission gate) checks `user_roles` table for system roles (admin, program_manager, team_lead, user). useUsers hook (admin page data layer) checked ONLY `user_product_roles` table (product roles: super_admin, product_manager, product_owner, etc.). This split source-of-truth meant admin page never showed system-level roles — showing only product roles while the gate used system roles, creating silent incompleteness. Jira-compare / design-critique looking at the UI alone would never catch this because it's a query-layer bug: the hook ran successfully but returned incomplete data. Fixed by updating `useUsers.ts` to fetch from BOTH tables and merge `system_role` into `UserProfile`. The two-tier model is deliberate and correct; the bug was querying only one tier.
+**Rule:** Catalyst has two role tables by design: (1) `user_roles` stores system-level access control (admin, program_manager, team_lead, user), (2) `user_product_roles` stores product-level capabilities (super_admin, product_manager, product_owner). When building admin views that show user permissions, ALWAYS query BOTH tables and expose both role types in the UserProfile data object. Set `system_role: string | null` in the data model alongside `roles: { role_name: string }[]`. Before calling a query layer complete, spot-check: does this hook load data from all tables that `useUserRole` (the permission gate) checks? If they differ, it's a sync bug waiting to happen.
+**Severity:** P1 (silent data incompleteness — no console errors, UI works, but shows wrong scope of roles)
+
+---
+
+## 2026-05-12 — design-critique must audit 360° holistic layout, not just content area in isolation
+**Surface:** Any admin page, any module page — applies to ALL design-critique runs
+**Pattern:** The design-critique of `/admin/access` scored content quality (tables, tabs, modal) but completely missed that the admin module renders its own independent 240px-wide sidebar NEXT TO the Catalyst global nav, creating a double-sidebar that pushes content to x=512px (31% of viewport consumed by navigation chrome). Regular Catalyst pages start content at x=296px. The 216px dead left gutter was invisible to a critique that only looked at the content panel.
+**Rule:** Every design-critique run MUST include a **360° holistic layout check** as Step 0, BEFORE heuristic scoring:
+1. Measure where content starts (x position of first meaningful content element)
+2. Compare against the standard Catalyst app shell baseline: content starts at ~296px (expanded nav) or ~56px (collapsed)
+3. Flag any module that adds its own sidebar container OUTSIDE the standard Catalyst shell pattern — this is always P0
+4. Check whether the module sits inside the correct slot of the Catalyst app shell (right-panel / main-content area), not floating in a parallel container
+5. Check content/chrome width ratio: content should occupy ≥ 70% of viewport
+**The lesson:** A surface can have perfect internal design (good typography, correct tokens, working components) and still be a P0 failure if its macro layout breaks the app shell contract. Layout audit is prerequisite to content audit.
+**Severity:** P0 (missed entirely in prior sessions — now blocking gate for all design-critique runs)
+
+---
+
 ## 2026-05-11 — Phase 0.5 diagnoses are hypotheses; probe before TDD'ing the wrong layer
 **Surface:** Any preflight cross-cutting plan with Phase 0.5 violations
 **Pattern:** Phase 0.5 N1 listed "breadcrumb crumb click is no-op → wire `onParentClick → openDetail` in every `CatalystView*`". A unit test reproducing the alleged failure mode PASSED on the first run — the wiring was correct end-to-end. Actual defect was upstream in `ProjectAllWorkView`: its `onOpenItem` called `selectItem(parentEpicKey)`, but AllWork's items list excludes Epic/Feature/Task (CLAUDE.md 2026-04-28), so `activeItem` stayed undefined. Hours of wrong-layer TDD were avoided by probing live + tracing the call chain before writing any test.
@@ -176,6 +227,66 @@ Append-only. Newest at top. Each entry: date, pattern, rule, surface.
 
 ---
 
+## 2026-05-12 — fullPageMode in CatalystViewBase needs body-as-scroll-container, not page-level scroll
+**Surface:** CatalystViewBase.tsx (fullPageMode) · BacklogDetailPage, IssueFullPage
+**Pattern:** The project hub layout constrains every page container with `height: '100%'; flex: 1; minHeight: 0` — the document never scrolls. `CatalystViewBase` in fullPageMode originally used `overflow: 'visible'` on `cv-drawer-body` and `minHeight: '100%'` on the `MODAL` wrapper. This produced a 1452px tall MODAL inside an 894px viewport with no scroll container — the page was stuck, fields above the fold were unreachable, and the sticky sidebar had no fixed-height parent to stick to.
+**Fix (committed ea94ed3b8):**
+- `MODAL` in fullPageMode: `height: '100%'; overflow: 'hidden'` (constrains MODAL to parent height)
+- `cv-drawer-body`: `flex: 1; minHeight: 0; overflowX: 'hidden'; overflowY: fullPageMode ? 'auto' : 'hidden'` (body IS the scroll container)
+- `cv-drawer-sidebar`: `maxHeight: '100%'` not `'100vh'` (sidebar sticks to scroll container, not viewport)
+**Rule:** In any fullPageMode detail view mounted inside a height-constrained container (project hub, split-view layouts), the scroll container MUST be an element inside the view — not the document. Pattern: `MODAL { height: 100%; overflow: hidden }` → `cv-drawer-body { flex: 1; minHeight: 0; overflowY: auto }` → `cv-drawer-sidebar { position: sticky; top: 0; maxHeight: 100%; alignSelf: flex-start }`. Never use `overflow: visible` on a flex child that needs to scroll — it produces an unbounded child with no scroll affordance.
+**Severity:** P0 (scroll and field interaction completely broken until fixed)
+
+## 2026-05-12 — Back button in fullPageMode must derive route from current URL, not hardcode /list
+**Surface:** CatalystViewBase.tsx — `handleBack` callback · BacklogDetailPage route
+**Pattern:** `handleBack` in fullPageMode was hardcoded to `navigate('/project-hub/${projectKey}/list')`. BacklogDetailPage mounts at `/project-hub/:key/backlog/:issueKey` — pressing Back sent users to the wrong surface (/list instead of /backlog). The issue wasn't just a wrong path — it reset the backlog scroll position and lost the user's context entirely.
+**Fix (committed 70dcdc79c):** `CatalystViewBase` now receives a `projectListHref` prop (defaults to `/project-hub/${projectKey}/list` for backward compatibility). `BacklogDetailPage` passes `projectListHref={/project-hub/${projectKey}/backlog}`. `handleBack` uses `navigate(projectListHref)`.
+**Rule:** Any full-page detail view mounted from a non-/list route MUST pass `projectListHref` to `CatalystViewBase`. Never hardcode the back destination — derive it from the route that mounted the view. Before adding a new full-page detail route, check if it needs a custom `projectListHref` and wire it in the mounting page component.
+**Severity:** P1 (back button navigated to wrong surface, breaking user flow)
+
+## 2026-05-11 — Catalyst's AI persona is CATY (not Kathy). When Vikram says "Ask Kathy" he means Ask CATY — recognize the phonetic immediately.
+**Surface:** Any conversation referencing Catalyst's AI assistant
+**Pattern:** Vikram said "Ask Kathy" in chat. Prior session treated it literally, launched a codebase-onboarding agent to "discover" what Kathy was, only to find CATY (Catalyst AI). The codebase has been on CATY naming for months — `src/components/caty-ai-chat/*`, `src/components/caty/CatyPanelV4`, `src/pages/testhub/CatyAIPage.tsx` (route `/caty`), `useCatyAI` hook, 3 live edge functions (`ai-digest`, `ai-improve-story`, `ai-similar-items`). The `src/features/ask-ai/*` mock module was removed 2026-04-01 (never wired). "Kathy" was a phonetic of CATY. Spending an agent cycle to confirm this is wasted context.
+**Rule:** Catalyst's AI persona is **CATY** (Catalyst AI). Any "Ask Kathy / Catty / Caddy / Cathy" phonetic from Vikram means **Ask CATY**. When mapping Jira's "✦ Ask AI" toolbar button for parity work, the Catalyst equivalent is the existing CATY panel — wire a new entry point to `CatyAIPage` / `CatyFAB`. Do NOT restore the deleted `src/features/ask-ai/` mock. Also clean 3 stale references to the dead `/releases/ask-ai` route in `ReleasesManagementSidebar.tsx:71`, `releaseModuleFeatureTree.ts:1076`, `releaseModuleDocumentation.ts:763`.
+**Severity:** P1 (context-awareness failure — wastes session budget on already-known facts).
+
+---
+
+## 2026-05-11 — Backlog table audit: surface-only DOM probe is REJECTED — must round-robin all 8 issue types AND probe every micro-interaction (drag/menus/bulk/AI/full-width view) before any PASS verdict
+**Surface:** BacklogPage list table at /project-hub/BAU/backlog (compared to /jira/software/c/projects/BAU/list)
+**Pattern:** Cycle 1 jira-compare audit closed with "ACCEPT CURRENT STATE — no changes required" after only measuring column widths and ARIA labels on ONE row of ONE issue type (Story). Vikram corrected: 70% of micro-interactions were never probed. The audit missed structural features that are core to Jira's table UX:
+1. **Row-hover drag handle** — Jira shows a 6-dot drag affordance to the LEFT of each row only when there is no active sort AND no grouping. Catalyst has zero drag affordance for row rank.
+2. **3-dot menu (top-right header)** — Jira opens: Apply old List settings · View work items as a chart · Format rules · Hide done toggle · Show hierarchy toggle · Export · Import from CSV · **Bulk change work items** · Go to all work items · Give feedback. Catalyst missing entirely.
+3. **Bulk-select footer bar** — When N items checked, Jira shows a bottom-anchored bar: "N selected · Select all (in JQL scope) · …options · Delete · X close". Catalyst has no equivalent.
+4. **Bulk-change wizard** — "Bulk change work items" opens 4-step modal/page: Step 2 offers Edit / Move / Transition / Delete / Watch / Stop Watching. Catalyst scope: build Edit + Move + Transition + Delete (Watch / Stop-Watch are explicitly OUT per Vikram).
+5. **Column picker — 228 fields** — Jira's right-side column-config dropdown has "My defaults" / "System" tabs, a search input, scrollable list of 228 fields with checkbox toggles, "Create a field" CTA at the bottom showing "33 of 228" count. Catalyst's ColumnManager only exposes ~17 fields with no tabs and no search.
+6. **Ask AI button** — Jira renders ✦ Ask AI to the left of search. Catalyst previously had "Ask Kathy" — was removed without RCA. Restore it, connect to the existing Claude / Google Gemini API in Catalyst, structurally identical to Jira's Ask AI flow.
+7. **Fix versions cell styling** — Jira renders Fix versions value as a rectangle/pill with border + padding, NOT bare text. Computed style was never measured.
+8. **Group By interactions** — Group By dropdown changes the entire table structure (collapsible group headers with expand chevron, in-group inline-create row, group count, group sort). Never exercised across the 8 work-item types.
+9. **Row click → full-width detail view** — Jira opens the issue in a FULL-WIDTH (not side-panel) detail view with a breadcrumb back-button that returns to the list. Catalyst opens a narrow side panel. This canonical full-width journey is missing.
+10. **Load-more / infinite scroll** — Jira loads 50 of 1000+, scroll triggers next batch smoothly with no jump. Catalyst's scroll behavior, batch size, and skeleton state were never measured.
+11. **Per-issue-type round-robin** — Audit only measured Story rows. Production Incident, QA Bug, Change Request, Task, Feature, Backend, API Req, Business Gap each have different cell renderers (parent click target, status options, severity, custom fields). Each MUST be opened and clicked through individually.
+12. **Catalyst-only "My Work" button** — Catalyst's toolbar shows "My work" — not in Jira's list view. No RCA on why it was added. Per Vikram's standing rule "if not in Jira, justify or remove" — needs investigation.
+13. **MDT Ref + Assessment Feature** — Already banned in CLAUDE.md (2026-05-05, 2026-05-07). Audit failed to verify they are NOT rendered on any of the 8 issue type backlogs.
+
+**Rule:** A jira-compare audit on a TABLE surface is NOT complete until ALL of these are individually probed AND a decision is logged:
+- Every column in the picker (full list, not just visible columns)
+- Every row-hover affordance (drag handle conditions, hover-only buttons)
+- Every cell-renderer for EVERY issue type (round-robin across all 8 BAU types)
+- Every toolbar control (Ask AI, Filter, Group, View toggle, Saved filters, Avatar list)
+- Every menu (3-dot top-right, action menus on rows, column-header menus)
+- Every multi-select interaction (footer bar, bulk-change wizard each step)
+- Every click-target outcome (row → detail view variant: side panel vs full-width + back-button)
+- Load-more / pagination / virtualization behavior
+- Group By scenarios (collapsible groups, in-group create row, group sort, empty groups)
+- All Catalyst-only features must be RCA'd against the "if not in Jira, justify or remove" rule
+
+Surface-level "measured X column widths" reports without per-issue-type round-robin + every-micro-interaction probe are **REJECTED as cycle output**. Triple-probe per micro-interaction is mandatory: live DOM + screenshot + Atlassian MCP schema. The audit can only PASS after all 13 items above carry an explicit verdict and any Catalyst gaps have either landed code or a logged Vikram-approved deferral.
+
+**Severity:** P0 (process failure — produced a false PASS verdict; the cycle had to be re-opened by Vikram and 70% of the work is still ahead).
+
+---
+
 ## 2026-05-10 — Epic Priority: Key details must use showPriority={false}
 **Surface:** CatalystViewEpic (Epic detail view)
 **Pattern:** CatalystKeyDetails defaults `showPriority={true}`, rendering Priority in the left Key details block for all types. Epic is the only type where Priority belongs exclusively in the right rail Details section (between Assignee and Reporter) — per CLAUDE.md 2026-05-06 re-probe of BAU-5419. Without `showPriority={false}`, Epic shows Priority twice: once in Key details (left) and once in the right rail (CatalystSidebarDetails). Fixed by passing `showPriority={false}` to `CatalystKeyDetails` in `CatalystViewEpic.tsx`.
@@ -243,10 +354,15 @@ Append-only. Newest at top. Each entry: date, pattern, rule, surface.
 **Pattern:** The self-rolled popover used `mousedown` for click-outside but had no keyboard handler. Pressing Escape with the watchers popover open closed both the popover AND the entire kanban modal because the keydown event bubbled up to the modal's own Escape handler. Fix: add `document.addEventListener('keydown', handler, true)` in capture phase (beats the modal's bubble-phase listener) that calls `e.stopPropagation()` before `setOpen(false)`.
 **Rule:** Self-rolled popovers MUST add a capture-phase `keydown` Escape handler (`addEventListener('keydown', fn, true)`) so Escape only closes the popover, not the parent modal. The bubble-phase handler always loses to the modal's bubble-phase handler.
 
-## 2026-05-08 — Section headers must never use @atlaskit/heading size="small" (16px/653)
-**Surface:** CatalystKeyDetails, CatalystSidebarDetails, ActivityPanel (all detail views)
-**Pattern:** `@atlaskit/heading size="small"` renders at 16px/653. K.11 Jira-measured spec for ALL section headers (Key details, Details, Activity, Description) is 14px/600/#172B4D. Using the Atlaskit Heading component for these sections always produces the wrong size.
-**Rule:** For any section header that K.11 specifies at 14px/600, use an inline `<h2 style={{ margin: 0, fontSize: 14, fontWeight: 600, lineHeight: '20px', color: 'var(--ds-text, #172B4D)' }}>` — never `@atlaskit/heading`. Breadcrumb links: 14px/400/#42526E. Rail field labels (stacked): 11px/600/#6B778C. Timestamps: 11px/400/#6B778C.
+## 2026-05-12 — Section header spec is PER-SECTION, not a single global value (corrects 2026-05-08 lesson)
+**Surface:** CatalystDescriptionSection, CatalystKeyDetails, SubtasksPanel, LinkedWorkItemsSection, ActivityPanel
+**Pattern:** 2026-05-08 lesson claimed ALL section headers are 14px/600/#172B4D. 2026-05-11 re-probe then overcorrected to 16px/653 for ALL sections. 2026-05-12 TreeWalker text-node probe (authoritative) on BAU-5609 settled the conflict:
+- **Description `<h2>`**: 14px / 500 / rgb(80,82,88) = `var(--ds-text-subtle, #505258)` ← different from all others
+- **Key details span** (text node inside collapsible toggle): 16px / 653 / rgb(41,42,46) = `var(--ds-text, #292A2E)` ✅ matches Catalyst
+- **Subtasks / Child issues span**: 16px / 653 / rgb(41,42,46) ✅ matches Catalyst `.sp-title` CSS
+- **Linked work items `<h2>`**: 16px / 653 / rgb(41,42,46) ✅ already correct
+- **Activity span**: 16px / 653 / rgb(41,42,46) ✅ already correct
+**Rule:** Description section header is the ONLY one that deviates: `<h2 style={{ margin:0, fontSize:14, fontWeight:500, color:'var(--ds-text-subtle, #505258)' }}>`. All other section headers (Key details, Subtasks, LWI, Activity) correctly use 16px/653. Never group all sections under one spec — always TreeWalker-probe the text node directly in Jira before changing a section header style. The 2026-05-08 and 2026-05-11 measurements both hit wrapper elements, not the text node. Breadcrumb links: 14px/400/#42526E. Rail field labels (stacked): 11px/600/#6B778C. Timestamps: 11px/400/#6B778C.
 
 ## 2026-05-05 — Schema-probe before field add, in practice (B4 anti-pattern #18 applied)
 **Surface:** CatalystSidebarDetails right rail

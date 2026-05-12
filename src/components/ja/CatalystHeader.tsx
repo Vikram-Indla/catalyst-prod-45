@@ -15,8 +15,8 @@ import { Link } from 'react-router-dom';
 import { useSyncExternalStore } from 'react';
 import { useCatalystContext } from '@/contexts/CatalystContext';
 import { useNavBreakpoint } from '@/hooks/useNavBreakpoint';
-import catalystWordmarkLight from '@/assets/catalyst-wordmark-3.svg';
-import catalystWordmarkDark from '@/assets/catalyst-wordmark-3-dark.svg';
+import logoMarkLight from '@/assets/logo-mark-light.svg';
+import logoMarkDark from '@/assets/logo-mark-dark.svg';
 
 function useIsDarkTheme() {
   return useSyncExternalStore(
@@ -41,7 +41,6 @@ const isMacPlatform = () =>
 
 export function CatalystHeader() {
   const isDark = useIsDarkTheme();
-  const catalystWordmark = isDark ? catalystWordmarkDark : catalystWordmarkLight;
   const {
     sidebarHidden, sidebarPinned, sidebarHoverOpen,
     cycleSidebarState,
@@ -152,14 +151,16 @@ export function CatalystHeader() {
             <Link
               to="/"
               aria-label="Catalyst home"
-              style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', opacity: 1 }}
+              style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', opacity: 1, gap: '8px' }}
             >
               <img
-                src={catalystWordmark}
-                alt=""
-                height={28}
-                style={{ height: '28px', width: 'auto', display: 'block' }}
+                src={isDark ? logoMarkDark : logoMarkLight}
+                alt="Catalyst"
+                style={{ height: '32px', width: '32px', flexShrink: 0 }}
               />
+              <span style={{ fontSize: '16px', fontWeight: 600, color: isDark ? 'white' : 'black' }}>
+                Catalyst
+              </span>
             </Link>
           )}
         </div>

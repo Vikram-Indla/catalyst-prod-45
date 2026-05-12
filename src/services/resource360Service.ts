@@ -154,7 +154,7 @@ export const fetchWorkItems = async (resourceId: string, jiraAccountId?: string 
 
   const items = (data ?? []).map((i: any) => {
     // Extract fix version names — inherit from parent if empty
-    let fvList = Array.isArray(i.fix_versions) && i.fix_versions.length > 0
+    const fvList = Array.isArray(i.fix_versions) && i.fix_versions.length > 0
       ? i.fix_versions
       : (i.parent_key && fvLookup[i.parent_key] ? fvLookup[i.parent_key] : []);
     const releaseNames = fvList.map((fv: any) => fv?.name).filter(Boolean);

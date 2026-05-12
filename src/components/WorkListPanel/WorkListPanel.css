@@ -1,0 +1,37 @@
+/* WorkListPanel — left rail (360px fixed width, split-view layout) */
+
+[data-testid='work-list-panel'] {
+  display: grid;
+  grid-template-rows: auto 1fr;
+  background: var(--ds-background-neutral, #ffffff);
+  border-right: 1px solid var(--ds-border, #dfe1e6);
+}
+
+[data-testid='work-list-toolbar'] {
+  flex: 0 0 auto;
+  border-bottom: 1px solid var(--ds-border, #dfe1e6);
+}
+
+[data-testid='work-list-items'] {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+/* Scrollbar styling (Jira-style) */
+[data-testid='work-list-items']::-webkit-scrollbar {
+  width: 8px;
+}
+
+[data-testid='work-list-items']::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+[data-testid='work-list-items']::-webkit-scrollbar-thumb {
+  background: var(--ds-border-subtle, #ebecf0);
+  border-radius: 4px;
+}
+
+[data-testid='work-list-items']::-webkit-scrollbar-thumb:hover {
+  background: var(--ds-border, #dfe1e6);
+}

@@ -359,7 +359,7 @@ export function DependencyWheelMap({ quarter, selectedProgram, onDependencyClick
       const isHovered = hoveredLinkId === link.id;
 
       let opacity = isRelatedToSelected ? 0.7 : 0.15;
-      let strokeWidth = isHovered ? 3 : 2;
+      const strokeWidth = isHovered ? 3 : 2;
 
       if (!isRelatedToSelected && !isHovered) {
         opacity = 0.1;

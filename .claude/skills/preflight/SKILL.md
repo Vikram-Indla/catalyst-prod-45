@@ -637,3 +637,9 @@ Preflight owns `active/` handover files and updates them throughout the session.
 - `~/.claude/skills/jira-compare/SKILL.md` — parity audit (Phase 1 Lane A + Phase 3 gate)
 - `~/.claude/skills/design-critique/SKILL.md` — heuristic scoring (Phase 5 visual evidence)
 - `~/.claude/skills/llm-council/SKILL.md` — council protocol (Phase 2 advisors)
+
+---
+
+## Agent Roster (companion)
+
+When this skill activates, also load `AGENT_ROSTER.md` from this directory and follow its activation-notification protocol. The roster is purely additive and does not change any instruction in this file. See `.claude/skills/AGENT_PIPELINE.md` for the cross-skill rules.

@@ -42,7 +42,7 @@ export function CommentsSection({ entityId, entityType }: CommentsSectionProps) 
       if (error) throw error;
       if (!data?.length) return [];
       const userIds = [...new Set(data.map((c: any) => c.user_id).filter(Boolean))];
-      let profileMap = new Map<string, any>();
+      const profileMap = new Map<string, any>();
       if (userIds.length > 0) {
         const { data: profiles } = await supabase.from('profiles').select('id, full_name, email, avatar_url').in('id', userIds);
         if (profiles) profiles.forEach((p: any) => profileMap.set(p.id, p));

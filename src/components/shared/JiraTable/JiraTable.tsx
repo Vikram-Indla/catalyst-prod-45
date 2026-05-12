@@ -67,20 +67,20 @@ const DENSITY = {
   comfortable: {
     cellFontSize: 14,
     headerFontSize: 12,
-    rowHeight: 40,
+    rowHeight: 48,
     cellPaddingY: 10,
     cellPaddingX: 12,
     headerPaddingY: 10,
     avatarSize: 'medium' as const, // 32px
   },
   compact: {
-    // Measured from Jira's BAU list DOM 2026-04-18:
-    //   summary cell color #292A2E, font-size 14px, weight 400, row-height 40px.
+    // Measured from Jira's BAU list DOM 2026-05-08:
+    //   summary cell color #292A2E, font-size 14px, weight 400, row-height 48px.
     // Our previous 13px read "washed out" compared to Jira at 14px — the
     // difference is small on screen but meaningful for body-text density.
     cellFontSize: 14,
     headerFontSize: 12,
-    rowHeight: 40,
+    rowHeight: 48,
     cellPaddingY: 8,
     cellPaddingX: 12,
     headerPaddingY: 8,
@@ -514,6 +514,17 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
       .jira-group-header-row:focus-within .jira-group-add-btn {
         opacity: 1;
       }
+      /* Drag handle: hidden by default, visible on row hover.
+         Jira shows 6-dot affordance only when there is no active sort
+         AND no grouping. CSS gate is temporary placeholder; Phase 4 adds
+         conditional isDragEnabled() logic to hide based on sortKey/groupBy state. */
+      .jira-table-grid table tbody > tr:hover .jira-drag-handle {
+        visibility: visible;
+      }
+      /* Row menu: hidden by default, visible on row hover. */
+      .jira-table-grid table tbody > tr:hover .jira-row-menu-trigger {
+        opacity: 1;
+      }
       /* ── Round H additions ─────────────────────────────────────────
          Sticky header + resize handle. The scroll container is the table
          viewport (.jira-table-viewport); position: sticky references
@@ -592,10 +603,18 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
            Catalyst's previous UPPERCASE / wide-tracked / muted-grey
            treatment was a Catalyst opinion. Matching Jira's actual list
            view here for parity. Apr 27 2026 jira-compare regression
-           (D-005 + D-006): fontWeight 700 → 653, color #505258 → #6B6E76. */
+           (D-005 + D-006): fontWeight 700 → 653, color #505258 → #6B6E76.
+           Jira spec (measured 2026-05-12): 12px/653/rgb(80,82,88) — NOT 14px/400.
+           14px/400 is body text. Headers must be bold and smaller.
+           May 12 2026 (design-intelligence RCA): line-height 18px → 16px
+           to match Jira's vertical compaction. Tighter line-height = denser
+           text = perceived darker appearance. Jira uses 16px; Catalyst was
+           18px (browser default). Also changed -webkit-font-smoothing from
+           antialiased to auto (via global index.css update). */
         font-size: 12px;
         font-weight: 653;
-        color: #6B6E76;
+        line-height: 16px;
+        color: rgb(80, 82, 88);
         text-transform: none;
         letter-spacing: normal;
         white-space: nowrap;
@@ -606,8 +625,10 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
       .jira-table-grid thead th.jira-th-sortable:hover { background: var(--ds-background-neutral-hovered, #EBECF0); }
       /* 2026-05-10 Jira-parity: row body is the click target for opening
          the detail panel. cursor: pointer signals clickability. Inline
-         editor cells override with their own cursors (text/pointer). */
-      .jira-table-grid tbody tr:not(.jira-table-group-row) { cursor: pointer; }
+         editor cells override with their own cursors (text/pointer).
+         May 12 2026 (design-critique): added min-height 48px for Jira
+         density parity (was 40px). */
+      .jira-table-grid tbody tr:not(.jira-table-group-row) { cursor: pointer; min-height: 48px; }
       /* 2026-05-10 Per-column filter chevron — hover-reveal on header.
          Active-filter state keeps chevron visible (opacity:1 inline). */
       .jira-table-grid thead th:hover .jira-filter-chevron { opacity: 1 !important; }
@@ -615,6 +636,7 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
       .jira-table-grid tbody td {
         padding: 0 12px;
         vertical-align: middle;
+        min-height: 48px;
         /* Phase 12 (2026-04-29): reverted to Atlaskit elevation.surface
            token via --ds-surface CSS variable. Phase 11 unblocked Atlaskit's
            bundled dark theme so --ds-surface flips natively. */
@@ -703,7 +725,7 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
         background: #F7F8F9;
       }
       .jira-table-grid thead th {
-        color: var(--ds-text-subtlest, #6B778C) !important;
+        color: rgb(80, 82, 88) !important;
       }
       /* Header z-index for non-sticky-left case — no left-pin, just
          keep header floating above body on vertical scroll. */
@@ -737,6 +759,7 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
         text-align: center;
         padding-left: 0 !important;
         padding-right: 0 !important;
+        border-right: 1px solid #DFE1E6 !important;
       }
       .jira-table-grid table thead > tr > th:first-child > span,
       .jira-table-grid table tbody > tr > td:first-child > [data-jira-table-editor],
@@ -783,6 +806,12 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
       /* Drag-handle grip — hidden at rest, visible on row hover */
       .jira-table-grid table tbody > tr:hover .jira-drag-handle {
         visibility: visible;
+      }
+      /* 2026-05-12 Jira parity: row hover reveals ↗ open + add child buttons
+         on the right edge of the Summary cell. Pattern mirrors .jira-drag-handle:
+         visibility: hidden at rest (set inline), flip to visible on tr:hover. */
+      .jira-table-grid table tbody > tr:hover [data-jira-row-hover-action] {
+        visibility: visible !important;
       }
       /* "Add comment" ghost text — always visible (Jira parity: shown at rest in every row) */
       .jira-table-grid table tbody > tr td [data-jira-cell-ghost] {
@@ -907,6 +936,8 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
               textTransform: 'none',
               letterSpacing: 'normal',
               whiteSpace: 'nowrap',
+              textAlign: col.align === 'center' ? 'center' : col.align === 'end' ? 'right' : 'left',
+              display: 'block',
             }}
           >
             {col.label}
@@ -1968,6 +1999,11 @@ function ColumnManagerTrigger<TRow>({
   const [isOpen, setIsOpen] = useState(false);
   const [anchor, setAnchor] = useState<{ top: number; right: number } | null>(null);
   const [search, setSearch] = useState('');
+  // 2026-05-12 Jira parity: My defaults / System tabs.
+  // "My defaults" shows columns marked defaultVisible:true (the canonical
+  // out-of-box set). "System" shows ALL toggleable columns. Matches Jira's
+  // column-picker tab pattern probed at digital-transformation.atlassian.net.
+  const [activeTab, setActiveTab] = useState<'my-defaults' | 'system'>('system');
   const triggerRef = useRef<HTMLButtonElement>(null);
   const popRef = useRef<HTMLDivElement>(null);
 
@@ -2006,10 +2042,18 @@ function ColumnManagerTrigger<TRow>({
   }, [isOpen]);
 
   const toggleable = columns.filter((c) => !c.alwaysVisible && !c.id.startsWith('__'));
+  // 2026-05-12 Jira parity: My defaults tab filters to defaultVisible:true cols.
+  // System tab shows the full toggleable set. Search applies on top.
+  const tabFiltered = activeTab === 'my-defaults'
+    ? toggleable.filter((c) => c.defaultVisible)
+    : toggleable;
   const q = search.trim().toLowerCase();
   const filtered = q
-    ? toggleable.filter((c) => (c.label || c.id).toLowerCase().includes(q))
-    : toggleable;
+    ? tabFiltered.filter((c) => (c.label || c.id).toLowerCase().includes(q))
+    : tabFiltered;
+  // Jira parity "X of Y" count display at bottom: visible-after-search / total-in-tab.
+  const totalInTab = tabFiltered.length;
+  const matchCount = filtered.length;
 
   const toggle = (id: string, next: boolean) => {
     const out = new Set(visibility);
@@ -2099,6 +2143,48 @@ function ColumnManagerTrigger<TRow>({
               <ResetIcon label="" size="small" /> Reset
             </button>
           </div>
+          {/* 2026-05-12 Jira parity: My defaults / System tabs */}
+          <div
+            role="tablist"
+            aria-label="Column tabs"
+            style={{
+              display: 'flex',
+              gap: 0,
+              borderBottom: '2px solid transparent',
+              padding: '0 4px',
+              marginBottom: 6,
+            }}
+          >
+            {[
+              { id: 'my-defaults' as const, label: 'My defaults' },
+              { id: 'system' as const, label: 'System' },
+            ].map((tab) => {
+              const isActive = activeTab === tab.id;
+              return (
+                <button
+                  key={tab.id}
+                  type="button"
+                  role="tab"
+                  aria-selected={isActive}
+                  onClick={() => setActiveTab(tab.id)}
+                  style={{
+                    background: 'transparent',
+                    border: 'none',
+                    borderBottom: `2px solid ${isActive ? '#0C66E4' : 'transparent'}`,
+                    padding: '6px 10px',
+                    cursor: 'pointer',
+                    fontFamily: 'inherit',
+                    fontSize: 12,
+                    fontWeight: isActive ? 600 : 500,
+                    color: isActive ? '#0C66E4' : 'var(--ds-text-subtle, #44546F)',
+                    marginBottom: -1,
+                  }}
+                >
+                  {tab.label}
+                </button>
+              );
+            })}
+          </div>
           <div style={{ padding: '0 4px 6px' }}>
             <Textfield
               isCompact
@@ -2148,9 +2234,17 @@ function ColumnManagerTrigger<TRow>({
               );
             })}
           </div>
+          {/* 2026-05-12 Jira parity: "X of Y" count display at the bottom */}
+          <div style={{
+            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+            padding: '6px 8px 2px', fontSize: 11, color: '#7A869A',
+            borderTop: '1px solid #DFE1E6', marginTop: 4,
+          }}>
+            <span>{matchCount} of {totalInTab}</span>
+          </div>
           {/* Locked columns hint */}
           {columns.some((c) => c.alwaysVisible) && (
-            <div style={{ padding: '6px 8px 2px', fontSize: 11, color: '#7A869A', borderTop: '1px solid #DFE1E6', marginTop: 4 }}>
+            <div style={{ padding: '6px 8px 2px', fontSize: 11, color: '#7A869A' }}>
               {columns.filter((c) => c.alwaysVisible && !c.id.startsWith('__')).map((c) => c.label || c.id).join(', ')} are required.
             </div>
           )}

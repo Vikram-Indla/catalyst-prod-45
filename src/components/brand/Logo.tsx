@@ -2,8 +2,8 @@ import { cn } from "@/lib/utils";
 import { useTheme } from "@/hooks/useTheme";
 
 // Import both logo variants
-import logoLight from "@/assets/catalyst-logo-dark.svg"; // Blue logo for light backgrounds
-import logoDark from "@/assets/catalyst-logo-white.svg"; // White logo for dark backgrounds
+import logoLight from "@/assets/logo-mark-light.svg"; // Blue mark for light backgrounds
+import logoDark from "@/assets/logo-mark-dark.svg"; // White mark for dark backgrounds
 
 interface LogoProps {
   variant?: "light" | "dark";
@@ -71,26 +71,21 @@ export function Logo({
     );
   }
 
-  // Wordmark logo with proper brand colors
+  // Wordmark logo with mark icon + text
   if (showWordmark) {
     return (
       <div className={cn("flex items-center gap-2", className)}>
+        <img
+          src={currentLogo}
+          alt="Catalyst Logo"
+          className={cn("object-contain flex-shrink-0", sizes[size])}
+        />
         <span className={cn(
           "font-extrabold tracking-tight",
-          textSizes[size]
+          textSizes[size],
+          isDark ? "text-white" : "text-black"
         )}>
-          {/* "Cata" in primary text color */}
-          <span className={cn(
-            variant === "light" 
-              ? "text-white" 
-              : "text-[var(--ds-surface,#0a0a0a)] dark:text-white"
-          )}>
-            Cata
-          </span>
-          {/* "lyst" in brand gold or teal */}
-          <span className={useGold ? "text-[#C69C6D]" : "text-[#0d9488]"}>
-            lyst
-          </span>
+          Catalyst
         </span>
       </div>
     );

@@ -201,9 +201,9 @@ export function TestRepositoryPage() {
 
      // Fetch lookup tables for priority and type names (parallel with profiles)
      const ownerIds = [...new Set(data?.map(tc => (tc as any).created_by).filter(Boolean) as string[])];
-     let profilesMap: Record<string, { full_name: string | null; avatar_url: string | null }> = {};
-     let priorityMap: Record<string, string> = {};
-     let typeMap: Record<string, string> = {};
+     const profilesMap: Record<string, { full_name: string | null; avatar_url: string | null }> = {};
+     const priorityMap: Record<string, string> = {};
+     const typeMap: Record<string, string> = {};
 
      const lookupPromises: Promise<void>[] = [];
 

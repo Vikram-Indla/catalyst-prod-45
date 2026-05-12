@@ -681,7 +681,7 @@ export default function AdminIconsPage() {
         <button
           type="button"
           onClick={() => {
-            // eslint-disable-next-line no-console
+             
             console.log('[AdminIcons] + New category clicked');
             setNewCategoryOpen(true);
           }}

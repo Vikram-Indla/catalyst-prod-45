@@ -596,7 +596,7 @@ async function tryLiveQuery(sb: any, query: string, lang: string, userName?: str
       if (initiatives && initiatives.length > 0) {
         // Resolve assignee names
         const assigneeIds = [...new Set(initiatives.map((i: any) => i.assignee_id).filter(Boolean))];
-        let assigneeMap: Record<string, string> = {};
+        const assigneeMap: Record<string, string> = {};
         if (assigneeIds.length > 0) {
           const { data: profiles } = await sb.from('profiles').select('id, full_name').in('id', assigneeIds);
           if (profiles) for (const p of profiles) assigneeMap[p.id] = p.full_name;

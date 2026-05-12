@@ -585,11 +585,11 @@ export default R360ProfileDrawer;
 // NOTE: OverviewTab, BehaviouralTab, WeeklyStoryTab, WorkItemsTab
 // have been extracted to separate files. See file header comment.
 
-/* eslint-disable @typescript-eslint/no-unused-vars */
+ 
 // Remaining inline tab definitions removed — see:
 //   R360OverviewTab.tsx
 //   R360BehaviouralTab.tsx
 //   R360WeeklyStoryTab.tsx
 //   R360WorkItemsTab.tsx
-/* eslint-enable @typescript-eslint/no-unused-vars */
+ 
 /* END OF FILE — inline tabs extracted to separate files */

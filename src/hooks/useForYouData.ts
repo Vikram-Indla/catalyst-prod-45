@@ -963,7 +963,10 @@ export function useForYouData() {
   const [searchQuery, setSearchQuery] = useState('');
   const [sortConfig, setSortConfig] = useState<{ field: string; order: 'asc' | 'desc' }>({ field: 'updated', order: 'desc' });
   const [isAIPanelOpen, setIsAIPanelOpen] = useState(false);
-  const [selectedItemId, setSelectedItemId] = useState<string | null>(null);
+  // selectedItemId/selectedItem/handleRowClick/closeDetailPanel removed
+  // 2026-05-11: the only consumer was ForYouDetailPanel (now deleted).
+  // ForYouPage routes all selections through useGlobalSearchStore.openDetail()
+  // which mounts the canonical CatalystDetailRouter via CatalystShell.
 
   const { user: authUser } = useAuth();
   const queryClient = useQueryClient();
@@ -1075,19 +1078,6 @@ export function useForYouData() {
     suggestions: [] as AISuggestion[],
   }), []);
   const performanceStats: PerformanceStats = { closed: 0, ops: 0, del: 0, pln: 0, slaRate: 0, percentChange: 0, personalBest: 0 };
-
-  const selectedItem = useMemo(() => {
-    if (!selectedItemId) return null;
-    return filteredItems.find(i => i.id === selectedItemId) || null;
-  }, [selectedItemId, filteredItems]);
-
-  const handleRowClick = useCallback((itemId: string) => {
-    setSelectedItemId(itemId);
-  }, []);
-
-  const closeDetailPanel = useCallback(() => {
-    setSelectedItemId(null);
-  }, []);
 
   const handleStartTask = (itemId: string) => { console.log('Start task:', itemId); };
   const generateStatusUpdate = () => { console.log('Generate status update'); };
@@ -1221,9 +1211,6 @@ export function useForYouData() {
     aiData,
     performanceStats,
     isLoading,
-    selectedItem,
-    handleRowClick,
-    closeDetailPanel,
     handleStartTask,
     generateStatusUpdate,
     generateImpactReport,

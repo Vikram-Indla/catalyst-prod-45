@@ -35,6 +35,23 @@ export function ProtectedRoute({ children, requireAdmin = false }: ProtectedRout
     retry: 1,
   });
 
+  // Lifecycle lockout: check resource_inventory.is_active for the current user.
+  const { data: resourceStatus, isLoading: resourceLoading } = useQuery({
+    queryKey: ['resource-active-status', user?.id],
+    queryFn: async () => {
+      if (!user) return null;
+      const { data } = await supabase
+        .from('resource_inventory')
+        .select('is_active')
+        .eq('profile_id', user.id)
+        .maybeSingle();
+      return data;
+    },
+    enabled: !!user && !AUTH_BYPASS,
+    staleTime: 60_000,
+    retry: 1,
+  });
+
   useEffect(() => {
     if (AUTH_BYPASS) return;
     if (!profileLoading && profile && profile.approval_status !== 'APPROVED') {
@@ -48,7 +65,7 @@ export function ProtectedRoute({ children, requireAdmin = false }: ProtectedRout
     return <>{children}</>;
   }
 
-  if (loading || profileLoading) {
+  if (loading || profileLoading || resourceLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="flex flex-col items-center gap-3">
@@ -65,6 +82,11 @@ export function ProtectedRoute({ children, requireAdmin = false }: ProtectedRout
 
   if (!profile || profile.approval_status !== 'APPROVED') {
     return <Navigate to="/auth" replace />;
+  }
+
+  // Deactivated by lifecycle-check — redirect to the deactivated holding page.
+  if (resourceStatus && resourceStatus.is_active === false) {
+    return <Navigate to="/deactivated" replace />;
   }
 
   if (requireAdmin && !['admin', 'super_admin'].includes(profile.role || '')) {

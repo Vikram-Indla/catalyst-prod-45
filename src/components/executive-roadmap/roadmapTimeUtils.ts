@@ -20,7 +20,7 @@ export function getWeeksForMonth(year: number, month: number): { week: number; s
   const firstDayOfYear = new Date(year, 0, 1);
 
   // Find all weeks that overlap with this month
-  let currentDate = new Date(firstDayOfMonth);
+  const currentDate = new Date(firstDayOfMonth);
 
   // Go back to the start of the week containing the first day of month
   const dayOfWeek = currentDate.getDay();

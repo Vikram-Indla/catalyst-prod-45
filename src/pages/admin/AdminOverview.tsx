@@ -58,7 +58,7 @@ const T = {
 
 /** Quick actions — all paths registered in REGISTERED_ADMIN_ROUTES. */
 const quickActions = [
-  { label: 'Invite user',     icon: PersonAddIcon,   path: '/admin/users' },
+  { label: 'Invite user',     icon: PersonAddIcon,   path: '/admin/access' },
   { label: 'Create role',     icon: ShieldIcon,      path: '/admin/roles-permissions' },
   { label: 'Sync logs',       icon: ChartTrendIcon,  path: '/admin/workhub/sync-logs' },
   { label: 'Jira connection', icon: LinkIcon,        path: '/admin/workhub/jira-connection' },
@@ -84,7 +84,7 @@ export default function AdminOverview() {
       title: 'Users & Access',
       description: 'Manage users, roles, and permissions',
       icon: PeopleGroupIcon,
-      path: '/admin/users',
+      path: '/admin/access',
       count: metrics.usersCount,
       countLabel: 'users',
     },

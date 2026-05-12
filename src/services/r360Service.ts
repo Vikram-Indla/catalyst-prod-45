@@ -21,7 +21,7 @@ function groupDate(dateStr: string) {
   const yStr = `${y.getFullYear()}-${String(y.getMonth()+1).padStart(2,'0')}-${String(y.getDate()).padStart(2,'0')}`;
   const M = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
   const D = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
-  let label = gd===tStr ? `Today, ${M[d.getMonth()]} ${d.getDate()}` : gd===yStr ? `Yesterday, ${M[d.getMonth()]} ${d.getDate()}` : `${D[d.getDay()]}, ${M[d.getMonth()]} ${d.getDate()}`;
+  const label = gd===tStr ? `Today, ${M[d.getMonth()]} ${d.getDate()}` : gd===yStr ? `Yesterday, ${M[d.getMonth()]} ${d.getDate()}` : `${D[d.getDay()]}, ${M[d.getMonth()]} ${d.getDate()}`;
   return { group_date: gd, date_label: label };
 }
 

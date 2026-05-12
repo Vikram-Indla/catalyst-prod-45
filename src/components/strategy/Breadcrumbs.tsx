@@ -18,7 +18,7 @@ interface BreadcrumbsProps {
   items: BreadcrumbItem[];
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
+ 
 export function Breadcrumbs(_props: BreadcrumbsProps) {
   return null;
 }

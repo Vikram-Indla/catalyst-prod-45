@@ -70,23 +70,43 @@ For every signal, which lanes fire and which agent owns each lane.
 
 Once the gap report is in hand, pick wrappers + implementers from the **actual gap**, not the original task text.
 
+### Routing Council Gate (Phase 2.5 — MANDATORY for high-stake / ambiguous)
+
+**When Phase 2.5 council activates:** Only when the gap report is **ambiguous** (2+ wrapper paths are equally valid) OR the task classified as **high-stake** (per RUBRIC.md).
+
+**Phase 2.5 council composition:**
+- `engineering-software-architect` (architecture risk assessment)
+- `engineering-senior-developer` (complexity + velocity assessment)
+- `project-management-jira-workflow-steward` (Jira scope confirmation)
+- `engineering-code-reviewer` (code review risk assessment)
+- `agents-orchestrator` (chair: synthesize into one composition order)
+
+**When to SKIP Phase 2.5:**
+- Trivial tier classification (per RUBRIC.md) — skip to Phase 3 directly
+- Only one wrapper path matches Implementer Matrix (unambiguous)
+- `--quick` mode
+- `--skip-probe` flag
+
+The council deliberates for 5-10 minutes and outputs a binding wrapper composition order + rationale. If no council is needed (unambiguous + standard tier), catalyst-agent proceeds straight to Phase 3 (Wrapper Selection).
+
 ### Gap pattern → wrapper composition
 
-| Gap pattern | Wrapper(s) — execution order |
-|---|---|
-| UI handler bug, no schema change | preflight (Phase 0.5 only) → jira-compare (CRUD gate) |
-| UI visual drift only | design-intelligence → design-critique |
-| Missing column / field in Catalyst that's in Jira scheme | preflight (Phase 0.5 + 1) → jira-compare (full 3-lane + CRUD) |
-| New table + UI | preflight (full) → Lovable SQL manual paste |
-| New admin page | preflight (full) — includes AdminGuard check, no jira-compare |
-| RLS policy bug | preflight (Phase 0.5 only) → Lovable SQL manual paste |
-| Pure parity audit | jira-compare (full 3-lane only, no preflight) |
-| Pure design audit (no functional change) | design-intelligence → design-critique |
-| Accessibility audit | design-critique with accessibility lens |
-| Performance fix | preflight (Phase 0.5 + 1) |
-| Test flake | preflight (direct, no wrappers nested) |
-| Refactor consolidation | preflight (full) → jira-compare (regression sweep) |
-| Banned signal (caught in step 2) | NONE — halt |
+| Gap pattern | Wrapper(s) — execution order | Phase 2.5 council? |
+|---|---|---|
+| UI handler bug, no schema change | preflight (Phase 0.5 only) → jira-compare (CRUD gate) | No (single path) |
+| UI visual drift only | design-intelligence → design-critique | No (single path) |
+| Missing column / field in Catalyst that's in Jira scheme | preflight (Phase 0.5 + 1) → jira-compare (full 3-lane + CRUD) | No (single path) |
+| New table + UI | preflight (full) → Lovable SQL manual paste | **Yes** (multiple layers, high-stake) |
+| New admin page | preflight (full) — includes AdminGuard check, no jira-compare | No (single path) |
+| RLS policy bug | preflight (Phase 0.5 only) → Lovable SQL manual paste | **Yes** (security + schema, high-stake) |
+| Pure parity audit | jira-compare (full 3-lane only, no preflight) | No (single path) |
+| Pure design audit (no functional change) | design-intelligence → design-critique | No (single path) |
+| Accessibility audit | design-critique with accessibility lens | No (single path) |
+| Performance fix | preflight (Phase 0.5 + 1) | No (single path) |
+| Test flake | preflight (direct, no wrappers nested) | No (single path) |
+| Refactor consolidation | preflight (full) → jira-compare (regression sweep) | **Yes** (cross-cutting, high-stake) |
+| Banned signal (caught in step 2) | NONE — halt | No (pre-phase 2) |
+| Ambiguous gap (e.g., could be design-only OR preflight + jira-compare) | Council deliberates, picks one or composition | **Yes** (mandatory for ambiguous) |
 
 ### Implementer agents (by gap type)
 

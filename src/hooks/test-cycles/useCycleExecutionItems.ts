@@ -228,7 +228,7 @@ export function useCycleExecutionItems(cycleId: string, filters?: ExecutionFilte
       const scopeIds = scopeItems.map((s: any) => s.id);
       
       // Get latest run for each scope item
-      let runsByScope: Record<string, any> = {};
+      const runsByScope: Record<string, any> = {};
       
       if (scopeIds.length > 0) {
         const { data: runs, error: runsError } = await typedQuery('tm_test_runs')

@@ -85,7 +85,7 @@ export function usePlannerWorkstreams(includeArchived = false) {
         .map(m => m.user_id)
         .filter((id): id is string => isValidUUID(id));
       
-      let profilesMap = new Map<string, { id: string; full_name: string | null; email: string | null; avatar_url: string | null }>();
+      const profilesMap = new Map<string, { id: string; full_name: string | null; email: string | null; avatar_url: string | null }>();
       if (memberUserIds.length > 0) {
         const { data: profilesData, error: profilesError } = await supabase
           .from('profiles')

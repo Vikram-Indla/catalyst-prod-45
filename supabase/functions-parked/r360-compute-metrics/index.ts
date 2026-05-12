@@ -43,7 +43,7 @@ serve(async (req) => {
 
     // Query unified view — fetch items assigned to this resource via either jira_id or user_id
     // We need to fetch in two batches to handle the dual-identity model
-    let allItems: any[] = []
+    const allItems: any[] = []
 
     if (identifiers.jira_id) {
       const { data: jiraItems } = await supabase

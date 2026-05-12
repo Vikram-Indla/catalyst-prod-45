@@ -96,7 +96,7 @@ export function useCompareMetrics(releaseIds: string[]) {
       const cycleToRelease: Record<string, string> = {};
       (cycles || []).forEach((c: any) => { cycleToRelease[c.id] = c.release_id; });
 
-      let runsByRelease: Record<string, { passed: number; failed: number; blocked: number; notRun: number; total: number }> = {};
+      const runsByRelease: Record<string, { passed: number; failed: number; blocked: number; notRun: number; total: number }> = {};
       if (cycleIds.length > 0) {
         const { data: runs } = await (supabase
           .from('tm_test_runs')

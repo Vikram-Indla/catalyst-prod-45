@@ -314,7 +314,7 @@ export function useStarredDeliveryItems() {
           .in('item_id', orphans.map(o => o.item_id))
           .then(({ error }) => {
             if (error) {
-              // eslint-disable-next-line no-console
+               
               console.warn('[useStarredDeliveryItems] orphan cleanup failed', error.message);
             }
           });

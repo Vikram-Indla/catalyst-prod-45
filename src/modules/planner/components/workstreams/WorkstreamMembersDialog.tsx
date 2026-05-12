@@ -92,7 +92,7 @@ export function WorkstreamMembersDialog({
           .map(r => r.assignment_id)
           .filter((id): id is string => !!id);
 
-        let assignmentNames: Record<string, string> = {};
+        const assignmentNames: Record<string, string> = {};
         if (assignmentIds.length > 0) {
           const { data: assignments } = await supabase
             .from('resource_assignments')

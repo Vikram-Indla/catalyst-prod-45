@@ -626,8 +626,8 @@ async function enrichResources(supabase: any, resources: any[], today: string): 
   
   // Fetch locations
   const locationIds = [...new Set(resources.map((r: any) => r.location_id).filter(Boolean))];
-  let locationMap = new Map<string, string>();
-  let onSiteLocationIds = new Set<string>();
+  const locationMap = new Map<string, string>();
+  const onSiteLocationIds = new Set<string>();
   if (locationIds.length > 0) {
     const { data: locations } = await supabase.from('resource_locations').select('id, name').in('id', locationIds);
     (locations || []).forEach((loc: any) => {

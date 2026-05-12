@@ -36,7 +36,7 @@ function useProjects() {
       const catMap = new Map<string, { avatar_url: string | null; color: string | null }>();
       (catRes.data ?? []).forEach((p) => { if (p.key) catMap.set(p.key, p); });
 
-      let phIconMap = new Map<string, { icon: string | null; color: string | null }>();
+      const phIconMap = new Map<string, { icon: string | null; color: string | null }>();
       if (projectKeys.length > 0) {
         const { data: phRows } = await supabase
           .from('ph_projects')

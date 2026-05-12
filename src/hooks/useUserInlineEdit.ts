@@ -101,7 +101,7 @@ export function useUserInlineEdit(referenceData: ReferenceData) {
             .maybeSingle();
 
           // Map field names for resource_inventory
-          let updatePayload: Record<string, any> = {
+          const updatePayload: Record<string, any> = {
             updated_at: new Date().toISOString(),
           };
 
@@ -145,7 +145,7 @@ export function useUserInlineEdit(referenceData: ReferenceData) {
         }
       } else {
         // Inventory-only user: update resource_inventory directly
-        let updatePayload: Record<string, any> = {
+        const updatePayload: Record<string, any> = {
           updated_at: new Date().toISOString(),
         };
 

@@ -348,7 +348,7 @@ export function useWorkbenchData(
   let epicCount = 0;
   let featureCount = 0;
   let storyCount = 0;
-  let subtaskCount = (subtasksData || []).length;
+  const subtaskCount = (subtasksData || []).length;
 
   // Transform to WorkItem hierarchy
   const items: WorkItem[] = (epicsData || []).map((epic: any) => {

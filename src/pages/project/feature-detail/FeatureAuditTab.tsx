@@ -165,7 +165,7 @@ export function FeatureAuditTab({ featureId }: FeatureAuditTabProps) {
       // 3. CAB - based on release linkage
       // Not linked = Not Started, Linked but not ready = Pending, Ready for Implementation = Approved
       let cabStatus: ApprovalStatus = 'not_started';
-      let cabOwner: string | null = null;
+      const cabOwner: string | null = null;
 
       if (feature.release_id) {
         const { data: release } = await supabase

@@ -39,7 +39,7 @@ export function ApplyWSJFToRankDialog({
 
       if (workItemType === 'epic') {
         // For epics, WSJF is in epic_wsjf table
-        let epicQuery = typedQuery('epic_wsjf')
+        const epicQuery = typedQuery('epic_wsjf')
           .select('epic_id, wsjf_score, epics!inner(id, global_rank, portfolio_id, primary_program_id)')
           .not('wsjf_score', 'is', null)
           .order('wsjf_score', { ascending: false });
