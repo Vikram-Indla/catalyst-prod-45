@@ -127,7 +127,7 @@ function LocationRowTitle({ location }: { location: RecentLocation }) {
             fontWeight: 400,
             fontSize: '11px',
             flex: '0 0 auto',
-            lineHeight: '20px',
+            lineHeight: '18px',
           }}
           aria-hidden="true"
         >
@@ -150,14 +150,14 @@ function LocationRowTitle({ location }: { location: RecentLocation }) {
         </span>
       </span>
 
-      {/* Line 2: Timestamp — 11px/400, color.text.subtlest (ADS timestamp style) */}
+      {/* Line 2: Timestamp — 12px/500, color.text.subtle (ADS meta style, increased visibility) */}
       <span
         style={{
-          color: 'var(--ds-text-subtlest, #626F86)',
-          fontWeight: 400,
-          fontSize: '11px',
+          color: 'var(--ds-text-subtle, #44546F)',
+          fontWeight: 500,
+          fontSize: '12px',
           lineHeight: '16px',
-          marginTop: 1,
+          marginTop: 4,
         }}
       >
         {formatTimestamp(location.visitedAt)}
@@ -227,6 +227,17 @@ export default function HomeSidebar({
   const config: SidebarConfig = useMemo(() => {
     const items: SidebarMenuItem[] = loading
       ? [
+          {
+            id: 'recent-loading-label',
+            title: (
+              <span style={{ color: 'var(--ds-text-subtlest, #626F86)', fontSize: 12 }}>
+                Loading recent pages...
+              </span>
+            ),
+            path: '#recent-loading-label',
+            icon: FolderOpen,
+            onClick: () => {},
+          },
           { id: 'recent-skel-1', title: <SkeletonRowTitle />, path: '#recent-skel-1', icon: FolderOpen },
           { id: 'recent-skel-2', title: <SkeletonRowTitle />, path: '#recent-skel-2', icon: FolderOpen },
           { id: 'recent-skel-3', title: <SkeletonRowTitle />, path: '#recent-skel-3', icon: FolderOpen },
