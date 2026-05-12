@@ -557,7 +557,7 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
   // Summary | Status | Comments | Parent — NO Assignee by default. Assignee is
   // available via the column picker (+) but hidden in the factory layout.
   // NOTE: Comments column is banned (2026-05-11), removed from defaults
-  const DEFAULT_VISIBLE_COLUMNS = ['key', 'summary', 'status', 'assignee', 'priority', 'parent'];
+  const DEFAULT_VISIBLE_COLUMNS = ['key', 'summary', 'status', 'assignee', 'priority', 'parent', 'fix_versions'];
 
   const parseSet = (raw: string | null): Set<string> =>
     raw ? new Set(raw.split(',').filter(Boolean)) : new Set();
@@ -2004,9 +2004,10 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
       label: 'Fix versions',
       width: 10,
       sortable: false,
-      defaultVisible: false,
+      defaultVisible: true,
       accessor: (r: BacklogItem) => (r.fix_versions || []).join(', '),
       cell: makeFixVersionsCell((r: BacklogItem) => r.fix_versions),
+      include: (row: BacklogItem) => row.issue_type !== 'Feature',
     },
     {
       id: 'created',
