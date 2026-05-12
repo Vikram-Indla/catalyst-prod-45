@@ -32,7 +32,7 @@ Deno.serve(async (req) => {
     }
 
     const body = await req.json();
-    const { role = 'user', module_access = {} } = body;
+    const { role = 'user', module_access = {}, full_name } = body;
     const email: string = body.email;
     if (!email || typeof email !== 'string') return err('email is required', 400);
     const normalizedEmail = email.toLowerCase().trim();
@@ -63,7 +63,7 @@ Deno.serve(async (req) => {
 
     const { data: invitation, error: insertErr } = await supabaseAdmin
       .from('user_invitations')
-      .insert({ email: normalizedEmail, invited_by: user.id, token_hash: tokenHash, role, module_access, expires_at: expiresAt })
+      .insert({ email: normalizedEmail, invited_by: user.id, token_hash: tokenHash, role, module_access, full_name, expires_at: expiresAt })
       .select('id')
       .single();
     if (insertErr || !invitation) {

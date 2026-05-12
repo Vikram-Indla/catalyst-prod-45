@@ -20,6 +20,8 @@ export interface UserProfile {
   last_login: string | null;
   created_at: string | null;
   updated_at: string | null;
+  system_role: string | null;  // admin, program_manager, team_lead, user (from user_roles table)
+  module_access: Record<string, boolean> | null;  // { "caty": true, "r360": false, ... }
   roles: UserRoleInfo[];
   business_lines: string[];
   // Vendor/Contract metadata
@@ -84,7 +86,7 @@ export function useUsers() {
       // Fetch all profiles with approval and vendor fields
       const { data: profiles, error: profilesError } = await supabase
         .from('profiles')
-        .select('*, rid, approval_status, requested_at, approved_at, rejected_at, rejection_reason, signup_attempts_count, vendor, contract_start_date, contract_end_date, country, country_code, country_flag_svg_url, location, resource_type, ctc')
+        .select('*, rid, approval_status, requested_at, approved_at, rejected_at, rejection_reason, signup_attempts_count, vendor, contract_start_date, contract_end_date, country, country_code, country_flag_svg_url, location, resource_type, ctc, module_access')
         .order('vendor', { ascending: true, nullsFirst: false })
         .order('full_name', { ascending: true })
         .limit(1000);
@@ -161,29 +163,43 @@ export function useUsers() {
           })
       );
 
-      // Fetch all user_product_roles with role info
-      const { data: userRoles, error: rolesError } = await supabase
+      // Fetch system-level roles (admin, program_manager, team_lead) from user_roles table
+      const { data: systemRoles, error: systemRolesError } = await supabase
+        .from('user_roles')
+        .select('user_id, role')
+        .limit(1000);
+
+      if (systemRolesError) throw systemRolesError;
+
+      // Fetch product-level roles (super_admin, product_manager, etc.) from user_product_roles
+      const { data: userProductRoles, error: productRolesError } = await supabase
         .from('user_product_roles')
         .select('id, user_id, role_id, business_lines')
         .limit(1000);
 
-      if (rolesError) throw rolesError;
+      if (productRolesError) throw productRolesError;
 
       // Fetch all product_roles for mapping
-      const { data: productRoles, error: productRolesError } = await supabase
+      const { data: productRoles, error: productRolesMetaError } = await supabase
         .from('product_roles')
         .select('id, name, code')
         .limit(1000);
 
-      if (productRolesError) throw productRolesError;
+      if (productRolesMetaError) throw productRolesMetaError;
+
+      // Create map of system roles by user_id
+      const systemRoleMap = (systemRoles || []).reduce((acc, sr) => {
+        acc[sr.user_id] = sr.role;
+        return acc;
+      }, {} as Record<string, string>);
 
       const roleMap = (productRoles || []).reduce((acc, r) => {
         acc[r.id] = { name: r.name, code: r.code };
         return acc;
       }, {} as Record<string, { name: string; code: string }>);
 
-      // Map user roles to profiles
-      const userRolesMap = (userRoles || []).reduce((acc, ur) => {
+      // Map product roles to profiles
+      const userProductRolesMap = (userProductRoles || []).reduce((acc, ur) => {
         if (!acc[ur.user_id]) {
           acc[ur.user_id] = [];
         }
@@ -207,11 +223,13 @@ export function useUsers() {
 
       // Build user list from profiles
       const profileUsers = (profiles || []).map((profile) => {
-        const roles = userRolesMap[profile.id] || [];
+        const system_role = systemRoleMap[profile.id] || null;
+        const roles = userProductRolesMap[profile.id] || [];
         const allBusinessLines = roles.flatMap((r) => r.business_lines);
         const inventory = inventoryByProfileId.get(profile.id);
         return {
           ...profile,
+          system_role,
           roles,
           business_lines: [...new Set(allBusinessLines)],
           contract_start_date: inventory?.contract_start_date || profile.contract_start_date || null,
@@ -259,6 +277,8 @@ export function useUsers() {
             last_login: null,
             created_at: null,
             updated_at: null,
+            system_role: null, // Unlinked users have no system role
+            module_access: null, // Unlinked users have no module access
             roles: [],
             business_lines: [],
             vendor: vendorData?.name || r.vendor_name,

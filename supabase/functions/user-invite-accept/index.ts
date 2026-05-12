@@ -28,7 +28,7 @@ Deno.serve(async (req) => {
     // Look up the invitation
     const { data: invitation } = await supabaseAdmin
       .from('user_invitations')
-      .select('id, email, role, status, expires_at')
+      .select('id, email, role, status, expires_at, module_access, full_name')
       .eq('token_hash', tokenHash)
       .eq('status', 'pending')
       .maybeSingle();
@@ -68,10 +68,14 @@ Deno.serve(async (req) => {
         .eq('user_id', userId);
     }
 
-    // Update profile: full_name + mark approved (bypasses pending-approval gate)
+    // Update profile: full_name + module_access + mark approved (bypasses pending-approval gate)
     await supabaseAdmin
       .from('profiles')
-      .update({ full_name: full_name || email, approval_status: 'APPROVED' })
+      .update({
+        full_name: full_name || invitation.full_name || email,
+        module_access: invitation.module_access || {},
+        approval_status: 'APPROVED'
+      })
       .eq('id', userId);
 
     // Mark invitation accepted

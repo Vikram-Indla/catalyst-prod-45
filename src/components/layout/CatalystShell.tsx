@@ -81,6 +81,7 @@ const WikiSidebar = lazyWithRetry(() => import('./WikiSidebar').then(m => ({ def
 // users were seeing on Home with @atlaskit/side-navigation sections for
 // Pinned, Recent and Jump to. Atlaskit-only — see HomeSidebar.tsx.
 const HomeSidebar = lazyWithRetry(() => import('./HomeSidebar'), 'HomeSidebar');
+const AdminSidebarV2 = lazyWithRetry(() => import('@/components/admin/AdminSidebarV2').then(m => ({ default: m.AdminSidebarV2 })), 'AdminSidebarV2');
 
 import { HubSurface } from './HubSurface';
 
@@ -454,9 +455,14 @@ function CatalystShellContent() {
       );
     }
 
-    // No sidebar for Admin routes
+    // Admin routes use AdminSidebarV2
     if (location.pathname.startsWith('/admin')) {
-      return null;
+      return (
+        <AdminSidebarV2
+          expanded={sidebarExpanded}
+          onToggle={cycleSidebarState}
+        />
+      );
     }
 
     // Full-screen issue view: show ProjectHub sidebar forced-collapsed
