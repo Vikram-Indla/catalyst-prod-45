@@ -2,8 +2,8 @@ import { cn } from "@/lib/utils";
 import { useTheme } from "@/hooks/useTheme";
 
 // Import both logo variants
-import logoLight from "@/assets/catalyst-logo-dark.svg"; // Blue logo for light backgrounds
-import logoDark from "@/assets/catalyst-logo-white.svg"; // White logo for dark backgrounds
+import logoLight from "@/assets/logo-primary-light.svg"; // Blue logo for light backgrounds
+import logoDark from "@/assets/logo-primary-dark.svg"; // White logo for dark backgrounds
 
 interface LogoProps {
   variant?: "light" | "dark";
