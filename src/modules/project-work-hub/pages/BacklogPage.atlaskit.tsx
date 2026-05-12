@@ -1758,8 +1758,8 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
       // and Ctrl+click all work. Left-click preventDefault → opens detail panel.
       cell: makeKeyCell(
         (r: BacklogItem) => r.key,
-        (r: BacklogItem) => setDetailItemId(r.id),
-        (r: BacklogItem) => `?selectedIssue=${r.id}`,
+        (r: BacklogItem) => openDetail(r),
+        (r: BacklogItem) => `/project-hub/${projectKey}/backlog/${r.key || r.id}`,
       ),
     },
     {
@@ -1865,9 +1865,7 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
       alwaysVisible: false,
       cell: makeCommentsCell(
         (r: BacklogItem) => r.comment_count,
-        // Clicking the comments cell opens the detail panel so the user
-        // lands in the Comments section — matches Jira's "Add comment" CTA.
-        (r: BacklogItem) => setDetailItemId(r.id),
+        (r: BacklogItem) => openDetail(r),
       ),
     },
     {
@@ -2511,10 +2509,9 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
           // affordance remains in pageChromeRightCtas. The small invite-
           // people icon next to the H1 (in nameAdornment) still opens the
           // Add people modal.
-          pageChromeRightCtas={
-          }
           // Apr 27 2026 (Vikram instruction): tabs row removed entirely.
           // All work / Releases / "+" not required on this surface.
+          pageChromeRightCtas={{}}
         />}
         </>
       }
@@ -3092,7 +3089,7 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
           />
           </div>
         </div>
-
+      </div>
 
       {/* Atlaskit-native Edit modal (replaces shadcn Dialog wrapper).
           Mounts only when editingId is set — ModalTransition handles enter/exit. */}
