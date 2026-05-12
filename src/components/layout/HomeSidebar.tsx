@@ -208,7 +208,7 @@ export default function HomeSidebar({
         }));
 
     return {
-      badge: 'H',
+      badge: null,
       label: 'Home',
       showFavorites: false,
       sections: [{ title: 'Recent', items }],

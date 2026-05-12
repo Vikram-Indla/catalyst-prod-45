@@ -262,16 +262,12 @@ export function SidebarBase({
             "flex-shrink-0 flex items-center",
             expanded ? "justify-start" : "justify-center"
           )}
-          // Header used to carry a `border-b` divider under the badge +
-          // hub label. Vikram's Apr 2026 directive: drop the divider on
-          // every hub rail — the 48px header height + section labels
-          // already give enough visual separation, and the rule was
-          // making the rail feel cluttered. Inter-section dividers
-          // below (rendered with `dividerColor`) and the rail's right
-          // edge (rendered with `sidebarBorder`) are unaffected.
+          // May 2026: Badge (H) removed. Text-only header with ADS-compliant
+          // typography. Header height reduced from 48px to 32px, reclaiming 16px
+          // for nav items. Padding adjusted to 8px per ADS 4/8dp rhythm.
           style={{
-            minHeight: '48px',
-            padding: expanded ? '12px 12px 12px 16px' : '12px 0',
+            minHeight: '32px',
+            padding: expanded ? '8px 12px 8px 16px' : '8px 0',
             gap: expanded ? '8px' : '4px',
             background: 'transparent',
           }}
@@ -292,19 +288,6 @@ export function SidebarBase({
                 flex: 1,
               }}
             >
-              <div
-                className="w-7 h-7 rounded flex items-center justify-center flex-shrink-0"
-                style={{
-                  background: 'var(--cp-blue)',
-                  color: 'var(--bg-app)',
-                  fontSize: '0.62rem',
-                  fontWeight: 700,
-                  letterSpacing: '0.02em',
-                  borderRadius: 6,
-                }}
-              >
-                {config.badge}
-              </div>
               {expanded && (
                 <span
                   className="truncate"
@@ -312,7 +295,7 @@ export function SidebarBase({
                     fontFamily: 'var(--cp-font-heading)',
                     fontSize: '14px',
                     fontWeight: 600,
-                    color: hubLabel,
+                    color: 'var(--ds-text, #292A2E)',
                     letterSpacing: '-0.3px',
                     flex: 1,
                     textAlign: 'left',
@@ -324,26 +307,14 @@ export function SidebarBase({
             </button>
           ) : (
             <>
-              <div
-                className="w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0"
-                style={{
-                  background: 'var(--cp-blue)',
-                  color: 'var(--bg-app)',
-                  fontSize: '0.62rem',
-                  fontWeight: 700,
-                  letterSpacing: '0.02em',
-                }}
-              >
-                {config.badge}
-              </div>
               {expanded && (
                 <span
                   className="truncate"
                   style={{
                     fontFamily: 'var(--cp-font-heading)',
                     fontSize: '14px',
-                    fontWeight: 700,
-                    color: hubLabel,
+                    fontWeight: 600,
+                    color: 'var(--ds-text, #292A2E)',
                     letterSpacing: '-0.3px',
                   }}
                 >
