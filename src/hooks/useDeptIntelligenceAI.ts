@@ -135,7 +135,7 @@ export function classifyRole(jobRole: string): RoleGroup {
 }
 
 /* ── Fetch department resources (parallelized) ── */
-let _deptResourcesCache: Map<string, { data: any; ts: number }> = new Map();
+const _deptResourcesCache: Map<string, { data: any; ts: number }> = new Map();
 const DEPT_CACHE_TTL = 5 * 60 * 1000; // 5 min in-memory cache
 
 async function getDeptResources(department: string) {

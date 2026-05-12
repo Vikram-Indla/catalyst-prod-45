@@ -102,7 +102,7 @@ export function useTestCases(projectId: string | undefined, filters?: CaseFilter
 
       // Fetch steps counts for all cases in batch
       const caseIds = (data || []).map(c => c.id);
-      let stepsCounts: Record<string, number> = {};
+      const stepsCounts: Record<string, number> = {};
       
       if (caseIds.length > 0) {
         const { data: stepsData } = await supabase
@@ -119,7 +119,7 @@ export function useTestCases(projectId: string | undefined, filters?: CaseFilter
       }
 
       // Fetch last execution status for all cases in batch
-      let lastExecutions: Record<string, { status: string; executed_at: string | null }> = {};
+      const lastExecutions: Record<string, { status: string; executed_at: string | null }> = {};
       
       if (caseIds.length > 0) {
         const { data: execData } = await supabase

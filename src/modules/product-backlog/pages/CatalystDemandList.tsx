@@ -341,7 +341,7 @@ export default function CatalystDemandList() {
 
     const dbField = fieldMap[field] || field;
     // When updating targetComplete, also sync end_date for consistency
-    let dbValue = field === 'quarter' || field === 'planned_quarter' ? (Array.isArray(value) ? value : [value]) : value;
+    const dbValue = field === 'quarter' || field === 'planned_quarter' ? (Array.isArray(value) ? value : [value]) : value;
     
     let updatePayload: Record<string, any> = { [dbField]: dbValue };
     if (field === 'targetComplete') {

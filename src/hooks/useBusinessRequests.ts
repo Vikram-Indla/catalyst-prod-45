@@ -107,7 +107,7 @@ export function useBusinessRequests(searchQuery?: string) {
       });
       
       // Batch fetch profile names (single query)
-      let profileMap: Record<string, string> = {};
+      const profileMap: Record<string, string> = {};
       if (userIds.size > 0) {
         const { data: profiles } = await supabase
           .from('profiles')

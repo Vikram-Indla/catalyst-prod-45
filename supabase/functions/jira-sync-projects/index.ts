@@ -52,7 +52,7 @@ serve(async (req) => {
     const jiraProjects = await jiraResp.json();
 
     // 3. Count issues per project from ph_issues (paginated)
-    let countMap: Record<string, { total: number; todo: number; in_progress: number; done: number; epics: number; stories: number; tasks: number }> = {};
+    const countMap: Record<string, { total: number; todo: number; in_progress: number; done: number; epics: number; stories: number; tasks: number }> = {};
     let offset = 0;
     let hasMore = true;
     while (hasMore) {

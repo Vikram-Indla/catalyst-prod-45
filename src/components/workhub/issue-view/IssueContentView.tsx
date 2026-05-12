@@ -114,7 +114,7 @@ function StatusPill({ status, statusCategory, issueId, onStatusChange }: { statu
   const ref = useRef<HTMLDivElement>(null);
   const cat = (statusCategory ?? '').toLowerCase();
   let bg = '#44546F';
-  let color = 'var(--ds-text-inverse, #FFFFFF)';
+  const color = 'var(--ds-text-inverse, #FFFFFF)';
   if (cat.includes('done') || cat === 'complete') { bg = '#1B845D'; }
   else if (cat.includes('progress') || cat === 'indeterminate') { bg = '#0C66E4'; }
   else if (status.toLowerCase().includes('beta')) { bg = '#1B845D'; }
@@ -707,7 +707,7 @@ export function IssueContentView({
                               uploaded_by: user.id,
                             });
                           if (error) {
-                            // eslint-disable-next-line no-console
+                             
                             console.error('[IssueContentView] ph_attachments insert failed', error);
                             return;
                           }

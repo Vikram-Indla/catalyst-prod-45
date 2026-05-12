@@ -102,7 +102,7 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
     const timeline = timelineScrollRef.current;
     if (!leftPanel || !timeline) return;
 
-    let ticking = false;
+    const ticking = false;
     let lastScrollSource: 'left' | 'timeline' | null = null;
 
     const handleLeftScroll = () => {

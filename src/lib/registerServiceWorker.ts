@@ -100,7 +100,7 @@ export async function registerServiceWorker(): Promise<void> {
   if (hasKillSwitch()) {
     persistKillSwitch();
     await destroyAllCatalystServiceWorkers();
-    // eslint-disable-next-line no-console
+     
     console.info('[catalyst-sw] killed by ?nosw=1 or storage flag');
     return;
   }
@@ -109,7 +109,7 @@ export async function registerServiceWorker(): Promise<void> {
     const registration = await navigator.serviceWorker.register('/sw.js', {
       scope: '/',
     });
-    // eslint-disable-next-line no-console
+     
     console.info('[catalyst-sw] registered', { scope: registration.scope });
 
     // When a new worker takes control, the freshly-loaded Atlaskit
@@ -118,7 +118,7 @@ export async function registerServiceWorker(): Promise<void> {
     // reload, which would be jarring. The next navigation will use
     // the new cache automatically.
   } catch (err) {
-    // eslint-disable-next-line no-console
+     
     console.warn('[catalyst-sw] registration failed', err);
   }
 }

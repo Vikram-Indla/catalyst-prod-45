@@ -125,7 +125,7 @@ function useIsDarkTheme(): boolean {
 function CatalystShellContent() {
   // Dev-only instrumentation: prove shell doesn't remount on program navigation
   if (import.meta.env.DEV) {
-    // eslint-disable-next-line no-console
+     
     console.debug('[CatalystShell] render');
   }
 

@@ -12,6 +12,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import Avatar from '@atlaskit/avatar';
 import CommentIcon from '@atlaskit/icon/glyph/comment';
+import DragHandleIcon from '@atlaskit/icon/glyph/drag-handle';
 import { token } from '@atlaskit/tokens';
 import AkChevronRightIcon from '@atlaskit/icon/glyph/chevron-right';
 import AkChevronDownIcon from '@atlaskit/icon/glyph/chevron-down';
@@ -24,6 +25,33 @@ export function makeTypeIconCell(getIcon: (row: any) => React.ReactNode) {
     return (
       <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 20, height: 20 }}>
         {getIcon(row)}
+      </span>
+    );
+  };
+}
+
+// ─── Drag Handle Cell ──────────────────────────────────────────────────────
+// Row-hover drag affordance. Shows a 6-dot drag handle icon only when dragging
+// is enabled (no active sort AND no grouping). Visible on hover, hidden at rest.
+export function makeDragHandleCell(isDragEnabled: () => boolean) {
+  return function DragHandleCell({ row }: CellProps<any>) {
+    if (!isDragEnabled()) return null;
+    return (
+      <span
+        style={{
+          display: 'inline-flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          width: 20,
+          height: 20,
+          opacity: 0,
+          transition: 'opacity 200ms',
+          cursor: 'grab',
+          color: token('color.text.subtle', '#42526E'),
+        }}
+        className="jira-drag-handle"
+      >
+        <DragHandleIcon label="" size="small" />
       </span>
     );
   };

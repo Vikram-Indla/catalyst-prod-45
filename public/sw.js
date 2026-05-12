@@ -137,7 +137,7 @@ self.addEventListener('message', (event) => {
             .map((key) => caches.delete(key)),
         );
         const registrations = await self.registration.unregister();
-        // eslint-disable-next-line no-console
+         
         console.info('[catalyst-sw] self-destructed', { unregistered: registrations });
       })(),
     );

@@ -244,7 +244,7 @@ export function useRecentIssues(
           setLoading(false);
         }
       } catch (err) {
-        // eslint-disable-next-line no-console
+         
         console.error('[useRecentIssues] failed to load recent issues', err);
         if (!cancelled) {
           setRecentIssues([]);

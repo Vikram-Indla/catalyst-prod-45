@@ -102,7 +102,7 @@ export function UnifiedSidebar({
         console.debug('[UnifiedSidebar] unmount', mountRef.current);
       }
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+     
   }, []);
 
   const menuItems = menuConfigs[workspaceType];

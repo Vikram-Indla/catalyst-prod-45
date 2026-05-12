@@ -142,7 +142,7 @@ export async function fetchFeatureBacklog(params: FeatureBacklogQueryParams): Pr
   });
 
   // Fetch profile names if we have user IDs
-  let profilesMap: Record<string, string> = {};
+  const profilesMap: Record<string, string> = {};
   if (userIds.size > 0) {
     const { data: profiles } = await supabase
       .from('profiles')

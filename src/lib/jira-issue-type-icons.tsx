@@ -379,7 +379,7 @@ export function JiraIssueTypeIcon({ type, size = 16, className, style }: JiraIss
 // JiraIssueTypeIcon (rare) continue to compile. The function body above has
 // already returned. The `<img>` block below is unreachable code — kept as a
 // reference of the old static-asset path until all callers have migrated.
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
+ 
 function _legacyImgFallback({ type, size = 16, className, style }: JiraIssueTypeIconProps) {
   const cfg = resolveJiraTypeConfig(type);
   const svgSize: 16 | 24 = size <= 16 ? 16 : 24;

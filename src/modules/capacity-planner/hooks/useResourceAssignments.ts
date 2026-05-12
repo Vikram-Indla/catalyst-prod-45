@@ -54,8 +54,8 @@ export function useResourceAssignments() {
       // Fetch project data separately if there are project_ids
       const projectIds = (data || []).map((a: any) => a.project_id).filter(Boolean);
       const vendorIds = (data || []).map((a: any) => a.vendor_id).filter(Boolean);
-      let projectsMap: Record<string, ProjectInfo> = {};
-      let vendorsMap: Record<string, VendorInfo> = {};
+      const projectsMap: Record<string, ProjectInfo> = {};
+      const vendorsMap: Record<string, VendorInfo> = {};
       
       if (projectIds.length > 0) {
         const { data: projects } = await typedQuery('projects')
@@ -103,8 +103,8 @@ export function useResourceAssignments() {
       // Fetch project data separately if there are project_ids
       const projectIds = (data || []).map((a: any) => a.project_id).filter(Boolean);
       const vendorIds = (data || []).map((a: any) => a.vendor_id).filter(Boolean);
-      let projectsMap: Record<string, ProjectInfo> = {};
-      let vendorsMap: Record<string, VendorInfo> = {};
+      const projectsMap: Record<string, ProjectInfo> = {};
+      const vendorsMap: Record<string, VendorInfo> = {};
       
       if (projectIds.length > 0) {
         const { data: projects } = await typedQuery('projects')

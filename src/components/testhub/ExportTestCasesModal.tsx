@@ -29,7 +29,7 @@ export function ExportTestCasesModal({ isOpen, onClose, testCaseCount, selectedF
       if (tcError) throw tcError;
       
       // Fetch steps if needed
-      let stepsMap: Record<string, Array<{ step_number: number; action: string; expected_result: string }>> = {};
+      const stepsMap: Record<string, Array<{ step_number: number; action: string; expected_result: string }>> = {};
       if (includeSteps && testCases?.length) {
         const { data: steps } = await supabase
           .from('tm_test_steps')

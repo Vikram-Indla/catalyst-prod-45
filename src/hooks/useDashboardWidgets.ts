@@ -1263,7 +1263,7 @@ export function useTimeInStatusMatrix(
           }));
         }
       } catch (e) {
-        // eslint-disable-next-line no-console
+         
         console.warn('[TimeInStatus] workflow lookup failed — falling back to discovered statuses', e);
       }
 
@@ -1314,7 +1314,7 @@ export function useTimeInStatusMatrix(
           .order('jira_updated_at', { ascending: false })
           .range(offset, offset + limit - 1);
         if (r2.error) {
-          // eslint-disable-next-line no-console
+           
           console.error('[TimeInStatus] ph_issues query failed', r2.error);
           throw r2.error;
         }
@@ -1344,13 +1344,13 @@ export function useTimeInStatusMatrix(
           .in('issue_key', issueKeys)
           .order('changed_at', { ascending: true }) as { data: any[] | null; error: any };
         if (error) {
-          // eslint-disable-next-line no-console
+           
           console.warn('[TimeInStatus] history fetch failed (likely RLS or empty table)', error);
         } else {
           transitions = data ?? [];
         }
       } catch (e) {
-        // eslint-disable-next-line no-console
+         
         console.warn('[TimeInStatus] history fetch threw', e);
       }
 

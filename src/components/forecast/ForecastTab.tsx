@@ -302,7 +302,7 @@ export function ForecastTab({ workItemId, workItemType, estimationSystem = 'poin
     if (!selectedPiId) return;
     
     let estimate: number;
-    let unit = getDbUnit(estimationSystem);
+    const unit = getDbUnit(estimationSystem);
     
     if (estimationSystem === 'tshirt') {
       // For T-Shirt, convert to team weeks for storage

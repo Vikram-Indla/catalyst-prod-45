@@ -443,7 +443,7 @@ serve(async (req) => {
         .eq("run_id", runId);
 
       const totalEntities = entities?.length || 0;
-      let cleaned = 0;
+      const cleaned = 0;
 
       // TODO: Implement actual cleanup logic
       // For each entity type, delete or soft-delete based on table schema

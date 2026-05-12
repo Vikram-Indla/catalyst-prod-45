@@ -320,7 +320,7 @@ export function PlannerPage() {
     
     // For now, we need a feature_id (NOT NULL in DB)
     // Use the linked work item if it's a feature, otherwise we need a default
-    let featureId = data.linkedWorkItemId;
+    const featureId = data.linkedWorkItemId;
     
     // If no work item linked, we can't create (DB constraint)
     if (!featureId) {

@@ -2719,6 +2719,23 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
         {toolbarViewOptionsButton}
         {/* P1 #7 — More actions overflow ⋯: refresh + export. */}
         {toolbarMoreActionsButton}
+
+        {/* 2026-05-12 — Pagination counter: "X of Y" format. Shows total visible
+            items in current filter scope. Jira parity: BAU list shows "50 of 810"
+            style counter on the right side of the toolbar. */}
+        <div style={{
+          display: 'inline-flex',
+          alignItems: 'center',
+          height: 32,
+          padding: '0 12px',
+          marginLeft: 8,
+          color: token('color.text.subtlest', '#626F86'),
+          fontSize: 12,
+          fontWeight: 500,
+          whiteSpace: 'nowrap',
+        }}>
+          {total} item{total === 1 ? '' : 's'}
+        </div>
       </div>
 
       {/* Bulk actions bar — only visible when selection is non-empty.

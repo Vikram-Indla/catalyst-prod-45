@@ -238,7 +238,7 @@ function calculateNextSchedule(schedule: ScheduledReport['schedule']): string {
   const now = new Date();
   const [hours, minutes] = schedule.time.split(':').map(Number);
   
-  let next = new Date(now);
+  const next = new Date(now);
   next.setHours(hours, minutes, 0, 0);
 
   switch (schedule.frequency) {

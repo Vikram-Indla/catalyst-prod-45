@@ -136,7 +136,7 @@ function walkNode(node: ADFEntity, ctx: WalkCtx): string {
   ]);
 
   const joiner = blockTypes.has(type as string) ? '' : '';
-  let text = children.map((c) => walkNode(c as ADFEntity, {
+  const text = children.map((c) => walkNode(c as ADFEntity, {
     ...ctx,
     depth: ctx.depth + 1,
     insideListItem: type === 'listItem' || type === 'taskItem' || ctx.insideListItem,

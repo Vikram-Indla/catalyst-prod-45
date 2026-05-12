@@ -92,7 +92,7 @@ export function UnifiedAuditHistoryTab({ entityId, entityType }: UnifiedAuditHis
       if (error) throw error;
 
       const actorIds = [...new Set((logs || []).map((l: any) => l.actor_id).filter(Boolean))];
-      let profileMap = new Map<string, any>();
+      const profileMap = new Map<string, any>();
       if (actorIds.length > 0) {
         const { data: profiles } = await supabase.from('profiles').select('id, full_name, avatar_url').in('id', actorIds);
         if (profiles) profiles.forEach((p: any) => profileMap.set(p.id, p));

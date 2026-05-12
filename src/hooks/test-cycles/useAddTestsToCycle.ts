@@ -24,7 +24,7 @@ export function useAddTestsToCycle() {
         .order('sort_order', { ascending: false })
         .limit(1);
 
-      let nextSortOrder = (existingScope?.[0]?.sort_order || 0) + 1;
+      const nextSortOrder = (existingScope?.[0]?.sort_order || 0) + 1;
 
       // Prepare rows to insert
       const rows = testCaseIds.map((testCaseId, index) => ({

@@ -514,6 +514,13 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
       .jira-group-header-row:focus-within .jira-group-add-btn {
         opacity: 1;
       }
+      /* Drag handle: hidden by default, visible on row hover.
+         Jira shows 6-dot affordance only when there is no active sort
+         AND no grouping. CSS gate is temporary placeholder; Phase 4 adds
+         conditional isDragEnabled() logic to hide based on sortKey/groupBy state. */
+      .jira-table-grid table tbody > tr:hover .jira-drag-handle {
+        visibility: visible;
+      }
       /* ── Round H additions ─────────────────────────────────────────
          Sticky header + resize handle. The scroll container is the table
          viewport (.jira-table-viewport); position: sticky references

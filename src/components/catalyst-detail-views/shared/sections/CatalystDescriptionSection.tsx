@@ -363,7 +363,7 @@ export function CatalystDescriptionSection({ issue, label = 'Description' }: Cat
         uploaded_by: user.id,
       });
     if (error) {
-      // eslint-disable-next-line no-console
+       
       console.error('[CatalystDescriptionSection] ph_attachments insert failed', error);
       return;
     }
