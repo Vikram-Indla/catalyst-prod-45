@@ -34,6 +34,7 @@ interface CatalystUser {
 interface PendingInvite {
   id: string;
   email: string;
+  role: string | null;
   invited_by: string | null;
   created_at: string;
   expires_at: string;
@@ -267,6 +268,18 @@ function UserEditPanel({ user, currentUserId, onClose, onSaved }: UserEditPanelP
   const [deletePhase, setDeletePhase] = useState<'idle' | 'confirm'>('idle');
   const [deleting, setDeleting] = useState(false);
 
+  // Password change state
+  const [pwOpen, setPwOpen] = useState(false);
+  const [newPw, setNewPw] = useState('');
+  const [confirmPw, setConfirmPw] = useState('');
+  const [showPw, setShowPw] = useState(false);
+  const [pwSaving, setPwSaving] = useState(false);
+
+  // Reset / suspend state
+  const [resetSending, setResetSending] = useState(false);
+  const [suspending, setSuspending] = useState(false);
+  const [localApprovalStatus, setLocalApprovalStatus] = useState<string | null>(null);
+
   // Sync state when user changes
   useEffect(() => {
     const found = ROLE_OPTIONS.find(r => r.value === user.role);
@@ -275,24 +288,31 @@ function UserEditPanel({ user, currentUserId, onClose, onSaved }: UserEditPanelP
     MODULE_ITEMS.forEach(m => { access[m.key] = user.module_access?.[m.key] === true || !!m.default; });
     setModuleAccess(access);
     setDeletePhase('idle');
+    setPwOpen(false);
+    setNewPw('');
+    setConfirmPw('');
+    setLocalApprovalStatus(user.approval_status ?? null);
   }, [user.id]);
 
-  // Esc closes panel (unless in delete confirm phase)
+  // Esc closes panel (unless in delete confirm or pw form)
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
-        if (deletePhase === 'confirm') { setDeletePhase('idle'); e.stopPropagation(); }
+        if (pwOpen) { setPwOpen(false); e.stopPropagation(); }
+        else if (deletePhase === 'confirm') { setDeletePhase('idle'); e.stopPropagation(); }
         else { onClose(); }
       }
     };
     document.addEventListener('keydown', handler, true);
     return () => document.removeEventListener('keydown', handler, true);
-  }, [onClose, deletePhase]);
+  }, [onClose, deletePhase, pwOpen]);
 
   const isSelf = user.id === currentUserId;
   const isSuperAdmin = user.role === 'super_admin';
   const canDelete = !isSelf && !isSuperAdmin;
-  const isActive = !user.approval_status || user.approval_status === 'APPROVED';
+  const canModify = !isSelf && !isSuperAdmin;
+  const isActive = !localApprovalStatus || localApprovalStatus === 'APPROVED';
+  const busyAny = saving || deleting || pwSaving || resetSending || suspending;
 
   const toggleModule = (key: string) => {
     const item = MODULE_ITEMS.find(m => m.key === key);
@@ -316,6 +336,63 @@ function UserEditPanel({ user, currentUserId, onClose, onSaved }: UserEditPanelP
       toast.error(e instanceof Error ? e.message : 'Update failed');
     } finally {
       setSaving(false);
+    }
+  };
+
+  const handleChangePassword = async () => {
+    if (!newPw || newPw !== confirmPw) { toast.error('Passwords do not match'); return; }
+    if (newPw.length < 8) { toast.error('Password must be at least 8 characters'); return; }
+    setPwSaving(true);
+    try {
+      const res = await supabase.functions.invoke('admin-set-password', {
+        body: { userId: user.id, newPassword: newPw },
+      });
+      if (res.error) throw new Error(res.error.message);
+      const data = res.data as { ok: boolean; error?: string };
+      if (!data?.ok) throw new Error(data?.error || 'Failed to set password');
+      toast.success('Password changed successfully');
+      setPwOpen(false); setNewPw(''); setConfirmPw('');
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : 'Failed to change password');
+    } finally {
+      setPwSaving(false);
+    }
+  };
+
+  const handleResetPassword = async () => {
+    setResetSending(true);
+    try {
+      const res = await supabase.functions.invoke('reset-user-password', {
+        body: { userId: user.id },
+      });
+      if (res.error) throw new Error(res.error.message);
+      const data = res.data as { ok: boolean; email?: string; error?: string };
+      if (!data?.ok) throw new Error(data?.error || 'Failed to send reset email');
+      toast.success(`Password reset email sent to ${data.email || user.email}`);
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : 'Failed to send reset email');
+    } finally {
+      setResetSending(false);
+    }
+  };
+
+  const handleToggleSuspend = async () => {
+    const newStatus = isActive ? 'SUSPENDED' : 'APPROVED';
+    setSuspending(true);
+    try {
+      const res = await supabase.functions.invoke('user-update', {
+        body: { user_id: user.id, approval_status: newStatus },
+      });
+      if (res.error) throw new Error(res.error.message);
+      const data = res.data as { ok: boolean; error?: string };
+      if (!data?.ok) throw new Error(data?.error || 'Failed to update account status');
+      setLocalApprovalStatus(newStatus);
+      toast.success(newStatus === 'SUSPENDED' ? 'Account suspended' : 'Account reactivated');
+      qc.invalidateQueries({ queryKey: ['admin-access-people'] });
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : 'Failed to update account status');
+    } finally {
+      setSuspending(false);
     }
   };
 
@@ -445,18 +522,34 @@ function UserEditPanel({ user, currentUserId, onClose, onSaved }: UserEditPanelP
             </div>
           </div>
 
-          {/* Account info */}
+          {/* Account Info */}
           <div style={{ marginBottom: 24 }}>
             <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--ds-text-subtle, #6B778C)', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: 10 }}>
               Account Info
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: 'auto 1fr', rowGap: 8, columnGap: 16, fontSize: 13, alignItems: 'center' }}>
               <span style={{ color: 'var(--ds-text-subtle, #6B778C)', fontWeight: 500 }}>Status</span>
-              <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <span style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
                 {isActive
                   ? <Lozenge appearance="success">Active</Lozenge>
                   : <Lozenge appearance="removed">Suspended</Lozenge>}
                 {isSelf && <span style={{ fontSize: 11, color: 'var(--ds-text-subtle, #6B778C)' }}>This is you</span>}
+                {canModify && (
+                  <button
+                    onClick={handleToggleSuspend}
+                    disabled={busyAny}
+                    style={{
+                      background: 'none',
+                      border: `1px solid ${isActive ? 'var(--ds-border-danger, #FF8F73)' : 'var(--ds-border, #EBECF0)'}`,
+                      borderRadius: 3, cursor: busyAny ? 'not-allowed' : 'pointer',
+                      fontSize: 11, fontWeight: 500,
+                      color: isActive ? 'var(--ds-text-danger, #AE2A19)' : 'var(--ds-text-subtle, #6B778C)',
+                      padding: '2px 8px', opacity: busyAny ? 0.5 : 1,
+                    }}
+                  >
+                    {suspending ? '…' : isActive ? 'Suspend' : 'Reactivate'}
+                  </button>
+                )}
               </span>
               <span style={{ color: 'var(--ds-text-subtle, #6B778C)', fontWeight: 500 }}>Joined</span>
               <span style={{ color: 'var(--ds-text, #172B4D)' }}>
@@ -470,6 +563,106 @@ function UserEditPanel({ user, currentUserId, onClose, onSaved }: UserEditPanelP
               </span>
             </div>
           </div>
+
+          {/* Security — only for non-self, non-super_admin */}
+          {canModify && (
+            <div style={{ marginBottom: 24 }}>
+              <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--ds-text-subtle, #6B778C)', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: 10 }}>
+                Security
+              </div>
+
+              {/* Send password reset email */}
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
+                <div>
+                  <div style={{ fontSize: 13, fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>Password reset email</div>
+                  <div style={{ fontSize: 12, color: 'var(--ds-text-subtle, #6B778C)' }}>Send a reset link to {user.email}</div>
+                </div>
+                <Button
+                  appearance="default"
+                  isLoading={resetSending}
+                  isDisabled={busyAny && !resetSending}
+                  onClick={handleResetPassword}
+                >
+                  Send reset
+                </Button>
+              </div>
+
+              {/* Change password inline form */}
+              <div style={{ borderTop: '1px solid var(--ds-border-subtle, #F4F5F7)', paddingTop: 10 }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: pwOpen ? 12 : 0 }}>
+                  <div>
+                    <div style={{ fontSize: 13, fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>Set new password</div>
+                    <div style={{ fontSize: 12, color: 'var(--ds-text-subtle, #6B778C)' }}>Override password without email</div>
+                  </div>
+                  <Button
+                    appearance="subtle"
+                    isDisabled={busyAny && !pwOpen}
+                    onClick={() => { setPwOpen(v => !v); setNewPw(''); setConfirmPw(''); }}
+                  >
+                    {pwOpen ? 'Cancel' : 'Change password'}
+                  </Button>
+                </div>
+
+                {pwOpen && (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                    <div>
+                      <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtle, #6B778C)', marginBottom: 4 }}>
+                        New password
+                      </label>
+                      <div style={{ position: 'relative' }}>
+                        <Textfield
+                          type={showPw ? 'text' : 'password'}
+                          value={newPw}
+                          onChange={e => setNewPw((e.target as HTMLInputElement).value)}
+                          placeholder="Min 8 characters"
+                          isDisabled={pwSaving}
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowPw(v => !v)}
+                          style={{
+                            position: 'absolute', right: 8, top: '50%', transform: 'translateY(-50%)',
+                            background: 'none', border: 'none', cursor: 'pointer',
+                            fontSize: 11, color: 'var(--ds-text-subtle, #6B778C)', padding: 0,
+                          }}
+                        >
+                          {showPw ? 'Hide' : 'Show'}
+                        </button>
+                      </div>
+                    </div>
+                    <div>
+                      <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'var(--ds-text-subtle, #6B778C)', marginBottom: 4 }}>
+                        Confirm password
+                      </label>
+                      <Textfield
+                        type={showPw ? 'text' : 'password'}
+                        value={confirmPw}
+                        onChange={e => setConfirmPw((e.target as HTMLInputElement).value)}
+                        placeholder="Re-enter password"
+                        isDisabled={pwSaving}
+                        isInvalid={confirmPw.length > 0 && newPw !== confirmPw}
+                      />
+                      {confirmPw.length > 0 && newPw !== confirmPw && (
+                        <div style={{ fontSize: 11, color: 'var(--ds-text-danger, #AE2A19)', marginTop: 3 }}>
+                          Passwords do not match
+                        </div>
+                      )}
+                    </div>
+                    <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                      <Button
+                        appearance="primary"
+                        isLoading={pwSaving}
+                        isDisabled={!newPw || newPw !== confirmPw || newPw.length < 8 || pwSaving}
+                        onClick={handleChangePassword}
+                      >
+                        Set password
+                      </Button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
 
         </div>
 
@@ -503,14 +696,14 @@ function UserEditPanel({ user, currentUserId, onClose, onSaved }: UserEditPanelP
             {canDelete ? (
               <button
                 onClick={() => setDeletePhase('confirm')}
-                disabled={saving || deleting}
+                disabled={busyAny}
                 style={{
                   background: 'none', border: 'none',
-                  cursor: (saving || deleting) ? 'not-allowed' : 'pointer',
+                  cursor: busyAny ? 'not-allowed' : 'pointer',
                   display: 'flex', alignItems: 'center', gap: 4,
                   fontSize: 13, color: 'var(--ds-text-danger, #AE2A19)',
                   padding: '4px 8px', borderRadius: 4,
-                  opacity: (saving || deleting) ? 0.5 : 1,
+                  opacity: busyAny ? 0.5 : 1,
                 }}
               >
                 <DeleteIcon label="" size="small" />
@@ -520,11 +713,11 @@ function UserEditPanel({ user, currentUserId, onClose, onSaved }: UserEditPanelP
               <div />
             )}
             <div style={{ display: 'flex', gap: 8 }}>
-              <Button appearance="subtle" onClick={onClose} isDisabled={saving || deleting}>Cancel</Button>
+              <Button appearance="subtle" onClick={onClose} isDisabled={busyAny}>Cancel</Button>
               <Button
                 appearance="primary"
                 isLoading={saving}
-                isDisabled={saving || deleting || isSuperAdmin}
+                isDisabled={busyAny || isSuperAdmin}
                 onClick={handleSave}
               >
                 Save changes
@@ -650,7 +843,7 @@ function PeopleTab() {
                 </td>
               </tr>
             ) : filtered.map(u => {
-              const isActive = !u.approval_status || u.approval_status === 'APPROVED';
+              const isActiveRow = !u.approval_status || u.approval_status === 'APPROVED';
               const modCount = moduleCount(u.module_access);
               return (
                 <tr
@@ -692,7 +885,7 @@ function PeopleTab() {
                     </span>
                   </td>
                   <td style={{ padding: '10px 12px' }}>
-                    {isActive
+                    {isActiveRow
                       ? <Lozenge appearance="success">Active</Lozenge>
                       : <Lozenge appearance="removed">Suspended</Lozenge>}
                   </td>
@@ -736,18 +929,57 @@ function PeopleTab() {
 // ─── InvitationsTab ───────────────────────────────────────────────────────────
 
 function InvitationsTab() {
+  const qc = useQueryClient();
+  const [actionLoading, setActionLoading] = useState<Record<string, 'resend' | 'revoke' | null>>({});
+
   const { data: invites = [], isLoading } = useQuery<PendingInvite[]>({
     queryKey: ['admin-access-invitations'],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('user_invitations')
-        .select('id, email, invited_by, created_at, expires_at, accepted_at')
+        .select('id, email, role, invited_by, created_at, expires_at, accepted_at')
         .order('created_at', { ascending: false });
       if (error) throw error;
       return data || [];
     },
     staleTime: 30_000,
   });
+
+  const handleResend = async (inv: PendingInvite) => {
+    setActionLoading(prev => ({ ...prev, [inv.id]: 'resend' }));
+    try {
+      const res = await supabase.functions.invoke('user-invite-send', {
+        body: {
+          email: inv.email,
+          role: inv.role || 'user',
+          module_access: DEFAULT_MODULE_ACCESS,
+        },
+      });
+      if (res.error) throw new Error(res.error.message);
+      const data = res.data as { ok: boolean; error?: string };
+      if (!data?.ok) throw new Error(data?.error || 'Resend failed');
+      toast.success(`Invitation resent to ${inv.email}`);
+      qc.invalidateQueries({ queryKey: ['admin-access-invitations'] });
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : 'Failed to resend invitation');
+    } finally {
+      setActionLoading(prev => ({ ...prev, [inv.id]: null }));
+    }
+  };
+
+  const handleRevoke = async (inv: PendingInvite) => {
+    setActionLoading(prev => ({ ...prev, [inv.id]: 'revoke' }));
+    try {
+      const { error } = await supabase.from('user_invitations').delete().eq('id', inv.id);
+      if (error) throw error;
+      toast.success(`Invitation for ${inv.email} revoked`);
+      qc.invalidateQueries({ queryKey: ['admin-access-invitations'] });
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : 'Failed to revoke invitation');
+    } finally {
+      setActionLoading(prev => ({ ...prev, [inv.id]: null }));
+    }
+  };
 
   return (
     <div style={{ paddingTop: 16 }}>
@@ -757,16 +989,18 @@ function InvitationsTab() {
         <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 14 }}>
           <thead>
             <tr style={{ borderBottom: '2px solid var(--ds-border, #EBECF0)' }}>
-              {['Email', 'Sent', 'Expires', 'Status'].map(h => (
+              {['Email', 'Sent', 'Expires', 'Status', 'Actions'].map(h => (
                 <th key={h} style={{ textAlign: 'left', padding: '8px 12px', fontWeight: 600, color: 'var(--ds-text-subtle, #6B778C)', fontSize: 12 }}>{h}</th>
               ))}
             </tr>
           </thead>
           <tbody>
             {invites.length === 0 ? (
-              <tr><td colSpan={4} style={{ padding: 32, textAlign: 'center', color: 'var(--ds-text-subtle)' }}>No invitations yet. Use "Invite User" in the People tab to send one.</td></tr>
+              <tr><td colSpan={5} style={{ padding: 32, textAlign: 'center', color: 'var(--ds-text-subtle)' }}>No invitations yet. Use "Invite User" in the People tab to send one.</td></tr>
             ) : invites.map(inv => {
               const expired = new Date(inv.expires_at) < new Date() && !inv.accepted_at;
+              const isPending = !inv.accepted_at && !expired;
+              const loading = actionLoading[inv.id];
               return (
                 <tr key={inv.id} style={{ borderBottom: '1px solid var(--ds-border-subtle, #F4F5F7)' }}>
                   <td style={{ padding: '10px 12px', fontWeight: 500 }}>{inv.email}</td>
@@ -779,6 +1013,42 @@ function InvitationsTab() {
                       <Lozenge appearance="removed">Expired</Lozenge>
                     ) : (
                       <Lozenge appearance="inprogress">Pending</Lozenge>
+                    )}
+                  </td>
+                  <td style={{ padding: '10px 12px' }}>
+                    {inv.accepted_at ? (
+                      <span style={{ fontSize: 12, color: 'var(--ds-text-disabled, #A5ADBA)' }}>—</span>
+                    ) : (
+                      <div style={{ display: 'flex', gap: 6 }}>
+                        {(isPending || expired) && (
+                          <button
+                            onClick={() => handleResend(inv)}
+                            disabled={!!loading}
+                            style={{
+                              background: 'none', border: '1px solid var(--ds-border, #EBECF0)',
+                              borderRadius: 3, padding: '3px 8px', fontSize: 12, fontWeight: 500,
+                              color: 'var(--ds-text, #172B4D)',
+                              cursor: loading ? 'not-allowed' : 'pointer', opacity: loading ? 0.5 : 1,
+                            }}
+                          >
+                            {loading === 'resend' ? '…' : 'Resend'}
+                          </button>
+                        )}
+                        {isPending && (
+                          <button
+                            onClick={() => handleRevoke(inv)}
+                            disabled={!!loading}
+                            style={{
+                              background: 'none', border: '1px solid var(--ds-border-danger, #FF8F73)',
+                              borderRadius: 3, padding: '3px 8px', fontSize: 12, fontWeight: 500,
+                              color: 'var(--ds-text-danger, #AE2A19)',
+                              cursor: loading ? 'not-allowed' : 'pointer', opacity: loading ? 0.5 : 1,
+                            }}
+                          >
+                            {loading === 'revoke' ? '…' : 'Revoke'}
+                          </button>
+                        )}
+                      </div>
                     )}
                   </td>
                 </tr>
