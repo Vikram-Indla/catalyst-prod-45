@@ -178,6 +178,7 @@ function InviteUserModal({ onClose }: { onClose: () => void }) {
               value={role}
               onChange={opt => setRole(opt as { label: string; value: string } | null)}
               menuPortalTarget={document.body}
+              styles={{ menuPortal: (base) => ({ ...base, zIndex: 10001 }) }}
             />
           </div>
           <div>
