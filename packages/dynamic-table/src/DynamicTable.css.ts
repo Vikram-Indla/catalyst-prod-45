@@ -388,3 +388,27 @@ export const paginationBarPosition = styleVariants({
   center: { justifyContent: "center" },
   end: { justifyContent: "flex-end" },
 });
+
+// ---------- selection action strap ----------
+//
+// Pinned to the viewport bottom so it stays visible while the user
+// scrolls a long page or a tall table. `pointer-events: none` on the
+// wrapper + `auto` on the strap itself means clicks pass through the
+// empty surrounding space to whatever's behind it (typically more
+// table rows). The high z-index keeps the strap above modals' backdrops
+// only if those backdrops aren't portaled above it; if the consumer
+// opens a full-page modal, the strap rightly sits below it.
+export const selectionStrapWrapper = style({
+  position: "fixed",
+  left: 0,
+  right: 0,
+  bottom: space[24],
+  display: "flex",
+  justifyContent: "center",
+  pointerEvents: "none",
+  zIndex: 1000,
+});
+
+export const selectionStrap = style({
+  pointerEvents: "auto",
+});

@@ -105,7 +105,24 @@ import {
   XCircle,
   Zap,
 } from "lucide-react";
-import type { LucideIcon } from "lucide-react";
+import type { ComponentType } from "react";
+
+import {
+  ChangeStatusIcon,
+  CrossIcon,
+  EditIcon,
+  EyeSolidIcon,
+  MouseSelectionIcon,
+  TrashSolidIcon,
+} from "./customSvgs";
+
+// Lucide's forwardRef components and our custom function components
+// have slightly different React-typing surfaces (Booleanish vs boolean
+// on `aria-hidden`, propTypes shape, etc.) that TS strict mode rejects
+// when unioned. The registry key shape is fully captured by `as const`
+// below, which is all `IconName` needs — values are runtime-checked
+// at the call site in `Icon.tsx` instead.
+type IconComponent = ComponentType<any>;
 
 export const iconRegistry = {
   "alert-circle": AlertCircle,
@@ -205,7 +222,14 @@ export const iconRegistry = {
   video: Video,
   "x-circle": XCircle,
   zap: Zap,
-} as const satisfies Record<string, LucideIcon>;
+  // ---------- Catylast brand glyphs (filled, currentColor) ----------
+  "change-status": ChangeStatusIcon,
+  cross: CrossIcon,
+  edit: EditIcon,
+  "eye-solid": EyeSolidIcon,
+  "mouse-selection": MouseSelectionIcon,
+  "trash-solid": TrashSolidIcon,
+} as const satisfies Record<string, IconComponent>;
 
 export type IconName = keyof typeof iconRegistry;
 

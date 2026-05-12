@@ -38,7 +38,7 @@ Built on TanStack Table v8 for the headless state engine. We own all markup, sty
 
 **Skip it for:** purely visual layouts (use \`Box\` / \`Stack\`), simple key-value displays (use \`DescriptionList\`), or charts (use a chart component).
 
-Every feature is opt-in via flags — none are forced. The minimum signature is two props: \`columns\` and \`data\`. Sorting and column resizing are on by default; selection, expansion, column visibility, and pinning are separate flags.`;
+The minimum signature is two props: \`columns\` and \`data\`. **Sorting, column resizing, and multi-row selection (with the floating action strap) are on by default** — pass \`enableSelection={false}\` to suppress selection on read-only surfaces. Expansion, column visibility, and pinning are separate opt-in flags.`;
 
 const meta: Meta<typeof DynamicTable> = {
   title: "Data/DynamicTable",
@@ -125,13 +125,14 @@ export const Selection: Story = {
     docs: {
       description: {
         story:
-          'Setting `enableSelection` injects a leading checkbox column. The header checkbox toggles all rows; partial selection shows an indeterminate state announced as `aria-checked="mixed"`. Subscribe to `onSelectionChange` for the array of selected row originals.',
+          'Setting `enableSelection` injects a leading checkbox column. The header checkbox toggles all rows; partial selection shows an indeterminate state announced as `aria-checked="mixed"`. Subscribe to `onSelectionChange` for the array of selected row originals. Once one or more rows are selected, the floating dark **action strap** slides up from the bottom of the table — its "Select All" toggles every row and the trailing close icon clears selection. Wire `onEditFields` / `onChangeStatus` / `onWatchOptions` / `onDelete` to give those buttons real behaviour; pass `showSelectionStrap={false}` to suppress the strap entirely.',
       },
       source: { code: selectionSnippet },
     },
   },
   render: function SelectionStory() {
     const [count, setCount] = useState(0);
+    const [lastAction, setLastAction] = useState<string | null>(null);
     return (
       <div style={wrapStyleMid}>
         <div
@@ -142,12 +143,28 @@ export const Selection: Story = {
           }}
         >
           Selected: <strong>{count}</strong>
+          {lastAction && (
+            <>
+              {" · Last action: "}
+              <strong>{lastAction}</strong>
+            </>
+          )}
         </div>
         <DynamicTable
           columns={basicColumns}
           data={flatIssues}
           enableSelection
           onSelectionChange={(rows) => setCount(rows.length)}
+          onEditFields={(rows) =>
+            setLastAction(`Edit fields (${rows.length})`)
+          }
+          onChangeStatus={(rows) =>
+            setLastAction(`Change status (${rows.length})`)
+          }
+          onWatchOptions={(rows) =>
+            setLastAction(`Watch options (${rows.length})`)
+          }
+          onDelete={(rows) => setLastAction(`Delete (${rows.length})`)}
         />
       </div>
     );

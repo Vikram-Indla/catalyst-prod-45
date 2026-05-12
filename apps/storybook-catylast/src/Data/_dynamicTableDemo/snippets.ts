@@ -54,8 +54,9 @@ export const pinnedColumnsSnippet = `// Pinned columns stay visible during horiz
   pinnedColumns={["summary"]}    /* one or more column IDs */
 />`;
 
-export const selectionSnippet = `// Add a leading checkbox column for multi-row selection. The header
-// checkbox toggles all rows. Partial selection shows an indeterminate
+export const selectionSnippet = `// Multi-row selection is ON BY DEFAULT — every table ships with a
+// leading checkbox column and the floating action strap. The header
+// checkbox toggles all rows; partial selection shows an indeterminate
 // state announced as \`aria-checked="mixed"\`.
 
 const [selected, setSelected] = useState<Issue[]>([]);
@@ -63,8 +64,19 @@ const [selected, setSelected] = useState<Issue[]>([]);
 <DynamicTable<Issue>
   columns={columns}
   data={issues}
-  enableSelection
   onSelectionChange={setSelected}
+  // Wire bulk-action handlers — each receives the array of selected rows
+  onEditFields={(rows) => editFields(rows)}
+  onChangeStatus={(rows) => changeStatus(rows)}
+  onWatchOptions={(rows) => watch(rows)}
+  onDelete={(rows) => del(rows)}
+/>
+
+// Opt out for read-only / single-select pickers / audit logs:
+<DynamicTable<Issue>
+  columns={columns}
+  data={issues}
+  enableSelection={false}
 />`;
 
 export const expansionSnippet = `// Hierarchical row expansion. Tell the table how to find a row's children;

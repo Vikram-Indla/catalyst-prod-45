@@ -19,6 +19,7 @@ import type {
 } from "@tanstack/react-table";
 import { Icon } from "@catylast/icons";
 import {
+  ActionStrap,
   Checkbox,
   IconButton,
   Menu,
@@ -28,6 +29,7 @@ import {
   MenuTrigger,
   Pagination,
 } from "@catylast/primitives";
+import type { ActionStrapItem } from "@catylast/primitives";
 import { useEffect, useMemo, useState } from "react";
 import type { CSSProperties, ReactNode } from "react";
 
@@ -84,7 +86,12 @@ export type DynamicTableProps<TData> = {
   enableSorting?: boolean;
   /** Allow per-column resize. Drag the right edge of a header. */
   enableColumnResizing?: boolean;
-  /** Add a leading checkbox column for multi-row selection. */
+  /**
+   * Add a leading checkbox column for multi-row selection. **On by
+   * default** — pass `false` to suppress when the surface explicitly
+   * doesn't want bulk operations (read-only audit logs, single-select
+   * pickers, etc.).
+   */
   enableSelection?: boolean;
   /** Enable hierarchical row expansion. Requires `getRowChildren`. */
   enableExpansion?: boolean;
@@ -132,6 +139,25 @@ export type DynamicTableProps<TData> = {
   /** Called when a row is clicked (excluding clicks on the checkbox or expand toggle). */
   onRowClick?: (row: TData) => void;
   /**
+   * Show the floating bulk-action strap when one or more rows are
+   * selected. Set to `false` to suppress it (useful when the consumer
+   * wants to render its own selection toolbar). @default true
+   */
+  showSelectionStrap?: boolean;
+  /**
+   * Override the "Select all" handler. Default: toggles all rows in
+   * the current page selected.
+   */
+  onSelectAll?: (rows: TData[]) => void;
+  /** Called when the user clicks "Edit fields" in the selection strap. */
+  onEditFields?: (rows: TData[]) => void;
+  /** Called when the user clicks "Change status" in the selection strap. */
+  onChangeStatus?: (rows: TData[]) => void;
+  /** Called when the user clicks "Watch options" in the selection strap. */
+  onWatchOptions?: (rows: TData[]) => void;
+  /** Called when the user clicks "Delete" in the selection strap. */
+  onDelete?: (rows: TData[]) => void;
+  /**
    * Inline action buttons rendered in the first column of each row, visible
    * on hover. Use it for per-row actions like "+ Add child" or a kebab menu.
    * Clicks inside the actions slot do NOT trigger `onRowClick`.
@@ -172,7 +198,7 @@ export function DynamicTable<TData>(props: DynamicTableProps<TData>) {
     density = "standard",
     enableSorting = true,
     enableColumnResizing = true,
-    enableSelection = false,
+    enableSelection = true,
     enableExpansion = false,
     expanded: expandedProp,
     onExpandedChange: onExpandedChangeProp,
@@ -187,6 +213,12 @@ export function DynamicTable<TData>(props: DynamicTableProps<TData>) {
     loadingContent,
     onSelectionChange,
     onRowClick,
+    showSelectionStrap = true,
+    onSelectAll,
+    onEditFields,
+    onChangeStatus,
+    onWatchOptions,
+    onDelete,
     renderRowActions,
     createLabel,
     onCreate,
@@ -314,6 +346,22 @@ export function DynamicTable<TData>(props: DynamicTableProps<TData>) {
     return cols;
   }, [columns, enableExpansion, enableSelection, renderRowActions]);
 
+  // Pinning resolution — when the consumer pins any column we MUST
+  // also pin the auto-injected `_select` column to the front of the
+  // list. Otherwise the first user-pinned column sits at `left: 0`
+  // (sticky) and overlaps the unpinned selection cell which lives at
+  // table-flow position 0; on horizontal scroll the selection cell
+  // scrolls away entirely and the checkbox column appears to vanish.
+  // No-op when nothing is pinned (TanStack falls back to default flow
+  // for all columns) or when selection is off.
+  const computedPinning = useMemo(() => {
+    if (!pinnedColumns || pinnedColumns.length === 0) return {};
+    const left = enableSelection
+      ? [SELECTION_COL_ID, ...pinnedColumns]
+      : pinnedColumns;
+    return { left };
+  }, [enableSelection, pinnedColumns]);
+
   const table = useReactTable<TData>({
     data,
     columns: finalColumns,
@@ -323,7 +371,7 @@ export function DynamicTable<TData>(props: DynamicTableProps<TData>) {
       rowSelection,
       columnSizing,
       columnVisibility,
-      columnPinning: pinnedColumns ? { left: pinnedColumns } : {},
+      columnPinning: computedPinning,
       ...(paginationEnabled && { pagination: paginationState }),
     },
     enableRowSelection: enableSelection,
@@ -367,6 +415,84 @@ export function DynamicTable<TData>(props: DynamicTableProps<TData>) {
   const showToolbar = Boolean(
     enableColumnVisibility || toolbarLeft || toolbarRight,
   );
+
+  // Selection strap state — derived from the live table model so the
+  // count + handlers stay in sync with actual selection. The default
+  // "Select all" toggles every page row selected; consumers can
+  // override with `onSelectAll` (e.g. to load every server-side row,
+  // not just the page).
+  const selectedRows = table.getSelectedRowModel().rows;
+  const selectedCount = selectedRows.length;
+  const selectedOriginals = useMemo(
+    () => selectedRows.map((r) => r.original),
+    [selectedRows],
+  );
+  const showStrap =
+    enableSelection && showSelectionStrap && selectedCount > 0;
+  // Drives the Select-All / Unselect-All toggle in the strap. When
+  // every row is already selected, the same button label and click
+  // handler invert so the user has a one-tap way back to a clean
+  // selection state without hunting for the close icon.
+  const allSelected = enableSelection && table.getIsAllRowsSelected();
+
+  const strapActions: ActionStrapItem[] = useMemo(() => {
+    const items: ActionStrapItem[] = [
+      {
+        id: "select-all",
+        label: allSelected ? "Unselect All" : "Select All",
+        icon: "mouse-selection",
+        onClick: () => {
+          if (onSelectAll) {
+            onSelectAll(selectedOriginals);
+          } else {
+            table.toggleAllRowsSelected(!allSelected);
+          }
+        },
+      },
+      {
+        id: "edit-fields",
+        label: "Edit fields",
+        icon: "edit",
+        ...(onEditFields && {
+          onClick: () => onEditFields(selectedOriginals),
+        }),
+      },
+      {
+        id: "change-status",
+        label: "Change status",
+        icon: "change-status",
+        ...(onChangeStatus && {
+          onClick: () => onChangeStatus(selectedOriginals),
+        }),
+      },
+      {
+        id: "watch-options",
+        label: "Watch options",
+        icon: "eye-solid",
+        ...(onWatchOptions && {
+          onClick: () => onWatchOptions(selectedOriginals),
+        }),
+      },
+      {
+        id: "delete",
+        label: "Delete",
+        icon: "trash-solid",
+        ...(onDelete && {
+          onClick: () => onDelete(selectedOriginals),
+        }),
+      },
+    ];
+    return items;
+  }, [
+    table,
+    allSelected,
+    selectedOriginals,
+    onSelectAll,
+    onEditFields,
+    onChangeStatus,
+    onWatchOptions,
+    onDelete,
+  ]);
 
   const toggleableColumns = enableColumnVisibility
     ? table
@@ -600,6 +726,16 @@ export function DynamicTable<TData>(props: DynamicTableProps<TData>) {
             </div>
           );
         })()}
+      {showStrap && (
+        <div className={styles.selectionStrapWrapper}>
+          <ActionStrap
+            className={styles.selectionStrap}
+            count={selectedCount}
+            actions={strapActions}
+            onDismiss={() => table.resetRowSelection()}
+          />
+        </div>
+      )}
     </div>
   );
 }

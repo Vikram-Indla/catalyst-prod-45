@@ -20,11 +20,11 @@ import * as DynamicTableStories from "./DynamicTable.stories";
 </Subtitle>
 
 `DynamicTable` is the workhorse for every tabular surface in Catylast: issue
-lists, work-item trees, settings tables, audit logs, dashboards. Every
-feature is **opt-in** via flags — none are forced. The minimum signature is
-two props: `columns` and `data`. Sorting and column resizing are on by
-default; selection, expansion, column visibility, and pinning are separate
-flags.
+lists, work-item trees, settings tables, audit logs, dashboards. The minimum
+signature is two props: `columns` and `data`. **Sorting, column resizing,
+and multi-row selection (with the floating action strap) are on by default**
+— pass `enableSelection={false}` to suppress selection on read-only surfaces.
+Expansion, column visibility, and pinning are separate opt-in flags.
 
 Cells aren't strings — they're render functions. Compose `Badge`, `Avatar`,
 `Select`, `Combobox`, progress bars, links, or any custom component. The
@@ -180,7 +180,9 @@ sticky and scrolling regions.
 
 ## Multi-row selection
 
-Set `enableSelection` to inject a leading checkbox column. The header
+**Selection is on by default.** Every `DynamicTable` ships with a leading
+checkbox column and a floating dark **action strap** that slides up from
+the viewport bottom whenever one or more rows are selected. The header
 checkbox toggles all rows; partial selection shows an indeterminate state
 announced as `aria-checked="mixed"`. Subscribe to `onSelectionChange` for
 the array of selected row originals.
@@ -189,11 +191,71 @@ the array of selected row originals.
 
 <Source
   language="tsx"
+  code={`// Default — checkbox column + action strap are auto-injected
+<DynamicTable
+  columns={columns}
+  data={issues}
+  onSelectionChange={(rows) => setSelected(rows)}
+/>`}
+/>
+
+### Action strap
+
+The strap is the `ActionStrap` primitive from `@catylast/primitives` —
+DynamicTable wires it up for you with five slots: **Select All**, **Edit
+fields**, **Change status**, **Watch options**, and **Delete**. The
+trailing close icon clears the selection. Each label is paired with a
+brand glyph from `@catylast/icons`.
+
+- **Select All** is wired by default — clicking it selects every row in
+  the table. When every row is already selected, the same button label
+  flips to **Unselect All** and a click clears the selection.
+- The other four buttons are visual until you hand them a callback. Pass
+  `onEditFields` / `onChangeStatus` / `onWatchOptions` / `onDelete` and
+  each handler receives the array of selected row originals.
+
+<Source
+  language="tsx"
   code={`<DynamicTable
   columns={columns}
   data={issues}
-  enableSelection
-  onSelectionChange={(rows) => setSelected(rows)}
+  onSelectionChange={setSelected}
+  onEditFields={(rows) => openBulkEditor(rows)}
+  onChangeStatus={(rows) => openStatusPicker(rows)}
+  onWatchOptions={(rows) => watchAll(rows)}
+  onDelete={(rows) => confirmDelete(rows)}
+  // Optional: override "Select All" (e.g. to load every server-side row,
+  // not just the visible page)
+  onSelectAll={(currentlySelected) => loadAndSelectEverything()}
+/>`}
+/>
+
+### Opting out
+
+Pass `enableSelection={false}` to suppress both the checkbox column and
+the strap entirely. Use this for read-only audit logs, single-select
+pickers, or anywhere bulk operations don't apply.
+
+<Source
+  language="tsx"
+  code={`<DynamicTable
+  columns={columns}
+  data={issues}
+  enableSelection={false}
+/>`}
+/>
+
+If you want the checkbox column but a custom toolbar instead of the
+built-in strap, keep selection on and pass `showSelectionStrap={false}`
+— then render your own UI from `onSelectionChange`.
+
+<Source
+  language="tsx"
+  code={`<DynamicTable
+  columns={columns}
+  data={issues}
+  showSelectionStrap={false}
+  onSelectionChange={(rows) => setMyOwnToolbarRows(rows)}
 />`}
 />
 
@@ -530,9 +592,10 @@ DynamicTable just composes it inside its footer slot. See
 
 ### Read-only
 
-All interactive features are opt-in. Omit `enableSelection`,
-`enableColumnVisibility`, `renderCreator`, and `renderRowActions` for a
-purely static, read-only display.
+For a purely static, read-only display: pass `enableSelection={false}`
+(selection is the one feature that's *on* by default — everything else
+is opt-in), and skip `enableColumnVisibility`, `renderCreator`, and
+`renderRowActions`.
 
 <Canvas of={DynamicTableStories.ReadOnly} />
 
