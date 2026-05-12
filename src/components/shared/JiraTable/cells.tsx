@@ -698,3 +698,21 @@ export function makeLabelsCell(getLabels: (row: any) => string[] | null) {
     );
   };
 }
+
+// ─── Fix Versions Cell ─────────────────────────────────────────────────────────
+// Renders fix versions as comma-separated plain text. Fix versions are not
+// inline-editable in this column cell — editing happens via the bulk wizard
+// or detail panel. Matches Jira's list column display.
+export function makeFixVersionsCell(getFixVersions: (row: any) => string[] | null | undefined) {
+  return function FixVersionsCell({ row }: CellProps<any>) {
+    const versions = getFixVersions(row);
+    if (!versions || versions.length === 0) {
+      return <span style={{ color: token('color.text.subtlest', '#7A869A') }}>—</span>;
+    }
+    return (
+      <span style={{ color: token('color.text', '#172B4D'), fontSize: 14, fontWeight: 400 }}>
+        {versions.join(', ')}
+      </span>
+    );
+  };
+}

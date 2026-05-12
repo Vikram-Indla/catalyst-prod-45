@@ -86,6 +86,7 @@ import {
   makeParentEditCell,
   makeLabelsCell,
   makeLabelsEditCell,
+  makeFixVersionsCell,
   makeDateEditCell,
   makeRowActionsCell,
   FlagsHost,
@@ -197,6 +198,7 @@ export interface BacklogItem {
   due_date: string | null;
   comment_count: number | null;
   labels: string[] | null;
+  fix_versions: string[] | null;
 }
 
 /* ─── Status mapping (shared with Story Backlog) ────────────────────────── */
@@ -1995,6 +1997,15 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
         getLabels: (r) => r.labels,
         onChange: (row, next) => updateField.mutate({ id: row.id, source: row.source, patch: { labels: next } }),
       }),
+    },
+    {
+      id: 'fix_versions',
+      label: 'Fix versions',
+      width: 10,
+      sortable: false,
+      defaultVisible: false,
+      accessor: (r: BacklogItem) => (r.fix_versions || []).join(', '),
+      cell: makeFixVersionsCell((r: BacklogItem) => r.fix_versions),
     },
     {
       id: 'created',
