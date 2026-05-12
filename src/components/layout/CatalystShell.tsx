@@ -455,11 +455,12 @@ function CatalystShellContent() {
       );
     }
 
-    // Admin routes use AdminSidebarV2
+    // Admin routes use AdminSidebarV2 — start collapsed (64px icon-only) so
+    // content gets the full available width. User can expand via the toggle.
     if (location.pathname.startsWith('/admin')) {
       return (
         <AdminSidebarV2
-          expanded={sidebarExpanded}
+          expanded={false}
           onToggle={cycleSidebarState}
         />
       );
