@@ -76,7 +76,16 @@ const getAllPaths = () => {
   return paths;
 };
 
-export function AdminSidebarV2({ expanded, onToggle, className }: AdminSidebarV2Props) {
+export function AdminSidebarV2({ expanded: initialExpanded, onToggle, className }: AdminSidebarV2Props) {
+  // Local state so the sidebar can expand/collapse independently of the
+  // global sidebarExpanded context (which defaults to true on non-admin routes).
+  const [expanded, setExpanded] = useState(initialExpanded);
+
+  const handleToggle = () => {
+    setExpanded(prev => !prev);
+    onToggle();
+  };
+
   const location = useLocation();
   const [searchQuery, setSearchQuery] = useState('');
   // Pinned items — must be valid registered routes (no dead links)
@@ -192,7 +201,7 @@ export function AdminSidebarV2({ expanded, onToggle, className }: AdminSidebarV2
 
         {/* Collapse toggle */}
         <button
-          onClick={onToggle}
+          onClick={handleToggle}
           aria-label={expanded ? 'Collapse sidebar' : 'Expand sidebar'}
           onMouseEnter={() => setHoveredPath('__toggle')}
           onMouseLeave={() => setHoveredPath(null)}
