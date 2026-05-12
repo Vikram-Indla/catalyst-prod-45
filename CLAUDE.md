@@ -27,6 +27,14 @@ All Catalyst team members have access to **184 shared personas** (committed to `
 
 ---
 
+## 2026-05-12 — Data model split: user_roles (system) vs user_product_roles (product) — ALWAYS fetch both for admin pages
+**Surface:** /admin/access, /admin/users, useUsers hook, any admin context showing user roles
+**Pattern:** User complained "role values are wrong" on /admin/access page. RCA trace: AdminGuard (permission gate) checks `user_roles` table for system roles (admin, program_manager, team_lead, user). useUsers hook (admin page data layer) checked ONLY `user_product_roles` table (product roles: super_admin, product_manager, product_owner, etc.). This split source-of-truth meant admin page never showed system-level roles — showing only product roles while the gate used system roles, creating silent incompleteness. Jira-compare / design-critique looking at the UI alone would never catch this because it's a query-layer bug: the hook ran successfully but returned incomplete data. Fixed by updating `useUsers.ts` to fetch from BOTH tables and merge `system_role` into `UserProfile`. The two-tier model is deliberate and correct; the bug was querying only one tier.
+**Rule:** Catalyst has two role tables by design: (1) `user_roles` stores system-level access control (admin, program_manager, team_lead, user), (2) `user_product_roles` stores product-level capabilities (super_admin, product_manager, product_owner). When building admin views that show user permissions, ALWAYS query BOTH tables and expose both role types in the UserProfile data object. Set `system_role: string | null` in the data model alongside `roles: { role_name: string }[]`. Before calling a query layer complete, spot-check: does this hook load data from all tables that `useUserRole` (the permission gate) checks? If they differ, it's a sync bug waiting to happen.
+**Severity:** P1 (silent data incompleteness — no console errors, UI works, but shows wrong scope of roles)
+
+---
+
 ## 2026-05-12 — design-critique must audit 360° holistic layout, not just content area in isolation
 **Surface:** Any admin page, any module page — applies to ALL design-critique runs
 **Pattern:** The design-critique of `/admin/access` scored content quality (tables, tabs, modal) but completely missed that the admin module renders its own independent 240px-wide sidebar NEXT TO the Catalyst global nav, creating a double-sidebar that pushes content to x=512px (31% of viewport consumed by navigation chrome). Regular Catalyst pages start content at x=296px. The 216px dead left gutter was invisible to a critique that only looked at the content panel.
