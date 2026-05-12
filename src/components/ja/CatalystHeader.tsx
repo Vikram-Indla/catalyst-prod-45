@@ -151,19 +151,19 @@ export function CatalystHeader() {
             <Link
               to="/"
               aria-label="Catalyst home"
-              style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', opacity: 1, gap: '6px' }}
+              style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', opacity: 1, gap: '4px' }}
             >
               <img
                 src={isDark ? logoMarkDark : logoMarkLight}
                 alt="Catalyst"
-                style={{ height: '28px', width: '28px', flexShrink: 0 }}
+                style={{ height: '24px', width: '24px', flexShrink: 0 }}
               />
               <span style={{
-                fontSize: '24px',
+                fontSize: '16px',
                 fontWeight: 500,
                 fontFamily: 'Inter, sans-serif',
                 color: isDark ? '#CECFD2' : '#101214',
-                letterSpacing: '-0.5px'
+                letterSpacing: '-0.4px'
               }}>
                 Catalyst
               </span>
