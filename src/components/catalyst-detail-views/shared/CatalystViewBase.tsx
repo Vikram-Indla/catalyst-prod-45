@@ -320,7 +320,7 @@ export function CatalystViewBase({
   const handleBack = useCallback(() => {
     if (fullPageMode) {
       if (projectKey) {
-        navigate(`/project-hub/${projectKey}/list`);
+        navigate(projectListHref);
       } else {
         navigate(-1);
       }
