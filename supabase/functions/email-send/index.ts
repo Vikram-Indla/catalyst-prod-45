@@ -8,9 +8,9 @@
 // Effects: POST https://api.resend.com/emails  +  INSERT INTO public.email_log
 // Returns: { ok: true, message_id, email_log_id } | { ok: false, error, email_log_id? }
 //
-// Phase 1B Step 1B.4 — smoke version. From-address is hardcoded to onboarding@resend.dev
-// (Resend test mode — only delivers to the verified account email). Phase 2 switches to
-// a real sending domain once DNS is verified.
+// Phase 2 — ksa-catalyst.com domain verified in Resend (2026-05-12).
+// FROM_EMAIL updated from onboarding@resend.dev to noreply@ksa-catalyst.com
+// so invitations can be delivered to any recipient (not just the Resend account owner).
 
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 const serve = (handler: (req: Request) => Response | Promise<Response>) => Deno.serve(handler);
@@ -21,7 +21,7 @@ const corsHeaders = {
 };
 
 const FROM_NAME = 'Catalyst';
-const FROM_EMAIL = 'onboarding@resend.dev';
+const FROM_EMAIL = 'noreply@ksa-catalyst.com';
 
 interface EmailSendRequest {
   to: string;
