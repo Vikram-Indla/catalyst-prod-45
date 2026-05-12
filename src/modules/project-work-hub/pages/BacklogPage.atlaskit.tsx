@@ -89,6 +89,7 @@ import {
   makeFixVersionsCell,
   makeDateEditCell,
   makeRowActionsCell,
+  makeRowMenuCell,
   FlagsHost,
   flag,
   StatusPill,

@@ -13,9 +13,11 @@ import ReactDOM from 'react-dom';
 import Avatar from '@atlaskit/avatar';
 import CommentIcon from '@atlaskit/icon/glyph/comment';
 import DragHandleIcon from '@atlaskit/icon/glyph/drag-handle';
+import MoreIcon from '@atlaskit/icon/glyph/more';
 import { token } from '@atlaskit/tokens';
 import AkChevronRightIcon from '@atlaskit/icon/glyph/chevron-right';
 import AkChevronDownIcon from '@atlaskit/icon/glyph/chevron-down';
+import { DropdownMenu, DropdownItem, DropdownItemGroup } from '@atlaskit/dropdown-menu';
 import type { CellProps } from './types';
 
 // ─── Type Icon Cell ────────────────────────────────────────────────────────
@@ -53,6 +55,97 @@ export function makeDragHandleCell(isDragEnabled: () => boolean) {
       >
         <DragHandleIcon label="" size="small" />
       </span>
+    );
+  };
+}
+
+// ─── Row Menu Cell ─────────────────────────────────────────────────────────
+// Row-level actions menu (⋯ more-actions button). Visible on row hover only.
+// Caller provides action handlers (onOpen, onMove, onDelete).
+export function makeRowMenuCell({
+  onOpen,
+  onMove,
+  onDelete,
+}: {
+  onOpen?: (row: any) => void;
+  onMove?: (row: any) => void;
+  onDelete?: (row: any) => void;
+}) {
+  return function RowMenuCell({ row }: CellProps<any>) {
+    return (
+      <DropdownMenu
+        trigger={({ triggerRef, isOpen }) => (
+          <button
+            ref={triggerRef}
+            type="button"
+            aria-label="More actions"
+            className="jira-row-menu-trigger"
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              width: 32,
+              height: 32,
+              padding: 0,
+              border: 'none',
+              borderRadius: 3,
+              background: 'transparent',
+              color: token('color.text.subtle', '#42526E'),
+              cursor: 'pointer',
+              opacity: 0,
+              transition: 'opacity 120ms ease, background 100ms ease',
+            }}
+            onMouseEnter={(e) => {
+              (e.currentTarget as HTMLElement).style.background = token(
+                'color.background.neutral.subtle.hovered',
+                '#F4F5F7'
+              );
+            }}
+            onMouseLeave={(e) => {
+              (e.currentTarget as HTMLElement).style.background = 'transparent';
+            }}
+          >
+            <MoreIcon label="" size="small" />
+          </button>
+        )}
+      >
+        <DropdownItemGroup>
+          {onOpen && (
+            <DropdownItem
+              onClick={(e) => {
+                e.preventDefault();
+                onOpen(row);
+              }}
+            >
+              Open
+            </DropdownItem>
+          )}
+          {onMove && (
+            <DropdownItem
+              onClick={(e) => {
+                e.preventDefault();
+                onMove(row);
+              }}
+            >
+              Move to...
+            </DropdownItem>
+          )}
+        </DropdownItemGroup>
+        {onDelete && (
+          <DropdownItemGroup>
+            <DropdownItem
+              onClick={(e) => {
+                e.preventDefault();
+                onDelete(row);
+              }}
+            >
+              <span style={{ color: 'var(--ds-text-danger, #AE2A19)' }}>
+                Delete
+              </span>
+            </DropdownItem>
+          </DropdownItemGroup>
+        )}
+      </DropdownMenu>
     );
   };
 }

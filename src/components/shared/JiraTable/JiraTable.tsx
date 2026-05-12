@@ -521,6 +521,10 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
       .jira-table-grid table tbody > tr:hover .jira-drag-handle {
         visibility: visible;
       }
+      /* Row menu: hidden by default, visible on row hover. */
+      .jira-table-grid table tbody > tr:hover .jira-row-menu-trigger {
+        opacity: 1;
+      }
       /* ── Round H additions ─────────────────────────────────────────
          Sticky header + resize handle. The scroll container is the table
          viewport (.jira-table-viewport); position: sticky references
