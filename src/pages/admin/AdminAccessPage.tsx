@@ -366,9 +366,11 @@ function UserEditPanel({ user, currentUserId, onClose, onSaved }: UserEditPanelP
         body: { userId: user.id },
       });
       if (res.error) throw new Error(res.error.message);
-      const data = res.data as { ok: boolean; email?: string; error?: string };
+      const data = res.data as { ok: boolean; email?: string; error?: string; message_id?: string; email_log_id?: string };
       if (!data?.ok) throw new Error(data?.error || 'Failed to send reset email');
-      toast.success(`Password reset email sent to ${data.email || user.email}`);
+      const recipient = data.email || user.email;
+      const ref = data.message_id ? ` (ref: ${data.message_id.slice(0, 8)})` : '';
+      toast.success(`Password reset email sent to ${recipient}${ref}`);
     } catch (e) {
       toast.error(e instanceof Error ? e.message : 'Failed to send reset email');
     } finally {
