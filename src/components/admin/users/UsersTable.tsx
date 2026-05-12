@@ -850,7 +850,7 @@ export const UsersTable = memo(function UsersTable({ users, isLoading }: UsersTa
                       <SortIcon column="location" />
                     </div>
                   </th>
-                  <th 
+                  <th
                     className="text-left py-3 px-3 text-xs font-medium text-muted-foreground cursor-pointer hover:text-foreground transition-colors select-none"
                     onClick={() => handleSort('ctc')}
                   >
@@ -858,6 +858,9 @@ export const UsersTable = memo(function UsersTable({ users, isLoading }: UsersTa
                       CTC (SAR)
                       <SortIcon column="ctc" />
                     </div>
+                  </th>
+                  <th className="text-left py-3 px-3 text-xs font-medium text-muted-foreground select-none">
+                    System Role
                   </th>
                   <th className="text-right py-3 px-3 text-xs font-medium text-muted-foreground">Actions</th>
                 </tr>
@@ -1103,6 +1106,13 @@ export const UsersTable = memo(function UsersTable({ users, isLoading }: UsersTa
                           });
                         }}
                       />
+                    </td>
+                    <td className="py-2 px-3">
+                      {user.system_role ? (
+                        <Lozenge appearance="default">{user.system_role}</Lozenge>
+                      ) : (
+                        <span className="text-xs text-muted-foreground">—</span>
+                      )}
                     </td>
                     <td className="py-3 px-3">
                       <div className="flex items-center justify-end gap-2">
