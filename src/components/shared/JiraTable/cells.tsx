@@ -12,12 +12,12 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import Avatar from '@atlaskit/avatar';
 import CommentIcon from '@atlaskit/icon/glyph/comment';
-import DragHandleIcon from '@atlaskit/icon/glyph/drag-handle';
+import DragHandleIcon from '@atlaskit/icon/glyph/drag-handler';
 import MoreIcon from '@atlaskit/icon/glyph/more';
 import { token } from '@atlaskit/tokens';
 import AkChevronRightIcon from '@atlaskit/icon/glyph/chevron-right';
 import AkChevronDownIcon from '@atlaskit/icon/glyph/chevron-down';
-import { DropdownMenu, DropdownItem, DropdownItemGroup } from '@atlaskit/dropdown-menu';
+import DropdownMenu, { DropdownItem, DropdownItemGroup } from '@atlaskit/dropdown-menu';
 import type { CellProps } from './types';
 
 // ─── Type Icon Cell ────────────────────────────────────────────────────────
@@ -74,8 +74,9 @@ export function makeRowMenuCell({
   return function RowMenuCell({ row }: CellProps<any>) {
     return (
       <DropdownMenu
-        trigger={({ triggerRef, isOpen }) => (
+        trigger={({ triggerRef, ...triggerProps }) => (
           <button
+            {...triggerProps}
             ref={triggerRef}
             type="button"
             aria-label="More actions"

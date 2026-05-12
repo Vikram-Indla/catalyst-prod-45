@@ -32,6 +32,9 @@ export {
   makeTypeIconCell,
   makeCaretCell,
   makeLabelsCell,
+  makeFixVersionsCell,
+  makeDragHandleCell,
+  makeRowMenuCell,
 } from './cells';
 export type {
   AssigneeCellInput,

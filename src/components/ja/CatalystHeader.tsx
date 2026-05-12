@@ -15,7 +15,8 @@ import { Link } from 'react-router-dom';
 import { useSyncExternalStore } from 'react';
 import { useCatalystContext } from '@/contexts/CatalystContext';
 import { useNavBreakpoint } from '@/hooks/useNavBreakpoint';
-import { Logo } from '@/components/brand/Logo';
+import logoMarkLight from '@/assets/logo-mark-light.svg';
+import logoMarkDark from '@/assets/logo-mark-dark.svg';
 
 function useIsDarkTheme() {
   return useSyncExternalStore(
@@ -150,9 +151,16 @@ export function CatalystHeader() {
             <Link
               to="/"
               aria-label="Catalyst home"
-              style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', opacity: 1 }}
+              style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', opacity: 1, gap: '8px' }}
             >
-              <Logo size="md" showWordmark={true} className="flex items-center gap-2" />
+              <img
+                src={isDark ? logoMarkDark : logoMarkLight}
+                alt="Catalyst"
+                style={{ height: '32px', width: '32px', flexShrink: 0 }}
+              />
+              <span style={{ fontSize: '16px', fontWeight: 600, color: isDark ? 'white' : 'black' }}>
+                Catalyst
+              </span>
             </Link>
           )}
         </div>

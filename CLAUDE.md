@@ -227,6 +227,23 @@ Append-only. Newest at top. Each entry: date, pattern, rule, surface.
 
 ---
 
+## 2026-05-12 — fullPageMode in CatalystViewBase needs body-as-scroll-container, not page-level scroll
+**Surface:** CatalystViewBase.tsx (fullPageMode) · BacklogDetailPage, IssueFullPage
+**Pattern:** The project hub layout constrains every page container with `height: '100%'; flex: 1; minHeight: 0` — the document never scrolls. `CatalystViewBase` in fullPageMode originally used `overflow: 'visible'` on `cv-drawer-body` and `minHeight: '100%'` on the `MODAL` wrapper. This produced a 1452px tall MODAL inside an 894px viewport with no scroll container — the page was stuck, fields above the fold were unreachable, and the sticky sidebar had no fixed-height parent to stick to.
+**Fix (committed ea94ed3b8):**
+- `MODAL` in fullPageMode: `height: '100%'; overflow: 'hidden'` (constrains MODAL to parent height)
+- `cv-drawer-body`: `flex: 1; minHeight: 0; overflowX: 'hidden'; overflowY: fullPageMode ? 'auto' : 'hidden'` (body IS the scroll container)
+- `cv-drawer-sidebar`: `maxHeight: '100%'` not `'100vh'` (sidebar sticks to scroll container, not viewport)
+**Rule:** In any fullPageMode detail view mounted inside a height-constrained container (project hub, split-view layouts), the scroll container MUST be an element inside the view — not the document. Pattern: `MODAL { height: 100%; overflow: hidden }` → `cv-drawer-body { flex: 1; minHeight: 0; overflowY: auto }` → `cv-drawer-sidebar { position: sticky; top: 0; maxHeight: 100%; alignSelf: flex-start }`. Never use `overflow: visible` on a flex child that needs to scroll — it produces an unbounded child with no scroll affordance.
+**Severity:** P0 (scroll and field interaction completely broken until fixed)
+
+## 2026-05-12 — Back button in fullPageMode must derive route from current URL, not hardcode /list
+**Surface:** CatalystViewBase.tsx — `handleBack` callback · BacklogDetailPage route
+**Pattern:** `handleBack` in fullPageMode was hardcoded to `navigate('/project-hub/${projectKey}/list')`. BacklogDetailPage mounts at `/project-hub/:key/backlog/:issueKey` — pressing Back sent users to the wrong surface (/list instead of /backlog). The issue wasn't just a wrong path — it reset the backlog scroll position and lost the user's context entirely.
+**Fix (committed 70dcdc79c):** `CatalystViewBase` now receives a `projectListHref` prop (defaults to `/project-hub/${projectKey}/list` for backward compatibility). `BacklogDetailPage` passes `projectListHref={/project-hub/${projectKey}/backlog}`. `handleBack` uses `navigate(projectListHref)`.
+**Rule:** Any full-page detail view mounted from a non-/list route MUST pass `projectListHref` to `CatalystViewBase`. Never hardcode the back destination — derive it from the route that mounted the view. Before adding a new full-page detail route, check if it needs a custom `projectListHref` and wire it in the mounting page component.
+**Severity:** P1 (back button navigated to wrong surface, breaking user flow)
+
 ## 2026-05-11 — Catalyst's AI persona is CATY (not Kathy). When Vikram says "Ask Kathy" he means Ask CATY — recognize the phonetic immediately.
 **Surface:** Any conversation referencing Catalyst's AI assistant
 **Pattern:** Vikram said "Ask Kathy" in chat. Prior session treated it literally, launched a codebase-onboarding agent to "discover" what Kathy was, only to find CATY (Catalyst AI). The codebase has been on CATY naming for months — `src/components/caty-ai-chat/*`, `src/components/caty/CatyPanelV4`, `src/pages/testhub/CatyAIPage.tsx` (route `/caty`), `useCatyAI` hook, 3 live edge functions (`ai-digest`, `ai-improve-story`, `ai-similar-items`). The `src/features/ask-ai/*` mock module was removed 2026-04-01 (never wired). "Kathy" was a phonetic of CATY. Spending an agent cycle to confirm this is wasted context.
