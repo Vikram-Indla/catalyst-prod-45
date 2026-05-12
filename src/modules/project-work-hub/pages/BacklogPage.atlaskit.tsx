@@ -1696,11 +1696,12 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
       // both findings in one change — visible text doubles as the
       // accessible name on the th element.
       // 2026-05-12 design-critique H8 fix: reduced from width:9 (108px) to
-      // width:6 (72px) to reduce excessive default spacing. Icon is 16px +
-      // padding; no text wrapping needed. Pairs with companion width
-      // reductions on Status, Comments, Parent, Assignee, Priority, Reporter.
+      // width:8 (96px): Type is the first data column — JiraTable prepends a
+      // 28px chevron placeholder to its header. At width:6 (72px), content
+      // area is only 48px; 28+30px "Type" text = 58px → clips to "Ty".
+      // width:8 → 96px → 72px content → 72-28=44px for label (fits ~30px) ✓
       label: 'Type',
-      width: 6,
+      width: 8,
       align: 'center',
       alwaysVisible: true,
       cell: ({ row: it }) => {

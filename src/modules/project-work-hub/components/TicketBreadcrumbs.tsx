@@ -50,6 +50,8 @@ export interface TicketBreadcrumbsProps {
    * ignored for rendering but still available if the consumer wants them.
    */
   middleSlot?: React.ReactNode;
+  /** Override for the project crumb href. Defaults to /project-hub/:key/list */
+  projectHref?: string;
 }
 
 /* ── Router adapter for Breadcrumbs.LinkComponent ───────────────────────── */
@@ -74,6 +76,7 @@ export function TicketBreadcrumbs({
   onParentClick,
   onAddParent,
   middleSlot,
+  projectHref,
 }: TicketBreadcrumbsProps) {
   // B1: copy-to-clipboard state for key chip
   const [copied, setCopied] = useState(false);
@@ -101,7 +104,7 @@ export function TicketBreadcrumbs({
       key: 'project',
       text: projectName || projectKey,
       iconBefore: <ProjectAvatar projectKey={projectKey} size={14} />,
-      href: `/project-hub/${projectKey}/list`,
+      href: projectHref ?? `/project-hub/${projectKey}/list`,
       ariaLabel: `Project ${projectName || projectKey}`,
     });
   }
