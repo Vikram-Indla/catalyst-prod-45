@@ -59,62 +59,108 @@ function SkeletonRowTitle() {
 }
 
 /**
- * Title renderer — "Project Name" in primary text, " › Section" in
- * subtle text. Uses ADS tokens so it themes correctly in dark mode.
+ * Format a timestamp (milliseconds since epoch) as relative time.
+ * Examples: "2h ago", "30m ago", "Yesterday", "Oct 5"
+ */
+function formatTimestamp(visitedAtMs: number): string {
+  const now = Date.now();
+  const diffMs = now - visitedAtMs;
+  const diffMins = Math.floor(diffMs / 60000);
+  const diffHours = Math.floor(diffMs / 3600000);
+  const diffDays = Math.floor(diffMs / 86400000);
+
+  if (diffMins < 1) return 'Just now';
+  if (diffMins < 60) return `${diffMins}m ago`;
+  if (diffHours < 24) return `${diffHours}h ago`;
+  if (diffDays === 1) return 'Yesterday';
+  if (diffDays < 7) return `${diffDays}d ago`;
+
+  // For older entries, show month/day
+  const date = new Date(visitedAtMs);
+  return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+}
+
+/**
+ * Title renderer — "Project Name › Section" on line 1, timestamp on line 2.
+ * Uses ADS tokens so it themes correctly in dark mode.
  */
 function LocationRowTitle({ location }: { location: RecentLocation }) {
   return (
     <span
       style={{
         display: 'inline-flex',
-        alignItems: 'baseline',
-        gap: 4,
+        flexDirection: 'column',
+        gap: 2,
         minWidth: 0,
         maxWidth: '100%',
       }}
     >
-      {/* Project key — primary label, 14px/500, color.text */}
+      {/* Line 1: Project key › Section */}
       <span
         style={{
-          color: 'var(--ds-text, #172B4D)',
-          fontWeight: 600,
-          fontSize: '13px',
-          overflow: 'hidden',
-          textOverflow: 'ellipsis',
-          whiteSpace: 'nowrap',
-          flex: '0 0 auto',
+          display: 'inline-flex',
+          alignItems: 'baseline',
+          gap: 4,
+          minWidth: 0,
+          maxWidth: '100%',
         }}
-        title={`${location.projectName} › ${location.sectionLabel}`}
       >
-        {location.projectKey}
+        {/* Project key — primary label, 13px/600, color.text */}
+        <span
+          style={{
+            color: 'var(--ds-text, #172B4D)',
+            fontWeight: 600,
+            fontSize: '13px',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            whiteSpace: 'nowrap',
+            flex: '0 0 auto',
+          }}
+          title={`${location.projectName} › ${location.sectionLabel}`}
+        >
+          {location.projectKey}
+        </span>
+        {/* Separator — 11px, color.text.subtlest */}
+        <span
+          style={{
+            color: 'var(--ds-text-subtlest, #626F86)',
+            fontWeight: 400,
+            fontSize: '11px',
+            flex: '0 0 auto',
+            lineHeight: '20px',
+          }}
+          aria-hidden="true"
+        >
+          ›
+        </span>
+        {/* Section label — 12px/400, color.text.subtlest (ADS meta size) */}
+        <span
+          style={{
+            color: 'var(--ds-text-subtlest, #626F86)',
+            fontWeight: 400,
+            fontSize: '12px',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            whiteSpace: 'nowrap',
+            flex: '0 1 auto',
+            minWidth: 0,
+          }}
+        >
+          {location.sectionLabel}
+        </span>
       </span>
-      {/* Separator — 11px, color.text.subtlest — reads as breadcrumb crumb, not competing text */}
+
+      {/* Line 2: Timestamp — 11px/400, color.text.subtlest (ADS timestamp style) */}
       <span
         style={{
           color: 'var(--ds-text-subtlest, #626F86)',
           fontWeight: 400,
           fontSize: '11px',
-          flex: '0 0 auto',
-          lineHeight: '20px',
-        }}
-        aria-hidden="true"
-      >
-        ›
-      </span>
-      {/* Section label — 12px/400, color.text.subtlest (ADS meta size) */}
-      <span
-        style={{
-          color: 'var(--ds-text-subtlest, #626F86)',
-          fontWeight: 400,
-          fontSize: '12px',
-          overflow: 'hidden',
-          textOverflow: 'ellipsis',
-          whiteSpace: 'nowrap',
-          flex: '0 1 auto',
-          minWidth: 0,
+          lineHeight: '16px',
+          marginTop: 1,
         }}
       >
-        {location.sectionLabel}
+        {formatTimestamp(location.visitedAt)}
       </span>
     </span>
   );
