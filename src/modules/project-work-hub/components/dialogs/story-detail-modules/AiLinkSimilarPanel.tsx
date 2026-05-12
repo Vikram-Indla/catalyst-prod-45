@@ -21,6 +21,12 @@ import RefreshCw from '@atlaskit/icon/core/refresh';
 import Spinner from '@atlaskit/spinner';
 import { IssueIcon } from './shared-components';
 import { LINK_TYPE_OPTIONS } from './constants';
+import './ai-link-similar-panel.css';
+
+// Typewriter copy for the loading state — taken verbatim from Jira's
+// AI suggestions panel so the experience is familiar to users moving
+// between the two products.
+const SEARCH_PLACEHOLDER = 'Searching for similar work items';
 
 interface AiSuggestion {
   issue_key: string;
@@ -36,8 +42,59 @@ interface AiLinkSimilarPanelProps {
   onLinked: () => void;
 }
 
-/* ── Link-type dropdown (bottom-right, opens upward) ── */
-function LinkAsDropdown({ value, onChange }: { value: string; onChange: (v: string) => void }) {
+/* ── Sparkle glyph (4-point star + small flares) ──
+ * Inline SVG so the icon ships with the panel; matches Jira's "AI"
+ * sparkle without pulling another @atlaskit/icon dependency. Size +
+ * colour are prop-controlled for future reuse.
+ */
+function SparkleIcon({ size = 16, color = 'var(--ds-text-subtlest, #6B778C)' }: { size?: number; color?: string }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      {/* main 4-point star */}
+      <path
+        d="M12 2.5l1.7 5.3a2 2 0 0 0 1.3 1.3l5.3 1.7-5.3 1.7a2 2 0 0 0-1.3 1.3L12 19.1l-1.7-5.3a2 2 0 0 0-1.3-1.3L3.7 10.8l5.3-1.7a2 2 0 0 0 1.3-1.3L12 2.5z"
+        fill={color}
+      />
+      {/* small flare top-right */}
+      <path
+        d="M19 14l.6 1.7L21.3 16l-1.7.6L19 18l-.6-1.7L16.7 16l1.7-.6L19 14z"
+        fill={color}
+      />
+      {/* small flare bottom-left */}
+      <path
+        d="M5 18l.4 1.1L6.5 19.5l-1.1.4L5 21l-.4-1.1L3.5 19.5l1.1-.4L5 18z"
+        fill={color}
+      />
+    </svg>
+  );
+}
+
+/* ── Link-type split button ──
+ * Two clickable halves separated by a 1px divider:
+ *   • Left text  → primary link action (`onLink` — links the active
+ *                  selection scope, e.g. all checked items, or just
+ *                  the row this button lives on)
+ *   • Right chevron → opens the link-type picker dropdown so the user
+ *                  can change the relationship word ("relates to" /
+ *                  "blocks" / etc.)
+ * Used both in the panel footer (links every checked suggestion) and
+ * inline on each suggestion row (links only that row).
+ */
+function LinkAsSplitButton({
+  value,
+  onChange,
+  onLink,
+  isPending = false,
+  size = 'normal',
+  className,
+}: {
+  value: string;
+  onChange: (v: string) => void;
+  onLink: () => void;
+  isPending?: boolean;
+  size?: 'normal' | 'small';
+  className?: string;
+}) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
@@ -50,28 +107,91 @@ function LinkAsDropdown({ value, onChange }: { value: string; onChange: (v: stri
     return () => document.removeEventListener('mousedown', h);
   }, [open]);
 
+  const height = size === 'small' ? 26 : 30;
+  const fontSize = size === 'small' ? 12 : 13;
+  const chevronWidth = size === 'small' ? 24 : 28;
+
   return (
-    <div ref={ref} style={{ position: 'relative' }}>
+    <div
+      ref={ref}
+      className={className}
+      style={{
+        position: 'relative',
+        display: 'inline-flex',
+        border: '1px solid var(--ds-border, #DFE1E6)',
+        borderRadius: 3,
+        background: 'var(--ds-surface, #fff)',
+        overflow: 'visible',
+      }}
+    >
       <button
-        onClick={() => setOpen(o => !o)}
+        onClick={onLink}
+        disabled={isPending}
         style={{
-          display: 'inline-flex', alignItems: 'center', gap: 6,
-          height: 32, padding: '0 10px 0 12px',
-          border: '1px solid #DFE1E6', borderRadius: 3,
-          background: 'var(--ds-surface, #fff)', cursor: 'pointer', fontSize: 13,
-          fontFamily: 'inherit', color: 'var(--ds-text, #172B4D)', whiteSpace: 'nowrap',
+          height,
+          padding: `0 12px`,
+          border: 'none',
+          background: 'transparent',
+          cursor: isPending ? 'not-allowed' : 'pointer',
+          fontSize,
+          fontFamily: 'inherit',
+          fontWeight: 500,
+          color: 'var(--ds-text, #172B4D)',
+          whiteSpace: 'nowrap',
+          opacity: isPending ? 0.6 : 1,
+          borderTopLeftRadius: 3,
+          borderBottomLeftRadius: 3,
         }}
       >
         Link as {value}
-        <ChevronDown size={14} color={open ? '#0052CC' : 'var(--ds-text-subtlest, #6B778C)'} />
+      </button>
+      {/* 1px vertical divider so the chevron reads as its own affordance */}
+      <div
+        aria-hidden="true"
+        style={{
+          width: 1,
+          alignSelf: 'stretch',
+          background: 'var(--ds-border, #DFE1E6)',
+          flexShrink: 0,
+        }}
+      />
+      <button
+        onClick={() => setOpen(o => !o)}
+        aria-label="Change link type"
+        aria-expanded={open}
+        style={{
+          height,
+          width: chevronWidth,
+          border: 'none',
+          background: 'transparent',
+          cursor: 'pointer',
+          display: 'inline-flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          color: open ? '#0052CC' : 'var(--ds-text-subtlest, #6B778C)',
+          padding: 0,
+          borderTopRightRadius: 3,
+          borderBottomRightRadius: 3,
+        }}
+      >
+        <ChevronDown size={14} />
       </button>
       {open && (
-        <div style={{
-          position: 'absolute', bottom: 'calc(100% + 4px)', right: 0,
-          minWidth: 200, background: 'var(--ds-surface, #fff)', border: '1px solid #DFE1E6',
-          borderRadius: 4, boxShadow: '0 4px 8px rgba(9,30,66,.25)',
-          zIndex: 70, maxHeight: 320, overflowY: 'auto',
-        }}>
+        <div
+          style={{
+            position: 'absolute',
+            bottom: 'calc(100% + 4px)',
+            right: 0,
+            minWidth: 200,
+            background: 'var(--ds-surface-overlay, var(--ds-surface, #fff))',
+            border: '1px solid var(--ds-border, #DFE1E6)',
+            borderRadius: 4,
+            boxShadow: '0 4px 8px rgba(9,30,66,.25)',
+            zIndex: 70,
+            maxHeight: 320,
+            overflowY: 'auto',
+          }}
+        >
           {LINK_TYPE_OPTIONS.map(opt => (
             <div
               key={opt}
@@ -79,7 +199,7 @@ function LinkAsDropdown({ value, onChange }: { value: string; onChange: (v: stri
               style={{
                 display: 'flex', alignItems: 'center', height: 36, padding: '0 12px',
                 cursor: 'pointer', fontSize: 14, color: 'var(--ds-text, #172B4D)',
-                background: opt === value ? '#DEEBFF' : 'transparent',
+                background: opt === value ? 'var(--ds-background-selected, #DEEBFF)' : 'transparent',
               }}
               onMouseEnter={e => { if (opt !== value) (e.currentTarget).style.background = 'var(--ds-surface-sunken, #F4F5F7)'; }}
               onMouseLeave={e => { if (opt !== value) (e.currentTarget).style.background = 'transparent'; }}
@@ -117,9 +237,21 @@ function Checkbox({ checked, onChange }: { checked: boolean; onChange: (v: boole
 
 export function AiLinkSimilarPanel({ issueKey, existingLinkedKeys, onLinked }: AiLinkSimilarPanelProps) {
   const queryClient = useQueryClient();
+  // Default collapsed — after AI completes the panel lands on the
+  // "Show N results" pill so the suggestion list doesn't shove the
+  // user's existing linked items down the page. Clicking the pill
+  // expands; the chevron in the expanded header collapses back.
   const [expanded, setExpanded] = useState(false);
   const [selectedKeys, setSelectedKeys] = useState<Set<string>>(new Set());
-  const [linkType, setLinkType] = useState('related');
+  // Tracks whether the initial "pre-select all" has fired. Without this
+  // ref a background refetch (network blip, focus return, etc.) would
+  // wipe the user's manual deselections by repopulating selectedKeys.
+  const didPreselectRef = useRef(false);
+  // Must match a value in LINK_TYPE_OPTIONS (constants.ts) — these are
+  // the only values the DB `ph_issue_links_link_type_check` constraint
+  // accepts. Defaulting to "relates to" mirrors the existing
+  // LinkedWorkItems `createLinkType` default.
+  const [linkType, setLinkType] = useState('relates to');
   const [feedback, setFeedback] = useState<'up' | 'down' | null>(null);
   const [dismissedKeys, setDismissedKeys] = useState<Set<string>>(new Set());
   const [linkedThisSession, setLinkedThisSession] = useState<Set<string>>(new Set());
@@ -147,6 +279,16 @@ export function AiLinkSimilarPanel({ issueKey, existingLinkedKeys, onLinked }: A
     return suggestions.filter(s => !excludeSet.has(s.issue_key));
   }, [suggestions, existingLinkedKeys, dismissedKeys, linkedThisSession]);
 
+  // Pre-select every suggestion the first time AI results land. Ref
+  // gate prevents a later refetch (focus return, network retry) from
+  // wiping the user's manual deselections.
+  useEffect(() => {
+    if (didPreselectRef.current) return;
+    if (filteredSuggestions.length === 0) return;
+    setSelectedKeys(new Set(filteredSuggestions.map(s => s.issue_key)));
+    didPreselectRef.current = true;
+  }, [filteredSuggestions]);
+
   const count = filteredSuggestions.length;
   const allSelected = count > 0 && filteredSuggestions.every(s => selectedKeys.has(s.issue_key));
 
@@ -164,11 +306,14 @@ export function AiLinkSimilarPanel({ issueKey, existingLinkedKeys, onLinked }: A
   };
 
   const linkMutation = useMutation({
-    mutationFn: async () => {
+    mutationFn: async (overrideKeys?: string[]) => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
+      const targets = overrideKeys && overrideKeys.length > 0
+        ? overrideKeys
+        : Array.from(selectedKeys);
       const results: { key: string; ok: boolean }[] = [];
-      for (const targetKey of Array.from(selectedKeys)) {
+      for (const targetKey of targets) {
         const { error } = await supabase.from('ph_issue_links').insert({
           source_id: issueKey,
           target_id: targetKey,
@@ -195,27 +340,81 @@ export function AiLinkSimilarPanel({ issueKey, existingLinkedKeys, onLinked }: A
     },
   });
 
-  /* ── COLLAPSED STATE ── */
+  // Typewriter state for the loading frame. Re-runs whenever
+  // `isLoading` flips back to true (e.g. user opens panel for a
+  // different ticket). Mounting effect cleans the interval on
+  // unmount or when loading completes.
+  const [typedText, setTypedText] = useState('');
+  useEffect(() => {
+    if (!isLoading) {
+      setTypedText('');
+      return;
+    }
+    let i = 0;
+    setTypedText('');
+    const interval = setInterval(() => {
+      i += 1;
+      if (i > SEARCH_PLACEHOLDER.length) {
+        clearInterval(interval);
+        return;
+      }
+      setTypedText(SEARCH_PLACEHOLDER.substring(0, i));
+    }, 55);
+    return () => clearInterval(interval);
+  }, [isLoading]);
+
+  /* ── LOADING STATE ──
+   * Inserted between the section header and the existing linked-items
+   * list while AI is fetching. Rainbow border rotates, dots bounce,
+   * and the placeholder text types itself in — matches Jira's
+   * "Searching for similar work items" affordance so users don't
+   * think the click did nothing.
+   */
+  if (isLoading) {
+    return (
+      <div
+        className="als-loading-frame"
+        role="status"
+        aria-live="polite"
+        style={{
+          padding: '10px 12px',
+          display: 'flex',
+          alignItems: 'center',
+          gap: 10,
+          marginBottom: 8,
+        }}
+      >
+        <span className="als-bouncing-dots" aria-hidden="true">
+          <span /><span /><span />
+        </span>
+        <span style={{ fontSize: 13, color: 'var(--ds-text-subtle, #42526E)' }}>
+          {typedText}
+          <span className="als-typewriter-caret" aria-hidden="true" />
+        </span>
+        <span className="sr-only">Searching for similar work items</span>
+      </div>
+    );
+  }
+
+  /* ── COLLAPSED STATE ── only entered after the user clicks the
+   * chevron in the expanded header. Loading is handled above so this
+   * branch never sees `isLoading === true`. */
   if (!expanded) {
     return (
       <div style={{
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        padding: '10px 12px', border: '1px solid #DFE1E6', borderRadius: 8,
+        padding: '10px 12px', border: '1px solid var(--ds-border, #DFE1E6)', borderRadius: 8,
         background: 'var(--ds-surface-sunken, #FAFBFC)', marginBottom: 8,
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-            <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" stroke="var(--ds-text-subtlest, #6B778C)" strokeWidth="1.5" fill="none"/>
-          </svg>
+          <SparkleIcon size={16} />
           <span style={{ fontSize: 14, fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>Link similar work items</span>
         </div>
-        {isLoading ? (
-          <Spinner size="small" />
-        ) : count > 0 ? (
+        {count > 0 ? (
           <button
             onClick={() => setExpanded(true)}
             style={{
-              height: 28, padding: '0 12px', border: '1px solid #DFE1E6', borderRadius: 3,
+              height: 28, padding: '0 12px', border: '1px solid var(--ds-border, #DFE1E6)', borderRadius: 3,
               background: 'var(--ds-surface, #fff)', cursor: 'pointer', fontSize: 13, color: 'var(--ds-text, #172B4D)',
               fontFamily: 'inherit', fontWeight: 500, whiteSpace: 'nowrap',
             }}
@@ -231,20 +430,18 @@ export function AiLinkSimilarPanel({ issueKey, existingLinkedKeys, onLinked }: A
 
   /* ── EXPANDED STATE ── */
   return (
-    <div style={{ border: '1px solid #DFE1E6', borderRadius: 8, marginBottom: 8, overflow: 'hidden' }}>
+    <div style={{ border: '1px solid var(--ds-border, #DFE1E6)', borderRadius: 8, marginBottom: 8, overflow: 'visible' }}>
       {/* Header — click to collapse */}
       <div
         onClick={() => setExpanded(false)}
         style={{
           display: 'flex', alignItems: 'center', justifyContent: 'space-between',
           padding: '10px 12px', cursor: 'pointer', background: 'var(--ds-surface-sunken, #FAFBFC)',
-          borderBottom: '1px solid #F4F5F7',
+          borderBottom: '1px solid var(--ds-border, #DFE1E6)',
         }}
       >
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-            <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" stroke="var(--ds-text-subtlest, #6B778C)" strokeWidth="1.5" fill="none"/>
-          </svg>
+          <SparkleIcon size={16} />
           <span style={{ fontSize: 14, fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>Link similar work items</span>
         </div>
         <ChevronDown size={16} color="var(--ds-text-subtlest, #6B778C)" style={{ transform: 'rotate(180deg)' }} />
@@ -258,7 +455,7 @@ export function AiLinkSimilarPanel({ issueKey, existingLinkedKeys, onLinked }: A
             <span style={{ fontSize: 13, color: '#FF5630' }}>Failed to load suggestions</span>
             <button onClick={() => refetch()} style={{
               display: 'inline-flex', alignItems: 'center', gap: 4,
-              border: '1px solid #DFE1E6', borderRadius: 3, background: 'var(--ds-surface, #fff)',
+              border: '1px solid var(--ds-border, #DFE1E6)', borderRadius: 3, background: 'var(--ds-surface, #fff)',
               padding: '4px 10px', fontSize: 12, cursor: 'pointer', color: 'var(--ds-text, #172B4D)',
             }}>
               <RefreshCw size={12} /> Retry
@@ -279,7 +476,7 @@ export function AiLinkSimilarPanel({ issueKey, existingLinkedKeys, onLinked }: A
             {/* Select all / Deselect all */}
             <div style={{
               display: 'flex', alignItems: 'center', gap: 8,
-              padding: '10px 0 6px', borderBottom: '1px solid #F4F5F7',
+              padding: '10px 0 6px', borderBottom: '1px solid var(--ds-border, #DFE1E6)',
             }}>
               <Checkbox checked={allSelected} onChange={toggleAll} />
               <span style={{ fontSize: 14, fontWeight: 500, color: 'var(--ds-text, #172B4D)' }}>
@@ -287,14 +484,18 @@ export function AiLinkSimilarPanel({ issueKey, existingLinkedKeys, onLinked }: A
               </span>
             </div>
 
-            {/* Rows */}
+            {/* Rows — each row reveals an inline split button on hover so
+                the user can link a single item without unticking the
+                others. The .als-suggestion-row hook drives the
+                opacity-on-hover transition (CSS file). */}
             {filteredSuggestions.map(s => (
               <div
                 key={s.issue_key}
+                className="als-suggestion-row"
                 onClick={() => toggleOne(s.issue_key)}
                 style={{
                   display: 'flex', alignItems: 'center', gap: 8,
-                  padding: '8px 0', borderBottom: '1px solid #F4F5F7',
+                  padding: '8px 0', borderBottom: '1px solid var(--ds-border, #DFE1E6)',
                   cursor: 'pointer',
                 }}
                 onMouseEnter={e => (e.currentTarget.style.background = 'var(--ds-surface-sunken, #FAFBFC)')}
@@ -302,13 +503,29 @@ export function AiLinkSimilarPanel({ issueKey, existingLinkedKeys, onLinked }: A
               >
                 <Checkbox checked={selectedKeys.has(s.issue_key)} onChange={() => toggleOne(s.issue_key)} />
                 <IssueIcon type={s.issue_type || 'task'} size={16} />
-                <span style={{ fontSize: 13, color: 'var(--ds-text, #172B4D)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                <span style={{
+                  flex: 1, minWidth: 0,
+                  fontSize: 13, color: 'var(--ds-text, #172B4D)',
+                  overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+                }}>
                   <span style={{ fontWeight: 600 }}>{s.issue_key}:</span> {s.summary}
                 </span>
+                <div
+                  className="als-row-action"
+                  onClick={e => e.stopPropagation()}
+                >
+                  <LinkAsSplitButton
+                    value={linkType}
+                    onChange={setLinkType}
+                    onLink={() => linkMutation.mutate([s.issue_key])}
+                    isPending={linkMutation.isPending}
+                    size="small"
+                  />
+                </div>
               </div>
             ))}
 
-            {/* Footer: disclaimer + feedback | link-type dropdown */}
+            {/* Footer: disclaimer + feedback (left) | bulk split button (right) */}
             <div style={{
               display: 'flex', alignItems: 'center', justifyContent: 'space-between',
               paddingTop: 10, marginTop: 4,
@@ -333,26 +550,16 @@ export function AiLinkSimilarPanel({ issueKey, existingLinkedKeys, onLinked }: A
                   <ThumbsDown size={14} />
                 </button>
               </div>
-              <LinkAsDropdown value={linkType} onChange={setLinkType} />
+              {/* Single split button replaces the legacy "LinkAsDropdown +
+                  separate Link N items pill" pair. Disabled until at
+                  least one row is checked. */}
+              <LinkAsSplitButton
+                value={linkType}
+                onChange={setLinkType}
+                onLink={() => linkMutation.mutate(undefined)}
+                isPending={linkMutation.isPending || selectedKeys.size === 0}
+              />
             </div>
-
-            {/* Link button when items selected */}
-            {selectedKeys.size > 0 && (
-              <div style={{ display: 'flex', justifyContent: 'flex-end', paddingTop: 8 }}>
-                <button
-                  onClick={() => linkMutation.mutate()}
-                  disabled={linkMutation.isPending}
-                  style={{
-                    height: 32, padding: '0 16px', border: 'none', borderRadius: 3,
-                    background: '#0052CC', color: 'var(--ds-surface, #fff)', fontSize: 14, fontWeight: 500,
-                    cursor: linkMutation.isPending ? 'not-allowed' : 'pointer',
-                    fontFamily: 'inherit', opacity: linkMutation.isPending ? 0.7 : 1,
-                  }}
-                >
-                  {linkMutation.isPending ? <Spinner size="small" /> : `Link ${selectedKeys.size} item${selectedKeys.size > 1 ? 's' : ''}`}
-                </button>
-              </div>
-            )}
           </>
         )}
       </div>

@@ -216,6 +216,23 @@ export function LinkedWorkItems({
 
       {expanded && (
         <>
+          {/*
+            AI similar-items panel renders inline above the linked-items
+            body whenever the user has hit `+`. Sits between the section
+            header and the existing groups (clones, blocks, etc.) so it
+            matches the Jira layout. The manual `LinkToolbar` below
+            stays as the explicit-key fallback for users who want to
+            link a known issue by typing its key.
+          */}
+          {showToolbar && (
+            <AiLinkSimilarPanel
+              issueKey={issueKey}
+              existingLinkedKeys={Array.from(existingLinkedKeys)}
+              onLinked={() => {
+                queryClient.invalidateQueries({ queryKey: ['linkedIssues', issueKey] });
+              }}
+            />
+          )}
           <LinkedWorkItemsBody
             id={bodyId}
             groups={groups}
