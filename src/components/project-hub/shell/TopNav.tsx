@@ -1,5 +1,6 @@
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Plus, Bell, Settings, Search } from '@/lib/atlaskit-icons';
+import { Logo } from '@/components/brand/Logo';
 import { UserAvatar } from './UserAvatar';
 
 const HUB_TABS = [
@@ -33,22 +34,13 @@ export function TopNav({ onCreateClick }: TopNavProps) {
         fontFamily: 'var(--cp-font-body)',
       }}
     >
-      {/* Logo — Catalyst™ */}
+      {/* Logo */}
       <button
         onClick={() => navigate('/for-you')}
-        className="flex items-center gap-1.5 mr-6 flex-shrink-0"
+        className="flex items-center mr-6 flex-shrink-0"
         style={{ border: 'none', background: 'transparent', cursor: 'pointer' }}
       >
-        <div
-          className="flex items-center justify-center rounded-full flex-shrink-0 bg-[var(--cp-blue)]"
-          style={{ width: 28, height: 28 }}
-        >
-          <span style={{ color: 'var(--bg-app)', fontSize: 13, fontWeight: 800, fontFamily: 'var(--cp-font-heading)' }}>C</span>
-        </div>
-        <span className="text-[var(--fg-1)] dark:text-[var(--ds-text,#EDEDED)]" style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 15, fontWeight: 700 }}>
-          atalyst
-          <span className="text-[var(--fg-4)] dark:text-[#7D7D7D]" style={{ fontSize: 9, verticalAlign: 'super', fontWeight: 500 }}>™</span>
-        </span>
+        <Logo size="md" showWordmark={true} className="flex items-center gap-2" />
       </button>
 
       {/* Hub Tabs */}

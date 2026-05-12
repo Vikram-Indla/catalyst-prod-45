@@ -15,8 +15,7 @@ import { Link } from 'react-router-dom';
 import { useSyncExternalStore } from 'react';
 import { useCatalystContext } from '@/contexts/CatalystContext';
 import { useNavBreakpoint } from '@/hooks/useNavBreakpoint';
-import catalystWordmarkLight from '@/assets/catalyst-wordmark-3.svg';
-import catalystWordmarkDark from '@/assets/catalyst-wordmark-3-dark.svg';
+import { Logo } from '@/components/brand/Logo';
 
 function useIsDarkTheme() {
   return useSyncExternalStore(
@@ -41,7 +40,6 @@ const isMacPlatform = () =>
 
 export function CatalystHeader() {
   const isDark = useIsDarkTheme();
-  const catalystWordmark = isDark ? catalystWordmarkDark : catalystWordmarkLight;
   const {
     sidebarHidden, sidebarPinned, sidebarHoverOpen,
     cycleSidebarState,
@@ -154,12 +152,7 @@ export function CatalystHeader() {
               aria-label="Catalyst home"
               style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', opacity: 1 }}
             >
-              <img
-                src={catalystWordmark}
-                alt=""
-                height={28}
-                style={{ height: '28px', width: 'auto', display: 'block' }}
-              />
+              <Logo size="md" showWordmark={true} className="flex items-center gap-2" />
             </Link>
           )}
         </div>
