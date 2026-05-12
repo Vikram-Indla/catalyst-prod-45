@@ -118,24 +118,7 @@ function buildExternalMediaSingle(url: string, filename: string, width?: number,
   };
 }
 
-/** Walk an ADF doc and return a { nodeType -> count } map. Diagnostic-
- *  only: used to log the view→edit normalization delta so we can see,
- *  without a debugger, when a node type is being dropped before the
- *  editor mounts. */
-function countNodeTypes(input: unknown): Record<string, number> {
-  const out: Record<string, number> = {};
-  const walk = (n: any) => {
-    if (!n || typeof n !== 'object') return;
-    if (typeof n.type === 'string') {
-      out[n.type] = (out[n.type] ?? 0) + 1;
-    }
-    if (Array.isArray(n.content)) n.content.forEach(walk);
-  };
-  walk(input);
-  return out;
-}
-
-export default function EpicDescriptionEditor({
+function EpicDescriptionEditorImpl({
   initialContent,
   onSave,
   onCancel,
@@ -147,32 +130,6 @@ export default function EpicDescriptionEditor({
 }: EpicDescriptionEditorProps) {
   const initialAdf = useMemo(() => parseStoredDescriptionToAdf(initialContent), [initialContent]);
   const defaultValueString = useMemo(() => JSON.stringify(initialAdf), [initialAdf]);
-
-  /* 2026-04-20 — Diagnostic: log the node-type histogram before and
-     after normalization so content-loss issues (view shows more than
-     edit) are traceable from the console. A single `console.info` per
-     mount is cheap and drops out in production builds via tree-shaking
-     of `import.meta.env.DEV`-gated code. We keep it unconditionally
-     info-level because the user has explicitly reported a content-loss
-     class of bug. */
-  useEffect(() => {
-    const raw = typeof initialContent === 'string' && initialContent.trim().startsWith('{')
-      ? (() => { try { return JSON.parse(initialContent); } catch { return initialContent; } })()
-      : initialContent;
-    const before = countNodeTypes(raw);
-    const after = countNodeTypes(initialAdf);
-    const dropped: Record<string, number> = {};
-    for (const k of Object.keys(before)) {
-      if ((after[k] ?? 0) < before[k]) dropped[k] = before[k] - (after[k] ?? 0);
-    }
-     
-    console.info('[EpicDescriptionEditor] normalize', {
-      workItemId,
-      before,
-      after,
-      dropped: Object.keys(dropped).length ? dropped : null,
-    });
-  }, [initialAdf, initialContent, workItemId]);
 
   const actionsRef = useRef<EditorActions | null>(null);
   const wrapperRef = useRef<HTMLDivElement>(null);
@@ -379,6 +336,17 @@ export default function EpicDescriptionEditor({
           // ADS motion — hover-curve, 150ms.
           // https://atlassian.design/foundations/motion
           transition: 'outline-color 150ms cubic-bezier(0.15,1,0.3,1), background-color 150ms cubic-bezier(0.15,1,0.3,1)',
+          // Perf — `contain: content` (= layout + paint + style) tells
+          // the browser that paints and layout invalidations inside
+          // ProseMirror cannot affect anything outside this wrapper. On
+          // a 2026-05-12 trace the editor was burning ~2.7s of
+          // "unattributed" main-thread time per ~12s session — almost
+          // entirely browser-internal layout/paint cascading up the
+          // detail-view tree as the user scrolled and typed. Containment
+          // chops that cascade off at the wrapper boundary. Crucially we
+          // do NOT include `size` — the wrapper still needs to grow
+          // with the editor's content height.
+          contain: 'content',
         }}
       >
         <Suspense
@@ -505,3 +473,20 @@ export default function EpicDescriptionEditor({
     </IntlProvider>
   );
 }
+
+/*
+ * React.memo with the default shallow prop comparison. The parent
+ * (CatalystDescriptionSection) re-renders any time React Query
+ * invalidates `cv-issue-detail` or any sibling state flips. Without
+ * this memo, every parent re-render walks the editor subtree (Suspense
+ * boundary, IntlProvider, Atlaskit Editor's huge tree) — work that's
+ * pure waste when the props haven't actually changed. Default shallow
+ * compare is enough here because:
+ *   - `initialContent` is read from `issue.description_adf` which is a
+ *     stable reference until a save invalidates the query.
+ *   - `onSave`, `onCancel`, `onAttachmentUploaded` are useCallback'd in
+ *     the parent.
+ *   - `workItemId`, `placeholder`, `appearance` are primitives.
+ */
+const EpicDescriptionEditor = React.memo(EpicDescriptionEditorImpl);
+export default EpicDescriptionEditor;

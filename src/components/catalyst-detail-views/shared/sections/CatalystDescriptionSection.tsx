@@ -114,7 +114,7 @@ const DESC_BUILD_ID = 'atlaskit-canonical-v218';
 
 /* ── Scoped styles for ADF content inside CatalystView ── */
 /* Bump this version when the style block changes — forces re-injection on HMR. */
-const STYLE_ID = 'cv-desc-styles-v6';
+const STYLE_ID = 'cv-desc-styles-v7';
 if (typeof document !== 'undefined' && !document.getElementById(STYLE_ID)) {
   const s = document.createElement('style');
   s.id = STYLE_ID;
@@ -270,6 +270,27 @@ if (typeof document !== 'undefined' && !document.getElementById(STYLE_ID)) {
     [data-testid="comment-cancel-button"] {
       font-weight: 500 !important;
     }
+
+    /* Perf — pencil-icon hover affordance via pure CSS instead of a
+       React useState(hovered) flip. Avoids a parent re-render on every
+       mouse-enter / mouse-leave of the section header, which was
+       reconciling through the entire editor subtree (cheap per render
+       but multiplied by every mouse twitch). */
+    .cv-desc-header .cv-desc-edit-btn {
+      opacity: 0;
+      transition:
+        opacity 150ms cubic-bezier(0.15, 1, 0.3, 1),
+        color 150ms cubic-bezier(0.15, 1, 0.3, 1),
+        background 150ms cubic-bezier(0.15, 1, 0.3, 1);
+    }
+    .cv-desc-header:hover .cv-desc-edit-btn,
+    .cv-desc-header:focus-within .cv-desc-edit-btn {
+      opacity: 1;
+    }
+    .cv-desc-edit-btn:hover {
+      color: #292A2E !important;
+      background: var(--ds-surface-sunken, #F4F5F7) !important;
+    }
   `;
   document.head.appendChild(s);
 }
@@ -282,7 +303,9 @@ interface CatalystDescriptionSectionProps {
 
 export function CatalystDescriptionSection({ issue, label = 'Description' }: CatalystDescriptionSectionProps) {
   const [editing, setEditing] = useState(false);
-  const [hovered, setHovered] = useState(false);
+  // Hover affordance moved to pure CSS (`.cv-desc-header:hover .cv-desc-edit-btn`).
+  // Keeping a `useState(hovered)` here forced the whole section to
+  // reconcile on every mouse twitch over the header band.
   const queryClient = useQueryClient();
 
   // Idle-time prefetch: kick off editor chunk download after paint so that
@@ -380,9 +403,8 @@ export function CatalystDescriptionSection({ issue, label = 'Description' }: Cat
           Jira never collapses the description section; chevron removed for parity).
           Pencil edit button appears on hover. */}
       <div
+        className="cv-desc-header"
         style={{ display: 'flex', alignItems: 'center', gap: 4, marginBottom: 8, userSelect: 'none' }}
-        onMouseEnter={() => setHovered(true)}
-        onMouseLeave={() => setHovered(false)}
       >
         <h2
           data-testid="catalyst-description-section.label"
@@ -400,22 +422,19 @@ export function CatalystDescriptionSection({ issue, label = 'Description' }: Cat
         </h2>
         {!editing && issue && (
           <button
+            className="cv-desc-edit-btn"
             onClick={() => startTransition(() => setEditing(true))}
+            onMouseEnter={prefetchEpicEditor}
+            onFocus={prefetchEpicEditor}
             title="Edit description"
             style={{
               background: 'none', border: 'none', cursor: 'pointer',
               padding: '4px 6px', borderRadius: 4, color: 'var(--ds-text-subtlest, #6B778C)',
               display: 'flex', alignItems: 'center',
-              opacity: hovered ? 1 : 0,
-              transition: 'opacity 150ms cubic-bezier(0.15,1,0.3,1), color 150ms cubic-bezier(0.15,1,0.3,1), background 150ms cubic-bezier(0.15,1,0.3,1)',
+              /* opacity + transitions live in the CSS rules above
+                 (.cv-desc-header:hover .cv-desc-edit-btn) — no React
+                 state involvement on mouse twitches. */
             }}
-            onMouseEnter={e => {
-              e.currentTarget.style.color = '#292A2E';
-              e.currentTarget.style.background = 'var(--ds-surface-sunken, #F4F5F7)';
-              prefetchEpicEditor();
-            }}
-            onFocus={() => { prefetchEpicEditor(); }}
-            onMouseLeave={e => { e.currentTarget.style.color = 'var(--ds-text-subtlest, #6B778C)'; e.currentTarget.style.background = 'none'; }}
           >
             <EditIcon label="Edit description" />
           </button>
@@ -468,6 +487,7 @@ export function CatalystDescriptionSection({ issue, label = 'Description' }: Cat
           }}
           onMouseEnter={e => { e.currentTarget.style.background = 'var(--ds-surface-sunken, #F4F5F7)'; prefetchEpicEditor(); }}
           onPointerDown={() => { if (issue) prefetchEpicEditor(); }}
+          onFocus={() => { if (issue) prefetchEpicEditor(); }}
           onClick={() => { if (issue) startTransition(() => setEditing(true)); }}
           onKeyDown={(e) => {
             if ((e.key === 'Enter' || e.key === ' ') && issue) {
