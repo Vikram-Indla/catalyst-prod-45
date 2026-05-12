@@ -105,12 +105,12 @@ function LocationRowTitle({ location }: { location: RecentLocation }) {
           maxWidth: '100%',
         }}
       >
-        {/* Project key — primary label, 13px/600, color.text */}
+        {/* Project key — primary label, 12px/600, color.text */}
         <span
           style={{
             color: 'var(--ds-text, #172B4D)',
             fontWeight: 600,
-            fontSize: '13px',
+            fontSize: '12px',
             overflow: 'hidden',
             textOverflow: 'ellipsis',
             whiteSpace: 'nowrap',
@@ -150,12 +150,12 @@ function LocationRowTitle({ location }: { location: RecentLocation }) {
         </span>
       </span>
 
-      {/* Line 2: Timestamp — 12px/500, color.text.subtle (ADS meta style, increased visibility) */}
+      {/* Line 2: Timestamp — 11px/400, color.text.subtlest (ADS secondary meta style) */}
       <span
         style={{
-          color: 'var(--ds-text-subtle, #44546F)',
-          fontWeight: 500,
-          fontSize: '12px',
+          color: 'var(--ds-text-subtlest, #626F86)',
+          fontWeight: 400,
+          fontSize: '11px',
           lineHeight: '16px',
           marginTop: 4,
         }}
@@ -230,7 +230,7 @@ export default function HomeSidebar({
           {
             id: 'recent-loading-label',
             title: (
-              <span style={{ color: 'var(--ds-text-subtlest, #626F86)', fontSize: 12 }}>
+              <span style={{ color: 'var(--ds-text-subtlest, #626F86)', fontSize: '11px' }}>
                 Loading recent pages...
               </span>
             ),
@@ -247,7 +247,7 @@ export default function HomeSidebar({
           {
             id: 'recent-empty',
             title: (
-              <span style={{ color: 'var(--ds-text-subtlest, #94A3B8)', fontSize: 13 }}>
+              <span style={{ color: 'var(--ds-text-subtlest, #626F86)', fontSize: '11px' }}>
                 No recent pages yet
               </span>
             ),
