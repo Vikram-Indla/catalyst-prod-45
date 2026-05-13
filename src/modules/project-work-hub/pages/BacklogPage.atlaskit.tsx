@@ -128,6 +128,20 @@ import type {
   AssigneeOption,
   FixVersionOption,
 } from '@/components/shared/JiraFilterAtlaskit';
+
+// Drag-and-drop support for row ranking (2026-05-12 Tier 1 gap)
+import {
+  DndContext,
+  DragEndEvent,
+  closestCenter,
+} from '@dnd-kit/core';
+import {
+  SortableContext,
+  verticalListSortingStrategy,
+  useSortable,
+} from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
+
 // ChevronsLeft/ChevronsRight (first/last page) have no ADS equivalent — inline SVG below
 const AkChevronsLeftIcon = () => (
   <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden><path d="M18.41 16.59L13.82 12l4.59-4.59L17 6l-6 6 6 6zM6 6h2v12H6z"/></svg>
@@ -135,6 +149,51 @@ const AkChevronsLeftIcon = () => (
 const AkChevronsRightIcon = () => (
   <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden><path d="M5.59 7.41L10.18 12l-4.59 4.59L7 18l6-6-6-6zM16 6h2v12h-2z"/></svg>
 );
+
+/**
+ * DragHandleCell — useSortable hook for row ranking.
+ * Called for each BacklogItem row; returns a draggable span with visual feedback.
+ */
+function DragHandleCell({ row }: { row: BacklogItem }) {
+  const { attributes, listeners, setNodeRef, transform } = useSortable({ id: row.id });
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition: 'transform 200ms ease-out',
+  };
+  return (
+    <span
+      ref={setNodeRef}
+      style={style}
+      className="jira-drag-handle"
+      aria-hidden
+      {...attributes}
+      {...listeners}
+    >
+      <span
+        style={{
+          display: 'inline-flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          width: 16,
+          height: 16,
+          cursor: listeners ? 'grabbing' : 'grab',
+          color: token('color.icon.subtle', '#626F86'),
+          visibility: 'hidden', /* JiraTable.tsx tr:hover CSS shows it */
+        }}
+      >
+        {/* 6-dot grip — no ADS equivalent; inline SVG */}
+        <svg width="10" height="16" viewBox="0 0 10 16" fill="currentColor" aria-hidden>
+          <circle cx="2" cy="2" r="1.5"/>
+          <circle cx="8" cy="2" r="1.5"/>
+          <circle cx="2" cy="8" r="1.5"/>
+          <circle cx="8" cy="8" r="1.5"/>
+          <circle cx="2" cy="14" r="1.5"/>
+          <circle cx="8" cy="14" r="1.5"/>
+        </svg>
+      </span>
+    </span>
+  );
+}
 
 // Apr 19, 2026 — U-4 (BAU Dashboard Atlaskit Conversion handover §2):
 // migrated outer page wrapper (blue page bg + white card + h1) onto the
@@ -1660,38 +1719,17 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
       // Jira-parity: 16px-wide drag-handle column at the leftmost position.
       // Shows a 6-dot grip icon on row hover; invisible at rest.
       // CSS in JiraTable.tsx (`.jira-drag-handle`) handles visibility.
-      // No functional DnD yet — visual parity only for Phase 4.
+      // 2026-05-12: functional DnD with @dnd-kit/sortable. DragHandleCell
+      // uses useSortable hook to track drag state and apply transform.
+      // Visibility gate: drag handle only shows when sortBy=rank_order AND
+      // groupBy=null (no active sort or grouping — matches Jira behavior).
       id: '__drag',
       label: '',
       width: 3,
       align: 'center' as const,
       alwaysVisible: true,
-      cell: () => (
-        <span
-          className="jira-drag-handle"
-          aria-hidden
-          style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            width: 16,
-            height: 16,
-            cursor: 'grab',
-            color: token('color.icon.subtle', '#626F86'),
-            visibility: 'hidden',  /* JiraTable.tsx tr:hover CSS shows it */
-          }}
-        >
-          {/* 6-dot grip — no ADS equivalent; inline SVG */}
-          <svg width="10" height="16" viewBox="0 0 10 16" fill="currentColor" aria-hidden>
-            <circle cx="2" cy="2" r="1.5"/>
-            <circle cx="8" cy="2" r="1.5"/>
-            <circle cx="2" cy="8" r="1.5"/>
-            <circle cx="8" cy="8" r="1.5"/>
-            <circle cx="2" cy="14" r="1.5"/>
-            <circle cx="8" cy="14" r="1.5"/>
-          </svg>
-        </span>
-      ),
+      hidden: sortBy !== 'rank_order' || groupBy !== null,
+      cell: ({ row }) => <DragHandleCell row={row} />,
     },
     {
       id: '__checkbox',
@@ -2816,6 +2854,58 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
           }}
         >
           <div style={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column' }}>
+          <DndContext
+            collisionDetection={closestCenter}
+            onDragEnd={async (event: DragEndEvent) => {
+              const { active, over } = event;
+              if (!over || active.id === over.id || !projectKey) return;
+
+              // Find the dragged row and target row
+              const draggedRow = sortedRows.find((r) => r.id === active.id);
+              const overRow = sortedRows.find((r) => r.id === over.id);
+              if (!draggedRow || !overRow) return;
+
+              // Calculate new rank_order: midpoint between neighbors
+              // If dragging above overRow: new_rank = (overRow.rank_order - ABOVE_rank_order) / 2
+              // If dragging below overRow: new_rank = (BELOW_rank_order - overRow.rank_order) / 2
+              const draggedIndex = sortedRows.indexOf(draggedRow);
+              const overIndex = sortedRows.indexOf(overRow);
+              const direction = draggedIndex < overIndex ? 1 : -1; // 1 = down, -1 = up
+
+              let newRankOrder: number;
+              if (direction === 1) {
+                // Dragging down: insert after overRow
+                const below = sortedRows[overIndex + 1];
+                const currentRank = overRow.rank_order ?? 0;
+                const belowRank = below?.rank_order ?? (currentRank + 100);
+                newRankOrder = (currentRank + belowRank) / 2;
+              } else {
+                // Dragging up: insert before overRow
+                const above = sortedRows[overIndex - 1];
+                const currentRank = overRow.rank_order ?? 0;
+                const aboveRank = above?.rank_order ?? Math.max(0, currentRank - 100);
+                newRankOrder = (aboveRank + currentRank) / 2;
+              }
+
+              // Update the rank_order via bulkUpdate mutation (batch-optimized)
+              try {
+                await bulkUpdate.mutateAsync({
+                  ids: [draggedRow.id],
+                  patch: { rank_order: newRankOrder },
+                });
+                // Invalidate backlog queries to re-fetch and re-sort by rank_order
+                queryClient.invalidateQueries({ queryKey: ['backlog-stories-v2', projectId] });
+                queryClient.invalidateQueries({ queryKey: ['backlog-epics', projectId] });
+              } catch (e: any) {
+                flag.error('Rank update failed', e?.message ?? String(e));
+              }
+            }}
+          >
+            <SortableContext
+              items={sortedRows.map((r) => r.id)}
+              strategy={verticalListSortingStrategy}
+              disabled={sortBy !== 'rank_order' || groupBy !== null}
+            >
           <JiraTable<BacklogItem>
             columns={filteredCols}
             data={groupedRows ? undefined : sortedRows}
@@ -3131,6 +3221,8 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
               />
             }
           />
+            </SortableContext>
+          </DndContext>
           </div>
         </div>
       </div>

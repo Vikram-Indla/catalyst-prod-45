@@ -64,3 +64,7 @@ export type {
 // Atlaskit-Flag based toast helpers — replaces sonner on JiraTable surfaces.
 export { FlagsHost, showFlag, flag } from './flags';
 export type { FlagAppearance, ShowFlagInput } from './flags';
+
+// Bulk selection UI
+export { BulkFooterBar } from './BulkFooterBar';
+export type { BulkFooterBarProps } from './BulkFooterBar';
