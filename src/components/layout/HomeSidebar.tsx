@@ -26,6 +26,7 @@
  *     not a project, surfacing it was misleading).
  */
 import React, { useMemo } from 'react';
+import EmptyState from '@atlaskit/empty-state';
 import ClockIcon from '@atlaskit/icon/core/clock';
 import FolderOpenIcon from '@atlaskit/icon/core/folder-open';
 import GridIcon from '@atlaskit/icon/core/grid';
@@ -237,33 +238,14 @@ export default function HomeSidebar({
           {
             id: 'recent-empty-state',
             title: (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 8, width: '100%' }}>
-                <span style={{ color: 'var(--ds-text-subtlest, #626F86)', fontSize: '11px' }}>
-                  No recent pages yet
-                </span>
-                <a
-                  href="/project-hub/projects"
-                  style={{
-                    color: 'var(--ds-link, #0052CC)',
-                    fontSize: '11px',
-                    fontWeight: 500,
-                    textDecoration: 'none',
-                    cursor: 'pointer',
-                  }}
-                  onMouseEnter={(e) => {
-                    (e.target as HTMLAnchorElement).style.textDecoration = 'underline';
-                  }}
-                  onMouseLeave={(e) => {
-                    (e.target as HTMLAnchorElement).style.textDecoration = 'none';
-                  }}
-                >
-                  Explore projects →
-                </a>
-              </div>
+              <EmptyState
+                image={<ClockIcon size="large" label="no recent pages" />}
+                heading="No recent pages yet"
+                description="Your recently viewed work appears here. Start by exploring our projects."
+              />
             ),
-            path: '#recent-empty-state',
+            path: '/project-hub/projects',
             icon: ClockIcon,
-            onClick: () => {},
           },
         ]
       : recentLocations.map((loc) => ({
