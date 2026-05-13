@@ -75,6 +75,7 @@ import SparkIconCore from '@atlaskit/icon/core/ai-chat';
    map). Replacing unicode `▾` character with the canonical Atlaskit glyph. */
 import ChevronDownIcon from '@atlaskit/icon/glyph/chevron-down';
 import type { WorkItem } from '@/types/workItem.types';
+import './ask-caty-input.css';
 
 /** Kept for back-compat with any remaining callsite imports — layout is
  *  always split; the toggle was removed (2026-05-04 jira-compare cycle 2). */
@@ -116,6 +117,39 @@ const FACET_ORDER: FilterFacet[] = [
   'fixVersions', 'parent', 'assignee', 'workType',
   'labels', 'status', 'priority', 'reporter',
   'resolution', 'sprint', 'storyPoints',
+];
+
+/**
+ * Ask Caty rotating placeholder samples — typed out one at a time
+ * with a typewriter animation, then erased and the next one starts.
+ *
+ * `${project}` is interpolated to the active project key at render
+ * time. Phrasings deliberately span the structured-filter shapes the
+ * Layer 2 AI parser will support (assignee, status, priority, type,
+ * is_unassigned, is_watching, date ranges, free-text), so users see
+ * the kind of queries that will actually work once the AI lands.
+ *
+ * Longer, more conversational phrasings work better here — they
+ * teach the user that Caty handles natural language, not just keyword
+ * search. Aim for ~50–90 chars each; mix imperative ("Show me…") and
+ * interrogative ("Which…?") forms so the animation doesn't feel
+ * repetitive across cycles.
+ */
+const ASK_CATY_PLACEHOLDER_SAMPLES: string[] = [
+  'Show me high-priority bugs assigned to me in ${project} that are still open',
+  'Which work items in ${project} have been blocked for more than three days?',
+  "Find stories I'm watching in ${project} that haven't moved in over a week",
+  'List all critical incidents in ${project} reported in the last seven days',
+  'Show unassigned bugs in ${project} that need triage',
+  'Which tasks in ${project} are due before the end of this week?',
+  'Find work items in ${project} that are currently in code review',
+  'Show me everything in ${project} created this week but not started',
+  'Which stories in ${project} have no estimate and no acceptance criteria?',
+  'List incidents in ${project} that are still open from last sprint',
+  'Show work items in ${project} blocked by another ticket I own',
+  "Find issues in ${project} that haven't been updated in two weeks",
+  "What's assigned to me in ${project} with no due date set?",
+  'Show me all QA bugs reported against ${project} this month',
 ];
 
 /* jira-compare 2026-05-03 Round 8 — chip-bar refactor.
@@ -1029,6 +1063,63 @@ export function AllWorkToolbar({
     }
   }, [askCatyOpen]);
 
+  /* ── Ask Caty rotating typewriter placeholder ──
+     Four-phase state machine drives one transition per render:
+       type      → add chars one at a time (~50ms with jitter)
+       pauseAfter → 1.5s pause to let the user read the full sentence
+       erase     → backspace one char at a time (~25ms — faster than typing,
+                   matches the Jira / GitHub Copilot / Linear pattern)
+       pauseBefore → 0.5s gap before the next sample starts typing
+
+     Auto-pauses while askCatyQuery is non-empty (the moment the user
+     types) and resumes when the input is cleared. Token-aware: stops
+     entirely when the bar is closed so we don't run timers in the
+     background. */
+  type PhMode = 'type' | 'pauseAfter' | 'erase' | 'pauseBefore';
+  const [phIdx, setPhIdx] = useState(0);
+  const [phText, setPhText] = useState('');
+  const [phMode, setPhMode] = useState<PhMode>('type');
+
+  useEffect(() => {
+    if (!askCatyOpen) return;
+    if (askCatyQuery !== '') return; // user is typing — pause animation
+
+    const sample = (ASK_CATY_PLACEHOLDER_SAMPLES[phIdx] ?? '').replace(
+      '${project}',
+      projectKey ?? 'this project',
+    );
+
+    let timeoutId: ReturnType<typeof setTimeout>;
+    if (phMode === 'type') {
+      if (phText.length < sample.length) {
+        // Slight jitter so the cadence feels human, not metronomic.
+        const delay = 45 + Math.random() * 30;
+        timeoutId = setTimeout(() => {
+          setPhText(sample.slice(0, phText.length + 1));
+        }, delay);
+      } else {
+        timeoutId = setTimeout(() => setPhMode('pauseAfter'), 1500);
+      }
+    } else if (phMode === 'pauseAfter') {
+      timeoutId = setTimeout(() => setPhMode('erase'), 0);
+    } else if (phMode === 'erase') {
+      if (phText.length > 0) {
+        timeoutId = setTimeout(() => {
+          setPhText(phText.slice(0, -1));
+        }, 22);
+      } else {
+        timeoutId = setTimeout(() => setPhMode('pauseBefore'), 0);
+      }
+    } else if (phMode === 'pauseBefore') {
+      timeoutId = setTimeout(() => {
+        setPhIdx((i) => (i + 1) % ASK_CATY_PLACEHOLDER_SAMPLES.length);
+        setPhMode('type');
+      }, 500);
+    }
+
+    return () => clearTimeout(timeoutId);
+  }, [askCatyOpen, askCatyQuery, phIdx, phText, phMode, projectKey]);
+
   /* Controlled-or-uncontrolled filter popup open state. */
   const [filterOpenLocal, setFilterOpenLocal] = useState(false);
   const filterOpen = filterOpenProp !== undefined ? filterOpenProp : filterOpenLocal;
@@ -1123,21 +1214,45 @@ export function AllWorkToolbar({
           borderRadius: 8, padding: '0 12px', height: 40, boxSizing: 'border-box',
         }}>
           <SparkIcon />
-          <input
-            ref={askCatyInputRef}
-            value={askCatyQuery}
-            onChange={e => setAskCatyQuery(e.target.value)}
-            onKeyDown={e => {
-              if (e.key === 'Enter') handleAskCatySubmit();
-              if (e.key === 'Escape') { setAskCatyOpen(false); setAskCatyQuery(''); }
-            }}
-            placeholder={`Ask Caty anything about ${projectKey}…`}
-            style={{
-              flex: 1, border: 'none', outline: 'none', fontSize: 14, lineHeight: '20px',
-              background: 'transparent', color: 'var(--ds-text, #292A2E)', fontFamily: 'inherit',
-            }}
-            aria-label="Ask Caty"
-          />
+          {/* Wrapped in a relative container so the typewriter overlay
+              can sit on top of the empty input. The native `placeholder`
+              attribute is intentionally empty — the overlay below owns
+              the placeholder UX so we can animate it. */}
+          <div style={{ position: 'relative', flex: 1, display: 'flex', alignItems: 'center' }}>
+            <input
+              ref={askCatyInputRef}
+              value={askCatyQuery}
+              onChange={e => setAskCatyQuery(e.target.value)}
+              onKeyDown={e => {
+                if (e.key === 'Enter') handleAskCatySubmit();
+                if (e.key === 'Escape') { setAskCatyOpen(false); setAskCatyQuery(''); }
+              }}
+              placeholder=""
+              style={{
+                width: '100%', border: 'none', outline: 'none', fontSize: 14, lineHeight: '20px',
+                background: 'transparent', color: 'var(--ds-text, #292A2E)', fontFamily: 'inherit',
+              }}
+              aria-label="Ask Caty"
+            />
+            {askCatyQuery === '' && (
+              <div
+                aria-hidden="true"
+                style={{
+                  position: 'absolute',
+                  top: 0, left: 0, right: 0, bottom: 0,
+                  display: 'flex', alignItems: 'center',
+                  pointerEvents: 'none',
+                  color: 'var(--ds-text-subtlest, #6B778C)',
+                  fontSize: 14, lineHeight: '20px',
+                  fontFamily: 'inherit',
+                  whiteSpace: 'nowrap', overflow: 'hidden',
+                }}
+              >
+                {phText}
+                <span className="ask-caty-cursor" />
+              </div>
+            )}
+          </div>
           <button
             onClick={handleAskCatySubmit}
             disabled={!askCatyQuery.trim()}

@@ -1,0 +1,21 @@
+/*
+ * Ask Caty input — animated typewriter placeholder cursor.
+ * The placeholder text itself is React-driven (state machine in
+ * AllWorkToolbar.tsx); only the blinking caret needs CSS because
+ * inline styles can't carry @keyframes.
+ */
+.ask-caty-cursor {
+  display: inline-block;
+  width: 1px;
+  height: 16px;
+  background: currentColor;
+  margin-left: 2px;
+  vertical-align: text-bottom;
+  animation: ask-caty-cursor-blink 1s steps(2) infinite;
+}
+
+@keyframes ask-caty-cursor-blink {
+  to {
+    opacity: 0;
+  }
+}
