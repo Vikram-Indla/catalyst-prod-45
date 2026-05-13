@@ -3,8 +3,10 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.0";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Methods": "POST, OPTIONS",
   "Access-Control-Allow-Headers":
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
+  "Access-Control-Max-Age": "86400",
 };
 
 const IMPROVE_INSTRUCTIONS: Record<string, string> = {
@@ -294,7 +296,252 @@ Return JSON only: {"suggestions": ["...", "...", "..."]}`;
       (t && PER_TYPE_FOCUS[t]) || PER_TYPE_FOCUS.Default;
 
     // ─────────────────────────────────────────────────────────────
-    // Branch: improve_description_v2
+    // Branch: improve_description_v2 (STREAMING variant)
+    //   Triggered when `body.stream === true`. Streams the AI output
+    //   as NDJSON (one JSON object per line) so the frontend can
+    //   render text incrementally — matches Jira's Rovo "Improve
+    //   description" typewriter UX. Multimodal: if `attachment_urls`
+    //   is provided, image URLs are attached to the prompt so the AI
+    //   can see screenshots / mockups.
+    //
+    //   NDJSON event shape:
+    //     {"type":"start"}
+    //     {"type":"text","delta":"chunk of text"}
+    //     ...
+    //     {"type":"done","full_text":"complete output"}
+    //     {"type":"error","message":"..."}
+    //
+    //   Output is a single markdown doc — frontend splits "Description"
+    //   and "Acceptance criteria" sections after the stream completes.
+    //   This matches Jira's behaviour: the AI writes one continuous
+    //   document, sections are headings inside it.
+    // ─────────────────────────────────────────────────────────────
+    if (improve_type === "improve_description_v2" && body.stream === true) {
+      const issueType: string = body.issue_type ?? "Default";
+      const subInstruction =
+        IMPROVE_INSTRUCTIONS[body.improve_sub_type ?? "improve_clarify"] ??
+          IMPROVE_INSTRUCTIONS.improve_clarify;
+      const typeFocus = focusFor(issueType);
+      const focusText = focus_hint ? `\nUser hint: ${focus_hint}` : "";
+      // Sanity cap on attachment URLs — protects the gateway from
+      // oversized payloads if the caller passes a huge attachment set.
+      // 5 images is plenty for description context.
+      const MAX_ATTACHMENTS = 5;
+      const attachmentUrls: string[] = Array.isArray(body.attachment_urls)
+        ? body.attachment_urls
+            .filter((u: unknown) => typeof u === "string" && /^https?:\/\//.test(u as string))
+            .slice(0, MAX_ATTACHMENTS)
+        : [];
+
+      const userPromptText =
+        `You are a senior business analyst writing requirements for an enterprise portfolio management platform used by the Saudi Ministry of Industry. Write in English. Output a single Markdown document — NO JSON, no code fences, no preamble.
+
+Work item type: ${issueType}
+Type-specific focus: ${typeFocus}
+
+Operation: ${subInstruction}${focusText}
+
+Title: ${issue_summary || "(untitled)"}
+Current description: ${current_description || "(empty)"}
+Current acceptance criteria: ${current_ac || "(none)"}
+${attachmentUrls.length > 0 ? `\nAttached images: ${attachmentUrls.length} (review them for visual context — UI mockups, screenshots, diagrams).` : ""}
+
+Produce the improved write-up with two top-level sections (use the exact heading text):
+
+## Description
+<the improved description body — narrative paragraphs, bullet points where they help readability>
+
+## Acceptance criteria
+<Given/When/Then bullets, or a clean list. Skip this section entirely if the current AC is empty AND the work-item type doesn't typically need AC>
+
+Begin immediately with the "## Description" heading. No preamble.`;
+
+      // Build content blocks — text + any image URLs (multimodal).
+      const userContent: Array<Record<string, unknown>> = [
+        { type: "text", text: userPromptText },
+      ];
+      for (const url of attachmentUrls) {
+        userContent.push({ type: "image_url", image_url: { url } });
+      }
+
+      // Upstream AbortController — wired into the ReadableStream's
+      // cancel() handler below so a client disconnect (Esc / tab close
+      // / browser navigation) propagates upstream and halts the
+      // Lovable call instead of burning tokens on a doc nobody will
+      // see.
+      const upstreamAbort = new AbortController();
+
+      const aiResp = await fetch(AI_GATEWAY_URL, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${LOVABLE_API_KEY}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          model: DEFAULT_MODEL,
+          messages: [
+            {
+              role: "system",
+              content:
+                "You are a senior business analyst. Output only Markdown. No JSON, no code fences, no preamble.",
+            },
+            { role: "user", content: userContent },
+          ],
+          temperature: 0.4,
+          // 2000 (vs the legacy 1500) gives complex Epics enough room
+          // for a narrative description + Given/When/Then AC without
+          // the AI getting cut off mid-sentence at the limit.
+          max_tokens: 2000,
+          stream: true,
+        }),
+        signal: upstreamAbort.signal,
+      });
+
+      if (!aiResp.ok || !aiResp.body) {
+        const status = aiResp.status;
+        const errBody = aiResp.body ? await aiResp.text() : "";
+        console.error("improve_description_v2 (stream) gateway error:", status, errBody);
+        await logGovernance({
+          admin_jwt: null,
+          action: "improve_description_v2_stream",
+          payload: { issue_type: issueType, has_attachments: attachmentUrls.length > 0 },
+          status: "error",
+          error_message: `gateway_${status}`,
+        });
+        const code = status === 429 ? "rate_limited" : status === 402 ? "payment_required" : "gateway_error";
+        return new Response(
+          JSON.stringify({ error: code, message: status === 429 ? "Rate limits exceeded, please try again later." : status === 402 ? "Payment required, please add funds." : "AI gateway error" }),
+          { status, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+        );
+      }
+
+      // Pipe OpenAI-compatible SSE → NDJSON.
+      // Lovable AI gateway returns standard `data: {...}\n\n` events
+      // ending with `data: [DONE]`. We unwrap the `choices[0].delta.content`
+      // and re-emit one JSON object per line for the frontend.
+      const reader = aiResp.body.getReader();
+      const stream = new ReadableStream({
+        async start(controller) {
+          const enc = new TextEncoder();
+          const writeEvent = (obj: Record<string, unknown>) => {
+            controller.enqueue(enc.encode(JSON.stringify(obj) + "\n"));
+          };
+          writeEvent({ type: "start" });
+
+          const dec = new TextDecoder();
+          let buffer = "";
+          let fullText = "";
+          let upstreamErrored = false;
+
+          try {
+            while (true) {
+              const { value, done } = await reader.read();
+              if (done) break;
+              buffer += dec.decode(value, { stream: true });
+
+              // SSE frames are separated by blank lines (\n\n)
+              let sepIdx;
+              while ((sepIdx = buffer.indexOf("\n\n")) !== -1) {
+                const frame = buffer.slice(0, sepIdx).trim();
+                buffer = buffer.slice(sepIdx + 2);
+                if (!frame) continue;
+
+                // Each frame is one or more `data: ...` lines
+                for (const line of frame.split("\n")) {
+                  if (!line.startsWith("data:")) continue;
+                  const payload = line.slice(5).trim();
+                  if (payload === "[DONE]") continue;
+                  try {
+                    const parsed = JSON.parse(payload);
+                    // OpenAI-compatible gateways can deliver a mid-stream
+                    // error inside a data frame (rate-limit hit late, model
+                    // timeout, etc.). Detect and surface it instead of
+                    // emitting a silent truncated `done`.
+                    if (parsed?.error) {
+                      const msg =
+                        typeof parsed.error === "string"
+                          ? parsed.error
+                          : parsed.error?.message ?? "Upstream AI error";
+                      writeEvent({ type: "error", message: String(msg) });
+                      upstreamErrored = true;
+                      break;
+                    }
+                    const delta: string | undefined =
+                      parsed?.choices?.[0]?.delta?.content;
+                    if (typeof delta === "string" && delta.length > 0) {
+                      fullText += delta;
+                      writeEvent({ type: "text", delta });
+                    }
+                  } catch {
+                    // Malformed chunk — skip rather than killing the stream
+                  }
+                }
+                if (upstreamErrored) break;
+              }
+              if (upstreamErrored) break;
+            }
+            if (!upstreamErrored) {
+              writeEvent({ type: "done", full_text: fullText });
+            }
+          } catch (e) {
+            // Reader error — typically network blip OR our own abort
+            // (which is OK; just stop emitting).
+            if ((e as DOMException)?.name !== "AbortError") {
+              writeEvent({
+                type: "error",
+                message: e instanceof Error ? e.message : "Stream error",
+              });
+            }
+          } finally {
+            try {
+              controller.close();
+            } catch {
+              // Already closed (e.g. consumer cancelled) — fine.
+            }
+          }
+        },
+        cancel(reason) {
+          // Client disconnected (Esc / tab close / navigation). Abort
+          // the upstream Lovable fetch so we stop generating tokens
+          // for a response nobody will read. Best-effort.
+          try {
+            upstreamAbort.abort(reason);
+          } catch {
+            /* swallow */
+          }
+          try {
+            reader.cancel(reason);
+          } catch {
+            /* swallow */
+          }
+        },
+      });
+
+      // Fire-and-forget audit (non-blocking)
+      logGovernance({
+        admin_jwt: null,
+        action: "improve_description_v2_stream",
+        payload: {
+          issue_type: issueType,
+          sub_type: body.improve_sub_type ?? "improve_clarify",
+          attachment_count: attachmentUrls.length,
+        },
+        status: "ok",
+      }).catch(() => {});
+
+      return new Response(stream, {
+        headers: {
+          ...corsHeaders,
+          "Content-Type": "application/x-ndjson; charset=utf-8",
+          "Cache-Control": "no-cache, no-transform",
+          // Hint reverse proxies / CDNs not to buffer the response
+          "X-Accel-Buffering": "no",
+        },
+      });
+    }
+
+    // ─────────────────────────────────────────────────────────────
+    // Branch: improve_description_v2 (NON-STREAMING, legacy)
     //   Per-type description rewrite. Returns
     //   { description, acceptance_criteria }.
     //   Differs from the legacy default branch by branching on

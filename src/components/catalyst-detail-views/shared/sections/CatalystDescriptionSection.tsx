@@ -39,7 +39,93 @@ const AdfDescriptionField = lazy(
   () => import('@/components/shared/rich-text/atlaskit/AdfDescriptionField'),
 );
 import EpicDescriptionRenderer from '@/components/shared/rich-text/atlaskit/EpicDescriptionRenderer';
+import { useCatyImprove } from '@/components/catalyst-detail-views/improve/catyImproveStore';
+import { CatyStreamingOverlay } from '@/components/catalyst-detail-views/improve/CatyStreamingOverlay';
 import type { PhIssue } from '../types';
+
+/**
+ * Minimal markdown → ADF converter for Caty's "Improve description"
+ * stream output. Handles the four block types Caty actually emits:
+ * `## Heading`, `- bullet`, `1. ordered`, plain paragraphs. Inline
+ * marks (bold/italic/code) are NOT handled — the user can edit the
+ * doc afterward to apply emphasis. Good enough for v1; a richer
+ * pipeline (e.g. via remark/rehype + ADF) is a later upgrade.
+ */
+function catyMarkdownToAdf(md: string): { type: 'doc'; version: number; content: unknown[] } {
+  if (!md.trim()) {
+    return { type: 'doc', version: 1, content: [{ type: 'paragraph' }] };
+  }
+  const lines = md.split('\n');
+  const blocks: unknown[] = [];
+  let i = 0;
+  while (i < lines.length) {
+    const line = lines[i] ?? '';
+    const hMatch = line.match(/^(#{1,6})\s+(.+)$/);
+    if (hMatch) {
+      blocks.push({
+        type: 'heading',
+        attrs: { level: hMatch[1].length },
+        content: [{ type: 'text', text: hMatch[2] }],
+      });
+      i++;
+      continue;
+    }
+    if (/^[-*]\s+/.test(line)) {
+      const items: unknown[] = [];
+      while (i < lines.length && /^[-*]\s+/.test(lines[i] ?? '')) {
+        items.push({
+          type: 'listItem',
+          content: [{
+            type: 'paragraph',
+            content: [{ type: 'text', text: (lines[i] ?? '').replace(/^[-*]\s+/, '') }],
+          }],
+        });
+        i++;
+      }
+      blocks.push({ type: 'bulletList', content: items });
+      continue;
+    }
+    if (/^\d+\.\s+/.test(line)) {
+      const items: unknown[] = [];
+      while (i < lines.length && /^\d+\.\s+/.test(lines[i] ?? '')) {
+        items.push({
+          type: 'listItem',
+          content: [{
+            type: 'paragraph',
+            content: [{ type: 'text', text: (lines[i] ?? '').replace(/^\d+\.\s+/, '') }],
+          }],
+        });
+        i++;
+      }
+      blocks.push({ type: 'orderedList', content: items });
+      continue;
+    }
+    if (!line.trim()) {
+      i++;
+      continue;
+    }
+    const paraLines: string[] = [];
+    while (
+      i < lines.length &&
+      (lines[i] ?? '').trim() &&
+      !/^(#{1,6}\s|[-*]\s|\d+\.\s)/.test(lines[i] ?? '')
+    ) {
+      paraLines.push(lines[i] ?? '');
+      i++;
+    }
+    if (paraLines.length > 0) {
+      blocks.push({
+        type: 'paragraph',
+        content: [{ type: 'text', text: paraLines.join(' ') }],
+      });
+    }
+  }
+  return {
+    type: 'doc',
+    version: 1,
+    content: blocks.length > 0 ? blocks : [{ type: 'paragraph' }],
+  };
+}
 
 /* Atlaskit description — canonical across ALL issue types.
    2026-05-03 (Council verdict): Converted lazy imports to static imports
@@ -308,6 +394,15 @@ export function CatalystDescriptionSection({ issue, label = 'Description' }: Cat
   // reconcile on every mouse twitch over the header band.
   const queryClient = useQueryClient();
 
+  // Caty-improve store — when the dropdown fires, the payload becomes
+  // truthy. We only render the overlay if the payload's issueKey
+  // matches THIS section's issue (multiple detail views could be open
+  // in tabs; each owns its own description).
+  const catyPayload = useCatyImprove((s) => s.payload);
+  const stopCatyImprove = useCatyImprove((s) => s.stop);
+  const catyActiveForThisIssue =
+    catyPayload != null && issue?.issue_key != null && catyPayload.issueKey === issue.issue_key;
+
   // Idle-time prefetch: kick off editor chunk download after paint so that
   // by the time the user clicks to edit, the ~2MB chunk is already cached.
   useEffect(() => {
@@ -357,6 +452,42 @@ export function CatalystDescriptionSection({ issue, label = 'Description' }: Cat
     if (!issue) return;
     saveDescriptionMutation.mutate(adfJson);
   }, [issue, saveDescriptionMutation]);
+
+  /**
+   * Caty accept handler — converts the streamed markdown to ADF for
+   * the description column and writes acceptance criteria as plain
+   * text. Both writes go in one transaction-like call so the UI
+   * doesn't flicker mid-save.
+   */
+  const handleCatyApply = useCallback(
+    async (
+      _fullMarkdown: string,
+      parts: { description: string; acceptanceCriteria: string },
+    ) => {
+      if (!issue?.issue_key) return;
+      const adfDoc = catyMarkdownToAdf(parts.description);
+      const update: Record<string, unknown> = { description_adf: adfDoc };
+      if (parts.acceptanceCriteria) {
+        update.acceptance_criteria = parts.acceptanceCriteria;
+      }
+      const { error } = await supabase
+        .from('ph_issues')
+        .update(update as never)
+        .eq('issue_key', issue.issue_key);
+      if (error) {
+
+        console.error('[CatalystDescriptionSection] Caty apply failed', error);
+        return;
+      }
+      stopCatyImprove();
+      queryClient.invalidateQueries({ queryKey: ['cv-issue-detail', issue.id] });
+    },
+    [issue?.issue_key, issue?.id, queryClient, stopCatyImprove],
+  );
+
+  const handleCatyCancel = useCallback(() => {
+    stopCatyImprove();
+  }, [stopCatyImprove]);
 
   const { user } = useAuth();
 
@@ -441,7 +572,20 @@ export function CatalystDescriptionSection({ issue, label = 'Description' }: Cat
         )}
       </div>
 
-      {editing && issue ? (
+      {catyActiveForThisIssue && catyPayload ? (
+        <CatyStreamingOverlay
+          key={catyPayload.issueKey}
+          issueKey={catyPayload.issueKey}
+          issueType={catyPayload.issueType}
+          issueSummary={catyPayload.issueSummary}
+          currentDescription={catyPayload.currentDescription}
+          currentAcceptanceCriteria={catyPayload.currentAcceptanceCriteria}
+          attachmentUrls={catyPayload.attachmentUrls}
+          improveSubType={catyPayload.improveSubType}
+          onApply={handleCatyApply}
+          onCancel={handleCatyCancel}
+        />
+      ) : editing && issue ? (
         <div>
           <Suspense fallback={<AtlaskitFallback minHeight={240} />}>
             <AdfDescriptionField
