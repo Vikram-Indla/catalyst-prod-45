@@ -371,7 +371,8 @@ export function SidebarBase({
                   {expanded && section.title && (
                     <div
                       style={{
-                        padding: '12px 12px 8px 12px',
+                        padding: '12px 12px 0 12px',
+                        marginBottom: '8px',
                         lineHeight: 1,
                       }}
                     >
