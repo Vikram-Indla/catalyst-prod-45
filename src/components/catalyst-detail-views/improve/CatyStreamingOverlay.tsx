@@ -18,7 +18,11 @@
  * No → resume.
  */
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import catalystAiLogo from '@/assets/catalyst-ai-logo.svg';
+// `/caty.svg` lives in `public/` — Vite serves it at site root, so the
+// string literal is the production path. Avoids a bundle round-trip
+// for what is a small static asset that may be swapped behind the
+// scenes (brand refresh, dark/light variants, etc.).
+const catalystAiLogo = '/caty.svg';
 import { fetchFunction } from '@/integrations/supabase/functionsRouter';
 import { supabase } from '@/integrations/supabase/client';
 import './caty-streaming-overlay.css';
@@ -370,7 +374,7 @@ export function CatyStreamingOverlay({
                 alt=""
                 width={14}
                 height={14}
-                className="caty-logo-spin"
+                className="caty-pulse"
                 style={{ display: 'block' }}
               />
             </span>
@@ -411,7 +415,7 @@ export function CatyStreamingOverlay({
                 alt=""
                 width={16}
                 height={16}
-                className="caty-logo-spin"
+                className="caty-pulse"
                 style={{ display: 'inline-block', verticalAlign: 'middle' }}
               />
               Caty is analyzing
@@ -571,7 +575,7 @@ export function CatyStreamingOverlay({
                 alt=""
                 width={16}
                 height={16}
-                className={phase === 'analyzing' ? 'caty-logo-spin' : ''}
+                className={phase === 'analyzing' ? 'caty-pulse' : ''}
                 style={{ display: 'inline-block' }}
               />
               <span>
