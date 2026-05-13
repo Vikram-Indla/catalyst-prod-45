@@ -348,9 +348,9 @@ export type LozengeAppearance =
 // 2026-05-10 via DOM probe — bg returned rgba(0,0,0,0)). Same fix pattern
 // already applied to status dropdown dots.
 const LOZENGE_BG: Record<LozengeAppearance, string> = {
-  success:    'rgb(179, 223, 114)',
-  inprogress: 'rgb(143, 184, 246)',
-  default:    'rgb(221, 222, 225)',
+  success:    'rgb(148, 199, 72)',    // #94C748 — Jira done category
+  inprogress: 'rgb(102, 157, 241)',   // #669DF1 — Jira in-progress category
+  default:    'rgb(220, 223, 228)',   // #DCDFE4 — Jira to-do category
   moved:      'rgb(243, 214, 100)',
   removed:    'rgb(255, 143, 115)',
   new:        'rgb(184, 172, 246)',
@@ -376,11 +376,11 @@ export function StatusPill({
       maxWidth: '200px',
     }}>
       <span style={{
-        fontSize: '11px',
-        fontWeight: 653,
+        fontSize: '14px',
+        fontWeight: 400,
         lineHeight: '16px',
         color: LOZENGE_FG,
-        textTransform: 'uppercase',
+        textTransform: 'none',
         letterSpacing: '0.165px',
         overflow: 'hidden',
         textOverflow: 'ellipsis',
