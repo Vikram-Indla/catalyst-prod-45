@@ -69,6 +69,8 @@ export interface Column<TRow> {
   renderFilterMenu?: (close: () => void) => ReactNode;
   /** When true, the chevron is always visible (filter active indicator). */
   hasActiveFilter?: boolean;
+  /** Optional row-level visibility gate — if present and returns false, the column is hidden for that row. */
+  include?: (row: TRow) => boolean;
 }
 
 /** Group definition for grouped rows. */
