@@ -70,7 +70,7 @@ import Modal, {
   ModalTransition,
 } from '@atlaskit/modal-dialog';
 import Select from '@atlaskit/select';
-import { FieldGroup, Label } from '@atlaskit/form';
+import { Fieldset, Label } from '@atlaskit/form';
 
 import {
   JiraTable,
@@ -1721,14 +1721,14 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
       // CSS in JiraTable.tsx (`.jira-drag-handle`) handles visibility.
       // 2026-05-12: functional DnD with @dnd-kit/sortable. DragHandleCell
       // uses useSortable hook to track drag state and apply transform.
-      // Visibility gate: drag handle only shows when sortBy=rank_order AND
+      // Visibility gate: drag handle only shows when sortKey=rank_order AND
       // groupBy=null (no active sort or grouping — matches Jira behavior).
       id: '__drag',
       label: '',
       width: 3,
       align: 'center' as const,
       alwaysVisible: true,
-      hidden: sortBy !== 'rank_order' || groupBy !== null,
+      hidden: sortKey !== 'rank_order' || groupBy !== null,
       cell: ({ row }) => <DragHandleCell row={row} />,
     },
     {
@@ -2904,7 +2904,7 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
             <SortableContext
               items={sortedRows.map((r) => r.id)}
               strategy={verticalListSortingStrategy}
-              disabled={sortBy !== 'rank_order' || groupBy !== null}
+              disabled={sortKey !== 'rank_order' || groupBy !== null}
             >
           <JiraTable<BacklogItem>
             columns={filteredCols}
@@ -3276,7 +3276,7 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
               <ModalTitle>Move {selectedIds.size} item{selectedIds.size === 1 ? '' : 's'} to...</ModalTitle>
             </ModalHeader>
             <ModalBody>
-              <FieldGroup>
+              <Fieldset>
                 <Label htmlFor="bulk-move-parent-select">Parent Epic</Label>
                 <Select
                   inputId="bulk-move-parent-select"
@@ -3286,7 +3286,7 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
                   placeholder="Select parent epic"
                   isClearable
                 />
-              </FieldGroup>
+              </Fieldset>
             </ModalBody>
             <ModalFooter>
               <Button appearance="subtle" onClick={() => setBulkMoveOpen(false)}>
