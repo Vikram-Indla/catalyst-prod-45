@@ -26,7 +26,6 @@
  *     not a project, surfacing it was misleading).
  */
 import React, { useMemo } from 'react';
-import EmptyState from '@atlaskit/empty-state';
 import ClockIcon from '@atlaskit/icon/core/clock';
 import FolderOpenIcon from '@atlaskit/icon/core/folder-open';
 import GridIcon from '@atlaskit/icon/core/grid';
@@ -236,16 +235,15 @@ export default function HomeSidebar({
       : recentLocations.length === 0
       ? [
           {
-            id: 'recent-empty-state',
+            id: 'recent-placeholder',
             title: (
-              <EmptyState
-                image={<ClockIcon size="large" label="no recent pages" />}
-                heading="No recent pages yet"
-                description="Your recently viewed work appears here. Start by exploring our projects."
-              />
+              <span style={{ color: 'var(--ds-text-subtlest, #626F86)', fontSize: '12px' }}>
+                No recent pages
+              </span>
             ),
-            path: '/project-hub/projects',
+            path: '#',
             icon: ClockIcon,
+            onClick: (e) => e.preventDefault(),
           },
         ]
       : recentLocations.map((loc) => ({
