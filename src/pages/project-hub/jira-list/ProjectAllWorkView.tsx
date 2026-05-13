@@ -32,6 +32,8 @@ import {
   type AllWorkView,
   type FilterState,
 } from './components/AllWorkToolbar';
+import { useCatySearch } from '@/components/caty/catySearchStore';
+import { applyCatyFilter } from '@/components/caty/applyCatyFilter';
 
 const CatalystDetailRouter = lazy(
   () => import('@/components/catalyst-detail-views/CatalystDetailRouter'),
@@ -83,14 +85,31 @@ export default function ProjectAllWorkView({ projectKey, projectId }: Props) {
     return () => window.removeEventListener('keydown', onKey);
   }, []);
 
+  /* Caty AI search filter — when the user has run an Ask Caty query
+     for THIS project AND it's resolved successfully, replace the
+     toolbar-driven filter pass with the AI-derived spec. Toolbar
+     selections are deliberately ignored while Caty is active so the
+     results match exactly what the user asked for; clearing the Caty
+     filter (via the chip below the bar or running a new project)
+     restores manual filtering. */
+  const catyStatus = useCatySearch((s) => s.status);
+  const catyFilter = useCatySearch((s) => s.filter);
+  const catyStoreProjectKey = useCatySearch((s) => s.projectKey);
+  const catyActive =
+    catyStatus === 'ready' &&
+    catyStoreProjectKey === projectKey &&
+    catyFilter !== null;
+
   /* Client-side filter pass — paginated useProjectAllWorkItems already
      fetches the whole project (1000s of rows), so a per-render .filter()
      on the items array is the right scope. Pushing the predicate into
      the SQL would force a refetch on every chip click. */
-  const filteredItems = useMemo(
-    () => items.filter(i => itemPassesFilters(i, toolbarFilters)),
-    [items, toolbarFilters],
-  );
+  const filteredItems = useMemo(() => {
+    if (catyActive && catyFilter) {
+      return applyCatyFilter(items, catyFilter);
+    }
+    return items.filter(i => itemPassesFilters(i, toolbarFilters));
+  }, [items, toolbarFilters, catyActive, catyFilter]);
 
   /** In narrow mode the middle panel is hidden — clicking a card opens
    *  StoryDetailModal as a full overlay instead (Jira parity). */
@@ -121,6 +140,51 @@ export default function ProjectAllWorkView({ projectKey, projectId }: Props) {
     urlParam: 'issue',
     autoSelectFirst: true,
   });
+
+  /* Caty auto-open — when an Ask Caty result just landed (status flips
+     to 'ready' with a new filter), force-select the top match.
+     The hook's autoSelectFirst path bails out when the URL still has
+     the pre-Caty `?issue=` param (deep-link guard treats it as
+     pending), which would leave the detail rail empty. Explicitly
+     calling selectItem rewires URL + activeItem in one shot.
+
+     IMPORTANT: WorkListPanel transforms the items it receives —
+     drops subtask types and sorts by created_date desc — so the
+     DOM-visible "first row" is NOT filteredItems[0]. We have to
+     replicate the same transformation here, otherwise auto-open
+     selects the array head while the user sees a different row at
+     the top of the rail. If WorkListPanel's sort/filter ever
+     changes, this needs to track. */
+  const lastCatyFilterRef = useRef<unknown>(null);
+  useEffect(() => {
+    if (
+      catyActive &&
+      catyFilter !== null &&
+      catyFilter !== lastCatyFilterRef.current
+    ) {
+      lastCatyFilterRef.current = catyFilter;
+      // Mirror WorkListPanel.tsx: subtask filter + created-date desc sort
+      const SUBTASK_TYPE_RE = /^(sub-?task|backend|frontend|figma|entity figma|integration)$/i;
+      const topLevel = filteredItems.filter((i) => {
+        const t = (i.type ?? '').toLowerCase();
+        const rawType = (i.rawType ?? '').toLowerCase();
+        return !SUBTASK_TYPE_RE.test(t) && !SUBTASK_TYPE_RE.test(rawType);
+      });
+      const sorted = [...topLevel].sort((a, b) => {
+        const av = (a as { jira_created_at?: string }).jira_created_at
+          ?? a.createdAt ?? a.id ?? '';
+        const bv = (b as { jira_created_at?: string }).jira_created_at
+          ?? b.createdAt ?? b.id ?? '';
+        const cmp = String(av) < String(bv) ? -1 : String(av) > String(bv) ? 1 : 0;
+        return -cmp; // desc, matches the panel's default sortDir
+      });
+      const top = sorted[0];
+      if (top) selectItem(top.id);
+    }
+    if (catyStatus !== 'ready') {
+      lastCatyFilterRef.current = null;
+    }
+  }, [catyActive, catyFilter, catyStatus, filteredItems, selectItem]);
 
   const handleNavigate = useCallback((id: string) => {
     selectItem(id);

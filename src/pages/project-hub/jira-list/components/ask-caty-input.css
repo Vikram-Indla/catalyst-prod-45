@@ -1,9 +1,24 @@
 /*
- * Ask Caty input — animated typewriter placeholder cursor.
- * The placeholder text itself is React-driven (state machine in
- * AllWorkToolbar.tsx); only the blinking caret needs CSS because
- * inline styles can't carry @keyframes.
+ * Ask Caty input — typewriter caret + Caty-rainbow gradient frame.
+ *
+ * Visual states:
+ *   - idle / typing → static rainbow border, no animation
+ *   - loading       → same border, rotating anticlockwise
+ *
+ * Implementation mirrors the linked-items overlay: an oversized square
+ * conic-gradient layer rotated via `transform`, clipped to the
+ * wrapper's rounded rectangle by overflow:hidden. Two pseudo-elements:
+ *   ::before — the gradient (z:-2). Animated only when .is-loading.
+ *   ::after  — surface mask sitting INSIDE the 1.5px border ring
+ *              (z:-1). Hides the gradient in the centre, leaving only
+ *              a thin coloured ring at the edge.
+ *
+ * Colours reuse the Atlassian-Intelligence palette we already use
+ * elsewhere (linked-items rainbow), so all Caty surfaces feel like
+ * the same product.
  */
+
+/* Typewriter caret — used by the rotating placeholder overlay. */
 .ask-caty-cursor {
   display: inline-block;
   width: 1px;
@@ -18,4 +33,159 @@
   to {
     opacity: 0;
   }
+}
+
+/* Rainbow gradient frame */
+.ask-caty-frame {
+  position: relative;
+  border-radius: 8px;
+  /* Padding is the visible border thickness — content sits inside. */
+  padding: 1.5px;
+  overflow: hidden;
+  isolation: isolate;
+  background: transparent;
+  box-sizing: border-box;
+}
+
+.ask-caty-frame::before {
+  content: "";
+  position: absolute;
+  /* Square gradient pad sized so any rotation angle still fully
+     covers the visible area without exposing a corner. */
+  width: 250%;
+  aspect-ratio: 1 / 1;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) rotate(0deg);
+  z-index: -2;
+  background: conic-gradient(
+    from 0deg,
+    #2684ff 0deg,
+    #6554c0 90deg,
+    #ff5630 180deg,
+    #ffab00 270deg,
+    #2684ff 360deg
+  );
+  pointer-events: none;
+}
+
+.ask-caty-frame::after {
+  content: "";
+  position: absolute;
+  /* Sits inside the 1.5px padding so it hides the gradient in the
+     centre and leaves only the edge ring visible. */
+  inset: 1.5px;
+  border-radius: 6.5px;
+  background: var(--ds-surface, #ffffff);
+  z-index: -1;
+  pointer-events: none;
+}
+
+/* Loading variant — rotate the gradient layer anticlockwise. The
+   `translate(-50%, -50%)` stays inside the keyframe so the square
+   keeps its centre point while spinning. */
+.ask-caty-frame.is-loading::before {
+  animation: ask-caty-rotate 3s linear infinite;
+}
+
+@keyframes ask-caty-rotate {
+  from {
+    transform: translate(-50%, -50%) rotate(0deg);
+  }
+  to {
+    transform: translate(-50%, -50%) rotate(-360deg);
+  }
+}
+
+/* Inner row — flexbox with explicit prefix / typing-area / suffix
+   slots. The whole row is wrapped in a <label> so clicking anywhere
+   between the icon and the button focuses the underlying input. */
+.ask-caty-row {
+  display: flex;
+  align-items: center;
+  gap: 12px; /* breathing room between icon ↔ text ↔ button */
+  height: 100%;
+  padding: 0 12px;
+  box-sizing: border-box;
+  cursor: text;
+}
+
+.ask-caty-row__prefix,
+.ask-caty-row__suffix {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+}
+
+.ask-caty-row__suffix {
+  cursor: default; /* Go button has its own pointer */
+}
+
+.ask-caty-row__field {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  height: 100%;
+}
+
+/* The typed-text input — completely chromeless. Browser defaults
+   (focus ring, autofill bg, spellcheck underline, search clear-X)
+   are all suppressed so the field reads as plain text on the bar. */
+.ask-caty-row__input {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0 0 0 6px; /* small inset so cursor/text don't sit flush against the icon gap */
+  border: 0;
+  outline: 0;
+  background: transparent;
+  box-shadow: none;
+  font: inherit;
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--ds-text, #292a2e);
+  appearance: none;
+  -webkit-appearance: none;
+  box-sizing: border-box;
+}
+
+.ask-caty-row__input:focus,
+.ask-caty-row__input:focus-visible,
+.ask-caty-row__input:active {
+  outline: 0;
+  box-shadow: none;
+  border: 0;
+}
+
+/* Suppress Chrome/Edge autofill yellow background */
+.ask-caty-row__input:-webkit-autofill,
+.ask-caty-row__input:-webkit-autofill:hover,
+.ask-caty-row__input:-webkit-autofill:focus {
+  -webkit-box-shadow: 0 0 0 1000px transparent inset;
+  -webkit-text-fill-color: var(--ds-text, #292a2e);
+  transition: background-color 5000s ease-in-out 0s;
+}
+
+/* Hide native search-input clear button */
+.ask-caty-row__input::-webkit-search-cancel-button,
+.ask-caty-row__input::-webkit-search-decoration {
+  appearance: none;
+  display: none;
+}
+
+.ask-caty-row__placeholder {
+  position: absolute;
+  inset: 0;
+  padding-left: 6px; /* match .ask-caty-row__input so animated text aligns with where typed text would appear */
+  display: flex;
+  align-items: center;
+  pointer-events: none;
+  color: var(--ds-text-subtlest, #6b778c);
+  font-size: 14px;
+  line-height: 20px;
+  white-space: nowrap;
+  overflow: hidden;
+  box-sizing: border-box;
 }

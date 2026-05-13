@@ -68,6 +68,9 @@ import { EditorMoreIcon } from '@/components/layout/ProjectHeaderChipIcons';
    color tokens). */
 import FilterIconCore from '@atlaskit/icon/core/filter';
 import SearchIconCore from '@atlaskit/icon/core/search';
+import ThumbsUpIconCore from '@atlaskit/icon/core/thumbs-up';
+import ThumbsDownIconCore from '@atlaskit/icon/core/thumbs-down';
+import InfoIconCore from '@atlaskit/icon/core/information';
 // ListIconCore and SplitIconCore removed — view toggle removed 2026-05-04
 import SparkIconCore from '@atlaskit/icon/core/ai-chat';
 /* jira-compare 2026-05-03 cycle 4 (Vikram caught ADS drift): chevron-down
@@ -76,6 +79,8 @@ import SparkIconCore from '@atlaskit/icon/core/ai-chat';
 import ChevronDownIcon from '@atlaskit/icon/glyph/chevron-down';
 import type { WorkItem } from '@/types/workItem.types';
 import './ask-caty-input.css';
+import { useCatySearch } from '@/components/caty/catySearchStore';
+import { useAuth } from '@/lib/auth';
 
 /** Kept for back-compat with any remaining callsite imports — layout is
  *  always split; the toggle was removed (2026-05-04 jira-compare cycle 2). */
@@ -1056,6 +1061,28 @@ export function AllWorkToolbar({
   const [askCatyQuery, setAskCatyQuery] = useState('');
   const askCatyInputRef = useRef<HTMLInputElement>(null);
 
+  // Caty AI search — store drives the AI call; the toolbar just dispatches
+  // the user query and reads back loading status for the gradient
+  // rotation. ProjectAllWorkView consumes the resulting filter spec.
+  const catySubmit = useCatySearch((s) => s.submit);
+  const catyClear = useCatySearch((s) => s.clear);
+  const catyStatus = useCatySearch((s) => s.status);
+  const catyStoreProjectKey = useCatySearch((s) => s.projectKey);
+  const catyReason = useCatySearch((s) => s.reason);
+  const catyErrorMessage = useCatySearch((s) => s.errorMessage);
+  const askCatyLoading =
+    catyStatus === 'loading' && catyStoreProjectKey === projectKey;
+  const askCatyHasResults =
+    catyStatus === 'ready' && catyStoreProjectKey === projectKey;
+  const askCatyHasError =
+    catyStatus === 'errored' && catyStoreProjectKey === projectKey;
+  const [askCatyFeedback, setAskCatyFeedback] = useState<'up' | 'down' | null>(null);
+  // Reset thumbs-up/down state whenever a new query is issued.
+  useEffect(() => {
+    if (catyStatus === 'loading') setAskCatyFeedback(null);
+  }, [catyStatus]);
+  const { user } = useAuth();
+
   useEffect(() => {
     if (askCatyOpen) {
       const t = setTimeout(() => askCatyInputRef.current?.focus(), 30);
@@ -1185,11 +1212,27 @@ export function AllWorkToolbar({
 
   const handleAskCatySubmit = () => {
     const q = askCatyQuery.trim();
-    if (!q) return;
+    if (!q || askCatyLoading) return;
+    // Layer 2 wired — fires the AI parser via the store. The view
+    // component (ProjectAllWorkView) subscribes to the same store
+    // and renders the filtered list when the response lands.
+    catySubmit({
+      query: q,
+      projectKey: projectKey ?? '',
+      currentUser:
+        user && (user as { id?: string }).id
+          ? {
+              id: (user as { id: string }).id,
+              name:
+                ((user as { user_metadata?: { full_name?: string }; email?: string }).user_metadata?.full_name ??
+                  (user as { email?: string }).email ??
+                  'me'),
+            }
+          : null,
+    });
+    // Also broadcast the legacy event so any external listeners (e.g.
+    // analytics) still fire.
     window.dispatchEvent(new CustomEvent('catalyst:ask-caty', { detail: { query: q, projectKey } }));
-    toast.info(`Ask Caty: "${q}"`);
-    setAskCatyOpen(false);
-    setAskCatyQuery('');
   };
 
   /* Ask Caty bar — shown when askCatyOpen is true; replaces entire toolbar row.
@@ -1199,7 +1242,7 @@ export function AllWorkToolbar({
       <div
         data-testid="catalyst-allwork-toolbar.ask-caty-bar"
         style={{
-          display: 'flex', alignItems: 'center', gap: 8,
+          display: 'flex', flexDirection: 'column', gap: 6,
           padding: '8px 12px',
           borderBottom: '1px solid var(--ds-border, #DFE1E6)',
           background: 'transparent',
@@ -1207,69 +1250,90 @@ export function AllWorkToolbar({
           fontFamily: "'Atlassian Sans', -apple-system, BlinkMacSystemFont, sans-serif",
         }}
       >
-        <div style={{
-          flex: 1, display: 'flex', alignItems: 'center', gap: 8,
-          background: 'var(--ds-surface, #FFFFFF)',
-          border: '2px solid var(--ds-border-focused, #388BFF)',
-          borderRadius: 8, padding: '0 12px', height: 40, boxSizing: 'border-box',
-        }}>
-          <SparkIcon />
-          {/* Wrapped in a relative container so the typewriter overlay
-              can sit on top of the empty input. The native `placeholder`
-              attribute is intentionally empty — the overlay below owns
-              the placeholder UX so we can animate it. */}
-          <div style={{ position: 'relative', flex: 1, display: 'flex', alignItems: 'center' }}>
-            <input
-              ref={askCatyInputRef}
-              value={askCatyQuery}
-              onChange={e => setAskCatyQuery(e.target.value)}
-              onKeyDown={e => {
-                if (e.key === 'Enter') handleAskCatySubmit();
-                if (e.key === 'Escape') { setAskCatyOpen(false); setAskCatyQuery(''); }
-              }}
-              placeholder=""
-              style={{
-                width: '100%', border: 'none', outline: 'none', fontSize: 14, lineHeight: '20px',
-                background: 'transparent', color: 'var(--ds-text, #292A2E)', fontFamily: 'inherit',
-              }}
-              aria-label="Ask Caty"
-            />
-            {askCatyQuery === '' && (
-              <div
-                aria-hidden="true"
-                style={{
-                  position: 'absolute',
-                  top: 0, left: 0, right: 0, bottom: 0,
-                  display: 'flex', alignItems: 'center',
-                  pointerEvents: 'none',
-                  color: 'var(--ds-text-subtlest, #6B778C)',
-                  fontSize: 14, lineHeight: '20px',
-                  fontFamily: 'inherit',
-                  whiteSpace: 'nowrap', overflow: 'hidden',
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+        {/* Outer frame draws the static Caty rainbow border via a
+            conic-gradient pseudo-element. Adding `is-loading` makes
+            the gradient rotate anticlockwise. The inner row holds the
+            actual input chrome (icon, input, Go button). */}
+        <div
+          className={`ask-caty-frame${askCatyLoading ? ' is-loading' : ''}`}
+          style={{ flex: 1, height: 40 }}
+        >
+          {/* <label> wraps the entire row so a click anywhere between the
+              icon and the button focuses the input — the icon is a
+              prefix, the button is a suffix, and the typing area in
+              between has no visible chrome of its own. */}
+          <label className="ask-caty-row">
+            <span className="ask-caty-row__prefix" aria-hidden="true">
+              <SparkIcon />
+            </span>
+            <span className="ask-caty-row__field">
+              <input
+                ref={askCatyInputRef}
+                className="ask-caty-row__input"
+                value={askCatyQuery}
+                onChange={e => setAskCatyQuery(e.target.value)}
+                onKeyDown={e => {
+                  if (e.key === 'Enter') handleAskCatySubmit();
+                  if (e.key === 'Escape') { setAskCatyOpen(false); setAskCatyQuery(''); }
                 }}
+                placeholder=""
+                disabled={askCatyLoading}
+                aria-label="Ask Caty"
+                autoComplete="off"
+                spellCheck={false}
+              />
+              {askCatyQuery === '' && (
+                <span className="ask-caty-row__placeholder" aria-hidden="true">
+                  {phText}
+                  <span className="ask-caty-cursor" />
+                </span>
+              )}
+            </span>
+            <span
+              className="ask-caty-row__suffix"
+              onMouseDown={e => e.preventDefault()} /* keep input focused */
+            >
+              {/* Go button — disabled/muted when query is empty OR a
+                  request is in flight; active blue otherwise. The ⏎
+                  glyph cues the user that Enter submits too. */}
+              <button
+                type="button"
+                onClick={handleAskCatySubmit}
+                disabled={!askCatyQuery.trim() || askCatyLoading}
+                style={{
+                  display: 'inline-flex', alignItems: 'center', gap: 6,
+                  padding: '4px 10px', border: 'none', borderRadius: 4,
+                  background:
+                    askCatyQuery.trim() && !askCatyLoading
+                      ? 'var(--ds-background-brand-bold, #0C66E4)'
+                      : 'var(--ds-background-neutral, #F4F5F7)',
+                  color:
+                    askCatyQuery.trim() && !askCatyLoading
+                      ? '#FFFFFF'
+                      : 'var(--ds-text-disabled, #8590A2)',
+                  fontSize: 13, fontWeight: 500,
+                  cursor: askCatyQuery.trim() && !askCatyLoading ? 'pointer' : 'default',
+                  fontFamily: 'inherit', transition: 'background 120ms ease', flexShrink: 0,
+                }}
+                aria-label="Submit"
               >
-                {phText}
-                <span className="ask-caty-cursor" />
-              </div>
-            )}
-          </div>
-          <button
-            onClick={handleAskCatySubmit}
-            disabled={!askCatyQuery.trim()}
-            style={{
-              display: 'inline-flex', alignItems: 'center', gap: 4,
-              padding: '4px 10px', border: 'none', borderRadius: 4,
-              background: askCatyQuery.trim() ? 'var(--ds-background-brand-bold, #0C66E4)' : 'var(--ds-background-neutral, #F4F5F7)',
-              color: askCatyQuery.trim() ? '#FFFFFF' : 'var(--ds-text-disabled, #8590A2)',
-              fontSize: 13, fontWeight: 500,
-              cursor: askCatyQuery.trim() ? 'pointer' : 'default',
-              fontFamily: 'inherit', transition: 'background 120ms ease', flexShrink: 0,
-            }}
-            aria-label="Submit"
-          >Go ←</button>
+                <span>Go</span>
+                <span aria-hidden="true" style={{ fontSize: 14, lineHeight: 1 }}>⏎</span>
+              </button>
+            </span>
+          </label>
         </div>
         <button
-          onClick={() => { setAskCatyOpen(false); setAskCatyQuery(''); }}
+          onClick={() => {
+            setAskCatyOpen(false);
+            setAskCatyQuery('');
+            // Dismiss any active Caty filter too — closing the bar
+            // reverts the project list to the toolbar-driven view.
+            if (askCatyHasResults || askCatyHasError || askCatyLoading) {
+              catyClear();
+            }
+          }}
           style={{
             width: 28, height: 28, border: 'none', borderRadius: 4,
             background: 'transparent', cursor: 'pointer',
@@ -1278,6 +1342,90 @@ export function AllWorkToolbar({
           }}
           aria-label="Close Ask Caty"
         >✕</button>
+        </div>
+        {/* Disclaimer row — visible when Caty has results OR errored.
+            Mirrors Jira's "Uses AI · Verify results" affordance with
+            thumbs feedback + a Clear pill so the user can restore the
+            normal toolbar-driven view without dismissing the bar. */}
+        {(askCatyHasResults || askCatyHasError) && (
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              gap: 12,
+              padding: '0 4px',
+              fontSize: 12,
+              color: 'var(--ds-text-subtlest, #6B778C)',
+            }}
+          >
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, minWidth: 0 }}>
+              <span aria-hidden="true" style={{ display: 'inline-flex', alignItems: 'center' }}>
+                <InfoIconCore label="" color="currentColor" />
+              </span>
+              <span>Uses AI. Verify results.</span>
+              {askCatyHasResults && catyReason && (
+                <span style={{ color: 'var(--ds-text-subtle, #505258)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                  · {catyReason}
+                </span>
+              )}
+              {askCatyHasError && catyErrorMessage && (
+                <span style={{ color: 'var(--ds-text-danger, #AE2A19)' }}>
+                  · {catyErrorMessage}
+                </span>
+              )}
+              {askCatyHasResults && (
+                <>
+                  <button
+                    type="button"
+                    onClick={() => setAskCatyFeedback((f) => (f === 'up' ? null : 'up'))}
+                    aria-label="Helpful"
+                    title="Helpful"
+                    style={{
+                      border: 'none', background: 'transparent', cursor: 'pointer',
+                      padding: 2, display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                      color: askCatyFeedback === 'up' ? 'var(--ds-text-brand, #0C66E4)' : 'var(--ds-text-subtlest, #6B778C)',
+                    }}
+                  >
+                    <ThumbsUpIconCore label="" color="currentColor" />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setAskCatyFeedback((f) => (f === 'down' ? null : 'down'))}
+                    aria-label="Not helpful"
+                    title="Not helpful"
+                    style={{
+                      border: 'none', background: 'transparent', cursor: 'pointer',
+                      padding: 2, display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                      color: askCatyFeedback === 'down' ? 'var(--ds-text-danger, #AE2A19)' : 'var(--ds-text-subtlest, #6B778C)',
+                    }}
+                  >
+                    <ThumbsDownIconCore label="" color="currentColor" />
+                  </button>
+                </>
+              )}
+            </div>
+            <button
+              type="button"
+              onClick={() => {
+                catyClear();
+                setAskCatyQuery('');
+                askCatyInputRef.current?.focus();
+              }}
+              style={{
+                border: '1px solid var(--ds-border, #DFE1E6)',
+                background: 'transparent',
+                cursor: 'pointer',
+                fontSize: 12, fontWeight: 500,
+                padding: '2px 10px', borderRadius: 12,
+                color: 'var(--ds-text-subtle, #505258)',
+                fontFamily: 'inherit',
+              }}
+            >
+              Clear
+            </button>
+          </div>
+        )}
       </div>
     );
   }
