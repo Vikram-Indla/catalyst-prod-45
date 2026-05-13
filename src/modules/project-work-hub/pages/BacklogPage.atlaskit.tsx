@@ -69,9 +69,12 @@ import Modal, {
   ModalTitle,
   ModalTransition,
 } from '@atlaskit/modal-dialog';
+import Select from '@atlaskit/select';
+import { FieldGroup, Label } from '@atlaskit/form';
 
 import {
   JiraTable,
+  makeCheckboxCell,
   makeKeyCell,
   makeCommentsCell,
   makeDateCell,
@@ -93,6 +96,7 @@ import {
   FlagsHost,
   flag,
   StatusPill,
+  BulkFooterBar,
 } from '@/components/shared/JiraTable';
 import type {
   Column,
@@ -1690,6 +1694,25 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
       ),
     },
     {
+      id: '__checkbox',
+      label: '',
+      width: 4,
+      align: 'center' as const,
+      alwaysVisible: true,
+      cell: makeCheckboxCell({
+        isChecked: (row: BacklogItem) => selectedIds.has(row.id),
+        onChange: (row: BacklogItem, checked: boolean) => {
+          const next = new Set(selectedIds);
+          if (checked) {
+            next.add(row.id);
+          } else {
+            next.delete(row.id);
+          }
+          setSelectedIds(next);
+        },
+      }),
+    },
+    {
       id: 'type',
       // Apr 27, 2026 — jira-compare audit P1 #5 + P-A11Y #12: Jira's BAU
       // list type column has a visible "Type" header (data-key=issuetype,
@@ -2104,6 +2127,10 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
   // Filters to Catalyst-owned rows only; Jira-synced rows are surfaced as a
   // partial-success count so the user knows why N of M weren't applied.
   const [bulkDeleteOpen, setBulkDeleteOpen] = useState(false);
+  const [bulkMoveOpen, setBulkMoveOpen] = useState(false);
+  const [bulkMoveTarget, setBulkMoveTarget] = useState<string | null>(null);
+  const [bulkTransitionOpen, setBulkTransitionOpen] = useState(false);
+  const [bulkTransitionTarget, setBulkTransitionTarget] = useState<string | null>(null);
   const bulkUpdate = useMutation({
     mutationFn: async ({ ids, patch }: { ids: string[]; patch: Record<string, unknown> }) => {
       const editable = items.filter((it) => ids.includes(it.id) && it.source === 'catalyst');
@@ -2740,31 +2767,17 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
         </div>
       </div>
 
-      {/* Bulk actions bar — only visible when selection is non-empty.
-          Atlaskit-native: Button primitives + a minimal DropdownMenu-style
-          popover for the status/assignee pickers. Delete requires a modal
-          confirmation (ModalDialog) before committing. */}
+      {/* Bulk footer bar — Jira-parity bottom-anchored action bar showing
+          when selectedIds.size > 0. MVP Phase 1: selection UX only (checkbox
+          visibility + footer appearance). Phase 2: Move / Transition handlers. */}
       {selectedIds.size > 0 && (
-        <BulkActionsBar
-          count={selectedIds.size}
-          // 2026-05-12 Jira parity: total in current filter scope drives the
-          // "Select all (N in scope)" CTA in the bar.
-          totalAvailable={sortedRows.length}
+        <BulkFooterBar
+          selectedCount={selectedIds.size}
           onSelectAll={() => setSelectedIds(new Set(sortedRows.map((r) => r.id)))}
-          // 2026-05-12 Jira parity: Edit fields opens bulk-edit wizard.
-          // Wired to inline flag for now; full bulk-edit modal is task #7
-          // follow-up — requires Vikram approval on field scope.
-          onEditFields={() => flag.info('Edit fields', `Bulk edit wizard scope (${selectedIds.size} items): pending Vikram approval.`)}
-          onClear={() => setSelectedIds(new Set())}
-          statusOptions={STATUS_OPTIONS}
-          assigneeOptions={assigneeOptions.map<AssigneeChoice>((a) => ({ id: a.id, name: a.name, avatarUrl: a.avatarUrl ?? null }))}
-          onChangeStatus={(next) => bulkUpdate.mutate({ ids: Array.from(selectedIds), patch: { status: next } })}
-          onChangeAssignee={(next) => bulkUpdate.mutate({
-            ids: Array.from(selectedIds),
-            patch: { assignee_id: next?.id ?? null, assignee_name: next?.name ?? null },
-          })}
+          onDeselectAll={() => setSelectedIds(new Set())}
           onDelete={() => setBulkDeleteOpen(true)}
-          isBusy={bulkUpdate.isPending || bulkDelete.isPending}
+          onMove={() => setBulkMoveOpen(true)}
+          onTransition={() => setBulkTransitionOpen(true)}
         />
       )}
 
@@ -3162,6 +3175,104 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
         hint="If you're not sure, you can close the items instead."
         isLoading={bulkDelete.isPending}
       />
+
+      {/* Bulk Move Modal — Phase 2 */}
+      <ModalTransition>
+        {bulkMoveOpen && (
+          <Modal onClose={() => setBulkMoveOpen(false)}>
+            <ModalHeader>
+              <ModalTitle>Move {selectedIds.size} item{selectedIds.size === 1 ? '' : 's'} to...</ModalTitle>
+            </ModalHeader>
+            <ModalBody>
+              <FieldGroup>
+                <Label htmlFor="bulk-move-parent-select">Parent Epic</Label>
+                <Select
+                  inputId="bulk-move-parent-select"
+                  options={epics.map(e => ({ label: e.issue_key, value: e.issue_key, data: e }))}
+                  value={bulkMoveTarget ? { label: bulkMoveTarget, value: bulkMoveTarget } : null}
+                  onChange={(opt) => setBulkMoveTarget(opt?.value ?? null)}
+                  placeholder="Select parent epic"
+                  isClearable
+                />
+              </FieldGroup>
+            </ModalBody>
+            <ModalFooter>
+              <Button appearance="subtle" onClick={() => setBulkMoveOpen(false)}>
+                Cancel
+              </Button>
+              <Button
+                appearance="primary"
+                isDisabled={!bulkMoveTarget || bulkUpdate.isPending}
+                onClick={() => {
+                  if (bulkMoveTarget) {
+                    bulkUpdate.mutate(
+                      { ids: Array.from(selectedIds), patch: { parent_key: bulkMoveTarget } },
+                      {
+                        onSuccess: () => {
+                          setBulkMoveOpen(false);
+                          setBulkMoveTarget(null);
+                          setSelectedIds(new Set());
+                        },
+                      }
+                    );
+                  }
+                }}
+              >
+                {bulkUpdate.isPending ? 'Moving...' : 'Move'}
+              </Button>
+            </ModalFooter>
+          </Modal>
+        )}
+      </ModalTransition>
+
+      {/* Bulk Transition Modal — Phase 2 */}
+      <ModalTransition>
+        {bulkTransitionOpen && (
+          <Modal onClose={() => setBulkTransitionOpen(false)}>
+            <ModalHeader>
+              <ModalTitle>Transition {selectedIds.size} item{selectedIds.size === 1 ? '' : 's'} to...</ModalTitle>
+            </ModalHeader>
+            <ModalBody>
+              <FieldGroup>
+                <Label htmlFor="bulk-transition-status-select">Status</Label>
+                <Select
+                  inputId="bulk-transition-status-select"
+                  options={STATUS_OPTIONS.map(s => ({ label: s.label, value: s.value, data: s }))}
+                  value={bulkTransitionTarget ? { label: bulkTransitionTarget, value: bulkTransitionTarget } : null}
+                  onChange={(opt) => setBulkTransitionTarget(opt?.value ?? null)}
+                  placeholder="Select target status"
+                  isClearable
+                />
+              </FieldGroup>
+            </ModalBody>
+            <ModalFooter>
+              <Button appearance="subtle" onClick={() => setBulkTransitionOpen(false)}>
+                Cancel
+              </Button>
+              <Button
+                appearance="primary"
+                isDisabled={!bulkTransitionTarget || bulkUpdate.isPending}
+                onClick={() => {
+                  if (bulkTransitionTarget) {
+                    bulkUpdate.mutate(
+                      { ids: Array.from(selectedIds), patch: { status: bulkTransitionTarget } },
+                      {
+                        onSuccess: () => {
+                          setBulkTransitionOpen(false);
+                          setBulkTransitionTarget(null);
+                          setSelectedIds(new Set());
+                        },
+                      }
+                    );
+                  }
+                }}
+              >
+                {bulkUpdate.isPending ? 'Transitioning...' : 'Transition'}
+              </Button>
+            </ModalFooter>
+          </Modal>
+        )}
+      </ModalTransition>
 
       {/* Single FlagsHost for this route — picks up every showFlag()/flag.* call. */}
       <FlagsHost />
