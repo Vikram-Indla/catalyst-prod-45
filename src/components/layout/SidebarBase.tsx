@@ -371,18 +371,19 @@ export function SidebarBase({
                   {expanded && section.title && (
                     <div
                       style={{
-                        padding: '12px 12px 4px',
+                        padding: '12px 12px 8px 12px',
                         lineHeight: 1,
                       }}
                     >
                       <span
                         style={{
                           fontFamily: 'var(--cp-font-body)',
-                          color: 'var(--ds-text-subtlest, #626F86)',
-                          fontSize: '11px',
-                          fontWeight: 600,
+                          color: 'var(--ds-text, #292A2E)',
+                          fontSize: '14px',
+                          fontWeight: 400,
                           letterSpacing: '0',
                           textTransform: 'none' as const,
+                          lineHeight: '20px',
                         }}
                       >
                         {section.title}

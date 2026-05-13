@@ -19,6 +19,7 @@ export type {
   JiraTableProps,
 } from './types';
 export {
+  makeCheckboxCell,
   makeKeyCell,
   makeSummaryCell,
   makeStatusCell,

@@ -106,9 +106,10 @@ function LocationRowTitle({ location }: { location: RecentLocation }) {
       {/* Line 1: Section label — primary */}
       <span
         style={{
-          color: 'var(--ds-text, #172B4D)',
+          color: 'var(--ds-text-subtle, #505258)',
           fontWeight: 400,
-          fontSize: '12px',
+          fontSize: '14px',
+          lineHeight: '20px',
           width: '100%',
           overflow: 'hidden',
           textOverflow: 'ellipsis',
@@ -143,6 +144,10 @@ function LocationRowTitle({ location }: { location: RecentLocation }) {
           lineHeight: '16px',
           marginTop: 4,
           width: '100%',
+          display: 'block',
+          overflow: 'hidden',
+          textOverflow: 'ellipsis',
+          whiteSpace: 'nowrap',
         }}
       >
         {formatTimestamp(location.visitedAt)}

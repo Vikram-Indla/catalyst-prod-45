@@ -20,6 +20,34 @@ import AkChevronDownIcon from '@atlaskit/icon/glyph/chevron-down';
 import DropdownMenu, { DropdownItem, DropdownItemGroup } from '@atlaskit/dropdown-menu';
 import type { CellProps } from './types';
 
+// ─── Checkbox Cell ─────────────────────────────────────────────────────────
+// Multi-select checkbox. Caller provides isChecked and onChange handlers.
+export function makeCheckboxCell({
+  isChecked,
+  onChange,
+}: {
+  isChecked: (row: any) => boolean;
+  onChange: (row: any, checked: boolean) => void;
+}) {
+  return function CheckboxCell({ row }: CellProps<any>) {
+    const checked = isChecked(row);
+    return (
+      <input
+        type="checkbox"
+        checked={checked}
+        onChange={(e) => onChange(row, e.target.checked)}
+        aria-label="Select row"
+        style={{
+          cursor: 'pointer',
+          width: 16,
+          height: 16,
+          margin: 0,
+        }}
+      />
+    );
+  };
+}
+
 // ─── Type Icon Cell ────────────────────────────────────────────────────────
 // Generic type-icon column. Caller passes the icon node.
 export function makeTypeIconCell(getIcon: (row: any) => React.ReactNode) {
