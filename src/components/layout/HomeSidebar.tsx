@@ -26,10 +26,18 @@
  *     not a project, surfacing it was misleading).
  */
 import React, { useMemo } from 'react';
-import {
-  Clock, FolderOpen, Columns3, GitBranch, LayoutDashboard,
-  Table2, CircleDot, Layers, Map as MapIcon, BarChart2, Settings, Calendar,
-} from '@/lib/atlaskit-icons';
+import ClockIcon from '@atlaskit/icon/core/clock';
+import FolderOpenIcon from '@atlaskit/icon/core/folder-open';
+import GridIcon from '@atlaskit/icon/core/grid';
+import BranchIcon from '@atlaskit/icon/core/branch';
+import DashboardIcon from '@atlaskit/icon/core/dashboard';
+import SpreadsheetIcon from '@atlaskit/icon/core/spreadsheet';
+import GoalIcon from '@atlaskit/icon/core/goal';
+import BoardIcon from '@atlaskit/icon/core/board';
+import LocationIcon from '@atlaskit/icon/core/location';
+import ChartBarIcon from '@atlaskit/icon/core/chart-bar';
+import SettingsIcon from '@atlaskit/icon/core/settings';
+import CalendarIcon from '@atlaskit/icon/core/calendar';
 import { SidebarBase, type SidebarConfig, type SidebarMenuItem } from './SidebarBase';
 import { useRecentProjects, type RecentLocation } from '@/hooks/home/useRecentProjects';
 
@@ -88,69 +96,45 @@ function LocationRowTitle({ location }: { location: RecentLocation }) {
   return (
     <span
       style={{
-        display: 'inline-flex',
+        display: 'flex',
         flexDirection: 'column',
         gap: 2,
         minWidth: 0,
         maxWidth: '100%',
       }}
     >
-      {/* Line 1: Project key › Section */}
+      {/* Line 1: Section label — primary */}
       <span
         style={{
-          display: 'inline-flex',
-          alignItems: 'baseline',
-          gap: 4,
-          minWidth: 0,
-          maxWidth: '100%',
+          color: 'var(--ds-text, #172B4D)',
+          fontWeight: 400,
+          fontSize: '12px',
+          width: '100%',
+          overflow: 'hidden',
+          textOverflow: 'ellipsis',
+          whiteSpace: 'nowrap',
         }}
       >
-        {/* Project key — primary label, 12px/600, color.text */}
-        <span
-          style={{
-            color: 'var(--ds-text, #172B4D)',
-            fontWeight: 600,
-            fontSize: '12px',
-            overflow: 'hidden',
-            textOverflow: 'ellipsis',
-            whiteSpace: 'nowrap',
-            flex: '0 0 auto',
-          }}
-          title={`${location.projectName} › ${location.sectionLabel}`}
-        >
-          {location.projectKey}
-        </span>
-        {/* Separator — 11px, color.text.subtlest */}
-        <span
-          style={{
-            color: 'var(--ds-text-subtlest, #626F86)',
-            fontWeight: 400,
-            fontSize: '11px',
-            flex: '0 0 auto',
-            lineHeight: '18px',
-          }}
-          aria-hidden="true"
-        >
-          ›
-        </span>
-        {/* Section label — 12px/400, color.text.subtlest (ADS meta size) */}
-        <span
-          style={{
-            color: 'var(--ds-text-subtlest, #626F86)',
-            fontWeight: 400,
-            fontSize: '12px',
-            overflow: 'hidden',
-            textOverflow: 'ellipsis',
-            whiteSpace: 'nowrap',
-            flex: '0 1 auto',
-            minWidth: 0,
-          }}
-        >
-          {location.sectionLabel}
-        </span>
+        {location.sectionLabel}
       </span>
 
-      {/* Line 2: Timestamp — 11px/400, color.text.subtlest (ADS secondary meta style) */}
+      {/* Line 2: Project key — secondary mono */}
+      <span
+        style={{
+          color: 'var(--ds-text-subtlest, #626F86)',
+          fontWeight: 500,
+          fontSize: '11px',
+          fontFamily: 'monospace',
+          width: '100%',
+          overflow: 'hidden',
+          textOverflow: 'ellipsis',
+          whiteSpace: 'nowrap',
+        }}
+      >
+        {location.projectKey}
+      </span>
+
+      {/* Line 3: Timestamp — tertiary */}
       <span
         style={{
           color: 'var(--ds-text-subtlest, #626F86)',
@@ -158,6 +142,7 @@ function LocationRowTitle({ location }: { location: RecentLocation }) {
           fontSize: '11px',
           lineHeight: '16px',
           marginTop: 4,
+          width: '100%',
         }}
       >
         {formatTimestamp(location.visitedAt)}
@@ -174,25 +159,25 @@ function LocationRowTitle({ location }: { location: RecentLocation }) {
 type LucideIcon = React.FC<{ size?: number; strokeWidth?: number; style?: React.CSSProperties }>;
 
 // Icons MUST match ProjectHubSidebar.tsx exactly — same section, same icon.
-// dashboard→LayoutDashboard, boards→Columns3, backlog→Layers, allwork→GitBranch
+// dashboard→DashboardIcon, boards→GridIcon, backlog→BoardIcon, allwork→BranchIcon
 const SECTION_ICON_MAP: Array<[RegExp, LucideIcon]> = [
-  [/all.?work/i,  GitBranch],     // ProjectHubSidebar: allwork → GitBranch
-  [/backlog/i,    Layers],        // ProjectHubSidebar: backlog → Layers
-  [/\bboard/i,    Columns3],      // ProjectHubSidebar: boards → Columns3 (\b prevents matching "dashboard")
-  [/dashboard/i,  LayoutDashboard],
-  [/report/i,     BarChart2],
-  [/setting/i,    Settings],
-  [/calendar/i,   Calendar],
-  [/roadmap/i,    MapIcon],
-  [/list/i,       Table2],
-  [/issue/i,      CircleDot],
+  [/all.?work/i,  BranchIcon],      // allwork → BranchIcon
+  [/backlog/i,    BoardIcon],       // backlog → BoardIcon
+  [/\bboard/i,    GridIcon],        // boards → GridIcon (\b prevents matching "dashboard")
+  [/dashboard/i,  DashboardIcon],
+  [/report/i,     ChartBarIcon],
+  [/setting/i,    SettingsIcon],
+  [/calendar/i,   CalendarIcon],
+  [/roadmap/i,    LocationIcon],
+  [/list/i,       SpreadsheetIcon],
+  [/issue/i,      GoalIcon],
 ];
 
 function iconForSection(label: string): LucideIcon {
   for (const [pattern, Icon] of SECTION_ICON_MAP) {
     if (pattern.test(label)) return Icon;
   }
-  return FolderOpen;
+  return FolderOpenIcon;
 }
 
 // Stable component cache keyed by section label so React reconciles correctly.
@@ -235,24 +220,44 @@ export default function HomeSidebar({
               </span>
             ),
             path: '#recent-loading-label',
-            icon: FolderOpen,
+            icon: FolderOpenIcon,
             onClick: () => {},
           },
-          { id: 'recent-skel-1', title: <SkeletonRowTitle />, path: '#recent-skel-1', icon: FolderOpen },
-          { id: 'recent-skel-2', title: <SkeletonRowTitle />, path: '#recent-skel-2', icon: FolderOpen },
-          { id: 'recent-skel-3', title: <SkeletonRowTitle />, path: '#recent-skel-3', icon: FolderOpen },
+          { id: 'recent-skel-1', title: <SkeletonRowTitle />, path: '#recent-skel-1', icon: FolderOpenIcon },
+          { id: 'recent-skel-2', title: <SkeletonRowTitle />, path: '#recent-skel-2', icon: FolderOpenIcon },
+          { id: 'recent-skel-3', title: <SkeletonRowTitle />, path: '#recent-skel-3', icon: FolderOpenIcon },
         ]
       : recentLocations.length === 0
       ? [
           {
-            id: 'recent-empty',
+            id: 'recent-empty-state',
             title: (
-              <span style={{ color: 'var(--ds-text-subtlest, #626F86)', fontSize: '11px' }}>
-                No recent pages yet
-              </span>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 8, width: '100%' }}>
+                <span style={{ color: 'var(--ds-text-subtlest, #626F86)', fontSize: '11px' }}>
+                  No recent pages yet
+                </span>
+                <a
+                  href="/project-hub/projects"
+                  style={{
+                    color: 'var(--ds-link, #0052CC)',
+                    fontSize: '11px',
+                    fontWeight: 500,
+                    textDecoration: 'none',
+                    cursor: 'pointer',
+                  }}
+                  onMouseEnter={(e) => {
+                    (e.target as HTMLAnchorElement).style.textDecoration = 'underline';
+                  }}
+                  onMouseLeave={(e) => {
+                    (e.target as HTMLAnchorElement).style.textDecoration = 'none';
+                  }}
+                >
+                  Explore projects →
+                </a>
+              </div>
             ),
-            path: '#recent-empty',
-            icon: Clock,
+            path: '#recent-empty-state',
+            icon: ClockIcon,
             onClick: () => {},
           },
         ]

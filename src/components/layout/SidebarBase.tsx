@@ -526,12 +526,14 @@ function renderMenuItem(
         className="flex-1 text-left"
         style={{
           lineHeight: '20px',
+          minWidth: 0,
           opacity: expanded ? 1 : 0,
           maxWidth: expanded ? '100%' : 0,
           transition: expanded
             ? 'opacity 120ms ease 40ms, max-width 180ms cubic-bezier(0.2, 0, 0, 1)'
             : 'opacity 80ms ease, max-width 180ms cubic-bezier(0.2, 0, 0, 1)',
           pointerEvents: expanded ? 'auto' : 'none',
+          overflow: 'hidden',
         }}
       >
         {item.title}
