@@ -27,16 +27,39 @@ import { fetchFunction } from '@/integrations/supabase/functionsRouter';
 import { supabase } from '@/integrations/supabase/client';
 
 export interface CatyFilter {
+  // People
   assignee_names?: string[];
   assignee_ids?: string[];
   is_unassigned?: boolean;
+  reporter_names?: string[];
+  reporter_ids?: string[];
+
+  // Lifecycle
   status_names?: string[];
   status_categories?: Array<'todo' | 'in_progress' | 'done'>;
   priorities?: string[];
   types?: string[];
-  text_contains?: string;
+  is_flagged?: boolean;
+  resolution_set?: boolean; // true → has a resolution, false → unresolved
+
+  // Time windows (uses createdAt / updatedAt from WorkItem)
   created_within_days?: number;
+  updated_within_days?: number;
+  stale_for_days?: number; // not updated in the last N+ days
+
+  // Hierarchy & grouping
+  parent_keys?: string[];
+  sprint_names?: string[];
+  fix_versions?: string[];
   labels?: string[];
+
+  // Engagement / weight
+  min_comments?: number;
+  story_points_min?: number;
+  story_points_max?: number;
+
+  // Free-text — checked against summary AND description
+  text_contains?: string;
 }
 
 export type CatySearchStatus = 'idle' | 'loading' | 'ready' | 'errored';

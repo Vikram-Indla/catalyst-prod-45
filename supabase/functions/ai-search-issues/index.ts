@@ -70,23 +70,64 @@ serve(async (req) => {
     const systemPrompt =
       `You translate natural-language work-item search queries into a structured JSON filter spec for a Jira-like UI. Output ONLY valid JSON. No markdown, no preamble, no explanation outside the JSON.
 
-Available filter fields (omit any you don't need — keep the spec minimal):
-- assignee_names      string[]  exact display names to match (e.g. ["Mike Smith"])
+INPUT TOLERANCE — IMPORTANT:
+The user's query is often informal: typos, broken grammar, missing articles, mixed languages, voice-to-text artefacts, misspelled names. INFER intent — never refuse to parse. If the query is "tikets asignd hasan", treat it the same as "tickets assigned to Hasan". If it's "show me bugz mike fixd last week", treat it the same as "bugs Mike worked on this past week". Always extract the strongest signal you can; only return an empty filter when there is genuinely nothing to extract.
+
+NAMES — partial vs full:
+The frontend does fuzzy substring + typo-tolerant matching against the actual project members. So:
+- DO put what the user typed (or your best-guess corrected spelling) into assignee_names — even single first names, even partial names, even slight misspellings. Examples: "tickets for Hassan" → assignee_names: ["Hassan"]. "issues assigned to hasan raza" → assignee_names: ["Hasan Raza"]. "what's mike up to" → assignee_names: ["Mike"].
+- DO NOT split a single person across multiple array entries. ["Hassan Raza"] is ONE name. ["Hassan", "Raza"] would be interpreted as two different people.
+- DO NOT canonicalize or "fix" names to full names you don't actually know — the frontend handles that. Just echo back what the user said.
+- For "me" / "my" / "mine" / "I" / "myself", use assignee_ids with the current user's id (provided below). Do not use assignee_names for self-references.
+
+Available filter fields (omit any you don't need — keep the spec minimal). AND across dimensions, OR within an array:
+
+People
+- assignee_names      string[]  display names or partial names (see NAMES rules above)
 - assignee_ids        string[]  user IDs — use the current user's id when the query mentions "me", "my", "mine", "myself", "I", "I'm"
 - is_unassigned       boolean   true → match items with no assignee at all
-- status_names        string[]  exact status names like "To Do", "In Progress", "Done", "In Review", "Code Review", "Blocked", "On Hold", "QA", "Ready for Development"
+- reporter_names      string[]  same fuzzy rules as assignee_names
+- reporter_ids        string[]
+
+Lifecycle
+- status_names        string[]  status names like "To Do", "In Progress", "Done", "In Review", "Code Review", "Blocked", "On Hold", "QA", "Ready for Development"
 - status_categories   string[]  high-level: "todo" | "in_progress" | "done"
 - priorities          string[]  one or more of "highest" | "high" | "medium" | "low" | "lowest"
 - types               string[]  one or more of "epic" | "story" | "bug" | "task" | "subtask" | "feature" | "improvement"
-- text_contains       string    free-text substring to fuzzy-match in the summary (use when the user asks about a topic, e.g. "issues about onboarding")
-- created_within_days number    e.g. 7 for "this week", 30 for "this month", 1 for "today"
+- is_flagged          boolean   true → only flagged items, false → only unflagged
+- resolution_set      boolean   true → has a resolution (closed/resolved), false → still unresolved/open
+
+Time windows
+- created_within_days number    e.g. 7 for "created this week", 1 for "created today"
+- updated_within_days number    e.g. 1 for "touched today", 7 for "active this week"
+- stale_for_days      number    inverse — NOT updated for the last N days; e.g. "haven't been worked on in 2 weeks" → 14
+
+Hierarchy & grouping
+- parent_keys         string[]  Jira issue keys like "BAU-4466"; use when user references "everything under …", "in this epic", a specific key
+- sprint_names        string[]  exact sprint names
+- fix_versions        string[]  exact fix-version names
 - labels              string[]  exact label strings
+
+Engagement / weight
+- min_comments        number    e.g. 5 for "items with lots of discussion"
+- story_points_min    number
+- story_points_max    number
+
+Free text
+- text_contains       string    substring matched against BOTH summary AND description (use for topic queries, e.g. "issues about onboarding")
 
 Response schema:
 {
   "filters": { /* any subset of the fields above */ },
   "reason":  "one short sentence explaining what these filters match"
-}`;
+}
+
+Concrete examples (study these carefully — the AI's job is to combine the right dimensions):
+- "high priority issues without assignee" → { "filters": { "priorities": ["highest", "high"], "is_unassigned": true }, "reason": "Unassigned high/highest priority items" }
+- "tickets assigned but not worked on since last week" → { "filters": { "stale_for_days": 7 }, "reason": "Items not updated in the last 7 days" }
+- "in-progress bugs reported by Sara this month" → { "filters": { "types": ["bug"], "status_categories": ["in_progress"], "reporter_names": ["Sara"], "created_within_days": 30 } }
+- "everything under BAU-4466" → { "filters": { "parent_keys": ["BAU-4466"] } }
+- "stories I'm watching that have lots of discussion" → { "filters": { "assignee_ids": ["<current_user_id>"], "types": ["story"], "min_comments": 5 } }`;
 
     const userPrompt =
       `Project key: ${projectKey || "(unknown)"}
@@ -200,6 +241,7 @@ function sanitizeFilters(raw: Record<string, unknown>): Record<string, unknown> 
     return Math.round(v);
   };
 
+  // People
   const assigneeNames = strArr(raw.assignee_names);
   if (assigneeNames) out.assignee_names = assigneeNames;
 
@@ -209,6 +251,13 @@ function sanitizeFilters(raw: Record<string, unknown>): Record<string, unknown> 
   const isUnassigned = bool(raw.is_unassigned);
   if (isUnassigned !== undefined) out.is_unassigned = isUnassigned;
 
+  const reporterNames = strArr(raw.reporter_names);
+  if (reporterNames) out.reporter_names = reporterNames;
+
+  const reporterIds = strArr(raw.reporter_ids);
+  if (reporterIds) out.reporter_ids = reporterIds;
+
+  // Lifecycle
   const statusNames = strArr(raw.status_names);
   if (statusNames) out.status_names = statusNames;
 
@@ -227,14 +276,48 @@ function sanitizeFilters(raw: Record<string, unknown>): Record<string, unknown> 
   );
   if (types && types.length > 0) out.types = types;
 
-  const textContains = str(raw.text_contains);
-  if (textContains) out.text_contains = textContains;
+  const isFlagged = bool(raw.is_flagged);
+  if (isFlagged !== undefined) out.is_flagged = isFlagged;
 
+  const resolutionSet = bool(raw.resolution_set);
+  if (resolutionSet !== undefined) out.resolution_set = resolutionSet;
+
+  // Time windows
   const createdWithin = num(raw.created_within_days);
   if (createdWithin !== undefined) out.created_within_days = createdWithin;
 
+  const updatedWithin = num(raw.updated_within_days);
+  if (updatedWithin !== undefined) out.updated_within_days = updatedWithin;
+
+  const staleFor = num(raw.stale_for_days);
+  if (staleFor !== undefined) out.stale_for_days = staleFor;
+
+  // Hierarchy & grouping
+  const parentKeys = strArr(raw.parent_keys)?.map((k) => k.toUpperCase());
+  if (parentKeys && parentKeys.length > 0) out.parent_keys = parentKeys;
+
+  const sprintNames = strArr(raw.sprint_names);
+  if (sprintNames) out.sprint_names = sprintNames;
+
+  const fixVersions = strArr(raw.fix_versions);
+  if (fixVersions) out.fix_versions = fixVersions;
+
   const labels = strArr(raw.labels);
   if (labels) out.labels = labels;
+
+  // Engagement / weight
+  const minComments = num(raw.min_comments);
+  if (minComments !== undefined) out.min_comments = minComments;
+
+  const spMin = num(raw.story_points_min);
+  if (spMin !== undefined) out.story_points_min = spMin;
+
+  const spMax = num(raw.story_points_max);
+  if (spMax !== undefined) out.story_points_max = spMax;
+
+  // Free text
+  const textContains = str(raw.text_contains);
+  if (textContains) out.text_contains = textContains;
 
   return out;
 }
