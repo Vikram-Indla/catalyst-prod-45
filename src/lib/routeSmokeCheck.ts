@@ -34,10 +34,14 @@ declare global {
 // Enumerate all page modules. `eager: false` keeps them as lazy import fns.
 // Patterns target route-level modules; component-level files are skipped to
 // keep the smoke check fast and focused on what the router actually mounts.
+// Test files are explicitly excluded using negation patterns.
 const pageModules = import.meta.glob([
   '/src/pages/**/*.{ts,tsx}',
+  '!/src/pages/**/*.{test,spec}.{ts,tsx}',
   '/src/modules/**/pages/**/*.{ts,tsx}',
+  '!/src/modules/**/pages/**/*.{test,spec}.{ts,tsx}',
   '/src/routes/**/*.{ts,tsx}',
+  '!/src/routes/**/*.{test,spec}.{ts,tsx}',
 ], { eager: false }) as Record<string, () => Promise<unknown>>;
 
 export async function runRouteSmokeCheck(): Promise<RouteCheckResult> {

@@ -98,53 +98,35 @@ function LocationRowTitle({ location }: { location: RecentLocation }) {
       style={{
         display: 'flex',
         flexDirection: 'column',
+        alignItems: 'flex-start',
         gap: 2,
         minWidth: 0,
         maxWidth: '100%',
       }}
     >
-      {/* Line 1: Section label — primary */}
+      {/* Project Key › Section — primary */}
       <span
         style={{
-          color: 'var(--ds-text-subtle, #505258)',
-          fontWeight: 400,
-          fontSize: '14px',
-          lineHeight: '20px',
-          width: '100%',
-          overflow: 'hidden',
-          textOverflow: 'ellipsis',
-          whiteSpace: 'nowrap',
-        }}
-      >
-        {location.sectionLabel}
-      </span>
-
-      {/* Line 2: Project key — secondary mono */}
-      <span
-        style={{
-          color: 'var(--ds-text-subtlest, #626F86)',
+          color: 'var(--ds-text, #292A2E)',
           fontWeight: 500,
-          fontSize: '11px',
-          fontFamily: 'monospace',
-          width: '100%',
+          fontSize: '13px',
+          lineHeight: '18px',
           overflow: 'hidden',
           textOverflow: 'ellipsis',
           whiteSpace: 'nowrap',
+          flex: 1,
         }}
       >
-        {location.projectKey}
+        {location.projectKey} › {location.sectionLabel}
       </span>
 
-      {/* Line 3: Timestamp — tertiary */}
+      {/* Timestamp — secondary */}
       <span
         style={{
           color: 'var(--ds-text-subtlest, #626F86)',
           fontWeight: 400,
           fontSize: '11px',
           lineHeight: '16px',
-          marginTop: 4,
-          width: '100%',
-          display: 'block',
           overflow: 'hidden',
           textOverflow: 'ellipsis',
           whiteSpace: 'nowrap',

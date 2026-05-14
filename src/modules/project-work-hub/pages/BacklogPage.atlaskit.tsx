@@ -23,7 +23,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { useCreateCatyConversation } from '@/hooks/useCatyAI';
 
 import EmptyState from '@atlaskit/empty-state';
-import SectionMessage from '@atlaskit/section-message';
+import { SectionMessage } from '@/components/ads';
 import Spinner from '@atlaskit/spinner';
 import Textfield from '@atlaskit/textfield';
 import { Box, xcss } from '@atlaskit/primitives';
