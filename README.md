@@ -21,6 +21,15 @@ Catalyst is a full-featured portfolio management system implementing Jira Align 
 - **Risk Management**: ROAM boards, dependency tracking, and health monitoring
 - **Reporting**: Status reports, trace reports, and hierarchy visualization
 
+## Multi-Platform
+
+Catalyst is available on multiple platforms:
+
+- **Web**: React/Next.js - Full portfolio management interface
+- **Mobile iOS**: Native Swift app for on-the-go access
+  - Repository: [CatyMobile](https://github.com/Vikram-Indla/CatyMobile)
+  - Setup guide: See [MOBILE_DEVELOPMENT.md](./MOBILE_DEVELOPMENT.md)
+
 ## Key Features
 
 ### Epic Management (Phase 5 Complete)
