@@ -34,6 +34,7 @@ import {
 } from './components/AllWorkToolbar';
 import { useCatySearch } from '@/components/caty/catySearchStore';
 import { applyCatyFilter } from '@/components/caty/applyCatyFilter';
+import type { WorkItem } from '@/types/workItem.types';
 
 const CatalystDetailRouter = lazy(
   () => import('@/components/catalyst-detail-views/CatalystDetailRouter'),
@@ -95,6 +96,7 @@ export default function ProjectAllWorkView({ projectKey, projectId }: Props) {
   const catyStatus = useCatySearch((s) => s.status);
   const catyFilter = useCatySearch((s) => s.filter);
   const catyStoreProjectKey = useCatySearch((s) => s.projectKey);
+  const catySecondaryQuery = useCatySearch((s) => s.secondaryQuery);
   const catyActive =
     catyStatus === 'ready' &&
     catyStoreProjectKey === projectKey &&
@@ -103,13 +105,28 @@ export default function ProjectAllWorkView({ projectKey, projectId }: Props) {
   /* Client-side filter pass — paginated useProjectAllWorkItems already
      fetches the whole project (1000s of rows), so a per-render .filter()
      on the items array is the right scope. Pushing the predicate into
-     the SQL would force a refetch on every chip click. */
+     the SQL would force a refetch on every chip click.
+
+     When Caty is active, we additionally apply the in-result "Search
+     work" substring filter (matched against summary AND issue key) so
+     the user can drill into a large AI-narrowed list. */
   const filteredItems = useMemo(() => {
+    let next: WorkItem[];
     if (catyActive && catyFilter) {
-      return applyCatyFilter(items, catyFilter);
+      next = applyCatyFilter(items, catyFilter);
+      const q = catySecondaryQuery.trim().toLowerCase();
+      if (q.length > 0) {
+        next = next.filter((i) => {
+          const sum = i.summary?.toLowerCase() ?? '';
+          const key = i.jiraKey?.toLowerCase() ?? '';
+          return sum.includes(q) || key.includes(q);
+        });
+      }
+    } else {
+      next = items.filter((i) => itemPassesFilters(i, toolbarFilters));
     }
-    return items.filter(i => itemPassesFilters(i, toolbarFilters));
-  }, [items, toolbarFilters, catyActive, catyFilter]);
+    return next;
+  }, [items, toolbarFilters, catyActive, catyFilter, catySecondaryQuery]);
 
   /** In narrow mode the middle panel is hidden — clicking a card opens
    *  StoryDetailModal as a full overlay instead (Jira parity). */

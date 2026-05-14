@@ -22,9 +22,9 @@
  * AND projectKey matches the active project (so navigating to a
  * different project doesn't leak the previous search).
  */
-import { create } from 'zustand';
-import { fetchFunction } from '@/integrations/supabase/functionsRouter';
-import { supabase } from '@/integrations/supabase/client';
+import { create } from "zustand";
+import { fetchFunction } from "@/integrations/supabase/functionsRouter";
+import { supabase } from "@/integrations/supabase/client";
 
 export interface CatyFilter {
   // People
@@ -36,7 +36,7 @@ export interface CatyFilter {
 
   // Lifecycle
   status_names?: string[];
-  status_categories?: Array<'todo' | 'in_progress' | 'done'>;
+  status_categories?: Array<"todo" | "in_progress" | "done">;
   priorities?: string[];
   types?: string[];
   is_flagged?: boolean;
@@ -62,7 +62,7 @@ export interface CatyFilter {
   text_contains?: string;
 }
 
-export type CatySearchStatus = 'idle' | 'loading' | 'ready' | 'errored';
+export type CatySearchStatus = "idle" | "loading" | "ready" | "errored";
 
 interface CatySearchState {
   status: CatySearchStatus;
@@ -71,6 +71,8 @@ interface CatySearchState {
   filter: CatyFilter | null;
   reason: string | null;
   errorMessage: string | null;
+  secondaryQuery: string;
+  setSecondaryQuery: (q: string) => void;
   submit: (args: {
     query: string;
     projectKey: string;
@@ -80,23 +82,28 @@ interface CatySearchState {
 }
 
 export const useCatySearch = create<CatySearchState>((set, get) => ({
-  status: 'idle',
+  status: "idle",
   projectKey: null,
   query: null,
   filter: null,
   reason: null,
   errorMessage: null,
+  secondaryQuery: "",
+  setSecondaryQuery: (q) => set({ secondaryQuery: q }),
 
   submit: async ({ query, projectKey, currentUser }) => {
     const trimmed = query.trim();
     if (!trimmed) return;
     set({
-      status: 'loading',
+      status: "loading",
       projectKey,
       query: trimmed,
       filter: null,
       reason: null,
       errorMessage: null,
+      // Reset the secondary search whenever a fresh AI query starts —
+      // its scope (the AI-narrowed list) is about to change.
+      secondaryQuery: "",
     });
     try {
       // Forward the user's session token so the function call hits
@@ -104,10 +111,10 @@ export const useCatySearch = create<CatySearchState>((set, get) => ({
       const { data: sessionData } = await supabase.auth.getSession();
       const accessToken = sessionData?.session?.access_token ?? null;
 
-      const res = await fetchFunction('ai-search-issues', {
-        method: 'POST',
+      const res = await fetchFunction("ai-search-issues", {
+        method: "POST",
         accessToken,
-        headers: { 'Content-Type': 'application/json' },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           query: trimmed,
           projectKey,
@@ -117,16 +124,19 @@ export const useCatySearch = create<CatySearchState>((set, get) => ({
         }),
       });
       if (!res.ok) {
-        const text = await res.text().catch(() => '');
+        const text = await res.text().catch(() => "");
         throw new Error(text || `AI search failed (${res.status})`);
       }
-      const json = (await res.json()) as { filters?: CatyFilter; reason?: string };
+      const json = (await res.json()) as {
+        filters?: CatyFilter;
+        reason?: string;
+      };
       // Guard against race — if user cleared / fired another query while
       // this one was in flight, ignore this stale response.
       const cur = get();
       if (cur.query !== trimmed || cur.projectKey !== projectKey) return;
       set({
-        status: 'ready',
+        status: "ready",
         filter: json.filters ?? {},
         reason: json.reason ?? null,
         errorMessage: null,
@@ -135,21 +145,21 @@ export const useCatySearch = create<CatySearchState>((set, get) => ({
       const cur = get();
       if (cur.query !== trimmed || cur.projectKey !== projectKey) return;
       set({
-        status: 'errored',
-        errorMessage:
-          err instanceof Error ? err.message : 'Caty search failed',
+        status: "errored",
+        errorMessage: err instanceof Error ? err.message : "Caty search failed",
       });
     }
   },
 
   clear: () => {
     set({
-      status: 'idle',
+      status: "idle",
       projectKey: null,
       query: null,
       filter: null,
       reason: null,
       errorMessage: null,
+      secondaryQuery: "",
     });
   },
 }));

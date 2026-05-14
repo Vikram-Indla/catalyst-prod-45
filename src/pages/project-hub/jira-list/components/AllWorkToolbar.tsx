@@ -1070,6 +1070,9 @@ export function AllWorkToolbar({
   const catyStoreProjectKey = useCatySearch((s) => s.projectKey);
   const catyReason = useCatySearch((s) => s.reason);
   const catyErrorMessage = useCatySearch((s) => s.errorMessage);
+  const catyStoredQuery = useCatySearch((s) => s.query);
+  const catySecondaryQuery = useCatySearch((s) => s.secondaryQuery);
+  const catySetSecondaryQuery = useCatySearch((s) => s.setSecondaryQuery);
   const askCatyLoading =
     catyStatus === 'loading' && catyStoreProjectKey === projectKey;
   const askCatyHasResults =
@@ -1257,72 +1260,170 @@ export function AllWorkToolbar({
             actual input chrome (icon, input, Go button). */}
         <div
           className={`ask-caty-frame${askCatyLoading ? ' is-loading' : ''}`}
-          style={{ flex: 1, height: 40 }}
+          style={{ flex: 1, minHeight: 40 }}
         >
-          {/* <label> wraps the entire row so a click anywhere between the
-              icon and the button focuses the input — the icon is a
-              prefix, the button is a suffix, and the typing area in
-              between has no visible chrome of its own. */}
-          <label className="ask-caty-row">
-            <span className="ask-caty-row__prefix" aria-hidden="true">
-              <SparkIcon />
-            </span>
-            <span className="ask-caty-row__field">
-              <input
-                ref={askCatyInputRef}
-                className="ask-caty-row__input"
-                value={askCatyQuery}
-                onChange={e => setAskCatyQuery(e.target.value)}
-                onKeyDown={e => {
-                  if (e.key === 'Enter') handleAskCatySubmit();
-                  if (e.key === 'Escape') { setAskCatyOpen(false); setAskCatyQuery(''); }
-                }}
-                placeholder=""
-                disabled={askCatyLoading}
-                aria-label="Ask Caty"
-                autoComplete="off"
-                spellCheck={false}
-              />
-              {askCatyQuery === '' && (
-                <span className="ask-caty-row__placeholder" aria-hidden="true">
-                  {phText}
-                  <span className="ask-caty-cursor" />
+          <div className="ask-caty-stack">
+            {/* Row 1 — AI query.
+                Default state: editable input with typewriter placeholder.
+                Results state: read-only summary of what was asked, so the
+                second row's "Search work" input becomes the active focus.
+                The whole row is wrapped in a <label> so clicking anywhere
+                between the icon and the button focuses the underlying
+                input (only meaningful in the editable state). */}
+            <label className="ask-caty-row">
+              <span className="ask-caty-row__prefix" aria-hidden="true">
+                <SparkIcon />
+              </span>
+              {askCatyHasResults ? (
+                <span
+                  className="ask-caty-row__readonly"
+                  title={catyStoredQuery ?? ''}
+                >
+                  {catyStoredQuery ?? ''}
+                </span>
+              ) : (
+                <span className="ask-caty-row__field">
+                  <input
+                    ref={askCatyInputRef}
+                    className="ask-caty-row__input"
+                    value={askCatyQuery}
+                    onChange={e => setAskCatyQuery(e.target.value)}
+                    onKeyDown={e => {
+                      if (e.key === 'Enter') handleAskCatySubmit();
+                      if (e.key === 'Escape') { setAskCatyOpen(false); setAskCatyQuery(''); }
+                    }}
+                    placeholder=""
+                    disabled={askCatyLoading}
+                    aria-label="Ask Caty"
+                    autoComplete="off"
+                    spellCheck={false}
+                  />
+                  {askCatyQuery === '' && (
+                    <span className="ask-caty-row__placeholder" aria-hidden="true">
+                      {phText}
+                      <span className="ask-caty-cursor" />
+                    </span>
+                  )}
                 </span>
               )}
-            </span>
-            <span
-              className="ask-caty-row__suffix"
-              onMouseDown={e => e.preventDefault()} /* keep input focused */
-            >
-              {/* Go button — disabled/muted when query is empty OR a
-                  request is in flight; active blue otherwise. The ⏎
-                  glyph cues the user that Enter submits too. */}
-              <button
-                type="button"
-                onClick={handleAskCatySubmit}
-                disabled={!askCatyQuery.trim() || askCatyLoading}
-                style={{
-                  display: 'inline-flex', alignItems: 'center', gap: 6,
-                  padding: '4px 10px', border: 'none', borderRadius: 4,
-                  background:
-                    askCatyQuery.trim() && !askCatyLoading
-                      ? 'var(--ds-background-brand-bold, #0C66E4)'
-                      : 'var(--ds-background-neutral, #F4F5F7)',
-                  color:
-                    askCatyQuery.trim() && !askCatyLoading
-                      ? '#FFFFFF'
-                      : 'var(--ds-text-disabled, #8590A2)',
-                  fontSize: 13, fontWeight: 500,
-                  cursor: askCatyQuery.trim() && !askCatyLoading ? 'pointer' : 'default',
-                  fontFamily: 'inherit', transition: 'background 120ms ease', flexShrink: 0,
-                }}
-                aria-label="Submit"
-              >
-                <span>Go</span>
-                <span aria-hidden="true" style={{ fontSize: 14, lineHeight: 1 }}>⏎</span>
-              </button>
-            </span>
-          </label>
+              {!askCatyHasResults && (
+                <span
+                  className="ask-caty-row__suffix"
+                  onMouseDown={e => e.preventDefault()} /* keep input focused */
+                >
+                  {/* Go button — disabled/muted when query is empty OR a
+                      request is in flight; active blue otherwise. */}
+                  <button
+                    type="button"
+                    onClick={handleAskCatySubmit}
+                    disabled={!askCatyQuery.trim() || askCatyLoading}
+                    style={{
+                      display: 'inline-flex', alignItems: 'center', gap: 6,
+                      padding: '4px 10px', border: 'none', borderRadius: 4,
+                      background:
+                        askCatyQuery.trim() && !askCatyLoading
+                          ? 'var(--ds-background-brand-bold, #0C66E4)'
+                          : 'var(--ds-background-neutral, #F4F5F7)',
+                      color:
+                        askCatyQuery.trim() && !askCatyLoading
+                          ? '#FFFFFF'
+                          : 'var(--ds-text-disabled, #8590A2)',
+                      fontSize: 13, fontWeight: 500,
+                      cursor: askCatyQuery.trim() && !askCatyLoading ? 'pointer' : 'default',
+                      fontFamily: 'inherit', transition: 'background 120ms ease', flexShrink: 0,
+                    }}
+                    aria-label="Submit"
+                  >
+                    <span>Go</span>
+                    <span aria-hidden="true" style={{ fontSize: 14, lineHeight: 1 }}>⏎</span>
+                  </button>
+                </span>
+              )}
+            </label>
+
+            {/* Row 2 — "Search work" input. Only rendered once AI
+                results have landed; filters the AI-narrowed list
+                further by free-text. Mirrors Jira's pattern (see
+                screenshot 2026-05-14): same rainbow-bordered area,
+                divider between rows, dedicated icon prefix. */}
+            {askCatyHasResults && (
+              <>
+                <div className="ask-caty-divider" aria-hidden="true" />
+                {/* Inline styles here intentionally beat any cached or
+                    overridden CSS rules — the secondary search must
+                    sit as a small fixed-width pill on the left,
+                    regardless of what the row's default flex rules
+                    say. Keeps the AI input full-width above while
+                    this row stays compact. */}
+                <label
+                  className="ask-caty-row"
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 0,
+                    height: 40,
+                    padding: '0 12px',
+                    boxSizing: 'border-box',
+                    justifyContent: 'flex-start',
+                  }}
+                >
+                  <span
+                    aria-hidden="true"
+                    style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      flex: '0 0 auto',
+                      height: 28,
+                      padding: '0 4px 0 8px',
+                      borderRadius: '4px 0 0 4px',
+                      background: 'var(--ds-background-neutral, #F1F2F4)',
+                      color: 'var(--ds-text-subtlest, #6B778C)',
+                    }}
+                  >
+                    <SearchIconCore label="" color="currentColor" />
+                  </span>
+                  <span
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      flex: '0 0 auto',
+                      width: 180,
+                      maxWidth: '100%',
+                      height: 28,
+                      padding: '0 8px 0 4px',
+                      borderRadius: '0 4px 4px 0',
+                      background: 'var(--ds-background-neutral, #F1F2F4)',
+                      boxSizing: 'border-box',
+                    }}
+                  >
+                    <input
+                      value={catySecondaryQuery}
+                      onChange={(e) => catySetSecondaryQuery(e.target.value)}
+                      placeholder="Search work"
+                      aria-label="Search work"
+                      autoComplete="off"
+                      spellCheck={false}
+                      style={{
+                        width: '100%',
+                        height: '100%',
+                        margin: 0,
+                        padding: 0,
+                        border: 0,
+                        outline: 0,
+                        background: 'transparent',
+                        boxShadow: 'none',
+                        font: 'inherit',
+                        fontSize: 13,
+                        color: 'var(--ds-text, #292A2E)',
+                        appearance: 'none',
+                        WebkitAppearance: 'none',
+                      }}
+                    />
+                  </span>
+                </label>
+              </>
+            )}
+          </div>
         </div>
         <button
           onClick={() => {
@@ -1405,25 +1506,6 @@ export function AllWorkToolbar({
                 </>
               )}
             </div>
-            <button
-              type="button"
-              onClick={() => {
-                catyClear();
-                setAskCatyQuery('');
-                askCatyInputRef.current?.focus();
-              }}
-              style={{
-                border: '1px solid var(--ds-border, #DFE1E6)',
-                background: 'transparent',
-                cursor: 'pointer',
-                fontSize: 12, fontWeight: 500,
-                padding: '2px 10px', borderRadius: 12,
-                color: 'var(--ds-text-subtle, #505258)',
-                fontFamily: 'inherit',
-              }}
-            >
-              Clear
-            </button>
           </div>
         )}
       </div>
