@@ -71,8 +71,8 @@ export function useAuditTrail(opts: UseAuditTrailOptions) {
         ...rows.map((r: any) => r.restored_by).filter(Boolean),
       ])];
 
-      let issueMap: Record<string, { issue_key: string; title: string }> = {};
-      let profileMap: Record<string, string> = {};
+      const issueMap: Record<string, { issue_key: string; title: string }> = {};
+      const profileMap: Record<string, string> = {};
 
       if (issueIds.length > 0) {
         const { data: issues } = await supabase
@@ -147,8 +147,8 @@ export function useAuditTrailAll(opts: Pick<UseAuditTrailOptions, 'statusFilter'
         ...rows.map((r: any) => r.restored_by).filter(Boolean),
       ])];
 
-      let issueMap: Record<string, { issue_key: string; title: string }> = {};
-      let profileMap: Record<string, string> = {};
+      const issueMap: Record<string, { issue_key: string; title: string }> = {};
+      const profileMap: Record<string, string> = {};
 
       if (issueIds.length > 0) {
         const { data: issues } = await supabase

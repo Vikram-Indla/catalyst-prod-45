@@ -114,7 +114,7 @@ function calculateAutoFitWidths(containerWidth: number): Record<ColumnId, number
   const widths = { ...DEFAULT_COLUMN_WIDTHS };
   
   // Calculate total default width
-  let totalDefault = Object.values(widths).reduce((a, b) => a + b, 0);
+  const totalDefault = Object.values(widths).reduce((a, b) => a + b, 0);
   
   // If container is wider, distribute extra space
   if (containerWidth > totalDefault) {

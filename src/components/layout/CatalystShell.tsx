@@ -81,6 +81,7 @@ const WikiSidebar = lazyWithRetry(() => import('./WikiSidebar').then(m => ({ def
 // users were seeing on Home with @atlaskit/side-navigation sections for
 // Pinned, Recent and Jump to. Atlaskit-only — see HomeSidebar.tsx.
 const HomeSidebar = lazyWithRetry(() => import('./HomeSidebar'), 'HomeSidebar');
+const AdminSidebarV2 = lazyWithRetry(() => import('@/components/admin/AdminSidebarV2').then(m => ({ default: m.AdminSidebarV2 })), 'AdminSidebarV2');
 
 import { HubSurface } from './HubSurface';
 
@@ -125,7 +126,7 @@ function useIsDarkTheme(): boolean {
 function CatalystShellContent() {
   // Dev-only instrumentation: prove shell doesn't remount on program navigation
   if (import.meta.env.DEV) {
-    // eslint-disable-next-line no-console
+     
     console.debug('[CatalystShell] render');
   }
 
@@ -210,6 +211,10 @@ function CatalystShellContent() {
   // from the InJira layout route (/project/:projectKey/*) from an ancestor component.
   const inJiraMatch = useMatch('/project/:projectKey/*');
   const urlProjectKey = inJiraMatch?.params?.projectKey ?? null;
+
+  // Admin routes always render their own sidebar (64px↔240px via local state).
+  // They must bypass the sidebarVisuallyOpen gate so the sidebar never vanishes.
+  const isAdminRoute = location.pathname.startsWith('/admin');
 
   // Determine which ID to use based on route pattern
   const isProgramRoute = location.pathname.startsWith('/program/');
@@ -454,9 +459,15 @@ function CatalystShellContent() {
       );
     }
 
-    // No sidebar for Admin routes
+    // Admin routes use AdminSidebarV2 — start collapsed (64px icon-only) so
+    // content gets the full available width. User can expand via the toggle.
     if (location.pathname.startsWith('/admin')) {
-      return null;
+      return (
+        <AdminSidebarV2
+          expanded={false}
+          onToggle={cycleSidebarState}
+        />
+      );
     }
 
     // Full-screen issue view: show ProjectHub sidebar forced-collapsed
@@ -727,7 +738,9 @@ function CatalystShellContent() {
             // When NOT visually open we let the child (zero-width placeholder or
             // zero-width placeholder) size itself — forcing a width here
             // would collapse the edge-reveal handle.
-            ...(sidebarVisuallyOpen ? { width: 240 } : null),
+            // Admin sidebar manages its own width (64px collapsed, 240px expanded).
+            // Don't override it with the global sidebarVisuallyOpen width.
+            ...(!isAdminRoute && sidebarVisuallyOpen ? { width: 240 } : null),
             ...(sidebarOverlayMode ? {
               position: 'absolute' as const,
               top: 56,   // start BELOW the 56px top nav — never covers the header
@@ -743,7 +756,15 @@ function CatalystShellContent() {
             ...(isNarrow ? { display: 'none' } : null),
           }}
           >
-            {sidebarVisuallyOpen ? (
+            {isAdminRoute ? (
+              // Admin sidebar is always present (never gated by sidebarVisuallyOpen).
+              // It manages its own 64px↔240px width via internal local state.
+              // onToggle is a no-op: local state owns the collapse — calling
+              // cycleSidebarState would hide the entire sidebar shell.
+              <Suspense fallback={null}>
+                <AdminSidebarV2 expanded={false} onToggle={() => {}} />
+              </Suspense>
+            ) : sidebarVisuallyOpen ? (
               // Visible — either pinned (solid panel) or hover-peek (overlay).
               <Suspense fallback={null}>
                 {renderSidebar()}

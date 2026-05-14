@@ -33,7 +33,7 @@ export function UsersPagination({ page, pageSize, total, onPageChange }: UsersPa
     const maxVisible = 5;
     
     let start = Math.max(0, page - Math.floor(maxVisible / 2));
-    let end = Math.min(totalPages - 1, start + maxVisible - 1);
+    const end = Math.min(totalPages - 1, start + maxVisible - 1);
     
     // Adjust start if we're near the end
     if (end - start < maxVisible - 1) {

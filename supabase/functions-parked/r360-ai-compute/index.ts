@@ -92,7 +92,7 @@ async function computeResourceAI(resourceId: string, sections: string[], weekSta
   const label = resource?.name || resourceId
 
   // Fetch items for this resource from unified view
-  let allItems: any[] = []
+  const allItems: any[] = []
   if (resource?.jira_account_id) {
     const { data } = await supabase.from('r360_unified_activity_view').select('*').eq('assignee_jira_id', resource.jira_account_id).limit(2000)
     if (data) allItems.push(...data)

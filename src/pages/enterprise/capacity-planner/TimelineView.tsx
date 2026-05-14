@@ -83,7 +83,7 @@ export function TimelineView({ resources, period, groupBy, groupedByAssignment, 
     startOfCurrentWeek.setDate(now.getDate() - now.getDay()); // Sunday start
 
     let weekNum = 1;
-    let weekDate = new Date(startOfCurrentWeek);
+    const weekDate = new Date(startOfCurrentWeek);
 
     while (weekDate <= endDate) {
       const weekMonth = weekDate.toLocaleString('en-US', { month: 'short' });

@@ -54,7 +54,7 @@ function getWeeksForMonth(year: number, month: number): { week: number; startDat
   const firstDayOfMonth = new Date(year, month, 1);
   const lastDayOfMonth = new Date(year, month + 1, 0);
   const firstDayOfYear = new Date(year, 0, 1);
-  let currentDate = new Date(firstDayOfMonth);
+  const currentDate = new Date(firstDayOfMonth);
   const dayOfWeek = currentDate.getDay();
   currentDate.setDate(currentDate.getDate() - dayOfWeek);
   

@@ -19,9 +19,11 @@ import ReactDOM from 'react-dom';
 import { useParams, useSearchParams, useNavigate } from 'react-router-dom';
 import { useQueryClient, useMutation, useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/hooks/useAuth';
+import { useCreateCatyConversation } from '@/hooks/useCatyAI';
 
 import EmptyState from '@atlaskit/empty-state';
-import SectionMessage from '@atlaskit/section-message';
+import { SectionMessage } from '@/components/ads';
 import Spinner from '@atlaskit/spinner';
 import Textfield from '@atlaskit/textfield';
 import { Box, xcss } from '@atlaskit/primitives';
@@ -47,6 +49,11 @@ import AkFilterIcon from '@atlaskit/icon/core/filter';
 import AkRefreshIcon from '@atlaskit/icon/core/refresh';
 import AkDownloadIcon from '@atlaskit/icon/core/download';
 import AkCommentIcon from '@atlaskit/icon/core/comment';
+import AkClockIcon from '@atlaskit/icon/core/clock';
+import AkArrowUpIcon from '@atlaskit/icon/core/arrow-up';
+import AkArrowDownIcon from '@atlaskit/icon/core/arrow-down';
+import AkAttachmentIcon from '@atlaskit/icon/core/attachment';
+import AkBoardIcon from '@atlaskit/icon/core/board';
 import AkShareIcon from '@atlaskit/icon/core/share';
 import AkWarningIcon from '@atlaskit/icon/core/warning';
 import AkArchiveBoxIcon from '@atlaskit/icon/core/archive-box';
@@ -62,9 +69,12 @@ import Modal, {
   ModalTitle,
   ModalTransition,
 } from '@atlaskit/modal-dialog';
+import Select from '@atlaskit/select';
+import { Fieldset, Label } from '@atlaskit/form';
 
 import {
   JiraTable,
+  makeCheckboxCell,
   makeKeyCell,
   makeCommentsCell,
   makeDateCell,
@@ -79,11 +89,14 @@ import {
   makeParentEditCell,
   makeLabelsCell,
   makeLabelsEditCell,
+  makeFixVersionsCell,
   makeDateEditCell,
   makeRowActionsCell,
+  makeRowMenuCell,
   FlagsHost,
   flag,
   StatusPill,
+  BulkFooterBar,
 } from '@/components/shared/JiraTable';
 import type {
   Column,
@@ -115,6 +128,20 @@ import type {
   AssigneeOption,
   FixVersionOption,
 } from '@/components/shared/JiraFilterAtlaskit';
+
+// Drag-and-drop support for row ranking (2026-05-12 Tier 1 gap)
+import {
+  DndContext,
+  DragEndEvent,
+  closestCenter,
+} from '@dnd-kit/core';
+import {
+  SortableContext,
+  verticalListSortingStrategy,
+  useSortable,
+} from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
+
 // ChevronsLeft/ChevronsRight (first/last page) have no ADS equivalent — inline SVG below
 const AkChevronsLeftIcon = () => (
   <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden><path d="M18.41 16.59L13.82 12l4.59-4.59L17 6l-6 6 6 6zM6 6h2v12H6z"/></svg>
@@ -122,6 +149,51 @@ const AkChevronsLeftIcon = () => (
 const AkChevronsRightIcon = () => (
   <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden><path d="M5.59 7.41L10.18 12l-4.59 4.59L7 18l6-6-6-6zM16 6h2v12h-2z"/></svg>
 );
+
+/**
+ * DragHandleCell — useSortable hook for row ranking.
+ * Called for each BacklogItem row; returns a draggable span with visual feedback.
+ */
+function DragHandleCell({ row }: { row: BacklogItem }) {
+  const { attributes, listeners, setNodeRef, transform } = useSortable({ id: row.id });
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition: 'transform 200ms ease-out',
+  };
+  return (
+    <span
+      ref={setNodeRef}
+      style={style}
+      className="jira-drag-handle"
+      aria-hidden
+      {...attributes}
+      {...listeners}
+    >
+      <span
+        style={{
+          display: 'inline-flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          width: 16,
+          height: 16,
+          cursor: listeners ? 'grabbing' : 'grab',
+          color: token('color.icon.subtle', '#626F86'),
+          visibility: 'hidden', /* JiraTable.tsx tr:hover CSS shows it */
+        }}
+      >
+        {/* 6-dot grip — no ADS equivalent; inline SVG */}
+        <svg width="10" height="16" viewBox="0 0 10 16" fill="currentColor" aria-hidden>
+          <circle cx="2" cy="2" r="1.5"/>
+          <circle cx="8" cy="2" r="1.5"/>
+          <circle cx="2" cy="8" r="1.5"/>
+          <circle cx="8" cy="8" r="1.5"/>
+          <circle cx="2" cy="14" r="1.5"/>
+          <circle cx="8" cy="14" r="1.5"/>
+        </svg>
+      </span>
+    </span>
+  );
+}
 
 // Apr 19, 2026 — U-4 (BAU Dashboard Atlaskit Conversion handover §2):
 // migrated outer page wrapper (blue page bg + white card + h1) onto the
@@ -190,6 +262,7 @@ export interface BacklogItem {
   due_date: string | null;
   comment_count: number | null;
   labels: string[] | null;
+  fix_versions: string[] | null;
 }
 
 /* ─── Status mapping (shared with Story Backlog) ────────────────────────── */
@@ -257,6 +330,40 @@ const PRIORITY_ORDER = ['highest', 'critical', 'high', 'medium', 'low', 'lowest'
 // popup on a Highest row never highlights or preserves the value.
 // Pass explicit options (including 'highest') at the column wiring site.
 const PRIORITY_OPTIONS = ['highest', 'critical', 'high', 'medium', 'low', 'lowest'];
+
+// Jira-parity column restriction (2026-05-12).
+// Only standard Jira fields are allowed in the column picker.
+// Type-specific custom fields (Gap Classification, IR Demo Date, etc.) are permanently banned.
+// See CLAUDE.md 2026-05-05, 2026-05-07 for the full ban list.
+const ALLOWED_COLUMN_IDS = new Set([
+  'type',
+  'key',
+  'summary',
+  'status',
+  'comments',
+  'parent',
+  'assignee',
+  'priority',
+  'labels',
+  'due_date',
+  'created',
+  'updated',
+  'reporter',
+  '__drag',
+  '__actions',
+]);
+
+// Permanently banned fields that must NEVER appear in column picker
+const BANNED_COLUMN_IDS = new Set([
+  'customfield_10882', // MDT Ref
+  'customfield_10288', // Assessment Feature
+  'customfield_10130', // Service Now #
+  // Type-specific custom fields (all permanently banned per Vikram 2026-05-12)
+  'customfield_10881', 'customfield_10116', 'customfield_10117', 'customfield_10118',
+  'customfield_10139', 'customfield_10140', 'customfield_10141', 'customfield_10142',
+  'customfield_10143', 'customfield_10144', 'customfield_10145', 'customfield_10146',
+  'customfield_10883', 'customfield_10884',
+]);
 
 // Apr 28, 2026 — Set project background palettes. Sourced from Atlassian
 // Design System color tokens (atlassian.design/tokens) for the solids,
@@ -353,6 +460,26 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
   const pageTitle = projectDisplayName;
   useAtlaskitThemeSync();
   const navigate = useNavigate();
+
+  // 2026-05-12 — Ask CATY entry point. Mirrors Jira's "✦ Ask AI" button
+  // position (left of Search in the list toolbar). On click: creates a
+  // CATY conversation scoped to this project, then navigates to /caty
+  // with the conversation id passed via URLSearchParams.
+  const { user } = useAuth();
+  const createCatyConversation = useCreateCatyConversation();
+  const handleAskCaty = useCallback(async () => {
+    if (!user?.id || !projectId) return;
+    try {
+      const conversation = await createCatyConversation.mutateAsync({
+        userId: user.id,
+        projectId,
+        type: 'chat',
+      });
+      navigate(`/caty?conversationId=${conversation.id}&source=backlog&projectKey=${projectKey}`);
+    } catch (err) {
+      console.error('Failed to start CATY conversation', err);
+    }
+  }, [user?.id, projectId, projectKey, createCatyConversation, navigate]);
 
   // ────────────────────────────────────────────────────────────────────
   // Apr 27 2026 (LOVABLE-01 landed in-session): project members for the
@@ -493,7 +620,8 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
   // Summary | Status | Comments | Parent — NO Assignee by default. Assignee is
   // available via the column picker (+) but hidden in the factory layout.
   // NOTE: Comments column is banned (2026-05-11), removed from defaults
-  const DEFAULT_VISIBLE_COLUMNS = ['key', 'summary', 'status', 'assignee', 'priority', 'parent'];
+  const DEFAULT_VISIBLE_COLUMNS = ['key', 'summary', 'status', 'assignee', 'priority', 'parent', 'fix_versions'];
+
   const parseSet = (raw: string | null): Set<string> =>
     raw ? new Set(raw.split(',').filter(Boolean)) : new Set();
 
@@ -522,29 +650,13 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
   // fallback-read supports old bookmarks with ?detail=<uuid>. On write we
   // only emit ?selectedIssue so new URLs stay Jira-native.
   //
-  // Design: selectedIssue carries the backlog item's ID (uuid), not its
-  // Jira issue_key. This matches what CatalystDetailRouter expects and
-  // preserves Catalyst-native items that have no Jira key.
-  const [detailItemId, setDetailItemId] = useState<string | null>(
-    () => searchParams.get('selectedIssue') || searchParams.get('detail') || null,
-  );
-  // Apr 27, 2026 (L44): track the most recently viewed detail item so the
-  // "Maximize table" toolbar button can act as a toggle — when the rail
-  // is closed via Maximize, this lets the same button restore the last
-  // panel without the user having to re-click a row. Cleared when the
-  // user explicitly closes via the rail's X (intentional dismissal).
-  const [lastDetailId, setLastDetailId] = useState<string | null>(null);
+  // 2026-05-12 task E: Full-width detail route (removed detail panel state).
+  // Detail views now navigate to /project-hub/:key/backlog/:issueKey for
+  // full-width rendering. No longer managing detailItemId or lastDetailId.
   const [editingId, setEditingId] = useState<string | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<BacklogItem | null>(null);
   // Panel mode machine — matches Jira's 3 states measured from their DOM:
-  //   'compact'    = 400px right drawer (default)
-  //   'expanded'   = ~60% of viewport (Jira's Expand button)
-  //   'fullscreen' = full viewport (Jira's Enter full screen button)
-  // Stored in URL as ?panel= so bookmarks preserve the user's last state.
-  type PanelMode = 'compact' | 'expanded' | 'fullscreen';
-  const [panelMode, setPanelMode] = useState<PanelMode>(
-    () => (searchParams.get('panel') as PanelMode) || 'compact',
-  );
+  // 2026-05-12 task E: panelMode removed (no longer managing detail panel).
   // Column visibility — seeded from URL if present, else defaults.
   // Apr 27, 2026: when a URL state is present we MERGE with the current
   // DEFAULT_VISIBLE_COLUMNS so columns added to the defaults later (like
@@ -582,6 +694,10 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
   // row whose status is in DONE_LIKE_STATUSES (Catalyst variants of
   // Jira's "Done" column). When false (default), all rows render.
   const [hideDoneItems, setHideDoneItems] = useState<boolean>(false);
+  // 2026-05-12 Jira parity: "Show hierarchy" toggle in toolbar ⋯ menu.
+  // When ON: parent rows show > chevron and children render indented inline.
+  // When OFF: flat row rendering (current behaviour). Defaults ON to match Jira.
+  const [showHierarchy, setShowHierarchy] = useState<boolean>(true);
   const [density, setDensity] = useState<'compact' | 'comfortable'>('compact');
   const [columnOrder, setColumnOrder] = useState<string[] | null>(null);
 
@@ -670,8 +786,8 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
     if (sortKey && sortKey !== DEFAULT_SORT_KEY) params.set('sort', sortKey);
     if (sortDir && sortDir !== DEFAULT_SORT_DIR) params.set('dir', sortDir);
     if (page !== 1) params.set('page', String(page));
-    if (detailItemId) params.set('selectedIssue', detailItemId);
-    if (panelMode !== 'compact') params.set('panel', panelMode);
+    // 2026-05-12 task E: detail state (selectedIssue, panel mode) removed.
+    // Detail views now use full-page route /backlog/:issueKey.
     if (groupBy !== 'none') params.set('groupBy', groupBy);
     if (collapsedGroups.size) params.set('collapsed', Array.from(collapsedGroups).join(','));
     if (expandedIds.size) params.set('expanded', Array.from(expandedIds).join(','));
@@ -684,7 +800,7 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
     if (differs) params.set('cols', Array.from(visibleColumns).join(','));
     setSearchParams(params, { replace: true });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [typeFilter, search, sortKey, sortDir, page, detailItemId, panelMode, groupBy, collapsedGroups, expandedIds, visibleColumns]);
+  }, [typeFilter, search, sortKey, sortDir, page, groupBy, collapsedGroups, expandedIds, visibleColumns]);
   // containerRef was declared + attached to the outer wrapper but never
   // read anywhere in this module. Removed Apr 19, 2026 as part of the
   // AtlaskitPageShell migration (handover §4 step (b)). `useRef` import
@@ -694,7 +810,7 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
 
   // ── Jira keyboard shortcuts ──
   // `c` → activate footer inline-create (Jira: opens quick-create dialog)
-  // `Enter` on a selected/focused row → navigate to the issue detail panel
+  // 2026-05-12 task E: Removed `Enter` detail-panel navigation (now full-page route)
   // Guard: skip if user is typing in an input/textarea/contenteditable
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -1115,7 +1231,10 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
       const kids = childrenOf.get(top.id) ?? [];
       const matchingKids = kids.filter((k) => matchesText(k) && matchesType(k) && matchesFilterBar(k));
       if (topVisible) tryPush(top);
-      const showChildren = expandedIds.has(top.id);
+      // 2026-05-12 Jira parity: when showHierarchy is OFF, render ALL children
+      // flat (no parent grouping, no expand/collapse). When ON (default),
+      // children render only when their parent is in expandedIds.
+      const showChildren = !showHierarchy || expandedIds.has(top.id);
       if (showChildren) {
         for (const k of matchingKids) tryPush(k);
       }
@@ -1134,7 +1253,7 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
       }
     }
     return out;
-  }, [topLevel, childrenOf, items, expandedIds, typeFilter, search, filterValue]);
+  }, [topLevel, childrenOf, items, expandedIds, showHierarchy, typeFilter, search, filterValue]);
 
   // ── "Hide done work items" filter (Apr 27 2026 — Jira parity View
   // options menu). When toggled on, rows whose status indicates a
@@ -1380,65 +1499,24 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
 
   useEffect(() => { setPage(1); }, [typeFilter, search, filterValue, sortKey, sortDir]);
 
-  // ── Row click → side panel ──
+  // ── Row click → full-width detail route ──
   const openDetail = useCallback((it: BacklogItem) => {
+    // Save scroll position before navigating to detail view
+    const container = document.querySelector('[data-backlog-scroll-container]');
+    if (container && projectKey) {
+      sessionStorage.setItem(`backlog-scroll-${projectKey}`, Math.max(0, container.scrollTop).toString());
+    }
     writeTicketOrigin({
       fromUrl: `/project-hub/${projectKey}/backlog`,
       fromLabel: 'Backlog',
       fromType: 'story-backlog',
     });
-    setDetailItemId(it.id);
-  }, [projectKey]);
-  const closeDetail = useCallback(() => {
-    // Explicit close via rail's X — clear the restore memory.
-    setLastDetailId(null);
-    setDetailItemId(null);
-    setPanelMode('compact');
-  }, []);
-  // Maximize-table — close the rail BUT remember what was open so the
-  // toolbar button can restore it. Used by the "Maximize table" button.
-  const maximizeTable = useCallback(() => {
-    setLastDetailId((prev) => prev ?? detailItemId);
-    setDetailItemId(null);
-    setPanelMode('compact');
-  }, [detailItemId]);
-  // Restore the last panel that was maximized away.
-  const restoreDetail = useCallback(() => {
-    if (!lastDetailId) return;
-    setDetailItemId(lastDetailId);
-    setLastDetailId(null);
-  }, [lastDetailId]);
+    navigate(`/project-hub/${projectKey}/backlog/${it.issue_key || it.id}`);
+  }, [projectKey, navigate]);
+  // Detail callbacks removed 2026-05-12 task E: no longer managing panel state.
 
-  // Prev / next navigation for the side detail panel. Walks through the
-  // currently-sorted rows (respecting group/filter/search). Wraps at the ends.
-  const currentDetailIdx = useMemo(
-    () => (detailItemId ? sortedRows.findIndex((r) => r.id === detailItemId) : -1),
-    [detailItemId, sortedRows],
-  );
-  const navigateDetail = useCallback((dir: 1 | -1) => {
-    if (currentDetailIdx < 0 || sortedRows.length === 0) return;
-    const nextIdx = (currentDetailIdx + dir + sortedRows.length) % sortedRows.length;
-    setDetailItemId(sortedRows[nextIdx].id);
-  }, [currentDetailIdx, sortedRows]);
-
-  // j / k keys ALSO navigate the detail panel when it's open — no more
-  // having to close the panel to move to the next item.
-  useEffect(() => {
-    if (!detailItemId) return;
-    const onKey = (e: KeyboardEvent) => {
-      const active = document.activeElement as HTMLElement | null;
-      const inEditor =
-        !!active &&
-        (active.tagName === 'INPUT' ||
-          active.tagName === 'TEXTAREA' ||
-          active.isContentEditable);
-      if (inEditor) return;
-      if (e.key === 'j' || e.key === 'ArrowDown') { e.preventDefault(); navigateDetail(1); }
-      if (e.key === 'k' || e.key === 'ArrowUp')   { e.preventDefault(); navigateDetail(-1); }
-    };
-    document.addEventListener('keydown', onKey);
-    return () => document.removeEventListener('keydown', onKey);
-  }, [detailItemId, navigateDetail]);
+  // Detail navigation (j/k keys) removed 2026-05-12 task E: detail view now
+  // full-page route. User can navigate via breadcrumb or back-button.
 
   // ── Toggle expanded ──
   const toggleExpanded = useCallback((it: BacklogItem) => {
@@ -1504,20 +1582,96 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
   }, [epics]);
 
   // ── Canonical row action list — shared by the ⋯ menu AND the right-click
-  //   context menu so there's one source of truth. Order is intentional:
-  //   non-destructive items first, destructive items pushed to the bottom
-  //   (makeRowActionsCell re-sorts danger into its own section).
+  //   context menu so there's one source of truth.
+  //
+  // 2026-05-12 — Jira parity: rewritten to match the 8-item set probed
+  // from Jira BAU live (digital-transformation.atlassian.net). Order:
+  //   1. View work item · 2. Comment · 3. Log work · 4. Agile board
+  //   5. Rank to top · 6. Rank to bottom · 7. Attach files
+  // (Connect Slack channel — OUT OF SCOPE per gap registry, no Slack integration)
+  // Catalyst-specific actions (Open in Jira, Copy link, Duplicate, Delete)
+  // kept as secondary group at the end of the menu.
   const rowActions = useMemo<RowAction<BacklogItem>[]>(() => ([
-    { id: 'open', label: 'Open', icon: <AkEditIcon label="" size="small" />, onClick: (r) => openDetail(r) },
-    { id: 'open-in-jira', label: 'Open in Jira',
-      icon: <AkLinkExternalIcon label="" size="small" />,
+    { id: 'view', label: 'View work item', icon: <AkEditIcon label="" size="small" />, onClick: (r) => openDetail(r) },
+    { id: 'comment', label: 'Comment', icon: <AkCommentIcon label="" />,
+      onClick: (r) => { openDetail(r); flag.info('Open comments', 'Activity → Comments in the right rail.'); } },
+    { id: 'log-work', label: 'Log work', icon: <AkClockIcon label="" />,
+      onClick: (r) => { openDetail(r); flag.info('Log work', 'Worklog section in the right rail.'); } },
+    { id: 'agile-board', label: 'Agile board', icon: <AkBoardIcon label="" />,
+      onClick: (r) => {
+        const parent = r.parent_key || r.key;
+        navigate(`/project-hub/${projectKey}/kanban${parent ? `?epic=${parent}` : ''}`);
+      } },
+    { id: 'rank-top', label: 'Rank to top', icon: <AkArrowUpIcon label="" />,
+      onClick: async (r) => {
+        // 2026-05-12 task #10 — rank-to-top: writes a rank_order lower than
+        // the current MIN within the project scope. Schema migration lives
+        // at supabase/migrations-pending/20260512_ph_issues_rank_order.sql
+        // (PENDING Vikram approval + Lovable manual paste). Until that
+        // lands the column doesn't exist → graceful fallback to info flag.
+        try {
+          const { data: minRow, error: minErr } = await (supabase
+            .from('ph_issues') as any)
+            .select('rank_order')
+            .eq('project_key', projectKey)
+            .not('rank_order', 'is', null)
+            .order('rank_order', { ascending: true })
+            .limit(1)
+            .maybeSingle();
+          if (minErr || !minRow) {
+            flag.info('Rank to top', `Schema pending: rank_order column not yet migrated. See migrations-pending/.`);
+            return;
+          }
+          const newRank = (minRow.rank_order ?? 100) - 10;
+          const { error: updErr } = await (supabase
+            .from('ph_issues') as any)
+            .update({ rank_order: newRank })
+            .eq('id', r.id);
+          if (updErr) throw updErr;
+          queryClient.invalidateQueries({ queryKey: ['backlog-stories-v2', projectId] });
+          flag.success('Ranked to top', r.key || r.id);
+        } catch (e: any) {
+          flag.error('Rank failed', e?.message ?? String(e));
+        }
+      } },
+    { id: 'rank-bottom', label: 'Rank to bottom', icon: <AkArrowDownIcon label="" />,
+      onClick: async (r) => {
+        // Symmetric: writes rank_order higher than current MAX in project scope.
+        try {
+          const { data: maxRow, error: maxErr } = await (supabase
+            .from('ph_issues') as any)
+            .select('rank_order')
+            .eq('project_key', projectKey)
+            .not('rank_order', 'is', null)
+            .order('rank_order', { ascending: false })
+            .limit(1)
+            .maybeSingle();
+          if (maxErr || !maxRow) {
+            flag.info('Rank to bottom', `Schema pending: rank_order column not yet migrated.`);
+            return;
+          }
+          const newRank = (maxRow.rank_order ?? 0) + 10;
+          const { error: updErr } = await (supabase
+            .from('ph_issues') as any)
+            .update({ rank_order: newRank })
+            .eq('id', r.id);
+          if (updErr) throw updErr;
+          queryClient.invalidateQueries({ queryKey: ['backlog-stories-v2', projectId] });
+          flag.success('Ranked to bottom', r.key || r.id);
+        } catch (e: any) {
+          flag.error('Rank failed', e?.message ?? String(e));
+        }
+      } },
+    { id: 'attach', label: 'Attach files', icon: <AkAttachmentIcon label="" />,
+      onClick: (r) => { openDetail(r); flag.info('Attach files', 'Attachments section in the right rail.'); } },
+    // ── Secondary group — Catalyst-specific actions ─────────────────────
+    { id: 'open-in-jira', label: 'Open in Jira', icon: <AkLinkExternalIcon label="" size="small" />,
       onClick: (r) => {
         if (r.key) window.open(`https://digital-transformation.atlassian.net/browse/${r.key}`, '_blank', 'noopener');
         else flag.info('No Jira key', 'This is a Catalyst-native item with no Jira counterpart.');
       },
     },
-    { id: 'copy-link', label: 'Copy link',
-      icon: <AkLinkIcon label="" size="small" />,
+    { id: 'copy-link', label: 'Copy link', icon: <AkLinkIcon label="" size="small" />,
       onClick: (r) => {
         const url = `${window.location.origin}/project-hub/${projectKey}/backlog?selectedIssue=${r.id}`;
         navigator.clipboard.writeText(url).then(
@@ -1526,8 +1680,6 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
         );
       },
     },
-    { id: 'edit', label: 'Edit', icon: <AkEditIcon label="" size="small" />, onClick: (r) => setEditingId(r.id) },
-    { id: 'flag', label: 'Flag', icon: <AkFlagIcon label="" size="small" />, onClick: (r) => flag.info(`Flagged ${r.key || r.id}`) },
     { id: 'duplicate', label: 'Duplicate', icon: <AkCopyIcon label="" size="small" />,
       onClick: async (r) => {
         try {
@@ -1556,7 +1708,7 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
     { id: 'delete', label: 'Delete', icon: <AkTrashIcon label="" size="small" />, danger: true,
       onClick: (r) => setDeleteTarget(r),
       hidden: (r) => r.source !== 'catalyst' },
-  ]), [openDetail, projectKey]);
+  ]), [openDetail, projectKey, projectId, navigate, queryClient]);
 
   // ── Column schema ──
   // F8 (iter-9): __caret column dropped — caret affordance folded into the
@@ -1567,38 +1719,36 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
       // Jira-parity: 16px-wide drag-handle column at the leftmost position.
       // Shows a 6-dot grip icon on row hover; invisible at rest.
       // CSS in JiraTable.tsx (`.jira-drag-handle`) handles visibility.
-      // No functional DnD yet — visual parity only for Phase 4.
+      // 2026-05-12: functional DnD with @dnd-kit/sortable. DragHandleCell
+      // uses useSortable hook to track drag state and apply transform.
+      // Visibility gate: drag handle only shows when sortKey=rank_order AND
+      // groupBy=null (no active sort or grouping — matches Jira behavior).
       id: '__drag',
       label: '',
-      width: 2,
+      width: 3,
       align: 'center' as const,
       alwaysVisible: true,
-      cell: () => (
-        <span
-          className="jira-drag-handle"
-          aria-hidden
-          style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            width: 16,
-            height: 16,
-            cursor: 'grab',
-            color: token('color.icon.subtle', '#626F86'),
-            visibility: 'hidden',  /* JiraTable.tsx tr:hover CSS shows it */
-          }}
-        >
-          {/* 6-dot grip — no ADS equivalent; inline SVG */}
-          <svg width="10" height="16" viewBox="0 0 10 16" fill="currentColor" aria-hidden>
-            <circle cx="2" cy="2" r="1.5"/>
-            <circle cx="8" cy="2" r="1.5"/>
-            <circle cx="2" cy="8" r="1.5"/>
-            <circle cx="8" cy="8" r="1.5"/>
-            <circle cx="2" cy="14" r="1.5"/>
-            <circle cx="8" cy="14" r="1.5"/>
-          </svg>
-        </span>
-      ),
+      hidden: sortKey !== 'rank_order' || groupBy !== null,
+      cell: ({ row }) => <DragHandleCell row={row} />,
+    },
+    {
+      id: '__checkbox',
+      label: '',
+      width: 4,
+      align: 'center' as const,
+      alwaysVisible: true,
+      cell: makeCheckboxCell({
+        isChecked: (row: BacklogItem) => selectedIds.has(row.id),
+        onChange: (row: BacklogItem, checked: boolean) => {
+          const next = new Set(selectedIds);
+          if (checked) {
+            next.add(row.id);
+          } else {
+            next.delete(row.id);
+          }
+          setSelectedIds(next);
+        },
+      }),
     },
     {
       id: 'type',
@@ -1609,12 +1759,14 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
       // header for the issue-type cell). Setting label to "Type" fixes
       // both findings in one change — visible text doubles as the
       // accessible name on the th element.
-      // 2026-05-08 re-probe: Jira BAU list measures Type at 110px.
-      // width:9 × 12 = 108px ≈ matches. Previous width:6 (~72px) was
-      // 38px too narrow — header "Type" text was clipped.
+      // 2026-05-12 design-critique H8 fix: reduced from width:9 (108px) to
+      // width:8 (96px): Type is the first data column — JiraTable prepends a
+      // 28px chevron placeholder to its header. At width:6 (72px), content
+      // area is only 48px; 28+30px "Type" text = 58px → clips to "Ty".
+      // width:8 → 96px → 72px content → 72-28=44px for label (fits ~30px) ✓
       label: 'Type',
-      width: 9,
-      align: 'start',
+      width: 8,
+      align: 'center',
       alwaysVisible: true,
       cell: ({ row: it }) => {
         let icon: React.ReactNode;
@@ -1671,8 +1823,8 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
       // and Ctrl+click all work. Left-click preventDefault → opens detail panel.
       cell: makeKeyCell(
         (r: BacklogItem) => r.key,
-        (r: BacklogItem) => setDetailItemId(r.id),
-        (r: BacklogItem) => `?selectedIssue=${r.id}`,
+        (r: BacklogItem) => openDetail(r),
+        (r: BacklogItem) => `/project-hub/${projectKey}/backlog/${r.key || r.id}`,
       ),
     },
     {
@@ -1699,6 +1851,30 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
         // editors.tsx for other surfaces that may want them, but BAU
         // backlog deliberately does not constrain edits by source.
         onChange: (row, next) => updateField.mutate({ id: row.id, source: row.source, patch: { title: next } }),
+        // 2026-05-12 Jira parity: row hover → ↗ "Open work item" opens the
+        // detail panel for that row (mirrors Jira's full-width detail open).
+        onOpenWorkItem: (row) => openDetail(row),
+        // 2026-05-12 Jira parity: row hover → + "Create child item" triggers
+        // inline create scoped to that row's parent group. For now we route
+        // through the existing inlineCreateGroup state machine so the new
+        // item appears as a sibling under the same parent. Wiring to a true
+        // per-row child-create (sub-task family) is task #4 follow-up — see
+        // ph_issues.parent_key relationship and Jira hierarchy rules.
+        onCreateChild: (row) => {
+          // Default group target = the row's parent key when grouped by parent,
+          // else fall back to row's own id so child inserts as sibling.
+          const groupId = groupBy === 'parent'
+            ? (row.parent_key || row.id)
+            : row.parent_key || row.id;
+          setInlineCreateGroup(groupId);
+        },
+        // Show + button on rows that can have children: Epic, Feature,
+        // Story (sub-task parent). Exclude API Requirement and sub-task
+        // types from the affordance.
+        canCreateChild: (row) => {
+          const t = row.type || '';
+          return t === 'Epic' || t === 'Feature' || t === 'Story' || t === 'Task';
+        },
       }),
     },
     {
@@ -1708,6 +1884,15 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
       // without truncation. Prior 144px (12 fractions) was measured from shorter
       // status values like "READY FOR QA". BAU project uses longer status names.
       width: 18,
+      // 2026-05-08 re-probe: Jira measures Status at 120px OUTER with 8px
+      // left container padding (112px effective). Catalyst TD has 12px+12px
+      // = 24px cell padding overhead; 144px - 24px = 120px inner = matches
+      // Jira's 112px effective + pill margin. "READY FOR QA" needs ~112px
+      // text — fits at 120px inner without truncation.
+      // 2026-05-12 design-critique H8 fix: reduced from width:12 (144px) to
+      // width:9 (108px) to reduce excessive default spacing. Most BAU status
+      // values are ≤20 chars and fit comfortably at 108px inner.
+      width: 9,
       sortable: true,
       defaultVisible: true,
       // B.4 verdict: @atlaskit/popup portal mounts on this surface but
@@ -1741,15 +1926,15 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
       // Jira-parity: Comments is the 5th column (after Status) in Jira's BAU
       // default list view. icon(16) + gap(4) + "Add comment"(~90px) + cell-
       // padding(24px) = ~134px needed. 12 fractions = 144px (inner 120px) fits.
-      width: 12,
+      // 2026-05-12 design-critique H8 fix: reduced from width:12 (144px) to
+      // width:8 (96px). Icon + count badge is the only content; fits easily.
+      width: 8,
       sortable: false,
       defaultVisible: true,
       alwaysVisible: false,
       cell: makeCommentsCell(
         (r: BacklogItem) => r.comment_count,
-        // Clicking the comments cell opens the detail panel so the user
-        // lands in the Comments section — matches Jira's "Add comment" CTA.
-        (r: BacklogItem) => setDetailItemId(r.id),
+        (r: BacklogItem) => openDetail(r),
       ),
     },
     {
@@ -1764,7 +1949,10 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
       // 2026-05-08 re-probe: Jira BAU list measures Parent at 160px.
       // width:13 × 12 = 156px ≈ matches. Previous width:10 (~120px) was
       // 40px too narrow — parent key+name was heavily truncated.
-      width: 13,
+      // 2026-05-12 design-critique H8 fix: reduced from width:13 (156px) to
+      // width:10 (120px) to reduce excessive default spacing. Parent links
+      // truncate gracefully at 120px inner with ellipsis.
+      width: 10,
       sortable: true,
       defaultVisible: true,
       cell: makeParentEditCell<BacklogItem>({
@@ -1795,7 +1983,10 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
     {
       id: 'assignee',
       label: 'Assignee',
-      width: 10,
+      // 2026-05-12 design-critique H8 fix: reduced from width:10 (120px) to
+      // width:8 (96px). Avatar (24px) + name fits at 96px inner with common
+      // name lengths; truncates gracefully for longer names.
+      width: 8,
       sortable: true,
       defaultVisible: true,
       cell: makeAssigneeEditCell<BacklogItem>({
@@ -1835,7 +2026,10 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
     {
       id: 'priority',
       label: 'Priority',
-      width: 8,
+      // 2026-05-12 design-critique H8 fix: reduced from width:8 (96px) to
+      // width:6 (72px). Priority is icon + label (High/Medium/Low/Highest) —
+      // all values ≤8 chars fit at 72px inner.
+      width: 6,
       sortable: true,
       defaultVisible: true,
       cell: makePriorityEditCell<BacklogItem>({
@@ -1871,6 +2065,16 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
       }),
     },
     {
+      id: 'fix_versions',
+      label: 'Fix versions',
+      width: 10,
+      sortable: false,
+      defaultVisible: true,
+      accessor: (r: BacklogItem) => (r.fix_versions || []).join(', '),
+      cell: makeFixVersionsCell((r: BacklogItem) => r.fix_versions),
+      include: (row: BacklogItem) => row.issue_type !== 'Feature',
+    },
+    {
       id: 'created',
       label: 'Created',
       width: 8,
@@ -1891,7 +2095,10 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
     {
       id: 'reporter',
       label: 'Reporter',
-      width: 15,
+      // 2026-05-12 design-critique H8 fix: reduced from width:15 (180px) to
+      // width:10 (120px) to reduce excessive default spacing. Reporter is
+      // rarely visible by default; hidden columns don't impact visual density.
+      width: 10,
       sortable: true,
       defaultVisible: false,
       accessor: (r: BacklogItem) => r.reporter_name || '',
@@ -1915,17 +2122,14 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
     },
   ]), [expandedIds, toggleExpanded, hasChildren, parentOptions, assigneeOptions, avatarsByName, updateField, rowActions]);
 
-  // ── Panel mode cycling (2026-04-18 drawer redesign).
-  //   Drag-to-resize removed — Jira uses a 3-state machine instead.
-  //   Expand: compact → expanded (~60% viewport).
-  //   Fullscreen: any → fullscreen (100%, table hidden).
-  //   Close: resets panelMode to 'compact' and closes the panel.
-  const toggleExpanded2 = useCallback(() => {
-    setPanelMode((m) => (m === 'compact' ? 'expanded' : 'compact'));
-  }, []);
-  const toggleFullscreen = useCallback(() => {
-    setPanelMode((m) => (m === 'fullscreen' ? 'compact' : 'fullscreen'));
-  }, []);
+  // Filter columns to only allowed standard Jira fields (2026-05-12).
+  // Prevents type-specific custom fields and banned fields from appearing
+  // in the column picker. See ALLOWED_COLUMN_IDS + BANNED_COLUMN_IDS above.
+  const filteredCols = useMemo(() =>
+    columns.filter((col) => ALLOWED_COLUMN_IDS.has(col.id) && !BANNED_COLUMN_IDS.has(col.id)),
+    [columns, ALLOWED_COLUMN_IDS, BANNED_COLUMN_IDS]
+  );
+
 
   // Editing state — used by EditBacklogItemModal below.
   const editingItem = useMemo(
@@ -1965,6 +2169,10 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
   // Filters to Catalyst-owned rows only; Jira-synced rows are surfaced as a
   // partial-success count so the user knows why N of M weren't applied.
   const [bulkDeleteOpen, setBulkDeleteOpen] = useState(false);
+  const [bulkMoveOpen, setBulkMoveOpen] = useState(false);
+  const [bulkMoveTarget, setBulkMoveTarget] = useState<string | null>(null);
+  const [bulkTransitionOpen, setBulkTransitionOpen] = useState(false);
+  const [bulkTransitionTarget, setBulkTransitionTarget] = useState<string | null>(null);
   const bulkUpdate = useMutation({
     mutationFn: async ({ ids, patch }: { ids: string[]; patch: Record<string, unknown> }) => {
       const editable = items.filter((it) => ids.includes(it.id) && it.source === 'catalyst');
@@ -2059,13 +2267,6 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
     );
   }
 
-  const isPanelOpen = !!detailItemId;
-  // Look up the open item so the panel header can show its key + type icon
-  const detailItem = detailItemId ? (items.find((it) => it.id === detailItemId) ?? null) : null;
-  const DETAIL_TYPE_MAP: Record<string, string> = {
-    epic: 'Epic', feature: 'Feature', story: 'Story', bug: 'QA Bug',
-    incident: 'Production Incident', initiative: 'Epic',
-  };
   const typeCount = {
     all: items.length,
     initiative: items.filter((i) => i.type === 'initiative').length,
@@ -2076,48 +2277,6 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
     incident: items.filter((i) => i.type === 'incident').length,
   };
 
-  // Apr 27, 2026 (L48): Maximize/Restore icon now lives in the toolbar,
-  // immediately right of "N items" so the label sits to its LEFT (per
-  // user request — earlier iter put it in the page header's actions slot
-  // which left the label and icon vertically stacked at different y's).
-  // Defined as a JSX expression so we can drop it inline in the toolbar.
-  const toolbarMaximizeIcon = isPanelOpen ? (
-    <Tooltip content="Maximize table — closes the detail panel">
-      <button
-        type="button"
-        onClick={maximizeTable}
-        aria-label="Maximize table"
-        style={{
-          display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-          width: 32, height: 32, padding: 0, marginLeft: 8,
-          border: 'none', background: 'transparent', borderRadius: 3,
-          color: token('color.text.subtle', '#42526E'), cursor: 'pointer',
-        }}
-        onMouseEnter={(e) => { e.currentTarget.style.background = '#E4E6EA'; }}
-        onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
-      >
-        <AkMaximizeIcon label="" size="small" />
-      </button>
-    </Tooltip>
-  ) : lastDetailId ? (
-    <Tooltip content="Restore detail panel">
-      <button
-        type="button"
-        onClick={restoreDetail}
-        aria-label="Restore detail panel"
-        style={{
-          display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-          width: 32, height: 32, padding: 0, marginLeft: 8,
-          border: 'none', background: 'transparent', borderRadius: 3,
-          color: token('color.text.subtle', '#42526E'), cursor: 'pointer',
-        }}
-        onMouseEnter={(e) => { e.currentTarget.style.background = '#E4E6EA'; }}
-        onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
-      >
-        <AkMinimizeIcon label="" size="small" />
-      </button>
-    </Tooltip>
-  ) : null;
 
   // Apr 27, 2026 — jira-compare audit P1 #7: "More actions" overflow ⋯
   // wired to @atlaskit/dropdown-menu with view-level actions (Refresh,
@@ -2164,8 +2323,7 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
   };
 
   // Shared icon-button styles for the right-cluster toolbar buttons.
-  // Matches the visual rhythm of toolbarMaximizeIcon (32×32, transparent,
-  // ADS subtle text token).
+  // All 32×32, transparent bg, ADS subtle text token.
   const toolbarIconButtonStyle: React.CSSProperties = {
     display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
     width: 32, height: 32, padding: 0,
@@ -2245,10 +2403,18 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
     />
   );
 
-  // P1 #7 — More actions overflow ⋯. Refresh is wired (TanStack Query
-  // invalidation); Export is a stub flag.info until the CSV exporter
-  // lands. The kebab matches the row-level ⋯ pattern in JiraTable but
-  // operates on the table view, not on a single row.
+  // 2026-05-12 — More actions overflow ⋯. Probed Jira's 10-item set:
+  //   1. Apply settings from old List view   — Jira-internal migration, N/A
+  //   2. View work items as a chart          — out of scope (no chart pivot)
+  //   3. Format rules                        — Jira-specific, N/A
+  //   4. Hide done work items [toggle]       — implemented (state at L646)
+  //   5. Show hierarchy [toggle]             — implemented (state at L649)
+  //   6. Export →                            — implemented (CSV)
+  //   7. Import work items from CSV          — stub flag
+  //   8. Bulk change work items              — opens bulk wizard (task #7)
+  //   9. Go to all work items                — wired to /allwork route
+  //  10. Give feedback                       — out of scope
+  // Items grouped: view-toggles, data-ops, navigation.
   const toolbarMoreActionsButton = (
     <ToolbarMenuButton
       icon={<AkMoreIcon label="" size="small" />}
@@ -2256,112 +2422,35 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
       tooltipContent="More actions"
       buttonStyle={toolbarIconButtonStyle}
       groups={[
+        // Group 1 — view toggles (Jira parity items 4 + 5)
+        { items: [
+          { id: 'toggle-hide-done',
+            label: hideDoneItems ? 'Show done work items' : 'Hide done work items',
+            icon: <AkArchiveBoxIcon label="" size="small" />,
+            onClick: () => setHideDoneItems((v) => !v) },
+          { id: 'toggle-hierarchy',
+            label: showHierarchy ? 'Hide hierarchy' : 'Show hierarchy',
+            icon: <AkChevronDownIcon label="" size="small" />,
+            onClick: () => setShowHierarchy((v) => !v) },
+        ]},
+        // Group 2 — data ops (Jira parity items 6 + 7 + 8)
         { items: [
           { id: 'refresh', label: 'Refresh', icon: <AkRefreshIcon label="" size="small" />, onClick: handleRefreshBacklog },
           { id: 'export', label: 'Export to CSV', icon: <AkDownloadIcon label="" size="small" />, onClick: handleExportCSV },
+          { id: 'import-csv', label: 'Import work items from CSV', icon: <AkDownloadIcon label="" size="small" />,
+            onClick: () => flag.info('Import CSV', 'CSV importer scope: pending Vikram approval.') },
+          { id: 'bulk-change', label: 'Bulk change work items', icon: <AkEditIcon label="" size="small" />,
+            onClick: () => flag.info('Bulk change', 'Bulk change wizard scope: pending Vikram approval (task #7).') },
+        ]},
+        // Group 3 — navigation (Jira parity item 9)
+        { items: [
+          { id: 'all-work', label: 'Go to all work items', icon: <AkLinkIcon label="" size="small" />,
+            onClick: () => navigate(`/project-hub/${projectKey}/allwork`) },
         ]},
       ]}
     />
   );
 
-  // Apr 27, 2026 (L46): Compact rail is routed through AtlaskitPageShell's
-  // `sideRail` prop so it extends to the TOP of the page card alongside the
-  // H1 — matching Jira's pattern where the rail starts at y=67 alongside
-  // "Senaei BAU" project header (probed). Expanded/fullscreen modes keep
-  // their existing rendering (expanded uses the inline 60% column,
-  // fullscreen uses position:fixed modal with backdrop).
-  const useRailAsSideSlot = isPanelOpen && panelMode === 'compact';
-
-  // Inner content shared by sideRail compact rendering AND the fullscreen
-  // modal — keeps "Catalyst work item" + toolbar + scrollable detail one
-  // source of truth.
-  // Apr 27, 2026 (L47): merged the "Catalyst work item" label band and
-  // the panel controls into ONE row to mirror Jira's pattern
-  // (`☑ Jira work item .......... ↗ ⤢ ×`). Dropped the second toolbar
-  // row entirely along with the Prev/Next chevrons and the "1 of N"
-  // counter — Jira's rail has neither (verified by probe of
-  // platform-issue-preview-panel.preview-panel-expand-btn at y=68).
-  // Row navigation still works via j/k keyboard shortcuts (see
-  // useEffect that registers them).
-  const railInnerContent = !isPanelOpen ? null : (
-    <>
-      {/* Single header row — label on left, controls on right.
-          Bottom border = horizontal divider that Jira shows after the
-          "Jira work item" label. Removed Prev/Next + counter (no Jira
-          equivalent). */}
-      <div
-        style={{
-          display: 'flex', alignItems: 'center', gap: 8,
-          padding: '10px 12px 10px 14px',
-          flexShrink: 0,
-          background: 'var(--ds-surface-sunken, #F4F5F7)',
-          borderBottom: `1px solid ${token('color.border', '#DFE1E6')}`,
-          minHeight: 44,
-        }}
-      >
-        {/* Label group — issue type icon + key (Jira parity: "[icon] BAU-1234") */}
-        {detailItem && (
-          <span style={{ display: 'inline-flex', alignItems: 'center', flexShrink: 0 }}>
-            <JiraIssueTypeIcon
-              type={DETAIL_TYPE_MAP[detailItem.type] ?? 'Story'}
-              size={16}
-            />
-          </span>
-        )}
-        <span style={{
-          fontSize: 14, fontWeight: 600,
-          color: token('color.text.subtle', '#42526E'),
-          letterSpacing: '-0.003em',
-          whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
-          maxWidth: 180,
-        }}>
-          {detailItem?.key ?? detailItemId}
-        </span>
-        <div style={{ flex: 1 }} />
-        {/* Controls — Expand/Fullscreen/Close (Jira parity).
-            'Open in new tab' deferred (no Catalyst equivalent yet). */}
-        <DetailNavIconButton
-          ariaLabel={panelMode === 'compact' ? 'Expand panel' : 'Collapse panel'}
-          onClick={toggleExpanded2}
-          isDisabled={panelMode === 'fullscreen'}
-        >
-          {panelMode === 'compact' ? <AkChevronsLeftIcon /> : <AkChevronsRightIcon />}
-        </DetailNavIconButton>
-        <DetailNavIconButton
-          ariaLabel={panelMode === 'fullscreen' ? 'Exit fullscreen' : 'Fullscreen'}
-          onClick={toggleFullscreen}
-        >
-          {panelMode === 'fullscreen' ? <AkMinimizeIcon label="" size="small" /> : <AkMaximizeIcon label="" size="small" />}
-        </DetailNavIconButton>
-        <DetailNavIconButton
-          ariaLabel="Open issue in full page"
-          onClick={() => {
-            if (detailItemId) window.open(`/project-hub/${projectKey}/issues/${detailItemId}`, '_blank');
-          }}
-        >
-          <AkMaximizeIcon label="" size="small" />
-        </DetailNavIconButton>
-        <DetailNavIconButton ariaLabel="Close panel (Esc)" onClick={closeDetail}>
-          <AkCloseIcon label="" size="small" />
-        </DetailNavIconButton>
-      </div>
-      {/* Scrollable detail body (Add parent / BAU-5609 / H1 / fields) */}
-      <div style={{ flex: 1, minHeight: 0, overflow: 'auto' }}>
-        <Suspense fallback={<div style={{ padding: 24, color: token('color.text.subtlest', '#6B778C') }}>Loading…</div>}>
-          <CatalystDetailRouter
-            isOpen={true}
-            onClose={closeDetail}
-            itemId={detailItemId!}
-            projectId={projectId}
-            projectKey={projectKey}
-            onOpenItem={(id) => setDetailItemId(id)}
-            panelMode={true}
-            onTogglePanelMode={closeDetail}
-          />
-        </Suspense>
-      </div>
-    </>
-  );
 
   return (
     <>
@@ -2370,11 +2459,6 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
       // the white card and INTO the chromeBand (Jira parity — H1 sits in
       // the chrome band, not inside the table card). The `title` prop is
       // intentionally NOT passed; passing it would double-render the H1.
-      sideRail={useRailAsSideSlot ? railInnerContent : undefined}
-      // May 2026 (jira-compare): 528 was crushing the table to ~54% viewport.
-      // Jira list+panel split measured: table ~60%, panel ~40% at 1440px.
-      // 420px gives ~40% at typical 1080-1440px viewports without cramping field rows.
-      sideRailWidth={420}
       flush
       // Apr 27, 2026 — jira-compare iter 3: opt in to Jira's blue page
       // chrome (#E9F2FE probed at https://digital-transformation.atlassian.net/jira/software/c/projects/BAU/list?groupBy=status)
@@ -2508,27 +2592,9 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
           // affordance remains in pageChromeRightCtas. The small invite-
           // people icon next to the H1 (in nameAdornment) still opens the
           // Add people modal.
-          pageChromeRightCtas={
-            <Button
-              appearance="subtle"
-              spacing="compact"
-              iconBefore={
-                panelMode === 'fullscreen' ? (
-                  <AkMinimizeIcon label="" size="small" />
-                ) : (
-                  <AkMaximizeIcon label="" size="small" />
-                )
-              }
-              onClick={() =>
-                setPanelMode(panelMode === 'fullscreen' ? 'panel' : 'fullscreen')
-              }
-              aria-label={
-                panelMode === 'fullscreen' ? 'Exit full screen' : 'Enter full screen'
-              }
-            />
-          }
           // Apr 27 2026 (Vikram instruction): tabs row removed entirely.
           // All work / Releases / "+" not required on this surface.
+          pageChromeRightCtas={{}}
         />}
         </>
       }
@@ -2570,6 +2636,35 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
             The global-nav Create handles cross-hub creation. Adding a
             third Create CTA on the toolbar was scope creep that broke
             Jira parity. Removed cleanly; toolbar starts with Search. */}
+        {/* 2026-05-12 — Ask CATY button, Jira parity placement.
+            Jira's "✦ Ask AI" sits left of "Search work" in the list
+            toolbar at all times (verified via Chrome MCP probe of
+            digital-transformation.atlassian.net BAU list view). Catalyst
+            previously rendered Ask CATY in the global top nav — wrong
+            location. Moved here per jira-compare 2026-05-12 finding. */}
+        <Tooltip content="Ask CATY about this backlog" position="bottom">
+          <Button
+            appearance="subtle"
+            isLoading={createCatyConversation.isPending}
+            onClick={handleAskCaty}
+            iconBefore={
+              <span style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: 16,
+                height: 16,
+                color: token('color.icon.accent.purple', '#8270DB'),
+                fontSize: 14,
+                lineHeight: 1,
+              }}>
+                ✦
+              </span>
+            }
+          >
+            Ask CATY
+          </Button>
+        </Tooltip>
         {/* Apr 28, 2026 (jira-compare cycle 2 T5): wrapper width fixed
             280 → flex:1 with min/max so the input expands like Jira's
             (probed Jira width=625px) instead of cramming at 280. */}
@@ -2695,27 +2790,36 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
         {toolbarViewOptionsButton}
         {/* P1 #7 — More actions overflow ⋯: refresh + export. */}
         {toolbarMoreActionsButton}
-        {/* Maximize/Restore icon — Jira toolbar has no item count label. */}
-        {toolbarMaximizeIcon}
+
+        {/* 2026-05-12 — Pagination counter: "X of Y" format. Shows total visible
+            items in current filter scope. Jira parity: BAU list shows "50 of 810"
+            style counter on the right side of the toolbar. */}
+        <div style={{
+          display: 'inline-flex',
+          alignItems: 'center',
+          height: 32,
+          padding: '0 12px',
+          marginLeft: 8,
+          color: token('color.text.subtlest', '#626F86'),
+          fontSize: 12,
+          fontWeight: 500,
+          whiteSpace: 'nowrap',
+        }}>
+          {total} item{total === 1 ? '' : 's'}
+        </div>
       </div>
 
-      {/* Bulk actions bar — only visible when selection is non-empty.
-          Atlaskit-native: Button primitives + a minimal DropdownMenu-style
-          popover for the status/assignee pickers. Delete requires a modal
-          confirmation (ModalDialog) before committing. */}
+      {/* Bulk footer bar — Jira-parity bottom-anchored action bar showing
+          when selectedIds.size > 0. MVP Phase 1: selection UX only (checkbox
+          visibility + footer appearance). Phase 2: Move / Transition handlers. */}
       {selectedIds.size > 0 && (
-        <BulkActionsBar
-          count={selectedIds.size}
-          onClear={() => setSelectedIds(new Set())}
-          statusOptions={STATUS_OPTIONS}
-          assigneeOptions={assigneeOptions.map<AssigneeChoice>((a) => ({ id: a.id, name: a.name, avatarUrl: a.avatarUrl ?? null }))}
-          onChangeStatus={(next) => bulkUpdate.mutate({ ids: Array.from(selectedIds), patch: { status: next } })}
-          onChangeAssignee={(next) => bulkUpdate.mutate({
-            ids: Array.from(selectedIds),
-            patch: { assignee_id: next?.id ?? null, assignee_name: next?.name ?? null },
-          })}
+        <BulkFooterBar
+          selectedCount={selectedIds.size}
+          onSelectAll={() => setSelectedIds(new Set(sortedRows.map((r) => r.id)))}
+          onDeselectAll={() => setSelectedIds(new Set())}
           onDelete={() => setBulkDeleteOpen(true)}
-          isBusy={bulkUpdate.isPending || bulkDelete.isPending}
+          onMove={() => setBulkMoveOpen(true)}
+          onTransition={() => setBulkTransitionOpen(true)}
         />
       )}
 
@@ -2725,18 +2829,9 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
            • fullscreen → table hidden, panel 100% */}
       <div style={{ flex: 1, display: 'flex', minHeight: 0, overflow: 'hidden' }}>
         <div
+          data-backlog-scroll-container
           style={{
-            // Table column width driven by panelMode (no drag-resize).
-            // Apr 27, 2026 (L39): fullscreen no longer hides the table.
-            // The panel renders as a position:fixed modal overlay above
-            // the table (Jira parity), so we keep the table at full
-            // flex width behind the modal — visible at the modal's edges
-            // and contributing to the dim-backdrop perception.
-            ...(isPanelOpen && panelMode === 'expanded'
-              ? { width: '40%', flexShrink: 0 }
-              : isPanelOpen && panelMode !== 'fullscreen'
-                ? { flex: 1 }       // compact — share remainder with fixed 400px panel
-                : { flex: 1 }),     // panel closed OR fullscreen modal — full width
+            // Table container — full width (panel removed)
             minWidth: 0,
             // Apr 27, 2026: page-level overflow was eating the table's own
             // .jira-table-viewport scroll. Switching to overflow:hidden +
@@ -2763,8 +2858,60 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
           }}
         >
           <div style={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column' }}>
+          <DndContext
+            collisionDetection={closestCenter}
+            onDragEnd={async (event: DragEndEvent) => {
+              const { active, over } = event;
+              if (!over || active.id === over.id || !projectKey) return;
+
+              // Find the dragged row and target row
+              const draggedRow = sortedRows.find((r) => r.id === active.id);
+              const overRow = sortedRows.find((r) => r.id === over.id);
+              if (!draggedRow || !overRow) return;
+
+              // Calculate new rank_order: midpoint between neighbors
+              // If dragging above overRow: new_rank = (overRow.rank_order - ABOVE_rank_order) / 2
+              // If dragging below overRow: new_rank = (BELOW_rank_order - overRow.rank_order) / 2
+              const draggedIndex = sortedRows.indexOf(draggedRow);
+              const overIndex = sortedRows.indexOf(overRow);
+              const direction = draggedIndex < overIndex ? 1 : -1; // 1 = down, -1 = up
+
+              let newRankOrder: number;
+              if (direction === 1) {
+                // Dragging down: insert after overRow
+                const below = sortedRows[overIndex + 1];
+                const currentRank = overRow.rank_order ?? 0;
+                const belowRank = below?.rank_order ?? (currentRank + 100);
+                newRankOrder = (currentRank + belowRank) / 2;
+              } else {
+                // Dragging up: insert before overRow
+                const above = sortedRows[overIndex - 1];
+                const currentRank = overRow.rank_order ?? 0;
+                const aboveRank = above?.rank_order ?? Math.max(0, currentRank - 100);
+                newRankOrder = (aboveRank + currentRank) / 2;
+              }
+
+              // Update the rank_order via bulkUpdate mutation (batch-optimized)
+              try {
+                await bulkUpdate.mutateAsync({
+                  ids: [draggedRow.id],
+                  patch: { rank_order: newRankOrder },
+                });
+                // Invalidate backlog queries to re-fetch and re-sort by rank_order
+                queryClient.invalidateQueries({ queryKey: ['backlog-stories-v2', projectId] });
+                queryClient.invalidateQueries({ queryKey: ['backlog-epics', projectId] });
+              } catch (e: any) {
+                flag.error('Rank update failed', e?.message ?? String(e));
+              }
+            }}
+          >
+            <SortableContext
+              items={sortedRows.map((r) => r.id)}
+              strategy={verticalListSortingStrategy}
+              disabled={sortKey !== 'rank_order' || groupBy !== null}
+            >
           <JiraTable<BacklogItem>
-            columns={columns}
+            columns={filteredCols}
             data={groupedRows ? undefined : sortedRows}
             groups={groupedRows ?? undefined}
             collapsedGroups={collapsedGroups}
@@ -2778,9 +2925,15 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
             // share the same standard semantics: expandedIds tracks
             // explicitly-EXPANDED rows, initial state empty → all
             // chevrons render collapsed. Click to expand. Matches Jira.
-            getRowHasChildren={(row) => childrenOf.has(row.id)}
+            // 2026-05-12 Jira parity: "Show hierarchy" toolbar toggle gates
+            // the expand chevron column. When off, getRowHasChildren returns
+            // false for every row → no chevrons rendered → flat list view.
+            // When on (default), parents render the > chevron and children
+            // expand inline (existing tree flatten in visibleRows).
+            getRowHasChildren={(row) => showHierarchy && childrenOf.has(row.id)}
             expandedRowIds={expandedIds}
             onToggleRowExpanded={(rowId) => {
+              if (!showHierarchy) return;
               setExpandedIds((prev) => {
                 const next = new Set(prev);
                 if (next.has(rowId)) next.delete(rowId);
@@ -2944,12 +3097,7 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
               }
               return 0;
             }}
-            // Jira-parity: the currently-open detail row gets the focused-row
-            // highlight (blue left bar + subtle bg). Wire detailItemId as
-            // focusedRowId so the key cell border and row tint track the panel.
-            focusedRowId={detailItemId ?? undefined}
             onRowClick={openDetail}
-            onEscape={closeDetail}
             selectable
             selection={selectedIds}
             onSelectionChange={setSelectedIds}
@@ -3077,198 +3225,10 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
               />
             }
           />
+            </SortableContext>
+          </DndContext>
           </div>
         </div>
-
-        {/* Fullscreen backdrop — dim layer behind the modal panel.
-            Click closes back to compact mode (Jira parity). */}
-        {isPanelOpen && panelMode === 'fullscreen' && (
-          <div
-            onClick={() => setPanelMode('compact')}
-            aria-hidden
-            style={{
-              position: 'fixed',
-              inset: 0,
-              background: 'rgba(9, 30, 66, 0.54)',
-              zIndex: 510,
-              transition: 'opacity 150ms ease',
-            }}
-          />
-        )}
-        {/* Apr 27, 2026 (L46): compact mode rail is now rendered via
-            AtlaskitPageShell.sideRail (extends to top of page = Jira parity).
-            Only render this inline panel for 'expanded' (60% inline) and
-            'fullscreen' (position:fixed modal) modes. */}
-        {isPanelOpen && panelMode !== 'compact' && (
-          <div
-            style={{
-              // Panel column width driven by panelMode:
-              //  expanded  → 60% of flex row (table at 40% beside)
-              //  fullscreen→ position:fixed modal overlay (Apr 27, 2026 L39)
-              //                — table stays visible behind the dim backdrop;
-              //                  modal centered, capped width/height, scrollable
-              //                  internally. Click backdrop or X/⛶ to close.
-              ...(panelMode === 'fullscreen'
-                ? {
-                    position: 'fixed' as const,
-                    top: '4vh',
-                    left: '50%',
-                    transform: 'translateX(-50%)',
-                    width: 'min(1280px, 92vw)',
-                    height: '92vh',
-                    zIndex: 520,
-                    background: token('elevation.surface', '#FFFFFF'),
-                    borderRadius: 8,
-                    boxShadow: '0 24px 56px rgba(9, 30, 66, 0.32), 0 0 1px rgba(9, 30, 66, 0.31)',
-                    border: 'none',
-                  }
-                : panelMode === 'expanded'
-                  ? {
-                      width: '60%', flexShrink: 0,
-                      borderLeft: `1px solid ${token('color.border', '#DFE1E6')}`,
-                      // Apr 27, 2026 (L45): reverted aggressive sticky+100vh
-                      // clamp — it was causing the rail to overlap the
-                      // global page chrome (search vanishing when rail
-                      // opened). Rely on the parent flex container's
-                      // existing min-height:0 + overflow:hidden to size
-                      // the rail; inner content scrolls via the existing
-                      // flex:1+overflow:auto wrapper at line 1572.
-                    }
-                  : {
-                      width: 400, flexShrink: 0,
-                      borderLeft: `1px solid ${token('color.border', '#DFE1E6')}`,
-                    }),
-              overflow: 'hidden',
-              display: 'flex',
-              flexDirection: 'column',
-              transition: panelMode === 'fullscreen' ? 'none' : 'width 150ms ease',
-            }}
-          >
-            {/* "Catalyst work item" anchor band — mirrors Jira's "Jira work
-                item" label at the top of every issue rail. Apr 27, 2026
-                (L40, iter 2): without this the rail's first content
-                (chevrons + close buttons) reads as "floating against
-                white" — the persistent "roof touch" perception even
-                after the canonical white canvas landed. The label gives
-                the rail a clear top edge and a cognitive anchor so the
-                user knows what they're looking at. Atlaskit Heading
-                semibold (Atlassian Sans, 14px/653) for top-row prominence;
-                bottom border separates it from the chevrons toolbar. */}
-            <div
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 8,
-                padding: '10px 14px',
-                fontSize: 14,
-                fontWeight: 653,
-                color: token('color.text', '#292A2E'),
-                letterSpacing: '-0.003em',
-                flexShrink: 0,
-                // Hex literal — `color.background.neutral.subtle` token
-                // resolved to transparent in this theme (probed iter 16),
-                // and CLAUDE.md mandates hex over HSL anyway.
-                background: 'var(--ds-surface-sunken, #F4F5F7)',
-                borderBottom: `1px solid ${token('color.border', '#DFE1E6')}`,
-                minHeight: 44,
-              }}
-            >
-              {detailItem && (
-                <span style={{ display: 'inline-flex', alignItems: 'center', flexShrink: 0 }}>
-                  <JiraIssueTypeIcon type={DETAIL_TYPE_MAP[detailItem.type] ?? 'Story'} size={16} />
-                </span>
-              )}
-              <span style={{
-                fontSize: 14,
-                fontWeight: 600,
-                color: token('color.text.subtle', '#42526E'),
-                whiteSpace: 'nowrap',
-                overflow: 'hidden',
-                textOverflow: 'ellipsis',
-                maxWidth: 220,
-              }}>
-                {detailItem?.key ?? detailItemId}
-              </span>
-            </div>
-            {/* Jira-faithful panel toolbar — Expand / Fullscreen / Close triad.
-                Prev/Next row navigation still works via j/k/↑/↓ keyboard. */}
-            <div
-              role="toolbar"
-              aria-label="Detail panel controls"
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 6,
-                padding: '0 10px 6px',
-                borderBottom: `1px solid ${token('color.border', '#DFE1E6')}`,
-                flexShrink: 0,
-              }}
-            >
-              <DetailNavIconButton
-                ariaLabel="Previous item (k)"
-                onClick={() => navigateDetail(-1)}
-                isDisabled={sortedRows.length < 2}
-              >
-                <AkChevronLeftIcon label="" size="small" />
-              </DetailNavIconButton>
-              <DetailNavIconButton
-                ariaLabel="Next item (j)"
-                onClick={() => navigateDetail(1)}
-                isDisabled={sortedRows.length < 2}
-              >
-                <AkChevronRightIcon label="" size="small" />
-              </DetailNavIconButton>
-              <span style={{ fontSize: 12, color: token('color.text.subtlest', '#6B778C'), marginLeft: 4, whiteSpace: 'nowrap' }}>
-                {currentDetailIdx >= 0 ? `${currentDetailIdx + 1} of ${sortedRows.length}` : ''}
-              </span>
-              <span style={{ width: 1, height: 14, background: token('color.border', '#DFE1E6'), margin: '0 4px' }} />
-              {/* Apr 27, 2026 iter-3 (duplication fix): dropped the
-                  Breadcrumbs from this top row entirely. Row 2 below
-                  ("Add parent / <issue-key> / Share / Actions") already
-                  carries the issue identification. Jira's pattern is:
-                  Row 1 = panel chrome only (label + expand/fullscreen/close);
-                  Row 2 = parent-switcher + current key.
-                  Earlier iters had this row showing
-                  "ProjectHub / BAU / Backlog / BAU-5609 — long title" then
-                  trimmed to "BAU / BAU-5609". Both produced redundant key
-                  display since row 2 also shows BAU-5609. Keep row 1 as
-                  pure chrome to match Jira and remove the duplication. */}
-              <div style={{ flex: '0 1 auto' }} />
-              <div style={{ flex: 1 }} />
-              {/* Jira-faithful icon triad: Expand (←/→) · Fullscreen · Close */}
-              <DetailNavIconButton
-                ariaLabel={panelMode === 'compact' ? 'Expand panel' : 'Collapse panel'}
-                onClick={toggleExpanded2}
-                isDisabled={panelMode === 'fullscreen'}
-              >
-                {panelMode === 'compact' ? <AkChevronsLeftIcon /> : <AkChevronsRightIcon />}
-              </DetailNavIconButton>
-              <DetailNavIconButton
-                ariaLabel={panelMode === 'fullscreen' ? 'Exit fullscreen' : 'Fullscreen'}
-                onClick={toggleFullscreen}
-              >
-                {panelMode === 'fullscreen' ? <AkMinimizeIcon label="" size="small" /> : <AkMaximizeIcon label="" size="small" />}
-              </DetailNavIconButton>
-              <DetailNavIconButton ariaLabel="Close panel (Esc)" onClick={closeDetail}>
-                <AkCloseIcon label="" size="small" />
-              </DetailNavIconButton>
-            </div>
-            <div style={{ flex: 1, minHeight: 0, overflow: 'auto' }}>
-              <Suspense fallback={<div style={{ padding: 24, color: token('color.text.subtlest', '#6B778C') }}>Loading…</div>}>
-                <CatalystDetailRouter
-                  isOpen={true}
-                  onClose={closeDetail}
-                  itemId={detailItemId!}
-                  projectId={projectId}
-                  projectKey={projectKey}
-                  onOpenItem={(id) => setDetailItemId(id)}
-                  panelMode={true}
-                  onTogglePanelMode={closeDetail}
-                />
-              </Suspense>
-            </div>
-          </div>
-        )}
       </div>
 
       {/* Atlaskit-native Edit modal (replaces shadcn Dialog wrapper).
@@ -3311,6 +3271,104 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
         hint="If you're not sure, you can close the items instead."
         isLoading={bulkDelete.isPending}
       />
+
+      {/* Bulk Move Modal — Phase 2 */}
+      <ModalTransition>
+        {bulkMoveOpen && (
+          <Modal onClose={() => setBulkMoveOpen(false)}>
+            <ModalHeader>
+              <ModalTitle>Move {selectedIds.size} item{selectedIds.size === 1 ? '' : 's'} to...</ModalTitle>
+            </ModalHeader>
+            <ModalBody>
+              <Fieldset>
+                <Label htmlFor="bulk-move-parent-select">Parent Epic</Label>
+                <Select
+                  inputId="bulk-move-parent-select"
+                  options={epics.map(e => ({ label: e.issue_key, value: e.issue_key, data: e }))}
+                  value={bulkMoveTarget ? { label: bulkMoveTarget, value: bulkMoveTarget } : null}
+                  onChange={(opt) => setBulkMoveTarget(opt?.value ?? null)}
+                  placeholder="Select parent epic"
+                  isClearable
+                />
+              </Fieldset>
+            </ModalBody>
+            <ModalFooter>
+              <Button appearance="subtle" onClick={() => setBulkMoveOpen(false)}>
+                Cancel
+              </Button>
+              <Button
+                appearance="primary"
+                isDisabled={!bulkMoveTarget || bulkUpdate.isPending}
+                onClick={() => {
+                  if (bulkMoveTarget) {
+                    bulkUpdate.mutate(
+                      { ids: Array.from(selectedIds), patch: { parent_key: bulkMoveTarget } },
+                      {
+                        onSuccess: () => {
+                          setBulkMoveOpen(false);
+                          setBulkMoveTarget(null);
+                          setSelectedIds(new Set());
+                        },
+                      }
+                    );
+                  }
+                }}
+              >
+                {bulkUpdate.isPending ? 'Moving...' : 'Move'}
+              </Button>
+            </ModalFooter>
+          </Modal>
+        )}
+      </ModalTransition>
+
+      {/* Bulk Transition Modal — Phase 2 */}
+      <ModalTransition>
+        {bulkTransitionOpen && (
+          <Modal onClose={() => setBulkTransitionOpen(false)}>
+            <ModalHeader>
+              <ModalTitle>Transition {selectedIds.size} item{selectedIds.size === 1 ? '' : 's'} to...</ModalTitle>
+            </ModalHeader>
+            <ModalBody>
+              <FieldGroup>
+                <Label htmlFor="bulk-transition-status-select">Status</Label>
+                <Select
+                  inputId="bulk-transition-status-select"
+                  options={STATUS_OPTIONS.map(s => ({ label: s.label, value: s.value, data: s }))}
+                  value={bulkTransitionTarget ? { label: bulkTransitionTarget, value: bulkTransitionTarget } : null}
+                  onChange={(opt) => setBulkTransitionTarget(opt?.value ?? null)}
+                  placeholder="Select target status"
+                  isClearable
+                />
+              </FieldGroup>
+            </ModalBody>
+            <ModalFooter>
+              <Button appearance="subtle" onClick={() => setBulkTransitionOpen(false)}>
+                Cancel
+              </Button>
+              <Button
+                appearance="primary"
+                isDisabled={!bulkTransitionTarget || bulkUpdate.isPending}
+                onClick={() => {
+                  if (bulkTransitionTarget) {
+                    bulkUpdate.mutate(
+                      { ids: Array.from(selectedIds), patch: { status: bulkTransitionTarget } },
+                      {
+                        onSuccess: () => {
+                          setBulkTransitionOpen(false);
+                          setBulkTransitionTarget(null);
+                          setSelectedIds(new Set());
+                        },
+                      }
+                    );
+                  }
+                }}
+              >
+                {bulkUpdate.isPending ? 'Transitioning...' : 'Transition'}
+              </Button>
+            </ModalFooter>
+          </Modal>
+        )}
+      </ModalTransition>
 
       {/* Single FlagsHost for this route — picks up every showFlag()/flag.* call. */}
       <FlagsHost />
@@ -5614,6 +5672,9 @@ function InlineCreateRow({
  */
 function BulkActionsBar({
   count,
+  totalAvailable,
+  onSelectAll,
+  onEditFields,
   onClear,
   statusOptions,
   assigneeOptions,
@@ -5623,6 +5684,17 @@ function BulkActionsBar({
   isBusy,
 }: {
   count: number;
+  /**
+   * 2026-05-12 Jira parity: total rows in current filter scope (used to label
+   * the "Select all (N in scope)" CTA). When omitted, button is hidden.
+   */
+  totalAvailable?: number;
+  onSelectAll?: () => void;
+  /**
+   * 2026-05-12 Jira parity: "Edit fields" opens the bulk-edit modal. When
+   * omitted, the button is hidden (back-compat for callers without bulk edit).
+   */
+  onEditFields?: () => void;
   onClear: () => void;
   statusOptions: StatusOption[];
   assigneeOptions: AssigneeChoice[];
@@ -5710,6 +5782,62 @@ function BulkActionsBar({
           {count} {itemLabel} selected
         </span>
         <div style={{ width: 1, height: 20, background: 'rgba(255,255,255,0.20)' }} />
+
+        {/* 2026-05-12 Jira parity: Select all (in scope) — only when not yet all selected */}
+        {onSelectAll && typeof totalAvailable === 'number' && count < totalAvailable && (
+          <>
+            <button
+              type="button"
+              onClick={onSelectAll}
+              disabled={isBusy}
+              style={{
+                height: 32,
+                padding: '0 12px',
+                margin: '0 6px',
+                background: 'transparent',
+                border: 'none',
+                color: 'var(--ds-text-inverse, #FFFFFF)',
+                fontSize: 14,
+                fontWeight: 500,
+                cursor: 'pointer',
+                borderRadius: 4,
+              }}
+              onMouseEnter={(e) => (e.currentTarget.style.background = 'rgba(255,255,255,0.10)')}
+              onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
+            >
+              Select all ({totalAvailable} in scope)
+            </button>
+            <div style={{ width: 1, height: 20, background: 'rgba(255,255,255,0.20)' }} />
+          </>
+        )}
+
+        {/* 2026-05-12 Jira parity: Edit fields button */}
+        {onEditFields && (
+          <>
+            <button
+              type="button"
+              onClick={onEditFields}
+              disabled={isBusy}
+              style={{
+                height: 32,
+                padding: '0 12px',
+                margin: '0 6px',
+                background: 'transparent',
+                border: 'none',
+                color: 'var(--ds-text-inverse, #FFFFFF)',
+                fontSize: 14,
+                fontWeight: 500,
+                cursor: 'pointer',
+                borderRadius: 4,
+              }}
+              onMouseEnter={(e) => (e.currentTarget.style.background = 'rgba(255,255,255,0.10)')}
+              onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
+            >
+              Edit fields
+            </button>
+            <div style={{ width: 1, height: 20, background: 'rgba(255,255,255,0.20)' }} />
+          </>
+        )}
 
         {/* Change status */}
         <BulkPopover label="Change status" width={240}>

@@ -18,6 +18,7 @@ import { describe, it, expect } from 'vitest';
 const ADMIN_DIR = resolve(__dirname, '..');
 
 const TARGET_FILES = [
+  'AdminAccessPage.tsx',
   'UserAccessPage.tsx',
   'CapacityDepartments.tsx',
   'ResourceAssignments.tsx',

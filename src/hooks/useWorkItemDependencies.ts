@@ -356,14 +356,14 @@ function transformDependency(
   let source_type: WorkItemDependencyType;
   let source_key: string;
   let source_name: string;
-  let source_container_name: string | null = null;
+  const source_container_name: string | null = null;
 
   // Get target info
   let target_id: string;
   let target_type: WorkItemDependencyType;
   let target_key: string;
   let target_name: string;
-  let target_container_name: string | null = null;
+  const target_container_name: string | null = null;
 
   // New model fields available
   if (dep.requesting_work_item_id && dep.depends_on_work_item_id) {

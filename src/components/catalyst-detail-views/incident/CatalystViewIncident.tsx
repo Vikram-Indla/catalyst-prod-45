@@ -4,7 +4,6 @@
 import React from 'react';
 import { toast } from 'sonner';
 import { cloneIssue, archiveIssue } from '@/modules/project-work-hub/lib/workItemRepo';
-import WarningIcon from '@atlaskit/icon/core/warning';
 import { CatalystViewBase } from '../shared/CatalystViewBase';
 import { useCatalystIssue, useCatalystIssueMutations } from '../shared/hooks';
 import {
@@ -20,10 +19,6 @@ import { useQueryClient } from '@tanstack/react-query';
 import { MoveIssueDialog } from '../shared/MoveIssueDialog';
 import { ConfirmArchiveDialog } from '../shared/ConfirmArchiveDialog';
 import type { CatalystViewBaseProps } from '../shared/types';
-import {
-  PRIORITY_STYLES,
-} from '@/modules/project-work-hub/components/dialogs/story-detail-modules/constants';
-
 export default function CatalystViewIncident({
   isOpen, onClose, itemId, projectId, projectKey,
   onOpenItem, panelMode, fullPageMode, onTogglePanelMode, navigationItems, onNavigate,
@@ -32,25 +27,12 @@ export default function CatalystViewIncident({
   const { data: issue, isLoading } = useCatalystIssue(itemId, isOpen);
   const mutations = useCatalystIssueMutations(itemId, onClose);
   const improveHandlers = useImproveApplyHandlers(issue ?? null);
-  const priorityStyle = PRIORITY_STYLES[issue?.priority ?? 'Medium'] ?? PRIORITY_STYLES.Medium;
   const [showMoveDialog, setShowMoveDialog] = React.useState(false);
   const [showArchiveDialog, setShowArchiveDialog] = React.useState(false);
   const queryClient = useQueryClient();
 
   const leftContent = (
     <>
-      {/* INCIDENT-UNIQUE: Severity banner */}
-      <div style={{
-        display: 'flex', alignItems: 'center', gap: 8, padding: '8px 12px',
-        background: 'var(--ds-background-danger, #FFEDEB)', borderRadius: 6, marginBottom: 16, border: '1px solid var(--ds-border-danger, #FF8F73)',
-      }}>
-        <WarningIcon size="small" primaryColor="var(--ds-icon-danger, #C9372C)" />
-        <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--ds-text-danger, #AE2A19)' }}>{issue?.issue_type || 'Production Incident'}</span>
-        <span style={{ fontSize: 12, color: 'var(--ds-text-subtlest, #626F86)', marginLeft: 'auto' }}>
-          Priority: <span style={{ color: priorityStyle.color, fontWeight: 700 }}>{priorityStyle.symbol} {issue?.priority ?? 'Medium'}</span>
-        </span>
-      </div>
-
       <CatalystTitleEditor issue={issue ?? null} onTitleChange={(t) => mutations.updateField.mutate({ field: 'summary', value: t, oldValue: issue?.summary ?? '' })} />
       {/* jira-compare 2026-05-03 — Patch E · CatalystStatusPill relocated to right-rail header in CatalystSidebarDetails. */}
       <CatalystQuickActions />

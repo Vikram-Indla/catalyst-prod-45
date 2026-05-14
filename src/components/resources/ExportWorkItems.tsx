@@ -205,7 +205,7 @@ async function generateExcel(selectedMonths: { label: string; start: Date; end: 
       resources.map((r: any) => (r.name || '').toLowerCase()).filter(Boolean)
     );
 
-    let issueQuery = supabase
+    const issueQuery = supabase
       .from('ph_issues')
       .select('issue_key, project_key, project_name, issue_type, summary, status, assignee_display_name, priority, jira_created_at, jira_updated_at, parent_key, parent_summary')
       .gte('jira_updated_at', startISO)

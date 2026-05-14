@@ -97,7 +97,7 @@ export async function fetchBacklogItems(params: BacklogQueryParams): Promise<Bac
     if (item.process_step_id) processStepIds.add(item.process_step_id);
   });
 
-  let profilesMap: Record<string, string> = {};
+  const profilesMap: Record<string, string> = {};
   if (userIds.size > 0) {
     const { data: profiles, error: profilesError } = await supabase
       .from('profiles')
@@ -112,7 +112,7 @@ export async function fetchBacklogItems(params: BacklogQueryParams): Promise<Bac
   }
 
   // Resolve process step names
-  let processStepsMap: Record<string, string> = {};
+  const processStepsMap: Record<string, string> = {};
   if (processStepIds.size > 0) {
     const { data: steps, error: stepsError } = await supabase
       .from('process_steps')

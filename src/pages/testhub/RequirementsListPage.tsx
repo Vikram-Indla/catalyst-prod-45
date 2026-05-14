@@ -89,7 +89,7 @@ export default function RequirementsListPage() {
 
       // Fetch linked test counts from tm_requirement_tests
       const reqIds = reqs.map((r: any) => r.id);
-      let linkCounts: Record<string, number> = {};
+      const linkCounts: Record<string, number> = {};
       if (reqIds.length > 0) {
         const { data: links } = await typedQuery('tm_requirement_tests')
           .select('requirement_id')

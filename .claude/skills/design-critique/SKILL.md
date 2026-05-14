@@ -362,3 +362,9 @@ If the score is below **22 / 30** (< 73%), the surface MUST NOT ship. Halt and f
 - `ads-validator` skill — token compliance gate
 - `preflight` Phase 6 — closure evidence protocol (same arrow/annotation rule)
 - Atlassian Design System: https://atlassian.design/
+
+---
+
+## Agent Roster (companion)
+
+When this skill activates, also load `AGENT_ROSTER.md` from this directory and follow its activation-notification protocol. The roster is purely additive and does not change any instruction in this file. See `.claude/skills/AGENT_PIPELINE.md` for the cross-skill rules.

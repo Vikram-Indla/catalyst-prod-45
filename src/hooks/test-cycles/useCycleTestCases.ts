@@ -118,7 +118,7 @@ export function useCycleTestCases(cycleId: string, filters?: TestCaseFilters) {
 
       // Get latest run results for each scope item
       const scopeIds = (scopeData || []).map((s: any) => s.id);
-      let runResults: Record<string, any> = {};
+      const runResults: Record<string, any> = {};
       
       if (scopeIds.length > 0) {
         const { data: runs } = await supabase

@@ -26,10 +26,18 @@
  *     not a project, surfacing it was misleading).
  */
 import React, { useMemo } from 'react';
-import {
-  Clock, FolderOpen, Columns3, GitBranch, LayoutDashboard,
-  Table2, CircleDot, Layers, Map as MapIcon, BarChart2, Settings, Calendar,
-} from '@/lib/atlaskit-icons';
+import ClockIcon from '@atlaskit/icon/core/clock';
+import FolderOpenIcon from '@atlaskit/icon/core/folder-open';
+import GridIcon from '@atlaskit/icon/core/grid';
+import BranchIcon from '@atlaskit/icon/core/branch';
+import DashboardIcon from '@atlaskit/icon/core/dashboard';
+import SpreadsheetIcon from '@atlaskit/icon/core/spreadsheet';
+import GoalIcon from '@atlaskit/icon/core/goal';
+import BoardIcon from '@atlaskit/icon/core/board';
+import LocationIcon from '@atlaskit/icon/core/location';
+import ChartBarIcon from '@atlaskit/icon/core/chart-bar';
+import SettingsIcon from '@atlaskit/icon/core/settings';
+import CalendarIcon from '@atlaskit/icon/core/calendar';
 import { SidebarBase, type SidebarConfig, type SidebarMenuItem } from './SidebarBase';
 import { useRecentProjects, type RecentLocation } from '@/hooks/home/useRecentProjects';
 
@@ -59,62 +67,72 @@ function SkeletonRowTitle() {
 }
 
 /**
- * Title renderer — "Project Name" in primary text, " › Section" in
- * subtle text. Uses ADS tokens so it themes correctly in dark mode.
+ * Format a timestamp (milliseconds since epoch) as relative time.
+ * Examples: "2h ago", "30m ago", "Yesterday", "Oct 5"
+ */
+function formatTimestamp(visitedAtMs: number): string {
+  const now = Date.now();
+  const diffMs = now - visitedAtMs;
+  const diffMins = Math.floor(diffMs / 60000);
+  const diffHours = Math.floor(diffMs / 3600000);
+  const diffDays = Math.floor(diffMs / 86400000);
+
+  if (diffMins < 1) return 'Just now';
+  if (diffMins < 60) return `${diffMins}m ago`;
+  if (diffHours < 24) return `${diffHours}h ago`;
+  if (diffDays === 1) return 'Yesterday';
+  if (diffDays < 7) return `${diffDays}d ago`;
+
+  // For older entries, show month/day
+  const date = new Date(visitedAtMs);
+  return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+}
+
+/**
+ * Title renderer — "Project Name › Section" on line 1, timestamp on line 2.
+ * Uses ADS tokens so it themes correctly in dark mode.
  */
 function LocationRowTitle({ location }: { location: RecentLocation }) {
   return (
     <span
       style={{
-        display: 'inline-flex',
-        alignItems: 'baseline',
-        gap: 4,
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'flex-start',
+        gap: 2,
         minWidth: 0,
         maxWidth: '100%',
       }}
     >
-      {/* Project key — primary label, 14px/500, color.text */}
+      {/* Project Key › Section — primary */}
       <span
         style={{
-          color: 'var(--ds-text, #172B4D)',
-          fontWeight: 600,
+          color: 'var(--ds-text, #292A2E)',
+          fontWeight: 500,
           fontSize: '13px',
+          lineHeight: '18px',
           overflow: 'hidden',
           textOverflow: 'ellipsis',
           whiteSpace: 'nowrap',
-          flex: '0 0 auto',
+          flex: 1,
         }}
-        title={`${location.projectName} › ${location.sectionLabel}`}
       >
-        {location.projectKey}
+        {location.projectKey} › {location.sectionLabel}
       </span>
-      {/* Separator — 11px, color.text.subtlest — reads as breadcrumb crumb, not competing text */}
+
+      {/* Timestamp — secondary */}
       <span
         style={{
           color: 'var(--ds-text-subtlest, #626F86)',
           fontWeight: 400,
           fontSize: '11px',
-          flex: '0 0 auto',
-          lineHeight: '20px',
-        }}
-        aria-hidden="true"
-      >
-        ›
-      </span>
-      {/* Section label — 12px/400, color.text.subtlest (ADS meta size) */}
-      <span
-        style={{
-          color: 'var(--ds-text-subtlest, #626F86)',
-          fontWeight: 400,
-          fontSize: '12px',
+          lineHeight: '16px',
           overflow: 'hidden',
           textOverflow: 'ellipsis',
           whiteSpace: 'nowrap',
-          flex: '0 1 auto',
-          minWidth: 0,
         }}
       >
-        {location.sectionLabel}
+        {formatTimestamp(location.visitedAt)}
       </span>
     </span>
   );
@@ -128,25 +146,25 @@ function LocationRowTitle({ location }: { location: RecentLocation }) {
 type LucideIcon = React.FC<{ size?: number; strokeWidth?: number; style?: React.CSSProperties }>;
 
 // Icons MUST match ProjectHubSidebar.tsx exactly — same section, same icon.
-// dashboard→LayoutDashboard, boards→Columns3, backlog→Layers, allwork→GitBranch
+// dashboard→DashboardIcon, boards→GridIcon, backlog→BoardIcon, allwork→BranchIcon
 const SECTION_ICON_MAP: Array<[RegExp, LucideIcon]> = [
-  [/all.?work/i,  GitBranch],     // ProjectHubSidebar: allwork → GitBranch
-  [/backlog/i,    Layers],        // ProjectHubSidebar: backlog → Layers
-  [/\bboard/i,    Columns3],      // ProjectHubSidebar: boards → Columns3 (\b prevents matching "dashboard")
-  [/dashboard/i,  LayoutDashboard],
-  [/report/i,     BarChart2],
-  [/setting/i,    Settings],
-  [/calendar/i,   Calendar],
-  [/roadmap/i,    MapIcon],
-  [/list/i,       Table2],
-  [/issue/i,      CircleDot],
+  [/all.?work/i,  BranchIcon],      // allwork → BranchIcon
+  [/backlog/i,    BoardIcon],       // backlog → BoardIcon
+  [/\bboard/i,    GridIcon],        // boards → GridIcon (\b prevents matching "dashboard")
+  [/dashboard/i,  DashboardIcon],
+  [/report/i,     ChartBarIcon],
+  [/setting/i,    SettingsIcon],
+  [/calendar/i,   CalendarIcon],
+  [/roadmap/i,    LocationIcon],
+  [/list/i,       SpreadsheetIcon],
+  [/issue/i,      GoalIcon],
 ];
 
 function iconForSection(label: string): LucideIcon {
   for (const [pattern, Icon] of SECTION_ICON_MAP) {
     if (pattern.test(label)) return Icon;
   }
-  return FolderOpen;
+  return FolderOpenIcon;
 }
 
 // Stable component cache keyed by section label so React reconciles correctly.
@@ -181,22 +199,33 @@ export default function HomeSidebar({
   const config: SidebarConfig = useMemo(() => {
     const items: SidebarMenuItem[] = loading
       ? [
-          { id: 'recent-skel-1', title: <SkeletonRowTitle />, path: '#recent-skel-1', icon: FolderOpen },
-          { id: 'recent-skel-2', title: <SkeletonRowTitle />, path: '#recent-skel-2', icon: FolderOpen },
-          { id: 'recent-skel-3', title: <SkeletonRowTitle />, path: '#recent-skel-3', icon: FolderOpen },
+          {
+            id: 'recent-loading-label',
+            title: (
+              <span style={{ color: 'var(--ds-text-subtlest, #626F86)', fontSize: '11px' }}>
+                Loading recent pages...
+              </span>
+            ),
+            path: '#recent-loading-label',
+            icon: FolderOpenIcon,
+            onClick: () => {},
+          },
+          { id: 'recent-skel-1', title: <SkeletonRowTitle />, path: '#recent-skel-1', icon: FolderOpenIcon },
+          { id: 'recent-skel-2', title: <SkeletonRowTitle />, path: '#recent-skel-2', icon: FolderOpenIcon },
+          { id: 'recent-skel-3', title: <SkeletonRowTitle />, path: '#recent-skel-3', icon: FolderOpenIcon },
         ]
       : recentLocations.length === 0
       ? [
           {
-            id: 'recent-empty',
+            id: 'recent-placeholder',
             title: (
-              <span style={{ color: 'var(--ds-text-subtlest, #94A3B8)', fontSize: 13 }}>
-                No recent pages yet
+              <span style={{ color: 'var(--ds-text-subtlest, #626F86)', fontSize: '12px' }}>
+                No recent pages
               </span>
             ),
-            path: '#recent-empty',
-            icon: Clock,
-            onClick: () => {},
+            path: '#',
+            icon: ClockIcon,
+            onClick: (e) => e.preventDefault(),
           },
         ]
       : recentLocations.map((loc) => ({
@@ -208,7 +237,7 @@ export default function HomeSidebar({
         }));
 
     return {
-      badge: 'H',
+      badge: null,
       label: 'Home',
       showFavorites: false,
       sections: [{ title: 'Recent', items }],

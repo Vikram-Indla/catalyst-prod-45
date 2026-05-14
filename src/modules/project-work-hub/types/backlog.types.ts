@@ -35,6 +35,9 @@ export interface BacklogEpic {
   parent_summary?: string | null;
   issue_type?: string | null;
   comment_count?: number | null;
+  labels?: string[] | null;
+  fix_versions?: string[] | null;
+  rank_order?: number | null;
 }
 
 export interface BacklogFeature {
@@ -88,6 +91,9 @@ export interface BacklogStory {
    *  correctly — table column should match. */
   parent_key?: string | null;
   parent_summary?: string | null;
+  labels?: string[] | null;
+  fix_versions?: string[] | null;
+  rank_order?: number | null;
   feature?: {
     id: string;
     display_id: string | null;

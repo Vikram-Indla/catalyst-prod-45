@@ -172,7 +172,7 @@ export function useDashboardWidgetConfig(projectId: string) {
         // Surface init failures so we don't fall through to a stateless
         // dashboard silently. Common causes: invalid project_id (UUID
         // mismatch), FK violation, RLS denial.
-        // eslint-disable-next-line no-console
+         
         console.error('[DashboardWidgetGrid] init upsert failed:', error, {
           projectId,
           userId,
@@ -185,7 +185,7 @@ export function useDashboardWidgetConfig(projectId: string) {
       queryClient.invalidateQueries({ queryKey: ['dashboard-widget-config', projectId, userId] });
     },
     onError: (err: any) => {
-      // eslint-disable-next-line no-console
+       
       console.error('[DashboardWidgetGrid] init mutation error:', err?.message ?? err);
     },
   });

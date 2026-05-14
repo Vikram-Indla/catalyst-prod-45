@@ -165,7 +165,7 @@ export default function EpicDescriptionEditor({
     for (const k of Object.keys(before)) {
       if ((after[k] ?? 0) < before[k]) dropped[k] = before[k] - (after[k] ?? 0);
     }
-    // eslint-disable-next-line no-console
+     
     console.info('[EpicDescriptionEditor] normalize', {
       workItemId,
       before,

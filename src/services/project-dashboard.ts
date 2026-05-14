@@ -60,7 +60,7 @@ export async function fetchKeyMilestones(projectId: string, releaseIds: string[]
 
   const itemIds = (data ?? []).map(d => d.id);
   // Fetch last transition to current status for each item
-  let transitionMap: Record<string, string> = {};
+  const transitionMap: Record<string, string> = {};
   if (itemIds.length > 0) {
     const { data: transitions } = await supabase
       .from('ph_status_transitions')
@@ -107,7 +107,7 @@ export async function fetchInProduction(projectId: string, releaseIds: string[])
 
   const itemIds = (data ?? []).map(d => d.id);
   // Fetch transition to in_production for accurate "since" date
-  let deployDateMap: Record<string, string> = {};
+  const deployDateMap: Record<string, string> = {};
   if (itemIds.length > 0) {
     const { data: transitions } = await supabase
       .from('ph_status_transitions')
@@ -189,7 +189,7 @@ export async function fetchOnHold(projectId: string, releaseIds: string[]) {
 
   const itemIds = (data ?? []).map(d => d.id);
   // Fetch the last transition to on_hold for each item to compute days
-  let daysMap: Record<string, number> = {};
+  const daysMap: Record<string, number> = {};
   if (itemIds.length > 0) {
     const { data: transitions } = await supabase
       .from('ph_status_transitions')
@@ -396,7 +396,7 @@ export async function fetchAssignedItems(userId: string, releaseIds: string[]) {
 
   // Fetch parent info for items with parent_id
   const parentIds = [...new Set(items.map(i => (i as any).parent_id).filter(Boolean))] as string[];
-  let parentMap: Record<string, { item_key: string; title: string; item_type: string }> = {};
+  const parentMap: Record<string, { item_key: string; title: string; item_type: string }> = {};
   if (parentIds.length > 0) {
     const { data: parents } = await supabase
       .from('ph_work_items')

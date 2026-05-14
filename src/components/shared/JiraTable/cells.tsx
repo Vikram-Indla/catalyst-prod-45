@@ -12,10 +12,41 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import Avatar from '@atlaskit/avatar';
 import CommentIcon from '@atlaskit/icon/glyph/comment';
+import DragHandleIcon from '@atlaskit/icon/glyph/drag-handler';
+import MoreIcon from '@atlaskit/icon/glyph/more';
 import { token } from '@atlaskit/tokens';
 import AkChevronRightIcon from '@atlaskit/icon/glyph/chevron-right';
 import AkChevronDownIcon from '@atlaskit/icon/glyph/chevron-down';
+import DropdownMenu, { DropdownItem, DropdownItemGroup } from '@atlaskit/dropdown-menu';
 import type { CellProps } from './types';
+
+// ─── Checkbox Cell ─────────────────────────────────────────────────────────
+// Multi-select checkbox. Caller provides isChecked and onChange handlers.
+export function makeCheckboxCell({
+  isChecked,
+  onChange,
+}: {
+  isChecked: (row: any) => boolean;
+  onChange: (row: any, checked: boolean) => void;
+}) {
+  return function CheckboxCell({ row }: CellProps<any>) {
+    const checked = isChecked(row);
+    return (
+      <input
+        type="checkbox"
+        checked={checked}
+        onChange={(e) => onChange(row, e.target.checked)}
+        aria-label="Select row"
+        style={{
+          cursor: 'pointer',
+          width: 16,
+          height: 16,
+          margin: 0,
+        }}
+      />
+    );
+  };
+}
 
 // ─── Type Icon Cell ────────────────────────────────────────────────────────
 // Generic type-icon column. Caller passes the icon node.
@@ -25,6 +56,125 @@ export function makeTypeIconCell(getIcon: (row: any) => React.ReactNode) {
       <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 20, height: 20 }}>
         {getIcon(row)}
       </span>
+    );
+  };
+}
+
+// ─── Drag Handle Cell ──────────────────────────────────────────────────────
+// Row-hover drag affordance. Shows a 6-dot drag handle icon only when dragging
+// is enabled (no active sort AND no grouping). Visible on hover, hidden at rest.
+export function makeDragHandleCell(isDragEnabled: () => boolean) {
+  return function DragHandleCell({ row }: CellProps<any>) {
+    if (!isDragEnabled()) return null;
+    return (
+      <span
+        style={{
+          display: 'inline-flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          width: 20,
+          height: 20,
+          opacity: 0,
+          transition: 'opacity 200ms',
+          cursor: 'grab',
+          color: token('color.text.subtle', '#42526E'),
+        }}
+        className="jira-drag-handle"
+      >
+        <DragHandleIcon label="" size="small" />
+      </span>
+    );
+  };
+}
+
+// ─── Row Menu Cell ─────────────────────────────────────────────────────────
+// Row-level actions menu (⋯ more-actions button). Visible on row hover only.
+// Caller provides action handlers (onOpen, onMove, onDelete).
+export function makeRowMenuCell({
+  onOpen,
+  onMove,
+  onDelete,
+}: {
+  onOpen?: (row: any) => void;
+  onMove?: (row: any) => void;
+  onDelete?: (row: any) => void;
+}) {
+  return function RowMenuCell({ row }: CellProps<any>) {
+    return (
+      <DropdownMenu
+        trigger={({ triggerRef, ...triggerProps }) => (
+          <button
+            {...triggerProps}
+            ref={triggerRef}
+            type="button"
+            aria-label="More actions"
+            className="jira-row-menu-trigger"
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              width: 32,
+              height: 32,
+              padding: 0,
+              border: 'none',
+              borderRadius: 3,
+              background: 'transparent',
+              color: token('color.text.subtle', '#42526E'),
+              cursor: 'pointer',
+              opacity: 0,
+              transition: 'opacity 120ms ease, background 100ms ease',
+            }}
+            onMouseEnter={(e) => {
+              (e.currentTarget as HTMLElement).style.background = token(
+                'color.background.neutral.subtle.hovered',
+                '#F4F5F7'
+              );
+            }}
+            onMouseLeave={(e) => {
+              (e.currentTarget as HTMLElement).style.background = 'transparent';
+            }}
+          >
+            <MoreIcon label="" size="small" />
+          </button>
+        )}
+      >
+        <DropdownItemGroup>
+          {onOpen && (
+            <DropdownItem
+              onClick={(e) => {
+                e.preventDefault();
+                onOpen(row);
+              }}
+            >
+              Open
+            </DropdownItem>
+          )}
+          {onMove && (
+            <DropdownItem
+              onClick={(e) => {
+                e.preventDefault();
+                onMove(row);
+              }}
+            >
+              Move to...
+            </DropdownItem>
+          )}
+        </DropdownItemGroup>
+        {onDelete && (
+          <DropdownItemGroup>
+            <DropdownItem
+              onClick={(e) => {
+                e.preventDefault();
+                onDelete(row);
+              }}
+            >
+              <span style={{ color: 'var(--ds-text-danger, #AE2A19)' }}>
+                Delete
+              </span>
+            </DropdownItem>
+          </DropdownItemGroup>
+        )}
+      </DropdownMenu>
     );
   };
 }
@@ -75,21 +225,15 @@ export function makeCaretCell({
 // ─── Key (link) Cell ───────────────────────────────────────────────────────
 // Jira-faithful key cell.
 //
-// Measured directly from Jira production DOM 2026-04-26 (BAU-5650 sample row,
-// digital-transformation.atlassian.net):
-//   - font-family:  "Atlassian Sans" (NOT monospace)
+// Key cell style — re-measured 2026-05-12 against user-provided Jira screenshot
+// (digital-transformation.atlassian.net BAU list view, current production):
 //   - font-size:    14px
-//   - font-weight:  400 (regular, NOT bold)
-//   - color:        rgb(80, 82, 88)  /  #505258  — neutral subtle, NOT link-blue
-//   - text-decoration: none in rest state; underline + bg tint on hover
+//   - font-weight:  400
+//   - color:        color.link (#0C66E4) — blue, underlined at rest
+//   - text-decoration: underline at rest state (Jira parity confirmed visually)
 //
-// The hover affordance lives in JiraTable.tsx:
-//   [data-jira-table-row-open]:hover { background:#E9F2FF; text-decoration: underline; }
-//
-// Previously this cell rendered as monospaced bold link-blue (Catalyst's
-// pre-2026-04 "opinionated" treatment). The 2026-04-26 audit confirmed Jira
-// has long since moved to neutral subtle for the rest state, with the link
-// affordance reserved for hover. The canonical now matches.
+// NOTE: 2026-04-26 comment claiming #505258/grey was stale — current Jira
+// production renders keys as blue+underlined links in rest state.
 export function makeKeyCell(
   getKey: (row: any) => string | null,
   /**
@@ -116,12 +260,12 @@ export function makeKeyCell(
       boxSizing: 'border-box',
       fontFamily: 'inherit',
       fontWeight: 400,
-      color: token('color.text.subtle', '#505258'),
+      color: token('color.link', '#0C66E4'),
       fontSize: 14,
       letterSpacing: 0,
       whiteSpace: 'nowrap',
       cursor: 'pointer',
-      textDecoration: 'none',
+      textDecoration: 'underline',
       border: `2px solid ${token('color.border.focused', '#388BFF')}`,
       borderRadius: 3,
       padding: '2px 6px',
@@ -131,12 +275,12 @@ export function makeKeyCell(
       margin: '-2px -6px',
       fontFamily: 'inherit',
       fontWeight: 400,
-      color: token('color.text.subtle', '#505258'),
+      color: token('color.link', '#0C66E4'),
       fontSize: 14,
       letterSpacing: 0,
       whiteSpace: 'nowrap',
       cursor: 'pointer',
-      textDecoration: 'none',
+      textDecoration: 'underline',
     };
     if (onOpen) {
       const href = getHref ? getHref(row) : '#';
@@ -232,9 +376,9 @@ export type LozengeAppearance =
 // 2026-05-10 via DOM probe — bg returned rgba(0,0,0,0)). Same fix pattern
 // already applied to status dropdown dots.
 const LOZENGE_BG: Record<LozengeAppearance, string> = {
-  success:    'rgb(179, 223, 114)',
-  inprogress: 'rgb(143, 184, 246)',
-  default:    'rgb(221, 222, 225)',
+  success:    'rgb(148, 199, 72)',    // #94C748 — Jira done category
+  inprogress: 'rgb(102, 157, 241)',   // #669DF1 — Jira in-progress category
+  default:    'rgb(220, 223, 228)',   // #DCDFE4 — Jira to-do category
   moved:      'rgb(243, 214, 100)',
   removed:    'rgb(255, 143, 115)',
   new:        'rgb(184, 172, 246)',
@@ -260,11 +404,11 @@ export function StatusPill({
       maxWidth: '200px',
     }}>
       <span style={{
-        fontSize: '11px',
-        fontWeight: 653,
+        fontSize: '14px',
+        fontWeight: 400,
         lineHeight: '16px',
         color: LOZENGE_FG,
-        textTransform: 'uppercase',
+        textTransform: 'none',
         letterSpacing: '0.165px',
         overflow: 'hidden',
         textOverflow: 'ellipsis',
@@ -698,6 +842,47 @@ export function makeLabelsCell(getLabels: (row: any) => string[] | null) {
             }}
           >
             {label}
+          </span>
+        ))}
+      </span>
+    );
+  };
+}
+
+// ─── Fix Versions Cell ─────────────────────────────────────────────────────────
+// Renders fix versions as comma-separated plain text. Fix versions are not
+// inline-editable in this column cell — editing happens via the bulk wizard
+// or detail panel. Matches Jira's list column display.
+export function makeFixVersionsCell(getFixVersions: (row: any) => string[] | null | undefined) {
+  return function FixVersionsCell({ row }: CellProps<any>) {
+    const versions = getFixVersions(row);
+    if (!versions || versions.length === 0) {
+      return <span style={{ color: token('color.text.subtlest', '#7A869A') }}>—</span>;
+    }
+    // jira-compare 2026-05-12 (Item 9): Jira renders each fix-version value
+    // as a rectangular pill — border 1px, border-radius 3px, padding 2px 6px,
+    // no background. Confirmed from context pack screenshot probe.
+    return (
+      <span style={{ display: 'inline-flex', flexWrap: 'wrap', gap: 4 }}>
+        {versions.map((v) => (
+          <span
+            key={v}
+            style={{
+              display: 'inline-block',
+              border: `1px solid ${token('color.border', '#DFE1E6')}`,
+              borderRadius: 3,
+              padding: '2px 6px',
+              fontSize: 12,
+              fontWeight: 400,
+              color: token('color.text', '#172B4D'),
+              whiteSpace: 'nowrap',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              maxWidth: 160,
+            }}
+            title={v}
+          >
+            {v}
           </span>
         ))}
       </span>

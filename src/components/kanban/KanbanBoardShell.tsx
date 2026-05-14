@@ -179,7 +179,7 @@ export function KanbanBoardShell<THubRow = unknown>({
         // the optimistic update; adapter can call setColMap via a ref if
         // rollback is needed. For now, we just log.
         if (import.meta.env.DEV) {
-          // eslint-disable-next-line no-console
+           
           console.warn('[KanbanBoardShell] persistence.onDrop rejected; adapter should roll back.');
         }
       });

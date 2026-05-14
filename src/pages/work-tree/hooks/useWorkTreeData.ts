@@ -368,7 +368,7 @@ async function calculateMetrics(options: WorkTreeOptions) {
   const { data: stories } = await storyQuery;
 
   // Task metrics
-  let taskQuery = supabase.from('subtasks').select('id, status');
+  const taskQuery = supabase.from('subtasks').select('id, status');
   const { data: tasks } = await taskQuery;
 
   const epicTotal = epics?.length || 0;

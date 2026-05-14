@@ -365,7 +365,7 @@ Return JSON:
 
     // Resolve from ph_issues if needed
     const allIdsToResolve = [...new Set([...unresolvedEntityIds])];
-    let issueKeyMap: Record<string, string> = {};
+    const issueKeyMap: Record<string, string> = {};
 
     if (allIdsToResolve.length > 0 || shortIds.length > 0) {
       const filters: string[] = [];

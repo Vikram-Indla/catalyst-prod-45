@@ -65,7 +65,7 @@ serve(async (req) => {
     })
 
     const projectConfigs: Record<string, ProjectConfig> = overrideProjectConfigs || cfg.sync_project_config || {}
-    let includedProjects: string[] = cfg.included_projects || []
+    const includedProjects: string[] = cfg.included_projects || []
     const hierarchyLevels: Array<{ level: number; name: string; jiraTypes: string[] }> = cfg.hierarchy_levels || []
     const statusMapping: Record<string, string[]> = cfg.status_mapping || {}
     const syncIssueTypes: string[] = overrideIssueTypes || cfg.sync_issue_types || []

@@ -14,7 +14,7 @@
  * renders its own content into the left/right slots.
  */
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import CrossIcon from '@atlaskit/icon/core/close';
 import ShareIcon from '@atlaskit/icon/core/share';
 import MoreIcon from '@atlaskit/icon/core/menu';
@@ -284,11 +284,14 @@ export function CatalystViewBase({
   };
 
   const MODAL: React.CSSProperties = fullPageMode ? {
-    /* jira-compare 2026-05-05: fullPageMode doesn't clip — the page-level scroll
-       container owns scroll. minHeight:100% so the background fills the viewport
-       even when content is short. overflow:visible so sticky right rail works. */
-    width: '100%', minHeight: '100%', background: 'var(--ds-surface, #FFFFFF)',
-    display: 'flex', flexDirection: 'column',
+    /* 2026-05-12: fullPageMode is always inside a constrained-height container
+       (BacklogDetailPage / IssueFullPage both wrap with height:100%;flex:1;minHeight:0).
+       overflow:hidden + height:100% constrains MODAL to parent height so cv-drawer-body
+       (flex:1) gets a fixed height and can be the scroll container.
+       Prior approach (minHeight:100%, overflow:visible) assumed page-level scroll, which
+       doesn't exist inside the project hub layout. */
+    width: '100%', height: '100%', background: 'var(--ds-surface, #FFFFFF)',
+    display: 'flex', flexDirection: 'column', overflow: 'hidden',
   } : panelMode ? {
     width: '100%', height: '100%', background: 'var(--ds-surface, #FFFFFF)',
     display: 'flex', flexDirection: 'column', overflow: 'hidden',
@@ -310,10 +313,14 @@ export function CatalystViewBase({
 
   /* ── Navigation (full-page back) ─────────── */
   const navigate = useNavigate();
+  const location = useLocation();
+  const projectListHref = location.pathname.includes('/backlog/')
+    ? `/project-hub/${projectKey}/backlog`
+    : `/project-hub/${projectKey}/list`;
   const handleBack = useCallback(() => {
     if (fullPageMode) {
       if (projectKey) {
-        navigate(`/project-hub/${projectKey}/list`);
+        navigate(projectListHref);
       } else {
         navigate(-1);
       }
@@ -399,6 +406,7 @@ export function CatalystViewBase({
                 parentKey={parentKey}
                 parentType={parentType}
                 onParentClick={onParentClick}
+                projectHref={projectListHref}
                 middleSlot={
                   !parentKey && itemKey && onParentChange
                     ? (
@@ -541,11 +549,11 @@ export function CatalystViewBase({
         </div>
 
         {/* ── B. BODY — two-column (restacks to single column under 680px via @container) ──
-            jira-compare 2026-05-05: fullPageMode removes overflow:hidden so the page-level
-            scroll container (the layout's main flex pane) drives scrolling, enabling
-            position:sticky on the right rail. Panel/modal modes keep overflow:hidden to
-            clip columns within the bounded pane. */}
-        <div className="cv-drawer-body" style={{ flex: 1, display: 'flex', overflow: fullPageMode ? 'visible' : 'hidden', alignItems: fullPageMode ? 'flex-start' : 'stretch' }}>
+            2026-05-12: fullPageMode — body IS the scroll container (overflowY:auto).
+            MODAL is constrained to height:100% so body gets a fixed height via flex:1.
+            Left panel grows freely; sidebar stays sticky at top of body's visible area.
+            Panel/modal modes keep overflow:hidden (columns each scroll independently). */}
+        <div className="cv-drawer-body" style={{ flex: 1, minHeight: 0, display: 'flex', overflowX: 'hidden', overflowY: fullPageMode ? 'auto' : 'hidden', alignItems: fullPageMode ? 'flex-start' : 'stretch' }}>
 
           {/* LEFT PANEL —
               jira-compare follow-up (2026-05-02): data-sdm-scope added so
@@ -553,14 +561,16 @@ export function CatalystViewBase({
               story-detail-extensions.css apply here. Without it the
               bare spans render as "Defects0" with no spacing or badge
               chrome. */}
-          {/* jira-compare 2026-05-05: fullPageMode — left panel grows freely (no
-              overflow-y:auto) so the page-level scroll container handles scrolling,
-              enabling the sticky right rail. Panel/modal modes keep overflow-y:auto
-              for independent column scroll within the bounded pane. */}
+          {/* 2026-05-12: fullPageMode — left panel grows freely (no overflow-y:auto);
+              cv-drawer-body (overflowY:auto) is now the scroll container.
+              Panel/modal modes keep overflow-y:auto for independent column scroll. */}
           <div className="cv-drawer-left" data-sdm-scope style={{
             flex: 1, padding: '20px 24px 32px 24px',
             borderRight: '1px solid #EBECF0', minWidth: 0, minHeight: 0,
-            ...(!fullPageMode ? { overflowY: 'auto' } : {}),
+            // fullPageMode: cap field rows at ~780px (matches modal left-panel width
+            // at 1100px total minus ~320px sidebar). Without this, fields like
+            // Priority and Severity stretch to fill the full viewport width.
+            ...(fullPageMode ? { maxWidth: 780 } : { overflowY: 'auto' }),
           }}>
             {isLoading ? (
               <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
@@ -592,18 +602,18 @@ export function CatalystViewBase({
           </div>
 
           {/* RIGHT PANEL — Sidebar
-              jira-compare 2026-05-05: Jira parity — right rail is sticky in
-              fullPageMode (probed BAU-5609: rail stays pinned at top while
-              left content scrolls past it). Panel/modal modes keep overflow-y:auto
-              for independent column scroll within the bounded pane.
-              position:sticky + align-self:flex-start only activate in fullPageMode. */}
+              2026-05-12: sticky within cv-drawer-body (the scroll container).
+              maxHeight:100% = body height (not 100vh) so the sidebar can't exceed
+              the scroll container's visible area. overflowY:auto for internal scroll
+              when sidebar content is taller than the body.
+              Panel/modal modes keep overflow-y:auto for independent column scroll. */}
           <div className="cv-drawer-sidebar" style={{
             width: rightPanelWidth, minWidth: 220, maxWidth: 600,
             background: 'var(--ds-surface, #FFFFFF)', overflowX: 'hidden',
             display: 'flex', flexDirection: 'column', padding: '16px 16px 32px 16px',
             minHeight: 0,
             ...(fullPageMode
-              ? { position: 'sticky', top: 0, maxHeight: '100vh', overflowY: 'auto', alignSelf: 'flex-start' }
+              ? { position: 'sticky', top: 0, maxHeight: '100%', overflowY: 'auto', alignSelf: 'flex-start' }
               : { overflowY: 'auto' }
             ),
           }}>

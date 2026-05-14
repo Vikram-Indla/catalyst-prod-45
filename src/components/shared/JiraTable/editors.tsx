@@ -34,6 +34,8 @@ import AkPriorityMediumIcon from '@atlaskit/icon/core/priority-medium';
 import AkPriorityLowIcon from '@atlaskit/icon/core/priority-low';
 import AkPriorityLowestIcon from '@atlaskit/icon/core/priority-lowest';
 import AkCloseIcon from '@atlaskit/icon/core/close';
+import AkLinkExternalIcon from '@atlaskit/icon/core/link-external';
+import AkAddIcon from '@atlaskit/icon/core/add';
 import { StatusPill } from './cells';
 import type { CellProps, LozengeAppearance } from './types';
 
@@ -86,12 +88,16 @@ function EditorPopover({ trigger, children, width = 240, align = 'start' }: Edit
       if (document.querySelector('.atlaskit-portal-container')?.contains(target)) return;
       setIsOpen(false);
     };
-    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') setIsOpen(false); };
+    // Capture-phase so Escape closes the popover before any parent modal's
+    // bubble-phase Escape handler fires (prevents CatalystViewBase modal
+    // or @atlaskit/modal-dialog from closing when user dismisses popover).
+    // Per CLAUDE.md 2026-05-08 WatchersChip lesson.
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') { e.stopPropagation(); setIsOpen(false); } };
     document.addEventListener('mousedown', onDown);
-    document.addEventListener('keydown', onKey);
+    document.addEventListener('keydown', onKey, true);
     return () => {
       document.removeEventListener('mousedown', onDown);
-      document.removeEventListener('keydown', onKey);
+      document.removeEventListener('keydown', onKey, true);
     };
   }, [isOpen]);
 
@@ -434,6 +440,9 @@ export function makeSummaryInlineEditCell<T>({
   canEdit,
   getReadOnlyTooltip,
   onChange,
+  onOpenWorkItem,
+  onCreateChild,
+  canCreateChild,
 }: {
   getSummary: (row: T) => string;
   canEdit?: (row: T) => boolean;
@@ -452,6 +461,18 @@ export function makeSummaryInlineEditCell<T>({
    */
   getReadOnlyTooltip?: (row: T) => string | null;
   onChange: (row: T, next: string) => void;
+  /**
+   * 2026-05-12 Jira parity: row hover reveals ↗ "Open work item" button at
+   * the right edge of the Summary cell. Opens detail in full-width view.
+   * When omitted, button is not rendered (back-compat for other surfaces).
+   */
+  onOpenWorkItem?: (row: T) => void;
+  /**
+   * 2026-05-12 Jira parity: row hover reveals + "Create child item" button.
+   * When omitted, button is not rendered. canCreateChild gate filters per row.
+   */
+  onCreateChild?: (row: T) => void;
+  canCreateChild?: (row: T) => boolean;
 }) {
   return function SummaryInlineEditCell({ row }: CellProps<T>) {
     const summary = getSummary(row);
@@ -494,58 +515,160 @@ export function makeSummaryInlineEditCell<T>({
       );
     }
 
+    // 2026-05-12 Jira parity: row hover reveals ↗ "Open work item" and
+    // + "Create child item" buttons on the right edge of the Summary cell.
+    // CSS in JiraTable.tsx ([data-jira-row-hover-action]) handles visibility
+    // via tr:hover (matches the .jira-drag-handle pattern at line 784).
+    const showOpen = !!onOpenWorkItem;
+    const showCreateChild = !!onCreateChild && (canCreateChild ? canCreateChild(row) : true);
+    const showHoverActions = showOpen || showCreateChild;
+
     return (
       <span
         data-jira-table-editor
         data-jira-cell-editor
         onClick={(e) => e.stopPropagation()}
-        style={{ display: 'block', width: '100%' }}
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: 4,
+          width: '100%',
+        }}
       >
-        <InlineEdit<string>
-          // Fix #2 (iter-9): Atlaskit InlineEdit defaults to fit-content
-          // sizing on its readView container. Without this prop the inner
-          // span's max-width: 100% resolves against a shrunk wrapper and
-          // "Test, 25 April." renders as "Test, 25 A...".
-          readViewFitContainerWidth
-          defaultValue={summary}
-          editView={({ errorMessage, ...fieldProps }) => (
-            <Textfield {...fieldProps} autoFocus />
-          )}
-          readView={() => (
-            <span
-              title={summary || undefined}
-              style={{
-                display: 'block',
-                padding: '2px 6px',
-                margin: '-2px -6px',
-                borderRadius: 3,
-                // Jira-parity: summary cell shows text cursor on hover (measured
-                // 2026-05-08 from digital-transformation.atlassian.net BAU list —
-                // cursor: text on the .text-cell-wrapper span, matching the
-                // "click anywhere in cell to edit" UX pattern). Previously used
-                // cursor: pointer which implies a navigation action, not a text edit.
-                cursor: 'text',
-                overflow: 'hidden',
-                textOverflow: 'ellipsis',
-                whiteSpace: 'nowrap',
-                width: '100%',
-                // 2026-05-08 DOM probe: Jira summary = rgb(80,82,88) = --ds-text-subtle.
-                // Inheriting --ds-text (rgb 41,42,46) from tbody td baseline was wrong.
-                color: 'var(--ds-text-subtle, #505258)',
-                lineHeight: '20px',
-              }}
-            >
-              {summary || (
-                <span data-jira-cell-ghost>
-                  Click to add summary
-                </span>
-              )}
-            </span>
-          )}
-          onConfirm={(value) => {
-            if (value !== undefined && value !== summary) onChange(row, value);
-          }}
-        />
+        <span style={{ flex: 1, minWidth: 0 }}>
+          <InlineEdit<string>
+            // Fix #2 (iter-9): Atlaskit InlineEdit defaults to fit-content
+            // sizing on its readView container. Without this prop the inner
+            // span's max-width: 100% resolves against a shrunk wrapper and
+            // "Test, 25 April." renders as "Test, 25 A...".
+            readViewFitContainerWidth
+            defaultValue={summary}
+            editView={({ errorMessage, ...fieldProps }) => (
+              <Textfield {...fieldProps} autoFocus />
+            )}
+            readView={() => (
+              <span
+                title={summary || undefined}
+                style={{
+                  display: 'block',
+                  padding: '2px 6px',
+                  margin: '-2px -6px',
+                  borderRadius: 3,
+                  // Jira-parity: summary cell shows text cursor on hover (measured
+                  // 2026-05-08 from digital-transformation.atlassian.net BAU list —
+                  // cursor: text on the .text-cell-wrapper span, matching the
+                  // "click anywhere in cell to edit" UX pattern). Previously used
+                  // cursor: pointer which implies a navigation action, not a text edit.
+                  cursor: 'text',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  whiteSpace: 'nowrap',
+                  width: '100%',
+                  // 2026-05-08 DOM probe: Jira summary = rgb(80,82,88) = --ds-text-subtle.
+                  // Inheriting --ds-text (rgb 41,42,46) from tbody td baseline was wrong.
+                  color: 'var(--ds-text-subtle, #505258)',
+                  lineHeight: '20px',
+                }}
+              >
+                {summary || (
+                  <span data-jira-cell-ghost>
+                    Click to add summary
+                  </span>
+                )}
+              </span>
+            )}
+            onConfirm={(value) => {
+              if (value !== undefined && value !== summary) onChange(row, value);
+            }}
+          />
+        </span>
+        {showHoverActions && (
+          <span
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 2,
+              flexShrink: 0,
+            }}
+          >
+            {showOpen && (
+              <Tooltip content="Open work item" position="top">
+                <button
+                  type="button"
+                  data-jira-row-hover-action
+                  aria-label="Open work item"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    e.preventDefault();
+                    onOpenWorkItem!(row);
+                  }}
+                  style={{
+                    visibility: 'hidden',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: 24,
+                    height: 24,
+                    padding: 0,
+                    border: '1px solid transparent',
+                    background: 'transparent',
+                    borderRadius: 3,
+                    cursor: 'pointer',
+                    color: 'var(--ds-text-subtle, #505258)',
+                  }}
+                  onMouseEnter={(e) => {
+                    (e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral-subtle-hovered, #F1F2F4)';
+                    (e.currentTarget as HTMLElement).style.borderColor = 'var(--ds-border, #DFE1E6)';
+                  }}
+                  onMouseLeave={(e) => {
+                    (e.currentTarget as HTMLElement).style.background = 'transparent';
+                    (e.currentTarget as HTMLElement).style.borderColor = 'transparent';
+                  }}
+                >
+                  <AkLinkExternalIcon label="" />
+                </button>
+              </Tooltip>
+            )}
+            {showCreateChild && (
+              <Tooltip content="Create child item" position="top">
+                <button
+                  type="button"
+                  data-jira-row-hover-action
+                  aria-label="Create child item"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    e.preventDefault();
+                    onCreateChild!(row);
+                  }}
+                  style={{
+                    visibility: 'hidden',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: 24,
+                    height: 24,
+                    padding: 0,
+                    border: '1px solid transparent',
+                    background: 'transparent',
+                    borderRadius: 3,
+                    cursor: 'pointer',
+                    color: 'var(--ds-text-subtle, #505258)',
+                  }}
+                  onMouseEnter={(e) => {
+                    (e.currentTarget as HTMLElement).style.background = 'var(--ds-background-neutral-subtle-hovered, #F1F2F4)';
+                    (e.currentTarget as HTMLElement).style.borderColor = 'var(--ds-border, #DFE1E6)';
+                  }}
+                  onMouseLeave={(e) => {
+                    (e.currentTarget as HTMLElement).style.background = 'transparent';
+                    (e.currentTarget as HTMLElement).style.borderColor = 'transparent';
+                  }}
+                >
+                  <AkAddIcon label="" />
+                </button>
+              </Tooltip>
+            )}
+          </span>
+        )}
       </span>
     );
   };

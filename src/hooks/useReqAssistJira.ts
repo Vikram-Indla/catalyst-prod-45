@@ -56,7 +56,7 @@ export function useProjectTickets(projectKey: string | null, pdfOnly = false) {
       );
 
       const ticketKeys = data.map((t: any) => t.ticket_key);
-      let importedMap: Record<string, string> = {};
+      const importedMap: Record<string, string> = {};
       if (ticketKeys.length > 0) {
         const { data: docs } = await typedQuery('ra_documents')
           .select('jira_ticket_key, status')

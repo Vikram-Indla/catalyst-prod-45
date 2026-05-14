@@ -148,7 +148,7 @@ export async function exportPlannerToPDF(options: ExportOptions): Promise<void> 
     pdf.roundedRect(margin, currentY, pageWidth - (margin * 2), 25, 3, 3, 'F');
     
     const statBoxWidth = (pageWidth - (margin * 2)) / 5;
-    let statX = margin + 8;
+    const statX = margin + 8;
     const statY = currentY + 8;
 
     const statItems = [

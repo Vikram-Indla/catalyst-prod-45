@@ -377,6 +377,42 @@ export type Database = {
           },
         ]
       }
+      auth_audit_log: {
+        Row: {
+          actor_id: string | null
+          created_at: string
+          event_details: Json | null
+          event_type: string
+          id: string
+          ip_address: string | null
+          user_agent: string | null
+          user_email: string | null
+          user_id: string | null
+        }
+        Insert: {
+          actor_id?: string | null
+          created_at?: string
+          event_details?: Json | null
+          event_type: string
+          id?: string
+          ip_address?: string | null
+          user_agent?: string | null
+          user_email?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          actor_id?: string | null
+          created_at?: string
+          event_details?: Json | null
+          event_type?: string
+          id?: string
+          ip_address?: string | null
+          user_agent?: string | null
+          user_email?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       board_columns: {
         Row: {
           board_id: string
@@ -5979,6 +6015,72 @@ export type Database = {
           position?: number
           tab_key?: string
           updated_at?: string
+        }
+        Relationships: []
+      }
+      email_log: {
+        Row: {
+          attempt_count: number
+          body_html: string | null
+          body_text: string | null
+          created_at: string
+          error_message: string | null
+          from_email: string
+          from_name: string
+          id: string
+          metadata: Json
+          provider: string
+          provider_message_id: string | null
+          recipient_user_id: string | null
+          sent_at: string | null
+          sent_by_user_id: string | null
+          status: string
+          subject: string
+          template_name: string
+          template_props: Json
+          to_email: string
+        }
+        Insert: {
+          attempt_count?: number
+          body_html?: string | null
+          body_text?: string | null
+          created_at?: string
+          error_message?: string | null
+          from_email: string
+          from_name: string
+          id?: string
+          metadata?: Json
+          provider?: string
+          provider_message_id?: string | null
+          recipient_user_id?: string | null
+          sent_at?: string | null
+          sent_by_user_id?: string | null
+          status?: string
+          subject: string
+          template_name: string
+          template_props?: Json
+          to_email: string
+        }
+        Update: {
+          attempt_count?: number
+          body_html?: string | null
+          body_text?: string | null
+          created_at?: string
+          error_message?: string | null
+          from_email?: string
+          from_name?: string
+          id?: string
+          metadata?: Json
+          provider?: string
+          provider_message_id?: string | null
+          recipient_user_id?: string | null
+          sent_at?: string | null
+          sent_by_user_id?: string | null
+          status?: string
+          subject?: string
+          template_name?: string
+          template_props?: Json
+          to_email?: string
         }
         Relationships: []
       }
@@ -60586,6 +60688,51 @@ export type Database = {
           token_expires_at?: string | null
           updated_at?: string | null
           user_id?: string
+        }
+        Relationships: []
+      }
+      user_invitations: {
+        Row: {
+          accepted_at: string | null
+          created_at: string
+          email: string
+          expires_at: string
+          id: string
+          invited_by: string
+          module_access: Json
+          resend_count: number
+          resent_at: string | null
+          role: Database["public"]["Enums"]["app_role"]
+          status: string
+          token_hash: string
+        }
+        Insert: {
+          accepted_at?: string | null
+          created_at?: string
+          email: string
+          expires_at: string
+          id?: string
+          invited_by: string
+          module_access?: Json
+          resend_count?: number
+          resent_at?: string | null
+          role?: Database["public"]["Enums"]["app_role"]
+          status?: string
+          token_hash: string
+        }
+        Update: {
+          accepted_at?: string | null
+          created_at?: string
+          email?: string
+          expires_at?: string
+          id?: string
+          invited_by?: string
+          module_access?: Json
+          resend_count?: number
+          resent_at?: string | null
+          role?: Database["public"]["Enums"]["app_role"]
+          status?: string
+          token_hash?: string
         }
         Relationships: []
       }

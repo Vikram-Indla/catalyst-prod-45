@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { BookOpen } from '@/lib/atlaskit-icons';
+import { Logo } from '@/components/brand/Logo';
 import { KBPanel } from '@/components/kb/KBPanel';
 
 const HUB_TABS = [
@@ -51,12 +52,7 @@ export function TopNav() {
             padding: 0, marginRight: 16, flexShrink: 0,
           }}
         >
-          <span style={{
-            fontSize: 14, fontWeight: 700, color: 'var(--bg-app)',
-            letterSpacing: '-0.02em',
-          }}>
-            Catalyst<span style={{ fontSize: 9, fontWeight: 400, verticalAlign: 'super', marginLeft: 1, opacity: 0.6 }}>™</span>
-          </span>
+          <Logo size="md" showWordmark={true} className="flex items-center gap-2" />
         </button>
 
         {/* Separator */}

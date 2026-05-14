@@ -147,7 +147,7 @@ export default function CoverageMatrixPage() {
   const fetchData = async () => {
     setIsLoading(true);
     try {
-      let query = typedQuery('tm_requirements')
+      const query = typedQuery('tm_requirements')
         .select('id, req_key, title, type, priority, status, release_version')
         .neq('status', 'deprecated')
         .order('req_key');

@@ -226,7 +226,7 @@ function CommentsSection({ requestId }: { requestId: string }) {
       if (error) throw error;
       const authorIds: string[] = (data || []).map((c: any) => c.author_id).filter(Boolean);
       const uniqueIds = Array.from(new Set(authorIds));
-      let authorMap: Record<string, string> = {};
+      const authorMap: Record<string, string> = {};
       if (uniqueIds.length > 0) {
         const { data: profiles } = await supabase.from('profiles').select('id, full_name').in('id', uniqueIds);
         if (profiles) profiles.forEach((p: any) => { authorMap[p.id] = p.full_name; });

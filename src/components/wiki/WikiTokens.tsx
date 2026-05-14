@@ -68,7 +68,7 @@ export const StatusLozenge: React.FC<{ status: string }> = ({ status }) => {
   const s = status?.toLowerCase() || '';
   let bg = 'var(--cp-lozenge-grey-bg)';
   let color = 'var(--cp-lozenge-grey-text)';
-  let ariaLabel = `Status: ${status || 'unknown'}`;
+  const ariaLabel = `Status: ${status || 'unknown'}`;
   if (['done', 'complete', 'completed', 'published', 'closed', 'resolved'].includes(s)) {
     bg = 'var(--cp-lozenge-green-bg)'; color = 'var(--cp-lozenge-green-text)';
   } else if (['in progress', 'active', 'review', 'in review', 'in_progress'].includes(s)) {

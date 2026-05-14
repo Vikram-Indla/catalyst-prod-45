@@ -340,7 +340,7 @@ async function fetchAllItems(params: {
   ]);
 
   // Combine all items
-  let allItems: UnifiedWorkItem[] = [
+  const allItems: UnifiedWorkItem[] = [
     ...opsResult.items,
     ...deliveryResult.items,
     ...plannerResult.items,

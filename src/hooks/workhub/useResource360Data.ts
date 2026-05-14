@@ -64,7 +64,7 @@ export function useResource360People() {
 
       // 1a. Get assignment types from resource_assignments
       const assignmentIds = (resources ?? []).map((r: any) => r.assignment_id).filter(Boolean);
-      let assignmentTypeMap = new Map<string, string>();
+      const assignmentTypeMap = new Map<string, string>();
       if (assignmentIds.length > 0) {
         const { data: assignments } = await supabase
           .from('resource_assignments')
@@ -80,8 +80,8 @@ export function useResource360People() {
         .map((r: any) => r.profile_id)
         .filter(Boolean);
       
-      let avatarMap = new Map<string, string>();
-      let profileDeptMap = new Map<string, string>();
+      const avatarMap = new Map<string, string>();
+      const profileDeptMap = new Map<string, string>();
       if (profileIds.length > 0) {
         const { data: profiles } = await supabase
           .from('profiles')
@@ -143,7 +143,7 @@ export function useResource360People() {
         if (issue.parent_key) parentKeys.add(issue.parent_key);
       });
 
-      let parentStoryMap = new Map<string, { status_category: string; fix_versions: any }>();
+      const parentStoryMap = new Map<string, { status_category: string; fix_versions: any }>();
       if (parentKeys.size > 0) {
         const { data: parentStories } = await supabase
           .from('ph_issues')

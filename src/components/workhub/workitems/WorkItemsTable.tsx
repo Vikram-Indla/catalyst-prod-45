@@ -49,7 +49,7 @@ function useAssigneeAvatars() {
         .map((d: any) => d.catalyst_profile_id)
         .filter(Boolean);
 
-      let profileAvatars = new Map<string, string>();
+      const profileAvatars = new Map<string, string>();
       if (profileIds.length > 0) {
         const { data: profiles } = await supabase
           .from('profiles')

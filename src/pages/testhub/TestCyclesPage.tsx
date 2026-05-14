@@ -94,7 +94,7 @@ export default function TestCyclesPage() {
 
       // Live stats: fetch scope rows for all cycles in one query
       const cycleIds = (data || []).map((c: any) => c.id);
-      let scopeStats: Record<string, { passed: number; failed: number; blocked: number; not_run: number; total: number }> = {};
+      const scopeStats: Record<string, { passed: number; failed: number; blocked: number; not_run: number; total: number }> = {};
       if (cycleIds.length > 0) {
         const { data: scopeRows } = await supabase
           .from('tm_cycle_scope')
