@@ -113,7 +113,7 @@ serve(async (req: Request) => {
     const prompt = `You are writing a concise post-mortem for a business request that has been completed.
 
 Business Request: "${brRow.title}"
-${brRow.description ? `Description: ${brRow.description}\n` : ""}Owner: ${brRow.assignee_name ?? "Unassigned"}
+${brRow.description ? `Description: ${brRow.description}\n` : ""}Owner: ${brRow.assignee ?? "Unassigned"}
 Total duration: ${totalDays} days
 Stage history:
 ${stageLines || "  (no stage history recorded)"}
