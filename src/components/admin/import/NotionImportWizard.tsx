@@ -78,7 +78,7 @@ function StatPill({ icon: Icon, label, value, color = 'var(--ds-text-brand, #256
 function WizardStepper({ step }: { step: number }) {
   const steps = [
     { id: 1, label: 'Connect', icon: LockLockedIcon },
-    { id: 2, label: 'Preview', icon: DatabaseIconIcon },
+    { id: 2, label: 'Preview', icon: DatabaseIcon },
     { id: 3, label: 'Map Fields', icon: ArrowRightIcon },
     { id: 4, label: 'Import', icon: UploadIcon },
   ];
@@ -424,7 +424,7 @@ export function NotionImportWizard() {
                   <div className="bg-white border border-[var(--ds-border,#E2E8F0)] rounded-lg overflow-hidden">
                     {[
                       { label: 'Source', value: dbTitle, icon: DatabaseIcon },
-                      { label: 'Rows', value: String(notionRows.length), icon: DatabaseIconIcon },
+                      { label: 'Rows', value: String(notionRows.length), icon: DatabaseIcon },
                       { label: 'Project', value: projectName, icon: BoardsIcon },
                       { label: 'Type', value: itemType, icon: GridIcon },
                       { label: 'Fields', value: `${mappedCount} / ${notionProps.length}`, icon: ArrowRightIcon },
