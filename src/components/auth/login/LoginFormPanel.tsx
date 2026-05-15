@@ -391,7 +391,7 @@ export function LoginFormPanel({
                   type="text"
                   inputMode="numeric"
                   pattern="[0-9]*"
-                  maxLength={6}
+                  maxLength={8}
                   placeholder="000000"
                   value={otpCode}
                   autoComplete="one-time-code"
@@ -408,7 +408,7 @@ export function LoginFormPanel({
                 type="submit"
                 appearance="primary"
                 isLoading={busy}
-                isDisabled={busy || otpCode.length < 6}
+                isDisabled={busy || otpCode.length < 6 || otpCode.length > 8}
                 shouldFitContainer
               >
                 Sign in

@@ -122,7 +122,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const { error } = await supabase.auth.verifyOtp({
         email: email.toLowerCase().trim(),
         token,
-        type: 'email',
+        type: 'magiclink',
       });
       if (error) {
         toast({ title: 'Invalid code', description: 'The code is incorrect or expired.', variant: 'destructive' });
