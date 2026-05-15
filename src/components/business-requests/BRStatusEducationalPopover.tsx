@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Popup } from '@atlaskit/popup';
-import { IconButton } from '@atlaskit/button';
-import InfoIcon from '@atlaskit/icon/core/info';
+import { IconButton } from '@atlaskit/button/new';
+import InfoIcon from '@atlaskit/icon/core/information';
 
 interface WorkflowStatus {
   id: string;

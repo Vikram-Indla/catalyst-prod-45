@@ -196,6 +196,11 @@ export default defineConfig(({ mode, command }) => {
       // exist since we depend on @atlaskit/renderer. The hoisted top-level copy
       // is not reliable across install environments (only present when hoisted).
       "react-intl-next": path.resolve(__dirname, "./node_modules/@atlaskit/renderer/node_modules/react-intl-next/index.js"),
+      // @atlaskit/editor-plugins is not reliably hoisted to the top-level
+      // node_modules across install environments (npm ci follows the lock file
+      // which only records it nested under editor-core). Pin it to the nested
+      // copy that is guaranteed to exist.
+      "@atlaskit/editor-plugins": path.resolve(__dirname, "./node_modules/@atlaskit/editor-core/node_modules/@atlaskit/editor-plugins"),
       // ─────────────────────────────────────────────────────────────────────
       // CRITICAL: Force a SINGLE ProseMirror instance shared by Atlaskit + Tiptap.
       //

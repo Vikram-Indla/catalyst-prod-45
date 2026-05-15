@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { Button } from '@atlaskit/button';
-import { Textfield } from '@atlaskit/textfield';
-import { Select } from '@atlaskit/select';
+import Button from '@atlaskit/button/new';
+import Textfield from '@atlaskit/textfield';
+import Select from '@atlaskit/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { cn } from '@/lib/utils';
 import { useBRWorkflowStatuses, getBRWorkflowStatus } from '@/hooks/useBRWorkflowStatus';
