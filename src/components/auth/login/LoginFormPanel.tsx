@@ -8,7 +8,6 @@ import { useState, useEffect, useRef, FormEvent } from 'react';
 import Textfield from '@atlaskit/textfield';
 import Textarea from '@atlaskit/textarea';
 import Button from '@atlaskit/button';
-import { Checkbox } from '@atlaskit/checkbox';
 import SectionMessage from '@atlaskit/section-message';
 import { UserType } from './constants';
 import type { Lang } from './translations';
@@ -27,11 +26,12 @@ export interface ExternalAccessRequest {
 interface LoginFormPanelProps {
   userType: UserType;
   onUserTypeChange: (type: UserType) => void;
-  onSignIn: (email: string, password: string, rememberMe: boolean) => Promise<{ error?: Error | null }>;
+  onSignIn: (email: string, password: string) => Promise<{ error?: Error | null }>;
   onSignUp: (email: string, password: string, fullName: string) => Promise<{ error?: Error | null }>;
   onExternalSubmit: (data: ExternalAccessRequest) => Promise<void>;
   onSendOtp: (email: string) => Promise<{ error?: any }>;
   onVerifyOtp: (email: string, token: string) => Promise<{ error?: any }>;
+  onForgotPassword: (email: string) => Promise<{ error?: any }>;
   loading: boolean;
   error?: string | null;
   lang: Lang;
@@ -80,6 +80,7 @@ export function LoginFormPanel({
   onExternalSubmit,
   onSendOtp,
   onVerifyOtp,
+  onForgotPassword,
   loading,
   error,
   lang,
@@ -87,7 +88,6 @@ export function LoginFormPanel({
   const [signinEmail, setSigninEmail] = useState('');
   const [signinPassword, setSigninPassword] = useState('');
   const [showPwd, setShowPwd] = useState(false);
-  const [rememberMe, setRememberMe] = useState(false);
 
   const [externalName, setExternalName] = useState('');
   const [externalEmail, setExternalEmail] = useState('');
@@ -97,25 +97,28 @@ export function LoginFormPanel({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
 
-  // OTP mode state — integrated into the main sign-in card
-  const [otpMode, setOtpMode] = useState(false);   // true = showing OTP flow instead of password
-  const [otpSent, setOtpSent] = useState(false);    // true = code sent, showing input
+  // OTP mode state
+  const [otpMode, setOtpMode] = useState(false);
+  const [otpSent, setOtpSent] = useState(false);
   const [otpCode, setOtpCode] = useState('');
   const [otpError, setOtpError] = useState<string | null>(null);
   const otpInputRef = useRef<HTMLInputElement>(null);
 
+  // Forgot password mode
+  const [forgotMode, setForgotMode] = useState(false);
+  const [forgotSent, setForgotSent] = useState(false);
+  const [forgotError, setForgotError] = useState<string | null>(null);
+
+  // Always pre-fill email — Jira always remembers your email
   useEffect(() => {
     const saved = localStorage.getItem(REMEMBERED_EMAIL_KEY);
-    if (saved) { setSigninEmail(saved); setRememberMe(true); }
+    if (saved) setSigninEmail(saved);
   }, []);
 
   useEffect(() => {
     setSubmitSuccess(false);
-    // Reset OTP state when switching tabs
-    setOtpMode(false);
-    setOtpSent(false);
-    setOtpCode('');
-    setOtpError(null);
+    setOtpMode(false); setOtpSent(false); setOtpCode(''); setOtpError(null);
+    setForgotMode(false); setForgotSent(false); setForgotError(null);
   }, [userType]);
 
   const isSignIn = userType === 'existing';
@@ -126,13 +129,26 @@ export function LoginFormPanel({
   const handleSignInSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-    const result = await onSignIn(signinEmail, signinPassword, rememberMe);
+    const result = await onSignIn(signinEmail, signinPassword);
     if (!result.error) {
-      if (rememberMe) localStorage.setItem(REMEMBERED_EMAIL_KEY, signinEmail);
-      else localStorage.removeItem(REMEMBERED_EMAIL_KEY);
+      localStorage.setItem(REMEMBERED_EMAIL_KEY, signinEmail);
       setSubmitSuccess(true);
     }
     setIsSubmitting(false);
+  };
+
+  // ── forgot password ────────────────────────────────────────────────────────
+  const handleForgotSubmit = async (e: FormEvent) => {
+    e.preventDefault();
+    setForgotError(null);
+    setIsSubmitting(true);
+    const result = await onForgotPassword(signinEmail);
+    setIsSubmitting(false);
+    if (result.error) {
+      setForgotError('Could not send reset link. Check your email and try again.');
+    } else {
+      setForgotSent(true);
+    }
   };
 
   // ── OTP — send code ───────────────────────────────────────────────────────
@@ -219,16 +235,24 @@ export function LoginFormPanel({
       <div className="clmp-card-header">
         <h2 className="clmp-card-title">
           {isSignIn
-            ? (otpMode ? (otpSent ? 'Check your email' : 'Sign in with a code') : t(lang, 'form.signin.title'))
+            ? forgotMode
+              ? (forgotSent ? 'Check your email' : 'Reset your password')
+              : otpMode
+                ? (otpSent ? 'Check your email' : 'Sign in with a code')
+                : t(lang, 'form.signin.title')
             : t(lang, 'form.external.title')}
         </h2>
         <p className="clmp-card-sub">
           {isSignIn
-            ? (otpMode
+            ? forgotMode
+              ? (forgotSent
+                  ? `We sent a password reset link to ${signinEmail}`
+                  : 'Enter your email and we\'ll send you a reset link')
+              : otpMode
                 ? (otpSent
                     ? `We sent a sign-in code to ${signinEmail}`
                     : 'Enter your work email and we\'ll send a one-time code')
-                : t(lang, 'form.signin.sub'))
+                : t(lang, 'form.signin.sub')
             : t(lang, 'form.external.sub')}
         </p>
       </div>
@@ -243,7 +267,7 @@ export function LoginFormPanel({
       {/* ══════════════════════════════════════════════════
           SIGN IN — PASSWORD MODE (default)
       ══════════════════════════════════════════════════ */}
-      {isSignIn && !otpMode && (
+      {isSignIn && !otpMode && !forgotMode && (
         <form onSubmit={handleSignInSubmit} className="clmp-form" noValidate>
 
           <div className="clmp-field">
@@ -268,7 +292,11 @@ export function LoginFormPanel({
               <label htmlFor="signin-password" className="clmp-label">
                 {t(lang, 'form.label.password')}
               </label>
-              <button type="button" className="clmp-forgot">
+              <button
+                type="button"
+                className="clmp-forgot"
+                onClick={() => { setForgotMode(true); setForgotSent(false); setForgotError(null); }}
+              >
                 {t(lang, 'form.forgot')}
               </button>
             </div>
@@ -286,15 +314,6 @@ export function LoginFormPanel({
             />
           </div>
 
-          <div className="clmp-field">
-            <Checkbox
-              label={t(lang, 'form.remember')}
-              isChecked={rememberMe}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setRememberMe(e.target.checked)}
-              name="remember-me"
-            />
-          </div>
-
           <Button
             type="submit"
             appearance="primary"
@@ -305,7 +324,6 @@ export function LoginFormPanel({
             {t(lang, 'form.btn.signin')}
           </Button>
 
-          {/* ── "or" divider + send code option ── */}
           <OrDivider />
 
           <button
@@ -322,11 +340,65 @@ export function LoginFormPanel({
       )}
 
       {/* ══════════════════════════════════════════════════
+          FORGOT PASSWORD
+      ══════════════════════════════════════════════════ */}
+      {isSignIn && forgotMode && (
+        <div className="clmp-form">
+          {forgotSent ? (
+            <SectionMessage appearance="success" title="Reset link sent">
+              <p>Check your inbox at <strong>{signinEmail}</strong> for a password reset link.</p>
+            </SectionMessage>
+          ) : (
+            <form onSubmit={handleForgotSubmit} className="clmp-otp-verify-form" noValidate>
+              <div className="clmp-field">
+                <label htmlFor="forgot-email" className="clmp-label">
+                  {t(lang, 'form.label.email')}
+                </label>
+                <Textfield
+                  id="forgot-email"
+                  name="email"
+                  type="email"
+                  placeholder={t(lang, 'form.placeholder.email')}
+                  value={signinEmail}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSigninEmail(e.currentTarget.value)}
+                  autoComplete="email"
+                  dir="ltr"
+                  isRequired
+                  autoFocus
+                />
+              </div>
+              {forgotError && (
+                <SectionMessage appearance="error"><p>{forgotError}</p></SectionMessage>
+              )}
+              <Button
+                type="submit"
+                appearance="primary"
+                isLoading={busy}
+                isDisabled={busy || !signinEmail.trim()}
+                shouldFitContainer
+              >
+                Send reset link
+              </Button>
+            </form>
+          )}
+          <div style={{ marginTop: 12, textAlign: 'center' }}>
+            <button
+              type="button"
+              className="clmp-otp-text-btn"
+              onClick={() => { setForgotMode(false); setForgotSent(false); setForgotError(null); }}
+            >
+              Back to sign in
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* ══════════════════════════════════════════════════
           SIGN IN — OTP MODE
           Sub-state A: email input + "Send code" button
           Sub-state B: OTP code input + verify
       ══════════════════════════════════════════════════ */}
-      {isSignIn && otpMode && (
+      {isSignIn && otpMode && !forgotMode && (
         <div className="clmp-form">
 
           {/* Sub-state A — email + send */}

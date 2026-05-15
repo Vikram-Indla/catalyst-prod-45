@@ -144,11 +144,9 @@ export function CatalystLoginPage() {
   const handleSignIn = async (
     email: string,
     password: string,
-    _rememberMe: boolean
   ): Promise<{ error?: Error | null }> => {
     setIsLoading(true);
     setLoginError(null);
-    // Capture previous login time before it gets overwritten
     captureLastLoginForDisplay();
     const result = await signIn(email, password);
     if (result.error) {
@@ -158,6 +156,8 @@ export function CatalystLoginPage() {
       setIsLoading(false);
       return { error: result.error };
     }
+    // Always remember email — Jira-like, no "Remember me" checkbox
+    localStorage.setItem('catalyst_remembered_email', email.toLowerCase().trim());
     const { data: { user: currentUser } } = await supabase.auth.getUser();
     if (currentUser) {
       const needsChange = await checkMustChangePassword(currentUser.id);
@@ -174,6 +174,14 @@ export function CatalystLoginPage() {
     navigate(lastRoute);
     setIsLoading(false);
     return {};
+  };
+
+  const handleForgotPassword = async (email: string): Promise<{ error?: any }> => {
+    const { error } = await supabase.auth.resetPasswordForEmail(
+      email.toLowerCase().trim(),
+      { redirectTo: `${window.location.origin}/auth/reset-password` }
+    );
+    return { error };
   };
 
   const handleSignUp = async (
@@ -227,6 +235,7 @@ export function CatalystLoginPage() {
     setLoginError(null);
     const result = await verifyOtp(email, token);
     if (!result.error) {
+      localStorage.setItem('catalyst_remembered_email', email.toLowerCase().trim());
       storeCurrentLoginTime();
       navigate(getLastRoute(), { replace: true });
     } else {
@@ -363,6 +372,7 @@ export function CatalystLoginPage() {
               onExternalSubmit={handleExternalSubmit}
               onSendOtp={handleSendOtp}
               onVerifyOtp={handleVerifyOtp}
+              onForgotPassword={handleForgotPassword}
               loading={isLoading}
               error={loginError}
               lang={lang}
