@@ -1,6 +1,7 @@
 import { defineConfig, Plugin } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import path from "path";
+import fs from "node:fs";
 import { spawnSync } from "node:child_process";
 import { componentTagger } from "lovable-tagger";
 
@@ -68,6 +69,49 @@ function devDepsWatcher(): Plugin {
 
       server.watcher.on("change", onChange);
       server.watcher.on("add", onChange);
+    },
+  };
+}
+
+/**
+ * ATLASKIT SUBPATH RESOLVER
+ *
+ * Atlaskit packages use a "subdirectory package.json" pattern for subpath
+ * exports: @atlaskit/adf-schema/schema-default resolves to the directory
+ * node_modules/@atlaskit/adf-schema/schema-default which contains a
+ * package.json with a `module` field. Rollup's default resolver treats the
+ * directory as a file and throws ENOENT.
+ *
+ * This plugin intercepts those imports, reads the subdir package.json,
+ * and returns the correct ESM entry path. Covers ALL @atlaskit/* subpaths
+ * so we never need to add individual vite aliases per subpath.
+ */
+function atlaskitSubpathResolver(): Plugin {
+  const nodeModules = path.resolve(__dirname, 'node_modules');
+  return {
+    name: 'atlaskit-subpath-resolver',
+    resolveId(id) {
+      // Only handle @atlaskit/<pkg>/<subpath> — skip plain @atlaskit/<pkg>
+      if (!id.startsWith('@atlaskit/')) return null;
+      const parts = id.split('/');
+      if (parts.length < 3) return null; // @atlaskit/<pkg> — handled by alias
+
+      // Reconstruct: parts[0]='@atlaskit', parts[1]=pkg, parts[2+]=subpath
+      const pkg = parts[1];
+      const subpath = parts.slice(2).join('/');
+      const subpkgDir = path.join(nodeModules, '@atlaskit', pkg, subpath);
+      const subpkgJson = path.join(subpkgDir, 'package.json');
+
+      if (!fs.existsSync(subpkgJson)) return null;
+
+      try {
+        const meta = JSON.parse(fs.readFileSync(subpkgJson, 'utf8'));
+        const entry = meta['module'] || meta['main'];
+        if (!entry) return null;
+        return path.resolve(subpkgDir, entry);
+      } catch {
+        return null;
+      }
     },
   };
 }
@@ -154,6 +198,7 @@ export default defineConfig(({ mode, command }) => {
 
   },
   plugins: [
+    atlaskitSubpathResolver(),
     isBuild ? skipHeavyModules() : null,
     !isBuild && devDepsWatcher(),
     react(),
