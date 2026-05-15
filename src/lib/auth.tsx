@@ -102,16 +102,34 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const sendOtp = useCallback(async (email: string) => {
     try {
-      // Delegates to send-login-otp edge function which uses admin.generateLink
-      // to get a Supabase-managed OTP, then delivers via Resend (same as invitations).
-      const { data, error } = await supabase.functions.invoke('send-login-otp', {
-        body: { email: email.toLowerCase().trim() },
-      });
-      if (error || data?.ok === false) {
-        const msg = data?.error || error?.message || 'Could not send code';
-        toast({ title: 'Could not send code', description: msg, variant: 'destructive' });
-        return { error: error || new Error(msg) };
+      const normalizedEmail = email.toLowerCase().trim();
+
+      // Try the branded edge function first (deployed → Resend delivery).
+      // Falls back to native Supabase signInWithOtp if the function isn't live yet.
+      let usedEdgeFunction = false;
+      try {
+        const { data, error } = await supabase.functions.invoke('send-login-otp', {
+          body: { email: normalizedEmail },
+        });
+        if (!error && data?.ok !== false) {
+          usedEdgeFunction = true;
+          return { error: null };
+        }
+      } catch {
+        // edge function not deployed — fall through to native OTP
       }
+
+      if (!usedEdgeFunction) {
+        const { error } = await supabase.auth.signInWithOtp({
+          email: normalizedEmail,
+          options: { shouldCreateUser: false },
+        });
+        if (error) {
+          toast({ title: 'Could not send code', description: error.message, variant: 'destructive' });
+          return { error };
+        }
+      }
+
       return { error: null };
     } catch (error: any) {
       toast({ title: 'Could not send code', description: error.message, variant: 'destructive' });
