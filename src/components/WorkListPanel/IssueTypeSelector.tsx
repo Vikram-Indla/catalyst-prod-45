@@ -86,7 +86,7 @@ export const IssueTypeSelector = memo(function IssueTypeSelector({
       >
         {value ? (
           <>
-            <JiraIssueTypeIcon issueType={value} size={14} />
+            <JiraIssueTypeIcon type={value} size={14} />
             {value}
           </>
         ) : (
@@ -139,7 +139,7 @@ export const IssueTypeSelector = memo(function IssueTypeSelector({
                   e.currentTarget.style.backgroundColor = 'transparent';
                 }}
               >
-                <JiraIssueTypeIcon issueType={type} size={14} />
+                <JiraIssueTypeIcon type={type} size={14} />
                 {type}
               </button>
             ))}

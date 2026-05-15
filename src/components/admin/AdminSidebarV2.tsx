@@ -355,7 +355,7 @@ export function AdminSidebarV2({ expanded: initialExpanded, onToggle, className 
       <div style={{ flex: 1, overflowY: 'auto', overflowX: 'hidden' }}>
         <nav style={{ padding: '4px 8px' }}>
           {adminPockets.map((pocket) => {
-            const Icon = ICON_MAP[pocket.iconName] ?? Settings;
+            const Icon = ICON_MAP[pocket.iconName] ?? SettingsIcon;
             const active = isActive(pocket.path) || isChildActive(pocket.children);
             const hasChildren = pocket.children && pocket.children.length > 0;
             const isOpen = expandedSections.has(pocket.id);

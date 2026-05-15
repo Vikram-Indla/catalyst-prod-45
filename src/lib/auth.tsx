@@ -9,6 +9,8 @@ interface AuthContextType {
   signIn: (email: string, password: string) => Promise<{ error: any }>;
   signUp: (email: string, password: string, fullName?: string) => Promise<{ error: any }>;
   signOut: () => Promise<void>;
+  sendOtp: (email: string) => Promise<{ error: any }>;
+  verifyOtp: (email: string, token: string) => Promise<{ error: any }>;
   loading: boolean;
   isAuthenticated: boolean;
 }
@@ -97,6 +99,43 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       subscription.unsubscribe();
     };
   }, []);
+
+  const sendOtp = useCallback(async (email: string) => {
+    try {
+      // Delegates to send-login-otp edge function which uses admin.generateLink
+      // to get a Supabase-managed OTP, then delivers via Resend (same as invitations).
+      const { data, error } = await supabase.functions.invoke('send-login-otp', {
+        body: { email: email.toLowerCase().trim() },
+      });
+      if (error || data?.ok === false) {
+        const msg = data?.error || error?.message || 'Could not send code';
+        toast({ title: 'Could not send code', description: msg, variant: 'destructive' });
+        return { error: error || new Error(msg) };
+      }
+      return { error: null };
+    } catch (error: any) {
+      toast({ title: 'Could not send code', description: error.message, variant: 'destructive' });
+      return { error };
+    }
+  }, [toast]);
+
+  const verifyOtp = useCallback(async (email: string, token: string) => {
+    try {
+      const { error } = await supabase.auth.verifyOtp({
+        email: email.toLowerCase().trim(),
+        token,
+        type: 'email',
+      });
+      if (error) {
+        toast({ title: 'Invalid code', description: 'The code is incorrect or expired.', variant: 'destructive' });
+        return { error };
+      }
+      return { error: null };
+    } catch (error: any) {
+      toast({ title: 'Verification failed', description: error.message, variant: 'destructive' });
+      return { error };
+    }
+  }, [toast]);
 
   const signIn = useCallback(async (email: string, password: string) => {
     try {
@@ -254,7 +293,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }, [toast]);
 
-  const value = useMemo(() => ({ user, session, signIn, signUp, signOut, loading, isAuthenticated: !!user }), [user, session, signIn, signUp, signOut, loading]);
+  const value = useMemo(() => ({ user, session, signIn, signUp, signOut, sendOtp, verifyOtp, loading, isAuthenticated: !!user }), [user, session, signIn, signUp, signOut, sendOtp, verifyOtp, loading]);
 
   return (
     <AuthContext.Provider value={value}>

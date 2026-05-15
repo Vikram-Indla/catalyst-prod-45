@@ -129,7 +129,7 @@ export function IssueBreakdownPopover({ projectKey, projectName, issueCount }: P
                   i < typeSummaries.length - 1 && "border-b border-slate-50 dark:border-white/[0.03]"
                 )}
               >
-                <JiraIssueTypeIcon issueType={t.type} size={18} />
+                <JiraIssueTypeIcon type={t.type} size={18} />
                 <div className="flex-1 min-w-0">
                   <div className="text-[12px] font-medium text-slate-700 dark:text-slate-200 truncate">
                     {t.type}

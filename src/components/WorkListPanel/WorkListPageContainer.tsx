@@ -37,7 +37,7 @@ export const WorkListPageContainer = memo(function WorkListPageContainer() {
       {isLoading ? (
         <WorkListLoadingState />
       ) : (
-        <WorkListPanelIntegration items={items} isLoading={false} />
+        <WorkListPanelIntegration items={items as never} isLoading={false} />
       )}
 
       <CreateModal

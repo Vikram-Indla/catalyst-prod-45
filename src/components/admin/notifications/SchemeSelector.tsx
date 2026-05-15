@@ -82,7 +82,7 @@ export function SchemeSelector({ selectedSchemeId, onSchemeChange }: SchemeSelec
       {selectedScheme && (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button appearance="default" iconBefore={ShowMoreHorizontalIcon} />
+            <Button appearance="default" iconBefore={ShowMoreHorizontalIcon} >{null}</Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-48">
             <DropdownMenuItem onClick={() => setEditScheme(selectedScheme)}>

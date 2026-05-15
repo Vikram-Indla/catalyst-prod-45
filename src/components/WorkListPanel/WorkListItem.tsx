@@ -61,7 +61,7 @@ export const WorkListItem = memo(function WorkListItem({
           flexShrink: 0,
         }}
       >
-        <JiraIssueTypeIcon issueType={item.issueType} size={14} />
+        <JiraIssueTypeIcon type={item.issueType} size={14} />
       </div>
 
       <div style={{ flex: 1, minWidth: 0 }}>

@@ -1,6 +1,6 @@
 import { useState, useMemo, useCallback, memo } from 'react';
 import { UserAvatar } from './UserAvatar';
-import Button from '@atlaskit/button/new';
+import Button, { IconButton } from '@atlaskit/button/new';
 import Textfield from '@atlaskit/textfield';
 import AdsSelect from '@atlaskit/select';
 import { Lozenge } from '@/components/ads';
@@ -617,7 +617,7 @@ export const UsersTable = memo(function UsersTable({ users, isLoading }: UsersTa
                 </div>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button appearance="subtle" iconBefore={ShowMoreHorizontalIcon} />
+                    <Button appearance="subtle" iconBefore={ShowMoreHorizontalIcon} >{null}</Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
                     {user.approval_status === 'PENDING_APPROVAL' && (
@@ -1145,9 +1145,12 @@ export const UsersTable = memo(function UsersTable({ users, isLoading }: UsersTa
                       <div className="flex items-center justify-end gap-2">
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" size="icon" className="h-8 w-8">
-                              <ShowMoreHorizontalIcon label="" size="small" />
-                            </Button>
+                            <IconButton
+                              appearance="subtle"
+                              spacing="compact"
+                              icon={ShowMoreHorizontalIcon}
+                              label="More actions"
+                            />
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
                             {user.approval_status === 'PENDING_APPROVAL' && (
