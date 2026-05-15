@@ -184,18 +184,16 @@ export const TriggerSearch = memo(function TriggerSearch({
 
         <div className="flex items-center gap-1">
           <Button
-            variant="ghost"
-            size="sm"
-            className="text-xs h-7 text-[var(--ds-text-subtle,#475569)] hover:text-[var(--ds-text,#0F172A)]"
+            appearance="subtle"
+            spacing="compact"
+            iconBefore={CustomizeIcon}
             onClick={onExpandAll}
           >
-            <CustomizeIcon label="" size="small" />
             Expand All
           </Button>
           <Button
-            variant="ghost"
-            size="sm"
-            className="text-xs h-7 text-[var(--ds-text-subtle,#475569)] hover:text-[var(--ds-text,#0F172A)]"
+            appearance="subtle"
+            spacing="compact"
             onClick={onCollapseAll}
           >
             Collapse All
