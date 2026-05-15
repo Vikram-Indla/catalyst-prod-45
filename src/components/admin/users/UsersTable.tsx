@@ -1,6 +1,6 @@
 import { useState, useMemo, useCallback, memo } from 'react';
 import { UserAvatar } from './UserAvatar';
-import Button from '@atlaskit/button/new';
+import Button, { IconButton } from '@atlaskit/button/new';
 import Textfield from '@atlaskit/textfield';
 import AdsSelect from '@atlaskit/select';
 import { Lozenge } from '@/components/ads';
